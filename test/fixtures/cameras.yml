@@ -1,0 +1,19 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  desc: MyString
+  price: 1
+  url: MyString
+  image: MyString
+  color: MyString
+  optical-zoom: MyString
+  pixels: MyString
+
+two:
+  desc: MyString
+  price: 1
+  url: MyString
+  image: MyString
+  color: MyString
+  optical-zoom: MyString
+  pixels: MyString

@@ -1,0 +1,12 @@
+<h1>Editing camera</h1>
+
+<% form_for(@camera) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @camera %> |
+<%= link_to 'Back', cameras_path %>

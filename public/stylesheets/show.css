@@ -1,0 +1,11 @@
+#close {
+	position: absolute;
+	top: 2px;
+	left: 452px;
+	padding: 2px;
+	border: solid thin black;
+}
+
+div #container {
+	top: 22px;
+}
