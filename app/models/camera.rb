@@ -1,32 +1,43 @@
 class Camera < ActiveRecord::Base
   named_scope :valid, :conditions => "brand IS NOT NULL AND maximumresolution IS NOT NULL AND opticalzoom IS NOT NULL AND listpriceint IS NOT NULL AND displaysize IS NOT NULL"
   
-  MaxWidth = 150
-  MaxHeight = 120
+  Max = {'MWidth' => 150, 'MHeight' => 120, 'LWidth' => 400, 'LHeight' => 300}
   def imagewidth
-    @imageW ||= resize("W")
+    @imageW ||= {}
+    @imageW['M'] ||= resize :dir => 'Width', :size => 'M'
   end
   def imageheight
-    @imageH ||= resize("H")
+    @imageH ||= {}
+    @imageH['M'] ||= resize :dir => 'Height', :size => 'M'
+  end
+  def imagelw
+    @imageW ||= {}
+    @imageW['L'] ||= resize :dir => 'Width', :size => 'L'
+  end
+  def imagelh
+    @imageH ||= {}
+    @imageH['L'] ||= resize :dir => 'Height', :size => 'L'
   end
   
-  def resize(dir)
-    dbH = Float.induced_from(imagemheight)
-    dbW = Float.induced_from(imagemwidth)
-    if (dbH > MaxHeight || dbW > MaxWidth)
-      relh = dbH / MaxHeight
-      relw = dbW / MaxWidth
+  def resize(opts = {})
+    dbH = opts[:size] == 'M' ? Float.induced_from(imagemheight) : Float.induced_from(imagelheight)
+    dbW = opts[:size] == 'M' ? Float.induced_from(imagemwidth) : Float.induced_from(imagelwidth)
+    maxHeight = Max[opts[:size]+'Height']
+    maxWidth = Max[opts[:size]+'Width']
+    if (dbH > maxHeight || dbW > maxWidth)
+      relh = dbH / maxHeight
+      relw = dbW / maxWidth
       if relh > relw
-        @imageH = MaxHeight
-        @iamgeW = dbW/dbH*MaxHeight.to_i
+        @imageH[opts[:size]] = maxHeight.to_s
+        @imageW[opts[:size]] = (dbW/dbH*maxHeight).to_i.to_s
       else
-        @imageW = MaxWidth
-        @imageH = dbH/dbW*MaxWidth.to_i
+        @imageW[opts[:size]] = maxWidth.to_s
+        @imageH[opts[:size]] = (dbH/dbW*maxWidth).to_i.to_s
       end
     else
-      @imageW = to_i
-      @imageH = to_i
+      @imageW[opts[:size]] = dbW.to_i.to_s
+      @imageH[opts[:size]] = dbH.to_i.to_s
     end
-    dir=="W" ? @imageW : @imageH
+    opts[:dir]=='Width' ? @imageW[opts[:size]] : @imageH[opts[:size]]
   end
 end

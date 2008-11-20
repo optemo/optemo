@@ -9,3 +9,16 @@
 div #container {
 	top: 22px;
 }
+
+ul {
+	list-style-type: none;
+}
+
+div .showtable{
+	display: table;
+	margin: 0 auto 0 auto;
+}
+div .showcell{
+	display: table-cell;
+	padding: 10px;
+}

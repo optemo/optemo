@@ -7,8 +7,9 @@
 			<%= link_to 'Save it', {:id => @cameras[i], :action => 'save'}, :class => 'save' %>
 			<%= link_to 'See similar', {:id => @cameras[i], :action => 'sim'}, :class => 'sim' %>
 		</div>
-		<% if !@cameras[i].imagemurl.blank? %>
-		<img src="<%= @cameras[i].imagemurl %>" width="<%= @cameras[i].imagewidth %>" height="<%= @cameras[i].imageheight %>" class="nav_img"><% end %>
+		<% if !@cameras[i].imagemwidth.blank? %>
+			<%= image_tag @cameras[i].imagemurl, :width => @cameras[i].imagewidth, :height => @cameras[i].imageheight %> 
+		<%end%>
 		<p><%= @cameras[i].title %></p>
 		<p><% if !@cameras[i].salepriceint.blank? %>
 			<span style="color: red;"><%= @cameras[i].salepricestr %></span> <span style="text-decoration: line-through;"><%= @cameras[i].listpricestr %></span>

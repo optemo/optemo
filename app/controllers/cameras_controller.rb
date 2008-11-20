@@ -2,6 +2,7 @@ class CamerasController < ApplicationController
   #require 'rubygems'
   #require 'config/environment'
   #require 'scrubyt'
+  layout 'cameras', :except => :show
 
   require 'open-uri'
   # GET /cameras
@@ -21,7 +22,7 @@ class CamerasController < ApplicationController
     @camera = Camera.find(params[:id])
 
     respond_to do |format|
-      format.html { render :layout => 'plain'}
+      format.html 
       format.xml  { render :xml => @camera }
     end
   end
