@@ -97,14 +97,5 @@ class CamerasController < ApplicationController
     redirect_to cameras_url
   end
   
-  def scrape
-    call_rake :amazon_categories
-    flash[:notice] = "Scraping Amazon"
-    redirect_to cameras_url
-    
-    #open(params[:funk][:file]) do |uri|
-    #  @cameras = amazon.scrape(uri.read)
-    #end
-    #render :action => 'index'
-  end
+  
 end
