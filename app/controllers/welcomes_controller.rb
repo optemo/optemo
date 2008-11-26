@@ -45,7 +45,7 @@ class WelcomesController < ApplicationController
     respond_to do |format|
       if @welcome.save
         flash[:notice] = 'Thank you for submitting your email.'
-        format.html { redirect_to "http://optemo.com" }
+        format.html { redirect_to "/" }
         format.xml  { render :xml => @welcome, :status => :created, :location => @welcome }
       else
         format.html { render :action => "new" }

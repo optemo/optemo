@@ -4,14 +4,59 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-  <title>Optemo Inc.</title>
+  <title> Optemo </title>
   <%= stylesheet_link_tag 'welcome' %>
-<script type="text/javascript" src="/javascripts/shadedborder/shadedborder.js"></script>
+	<link rel="shortcut icon" href="/favicon.ico" >
+  <% javascript_include_tag 'shadedborder/shadedborder' %>
 </head>
 <body>
 
+<div class="dialog">
 
-<%= yield  %>
+ <!-- top/right PNG -->
+ <div class="content">
+
+  <!-- optional: vertical scroll wrapper -->
+  <div class="wrapper">
+
+   <!-- top/left PNG -->
+   <div class="t"></div>
+
+   <!-- Your content goes here -->
+
+   <!-- Optional: Standard Module Format (hd/bd/ft)
+   for providing semantic, meaningful content.
+   Not required for visual effect. -->
+
+   <div class="hd">
+	<br>
+	<div id="searchbar">
+	  <img src="images/logo.jpg" width="300" class="img">
+	</div>
+	<!--<div id = "header_options"><span style="float: left;"><a href="/" class="link">Home</a></span><span style="float: right;"><a class="link" href="/about">About Us</a> <a href="/team" class="link">The Team</a></span>&nbsp;</div>-->
+	<div id = "header_options"><a href="/" class="link">Home</a> <a class="link" href="/about">About Us</a> <a href="/team" class="link">The Team</a></div>
+	
 <p style="color: green"><%= flash[:notice] %></p>
+   </div>
+
+   <div class="bd">
+    <%= yield  %>
+   </div>
+
+   <div class="ft">
+   </div>
+
+  <!-- end content -->
+  </div>
+
+ <!-- end scroll wrapper -->
+ </div>
+
+ <!-- bottom PNG -->
+ <div class="b"><div></div></div>
+
+<!-- end dialog -->
+</div>
+
 </body>
 </html>

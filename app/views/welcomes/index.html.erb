@@ -1,17 +1,7 @@
-<div id="outside">
-	<br>
-<img id="logo" name="Optemo Logo" src="images/logosm.png" />
-<p>Optemo is a new company that focuses on enhancing the online 
-shopping experience.</p>
-<p>We will start our closed alpha testing in few months!!<br>
-Interested in participating or would you like to stay updated with news and information?<br>
+<p class="index">Optemo is a new company that focuses on making online shopping easier.</p>
+<p class="index">
+Do you want to be one of the first to try Optemo or would you like to stay updated with news and information?<br>
 Please leave your email address below.</p>
 <% form_tag :action => 'create' do %>
-<p>Email: <%=	text_field 'welcome','email' %> <%= submit_tag 'Submit' %></p>
+<p class="index">Email: <%=	text_field 'welcome','email' %> <%= submit_tag 'Submit' %></p>
 <% end %>
-<p style="color: green"><%= flash[:notice] %></p>
-<script language="javascript" type="text/javascript">
-    var myBorder = RUZEE.ShadedBorder.create({ corner:8, border:5, shadow: 30 });
-    myBorder.render('outside');
-  </script>
-</div>

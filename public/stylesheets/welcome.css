@@ -1,30 +1,208 @@
+/* Demo styles, page-specific - not needed for your use. */
+
+html {
+ height:100%;
+ margin: 0;
+ padding: 0;
+}
+
+body {
+ font:normal verdana,tahoma,arial;
+ font-family: arial;
+ padding: 0;
+ margin: 0;
+ height: 100%;
+}
+
+h1, h2 {
+ letter-spacing:-0.5px; /* it isn't web 2.0 otherwise, right? ;) */
+}
+
+h2 {
+ font-size:1.25em;
+ letter-spacing:0px;
+ font-style:italic;
+}
+
+h2.compact {
+ margin-top:0.05em;
+ margin-bottom:1em;
+}
+
+h2.tight {
+ margin-bottom:0.5em;
+}
+
+h2 em {
+ text-decoration:underline;
+}
+
+ul {
+ margin:0.5em 0px 0px 1.5em;
+ padding:0px;
+}
+
+ul li {
+ line-height:1.9em;
+}
+
+p {
+ margin:0.5em 0px 1.25em 0px;
+ padding:0px;
+ line-height:1.5em;
+}
+
+p.last {
+ margin-bottom:0px;
+}
+
+p.compact {
+ margin:0px;
+ padding:0px;
+}
+
+p, ul {
+ font-size:0.9em;
+}
+
 #logo {
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
 }
+
 p {
-	font-size: x-large;
+	font-size: 1.1em;
 	font-family: Arial;
+}
+.index {
 	text-align: center;
+	font-size: 1.5em;
 }
-html {
-	margin: 0;
+#searchbar {
+   margin-left: 20px;
+}
+a.link {
+	margin-left: 10px;
+	margin-right: 10px;
+}
+div #header_options, div #footer_options {
+	text-align: right;
+    background-color: #c8c8ff;
 	padding: 0;
-	height: 100%;
-}
-body {
-	/*border: 10px solid grey ;*/
-	padding: 0;
 	margin: 0;
-	height: 100%;
-	
 }
-#outside{
-	height: 100%;
-	background:#fff; 
-	color:#000;
+div #left {
+	text-align: left;
+	float: left;
+	width: 45%;
+	padding-left: 30px;
 }
-#outside .sb-shadow { }
-#outside .sb-border { background:#693; }
-#outside .sb-inner { background:#fff; }
+div #right {
+	text-align: left;
+	float: right;
+	width: 45%;
+	padding-left: 30px;
+}
+div.pass img{
+	border: medium double gray;
+}
+
+.pass {
+	float: left;
+	margin: 0px 10px 0px 0px;
+}
+
+
+
+
+
+
+/* 
+  -- Even more rounded corners with CSS: Base stylesheet --
+*/
+
+.dialog {
+ position:relative;
+ margin:0px auto;
+ min-width:8em;
+ max-width:1460px; /* based on image dimensions - not quite consistent with drip styles yet */
+ /*color:#fff;*/
+ z-index:1;
+ margin-left:18px; /* default, width of left corner */
+ margin-bottom:0.5em; /* spacing under dialog */
+}
+
+.dialog .content,
+.dialog .t,
+.dialog .b,
+.dialog .b div {
+ background:transparent url(../images/mainbg.png) no-repeat top right;
+ _background-image:url(../images/mainbg.gif);
+}
+
+.dialog .content {
+ position:relative;
+ zoom:1;
+ _overflow-y:hidden;
+ padding:0px 18px 0px 0px;
+}
+
+.dialog .t {
+ /* top+left vertical slice */
+ position:absolute;
+ left:0px;
+ top:0px;
+ width:18px; /* top slice width */
+ margin-left:-18px;
+ height:100%;
+ _height:1600px; /* arbitrary long height, IE 6 */
+ background-position:top left;
+}
+
+.dialog .b {
+ /* bottom */
+ position:relative;
+ width:100%;
+}
+
+.dialog .b,
+.dialog .b div {
+ height:30px; /* height of bottom cap/shade */
+ font-size:1px;
+}
+
+.dialog .b {
+ background-position:bottom right;
+}
+
+.dialog .b div {
+ position:relative;
+ width:18px; /* bottom corner width */
+ margin-left:-18px;
+ background-position:bottom left;
+}
+
+.dialog .hd,
+.dialog .bd,
+.dialog .ft {
+ position:relative;
+}
+
+.dialog .wrapper {
+ /* extra content protector - preventing vertical overflow (past background) */
+ position:static;
+ margin: 0;
+ max-height:1000px;
+ overflow:auto; /* note that overflow:auto causes a rather annoying redraw "lag" in Firefox 2, and may degrade performance. Might be worth trying without if you aren't worried about height/overflow issues. */
+}
+
+.dialog h1,
+.dialog p {
+ margin:0px; /* margins will blow out backgrounds, leaving whitespace. */
+ padding:0.5em 0px 0.5em 0px;
+}
+
+.dialog h1 {
+ padding-bottom:0px;
+}
