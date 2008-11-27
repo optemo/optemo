@@ -46,4 +46,5 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':controller/:action/:i1/:i2/:i3/:i4/:i5/:i6/:i7/:i8/:i9'
   map.connect ':controller/:action/:id'
   map.connect ':controller/:action/:id.:format'
+   map.connect ':action', :controller => 'welcomes'
 end

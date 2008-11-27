@@ -10,6 +10,8 @@ div#fade {
 	z-index: 1;
 	opacity: 0.5;
 	display: none;
+	margin-left: -6px;
+	margin-top: 11px;
 }
 div#info {
 	background: white;
@@ -27,8 +29,10 @@ div#info {
 	/*vertical-align: middle;*/
 }
 
-p {
-	margin: 5px;
+.navigator_box p {
+	margin: 0px 0px 5px;
+	padding: 0;
+	line-height:1.2em;
 }
 
 div#header_options, div#footer_options {
@@ -52,58 +56,48 @@ div.navigator_box {
 	text-align: center;
 	font-size: small;
 	display: table-cell;
-	width:240px;
-	height:220px;
+	width:245px;
+	height:225px;
+	padding: 0px 1px 0px 1px;
+	background: url(../images/navigatorbox_u.png) no-repeat;
+	 _background-image:url(../images/mainbg.gif);
+}
+div.navigator_box:hover {
+	background: url(../images/navigatorbox_s.png) no-repeat;
 }
 div.borderbox {
-	height: 100%;
-	margin: 0px 1px 2px 1px;
-	padding: 6px 5px 5px 5px;
+	position: relative;
+	top: 6px;
+	left: 6px;
+	height: 209px;
+	width: 231px;
 }
-#box0:hover .sb-border { background:#693; }
-#box1:hover .sb-border { background:#693; }
-#box2:hover .sb-border { background:#693; }
-#box3:hover .sb-border { background:#693; }
-#box4:hover .sb-border { background:#693; }
-#box5:hover .sb-border { background:#693; }
-#box6:hover .sb-border { background:#693; }
-#box7:hover .sb-border { background:#693; }
-#box8:hover .sb-border { background:#693; }
-
 .save {
+	width: 45px;
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+.sim {
+	width: 45px;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+.save a {
 	/*float: left;*/
 	background-color: orange;
 	text-decoration: none;
 	color: black;
-	padding: 1px;
 }
-.sim {
+.sim a {
 	/*float: right;*/
 	background-color: yellow;
 	text-decoration: none;
 	color: black;
-	padding: 1px;
 }
 
 a img {
 	border: none;
 }
 
-#outside{
-	height: 100%;
-	background:#fff; 
-	color:#000;
-	padding: 17px 17px 25px 17px;
-}
-#outside .sb-shadow { }
-#outside .sb-border { background:#693; }
-#outside .sb-inner { background:#fff; }
-#box0 .sb-border { background:#aaa; }
-#box1 .sb-border { background:#aaa; }
-#box2 .sb-border { background:#aaa; }
-#box3 .sb-border { background:#aaa; }
-#box4 .sb-border { background:#aaa; }
-#box5 .sb-border { background:#aaa; }
-#box6 .sb-border { background:#aaa; }
-#box7 .sb-border { background:#aaa; }
-#box8 .sb-border { background:#aaa; }

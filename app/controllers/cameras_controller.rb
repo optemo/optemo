@@ -104,5 +104,11 @@ class CamerasController < ApplicationController
     redirect_to cameras_url
   end
   
+  def sim
+    flash[:notice] = 'Function not implemented yet.'
+  end
   
+  def save
+    flash[:notice] = 'Function not implemented yet.'
+  end
 end
