@@ -9,7 +9,15 @@ class CamerasController < ApplicationController
   # GET /cameras.xml
   def index
     @cameras = Camera.valid.find(:all, :order => 'RAND()', :limit => 9)
-    
+    redirect_to "/cameras/list/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/"
+  end
+  
+  def list
+    @cameras = []
+    num = "i0"
+    9.times do
+      @cameras << Camera.find(params[num.next!])
+    end
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @cameras }
