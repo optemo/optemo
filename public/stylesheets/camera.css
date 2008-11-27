@@ -25,10 +25,6 @@ div#info {
 	display: none;
 }
 
-.img {
-	/*vertical-align: middle;*/
-}
-
 .navigator_box p {
 	margin: 0px 0px 5px;
 	padding: 0;
@@ -60,17 +56,17 @@ div.navigator_box {
 	height:225px;
 	padding: 0px 1px 0px 1px;
 	background: url(../images/navigatorbox_u.png) no-repeat;
-	 _background-image:url(../images/mainbg.gif);
+	_background-image:url(../images/mainbg.gif);
 }
 div.navigator_box:hover {
 	background: url(../images/navigatorbox_s.png) no-repeat;
 }
 div.borderbox {
 	position: relative;
-	top: 6px;
-	left: 6px;
-	height: 209px;
-	width: 231px;
+	top: 5px;
+	left: 5px;
+	height: 210px;
+	width: 232px;
 }
 .save {
 	width: 45px;
@@ -85,13 +81,11 @@ div.borderbox {
 	top: 0;
 }
 .save a {
-	/*float: left;*/
 	background-color: orange;
 	text-decoration: none;
 	color: black;
 }
 .sim a {
-	/*float: right;*/
 	background-color: yellow;
 	text-decoration: none;
 	color: black;
