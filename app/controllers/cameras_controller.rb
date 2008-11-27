@@ -2,8 +2,7 @@ class CamerasController < ApplicationController
   #require 'rubygems'
   #require 'config/environment'
   #require 'scrubyt'
-  layout 'cameras', :except => :show
-
+  layout 'optemo', :except => :show
   require 'open-uri'
   # GET /cameras
   # GET /cameras.xml

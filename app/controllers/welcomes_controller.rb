@@ -1,6 +1,7 @@
 class WelcomesController < ApplicationController
   # GET /welcomes
   # GET /welcomes.xml
+  layout 'optemo'
   def index
     @welcomes = Welcome.find(:all)
 

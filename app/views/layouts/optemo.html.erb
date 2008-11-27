@@ -6,8 +6,9 @@
   <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
   <title> Optemo </title>
   <%= stylesheet_link_tag 'welcome' %>
+  <%= stylesheet_link_tag 'camera' %>
 	<link rel="shortcut icon" href="/favicon.ico" >
-  <% javascript_include_tag 'shadedborder/shadedborder' %>
+  <%= javascript_include_tag :defaults %>
 </head>
 <body>
 
@@ -31,7 +32,7 @@
    <div class="hd">
 	<br>
 	<div id="searchbar">
-	  <img src="images/logo.jpg" width="300" class="img">
+	  <%= image_tag 'logo.jpg', :width  => 300, :class => 'img' %>
 	</div>
 	<!--<div id = "header_options"><span style="float: left;"><a href="/" class="link">Home</a></span><span style="float: right;"><a class="link" href="/about">About Us</a> <a href="/team" class="link">The Team</a></span>&nbsp;</div>-->
 	<div id = "header_options"><a href="/" class="link">Home</a> <a class="link" href="/about">About Us</a> <a href="/team" class="link">The Team</a></div>
@@ -45,7 +46,6 @@
 
    <div class="ft">
    </div>
-
   <!-- end content -->
   </div>
 
@@ -58,5 +58,7 @@
 <!-- end dialog -->
 </div>
 
+<div id="fade" onClick="fadein();">&nbsp;</div>
+<div id="info">&nbsp;</div>
 </body>
 </html>

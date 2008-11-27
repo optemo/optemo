@@ -1,14 +1,6 @@
 /* CSS Document */
 
-#searchbar {
-   position: relative;
-   left: 20px;
-}
-
-#search_input {
-	/*height: 40px;*/
-}
-div #fade {
+div#fade {
 	background-color: black;
 	position: absolute;
 	top: 0;
@@ -19,7 +11,7 @@ div #fade {
 	opacity: 0.5;
 	display: none;
 }
-div #info {
+div#info {
 	background: white;
 	position: absolute;
 	top: 180px;
@@ -95,12 +87,6 @@ div.borderbox {
 
 a img {
 	border: none;
-}
-
-body {
-	font-family: arial;
-	margin: 0;
-	padding: 0;
 }
 
 #outside{

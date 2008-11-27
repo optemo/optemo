@@ -1,6 +1,7 @@
 class AmazonGroup < ActiveRecord::Base
   named_scope :unprocessed, :conditions => { :processed => false }
   named_scope :leafs, :conditions => { :leaf => true }
+  require 'scrubyt'
   #Create new groups with new filled in variables
   def selectNextVar
     #Find which variable needs to be filled in

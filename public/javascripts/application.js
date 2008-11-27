@@ -16,5 +16,5 @@ function fadein()
 
 function loadinfo(id)
 {
-	new Ajax.Updater('info','cameras/'+id, {method:	'get'});
+	new Ajax.Updater('info','/cameras/show/'+id, {method:	'get'});
 }
