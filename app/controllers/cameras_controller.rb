@@ -105,10 +105,22 @@ class CamerasController < ApplicationController
   end
   
   def sim
-    flash[:notice] = 'Function not implemented yet.'
+    @mysession = Session.find(session[:user_id])
+    s = Similar.new
+    s.session_id = @mysession
+    s.camera_id = params[:id]
+    s.save
+    flash[:notice] = 'Similar has been saved.'
+    redirect_to :action => 'index'
   end
   
   def save
-    flash[:notice] = 'Function not implemented yet.'
+    @mysession = Session.find(session[:user_id])
+    s = Saved.new
+    s.session_id = @mysession
+    s.camera_id = params[:id]
+    s.save
+    flash[:notice] = 'Saved has been saved.'
+    redirect_to :action => 'index'
   end
 end

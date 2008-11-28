@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20081108175237) do
+ActiveRecord::Schema.define(:version => 20081127225953) do
 
   create_table "amazon_groups", :force => true do |t|
     t.datetime "created_at"
@@ -84,6 +84,37 @@ ActiveRecord::Schema.define(:version => 20081108175237) do
     t.integer  "imagelwidth"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "optemo_development", :force => true do |t|
+    t.string "label", :limit => 1
+  end
+
+  create_table "saveds", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "session_id"
+    t.integer  "camera_id"
+  end
+
+  create_table "sessions", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "loaded_at"
+  end
+
+  create_table "similars", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "session_id"
+    t.integer  "camera_id"
+  end
+
+  create_table "vieweds", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "session_id"
+    t.integer  "camera_id"
   end
 
   create_table "welcomes", :force => true do |t|
