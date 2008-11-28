@@ -27,7 +27,13 @@ class CamerasController < ApplicationController
   # GET /cameras/1.xml
   def show
     @camera = Camera.find(params[:id])
-
+    
+    #Session Tracking
+    s = Viewed.new
+    s.session_id = session[:user_id]
+    s.camera_id = @camera.id
+    s.save
+    
     respond_to do |format|
       format.html 
       format.xml  { render :xml => @camera }
@@ -105,9 +111,9 @@ class CamerasController < ApplicationController
   end
   
   def sim
-    @mysession = Session.find(session[:user_id])
+    #Session Tracking
     s = Similar.new
-    s.session_id = @mysession
+    s.session_id = session[:user_id]
     s.camera_id = params[:id]
     s.save
     flash[:notice] = 'Similar has been saved.'
@@ -115,9 +121,9 @@ class CamerasController < ApplicationController
   end
   
   def save
-    @mysession = Session.find(session[:user_id])
+    #Session Tracking
     s = Saved.new
-    s.session_id = @mysession
+    s.session_id = session[:user_id]
     s.camera_id = params[:id]
     s.save
     flash[:notice] = 'Saved has been saved.'
