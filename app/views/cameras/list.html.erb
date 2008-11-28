@@ -2,17 +2,18 @@
 	<% for i in 0..8 %>
 	<%= i%3 == 0 ? '<div class="rowdiv">' : '' %>
 	<div class="navigator_box">
-	<div id="box<%=i%>" class="borderbox" onClick="fadeout(<%=@cameras[i].id%>);">
+	<div id="box<%=i%>" class="borderbox">
 		
 		    <% if !@cameras[i].imagemwidth.blank? %>
 		    <div class='save'>
 				<%= link_to "Save it", {:id => @cameras[i], :action => 'save'} %>
 			</div>
-			<%= image_tag @cameras[i].imagemurl, :width => @cameras[i].imagewidth, :height => @cameras[i].imageheight %> 
+			<%= image_tag @cameras[i].imagemurl, :width => @cameras[i].imagewidth, :height => @cameras[i].imageheight, :onClick => "fadeout(#{@cameras[i].id});" %> 
 			<div class='sim'>
-			    <%= link_to "See similar", {:id => @cameras[i], :action => 'sim'}, :class => 'sim' %>
+			    <%= link_to "See similar", {:id => @cameras[i], :action => 'sim', :pos => i}, :class => 'sim' %>
 			</div>
 		<%end%>
+		<div onClick="fadeout(<%=@cameras[i].id%>);">
 		<p><%= @cameras[i].title %></p>
 		<p><% if !@cameras[i].salepriceint.blank? %>
 			<span style="color: red;"><%= @cameras[i].salepricestr %></span> <span style="text-decoration: line-through;"><%= @cameras[i].listpricestr %></span>
@@ -20,6 +21,7 @@
 			<%= @cameras[i].listpricestr %>
 			<% end %>
 		</p>
+		</div>
 	</div>
 	</div>
 	<%= i%3 == 2 ? '</div>' : '' %>

@@ -113,11 +113,16 @@ class CamerasController < ApplicationController
   def sim
     #Session Tracking
     s = Similar.new
+    #Cleanse id to be only numbers
+    params[:id].gsub!(/\D/,'')
+    #Cleanse pos to be one digit
+    params[:pos] = params[:pos].gsub(/[^0-8]/,'')[0,1]
     s.session_id = session[:user_id]
     s.camera_id = params[:id]
     s.save
-    flash[:notice] = 'Similar has been saved.'
-    redirect_to :action => 'index'
+    newids = %x["/optemo/site/lib/c_code/connect" "#{params[:id]}"]
+    
+    redirect_to "/cameras/list/#{newids.strip.split.insert(params[:pos].to_i,params[:id]).join('/')}"
   end
   
   def save
