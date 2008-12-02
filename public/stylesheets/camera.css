@@ -95,3 +95,8 @@ a img {
 	border: none;
 }
 
+div #sidebar {
+	float: left;
+	width: 10em;
+}
+

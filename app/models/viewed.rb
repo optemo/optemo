@@ -1,4 +1,4 @@
 class Viewed < ActiveRecord::Base
   belongs_to :session
-  has_one :camera
+  belongs_to :camera
 end

@@ -1,0 +1,12 @@
+<h1>Editing saved</h1>
+
+<% form_for(@saved) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @saved %> |
+<%= link_to 'Back', saveds_path %>

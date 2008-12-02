@@ -77,7 +77,10 @@ p {
 }
 .index {
 	text-align: center;
-	font-size: 1.5em;
+	font-size: 1.2em;
+}
+.thin {
+	margin: 0.5em 5em;
 }
 #searchbar {
    margin-left: 20px;
@@ -162,7 +165,7 @@ div.pass img{
 .dialog .b {
  /* bottom */
  position:relative;
- width:100%;
+ /*width:100%;*/
 }
 
 .dialog .b,
@@ -192,7 +195,7 @@ div.pass img{
  /* extra content protector - preventing vertical overflow (past background) */
  position:static;
  margin: 0;
- max-height:1000px;
+ max-height:1500px;
  overflow:auto; /* note that overflow:auto causes a rather annoying redraw "lag" in Firefox 2, and may degrade performance. Might be worth trying without if you aren't worried about height/overflow issues. */
 }
 

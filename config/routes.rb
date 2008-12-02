@@ -1,4 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :saveds
+
   map.resources :welcomes
 
   map.resources :amazon_groups

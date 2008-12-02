@@ -128,6 +128,8 @@ class CamerasController < ApplicationController
   def save
     #Session Tracking
     s = Saved.new
+    #Cleanse id to be only numbers
+    params[:id].gsub!(/\D/,'')
     s.session_id = session[:user_id]
     s.camera_id = params[:id]
     s.save

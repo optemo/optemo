@@ -1,0 +1,22 @@
+<h1>Compare Items</h1>
+
+<%# Descriptions %>
+<div class="cell">
+<h2>Graco</h2>
+<ul>
+	<% for column in Camera.content_columns %>
+	    <li><%= column.human_name %></li>
+	  <% end %>
+</ul>
+</div>
+
+<% @saveds.each do |saved| %>
+<div class="cell">
+<h2>Graco</h2>
+<ul>
+	<% for column in Camera.content_columns %>
+	    <li><%=h saved.camera.send(column.name) %></li>
+	  <% end %>
+</ul>
+</div>
+<% end %>

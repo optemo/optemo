@@ -1,4 +1,7 @@
 class Camera < ActiveRecord::Base
+  has_many :saveds
+  has_many :vieweds
+  has_many :similars 
   named_scope :valid, :conditions => "brand IS NOT NULL AND maximumresolution IS NOT NULL AND opticalzoom IS NOT NULL AND listpriceint IS NOT NULL AND displaysize IS NOT NULL"
   
   Max = {'MWidth' => 140, 'MHeight' => 100, 'LWidth' => 400, 'LHeight' => 300}
