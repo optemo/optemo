@@ -3,11 +3,32 @@ class CompareController < ApplicationController
   # GET /saveds
   # GET /saveds.xml
   def index
-    @saveds = Saved.find_all_by_session_id(session[:user_id])
-    
+    @cameras = []
+    if params[:path_info].blank?
+      @saveds = Saved.find_all_by_session_id(session[:user_id])
+      @saveds.collect do |saved|
+        @cameras << saved.camera.id
+      end
+      redirect_to "/compare/#{@cameras.join('/')}"
+    else
+      params[:path_info].collect do |id|
+        @cameras << Camera.find(id)
+      end
+      respond_to do |format|
+        format.html # index.html.erb
+        format.xml  { render :xml => @cameras }
+      end
+    end
+  end
+  
+  def list
+    @saveds = []
+    params[:path_info].collect do |id|
+      @saveds << Camera.find(id)
+    end
     respond_to do |format|
       format.html # index.html.erb
-      format.xml  { render :xml => @saveds }
+      format.xml  { render :xml => @cameras }
     end
   end
 

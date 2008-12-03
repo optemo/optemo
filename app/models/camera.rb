@@ -5,11 +5,11 @@ class Camera < ActiveRecord::Base
   named_scope :valid, :conditions => "brand IS NOT NULL AND maximumresolution IS NOT NULL AND opticalzoom IS NOT NULL AND listpriceint IS NOT NULL AND displaysize IS NOT NULL"
   
   Max = {'MWidth' => 140, 'MHeight' => 100, 'LWidth' => 400, 'LHeight' => 300}
-  def imagewidth
+  def imagemw
     @imageW ||= {}
     @imageW['M'] ||= resize :dir => 'Width', :size => 'M'
   end
-  def imageheight
+  def imagemh
     @imageH ||= {}
     @imageH['M'] ||= resize :dir => 'Height', :size => 'M'
   end

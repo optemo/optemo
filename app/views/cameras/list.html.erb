@@ -11,7 +11,7 @@
 		    <div class='save'>
 				<%= link_to "Save it", {:id => @cameras[i], :action => 'save'} %>
 			</div>
-			<%= image_tag @cameras[i].imagemurl, :width => @cameras[i].imagewidth, :height => @cameras[i].imageheight, :onClick => "fadeout(#{@cameras[i].id});" %> 
+			<%= image_tag @cameras[i].imagemurl, :width => @cameras[i].imagemw, :height => @cameras[i].imagemh, :onClick => "fadeout(#{@cameras[i].id});" %> 
 			<div class='sim'>
 			    <%= link_to "See similar", {:id => @cameras[i], :action => 'sim', :pos => i}, :class => 'sim' %>
 			</div>

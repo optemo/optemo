@@ -1,7 +1,15 @@
 .cell{
 	float: left;
+	width: 200px;
+	overflow: hidden;
 }
 
+.first {
+	height: 100px;
+}
+.first h2{
+	margin: 0;
+}
 #graco, #sames, #iwata, #dopag {
 width: 570px;
 border: solid 2px #7e7e7e;
@@ -29,4 +37,4 @@ vertical-align: middle;
 #graco li, #sames li, #iwata li, #dopag li {
 margin-left: 40px;
 }
-.clear{clear:both;display:none;}
+.clear{clear:both;}
