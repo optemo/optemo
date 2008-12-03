@@ -120,7 +120,7 @@ class CamerasController < ApplicationController
     s.session_id = session[:user_id]
     s.camera_id = params[:id]
     s.save
-    newids = %x["/optemo/site/lib/c_code/connect" "#{params[:id]}"]
+    newids = %x["/Users/maryam/serverFiles/optemo/site/lib/c_code/connect" "#{params[:id]}"]
     
     redirect_to "/cameras/list/#{newids.strip.split.insert(params[:pos].to_i,params[:id]).join('/')}"
   end
