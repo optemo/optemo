@@ -2,21 +2,18 @@
 
 <%# Descriptions %>
 <div class="cell">
-<h2>Graco</h2>
+<div class="first">
+	<br><br><br><br>
+<h2>Product Features</h2>
+</div>
 <ul>
 	<% for column in Camera.content_columns %>
 	    <li><%= column.human_name %></li>
-	  <% end %>
+	<% end %>
 </ul>
 </div>
 
-<% @saveds.each do |saved| %>
-<div class="cell">
-<h2>Graco</h2>
-<ul>
-	<% for column in Camera.content_columns %>
-	    <li><%=h saved.camera.send(column.name) %></li>
-	  <% end %>
-</ul>
-</div>
-<% end %>
+<%= render :partial => 'camera', :collection => @cameras %>
+
+<%# This moves the border to the bottom %>
+<div class="clear"></div>
