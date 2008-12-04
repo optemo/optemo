@@ -7,18 +7,22 @@ class Camera < ActiveRecord::Base
   Max = {'MWidth' => 140, 'MHeight' => 100, 'LWidth' => 400, 'LHeight' => 300}
   def imagemw
     @imageW ||= {}
+    @imageH ||= {}
     @imageW['M'] ||= resize :dir => 'Width', :size => 'M'
   end
   def imagemh
     @imageH ||= {}
+    @imageW ||= {}
     @imageH['M'] ||= resize :dir => 'Height', :size => 'M'
   end
   def imagelw
+    @imageH ||= {}
     @imageW ||= {}
     @imageW['L'] ||= resize :dir => 'Width', :size => 'L'
   end
   def imagelh
     @imageH ||= {}
+    @imageW ||= {}
     @imageH['L'] ||= resize :dir => 'Height', :size => 'L'
   end
   
