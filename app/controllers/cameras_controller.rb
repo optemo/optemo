@@ -17,6 +17,13 @@ class CamerasController < ApplicationController
     9.times do
       @cameras << Camera.find(params[num.next!])
     end
+    @picked_cameras = []
+    #This is ugly!
+    @picked_cameras_ids = []
+    Session.find(session[:user_id]).saveds.collect do |saved|
+      @picked_cameras << saved.camera
+      @picked_cameras_ids << saved.camera.id
+    end
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @cameras }
@@ -26,14 +33,14 @@ class CamerasController < ApplicationController
   # GET /cameras/1
   # GET /cameras/1.xml
   def show
+    #Cleanse id to be only numbers
+    params[:id].gsub!(/\D/,'')
     @camera = Camera.find(params[:id])
-    
     #Session Tracking
     s = Viewed.new
     s.session_id = session[:user_id]
     s.camera_id = @camera.id
     s.save
-    
     respond_to do |format|
       format.html 
       format.xml  { render :xml => @camera }

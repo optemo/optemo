@@ -47,4 +47,8 @@ class Camera < ActiveRecord::Base
     end
     opts[:dir]=='Width' ? @imageW[opts[:size]] : @imageH[opts[:size]]
   end
+  
+  def smlTitle
+    [brand,model].join(' ')
+  end
 end

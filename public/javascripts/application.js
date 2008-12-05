@@ -18,3 +18,20 @@ function loadinfo(id)
 {
 	new Ajax.Updater('info','/cameras/show/'+id, {method:	'get'});
 }
+
+function saveit(id)
+{
+	if ($('deleteme')){$('deleteme').remove()}
+	new Ajax.Updater({success:'savebar_content'}, '/saveds/create/'+id, {
+	  method: 'get',
+	  insertion: Insertion.Bottom
+	  });
+}
+
+function remove(id)
+{
+	new Ajax.Request('/saveds/destroy/'+id, {
+	  method: 'get'
+	});
+	$('c'+id).remove();
+}

@@ -43,7 +43,7 @@ a.link {
 div.tablediv {
 	display: table;
 	padding: 0;
-	margin: 4px auto 2px auto;
+	margin: 0;
 }
 div.rowdiv {
 	display:table-row;
@@ -95,8 +95,20 @@ a img {
 	border: none;
 }
 
-div #sidebar {
+div #savebar {
 	float: left;
-	width: 10em;
+	width: 150px;
+	background: #ddd;
+	margin: 0em 1em;
+	text-align: center;
 }
 
+.deleteX {
+	position: absolute;
+	left: 130px;
+	top: 0;
+}
+
+.saveditem {
+	position: relative;
+}

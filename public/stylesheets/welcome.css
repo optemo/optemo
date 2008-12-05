@@ -65,6 +65,10 @@ p, ul {
  font-size:0.9em;
 }
 
+.small {
+  font-size: 0.8em;
+}
+
 #logo {
 	display: block;
 	margin-left: auto;

@@ -4,6 +4,13 @@
 	left: 452px;
 	padding: 2px;
 	border: solid thin black;
+	display: none;
+}
+
+#newclose {
+	position: absolute;
+	top: 0px;
+	left: 475px;
 }
 
 div #container {

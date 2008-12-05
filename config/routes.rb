@@ -45,7 +45,7 @@ ActionController::Routing::Routes.draw do |map|
 
   # Install the default routes as the lowest priority.
   map.root :controller => 'welcomes'
-  map.connect ':controller/:action/:i1/:i2/:i3/:i4/:i5/:i6/:i7/:i8/:i9'
+  map.connect '/cameras/list/:i1/:i2/:i3/:i4/:i5/:i6/:i7/:i8/:i9', :controller => 'cameras', :action => 'list'
   map.connect 'compare/*path_info', :controller => 'compare', :action => 'index'
   map.connect ':controller/:action/:id'
   map.connect ':controller/:action/:id.:format'
