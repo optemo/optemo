@@ -9,6 +9,14 @@
 	</div>
 	<%= link_to 'Compare them!', :controller => 'compare' %>
 </div>
+<div id="filterbar">
+	<h2>Navigation Filters</h2>
+	<% form_tag ({:action => 'filter' }) do %>
+	  <%= render :partial => 'filter' %>
+	  <%= submit_tag 'Filter' %>
+	<% end %>
+	
+</div>
 <div class="tablediv">
 	<% for i in 0..8 %>
 	<%= i%3 == 0 ? '<div class="rowdiv">' : '' %>
@@ -38,6 +46,6 @@
 	<%= i%3 == 2 ? '</div>' : '' %>
 	<% end %>
 </div>
-<div id="error"></div>
+
 	
 

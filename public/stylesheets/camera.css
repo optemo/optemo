@@ -103,6 +103,14 @@ div #savebar {
 	text-align: center;
 }
 
+div #filterbar {
+	float: right;
+	margin: 0em 1em;
+	padding: 1em;
+	text-align: center;
+	background: #ddd;
+}
+
 .deleteX {
 	position: absolute;
 	left: 130px;
@@ -111,4 +119,39 @@ div #savebar {
 
 .saveditem {
 	position: relative;
+}
+
+.slider {
+	/*background: url(../images/sliderbgwticks193px.gif) no-repeat;*/
+	margin: 0.3em 0 0.8em;
+	width: 193px;
+	height: 3px;
+	background-color: black;
+	position: relative;
+}
+
+.label {
+	text-align: left;
+	font-size: 0.8em;
+	width: 193px;
+	position: relative;
+}
+.handle img{
+	float: left;
+}
+.handle {
+	width: 9px;
+	height: 15px;
+	position: absolute;
+	top: -6px;
+	cursor: move;
+}
+
+.disp {
+	text-align: left;
+	width: 50px;
+	font-size: 0.9em;
+	position: absolute;
+	right: 0;
+	top: 0;
 }

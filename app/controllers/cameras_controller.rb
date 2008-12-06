@@ -24,6 +24,7 @@ class CamerasController < ApplicationController
       @picked_cameras << saved.camera
       @picked_cameras_ids << saved.camera.id
     end
+    @allcameras = Camera.find(:all)
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @cameras }
@@ -127,20 +128,17 @@ class CamerasController < ApplicationController
     s.session_id = session[:user_id]
     s.camera_id = params[:id]
     s.save
-    newids = %x["/optemo/site/lib/c_code/connect" "#{params[:id]}"]
+    newids = %x["/optemo/site/lib/c_code/connect" "-l 2 #{params[:id]}"]
     
     redirect_to "/cameras/list/#{newids.strip.split.insert(params[:pos].to_i,params[:id]).join('/')}"
   end
   
-  def save
-    #Session Tracking
-    s = Saved.new
-    #Cleanse id to be only numbers
-    params[:id].gsub!(/\D/,'')
-    s.session_id = session[:user_id]
-    s.camera_id = params[:id]
-    s.save
-    flash[:notice] = 'Saved has been saved.'
-    redirect_to :action => 'index'
+  def filter
+    debugger
+    @myfilter = params[:myfilter]
+    myparams = "-l 1 0 -maximumresolution #{@myfilter['mp'].gsub(/,/,' ')} -displaysize #{@myfilter['ds'].gsub(/,/,' ')} \
+-opticalzoom #{@myfilter['oz'].gsub(/,/,' ')} -listpriceint #{@myfilter['p'].gsub(/,/,' ')}"
+    newids = %x["/optemo/site/lib/c_code/connect" "#{myparams}"]
+    redirect_to "/cameras/list/#{newids.strip.split.insert(params[:pos].to_i,params[:id]).join('/')}"
   end
 end

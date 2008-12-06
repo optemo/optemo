@@ -1,0 +1,66 @@
+<div class='label'>Brand</div>
+<%= select('myfilter', 'brand', @allcameras.map{|u| u.brand}.compact!.uniq!) %>
+<div class='label' style="margin-top: 0.6em;">Megapixels<div class='disp' id='mpdisp'>&nbsp;</div></div>
+<%= hidden_field_tag 'myfilter[mp]' %>
+<div class = 'slider' id='mpslider'>
+	<div class='handle' id='mphandle_min'><%= image_tag 'arrow_min.gif' %></div>
+	<div class='handle' id='mphandle_max'><%= image_tag 'arrow_max.gif' %></div>
+</div>
+<div class='label'>Display Size<div class='disp' id='dsdisp'>&nbsp;</div></div>
+<%= hidden_field_tag 'myfilter[ds]' %>
+<div class = 'slider' id='dsslider'>
+	<div class='handle' id='dshandle_min'><%= image_tag 'arrow_min.gif' %></div>
+	<div class='handle' id='dshandle_max'><%= image_tag 'arrow_max.gif' %></div>
+</div>
+<div class='label'>Optical Zoom<div class='disp' id='ozdisp'>&nbsp;</div></div>
+<%= hidden_field_tag 'myfilter[oz]' %>
+<div class = 'slider' id='ozslider'>
+	<div class='handle' id='ozhandle_min'><%= image_tag 'arrow_min.gif' %></div>
+	<div class='handle' id='ozhandle_max'><%= image_tag 'arrow_max.gif' %></div>
+</div>
+<div class='label'>Price<div class='disp' id='pdisp'>&nbsp;</div></div>
+<%= hidden_field_tag 'myfilter[p]' %>
+<div class = 'slider' id='pslider'>
+	<div class='handle' id='phandle_min'><%= image_tag 'arrow_min.gif' %></div>
+	<div class='handle' id='phandle_max'><%= image_tag 'arrow_max.gif' %></div>
+</div>
+
+<script type="text/javascript" language="javascript">
+		// <![CDATA[
+
+			// horizontal slider control
+			var mphandles = ['mphandle_min','mphandle_max'];
+			var dshandles = ['dshandle_min','dshandle_max'];
+			var ozhandles = ['ozhandle_min','ozhandle_max'];
+			var phandles = ['phandle_min','phandle_max'];
+			var mpslider = new Control.Slider(mphandles, 'mpslider', {
+				sliderValue: [0.2,0.8],
+				restricted: true,
+				onSlide: function(v) { $('mpdisp').innerHTML = Math.round(v[0]*100)/100+","+Math.round(v[1]*100)/100 },
+				onChange: function(v) { $('mpdisp').innerHTML = Math.round(v[0]*100)/100+","+Math.round(v[1]*100)/100;
+				$('myfilter_mp').value = $('mpdisp').innerHTML}
+			});
+			var dsslider = new Control.Slider(dshandles, 'dsslider', {
+				sliderValue: [0.2,0.8],
+				restricted: true,
+				onSlide: function(v) { $('dsdisp').innerHTML = Math.round(v[0]*100)/100+","+Math.round(v[1]*100)/100 },
+				onChange: function(v) { $('dsdisp').innerHTML = Math.round(v[0]*100)/100+","+Math.round(v[1]*100)/100;
+				$('myfilter_ds').value = $('dsdisp').innerHTML }
+			});
+			var ozslider = new Control.Slider(ozhandles, 'ozslider', {
+				sliderValue: [0.2,0.8],
+				restricted: true,
+				onSlide: function(v) { $('ozdisp').innerHTML = Math.round(v[0]*100)/100+","+Math.round(v[1]*100)/100 },
+				onChange: function(v) { $('ozdisp').innerHTML = Math.round(v[0]*100)/100+","+Math.round(v[1]*100)/100;
+				$('myfilter_oz').value = $('ozdisp').innerHTML }
+			});
+			var pslider = new Control.Slider(phandles, 'pslider', {
+				sliderValue: [0.2,0.8],
+				restricted: true,
+				onSlide: function(v) { $('pdisp').innerHTML = Math.round(v[0]*100)/100+","+Math.round(v[1]*100)/100 },
+				onChange: function(v) { $('pdisp').innerHTML = Math.round(v[0]*100)/100+","+Math.round(v[1]*100)/100;
+				$('myfilter_p').value = $('pdisp').innerHTML }
+			});
+
+		// ]]>
+</script>
