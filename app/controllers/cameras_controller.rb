@@ -136,8 +136,13 @@ class CamerasController < ApplicationController
   def filter
     debugger
     @myfilter = params[:myfilter]
-    myparams = "-l 1 0 -maximumresolution #{@myfilter['mp'].gsub(/,/,' ')} -displaysize #{@myfilter['ds'].gsub(/,/,' ')} \
--opticalzoom #{@myfilter['oz'].gsub(/,/,' ')} -listpriceint #{@myfilter['p'].gsub(/,/,' ')}"
+    #Remove quotes for strings
+    @myfilter.each_pair {|key, val| @myfilter[key] = val.to_f if key.index('_min') || key.index('_max')}
+    @myfilter['layer'] = 1
+    @myfilter['ids'] = 0
+    myparams = @myfilter.to_yaml
+    #myparams = "-l 1 0 -maximumresolution #{@myfilter['mp'].gsub(/,/,' ')} -displaysize #{@myfilter['ds'].gsub(/,/,' ')} -opticalzoom #{@myfilter['oz'].gsub(/,/,' ')} -listpriceint #{@myfilter['p'].gsub(/,/,' ')}"
+    
     newids = %x["/optemo/site/lib/c_code/connect" "#{myparams}"]
     redirect_to "/cameras/list/#{newids.strip.split.insert(params[:pos].to_i,params[:id]).join('/')}"
   end
