@@ -145,7 +145,7 @@ int main(int argc, char** argv) {
 	lengthit = endit - startit;
 	if (lengthit > 0){
 		
-		conFeatureRange[0][0] = atoi((argu.substr(startit, lengthit)).c_str());
+		conFeatureRange[0][0] = atoi((argu.substr(startit, lengthit)).c_str()) * 100;
         filteredFeatures[0] = 1;
 }
 	
@@ -156,7 +156,7 @@ int main(int argc, char** argv) {
 	startit = ind + var.length() + 2;
 	lengthit = endit - startit;
 	if (lengthit > 0){
-		conFeatureRange[0][1] = atoi((argu.substr(startit, lengthit)).c_str());
+		conFeatureRange[0][1] = atoi((argu.substr(startit, lengthit)).c_str())* 100;
 	     filteredFeatures[0] = 1;
 	}
 
@@ -312,17 +312,20 @@ int main(int argc, char** argv) {
 				bool include = true;
 				int listprice;
 				int saleprice; 
-		
+		//cout<<"conFeatureRange[0][0] is "<<conFeatureRange[0][0]<<"  and conFeatureRange[0][1] is  "<<conFeatureRange[0][1];
+	
+				
 				while (res1->next() && res->next() && res2->next() && res3->next() & res4->next() & res5->next()) {
 					idA[row] = -10;
-				//	cout<<"Here"<<endl;
+		//	cout<<"     res->getInt(conFeatureNames[0])  is  "<<res->getInt(conFeatureNames[0])<<endl;
+					
 				 if (
-		     ((!filteredFeatures[0]  || (res->getInt(conFeatureNames[0])>=(filteredFeatures[0]*conFeatureRange[0][0])) && (res->getInt(conFeatureNames[0])<=(filteredFeatures[0]*conFeatureRange[0][1])))) &&  
-			         ((!filteredFeatures[1]  ||(res1->getInt(conFeatureNames[1])>=(filteredFeatures[1]*conFeatureRange[1][0])) && (res1->getInt(conFeatureNames[1])<=(filteredFeatures[1]*conFeatureRange[1][1])))) && 
-			         ((!filteredFeatures[2]  ||(res2->getInt(conFeatureNames[2])>=(filteredFeatures[2]*conFeatureRange[2][0])) && (res2->getInt(conFeatureNames[2])<=(filteredFeatures[2]*conFeatureRange[2][1])))) && 
-			         ((!filteredFeatures[3]  ||(res3->getInt(conFeatureNames[3])>=(filteredFeatures[3]*conFeatureRange[3][0])) && (res3->getInt(conFeatureNames[3])<=(filteredFeatures[3]*conFeatureRange[3][1])))) &&
-			        // ((!filteredFeatures[0]  || (res4->getInt("salepriceint")>=(filteredFeatures[0]*conFeatureRange[0][0])) && (res4->getInt("salepriceint")<=(filteredFeatures[0]*conFeatureRange[0][1])))) &&
-			          (!filteredFeatures[4]  ||(res5->getString("brand")==brand)) && 
+		     (!filteredFeatures[0]  || ((res->getInt(conFeatureNames[0])>=(filteredFeatures[0]*conFeatureRange[0][0])) && (res->getInt(conFeatureNames[0])<=(filteredFeatures[0]*conFeatureRange[0][1])))) &&  
+			  (!filteredFeatures[1]  ||((res1->getInt(conFeatureNames[1])>=(filteredFeatures[1]*conFeatureRange[1][0])) && (res1->getInt(conFeatureNames[1])<=(filteredFeatures[1]*conFeatureRange[1][1])))) && 
+			  (!filteredFeatures[2]  ||((res2->getInt(conFeatureNames[2])>=(filteredFeatures[2]*conFeatureRange[2][0])) && (res2->getInt(conFeatureNames[2])<=(filteredFeatures[2]*conFeatureRange[2][1])))) && 
+	     	  (!filteredFeatures[3]  ||((res3->getInt(conFeatureNames[3])>=(filteredFeatures[3]*conFeatureRange[3][0])) && (res3->getInt(conFeatureNames[3])<=(filteredFeatures[3]*conFeatureRange[3][1])))) &&
+			  (!filteredFeatures[0]  || ((res4->getInt("salepriceint")>=(filteredFeatures[0]*conFeatureRange[0][0])) && (res4->getInt("salepriceint")<=(filteredFeatures[0]*conFeatureRange[0][1])))) &&
+			  (!filteredFeatures[4]  ||((res5->getString("brand")==brand))) && 
 				(res->getInt("listpriceint")!=NULL && res1->getDouble("displaysize")!=NULL && res2->getDouble("opticalzoom")!=NULL && res3->getDouble("maximumresolution")!=NULL && res4->getInt("salepriceint")>0 && 
 				res5->getString("brand")!=""))	
 			{
@@ -440,6 +443,10 @@ int main(int argc, char** argv) {
  		for(int c =0; c<clusterN; c++){
  			minDist = dist[0][c];
  			medians[c] = clusteredData[c][1];
+			if (clusteredData[c][0] == 0){   /////////////LOSER, FIX IT!!
+   			medians[c] = clusteredData[c+1][2];
+		//	cout<<"loser c is "<<c<<endl;
+			   			}
  			for(int j=2; j<clusteredData[c][0]; j++){
  				if(minDist > dist[j-1][c]){
  					minDist = dist[j-1][c];
