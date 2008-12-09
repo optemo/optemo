@@ -49,5 +49,6 @@ ActionController::Routing::Routes.draw do |map|
   map.connect 'compare/*path_info', :controller => 'compare', :action => 'index'
   map.connect ':controller/:action/:id'
   map.connect ':controller/:action/:id.:format'
+  map.connect ':controller/:action'
   map.connect ':action', :controller => 'welcomes'
 end
