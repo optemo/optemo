@@ -5,9 +5,10 @@ class SearchController < ApplicationController
     @myfilter.each_pair {|key, val| @myfilter[key] = val.to_f if key.index('_min') || key.index('_max')}
     @myfilter['layer'] = 1
     @myfilter['ids'] = 0
-    @myfilter['chosen'] = [123,546,567,86,54,34,122,434,675]
+    #@myfilter['chosen'] = [123,546,567,86,54,34,122,434,675]
     myparams = @myfilter.to_yaml
-    output = myparams#%x["/optemo/site/lib/c_code/connect" "#{myparams}"]
+    debugger
+    output = %x["/optemo/site/lib/c_code/connect" "#{myparams}"]
     options = YAML.load(output)
     #parse the new ids
     newids = options.delete('chosen').join('/')
