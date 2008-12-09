@@ -1,67 +1,24 @@
 <div class='label'>Brand</div>
 <%= select('myfilter', 'brand', @allcameras.map{|u| u.brand}.compact!.uniq!) %>
-<div class='label' style="margin-top: 0.6em;">Megapixels<div class='disp' id='mpdisp'>&nbsp;</div></div>
-<%= hidden_field_tag 'myfilter[maximumresolution_min]' %><%= hidden_field_tag 'myfilter[maximumresolution_max]' %>
-<div class = 'slider' id='mpslider'>
-	<div class='handle' id='mphandle_min'><%= image_tag 'arrow_min.gif' %></div>
-	<div class='handle' id='mphandle_max'><%= image_tag 'arrow_max.gif' %></div>
-</div>
-<div class='label'>Display Size<div class='disp' id='dsdisp'>&nbsp;</div></div>
-<%= hidden_field_tag 'myfilter[displaysize_min]' %><%= hidden_field_tag 'myfilter[displaysize_max]' %>
-<div class = 'slider' id='dsslider'>
-	<div class='handle' id='dshandle_min'><%= image_tag 'arrow_min.gif' %></div>
-	<div class='handle' id='dshandle_max'><%= image_tag 'arrow_max.gif' %></div>
-</div>
-<div class='label'>Optical Zoom<div class='disp' id='ozdisp'>&nbsp;</div></div>
-<%= hidden_field_tag 'myfilter[opticalzoom_min]' %><%= hidden_field_tag 'myfilter[opticalzoom_max]' %>
-<div class = 'slider' id='ozslider'>
-	<div class='handle' id='ozhandle_min'><%= image_tag 'arrow_min.gif' %></div>
-	<div class='handle' id='ozhandle_max'><%= image_tag 'arrow_max.gif' %></div>
-</div>
-<div class='label'>Price<div class='disp' id='pdisp'>&nbsp;</div></div>
-<%= hidden_field_tag 'myfilter[price_min]' %><%= hidden_field_tag 'myfilter[price_max]' %>
-<div class = 'slider' id='pslider'>
-	<div class='handle' id='phandle_min'><%= image_tag 'arrow_min.gif' %></div>
-	<div class='handle' id='phandle_max'><%= image_tag 'arrow_max.gif' %></div>
-</div>
+
+<%= render :partial => 'sliderhtml', :locals => {:name => 'Megapixels', :val => 'maximumresolution'} %>
+<%= render :partial => 'sliderhtml', :locals => {:name => 'Display Size', :val => 'displaysize'} %>
+<%= render :partial => 'sliderhtml', :locals => {:name => 'Optical Zoom', :val => 'opticalzoom'} %>
+<%= render :partial => 'sliderhtml', :locals => {:name => 'Price', :val => 'price'} %>
 
 <script type="text/javascript" language="javascript">
 		// <![CDATA[
 
 			// horizontal slider control
-			var mphandles = ['mphandle_min','mphandle_max'];
-			var dshandles = ['dshandle_min','dshandle_max'];
-			var ozhandles = ['ozhandle_min','ozhandle_max'];
-			var phandles = ['phandle_min','phandle_max'];
-			var mpslider = new Control.Slider(mphandles, 'mpslider', {
-				sliderValue: [0.2,0.8],
-				restricted: true,
-				onSlide: function(v) {disp(v,'mpdisp','myfilter_maximumresolution_min','myfilter_maximumresolution_max');},
-				onChange: function(v) {disp(v,'mpdisp','myfilter_maximumresolution_min','myfilter_maximumresolution_max');}
-			});
-			var dsslider = new Control.Slider(dshandles, 'dsslider', {
-				sliderValue: [0.2,0.8],
-				restricted: true,
-				onSlide: function(v) {disp(v,'dsdisp','myfilter_displaysize_min','myfilter_displaysize_max');},
-				onChange: function(v) {disp(v,'dsdisp','myfilter_displaysize_min','myfilter_displaysize_max');}
-			});
-			var ozslider = new Control.Slider(ozhandles, 'ozslider', {
-				sliderValue: [0.2,0.8],
-				restricted: true,
-				onSlide: function(v) {disp(v,'ozdisp','myfilter_opticalzoom_min','myfilter_opticalzoom_max');},
-				onChange: function(v) {disp(v,'ozdisp','myfilter_opticalzoom_min','myfilter_opticalzoom_max');}
-			});
-			var pslider = new Control.Slider(phandles, 'pslider', {
-				sliderValue: [0.2,0.8],
-				restricted: true,
-				onSlide: function(v) {disp(v,'pdisp','myfilter_price_min','myfilter_price_max');},
-				onChange: function(v) {disp(v,'pdisp','myfilter_price_min','myfilter_price_max');}
-			});
+			<%= render :partial => 'sliderjs', :locals => {:val => 'maximumresolution', :min => 0, :max => 10} %>
+			<%= render :partial => 'sliderjs', :locals => {:val => 'displaysize', :min => 0, :max => 10} %>
+			<%= render :partial => 'sliderjs', :locals => {:val => 'opticalzoom', :min => 0, :max => 10} %>
+			<%= render :partial => 'sliderjs', :locals => {:val => 'price', :min => 0, :max => 5000} %>
 			
 			var disp = function(v, disp, filter_min, filter_max) {
-			$(filter_min).value = Math.round(v[0]*100)/100;
-			$(filter_max).value = Math.round(v[1]*100)/100;
-			$(disp).innerHTML = $(filter_min).value+","+$(filter_max).value;
+			$(filter_min).value = Math.round(v[0]*10)/10;
+			$(filter_max).value = Math.round(v[1]*10)/10;
+			$(disp).innerHTML = $(filter_min).value+"-"+$(filter_max).value;
 			};
 
 		// ]]>

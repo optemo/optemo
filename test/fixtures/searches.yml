@@ -1,0 +1,23 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  brand: 
+  maximumresolution_min: 
+  maximumresolution_max: 
+  opticalzoom_min: 
+  opticalzoom_max: 
+  displaysize_min: 
+  displaysize_max: 
+  price_min: 
+  price_max: 1.5
+
+two:
+  brand: 
+  maximumresolution_min: 
+  maximumresolution_max: 
+  opticalzoom_min: 
+  opticalzoom_max: 
+  displaysize_min: 
+  displaysize_max: 
+  price_min: 
+  price_max: 1.5

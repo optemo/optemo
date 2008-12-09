@@ -11,7 +11,7 @@
 </div>
 <div id="filterbar">
 	<h2>Navigation Filters</h2>
-	<% form_tag ({:action => 'filter' }) do %>
+	<% form_tag ({:controller => 'search', :action => 'filter' }) do %>
 	  <%= render :partial => 'filter' %>
 	  <%= submit_tag 'Filter' %>
 	<% end %>

@@ -12,6 +12,8 @@ class CamerasController < ApplicationController
   end
   
   def list
+    @session = Session.find(session[:user_id])
+    @search = @session.search
     @cameras = []
     num = "i0"
     9.times do
@@ -20,7 +22,7 @@ class CamerasController < ApplicationController
     @picked_cameras = []
     #This is ugly!
     @picked_cameras_ids = []
-    Session.find(session[:user_id]).saveds.collect do |saved|
+    @session.saveds.collect do |saved|
       @picked_cameras << saved.camera
       @picked_cameras_ids << saved.camera.id
     end
@@ -133,17 +135,4 @@ class CamerasController < ApplicationController
     redirect_to "/cameras/list/#{newids.strip.split.insert(params[:pos].to_i,params[:id]).join('/')}"
   end
   
-  def filter
-    debugger
-    @myfilter = params[:myfilter]
-    #Remove quotes for strings
-    @myfilter.each_pair {|key, val| @myfilter[key] = val.to_f if key.index('_min') || key.index('_max')}
-    @myfilter['layer'] = 1
-    @myfilter['ids'] = 0
-    myparams = @myfilter.to_yaml
-    #myparams = "-l 1 0 -maximumresolution #{@myfilter['mp'].gsub(/,/,' ')} -displaysize #{@myfilter['ds'].gsub(/,/,' ')} -opticalzoom #{@myfilter['oz'].gsub(/,/,' ')} -listpriceint #{@myfilter['p'].gsub(/,/,' ')}"
-    
-    newids = %x["/optemo/site/lib/c_code/connect" "#{myparams}"]
-    redirect_to "/cameras/list/#{newids.strip.split.insert(params[:pos].to_i,params[:id]).join('/')}"
-  end
 end

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20081127225953) do
+ActiveRecord::Schema.define(:version => 20081208220610) do
 
   create_table "amazon_groups", :force => true do |t|
     t.datetime "created_at"
@@ -95,6 +95,21 @@ ActiveRecord::Schema.define(:version => 20081127225953) do
     t.datetime "updated_at"
     t.integer  "session_id"
     t.integer  "camera_id"
+  end
+
+  create_table "searches", :force => true do |t|
+    t.string   "brand"
+    t.integer  "session_id"
+    t.float    "maximumresolution_min", :default => 0.0
+    t.float    "maximumresolution_max", :default => 10.0
+    t.float    "opticalzoom_min",       :default => 0.0
+    t.float    "opticalzoom_max",       :default => 8.0
+    t.float    "displaysize_min",       :default => 0.0
+    t.float    "displaysize_max",       :default => 7.0
+    t.float    "price_min",             :default => 0.0
+    t.float    "price_max",             :default => 5000.0
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "sessions", :force => true do |t|
