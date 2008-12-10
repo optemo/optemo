@@ -29,204 +29,249 @@ int main(int argc, char** argv) {
 	stringstream sql;
 	int sane , affected_rows, size;
 	int clusterN = 9; 
-	int featureN = 4;   
+	int conFeatureN = 4;
+	int catFeatureN = 1;
+	int boolFeatureN = 0;
+	int varNamesN = 11;
+	int featureN = conFeatureN + catFeatureN + boolFeatureN;    
 	int range = 2;
     int inputID;
+	int layer = 1;
 		
-	string *catFeatureNames;
-	bool *boolFeatureNames;
-	string *conFeatureNames = new string[featureN];
+	string *varNames = new string[varNamesN];	
+	string *catFeatureNames = new string[catFeatureN];
+	string *boolFeatureNames = new string [boolFeatureN];
+	string *conFeatureNames = new string[conFeatureN];
+	double **conFeatureRange = new double* [conFeatureN];
+	
+	catFeatureNames[0] = "brand";
 	
 	conFeatureNames[0]="listpriceint";
 	conFeatureNames[1]="displaysize";  
     conFeatureNames[2]="opticalzoom";
     conFeatureNames[3]="maximumresolution";
-	bool *filteredFeatures = new bool[featureN+1];   //brand
-	for(int f=0; f<featureN+1; f++){
-		filteredFeatures[f] = 0;
-	}  
-
-	int **conFeatureRange = new int* [featureN];
-	for (int f=0; f<featureN; f++){
-		conFeatureRange[f] = new int[range];
-	}      
-	//Intitializing:
-	for(int f=0; f<featureN; f++){
-			conFeatureRange[f][0] = -1000;
-			conFeatureRange[f][1] = 1000000;
-		}
     
-	int layer;
-    string option;
-	
-	
-	//Different values of option: 
-	
-	// ./connect [-l layerNumber inputID] []
-	
-	// The original clustering (returning 9 IDs)
+  	bool *conFilteredFeatures = new bool[conFeatureN];   
+	bool *catFilteredFeatures = new bool[catFeatureN];
+	bool *boolFilteredFeatures = new bool[boolFeatureN];
 
-//   if (!strcmp(argv[1], "-l")){
-//	 layer = atoi(argv[2]);
-//	inputID = atoi(argv[3]);
-//	}   
-//     
-//	int a = 4;
-//	
-//	while(a<argc){
-//		for (int f=0; f<featureN; f++){
-//			option = "-";
-//			option += conFeatureNames[f] ;
-//		   if(!option.compare(argv[a])){
-//			filteredFeatures[f] = 1;
-//			 for (int r=0; r<range; r++){
-//				a++;
-//			  	conFeatureRange[f][r] = atoi(argv[a]);
-//			 }	 
-//		   }
-//		}a++;	  
-//	}
-
-
-//--- !map:HashWithIndifferentAccess \nbrand: Canon Cameras US\nmaximumresolution_min: 0.21\nids: 0\ndisplaysize_min: 0.23\nprice_max: 0.8\nopticalzoom_max: 0.8\nlayer: 1\nmaximumresolution_max: 0.8\nprice_min: 0.22\ndisplaysize_max: 0.8\nopticalzoom_min: 0.21\n
-
- //   string varNames = new string[100];
- //   varNames[0] = "layer";
- //   varNames[1] = "ids";
- //   varNames[2] = "brand";
- //   varNames[3] = "price";
- //   varNames[4] = "displaysize_min";
- //   varNames[5] = "displaysize_max";
- //   varNames[6] = "opticalzoom_min";
- //   varNames[7] = "opticalzoom_max";
- //   varNames[8] = "maximumresolution_min";
- //   varNames[9] = "maximumresolution_max";
- //   int varN = 10;
 	
-	
+	for (int f=0; f<conFeatureN; f++){
+		conFilteredFeatures[f] = 0;
+		conFeatureRange[f] = new double[range]; 
+	} 
+
+	for (int f=0; f<catFeatureN; f++){
+	    catFilteredFeatures[f] = 0;
+	}
+
+    for (int f=0; f<boolFeatureN; f++){
+		boolFilteredFeatures[f] = 0;
+	}
+
+   
+   
 
 	string argu = argv[1];
-	int ind;
+	int ind, endit, startit, lengthit;
 	string var;
 
-	//layer
-	var = "layer";
-	ind = argu.find("layer", 0);
-	int endit = argu.find("\n", ind);
-	int startit = ind + var.length() + 2;
-	int lengthit = endit - startit;
-	//cout<<"brand is :  BBB"<<argu.substr(startit, lengthit)<<"BBB"<<endl;
-	layer = atoi((argu.substr(startit, lengthit)).c_str());
+	varNames[0] = "layer";
+	varNames[1] = "ids";
+	varNames[2] = "brand";
+	varNames[3] = "price_min";
+	varNames[4] = "price_max";
+	varNames[5] = "displaysize_min";
+	varNames[6] = "displaysize_max";
+	varNames[7] = "opticalzoom_min";
+	varNames[8] = "opticalzoom_max";
+	varNames[9] = "maximumresolution_min";
+	varNames[10] = "maximumresolution_max";
 	
-	//ids
-	var = "ids";
-	ind = argu.find("ids", 0);
-	endit = argu.find("\n", ind);
-	startit = ind + var.length() + 2;
-	lengthit = endit - startit;
-	inputID = atoi((argu.substr(startit, lengthit)).c_str());
 	
-    //brand
-	var = "brand";
-    ind = argu.find("brand", 0);
-	endit = argu.find("\n", ind);
-	startit = ind + var.length() + 2;
-	lengthit = endit - startit;
-	string brand = (argu.substr(startit, lengthit)).c_str();
-	if (brand != ""){
-		filteredFeatures[4] = 1;
-	}
-   	
-	//price_min
-	var = "price_min"; 
-	ind = argu.find("price_min", 0);
-	endit = argu.find("\n", ind);
-	startit = ind + var.length() + 2;
-	lengthit = endit - startit;
-	if (lengthit > 0){
+    
+	varNamesN = 11;
+    
+	string brand = "";
+	for (int j=0; j<varNamesN; j++){
+		var = varNames[j];
+		ind = argu.find(var, 0);
+		endit = argu.find("\n", ind);
+		startit = ind + var.length() + 2;
+		lengthit = endit - startit;
+		if(lengthit > 0){
+			if (var=="brand"){
+					brand = (argu.substr(startit, lengthit)).c_str();
+					catFilteredFeatures[0] = 1;
+		   }
+		   else if(var == "layer"){
+		        	layer = atoi((argu.substr(startit, lengthit)).c_str());
+	    	}
+		   else if(var == "ids"){
+			    	inputID = atoi((argu.substr(startit, lengthit)).c_str());
+		    }
+		   else if(var == "price_min"){
+					conFeatureRange[0][0] = atof((argu.substr(startit, lengthit)).c_str()) * 100;
+		        	conFilteredFeatures[0] = 1;
+	    	}
+		   else if(var == "price_max"){
+			
+			conFeatureRange[0][1] = atof((argu.substr(startit, lengthit)).c_str()) ;
+					
+					conFeatureRange[0][1] = conFeatureRange[0][1]* 100;
+			    	conFilteredFeatures[0] = 1;
+		    }
+		   else if(var == "displaysize_min"){
+				    conFeatureRange[1][0] = atof((argu.substr(startit, lengthit)).c_str());
+				    conFilteredFeatures[1] = 1;
+		    }
+		   else if(var == "displaysize_max"){
+			    	conFeatureRange[1][1] = atof((argu.substr(startit, lengthit)).c_str());
+			    	conFilteredFeatures[1] = 1;
+		    }
+		   else if(var == "opticalzoom_min"){
+			    	conFeatureRange[2][0] = atof((argu.substr(startit, lengthit)).c_str());
+			    	conFilteredFeatures[2] = 1;
+		    }
+		   else if(var == "opticalzoom_max"){
+				    conFeatureRange[2][1] = atof((argu.substr(startit, lengthit)).c_str());
+				    conFilteredFeatures[2] = 1;
+			}
+		   else if (var == "maximumresolution_mim"){
+					conFeatureRange[3][0] = atof((argu.substr(startit, lengthit)).c_str());
+			   		conFilteredFeatures[3] = 1;
+		    }	
+		   else if (var == "maximumresolution_mim"){
+				    conFeatureRange[3][1] = atof((argu.substr(startit, lengthit)).c_str());
+				   	conFilteredFeatures[3] = 1;
+			}	 
+	    }
 		
-		conFeatureRange[0][0] = atoi((argu.substr(startit, lengthit)).c_str()) * 100;
-        filteredFeatures[0] = 1;
-}
-	
-	//price_max 
-	var = "price_max";
-	ind = argu.find("price_max", 0);
-	endit = argu.find("\n", ind);
-	startit = ind + var.length() + 2;
-	lengthit = endit - startit;
-	if (lengthit > 0){
-		conFeatureRange[0][1] = atoi((argu.substr(startit, lengthit)).c_str())* 100;
-	     filteredFeatures[0] = 1;
+		else{      //if lengthit = 0
+			cout<<"Error, you didn't specify a value for "<<var<<endl;
+			}
+		//layer = atoi((argu.substr(startit, lengthit)).c_str());
 	}
 
-	//displaysize_min
-	var = "displaysize_min";
-	ind = argu.find("displaysize_min", 0);
-	endit = argu.find("\n", ind);
-	startit = ind + var.length() + 2;
-	lengthit = endit - startit;
-	if (lengthit >0){
-		conFeatureRange[1][0] = atoi((argu.substr(startit, lengthit)).c_str());
-		filteredFeatures[1] = 1;
-    }		
-	
-	//displaysize_max
-	var = "displaysize_max";
-	ind = argu.find("displaysize_max", 0);
-	endit = argu.find("\n", ind);
-	startit = ind + var.length() + 2;
-	lengthit = endit - startit;
-	if (lengthit >0){
-		conFeatureRange[1][1] = atoi((argu.substr(startit, lengthit)).c_str());
-		filteredFeatures[1] = 1;
-	}
-	//opticalzoom_min
-	var = "opticalzoom_min";
-	ind = argu.find("opticalzoom_min", 0);
-	endit = argu.find("\n", ind);
-	startit = ind + var.length() + 2;
-	lengthit = endit - startit;
-	if (lengthit >0){
-		conFeatureRange[2][0] = atoi((argu.substr(startit, lengthit)).c_str());
-		filteredFeatures[2] = 1;
-	}
-	//opticalzoom_max
-	var = "opticalzoom_max";
-	ind = argu.find("opticalzoom_max", 0);
-    endit = argu.find("\n", ind);
-	startit = ind + var.length() + 2;
-	lengthit = endit - startit;
-	if (lengthit >0){
-		conFeatureRange[2][1] = atoi((argu.substr(startit, lengthit)).c_str());
-	    filteredFeatures[2] = 1;
-	}
-	
-	
-	//maximumresolution_min
-	var ="maximumresolution_min";
-	ind = argu.find("maximumresolution_min", 0);
-	endit = argu.find("\n", ind);
-	startit = ind + var.length() + 2;
-	lengthit = endit - startit;
-	if (lengthit >0){
-		conFeatureRange[3][0] = atoi((argu.substr(startit, lengthit)).c_str());
-		   filteredFeatures[3] = 1;
-		}
-	
-	//maximumresolution_max
-	var = "maximumresolution_max";
-	ind = argu.find("maximumresolution_max", 0);
-	endit = argu.find("\n", ind);
-	startit = ind + var.length() + 2;
-	lengthit = endit - startit;
-	if (lengthit >0){
-	conFeatureRange[3][1] = atoi((argu.substr(startit, lengthit)).c_str());
-	  filteredFeatures[3] = 1;
-	}
+	//layer
+//	var = "layer";
+//	ind = argu.find("layer", 0);
+//	int endit = argu.find("\n", ind);
+//	int startit = ind + var.length() + 2;
+//	int lengthit = endit - startit;
+//	//cout<<"brand is :  BBB"<<argu.substr(startit, lengthit)<<"BBB"<<endl;
+//	layer = atoi((argu.substr(startit, lengthit)).c_str());
+//	
+//	//ids
+//	var = "ids";
+//	ind = argu.find("ids", 0);
+//	endit = argu.find("\n", ind);
+//	startit = ind + var.length() + 2;
+//	lengthit = endit - startit;
+//	inputID = atoi((argu.substr(startit, lengthit)).c_str());
+//	
+//    //brand
+//	var = "brand";
+//    ind = argu.find("brand", 0);
+//	endit = argu.find("\n", ind);
+//	startit = ind + var.length() + 2;
+//	lengthit = endit - startit;
+//	string brand = (argu.substr(startit, lengthit)).c_str();
+//	if (brand != ""){
+//		filteredFeatures[4] = 1;
+//	}
+   	
+//	//price_min
+//	var = "price_min"; 
+//	ind = argu.find("price_min", 0);
+//	endit = argu.find("\n", ind);
+//	startit = ind + var.length() + 2;
+//	lengthit = endit - startit;
+//	if (lengthit > 0){
+//		
+//		conFeatureRange[0][0] = atoi((argu.substr(startit, lengthit)).c_str()) * 100;
+//        conFilteredFeatures[0] = 1;
+//}
+//	
+//	//price_max 
+//	var = "price_max";
+//	ind = argu.find("price_max", 0);
+//	endit = argu.find("\n", ind);
+//	startit = ind + var.length() + 2;
+//	lengthit = endit - startit;
+//	if (lengthit > 0){
+//		conFeatureRange[0][1] = atoi((argu.substr(startit, lengthit)).c_str())* 100;
+//	     conFilteredFeatures[0] = 1;
+//	}
+//
+//	//displaysize_min
+//	var = "displaysize_min";
+//	ind = argu.find("displaysize_min", 0);
+//	endit = argu.find("\n", ind);
+//	startit = ind + var.length() + 2;
+//	lengthit = endit - startit;
+//	if (lengthit >0){
+//		conFeatureRange[1][0] = atoi((argu.substr(startit, lengthit)).c_str());
+//		conFilteredFeatures[1] = 1;
+//    }		
+//	
+//	//displaysize_max
+//	var = "displaysize_max";
+//	ind = argu.find("displaysize_max", 0);
+//	endit = argu.find("\n", ind);
+//	startit = ind + var.length() + 2;
+//	lengthit = endit - startit;
+//	if (lengthit >0){
+//		conFeatureRange[1][1] = atoi((argu.substr(startit, lengthit)).c_str());
+//		filteredFeatures[1] = 1;
+//	}
+//	//opticalzoom_min
+//	var = "opticalzoom_min";
+//	ind = argu.find("opticalzoom_min", 0);
+//	endit = argu.find("\n", ind);
+//	startit = ind + var.length() + 2;
+//	lengthit = endit - startit;
+//	if (lengthit >0){
+//		conFeatureRange[2][0] = atoi((argu.substr(startit, lengthit)).c_str());
+//		filteredFeatures[2] = 1;
+//	}
+//	//opticalzoom_max
+//	var = "opticalzoom_max";
+//	ind = argu.find("opticalzoom_max", 0);
+//    endit = argu.find("\n", ind);
+//	startit = ind + var.length() + 2;
+//	lengthit = endit - startit;
+//	if (lengthit >0){
+//		conFeatureRange[2][1] = atoi((argu.substr(startit, lengthit)).c_str());
+//	    filteredFeatures[2] = 1;
+//	}
+//	
+//	
+//	//maximumresolution_min
+//	var ="maximumresolution_min";
+//	ind = argu.find("maximumresolution_min", 0);
+//	endit = argu.find("\n", ind);
+//	startit = ind + var.length() + 2;
+//	lengthit = endit - startit;
+//	if (lengthit >0){
+//		conFeatureRange[3][0] = atoi((argu.substr(startit, lengthit)).c_str());
+//		   filteredFeatures[3] = 1;
+//		}
+//	
+//	//maximumresolution_max
+//	var = "maximumresolution_max";
+//	ind = argu.find("maximumresolution_max", 0);
+//	endit = argu.find("\n", ind);
+//	startit = ind + var.length() + 2;
+//	lengthit = endit - startit;
+//	if (lengthit >0){
+//	conFeatureRange[3][1] = atoi((argu.substr(startit, lengthit)).c_str());
+//	  filteredFeatures[3] = 1;
+//	}
 	
 		
 	if (layer == 1){
+		
 		// Driver Manager
 		sql::mysql::MySQL_Driver *driver;
 
@@ -297,7 +342,7 @@ int main(int argc, char** argv) {
 			    //displaysize
 				//optical zoom
 				//maximumresolution
-
+	
 				
 				size = res->rowsCount();
 				double **data = new double*[size];
@@ -310,29 +355,39 @@ int main(int argc, char** argv) {
 			    row = 1;
 				sane = 0;
 				bool include = true;
-				int listprice;
-				int saleprice; 
+				double listprice = 0.0;
+				double saleprice = 0.0;
+				double price = 0.0;
+				 
 		//cout<<"conFeatureRange[0][0] is "<<conFeatureRange[0][0]<<"  and conFeatureRange[0][1] is  "<<conFeatureRange[0][1];
 	
 				
 				while (res1->next() && res->next() && res2->next() && res3->next() & res4->next() & res5->next()) {
+				
 					idA[row] = -10;
 		//	cout<<"     res->getInt(conFeatureNames[0])  is  "<<res->getInt(conFeatureNames[0])<<endl;
+				 if (res->getDouble("listpriceint")!=NULL){  
+					listprice =  res->getDouble("listpriceint");
+					}
+				
+				 if(res4->getDouble("salepriceint")!=NULL ) {	
+					
+				    saleprice = res4->getDouble("salepriceint");
+					}
+						
+				   price = min(listprice, saleprice);
 					
 				 if (
-		     (!filteredFeatures[0]  || ((res->getInt(conFeatureNames[0])>=(filteredFeatures[0]*conFeatureRange[0][0])) && (res->getInt(conFeatureNames[0])<=(filteredFeatures[0]*conFeatureRange[0][1])))) &&  
-			  (!filteredFeatures[1]  ||((res1->getInt(conFeatureNames[1])>=(filteredFeatures[1]*conFeatureRange[1][0])) && (res1->getInt(conFeatureNames[1])<=(filteredFeatures[1]*conFeatureRange[1][1])))) && 
-			  (!filteredFeatures[2]  ||((res2->getInt(conFeatureNames[2])>=(filteredFeatures[2]*conFeatureRange[2][0])) && (res2->getInt(conFeatureNames[2])<=(filteredFeatures[2]*conFeatureRange[2][1])))) && 
-	     	  (!filteredFeatures[3]  ||((res3->getInt(conFeatureNames[3])>=(filteredFeatures[3]*conFeatureRange[3][0])) && (res3->getInt(conFeatureNames[3])<=(filteredFeatures[3]*conFeatureRange[3][1])))) &&
-			  (!filteredFeatures[0]  || ((res4->getInt("salepriceint")>=(filteredFeatures[0]*conFeatureRange[0][0])) && (res4->getInt("salepriceint")<=(filteredFeatures[0]*conFeatureRange[0][1])))) &&
-			  (!filteredFeatures[4]  ||((res5->getString("brand")==brand))) && 
-				(res->getInt("listpriceint")!=NULL && res1->getDouble("displaysize")!=NULL && res2->getDouble("opticalzoom")!=NULL && res3->getDouble("maximumresolution")!=NULL && res4->getInt("salepriceint")>0 && 
-				res5->getString("brand")!=""))	
+			 (price>0.0 && res1->getDouble("displaysize")!=NULL && res2->getDouble("opticalzoom")!=NULL && res3->getDouble("maximumresolution")!=NULL && res5->getString("brand")!="")&& 
+		     (!conFilteredFeatures[0]  || ((price>=(conFilteredFeatures[0]*conFeatureRange[0][0])) && (price<=(conFilteredFeatures[0]*conFeatureRange[0][1])))) &&  
+			  (!conFilteredFeatures[1]  ||((res1->getInt(conFeatureNames[1])>=(conFilteredFeatures[1]*conFeatureRange[1][0])) && (res1->getInt(conFeatureNames[1])<=(conFilteredFeatures[1]*conFeatureRange[1][1])))) && 
+			  (!conFilteredFeatures[2]  ||((res2->getInt(conFeatureNames[2])>=(conFilteredFeatures[2]*conFeatureRange[2][0])) && (res2->getInt(conFeatureNames[2])<=(conFilteredFeatures[2]*conFeatureRange[2][1])))) && 
+	     	  (!conFilteredFeatures[3]  ||((res3->getInt(conFeatureNames[3])>=(conFilteredFeatures[3]*conFeatureRange[3][0])) && (res3->getInt(conFeatureNames[3])<=(conFilteredFeatures[3]*conFeatureRange[3][1])))) &&
+			  (!conFilteredFeatures[4]  ||((res5->getString("brand")==brand))) 
+				)	
 			{
-							listprice =  res->getInt("listpriceint");
-						   saleprice = res4->getInt("salepriceint");
-						   // cout<<"real min is  "<<min(listprice, saleprice)<<endl;
-							data[sane][0] = min(listprice, saleprice);
+			
+							data[sane][0] = price;
 						//	cout<<" min is "<<data[sane][0]<<endl;
 						    data[sane][1] = res1->getInt("displaysize");
 							data[sane][2] = res2->getInt("opticalzoom");
@@ -346,43 +401,42 @@ int main(int argc, char** argv) {
 
 	   
 //////////////////////		
-	    double *max = new double[featureN];
-		double *min = new double[featureN];
-	 	double *dif = new double[featureN];
+	   // double *max = new double[featureN];
+	//	double *min = new double[featureN];
+	 	double *dif = new double[conFeatureN];
 	    
 	    double **dataN = new double*[sane];
 	    for(int j=0; j<sane; j++){
-				dataN[j] = new double[featureN]; 
+				dataN[j] = new double[conFeatureN]; 
 		}     
 	
 		
-		for(int f=0; f<featureN; f++){	
-  	          max[f] = data[f][0]; 
-              min[f] = data[f][0]; 
+		for(int f=0; f<conFeatureN; f++){	
+  	          conFeatureRange[f][1] = data[0][f]; 
+              conFeatureRange[f][0] = data[0][f]; 
         }
  
 	   
 	
-		for (int f=0; f<featureN; f++){
+		for (int f=0; f<conFeatureN; f++){
 	      for(int j = 0; j<sane; j++){
-				if(data[j][f] > max[f]){
-	                max[f] = data[j][f];
+				if(data[j][f] > conFeatureRange[f][1]){
+	                conFeatureRange[f][1] = data[j][f];
 	           }
-		       if (data[j][f] < min[f]){
-				   min[f] = data[j][f];
+		       if (data[j][f] < conFeatureRange[f][0]){
+				   conFeatureRange[f][0] = data[j][f];
 			   }
 			}
 		}	
 				
-	    	  
-
-		for (int f=0; f<featureN; f++){
-			dif[f] = max[f] - min[f];
+	 
+		for (int f=0; f<conFeatureN; f++){
+			dif[f] = conFeatureRange[f][1] - conFeatureRange[f][0];
 		}
 	
-		for (int f=0; f<featureN; f++){
+		for (int f=0; f<conFeatureN; f++){
 		   for(int j=0; j<sane; j++){
-		    dataN[j][f] = (((data[j][f] - min[f])/ dif[f]) * 2 ) - 1;
+		    dataN[j][f] = (((data[j][f] - conFeatureRange[f][0])/ dif[f]) * 2 ) - 1;
 		   	
 	}
 	   }
@@ -391,11 +445,11 @@ int main(int argc, char** argv) {
   
      double** centroids = new double* [clusterN];
     	for(int j=0; j<clusterN; j++){
-    		centroids[j]=new double[featureN];
+    		centroids[j]=new double[conFeatureN];
    	}
     
     
-       int *centersA = k_means(dataN,sane,featureN, clusterN, 1e-4, centroids); 
+       int *centersA = k_means(dataN,sane,conFeatureN, clusterN, 1e-4, centroids); 
       	
     
     		double** dist = new double* [sane];
@@ -407,7 +461,7 @@ int main(int argc, char** argv) {
 			double distan;
           for (int j=0; j<sane; j++){
     			for (int c=0; c<clusterN; c++){
-    				for (int f=0; f<featureN; f++){
+    				for (int f=0; f<conFeatureN; f++){
 						distan = dist[j][c] + ((centroids[c][f] - dataN[j][f])*(centroids[c][f] - dataN[j][f]) );	 
     				    dist[j][c] = distan;	   
     				}  
@@ -454,17 +508,52 @@ int main(int argc, char** argv) {
  				}
  			}
  		}
+//Generating the output string 
+	
 
- 		for (int c=0; c<clusterN; c++){		  
-		   		cout<<medians[c]<<" ";
-		       }
-		   	cout<<endl;
+		
+		
+	
+		string out = "--- !map:HashWithIndifferentAccess \n";
+		
+		conFeatureRange[0][0] = conFeatureRange[0][0] / 100;
+		conFeatureRange[0][1] = conFeatureRange[0][1] / 100;
+		for (int j=0; j<(conFeatureN*2); j++){
+			out.append(varNames[j+3]);
+			out.append(": ");
+			if ((j%2) == 0){  // j is even for mins
+				std::ostringstream oss;
+				oss<<conFeatureRange[j/2][0];
+		     	out.append(oss.str());
+			}
+			else{
+				std::ostringstream oss;
+				oss<<conFeatureRange[j/2][1];
+		     	out.append(oss.str());
+				}
+			out.append("\n");
+		}
+		out.append("ids: \n");
+        for(int c=0; c<clusterN; c++){
+		       out.append("- ");
+	           std::ostringstream oss; 		  
+			   oss<<medians[c];
+			   out.append(oss.str()); 
+			   out.append("\n");
+		} 
+//
+		cout<<out<<endl;
+	//	cout<<7%2<<endl;
+ 	//	for (int c=0; c<clusterN; c++){		  
+	//	   		cout<<medians[c]<<" ";
+	//	       }
+	//	   	cout<<endl;
 
    // Saving 
    
 	string fileName = "saveThem.txt"; 
 
-	save2File(fileName, data, clusteredData, centersA, idA, sane, featureN, clusterN, row);  //dataN
+	save2File(fileName, data, clusteredData, centersA, idA, sane, conFeatureN, clusterN, row);  //dataN
 	
 //	save2dIntArray(fileName, clusteredData, clusterN, sane);
 //	
@@ -510,13 +599,13 @@ int minDist;
 int *sizes = loadNumbers(fileName); 
 
 int sane = sizes[0];
-featureN = sizes[1];
+conFeatureN = sizes[1];
 clusterN = sizes[2];
 row = sizes[3];
 
 double **oldData = new double*[sane];
 for(int j=0; j<sane; j++){
-	oldData[j] = new double[featureN]; 
+	oldData[j] = new double[conFeatureN]; 
 }     
 
   
@@ -562,12 +651,12 @@ double **data = new double*[clusterSize];
 
 bool include = true;
 for (int j=0; j<clusterSize; j++){
- for (int f=0; f<featureN; f++)	{ 
-	include = include && ((!filteredFeatures[f]  || (data[idA[clusteredData[pickedCluster][j]]][f]>=(filteredFeatures[f]*conFeatureRange[f][0])) && 
-	(data[idA[clusteredData[pickedCluster][j]]][f]<=(filteredFeatures[f]*conFeatureRange[f][1])))); 
+ for (int f=0; f<conFeatureN; f++)	{ 
+	include = include && ((!conFilteredFeatures[f]  || (data[idA[clusteredData[pickedCluster][j]]][f]>=(conFilteredFeatures[f]*conFeatureRange[f][0])) && 
+	(data[idA[clusteredData[pickedCluster][j]]][f]<=(conFilteredFeatures[f]*conFeatureRange[f][1])))); 
   }	
   if (include){
-    for (int f=0; f<featureN; f++) {	
+    for (int f=0; f<conFeatureN; f++) {	
       data[j][f] = oldData[idA[(clusteredData[pickedCluster][j+1])]][f];    
     } 
   }
@@ -578,21 +667,21 @@ for (int j=0; j<clusterSize; j++){
  double **dataN = new double* [clusterSize];
   	
  for(int j=0; j<clusterSize; j++){
-	 	dataN[j] = new double[featureN]; 
+	 	dataN[j] = new double[conFeatureN]; 
   }     
   
  
-	double *max = new double[featureN];
-	double *min = new double[featureN];
-	double *dif = new double[featureN];
+	double *max = new double[conFeatureN];
+	double *min = new double[conFeatureN];
+	double *dif = new double[conFeatureN];
 	
-	for(int f=0; f<featureN; f++){	
+	for(int f=0; f<conFeatureN; f++){	
         max[f] = data[f][0]; 
         min[f] = data[f][0]; 
   }
 
 
-	for (int f=0; f<featureN; f++){
+	for (int f=0; f<conFeatureN; f++){
     for(int j = 0; j<clusterSize; j++){
 			if(data[j][f] > max[f]){
               max[f] = data[j][f];
@@ -605,7 +694,7 @@ for (int j=0; j<clusterSize; j++){
 			
   	  
 
-	for (int f=0; f<featureN; f++){
+	for (int f=0; f<conFeatureN; f++){
 		dif[f] = max[f] - min[f];
 	}
 
