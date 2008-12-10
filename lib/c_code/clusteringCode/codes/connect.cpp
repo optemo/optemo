@@ -380,18 +380,18 @@ int main(int argc, char** argv) {
 				 if (
 			 (price>0.0 && res1->getDouble("displaysize")!=NULL && res2->getDouble("opticalzoom")!=NULL && res3->getDouble("maximumresolution")!=NULL && res5->getString("brand")!="")&& 
 		     (!conFilteredFeatures[0]  || ((price>=(conFilteredFeatures[0]*conFeatureRange[0][0])) && (price<=(conFilteredFeatures[0]*conFeatureRange[0][1])))) &&  
-			  (!conFilteredFeatures[1]  ||((res1->getInt(conFeatureNames[1])>=(conFilteredFeatures[1]*conFeatureRange[1][0])) && (res1->getInt(conFeatureNames[1])<=(conFilteredFeatures[1]*conFeatureRange[1][1])))) && 
-			  (!conFilteredFeatures[2]  ||((res2->getInt(conFeatureNames[2])>=(conFilteredFeatures[2]*conFeatureRange[2][0])) && (res2->getInt(conFeatureNames[2])<=(conFilteredFeatures[2]*conFeatureRange[2][1])))) && 
-	     	  (!conFilteredFeatures[3]  ||((res3->getInt(conFeatureNames[3])>=(conFilteredFeatures[3]*conFeatureRange[3][0])) && (res3->getInt(conFeatureNames[3])<=(conFilteredFeatures[3]*conFeatureRange[3][1])))) &&
-			  (!conFilteredFeatures[4]  ||((res5->getString("brand")==brand))) 
+			  (!conFilteredFeatures[1]  ||((res1->getDouble(conFeatureNames[1])>=(conFilteredFeatures[1]*conFeatureRange[1][0])) && (res1->getDouble(conFeatureNames[1])<=(conFilteredFeatures[1]*conFeatureRange[1][1])))) && 
+			  (!conFilteredFeatures[2]  ||((res2->getDouble(conFeatureNames[2])>=(conFilteredFeatures[2]*conFeatureRange[2][0])) && (res2->getDouble(conFeatureNames[2])<=(conFilteredFeatures[2]*conFeatureRange[2][1])))) && 
+	     	  (!conFilteredFeatures[3]  ||((res3->getDouble(conFeatureNames[3])>=(conFilteredFeatures[3]*conFeatureRange[3][0])) && (res3->getDouble(conFeatureNames[3])<=(conFilteredFeatures[3]*conFeatureRange[3][1])))) &&
+			  (!catFilteredFeatures[0]  ||((res5->getString("brand")==brand))) 
 				)	
-			{
+				{              
 			
 							data[sane][0] = price;
 						//	cout<<" min is "<<data[sane][0]<<endl;
-						    data[sane][1] = res1->getInt("displaysize");
-							data[sane][2] = res2->getInt("opticalzoom");
-							data[sane][3] = res3->getInt("maximumresolution");
+						    data[sane][1] = res1->getDouble("displaysize");
+							data[sane][2] = res2->getDouble("opticalzoom");
+							data[sane][3] = res3->getDouble("maximumresolution");
 							idA[row] = sane; 
 							sane++;
 				}
