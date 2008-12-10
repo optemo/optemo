@@ -137,11 +137,11 @@ int main(int argc, char** argv) {
 				    conFeatureRange[2][1] = atof((argu.substr(startit, lengthit)).c_str());
 				    conFilteredFeatures[2] = 1;
 			}
-		   else if (var == "maximumresolution_mim"){
+		   else if (var == "maximumresolution_min"){
 					conFeatureRange[3][0] = atof((argu.substr(startit, lengthit)).c_str());
 			   		conFilteredFeatures[3] = 1;
 		    }	
-		   else if (var == "maximumresolution_mim"){
+		   else if (var == "maximumresolution_max"){
 				    conFeatureRange[3][1] = atof((argu.substr(startit, lengthit)).c_str());
 				   	conFilteredFeatures[3] = 1;
 			}	 
@@ -382,8 +382,9 @@ int main(int argc, char** argv) {
 		     (!conFilteredFeatures[0]  || ((price>=(conFilteredFeatures[0]*conFeatureRange[0][0])) && (price<=(conFilteredFeatures[0]*conFeatureRange[0][1])))) &&  
 			  (!conFilteredFeatures[1]  ||((res1->getDouble(conFeatureNames[1])>=(conFilteredFeatures[1]*conFeatureRange[1][0])) && (res1->getDouble(conFeatureNames[1])<=(conFilteredFeatures[1]*conFeatureRange[1][1])))) && 
 			  (!conFilteredFeatures[2]  ||((res2->getDouble(conFeatureNames[2])>=(conFilteredFeatures[2]*conFeatureRange[2][0])) && (res2->getDouble(conFeatureNames[2])<=(conFilteredFeatures[2]*conFeatureRange[2][1])))) && 
-	     	  (!conFilteredFeatures[3]  ||((res3->getDouble(conFeatureNames[3])>=(conFilteredFeatures[3]*conFeatureRange[3][0])) && (res3->getDouble(conFeatureNames[3])<=(conFilteredFeatures[3]*conFeatureRange[3][1])))) &&
-			  (!catFilteredFeatures[0]  ||((res5->getString("brand")==brand))) 
+	     	 (!conFilteredFeatures[3]  ||((res3->getDouble(conFeatureNames[3])>=(conFilteredFeatures[3]*conFeatureRange[3][0])) && (res3->getDouble(conFeatureNames[3])<=(conFilteredFeatures[3]*conFeatureRange[3][1])))) &&
+			 
+			(!catFilteredFeatures[0]  ||((res5->getString("brand")==brand))) 
 				)	
 				{              
 			
@@ -427,7 +428,7 @@ int main(int argc, char** argv) {
 				   conFeatureRange[f][0] = data[j][f];
 			   }
 			}
-		
+		//	cout<< "Min of "<<f<<" is "<< 	conFeatureRange[f][0]<<endl;
 		}	
 				
 	 
@@ -499,7 +500,7 @@ int main(int argc, char** argv) {
  			minDist = dist[0][c];
  			medians[c] = clusteredData[c][1];
 			if (clusteredData[c][0] == 0){   /////////////LOSER, FIX IT!!
-   			medians[c] = clusteredData[c+1][2];
+   			medians[c] = inputID;
 		//	cout<<"loser c is "<<c<<endl;
 			   			}
  			for(int j=2; j<clusteredData[c][0]; j++){
