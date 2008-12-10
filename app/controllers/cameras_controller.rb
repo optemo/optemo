@@ -26,6 +26,7 @@ class CamerasController < ApplicationController
       @picked_cameras << saved.camera
       @picked_cameras_ids << saved.camera.id
     end
+    @dbprops = DbProperty.find(:first)
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @cameras }

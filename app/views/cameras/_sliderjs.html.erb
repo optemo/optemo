@@ -3,6 +3,18 @@ var <%= val %>slider = new Control.Slider(<%= val %>handles, '<%= val %>slider',
 	range: $R(<%= min %>,<%= max %>),
 	sliderValue: [<%= @search.send("#{val}_min".intern) %>,<%= @search.send("#{val}_max".intern) %>],
 	restricted: true,
-	onSlide: function(v) {disp(v,'<%= val %>disp','myfilter_<%= val %>_min','myfilter_<%= val %>_max');},
-	onChange: function(v) {disp(v,'<%= val %>disp','myfilter_<%= val %>_min','myfilter_<%= val %>_max');}
+	onSlide: function(v) {
+		<% if money_formatting %>
+			disp_money(v,'<%= val %>disp','myfilter_<%= val %>_min','myfilter_<%= val %>_max');
+		<% else %>
+			disp(v,'<%= val %>disp','myfilter_<%= val %>_min','myfilter_<%= val %>_max');
+		<% end %>
+		},
+	onChange: 	function(v) {
+		<% if money_formatting %>
+			disp_money(v,'<%= val %>disp','myfilter_<%= val %>_min','myfilter_<%= val %>_max');
+		<% else %>
+			disp(v,'<%= val %>disp','myfilter_<%= val %>_min','myfilter_<%= val %>_max');
+		<% end %>
+		}
 });
