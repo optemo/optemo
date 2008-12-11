@@ -35,8 +35,8 @@ int main(int argc, char** argv) {
 	int varNamesN = 11;
 	int featureN = conFeatureN + catFeatureN + boolFeatureN;    
 	int range = 2;
-    int inputID;
-	int layer = 1;
+    int inputID = 220;
+	int layer = 2;
 		
 	string *varNames = new string[varNamesN];	
 	string *catFeatureNames = new string[catFeatureN];
@@ -69,7 +69,16 @@ int main(int argc, char** argv) {
 		boolFilteredFeatures[f] = 0;
 	}
 
-   
+  // 	bool filter = false;
+  //  for(int f=0; f<conFeatureN; f++){
+  //  	filter = filter || conFilteredFeatures[f];
+  //  }
+  //  for(int f=0; f<catFeatureN; f++){
+  //  	filter = filter || catFilteredFeatures[f];
+  //  }
+  //  for(int f=0; f<boolFeatureN; f++){
+  //  	filter = filter || boolFilteredFeatures[f];
+  //  }
    
 
 	string argu = argv[1];
@@ -102,7 +111,10 @@ int main(int argc, char** argv) {
 		if(lengthit > 0){
 			if (var=="brand"){
 					brand = (argu.substr(startit, lengthit)).c_str();
-					catFilteredFeatures[0] = 1;
+					if (brand != "All Brands"){
+						catFilteredFeatures[0] = 1;
+					}
+		
 		   }
 		   else if(var == "layer"){
 		        	layer = atoi((argu.substr(startit, lengthit)).c_str());
@@ -148,127 +160,11 @@ int main(int argc, char** argv) {
 	    }
 		
 		else{      //if lengthit = 0
-			cout<<"Error, you didn't specify a value for "<<var<<endl;
+		//	cout<<"Error, you didn't specify a value for "<<var<<endl;
 			}
 		//layer = atoi((argu.substr(startit, lengthit)).c_str());
 	}
 
-	//layer
-//	var = "layer";
-//	ind = argu.find("layer", 0);
-//	int endit = argu.find("\n", ind);
-//	int startit = ind + var.length() + 2;
-//	int lengthit = endit - startit;
-//	//cout<<"brand is :  BBB"<<argu.substr(startit, lengthit)<<"BBB"<<endl;
-//	layer = atoi((argu.substr(startit, lengthit)).c_str());
-//	
-//	//ids
-//	var = "ids";
-//	ind = argu.find("ids", 0);
-//	endit = argu.find("\n", ind);
-//	startit = ind + var.length() + 2;
-//	lengthit = endit - startit;
-//	inputID = atoi((argu.substr(startit, lengthit)).c_str());
-//	
-//    //brand
-//	var = "brand";
-//    ind = argu.find("brand", 0);
-//	endit = argu.find("\n", ind);
-//	startit = ind + var.length() + 2;
-//	lengthit = endit - startit;
-//	string brand = (argu.substr(startit, lengthit)).c_str();
-//	if (brand != ""){
-//		filteredFeatures[4] = 1;
-//	}
-   	
-//	//price_min
-//	var = "price_min"; 
-//	ind = argu.find("price_min", 0);
-//	endit = argu.find("\n", ind);
-//	startit = ind + var.length() + 2;
-//	lengthit = endit - startit;
-//	if (lengthit > 0){
-//		
-//		conFeatureRange[0][0] = atoi((argu.substr(startit, lengthit)).c_str()) * 100;
-//        conFilteredFeatures[0] = 1;
-//}
-//	
-//	//price_max 
-//	var = "price_max";
-//	ind = argu.find("price_max", 0);
-//	endit = argu.find("\n", ind);
-//	startit = ind + var.length() + 2;
-//	lengthit = endit - startit;
-//	if (lengthit > 0){
-//		conFeatureRange[0][1] = atoi((argu.substr(startit, lengthit)).c_str())* 100;
-//	     conFilteredFeatures[0] = 1;
-//	}
-//
-//	//displaysize_min
-//	var = "displaysize_min";
-//	ind = argu.find("displaysize_min", 0);
-//	endit = argu.find("\n", ind);
-//	startit = ind + var.length() + 2;
-//	lengthit = endit - startit;
-//	if (lengthit >0){
-//		conFeatureRange[1][0] = atoi((argu.substr(startit, lengthit)).c_str());
-//		conFilteredFeatures[1] = 1;
-//    }		
-//	
-//	//displaysize_max
-//	var = "displaysize_max";
-//	ind = argu.find("displaysize_max", 0);
-//	endit = argu.find("\n", ind);
-//	startit = ind + var.length() + 2;
-//	lengthit = endit - startit;
-//	if (lengthit >0){
-//		conFeatureRange[1][1] = atoi((argu.substr(startit, lengthit)).c_str());
-//		filteredFeatures[1] = 1;
-//	}
-//	//opticalzoom_min
-//	var = "opticalzoom_min";
-//	ind = argu.find("opticalzoom_min", 0);
-//	endit = argu.find("\n", ind);
-//	startit = ind + var.length() + 2;
-//	lengthit = endit - startit;
-//	if (lengthit >0){
-//		conFeatureRange[2][0] = atoi((argu.substr(startit, lengthit)).c_str());
-//		filteredFeatures[2] = 1;
-//	}
-//	//opticalzoom_max
-//	var = "opticalzoom_max";
-//	ind = argu.find("opticalzoom_max", 0);
-//    endit = argu.find("\n", ind);
-//	startit = ind + var.length() + 2;
-//	lengthit = endit - startit;
-//	if (lengthit >0){
-//		conFeatureRange[2][1] = atoi((argu.substr(startit, lengthit)).c_str());
-//	    filteredFeatures[2] = 1;
-//	}
-//	
-//	
-//	//maximumresolution_min
-//	var ="maximumresolution_min";
-//	ind = argu.find("maximumresolution_min", 0);
-//	endit = argu.find("\n", ind);
-//	startit = ind + var.length() + 2;
-//	lengthit = endit - startit;
-//	if (lengthit >0){
-//		conFeatureRange[3][0] = atoi((argu.substr(startit, lengthit)).c_str());
-//		   filteredFeatures[3] = 1;
-//		}
-//	
-//	//maximumresolution_max
-//	var = "maximumresolution_max";
-//	ind = argu.find("maximumresolution_max", 0);
-//	endit = argu.find("\n", ind);
-//	startit = ind + var.length() + 2;
-//	lengthit = endit - startit;
-//	if (lengthit >0){
-//	conFeatureRange[3][1] = atoi((argu.substr(startit, lengthit)).c_str());
-//	  filteredFeatures[3] = 1;
-//	}
-	
 		
 	if (layer == 1){
 		
@@ -347,9 +243,9 @@ int main(int argc, char** argv) {
 				size = res->rowsCount();
 				double **data = new double*[size];
 		    	for(int j=0; j<size; j++){
-						data[j] = new double[featureN]; 
+						data[j] = new double[conFeatureN]; 
 				}
-				
+				string *brands = new string [size];
 				int *idA = new int[size];	
 				idA[0] = -10;
 			    row = 1;
@@ -394,6 +290,8 @@ int main(int argc, char** argv) {
 							data[sane][2] = res2->getDouble("opticalzoom");
 							data[sane][3] = res3->getDouble("maximumresolution");
 							idA[row] = sane; 
+							brands[sane] = res5->getString("brand");
+						
 							sane++;
 				}
 					row++;
@@ -438,8 +336,12 @@ int main(int argc, char** argv) {
 	
 		for (int f=0; f<conFeatureN; f++){
 		   for(int j=0; j<sane; j++){
-		    dataN[j][f] = (((data[j][f] - conFeatureRange[f][0])/ dif[f]) * 2 ) - 1;
-		   	
+			if (dif[f] == 0){
+				dataN[j][f] = 0;
+			}
+			else{
+		    	dataN[j][f] = (((data[j][f] - conFeatureRange[f][0])/ dif[f]) * 2 ) - 1;
+		   	}
 	}
 	   }
         
@@ -500,7 +402,7 @@ int main(int argc, char** argv) {
  			minDist = dist[0][c];
  			medians[c] = clusteredData[c][1];
 			if (clusteredData[c][0] == 0){   /////////////LOSER, FIX IT!!
-   			medians[c] = inputID;
+   			medians[c] = clusteredData[c+1][2];
 		//	cout<<"loser c is "<<c<<endl;
 			   			}
  			for(int j=2; j<clusteredData[c][0]; j++){
@@ -545,17 +447,16 @@ int main(int argc, char** argv) {
 		} 
 //
 		cout<<out<<endl;
-	//	cout<<7%2<<endl;
- 	//	for (int c=0; c<clusterN; c++){		  
-	//	   		cout<<medians[c]<<" ";
-	//	       }
-	//	   	cout<<endl;
 
    // Saving 
    
-	string fileName = "saveThem.txt"; 
+		string fileName = "saveClustered";	 
+		std::ostringstream layerS;
+		layerS<<layer;
+		fileName.append(layerS.str());
 
-	save2File(fileName, data, clusteredData, centersA, idA, sane, conFeatureN, clusterN, row);  //dataN
+
+	save2File(fileName, data, clusteredData, centersA, brands, idA, sane, conFeatureN, clusterN, row);  //dataN
 	
 //	save2dIntArray(fileName, clusteredData, clusterN, sane);
 //	
@@ -589,14 +490,16 @@ int main(int argc, char** argv) {
 }//////////////////////////////////////////////////
 
 
-else if(layer == 2){
+else if(layer >1){
 
-//inputID = atoi(argv[3]); 
-string fileName = "saveThem.txt";
+   string fileName = "saveClustered";	 
+   std::ostringstream layerS;
+   layerS<<layer-1;
+   fileName.append(layerS.str());
+
 int minDist;
+
 ////loading data
-//  
-//(fileName, dataN, clusteredData, centersA, idA, sane, featureN, clusterN, row);
 
 int *sizes = loadNumbers(fileName); 
 
@@ -610,182 +513,249 @@ for(int j=0; j<sane; j++){
 	oldData[j] = new double[conFeatureN]; 
 }     
 
-  
- int **clusteredData = new int* [clusterN];
+
+ int **oldClusteredData = new int* [clusterN];
  for (int j=0; j<clusterN; j++){
- 			clusteredData[j] = new int[sane];	
+ 			oldClusteredData[j] = new int[sane];	
  }
 
- int *centersA = new int[sane];
- int *idA = new int[row];
+ int *oldCentersA = new int[sane];
+ int *oldIdA = new int[row];
 
- loadFile(fileName, oldData, clusteredData, centersA, idA);
+string *oldBrands = new string[sane]; 
 
+
+
+ loadFile(fileName, oldData, oldClusteredData, oldCentersA, oldBrands, oldIdA);
+//for (int j=0; j<sane; j++){
+//	cout<<"oldBrand is "<<oldBrands[j]<<endl;
+//}
 
  if (inputID > row){
  	cout<<"THE ID NUMBER IS TOO LARGE"<<endl;
  	return 0;
   }
 
- if (idA[inputID] == -10){
+ if (oldIdA[inputID] == -10){
  	cout<<"THIS ID IS NOT ACCEPTABLE"<<endl;
  	return 0;
  }
 
 
- int pickedCluster = centersA[idA[inputID]];  
+ int pickedCluster = oldCentersA[oldIdA[inputID]];  
 
  //removing the inputID from the rest of data   
 
- int clusterSize = clusteredData[pickedCluster][0];
+ int clusterSize = oldClusteredData[pickedCluster][0];
 
- clusteredData[pickedCluster][find(clusteredData[pickedCluster], inputID, clusteredData[pickedCluster][0])] = clusteredData[pickedCluster][clusterSize];
- clusteredData[pickedCluster][0]--;
+ oldClusteredData[pickedCluster][find(oldClusteredData[pickedCluster], inputID, oldClusteredData[pickedCluster][0])] = oldClusteredData[pickedCluster][clusterSize];
+ oldClusteredData[pickedCluster][0]--;
  clusterSize--;
-	 	
- 
+
+
 double **data = new double*[clusterSize];
  for(int j=0; j<clusterSize; j++){
-	 	data[j] = new double[featureN]; 
+	 	data[j] = new double[conFeatureN]; 
   }	
  
+string *brands = new string [clusterSize]; 
+int *idA = new int[clusterSize];
+
 // filtering the data
 
 bool include = true;
 for (int j=0; j<clusterSize; j++){
  for (int f=0; f<conFeatureN; f++)	{ 
-	include = include && ((!conFilteredFeatures[f]  || (data[idA[clusteredData[pickedCluster][j]]][f]>=(conFilteredFeatures[f]*conFeatureRange[f][0])) && 
-	(data[idA[clusteredData[pickedCluster][j]]][f]<=(conFilteredFeatures[f]*conFeatureRange[f][1])))); 
+	include = include && (!conFilteredFeatures[f]  || ((oldData[oldClusteredData[pickedCluster][j]][f]>=(conFilteredFeatures[f]*conFeatureRange[f][0])) && 
+	(oldData[oldClusteredData[pickedCluster][j]][f]<=(conFilteredFeatures[f]*conFeatureRange[f][1])))); 
   }	
-  if (include){
+//cout<<":Here "<<endl; 
+//cout<<"oldIdA[oldClusteredData[pickedCluster][j]]  is  "<<oldIdA[oldClusteredData[pickedCluster][j+1]]<<endl;
+//cout<<"brand is "<<brand<<"  and  oldBrand is "<<oldBrands[oldIdA[oldClusteredData[pickedCluster][j+1]]]<<endl;
+include = include && (!catFilteredFeatures[0] || (brand == oldBrands[oldIdA[oldClusteredData[pickedCluster][j+1]]])); 
+//cout<<" not including yet"<<endl;  
+if (include){
+//	cout<<"including "<<endl;
     for (int f=0; f<conFeatureN; f++) {	
-      data[j][f] = oldData[idA[(clusteredData[pickedCluster][j+1])]][f];    
-    } 
+      data[j][f] = oldData[oldIdA[(oldClusteredData[pickedCluster][j+1])]][f];  
+     }
+      brands[j]  = oldBrands[oldIdA[oldClusteredData[pickedCluster][j+1]]];
+      idA[j] = oldClusteredData[pickedCluster][j+1]; 
   }
  }
 
-// normalizing of the data
+//Delete old stuff
 
+delete oldIdA;
+delete oldData;
+delete oldCentersA;
+
+
+
+// normalizing of the data
+ 
  double **dataN = new double* [clusterSize];
   	
  for(int j=0; j<clusterSize; j++){
 	 	dataN[j] = new double[conFeatureN]; 
   }     
   
- 
-	double *max = new double[conFeatureN];
-	double *min = new double[conFeatureN];
-	double *dif = new double[conFeatureN];
-	
-	for(int f=0; f<conFeatureN; f++){	
-        max[f] = data[f][0]; 
-        min[f] = data[f][0]; 
+ for(int f=0; f<conFeatureN; f++){	
+        conFeatureRange[f][1] = data[0][f]; 
+        conFeatureRange[f][0] = data[0][f]; 
   }
+
+	double *dif = new double[conFeatureN];
 
 
 	for (int f=0; f<conFeatureN; f++){
-    for(int j = 0; j<clusterSize; j++){
-			if(data[j][f] > max[f]){
-              max[f] = data[j][f];
+       for(int j = 0; j<clusterSize; j++){
+			if(data[j][f] > conFeatureRange[f][1]){
+               conFeatureRange[f][1] = data[j][f];
          }
-	       if (data[j][f] < min[f]){
-			   min[f] = data[j][f];
+	       if (data[j][f] < conFeatureRange[f][0]){
+			   conFeatureRange[f][0] = data[j][f];
 		   }
 		}
 	}	
-			
-  	  
 
 	for (int f=0; f<conFeatureN; f++){
-		dif[f] = max[f] - min[f];
+		dif[f] = conFeatureRange[f][1] - conFeatureRange[f][0];
 	}
 
-	for (int f=0; f<featureN; f++){
+	for (int f=0; f<conFeatureN; f++){
 	   for(int j=0; j<clusterSize; j++){
-	    dataN[j][f] = (((data[j][f] - min[f])/ dif[f]) * 2 ) - 1;
-	   	
+		if (dif[f] == 0){
+			dataN[j][f] = -1;	
+		}
+	    else{
+		dataN[j][f] = (((data[j][f] - conFeatureRange[f][0])/ dif[f]) * 2 ) -1;
+   	}
 }
  }
-
   
-  
-  double** centroids2 = new double* [clusterN-1];
+  double** centroids = new double* [clusterN-1];
   for(int j=0; j<clusterN-1; j++){
-   	centroids2[j]=new double[featureN];
+   	centroids[j]=new double[conFeatureN];
   }
  
 
-  double** dist2 = new double* [clusterSize];
+  double** dist = new double* [clusterSize];
   	
   for(int j=0; j<clusterSize; j++){
-  	dist2[j] = new double[clusterN-1]; 
+  	dist[j] = new double[clusterN-1]; 
   }
   
-   
- int *centers2A = k_means(dataN,clusterSize, featureN, clusterN - 1, 1e-4, centroids2); 
 
-   
+ 
+ int *centersA = k_means(dataN,clusterSize, conFeatureN, clusterN - 1, 1e-4, centroids); 
+
+
   for (int j=0; j<clusterSize; j++){
  	for (int c=0; c<clusterN-1; c++){
-  		for (int f=0; f<featureN; f++){
-  			dist2[j][c] = dist2[j][c] + ((centroids2[c][f] - dataN[j][f])*(centroids2[c][f] - dataN[j][f]) );	   
+  		for (int f=0; f<conFeatureN; f++){
+  			dist[j][c] = dist[j][c] + ((centroids[c][f] - dataN[j][f])*(centroids[c][f] - dataN[j][f]));	
+      
   		}  
   	}	 
   }
   
-   	int **clusteredData2 = new int* [clusterN-1];
+   	int **clusteredData = new int* [clusterN-1];
 
 
   	for (int j=0; j<clusterN-1; j++){
-  		clusteredData2[j] = new int[clusterSize];	
+  		clusteredData[j] = new int[clusterSize];	
   	}
 
   	for (int c=0; c<clusterN-1; c++){
-  		clusteredData2[c][0] = 0;
+  		clusteredData[c][0] = 0;
   	}	
-  	int *ts2 = new int[clusterN-1];
+  	int *ts = new int[clusterN-1];
   	for(int j=0; j<clusterN-1; j++){
-  		ts2[j] = 0;
+  		ts[j] = 0;
   	}
   	for (int j=0; j<clusterSize; j++){
   	
-  	    ts2[centers2A[j]] = ts2[centers2A[j]]++;	
-  		clusteredData2[centers2A[j]][ts2[centers2A[j]]] = clusteredData[pickedCluster][j+1];
-		clusteredData2[centers2A[j]][0]++;
+  	    ts[centersA[j]] = ts[centersA[j]]++;	
+  		clusteredData[centersA[j]][ts[centersA[j]]] = oldClusteredData[pickedCluster][j+1];
+		clusteredData[centersA[j]][0]++;
   	}
-
-   	int *medians2 = new int [clusterN - 1];
+ 
+   	int *medians = new int [clusterN - 1];
    	for(int c =0; c<clusterN - 1; c++){
-   		minDist = dist2[0][c];
-   			medians2[c] = clusteredData2[c][1];
-   			if (clusteredData2[c][0] == 0){   /////////////LOSER, FIX IT!!
-   				medians2[c] = clusteredData[pickedCluster][c];
+   		minDist = dist[0][c];
+   		medians[c] = clusteredData[c][1];
+   			if (clusteredData[c][0] == 0){   /////////////LOSER, FIX IT!!
+			//	cout<<"loser"<<endl;
+   				medians[c] = oldClusteredData[pickedCluster][c];
    			}
-   	  		for(int j=2; j<clusteredData2[c][0]; j++){
-   		 		if(minDist > dist2[j-1][c]){
-    					minDist = dist2[j-1][c];
-   					medians2[c] = clusteredData2[c][j];		   
+		
+   	  		for(int j=2; j<clusteredData[c][0]; j++){
+   		 		if(minDist > dist[j-1][c]){
+    					minDist = dist[j-1][c];
+   					medians[c] = clusteredData[c][j];		   
    		     	}
    		   	}
    		 }
-   	
+	
+	///save to file
+
+		fileName="saveClustered";
+		std::ostringstream layerO;
+		layerO<<layer;
+		fileName.append(layerO.str());
 		
-   	for (int c=0; c<clusterN-1; c++){		  
-   		cout<<medians2[c]<<" ";
-       }
-   	cout<<endl;
+		save2File(fileName, data, clusteredData, centersA, brands, idA, clusterSize, conFeatureN, clusterN-1, clusterSize);  //dataN
+
+  
+		// Clean up
+
+
+	    delete data;
+	    delete dataN;
+	 	delete clusteredData; 
+	 	delete dist;
+	
+
+
+
+  // 	for (int c=0; c<clusterN-1; c++){		  
+  // 		cout<<medians[c]<<" ";
+  //     }
+  // 	cout<<endl;
     // 
 
-   // Clean up
-
-
-	delete dataN;
-	delete clusteredData;
-   delete clusteredData2; 
-	delete medians2;
-
+		string out = "--- !map:HashWithIndifferentAccess \n";
+		
+		conFeatureRange[0][0] = conFeatureRange[0][0] / 100;
+		conFeatureRange[0][1] = conFeatureRange[0][1] / 100;
+		for (int j=0; j<(conFeatureN*2); j++){
+			out.append(varNames[j+3]);
+			out.append(": ");
+			if ((j%2) == 0){  // j is even for mins
+				std::ostringstream oss;
+				oss<<conFeatureRange[j/2][0];
+		     	out.append(oss.str());
+			}
+			else{
+				std::ostringstream oss;
+				oss<<conFeatureRange[j/2][1];
+		     	out.append(oss.str());
+				}
+			out.append("\n");
+		}
+		out.append("ids: \n");
+        for(int c=0; c<clusterN-1; c++){
+		       out.append("- ");
+	           std::ostringstream oss; 		  
+			   oss<<medians[c];
+			   out.append(oss.str()); 
+			   out.append("\n");
+		} 
+//
+		cout<<out<<endl;
+delete oldClusteredData; 
 }
-
 
 return 1; //EXIT_SUCCESS;
 }

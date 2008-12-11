@@ -61,9 +61,9 @@ int findVec(vector<string> tokens, string value)
 	return ind;
 }
 
+//save2File(fileName, data, clusteredData, centersA, brands, idA, sane, conFeatureN, clusterN, row)
 
-//	save2File(fileName, dataN, clusteredData, centersA, idA, sane, featureN, row);
-void save2File (string filename, double **array1, int **array2, int *array3, int *array4, int size, int F, int C, int R){
+void save2File (string filename, double **array1, int **array2, int *array3, string* array5, int *array4, int size, int F, int C, int R){
 	ofstream myfile;
 	int x, y;
 	myfile.open(filename.c_str(), ios::out);
@@ -98,7 +98,10 @@ void save2File (string filename, double **array1, int **array2, int *array3, int
 		myfile<<array4[x];
 		myfile<<" ";
 	}
-	
+	for(x = 0; x<size; x++){
+		myfile<<array5[x];
+		myfile<<" ";
+	}
 	myfile.close();
 }
 
@@ -117,7 +120,7 @@ int* loadNumbers(string filename){
 } 
 
 
-void loadFile(string filename, double **array1, int **array2, int *array3, int *array4){
+void loadFile(string filename, double **array1, int **array2, int *array3, string *array5, int *array4){
 	ifstream myfile;
 	myfile.open(filename.c_str(), ios::in);
 	int x, y, size, F, C, R;
@@ -143,7 +146,9 @@ void loadFile(string filename, double **array1, int **array2, int *array3, int *
 	for(x = 0; x<R; x++){
 		myfile>>array4[x];
 	}
-	
+	for(x = 0; x<size; x++){
+		myfile>>array5[x];
+	}
 	myfile.close();
 	
 }
