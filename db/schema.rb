@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20081208220610) do
+ActiveRecord::Schema.define(:version => 20081209003643) do
 
   create_table "amazon_groups", :force => true do |t|
     t.datetime "created_at"
@@ -82,6 +82,20 @@ ActiveRecord::Schema.define(:version => 20081208220610) do
     t.string   "imagelurl"
     t.integer  "imagelheight"
     t.integer  "imagelwidth"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "db_properties", :force => true do |t|
+    t.text     "brands"
+    t.float    "maximumresolution_min"
+    t.float    "maximumresolution_max"
+    t.float    "displaysize_min"
+    t.float    "displaysize_max"
+    t.float    "opticalzoom_min"
+    t.float    "opticalzoom_max"
+    t.float    "price_min"
+    t.float    "price_max"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -13,20 +13,19 @@ class CamerasController < ApplicationController
   
   def list
     @session = Session.find(session[:user_id])
-    @search = @session.search
+    #Navigation Variables
     @cameras = []
-    num = "i0"
-    9.times do
-      @cameras << Camera.find(params[num.next!])
+    "i1".upto("i9") do |num|
+      @cameras << Camera.find(params[num])
     end
-    @picked_cameras = []
-    #This is ugly!
-    @picked_cameras_ids = []
-    @session.saveds.collect do |saved|
-      @picked_cameras << saved.camera
-      @picked_cameras_ids << saved.camera.id
-    end
+    @message = "Surf's up!"
+    #Saved Bar variables
+    @picked_cameras = @session.saveds.map {|s| s.camera}
+    
+    #Filtering variables
+    @search = @session.search
     @dbprops = DbProperty.find(:first)
+    
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @cameras }

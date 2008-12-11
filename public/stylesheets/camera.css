@@ -1,5 +1,4 @@
 /* CSS Document */
-
 div#fade {
 	background-color: black;
 	position: absolute;
@@ -11,8 +10,7 @@ div#fade {
 	opacity: 0.5;
 	display: none;
 	margin-left: -6px;
-	margin-top: 11px;
-}
+	margin-top: 11px;}
 div#info {
 	background: white;
 	position: absolute;
@@ -22,136 +20,164 @@ div#info {
 	width: 500px;
 	height: 600px;
 	z-index: 3;
-	display: none;
-}
-
-.navigator_box p {
-	margin: 0px 0px 5px;
-	padding: 0;
-	line-height:1.2em;
-}
-
+	display: none;}
 div#header_options, div#footer_options {
     background-color: #c8c8ff;
 	padding: 0;
-	margin: 0;
-}
+	margin: 0;}
 a.link {
 	margin-left: 10px;
-	margin-right: 10px;
-}
-div.tablediv {
-	display: table;
+	margin-right: 10px;}
+div.main {
+	display: relative;
 	padding: 0;
-	margin: 0;
-}
+	margin-left: 170px;
+	text-align: center;}
 div.rowdiv {
-	display:table-row;
-}
+	width: 750px;
+	height: 225px;
+	position: relative;
+	/*display:table-row;*/}
+a img {
+	border: none;}
+
+/* Navigator box */
+.navigator_box p {
+	margin: 0px 0px 5px;
+	padding: 0;
+	line-height:1.2em;}
 div.navigator_box {
 	text-align: center;
 	font-size: small;
-	display: table-cell;
+	/*display: table-cell;*/
+	position: absolute;
 	width:245px;
 	height:225px;
-	padding: 0px 1px 0px 1px;
+	margin: 0px;
+	padding: 0px;
 	background: url(../images/navigatorbox_u.png) no-repeat;
-	_background-image:url(../images/mainbg.gif);
-}
+	_background-image:url(../images/mainbg.gif);}
 div.navigator_box:hover {
-	background: url(../images/navigatorbox_s.png) no-repeat;
-}
+	background: url(../images/navigatorbox_s.png) no-repeat;}
 div.borderbox {
 	position: relative;
 	top: 5px;
 	left: 5px;
 	height: 210px;
-	width: 232px;
-}
+	width: 235px;}
 .save {
 	width: 45px;
 	position: absolute;
 	left: 0;
-	top: 0;
-}
+	top: 0;}
 .sim {
-	width: 45px;
-	position: absolute;
-	right: 0;
-	top: 0;
-}
+	width: 35px;
+	float: left;}
 .save a {
 	background-color: orange;
 	text-decoration: none;
-	color: black;
-}
+	color: black;}
 .sim a {
 	background-color: yellow;
 	text-decoration: none;
+	color: black;}
+.bottombar {
+	border-top: solid medium black;
+	position: absolute;
+	bottom: 0;
+	width: 100%;}
+.up {
+	text-decoration: none;
+	/*color: #693;*/
+	color: #000;}
+.down {
+	text-decoration: none;
+	/*color: #f63;*/
+	color: #000;}
+.up img, 
+.down img {
+	vertical-align: middle;}
+.clusterfeatures {
+	float: right;
+	margin-top: 5px;}
+	
+/*Easy Nav*/
+.easynav .title {
+	float:left;
+	height: 100%;
+	width: 65px;
+	border: medium solid black;
+	font-size: 0.8em;}
+.easynav .cont {
+	float: right;
+	height: 100%;
+	padding-top: 4px;}
+.easynav a {
+	text-decoration: none;
 	color: black;
-}
-
-a img {
-	border: none;
-}
-
+	padding: 6px;}
+.easynav .buttons a {
+	background-color: #999;}
+.easynav .buttons a:hover {
+	background-color: #693;}
+.easynav .title a {
+	padding: 0;}
+.easynav .cont a {
+	background-color: #999;}
+.easynav .cont a:hover {
+	background-color: #693;}
+.easynav {
+	width: 738px;
+	height: 30px;}
+.easynav .buttons {
+	float: left;
+	padding-top: 4px;}
+	
+/* Save Box */
 div #savebar {
 	float: left;
 	width: 150px;
 	background: #ddd;
 	margin: 0em 1em;
-	text-align: center;
-}
+	text-align: center;}
+.deleteX {
+	position: absolute;
+	left: 130px;
+	top: 0;}
+.saveditem {
+	position: relative;}
 
+/* Filter Box */
 div #filterbar {
 	float: right;
 	margin: 0em 1em;
 	padding: 1em;
 	text-align: center;
-	background: #ddd;
-}
-
-.deleteX {
-	position: absolute;
-	left: 130px;
-	top: 0;
-}
-
-.saveditem {
-	position: relative;
-}
-
+	background: #ddd;}
 .slider {
 	/*background: url(../images/sliderbgwticks193px.gif) no-repeat;*/
 	margin: 0.3em 0 0.8em;
 	width: 193px;
 	height: 3px;
 	background-color: black;
-	position: relative;
-}
-
+	position: relative;}
 .label {
 	text-align: left;
 	font-size: 0.8em;
 	width: 193px;
-	position: relative;
-}
+	position: relative;}
 .handle img{
-	float: left;
-}
+	float: left;}
 .handle {
 	width: 9px;
 	height: 15px;
 	position: absolute;
 	top: -7px;
-	cursor: move;
-}
-
+	cursor: move;}
 .disp {
 	text-align: left;
 	width: 80px;
 	font-size: 0.9em;
 	position: absolute;
 	right: 0;
-	top: 0;
-}
+	top: 0;}

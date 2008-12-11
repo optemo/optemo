@@ -1,0 +1,30 @@
+<div class="navigator_box" style="left: <%= (i%3)*247 %>px;">
+<div id="box<%=i%>" class="borderbox">
+	
+	    <% if !@cameras[i].imagemwidth.blank? %>
+	    <div class='save'>
+			<%= link_to "Save it", "javascript:saveit(#{@cameras[i].id})" %>
+		</div>
+		<%= image_tag @cameras[i].imagemurl, :width => @cameras[i].imagemw, :height => @cameras[i].imagemh, :onClick => "fadeout(#{@cameras[i].id});" %> 	
+	<%end%>
+	<div onClick="fadeout(<%=@cameras[i].id%>);">
+	<p><%= @cameras[i].title[0..90] %></p>
+	<p><% if !@cameras[i].salepriceint.blank? %>
+		<span style="color: red;"><%= @cameras[i].salepricestr %></span> <span style="text-decoration: line-through;"><%= @cameras[i].listpricestr %></span>
+		<% else %>
+		<%= @cameras[i].listpricestr %>
+		<% end %>
+	</p>
+	</div>
+	<div class="bottombar">
+		<div class='sim'>
+		    <%= link_to "See more", {:id => @cameras[i], :action => 'sim', :pos => i}, :class => 'sim' %>
+		</div>
+		<div class="clusterfeatures">
+		<%= link_to "Megapixels#{image_tag('up.gif')}", {:action => 'price'}, {:class => 'up'}%>
+		<%= link_to "Price#{image_tag('up.gif')}", {:action => 'price'}, {:class => 'up'}%>
+		<%= link_to "Reviews#{image_tag('down.gif')}", {:action => 'reviews'}, {:class => 'down'} %>
+		</div>
+	</div>
+</div>
+</div>
