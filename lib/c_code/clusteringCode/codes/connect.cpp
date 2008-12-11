@@ -450,7 +450,7 @@ int main(int argc, char** argv) {
 
    // Saving 
    
-		string fileName = "saveClustered";	 
+		string fileName = "tmp/cachedFiles/saveClustered";	 
 		std::ostringstream layerS;
 		layerS<<layer;
 		fileName.append(layerS.str());
@@ -492,7 +492,7 @@ int main(int argc, char** argv) {
 
 else if(layer >1){
 
-   string fileName = "saveClustered";	 
+   string fileName = "tmp/cachedFiles/saveClustered";	 
    std::ostringstream layerS;
    layerS<<layer-1;
    fileName.append(layerS.str());
@@ -700,7 +700,7 @@ delete oldCentersA;
 	
 	///save to file
 
-		fileName="saveClustered";
+		fileName="tmp/cachedFiles/saveClustered";
 		std::ostringstream layerO;
 		layerO<<layer;
 		fileName.append(layerO.str());
