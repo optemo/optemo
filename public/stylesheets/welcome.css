@@ -198,7 +198,7 @@ div.pass img{
  position:static;
  margin: 0;
  max-height:1500px;
- /*overflow:auto; /* note that overflow:auto causes a rather annoying redraw "lag" in Firefox 2, and may degrade performance. Might be worth trying without if you aren't worried about height/overflow issues. */
+ overflow:auto; /* note that overflow:auto causes a rather annoying redraw "lag" in Firefox 2, and may degrade performance. Might be worth trying without if you aren't worried about height/overflow issues. */
 }
 
 .dialog h1,

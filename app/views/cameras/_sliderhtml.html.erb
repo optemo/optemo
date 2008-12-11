@@ -11,6 +11,6 @@
 <%= hidden_field_tag "myfilter[#{val}_min]", @search.send("#{val}_min".intern)%>
 <%= hidden_field_tag "myfilter[#{val}_max]", @search.send("#{val}_max".intern)%>
 <div class = 'slider' id='<%= val %>slider'>
-	<div class='handle' id='<%= val %>handle_min'><%= image_tag 'arrow_min.gif' %></div>
-	<div class='handle' id='<%= val %>handle_max'><%= image_tag 'arrow_max.gif' %></div>
+	<div class='handle' id='<%= val %>handle_min'><%= image_tag 'diamond.gif' %></div>
+	<div class='handle' id='<%= val %>handle_max'><%= image_tag 'diamond.gif' %></div>
 </div>
