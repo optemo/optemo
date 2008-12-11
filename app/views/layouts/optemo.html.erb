@@ -37,9 +37,7 @@
 	  <%= image_tag 'logo.jpg', :width  => 300, :class => 'img' %>
 	</div>
 	<!--<div id = "header_options"><span style="float: left;"><a href="/" class="link">Home</a></span><span style="float: right;"><a class="link" href="/about">About Us</a> <a href="/team" class="link">The Team</a></span>&nbsp;</div>-->
-	<div id = "header_options">Sess: <%= params[:user_id] %> <a href="/" class="link">Home</a> <a class="link" href="/about">About Us</a> <a href="/team" class="link">The Team</a></div>
-	
-<p style="color: green"><%= flash[:notice] %></p>
+	<div id = "header_options"><%= flash[:notice] %> Session: <%= session[:user_id] %> <a href="/" class="link">Home</a> <a class="link" href="/about">About Us</a> <a href="/team" class="link">The Team</a></div>
    </div>
 
    <div class="bd">

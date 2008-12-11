@@ -193,6 +193,10 @@ div.pass img{
  position:relative;
 }
 
+.dialog .bd {
+	margin-top: 3px;
+}
+
 .dialog .wrapper {
  /* extra content protector - preventing vertical overflow (past background) */
  position:static;
