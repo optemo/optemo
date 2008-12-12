@@ -119,19 +119,4 @@ class CamerasController < ApplicationController
     redirect_to cameras_url
   end
   
-  def sim
-    #Session Tracking
-    s = Similar.new
-    #Cleanse id to be only numbers
-    params[:id].gsub!(/\D/,'')
-    #Cleanse pos to be one digit
-    params[:pos] = params[:pos].gsub(/[^0-8]/,'')[0,1]
-    s.session_id = session[:user_id]
-    s.camera_id = params[:id]
-    s.save
-    newids = %x["/optemo/site/lib/c_code/connect" "-l 2 #{params[:id]}"]
-    
-    redirect_to "/cameras/list/#{newids.strip.split.insert(params[:pos].to_i,params[:id]).join('/')}"
-  end
-  
 end

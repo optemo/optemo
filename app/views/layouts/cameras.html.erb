@@ -7,7 +7,6 @@
   <title>Cameras: <%= controller.action_name %></title>
   <%= stylesheet_link_tag 'camera' %>
   <link rel="shortcut icon" href="/favicon.ico" >
-  <%= javascript_include_tag 'shadedborder/shadedborder.js' %>
   <%= javascript_include_tag :defaults %>
 
 </head>
@@ -26,14 +25,6 @@
 <div id="fade" onClick="fadein();">&nbsp;</div>
 <div id="info">&nbsp;</div>
 </div>
-<script language="javascript" type="text/javascript">
-    var myBorder = RUZEE.ShadedBorder.create({ corner:8, border:5, shadow: 30});
-	var myBox = RUZEE.ShadedBorder.create({ corner:8, border:5 });
-    myBorder.render('outside');
-    var boxes = document.getElementsByClassName("borderbox");
-	for (var i=0; i < boxes.length; ++i) {
-	      myBox.render(boxes[i]);
-	}
-  </script>
+
 </body>
 </html>
