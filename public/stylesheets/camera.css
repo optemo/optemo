@@ -29,7 +29,7 @@ a.link {
 	margin-left: 10px;
 	margin-right: 10px;}
 div.main {
-	display: relative;
+	position: relative;
 	padding: 0;
 	margin-left: 170px;
 	text-align: center;}

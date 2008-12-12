@@ -7,7 +7,7 @@ namespace :db do
     end
     #Collect new properties
     @prop = DbProperty.new
-    @prop.brands = Camera.find(:all).map{|u| u.brand}.compact!.uniq!.join('*')
+    @prop.brands = Camera.find(:all).map{|u| u.brand}.compact.uniq.join('*')
     @prop.maximumresolution_min = Camera.find(:first, :order => "maximumresolution ASC", :conditions => 'maximumresolution IS NOT NULL').maximumresolution
     @prop.maximumresolution_max = Camera.find(:first, :order => "maximumresolution DESC").maximumresolution
     @prop.displaysize_min = Camera.find(:first, :order => "displaysize ASC", :conditions => 'displaysize IS NOT NULL').displaysize

@@ -1,9 +1,10 @@
 class Camera < ActiveRecord::Base
   has_many :saveds
   has_many :vieweds
-  has_many :similars 
+  has_many :similars
+  has_many :nodes
   named_scope :valid, :conditions => "brand IS NOT NULL AND maximumresolution IS NOT NULL AND opticalzoom IS NOT NULL AND listpriceint IS NOT NULL AND displaysize IS NOT NULL"
-  
+  named_scope :invalid, :conditions => "brand IS NULL OR maximumresolution IS NULL OR opticalzoom IS NULL OR listpriceint IS NULL OR displaysize IS NULL"
   Max = {'MWidth' => 140, 'MHeight' => 100, 'LWidth' => 400, 'LHeight' => 300}
   def imagemw
     @imageW ||= {}
