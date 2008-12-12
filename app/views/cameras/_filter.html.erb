@@ -5,6 +5,8 @@
 <%= render :partial => 'sliderhtml', :locals => {:name => 'Display Size', :val => 'displaysize', :money_formatting => false} %>
 <%= render :partial => 'sliderhtml', :locals => {:name => 'Optical Zoom', :val => 'opticalzoom', :money_formatting => false} %>
 <%= render :partial => 'sliderhtml', :locals => {:name => 'Price', :val => 'price', :money_formatting => true} %>
+<div id="chart"></div>
+<button type='button' onClick='activate();'>JS</button>
 
 <script type="text/javascript" language="javascript">
 		// <![CDATA[

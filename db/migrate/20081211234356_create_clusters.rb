@@ -3,6 +3,7 @@ class CreateClusters < ActiveRecord::Migration
     create_table :clusters do |t|
       t.integer :session_id
       t.text :nodes
+      t.integer :cluser_num
       t.timestamps
     end
   end
