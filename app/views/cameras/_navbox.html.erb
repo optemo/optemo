@@ -8,7 +8,7 @@
 		<%= image_tag @cameras[i].imagemurl, :width => @cameras[i].imagemw, :height => @cameras[i].imagemh, :onClick => "fadeout(#{@cameras[i].id});" %> 	
 	<%end%>
 	<div onClick="fadeout(<%=@cameras[i].id%>);">
-	<p><%= @cameras[i].title[0..90] %></p>
+	<p><%= @cameras[i].title[0..87] %></p>
 	<p><% if !@cameras[i].salepriceint.blank? %>
 		<span style="color: red;"><%= @cameras[i].salepricestr %></span> <span style="text-decoration: line-through;"><%= @cameras[i].listpricestr %></span>
 		<% else %>

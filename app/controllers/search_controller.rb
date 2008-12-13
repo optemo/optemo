@@ -29,7 +29,7 @@ class SearchController < ApplicationController
   
   def call_c(opts = {})
     #Find current search
-    @search = Search.find(session[:user_id]).search
+    @search = Session.find(session[:user_id]).search
     myfilter = @search.attributes
     myfilter.update(opts)
     myparams = myfilter.to_yaml

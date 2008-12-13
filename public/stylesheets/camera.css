@@ -29,7 +29,6 @@ a.link {
 	margin-left: 10px;
 	margin-right: 10px;}
 div.main {
-	position: relative;
 	padding: 0;
 	margin-left: 170px;
 	text-align: center;}
@@ -156,15 +155,15 @@ div #filterbar {
 	background: #ddd;}
 .slider {
 	/*background: url(../images/sliderbgwticks193px.gif) no-repeat;*/
-	margin: 0.3em 0 0.8em;
-	width: 193px;
+	margin: 0 0 0.8em;
+	width: 190px;
 	height: 3px;
 	background-color: black;
 	position: relative;}
 .label {
 	text-align: left;
 	font-size: 0.8em;
-	width: 193px;
+	width: 190px;
 	position: relative;}
 .handle img{
 	float: left;}

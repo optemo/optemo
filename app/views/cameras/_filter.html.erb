@@ -6,6 +6,67 @@
 <%= render :partial => 'sliderhtml', :locals => {:name => 'Optical Zoom', :val => 'opticalzoom', :money_formatting => false} %>
 <%= render :partial => 'sliderhtml', :locals => {:name => 'Price', :val => 'price', :money_formatting => true} %>
 
+<script language="javascript" type="text/javascript">
+/*
+//var circle = paper.rect(0,0,400,200,10),
+//circle.attr("fill", "#f00");
+//circle.matrix(1,1.1,0.1,0,200,50);
+//var R = Raphael("image", 600,600);
+img = paper.image("/images/logosm.png", 0,0,140,140);
+
+setTimeout("Func(img)", 1000);
+setTimeout("Func2(img)", 2000);
+setTimeout("Func3(img)", 3000);
+setTimeout("Func4(img)", 4000);
+function Func(img)
+{
+img.matrix(0.9,0.3,0,0.9,-40,0);
+img.rotate(5);
+}
+function Func2(img)
+{
+img.matrix(0.8,0.5,0,0.8,-40,0);
+img.rotate(10);
+}
+function Func3(img)
+{
+img.matrix(0.7,0.7,0,0.7,-40,0);
+img.rotate(15);
+}
+function Func4(img)
+{
+img.matrix(0.5,0.9,0,0.5,-40,0);
+img.rotate(20);
+}*/
+var histogram = function(data,element,min,max) {
+/*var data = [0.5,0.7,0.1,0,0.3,0.8,0.6,0.4,0.3,0.3]
+%Data is assumed to be 10 normalized elements in an array*/
+var peak = 11,
+trans = 4,
+step = peak + 2*trans
+height = 20,
+length = 193,
+paper = Raphael(element,length,height),
+shapelayer = paper.group(),
+console.log(Raphael.hsb2rgb(.25,1,1));
+console.log(Raphael.hsb2rgb(.50,1,1));
+console.log(Raphael.hsb2rgb(.75,1,1));
+console.log("color "+Math.abs(Math.sin(parseInt(element,36))))
+t = shapelayer.path({fill: Raphael.hsb2rgb(Math.abs(Math.sin(parseInt(element,36))),1,1).hex, opacity: 0.5});
+
+t.moveTo(0,height);
+for (var i = 0; i < data.length; i++)
+{
+t.cplineTo(i*step+trans,height*(1-data[i]),5);
+t.lineTo(i*step+trans+peak,height*(1-data[i]));	
+}
+t.cplineTo((data.length)*step,height,5);
+t.andClose();
+console.log(min+"/"+max);
+shapelayer.rect(0,0,min*length,height).attr({fill: "#dddddd", "stroke-opacity": 0});
+shapelayer.rect(max*length,0,length,height).attr({fill: '#dddddd', "stroke-opacity": 0});
+}
+</script>
 <script type="text/javascript" language="javascript">
 		// <![CDATA[
 
