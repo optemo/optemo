@@ -48,10 +48,6 @@ height = 20,
 length = 193,
 paper = Raphael(element,length,height),
 shapelayer = paper.group(),
-console.log(Raphael.hsb2rgb(.25,1,1));
-console.log(Raphael.hsb2rgb(.50,1,1));
-console.log(Raphael.hsb2rgb(.75,1,1));
-console.log("color "+Math.abs(Math.sin(parseInt(element,36))))
 t = shapelayer.path({fill: Raphael.hsb2rgb(Math.abs(Math.sin(parseInt(element,36))),1,1).hex, opacity: 0.5});
 
 t.moveTo(0,height);
@@ -62,7 +58,6 @@ t.lineTo(i*step+trans+peak,height*(1-data[i]));
 }
 t.cplineTo((data.length)*step,height,5);
 t.andClose();
-console.log(min+"/"+max);
 shapelayer.rect(0,0,min*length,height).attr({fill: "#dddddd", "stroke-opacity": 0});
 shapelayer.rect(max*length,0,length,height).attr({fill: '#dddddd', "stroke-opacity": 0});
 }

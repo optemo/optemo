@@ -86,8 +86,14 @@ p {
 .thin {
 	margin: 0.5em 5em;
 }
-#searchbar {
+#header {
    margin-left: 20px;
+   position: relative;
+}
+#searchbar {
+   position: absolute;
+   left: 330px;
+   top: 55px;
 }
 a.link {
 	margin-left: 10px;
