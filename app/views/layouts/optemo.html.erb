@@ -35,16 +35,25 @@
    <div class="hd">
 	<br>
 	<div id="header">
-	  <%= image_tag 'logo.jpg', :width  => 300, :class => 'img' %>
-	  <div id="searchbar">
+	  <div id="logo">
+	  <%= image_tag 'logo.jpg', :width  => 250, :class => 'img' %>
+	  </div>
+	  <div id="header_buttons">
+	  <a href="/" class="link">Home</a> <a class="link" href="/about">About Us</a> <a href="/team" class="link">The Team</a>
+	  <br><br>
 	  <% form_tag ({:controller => 'search', :action => 'find' }) do %>
 	  
 	  <%= text_field_tag 'search' %>
 	  <%= submit_tag 'Search Cameras' %>
 	  <% end %>
+	  
 	</div>
+	  <div id = "header_space"><%= flash[:notice] %> Session: <%= session[:user_id] %> 
+	
+		<% if @message %><p class="message"><%= @message %></p><% end %>	
+	  </div>
 	</div>
-	<div id = "header_options"><%= flash[:notice] %> Session: <%= session[:user_id] %> <a href="/" class="link">Home</a> <a class="link" href="/about">About Us</a> <a href="/team" class="link">The Team</a></div>
+	  <div id="header_spacer">&nbsp;</div>
    </div>
 
    <div class="bd">

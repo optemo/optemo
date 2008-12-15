@@ -70,9 +70,7 @@ p, ul {
 }
 
 #logo {
-	display: block;
-	margin-left: auto;
-	margin-right: auto;
+	float:left;
 }
 
 p {
@@ -90,20 +88,21 @@ p {
    margin-left: 20px;
    position: relative;
 }
-#searchbar {
-   position: absolute;
-   left: 330px;
-   top: 55px;
+#header_buttons {
+   float: right;
 }
 a.link {
 	margin-left: 10px;
 	margin-right: 10px;
 }
-div #header_options, div #footer_options {
+div #header_spacer, div #footer_options {
 	text-align: right;
-    background-color: #c8c8ff;
+    /*background-color: #c8c8ff;*/
+    background-color: #669933;
 	padding: 0;
 	margin: 0;
+	clear: both;
+	height: 4px;
 }
 div #left {
 	text-align: left;
@@ -200,7 +199,7 @@ div.pass img{
 }
 
 .dialog .bd {
-	margin-top: 3px;
+	margin-top: 4px;
 }
 
 .dialog .wrapper {

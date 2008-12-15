@@ -18,7 +18,6 @@
 	
 </div>
 <div class="main">
-	<% if @message %><p class="message"><%= @message %></p><% end %>
 	<% for i in 0..8 %>
 	<%= i%3 == 0 ? '<div class="rowdiv">' : '' %>
 	<%= render :partial => 'navbox', :locals => {:i => i} %>
