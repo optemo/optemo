@@ -90,19 +90,18 @@ p {
 }
 #header_buttons {
    float: right;
+	width: 268px;
 }
 a.link {
 	margin-left: 10px;
 	margin-right: 10px;
 }
 div #header_spacer, div #footer_options {
-	text-align: right;
     /*background-color: #c8c8ff;*/
-    background-color: #669933;
-	padding: 0;
-	margin: 0;
+    /*background-color: #669933;*/
+    background:transparent url(../images/divider.gif);
 	clear: both;
-	height: 4px;
+	height: 5px;
 }
 div #left {
 	text-align: left;

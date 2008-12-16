@@ -138,6 +138,7 @@ div #savebar {
 	width: 150px;
 	background: #ddd;
 	margin: 0em 1em;
+	padding: 0em 0em 1em;
 	text-align: center;}
 .deleteX {
 	position: absolute;
@@ -150,7 +151,7 @@ div #savebar {
 div #filterbar {
 	float: right;
 	margin: 0em 1em;
-	padding: 1em;
+	padding: 0em 1em 1em;
 	text-align: center;
 	background: #ddd;}
 .slider {

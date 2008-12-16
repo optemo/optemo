@@ -18,7 +18,7 @@ class CamerasController < ApplicationController
     "i1".upto("i9") do |num|
       @cameras << Camera.find(params[num])
     end
-    @message = "Surf's up!"
+    @message = ""
     #Saved Bar variables
     @picked_cameras = @session.saveds.map {|s| s.camera}
     

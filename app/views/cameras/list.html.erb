@@ -10,7 +10,7 @@
 	<%= link_to 'Compare them!', :controller => 'compare' %>
 </div>
 <div id="filterbar">
-	<h2>Optional Filters</h2>
+	<h2>Visual Filters</h2>
 	<% form_tag ({:controller => 'search', :action => 'filter' }) do %>
 	  <%= render :partial => 'filter' %>
 	  <%= submit_tag 'Filter' %>
