@@ -1,5 +1,5 @@
-<h1>Item Comparison</h1>
-
+<center><h1>Item Comparison</h1></center>
+<%= link_to 'Go back to navigation', {:controller => 'cameras'}, {:style => 'position:absolute; top:0;left:0;'}%>
 <%# Descriptions %>
 <div class="cell">
 <div class="first">
@@ -7,8 +7,8 @@
 <h2>Product Features</h2>
 </div>
 <ul>
-	<% for column in Camera.content_columns %>
-	    <li><%= column.human_name %></li>
+	<% Camera::Interesting_features.each do |column| %>
+	    <li><%= column.gsub(/_id$/, '').gsub(/_/,' ').capitalize %></li>
 	<% end %>
 </ul>
 </div>

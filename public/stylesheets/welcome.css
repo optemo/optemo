@@ -43,7 +43,7 @@ ul {
 }
 
 ul li {
- line-height:1.9em;
+ line-height:1.5em;
 }
 
 p {
@@ -99,9 +99,20 @@ a.link {
 div #header_spacer, div #footer_options {
     /*background-color: #c8c8ff;*/
     /*background-color: #669933;*/
-    background:transparent url(../images/divider.gif);
 	clear: both;
 	height: 5px;
+	position: relative;
+	
+}
+div #headerbar {
+	position: absolute;
+	left: -3px;
+	top: 92px;
+	height: 5px;
+	width: 100%;
+	z-index: 5;
+	/*width: 800px;*/
+    background:transparent url(../images/divider.gif);
 }
 div #left {
 	text-align: left;
@@ -135,6 +146,7 @@ div.pass img{
 .dialog {
  position:relative;
  margin:0px auto;
+ width: 1139px;
  min-width:8em;
  max-width:1460px; /* based on image dimensions - not quite consistent with drip styles yet */
  /*color:#fff;*/
@@ -155,7 +167,7 @@ div.pass img{
  position:relative;
  /*zoom:1; removed because Firefox doesn't like it*/
  _overflow-y:hidden;
- padding:0px 18px 0px 0px;
+ padding:0px 8px 0px 0px;
 }
 
 .dialog .t {

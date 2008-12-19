@@ -1,42 +1,16 @@
 /* CSS Document */
-div#fade {
-	background-color: black;
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	z-index: 1;
-	opacity: 0.5;
-	display: none;
-	margin-left: -6px;
-	margin-top: 11px;}
-div#info {
-	background: white;
-	position: absolute;
-	top: 180px;
-	left: 50%;
-	margin-left: -250px;
-	width: 500px;
-	height: 600px;
-	z-index: 3;
-	display: none;}
-div#header_options, div#footer_options {
-    background-color: #c8c8ff;
-	padding: 0;
-	margin: 0;}
 a.link {
 	margin-left: 10px;
 	margin-right: 10px;}
 div.main {
 	padding: 0;
-	margin-left: 170px;
+	margin-left: 155px;
 	text-align: center;}
 div.rowdiv {
 	width: 750px;
 	height: 225px;
 	position: relative;
-	/*display:table-row;*/}
+	}
 a img {
 	border: none;}
 
@@ -137,7 +111,7 @@ div #savebar {
 	float: left;
 	width: 150px;
 	background: #ddd;
-	margin: 0em 1em;
+	margin: 0em 0.1em;
 	padding: 0em 0em 1em;
 	text-align: center;}
 .deleteX {
@@ -150,7 +124,7 @@ div #savebar {
 /* Filter Box */
 div #filterbar {
 	float: right;
-	margin: 0em 1em;
+	margin: 0em 0.3em;
 	padding: 0em 1em 1em;
 	text-align: center;
 	background: #ddd;}

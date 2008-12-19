@@ -52,7 +52,7 @@ class CreateCameras < ActiveRecord::Migration
 
       t.string :imagesurl
       t.integer :imagesheight
-      t.integer :imageswidth 
+      t.integer :imageswidth
       t.string :imagemurl
       t.integer :imagemheight
       t.integer :imagemwidth 

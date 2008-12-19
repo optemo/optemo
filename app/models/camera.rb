@@ -4,6 +4,7 @@ class Camera < ActiveRecord::Base
   has_many :similars
   named_scope :valid, :conditions => "brand IS NOT NULL AND maximumresolution IS NOT NULL AND opticalzoom IS NOT NULL AND listpriceint IS NOT NULL AND displaysize IS NOT NULL"
   named_scope :invalid, :conditions => "brand IS NULL OR maximumresolution IS NULL OR opticalzoom IS NULL OR listpriceint IS NULL OR displaysize IS NULL"
+  Interesting_features = %w(brand digitalzoom displaysize itemheight itemlength itemwidth itemweight label listpricestr maximumresolution maximumfocallength minimumfocallength model opticalzoom packageheight packageweight packagelength packagewidth title upc merchant condition iseligibleforsupersavershipping)
   Max = {'MWidth' => 140, 'MHeight' => 100, 'LWidth' => 400, 'LHeight' => 300}
   def imagemw
     @imageW ||= {}
@@ -50,5 +51,22 @@ class Camera < ActiveRecord::Base
   
   def smlTitle
     [brand,model].join(' ')
+  end
+  
+  def display(attr)
+    data = self.send(attr)
+    if data.nil?
+      return 'Unknown'
+    else
+      ending = case attr
+        when /zoom/: ' X'
+        when /size/: ' in.' 
+        when /(item|package)(width|length|height)/: data = data.to_f/100
+          ' in.'
+        when /focal/: ' mm.'
+        else ''
+      end
+    end
+    data.to_s+ending
   end
 end

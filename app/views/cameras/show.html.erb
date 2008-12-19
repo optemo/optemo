@@ -1,25 +1,61 @@
-<div id="close" onClick="fadein();">Close</div>
-<%= link_to image_tag('close.png', :width => '25', :height => '25'  ), "javascript:fadein();", :id => 'newclose' %>
+<%= link_to image_tag('close.png', :width => '25', :height => '25'  ), "javascript:fadein();", :id => 'close' if @plain%>
+<% if !@plain %><div id="outside"><% end %>
 <div id="container">
 	<p style="margin-right: 20px"><%=h @camera.title %></p>
-	<div align="center"><%= link_to image_tag(@camera.imagelurl, :width => @camera.imagelw, :height => @camera.imagelh), @camera.imagelurl, :popup => true %></div>
+	<div id="image"><%= link_to image_tag(@camera.imagelurl, :width => @camera.imagelw, :height => @camera.imagelh), @camera.imagelurl, :popup => true %></div>
+	<div id="features">
 	<ul>
-		<li><span class"label">Megapixels: </span><%= @camera.maximumresolution %></li>
-		<li><span class"label">Optical Zoom: </span><%= @camera.opticalzoom %> X</li>
-		<li><span class"label">Display Size: </span><%= @camera.displaysize %> in.</li>
+		<% if !@camera.brand.nil? %><li><span class="detail_label">Brand: </span><%= @camera.display 'brand' %></li><% end %>
+		<% if !@camera.model.nil? %><li><span class="detail_label">Model: </span><%= @camera.display 'model' %></li><% end %>
+		<% if !@camera.maximumresolution.nil? %><li><span class="detail_label">Megapixels: </span><%= @camera.display 'maximumresolution' %></li><% end %>
+		<% if !@camera.opticalzoom.nil? %><li><span class="detail_label">Optical Zoom: </span><%= @camera.display 'opticalzoom' %></li><% end %>
+		<% if !@camera.digitalzoom.nil? %><li><span class="detail_label">Digital Zoom: </span><%= @camera.display 'digitalzoom' %></li><% end %>
+		<% if !@camera.displaysize.nil? %><li><span class="detail_label">Display Size: </span><%= @camera.display 'displaysize' %></li><% end %>
+		<% if !@camera.maximumfocallength.nil? %><li><span class="detail_label">Maximum Focal Length: </span><%= @camera.display 'maximumfocallength' %></li><% end %>
+		<% if !@camera.minimumfocallength.nil? %><li><span class="detail_label">Minimum Focal Length: </span><%= @camera.display 'minimumfocallength' %></li><% end %>
+		<% if !@camera.batterydescription.nil? %><li><span class="detail_label">Battery Type: </span><%= @camera.display 'batterydescription' %></li><% end %>
+		<% if !@camera.hasredeyereduction.nil? %><li><span class="detail_label">Red Eye Reduction: </span><%= @camera.display 'hasredeyereduction' %></li><% end %>
+		<%# #The units are all messed up here %>
+		<% if !@camera.itemweight.nil? && false %><li><span class="detail_label">Weight: </span><%= @camera.display 'itemweight' %></li><% end %>
+		<% if !@camera.itemwidth.nil? %><li><span class="detail_label">Item W x L x H: </span><%= @camera.display 'itemwidth' %> x <%= @camera.display 'itemlength' %> x <%= @camera.display 'itemheight' %></li><% end %>
+		<% if !@camera.packagewidth.nil? %><li><span class="detail_label">Package W x L x H: </span><%= @camera.display 'packagewidth' %> x <%= @camera.display 'packagelength' %> x <%= @camera.display 'packageheight' %></li><% end %>
+		<% if !@camera.upc.nil? %><li><span class="detail_label">UPC: </span><%= @camera.display 'upc' %></li><% end %>
+		<li><span class="detail_label">Lowest Price: </span><%= @camera.displaysize %></li>
 	</ul>
+	</div>
+	<% if !@camera.feature.nil? %>
+	<div id="textfeatures">
+		<ul>
+		<li><%= @camera.feature.gsub("\n",'</li><li>') %></li>
+		</ul>
+	</div>
+	<% end %>
+	<div id="reviews">
+		<h3>Reviews</h3>
+		This is where our reviews will go.
+	</div>
 	<div class="showtable">
-	<div class="showcell">
+		<h3>Available at the following Retailers</h3>
+	<div class="left">
 	<% if !@camera.salepriceint.blank? %>
-		<span class"label">List Price: </span><span style="text-decoration: line-through;"><%= @camera.listpricestr %></span><br>
-		<span class"label">Sale Price: </span><span style="color: red;"><%= @camera.salepricestr %></span>
+		<span class="detail_label">List Price: </span><span style="text-decoration: line-through;"><%= @camera.listpricestr %></span><br>
+		<span class="detail_label">Sale Price: </span><span style="color: red;"><%= @camera.salepricestr %></span>
 	<% else %>
-		<span class"label">Price: </span><%= @camera.listpricestr %>
+		<span class="detail_label">Price: </span><%= @camera.listpricestr %>
 	<% end %>
 	</div>
-	<div class="showcell">
+	<div class="right">
 		<%= link_to 'Go to Seller', 'http://amazon.com/o/ASIN/'+@camera.asin, :popup => true %> <iframe src="http://rcm.amazon.com/e/cm?t=optemo-20&o=1&p=41&l=ur1&category=home&banner=0PXNA3R0DT5CZVZA7J02&f=ifr" width="88" height="31" scrolling="no" border="0" marginwidth="0" style="border:none; vertical-align:middle" frameborder="0"></iframe>
 	</div>
 	</div>
 	<%= flash[:notice] %>
-<div>
+	<div id='full_link'>
+	<% if @plain %>
+	<%= link_to 'Open as full page', url_for(@camera)%>
+	<% else %>
+	<%= link_to 'Go back to navigation', :action => 'index'%>
+	<% end %>
+	</div>
+	
+</div>
+<% if !@plain %></div><% end %>

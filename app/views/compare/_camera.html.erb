@@ -3,8 +3,8 @@
 <%= image_tag(camera.imagemurl, :width => camera.imagemw, :height => camera.imagemh) %>
 </div>
 <ul>
-	<% for column in Camera.content_columns %>
-	    <li><%= camera.send(column.name).to_s.gsub(/^$/,'NULL')[0..20]  %></li>
+	<% Camera::Interesting_features.each do |f| %>
+	    <li><%= camera.display(f)[0..20] %></li>
 	  <% end %>
 </ul>
 

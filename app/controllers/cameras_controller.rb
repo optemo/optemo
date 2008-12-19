@@ -2,7 +2,7 @@ class CamerasController < ApplicationController
   #require 'rubygems'
   #require 'config/environment'
   #require 'scrubyt'
-  layout 'optemo', :except => :show
+  layout 'optemo'
   require 'open-uri'
   # GET /cameras
   # GET /cameras.xml
@@ -35,6 +35,7 @@ class CamerasController < ApplicationController
   # GET /cameras/1
   # GET /cameras/1.xml
   def show
+    @plain = params[:plain].nil?? false : true
     #Cleanse id to be only numbers
     params[:id].gsub!(/\D/,'')
     @camera = Camera.find(params[:id])
@@ -44,7 +45,11 @@ class CamerasController < ApplicationController
     s.camera_id = @camera.id
     s.save
     respond_to do |format|
-      format.html 
+      format.html { if @plain
+                      render :layout => false
+                    else
+                      render :http => 'show' 
+                    end }
       format.xml  { render :xml => @camera }
     end
   end
