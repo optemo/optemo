@@ -5,9 +5,7 @@ class SearchController < ApplicationController
     #Remove quotes for strings
     myfilter.each_pair {|key, val| myfilter[key] = val.to_f if key.index('_min') || key.index('_max')}
     myfilter['ids'] = 0
-    newids = call_c(myfilter)
-    
-    redirect_to "/cameras/list/#{newids.join('/')}"
+    search(myfilter)
   end
   
   def sim
@@ -20,14 +18,12 @@ class SearchController < ApplicationController
     s.session_id = session[:user_id]
     s.camera_id = params[:id]
     s.save
-    
-    newids = call_c({"ids" => params[:id]})
-    redirect_to "/cameras/list/#{newids.join('/')}"
+    search({"ids" => params[:id]})
   end
   
   private
   
-  def call_c(opts = {})
+  def search(opts = {})
     #Find current search
     @search = Session.find(session[:user_id]).search
     myfilter = @search.attributes
@@ -37,7 +33,10 @@ class SearchController < ApplicationController
     options = YAML.load(output)
     #parse the new ids
     newids = options.delete('ids')
+    #make chosen a YAML
+    options[:chosen] = options[:chosen].to_yaml
     @search = Session.find(session[:user_id]).search
     @search.update_attributes(options)
+    redirect_to "/cameras/list/#{newids.join('/')}"
   end
 end
