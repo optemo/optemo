@@ -39,6 +39,7 @@
 
 
 int find(int *idA, int value, int size){
+		
 	int ind = -1;
 	for(int i=0; i<size; i++){
 		if (idA[i] == value){
@@ -46,6 +47,7 @@ int find(int *idA, int value, int size){
 			return ind;
 		}
 	}
+	
 	return ind;  
 }
 
