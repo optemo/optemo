@@ -25,15 +25,16 @@ class CamerasController < ApplicationController
       @cameras << Camera.find(params[num])
       #Find the cluster's description
       chosen.each do |c|
-        if c[id] == params[num]
+        if c[:id].to_s == params[num]
           c.delete('id')
           @desc << c.to_a
-        else
-          @desc << nil
+          break
         end
       end
+      #Otherwise fill in a null value
+      @desc << nil
     end
-    @message = ""
+    @message = session[:message]
     #Saved Bar variables
     @picked_cameras = @session.saveds.map {|s| s.camera}
     

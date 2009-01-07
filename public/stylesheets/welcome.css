@@ -71,6 +71,7 @@ p, ul {
 
 #logo {
 	float:left;
+	margin-right: 5px;
 }
 
 p {
@@ -110,7 +111,7 @@ div #headerbar {
 	top: 92px;
 	height: 5px;
 	width: 1134px;
-	z-index: 5;
+	z-index: 2;
 	/*width: 800px;*/
     background:transparent url(../images/divider.gif);
 }

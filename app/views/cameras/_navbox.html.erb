@@ -18,12 +18,13 @@
 	</div>
 	<div class="bottombar">
 		<div class='sim'>
-		    <%= link_to "See more", {:id => @cameras[i], :action => 'sim', :pos => i}, :class => 'sim' %>
+		    <%= link_to "See more", {:id => @cameras[i], :action => 'sim', :controller => 'search', :pos => i}, :class => 'sim' %>
 		</div>
 		<div class="clusterfeatures">
 		<% if !@desc[i].nil? %>
 		<% @desc[i].each do |item| %>
-			<%= link_to "#{item[0]}#{item[1] ? image_tag('up.gif') : image_tag('down.gif')}", {:action => "#{item[0]}"}, {:class => "#{item[1] ? 'up' : 'down'}"}%>
+		    <% next if item[1] == 0 %>
+			<%= link_to "#{item[0]}#{item[1]>0 ? image_tag('up.gif') : image_tag('down.gif')}", {:action => "#{item[0]}"}, {:class => "#{item[1]>0 ? 'up' : 'down'}"}%>
 		<% end %>
 		<% end %>
 		</div>

@@ -4,7 +4,6 @@ class SavedsController < ApplicationController
 
     #Cleanse id to be only numbers
     params[:id].gsub!(/\D/,'')
-    #debugger
     if Saved.find_by_camera_id_and_session_id(params[:id],session[:user_id]).nil?
       @camera = Camera.find(params[:id])
       s = Saved.new
