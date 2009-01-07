@@ -21,9 +21,11 @@
 		    <%= link_to "See more", {:id => @cameras[i], :action => 'sim', :pos => i}, :class => 'sim' %>
 		</div>
 		<div class="clusterfeatures">
-		<%= link_to "Megapixels#{image_tag('up.gif')}", {:action => 'price'}, {:class => 'up'}%>
-		<%= link_to "Price#{image_tag('up.gif')}", {:action => 'price'}, {:class => 'up'}%>
-		<%= link_to "Reviews#{image_tag('down.gif')}", {:action => 'reviews'}, {:class => 'down'} %>
+		<% if !@desc[i].nil? %>
+		<% @desc[i].each do |item| %>
+			<%= link_to "#{item[0]}#{item[1] ? image_tag('up.gif') : image_tag('down.gif')}", {:action => "#{item[0]}"}, {:class => "#{item[1] ? 'up' : 'down'}"}%>
+		<% end %>
+		<% end %>
 		</div>
 	</div>
 </div>

@@ -13,18 +13,31 @@ class CamerasController < ApplicationController
   
   def list
     @session = Session.find(session[:user_id])
+    #Filtering variables
+    @search = @session.search
+    chosen = []
+    chosen = YAML.load(@search.chosen) if @search.chosen
+    @dbprops = DbProperty.find(:first)
     #Navigation Variables
     @cameras = []
+    @desc = []
     "i1".upto("i9") do |num|
       @cameras << Camera.find(params[num])
+      #Find the cluster's description
+      chosen.each do |c|
+        if c[id] == params[num]
+          c.delete('id')
+          @desc << c.to_a
+        else
+          @desc << nil
+        end
+      end
     end
     @message = ""
     #Saved Bar variables
     @picked_cameras = @session.saveds.map {|s| s.camera}
     
-    #Filtering variables
-    @search = @session.search
-    @dbprops = DbProperty.find(:first)
+    
     
     respond_to do |format|
       format.html # index.html.erb
