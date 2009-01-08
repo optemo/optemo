@@ -10,6 +10,11 @@ class SearchController < ApplicationController
     redirect_to "/cameras/list/#{newids.join('/')}"
   end
   
+  def index
+    newids = search({"layer" => 1})
+    redirect_to "/cameras/list/#{newids.join('/')}"
+  end
+  
   def sim
     #Session Tracking
     s = Similar.new
@@ -20,7 +25,7 @@ class SearchController < ApplicationController
     s.session_id = session[:user_id]
     s.camera_id = params[:id]
     s.save
-    newids = search({"ids" => params[:id].to_i, "layer" => 1})
+    newids = search({"ids" => params[:id].to_i, "layer" => 2})
     chosen = YAML.load(Session.find(session[:user_id]).search.chosen)
     session[:message] = ""
     txt = ""
@@ -47,8 +52,8 @@ class SearchController < ApplicationController
     myfilter.update(opts)
     myparams = myfilter.to_yaml
     debugger
-    output = %x["/optemo/site/lib/c_code/connect" "#{myparams}"]
-    options = YAML.load(output)
+    output_x = %x["/optemo/site/lib/c_code/connect" "#{myparams}"]
+    options = YAML.load(output_x)
     #parse the new ids
     newids = options.delete('ids')
     #make chosen a YAML

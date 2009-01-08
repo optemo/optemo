@@ -7,8 +7,9 @@ class CamerasController < ApplicationController
   # GET /cameras
   # GET /cameras.xml
   def index
-    @cameras = Camera.valid.find(:all, :order => 'RAND()', :limit => 9)
-    redirect_to "/cameras/list/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/"
+    #@cameras = Camera.valid.find(:all, :order => 'RAND()', :limit => 9)
+    #redirect_to "/cameras/list/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/"
+    redirect_to :controller => 'search'
   end
   
   def list
