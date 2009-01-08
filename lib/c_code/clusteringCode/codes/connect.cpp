@@ -25,7 +25,7 @@ using namespace std;
 */
 int main(int argc, char** argv) {
 	
-	int row;
+
 	stringstream sql;
 	int size , affected_rows, sized;
 	int clusterN = 9; 
@@ -249,8 +249,7 @@ int main(int argc, char** argv) {
 				}
 				string *brands = new string [sized];
 				int *idA = new int[sized];	
-				idA[0] = -10;
-			    row = 1;
+			
 				size = 0;
 				bool include = true;
 				double listprice = 0.0;
@@ -263,7 +262,7 @@ int main(int argc, char** argv) {
 				
 				while (res->next()) // && res1->next() && res2->next() && res3->next() & res4->next() & res5->next()) {
 				{
-					idA[row] = -10;
+				
 					listprice =  res->getDouble("listpriceint");
 				 if(res->getDouble("salepriceint")!=NULL ) {	
 					
@@ -288,7 +287,7 @@ int main(int argc, char** argv) {
 						    data[size][1] = res->getDouble("displaysize");
 							data[size][2] = res->getDouble("opticalzoom");
 							data[size][3] = res->getDouble("maximumresolution");
-							idA[row] = res->getInt("id"); 
+							idA[size] = res->getInt("id"); 
 							brands[size] = res->getString("brand");
 								
 							for (int f=0; f<conFeatureN; f++){
@@ -296,7 +295,7 @@ int main(int argc, char** argv) {
 					}
 					size++;							
 				}
-				row++;
+			
 			}
 		
 		
@@ -672,7 +671,7 @@ for (int c=0; c<clusterN; c++){
 
 // loadFile(fileName, oldData, oldClusteredData, oldCentersA, oldBrands, oldIdA);
 //for (int j=0; j<size; j++){
-//	cout<<"oldBrand is "<<oldBrands[j]<<endl;
+//	<<"oldBrand is "<<oldBrands[j]<<endl;
 //}
 
  if (inputID > 2200){
@@ -874,7 +873,7 @@ clusterN--;
    		minDist = dist[0][c];
    		medians[c] = clusteredData[c][1];
    			if (clusteredData[c][0] == 0){   /////////////LOSER, FIX IT!!
-			//	cout<<"loser"<<endl;
+			
 				medians[c] = idA[c]; //oldClusteredData[pickedCluster][c];
    			}
 		
@@ -886,16 +885,6 @@ clusterN--;
    		   	}
 	
    		 }
-	
-	/////save to file
-    //
-	//	fileName="tmp/cachedFiles/saveClustered";
-	//	std::ostringstream layerO;
-	//	layerO<<layer;
-	//	fileName.append(layerO.str());
-	//	
-	//	save2File(fileName, data, clusteredData, centersA, brands, idA, clusterSize, conFeatureN, clusterN-1, clusterSize);  //dataN
-
    
 
 
@@ -976,7 +965,7 @@ clusterN--;
 			out.append("\n");
 		}
 		out.append("ids: \n");
-        for(int c=0; c<clusterN-1; c++){
+        for(int c=0; c<clusterN; c++){
 		       out.append("- ");
 	           std::ostringstream oss; 		  
 			   oss<<medians[c];
@@ -984,6 +973,7 @@ clusterN--;
 			   out.append("\n");
 		} 
 		out.append("chosen: \n");
+	
 		for(int c=0; c<clusterN; c++){		  
 		   out.append("- {");
 		   out.append("id: ");
