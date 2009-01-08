@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
 	int varNamesN = 12;
 	int featureN = conFeatureN + catFeatureN + boolFeatureN;    
 	int range = 2;
-    int inputID = 221;
+    int inputID = 8;
 	int layer = 2;
 	int session_id = 1; 
 	double difMin; 
@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
 	string var;
 
 	varNames[0] = "layer";
-	varNames[1] = "ids";
+	varNames[1] = "camid";
 	varNames[2] = "brand";
 	varNames[3] = "price_min";
 	varNames[4] = "price_max";
@@ -123,9 +123,12 @@ int main(int argc, char** argv) {
 		   }
 		   else if(var == "layer"){
 		        	layer = atoi((argu.substr(startit, lengthit)).c_str());
+				//	cout<<"seeing layer"<<endl;
 	    	}
-		   else if(var == "ids"){
+		   else if(var == "camid"){
+			//cout<<"seeing id  is  "<<endl;
 			    	inputID = atoi((argu.substr(startit, lengthit)).c_str());
+				//	cout<<inputID<<endl;
 		    }
 		   else if(var == "price_min"){
 					conFeatureRange[0][0] = atof((argu.substr(startit, lengthit)).c_str()) * 100;
@@ -161,6 +164,7 @@ int main(int argc, char** argv) {
 		   else if (var == "maximumresolution_max"){
 				    conFeatureRange[3][1] = atof((argu.substr(startit, lengthit)).c_str());
 				   	conFilteredFeatures[3] = 1;
+					
 			}
 		   else if (var == "session_id"){
 					session_id = atoi((argu.substr(startit, lengthit)).c_str());
@@ -284,7 +288,7 @@ int main(int argc, char** argv) {
 						    data[size][1] = res->getDouble("displaysize");
 							data[size][2] = res->getDouble("opticalzoom");
 							data[size][3] = res->getDouble("maximumresolution");
-							idA[row] = size; 
+							idA[row] = res->getInt("id"); 
 							brands[size] = res->getString("brand");
 								
 							for (int f=0; f<conFeatureN; f++){
@@ -295,7 +299,8 @@ int main(int argc, char** argv) {
 				row++;
 			}
 		
-				
+		
+		
 		
 //////////////////////		
 	  
@@ -395,7 +400,7 @@ int main(int argc, char** argv) {
    			}	 
     	}
 			
-			
+		
 							////////////////////////////////  Change clusteredData to vector 
   	int **clusteredData = new int* [clusterN];
 
@@ -412,11 +417,17 @@ int main(int argc, char** argv) {
  			ts[j] = 0;
  		}
  		for (int j=0; j<size; j++){
- 		    ts[centersA[j]] = ts[centersA[j]]++;		
- 			clusteredData[centersA[j]][ts[centersA[j]]] = find(idA, j, sized);
+ 		    ts[centersA[j]] = ts[centersA[j]]++;			
+ 			clusteredData[centersA[j]][ts[centersA[j]]] = idA[j];
  			clusteredData[centersA[j]][0]++;
  		}
  		
+
+   //	for (int c=0; c<clusterN; c++){
+   //		for(int j=0; j<size; j++){
+   //			cout<<"clusteredData[c][j] is  "<<clusteredData[c][j]<<endl;
+   //		}
+   //	}   
  	  
          int *medians = new int [clusterN];
  		
@@ -426,7 +437,8 @@ int main(int argc, char** argv) {
  			medians[c] = clusteredData[c][1];
 			if (clusteredData[c][0] == 0){   /////////////LOSER, FIX IT!!
    			medians[c] = clusteredData[c+1][2];
-			cout<<"loser c is "<<c<<endl;
+		//	cout<<"loser c is "<<c<<endl;
+			
 			   			}
  			for(int j=2; j<clusteredData[c][0]; j++){
  				if(minDist > dist[j-1][c]){
@@ -434,6 +446,7 @@ int main(int argc, char** argv) {
  					medians[c] = clusteredData[c][j];
  				}
  			}
+			
  		}
 //Generating the output string 
 
@@ -457,6 +470,7 @@ int main(int argc, char** argv) {
 			out.append("\n");
 		}
 		out.append("ids: \n");
+		
         for(int c=0; c<clusterN; c++){
 		       out.append("- ");
 	           std::ostringstream oss; 		  
@@ -475,17 +489,15 @@ int main(int argc, char** argv) {
 			   
 
 			for (int f=0; f<4; f++){
-				out.append(" ");
+				out.append(", ");
 				out.append(indicatorNames[f]);
 				out.append(": ");
 			    std::ostringstream oss; 
-				oss<<indicators[f][medians[c]];
+				oss<<indicators[f][find(idA, medians[c], size)];
 				out.append(oss.str());
-				if (f<3){
-					out.append(",");
-					} 
+				
 			}
-			out.append("}");
+			out.append("}\n");
 		}
 		
 		
@@ -701,21 +713,25 @@ for (int j=0; j<clusterSize; j++){
 	
 	resClus = stmt->executeQuery(command);
 	if (resClus->next()){
-	//dataBrand = resClus->getString("brand");
+	dataBrand = resClus->getString("brand");
 	
 	saleprice = 0.0;
-	
+
 	if(resClus->getDouble("salepriceint")!=NULL ) {	
     	saleprice = resClus->getDouble("salepriceint");
 	}
+		
 	listprice = resClus->getDouble("listpriceint");
+	
 	price = min(listprice, saleprice);
+//	cout<<"BEFORE"<<endl;
+//	cout<<"brand is  "<<brand<<"and dataBrand is  "<<dataBrand<<endl;
     if(
        (!conFilteredFeatures[0]  || ((price>=(conFilteredFeatures[0]*conFeatureRange[0][0])) && (price<=(conFilteredFeatures[0]*conFeatureRange[0][1])))) &&  
-       (!conFilteredFeatures[1]  ||((res->getDouble(conFeatureNames[1])>=(conFilteredFeatures[1]*conFeatureRange[1][0])) && (res->getDouble(conFeatureNames[1])<=(conFilteredFeatures[1]*conFeatureRange[1][1])))) && 
-	   (!conFilteredFeatures[2]  ||((res->getDouble(conFeatureNames[2])>=(conFilteredFeatures[2]*conFeatureRange[2][0])) && (res->getDouble(conFeatureNames[2])<=(conFilteredFeatures[2]*conFeatureRange[2][1])))) && 
-	   (!conFilteredFeatures[3]  ||((res->getDouble(conFeatureNames[3])>=(conFilteredFeatures[3]*conFeatureRange[3][0])) && (res->getDouble(conFeatureNames[3])<=(conFilteredFeatures[3]*conFeatureRange[3][1])))) &&
-	   (!catFilteredFeatures[0] || brand == dataBrand))
+       (!conFilteredFeatures[1]  ||((resClus->getDouble(conFeatureNames[1])>=(conFilteredFeatures[1]*conFeatureRange[1][0])) && (resClus->getDouble(conFeatureNames[1])<=(conFilteredFeatures[1]*conFeatureRange[1][1])))) && 
+	   (!conFilteredFeatures[2]  ||((resClus->getDouble(conFeatureNames[2])>=(conFilteredFeatures[2]*conFeatureRange[2][0])) && (resClus->getDouble(conFeatureNames[2])<=(conFilteredFeatures[2]*conFeatureRange[2][1])))) && 
+	   (!conFilteredFeatures[3]  ||((resClus->getDouble(conFeatureNames[3])>=(conFilteredFeatures[3]*conFeatureRange[3][0])) && (resClus->getDouble(conFeatureNames[3])<=(conFilteredFeatures[3]*conFeatureRange[3][1])))) &&
+	   ( !catFilteredFeatures[0] || brand == dataBrand ))
 	{	 
 		
 		data[size][0] = price;
@@ -858,7 +874,7 @@ clusterN--;
    		minDist = dist[0][c];
    		medians[c] = clusteredData[c][1];
    			if (clusteredData[c][0] == 0){   /////////////LOSER, FIX IT!!
-				cout<<"loser"<<endl;
+			//	cout<<"loser"<<endl;
 				medians[c] = idA[c]; //oldClusteredData[pickedCluster][c];
    			}
 		
@@ -973,19 +989,18 @@ clusterN--;
 		   out.append("id: ");
 		   std::ostringstream oss2; 		  
 		   oss2<<medians[c];
-		   out.append(oss2.str()); 
+		   out.append(oss2.str());
+		   
 		   for (int f=0; f<4; f++){
-				out.append(" ");
+				out.append(", ");
 				out.append(indicatorNames[f]);
 				out.append(": ");
 				std::ostringstream oss; 
 				oss<<indicators[f][find(idA, medians[c], clusterSize)];
 				out.append(oss.str());
-				if (f<3){
-				out.append(",");
-				} 
+			
 			}
-		   	out.append("}");
+		   	out.append("}\n");
 	    }
 
 //
