@@ -481,7 +481,9 @@ int main(int argc, char** argv) {
 			    std::ostringstream oss; 
 				oss<<indicators[f][medians[c]];
 				out.append(oss.str());
-				out.append(","); 
+				if (f<3){
+					out.append(",");
+					} 
 			}
 			out.append("}");
 		}
@@ -979,7 +981,9 @@ clusterN--;
 				std::ostringstream oss; 
 				oss<<indicators[f][find(idA, medians[c], clusterSize)];
 				out.append(oss.str());
-				out.append(","); 
+				if (f<3){
+				out.append(",");
+				} 
 			}
 		   	out.append("}");
 	    }
