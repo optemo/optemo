@@ -723,17 +723,14 @@ for (int j=0; j<clusterSize; j++){
 		
 	listprice = resClus->getDouble("listpriceint");
 	
-	
-	
-	
 	price = min(listprice, saleprice);
 //	cout<<"BEFORE"<<endl;
 //	cout<<"brand is  "<<brand<<"and dataBrand is  "<<dataBrand<<endl;
     if(
        (!conFilteredFeatures[0]  || ((price>=(conFilteredFeatures[0]*conFeatureRange[0][0])) && (price<=(conFilteredFeatures[0]*conFeatureRange[0][1])))) &&  
-    //   (!conFilteredFeatures[1]  ||((res->getDouble(conFeatureNames[1])>=(conFilteredFeatures[1]*conFeatureRange[1][0])) && (res->getDouble(conFeatureNames[1])<=(conFilteredFeatures[1]*conFeatureRange[1][1])))) && 
-	  //(!conFilteredFeatures[2]  ||((res->getDouble(conFeatureNames[2])>=(conFilteredFeatures[2]*conFeatureRange[2][0])) && (res->getDouble(conFeatureNames[2])<=(conFilteredFeatures[2]*conFeatureRange[2][1])))) && 
-	 //  (!conFilteredFeatures[3]  ||((res->getDouble(conFeatureNames[3])>=(conFilteredFeatures[3]*conFeatureRange[3][0])) && (res->getDouble(conFeatureNames[3])<=(conFilteredFeatures[3]*conFeatureRange[3][1])))) &&
+       (!conFilteredFeatures[1]  ||((resClus->getDouble(conFeatureNames[1])>=(conFilteredFeatures[1]*conFeatureRange[1][0])) && (resClus->getDouble(conFeatureNames[1])<=(conFilteredFeatures[1]*conFeatureRange[1][1])))) && 
+	   (!conFilteredFeatures[2]  ||((resClus->getDouble(conFeatureNames[2])>=(conFilteredFeatures[2]*conFeatureRange[2][0])) && (resClus->getDouble(conFeatureNames[2])<=(conFilteredFeatures[2]*conFeatureRange[2][1])))) && 
+	   (!conFilteredFeatures[3]  ||((resClus->getDouble(conFeatureNames[3])>=(conFilteredFeatures[3]*conFeatureRange[3][0])) && (resClus->getDouble(conFeatureNames[3])<=(conFilteredFeatures[3]*conFeatureRange[3][1])))) &&
 	   ( !catFilteredFeatures[0] || brand == dataBrand ))
 	{	 
 		
