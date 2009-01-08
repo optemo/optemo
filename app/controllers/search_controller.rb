@@ -5,6 +5,7 @@ class SearchController < ApplicationController
     #Remove quotes for strings
     myfilter.each_pair {|key, val| myfilter[key] = val.to_f if key.index('_min') || key.index('_max')}
     myfilter['ids'] = 0
+    myfilter['layer'] = 1
     newids = search(myfilter)
     redirect_to "/cameras/list/#{newids.join('/')}"
   end
@@ -19,7 +20,7 @@ class SearchController < ApplicationController
     s.session_id = session[:user_id]
     s.camera_id = params[:id]
     s.save
-    newids = search({"ids" => params[:id]})
+    newids = search({"ids" => params[:id].to_i, "layer" => 1})
     chosen = YAML.load(Session.find(session[:user_id]).search.chosen)
     session[:message] = ""
     txt = ""
@@ -42,8 +43,10 @@ class SearchController < ApplicationController
     #Find current search
     @search = Session.find(session[:user_id]).search
     myfilter = @search.attributes
+    myfilter.delete('chosen')
     myfilter.update(opts)
     myparams = myfilter.to_yaml
+    debugger
     output = %x["/optemo/site/lib/c_code/connect" "#{myparams}"]
     options = YAML.load(output)
     #parse the new ids
