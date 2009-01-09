@@ -24,16 +24,16 @@ class CamerasController < ApplicationController
     @desc = []
     "i1".upto("i9") do |num|
       @cameras << Camera.find(params[num])
-      #Find the cluster's description
-      chosen.each do |c|
-        if c[:id].to_s == params[num]
-          c.delete('id')
-          @desc << c.to_a
-          break
-        end
+      
+      myc = chosen.find{|c| c[:id].to_s == params[num]}
+      if myc.nil?
+        #Otherwise fill in a null value
+        @desc << nil
+      else
+        #Find the cluster's description
+        myc.delete('id')
+        @desc << myc.to_a
       end
-      #Otherwise fill in a null value
-      @desc << nil
     end
     @message = session[:message]
     #Saved Bar variables
