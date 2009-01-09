@@ -15,8 +15,11 @@ using namespace std;
 
 // Public interface of the MySQL Connector/C++
 #include <cppconn/mysql_public_iface.h>
-// Connection parameter and sample data
-#include "examples.h"
+// Connection parameter and helper functions
+#include "helpers.h"
+
+// kmeans function
+#include "kmeans.h"
 
 using namespace std;
 
@@ -123,12 +126,9 @@ int main(int argc, char** argv) {
 		   }
 		   else if(var == "layer"){
 		        	layer = atoi((argu.substr(startit, lengthit)).c_str());
-				//	cout<<"seeing layer"<<endl;
 	    	}
 		   else if(var == "camid"){
-			//cout<<"seeing id  is  "<<endl;
 			    	inputID = atoi((argu.substr(startit, lengthit)).c_str());
-				//	cout<<inputID<<endl;
 		    }
 		   else if(var == "price_min"){
 					conFeatureRange[0][0] = atof((argu.substr(startit, lengthit)).c_str()) * 100;
@@ -171,11 +171,7 @@ int main(int argc, char** argv) {
 		} 	
 				 
 	    }
-		
-		else{      //if lengthit = 0
-		//	cout<<"Error, you didn't specify a value for "<<var<<endl;
-			}
-		//layer = atoi((argu.substr(startit, lengthit)).c_str());
+
 	}
 
 // Driver Manager
@@ -235,11 +231,8 @@ int main(int argc, char** argv) {
 
 				// Create a test table demonstrating the use of sql::Statement.execute()
 				stmt->execute("USE "  EXAMPLE_DB);
-			//	stmt1->execute("USE "  EXAMPLE_DB);
-			//	stmt2->execute("USE "  EXAMPLE_DB);
-
-				// Fetching again but using type convertion methods
-			//	res = stmt->executeQuery("SELECT listpriceint FROM cameras"); // ORDER BY id DESC");
+		
+		
 			   res = stmt->executeQuery("SELECT * FROM cameras"); 
 			
 	     		sized = res->rowsCount();
@@ -257,10 +250,10 @@ int main(int argc, char** argv) {
 				double price = 0.0;
 		
 				 
-		//cout<<"conFeatureRange[0][0] is "<<conFeatureRange[0][0]<<"  and conFeatureRange[0][1] is  "<<conFeatureRange[0][1];
+		
 	
 				
-				while (res->next()) // && res1->next() && res2->next() && res3->next() & res4->next() & res5->next()) {
+				while (res->next()) 
 				{
 				
 					listprice =  res->getDouble("listpriceint");
@@ -273,7 +266,7 @@ int main(int argc, char** argv) {
 				
 					
 				 if (
-			// (price>0.0 && res1->getDouble("displaysize")!=NULL && res2->getDouble("opticalzoom")!=NULL && res3->getDouble("maximumresolution")!=NULL && res5->getString("brand")!="")&& 
+			
 		     (!conFilteredFeatures[0]  || ((price>=(conFilteredFeatures[0]*conFeatureRange[0][0])) && (price<=(conFilteredFeatures[0]*conFeatureRange[0][1])))) &&  
 			  (!conFilteredFeatures[1]  ||((res->getDouble(conFeatureNames[1])>=(conFilteredFeatures[1]*conFeatureRange[1][0])) && (res->getDouble(conFeatureNames[1])<=(conFilteredFeatures[1]*conFeatureRange[1][1])))) && 
 			  (!conFilteredFeatures[2]  ||((res->getDouble(conFeatureNames[2])>=(conFilteredFeatures[2]*conFeatureRange[2][0])) && (res->getDouble(conFeatureNames[2])<=(conFilteredFeatures[2]*conFeatureRange[2][1])))) && 
@@ -300,8 +293,7 @@ int main(int argc, char** argv) {
 		
 		
 		
-		
-//////////////////////		
+	
 	  
 	   int **indicators = new int* [conFeatureN];
 	   for (int j=0; j<conFeatureN; j++){
@@ -336,7 +328,7 @@ int main(int argc, char** argv) {
 				   conFeatureRange[f][0] = data[j][f];
 			   }
 			}
-		//	cout<< "Min of "<<f<<" is "<< 	conFeatureRange[f][0]<<endl;
+	
 		}	
 				
 		
@@ -422,11 +414,7 @@ int main(int argc, char** argv) {
  		}
  		
 
-   //	for (int c=0; c<clusterN; c++){
-   //		for(int j=0; j<size; j++){
-   //			cout<<"clusteredData[c][j] is  "<<clusteredData[c][j]<<endl;
-   //		}
-   //	}   
+   
  	  
          int *medians = new int [clusterN];
  		
@@ -434,9 +422,9 @@ int main(int argc, char** argv) {
  		for(int c =0; c<clusterN; c++){
  			minDist = dist[0][c];
  			medians[c] = clusteredData[c][1];
-			if (clusteredData[c][0] == 0){   /////////////LOSER, FIX IT!!
+			if (clusteredData[c][0] == 0){   
    			medians[c] = clusteredData[c+1][2];
-		//	cout<<"loser c is "<<c<<endl;
+
 			
 			   			}
  			for(int j=2; j<clusteredData[c][0]; j++){
@@ -583,20 +571,12 @@ else if(layer >1){
 	clusterN = clusterN - layer + 2;
 	
 		try {
-			// Using the Driver to create a connection
 			driver = sql::mysql::get_mysql_driver_instance();
 			con = driver->connect(EXAMPLE_HOST, EXAMPLE_PORT, EXAMPLE_USER, EXAMPLE_PASS);
-			// Creating a "simple" statement - "simple" = not a prepared statement
 			stmt = con->createStatement();
-
-			// Create a test table demonstrating the use of sql::Statement.execute()
 			stmt->execute("USE "  EXAMPLE_DB);
 		    res = stmt->executeQuery("SELECT * FROM cameras");
 
-   //string fileName = "tmp/cachedFiles/saveClustered";	 
-   //std::ostringstream layerS;
-   //layerS<<layer-1;
-   //fileName.append(layerS.str());
 
 int minDist;
   
@@ -609,12 +589,6 @@ command += session_idStream.str();
 resClus = stmt->executeQuery(command);
 
 
-////loading data
-
-// int **oldClusteredData = new int* [clusterN];
-// for (int j=0; j<clusterN; j++){
-// 			oldClusteredData[j] = new int[size];	
-//}
 int* idA;
 int ClusterSize;
 string nodeToken;
@@ -631,13 +605,10 @@ for (int c=0; c<clusterN; c++){
 	
 	nodeString = resClus->getString("nodes");
 	
-	//parse nodeString
 	pos = nodeString.find(" ");
 	nodeToken = nodeString.substr(0, pos);
 	clusterSize = atoi(nodeToken.c_str());
-//	oldClusteredData[c][0] = clusterSize;
 
-//	delete idA;
 	idA = new int [clusterSize];
 	
 	for (int j=0; j<clusterSize; j++){
@@ -646,7 +617,6 @@ for (int c=0; c<clusterN; c++){
 		nodeToken = nodeString.substr(0, pos);
 		id = atoi(nodeToken.c_str());
 		
-//		oldClusteredData[c][j+1] = id;
 		if (!stop){
 			
 			idA[j] = id;
@@ -663,17 +633,6 @@ for (int c=0; c<clusterN; c++){
 }
 
 
-
-
-
-
- //int *oldCentersA = new int[size];
-
-// loadFile(fileName, oldData, oldClusteredData, oldCentersA, oldBrands, oldIdA);
-//for (int j=0; j<size; j++){
-//	<<"oldBrand is "<<oldBrands[j]<<endl;
-//}
-
  if (inputID > 2200){
  	cout<<"THE ID NUMBER IS TOO LARGE"<<endl;
  	return 0;
@@ -683,13 +642,8 @@ for (int c=0; c<clusterN; c++){
  //removing the inputID from the rest of data   
 
 int size = 0;
-
-// oldClusteredData[pickedCluster][find(oldClusteredData[pickedCluster], inputID, oldClusteredData[pickedCluster][0])] = oldClusteredData[pickedCluster][clusterSize];
-// oldClusteredData[pickedCluster][0]--;
-
 idA[find(idA, id, clusterSize)] = idA[clusterSize]; 
-
- clusterSize--;
+clusterSize--;
 
 
 double **data = new double*[clusterSize];
@@ -719,12 +673,8 @@ for (int j=0; j<clusterSize; j++){
 	if(resClus->getDouble("salepriceint")!=NULL ) {	
     	saleprice = resClus->getDouble("salepriceint");
 	}
-		
 	listprice = resClus->getDouble("listpriceint");
-	
 	price = min(listprice, saleprice);
-//	cout<<"BEFORE"<<endl;
-//	cout<<"brand is  "<<brand<<"and dataBrand is  "<<dataBrand<<endl;
     if(
        (!conFilteredFeatures[0]  || ((price>=(conFilteredFeatures[0]*conFeatureRange[0][0])) && (price<=(conFilteredFeatures[0]*conFeatureRange[0][1])))) &&  
        (!conFilteredFeatures[1]  ||((resClus->getDouble(conFeatureNames[1])>=(conFilteredFeatures[1]*conFeatureRange[1][0])) && (resClus->getDouble(conFeatureNames[1])<=(conFilteredFeatures[1]*conFeatureRange[1][1])))) && 
@@ -738,8 +688,7 @@ for (int j=0; j<clusterSize; j++){
 		data[size][2] = resClus->getDouble("opticalzoom");
 		data[size][3] = resClus->getDouble("maximumresolution"); 
 		brands[size] = dataBrand; 
-		
-		
+			
 		for (int j=0; j<conFeatureN; j++){
 					average[j] += data[size][j];
 			}
@@ -864,7 +813,7 @@ clusterN--;
   	for (int j=0; j<size; j++){
   	
   	    ts[centersA[j]] = ts[centersA[j]]++;	
-  		clusteredData[centersA[j]][ts[centersA[j]]] = idA[j];//oldClusteredData[pickedCluster][j+1];
+  		clusteredData[centersA[j]][ts[centersA[j]]] = idA[j];
 		clusteredData[centersA[j]][0]++;
   	}
  
@@ -873,8 +822,7 @@ clusterN--;
    		minDist = dist[0][c];
    		medians[c] = clusteredData[c][1];
    			if (clusteredData[c][0] == 0){   /////////////LOSER, FIX IT!!
-			
-				medians[c] = idA[c]; //oldClusteredData[pickedCluster][c];
+				medians[c] = idA[c]; 
    			}
 		
    	  		for(int j=2; j<clusteredData[c][0]; j++){
@@ -885,11 +833,7 @@ clusterN--;
    		   	}
 	
    		 }
-   
-
-
-		 string nodeString;
-
+		string nodeString;
 		for (int c=0; c<clusterN; c++){
 			ostringstream nodeStream;
 			ostringstream clusterStream;
@@ -993,7 +937,6 @@ clusterN--;
 		   	out.append("}\n");
 	    }
 
-//
 		cout<<out<<endl;
  }
 catch(sql::mysql::MySQL_DbcException *e) {
