@@ -7,6 +7,7 @@ class CamerasController < ApplicationController
   # GET /cameras
   # GET /cameras.xml
   def index
+    reset_session
     #@cameras = Camera.valid.find(:all, :order => 'RAND()', :limit => 9)
     #redirect_to "/cameras/list/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/"
   end
@@ -14,17 +15,21 @@ class CamerasController < ApplicationController
   def list
     @session = Session.find(session[:user_id])
     #Filtering variables
-    @search = @session.search
+    if session[:search_id] && Search.find(session[:search_id]).URL == params[:path_info].join('/')
+      @search = Search.find(session[:search_id])
+    else
+      @search = initialize_search
+    end
     chosen = []
     chosen = YAML.load(@search.chosen) if @search.chosen
     @dbprops = DbProperty.find(:first)
     #Navigation Variables
     @cameras = []
     @desc = []
-    "i1".upto("i9") do |num|
-      @cameras << Camera.find(params[num])
+    params[:path_info].collect do |num|
+      @cameras << Camera.find(num)
       
-      myc = chosen.find{|c| c[:id].to_s == params[num]}
+      myc = chosen.find{|c| c[:id].to_s == num}
       if myc.nil?
         #Otherwise fill in a null value
         @desc << nil
@@ -34,7 +39,6 @@ class CamerasController < ApplicationController
         @desc << myc.to_a
       end
     end
-    @message = session[:message]
     #Saved Bar variables
     @picked_cameras = @session.saveds.map {|s| s.camera}
     

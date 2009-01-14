@@ -50,7 +50,7 @@
 	</div>
 	  <div id = "header_space"><%= flash[:notice] %><!--> Session: <%= session[:user_id] %> -->
 	
-		<% if @message %><p class="message"><%= @message %></p><% end %>	
+		<% if @search && @search.msg %><p class="message"><%= @search.msg %></p><% end %>	
 	  </div>
 	</div>
 	  <div id="header_spacer"></div>

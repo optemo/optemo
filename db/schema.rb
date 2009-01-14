@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090107004851) do
+ActiveRecord::Schema.define(:version => 20090113225723) do
 
   create_table "amazon_groups", :force => true do |t|
     t.datetime "created_at"
@@ -87,13 +87,17 @@ ActiveRecord::Schema.define(:version => 20090107004851) do
   end
 
   create_table "clusters", :force => true do |t|
-    t.integer  "session_id"
-    t.text     "nodes"
-    t.integer  "cluser_num"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "cluster_size"
-    t.integer  "layer"
+    t.integer "parent_id"
+    t.integer "layer"
+    t.integer "cluster_size"
+    t.float   "maximumresolution_max"
+    t.float   "maximumresolution_min"
+    t.float   "displaysize_max"
+    t.float   "displaysize_min"
+    t.float   "opticalzoom_max"
+    t.float   "opticalzoom_min"
+    t.float   "price_max"
+    t.float   "price_min"
   end
 
   create_table "db_properties", :force => true do |t|
@@ -110,6 +114,15 @@ ActiveRecord::Schema.define(:version => 20090107004851) do
     t.datetime "updated_at"
   end
 
+  create_table "nodes", :force => true do |t|
+    t.integer "cluster_id"
+    t.integer "camera_id"
+    t.float   "maximumresolution"
+    t.float   "displaysize"
+    t.float   "opticalzoom"
+    t.float   "price"
+  end
+
   create_table "optemo_development", :force => true do |t|
     t.string "label", :limit => 1
   end
@@ -119,35 +132,59 @@ ActiveRecord::Schema.define(:version => 20090107004851) do
     t.datetime "updated_at"
     t.integer  "session_id"
     t.integer  "camera_id"
+    t.integer  "search_id"
   end
 
   create_table "searches", :force => true do |t|
-    t.string   "brand"
+    t.integer  "i0"
+    t.integer  "i1"
+    t.integer  "i2"
+    t.integer  "i3"
+    t.integer  "i4"
+    t.integer  "i5"
+    t.integer  "i6"
+    t.integer  "i7"
+    t.integer  "i8"
+    t.integer  "c0"
+    t.integer  "c1"
+    t.integer  "c2"
+    t.integer  "c3"
+    t.integer  "c4"
+    t.integer  "c5"
+    t.integer  "c6"
+    t.integer  "c7"
+    t.integer  "c8"
     t.integer  "session_id"
+    t.integer  "parent_id"
+    t.integer  "camera_id"
+    t.string   "brand",                 :default => "All Brands"
     t.float    "maximumresolution_min", :default => 0.0
-    t.float    "maximumresolution_max", :default => 10.0
+    t.float    "maximumresolution_max", :default => 14.7
     t.float    "opticalzoom_min",       :default => 0.0
-    t.float    "opticalzoom_max",       :default => 8.0
+    t.float    "opticalzoom_max",       :default => 20.0
     t.float    "displaysize_min",       :default => 0.0
-    t.float    "displaysize_max",       :default => 7.0
+    t.float    "displaysize_max",       :default => 3.6
     t.float    "price_min",             :default => 0.0
-    t.float    "price_max",             :default => 5000.0
+    t.float    "price_max",             :default => 1815.86
+    t.text     "chosen"
+    t.string   "msg"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.text     "chosen"
   end
 
   create_table "sessions", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "loaded_at"
-  end
-
-  create_table "similars", :force => true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "session_id"
-    t.integer  "camera_id"
+    t.string   "brand",                 :default => "All Brands"
+    t.float    "maximumresolution_min", :default => 0.0
+    t.float    "maximumresolution_max", :default => 14.7
+    t.float    "opticalzoom_min",       :default => 0.0
+    t.float    "opticalzoom_max",       :default => 20.0
+    t.float    "displaysize_min",       :default => 0.0
+    t.float    "displaysize_max",       :default => 3.6
+    t.float    "price_min",             :default => 0.0
+    t.float    "price_max",             :default => 1815.86
   end
 
   create_table "vieweds", :force => true do |t|
@@ -155,6 +192,7 @@ ActiveRecord::Schema.define(:version => 20090107004851) do
     t.datetime "updated_at"
     t.integer  "session_id"
     t.integer  "camera_id"
+    t.integer  "search_id"
   end
 
   create_table "welcomes", :force => true do |t|

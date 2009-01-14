@@ -2,7 +2,7 @@
 <br>
 <br>
 <div class='label'>Brand</div>
-<%= select('myfilter', 'brand', ["All Brands"]+@dbprops.brands.split('*')) %>
+<%= select('myfilter', 'brand', ["All Brands"]+@dbprops.brands.split('*'),{:selected => @session.brand}) %>
 
 <%= render :partial => 'sliderhtml', :locals => {:name => 'Megapixels', :val => 'maximumresolution', :money_formatting => false} %>
 <%= render :partial => 'sliderhtml', :locals => {:name => 'Display Size', :val => 'displaysize', :money_formatting => false} %>

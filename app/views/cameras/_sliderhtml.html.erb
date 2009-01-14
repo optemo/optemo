@@ -2,15 +2,15 @@
 	<%= name %>
 	<div class='disp' id='<%= val %>disp'>
 		<% if money_formatting %>
-		$<%= @search.send("#{val}_min".intern).to_i %>-$<%= @search.send("#{val}_max".intern).to_i %>
+		$<%= @session.send("#{val}_min".intern).to_i %>-$<%= @session.send("#{val}_max".intern).to_i %>
 		<% else %>
-		<%= @search.send("#{val}_min".intern) %>-<%= @search.send("#{val}_max".intern) %>
+		<%= @session.send("#{val}_min".intern) %>-<%= @session.send("#{val}_max".intern) %>
 		<% end %>
 	</div>
 </div>
 <div id="<%= val %>hist"></div>
-<%= hidden_field_tag "myfilter[#{val}_min]", @search.send("#{val}_min".intern)%>
-<%= hidden_field_tag "myfilter[#{val}_max]", @search.send("#{val}_max".intern)%>
+<%= hidden_field_tag "myfilter[#{val}_min]", @session.send("#{val}_min".intern)%>
+<%= hidden_field_tag "myfilter[#{val}_max]", @session.send("#{val}_max".intern)%>
 <div class = 'slider' id='<%= val %>slider'>
 	<div class='handle' id='<%= val %>handle_min'><%= image_tag 'diamond.gif' %></div>
 	<div class='handle' id='<%= val %>handle_max'><%= image_tag 'diamond.gif' %></div>

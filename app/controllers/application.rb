@@ -24,7 +24,6 @@ class ApplicationController < ActionController::Base
   end
   
   def update_user
-    
    if !session[:user_id].blank? && Session.exists?(session[:user_id])
       #Update loaded time
       @mysession = Session.find(session[:user_id])
@@ -41,5 +40,16 @@ class ApplicationController < ActionController::Base
       @mysearch.session = @mysession
       @mysearch.save
     end
+  end
+  
+  def initialize_search(params = {})
+    if session[:search_id]
+      s = Search.new(Search.find(session[:search_id]).attributes.merge(params))
+      s.parent_id = session[:search_id]
+    else
+      s = Search.new(params)
+      s.session_id = session[:user_id]
+    end
+    s
   end
 end

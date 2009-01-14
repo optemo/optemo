@@ -43,8 +43,14 @@ div.borderbox {
 	position: absolute;
 	left: 0;
 	top: 0;}
+.rightbar {
+	width: 45px;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
 .sim {
-	width: 35px;
+	width: 57px;
 	float: left;}
 .save a {
 	background-color: orange;
@@ -73,7 +79,8 @@ div.borderbox {
 .clusterfeatures {
 	float: right;
 	margin-top: 1px;
-	width: 200px;}
+	width: 175px;
+	font-size: 0.95em;}
 	
 /*Easy Nav*/
 .easynav .title {

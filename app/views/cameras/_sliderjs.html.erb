@@ -1,7 +1,7 @@
 var <%= val %>handles = ['<%= val %>handle_min','<%= val %>handle_max'];
 var <%= val %>slider = new Control.Slider(<%= val %>handles, '<%= val %>slider', {
 	range: $R(<%= min %>,<%= max %>),
-	sliderValue: [<%= @search.send("#{val}_min".intern) %>,<%= @search.send("#{val}_max".intern) %>],
+	sliderValue: [<%= @session.send("#{val}_min".intern) %>,<%= @session.send("#{val}_max".intern) %>],
 	restricted: true,
 	onSlide: function(v) {
 		<% if money_formatting %>
@@ -9,17 +9,17 @@ var <%= val %>slider = new Control.Slider(<%= val %>handles, '<%= val %>slider',
 		<% else %>
 			disp(v,'<%= val %>disp','myfilter_<%= val %>_min','myfilter_<%= val %>_max');
 		<% end %>
-		$('<%= val %>hist').innerHTML="";
-		histogram([0.5,0.7,0.1,0,0.3,1,0.6,0.4,0.3,0.3],"<%= val %>hist",v[0] /<%= max %>,v[1] /<%= max %>);
+		//$('<%= val %>hist').innerHTML="";
+		//histogram([0.5,0.7,0.1,0.5,0.3,1,0.6,0.4,0.3,0.3],"<%= val %>hist",v[0] /<%= max %>,v[1] /<%= max %>);
 		},
 	onChange: 	function(v) {
-		<% if money_formatting %>
+		/*<% if money_formatting %>
 			disp_money(v,'<%= val %>disp','myfilter_<%= val %>_min','myfilter_<%= val %>_max');
 		<% else %>
 			disp(v,'<%= val %>disp','myfilter_<%= val %>_min','myfilter_<%= val %>_max');
 		<% end %>
 		$('<%= val %>hist').innerHTML="";
-		histogram([0.5,0.7,0.1,0,0.3,1,0.6,0.4,0.3,0.3],"<%= val %>hist",v[0] /<%= max %>,v[1] /<%= max %>);
+		histogram([0.5,0.7,0.1,0.5,0.3,1,0.6,0.4,0.3,0.3],"<%= val %>hist",v[0] /<%= max %>,v[1] /<%= max %>);*/
 		}
 });
-histogram([0.5,0.7,0.1,0,0.3,1,0.6,0.4,0.3,0.3],"<%= val %>hist",<%= @search.send("#{val}_min".intern) / max %>,<%= @search.send("#{val}_max".intern) / max %>);
+histogram([0.5,0.7,0.1,0.5,0.3,1,0.6,0.4,0.3,0.3],"<%= val %>hist",<%= @search.send("#{val}_min".intern) / max %>,<%= @search.send("#{val}_max".intern) / max %>);
