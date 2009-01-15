@@ -7,6 +7,7 @@ class CreateNodes < ActiveRecord::Migration
       t.float :displaysize
       t.float :opticalzoom
       t.float :price
+      t.string :brand
     end
   end
 

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090113225723) do
+ActiveRecord::Schema.define(:version => 20090107004851) do
 
   create_table "amazon_groups", :force => true do |t|
     t.datetime "created_at"
@@ -112,15 +112,6 @@ ActiveRecord::Schema.define(:version => 20090113225723) do
     t.float    "price_max"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "nodes", :force => true do |t|
-    t.integer "cluster_id"
-    t.integer "camera_id"
-    t.float   "maximumresolution"
-    t.float   "displaysize"
-    t.float   "opticalzoom"
-    t.float   "price"
   end
 
   create_table "optemo_development", :force => true do |t|

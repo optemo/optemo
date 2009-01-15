@@ -4,6 +4,6 @@ class Search < ActiveRecord::Base
   has_many :vieweds
   
   def URL
-    [i0, i1, i2, i3, i4, i5, i6, i7, i8].join('/')
+    [i0, i1, i2, i3, i4, i5, i6, i7, i8].compact.join('/')
   end
 end
