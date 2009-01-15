@@ -33,7 +33,7 @@ indexer
 searchd
 {  
   # What interface the search daemon should listen on and where to store its logs
-  address = 0.0.0.0
+  address = 0.0.0.0, 192.168.5.100
   port = 3313
   seamless_rotate = 1
   log = <%= path %>log/searchd.log
@@ -51,7 +51,7 @@ client
   dictionary_name = ap
   
   # How your application connects to the search daemon (not necessarily the same as above)
-  server_host = localhost
+  server_host = jaguar
   server_port = 3313
 }
 

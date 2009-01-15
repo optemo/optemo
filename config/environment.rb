@@ -66,5 +66,5 @@ Rails::Initializer.run do |config|
   # config.active_record.observers = :cacher, :garbage_collector
   
   #config.gem "scrapi", :version => ">= 1.2.0"
-  config.gem "scrubyt", :version => ">= 0.3.4"
+  #config.gem "scrubyt", :version => ">= 0.3.4"
 end
