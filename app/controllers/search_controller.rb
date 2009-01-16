@@ -43,6 +43,20 @@ class SearchController < ApplicationController
     search(s,{"camid" => params[:id].to_i},params[:pos])
   end
   
+  def find
+    @search = Ultrasphinx::Search.new(:query => params[:search])
+    @search.run
+    @search.results
+    s = initialize_search
+    s.msg = "Search results for: "+params[:search]
+    "i0=".upto("i8=") do |i|
+      s.send i.intern, @search.shift.id unless @search.empty?
+    end
+    s.save
+    session[:search_id] = s.id
+    redirect_to "/cameras/list/"+s.URL
+  end
+  
   private
   
   def search(s, opts = {}, pos = nil)
