@@ -1,5 +1,8 @@
 <%= link_to image_tag('close.png', :width => '25', :height => '25'  ), "javascript:fadein();", :id => 'close' if @plain%>
-<% if !@plain %><div id="outside"><% end %>
+<% if !@plain %><div id="outside">
+	<span style="float: left;"><%= nav_link %></span>
+	
+<% end %>
 <div id="container">
 	<p style="margin-right: 20px"><%=h @camera.title %></p>
 	<div id="image"><%= link_to image_tag(@camera.imagelurl, :width => @camera.imagelw, :height => @camera.imagelh), @camera.imagelurl, :popup => true %></div>
@@ -52,8 +55,6 @@
 	<div id='full_link'>
 	<% if @plain %>
 	<%= link_to 'Open as full page', url_for(@camera)%>
-	<% else %>
-	<%= link_to 'Go back to navigation', :action => 'index'%>
 	<% end %>
 	</div>
 	

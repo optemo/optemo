@@ -12,7 +12,7 @@
 			OZ:<%= @cameras[i].opticalzoom %><br>
 		</div>
 	<%end%>
-	<div onClick="fadeout(<%=@cameras[i].id%>);" style="cursor: pointer;">
+	<a href="/cameras/<%=@cameras[i].id%>" onClick="fadeout(<%=@cameras[i].id%>);return false;">
 	<p><%= @cameras[i].title[0..87] %></p>
 	<p><% if !@cameras[i].salepriceint.blank? %>
 		<span style="color: red;"><%= @cameras[i].salepricestr %></span> <span style="text-decoration: line-through;"><%= @cameras[i].listpricestr %></span>
@@ -20,7 +20,7 @@
 		<%= @cameras[i].listpricestr %>
 		<% end %>
 	</p>
-	</div>
+	</a>
 	<div class="bottombar">
 		<div class='sim'>
 		    <%= link_to 'See more (10)', {:id => @cameras[i], :action => 'sim', :controller => 'search', :pos => i}, :class => 'sim' %>

@@ -38,6 +38,10 @@ div.borderbox {
 	left: 5px;
 	height: 210px;
 	width: 235px;}
+.borderbox a {
+	color: black;
+	text-decoration: none;
+}
 .save {
 	width: 45px;
 	position: absolute;
