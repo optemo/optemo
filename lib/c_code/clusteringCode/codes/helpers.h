@@ -133,9 +133,132 @@ void loadFile(string filename, double **array1, int **array2, int *array3, strin
 	myfile.close();
 	
 }
+void getStatistics(double** data, int** indicators, double* average, int size, int conFeatureN, double** conFeatureRange, double** dataN){
+	
+	   double difMin; 
+	double difMax;
+	
+			
+	   for (int j=0; j<conFeatureN; j++){
+			average[j] = average[j]/size;
+		}
+		
+				
+	  	double tresh;
+	 	double *dif = new double[conFeatureN];
+	
+		for(int f=0; f<conFeatureN; f++){	
+			
+  	          conFeatureRange[f][1] = data[0][f]; 
+              conFeatureRange[f][0] = data[0][f]; 
+        } 
+
+/////
+		for (int f=0; f<conFeatureN; f++){
+	      for(int j = 0; j<size; j++){
+				if(data[j][f] > conFeatureRange[f][1]){
+	                conFeatureRange[f][1] = data[j][f];
+	           }
+		       if (data[j][f] < conFeatureRange[f][0]){
+			   	conFeatureRange[f][0] = data[j][f];
+			   }
+			} }
+		for (int f=0; f<conFeatureN; f++){
+			difMin = average[f] - conFeatureRange[f][0];
+			difMax = conFeatureRange[f][1] - average[f];
+			tresh = min(difMax, difMin) / 2;
+			for (int j=0; j<size; j++){
+				if (data[j][f] > (average[f] + tresh)){    // high 
+			   		indicators[f][j] = 1;
+			    }
+			    else if(data[j][f] < (average[f] - tresh)){ // low
+			   		indicators[f][j] = -1;
+				}  
+				else{  //average
+					indicators[f][j] = 0;
+				}
+			}		
+		}	
+		for (int f=0; f<conFeatureN; f++){
+			dif[f] = conFeatureRange[f][1] - conFeatureRange[f][0];
+		}
+		for (int f=0; f<conFeatureN; f++){
+		   for(int j=0; j<size; j++){
+			if (dif[f] == 0){
+				dataN[j][f] = 0;
+			}
+			else{
+		    	dataN[j][f] = (((data[j][f] - conFeatureRange[f][0])/ dif[f]) * 2 ) - 1;
+		   	}
+	}  }
+  	}
+
+void saveClusteredData(double ** data, int* idA, string* brands, int parent_id, int** clusteredData, int layer, int clusterN, int conFeatureN, sql::Statement *stmt, sql::ResultSet *res2){
+///Saving to DataBase	
+	ostringstream layerStream; 
+	layerStream<<layer;
+    ostringstream parent_idStream;
+	parent_idStream<<parent_id;
+	int cluster_id;
+	for (int c=0; c<clusterN; c++){
+		ostringstream nodeStream;
+		ostringstream cluster_idStream; 
+		
+		ostringstream clusterSizeStream;
+		clusterSizeStream<<clusteredData[c][0];
+		string command = "INSERT INTO clusters (layer, parent_id, cluster_size) values (";
+		command += layerStream.str();
+		command += ", ";
+		command += parent_idStream.str();
+		command += ", ";
+		command += clusterSizeStream.str();
+		command +=");";
+		
+		stmt->execute(command);
+	
 
 
-
+		command = "SELECT last_insert_id();"; // from clusters;"
+		res2 = stmt->executeQuery(command);
+	
+		if (res2->next()){
+			cluster_id = res2->getInt("last_insert_id()");
+		}
+		
+	////// saving in the nodes table
+		for (int j=0; j<clusteredData[c][0]; j++){	  
+			command = "INSERT INTO nodes (cluster_id, camera_id, price, displaysize, opticalzoom, maximumresolution, brand) values(";
+			ostringstream cluster_idStream;
+			cluster_idStream<<cluster_id;
+			command += cluster_idStream.str();
+			command += ", ";
+			ostringstream idStream;
+			idStream<<clusteredData[c][j+1];
+			command +=  idStream.str();	
+			for (int f=0; f<conFeatureN; f++){
+				command +=", ";
+				ostringstream featureStream;
+			//	cout<<"j is "<<j<<" and idA[j] is "<<idA[j]<<"  and data[j][f] is  "<<data[j][f]<<endl;
+				featureStream<<data[j][f];
+				
+				command += featureStream.str();
+			}
+	  
+	        command +=", \"";
+			ostringstream featureStream;
+				
+			featureStream<<brands[j];
+			command += featureStream.str();   
+			command +="\");"; 
+			stmt->execute(command);
+	 }
+	
+	}
+	
+	
+	
+	
+}	
 
 //#endif	/* _EXAMPLES_H */
 

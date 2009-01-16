@@ -21,6 +21,9 @@ using namespace std;
 // kmeans function
 #include "kmeans.h"
 
+//
+#include "hclustering.h"
+
 using namespace std;
 
 /**
@@ -28,10 +31,11 @@ using namespace std;
 */
 int main(int argc, char** argv) {
 	
-
+//void initialize(int arcCount, char** argArray)
+//{
 	stringstream sql;
 	int size , affected_rows, sized;
-	int clusterN = 9; 
+	int clusterN = 18; 
 	int conFeatureN = 4;
 	int catFeatureN = 1;
 	int boolFeatureN = 0;
@@ -39,14 +43,12 @@ int main(int argc, char** argv) {
 	int featureN = conFeatureN + catFeatureN + boolFeatureN;    
 	int range = 2;
     int inputID = 8;
-	int layer = 2;
+	int layer = 1;
 	int session_id = 1; 
-	double difMin; 
-	double difMax;
 	ostringstream session_idStream;
 	ostringstream layerStream;
 	layerStream<<layer;
-	
+
 	string nodeString;
 	
 	char** indicatorNames = new char* [4];
@@ -69,9 +71,7 @@ int main(int argc, char** argv) {
     conFeatureNames[3]="maximumresolution";
     
 	double *average = new double[conFeatureN]; 
-	for (int j=0; j<conFeatureN; j++){
-		average[j] = 0.0;
-	}
+	
 
 
   	bool *conFilteredFeatures = new bool[conFeatureN];   
@@ -173,7 +173,8 @@ int main(int argc, char** argv) {
 	    }
 
 	}
-
+	
+//}
 // Driver Manager
 
    	sql::mysql::MySQL_Driver *driver;
@@ -181,11 +182,11 @@ int main(int argc, char** argv) {
 	// Connection, (simple, not prepared) Statement, Result Set
 	sql::Connection	*con;
 	sql::Statement	*stmt;
-	sql::Statement  *stmt1;
-	sql::Statement  *stmt2;
 	
 	sql::ResultSet	*res;
+	sql::ResultSet	*res2;
     sql::ResultSet	*resClus;
+    sql::ResultSet	*resNodes;
 		string line;
 		string buf; 
 		vector<string> tokens;
@@ -204,7 +205,7 @@ int main(int argc, char** argv) {
        }
 	   else{
 			cout<<"Can't open file "<<myfile<<endl;
-	}
+	   }
 
 	string databaseString = tokens.at(findVec(tokens, "database:") + 1);
 	string usernameString = tokens.at(findVec(tokens, "username:") + 1);
@@ -217,337 +218,42 @@ int main(int argc, char** argv) {
 		#define EXAMPLE_USER usernameString 
 	    #define EXAMPLE_PASS passwordString 
 
-		
-	if (layer == 1){
 
+///////////////////////////////////////////////
+		
 			try {
 				// Using the Driver to create a connection
 				driver = sql::mysql::get_mysql_driver_instance();
 				con = driver->connect(EXAMPLE_HOST, EXAMPLE_PORT, EXAMPLE_USER, EXAMPLE_PASS);
-				// Creating a "simple" statement - "simple" = not a prepared statement
 				stmt = con->createStatement();
-				stmt1 = con->createStatement();
-				stmt2 = con->createStatement();
-
-				// Create a test table demonstrating the use of sql::Statement.execute()
 				stmt->execute("USE "  EXAMPLE_DB);
-		
-		
-			   res = stmt->executeQuery("SELECT * FROM cameras"); 
-			
-	     		sized = res->rowsCount();
-				double **data = new double*[sized];
-		    	for(int j=0; j<sized; j++){
-						data[j] = new double[conFeatureN]; 
-				}
-				string *brands = new string [sized];
-				int *idA = new int[sized];	
-			
-				size = 0;
-				bool include = true;
-				double listprice = 0.0;
-				double saleprice = 0.0;
-				double price = 0.0;
-		
-				 
-		
+			    res = stmt->executeQuery("SELECT * FROM cameras"); 
 	
-				
-				while (res->next()) 
-				{
-				
-					listprice =  res->getDouble("listpriceint");
-				 if(res->getDouble("salepriceint")!=NULL ) {	
-					
-				    saleprice = res->getDouble("salepriceint");
-				}
-						
-				   price = min(listprice, saleprice);
-				
-					
-				 if (
-			
-		     (!conFilteredFeatures[0]  || ((price>=(conFilteredFeatures[0]*conFeatureRange[0][0])) && (price<=(conFilteredFeatures[0]*conFeatureRange[0][1])))) &&  
-			  (!conFilteredFeatures[1]  ||((res->getDouble(conFeatureNames[1])>=(conFilteredFeatures[1]*conFeatureRange[1][0])) && (res->getDouble(conFeatureNames[1])<=(conFilteredFeatures[1]*conFeatureRange[1][1])))) && 
-			  (!conFilteredFeatures[2]  ||((res->getDouble(conFeatureNames[2])>=(conFilteredFeatures[2]*conFeatureRange[2][0])) && (res->getDouble(conFeatureNames[2])<=(conFilteredFeatures[2]*conFeatureRange[2][1])))) && 
-	     	 (!conFilteredFeatures[3]  ||((res->getDouble(conFeatureNames[3])>=(conFilteredFeatures[3]*conFeatureRange[3][0])) && (res->getDouble(conFeatureNames[3])<=(conFilteredFeatures[3]*conFeatureRange[3][1])))) &&
-			 
-			(!catFilteredFeatures[0]  ||((res->getString("brand")==brand))) 
-				)	
-				{              
-			
-							data[size][0] = price;
-						    data[size][1] = res->getDouble("displaysize");
-							data[size][2] = res->getDouble("opticalzoom");
-							data[size][3] = res->getDouble("maximumresolution");
-							idA[size] = res->getInt("id"); 
-							brands[size] = res->getString("brand");
-								
-							for (int f=0; f<conFeatureN; f++){
-							average[f] += data[size][f];
+////{}
+				int maxSize = 10000;
+				while (maxSize>clusterN){
+					cout<<"layer is "<<layer<<endl;
+					for (int j=0; j<conFeatureN; j++){
+						average[j] = 0.0;
 					}
-					size++;							
+					maxSize = hClustering(layer, clusterN,  conFeatureN,  average, conFeatureRange, res, res2,resClus, resNodes, stmt);	
+					cout<<"maxSize is "<<maxSize<<endl;
+					layer++;
 				}
-			
-			}
-		
-		
-		
-	
-	  
-	   int **indicators = new int* [conFeatureN];
-	   for (int j=0; j<conFeatureN; j++){
-			average[j] = average[j]/size;
-			indicators[j] = new int[size];
-		}
-	  
-		double tresh;
-	
-	
-	 	double *dif = new double[conFeatureN];
-	    
-	    double **dataN = new double*[size];
-	    for(int j=0; j<size; j++){
-				dataN[j] = new double[conFeatureN]; 
-		}     
-	
-		
-		for(int f=0; f<conFeatureN; f++){	
-  	          conFeatureRange[f][1] = data[0][f]; 
-              conFeatureRange[f][0] = data[0][f]; 
-        }
- 
-	   
-	
-		for (int f=0; f<conFeatureN; f++){
-	      for(int j = 0; j<size; j++){
-				if(data[j][f] > conFeatureRange[f][1]){
-	                conFeatureRange[f][1] = data[j][f];
-	           }
-		       if (data[j][f] < conFeatureRange[f][0]){
-				   conFeatureRange[f][0] = data[j][f];
-			   }
-			}
-	
-		}	
-				
-		
-		for (int f=0; f<conFeatureN; f++){
-			difMin = average[f] - conFeatureRange[f][0];
-			difMax = conFeatureRange[f][1] - average[f];
-			tresh = min(difMax, difMin) / 2;
-			for (int j=0; j<size; j++){
-				if (data[j][f] > (average[f] + tresh)){    // high 
-			   		indicators[f][j] = 1;
-			    }
-			    else if(data[j][f] < (average[f] - tresh)){ // low
-			   		indicators[f][j] = -1;
-				}  
-				else{  //average
-					indicators[f][j] = 0;
-				}
-			}		
-		}
-	
-		for (int f=0; f<conFeatureN; f++){
-			dif[f] = conFeatureRange[f][1] - conFeatureRange[f][0];
-		}
-	
-		for (int f=0; f<conFeatureN; f++){
-		   for(int j=0; j<size; j++){
-			if (dif[f] == 0){
-				dataN[j][f] = 0;
-			}
-			else{
-		    	dataN[j][f] = (((data[j][f] - conFeatureRange[f][0])/ dif[f]) * 2 ) - 1;
-		   	}
-	}
-	   }
-        
-   //  delete data;
-  
-     double** centroids = new double* [clusterN];
-    	for(int j=0; j<clusterN; j++){
-    		centroids[j]=new double[conFeatureN];
-   	}
-    
-    
-       int *centersA = k_means(dataN,size,conFeatureN, clusterN, 1e-4, centroids); 
-      	
-    
-    		double** dist = new double* [size];
- 
-     		for(int j=0; j<size; j++){
-    			dist[j] = new double[clusterN]; 
-    		}
-  
-			double distan;
-          for (int j=0; j<size; j++){
-    			for (int c=0; c<clusterN; c++){
-    				for (int f=0; f<conFeatureN; f++){
-						distan = dist[j][c] + ((centroids[c][f] - dataN[j][f])*(centroids[c][f] - dataN[j][f]) );	 
-    				    dist[j][c] = distan;	   
-    				}  
-   			}	 
-    	}
-			
-		
-							////////////////////////////////  Change clusteredData to vector 
-  	int **clusteredData = new int* [clusterN];
-
-
- 		for (int j=0; j<clusterN; j++){
- 			clusteredData[j] = new int[size];	
- 		}
-
- 		for (int c=0; c<clusterN; c++){
- 			clusteredData[c][0] = 0;
- 		}	
- 		int *ts = new int[clusterN];
- 		for(int j=0; j<clusterN; j++){
- 			ts[j] = 0;
- 		}
- 		for (int j=0; j<size; j++){
- 		    ts[centersA[j]] = ts[centersA[j]]++;			
- 			clusteredData[centersA[j]][ts[centersA[j]]] = idA[j];
- 			clusteredData[centersA[j]][0]++;
- 		}
- 		
-
-   
- 	  
-         int *medians = new int [clusterN];
- 		
- 		double minDist;
- 		for(int c =0; c<clusterN; c++){
- 			minDist = dist[0][c];
- 			medians[c] = clusteredData[c][1];
-			if (clusteredData[c][0] == 0){   
-   			medians[c] = clusteredData[c+1][2];
-
-			
-			   			}
- 			for(int j=2; j<clusteredData[c][0]; j++){
- 				if(minDist > dist[j-1][c]){
- 					minDist = dist[j-1][c];
- 					medians[c] = clusteredData[c][j];
- 				}
- 			}
-			
- 		}
 //Generating the output string 
 
-		string out = "--- !map:HashWithIndifferentAccess \n";
-		
-		conFeatureRange[0][0] = conFeatureRange[0][0] / 100;
-		conFeatureRange[0][1] = conFeatureRange[0][1] / 100;
-		for (int j=0; j<(conFeatureN*2); j++){
-			out.append(varNames[j+3]);
-			out.append(": ");
-			if ((j%2) == 0){  // j is even for mins
-				std::ostringstream oss;
-				oss<<conFeatureRange[j/2][0];
-		     	out.append(oss.str());
-			}
-			else{
-				std::ostringstream oss;
-				oss<<conFeatureRange[j/2][1];
-		     	out.append(oss.str());
-				}
-			out.append("\n");
-		}
-		out.append("ids: \n");
-		
-        for(int c=0; c<clusterN; c++){
-		       out.append("- ");
-	           std::ostringstream oss; 		  
-			   oss<<medians[c];
-			   out.append(oss.str()); 
-			   out.append("\n");
-		} 
-		///////////////>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		out.append("chosen: \n");
-		for(int c=0; c<clusterN; c++){		  
-			   out.append("- {");
-			   out.append("id: ");
-			   std::ostringstream oss2; 		  
-			   oss2<<medians[c];
-			   out.append(oss2.str()); 
-			   
 
-			for (int f=0; f<4; f++){
-				out.append(", ");
-				out.append(indicatorNames[f]);
-				out.append(": ");
-			    std::ostringstream oss; 
-				oss<<indicators[f][find(idA, medians[c], size)];
-				out.append(oss.str());
-				
-			}
-			out.append("}\n");
-		}
-		
-		
-//
-		cout<<out<<endl;
-
-	
-	session_idStream<<session_id;
-	for (int c=0; c<clusterN; c++){
-		ostringstream nodeStream;
-		ostringstream clusterStream;
-		ostringstream clusterSizeStream;
-		clusterStream<<c;
-		string command = "INSERT INTO clusters (session_id, layer, cluser_num) values (";
-		command += session_idStream.str();
-		command += ", ";
-		command += layerStream.str();
-		command += ", ";
-		command += clusterStream.str();
-		command +=")";
-		stmt->execute(command);
-	
-		for(int j=0; j<clusteredData[c][0]+1; j++){
-			nodeStream<<clusteredData[c][j];
-			nodeStream<<" ";
-		}
-		
-		clusterSizeStream<<clusteredData[c][0];
-		command = "UPDATE clusters set cluster_size=";
-		command += clusterSizeStream.str();
-		command += " WHERE session_id=";
-		command += session_idStream.str();
-		command += " AND cluser_num=";
-		command += clusterStream.str();
-		stmt->execute(command);
-		
-		nodeString = "\"";
-		nodeString += nodeStream.str();
-		nodeString += "\")";
-		command = "UPDATE clusters set nodes=(";
-		command += nodeString;
-		
-		command += " WHERE session_id=";
-		command += session_idStream.str();
-		command += " AND layer=";
-		command += layerStream.str();
-		command += " AND cluser_num=";
-		command += clusterStream.str();
-		
-		stmt->execute(command); 
-	
-	}	
+//////
             
-
 	// Clean up
 
  	delete stmt;
  	delete con;
-    delete data;
-    delete dataN;
- 	delete clusteredData; 
- 	delete medians;
- 	delete dist;
+  //  delete data;
+    
+ 	 
+ //	delete medians;
+ 
 
  	} catch (sql::mysql::MySQL_DbcException *e) {
 
@@ -561,397 +267,6 @@ int main(int argc, char** argv) {
 		return EXIT_FAILURE;
 	}
 
-
-
-}////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-else if(layer >1){
-	
-	clusterN = clusterN - layer + 2;
-	
-		try {
-			driver = sql::mysql::get_mysql_driver_instance();
-			con = driver->connect(EXAMPLE_HOST, EXAMPLE_PORT, EXAMPLE_USER, EXAMPLE_PASS);
-			stmt = con->createStatement();
-			stmt->execute("USE "  EXAMPLE_DB);
-		    res = stmt->executeQuery("SELECT * FROM cameras");
-
-
-int minDist;
-  
- 	int session_id = 1;
-		ostringstream session_idStream;
-		session_idStream<<session_id;
-
-string command = "SELECT * from clusters where session_id=";
-command += session_idStream.str();
-resClus = stmt->executeQuery(command);
-
-
-int* idA;
-int ClusterSize;
-string nodeToken;
-int pos;
-int id;
-int clusterSize;
-int pickedCluster;
-bool stop = false;
-
-
-for (int c=0; c<clusterN; c++){
-  if(resClus->next()){
-	
-	
-	nodeString = resClus->getString("nodes");
-	
-	pos = nodeString.find(" ");
-	nodeToken = nodeString.substr(0, pos);
-	clusterSize = atoi(nodeToken.c_str());
-
-	idA = new int [clusterSize];
-	
-	for (int j=0; j<clusterSize; j++){
-		nodeString = nodeString.substr(pos+1);
-		pos = nodeString.find(" ");
-		nodeToken = nodeString.substr(0, pos);
-		id = atoi(nodeToken.c_str());
-		
-		if (!stop){
-			
-			idA[j] = id;
-		}
-	} 		
-	if (find(idA, id , clusterSize) >-1){
-		
-		stop = true;
-		pickedCluster = c;
-		c = clusterN;
-	}
-	
-}
-}
-
-
- if (inputID > 2200){
- 	cout<<"THE ID NUMBER IS TOO LARGE"<<endl;
- 	return 0;
-  }
-
-
- //removing the inputID from the rest of data   
-
-int size = 0;
-idA[find(idA, id, clusterSize)] = idA[clusterSize]; 
-clusterSize--;
-
-
-double **data = new double*[clusterSize];
- for(int j=0; j<clusterSize; j++){
-	 	data[j] = new double[conFeatureN]; 
-  }	
- 
-string *brands = new string [clusterSize]; 
-int saleprice, price, listprice;
-// filtering the data
-string dataBrand;
-bool include = true;
-
-for (int j=0; j<clusterSize; j++){
-
-	command = "SELECT * from cameras where id=";
-	ostringstream idStream;
-	idStream<<idA[j];
-	command += idStream.str();
-	
-	resClus = stmt->executeQuery(command);
-	if (resClus->next()){
-	dataBrand = resClus->getString("brand");
-	
-	saleprice = 0.0;
-
-	if(resClus->getDouble("salepriceint")!=NULL ) {	
-    	saleprice = resClus->getDouble("salepriceint");
-	}
-	listprice = resClus->getDouble("listpriceint");
-	price = min(listprice, saleprice);
-    if(
-       (!conFilteredFeatures[0]  || ((price>=(conFilteredFeatures[0]*conFeatureRange[0][0])) && (price<=(conFilteredFeatures[0]*conFeatureRange[0][1])))) &&  
-       (!conFilteredFeatures[1]  ||((resClus->getDouble(conFeatureNames[1])>=(conFilteredFeatures[1]*conFeatureRange[1][0])) && (resClus->getDouble(conFeatureNames[1])<=(conFilteredFeatures[1]*conFeatureRange[1][1])))) && 
-	   (!conFilteredFeatures[2]  ||((resClus->getDouble(conFeatureNames[2])>=(conFilteredFeatures[2]*conFeatureRange[2][0])) && (resClus->getDouble(conFeatureNames[2])<=(conFilteredFeatures[2]*conFeatureRange[2][1])))) && 
-	   (!conFilteredFeatures[3]  ||((resClus->getDouble(conFeatureNames[3])>=(conFilteredFeatures[3]*conFeatureRange[3][0])) && (resClus->getDouble(conFeatureNames[3])<=(conFilteredFeatures[3]*conFeatureRange[3][1])))) &&
-	   ( !catFilteredFeatures[0] || brand == dataBrand ))
-	{	 
-		
-		data[size][0] = price;
-		data[size][1] = resClus->getDouble("displaysize");
-		data[size][2] = resClus->getDouble("opticalzoom");
-		data[size][3] = resClus->getDouble("maximumresolution"); 
-		brands[size] = dataBrand; 
-			
-		for (int j=0; j<conFeatureN; j++){
-					average[j] += data[size][j];
-			}
-		size++;	
-	}
-}
-}
-
-int **indicators = new int* [conFeatureN];
-for (int j=0; j<conFeatureN; j++){
-	average[j] = average[j]/size;
-	indicators[j] = new int[size];
-		}
-	  
-double tresh;
-
-
-// normalizing of the data
- 
- double **dataN = new double* [size];
-  	
- for(int j=0; j<size; j++){
-	 	dataN[j] = new double[conFeatureN]; 
-  }     
-  
- for(int f=0; f<conFeatureN; f++){	
-        conFeatureRange[f][1] = data[0][f]; 
-        conFeatureRange[f][0] = data[0][f]; 
-  }
-
-	double *dif = new double[conFeatureN];
-
-
-	for (int f=0; f<conFeatureN; f++){
-       for(int j = 0; j<size; j++){
-			if(data[j][f] > conFeatureRange[f][1]){
-               conFeatureRange[f][1] = data[j][f];
-         }
-	       if (data[j][f] < conFeatureRange[f][0]){
-			   conFeatureRange[f][0] = data[j][f];
-		   }
-		}
-	}	
-	
-	
-	for (int f=0; f<conFeatureN; f++){
-	
-		difMin = average[f] - conFeatureRange[f][0];
-		difMax = conFeatureRange[f][1] - average[f];
-		tresh = min(difMax, difMin) / 2;
-	
-		for (int j=0; j<size; j++){
-			if (data[j][f] > (average[f] + tresh)){    // high 
-		   		indicators[f][j] = 1;
-		    }
-		    else if(data[j][f] < (average[f] - tresh)){ // low
-		   		indicators[f][j] = -1;
-			}  
-			else{  //average
-				indicators[f][j] = 0;
-			}
-		}		
-	}
-
-	for (int f=0; f<conFeatureN; f++){
-		dif[f] = conFeatureRange[f][1] - conFeatureRange[f][0];
-	}
-
-	for (int f=0; f<conFeatureN; f++){
-	   for(int j=0; j<size; j++){
-		if (dif[f] == 0){
-			dataN[j][f] = -1;	
-		}
-	    else{
-		dataN[j][f] = (((data[j][f] - conFeatureRange[f][0])/ dif[f]) * 2 ) -1;
-   	}
-}
- }
-  
-clusterN--;
-
-  double** centroids = new double* [clusterN];
-  for(int j=0; j<clusterN; j++){
-   	centroids[j]=new double[conFeatureN];
-  }
- 
-
-  double** dist = new double* [size];
-  	
-  for(int j=0; j<size; j++){
-  	dist[j] = new double[clusterN]; 
-  }
-  
-
- 
- int *centersA = k_means(dataN,size, conFeatureN, clusterN, 1e-4, centroids); 
-
-
-  for (int j=0; j<size; j++){
- 	for (int c=0; c<clusterN; c++){
-  		for (int f=0; f<conFeatureN; f++){
-  			dist[j][c] = dist[j][c] + ((centroids[c][f] - dataN[j][f])*(centroids[c][f] - dataN[j][f]));	
-      
-  		}  
-  	}	 
-  }
-  
-   	int **clusteredData = new int* [clusterN];
-
-
-  	for (int j=0; j<clusterN; j++){
-  		clusteredData[j] = new int[size];	
-  	}
-
-  	for (int c=0; c<clusterN; c++){
-  		clusteredData[c][0] = 0;
-  	}	
-  	int *ts = new int[clusterN];
-  	for(int j=0; j<clusterN; j++){
-  		ts[j] = 0;
-  	}
-  	for (int j=0; j<size; j++){
-  	
-  	    ts[centersA[j]] = ts[centersA[j]]++;	
-  		clusteredData[centersA[j]][ts[centersA[j]]] = idA[j];
-		clusteredData[centersA[j]][0]++;
-  	}
- 
-   	int *medians = new int [clusterN];
-   	for(int c =0; c<clusterN; c++){
-   		minDist = dist[0][c];
-   		medians[c] = clusteredData[c][1];
-   			if (clusteredData[c][0] == 0){   /////////////LOSER, FIX IT!!
-				medians[c] = idA[c]; 
-   			}
-		
-   	  		for(int j=2; j<clusteredData[c][0]; j++){
-   		 		if(minDist > dist[j-1][c]){
-    					minDist = dist[j-1][c];
-   					medians[c] = clusteredData[c][j];		   
-   		     	}
-   		   	}
-	
-   		 }
-		string nodeString;
-		for (int c=0; c<clusterN; c++){
-			ostringstream nodeStream;
-			ostringstream clusterStream;
-			ostringstream clusterSizeStream;
-			clusterStream<<c;
-			string command = "INSERT INTO clusters (session_id, layer, cluser_num) values (";
-			command += session_idStream.str();
-			command += ", ";
-			command += layerStream.str();
-			command += ", ";
-			command += clusterStream.str();
-			command +=")";
-			stmt->execute(command);
-
-			for(int j=0; j<clusteredData[c][0]+1; j++){
-				nodeStream<<clusteredData[c][j];
-				nodeStream<<" ";
-			}
-
-			clusterSizeStream<<clusteredData[c][0];
-			command = "UPDATE clusters set cluster_size=";
-			command += clusterSizeStream.str();
-			command += " WHERE session_id=";
-			command += session_idStream.str();
-			command += " AND cluser_num=";
-			command += clusterStream.str();
-			stmt->execute(command);
-
-			nodeString = "\"";
-			nodeString += nodeStream.str();
-			nodeString += "\")";
-			command = "UPDATE clusters set nodes=(";
-			command += nodeString;
-
-			command += " WHERE session_id=";
-			command += session_idStream.str();
-			command += " AND layer=";
-			command += layerStream.str();
-			command += " AND cluser_num=";
-			command += clusterStream.str();
-
-			stmt->execute(command); 
-
-		}	
-	 
-		// Clean up
-
-	    delete data;
-	    delete dataN;
-	 	delete clusteredData; 
-	 	delete dist;
-	
-
-	
-
-		string out = "--- !map:HashWithIndifferentAccess \n";
-		
-		conFeatureRange[0][0] = conFeatureRange[0][0] / 100;
-		conFeatureRange[0][1] = conFeatureRange[0][1] / 100;
-		for (int j=0; j<(conFeatureN*2); j++){
-			out.append(varNames[j+3]);
-			out.append(": ");
-			if ((j%2) == 0){  // j is even for mins
-				std::ostringstream oss;
-				oss<<conFeatureRange[j/2][0];
-		     	out.append(oss.str());
-			}
-			else{
-				std::ostringstream oss;
-				oss<<conFeatureRange[j/2][1];
-		     	out.append(oss.str());
-				}
-			out.append("\n");
-		}
-		out.append("ids: \n");
-        for(int c=0; c<clusterN; c++){
-		       out.append("- ");
-	           std::ostringstream oss; 		  
-			   oss<<medians[c];
-			   out.append(oss.str()); 
-			   out.append("\n");
-		} 
-		out.append("chosen: \n");
-	
-		for(int c=0; c<clusterN; c++){		  
-		   out.append("- {");
-		   out.append("id: ");
-		   std::ostringstream oss2; 		  
-		   oss2<<medians[c];
-		   out.append(oss2.str());
-		   
-		   for (int f=0; f<4; f++){
-				out.append(", ");
-				out.append(indicatorNames[f]);
-				out.append(": ");
-				std::ostringstream oss; 
-				oss<<indicators[f][find(idA, medians[c], clusterSize)];
-				out.append(oss.str());
-			
-			}
-		   	out.append("}\n");
-	    }
-
-		cout<<out<<endl;
- }
-catch(sql::mysql::MySQL_DbcException *e) {
-
-		delete e;
-		return EXIT_FAILURE;
-
-	} catch (sql::DbcException *e) {
-		/* Exception is not caused by the MySQL Server */
-
-		delete e;
-		return EXIT_FAILURE;
-	}
-
-}
 
 return 1; //EXIT_SUCCESS;
 }
