@@ -1,6 +1,6 @@
 
 
-int hClustering(int layer, int clusterN, int conFeatureN, double *average, double** conFeatureRange, 
+int hClustering(int layer, int clusterN, int conFeatureN, double *average, double** conFeatureRange, double*** conFeatureRangeC,
 	sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *resClus, sql::ResultSet *resNodes, sql::Statement *stmt){				
 	
 int maxSize = -2;	
@@ -50,6 +50,7 @@ if 	(layer == 1){
 					}
 					size++;							
 				}
+				
 				  dataN = new double*[size];
 			 	   	    for(int j=0; j<size; j++){
 			 	   				dataN[j] = new double[conFeatureN]; 
@@ -60,7 +61,7 @@ if 	(layer == 1){
 			 	   				indicators[j] = new int[size];
 			 	   			}
 
-			 	   		getStatistics(data, indicators, average, size, conFeatureN, conFeatureRange, dataN);  
+			 	   		getStatisticsData(data, indicators, average, size, conFeatureN, conFeatureRange, dataN);  
 
 			// cluster
 			 			int *centersA;
@@ -109,12 +110,17 @@ if 	(layer == 1){
 						 		clusteredData[centersA[j]][0]++;
 						 	}
 
-
+					 //		for (int c=0; c<clusterN; c++){
+					 //   		if (clusteredData[c][0] == 0){
+					 //   			cout<<"cluster : "<<c<<" and layer is  "<<layer<<endl;
+					 //   			}								
+					 //   	}			
 
 
 					   // save it to the database
-			
-				   	   saveClusteredData(data, idA, brands, parent_id,clusteredData, layer, clusterN, conFeatureN, stmt, res2);
+					
+					   getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);		
+				   	   saveClusteredData(data, idA, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, stmt, res2);
 						for (int c=0; c<clusterN; c++){
 								if (clusteredData[c][0]>maxSize){
 									maxSize = clusteredData[c][0];
@@ -198,7 +204,7 @@ if (layer > 1){
  	   		for (int j=0; j<conFeatureN; j++){
  	   				indicators[j] = new int[size];
  	   			}
- 	   		getStatistics(data, indicators, average, size, conFeatureN, conFeatureRange, dataN);  
+ 	   		getStatisticsData(data, indicators, average, size, conFeatureN, conFeatureRange, dataN);  
 		
 // cluster
  			int *centersA;
@@ -210,9 +216,10 @@ if (layer > 1){
  	   	    	centroids[j]=new double[conFeatureN];
  	   		}
      	      
- 	       	centersA = k_means(dataN,size,conFeatureN, clusterN, 1e-4, centroids); 
-  	
-	dist = new double* [size];
+ 	       	centersA = k_means(dataN,size,conFeatureN, clusterN, 1e-10, centroids); 
+	
+	
+	       dist = new double* [size];
 		
 			for(int j=0; j<size; j++){
 		    	dist[j] = new double[clusterN]; 
@@ -248,11 +255,15 @@ if (layer > 1){
 			 	}
 	
 			
-				
-					
+	//			for (int c=0; c<clusterN; c++){
+	//				if (clusteredData[c][0] == 0){
+	//					cout<<"cluster : "<<c<<" and layer is  "<<layer<<endl;
+	//					}								
+	//			}
+	//				
 		   // save it to the database
-
-	   	   saveClusteredData(data, idA, brands, parent_id,clusteredData, layer, clusterN, conFeatureN, stmt, res2);
+		   getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);	
+	   	   saveClusteredData(data, idA, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, stmt, res2);
 	
 		
 			for (int c=0; c<clusterN; c++){
