@@ -34,6 +34,8 @@ div #container {
 }
 div #outside {
 	background-color: #ff9;
+	margin: 0px;
+	padding: 0px;
 }
 #image {
 	text-align: center;
