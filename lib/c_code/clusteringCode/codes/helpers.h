@@ -14,9 +14,6 @@
 //  #define __LINE__ "(line number n/a)"
 //#endif 
 
-
-
-
 int find(int *idA, int value, int size){
 		
 	int ind = -1;
@@ -133,52 +130,53 @@ void loadFile(string filename, double **array1, int **array2, int *array3, strin
 	myfile.close();
 	
 }
-void getStatistics(double** data, int** indicators, double* average, int size, int conFeatureN, double** conFeatureRange, double** dataN){
-	
-	   double difMin; 
-	double difMax;
-	
+void getStatisticsData(double** data, int** indicators, double* average, int size, int conFeatureN, double** conFeatureRange, double** dataN){
+		
 			
 	   for (int j=0; j<conFeatureN; j++){
 			average[j] = average[j]/size;
 		}
 		
 				
-	  	double tresh;
+	  	
 	 	double *dif = new double[conFeatureN];
 	
 		for(int f=0; f<conFeatureN; f++){	
-			
-  	          conFeatureRange[f][1] = data[0][f]; 
-              conFeatureRange[f][0] = data[0][f]; 
-        } 
+  	         conFeatureRange[f][1] = data[0][1]; 
+             conFeatureRange[f][0] = data[0][1]; 
+		}
+        
 
 /////
+	
 		for (int f=0; f<conFeatureN; f++){
-	      for(int j = 0; j<size; j++){
-				if(data[j][f] > conFeatureRange[f][1]){
-	                conFeatureRange[f][1] = data[j][f];
-	           }
-		       if (data[j][f] < conFeatureRange[f][0]){
-			   	conFeatureRange[f][0] = data[j][f];
-			   }
-			} }
-		for (int f=0; f<conFeatureN; f++){
-			difMin = average[f] - conFeatureRange[f][0];
-			difMax = conFeatureRange[f][1] - average[f];
-			tresh = min(difMax, difMin) / 2;
-			for (int j=0; j<size; j++){
-				if (data[j][f] > (average[f] + tresh)){    // high 
-			   		indicators[f][j] = 1;
-			    }
-			    else if(data[j][f] < (average[f] - tresh)){ // low
-			   		indicators[f][j] = -1;
-				}  
-				else{  //average
-					indicators[f][j] = 0;
-				}
-			}		
-		}	
+      		for(int j = 1; j<size; j++){
+					if(data[j][f] > conFeatureRange[f][1]){
+                		conFeatureRange[f][1] = data[j][f];
+	           		}
+		       		if (data[j][f] < conFeatureRange[f][0]){
+			   			conFeatureRange[f][0] = data[j][f];
+		   			}
+			}
+		}
+			
+			
+	//	for (c=0; c<clusterN; c++){
+	//		for (int f=0; f<conFeatureN; f++){
+	//			//	tresh = min(difMax, difMin) / 2;
+	//			for (int j=0; j<size; j++){
+	//			
+	//				if (data[j][f] > (average[f] + tresh)){    // high 
+	//		   		indicators[f][j] = 1;
+	//		    }
+	//		    else if(data[j][f] < (average[f] - tresh)){ // low
+	//		   		indicators[f][j] = -1;
+	//			}  
+	//			else{  //average
+//	//				indicators[f][j] = 0;
+//	//			}
+//	//		}		
+//	//	}	
 		for (int f=0; f<conFeatureN; f++){
 			dif[f] = conFeatureRange[f][1] - conFeatureRange[f][0];
 		}
@@ -193,7 +191,65 @@ void getStatistics(double** data, int** indicators, double* average, int size, i
 	}  }
   	}
 
-void saveClusteredData(double ** data, int* idA, string* brands, int parent_id, int** clusteredData, int layer, int clusterN, int conFeatureN, sql::Statement *stmt, sql::ResultSet *res2){
+
+
+	void getStatisticsClusteredData(double** data, int** clusteredData, int** indicators, double* average, int* idA, int size, int clusterN, int conFeatureN, double*** conFeatureRange){
+
+
+		int ind = 0;
+			
+		for (int j=0; j<conFeatureN; j++){
+			average[j] = average[j]/size;
+		}
+	
+			for (int c=0; c<clusterN; c++){
+				ind = find(idA, clusteredData[c][1], size);
+				for(int f=0; f<conFeatureN; f++){	
+	  	          conFeatureRange[c][f][1] = data[ind][f]; 
+	              conFeatureRange[c][f][0] = data[ind][f]; 
+				}
+	        } 
+
+	/////
+			
+			for (int c=0; c<clusterN; c++){
+				for (int f=0; f<conFeatureN; f++){
+		      		for(int j = 0; j<clusteredData[c][0]; j++){
+			
+						ind = find(idA, clusteredData[c][j+1], size);
+						
+						if(data[ind][f] > conFeatureRange[c][f][1]){
+		                	conFeatureRange[c][f][1] = data[ind][f];
+		           		}
+			       		if (data[ind][f] < conFeatureRange[c][f][0]){
+				   			conFeatureRange[c][f][0] = data[ind][f];
+				   		}
+					}
+				 }
+			}	
+		
+	//		for (c=0; c<clusterN; c++){
+	//			for (int f=0; f<conFeatureN; f++){
+	//				//	tresh = min(difMax, difMin) / 2;
+	//				for (int j=0; j<clusteredData[c][0]; j++){
+	//					ind = idA[clusteredData[c][j];
+	//					if (data[ind][f] > (average[f] + tresh)){    // high 
+	//			   		indicators[f][j] = 1;
+	//			    }
+	//			    else if(data[j][f] < (average[f] - tresh)){ // low
+	//			   		indicators[f][j] = -1;
+	//				}  
+	//				else{  //average
+	//					indicators[f][j] = 0;
+	//				}
+	//			}		
+	//		}	
+			
+		
+	  	}
+
+
+void saveClusteredData(double ** data, int* idA, string* brands, int parent_id, int** clusteredData, double*** conFeatureRange, int layer, int clusterN, int conFeatureN, sql::Statement *stmt, sql::ResultSet *res2){
 ///Saving to DataBase	
 	ostringstream layerStream; 
 	layerStream<<layer;
@@ -206,18 +262,24 @@ void saveClusteredData(double ** data, int* idA, string* brands, int parent_id, 
 		
 		ostringstream clusterSizeStream;
 		clusterSizeStream<<clusteredData[c][0];
-		string command = "INSERT INTO clusters (layer, parent_id, cluster_size) values (";
+		string command = "INSERT INTO clusters (layer, parent_id, cluster_size,price_min, price_max, displaysize_min,displaysize_max,  opticalzoom_min, opticalzoom_max, maximumresolution_min, maximumresolution_max ) values (";
 		command += layerStream.str();
 		command += ", ";
 		command += parent_idStream.str();
 		command += ", ";
 		command += clusterSizeStream.str();
+		for (int f=0; f<conFeatureN; f++){
+			for (int r=0; r<2; r++){
+				command += ", ";
+				ostringstream rangeStream;
+				rangeStream<<conFeatureRange[c][f][r];
+				command += rangeStream.str();
+			}
+		}
 		command +=");";
 		
 		stmt->execute(command);
 	
-
-
 		command = "SELECT last_insert_id();"; // from clusters;"
 		res2 = stmt->executeQuery(command);
 	
