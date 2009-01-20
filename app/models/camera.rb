@@ -55,6 +55,12 @@ class Camera < ActiveRecord::Base
     [brand,model].join(' ')
   end
   
+  def price
+    salepriceint.nil? ? listpriceint : salepriceint
+  end
+  def pricestr
+    salepriceint.nil? ? listpricestr : salepricestr
+  end
   def display(attr)
     data = self.send(attr)
     if data.nil?

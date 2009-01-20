@@ -13,17 +13,20 @@
 		</div>
 	<%end%>
 	<a href="/cameras/<%=@cameras[i].id%>" onClick="fadeout(<%=@cameras[i].id%>);return false;">
-	<p><%= @cameras[i].title[0..87] %></p>
-	<p><% if !@cameras[i].salepriceint.blank? %>
-		<span style="color: red;"><%= @cameras[i].salepricestr %></span> <span style="text-decoration: line-through;"><%= @cameras[i].listpricestr %></span>
-		<% else %>
-		<%= @cameras[i].listpricestr %>
-		<% end %>
+	<p><%= @cameras[i].smlTitle %></p>
+	<p style="font-size: 0.9em">
+		<%= @dbprops.toPhrase('maximumresolution',@cameras[i].maximumresolution,',') %>
+		<%= @dbprops.toPhrase('displaysize',@cameras[i].displaysize,',') %>
+		<%= @dbprops.toPhrase('opticalzoom',@cameras[i].opticalzoom) %>
+	</p>
+	<p><%= @cameras[i].pricestr %>  
+		<%# Randomized Product Reviews %>
+		<%= rand > 0.5 ? (rand > 0.5 ? image_tag('5star.gif') : image_tag ('3star.gif')) : image_tag ('4star.gif') %>
 	</p>
 	</a>
 	<div class="bottombar">
 		<div class='sim'>
-		    <%= link_to 'See more (10)', {:id => @cameras[i], :action => 'sim', :controller => 'search', :pos => i}, :class => 'sim' %>
+		    <%= link_to "See more (#{(rand*20).round+1})", {:id => @cameras[i], :action => 'sim', :controller => 'search', :pos => i}, :class => 'sim' %>
 		</div>
 		<div class="clusterfeatures">
 		<% if !@desc[i].nil? %>
