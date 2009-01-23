@@ -12,7 +12,7 @@
 #include <algorithm>
 using namespace std;
 
-													//return 9 cameras
+
 // Public interface of the MySQL Connector/C++
 #include <cppconn/mysql_public_iface.h>
 
@@ -24,8 +24,8 @@ using namespace std;
 /**
 * Usage example for Driver Manager, Connection, (simple) Statement, ResultSet
 */
-//int main(int argc, char** argv) {
-int main(){	
+int main(int argc, char** argv) {
+	
 //void initialize(int arcCount, char** argArray)
 //{
 	stringstream sql;
@@ -35,7 +35,8 @@ int main(){
 	int boolFeatureN = 0;
 	int varNamesN = 12;
 	int range = 2;
-	int layer = 1;
+    int inputID = 8;
+	int layer = 2;
 	int session_id = 1; 
 	ostringstream session_idStream;
 	ostringstream layerStream;
@@ -53,7 +54,8 @@ int main(){
 	string *catFeatureNames = new string[catFeatureN];
 	string *boolFeatureNames = new string [boolFeatureN];
 	string *conFeatureNames = new string[conFeatureN];
-	double **conFeatureRange = new double* [conFeatureN];
+	double **filteredRange = new double* [conFeatureN];
+	
 	double ***conFeatureRangeC = new double** [clusterN];
 	
 	catFeatureNames[0] = "brand";
@@ -73,9 +75,29 @@ int main(){
 
    	for(int f=0; f<conFeatureN; f++){
 		conFilteredFeatures[f] = 0;
-		conFeatureRange[f] = new double [range];
+		filteredRange[f] = new double [range];
+		
 	}
 
+	//price
+	filteredRange[0][0] = 10000;
+	filteredRange[0][1] = 100000;
+	conFilteredFeatures[0] = 1;
+	
+	//displyasize
+	filteredRange[1][0] = 0.5;
+	filteredRange[1][1] = 4;
+	conFilteredFeatures[1] = 1;
+	
+	//optical zoom
+	filteredRange[2][0] = 1;
+	filteredRange[2][1] = 10;
+	conFilteredFeatures[2] = 1;
+	
+	//maximumresolution
+	filteredRange[3][0] = 4;
+	filteredRange[3][1] = 12;
+ 	conFilteredFeatures[3] = 1;
 	
 	for (int c=0; c<clusterN; c++){
 		conFeatureRangeC[c] = new double* [conFeatureN]; 
@@ -93,7 +115,7 @@ int main(){
 		boolFilteredFeatures[f] = 0;
 	}
 
-	
+	string argu = argv[1];
 	int ind, endit, startit, lengthit;
 	string var;
 
@@ -110,6 +132,67 @@ int main(){
 	varNames[10] = "maximumresolution_max";
 	varNames[11] = "session_id";	
    
+	string brand = "";
+	for (int j=0; j<varNamesN; j++){
+		var = varNames[j];
+		ind = argu.find(var, 0);
+		endit = argu.find("\n", ind);
+		startit = ind + var.length() + 2;
+		lengthit = endit - startit;
+		if(lengthit > 0){
+			if (var=="brand"){
+					brand = (argu.substr(startit, lengthit)).c_str();
+					catFilteredFeatures[0] = 1;
+					if (brand != "All Brands"){
+						catFilteredFeatures[0] = 0;
+					}
+		   }
+		   else if(var == "layer"){
+		        	layer = atoi((argu.substr(startit, lengthit)).c_str());
+	    	}
+		   else if(var == "camid"){
+			    	inputID = atoi((argu.substr(startit, lengthit)).c_str());
+		    }
+		   else if(var == "price_min"){
+				    filteredRange[0][0] = atof((argu.substr(startit, lengthit)).c_str()) * 100;
+		        	conFilteredFeatures[0] = 1;
+	    	}
+		   else if(var == "price_max"){
+			
+	  				filteredRange[0][1] = atof((argu.substr(startit, lengthit)).c_str()) ;	
+					filteredRange[0][1] = filteredRange[0][1]* 100;
+			    	conFilteredFeatures[0] = 1;
+		    }
+		   else if(var == "displaysize_min"){
+				    filteredRange[1][0] = atof((argu.substr(startit, lengthit)).c_str());
+				    conFilteredFeatures[1] = 1;
+		    }
+		   else if(var == "displaysize_max"){
+			    	filteredRange[1][1] = atof((argu.substr(startit, lengthit)).c_str());
+			    	conFilteredFeatures[1] = 1;
+		    }
+		   else if(var == "opticalzoom_min"){
+			    	filteredRange[2][0] = atof((argu.substr(startit, lengthit)).c_str());
+			    	conFilteredFeatures[2] = 1;
+		    }
+		   else if(var == "opticalzoom_max"){
+				    filteredRange[2][1] = atof((argu.substr(startit, lengthit)).c_str());
+				    conFilteredFeatures[2] = 1;
+			}
+		   else if (var == "maximumresolution_min"){
+					filteredRange[3][0] = atof((argu.substr(startit, lengthit)).c_str());
+			   		conFilteredFeatures[3] = 1;
+		    }	
+		   else if (var == "maximumresolution_max"){
+		     	    filteredRange[3][1] = atof((argu.substr(startit, lengthit)).c_str());
+				   	conFilteredFeatures[3] = 1;
+					
+			}
+		   else if (var == "session_id"){
+					session_id = atoi((argu.substr(startit, lengthit)).c_str());
+		    } 		 
+	    }
+	}
 	
 //}
 // Driver Manager
@@ -122,8 +205,8 @@ int main(){
 	
 	sql::ResultSet	*res;
 	sql::ResultSet	*res2;
-    sql::ResultSet	*resClus;
-    sql::ResultSet	*resNodes;
+   // sql::ResultSet	*resClus;
+   // sql::ResultSet	*resNodes;
 		string line;
 		string buf; 
 		vector<string> tokens;
@@ -165,19 +248,22 @@ int main(){
 				stmt = con->createStatement();
 				stmt->execute("USE "  EXAMPLE_DB);
 			    res = stmt->executeQuery("SELECT * FROM cameras"); 
+				int size = res->rowsCount();
 	
 ////{}
-				int maxSize = 10000;
-			while (maxSize>4*clusterN){
-					
-					for (int j=0; j<conFeatureN; j++){
-						average[j] = 0.0;
-					}
-			
-					maxSize = hClustering(layer, clusterN-layer+1,  conFeatureN,  average, conFeatureRange, conFeatureRangeC, res, res2,resClus, resNodes, stmt);	
+
+				int* cameraIDs = new int [size];
 				
-					layer++;
+				int cameraN = filter(filteredRange, brand, layer,stmt, res, res2, cameraIDs, conFilteredFeatures, catFilteredFeatures);
+		
+				cout <<cameraN<<endl;	
+				
+				for (int j=0; j<cameraN; j++){
+					cout<<cameraIDs[j]<<endl;
 				}
+			
+			
+			
 //Generating the output string 
 
 
