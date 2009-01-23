@@ -1,4 +1,7 @@
 
+#include "kmeans.h"
+#include "helpers.h"
+
 
 int hClustering(int layer, int clusterN, int conFeatureN, double *average, double** conFeatureRange, double*** conFeatureRangeC,
 	sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *resClus, sql::ResultSet *resNodes, sql::Statement *stmt){				
@@ -36,15 +39,13 @@ if 	(layer == 1){
 				    saleprice = res->getDouble("salepriceint");
 				}
 						
-				   price = min(listprice, saleprice);
-				
+				   			price = min(listprice, saleprice);
 							data[size][0] = price;
 						    data[size][1] = res->getDouble("displaysize");
 							data[size][2] = res->getDouble("opticalzoom");
 							data[size][3] = res->getDouble("maximumresolution");
 							idA[size] = res->getInt("id"); 
 							brands[size] = res->getString("brand");
-								
 							for (int f=0; f<conFeatureN; f++){
 							average[f] += data[size][f];
 					}
@@ -109,18 +110,13 @@ if 	(layer == 1){
 						 		clusteredData[centersA[j]][ts[centersA[j]]] = idA[j];
 						 		clusteredData[centersA[j]][0]++;
 						 	}
-
-					 //		for (int c=0; c<clusterN; c++){
-					 //   		if (clusteredData[c][0] == 0){
-					 //   			cout<<"cluster : "<<c<<" and layer is  "<<layer<<endl;
-					 //   			}								
-					 //   	}			
+			
 
 
 					   // save it to the database
 					
-					   getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);		
-				   	   saveClusteredData(data, idA, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, stmt, res2);
+				//	   getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);		
+				   	   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, stmt, res2);
 						for (int c=0; c<clusterN; c++){
 								if (clusteredData[c][0]>maxSize){
 									maxSize = clusteredData[c][0];
@@ -133,12 +129,16 @@ if 	(layer == 1){
 				
 			}
 if (layer > 1){
-
+//cout<<"HERE BEG"<<endl;
 	// getting all cluster ids in this layer
 	string command = "SELECT * FROM clusters WHERE layer=";
 	ostringstream layerStream; 
 	layerStream << layer - 1; 
 	command += layerStream.str();
+	command += " AND cluster_size>";
+	ostringstream cluster_sizeStream;
+	cluster_sizeStream<< (clusterN * 4);
+	command += cluster_sizeStream.str();
 	command += ";";
 	resClus = stmt->executeQuery(command); 
 
@@ -171,6 +171,7 @@ if (layer > 1){
 			
 			
 			int s = 0;
+		
 			while(resNodes->next()){
 					
 				data[s][0] = resNodes->getDouble("price");
@@ -192,7 +193,6 @@ if (layer > 1){
 								
 	        }
 	       
-	    
 
 	
        dataN = new double*[size];
@@ -218,8 +218,8 @@ if (layer > 1){
      	      
  	       	centersA = k_means(dataN,size,conFeatureN, clusterN, 1e-10, centroids); 
 	
-	
-	       dist = new double* [size];
+		
+	        dist = new double* [size];
 		
 			for(int j=0; j<size; j++){
 		    	dist[j] = new double[clusterN]; 
@@ -243,7 +243,7 @@ if (layer > 1){
 	   		for (int c=0; c<clusterN; c++){
 			 		clusteredData[c][0] = 0;
 			 	}
-	 		
+	 	
 			int *ts = new int[clusterN];
 			for(int j=0; j<clusterN; j++){
 			 		ts[j] = 0;
@@ -253,7 +253,7 @@ if (layer > 1){
 			 		clusteredData[centersA[j]][ts[centersA[j]]] = idA[j];
 			 		clusteredData[centersA[j]][0]++;
 			 	}
-	
+		
 			
 	//			for (int c=0; c<clusterN; c++){
 	//				if (clusteredData[c][0] == 0){
@@ -262,15 +262,18 @@ if (layer > 1){
 	//			}
 	//				
 		   // save it to the database
-		   getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);	
-	   	   saveClusteredData(data, idA, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, stmt, res2);
-	
+		 //  getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);	
+	   	   //cout<<"THERE"<<endl;
+		   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, stmt, res2);
+
 		
 			for (int c=0; c<clusterN; c++){
 					if (clusteredData[c][0]>maxSize){
 						maxSize = clusteredData[c][0];
 					}
 				}
+				
+					//cout<<"HERE ED"<<endl;
 		delete data;	
 		delete clusteredData;
 		delete dist;
