@@ -2,6 +2,7 @@
 // This file is automatically included by javascript_include_tag :defaults
 function fadeout(id)
 {
+	$('fade').style.height = (getDocHeight())+'px';
 	$('fade').setStyle({display: 'inline'});
 	$('info').setStyle({display: 'inline'});
 	loadinfo(id);
@@ -34,4 +35,14 @@ function remove(id)
 	  method: 'get'
 	});
 	$('c'+id).remove();
+}
+
+/*http://james.padolsey.com/javascript/get-document-height-cross-browser/*/
+function getDocHeight() {
+    var D = document;
+    return Math.max(
+        Math.max(D.body.scrollHeight, D.documentElement.scrollHeight),
+        Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),
+        Math.max(D.body.clientHeight, D.documentElement.clientHeight)
+    );
 }

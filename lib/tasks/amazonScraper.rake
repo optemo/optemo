@@ -29,6 +29,7 @@ task :scrape_amazon => :environment do
     end
     
     #saving the data to mysql, requires the environment line above
+
     flash[:notice] = extractor.to_xml
     product_data_hash = extractor.to_hash
     product_data_hash.each do |item|
