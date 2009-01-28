@@ -40,7 +40,7 @@ class SearchController < ApplicationController
     end
     #Cleanse pos to be one digit
     params[:pos] = params[:pos].gsub(/[^0-8]/,'')[0,1]
-    search(s,{"camid" => params[:id].to_i},params[:pos])
+    search(s,{"cluster_id" => params[:id].to_i},params[:pos])
   end
   
   def find
@@ -68,25 +68,23 @@ class SearchController < ApplicationController
     "i0".upto("i8") {|i| myfilter.delete(i)} 
     "c0".upto("c8") {|i| myfilter.delete(i)} 
     myfilter.delete('parent_id')
-    myfilter.delete('session_id')
+    #myfilter.delete('session_id')
     myfilter.delete('msg')
-    myfilter.delete('camera_id')
-    myfilter[:layer] = 1
     myfilter.update(opts)
     myparams = myfilter.to_yaml
     #debugger
     output = %x["/optemo/site/lib/c_code/connect" "#{myparams}"]
     options = YAML.load(output)
     #parse the new ids
-    newids = options.delete('ids')
+    newcameras = options.delete('cameras')
     newclusters = options.delete('clusters')
     "i0".upto("i8") do |i|
       c = "c#{i[1,1]}"
       if !pos.nil? && i == "i#{pos}"
         options[i.intern] = s.camera_id
       else
-        options[i.intern] = newids.pop
-        #options[i.intern] = newclusters.pop
+        options[i.intern] = newcameras.pop
+        options[c.intern] = newclusters.pop
       end
     end
     #make chosen a YAML

@@ -26,12 +26,12 @@
 	</a>
 	<div class="bottombar">
 		<div class='sim'>
-		    <%= link_to "See more (#{(rand*20).round+1})", {:id => @cameras[i], :action => 'sim', :controller => 'search', :pos => i}, :class => 'sim' %>
+		    <%= link_to "See more (#{@desc[i].count})", {:id => @cameras[i], :action => 'sim', :controller => 'search', :pos => i}, :class => 'sim' unless @desc[i].nil? %>
 		</div>
 		<div class="clusterfeatures">
 		<% if !@desc[i].nil? %>
 		<% @desc[i].each do |item| %>
-		    <% next if item[1] == 0 %>
+		    <% next if item[1] == 0 || item[0] == 'count' %>
 			<%= link_to "#{item[0]}#{item[1]>0 ? image_tag('up.gif') : image_tag('down.gif')}", {:action => "#{item[0]}"}, {:class => "#{item[1]>0 ? 'up' : 'down'}"}%>
 		<% end %>
 		<% end %>

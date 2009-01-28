@@ -67,4 +67,6 @@ Rails::Initializer.run do |config|
   
   #config.gem "scrapi", :version => ">= 1.2.0"
   #config.gem "scrubyt", :version => ">= 0.3.4"
+  
+  Camera_Main_Features = %w(maximumresolution displaysize opticalzoom salepriceint)
 end

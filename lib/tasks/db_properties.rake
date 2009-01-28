@@ -5,26 +5,25 @@ namespace :db do
     DbProperty.find(:all).each do |prop|
       prop.destroy
     end
+    DbFeature.find(:all).each do |f|
+      f.destroy
+    end
     #Collect new properties
     @prop = DbProperty.new
+    @prop.product = 'Camera'
     @prop.brands = Camera.find(:all).map{|u| u.brand}.compact.uniq.join('*')
-    @prop.maximumresolution_min = Camera.find(:first, :order => "maximumresolution ASC", :conditions => 'maximumresolution IS NOT NULL').maximumresolution
-    @prop.maximumresolution_max = Camera.find(:first, :order => "maximumresolution DESC").maximumresolution
-    @prop.maximumresolution_high = Camera.find(:all).map{|c|c.maximumresolution}.sort[Camera.count*0.75]
-    @prop.maximumresolution_low = Camera.find(:all).map{|c|c.maximumresolution}.sort[Camera.count*0.25]
-    @prop.displaysize_min = Camera.find(:first, :order => "displaysize ASC", :conditions => 'displaysize IS NOT NULL').displaysize
-    @prop.displaysize_max = Camera.find(:first, :order => "displaysize DESC").displaysize
-    @prop.displaysize_high = Camera.find(:all).map{|c|c.displaysize}.sort[Camera.count*0.75]
-    @prop.displaysize_low = Camera.find(:all).map{|c|c.displaysize}.sort[Camera.count*0.25]
-    @prop.opticalzoom_min = Camera.find(:first, :order => "opticalzoom ASC", :conditions => 'opticalzoom IS NOT NULL').opticalzoom
-    @prop.opticalzoom_max = Camera.find(:first, :order => "opticalzoom DESC").opticalzoom
-    @prop.opticalzoom_high = Camera.find(:all).map{|c|c.opticalzoom}.sort[Camera.count*0.75]
-    @prop.opticalzoom_low = Camera.find(:all).map{|c|c.opticalzoom}.sort[Camera.count*0.25]
-    @prop.price_min = Camera.find(:first, :order => "listpriceint ASC", :conditions => 'listpriceint IS NOT NULL').listpriceint
-    @prop.price_max = Camera.find(:first, :order => "listpriceint DESC").listpriceint
-    @prop.price_high = Camera.find(:all).map{|c|c.price}.sort[Camera.count*0.75]
-    @prop.price_low = Camera.find(:all).map{|c|c.price}.sort[Camera.count*0.25]
     @prop.save
+    Camera_Main_Features.each {|name|
+      f = DbFeature.new
+      f.db_property = @prop
+      f.name = name
+      f.min = Camera.find(:first, :order => "#{name} ASC", :conditions => "#{name} IS NOT NULL").send(name.intern)
+      f.max = Camera.find(:first, :order => "#{name} DESC").send(name.intern)
+      f.high = Camera.find(:all).map{|c|c.send(name.intern)}.sort[Camera.count*0.75]
+      f.low = Camera.find(:all).map{|c|c.send(name.intern)}.sort[Camera.count*0.25]
+      f.save!
+    }
+    
     #output results
     for column in DbProperty.content_columns
       tmp = @prop.send(column.name)

@@ -7,14 +7,16 @@ class CreateSearches < ActiveRecord::Migration
       t.integer :c0, :c1, :c2, :c3, :c4, :c5, :c6, :c7, :c8
       t.integer :session_id
       t.integer :parent_id
-      t.integer :camera_id
+      t.integer :cluster_id
       t.string :brand, :default => "All Brands"
-      t.float :maximumresolution_min, :default => @props.maximumresolution_min
-      t.float :maximumresolution_max, :default => @props.maximumresolution_max
-      t.float :opticalzoom_min, :default => @props.opticalzoom_min
-      t.float :opticalzoom_max, :default => @props.opticalzoom_max
-      t.float :displaysize_min, :default => @props.displaysize_min
-      t.float :displaysize_max, :default => @props.displaysize_max
+      t.float :f1_min, :default => @props.f1_min
+      t.float :f1_max, :default => @props.f1_max
+      t.float :f2_min, :default => @props.f2_min
+      t.float :f2_max, :default => @props.f2_max
+      t.float :f3_min, :default => @props.f3_min
+      t.float :f3_max, :default => @props.f3_max
+      t.float :f4_min, :default => @props.f4_min
+      t.float :f4_max, :default => @props.f4_max
       t.float :price_min, :default => @props.price_min/100
       t.float :price_max, :default => @props.price_max/100
       t.text :chosen

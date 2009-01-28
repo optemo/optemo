@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090127003513) do
+ActiveRecord::Schema.define(:version => 20090127204735) do
 
   create_table "amazon_groups", :force => true do |t|
     t.datetime "created_at"
@@ -100,24 +100,21 @@ ActiveRecord::Schema.define(:version => 20090127003513) do
     t.float   "price_min"
   end
 
+  create_table "db_features", :force => true do |t|
+    t.integer  "db_property_id"
+    t.string   "name"
+    t.float    "min"
+    t.float    "max"
+    t.float    "high"
+    t.float    "low"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "db_properties", :force => true do |t|
+    t.string   "product"
     t.text     "brands"
-    t.float    "maximumresolution_min"
-    t.float    "maximumresolution_max"
-    t.float    "maximumresolution_high"
-    t.float    "maximumresolution_low"
-    t.float    "displaysize_min"
-    t.float    "displaysize_max"
-    t.float    "displaysize_high"
-    t.float    "displaysize_low"
-    t.float    "opticalzoom_min"
-    t.float    "opticalzoom_max"
-    t.float    "opticalzoom_high"
-    t.float    "opticalzoom_low"
-    t.float    "price_min"
-    t.float    "price_max"
-    t.float    "price_high"
-    t.float    "price_low"
+    t.integer  "feature_count"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -229,7 +226,7 @@ ActiveRecord::Schema.define(:version => 20090127003513) do
     t.integer  "c8"
     t.integer  "session_id"
     t.integer  "parent_id"
-    t.integer  "camera_id"
+    t.integer  "cluster_id"
     t.string   "brand",                 :default => "All Brands"
     t.float    "maximumresolution_min", :default => 0.0
     t.float    "maximumresolution_max", :default => 14.7

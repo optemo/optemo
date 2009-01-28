@@ -134,7 +134,8 @@ end
 desc "Get all the Amazon data for the current Printer ASINs"
 task :get_printer_data_for_ASINs => :environment do
   require 'amazon/ecs'
-  Printer.find(:all).each do |p|
+  #Printer.find(:all, :conditions => "updated_at < #{1.hour.ago.to_s(:db)}").each do |p|
+  Printer.find(:all, :conditions => "updated_at < NOW()").each do |p|
     if !p.asin.blank?
       puts 'Processing' + p.asin
       Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
@@ -185,9 +186,7 @@ task :get_printer_data_for_ASINs => :environment do
       p.upc = atts.get('upc')
       p.warranty = atts.get('warranty')
 
-      #Find lowest new price
-      #res = Amazon::Ecs.item_lookup(asin, :response_group => 'OfferSummary', :condition => 'New', :merchant_id => 'All')
-      #lowprice = res.first_item.get('offersummary/lowestnewprice/amount')
+      #Find the lowest price
       lowestprice = 100000000
       lowmerchant = ''
       current_page = 1
@@ -201,20 +200,18 @@ task :get_printer_data_for_ASINs => :environment do
         end
         offers = [] << offers unless offers.class == Array
         offers.each {|o| 
-          pricestr = o.get('offerlisting/price/amount')
-          if pricestr == 'Too low to display'
+          if o.get('offerlisting/price/formattedprice') == 'Too low to display'
             p.toolow = true
-            current_page += 1
-            next
-          end
-          priceint = pricestr.to_i
-          if priceint < lowestprice
-            lowestprice = priceint
-            lowmerchant = o.get('merchant/merchantid')
+          else
+            price = o.get('offerlisting/price/amount').to_i
+            if price < lowestprice
+              lowestprice = price
+              lowmerchant = o.get('merchant/merchantid')
+            end
           end
         }
-        #offers.reject! {|o| o.nil? || lowprice != o.get('offerlisting/price/amount')}
         current_page += 1
+        sleep(1) #One Req per sec
       end while (current_page <= total_pages)
       
       #Save lowest price
@@ -230,7 +227,7 @@ task :get_printer_data_for_ASINs => :environment do
           p.iseligibleforsupersavershipping = offers.get('offerlisting/iseligibleforsupersavershipping')
         end
       end
-
+      sleep(0.5) #One Req per sec
       #Lookup images
       res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'Images')
       r = res.first_item
@@ -250,21 +247,27 @@ task :get_printer_data_for_ASINs => :environment do
 end
 
 desc "Scraping Amazon Hidden Price"
-task :scrape_hidden_price => :environment do
+task :scrape_hidden_prices => :environment do
   require 'open-uri'
   require 'hpricot'
   #Printer.find(:all, :conditions => 'salepricestr="Too low to display" or salepricestr is null').each {|p|
-  Printer.find_by_toolow('true').each {|p|
+  Printer.find_all_by_toolow(true).each {|p|
   url = "http://www.amazon.com/o/asin/#{p.asin}"
   doc = Hpricot(open(url,{"User-Agent" => "User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_6; en-us) AppleWebKit/525.27.1 (KHTML, like Gecko) Version/3.2.1 Safari/525.27.1"}).read)
   price = (doc/"b[@class='priceLarge']").first
+  puts 'Processing'+p.asin
+  sleep(1+rand()) #Be nice to Amazon
   if !price.nil?
     priceint = price.innerHTML.gsub(/\D/,'').to_i
-    if !p.blank? && priceint < p.salepriceint
-    p.salepricestr = price.innerHTML
-    p.salepriceint = priceint
-    p.merchantid = 'ATVPDKIKX0DER' unless p.merchantid
-    p.save!
+    if !p.blank? 
+      if (p.salepriceint.nil? || priceint < p.salepriceint)
+        p.salepricestr = price.innerHTML
+        p.salepriceint = priceint
+        p.merchantid = 'ATVPDKIKX0DER' unless p.merchantid
+      end
+      p.toolow = false      
+      p.save!
+    end
   end
 }
 #    extractor = Scrubyt::Extractor.define do

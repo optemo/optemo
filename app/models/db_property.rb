@@ -1,4 +1,5 @@
 class DbProperty < ActiveRecord::Base
+  has_many :db_features
   def toPhrase(prop,v,optional="")
     case prop
       when "maximumresolution": res = ['high resolution','low resolution']

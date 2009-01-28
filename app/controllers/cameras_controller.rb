@@ -26,16 +26,17 @@ class CamerasController < ApplicationController
     #Navigation Variables
     @cameras = []
     @desc = []
+    counter = 0
     params[:path_info].collect do |num|
       @cameras << Camera.find(num)
-      
-      myc = chosen.find{|c| c[:id].to_s == num}
+      if num == @search.send(('i'+counter).intern)
+      myc = chosen.find{|c| c[:cluster_id].to_s == @search.send('c'+counter.intern)}
       if myc.nil?
         #Otherwise fill in a null value
         @desc << nil
       else
         #Find the cluster's description
-        myc.delete('id')
+        myc.delete('cluster_id')
         @desc << myc.to_a
       end
     end
