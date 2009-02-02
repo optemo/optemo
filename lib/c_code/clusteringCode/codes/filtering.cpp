@@ -214,6 +214,7 @@ int main(int argc, char** argv) {
 				clusterID = 56033;
 				
 ////{}		
+				
 				int repW = 9;
 
 			   int cameraN = filter(filteredRange, brand,stmt, res, res2, cameraIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN);
@@ -226,29 +227,32 @@ int main(int argc, char** argv) {
 				
 				int* reps = new int[repW];
 				int* clusterReps = new int[repW];
-				bool reped = getRep(reps, clusterReps, cameraIDs, clusterIDs, cameraN, conFeatureN, acceptedCN, repW, stmt, res);
-				
+				bool reped = getRep(reps, clusterReps, cameraIDs, clusterIDs, cameraN, conFeatureN, acceptedCN, repW, stmt, res);	
 				if (!reped){
 					cout<<"Not enough cameras to return "<<repW<<" cameraIDs!"<<endl;
 				}
-	
-	             
-			    int ** indicators = new int*[repW];
+	    		int ** indicators = new int*[conFeatureN];
 				double** data = new double* [cameraN];
 				double** conFeatureRange = new double* [conFeatureN];
-				for (int f=0; f<2; f++){
+				for (int f=0; f<conFeatureN; f++){
 					conFeatureRange[f] = new double [2];
 				}
 				for(int j=0; j<cameraN; j++){
 					data[j] = new double [conFeatureN];
 				}
+				
+				for (int f=0; f<conFeatureN; f++){
+					indicators[f] = new int[cameraN];
+				}
+				
 				//void getIndicators2(int accpetedCN, int * clusteIDs, sql::Statement *stmt, sql::ResultSet res,int** indicators, double** data)
 				getIndicators2(cameraN, cameraIDs, stmt, res, indicators, data);	
-				
+			
 				//void getRange(double** data, int size, int conFeatureN, double** conFeatureRange){
 					
-				
+					
 				getRange(data, cameraN, conFeatureN, conFeatureRange); 
+
 		
 //Generating the output string 
 
@@ -289,7 +293,7 @@ int main(int argc, char** argv) {
 			        for(int c=0; c<repW; c++){
 					       out.append("- ");
 				           std::ostringstream oss; 		  
-						   oss<<repClusters[c];
+						   oss<<clusterReps[c];
 						   out.append(oss.str()); 
 						   out.append("\n");
 					} 
@@ -300,7 +304,7 @@ int main(int argc, char** argv) {
 					   out.append("- {");
 					   out.append("cluster_id: ");
 					   std::ostringstream oss2; 		  
-					   oss2<<repClusters[c];
+					   oss2<<clusterReps[c];
 					   out.append(oss2.str());
 					  
 
