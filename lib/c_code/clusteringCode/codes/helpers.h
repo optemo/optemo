@@ -27,6 +27,25 @@ int find(int *idA, int value, int size){
 	return ind;  
 }
 
+
+int find2(int *idA, int value, int size, int order){
+		
+	int ind = -1;
+	int o = 0;
+	for(int i=0; i<size; i++){
+		if (idA[i] == value){
+			o++;
+			if (o = order){
+				ind = i;
+				return ind;
+			}
+		}
+	}
+	
+	return ind;  
+}
+
+
 int findVec(vector<string> tokens, string value)
 {
 	int ind = -1;
@@ -130,6 +149,31 @@ void loadFile(string filename, double **array1, int **array2, int *array3, strin
 	myfile.close();
 	
 }
+
+void getRange(double** data, int size, int conFeatureN, double** conFeatureRange){
+		
+	 	double *dif = new double[conFeatureN];
+		for(int f=0; f<conFeatureN; f++){	
+  	         conFeatureRange[f][1] = data[0][1]; 
+             conFeatureRange[f][0] = data[0][1]; 
+		}
+        
+
+/////
+	
+		for (int f=0; f<conFeatureN; f++){
+      		for(int j = 1; j<size; j++){
+					if(data[j][f] > conFeatureRange[f][1]){
+                		conFeatureRange[f][1] = data[j][f];
+	           		}
+		       		if (data[j][f] < conFeatureRange[f][0]){
+			   			conFeatureRange[f][0] = data[j][f];
+		   			}
+			}
+		}
+}
+
+
 void getStatisticsData(double** data, int** indicators, double* average, int size, int conFeatureN, double** conFeatureRange, double** dataN){
 		
 			
@@ -203,9 +247,7 @@ void getStatisticsData(double** data, int** indicators, double* average, int siz
 		}
 	
 			for (int c=0; c<clusterN; c++){
-				cout<<"c is "<<c<< "clusteredData[c][0] is  "<<clusteredData[c][0]<<endl;
 				ind = find(idA, clusteredData[c][1], size);
-				cout<<ind<<endl;
 				for(int f=0; f<conFeatureN; f++){	
 	  	          conFeatureRange[c][f][1] = data[ind][f]; 
 	              conFeatureRange[c][f][0] = data[ind][f]; 
@@ -213,7 +255,7 @@ void getStatisticsData(double** data, int** indicators, double* average, int siz
 	        } 
 
 	/////
-				cout<<"in stat"<<endl;
+			//	cout<<"in stat"<<endl;
 			for (int c=0; c<clusterN; c++){
 				for (int f=0; f<conFeatureN; f++){
 		      		for(int j = 0; j<clusteredData[c][0]; j++){
@@ -304,9 +346,13 @@ void saveClusteredData(double ** data, int* idA, int size, string* brands, int p
 
 
 
-void insertion_sort(double x[], int ids[], int length)
+void insertion_sort(double* xOri, int* ids, int length)
 {
-  int key,i, idKey;
+ int key,i, idKey;
+double* x = new double [length];
+for (int j=0; j<length; j++){
+	x[j] = xOri[j];
+}
   
   for(int j=1;j<length;j++)
   {
@@ -323,34 +369,39 @@ void insertion_sort(double x[], int ids[], int length)
      x[i+1] = key;
 	ids[i+1] = idKey;
   }
+delete x;
+
 }
 
 
 void sort(double** data, int* idA, int** sortedA, int size, int conFeatureN){
 	
 	double** dataT = new double* [conFeatureN];
+	
 	for (int f=0; f<conFeatureN; f++){
 	dataT[f] = new double [size];
+
 		for (int j=0; j<size; j++){
 			dataT[f][j] = data[j][f];
 			sortedA[f][j] = idA[j];
 		}
+		
 		insertion_sort(dataT[f], sortedA[f], size);
 		
 	}
 }
 
 
-void getIndicators(double** data, int** sortedA, int size, int conFeatureN, int** indicators){
+void getIndicators(double** data, int* idA, int** sortedA, int size, int conFeatureN, int** indicators){
 	
 	int quarter = size/4;
 	
 	for (int f=0; f<conFeatureN; f++){
 		for(int j=0; j<size; j++){
-		   if (data[j][f] > data[sortedA[f][size-quarter]][f]) {//high
+		   if (data[j][f] > data[find(idA, sortedA[f][size-quarter], size)][f]) {//high
 			indicators[f][j] = 1;
 			}
-			else if (data[j][f] < data[sortedA[f][quarter]][f]) { //low
+			else if (data[j][f] < data[find(idA, sortedA[f][quarter], size)][f]) { //low
 				indicators[f][j] = -1;
 				}
 			else{
@@ -361,28 +412,242 @@ void getIndicators(double** data, int** sortedA, int size, int conFeatureN, int*
 }
 
 
-int filter(double **filteredRange, string brand, int layer,sql::Statement *stmt,
- sql::ResultSet *res, sql::ResultSet *res2, int* cameraIDs, bool* conFilteredFeatures, bool* catFilteredFeatures) {
+// 	getIndicators2(accpetedCN, clusteID, stmt, res, indicators);
+
+
+void getIndicators2(int cameraN, int* cameraIDs, sql::Statement *stmt, sql::ResultSet *res, int** indicators, double** data) //                  double** data, int** sortedA, int size, int conFeatureN, int** indicators){
+{
+	//getIndicators(double** data, int** sortedA, int size, int conFeatureN, int** indicators)
+		
+	string command = "";
+	for (int j=0; j<cameraN-1; j++){
+		command += "(SELECT price, displaysize, opticalzoom, maximumresolution, camera_id from nodes where camera_id=";
+		ostringstream idStream; 
+		idStream << cameraIDs[j];
+		command += idStream.str();
+		command += ")";
+		command += " UNION ";
+	}
+
+	command += "(SELECT price, displaysize, opticalzoom, maximumresolution, camera_id from nodes where camera_id=";
+	ostringstream idStream;
+	idStream<<cameraIDs[cameraN-1];
+	command += idStream.str();
+	command += ")";
+	command += ";";
+	
+	res = stmt->executeQuery(command);
+	int j=0;
+	int size = res->rowsCount();
+	int* idA = new int[size];
+	while(res->next()){
+		data[j][0] = res->getInt("price");
+		data[j][1] = res->getDouble("displaysize");
+		data[j][2] = res->getDouble("opticalzoom");
+		data[j][3] = res->getDouble("maximumresolution");
+		idA[j] = res->getInt("camera_id");
+		j++;
+	}
+		int conFeatureN =4;
+	int** sortedA = new int* [conFeatureN];
+	for (int f =0; f<conFeatureN; f++) {
+		sortedA[f] = new int[cameraN];
+	}
+		
+	//void sort(double** data, int* idA, int** sortedA, int size, int conFeatureN){
+
+	sort(data, cameraIDs,sortedA,cameraN,conFeatureN);
+		
+//void getIndicators(double** data, int** sortedA, int size, int conFeatureN, int** indicators){	
+	
+	getIndicators(data, idA, sortedA, cameraN, conFeatureN,indicators);
+
+	}
+
+
+//vector<int> clusterChildrenV;	
+//clusterChildrenN = size(getChildrenV(clusterID, clusterChildrenV, stmt, res, clusterSize, clusterN));
+//
+//for (int j=0; j<clusterChildrenN; j++){
+//	clusterChildren[j] = clusterChildrenV.at(j);
+//}
+int getChildren(int parent_id, vector<int>* clusterChildren,sql::Statement *stmt, sql::ResultSet *res, int clusterN, int clusterSize){
+	int clusterChildrenN = 0;
+	string command;
+	if(clusterSize>clusterN){
+		command = "(SELECT id, cluster_size FROM clusters WHERE parent_id=";
+		ostringstream clusterIDStream;
+		clusterIDStream<<parent_id;
+		command += clusterIDStream.str();
+		command += ");";
+		res = stmt->executeQuery(command);
+		while(res->next()){
+			clusterSize = res->getInt("cluster_size");
+			parent_id = res->getInt("id");
+
+			clusterChildrenN += getChildren(parent_id, clusterChildren, stmt, res, clusterN, clusterSize); 
+		}
+	}
+	else{
+		
+		clusterChildrenN++;
+	}
+	return clusterChildrenN; 	
+}
+
+
+
+vector<int> getChildren(int parent_id, vector<int> clusterChildren,sql::Statement *stmt, sql::ResultSet *res, int clusterN, int clusterSize){
+	//int clusterChildrenN = 0;
+	int sizeIt;
+	string command;
+	if(clusterSize>clusterN){
+		command = "(SELECT id, cluster_size FROM clusters WHERE parent_id=";
+		ostringstream clusterIDStream;
+		clusterIDStream<<parent_id;
+		command += clusterIDStream.str();
+		command += ");";
+	//	cout<<"command in children is "<<command<<endl;
+		res = stmt->executeQuery(command);
+		while(res->next()){
+			clusterSize = res->getInt("cluster_size");
+			parent_id = res->getInt("id");
+		//	cout<<"parent_id is  "<<parent_id<<endl;
+			clusterChildren.push_back(parent_id);
+		 //   sizeIt = getChildren(parent_id, clusterChildren, stmt, res, clusterN, clusterSize).size();
+		//	cout<<"sizeIt is "<<sizeIt<<endl;
+			//for (int j=0; j<sizeIt; j++){
+				clusterChildren = getChildren(parent_id, clusterChildren, stmt, res, clusterN, clusterSize);
+			//} 
+		}
+	}
+	//else{
+		
+		//;
+	//}
+//	cout<<"clusterChildrenN  is  "<<clusterChildren.size()<<endl;
+	return clusterChildren; 	
+}
+
+
+//filterCluster(clusterIDs, clusterID, cameraIDs, cameraN, stmt, res);
+
+int filterCluster(int *clusterIDs, int clusterID, int* cameraIDs, int cameraN, sql::Statement *stmt, sql::ResultSet *res, int clusterN){
+	
+	int acceptedCN = 0;
+	int clusterChildrenN = 0;
+	int clusterSize = 0;
+	string command;
+	
+	command = "SELECT cluster_size from clusters where id=";
+	ostringstream cluster_idStream; 
+	cluster_idStream<<clusterID;
+	command += cluster_idStream.str();
+	command += ";";
+	
+	res= stmt->executeQuery(command); 
+	
+	
+	res->next();
+	
+	clusterSize = res->getInt("cluster_size");
+		
+	int* clusterChildren = new int [clusterSize];
+	vector<int> clusterChildrenV;	
+	
+	//vector<int> clusterChildrenM = vector<int>(clusterChildrenV);
+
+	clusterChildrenV = getChildren(clusterID, clusterChildrenV , stmt, res, clusterN, clusterSize);
+
+	for (int j=0; j<clusterChildrenN; j++){
+		clusterChildren[j] = clusterChildrenV.at(j);
+	}
+
+	command = "";
+	for (int j=0; j<cameraN-1; j++){
+		
+	 	command += "(SELECT cluster_id FROM nodes WHERE camera_id=";
+		ostringstream camera_idStream; 
+		camera_idStream << cameraIDs[j];
+		command += camera_idStream.str();
+		command += ") UNION ";
+	}
+	
+		command += "(SELECT cluster_id FROM nodes WHERE camera_id=";
+		ostringstream camera_idStream; 
+		camera_idStream << cameraIDs[cameraN-1];
+		command += camera_idStream.str();
+		command += ");";
+
+		res = stmt->executeQuery(command);
+
+		int j=0;
+		int id;
+	
+		while(res->next()){
+			id = res->getInt("cluster_id");	
+			if (clusterID>0){
+				if (find(clusterChildren, id, clusterChildrenN)>-1){
+					clusterIDs[j] = id;
+					acceptedCN++;
+				}
+			else{
+					clusterIDs[j] = id;
+					acceptedCN++;
+				}
+			j++;
+		   }
+		}
+		return acceptedCN;
+}
+
+int filter(double **filteredRange, string brand,sql::Statement *stmt,
+ sql::ResultSet *res, sql::ResultSet *res2, int* cameraIDs, bool* conFilteredFeatures, bool* catFilteredFeatures, int clusterID, int clusterN) {
 
 	int cameraN = 0; ////???
-
-	string command = "SELECT id FROM clusters WHERE layer =";
-	ostringstream layerStream;
-	layerStream<<layer; 
-	command += layerStream.str();  
-	command += ";";
-	res = stmt->executeQuery(command); 
+	int cameraNC = 0;
+	int c=0;
 	
-	 
+	
+	
+	string command = "SELECT cluster_size from clusters where id=";
+	ostringstream cluster_idStream; 
+	cluster_idStream<<clusterID;
+	command += cluster_idStream.str();
+	command += ";";
+
+	res= stmt->executeQuery(command); 
+
+	res->next();
+	
+	int clusterSize = res->getInt("cluster_size");
+
+	int* clusterChildren = new int[clusterSize];
+	
+	
+	vector<int> clusterChildrenV;
+
+	
+	clusterChildrenV = getChildren(clusterID, clusterChildrenV, stmt, res, clusterN, clusterSize);
+	int clusterChildrenN = clusterChildrenV.size();
+
+	for (int j=0; j<clusterChildrenN; j++){
+		clusterChildren[j] = clusterChildrenV.at(j);
+	}
+	
+
 	int cluster_id;
-	while(res->next()){
+	int cSize = clusterChildrenN; //res->rowsCount();
+	int counter = 0;
+	int i=0;
+	command = "";
+	for(int j=0; j<clusterChildrenN-1; j++){
 		
-		cluster_id = res->getInt("id");
-		command = "SELECT camera_id FROM nodes WHERE cluster_id=";
+		cluster_id = clusterChildren[j];
+		command += "(SELECT camera_id FROM nodes WHERE cluster_id=";
 		ostringstream cluster_idStream;
 		cluster_idStream << cluster_id;         
 		command += cluster_idStream.str();
-	
 	if (conFilteredFeatures[0]){	
 		command += " AND (price>=";
 		ostringstream priceMin;
@@ -433,23 +698,83 @@ int filter(double **filteredRange, string brand, int layer,sql::Statement *stmt,
 	}
 	
 	
-		command += ");";
+		command += ") UNION ";
+	}
+	
+	/////////////////////////////////////STUPID
+		cluster_id = clusterChildren[clusterChildrenN-1];
+		command += "(SELECT camera_id FROM nodes WHERE cluster_id=";
+		ostringstream cluster_idStream2;
+		cluster_idStream2 << cluster_id;         
+		command += cluster_idStream2.str();
+	if (conFilteredFeatures[0]){	
+		command += " AND (price>=";
+		ostringstream priceMin;
+		priceMin<<filteredRange[0][0];
+		command += priceMin.str();
+		command +=" AND price<=";
+		ostringstream priceMax;
+		priceMax<<filteredRange[0][1];
+		command += priceMax.str();
+	}
+	
+	if (conFilteredFeatures[1]){		
+		command +=" AND displaysize>=";
+		stringstream displaysizeMin;
+		displaysizeMin<<filteredRange[1][0];
+		command += displaysizeMin.str();
+		command +=" AND displaysize<=";
+		ostringstream displaysizeMax;
+		displaysizeMax<<filteredRange[1][1];
+		command += displaysizeMax.str();
+	}
+	
+	if (conFilteredFeatures[2]){		
+		command +=" AND opticalzoom>=";
+		stringstream opticalzoomMin;
+		opticalzoomMin<<filteredRange[2][0];
+		command += opticalzoomMin.str();
+		command +=" AND opticalzoom<=";
+		ostringstream opticalzoomMax;
+		opticalzoomMax<<filteredRange[2][1];
+		command += opticalzoomMax.str();
+	}
+	
+	if (conFilteredFeatures[3]){		
+		command +=" AND maximumresolution>=";
+		stringstream maximumresolutionMin;	
+		maximumresolutionMin<<filteredRange[3][0];
+		command += maximumresolutionMin.str();
+		command +=" AND maximumresolution<=";
+		ostringstream maximumresolutionMax;
+		maximumresolutionMax<<filteredRange[3][1];
+		command += maximumresolutionMax.str();
+	}
+	
 
+	if (catFilteredFeatures[0]){		
+		command +=" AND brand=";	
+		command += brand;	
+	}
+		command += ");";
+	
 		res2 = stmt->executeQuery(command);
-		
-		cameraN = res2->rowsCount();
-		int i=0;
+
+//		int id;
 		while(res2->next()){
 			cameraIDs[i] = res2->getInt("camera_id");
 			i++;
+			cameraN++;
 		}
-		
-	}
+
 	return cameraN; 
 }
 
+//////
 
-int median(double** data, int* idA, int size, int conFeatureN){
+
+void median(double** data, int size, int conFeatureN, int* sortedA){
+
 	double* distan = new double[size];
 	for (int j=0; j<size; j++){
 	    distan[j] = 0;
@@ -460,15 +785,152 @@ int median(double** data, int* idA, int size, int conFeatureN){
 		}	
 	}
 	
-	/// find min distan
-	int minId = idA[0];
-	for (int j=1; j<size; j++){
-		if(distan[minId]>distan[idA[j]]){
-			minId = idA[j];
+	insertion_sort(distan, sortedA, size);
+}
+
+//given the data of a cluster and filtered cameras would give the cluster rep
+int getRepC (double** clusterData, int size, int conFeatureN, int* idA, int* cameraIds, int cameraN, int order){
+	int ind;
+	int rep = 0;
+	int* sortedA = new int[size];
+		
+	for (int j=0; j<size; j++){
+		sortedA[j] = idA[j];
+	}
+	//median or more soffisticated things
+	median(clusterData, size, conFeatureN, sortedA);
+	ind = find(cameraIds,sortedA[order], cameraN);
+	if(ind>-1){
+		rep=cameraIds[ind]; 
+   }	
+	return rep;
+}
+
+
+//gives all the reps (int* reps)
+bool getRep(int* reps, int* repClusters, int* cameraIds, int* clusterIds, int cameraIDN, int conFeatureN, int acceptedClusterN, int repW, sql::Statement *stmt, sql::ResultSet *res){
+//	filter(double **filteredRange, string brand, int layer,sql::Statement *stmt,
+//	 sql::ResultSet *res, sql::ResultSet *res2, int* cameraIDs, bool* conFilteredFeatures, bool* catFilteredFeatures)
+	int rep;
+	int c=0;
+	int r=0;
+	int size, j;
+	double** clusterData; 
+	int* idA;
+	int* cIdA;
+	if (repW>cameraIDN){
+			return false;
+	}
+	else {
+		string command;
+		while((r<repW) && (c<acceptedClusterN) && (r<acceptedClusterN)){
+			
+			command = "SELECT * from nodes where ";	
+			command += "cluster_id=";
+			ostringstream cluster_idStream;
+			cluster_idStream<<clusterIds[c];
+			command += cluster_idStream.str();
+			command += ";";
+			res = stmt->executeQuery(command);
+			size = res->rowsCount();
+		
+			if (size>0){
+				clusterData = new double* [size];
+				idA = new int[size];
+				cIdA = new int [size];
+				j=0;
+				while(res->next()){
+					clusterData[j] = new double [conFeatureN];
+					clusterData[j][0] = res->getInt("price");
+					clusterData[j][1] = res->getDouble("displaysize");
+					clusterData[j][2] = res->getDouble("opticalzoom");
+					clusterData[j][3] = res->getDouble("maximumresolution");
+					idA[j] = res->getInt("camera_id");
+					cIdA[j] = res->getInt("cluster_id");
+					j++;
+				}
+					rep = getRepC(clusterData, size, conFeatureN, idA, cameraIds, cameraIDN,1);
+					if (rep>0){
+						reps[r] = rep;
+						command = "SELECT cluster_id from nodes where camera_id=";
+						ostringstream repStream;
+						repStream<<rep;
+						command += repStream.str();
+						res= stmt->executeQuery(command);
+						res->next();
+						repClusters[r] = res->getInt("cluster_id");
+						r++;
+					}
 		}
+		c++;
+	  }
+
+		if(repW>r){
+			int left = repW - r;
+		    j=0; 
+		    c = -1;
+			int o;
+			o = 2;
+			while ((r<left) && (c<acceptedClusterN)){
+			    command = "SELECT * from nodes where ";	
+				command += "cluster_id=";
+				ostringstream cluster_idStream;
+				cluster_idStream<<clusterIds[c];
+				command += cluster_idStream.str();
+				command += ";";
+				res = stmt->executeQuery(command);
+				size = res->rowsCount();
+			    if(size>0){
+				clusterData = new double* [size];
+				idA = new int[size];
+				j=0;
+				while(res->next()){
+						clusterData[j] = new double [conFeatureN];
+						clusterData[j][0] = res->getInt("price");
+						clusterData[j][1] = res->getDouble("displaysize");
+						clusterData[j][2] = res->getDouble("opticalzoom");
+						clusterData[j][3] = res->getDouble("maximumresolution");
+						idA[j] = res->getInt("camera_id");
+						repClusters[j] = res->getInt("cluster_id");
+						j++;
+				}
+			
+				rep = getRepC(clusterData, size, conFeatureN, idA, cameraIds, cameraIDN, o);
+		//			<<"rep is "<<rep<<endl;
+				int t= 0;
+				while ((rep=0) && (t<size)){
+					o++;
+					rep  = getRepC(clusterData, size, conFeatureN, idA, cameraIds, cameraIDN,  o);
+					t++;
+				}
+			
+				if (rep>0){
+					
+					reps[r] = rep;
+					command = "SELECT cluster_id from nodes where camera_id=";
+					ostringstream repStream;
+					repStream<<rep;
+					command += repStream.str();
+					res= stmt->executeQuery(command);
+					res->next();
+					repClusters[r] = res->getInt("cluster_id");
+					r++;
+				}	
+	
+				    j++;
+					c++;
+				}
+			
+			else{
+				o = 2;
+				c++;
+			}
+							
+		}
+		}
+		return true;	
 	}
 	
-	return minId;
 }
 
 //#endif	/* _EXAMPLES_H */
