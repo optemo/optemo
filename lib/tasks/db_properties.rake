@@ -32,8 +32,10 @@ def create_product_properties(model)
     f = DbFeature.new
     f.db_property = @prop
     f.name = name
-    f.min = model.find(:first, :order => "#{name} ASC", :conditions => "#{name} IS NOT NULL").send(name.intern)
-    f.max = model.find(:first, :order => "#{name} DESC").send(name.intern)
+    f.min = model.find(:all).map{|c|c.send(name.intern)}.reject{|c|c.nil?}.sort[0]
+    f.max = model.find(:all).map{|c|c.send(name.intern)}.sort[-1]
+    #f.min = model.find(:first, :order => "#{name} ASC", :conditions => "#{name} IS NOT NULL").send(name.intern)
+    #f.max = model.find(:first, :order => "#{name} DESC").send(name.intern)
     f.high = model.find(:all).map{|c|c.send(name.intern)}.sort[model.count*0.75]
     f.low = model.find(:all).map{|c|c.send(name.intern)}.sort[model.count*0.25]
     f.save!

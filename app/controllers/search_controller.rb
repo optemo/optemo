@@ -70,9 +70,12 @@ class SearchController < ApplicationController
     myfilter.delete('parent_id')
     #myfilter.delete('session_id')
     myfilter.delete('msg')
+    myfilter.delete('created_at')
+    myfilter.delete('updated_at')
+    myfilter.delete('cluster_id') unless myfilter['cluster_id']
     myfilter.update(opts)
     myparams = myfilter.to_yaml
-    #debugger
+    debugger
     output = %x["/optemo/site/lib/c_code/connect" "#{myparams}"]
     options = YAML.load(output)
     #parse the new ids

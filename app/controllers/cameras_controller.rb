@@ -30,14 +30,15 @@ class CamerasController < ApplicationController
     params[:path_info].collect do |num|
       @cameras << Camera.find(num)
       if num == @search.send(('i'+counter).intern)
-      myc = chosen.find{|c| c[:cluster_id].to_s == @search.send('c'+counter.intern)}
-      if myc.nil?
-        #Otherwise fill in a null value
-        @desc << nil
-      else
-        #Find the cluster's description
-        myc.delete('cluster_id')
-        @desc << myc.to_a
+        myc = chosen.find{|c| c[:cluster_id].to_s == @search.send('c'+counter.intern)}
+        if myc.nil?
+          #Otherwise fill in a null value
+          @desc << nil
+        else
+          #Find the cluster's description
+          myc.delete('cluster_id')
+          @desc << myc.to_a
+        end
       end
     end
     #Saved Bar variables
