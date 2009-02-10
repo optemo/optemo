@@ -15,9 +15,9 @@
 	<a href="/cameras/<%=@cameras[i].id%>" onClick="fadeout(<%=@cameras[i].id%>);return false;">
 	<p><%= @cameras[i].smlTitle %></p>
 	<p style="font-size: 0.9em">
-		<%= @dbprops.toPhrase('maximumresolution',@cameras[i].maximumresolution,',') %>
-		<%= @dbprops.toPhrase('displaysize',@cameras[i].displaysize,',') %>
-		<%= @dbprops.toPhrase('opticalzoom',@cameras[i].opticalzoom) %>
+		<% Camera::MainFeatures.each do |f| %>
+			<%= @dbprops.toPhrase(f,@cameras[i].send(f),',') %>
+		<% end %>
 	</p>
 	<p><%= @cameras[i].pricestr %>  
 		<%# Randomized Product Reviews %>

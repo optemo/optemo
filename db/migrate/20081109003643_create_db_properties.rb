@@ -4,8 +4,9 @@ class CreateDbProperties < ActiveRecord::Migration
       t.primary_key :id
       t.string :product
       t.text  :brands
-      t.integer :feature_count
-
+      t.float :price_min
+      t.float :price_max
+      
       t.timestamps
     end
   end

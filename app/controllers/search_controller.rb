@@ -75,7 +75,7 @@ class SearchController < ApplicationController
     myfilter.delete('cluster_id') unless myfilter['cluster_id']
     myfilter.update(opts)
     myparams = myfilter.to_yaml
-    debugger
+    #debugger
     output = %x["/optemo/site/lib/c_code/connect" "#{myparams}"]
     options = YAML.load(output)
     #parse the new ids

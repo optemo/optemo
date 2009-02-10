@@ -27,6 +27,8 @@ def create_product_properties(model)
   @prop = DbProperty.new
   @prop.product = model.name
   @prop.brands = model.find(:all).map{|u| u.brand}.compact.uniq.join('*')
+  @prop.price_min = model.find(:all).map{|p| p.price}.reject{|c|c.nil?}.sort[0]
+  @prop.price_max = model.find(:all).map{|p| p.price}.sort[-1]
   @prop.save
   model::MainFeatures.each {|name|
     f = DbFeature.new

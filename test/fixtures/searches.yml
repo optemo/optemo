@@ -1,23 +1,34 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
-one:
-  brand: 
-  maximumresolution_min: 
-  maximumresolution_max: 
-  opticalzoom_min: 
-  opticalzoom_max: 
-  displaysize_min: 
-  displaysize_max: 
-  price_min: 
-  price_max: 1.5
+cheap:
+  brand: "All Brands"
+  maximumresolution_min: 0.0
+  maximumresolution_max: 14.7 
+  opticalzoom_min: 0
+  opticalzoom_max: 20
+  displaysize_min: 0
+  displaysize_max: 3.6 
+  price_min: 0
+  price_max: 30000
 
-two:
-  brand: 
-  maximumresolution_min: 
-  maximumresolution_max: 
-  opticalzoom_min: 
-  opticalzoom_max: 
-  displaysize_min: 
-  displaysize_max: 
-  price_min: 
-  price_max: 1.5
+highzoom:
+  brand: "All Brands"
+  maximumresolution_min: 0.0
+  maximumresolution_max: 14.7
+  opticalzoom_min: 10
+  opticalzoom_max: 20
+  displaysize_min: 0
+  displaysize_max: 3.6
+  price_min: 0
+  price_max: 1815.86
+
+canon:
+  brand: "Canon"
+  maximumresolution_min: 0.0
+  maximumresolution_max: 14.7
+  opticalzoom_min: 0
+  opticalzoom_max: 20
+  displaysize_min: 0
+  displaysize_max: 3.6
+  price_min: 0
+  price_max: 1815.86

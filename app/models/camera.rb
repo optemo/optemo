@@ -7,7 +7,8 @@ class Camera < ActiveRecord::Base
   named_scope :invalid, :conditions => "brand IS NULL OR maximumresolution IS NULL OR opticalzoom IS NULL OR listpriceint IS NULL OR displaysize IS NULL"
   is_indexed :fields => ['title', 'feature']
   Interesting_features = %w(brand digitalzoom displaysize itemheight itemlength itemwidth itemweight label listpricestr maximumresolution maximumfocallength minimumfocallength model opticalzoom packageheight packageweight packagelength packagewidth title upc merchant condition iseligibleforsupersavershipping)
-  MainFeatures = %w(maximumresolution displaysize opticalzoom price)
+  MainFeatures = %w(maximumresolution displaysize opticalzoom)
+  MainFeaturesDisp = %w(Megapixels Display\ Size Optical\ Zoom)
   
   Max = {'MWidth' => 140, 'MHeight' => 100, 'LWidth' => 400, 'LHeight' => 300}
   def imagemw

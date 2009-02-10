@@ -29,8 +29,8 @@ class CamerasController < ApplicationController
     counter = 0
     params[:path_info].collect do |num|
       @cameras << Camera.find(num)
-      if num == @search.send(('i'+counter).intern)
-        myc = chosen.find{|c| c[:cluster_id].to_s == @search.send('c'+counter.intern)}
+      if num.to_i == @search.send(('i'+counter.to_s).intern)
+        myc = chosen.find{|c| c[:cluster_id].to_s == @search.send(('c'+counter.to_s).intern)}
         if myc.nil?
           #Otherwise fill in a null value
           @desc << nil

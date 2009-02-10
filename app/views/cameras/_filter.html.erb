@@ -3,10 +3,9 @@
 <br>
 <div class='label'>Brand</div>
 <%= select('myfilter', 'brand', ["All Brands"]+@dbprops.brands.split('*'),{:selected => @session.brand}) %>
-
-<%= render :partial => 'sliderhtml', :locals => {:name => 'Megapixels', :val => 'maximumresolution', :money_formatting => false} %>
-<%= render :partial => 'sliderhtml', :locals => {:name => 'Display Size', :val => 'displaysize', :money_formatting => false} %>
-<%= render :partial => 'sliderhtml', :locals => {:name => 'Optical Zoom', :val => 'opticalzoom', :money_formatting => false} %>
+<% Camera::MainFeatures.each_index do |i| %>
+<%= render :partial => 'sliderhtml', :locals => {:name => Camera::MainFeaturesDisp[i], :val => Camera::MainFeatures[i], :money_formatting => false} %>
+<% end %>
 <%= render :partial => 'sliderhtml', :locals => {:name => 'Price', :val => 'price', :money_formatting => true} %>
 
 <script language="javascript" type="text/javascript">
@@ -69,10 +68,10 @@ shapelayer.rect(max*length,0,length,height).attr({fill: '#dddddd', "stroke-opaci
 		// <![CDATA[
 
 			// horizontal slider control
-			<%= render :partial => 'sliderjs', :locals => {:val => 'maximumresolution', :min => @dbprops.maximumresolution_min, :max => @dbprops.maximumresolution_max, :money_formatting => false} %>
-			<%= render :partial => 'sliderjs', :locals => {:val => 'displaysize', :min => @dbprops.displaysize_min, :max => @dbprops.displaysize_max, :money_formatting => false} %>
-			<%= render :partial => 'sliderjs', :locals => {:val => 'opticalzoom', :min => @dbprops.opticalzoom_min, :max => @dbprops.opticalzoom_max, :money_formatting => false} %>
-			<%= render :partial => 'sliderjs', :locals => {:val => 'price', :min => @dbprops.price_min/100, :max => @dbprops.price_max/100, :money_formatting => true} %>
+			<% Camera::MainFeatures.each_index do |i| %>
+			<%= render :partial => 'sliderjs', :locals => {:val => Camera::MainFeatures[i], :min => @dbprops.db_features.find_by_name(Camera::MainFeatures[i]).min, :max => @dbprops.db_features.find_by_name(Camera::MainFeatures[i]).max, :money_formatting => false} %>
+			<% end %>
+			<%= render :partial => 'sliderjs', :locals => {:val => 'price', :min => @dbprops.price_min/100, :max =>@dbprops.price_max/100, :money_formatting => true} %>
 			
 			var disp = function(v, disp, filter_min, filter_max) {
 			$(filter_min).value = Math.round(v[0]*10)/10;
