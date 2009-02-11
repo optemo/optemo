@@ -79,23 +79,28 @@ class SearchController < ApplicationController
     output = %x["/optemo/site/lib/c_code/connect" "#{myparams}"]
     options = YAML.load(output)
     #parse the new ids
-    newcameras = options.delete('cameras')
-    newclusters = options.delete('clusters')
-    "i0".upto("i8") do |i|
-      c = "c#{i[1,1]}"
-      if !pos.nil? && i == "i#{pos}"
-        options[i.intern] = s.camera_id
-      else
-        options[i.intern] = newcameras.pop
-        options[c.intern] = newclusters.pop
+    if options.blank?
+      flash[:error] = "Error finding products."
+      redirect_to :controller => 'cameras'
+    else
+      newcameras = options.delete('cameras')
+      newclusters = options.delete('clusters')
+      "i0".upto("i8") do |i|
+        c = "c#{i[1,1]}"
+        if !pos.nil? && i == "i#{pos}"
+          options[i.intern] = s.camera_id
+        else
+          options[i.intern] = newcameras.pop
+          options[c.intern] = newclusters.pop
+        end
       end
+      #make chosen a YAML
+      options[:chosen] = options[:chosen].to_yaml
+      s.update_attributes(options)
+      
+      session[:search_id] = s.id
+      redirect_to "/cameras/list/"+s.URL
     end
-    #make chosen a YAML
-    options[:chosen] = options[:chosen].to_yaml
-    s.update_attributes(options)
-    
-    session[:search_id] = s.id
-    redirect_to "/cameras/list/"+s.URL
   end
   
   def combine_list(a)

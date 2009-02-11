@@ -11,24 +11,24 @@ cheap:
   price_min: 0
   price_max: 30000
 
-highzoom:
-  brand: "All Brands"
-  maximumresolution_min: 0.0
-  maximumresolution_max: 14.7
-  opticalzoom_min: 10
-  opticalzoom_max: 20
-  displaysize_min: 0
-  displaysize_max: 3.6
-  price_min: 0
-  price_max: 1815.86
-
-canon:
-  brand: "Canon"
-  maximumresolution_min: 0.0
-  maximumresolution_max: 14.7
-  opticalzoom_min: 0
-  opticalzoom_max: 20
-  displaysize_min: 0
-  displaysize_max: 3.6
-  price_min: 0
-  price_max: 1815.86
+#highzoom:
+#  brand: "All Brands"
+#  maximumresolution_min: 0.0
+#  maximumresolution_max: 14.7
+#  opticalzoom_min: 10
+#  opticalzoom_max: 20
+#  displaysize_min: 0
+#  displaysize_max: 3.6
+#  price_min: 0
+#  price_max: 181586
+#
+#canon:
+#  brand: "Canon"
+#  maximumresolution_min: 0.0
+#  maximumresolution_max: 14.7
+#  opticalzoom_min: 0
+#  opticalzoom_max: 20
+#  displaysize_min: 0
+#  displaysize_max: 3.6
+#  price_min: 0
+#  price_max: 181586
