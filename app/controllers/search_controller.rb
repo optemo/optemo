@@ -19,7 +19,7 @@ class SearchController < ApplicationController
     s = initialize_search
     #Cleanse id to be only numbers
     params[:id].gsub!(/\D/,'')
-    s.camera_id = params[:id]
+    s.cluster_id = params[:id]
     #Generate NLG message
     chosen = YAML.load(Search.find(session[:search_id]).chosen)
     c = chosen.find{|c| c[:id].to_s == params[:id]}
@@ -40,7 +40,8 @@ class SearchController < ApplicationController
     end
     #Cleanse pos to be one digit
     params[:pos] = params[:pos].gsub(/[^0-8]/,'')[0,1]
-    search(s,{"cluster_id" => params[:id].to_i},params[:pos])
+    search(s,{"cam_id" => params[:id].to_i},params[:pos])
+    #search(s,{"cluster_id" => params[:id].to_i},params[:pos])
   end
   
   def find
@@ -72,6 +73,7 @@ class SearchController < ApplicationController
     myfilter.delete('msg')
     myfilter.delete('created_at')
     myfilter.delete('updated_at')
+    myfilter['layer'] = 1
     myfilter.delete('cluster_id') unless myfilter['cluster_id']
     myfilter.update(opts)
     myparams = myfilter.to_yaml
@@ -83,15 +85,16 @@ class SearchController < ApplicationController
       flash[:error] = "Error finding products."
       redirect_to :controller => 'cameras'
     else
-      newcameras = options.delete('cameras')
-      newclusters = options.delete('clusters')
+      newcameras = options.delete('ids')
+      #newcameras = options.delete('cameras')
+      #newclusters = options.delete('clusters')
       "i0".upto("i8") do |i|
         c = "c#{i[1,1]}"
         if !pos.nil? && i == "i#{pos}"
-          options[i.intern] = s.camera_id
+          options[i.intern] = s.cluster_id
         else
           options[i.intern] = newcameras.pop
-          options[c.intern] = newclusters.pop
+          #options[c.intern] = newclusters.pop
         end
       end
       #make chosen a YAML

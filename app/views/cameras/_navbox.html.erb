@@ -15,9 +15,7 @@
 	<a href="/cameras/<%=@cameras[i].id%>" onClick="fadeout(<%=@cameras[i].id%>);return false;">
 	<p><%= @cameras[i].smlTitle %></p>
 	<p style="font-size: 0.9em">
-		<% Camera::MainFeatures.each do |f| %>
-			<%= @dbprops.toPhrase(f,@cameras[i].send(f),',') %>
-		<% end %>
+		<%= description(i) %>
 	</p>
 	<p><%= @cameras[i].pricestr %>  
 		<%# Randomized Product Reviews %>
@@ -26,7 +24,8 @@
 	</a>
 	<div class="bottombar">
 		<div class='sim'>
-		    <%= link_to "See more (#{@desc[i].count})", {:id => @cameras[i], :action => 'sim', :controller => 'search', :pos => i}, :class => 'sim' unless @desc[i].nil? %>
+		    <%# link_to "See more (#{@desc[i].count})", {:id => @cameras[i], :action => 'sim', :controller => 'search', :pos => i}, :class => 'sim' unless @desc[i].nil? %>
+		<%= link_to "See more (#{(rand*20).round+1})", {:id => @cameras[i], :action => 'sim', :controller => 'search', :pos => i}, :class => 'sim' %>
 		</div>
 		<div class="clusterfeatures">
 		<% if !@desc[i].nil? %>

@@ -7,4 +7,12 @@ module CamerasHelper
       link_to 'Browse more cameras', :controller => 'cameras'
     end
   end
+  def description(i)
+    text = []
+		Camera::MainFeatures.each do |f|
+		  res = @dbprops.toPhrase(f,@cameras[i].send(f))
+			text << res unless res.blank?
+		end
+		text.join(',')
+  end
 end
