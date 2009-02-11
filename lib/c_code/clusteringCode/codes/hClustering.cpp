@@ -168,13 +168,12 @@ int main(){
 	
 ////{}
 				int maxSize = 10000;
-			while (maxSize>4*clusterN){
+			while (maxSize>clusterN){
 					
 					for (int j=0; j<conFeatureN; j++){
 						average[j] = 0.0;
 					}
-			
-					maxSize = hClustering(layer, clusterN-layer+1,  conFeatureN,  average, conFeatureRange, conFeatureRangeC, res, res2,resClus, resNodes, stmt);	
+					maxSize = hClustering(layer, clusterN,  conFeatureN,  average, conFeatureRange, conFeatureRangeC, res, res2,resClus, resNodes, stmt);	
 				
 					layer++;
 				}

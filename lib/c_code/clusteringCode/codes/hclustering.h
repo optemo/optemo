@@ -28,18 +28,25 @@ if 	(layer == 1){
 				double listprice = 0.0;
 				double saleprice = 0.0;
 				double price = 0.0;
-			
+		
 				
 				while (res->next()) 
 				{
 				
-				 listprice =  res->getDouble("listpriceint");
-				 if(res->getDouble("salepriceint")!=NULL ) {	
-					
-				    saleprice = res->getDouble("salepriceint");
+				 listprice =  res->getInt("listpriceint");
+				
+				saleprice = res->getInt("salepriceint");
+			 if(saleprice > 0 ) {	
+					price = min(listprice, saleprice);	
+				    
 				}
 						
-				   			price = min(listprice, saleprice);
+			else{
+				price = listprice;
+				
+			}	   		
+				
+				
 							data[size][0] = price;
 						    data[size][1] = res->getDouble("displaysize");
 							data[size][2] = res->getDouble("opticalzoom");
@@ -115,7 +122,7 @@ if 	(layer == 1){
 
 					   // save it to the database
 					
-				//	   getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);		
+					   getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);		
 				   	   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, stmt, res2);
 						for (int c=0; c<clusterN; c++){
 								if (clusteredData[c][0]>maxSize){
@@ -137,7 +144,7 @@ if (layer > 1){
 	command += layerStream.str();
 	command += " AND cluster_size>";
 	ostringstream cluster_sizeStream;
-	cluster_sizeStream<< (clusterN * 4);
+	cluster_sizeStream<< (clusterN);
 	command += cluster_sizeStream.str();
 	command += ";";
 	resClus = stmt->executeQuery(command); 
