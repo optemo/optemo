@@ -270,13 +270,41 @@ task :scrape_hidden_prices => :environment do
     end
   end
 }
-#    extractor = Scrubyt::Extractor.define do
-#   fetch 'http://www.amazon.com/gp/product/B000UZH526/ref=olp_product_details?ie=UTF8&me=&seller='
-#  # click_link brand  
-#      
-#      price "HP LaserJet P1006 Printer", :generalize => true, :write_text => true
-#     #next_page "Next", :limit => 2                    
-#   end
-#   puts extractor.to_xml
+end
 
+desc "Get real features from Printer special features"
+task :interpret_special_features => :environment do
+  Printer.find(:all, :order => 'rand()', :conditions => 'specialfeatures IS NOT NULL').each do |p|
+    #p = Printer.find(:first, :order => 'rand()', :conditions => 'specialfeatures IS NOT NULL')
+    sf = p.specialfeatures
+    a = sf[3..-1].split('|') #Remove leading nv:
+    features = {}
+    a.map{|l| 
+      c = l.split('^') 
+      features[c[0]] = c[1]
+    }
+    p.ppm = features['Print Speed'].match(/\d+[.]?\d*/)[0] if features['Print Speed']
+    p.ttp = features['First Page Output Time'].match(/\d+[.]?\d*/)[0] if features['First Page Output Time']
+    #p.resolution = features['Resolution'].match(/(\d,\d{3}|\d+) ?(x ?(\d,\d{3}|\d+))?/)[1,2].sort{|a,b| 
+    #  a.gsub!(',','')
+    #  b.gsub!(',','')
+    #  a.to_i < b.to_i ? 1 : a.to_i > b.to_i ? -1 : 0
+    #}.join(' x ') if features['Resolution'] && features['Resolution'].match(/\d+ ?x ?\d+/)
+    duplex = features['Duplex Printing']
+    features['Connectivity']
+    features['Paper Sizes Supported']
+    features['Standard Paper Output']
+    features['Dimensions']
+    dutycycle = features['Maximum Duty Cycle'].match(/(\d{1,3}(,\d{3})+|\d+)/)[0].gsub(',','') if features['Maximum Duty Cycle']
+    features['Standard Paper Input']
+    features['Special Features']
+    #pp features
+    if features['Maximum Duty Cycle']
+    #if features['Print Speed']
+    #puts features['Print Speed'] + " => "+ p.ppm.to_s
+    puts features['Maximum Duty Cycle'] + " => #{dutycycle if dutycycle}"
+  else
+    puts 'nil'
+  end
+  end
 end
