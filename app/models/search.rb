@@ -5,7 +5,7 @@ class Search < ActiveRecord::Base
   
   def URL
     ret = []
-    "i0".upto("i#{result_count}"){|i|out<<i}
+    "i0".upto("i#{result_count-1}"){|i|ret<<send(i.intern)}
     ret.compact.join('/')
   end
 end

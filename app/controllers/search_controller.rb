@@ -97,15 +97,16 @@ class SearchController < ApplicationController
       redirect_to :controller => 'cameras'
     else
       #newcameras = options.delete('ids')
+      options[:result_count] = 9 if options[:result_count] > 9
       newcameras = options.delete('cameras')
       newclusters = options.delete('clusters')
       current_node = "i0"
       options[:result_count].times do 
         c = "c#{current_node[1,1]}"
-        if !pos.nil? && i == "i#{pos}"
-          options[i.intern] = s.cluster_id
+        if !pos.nil? && pos == current_node[1,1]
+          options[current_node.intern] = s.cluster_id
         else
-          options[i.intern] = newcameras.pop
+          options[current_node.intern] = newcameras.pop
           options[c.intern] = newclusters.pop
         end
         current_node.next!
