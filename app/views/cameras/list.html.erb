@@ -10,7 +10,7 @@
 	<%= link_to 'Compare them!', :controller => 'compare' %>
 </div>
 <div id="filterbar">
-	<h2>Visual Filters</h2>
+	<h2>Filters</h2>
 	<% form_tag ({:controller => 'search', :action => 'filter' }) do %>
 	  <%= render :partial => 'filter' %>
 	  <%= submit_tag 'Filter' %>
@@ -23,8 +23,7 @@
 	<%= render :partial => 'navbox', :locals => {:i => i} %>
 	<%= i%3 == 2 ? '</div>' : '' %>
 	<% end %>
-	<div class="easynav">
-	  <!--><div class="title"><%= link_to 'Easy Navigation' %></div>-->
+	<div class="easynav" style="display:none;">
 	  <div class="buttons"><%= link_to 'Higher Resolution' %><%= link_to 'Lower Price' %><%= link_to 'Bigger Display Size' %><%= link_to 'Farther Zoom' %></div>
 	  <div class="cont">
 		<%= link_to 'Show More Cameras' %>

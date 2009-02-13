@@ -48,16 +48,20 @@ class SearchControllerTest < ActionController::TestCase
     oldsearch = session[:search_id] if !session.empty?
     get :index
     assert_response :redirect
+    
     assert_not_equal(assigns(:output),"","No output from connect program")
-    assert_not_equal(oldsearch, session[:search_id], "Search was not successful")
+    assert_equal(assigns(:badparams),"None","Extra output from connect")
+    assert_not_equal(oldsearch, session[:search_id], "Search was not successful, output: #{assigns(:output)}}")
   end
   
   def test_filter_cheap
     get :index
     oldsearch = session[:search_id]
+    assert_equal(assigns(:badparams),"None","Extra output from connect")
     post :filter, :myfilter => Cheap
     assert_response :redirect
-    assert_not_equal(oldsearch, session[:search_id], "Search was not successful")
+    assert_equal(assigns(:badparams),"None","Extra output from connect")
+    assert_not_equal(oldsearch, session[:search_id], "Search was not successful, output: #{assigns(:output)}")
     s = Search.find(session[:search_id])
     "i0".upto("i8") do |i|
       assert_match(/\d+/,s.send(i.intern).to_s,"Returned id(#{i}) not a number: #{s.send(i.intern).to_s}")
@@ -70,7 +74,7 @@ class SearchControllerTest < ActionController::TestCase
     oldsearch = session[:search_id]
     post :filter, :myfilter => HighZoom
     assert_response :redirect
-    assert_not_equal(oldsearch, session[:search_id], "Search was not successful")
+    assert_not_equal(oldsearch, session[:search_id], "Search was not successful, output: #{assigns(:output)}")
     s = Search.find(session[:search_id])
     "i0".upto("i8") do |i|
       assert_match(/\d+/,s.send(i.intern).to_s,"Returned id(#{i}) not a number: #{s.send(i.intern).to_s}")
@@ -83,7 +87,7 @@ class SearchControllerTest < ActionController::TestCase
     oldsearch = session[:search_id]
     post :filter, :myfilter => Canon
     assert_response :redirect
-    assert_not_equal(oldsearch, session[:search_id], "Search was not successful")
+    assert_not_equal(oldsearch, session[:search_id], "Search was not successful, output: #{assigns(:output)}")
     s = Search.find(session[:search_id])
     "i0".upto("i8") do |i|
       assert_match(/\d+/,s.send(i.intern).to_s,"Returned id(#{i}) not a number: #{s.send(i.intern).to_s}")
@@ -96,7 +100,7 @@ class SearchControllerTest < ActionController::TestCase
     oldsearch = session[:search_id]
     post :filter, :myfilter => Small
     assert_response :redirect
-    assert_not_equal(oldsearch, session[:search_id], "Search was not successful")
+    assert_not_equal(oldsearch, session[:search_id], "Search was not successful, output: #{assigns(:output)}")
     s = Search.find(session[:search_id])
     "i0".upto("i8") do |i|
       assert_match(/\d+/,s.send(i.intern).to_s,"Returned id(#{i}) not a number: #{s.send(i.intern).to_s}")
