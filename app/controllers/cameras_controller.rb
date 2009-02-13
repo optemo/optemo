@@ -25,21 +25,24 @@ class CamerasController < ApplicationController
     @dbprops = DbProperty.find(:first)
     #Navigation Variables
     @cameras = []
+    @clusters = []
     @desc = []
     counter = 0
     params[:path_info].collect do |num|
       @cameras << Camera.find(num)
       if num.to_i == @search.send(('i'+counter.to_s).intern)
-        myc = chosen.find{|c| c[:cluster_id].to_s == @search.send(('c'+counter.to_s).intern)}
+        myc = chosen.find{|c| c[:cluster_id] == @search.send(('c'+counter.to_s).intern)}
         if myc.nil?
           #Otherwise fill in a null value
           @desc << nil
+          @clusters << nil
         else
           #Find the cluster's description
-          myc.delete('cluster_id')
+          @clusters << myc.delete('cluster_id')
           @desc << myc.to_a
         end
       end
+      counter += 1
     end
     #Saved Bar variables
     @picked_cameras = @session.saveds.map {|s| s.camera}

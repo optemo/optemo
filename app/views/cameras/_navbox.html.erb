@@ -19,13 +19,13 @@
 	</p>
 	<p><%= @cameras[i].pricestr %>  
 		<%# Randomized Product Reviews %>
-		<%= rand > 0.5 ? (rand > 0.5 ? image_tag('5star.gif') : image_tag ('3star.gif')) : image_tag ('4star.gif') %>
+		<%= rand > 0.5 ? (rand > 0.5 ? image_tag('5star.gif') : image_tag('3star.gif')) : image_tag('4star.gif') %>
 	</p>
 	</a>
 	<div class="bottombar">
 		<div class='sim'>
-		    <%# link_to "See more (#{@desc[i].count})", {:id => @cameras[i], :action => 'sim', :controller => 'search', :pos => i}, :class => 'sim' unless @desc[i].nil? %>
-		<%= link_to "See more (#{(rand*20).round+1})", {:id => @cameras[i], :action => 'sim', :controller => 'search', :pos => i}, :class => 'sim' %>
+		    <%= sim_link(i) %>
+		<%# link_to "See more (#{(rand*20).round+1})", {:id => @cameras[i], :action => 'sim', :controller => 'search', :pos => i}, :class => 'sim' %>
 		</div>
 		<div class="clusterfeatures">
 		<% if !@desc[i].nil? %>

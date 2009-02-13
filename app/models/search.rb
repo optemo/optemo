@@ -4,6 +4,8 @@ class Search < ActiveRecord::Base
   has_many :vieweds
   
   def URL
-    [i0, i1, i2, i3, i4, i5, i6, i7, i8].compact.join('/')
+    ret = []
+    "i0".upto("i#{result_count}"){|i|out<<i}
+    ret.compact.join('/')
   end
 end

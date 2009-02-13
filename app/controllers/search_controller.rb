@@ -17,31 +17,38 @@ class SearchController < ApplicationController
   def sim
     #Create new search instance
     s = initialize_search
-    #Cleanse id to be only numbers
-    params[:id].gsub!(/\D/,'')
-    s.cluster_id = params[:id]
-    #Generate NLG message
-    chosen = YAML.load(Search.find(session[:search_id]).chosen)
-    c = chosen.find{|c| c[:id].to_s == params[:id]}
-    if !c.nil?
-        c.delete('id')
-        c.each_pair {|k,v| 
-          if v == 0
-            c.delete(k) 
-          else
-            c[k] = v>0 ? 'high' : 'low'
-          end}
-        if c.empty?
-          s.msg = ""
-        else
-          att = c.to_a.each{|a|a.reverse!}
-          s.msg = "You are viewing cameras that have " + combine_list(att)
-        end
-    end
     #Cleanse pos to be one digit
     params[:pos] = params[:pos].gsub(/[^0-8]/,'')[0,1]
-    #search(s,{"cam_id" => params[:id].to_i},params[:pos])
-    search(s,{"cluster_id" => params[:id].to_i},params[:pos])
+    if params[:camera]
+      #The data has not previously been clustered
+      s.camera_id = params[:id]
+      search(s,{"camera_id" => params[:id].to_i},params[:pos])
+    else
+      #The data has previously been clustered
+      #Cleanse id to be only numbers
+      params[:id].gsub!(/\D/,'')
+      s.cluster_id = params[:id]
+      #Generate NLG message
+      chosen = YAML.load(Search.find(session[:search_id]).chosen)
+      c = chosen.find{|c| c[:cluster_id].to_s == params[:id]}
+      if !c.nil?
+          c.delete('id')
+          c.each_pair {|k,v| 
+            if v == 0
+              c.delete(k) 
+            else
+              c[k] = v>0 ? 'high' : 'low'
+            end}
+          if c.empty?
+            s.msg = ""
+          else
+            att = c.to_a.each{|a|a.reverse!}
+            s.msg = "You are viewing cameras that have " + combine_list(att)
+          end
+      end
+      #search(s,{"cam_id" => params[:id].to_i},params[:pos])
+      search(s,{"cluster_id" => params[:id].to_i},params[:pos])
+    end
   end
   
   def find
@@ -73,36 +80,41 @@ class SearchController < ApplicationController
     myfilter.delete('msg')
     myfilter.delete('created_at')
     myfilter.delete('updated_at')
+    myfilter.delete('result_count')
     #myfilter['layer'] = 1
     myfilter.delete('cluster_id') unless myfilter['cluster_id']
     myfilter.update(opts)
     myparams = myfilter.to_yaml
     @badparams = "None"
-    #debugger
+    debugger
     @output = %x["/optemo/site/lib/c_code/connect" "#{myparams}"]
     options = YAML.load(@output)
     #parse the new ids
-    if options.blank? || options['cameras'].nil? || options['clusters'].nil?
+    #Not enough cameras to return 9 cameraIDs!\n
+    
+    if options.blank? || options[:result_count].nil? || (options[:result_count] > 0 && options['cameras'].nil?) || (options[:result_count] > 0 && options['clusters'].nil?)
       flash[:error] = "Error finding products."
       redirect_to :controller => 'cameras'
     else
       #newcameras = options.delete('ids')
       newcameras = options.delete('cameras')
       newclusters = options.delete('clusters')
-      "i0".upto("i8") do |i|
-        c = "c#{i[1,1]}"
+      current_node = "i0"
+      options[:result_count].times do 
+        c = "c#{current_node[1,1]}"
         if !pos.nil? && i == "i#{pos}"
           options[i.intern] = s.cluster_id
         else
           options[i.intern] = newcameras.pop
           options[c.intern] = newclusters.pop
         end
+        current_node.next!
       end
       #make chosen a YAML
       options[:chosen] = options[:chosen].to_yaml
       
       #Filter for only valid options
-      options.delete_if{|k,v| if k.to_s.match(/^(cameras|clusters|maximumresolution\_max|maximumresolution\_min|displaysize\_max|displaysize\_min|opticalzoom\_max|opticalzoom\_min|price\_max|price\_min|clusters|chosen|i\d|c\d)$/).nil?
+      options.delete_if{|k,v| if k.to_s.match(/^(cameras|clusters|maximumresolution\_max|maximumresolution\_min|displaysize\_max|displaysize\_min|opticalzoom\_max|opticalzoom\_min|price\_max|price\_min|clusters|chosen|i\d|c\d|result\_count)$/).nil?
         @badparams = k.to_s
         true
       else
