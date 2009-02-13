@@ -47,7 +47,7 @@
 	  <% end %>
 	  
 	</div>
-	  <div id = "header_space"><%= flash[:notice] %><!--> Session: <%= session[:user_id] %> -->
+	  <div id = "header_space"><%= flash[:notice] %> <%= flash[:error] %><!--> Session: <%= session[:user_id] %> -->
 	
 		<% if @search && @search.msg %><p class="message"><%= @search.msg %></p><% end %>	
 	  </div>
