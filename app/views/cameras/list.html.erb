@@ -31,6 +31,10 @@
 	</div>
 </div>
 
+<% content_for :header do %>
+	<%= render :partial => 'camera' if @camera%>
+<% end %>
+
 
 	
 

@@ -46,8 +46,8 @@ class CamerasController < ApplicationController
     end
     #Saved Bar variables
     @picked_cameras = @session.saveds.map {|s| s.camera}
-    
-    
+    #Previously clicked camera
+    @camera = @search.camera
     
     respond_to do |format|
       format.html # index.html.erb
@@ -58,7 +58,7 @@ class CamerasController < ApplicationController
   # GET /cameras/1
   # GET /cameras/1.xml
   def show
-    @plain = params[:plain].nil?? false : true
+    @plain = params[:plain].nil? ? false : true
     #Cleanse id to be only numbers
     params[:id].gsub!(/\D/,'')
     @camera = Camera.find(params[:id])

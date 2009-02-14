@@ -231,6 +231,7 @@ ActiveRecord::Schema.define(:version => 20090130223927) do
     t.integer  "session_id"
     t.integer  "parent_id"
     t.integer  "cluster_id"
+    t.integer  "camera_id"
     t.integer  "result_count"
     t.string   "brand",                 :default => "All Brands"
     t.float    "maximumresolution_min", :default => 0.0

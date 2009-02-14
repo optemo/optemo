@@ -17,22 +17,21 @@ class SearchController < ApplicationController
   def sim
     #Create new search instance
     s = initialize_search
-    #Cleanse pos to be one digit
-    params[:pos] = params[:pos].gsub(/[^0-8]/,'')[0,1]
-    if params[:camera]
+    if params[:c].nil?
       #The data has not previously been clustered
       s.camera_id = params[:id]
-      search(s,{"camera_id" => params[:id].to_i},params[:pos])
+      search(s,{"camera_id" => params[:id].to_i})
     else
       #The data has previously been clustered
       #Cleanse id to be only numbers
-      params[:id].gsub!(/\D/,'')
-      s.cluster_id = params[:id]
+      s.camera_id = params[:id].gsub(/\D/,'')
+      s.cluster_id = params[:c].gsub(/\D/,'')
       #Generate NLG message
       chosen = YAML.load(Search.find(session[:search_id]).chosen)
-      c = chosen.find{|c| c[:cluster_id].to_s == params[:id]}
+      c = chosen.find{|c| c[:cluster_id].to_s == s.camera_id}
       if !c.nil?
-          c.delete('id')
+          c.delete('cluster_id')
+          c.delete('cluster_count')
           c.each_pair {|k,v| 
             if v == 0
               c.delete(k) 
@@ -46,8 +45,7 @@ class SearchController < ApplicationController
             s.msg = "You are viewing cameras that have " + combine_list(att)
           end
       end
-      #search(s,{"cam_id" => params[:id].to_i},params[:pos])
-      search(s,{"cluster_id" => params[:id].to_i},params[:pos])
+      search(s,{"cluster_id" => s.cluster_id})
     end
   end
   
@@ -67,7 +65,7 @@ class SearchController < ApplicationController
   
   private
   
-  def search(s, opts = {}, pos = nil)
+  def search(s, opts = {})
     #Find current search
     myfilter = s.attributes
     #Remove unnescessary arguments from YAML query
@@ -82,33 +80,30 @@ class SearchController < ApplicationController
     myfilter.delete('updated_at')
     myfilter.delete('result_count')
     #myfilter['layer'] = 1
+    myfilter.delete('camera_id') if myfilter['cluster_id']
     myfilter.delete('cluster_id') unless myfilter['cluster_id']
     myfilter.update(opts)
     myparams = myfilter.to_yaml
     @badparams = "None"
-    debugger
+    #debugger
     @output = %x["/optemo/site/lib/c_code/connect" "#{myparams}"]
     options = YAML.load(@output)
     #parse the new ids
-    #Not enough cameras to return 9 cameraIDs!\n
-    
     if options.blank? || options[:result_count].nil? || (options[:result_count] > 0 && options['cameras'].nil?) || (options[:result_count] > 0 && options['clusters'].nil?)
-      flash[:error] = "Error finding products."
-      redirect_to :controller => 'cameras'
+      flash[:error] = "There was a problem finding your products."
+      redirect_to :back
+    elsif options[:result_count] == 0
+      flash[:error] = "No products were found"
+      redirect_to :back
     else
-      #newcameras = options.delete('ids')
       options[:result_count] = 9 if options[:result_count] > 9
       newcameras = options.delete('cameras')
       newclusters = options.delete('clusters')
       current_node = "i0"
       options[:result_count].times do 
         c = "c#{current_node[1,1]}"
-        if !pos.nil? && pos == current_node[1,1]
-          options[current_node.intern] = s.cluster_id
-        else
-          options[current_node.intern] = newcameras.pop
-          options[c.intern] = newclusters.pop
-        end
+        options[current_node.intern] = newcameras.pop
+        options[c.intern] = newclusters.pop
         current_node.next!
       end
       #make chosen a YAML
