@@ -130,4 +130,15 @@ class SearchControllerTest < ActionController::TestCase
       assert_in_delta(1000,s.send(i.intern),1000,"Not a valid product id(#{i}) greater than 2000 or less than 0: #{s.send(i.intern).to_s}")
     end
   end
+  
+  def test_similar
+    get :index
+    oldsearch = session[:search_id]
+    @request.env["HTTP_REFERER"] = 'http://localhost:3000/cameras/'
+    get :sim, {:id => 679, :c => 1052}
+    assert_not_equal(oldsearch, session[:search_id], "Search was not successful, output: #{assigns(:output)}")
+    oldsearch = session[:search_id]
+    get :sim, {:id => 1206, :c => 1125}
+    assert_not_equal(oldsearch, session[:search_id], "Search was not successful, output: #{assigns(:output)}")
+  end
 end

@@ -88,9 +88,12 @@ p {
 #header {
    margin-left: 20px;
    position: relative;
+   width: 750px;
 }
 #header_buttons {
-   float: right;
+   position: absolute;
+   right: 0;
+   top: 0;
 	width: 268px;
 }
 a.link {

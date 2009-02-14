@@ -38,6 +38,7 @@
 	  <div id="logo">
 	  <%= image_tag 'logo.jpg', :width  => 250, :class => 'img' %>
 	  </div>
+	  <%= yield :header %>
 	  <div id="header_buttons">
 	  <a href="/" class="link">Home</a> <a class="link" href="/about">About Us</a> <a href="/team" class="link">The Team</a>
 	  <br><br>
@@ -48,8 +49,7 @@
 	  
 	</div>
 	  <div id = "header_space"><%= flash[:notice] %> <span style="color:red;"><%= flash[:error] %></span><!--> Session: <%= session[:user_id] %> -->
-	
-		<p class="message"><%= yield :header %></p>
+		
 	  </div>
 	</div>
 	  <div id="header_spacer"></div>
