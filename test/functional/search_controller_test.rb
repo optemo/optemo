@@ -42,6 +42,16 @@ class SearchControllerTest < ActionController::TestCase
     "displaysize_max", 2,
     "price_min", 400,
     "price_max", 51586]
+  HighMPSmallD = Hash[
+    "brand", "All Brands",
+    "maximumresolution_min", 8.1,
+    "maximumresolution_max", 14.7,
+    "opticalzoom_min", 0,
+    "opticalzoom_max", 20,
+    "displaysize_min", 0,
+    "displaysize_max", 2.4,
+    "price_min", 400,
+    "price_max", 181586]
   
   
   def test_index
@@ -99,6 +109,19 @@ class SearchControllerTest < ActionController::TestCase
     get :index
     oldsearch = session[:search_id]
     post :filter, :myfilter => Small
+    assert_response :redirect
+    assert_not_equal(oldsearch, session[:search_id], "Search was not successful, output: #{assigns(:output)}")
+    s = Search.find(session[:search_id])
+    "i0".upto("i8") do |i|
+      assert_match(/\d+/,s.send(i.intern).to_s,"Returned id(#{i}) not a number: #{s.send(i.intern).to_s}")
+      assert_in_delta(1000,s.send(i.intern),1000,"Not a valid product id(#{i}) greater than 2000 or less than 0: #{s.send(i.intern).to_s}")
+    end
+  end
+  
+  def test_filter_HighMPSmallD
+    get :index
+    oldsearch = session[:search_id]
+    post :filter, :myfilter => HighMPSmallD
     assert_response :redirect
     assert_not_equal(oldsearch, session[:search_id], "Search was not successful, output: #{assigns(:output)}")
     s = Search.find(session[:search_id])

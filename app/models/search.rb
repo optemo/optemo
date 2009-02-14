@@ -1,9 +1,12 @@
 class Search < ActiveRecord::Base
   belongs_to :session
   belongs_to :camera
+  belongs_to :cluster
   has_many :vieweds
   
   def URL
-    [i0, i1, i2, i3, i4, i5, i6, i7, i8].compact.join('/')
+    ret = []
+    "i0".upto("i#{result_count-1}"){|i|ret<<send(i.intern)}
+    ret.compact.join('/')
   end
 end

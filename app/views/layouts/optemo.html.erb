@@ -47,9 +47,9 @@
 	  <% end %>
 	  
 	</div>
-	  <div id = "header_space"><%= flash[:notice] %> <%= flash[:error] %><!--> Session: <%= session[:user_id] %> -->
+	  <div id = "header_space"><%= flash[:notice] %> <span style="color:red;"><%= flash[:error] %></span><!--> Session: <%= session[:user_id] %> -->
 	
-		<% if @search && @search.msg %><p class="message"><%= @search.msg %></p><% end %>	
+		<p class="message"><%= yield :header %></p>
 	  </div>
 	</div>
 	  <div id="header_spacer"></div>

@@ -25,26 +25,29 @@ class CamerasController < ApplicationController
     @dbprops = DbProperty.find(:first)
     #Navigation Variables
     @cameras = []
+    @clusters = []
     @desc = []
     counter = 0
     params[:path_info].collect do |num|
       @cameras << Camera.find(num)
       if num.to_i == @search.send(('i'+counter.to_s).intern)
-        myc = chosen.find{|c| c[:cluster_id].to_s == @search.send(('c'+counter.to_s).intern)}
+        myc = chosen.find{|c| c[:cluster_id] == @search.send(('c'+counter.to_s).intern)}
         if myc.nil?
           #Otherwise fill in a null value
           @desc << nil
+          @clusters << nil
         else
           #Find the cluster's description
-          myc.delete('cluster_id')
+          @clusters << myc.delete('cluster_id')
           @desc << myc.to_a
         end
       end
+      counter += 1
     end
     #Saved Bar variables
     @picked_cameras = @session.saveds.map {|s| s.camera}
-    
-    
+    #Previously clicked camera
+    @camera = @search.camera
     
     respond_to do |format|
       format.html # index.html.erb
@@ -55,7 +58,7 @@ class CamerasController < ApplicationController
   # GET /cameras/1
   # GET /cameras/1.xml
   def show
-    @plain = params[:plain].nil?? false : true
+    @plain = params[:plain].nil? ? false : true
     #Cleanse id to be only numbers
     params[:id].gsub!(/\D/,'')
     @camera = Camera.find(params[:id])
