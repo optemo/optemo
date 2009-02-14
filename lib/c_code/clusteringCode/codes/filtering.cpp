@@ -21,6 +21,7 @@ using namespace std;
 #include "hClustering.h"
 #include "filtering.h"
 
+
 using namespace std;
 
 /**
@@ -91,8 +92,8 @@ int main(int argc, char** argv) {
 	varNames[9] = "maximumresolution_min";
 	varNames[10] = "maximumresolution_max";
 	
-   
-	string brand = "Canon";
+	
+	string brand = "canon";
 	for (int j=0; j<varNamesN; j++){
 		var = varNames[j];
 		ind = argu.find(var, 0);
@@ -110,6 +111,7 @@ int main(int argc, char** argv) {
 
 		   else if(var == "cluster_id"){
 			    	clusterID = atoi((argu.substr(startit, lengthit)).c_str());
+				
 		    }
 		   else if(var == "price_min"){
 				    filteredRange[0][0] = atof((argu.substr(startit, lengthit)).c_str()) * 100;
@@ -210,12 +212,14 @@ int main(int argc, char** argv) {
 				string command;	
 				int clusterIDN;
 				int size;
+				string out = "";
 				int repW = 9;
+				
 			if (clusterID == 0){
 				command = "SELECT id from cameras;";
 				res = stmt->executeQuery(command);
 				size = res->rowsCount();
-			}
+				}
 			else{
 				int parentID; 
 				command = "SELECT id from nodes where cluster_id=";
@@ -225,12 +229,12 @@ int main(int argc, char** argv) {
 				command += ";";
 				res = stmt->executeQuery(command);
 				size = res->rowsCount();
-				repW--;
+			//	repW--;
 			}	
+			
 			
 				int* cameraIDs = new int [size];
 					int ** indicators = new int*[conFeatureN];
-				//	double** data = new double* [cameraN];
 					double** conFeatureRange = new double* [conFeatureN];
 					for (int f=0; f<conFeatureN; f++){
 						conFeatureRange[f] = new double [2];
@@ -238,41 +242,37 @@ int main(int argc, char** argv) {
 					}
 			
 				int cameraN = filter2(filteredRange, brand, stmt, res, res2, cameraIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange);
-			    // int cameraN = filter(filteredRange, brand,stmt, res, res2, cameraIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN);
 				
-				if (cameraN < repW -1){
-					cout<<"Not enough cameras to return "<<repW<<" cameraIDs!"<<endl;
-					return 0;
-				}
+				if (cameraN> 0){
+					if (cameraN<repW){
+						repW = cameraN;
+					}
 				
-				int* reps = new int [repW];
+					int* reps = new int [repW];
 					
-				int* clusterIDs = new int[repW];
-				int* clusterCounts = new int[repW];
+					int* clusterIDs = new int[repW];
+					int* clusterCounts = new int[repW];
 				
-				//void getRep2(int* reps, int* cameraIds, int* cameraN, int* clusterIDs, int* clusterCounts, int conFeatureN, int repW, sql::Statement *stmt, sql::ResultSet *res)
-				bool reped = getRep2(reps, cameraIDs, cameraN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res);	
-				
-			
-				if (!reped){
-					cout<<"Not enough cameras to return "<<repW<<" cameraIDs!"<<endl;
-				}
-					
-	    
-				
-				//void getIndicators3(int* cameraIDs, int cameraN, int* reps, int repW, int conFeatureN, int** indicators)
-				getIndicators3(cameraIDs, cameraN, reps, repW, conFeatureN, indicators, stmt, res);
+					bool reped = getRep2(reps, cameraIDs, cameraN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, clusterID);	
+					getIndicators3(cameraIDs, cameraN, reps, repW, conFeatureN, indicators, stmt, res);
 	
 //Generating the output string 
 			
 
-				string* indicatorNames = new string[4];
-				indicatorNames[0] = "Price";
-				indicatorNames[1] = "Display Size";
-				indicatorNames[2] = "Optical Zoom";
-				indicatorNames[3] = "MegaPixels";
-				string out = "--- !map:HashWithIndifferentAccess \n";
-
+					string* indicatorNames = new string[4];
+					indicatorNames[0] = "Price";
+					indicatorNames[1] = "Display Size";
+					indicatorNames[2] = "Optical Zoom";
+					indicatorNames[3] = "MegaPixels";
+					out = "--- !map:HashWithIndifferentAccess \n";
+					out.append("result_count: ");
+					ostringstream resultCountStream;
+				
+					resultCountStream << cameraN;
+					out.append(resultCountStream.str());
+					out.append("\n");
+				
+				
 					conFeatureRange[0][0] = conFeatureRange[0][0] / 100;
 					conFeatureRange[0][1] = conFeatureRange[0][1] / 100;
 					for (int j=0; j<(conFeatureN*2); j++){
@@ -290,14 +290,14 @@ int main(int argc, char** argv) {
 							}
 						out.append("\n");
 					}
-						out.append("cameras: \n");
-				        for(int c=0; c<repW; c++){
-						       out.append("- ");
-					           std::ostringstream oss; 		  
-							   oss<<reps[c];
-							   out.append(oss.str()); 
-							   out.append("\n");
-						}
+					out.append("cameras: \n");
+				    for(int c=0; c<repW; c++){
+						    out.append("- ");
+					        std::ostringstream oss; 		  
+						 	oss<<reps[c];
+							out.append(oss.str()); 
+						 	out.append("\n");
+					}
 					out.append("clusters: \n");
 			        for(int c=0; c<repW; c++){
 					       out.append("- ");
@@ -310,25 +310,39 @@ int main(int argc, char** argv) {
 					out.append("chosen: \n");
 
 					for(int c=0; c<repW; c++){		  
-					   out.append("- {");
-					   out.append("cluster_id: ");
-					   std::ostringstream oss2; 		  
-					   oss2<<clusterIDs[c];
-					   out.append(oss2.str());
-					  
+					     	out.append("- {");
+					   		out.append("cluster_id: ");
+					   		std::ostringstream oss2; 		  
+					   		oss2<<clusterIDs[c];
+					   		out.append(oss2.str());
+					  		out.append(", ");
+							out.append("cluster_count: ");
+							std::ostringstream oss3; 		  
+							oss3<<clusterCounts[c];
+							out.append(oss3.str());
 
-					   for (int f=0; f<4; f++){
-							out.append(", ");
-							out.append(indicatorNames[f]);
-							out.append(": ");
-							std::ostringstream oss; 
-							oss<<indicators[f][c];
-							out.append(oss.str());
+					   		for (int f=0; f<4; f++){
+								out.append(", ");
+								out.append(indicatorNames[f]);
+								out.append(": ");
+								std::ostringstream oss; 
+								oss<<indicators[f][c];
+								out.append(oss.str());
+							}
+					   		out.append("}\n");
+					}
+			}				
 
-						}
-					   	out.append("}\n");
-				    }
-
+			else{	//cameraN=0;
+				out = "--- !map:HashWithIndifferentAccess \n";
+				out.append("result_count: ");
+				ostringstream resultCountStream;
+				resultCountStream << cameraN;
+				out.append(resultCountStream.str());
+				out.append("\n");
+	
+			}	
+	
 //
    			cout<<out<<endl;
 

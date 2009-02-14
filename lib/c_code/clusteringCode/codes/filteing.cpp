@@ -10,7 +10,6 @@
 #include <vector>
 #include <string>
 #include <algorithm>
-
 using namespace std;
 
 
@@ -19,8 +18,6 @@ using namespace std;
 
 //
 #include "hClustering.h"
-#include "filtering.h"
-
 
 using namespace std;
 
@@ -28,7 +25,7 @@ using namespace std;
 * Usage example for Driver Manager, Connection, (simple) Statement, ResultSet
 */
 int main(int argc, char** argv) {
-	
+
 //void initialize(int arcCount, char** argArray)
 //{
 	stringstream sql;
@@ -52,7 +49,7 @@ int main(int argc, char** argv) {
 	bool *conFilteredFeatures = new bool[conFeatureN];   
 	bool *catFilteredFeatures = new bool[catFeatureN];
 	bool *boolFilteredFeatures = new bool[boolFeatureN];
-	
+	//clusterID = 56033;
 	
 	catFeatureNames[0]= "brand";
 	conFeatureNames[0]= "price";
@@ -92,8 +89,8 @@ int main(int argc, char** argv) {
 	varNames[9] = "maximumresolution_min";
 	varNames[10] = "maximumresolution_max";
 	
-	
-	string brand = "canon";
+   
+	string brand = "";
 	for (int j=0; j<varNamesN; j++){
 		var = varNames[j];
 		ind = argu.find(var, 0);
@@ -107,45 +104,53 @@ int main(int argc, char** argv) {
 					if (brand == "All Brands"){
 						catFilteredFeatures[0] = 0;
 					}
+				//	cout<<"brand is "<<brand<<endl;
 		   }
 
 		   else if(var == "cluster_id"){
 			    	clusterID = atoi((argu.substr(startit, lengthit)).c_str());
-				
 		    }
 		   else if(var == "price_min"){
 				    filteredRange[0][0] = atof((argu.substr(startit, lengthit)).c_str()) * 100;
 		        	conFilteredFeatures[0] = 1;
+	//	cout<<"bprice_min is "<<filteredRange[0][0]<<endl;
 	    	}
 		   else if(var == "price_max"){
 			
 	  				filteredRange[0][1] = atof((argu.substr(startit, lengthit)).c_str()) ;	
 					filteredRange[0][1] = filteredRange[0][1]* 100;
 			    	conFilteredFeatures[0] = 1;
+			//	cout<<"bprice_max is "<<filteredRange[0][1]<<endl;
 		    }
 		   else if(var == "displaysize_min"){
 				    filteredRange[1][0] = atof((argu.substr(startit, lengthit)).c_str());
 				    conFilteredFeatures[1] = 1;
+			//		cout<<"displaysize_min is "<<filteredRange[1][0]<<endl;
 		    }
 		   else if(var == "displaysize_max"){
 			    	filteredRange[1][1] = atof((argu.substr(startit, lengthit)).c_str());
 			    	conFilteredFeatures[1] = 1;
+				//	cout<<"displaysize_max is "<<filteredRange[1][1]<<endl;
 		    }
 		   else if(var == "opticalzoom_min"){
 			    	filteredRange[2][0] = atof((argu.substr(startit, lengthit)).c_str());
 			    	conFilteredFeatures[2] = 1;
+		//	cout<<"opticalzoom_min is "<<filteredRange[2][0]<<endl;
 		    }
 		   else if(var == "opticalzoom_max"){
 				    filteredRange[2][1] = atof((argu.substr(startit, lengthit)).c_str());
 				    conFilteredFeatures[2] = 1;
+			//	cout<<"opticalzoom_max is "<<filteredRange[2][1]<<endl;
 			}
 		   else if (var == "maximumresolution_min"){
 					filteredRange[3][0] = atof((argu.substr(startit, lengthit)).c_str());
 			   		conFilteredFeatures[3] = 1;
+			//	cout<<"maximumresolution_min is "<<filteredRange[3][0]<<endl;
 		    }	
 		   else if (var == "maximumresolution_max"){
 		     	    filteredRange[3][1] = atof((argu.substr(startit, lengthit)).c_str());
 				   	conFilteredFeatures[3] = 1;
+			///		cout<<"maximumresolution_max is "<<filteredRange[3][1]<<endl;
 					
 			}
 		   else if (var == "session_id"){
@@ -153,7 +158,7 @@ int main(int argc, char** argv) {
 		    } 		 
 	    }
 	}
-
+	
 //}
 // Driver Manager
 
@@ -208,71 +213,71 @@ int main(int argc, char** argv) {
 				con = driver->connect(EXAMPLE_HOST, EXAMPLE_PORT, EXAMPLE_USER, EXAMPLE_PASS);
 				stmt = con->createStatement();
 				stmt->execute("USE "  EXAMPLE_DB);
-			//    res = stmt->executeQuery("SELECT * FROM cameras"); 
-				string command;	
-				int clusterIDN;
-				int size;
-				string out = "";
-				int repW = 9;
-				
-			if (clusterID == 0){
-				command = "SELECT id from cameras;";
-				res = stmt->executeQuery(command);
-				size = res->rowsCount();
-				}
-			else{
-				int parentID; 
-				command = "SELECT id from nodes where cluster_id=";
-				ostringstream cid;
-				cid<<clusterID;
-				command += cid.str();
-				command += ";";
-				res = stmt->executeQuery(command);
-				size = res->rowsCount();
-			//	repW--;
-			}	
-			
-			
+			    res = stmt->executeQuery("SELECT * FROM cameras"); 
+				int size = res->rowsCount();
+				int cameraN = size;
 				int* cameraIDs = new int [size];
-					int ** indicators = new int*[conFeatureN];
-					double** conFeatureRange = new double* [conFeatureN];
-					for (int f=0; f<conFeatureN; f++){
-						conFeatureRange[f] = new double [2];
-						indicators[f] = new int[repW];
-					}
-			
-				int cameraN = filter2(filteredRange, brand, stmt, res, res2, cameraIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange);
+				res = stmt->executeQuery("SELECT * FROM clusters"); 
+				size = res->rowsCount();
+				int* clusterIDs = new int [size];
 				
-				if (cameraN> 0){
-					if (cameraN<repW){
-						repW = cameraN;
-					}
 				
-					int* reps = new int [repW];
-					
-					int* clusterIDs = new int[repW];
-					int* clusterCounts = new int[repW];
-				
-					bool reped = getRep2(reps, cameraIDs, cameraN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, clusterID);	
-					getIndicators3(cameraIDs, cameraN, reps, repW, conFeatureN, indicators, stmt, res);
-	
-//Generating the output string 
-			
+////{}		
 
-					string* indicatorNames = new string[4];
-					indicatorNames[0] = "Price";
-					indicatorNames[1] = "Display Size";
-					indicatorNames[2] = "Optical Zoom";
-					indicatorNames[3] = "MegaPixels";
-					out = "--- !map:HashWithIndifferentAccess \n";
-					out.append("result_count: ");
-					ostringstream resultCountStream;
 				
-					resultCountStream << cameraN;
-					out.append(resultCountStream.str());
-					out.append("\n");
+				int repW = 9;
+	
+				if(catFilteredFeatures[0]){
+					cout<<"brand is "<<brand<<endl;
+				}	
+			    cameraN = filter(filteredRange, brand,stmt, res, res2, cameraIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN);
+				cout<<"after filter"<<endl;
+				int acceptedCN = filterCluster(clusterIDs, clusterID, cameraIDs, cameraN, stmt, res, clusterN);
 				
+				if (clusterID != 0){ // passed
+					repW--;
+				}
 				
+				int* reps = new int[repW];
+				int* clusterReps = new int[repW];
+				bool reped = getRep(reps, clusterReps, cameraIDs, clusterIDs, cameraN, conFeatureN, acceptedCN, repW, stmt, res);	
+				if (!reped){
+					cout<<"Not enough cameras to return "<<repW<<" cameraIDs!"<<endl;
+				}
+				
+		
+	    		int ** indicators = new int*[conFeatureN];
+				double** data = new double* [cameraN];
+				double** conFeatureRange = new double* [conFeatureN];
+				for (int f=0; f<conFeatureN; f++){
+					conFeatureRange[f] = new double [2];
+				}
+				for(int j=0; j<cameraN; j++){
+					data[j] = new double [conFeatureN];
+				}
+				
+				for (int f=0; f<conFeatureN; f++){
+					indicators[f] = new int[cameraN];
+				}
+				
+				//void getIndicators2(int accpetedCN, int * clusteIDs, sql::Statement *stmt, sql::ResultSet res,int** indicators, double** data)
+				getIndicators2(cameraN, cameraIDs, stmt, res, indicators, data);	
+
+					
+					
+				getRange(data, cameraN, conFeatureN, conFeatureRange); 
+
+		
+//Generating the output string 
+		
+
+				string* indicatorNames = new string[4];
+				indicatorNames[0] = "Price";
+				indicatorNames[1] = "Display Size";
+				indicatorNames[2] = "Optical Zoom";
+				indicatorNames[3] = "MegaPixels";
+				string out = "--- !map:HashWithIndifferentAccess \n";
+
 					conFeatureRange[0][0] = conFeatureRange[0][0] / 100;
 					conFeatureRange[0][1] = conFeatureRange[0][1] / 100;
 					for (int j=0; j<(conFeatureN*2); j++){
@@ -290,19 +295,19 @@ int main(int argc, char** argv) {
 							}
 						out.append("\n");
 					}
-					out.append("cameras: \n");
-				    for(int c=0; c<repW; c++){
-						    out.append("- ");
-					        std::ostringstream oss; 		  
-						 	oss<<reps[c];
-							out.append(oss.str()); 
-						 	out.append("\n");
-					}
+						out.append("cameras: \n");
+				        for(int c=0; c<repW; c++){
+						       out.append("- ");
+					           std::ostringstream oss; 		  
+							   oss<<reps[c];
+							   out.append(oss.str()); 
+							   out.append("\n");
+						}
 					out.append("clusters: \n");
 			        for(int c=0; c<repW; c++){
 					       out.append("- ");
 				           std::ostringstream oss; 		  
-						   oss<<clusterIDs[c];
+						   oss<<clusterReps[c];
 						   out.append(oss.str()); 
 						   out.append("\n");
 					} 
@@ -310,42 +315,38 @@ int main(int argc, char** argv) {
 					out.append("chosen: \n");
 
 					for(int c=0; c<repW; c++){		  
-					     	out.append("- {");
-					   		out.append("cluster_id: ");
-					   		std::ostringstream oss2; 		  
-					   		oss2<<clusterIDs[c];
-					   		out.append(oss2.str());
-					  		out.append(", ");
-							out.append("cluster_count: ");
-							std::ostringstream oss3; 		  
-							oss3<<clusterCounts[c];
-							out.append(oss3.str());
+					   out.append("- {");
+					   out.append("cluster_id: ");
+					   std::ostringstream oss2; 		  
+					   oss2<<clusterReps[c];
+					   out.append(oss2.str());
+					  
 
-					   		for (int f=0; f<4; f++){
-								out.append(", ");
-								out.append(indicatorNames[f]);
-								out.append(": ");
-								std::ostringstream oss; 
-								oss<<indicators[f][c];
-								out.append(oss.str());
-							}
-					   		out.append("}\n");
-					}
-			}				
+					   for (int f=0; f<4; f++){
+							out.append(", ");
+							out.append(indicatorNames[f]);
+							out.append(": ");
+							std::ostringstream oss; 
+							oss<<indicators[f][find(cameraIDs, reps[c], cameraN)];
+							out.append(oss.str());
 
-			else{	//cameraN=0;
-				out = "--- !map:HashWithIndifferentAccess \n";
-				out.append("result_count: ");
-				ostringstream resultCountStream;
-				resultCountStream << cameraN;
-				out.append(resultCountStream.str());
-				out.append("\n");
-	
-			}	
-	
-//
+						}
+					   	out.append("}\n");
+				    }
+
+////
+  		//	string out = "";
+   		//	for (int j=0; j<repW-1; j++){
+   		//	ostringstream idStream;
+   		//		idStream<<reps[j];
+   		//		out.append(idStream.str());
+   		//		out.append(", ");
+   		//	}	
+   		//	ostringstream idStream;
+   		//	idStream<<reps[repW-1];
+   		//	out.append(idStream.str());
    			cout<<out<<endl;
-
+				
 				
 //////
             
