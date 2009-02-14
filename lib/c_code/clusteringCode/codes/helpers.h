@@ -389,8 +389,6 @@ void sort(double** data, int* idA, int** sortedA, int size, int conFeatureN){
 void getIndicators3(int* cameraIDs, int cameraN, int* reps, int repW, int conFeatureN, int** indicators, sql::Statement *stmt,
  sql::ResultSet *res){
 	
-
-	
 	string command = "SELECT distinct * from nodes where camera_id=";
 	ostringstream pid; 
 	pid << cameraIDs[0];
