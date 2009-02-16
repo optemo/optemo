@@ -4,6 +4,7 @@ function fadeout(id)
 {
 	$('fade').style.height = (getDocHeight())+'px';
 	$('fade').setStyle({display: 'inline'});
+	$('info').style.left = ((document.body.clientWidth-800)/2)+'px';
 	$('info').setStyle({display: 'inline'});
 	loadinfo(id);
 }

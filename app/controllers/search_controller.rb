@@ -28,7 +28,7 @@ class SearchController < ApplicationController
       s.cluster_id = params[:c].gsub(/\D/,'')
       #Generate NLG message
       chosen = YAML.load(Search.find(session[:search_id]).chosen)
-      c = chosen.find{|c| c[:cluster_id].to_s == s.camera_id}
+      c = chosen.find{|c| c[:cluster_id] == s.cluster_id}
       if !c.nil?
           c.delete('cluster_id')
           c.delete('cluster_count')
@@ -42,7 +42,7 @@ class SearchController < ApplicationController
             s.msg = ""
           else
             att = c.to_a.each{|a|a.reverse!}
-            s.msg = "You are viewing cameras that have " + combine_list(att)
+            s.msg = "which have " + combine_list(att)
           end
       end
       search(s,{"cluster_id" => s.cluster_id})
@@ -118,7 +118,6 @@ class SearchController < ApplicationController
       end
         }
       s.update_attributes(options)
-      
       session[:search_id] = s.id
       redirect_to "/cameras/list/"+s.URL
     end

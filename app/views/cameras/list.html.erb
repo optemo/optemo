@@ -1,3 +1,4 @@
+<div id="leftbar">
 <div id="savebar">
 	<h2>Saved Items</h2>
 	<div id="savebar_content">
@@ -7,7 +8,7 @@
 	  <%= render :partial => 'camera', :collection => @picked_cameras %>
 	<% end %>
 	</div>
-	<%= link_to 'Compare them!', :controller => 'compare' %>
+	<div style = "clear: both;"><%= link_to 'Compare them!', :controller => 'compare' %></div>
 </div>
 <div id="filterbar">
 	<h2>Filters</h2>
@@ -15,7 +16,7 @@
 	  <%= render :partial => 'filter' %>
 	  <%= submit_tag 'Filter' %>
 	<% end %>
-	
+</div>
 </div>
 <div class="main">
 	<% for i in 0..@cameras.length-1 %>
@@ -32,7 +33,11 @@
 </div>
 
 <% content_for :header do %>
-	<%= render :partial => 'camera' if @camera%>
+	<% if @camera %>
+		<div style="float:left">Viewing<br>Similar<br>cameras to:</div>
+		<%= render :partial => 'camera', :locals => {:nox => true} %>
+		<%= @search.msg %>
+	<% end %>
 <% end %>
 
 
