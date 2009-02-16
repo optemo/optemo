@@ -86,25 +86,32 @@ p {
 	margin: 0.5em 5em;
 }
 #header {
+   margin-top: 15px;
    margin-left: 20px;
    position: relative;
-   width: 750px;
+   width: 920px;
+   height: 82px;
 }
 #header_buttons {
-   position: absolute;
+   /*position: absolute;
    right: 0;
-   top: 0;
-	width: 268px;
+   top: 0;*/
+   float: right;
+   width: 268px;
+}
+#header_content {
+	width: 395px;
+	float: left;
 }
 a.link {
 	margin-left: 10px;
 	margin-right: 10px;
 }
-div #header_spacer, div #footer_options {
+div #header_clear, #footer_options {
     /*background-color: #c8c8ff;*/
     /*background-color: #669933;*/
 	clear: both;
-	height: 5px;
+	height: 1px;
 	position: relative;
 	
 }
@@ -113,7 +120,7 @@ div #headerbar {
 	left: -3px;
 	top: 92px;
 	height: 5px;
-	width: 1134px;
+	width: 953px;
 	z-index: 2;
 	/*width: 800px;*/
     background:transparent url(../images/divider.gif);
@@ -146,11 +153,11 @@ div.pass img{
 /* 
   -- Even more rounded corners with CSS: Base stylesheet --
 */
-
+#mycenter { margin-left: auto; margin-right: auto; width: 958px;}
 .dialog {
  position:relative;
  margin:0px auto;
- width: 1139px;
+ width: 958px;
  min-width:8em;
  max-width:1460px; /* based on image dimensions - not quite consistent with drip styles yet */
  /*color:#fff;*/

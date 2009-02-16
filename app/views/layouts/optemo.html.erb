@@ -15,6 +15,7 @@
   <%= javascript_include_tag 'master_raphael-packed' %>
 </head>
 <body>
+<div id="mycenter">
 <div class="dialog">
 
  <!-- top/right PNG -->
@@ -33,12 +34,11 @@
    Not required for visual effect. -->
 
    <div class="hd">
-	<br>
 	<div id="header">
 	  <div id="logo">
 	  <%= image_tag 'logo.jpg', :width  => 250, :class => 'img' %>
 	  </div>
-	  <%= yield :header %>
+	  <div id="header_content"<%= yield :header %></div>
 	  <div id="header_buttons">
 	  <a href="/" class="link">Home</a> <a class="link" href="/about">About Us</a> <a href="/team" class="link">The Team</a>
 	  <br><br>
@@ -48,11 +48,10 @@
 	  <% end %>
 	  
 	</div>
+	<div id="header_clear"></div>
 	  <div id = "header_space"><%= flash[:notice] %> <span style="color:red;"><%= flash[:error] %></span><!--> Session: <%= session[:user_id] %> -->
-		
 	  </div>
 	</div>
-	  <div id="header_spacer"></div>
    </div>
    <div id="headerbar">&nbsp;</div>
    <div class="bd">
@@ -70,6 +69,7 @@
  <!-- bottom PNG -->
  <div class="b"><div></div></div>
 <!-- end dialog -->
+</div>
 </div>
 <div id="fade" onClick="fadein();">&nbsp;</div>
 <div id="info">&nbsp;</div>
