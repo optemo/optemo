@@ -32,7 +32,7 @@ class SearchController < ApplicationController
       s.cluster_id = params[:c].gsub(/\D/,'')
       #Generate NLG message
       chosen = YAML.load(Search.find(session[:search_id]).chosen)
-      c = chosen.find{|c| c[:cluster_id] == s.cluster_id}
+      c = chosen.find{|c| c[:cluster_id] == s.cluster_id} if chosen
       if !c.nil?
           c.delete('cluster_id')
           c.delete('cluster_count')
@@ -58,6 +58,7 @@ class SearchController < ApplicationController
     @search.run
     @search.results
     s = initialize_search
+    s.result_count = @search.count > 9 ? 9 : @search.count
     s.msg = "Search results for: "+params[:search]
     "i0=".upto("i8=") do |i|
       s.send i.intern, @search.shift.id unless @search.empty?

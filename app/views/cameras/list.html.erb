@@ -15,7 +15,7 @@
 	<h2>Filters</h2>
 	<% form_tag ({:controller => 'search', :action => 'filter' }) do %>
 	  <%= render :partial => 'filter' %>
-	  <%= submit_tag 'Filter' %>
+	  <%= submit_tag 'Filter' %> <a href="javascript:resetFilter();" style="font-size: 0.7em">(reset)</a>
 	<% end %>
 </div>
 </div>

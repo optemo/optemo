@@ -47,3 +47,7 @@ function getDocHeight() {
         Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     );
 }
+
+function resetFilter() {
+	$('filterbar').getElementsByClassName('slider')
+}

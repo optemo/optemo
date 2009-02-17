@@ -44,7 +44,15 @@ class ApplicationController < ActionController::Base
   
   def initialize_search(params = {})
     if session[:search_id]
-      s = Search.new(Search.find(session[:search_id]).attributes.merge(params))
+      atts = Search.find(session[:search_id]).attributes
+      "i0".upto("i8") {|i| atts.delete(i)} 
+      "c0".upto("c8") {|i| atts.delete(i)}
+      atts.delete('camera_id')
+      atts.delete('cluster_id')
+      atts.delete('result_count')
+      atts.delete('id')
+      atts.delete('chosen')
+      s = Search.new(atts.merge(params))
       s.parent_id = session[:search_id]
     else
       s = Search.new(params)
