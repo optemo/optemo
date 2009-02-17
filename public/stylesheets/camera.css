@@ -153,9 +153,10 @@ div #savebar {
 	height: 85px;
 	float: left;
 	}
-.smalldesc {
+p.smalldesc {
 	font-size: 0.8em;
 	line-height: 1em;
+	padding: 0;
 }
 
 /* Filter Box */

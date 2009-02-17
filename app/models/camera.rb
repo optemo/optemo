@@ -76,6 +76,10 @@ class Camera < ActiveRecord::Base
     [brand,model].join(' ')
   end
   
+  def tinyTitle
+    [brand,model.split(' ')[0]].join(' ')
+  end
+  
   def price
     salepriceint.nil? ? listpriceint : salepriceint
   end
