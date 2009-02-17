@@ -8,6 +8,7 @@ class SearchController < ApplicationController
     Session.find(session[:user_id]).update_attributes(myfilter)
     myfilter.each_pair {|key, val| myfilter[key] = val.to_f if key.index('_min') || key.index('_max')}
     s.attributes = myfilter
+    s.filter = true
     search(s)
   end
   
@@ -19,6 +20,7 @@ class SearchController < ApplicationController
   def sim
     #Create new search instance
     s = initialize_search
+    s.filter = !params[:f].nil?
     if params[:c].nil?
       #The data has not previously been clustered
       s.camera_id = params[:id]
@@ -68,24 +70,29 @@ class SearchController < ApplicationController
   private
   
   def search(s, opts = {})
-    #Find current search
-    myfilter = s.attributes
-    #Remove unnescessary arguments from YAML query
-    myfilter.delete('chosen')
-    myfilter.delete('id')
-    "i0".upto("i8") {|i| myfilter.delete(i)} 
-    "c0".upto("c8") {|i| myfilter.delete(i)} 
-    myfilter.delete('parent_id')
-    myfilter.delete('session_id')
-    myfilter.delete('msg')
-    myfilter.delete('created_at')
-    myfilter.delete('updated_at')
-    myfilter.delete('result_count')
-    #myfilter['layer'] = 1
-    myfilter.delete('camera_id') if myfilter['cluster_id']
-    myfilter.delete('cluster_id') unless myfilter['cluster_id']
-    myfilter.update(opts)
-    myparams = myfilter.to_yaml
+    q = {}
+    if s.filter
+      myfilter = s.attributes
+      #Remove unnescessary arguments from YAML query
+      myfilter.delete('chosen')
+      myfilter.delete('id')
+      "i0".upto("i8") {|i| myfilter.delete(i)} 
+      "c0".upto("c8") {|i| myfilter.delete(i)} 
+      myfilter.delete('parent_id')
+      myfilter.delete('session_id')
+      myfilter.delete('msg')
+      myfilter.delete('created_at')
+      myfilter.delete('updated_at')
+      myfilter.delete('result_count')
+      #myfilter['layer'] = 1
+      myfilter.delete('camera_id') if myfilter['cluster_id']
+      myfilter.delete('cluster_id') unless myfilter['cluster_id']
+      myfilter.delete('camera_id') unless myfilter['camera_id']
+      q.update(myfilter)
+    end
+    q.update(opts)
+    q.update({'cluster_id' => s.cluster_id}) if s.cluster_id
+    myparams = q.to_yaml
     @badparams = "None"
     @output = %x["/optemo/site/lib/c_code/connect" "#{myparams}"]
     options = YAML.load(@output)
@@ -104,7 +111,7 @@ class SearchController < ApplicationController
       options[:result_count].times do 
         c = "c#{current_node[1,1]}"
         options[current_node.intern] = newcameras.pop
-        options[c.intern] = newclusters.pop
+        options[c.intern] = newclusters.pop unless newclusters.nil? || newclusters.empty?
         current_node.next!
       end
       #make chosen a YAML
