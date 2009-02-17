@@ -233,6 +233,7 @@ ActiveRecord::Schema.define(:version => 20090130223927) do
     t.integer  "cluster_id"
     t.integer  "camera_id"
     t.integer  "result_count"
+    t.boolean  "filter",                :default => false
     t.string   "brand",                 :default => "All Brands"
     t.float    "maximumresolution_min", :default => 0.0
     t.float    "maximumresolution_max", :default => 14.7
