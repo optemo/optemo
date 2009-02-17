@@ -20,7 +20,6 @@ class CamerasController < ApplicationController
     else
       @search = initialize_search
     end
-    chosen = []
     chosen = YAML.load(@search.chosen) if @search.chosen
     @dbprops = DbProperty.find(:first)
     #Navigation Variables
@@ -31,7 +30,7 @@ class CamerasController < ApplicationController
     params[:path_info].collect do |num|
       @cameras << Camera.find(num)
       if num.to_i == @search.send(('i'+counter.to_s).intern)
-        myc = chosen.find{|c| c[:cluster_id] == @search.send(('c'+counter.to_s).intern)}
+        myc = chosen.find{|c| c[:cluster_id] == @search.send(('c'+counter.to_s).intern)} if chosen
         if myc.nil?
           #Otherwise fill in a null value
           @desc << nil
