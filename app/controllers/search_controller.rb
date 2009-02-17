@@ -1,6 +1,8 @@
 class SearchController < ApplicationController
   def filter
     s = initialize_search
+    s.cluster_id = nil
+    s.camera_id = nil
     #Remove quotes for strings
     myfilter = params[:myfilter]
     Session.find(session[:user_id]).update_attributes(myfilter)
@@ -85,7 +87,7 @@ class SearchController < ApplicationController
     myfilter.update(opts)
     myparams = myfilter.to_yaml
     @badparams = "None"
-    #debugger
+    debugger
     @output = %x["/optemo/site/lib/c_code/connect" "#{myparams}"]
     options = YAML.load(@output)
     #parse the new ids

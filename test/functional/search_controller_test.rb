@@ -135,10 +135,21 @@ class SearchControllerTest < ActionController::TestCase
     get :index
     oldsearch = session[:search_id]
     @request.env["HTTP_REFERER"] = 'http://localhost:3000/cameras/'
-    get :sim, {:id => 679, :c => 1052}
+    get :sim, {:id => 9, :c => 1049}
     assert_not_equal(oldsearch, session[:search_id], "Search was not successful, output: #{assigns(:output)}")
     oldsearch = session[:search_id]
-    get :sim, {:id => 1206, :c => 1125}
+    get :sim, {:id => 289, :c => 1095}
+    assert_not_equal(oldsearch, session[:search_id], "Search was not successful, output: #{assigns(:output)}")
+  end
+  
+  def test_similar_2
+    get :index
+    oldsearch = session[:search_id]
+    @request.env["HTTP_REFERER"] = 'http://localhost:3000/cameras/'
+    get :sim, {:id => 9, :c => 1049}
+    assert_not_equal(oldsearch, session[:search_id], "Search was not successful, output: #{assigns(:output)}")
+    oldsearch = session[:search_id]
+    get :sim, {:id => 462, :c => 1098}
     assert_not_equal(oldsearch, session[:search_id], "Search was not successful, output: #{assigns(:output)}")
   end
 end
