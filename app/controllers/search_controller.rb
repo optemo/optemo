@@ -87,7 +87,6 @@ class SearchController < ApplicationController
     myfilter.update(opts)
     myparams = myfilter.to_yaml
     @badparams = "None"
-    debugger
     @output = %x["/optemo/site/lib/c_code/connect" "#{myparams}"]
     options = YAML.load(@output)
     #parse the new ids
