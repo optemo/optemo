@@ -123,13 +123,16 @@ div #leftbar {
 	float: left;
 	padding: 0;
 	margin: 0;
+	text-align: center;
+}
+#startover {
 }
 	
 /* Save Box */
 div #savebar {
 	width: 195px;
 	background: #ddd;
-	margin: 0em 0.1em;
+	margin: 0.5em 0.1em 0;
 	padding: 0em 0em 0.5em 0em;
 	text-align: center;}
 #savebar h2 {

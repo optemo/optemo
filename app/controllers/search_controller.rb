@@ -97,7 +97,7 @@ class SearchController < ApplicationController
     @output = %x["/optemo/site/lib/c_code/connect" "#{myparams}"]
     options = YAML.load(@output)
     #parse the new ids
-    if options.blank? || options[:result_count].nil? || (options[:result_count] > 0 && options['cameras'].nil?) || (options[:result_count] > 0 && options['clusters'].nil?)
+    if options.blank? || options[:result_count].nil? || (options[:result_count] > 0 && options['cameras'].nil?))
       flash[:error] = "There was a problem finding your products."
       redirect_to :back
     elsif options[:result_count] == 0
