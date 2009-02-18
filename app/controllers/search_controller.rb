@@ -95,6 +95,7 @@ class SearchController < ApplicationController
     q.update({'cluster_id' => s.cluster_id}) if s.cluster_id
     myparams = q.to_yaml
     @badparams = "None"
+    #debugger
     @output = %x["/optemo/site/lib/c_code/connect" "#{myparams}"]
     options = YAML.load(@output)
     #parse the new ids
