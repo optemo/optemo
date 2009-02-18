@@ -7,9 +7,9 @@ class DbProperty < ActiveRecord::Base
       when "opticalzoom": res = ['large zoom','small zoom']
       else return nil
     end
-    if v >= db_features.find_by_name(prop).high
+    if !v.nil? && v >= db_features.find_by_name(prop).high
       '<span class="high">'+res[0]+'</span>'+optional
-    elsif v <= db_features.find_by_name(prop).low
+    elsif !v.nil? && v <= db_features.find_by_name(prop).low
       '<span class="low">'+res[1]+'</span>'+optional
     else
       ""

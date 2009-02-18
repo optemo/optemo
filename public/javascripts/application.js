@@ -49,5 +49,19 @@ function getDocHeight() {
 }
 
 function resetFilter() {
-	$('filterbar').getElementsByClassName('slider')
+	var disp = $('filterbar').getElementsByClassName('disp');
+	var slider = $('filterbar').getElementsByClassName('slider');
+	for (i=0;i<mysliders.length;i++)
+	{
+		var name = slider[i].id.substr(0,slider[i].id.length-6);
+		$('myfilter_'+name+'_min').value = mysliders[i].minimum;
+		$('myfilter_'+name+'_max').value = mysliders[i].maximum;
+		disp[i].innerHTML = mysliders[i].minimum + "-" + mysliders[i].maximum;
+		mysliders[i].setValue(mysliders[i].minimum, 0);
+		mysliders[i].setValue(mysliders[i].maximum, 1);
+	}
+	//alert(mysliders.length)
+	//i.setValue(0);
+	//i.setValue(20);
+	//alert(array[i].id)
 }
