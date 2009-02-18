@@ -6,7 +6,8 @@ class CreateDbProperties < ActiveRecord::Migration
       t.text  :brands
       t.float :price_min
       t.float :price_max
-      
+      t.float :price_low
+      t.float :price_high
       t.timestamps
     end
   end

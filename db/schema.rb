@@ -116,6 +116,8 @@ ActiveRecord::Schema.define(:version => 20090130223927) do
     t.text     "brands"
     t.float    "price_min"
     t.float    "price_max"
+    t.float    "price_low"
+    t.float    "price_high"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
