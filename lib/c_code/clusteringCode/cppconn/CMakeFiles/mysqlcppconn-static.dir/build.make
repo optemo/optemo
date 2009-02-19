@@ -31,10 +31,10 @@ RM = /usr/local/bin/cmake -E remove -f
 CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /optemo/site/lib/c_code/clusteringCode
+CMAKE_SOURCE_DIR = /Users/maryam/clusteringCode
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /optemo/site/lib/c_code/clusteringCode
+CMAKE_BINARY_DIR = /Users/maryam/clusteringCode
 
 # Include any dependencies generated for this target.
 include cppconn/CMakeFiles/mysqlcppconn-static.dir/depend.make
@@ -50,17 +50,17 @@ cppconn/CMakeFiles/mysqlcppconn-static.dir/depend.make.mark: cppconn/mysql_conne
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_connection.o: cppconn/CMakeFiles/mysqlcppconn-static.dir/flags.make
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_connection.o: cppconn/mysql_connection.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /optemo/site/lib/c_code/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_1)
+	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_connection.o"
-	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_connection.o -c /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_connection.cpp
+	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_connection.o -c /Users/maryam/clusteringCode/cppconn/mysql_connection.cpp
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_connection.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_connection.i"
-	/usr/bin/c++  $(CXX_FLAGS) -E /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_connection.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_connection.i
+	/usr/bin/c++  $(CXX_FLAGS) -E /Users/maryam/clusteringCode/cppconn/mysql_connection.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_connection.i
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_connection.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_connection.s"
-	/usr/bin/c++  $(CXX_FLAGS) -S /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_connection.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_connection.s
+	/usr/bin/c++  $(CXX_FLAGS) -S /Users/maryam/clusteringCode/cppconn/mysql_connection.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_connection.s
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_connection.o.requires:
 
@@ -74,17 +74,17 @@ cppconn/CMakeFiles/mysqlcppconn-static.dir/depend.make.mark: cppconn/mysql_const
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_constructed_resultset.o: cppconn/CMakeFiles/mysqlcppconn-static.dir/flags.make
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_constructed_resultset.o: cppconn/mysql_constructed_resultset.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /optemo/site/lib/c_code/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_2)
+	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_2)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_constructed_resultset.o"
-	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_constructed_resultset.o -c /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_constructed_resultset.cpp
+	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_constructed_resultset.o -c /Users/maryam/clusteringCode/cppconn/mysql_constructed_resultset.cpp
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_constructed_resultset.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_constructed_resultset.i"
-	/usr/bin/c++  $(CXX_FLAGS) -E /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_constructed_resultset.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_constructed_resultset.i
+	/usr/bin/c++  $(CXX_FLAGS) -E /Users/maryam/clusteringCode/cppconn/mysql_constructed_resultset.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_constructed_resultset.i
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_constructed_resultset.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_constructed_resultset.s"
-	/usr/bin/c++  $(CXX_FLAGS) -S /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_constructed_resultset.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_constructed_resultset.s
+	/usr/bin/c++  $(CXX_FLAGS) -S /Users/maryam/clusteringCode/cppconn/mysql_constructed_resultset.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_constructed_resultset.s
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_constructed_resultset.o.requires:
 
@@ -98,17 +98,17 @@ cppconn/CMakeFiles/mysqlcppconn-static.dir/depend.make.mark: cppconn/mysql_drive
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_driver.o: cppconn/CMakeFiles/mysqlcppconn-static.dir/flags.make
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_driver.o: cppconn/mysql_driver.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /optemo/site/lib/c_code/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_3)
+	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_3)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_driver.o"
-	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_driver.o -c /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_driver.cpp
+	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_driver.o -c /Users/maryam/clusteringCode/cppconn/mysql_driver.cpp
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_driver.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_driver.i"
-	/usr/bin/c++  $(CXX_FLAGS) -E /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_driver.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_driver.i
+	/usr/bin/c++  $(CXX_FLAGS) -E /Users/maryam/clusteringCode/cppconn/mysql_driver.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_driver.i
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_driver.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_driver.s"
-	/usr/bin/c++  $(CXX_FLAGS) -S /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_driver.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_driver.s
+	/usr/bin/c++  $(CXX_FLAGS) -S /Users/maryam/clusteringCode/cppconn/mysql_driver.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_driver.s
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_driver.o.requires:
 
@@ -122,17 +122,17 @@ cppconn/CMakeFiles/mysqlcppconn-static.dir/depend.make.mark: cppconn/mysql_excep
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_exception.o: cppconn/CMakeFiles/mysqlcppconn-static.dir/flags.make
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_exception.o: cppconn/mysql_exception.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /optemo/site/lib/c_code/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_4)
+	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_4)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_exception.o"
-	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_exception.o -c /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_exception.cpp
+	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_exception.o -c /Users/maryam/clusteringCode/cppconn/mysql_exception.cpp
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_exception.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_exception.i"
-	/usr/bin/c++  $(CXX_FLAGS) -E /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_exception.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_exception.i
+	/usr/bin/c++  $(CXX_FLAGS) -E /Users/maryam/clusteringCode/cppconn/mysql_exception.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_exception.i
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_exception.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_exception.s"
-	/usr/bin/c++  $(CXX_FLAGS) -S /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_exception.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_exception.s
+	/usr/bin/c++  $(CXX_FLAGS) -S /Users/maryam/clusteringCode/cppconn/mysql_exception.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_exception.s
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_exception.o.requires:
 
@@ -146,17 +146,17 @@ cppconn/CMakeFiles/mysqlcppconn-static.dir/depend.make.mark: cppconn/mysql_metad
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_metadata.o: cppconn/CMakeFiles/mysqlcppconn-static.dir/flags.make
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_metadata.o: cppconn/mysql_metadata.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /optemo/site/lib/c_code/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_5)
+	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_5)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_metadata.o"
-	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_metadata.o -c /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_metadata.cpp
+	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_metadata.o -c /Users/maryam/clusteringCode/cppconn/mysql_metadata.cpp
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_metadata.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_metadata.i"
-	/usr/bin/c++  $(CXX_FLAGS) -E /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_metadata.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_metadata.i
+	/usr/bin/c++  $(CXX_FLAGS) -E /Users/maryam/clusteringCode/cppconn/mysql_metadata.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_metadata.i
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_metadata.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_metadata.s"
-	/usr/bin/c++  $(CXX_FLAGS) -S /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_metadata.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_metadata.s
+	/usr/bin/c++  $(CXX_FLAGS) -S /Users/maryam/clusteringCode/cppconn/mysql_metadata.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_metadata.s
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_metadata.o.requires:
 
@@ -170,17 +170,17 @@ cppconn/CMakeFiles/mysqlcppconn-static.dir/depend.make.mark: cppconn/mysql_prepa
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_prepared_statement.o: cppconn/CMakeFiles/mysqlcppconn-static.dir/flags.make
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_prepared_statement.o: cppconn/mysql_prepared_statement.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /optemo/site/lib/c_code/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_6)
+	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_6)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_prepared_statement.o"
-	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_prepared_statement.o -c /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_prepared_statement.cpp
+	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_prepared_statement.o -c /Users/maryam/clusteringCode/cppconn/mysql_prepared_statement.cpp
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_prepared_statement.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_prepared_statement.i"
-	/usr/bin/c++  $(CXX_FLAGS) -E /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_prepared_statement.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_prepared_statement.i
+	/usr/bin/c++  $(CXX_FLAGS) -E /Users/maryam/clusteringCode/cppconn/mysql_prepared_statement.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_prepared_statement.i
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_prepared_statement.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_prepared_statement.s"
-	/usr/bin/c++  $(CXX_FLAGS) -S /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_prepared_statement.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_prepared_statement.s
+	/usr/bin/c++  $(CXX_FLAGS) -S /Users/maryam/clusteringCode/cppconn/mysql_prepared_statement.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_prepared_statement.s
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_prepared_statement.o.requires:
 
@@ -194,17 +194,17 @@ cppconn/CMakeFiles/mysqlcppconn-static.dir/depend.make.mark: cppconn/mysql_ps_re
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_ps_resultset.o: cppconn/CMakeFiles/mysqlcppconn-static.dir/flags.make
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_ps_resultset.o: cppconn/mysql_ps_resultset.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /optemo/site/lib/c_code/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_7)
+	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_7)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_ps_resultset.o"
-	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_ps_resultset.o -c /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_ps_resultset.cpp
+	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_ps_resultset.o -c /Users/maryam/clusteringCode/cppconn/mysql_ps_resultset.cpp
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_ps_resultset.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_ps_resultset.i"
-	/usr/bin/c++  $(CXX_FLAGS) -E /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_ps_resultset.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_ps_resultset.i
+	/usr/bin/c++  $(CXX_FLAGS) -E /Users/maryam/clusteringCode/cppconn/mysql_ps_resultset.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_ps_resultset.i
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_ps_resultset.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_ps_resultset.s"
-	/usr/bin/c++  $(CXX_FLAGS) -S /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_ps_resultset.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_ps_resultset.s
+	/usr/bin/c++  $(CXX_FLAGS) -S /Users/maryam/clusteringCode/cppconn/mysql_ps_resultset.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_ps_resultset.s
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_ps_resultset.o.requires:
 
@@ -218,17 +218,17 @@ cppconn/CMakeFiles/mysqlcppconn-static.dir/depend.make.mark: cppconn/mysql_resul
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset.o: cppconn/CMakeFiles/mysqlcppconn-static.dir/flags.make
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset.o: cppconn/mysql_resultset.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /optemo/site/lib/c_code/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_8)
+	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_8)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset.o"
-	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset.o -c /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_resultset.cpp
+	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset.o -c /Users/maryam/clusteringCode/cppconn/mysql_resultset.cpp
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset.i"
-	/usr/bin/c++  $(CXX_FLAGS) -E /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_resultset.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset.i
+	/usr/bin/c++  $(CXX_FLAGS) -E /Users/maryam/clusteringCode/cppconn/mysql_resultset.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset.i
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset.s"
-	/usr/bin/c++  $(CXX_FLAGS) -S /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_resultset.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset.s
+	/usr/bin/c++  $(CXX_FLAGS) -S /Users/maryam/clusteringCode/cppconn/mysql_resultset.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset.s
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset.o.requires:
 
@@ -242,17 +242,17 @@ cppconn/CMakeFiles/mysqlcppconn-static.dir/depend.make.mark: cppconn/mysql_resul
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset_metadata.o: cppconn/CMakeFiles/mysqlcppconn-static.dir/flags.make
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset_metadata.o: cppconn/mysql_resultset_metadata.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /optemo/site/lib/c_code/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_9)
+	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_9)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset_metadata.o"
-	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset_metadata.o -c /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_resultset_metadata.cpp
+	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset_metadata.o -c /Users/maryam/clusteringCode/cppconn/mysql_resultset_metadata.cpp
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset_metadata.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset_metadata.i"
-	/usr/bin/c++  $(CXX_FLAGS) -E /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_resultset_metadata.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset_metadata.i
+	/usr/bin/c++  $(CXX_FLAGS) -E /Users/maryam/clusteringCode/cppconn/mysql_resultset_metadata.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset_metadata.i
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset_metadata.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset_metadata.s"
-	/usr/bin/c++  $(CXX_FLAGS) -S /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_resultset_metadata.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset_metadata.s
+	/usr/bin/c++  $(CXX_FLAGS) -S /Users/maryam/clusteringCode/cppconn/mysql_resultset_metadata.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset_metadata.s
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_resultset_metadata.o.requires:
 
@@ -266,17 +266,17 @@ cppconn/CMakeFiles/mysqlcppconn-static.dir/depend.make.mark: cppconn/mysql_res_w
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_res_wrapper.o: cppconn/CMakeFiles/mysqlcppconn-static.dir/flags.make
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_res_wrapper.o: cppconn/mysql_res_wrapper.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /optemo/site/lib/c_code/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_10)
+	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_10)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_res_wrapper.o"
-	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_res_wrapper.o -c /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_res_wrapper.cpp
+	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_res_wrapper.o -c /Users/maryam/clusteringCode/cppconn/mysql_res_wrapper.cpp
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_res_wrapper.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_res_wrapper.i"
-	/usr/bin/c++  $(CXX_FLAGS) -E /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_res_wrapper.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_res_wrapper.i
+	/usr/bin/c++  $(CXX_FLAGS) -E /Users/maryam/clusteringCode/cppconn/mysql_res_wrapper.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_res_wrapper.i
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_res_wrapper.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_res_wrapper.s"
-	/usr/bin/c++  $(CXX_FLAGS) -S /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_res_wrapper.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_res_wrapper.s
+	/usr/bin/c++  $(CXX_FLAGS) -S /Users/maryam/clusteringCode/cppconn/mysql_res_wrapper.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_res_wrapper.s
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_res_wrapper.o.requires:
 
@@ -290,17 +290,17 @@ cppconn/CMakeFiles/mysqlcppconn-static.dir/depend.make.mark: cppconn/mysql_state
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_statement.o: cppconn/CMakeFiles/mysqlcppconn-static.dir/flags.make
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_statement.o: cppconn/mysql_statement.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /optemo/site/lib/c_code/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_11)
+	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/clusteringCode/CMakeFiles $(CMAKE_PROGRESS_11)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_statement.o"
-	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_statement.o -c /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_statement.cpp
+	/usr/bin/c++   $(CXX_FLAGS) -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_statement.o -c /Users/maryam/clusteringCode/cppconn/mysql_statement.cpp
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_statement.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_statement.i"
-	/usr/bin/c++  $(CXX_FLAGS) -E /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_statement.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_statement.i
+	/usr/bin/c++  $(CXX_FLAGS) -E /Users/maryam/clusteringCode/cppconn/mysql_statement.cpp > cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_statement.i
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_statement.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_statement.s"
-	/usr/bin/c++  $(CXX_FLAGS) -S /optemo/site/lib/c_code/clusteringCode/cppconn/mysql_statement.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_statement.s
+	/usr/bin/c++  $(CXX_FLAGS) -S /Users/maryam/clusteringCode/cppconn/mysql_statement.cpp -o cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_statement.s
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_statement.o.requires:
 
@@ -313,7 +313,7 @@ cppconn/CMakeFiles/mysqlcppconn-static.dir/depend: cppconn/CMakeFiles/mysqlcppco
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/depend.make.mark:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --magenta --bold "Scanning dependencies of target mysqlcppconn-static"
-	cd /optemo/site/lib/c_code/clusteringCode && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /optemo/site/lib/c_code/clusteringCode /optemo/site/lib/c_code/clusteringCode/cppconn /optemo/site/lib/c_code/clusteringCode /optemo/site/lib/c_code/clusteringCode/cppconn /optemo/site/lib/c_code/clusteringCode/cppconn/CMakeFiles/mysqlcppconn-static.dir/DependInfo.cmake
+	cd /Users/maryam/clusteringCode && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/maryam/clusteringCode /Users/maryam/clusteringCode/cppconn /Users/maryam/clusteringCode /Users/maryam/clusteringCode/cppconn /Users/maryam/clusteringCode/cppconn/CMakeFiles/mysqlcppconn-static.dir/DependInfo.cmake
 
 # Object files for target mysqlcppconn-static
 mysqlcppconn__static_OBJECTS = \
@@ -345,8 +345,8 @@ cppconn/libmysqlcppconn-static.a: cppconn/CMakeFiles/mysqlcppconn-static.dir/mys
 cppconn/libmysqlcppconn-static.a: cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_statement.o
 cppconn/libmysqlcppconn-static.a: cppconn/CMakeFiles/mysqlcppconn-static.dir/build.make
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX static library libmysqlcppconn-static.a"
-	cd /optemo/site/lib/c_code/clusteringCode/cppconn && $(CMAKE_COMMAND) -P CMakeFiles/mysqlcppconn-static.dir/cmake_clean_target.cmake
-	cd /optemo/site/lib/c_code/clusteringCode/cppconn && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/mysqlcppconn-static.dir/link.txt --verbose=$(VERBOSE)
+	cd /Users/maryam/clusteringCode/cppconn && $(CMAKE_COMMAND) -P CMakeFiles/mysqlcppconn-static.dir/cmake_clean_target.cmake
+	cd /Users/maryam/clusteringCode/cppconn && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/mysqlcppconn-static.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 cppconn/CMakeFiles/mysqlcppconn-static.dir/build: cppconn/libmysqlcppconn-static.a
@@ -364,5 +364,5 @@ cppconn/CMakeFiles/mysqlcppconn-static.dir/requires: cppconn/CMakeFiles/mysqlcpp
 cppconn/CMakeFiles/mysqlcppconn-static.dir/requires: cppconn/CMakeFiles/mysqlcppconn-static.dir/mysql_statement.o.requires
 
 cppconn/CMakeFiles/mysqlcppconn-static.dir/clean:
-	cd /optemo/site/lib/c_code/clusteringCode/cppconn && $(CMAKE_COMMAND) -P CMakeFiles/mysqlcppconn-static.dir/cmake_clean.cmake
+	cd /Users/maryam/clusteringCode/cppconn && $(CMAKE_COMMAND) -P CMakeFiles/mysqlcppconn-static.dir/cmake_clean.cmake
 

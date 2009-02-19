@@ -28,7 +28,7 @@ using namespace std;
 * Usage example for Driver Manager, Connection, (simple) Statement, ResultSet
 */
 int main(int argc, char** argv) {
-	
+
 //void initialize(int arcCount, char** argArray)
 //{
 	stringstream sql;
@@ -153,7 +153,7 @@ int main(int argc, char** argv) {
 		    } 		 
 	    }
 	}
-
+	
 //}
 // Driver Manager
 
@@ -239,9 +239,13 @@ int main(int argc, char** argv) {
 					for (int f=0; f<conFeatureN; f++){
 						conFeatureRange[f] = new double [2];
 						indicators[f] = new int[repW];
+						for (int i=0; i<repW; i++){
+							indicators[f][i] = 0;
+						}
 					}
 			
 				int cameraN = filter2(filteredRange, brand, stmt, res, res2, cameraIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange);
+			
 				
 				if (cameraN> 0){
 					if (cameraN<repW){
@@ -253,12 +257,16 @@ int main(int argc, char** argv) {
 					int* clusterIDs = new int[repW];
 					int* clusterCounts = new int[repW];
 				
-					bool reped = getRep2(reps, cameraIDs, cameraN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, clusterID);	
-					getIndicators3(cameraIDs, cameraN, reps, repW, conFeatureN, indicators, stmt, res);
-	
+					bool reped = getRep2(reps, cameraIDs, cameraN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID);
+				
+					//void getIndicators4(int* clusterIDs, int repW, int conFeatureN, int** indicators, sql::Statement *stmt,sql::ResultSet *res)
+				
+				if(reped){
+					getIndicators4(clusterIDs,repW, conFeatureN, indicators, stmt, res);
+				}
+
 //Generating the output string 
 			
-
 					string* indicatorNames = new string[4];
 					indicatorNames[0] = "Price";
 					indicatorNames[1] = "Display Size";
@@ -298,6 +306,7 @@ int main(int argc, char** argv) {
 							out.append(oss.str()); 
 						 	out.append("\n");
 					}
+				if (reped){
 					out.append("clusters: \n");
 			        for(int c=0; c<repW; c++){
 					       out.append("- ");
@@ -331,6 +340,7 @@ int main(int argc, char** argv) {
 							}
 					   		out.append("}\n");
 					}
+				}	
 			}				
 
 			else{	//cameraN=0;

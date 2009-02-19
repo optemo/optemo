@@ -1,4 +1,4 @@
-# Install script for directory: /optemo/site/lib/c_code/clusteringCode/drivermanager
+# Install script for directory: /Users/maryam/clusteringCode/drivermanager
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)

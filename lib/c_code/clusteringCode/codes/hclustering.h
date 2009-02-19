@@ -81,7 +81,7 @@ if 	(layer == 1){
 			 	   	    	centroids[j]=new double[conFeatureN];
 			 	   		}
 
-			 	       	centersA = k_means(dataN,size,conFeatureN, clusterN, 1e-4, centroids); 
+			 	       	centersA = k_means2(dataN,size,conFeatureN, clusterN, 1e-4, centroids); 
 
 				dist = new double* [size];
 
