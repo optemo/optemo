@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090130223927) do
+ActiveRecord::Schema.define(:version => 20090127204735) do
 
   create_table "amazon_groups", :force => true do |t|
     t.datetime "created_at"
@@ -198,9 +198,6 @@ ActiveRecord::Schema.define(:version => 20090130223927) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "toolow"
-    t.float    "ppm"
-    t.float    "ttp"
-    t.string   "resolution"
   end
 
   create_table "saveds", :force => true do |t|
@@ -265,6 +262,12 @@ ActiveRecord::Schema.define(:version => 20090130223927) do
     t.float    "price_min",             :default => 0.0
     t.float    "price_max",             :default => 1815.86
   end
+
+  create_table "test", :id => false, :force => true do |t|
+    t.binary "blob_col"
+  end
+
+  add_index "test", ["blob_col"], :name => "blob_col"
 
   create_table "vieweds", :force => true do |t|
     t.datetime "created_at"

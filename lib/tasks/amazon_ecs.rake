@@ -313,5 +313,6 @@ task :interpret_special_features => :environment do
     #if features['Dimensions']
     #  puts features['Dimensions']
     #puts features['Dimensions'] + " => #{p.itemheight} #{p.itemwidth} #{p.itemlength}"
+    p.save
   end
 end
