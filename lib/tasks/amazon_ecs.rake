@@ -285,26 +285,33 @@ task :interpret_special_features => :environment do
     }
     p.ppm = features['Print Speed'].match(/\d+[.]?\d*/)[0] if features['Print Speed']
     p.ttp = features['First Page Output Time'].match(/\d+[.]?\d*/)[0] if features['First Page Output Time']
-    #p.resolution = features['Resolution'].match(/(\d,\d{3}|\d+) ?(x ?(\d,\d{3}|\d+))?/)[1,2].sort{|a,b| 
-    #  a.gsub!(',','')
-    #  b.gsub!(',','')
-    #  a.to_i < b.to_i ? 1 : a.to_i > b.to_i ? -1 : 0
-    #}.join(' x ') if features['Resolution'] && features['Resolution'].match(/\d+ ?x ?\d+/)
-    duplex = features['Duplex Printing']
-    features['Connectivity']
-    features['Paper Sizes Supported']
-    features['Standard Paper Output']
-    features['Dimensions']
-    dutycycle = features['Maximum Duty Cycle'].match(/(\d{1,3}(,\d{3})+|\d+)/)[0].gsub(',','') if features['Maximum Duty Cycle']
-    features['Standard Paper Input']
-    features['Special Features']
+    if features['Resolution']
+      tmp = features['Resolution'].match(/(\d,\d{3}|\d+) ?x?X? ?(\d,\d{3}|\d+)?/)[1,2].compact
+      tmp*=2 if tmp.size == 1
+      p.resolution = tmp.sort{|a,b| 
+        a.gsub!(',','')
+        b.gsub!(',','')
+        a.to_i < b.to_i ? 1 : a.to_i > b.to_i ? -1 : 0
+      }.join(' x ') 
+    end # String drop down style
+    p.duplex = features['Duplex Printing'] # String
+    p.connectivity = features['Connectivity'] # String
+    p.papersize = features['Paper Sizes Supported'] # String
+    p.paperoutput = features['Standard Paper Output'].match(/(\d,\d{3}|\d+)/)[0] if features['Standard Paper Output'] #Numeric
+    p.dimensions = features['Dimensions'] #Not parsed yet
+    p.dutycycle = features['Maximum Duty Cycle'].match(/(\d{1,3}(,\d{3})+|\d+)/)[0].gsub(',','') if features['Maximum Duty Cycle']
+    p.paperinput = features['Standard Paper Input'].match(/(\d,\d{3}|\d+)/)[0] if features['Standard Paper Input'] && features['Standard Paper Input'].match(/(\d,\d{3}|\d+)/) #Numeric
+    #Parse out special features
+    if !features['Special Features'].nil?
+      if features['Special Features'] == "Duplex Printing"
+        features['Special Features'] = nil
+        p.duplex = "Yes" if p.duplex.nil?
+      end
+    end
+    p.special = features['Special Features']
     #pp features
-    if features['Maximum Duty Cycle']
-    #if features['Print Speed']
-    #puts features['Print Speed'] + " => "+ p.ppm.to_s
-    puts features['Maximum Duty Cycle'] + " => #{dutycycle if dutycycle}"
-  else
-    puts 'nil'
-  end
+    #if features['Dimensions']
+    #  puts features['Dimensions']
+    #puts features['Dimensions'] + " => #{p.itemheight} #{p.itemwidth} #{p.itemlength}"
   end
 end
