@@ -21,10 +21,18 @@ algorithm
 -
 cppconn/mysql_public_iface.h
 -
-examples.h
-/optemo/site/lib/c_code/clusteringCode/codes/examples.h
+hClustering.h
+/optemo/site/lib/c_code/clusteringCode/codes/hClustering.h
 
-/optemo/site/lib/c_code/clusteringCode/codes/examples.h
+/optemo/site/lib/c_code/clusteringCode/codes/hClustering.h
+kmeans.h
+/optemo/site/lib/c_code/clusteringCode/codes/kmeans.h
+helpers.h
+/optemo/site/lib/c_code/clusteringCode/codes/helpers.h
+
+/optemo/site/lib/c_code/clusteringCode/codes/helpers.h
+
+/optemo/site/lib/c_code/clusteringCode/codes/kmeans.h
 
 /usr/local/mysql/include/config-os2.h
 os2.h
