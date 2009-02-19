@@ -40,10 +40,10 @@ RM = /usr/local/bin/cmake -E remove -f
 CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/maryam/mysql_connector_cpp_1_0_0_preview/examples
+CMAKE_SOURCE_DIR = /Users/maryam/clusteringCode/codes
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/maryam/mysql_connector_cpp_1_0_0_preview/examples
+CMAKE_BINARY_DIR = /Users/maryam/clusteringCode/codes
 
 #=============================================================================
 # Target rules for target CMakeFiles/connect.dir
@@ -52,7 +52,7 @@ CMAKE_BINARY_DIR = /Users/maryam/mysql_connector_cpp_1_0_0_preview/examples
 CMakeFiles/connect.dir/all:
 	$(MAKE) -f CMakeFiles/connect.dir/build.make CMakeFiles/connect.dir/depend
 	$(MAKE) -f CMakeFiles/connect.dir/build.make CMakeFiles/connect.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/mysql_connector_cpp_1_0_0_preview/examples/CMakeFiles  1
+	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/clusteringCode/codes/CMakeFiles  1
 	@echo "Built target connect"
 
 # Include target in all.
@@ -60,9 +60,9 @@ all: CMakeFiles/connect.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/connect.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/mysql_connector_cpp_1_0_0_preview/examples/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/clusteringCode/codes/CMakeFiles 1
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/connect.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/mysql_connector_cpp_1_0_0_preview/examples/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/clusteringCode/codes/CMakeFiles 0
 
 # Convenience name for target.
 connect: CMakeFiles/connect.dir/rule
@@ -81,7 +81,7 @@ clean: CMakeFiles/connect.dir/clean
 CMakeFiles/prepared_statement.dir/all:
 	$(MAKE) -f CMakeFiles/prepared_statement.dir/build.make CMakeFiles/prepared_statement.dir/depend
 	$(MAKE) -f CMakeFiles/prepared_statement.dir/build.make CMakeFiles/prepared_statement.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/mysql_connector_cpp_1_0_0_preview/examples/CMakeFiles  2
+	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/clusteringCode/codes/CMakeFiles  2
 	@echo "Built target prepared_statement"
 
 # Include target in all.
@@ -89,9 +89,9 @@ all: CMakeFiles/prepared_statement.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/prepared_statement.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/mysql_connector_cpp_1_0_0_preview/examples/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/clusteringCode/codes/CMakeFiles 1
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/prepared_statement.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/mysql_connector_cpp_1_0_0_preview/examples/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/clusteringCode/codes/CMakeFiles 0
 
 # Convenience name for target.
 prepared_statement: CMakeFiles/prepared_statement.dir/rule
@@ -110,7 +110,7 @@ clean: CMakeFiles/prepared_statement.dir/clean
 CMakeFiles/resultset.dir/all:
 	$(MAKE) -f CMakeFiles/resultset.dir/build.make CMakeFiles/resultset.dir/depend
 	$(MAKE) -f CMakeFiles/resultset.dir/build.make CMakeFiles/resultset.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/mysql_connector_cpp_1_0_0_preview/examples/CMakeFiles  3
+	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/clusteringCode/codes/CMakeFiles  3
 	@echo "Built target resultset"
 
 # Include target in all.
@@ -118,9 +118,9 @@ all: CMakeFiles/resultset.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/resultset.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/mysql_connector_cpp_1_0_0_preview/examples/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/clusteringCode/codes/CMakeFiles 1
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/resultset.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/mysql_connector_cpp_1_0_0_preview/examples/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/clusteringCode/codes/CMakeFiles 0
 
 # Convenience name for target.
 resultset: CMakeFiles/resultset.dir/rule
@@ -139,7 +139,7 @@ clean: CMakeFiles/resultset.dir/clean
 CMakeFiles/resultset_meta.dir/all:
 	$(MAKE) -f CMakeFiles/resultset_meta.dir/build.make CMakeFiles/resultset_meta.dir/depend
 	$(MAKE) -f CMakeFiles/resultset_meta.dir/build.make CMakeFiles/resultset_meta.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/mysql_connector_cpp_1_0_0_preview/examples/CMakeFiles  4
+	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/clusteringCode/codes/CMakeFiles  4
 	@echo "Built target resultset_meta"
 
 # Include target in all.
@@ -147,9 +147,9 @@ all: CMakeFiles/resultset_meta.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/resultset_meta.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/mysql_connector_cpp_1_0_0_preview/examples/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/clusteringCode/codes/CMakeFiles 1
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/resultset_meta.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/mysql_connector_cpp_1_0_0_preview/examples/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/clusteringCode/codes/CMakeFiles 0
 
 # Convenience name for target.
 resultset_meta: CMakeFiles/resultset_meta.dir/rule
@@ -168,7 +168,7 @@ clean: CMakeFiles/resultset_meta.dir/clean
 CMakeFiles/statement.dir/all:
 	$(MAKE) -f CMakeFiles/statement.dir/build.make CMakeFiles/statement.dir/depend
 	$(MAKE) -f CMakeFiles/statement.dir/build.make CMakeFiles/statement.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/mysql_connector_cpp_1_0_0_preview/examples/CMakeFiles  5
+	$(CMAKE_COMMAND) -E cmake_progress_report /Users/maryam/clusteringCode/codes/CMakeFiles  5
 	@echo "Built target statement"
 
 # Include target in all.
@@ -176,9 +176,9 @@ all: CMakeFiles/statement.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/statement.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/mysql_connector_cpp_1_0_0_preview/examples/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/clusteringCode/codes/CMakeFiles 1
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/statement.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/mysql_connector_cpp_1_0_0_preview/examples/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/clusteringCode/codes/CMakeFiles 0
 
 # Convenience name for target.
 statement: CMakeFiles/statement.dir/rule

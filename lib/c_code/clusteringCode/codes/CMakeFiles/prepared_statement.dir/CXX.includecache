@@ -1,6 +1,6 @@
-/Users/maryam/mysql_connector_cpp_1_0_0_preview/examples/examples.h
+/Users/maryam/clusteringCode/codes/examples.h
 
-/Users/maryam/mysql_connector_cpp_1_0_0_preview/examples/prepared_statement.cpp
+/Users/maryam/clusteringCode/codes/prepared_statement.cpp
 stdlib.h
 -
 iostream
@@ -8,9 +8,9 @@ iostream
 sstream
 -
 cppconn/mysql_public_iface.h
-/Users/maryam/mysql_connector_cpp_1_0_0_preview/examples/cppconn/mysql_public_iface.h
+/Users/maryam/clusteringCode/codes/cppconn/mysql_public_iface.h
 examples.h
-/Users/maryam/mysql_connector_cpp_1_0_0_preview/examples/examples.h
+/Users/maryam/clusteringCode/codes/examples.h
 
 /usr/local/mysql/include/config-os2.h
 os2.h

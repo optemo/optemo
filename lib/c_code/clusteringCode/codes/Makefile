@@ -34,10 +34,10 @@ RM = /usr/local/bin/cmake -E remove -f
 CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /optemo/site/lib/c_code/clusteringCode
+CMAKE_SOURCE_DIR = /Users/maryam/clusteringCode
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /optemo/site/lib/c_code/clusteringCode
+CMAKE_BINARY_DIR = /Users/maryam/clusteringCode
 
 # Include the progress variables for this target.
 include CMakeFiles/progress.make
@@ -48,7 +48,7 @@ include CMakeFiles/progress.make
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	cd /optemo/site/lib/c_code/clusteringCode/codes && /usr/local/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	cd /Users/maryam/clusteringCode/codes && /usr/local/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 
 # Special rule for the target edit_cache
 edit_cache/fast: edit_cache
@@ -56,31 +56,31 @@ edit_cache/fast: edit_cache
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	cd /optemo/site/lib/c_code/clusteringCode/codes && /usr/local/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	cd /Users/maryam/clusteringCode/codes && /usr/local/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 
 # Special rule for the target rebuild_cache
 rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /optemo/site/lib/c_code/clusteringCode && $(CMAKE_COMMAND) -E cmake_progress_start /optemo/site/lib/c_code/clusteringCode/CMakeFiles $(CMAKE_ALL_PROGRESS)
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f CMakeFiles/Makefile2 codes/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /optemo/site/lib/c_code/clusteringCode/CMakeFiles 0
+	cd /Users/maryam/clusteringCode && $(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/clusteringCode/CMakeFiles $(CMAKE_ALL_PROGRESS)
+	cd /Users/maryam/clusteringCode && $(MAKE) -f CMakeFiles/Makefile2 codes/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/maryam/clusteringCode/CMakeFiles 0
 
 # The main clean target
 clean:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f CMakeFiles/Makefile2 codes/clean
+	cd /Users/maryam/clusteringCode && $(MAKE) -f CMakeFiles/Makefile2 codes/clean
 
 # The main clean target
 clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f CMakeFiles/Makefile2 codes/preinstall
+	cd /Users/maryam/clusteringCode && $(MAKE) -f CMakeFiles/Makefile2 codes/preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f CMakeFiles/Makefile2 codes/preinstall
+	cd /Users/maryam/clusteringCode && $(MAKE) -f CMakeFiles/Makefile2 codes/preinstall
 
 # clear depends
 depend:
@@ -88,118 +88,118 @@ depend:
 
 # Convenience name for target.
 codes/CMakeFiles/connect.dir/rule:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f CMakeFiles/Makefile2 codes/CMakeFiles/connect.dir/rule
+	cd /Users/maryam/clusteringCode && $(MAKE) -f CMakeFiles/Makefile2 codes/CMakeFiles/connect.dir/rule
 
 # Convenience name for target.
 connect: codes/CMakeFiles/connect.dir/rule
 
 # fast build rule for target.
 connect/fast:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/connect.dir/build.make codes/CMakeFiles/connect.dir/build
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/connect.dir/build.make codes/CMakeFiles/connect.dir/build
 
 # Convenience name for target.
 codes/CMakeFiles/prepared_statement.dir/rule:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f CMakeFiles/Makefile2 codes/CMakeFiles/prepared_statement.dir/rule
+	cd /Users/maryam/clusteringCode && $(MAKE) -f CMakeFiles/Makefile2 codes/CMakeFiles/prepared_statement.dir/rule
 
 # Convenience name for target.
 prepared_statement: codes/CMakeFiles/prepared_statement.dir/rule
 
 # fast build rule for target.
 prepared_statement/fast:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/prepared_statement.dir/build.make codes/CMakeFiles/prepared_statement.dir/build
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/prepared_statement.dir/build.make codes/CMakeFiles/prepared_statement.dir/build
 
 # Convenience name for target.
 codes/CMakeFiles/resultset.dir/rule:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f CMakeFiles/Makefile2 codes/CMakeFiles/resultset.dir/rule
+	cd /Users/maryam/clusteringCode && $(MAKE) -f CMakeFiles/Makefile2 codes/CMakeFiles/resultset.dir/rule
 
 # Convenience name for target.
 resultset: codes/CMakeFiles/resultset.dir/rule
 
 # fast build rule for target.
 resultset/fast:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/resultset.dir/build.make codes/CMakeFiles/resultset.dir/build
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/resultset.dir/build.make codes/CMakeFiles/resultset.dir/build
 
 # Convenience name for target.
 codes/CMakeFiles/resultset_meta.dir/rule:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f CMakeFiles/Makefile2 codes/CMakeFiles/resultset_meta.dir/rule
+	cd /Users/maryam/clusteringCode && $(MAKE) -f CMakeFiles/Makefile2 codes/CMakeFiles/resultset_meta.dir/rule
 
 # Convenience name for target.
 resultset_meta: codes/CMakeFiles/resultset_meta.dir/rule
 
 # fast build rule for target.
 resultset_meta/fast:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/resultset_meta.dir/build.make codes/CMakeFiles/resultset_meta.dir/build
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/resultset_meta.dir/build.make codes/CMakeFiles/resultset_meta.dir/build
 
 # Convenience name for target.
 codes/CMakeFiles/statement.dir/rule:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f CMakeFiles/Makefile2 codes/CMakeFiles/statement.dir/rule
+	cd /Users/maryam/clusteringCode && $(MAKE) -f CMakeFiles/Makefile2 codes/CMakeFiles/statement.dir/rule
 
 # Convenience name for target.
 statement: codes/CMakeFiles/statement.dir/rule
 
 # fast build rule for target.
 statement/fast:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/statement.dir/build.make codes/CMakeFiles/statement.dir/build
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/statement.dir/build.make codes/CMakeFiles/statement.dir/build
 
 # target to build an object file
 connect.o:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/connect.dir/build.make codes/CMakeFiles/connect.dir/connect.o
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/connect.dir/build.make codes/CMakeFiles/connect.dir/connect.o
 
 # target to preprocess a source file
 connect.i:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/connect.dir/build.make codes/CMakeFiles/connect.dir/connect.i
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/connect.dir/build.make codes/CMakeFiles/connect.dir/connect.i
 
 # target to generate assembly for a file
 connect.s:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/connect.dir/build.make codes/CMakeFiles/connect.dir/connect.s
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/connect.dir/build.make codes/CMakeFiles/connect.dir/connect.s
 
 # target to build an object file
 prepared_statement.o:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/prepared_statement.dir/build.make codes/CMakeFiles/prepared_statement.dir/prepared_statement.o
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/prepared_statement.dir/build.make codes/CMakeFiles/prepared_statement.dir/prepared_statement.o
 
 # target to preprocess a source file
 prepared_statement.i:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/prepared_statement.dir/build.make codes/CMakeFiles/prepared_statement.dir/prepared_statement.i
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/prepared_statement.dir/build.make codes/CMakeFiles/prepared_statement.dir/prepared_statement.i
 
 # target to generate assembly for a file
 prepared_statement.s:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/prepared_statement.dir/build.make codes/CMakeFiles/prepared_statement.dir/prepared_statement.s
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/prepared_statement.dir/build.make codes/CMakeFiles/prepared_statement.dir/prepared_statement.s
 
 # target to build an object file
 resultset.o:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/resultset.dir/build.make codes/CMakeFiles/resultset.dir/resultset.o
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/resultset.dir/build.make codes/CMakeFiles/resultset.dir/resultset.o
 
 # target to preprocess a source file
 resultset.i:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/resultset.dir/build.make codes/CMakeFiles/resultset.dir/resultset.i
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/resultset.dir/build.make codes/CMakeFiles/resultset.dir/resultset.i
 
 # target to generate assembly for a file
 resultset.s:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/resultset.dir/build.make codes/CMakeFiles/resultset.dir/resultset.s
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/resultset.dir/build.make codes/CMakeFiles/resultset.dir/resultset.s
 
 # target to build an object file
 resultset_meta.o:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/resultset_meta.dir/build.make codes/CMakeFiles/resultset_meta.dir/resultset_meta.o
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/resultset_meta.dir/build.make codes/CMakeFiles/resultset_meta.dir/resultset_meta.o
 
 # target to preprocess a source file
 resultset_meta.i:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/resultset_meta.dir/build.make codes/CMakeFiles/resultset_meta.dir/resultset_meta.i
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/resultset_meta.dir/build.make codes/CMakeFiles/resultset_meta.dir/resultset_meta.i
 
 # target to generate assembly for a file
 resultset_meta.s:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/resultset_meta.dir/build.make codes/CMakeFiles/resultset_meta.dir/resultset_meta.s
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/resultset_meta.dir/build.make codes/CMakeFiles/resultset_meta.dir/resultset_meta.s
 
 # target to build an object file
 statement.o:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/statement.dir/build.make codes/CMakeFiles/statement.dir/statement.o
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/statement.dir/build.make codes/CMakeFiles/statement.dir/statement.o
 
 # target to preprocess a source file
 statement.i:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/statement.dir/build.make codes/CMakeFiles/statement.dir/statement.i
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/statement.dir/build.make codes/CMakeFiles/statement.dir/statement.i
 
 # target to generate assembly for a file
 statement.s:
-	cd /optemo/site/lib/c_code/clusteringCode && $(MAKE) -f codes/CMakeFiles/statement.dir/build.make codes/CMakeFiles/statement.dir/statement.s
+	cd /Users/maryam/clusteringCode && $(MAKE) -f codes/CMakeFiles/statement.dir/build.make codes/CMakeFiles/statement.dir/statement.s
 
 # Help Target
 help::
@@ -239,5 +239,5 @@ help::
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /optemo/site/lib/c_code/clusteringCode && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /Users/maryam/clusteringCode && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 
