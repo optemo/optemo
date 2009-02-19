@@ -3,6 +3,6 @@ SET(CMAKE_DEPENDS_LANGUAGES
   "CXX"
   )
 SET(CMAKE_DEPENDS_CHECK_CXX
-  "/Users/maryam/clusteringCode/codes/connect.cpp"
-  "/Users/maryam/clusteringCode/codes/CMakeFiles/connect.dir/connect.o"
+  "/optemo/site/lib/c_code/clusteringCode/codes/connect.cpp"
+  "/optemo/site/lib/c_code/clusteringCode/codes/CMakeFiles/connect.dir/connect.o"
   )

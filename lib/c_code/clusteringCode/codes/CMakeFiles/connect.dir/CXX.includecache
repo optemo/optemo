@@ -1,4 +1,4 @@
-/Users/maryam/clusteringCode/codes/connect.cpp
+/optemo/site/lib/c_code/clusteringCode/codes/connect.cpp
 stdlib.h
 -
 fstream
@@ -22,17 +22,17 @@ algorithm
 cppconn/mysql_public_iface.h
 -
 hClustering.h
-/Users/maryam/clusteringCode/codes/hClustering.h
+/optemo/site/lib/c_code/clusteringCode/codes/hClustering.h
 
-/Users/maryam/clusteringCode/codes/hClustering.h
+/optemo/site/lib/c_code/clusteringCode/codes/hClustering.h
 kmeans.h
-/Users/maryam/clusteringCode/codes/kmeans.h
+/optemo/site/lib/c_code/clusteringCode/codes/kmeans.h
 helpers.h
-/Users/maryam/clusteringCode/codes/helpers.h
+/optemo/site/lib/c_code/clusteringCode/codes/helpers.h
 
-/Users/maryam/clusteringCode/codes/helpers.h
+/optemo/site/lib/c_code/clusteringCode/codes/helpers.h
 
-/Users/maryam/clusteringCode/codes/kmeans.h
+/optemo/site/lib/c_code/clusteringCode/codes/kmeans.h
 
 /usr/local/mysql/include/config-os2.h
 os2.h

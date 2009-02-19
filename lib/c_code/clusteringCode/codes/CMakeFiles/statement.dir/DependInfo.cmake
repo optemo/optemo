@@ -3,6 +3,6 @@ SET(CMAKE_DEPENDS_LANGUAGES
   "CXX"
   )
 SET(CMAKE_DEPENDS_CHECK_CXX
-  "/Users/maryam/clusteringCode/codes/statement.cpp"
-  "/Users/maryam/clusteringCode/codes/CMakeFiles/statement.dir/statement.o"
+  "/optemo/site/lib/c_code/clusteringCode/codes/statement.cpp"
+  "/optemo/site/lib/c_code/clusteringCode/codes/CMakeFiles/statement.dir/statement.o"
   )
