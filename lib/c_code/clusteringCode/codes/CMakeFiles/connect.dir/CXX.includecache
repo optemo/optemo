@@ -23,6 +23,12 @@ cppconn/mysql_public_iface.h
 -
 hClustering.h
 /optemo/site/lib/c_code/clusteringCode/codes/hClustering.h
+filtering.h
+/optemo/site/lib/c_code/clusteringCode/codes/filtering.h
+
+/optemo/site/lib/c_code/clusteringCode/codes/filtering.h
+iostream
+-
 
 /optemo/site/lib/c_code/clusteringCode/codes/hClustering.h
 kmeans.h

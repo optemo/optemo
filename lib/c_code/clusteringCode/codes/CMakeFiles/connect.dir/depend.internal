@@ -3,6 +3,7 @@
 
 codes/CMakeFiles/connect.dir/connect.o
  /optemo/site/lib/c_code/clusteringCode/codes/connect.cpp
+ /optemo/site/lib/c_code/clusteringCode/codes/filtering.h
  /optemo/site/lib/c_code/clusteringCode/codes/hClustering.h
  /optemo/site/lib/c_code/clusteringCode/codes/helpers.h
  /optemo/site/lib/c_code/clusteringCode/codes/kmeans.h
