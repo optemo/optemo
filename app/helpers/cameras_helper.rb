@@ -19,9 +19,9 @@ module CamerasHelper
     if @desc[i].nil? || @clusters.nil?
       #No cluster info
       if @search.filter
-        link_to "See<br> more", {:id => @cameras[i], :action => 'sim', :controller => 'search', :f => 1}, :class => 'sim'
+        ""#link_to "See<br> more", {:id => @cameras[i], :action => 'sim', :controller => 'search', :f => 1}
       else
-        link_to "See<br> more", {:id => @cameras[i], :action => 'sim', :controller => 'search'}, :class => 'sim'
+        ""#link_to "See<br> more", {:id => @cameras[i], :action => 'sim', :controller => 'search'}
       end
     else
       #Clustering present

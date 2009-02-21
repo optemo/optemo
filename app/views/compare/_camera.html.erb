@@ -1,6 +1,6 @@
 <div class="cell">
-<div class="first">
-<%= image_tag(camera.imagemurl, :width => camera.imagemw, :height => camera.imagemh) %>
+<div class="first">	
+<%= image_tag(camera.imagemurl, :width => camera.imagemw, :height => camera.imagemh, :onClick => "fadeout(#{camera.id});", :style => "cursor: pointer;") %>
 </div>
 <ul>
 	<% Camera::Interesting_features.each do |f| %>

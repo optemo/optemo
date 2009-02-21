@@ -4,8 +4,11 @@
 	<div id="container" style="margin-left: 149px">
 <% else %>		
 	<div id="container">
+	<div class='save'>
+		<%= link_to "Save it", "javascript:saveit(#{@camera.id})" %>
+	</div>
 <% end %>
-	<p style="margin-right: 20px"><%=h @camera.title %></p>
+	<p style="margin: 15px 0px 0px 20px"><%=h @camera.title %></p>
 	<div id="image"><%= link_to image_tag(@camera.imagelurl, :width => @camera.imagelw, :height => @camera.imagelh), @camera.imagelurl, :popup => true %></div>
 	<div id="features">
 	<ul>

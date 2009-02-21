@@ -8,7 +8,7 @@
 </div>
 <ul>
 	<% Camera::Interesting_features.each do |column| %>
-	    <li><%= column.gsub(/_id$/, '').gsub(/_/,' ').capitalize %></li>
+	    <li><%= column.gsub(/_id$/, '').gsub(/str$/,' ').gsub(/_/,' ').capitalize %></li>
 	<% end %>
 </ul>
 </div>
