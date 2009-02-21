@@ -5,7 +5,7 @@
 	    <div class='save'>
 			<%= link_to "Save it", "javascript:saveit(#{@cameras[i].id})" %>
 		</div>
-		<%= image_tag @cameras[i].imagemurl, :width => @cameras[i].imagemw, :height => @cameras[i].imagemh, :onClick => "fadeout(#{@cameras[i].id});" %> 	
+		<%= image_tag @cameras[i].imagemurl, :width => @cameras[i].imagemw, :height => @cameras[i].imagemh, :onClick => "fadeout(#{@cameras[i].id});", :style => "cursor: pointer;" %> 	
 		<div class='rightbar' style='display: none;'>
 			MP:<%= @cameras[i].maximumresolution %><br>
 			DS:<%= @cameras[i].displaysize %><br>
@@ -13,7 +13,7 @@
 		</div>
 	<%end%>
 	<a href="/cameras/<%=@cameras[i].id%>" onClick="fadeout(<%=@cameras[i].id%>);return false;">
-	<p><%= @cameras[i].smlTitle %></p>
+	<p class="easylink"><%= @cameras[i].smlTitle %></p>
 	<p style="font-size: 0.9em">
 		<%= description(i) %>
 	</p>

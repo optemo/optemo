@@ -9,10 +9,6 @@ task :scrape_amazon => :environment do
       click_link 'See more technical details'
       features("Brand Name: Konica", { :generalize => true }) #, :write_text => true 
     end
-    
-    #saving the data to mysql, requires the environment line above
-
-    #flash[:notice] = extractor.to_xml
     product_data_hash = extractor.to_hash
     array = product_data_hash.map{|i| i[:features] if i[:features].index(':')}.compact
     features = {}
@@ -21,10 +17,9 @@ task :scrape_amazon => :environment do
       features[t[0]]=t[1]
       }
     pp features
-    #product_data_hash.each do |item|
-    #  @product = Camera.create(item)
-    #  pp @product
-    #  #@product.save
-    #end
+    features.each {|key, value| 
+      if key[/(M|m)axmimum( |_)?(P|p)rint( |_)?(S|s)peed/]
+        p.ppm = value.to_i unless !p.ppm.nil? && p.ppm > value.to_i
+    }
 end
  
