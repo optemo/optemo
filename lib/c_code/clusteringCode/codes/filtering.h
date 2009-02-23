@@ -326,7 +326,7 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 		
 			command += ")";
 		}
-		if (conFilteredFeatures[0] || conFilteredFeatures[1] || conFilteredFeatures[2] || conFilteredFeatures[3]){
+		if (conFilteredFeatures[0] || conFilteredFeatures[1] || conFilteredFeatures[2] || conFilteredFeatures[3] || catFilteredFeatures[0]){
 			command += " AND (";
 			if (conFilteredFeatures[0]){
 				command += " (price>=";
@@ -338,7 +338,7 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 				maxv<<filteredRange[0][1];
 				command += maxv.str();
 				command += ")";
-				if (conFilteredFeatures[1] || conFilteredFeatures[2] || conFilteredFeatures[3]){
+				if (conFilteredFeatures[1] || conFilteredFeatures[2] || conFilteredFeatures[3] || catFilteredFeatures[0]){
 					command += " AND ";
 				}
 			}	
@@ -352,7 +352,7 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 				maxv<<filteredRange[1][1];
 				command += maxv.str();
 				command += ")";
-				if (conFilteredFeatures[2] || conFilteredFeatures[3]){
+				if (conFilteredFeatures[2] || conFilteredFeatures[3] || catFilteredFeatures[0]){
 					command += " AND ";
 				}
 			}
@@ -366,7 +366,7 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 				maxv<<filteredRange[2][1];
 				command += maxv.str();
 				command += ")";
-				if (conFilteredFeatures[3]){
+				if (conFilteredFeatures[3] || catFilteredFeatures[0]){
 					command += " AND ";
 				}
 			}
@@ -380,7 +380,18 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 				maxv<<filteredRange[3][1];
 				command += maxv.str();
 				command += ")";
-			}	
+				if (catFilteredFeatures[0]){
+					command += " AND ";
+				}
+			}
+			if(catFilteredFeatures[0]){
+				
+				command += "(brand =\'";
+				command += brand;
+				command += "\'"; 
+				command += ")";
+			}
+				
 			command += ");";
 		}	
 	
