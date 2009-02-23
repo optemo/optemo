@@ -155,7 +155,7 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 	
 
 	for(int f=0; f<conFeatureN; f++){
-		conFeatureRange[f][0] = 10000.0;
+		conFeatureRange[f][0] = 100000000.0;
 		conFeatureRange[f][1] = 0.0;
 	}
 	
@@ -284,9 +284,9 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 
 			cameraN++;
 		}
-		
-	
+
 	}
+	
 	else{ //if clusterID != 0
 		
 		command = "SELECT DISTINCT id from clusters where parent_id=";
