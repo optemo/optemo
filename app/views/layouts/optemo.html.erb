@@ -41,19 +41,15 @@
    <div class="hd">
 	<div id="header">
 	  <div id="logo">
-	  <%= image_tag 'logo.jpg', :width  => 250, :class => 'img' %>
+	    <%= image_tag 'logo.jpg', :width  => 250, :class => 'img' %>
+	  </div>
+	  <div id="header_buttons">
+	    <a href="/" class="link">Home</a><br>
+	    <a href="http://optemo.com/" class="link" >About Us</a><br>
+	    <a href="http://optemo.com/team" class="link">The Team</a><br>
 	  </div>
 	  <div id="header_content"<%= yield :header %></div>
-	  <div id="header_buttons">
-	  <a href="/" class="link">Home</a> <a class="link" href="http://optemo.com/">About Us</a> <a href="http://optemo.com/team" class="link">The Team</a>
-	  <br><br>
-	  <% form_tag ({:controller => 'search', :action => 'find' }) do %>
-	  <%= text_field_tag 'search' %>
-	  <%= submit_tag 'Search Cameras' %>
-	  <% end %>
-	  
-	</div>
-	<div id="header_clear"></div>
+	  <div id="header_clear"></div>
 	</div>
    </div>
    <div id="headerbar">&nbsp;</div>

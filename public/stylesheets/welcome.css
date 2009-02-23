@@ -93,19 +93,17 @@ p {
    height: 82px;
 }
 #header_buttons {
-   /*position: absolute;
-   right: 0;
-   top: 0;*/
    float: right;
-   width: 268px;
+   width: 98px;
 }
 #header_content {
-	width: 395px;
+	width: 565px;
 	float: left;
 }
 a.link {
-	margin-left: 10px;
-	margin-right: 10px;
+	/*margin-left: 10px;
+	margin-right: 10px;*/
+	line-height: 1.5em;
 }
 div #header_clear, #footer_options {
     /*background-color: #c8c8ff;*/

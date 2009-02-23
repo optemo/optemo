@@ -1,5 +1,9 @@
 <div id="leftbar">
 	<%= link_to 'Start Search Over', {:action => 'index'}, {:id => 'startover'} %>
+	<% form_tag ({:controller => 'search', :action => 'find' }) do %>
+	  <%= text_field_tag 'search' %>
+	  <%= submit_tag 'Search' %>
+	  <% end %>
 <div id="savebar">
 	<h2>Saved Items</h2>
 	<div id="savebar_content">
