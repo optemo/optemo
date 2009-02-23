@@ -59,13 +59,18 @@ class SearchController < ApplicationController
     @search.results
     s = initialize_search
     s.result_count = @search.count > 9 ? 9 : @search.count
-    s.msg = "Search results for: "+params[:search]
-    "i0=".upto("i8=") do |i|
-      s.send i.intern, @search.shift.id unless @search.empty?
+    if s.result_count == 0
+      flash[:error] = "No products were found"
+      redirect_to :back
+    else
+      s.msg = "Search results for: "+params[:search]
+      "i0=".upto("i8=") do |i|
+        s.send i.intern, @search.shift.id unless @search.empty?
+      end
+      s.save
+      session[:search_id] = s.id
+      redirect_to "/cameras/list/"+s.URL
     end
-    s.save
-    session[:search_id] = s.id
-    redirect_to "/cameras/list/"+s.URL
   end
   
   private
