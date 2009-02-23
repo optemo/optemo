@@ -27,7 +27,6 @@
 		<% if !@camera.itemwidth.nil? %><li><span class="detail_label">Item W x L x H: </span><%= @camera.display 'itemwidth' %> x <%= @camera.display 'itemlength' %> x <%= @camera.display 'itemheight' %></li><% end %>
 		<% if !@camera.packagewidth.nil? %><li><span class="detail_label">Package W x L x H: </span><%= @camera.display 'packagewidth' %> x <%= @camera.display 'packagelength' %> x <%= @camera.display 'packageheight' %></li><% end %>
 		<% if !@camera.upc.nil? %><li><span class="detail_label">UPC: </span><%= @camera.display 'upc' %></li><% end %>
-		<li><span class="detail_label">Lowest Price: </span><%= @camera.displaysize %></li>
 	</ul>
 	</div>
 	<% if !@camera.feature.nil? %>

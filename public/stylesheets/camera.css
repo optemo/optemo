@@ -59,7 +59,7 @@ div.borderbox {
 .sim {
 	width: 104px;
 	height: 26px;
-	padding: 5px 2px 0px;
+	padding: 4px 2px 0px;
 	margin: auto;
 	background: url(../images/sim_button.png) no-repeat;}
 .sim:hover{
@@ -68,11 +68,17 @@ div.borderbox {
 .save a {
 	font-size: 0.9em;
 	line-height: 0.9em;
+	display: block;
+	width: 100%;
+	height: 100%;
 	text-decoration: none;
 	color: black;}
 .sim a {
 	text-decoration: none;
 	color: black;
+	display: block;
+	width: 100%;
+	height: 100%;
 	font-size: 0.9em;
 	line-height: 0.9em;}
 .bottombar {
@@ -139,7 +145,9 @@ div #leftbar {
 	margin: 0;
 	text-align: center;
 }
-#startover {
+#search {
+	width: 130px;
+	margin-top: 0.5em;
 }
 	
 /* Save Box */
