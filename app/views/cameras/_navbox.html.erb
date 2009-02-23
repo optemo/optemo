@@ -23,10 +23,7 @@
 	</p>
 	</a>
 	<div class="bottombar">
-		<div class='sim'>
-		    <%= sim_link(i) %>
-		<%# link_to "See more (#{(rand*20).round+1})", {:id => @cameras[i], :action => 'sim', :controller => 'search', :pos => i}, :class => 'sim' %>
-		</div><!--
+		<%= sim_link(i) %><!--
 		<div class="clusterfeatures">
 		<% if !@desc[i].nil? %>
 		<% @desc[i].each do |item| %>

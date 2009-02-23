@@ -37,9 +37,17 @@ module CamerasHelper
   		end
   		@desc[i].compact!.each{|a|a.reverse!}
       if @search.filter
-        link_to "Explore #{count} Similar Camera#{"s" if count > 1}", {:id => @cameras[i], :action => 'sim', :controller => 'search', :c => @clusters[i], :f => 1}, :title => "These cameras have " + combine_list(@desc[i])
+        "<div class='sim'>" +
+          link_to("Explore #{count} Similar Camera#{"s" if count > 1}", 
+          {:id => @cameras[i], :action => 'sim', :controller => 'search', :c => @clusters[i], :f => 1}, 
+          :title => "These cameras have " + combine_list(@desc[i])) +
+        "</div>"
       else
-        link_to "Explore #{count} Similar Camera#{"s" if count > 1}", {:id => @cameras[i], :action => 'sim', :controller => 'search', :c => @clusters[i]}, :title => "These cameras have " + combine_list(@desc[i])
+        "<div class='sim'>"+
+          link_to("Explore #{count} Similar Camera#{"s" if count > 1}",
+          {:id => @cameras[i], :action => 'sim', :controller => 'search', :c => @clusters[i]},
+          :title => "These cameras have " + combine_list(@desc[i])) + 
+        "</div>"
       end
     end
   end
