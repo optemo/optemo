@@ -8,7 +8,7 @@ class SearchController < ApplicationController
     Session.find(session[:user_id]).update_attributes(myfilter)
     myfilter.each_pair {|key, val| myfilter[key] = val.to_f if key.index('_min') || key.index('_max')}
     s.attributes = myfilter
-    s.filter = true
+    s.filter = session[:search_id]
     search(s)
   end
   
@@ -77,8 +77,13 @@ class SearchController < ApplicationController
   
   def search(s, opts = {})
     q = {}
-    if s.filter
-      myfilter = s.attributes
+    if s.filter && s.filter > 1
+      if !session[:search_id].nil? && s.filter != session[:search_id]
+        myfilter = Search.find(s.filter).attributes
+        s.parent_id = s.filter
+      else
+        myfilter = s.attributes
+      end
       #Remove unnescessary arguments from YAML query
       myfilter.delete('chosen')
       myfilter.delete('id')
