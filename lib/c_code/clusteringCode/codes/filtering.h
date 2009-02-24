@@ -525,7 +525,17 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 				
 					command = "SELECT DISTINCT camera_id from nodes where cluster_id=";
 					command += clusterIDStream.str();
-					command += ";";
+					command += " AND (camera_id=";
+					ostringstream idstr2;
+				    idstr2 << cameraIds[0]; 
+					command += idstr2.str();
+					for (int i=1; i<cameraN; i++){
+						command += " OR camera_id=";
+						ostringstream idStream3;
+						idStream3 << cameraIds[i];
+						command += idStream3.str();
+					}
+					command += ");";
 					
 					res2 = stmt->executeQuery(command);
 					repW = res2->rowsCount();
