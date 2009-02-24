@@ -243,9 +243,9 @@ int main(int argc, char** argv) {
 							indicators[f][i] = 0;
 						}
 					}
-				
+			
 				int cameraN = filter2(filteredRange, brand, stmt, res, res2, cameraIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange);
-	
+			
 				
 				if (cameraN> 0){
 					if (cameraN<repW){
@@ -265,8 +265,7 @@ int main(int argc, char** argv) {
 					getIndicators4(clusterIDs,repW, conFeatureN, indicators, stmt, res);
 				}
 
-//Generating the output string 	
-
+//Generating the output string 
 			
 					string* indicatorNames = new string[4];
 					indicatorNames[0] = "Price";
@@ -280,13 +279,9 @@ int main(int argc, char** argv) {
 					resultCountStream << cameraN;
 					out.append(resultCountStream.str());
 					out.append("\n");
-					
-			
-			
-					
+				
+				
 					conFeatureRange[0][0] = conFeatureRange[0][0] / 100;
-					
-						
 					conFeatureRange[0][1] = conFeatureRange[0][1] / 100;
 					for (int j=0; j<(conFeatureN*2); j++){
 						out.append(varNames[j+3]);
