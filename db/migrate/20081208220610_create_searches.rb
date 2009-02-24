@@ -10,7 +10,7 @@ class CreateSearches < ActiveRecord::Migration
       t.integer :cluster_id
       t.integer :camera_id
       t.integer :result_count
-      t.boolean :filter, :default => false
+      t.integer :filter
       t.string :brand, :default => "All Brands"
       @props.db_features.each do |f|
         min = f.name+'_min'

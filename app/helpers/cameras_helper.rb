@@ -39,7 +39,7 @@ module CamerasHelper
       if @search.filter
         "<div class='sim'>" +
           link_to("Explore #{count} Similar Camera#{"s" if count > 1}", 
-          {:id => @cameras[i], :action => 'sim', :controller => 'search', :c => @clusters[i], :f => 1}, 
+          {:id => @cameras[i], :action => 'sim', :controller => 'search', :c => @clusters[i], :f => session[:search_id]}, 
           :title => "These cameras have " + combine_list(@desc[i])) +
         "</div>"
       else

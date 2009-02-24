@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090127204735) do
+ActiveRecord::Schema.define(:version => 20090130223927) do
 
   create_table "amazon_groups", :force => true do |t|
     t.datetime "created_at"
@@ -198,6 +198,17 @@ ActiveRecord::Schema.define(:version => 20090127204735) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "toolow"
+    t.float    "ppm"
+    t.float    "ttp"
+    t.string   "resolution"
+    t.string   "duplex"
+    t.string   "connectivity"
+    t.string   "papersize"
+    t.integer  "paperoutput"
+    t.string   "dimensions"
+    t.integer  "dutycycle"
+    t.integer  "paperinput"
+    t.string   "special"
   end
 
   create_table "saveds", :force => true do |t|
@@ -232,7 +243,7 @@ ActiveRecord::Schema.define(:version => 20090127204735) do
     t.integer  "cluster_id"
     t.integer  "camera_id"
     t.integer  "result_count"
-    t.boolean  "filter",                :default => false
+    t.integer  "filter"
     t.string   "brand",                 :default => "All Brands"
     t.float    "maximumresolution_min", :default => 0.0
     t.float    "maximumresolution_max", :default => 14.7
@@ -240,7 +251,7 @@ ActiveRecord::Schema.define(:version => 20090127204735) do
     t.float    "displaysize_max",       :default => 3.6
     t.float    "opticalzoom_min",       :default => 0.0
     t.float    "opticalzoom_max",       :default => 20.0
-    t.float    "price_min",             :default => 0.0
+    t.float    "price_min",             :default => 49.99
     t.float    "price_max",             :default => 1815.86
     t.text     "chosen"
     t.string   "msg"

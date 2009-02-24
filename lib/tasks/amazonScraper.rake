@@ -17,9 +17,10 @@ task :scrape_amazon => :environment do
       features[t[0]]=t[1]
       }
     pp features
-    features.each {|key, value| 
-      if key[/(M|m)axmimum( |_)?(P|p)rint( |_)?(S|s)peed/]
-        p.ppm = value.to_i unless !p.ppm.nil? && p.ppm > value.to_i
-    }
+    #features.each {|key, value| 
+    #  if key[/(M|m)axmimum( |_)?(P|p)rint( |_)?(S|s)peed/]
+    #    p.ppm = value.to_i unless !p.ppm.nil? && p.ppm > value.to_i
+    #  end
+    #}
 end
  
