@@ -20,7 +20,7 @@ class SearchController < ApplicationController
   def sim
     #Create new search instance
     s = initialize_search
-    s.filter = !params[:f].nil?
+    s.filter = params[:f]
     if params[:c].nil?
       #The data has not previously been clustered
       s.camera_id = params[:id]
