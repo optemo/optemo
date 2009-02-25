@@ -81,8 +81,8 @@ if 	(layer == 1){
 			 	   	    	centroids[j]=new double[conFeatureN];
 			 	   		}
 
-			 	       	centersA = k_means2(dataN,size,conFeatureN, clusterN, 1e-4, centroids); 
-
+			 	       	centersA = k_means3(dataN,size,conFeatureN, clusterN, 1e-4, centroids); 
+					
 				dist = new double* [size];
 
 						for(int j=0; j<size; j++){
@@ -121,9 +121,10 @@ if 	(layer == 1){
 
 
 					   // save it to the database
-					
+						cout<<"After k_means 1"<<endl;   
 					   getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);		
-				   	   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, stmt, res2);
+						   
+				saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, stmt, res2);
 						for (int c=0; c<clusterN; c++){
 								if (clusteredData[c][0]>maxSize){
 									maxSize = clusteredData[c][0];
@@ -133,6 +134,7 @@ if 	(layer == 1){
 					delete data;	
 					delete clusteredData;
 					delete dist;
+				
 				
 			}
 if (layer > 1){
@@ -200,8 +202,6 @@ if (layer > 1){
 								
 	        }
 	       
-
-	
        dataN = new double*[size];
  	   	    for(int j=0; j<size; j++){
  	   				dataN[j] = new double[conFeatureN]; 
@@ -224,7 +224,7 @@ if (layer > 1){
  	   		}
      	      
  	       	centersA = k_means(dataN,size,conFeatureN, clusterN, 1e-10, centroids); 
-	
+			cout<<"after k_means"<<endl;
 		
 	        dist = new double* [size];
 		
@@ -260,17 +260,7 @@ if (layer > 1){
 			 		clusteredData[centersA[j]][ts[centersA[j]]] = idA[j];
 			 		clusteredData[centersA[j]][0]++;
 			 	}
-		
-			
-	//			for (int c=0; c<clusterN; c++){
-	//				if (clusteredData[c][0] == 0){
-	//					cout<<"cluster : "<<c<<" and layer is  "<<layer<<endl;
-	//					}								
-	//			}
-	//				
-		   // save it to the database
-		 //  getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);	
-	   	   //cout<<"THERE"<<endl;
+
 		   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, stmt, res2);
 
 		
