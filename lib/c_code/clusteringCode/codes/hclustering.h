@@ -34,7 +34,6 @@ if 	(layer == 1){
 				{
 				
 				 listprice =  res->getInt("listpriceint");
-				
 				saleprice = res->getInt("salepriceint");
 			 if(saleprice > 0 ) {	
 					price = min(listprice, saleprice);	
@@ -45,8 +44,7 @@ if 	(layer == 1){
 				price = listprice;
 				
 			}	   		
-				
-				
+
 							data[size][0] = price;
 						    data[size][1] = res->getDouble("displaysize");
 							data[size][2] = res->getDouble("opticalzoom");
@@ -81,7 +79,8 @@ if 	(layer == 1){
 			 	   	    	centroids[j]=new double[conFeatureN];
 			 	   		}
 
-			 	       	centersA = k_means3(dataN,size,conFeatureN, clusterN, 1e-4, centroids); 
+			 	       	centersA = k_means2(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids); 
+					
 					
 				dist = new double* [size];
 
@@ -121,9 +120,9 @@ if 	(layer == 1){
 
 
 					   // save it to the database
-						cout<<"After k_means 1"<<endl;   
+					 
 					   getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);		
-						   
+						  
 				saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, stmt, res2);
 						for (int c=0; c<clusterN; c++){
 								if (clusteredData[c][0]>maxSize){
@@ -138,7 +137,8 @@ if 	(layer == 1){
 				
 			}
 if (layer > 1){
-//cout<<"HERE BEG"<<endl;
+	
+
 	// getting all cluster ids in this layer
 	string command = "SELECT * FROM clusters WHERE layer=";
 	ostringstream layerStream; 
@@ -198,8 +198,7 @@ if (layer > 1){
      				average[f] += data[s][f];
 			
 		        }
-		        s++;	
-								
+		        s++;					
 	        }
 	       
        dataN = new double*[size];
@@ -217,14 +216,14 @@ if (layer > 1){
  			int *centersA;
  	   		double** dist;
  	   		double distan;
- 	
  	   		double** centroids = new double* [clusterN];
  	   		for(int j=0; j<clusterN; j++){
  	   	    	centroids[j]=new double[conFeatureN];
  	   		}
      	      
- 	       	centersA = k_means(dataN,size,conFeatureN, clusterN, 1e-10, centroids); 
-			cout<<"after k_means"<<endl;
+ 	       	centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids); 
+	
+		
 		
 	        dist = new double* [size];
 		
@@ -232,14 +231,14 @@ if (layer > 1){
 		    	dist[j] = new double[clusterN]; 
 			}
 		      
-			for (int j=0; j<size; j++){
-		    	  	for (int c=0; c<clusterN; c++){
-		    		   	for (int f=0; f<conFeatureN; f++){
-							 	distan = dist[j][c] + ((centroids[c][f] - dataN[j][f])*(centroids[c][f] - dataN[j][f]) );	 
-		    				 	dist[j][c] = distan;	   
-		    				}  
-		   				}	 
-		     }
+	 //   	for (int j=0; j<size; j++){
+	 //       	  	for (int c=0; c<clusterN; c++){
+	 //       		   	for (int f=0; f<conFeatureN; f++){
+	 //   					 	distan = dist[j][c] + ((centroids[c][f] - dataN[j][f])*(centroids[c][f] - dataN[j][f]) );	 
+	 //       				 	dist[j][c] = distan;	   
+	 //       				}  
+	 //      				}	 
+	 //        }
 					
 		//}		
 									////////////////////////////////  Change clusteredData to vector 

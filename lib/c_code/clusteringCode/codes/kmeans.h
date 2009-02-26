@@ -1,3 +1,17 @@
+int find5(int *idA, int value, int size){
+		
+	int ind = -1;
+	for(int i=0; i<size; i++){
+		if (idA[i] == value){
+			ind = i;
+			return ind;
+		}
+	}
+	
+	return ind;  
+}
+
+
 int *k_means(double **data, int n, int m, int k, double t, double **centroids)
 {
    /* output cluster label for each data point */
@@ -133,9 +147,9 @@ int *k_means2(double **data, int n, int m, int k, double t, double **centroids)
             double distance = 0;
             //for (j = m; j-- > 0; distance += pow(data[h][j] - c[i][j], 2));
 			for (j=m; j--; j>0){
-				//cout<<"j is "<<j<<endl;
+			
 				if (j==1){
-					distance += (2/3) * pow(data[h][j] - c[i][j], 2);
+					distance += (1/2) * pow(data[h][j] - c[i][j], 2);
 				}
 				else if (j==0){
 					distance += (2) * pow(data[h][j] - c[i][j], 2);
@@ -215,6 +229,11 @@ int *k_means3(double **data, int n, int m, int k, double t, double **centroids){
       for (j = m; j-- > 0; c[i][j] = data[h][j]);
    }
 
+
+	bool* assigned = new bool[k];
+	for (i=0; i<k; i++){
+		assigned[i] = 0;
+	}	
    /****
    ** main loop */
 
@@ -237,10 +256,10 @@ int *k_means3(double **data, int n, int m, int k, double t, double **centroids){
 			for (j=0; j<m; j++){
 				//cout<<"j is "<<j<<endl;
 				if (j==1){
-					distance += (2/3) * pow(data[h][j] - c[i][j], 2);
+					distance += (1/2) * pow(data[h][j] - c[i][j], 2);
 				}
 				else if (j==0){
-					distance += (2) * pow(data[h][j] - c[i][j], 2);
+					distance += (2/3) * pow(data[h][j] - c[i][j], 2);
 				}
 				else{
 					distance += pow(data[h][j] - c[i][j], 2);
@@ -252,49 +271,107 @@ int *k_means3(double **data, int n, int m, int k, double t, double **centroids){
                min_distance = distance;
             }
          }
+		
+	
          /* update size and temp centroid of the destination cluster */
 	
 		for (j = 0; j<m ; j++){
 	 		c1[labels[h]][j] += data[h][j];
-	}
+		}
+	
          counts[labels[h]]++;
          /* update standard error */
          error += min_distance;
       }
-
-      for (i = 0; i < k; i++) { /* update all centroids */
-         for (j = 0; j < m; j++) {
-            if (c[i][j] = counts[i]) {
-				c1[i][j] / counts[i];
-				
+		for (int i=0; i<k; i++){
+			if (find5(labels, i, n) > -1){
+				assigned[i] = 1;
 			}
-			else {
-				 c1[i][j];
-				}
+		}
+	  	
+		
+      for (i = 0; i < k; i++) { /* update all centroids */
+		if (assigned[i]){
+         for (j = 0; j < m; j++) {
+            c[i][j] = counts[i] ? c1[i][j] / counts[i] : c1[i][j];
          }
-      }
+	}
+  }
 
    } while (fabs(error - old_error) > t);
+		
+		
+		for (int i=0; i<k; i++){
+			if (find5(labels, i, n) > -1){
+				assigned[i] = 1;
+			}
+			else{
+				assigned[i] = 0;
+			}
+		}
 
-	cout<<"here"<<endl;
+
+	int preLabel, point =0;
+	for (i=0; i<k; i++){
+		if (!assigned[i]){
+		
+			double min_distance = DBL_MAX;
+			double distance = 0;
+			for (h=0; h<n; h++){
+				
+				for (j=0; j<m; j++){
+					
+					if (j==1){
+						distance +=  (1/2) * pow(data[h][j] - c[i][j], 2);
+					}
+					else if (j==0){
+						distance += 2 * pow(data[h][j] - c[i][j], 2);
+					}
+					else{
+						distance += pow(data[h][j] - c[i][j], 2);
+					}	
+				}
+	
+				if (distance <min_distance){
+				
+					if (counts[labels[h]]>1){
+						point = h;
+						
+						preLabel = labels[point];
+						min_distance = distance;
+					}
+				
+				}
+				
+			}
+ 			
+			counts[preLabel]--;
+			labels[point] = i;
+			counts[i] = 1;
+			assigned[i] = 1;
+		
+		}
+	}	
+
 
    /****
    ** housekeeping */
 
- //  for (i = 0; i < k; i++) {
- //     if (!centroids) {
- //        free(c[i]);
- //     }
- //     free(c1[i]);
- //  }
- //
- //  if (!centroids) {
- //     free(c);
- //  }
- //  free(c1);
- //
- //  free(counts);
-
+  for (i = 0; i < k; i++) {
+      if (!centroids) {
+         free(c[i]);
+     }
+      free(c1[i]);
+   }
+ 
+   if (!centroids) {
+      free(c);
+   }
+   free(c1);
+ 
+   free(counts);
+	
+	
    return labels;
 	
 	
