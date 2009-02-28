@@ -27,6 +27,15 @@ int find(int *idA, int value, int size){
 	return ind;  
 }
 
+void shift1(int* reps, int* clusterIds, int* clusterCounts, int size){
+	
+	for (int i=0; i<size; i++){
+		reps[i] = reps[i+1];
+		clusterIds[i] = clusterIds[i+1];
+		clusterCounts[i] = clusterCounts[i+1];
+	} 
+	
+}
 
 int find2(int *idA, int value, int size, int order){
 		
@@ -240,23 +249,26 @@ void getStatisticsData(double** data, int** indicators, double* average, int siz
 
 
 	void getStatisticsClusteredData(double** data, int** clusteredData, int** indicators, double* average, int* idA, int size, int clusterN, int conFeatureN, double*** conFeatureRange){
-
-
 		int ind = 0;
 			
 		for (int j=0; j<conFeatureN; j++){
 			average[j] = average[j]/size;
 		}
+		
 	
 			for (int c=0; c<clusterN; c++){
 				ind = find(idA, clusteredData[c][1], size);
-				for(int f=0; f<conFeatureN; f++){	
+		
+				for(int f=0; f<conFeatureN; f++){
+					
 	  	          conFeatureRange[c][f][1] = data[ind][f]; 
+	
 	              conFeatureRange[c][f][0] = data[ind][f]; 
 				}
 	        } 
 
 	/////
+		
 			//	cout<<"in stat"<<endl;
 			for (int c=0; c<clusterN; c++){
 				for (int f=0; f<conFeatureN; f++){

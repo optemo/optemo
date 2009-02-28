@@ -288,7 +288,7 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 	}
 	
 	else{ //if clusterID != 0
-		
+	
 		command = "SELECT DISTINCT id from clusters where parent_id=";
 		ostringstream cid; 
 		cid<<clusterID;
@@ -422,17 +422,19 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 	return cameraN;
 }
 
+int getRepCluster2(int* cIds, int cIdN, int conFeatureN, sql::Statement *stmt , sql::ResultSet *res, int cameraN, int* cameraIDs, int turn, int* reps, int repSize){ 
 
-
-//getRepCluster(cId, conFeatureN, stmt, res2, cameraN,cameraIds,0);
-int getRepCluster(int clusterID, int conFeatureN, sql::Statement *stmt , sql::ResultSet *res, int cameraN, int* cameraIDs, int turn, int* reps, int repSize){ 
-
-	string command = "SELECT * from nodes where cluster_id=";
+	string command = "SELECT * from nodes where (cluster_id=";
 	ostringstream cid;
 	int rep=0;
-	cid<<clusterID;
+	cid<<cIds[0];
 	command += cid.str();
-	command += ";";
+	for (int i=1; i<cIdN; i++){
+		command += " OR cluster_id=";
+		cid<<cIds[i];
+		command += cid.str();
+	}
+	command += ");";
 	res = stmt->executeQuery(command);
 	int size = res->rowsCount(); 
 	double** data = new double* [conFeatureN];
@@ -473,17 +475,83 @@ int getRepCluster(int clusterID, int conFeatureN, sql::Statement *stmt , sql::Re
 }
 
 
+
+
+
+
+//getRepCluster(cId, conFeatureN, stmt, res2, cameraN,cameraIds,0);
+int getRepCluster(int clusterID, int conFeatureN, sql::Statement *stmt , sql::ResultSet *res, int cameraN, int* cameraIDs, int turn, int* reps, int repSize){ 
+
+	string command = "SELECT * from nodes where cluster_id=";
+	ostringstream cid;
+	int rep=0;
+	cid<<clusterID;
+	command += cid.str();
+	command += " and (camera_id=";
+	ostringstream cameraIdStream; 
+	cameraIdStream<<cameraIDs[0];
+	command += cameraIdStream.str();
+	
+	for (int i=0; i<cameraN; i++){
+		command +=" or camera_id="; 
+		ostringstream cameraIdStream2; 
+		cameraIdStream2<<cameraIDs[i];
+		command+=cameraIdStream2.str();
+	}
+	command += ");";
+
+	res = stmt->executeQuery(command);
+	int size = res->rowsCount(); 
+	double** data = new double* [conFeatureN];
+	for (int f=0; f<conFeatureN; f++){
+		data[f] = new double[size];
+	}
+	
+	int* sortedA = new int [size];
+	int i=0;
+	while(res->next()){
+			
+		data[0][i] = res->getInt("price");
+
+		data[1][i] = res->getDouble("displaysize");
+
+		data[2][i] = res->getDouble("opticalzoom");
+
+		data[3][i] = res->getDouble("maximumresolution"); 
+		sortedA[i] = res->getInt("camera_id");
+	
+		i++;
+	}
+
+	median2(data, size, conFeatureN, sortedA);
+
+	for(int j=0; j<size; j++){
+		while (turn <= repSize){
+		//	if (find(cameraIDs, sortedA[j], cameraN)> -1){
+			  if (find(reps, sortedA[j], repSize) == -1){	
+					rep = sortedA[j];
+					return rep;
+			  }		
+		  // }
+		turn++;
+		}
+	}	
+	return rep;
+}
+
+
 //int getReps14(int clusterID, int conFeatureN, sql::Statement *stmt, sql::ResultSet *res, int cameraN, int* cameraIDs, int* reps,int cursor)
 bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clusterCounts, int conFeatureN, int& repW, 
 				sql::Statement *stmt, sql::ResultSet *res, sql::ResultSet *res2, int clusterID){
-				
+						
 	bool reped = false;
 	string command;
 	int rep;
 	int clusterN = 0;
 	
 	if (clusterID ==0){
-		command = "SELECT DISTINCT cluster_id FROM nodes WHERE camera_id=";
+			
+		command = "SELECT DISTINCT nodes.cluster_id, clusters.cluster_size, clusters.layer FROM nodes, clusters WHERE (clusters.id=nodes.cluster_id AND (camera_id=";
 		ostringstream idstr;
     	idstr << cameraIds[0]; 
 		command += idstr.str(); 
@@ -493,34 +561,39 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 			idStream << cameraIds[i];
 			command += idStream.str();
 			}
-			command +=";";
+			command += ")) order by layer, cluster_size DESC;";
+			
 			res = stmt->executeQuery(command);
 			clusterN = res->rowsCount();
 	
    		}
 	else{ //clusterID != 0
-	
-		//	command = "SELECT id, cluster_size FROM clusters where parent_id=";
-			command = "SELECT * from ((SELECT distinct id FROM clusters where parent_id=";
+			//command = "SELECT * from ((SELECT distinct id FROM clusters where parent_id=";
+		command = "SELECT DISTINCT nodes.cluster_id, clusters.cluster_size, clusters.layer FROM nodes, clusters WHERE (clusters.id=nodes.cluster_id AND clusters.parent_id=";
 			ostringstream clusterIDStream;
 			clusterIDStream<<clusterID;
 			command += clusterIDStream.str();
 			
-			command += ") UNION ALL (SELECT distinct cluster_id from nodes where camera_id=";
+			command += " AND (nodes.camera_id=";
 			ostringstream idstr;
 		    idstr << cameraIds[0]; 
 			command += idstr.str();
 			for (int i=1; i<cameraN; i++){
-				command += " OR camera_id=";
+				command += " OR nodes.camera_id=";
 				ostringstream idStream;
 				idStream << cameraIds[i];
 				command += idStream.str();
 			}
 			
-			command += ")) as tbl GROUP BY tbl.id HAVING COUNT(*)=2";
-			command += ";";
+			command += ")) order by clusters.layer, clusters.cluster_size;";
+		
 			res = stmt->executeQuery(command);	
+		
 		 	clusterN = res->rowsCount();
+		
+	
+	
+	///////
 			if (clusterN == 0){
 				
 					command = "SELECT DISTINCT camera_id from nodes where cluster_id=";
@@ -547,6 +620,9 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 			
 					return reped;
 				}
+	//////			
+				
+				
 			}	
 
 	int j=0;
@@ -560,9 +636,10 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 					cId= res->getInt("cluster_id");
 				}
 				else{
-					cId= res->getInt("id");
+					cId= res->getInt("cluster_id");
+			
 				}	
-				
+
 					command = "select distinct camera_id from nodes where ( cluster_id=";
 					ostringstream cIdStream;
 					cIdStream << cId;
@@ -581,32 +658,112 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 					}
 					
 					command += "));";
-				
+				//	cout<<"command1 is  :   "<<command<<endl;
 				res2 = stmt->executeQuery(command);	
 				int clusterCount = res2->rowsCount();
-				rep = getRepCluster(cId, conFeatureN, stmt, res2, cameraN,cameraIds,0, reps,j);
+				int cIdN = 1;
+				int* cIds = new int[cIdN];
+				cIds[0] = cId;
+				
+				rep = getRepCluster(cId,conFeatureN, stmt, res2, cameraN,cameraIds,0, reps,j);
 	
 				if (rep>0){
+				
 					reps[j] = rep;
 					clusterIds[j] = cId;			
 					clusterCounts[j] = clusterCount;
 					j++;	
 				}
 		}	
-	//else{	//clusterN<repW
-	if (j<repW){
+	
+	if (j<repW){ // i.e. (clusterN<repW)
+		// we should use children and remove parent
+		
+		
+		
 	int i=0;
-				
-				while((i<cameraN) && (j<repW) ){
+
+				while((i<j) && (j<repW) ){
+			
+					ostringstream parentClusterStream;
+					parentClusterStream<< clusterIds[i];
+					command = "SELECT distinct nodes.cluster_id, clusters.id from nodes, clusters where (nodes.cluster_id=clusters.id "; //and nodes.camera_id=";
+				//	ostringstream cameraIdStream;
+				//	cameraIdStream << cameraIds[i];
+				//	command += cameraIdStream.str();
+					command += " and clusters.parent_id=";
+					command += parentClusterStream.str();
 					
+					command += ");";
+					
+					res = stmt->executeQuery(command);
+					int cCount = res->rowsCount();
+				
+					if ( cCount> 0){
+						shift1(reps, clusterIds, clusterCounts, j+1);
+						j--;
+						
+					while(res->next()){
+				//		cout<<"in whilte"<<endl;
+						int cid = res->getInt("cluster_id");
+						command ="select distinct * from nodes where (cluster_id=";
+						ostringstream cIdStream3;
+						cIdStream3 << cid;
+						command += cIdStream3.str();
+						command += " and (camera_id=";
+						ostringstream cameraIdStream3; 
+						cameraIdStream3 << cameraIds[0];
+						command += cameraIdStream3.str();
+						 for (int k=1; k<cameraN; k++){
+									command += " OR";
+									ostringstream cameraIdStream2;
+									cameraIdStream2 << cameraIds[k];
+									command += " camera_id=";
+									command += cameraIdStream2.str();
+						}
+						command += "));";
+					
+						res2 = stmt->executeQuery(command);
+						int clusterCount = res2->rowsCount();
+						if (clusterCount>0){
+							
+							rep = getRepCluster(cid,conFeatureN, stmt, res2, cameraN,cameraIds,0, reps,j);
+
+							if(rep>0) {
+								reps[j] = rep;
+								clusterIds[j] = cid;
+								clusterCounts[j] = clusterCount;
+						
+								j++;
+							}
+						}
+					}
+				}
+				
+				else{
+					
+				
+					if (i<j-1){
+						i++;
+					}
+					else{
+						i=0;
+					}
+				}		
+				/*	
 					if (find(reps, cameraIds[i], j) == -1){
 					
 						reps[j] = cameraIds[i];
-						command = "SELECT cluster_id from nodes where camera_id=";
+						command = "SELECT distinct nodes.cluster_id, clusters.id from nodes, clusters where (nodes.cluster_id=clusters.id and nodes.camera_id=";
 						ostringstream cameraIdStream;
 						cameraIdStream <<  cameraIds[i];
 						command += cameraIdStream.str();
-						command += ";";
+						command += " and clusters.parent_id=";
+						ostringstream clusterIdStream;
+						clusterIdStream << clusterID;
+						command += clusterIdStream.str();
+						command += ");";
+					
 						res = stmt->executeQuery(command);
 						res->next();
 						int cid = res->getInt("cluster_id");
@@ -628,13 +785,15 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 						}
 						
 						command += "));";
+					//	cout<<"commad is "<<command<<endl;
 						res = stmt->executeQuery(command);
 						clusterCounts[j] = res->rowsCount();
 						j++;
 					}
-					i++;	
+				*/	
+				}
 				}	
-		}		
+				
 	if (j==repW){
 		reped = true;
 	}			

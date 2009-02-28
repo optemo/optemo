@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
 	varNames[10] = "maximumresolution_max";
 	
 	
-	string brand = "canon";
+	string brand = "Canon";
 	for (int j=0; j<varNamesN; j++){
 		var = varNames[j];
 		ind = argu.find(var, 0);
@@ -202,7 +202,7 @@ int main(int argc, char** argv) {
 ///////////////////////////////////////////////
 		
 			try {
-			
+		
 				// Using the Driver to create a connection
 				driver = sql::mysql::get_mysql_driver_instance();
 				con = driver->connect(EXAMPLE_HOST, EXAMPLE_PORT, EXAMPLE_USER, EXAMPLE_PASS);
@@ -245,8 +245,8 @@ int main(int argc, char** argv) {
 					}
 			
 				int cameraN = filter2(filteredRange, brand, stmt, res, res2, cameraIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange);
-			
-				
+	
+		
 				if (cameraN> 0){
 					if (cameraN<repW){
 						repW = cameraN;
