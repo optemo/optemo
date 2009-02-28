@@ -221,7 +221,7 @@ if (layer > 1){
  	   	    	centroids[j]=new double[conFeatureN];
  	   		}
      	      
- 	       	centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids); 
+ 	       	centersA = k_means2(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids); 
 	
 		
 		
