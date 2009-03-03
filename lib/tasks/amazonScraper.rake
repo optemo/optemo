@@ -23,4 +23,40 @@ task :scrape_amazon => :environment do
     #  end
     #}
 end
+
+require 'open-uri'
+#require 'net/http'
+desc "Download Images"
+task :download_images => :environment do
+  Camera.find(:all).each {|c|
+    c.imagesurl = download(c.imagesurl)
+    c.imagemurl = download(c.imagemurl)
+    c.imagelurl = download(c.imagelurl)
+    c.save
+  }
+end
+
+desc "Download Images"
+task :download_test => :environment do
+  begin
+  open('http://ecx.images-amazon.com/images/I/41dE-qCZRpL._SL75_.jpg')
+  rescue OpenURI::HTTPError
+    puts "We've run into a nonexistant page"
+  end
+end
+
+def download(url)
+  return nil if url.nil?
+  return url if url.index(/\/images\/Amazon\//)
+  url = 'http://ecx.images-amazon.com/images/I/'+url if url.length < 30 
+  filename = url.split('/').pop
+  puts filename
+  ret = '/images/Amazon/'+filename
+  begin
+  f = open('/optemo/site/public/images/Amazon/'+filename,"w").write(open(url).read)
+  rescue OpenURI::HTTPError
+    ret = ""
+  end
+  ret
+end
  
