@@ -36,13 +36,14 @@ task :download_images => :environment do
   }
 end
 
-desc "Download Images"
-task :download_test => :environment do
-  begin
-  open('http://ecx.images-amazon.com/images/I/41dE-qCZRpL._SL75_.jpg')
-  rescue OpenURI::HTTPError
-    puts "We've run into a nonexistant page"
-  end
+desc "Rename %2B (+)"
+task :image_unescape => :environment do
+  Camera.find(:all).each {|c|
+    s = c.imagesurl.gsub(/%2(b|B)/,'-') if !c.imagesurl.nil?
+    m = c.imagemurl.gsub(/%2(b|B)/,'-') if !c.imagemurl.nil?
+    l = c.imagelurl.gsub(/%2(b|B)/,'-') if !c.imagelurl.nil?
+    c.update_attributes(:imagelurl => l, :imagemurl => m, :imagesurl => s)
+  }
 end
 
 def download(url)
