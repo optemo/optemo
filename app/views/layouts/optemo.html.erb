@@ -39,7 +39,7 @@
    Not required for visual effect. -->
 
    <div class="hd">
-	<div id="header">
+	<div id="header" style="display:none;">
 	  <div id="logo">
 	    <%= image_tag 'logo.jpg', :width  => 250, :class => 'img' %>
 	  </div>
@@ -52,11 +52,11 @@
 	  <div id="header_clear"></div>
 	</div>
    </div>
-   <div id="headerbar">&nbsp;</div>
-	<div id = "error_space"><%= flash[:notice] %> <span style="color:red;"><%= flash[:error] %></span>
-	  </div>
+   <div id="headerbar" style="display:none;">&nbsp;</div>
+	
    <div class="bd">
-    <%= yield  %>
+	<div id = "error_space"><%= flash[:notice] %> <span style="color:red;"><%= flash[:error] %></span></div>
+    <%# yield  %>
    </div>
 
    <div class="ft">
