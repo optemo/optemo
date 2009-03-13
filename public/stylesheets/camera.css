@@ -198,7 +198,7 @@ div #filterbar {
 	text-align: left;
 	font-size: 0.8em;
 	margin-left: 5px;
-	width: 90px;
+	width: 187px;
 	margin-top: 0.6em;
 }
 .handle img{
@@ -209,9 +209,16 @@ div #filterbar {
 	cursor: move;
 	position: absolute;}
 .disp {
-	text-align: left;
 	width: 80px;
+	position: absolute;
+	right: 0;
+	top: 0;
 	font-size: 0.8em;
-	float: right;
-	margin-top: 0.6em;
+	text-align: left;
+}
+.feature {
+	position: relative;
+}
+.hist {
+	text-align: left;
 }
