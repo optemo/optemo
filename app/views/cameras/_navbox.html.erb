@@ -1,11 +1,10 @@
 <div class="navigator_box" style="left: <%= (i%3)*247 %>px;">
 <div id="box<%=i%>" class="borderbox">
-	
-	    <% if !@cameras[i].imagemwidth.blank? %>
-	    <div class='save'>
+	   <% if !@cameras[i].imagemwidth.blank? %>
+		<div class='save'>
 			<%= link_to "Save it", "javascript:saveit(#{@cameras[i].id})" %>
 		</div>
-		<%= image_tag @cameras[i].imagemurl, :width => @cameras[i].imagemw, :height => @cameras[i].imagemh, :onClick => "fadeout(#{@cameras[i].id});", :style => "cursor: pointer;" %> 	
+		<%= image_tag @cameras[i].imagemurl, :width => @cameras[i].imagemw, :height => @cameras[i].imagemh, :onClick => "fadeout(#{@cameras[i].id});", :style => "cursor: pointer;margin-left:-45px" %> 	
 		<div class='rightbar' style='display: none;'>
 			MP:<%= @cameras[i].maximumresolution %><br>
 			DS:<%= @cameras[i].displaysize %><br>
@@ -23,7 +22,7 @@
 	</p>
 	</a>
 	<div class="bottombar">
-		<%= sim_link(i) %><!--
+		<%= sim_link(i) %><!--# remove this
 		<div class="clusterfeatures">
 		<% if !@desc[i].nil? %>
 		<% @desc[i].each do |item| %>

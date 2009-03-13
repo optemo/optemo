@@ -176,7 +176,7 @@ div.pass img{
 
 .dialog .content {
  position:relative;
- /*zoom:1; removed because Firefox doesn't like it*/
+ zoom:1; /*removed because Firefox doesn't like it*/
  _overflow-y:hidden;
  padding:0px 8px 0px 0px;
 }
@@ -197,7 +197,7 @@ div.pass img{
  /* bottom */
  position:relative;
  background-position:bottom right;
- /*width:100%;*/
+ width:100%;
 }
 
 .dialog .b,

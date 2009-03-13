@@ -39,7 +39,7 @@ img.rotate(20);
 }*/
 var histogram = function(data,element,min,max) {
 /*var data = [0.5,0.7,0.1,0,0.3,0.8,0.6,0.4,0.3,0.3]
-%Data is assumed to be 10 normalized elements in an array*/
+%Data is assumed to be 10 normalized elements in an array*//*
 var peak = 11,
 trans = 4,
 step = peak + 2*trans
@@ -58,7 +58,7 @@ t.lineTo(i*step+trans+peak,height*(1-data[i]));
 t.cplineTo((data.length)*step,height,5);
 t.andClose();
 shapelayer.rect(0,0,min*length,height).attr({fill: "#dddddd", "stroke-opacity": 0});
-shapelayer.rect(max*length,0,length,height).attr({fill: '#dddddd', "stroke-opacity": 0});
+shapelayer.rect(max*length,0,length,height).attr({fill: '#dddddd', "stroke-opacity": 0});*/
 }
 </script>
 <script type="text/javascript" language="javascript">

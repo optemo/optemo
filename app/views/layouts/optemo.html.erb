@@ -48,11 +48,11 @@
 	    <a href="http://optemo.com/" class="link" >About Us</a><br>
 	    <a href="http://optemo.com/team" class="link">The Team</a><br>
 	  </div>
-	  <div id="header_content"<%= yield :header %></div>
+	  <div id="header_content"><%= yield :header %></div>
 	  <div id="header_clear"></div>
 	</div>
    </div>
-   <div id="headerbar">&nbsp;</div>
+   <div id="headerbar"><!--IE min line height--></div>
 	
    <div class="bd">
 	<div id = "error_space"><%= flash[:notice] %> <span style="color:red;"><%= flash[:error] %></span></div>
