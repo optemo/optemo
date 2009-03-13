@@ -12,6 +12,7 @@ body {
  padding: 0;
  margin: 0;
  height: 100%;
+ position: relative; /*IE6 Resize bug*/
 }
 
 h1, h2 {
@@ -153,7 +154,12 @@ div.pass img{
 /* 
   -- Even more rounded corners with CSS: Base stylesheet --
 */
-#mycenter { margin-left: auto; margin-right: auto; width: 958px;}
+#mycenter { 
+	margin-left: auto; 
+	margin-right: auto; 
+	width: 958px;
+	position: relative;
+}
 .dialog {
  position:relative;
  margin:0px auto;

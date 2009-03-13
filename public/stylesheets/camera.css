@@ -140,6 +140,7 @@ div #leftbar {
 	width: 195px;
 	text-align: center;
 	float: left;
+	position: relative;
 }
 #search {
 	margin-top: 0.5em;
@@ -181,13 +182,14 @@ div #filterbar {
 	margin: 0.5em 0.1em;
 	padding: 0em;
 	text-align: center;
+	position: relative;
 	background: #ddd;}
 #filterbar h2 {
 	margin: 0;
 }
 .slider {
 	/*background: url(../images/sliderbgwticks193px.gif) no-repeat;*/
-}/*	margin: 0 0 0.8em;
+	margin: 0 0 0.8em;
 	width: 190px;
 	height: 3px;
 	background-color: black;
@@ -212,4 +214,4 @@ div #filterbar {
 	font-size: 0.8em;
 	float: right;
 	margin-top: 0.6em;
-}*/
+}
