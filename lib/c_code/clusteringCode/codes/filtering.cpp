@@ -63,8 +63,7 @@ int main(int argc, char** argv) {
 
    	for(int f=0; f<conFeatureN; f++){
 		conFilteredFeatures[f] = 0;
-		filteredRange[f] = new double [range];
-		
+		filteredRange[f] = new double [range];		
 	}
 	
 
@@ -258,7 +257,9 @@ int main(int argc, char** argv) {
 					int* clusterCounts = new int[repW];
 				
 					bool reped = getRep2(reps, cameraIDs, cameraN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID);
-				
+				if (!reped){
+					cout<<"Not reped"<<endl;
+				}
 					//void getIndicators4(int* clusterIDs, int repW, int conFeatureN, int** indicators, sql::Statement *stmt,sql::ResultSet *res)
 				
 				if(reped){

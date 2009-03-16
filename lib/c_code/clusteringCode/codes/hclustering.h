@@ -44,7 +44,6 @@ if 	(layer == 1){
 				price = listprice;
 				
 			}	   		
-
 							data[size][0] = price;
 						    data[size][1] = res->getDouble("displaysize");
 							data[size][2] = res->getDouble("opticalzoom");
@@ -79,7 +78,7 @@ if 	(layer == 1){
 			 	   	    	centroids[j]=new double[conFeatureN];
 			 	   		}
 
-			 	       	centersA = k_means2(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids); 
+			 	       	centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids); 
 					
 					
 				dist = new double* [size];
@@ -221,7 +220,7 @@ if (layer > 1){
  	   	    	centroids[j]=new double[conFeatureN];
  	   		}
      	      
- 	       	centersA = k_means2(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids); 
+ 	       	centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids); 
 	
 		
 		

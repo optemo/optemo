@@ -28,7 +28,6 @@ using namespace std;
 * Usage example for Driver Manager, Connection, (simple) Statement, ResultSet
 */
 int main(int argc, char** argv) {
-
 //void initialize(int arcCount, char** argArray)
 //{
 	stringstream sql;
@@ -40,6 +39,8 @@ int main(int argc, char** argv) {
 	int range = 2;
 	int session_id = 1; 
 	int clusterID = 0;
+	
+	bool smallNFlag =false;
 	
 	ostringstream session_idStream;
 
@@ -63,8 +64,7 @@ int main(int argc, char** argv) {
 
    	for(int f=0; f<conFeatureN; f++){
 		conFilteredFeatures[f] = 0;
-		filteredRange[f] = new double [range];
-		
+		filteredRange[f] = new double [range];		
 	}
 	
 
@@ -91,9 +91,9 @@ int main(int argc, char** argv) {
 	varNames[8] = "opticalzoom_max";
 	varNames[9] = "maximumresolution_min";
 	varNames[10] = "maximumresolution_max";
+
 	
-	
-	string brand = "Canon";
+	string brand = "";
 	for (int j=0; j<varNamesN; j++){
 		var = varNames[j];
 		ind = argu.find(var, 0);
@@ -101,6 +101,7 @@ int main(int argc, char** argv) {
 		startit = ind + var.length() + 2;
 		lengthit = endit - startit;
 		if(lengthit > 0){
+
 			if (var=="brand"){
 					brand = (argu.substr(startit, lengthit)).c_str();
 					catFilteredFeatures[0] = 1;
@@ -111,6 +112,7 @@ int main(int argc, char** argv) {
 
 		   else if(var == "cluster_id"){
 			    	clusterID = atoi((argu.substr(startit, lengthit)).c_str());
+	
 				
 		    }
 		   else if(var == "price_min"){
@@ -118,7 +120,6 @@ int main(int argc, char** argv) {
 		        	conFilteredFeatures[0] = 1;
 	    	}
 		   else if(var == "price_max"){
-			
 	  				filteredRange[0][1] = atof((argu.substr(startit, lengthit)).c_str()) ;	
 					filteredRange[0][1] = filteredRange[0][1]* 100;
 			    	conFilteredFeatures[0] = 1;
@@ -202,7 +203,6 @@ int main(int argc, char** argv) {
 ///////////////////////////////////////////////
 		
 			try {
-		
 				// Using the Driver to create a connection
 				driver = sql::mysql::get_mysql_driver_instance();
 				con = driver->connect(EXAMPLE_HOST, EXAMPLE_PORT, EXAMPLE_USER, EXAMPLE_PASS);
@@ -214,12 +214,13 @@ int main(int argc, char** argv) {
 				int size;
 				string out = "";
 				int repW = 9;
+				bool reped = false;
 				
 			if (clusterID == 0){
 				command = "SELECT id from cameras;";
 				res = stmt->executeQuery(command);
 				size = res->rowsCount();
-				}
+			}
 			else{
 				int parentID; 
 				command = "SELECT id from nodes where cluster_id=";
@@ -231,40 +232,34 @@ int main(int argc, char** argv) {
 				size = res->rowsCount();
 			//	repW--;
 			}	
-			
-			
-				int* cameraIDs = new int [size];
-					int ** indicators = new int*[conFeatureN];
-					double** conFeatureRange = new double* [conFeatureN];
-					for (int f=0; f<conFeatureN; f++){
-						conFeatureRange[f] = new double [2];
-						indicators[f] = new int[repW];
-						for (int i=0; i<repW; i++){
-							indicators[f][i] = 0;
-						}
-					}
-			
-				int cameraN = filter2(filteredRange, brand, stmt, res, res2, cameraIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange);
-	
+			int* cameraIDs = new int [size];
+			int ** indicators = new int*[conFeatureN];
+			double** conFeatureRange = new double* [conFeatureN];
+			for (int f=0; f<conFeatureN; f++){
+				conFeatureRange[f] = new double [2];
+				indicators[f] = new int[repW];
+				for (int i=0; i<repW; i++){
+				indicators[f][i] = 0;
+				}
+			}
 		
-				if (cameraN> 0){
-					if (cameraN<repW){
-						repW = cameraN;
-					}
+			int cameraN = filter2(filteredRange, brand, stmt, res, res2, cameraIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange);
+		
+			if (cameraN> 0){
+				if (cameraN<=repW){
+					repW = cameraN;                 
+					smallNFlag = true;
+				}
+				int* reps = new int [repW];		
+				int* clusterIDs = new int[repW];
+				int* clusterCounts = new int[repW];
 				
-					int* reps = new int [repW];
-					
-					int* clusterIDs = new int[repW];
-					int* clusterCounts = new int[repW];
-				
-					bool reped = getRep2(reps, cameraIDs, cameraN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID);
-				
-					//void getIndicators4(int* clusterIDs, int repW, int conFeatureN, int** indicators, sql::Statement *stmt,sql::ResultSet *res)
-				
+				reped = getRep2(reps, cameraIDs, cameraN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID, smallNFlag);
+		
 				if(reped){
 					getIndicators4(clusterIDs,repW, conFeatureN, indicators, stmt, res);
 				}
-
+			
 //Generating the output string 
 			
 					string* indicatorNames = new string[4];
@@ -279,8 +274,6 @@ int main(int argc, char** argv) {
 					resultCountStream << cameraN;
 					out.append(resultCountStream.str());
 					out.append("\n");
-				
-				
 					conFeatureRange[0][0] = conFeatureRange[0][0] / 100;
 					conFeatureRange[0][1] = conFeatureRange[0][1] / 100;
 					for (int j=0; j<(conFeatureN*2); j++){
@@ -341,8 +334,8 @@ int main(int argc, char** argv) {
 					   		out.append("}\n");
 					}
 				}	
-			}				
-
+							
+}
 			else{	//cameraN=0;
 				out = "--- !map:HashWithIndifferentAccess \n";
 				out.append("result_count: ");
