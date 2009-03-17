@@ -4,12 +4,13 @@ a.link {
 	margin-right: 10px;}
 div.main {
 	padding: 0;
-	margin-left: 203px;
+	float: left;
+	/*margin-left: 203px;*/
+	margin-left: 5px;
 	text-align: center;}
 div.rowdiv {
 	width: 745px;
 	height: 225px;
-	position: relative;
 	}
 a img {
 	border: none;}
@@ -22,20 +23,18 @@ a img {
 div.navigator_box {
 	text-align: center;
 	font-size: small;
-	/*display: table-cell;*/
-	position: absolute;
+	float: left;
 	width:245px;
 	height:225px;
-	margin: 0px;
+	margin: 0px 2px 0px 0px;
 	padding: 0px;
 	background: url(../images/navigatorbox_u.png) no-repeat;
-	_background-image:url(../images/mainbg.gif);}
+	_background-image:url(../images/navigatorbox_u.gif);}
 div.navigator_box:hover {
 	background: url(../images/navigatorbox_s.png) no-repeat;}
 div.borderbox {
-	position: relative;
-	top: 5px;
-	left: 5px;
+	/*position: relative;*/
+	margin: 5px 0px 0px 5px;
 	height: 210px;
 	width: 235px;}
 .borderbox a {
@@ -46,9 +45,7 @@ div.borderbox {
 	width: 45px;
 	height: 15px;
 	padding: 2px 1px 0px;
-	position: absolute;
-	left: 1px;
-	top: 1px;
+	float: left;
 	background: url(../images/save_button.png) no-repeat;}}
 .rightbar {
 	width: 45px;
@@ -82,8 +79,6 @@ div.borderbox {
 	font-size: 0.9em;
 	line-height: 0.9em;}
 .bottombar {
-	position: absolute;
-	bottom: 0;
 	width: 100%;}
 .up {
 	text-decoration: none;
@@ -140,19 +135,20 @@ div.borderbox {
 
 /* Left Bar */
 div #leftbar {
-	float: left;
 	padding: 0;
 	margin: 0;
+	width: 195px;
 	text-align: center;
+	float: left;
+	position: relative;
 }
 #search {
-	width: 130px;
 	margin-top: 0.5em;
+	width: 130px;
 }
 	
 /* Save Box */
 div #savebar {
-	width: 195px;
 	background: #ddd;
 	margin: 0.5em 0.1em 0;
 	padding: 0em 0em 0.5em 0em;
@@ -186,6 +182,7 @@ div #filterbar {
 	margin: 0.5em 0.1em;
 	padding: 0em;
 	text-align: center;
+	position: relative;
 	background: #ddd;}
 #filterbar h2 {
 	margin: 0;
@@ -201,20 +198,27 @@ div #filterbar {
 	text-align: left;
 	font-size: 0.8em;
 	margin-left: 5px;
-	width: 190px;
-	position: relative;}
+	width: 187px;
+	margin-top: 0.6em;
+}
 .handle img{
 	float: left;}
 .handle {
 	width: 9px;
 	height: 15px;
-	position: absolute;
-	top: -7px;
-	cursor: move;}
+	cursor: move;
+	position: absolute;}
 .disp {
-	text-align: left;
 	width: 80px;
-	font-size: 0.9em;
 	position: absolute;
 	right: 0;
-	top: 0;}
+	top: 0;
+	font-size: 0.8em;
+	text-align: left;
+}
+.feature {
+	position: relative;
+}
+.hist {
+	text-align: left;
+}

@@ -1,5 +1,5 @@
 <div id="c<%= local_assigns[:nox].nil? ? camera.id : "last_click"%>" class="saveditem">
 <%= image_tag camera.imagemurl, :width => camera.imagesw, :height => camera.imagesh, :onClick => "fadeout(#{camera.id});" %><br> 
 <p class="smalldesc"><%= link_to camera.tinyTitle, "javascript:fadeout(#{camera.id});" %></p>
-<%= link_to image_tag('close.png'), "javascript:remove(#{camera.id})", :class => 'deleteX' if local_assigns[:nox].nil?%>
+<%= link_to image_tag('close.gif'), "javascript:remove(#{camera.id})", :class => 'deleteX' if local_assigns[:nox].nil?%>
 </div>

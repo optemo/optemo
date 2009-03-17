@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090130223927) do
+ActiveRecord::Schema.define(:version => 20090127204735) do
 
   create_table "amazon_groups", :force => true do |t|
     t.datetime "created_at"
@@ -198,17 +198,6 @@ ActiveRecord::Schema.define(:version => 20090130223927) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "toolow"
-    t.float    "ppm"
-    t.float    "ttp"
-    t.string   "resolution"
-    t.string   "duplex"
-    t.string   "connectivity"
-    t.string   "papersize"
-    t.integer  "paperoutput"
-    t.string   "dimensions"
-    t.integer  "dutycycle"
-    t.integer  "paperinput"
-    t.string   "special"
   end
 
   create_table "saveds", :force => true do |t|

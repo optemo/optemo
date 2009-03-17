@@ -6,11 +6,13 @@ function fadeout(id)
 	$('fade').setStyle({display: 'inline'});
 	$('info').style.left = ((document.body.clientWidth-800)/2)+'px';
 	$('info').setStyle({display: 'inline'});
+	$('myfilter_brand').setStyle({visibility: 'hidden'});
 	loadinfo(id);
 }
 
 function fadein()
 {
+	$('myfilter_brand').setStyle({visibility: 'visible'});
 	$('fade').setStyle({display: 'none'});
 	$('info').setStyle({display: 'none'});
 	

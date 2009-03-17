@@ -7,6 +7,7 @@ div#fade {
 	height: 5000px;
 	z-index: 1;
 	opacity: 0.5;
+	filter: alpha(opacity = 50);
 	display: none;
 	/*margin-left: -6px;
 	margin-top: 11px;*/}
@@ -22,7 +23,7 @@ div#info {
 #close {
 	position: absolute;
 	top: 0px;
-	left: 775px;
+	left: 781px;
 }
 
 div #container {
