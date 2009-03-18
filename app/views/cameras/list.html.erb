@@ -25,10 +25,17 @@
 </div>
 <div class="main">
 	<% for i in 0..@cameras.length-1 %>
-	<%= i%3 == 0 ? '<div class="rowdiv">' : '' %>
-	<%= render :partial => 'navbox', :locals => {:i => i} %>
-	<%= i%3 == 2 ? '</div>' : '' %>
+	  <% if i%3 == 0 %>
+		<div class="rowdiv">
+		<% open = true %>
+	  <% end %>
+	  <%= render :partial => 'navbox', :locals => {:i => i} %>
+	  <% if i%3 == 2 %>
+		</div>
+		<% open = false %>
+	  <% end %>
 	<% end %>
+	<%= '</div>' if open %>
 	<!--<div class="easynav" style="display:none;">
 	  <div class="buttons"><%= link_to 'Higher Resolution' %><%= link_to 'Lower Price' %><%= link_to 'Bigger Display Size' %><%= link_to 'Farther Zoom' %></div>
 	  <div class="cont">
