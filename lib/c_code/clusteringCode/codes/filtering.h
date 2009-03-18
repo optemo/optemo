@@ -722,6 +722,8 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 							}
 					
 					}
+					//merge
+					cout<<"cCount is "<<cCount<<"and j is "<<j<<endl;
 				}
 				//else{
 				//	if (i<j-1){ 
