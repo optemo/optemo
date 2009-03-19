@@ -6,17 +6,17 @@ task :scrape_amazon => :environment do
   Printer.fewfeatures.find(:all, :order => 'rand()', :conditions => 'scrapedat IS NULL AND nodetails IS NOT TRUE').each { |p|
     scrape_details(p)
     sleep(1+rand()) #Be nice to Amazon
-    sleep(rand()*50) #Be really nice to Amazon!
+    sleep(rand()*30) #Be really nice to Amazon!
   }  
 end
 
 def scrape_details(p)
   puts 'ASIN='+p.asin
   extractor = Scrubyt::Extractor.define do
+    begin
     fetch('http://www.amazon.com/o/asin/' + p.asin, :user_agent => "User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_6; en-us) AppleWebKit/525.27.1 (KHTML, like Gecko) Version/3.2.1 Safari/525.27.1")
     #fetch 'http://www.amazon.com/o/asin/' + 'B000F005U0'
     #fetch 'http://www.amazon.com/Magicolor-2550-Dn-Color-Laser/dp/tech-data/B000I7VK22/ref=de_a_smtd'
-    begin
       click_link('See more technical details')
     rescue
       p.nodetails = true
