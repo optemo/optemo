@@ -244,7 +244,6 @@ int main(int argc, char** argv) {
 			}
 		
 			int cameraN = filter2(filteredRange, brand, stmt, res, res2, cameraIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange);
-		
 			if (cameraN> 0){
 				if (cameraN<=repW){
 					repW = cameraN;                 

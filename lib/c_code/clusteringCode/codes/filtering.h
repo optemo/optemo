@@ -158,7 +158,11 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 		conFeatureRange[f][0] = 100000000.0;
 		conFeatureRange[f][1] = 0.0;
 	}
-	
+	double eps = 0.00001;
+	for (int f=0; f<conFeatureN; f++){
+		filteredRange[f][0] -= eps;
+		filteredRange[f][1] += eps;
+	}
 	
 	if (clusterID==0){
 		command = "SELECT distinct camera_id, price, maximumresolution, displaysize, opticalzoom from nodes";
@@ -246,6 +250,7 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 			command += ")";
 		}
 		command += ";";
+	
 		res = stmt->executeQuery(command);
 		
 
@@ -407,10 +412,10 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 			}
 			
 			for(int f=0; f<conFeatureN; f++){
-				if (eachValue[f]<conFeatureRange[f][0]){
+				if (eachValue[f]<=conFeatureRange[f][0]){
 					conFeatureRange[f][0] = eachValue[f];
 				}
-				if (eachValue[f]>conFeatureRange[f][1]){
+				if (eachValue[f]>=conFeatureRange[f][1]){
 					conFeatureRange[f][1] = eachValue[f];
 				}
 			}
@@ -722,8 +727,8 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 							}
 					
 					}
-					//merge
-					cout<<"cCount is "<<cCount<<"and j is "<<j<<endl;
+					//merge the unused children
+					
 				}
 				//else{
 				//	if (i<j-1){ 
