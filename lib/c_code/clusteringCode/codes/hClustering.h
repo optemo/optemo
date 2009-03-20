@@ -188,7 +188,7 @@ if (layer > 1){
 					
 				data[s][3] = resNodes->getDouble("maximumresolution");
 				
-				idA[s] = resNodes->getInt("camera_id"); 
+				idA[s] = resNodes->getInt("product_id"); 
 			
 				brands[s] = resNodes->getString("brand");
 

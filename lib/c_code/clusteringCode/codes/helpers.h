@@ -326,7 +326,7 @@ void getStatisticsData(double** data, int** indicators, double* average, int siz
 
 			////// saving in the nodes table
 				for (int j=0; j<clusteredData[c][0]; j++){	  
-					command = "INSERT INTO nodes (cluster_id, camera_id, price, displaysize, opticalzoom, maximumresolution, brand) values(";
+					command = "INSERT INTO nodes (cluster_id, product_id, price, displaysize, opticalzoom, maximumresolution, brand) values(";
 					ostringstream cluster_idStream;
 					cluster_idStream<<cluster_id;
 					command += cluster_idStream.str();
@@ -631,13 +631,13 @@ void getIndicators4(int* clusterIDs, int repW, int conFeatureN, int** indicators
 
 void getIndicators3(int* cameraIDs, int cameraN, int* reps, int repW, int conFeatureN, int** indicators, sql::Statement *stmt,
  sql::ResultSet *res){
-	string command = "SELECT distinct * from nodes where camera_id=";
+	string command = "SELECT distinct * from nodes where product_id=";
 	ostringstream pid; 
 	pid << cameraIDs[0];
 	command += pid.str();
 	
 	for (int i=1; i<cameraN; i++){
-		command += " OR camera_id=";
+		command += " OR product_id=";
 		ostringstream pid2; 
 		pid2 << cameraIDs[0];
 		command += pid.str();
@@ -665,7 +665,7 @@ void getIndicators3(int* cameraIDs, int cameraN, int* reps, int repW, int conFea
 			data[1][i] = res->getDouble("displaysize");
 			data[2][i] = res->getDouble("opticalzoom");
 			data[3][i] = res->getDouble("maximumresolution");
-			idA[i] = res->getInt("camera_id");		
+			idA[i] = res->getInt("product_id");		
 			if (idA[i] == cameraIDs[r]){
 				repData[0][r] = data[0][i] ;
 				repData[1][r] = data[1][i];
@@ -724,7 +724,7 @@ void getIndicators2(int cameraN, int* cameraIDs, sql::Statement *stmt, sql::Resu
 		
 	string command = "";
 	for (int j=0; j<cameraN-1; j++){
-		command += "(SELECT price, displaysize, opticalzoom, maximumresolution, camera_id from nodes where camera_id=";
+		command += "(SELECT price, displaysize, opticalzoom, maximumresolution, product_id from nodes where product_id=";
 		ostringstream idStream; 
 		idStream << cameraIDs[j];
 		command += idStream.str();
@@ -732,7 +732,7 @@ void getIndicators2(int cameraN, int* cameraIDs, sql::Statement *stmt, sql::Resu
 		command += " UNION ";
 	}
 
-	command += "(SELECT price, displaysize, opticalzoom, maximumresolution, camera_id from nodes where camera_id=";
+	command += "(SELECT price, displaysize, opticalzoom, maximumresolution, product_id from nodes where product_id=";
 	ostringstream idStream;
 	idStream<<cameraIDs[cameraN-1];
 	command += idStream.str();
@@ -748,7 +748,7 @@ void getIndicators2(int cameraN, int* cameraIDs, sql::Statement *stmt, sql::Resu
 		data[j][1] = res->getDouble("displaysize");
 		data[j][2] = res->getDouble("opticalzoom");
 		data[j][3] = res->getDouble("maximumresolution");
-		idA[j] = res->getInt("camera_id");
+		idA[j] = res->getInt("product_id");
 		j++;
 	}
 		int conFeatureN =4;
@@ -881,134 +881,4 @@ void median2(double** data, int size, int conFeatureN, int* sortedA){
 
 
 
-
-//getRepCluster(cId, conFeatureN, stmt, res, cameraN,cameraIds, reps, j);
-
-/*//gives all the reps (int* reps)
-bool getRep(int* reps, int* repClusters, int* cameraIds, int* clusterIds, int cameraIDN, int conFeatureN, int acceptedClusterN, int repW, sql::Statement *stmt, sql::ResultSet *res){
-//	filter(double **filteredRange, string brand, int layer,sql::Statement *stmt,
-//	 sql::ResultSet *res, sql::ResultSet *res2, int* cameraIDs, bool* conFilteredFeatures, bool* catFilteredFeatures)
-	int rep;
-	int c=0;
-	int r=0;
-	int size, j;
-	double** clusterData; 
-	int* idA;
-	int* cIdA;
-	if (repW>cameraIDN){
-			return false;
-	}
-	else {
-		string command;
-		while((r<repW) && (c<acceptedClusterN) && (r<acceptedClusterN)){
-			
-			command = "SELECT * from nodes where ";	
-			command += "cluster_id=";
-			ostringstream cluster_idStream;
-			cluster_idStream<<clusterIds[c];
-			command += cluster_idStream.str();
-			command += ";";
-			res = stmt->executeQuery(command);
-			size = res->rowsCount();
-		
-			if (size>0){
-				clusterData = new double* [size];
-				idA = new int[size];
-				cIdA = new int [size];
-				j=0;
-				while(res->next()){
-					clusterData[j] = new double [conFeatureN];
-					clusterData[j][0] = res->getInt("price");
-					clusterData[j][1] = res->getDouble("displaysize");
-					clusterData[j][2] = res->getDouble("opticalzoom");
-					clusterData[j][3] = res->getDouble("maximumresolution");
-					idA[j] = res->getInt("camera_id");
-					cIdA[j] = res->getInt("cluster_id");
-					j++;
-				}
-					rep = getRepC(clusterData, size, conFeatureN, idA, cameraIds, cameraIDN,1);
-					if (rep>0){
-						reps[r] = rep;
-						command = "SELECT cluster_id from nodes where camera_id=";
-						ostringstream repStream;
-						repStream<<rep;
-						command += repStream.str();
-						res= stmt->executeQuery(command);
-						res->next();
-						repClusters[r] = res->getInt("cluster_id");
-						r++;
-					}
-		}
-		c++;
-	  }
-
-		if(repW>r){
-			int left = repW - r;
-		    j=0; 
-		    c = -1;
-			int o;
-			o = 2;
-			while ((r<left) && (c<acceptedClusterN)){
-			    command = "SELECT * from nodes where ";	
-				command += "cluster_id=";
-				ostringstream cluster_idStream;
-				cluster_idStream<<clusterIds[c];
-				command += cluster_idStream.str();
-				command += ";";
-				res = stmt->executeQuery(command);
-				size = res->rowsCount();
-			    if(size>0){
-				clusterData = new double* [size];
-				idA = new int[size];
-				j=0;
-				while(res->next()){
-						clusterData[j] = new double [conFeatureN];
-						clusterData[j][0] = res->getInt("price");
-						clusterData[j][1] = res->getDouble("displaysize");
-						clusterData[j][2] = res->getDouble("opticalzoom");
-						clusterData[j][3] = res->getDouble("maximumresolution");
-						idA[j] = res->getInt("camera_id");
-						repClusters[j] = res->getInt("cluster_id");
-						j++;
-				}
-			
-				rep = getRepC(clusterData, size, conFeatureN, idA, cameraIds, cameraIDN, o);
-		//			<<"rep is "<<rep<<endl;
-				int t= 0;
-				while ((rep=0) && (t<size)){
-					o++;
-					rep  = getRepC(clusterData, size, conFeatureN, idA, cameraIds, cameraIDN,  o);
-					t++;
-				}
-			
-				if (rep>0){
-					
-					reps[r] = rep;
-					command = "SELECT cluster_id from nodes where camera_id=";
-					ostringstream repStream;
-					repStream<<rep;
-					command += repStream.str();
-					res= stmt->executeQuery(command);
-					res->next();
-					repClusters[r] = res->getInt("cluster_id");
-					r++;
-				}	
-	
-				    j++;
-					c++;
-				}
-			
-			else{
-				o = 2;
-				c++;
-			}
-							
-		}
-		}
-		return true;	
-	}
-	
-}*/
-
-//#endif	/* _EXAMPLES_H */
 

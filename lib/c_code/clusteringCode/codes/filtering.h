@@ -107,17 +107,17 @@ else{
 	command = "";
 	for (int j=0; j<cameraN-1; j++){
 		
-	 	command += "(SELECT cluster_id FROM nodes WHERE camera_id=";
-		ostringstream camera_idStream; 
-		camera_idStream << cameraIDs[j];
-		command += camera_idStream.str();
+	 	command += "(SELECT cluster_id FROM nodes WHERE product_id=";
+		ostringstream product_idStream; 
+		product_idStream << cameraIDs[j];
+		command += product_idStream.str();
 		command += ") UNION ";
 	}
 	
-		command += "(SELECT cluster_id FROM nodes WHERE camera_id=";
-		ostringstream camera_idStream; 
-		camera_idStream << cameraIDs[cameraN-1];
-		command += camera_idStream.str();
+		command += "(SELECT cluster_id FROM nodes WHERE product_id=";
+		ostringstream product_idStream; 
+		product_idStream << cameraIDs[cameraN-1];
+		command += product_idStream.str();
 		command += ");";
 
 		res = stmt->executeQuery(command);
@@ -158,10 +158,14 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 		conFeatureRange[f][0] = 100000000.0;
 		conFeatureRange[f][1] = 0.0;
 	}
-	
+	double eps = 0.00001;
+	for (int f=0; f<conFeatureN; f++){
+		filteredRange[f][0] -= eps;
+		filteredRange[f][1] += eps;
+	}
 	
 	if (clusterID==0){
-		command = "SELECT distinct camera_id, price, maximumresolution, displaysize, opticalzoom from nodes";
+		command = "SELECT distinct product_id, price, maximumresolution, displaysize, opticalzoom from nodes";
 		if (conFilteredFeatures[0]){
 			command += " where (price>=";
 			ostringstream minv;
@@ -246,6 +250,7 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 			command += ")";
 		}
 		command += ";";
+	
 		res = stmt->executeQuery(command);
 		
 
@@ -263,7 +268,7 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 		
 		while(res->next()){
 				
-			cameraIDs[cameraN] = res->getInt("camera_id");
+			cameraIDs[cameraN] = res->getInt("product_id");
 			double* eachValue = new double[conFeatureN];
 			
 			for (int f=0; f<conFeatureN; f++){
@@ -302,7 +307,7 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 		
 		if (clusterN==0){ //i.e. there is no subCluster
 			
-			command = "SELECT distinct camera_id, price, maximumresolution, displaysize, opticalzoom from nodes where cluster_id=";
+			command = "SELECT distinct product_id, price, maximumresolution, displaysize, opticalzoom from nodes where cluster_id=";
 			command += cid.str();
 		}
 		else{
@@ -312,7 +317,7 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 				i++;
 			}
 			
-			command = "SELECT distinct camera_id, price, maximumresolution, displaysize, opticalzoom from nodes where (cluster_id=";
+			command = "SELECT distinct product_id, price, maximumresolution, displaysize, opticalzoom from nodes where (cluster_id=";
 			ostringstream cid2; 
 			cid2<<clusterChildren[0];
 			command += cid2.str();
@@ -400,17 +405,17 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 
 		while(res->next()){
 		
-			cameraIDs[cameraN] = res->getInt("camera_id");
+			cameraIDs[cameraN] = res->getInt("product_id");
 			double* eachValue = new double[conFeatureN];
 			for (int f=0; f<conFeatureN; f++){
 				eachValue[f] = res->getDouble(conFeatureNames[f]);
 			}
 			
 			for(int f=0; f<conFeatureN; f++){
-				if (eachValue[f]<conFeatureRange[f][0]){
+				if (eachValue[f]<=conFeatureRange[f][0]){
 					conFeatureRange[f][0] = eachValue[f];
 				}
-				if (eachValue[f]>conFeatureRange[f][1]){
+				if (eachValue[f]>=conFeatureRange[f][1]){
 					conFeatureRange[f][1] = eachValue[f];
 				}
 			}
@@ -434,13 +439,13 @@ int getRepCluster(int clusterID, int conFeatureN, sql::Statement *stmt , sql::Re
 	int rep=0;
 	cid<<clusterID;
 	command += cid.str();
-	command += " and (camera_id=";
+	command += " and (product_id=";
 	ostringstream cameraIdStream; 
 	cameraIdStream<<cameraIDs[0];
 	command += cameraIdStream.str();
 	
 	for (int i=0; i<cameraN; i++){
-		command +=" or camera_id="; 
+		command +=" or product_id="; 
 		ostringstream cameraIdStream2; 
 		cameraIdStream2<<cameraIDs[i];
 		command += cameraIdStream2.str();
@@ -465,7 +470,7 @@ int getRepCluster(int clusterID, int conFeatureN, sql::Statement *stmt , sql::Re
 		data[2][i] = res->getDouble("opticalzoom");
 
 		data[3][i] = res->getDouble("maximumresolution"); 
-		sortedA[i] = res->getInt("camera_id");
+		sortedA[i] = res->getInt("product_id");
 	
 		i++;
 	}
@@ -502,14 +507,14 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 		for(int i=0; i<cameraN; i++){
 			reps[i] = cameraIds[i];
 			if (clusterID==0){
-				command = "select clusters.id from nodes, clusters where (nodes.cluster_id=clusters.id and nodes.camera_id=";
+				command = "select clusters.id from nodes, clusters where (nodes.cluster_id=clusters.id and nodes.product_id=";
 				ostringstream cameraIdSmall;
 				cameraIdSmall << cameraIds[i];
 				command += cameraIdSmall.str();
 				command += ");" ;
 		}
 		    else{
-				command = "select clusters.id from nodes, clusters  where (nodes.cluster_id=clusters.id and nodes.camera_id =";
+				command = "select clusters.id from nodes, clusters  where (nodes.cluster_id=clusters.id and nodes.product_id =";
 				ostringstream cameraIdSmall;
 				cameraIdSmall << cameraIds[i];
 				command += cameraIdSmall.str();
@@ -522,16 +527,16 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 						res = stmt->executeQuery(command);
 						res->next();
 						clusterIds[i] = res->getInt("id");
-						command = "select distinct camera_id from nodes where (cluster_id=";
+						command = "select distinct product_id from nodes where (cluster_id=";
 						ostringstream cStream;
 						cStream << clusterIds[i];
 						command += cStream.str();
-						command += " and (camera_id=";
+						command += " and (product_id=";
 						ostringstream camIdStream;
 						camIdStream << cameraIds[0];
 						command += camIdStream.str(); 
 						for (int k=1; k<cameraN; k++){
-							command += " OR camera_id=";
+							command += " OR product_id=";
 							ostringstream camIdStream2;
 							camIdStream2 << cameraIds[k];
 							command += camIdStream2.str();
@@ -547,12 +552,12 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 	//where clusterID is 0 - on the first page- 
 	//Finding the accepted clusters 
 	if (clusterID ==0){
-		command = "SELECT DISTINCT nodes.cluster_id, clusters.cluster_size, clusters.layer FROM nodes, clusters WHERE (clusters.id=nodes.cluster_id AND (camera_id=";
+		command = "SELECT DISTINCT nodes.cluster_id, clusters.cluster_size, clusters.layer FROM nodes, clusters WHERE (clusters.id=nodes.cluster_id AND (product_id=";
 		ostringstream idstr;
     	idstr << cameraIds[0]; 
 		command += idstr.str(); 
 		for (int i=1; i<cameraN; i++){
-			command += " OR camera_id=";
+			command += " OR product_id=";
 			ostringstream idStream;
 			idStream << cameraIds[i];
 			command += idStream.str();
@@ -572,12 +577,12 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 			ostringstream clusterIDStream;
 			clusterIDStream<<clusterID;
 			command += clusterIDStream.str();
-			command += " AND (nodes.camera_id=";
+			command += " AND (nodes.product_id=";
 			ostringstream idstr;
 		    idstr << cameraIds[0]; 
 			command += idstr.str();
 			for (int i=1; i<cameraN; i++){
-				command += " OR nodes.camera_id=";
+				command += " OR nodes.product_id=";
 				ostringstream idStream;
 				idStream << cameraIds[i];
 				command += idStream.str();
@@ -589,14 +594,14 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 		 	clusterN = res->rowsCount();
 			//cout<<"clusterN is "<<clusterN<<endl;
 			if (clusterN == 0){
-					command = "SELECT DISTINCT camera_id from nodes where cluster_id=";
+					command = "SELECT DISTINCT product_id from nodes where cluster_id=";
 					command += clusterIDStream.str();
-					command += " AND (camera_id=";
+					command += " AND (product_id=";
 					ostringstream idstr2;
 				    idstr2 << cameraIds[0]; 
 					command += idstr2.str();
 					for (int i=1; i<cameraN; i++){
-						command += " OR camera_id=";
+						command += " OR product_id=";
 						ostringstream idStream3;
 						idStream3 << cameraIds[i];
 						command += idStream3.str();
@@ -608,7 +613,7 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 					repW = res2->rowsCount();
 					j=0;
 					while(res2->next()){
-						reps[j] = res2->getInt("camera_id");
+						reps[j] = res2->getInt("product_id");
 						j++;
 					}
 					return reped;
@@ -624,11 +629,11 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 				else{
 					cId= res->getInt("cluster_id");
 				}				
-					command = "select distinct camera_id from nodes where (cluster_id=";
+					command = "select distinct product_id from nodes where (cluster_id=";
 					ostringstream cIdStream;
 					cIdStream << cId;
 					command += cIdStream.str();
-					command += " AND (camera_id=";
+					command += " AND (product_id=";
 					ostringstream cameraIdStream;
 					cameraIdStream << cameraIds[0];
 					command += cameraIdStream.str();
@@ -636,7 +641,7 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 						command += " OR";
 						ostringstream cameraIdStream2;
 						cameraIdStream2 << cameraIds[k];
-						command += " camera_id=";
+						command += " product_id=";
 						command += cameraIdStream2.str();
 					}	
 				command += "));";
@@ -666,7 +671,7 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 			while((i>=j) || (j>=repW) ){
 					ostringstream parentClusterStream;
 					parentClusterStream<< clusterIds[i];
-					command = "SELECT distinct clusters.id from clusters, nodes where (nodes.cluster_id=clusters.id "; //and nodes.camera_id=";
+					command = "SELECT distinct clusters.id from clusters, nodes where (nodes.cluster_id=clusters.id "; //and nodes.product_id=";
 					command += " and clusters.parent_id=";
 					command += parentClusterStream.str();
 					command += ");";
@@ -688,7 +693,7 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 							ostringstream cIdStream3;
 							cIdStream3 << cid;
 							command += cIdStream3.str();
-							command += " and (camera_id=";
+							command += " and (product_id=";
 							ostringstream cameraIdStream3; 
 							cameraIdStream3 << cameraIds[0];
 							command += cameraIdStream3.str();
@@ -696,7 +701,7 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 									command += " OR";
 									ostringstream cameraIdStream2;
 									cameraIdStream2 << cameraIds[k];
-									command += " camera_id=";
+									command += " product_id=";
 									command += cameraIdStream2.str();
 								}
 							command += "));";
@@ -722,6 +727,8 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 							}
 					
 					}
+					//merge the unused children
+					
 				}
 				//else{
 				//	if (i<j-1){ 
@@ -856,7 +863,7 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 //	for(int j=0; j<clusterChildrenN-1; j++){
 //	
 //		cluster_id = clusterChildren[j];
-//		command += "(SELECT camera_id FROM nodes WHERE cluster_id=";
+//		command += "(SELECT product_id FROM nodes WHERE cluster_id=";
 //		ostringstream cluster_idStream;
 //		cluster_idStream << cluster_id;         
 //		command += cluster_idStream.str();
@@ -915,7 +922,7 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 //	
 //	/////////////////////////////////////STUPID
 //		cluster_id = clusterChildren[clusterChildrenN-1];
-//		command += "(SELECT camera_id FROM nodes WHERE cluster_id=";
+//		command += "(SELECT product_id FROM nodes WHERE cluster_id=";
 //		ostringstream cluster_idStream2;
 //		cluster_idStream2 << cluster_id;         
 //		command += cluster_idStream2.str();
@@ -974,7 +981,7 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 //		res2 = stmt->executeQuery(command);
 //
 //		while(res2->next()){
-//			cameraIDs[i] = res2->getInt("camera_id");
+//			cameraIDs[i] = res2->getInt("product_id");
 //			i++;
 //			cameraN++;
 //		}
