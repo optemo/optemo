@@ -1,7 +1,7 @@
 <div class='label'>Brand</div>
 <%= select('myfilter', 'brand', ["All Brands"]+@dbprops.brands.split('*'),{:selected => @session.brand}) %>
-<% Camera::MainFeatures.each_index do |i| %>
-<%= render :partial => 'sliderhtml', :locals => {:name => Camera::MainFeaturesDisp[i], :val => Camera::MainFeatures[i], :money_formatting => false} %>
+<% $productType::MainFeatures.each_index do |i| %>
+<%= render :partial => 'sliderhtml', :locals => {:name => $productType::MainFeaturesDisp[i], :val => $productType::MainFeatures[i], :money_formatting => false} %>
 <% end %>
 <%= render :partial => 'sliderhtml', :locals => {:name => 'Price', :val => 'price', :money_formatting => true} %>
 
@@ -65,10 +65,10 @@ shapelayer.rect(max*length,0,length,height).attr({fill: '#dddddd', "stroke-opaci
 		// <![CDATA[
 
 			// horizontal slider control
-			<% Camera::MainFeatures.each_index do |i| %>
-			<%= render :partial => 'sliderjs', :locals => {:val => Camera::MainFeatures[i], :min => @dbprops.db_features.find_by_name(Camera::MainFeatures[i]).min, :max => @dbprops.db_features.find_by_name(Camera::MainFeatures[i]).max, :money_formatting => false} %>
+			<% $productType::MainFeatures.each_index do |i| %>
+			<%= render :partial => 'sliderjs', :locals => {:val => $productType::MainFeatures[i], :min => @dbprops.db_features.find_by_name($productType::MainFeatures[i]).min, :max => @dbprops.db_features.find_by_name($productType::MainFeatures[i]).max, :money_formatting => false} %>
 			<% end %>
-			<%= render :partial => 'sliderjs', :locals => {:val => 'price', :min => @dbprops.price_min/100, :max =>@dbprops.price_max/100, :money_formatting => true} %>
+			<%= render :partial => 'sliderjs', :locals => {:val => 'price', :min => @dbprops.price_min/100, :max =>(@dbprops.price_max.to_f/100).ceil, :money_formatting => true} %>
 			
 			var disp = function(v, disp, filter_min, filter_max) {
 			$(filter_min).value = Math.round(v[0]*10)/10;

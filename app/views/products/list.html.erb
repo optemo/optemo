@@ -7,10 +7,10 @@
 <div id="savebar">
 	<h2>Saved Items</h2>
 	<div id="savebar_content">
-	<% if @picked_cameras.empty? %>
-	  <p id="deleteme">Save some cameras to add them to this list</p>
+	<% if @picked_products.empty? %>
+	  <p id="deleteme">Save some products to add them to this list</p>
 	<% else %>
-	  <%= render :partial => 'camera', :collection => @picked_cameras %>
+	  <%= render :partial => 'product', :collection => @picked_products %>
 	<% end %>
 	</div>
 	<div style = "clear: both;"><a href='/compare'>Compare them!</a></div>
@@ -24,7 +24,7 @@
 </div>
 </div>
 <div class="main">
-	<% for i in 0..@cameras.length-1 %>
+	<% for i in 0..@products.length-1 %>
 	  <% if i%3 == 0 %>
 		<div class="rowdiv">
 		<% open = true %>
@@ -39,15 +39,15 @@
 	<!--<div class="easynav" style="display:none;">
 	  <div class="buttons"><%= link_to 'Higher Resolution' %><%= link_to 'Lower Price' %><%= link_to 'Bigger Display Size' %><%= link_to 'Farther Zoom' %></div>
 	  <div class="cont">
-		<%= link_to 'Show More Cameras' %>
+		<%= link_to 'Show More products' %>
 	  </div>
 	</div>-->
 </div>
 
 <% content_for :header do %>
-	<% if @camera %>
-		<div style="float:left">Viewing<br>Similar<br>cameras to:</div>
-		<%= render :partial => 'camera', :locals => {:nox => true} %>
+	<% if @product %>
+		<div style="float:left">Viewing<br>Similar<br>products to:</div>
+		<%= render :partial => 'product', :locals => {:nox => true} %>
 		<%= @search.msg %>
 	<% end %>
 <% end %>

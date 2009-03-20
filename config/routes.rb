@@ -44,8 +44,9 @@ ActionController::Routing::Routes.draw do |map|
   # See how all your routes lay out with "rake routes"
 
   # Install the default routes as the lowest priority.
-  map.root :controller => 'cameras'
+  map.root :controller => 'products'
   map.connect '/cameras/list/*path_info', :controller => 'cameras', :action => 'list'
+  map.connect '/products/list/*path_info', :controller => 'products', :action => 'list'
   map.connect 'compare/*path_info', :controller => 'compare', :action => 'index'
   map.connect ':controller/:action/:id'
   map.connect ':controller/:action/:id.:format'

@@ -3,7 +3,7 @@ class CreateVieweds < ActiveRecord::Migration
     create_table :vieweds do |t|
 
       t.timestamps
-      t.integer :session_id, :camera_id, :search_id
+      t.integer :session_id, :product_id, :search_id
     end
   end
 

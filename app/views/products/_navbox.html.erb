@@ -1,22 +1,22 @@
 <div class="navigator_box" style="left: <%= (i%3)*247 %>px;">
 <div id="box<%=i%>" class="borderbox">
-	   <% if !@cameras[i].imagemwidth.blank? %>
+	   <% if !@products[i].imagemwidth.blank? %>
 		<div class='save'>
-			<%= link_to "Save it", "javascript:saveit(#{@cameras[i].id})" %>
+			<%= link_to "Save it", "javascript:saveit(#{@products[i].id})" %>
 		</div>
-		<%= image_tag @cameras[i].imagemurl, :width => @cameras[i].imagemw, :height => @cameras[i].imagemh, :onClick => "fadeout(#{@cameras[i].id});", :style => "cursor: pointer;margin-left:-45px" %> 	
+		<%= image_tag @products[i].imagemurl, :width => @products[i].imagemw, :height => @products[i].imagemh, :onClick => "fadeout(#{@products[i].id});", :style => "cursor: pointer;margin-left:-45px" %> 	
 		<div class='rightbar' style='display: none;'>
-			MP:<%= @cameras[i].maximumresolution %><br>
-			DS:<%= @cameras[i].displaysize %><br>
-			OZ:<%= @cameras[i].opticalzoom %><br>
+			MP:<%= @products[i].maximumresolution %><br>
+			DS:<%= @products[i].displaysize %><br>
+			OZ:<%= @products[i].opticalzoom %><br>
 		</div>
 	<%end%>
-	<a href="/cameras/<%=@cameras[i].id%>" onClick="fadeout(<%=@cameras[i].id%>);return false;">
-	<p class="easylink"><%= @cameras[i].smlTitle %></p>
+	<a href="/products/<%=@products[i].id%>" onClick="fadeout(<%=@products[i].id%>);return false;">
+	<p class="easylink"><%= @products[i].smlTitle %></p>
 	<p style="font-size: 0.9em">
 		<%= description(i) %>
 	</p>
-	<p><%= @cameras[i].pricestr %>  
+	<p><%= @products[i].pricestr %>  
 		<%# Randomized Product Reviews %>
 		<%= rand > 0.5 ? (rand > 0.5 ? image_tag('5star.gif') : image_tag('3star.gif')) : image_tag('4star.gif') %>
 	</p>

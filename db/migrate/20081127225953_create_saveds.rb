@@ -3,7 +3,7 @@ class CreateSaveds < ActiveRecord::Migration
     create_table :saveds do |t|
 
       t.timestamps
-      t.integer :session_id, :camera_id, :search_id
+      t.integer :session_id, :product_id, :search_id
     end
   end
 

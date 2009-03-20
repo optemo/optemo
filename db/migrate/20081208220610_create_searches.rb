@@ -8,7 +8,7 @@ class CreateSearches < ActiveRecord::Migration
       t.integer :session_id
       t.integer :parent_id
       t.integer :cluster_id
-      t.integer :camera_id
+      t.integer :product_id
       t.integer :result_count
       t.integer :filter
       t.string :brand, :default => "All Brands"
