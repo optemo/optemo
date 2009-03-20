@@ -20,7 +20,7 @@ function fadein()
 
 function loadinfo(id)
 {
-	new Ajax.Updater('info','/cameras/show/'+id+'?plain=true', {method:	'get'});
+	new Ajax.Updater('info','/products/show/'+id+'?plain=true', {method:	'get'});
 }
 
 function saveit(id)

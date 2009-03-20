@@ -4,6 +4,7 @@ class ProductsController < ApplicationController
   #require 'scrubyt'
   layout 'optemo'
   require 'open-uri'
+  
   # GET /products
   # GET /products.xml
   def index
@@ -28,7 +29,7 @@ class ProductsController < ApplicationController
     @desc = []
     counter = 0
     params[:path_info].collect do |num|
-      @products << productType.find(num)
+      @products << $productType.find(num)
       if num.to_i == @search.send(('i'+counter.to_s).intern)
         #debugger
         myc = chosen.find{|c| c[:cluster_id] == @search.send(('c'+counter.to_s).intern)} if chosen
@@ -45,9 +46,9 @@ class ProductsController < ApplicationController
       counter += 1
     end
     #Saved Bar variables
-    @picked_products = @session.saveds.map {|s| s.product}
+    @picked_products = @session.saveds.map {|s| $productType.find(s.product_id)}
     #Previously clicked product
-    @product = @search.product
+    @product = $productType.find(@search.product_id) if @search.product_id
     
     respond_to do |format|
       format.html # index.html.erb
@@ -61,7 +62,7 @@ class ProductsController < ApplicationController
     @plain = params[:plain].nil? ? false : true
     #Cleanse id to be only numbers
     params[:id].gsub!(/\D/,'')
-    @product = productType.find(params[:id])
+    @product = $productType.find(params[:id])
     #Session Tracking
     s = Viewed.new
     s.session_id = session[:user_id]
@@ -80,7 +81,7 @@ class ProductsController < ApplicationController
   # GET /products/new
   # GET /products/new.xml
   def new
-    @product = productType.new
+    @product = $productType.new
 
     respond_to do |format|
       format.html # new.html.erb
@@ -90,13 +91,13 @@ class ProductsController < ApplicationController
 
   # GET /products/1/edit
   def edit
-    @product = productType.find(params[:id])
+    @product = $productType.find(params[:id])
   end
 
   # POST /products
   # POST /products.xml
   def create
-    @product = productType.new(params[:product])
+    @product = $productType.new(params[:product])
 
     respond_to do |format|
       if @product.save
@@ -113,7 +114,7 @@ class ProductsController < ApplicationController
   # PUT /products/1
   # PUT /products/1.xml
   def update
-    @product = productType.find(params[:id])
+    @product = $productType.find(params[:id])
 
     respond_to do |format|
       if @product.update_attributes(params[:product])
@@ -130,7 +131,7 @@ class ProductsController < ApplicationController
   # DELETE /products/1
   # DELETE /products/1.xml
   def destroy
-    @product = productType.find(params[:id])
+    @product = $productType.find(params[:id])
     @product.destroy
 
     respond_to do |format|
@@ -140,7 +141,7 @@ class ProductsController < ApplicationController
   end
   
   def destroy_all
-    @products = productType.find(:all)
+    @products = $productType.find(:all)
     @products.each do |product|
       product.destroy
     end

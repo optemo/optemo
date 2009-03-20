@@ -57,7 +57,7 @@
 	<%= flash[:notice] %>
 	<div id='full_link'>
 	<% if @plain %>
-	<%= link_to 'Open as full page', url_for(@product)%>
+	<%= link_to 'Open as full page', :action => 'show', :id => @product%>
 	<% end %>
 	</div>
 	
