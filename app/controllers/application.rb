@@ -16,6 +16,7 @@ class ApplicationController < ActionController::Base
   before_filter :update_user
   
   private
+  productType = Camera
   
   def call_rake(task, options = {})
     options[:rails_env] ||= Rails.env

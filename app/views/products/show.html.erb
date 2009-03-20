@@ -1,0 +1,65 @@
+<%= link_to image_tag('close.gif'), "javascript:fadein();", :id => 'close' if @plain%>
+<% if !@plain %><div id="outside">
+	<span style="float: left;"><%= nav_link %></span>
+	<div id="container" style="margin-left: 149px">
+<% else %>		
+	<div id="container">
+	<div class='save'>
+		<%= link_to "Save it", "javascript:saveit(#{@product.id})" %>
+	</div>
+<% end %>
+	<p style="margin: 15px 0px 0px 20px"><%=h @product.title %></p>
+	<div id="image"><%= link_to image_tag(@product.imagelurl, :width => @product.imagelw, :height => @product.imagelh), @product.imagelurl, :popup => true %></div>
+	<div id="features">
+	<ul>
+		<% if !@product.brand.nil? %><li><span class="detail_label">Brand: </span><%= @product.display 'brand' %></li><% end %>
+		<% if !@product.model.nil? %><li><span class="detail_label">Model: </span><%= @product.display 'model' %></li><% end %>
+		<% if !@product.maximumresolution.nil? %><li><span class="detail_label">Megapixels: </span><%= @product.display 'maximumresolution' %></li><% end %>
+		<% if !@product.opticalzoom.nil? %><li><span class="detail_label">Optical Zoom: </span><%= @product.display 'opticalzoom' %></li><% end %>
+		<% if !@product.digitalzoom.nil? %><li><span class="detail_label">Digital Zoom: </span><%= @product.display 'digitalzoom' %></li><% end %>
+		<% if !@product.displaysize.nil? %><li><span class="detail_label">Display Size: </span><%= @product.display 'displaysize' %></li><% end %>
+		<% if !@product.maximumfocallength.nil? %><li><span class="detail_label">Maximum Focal Length: </span><%= @product.display 'maximumfocallength' %></li><% end %>
+		<% if !@product.minimumfocallength.nil? %><li><span class="detail_label">Minimum Focal Length: </span><%= @product.display 'minimumfocallength' %></li><% end %>
+		<% if !@product.batterydescription.nil? %><li><span class="detail_label">Battery Type: </span><%= @product.display 'batterydescription' %></li><% end %>
+		<% if !@product.hasredeyereduction.nil? %><li><span class="detail_label">Red Eye Reduction: </span><%= @product.display 'hasredeyereduction' %></li><% end %>
+		<%# #The units are all messed up here %>
+		<% if !@product.itemweight.nil? && false %><li><span class="detail_label">Weight: </span><%= @product.display 'itemweight' %></li><% end %>
+		<% if !@product.itemwidth.nil? %><li><span class="detail_label">Item W x L x H: </span><%= @product.display 'itemwidth' %> x <%= @product.display 'itemlength' %> x <%= @product.display 'itemheight' %></li><% end %>
+		<% if !@product.packagewidth.nil? %><li><span class="detail_label">Package W x L x H: </span><%= @product.display 'packagewidth' %> x <%= @product.display 'packagelength' %> x <%= @product.display 'packageheight' %></li><% end %>
+		<% if !@product.upc.nil? %><li><span class="detail_label">UPC: </span><%= @product.display 'upc' %></li><% end %>
+	</ul>
+	</div>
+	<% if !@product.feature.nil? %>
+	<div id="textfeatures">
+		<ul>
+		<li><%= @product.feature.gsub("\n",'</li><li>') %></li>
+		</ul>
+	</div>
+	<% end %>
+	<div id="reviews">
+		<h3>Reviews</h3>
+		This is where our reviews will go.
+	</div>
+	<div class="showtable">
+		<h3>Available at the following Retailers</h3>
+	<div class="left">
+	<% if !@product.salepriceint.blank? %>
+		<span class="detail_label">List Price: </span><span style="text-decoration: line-through;"><%= @product.listpricestr %></span><br>
+		<span class="detail_label">Sale Price: </span><span style="color: red;"><%= @product.salepricestr %></span>
+	<% else %>
+		<span class="detail_label">Price: </span><%= @product.listpricestr %>
+	<% end %>
+	</div>
+	<div class="right">
+		<%= link_to 'Go to Seller', 'http://amazon.com/o/ASIN/'+@product.asin, :popup => true %> <iframe src="http://rcm.amazon.com/e/cm?t=optemo-20&o=1&p=41&l=ur1&category=home&banner=0PXNA3R0DT5CZVZA7J02&f=ifr" width="88" height="31" scrolling="no" border="0" marginwidth="0" style="border:none; vertical-align:middle" frameborder="0"></iframe>
+	</div>
+	</div>
+	<%= flash[:notice] %>
+	<div id='full_link'>
+	<% if @plain %>
+	<%= link_to 'Open as full page', url_for(@product)%>
+	<% end %>
+	</div>
+	
+</div>
+<% if !@plain %></div><% end %>

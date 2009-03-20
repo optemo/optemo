@@ -2,7 +2,7 @@ class CreateNodes < ActiveRecord::Migration
   def self.up
     create_table :nodes do |t|
       t.integer :cluster_id
-      t.integer :camera_id
+      t.integer :product_id
       t.float :maximumresolution
       t.float :displaysize
       t.float :opticalzoom

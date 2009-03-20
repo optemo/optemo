@@ -7,13 +7,13 @@
 <h2>Product Features</h2>
 </div>
 <ul>
-	<% Camera::Interesting_features.each do |column| %>
+	<% productType::Interesting_features.each do |column| %>
 	    <li><%= column.gsub(/_id$/, '').gsub(/str$/,' ').gsub(/_/,' ').capitalize %></li>
 	<% end %>
 </ul>
 </div>
 
-<%= render :partial => 'camera', :collection => @cameras %>
+<%= render :partial => 'productType', :collection => @productTypes %>
 
 <%# This moves the border to the bottom %>
 <div class="clear"></div>

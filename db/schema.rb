@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090127204735) do
+ActiveRecord::Schema.define(:version => 20090130223927) do
 
   create_table "amazon_groups", :force => true do |t|
     t.datetime "created_at"
@@ -124,7 +124,7 @@ ActiveRecord::Schema.define(:version => 20090127204735) do
 
   create_table "nodes", :force => true do |t|
     t.integer "cluster_id"
-    t.integer "camera_id"
+    t.integer "product_id"
     t.float   "maximumresolution"
     t.float   "displaysize"
     t.float   "opticalzoom"
@@ -198,13 +198,31 @@ ActiveRecord::Schema.define(:version => 20090127204735) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "toolow"
+    t.float    "ppm"
+    t.float    "ttp"
+    t.string   "resolution"
+    t.string   "duplex"
+    t.string   "connectivity"
+    t.string   "papersize"
+    t.integer  "paperoutput"
+    t.string   "dimensions"
+    t.integer  "dutycycle"
+    t.integer  "paperinput"
+    t.string   "special"
+    t.float    "ppmcolor"
+    t.string   "platform"
+    t.boolean  "colorprinter"
+    t.boolean  "scanner"
+    t.datetime "scrapedat"
+    t.boolean  "nodetails"
+    t.boolean  "printserver"
   end
 
   create_table "saveds", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "session_id"
-    t.integer  "camera_id"
+    t.integer  "product_id"
     t.integer  "search_id"
   end
 
@@ -230,7 +248,7 @@ ActiveRecord::Schema.define(:version => 20090127204735) do
     t.integer  "session_id"
     t.integer  "parent_id"
     t.integer  "cluster_id"
-    t.integer  "camera_id"
+    t.integer  "product_id"
     t.integer  "result_count"
     t.integer  "filter"
     t.string   "brand",                 :default => "All Brands"
@@ -273,7 +291,7 @@ ActiveRecord::Schema.define(:version => 20090127204735) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "session_id"
-    t.integer  "camera_id"
+    t.integer  "product_id"
     t.integer  "search_id"
   end
 

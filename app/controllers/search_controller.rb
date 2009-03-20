@@ -2,7 +2,7 @@ class SearchController < ApplicationController
   def filter
     s = initialize_search
     s.cluster_id = nil
-    s.camera_id = nil
+    s.product_id = nil
     #Remove quotes for strings
     myfilter = params[:myfilter]
     Session.find(session[:user_id]).update_attributes(myfilter)
@@ -23,12 +23,12 @@ class SearchController < ApplicationController
     s.filter = params[:f]
     if params[:c].nil?
       #The data has not previously been clustered
-      s.camera_id = params[:id]
-      search(s,{"camera_id" => params[:id].to_i})
+      s.product_id = params[:id]
+      search(s,{"product_id" => params[:id].to_i})
     else
       #The data has previously been clustered
       #Cleanse id to be only numbers
-      s.camera_id = params[:id].gsub(/\D/,'')
+      s.product_id = params[:id].gsub(/\D/,'')
       s.cluster_id = params[:c].gsub(/\D/,'')
       #Generate NLG message
       chosen = YAML.load(Search.find(session[:search_id]).chosen)
@@ -69,7 +69,7 @@ class SearchController < ApplicationController
       end
       s.save
       session[:search_id] = s.id
-      redirect_to "/cameras/list/"+s.URL
+      redirect_to "/products/list/"+s.URL
     end
   end
   
@@ -96,9 +96,9 @@ class SearchController < ApplicationController
       myfilter.delete('updated_at')
       myfilter.delete('result_count')
       #myfilter['layer'] = 1
-      myfilter.delete('camera_id') if myfilter['cluster_id']
+      myfilter.delete('product_id') if myfilter['cluster_id']
       myfilter.delete('cluster_id') unless myfilter['cluster_id']
-      myfilter.delete('camera_id') unless myfilter['camera_id']
+      myfilter.delete('product_id') unless myfilter['product_id']
       q.update(myfilter)
     end
     q.update(opts)
@@ -109,7 +109,7 @@ class SearchController < ApplicationController
     @output = %x["/optemo/site/lib/c_code/connect" "#{myparams}"]
     options = YAML.load(@output)
     #parse the new ids
-    if options.blank? || options[:result_count].nil? || (options[:result_count] > 0 && options['cameras'].nil?)
+    if options.blank? || options[:result_count].nil? || (options[:result_count] > 0 && options['products'].nil?)
       flash[:error] = "There was a problem finding your products."
       redirect_to :back
     elsif options[:result_count] == 0
@@ -117,12 +117,12 @@ class SearchController < ApplicationController
       redirect_to :back
     else
       options[:result_count] = 9 if options[:result_count] > 9
-      newcameras = options.delete('cameras')
+      newproducts = options.delete('products')
       newclusters = options.delete('clusters')
       current_node = "i0"
       options[:result_count].times do 
         c = "c#{current_node[1,1]}"
-        options[current_node.intern] = newcameras.pop
+        options[current_node.intern] = newproducts.pop
         options[c.intern] = newclusters.pop unless newclusters.nil? || newclusters.empty?
         current_node.next!
       end
@@ -130,7 +130,7 @@ class SearchController < ApplicationController
       options[:chosen] = options[:chosen].to_yaml
       
       #Filter for only valid options
-      options.delete_if{|k,v| if k.to_s.match(/^(cameras|clusters|maximumresolution\_max|maximumresolution\_min|displaysize\_max|displaysize\_min|opticalzoom\_max|opticalzoom\_min|price\_max|price\_min|clusters|chosen|i\d|c\d|result\_count)$/).nil?
+      options.delete_if{|k,v| if k.to_s.match(/^(products|clusters|maximumresolution\_max|maximumresolution\_min|displaysize\_max|displaysize\_min|opticalzoom\_max|opticalzoom\_min|price\_max|price\_min|clusters|chosen|i\d|c\d|result\_count)$/).nil?
         @badparams = k.to_s
         true
       else
@@ -139,7 +139,7 @@ class SearchController < ApplicationController
         }
       s.update_attributes(options)
       session[:search_id] = s.id
-      redirect_to "/cameras/list/"+s.URL
+      redirect_to "/products/list/"+s.URL
     end
   end
   
