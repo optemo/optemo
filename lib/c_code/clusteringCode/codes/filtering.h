@@ -302,7 +302,7 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 
 	
 		res = stmt->executeQuery(command);
-			
+	
 		int clusterN = res->rowsCount();
 		
 		if (clusterN==0){ //i.e. there is no subCluster
@@ -316,21 +316,21 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 				clusterChildren[i] = res->getInt("id");
 				i++;
 			}
-			
 			command = "SELECT distinct product_id, price, maximumresolution, displaysize, opticalzoom from nodes where (cluster_id=";
+			command.reserve(command.size() *100); 
 			ostringstream cid2; 
 			cid2<<clusterChildren[0];
 			command += cid2.str();
-	
-		
+
 			for (int j=1; j<i; j++){
 				command += " OR cluster_id=";
-				ostringstream cid2; 
-				cid2<<clusterChildren[j];
-				command += cid2.str(); 
+				ostringstream cid3; 
+				cid3<<clusterChildren[j];
+				command += cid3.str(); 
+				command += "";	
 			}
-		
 			command += ")";
+			
 		}
 		if (conFilteredFeatures[0] || conFilteredFeatures[1] || conFilteredFeatures[2] || conFilteredFeatures[3] || catFilteredFeatures[0]){
 			command += " AND (";
@@ -400,9 +400,9 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 				
 			command += ");";
 		}	
+		
 	
 		res = stmt->executeQuery(command);
-
 		while(res->next()){
 		
 			cameraIDs[cameraN] = res->getInt("product_id");
