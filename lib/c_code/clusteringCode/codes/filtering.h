@@ -317,7 +317,7 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 				i++;
 			}
 			command = "SELECT distinct product_id, price, maximumresolution, displaysize, opticalzoom from nodes where (cluster_id=";
-			command.reserve(command.size() *100); 
+			command.reserve(command.size() *1000); 
 			ostringstream cid2; 
 			cid2<<clusterChildren[0];
 			command += cid2.str();
@@ -398,33 +398,39 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 				command += ")";
 			}
 				
-			command += ");";
+			command += ")";
 		}	
-		
-	
+		command += ";"; 
+		cout<<"command is  "<<command<<endl;
 		res = stmt->executeQuery(command);
 		while(res->next()){
 		
 			cameraIDs[cameraN] = res->getInt("product_id");
 			double* eachValue = new double[conFeatureN];
 			for (int f=0; f<conFeatureN; f++){
+				cout<<"f is "<<conFeatureNames[f]<<"  ";
 				eachValue[f] = res->getDouble(conFeatureNames[f]);
+				cout<<"res->getDouble(conFeatureNames[f]);"<<eachValue[f]<<endl;
 			}
 			
 			for(int f=0; f<conFeatureN; f++){
+				cout<<"in for   ";
 				if (eachValue[f]<=conFeatureRange[f][0]){
+					cout<<"  in if 1  ";
 					conFeatureRange[f][0] = eachValue[f];
 				}
 				if (eachValue[f]>=conFeatureRange[f][1]){
+					cout<<" in if2   ";
 					conFeatureRange[f][1] = eachValue[f];
 				}
 			}
 			cameraN++;
+			cout<<"cameraN is "<<cameraN<<endl;
 		}
 					
 	}
 	
-
+	
 	return cameraN;
 }
 
@@ -600,6 +606,7 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 					ostringstream idstr2;
 				    idstr2 << cameraIds[0]; 
 					command += idstr2.str();
+						
 					for (int i=1; i<cameraN; i++){
 						command += " OR product_id=";
 						ostringstream idStream3;
@@ -645,7 +652,7 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 						command += cameraIdStream2.str();
 					}	
 				command += "));";
-			//	cout<<"command 2 is "<<command<<endl;
+	
 				res2 = stmt->executeQuery(command);	
 					
 				int clusterCount = 0;
