@@ -108,16 +108,16 @@ else{
 	for (int j=0; j<cameraN-1; j++){
 		
 	 	command += "(SELECT cluster_id FROM nodes WHERE product_id=";
-		ostringstream product_idStream; 
-		product_idStream << cameraIDs[j];
-		command += product_idStream.str();
+		ostringstream camera_idStream; 
+		camera_idStream << cameraIDs[j];
+		command += camera_idStream.str();
 		command += ") UNION ";
 	}
 	
 		command += "(SELECT cluster_id FROM nodes WHERE product_id=";
-		ostringstream product_idStream; 
-		product_idStream << cameraIDs[cameraN-1];
-		command += product_idStream.str();
+		ostringstream camera_idStream; 
+		camera_idStream << cameraIDs[cameraN-1];
+		command += camera_idStream.str();
 		command += ");";
 
 		res = stmt->executeQuery(command);
@@ -302,7 +302,7 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 
 	
 		res = stmt->executeQuery(command);
-	
+			
 		int clusterN = res->rowsCount();
 		
 		if (clusterN==0){ //i.e. there is no subCluster
@@ -316,21 +316,21 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 				clusterChildren[i] = res->getInt("id");
 				i++;
 			}
+			
 			command = "SELECT distinct product_id, price, maximumresolution, displaysize, opticalzoom from nodes where (cluster_id=";
-			command.reserve(command.size() *1000); 
 			ostringstream cid2; 
 			cid2<<clusterChildren[0];
 			command += cid2.str();
-
+	
+		
 			for (int j=1; j<i; j++){
 				command += " OR cluster_id=";
-				ostringstream cid3; 
-				cid3<<clusterChildren[j];
-				command += cid3.str(); 
-				command += "";	
+				ostringstream cid2; 
+				cid2<<clusterChildren[j];
+				command += cid2.str(); 
 			}
+		
 			command += ")";
-			
 		}
 		if (conFilteredFeatures[0] || conFilteredFeatures[1] || conFilteredFeatures[2] || conFilteredFeatures[3] || catFilteredFeatures[0]){
 			command += " AND (";
@@ -398,43 +398,33 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 				command += ")";
 			}
 				
-			command += ")";
+			command += ");";
 		}	
-		command += ";"; 
-		//cout<<"command is  "<<command<<endl;
+	
 		res = stmt->executeQuery(command);
+
 		while(res->next()){
 		
 			cameraIDs[cameraN] = res->getInt("product_id");
 			double* eachValue = new double[conFeatureN];
-		//	for (int g=0; g<conFeatureN; g++){
-		//		cout<<"g is "<<conFeatureNames[g]<<"  ";
-				//eachValue[g] = res->getDouble(conFeatureNames[g]);
-				eachValue[0] = res->getDouble("price");
-				eachValue[1] = res->getDouble("displaysize");
-				eachValue[2] = res->getDouble("opticalzoom");
-				eachValue[3] = res->getDouble("maximumresolution");
-			//	cout<<"res->getDouble(conFeatureNames[f]);"<<eachValue[f]<<endl;
-		//	}
+			for (int f=0; f<conFeatureN; f++){
+				eachValue[f] = res->getDouble(conFeatureNames[f]);
+			}
 			
 			for(int f=0; f<conFeatureN; f++){
-			//	cout<<"in for   ";
 				if (eachValue[f]<=conFeatureRange[f][0]){
-			//		cout<<"  in if 1  ";
 					conFeatureRange[f][0] = eachValue[f];
 				}
 				if (eachValue[f]>=conFeatureRange[f][1]){
-			//		cout<<" in if2   ";
 					conFeatureRange[f][1] = eachValue[f];
 				}
 			}
 			cameraN++;
-		//	cout<<"cameraN is "<<cameraN<<endl;
 		}
 					
 	}
 	
-	
+
 	return cameraN;
 }
 
@@ -610,7 +600,6 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 					ostringstream idstr2;
 				    idstr2 << cameraIds[0]; 
 					command += idstr2.str();
-						
 					for (int i=1; i<cameraN; i++){
 						command += " OR product_id=";
 						ostringstream idStream3;
@@ -656,7 +645,7 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 						command += cameraIdStream2.str();
 					}	
 				command += "));";
-	
+			//	cout<<"command 2 is "<<command<<endl;
 				res2 = stmt->executeQuery(command);	
 					
 				int clusterCount = 0;
@@ -675,20 +664,24 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 				}
 			}	
 		
-	if (j<repW){ 
+	if (j<repW){ // i.e. (clusterN<repW)
+		// we should use children and remove parent
+		
 			int i=0;
 			while((i>=j) || (j>=repW) ){
 					ostringstream parentClusterStream;
 					parentClusterStream<< clusterIds[i];
-					command = "SELECT distinct clusters.id from clusters, nodes where (nodes.cluster_id=clusters.id "; //and nodes.product_id=";
+					command = "SELECT distinct clusters.id from clusters, nodes where (nodes.cluster_id=clusters.id "; //and nodes.camera_id=";
 					command += " and clusters.parent_id=";
 					command += parentClusterStream.str();
 					command += ");";
 					res = stmt->executeQuery(command);
+				//	cout<<"command is "<<command<<endl;
 				
 				    int cCount = res->rowsCount();
 				
 					if ( cCount> 0){
+					//	cout<<"cCount is > 0"<<endl;
 						int preClusterCount = clusterCounts[i];
 						int preRep = reps[i];
 						int preId = clusterIds[i];
@@ -715,11 +708,13 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 							res2 = stmt->executeQuery(command);
 							int clusterCount = res2->rowsCount();
 							if (clusterCount>0){
+								//s<<"this cid is  "<<cid<<endl;
 								rep = getRepCluster(cid,conFeatureN, stmt, res2, cameraN,cameraIds,0, reps,j);
 								if(rep>0) {
 										
 									reps[j] = rep;
 									clusterIds[j] = cid;
+									//cout<<"cid is "<<cid<<endl;
 									clusterCounts[j] = clusterCount;
 									j++;	
 								}
@@ -730,10 +725,16 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 									j++;	
 								}
 							}
+					
 					}
-	
+					//merge the unused children
+					
 				}
-					i++;
+				//else{
+				//	if (i<j-1){ 
+					i++;//}
+					//else{i=0;}
+			//	}		
 			
 				}
 				}
@@ -748,3 +749,242 @@ bool getRep2(int* reps, int* cameraIds, int cameraN, int* clusterIds, int* clust
 }
 	return reped;	
 }
+//int filter(double **filteredRange, string brand,sql::Statement *stmt,
+// sql::ResultSet *res, sql::ResultSet *res2, int* cameraIDs, bool* conFilteredFeatures, bool* catFilteredFeatures, int clusterID, int clusterN) {
+//
+//	int cameraN = 0; ////???
+//	int cameraNC = 0;
+//	int c=0;
+//	int clusterSize;
+//	int clusterChildrenN;
+//	string command;
+//	int* clusterChildren;
+//	
+//if (clusterID != 0){	
+//   command = "SELECT cluster_size from clusters where id=";
+//	ostringstream cluster_idStream; 
+//	cluster_idStream<<clusterID;
+//	command += cluster_idStream.str();
+//	command += ";";
+//
+//	res= stmt->executeQuery(command); 
+//
+//	res->next();
+//	
+//	clusterSize = res->getInt("cluster_size");
+//
+//
+//	clusterChildren = new int[clusterSize];
+//	
+//	
+//	vector<int> clusterChildrenV;
+//
+//		
+//	clusterChildrenV = getChildren(clusterID, clusterChildrenV, stmt, res, clusterN, clusterSize);
+//	clusterChildrenN = clusterChildrenV.size();
+//
+//	for (int j=0; j<clusterChildrenN; j++){
+//		clusterChildren[j] = clusterChildrenV.at(j);
+//	}
+//	
+//
+//	
+//}
+//
+//
+//
+//
+//else{  //if clusterId ==0
+//	res = stmt->executeQuery("SELECT * from clusters where parent_id=0;");
+//	int firstLayerClusterN = res->rowsCount();
+//	int* firstLayerClusters = new int [firstLayerClusterN];
+//	int k=0;
+//	int cId;
+//	while (res->next()){
+//		firstLayerClusters[k] = res->getInt("id");
+//		k++;
+//	}
+//	
+//	int sizeA = 0;
+//	clusterChildren = new int [sizeA+1];
+//	for(int j=0; j<firstLayerClusterN; j++){
+//		
+//		cId = firstLayerClusters[j];
+//		clusterChildren[sizeA] = cId;
+//		sizeA++;
+//		
+//	    command = "SELECT cluster_size from clusters where id=";
+//		ostringstream cluster_idStream; 
+//		cluster_idStream<<cId;
+//		command += cluster_idStream.str();
+//		command += ";";
+//	
+//		res= stmt->executeQuery(command); 
+//		res->next();
+//
+//		clusterSize = res->getInt("cluster_size");
+//
+//		vector<int> clusterChildrenV;
+//
+//
+//		clusterChildrenV = getChildren(clusterID, clusterChildrenV, stmt, res, clusterN, clusterSize);
+//		clusterChildrenN = clusterChildrenV.size();
+//			
+//		int* clusterChildrenNew = new int[sizeA + clusterChildrenN];	
+//		for (int t=0; t<sizeA; t++){
+//			clusterChildrenNew[t] = clusterChildren[t];
+//		}
+//		delete clusterChildren;	
+//			
+//			
+//		for (int i=0; i<clusterChildrenN; i++){
+//
+//			clusterChildrenNew[sizeA+i] = clusterChildrenV.at(i);
+//		}
+//		
+//		sizeA += clusterChildrenN;
+//		clusterChildren = new int[sizeA];
+//
+//		for (int i=0; i<sizeA; i++){
+//			clusterChildren[i] = clusterChildrenNew[i]; 
+//		}
+//		
+//		delete clusterChildrenNew;
+//	    	
+//	}
+//	clusterChildrenN = sizeA;
+//
+//}	
+//	int cluster_id;
+//	int cSize = clusterChildrenN; //res->rowsCount();
+//	int counter = 0;
+//	int i=0;
+//	command = "";
+//	for(int j=0; j<clusterChildrenN-1; j++){
+//	
+//		cluster_id = clusterChildren[j];
+//		command += "(SELECT camera_id FROM nodes WHERE cluster_id=";
+//		ostringstream cluster_idStream;
+//		cluster_idStream << cluster_id;         
+//		command += cluster_idStream.str();
+//	if (conFilteredFeatures[0]){	
+//		command += " AND (price>=";
+//		ostringstream priceMin;
+//		priceMin<<filteredRange[0][0];
+//		command += priceMin.str();
+//		command +=" AND price<=";
+//		ostringstream priceMax;
+//		priceMax<<filteredRange[0][1];
+//		command += priceMax.str();
+//	}
+//	
+//	if (conFilteredFeatures[1]){		
+//		command +=" AND displaysize>=";
+//		stringstream displaysizeMin;
+//		displaysizeMin<<filteredRange[1][0];
+//		command += displaysizeMin.str();
+//		command +=" AND displaysize<=";
+//		ostringstream displaysizeMax;
+//		displaysizeMax<<filteredRange[1][1];
+//		command += displaysizeMax.str();
+//	}
+//	
+//	if (conFilteredFeatures[2]){		
+//		command +=" AND opticalzoom>=";
+//		stringstream opticalzoomMin;
+//		opticalzoomMin<<filteredRange[2][0];
+//		command += opticalzoomMin.str();
+//		command +=" AND opticalzoom<=";
+//		ostringstream opticalzoomMax;
+//		opticalzoomMax<<filteredRange[2][1];
+//		command += opticalzoomMax.str();
+//	}
+//	
+//	if (conFilteredFeatures[3]){		
+//		command +=" AND maximumresolution>=";
+//		stringstream maximumresolutionMin;	
+//		maximumresolutionMin<<filteredRange[3][0];
+//		command += maximumresolutionMin.str();
+//		command +=" AND maximumresolution<=";
+//		ostringstream maximumresolutionMax;
+//		maximumresolutionMax<<filteredRange[3][1];
+//		command += maximumresolutionMax.str();
+//	}
+//	
+//	if (catFilteredFeatures[0]){		
+//		command +=" AND brand=";	
+//		command += brand;	
+//	}
+//	
+//	
+//		command += ")) UNION ";
+//	}
+//	
+//	/////////////////////////////////////STUPID
+//		cluster_id = clusterChildren[clusterChildrenN-1];
+//		command += "(SELECT camera_id FROM nodes WHERE cluster_id=";
+//		ostringstream cluster_idStream2;
+//		cluster_idStream2 << cluster_id;         
+//		command += cluster_idStream2.str();
+//	if (conFilteredFeatures[0]){	
+//		command += " AND (price>=";
+//		ostringstream priceMin;
+//		priceMin<<filteredRange[0][0];
+//		command += priceMin.str();
+//		command +=" AND price<=";
+//		ostringstream priceMax;
+//		priceMax<<filteredRange[0][1];
+//		command += priceMax.str();
+//	}
+//	
+//	if (conFilteredFeatures[1]){		
+//		command +=" AND displaysize>=";
+//		stringstream displaysizeMin;
+//		displaysizeMin<<filteredRange[1][0];
+//		command += displaysizeMin.str();
+//		command +=" AND displaysize<=";
+//		ostringstream displaysizeMax;
+//		displaysizeMax<<filteredRange[1][1];
+//		command += displaysizeMax.str();
+//	}
+//	
+//	if (conFilteredFeatures[2]){		
+//		command +=" AND opticalzoom>=";
+//		stringstream opticalzoomMin;
+//		opticalzoomMin<<filteredRange[2][0];
+//		command += opticalzoomMin.str();
+//		command +=" AND opticalzoom<=";
+//		ostringstream opticalzoomMax;
+//		opticalzoomMax<<filteredRange[2][1];
+//		command += opticalzoomMax.str();
+//	}
+//	
+//	if (conFilteredFeatures[3]){		
+//		command +=" AND maximumresolution>=";
+//		stringstream maximumresolutionMin;	
+//		maximumresolutionMin<<filteredRange[3][0];
+//		command += maximumresolutionMin.str();
+//		command +=" AND maximumresolution<=";
+//		ostringstream maximumresolutionMax;
+//		maximumresolutionMax<<filteredRange[3][1];
+//		command += maximumresolutionMax.str();
+//	}
+//	
+//
+//	if (catFilteredFeatures[0]){
+//			
+//		command +=" AND brand=";	
+//		command += brand;	
+//	}
+//		command += "));";
+//
+//		res2 = stmt->executeQuery(command);
+//
+//		while(res2->next()){
+//			cameraIDs[i] = res2->getInt("camera_id");
+//			i++;
+//			cameraN++;
+//		}
+//
+//	return cameraN; 
+//}

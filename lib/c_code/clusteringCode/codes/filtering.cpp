@@ -290,7 +290,7 @@ int main(int argc, char** argv) {
 							}
 						out.append("\n");
 					}
-					out.append("cameras: \n");
+					out.append("products: \n");
 				    for(int c=0; c<repW; c++){
 						    out.append("- ");
 					        std::ostringstream oss; 		  

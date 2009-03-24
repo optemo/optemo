@@ -208,6 +208,7 @@ int main(int argc, char** argv) {
 				con = driver->connect(EXAMPLE_HOST, EXAMPLE_PORT, EXAMPLE_USER, EXAMPLE_PASS);
 				stmt = con->createStatement();
 				stmt->execute("USE "  EXAMPLE_DB);
+			//    res = stmt->executeQuery("SELECT * FROM cameras"); 
 				string command;	
 				int clusterIDN;
 				int size;
@@ -241,9 +242,8 @@ int main(int argc, char** argv) {
 				indicators[f][i] = 0;
 				}
 			}
-			
+		
 			int cameraN = filter2(filteredRange, brand, stmt, res, res2, cameraIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange);
-	
 			if (cameraN> 0){
 				if (cameraN<=repW){
 					repW = cameraN;                 
