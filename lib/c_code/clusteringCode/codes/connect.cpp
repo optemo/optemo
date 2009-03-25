@@ -28,8 +28,7 @@ using namespace std;
 * Usage example for Driver Manager, Connection, (simple) Statement, ResultSet
 */
 int main(int argc, char** argv) {
-//void initialize(int arcCount, char** argArray)
-//{
+
 	stringstream sql;
 	int clusterN = 9; 
 	int conFeatureN = 4;
@@ -160,14 +159,11 @@ int main(int argc, char** argv) {
 
    	sql::mysql::MySQL_Driver *driver;
 
-	// Connection, (simple, not prepared) Statement, Result Set
 	sql::Connection	*con;
 	sql::Statement	*stmt;
 	
 	sql::ResultSet	*res;
 	sql::ResultSet	*res2;
-   // sql::ResultSet	*resClus;
-   // sql::ResultSet	*resNodes;
 		string line;
 		string buf; 
 		vector<string> tokens;
@@ -208,7 +204,6 @@ int main(int argc, char** argv) {
 				con = driver->connect(EXAMPLE_HOST, EXAMPLE_PORT, EXAMPLE_USER, EXAMPLE_PASS);
 				stmt = con->createStatement();
 				stmt->execute("USE "  EXAMPLE_DB);
-			//    res = stmt->executeQuery("SELECT * FROM cameras"); 
 				string command;	
 				int clusterIDN;
 				int size;
@@ -230,7 +225,6 @@ int main(int argc, char** argv) {
 				command += ";";
 				res = stmt->executeQuery(command);
 				size = res->rowsCount();
-			//	repW--;
 			}	
 			int* cameraIDs = new int [size];
 			int ** indicators = new int*[conFeatureN];
@@ -344,13 +338,9 @@ int main(int argc, char** argv) {
 				out.append("\n");
 	
 			}	
-	
-//
+
    			cout<<out<<endl;
 
-				
-//////
-            
 	// Clean up
 
  	delete stmt;
