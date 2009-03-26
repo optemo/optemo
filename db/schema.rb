@@ -112,7 +112,7 @@ ActiveRecord::Schema.define(:version => 20090130223927) do
   end
 
   create_table "db_properties", :force => true do |t|
-    t.string   "product"
+    t.string   "name"
     t.text     "brands"
     t.float    "price_min"
     t.float    "price_max"
@@ -258,8 +258,14 @@ ActiveRecord::Schema.define(:version => 20090130223927) do
     t.float    "displaysize_max",       :default => 3.6
     t.float    "opticalzoom_min",       :default => 0.0
     t.float    "opticalzoom_max",       :default => 20.0
-    t.float    "price_min",             :default => 49.99
-    t.float    "price_max",             :default => 1815.86
+    t.float    "ppm_min",               :default => 5.0
+    t.float    "ppm_max",               :default => 680.0
+    t.float    "itemwidth_min",         :default => 0.0
+    t.float    "itemwidth_max",         :default => 36756.0
+    t.float    "paperinput_min",        :default => 1.0
+    t.float    "paperinput_max",        :default => 4100.0
+    t.float    "price_min",             :default => 0.0
+    t.float    "price_max",             :default => 10000000.0
     t.text     "chosen"
     t.string   "msg"
     t.datetime "created_at"

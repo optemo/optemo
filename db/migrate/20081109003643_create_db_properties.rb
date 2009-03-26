@@ -2,7 +2,7 @@ class CreateDbProperties < ActiveRecord::Migration
   def self.up
     create_table :db_properties do |t|
       t.primary_key :id
-      t.string :product
+      t.string :name
       t.text  :brands
       t.float :price_min
       t.float :price_max

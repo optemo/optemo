@@ -1,11 +1,9 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :saveds
+  #map.resources :saveds
 
-  map.resources :welcomes
+  #map.resources :amazon_groups
 
-  map.resources :amazon_groups
-
-  map.resources :cameras
+  #map.resources :cameras
 
   # The priority is based upon order of creation: first created -> highest priority.
 
@@ -45,7 +43,8 @@ ActionController::Routing::Routes.draw do |map|
 
   # Install the default routes as the lowest priority.
   map.root :controller => 'products'
-  map.connect '/cameras/list/*path_info', :controller => 'cameras', :action => 'list'
+  map.connect '/cameras/list/*path_info', :controller => 'products', :action => 'list'
+  map.connect '/printers/list/*path_info', :controller => 'printers', :action => 'list'
   map.connect '/products/list/*path_info', :controller => 'products', :action => 'list'
   map.connect 'compare/*path_info', :controller => 'compare', :action => 'index'
   map.connect ':controller/:action/:id'

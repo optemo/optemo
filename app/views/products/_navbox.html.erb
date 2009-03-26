@@ -6,9 +6,9 @@
 		</div>
 		<%= image_tag @products[i].imagemurl, :width => @products[i].imagemw, :height => @products[i].imagemh, :onClick => "fadeout(#{@products[i].id});", :style => "cursor: pointer;margin-left:-45px" %> 	
 		<div class='rightbar' style='display: none;'>
-			MP:<%= @products[i].maximumresolution %><br>
-			DS:<%= @products[i].displaysize %><br>
-			OZ:<%= @products[i].opticalzoom %><br>
+			MP:<%# @products[i].maximumresolution %><br>
+			DS:<%# @products[i].displaysize %><br>
+			OZ:<%# @products[i].opticalzoom %><br>
 		</div>
 	<%end%>
 	<a href="/products/<%=@products[i].id%>" onClick="fadeout(<%=@products[i].id%>);return false;">

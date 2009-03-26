@@ -22,7 +22,7 @@ class ProductsController < ApplicationController
       @search = initialize_search
     end
     chosen = YAML.load(@search.chosen) if @search.chosen
-    @dbprops = DbProperty.find(:first)
+    @dbprops = DbProperty.find_by_name($productType.name)
     #Navigation Variables
     @products = []
     @clusters = []
