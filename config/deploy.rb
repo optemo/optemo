@@ -37,3 +37,10 @@ end
 
 after :deploy, "compilec"
 after :compilec, "passenger:restart"
+
+namespace :deploy do
+  task :after, :roles => :app do
+    # config on server
+    run "cd #{release_path}/config              && cp -f database.yml.deploy database.yml"
+  end
+end
