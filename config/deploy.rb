@@ -1,5 +1,5 @@
-set :application, "optemo"
-set :repository,  "git@jaguar:optemo.git"
+set :application, "optemo_site"
+set :repository,  "git@jaguar:site.git"
 set :domain, "jaguar"
 
 # If you aren't deploying to /u/apps/#{application} on the target
