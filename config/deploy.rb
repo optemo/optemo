@@ -32,7 +32,8 @@ end
 
 desc "Compile C-Code"
 task :compilec do
-  run "make #{current_path}/lib/c_code/clusteringCode/codes/connect"
+  run "cp -rf #{current_path}/lib/c_code/clusteringCodeLinux #{current_path}/lib/c_code/clusteringCode"
+  run "cd #{current_path}/lib/c_code/clusteringCode/ && make clean && make connect"
 end
 
 after :deploy, "compilec"
@@ -41,6 +42,6 @@ after :compilec, "passenger:restart"
 namespace :deploy do
   task :after, :roles => :app do
     # config on server
-    run "cd #{release_path}/config              && cp -f database.yml.deploy database.yml"
+    run "cd #{current_path}/config              && cp -f database.yml.deploy database.yml"
   end
 end
