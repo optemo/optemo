@@ -106,7 +106,7 @@ class SearchController < ApplicationController
     myparams = q.to_yaml
     @badparams = "None"
     #debugger
-    @output = %x["/u/app/optemo_site/current/lib/c_code/connect" "#{myparams}"]
+    @output = %x["#{RAILS_ROOT}/lib/c_code/clusterCode/codes/connect" "#{myparams}"]
     options = YAML.load(@output)
     #parse the new ids
     if options.blank? || options[:result_count].nil? || (options[:result_count] > 0 && options['products'].nil?)

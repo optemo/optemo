@@ -30,4 +30,10 @@ namespace :passenger do
   end
 end
 
-after :deploy, "passenger:restart"
+desc "Compile C-Code"
+task :compilec do
+  run "make #{current_path}/lib/c_code/clusteringCode/codes/connect"
+end
+
+after :deploy, "compilec"
+after :compilec, "passenger:restart"
