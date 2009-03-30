@@ -1,4 +1,4 @@
-# Install script for directory: /optemo/site/lib/c_code/clusteringCode
+# Install script for directory: /u/apps/optemo_site/releases/20090330232428/lib/c_code/clusteringCode
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,9 +34,9 @@ ENDIF(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 
 IF(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  INCLUDE("/optemo/site/lib/c_code/clusteringCode/cppconn/cmake_install.cmake")
-  INCLUDE("/optemo/site/lib/c_code/clusteringCode/drivermanager/cmake_install.cmake")
-  INCLUDE("/optemo/site/lib/c_code/clusteringCode/codes/cmake_install.cmake")
+  INCLUDE("/u/apps/optemo_site/releases/20090330232428/lib/c_code/clusteringCode/cppconn/cmake_install.cmake")
+  INCLUDE("/u/apps/optemo_site/releases/20090330232428/lib/c_code/clusteringCode/drivermanager/cmake_install.cmake")
+  INCLUDE("/u/apps/optemo_site/releases/20090330232428/lib/c_code/clusteringCode/codes/cmake_install.cmake")
 
 ENDIF(NOT CMAKE_INSTALL_LOCAL_ONLY)
 IF(CMAKE_INSTALL_COMPONENT)
@@ -44,7 +44,7 @@ IF(CMAKE_INSTALL_COMPONENT)
 ELSE(CMAKE_INSTALL_COMPONENT)
   SET(CMAKE_INSTALL_MANIFEST "install_manifest.txt")
 ENDIF(CMAKE_INSTALL_COMPONENT)
-FILE(WRITE "/optemo/site/lib/c_code/clusteringCode/${CMAKE_INSTALL_MANIFEST}" "")
+FILE(WRITE "/u/apps/optemo_site/releases/20090330232428/lib/c_code/clusteringCode/${CMAKE_INSTALL_MANIFEST}" "")
 FOREACH(file ${CMAKE_INSTALL_MANIFEST_FILES})
-  FILE(APPEND "/optemo/site/lib/c_code/clusteringCode/${CMAKE_INSTALL_MANIFEST}" "${file}\n")
+  FILE(APPEND "/u/apps/optemo_site/releases/20090330232428/lib/c_code/clusteringCode/${CMAKE_INSTALL_MANIFEST}" "${file}\n")
 ENDFOREACH(file)
