@@ -1,4 +1,4 @@
-/u/apps/optemo_site/releases/20090330232428/lib/c_code/clusteringCode/codes/connect.cpp
+/u/apps/optemo_site/releases/20090331185935/lib/c_code/clusteringCode/codes/connect.cpp
 stdlib.h
 -
 fstream
@@ -21,24 +21,16 @@ algorithm
 -
 cppconn/mysql_public_iface.h
 -
-hClustering.h
-/u/apps/optemo_site/releases/20090330232428/lib/c_code/clusteringCode/codes/hClustering.h
 filtering.h
-/u/apps/optemo_site/releases/20090330232428/lib/c_code/clusteringCode/codes/filtering.h
+/u/apps/optemo_site/releases/20090331185935/lib/c_code/clusteringCode/codes/filtering.h
 
-/u/apps/optemo_site/releases/20090330232428/lib/c_code/clusteringCode/codes/filtering.h
+/u/apps/optemo_site/releases/20090331185935/lib/c_code/clusteringCode/codes/filtering.h
 iostream
 -
-
-/u/apps/optemo_site/releases/20090330232428/lib/c_code/clusteringCode/codes/hClustering.h
-kmeans.h
-/u/apps/optemo_site/releases/20090330232428/lib/c_code/clusteringCode/codes/kmeans.h
 helpers.h
-/u/apps/optemo_site/releases/20090330232428/lib/c_code/clusteringCode/codes/helpers.h
+/u/apps/optemo_site/releases/20090331185935/lib/c_code/clusteringCode/codes/helpers.h
 
-/u/apps/optemo_site/releases/20090330232428/lib/c_code/clusteringCode/codes/helpers.h
-
-/u/apps/optemo_site/releases/20090330232428/lib/c_code/clusteringCode/codes/kmeans.h
+/u/apps/optemo_site/releases/20090331185935/lib/c_code/clusteringCode/codes/helpers.h
 
 /usr/include/mysql/my_alloc.h
 

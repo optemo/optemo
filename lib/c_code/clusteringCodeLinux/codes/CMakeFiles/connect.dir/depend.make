@@ -3,9 +3,7 @@
 
 codes/CMakeFiles/connect.dir/connect.o: codes/connect.cpp
 codes/CMakeFiles/connect.dir/connect.o: codes/filtering.h
-codes/CMakeFiles/connect.dir/connect.o: codes/hClustering.h
 codes/CMakeFiles/connect.dir/connect.o: codes/helpers.h
-codes/CMakeFiles/connect.dir/connect.o: codes/kmeans.h
 codes/CMakeFiles/connect.dir/connect.o: /usr/include/mysql/my_alloc.h
 codes/CMakeFiles/connect.dir/connect.o: /usr/include/mysql/my_attribute.h
 codes/CMakeFiles/connect.dir/connect.o: /usr/include/mysql/my_config.h
