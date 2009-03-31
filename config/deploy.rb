@@ -37,7 +37,7 @@ task :compilec do
 end
 
 desc "Configure the server files"
-task :serversetup, do
+task :serversetup do
   # Instantiate the database.yml file
   run "cd #{current_path}/config              && cp -f database.yml.deploy database.yml"
 end
