@@ -16,17 +16,14 @@ using namespace std;
 
 // Public interface of the MySQL Connector/C++
 #include <cppconn/mysql_public_iface.h>
-
-//
-#include "hClustering.h"
 #include "filtering.h"
 
-
 using namespace std;
-
+ 
 /**
 * Usage example for Driver Manager, Connection, (simple) Statement, ResultSet
 */
+
 int main(int argc, char** argv) {
 
 	stringstream sql;
@@ -35,18 +32,14 @@ int main(int argc, char** argv) {
 	int catFeatureN = 1;
 	int boolFeatureN = 0;
 	int varNamesN = 12;
-	int range = 2;
-	int session_id = 1; 
+	int range = 2;  
+	int session_id; 
 	int clusterID = 0;
-	
+	int* mergedClusterIDInput = new int[clusterN];
 	bool smallNFlag =false;
-	
 	ostringstream session_idStream;
-
-			
 	string *varNames = new string[varNamesN];	
 	string *catFeatureNames = new string[catFeatureN];
-	string *boolFeatureNames = new string [boolFeatureN];
 	string *conFeatureNames = new string[conFeatureN];
 	double **filteredRange = new double* [conFeatureN];
 	bool *conFilteredFeatures = new bool[conFeatureN];   
@@ -110,8 +103,20 @@ int main(int argc, char** argv) {
 		   }
 
 		   else if(var == "cluster_id"){
-			    	clusterID = atoi((argu.substr(startit, lengthit)).c_str());
-	
+					string valueString = argu.substr(startit, lengthit);
+					int found = valueString.find("-");
+					int mergedClusterN=0;
+					while ( found != (int)string::npos){	
+						mergedClusterIDInput[mergedClusterN] = atoi((valueString.substr(found+1,1)).c_str());
+						found = valueString.find("-", found+2, 1);
+						mergedClusterN++; 
+					}	
+					if (mergedClusterN >0){
+						clusterID = -1 * mergedClusterN;
+					}
+					if (found == (int)string::npos){
+							clusterID = atoi((argu.substr(startit, lengthit)).c_str());
+					}
 				
 		    }
 		   else if(var == "price_min"){
@@ -205,7 +210,6 @@ int main(int argc, char** argv) {
 				stmt = con->createStatement();
 				stmt->execute("USE "  EXAMPLE_DB);
 				string command;	
-				int clusterIDN;
 				int size;
 				string out = "";
 				int repW = 9;
@@ -217,7 +221,6 @@ int main(int argc, char** argv) {
 				size = res->rowsCount();
 			}
 			else{
-				int parentID; 
 				command = "SELECT id from nodes where cluster_id=";
 				ostringstream cid;
 				cid<<clusterID;
@@ -238,6 +241,7 @@ int main(int argc, char** argv) {
 			}
 		
 			int cameraN = filter2(filteredRange, brand, stmt, res, res2, cameraIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange);
+		
 			if (cameraN> 0){
 				if (cameraN<=repW){
 					repW = cameraN;                 
@@ -246,16 +250,17 @@ int main(int argc, char** argv) {
 				int* reps = new int [repW];		
 				int* clusterIDs = new int[repW];
 				int* clusterCounts = new int[repW];
+				int* mergedClusterIDs;
 				
-				reped = getRep2(reps, cameraIDs, cameraN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID, smallNFlag);
+				reped = getRep(reps, cameraIDs, cameraN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput);
 		
 				if(reped){
-					getIndicators4(clusterIDs,repW, conFeatureN, indicators, stmt, res);
+					getIndicators(clusterIDs,repW, conFeatureN, indicators, stmt, res, mergedClusterIDs);
 				}
 			
 //Generating the output string 
 			
-					string* indicatorNames = new string[4];
+					string* indicatorNames = new string[conFeatureN];
 					indicatorNames[0] = "Price";
 					indicatorNames[1] = "Display Size";
 					indicatorNames[2] = "Optical Zoom";
@@ -295,10 +300,23 @@ int main(int argc, char** argv) {
 				if (reped){
 					out.append("clusters: \n");
 			        for(int c=0; c<repW; c++){
-					       out.append("- ");
+						out.append("- ");
+						if (clusterIDs[c] < 0 ) { //merged clusters
+							ostringstream oss2; 
+							oss2<<mergedClusterIDs[0];
+							out.append(oss2.str());
+							for (int m=1; m<(-1*clusterIDs[c]); m++){
+								out.append("-");
+								ostringstream oss3;
+								oss3 << mergedClusterIDs[m];
+								out.append(oss3.str());
+							}
+						} 
+					    else{    
 				           std::ostringstream oss; 		  
 						   oss<<clusterIDs[c];
-						   out.append(oss.str()); 
+						   out.append(oss.str());
+						} 
 						   out.append("\n");
 					} 
 				
@@ -316,7 +334,7 @@ int main(int argc, char** argv) {
 							oss3<<clusterCounts[c];
 							out.append(oss3.str());
 
-					   		for (int f=0; f<4; f++){
+					   		for (int f=0; f<conFeatureN; f++){
 								out.append(", ");
 								out.append(indicatorNames[f]);
 								out.append(": ");
@@ -345,10 +363,7 @@ int main(int argc, char** argv) {
 
  	delete stmt;
  	delete con;
-  //  delete data;
-    
- 	 
- //	delete medians;
+
  
 
  	} catch (sql::mysql::MySQL_DbcException *e) {

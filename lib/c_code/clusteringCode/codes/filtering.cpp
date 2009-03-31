@@ -21,15 +21,14 @@ using namespace std;
 #include "hClustering.h"
 #include "filtering.h"
 
-
 using namespace std;
 
 /**
 * Usage example for Driver Manager, Connection, (simple) Statement, ResultSet
 */
+
 int main(int argc, char** argv) {
-//void initialize(int arcCount, char** argArray)
-//{
+
 	stringstream sql;
 	int clusterN = 9; 
 	int conFeatureN = 4;
@@ -37,14 +36,11 @@ int main(int argc, char** argv) {
 	int boolFeatureN = 0;
 	int varNamesN = 12;
 	int range = 2;
-	int session_id = 1; 
+	int session_id; 
 	int clusterID = 0;
-	
+	int* mergedClusterIDInput = new int[clusterN];
 	bool smallNFlag =false;
-	
 	ostringstream session_idStream;
-
-			
 	string *varNames = new string[varNamesN];	
 	string *catFeatureNames = new string[catFeatureN];
 	string *boolFeatureNames = new string [boolFeatureN];
@@ -111,8 +107,20 @@ int main(int argc, char** argv) {
 		   }
 
 		   else if(var == "cluster_id"){
-			    	clusterID = atoi((argu.substr(startit, lengthit)).c_str());
-	
+					string valueString = argu.substr(startit, lengthit);
+					int found = valueString.find("-");
+					int mergedClusterN=0;
+					while ( found != string::npos){	
+						mergedClusterIDInput[mergedClusterN] = atoi((valueString.substr(found+1,1)).c_str());
+						found = valueString.find("-", found+2, 1);
+						mergedClusterN++; 
+					}	
+					if (mergedClusterN >0){
+						clusterID = -1 * mergedClusterN;
+					}
+					if (found == string::npos){
+							clusterID = atoi((argu.substr(startit, lengthit)).c_str());
+					}
 				
 		    }
 		   else if(var == "price_min"){
@@ -160,14 +168,11 @@ int main(int argc, char** argv) {
 
    	sql::mysql::MySQL_Driver *driver;
 
-	// Connection, (simple, not prepared) Statement, Result Set
 	sql::Connection	*con;
 	sql::Statement	*stmt;
 	
 	sql::ResultSet	*res;
 	sql::ResultSet	*res2;
-   // sql::ResultSet	*resClus;
-   // sql::ResultSet	*resNodes;
 		string line;
 		string buf; 
 		vector<string> tokens;
@@ -208,7 +213,6 @@ int main(int argc, char** argv) {
 				con = driver->connect(EXAMPLE_HOST, EXAMPLE_PORT, EXAMPLE_USER, EXAMPLE_PASS);
 				stmt = con->createStatement();
 				stmt->execute("USE "  EXAMPLE_DB);
-			//    res = stmt->executeQuery("SELECT * FROM cameras"); 
 				string command;	
 				int clusterIDN;
 				int size;
@@ -230,7 +234,6 @@ int main(int argc, char** argv) {
 				command += ";";
 				res = stmt->executeQuery(command);
 				size = res->rowsCount();
-			//	repW--;
 			}	
 			int* cameraIDs = new int [size];
 			int ** indicators = new int*[conFeatureN];
@@ -244,6 +247,7 @@ int main(int argc, char** argv) {
 			}
 		
 			int cameraN = filter2(filteredRange, brand, stmt, res, res2, cameraIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange);
+		
 			if (cameraN> 0){
 				if (cameraN<=repW){
 					repW = cameraN;                 
@@ -252,11 +256,12 @@ int main(int argc, char** argv) {
 				int* reps = new int [repW];		
 				int* clusterIDs = new int[repW];
 				int* clusterCounts = new int[repW];
+				int* mergedClusterIDs;
 				
-				reped = getRep2(reps, cameraIDs, cameraN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID, smallNFlag);
+				reped = getRep2(reps, cameraIDs, cameraN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput);
 		
 				if(reped){
-					getIndicators4(clusterIDs,repW, conFeatureN, indicators, stmt, res);
+					getIndicators4(clusterIDs,repW, conFeatureN, indicators, stmt, res, mergedClusterIDs);
 				}
 			
 //Generating the output string 
@@ -301,10 +306,23 @@ int main(int argc, char** argv) {
 				if (reped){
 					out.append("clusters: \n");
 			        for(int c=0; c<repW; c++){
-					       out.append("- ");
+						out.append("- ");
+						if (clusterIDs[c] < 0 ) { //merged clusters
+							ostringstream oss2; 
+							oss2<<mergedClusterIDs[0];
+							out.append(oss2.str());
+							for (int m=1; m<(-1*clusterIDs[c]); m++){
+								out.append("-");
+								ostringstream oss3;
+								oss3 << mergedClusterIDs[m];
+								out.append(oss3.str());
+							}
+						} 
+					    else{    
 				           std::ostringstream oss; 		  
 						   oss<<clusterIDs[c];
-						   out.append(oss.str()); 
+						   out.append(oss.str());
+						} 
 						   out.append("\n");
 					} 
 				
@@ -344,13 +362,9 @@ int main(int argc, char** argv) {
 				out.append("\n");
 	
 			}	
-	
-//
+
    			cout<<out<<endl;
 
-				
-//////
-            
 	// Clean up
 
  	delete stmt;
