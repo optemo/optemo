@@ -410,13 +410,13 @@ int main(){return 0;}
 
 Determining if files glib.h exist failed with the following output:
 /usr/bin/make -f CMakeFiles/cmTryCompileExec.dir/build.make CMakeFiles/cmTryCompileExec.dir/build
-make[1]: Entering directory `/u/apps/optemo_site/releases/20090331185935/lib/c_code/clusteringCode/CMakeFiles/CMakeTmp'
-/usr/bin/cmake -E cmake_progress_report /u/apps/optemo_site/releases/20090331185935/lib/c_code/clusteringCode/CMakeFiles/CMakeTmp/CMakeFiles 1
+make[1]: Entering directory `/u/apps/optemo_site/current/lib/c_code/clusteringCode/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /u/apps/optemo_site/current/lib/c_code/clusteringCode/CMakeFiles/CMakeTmp/CMakeFiles 1
 Building C object CMakeFiles/cmTryCompileExec.dir/CheckIncludeFiles.o
-/usr/bin/gcc  -I/usr/lib/glib-2.0/include -I/usr/include/glib-2.0   -o CMakeFiles/cmTryCompileExec.dir/CheckIncludeFiles.o   -c /u/apps/optemo_site/releases/20090331185935/lib/c_code/clusteringCode/CMakeFiles/CMakeTmp/CheckIncludeFiles.c
-/u/apps/optemo_site/releases/20090331185935/lib/c_code/clusteringCode/CMakeFiles/CMakeTmp/CheckIncludeFiles.c:2:18: error: glib.h: No such file or directory
+/usr/bin/gcc  -I/usr/lib/glib-2.0/include -I/usr/include/glib-2.0   -o CMakeFiles/cmTryCompileExec.dir/CheckIncludeFiles.o   -c /u/apps/optemo_site/current/lib/c_code/clusteringCode/CMakeFiles/CMakeTmp/CheckIncludeFiles.c
+/u/apps/optemo_site/current/lib/c_code/clusteringCode/CMakeFiles/CMakeTmp/CheckIncludeFiles.c:2:18: error: glib.h: No such file or directory
 make[1]: *** [CMakeFiles/cmTryCompileExec.dir/CheckIncludeFiles.o] Error 1
-make[1]: Leaving directory `/u/apps/optemo_site/releases/20090331185935/lib/c_code/clusteringCode/CMakeFiles/CMakeTmp'
+make[1]: Leaving directory `/u/apps/optemo_site/current/lib/c_code/clusteringCode/CMakeFiles/CMakeTmp'
 make: *** [cmTryCompileExec/fast] Error 2
 
 Source:

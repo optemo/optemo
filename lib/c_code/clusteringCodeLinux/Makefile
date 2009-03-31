@@ -34,10 +34,10 @@ RM = /usr/bin/cmake -E remove -f
 CMAKE_EDIT_COMMAND = /usr/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /u/apps/optemo_site/releases/20090331185935/lib/c_code/clusteringCode
+CMAKE_SOURCE_DIR = /u/apps/optemo_site/current/lib/c_code/clusteringCode
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /u/apps/optemo_site/releases/20090331185935/lib/c_code/clusteringCode
+CMAKE_BINARY_DIR = /u/apps/optemo_site/current/lib/c_code/clusteringCode
 
 # Include the progress variables for this target.
 include CMakeFiles/progress.make
@@ -63,9 +63,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /u/apps/optemo_site/releases/20090331185935/lib/c_code/clusteringCode/CMakeFiles $(CMAKE_ALL_PROGRESS)
+	$(CMAKE_COMMAND) -E cmake_progress_start /u/apps/optemo_site/current/lib/c_code/clusteringCode/CMakeFiles $(CMAKE_ALL_PROGRESS)
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /u/apps/optemo_site/releases/20090331185935/lib/c_code/clusteringCode/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /u/apps/optemo_site/current/lib/c_code/clusteringCode/CMakeFiles 0
 
 # The main clean target
 clean:

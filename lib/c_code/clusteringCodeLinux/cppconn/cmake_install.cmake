@@ -1,4 +1,4 @@
-# Install script for directory: /u/apps/optemo_site/releases/20090331185935/lib/c_code/clusteringCode/cppconn
+# Install script for directory: /u/apps/optemo_site/current/lib/c_code/clusteringCode/cppconn
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)
