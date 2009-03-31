@@ -36,12 +36,14 @@ task :compilec do
   run "cd #{current_path}/lib/c_code/clusteringCode/ && make clean && make connect"
 end
 
-after :deploy, "compilec"
+desc "Configure the server files"
+task :serversetup, do
+  # Instantiate the database.yml file
+  run "cd #{current_path}/config              && cp -f database.yml.deploy database.yml"
+end
+
+after :deploy, "serversetup"
+after :serversetup, "compilec"
 after :compilec, "passenger:restart"
 
-namespace :deploy do
-  task :after, :roles => :app do
-    # config on server
-    run "cd #{current_path}/config              && cp -f database.yml.deploy database.yml"
-  end
-end
+
