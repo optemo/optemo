@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <map>
 
 using namespace std;
 
@@ -25,14 +26,15 @@ using namespace std;
 */
 
 int main(int argc, char** argv) {
-
+	
+	string productName;	
 	stringstream sql;
-	int clusterN = 9; 
-	int conFeatureN = 4;
-	int catFeatureN = 1;
-	int boolFeatureN = 0;
-	int varNamesN = 12;
-	int range = 2;  
+	int clusterN; // = 9; 
+	int conFeatureN; // = 4;
+	int catFeatureN; // = 1;
+	int boolFeatureN; //= 0;
+	int varNamesN; // = 12;
+	int range;  // = 2;  
 	int session_id; 
 	int clusterID = 0;
 	int* mergedClusterIDInput = new int[clusterN];
@@ -45,6 +47,9 @@ int main(int argc, char** argv) {
 	bool *conFilteredFeatures = new bool[conFeatureN];   
 	bool *catFilteredFeatures = new bool[catFeatureN];
 	bool *boolFilteredFeatures = new bool[boolFeatureN];
+	
+	map<const char*, string*, strCmp> productFeatures;
+	
 	
 	
 	catFeatureNames[0]= "brand";
@@ -83,7 +88,55 @@ int main(int argc, char** argv) {
 	varNames[8] = "opticalzoom_max";
 	varNames[9] = "maximumresolution_min";
 	varNames[10] = "maximumresolution_max";
+	
+	productFeatures["camera"] = varNames;
 
+	//productName
+	ind = argu.find("product_name", 0);
+	endit = argu.find("\n", ind);
+	startit = ind + var.length() + 2;
+	lengthit = endit - startit;
+	if (lenghtit>0){
+		productName = (argu.substr(startit, lengthit)).c_str();
+	}
+	else{
+		cout<<"ERROR - Specify a productName"<<endl;
+	}
+	//session_id
+	ind = argu.find("session_id", 0);
+	endit = argu.find("\n", ind);
+	startit = ind + var.length() + 2;
+	lengthit = endit - startit;
+	if (lenghtit>0){
+		session_id = atoi((argu.substr(startit, lengthit)).c_str());
+	}
+	
+	//cluster_id
+	ind = argu.find("session_id", 0);
+	endit = argu.find("\n", ind);
+	startit = ind + var.length() + 2;
+	lengthit = endit - startit;
+	if(lenghtit>0){
+		string valueString = argu.substr(startit, lengthit);
+		int found = valueString.find("-");
+		int mergedClusterN=0;
+		while ( found != (int)string::npos){	
+			mergedClusterIDInput[mergedClusterN] = atoi((valueString.substr(found+1,1)).c_str());
+			found = valueString.find("-", found+2, 1);
+			mergedClusterN++; 
+		}	
+		if (mergedClusterN >0){
+			clusterID = -1 * mergedClusterN;
+		}
+		if (found == (int)string::npos){
+				clusterID = atoi((argu.substr(startit, lengthit)).c_str());
+		}
+	}
+	
+	parseInput(productName, argu, brands, catFilteredFeatures, conFilteredFeatures, boolFilteredFeatures, filteredRange);
+	
+	
+	
 	
 	string brand = "";
 	for (int j=0; j<varNamesN; j++){
@@ -103,20 +156,7 @@ int main(int argc, char** argv) {
 		   }
 
 		   else if(var == "cluster_id"){
-					string valueString = argu.substr(startit, lengthit);
-					int found = valueString.find("-");
-					int mergedClusterN=0;
-					while ( found != (int)string::npos){	
-						mergedClusterIDInput[mergedClusterN] = atoi((valueString.substr(found+1,1)).c_str());
-						found = valueString.find("-", found+2, 1);
-						mergedClusterN++; 
-					}	
-					if (mergedClusterN >0){
-						clusterID = -1 * mergedClusterN;
-					}
-					if (found == (int)string::npos){
-							clusterID = atoi((argu.substr(startit, lengthit)).c_str());
-					}
+				
 				
 		    }
 		   else if(var == "price_min"){
