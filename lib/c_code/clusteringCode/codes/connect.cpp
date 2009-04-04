@@ -18,6 +18,7 @@ using namespace std;
 // Public interface of the MySQL Connector/C++
 #include <cppconn/mysql_public_iface.h>
 #include "filtering.h"
+#include "preprocessing.h"
 
 using namespace std;
  
@@ -48,7 +49,7 @@ int main(int argc, char** argv) {
 	bool *catFilteredFeatures = new bool[catFeatureN];
 	bool *boolFilteredFeatures = new bool[boolFeatureN];
 	
-	map<const char*, string*, strCmp> productFeatures;
+	map<const string, string*> productFeatures;
 	
 	
 	
@@ -133,7 +134,7 @@ int main(int argc, char** argv) {
 		}
 	}
 	
-	parseInput(productName, argu, brands, catFilteredFeatures, conFilteredFeatures, boolFilteredFeatures, filteredRange);
+	parseInput(productFeatures, productName, argu, brands, catFilteredFeatures, conFilteredFeatures, boolFilteredFeatures, filteredRange);
 	
 	
 	

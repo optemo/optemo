@@ -95,9 +95,8 @@ if 	(layer == 1){
 					    				}  
 					   				}	 
 					     }
-
-					//}		
-												////////////////////////////////  Change clusteredData to vector 
+	
+		////////////////////////////////  Change clusteredData to vector 
 					    int **clusteredData = new int* [clusterN];
 						for (int j=0; j<clusterN; j++){
 						 		clusteredData[j] = new int[size];	
@@ -115,8 +114,6 @@ if 	(layer == 1){
 						 		clusteredData[centersA[j]][ts[centersA[j]]] = idA[j];
 						 		clusteredData[centersA[j]][0]++;
 						 	}
-			
-
 
 					   // save it to the database
 					 
@@ -132,12 +129,9 @@ if 	(layer == 1){
 					delete data;	
 					delete clusteredData;
 					delete dist;
-				
-				
+		
 			}
 if (layer > 1){
-	
-
 	// getting all cluster ids in this layer
 	string command = "SELECT * FROM clusters WHERE layer=";
 	ostringstream layerStream; 
@@ -176,10 +170,8 @@ if (layer > 1){
 			for (int j=0; j<size; j++){
 				data[j] = new double[conFeatureN];
 			}
-			
-			
+
 			int s = 0;
-		
 			while(resNodes->next()){
 					
 				data[s][0] = resNodes->getDouble("price");
@@ -221,25 +213,12 @@ if (layer > 1){
  	   		}
      	      
  	       	centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids); 
-	
-		
-		
 	        dist = new double* [size];
 		
 			for(int j=0; j<size; j++){
 		    	dist[j] = new double[clusterN]; 
 			}
-		      
-	 //   	for (int j=0; j<size; j++){
-	 //       	  	for (int c=0; c<clusterN; c++){
-	 //       		   	for (int f=0; f<conFeatureN; f++){
-	 //   					 	distan = dist[j][c] + ((centroids[c][f] - dataN[j][f])*(centroids[c][f] - dataN[j][f]) );	 
-	 //       				 	dist[j][c] = distan;	   
-	 //       				}  
-	 //      				}	 
-	 //        }
-					
-		//}		
+		      		
 									////////////////////////////////  Change clusteredData to vector 
 		    int **clusteredData = new int* [clusterN];
 			for (int j=0; j<clusterN; j++){

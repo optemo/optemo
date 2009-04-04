@@ -21,13 +21,8 @@ using namespace std;
 
 using namespace std;
 
-/**
-* Usage example for Driver Manager, Connection, (simple) Statement, ResultSet
-*/
-//int main(int argc, char** argv) {
 int main(){	
-//void initialize(int arcCount, char** argArray)
-//{
+
 	stringstream sql;
 	int clusterN = 9; 
 	int conFeatureN = 4;
@@ -165,8 +160,7 @@ int main(){
 				stmt = con->createStatement();
 				stmt->execute("USE "  EXAMPLE_DB);
 			    res = stmt->executeQuery("SELECT * FROM cameras"); 
-	
-////{}
+
 				int maxSize = 10000;
 			while (maxSize>clusterN){
 					
@@ -184,17 +178,8 @@ int main(){
 //Generating the output string 
 
 
-//////
-            
-	// Clean up
-
  	delete stmt;
  	delete con;
-  //  delete data;
-    
- 	 
- //	delete medians;
- 
 
  	} catch (sql::mysql::MySQL_DbcException *e) {
 

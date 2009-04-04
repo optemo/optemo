@@ -1,11 +1,11 @@
 //preProcessing.h
-
-void parseInput(<map> productFeatures, string productName, string argument, string* brands, bool* catFilteredFeatures, bool* conFilteredFeatures, bool* boolFilteredFeatures, double* filteredRange){
+#include <map>
+void parseInput(map<const string, string*> productFeatures, string productName, string argument, string* brands, bool* catFilteredFeatures, bool* conFilteredFeatures, bool* boolFilteredFeatures, double* filteredRange){
 	
 	string* varNames = productFeatures.find(productName);
 	string brand = "";
 	
-	if (producName == "camera"){
+	if (productName == "camera"){
 		for (int j=0; j<varNamesN; j++){
 			var = varNames[j];
 			ind = argu.find(var, 0);
