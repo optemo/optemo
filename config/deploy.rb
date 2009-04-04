@@ -10,7 +10,6 @@ set :branch, "staging"
 
 set :scm, :git
 set :deploy_via, :remote_cache
-set :user, 'jan'
 #ssh_options[:paranoid] = false
 default_run_options[:pty] = true
 set :use_sudo, false

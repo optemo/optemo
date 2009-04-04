@@ -7,12 +7,12 @@ class CompareController < ApplicationController
     if params[:path_info].blank?
       @saveds = Saved.find_all_by_session_id(session[:user_id])
       @saveds.collect do |saved|
-        @products << saved.product.id
+        @products << saved.product_id
       end
       redirect_to "/compare/#{@products.join('/')}"
     else
       params[:path_info].collect do |id|
-        @products << productType.find(id)
+        @products << $productType.find(id)
       end
       respond_to do |format|
         format.html # index.html.erb
