@@ -1,8 +1,8 @@
 module ProductsHelper
   def nav_link
-    s = Session.find(session[:user_id]).last_search
+    s = Session.find(session[:user_id])
     if !s.nil?
-      link_to 'Go back<br> to navigation', '/products/list/'+s 
+      link_to 'Go back<br> to navigation', '/products/list/'+s.URL
     else
       link_to 'Browse more products', :controller => 'products'
     end

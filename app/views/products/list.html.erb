@@ -1,5 +1,5 @@
 <div id="leftbar">
-	<%= link_to 'Start Search Over', {:action => 'index'}, {:id => 'startover'} %>
+	<%= link_to 'Go Back', 'javascript:history.go(-1)', {:id => 'startover'} %>
 	<% form_tag ({:controller => 'search', :action => 'find' }) do %>
 	  <%= text_field_tag 'search' %>
 	  <%= submit_tag 'Search' %>
@@ -17,13 +17,18 @@
 </div>
 <div id="filterbar">
 	<h2>Filters</h2>
-	<% form_tag ({:controller => 'search', :action => 'filter' }) do %>
+	<div class='label'>Brand</div>
+	<% form_tag ({:controller => 'search', :action => 'filter'},{:id => 'brand_form'}) do %>
+	<%= select('myfilter', 'brand', ["All Brands"]+@dbprops.brands.split('*'),{:selected => @search.brand}, {:onchange => "$('brand_form').submit()"}) %>
+	<% end %>
+	<% form_tag ({:controller => 'search', :action => 'filter'}) do %>
 	  <%= render :partial => 'filter' %>
 	  <%= submit_tag 'Filter' %>&nbsp;&nbsp;<a href="javascript:resetFilter();" style="font-size: 0.7em">(reset)</a>
 	<% end %>
 </div>
 </div>
 <div class="main">
+	<span style="color:red;"><%= flash[:error] %></span>
 	<% for i in 0..@products.length-1 %>
 	  <% if i%3 == 0 %>
 		<div class="rowdiv">
@@ -48,7 +53,7 @@
 	<% if @product %>
 		<div style="float:left">Viewing<br>Similar<br>products to:</div>
 		<%= render :partial => 'product', :locals => {:nox => true} %>
-		<%= @search.msg %>
+		<%= @session.msg %>
 	<% end %>
 <% end %>
 

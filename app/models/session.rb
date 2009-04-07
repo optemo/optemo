@@ -3,8 +3,9 @@ class Session < ActiveRecord::Base
   has_many :vieweds
   has_many :searches
   
-  def last_search
-    s = searches.find(:last)
-    s.URL if !s.nil?
+  def URL
+    ret = []
+    "i0".upto("i#{result_count-1}"){|i|ret<<send(i.intern)}
+    ret.compact.join('/')
   end
 end

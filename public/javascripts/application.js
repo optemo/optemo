@@ -4,7 +4,11 @@ function fadeout(id)
 {
 	$('fade').style.height = (getDocHeight())+'px';
 	$('fade').setStyle({display: 'inline'});
+	//IE Compatibility
+	var iebody=(document.compatMode && document.compatMode != "BackCompat")? document.documentElement : document.body
+	var dsoctop=document.all? iebody.scrollTop : pageYOffset
 	$('info').style.left = ((document.body.clientWidth-800)/2)+'px';
+	$('info').style.top = (dsoctop+5)+'px';
 	$('info').setStyle({display: 'inline'});
 	$('myfilter_brand').setStyle({visibility: 'hidden'});
 	loadinfo(id);
