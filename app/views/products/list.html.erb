@@ -20,7 +20,7 @@
 	<div class='label'>Brands</div>
 	<% if @search.brand != "All Brands" %>
 		<% @search.brand.split('*').each do |b| %>
-		<div><%= b %><%= link_to image_tag('close.png'), "javascript:removeBrand('#{b}');" %></div>
+		<div><%= link_to image_tag('close.png', :width => '13'), "javascript:removeBrand('#{b}');", {:title => "Remove Brand Filter"} %> <%= b %></div>
 		<% end %>
 		<% selectmsg = "Add Another Brand" %>
 	<% end %>

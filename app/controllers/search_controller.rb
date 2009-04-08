@@ -13,7 +13,7 @@ class SearchController < ApplicationController
         myfilter[:brand] = old_brand.split('*').delete_if{|b|b == myfilter[:Xbrand]}.join('*')
       else
         #Add a brand
-        myfilter[:brand]+= '*'+old_brand if old_brand != "All Brands"
+        myfilter[:brand]+= '*'+old_brand if old_brand != "All Brands" && old_brand != "Add Another Brand"
       end
     end
     myfilter.delete('Xbrand') if myfilter[:Xbrand]
