@@ -32,6 +32,7 @@ int main(){
 	int range = 2;
 	int layer = 1;
 	int session_id = 1; 
+	string productName = "camera";
 	ostringstream session_idStream;
 	ostringstream layerStream;
 	layerStream<<layer;
@@ -167,7 +168,7 @@ int main(){
 					for (int j=0; j<conFeatureN; j++){
 						average[j] = 0.0;
 					}
-					maxSize = hClustering(layer, clusterN,  conFeatureN,  average, conFeatureRange, conFeatureRangeC, res, res2,resClus, resNodes, stmt);	
+					maxSize = hClustering(layer, clusterN,  conFeatureN,  average, conFeatureRange, conFeatureRangeC, res, res2,resClus, resNodes, stmt, productName);	
 				
 					layer++;
 				}

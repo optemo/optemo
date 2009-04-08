@@ -268,7 +268,8 @@ void getStatisticsData(double** data, int** indicators, double* average, int siz
 	  	}
 
 
-		void saveClusteredData(double ** data, int* idA, int size, string* brands, int parent_id, int** clusteredData, double*** conFeatureRange, int layer, int clusterN, int conFeatureN, sql::Statement *stmt, sql::ResultSet *res2){
+		void saveClusteredData(double ** data, int* idA, int size, string* brands, int parent_id, int** clusteredData, double*** conFeatureRange, int layer, 
+		int clusterN, int conFeatureN, sql::Statement *stmt, sql::ResultSet *res2, string productName){
 		///Saving to DataBase	
 			ostringstream layerStream; 
 			layerStream<<layer;
@@ -281,7 +282,9 @@ void getStatisticsData(double** data, int** indicators, double* average, int siz
 
 				ostringstream clusterSizeStream;
 				clusterSizeStream<<clusteredData[c][0];
-				string command = "INSERT INTO clusters (layer, parent_id, cluster_size,price_min, price_max, displaysize_min,displaysize_max,  opticalzoom_min, opticalzoom_max, maximumresolution_min, maximumresolution_max ) values (";
+				string command = "INSERT INTO ";
+				command += productName;
+				command += "_clusters (layer, parent_id, cluster_size,price_min, price_max, displaysize_min,displaysize_max,  opticalzoom_min, opticalzoom_max, maximumresolution_min, maximumresolution_max ) values (";
 				command += layerStream.str();
 				command += ", ";
 				command += parent_idStream.str();
@@ -308,7 +311,9 @@ void getStatisticsData(double** data, int** indicators, double* average, int siz
 
 			////// saving in the nodes table
 				for (int j=0; j<clusteredData[c][0]; j++){	  
-					command = "INSERT INTO nodes (cluster_id, product_id, price, displaysize, opticalzoom, maximumresolution, brand) values(";
+					command = "INSERT INTO ";
+					command += productName;
+					command += "_nodes (cluster_id, product_id, price, displaysize, opticalzoom, maximumresolution, brand) values(";
 					ostringstream cluster_idStream;
 					cluster_idStream<<cluster_id;
 					command += cluster_idStream.str();
@@ -335,151 +340,6 @@ void getStatisticsData(double** data, int** indicators, double* average, int siz
 
 		}	
 
-
-void setRange(sql::Statement *stmt, sql::ResultSet *res, sql::ResultSet *res2, int conFeatureN){
-
-	double** range = new double* [conFeatureN];
-	for (int f=0; f<conFeatureN; f++){
-		range[f] = new double [2];
-	}
-	
-	
-	string command;
-	res = stmt->executeQuery("select * from clusters");
-	while (res->next()){
-	
-		int cId = res->getInt("id");
-		
-				command = "select distinct price from nodes where cluster_id=";
-		ostringstream cIdStream;
-		cIdStream << cId;
-		command += cIdStream.str();
-		command += " order by price;";
-	
-		res2 = stmt->executeQuery(command);
-		
-
-	if(res2->next()){
-		range[0][0] = res2->getDouble("price");	
-	}
-		
-		command = "select distinct price from nodes where cluster_id=";
-		command += cIdStream.str();
-		command += " order by price DESC;";
-		
-		res2 = stmt->executeQuery(command);
-		if (res2->next()){
-			range[0][1] = res2->getDouble("price");
-		}
-	
-		
-		
-			command = "select displaysize from nodes where cluster_id=";
-			
-			command += cIdStream.str();
-			command += " order by displaysize;";
-			res2 = stmt->executeQuery(command);
-			if (res2->next()){
-			range[1][0] = res2->getDouble("displaysize");}
-
-			command = "select displaysize from nodes where cluster_id=";
-		
-			command += cIdStream.str();
-			command += " order by displaysize DESC;";
-			res2 = stmt->executeQuery(command);
-			if (res2->next()){
-			range[1][1] = res2->getDouble("displaysize");}
-			command = "select opticalzoom from nodes where cluster_id=";
-			
-			command += cIdStream.str();
-			command += " order by opticalzoom;";
-			res2 = stmt->executeQuery(command);
-			if (res2->next()){
-			range[2][0] = res2->getDouble("opticalzoom");}
-			command = "select opticalzoom from nodes where cluster_id=";
-			
-			command += cIdStream.str();
-			command += " order by opticalzoom DESC;";
-			res2 = stmt->executeQuery(command);
-			if (res2->next()){
-			range[2][1] = res2->getDouble("opticalzoom");			}
-		///
-				command = "select maximumresolution from nodes where cluster_id=";
-			
-				command += cIdStream.str();
-				command += " order by maximumresolution;";
-				res2 = stmt->executeQuery(command);
-				if (res2->next()){
-				range[3][0] = res2->getDouble("maximumresolution");}
-
-				command = "select maximumresolution from nodes where cluster_id=";
-			
-				command += cIdStream.str();
-				command += " order by maximumresolution DESC;";
-				res2 = stmt->executeQuery(command);
-				if (res2->next()){
-				range[3][1] = res2->getDouble("maximumresolution");	
-			}
-			/////
-		
-		command = "UPDATE clusters SET price_min="; // 
-		ostringstream valStream; 
-		valStream << range[0][0];
-		command += valStream.str();
-		command += ", ";
-		
-		command+="price_max=";
-		ostringstream valStream2; 
-		valStream2 << range[0][1];
-		command += valStream2.str();
-		command += ", ";
-		
-		command+="displaysize_min=";
-		ostringstream valStream3; 
-		valStream3 << range[1][0];
-		command += valStream3.str();
-		command += ", ";
-		
-		command+="displaysize_max=";
-		ostringstream valStream4; 
-		valStream4 << range[1][1];
-		command += valStream4.str();
-		command += ", ";
-		
-		command+="opticalzoom_min=";
-		ostringstream valStream5; 
-		valStream5 << range[2][0];
-		command += valStream5.str();
-		command += ", ";
-		
-			command+="opticalzoom_max=";
-			ostringstream valStream6; 
-			valStream6 << range[2][1];
-			command += valStream6.str();
-			command += ", ";		
-		
-		command+="maximumresolution_min=";
-		ostringstream valStream8; 
-		valStream8 << range[3][0];
-		command += valStream8.str();
-		command += ", ";
-		
-			command+="maximumresolution_max=";
-			ostringstream valStream7; 
-			valStream7 << range[3][1];
-			command += valStream7.str();
-		
-		
-
-		command += " where id=";
-		command += cIdStream.str();
-		command += ";";
-		
-		stmt->execute(command);
-	
-	} 
-	
-}
 
 
 void insertion_sort(double* xOri, int* ids, int length)
@@ -542,7 +402,7 @@ void sort(double** data, int* idA, int** sortedA, int size, int conFeatureN){
 
 
 void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators, sql::Statement *stmt,
- sql::ResultSet *res, int* mergedClusterIDs){
+ sql::ResultSet *res, int* mergedClusterIDs, string productName){
 
 	string command;
 	res = stmt->executeQuery("select high, low from db_features"); 
@@ -572,7 +432,9 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators,
 	stat[0][1] = res->getInt("price_high");
 
 	for (int i=0; i<repW; i++){
-		command = "SELECT * from clusters where (id=";
+		command = "SELECT * from ";
+		command += productName;
+		command += "_clusters where (id=";
 		if (clusterIDs[i]<0){ //merged clusters
 			ostringstream mergedCId;
 			mergedCId << mergedClusterIDs[0];
@@ -592,7 +454,9 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators,
 			command += ")";
 		}	
 		command += ";";
+		cout<<"command is  "<<command<<endl;
 		res = stmt->executeQuery(command);
+			cout<<"there"<<endl;
 		res->next();
 		
 		range[0][0] = res->getInt("price_min");
@@ -625,52 +489,54 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators,
 }
 
 
-int getChildren(int parent_id, vector<int>* clusterChildren,sql::Statement *stmt, sql::ResultSet *res, int clusterN, int clusterSize){
-	int clusterChildrenN = 0;
-	string command;
-	if(clusterSize>clusterN){
-		command = "(SELECT id, cluster_size FROM clusters WHERE parent_id=";
-		ostringstream clusterIDStream;
-		clusterIDStream<<parent_id;
-		command += clusterIDStream.str();
-		command += ");";
-		res = stmt->executeQuery(command);
-		while(res->next()){
-			clusterSize = res->getInt("cluster_size");
-			parent_id = res->getInt("id");
+//int getChildren(int parent_id, vector<int>* clusterChildren,sql::Statement *stmt, sql::ResultSet *res, int clusterN, int clusterSize){
+//	int clusterChildrenN = 0;
+//	string command;
+//	if(clusterSize>clusterN){
+//		command = "(SELECT id, cluster_size FROM ";
+//		command += productName;
+//		command += "_clusters WHERE parent_id=";
+//		ostringstream clusterIDStream;
+//		clusterIDStream<<parent_id;
+//		command += clusterIDStream.str();
+//		command += ");";
+//		res = stmt->executeQuery(command);
+//		while(res->next()){
+//			clusterSize = res->getInt("cluster_size");
+//			parent_id = res->getInt("id");
+//
+//			clusterChildrenN += getChildren(parent_id, clusterChildren, stmt, res, clusterN, clusterSize); 
+//		}
+//	}
+//	else{
+//		
+//		clusterChildrenN++;
+//	}
+//	return clusterChildrenN; 	
+//}
+//
 
-			clusterChildrenN += getChildren(parent_id, clusterChildren, stmt, res, clusterN, clusterSize); 
-		}
-	}
-	else{
-		
-		clusterChildrenN++;
-	}
-	return clusterChildrenN; 	
-}
 
-
-
-vector<int> getChildren(int parent_id, vector<int> clusterChildren,sql::Statement *stmt, sql::ResultSet *res, int clusterN, int clusterSize){
-	
-	string command;
-	if(clusterSize>clusterN){
-		command = "(SELECT id, cluster_size FROM clusters WHERE parent_id=";
-		ostringstream clusterIDStream;
-		clusterIDStream<<parent_id;
-		command += clusterIDStream.str();
-		command += ");";
-		res = stmt->executeQuery(command);
-		while(res->next()){
-			clusterSize = res->getInt("cluster_size");
-			parent_id = res->getInt("id");
-			clusterChildren.push_back(parent_id);
-	
-				clusterChildren = getChildren(parent_id, clusterChildren, stmt, res, clusterN, clusterSize);
-		}
-	}
-	return clusterChildren; 	
-}
+//vector<int> getChildren(int parent_id, vector<int> clusterChildren,sql::Statement *stmt, sql::ResultSet *res, int clusterN, int clusterSize){
+//	
+//	string command;
+//	if(clusterSize>clusterN){
+//		command = "(SELECT id, cluster_size FROM ";clusters WHERE parent_id=";
+//		ostringstream clusterIDStream;
+//		clusterIDStream<<parent_id;
+//		command += clusterIDStream.str();
+//		command += ");";
+//		res = stmt->executeQuery(command);
+//		while(res->next()){
+//			clusterSize = res->getInt("cluster_size");
+//			parent_id = res->getInt("id");
+//			clusterChildren.push_back(parent_id);
+//	
+//				clusterChildren = getChildren(parent_id, clusterChildren, stmt, res, clusterN, clusterSize);
+//		}
+//	}
+//	return clusterChildren; 	
+//}
 
 
 

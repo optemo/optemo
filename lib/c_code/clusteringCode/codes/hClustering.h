@@ -4,7 +4,7 @@
 
 
 int hClustering(int layer, int clusterN, int conFeatureN, double *average, double** conFeatureRange, double*** conFeatureRangeC,
-	sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *resClus, sql::ResultSet *resNodes, sql::Statement *stmt){				
+	sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *resClus, sql::ResultSet *resNodes, sql::Statement *stmt, string productName){				
 	
 int maxSize = -2;	
 double **data;
@@ -133,7 +133,9 @@ if 	(layer == 1){
 			}
 if (layer > 1){
 	// getting all cluster ids in this layer
-	string command = "SELECT * FROM clusters WHERE layer=";
+	string command = "SELECT * FROM ";
+	command += productName;
+	command += "_clusters WHERE layer=";
 	ostringstream layerStream; 
 	layerStream << layer - 1; 
 	command += layerStream.str();
@@ -148,7 +150,9 @@ if (layer > 1){
 	while(resClus->next()){
 	
 		parent_id = resClus->getInt("id");
-		command = "SELECT * FROM nodes WHERE cluster_id=";
+		command = "SELECT * FROM ";
+		command += productName;
+		command += "_nodes WHERE cluster_id=";
 		ostringstream cidStream;
 		ostringstream cluster_idStream;
 		cluster_id = resClus->getInt("id");
@@ -238,7 +242,7 @@ if (layer > 1){
 			 		clusteredData[centersA[j]][0]++;
 			 	}
 
-		   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, stmt, res2);
+		   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, stmt, res2, productName);
 
 		
 			for (int c=0; c<clusterN; c++){
