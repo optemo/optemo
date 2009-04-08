@@ -3,9 +3,20 @@ class SearchController < ApplicationController
     s = initialize_search
     s.cluster_id = nil
     s.product_id = nil
-    #Remove quotes for strings
     myfilter = params[:myfilter]
-    #Session.find(session[:user_id]).update_attributes(myfilter)
+    #Allow for multiple brands
+    if myfilter[:brand] != "All Brands"
+      new_brand = myfilter[:brand]
+      old_brand = Search.find(s.parent_id).brand
+      if !myfilter[:Xbrand].blank?
+        #Remove a brand
+        myfilter[:brand] = old_brand.split('*').delete_if{|b|b == myfilter[:Xbrand]}.join('*')
+      else
+        #Add a brand
+        myfilter[:brand]+= '*'+old_brand if old_brand != "All Brands"
+      end
+    end
+    myfilter.delete('Xbrand') if myfilter[:Xbrand]
     myfilter.each_pair {|key, val| myfilter[key] = val.to_f if key.index('_min') || key.index('_max')}
     s.attributes = myfilter
     s.filter = session[:search_id]
@@ -101,6 +112,7 @@ class SearchController < ApplicationController
     q.update({'cluster_id' => s.cluster_id}) if s.cluster_id
     s.update_attributes(q)
     session[:search_id] = s.id
+    q['brand'] = q['brand'].split('*').first if !q['brand'].nil? #Remove first later
     myparams = q.to_yaml
     @badparams = "None"
     #debugger

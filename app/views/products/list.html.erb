@@ -17,9 +17,16 @@
 </div>
 <div id="filterbar">
 	<h2>Filters</h2>
-	<div class='label'>Brand</div>
+	<div class='label'>Brands</div>
+	<% if @search.brand != "All Brands" %>
+		<% @search.brand.split('*').each do |b| %>
+		<div><%= b %><%= link_to image_tag('close.png'), "javascript:removeBrand('#{b}');" %></div>
+		<% end %>
+		<% selectmsg = "Add Another Brand" %>
+	<% end %>
 	<% form_tag ({:controller => 'search', :action => 'filter'},{:id => 'brand_form'}) do %>
-	<%= select('myfilter', 'brand', ["All Brands"]+@dbprops.brands.split('*'),{:selected => @search.brand}, {:onchange => "$('brand_form').submit()"}) %>
+	<%= select('myfilter', 'brand', [selectmsg.nil? ? "All Brands" : selectmsg] +@dbprops.brands.split('*'), options={}, {:onchange => "$('brand_form').submit()"}) %>
+	<%= hidden_field_tag "myfilter[Xbrand]"%>
 	<% end %>
 	<% form_tag ({:controller => 'search', :action => 'filter'}) do %>
 	  <%= render :partial => 'filter' %>

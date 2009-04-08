@@ -44,6 +44,13 @@ function remove(id)
 	$('c'+id).remove();
 }
 
+function removeBrand(str)
+{
+	$('myfilter_Xbrand').value = str;
+	$('brand_form').submit();
+}
+
+
 /*http://james.padolsey.com/javascript/get-document-height-cross-browser/*/
 function getDocHeight() {
     var D = document;
