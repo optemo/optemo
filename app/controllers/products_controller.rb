@@ -46,7 +46,7 @@ class ProductsController < ApplicationController
     #Saved Bar variables
     @picked_products = @session.saveds.map {|s| $productType.find(s.product_id)}
     #Previously clicked product
-    @search = Search.find(session[:search_id])
+    @search = Search.find(session[:search_id]) if session[:search_id]
     @product = $productType.find(@search.product_id) if @search && @search.product_id
     
     respond_to do |format|

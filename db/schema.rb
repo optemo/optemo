@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090130223927) do
+ActiveRecord::Schema.define(:version => 20090408194159) do
 
   create_table "amazon_groups", :force => true do |t|
     t.datetime "created_at"
@@ -134,6 +134,30 @@ ActiveRecord::Schema.define(:version => 20090130223927) do
 
   create_table "optemo_development", :force => true do |t|
     t.string "label", :limit => 1
+  end
+
+  create_table "printer_clusters", :force => true do |t|
+    t.integer "parent_id"
+    t.integer "layer"
+    t.integer "cluster_size"
+    t.float   "ppm_min"
+    t.float   "ppm_max"
+    t.float   "itemwidth_min"
+    t.float   "itemwidth_max"
+    t.float   "paperinput_min"
+    t.float   "paperinput_max"
+    t.float   "price_max"
+    t.float   "price_min"
+  end
+
+  create_table "printer_nodes", :force => true do |t|
+    t.integer "cluster_id"
+    t.integer "product_id"
+    t.float   "ppm"
+    t.float   "itemwidth"
+    t.float   "paperinput"
+    t.float   "price"
+    t.string  "brand"
   end
 
   create_table "printers", :force => true do |t|

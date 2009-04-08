@@ -1,7 +1,7 @@
 var <%= val %>handles = ['<%= val %>handle_min','<%= val %>handle_max'];
 var a = new Control.Slider(<%= val %>handles, '<%= val %>slider', {
 	range: $R(<%= min %>,<%= max %>),
-	sliderValue: [<%= @search.send("#{val}_min".intern) %>,<%= @search.send("#{val}_max".intern) %>],
+	sliderValue: [<%= @search.nil? ? min : @search.send("#{val}_min".intern) %>,<%= @search.nil? ? max : @search.send("#{val}_max".intern) %>],
 	restricted: true,
 	onSlide: function(v) {
 		<% if money_formatting %>

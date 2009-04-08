@@ -112,6 +112,7 @@ class SearchController < ApplicationController
     q.update({'cluster_id' => s.cluster_id}) if s.cluster_id
     s.update_attributes(q)
     session[:search_id] = s.id
+    q['product_name'] = $productType.name
     q['brand'] = q['brand'].split('*').first if !q['brand'].nil? #Remove first later
     myparams = q.to_yaml
     @badparams = "None"

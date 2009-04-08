@@ -1,5 +1,5 @@
 <% $productType::MainFeatures.each_index do |i| %>
-<%= render :partial => 'sliderhtml', :locals => {:name => $productType::MainFeaturesDisp[i], :val => $productType::MainFeatures[i], :money_formatting => false, :ses_name => "f#{i}"} %>
+<%= render :partial => 'sliderhtml', :locals => {:name => $productType::MainFeaturesDisp[i], :val => $productType::MainFeatures[i], :money_formatting => false, :ses_name => "f#{i}", :min => @dbprops.db_features.find_by_name($productType::MainFeatures[i]).min, :max => @dbprops.db_features.find_by_name($productType::MainFeatures[i]).max} %>
 <% end %>
 <%= render :partial => 'sliderhtml', :locals => {:name => 'Price', :val => 'price', :money_formatting => true, :ses_name => 'price', :min => @dbprops.price_min/100, :max =>(@dbprops.price_max.to_f/100).ceil} %>
 

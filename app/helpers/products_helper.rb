@@ -18,11 +18,7 @@ module ProductsHelper
   def sim_link(i)
     if @desc[i].nil? || @clusters.nil?
       #No cluster info
-      if @search.filter
-        ""#link_to "See<br> more", {:id => @products[i], :action => 'sim', :controller => 'search', :f => 1}
-      else
-        ""#link_to "See<br> more", {:id => @products[i], :action => 'sim', :controller => 'search'}
-      end
+      ""
     else
       #Clustering present
       a = @desc[i].select{|ii|ii[0]=='cluster_count'}

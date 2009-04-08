@@ -1,9 +1,9 @@
-class CreateNodes < ActiveRecord::Migration
+class CreatePrinterNodes < ActiveRecord::Migration
   def self.up
-    create_table :nodes do |t|
+    create_table :printer_nodes do |t|
       t.integer :cluster_id
       t.integer :product_id
-      DbProperty.find_by_name('Camera').db_features.each do |f|
+      DbProperty.find_by_name('Printer').db_features.each do |f|
         t.float f.name.intern
       end
       t.float :price
@@ -12,6 +12,6 @@ class CreateNodes < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :nodes
+    drop_table :printer_nodes
   end
 end

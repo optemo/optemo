@@ -18,7 +18,7 @@
 <div id="filterbar">
 	<h2>Filters</h2>
 	<div class='label'>Brands</div>
-	<% if @search.brand != "All Brands" %>
+	<% if @search && @search.brand != "All Brands" %>
 		<% @search.brand.split('*').each do |b| %>
 		<div><%= link_to image_tag('close.png', :width => '13'), "javascript:removeBrand('#{b}');", {:title => "Remove Brand Filter"} %> <%= b %></div>
 		<% end %>
