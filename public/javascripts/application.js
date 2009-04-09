@@ -4,7 +4,11 @@ function fadeout(id)
 {
 	$('fade').style.height = (getDocHeight())+'px';
 	$('fade').setStyle({display: 'inline'});
+	//IE Compatibility
+	var iebody=(document.compatMode && document.compatMode != "BackCompat")? document.documentElement : document.body
+	var dsoctop=document.all? iebody.scrollTop : pageYOffset
 	$('info').style.left = ((document.body.clientWidth-800)/2)+'px';
+	$('info').style.top = (dsoctop+5)+'px';
 	$('info').setStyle({display: 'inline'});
 	$('myfilter_brand').setStyle({visibility: 'hidden'});
 	loadinfo(id);
@@ -39,6 +43,13 @@ function remove(id)
 	});
 	$('c'+id).remove();
 }
+
+function removeBrand(str)
+{
+	$('myfilter_Xbrand').value = str;
+	$('brand_form').submit();
+}
+
 
 /*http://james.padolsey.com/javascript/get-document-height-cross-browser/*/
 function getDocHeight() {

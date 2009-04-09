@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090130223927) do
+ActiveRecord::Schema.define(:version => 20090408194159) do
 
   create_table "amazon_groups", :force => true do |t|
     t.datetime "created_at"
@@ -136,6 +136,30 @@ ActiveRecord::Schema.define(:version => 20090130223927) do
     t.string "label", :limit => 1
   end
 
+  create_table "printer_clusters", :force => true do |t|
+    t.integer "parent_id"
+    t.integer "layer"
+    t.integer "cluster_size"
+    t.float   "ppm_min"
+    t.float   "ppm_max"
+    t.float   "itemwidth_min"
+    t.float   "itemwidth_max"
+    t.float   "paperinput_min"
+    t.float   "paperinput_max"
+    t.float   "price_max"
+    t.float   "price_min"
+  end
+
+  create_table "printer_nodes", :force => true do |t|
+    t.integer "cluster_id"
+    t.integer "product_id"
+    t.float   "ppm"
+    t.float   "itemwidth"
+    t.float   "paperinput"
+    t.float   "price"
+    t.string  "brand"
+  end
+
   create_table "printers", :force => true do |t|
     t.string   "asin"
     t.text     "detailpageurl"
@@ -227,6 +251,48 @@ ActiveRecord::Schema.define(:version => 20090130223927) do
   end
 
   create_table "searches", :force => true do |t|
+    t.integer  "session_id"
+    t.integer  "parent_id"
+    t.integer  "cluster_id"
+    t.integer  "product_id"
+    t.integer  "filter"
+    t.string   "brand",                 :default => "All Brands"
+    t.float    "maximumresolution_min", :default => 0.0
+    t.float    "maximumresolution_max", :default => 14.7
+    t.float    "displaysize_min",       :default => 0.0
+    t.float    "displaysize_max",       :default => 3.6
+    t.float    "opticalzoom_min",       :default => 0.0
+    t.float    "opticalzoom_max",       :default => 20.0
+    t.float    "ppm_min",               :default => 5.0
+    t.float    "ppm_max",               :default => 680.0
+    t.float    "itemwidth_min",         :default => 0.0
+    t.float    "itemwidth_max",         :default => 36756.0
+    t.float    "paperinput_min",        :default => 1.0
+    t.float    "paperinput_max",        :default => 4100.0
+    t.float    "price_min",             :default => 0.0
+    t.float    "price_max",             :default => 10000000.0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "sessions", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.float    "maximumresolution_min", :default => 0.0
+    t.float    "maximumresolution_max", :default => 14.7
+    t.float    "displaysize_min",       :default => 0.0
+    t.float    "displaysize_max",       :default => 3.6
+    t.float    "opticalzoom_min",       :default => 0.0
+    t.float    "opticalzoom_max",       :default => 20.0
+    t.float    "ppm_min",               :default => 5.0
+    t.float    "ppm_max",               :default => 680.0
+    t.float    "itemwidth_min",         :default => 0.0
+    t.float    "itemwidth_max",         :default => 36756.0
+    t.float    "paperinput_min",        :default => 1.0
+    t.float    "paperinput_max",        :default => 4100.0
+    t.float    "price_min",             :default => 0.0
+    t.float    "price_max",             :default => 10000000.0
+    t.integer  "result_count"
     t.integer  "i0"
     t.integer  "i1"
     t.integer  "i2"
@@ -245,46 +311,8 @@ ActiveRecord::Schema.define(:version => 20090130223927) do
     t.integer  "c6"
     t.integer  "c7"
     t.integer  "c8"
-    t.integer  "session_id"
-    t.integer  "parent_id"
-    t.integer  "cluster_id"
-    t.integer  "product_id"
-    t.integer  "result_count"
-    t.integer  "filter"
-    t.string   "brand",                 :default => "All Brands"
-    t.float    "maximumresolution_min", :default => 0.0
-    t.float    "maximumresolution_max", :default => 14.7
-    t.float    "displaysize_min",       :default => 0.0
-    t.float    "displaysize_max",       :default => 3.6
-    t.float    "opticalzoom_min",       :default => 0.0
-    t.float    "opticalzoom_max",       :default => 20.0
-    t.float    "ppm_min",               :default => 5.0
-    t.float    "ppm_max",               :default => 680.0
-    t.float    "itemwidth_min",         :default => 0.0
-    t.float    "itemwidth_max",         :default => 36756.0
-    t.float    "paperinput_min",        :default => 1.0
-    t.float    "paperinput_max",        :default => 4100.0
-    t.float    "price_min",             :default => 0.0
-    t.float    "price_max",             :default => 10000000.0
     t.text     "chosen"
     t.string   "msg"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "sessions", :force => true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.datetime "loaded_at"
-    t.string   "brand",                 :default => "All Brands"
-    t.float    "maximumresolution_min", :default => 0.0
-    t.float    "maximumresolution_max", :default => 14.7
-    t.float    "opticalzoom_min",       :default => 0.0
-    t.float    "opticalzoom_max",       :default => 20.0
-    t.float    "displaysize_min",       :default => 0.0
-    t.float    "displaysize_max",       :default => 3.6
-    t.float    "price_min",             :default => 0.0
-    t.float    "price_max",             :default => 1815.86
   end
 
   create_table "test", :id => false, :force => true do |t|

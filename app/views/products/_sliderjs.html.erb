@@ -1,7 +1,7 @@
 var <%= val %>handles = ['<%= val %>handle_min','<%= val %>handle_max'];
 var a = new Control.Slider(<%= val %>handles, '<%= val %>slider', {
 	range: $R(<%= min %>,<%= max %>),
-	sliderValue: [<%= @search.send("#{val}_min".intern) %>,<%= @search.send("#{val}_max".intern) %>],
+	sliderValue: [<%= @search.nil? ? min : @search.send("#{val}_min".intern) %>,<%= @search.nil? ? max : @search.send("#{val}_max".intern) %>],
 	restricted: true,
 	onSlide: function(v) {
 		<% if money_formatting %>
@@ -24,4 +24,4 @@ var a = new Control.Slider(<%= val %>handles, '<%= val %>slider', {
 });
 if(typeof(mysliders) == 'undefined') {var mysliders = [];}
 mysliders.push(a);
-histogram([0.5,Math.round((Math.random()*9))/10,Math.round((Math.random()*9))/10,0.5,0.3,Math.round((Math.random()*9))/10,Math.round((Math.random()*9))/10,0.4,0.3,0.3],"<%= val %>hist",<%= @search.send("#{val}_min".intern) / max %>,<%= @search.send("#{val}_max".intern) / max %>);
+histogram([0.5,Math.round((Math.random()*9))/10,Math.round((Math.random()*9))/10,0.5,0.3,Math.round((Math.random()*9))/10,Math.round((Math.random()*9))/10,0.4,0.3,0.3],"<%= val %>hist",<%= @session.send("#{val}_min".intern) / max %>,<%= @session.send("#{val}_max".intern) / max %>);

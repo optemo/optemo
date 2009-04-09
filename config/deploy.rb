@@ -1,6 +1,7 @@
 set :application, "optemo_site"
 set :repository,  "git@jaguar:site.git"
 set :domain, "jaguar"
+set :branch, "staging"
 
 # If you aren't deploying to /u/apps/#{application} on the target
 # servers (which is the default), you can specify the actual location
@@ -9,10 +10,10 @@ set :domain, "jaguar"
 
 set :scm, :git
 set :deploy_via, :remote_cache
-set :user, 'jan'
 #ssh_options[:paranoid] = false
 default_run_options[:pty] = true
 set :use_sudo, false
+set :restart, "/etc/init.d/apache2 restart"
 
 
 role :app, domain

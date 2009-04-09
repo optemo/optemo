@@ -9,19 +9,17 @@ class ProductsController < ApplicationController
   # GET /products.xml
   def index
     reset_session
-    #@cameras = Camera.valid.find(:all, :order => 'RAND()', :limit => 9)
-    #redirect_to "/cameras/list/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/#{@cameras.pop.id}/"
   end
   
   def list
     @session = Session.find(session[:user_id])
     #Filtering variables
-    if session[:search_id] && Search.find(session[:search_id]).URL == params[:path_info].join('/')
-      @search = Search.find(session[:search_id])
-    else
-      @search = initialize_search
-    end
-    chosen = YAML.load(@search.chosen) if @search.chosen
+    #if session[:search_id] && Search.find(session[:search_id]).URL == params[:path_info].join('/')
+    #  @search = Search.find(session[:search_id])
+    #else
+    #  @search = initialize_search
+    #end
+    chosen = YAML.load(@session.chosen) if @session.chosen
     @dbprops = DbProperty.find_by_name($productType.name)
     #Navigation Variables
     @products = []
@@ -30,9 +28,9 @@ class ProductsController < ApplicationController
     counter = 0
     params[:path_info].collect do |num|
       @products << $productType.find(num)
-      if num.to_i == @search.send(('i'+counter.to_s).intern)
+      if num.to_i == @session.send(('i'+counter.to_s).intern)
         #debugger
-        myc = chosen.find{|c| c[:cluster_id] == @search.send(('c'+counter.to_s).intern)} if chosen
+        myc = chosen.find{|c| c[:cluster_id] == @session.send(('c'+counter.to_s).intern)} if chosen
         if myc.nil?
           #Otherwise fill in a null value
           @desc << nil
@@ -48,7 +46,8 @@ class ProductsController < ApplicationController
     #Saved Bar variables
     @picked_products = @session.saveds.map {|s| $productType.find(s.product_id)}
     #Previously clicked product
-    @product = $productType.find(@search.product_id) if @search.product_id
+    @search = Search.find(session[:search_id]) if session[:search_id]
+    @product = $productType.find(@search.product_id) if @search && @search.product_id
     
     respond_to do |format|
       format.html # index.html.erb

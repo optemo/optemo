@@ -1,8 +1,8 @@
 module ProductsHelper
   def nav_link
-    s = Session.find(session[:user_id]).last_search
+    s = Session.find(session[:user_id])
     if !s.nil?
-      link_to 'Go back<br> to navigation', '/products/list/'+s 
+      link_to 'Go back<br> to navigation', '/products/list/'+s.URL
     else
       link_to 'Browse more products', :controller => 'products'
     end
@@ -18,11 +18,7 @@ module ProductsHelper
   def sim_link(i)
     if @desc[i].nil? || @clusters.nil?
       #No cluster info
-      if @search.filter
-        ""#link_to "See<br> more", {:id => @products[i], :action => 'sim', :controller => 'search', :f => 1}
-      else
-        ""#link_to "See<br> more", {:id => @products[i], :action => 'sim', :controller => 'search'}
-      end
+      ""
     else
       #Clustering present
       a = @desc[i].select{|ii|ii[0]=='cluster_count'}

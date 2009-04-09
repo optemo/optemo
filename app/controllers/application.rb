@@ -25,15 +25,9 @@ class ApplicationController < ActionController::Base
   end
   
   def update_user
-   if !session[:user_id].blank? && Session.exists?(session[:user_id])
-      #Update loaded time
-      @mysession = Session.find(session[:user_id])
-      @mysession.loaded_at = Time.now
-      @mysession.save
-   else
+   if session[:user_id].blank? || !Session.exists?(session[:user_id])
       #Create a new session
       @mysession = Session.new
-      @mysession.loaded_at = Time.now
       @mysession.save
       session[:user_id] = @mysession.id
       #Create a new search object for the session

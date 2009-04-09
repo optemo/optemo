@@ -1,17 +1,17 @@
 <div class='feature'>
 <div class='disp' id='<%= val %>disp'>
 	<% if money_formatting %>
-	$<%= @search.send("#{val}_min".intern).to_i %>-$<%= @search.send("#{val}_max".intern).ceil %>
+	$<%= @search.nil? ? min.to_i : @search.send("#{val}_min".intern) < min ? min.to_i : @search.send("#{val}_min".intern).to_i %>-$<%= @search.nil? ? max.ceil : @search.send("#{val}_max".intern) > max ? max.ceil : @search.send("#{val}_max".intern).ceil %>
 	<% else %>
-	<%= @search.send("#{val}_min".intern) %>-<%= @search.send("#{val}_max".intern) %>
+	<%= @search.nil? ? min : @search.send("#{val}_min".intern) %>-<%= @search.nil? ? max : @search.send("#{val}_max".intern) %>
 	<% end %>
 </div>
 <div class='label'>
 	<%= name %>
 </div>
 <div id="<%= val %>hist" class="hist"></div>
-<%= hidden_field_tag "myfilter[#{val}_min]", @search.send("#{val}_min".intern)%>
-<%= hidden_field_tag "myfilter[#{val}_max]", @search.send("#{val}_max".intern)%>
+<%= hidden_field_tag "myfilter[#{val}_min]", @search.nil? ? min : @search.send("#{val}_min".intern)%>
+<%= hidden_field_tag "myfilter[#{val}_max]", @search.nil? ? max : @search.send("#{val}_max".intern)%>
 <div class = 'slider' id='<%= val %>slider'>
 	<div class='handle' id='<%= val %>handle_min'><%= image_tag 'diamond.gif' %></div>
 	<div class='handle' id='<%= val %>handle_max'><%= image_tag 'diamond.gif' %></div>
