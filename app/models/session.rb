@@ -5,7 +5,8 @@ class Session < ActiveRecord::Base
   
   def URL
     ret = []
-    "i0".upto("i#{result_count-1}"){|i|ret<<send(i.intern)}
+    results = result_count < 9 ? result_count - 1 : 8
+    "i0".upto("i#{results}"){|i|ret<<send(i.intern)}
     ret.compact.join('/')
   end
 end

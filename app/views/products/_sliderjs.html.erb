@@ -7,7 +7,7 @@ var a = new Control.Slider(<%= val %>handles, '<%= val %>slider', {
 		<% if money_formatting %>
 			disp_money(v,'<%= val %>disp','myfilter_<%= val %>_min','myfilter_<%= val %>_max');
 		<% else %>
-			disp(v,'<%= val %>disp','myfilter_<%= val %>_min','myfilter_<%= val %>_max');
+			disp(v,'<%= val %>disp','myfilter_<%= val %>_min','myfilter_<%= val %>_max','<%= $productType::MainFeaturesLabel[val] %>');
 		<% end %>
 		//$('<%= val %>hist').innerHTML="";
 		//histogram([0.5,0.7,0.1,0.5,0.3,1,0.6,0.4,0.3,0.3],"<%= val %>hist",v[0] /<%= max %>,v[1] /<%= max %>);

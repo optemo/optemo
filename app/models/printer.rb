@@ -7,4 +7,5 @@ class Printer < ActiveRecord::Base
   named_scope :fewfeatures, :conditions => %w(ppm ttp paperinput).map{|i|i+' IS NULL'}.join(' OR ')
   MainFeatures = %w(ppm itemwidth paperinput)
   MainFeaturesDisp = %w(Pages\ Per\ Minute Width Input\ Size)
+  MainFeaturesLabel = []
 end

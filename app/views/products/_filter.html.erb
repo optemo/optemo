@@ -68,10 +68,11 @@ shapelayer.rect(max*length,0,length,height).attr({fill: '#dddddd', "stroke-opaci
 			<% end %>
 			<%= render :partial => 'sliderjs', :locals => {:val => 'price', :min => @dbprops.price_min/100, :max =>(@dbprops.price_max.to_f/100).ceil, :money_formatting => true} %>
 			
-			var disp = function(v, disp, filter_min, filter_max) {
+			var disp = function(v, disp, filter_min, filter_max, label) {
 			$(filter_min).value = Math.floor(v[0]*10)/10;
 			$(filter_max).value = Math.ceil(v[1]*10)/10;
-			$(disp).innerHTML = $(filter_min).value+"-"+$(filter_max).value;
+			$(disp).innerHTML = ($(filter_min).value.indexOf('.') == -1 ? $(filter_min).value+".0" : $(filter_min).value) +"-"+($(filter_max).value.indexOf('.') == -1 ? $(filter_max).value+".0" : $(filter_max).value)+" "+label;
+			//$(disp).innerHTML = $(filter_min).value+"-"+$(filter_max).value+" "+label;
 			};
 			
 			var disp_money = function(v, disp, filter_min, filter_max) {

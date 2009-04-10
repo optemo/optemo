@@ -6,7 +6,7 @@ class Camera < ActiveRecord::Base
   Interesting_features = %w(pricestr brand digitalzoom displaysize itemheight itemlength itemwidth itemweight label listpricestr maximumresolution maximumfocallength minimumfocallength model opticalzoom packageheight packageweight packagelength packagewidth title upc merchant condition iseligibleforsupersavershipping)
   MainFeatures = %w(maximumresolution displaysize opticalzoom)
   MainFeaturesDisp = %w(Megapixels Display\ Size Optical\ Zoom)
-  
+  MainFeaturesLabel = Hash[*MainFeatures.zip(['','in','X']).flatten]
   Max = {'SWidth' => 70, 'SHeight' => 50,'MWidth' => 140, 'MHeight' => 100, 'LWidth' => 400, 'LHeight' => 300}
   def imagesw
     @imageW ||= {}

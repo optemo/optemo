@@ -58,7 +58,7 @@
 
 <% content_for :header do %>
 	<% if @product %>
-		<div style="float:left">Viewing<br>Similar<br>products to:</div>
+		<div style="float:left">Viewing<br><%= @session.result_count %> Similar<br>products to:</div>
 		<%= render :partial => 'product', :locals => {:nox => true} %>
 		<%= @session.msg %>
 	<% end %>

@@ -3,7 +3,7 @@
 	<% if money_formatting %>
 	$<%= @search.nil? ? min.to_i : @search.send("#{val}_min".intern) < min ? min.to_i : @search.send("#{val}_min".intern).to_i %>-$<%= @search.nil? ? max.ceil : @search.send("#{val}_max".intern) > max ? max.ceil : @search.send("#{val}_max".intern).ceil %>
 	<% else %>
-	<%= @search.nil? ? min : @search.send("#{val}_min".intern) %>-<%= @search.nil? ? max : @search.send("#{val}_max".intern) %>
+	<%= @search.nil? ? min : @search.send("#{val}_min".intern) %>-<%= @search.nil? ? max : @search.send("#{val}_max".intern) %> <%= $productType::MainFeaturesLabel[val] %>
 	<% end %>
 </div>
 <div class='label'>

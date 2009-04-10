@@ -126,11 +126,11 @@ class SearchController < ApplicationController
     elsif options[:result_count] == 0
       flash[:error] = "No products were found"
     else
-      options[:result_count] = 9 if options[:result_count] > 9
+      results = options[:result_count] < 9 ? options[:result_count] : 9
       newproducts = options.delete('products')
       newclusters = options.delete('clusters')
       current_node = "i0"
-      options[:result_count].times do 
+      results.times do 
         c = "c#{current_node[1,1]}"
         options[current_node.intern] = newproducts.pop
         options[c.intern] = newclusters.pop unless newclusters.nil? || newclusters.empty?
