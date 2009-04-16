@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090408194159) do
+ActiveRecord::Schema.define(:version => 20090415181307) do
 
   create_table "amazon_groups", :force => true do |t|
     t.datetime "created_at"
@@ -240,6 +240,7 @@ ActiveRecord::Schema.define(:version => 20090408194159) do
     t.datetime "scrapedat"
     t.boolean  "nodetails"
     t.boolean  "printserver"
+    t.string   "oldprices"
   end
 
   create_table "saveds", :force => true do |t|

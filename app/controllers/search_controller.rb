@@ -116,7 +116,7 @@ class SearchController < ApplicationController
     q['brand'] = q['brand'].split('*').first if !q['brand'].nil? #Remove first later
     myparams = q.to_yaml
     @badparams = "None"
-    #debugger
+    debugger
     @output = %x["#{RAILS_ROOT}/lib/c_code/clusteringCode/codes/connect" "#{myparams}"]
     options = YAML.load(@output)
     #parse the new ids

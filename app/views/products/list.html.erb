@@ -24,11 +24,11 @@
 		<% end %>
 		<% selectmsg = "Add Another Brand" %>
 	<% end %>
-	<% form_tag ({:controller => 'search', :action => 'filter'},{:id => 'brand_form'}) do %>
+	<% form_tag({:controller => 'search', :action => 'filter'},{:id => 'brand_form'}) do %>
 	<%= select('myfilter', 'brand', [selectmsg.nil? ? "All Brands" : selectmsg] +@dbprops.brands.split('*'), options={}, {:onchange => "$('brand_form').submit()"}) %>
 	<%= hidden_field_tag "myfilter[Xbrand]"%>
 	<% end %>
-	<% form_tag ({:controller => 'search', :action => 'filter'}) do %>
+	<% form_tag({:controller => 'search', :action => 'filter'}) do %>
 	  <%= render :partial => 'filter' %>
 	  <%= submit_tag 'Filter' %>&nbsp;&nbsp;<a href="javascript:resetFilter();" style="font-size: 0.7em">(reset)</a>
 	<% end %>

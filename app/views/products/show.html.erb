@@ -51,7 +51,7 @@
 	<% end %>
 	</div>
 	<div class="right">
-		<%= link_to 'Go to Seller', 'http://amazon.com/o/ASIN/'+@product.asin, :popup => true %> <iframe src="http://rcm.amazon.com/e/cm?t=optemo-20&o=1&p=41&l=ur1&category=home&banner=0PXNA3R0DT5CZVZA7J02&f=ifr" width="88" height="31" scrolling="no" border="0" marginwidth="0" style="border:none; vertical-align:middle" frameborder="0"></iframe>
+		<%= link_to 'Go to Seller', 'http://amazon.com/o/ASIN/'+@product.asin+'?t=optemo-20', :popup => true %> <%=  link_to image_tag('amazon.gif'), 'http://amazon.com/o/ASIN/'+@product.asin+'?t=optemo-20', :popup => true %>
 	</div>
 	</div>
 	<%= flash[:notice] %>

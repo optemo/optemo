@@ -186,48 +186,9 @@ task :get_printer_data_for_ASINs => :environment do
       p.upc = atts.get('upc')
       p.warranty = atts.get('warranty')
 
-      #Find the lowest price
-      lowestprice = 100000000
-      lowmerchant = ''
-      current_page = 1
-      begin
-        res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => 'All', :offer_page => current_page)
-        total_pages = res.total_pages unless total_pages
-        offers = res.first_item.search_and_convert('offers/offer')
-        if offers.nil?
-          current_page += 1
-          next
-        end
-        offers = [] << offers unless offers.class == Array
-        offers.each {|o| 
-          if o.get('offerlisting/price/formattedprice') == 'Too low to display'
-            p.toolow = true
-          else
-            price = o.get('offerlisting/price/amount').to_i
-            if price < lowestprice
-              lowestprice = price
-              lowmerchant = o.get('merchant/merchantid')
-            end
-          end
-        }
-        current_page += 1
-        sleep(1) #One Req per sec
-      end while (current_page <= total_pages)
-      
-      #Save lowest price
-      if !lowmerchant.blank?
-        res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => lowmerchant)
-        offers = res.first_item
-        if !offers.nil?
-          p.merchantid = offers.get('merchant/merchantid')
-          p.merchantname = offers.get('merchant/merchantname')
-          p.salepriceint = offers.get('offerlisting/price/amount')
-          p.salepricestr = offers.get('offerlisting/price/formattedprice')
-          p.availability = offers.get('offerlisting/availability')
-          p.iseligibleforsupersavershipping = offers.get('offerlisting/iseligibleforsupersavershipping')
-        end
-      end
+      p = findprice(p)
       sleep(0.5) #One Req per sec
+  
       #Lookup images
       res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'Images')
       r = res.first_item
@@ -256,11 +217,18 @@ task :scrape_hidden_prices => :environment do
   doc = Hpricot(open(url,{"User-Agent" => "User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_6; en-us) AppleWebKit/525.27.1 (KHTML, like Gecko) Version/3.2.1 Safari/525.27.1"}).read)
   price = (doc/"b[@class='priceLarge']").first
   puts 'Processing'+p.asin
-  sleep(1+rand()) #Be nice to Amazon
+  sleep(1+rand()*30) #Be nice to Amazon
   if !price.nil?
     priceint = price.innerHTML.gsub(/\D/,'').to_i
     if !p.blank? 
       if (p.salepriceint.nil? || priceint < p.salepriceint)
+        if !p.salepriceint.nil?
+          if p.oldprices.nil?
+            p.oldprices = [p.updated_at.to_s(:db), p.salepriceint].to_yaml
+          else
+            p.oldprices = (YAML.load(p.oldprices) + [p.updated_at.to_s(:db), p.salepriceint]).to_yaml
+          end
+        end
         p.salepricestr = price.innerHTML
         p.salepriceint = priceint
         p.merchantid = 'ATVPDKIKX0DER' unless p.merchantid
@@ -270,6 +238,18 @@ task :scrape_hidden_prices => :environment do
     end
   end
 }
+end
+
+desc "Updating Amazon Price"
+task :update_prices => :environment do
+  require 'amazon/ecs'
+  Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
+  Printer.find(:all, :conditions => ['updated_at < ?', 1.week.ago]).each {|p|
+    puts 'Processing ' + p.asin
+    p = findprice(p)
+    p.save
+    sleep(0.5) #One Req per sec
+  }
 end
 
 desc "Get real features from Printer special features"
@@ -315,4 +295,63 @@ task :interpret_special_features => :environment do
     #puts features['Dimensions'] + " => #{p.itemheight} #{p.itemwidth} #{p.itemlength}"
     p.save
   end
+end
+
+private
+
+def findprice(p)
+  #Find the lowest price
+  lowestprice = 100000000
+  lowmerchant = ''
+  current_page = 1
+  begin
+    res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => 'All', :offer_page => current_page)
+    total_pages = res.total_pages unless total_pages
+    if res.first_item.nil?
+      current_page += 1
+      next
+    end
+    offers = res.first_item.search_and_convert('offers/offer')
+    if offers.nil?
+      current_page += 1
+      next
+    end
+    offers = [] << offers unless offers.class == Array
+    offers.each {|o| 
+      if o.get('offerlisting/price/formattedprice') == 'Too low to display'
+        p.toolow = true
+      else
+        price = o.get('offerlisting/price/amount').to_i
+        if price < lowestprice
+          lowestprice = price
+          lowmerchant = o.get('merchant/merchantid')
+        end
+      end
+    }
+    current_page += 1
+    sleep(1) #One Req per sec
+  end while (current_page <= total_pages)
+  
+  #Save lowest price
+  if !lowmerchant.blank?
+    res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => lowmerchant)
+    offers = res.first_item
+    if !offers.nil?
+      #Save old price
+      if !p.salepriceint.nil?
+        if p.oldprices.nil?
+          p.oldprices = [p.updated_at.to_s(:db), p.salepriceint].to_yaml
+        else
+          p.oldprices = (YAML.load(p.oldprices) + [p.updated_at.to_s(:db), p.salepriceint]).to_yaml
+        end
+      end
+      p.merchantid = offers.get('merchant/merchantid')
+      p.merchantname = offers.get('merchant/merchantname')
+      p.salepriceint = offers.get('offerlisting/price/amount')
+      p.salepricestr = offers.get('offerlisting/price/formattedprice')
+      p.availability = offers.get('offerlisting/availability')
+      p.iseligibleforsupersavershipping = offers.get('offerlisting/iseligibleforsupersavershipping')
+    end
+  end
+  p
 end
