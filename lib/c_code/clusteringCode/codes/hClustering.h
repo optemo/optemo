@@ -4,7 +4,7 @@
 
 
 int hClustering(int layer, int clusterN, int conFeatureN, double *average, double** conFeatureRange, double*** conFeatureRangeC,
-	sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *resClus, sql::ResultSet *resNodes, sql::Statement *stmt, string productName){				
+	sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *resClus, sql::ResultSet *resNodes, sql::Statement *stmt, string* conFeatureNames, string productName){				
 	
 int maxSize = -2;	
 double **data;
@@ -14,7 +14,8 @@ string *brands;
 int parent_id = 0;
 int size, sized, cluster_id;
 				
-if 	(layer == 1){		
+if 	(layer == 1){	
+		
 	     		sized = res->rowsCount();
 				data= new double*[sized];
 		    	for(int j=0; j<sized; j++){
@@ -45,15 +46,18 @@ if 	(layer == 1){
 				
 			}	   		
 							data[size][0] = price;
-						    data[size][1] = res->getDouble("displaysize");
-							data[size][2] = res->getDouble("opticalzoom");
-							data[size][3] = res->getDouble("maximumresolution");
+							data[size][1] = res->getDouble(conFeatureNames[1]);
+							data[size][2] = res->getDouble(conFeatureNames[2]);
+							
+							data[size][3] = res->getDouble(conFeatureNames[3]);
+							
 							idA[size] = res->getInt("id"); 
 							brands[size] = res->getString("brand");
 							for (int f=0; f<conFeatureN; f++){
 							average[f] += data[size][f];
 					}
-					size++;							
+					size++;	
+											
 				}
 				
 				  dataN = new double*[size];
@@ -116,10 +120,11 @@ if 	(layer == 1){
 						 	}
 
 					   // save it to the database
-					 
+						
 					   getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);		
-						  
-				saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, stmt, res2);
+
+					   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, conFeatureNames, stmt, res2, productName);
+				
 						for (int c=0; c<clusterN; c++){
 								if (clusteredData[c][0]>maxSize){
 									maxSize = clusteredData[c][0];
@@ -129,9 +134,10 @@ if 	(layer == 1){
 					delete data;	
 					delete clusteredData;
 					delete dist;
-		
+				
 			}
 if (layer > 1){
+
 	// getting all cluster ids in this layer
 	string command = "SELECT * FROM ";
 	command += productName;
@@ -179,10 +185,10 @@ if (layer > 1){
 			while(resNodes->next()){
 					
 				data[s][0] = resNodes->getDouble("price");
-				data[s][1] = resNodes->getDouble("displaysize");
-				data[s][2] = resNodes->getDouble("opticalzoom");
+				data[s][1] = resNodes->getDouble(conFeatureNames[1]);
+				data[s][2] = resNodes->getDouble(conFeatureNames[2]);
 					
-				data[s][3] = resNodes->getDouble("maximumresolution");
+				data[s][3] = resNodes->getDouble(conFeatureNames[3]);
 				
 				idA[s] = resNodes->getInt("product_id"); 
 			
@@ -242,7 +248,7 @@ if (layer > 1){
 			 		clusteredData[centersA[j]][0]++;
 			 	}
 
-		   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, stmt, res2, productName);
+		   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, conFeatureNames, stmt, res2, productName);
 
 		
 			for (int c=0; c<clusterN; c++){
@@ -251,7 +257,6 @@ if (layer > 1){
 					}
 				}
 				
-					//cout<<"HERE ED"<<endl;
 		delete data;	
 		delete clusteredData;
 		delete dist;

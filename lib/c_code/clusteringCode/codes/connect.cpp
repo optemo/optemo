@@ -70,8 +70,8 @@ int main(int argc, char** argv) {
 	string tableName = productName;
 	tableName.append("s");
 	map<const string, int> productNames;
-	productNames["Camera"] = 1;
-	productNames["Printer"] = 2;
+	productNames["camera"] = 1;
+	productNames["printer"] = 2;
 	
 	switch(productNames[productName]){
 		
@@ -170,11 +170,11 @@ int main(int argc, char** argv) {
 				clusterID = atoi((argu.substr(startit, lengthit)).c_str());
 		}
 	}
-	
+
 	parseInput(varNames, productNames, productName, argu, brands, catFilteredFeatures, conFilteredFeatures, boolFilteredFeatures, filteredRange, 
 				varNamesN, conFeatureNames, catFeatureNames, indicatorNames);
 			
-    		
+    	
 	string brand = "";
 
 // Driver Manager
@@ -241,7 +241,9 @@ int main(int argc, char** argv) {
 				size = res->rowsCount();	
 			}
 			else{
-				command = "SELECT id from nodes where cluster_id=";
+				command = "SELECT id from ";
+				command += productName;
+				command += "_nodes where cluster_id=";
 				ostringstream cid;
 				cid<<clusterID;
 				command += cid.str();
@@ -254,7 +256,7 @@ int main(int argc, char** argv) {
 		
 		
 			int productN = filter2(filteredRange, brand, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange);
-		
+			cout<<"productN is "<<productN<<endl;
 			if (productN> 0){
 				if (productN<=repW){
 					repW = productN;                 
@@ -265,12 +267,15 @@ int main(int argc, char** argv) {
 				int* clusterCounts = new int[repW];
 				int* mergedClusterIDs;
 				
-				reped = getRep(reps, productIDs, productN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput);
-		
-				if(reped){
-					getIndicators(clusterIDs,repW, conFeatureN, indicators, stmt, res, mergedClusterIDs, productName);
+				reped = getRep(reps, productIDs, productN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName);
+				for (int r=0; r<repW; r++){
+					cout<<"clusterIDs["<<r<<"] is  "<<clusterIDs[r]<<endl;
 				}
-			cout<<"HERE"<<endl;	
+				if(reped){
+						
+					getIndicators(clusterIDs,repW, conFeatureN, indicators, stmt, res, mergedClusterIDs, productName, conFeatureNames);
+				}
+		
 //Generating the output string 
 			
 			

@@ -269,7 +269,7 @@ void getStatisticsData(double** data, int** indicators, double* average, int siz
 
 
 		void saveClusteredData(double ** data, int* idA, int size, string* brands, int parent_id, int** clusteredData, double*** conFeatureRange, int layer, 
-		int clusterN, int conFeatureN, sql::Statement *stmt, sql::ResultSet *res2, string productName){
+		int clusterN, int conFeatureN, string* conFeatureNames, sql::Statement *stmt, sql::ResultSet *res2, string productName){
 		///Saving to DataBase	
 			ostringstream layerStream; 
 			layerStream<<layer;
@@ -284,7 +284,15 @@ void getStatisticsData(double** data, int** indicators, double* average, int siz
 				clusterSizeStream<<clusteredData[c][0];
 				string command = "INSERT INTO ";
 				command += productName;
-				command += "_clusters (layer, parent_id, cluster_size,price_min, price_max, displaysize_min,displaysize_max,  opticalzoom_min, opticalzoom_max, maximumresolution_min, maximumresolution_max ) values (";
+				command += "_clusters (layer, parent_id, cluster_size,price_min, price";
+				for (int i=1; i<conFeatureN; i++){
+					command += "_max, ";
+					command += conFeatureNames[i];
+					command += "_min, ";
+					command += conFeatureNames[i];
+				}
+				
+				command += "_max) values (";
 				command += layerStream.str();
 				command += ", ";
 				command += parent_idStream.str();
@@ -299,9 +307,8 @@ void getStatisticsData(double** data, int** indicators, double* average, int siz
 					}
 				}
 				command +=");";
-
 				stmt->execute(command);
-
+	
 				command = "SELECT last_insert_id();"; // from clusters;"
 				res2 = stmt->executeQuery(command);
 
@@ -313,7 +320,12 @@ void getStatisticsData(double** data, int** indicators, double* average, int siz
 				for (int j=0; j<clusteredData[c][0]; j++){	  
 					command = "INSERT INTO ";
 					command += productName;
-					command += "_nodes (cluster_id, product_id, price, displaysize, opticalzoom, maximumresolution, brand) values(";
+					command += "_nodes (cluster_id, product_id, price";
+					for (int i=1; i<conFeatureN; i++){
+							command += ", ";
+							command += conFeatureNames[i];
+					}
+					command += ", brand) values(";
 					ostringstream cluster_idStream;
 					cluster_idStream<<cluster_id;
 					command += cluster_idStream.str();
@@ -335,6 +347,7 @@ void getStatisticsData(double** data, int** indicators, double* average, int siz
 					command += featureStream.str();   
 					command +="\");"; 
 					stmt->execute(command);
+				
 			 }
 			}
 
@@ -402,7 +415,7 @@ void sort(double** data, int* idA, int** sortedA, int size, int conFeatureN){
 
 
 void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators, sql::Statement *stmt,
- sql::ResultSet *res, int* mergedClusterIDs, string productName){
+ sql::ResultSet *res, int* mergedClusterIDs, string productName, string* conFeatureNames){
 
 	string command;
 	res = stmt->executeQuery("select high, low from db_features"); 
@@ -448,33 +461,34 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators,
 			command += ")";
 		}
 		else{
+			cout<<"in else"<<endl;
 			ostringstream cId;
 			cId << clusterIDs[i];
 			command += cId.str();
 			command += ")";
 		}	
+		
 		command += ";";
 		cout<<"command is  "<<command<<endl;
 		res = stmt->executeQuery(command);
-			cout<<"there"<<endl;
+			cout<<"in indicators"<<endl;
 		res->next();
 		
 		range[0][0] = res->getInt("price_min");
 		range[0][1] = res->getInt("price_max");
 		
-		res->next();
+		
+		for (int i=0; i<conFeatureN; i++){
+			res->next();
+			command = conFeatureNames[i];
+			command += "_min"; 
+			range[i][0] = res->getInt(command);
+			command = conFeatureNames[i];
+			command += "_max";
+			range[i][1] = res->getInt(command);
+		}	
+			
 	
-		range[1][0] = res->getInt("displaysize_min");
-		range[1][1] = res->getInt("displaysize_max");
-		
-		res->next();
-		range[2][0] = res->getInt("opticalzoom_min");
-		range[2][1] = res->getInt("opticalzoom_max");
-		
-		res->next();
-		
-		range[3][0] = res->getInt("maximumresolution_min");
-		range[3][1] = res->getInt("maximumresolution_max");
 		
 	
 		for (int f=0; f<conFeatureN; f++){
