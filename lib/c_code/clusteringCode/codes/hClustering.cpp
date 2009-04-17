@@ -16,38 +16,79 @@ using namespace std;
 // Public interface of the MySQL Connector/C++
 #include <cppconn/mysql_public_iface.h>
 
+
 //
 #include "hClustering.h"
+#include "preProcessing.h"
 
 using namespace std;
 
-/**
-* Usage example for Driver Manager, Connection, (simple) Statement, ResultSet
-*/
-//int main(int argc, char** argv) {
-int main(){	
-//void initialize(int arcCount, char** argArray)
-//{
+int main(int argc, char** argv){	
+
 	stringstream sql;
-	int clusterN = 9; 
-	int conFeatureN = 4;
-	int catFeatureN = 1;
-	int boolFeatureN = 0;
-	int varNamesN = 12;
-	int range = 2;
+	int clusterN;
+	int conFeatureN;
+	int catFeatureN;
+	int boolFeatureN;
+	int varNamesN;
+	int range;
 	int layer = 1;
-	int session_id = 1; 
+	int session_id; 
+	string var;
+	
+	//argument is the productName
+
+	string productName = argv[1];
+	string tableName = productName;
+	tableName.append("s");
+	map<const string, int> productNames;
+	productNames["camera"] = 1;
+	productNames["printer"] = 2;
+	
+	switch(productNames[productName]){
+		
+		case 1:
+		
+					clusterN = 9; 
+					conFeatureN= 4;
+					catFeatureN= 1;
+					boolFeatureN= 0;
+					varNamesN= 12;
+					range= 2;
+					break;
+			
+		case 2:
+					clusterN = 9; 
+					conFeatureN= 4;
+					catFeatureN= 1;
+					boolFeatureN= 0;
+					varNamesN= 12;
+					range= 2;
+					break;
+		default:
+					clusterN = 9; 
+					conFeatureN= 4;
+					catFeatureN= 1;
+					boolFeatureN= 0;
+					varNamesN= 12;
+					range= 2;
+					break;
+	}
+	
+	
+	
+
 	ostringstream session_idStream;
 	ostringstream layerStream;
 	layerStream<<layer;
 
 	string nodeString;
 	
-	char** indicatorNames = new char* [4];
-	indicatorNames[0] = "Price";
-	indicatorNames[1] = "Display Size";
-	indicatorNames[2] = "Optical Zoom";
-	indicatorNames[3] = "Megapixels";
+	string* indicatorNames = new string [4];
+//	indicatorNames[0] = "Price";
+//	indicatorNames[1] = "Display Size";
+//	indicatorNames[2] = "Optical Zoom";
+//	indicatorNames[3] = "Megapixels";
 		
 	string *varNames = new string[varNamesN];	
 	string *catFeatureNames = new string[catFeatureN];
@@ -65,7 +106,6 @@ int main(){
     
 	double *average = new double[conFeatureN]; 
 	
-
 
   	bool *conFilteredFeatures = new bool[conFeatureN];   
 	bool *catFilteredFeatures = new bool[catFeatureN];
@@ -95,7 +135,7 @@ int main(){
 
 	
 	int ind, endit, startit, lengthit;
-	string var;
+//	string var;
 
 	varNames[0] = "layer";
 	varNames[1] = "camid";
@@ -110,7 +150,12 @@ int main(){
 	varNames[10] = "maximumresolution_max";
 	varNames[11] = "session_id";	
    
-	
+//void preClustering(string* varNames, map<const string, int>productNames, string productName, string* conFeatureNames, string* catFeatureNames, string* indicatorNames)
+
+
+	preClustering(varNames, productNames, productName, conFeatureNames, catFeatureNames, indicatorNames);
+
+
 //}
 // Driver Manager
 
@@ -149,11 +194,11 @@ int main(){
 	string passwordString = tokens.at(findVec(tokens, "password:") + 1);
 	string hostString = tokens.at(findVec(tokens, "host:") + 1);
 
-	    #define EXAMPLE_PORT "3306"       
-	 	#define EXAMPLE_DB  "optemo_development"
-		#define EXAMPLE_HOST hostString    
-		#define EXAMPLE_USER usernameString 
-	    #define EXAMPLE_PASS passwordString 
+	    #define PORT "3306"       
+	 	#define DB  "optemo_development"
+		#define HOST hostString    
+		#define USER usernameString 
+	    #define PASS passwordString 
 
 
 ///////////////////////////////////////////////
@@ -161,40 +206,33 @@ int main(){
 			try {
 				// Using the Driver to create a connection
 				driver = sql::mysql::get_mysql_driver_instance();
-				con = driver->connect(EXAMPLE_HOST, EXAMPLE_PORT, EXAMPLE_USER, EXAMPLE_PASS);
+				con = driver->connect(HOST, PORT, USER, PASS);
 				stmt = con->createStatement();
-				stmt->execute("USE "  EXAMPLE_DB);
-			    res = stmt->executeQuery("SELECT * FROM cameras"); 
-	
-////{}
+				stmt->execute("USE "  DB);
+				string command = "SELECT * FROM ";
+				command += productName;
+				command += "s";
+			    res = stmt->executeQuery(command); 
+
 				int maxSize = 10000;
-			while (maxSize>clusterN){
-					
+			   while (maxSize>clusterN){
+							
 					for (int j=0; j<conFeatureN; j++){
 						average[j] = 0.0;
 					}
-					maxSize = hClustering(layer, clusterN,  conFeatureN,  average, conFeatureRange, conFeatureRangeC, res, res2,resClus, resNodes, stmt);	
+					
+					maxSize = hClustering(layer, clusterN,  conFeatureN,  average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, stmt, conFeatureNames, productName);	
 				
 					layer++;
+					
 				}
-				
-				
-				
-				setRange(stmt, res, res2, conFeatureN);
+			
+			//	setRange(stmt, res, res2, conFeatureN);
 //Generating the output string 
 
 
-//////
-            
-	// Clean up
-
  	delete stmt;
  	delete con;
-  //  delete data;
-    
- 	 
- //	delete medians;
- 
 
  	} catch (sql::mysql::MySQL_DbcException *e) {
 
