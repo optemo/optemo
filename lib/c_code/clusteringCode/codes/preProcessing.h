@@ -75,12 +75,9 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 	switch(productNames[productName]){
 		case 1:
 	
-				
 				conFeatureNames[1]= "displaysize";  
 			    conFeatureNames[2]= "opticalzoom";
 			    conFeatureNames[3]= "maximumresolution";
-			
-		
 				varNames[0] = "session_id";
 				varNames[1] = "cluster_id";
 				varNames[2] = "brand";
@@ -92,8 +89,6 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 				varNames[8] = "opticalzoom_max";
 				varNames[9] = "maximumresolution_min";
 				varNames[10] = "maximumresolution_max";
-			
-				
 				indicatorNames[0] = "Price";
 				indicatorNames[1] = "Display Size";
 				indicatorNames[2] = "Optical Zoom";
