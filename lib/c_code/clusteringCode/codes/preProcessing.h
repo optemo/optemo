@@ -12,7 +12,6 @@ void preClustering(string* varNames, map<const string, int>productNames, string 
 
 	catFeatureNames[0]= "brand";
 	conFeatureNames[0]= "price";
-//	cout<<"productNames[productName] is "<<productNames[productName]<<endl;
 	switch(productNames[productName]){
 		case 1:
 
@@ -70,7 +69,7 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 	string var;
 	int ind, startit, endit, lengthit, indash; 
 	
-	catFeatureNames[0]= "brands";
+	catFeatureNames[0]= "brand";
 	conFeatureNames[0]= "price";
 	switch(productNames[productName]){
 		case 1:
@@ -122,7 +121,7 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 											brands[brandN] = brandString.substr(startit, indash);
 											brandN ++;
 										
-											brandString = brandString.substr(lengthit+1);
+											brandString = brandString.substr(indash+1);
 											startit = 0;
 										}
 									}
@@ -214,11 +213,11 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 										{	
 											indash = brandString.find("\n", startit);
 										}
-							
+					
+					
 										brands[brandN] = brandString.substr(startit, indash);
-										brandN ++;
-										cout<<"brandN is "<<brandN<<endl;
-										brandString = brandString.substr(lengthit+1);
+										brandN++;
+										brandString = brandString.substr(indash+1);
 										startit = 0;
 									}
 								}
