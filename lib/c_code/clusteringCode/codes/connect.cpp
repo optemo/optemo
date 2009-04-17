@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
 	switch(productNames[productName]){
 		
 		case 1:
-		
+					//productName = "Camera";
 					clusterN = 9; 
 					conFeatureN= 4;
 					catFeatureN= 1;
@@ -86,7 +86,8 @@ int main(int argc, char** argv) {
 					repW = 9; 
 					break;
 			
-		case 2:
+		case 2: 	
+				//	productName = "Printer";
 					clusterN = 9; 
 					conFeatureN= 4;
 					catFeatureN= 1;
