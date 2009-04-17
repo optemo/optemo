@@ -6,6 +6,6 @@ class Printer < ActiveRecord::Base
   named_scope :invalid, :conditions => %w(ppm itemwidth paperinput).map{|i|i+' IS NULL'}.join(' OR ')+" OR (salepriceint IS NULL AND listpriceint IS NULL)"
   named_scope :fewfeatures, :conditions => %w(ppm ttp paperinput).map{|i|i+' IS NULL'}.join(' OR ')
   MainFeatures = %w(ppm itemwidth paperinput)
-  MainFeaturesDisp = %w(Pages\ Per\ Minute Width Input\ Size)
-  MainFeaturesLabel = []
+  MainFeaturesDisp = %w(Pages\ Per\ Minute Width Paper\ Tray\ Size)
+  MainFeaturesLabel = Hash[*MainFeatures.zip(['','in','']).flatten]
 end

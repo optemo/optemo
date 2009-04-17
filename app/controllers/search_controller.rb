@@ -5,7 +5,7 @@ class SearchController < ApplicationController
     s.product_id = nil
     myfilter = params[:myfilter]
     #Allow for multiple brands
-    if myfilter[:brand] != "All Brands"
+    if myfilter[:brand] != "All Brands" #&& myfilter[:brand] != "Add Another Brand"
       new_brand = myfilter[:brand]
       old_brand = Search.find(s.parent_id).brand
       if !myfilter[:Xbrand].blank?
@@ -13,7 +13,11 @@ class SearchController < ApplicationController
         myfilter[:brand] = old_brand.split('*').delete_if{|b|b == myfilter[:Xbrand]}.join('*')
       else
         #Add a brand
-        myfilter[:brand]+= '*'+old_brand if old_brand != "All Brands" && old_brand != "Add Another Brand"
+        if myfilter[:brand].nil?
+          myfilter[:brand] = old_brand if old_brand != "All Brands" && old_brand != "Add Another Brand"
+        else
+          myfilter[:brand]+= '*'+old_brand if old_brand != "All Brands" && old_brand != "Add Another Brand"
+        end
       end
     end
     myfilter.delete('Xbrand') if myfilter[:Xbrand]
@@ -103,6 +107,9 @@ class SearchController < ApplicationController
       myfilter.delete('session_id')
       myfilter.delete('created_at')
       myfilter.delete('updated_at')
+      myfilter.delete('filter')
+      myfilter.delete('brand') if myfilter['brand'].blank?
+      myfilter.delete_if {|key, val| (key.index('_max') || key.index('_min'))&&!key.index(Regexp.union($productType::MainFeatures<<"price"))}
       myfilter.delete('product_id') if myfilter['cluster_id']
       myfilter.delete('cluster_id') unless myfilter['cluster_id']
       myfilter.delete('product_id') unless myfilter['product_id']
@@ -112,11 +119,11 @@ class SearchController < ApplicationController
     q.update({'cluster_id' => s.cluster_id}) if s.cluster_id
     s.update_attributes(q)
     session[:search_id] = s.id
+    #Make request work with c code
     q['product_name'] = $productType.name.downcase
     q['brand'] = q['brand'].split('*').first if !q['brand'].nil? #Remove first later
     myparams = q.to_yaml
-    @badparams = "None"
-    debugger
+    #debugger
     @output = %x["#{RAILS_ROOT}/lib/c_code/clusteringCode/codes/connect" "#{myparams}"]
     options = YAML.load(@output)
     #parse the new ids
@@ -138,14 +145,6 @@ class SearchController < ApplicationController
       end
       #make chosen a YAML
       options[:chosen] = options[:chosen].to_yaml
-      #Filter for only valid options
-      options.delete_if{|k,v| if k.to_s.match(/^(products|clusters|maximumresolution\_max|maximumresolution\_min|displaysize\_max|displaysize\_min|opticalzoom\_max|opticalzoom\_min|price\_max|price\_min|clusters|chosen|i\d|c\d|result\_count|brand)$/).nil?
-        @badparams = k.to_s
-        true
-      else
-        false
-      end
-        }
     end
     @session = s.session
     @session.update_attributes(options)

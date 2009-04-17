@@ -62,7 +62,7 @@ function getDocHeight() {
 }
 
 function resetFilter() {
-	$('myfilter_brand').selectedIndex = "All Brands";
+	//$('myfilter_brand').selectedIndex = "All Brands";
 	var disp = $('filterbar').getElementsByClassName('disp');
 	var slider = $('filterbar').getElementsByClassName('slider');
 	for (i=0;i<mysliders.length;i++)
