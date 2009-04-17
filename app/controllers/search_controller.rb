@@ -121,7 +121,7 @@ class SearchController < ApplicationController
     session[:search_id] = s.id
     #Make request work with c code
     q['product_name'] = session[:productType].downcase || $DefaultProduct
-    q['brand'] = q['brand'].split('*').first if !q['brand'].nil? #Remove first later
+    #q['brand'] = q['brand'].split('*').first if !q['brand'].nil? #Remove first later
     myparams = q.to_yaml
     #debugger
     @output = %x["#{RAILS_ROOT}/lib/c_code/clusteringCode/codes/connect" "#{myparams}"]
