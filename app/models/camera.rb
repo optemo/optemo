@@ -3,10 +3,13 @@ class Camera < ActiveRecord::Base
   named_scope :valid, :conditions => "brand IS NOT NULL AND maximumresolution IS NOT NULL AND opticalzoom IS NOT NULL AND listpriceint IS NOT NULL AND displaysize IS NOT NULL"
   named_scope :invalid, :conditions => "brand IS NULL OR maximumresolution IS NULL OR opticalzoom IS NULL OR listpriceint IS NULL OR displaysize IS NULL"
   is_indexed :fields => ['title', 'feature']
-  Interesting_features = %w(pricestr brand digitalzoom displaysize itemheight itemlength itemwidth itemweight label listpricestr maximumresolution maximumfocallength minimumfocallength model opticalzoom packageheight packageweight packagelength packagewidth title upc merchant condition iseligibleforsupersavershipping)
+  InterestingFeatures = %w(pricestr brand digitalzoom displaysize itemheight itemlength itemwidth itemweight label listpricestr maximumresolution maximumfocallength minimumfocallength model opticalzoom packageheight packageweight packagelength packagewidth title upc merchant condition iseligibleforsupersavershipping)
   MainFeatures = %w(maximumresolution displaysize opticalzoom)
   MainFeaturesDisp = %w(Megapixels Display\ Size Optical\ Zoom)
   MainFeaturesLabel = Hash[*MainFeatures.zip(['','in','X']).flatten]
+  ShowFeatures = %w(brand model maximumresolution opticalzoom digitalzoom displaysize maximumfocallength minimumfocallength batterydescription hasredeyereduction itemweight itemwidth packagewidth upc)
+  ShowFeaturesDisp = %w(Brand Model Megapixels Optical\ Zoom Digital\ Zoom Display\ Size Maximum\ Focal\ Length Minimum\ Focal\ Length Battery Red\ Eye\ Reduction Weight Camera\ Width Package\ Width UPC)
+
   Max = {'SWidth' => 70, 'SHeight' => 50,'MWidth' => 140, 'MHeight' => 100, 'LWidth' => 400, 'LHeight' => 300}
   def imagesw
     @imageW ||= {}

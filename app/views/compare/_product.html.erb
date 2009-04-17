@@ -3,7 +3,7 @@
 <%= image_tag(product.imagemurl, :width => product.imagemw, :height => product.imagemh, :onClick => "fadeout(#{product.id});", :style => "cursor: pointer;") %>
 </div>
 <ul>
-	<% $productType::Interesting_features.each do |f| %>
+	<% $productType::InterestingFeatures.each do |f| %>
 	    <li><%= product.display(f)[0..20] %></li>
 	  <% end %>
 </ul>

@@ -82,10 +82,12 @@ module ProductProperties
     else
       ending = case attr
         when /zoom/: ' X'
-        when /size/: ' in.' 
+        when /[^p][^a][^p][^e][^r]size/: ' in.' 
         when /(item|package)(width|length|height)/: data = data.to_f/100
           ' in.'
+        when /resolution/: ' dpi'
         when /focal/: ' mm.'
+        when /ttp/: ' seconds'
         else ''
       end
     end

@@ -8,4 +8,8 @@ class Printer < ActiveRecord::Base
   MainFeatures = %w(ppm itemwidth paperinput)
   MainFeaturesDisp = %w(Pages\ Per\ Minute Width Paper\ Tray\ Size)
   MainFeaturesLabel = Hash[*MainFeatures.zip(['','in','']).flatten]
+  ShowFeatures = %w(brand model ppm paperinput ttp resolution itemwidth itemheight itemlength duplex connectivity papersize scanner printserver platform upc)
+  ShowFeaturesDisp = %w(Brand Model Pages\ Per\ Minute Paper\ Tray\ Size Time\ To\ Print Resolution Width Height Length Duplex Connectivity Paper\ Size Scanner Print\ Server OS UPC)
+  InterestingFeatures = %w(brand ppm ttp resolution duplex connectivity papersize paperoutput dimensions dutycycle paperinput ppmcolor platform colorprinter scanner printserver itemheight itemlength itemwidth itemweight manufacturer model packageheight packagelength packagewidth packageweight upc merchantname)
 end
+

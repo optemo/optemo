@@ -7,7 +7,7 @@
 <h2>Product Features</h2>
 </div>
 <ul>
-	<% $productType::Interesting_features.each do |column| %>
+	<% $productType::InterestingFeatures.each do |column| %>
 	    <li><%= column.gsub(/_id$/, '').gsub(/str$/,' ').gsub(/_/,' ').capitalize %></li>
 	<% end %>
 </ul>

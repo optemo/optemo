@@ -12,21 +12,13 @@
 	<div id="image"><%= link_to image_tag(@product.imagelurl, :width => @product.imagelw, :height => @product.imagelh), @product.imagelurl, :popup => true %></div>
 	<div id="features">
 	<ul>
-		<% if !@product.brand.nil? %><li><span class="detail_label">Brand: </span><%= @product.display 'brand' %></li><% end %>
-		<% if !@product.model.nil? %><li><span class="detail_label">Model: </span><%= @product.display 'model' %></li><% end %>
-		<% if !@product.maximumresolution.nil? %><li><span class="detail_label">Megapixels: </span><%= @product.display 'maximumresolution' %></li><% end %>
-		<% if !@product.opticalzoom.nil? %><li><span class="detail_label">Optical Zoom: </span><%= @product.display 'opticalzoom' %></li><% end %>
-		<% if !@product.digitalzoom.nil? %><li><span class="detail_label">Digital Zoom: </span><%= @product.display 'digitalzoom' %></li><% end %>
-		<% if !@product.displaysize.nil? %><li><span class="detail_label">Display Size: </span><%= @product.display 'displaysize' %></li><% end %>
-		<% if !@product.maximumfocallength.nil? %><li><span class="detail_label">Maximum Focal Length: </span><%= @product.display 'maximumfocallength' %></li><% end %>
-		<% if !@product.minimumfocallength.nil? %><li><span class="detail_label">Minimum Focal Length: </span><%= @product.display 'minimumfocallength' %></li><% end %>
-		<% if !@product.batterydescription.nil? %><li><span class="detail_label">Battery Type: </span><%= @product.display 'batterydescription' %></li><% end %>
-		<% if !@product.hasredeyereduction.nil? %><li><span class="detail_label">Red Eye Reduction: </span><%= @product.display 'hasredeyereduction' %></li><% end %>
-		<%# #The units are all messed up here %>
-		<% if !@product.itemweight.nil? && false %><li><span class="detail_label">Weight: </span><%= @product.display 'itemweight' %></li><% end %>
-		<% if !@product.itemwidth.nil? %><li><span class="detail_label">Item W x L x H: </span><%= @product.display 'itemwidth' %> x <%= @product.display 'itemlength' %> x <%= @product.display 'itemheight' %></li><% end %>
-		<% if !@product.packagewidth.nil? %><li><span class="detail_label">Package W x L x H: </span><%= @product.display 'packagewidth' %> x <%= @product.display 'packagelength' %> x <%= @product.display 'packageheight' %></li><% end %>
-		<% if !@product.upc.nil? %><li><span class="detail_label">UPC: </span><%= @product.display 'upc' %></li><% end %>
+		<% $productType::ShowFeatures.each_index do |i| %>
+			<% f_name = $productType::ShowFeatures[i] %>
+			<% f = @product.send(f_name) %>
+			<% if !f.nil? %>
+				<li><span class="detail_label"><%= $productType::ShowFeaturesDisp[i] %>: </span><%= @product.display f_name %></li>
+			<% end %>
+		<% end %>
 	</ul>
 	</div>
 	<% if !@product.feature.nil? %>
@@ -38,7 +30,7 @@
 	<% end %>
 	<div id="reviews">
 		<h3>Reviews</h3>
-		This is where our reviews will go.
+		There are no reviews for this item yet.
 	</div>
 	<div class="showtable">
 		<h3>Available at the following Retailers</h3>
