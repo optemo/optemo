@@ -9,7 +9,7 @@ module ProductsHelper
   end
   def description(i)
     text = []
-		$productType::MainFeatures.each do |f|
+		session[:productType].constantize::MainFeatures.each do |f|
 		  res = @dbprops.toPhrase(f,@products[i].send(f))
 			text << res unless res.blank?
 		end

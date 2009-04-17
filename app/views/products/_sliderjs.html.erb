@@ -7,7 +7,7 @@ var a = new Control.Slider(<%= val %>handles, '<%= val %>slider', {
 		<% if money_formatting %>
 			disp_money(v,'<%= val %>disp','myfilter_<%= val %>_min','myfilter_<%= val %>_max');
 		<% else %>
-			disp(v,'<%= val %>disp','myfilter_<%= val %>_min','myfilter_<%= val %>_max','<%= $productType::MainFeaturesLabel[val] %>');
+			disp(v,'<%= val %>disp','myfilter_<%= val %>_min','myfilter_<%= val %>_max','<%= session[:productType].constantize::MainFeaturesLabel[val] %>');
 		<% end %>
 		//$('<%= val %>hist').innerHTML="";
 		//histogram([0.5,0.7,0.1,0.5,0.3,1,0.6,0.4,0.3,0.3],"<%= val %>hist",v[0] /<%= max %>,v[1] /<%= max %>);
@@ -19,9 +19,9 @@ var a = new Control.Slider(<%= val %>handles, '<%= val %>slider', {
 			disp(v,'<%= val %>disp','myfilter_<%= val %>_min','myfilter_<%= val %>_max');
 		<% end %>
 		$('<%= val %>hist').innerHTML="";
-		histogram([0.5,0.7,0.1,0.5,0.3,1,0.6,0.4,0.3,0.3],"<%= val %>hist",v[0] /<%= max %>,v[1] /<%= max %>);*/
+		histogram([0.5,0.7,0.1,0.5,0.3,1,0.6,0.4,0.3,0.3],"<%= val %>hist",(v[0]-<%= min %>)/<%= max - min %>,(v[1]-<%= min %>)/<%= max - min %>);*/
 		}
 });
 if(typeof(mysliders) == 'undefined') {var mysliders = [];}
 mysliders.push(a);
-histogram([0.5,Math.round((Math.random()*9))/10,Math.round((Math.random()*9))/10,0.5,0.3,Math.round((Math.random()*9))/10,Math.round((Math.random()*9))/10,0.4,0.3,0.3],"<%= val %>hist",<%= @session.send("#{val}_min".intern) / max %>,<%= @session.send("#{val}_max".intern) / max %>);
+histogram([0.5,Math.round((Math.random()*9))/10,Math.round((Math.random()*9))/10,0.5,0.3,Math.round((Math.random()*9))/10,Math.round((Math.random()*9))/10,0.4,0.3,0.3],"<%= val %>hist",<%= (@session.send("#{val}_min".intern) - min) / (max-min) %>,<%= (@session.send("#{val}_max".intern)-min) / (max-min) %>);

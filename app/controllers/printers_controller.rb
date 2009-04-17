@@ -1,3 +1,7 @@
 class PrintersController < ProductsController
-  $productType = Printer
+  before_filter :pickProduct
+  
+  def pickProduct
+    session[:productType] = 'Printer'
+  end
 end
