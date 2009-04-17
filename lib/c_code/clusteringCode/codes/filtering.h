@@ -154,6 +154,7 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 	}
 	
 	if (clusterID==0){
+		
 		command = "SELECT distinct product_id, price";
 		for (int i=1; i<conFeatureN; i++){
 			command += ", ";
@@ -615,7 +616,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 		for(int i=0; i<productN; i++){
 			reps[i] = productIds[i];
 			if (clusterID==0){
-				
+			
 				command = "select ";
 				command += product_clusters;
 				command += ".id from ";
@@ -731,7 +732,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 	//where clusterID is 0 - on the first page- 
 	//Finding the accepted clusters 
 	if (clusterID ==0){
-		
+	
 		command = "SELECT DISTINCT ";
 		command += product_nodes;
 		command += ".cluster_id, ";
@@ -768,7 +769,23 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 	
 	else{ 
 		
-		command = "SELECT DISTINCT nodes.cluster_id, clusters.cluster_size, clusters.layer FROM nodes, clusters WHERE (clusters.id=nodes.cluster_id AND (clusters.parent_id=";
+		command = "SELECT DISTINCT ";
+		command += product_nodes;
+		command += ".cluster_id, ";
+		command += product_clusters;
+		command +=".cluster_size, ";
+		command += product_clusters;
+		command +=".layer FROM ";
+		command += product_nodes;
+		command +=", ";
+		command +=product_clusters;
+		command +=" WHERE (";
+		command += product_clusters;
+		command +=".id=";
+		command += product_nodes;
+		command +=".cluster_id AND (";
+		command +=product_clusters;
+		command +=".parent_id=";
 		    if (clusterID <0 ){ //clusters are merged
 				ostringstream jointParentStream;
 				jointParentStream << mergedClusterIDInput[0];
@@ -807,9 +824,8 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 			command +=".layer, ";
 			command += product_clusters;
 			command += ".cluster_size;";
-		
 			res = stmt->executeQuery(command);	
-		
+
 		 	clusterN = res->rowsCount();
 			if (clusterN == 0){
 				command = "SELECT DISTINCT product_id from ";

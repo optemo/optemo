@@ -253,7 +253,7 @@ int main(int argc, char** argv) {
 			}	
 			int* productIDs = new int [size];
 			int productN = filter2(filteredRange, brand, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange, productName, conFeatureNames);
-	
+		
 			if (productN> 0){
 				if (productN<=repW){
 					repW = productN;                 
@@ -266,7 +266,7 @@ int main(int argc, char** argv) {
 				int* mergedClusterIDs;
 			
 				reped = getRep(reps, productIDs, productN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames);
-						
+					
 		
 				if(reped){
 						
