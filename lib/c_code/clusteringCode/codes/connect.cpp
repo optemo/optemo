@@ -254,6 +254,7 @@ int main(int argc, char** argv) {
 			}	
 			int* productIDs = new int [size];
 			int productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange, productName, conFeatureNames);
+			
 			if (productN> 0){
 				if (productN<=repW){
 					repW = productN;                 

@@ -259,7 +259,8 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 				command += " OR brand=\'";
 				command += brands[b];
 				command += "\'"; 
-		}
+			}
+		}	
 		command += ");";
 		res = stmt->executeQuery(command);
 
@@ -441,7 +442,7 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 				
 			command += ");";
 		}	
-	
+		
 		res = stmt->executeQuery(command);
 
 		while(res->next()){
@@ -462,11 +463,10 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 			}
 			productN++;
 		}
-					
+		
 	}
-
 	return productN;
-}
+
 }
 int getRepCluster(int clusterID, int conFeatureN, sql::Statement *stmt , sql::ResultSet *res, int productN, int* productIDs, int* reps, int repSize, string productName, 
 			 string* conFeatureNames){ 
