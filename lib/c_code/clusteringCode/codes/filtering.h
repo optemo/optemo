@@ -255,12 +255,15 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 			command += "(brand =\'";
 			command += brands[0];
 			command += "\'";
+			cout<<"brandN is "<<brandN<<endl;
 			for (int b=1; b<brandN; b++){
+				cout<<"in brand for loop  ";
 				command += " OR brand=\'";
 				command += brands[b];
 				command += "\'"; 
 		}
 		command += ");";
+		cout<<"commad is "<<command<<endl;
 		res = stmt->executeQuery(command);
 
 				command = "";

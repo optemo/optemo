@@ -121,6 +121,7 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 
 											brands[brandN] = brandString.substr(startit, indash);
 											brandN ++;
+										
 											brandString = brandString.substr(lengthit+1);
 											startit = 0;
 										}
@@ -216,6 +217,7 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 							
 										brands[brandN] = brandString.substr(startit, indash);
 										brandN ++;
+										cout<<"brandN is "<<brandN<<endl;
 										brandString = brandString.substr(lengthit+1);
 										startit = 0;
 									}
