@@ -131,8 +131,9 @@
 //		return acceptedCN;
 //}
 
-int filter2(double **filteredRange, string brand,sql::Statement *stmt,
- sql::ResultSet *res, sql::ResultSet *res2, int* productIDs, bool* conFilteredFeatures, bool* catFilteredFeatures, int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string productName, string* conFeatureNames) {
+int filter2(double **filteredRange, string* brands, int brandN, sql::Statement *stmt,
+ sql::ResultSet *res, sql::ResultSet *res2, int* productIDs, bool* conFilteredFeatures, bool* catFilteredFeatures, 
+int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string productName, string* conFeatureNames) {
 
 	int productN = 0;
 	string command;
@@ -252,11 +253,14 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 				command += " where ";
 			}
 			command += "(brand =\'";
-			command += brand;
-			command += "\'"; 
-			command += ")";
+			command += brands[0];
+			command += "\'";
+			for (int b=1; b<brandN; b++){
+				command += " OR brand=\'";
+				command += brands[b];
+				command += "\'"; 
 		}
-		command += ";";
+		command += ");";
 		res = stmt->executeQuery(command);
 
 				command = "";
@@ -425,8 +429,13 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 			if(catFilteredFeatures[0]){
 				
 				command += "(brand =\'";
-				command += brand;
+				command += brands[0];
 				command += "\'"; 
+				for (int b=1; b<brandN; b++){
+					command += " OR brand=\'";
+					command += brands[b];
+					command += "\'";
+				}
 				command += ")";
 			}
 				
@@ -458,7 +467,7 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 
 	return productN;
 }
-
+}
 int getRepCluster(int clusterID, int conFeatureN, sql::Statement *stmt , sql::ResultSet *res, int productN, int* productIDs, int* reps, int repSize, string productName, 
 			 string* conFeatureNames){ 
 

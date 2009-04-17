@@ -107,7 +107,7 @@ int main(int argc, char** argv) {
 					break;
 	}
 	
-	string* brands = new string [1] ;
+	string* brands = new string [40] ;
 	int* mergedClusterIDInput = new int[clusterN];
 	bool smallNFlag =false;
 	string* indicatorNames = new string[conFeatureN];
@@ -171,8 +171,9 @@ int main(int argc, char** argv) {
 				clusterID = atoi((argu.substr(startit, lengthit)).c_str());
 		}
 	}
-
-	parseInput(varNames, productNames, productName, argu, brands, catFilteredFeatures, conFilteredFeatures, boolFilteredFeatures, filteredRange, 
+	
+		
+	int brandN = parseInput(varNames, productNames, productName, argu, brands, catFilteredFeatures, conFilteredFeatures, boolFilteredFeatures, filteredRange, 
 				varNamesN, conFeatureNames, catFeatureNames, indicatorNames);
 
     	
@@ -252,8 +253,7 @@ int main(int argc, char** argv) {
 				size = res->rowsCount();
 			}	
 			int* productIDs = new int [size];
-			int productN = filter2(filteredRange, brand, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange, productName, conFeatureNames);
-		
+			int productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange, productName, conFeatureNames);
 			if (productN> 0){
 				if (productN<=repW){
 					repW = productN;                 

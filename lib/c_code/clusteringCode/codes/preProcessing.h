@@ -61,14 +61,16 @@ void preClustering(string* varNames, map<const string, int>productNames, string 
 // parseInput(productFeatures, productNames, productName, argu, brands, catFilteredFeatures, conFilteredFeatures, boolFilteredFeatures, filteredRange, 
 //			varNamesN, conFeatureNames, catFeatureNames, indicatorNames);
 
-void parseInput(string* varNames, map<const string, int>productNames, string productName, string argument, string* brands, bool* catFilteredFeatures, bool* conFilteredFeatures, 
+int parseInput(string* varNames, map<const string, int>productNames, string productName, string argument, string* brands, bool* catFilteredFeatures, bool* conFilteredFeatures, 
 	bool* boolFilteredFeatures, double** filteredRange, int varNamesN, string* conFeatureNames, string* catFeatureNames, string* indicatorNames){
 
+	int brandN =0;	
+	string brandString;		
 	string brand = "";
 	string var;
-	int ind, startit, endit, lengthit; 
+	int ind, startit, endit, lengthit, indash; 
 	
-	catFeatureNames[0]= "brand";
+	catFeatureNames[0]= "brands";
 	conFeatureNames[0]= "price";
 	switch(productNames[productName]){
 		case 1:
@@ -105,16 +107,30 @@ void parseInput(string* varNames, map<const string, int>productNames, string pro
 					startit = ind + var.length() + 2;
 					lengthit = endit - startit;
 					if(lengthit > 0){
+								if (var=="brand"){
+									brandString = (argument.substr(startit, lengthit)).c_str();
+									catFilteredFeatures[0] = 1;
+									if (brandString == "All Brands"){
+										catFilteredFeatures[0] = 0;
+									}
+									// this will be changed once we have an array of brands
+									else{
+											startit = 0;
+											brandString += "\n";
+										while(brandString != ""){
+											indash = brandString.find("*", startit);
+											if (indash ==-1) // this is the last brand	
+											{	
+												indash = brandString.find("\n", startit);
+											}
 
-						if (var=="brand"){
-							brand = (argument.substr(startit, lengthit)).c_str();
-							catFilteredFeatures[0] = 1;
-							if (brand == "All Brands"){
-								catFilteredFeatures[0] = 0;
-							}
-							// this will be changed once we have an array of brands
-							brands[0] = brand;
-				   		}		
+											brands[brandN] = brandString.substr(startit, indash);
+											brandN ++;
+											brandString = brandString.substr(lengthit+1);
+											startit = 0;
+										}
+									}
+						   		}
 				
 				   		else if(var == "price_min"){
 							filteredRange[0][0] = atof((argument.substr(startit, lengthit)).c_str()) * 100;
@@ -184,17 +200,41 @@ void parseInput(string* varNames, map<const string, int>productNames, string pro
 				endit = argument.find("\n", ind);
 				startit = ind + var.length() + 2;
 				lengthit = endit - startit;
+			
 				if(lengthit > 0){
-
-					if (var=="brand"){
-						brand = (argument.substr(startit, lengthit)).c_str();
-						catFilteredFeatures[0] = 1;
-						if (brand == "All Brands"){
-							catFilteredFeatures[0] = 0;
-						}
-						// this will be changed once we have an array of brands
-						brands[0] = brand;
-			   		}		
+							if (var=="brand"){
+								brandString = (argument.substr(startit, lengthit)).c_str();
+								catFilteredFeatures[0] = 1;
+								if (brandString == "All Brands"){
+									catFilteredFeatures[0] = 0;
+								}
+								// this will be changed once we have an array of brands
+								else{
+										startit = 0;
+										brandString += "\n";
+									while(brandString != ""){
+										indash = brandString.find("*", startit);
+										if (indash ==-1) // this is the last brand	
+										{	
+											indash = brandString.find("\n", startit);
+										}
+							
+										brands[brandN] = brandString.substr(startit, indash);
+										brandN ++;
+										brandString = brandString.substr(lengthit+1);
+										startit = 0;
+									}
+								}
+					   		}
+			//		if (var=="brand"){
+			//			brand = (argument.substr(startit, lengthit)).c_str();
+			//			catFilteredFeatures[0] = 1;
+			//			if (brand == "All Brands"){
+			//				catFilteredFeatures[0] = 0;
+			//			}
+			//			// this will be changed once we have an array of brands
+			//			brands[0] = brand;
+			//   		}		
 			
 			   		else if(var == "price_min"){
 						filteredRange[0][0] = atof((argument.substr(startit, lengthit)).c_str()) * 100;
@@ -236,7 +276,8 @@ void parseInput(string* varNames, map<const string, int>productNames, string pro
 				break;
 		default: 
 				break;
-	}			
+	}	
+	return brandN;		
 }
 string generateOutput(string* indicatorNames, int conFeatureN, int productN, double** conFeatureRange, string* varNames, int repW, int* reps, bool reped, 
 	int* clusterIDs, int* mergedClusterIDs, int* clusterCounts, int** indicators){
