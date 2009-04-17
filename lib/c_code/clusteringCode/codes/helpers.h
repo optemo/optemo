@@ -461,7 +461,6 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators,
 			command += ")";
 		}
 		else{
-			cout<<"in else"<<endl;
 			ostringstream cId;
 			cId << clusterIDs[i];
 			command += cId.str();
@@ -469,9 +468,8 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators,
 		}	
 		
 		command += ";";
-		cout<<"command is  "<<command<<endl;
 		res = stmt->executeQuery(command);
-			cout<<"in indicators"<<endl;
+	
 		res->next();
 		
 		range[0][0] = res->getInt("price_min");

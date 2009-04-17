@@ -68,12 +68,12 @@ void parseInput(string* varNames, map<const string, int>productNames, string pro
 	string var;
 	int ind, startit, endit, lengthit; 
 	
-	
+	catFeatureNames[0]= "brand";
+	conFeatureNames[0]= "price";
 	switch(productNames[productName]){
 		case 1:
 	
-				catFeatureNames[0]= "brand";
-				conFeatureNames[0]= "price";
+				
 				conFeatureNames[1]= "displaysize";  
 			    conFeatureNames[2]= "opticalzoom";
 			    conFeatureNames[3]= "maximumresolution";
@@ -156,11 +156,83 @@ void parseInput(string* varNames, map<const string, int>productNames, string pro
 				
 		case 2:
 		
-				catFeatureNames[0]= "";
-				conFeatureNames[0]= "";
-				conFeatureNames[1]= "";  
-			    conFeatureNames[2]= "";
-			    conFeatureNames[3]= "";
+			conFeatureNames[1]= "ppm";  
+		    conFeatureNames[2]= "itemwidth";
+		    conFeatureNames[3]= "paperinput";
+		    varNames[0] = "session_id";
+			varNames[1] = "cluster_id";
+			varNames[2] = "brand";
+			varNames[3] = "price_min";
+			varNames[4] = "price_max";
+			varNames[5] = "ppm_min";
+			varNames[6] = "ppm_max";
+			varNames[7] = "itemwidth_min";
+			varNames[8] = "itemwidth_max";
+			varNames[9] = "paperinput_min";
+			varNames[10] = "paperinput_max";
+		
+			
+			indicatorNames[0] = "price";
+			indicatorNames[1] = "ppm";
+			indicatorNames[2] = "itemwidth";
+			indicatorNames[3] = "paperinput";
+			
+			
+			for (int j=0; j<varNamesN; j++){
+				var = varNames[j];
+				ind = argument.find(var, 0);
+				endit = argument.find("\n", ind);
+				startit = ind + var.length() + 2;
+				lengthit = endit - startit;
+				if(lengthit > 0){
+
+					if (var=="brand"){
+						brand = (argument.substr(startit, lengthit)).c_str();
+						catFilteredFeatures[0] = 1;
+						if (brand == "All Brands"){
+							catFilteredFeatures[0] = 0;
+						}
+						// this will be changed once we have an array of brands
+						brands[0] = brand;
+			   		}		
+			
+			   		else if(var == "price_min"){
+						filteredRange[0][0] = atof((argument.substr(startit, lengthit)).c_str()) * 100;
+			        	conFilteredFeatures[0] = 1;
+		    		}
+			   		else if(var == "price_max"){
+		  				filteredRange[0][1] = atof((argument.substr(startit, lengthit)).c_str()) ;	
+						filteredRange[0][1] = filteredRange[0][1] * 100;
+				    	conFilteredFeatures[0] = 1;
+			    	}
+			   		else if(var == "ppm_min"){
+					    filteredRange[1][0] = atof((argument.substr(startit, lengthit)).c_str());
+					    conFilteredFeatures[1] = 1;
+			    	}
+			   		else if(var == "ppm_max"){
+				    	filteredRange[1][1] = atof((argument.substr(startit, lengthit)).c_str());
+				    	conFilteredFeatures[1] = 1;
+			    	}
+			   		else if(var == "itemwidth_min"){
+				    	filteredRange[2][0] = atof((argument.substr(startit, lengthit)).c_str());
+				    	conFilteredFeatures[2] = 1;
+			    	}
+			   		else if(var == "itemwidth_max"){
+					    filteredRange[2][1] = atof((argument.substr(startit, lengthit)).c_str());
+					    conFilteredFeatures[2] = 1;
+					}
+			   		else if (var == "paperinput_min"){
+						filteredRange[3][0] = atof((argument.substr(startit, lengthit)).c_str());
+				   		conFilteredFeatures[3] = 1;
+			    	}	
+			   		else if (var == "paperinput_max"){
+			     	    filteredRange[3][1] = atof((argument.substr(startit, lengthit)).c_str());
+					   	conFilteredFeatures[3] = 1;		
+					}
+					
+		     	}
+			}
+		
 				break;
 		default: 
 				break;
@@ -168,6 +240,7 @@ void parseInput(string* varNames, map<const string, int>productNames, string pro
 }
 string generateOutput(string* indicatorNames, int conFeatureN, int productN, double** conFeatureRange, string* varNames, int repW, int* reps, bool reped, 
 	int* clusterIDs, int* mergedClusterIDs, int* clusterCounts, int** indicators){
+
 		string out = "--- !map:HashWithIndifferentAccess \n";
 		out.append("result_count: ");
 		ostringstream resultCountStream;

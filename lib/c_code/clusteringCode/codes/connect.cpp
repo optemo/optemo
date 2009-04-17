@@ -221,7 +221,7 @@ int main(int argc, char** argv) {
 ///////////////////////////////////////////////
 		
 			try {
-				
+						
 				// Using the Driver to create a connection
 				driver = sql::mysql::get_mysql_driver_instance();
 				con = driver->connect(HOST, PORT, USER, PASS);
@@ -252,32 +252,29 @@ int main(int argc, char** argv) {
 				size = res->rowsCount();
 			}	
 			int* productIDs = new int [size];
-			
-		
-		
-			int productN = filter2(filteredRange, brand, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange);
-			cout<<"productN is "<<productN<<endl;
+			int productN = filter2(filteredRange, brand, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange, productName, conFeatureNames);
 			if (productN> 0){
 				if (productN<=repW){
 					repW = productN;                 
 					smallNFlag = true;
 				}
+				
 				int* reps = new int [repW];		
 				int* clusterIDs = new int[repW];
 				int* clusterCounts = new int[repW];
 				int* mergedClusterIDs;
+			
+				reped = getRep(reps, productIDs, productN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames);
 				
-				reped = getRep(reps, productIDs, productN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName);
-				for (int r=0; r<repW; r++){
-					cout<<"clusterIDs["<<r<<"] is  "<<clusterIDs[r]<<endl;
-				}
+		
 				if(reped){
 						
 					getIndicators(clusterIDs,repW, conFeatureN, indicators, stmt, res, mergedClusterIDs, productName, conFeatureNames);
 				}
 		
 //Generating the output string 
-			
+			//	repW = 9;
+		
 			
 				out = generateOutput(indicatorNames, conFeatureN, productN, conFeatureRange, varNames, repW, reps, reped, clusterIDs, mergedClusterIDs, clusterCounts, indicators);
 			}

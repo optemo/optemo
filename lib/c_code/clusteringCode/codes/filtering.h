@@ -132,16 +132,16 @@
 //}
 
 int filter2(double **filteredRange, string brand,sql::Statement *stmt,
- sql::ResultSet *res, sql::ResultSet *res2, int* productIDs, bool* conFilteredFeatures, bool* catFilteredFeatures, int clusterID, int clusterN, int conFeatureN, double** conFeatureRange) {
+ sql::ResultSet *res, sql::ResultSet *res2, int* productIDs, bool* conFilteredFeatures, bool* catFilteredFeatures, int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string productName, string* conFeatureNames) {
 	
 	int productN = 0;
 	string command;
-	string* conFeatureNames = new string[conFeatureN];
-	conFeatureNames[0] = "price";
-	conFeatureNames[1] = "displaysize";
-	conFeatureNames[2] = "opticalzoom";
-	conFeatureNames[3] = "maximumresolution";
+	string product_clusters = productName;
+	product_clusters += "_clusters";
+	string product_nodes = productName;
+	product_nodes += "_nodes";
 	
+
 
 	for(int f=0; f<conFeatureN; f++){
 		conFeatureRange[f][0] = 100000000.0;
@@ -154,7 +154,13 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 	}
 	
 	if (clusterID==0){
-		command = "SELECT distinct product_id, price, maximumresolution, displaysize, opticalzoom from nodes";
+		command = "SELECT distinct product_id, price";
+		for (int i=1; i<conFeatureN; i++){
+			command += ", ";
+			command += conFeatureNames[i];
+		}
+		command += " from ";
+		command += product_nodes;
 		if (conFilteredFeatures[0]){
 			command += " where (price>=";
 			ostringstream minv;
@@ -171,16 +177,20 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 				command += " AND ";
 			}
 		}
-		
+	 ////////////////////////////////////////This SHOULD be also 	
 	  if (conFilteredFeatures[1]){
 		if(!conFilteredFeatures[0]){
 			command += " where ";
 		}
-			command += "(displaysize>=";
-			ostringstream minv;
-			minv<<filteredRange[1][0];
-			command += minv.str(); 
-			command += " AND displaysize<=";
+		command += "(";
+		command += conFeatureNames[1]; 
+		command += ">=";
+		ostringstream minv;
+		minv<<filteredRange[1][0];
+		command += minv.str(); 
+		command += " AND ";
+		command += conFeatureNames[1];
+		command += "<=";
 			ostringstream maxv;
 			maxv<<filteredRange[1][1];
 			command += maxv.str();
@@ -193,11 +203,15 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 			if(!conFilteredFeatures[0] && !conFilteredFeatures[1]){
 				command += " where ";
 			}
-			command += "(opticalzoom>=";
+			command += "(";
+			command += conFeatureNames[2];
+			command +=">=";
 			ostringstream minv;
 			minv<<filteredRange[2][0];
 			command += minv.str(); 
-			command += " AND opticalzoom<=";
+			command += " AND ";
+			command += conFeatureNames[2];
+			command += "<=";
 			ostringstream maxv;
 			maxv<<filteredRange[2][1];
 			command += maxv.str();
@@ -211,11 +225,15 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 			if(!conFilteredFeatures[0] && !conFilteredFeatures[1] && !conFilteredFeatures[2]){
 				command += " where ";
 			}
-			command += "(maximumresolution>=";
+			command += "(";
+			command += conFeatureNames[3];
+			command +=">=";
 			ostringstream minv;
 			minv<<filteredRange[3][0];
 			command += minv.str(); 
-			command += " AND maximumresolution<=";
+			command += " AND ";
+			command += conFeatureNames[3];
+			command += "<=";
 			ostringstream maxv;
 			maxv<<filteredRange[3][1];
 			command += maxv.str();
@@ -237,9 +255,8 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 			command += ")";
 		}
 		command += ";";
-	
 		res = stmt->executeQuery(command);
-		
+	
 
 				command = "";
 				ostringstream mino;
@@ -251,14 +268,15 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 				command += maxv.str();
 				command += "";
 		
+				
+		
 		while(res->next()){
 				
 			productIDs[productN] = res->getInt("product_id");
 			double* eachValue = new double[conFeatureN];
-			
-			for (int f=0; f<conFeatureN; f++){
-				
-				eachValue[f] = res->getDouble(conFeatureNames[f]);
+		
+			for (int i=0; i<conFeatureN; i++){
+				eachValue[i] = res->getDouble(conFeatureNames[i]);
 			}
 			
 			for(int f=0; f<conFeatureN; f++){
@@ -277,7 +295,9 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 	
 	else{ //if clusterID != 0
 
-		command = "SELECT DISTINCT id from clusters where parent_id=";
+		command = "SELECT DISTINCT id from ";
+		command += product_clusters;
+		command +=" where parent_id=";
 		ostringstream cid; 
 		cid<<clusterID;
 		
@@ -292,7 +312,14 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 		
 		if (clusterN==0){ //i.e. there is no subCluster
 			
-			command = "SELECT distinct product_id, price, maximumresolution, displaysize, opticalzoom from nodes where cluster_id=";
+			command = "SELECT distinct product_id, price";
+			for (int i=1; i<conFeatureN; i++){
+				command += ", ";
+				command += conFeatureNames[i];
+			}
+			command += " from ";
+			command += product_nodes;
+			command += " where cluster_id=";
 			command += cid.str();
 		}
 		else{
@@ -302,7 +329,14 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 				i++;
 			}
 			
-			command = "SELECT distinct product_id, price, maximumresolution, displaysize, opticalzoom from nodes where (cluster_id=";
+			command = "SELECT distinct product_id, price";
+			for (int i=0; i<conFeatureN; i++){
+				command += ", ";
+				command += conFeatureNames[i];
+			}
+			command += " from ";
+			command += product_nodes;
+			command +=" where (cluster_id=";
 			ostringstream cid2; 
 			cid2<<clusterChildren[0];
 			command += cid2.str();
@@ -334,11 +368,15 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 				}
 			}	
 			 if(conFilteredFeatures[1]){
-				command += "(displaysize>=";
+				command += "(";
+				command += conFeatureNames[1];
+				command +=">=";
 				ostringstream minv;
 				minv<<filteredRange[1][0];
 				command += minv.str(); 
-				command += " AND displaysize<=";
+				command += " AND ";
+				command += conFeatureNames[1];
+				command +="<=";
 				ostringstream maxv;
 				maxv<<filteredRange[1][1];
 				command += maxv.str();
@@ -348,11 +386,15 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 				}
 			}
 			 if(conFilteredFeatures[2]){
-				command += "(opticalzoom>=";
+				command += "(";
+				command += conFeatureNames[2];
+				command += ">=";
 				ostringstream minv;
 				minv<<filteredRange[2][0];
 				command += minv.str(); 
-				command += " AND opticalzoom<=";
+				command += " AND ";
+				command += conFeatureNames[2];
+				command +="<=";
 				ostringstream maxv;
 				maxv<<filteredRange[2][1];
 				command += maxv.str();
@@ -362,11 +404,15 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 				}
 			}
 			 if(conFilteredFeatures[3]){
-				command += "(maximumresolution>=";
+				command += "(";
+				command += conFeatureNames[3];
+				command +=">=";
 				ostringstream minv;
 				minv<<filteredRange[3][0];
 				command += minv.str(); 
-				command += " AND maximumresolution<=";
+				command += " AND ";
+				command += conFeatureNames[3];
+				command +="<=";
 				ostringstream maxv;
 				maxv<<filteredRange[3][1];
 				command += maxv.str();
@@ -412,9 +458,18 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 	return productN;
 }
 
-int getRepCluster(int clusterID, int conFeatureN, sql::Statement *stmt , sql::ResultSet *res, int productN, int* productIDs, int* reps, int repSize){ 
+int getRepCluster(int clusterID, int conFeatureN, sql::Statement *stmt , sql::ResultSet *res, int productN, int* productIDs, int* reps, int repSize, string productName, 
+			 string* conFeatureNames){ 
 
-	string command = "SELECT * from nodes where cluster_id=";
+	string product_clusters = productName;
+	product_clusters += "_clusters";
+	
+	string product_nodes = productName;
+	product_nodes += "_nodes";
+	
+	string command = "SELECT * from ";
+	command += product_nodes;
+	command +=" where cluster_id=";
 	ostringstream cid;
 	int rep=0;
 	int turn = 0;
@@ -445,12 +500,10 @@ int getRepCluster(int clusterID, int conFeatureN, sql::Statement *stmt , sql::Re
 	while(res->next()){
 			
 		data[0][i] = res->getInt("price");
+		for (int f=1; f<conFeatureN; f++){
+			data[f][i] = res->getDouble(conFeatureNames[f]);
+		}
 
-		data[1][i] = res->getDouble("displaysize");
-
-		data[2][i] = res->getDouble("opticalzoom");
-
-		data[3][i] = res->getDouble("maximumresolution"); 
 		sortedA[i] = res->getInt("product_id");
 	
 		i++;
@@ -470,9 +523,18 @@ int getRepCluster(int clusterID, int conFeatureN, sql::Statement *stmt , sql::Re
 }
 
 //getRepClusterString(mergedClusterIDs, conFeatureN, stmt, res2, productN,productIds,reps,j);
-int getRepClusterString(int* clusterIDs, int mergedClusterN, int conFeatureN, sql::Statement *stmt , sql::ResultSet *res, int productN, int* productIDs, int* reps, int repSize){ 
+int getRepClusterString(int* clusterIDs, int mergedClusterN, int conFeatureN, sql::Statement *stmt , sql::ResultSet *res, int productN, int* productIDs, int* reps, 
+		int repSize, string productName, string* conFeatureNames){ 
 
-	string command = "SELECT * from nodes where (cluster_id=";
+	string product_clusters = productName;
+	product_clusters += "_clusters";
+	
+	string product_nodes = productName;
+	product_nodes += "_nodes"; 		 
+	
+	string command = "SELECT * from ";
+	command += product_nodes;
+	command += " where (cluster_id=";
 	ostringstream cid;
 	int rep=0;
 	int turn=0;
@@ -509,12 +571,10 @@ int getRepClusterString(int* clusterIDs, int mergedClusterN, int conFeatureN, sq
 	while(res->next()){
 			
 		data[0][i] = res->getInt("price");
+		for (int f=1; f<conFeatureN; f++){
 
-		data[1][i] = res->getDouble("displaysize");
-
-		data[2][i] = res->getDouble("opticalzoom");
-
-		data[3][i] = res->getDouble("maximumresolution"); 
+			data[1][i] = res->getDouble(conFeatureNames[f]);
+} 
 		sortedA[i] = res->getInt("product_id");
 
 		i++;
@@ -535,7 +595,7 @@ int getRepClusterString(int* clusterIDs, int mergedClusterN, int conFeatureN, sq
 }
 
 bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clusterCounts, int conFeatureN, int& repW, 
-				sql::Statement *stmt, sql::ResultSet *res, sql::ResultSet *res2, int clusterID, bool smallNFlag, int* mergedClusterIDs, int* mergedClusterIDInput, string productName){
+				sql::Statement *stmt, sql::ResultSet *res, sql::ResultSet *res2, int clusterID, bool smallNFlag, int* mergedClusterIDs, int* mergedClusterIDInput, string productName, string* conFeatureNames){
 					
 					
 	bool reped = false;
@@ -693,7 +753,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 			command += idStream.str();
 		}
 			command += ")) order by layer, cluster_size DESC;";
-		//	cout<<"commad is "<<command<<endl;
+	
 			res = stmt->executeQuery(command);
 			
 			clusterN = res->rowsCount();
@@ -796,7 +856,6 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 	
 	        int cId;
 			while(res->next() && j<repW){
-				
 				if (clusterID == 0){
 					cId= res->getInt("cluster_id");
 				}
@@ -843,7 +902,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 				int cIdN = 1;
 				int* cIds = new int[cIdN];
 				cIds[0] = cId;
-				rep = getRepCluster(cId,conFeatureN, stmt, res2, productN,productIds, reps,j);
+				rep = getRepCluster(cId,conFeatureN, stmt, res2, productN,productIds, reps,j, productName, conFeatureNames);
 				
 				if (rep>0){
 				
@@ -853,7 +912,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 					j++;	
 				}
 			}
-			
+		
 	if (j<repW){ // i.e. (clusterN<repW)
 		// we should use children and remove parent
 			int i=0;
@@ -945,7 +1004,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 							res2 = stmt->executeQuery(command);
 							clusterCount = res2->rowsCount();
 							if (clusterCount>0){
-								rep = getRepCluster(cid,conFeatureN, stmt, res2, productN,productIds,reps,j);
+								rep = getRepCluster(cid,conFeatureN, stmt, res2, productN,productIds,reps,j, productName, conFeatureNames);
 								if(rep>0) {	
 									reps[j] = rep;
 									clusterIds[j] = cid;
@@ -1014,7 +1073,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 								}
 							}
 							if (mergedCount>0){
-								rep = getRepClusterString(mergedClusterIDs, mergedClusterN, conFeatureN, stmt, res2, productN,productIds,reps,j);
+								rep = getRepClusterString(mergedClusterIDs, mergedClusterN, conFeatureN, stmt, res2, productN,productIds,reps,j, productName, conFeatureNames);
 								
 								if (rep>0){
 									reps[j] = rep;
