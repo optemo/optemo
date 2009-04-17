@@ -133,7 +133,7 @@
 
 int filter2(double **filteredRange, string brand,sql::Statement *stmt,
  sql::ResultSet *res, sql::ResultSet *res2, int* productIDs, bool* conFilteredFeatures, bool* catFilteredFeatures, int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string productName, string* conFeatureNames) {
-	
+
 	int productN = 0;
 	string command;
 	string product_clusters = productName;
@@ -177,6 +177,7 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 				command += " AND ";
 			}
 		}
+		
 	 ////////////////////////////////////////This SHOULD be also 	
 	  if (conFilteredFeatures[1]){
 		if(!conFilteredFeatures[0]){
@@ -256,7 +257,6 @@ int filter2(double **filteredRange, string brand,sql::Statement *stmt,
 		}
 		command += ";";
 		res = stmt->executeQuery(command);
-	
 
 				command = "";
 				ostringstream mino;
@@ -615,11 +615,12 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 		for(int i=0; i<productN; i++){
 			reps[i] = productIds[i];
 			if (clusterID==0){
+				
 				command = "select ";
 				command += product_clusters;
 				command += ".id from ";
 				command += product_nodes;
-				command += "_nodes, ";
+				command += ", ";
 				command += product_clusters;
 				command += " where (";
 				command += product_nodes;
@@ -679,7 +680,8 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 					command += parentIdSmall.str();
 				}
 				command += ");" ;
-				}			
+				}				
+		
 						res = stmt->executeQuery(command);
 						res->next();
 						clusterIds[i] = res->getInt("id");
@@ -717,7 +719,9 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 							command += camIdStream2.str();
 						}
 						command += "));";
+		
 						res = stmt->executeQuery(command);
+				
 						clusterCounts[i] = 0;//res->rowsCount();
 						reped = false;
 		}
@@ -755,7 +759,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 			command += ")) order by layer, cluster_size DESC;";
 	
 			res = stmt->executeQuery(command);
-			
+		
 			clusterN = res->rowsCount();
 	}
 	
@@ -1081,9 +1085,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 									clusterCounts[j] = mergedCount;
 									j++;
 								}
-							//	else{
-							//		cout<<"ERROR"<<endl;
-							//	}
+						
 							}
 			  		}
 			}
