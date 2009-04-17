@@ -12,11 +12,11 @@
 	<div id="image"><%= link_to image_tag(@product.imagelurl, :width => @product.imagelw, :height => @product.imagelh), @product.imagelurl, :popup => true %></div>
 	<div id="features">
 	<ul>
-		<% $productType::ShowFeatures.each_index do |i| %>
-			<% f_name = $productType::ShowFeatures[i] %>
+		<% session[:productType].constantize::ShowFeatures.each_index do |i| %>
+			<% f_name = session[:productType].constantize::ShowFeatures[i] %>
 			<% f = @product.send(f_name) %>
 			<% if !f.nil? %>
-				<li><span class="detail_label"><%= $productType::ShowFeaturesDisp[i] %>: </span><%= @product.display f_name %></li>
+				<li><span class="detail_label"><%= session[:productType].constantize::ShowFeaturesDisp[i] %>: </span><%= @product.display f_name %></li>
 			<% end %>
 		<% end %>
 	</ul>

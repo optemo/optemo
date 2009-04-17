@@ -12,7 +12,7 @@ class CompareController < ApplicationController
       redirect_to "/compare/#{@products.join('/')}"
     else
       params[:path_info].collect do |id|
-        @products << $productType.find(id)
+        @products << session[:productType].constantize.find(id)
       end
       respond_to do |format|
         format.html # index.html.erb
@@ -24,7 +24,7 @@ class CompareController < ApplicationController
   def list
     @saveds = []
     params[:path_info].collect do |id|
-      @saveds << productType.find(id)
+      @saveds << session[:productType].constantize.find(id)
     end
     respond_to do |format|
       format.html # index.html.erb

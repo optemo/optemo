@@ -79,7 +79,7 @@ class SearchController < ApplicationController
     @session.result_count = @search.count > 9 ? 9 : @search.count
     if @session.result_count == 0
       flash[:error] = "No products were found"
-      redirect_to "/#{$productType.name.pluralize.downcase}/list/"
+      redirect_to "/#{session[:productType].pluralize.downcase || $DefaultProduct.pluralize.downcase}/list/"
     else
       @session.msg = "Search results for: "+params[:search]
       "i0=".upto("i8=") do |i|
@@ -109,7 +109,7 @@ class SearchController < ApplicationController
       myfilter.delete('updated_at')
       myfilter.delete('filter')
       myfilter.delete('brand') if myfilter['brand'].blank?
-      myfilter.delete_if {|key, val| (key.index('_max') || key.index('_min'))&&!key.index(Regexp.union($productType::MainFeatures<<"price"))}
+      myfilter.delete_if {|key, val| (key.index('_max') || key.index('_min'))&&!key.index(Regexp.union(session[:productType].constantize::MainFeatures<<"price"))}
       myfilter.delete('product_id') if myfilter['cluster_id']
       myfilter.delete('cluster_id') unless myfilter['cluster_id']
       myfilter.delete('product_id') unless myfilter['product_id']
@@ -120,7 +120,7 @@ class SearchController < ApplicationController
     s.update_attributes(q)
     session[:search_id] = s.id
     #Make request work with c code
-    q['product_name'] = $productType.name.downcase
+    q['product_name'] = session[:productType].downcase || $DefaultProduct
     q['brand'] = q['brand'].split('*').first if !q['brand'].nil? #Remove first later
     myparams = q.to_yaml
     #debugger
@@ -148,7 +148,7 @@ class SearchController < ApplicationController
     end
     @session = s.session
     @session.update_attributes(options)
-    redirect_to "/#{$productType.name.pluralize.downcase}/list/"+@session.URL
+    redirect_to "/#{session[:productType].pluralize.downcase || $DefaultProduct.pluralize.downcase}/list/"+@session.URL
   end
   
   def combine_list(a)

@@ -1,5 +1,5 @@
-<% $productType::MainFeatures.each_index do |i| %>
-<%= render :partial => 'sliderhtml', :locals => {:name => $productType::MainFeaturesDisp[i], :val => $productType::MainFeatures[i], :money_formatting => false, :ses_name => "f#{i}", :min => @dbprops.db_features.find_by_name($productType::MainFeatures[i]).min, :max => @dbprops.db_features.find_by_name($productType::MainFeatures[i]).max} %>
+<% session[:productType].constantize::MainFeatures.each_index do |i| %>
+<%= render :partial => 'sliderhtml', :locals => {:name => session[:productType].constantize::MainFeaturesDisp[i], :val => session[:productType].constantize::MainFeatures[i], :money_formatting => false, :ses_name => "f#{i}", :min => @dbprops.db_features.find_by_name(session[:productType].constantize::MainFeatures[i]).min, :max => @dbprops.db_features.find_by_name(session[:productType].constantize::MainFeatures[i]).max} %>
 <% end %>
 <%= render :partial => 'sliderhtml', :locals => {:name => 'Price', :val => 'price', :money_formatting => true, :ses_name => 'price', :min => @dbprops.price_min/100, :max =>(@dbprops.price_max.to_f/100).ceil} %>
 
@@ -63,8 +63,8 @@ shapelayer.rect(max*length,0,length,height).attr({fill: '#dddddd', "stroke-opaci
 		// <![CDATA[
 
 			// horizontal slider control
-			<% $productType::MainFeatures.each_index do |i| %>
-			<%= render :partial => 'sliderjs', :locals => {:val => $productType::MainFeatures[i], :min => @dbprops.db_features.find_by_name($productType::MainFeatures[i]).min, :max => @dbprops.db_features.find_by_name($productType::MainFeatures[i]).max, :money_formatting => false} %>
+			<% session[:productType].constantize::MainFeatures.each_index do |i| %>
+			<%= render :partial => 'sliderjs', :locals => {:val => session[:productType].constantize::MainFeatures[i], :min => @dbprops.db_features.find_by_name(session[:productType].constantize::MainFeatures[i]).min, :max => @dbprops.db_features.find_by_name(session[:productType].constantize::MainFeatures[i]).max, :money_formatting => false} %>
 			<% end %>
 			<%= render :partial => 'sliderjs', :locals => {:val => 'price', :min => @dbprops.price_min/100, :max =>(@dbprops.price_max.to_f/100).ceil, :money_formatting => true} %>
 			
