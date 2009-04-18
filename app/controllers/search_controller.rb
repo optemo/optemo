@@ -109,7 +109,8 @@ class SearchController < ApplicationController
       myfilter.delete('updated_at')
       myfilter.delete('filter')
       myfilter.delete('brand') if myfilter['brand'].blank?
-      myfilter.delete_if {|key, val| (key.index('_max') || key.index('_min'))&&!key.index(Regexp.union((session[:productType].constantize::MainFeatures<<"price").to_s))}
+      #myfilter.delete_if {|key, val| (key.index('_max') || key.index('_min'))&&!key.index(Regexp.union(session[:productType].constantize::MainFeatures+["price"]))}
+      myfilter.delete_if {|key, val| (key.index('_max') || key.index('_min'))&&!key.index(/ppm|itemwidth|paperinput|price/)}
       myfilter.delete('product_id') if myfilter['cluster_id']
       myfilter.delete('cluster_id') unless myfilter['cluster_id']
       myfilter.delete('product_id') unless myfilter['product_id']
