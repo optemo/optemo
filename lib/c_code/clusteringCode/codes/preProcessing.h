@@ -18,8 +18,6 @@ void preClustering(string* varNames, map<const string, int>productNames, string 
 				conFeatureNames[1]= "displaysize";  
 			    conFeatureNames[2]= "opticalzoom";
 			    conFeatureNames[3]= "maximumresolution";
-
-
 				varNames[0] = "layer";
 				varNames[1] = "camid";
 				varNames[2] = "brand";
@@ -222,15 +220,7 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 									}
 								}
 					   		}
-			//		if (var=="brand"){
-			//			brand = (argument.substr(startit, lengthit)).c_str();
-			//			catFilteredFeatures[0] = 1;
-			//			if (brand == "All Brands"){
-			//				catFilteredFeatures[0] = 0;
-			//			}
-			//			// this will be changed once we have an array of brands
-			//			brands[0] = brand;
-			//   		}		
+	
 			
 			   		else if(var == "price_min"){
 						filteredRange[0][0] = atof((argument.substr(startit, lengthit)).c_str()) * 100;

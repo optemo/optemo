@@ -70,13 +70,13 @@ int main(int argc, char** argv) {
 	string tableName = productName;
 	tableName.append("s");
 	map<const string, int> productNames;
-	productNames["Camera"] = 1;
-	productNames["Printer"] = 2;
+	productNames["camera"] = 1;
+	productNames["printer"] = 2;
 	
 	switch(productNames[productName]){
 		
 		case 1:
-		
+					//productName = "Camera";
 					clusterN = 9; 
 					conFeatureN= 4;
 					catFeatureN= 1;
@@ -86,7 +86,8 @@ int main(int argc, char** argv) {
 					repW = 9; 
 					break;
 			
-		case 2:
+		case 2: 	
+				//	productName = "Printer";
 					clusterN = 9; 
 					conFeatureN= 4;
 					catFeatureN= 1;
@@ -106,7 +107,7 @@ int main(int argc, char** argv) {
 					break;
 	}
 	
-	string* brands = new string [1] ;
+	string* brands = new string [40] ;
 	int* mergedClusterIDInput = new int[clusterN];
 	bool smallNFlag =false;
 	string* indicatorNames = new string[conFeatureN];
@@ -171,12 +172,12 @@ int main(int argc, char** argv) {
 		}
 	}
 	
-	parseInput(varNames, productNames, productName, argu, brands, catFilteredFeatures, conFilteredFeatures, boolFilteredFeatures, filteredRange, 
+		
+	int brandN = parseInput(varNames, productNames, productName, argu, brands, catFilteredFeatures, conFilteredFeatures, boolFilteredFeatures, filteredRange, 
 				varNamesN, conFeatureNames, catFeatureNames, indicatorNames);
-			
-    		
-	string brand = "";
 
+    	
+	string brand = brands[0];
 // Driver Manager
 
    	sql::mysql::MySQL_Driver *driver;
@@ -221,7 +222,7 @@ int main(int argc, char** argv) {
 ///////////////////////////////////////////////
 		
 			try {
-				
+						
 				// Using the Driver to create a connection
 				driver = sql::mysql::get_mysql_driver_instance();
 				con = driver->connect(HOST, PORT, USER, PASS);
@@ -241,7 +242,9 @@ int main(int argc, char** argv) {
 				size = res->rowsCount();	
 			}
 			else{
-				command = "SELECT id from nodes where cluster_id=";
+				command = "SELECT id from ";
+				command += productName;
+				command += "_nodes where cluster_id=";
 				ostringstream cid;
 				cid<<clusterID;
 				command += cid.str();
@@ -250,29 +253,30 @@ int main(int argc, char** argv) {
 				size = res->rowsCount();
 			}	
 			int* productIDs = new int [size];
+			int productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange, productName, conFeatureNames);
 			
-		
-		
-			int productN = filter2(filteredRange, brand, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange);
-		
 			if (productN> 0){
 				if (productN<=repW){
 					repW = productN;                 
 					smallNFlag = true;
 				}
+				
 				int* reps = new int [repW];		
 				int* clusterIDs = new int[repW];
 				int* clusterCounts = new int[repW];
 				int* mergedClusterIDs;
-				
-				reped = getRep(reps, productIDs, productN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput);
+			
+				reped = getRep(reps, productIDs, productN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames);
+					
 		
 				if(reped){
-					getIndicators(clusterIDs,repW, conFeatureN, indicators, stmt, res, mergedClusterIDs, productName);
+						
+					getIndicators(clusterIDs,repW, conFeatureN, indicators, stmt, res, mergedClusterIDs, productName, conFeatureNames);
 				}
-			cout<<"HERE"<<endl;	
+		
 //Generating the output string 
-			
+			//	repW = 9;
+		
 			
 				out = generateOutput(indicatorNames, conFeatureN, productN, conFeatureRange, varNames, repW, reps, reped, clusterIDs, mergedClusterIDs, clusterCounts, indicators);
 			}

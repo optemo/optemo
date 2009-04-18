@@ -251,16 +251,18 @@ int *k_means3(double **data, int n, int m, int k, double t, double **centroids){
             double distance = 0;
             //for (j = m; j-- > 0; distance += pow(data[h][j] - c[i][j], 2));
 			for (j=0; j<m; j++){
-				//cout<<"j is "<<j<<endl;
-				if (j==1){
-					distance += (1/2) * pow(data[h][j] - c[i][j], 2);
-				}
-				else if (j==0){
-					distance += (2) * pow(data[h][j] - c[i][j], 2);
-				}
-				else{
-					distance += pow(data[h][j] - c[i][j], 2);
-				}	
+				
+			distance += pow(data[h][j] - c[i][j], 2);	
+				
+			//	if (j==1){
+			//		distance += (1/2) * pow(data[h][j] - c[i][j], 2);
+			//	}
+			//	else if (j==0){
+			//		distance += (2) * pow(data[h][j] - c[i][j], 2);
+			//	}
+			//	else{
+			//		distance += pow(data[h][j] - c[i][j], 2);
+			//	}	
 			}	
 
 			if (distance < min_distance) {

@@ -171,12 +171,10 @@ int main(int argc, char** argv) {
 				clusterID = atoi((argu.substr(startit, lengthit)).c_str());
 		}
 	}
-	
-		
+
 	int brandN = parseInput(varNames, productNames, productName, argu, brands, catFilteredFeatures, conFilteredFeatures, boolFilteredFeatures, filteredRange, 
 				varNamesN, conFeatureNames, catFeatureNames, indicatorNames);
-
-    	
+	
 	string brand = brands[0];
 // Driver Manager
 
@@ -253,6 +251,7 @@ int main(int argc, char** argv) {
 				size = res->rowsCount();
 			}	
 			int* productIDs = new int [size];
+		
 			int productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange, productName, conFeatureNames);
 			
 			if (productN> 0){
