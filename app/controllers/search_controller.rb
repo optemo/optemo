@@ -110,7 +110,11 @@ class SearchController < ApplicationController
       myfilter.delete('filter')
       myfilter.delete('brand') if myfilter['brand'].blank?
       #myfilter.delete_if {|key, val| (key.index('_max') || key.index('_min'))&&!key.index(Regexp.union(session[:productType].constantize::MainFeatures+["price"]))}
-      myfilter.delete_if {|key, val| (key.index('_max') || key.index('_min'))&&!key.index(/ppm|itemwidth|paperinput|price/)}
+      if session[:productType] == 'Printer'
+        myfilter.delete_if {|key, val| (key.index('_max') || key.index('_min'))&&!key.index(/ppm|itemwidth|paperinput|price/)}
+      else
+        myfilter.delete_if {|key, val| (key.index('_max') || key.index('_min'))&&!key.index(/maximumresolution|displaysize|opticalzoom|price/)}
+      end
       myfilter.delete('product_id') if myfilter['cluster_id']
       myfilter.delete('cluster_id') unless myfilter['cluster_id']
       myfilter.delete('product_id') unless myfilter['product_id']
