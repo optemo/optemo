@@ -18,7 +18,7 @@ using namespace std;
 // Public interface of the MySQL Connector/C++
 #include <cppconn/mysql_public_iface.h>
 #include "filtering.h"
-#include "preprocessing.h"
+#include "preProcessing.h"
 
 using namespace std;
  
