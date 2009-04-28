@@ -1,9 +1,11 @@
 <div class='feature'>
 <div class='disp' id='<%= val %>disp'>
 	<% if money_formatting %>
-	$<%= @search.nil? ? min.to_i : @search.send("#{val}_min".intern) < min ? min.to_i : @search.send("#{val}_min".intern).to_i %>-$<%= @search.nil? ? max.ceil : @search.send("#{val}_max".intern) > max ? max.ceil : @search.send("#{val}_max".intern).ceil %>
+	<!--$<%= @search.nil? ? min.to_i : @search.send("#{val}_min".intern) < min ? min.to_i : @search.send("#{val}_min".intern).to_i %>-$<%= @search.nil? ? max.ceil : @search.send("#{val}_max".intern) > max ? max.ceil : @search.send("#{val}_max".intern).ceil %>-->
+	$<%= @session.send("#{val}_min".intern) %>-$<%= @session.send("#{val}_max".intern) %>
 	<% else %>
-	<%= @search.nil? ? min : @search.send("#{val}_min".intern) %>-<%= @search.nil? ? max : @search.send("#{val}_max".intern) %> <%= session[:productType].constantize::MainFeaturesLabel[val] %>
+	<!--<%= @search.nil? ? min : @search.send("#{val}_min".intern) %>-<%= @search.nil? ? max : @search.send("#{val}_max".intern) %> <%= session[:productType].constantize::MainFeaturesLabel[val] %>-->
+	<%= @session.send("#{val}_min".intern) %>-<%= @session.send("#{val}_max".intern) %> <%= session[:productType].constantize::MainFeaturesLabel[val] %>
 	<% end %>
 </div>
 <div class='label'>
@@ -15,5 +17,7 @@
 <div class = 'slider' id='<%= val %>slider'>
 	<div class='handle' id='<%= val %>handle_min'><%= image_tag 'diamond.gif' %></div>
 	<div class='handle' id='<%= val %>handle_max'><%= image_tag 'diamond.gif' %></div>
+	<div class='endlabel_min' id='<%= val %>endlabel_min'><%= min %></div>
+	<div class='endlabel_max' id='<%= val %>endlabel_max'><%= max %></div>
 </div>
 </div>

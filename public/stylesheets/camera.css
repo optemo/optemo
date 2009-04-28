@@ -188,11 +188,11 @@ div #filterbar {
 	margin: 0;
 }
 .slider {
-	/*background: url(../images/sliderbgwticks193px.gif) no-repeat;*/
+	background: url(../images/slider.gif) no-repeat;*/
 	margin: 0 0 0.8em;
-	width: 190px;
-	height: 3px;
-	background-color: black;
+	width: 185px;
+	height: 13px;
+	/*background-color: black;*/
 	position: relative;}
 .label {
 	text-align: left;
@@ -205,9 +205,20 @@ div #filterbar {
 	float: left;}
 .handle {
 	width: 9px;
-	height: 15px;
+	height: 13px;
+	margin-top: -3px;
 	cursor: move;
 	position: absolute;}
+.endlabel_min {
+	position: absolute;
+	bottom: -10px;
+	left: 2px;
+	font-size: 0.5em;}
+.endlabel_max {
+	position: absolute;
+	bottom: -10px;
+	right: 0px;
+	font-size: 0.5em;}
 .disp {
 	width: 80px;
 	position: absolute;
