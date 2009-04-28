@@ -1,6 +1,6 @@
-class CreateClusters < ActiveRecord::Migration
+class CreateCameraClusters < ActiveRecord::Migration
   def self.up
-    create_table :clusters do |t|
+    create_table :camera_clusters do |t|
       t.primary_key :id
       t.integer :parent_id
       t.integer :layer
@@ -16,6 +16,6 @@ class CreateClusters < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :clusters
+    drop_table :camera_clusters
   end
 end

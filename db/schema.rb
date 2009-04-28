@@ -26,6 +26,30 @@ ActiveRecord::Schema.define(:version => 20090415181307) do
     t.datetime "scrapedAt"
   end
 
+  create_table "camera_clusters", :force => true do |t|
+    t.integer "parent_id"
+    t.integer "layer"
+    t.integer "cluster_size"
+    t.float   "maximumresolution_max"
+    t.float   "maximumresolution_min"
+    t.float   "displaysize_max"
+    t.float   "displaysize_min"
+    t.float   "opticalzoom_max"
+    t.float   "opticalzoom_min"
+    t.float   "price_max"
+    t.float   "price_min"
+  end
+
+  create_table "camera_nodes", :force => true do |t|
+    t.integer "cluster_id"
+    t.integer "product_id"
+    t.float   "maximumresolution"
+    t.float   "displaysize"
+    t.float   "opticalzoom"
+    t.float   "price"
+    t.string  "brand"
+  end
+
   create_table "cameras", :force => true do |t|
     t.string   "asin"
     t.text     "detailpageurl"
@@ -86,20 +110,6 @@ ActiveRecord::Schema.define(:version => 20090415181307) do
     t.datetime "updated_at"
   end
 
-  create_table "clusters", :force => true do |t|
-    t.integer "parent_id"
-    t.integer "layer"
-    t.integer "cluster_size"
-    t.float   "maximumresolution_max"
-    t.float   "maximumresolution_min"
-    t.float   "displaysize_max"
-    t.float   "displaysize_min"
-    t.float   "opticalzoom_max"
-    t.float   "opticalzoom_min"
-    t.float   "price_max"
-    t.float   "price_min"
-  end
-
   create_table "db_features", :force => true do |t|
     t.integer  "db_property_id"
     t.string   "name"
@@ -120,16 +130,6 @@ ActiveRecord::Schema.define(:version => 20090415181307) do
     t.float    "price_high"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "nodes", :force => true do |t|
-    t.integer "cluster_id"
-    t.integer "product_id"
-    t.float   "maximumresolution"
-    t.float   "displaysize"
-    t.float   "opticalzoom"
-    t.float   "price"
-    t.string  "brand"
   end
 
   create_table "optemo_development", :force => true do |t|
@@ -259,9 +259,9 @@ ActiveRecord::Schema.define(:version => 20090415181307) do
     t.integer  "filter"
     t.string   "brand",                 :default => "All Brands"
     t.float    "maximumresolution_min", :default => 0.0
-    t.float    "maximumresolution_max", :default => 14.7
+    t.float    "maximumresolution_max", :default => 15.0
     t.float    "displaysize_min",       :default => 0.0
-    t.float    "displaysize_max",       :default => 3.6
+    t.float    "displaysize_max",       :default => 4.0
     t.float    "opticalzoom_min",       :default => 0.0
     t.float    "opticalzoom_max",       :default => 20.0
     t.float    "ppm_min",               :default => 5.0
@@ -280,9 +280,9 @@ ActiveRecord::Schema.define(:version => 20090415181307) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.float    "maximumresolution_min", :default => 0.0
-    t.float    "maximumresolution_max", :default => 14.7
+    t.float    "maximumresolution_max", :default => 15.0
     t.float    "displaysize_min",       :default => 0.0
-    t.float    "displaysize_max",       :default => 3.6
+    t.float    "displaysize_max",       :default => 4.0
     t.float    "opticalzoom_min",       :default => 0.0
     t.float    "opticalzoom_max",       :default => 20.0
     t.float    "ppm_min",               :default => 5.0
