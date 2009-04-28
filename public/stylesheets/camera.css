@@ -192,7 +192,7 @@ div #filterbar {
 	margin: 0 0 0.8em;
 	width: 185px;
 	height: 13px;
-	/*background-color: black;*/
+	padding-bottom: 6px;
 	position: relative;}
 .label {
 	text-align: left;
@@ -211,12 +211,12 @@ div #filterbar {
 	position: absolute;}
 .endlabel_min {
 	position: absolute;
-	bottom: -10px;
+	bottom: -5px;
 	left: 2px;
 	font-size: 0.5em;}
 .endlabel_max {
 	position: absolute;
-	bottom: -10px;
+	bottom: -5px;
 	right: 0px;
 	font-size: 0.5em;}
 .disp {

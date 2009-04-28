@@ -17,20 +17,9 @@
 </div>
 <div id="filterbar">
 	<h2>Filters</h2>
-	<div class='label'>Brands</div>
-	<% if @search && @search.brand != "All Brands" %>
-		<% @search.brand.split('*').each do |b| %>
-		<div><%= link_to image_tag('close.png', :width => '13'), "javascript:removeBrand('#{b}');", {:title => "Remove Brand Filter"} %> <%= b %></div>
-		<% end %>
-		<% selectmsg = "Add Another Brand" %>
-	<% end %>
-	<% form_tag({:controller => 'search', :action => 'filter'},{:id => 'brand_form'}) do %>
-	<%= select('myfilter', 'brand', [selectmsg.nil? ? "All Brands" : selectmsg] +@dbprops.brands.split('*'), options={}, {:onchange => "$('brand_form').submit()"}) %>
-	<%= hidden_field_tag "myfilter[Xbrand]"%>
-	<% end %>
-	<% form_tag({:controller => 'search', :action => 'filter'}) do %>
+	<% form_tag({:controller => 'search', :action => 'filter'},{:id => 'filter_form'}) do %>
 	  <%= render :partial => 'filter' %>
-	  <%= submit_tag 'Filter' %>&nbsp;&nbsp;<a href="javascript:resetFilter();" style="font-size: 0.7em">(reset)</a>
+	  <br>
 	<% end %>
 </div>
 </div>
