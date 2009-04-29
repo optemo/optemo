@@ -1,6 +1,9 @@
+require 'migration_helper'
 class CreatePrinters < ActiveRecord::Migration
+  extend MigrationHelper
   def self.up
     create_table :printers do |t|
+      addBasicProductFeatures
       t.primary_key :id
       t.string :asin
       t.text :detailpageurl
@@ -42,27 +45,26 @@ class CreatePrinters < ActiveRecord::Migration
       t.string :studio
       t.integer :systemmemorysize
       t.string :systemmemorytype
-      t.text :title
-      t.integer :upc
       t.string :warranty
-
-      t.string :merchantid
-      t.string :merchantname
-      t.integer :salepriceint
-      t.string :salepricestr
-      t.string :availability
-      t.boolean :iseligibleforsupersavershipping
-
-      t.string :imagesurl
-      t.integer :imagesheight
-      t.integer :imageswidth
-      t.string :imagemurl
-      t.integer :imagemheight
-      t.integer :imagemwidth 
-      t.string :imagelurl 
-      t.integer :imagelheight   
-      t.integer :imagelwidth    
-      t.timestamps
+      
+      t.float :ppm
+      t.float :ttp
+      t.string :resolution
+      t.string :duplex
+      t.string :connectivity
+      t.string :papersize
+      t.integer :paperoutput
+      t.string :dimensions
+      t.integer :dutycycle 
+      t.integer :paperinput
+      t.string :special
+      t.float :ppmcolor
+      t.string :platform
+      t.boolean :colorprinter
+      t.boolean :scanner
+      t.datetime :scrapedat
+      t.boolean :nodetails
+      t.boolean :printserver
     end
   end
 

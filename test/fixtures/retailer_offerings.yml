@@ -1,0 +1,23 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  product_id: 
+  price: 
+  shipping: 
+  tax: 
+  state: MyString
+  link: MyString
+  retailer_id: 
+  stock: false
+  pricehistory: MyString
+
+two:
+  product_id: 
+  price: 
+  shipping: 
+  tax: 
+  state: MyString
+  link: MyString
+  retailer_id: 
+  stock: false
+  pricehistory: MyString
