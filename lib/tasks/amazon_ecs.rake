@@ -297,7 +297,7 @@ def findprice(p)
       end
     }
     current_page += 1
-    sleep(1) #One Req per sec
+    sleep(2) #One Req per sec
   end while (current_page <= total_pages)
   
   #Save Amazon Price
