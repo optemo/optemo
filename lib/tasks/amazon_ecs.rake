@@ -304,7 +304,8 @@ def findprice(p)
   saveoffer(p,Retailer.find_by_name('Amazon').id,AmazonID)
   #Save lowest Marketplace price
   if lowmerchant.blank?
-    RetailerOffering.find_by_product_id_and_product_type_and_retailer_id(p.id,p.class.name,Retailer.find_by_name('Amazon Marketplace').id).update_attribute(:stock,false)
+    offer = RetailerOffering.find_by_product_id_and_product_type_and_retailer_id(p.id,p.class.name,Retailer.find_by_name('Amazon Marketplace').id)
+    offer.update_attribute(:stock,false) unless offer.nil?
   else
     saveoffer(p,Retailer.find_by_name('Amazon Marketplace').id,lowmerchant)
   end
