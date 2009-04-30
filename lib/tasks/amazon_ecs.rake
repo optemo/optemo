@@ -301,6 +301,7 @@ def findprice(p)
   end while (current_page <= total_pages)
   
   #Save Amazon Price
+  sleep(1) #Be Nice
   saveoffer(p,Retailer.find_by_name('Amazon').id,AmazonID)
   sleep(2) #One Req per sec
   #Save lowest Marketplace price
