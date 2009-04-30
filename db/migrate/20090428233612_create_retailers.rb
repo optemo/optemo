@@ -3,6 +3,8 @@ class CreateRetailers < ActiveRecord::Migration
     create_table :retailers do |t|
       t.string :url
       t.string :name
+      t.string :image
+      
 
       t.timestamps
     end
