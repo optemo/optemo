@@ -302,7 +302,7 @@ def findprice(p)
   
   #Save Amazon Price
   saveoffer(p,Retailer.find_by_name('Amazon').id,AmazonID)
-  sleep(1) #One Req per sec
+  sleep(2) #One Req per sec
   #Save lowest Marketplace price
   if lowmerchant.blank?
     offer = RetailerOffering.find_by_product_id_and_product_type_and_retailer_id(p.id,p.class.name,Retailer.find_by_name('Amazon Marketplace').id)
