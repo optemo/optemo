@@ -37,7 +37,7 @@
 	<% @offerings.each do |offer| %>
 		<% next if !offer.stock || offer.priceint.blank? %>
 		<div class="left">	
-			<%= link_to "#{offer.pricestr}", 'http://amazon.com/o/ASIN/'+@product.asin+'?t=optemo-20', :popup => true %>
+			<%= link_to "#{offer.pricestr}", 'http://amazon.com/gp/product/'+@product.asin+'?tag=optemo-20&m='+'blah', :popup => true %>
 		</div>
 		<div class="right">
 			 <%=  link_to image_tag(offer.retailer.image), 'http://amazon.com/o/ASIN/'+@product.asin+'?t=optemo-20', :popup => true %>
