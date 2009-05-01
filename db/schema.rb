@@ -355,6 +355,7 @@ ActiveRecord::Schema.define(:version => 20090429221603) do
   create_table "retailers", :force => true do |t|
     t.string   "url"
     t.string   "name"
+    t.string   "image"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

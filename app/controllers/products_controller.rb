@@ -64,6 +64,7 @@ class ProductsController < ApplicationController
     #Cleanse id to be only numbers
     params[:id].gsub!(/\D/,'')
     @product = session[:productType].constantize.find(params[:id])
+    @offerings = RetailerOffering.find_all_by_product_id_and_product_type(params[:id],session[:productType])
     #Session Tracking
     s = Viewed.new
     s.session_id = session[:user_id]

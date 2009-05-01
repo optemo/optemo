@@ -4,7 +4,6 @@ class CreateRetailers < ActiveRecord::Migration
       t.string :url
       t.string :name
       t.string :image
-      
 
       t.timestamps
     end

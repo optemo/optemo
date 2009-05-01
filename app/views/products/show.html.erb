@@ -34,17 +34,15 @@
 	</div>
 	<div class="showtable">
 		<h3>Available at the following Retailers</h3>
-	<div class="left">
-	<% if !@product.salepriceint.blank? %>
-		<span class="detail_label">List Price: </span><span style="text-decoration: line-through;"><%= @product.listpricestr %></span><br>
-		<span class="detail_label">Sale Price: </span><span style="color: red;"><%= @product.salepricestr %></span>
-	<% else %>
-		<span class="detail_label">Price: </span><%= @product.listpricestr %>
+	<% @offerings.each do |offer| %>
+		<% next if !offer.stock || offer.priceint.blank? %>
+		<div class="left">	
+			<%= link_to "#{offer.pricestr}", 'http://amazon.com/o/ASIN/'+@product.asin+'?t=optemo-20', :popup => true %>
+		</div>
+		<div class="right">
+			 <%=  link_to image_tag(offer.retailer.image), 'http://amazon.com/o/ASIN/'+@product.asin+'?t=optemo-20', :popup => true %>
+		</div>
 	<% end %>
-	</div>
-	<div class="right">
-		<%= link_to 'Go to Seller', 'http://amazon.com/o/ASIN/'+@product.asin+'?t=optemo-20', :popup => true %> <%=  link_to image_tag('amazon.gif'), 'http://amazon.com/o/ASIN/'+@product.asin+'?t=optemo-20', :popup => true %>
-	</div>
 	</div>
 	<%= flash[:notice] %>
 	<div id='full_link'>

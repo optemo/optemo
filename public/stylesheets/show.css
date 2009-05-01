@@ -63,16 +63,15 @@ div .left{
 	float: left;
 	text-align: right;
 	margin-top: 5px;
+	margin-bottom: 10px;
 	width: 390px;
 }
 div .right{
 	float: right;
 	text-align: left;
+	margin-bottom: 10px;
 	width: 390px;
 	
-}
-.detail_label{
-	font-weight: bold;
 }
 #full_link{
 	clear: both;
