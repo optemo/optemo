@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090415181307) do
+ActiveRecord::Schema.define(:version => 20090429221603) do
 
   create_table "amazon_groups", :force => true do |t|
     t.datetime "created_at"
@@ -24,6 +24,30 @@ ActiveRecord::Schema.define(:version => 20090415181307) do
     t.string   "viewfinderType"
     t.boolean  "leaf",               :default => false
     t.datetime "scrapedAt"
+  end
+
+  create_table "camera_clusters", :force => true do |t|
+    t.integer "parent_id"
+    t.integer "layer"
+    t.integer "cluster_size"
+    t.float   "maximumresolution_max"
+    t.float   "maximumresolution_min"
+    t.float   "displaysize_max"
+    t.float   "displaysize_min"
+    t.float   "opticalzoom_max"
+    t.float   "opticalzoom_min"
+    t.float   "price_max"
+    t.float   "price_min"
+  end
+
+  create_table "camera_nodes", :force => true do |t|
+    t.integer "cluster_id"
+    t.integer "product_id"
+    t.float   "maximumresolution"
+    t.float   "displaysize"
+    t.float   "opticalzoom"
+    t.float   "price"
+    t.string  "brand"
   end
 
   create_table "cameras", :force => true do |t|
@@ -67,9 +91,7 @@ ActiveRecord::Schema.define(:version => 20090415181307) do
     t.text     "specialfeatures"
     t.string   "studio"
     t.text     "title"
-    t.integer  "upc"
     t.string   "merchant"
-    t.string   "condition"
     t.integer  "salepriceint"
     t.string   "salepricestr"
     t.boolean  "iseligibleforsupersavershipping"
@@ -84,20 +106,9 @@ ActiveRecord::Schema.define(:version => 20090415181307) do
     t.integer  "imagelwidth"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "clusters", :force => true do |t|
-    t.integer "parent_id"
-    t.integer "layer"
-    t.integer "cluster_size"
-    t.float   "maximumresolution_max"
-    t.float   "maximumresolution_min"
-    t.float   "displaysize_max"
-    t.float   "displaysize_min"
-    t.float   "opticalzoom_max"
-    t.float   "opticalzoom_min"
-    t.float   "price_max"
-    t.float   "price_min"
+    t.boolean  "instock"
+    t.string   "pricehistory"
+    t.integer  "bestoffer"
   end
 
   create_table "db_features", :force => true do |t|
@@ -122,14 +133,87 @@ ActiveRecord::Schema.define(:version => 20090415181307) do
     t.datetime "updated_at"
   end
 
-  create_table "nodes", :force => true do |t|
-    t.integer "cluster_id"
-    t.integer "product_id"
-    t.float   "maximumresolution"
-    t.float   "displaysize"
-    t.float   "opticalzoom"
-    t.float   "price"
-    t.string  "brand"
+  create_table "newegg_printers", :force => true do |t|
+    t.string   "asin"
+    t.text     "detailpageurl"
+    t.string   "binding"
+    t.string   "brand"
+    t.string   "color"
+    t.string   "cpumanufacturer"
+    t.float    "cpuspeed"
+    t.string   "cputype"
+    t.float    "displaysize"
+    t.string   "ean"
+    t.text     "feature"
+    t.string   "graphicsmemorysize"
+    t.boolean  "isautographed"
+    t.boolean  "ismemorabilia"
+    t.integer  "itemheight"
+    t.integer  "itemlength"
+    t.integer  "itemwidth"
+    t.integer  "itemweight"
+    t.string   "label"
+    t.string   "language"
+    t.string   "legaldisclaimer"
+    t.string   "listpricestr"
+    t.integer  "listpriceint"
+    t.string   "manufacturer"
+    t.string   "model"
+    t.string   "modemdescription"
+    t.string   "mpn"
+    t.string   "nativeresolution"
+    t.integer  "numberofitems"
+    t.integer  "packageheight"
+    t.integer  "packagelength"
+    t.integer  "packagewidth"
+    t.integer  "packageweight"
+    t.integer  "processorcount"
+    t.string   "productgroup"
+    t.string   "publisher"
+    t.text     "specialfeatures"
+    t.string   "studio"
+    t.integer  "systemmemorysize"
+    t.string   "systemmemorytype"
+    t.text     "title"
+    t.integer  "upc"
+    t.string   "warranty"
+    t.string   "merchantid"
+    t.string   "merchantname"
+    t.integer  "salepriceint"
+    t.string   "salepricestr"
+    t.string   "availability"
+    t.boolean  "iseligibleforsupersavershipping"
+    t.string   "imagesurl"
+    t.integer  "imagesheight"
+    t.integer  "imageswidth"
+    t.string   "imagemurl"
+    t.integer  "imagemheight"
+    t.integer  "imagemwidth"
+    t.string   "imagelurl"
+    t.integer  "imagelheight"
+    t.integer  "imagelwidth"
+    t.boolean  "toolow"
+    t.float    "ppm"
+    t.float    "ttp"
+    t.string   "resolution"
+    t.string   "duplex"
+    t.string   "connectivity"
+    t.string   "papersize"
+    t.integer  "paperoutput"
+    t.string   "dimensions"
+    t.integer  "dutycycle"
+    t.integer  "paperinput"
+    t.string   "special"
+    t.float    "ppmcolor"
+    t.string   "platform"
+    t.boolean  "colorprinter"
+    t.boolean  "scanner"
+    t.datetime "scrapedat"
+    t.boolean  "nodetails"
+    t.boolean  "printserver"
+    t.string   "oldprices"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "optemo_development", :force => true do |t|
@@ -202,13 +286,9 @@ ActiveRecord::Schema.define(:version => 20090415181307) do
     t.integer  "systemmemorysize"
     t.string   "systemmemorytype"
     t.text     "title"
-    t.integer  "upc"
     t.string   "warranty"
-    t.string   "merchantid"
-    t.string   "merchantname"
     t.integer  "salepriceint"
     t.string   "salepricestr"
-    t.string   "availability"
     t.boolean  "iseligibleforsupersavershipping"
     t.string   "imagesurl"
     t.integer  "imagesheight"
@@ -221,7 +301,6 @@ ActiveRecord::Schema.define(:version => 20090415181307) do
     t.integer  "imagelwidth"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "toolow"
     t.float    "ppm"
     t.float    "ttp"
     t.string   "resolution"
@@ -240,7 +319,45 @@ ActiveRecord::Schema.define(:version => 20090415181307) do
     t.datetime "scrapedat"
     t.boolean  "nodetails"
     t.boolean  "printserver"
-    t.string   "oldprices"
+    t.boolean  "instock"
+    t.string   "pricehistory"
+    t.integer  "bestoffer"
+  end
+
+  create_table "referrals", :force => true do |t|
+    t.integer  "product_id"
+    t.string   "product_type"
+    t.integer  "session_id"
+    t.integer  "retailer_offering_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "retailer_offerings", :force => true do |t|
+    t.integer  "product_id"
+    t.string   "product_type"
+    t.integer  "priceint"
+    t.string   "pricestr"
+    t.integer  "shipping"
+    t.integer  "tax"
+    t.string   "state"
+    t.string   "link"
+    t.integer  "retailer_id"
+    t.boolean  "stock"
+    t.string   "pricehistory"
+    t.boolean  "toolow"
+    t.string   "availability"
+    t.boolean  "iseligibleforsupersavershipping"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "retailers", :force => true do |t|
+    t.string   "url"
+    t.string   "name"
+    t.string   "image"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "saveds", :force => true do |t|
@@ -259,9 +376,9 @@ ActiveRecord::Schema.define(:version => 20090415181307) do
     t.integer  "filter"
     t.string   "brand",                 :default => "All Brands"
     t.float    "maximumresolution_min", :default => 0.0
-    t.float    "maximumresolution_max", :default => 14.7
+    t.float    "maximumresolution_max", :default => 15.0
     t.float    "displaysize_min",       :default => 0.0
-    t.float    "displaysize_max",       :default => 3.6
+    t.float    "displaysize_max",       :default => 4.0
     t.float    "opticalzoom_min",       :default => 0.0
     t.float    "opticalzoom_max",       :default => 20.0
     t.float    "ppm_min",               :default => 5.0
@@ -280,9 +397,9 @@ ActiveRecord::Schema.define(:version => 20090415181307) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.float    "maximumresolution_min", :default => 0.0
-    t.float    "maximumresolution_max", :default => 14.7
+    t.float    "maximumresolution_max", :default => 15.0
     t.float    "displaysize_min",       :default => 0.0
-    t.float    "displaysize_max",       :default => 3.6
+    t.float    "displaysize_max",       :default => 4.0
     t.float    "opticalzoom_min",       :default => 0.0
     t.float    "opticalzoom_max",       :default => 20.0
     t.float    "ppm_min",               :default => 5.0

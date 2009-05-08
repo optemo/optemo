@@ -1,6 +1,9 @@
+require 'migration_helper'
 class CreateCameras < ActiveRecord::Migration
+  extend MigrationHelper
   def self.up
     create_table :cameras do |t|
+      addBasicProductFeatures
       t.primary_key :id
       t.string :asin
       t.text :detailpageurl
@@ -41,25 +44,6 @@ class CreateCameras < ActiveRecord::Migration
       t.date :releasedate
       t.text :specialfeatures
       t.string :studio
-      t.text :title
-      t.integer :upc
-
-      t.string :merchant
-      t.string :condition
-      t.integer :salepriceint
-      t.string :salepricestr
-      t.boolean :iseligibleforsupersavershipping
-
-      t.string :imagesurl
-      t.integer :imagesheight
-      t.integer :imageswidth
-      t.string :imagemurl
-      t.integer :imagemheight
-      t.integer :imagemwidth 
-      t.string :imagelurl 
-      t.integer :imagelheight   
-      t.integer :imagelwidth    
-      t.timestamps
     end  
   end
 

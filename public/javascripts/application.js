@@ -47,7 +47,7 @@ function remove(id)
 function removeBrand(str)
 {
 	$('myfilter_Xbrand').value = str;
-	$('brand_form').submit();
+	$('filter_form').submit();
 }
 
 

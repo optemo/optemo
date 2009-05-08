@@ -207,39 +207,6 @@ task :get_printer_data_for_ASINs => :environment do
   end
 end
 
-desc "Scraping Amazon Hidden Price"
-task :scrape_hidden_prices => :environment do
-  require 'open-uri'
-  require 'hpricot'
-  #Printer.find(:all, :conditions => 'salepricestr="Too low to display" or salepricestr is null').each {|p|
-  Printer.find_all_by_toolow(true).each {|p|
-  url = "http://www.amazon.com/o/asin/#{p.asin}"
-  doc = Hpricot(open(url,{"User-Agent" => "User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_6; en-us) AppleWebKit/525.27.1 (KHTML, like Gecko) Version/3.2.1 Safari/525.27.1"}).read)
-  price = (doc/"b[@class='priceLarge']").first
-  puts 'Processing'+p.asin
-  sleep(1+rand()*30) #Be nice to Amazon
-  if !price.nil?
-    priceint = price.innerHTML.gsub(/\D/,'').to_i
-    if !p.blank? 
-      if (p.salepriceint.nil? || priceint < p.salepriceint)
-        if !p.salepriceint.nil?
-          if p.oldprices.nil?
-            p.oldprices = [p.updated_at.to_s(:db), p.salepriceint].to_yaml
-          else
-            p.oldprices = (YAML.load(p.oldprices) + [p.updated_at.to_s(:db), p.salepriceint]).to_yaml
-          end
-        end
-        p.salepricestr = price.innerHTML
-        p.salepriceint = priceint
-        p.merchantid = 'ATVPDKIKX0DER' unless p.merchantid
-      end
-      p.toolow = false      
-      p.save!
-    end
-  end
-}
-end
-
 desc "Updating Amazon Price"
 task :update_prices => :environment do
   require 'amazon/ecs'
@@ -298,10 +265,12 @@ task :interpret_special_features => :environment do
 end
 
 private
+AmazonID = 'ATVPDKIKX0DER'
 
 def findprice(p)
   #Find the lowest price
-  lowestprice = 100000000
+  highestprice = 100000000
+  lowestprice = highestprice
   lowmerchant = ''
   current_page = 1
   begin
@@ -318,40 +287,98 @@ def findprice(p)
     end
     offers = [] << offers unless offers.class == Array
     offers.each {|o| 
-      if o.get('offerlisting/price/formattedprice') == 'Too low to display'
-        p.toolow = true
-      else
+      if o.get('offerlisting/price/formattedprice') != 'Too low to display'
         price = o.get('offerlisting/price/amount').to_i
-        if price < lowestprice
+        merchant = o.get('merchant/merchantid')
+        if price < lowestprice && merchant != AmazonID
           lowestprice = price
-          lowmerchant = o.get('merchant/merchantid')
+          lowmerchant = merchant
         end
       end
     }
     current_page += 1
-    sleep(1) #One Req per sec
+    sleep(2) #One Req per sec
   end while (current_page <= total_pages)
   
-  #Save lowest price
-  if !lowmerchant.blank?
-    res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => lowmerchant)
-    offers = res.first_item
-    if !offers.nil?
-      #Save old price
-      if !p.salepriceint.nil?
-        if p.oldprices.nil?
-          p.oldprices = [p.updated_at.to_s(:db), p.salepriceint].to_yaml
-        else
-          p.oldprices = (YAML.load(p.oldprices) + [p.updated_at.to_s(:db), p.salepriceint]).to_yaml
-        end
+  #Save Amazon Price
+  sleep(1) #Be Nice
+  saveoffer(p,Retailer.find_by_name('Amazon').id,AmazonID)
+  sleep(2) #One Req per sec
+  #Save lowest Marketplace price
+  if lowmerchant.blank?
+    offer = RetailerOffering.find_by_product_id_and_product_type_and_retailer_id(p.id,p.class.name,Retailer.find_by_name('Amazon Marketplace').id)
+    offer.update_attribute(:stock,false) unless offer.nil?
+  else
+    saveoffer(p,Retailer.find_by_name('Amazon Marketplace').id,lowmerchant)
+    sleep(1) #One Req per sec
+  end
+  #Find lowest product price
+  os = RetailerOffering.find_all_by_product_id_and_product_type(p.id,p.class.name)
+  lowest = highestprice
+  p.instock = false
+  if !os.nil? && !os.empty?
+    os.each do |o| 
+      if o.stock && o.priceint && o.priceint < lowest
+        lowest = o.priceint
+        p.salepriceint = lowest
+        p.salepricestr = o.pricestr
+        p.bestoffer = o.id
+        p.instock = true
       end
-      p.merchantid = offers.get('merchant/merchantid')
-      p.merchantname = offers.get('merchant/merchantname')
-      p.salepriceint = offers.get('offerlisting/price/amount')
-      p.salepricestr = offers.get('offerlisting/price/formattedprice')
-      p.availability = offers.get('offerlisting/availability')
-      p.iseligibleforsupersavershipping = offers.get('offerlisting/iseligibleforsupersavershipping')
     end
   end
   p
+end
+
+def saveoffer(p,retailer,merchant)
+  puts [p,retailer,merchant].join(' ')
+  res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => merchant)
+  offer = res.first_item
+  #Look for old Retail Offering
+  o = RetailerOffering.find_by_product_id_and_product_type_and_retailer_id(p.id,p.class.name,retailer)
+  if o.nil?
+    o = RetailerOffering.new
+    o.product_id = p.id
+    o.product_type = p.class.name
+    o.link = ""
+    o.retailer_id = retailer
+  else
+    if offer.nil?
+      o.stock = false
+      o.save
+    else
+      #Save old prices
+      if o.pricehistory.nil?
+        o.pricehistory = [o.updated_at.to_s(:db), o.priceint].to_yaml
+      else
+        o.pricehistory = (YAML.load(o.pricehistory) + [o.updated_at.to_s(:db), o.priceint]).to_yaml
+      end
+    end
+  end
+  if !offer.nil?
+    #Too Low to Display
+    if offer.get('offerlisting/price/formattedprice') == 'Too low to display'
+      o.toolow = true
+      o.priceint = scrape_hidden_prices(p)
+      o.pricestr = '$' + (o.priceint.to_f/100).to_s
+    else
+      o.priceint = offer.get('offerlisting/price/amount')
+      o.pricestr = offer.get('offerlisting/price/formattedprice')
+    end
+    o.stock = true
+    o.availability = offer.get('offerlisting/availability')
+    o.iseligibleforsupersavershipping = offer.get('offerlisting/iseligibleforsupersavershipping')
+    o.save
+  end
+end
+
+def scrape_hidden_prices(p)
+  require 'open-uri'
+  require 'hpricot'
+  url = "http://www.amazon.com/o/asin/#{p.asin}"
+  doc = Hpricot(open(url,{"User-Agent" => "User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_6; en-us) AppleWebKit/525.27.1 (KHTML, like Gecko) Version/3.2.1 Safari/525.27.1"}).read)
+  price = (doc/"b[@class='priceLarge']").first
+  priceint = price.innerHTML.gsub(/\D/,'').to_i unless price.nil?
+  sleep(1+rand()*30) #Be nice to Amazon
+  priceint
 end

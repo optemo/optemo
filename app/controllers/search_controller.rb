@@ -5,20 +5,20 @@ class SearchController < ApplicationController
     s.product_id = nil
     myfilter = params[:myfilter]
     #Allow for multiple brands
-    if myfilter[:brand] != "All Brands" #&& myfilter[:brand] != "Add Another Brand"
-      new_brand = myfilter[:brand]
+    new_brand = myfilter[:brand]
+    if !myfilter[:Xbrand].blank?
+      #Remove a brand
+      myfilter[:brand] = Search.find(s.parent_id).brand.split('*').delete_if{|b|b == myfilter[:Xbrand]}.join('*')
+    elsif new_brand != "All Brands" && new_brand != "Add Another Brand"
       old_brand = Search.find(s.parent_id).brand
-      if !myfilter[:Xbrand].blank?
-        #Remove a brand
-        myfilter[:brand] = old_brand.split('*').delete_if{|b|b == myfilter[:Xbrand]}.join('*')
+      #Add a brand
+      if myfilter[:brand].nil?
+        myfilter[:brand] = old_brand if old_brand != "All Brands" && old_brand != "Add Another Brand"
       else
-        #Add a brand
-        if myfilter[:brand].nil?
-          myfilter[:brand] = old_brand if old_brand != "All Brands" && old_brand != "Add Another Brand"
-        else
-          myfilter[:brand]+= '*'+old_brand if old_brand != "All Brands" && old_brand != "Add Another Brand"
-        end
+        myfilter[:brand]+= '*'+old_brand if old_brand != "All Brands" && old_brand != "Add Another Brand"
       end
+    elsif new_brand == "Add Another Brand"
+      myfilter[:brand] = Search.find(s.parent_id).brand
     end
     myfilter.delete('Xbrand') if myfilter[:Xbrand]
     myfilter.each_pair {|key, val| myfilter[key] = val.to_f if key.index('_min') || key.index('_max')}

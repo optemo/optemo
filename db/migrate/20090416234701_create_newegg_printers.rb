@@ -83,7 +83,7 @@ class CreateNeweggPrinters < ActiveRecord::Migration
       t.datetime :scrapedat    
       t.boolean :nodetails    
       t.boolean :printserver
-      t.string :oldprices
+      t.string :pricehistory
       t.timestamps
     end
   end
