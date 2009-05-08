@@ -174,7 +174,7 @@ int main(int argc, char** argv) {
 
 	int brandN = parseInput(varNames, productNames, productName, argu, brands, catFilteredFeatures, conFilteredFeatures, boolFilteredFeatures, filteredRange, 
 				varNamesN, conFeatureNames, catFeatureNames, indicatorNames);
-	
+		
 	string brand = brands[0];
 // Driver Manager
 
@@ -264,15 +264,16 @@ int main(int argc, char** argv) {
 				int* clusterIDs = new int[repW];
 				int* clusterCounts = new int[repW];
 				int* mergedClusterIDs;
-			
-				reped = getRep(reps, productIDs, productN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames);
-					
 		
+				reped = getRep(reps, productIDs, productN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames);
+			
+			
 				if(reped){
 						
 					getIndicators(clusterIDs,repW, conFeatureN, indicators, stmt, res, mergedClusterIDs, productName, conFeatureNames);
 				}
 		
+			
 //Generating the output string 
 			//	repW = 9;
 		

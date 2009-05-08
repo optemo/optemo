@@ -620,7 +620,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 	string product_nodes = productName;
 	product_nodes += "_nodes";	
 	//don't need to do so much work if the number of accepted ids are smaller than 9!
-
+	
 	if (smallNFlag){
 		for(int i=0; i<productN; i++){
 			reps[i] = productIds[i];
@@ -778,6 +778,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 	
 	else{ 
 		
+		
 		command = "SELECT DISTINCT ";
 		command += product_nodes;
 		command += ".cluster_id, ";
@@ -814,6 +815,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 				command += clusterIDStream.str();
 				command += ")";
 			}	
+			
 			command += " AND (";
 			command += product_nodes;
 			command += ".product_id=";
@@ -925,7 +927,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 					}	
 				command += "));";
 				res2 = stmt->executeQuery(command);	
-					
+
 				int clusterCount = 0;
 				clusterCount = res2->rowsCount();
 				int cIdN = 1;
@@ -987,6 +989,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 					command += product_clusters;
 					command += ".cluster_size DESC;";
 					res = stmt->executeQuery(command);
+										
 				    int cCount = res->rowsCount();
 					if ( cCount> 0){
 						int preClusterCount = clusterCounts[i];
@@ -1062,7 +1065,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 								cid = res->getInt("id");
 								command ="select distinct * from ";
 								command += product_nodes;
-								command += "where ((cluster_id=";
+								command += " where ((cluster_id=";
 								if (clusterID <0 ){ //clusters are merged
 									ostringstream jointParentStream;
 									jointParentStream << mergedClusterIDInput[0];
@@ -1094,6 +1097,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 									}
 								command += "));";
 								res2 = stmt->executeQuery(command);
+								
 								clusterCount = res2->rowsCount();
 								if (clusterCount>0){
 									mergedClusterIDs[mergedClusterN] = cid;
