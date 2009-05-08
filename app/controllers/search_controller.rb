@@ -6,6 +6,7 @@ class SearchController < ApplicationController
     myfilter = params[:myfilter]
     #Allow for multiple brands
     new_brand = myfilter[:brand]
+    #debugger
     if !myfilter[:Xbrand].blank?
       #Remove a brand
       myfilter[:brand] = Search.find(s.parent_id).brand.split('*').delete_if{|b|b == myfilter[:Xbrand]}.join('*')
@@ -15,7 +16,7 @@ class SearchController < ApplicationController
       if myfilter[:brand].nil?
         myfilter[:brand] = old_brand if old_brand != "All Brands" && old_brand != "Add Another Brand"
       else
-        myfilter[:brand]+= '*'+old_brand if old_brand != "All Brands" && old_brand != "Add Another Brand"
+        myfilter[:brand]+= '*'+old_brand if !old_brand.blank? && old_brand != "All Brands" && old_brand != "Add Another Brand"
       end
     elsif new_brand == "Add Another Brand"
       myfilter[:brand] = Search.find(s.parent_id).brand

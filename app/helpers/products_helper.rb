@@ -36,13 +36,13 @@ module ProductsHelper
         "<div class='sim'>" +
           link_to("Explore #{count} Similar Product#{"s" if count > 1}", 
           {:id => @products[i], :action => 'sim', :controller => 'search', :c => @clusters[i], :f => session[:search_id]}, 
-          :title => "These products have " + combine_list(@desc[i])) +
+          :title => "These products have " + combine_list(@desc[i]), :id => "sim#{i}") +
         "</div>"
       else
         "<div class='sim'>"+
           link_to("Explore #{count} Similar Product#{"s" if count > 1}",
           {:id => @products[i], :action => 'sim', :controller => 'search', :c => @clusters[i]},
-          :title => "These products have " + combine_list(@desc[i])) + 
+          :title => "These products have " + combine_list(@desc[i]), :id => "sim#{i}") + 
         "</div>"
       end
     end
