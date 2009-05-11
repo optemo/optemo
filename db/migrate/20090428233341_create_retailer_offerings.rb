@@ -15,6 +15,8 @@ class CreateRetailerOfferings < ActiveRecord::Migration
       t.boolean :toolow
       t.string :availability
       t.boolean :iseligibleforsupersavershipping
+      t.string :merchant
+      t.string :url
   
       t.timestamps
     end

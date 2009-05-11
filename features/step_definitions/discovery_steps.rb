@@ -1,4 +1,4 @@
-Given /^he visits the printers page$/ do
+Given /^He visits the printers page$/ do
   visit "/printers"
 end
 
@@ -6,12 +6,24 @@ And /^He clicks continue to see printers$/ do
   click_link "Continue"
 end
 
-When /^he clicks See Similar on the first product$/ do
-  click_link 'sim0'
+When /^He clicks (\d) See Similar$/ do |num|
+  click_link 'sim'+num
 end
 
-Then /^he should see at least six more products$/ do
+Then /^He should see at least one product$/ do
   doc = Nokogiri::HTML(response.body)
   n = doc.css(".navbox")
   assert_not_nil n
+end
+
+When /^He selects (.*)$/ do |selection|
+  select selection, :from => 'myfilter_brand'
+  submit_form 'filter_form'
+end
+
+Then /^He should see 9 Brother Printers$/ do
+  doc = Nokogiri::HTML(response.body)
+  n = doc.css(".easylink")
+  assert_match(/(Brother.*){9}/, n.text)
+  assert_equal n.length, 9
 end

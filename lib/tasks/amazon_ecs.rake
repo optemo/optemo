@@ -368,6 +368,7 @@ def saveoffer(p,retailer,merchant)
     o.stock = true
     o.availability = offer.get('offerlisting/availability')
     o.iseligibleforsupersavershipping = offer.get('offerlisting/iseligibleforsupersavershipping')
+    o.merchant = merchant
     o.save
   end
 end

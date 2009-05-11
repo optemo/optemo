@@ -348,6 +348,8 @@ ActiveRecord::Schema.define(:version => 20090429221603) do
     t.boolean  "toolow"
     t.string   "availability"
     t.boolean  "iseligibleforsupersavershipping"
+    t.string   "merchant"
+    t.string   "url"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -432,6 +434,12 @@ ActiveRecord::Schema.define(:version => 20090429221603) do
     t.text     "chosen"
     t.string   "msg"
   end
+
+  create_table "test", :id => false, :force => true do |t|
+    t.binary "blob_col"
+  end
+
+  add_index "test", ["blob_col"], :name => "blob_col"
 
   create_table "vieweds", :force => true do |t|
     t.datetime "created_at"

@@ -10,7 +10,7 @@
 	<% if @picked_products.empty? %>
 	  <p id="deleteme">Save some products to add them to this list</p>
 	<% else %>
-	  <%= render :partial => 'product', :collection => @picked_products %>
+	  <%= render :partial => 'product', :collection => @picked_products%>
 	<% end %>
 	</div>
 	<div style = "clear: both;"><a href='/compare'>Compare them!</a></div>
@@ -48,7 +48,7 @@
 <% content_for :header do %>
 	<% if @product %>
 		<div style="float:left">Viewing<br><%= @session.result_count %> Similar<br>products to:</div>
-		<%= render :partial => 'product', :locals => {:nox => true} %>
+		<%= render :partial => 'product', :locals => {:nox => true, :product => @product} %>
 		<%= @session.msg %>
 	<% end %>
 <% end %>
