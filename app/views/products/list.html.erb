@@ -49,7 +49,7 @@
 	<% if @product %>
 		<div style="float:left">Viewing<br><%= @session.result_count %> Similar<br>products to:</div>
 		<%= render :partial => 'product', :locals => {:nox => true, :product => @product} %>
-		<%= @session.msg %>
+		<%# @session.msg %>
 	<% end %>
 <% end %>
 

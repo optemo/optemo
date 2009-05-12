@@ -21,9 +21,20 @@ When /^He selects (.*)$/ do |selection|
   submit_form 'filter_form'
 end
 
+When /^He removes (.*)$/ do |selection|
+  pending
+end
+
+
 Then /^He should see 9 Brother Printers$/ do
   doc = Nokogiri::HTML(response.body)
   n = doc.css(".easylink")
   assert_match(/(Brother.*){9}/, n.text)
   assert_equal n.length, 9
+end
+
+Then /^He should see (\d) brand selectors$/ do |num|
+  doc = Nokogiri::HTML(response.body)
+  n = doc.css("#filter_form a")
+  assert_equal n.length, num.to_i
 end

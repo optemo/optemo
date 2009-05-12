@@ -49,6 +49,7 @@ class SearchController < ApplicationController
       s.cluster_id = params[:c].gsub(/\D/,'')
       #Generate NLG message
       chosen = YAML.load(@session.chosen)
+      #debugger
       c = chosen.find{|c| c[:cluster_id] == s.cluster_id} if chosen
       if !c.nil?
           c.delete('cluster_id')
