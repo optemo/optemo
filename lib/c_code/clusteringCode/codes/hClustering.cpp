@@ -33,7 +33,6 @@ int main(int argc, char** argv){
 	int varNamesN;
 	int range;
 	int layer = 1;
-	int session_id; 
 	string var;
 	
 	//argument is the productName
@@ -85,14 +84,11 @@ int main(int argc, char** argv){
 	string nodeString;
 	
 	string* indicatorNames = new string [4];
-//	indicatorNames[0] = "Price";
-//	indicatorNames[1] = "Display Size";
-//	indicatorNames[2] = "Optical Zoom";
-//	indicatorNames[3] = "Megapixels";
+
 		
 	string *varNames = new string[varNamesN];	
 	string *catFeatureNames = new string[catFeatureN];
-	string *boolFeatureNames = new string [boolFeatureN];
+	//string *boolFeatureNames = new string [boolFeatureN];
 	string *conFeatureNames = new string[conFeatureN];
 	double **conFeatureRange = new double* [conFeatureN];
 	double ***conFeatureRangeC = new double** [clusterN];
@@ -133,8 +129,7 @@ int main(int argc, char** argv){
 		boolFilteredFeatures[f] = 0;
 	}
 
-	
-	int ind, endit, startit, lengthit;
+
 //	string var;
 
 	varNames[0] = "layer";
@@ -209,7 +204,20 @@ int main(int argc, char** argv){
 				con = driver->connect(HOST, PORT, USER, PASS);
 				stmt = con->createStatement();
 				stmt->execute("USE "  DB);
-				string command = "SELECT * FROM ";
+				
+				//deleting the current node and cluster tables
+				string command = "DELETE FROM ";
+				command += productName;
+				command += "_clusters;";
+				stmt->execute(command);
+					
+				command = "DELETE FROM ";
+				command += productName;
+				command += "_nodes;";
+				stmt->execute(command);
+				
+				
+				command = "SELECT * FROM ";
 				command += productName;
 				command += "s";
 			    res = stmt->executeQuery(command); 

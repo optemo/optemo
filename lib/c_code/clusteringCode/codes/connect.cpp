@@ -40,6 +40,7 @@ int main(int argc, char** argv) {
 	int session_id;
 	int repW; 
 	int clusterID = 0;
+	int bucketDiv = 10;
 	
 	string argu = argv[1];
 	int ind, endit, startit, lengthit;
@@ -251,8 +252,13 @@ int main(int argc, char** argv) {
 				size = res->rowsCount();
 			}	
 			int* productIDs = new int [size];
+			double** bucketCount = new double*[conFeatureN];
+			for (int f=0; f<conFeatureN; f++){
+				bucketCount[f] = new double [bucketDiv];
+			}
 		
-			int productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange, productName, conFeatureNames);
+			int productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, 
+					conFeatureN, conFeatureRange, productName, conFeatureNames, bucketCount, bucketDiv);
 			
 			if (productN> 0){
 				if (productN<=repW){
@@ -278,7 +284,7 @@ int main(int argc, char** argv) {
 			//	repW = 9;
 		
 			
-				out = generateOutput(indicatorNames, conFeatureN, productN, conFeatureRange, varNames, repW, reps, reped, clusterIDs, mergedClusterIDs, clusterCounts, indicators);
+				out = generateOutput(indicatorNames, conFeatureNames, conFeatureN, productN, conFeatureRange, varNames, repW, reps, reped, clusterIDs, mergedClusterIDs, clusterCounts, indicators, bucketCount, bucketDiv);
 			}
 			else{	//productN=0;
 				out = "--- !map:HashWithIndifferentAccess \n";
