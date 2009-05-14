@@ -1,0 +1,26 @@
+<div class='feature'>
+<div class='disp'>
+	<% if money_formatting %>
+	<!--$<%= @search.nil? ? min.to_i : @search.send("#{val}_min".intern) < min ? min.to_i : @search.send("#{val}_min".intern).to_i %>-$<%= @search.nil? ? max.ceil : @search.send("#{val}_max".intern) > max ? max.ceil : @search.send("#{val}_max".intern).ceil %>-->
+	$<%= @session.send("#{val}_min".intern).to_i %>-$<%= @session.send("#{val}_max".intern).ceil %>
+	<% else %>
+	<!--<%= @search.nil? ? min : @search.send("#{val}_min".intern) %>-<%= @search.nil? ? max : @search.send("#{val}_max".intern) %> <%= session[:productType].constantize::MainFeaturesLabel[val] %>-->
+	<%= @session.send("#{val}_min".intern) %>-<%= @session.send("#{val}_max".intern) %> <%= session[:productType].constantize::MainFeaturesLabel[val] %>
+	<% end %>
+</div>
+<div class='label'>
+	<%= name %>
+</div>
+<div class="hist"></div>
+<%= hidden_field_tag "myfilter[#{val}_min]", @search.nil? ? min : @search.send("#{val}_min".intern),{:class => 'min'}%>
+<%= hidden_field_tag "myfilter[#{val}_max]", @search.nil? ? max : @search.send("#{val}_max".intern),{:class => 'max'}%>
+<div class='slider' 
+data-min='<%= val=='price' ? @dbprops.price_min/100 :  @dbprops.db_features.find_by_name(val).min.to_i%>'
+data-max='<%= val=='price' ? (@dbprops.price_max.to_f/100).ceil : @dbprops.db_features.find_by_name(val).max.ceil%>'
+data-startmin='<%= @search.nil? ? min : @search.send("#{val}_min".intern) %>'
+data-startmax='<%= @search.nil? ? max : @search.send("#{val}_max".intern) %>' 
+data-prodmin='<%= @session.send("#{val}_min".intern) %>' 
+data-prodmax='<%= @session.send("#{val}_max".intern) %>'
+<%= puts 'data-formatting="$"' if money_formatting %>>
+</div>
+</div>

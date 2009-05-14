@@ -435,12 +435,6 @@ ActiveRecord::Schema.define(:version => 20090429221603) do
     t.string   "msg"
   end
 
-  create_table "test", :id => false, :force => true do |t|
-    t.binary "blob_col"
-  end
-
-  add_index "test", ["blob_col"], :name => "blob_col"
-
   create_table "vieweds", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
