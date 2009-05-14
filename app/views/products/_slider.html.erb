@@ -11,7 +11,7 @@
 <div class='label'>
 	<%= name %>
 </div>
-<div class="hist"></div>
+<div class="hist" data-data="<%= @session.send("#{val}_hist".intern) %>"></div>
 <%= hidden_field_tag "myfilter[#{val}_min]", @search.nil? ? min : @search.send("#{val}_min".intern),{:class => 'min'}%>
 <%= hidden_field_tag "myfilter[#{val}_max]", @search.nil? ? max : @search.send("#{val}_max".intern),{:class => 'max'}%>
 <div class='slider' 

@@ -11,10 +11,9 @@ Screw.Unit(function(){
       expect($('.select_me').length).to(equal, 0);
     });
   });
-  describe("saveItemToSaveds", function(){
-	it("adds item (printer) 264 to the saved list", function(){
-		saveit(264);
-		expect($('#savebar_content').to(equal, "<div id='c264' class='saveditem'>.*"))
+  describe("drawHistogram", function(){
+	it("draws the histogram and initializes the slider", function(){
+		expect($('.hist').to(contain_selector, 'svg'))
 	})
   });
 });

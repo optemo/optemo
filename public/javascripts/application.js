@@ -75,14 +75,19 @@ $(document).ready(function() {
 				$('#filter_form').submit();
 				}
 		});
-		histogram([0.5,Math.round((Math.random()*9))/10,Math.round((Math.random()*9))/10,0.5,0.3,Math.round((Math.random()*9))/10,Math.round((Math.random()*9))/10,0.4,0.3,0.3],$(this).siblings('.hist')[0],(sessmin-rangemin)/(rangemax-rangemin),(sessmax-rangemin)/(rangemax-rangemin));
+		histogram($(this).siblings('.hist')[0],(sessmin-rangemin)/(rangemax-rangemin),(sessmax-rangemin)/(rangemax-rangemin));
 		});
 });
 
 //Draw slider histogram
-function histogram(data,element,min,max) {
-	/*var data = [0.5,0.7,0.1,0,0.3,0.8,0.6,0.4,0.3,0.3]
-	%Data is assumed to be 10 normalized elements in an array*/
+function histogram(element,min,max) {
+	var raw = $(element).attr('data-data');
+	if (raw)
+		var data = split(raw);
+	else
+		var data = [0.5,0.7,0.1,0,0.3,0.8,0.6,0.4,0.3,0.3];
+	//Data is assumed to be 10 normalized elements in an array
+	
 	var peak = 10,
 	trans = 4,
 	step = peak + 2*trans,

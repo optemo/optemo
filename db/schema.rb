@@ -398,20 +398,27 @@ ActiveRecord::Schema.define(:version => 20090429221603) do
   create_table "sessions", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.float    "maximumresolution_min", :default => 0.0
-    t.float    "maximumresolution_max", :default => 15.0
-    t.float    "displaysize_min",       :default => 0.0
-    t.float    "displaysize_max",       :default => 4.0
-    t.float    "opticalzoom_min",       :default => 0.0
-    t.float    "opticalzoom_max",       :default => 20.0
-    t.float    "ppm_min",               :default => 5.0
-    t.float    "ppm_max",               :default => 60.0
-    t.float    "itemwidth_min",         :default => 0.0
-    t.float    "itemwidth_max",         :default => 6290.0
-    t.float    "paperinput_min",        :default => 50.0
-    t.float    "paperinput_max",        :default => 4100.0
-    t.float    "price_min",             :default => 0.0
-    t.float    "price_max",             :default => 10000000.0
+    t.float    "maximumresolution_min",  :default => 0.0
+    t.float    "maximumresolution_max",  :default => 15.0
+    t.string   "maximumresolution_hist"
+    t.float    "displaysize_min",        :default => 0.0
+    t.float    "displaysize_max",        :default => 4.0
+    t.string   "displaysize_hist"
+    t.float    "opticalzoom_min",        :default => 0.0
+    t.float    "opticalzoom_max",        :default => 20.0
+    t.string   "opticalzoom_hist"
+    t.float    "ppm_min",                :default => 5.0
+    t.float    "ppm_max",                :default => 60.0
+    t.string   "ppm_hist"
+    t.float    "itemwidth_min",          :default => 0.0
+    t.float    "itemwidth_max",          :default => 6290.0
+    t.string   "itemwidth_hist"
+    t.float    "paperinput_min",         :default => 50.0
+    t.float    "paperinput_max",         :default => 4100.0
+    t.string   "paperinput_hist"
+    t.float    "price_min",              :default => 0.0
+    t.float    "price_max",              :default => 10000000.0
+    t.float    "price_hist"
     t.integer  "result_count"
     t.integer  "i0"
     t.integer  "i1"
@@ -434,6 +441,12 @@ ActiveRecord::Schema.define(:version => 20090429221603) do
     t.text     "chosen"
     t.string   "msg"
   end
+
+  create_table "test", :id => false, :force => true do |t|
+    t.binary "blob_col"
+  end
+
+  add_index "test", ["blob_col"], :name => "blob_col"
 
   create_table "vieweds", :force => true do |t|
     t.datetime "created_at"
