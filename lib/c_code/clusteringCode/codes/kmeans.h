@@ -282,7 +282,7 @@ int *k_means3(double **data, int n, int m, int k, double t, double **centroids){
          /* update standard error */
          error += min_distance;
       }
-		for (int i=0; i<k; i++){
+		for (i=0; i<k; i++){
 			if (find5(labels, i, n) > -1){
 				assigned[i] = 1;
 			}

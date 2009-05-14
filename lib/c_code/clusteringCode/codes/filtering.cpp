@@ -40,6 +40,7 @@ int main(int argc, char** argv) {
 	int session_id;
 	int repW; 
 	int clusterID = 0;
+	int bucketDiv = 10;
 	
 	string argu = argv[1];
 	int ind, endit, startit, lengthit;
@@ -174,7 +175,7 @@ int main(int argc, char** argv) {
 
 	int brandN = parseInput(varNames, productNames, productName, argu, brands, catFilteredFeatures, conFilteredFeatures, boolFilteredFeatures, filteredRange, 
 				varNamesN, conFeatureNames, catFeatureNames, indicatorNames);
-	
+		
 	string brand = brands[0];
 // Driver Manager
 
@@ -251,8 +252,15 @@ int main(int argc, char** argv) {
 				size = res->rowsCount();
 			}	
 			int* productIDs = new int [size];
+			int** bucketCount = new int*[conFeatureN];
+			for (int f=0; f<conFeatureN; f++){
+				bucketCount[f] = new int [bucketDiv];
+			}
+			
+			
 		
-			int productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, conFeatureN, conFeatureRange, productName, conFeatureNames);
+			int productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, 
+					conFeatureN, conFeatureRange, productName, conFeatureNames, bucketCount, bucketDiv);
 			
 			if (productN> 0){
 				if (productN<=repW){
@@ -264,15 +272,16 @@ int main(int argc, char** argv) {
 				int* clusterIDs = new int[repW];
 				int* clusterCounts = new int[repW];
 				int* mergedClusterIDs;
-			
-				reped = getRep(reps, productIDs, productN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames);
-					
 		
+				reped = getRep(reps, productIDs, productN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames);
+			
+			
 				if(reped){
 						
 					getIndicators(clusterIDs,repW, conFeatureN, indicators, stmt, res, mergedClusterIDs, productName, conFeatureNames);
 				}
 		
+			
 //Generating the output string 
 			//	repW = 9;
 		

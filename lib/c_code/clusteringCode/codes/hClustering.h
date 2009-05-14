@@ -15,7 +15,7 @@ int parent_id = 0;
 int size, sized, cluster_id;
 				
 if 	(layer == 1){	
-		
+	
 	     		sized = res->rowsCount();
 				data= new double*[sized];
 		    	for(int j=0; j<sized; j++){
@@ -33,8 +33,7 @@ if 	(layer == 1){
 				
 				while (res->next()) 
 				{
-				
-				 listprice =  res->getInt("listpriceint");
+				listprice =  res->getInt("listpriceint");
 				saleprice = res->getInt("salepriceint");
 			 if(saleprice > 0 ) {	
 					price = min(listprice, saleprice);	
@@ -48,9 +47,7 @@ if 	(layer == 1){
 							data[size][0] = price;
 							data[size][1] = res->getDouble(conFeatureNames[1]);
 							data[size][2] = res->getDouble(conFeatureNames[2]);
-							
 							data[size][3] = res->getDouble(conFeatureNames[3]);
-							
 							idA[size] = res->getInt("id"); 
 							brands[size] = res->getString("brand");
 							for (int f=0; f<conFeatureN; f++){
@@ -216,7 +213,6 @@ if (layer > 1){
 // cluster
  			int *centersA;
  	   		double** dist;
- 	   		double distan;
  	   		double** centroids = new double* [clusterN];
  	   		for(int j=0; j<clusterN; j++){
  	   	    	centroids[j]=new double[conFeatureN];

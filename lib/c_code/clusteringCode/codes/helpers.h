@@ -468,7 +468,7 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators,
 		}	
 		
 		command += ";";
-		res = stmt->executeQuery(command);
+		res = stmt->executeQuery(command); 
 	
 		res->next();
 		
@@ -476,18 +476,16 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators,
 		range[0][1] = res->getInt("price_max");
 		
 		
-		for (int i=0; i<conFeatureN; i++){
+		for (int f=0; f<conFeatureN; f++){
 			res->next();
-			command = conFeatureNames[i];
+			command = conFeatureNames[f];
 			command += "_min"; 
-			range[i][0] = res->getInt(command);
-			command = conFeatureNames[i];
+			range[f][0] = res->getInt(command);
+			command = conFeatureNames[f];
 			command += "_max";
-			range[i][1] = res->getInt(command);
+			range[f][1] = res->getInt(command);
 		}	
 			
-	
-		
 	
 		for (int f=0; f<conFeatureN; f++){
 			if (range[f][1] <= stat[f][0]){
