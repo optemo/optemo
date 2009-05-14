@@ -298,15 +298,14 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 		}
 		
 		for (int f=0; f<conFeatureN; f++){
-			out.append("- ");
 			out.append(conFeatureNames[f]);
 			out.append("_hist: ");
 			ostringstream countStream;
-			countStream << (bucketCount[f][0]/productN);
+			countStream << round((bucketCount[f][0]/productN)*100)/100;
 			out.append(countStream.str());
 			for (int t=1; t<bucketDiv; t++){
 				ostringstream countStream2;
-				countStream2 << (bucketCount[f][t]/productN);
+				countStream2 << round((bucketCount[f][t]/productN)*100)/100;
 				out.append(",");
 				out.append(countStream2.str());	
 			}
