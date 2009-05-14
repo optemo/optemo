@@ -133,7 +133,7 @@
 
 int filter2(double **filteredRange, string* brands, int brandN, sql::Statement *stmt,
  sql::ResultSet *res, sql::ResultSet *res2, int* productIDs, bool* conFilteredFeatures, bool* catFilteredFeatures, 
-int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string productName, string* conFeatureNames, int** bucketCount, int bucketDiv) {
+int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string productName, string* conFeatureNames, double** bucketCount, int bucketDiv) {
 
 	int productN = 0;
 	string command;
@@ -159,23 +159,28 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 	
 	conFeatureRange[0][0] = 100000000.0;
 	conFeatureRange[0][1] = 0.0;
-	command = "select price_min, price_max from db_properties where name=";
+	command = "select price_min, price_max from db_properties where name=\'";
 	command += capProductName;
-	command += ";";
+	command += "\';";
+
 	res = stmt->executeQuery(command);
+	res->next();
 	bucketRange[0][0] = res->getDouble("price_min");
 	bucketRange[0][1] = res->getDouble("price_max");
+		
 	bucketInterval[0] = (bucketRange[0][1] - bucketRange[0][0]) / bucketDiv ;
 
 	for(int f=1; f<conFeatureN; f++){
 		conFeatureRange[f][0] = 100000000.0;
 		conFeatureRange[f][1] = 0.0;
-		command = "select min, max from db_features where name=";
+		command = "select min, max from db_features where name=\'";
 		command +=  conFeatureNames[f];
-		command += ";";
+		command += "\';";
+	//	cout<<"command is "<<command<<endl;
 		res = stmt->executeQuery(command);
-		bucketRange[0][f] = res->getDouble("min");
-		bucketRange[1][f] = res->getDouble("max");
+		res->next();
+		bucketRange[f][0] = res->getDouble("min");
+		bucketRange[f][1] = res->getDouble("max");
 		bucketInterval[f] = (bucketRange[f][1] - bucketRange[f][0]) / bucketDiv ;
 	}
 	
@@ -314,8 +319,8 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 			for (int f=0; f<conFeatureN; f++){
 				eachValue[f] = res->getDouble(conFeatureNames[f]);
 				for (int t=0; t<bucketDiv; t++){
-					if ( (eachValue[f]<(bucketRange[0][f]+((t+1)*bucketInterval[f]))) && (eachValue[f]>=(bucketRange[0][f]+(t*bucketInterval[f]))) ){
-						bucketCount[t]++;
+					if ( (eachValue[f]<(bucketRange[f][0]+((t+1)*bucketInterval[f]))) && (eachValue[f]>=(bucketRange[f][0]+(t*bucketInterval[f]))) ){
+						bucketCount[f][t]++;
 					}
 				}
 				if (eachValue[f]<conFeatureRange[f][0]){

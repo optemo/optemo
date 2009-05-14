@@ -261,8 +261,8 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 	}	
 	return brandN;		
 }
-string generateOutput(string* indicatorNames, int conFeatureN, int productN, double** conFeatureRange, string* varNames, int repW, int* reps, bool reped, 
-	int* clusterIDs, int* mergedClusterIDs, int* clusterCounts, int** indicators){
+string generateOutput(string* indicatorNames, string* conFeatureNames, int conFeatureN, int productN, double** conFeatureRange, string* varNames, int repW, int* reps, bool reped, 
+	int* clusterIDs, int* mergedClusterIDs, int* clusterCounts, int** indicators, double** bucketCount, int bucketDiv){
 
 		string out = "--- !map:HashWithIndifferentAccess \n";
 		out.append("result_count: ");
@@ -295,6 +295,22 @@ string generateOutput(string* indicatorNames, int conFeatureN, int productN, dou
 			 	oss<<reps[c];
 				out.append(oss.str()); 
 			 	out.append("\n");
+		}
+		
+		for (int f=0; f<conFeatureN; f++){
+			out.append("- ");
+			out.append(conFeatureNames[f]);
+			out.append("_hist: ");
+			ostringstream countStream;
+			countStream << (bucketCount[f][0]/productN);
+			out.append(countStream.str());
+			for (int t=1; t<bucketDiv; t++){
+				ostringstream countStream2;
+				countStream2 << (bucketCount[f][t]/productN);
+				out.append(",");
+				out.append(countStream2.str());	
+			}
+			out.append("\n");
 		}
 	if (reped){
 		out.append("clusters: \n");
