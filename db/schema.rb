@@ -418,7 +418,7 @@ ActiveRecord::Schema.define(:version => 20090429221603) do
     t.string   "paperinput_hist"
     t.float    "price_min",              :default => 0.0
     t.float    "price_max",              :default => 10000000.0
-    t.float    "price_hist"
+    t.string   "price_hist"
     t.integer  "result_count"
     t.integer  "i0"
     t.integer  "i1"
