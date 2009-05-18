@@ -219,7 +219,7 @@ int main(int argc, char** argv){
 				
 				command = "SELECT * FROM ";
 				command += productName;
-				command += "s";
+				command += "s where instock=1;";
 			    res = stmt->executeQuery(command); 
 
 				int maxSize = 10000;
