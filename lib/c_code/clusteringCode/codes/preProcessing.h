@@ -299,7 +299,7 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 		
 		for (int f=0; f<conFeatureN; f++){
 			out.append(conFeatureNames[f]);
-			out.append("_hist: ");
+			out.append("_hist: \'");
 			ostringstream countStream;
 			countStream << round((bucketCount[f][0]/productN)*100)/100;
 			out.append(countStream.str());
@@ -309,7 +309,7 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 				out.append(",");
 				out.append(countStream2.str());	
 			}
-			out.append("\n");
+			out.append("\'\n");
 		}
 	if (reped){
 		out.append("clusters: \n");

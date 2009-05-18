@@ -252,12 +252,10 @@ int main(int argc, char** argv) {
 				size = res->rowsCount();
 			}	
 			int* productIDs = new int [size];
-			int** bucketCount = new int*[conFeatureN];
+			double** bucketCount = new double*[conFeatureN];
 			for (int f=0; f<conFeatureN; f++){
-				bucketCount[f] = new int [bucketDiv];
+				bucketCount[f] = new double [bucketDiv];
 			}
-			
-			
 		
 			int productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, 
 					conFeatureN, conFeatureRange, productName, conFeatureNames, bucketCount, bucketDiv);
@@ -286,7 +284,7 @@ int main(int argc, char** argv) {
 			//	repW = 9;
 		
 			
-				out = generateOutput(indicatorNames, conFeatureN, productN, conFeatureRange, varNames, repW, reps, reped, clusterIDs, mergedClusterIDs, clusterCounts, indicators);
+				out = generateOutput(indicatorNames, conFeatureNames, conFeatureN, productN, conFeatureRange, varNames, repW, reps, reped, clusterIDs, mergedClusterIDs, clusterCounts, indicators, bucketCount, bucketDiv);
 			}
 			else{	//productN=0;
 				out = "--- !map:HashWithIndifferentAccess \n";

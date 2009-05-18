@@ -152,10 +152,7 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 		for (int t=0; t<bucketDiv; t++){
 			bucketCount[f][t] = 0; 
 		}
-		
 	}	
-	
-	
 	
 	conFeatureRange[0][0] = 100000000.0;
 	conFeatureRange[0][1] = 0.0;
@@ -309,8 +306,6 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 				command += maxv.str();
 				command += "";
 		
-			
-		
 		while(res->next()){
 				
 			productIDs[productN] = res->getInt("product_id");
@@ -331,8 +326,6 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 				}
 			}
 			
-			
-
 			productN++;
 		}
 
@@ -492,8 +485,8 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 					for (int f=0; f<conFeatureN; f++){
 						eachValue[f] = res->getDouble(conFeatureNames[f]);
 						for (int t=0; t<bucketDiv; t++){
-							if ( (eachValue[f]<(bucketRange[0][f]+((t+1)*bucketInterval[f]))) && (eachValue[f]>=(bucketRange[0][f]+(t*bucketInterval[f]))) ){
-								bucketCount[t]++;
+							if ( (eachValue[f]<(bucketRange[f][0]+((t+1)*bucketInterval[f]))) && (eachValue[f]>=(bucketRange[f][0]+(t*bucketInterval[f]))) ){
+								bucketCount[f][t]++;
 							}
 						}
 						if (eachValue[f]<conFeatureRange[f][0]){
