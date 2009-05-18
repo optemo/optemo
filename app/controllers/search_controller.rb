@@ -128,11 +128,26 @@ class SearchController < ApplicationController
     session[:search_id] = s.id
     #Make request work with c code
     q['product_name'] = !session[:productType].nil? ? session[:productType].downcase : $DefaultProduct.downcase
-    #q['brand'] = q['brand'].split('*').first if !q['brand'].nil? #Remove first later
+    send_query(q)
+  end
+  
+  def send_query(q)
     myparams = q.to_yaml
     #debugger
     @output = %x["#{RAILS_ROOT}/lib/c_code/clusteringCode/codes/connect" "#{myparams}"]
     options = YAML.load(@output)
+    #Output structure
+#      result_count :integer
+#      products :array
+#      clusters :array
+#      chosen :hash
+#        cluster_id :int
+#        cluster_count :int
+#        %feature :-1,0,1
+#      %feature_min :int
+#      %feature_max :int
+#      %feature_hist :string
+    
     #parse the new ids
     if options.blank? || options[:result_count].nil? || (options[:result_count] > 0 && options['products'].nil?)
       flash[:error] = "We're having problems with our database."
@@ -141,6 +156,7 @@ class SearchController < ApplicationController
       flash[:error] = "No products were found"
     else
       results = options[:result_count] < 9 ? options[:result_count] : 9
+      #Pop array of products and clusters
       newproducts = options.delete('products')
       newclusters = options.delete('clusters')
       current_node = "i0"
@@ -153,9 +169,9 @@ class SearchController < ApplicationController
       #make chosen a YAML
       options[:chosen] = options[:chosen].to_yaml
     end
-    @session = s.session
-    @session.update_attributes(options)
-    redirect_to "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+@session.URL
+    mysession = Session.find(session[:user_id])
+    mysession.update_attributes(options)
+    redirect_to "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+mysession.URL
   end
   
   def combine_list(a)

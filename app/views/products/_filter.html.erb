@@ -5,92 +5,22 @@
 	<% end %>
 	<% selectmsg = "Add Another Brand" %>
 <% end %>
-<%= select('myfilter', 'brand', [selectmsg.nil? ? "All Brands" : selectmsg] +@dbprops.brands.split('*'), options={}, {:onchange => "$('filter_form').submit()"}) %>
+<%= select('myfilter', 'brand', [selectmsg.nil? ? "All Brands" : selectmsg] +@dbprops.brands.split('*'), options={}, {:onchange => "$('#filter_form').submit()"}) %>
 <%= hidden_field_tag "myfilter[Xbrand]"%>
 
 <% session[:productType].constantize::MainFeatures.each_index do |i| %>
-<%= render :partial => 'sliderhtml', :locals => {:name => session[:productType].constantize::MainFeaturesDisp[i], :val => session[:productType].constantize::MainFeatures[i], :money_formatting => false, :ses_name => "f#{i}", :min => @dbprops.db_features.find_by_name(session[:productType].constantize::MainFeatures[i]).min, :max => @dbprops.db_features.find_by_name(session[:productType].constantize::MainFeatures[i]).max} %>
+	<%= render :partial => 'slider', 
+		:locals => {:name => session[:productType].constantize::MainFeaturesDisp[i], 
+		:val => session[:productType].constantize::MainFeatures[i], 
+		:money_formatting => false, 
+		:ses_name => "f#{i}", 
+		:min => @dbprops.db_features.find_by_name(session[:productType].constantize::MainFeatures[i]).min, 
+		:max => @dbprops.db_features.find_by_name(session[:productType].constantize::MainFeatures[i]).max} %>
 <% end %>
-<%= render :partial => 'sliderhtml', :locals => {:name => 'Price', :val => 'price', :money_formatting => true, :ses_name => 'price', :min => @dbprops.price_min/100, :max =>(@dbprops.price_max.to_f/100).ceil} %>
-
-<script language="javascript" type="text/javascript">
-/*
-//var circle = paper.rect(0,0,400,200,10),
-//circle.attr("fill", "#f00");
-//circle.matrix(1,1.1,0.1,0,200,50);
-//var R = Raphael("image", 600,600);
-img = paper.image("/images/logosm.png", 0,0,140,140);
-
-setTimeout("Func(img)", 1000);
-setTimeout("Func2(img)", 2000);
-setTimeout("Func3(img)", 3000);
-setTimeout("Func4(img)", 4000);
-function Func(img)
-{
-img.matrix(0.9,0.3,0,0.9,-40,0);
-img.rotate(5);
-}
-function Func2(img)
-{
-img.matrix(0.8,0.5,0,0.8,-40,0);
-img.rotate(10);
-}
-function Func3(img)
-{
-img.matrix(0.7,0.7,0,0.7,-40,0);
-img.rotate(15);
-}
-function Func4(img)
-{
-img.matrix(0.5,0.9,0,0.5,-40,0);
-img.rotate(20);
-}*/
-var histogram = function(data,element,min,max) {
-/*var data = [0.5,0.7,0.1,0,0.3,0.8,0.6,0.4,0.3,0.3]
-%Data is assumed to be 10 normalized elements in an array*/
-var peak = 10,
-trans = 4,
-step = peak + 2*trans,
-height = 20,
-length = 185,
-paper = Raphael(element,length,height),
-shapelayer = paper.group(),
-t = shapelayer.path({fill: Raphael.hsb2rgb(Math.abs(Math.sin(parseInt(element,36))),1,1).hex, opacity: 0.5});
-
-t.moveTo(0,height);
-for (var i = 0; i < data.length; i++)
-{
-t.cplineTo(i*step+trans,height*(1-data[i]),5);
-t.lineTo(i*step+trans+peak,height*(1-data[i]));	
-}
-t.cplineTo((data.length)*step,height,5);
-t.andClose();
-shapelayer.rect(0,0,min*length,height).attr({fill: "#dddddd", "stroke-opacity": 0});
-shapelayer.rect(max*length,0,length,height).attr({fill: '#dddddd', "stroke-opacity": 0});
-}
-</script>
-<script type="text/javascript" language="javascript">
-		// <![CDATA[
-
-			// horizontal slider control
-			<% session[:productType].constantize::MainFeatures.each_index do |i| %>
-			<%= render :partial => 'sliderjs', :locals => {:val => session[:productType].constantize::MainFeatures[i], :min => @dbprops.db_features.find_by_name(session[:productType].constantize::MainFeatures[i]).min.to_i, :max => @dbprops.db_features.find_by_name(session[:productType].constantize::MainFeatures[i]).max.ceil, :money_formatting => false} %>
-			<% end %>
-			<%= render :partial => 'sliderjs', :locals => {:val => 'price', :min => @dbprops.price_min/100, :max =>(@dbprops.price_max.to_f/100).ceil, :money_formatting => true} %>
-			
-			var disp = function(v, disp, filter_min, filter_max, label) {
-			$(filter_min).value = Math.floor(v[0]*10)/10;
-			$(filter_max).value = Math.ceil(v[1]*10)/10;
-			$(disp).innerHTML = ($(filter_min).value.indexOf('.') == -1 ? $(filter_min).value+".0" : $(filter_min).value) +"-"+($(filter_max).value.indexOf('.') == -1 ? $(filter_max).value+".0" : $(filter_max).value)+" "+label;
-			//$(disp).innerHTML = $(filter_min).value+"-"+$(filter_max).value+" "+label;
-			};
-			
-			var disp_money = function(v, disp, filter_min, filter_max) {
-			$(filter_min).value = Math.floor(v[0]);
-			$(filter_max).value = Math.ceil(v[1]);
-			$(disp).innerHTML = "$"+$(filter_min).value+"-$"+$(filter_max).value;
-			};
-			
-
-		// ]]>
-</script>
+<%= render :partial => 'slider', 
+	:locals => {:name => 'Price', 
+	:val => 'price', 
+	:money_formatting => true, 
+	:ses_name => 'price', 
+	:min => @dbprops.price_min/100, 
+	:max =>(@dbprops.price_max.to_f/100).ceil} %>
