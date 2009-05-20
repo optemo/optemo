@@ -417,8 +417,9 @@ void sort(double** data, int* idA, int** sortedA, int size, int conFeatureN){
 void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators, sql::Statement *stmt,
  sql::ResultSet *res, int* mergedClusterIDs, string productName, string* conFeatureNames){
 
+    string capProductName = productName;
+	capProductName[0] = capProductName[0] - 32;
 	string command;
-	res = stmt->executeQuery("select high, low from db_features"); 
 	double** stat = new double* [conFeatureN];
 	double** range = new double* [conFeatureN];
 	for(int f=0; f<conFeatureN; f++){
@@ -426,23 +427,27 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators,
 		range[f]= new double[2]; 
 	}
 	
-
-	res->next();
-	stat[3][0] = res->getInt("low");
-	stat[3][1] = res->getInt("high");
+	for (int f=1; f<conFeatureN; f++){
+		command = "select low, high from db_features where name=\'";
+		ostringstream fnameString;
+		fnameString << conFeatureNames[f];
+		command += fnameString.str();
+		command += "\'";
+		res = stmt->executeQuery(command);
+		res->next();
+		stat[f][0] = res->getDouble("low");
+		stat[f][1] = res->getDouble("high");
+	}	
 	
+	command = "select price_low, price_high from db_properties where name=\'";
+	ostringstream cProductStream; 
+	cProductStream <<capProductName;
+	command += cProductStream.str();
+	command += "\'";	
+	res = stmt->executeQuery(command); 
 	res->next();
-	stat[1][0] = res->getInt("low");
-	stat[1][1] = res->getInt("high");
-	
-	res->next();
-	stat[2][0] = res->getInt("low");
-	stat[2][1] = res->getInt("high");
-	
-	res = stmt->executeQuery("select price_high, price_low from db_properties"); 
-	res->next();
-	stat[0][0] = res->getInt("price_low");
-	stat[0][1] = res->getInt("price_high");
+	stat[0][0] = res->getDouble("price_low");
+	stat[0][1] = res->getDouble("price_high");
 
 	for (int i=0; i<repW; i++){
 		command = "SELECT * from ";
@@ -472,29 +477,32 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators,
 	
 		res->next();
 		
-		range[0][0] = res->getInt("price_min");
-		range[0][1] = res->getInt("price_max");
+		range[0][0] = res->getDouble("price_min");
+		range[0][1] = res->getDouble("price_max");
 		
 		
 		for (int f=0; f<conFeatureN; f++){
 			res->next();
 			command = conFeatureNames[f];
 			command += "_min"; 
-			range[f][0] = res->getInt(command);
+			range[f][0] = res->getDouble(command);
 			command = conFeatureNames[f];
 			command += "_max";
-			range[f][1] = res->getInt(command);
+			range[f][1] = res->getDouble(command);
 		}	
 			
 	
 		for (int f=0; f<conFeatureN; f++){
 			if (range[f][1] <= stat[f][0]){
-				indicators[f][i] = -1;
-			}
-			else if (range[f][0] >= stat[f][1]){
 				indicators[f][i] = 1;
 			}
-		}		
+			else if (range[f][0] >= stat[f][1]){
+				indicators[f][i] = 3;
+			}
+			else if ((range[f][0] >= stat[f][0]) && (range[f][1] <= stat[f][1])){
+				indicators[f][i] = 2;
+			}
+		}	
 	}
 }
 

@@ -4,7 +4,8 @@
 
 
 int hClustering(int layer, int clusterN, int conFeatureN, double *average, double** conFeatureRange, double*** conFeatureRangeC,
-	sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *resClus, sql::ResultSet *resNodes, sql::Statement *stmt, string* conFeatureNames, string productName){				
+	sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *resClus, sql::ResultSet *resNodes, sql::Statement *stmt, 
+	string* conFeatureNames, string productName, double* weights){				
 	
 int maxSize = -2;	
 double **data;
@@ -33,17 +34,17 @@ if 	(layer == 1){
 				
 				while (res->next()) 
 				{
-				listprice =  res->getInt("listpriceint");
+		//		listprice =  res->getInt("listpriceint");
 				saleprice = res->getInt("salepriceint");
-			 if(saleprice > 0 ) {	
-					price = min(listprice, saleprice);	
+		//	 if(saleprice > 0 ) {	
+		//			price = min(listprice, saleprice);	
 				    
-				}
+		//		}
 						
-			else{
-				price = listprice;
+		//	else{
+				price = saleprice;
 				
-			}	   		
+		//	}	   		
 							data[size][0] = price;
 							data[size][1] = res->getDouble(conFeatureNames[1]);
 							data[size][2] = res->getDouble(conFeatureNames[2]);
@@ -79,7 +80,7 @@ if 	(layer == 1){
 			 	   	    	centroids[j]=new double[conFeatureN];
 			 	   		}
 
-			 	       	centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids); 
+			 	       	centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights); 
 					
 					
 				dist = new double* [size];
@@ -218,7 +219,7 @@ if (layer > 1){
  	   	    	centroids[j]=new double[conFeatureN];
  	   		}
      	      
- 	       	centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids); 
+ 	       	centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights); 
 	        dist = new double* [size];
 		
 			for(int j=0; j<size; j++){

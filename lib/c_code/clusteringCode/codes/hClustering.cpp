@@ -76,6 +76,11 @@ int main(int argc, char** argv){
 	
 	
 	
+	double* weights = new double [conFeatureN];
+	weights[0] = 2;
+	for (int f=1; f<conFeatureN; f++){
+		weights[f] = 1/2;
+	}
 
 	ostringstream session_idStream;
 	ostringstream layerStream;
@@ -229,7 +234,8 @@ int main(int argc, char** argv){
 						average[j] = 0.0;
 					}
 					
-					maxSize = hClustering(layer, clusterN,  conFeatureN,  average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, stmt, conFeatureNames, productName);	
+					maxSize = hClustering(layer, clusterN,  conFeatureN,  average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
+							stmt, conFeatureNames, productName, weights);	
 				
 					layer++;
 					

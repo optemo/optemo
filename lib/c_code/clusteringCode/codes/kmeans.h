@@ -201,7 +201,7 @@ int *k_means2(double **data, int n, int m, int k, double t, double **centroids)
 
 
 
-int *k_means3(double **data, int n, int m, int k, double t, double **centroids){
+int *k_means3(double **data, int n, int m, int k, double t, double **centroids, double* weights){
 	
 	/* output cluster label for each data point */
    int *labels = (int*)calloc(n, sizeof(int));
@@ -252,7 +252,7 @@ int *k_means3(double **data, int n, int m, int k, double t, double **centroids){
             //for (j = m; j-- > 0; distance += pow(data[h][j] - c[i][j], 2));
 			for (j=0; j<m; j++){
 				
-			distance += pow(data[h][j] - c[i][j], 2);	
+			distance += weights[j] * pow(data[h][j] - c[i][j], 2);	
 				
 			//	if (j==1){
 			//		distance += (1/2) * pow(data[h][j] - c[i][j], 2);
