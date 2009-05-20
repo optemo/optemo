@@ -7,7 +7,7 @@ div.main {
 	float: left;
 	/*margin-left: 203px;*/
 	margin-left: 5px;
-	text-align: center;}
+	text-align: left;}
 div.rowdiv {
 	width: 745px;
 	height: 225px;
@@ -42,7 +42,7 @@ div.borderbox {
 	text-decoration: none;
 }
 .backlink {
-	text-align: left;
+	margin-left: 10px;
 }
 .save {
 	width: 45px;
