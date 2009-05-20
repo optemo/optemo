@@ -6,6 +6,8 @@ class Printer < ActiveRecord::Base
   named_scope :valid, :conditions => %w(ppm itemwidth paperinput).map{|i|i+' IS NOT NULL'}.join(' AND ')+" AND (salepriceint IS NOT NULL OR listpriceint IS NOT NULL)"
   named_scope :invalid, :conditions => %w(ppm itemwidth paperinput).map{|i|i+' IS NULL'}.join(' OR ')+" OR (salepriceint IS NULL AND listpriceint IS NULL)"
   named_scope :fewfeatures, :conditions => %w(ppm ttp paperinput).map{|i|i+' IS NULL'}.join(' OR ')
+  named_scope :instock, :conditions => "instock is true"
+  named_scope :newfeatures, :conditions => %w(ppm itemwidth paperinput resolutionarea salepriceint scanner printserver).map{|i|i+' IS NOT NULL'}.join(' AND ')
   MainFeatures = %w(ppm itemwidth paperinput)
   MainFeaturesDisp = %w(Pages\ Per\ Minute Width Paper\ Tray\ Size)
   MainFeaturesLabel = Hash[*MainFeatures.zip(['','in','']).flatten]

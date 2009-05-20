@@ -211,7 +211,7 @@ desc "Updating Amazon Price"
 task :update_prices => :environment do
   require 'amazon/ecs'
   Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
-  Printer.find(:all, :conditions => ['updated_at < ?', 1.week.ago]).each {|p|
+  Printer.find(:all).each{|p|#, :conditions => ['updated_at < ?', 1.day.ago]).each {|p|
     puts 'Processing ' + p.asin
     p = findprice(p)
     p.save
@@ -369,6 +369,7 @@ def saveoffer(p,retailer,merchant)
     o.availability = offer.get('offerlisting/availability')
     o.iseligibleforsupersavershipping = offer.get('offerlisting/iseligibleforsupersavershipping')
     o.merchant = merchant
+    o.url = 'http://amazon.com/gp/product/'+p.asin+'?tag=optemo-20&m='+merchant
     o.save
   end
 end

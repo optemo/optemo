@@ -41,6 +41,9 @@ div.borderbox {
 	color: black;
 	text-decoration: none;
 }
+.backlink {
+	text-align: left;
+}
 .save {
 	width: 45px;
 	height: 15px;
@@ -189,8 +192,8 @@ div #filterbar {
 }
 .slider {
 	background: url(../images/slider.gif) no-repeat;
-	margin: 0 0 0.8em;
-	width: 185px;
+	margin: 0 0 0.8em 7px;
+	width: 177px;
 	height: 13px;
 	padding-bottom: 6px;
 	position: relative;}
@@ -212,12 +215,12 @@ div #filterbar {
 .endlabel_min {
 	position: absolute;
 	bottom: -5px;
-	left: 2px;
+	left: -1px;
 	font-size: 0.5em;}
 .endlabel_max {
 	position: absolute;
 	bottom: -5px;
-	right: 0px;
+	right: -1px;
 	font-size: 0.5em;}
 .disp {
 	width: 80px;
@@ -232,6 +235,7 @@ div #filterbar {
 }
 .hist {
 	text-align: left;
+	margin-left: 7px;
 }
 .ui-slider { position: relative; text-align: left; }
 .ui-slider .ui-slider-handle { background:url(../../../images/diamond.gif) no-repeat; height:13px; width:9px; overflow:hidden;position:absolute;z-index:2;}/*{ position: absolute; z-index: 2; width: 1.2em; height: 1.2em; cursor: default; }
@@ -239,7 +243,7 @@ div #filterbar {
 .ui-slider .ui-slider-range { position: absolute; z-index: 1; font-size: .7em; display: block; border: 0; }
 
 .ui-slider-horizontal { background:url(../../../images/slider.gif) no-repeat; height: 13px; }
-.ui-slider-horizontal .ui-slider-handle { top: -3px; margin-left: -5px; }
+.ui-slider-horizontal .ui-slider-handle { top: -3px; margin-left: -4px; }
 .ui-slider-horizontal .ui-slider-range { top: 0; height: 100%; }
 .ui-slider-horizontal .ui-slider-range-min { left: 0; }
 .ui-slider-horizontal .ui-slider-range-max { right: 0; }

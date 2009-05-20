@@ -16,8 +16,8 @@ namespace :db do
     @prop.price_high = 59999
     @prop.save
     @prop = DbProperty.find_by_name("Printer")
-    @prop.price_low = 12000
-    @prop.price_high = 59999
+    @prop.price_low = Printer.instock.map{|c|c.salepriceint}.sort[Printer.instock.count*0.25]
+    @prop.price_high = Printer.instock.map{|c|c.salepriceint}.sort[Printer.instock.count*0.75]
     @prop.save
     for column in DbProperty.content_columns
       tmp = @prop.send(column.name)
@@ -33,18 +33,18 @@ def create_product_properties(model)
   #Collect new properties
   @prop = DbProperty.new
   @prop.name = model.name
-  @prop.brands = model.find(:all).map{|u| u.brand}.compact.uniq.join('*')
-  @prop.price_min = model.find(:all).map{|p| p.price}.reject{|c|c.nil?}.sort[0]
-  @prop.price_max = model.find(:all).map{|p| p.price}.sort[-1]
+  @prop.brands = model.instock.map{|u| u.brand}.compact.uniq.join('*')
+  @prop.price_min = model.instock.map{|p| p.price}.reject{|c|c.nil?}.sort[0]
+  @prop.price_max = model.instock.map{|p| p.price}.sort[-1]
   @prop.save
   model::MainFeatures.each {|name|
     f = DbFeature.new
     f.db_property = @prop
     f.name = name
-    f.min = model.find(:all).map{|c|c.send(name.intern)}.reject{|c|c.nil?}.sort[0]
-    f.max = model.find(:all).map{|c|c.send(name.intern)}.sort[-1]
-    f.high = model.find(:all).map{|c|c.send(name.intern)}.sort[model.count*0.75]
-    f.low = model.find(:all).map{|c|c.send(name.intern)}.sort[model.count*0.25]
+    f.min = model.instock.map{|c|c.send(name.intern)}.reject{|c|c.nil?}.sort[0]
+    f.max = model.instock.map{|c|c.send(name.intern)}.sort[-1]
+    f.high = model.instock.map{|c|c.send(name.intern)}.sort[model.instock.count*0.75]
+    f.low = model.instock.map{|c|c.send(name.intern)}.sort[model.instock.count*0.25]
     f.save!
   }
 end

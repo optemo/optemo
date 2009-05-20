@@ -27,13 +27,14 @@ class ApplicationController < ActionController::Base
   def update_user
    if session[:user_id].blank? || !Session.exists?(session[:user_id])
       #Create a new session
-      @mysession = Session.new
-      @mysession.save
-      session[:user_id] = @mysession.id
+      mysession = Session.new
+      mysession.ip = request.env['REMOTE_HOST']
+      mysession.save
+      session[:user_id] = mysession.id
       #Create a new search object for the session
-      @mysearch = Search.new
-      @mysearch.session = @mysession
-      @mysearch.save
+      mysearch = Search.new
+      mysearch.session = mysession
+      mysearch.save
     end
   end
   

@@ -20,6 +20,7 @@ class CreateSessions < ActiveRecord::Migration
       t.integer :c0, :c1, :c2, :c3, :c4, :c5, :c6, :c7, :c8
       t.text :chosen
       t.string :msg
+      t.string :ip
     end
   end
 
