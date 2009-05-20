@@ -28,7 +28,11 @@ module ProductsHelper
         if item[1] == 0 || item[0] == 'cluster_count'
   		    @desc[i][ii] = nil
   		  else
-  		    @desc[i][ii][1] = item[1]>0 ? 'high' : 'low'
+  		    @desc[i][ii][1] = case item[1]
+  		        when 1: 'low'
+  		        when 2: 'avg'
+  		        when 3: 'high'
+  		    end
   		  end
   		end
   		@desc[i].compact!.each{|a|a.reverse!}

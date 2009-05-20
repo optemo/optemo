@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090429221603) do
+ActiveRecord::Schema.define(:version => 20090520195431) do
 
   create_table "amazon_groups", :force => true do |t|
     t.datetime "created_at"
@@ -322,6 +322,7 @@ ActiveRecord::Schema.define(:version => 20090429221603) do
     t.boolean  "instock"
     t.string   "pricehistory"
     t.integer  "bestoffer"
+    t.integer  "resolutionarea"
   end
 
   create_table "referrals", :force => true do |t|
@@ -440,6 +441,7 @@ ActiveRecord::Schema.define(:version => 20090429221603) do
     t.integer  "c8"
     t.text     "chosen"
     t.string   "msg"
+    t.string   "ip"
   end
 
   create_table "test", :id => false, :force => true do |t|

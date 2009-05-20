@@ -48,7 +48,7 @@ div #outside {
 	width: 390px;
 	float: left;
 }
-div#textfeatures{
+div#textfeatures, #reviews{
 	clear:both;
 }
 #features ul {

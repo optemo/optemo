@@ -92,7 +92,7 @@ function histogram(element,min,max) {
 	trans = 4,
 	step = peak + 2*trans,
 	height = 20,
-	length = 185,
+	length = 177,
 	paper = Raphael(element,length,height),
 	shapelayer = paper.group(),
 	t = shapelayer.path({fill: Raphael.getColor(), opacity: 0.75});//Raphael.hsb2rgb(Math.abs(Math.sin(parseInt(element,36))),1,1).hex, opacity: 0.5});
@@ -100,8 +100,8 @@ function histogram(element,min,max) {
 	t.moveTo(0,height);
 	for (var i = 0; i < data.length; i++)
 	{
-	t.cplineTo(i*step+trans,height*(1-data[i]),5);
-	t.lineTo(i*step+trans+peak,height*(1-data[i]));	
+	t.cplineTo(i*step+trans,height*(1-Math.sqrt(data[i])),5);
+	t.lineTo(i*step+trans+peak,height*(1-Math.sqrt(data[i])));	
 	}
 	t.cplineTo((data.length)*step,height,5);
 	t.andClose();

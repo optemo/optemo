@@ -22,5 +22,7 @@ data-startmax='<%= @search.nil? ? max : @search.send("#{val}_max".intern) %>'
 data-prodmin='<%= @session.send("#{val}_min".intern) %>' 
 data-prodmax='<%= @session.send("#{val}_max".intern) %>'
 <%= puts 'data-formatting="$"' if money_formatting %>>
+	<div class="endlabel_min"><%= min.to_i %></div>
+	<div class="endlabel_max"><%= max.ceil %></div>
 </div>
 </div>
