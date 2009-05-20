@@ -77,9 +77,9 @@ int main(int argc, char** argv){
 	
 	
 	double* weights = new double [conFeatureN];
-	weights[0] = 2;
+	weights[0] = 1.3;
 	for (int f=1; f<conFeatureN; f++){
-		weights[f] = 1/2;
+		weights[f] = 0.9;
 	}
 
 	ostringstream session_idStream;
