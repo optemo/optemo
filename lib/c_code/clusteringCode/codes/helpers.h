@@ -276,6 +276,7 @@ void getStatisticsData(double** data, int** indicators, double* average, int siz
 		    ostringstream parent_idStream;
 			parent_idStream<<parent_id;
 			int cluster_id;
+			
 			for (int c=0; c<clusterN; c++){
 				ostringstream nodeStream;
 				ostringstream cluster_idStream; 
@@ -291,6 +292,12 @@ void getStatisticsData(double** data, int** indicators, double* average, int siz
 					command += "_min, ";
 					command += conFeatureNames[i];
 				}
+		//		for (int i=0; i<catFeatureN; i++){
+		//			command += "_max, ";
+		//			command += catFeatureNames[i];
+		//			command += "_min, ";
+		//			command += caFeatureNames[i];
+		//		}
 				
 				command += "_max) values (";
 				command += layerStream.str();
@@ -306,9 +313,11 @@ void getStatisticsData(double** data, int** indicators, double* average, int siz
 						command += rangeStream.str();
 					}
 				}
+				
 				command +=");";
+			
 				stmt->execute(command);
-	
+
 				command = "SELECT last_insert_id();"; // from clusters;"
 				res2 = stmt->executeQuery(command);
 
