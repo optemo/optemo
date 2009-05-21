@@ -243,6 +243,8 @@ ActiveRecord::Schema.define(:version => 20090520195431) do
     t.float   "itemwidth"
     t.float   "paperinput"
     t.float   "resolutionarea"
+    t.boolean "scanner"
+    t.boolean "printserver"
     t.float   "price"
     t.string  "brand"
   end

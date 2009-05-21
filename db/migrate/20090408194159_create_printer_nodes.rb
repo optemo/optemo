@@ -6,6 +6,9 @@ class CreatePrinterNodes < ActiveRecord::Migration
       DbProperty.find_by_name('Printer').db_features.each do |f|
         t.float f.name.intern
       end
+      Printer::BinaryFeatures.each do |name|
+        t.boolean name.intern
+      end
       t.float :price
       t.string :brand
     end
