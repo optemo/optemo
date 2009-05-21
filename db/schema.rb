@@ -230,6 +230,8 @@ ActiveRecord::Schema.define(:version => 20090520195431) do
     t.float   "itemwidth_max"
     t.float   "paperinput_min"
     t.float   "paperinput_max"
+    t.float   "resolutionarea_min"
+    t.float   "resolutionarea_max"
     t.float   "price_max"
     t.float   "price_min"
   end
@@ -240,6 +242,7 @@ ActiveRecord::Schema.define(:version => 20090520195431) do
     t.float   "ppm"
     t.float   "itemwidth"
     t.float   "paperinput"
+    t.float   "resolutionarea"
     t.float   "price"
     t.string  "brand"
   end
@@ -386,10 +389,12 @@ ActiveRecord::Schema.define(:version => 20090520195431) do
     t.float    "opticalzoom_max",       :default => 20.0
     t.float    "ppm_min",               :default => 5.0
     t.float    "ppm_max",               :default => 60.0
-    t.float    "itemwidth_min",         :default => 0.0
-    t.float    "itemwidth_max",         :default => 6290.0
+    t.float    "itemwidth_min",         :default => 850.0
+    t.float    "itemwidth_max",         :default => 6100.0
     t.float    "paperinput_min",        :default => 50.0
-    t.float    "paperinput_max",        :default => 4100.0
+    t.float    "paperinput_max",        :default => 3550.0
+    t.float    "resolutionarea_min",    :default => 600.0
+    t.float    "resolutionarea_max",    :default => 5760000.0
     t.float    "price_min",             :default => 0.0
     t.float    "price_max",             :default => 10000000.0
     t.datetime "created_at"
@@ -411,12 +416,15 @@ ActiveRecord::Schema.define(:version => 20090520195431) do
     t.float    "ppm_min",                :default => 5.0
     t.float    "ppm_max",                :default => 60.0
     t.string   "ppm_hist"
-    t.float    "itemwidth_min",          :default => 0.0
-    t.float    "itemwidth_max",          :default => 6290.0
+    t.float    "itemwidth_min",          :default => 850.0
+    t.float    "itemwidth_max",          :default => 6100.0
     t.string   "itemwidth_hist"
     t.float    "paperinput_min",         :default => 50.0
-    t.float    "paperinput_max",         :default => 4100.0
+    t.float    "paperinput_max",         :default => 3550.0
     t.string   "paperinput_hist"
+    t.float    "resolutionarea_min",     :default => 600.0
+    t.float    "resolutionarea_max",     :default => 5760000.0
+    t.string   "resolutionarea_hist"
     t.float    "price_min",              :default => 0.0
     t.float    "price_max",              :default => 10000000.0
     t.string   "price_hist"

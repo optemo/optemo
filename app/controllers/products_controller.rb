@@ -27,6 +27,7 @@ class ProductsController < ApplicationController
     @products = []
     @clusters = []
     @desc = []
+    @clustergraph = []
     counter = 0
     params[:path_info].collect do |num|
       @products << session[:productType].constantize.find(num)
@@ -39,7 +40,28 @@ class ProductsController < ApplicationController
           @clusters << nil
         else
           #Find the cluster's description
-          @clusters << myc.delete('cluster_id')
+          cluster_id = myc.delete('cluster_id')
+          realc = (session[:productType]+"Cluster").constantize.find(cluster_id)
+          currentclustergraph = []
+          (session[:productType].constantize::MainFeatures+["price"]).each {|name|
+            min = name+'_min'
+            max = name+'_max'
+            if name == "price"
+                prop = DbProperty.find_by_name(session[:productType])
+                fmax = prop.price_max
+                fmin = prop.price_min
+            else
+                feat = DbFeature.find_by_name(name)
+                fmax = feat.max
+                fmin = feat.min
+            end
+            #Normalize features values
+            mymin = (realc.send(min.intern) - fmin) / (fmax - fmin)
+            mymax = (realc.send(max.intern) - fmin) / (fmax - fmin)
+            currentclustergraph << [mymin.round(2),(mymax-mymin).round(2)]
+          }
+          @clustergraph << currentclustergraph
+          @clusters << cluster_id
           @desc << myc.to_a
         end
       end
@@ -48,7 +70,14 @@ class ProductsController < ApplicationController
     #Saved Bar variables
     @picked_products = @session.saveds.map {|s| session[:productType].constantize.find(s.product_id)}
     #Previously clicked product
-    @search = Search.find(session[:search_id]) if session[:search_id]
+    @searches = []
+    if session[:search_id]
+      @search = Search.find(session[:search_id]) 
+      currentsearch = @search
+      while (!currentsearch.parent_id.nil?) do
+        searches<<currentsearch.id
+      end
+    end
     @product = session[:productType].constantize.find(@search.product_id) if @search && @search.product_id
     
     respond_to do |format|

@@ -39,8 +39,9 @@ function removeBrand(str)
 	$('#filter_form').submit();
 }
 
-//Set up sliders
+
 $(document).ready(function() {
+	//Set up sliders
 	$('.slider').each(function () {
 		curmin = parseInt($(this).attr('data-startmin'));
 		curmax = parseInt($(this).attr('data-startmax'));
@@ -77,6 +78,18 @@ $(document).ready(function() {
 		});
 		histogram($(this).siblings('.hist')[0],(sessmin-rangemin)/(rangemax-rangemin),(sessmax-rangemin)/(rangemax-rangemin));
 		});
+	//Draw cluster graphs
+	$('.clustergraph').each(function () {
+		Raphael.getColor.reset();
+		$(this).children().each(function () {
+			max = parseFloat($(this).parent().css('width'), 10);
+			margin = parseFloat($(this).attr('data-left')) * max;
+			width = $(this).attr('data-width') * max;
+			$(this).css('margin-left', margin+'px');
+			$(this).css('width', width+'px');
+			$(this).css('background-color', Raphael.getColor());
+		});
+	});
 });
 
 //Draw slider histogram
