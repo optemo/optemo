@@ -58,9 +58,9 @@ int main(int argc, char** argv){
 			
 		case 2:
 					clusterN = 9; 
-					conFeatureN= 4;
+					conFeatureN= 5;
 					catFeatureN= 1;
-					boolFeatureN= 0;
+					boolFeatureN= 2;
 					varNamesN= 12;
 					range= 2;
 					break;
@@ -76,10 +76,13 @@ int main(int argc, char** argv){
 	
 	
 	
-	double* weights = new double [conFeatureN];
+	double* weights = new double [conFeatureN+catFeatureN];
 	weights[0] = 1.3;
 	for (int f=1; f<conFeatureN; f++){
 		weights[f] = 0.9;
+	}
+	for (int f=0; f<catFeatureN; f++){
+		weights[conFeatureN+f] = 0.1;
 	}
 
 	ostringstream session_idStream;
@@ -88,12 +91,12 @@ int main(int argc, char** argv){
 
 	string nodeString;
 	
-	string* indicatorNames = new string [4];
+	string* indicatorNames = new string [conFeatureN + boolFeatureN];
 
 		
 	string *varNames = new string[varNamesN];	
 	string *catFeatureNames = new string[catFeatureN];
-	//string *boolFeatureNames = new string [boolFeatureN];
+	string *boolFeatureNames = new string [boolFeatureN];
 	string *conFeatureNames = new string[conFeatureN];
 	double **conFeatureRange = new double* [conFeatureN];
 	double ***conFeatureRangeC = new double** [clusterN];
@@ -151,9 +154,9 @@ int main(int argc, char** argv){
 	varNames[11] = "session_id";	
    
 //void preClustering(string* varNames, map<const string, int>productNames, string productName, string* conFeatureNames, string* catFeatureNames, string* indicatorNames)
+	
 
-
-	preClustering(varNames, productNames, productName, conFeatureNames, catFeatureNames, indicatorNames);
+ string filteringCommand = preClustering(varNames, productNames, productName, conFeatureNames, catFeatureNames, boolFeatureNames, indicatorNames);
 
 
 //}
@@ -221,21 +224,19 @@ int main(int argc, char** argv){
 				command += "_nodes;";
 				stmt->execute(command);
 				
-				
-				command = "SELECT * FROM ";
-				command += productName;
-				command += "s where instock=1;";
-			    res = stmt->executeQuery(command); 
+			
+			    res = stmt->executeQuery(filteringCommand); 
 
 				int maxSize = 10000;
+			
 			   while (maxSize>clusterN){
 							
 					for (int j=0; j<conFeatureN; j++){
 						average[j] = 0.0;
 					}
-					
-					maxSize = hClustering(layer, clusterN,  conFeatureN,  average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
-							stmt, conFeatureNames, productName, weights);	
+				
+					maxSize = hClustering(layer, clusterN,  conFeatureN,  boolFeatureN, average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
+							stmt, conFeatureNames, boolFeatureNames, productName, weights);	
 				
 					layer++;
 					

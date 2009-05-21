@@ -4,12 +4,15 @@
 
 //make productNames a global variable
 
-void preClustering(string* varNames, map<const string, int>productNames, string productName, string* conFeatureNames, string* catFeatureNames, string* indicatorNames){
+string preClustering(string* varNames, map<const string, int>productNames, string productName, string* conFeatureNames, string* catFeatureNames, string* boolFeatureNames, string* indicatorNames){
+	
+	string filteringCommand;
 	
 	string brand = "";
 	string var;
 	catFeatureNames[0]= "brand";
 	conFeatureNames[0]= "price";
+	
 	switch(productNames[productName]){
 		case 1:
 				conFeatureNames[1]= "displaysize";  
@@ -31,21 +34,36 @@ void preClustering(string* varNames, map<const string, int>productNames, string 
 				indicatorNames[1] = "Display Size";
 				indicatorNames[2] = "Optical Zoom";
 				indicatorNames[3] = "MegaPixels";
+				filteringCommand = "SELECT * FROM ";
+				filteringCommand += productName;
+				filteringCommand += "s where instock=1;";
 				break;
 		case 2:	
 				conFeatureNames[1]= "ppm";  
 			    conFeatureNames[2]= "itemwidth";
 			    conFeatureNames[3]= "paperinput";
+				conFeatureNames[4] = "resolutionarea";
+				
+				boolFeatureNames[0] = "scanner";
+				boolFeatureNames[1] = "printserver";
+				
 				indicatorNames[0]="price";
 				indicatorNames[1]= "ppm";  
 			    indicatorNames[2]= "itemwidth";
 			    indicatorNames[3]= "paperinput";
+				indicatorNames[4] = "Resolution Area";
+				indicatorNames[5] = "scanner";
+				indicatorNames[6] = "printserver";
+				filteringCommand = "SELECT * FROM ";
+				filteringCommand += productName;
+				
+				filteringCommand += "s where (instock=1 and (scanner IS NOT NULL) and (printserver IS NOT NULL) and (resolutionarea IS NOT NULL));";
 			
 				break;
 		default: 
 				break;
 	}
-	
+	return filteringCommand;
 	
 }
 
@@ -86,6 +104,7 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 				indicatorNames[1] = "Display Size";
 				indicatorNames[2] = "Optical Zoom";
 				indicatorNames[3] = "MegaPixels";
+			
 				
 				
 				for (int j=0; j<varNamesN; j++){
@@ -175,12 +194,13 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 			varNames[8] = "itemwidth_max";
 			varNames[9] = "paperinput_min";
 			varNames[10] = "paperinput_max";
-		
+		    
 			
 			indicatorNames[0] = "price";
 			indicatorNames[1] = "ppm";
 			indicatorNames[2] = "itemwidth";
 			indicatorNames[3] = "paperinput";
+	
 			
 			
 			for (int j=0; j<varNamesN; j++){
