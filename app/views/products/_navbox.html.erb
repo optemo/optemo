@@ -33,9 +33,11 @@
 		</div>-->
 	</div>
 	<div class="clustergraph">
+		<% if !@clustergraph[i].nil? %>
 		<% @clustergraph[i].each do |u| %>
 		<% if u.length == 2 %>
 		<div class="featurebar" data-left="<%= u[0] %>" data-width="<%= u[1] %>"></div>
+		<% end %>
 		<% end %>
 		<% end %>
 	</div>
