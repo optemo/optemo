@@ -75,7 +75,8 @@ class ProductsController < ApplicationController
       @search = Search.find(session[:search_id]) 
       currentsearch = @search
       while (!currentsearch.parent_id.nil?) do
-        searches<<currentsearch.id
+        @searches<<currentsearch.id
+         currentsearch = Search.find(currentsearch.parent_id)
       end
     end
     @product = session[:productType].constantize.find(@search.product_id) if @search && @search.product_id

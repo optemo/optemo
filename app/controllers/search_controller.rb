@@ -133,7 +133,7 @@ class SearchController < ApplicationController
   
   def send_query(q)
     myparams = q.to_yaml
-    #debugger
+    debugger
     @output = %x["#{RAILS_ROOT}/lib/c_code/clusteringCode/codes/connect" "#{myparams}"]
     options = YAML.load(@output)
     #Output structure
