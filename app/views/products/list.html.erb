@@ -26,7 +26,7 @@
 <div class="main">
 	<span style="color:red;"><%= flash[:error] %></span>
 	<% @searches.each do |s| %>
-	<span class='backlink'><%= link_to 'Looking at 40 Printers with High PPM', '#'%></span>
+	<span class='backlink'><% link_to 'Looking at 40 Printers with High PPM', '#'%></span>
 	<% end %>
 	<% for i in 0..@products.length-1 %>
 	  <% if i%3 == 0 %>
@@ -50,7 +50,7 @@
 
 <% content_for :header do %>
 	<% if @product %>
-		<div style="float:left">Viewing<br><%= @session.result_count %> Similar<br>products to:</div>
+		<div style="float:left">Viewing<br><%= @result_count %> Similar<br>products to:</div>
 		<%= render :partial => 'product', :locals => {:nox => true, :product => @product} %>
 		<%# @session.msg %>
 	<% end %>
