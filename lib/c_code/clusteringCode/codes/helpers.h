@@ -195,8 +195,8 @@ void getStatisticsData(double** data, int** indicators, double* average, int siz
 	 	double *dif = new double[conFeatureN];
 	
 		for(int f=0; f<conFeatureN; f++){	
-  	         conFeatureRange[f][1] = data[0][1]; 
-             conFeatureRange[f][0] = data[0][1]; 
+  	         conFeatureRange[f][1] = data[0][f]; 
+             conFeatureRange[f][0] = data[0][f]; 
 		}
         
 
