@@ -1,22 +1,22 @@
 <div class="navigator_box" style="left: <%= (i%3)*247 %>px;">
 <div id="box<%=i%>" class="borderbox">
-	   <% if !@products[i].imagemwidth.blank? %>
+	   <% if !@c.products[i].imagemwidth.blank? %>
 		<div class='save'>
-			<%= link_to "Save it", "javascript:saveit(#{@products[i].id})" %>
+			<%= link_to "Save it", "javascript:saveit(#{@c.products[i].id})" %>
 		</div>
-		<%= image_tag @products[i].imagemurl, :width => @products[i].imagemw, :height => @products[i].imagemh, :onClick => "fadeout(#{@products[i].id});", :style => "cursor: pointer;margin-left:-45px" %> 	
+		<%= image_tag @c.products[i].imagemurl, :width => @c.products[i].imagemw, :height => @c.products[i].imagemh, :onClick => "fadeout(#{@c.products[i].id});", :style => "cursor: pointer;margin-left:-45px" %> 	
 		<div class='rightbar' style='display: none;'>
-			MP:<%# @products[i].maximumresolution %><br>
-			DS:<%# @products[i].displaysize %><br>
-			OZ:<%# @products[i].opticalzoom %><br>
+			MP:<%# @c.products[i].maximumresolution %><br>
+			DS:<%# @c.products[i].displaysize %><br>
+			OZ:<%# @c.products[i].opticalzoom %><br>
 		</div>
 	<%end%>
-	<a href="/products/<%=@products[i].id%>" onClick="fadeout(<%=@products[i].id%>);return false;">
-	<p class="easylink"><%= @products[i].smlTitle %></p>
+	<a href="/products/<%=@c.products[i].id%>" onClick="fadeout(<%=@c.products[i].id%>);return false;">
+	<p class="easylink"><%= @c.products[i].smlTitle %></p>
 	<p style="font-size: 0.9em">
 		<%= description(i) %>
 	</p>
-	<p><%= @products[i].pricestr %>  
+	<p><%= @c.products[i].pricestr %>  
 		<%# Randomized Product Reviews %>
 		<%= rand > 0.5 ? (rand > 0.5 ? image_tag('5star.gif') : image_tag('3star.gif')) : image_tag('4star.gif') %>
 	</p>
@@ -24,8 +24,8 @@
 	<div class="bottombar">
 		<%= sim_link(i) %><!--# remove this
 		<div class="clusterfeatures">
-		<% if !@desc[i].nil? %>
-		<% @desc[i].each do |item| %>
+		<% if !@c.desc[i].nil? %>
+		<% @c.desc[i].each do |item| %>
 		    <% next if item[1] == 0 || item[0] == 'cluster_count' %>
 			<%# link_to "#{item[0]}#{item[1]>0 ? image_tag('up.gif') : image_tag('down.gif')}", {:action => "#{item[0]}"}, {:class => "#{item[1]>0 ? 'up' : 'down'}"}%>
 		<% end %>
@@ -33,8 +33,8 @@
 		</div>-->
 	</div>
 	<div class="clustergraph">
-		<% if !@clustergraph[i].nil? %>
-		<% @clustergraph[i].each do |u| %>
+		<% if !@c.clustergraph[i].nil? %>
+		<% @c.clustergraph[i].each do |u| %>
 		<% if u.length == 2 %>
 		<div class="featurebar" data-left="<%= u[0] %>" data-width="<%= u[1] %>"></div>
 		<% end %>

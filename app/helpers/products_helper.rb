@@ -10,38 +10,33 @@ module ProductsHelper
   def description(i)
     text = []
 		session[:productType].constantize::MainFeatures.each do |f|
-		  res = @dbprops.toPhrase(f,@products[i].send(f))
+		  res = @dbprops.toPhrase(f,@c.products[i].send(f))
 			text << res unless res.blank?
 		end
 		text.join(', ')
   end
   def sim_link(i)
-    if @desc[i].nil? || @clusters.nil?
-      #No cluster info
-      ""
-    else
-      #Clustering present
-      a = @desc[i].select{|ii|ii[0]=='cluster_count'}
-      count = a[0][1] if !a.nil? && !a[0].nil?
-      @desc[i].each_index do |ii|
-        item = @desc[i][ii]
-        if item[1] == 0 || item[0] == 'cluster_count'
-  		    @desc[i][ii] = nil
-  		  else
-  		    @desc[i][ii][1] = case item[1]
-  		        when 1: 'low'
-  		        when 2: 'avg'
-  		        when 3: 'high'
-  		    end
-  		  end
-  		end
-  		@desc[i].compact!.each{|a|a.reverse!}
-      "<div class='sim'>" +
-        link_to("Explore #{count} Similar Product#{"s" if count > 1}", 
-        "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+@subclusters[i], 
-        :title => "These products have " + combine_list(@desc[i]), :id => "sim#{i}") +
-      "</div>"
-    end
+    #Clustering present
+    a = @c.desc[i].select{|ii|ii[0]=='cluster_count'}
+    count = a[0][1] if !a.nil? && !a[0].nil?
+    @c.desc[i].each_index do |ii|
+      item = @c.desc[i][ii]
+      if item[1] == 0 || item[0] == 'cluster_count'
+  	    @c.desc[i][ii] = nil
+  	  else
+  	    @c.desc[i][ii][1] = case item[1]
+  	        when 1: 'low'
+  	        when 2: 'avg'
+  	        when 3: 'high'
+  	    end
+  	  end
+  	end
+  	@c.desc[i].compact!.each{|a|a.reverse!}
+    "<div class='sim'>" +
+      link_to("Explore #{count} Similar Product#{"s" if count > 1}", 
+      "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+@c.subclusters[i], 
+      :title => "These products have " + combine_list(@c.desc[i]), :id => "sim#{i}") +
+    "</div>"
   end
   def combine_list(a)
     case a.length

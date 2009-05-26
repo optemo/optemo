@@ -28,7 +28,7 @@
 	<% @searches.each do |s| %>
 	<span class='backlink'><% link_to 'Looking at 40 Printers with High PPM', '#'%></span>
 	<% end %>
-	<% for i in 0..@products.length-1 %>
+	<% for i in 0..@c.products.length-1 %>
 	  <% if i%3 == 0 %>
 		<div class="rowdiv">
 		<% open = true %>
