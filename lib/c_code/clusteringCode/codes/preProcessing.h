@@ -389,7 +389,8 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 						out.append(", ");
 						ostringstream oss7; 
 						oss7<<childrenIDs[c][l];
-						out.append(oss4.str());
+						//cout<<"children ID is "<<childrenIDs[c][l]<<endl;
+						out.append(oss7.str());
 					
 					}
 					out.append("]");
