@@ -94,85 +94,79 @@ class SearchController < ApplicationController
   
   private
   
-  def search(s, opts = {})
-    q = {}
-    if s.filter && s.filter > 1
-      if !session[:search_id].nil? && s.filter != session[:search_id]
-        myfilter = Search.find(s.filter).attributes
-        s.parent_id = s.filter
-      else
-        myfilter = s.attributes
+    def search(s, opts = {})
+      q = {}
+      if s.filter && s.filter > 1
+        if !session[:search_id].nil? && s.filter != session[:search_id]
+          myfilter = Search.find(s.filter).attributes
+          s.parent_id = s.filter
+        else
+          myfilter = s.attributes
+        end
+        #Remove unnescessary arguments from YAML query
+        myfilter.delete('id')
+        myfilter.delete('parent_id')
+        myfilter.delete('session_id')
+        myfilter.delete('created_at')
+        myfilter.delete('updated_at')
+        myfilter.delete('filter')
+        myfilter.delete('brand') if myfilter['brand'].blank?
+        #myfilter.delete_if {|key, val| (key.index('_max') || key.index('_min'))&&!key.index(Regexp.union(session[:productType].constantize::MainFeatures+["price"]))}
+        if session[:productType] == 'Printer'
+          myfilter.delete_if {|key, val| (key.index('_max') || key.index('_min'))&&!key.index(/ppm|itemwidth|paperinput|price/)}
+        else
+          myfilter.delete_if {|key, val| (key.index('_max') || key.index('_min'))&&!key.index(/maximumresolution|displaysize|opticalzoom|price/)}
+        end
+        myfilter.delete('product_id') if myfilter['cluster_id']
+        myfilter.delete('cluster_id') unless myfilter['cluster_id']
+        myfilter.delete('product_id') unless myfilter['product_id']
+        q.update(myfilter)
       end
-      #Remove unnescessary arguments from YAML query
-      myfilter.delete('id')
-      myfilter.delete('parent_id')
-      myfilter.delete('session_id')
-      myfilter.delete('created_at')
-      myfilter.delete('updated_at')
-      myfilter.delete('filter')
-      myfilter.delete('brand') if myfilter['brand'].blank?
-      #myfilter.delete_if {|key, val| (key.index('_max') || key.index('_min'))&&!key.index(Regexp.union(session[:productType].constantize::MainFeatures+["price"]))}
-      if session[:productType] == 'Printer'
-        myfilter.delete_if {|key, val| (key.index('_max') || key.index('_min'))&&!key.index(/ppm|itemwidth|paperinput|price/)}
-      else
-        myfilter.delete_if {|key, val| (key.index('_max') || key.index('_min'))&&!key.index(/maximumresolution|displaysize|opticalzoom|price/)}
-      end
-      myfilter.delete('product_id') if myfilter['cluster_id']
-      myfilter.delete('cluster_id') unless myfilter['cluster_id']
-      myfilter.delete('product_id') unless myfilter['product_id']
-      q.update(myfilter)
+      q.update(opts)
+      q.update({'cluster_id' => s.cluster_id}) if s.cluster_id
+      s.update_attributes(q)
+      session[:search_id] = s.id
+      #Make request work with c code
+      q['product_name'] = !session[:productType].nil? ? session[:productType].downcase : $DefaultProduct.downcase
+      send_query(q)
     end
-    q.update(opts)
-    q.update({'cluster_id' => s.cluster_id}) if s.cluster_id
-    s.update_attributes(q)
-    session[:search_id] = s.id
-    #Make request work with c code
-    q['product_name'] = !session[:productType].nil? ? session[:productType].downcase : $DefaultProduct.downcase
-    send_query(q)
-  end
-  
-  def send_query(q)
-    myparams = q.to_yaml
-    #debugger
-    @output = %x["#{RAILS_ROOT}/lib/c_code/clusteringCode/codes/connect" "#{myparams}"]
-    options = YAML.load(@output)
-    #Output structure
-#      result_count :integer
-#      products :array
-#      clusters :array
-#      chosen :hash
-#        cluster_id :int
-#        cluster_count :int
-#        %feature :-1,0,1
-#      %feature_min :int
-#      %feature_max :int
-#      %feature_hist :string
-    
-    #parse the new ids
-    if options.blank? || options[:result_count].nil? || (options[:result_count] > 0 && options['products'].nil?)
-      flash[:error] = "We're having problems with our database."
-      options = {:result_count => 0}
-    elsif options[:result_count] == 0
-      flash[:error] = "No products were found"
-    else
-      results = options[:result_count] < 9 ? options[:result_count] : 9
-      #Pop array of products and clusters
-      newproducts = options.delete('products')
-      newclusters = options.delete('clusters')
-      current_node = "i0"
-      results.times do 
-        c = "c#{current_node[1,1]}"
-        options[current_node.intern] = newproducts.pop
-        options[c.intern] = newclusters.pop unless newclusters.nil? || newclusters.empty?
-        current_node.next!
+
+    def send_query(q)
+      myparams = q.to_yaml
+      #debugger
+      #Input
+  #       cluster_id :array
+      @output = %x["#{RAILS_ROOT}/lib/c_code/clusteringCode/codes/connect" "#{myparams}"]
+      options = YAML.load(@output)
+      #Output structure
+  #      result_count :integer --now current page
+  #      products :array --now current page
+  #      clusters :array of array #only for filtering
+  #      clusterdetails :hash
+  #        cluster_id :int
+  #        cluster_count :int
+  #        clusters :array
+  #        %feature :0,1,2,3
+  #      %feature_min :int --now current page
+  #      %feature_max :int --now current page
+  #      %feature_hist :string --now current page
+
+      #parse the new ids
+      if options.blank? || options[:result_count].nil? || (options[:result_count] > 0 && options['products'].nil?)
+        flash[:error] = "We're having problems with our database."
+        options = {:result_count => 0}
+      elsif options[:result_count] == 0
+        flash[:error] = "No products were found"
+      else
+        results = options[:result_count] < 9 ? options[:result_count] : 9
+        #Pop array of products and clusters
+        newclusters = options.delete('clusters')
+        options.delete('products')
+        redirect_to "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+newclusters.join('/')
       end
-      #make chosen a YAML
-      options[:chosen] = options[:chosen].to_yaml
+      mysession = Session.find(session[:user_id])
+      mysession.update_attributes(options)
     end
-    mysession = Session.find(session[:user_id])
-    mysession.update_attributes(options)
-    redirect_to "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+mysession.URL
-  end
   
   def combine_list(a)
     if a.length == 1

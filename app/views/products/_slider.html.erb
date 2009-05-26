@@ -1,11 +1,9 @@
 <div class='feature'>
 <div class='disp'>
-	<% if money_formatting %>
-	<!--$<%= @search.nil? ? min.to_i : @search.send("#{val}_min".intern) < min ? min.to_i : @search.send("#{val}_min".intern).to_i %>-$<%= @search.nil? ? max.ceil : @search.send("#{val}_max".intern) > max ? max.ceil : @search.send("#{val}_max".intern).ceil %>-->
-	$<%= @session.send("#{val}_min".intern).to_i %>-$<%= @session.send("#{val}_max".intern).ceil %>
-	<% else %>
-	<!--<%= @search.nil? ? min : @search.send("#{val}_min".intern) %>-<%= @search.nil? ? max : @search.send("#{val}_max".intern) %> <%= session[:productType].constantize::MainFeaturesLabel[val] %>-->
-	<%= @session.send("#{val}_min".intern) %>-<%= @session.send("#{val}_max".intern) %> <%= session[:productType].constantize::MainFeaturesLabel[val] %>
+	<!-- MoneyFormatting -- $<%= @search.nil? ? min.to_i : @search.send("#{val}_min".intern) < min ? min.to_i : @search.send("#{val}_min".intern).to_i %>-$<%= @search.nil? ? max.ceil : @search.send("#{val}_max".intern) > max ? max.ceil : @search.send("#{val}_max".intern).ceil %>-->
+	<!-- RegularFormatting -- <%= @search.nil? ? min : @search.send("#{val}_min".intern) %>-<%= @search.nil? ? max : @search.send("#{val}_max".intern) %> <%= session[:productType].constantize::MainFeaturesLabel[val] %>-->
+	<% if @filterinfo %>
+	  <%= '$' if money_formatting %><%= @filterinfo["#{val}_min"].to_i %>-<%= '$' if money_formatting %><%=  @filterinfo["#{val}_max"].ceil %> <%= session[:productType].constantize::MainFeaturesLabel[val] %>
 	<% end %>
 </div>
 <div class='label'>
@@ -18,9 +16,11 @@
 data-min='<%= val=='price' ? @dbprops.price_min/100 :  @dbprops.db_features.find_by_name(val).min.to_i%>'
 data-max='<%= val=='price' ? (@dbprops.price_max.to_f/100).ceil : @dbprops.db_features.find_by_name(val).max.ceil%>'
 data-startmin='<%= @search.nil? ? min : @search.send("#{val}_min".intern) %>'
-data-startmax='<%= @search.nil? ? max : @search.send("#{val}_max".intern) %>' 
-data-prodmin='<%= @session.send("#{val}_min".intern) %>' 
-data-prodmax='<%= @session.send("#{val}_max".intern) %>'
+data-startmax='<%= @search.nil? ? max : @search.send("#{val}_max".intern) %>'
+<% if @filterinfo %>
+data-prodmin='<%= @filterinfo["#{val}_min"] %>' 
+data-prodmax='<%= @filterinfo["#{val}_max"] %>'
+<% end %>
 <%= puts 'data-formatting="$"' if money_formatting %>>
 	<div class="endlabel_min"><%= min.to_i %></div>
 	<div class="endlabel_max"><%= max.ceil %></div>

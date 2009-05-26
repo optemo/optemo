@@ -3,12 +3,13 @@ class Printer < ActiveRecord::Base
   include ProductProperties
   has_many :printer_nodes
   named_scope :priced, :conditions => "salepriceint IS NOT NULL"
-  named_scope :valid, :conditions => %w(ppm itemwidth paperinput salepriceint resolutionarea).map{|i|i+' IS NOT NULL'}.join(' AND ')
+  named_scope :valid, :conditions => %w(ppm itemwidth paperinput salepriceint resolutionarea scanner printserver).map{|i|i+' IS NOT NULL'}.join(' AND ')
   named_scope :invalid, :conditions => %w(ppm itemwidth paperinput).map{|i|i+' IS NULL'}.join(' OR ')+" OR (salepriceint IS NULL AND listpriceint IS NULL)"
   named_scope :fewfeatures, :conditions => %w(ppm ttp paperinput).map{|i|i+' IS NULL'}.join(' OR ')
   named_scope :instock, :conditions => "instock is true"
   named_scope :newfeatures, :conditions => %w(ppm itemwidth paperinput resolutionarea salepriceint scanner printserver).map{|i|i+' IS NOT NULL'}.join(' AND ')
   MainFeatures = %w(ppm itemwidth paperinput resolutionarea)
+  BinaryFeatures = %w(scanner printserver)
   MainFeaturesDisp = %w(Pages\ Per\ Minute Width Paper\ Tray\ Size)
   MainFeaturesLabel = Hash[*MainFeatures.zip(['','in','']).flatten]
   ShowFeatures = %w(brand model ppm paperinput ttp resolution itemwidth itemheight itemlength duplex connectivity papersize scanner printserver platform)
