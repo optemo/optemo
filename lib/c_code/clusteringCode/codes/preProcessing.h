@@ -380,7 +380,7 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 				out.append(oss5.str());
 				if (childrenCount[c] >0){
 					out.append(", ");
-					out.append("children: \n[");
+					out.append("children: [");
 						ostringstream oss4; 
 						oss4<<childrenIDs[c][0];
 						out.append(oss4.str());
