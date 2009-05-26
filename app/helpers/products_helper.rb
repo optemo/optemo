@@ -15,8 +15,10 @@ module ProductsHelper
 		end
 		text.join(', ')
   end
+  
   def sim_link(i)
     #Clustering present
+    return "" unless @c.desc
     a = @c.desc[i].select{|ii|ii[0]=='cluster_count'}
     count = a[0][1] if !a.nil? && !a[0].nil?
     @c.desc[i].each_index do |ii|
@@ -32,11 +34,15 @@ module ProductsHelper
   	  end
   	end
   	@c.desc[i].compact!.each{|a|a.reverse!}
-    "<div class='sim'>" +
-      link_to("Explore #{count} Similar Product#{"s" if count > 1}", 
-      "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+@c.subclusters[i], 
-      :title => "These products have " + combine_list(@c.desc[i]), :id => "sim#{i}") +
-    "</div>"
+  	unless @c.subclusters[i].nil?
+      "<div class='sim'>" +
+        link_to("Explore #{count} Similar Product#{"s" if count > 1}", 
+        "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+@c.subclusters[i], 
+        :title => "These products have " + combine_list(@c.desc[i]), :id => "sim#{i}") +
+      "</div>"
+    else
+      ""
+    end
   end
   def combine_list(a)
     case a.length

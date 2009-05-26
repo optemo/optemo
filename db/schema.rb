@@ -406,52 +406,25 @@ ActiveRecord::Schema.define(:version => 20090520195431) do
   create_table "sessions", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.float    "maximumresolution_min",  :default => 0.0
-    t.float    "maximumresolution_max",  :default => 15.0
-    t.string   "maximumresolution_hist"
-    t.float    "displaysize_min",        :default => 0.0
-    t.float    "displaysize_max",        :default => 4.0
-    t.string   "displaysize_hist"
-    t.float    "opticalzoom_min",        :default => 0.0
-    t.float    "opticalzoom_max",        :default => 20.0
-    t.string   "opticalzoom_hist"
-    t.float    "ppm_min",                :default => 5.0
-    t.float    "ppm_max",                :default => 60.0
-    t.string   "ppm_hist"
-    t.float    "itemwidth_min",          :default => 850.0
-    t.float    "itemwidth_max",          :default => 6100.0
-    t.string   "itemwidth_hist"
-    t.float    "paperinput_min",         :default => 50.0
-    t.float    "paperinput_max",         :default => 3550.0
-    t.string   "paperinput_hist"
-    t.float    "resolutionarea_min",     :default => 600.0
-    t.float    "resolutionarea_max",     :default => 5760000.0
-    t.string   "resolutionarea_hist"
-    t.float    "price_min",              :default => 0.0
-    t.float    "price_max",              :default => 10000000.0
-    t.string   "price_hist"
-    t.integer  "result_count"
-    t.integer  "i0"
-    t.integer  "i1"
-    t.integer  "i2"
-    t.integer  "i3"
-    t.integer  "i4"
-    t.integer  "i5"
-    t.integer  "i6"
-    t.integer  "i7"
-    t.integer  "i8"
-    t.integer  "c0"
-    t.integer  "c1"
-    t.integer  "c2"
-    t.integer  "c3"
-    t.integer  "c4"
-    t.integer  "c5"
-    t.integer  "c6"
-    t.integer  "c7"
-    t.integer  "c8"
-    t.text     "chosen"
-    t.string   "msg"
     t.string   "ip"
+    t.integer  "parent_id"
+    t.string   "brand",                 :default => "All Brands"
+    t.float    "maximumresolution_min", :default => 0.0
+    t.float    "maximumresolution_max", :default => 15.0
+    t.float    "displaysize_min",       :default => 0.0
+    t.float    "displaysize_max",       :default => 4.0
+    t.float    "opticalzoom_min",       :default => 0.0
+    t.float    "opticalzoom_max",       :default => 20.0
+    t.float    "ppm_min",               :default => 8.0
+    t.float    "ppm_max",               :default => 60.0
+    t.float    "itemwidth_min",         :default => 850.0
+    t.float    "itemwidth_max",         :default => 6100.0
+    t.float    "paperinput_min",        :default => 100.0
+    t.float    "paperinput_max",        :default => 3550.0
+    t.float    "resolutionarea_min",    :default => 360000.0
+    t.float    "resolutionarea_max",    :default => 5760000.0
+    t.float    "price_min",             :default => 0.0
+    t.float    "price_max",             :default => 10000000.0
   end
 
   create_table "test", :id => false, :force => true do |t|

@@ -1,31 +1,41 @@
 class SearchController < ApplicationController
   def filter
-    s = initialize_search
-    s.cluster_id = nil
-    s.product_id = nil
     myfilter = params[:myfilter]
-    #Allow for multiple brands
-    new_brand = myfilter[:brand]
-    #debugger
-    if !myfilter[:Xbrand].blank?
-      #Remove a brand
-      myfilter[:brand] = Search.find(s.parent_id).brand.split('*').delete_if{|b|b == myfilter[:Xbrand]}.join('*')
-    elsif new_brand != "All Brands" && new_brand != "Add Another Brand"
-      old_brand = Search.find(s.parent_id).brand
-      #Add a brand
-      if myfilter[:brand].nil?
-        myfilter[:brand] = old_brand if old_brand != "All Brands" && old_brand != "Add Another Brand"
-      else
-        myfilter[:brand]+= '*'+old_brand if !old_brand.blank? && old_brand != "All Brands" && old_brand != "Add Another Brand"
+    if myfilter.nil?
+      #No post info passed
+      flash[:error] = "Search could not be completed."
+      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+params[:path_info].join('/')
+    else
+      mysession = Session.find(session[:user_id])
+      #Allow for multiple brands
+      new_brand = myfilter[:brand]
+      if !myfilter[:Xbrand].blank?
+        #Remove a brand
+        myfilter[:brand] = mysession.brand.split('*').delete_if{|b|b == myfilter[:Xbrand]}.join('*')
+      elsif new_brand != "All Brands" && new_brand != "Add Another Brand"
+        old_brand = mysession.brand
+        #Add a brand
+        if myfilter[:brand].nil?
+          myfilter[:brand] = old_brand if old_brand != "All Brands" && old_brand != "Add Another Brand"
+        else
+          myfilter[:brand]+= '*'+old_brand if !old_brand.blank? && old_brand != "All Brands" && old_brand != "Add Another Brand"
+        end
+      elsif new_brand == "Add Another Brand"
+        myfilter[:brand] = mysession.brand
       end
-    elsif new_brand == "Add Another Brand"
-      myfilter[:brand] = Search.find(s.parent_id).brand
+      myfilter.delete('Xbrand') if myfilter[:Xbrand]
+      myfilter.each_pair {|key, val| myfilter[key] = val.to_f if key.index('_min') || key.index('_max')}
+      #Save search values
+      mysession.update_attributes(myfilter)
+      #Send search query
+      c = CQuery.new(session[:productType], params[:path_info].map{|p|p.to_i}, mysession) #C-code wrapper
+      if c.valid
+        redirect_to "/#{session[:productType].pluralize.downcase}/list/"+c.to_s
+      else
+        flash[:error] = c.to_s
+        redirect_to "/#{session[:productType].pluralize.downcase}/list/"+params[:path_info].join('/')
+      end
     end
-    myfilter.delete('Xbrand') if myfilter[:Xbrand]
-    myfilter.each_pair {|key, val| myfilter[key] = val.to_f if key.index('_min') || key.index('_max')}
-    s.attributes = myfilter
-    s.filter = session[:search_id]
-    search(s)
   end
   
   def index

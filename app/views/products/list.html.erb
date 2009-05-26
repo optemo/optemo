@@ -17,7 +17,7 @@
 </div>
 <div id="filterbar">
 	<h2>Filters</h2>
-	<% form_tag({:controller => 'search', :action => 'filter'},{:id => 'filter_form'}) do %>
+	<% form_tag("/search/filter/#{@c.to_s}",{:id => 'filter_form'}) do %>
 	  <%= render :partial => 'filter' %>
 	  <br>
 	<% end %>
@@ -25,10 +25,10 @@
 </div>
 <div class="main">
 	<span style="color:red;"><%= flash[:error] %></span>
-	<% @searches.each do |s| %>
+	<%# @searches.each do |s| %>
 	<span class='backlink'><% link_to 'Looking at 40 Printers with High PPM', '#'%></span>
-	<% end %>
-	<% for i in 0..@c.products.length-1 %>
+	<%# end %>
+	<% for i in 0..@c.cluster_count-1 %>
 	  <% if i%3 == 0 %>
 		<div class="rowdiv">
 		<% open = true %>

@@ -11,15 +11,17 @@ class CQuery
 #        %feature_min :int --now current page
 #        %feature_max :int --now current page
 #        %feature_hist :string --now current page
-  attr_reader :result_count, :products, :cluster_ids, :product_type, :filterinfo, :clustergraph, :subclusters, :desc
+  attr_reader :result_count, :cluster_count, :products, :cluster_ids, :product_type, :filterinfo, :clustergraph, :subclusters, :desc
   
-  def initialize(product_type, clusters=nil)
+  def initialize(product_type, clusters=nil, session=nil)
     @cluster_ids = clusters
     @product_type = product_type
     if clusters.nil?
       myparams = {"product_name" => @product_type.downcase}.to_yaml
     else
-      myparams = {"cluster_id" => @cluster_ids, "product_name" => @product_type.downcase}.to_yaml
+      myfilters = session.attributes.delete_if {|key, val| !key.index(/#{@product_type.constantize::MainFeatures.join('|')+"price|brand"}/)}
+      #debugger
+      myparams = {"cluster_id" => @cluster_ids, "product_name" => @product_type.downcase}.merge(myfilters).to_yaml
     end
     output = sendCQuery myparams
     #debugger
@@ -27,39 +29,51 @@ class CQuery
   end
   
   def to_s
-    @cluster_ids.join("/")
+    unless @msg.nil?
+      @msg
+    else
+      @cluster_ids.join("/")
+    end
+  end
+  
+  def valid
+    return @msg.nil?
   end
   
   private
   
   def sendCQuery(myparams)
-    #output = %x["#{RAILS_ROOT}/lib/c_code/clusteringCode/codes/connect" "#{myparams}"]
-    #YAML.load(output)
-    options = {'result_count' => 420, 'products' => [14,15,16,31,25,19,20,21,22], 'clusters' => [450,451,446,449,447,444,445,448,443], 
-      'clusterdetails' => [{'cluster_id' => 450, 'cluster_count' => 10, 'clusters' => [450,451,446,449,447,444,445,448,443], 'ppmfeature' => 1},{'cluster_id' => 450, 'cluster_count' => 10, 'clusters' => [450,451,446,449,447,444,445,448,443], 'ppmfeature' => 1},{'cluster_id' => 450, 'cluster_count' => 10, 'clusters' => [450,451,446,449,447,444,445,448,443], 'ppmfeature' => 1},{'cluster_id' => 450, 'cluster_count' => 10, 'clusters' => [450,451,446,449,447,444,445,448,443], 'ppmfeature' => 1},{'cluster_id' => 450, 'cluster_count' => 10, 'clusters' => [450,451,446,449,447,444,445,448,443], 'ppmfeature' => 1},{'cluster_id' => 450, 'cluster_count' => 10, 'clusters' => [450,451,446,449,447,444,445,448,443], 'ppmfeature' => 1},{'cluster_id' => 450, 'cluster_count' => 10, 'clusters' => [450,451,446,449,447,444,445,448,443], 'ppmfeature' => 1},{'cluster_id' => 450, 'cluster_count' => 10, 'clusters' => [450,451,446,449,447,444,445,448,443], 'ppmfeature' => 1},{'cluster_id' => 450, 'cluster_count' => 10, 'clusters' => [450,451,446,449,447,444,445,448,443], 'ppmfeature' => 1}],
-      'ppm_max' => 24, 'ppm_min' => 4, 'itemwidth_min' => 12, 'itemwidth_max' => 2000, 'paperinput_min' => 100, 'paperinput_max' => 500,
-      'resolutionarea_min' => 600, 'resolutionarea_max' => 3000000, 'price_min' => 8000, 'price_max' => 800000}
+    output = %x["#{RAILS_ROOT}/lib/c_code/clusteringCode/codes/connect" "#{myparams}"]
+    #debugger
+    YAML.load(output)
+    #options = {'result_count' => 420, 'products' => [14,15,16,31,25,19,20,21,22], 'clusters' => [450,451,446,449,447,444,445,448,443], 
+    #  'clusterdetails' => [{'cluster_id' => 450, 'cluster_count' => 10, 'children' => [450,451,446,449,447,444,445,448,443], 'ppmfeature' => 1},{'cluster_id' => 450, 'cluster_count' => 10, 'clusters' => [450,451,446,449,447,444,445,448,443], 'ppmfeature' => 1},{'cluster_id' => 450, 'cluster_count' => 10, 'clusters' => [450,451,446,449,447,444,445,448,443], 'ppmfeature' => 1},{'cluster_id' => 450, 'cluster_count' => 10, 'clusters' => [450,451,446,449,447,444,445,448,443], 'ppmfeature' => 1},{'cluster_id' => 450, 'cluster_count' => 10, 'clusters' => [450,451,446,449,447,444,445,448,443], 'ppmfeature' => 1},{'cluster_id' => 450, 'cluster_count' => 10, 'clusters' => [450,451,446,449,447,444,445,448,443], 'ppmfeature' => 1},{'cluster_id' => 450, 'cluster_count' => 10, 'clusters' => [450,451,446,449,447,444,445,448,443], 'ppmfeature' => 1},{'cluster_id' => 450, 'cluster_count' => 10, 'clusters' => [450,451,446,449,447,444,445,448,443], 'ppmfeature' => 1},{'cluster_id' => 450, 'cluster_count' => 10, 'clusters' => [450,451,446,449,447,444,445,448,443], 'ppmfeature' => 1}],
+    #  'ppm_max' => 24, 'ppm_min' => 4, 'itemwidth_min' => 12, 'itemwidth_max' => 2000, 'paperinput_min' => 100, 'paperinput_max' => 500,
+    #  'resolutionarea_min' => 600, 'resolutionarea_max' => 3000000, 'price_min' => 8000, 'price_max' => 800000}
   end
   
   def processOutput(output)
     #validateOutput
     if output.blank? || output['result_count'].nil? || (output['result_count'] > 0 && output['products'].nil?)
-      flash[:error] = "We're having problems with our database."
+      @msg = "We're having problems with our database."
       @result_count = 0
+      @cluster_count = 0
     elsif output['result_count'] == 0
-      flash[:error] = "No products were found"
+      @msg = "No products were found"
       @result_count = 0
+      @cluster_count = 0
     else
       #Pop array of products and clusters
       newproducts = output.delete('products')
       @cluster_ids ||= output.delete('clusters') #Might not be needed since clusters were passed in
+      @result_count = output.delete('result_count')
+      @cluster_count = @result_count < 9 ? @result_count : 9
       @products = []
-      results = output['result_count'] < 9 ? output['result_count'] : 9
-      results.times do 
+      @cluster_count.times do 
         @products << @product_type.constantize.find(newproducts.pop)
       end
-      processClusterDetails(output.delete('clusterdetails'))
-      @result_count = output.delete('result_count')
+      details = output.delete('clusterdetails')
+      processClusterDetails(details) if details
       @filterinfo = output
     end
   end
@@ -77,7 +91,12 @@ class CQuery
         cluster_id = myc.delete('cluster_id')
         realc = (@product_type+"Cluster").constantize.find(cluster_id)
         @clustergraph << calcClusterGraph(realc)
-        @subclusters << myc.delete('clusters').join('/')
+        children = myc.delete('children')
+        if children.nil?
+          @subclusters << nil
+        else
+          @subclusters << children.join('/')
+        end
         @desc << myc.to_a
       end
     end

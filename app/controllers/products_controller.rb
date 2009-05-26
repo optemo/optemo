@@ -11,30 +11,34 @@ class ProductsController < ApplicationController
     productType = session[:productType]
     reset_session
     session[:productType] = productType
-    redirect_to "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+CQuery.new(session[:productType]).to_s
+    c = CQuery.new(session[:productType])
+    if c.valid
+      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+c.to_s
+    else
+      flash[:error] = c.to_s
+    end
   end
   
   def list
     @session = Session.find(session[:user_id])
     @dbprops = DbProperty.find_by_name(session[:productType].constantize.name)
-    @c = CQuery.new(session[:productType], params[:path_info].map{|p|p.to_i}) #C-code wrapper
+    @c = CQuery.new(session[:productType], params[:path_info].map{|p|p.to_i},@session) #C-code wrapper
+    if !@c.valid
+      flash[:error] = @c.to_s
+      redirect_to '/error'
+    end
     #Saved Bar variables
     @picked_products = @session.saveds.map {|s| session[:productType].constantize.find(s.product_id)}
     #Previously clicked product
-    @searches = []
-    if session[:search_id]
-      @search = Search.find(session[:search_id]) 
-      currentsearch = @search
-      while (!currentsearch.parent_id.nil?) do
-        @searches<<currentsearch.id
-         currentsearch = Search.find(currentsearch.parent_id)
-      end
-    end
-    
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml  { render :xml => @products }
-    end
+    #@searches = []
+    #if session[:search_id]
+    #  @search = Search.find(session[:search_id]) 
+    #  currentsearch = @search
+    #  while (!currentsearch.parent_id.nil?) do
+    #    @searches<<currentsearch.id
+    #     currentsearch = Search.find(currentsearch.parent_id)
+    #  end
+    #end
   end
 
   # GET /products/1
@@ -129,5 +133,5 @@ class ProductsController < ApplicationController
     end
     redirect_to products_url
   end
-  
+
 end

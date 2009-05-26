@@ -24,22 +24,23 @@
 	<div class="bottombar">
 		<%= sim_link(i) %><!--# remove this
 		<div class="clusterfeatures">
-		<% if !@c.desc[i].nil? %>
-		<% @c.desc[i].each do |item| %>
-		    <% next if item[1] == 0 || item[0] == 'cluster_count' %>
+		<%# if !@c.desc[i].nil? %>
+		<%# @c.desc[i].each do |item| %>
+		    <%# next if item[1] == 0 || item[0] == 'cluster_count' %>
 			<%# link_to "#{item[0]}#{item[1]>0 ? image_tag('up.gif') : image_tag('down.gif')}", {:action => "#{item[0]}"}, {:class => "#{item[1]>0 ? 'up' : 'down'}"}%>
-		<% end %>
-		<% end %>
+		<%# end %>
+		<%# end %>
 		</div>-->
 	</div>
+	
+	<% if @c.clustergraph && @c.clustergraph[i] %>
 	<div class="clustergraph">
-		<% if !@c.clustergraph[i].nil? %>
 		<% @c.clustergraph[i].each do |u| %>
 		<% if u.length == 2 %>
 		<div class="featurebar" data-left="<%= u[0] %>" data-width="<%= u[1] %>"></div>
 		<% end %>
 		<% end %>
-		<% end %>
 	</div>
+	<% end %>
 </div>
 </div>
