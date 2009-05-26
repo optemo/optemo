@@ -376,20 +376,23 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 
 				out.append("childrenCount: ");
 				std::ostringstream oss5; 
-				oss5 << childrenCount[c]<<endl;
+				oss5 << childrenCount[c];
 				out.append(oss5.str());
 				if (childrenCount[c] >0){
 					out.append(", ");
-					out.append("children: \n");
-			
-					
-					for (int l=0; l<childrenCount[c]; l++){
-						out.append("- ");
+					out.append("children: \n[");
 						ostringstream oss4; 
-						oss4<<childrenIDs[c][l];
+						oss4<<childrenIDs[c][0];
 						out.append(oss4.str());
-						out.append("\n");
+					
+					for (int l=1; l<childrenCount[c]; l++){
+						out.append(", ");
+						ostringstream oss7; 
+						oss7<<childrenIDs[c][l];
+						out.append(oss4.str());
+					
 					}
+					out.append("]");
 				}	
 				
 		   		for (int f=0; f<conFeatureN; f++){
