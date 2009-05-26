@@ -988,7 +988,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 					cidstream << cId;
 					command += cidstream.str();
 					command += ";";
-					
+				
 					res2 = stmt->executeQuery(command);
 					int cSize = 0;
 				
