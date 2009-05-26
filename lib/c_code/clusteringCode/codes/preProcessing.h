@@ -380,7 +380,7 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 				out.append(oss5.str());
 				if (childrenCount[c] >0){
 					out.append(", ");
-					out.append("children: ");
+					out.append("children: \n");
 			
 					
 					for (int l=0; l<childrenCount[c]; l++){
