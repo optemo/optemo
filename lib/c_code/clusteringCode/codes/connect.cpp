@@ -232,7 +232,7 @@ int *mergedClusterN= new int[clusterN];
 ///////////////////////////////////////////////
 		
 			try {
-						
+				
 				// Using the Driver to create a connection
 				driver = sql::mysql::get_mysql_driver_instance();
 				con = driver->connect(HOST, PORT, USER, PASS);
@@ -264,15 +264,19 @@ int *mergedClusterN= new int[clusterN];
 				cidstream << clusterIDs[safeID];
 				command += cidstream.str();
 				command += ";";
-		
+			
 				res = stmt->executeQuery(command);
 	
 				res->next();
-				clusterID = res->getInt("parent_id");
+			
+				clusterID = res->getDouble("parent_id");
+			
 				if (clusterID == 0){
+				
 					command = "SELECT id from ";
 					command += tableName;
 					command += ";";
+					
 	 				res = stmt->executeQuery(command);
 					size = res->rowsCount();
 				}
@@ -296,7 +300,7 @@ int *mergedClusterN= new int[clusterN];
 			for (int f=0; f<conFeatureN; f++){
 				bucketCount[f] = new double [bucketDiv];
 			}
-		
+			
 			int productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, 
 					conFeatureN, conFeatureRange, productName, conFeatureNames, bucketCount, bucketDiv);
 

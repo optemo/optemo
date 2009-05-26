@@ -39,8 +39,10 @@ int main(int argc, char** argv) {
 	int range;  
 	int session_id;
 	int repW; 
+	int *clusterIDs;
 	int clusterID = 0;
 	int bucketDiv = 10;
+	bool cluster = 0; 
 	
 	string argu = argv[1];
 	int ind, endit, startit, lengthit;
@@ -107,9 +109,14 @@ int main(int argc, char** argv) {
 					repW = 9; 
 					break;
 	}
-	
-	string* brands = new string [40] ;
+
+	clusterIDs = new int [clusterN];
+	string* brands = new string [40];
 	int* mergedClusterIDInput = new int[clusterN];
+//	int** mergedClusterIDInput = new int* [clusterN];
+//	for (int c=0; c<clusterN; c++){
+//		mergedClusterIDInput[c] = new int [clusterN];
+//	}
 	bool smallNFlag =false;
 	string* indicatorNames = new string[conFeatureN];
 	int ** indicators = new int*[conFeatureN];
@@ -145,33 +152,37 @@ int main(int argc, char** argv) {
 		boolFilteredFeatures[f] = 0;
 	}
 
+int *mergedClusterN= new int[clusterN];
 
 	//cluster_id
 	var = "cluster_id";
 	ind = argu.find(var, 0);
-	endit = argu.find("\n", ind);
-	
-	startit = ind + var.length() + 2;
-	lengthit = endit - startit;
-
-
-	if(lengthit>0){
-		
-		string valueString = argu.substr(startit, lengthit);
-		int found = valueString.find("-");
-		int mergedClusterN=0;
-		while ( found != (int)string::npos){	
-			mergedClusterIDInput[mergedClusterN] = atoi((valueString.substr(found+1,1)).c_str());
-			found = valueString.find("-", found+2, 1);
-			mergedClusterN++; 
-		}	
-		if (mergedClusterN >0){
-			clusterID = -1 * mergedClusterN;
+//	endit = argu.find("\n", ind);
+	startit = ind + var.length() + 4;
+	for (int c=0; c<clusterN; c++){
+		endit = argu.find("\n", startit);
+		lengthit = endit - startit;		
+		if(lengthit>0 && ind>0){		
+				
+			cluster = 1;
+			string valueString = argu.substr(startit, lengthit);
+			int found = valueString.find("-");		
+			mergedClusterN[c] = 0;
+			while ( found != (int)string::npos){	
+				mergedClusterIDInput[mergedClusterN[c]] = atoi((valueString.substr(found+1,1)).c_str());
+				found = valueString.find("M", found+2, 1);
+				mergedClusterN[c]++; 
+			}	
+			if (mergedClusterN >0){
+				clusterIDs[c] = -1 * mergedClusterN[c];
+			}
+			if (found == (int)string::npos){
+			
+				clusterIDs[c] = atoi((argu.substr(startit, lengthit)).c_str());
+			}		
 		}
-		if (found == (int)string::npos){
-				clusterID = atoi((argu.substr(startit, lengthit)).c_str());
-		}
-	}
+		startit = endit;
+	}	
 
 	int brandN = parseInput(varNames, productNames, productName, argu, brands, catFilteredFeatures, conFilteredFeatures, boolFilteredFeatures, filteredRange, 
 				varNamesN, conFeatureNames, catFeatureNames, indicatorNames);
@@ -233,7 +244,8 @@ int main(int argc, char** argv) {
 			
 				bool reped = false;
 			
-			if (clusterID == 0){
+			if (cluster == 0){
+	
 				command = "SELECT id from ";
 				command += tableName;
 				command += ";";
@@ -241,15 +253,43 @@ int main(int argc, char** argv) {
 				size = res->rowsCount();	
 			}
 			else{
+				command = "SELECT parent_id from ";
+				command += productName;
+				command += "_clusters WHERE id=";
+				ostringstream cidstream; 
+				int safeID = 0;
+				while (clusterIDs[safeID] < 0){
+					safeID++;
+				}
+				cidstream << clusterIDs[safeID];
+				command += cidstream.str();
+				command += ";";
+		
+				res = stmt->executeQuery(command);
+	
+				res->next();
+				clusterID = res->getInt("parent_id");
+				if (clusterID == 0){
+					command = "SELECT id from ";
+					command += tableName;
+					command += ";";
+	 				res = stmt->executeQuery(command);
+					size = res->rowsCount();
+				}
+				else{
 				command = "SELECT id from ";
 				command += productName;
 				command += "_nodes where cluster_id=";
 				ostringstream cid;
 				cid<<clusterID;
 				command += cid.str();
+				
 				command += ";";
+			
 				res = stmt->executeQuery(command);
+						
 				size = res->rowsCount();
+			}
 			}	
 			int* productIDs = new int [size];
 			double** bucketCount = new double*[conFeatureN];
@@ -259,7 +299,7 @@ int main(int argc, char** argv) {
 		
 			int productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, 
 					conFeatureN, conFeatureRange, productName, conFeatureNames, bucketCount, bucketDiv);
-			
+
 			if (productN> 0){
 				if (productN<=repW){
 					repW = productN;                 
@@ -267,24 +307,28 @@ int main(int argc, char** argv) {
 				}
 				
 				int* reps = new int [repW];		
-				int* clusterIDs = new int[repW];
+				int* resultClusters = new int [repW];
+				int** childrenIDs = new int*[repW];
+				for (int r=0; r<repW; r++){
+					childrenIDs[r] = new int[clusterN];
+				}
+				int* childrenCount = new int[repW];
 				int* clusterCounts = new int[repW];
 				int* mergedClusterIDs;
+				
+				reped = getRep(reps, productIDs, productN, resultClusters, childrenIDs, clusterCounts, childrenCount, conFeatureN, repW, stmt, 
+					res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames);
 		
-				reped = getRep(reps, productIDs, productN, clusterIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames);
-			
-			
-				if(reped){
-						
-					getIndicators(clusterIDs,repW, conFeatureN, indicators, stmt, res, mergedClusterIDs, productName, conFeatureNames);
+				if(reped){			
+					getIndicators(resultClusters,repW, conFeatureN, indicators, stmt, res, mergedClusterIDs, productName, conFeatureNames);
 				}
 		
 			
 //Generating the output string 
 			//	repW = 9;
-		
 			
-				out = generateOutput(indicatorNames, conFeatureNames, conFeatureN, productN, conFeatureRange, varNames, repW, reps, reped, clusterIDs, mergedClusterIDs, clusterCounts, indicators, bucketCount, bucketDiv);
+				out = generateOutput(indicatorNames, conFeatureNames, conFeatureN, productN, conFeatureRange, varNames, repW, reps, reped, resultClusters, childrenIDs, childrenCount, mergedClusterIDs, clusterCounts, indicators, bucketCount, bucketDiv);
+			
 			}
 			else{	//productN=0;
 				out = "--- !map:HashWithIndifferentAccess \n";
