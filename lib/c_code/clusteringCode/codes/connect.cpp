@@ -158,11 +158,12 @@ int *mergedClusterN= new int[clusterN];
 	var = "cluster_id";
 	ind = argu.find(var, 0);
 //	endit = argu.find("\n", ind);
-	startit = ind + var.length() + 3;
+	startit = ind + var.length() + 4;
 	for (int c=0; c<clusterN; c++){
 		endit = argu.find("\n", startit);
 		lengthit = endit - startit;		
-		if(lengthit>0 && ind>0){			
+		if(lengthit>0 && ind>0){		
+				
 			cluster = 1;
 			string valueString = argu.substr(startit, lengthit);
 			int found = valueString.find("-");		
@@ -176,6 +177,7 @@ int *mergedClusterN= new int[clusterN];
 				clusterIDs[c] = -1 * mergedClusterN[c];
 			}
 			if (found == (int)string::npos){
+			
 				clusterIDs[c] = atoi((argu.substr(startit, lengthit)).c_str());
 			}		
 		}
@@ -262,11 +264,19 @@ int *mergedClusterN= new int[clusterN];
 				cidstream << clusterIDs[safeID];
 				command += cidstream.str();
 				command += ";";
+		
 				res = stmt->executeQuery(command);
-			
+	
 				res->next();
 				clusterID = res->getInt("parent_id");
-					
+				if (clusterID == 0){
+					command = "SELECT id from ";
+					command += tableName;
+					command += ";";
+	 				res = stmt->executeQuery(command);
+					size = res->rowsCount();
+				}
+				else{
 				command = "SELECT id from ";
 				command += productName;
 				command += "_nodes where cluster_id=";
@@ -275,8 +285,11 @@ int *mergedClusterN= new int[clusterN];
 				command += cid.str();
 				
 				command += ";";
+			
 				res = stmt->executeQuery(command);
+						
 				size = res->rowsCount();
+			}
 			}	
 			int* productIDs = new int [size];
 			double** bucketCount = new double*[conFeatureN];
