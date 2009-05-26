@@ -190,7 +190,6 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 	}
 
 	if (clusterID==0){
-	
 		command = "SELECT distinct product_id, price";
 		for (int i=1; i<conFeatureN; i++){
 			command += ", ";
@@ -296,7 +295,7 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 			}
 				command += ");";
 		}	
-	
+		
 		res = stmt->executeQuery(command);
 
 				command = "";
