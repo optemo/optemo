@@ -131,6 +131,8 @@
 //		return acceptedCN;
 //}
 
+//ilter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, 
+//		conFeatureN, conFeatureRange, productName, conFeatureNames, bucketCount, bucketDiv);
 int filter2(double **filteredRange, string* brands, int brandN, sql::Statement *stmt,
  sql::ResultSet *res, sql::ResultSet *res2, int* productIDs, bool* conFilteredFeatures, bool* catFilteredFeatures, 
 int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string productName, string* conFeatureNames, double** bucketCount, int bucketDiv) {
@@ -186,7 +188,7 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 		filteredRange[f][0] -= eps;
 		filteredRange[f][1] += eps;
 	}
-	
+
 	if (clusterID==0){
 	
 		command = "SELECT distinct product_id, price";
@@ -294,6 +296,7 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 			}
 				command += ");";
 		}	
+	
 		res = stmt->executeQuery(command);
 
 				command = "";
@@ -307,7 +310,7 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 				command += "";
 		
 		while(res->next()){
-				
+		
 			productIDs[productN] = res->getInt("product_id");
 			double* eachValue = new double[conFeatureN];
 		
@@ -639,7 +642,10 @@ int getRepClusterString(int* clusterIDs, int mergedClusterN, int conFeatureN, sq
 	return rep;
 }
 
-bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clusterCounts, int conFeatureN, int& repW, 
+// getRep(reps, productIDs, productN, resultClusters, childrenIDs, clusterCounts, conFeatureN, repW, stmt, 
+//	res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames);
+
+bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** childrenIDs, int* clusterCounts, int* childrenCount, int conFeatureN, int& repW, 
 				sql::Statement *stmt, sql::ResultSet *res, sql::ResultSet *res2, int clusterID, bool smallNFlag, int* mergedClusterIDs, int* mergedClusterIDInput, string productName, string* conFeatureNames){
 					
 					
@@ -802,7 +808,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 			command += idStream.str();
 		}
 			command += ")) order by layer, cluster_size DESC;";
-	
+		
 			res = stmt->executeQuery(command);
 		
 			clusterN = res->rowsCount();
@@ -911,6 +917,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 					res2 = stmt->executeQuery(command);
 					
 					repW = res2->rowsCount();
+				
 					j=0;
 					while(res2->next()){
 						reps[j] = res2->getInt("product_id");
@@ -922,6 +929,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 	
 	        int cId;
 			while(res->next() && j<repW){
+
 				if (clusterID == 0){
 					cId= res->getInt("cluster_id");
 				}
@@ -962,7 +970,6 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 					}	
 				command += "));";
 				res2 = stmt->executeQuery(command);	
-
 				int clusterCount = 0;
 				clusterCount = res2->rowsCount();
 				int cIdN = 1;
@@ -973,7 +980,25 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 				if (rep>0){
 				
 					reps[j] = rep;
+					
 					clusterIds[j] = cId;			
+					command = "SELECT id from ";
+					command += productName; 
+					command += "_clusters where parent_id=";
+					ostringstream cidstream;
+					cidstream << cId;
+					command += cidstream.str();
+					command += ";";
+					
+					res2 = stmt->executeQuery(command);
+					int cSize = 0;
+				
+					while(res2->next()){
+						childrenIDs[j][cSize] = res2->getInt("id");
+						cSize++;
+					}	
+					
+					childrenCount[j] = cSize;
 					clusterCounts[j] = clusterCount;
 					j++;	
 				}
@@ -1024,7 +1049,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 					command += product_clusters;
 					command += ".cluster_size DESC;";
 					res = stmt->executeQuery(command);
-										
+				
 				    int cCount = res->rowsCount();
 					if ( cCount> 0){
 						int preClusterCount = clusterCounts[i];
@@ -1068,6 +1093,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 									command += productIdStream2.str();
 								}
 							command += "));";
+							
 							res2 = stmt->executeQuery(command);
 							clusterCount = res2->rowsCount();
 							if (clusterCount>0){
@@ -1075,6 +1101,20 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 								if(rep>0) {	
 									reps[j] = rep;
 									clusterIds[j] = cid;
+									command = "SELECT id from ";
+									command += productName;
+									command += "_clusters where parent_id=";
+									ostringstream cidstream;
+									cidstream << cId;
+									command += cidstream.str();
+									command += ";";
+									res2 = stmt->executeQuery(command);
+									int cSize = 0;
+									while(res2->next()){
+										childrenIDs[j][cSize] = res2->getInt("id");
+										cSize++;
+									}		
+									childrenCount[j] = cSize;
 									clusterCounts[j] = clusterCount;
 									j++;
 									childLeftN--;	
@@ -1083,6 +1123,18 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 						}
 						if (childLeftN == cCount){
 								reps[j] = preRep;
+								command = "SELECT id from clusters where parent_id=";
+								ostringstream cidstream;
+								cidstream << cId;
+								command += cidstream.str();
+								command += ";";
+								res = stmt->executeQuery(command);
+								int cSize = 0;
+								while(res->next()){
+									childrenIDs[j][cSize] = res->getInt("id");
+									cSize++;
+								}	
+								childrenCount[j] = cSize;
 								clusterCounts[j] = preClusterCount;
 								clusterIds[j] = preId;									
 						}
@@ -1156,8 +1208,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int* clus
 		i++;
 	}
 				
-	}			
-					
+	}						
 	if (j==repW){
 		reped = true;
 	}

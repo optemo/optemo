@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
 	int session_id;
 	int repW; 
 	int *clusterIDs;
-	int clusterID = 0;
+	int clusterID
 	int bucketDiv = 10;
 	bool cluster = 0; 
 	
@@ -109,14 +109,13 @@ int main(int argc, char** argv) {
 					repW = 9; 
 					break;
 	}
-
+	
 	clusterIDs = new int [clusterN];
-	string* brands = new string [40];
-	int* mergedClusterIDInput = new int[clusterN];
-//	int** mergedClusterIDInput = new int* [clusterN];
-//	for (int c=0; c<clusterN; c++){
-//		mergedClusterIDInput[c] = new int [clusterN];
-//	}
+	string* brands = new string [40] ;
+	int** mergedClusterIDInput = new *int[clusterN];
+	for (int c=0; c<clusterN; c++){
+		mergedClusterIDInput[c] = new int [clusterN];
+	}
 	bool smallNFlag =false;
 	string* indicatorNames = new string[conFeatureN];
 	int ** indicators = new int*[conFeatureN];
@@ -153,33 +152,39 @@ int main(int argc, char** argv) {
 	}
 
 int *mergedClusterN= new int[clusterN];
-
 	//cluster_id
 	var = "cluster_id";
 	ind = argu.find(var, 0);
 //	endit = argu.find("\n", ind);
+	
 	startit = ind + var.length() + 3;
+	
 	for (int c=0; c<clusterN; c++){
 		endit = argu.find("\n", startit);
-		lengthit = endit - startit;		
-		if(lengthit>0 && ind>0){			
+		lengthit = endit - startit;
+		
+		if(lengthit>0){
+			
 			cluster = 1;
 			string valueString = argu.substr(startit, lengthit);
-			int found = valueString.find("-");		
+			int found = valueString.find("-");
+			
 			mergedClusterN[c] = 0;
 			while ( found != (int)string::npos){	
-				mergedClusterIDInput[mergedClusterN[c]] = atoi((valueString.substr(found+1,1)).c_str());
+				mergedClusterIDInput[c][mergedClusterN] = atoi((valueString.substr(found+1,1)).c_str());
 				found = valueString.find("M", found+2, 1);
 				mergedClusterN[c]++; 
 			}	
 			if (mergedClusterN >0){
-				clusterIDs[c] = -1 * mergedClusterN[c];
+				clusterIDs[c] = -1 * mergedClusterN;
 			}
 			if (found == (int)string::npos){
 				clusterIDs[c] = atoi((argu.substr(startit, lengthit)).c_str());
-			}		
+			}
+				
 		}
 		startit = endit;
+	
 	}	
 
 	int brandN = parseInput(varNames, productNames, productName, argu, brands, catFilteredFeatures, conFilteredFeatures, boolFilteredFeatures, filteredRange, 
@@ -243,7 +248,8 @@ int *mergedClusterN= new int[clusterN];
 				bool reped = false;
 			
 			if (cluster == 0){
-	
+		
+				
 				command = "SELECT id from ";
 				command += tableName;
 				command += ";";
@@ -251,9 +257,9 @@ int *mergedClusterN= new int[clusterN];
 				size = res->rowsCount();	
 			}
 			else{
-				command = "SELECT parent_id from ";
-				command += productName;
-				command += "_clusters WHERE id=";
+				command = "SELECT parent_id from ";s
+				command += tableName;
+				command += " WHERE cluster_id=";
 				ostringstream cidstream; 
 				int safeID = 0;
 				while (clusterIDs[safeID] < 0){
@@ -262,11 +268,10 @@ int *mergedClusterN= new int[clusterN];
 				cidstream << clusterIDs[safeID];
 				command += cidstream.str();
 				command += ";";
-				res = stmt->executeQuery(command);
-			
+				res = stmt->executeQuerry(command);
 				res->next();
 				clusterID = res->getInt("parent_id");
-					
+				
 				command = "SELECT id from ";
 				command += productName;
 				command += "_nodes where cluster_id=";
@@ -294,28 +299,29 @@ int *mergedClusterN= new int[clusterN];
 				}
 				
 				int* reps = new int [repW];		
-				int* resultClusters = new int [repW];
+				
 				int** childrenIDs = new int*[repW];
 				for (int r=0; r<repW; r++){
 					childrenIDs[r] = new int[clusterN];
 				}
-				int* childrenCount = new int[repW];
+				int* childrenSize = new int[repW];
 				int* clusterCounts = new int[repW];
 				int* mergedClusterIDs;
-				
-				reped = getRep(reps, productIDs, productN, resultClusters, childrenIDs, clusterCounts, childrenCount, conFeatureN, repW, stmt, 
-					res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames);
 		
-				if(reped){			
-					getIndicators(resultClusters,repW, conFeatureN, indicators, stmt, res, mergedClusterIDs, productName, conFeatureNames);
+				reped = getRep(reps, productIDs, productN, clusterIDs, childrenIDs, clusterCounts, conFeatureN, repW, stmt, res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames);
+			
+			
+				if(reped){
+						
+					getIndicators(clusterIDs,repW, conFeatureN, indicators, stmt, res, mergedClusterIDs, productName, conFeatureNames);
 				}
 		
 			
 //Generating the output string 
 			//	repW = 9;
+		
 			
-				out = generateOutput(indicatorNames, conFeatureNames, conFeatureN, productN, conFeatureRange, varNames, repW, reps, reped, resultClusters, childrenIDs, childrenCount, mergedClusterIDs, clusterCounts, indicators, bucketCount, bucketDiv);
-			
+				out = generateOutput(indicatorNames, conFeatureNames, conFeatureN, productN, conFeatureRange, varNames, repW, reps, reped, clusterIDs, mergedClusterIDs, clusterCounts, indicators, bucketCount, bucketDiv);
 			}
 			else{	//productN=0;
 				out = "--- !map:HashWithIndifferentAccess \n";

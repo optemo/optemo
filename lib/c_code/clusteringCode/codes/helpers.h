@@ -182,51 +182,142 @@ void getRange(double** data, int size, int conFeatureN, double** conFeatureRange
 		}
 }
 
-
-void getStatisticsData(double** data, int** indicators, double* average, int size, int conFeatureN, double** conFeatureRange, double** dataN){
+//	getStatisticsData(data, clusteredData, indicators, idA, s, clusterN, conFeatureN, conFeatureRangeC);
+void getStatisticsData(double** data, int** clusteredData, int** indicators, int* idA, int size, int clusterN, int conFeatureN, double*** conFeatureRangeC){
 		
 			
-	   for (int j=0; j<conFeatureN; j++){
-			average[j] = average[j]/size;
-		}
+	int ind = 0;
 		
-				
-	  	
-	 	double *dif = new double[conFeatureN];
-	
-		for(int f=0; f<conFeatureN; f++){	
-  	         conFeatureRange[f][1] = data[0][f]; 
-             conFeatureRange[f][0] = data[0][f]; 
+			
+	for (int c=0; c<clusterN; c++){
+		ind = find(idA, clusteredData[c][1], size);
+
+		for(int f=0; f<conFeatureN; f++){
+			
+          conFeatureRangeC[c][f][1] = data[ind][f]; 
+
+          conFeatureRangeC[c][f][0] = data[ind][f]; 
 		}
-        
+    } 
+
+/////
+	for (int c=0; c<clusterN; c++){
+		for (int f=0; f<conFeatureN; f++){
+      		for(int j = 0; j<clusteredData[c][0]; j++){
+	
+				ind = find(idA, clusteredData[c][j+1], size);
+				
+				if(data[ind][f] > conFeatureRangeC[c][f][1]){
+                	conFeatureRangeC[c][f][1] = data[ind][f];
+           		}
+	       		if (data[ind][f] < conFeatureRangeC[c][f][0]){
+		   			conFeatureRangeC[c][f][0] = data[ind][f];
+		   		}
+			}
+		 }
+	}
+   }     
 
 /////
 	
-		for (int f=0; f<conFeatureN; f++){
-      		for(int j = 1; j<size; j++){
-					if(data[j][f] > conFeatureRange[f][1]){
-                		conFeatureRange[f][1] = data[j][f];
-	           		}
-		       		if (data[j][f] < conFeatureRange[f][0]){
-			   			conFeatureRange[f][0] = data[j][f];
-		   			}
-			}
-		}
-			
 	
-		for (int f=0; f<conFeatureN; f++){
-			dif[f] = conFeatureRange[f][1] - conFeatureRange[f][0];
-		}
-		for (int f=0; f<conFeatureN; f++){
-		   for(int j=0; j<size; j++){
-			if (dif[f] == 0){
-				dataN[j][f] = 0;
+void getStatisticsData1(double** data, int** indicators, double* average, int size, int conFeatureN, double** dataN){
+		
+		 for (int j=0; j<conFeatureN; j++){
+				average[j] = average[j]/size;
 			}
-			else{
-		    	dataN[j][f] = (((data[j][f] - conFeatureRange[f][0])/ dif[f]) * 2 ) - 1;
-		   	}
-	}  }
-  	}
+				
+		 	double *dif = new double[conFeatureN];
+			double **conFeatureRange = new double* [conFeatureN];
+		    for(int f=0; f<conFeatureN; f++){	
+				conFeatureRange[f] = new double [2];	
+	  	         conFeatureRange[f][1] = data[0][f]; 
+	             conFeatureRange[f][0] = data[0][f]; 
+			}
+
+
+	/////
+
+			for (int f=0; f<conFeatureN; f++){
+	      		for(int j = 1; j<size; j++){
+						if(data[j][f] > conFeatureRange[f][1]){
+	                		conFeatureRange[f][1] = data[j][f];
+		           		}
+			       		if (data[j][f] < conFeatureRange[f][0]){
+				   			conFeatureRange[f][0] = data[j][f];
+			   			}
+				}
+			}
+
+
+			for (int f=0; f<conFeatureN; f++){
+				dif[f] = conFeatureRange[f][1] - conFeatureRange[f][0];
+			}
+			for (int f=0; f<conFeatureN; f++){
+			   for(int j=0; j<size; j++){
+				if (dif[f] == 0){
+					dataN[j][f] = 0;
+				}
+				else{
+			    	dataN[j][f] = (((data[j][f] - conFeatureRange[f][0])/ dif[f]) * 2 ) - 1;
+			   	}
+		}  }
+		
+	}
+
+
+
+
+	void getStatisticsData2(double** data, double* average, int size, int conFeatureN, double** dataN){
+
+
+		   for (int j=0; j<conFeatureN; j++){
+				average[j] = average[j]/size;
+			}
+				
+
+
+		 	double *dif = new double[conFeatureN];
+			double **conFeatureRange = new double* [conFeatureN];
+		
+			
+			for(int f=0; f<conFeatureN; f++){	
+				conFeatureRange[f] = new double [2];	
+	  	         conFeatureRange[f][1] = data[0][f]; 
+	             conFeatureRange[f][0] = data[0][f]; 
+			}
+
+
+	/////
+
+			for (int f=0; f<conFeatureN; f++){
+	      		for(int j = 1; j<size; j++){
+						if(data[j][f] > conFeatureRange[f][1]){
+	                		conFeatureRange[f][1] = data[j][f];
+		           		}
+			       		if (data[j][f] < conFeatureRange[f][0]){
+				   			conFeatureRange[f][0] = data[j][f];
+			   			}
+				}
+			}
+
+
+			for (int f=0; f<conFeatureN; f++){
+				dif[f] = conFeatureRange[f][1] - conFeatureRange[f][0];
+			}
+			for (int f=0; f<conFeatureN; f++){
+			   for(int j=0; j<size; j++){
+				if (dif[f] == 0){
+					dataN[j][f] = 0;
+				}
+				else{
+			    	dataN[j][f] = (((data[j][f] - conFeatureRange[f][0])/ dif[f]) * 2 ) - 1;
+			   	}
+		}  }
+	  	}
+
+
+
 
 
 
@@ -270,7 +361,7 @@ void getStatisticsData(double** data, int** indicators, double* average, int siz
 
 		void saveClusteredData(double ** data, int* idA, int size, string* brands, int parent_id, int** clusteredData, double*** conFeatureRange, int layer, 
 		int clusterN, int conFeatureN, string* conFeatureNames, sql::Statement *stmt, sql::ResultSet *res2, string productName){
-		///Saving to DataBase	
+		///Saving to cluster table 	
 			ostringstream layerStream; 
 			layerStream<<layer;
 		    ostringstream parent_idStream;
@@ -292,12 +383,6 @@ void getStatisticsData(double** data, int** indicators, double* average, int siz
 					command += "_min, ";
 					command += conFeatureNames[i];
 				}
-		//		for (int i=0; i<catFeatureN; i++){
-		//			command += "_max, ";
-		//			command += catFeatureNames[i];
-		//			command += "_min, ";
-		//			command += caFeatureNames[i];
-		//		}
 				
 				command += "_max) values (";
 				command += layerStream.str();
@@ -475,6 +560,7 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators,
 			command += ")";
 		}
 		else{
+	
 			ostringstream cId;
 			cId << clusterIDs[i];
 			command += cId.str();
@@ -488,9 +574,7 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators,
 		
 		range[0][0] = res->getDouble("price_min");
 		range[0][1] = res->getDouble("price_max");
-		
-		
-		for (int f=0; f<conFeatureN; f++){
+		for (int f=1; f<conFeatureN; f++){
 			res->next();
 			command = conFeatureNames[f];
 			command += "_min"; 
@@ -504,12 +588,30 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators,
 		for (int f=0; f<conFeatureN; f++){
 			if (range[f][1] <= stat[f][0]){
 				indicators[f][i] = 1;
+				
 			}
 			else if (range[f][0] >= stat[f][1]){
 				indicators[f][i] = 3;
 			}
+		
 			else if ((range[f][0] >= stat[f][0]) && (range[f][1] <= stat[f][1])){
 				indicators[f][i] = 2;
+			}
+			else if (range[f][1] <= stat[f][1]){
+				if ((range[f][1] - stat[f][0]) >= (stat[f][0] - range[f][0])){
+						indicators[f][i] = 2;
+				} 
+				else{
+					indicators[f][i] = 1;
+				}
+			}
+		    else if(range[f][0] >= stat[f][0]){
+					if((stat[f][1] - range[f][0]) >= (range[f][1] - stat[f][1])){
+						indicators[f][i] = 2;
+					}
+					else{
+						indicators[f][i] = 3;
+					}
 			}
 		}	
 	}

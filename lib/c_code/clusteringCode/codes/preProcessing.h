@@ -282,7 +282,7 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 	return brandN;		
 }
 string generateOutput(string* indicatorNames, string* conFeatureNames, int conFeatureN, int productN, double** conFeatureRange, string* varNames, int repW, int* reps, bool reped, 
-	int* clusterIDs, int* mergedClusterIDs, int* clusterCounts, int** indicators, double** bucketCount, int bucketDiv){
+	int* clusterIDs, int** childrenIDs, int* childrenCount, int* mergedClusterIDs, int* clusterCounts, int** indicators, double** bucketCount, int bucketDiv){
 
 		string out = "--- !map:HashWithIndifferentAccess \n";
 		out.append("result_count: ");
@@ -333,9 +333,12 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 		}
 	if (reped){
 		out.append("clusters: \n");
+		
         for(int c=0; c<repW; c++){
+		
 			out.append("- ");
 			if (clusterIDs[c] < 0 ) { //merged clusters
+			
 				ostringstream oss2; 
 				oss2<<mergedClusterIDs[0];
 				out.append(oss2.str());
@@ -345,8 +348,9 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 					oss3 << mergedClusterIDs[m];
 					out.append(oss3.str());
 				}
-			} 
+			}
 		    else{    
+
 	           std::ostringstream oss; 		  
 			   oss<<clusterIDs[c];
 			   out.append(oss.str());
@@ -354,9 +358,10 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 			   out.append("\n");
 		} 
 	
-		out.append("chosen: \n");
+		out.append("clusterdetails: \n");
 
-		for(int c=0; c<repW; c++){		  
+		for(int c=0; c<repW; c++){	
+		
 		     	out.append("- {");
 		   		out.append("cluster_id: ");
 		   		std::ostringstream oss2; 		  
@@ -367,7 +372,26 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 				std::ostringstream oss3; 		  
 				oss3<<clusterCounts[c];
 				out.append(oss3.str());
+				out.append(", ");
 
+				out.append("childrenCount: ");
+				std::ostringstream oss5; 
+				oss5 << childrenCount[c]<<endl;
+				out.append(oss5.str());
+				if (childrenCount[c] >0){
+					out.append(", ");
+					out.append("children: ");
+			
+					
+					for (int l=0; l<childrenCount[c]; l++){
+						out.append("- ");
+						ostringstream oss4; 
+						oss4<<childrenIDs[c][l];
+						out.append(oss4.str());
+						out.append("\n");
+					}
+				}	
+				
 		   		for (int f=0; f<conFeatureN; f++){
 					out.append(", ");
 					out.append(indicatorNames[f]);
@@ -376,6 +400,7 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 					oss<<indicators[f][c];
 					out.append(oss.str());
 				}
+			
 		   		out.append("}\n");
 		}
 	}	

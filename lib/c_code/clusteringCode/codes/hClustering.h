@@ -76,7 +76,7 @@ if 	(layer == 1){
 			 	   				indicators[j] = new int[size];
 			 	   			}
 
-			 	   		getStatisticsData(data, indicators, average, size, conFeatureN, conFeatureRange, dataN);  
+			 	   		getStatisticsData1(data, indicators, average, size, conFeatureN, dataN);  
 
 			// cluster
 			 			int *centersA;
@@ -225,8 +225,8 @@ if (layer > 1){
  	   				indicators[j] = new int[size];
  	   			}
 
- 	   		getStatisticsData(data, indicators, average, size, conFeatureN, conFeatureRange, dataN);  
-		
+
+			getStatisticsData2(data, average, s, conFeatureN, dataN);
 // cluster
  			int *centersA;
  	   		double** dist;
@@ -260,7 +260,10 @@ if (layer > 1){
 			 		clusteredData[centersA[j]][ts[centersA[j]]] = idA[j];
 			 		clusteredData[centersA[j]][0]++;
 			 	}
-
+			
+			//	 getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);		
+			
+ 	   		getStatisticsData(data, clusteredData, indicators, idA, s, clusterN, conFeatureN, conFeatureRangeC);
 		   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, conFeatureNames, stmt, res2, productName);
 
 		
