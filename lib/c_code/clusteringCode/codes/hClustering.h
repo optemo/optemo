@@ -202,7 +202,7 @@ if (layer > 1){
 			//		cout<<"resNodes->getDouble(boolFeatureNames[f]) is "<<resNodes->getDouble(boolFeatureNames[f])<<endl;
 			//		data[s][f+conFeatureN] = resNodes->getDouble(boolFeatureNames[f]);
 			//	}
-				 cout<<"layer is "<<layer<<endl;
+				
 				idA[s] = resNodes->getInt("product_id"); 
 			
 				brands[s] = resNodes->getString("brand");
@@ -284,3 +284,109 @@ if (layer > 1){
 		return maxSize;
 
  }
+
+//leafClustering(layer, conFeatureN, res, stmt, productName);
+
+void leafClustering(int layer, int conFeatureN, int clusterN, string* conFeatureNames, sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *res3, sql::Statement *stmt, string productName){
+	
+	string command;
+	int cluster_id;
+//	for (int l=1; l<layer; l++){
+	   
+		command = "SELECT id, layer from ";
+		command += productName;
+		command += "_clusters where (cluster_size<";
+		ostringstream sizeStream;
+		sizeStream << clusterN+1;
+		command += sizeStream.str();
+		command += ");";
+	
+		res = stmt->executeQuery(command);
+		while(res->next()){
+			ostringstream parent_idStream;
+			parent_idStream << res->getInt("id");
+			ostringstream clusterSizeStream;
+			clusterSizeStream <<1;
+			command = "select * from ";
+			command += productName;
+			command += "_nodes where cluster_id=";
+			command += parent_idStream.str();
+			command += ";";
+			
+			res2 = stmt->executeQuery(command);
+					
+			command = "INSERT INTO ";
+			command += productName;
+			command += "_clusters (layer, parent_id, cluster_size,price_min, price";
+				for (int i=1; i<conFeatureN; i++){
+					command += "_max, ";
+					command += conFeatureNames[i];
+					command += "_min, ";
+					command += conFeatureNames[i];
+				}
+				
+				command += "_max) values (";
+				ostringstream layerStream;
+				layerStream << layer;
+				command += layerStream.str();
+				command += ", ";
+			
+				command += parent_idStream.str();
+				command += ", ";
+				command += clusterSizeStream.str();
+				
+				for (int f=0; f<conFeatureN; f++){
+						command += ", ";
+						res2->next();
+						double feaVal = res2->getDouble(conFeatureNames[f]);
+						ostringstream feavalStream;
+						feavalStream << feaVal;
+						command += feavalStream.str();
+						command += ", ";
+						command += feavalStream.str();
+				}
+			
+				command +=");";
+				
+				stmt->execute(command);
+			
+				command = "SELECT last_insert_id();"; // from clusters;"
+				res3 = stmt->executeQuery(command);
+
+				if (res3->next()){
+					cluster_id = res3->getInt("last_insert_id()");
+				}
+			command = "INSERT INTO ";
+			command += productName;
+			command += "_nodes (cluster_id, product_id";
+			for (int i=0; i<conFeatureN; i++){
+				command += ", ";
+				command += conFeatureNames[i];
+			}
+			command += ", brand) values (";
+			ostringstream cidStream2; 
+			cidStream2<< cluster_id;
+			command += cidStream2.str();
+			command += ", ";
+			ostringstream pIdStream;
+			pIdStream << res2->getInt("product_id");
+			command += pIdStream.str();
+			for (int f=0; f<conFeatureN; f++){
+				command += ", ";
+				ostringstream feaVStream;
+				feaVStream << res2->getDouble(conFeatureNames[f]);
+				command += feaVStream.str();
+				
+			}
+			command += ", ";
+			command += res2->getString("brand");
+			command += ");"; 
+		}
+		
+		// insert in node tables
+		
+		
+	
+			
+	
+}

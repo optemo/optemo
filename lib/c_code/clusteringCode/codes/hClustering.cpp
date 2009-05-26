@@ -170,6 +170,7 @@ int main(int argc, char** argv){
 	
 	sql::ResultSet	*res;
 	sql::ResultSet	*res2;
+	sql::ResultSet	*res3;
     sql::ResultSet	*resClus;
     sql::ResultSet	*resNodes;
 		string line;
@@ -241,8 +242,10 @@ int main(int argc, char** argv){
 					layer++;
 					
 				}
-			
-			//	setRange(stmt, res, res2, conFeatureN);
+		
+				leafClustering(layer, conFeatureN, clusterN, conFeatureNames, res, res2, res3, stmt, productName);
+		
+		
 //Generating the output string 
 
 
