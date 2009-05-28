@@ -381,9 +381,9 @@ void leafClustering(int conFeatureN, int clusterN, string* conFeatureNames, sql:
 				command += feaVStream.str();
 				
 			}
-			command += ", ";
+			command += ", \'";
 			command += res2->getString("brand");
-			command += ");"; 
+			command += "\');"; 
 		}
 		
 		// insert in node tables
