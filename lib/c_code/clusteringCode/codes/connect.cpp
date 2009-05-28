@@ -285,9 +285,11 @@ int *mergedClusterN= new int[clusterN];
 					size = res->rowsCount();
 				}
 				else{
+				
 				command = "SELECT id from ";
 				command += productName;
 				command += "_nodes where cluster_id=";
+			
 				ostringstream cid;
 				cid<<clusterID;
 				command += cid.str();
@@ -307,7 +309,7 @@ int *mergedClusterN= new int[clusterN];
 			
 			int productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, 
 					conFeatureN, conFeatureRange, productName, conFeatureNames, bucketCount, bucketDiv);
-				
+		
 			if (productN> 0){
 				if (productN<=repW){
 					repW = productN;                 
@@ -323,10 +325,13 @@ int *mergedClusterN= new int[clusterN];
 				int* childrenCount = new int[repW];
 				int* clusterCounts = new int[repW];
 				int* mergedClusterIDs;
-				
+			
 				reped = getRep(reps, productIDs, productN, resultClusters, childrenIDs, clusterCounts, childrenCount, conFeatureN, repW, stmt, 
 					res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames);
-		
+			//	cout<<"resultCLusters are ";
+			//	for (int r=0; r<repW; r++){
+			//		cout<<resultClusters[r]<<"  ";
+			//	}
 				if(reped){			
 					getIndicators(resultClusters,repW, conFeatureN, indicators, stmt, res, mergedClusterIDs, productName, conFeatureNames);
 				}
