@@ -50,6 +50,7 @@ int main(int argc, char** argv) {
 
 	//productName
 	var = "product_name";
+
 	ind = argu.find(var, 0);
 	endit = argu.find("\n", ind);
 	startit = ind + var.length() + 2;
@@ -221,9 +222,10 @@ int *mergedClusterN= new int[clusterN];
 	string usernameString = tokens.at(findVec(tokens, "username:") + 1);
 	string passwordString = tokens.at(findVec(tokens, "password:") + 1);
 	string hostString = tokens.at(findVec(tokens, "host:") + 1);
+	string databaseName = tokens.at(findVec(tokens, "database:") + 1);
 
 	    #define PORT "3306"       
-	 	#define DB  "optemo_development"
+	 	#define DB  databaseName
 		#define HOST hostString    
 		#define USER usernameString 
 	    #define PASS passwordString 
@@ -232,13 +234,15 @@ int *mergedClusterN= new int[clusterN];
 ///////////////////////////////////////////////
 		
 			try {
-						
+					
 				// Using the Driver to create a connection
 				driver = sql::mysql::get_mysql_driver_instance();
 				con = driver->connect(HOST, PORT, USER, PASS);
 				stmt = con->createStatement();
-				stmt->execute("USE "  DB);
-				string command;	
+				string command = "USE ";
+				command += databaseName;
+				stmt->execute(command);
+				
 				int size;
 				string out = "";
 			
@@ -264,15 +268,19 @@ int *mergedClusterN= new int[clusterN];
 				cidstream << clusterIDs[safeID];
 				command += cidstream.str();
 				command += ";";
-		
+			
 				res = stmt->executeQuery(command);
 	
 				res->next();
-				clusterID = res->getInt("parent_id");
+			
+				clusterID = res->getDouble("parent_id");
+			
 				if (clusterID == 0){
+				
 					command = "SELECT id from ";
 					command += tableName;
 					command += ";";
+					
 	 				res = stmt->executeQuery(command);
 					size = res->rowsCount();
 				}
@@ -296,7 +304,7 @@ int *mergedClusterN= new int[clusterN];
 			for (int f=0; f<conFeatureN; f++){
 				bucketCount[f] = new double [bucketDiv];
 			}
-		
+			
 			int productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, 
 					conFeatureN, conFeatureRange, productName, conFeatureNames, bucketCount, bucketDiv);
 

@@ -287,10 +287,11 @@ if (layer > 1){
 
 //leafClustering(layer, conFeatureN, res, stmt, productName);
 
-void leafClustering(int layer, int conFeatureN, int clusterN, string* conFeatureNames, sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *res3, sql::Statement *stmt, string productName){
+void leafClustering(int conFeatureN, int clusterN, string* conFeatureNames, sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *res3, sql::Statement *stmt, string productName){
 	
 	string command;
 	int cluster_id;
+	int layer;
 //	for (int l=1; l<layer; l++){
 	   
 		command = "SELECT id, layer from ";
@@ -304,7 +305,10 @@ void leafClustering(int layer, int conFeatureN, int clusterN, string* conFeature
 		res = stmt->executeQuery(command);
 		while(res->next()){
 			ostringstream parent_idStream;
-			parent_idStream << res->getInt("id");
+			int pid =  res->getInt("id");
+			layer = res->getInt("layer");
+		//	cout<<"pid is  "<<pid<<endl;
+			parent_idStream << pid;
 			ostringstream clusterSizeStream;
 			clusterSizeStream <<1;
 			command = "select * from ";
@@ -314,7 +318,7 @@ void leafClustering(int layer, int conFeatureN, int clusterN, string* conFeature
 			command += ";";
 			
 			res2 = stmt->executeQuery(command);
-					
+		   while(res2->next()){			
 			command = "INSERT INTO ";
 			command += productName;
 			command += "_clusters (layer, parent_id, cluster_size,price_min, price";
@@ -327,7 +331,7 @@ void leafClustering(int layer, int conFeatureN, int clusterN, string* conFeature
 				
 				command += "_max) values (";
 				ostringstream layerStream;
-				layerStream << layer;
+				layerStream << layer+1;
 				command += layerStream.str();
 				command += ", ";
 			
@@ -337,7 +341,6 @@ void leafClustering(int layer, int conFeatureN, int clusterN, string* conFeature
 				
 				for (int f=0; f<conFeatureN; f++){
 						command += ", ";
-						res2->next();
 						double feaVal = res2->getDouble(conFeatureNames[f]);
 						ostringstream feavalStream;
 						feavalStream << feaVal;
@@ -385,8 +388,8 @@ void leafClustering(int layer, int conFeatureN, int clusterN, string* conFeature
 		
 		// insert in node tables
 		
-		
+		stmt->execute(command);	
 	
-			
+	}		
 	
 }

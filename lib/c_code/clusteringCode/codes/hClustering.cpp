@@ -178,7 +178,7 @@ int main(int argc, char** argv){
 		vector<string> tokens;
 		ifstream myfile;
 		int i=0;
-	   myfile.open("/optemo/site/config/database.yml"); 
+	   myfile.open("/site/config/database.yml"); 
 	   if (myfile.is_open()){
 		while (! myfile.eof()){
 			getline (myfile,line);
@@ -199,7 +199,7 @@ int main(int argc, char** argv){
 	string hostString = tokens.at(findVec(tokens, "host:") + 1);
 
 	    #define PORT "3306"       
-	 	#define DB  "optemo_development"
+	 	#define DB  "development_copy"
 		#define HOST hostString    
 		#define USER usernameString 
 	    #define PASS passwordString 
@@ -243,7 +243,7 @@ int main(int argc, char** argv){
 					
 				}
 		
-				leafClustering(layer, conFeatureN, clusterN, conFeatureNames, res, res2, res3, stmt, productName);
+				leafClustering(conFeatureN, clusterN, conFeatureNames, res, res2, res3, stmt, productName);
 		
 		
 //Generating the output string 

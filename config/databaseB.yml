@@ -1,0 +1,12 @@
+development:
+    adapter: mysql
+    database: optemo_development
+    username: maryam
+    password: sCbub3675NWnNZK2
+    host:     jaguar
+    
+test:
+    adapter: mysql
+    database: optemo_test
+    username: root
+    password: aabb2761
