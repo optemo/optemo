@@ -41,8 +41,9 @@ div.borderbox {
 	color: black;
 	text-decoration: none;
 }
-.backlink {
+.backlink a{
 	margin-left: 10px;
+	color: #891D1D;
 }
 .save {
 	width: 45px;

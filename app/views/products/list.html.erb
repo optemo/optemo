@@ -1,5 +1,4 @@
 <div id="leftbar">
-	<%= link_to 'Go Back', 'javascript:history.go(-1)', {:id => 'startover'} %>
 	<% form_tag ({:controller => 'search', :action => 'find' }) do %>
 	  <%= text_field_tag 'search' %>
 	  <%= submit_tag 'Search' %>
@@ -25,9 +24,9 @@
 </div>
 <div class="main">
 	<span style="color:red;"><%= flash[:error] %></span>
-	<%# @searches.each do |s| %>
-	<span class='backlink'><% link_to 'Looking at 40 Printers with High PPM', '#'%></span>
-	<%# end %>
+	<% PrinterCluster.find(@c.cluster_ids[0]).getHistory.each do |s| %>
+	<div class='backlink'><%= link_to 'Previously looking at these printers', "/printers/list/#{s.id}"%></div>
+	<% end %>
 	<% for i in 0..@c.cluster_count-1 %>
 	  <% if i%3 == 0 %>
 		<div class="rowdiv">
@@ -47,7 +46,6 @@
 	  </div>
 	</div>-->
 </div>
-
 <% content_for :header do %>
 	<% if @product %>
 		<div style="float:left">Viewing<br><%= @result_count %> Similar<br>products to:</div>

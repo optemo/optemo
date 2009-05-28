@@ -8,7 +8,7 @@ class ProductsController < ApplicationController
   # GET /products
   # GET /products.xml
   def index
-    productType = session[:productType]
+    productType = session[:productType] || $DefaultProduct
     reset_session
     session[:productType] = productType
     c = CQuery.new(session[:productType])
