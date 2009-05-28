@@ -64,14 +64,10 @@ class CQuery
       @cluster_count = 0
     else
       #Pop array of products and clusters
-      newproducts = output.delete('products')
       @cluster_ids ||= output.delete('clusters') #Might not be needed since clusters were passed in
       @result_count = output.delete('result_count')
-      @cluster_count = @result_count < 9 ? @result_count : 9
-      @products = []
-      @cluster_count.times do 
-        @products << @product_type.constantize.find(newproducts.pop)
-      end
+      @products = output.delete('products').map{|p|@product_type.constantize.find(p)}
+      @cluster_count = @products.length
       details = output.delete('clusterdetails')
       processClusterDetails(details) if details
       @filterinfo = output
