@@ -45,15 +45,16 @@
    <div class="hd">
 	<div id="header">
 	  <div id="logo">
-	    <%= image_tag 'logo.jpg', :width  => 250, :class => 'img' %>
+	    <%= link_to image_tag('logo.png', :height  => 73, :class => 'img'), '/'%>
 	  </div>
+		Why buy a laser printer
+		About Us
+		Contact Us
 	  <div id="header_buttons">
-	    <a href="/" class="link">Home</a><br>
-	    <a href="http://optemo.com/" class="link" >About Us</a><br>
-	    <a href="http://optemo.com/team" class="link">The Team</a><br>
+	    powered by <%= link_to image_tag('optemo.png'), 'http://www.optemo.com', {:title => 'Optemo'} %>
 	  </div>
-	  <div id="header_content"><%= yield :header %></div>
-	  <div id="header_clear"><!--IE min line height--></div>
+	  
+
 	</div>
    </div>
    <div id="headerbar"><!--IE min line height--></div>
@@ -72,7 +73,13 @@
 
  <!-- bottom PNG -->
  <div class="b"><div></div></div>
-<!-- end dialog -->
+ <div id="bottomlinks">
+	<%= link_to 'Home', '/' %> |
+	<%= link_to 'Terms of Use' %> |
+	<%= link_to 'About Us', 'http://optemo.com', {:title => 'Optemo'} %> |
+	<%= link_to 'Contact Us', "znvygb:grnz\100ynfrecevagreuho\056pbz", {:class => 'decrypt'}%>
+ </div>
+ <!-- end dialog -->
 </div>
 </div>
 <div id="fade" onClick="fadein();">&nbsp;</div>

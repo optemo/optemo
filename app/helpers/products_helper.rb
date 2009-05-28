@@ -1,11 +1,12 @@
 module ProductsHelper
   def nav_link
-    s = Session.find(session[:user_id])
-    if !s.nil?
-      link_to 'Go back<br> to navigation', '/products/list/'+s.URL
+    
+    if request.env['HTTP_REFERER'].match('laserprinterhub|localhost')
+      link_to 'Go back<br> to navigation', 'javascript:history.back()'
     else
       link_to 'Browse more products', :controller => 'products'
     end
+    
   end
   def description(i)
     text = []

@@ -25,7 +25,7 @@
 <div class="main">
 	<span style="color:red;"><%= flash[:error] %></span>
 	<% PrinterCluster.find(@c.cluster_ids[0]).getHistory.each do |s| %>
-	<div class='backlink'><%= link_to 'Previously looking at these printers', "/printers/list/#{s.id}"%></div>
+	<div class='backlink'><%= link_to 'Go back to previous printers', "/printers/list/#{s.id}"%></div>
 	<% end %>
 	<% for i in 0..@c.cluster_count-1 %>
 	  <% if i%3 == 0 %>

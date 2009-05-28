@@ -94,12 +94,14 @@ p {
    height: 82px;
 }
 #header_buttons {
-   float: right;
-   width: 98px;
+	position: absolute;
+	height: 30px;
+	bottom: 5px;
+	right: 0;
 }
-#header_content {
-	width: 565px;
-	float: left;
+#header_buttons img{
+	margin-top: 0px;
+	vertical-align: middle;
 }
 a.link {
 	/*margin-left: 10px;
@@ -147,6 +149,11 @@ div.pass img{
 
 #error_space {
 	text-align: left;
+}
+#bottomlinks {
+	text-align: center;
+	font-size: small;
+	margin: 2px 0px;
 }
 
 
@@ -208,7 +215,7 @@ div.pass img{
 
 .dialog .b,
 .dialog .b div {
- height:30px; /* height of bottom cap/shade */
+ height:20px; /* height of bottom cap/shade */
  font-size:1px;
 }
 
