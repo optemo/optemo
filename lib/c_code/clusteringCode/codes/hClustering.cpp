@@ -178,7 +178,7 @@ int main(int argc, char** argv){
 		vector<string> tokens;
 		ifstream myfile;
 		int i=0;
-	   myfile.open("/site/config/database.yml"); 
+	   myfile.open("/optemo/site/config/database.yml"); 
 	   if (myfile.is_open()){
 		while (! myfile.eof()){
 			getline (myfile,line);
@@ -197,9 +197,10 @@ int main(int argc, char** argv){
 	string usernameString = tokens.at(findVec(tokens, "username:") + 1);
 	string passwordString = tokens.at(findVec(tokens, "password:") + 1);
 	string hostString = tokens.at(findVec(tokens, "host:") + 1);
-
+	string databaseName = tokens.at(findVec(tokens, "database:") + 1);
+	
 	    #define PORT "3306"       
-	 	#define DB  "development_copy"
+		#define DB   databaseName
 		#define HOST hostString    
 		#define USER usernameString 
 	    #define PASS passwordString 
@@ -208,14 +209,18 @@ int main(int argc, char** argv){
 ///////////////////////////////////////////////
 		
 			try {
+		
 				// Using the Driver to create a connection
 				driver = sql::mysql::get_mysql_driver_instance();
 				con = driver->connect(HOST, PORT, USER, PASS);
 				stmt = con->createStatement();
-				stmt->execute("USE "  DB);
-				
+				string command = "USE ";
+				command += databaseName;
+						
+				stmt->execute(command);
+					
 				//deleting the current node and cluster tables
-				string command = "DELETE FROM ";
+				command = "DELETE FROM ";
 				command += productName;
 				command += "_clusters;";
 				stmt->execute(command);
@@ -223,8 +228,9 @@ int main(int argc, char** argv){
 				command = "DELETE FROM ";
 				command += productName;
 				command += "_nodes;";
+			//	cout<<"command: "<<command<<endl;
 				stmt->execute(command);
-				
+			
 			
 			    res = stmt->executeQuery(filteringCommand); 
 
