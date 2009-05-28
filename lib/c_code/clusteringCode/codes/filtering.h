@@ -350,7 +350,7 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 		res = stmt->executeQuery(command);
 			
 		int clusterN = res->rowsCount();
-		
+	
 		if (clusterN==0){ //i.e. there is no subCluster
 		
 			command = "SELECT distinct product_id, price";
@@ -663,6 +663,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 	//don't need to do so much work if the number of accepted ids are smaller than 9!
 	
 	if (smallNFlag){
+	
 		for(int i=0; i<productN; i++){
 			reps[i] = productIds[i];
 			if (clusterID==0){
@@ -736,6 +737,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 						res = stmt->executeQuery(command);
 						res->next();
 						clusterIds[i] = res->getInt("id");
+					
 						command = "select distinct product_id from ";
 						command += product_nodes;
 						command +=" where ((cluster_id=";
@@ -818,8 +820,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 	//If the user clicks on explore similar -- there is a parent_id
 	
 	else{ 
-		
-		
+			
 		command = "SELECT DISTINCT ";
 		command += product_nodes;
 		command += ".cluster_id, ";
@@ -876,9 +877,12 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 			command +=".layer, ";
 			command += product_clusters;
 			command += ".cluster_size;";
+		//	cout<<"commad is "<<command<<endl;
 			res = stmt->executeQuery(command);	
 
 		 	clusterN = res->rowsCount();
+		
+		
 			if (clusterN == 0){
 				command = "SELECT DISTINCT product_id from ";
 				command += product_nodes;
@@ -913,7 +917,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 						command += idStream3.str();
 					}
 					command += ");";
-					
+				
 					res2 = stmt->executeQuery(command);
 					
 					repW = res2->rowsCount();
@@ -926,10 +930,10 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 					return reped;
 				}
 			}	
-	
+		
 	        int cId;
 			while(res->next() && j<repW){
-
+				
 				if (clusterID == 0){
 					cId= res->getInt("cluster_id");
 				}
@@ -969,6 +973,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 						command += productIdStream2.str();
 					}	
 				command += "));";
+			//	<<"command is "<<command<<endl;
 				res2 = stmt->executeQuery(command);	
 				int clusterCount = 0;
 				clusterCount = res2->rowsCount();
@@ -981,7 +986,8 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 				
 					reps[j] = rep;
 					
-					clusterIds[j] = cId;			
+					clusterIds[j] = cId;
+							
 					command = "SELECT id from ";
 					command += productName; 
 					command += "_clusters where parent_id=";
@@ -999,216 +1005,227 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 					}	
 					
 					childrenCount[j] = cSize;
+				
 					clusterCounts[j] = clusterCount;
 					j++;	
 				}
 			}
 		
-	if (j<repW){ // i.e. (clusterN<repW)
-		// we should use children and remove parent
-			int i=0;
-			while((i<j) && (j<repW)){ 
-		
-					ostringstream parentClusterStream;
-					parentClusterStream<< clusterIds[i];
-					command = "SELECT distinct ";
-					command += product_clusters;
-					command += ".id, ";
-					command += product_clusters;
-					command += ".cluster_size from ";
-					command += product_clusters;
-					command += ", ";
-					command += product_nodes;
-					command += " where (";
-					command += product_nodes;
-					command +=".cluster_id=";
-					command += product_clusters;
-					command += ".id and (";
-					command += product_clusters;
-					command +=".parent_id=";
-					if (clusterID <0 ){ //clusters are merged
-						ostringstream jointParentStream;
-						jointParentStream << mergedClusterIDInput[0];
-						command += jointParentStream.str();
-						for (int m=1; m<(-1*clusterID); m++){
-							ostringstream jointParentStream2;
-							jointParentStream2 << mergedClusterIDInput[m];
-							command += " OR ";
-							command += product_clusters;
-							command += ".parent_id=";
-							command += jointParentStream2.str();
-						}
-						command += ")";
-					}
-					else{
-						command += parentClusterStream.str();
-						command += ")";
-					}
-					
-					command += ") order by ";
-					command += product_clusters;
-					command += ".cluster_size DESC;";
-					res = stmt->executeQuery(command);
-				
-				    int cCount = res->rowsCount();
-					if ( cCount> 0){
-						int preClusterCount = clusterCounts[i];
-						int preRep = reps[i];
-						int preId = clusterIds[i];
-						shift1(reps, clusterIds, clusterCounts, j);
-						j--;
-						int childLeftN = cCount;
-						while(res->next() && j<repW){
-							cid = res->getInt("id");
-							command ="select distinct * from ";
-							command += product_nodes;
-							command +=" where ((cluster_id=";
-							if (clusterID <0 ){ //clusters are merged
-								ostringstream jointParentStream;
-								jointParentStream << mergedClusterIDInput[0];
-								command += jointParentStream.str();
-								for (int m=1; m<(-1*clusterID); m++){
-									ostringstream jointParentStream2;
-									jointParentStream2 << mergedClusterIDInput[m];
-									command += " OR cluster_id=";
-									command += jointParentStream2.str();
-								}
-								command += ")";
-							}
-							else{
-								ostringstream cIdStream3;
-								cIdStream3 << cid;
-								command += cIdStream3.str();
-								command += ")";
-							}	
-							command += " and (product_id=";
-							ostringstream productIdStream3; 
-							productIdStream3 << productIds[0];
-							command += productIdStream3.str();
-						 	for (int k=1; k<productN; k++){
-									command += " OR";
-									ostringstream productIdStream2;
-									productIdStream2 << productIds[k];
-									command += " product_id=";
-									command += productIdStream2.str();
-								}
-							command += "));";
-							
-							res2 = stmt->executeQuery(command);
-							clusterCount = res2->rowsCount();
-							if (clusterCount>0){
-								rep = getRepCluster(cid,conFeatureN, stmt, res2, productN,productIds,reps,j, productName, conFeatureNames);
-								if(rep>0) {	
-									reps[j] = rep;
-									clusterIds[j] = cid;
-									command = "SELECT id from ";
-									command += productName;
-									command += "_clusters where parent_id=";
-									ostringstream cidstream;
-									cidstream << cId;
-									command += cidstream.str();
-									command += ";";
-									res2 = stmt->executeQuery(command);
-									int cSize = 0;
-									while(res2->next()){
-										childrenIDs[j][cSize] = res2->getInt("id");
-										cSize++;
-									}		
-									childrenCount[j] = cSize;
-									clusterCounts[j] = clusterCount;
-									j++;
-									childLeftN--;	
-								}
-							}	
-						}
-						if (childLeftN == cCount){
-								reps[j] = preRep;
-								command = "SELECT id from clusters where parent_id=";
-								ostringstream cidstream;
-								cidstream << cId;
-								command += cidstream.str();
-								command += ";";
-								res = stmt->executeQuery(command);
-								int cSize = 0;
-								while(res->next()){
-									childrenIDs[j][cSize] = res->getInt("id");
-									cSize++;
-								}	
-								childrenCount[j] = cSize;
-								clusterCounts[j] = preClusterCount;
-								clusterIds[j] = preId;									
-						}
-						else if (childLeftN > 0){ // i.e. some of the children are in repW and some are left out
-							//merge the unused children
-							mergedClusterIDs = new int [childLeftN];
-							string appendedClusters;
-							ostringstream appendedClusterStream;
-							j--;
-							appendedClusterStream << clusterIds[j];
-							appendedClusters = appendedClusterStream.str();
-							int mergedClusterN = 0;
-							int mergedCount = 0;
-							while(res->next()){ 
-								cid = res->getInt("id");
-								command ="select distinct * from ";
-								command += product_nodes;
-								command += " where ((cluster_id=";
-								if (clusterID <0 ){ //clusters are merged
-									ostringstream jointParentStream;
-									jointParentStream << mergedClusterIDInput[0];
-									command += jointParentStream.str();
-									for (int m=1; m<(-1*clusterID); m++){
-										ostringstream jointParentStream2;
-										jointParentStream2 << mergedClusterIDInput[m];
-										command += " OR cluster_id=";
-										command += jointParentStream2.str();
-									}
-									command += ")";
-								}
-								else{
-									ostringstream cIdStream3;
-									cIdStream3 << cid;
-									command += cIdStream3.str();
-									command += ")";
-								}	
-								command += " and (product_id=";
-								ostringstream productIdStream3; 
-								productIdStream3 << productIds[0];
-								command += productIdStream3.str();
-							 	for (int k=1; k<productN; k++){
-										command += " OR";
-										ostringstream productIdStream2;
-										productIdStream2 << productIds[k];
-										command += " product_id=";
-										command += productIdStream2.str();
-									}
-								command += "));";
-								res2 = stmt->executeQuery(command);
-								
-								clusterCount = res2->rowsCount();
-								if (clusterCount>0){
-									mergedClusterIDs[mergedClusterN] = cid;
-									mergedClusterN++;
-									mergedCount += clusterCount;
-								}
-							}
-							if (mergedCount>0){
-								rep = getRepClusterString(mergedClusterIDs, mergedClusterN, conFeatureN, stmt, res2, productN,productIds,reps,j, productName, conFeatureNames);
-								
-								if (rep>0){
-									reps[j] = rep;
-									clusterIds[j] = -1*(mergedClusterN); //meaning that it is a mergedCluster
-									clusterCounts[j] = mergedCount;
-									j++;
-								}
-						
-							}
-			  		}
-			}
-		i++;
-	}
-				
-	}						
+//	if (j<repW){ // i.e. (clusterN<repW)
+//		// we should use children and remove parent
+//			int i=0;
+//			while((i<j) && (j<repW)){ 
+//		
+//					ostringstream parentClusterStream;
+//					parentClusterStream<< clusterIds[i];
+//					command = "SELECT distinct ";
+//					command += product_clusters;
+//					command += ".id, ";
+//					command += product_clusters;
+//					command += ".cluster_size from ";
+//					command += product_clusters;
+//					command += ", ";
+//					command += product_nodes;
+//					command += " where (";
+//					command += product_nodes;
+//					command +=".cluster_id=";
+//					command += product_clusters;
+//					command += ".id and (";
+//					command += product_clusters;
+//					command +=".parent_id=";
+//					if (clusterID <0 ){ //clusters are merged
+//						ostringstream jointParentStream;
+//						jointParentStream << mergedClusterIDInput[0];
+//						command += jointParentStream.str();
+//						for (int m=1; m<(-1*clusterID); m++){
+//							ostringstream jointParentStream2;
+//							jointParentStream2 << mergedClusterIDInput[m];
+//							command += " OR ";
+//							command += product_clusters;
+//							command += ".parent_id=";
+//							command += jointParentStream2.str();
+//						}
+//						command += ")";
+//					}
+//					else{
+//						command += parentClusterStream.str();
+//						command += ")";
+//					}
+//					
+//					command += ") order by ";
+//					command += product_clusters;
+//					command += ".cluster_size DESC;";
+//					
+//					res = stmt->executeQuery(command);
+//				
+//				    int cCount = res->rowsCount();
+//					if ( cCount> 0){
+//						int preClusterCount = clusterCounts[i];
+//						int preRep = reps[i];
+//						int preId = clusterIds[i];
+//						shift1(reps, clusterIds, clusterCounts, j);
+//						j--;
+//						int childLeftN = cCount;
+//						while(res->next() && j<repW){
+//							cid = res->getInt("id");
+//							command ="select distinct * from ";
+//							command += product_nodes;
+//							command +=" where ((cluster_id=";
+//							if (clusterID <0 ){ //clusters are merged
+//								ostringstream jointParentStream;
+//								jointParentStream << mergedClusterIDInput[0];
+//								command += jointParentStream.str();
+//								for (int m=1; m<(-1*clusterID); m++){
+//									ostringstream jointParentStream2;
+//									jointParentStream2 << mergedClusterIDInput[m];
+//									command += " OR cluster_id=";
+//									command += jointParentStream2.str();
+//								}
+//								command += ")";
+//							}
+//							else{
+//								ostringstream cIdStream3;
+//								cIdStream3 << cid;
+//								command += cIdStream3.str();
+//								command += ")";
+//							}	
+//							command += " and (product_id=";
+//							ostringstream productIdStream3; 
+//							productIdStream3 << productIds[0];
+//							command += productIdStream3.str();
+//						 	for (int k=1; k<productN; k++){
+//									command += " OR";
+//									ostringstream productIdStream2;
+//									productIdStream2 << productIds[k];
+//									command += " product_id=";
+//									command += productIdStream2.str();
+//								}
+//							command += "));";
+//							
+//							res2 = stmt->executeQuery(command);
+//							
+//							clusterCount = res2->rowsCount();
+//							if (clusterCount>0){
+//								rep = getRepCluster(cid,conFeatureN, stmt, res2, productN,productIds,reps,j, productName, conFeatureNames);
+//								if(rep>0) {	
+//									reps[j] = rep;
+//									clusterIds[j] = cid;
+//								//	cout<<"clusterIds here is "<<cid<<endl;
+//									command = "SELECT id from ";
+//									command += productName;
+//									command += "_clusters where parent_id=";
+//									ostringstream cidstream;
+//									cidstream << cId;
+//									command += cidstream.str();
+//									command += ";";
+//									res2 = stmt->executeQuery(command);
+//									int cSize = 0;
+//									while(res2->next()){
+//										childrenIDs[j][cSize] = res2->getInt("id");
+//										cSize++;
+//									}		
+//									childrenCount[j] = cSize;
+//								
+//									clusterCounts[j] = clusterCount;
+//								
+//									j++;
+//									childLeftN--;	
+//								}
+//							}	
+//						}
+//						if (childLeftN == cCount){
+//					
+//								reps[j] = preRep;
+//								command = "SELECT id from ";
+//								command += productName;
+//								command += "_clusters where parent_id=";
+//								ostringstream cidstream;
+//								cidstream << cId;
+//								command += cidstream.str();
+//								command += ";";
+//							
+//								res = stmt->executeQuery(command);
+//					
+//								int cSize = 0;
+//								while(res->next()){
+//									childrenIDs[j][cSize] = res->getInt("id");
+//									cSize++;
+//								}	
+//								childrenCount[j] = cSize;
+//								clusterCounts[j] = preClusterCount;
+//								clusterIds[j] = preId;									
+//						}
+//						else if (childLeftN > 0){ // i.e. some of the children are in repW and some are left out
+//							//merge the unused children
+//							mergedClusterIDs = new int [childLeftN];
+//							string appendedClusters;
+//							ostringstream appendedClusterStream;
+//							j--;
+//							appendedClusterStream << clusterIds[j];
+//							appendedClusters = appendedClusterStream.str();
+//							int mergedClusterN = 0;
+//							int mergedCount = 0;
+//							while(res->next()){ 
+//								cid = res->getInt("id");
+//								command ="select distinct * from ";
+//								command += product_nodes;
+//								command += " where ((cluster_id=";
+//								if (clusterID <0 ){ //clusters are merged
+//									ostringstream jointParentStream;
+//									jointParentStream << mergedClusterIDInput[0];
+//									command += jointParentStream.str();
+//									for (int m=1; m<(-1*clusterID); m++){
+//										ostringstream jointParentStream2;
+//										jointParentStream2 << mergedClusterIDInput[m];
+//										command += " OR cluster_id=";
+//										command += jointParentStream2.str();
+//									}
+//									command += ")";
+//								}
+//								else{
+//									ostringstream cIdStream3;
+//									cIdStream3 << cid;
+//									command += cIdStream3.str();
+//									command += ")";
+//								}	
+//								command += " and (product_id=";
+//								ostringstream productIdStream3; 
+//								productIdStream3 << productIds[0];
+//								command += productIdStream3.str();
+//							 	for (int k=1; k<productN; k++){
+//										command += " OR";
+//										ostringstream productIdStream2;
+//										productIdStream2 << productIds[k];
+//										command += " product_id=";
+//										command += productIdStream2.str();
+//									}
+//								command += "));";
+//								res2 = stmt->executeQuery(command);
+//								
+//								clusterCount = res2->rowsCount();
+//								if (clusterCount>0){
+//									mergedClusterIDs[mergedClusterN] = cid;
+//									mergedClusterN++;
+//									mergedCount += clusterCount;
+//								}
+//							}
+//							if (mergedCount>0){
+//								rep = getRepClusterString(mergedClusterIDs, mergedClusterN, conFeatureN, stmt, res2, productN,productIds,reps,j, productName, conFeatureNames);
+//								
+//								if (rep>0){
+//									reps[j] = rep;
+//									clusterIds[j] = -1*(mergedClusterN); //meaning that it is a mergedCluster
+//									clusterCounts[j] = mergedCount;
+//									j++;
+//								}
+//						
+//							}
+//			  		}
+//			}
+//		i++;
+//	}
+//				
+//	}						
 	if (j==repW){
 		reped = true;
 	}

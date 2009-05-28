@@ -384,11 +384,12 @@ void leafClustering(int conFeatureN, int clusterN, string* conFeatureNames, sql:
 			command += ", \'";
 			command += res2->getString("brand");
 			command += "\');"; 
+			stmt->execute(command);	
 		}
 		
 		// insert in node tables
 		
-		stmt->execute(command);	
+		
 	
 	}		
 	

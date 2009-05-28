@@ -307,7 +307,7 @@ int *mergedClusterN= new int[clusterN];
 			
 			int productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, 
 					conFeatureN, conFeatureRange, productName, conFeatureNames, bucketCount, bucketDiv);
-				cout<<" number is  "<<productN<<endl;	
+			
 			if (productN> 0){
 				if (productN<=repW){
 					repW = productN;                 
