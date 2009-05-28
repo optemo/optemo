@@ -51,5 +51,5 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':controller/:action/:id'
   map.connect ':controller/:action/:id.:format'
   map.connect ':controller/:action'
-  #map.connect ':action', :controller => 'welcomes'
+  map.connect ':action', :controller => 'content'
 end
