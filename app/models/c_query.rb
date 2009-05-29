@@ -28,7 +28,8 @@ class CQuery
         myparams = {"cluster_id" => @cluster_ids, "product_name" => @product_type.downcase}.merge(myfilters).to_yaml
       else
         sphinx = searchSphinx(searchterm)
-        search_ids = sphinx.results.map{|r| r[1]} #Remove Classname from results
+        search_ids = sphinx.results.delete_if{|r|!r.valid?}.map{|r|r.id}
+        #search_ids = sphinx.results.map{|r| r[1]} #Remove Classname from results
         if sphinx.count == 0
           @msg = "No results found."
           return
@@ -134,7 +135,7 @@ class CQuery
   
   def searchSphinx(searchterm)
     search = Ultrasphinx::Search.new(:query => searchterm, :per_page => 10000)
-    search.run(false)
+    search.run
     if false
       flash[:error] = "No products were found"
       redirect_to "/#{session[:productType].pluralize.downcase || $DefaultProduct.pluralize.downcase}/list/"
