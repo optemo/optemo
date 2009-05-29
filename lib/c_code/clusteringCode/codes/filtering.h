@@ -131,8 +131,103 @@
 //		return acceptedCN;
 //}
 
-//ilter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, 
-//		conFeatureN, conFeatureRange, productName, conFeatureNames, bucketCount, bucketDiv);
+
+
+//range(stmt, res, searchIds, conFeatureRange, conFeatureN, productName, conFeatureNames, bucketCount, bucketDiv);
+
+void featureRange(sql::Statement *stmt, sql::ResultSet *res, int* searchIds, double** conFeatureRange, int productN, int conFeatureN, string productName, string* conFeatureNames, 
+		double** bucketCount, int bucketDiv){
+		
+			string command ;	
+			string capProductName = productName;
+			capProductName[0] = capProductName[0] - 32;
+
+			double** bucketRange = new double* [conFeatureN];
+			double* bucketInterval = new double [conFeatureN];
+
+			for (int f=0; f<conFeatureN; f++){
+				bucketRange[f] = new double[2];
+				for (int t=0; t<bucketDiv; t++){
+					bucketCount[f][t] = 0; 
+				}
+			}
+			conFeatureRange[0][0] = 100000000.0;
+			conFeatureRange[0][1] = 0.0;
+			command = "select price_min, price_max from db_properties where name=\'";
+			command += capProductName;
+			command += "\';";
+
+			res = stmt->executeQuery(command);
+	
+			res->next();
+			bucketRange[0][0] = res->getDouble("price_min");
+			bucketRange[0][1] = res->getDouble("price_max");
+
+			bucketInterval[0] = (bucketRange[0][1] - bucketRange[0][0]) / bucketDiv ;
+			for(int f=1; f<conFeatureN; f++){
+				conFeatureRange[f][0] = 100000000.0;
+				conFeatureRange[f][1] = 0.0;
+				command = "select min, max from db_features where name=\'";
+				command +=  conFeatureNames[f];
+				command += "\';";
+				res = stmt->executeQuery(command);
+
+				res->next();
+				bucketRange[f][0] = res->getDouble("min");
+				bucketRange[f][1] = res->getDouble("max");
+				bucketInterval[f] = (bucketRange[f][1] - bucketRange[f][0]) / bucketDiv ;
+			}
+
+			command = "select price";
+			for (int f=1; f<conFeatureN; f++){
+				command += ", ";
+				command += conFeatureNames[f];
+			//	command += "_min, ";
+			//	command += conFeatureNames[f];
+			//	command += "_max";
+			}	
+			command += " from ";
+			command += productName;
+			command += "_nodes where (product_id=";
+			ostringstream pidSt;
+			pidSt << searchIds[0];
+			command += pidSt.str();
+			
+			for (int i=0; i<productN; i++){
+				command +=" OR product_id=";
+				ostringstream pidSt2; 
+				pidSt2 << searchIds[i];
+				command += pidSt2.str();
+			}
+			command +=");";
+		
+			res = stmt->executeQuery(command);
+		
+				while(res->next()){
+
+					double* eachValue = new double[conFeatureN];
+
+					for (int f=0; f<conFeatureN; f++){
+						eachValue[f] = res->getDouble(conFeatureNames[f]);
+						for (int t=0; t<bucketDiv; t++){
+							if ( (eachValue[f]<(bucketRange[f][0]+((t+1)*bucketInterval[f]))) && (eachValue[f]>=(bucketRange[f][0]+(t*bucketInterval[f]))) ){
+								bucketCount[f][t]++;
+							}
+						}
+						if (eachValue[f]<conFeatureRange[f][0]){
+							conFeatureRange[f][0] = eachValue[f];
+						}
+						if (eachValue[f]>conFeatureRange[f][1]){
+							conFeatureRange[f][1] = eachValue[f];
+						}
+					}
+			
+				}
+				
+}
+
+
+
 int filter2(double **filteredRange, string* brands, int brandN, sql::Statement *stmt,
  sql::ResultSet *res, sql::ResultSet *res2, int* productIDs, bool* conFilteredFeatures, bool* catFilteredFeatures, 
 int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string productName, string* conFeatureNames, double** bucketCount, int bucketDiv) {
@@ -671,7 +766,7 @@ int getRepClusterString(int* clusterIDs, int mergedClusterN, int conFeatureN, sq
 //	res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames);
 
 bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** childrenIDs, int* clusterCounts, int* childrenCount, int conFeatureN, int& repW, 
-				sql::Statement *stmt, sql::ResultSet *res, sql::ResultSet *res2, int clusterID, bool smallNFlag, int* mergedClusterIDs, int* mergedClusterIDInput, string productName, string* conFeatureNames){
+				sql::Statement *stmt, sql::ResultSet *res, sql::ResultSet *res2, int clusterID, bool smallNFlag, int* mergedClusterIDs, int* mergedClusterIDInput, string productName, string* conFeatureNames, int searchBoxFlag){
 					
 					
 	bool reped = false;
@@ -688,7 +783,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 	//don't need to do so much work if the number of accepted ids are smaller than 9!
 	
 	if (smallNFlag){
-	
+		
 		for(int i=0; i<productN; i++){
 			reps[i] = productIds[i];
 			if (clusterID==0){
@@ -730,6 +825,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 				ostringstream productIdSmall;
 				productIdSmall << productIds[i];
 				command += productIdSmall.str();
+				
 				if (clusterID <0 ){ //clusters are merged
 					command +=  " and (";
 					command += product_clusters;
@@ -797,11 +893,12 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 							command += camIdStream2.str();
 						}
 						command += "));";
-		
+						
 						res = stmt->executeQuery(command);
-				
+						
 						clusterCounts[i] = 0;//res->rowsCount();
 						reped = false;
+					//	return reped;
 		}
 	}
 	else{
@@ -835,17 +932,56 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 			command += idStream.str();
 		}
 			command += ")) order by layer, cluster_size DESC;";
-		
+	//	cout<<"CLUS command "<<command<<endl;
 			res = stmt->executeQuery(command);
+		if (searchBoxFlag){
 		
+			res->next();
+			int lay = res->getInt("layer");
+		
+				command = "SELECT DISTINCT ";
+				command += product_nodes;
+				command += ".cluster_id, ";
+				command += product_clusters;
+				command += ".cluster_size FROM ";
+				command += product_nodes;
+				command +=", ";
+				command += product_clusters;
+				command +=" WHERE (";
+				command +=product_clusters;
+				command += ".id=";
+				command += product_nodes;
+				command += ".cluster_id AND ";
+				command += product_clusters;
+				command +=".layer=";
+				ostringstream layStream;
+				layStream << lay;
+				command += layStream.str();
+				command += " AND (product_id=";
+				ostringstream idstr;
+		    	idstr << productIds[0]; 
+				command += idstr.str(); 
+				for (int i=1; i<productN; i++){
+					command += " OR product_id=";
+					ostringstream idStream;
+					idStream << productIds[i];
+					command += idStream.str();
+				}
+					command += ")) order by layer, cluster_size DESC;";
+					res = stmt->executeQuery(command);
+					clusterN = res->rowsCount();
+			
+		}
+		else{	
 			clusterN = res->rowsCount();
+		}	
 	}
 	
 	
 	//If the user clicks on explore similar -- there is a parent_id
 	
 	else{ 
-			
+	
 		command = "SELECT DISTINCT ";
 		command += product_nodes;
 		command += ".cluster_id, ";
@@ -902,13 +1038,14 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 			command +=".layer, ";
 			command += product_clusters;
 			command += ".cluster_size;";
-		//	cout<<"commad is "<<command<<endl;
+//			cout<<"commad is "<<command<<endl;
 			res = stmt->executeQuery(command);	
 
 		 	clusterN = res->rowsCount();
 		
 		
 			if (clusterN == 0){
+				
 				command = "SELECT DISTINCT product_id from ";
 				command += product_nodes;
 				command += " where (cluster_id=";
@@ -955,16 +1092,20 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 					return reped;
 				}
 			}	
-		
+	
 	        int cId;
+		
+
 			while(res->next() && j<repW){
+		
+			//	if (clusterID == 0){
 				
-				if (clusterID == 0){
 					cId= res->getInt("cluster_id");
-				}
-				else{
-					cId= res->getInt("cluster_id");
-				}				
+				
+			//	}
+			//	else{
+			//		cId= res->getInt("cluster_id");
+			//	}				
 				command = "select distinct product_id from ";
 				command += product_nodes;
 				command +=" where ((cluster_id=";
@@ -994,11 +1135,13 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 						command += " OR";
 						ostringstream productIdStream2;
 						productIdStream2 << productIds[k];
+					
 						command += " product_id=";
 						command += productIdStream2.str();
 					}	
+				
 				command += "));";
-			//	<<"command is "<<command<<endl;
+			
 				res2 = stmt->executeQuery(command);	
 				int clusterCount = 0;
 				clusterCount = res2->rowsCount();
@@ -1010,7 +1153,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 				if (rep>0){
 				
 					reps[j] = rep;
-					
+				
 					clusterIds[j] = cId;
 							
 					command = "SELECT id from ";
@@ -1091,7 +1234,9 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 //						shift1(reps, clusterIds, clusterCounts, j);
 //						j--;
 //						int childLeftN = cCount;
+//							
 //						while(res->next() && j<repW){
+//						
 //							cid = res->getInt("id");
 //							command ="select distinct * from ";
 //							command += product_nodes;
@@ -1126,7 +1271,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 //									command += productIdStream2.str();
 //								}
 //							command += "));";
-//							
+//						
 //							res2 = stmt->executeQuery(command);
 //							
 //							clusterCount = res2->rowsCount();
@@ -1134,7 +1279,9 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 //								rep = getRepCluster(cid,conFeatureN, stmt, res2, productN,productIds,reps,j, productName, conFeatureNames);
 //								if(rep>0) {	
 //									reps[j] = rep;
+//									cout<<"     MANIP:cid is    "<<cid<<endl;
 //									clusterIds[j] = cid;
+//									
 //								//	cout<<"clusterIds here is "<<cid<<endl;
 //									command = "SELECT id from ";
 //									command += productName;
@@ -1156,6 +1303,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 //									j++;
 //									childLeftN--;	
 //								}
+//								cout<<" j  is  "<<j<<"   clusterIds is "<<clusterIds[j]<<endl;
 //							}	
 //						}
 //						if (childLeftN == cCount){
@@ -1252,14 +1400,16 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 //				
 //	}						
 	if (j==repW){
+	
 		reped = true;
 	}
 	else if(j<repW){
+		
 		repW = j;
 		reped=true;
 	} 		
 }
-
+	
 	return reped;	
 }
 

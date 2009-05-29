@@ -44,6 +44,7 @@ int main(int argc, char** argv) {
 	int bucketDiv = 10;
 	bool cluster = 0; 
 	bool searchBoxFlag = 0;
+	int productN = 0;
 	
 	string argu = argv[1];
 	int ind, endit, startit, lengthit;
@@ -73,16 +74,39 @@ int main(int argc, char** argv) {
 	}
 	
 	//searchBox
-	var= "search_box";
+	var= "search_count";
 	ind = argu.find(var, 0);
 	endit = argu.find("\n", ind);
 	startit = ind + var.length() + 2;
 	lengthit = endit - startit;
 	if (lengthit>0){
-		searchBoxFlag = atoi((argu.substr(startit, lengthit)).c_str());
+		productN = atoi((argu.substr(startit, lengthit)).c_str());
+		searchBoxFlag = 1;
 	}
 	
+	string searchIdsString;
+	int* searchIds = new int[productN];
 	
+	var = "search_ids";
+	ind = argu.find(var, 0);
+	endit = argu.find("\n", ind);
+	startit = ind + var.length() + 2;
+	lengthit = endit - startit;
+	if (lengthit>0){
+		searchIdsString = (argu.substr(startit, lengthit)).c_str();
+		var = "[";
+		ind = searchIdsString.find(var,0);
+		startit = ind + 1;
+		for (int i=0; i<productN; i++){
+			
+			endit = searchIdsString.find(", ", startit);
+			lengthit = endit-startit;
+			searchIds[i] = atoi((searchIdsString.substr(startit, lengthit)).c_str());
+			startit = endit+2;
+		}
+	}
+	
+
 	
 	string tableName = productName;
 	tableName.append("s");
@@ -322,8 +346,14 @@ int *mergedClusterN= new int[clusterN];
 			}
 			
 		//if searchBoxFlag
-			int productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, 
+		if (searchBoxFlag){
+			featureRange(stmt, res, searchIds, conFeatureRange, productN, conFeatureN, productName, conFeatureNames, bucketCount, bucketDiv);
+		}
+		
+		else{
+			productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, 
 					conFeatureN, conFeatureRange, productName, conFeatureNames, bucketCount, bucketDiv);
+		}
 		
 			if (productN> 0){
 				if (productN<=repW){
@@ -340,10 +370,19 @@ int *mergedClusterN= new int[clusterN];
 				int* childrenCount = new int[repW];
 				int* clusterCounts = new int[repW];
 				int* mergedClusterIDs;
-			
-				reped = getRep(reps, productIDs, productN, resultClusters, childrenIDs, clusterCounts, childrenCount, conFeatureN, repW, stmt, 
-					res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames);
-			
+	
+				
+			if (searchBoxFlag){
+					
+				reped = getRep(reps, searchIds, productN, resultClusters, childrenIDs, clusterCounts, childrenCount, conFeatureN, repW, stmt, 
+					res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames, searchBoxFlag);
+				
+			}
+			else{
+					reped = getRep(reps, productIDs, productN, resultClusters, childrenIDs, clusterCounts, childrenCount, conFeatureN, repW, stmt, 
+							res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames, searchBoxFlag);
+						
+			}
 				if(reped){			
 					getIndicators(resultClusters,repW, conFeatureN, indicators, stmt, res, mergedClusterIDs, productName, conFeatureNames);
 				}
