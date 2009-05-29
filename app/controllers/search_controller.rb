@@ -43,7 +43,7 @@ class SearchController < ApplicationController
     #Send search query
     c = CQuery.new(session[:productType], params[:path_info].map{|p|p.to_i}, mysession, params[:search]) #C-code wrapper
     if c.valid
-      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+c.to_s
+      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+c.to_s+"/s/#{params[:search]}"
     else
       flash[:error] = c.to_s
       redirect_to "/#{session[:productType].pluralize.downcase}/list/"+params[:path_info].join('/')

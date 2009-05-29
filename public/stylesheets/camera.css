@@ -213,6 +213,7 @@ div #filterbar {
 	margin: 0 0 0.8em 7px;
 	width: 177px;
 	height: 13px;
+	padding-top: 0px;
 	padding-bottom: 6px;
 	position: relative;}
 .label {
@@ -221,6 +222,7 @@ div #filterbar {
 	margin-left: 5px;
 	width: 187px;
 	margin-top: 0.6em;
+	margin-bottom: 20px; /*Spacing for histogram*/
 }
 .handle img{
 	float: left;}
@@ -255,6 +257,7 @@ div #filterbar {
 	position: absolute;
 	text-align: left;
 	left: 7px;
+	top: 16px;
 }
 .ui-slider { position: relative; text-align: left; }
 .ui-slider .ui-slider-handle { background:url(../../../images/diamond.gif) no-repeat; height:13px; width:9px; overflow:hidden;position:absolute;z-index:2;}/*{ position: absolute; z-index: 2; width: 1.2em; height: 1.2em; cursor: default; }
