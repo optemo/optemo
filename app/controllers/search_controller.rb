@@ -38,67 +38,15 @@ class SearchController < ApplicationController
     end
   end
   
-  def index
-    s = initialize_search
-    search(s)
-  end
-  
-  def sim
-    #Create new search instance
-    s = initialize_search
-    s.filter = params[:f]
-    if params[:c].nil?
-      #The data has not previously been clustered
-      s.product_id = params[:id]
-      search(s,{"product_id" => params[:id].to_i})
-    else
-      #The data has previously been clustered
-      @session = Session.find(session[:user_id])
-      #Cleanse id to be only numbers
-      s.product_id = params[:id].gsub(/\D/,'')
-      s.cluster_id = params[:c].gsub(/\D/,'')
-      #Generate NLG message
-      chosen = YAML.load(@session.chosen)
-      #debugger
-      c = chosen.find{|c| c[:cluster_id] == s.cluster_id} if chosen
-      if !c.nil?
-          c.delete('cluster_id')
-          c.delete('cluster_count')
-          c.each_pair {|k,v| 
-            if v == 0
-              c.delete(k) 
-            else
-              c[k] = v>0 ? 'high' : 'low'
-            end}
-          if c.empty?
-            @session.msg = ""
-          else
-            att = c.to_a.each{|a|a.reverse!}
-            @session.msg = "which have " + combine_list(att)
-          end
-      end
-      @session.save
-      search(s,{"cluster_id" => s.cluster_id})
-    end
-  end
-  
   def find
-    @search = Ultrasphinx::Search.new(:query => params[:search])
-    @search.run
-    @search.results
-    #s = initialize_search
-    @session = Session.find(session[:user_id])
-    @session.result_count = @search.count > 9 ? 9 : @search.count
-    if @session.result_count == 0
-      flash[:error] = "No products were found"
-      redirect_to "/#{session[:productType].pluralize.downcase || $DefaultProduct.pluralize.downcase}/list/"
+    mysession = Session.find(session[:user_id])
+    #Send search query
+    c = CQuery.new(session[:productType], params[:path_info].map{|p|p.to_i}, mysession, params[:search]) #C-code wrapper
+    if c.valid
+      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+c.to_s
     else
-      @session.msg = "Search results for: "+params[:search]
-      "i0=".upto("i8=") do |i|
-        @session.send i.intern, @search.shift.id unless @search.empty?
-      end
-      @session.save
-      redirect_to "/products/list/"+@session.URL
+      flash[:error] = c.to_s
+      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+params[:path_info].join('/')
     end
   end
   

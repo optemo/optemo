@@ -162,6 +162,11 @@ div #leftbar {
 	margin-top: 0.5em;
 	width: 130px;
 }
+
+/* Search */
+#submit_button {
+	margin-top: 2px;
+}
 	
 /* Save Box */
 div #savebar {

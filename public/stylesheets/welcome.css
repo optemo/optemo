@@ -74,7 +74,17 @@ p, ul {
 	float:left;
 	margin-right: 5px;
 }
-
+#logo span{
+	position: absolute;
+	top: 54px;
+	left: 230px;
+	color: #693;
+	visibility: hidden;
+	font-family: monaco, arial;
+}
+#logo:hover{
+	
+}
 p {
 	font-size: 1.1em;
 	font-family: Arial;
@@ -157,6 +167,28 @@ div.pass img{
 }
 #whylaser {
 	margin-left: 20px;
+	position: relative;
+}
+#whylaser span{
+	position: absolute;
+	top: 0px;
+	left: 160px;
+	color: black;
+	font-size: small;
+	visibility: hidden;
+}
+/* Website Content */
+.article {
+	margin: 0px 30px;
+	line-height: 1.5em;
+}
+.article h1 {
+	padding-bottom: 15px !important;
+}
+.article_link {
+	font-size: 1.4em;
+	text-align: center;
+	margin-top: 2em;
 }
 
 /* From: http://www.schillmania.com/projects/dialog2/ */

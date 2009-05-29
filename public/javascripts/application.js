@@ -96,6 +96,11 @@ $(document).ready(function() {
 			return String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26);
 			}));
 	});
+	//Do rollover effect
+	$('#logo').hover(function(){$('#logo > span').css('visibility', 'visible')},
+					 function(){$('#logo > span').css('visibility', 'hidden')});
+	$('#whylaser').hover(function(){$('#whylaser > span').css('visibility', 'visible')},
+					 function(){$('#whylaser > span').css('visibility', 'hidden')});
 });
 
 //Draw slider histogram
