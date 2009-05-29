@@ -22,7 +22,14 @@ class ProductsController < ApplicationController
   def list
     @session = Session.find(session[:user_id])
     @dbprops = DbProperty.find_by_name(session[:productType].constantize.name)
-    @c = CQuery.new(session[:productType], params[:path_info].map{|p|p.to_i},@session) #C-code wrapper
+    #Check for search keyword
+    if params[:path_info][-2] == 's'
+      cluster_ids = params[:path_info][0..-3].map{|p|p.to_i}
+      searchterm = params[:path_info][-1].gsub(/[\W]/,'')
+      @c = CQuery.new(session[:productType],cluster_ids,@session,searchterm) #C-code wrapper
+    else
+      @c = CQuery.new(session[:productType], params[:path_info].map{|p|p.to_i},@session) #C-code wrapper
+    end
     if !@c.valid
       flash[:error] = @c.to_s
       redirect_to '/error'
