@@ -342,7 +342,8 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 			}
 			out.append("\'\n");
 		}
-	if (reped){
+			
+//	if (reped){
 		out.append("clusters: \n");
 		
         for(int c=0; c<repW; c++){
@@ -372,7 +373,7 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 		out.append("clusterdetails: \n");
 
 		for(int c=0; c<repW; c++){	
-		
+	
 		     	out.append("- {");
 		   		out.append("cluster_id: ");
 		   		std::ostringstream oss2; 		  
@@ -418,7 +419,7 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 			
 		   		out.append("}\n");
 		}
-	}	
+//	}	
 
 	
 return out;
