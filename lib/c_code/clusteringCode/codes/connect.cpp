@@ -43,6 +43,7 @@ int main(int argc, char** argv) {
 	int clusterID = 0;
 	int bucketDiv = 10;
 	bool cluster = 0; 
+	bool searchBoxFlag = 0;
 	
 	string argu = argv[1];
 	int ind, endit, startit, lengthit;
@@ -71,6 +72,18 @@ int main(int argc, char** argv) {
 		session_id = atoi((argu.substr(startit, lengthit)).c_str());
 	}
 	
+	//searchBox
+	var= "search_box";
+	ind = argu.find(var, 0);
+	endit = argu.find("\n", ind);
+	startit = ind + var.length() + 2;
+	lengthit = endit - startit;
+	if (lengthit>0){
+		searchBoxFlag = atoi((argu.substr(startit, lengthit)).c_str());
+	}
+	
+	
+	
 	string tableName = productName;
 	tableName.append("s");
 	map<const string, int> productNames;
@@ -93,10 +106,10 @@ int main(int argc, char** argv) {
 		case 2: 	
 				//	productName = "Printer";
 					clusterN = 9; 
-					conFeatureN= 4;
+					conFeatureN= 5;
 					catFeatureN= 1;
 					boolFeatureN= 0;
-					varNamesN= 12;
+					varNamesN= 13;
 					range= 2;
 					repW = 9; 
 					break;
@@ -184,7 +197,7 @@ int *mergedClusterN= new int[clusterN];
 		}
 		startit = endit;
 	}	
-
+	
 	int brandN = parseInput(varNames, productNames, productName, argu, brands, catFilteredFeatures, conFilteredFeatures, boolFilteredFeatures, filteredRange, 
 				varNamesN, conFeatureNames, catFeatureNames, indicatorNames);
 		
@@ -247,6 +260,7 @@ int *mergedClusterN= new int[clusterN];
 				string out = "";
 			
 				bool reped = false;
+				
 			
 			if (cluster == 0){
 	
@@ -270,7 +284,7 @@ int *mergedClusterN= new int[clusterN];
 				command += ";";
 			
 				res = stmt->executeQuery(command);
-	
+
 				res->next();
 			
 				clusterID = res->getDouble("parent_id");
@@ -307,6 +321,7 @@ int *mergedClusterN= new int[clusterN];
 				bucketCount[f] = new double [bucketDiv];
 			}
 			
+		//if searchBoxFlag
 			int productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, 
 					conFeatureN, conFeatureRange, productName, conFeatureNames, bucketCount, bucketDiv);
 		
@@ -328,10 +343,7 @@ int *mergedClusterN= new int[clusterN];
 			
 				reped = getRep(reps, productIDs, productN, resultClusters, childrenIDs, clusterCounts, childrenCount, conFeatureN, repW, stmt, 
 					res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames);
-			//	cout<<"resultCLusters are ";
-			//	for (int r=0; r<repW; r++){
-			//		cout<<resultClusters[r]<<"  ";
-			//	}
+			
 				if(reped){			
 					getIndicators(resultClusters,repW, conFeatureN, indicators, stmt, res, mergedClusterIDs, productName, conFeatureNames);
 				}

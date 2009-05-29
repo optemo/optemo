@@ -163,20 +163,20 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 	command += "\';";
 
 	res = stmt->executeQuery(command);
+	
 	res->next();
 	bucketRange[0][0] = res->getDouble("price_min");
 	bucketRange[0][1] = res->getDouble("price_max");
 		
 	bucketInterval[0] = (bucketRange[0][1] - bucketRange[0][0]) / bucketDiv ;
-
 	for(int f=1; f<conFeatureN; f++){
 		conFeatureRange[f][0] = 100000000.0;
 		conFeatureRange[f][1] = 0.0;
 		command = "select min, max from db_features where name=\'";
 		command +=  conFeatureNames[f];
 		command += "\';";
-	//	cout<<"command is "<<command<<endl;
 		res = stmt->executeQuery(command);
+
 		res->next();
 		bucketRange[f][0] = res->getDouble("min");
 		bucketRange[f][1] = res->getDouble("max");
@@ -210,7 +210,7 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 			
 			command += ")";
 			
-			if (conFilteredFeatures[1] || conFilteredFeatures[2] || conFilteredFeatures[3] || catFilteredFeatures[0]){
+			if (conFilteredFeatures[1] || conFilteredFeatures[2] || conFilteredFeatures[3] || conFilteredFeatures[4] || catFilteredFeatures[0]){
 				command += " AND ";
 			}
 		}
@@ -232,7 +232,7 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 			maxv<<filteredRange[1][1];
 			command += maxv.str();
 			command += ")";
-			if (conFilteredFeatures[2] || conFilteredFeatures[3]  || catFilteredFeatures[0]){
+			if (conFilteredFeatures[2] || conFilteredFeatures[3]  || conFilteredFeatures[4] || catFilteredFeatures[0]){
 				command += " AND ";
 			}
 		}
@@ -253,7 +253,7 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 			maxv<<filteredRange[2][1];
 			command += maxv.str();
 			command += ")";
-			if (conFilteredFeatures[3] || catFilteredFeatures[0]){
+			if (conFilteredFeatures[3] || conFilteredFeatures[4] || catFilteredFeatures[0]){
 				command += " AND ";
 			}
 		} 
@@ -276,14 +276,39 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 			command += maxv.str();
 			command += ")";
 			
-			if (catFilteredFeatures[0]){
+			if (conFilteredFeatures[4] || catFilteredFeatures[0]){
 				command += " AND ";
 			} 
 
 		}
 		
+			if (conFilteredFeatures[4]){
+				if(!conFilteredFeatures[0] && !conFilteredFeatures[1] && !conFilteredFeatures[2] && !conFilteredFeatures[3]){
+					command += " where ";
+				}
+				command += "(";
+				command += conFeatureNames[4];
+				command +=">=";
+				ostringstream minv;
+				minv<<filteredRange[4][0];
+				command += minv.str(); 
+				command += " AND ";
+				command += conFeatureNames[4];
+				command += "<=";
+				ostringstream maxv;
+				maxv<<filteredRange[4][1];
+				command += maxv.str();
+				command += ")";
+
+				if (catFilteredFeatures[0]){
+					command += " AND ";
+				} 
+
+			}
+		
+		
 		if (catFilteredFeatures[0]){
-			if(!conFilteredFeatures[0] && !conFilteredFeatures[1] && !conFilteredFeatures[2] && !conFilteredFeatures[3]){
+			if(!conFilteredFeatures[0] && !conFilteredFeatures[1] && !conFilteredFeatures[2] && !conFilteredFeatures[3] && !!conFilteredFeatures[4] ){
 				command += " where ";
 			}
 			command += "(brand =\'";
@@ -335,7 +360,7 @@ int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string p
 	}
 	
 	else{ //if clusterID != 0
-
+	
 		command = "SELECT DISTINCT id from ";
 		command += product_clusters;
 		command +=" where parent_id=";

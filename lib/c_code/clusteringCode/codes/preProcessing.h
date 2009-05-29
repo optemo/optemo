@@ -183,6 +183,7 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 			conFeatureNames[1]= "ppm";  
 		    conFeatureNames[2]= "itemwidth";
 		    conFeatureNames[3]= "paperinput";
+			conFeatureNames[4] = "resolutionarea";
 		    varNames[0] = "session_id";
 			varNames[1] = "cluster_id";
 			varNames[2] = "brand";
@@ -194,12 +195,15 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 			varNames[8] = "itemwidth_max";
 			varNames[9] = "paperinput_min";
 			varNames[10] = "paperinput_max";
+			varNames[11] = "resolutionarea_min";
+			varNames[12] = "resolutionarea_max";
 		    
 			
 			indicatorNames[0] = "price";
 			indicatorNames[1] = "ppm";
 			indicatorNames[2] = "itemwidth";
 			indicatorNames[3] = "paperinput";
+			indicatorNames[4] = "resolutionarea";
 	
 			
 			
@@ -271,7 +275,14 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 			     	    filteredRange[3][1] = atof((argument.substr(startit, lengthit)).c_str());
 					   	conFilteredFeatures[3] = 1;		
 					}
-					
+					else if (var == "resolutionarea_min"){
+				     	filteredRange[4][0] = atof((argument.substr(startit, lengthit)).c_str());
+						conFilteredFeatures[4] = 1;		
+					}
+					else if (var == "resolutionarea_max"){
+				     	filteredRange[4][1] = atof((argument.substr(startit, lengthit)).c_str());
+						conFilteredFeatures[4] = 1;		
+					}
 		     	}
 			}
 		
@@ -395,7 +406,7 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 					}
 					out.append("]");
 				}	
-				
+			
 		   		for (int f=0; f<conFeatureN; f++){
 					out.append(", ");
 					out.append(indicatorNames[f]);
