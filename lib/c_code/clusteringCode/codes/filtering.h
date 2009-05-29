@@ -1155,14 +1155,69 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 					reps[j] = rep;
 				
 					clusterIds[j] = cId;
-							
-					command = "SELECT id from ";
+				
+			if (searchBoxFlag){				
+					command = "SELECT ";
+					command += productName;
+					command +="_clusters.id, ";
+					command += productName;
+					command += "_nodes.product_id from ";
 					command += productName; 
-					command += "_clusters where parent_id=";
+					command += "_clusters,";
+					command += productName;
+					command += "_nodes where (";
+					command += productName;
+					command += "_clusters.id=";
+					command += productName;
+					command += "_nodes.cluster_id AND ";
+					command += productName;
+					command += "_clusters.parent_id=";
 					ostringstream cidstream;
 					cidstream << cId;
 					command += cidstream.str();
-					command += ";";
+					command += " AND (";
+					command += productName;
+					command += "_nodes.product_id=";
+					ostringstream pidSt3;
+					pidSt3<<productIds[0];
+					command += pidSt3.str();
+					for (int p=1; p<productN; p++){
+						command += " OR ";
+						command += productName;
+						command += "_nodes.product_id=";
+						ostringstream pidSt4;
+						pidSt4<<productIds[p];
+						command += pidSt4.str();
+					}
+					
+					command += "));";
+				
+				}
+				else{
+
+					command = "SELECT id FROM ";
+					command += productName; 
+					command += "_clusters where (parent_id=";
+					ostringstream cidstream;
+					cidstream << cId;
+					command += cidstream.str();
+				//	command += " AND (";
+				//	command += productName;
+				//	command += "_nodes.product_id=";
+				//	ostringstream pidSt3;
+				//	pidSt3<<productIds[0];
+				//	command += pidSt3.str();
+				//	for (int p=1; p<productN; p++){
+				//		command += " OR ";
+				//		command += productName;
+				//		command += "_nodes.product_id=";
+				//		ostringstream pidSt4;
+				//		pidSt4<<productIds[p];
+				//		command += pidSt4.str();
+				//	}
+					
+					command += ");";
+				}
 				
 					res2 = stmt->executeQuery(command);
 					int cSize = 0;

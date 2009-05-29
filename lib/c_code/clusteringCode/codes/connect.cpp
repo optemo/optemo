@@ -87,25 +87,29 @@ int main(int argc, char** argv) {
 	string searchIdsString;
 	int* searchIds = new int[productN];
 	
-	var = "search_ids";
+	var = "search_ids: ";
 	ind = argu.find(var, 0);
-	endit = argu.find("\n", ind);
-	startit = ind + var.length() + 2;
+
+	startit = ind + var.length() + 3;
+	endit = argu.find("\n", startit);
+	
 	lengthit = endit - startit;
+
 	if (lengthit>0){
+		
 		searchIdsString = (argu.substr(startit, lengthit)).c_str();
-		var = "[";
-		ind = searchIdsString.find(var,0);
-		startit = ind + 1;
+
 		for (int i=0; i<productN; i++){
-			
-			endit = searchIdsString.find(", ", startit);
+
+			searchIds[i] = atoi((argu.substr(startit, lengthit)).c_str());
+	
+			startit = endit+3;
+	
+			endit = argu.find("\n", startit);
 			lengthit = endit-startit;
-			searchIds[i] = atoi((searchIdsString.substr(startit, lengthit)).c_str());
-			startit = endit+2;
 		}
 	}
-	
+
 
 	
 	string tableName = productName;
@@ -285,7 +289,9 @@ int *mergedClusterN= new int[clusterN];
 			
 				bool reped = false;
 				
-			
+			if (searchBoxFlag){
+				cluster =0;
+			}
 			if (cluster == 0){
 	
 				command = "SELECT id from ";
@@ -347,6 +353,7 @@ int *mergedClusterN= new int[clusterN];
 			
 		//if searchBoxFlag
 		if (searchBoxFlag){
+			
 			featureRange(stmt, res, searchIds, conFeatureRange, productN, conFeatureN, productName, conFeatureNames, bucketCount, bucketDiv);
 		}
 		
