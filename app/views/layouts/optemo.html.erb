@@ -45,9 +45,9 @@
    <div class="hd">
 	<div id="header">
 	  <div id="logo">
-	    <%= link_to image_tag('logo.png', :height  => 73, :class => 'img'), '/', {:title => 'LaserPrinterHub.com'}%>
+		<a href="<%= url_for '/' %>" id ="logo" title="LaserPrinterHub.com"><%= image_tag('logo.png') %><span>Home</span></a>
 	  </div>
-		<%= link_to image_tag('whylaser.png'), '/laserprinters', {:title => "Why to buy a laser printer?", :id => 'whylaser'} %>
+		<a href="<%= url_for '/laserprinters' %>" title="Why to buy a laser printer?" id='whylaser'><%= image_tag('whylaser.png') %><span>Click to find out</span></a>
 	  <div id="header_buttons">
 	    powered by <%= link_to image_tag('optemo.png'), 'http://www.optemo.com', {:title => 'Optemo'} %>
 	  </div>

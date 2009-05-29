@@ -2,6 +2,8 @@ require 'product'
 class Printer < ActiveRecord::Base
   include ProductProperties
   has_many :printer_nodes
+  #Ultrasphinx field selection
+  is_indexed :fields => ['title', 'feature']
   named_scope :priced, :conditions => "salepriceint IS NOT NULL"
   named_scope :valid, :conditions => %w(ppm itemwidth paperinput salepriceint resolutionarea scanner printserver).map{|i|i+' IS NOT NULL'}.join(' AND ')
   named_scope :invalid, :conditions => %w(ppm itemwidth paperinput).map{|i|i+' IS NULL'}.join(' OR ')+" OR (salepriceint IS NULL AND listpriceint IS NULL)"

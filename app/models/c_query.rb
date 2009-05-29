@@ -13,18 +13,30 @@ class CQuery
 #        %feature_hist :string --now current page
   attr_reader :result_count, :cluster_count, :products, :cluster_ids, :product_type, :filterinfo, :clustergraph, :subclusters, :desc
   
-  def initialize(product_type, clusters=nil, session=nil)
+  def initialize(product_type, clusters=nil, session=nil, searchterm=nil)
     @cluster_ids = clusters
     @product_type = product_type
     if clusters.nil?
       myparams = {"product_name" => @product_type.downcase}.to_yaml
     else
+      if session.nil?
+        @msg = "Please supply a session"
+        return
+      end
       myfilters = session.attributes.delete_if {|key, val| !key.index(/#{@product_type.constantize::MainFeatures.join('|')+"price|brand"}/)}
-      #debugger
-      myparams = {"cluster_id" => @cluster_ids, "product_name" => @product_type.downcase}.merge(myfilters).to_yaml
+      if searchterm.nil?
+        myparams = {"cluster_id" => @cluster_ids, "product_name" => @product_type.downcase}.merge(myfilters).to_yaml
+      else
+        sphinx = searchSphinx(searchterm)
+        search_ids = sphinx.results.map{|r| r[1]} #Remove Classname from results
+        if sphinx.count == 0
+          @msg = "No results found."
+          return
+        end
+        myparams = {"cluster_id" => @cluster_ids, "product_name" => @product_type.downcase, "search_ids" => search_ids, "search_count" => sphinx.count}.merge(myfilters).to_yaml
+      end
     end
     output = sendCQuery myparams
-    #debugger
     processOutput output
   end
   
@@ -118,5 +130,15 @@ class CQuery
       myclustergraph << [mymin.round(2),(mymax-mymin).round(2)]
     end
     myclustergraph
+  end
+  
+  def searchSphinx(searchterm)
+    search = Ultrasphinx::Search.new(:query => searchterm, :per_page => 10000)
+    search.run(false)
+    if false
+      flash[:error] = "No products were found"
+      redirect_to "/#{session[:productType].pluralize.downcase || $DefaultProduct.pluralize.downcase}/list/"
+    end
+    search
   end
 end
