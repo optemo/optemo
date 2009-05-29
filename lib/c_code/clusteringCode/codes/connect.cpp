@@ -275,7 +275,7 @@ int *mergedClusterN= new int[clusterN];
 ///////////////////////////////////////////////
 		
 			try {
-						
+				
 				// Using the Driver to create a connection
 				driver = sql::mysql::get_mysql_driver_instance();
 				con = driver->connect(HOST, PORT, USER, PASS);
@@ -313,9 +313,9 @@ int *mergedClusterN= new int[clusterN];
 				cidstream << clusterIDs[safeID];
 				command += cidstream.str();
 				command += ";";
-				//cout<<"commad is "<<command<<endl;
+				cout<<"commad is "<<command<<endl;
 				res = stmt->executeQuery(command);
-//	cout<<"HERE"<<endl;	
+	cout<<"HERE"<<endl;	
 				res->next();
 			
 				clusterID = res->getDouble("parent_id");
@@ -359,8 +359,10 @@ int *mergedClusterN= new int[clusterN];
 		}
 		
 		else{
+			
 			productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, 
 					conFeatureN, conFeatureRange, productName, conFeatureNames, bucketCount, bucketDiv);
+	
 		}
 		
 			if (productN> 0){
