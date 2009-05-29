@@ -275,7 +275,7 @@ int *mergedClusterN= new int[clusterN];
 ///////////////////////////////////////////////
 		
 			try {
-					
+						
 				// Using the Driver to create a connection
 				driver = sql::mysql::get_mysql_driver_instance();
 				con = driver->connect(HOST, PORT, USER, PASS);
@@ -306,15 +306,16 @@ int *mergedClusterN= new int[clusterN];
 				command += "_clusters WHERE id=";
 				ostringstream cidstream; 
 				int safeID = 0;
+			//	cout<<"clusterIDs[0] is:"<<clusterIDs[0]<<endl;
 				while (clusterIDs[safeID] < 0){
 					safeID++;
 				}
 				cidstream << clusterIDs[safeID];
 				command += cidstream.str();
 				command += ";";
-			
+				//cout<<"commad is "<<command<<endl;
 				res = stmt->executeQuery(command);
-
+//	cout<<"HERE"<<endl;	
 				res->next();
 			
 				clusterID = res->getDouble("parent_id");
@@ -350,7 +351,7 @@ int *mergedClusterN= new int[clusterN];
 			for (int f=0; f<conFeatureN; f++){
 				bucketCount[f] = new double [bucketDiv];
 			}
-			
+		
 		//if searchBoxFlag
 		if (searchBoxFlag){
 			
@@ -378,7 +379,7 @@ int *mergedClusterN= new int[clusterN];
 				int* clusterCounts = new int[repW];
 				int* mergedClusterIDs;
 	
-				
+			
 			if (searchBoxFlag){
 					
 				reped = getRep(reps, searchIds, productN, resultClusters, childrenIDs, clusterCounts, childrenCount, conFeatureN, repW, stmt, 

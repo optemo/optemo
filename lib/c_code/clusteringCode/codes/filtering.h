@@ -859,7 +859,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 						res->next();
 						clusterIds[i] = res->getInt("id");
 					
-						command = "select distinct product_id from ";
+						command = "select distinct product_id, cluster_id from ";
 						command += product_nodes;
 						command +=" where ((cluster_id=";
 						if (clusterID <0 ){ //clusters are merged
@@ -893,11 +893,12 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 							command += camIdStream2.str();
 						}
 						command += "));";
-						
+				
 						res = stmt->executeQuery(command);
 						
-						clusterCounts[i] = 0;//res->rowsCount();
-						reped = false;
+						clusterCounts[i] = 1;//res->rowsCount();
+						childrenCount[i] = 0;
+						reped = true;
 					//	return reped;
 		}
 	}
@@ -1226,6 +1227,9 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 						childrenIDs[j][cSize] = res2->getInt("id");
 						cSize++;
 					}	
+					if (smallNFlag){
+						childrenCount[j] = 0;
+					}
 					
 					childrenCount[j] = cSize;
 				
