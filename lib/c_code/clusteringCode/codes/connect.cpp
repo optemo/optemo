@@ -275,7 +275,7 @@ int *mergedClusterN= new int[clusterN];
 ///////////////////////////////////////////////
 		
 			try {
-						
+				
 				// Using the Driver to create a connection
 				driver = sql::mysql::get_mysql_driver_instance();
 				con = driver->connect(HOST, PORT, USER, PASS);
@@ -359,8 +359,10 @@ int *mergedClusterN= new int[clusterN];
 		}
 		
 		else{
+			
 			productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, 
 					conFeatureN, conFeatureRange, productName, conFeatureNames, bucketCount, bucketDiv);
+	
 		}
 		
 			if (productN> 0){
