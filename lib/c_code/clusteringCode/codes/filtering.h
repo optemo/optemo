@@ -1102,6 +1102,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 			//	if (clusterID == 0){
 				
 					cId= res->getInt("cluster_id");
+					//cout<<"cId is      :"<<cId<<endl;
 				
 			//	}
 			//	else{
@@ -1200,8 +1201,12 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 					command += productName; 
 					command += "_clusters where (parent_id=";
 					ostringstream cidstream;
-					cidstream << cId;
-					command += cidstream.str();
+						cidstream << cId;
+						command += cidstream.str();
+					
+			
+					
+				
 				//	command += " AND (";
 				//	command += productName;
 				//	command += "_nodes.product_id=";
@@ -1221,15 +1226,27 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 				}
 				
 					res2 = stmt->executeQuery(command);
+					if (res2->rowsCount() ==0){
+						command = "SELECT id FROM ";
+						command += productName; 
+						command += "_clusters where (id=";
+						ostringstream cidstream;
+						cidstream << cId;
+						command += cidstream.str();
+							command += ");";
+					}
+				//	cout<<"command is  "<<command<<endl;
+					res2 = stmt->executeQuery(command);
 					int cSize = 0;
 				
 					while(res2->next()){
 						childrenIDs[j][cSize] = res2->getInt("id");
+					//	cout<<"cSize is "<<cSize<<endl;
 						cSize++;
 					}	
-					if (smallNFlag){
-						childrenCount[j] = 0;
-					}
+				//	if (smallNFlag){
+				//		childrenCount[j] = 0;
+				//	}
 					
 					childrenCount[j] = cSize;
 				

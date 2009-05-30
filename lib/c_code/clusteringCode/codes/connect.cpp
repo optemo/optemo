@@ -313,9 +313,9 @@ int *mergedClusterN= new int[clusterN];
 				cidstream << clusterIDs[safeID];
 				command += cidstream.str();
 				command += ";";
-				cout<<"commad is "<<command<<endl;
+				//cout<<"commad is "<<command<<endl;
 				res = stmt->executeQuery(command);
-	cout<<"HERE"<<endl;	
+//	cout<<"HERE"<<endl;	
 				res->next();
 			
 				clusterID = res->getDouble("parent_id");
