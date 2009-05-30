@@ -73,13 +73,13 @@ p, ul {
 #logo {
 	float:left;
 	margin-right: 5px;
+	text-decoration: none;
 }
 #logo span{
 	position: absolute;
 	top: 54px;
 	left: 230px;
 	color: #693;
-	text-decoration: none;
 	visibility: hidden;
 	font-family: monaco, arial;
 }
@@ -166,14 +166,15 @@ div.pass img{
 #whylaser {
 	margin-left: 20px;
 	position: relative;
+	text-decoration: none;
 }
 #whylaser span{
 	position: absolute;
 	top: 0px;
 	left: 160px;
 	color: black;
-	text-decoration: none;
 	font-size: small;
+	width: 100px;
 	visibility: hidden;
 }
 /* Website Content */

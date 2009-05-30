@@ -5,12 +5,7 @@
 			<%= link_to "Save it", "javascript:saveit(#{@c.products[i].id})" %>
 		</div>
 		<%= image_tag @c.products[i].imagemurl, :width => @c.products[i].imagemw, :height => @c.products[i].imagemh, :onClick => "fadeout(#{@c.products[i].id});", :style => "cursor: pointer;margin-left:-45px" %> 	
-		<div class='rightbar' style='display: none;'>
-			MP:<%# @c.products[i].maximumresolution %><br>
-			DS:<%# @c.products[i].displaysize %><br>
-			OZ:<%# @c.products[i].opticalzoom %><br>
-		</div>
-	<%end%>
+	    <%end%>
 	<a href="/products/<%=@c.products[i].id%>" onClick="fadeout(<%=@c.products[i].id%>);return false;">
 	<p class="easylink"><%= @c.products[i].smlTitle %></p>
 	<p style="font-size: 0.9em">
@@ -18,7 +13,7 @@
 	</p>
 	<p><%= @c.products[i].pricestr %>  
 		<%# Randomized Product Reviews %>
-		<%= rand > 0.5 ? (rand > 0.5 ? image_tag('5star.gif') : image_tag('3star.gif')) : image_tag('4star.gif') %>
+		<%# rand > 0.5 ? (rand > 0.5 ? image_tag('5star.gif') : image_tag('3star.gif')) : image_tag('4star.gif') %>
 	</p>
 	</a>
 	<div class="bottombar">
@@ -32,7 +27,7 @@
 		<%# end %>
 		</div>-->
 	</div>
-	<% if @c.clustergraph && @c.clustergraph[i] %>
+	<% if false && @c.clustergraph && @c.clustergraph[i] %>
 	<div class="clustergraph">
 		<% @c.clustergraph[i].each do |u| %>
 		<% if u.length == 2 %>

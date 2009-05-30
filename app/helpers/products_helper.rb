@@ -24,7 +24,7 @@ module ProductsHelper
     count = a[0][1] if !a.nil? && !a[0].nil?
     @c.desc[i].each_index do |ii|
       item = @c.desc[i][ii]
-      if item[1] == 0 || item[0] == 'cluster_count'
+      if item[1] == 0 || item[0] == 'cluster_count' || item[0] == 'childrenCount'
   	    @c.desc[i][ii] = nil
   	  else
   	    @c.desc[i][ii][1] = case item[1]
