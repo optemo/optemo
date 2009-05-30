@@ -389,13 +389,13 @@ ActiveRecord::Schema.define(:version => 20090520195431) do
     t.float    "displaysize_max",       :default => 4.0
     t.float    "opticalzoom_min",       :default => 0.0
     t.float    "opticalzoom_max",       :default => 20.0
-    t.float    "ppm_min",               :default => 5.0
+    t.float    "ppm_min",               :default => 8.0
     t.float    "ppm_max",               :default => 60.0
     t.float    "itemwidth_min",         :default => 850.0
     t.float    "itemwidth_max",         :default => 6100.0
-    t.float    "paperinput_min",        :default => 50.0
+    t.float    "paperinput_min",        :default => 100.0
     t.float    "paperinput_max",        :default => 3550.0
-    t.float    "resolutionarea_min",    :default => 600.0
+    t.float    "resolutionarea_min",    :default => 360000.0
     t.float    "resolutionarea_max",    :default => 5760000.0
     t.float    "price_min",             :default => 0.0
     t.float    "price_max",             :default => 10000000.0
@@ -426,6 +426,12 @@ ActiveRecord::Schema.define(:version => 20090520195431) do
     t.float    "price_min",             :default => 0.0
     t.float    "price_max",             :default => 10000000.0
   end
+
+  create_table "test", :id => false, :force => true do |t|
+    t.binary "blob_col"
+  end
+
+  add_index "test", ["blob_col"], :name => "blob_col"
 
   create_table "vieweds", :force => true do |t|
     t.datetime "created_at"
