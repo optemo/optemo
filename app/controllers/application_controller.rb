@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
    if session[:user_id].blank? || !Session.exists?(session[:user_id])
       #Create a new session
       mysession = Session.new
-      mysession.ip = request.env['REMOTE_HOST']
+      mysession.ip = request.remote_ip
       mysession.save
       session[:user_id] = mysession.id
       #Create a new search object for the session
