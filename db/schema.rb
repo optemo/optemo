@@ -216,10 +216,6 @@ ActiveRecord::Schema.define(:version => 20090520195431) do
     t.datetime "updated_at"
   end
 
-  create_table "optemo_development", :force => true do |t|
-    t.string "label", :limit => 1
-  end
-
   create_table "printer_clusters", :force => true do |t|
     t.integer "parent_id"
     t.integer "layer"
@@ -426,12 +422,6 @@ ActiveRecord::Schema.define(:version => 20090520195431) do
     t.float    "price_min",             :default => 0.0
     t.float    "price_max",             :default => 10000000.0
   end
-
-  create_table "test", :id => false, :force => true do |t|
-    t.binary "blob_col"
-  end
-
-  add_index "test", ["blob_col"], :name => "blob_col"
 
   create_table "vieweds", :force => true do |t|
     t.datetime "created_at"
