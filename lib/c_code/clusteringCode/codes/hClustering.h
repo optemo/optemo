@@ -34,36 +34,23 @@ if 	(layer == 1){
 				
 				while (res->next()) 
 				{
-		//		listprice =  res->getInt("listpriceint");
-				saleprice = res->getInt("salepriceint");
-		//	 if(saleprice > 0 ) {	
-		//			price = min(listprice, saleprice);	
-				    
-		//		}
-						
-		//	else{
-				price = saleprice;
-				
-		//	}	   		
-			
-							data[size][0] = price;
-							for (int f=1; f<conFeatureN; f++){
-								data[size][f] = res->getDouble(conFeatureNames[f]);
-							}	
-							for (int f=0; f<boolFeatureN; f++){
-								data[size][conFeatureN+f] = res->getDouble(boolFeatureNames[f]);
-							}
-							
-							//data[size][1] = res->getDouble(conFeatureNames[1]);
-							//data[size][2] = res->getDouble(conFeatureNames[2]);
-							//data[size][3] = res->getDouble(conFeatureNames[3]);
-							idA[size] = res->getInt("id"); 
-							brands[size] = res->getString("brand");
-							for (int f=0; f<conFeatureN; f++){
-							average[f] += data[size][f];
-					}
-					size++;	
-											
+		 			saleprice = res->getInt("salepriceint");
+		 			price = saleprice;
+	   	 				
+		 			data[size][0] = price;
+		 			for (int f=1; f<conFeatureN; f++){
+		 				data[size][f] = res->getDouble(conFeatureNames[f]);
+		 			}	
+		 			for (int f=0; f<boolFeatureN; f++){
+		 				data[size][conFeatureN+f] = res->getDouble(boolFeatureNames[f]);
+		 			}
+		 			
+		 			idA[size] = res->getInt("id"); 
+		 	    	brands[size] = res->getString("brand");
+		 			for (int f=0; f<conFeatureN; f++){
+		 				average[f] += data[size][f];
+		 			}
+						size++;						
 				}
 				
 				  dataN = new double*[size];
