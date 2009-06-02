@@ -31,30 +31,6 @@ class ApplicationController < ActionController::Base
       mysession.ip = request.remote_ip
       mysession.save
       session[:user_id] = mysession.id
-      #Create a new search object for the session
-      mysearch = Search.new
-      mysearch.session = mysession
-      mysearch.save
     end
   end
-  
-  def initialize_search(params = {})
-    if session[:search_id]
-      atts = Search.find(session[:search_id]).attributes
-      "i0".upto("i8") {|i| atts.delete(i)} 
-      "c0".upto("c8") {|i| atts.delete(i)}
-      atts.delete('camera_id')
-      atts.delete('cluster_id')
-      atts.delete('result_count')
-      atts.delete('id')
-      atts.delete('chosen')
-      s = Search.new(atts.merge(params))
-      s.parent_id = session[:search_id]
-    else
-      s = Search.new(params)
-      s.session_id = session[:user_id]
-    end
-    s
-  end
-  
 end

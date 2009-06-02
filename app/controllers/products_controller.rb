@@ -8,9 +8,8 @@ class ProductsController < ApplicationController
   # GET /products
   # GET /products.xml
   def index
-    productType = session[:productType] || $DefaultProduct
-    reset_session
-    session[:productType] = productType
+    session = Session.find(session[:user_id])
+    session.clearFilters
     c = CQuery.new(session[:productType])
     if c.valid
       redirect_to "/#{session[:productType].pluralize.downcase}/list/"+c.to_s

@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  cluster_id: 1
+  product_id: 1
+  maximumresolution: 1.5
+  displaysize: 1.5
+  opticalzoom: 1.5
+  price: 1.5
+
+two:
+  cluster_id: 1
+  product_id: 1
+  maximumresolution: 1.5
+  displaysize: 1.5
+  opticalzoom: 1.5
+  price: 1.5
