@@ -1,7 +1,27 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
-# one:
-#   column: value
-#
+ one:
+#       created_at: 
+#       updated_at"
+       ip:                      55.32.12.5
+       parent_id:               0
+       brand:                   "Brother"
+       maximumresolution_min:   2
+       maximumresolution_max:   10
+       displaysize_min:         2
+       displaysize_max:         3.5
+       opticalzoom_min:         3
+       opticalzoom_max:         20
+       ppm_min:                 1
+       ppm_max:                 20
+       itemwidth_min:           10
+       itemwidth_max:           100
+       paperinput_min:          100
+       paperinput_max:          3000
+       resolutionarea_min:      6000
+       resolutionarea_max:      50000000
+       price_min:               0
+       price_max:               10000000.0
+
 # two:
 #   column: value

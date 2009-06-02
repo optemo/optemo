@@ -2,7 +2,7 @@
 
 one:
   cluster_id: 1
-  camera_id: 1
+  product_id: 1
   maximumresolution: 1.5
   displaysize: 1.5
   opticalzoom: 1.5
@@ -10,7 +10,7 @@ one:
 
 two:
   cluster_id: 1
-  camera_id: 1
+  product_id: 1
   maximumresolution: 1.5
   displaysize: 1.5
   opticalzoom: 1.5
