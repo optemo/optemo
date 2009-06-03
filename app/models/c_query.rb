@@ -23,7 +23,7 @@ class CQuery
         @msg = "Please supply a session"
         return
       end
-      myfilters = session.attributes.delete_if {|key, val| !key.index(/#{@product_type.constantize::MainFeatures.join('|')+"price|brand"}/)}
+      myfilters = session.attributes.delete_if {|key, val| !key.index(/#{@product_type.constantize::MainFeatures.join('|')+"|price|brand"}/)}
       if searchterm.nil?
         myparams = {"cluster_id" => @cluster_ids, "product_name" => @product_type.downcase}.merge(myfilters).to_yaml
       else
