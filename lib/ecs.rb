@@ -31,10 +31,16 @@ module BestBuy
   class Ecs
     BESTBUY_URL = "http://api.remix.bestbuy.com/v1"
     
-    @@options = {:apiKey => '***REMOVED***'}
-    @@debug = true
+    @options = {:apiKey => '***REMOVED***'}
+    @debug = true
+    
+    #supply your apiKey
+    def initialize(apiKey)
+      @options[:apiKey] = apiKey
+    end
 
     # Default search options
+    attr @options
     def self.options
       @@options
     end
@@ -59,11 +65,11 @@ module BestBuy
       yield @@options
     end
     
-    def self.product_search(opts)
+    def product_search(opts)
       self.send_request('products',opts)
     end
     
-    def self.category_search(name)
+    def category_search(name)
       self.send_request('categories',{:name => name})
     end
     
@@ -93,14 +99,16 @@ module BestBuy
       unless res.kind_of? Net::HTTPSuccess
         raise BestBuy::RequestError, "HTTP Response: #{res.code} #{res.message}"
       end
-      Response.new(res.body)
+      Response.new(res.body,type,opts)
     end
 
     # Response object returned after a REST call to Amazon service.
     class Response
       # XML input is in string format
-      def initialize(xml)
+      def initialize(xml, type, opts)
         @doc = Hpricot.XML(xml)
+        @type = type #kept for generating the next results
+        @opts = opts #kept for generating the next results
       end
 
       # Return Hpricot object.
@@ -129,6 +137,12 @@ module BestBuy
           @items = (@doc/"product").collect {|item| Element.new(item)}
         end
         @items
+      end
+      
+      # Returns the page of results as a Response object
+      def next_results
+        return nil if item_page >= total_pages
+        Ecs.send_request(@type,@opts,item_page+1)
       end
       
       # Return current page no if :item_page option is when initiating the request.
