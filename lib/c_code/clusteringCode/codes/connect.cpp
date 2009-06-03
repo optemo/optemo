@@ -111,8 +111,6 @@ int main(int argc, char** argv) {
 		}
 	}
 
-
-	
 	string tableName = productName;
 	tableName.append("s");
 	map<const string, int> productNames;
@@ -156,10 +154,7 @@ int main(int argc, char** argv) {
 	clusterIDs = new int [clusterN];
 	string* brands = new string [40];
 	int* mergedClusterIDInput = new int[clusterN];
-//	int** mergedClusterIDInput = new int* [clusterN];
-//	for (int c=0; c<clusterN; c++){
-//		mergedClusterIDInput[c] = new int [clusterN];
-//	}
+
 	bool smallNFlag =false;
 	string* indicatorNames = new string[conFeatureN];
 	int ** indicators = new int*[conFeatureN];
@@ -245,7 +240,7 @@ int *mergedClusterN= new int[clusterN];
 		vector<string> tokens;
 		ifstream myfile;
 		int i=0;
-	   myfile.open("/optemo/site/config/database.yml"); 
+	   myfile.open("/site/config/database.yml"); 
 	   if (myfile.is_open()){
 		while (! myfile.eof()){
 			getline (myfile,line);
