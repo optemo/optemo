@@ -240,7 +240,7 @@ int *mergedClusterN= new int[clusterN];
 		vector<string> tokens;
 		ifstream myfile;
 		int i=0;
-	   myfile.open("/site/config/database.yml"); 
+	   myfile.open("/optemo/site/config/database.yml"); 
 	   if (myfile.is_open()){
 		while (! myfile.eof()){
 			getline (myfile,line);
