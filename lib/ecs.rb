@@ -31,84 +31,65 @@ module BestBuy
   class Ecs
     BESTBUY_URL = "http://api.remix.bestbuy.com/v1"
     
-    @options = {:apiKey => '***REMOVED***'}
-    @debug = true
+    attr_writer :options # Default search options
+    attr_writer :debug # debug flag
     
     #supply your apiKey
-    def initialize(apiKey)
-      @options[:apiKey] = apiKey
-    end
-
-    # Default search options
-    attr @options
-    def self.options
-      @@options
-    end
-    
-    # Set default search options
-    def self.options=(opts)
-      @@options = opts
-    end
-    
-    # Get debug flag.
-    def self.debug
-      @@debug
-    end
-    
-    # Set debug flag to true or false.
-    def self.debug=(dbg)
-      @@debug = dbg
+    def initialize(apiKey = '***REMOVED***', pid = '***REMOVED***')
+      @options = {:apiKey => apiKey, :PID => pid}
+      @debug = false
     end
     
     def self.configure(&proc)
       raise ArgumentError, "Block is required." unless block_given?
-      yield @@options
+      yield @options
     end
     
+    #Find BestBuy products
     def product_search(opts)
-      self.send_request('products',opts)
-    end
-    
-    def category_search(name)
-      self.send_request('categories',{:name => name})
-    end
-    
-    # Search amazon items with search terms. Default search index option is 'Books'.
-    # For other search type other than keywords, please specify :type => [search type param name].
-    def self.item_search(terms, opts = {})
-      opts[:operation] = 'ItemSearch'
-      opts[:search_index] = opts[:search_index] || 'Books'
-      
-      type = opts.delete(:type)
-      if type 
-        opts[type.to_sym] = terms
-      else 
-        opts[:keywords] = terms
+      if opts && opts[:category]
+        opts[:"categoryPath.name"] = opts[:category]
+        opts.delete(:category)
       end
-      
-      self.send_request(opts)
+      if opts[:postalCode]
+        send_request('products+stores',opts)
+      else
+        send_request('products',opts)
+      end
+    end
+    
+    #Search through the BestBuy Categories
+    def category_search(name)
+      send_request('categories',{:name => name})
+    end
+    
+    #Find store info
+    def store_search(opts)
+      send_request('stores',opts)
     end
 
     # Generic send request to ECS REST service. You have to specify the :operation parameter.
-    def self.send_request(type,opts)
-      raise BestBuy::RequestError, "No apiKey specified in options" if self.options[:apiKey].nil?
-      request_url = prepare_url(type,self.options,opts)
+    def send_request(type,opts,page=1)
+      raise BestBuy::RequestError, "No apiKey specified in options" if @options[:apiKey].nil?
+      @options[:page] = page
+      request_url = prepare_url(type,@options,opts)
       log "Request URL: #{request_url}"
       
       res = Net::HTTP.get_response(URI::parse(request_url))
       unless res.kind_of? Net::HTTPSuccess
-        raise BestBuy::RequestError, "HTTP Response: #{res.code} #{res.message}"
+        raise BestBuy::RequestError, "HTTP Response: #{res.code} #{res.message} #{res.status}"
       end
-      Response.new(res.body,type,opts)
+      Response.new(res.body,type,opts, self)
     end
 
     # Response object returned after a REST call to Amazon service.
     class Response
       # XML input is in string format
-      def initialize(xml, type, opts)
+      def initialize(xml, type, opts, ecs)
         @doc = Hpricot.XML(xml)
         @type = type #kept for generating the next results
         @opts = opts #kept for generating the next results
+        @ecs = ecs
       end
 
       # Return Hpricot object.
@@ -142,7 +123,7 @@ module BestBuy
       # Returns the page of results as a Response object
       def next_results
         return nil if item_page >= total_pages
-        Ecs.send_request(@type,@opts,item_page+1)
+        @ecs.send_request(@type,@opts,item_page+1)
       end
       
       # Return current page no if :item_page option is when initiating the request.
@@ -164,15 +145,15 @@ module BestBuy
       # Return total pages.
       def total_pages
         unless @total_pages
-          @total_pages = (@doc/'products').first.attributes['total_pages'].to_i
+          @total_pages = (@doc/'products').first.attributes['totalPages'].to_i
         end
         @total_pages
       end
     end
     
     protected
-      def self.log(s)
-        return unless self.debug
+      def log(s)
+        return unless @debug
         if defined? RAILS_DEFAULT_LOGGER
           RAILS_DEFAULT_LOGGER.error(s)
         elsif defined? LOGGER
@@ -183,9 +164,10 @@ module BestBuy
       end
       
     private 
-      def self.prepare_url(type, opts, filters)
-        qs = ''
-        qf = ''
+      def prepare_url(type, opts, filters)
+        qs = '' #options
+        qf = '' #filters
+        sf = '' #store filters
         opts.each {|k,v|
           next unless v
           v = v.join(',') if v.is_a? Array
@@ -194,13 +176,29 @@ module BestBuy
         filters.each {|k,v|
           next unless v
           #v = v.join(',') if v.is_a? Array
-          qf << "&#{k.to_s}#{'=' if v.match(/^\w/)}#{URI.encode(v.to_s)}"
-        }
+          q = "&#{k.to_s}#{'=' if v.match(/^\w/)}'#{URI.encode(v.to_s)}'"
+          if type == "products+stores" && k.to_s.index(/#{store_attrs.join('|')}/)
+            sf << q
+          else
+            qf << q
+          end
+        } unless filters.nil?
         if filters.nil? || qf.length < 1
           "#{BESTBUY_URL}/#{type}?#{qs[1..-1]}"
+        elsif type != "products+stores"
+          "#{BESTBUY_URL}/#{type}(#{qf[1..-1]})?#{qs[1..-1]}" #Filter the search
         else
-          "#{BESTBUY_URL}/#{type}(#{qf[1..-1]})?#{qs[1..-1]}"
+          "#{BESTBUY_URL}/products(#{qf[1..-1]})+stores(#{sf[1..-1]})?#{qs[1..-1]}" #Search for products in certain stores
         end
+      end
+      
+      def store_attrs
+        unless @store_attrs
+          req = Ecs.new(@options[:apiKey], @options[:PID])
+          res = req.store_search(:postalCode => '75244')
+          @store_attrs = (res.doc/'store>').map{|a|a.name}.delete_if{|a|a=="\n"}
+        end
+        @store_attrs
       end
   end
 
