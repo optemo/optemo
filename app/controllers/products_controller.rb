@@ -24,7 +24,7 @@ class ProductsController < ApplicationController
     #Check for search keyword
     if params[:path_info][-2] == 's'
       cluster_ids = params[:path_info][0..-3].map{|p|p.to_i}
-      searchterm = params[:path_info][-1].gsub(/[\W]/,'')
+      searchterm = URI.decode(params[:path_info][-1])
       @c = CQuery.new(session[:productType],cluster_ids,@session,searchterm) #C-code wrapper
     else
       @c = CQuery.new(session[:productType], params[:path_info].map{|p|p.to_i},@session) #C-code wrapper
