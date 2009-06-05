@@ -1,5 +1,7 @@
-int parseInput(string* varNames, map<const string, int>productNames, string productName, string argument, string* brands, bool* catFilteredFeatures, bool* conFilteredFeatures, 
-	bool* boolFilteredFeatures, double** filteredRange, int varNamesN, string* conFeatureNames, string* catFeatureNames, string* indicatorNames){
+int parseInput(string* varNames, map<const string, int>productNames, string productName, string argument, 
+				string* brands, bool* catFilteredFeatures, bool* conFilteredFeatures, 
+	bool* boolFilteredFeatures, double** filteredRange, bool* boolFeatures, int varNamesN, string* conFeatureNames, 
+	string* catFeatureNames, string* boolFeatureNames, string* indicatorNames){
 
 	int brandN =0;	
 	string brandString;		
@@ -30,7 +32,7 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 				indicatorNames[1] = "Display Size";
 				indicatorNames[2] = "Optical Zoom";
 				indicatorNames[3] = "MegaPixels";
-			
+				
 				
 				
 				for (int j=0; j<varNamesN; j++){
@@ -110,6 +112,10 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 		    conFeatureNames[2]= "itemwidth";
 		    conFeatureNames[3]= "paperinput";
 			conFeatureNames[4] = "resolutionarea";
+			
+			boolFeatureNames[0] = "scanner";
+			boolFeatureNames[1] = "printserver";
+				
 		    varNames[0] = "session_id";
 			varNames[1] = "cluster_id";
 			varNames[2] = "brand";
@@ -123,6 +129,8 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 			varNames[10] = "paperinput_max";
 			varNames[11] = "resolutionarea_min";
 			varNames[12] = "resolutionarea_max";
+			varNames[13] = "scanner";
+			varNames[14] = "printserver";
 		    
 			
 			indicatorNames[0] = "price";
@@ -130,7 +138,8 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 			indicatorNames[2] = "itemwidth";
 			indicatorNames[3] = "paperinput";
 			indicatorNames[4] = "resolutionarea";
-	
+			indicatorNames[5] = "scanner";
+			indicatorNames[6] = "printserver";
 			
 			
 			for (int j=0; j<varNamesN; j++){
@@ -157,7 +166,6 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 										{	
 											indash = brandString.find("\n", startit);
 										}
-					
 					
 										brands[brandN] = brandString.substr(startit, indash);
 										brandN++;
@@ -208,6 +216,15 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 					else if (var == "resolutionarea_max"){
 				     	filteredRange[4][1] = atof((argument.substr(startit, lengthit)).c_str());
 						conFilteredFeatures[4] = 1;		
+					}
+					else if (var == "scanner"){
+						boolFilteredFeatures[0] = 1;
+						boolFeatures[0] = atof((argument.substr(startit, lengthit)).c_str());
+						
+					}
+					else if (var == "printserver"){
+						boolFilteredFeatures[1] =1;
+						boolFeatures[1] = ((argument.substr(startit, lengthit)).c_str());
 					}
 		     	}
 			}
