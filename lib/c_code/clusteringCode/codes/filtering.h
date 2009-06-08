@@ -235,8 +235,13 @@ int clusterID, int clusterN, int conFeatureN, int boolFeatureN, double** conFeat
 //	for (g=0; g<boolFilteredFeatures; g++){
 //		condition = condition || boolFilteredFeatures[g];
 //	}	
+	
 	if (condition){
-		command += " Where (";
+	 		if ((clusterID==0)){
+				command += " Where (";
+			}else{
+				command += " AND (";
+			}	
 	}
 	for (int k=0; k<conFeatureN; k++){
 		for (int g=k; g<conFeatureN; g++){
@@ -271,12 +276,14 @@ int clusterID, int clusterN, int conFeatureN, int boolFeatureN, double** conFeat
 			}
 		}
 	}
-
+	bool condition3 = 0;
+	bool condition4 = 0;
 	if (!condition && catFilteredFeatures[0]){
 			
 		command += " WHERE (";
 	}
 			if(catFilteredFeatures[0]){
+				condition3 = 1;
 				command += "(";
 				command += "brand =\'";
 				command += brands[0];
@@ -303,13 +310,13 @@ int clusterID, int clusterN, int conFeatureN, int boolFeatureN, double** conFeat
 					command += " WHERE ("; 
 				}
 			}
-			condition = 0;
+			condition2 = 0;
 			for (int k=0; k<boolFeatureN; k++){
 				for (int g=k; g<boolFeatureN; g++){
-					condition =  condition || boolFilteredFeatures[g];
+					condition2 =  condition2 || boolFilteredFeatures[g];
 				}	
 
-				if (condition || boolFilteredFeatures[k]){
+				if (condition2 || boolFilteredFeatures[k]){
 					if (boolFilteredFeatures[k]){
 						command += " (";
 						command += boolFeatureNames[k];
@@ -318,24 +325,24 @@ int clusterID, int clusterN, int conFeatureN, int boolFeatureN, double** conFeat
 						minv<<boolFeatures[k];
 						command += minv.str(); 
 						command += ")";
-						condition2  = 0;
+						condition4  = 0;
 
 						for (int l=k+1; l<boolFeatureN; l++){			
-							condition2 = condition2 || boolFilteredFeatures[l];
+							condition4 = condition4 || boolFilteredFeatures[l];
 						}	 
 
-						if (condition2){
+						if (condition4){
 							command += " AND ";
 						}
 					}
 				}
 			}	
 			
-			if (condition || condition2){
+			if (condition || condition2 || condition3){
 					command += ");";
 				}	
 		
-	
+			
 		res = stmt->executeQuery(command);
 
 		while(res->next()){
