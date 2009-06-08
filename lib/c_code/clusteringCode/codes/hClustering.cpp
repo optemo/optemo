@@ -228,7 +228,7 @@ int main(int argc, char** argv){
 				command = "DELETE FROM ";
 				command += productName;
 				command += "_nodes;";
-			//	cout<<"command: "<<command<<endl;
+		
 				stmt->execute(command);
 			
 			
@@ -241,15 +241,15 @@ int main(int argc, char** argv){
 					for (int j=0; j<conFeatureN; j++){
 						average[j] = 0.0;
 					}
-				
+			
 					maxSize = hClustering(layer, clusterN,  conFeatureN,  boolFeatureN, average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
 							stmt, conFeatureNames, boolFeatureNames, productName, weights);	
-				
+		
 					layer++;
 					
 				}
 		
-				leafClustering(conFeatureN, clusterN, conFeatureNames, res, res2, res3, stmt, productName);
+				leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, res3, stmt, productName);
 		
 		
 //Generating the output string 

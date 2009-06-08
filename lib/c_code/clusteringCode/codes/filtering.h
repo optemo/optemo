@@ -97,6 +97,7 @@ int filter2(double **filteredRange, string* brands, int brandN, sql::Statement *
  sql::ResultSet *res, sql::ResultSet *res2, int* productIDs, bool* conFilteredFeatures, bool* catFilteredFeatures, bool* boolFilteredFeatures,
 int clusterID, int clusterN, int conFeatureN, int boolFeatureN, double** conFeatureRange, bool* boolFeatures, string productName, string* conFeatureNames,string* boolFeatureNames, double** bucketCount, int bucketDiv) {
 
+
 	int productN = 0;
 	string command;
 	string product_clusters = productName;
@@ -158,164 +159,6 @@ int clusterID, int clusterN, int conFeatureN, int boolFeatureN, double** conFeat
 		}
 		command += " from ";
 		command += product_nodes;
-		if (conFilteredFeatures[0]){
-			command += " where (price>=";
-			ostringstream minv;
-			minv<<filteredRange[0][0];
-			command += minv.str(); 
-			command += " AND price<=";
-			ostringstream maxv;
-			maxv<<filteredRange[0][1];
-			command += maxv.str();
-			
-			command += ")";
-			
-			if (conFilteredFeatures[1] || conFilteredFeatures[2] || conFilteredFeatures[3] || conFilteredFeatures[4] || catFilteredFeatures[0]){
-				command += " AND ";
-			}
-		}
-	
-	  if (conFilteredFeatures[1]){
-		if(!conFilteredFeatures[0]){
-			command += " where ";
-		}
-		command += "(";
-		command += conFeatureNames[1]; 
-		command += ">=";
-		ostringstream minv;
-		minv<<filteredRange[1][0];
-		command += minv.str(); 
-		command += " AND ";
-		command += conFeatureNames[1];
-		command += "<=";
-			ostringstream maxv;
-			maxv<<filteredRange[1][1];
-			command += maxv.str();
-			command += ")";
-			if (conFilteredFeatures[2] || conFilteredFeatures[3]  || conFilteredFeatures[4] || catFilteredFeatures[0]){
-				command += " AND ";
-			}
-		}
-		if (conFilteredFeatures[2]){
-			if(!conFilteredFeatures[0] && !conFilteredFeatures[1]){
-				command += " where ";
-			}
-			command += "(";
-			command += conFeatureNames[2];
-			command +=">=";
-			ostringstream minv;
-			minv<<filteredRange[2][0];
-			command += minv.str(); 
-			command += " AND ";
-			command += conFeatureNames[2];
-			command += "<=";
-			ostringstream maxv;
-			maxv<<filteredRange[2][1];
-			command += maxv.str();
-			command += ")";
-			if (conFilteredFeatures[3] || conFilteredFeatures[4] || catFilteredFeatures[0]){
-				command += " AND ";
-			}
-		} 
-		
-		if (conFilteredFeatures[3]){
-			if(!conFilteredFeatures[0] && !conFilteredFeatures[1] && !conFilteredFeatures[2]){
-				command += " where ";
-			}
-			command += "(";
-			command += conFeatureNames[3];
-			command +=">=";
-			ostringstream minv;
-			minv<<filteredRange[3][0];
-			command += minv.str(); 
-			command += " AND ";
-			command += conFeatureNames[3];
-			command += "<=";
-			ostringstream maxv;
-			maxv<<filteredRange[3][1];
-			command += maxv.str();
-			command += ")";
-			
-			if (conFilteredFeatures[4] || catFilteredFeatures[0]){
-				command += " AND ";
-			} 
-
-		}
-		
-			if (conFilteredFeatures[4]){
-				if(!conFilteredFeatures[0] && !conFilteredFeatures[1] && !conFilteredFeatures[2] && !conFilteredFeatures[3]){
-					command += " where ";
-				}
-				command += "(";
-				command += conFeatureNames[4];
-				command +=">=";
-				ostringstream minv;
-				minv<<filteredRange[4][0];
-				command += minv.str(); 
-				command += " AND ";
-				command += conFeatureNames[4];
-				command += "<=";
-				ostringstream maxv;
-				maxv<<filteredRange[4][1];
-				command += maxv.str();
-				command += ")";
-
-				if (catFilteredFeatures[0]){
-					command += " AND ";
-				} 
-
-			}
-		
-		
-		if (catFilteredFeatures[0]){
-			if(!conFilteredFeatures[0] && !conFilteredFeatures[1] && !conFilteredFeatures[2] && !conFilteredFeatures[3] && !!conFilteredFeatures[4] ){
-				command += " where ";
-			}
-			command += "(brand =\'";
-			command += brands[0];
-			command += "\'";
-			for (int b=1; b<brandN; b++){
-				command += " OR brand=\'";
-				command += brands[b];
-				command += "\'"; 
-			}
-				command += ");";
-		}	
-		
-		res = stmt->executeQuery(command);
-
-				command = "";
-				ostringstream mino;
-				mino<<0;
-				command += mino.str(); 
-				command += "";
-				ostringstream maxv;
-				maxv<<0;
-				command += maxv.str();
-				command += "";
-		
-		while(res->next()){
-		
-			productIDs[productN] = res->getInt("product_id");
-			double* eachValue = new double[conFeatureN];
-		
-			for (int f=0; f<conFeatureN; f++){
-				eachValue[f] = res->getDouble(conFeatureNames[f]);
-				for (int t=0; t<bucketDiv; t++){
-					if ( (eachValue[f]<(bucketRange[f][0]+((t+1)*bucketInterval[f]))) && (eachValue[f]>=(bucketRange[f][0]+(t*bucketInterval[f]))) ){
-						bucketCount[f][t]++;
-					}
-				}
-				if (eachValue[f]<conFeatureRange[f][0]){
-					conFeatureRange[f][0] = eachValue[f];
-				}
-				if (eachValue[f]>conFeatureRange[f][1]){
-					conFeatureRange[f][1] = eachValue[f];
-				}
-			}
-			
-			productN++;
-		}
 
 	}
 	
@@ -377,79 +220,65 @@ int clusterID, int clusterN, int conFeatureN, int boolFeatureN, double** conFeat
 		
 			command += ")";
 		}
-		if (conFilteredFeatures[0] || conFilteredFeatures[1] || conFilteredFeatures[2] || conFilteredFeatures[3] || catFilteredFeatures[0]){
-			command += " AND (";
-			if (conFilteredFeatures[0]){
-				command += " (price>=";
-				ostringstream minv;
-				minv<<filteredRange[0][0];
-				command += minv.str(); 
-				command += " AND price<=";
-				ostringstream maxv;
-				maxv<<filteredRange[0][1];
-				command += maxv.str();
-				command += ")";
-				if (conFilteredFeatures[1] || conFilteredFeatures[2] || conFilteredFeatures[3] || catFilteredFeatures[0]){
-					command += " AND ";
-				}
-			}	
-			 if(conFilteredFeatures[1]){
-				command += "(";
-				command += conFeatureNames[1];
-				command +=">=";
-				ostringstream minv;
-				minv<<filteredRange[1][0];
-				command += minv.str(); 
-				command += " AND ";
-				command += conFeatureNames[1];
-				command +="<=";
-				ostringstream maxv;
-				maxv<<filteredRange[1][1];
-				command += maxv.str();
-				command += ")";
-				if (conFilteredFeatures[2] || conFilteredFeatures[3] || catFilteredFeatures[0]){
-					command += " AND ";
-				}
-			}
-			 if(conFilteredFeatures[2]){
-				command += "(";
-				command += conFeatureNames[2];
+		
+	}	
+	bool condition, condition2;
+
+	int g;
+	condition = 0;
+	for (g=0 ; g<conFeatureN; g++){
+		condition =  condition || conFilteredFeatures[g];
+	}
+//	for (g=0; g<catFeatureN; g++){
+//		condition = condition || catFilteredFeatures[g];
+//	}
+//	for (g=0; g<boolFilteredFeatures; g++){
+//		condition = condition || boolFilteredFeatures[g];
+//	}	
+	if (condition){
+		command += " Where (";
+	}
+	for (int k=0; k<conFeatureN; k++){
+		for (int g=k; g<conFeatureN; g++){
+			condition =  condition || conFilteredFeatures[g];
+		}	
+
+		if (condition || catFilteredFeatures[0]){
+	
+			if (conFilteredFeatures[k]){
+				command += " (";
+				command += conFeatureNames[k];
 				command += ">=";
 				ostringstream minv;
-				minv<<filteredRange[2][0];
+				minv<<filteredRange[k][0];
 				command += minv.str(); 
 				command += " AND ";
-				command += conFeatureNames[2];
-				command +="<=";
+				command += conFeatureNames[k];
+				command += "<=";
 				ostringstream maxv;
-				maxv<<filteredRange[2][1];
+				maxv<<filteredRange[k][1];
 				command += maxv.str();
 				command += ")";
-				if (conFilteredFeatures[3] || catFilteredFeatures[0]){
-					command += " AND ";
-				}
-			}
-			 if(conFilteredFeatures[3]){
-				command += "(";
-				command += conFeatureNames[3];
-				command +=">=";
-				ostringstream minv;
-				minv<<filteredRange[3][0];
-				command += minv.str(); 
-				command += " AND ";
-				command += conFeatureNames[3];
-				command +="<=";
-				ostringstream maxv;
-				maxv<<filteredRange[3][1];
-				command += maxv.str();
-				command += ")";
-				if (catFilteredFeatures[0]){
-					command += " AND ";
-				}
-			}
-			if(catFilteredFeatures[0]){
+				condition2  = 0;
+		
+				for (int l=k+1; l<conFeatureN; l++){			
+					condition2 = condition2 || conFilteredFeatures[l];
+				}	 
 				
-				command += "(brand =\'";
+				if (conFilteredFeatures[k] && (condition2 || catFilteredFeatures[0])){
+					command += " AND ";
+				}
+			}
+		}
+	}
+
+	if (!condition && catFilteredFeatures[0]){
+			
+		command += " WHERE (";
+	}
+			if(catFilteredFeatures[0]){
+				command += "(";
+				command += "brand =\'";
 				command += brands[0];
 				command += "\'"; 
 				for (int b=1; b<brandN; b++){
@@ -459,10 +288,54 @@ int clusterID, int clusterN, int conFeatureN, int boolFeatureN, double** conFeat
 				}
 				command += ")";
 			}
-				
-			command += ");";
-		}	
+			
+			condition2 = 0;
+			for (int g=0 ; g<boolFeatureN; g++){
+				condition2 =  condition2 || boolFilteredFeatures[g];
+			}
+		
+			if (condition2){
+				if (condition || catFilteredFeatures[0]){
+					command += " AND";
+				}
+				else{
+			
+					command += " WHERE ("; 
+				}
+			}
+			condition = 0;
+			for (int k=0; k<boolFeatureN; k++){
+				for (int g=k; g<boolFeatureN; g++){
+					condition =  condition || boolFilteredFeatures[g];
+				}	
 
+				if (condition || boolFilteredFeatures[k]){
+					if (boolFilteredFeatures[k]){
+						command += " (";
+						command += boolFeatureNames[k];
+						command += "=";
+						ostringstream minv;
+						minv<<boolFeatures[k];
+						command += minv.str(); 
+						command += ")";
+						condition2  = 0;
+
+						for (int l=k+1; l<boolFeatureN; l++){			
+							condition2 = condition2 || boolFilteredFeatures[l];
+						}	 
+
+						if (condition2){
+							command += " AND ";
+						}
+					}
+				}
+			}	
+			
+			if (condition || condition2){
+					command += ");";
+				}	
+		
+	
 		res = stmt->executeQuery(command);
 
 		while(res->next()){
@@ -487,7 +360,7 @@ int clusterID, int clusterN, int conFeatureN, int boolFeatureN, double** conFeat
 			productN++;
 		}
 		
-	}
+//	}
 	return productN;
 
 }
