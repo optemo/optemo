@@ -6,7 +6,7 @@
 		</div>
 		<%= image_tag @c.products[i].imagemurl, :width => @c.products[i].imagemw, :height => @c.products[i].imagemh, :onClick => "fadeout(#{@c.products[i].id});", :style => "cursor: pointer;margin-left:-45px" %> 	
 	    <%end%>
-	<a href="/products/<%=@c.products[i].id%>" onClick="fadeout(<%=@c.products[i].id%>);return false;">
+	<a href="/products/show/<%=@c.products[i].id%>" onClick="fadeout(<%=@c.products[i].id%>);return false;">
 	<p class="easylink"><%= @c.products[i].smlTitle %></p>
 	<p style="font-size: 0.9em">
 		<%= description(i) %>
@@ -27,7 +27,7 @@
 		<%# end %>
 		</div>-->
 	</div>
-	<% if false && @c.clustergraph && @c.clustergraph[i] %>
+	<% if ENV['RAILS_ENV'] == 'development' && @c.clustergraph && @c.clustergraph[i] %>
 	<div class="clustergraph">
 		<% @c.clustergraph[i].each do |u| %>
 		<% if u.length == 2 %>
