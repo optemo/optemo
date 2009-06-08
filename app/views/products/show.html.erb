@@ -9,14 +9,21 @@
 	</div>
 <% end %>
 	<p style="margin: 15px 0px 0px 20px"><%=h @product.title %></p>
-	<div id="image"><%= link_to image_tag(@product.imagelurl, :width => @product.imagelw, :height => @product.imagelh), @product.imagelurl, :popup => true %></div>
+	<div id="image">
+		<% if @product.imagelurl %>
+			<%= link_to image_tag(@product.imagelurl, :width => @product.imagelw, :height => @product.imagelh), @product.imagelurl, :popup => true %>
+		<% else %>
+			<br><br>No Image Available
+		<% end %>
+	</div>
 	<div id="features">
 	<ul>
-		<% session[:productType].constantize::ShowFeatures.each_index do |i| %>
-			<% f_name = session[:productType].constantize::ShowFeatures[i] %>
+		<% product = session[:productType] || $DefaultProduct %>
+		<% product.constantize::ShowFeatures.each_index do |i| %>
+			<% f_name = product.constantize::ShowFeatures[i] %>
 			<% f = @product.send(f_name) %>
 			<% if !f.nil? %>
-				<li><span class="detail_label"><%= session[:productType].constantize::ShowFeaturesDisp[i] %>: </span><%= @product.display f_name %></li>
+				<li><span class="detail_label"><%= product.constantize::ShowFeaturesDisp[i] %>: </span><%= @product.display f_name %></li>
 			<% end %>
 		<% end %>
 	</ul>

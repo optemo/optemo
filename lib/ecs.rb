@@ -74,10 +74,13 @@ module BestBuy
       @options[:page] = page
       request_url = prepare_url(type,@options,opts)
       log "Request URL: #{request_url}"
-      
       res = Net::HTTP.get_response(URI::parse(request_url))
       unless res.kind_of? Net::HTTPSuccess
-        raise BestBuy::RequestError, "HTTP Response: #{res.code} #{res.message} #{res.status}"
+        if res.body.index(/too many product matches/)
+          raise BestBuy::RequestError, "Sorry, there are too many product matches (> 101).  Please narrow your query."
+        else
+          raise BestBuy::RequestError, "HTTP Response: #{res.code} #{res.message}"
+        end
       end
       Response.new(res.body,type,opts, self)
     end
@@ -175,20 +178,26 @@ module BestBuy
         }
         filters.each {|k,v|
           next unless v
-          #v = v.join(',') if v.is_a? Array
-          q = "&#{k.to_s}#{'=' if v.match(/^\w/)}'#{URI.encode(v.to_s)}'"
-          if type == "products+stores" && k.to_s.index(/#{store_attrs.join('|')}/)
+          if v.is_a? Array
+            v = ' in('+v.join(',')+')' 
+          else
+            v = "'"+v.to_s+"'"
+          end
+          q = "&#{k.to_s}#{'=' if v.match(/^'\w/)}#{URI.encode(v.to_s)}"
+          if type == "products+stores" && k.to_s.index(/#{store_attrs.join('|')}$/) == 0
             sf << q
           else
             qf << q
           end
         } unless filters.nil?
-        if filters.nil? || qf.length < 1
-          "#{BESTBUY_URL}/#{type}?#{qs[1..-1]}"
-        elsif type != "products+stores"
-          "#{BESTBUY_URL}/#{type}(#{qf[1..-1]})?#{qs[1..-1]}" #Filter the search
+        if type == "products+stores"
+            "#{BESTBUY_URL}/products#{('('+qf[1..-1]+')'if qf.length>1).to_s}+stores#{('('+sf[1..-1]+')'if sf.length>1).to_s}?#{qs[1..-1]}" #Search for products in certain stores
         else
-          "#{BESTBUY_URL}/products(#{qf[1..-1]})+stores(#{sf[1..-1]})?#{qs[1..-1]}" #Search for products in certain stores
+          if filters.nil? || qf.length < 1
+            "#{BESTBUY_URL}/#{type}?#{qs[1..-1]}"
+          else
+            "#{BESTBUY_URL}/#{type}(#{qf[1..-1]})?#{qs[1..-1]}" #Filter the search
+          end
         end
       end
       
