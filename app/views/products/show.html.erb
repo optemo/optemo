@@ -8,7 +8,7 @@
 		<%= link_to "Save it", "javascript:saveit(#{@product.id})" %>
 	</div>
 <% end %>
-	<p style="margin: 15px 0px 0px 20px"><%=h @product.title %></p>
+	<p style="margin: 15px 0px 0px 20px"><%= URI.decode(@product.title) %></p>
 	<div id="image">
 		<% if @product.imagelurl %>
 			<%= link_to image_tag(@product.imagelurl, :width => @product.imagelw, :height => @product.imagelh), @product.imagelurl, :popup => true %>

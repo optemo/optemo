@@ -74,6 +74,8 @@ class CreateBestBuyPrinters < ActiveRecord::Migration
       t.float     :depth
       t.datetime  :itemUpdateDate
       t.text      :longDescription
+      
+      t.integer   :printer_id
 
       t.timestamps
     end

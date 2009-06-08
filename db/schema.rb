@@ -100,6 +100,7 @@ ActiveRecord::Schema.define(:version => 20090605180535) do
     t.float    "depth"
     t.datetime "itemUpdateDate"
     t.text     "longDescription"
+    t.integer  "printer_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

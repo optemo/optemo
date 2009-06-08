@@ -7,3 +7,47 @@ task :fill_in_resolution => :environment do
     end
   end
 end
+
+desc "Fix wrong model names"
+task :fix_model_names => :environment do
+  Printer.find(:all, :conditions => 'mpn = model').each do |p|
+    /(\w+ )?([\w\-\/_]*[0-9][\w\-\/_]*)/ =~ p.title
+    w = Regexp.last_match(1).rstrip if Regexp.last_match(1)
+    if w && (w.lowercase == p.brand.lowercase || w == "Printer" || w == 'LaserJet' || w == 'Laserjet' || w =='HP' || w == 'Okidata')
+      p.model = Regexp.last_match(2)
+    else
+      p.model = Regexp.last_match(0)
+    end
+    p.save
+  end
+end
+
+desc "Match BB to Amazon"
+task :match_printers => :environment do
+  total = BestBuyPrinter.all.count
+  missed = 0
+  BestBuyPrinter.all.each do |p|
+    if Printer.find_by_model(p.modelNumber).nil?
+      match = nil
+      Printer.all.each do |printer|
+        if printer.model && printer.model.index(p.modelNumber)
+          if match.nil?
+            match = printer
+          else
+            raise StandardException "Double match"
+          end
+        end
+      end
+      if match.nil?
+        missed+=1
+      else
+        p.printer_id = match
+        p.save
+      end
+    else
+      p.printer_id = Printer.find_by_model(p.modelNumber).id
+      p.save
+    end
+  end
+  puts "Matches: " + (total-missed).to_s + '/' +total.to_s
+end
