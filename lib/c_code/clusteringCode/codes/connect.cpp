@@ -46,7 +46,6 @@ int main(int argc, char** argv) {
 	bool cluster = 0; 
 	bool searchBoxFlag = 0;
 	int productN = 0;
-	
 	string argu = argv[1];
 	int ind, endit, startit, lengthit;
 	string var;
@@ -307,16 +306,13 @@ int *mergedClusterN= new int[clusterN];
 				command += "_clusters WHERE id=";
 				ostringstream cidstream; 
 				int safeID = 0;
-			//	cout<<"clusterIDs[0] is:"<<clusterIDs[0]<<endl;
 				while (clusterIDs[safeID] < 0){
 					safeID++;
 				}
 				cidstream << clusterIDs[safeID];
 				command += cidstream.str();
 				command += ";";
-				//cout<<"commad is "<<command<<endl;
 				res = stmt->executeQuery(command);
-//	cout<<"HERE"<<endl;	
 				res->next();
 			
 				clusterID = res->getDouble("parent_id");

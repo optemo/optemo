@@ -360,14 +360,14 @@ void getStatisticsData1(double** data, int** indicators, double* average, int si
 
 
 		void saveClusteredData(double ** data, int* idA, int size, string* brands, int parent_id, int** clusteredData, double*** conFeatureRange, int layer, 
-		int clusterN, int conFeatureN, string* conFeatureNames, sql::Statement *stmt, sql::ResultSet *res2, string productName){
+		int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, sql::ResultSet *res2, string productName){
 		///Saving to cluster table 	
 			ostringstream layerStream; 
 			layerStream<<layer;
 		    ostringstream parent_idStream;
 			parent_idStream<<parent_id;
 			int cluster_id;
-			
+			string command2;
 			for (int c=0; c<clusterN; c++){
 				ostringstream nodeStream;
 				ostringstream cluster_idStream; 
@@ -419,6 +419,10 @@ void getStatisticsData1(double** data, int** indicators, double* average, int si
 							command += ", ";
 							command += conFeatureNames[i];
 					}
+					for (int i=0; i<boolFeatureN; i++){
+							command += ", ";
+							command += boolFeatureNames[i];
+					}
 					command += ", brand) values(";
 					ostringstream cluster_idStream;
 					cluster_idStream<<cluster_id;
@@ -434,12 +438,34 @@ void getStatisticsData1(double** data, int** indicators, double* average, int si
 
 						command += featureStream.str();
 					}
+					
+					for (int f=0; f<boolFeatureN; f++){
+						command +=", ";
+						ostringstream featureStream;
+						command2 = "Select ";
+						command2 += boolFeatureNames[f];
+						command2 += " from ";
+						command2 += productName;
+						command2 += "s where id=";
+						ostringstream idS;
+						idS << idA[j];
+						command2 += idS.str();
+						command2 += ";";
+						
+						res2 = stmt->executeQuery(command2);
+						
+						res2->next();   
+						featureStream<<res2->getInt(boolFeatureNames[f]);
+						
+						command += featureStream.str();
+					}
 			        command +=", \"";
 					ostringstream featureStream;
 
 					featureStream<<brands[find(idA, clusteredData[c][j+1], size)];
 					command += featureStream.str();   
 					command +="\");"; 
+			
 					stmt->execute(command);
 				
 			 }
