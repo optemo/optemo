@@ -3,20 +3,25 @@ class CreateRetailerOfferings < ActiveRecord::Migration
     create_table :retailer_offerings do |t|
       t.integer :product_id
       t.string :product_type
+      t.integer :retailer_id
+      t.string :pricehistory
+      t.string :merchant
+      
       t.integer :priceint
       t.string :pricestr
-      t.integer :shipping
+      t.datetime :priceUpdate
+      t.integer :shippingCost
       t.integer :tax
       t.string :state
-      t.string :link
-      t.integer :retailer_id
       t.boolean :stock
-      t.string :pricehistory
       t.boolean :toolow
       t.string :availability
+      t.datetime :availabilityUpdate
       t.boolean :iseligibleforsupersavershipping
-      t.string :merchant
       t.string :url
+      t.boolean   :active
+      t.datetime  :activeUpdate
+      t.boolean   :freeShipping
   
       t.timestamps
     end
