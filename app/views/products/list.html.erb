@@ -24,14 +24,25 @@
 </div>
 <div class="main">
 	<span style="color:red;"><%= flash[:error] %></span>
-	<% PrinterCluster.find(@c.cluster_ids[0]).getHistory.each do |s| %>
-	<div class='backlink'><%= link_to 'Go back to previous printers', "/printers/list/#{s.id}"%></div>
+	<!-- count variable to print << after every Go Back link -->
+	<% count=1 %>	
+	<div class='backlink'>
+	<% PrinterCluster.find(@c.cluster_ids[0]).getHistory.reverse.each do |s| %>
+ 	  <!-- If s>1 then print << -->
+	  <% if count>1 %>
+		&nbsp;&nbsp;&lt;&lt;
+	  <% end %>   
+	  <%= link_to 'Go back to previous printers', "/printers/list/#{s.id}"%>
+	  <% count = count+1 %>
 	<% end %>
+	</div>
+	
 	<% for i in 0..@c.cluster_count-1 %>
 	  <% if i%3 == 0 %>
 		<div class="rowdiv">
 		<% open = true %>
 	  <% end %>
+	  <!-- Navbox partial to draw boxes -->
 	  <%= render :partial => 'navbox', :locals => {:i => i} %>
 	  <% if i%3 == 2 %>
 		</div>
@@ -46,6 +57,7 @@
 	  </div>
 	</div>-->
 </div>
+
 <% content_for :header do %>
 	<% if @product %>
 		<div style="float:left">Viewing<br><%= @result_count %> Similar<br>products to:</div>
@@ -53,7 +65,3 @@
 		<%# @session.msg %>
 	<% end %>
 <% end %>
-
-
-	
-
