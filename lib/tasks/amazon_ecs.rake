@@ -22,6 +22,7 @@ end
 desc "Collect all Printer ASINs for a browse node"
 task :get_printer_ASINs => :environment do
   require 'amazon/ecs'
+  #browse_node for printers: 172635
   #Use browse id for Laser Printers
   browse_node_id = '172648'
   search_index = 'Electronics'
