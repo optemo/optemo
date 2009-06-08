@@ -32,8 +32,13 @@ module ProductProperties
   end
   
   def resize(opts = {})
+    case opts[:size]
+      when 'S': return unless imagesheight && imageswidth
+      when 'M': return unless imagemheight && imagemwidth
+      when 'L': return unless imagelheight && imagelwidth
+    end
     dbH = case opts[:size] 
-      when 'S': Float.induced_from(imagesheight) 
+      when 'S': Float.induced_from(imagesheight)
       when 'M': Float.induced_from(imagemheight) 
       when 'L': Float.induced_from(imagelheight)
     end

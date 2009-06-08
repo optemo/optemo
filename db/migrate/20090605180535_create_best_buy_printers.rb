@@ -8,12 +8,15 @@ class CreateBestBuyPrinters < ActiveRecord::Migration
       t.string    :accessoriesImage
       t.boolean   :printOnly
       t.string    :upc
+      t.string    :sku
+      t.string    :color
       t.integer   :productId
       t.string    :alternateViewsImage
       t.datetime  :inStoreAvailabilityUpdateDate
       t.string    :warrantyParts
       t.string    :modelNumber
       t.integer   :customerReviewCount
+      t.float     :customerReviewAverage
       t.string    :shortDescription
       t.string    :addToCartUrl
       t.string    :dollarSavings
@@ -39,7 +42,7 @@ class CreateBestBuyPrinters < ActiveRecord::Migration
       t.string    :energyGuideImage
       t.boolean   :inStoreAvailability
       t.string    :source
-      t.string    :class
+      t.string    :bb_class
       t.string    :thumbnailImage
       t.float     :shippingWeight
       t.string    :cjAffiliateAddToCartUrl
@@ -53,7 +56,7 @@ class CreateBestBuyPrinters < ActiveRecord::Migration
       t.string    :url
       t.string    :onlineAvailability
       t.string    :activeUpdateDate
-      t.boolean   :new
+      t.boolean   :bb_new
       t.boolean   :freeShipping
       t.string    :subclass
       t.string    :type
@@ -63,11 +66,14 @@ class CreateBestBuyPrinters < ActiveRecord::Migration
       t.integer   :subclassId
       t.boolean   :nationalFeatured
       t.string    :remoteControlImage
+      t.string    :largeFrontImage
+      t.boolean   :navigability
       t.datetime  :releaseDate
       t.datetime  :startDate
       t.string    :angleImage
       t.float     :depth
       t.datetime  :itemUpdateDate
+      t.text      :longDescription
 
       t.timestamps
     end
