@@ -27,7 +27,7 @@
 		<%# end %>
 		</div>-->
 	</div>
-	<% if @c.clustergraph && @c.clustergraph[i] %>
+	<% if ENV['RAILS_ENV'] == 'development' && @c.clustergraph && @c.clustergraph[i] %>
 	<div class="clustergraph">
 		<% @c.clustergraph[i].each do |u| %>
 		<% if u.length == 2 %>
