@@ -93,10 +93,9 @@ void featureRange(sql::Statement *stmt, sql::ResultSet *res, int* searchIds, dou
 }
 
 
-
 int filter2(double **filteredRange, string* brands, int brandN, sql::Statement *stmt,
- sql::ResultSet *res, sql::ResultSet *res2, int* productIDs, bool* conFilteredFeatures, bool* catFilteredFeatures, 
-int clusterID, int clusterN, int conFeatureN, double** conFeatureRange, string productName, string* conFeatureNames, double** bucketCount, int bucketDiv) {
+ sql::ResultSet *res, sql::ResultSet *res2, int* productIDs, bool* conFilteredFeatures, bool* catFilteredFeatures, bool* boolFilteredFeatures,
+int clusterID, int clusterN, int conFeatureN, int boolFeatureN, double** conFeatureRange, bool* boolFeatures, string productName, string* conFeatureNames,string* boolFeatureNames, double** bucketCount, int bucketDiv) {
 
 	int productN = 0;
 	string command;

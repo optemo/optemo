@@ -38,6 +38,7 @@ string preClustering(string* varNames, map<const string, int>productNames, strin
 			    conFeatureNames[3]= "paperinput";
 				conFeatureNames[4] = "resolutionarea";
 				
+				
 				boolFeatureNames[0] = "scanner";
 				boolFeatureNames[1] = "printserver";
 				
@@ -48,6 +49,7 @@ string preClustering(string* varNames, map<const string, int>productNames, strin
 				indicatorNames[4] = "Resolution Area";
 				indicatorNames[5] = "scanner";
 				indicatorNames[6] = "printserver";
+				
 				filteringCommand = "SELECT * FROM ";
 				filteringCommand += productName;
 				

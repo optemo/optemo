@@ -135,8 +135,8 @@ int main(int argc, char** argv) {
 					clusterN = 9; 
 					conFeatureN= 5;
 					catFeatureN= 1;
-					boolFeatureN= 0;
-					varNamesN= 13;
+					boolFeatureN= 2;
+					varNamesN= 15;
 					range= 2;
 					repW = 9; 
 					break;
@@ -156,7 +156,7 @@ int main(int argc, char** argv) {
 	int* mergedClusterIDInput = new int[clusterN];
 
 	bool smallNFlag =false;
-	string* indicatorNames = new string[conFeatureN];
+	string* indicatorNames = new string[conFeatureN+boolFeatureN];
 	int ** indicators = new int*[conFeatureN];
 	double** conFeatureRange = new double* [conFeatureN];
 	
@@ -172,10 +172,13 @@ int main(int argc, char** argv) {
 	string *varNames = new string[varNamesN];
 	string *catFeatureNames = new string [catFeatureN];
 	string *conFeatureNames = new string[conFeatureN];
+	string *boolFeatureNames = new string[boolFeatureN];
 	double **filteredRange = new double* [conFeatureN];
 	bool *conFilteredFeatures = new bool[conFeatureN];   
 	bool *catFilteredFeatures = new bool[catFeatureN];
 	bool *boolFilteredFeatures = new bool[boolFeatureN];
+	bool *boolFeatures = new bool[boolFeatureN];
+	
 	map<const string, string*> productFeatures;
    	for(int f=0; f<conFeatureN; f++){
 		conFilteredFeatures[f] = 0;
@@ -188,6 +191,7 @@ int main(int argc, char** argv) {
 
     for (int f=0; f<boolFeatureN; f++){
 		boolFilteredFeatures[f] = 0;
+		boolFeatures[f] = 0;
 	}
 
 int *mergedClusterN= new int[clusterN];
@@ -221,10 +225,11 @@ int *mergedClusterN= new int[clusterN];
 		}
 		startit = endit;
 	}	
+
+	int brandN = parseInput(varNames, productNames, productName, argu, brands, catFilteredFeatures, 
+	conFilteredFeatures, boolFilteredFeatures, filteredRange, boolFeatures, 
+				varNamesN, conFeatureNames, catFeatureNames, boolFeatureNames, indicatorNames);
 	
-	int brandN = parseInput(varNames, productNames, productName, argu, brands, catFilteredFeatures, conFilteredFeatures, boolFilteredFeatures, filteredRange, 
-				varNamesN, conFeatureNames, catFeatureNames, indicatorNames);
-		
 	string brand = brands[0];
 // Driver Manager
 
@@ -356,8 +361,8 @@ int *mergedClusterN= new int[clusterN];
 		
 		else{
 			
-			productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures, clusterID, clusterN, 
-					conFeatureN, conFeatureRange, productName, conFeatureNames, bucketCount, bucketDiv);
+			productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures,boolFilteredFeatures,clusterID, clusterN, 
+					conFeatureN, boolFeatureN, conFeatureRange, boolFeatures, productName, conFeatureNames, boolFeatureNames, bucketCount, bucketDiv);
 	
 		}
 		
