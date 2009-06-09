@@ -22,22 +22,30 @@ end
 desc "Collect all Printer ASINs for a browse node"
 task :get_printer_ASINs => :environment do
   require 'amazon/ecs'
+  #browse_node for printers: 172635
+  #browse_node for all-in-one:172583
   #Use browse id for Laser Printers
   browse_node_id = '172648'
   search_index = 'Electronics'
   response_group = 'ItemIds'
   Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
   current_page = 1
-  begin
+  missing = []
+  loop do
     res = Amazon::Ecs.item_search('',:browse_node => browse_node_id, :search_index => search_index, :response_group => response_group, :item_page => current_page)
     total_pages = res.total_pages unless total_pages
     res.items.each do |item|
-      @item = Printer.new
-      @item.asin = item.get('asin')
-      @item.save!
+      #@item = Printer.new
+      #@item.asin = item.get('asin')
+      #@item.save!
+      asin = item.get('asin')
+      missing << asin if Printer.find_by_asin(asin).nil?
     end
     current_page += 1
-  end while (current_page <= total_pages)
+    break if (current_page > total_pages)
+  end
+  puts "Number of new products: #{missing.length}"
+  puts missing
 end
 
 desc "Get the Camera attributes of a particular ASIN"
@@ -340,18 +348,17 @@ def saveoffer(p,retailer,merchant)
     o = RetailerOffering.new
     o.product_id = p.id
     o.product_type = p.class.name
-    o.link = ""
     o.retailer_id = retailer
   else
     if offer.nil?
       o.stock = false
       o.save
-    else
-      #Save old prices
+    elsif o.priceint != offer.get('offerlisting/price/amount')
+      #Save old prices only if price has changed
       if o.pricehistory.nil?
-        o.pricehistory = [o.updated_at.to_s(:db), o.priceint].to_yaml
+        o.pricehistory = [o.priceUpdate.to_s(:db), o.priceint].to_yaml
       else
-        o.pricehistory = (YAML.load(o.pricehistory) + [o.updated_at.to_s(:db), o.priceint]).to_yaml
+        o.pricehistory = (YAML.load(o.pricehistory) + [o.priceUpdate.to_s(:db), o.priceint]).to_yaml
       end
     end
   end

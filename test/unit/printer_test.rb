@@ -5,4 +5,11 @@ class PrinterTest < ActiveSupport::TestCase
   test "the truth" do
     assert true
   end
+  
+  def test_myvalid
+    printer = Printer.first
+    result = printer.myvalid?
+    assert result
+  end
+
 end

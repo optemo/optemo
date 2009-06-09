@@ -1,4 +1,5 @@
 #--
+# Copyright (c) 2009 Jan Ulrich, Optemo Technologies
 # Copyright (c) 2006 Herryanto Siatono, Pluit Solutions
 #
 # Permission is hereby granted, free of charge, to any person obtaining
