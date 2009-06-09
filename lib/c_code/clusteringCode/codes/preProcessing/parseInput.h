@@ -1,7 +1,7 @@
 int parseInput(string* varNames, map<const string, int>productNames, string productName, string argument, 
 				string* brands, bool* catFilteredFeatures, bool* conFilteredFeatures, 
 	bool* boolFilteredFeatures, double** filteredRange, bool* boolFeatures, int varNamesN, string* conFeatureNames, 
-	string* catFeatureNames, string* boolFeatureNames, string* indicatorNames){
+	string* catFeatureNames, string* boolFeatureNames, string* indicatorNames, 	string** descStrings){
 
 	int brandN =0;	
 	string brandString;		
@@ -140,6 +140,25 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 			indicatorNames[4] = "resolutionarea";
 			indicatorNames[5] = "scanner";
 			indicatorNames[6] = "printserver";
+			
+			
+		//	map<const string, string*> descStrings;
+		
+		
+			descStrings[0][0] = "Cheap";
+			descStrings[0][1] = "Expensive";
+			descStrings[1][0] = "Slow";
+			descStrings[1][1] = "Fast";
+			descStrings[2][0] = "Small";
+			descStrings[2][1] = "Large";
+			descStrings[3][0] = "Low Capacity";
+			descStrings[3][1] = "High Capacity";
+			descStrings[4][0] = "Low Resolution";
+			descStrings[4][1] = "High Resolution";
+			descStrings[5][0] = "No Print Server";
+			descStrings[5][1] = "Print Server";
+			descStrings[6][0] = "No Scanner";
+			descStrings[6][1] ="Scanner";
 			
 			
 			for (int j=0; j<varNamesN; j++){

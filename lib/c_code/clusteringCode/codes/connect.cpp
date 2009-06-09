@@ -1,4 +1,3 @@
-
 // Standard C++ includes
 #include <stdlib.h>
 #include <fstream>
@@ -49,6 +48,7 @@ int main(int argc, char** argv) {
 	string argu = argv[1];
 	int ind, endit, startit, lengthit;
 	string var;
+	string** descStrings;
 
 	//productName
 	var = "product_name";
@@ -153,7 +153,8 @@ int main(int argc, char** argv) {
 	clusterIDs = new int [clusterN];
 	string* brands = new string [40];
 	int* mergedClusterIDInput = new int[clusterN];
-
+	descStrings = new string*[conFeatureN+boolFeatureN]; 
+	
 	bool smallNFlag =false;
 	string* indicatorNames = new string[conFeatureN+boolFeatureN];
 	int ** indicators = new int*[conFeatureN];
@@ -226,9 +227,14 @@ int* MclusterIDs = new int[clusterN];
 		startit = endit;
 	}	
 
+			for (int f=0; f<conFeatureN+boolFeatureN; f++){
+				descStrings[f] = new string[2];
+			}
+
+
 	int brandN = parseInput(varNames, productNames, productName, argu, brands, catFilteredFeatures, 
 	conFilteredFeatures, boolFilteredFeatures, filteredRange, boolFeatures, 
-				varNamesN, conFeatureNames, catFeatureNames, boolFeatureNames, indicatorNames);
+				varNamesN, conFeatureNames, catFeatureNames, boolFeatureNames, indicatorNames, descStrings);
 	
 	string brand = brands[0];
 // Driver Manager
@@ -383,7 +389,7 @@ int* MclusterIDs = new int[clusterN];
 				int* clusterCounts = new int[repW];
 				int* mergedClusterIDs;
 	
-			
+					
 			if (searchBoxFlag){
 					
 				reped = getRep(reps, searchIds, productN, resultClusters, childrenIDs, clusterCounts, childrenCount, conFeatureN, repW, stmt, 
@@ -403,7 +409,9 @@ int* MclusterIDs = new int[clusterN];
 //Generating the output string 
 			//	repW = 9;
 			
-				out = generateOutput(indicatorNames, conFeatureNames, conFeatureN, productN, conFeatureRange, varNames, repW, reps, reped, resultClusters, childrenIDs, childrenCount, mergedClusterIDs, clusterCounts, indicators, bucketCount, bucketDiv);
+			
+				out = generateOutput(indicatorNames, conFeatureNames, conFeatureN, productN, conFeatureRange, varNames, repW, reps, reped, resultClusters, 
+				childrenIDs, childrenCount, mergedClusterIDs, clusterCounts, indicators, bucketCount, bucketDiv, descStrings);
 			
 			}
 			else{	//productN=0;

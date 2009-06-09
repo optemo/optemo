@@ -194,6 +194,7 @@ int main(int argc, char** argv) {
 	}
 
 int *mergedClusterN= new int[clusterN];
+int* MclusterIDs = new int[clusterN];
 
 	//cluster_id
 	var = "cluster_id";
@@ -215,7 +216,7 @@ int *mergedClusterN= new int[clusterN];
 				mergedClusterN[c]++; 
 			}	
 			if (mergedClusterN >0){
-				clusterIDs[c] = -1 * mergedClusterN[c];
+				MclusterIDs[c] = -1 * mergedClusterN[c];
 			}
 			if (found == (int)string::npos){
 			
@@ -275,7 +276,7 @@ int *mergedClusterN= new int[clusterN];
 ///////////////////////////////////////////////
 		
 			try {
-				
+						
 				// Using the Driver to create a connection
 				driver = sql::mysql::get_mysql_driver_instance();
 				con = driver->connect(HOST, PORT, USER, PASS);
@@ -293,7 +294,7 @@ int *mergedClusterN= new int[clusterN];
 				cluster =0;
 			}
 			if (cluster == 0){
-	
+		
 				command = "SELECT id from ";
 				command += tableName;
 				command += ";";
@@ -301,23 +302,23 @@ int *mergedClusterN= new int[clusterN];
 				size = res->rowsCount();	
 			}
 			else{
+		
 				command = "SELECT parent_id from ";
 				command += productName;
 				command += "_clusters WHERE id=";
 				ostringstream cidstream; 
 				int safeID = 0;
-			//	cout<<"clusterIDs[0] is:"<<clusterIDs[0]<<endl;
 				while (clusterIDs[safeID] < 0){
 					safeID++;
 				}
+				
 				cidstream << clusterIDs[safeID];
 				command += cidstream.str();
 				command += ";";
-				//cout<<"commad is "<<command<<endl;
-				res = stmt->executeQuery(command);
-//	cout<<"HERE"<<endl;	
-				res->next();
 			
+				res = stmt->executeQuery(command);
+				res->next();
+	
 				clusterID = res->getDouble("parent_id");
 			
 				if (clusterID == 0){
@@ -351,7 +352,7 @@ int *mergedClusterN= new int[clusterN];
 			for (int f=0; f<conFeatureN; f++){
 				bucketCount[f] = new double [bucketDiv];
 			}
-		
+	
 		//if searchBoxFlag
 		if (searchBoxFlag){
 			
@@ -359,12 +360,13 @@ int *mergedClusterN= new int[clusterN];
 		}
 		
 		else{
-			
+		
 			productN = filter2(filteredRange, brands, brandN, stmt, res, res2, productIDs, conFilteredFeatures, catFilteredFeatures,boolFilteredFeatures,clusterID, clusterN, 
 					conFeatureN, boolFeatureN, conFeatureRange, boolFeatures, productName, conFeatureNames, boolFeatureNames, bucketCount, bucketDiv);
 	
+	
 		}
-		
+			
 			if (productN> 0){
 				if (productN<=repW){
 					repW = productN;                 

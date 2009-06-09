@@ -56,7 +56,7 @@ if 	(layer == 1){
 				
 				  dataN = new double*[size];
 			 	   	    for(int j=0; j<size; j++){
-			 	   				dataN[j] = new double[conFeatureN]; 
+			 	   				dataN[j] = new double[conFeatureN+boolFeatureN]; 
 			 	   		}
 
 			 	   		int **indicators = new int* [conFeatureN];
@@ -64,7 +64,7 @@ if 	(layer == 1){
 			 	   				indicators[j] = new int[size];
 			 	   			}
 
-			 	   		getStatisticsData1(data, indicators, average, size, conFeatureN, dataN);  
+			 	   		getStatisticsData1(data, indicators, average, size, conFeatureN, boolFeatureN, dataN);  
 
 			// cluster
 			 			int *centersA;
@@ -184,12 +184,13 @@ if (layer > 1){
 					
 				data[s][3] = resNodes->getDouble(conFeatureNames[3]);
 				data[s][4] = resNodes->getDouble(conFeatureNames[4]);
+				
 				 
-			//	for (int f=0; f<boolFeatureN; f++){
-			//		cout<<"in loop "<<boolFeatureNames[f]<<endl;
-			//		cout<<"resNodes->getDouble(boolFeatureNames[f]) is "<<resNodes->getDouble(boolFeatureNames[f])<<endl;
-			//		data[s][f+conFeatureN] = resNodes->getDouble(boolFeatureNames[f]);
-			//	}
+				for (int f=0; f<boolFeatureN; f++){
+				//	cout<<"in loop "<<boolFeatureNames[f]<<endl;
+				//	cout<<"resNodes->getDouble(boolFeatureNames[f]) is "<<resNodes->getDouble(boolFeatureNames[f])<<endl;
+					data[s][f+conFeatureN] = resNodes->getDouble(boolFeatureNames[f]);
+				}
 				
 				idA[s] = resNodes->getInt("product_id"); 
 			
@@ -205,7 +206,7 @@ if (layer > 1){
 	     
        dataN = new double*[size];
  	   	    for(int j=0; j<size; j++){
- 	   				dataN[j] = new double[conFeatureN]; 
+ 	   				dataN[j] = new double[conFeatureN+boolFeatureN]; 
  	   		}
 
  	   		int **indicators = new int* [conFeatureN];
@@ -214,7 +215,7 @@ if (layer > 1){
  	   			}
 
 
-			getStatisticsData2(data, average, s, conFeatureN, dataN);
+			getStatisticsData2(data, average, s, conFeatureN, boolFeatureN, dataN);
 // cluster
  			int *centersA;
  	   		double** dist;

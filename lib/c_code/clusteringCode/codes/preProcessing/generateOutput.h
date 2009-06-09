@@ -1,5 +1,5 @@
 string generateOutput(string* indicatorNames, string* conFeatureNames, int conFeatureN, int productN, double** conFeatureRange, string* varNames, int repW, int* reps, bool reped, 
-	int* clusterIDs, int** childrenIDs, int* childrenCount, int* mergedClusterIDs, int* clusterCounts, int** indicators, double** bucketCount, int bucketDiv){
+	int* clusterIDs, int** childrenIDs, int* childrenCount, int* mergedClusterIDs, int* clusterCounts, int** indicators, double** bucketCount, int bucketDiv, string** descStrings){
 
 		string out = "--- !map:HashWithIndifferentAccess \n";
 		out.append("result_count: ");
@@ -109,7 +109,6 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 						oss7<<childrenIDs[c][l];
 						//cout<<"children ID is "<<childrenIDs[c][l]<<endl;
 						out.append(oss7.str());
-					
 					}
 					out.append("]");
 				}	
@@ -122,10 +121,45 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 					oss<<indicators[f][c];
 					out.append(oss.str());
 				}
+	
+				out.append(", descString: ");
+				bool oneIndicator = 0;
+				if (indicators[0][c] == 1) { //min
+					out.append(descStrings[0][0]);
+					oneIndicator = 1;
+				}else if(indicators[0][c] == 3)//max
+				{
+					out.append(descStrings[0][1]);
+					oneIndicator = 1;
+				}
+				
+				for(int f=1; f<conFeatureN; f++){
+					
+					if (indicators[f][c] == 1) { //min
+						if (oneIndicator){	
+							out.append(", ");
+						}	
+						out.append(descStrings[f][0]);
+						oneIndicator = 1;
+					}else if(indicators[f][c] == 3)//max
+					{
+						if (oneIndicator){
+							out.append(", ");
+						}	
+						out.append(descStrings[f][1]);
+						oneIndicator = 1;
+					}			
+				}
+				
 			
 		   		out.append("}\n");
 		}
 //	}	
+	
+
+		
+	
+		
 
 	
 return out;

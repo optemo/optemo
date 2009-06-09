@@ -76,14 +76,16 @@ int main(int argc, char** argv){
 	
 	
 	
-	double* weights = new double [conFeatureN+catFeatureN];
-	weights[0] = 1.3;
-	for (int f=1; f<conFeatureN; f++){
-		weights[f] = 0.9;
+	double* weights = new double [conFeatureN + boolFeatureN];
+	weights[0] = 1.4;
+	for (int f=1; f<conFeatureN-1; f++){
+		weights[f] = 1.1;
 	}
-	for (int f=0; f<catFeatureN; f++){
-		weights[conFeatureN+f] = 0.1;
-	}
+	weights[conFeatureN-1] = 0.7;
+
+    for (int f=0; f<boolFeatureN; f++){
+    	weights[conFeatureN+f] = 0.7;
+    }
 
 	ostringstream session_idStream;
 	ostringstream layerStream;
@@ -154,7 +156,7 @@ int main(int argc, char** argv){
 	varNames[11] = "session_id";	
    
 //void preClustering(string* varNames, map<const string, int>productNames, string productName, string* conFeatureNames, string* catFeatureNames, string* indicatorNames)
-	
+
 
  string filteringCommand = preClustering(varNames, productNames, productName, conFeatureNames, catFeatureNames, boolFeatureNames, indicatorNames);
 

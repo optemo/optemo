@@ -221,13 +221,13 @@ void getStatisticsData(double** data, int** clusteredData, int** indicators, int
 /////
 	
 	
-void getStatisticsData1(double** data, int** indicators, double* average, int size, int conFeatureN, double** dataN){
+void getStatisticsData1(double** data, int** indicators, double* average, int size, int conFeatureN, int boolFeatureN, double** dataN){
 		
 		 for (int j=0; j<conFeatureN; j++){
 				average[j] = average[j]/size;
 			}
 				
-		 	double *dif = new double[conFeatureN];
+			double *dif = new double[conFeatureN + boolFeatureN];
 			double **conFeatureRange = new double* [conFeatureN];
 		    for(int f=0; f<conFeatureN; f++){	
 				conFeatureRange[f] = new double [2];	
@@ -253,7 +253,7 @@ void getStatisticsData1(double** data, int** indicators, double* average, int si
 			for (int f=0; f<conFeatureN; f++){
 				dif[f] = conFeatureRange[f][1] - conFeatureRange[f][0];
 			}
-			for (int f=0; f<conFeatureN; f++){
+			for (int f=0; f<conFeatureN+boolFeatureN; f++){
 			   for(int j=0; j<size; j++){
 				if (dif[f] == 0){
 					dataN[j][f] = 0;
@@ -265,10 +265,7 @@ void getStatisticsData1(double** data, int** indicators, double* average, int si
 		
 	}
 
-
-
-
-	void getStatisticsData2(double** data, double* average, int size, int conFeatureN, double** dataN){
+	void getStatisticsData2(double** data, double* average, int size, int conFeatureN, int boolFeatureN, double** dataN){
 
 
 		   for (int j=0; j<conFeatureN; j++){
@@ -277,12 +274,12 @@ void getStatisticsData1(double** data, int** indicators, double* average, int si
 				
 
 
-		 	double *dif = new double[conFeatureN];
+		 	double *dif = new double[conFeatureN+boolFeatureN];
 			double **conFeatureRange = new double* [conFeatureN];
-		
+			cout<<"here"<<endl;
 			
 			for(int f=0; f<conFeatureN; f++){	
-				conFeatureRange[f] = new double [2];	
+				 conFeatureRange[f] = new double [2];	
 	  	         conFeatureRange[f][1] = data[0][f]; 
 	             conFeatureRange[f][0] = data[0][f]; 
 			}
@@ -305,7 +302,7 @@ void getStatisticsData1(double** data, int** indicators, double* average, int si
 			for (int f=0; f<conFeatureN; f++){
 				dif[f] = conFeatureRange[f][1] - conFeatureRange[f][0];
 			}
-			for (int f=0; f<conFeatureN; f++){
+			for (int f=0; f<(conFeatureN+boolFeatureN); f++){
 			   for(int j=0; j<size; j++){
 				if (dif[f] == 0){
 					dataN[j][f] = 0;
@@ -611,34 +608,34 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators,
 		}	
 			
 	
-		for (int f=0; f<conFeatureN; f++){
+		for (int f=0; f<conFeatureN; f++){  //min
 			if (range[f][1] <= stat[f][0]){
 				indicators[f][i] = 1;
 				
 			}
-			else if (range[f][0] >= stat[f][1]){
+			else if (range[f][0] >= stat[f][1]){ //max
 				indicators[f][i] = 3;
 			}
 		
-			else if ((range[f][0] >= stat[f][0]) && (range[f][1] <= stat[f][1])){
+			else if ((range[f][0] >= stat[f][0]) && (range[f][1] <= stat[f][1])){ //average
 				indicators[f][i] = 2;
 			}
-			else if (range[f][1] <= stat[f][1]){
-				if ((range[f][1] - stat[f][0]) >= (stat[f][0] - range[f][0])){
-						indicators[f][i] = 2;
-				} 
-				else{
-					indicators[f][i] = 1;
-				}
-			}
-		    else if(range[f][0] >= stat[f][0]){
-					if((stat[f][1] - range[f][0]) >= (range[f][1] - stat[f][1])){
-						indicators[f][i] = 2;
-					}
-					else{
-						indicators[f][i] = 3;
-					}
-			}
+	//		else if (range[f][1] <= stat[f][1]){
+	//			if ((range[f][1] - stat[f][0]) >= (stat[f][0] - range[f][0])){
+	//					indicators[f][i] = 2;
+	//			} 
+	//			else{
+	//				indicators[f][i] = 1;
+	//			}
+	//		}
+	//	    else if(range[f][0] >= stat[f][0]){
+	//				if((stat[f][1] - range[f][0]) >= (range[f][1] - stat[f][1])){
+	//					indicators[f][i] = 2;
+	//				}
+	//				else{
+	//					indicators[f][i] = 3;
+	//				}
+	//		}
 		}	
 	}
 }
