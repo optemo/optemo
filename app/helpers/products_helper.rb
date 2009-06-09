@@ -39,7 +39,7 @@ module ProductsHelper
       "<div class='sim'>" +
         link_to("Explore #{count} Similar Product#{"s" if count > 1}", 
         "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+@c.subclusters[i], 
-        :title => "These products have " + combine_list(@c.desc[i]), :id => "sim#{i}") +
+        :id => "sim#{i}") +
       "</div>"
     else
       ""
@@ -54,5 +54,9 @@ module ProductsHelper
       a.each {|i| ret = i.join(' ') + ', ' + ret }
       ret
     end
+  end
+  
+  def history
+    PrinterCluster.find(@c.cluster_ids[0]).getHistory.reverse
   end
 end

@@ -128,7 +128,7 @@ class CQuery
       #Normalize features values
       mymin = (cluster.send(min.intern) - fmin) / (fmax - fmin)
       mymax = (cluster.send(max.intern) - fmin) / (fmax - fmin)
-      myclustergraph << [mymin.round(2),(mymax-mymin).round(2)]
+      myclustergraph << [mymin.round(2),(mymax-mymin+0.05).round(2)]
     end
     myclustergraph
   end
