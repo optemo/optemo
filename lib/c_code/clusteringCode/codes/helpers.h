@@ -276,7 +276,6 @@ void getStatisticsData1(double** data, int** indicators, double* average, int si
 
 		 	double *dif = new double[conFeatureN+boolFeatureN];
 			double **conFeatureRange = new double* [conFeatureN];
-			cout<<"here"<<endl;
 			
 			for(int f=0; f<conFeatureN; f++){	
 				 conFeatureRange[f] = new double [2];	

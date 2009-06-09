@@ -282,7 +282,7 @@ int* MclusterIDs = new int[clusterN];
 ///////////////////////////////////////////////
 		
 			try {
-						
+			
 				// Using the Driver to create a connection
 				driver = sql::mysql::get_mysql_driver_instance();
 				con = driver->connect(HOST, PORT, USER, PASS);

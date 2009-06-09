@@ -140,9 +140,6 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 			indicatorNames[4] = "resolutionarea";
 			indicatorNames[5] = "scanner";
 			indicatorNames[6] = "printserver";
-			
-			
-		//	map<const string, string*> descStrings;
 		
 		
 			descStrings[0][0] = "Cheap";
