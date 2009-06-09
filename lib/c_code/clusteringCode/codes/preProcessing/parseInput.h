@@ -33,6 +33,19 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 				indicatorNames[2] = "Optical Zoom";
 				indicatorNames[3] = "MegaPixels";
 				
+				descStrings[0][0] = "Cheap";
+				descStrings[0][1] = "Expensive";
+				descStrings[1][0] = "Small Screen";
+				descStrings[1][1] = "Large Screen";
+				descStrings[2][0] = "Low Zoom";
+				descStrings[2][1] = "High Zoom";
+				descStrings[3][0] = "Low Resolutiion";
+				descStrings[3][1] = "High Resolution";
+				
+				
+				
+				
+				
 				
 				
 				for (int j=0; j<varNamesN; j++){

@@ -43,7 +43,7 @@ int main(int argc, char** argv){
 	map<const string, int> productNames;
 	productNames["camera"] = 1;
 	productNames["printer"] = 2;
-	
+	double* weights;
 	switch(productNames[productName]){
 		
 		case 1:
@@ -54,6 +54,16 @@ int main(int argc, char** argv){
 					boolFeatureN= 0;
 					varNamesN= 12;
 					range= 2;
+					weights = new double [conFeatureN + boolFeatureN];
+					weights[0] = 1.2;
+					for (int f=1; f<conFeatureN-1; f++){
+						weights[f] = 1.2;
+					}
+					weights[conFeatureN-1] = 0.9;
+
+				    for (int f=0; f<boolFeatureN; f++){
+				    	weights[conFeatureN+f] = 0.5;
+				    }
 					break;
 			
 		case 2:
@@ -61,8 +71,18 @@ int main(int argc, char** argv){
 					conFeatureN= 5;
 					catFeatureN= 1;
 					boolFeatureN= 2;
+					weights = new double [conFeatureN + boolFeatureN];
 					varNamesN= 12;
 					range= 2;
+					weights[0] = 1.2;
+					weights[0] = 0.8;
+					for (int f=2; f<conFeatureN; f++){
+						weights[f] = 1;
+					}
+
+				    for (int f=0; f<boolFeatureN; f++){
+				    	weights[conFeatureN+f] = 0.5;
+				    }
 					break;
 		default:
 					clusterN = 9; 
@@ -73,19 +93,6 @@ int main(int argc, char** argv){
 					range= 2;
 					break;
 	}
-	
-	
-	
-	double* weights = new double [conFeatureN + boolFeatureN];
-	weights[0] = 1.2;
-	for (int f=1; f<conFeatureN-1; f++){
-		weights[f] = 1.2;
-	}
-	weights[conFeatureN-1] = 0.9;
-
-    for (int f=0; f<boolFeatureN; f++){
-    	weights[conFeatureN+f] = 0.5;
-    }
 
 	ostringstream session_idStream;
 	ostringstream layerStream;
@@ -248,7 +255,7 @@ int main(int argc, char** argv){
 							stmt, conFeatureNames, boolFeatureNames, productName, weights);	
 		
 					layer++;
-					
+		
 				}
 		
 				leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, res3, stmt, productName);

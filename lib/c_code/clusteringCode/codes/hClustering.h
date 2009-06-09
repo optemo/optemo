@@ -178,17 +178,12 @@ if (layer > 1){
 			int s = 0;
 			while(resNodes->next()){
 					
-				data[s][0] = resNodes->getDouble("price");
-				data[s][1] = resNodes->getDouble(conFeatureNames[1]);
-				data[s][2] = resNodes->getDouble(conFeatureNames[2]);
-					
-				data[s][3] = resNodes->getDouble(conFeatureNames[3]);
-				data[s][4] = resNodes->getDouble(conFeatureNames[4]);
-				
+				for (int f=0; f<conFeatureN; f++){	
+					data[s][f] = resNodes->getDouble(conFeatureNames[f]);
+				}	
 				 
 				for (int f=0; f<boolFeatureN; f++){
-				//	cout<<"in loop "<<boolFeatureNames[f]<<endl;
-				//	cout<<"resNodes->getDouble(boolFeatureNames[f]) is "<<resNodes->getDouble(boolFeatureNames[f])<<endl;
+		
 					data[s][f+conFeatureN] = resNodes->getDouble(boolFeatureNames[f]);
 				}
 				
@@ -212,8 +207,7 @@ if (layer > 1){
  	   		int **indicators = new int* [conFeatureN];
  	   		for (int j=0; j<conFeatureN; j++){
  	   				indicators[j] = new int[size];
- 	   			}
-
+ 	   			} 
 
 			getStatisticsData2(data, average, s, conFeatureN, boolFeatureN, dataN);
 // cluster
@@ -253,7 +247,8 @@ if (layer > 1){
 			//	 getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);		
 			
  	   		getStatisticsData(data, clusteredData, indicators, idA, s, clusterN, conFeatureN, conFeatureRangeC);
-		   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName);
+
+		saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName);
 
 		
 			for (int c=0; c<clusterN; c++){
