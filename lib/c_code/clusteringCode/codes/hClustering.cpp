@@ -57,7 +57,7 @@ int main(int argc, char** argv){
 					weights = new double [conFeatureN + boolFeatureN];
 					weights[0] = 1.2;
 					for (int f=1; f<conFeatureN-1; f++){
-						weights[f] = 1.2;
+						weights[f] = 1;
 					}
 					weights[conFeatureN-1] = 0.9;
 
