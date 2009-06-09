@@ -77,14 +77,14 @@ int main(int argc, char** argv){
 	
 	
 	double* weights = new double [conFeatureN + boolFeatureN];
-	weights[0] = 1.4;
+	weights[0] = 1.2;
 	for (int f=1; f<conFeatureN-1; f++){
-		weights[f] = 1.1;
+		weights[f] = 1.2;
 	}
-	weights[conFeatureN-1] = 0.7;
+	weights[conFeatureN-1] = 1.2;
 
     for (int f=0; f<boolFeatureN; f++){
-    	weights[conFeatureN+f] = 0.7;
+    	weights[conFeatureN+f] = 0.5;
     }
 
 	ostringstream session_idStream;

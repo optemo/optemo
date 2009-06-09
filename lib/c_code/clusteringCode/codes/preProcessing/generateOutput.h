@@ -122,7 +122,7 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 					out.append(oss.str());
 				}
 	
-				out.append(", descString: ");
+				out.append(", descString: \'");
 				bool oneIndicator = 0;
 				if (indicators[0][c] == 1) { //min
 					out.append(descStrings[0][0]);
@@ -150,6 +150,7 @@ string generateOutput(string* indicatorNames, string* conFeatureNames, int conFe
 						oneIndicator = 1;
 					}			
 				}
+				out.append("\'");
 				
 			
 		   		out.append("}\n");
