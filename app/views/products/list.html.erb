@@ -1,29 +1,38 @@
 <div id="leftbar">
+	<!-- The Search box -->
 	<% form_tag ("/search/find/#{@c.to_s}") do %>
 	  <%= text_field_tag 'search' %>
 	  <%= submit_tag 'Search', {:id => 'submit_button'} %>
 	  <% end %>
-<div id="savebar">
-	<h2>Saved Items</h2>
-	<div id="savebar_content">
-	<% if @picked_products.empty? %>
-	  <p id="deleteme">Save some products to add them to this list</p>
-	<% else %>
-	  <%= render :partial => 'product', :collection => @picked_products%>
-	<% end %>
+	
+	<!-- The Saved Items box -->
+	<div id="savebar">
+		<h2>Saved Items</h2>
+		<div id="savebar_content">
+			<% if @picked_products.empty? %>
+	  			<p id="deleteme">Save some products to add them to this list</p>
+			<% else %>
+	  			<%= render :partial => 'product', :collection => @picked_products%>
+			<% end %>
+		</div>
+		<div style = "clear: both;"><a href='/compare'>Compare them!</a>
+		</div>
 	</div>
-	<div style = "clear: both;"><a href='/compare'>Compare them!</a></div>
+		
+	<!-- The Filters section -->
+	<div id="filterbar">
+		<h2>Filters</h2>
+		<% form_tag("/search/filter/#{@c.to_s}",{:id => 'filter_form'}) do %>
+		<!-- Filter partial to draw the filter controls -->
+		<%= render :partial => 'filter' %>
+		<br>
+		<% end %>
+	</div>
 </div>
-<div id="filterbar">
-	<h2>Filters</h2>
-	<% form_tag("/search/filter/#{@c.to_s}",{:id => 'filter_form'}) do %>
-	  <%= render :partial => 'filter' %>
-	  <br>
-	<% end %>
-</div>
-</div>
+
 <div class="main">
 	<span style="color:red;"><%= flash[:error] %></span>
+	
 	<!-- count variable to print << after every Go Back link -->
 	<% count=1 %>	
 	<div class='backlink'>

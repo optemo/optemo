@@ -3,10 +3,9 @@
 one:
   product_id: 
   priceint: 30 
-  shipping: 
+  shippingCost: 
   tax: 
   state: MyString
-  link: MyString
   retailer_id: 
   stock: false
   pricehistory: MyString
@@ -14,10 +13,9 @@ one:
 two:
   product_id: 
   priceint: 12
-  shipping: 
+  shippingCost:
   tax: 
   state: MyString
-  link: MyString
   retailer_id: 
   stock: false
   pricehistory: MyString
