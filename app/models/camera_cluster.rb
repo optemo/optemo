@@ -1,3 +1,4 @@
+require 'cluster'
 class CameraCluster < ActiveRecord::Base
-  belongs_to :session
+  include Cluster
 end
