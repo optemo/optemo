@@ -7,5 +7,6 @@ class Session < ActiveRecord::Base
     Session.column_names.delete_if{|i| %w(id created_at updated_at ip parent_id).index(i)}.each do |name|
       send((name+'=').intern, Session.columns_hash[name].default)
     end
+    save
   end
 end

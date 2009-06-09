@@ -20,22 +20,22 @@ class ProductsController < ApplicationController
   
   def list
     @session = Session.find(session[:user_id])
-    pt = session[:productType] || $DefaultProduct
-    @dbprops = DbProperty.find_by_name(pt.constantize.name)
+    @pt = session[:productType] || $DefaultProduct
+    @dbprops = DbProperty.find_by_name(@pt.constantize.name)
     #Check for search keyword
     if params[:path_info][-2] == 's'
       cluster_ids = params[:path_info][0..-3].map{|p|p.to_i}
       searchterm = URI.decode(params[:path_info][-1])
-      @c = CQuery.new(pt,cluster_ids,@session,searchterm) #C-code wrapper
+      @c = CQuery.new(@pt,cluster_ids,@session,searchterm) #C-code wrapper
     else
-      @c = CQuery.new(pt, params[:path_info].map{|p|p.to_i},@session) #C-code wrapper
+      @c = CQuery.new(@pt, params[:path_info].map{|p|p.to_i},@session) #C-code wrapper
     end
     if !@c.valid
       flash[:error] = @c.to_s
       redirect_to '/error'
     end
     #Saved Bar variables
-    @picked_products = @session.saveds.map {|s| pt.constantize.find(s.product_id)}
+    @picked_products = @session.saveds.map {|s| @pt.constantize.find(s.product_id)}
     #Previously clicked product
     #@searches = []
     #if session[:search_id]

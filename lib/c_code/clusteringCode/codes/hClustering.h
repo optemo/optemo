@@ -1,7 +1,7 @@
 
 #include "kmeans.h"
 #include "helpers.h"
-#include
+
 
 
 int hClustering(int layer, int clusterN, int conFeatureN, int boolFeatureN, double *average, double** conFeatureRange, double*** conFeatureRangeC,
@@ -117,7 +117,7 @@ if 	(layer == 1){
 						
 					   getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);		
 
-					   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, conFeatureNames, stmt, res2, productName);
+					   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName);
 					
 						for (int c=0; c<clusterN; c++){
 								if (clusteredData[c][0]>maxSize){
@@ -252,7 +252,7 @@ if (layer > 1){
 			//	 getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);		
 			
  	   		getStatisticsData(data, clusteredData, indicators, idA, s, clusterN, conFeatureN, conFeatureRangeC);
-		   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, conFeatureNames, stmt, res2, productName);
+		   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName);
 
 		
 			for (int c=0; c<clusterN; c++){
@@ -275,7 +275,7 @@ if (layer > 1){
 
 //leafClustering(layer, conFeatureN, res, stmt, productName);
 
-void leafClustering(int conFeatureN, int clusterN, string* conFeatureNames, sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *res3, sql::Statement *stmt, string productName){
+void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* conFeatureNames, string* boolFeatureNames, sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *res3, sql::Statement *stmt, string productName){
 	
 	string command;
 	int cluster_id;
@@ -295,7 +295,6 @@ void leafClustering(int conFeatureN, int clusterN, string* conFeatureNames, sql:
 			ostringstream parent_idStream;
 			int pid =  res->getInt("id");
 			layer = res->getInt("layer");
-		//	cout<<"pid is  "<<pid<<endl;
 			parent_idStream << pid;
 			ostringstream clusterSizeStream;
 			clusterSizeStream <<1;
@@ -354,6 +353,10 @@ void leafClustering(int conFeatureN, int clusterN, string* conFeatureNames, sql:
 				command += ", ";
 				command += conFeatureNames[i];
 			}
+			for (int i=0; i<boolFeatureN; i++){
+				command += ", ";
+				command += boolFeatureNames[i];
+			}
 			command += ", brand) values (";
 			ostringstream cidStream2; 
 			cidStream2<< cluster_id;
@@ -368,6 +371,12 @@ void leafClustering(int conFeatureN, int clusterN, string* conFeatureNames, sql:
 				feaVStream << res2->getDouble(conFeatureNames[f]);
 				command += feaVStream.str();
 				
+			}
+			for (int f=0; f<boolFeatureN; f++){
+				command += ", ";
+				ostringstream feaVStream;
+				feaVStream << res2->getDouble(boolFeatureNames[f]);
+				command += feaVStream.str();
 			}
 			command += ", \'";
 			command += res2->getString("brand");

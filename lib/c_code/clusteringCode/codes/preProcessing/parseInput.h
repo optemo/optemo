@@ -218,13 +218,14 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 						conFilteredFeatures[4] = 1;		
 					}
 					else if (var == "scanner"){
+				
 						boolFilteredFeatures[0] = 1;
 						boolFeatures[0] = atof((argument.substr(startit, lengthit)).c_str());
 						
 					}
 					else if (var == "printserver"){
 						boolFilteredFeatures[1] =1;
-						boolFeatures[1] = ((argument.substr(startit, lengthit)).c_str());
+						boolFeatures[1] = atof((argument.substr(startit, lengthit)).c_str());
 					}
 		     	}
 			}
