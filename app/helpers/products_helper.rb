@@ -56,7 +56,7 @@ module ProductsHelper
     end
   end
   
-  def history
-    PrinterCluster.find(@c.cluster_ids[0]).getHistory.reverse
+  def history(mytype)
+    (mytype+'Cluster').constantize.find(@c.cluster_ids[0]).getHistory.reverse
   end
 end
