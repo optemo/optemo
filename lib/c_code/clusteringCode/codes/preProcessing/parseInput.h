@@ -84,11 +84,12 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 				   		else if(var == "price_min"){
 							filteredRange[0][0] = atof((argument.substr(startit, lengthit)).c_str()) * 100;
 				        	conFilteredFeatures[0] = 1;
-			    		}
+						}
 				   		else if(var == "price_max"){
 			  				filteredRange[0][1] = atof((argument.substr(startit, lengthit)).c_str()) ;	
 							filteredRange[0][1] = filteredRange[0][1] * 100;
 					    	conFilteredFeatures[0] = 1;
+						
 				    	}
 				   		else if(var == "displaysize_min"){
 						    filteredRange[1][0] = atof((argument.substr(startit, lengthit)).c_str());
