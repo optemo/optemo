@@ -32,7 +32,7 @@ class ProductsController < ApplicationController
     end
     if !@c.valid
       flash[:error] = @c.to_s
-      redirect_to :controller => 'error'
+      redirect_to '/error'
     end
     #Saved Bar variables
     @picked_products = @session.saveds.map {|s| @pt.constantize.find(s.product_id)}
