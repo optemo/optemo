@@ -15,6 +15,7 @@ class ProductsController < ApplicationController
       redirect_to "/#{c.product_type.pluralize.downcase}/list/"+c.to_s
     else
       flash[:error] = c.to_s
+      redirect_to '/error'
     end
   end
   

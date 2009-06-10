@@ -1,22 +1,22 @@
 <div class="navigator_box" style="left: <%= (i%3)*247 %>px;">
 <div id="box<%=i%>" class="borderbox">
-	<div class='title'><%= @c.desc[i].select{|ii|ii[0]=='descString'}[0][1] %></div><!--28 is largest title-->
+	<div class='title'><%= (d = @c.desc[i].select{|ii|ii[0]=='descString'}[0][1]).blank? ? "All-Purpose" : d%></div>
 	<% if !@c.products[i].imagemwidth.blank? %>
 		<%= image_tag @c.products[i].imagemurl, :height => 100, :onClick => "fadeout(#{@c.products[i].id});", :class => "productimg" %> 	<!--:width => @c.products[i].imagemw, :height => @c.products[i].imagemh, -->
 	<%end%>
-	<p>	
-	<a href="/products/show/<%=@c.products[i].id%>" onClick="fadeout(<%=@c.products[i].id%>);return false;">
+
+	<p><a href="/products/show/<%=@c.products[i].id%>" onClick="fadeout(<%=@c.products[i].id%>);return false;">
 		<span class="easylink"><%= @c.products[i].smlTitle %></span>
-	</a>
-	<%= link_to "&nbsp;Save it&nbsp;", "javascript:saveit(#{@c.products[i].id})", {:class => 'save'}%></p>
+	</a></p>
+	
 	<p style="font-size: 0.9em">
-		<%= description(i) %>
+		<% description(i) %>
 	</p>
-	<p><%= @c.products[i].pricestr %>  
+	<p><%= @c.products[i].pricestr %>  <%= link_to "&nbsp;Save it&nbsp;", "javascript:saveit(#{@c.products[i].id})", {:class => 'save'}%>
 		<%# Randomized Product Reviews %>
 		<%# rand > 0.5 ? (rand > 0.5 ? image_tag('5star.gif') : image_tag('3star.gif')) : image_tag('4star.gif') %>
 	</p>
-	<% if ENV['RAILS_ENV'] == 'development' && @c.clustergraph && @c.clustergraph[i] %>
+	<% if RAILS_ENV == 'development' && @c.clustergraph && @c.clustergraph[i] %>
 	<div class="clustergraph">
 		<% @c.clustergraph[i].each do |u| %>
 		<% if u.length == 2 %>

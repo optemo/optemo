@@ -1,4 +1,4 @@
-class CQuery
+class CQuery 
   #C code Output structure
 #        result_count :integer --now current page
 #        products :array --now current page
@@ -16,8 +16,10 @@ class CQuery
   def initialize(product_type, clusters=nil, session=nil, searchterm=nil)
     @cluster_ids = clusters
     @product_type = product_type
+    #General parameters that are passed
+    params = {"product_name" => @product_type.downcase, "database_config_path" => "#{RAILS_ROOT}/config/database.yml", "environment" => RAILS_ENV}
     if clusters.nil?
-      myparams = {"product_name" => @product_type.downcase}.to_yaml
+      myparams = params.to_yaml
     else
       if session.nil?
         @msg = "Please supply a session"
@@ -25,16 +27,17 @@ class CQuery
       end
       myfilters = session.attributes.delete_if {|key, val| !key.index(/#{@product_type.constantize::MainFeatures.join('|')+"|price|brand"}/)}
       if searchterm.nil?
-        myparams = {"cluster_id" => @cluster_ids, "product_name" => @product_type.downcase}.merge(myfilters).to_yaml
+        myparams = params.merge({"cluster_id" => @cluster_ids}).merge(myfilters).to_yaml
       else
         sphinx = searchSphinx(searchterm)
-        search_ids = sphinx.results.delete_if{|r|!r.myvalid?}.map{|r|r.id}
+        search_ids = sphinx.results.delete_if{|r|r.class.name != @product_type || !r.myvalid?}.map{|r|r.id}
         #search_ids = sphinx.results.map{|r| r[1]} #Remove Classname from results
         if sphinx.count == 0
           @msg = "No results found."
           return
         end
-        myparams = {"cluster_id" => @cluster_ids, "product_name" => @product_type.downcase, "search_ids" => search_ids, "search_count" => sphinx.count}.merge(myfilters).to_yaml
+        myparams = params.merge({"cluster_id" => @cluster_ids, "product_name" => @product_type.downcase, "search_ids" => search_ids, 
+          "search_count" => sphinx.count}).merge(myfilters).to_yaml
       end
     end
     output = sendCQuery myparams
@@ -113,22 +116,24 @@ class CQuery
   
   def calcClusterGraph(cluster)
     myclustergraph = []
-    (@product_type.constantize::MainFeatures+["price"]).each do |name|
-      min = name+'_min'
-      max = name+'_max'
-      if name == "price"
-          prop = DbProperty.find_by_name(@product_type)
-          fmax = prop.price_max
-          fmin = prop.price_min
-      else
-          feat = DbFeature.find_by_name(name)
-          fmax = feat.max
-          fmin = feat.min
+    unless cluster.nil?
+      (@product_type.constantize::MainFeatures+["price"]).each do |name|
+        min = name+'_min'
+        max = name+'_max'
+        if name == "price"
+            prop = DbProperty.find_by_name(@product_type)
+            fmax = prop.price_max
+            fmin = prop.price_min
+        else
+            feat = DbFeature.find_by_name(name)
+            fmax = feat.max
+            fmin = feat.min
+        end
+        #Normalize features values
+        mymin = (cluster.send(min.intern) - fmin) / (fmax - fmin)
+        mymax = (cluster.send(max.intern) - fmin) / (fmax - fmin)
+        myclustergraph << [mymin.round(2),(mymax-mymin+0.05).round(2)]
       end
-      #Normalize features values
-      mymin = (cluster.send(min.intern) - fmin) / (fmax - fmin)
-      mymax = (cluster.send(max.intern) - fmin) / (fmax - fmin)
-      myclustergraph << [mymin.round(2),(mymax-mymin+0.05).round(2)]
     end
     myclustergraph
   end
