@@ -530,7 +530,7 @@ void sort(double** data, int* idA, int** sortedA, int size, int conFeatureN){
 }
 
 
-void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators, sql::Statement *stmt,
+void getIndicators(int* clusterIDs, int repW, int conFeatureN, double*** conFeatureRangeC, bool* conFilteredFeatures, int** indicators, sql::Statement *stmt,
  sql::ResultSet *res, int* mergedClusterIDs, string productName, string* conFeatureNames){
 
     string capProductName = productName;
@@ -606,19 +606,36 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators,
 			range[f][1] = res->getDouble(command);
 		}	
 			
+
 	
 		for (int f=0; f<conFeatureN; f++){  //min
-			if (range[f][1] <= stat[f][0]){
-				indicators[f][i] = 1;
-				
-			}
-			else if (range[f][0] >= stat[f][1]){ //max
+		if (conFilteredFeatures[f]){
+		//	cout<<"stat[f][0] is "<<stat[f][0]<<" stat[f][1]  is "<<stat[f][1]<<endl;
+				  if (conFeatureRangeC[i][f][1] <= stat[f][0]){
+					indicators[f][i] = 1;
+				}
+				else if (conFeatureRangeC[i][f][0] >= stat[f][1]){ //max
 				indicators[f][i] = 3;
+				}
+
+			else if ((conFeatureRangeC[i][f][0] >= stat[f][0]) && (conFeatureRangeC[i][f][1] <= stat[f][1])){ //average
+				indicators[f][i] = 2;
+						
 			}
+	}else{
+			
+				if (range[f][1] <= stat[f][0]){
+					indicators[f][i] = 1;
+				}
+				else if (range[f][0] >= stat[f][1]){ //max
+				indicators[f][i] = 3;
+				}
 		
 			else if ((range[f][0] >= stat[f][0]) && (range[f][1] <= stat[f][1])){ //average
 				indicators[f][i] = 2;
 			}
+		  }
+			
 	//		else if (range[f][1] <= stat[f][1]){
 	//			if ((range[f][1] - stat[f][0]) >= (stat[f][0] - range[f][0])){
 	//					indicators[f][i] = 2;
@@ -635,7 +652,8 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, int** indicators,
 	//					indicators[f][i] = 3;
 	//				}
 	//		}
-		}	
+		
+		}
 	}
 }
 

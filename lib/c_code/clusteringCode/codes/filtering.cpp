@@ -388,21 +388,28 @@ int* MclusterIDs = new int[clusterN];
 				int* childrenCount = new int[repW];
 				int* clusterCounts = new int[repW];
 				int* mergedClusterIDs;
+				double*** conFeatureRangeC = new double** [repW];
+				for (int r=0; r<repW; r++){
+					conFeatureRangeC[r] = new double* [conFeatureN];
+					for (int f=0; f<conFeatureN; f++){
+						conFeatureRangeC[r][f] = new double [2];
+					}
+				}
 	
 					
 			if (searchBoxFlag){
 					
-				reped = getRep(reps, searchIds, productN, resultClusters, childrenIDs, clusterCounts, childrenCount, conFeatureN, repW, stmt, 
+				reped = getRep(reps, searchIds, productN, resultClusters, childrenIDs, conFeatureRangeC, clusterCounts, childrenCount, conFeatureN, repW, stmt, 
 					res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames, searchBoxFlag);
 				
 			}
 			else{
-					reped = getRep(reps, productIDs, productN, resultClusters, childrenIDs, clusterCounts, childrenCount, conFeatureN, repW, stmt, 
+					reped = getRep(reps, productIDs, productN, resultClusters, childrenIDs, conFeatureRangeC, clusterCounts, childrenCount, conFeatureN, repW, stmt, 
 							res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames, searchBoxFlag);
 						
 			}
 				if(reped){			
-					getIndicators(resultClusters,repW, conFeatureN, indicators, stmt, res, mergedClusterIDs, productName, conFeatureNames);
+					getIndicators(resultClusters,repW, conFeatureN, conFeatureRangeC, conFilteredFeatures, indicators, stmt, res, mergedClusterIDs, productName, conFeatureNames);
 				}
 		
 			

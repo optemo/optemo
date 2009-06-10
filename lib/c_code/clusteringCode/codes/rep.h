@@ -137,7 +137,7 @@ int getRepClusterString(int* clusterIDs, int mergedClusterN, int conFeatureN, sq
 // getRep(reps, productIDs, productN, resultClusters, childrenIDs, clusterCounts, conFeatureN, repW, stmt, 
 //	res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames);
 
-bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** childrenIDs, int* clusterCounts, int* childrenCount, int conFeatureN, int& repW, 
+bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** childrenIDs, double*** conFeatureRangeC, int* clusterCounts, int* childrenCount, int conFeatureN, int& repW, 
 				sql::Statement *stmt, sql::ResultSet *res, sql::ResultSet *res2, int clusterID, bool smallNFlag, int* mergedClusterIDs, int* mergedClusterIDInput, string productName, string* conFeatureNames, int searchBoxFlag){
 					
 					
@@ -230,6 +230,54 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 						res = stmt->executeQuery(command);
 						res->next();
 						clusterIds[i] = res->getInt("id");
+						
+						string command2 = "select price";
+						conFeatureRangeC[i][0][0] = 10000000;
+						conFeatureRangeC[i][0][1] = 1e-5;
+						for(int f=1; f<conFeatureN; f++){
+							command2 += ", ";
+							ostringstream fst;
+							fst << conFeatureNames[f];
+							command2 += fst.str();
+							
+							////
+							conFeatureRangeC[i][f][0] = 10000000;
+							conFeatureRangeC[i][f][1] = 1e-5;
+							///
+						} 
+						command2 += " from ";
+						command2 += product_nodes;
+						command2 += " where cluster_id=";
+						ostringstream idSt;
+						idSt << clusterIds[i];
+						command2 += idSt.str();
+						
+						command2 += " AND (id=";
+						ostringstream proSt; 
+						proSt<< productIds[0];
+						command2 += proSt.str();
+						for(int p=0; p<productN; p++){
+							command2 += ", ";
+							ostringstream proSt2; 
+							proSt2<< productIds[0];
+							command2 += proSt2.str();
+						} 
+						command2 += ");";
+						
+						double fValue;
+						res = stmt->executeQuery(command2);
+						while (res->next()){
+							for (int f=0; f<conFeatureN; f++){
+								fValue = res->getDouble(conFeatureNames[f]);
+								if (fValue < conFeatureRangeC[i][f][0]){
+									conFeatureRangeC[i][f][0] = fValue;
+								}
+								else if (fValue > conFeatureRangeC[i][f][1]){
+									conFeatureRangeC[i][f][1] = fValue;
+								} 
+							}	
+						}
+					
 					
 						command = "select distinct product_id, cluster_id from ";
 						command += product_nodes;
