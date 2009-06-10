@@ -30,22 +30,20 @@ task :get_printer_ASINs => :environment do
   response_group = 'ItemIds'
   Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
   current_page = 1
-  missing = []
   loop do
     res = Amazon::Ecs.item_search('',:browse_node => browse_node_id, :search_index => search_index, :response_group => response_group, :item_page => current_page)
     total_pages = res.total_pages unless total_pages
     res.items.each do |item|
-      #@item = Printer.new
-      #@item.asin = item.get('asin')
-      #@item.save!
-      asin = item.get('asin')
-      missing << asin if Printer.find_by_asin(asin).nil?
+      asin = item.get('asin')\
+      if Printer.find_by_asin(asin).nil?
+        product = Printer.new
+        product.asin = asin
+        product.save!
     end
     current_page += 1
+    sleep(0.2)
     break if (current_page > total_pages)
   end
-  puts "Number of new products: #{missing.length}"
-  puts missing
 end
 
 desc "Get the Camera attributes of a particular ASIN"
@@ -142,8 +140,7 @@ end
 desc "Get all the Amazon data for the current Printer ASINs"
 task :get_printer_data_for_ASINs => :environment do
   require 'amazon/ecs'
-  #Printer.find(:all, :conditions => "updated_at < #{1.hour.ago.to_s(:db)}").each do |p|
-  Printer.find(:all, :conditions => "updated_at < NOW()").each do |p|
+  Printer.find(:all, :conditions => "instock is null").each do |p|
     if !p.asin.blank?
       puts 'Processing' + p.asin
       Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}

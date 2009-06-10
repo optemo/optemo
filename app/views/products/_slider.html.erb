@@ -25,7 +25,7 @@ data-startmax='<%= @session.send("#{val}_max".intern) %>'
 data-prodmin='<%= @c.filterinfo["#{val}_min"] %>' 
 data-prodmax='<%= @c.filterinfo["#{val}_max"] %>'
 <% end %>
-<%= puts 'data-formatting="$"' if money_formatting %>>
+<%= money_formatting ? 'data-formatting="$"' : ""  %>>
 	<div class="endlabel_min"><%= min.to_i %></div>
 	<div class="endlabel_max"><%= max.ceil %></div>
 </div>

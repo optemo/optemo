@@ -16,7 +16,7 @@
 		<%# Randomized Product Reviews %>
 		<%# rand > 0.5 ? (rand > 0.5 ? image_tag('5star.gif') : image_tag('3star.gif')) : image_tag('4star.gif') %>
 	</p>
-	<% if ENV['RAILS_ENV'] == 'development' && @c.clustergraph && @c.clustergraph[i] %>
+	<% if RAILS_ENV == 'development' && @c.clustergraph && @c.clustergraph[i] %>
 	<div class="clustergraph">
 		<% @c.clustergraph[i].each do |u| %>
 		<% if u.length == 2 %>
