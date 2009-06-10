@@ -8,17 +8,20 @@ task :fill_in_resolution => :environment do
   end
 end
 
-desc "Fix wrong model names"
+desc "Fix wrong model names MODEL=Printer|Camera"
 task :fix_model_names => :environment do
-  Printer.find(:all, :conditions => 'mpn = model').each do |p|
+  pt = ENV['MODEL']
+  pt.constantize.find(:all, :conditions => 'mpn = model').each do |p|
     /(\w+ )?([\w\-\/_]*[0-9][\w\-\/_]*)/ =~ p.title
     w = Regexp.last_match(1).rstrip if Regexp.last_match(1)
-    if w && (w.lowercase == p.brand.lowercase || w == "Printer" || w == 'LaserJet' || w == 'Laserjet' || w =='HP' || w == 'Okidata')
+    if w && (w.downcase == p.brand.downcase || 
+      (pt == "Printer" && (w == "Printer" || w == 'LaserJet' || w == 'Laserjet' || w =='HP' || w == 'Okidata')))
       p.model = Regexp.last_match(2)
     else
       p.model = Regexp.last_match(0)
     end
     p.save
+    print '.'
   end
 end
 
@@ -50,4 +53,12 @@ task :match_printers => :environment do
     end
   end
   puts "Matches: " + (total-missed).to_s + '/' +total.to_s
+end
+
+desc "Copy Camera info"
+task :copy_camera => :environment do
+  Camera.all.each do |c|
+    p = Phlamera.new(c.attributes)
+    p.save
+  end
 end

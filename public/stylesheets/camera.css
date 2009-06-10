@@ -66,8 +66,9 @@ div.borderbox {
 .sim:hover{
 	background: url(../images/sim_button_high.png) no-repeat;
 }
-.save {
+a.save {
 	font-size: 0.9em;
+	line-height: 1.2em;
 	/*width: 45px;
 	height: 15px;*/
 	text-decoration: none;

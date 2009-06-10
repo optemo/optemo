@@ -4,9 +4,7 @@
 	<div id="container" style="margin-left: 149px">
 <% else %>		
 	<div id="container">
-	<div class='save'>
-		<%= link_to "Save it", "javascript:saveit(#{@product.id})" %>
-	</div>
+	<%= link_to "&nbsp;Save it&nbsp;", "javascript:saveit(#{@product.id})", {:class => 'save'}%>
 <% end %>
 	<p style="margin: 15px 0px 0px 20px"><%= URI.decode(@product.title) %></p>
 	<div id="image">
