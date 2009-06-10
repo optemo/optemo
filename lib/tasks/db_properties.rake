@@ -47,4 +47,10 @@ def create_product_properties(model)
     f.low = model.valid.instock.map{|c|c.send(name.intern)}.sort[model.valid.instock.count*0.25]
     f.save!
   }
+  model::BinaryFeatures.each {|name|
+    f = DbFeature.new
+    f.db_property = @prop
+    f.name = name
+    f.save!
+  }
 end

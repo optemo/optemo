@@ -102,7 +102,6 @@ task :get_camera_attributes => :environment do
   @camera.specialfeatures = atts.get('specialfeatures')
   @camera.studio = atts.get('studio')
   @camera.title = atts.get('title')
-  @camera.upc = atts.get('upc')
   
   #Lookup offers/discounts
   res = Amazon::Ecs.item_lookup(asin, :response_group => 'OfferFull')
@@ -188,7 +187,6 @@ task :get_printer_data_for_ASINs => :environment do
       p.systemmemorysize = atts.get('systemmemorysize')
       p.systemmemorytype = atts.get('systemmemorytype')
       p.title = atts.get('title')
-      p.upc = atts.get('upc')
       p.warranty = atts.get('warranty')
 
       p = findprice(p)
