@@ -28,7 +28,7 @@ class CQuery
         myparams = {"cluster_id" => @cluster_ids, "product_name" => @product_type.downcase}.merge(myfilters).to_yaml
       else
         sphinx = searchSphinx(searchterm)
-        search_ids = sphinx.results.delete_if{|r|!r.myvalid?}.map{|r|r.id}
+        search_ids = sphinx.results.delete_if{|r|r.class.name != @product_type || !r.myvalid?}.map{|r|r.id}
         #search_ids = sphinx.results.map{|r| r[1]} #Remove Classname from results
         if sphinx.count == 0
           @msg = "No results found."
