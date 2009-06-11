@@ -3,9 +3,18 @@
 <%= image_tag(product.imagemurl, :width => product.imagemw, :height => product.imagemh, :onClick => "fadeout(#{product.id});", :style => "cursor: pointer;") %>
 </div>
 <ul>
+	<% countVar = 0 %>
 	<% session[:productType].constantize::InterestingFeatures.each do |f| %>
-	    <li><%= product.display(f)[0..20] %></li>
+	    <!-- If the interesting feature should be displayed then display -->
+		<% if @interestingFeatureDisplayed[countVar] == true %>
+			<!-- Display Unavailable instead of Unknown-->
+			<% if product.display(f) == 'Unknown' %>
+				<li> Unavailable </li>
+			<% else %>
+				<li><%= product.display(f)[0..20] %></li>
+			<% end %>
+		<% end %>		
+		<% countVar = countVar + 1 %>
 	  <% end %>
 </ul>
-
 </div>
