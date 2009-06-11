@@ -21,16 +21,38 @@ function fadein()
 	
 }
 
+// When you click the Save button:
 function saveit(id)
-{
-	if ($('#deleteme')){$('#deleteme').remove()};
-	$.get('/saveds/create/'+id,function(data){$(data).appendTo('#savebar_content');});
+{	
+	//Check if this id has already been added.
+	if(null != document.getElementById('c'+id)){
+		$("#already_added_msg").attr("style","display:block");
+	}else{
+		// Update just the savebar_content div after doing get on /saveds/create/[id here].
+		$.get('/saveds/create/'+id, function(data){ $(data).appendTo('#savebar_content');});
+		$("#already_added_msg").attr("style","display:none");
+	}
+	
+	// There should be at least 1 saved item, so...
+	// 1. show compare button	
+	$("#compare_button").attr("style","display:block");
+	// 2. hide 'add stuff here' message
+	$("#deleteme").attr("style","display:none");
+	
 }
 
+// When you click the X on a saved product:
 function remove(id)
 {
 	$.get('/saveds/destroy/'+id)
 	$('#c'+id).remove();
+	
+	$("#already_added_msg").attr("style","display:none");
+		
+	if($('.saveditem').length == 0){
+		$("#compare_button").attr("style","display:none");
+		$("#deleteme").attr("style","display:block");
+	}
 }
 
 function removeBrand(str)
@@ -133,6 +155,16 @@ function histogram(element,min,max) {
 	shapelayer.rect(max*length,0,length,height).attr({fill: '#dddddd', "stroke-opacity": 0});
 }
 
+/* http://snipplr.com/view/1696/get-elements-by-class-name/ */
+function getElementsByClassName(classname, node) {
+   if(!node) node = document.getElementsByTagName("body")[0];
+   var a = [];
+   var re = new RegExp('\\b' + classname + '\\b');
+   var els = node.getElementsByTagName("*");
+   for(var i=0,j=els.length; i<j; i++)
+   		if(re.test(els[i].className))a.push(els[i]);
+   return a;
+  }
 
 /*http://james.padolsey.com/javascript/get-document-height-cross-browser/*/
 function getDocHeight() {
@@ -142,4 +174,11 @@ function getDocHeight() {
         Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),
         Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     );
+
+function clickOnlyIfSomethingSelected(){
+	//TODO
+	
+	if (true) {};
+	return;
+}
 }
