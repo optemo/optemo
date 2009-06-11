@@ -609,20 +609,20 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, double*** conFeat
 
 	
 		for (int f=0; f<conFeatureN; f++){  //min
-		if (conFilteredFeatures[f]){
-		//	cout<<"stat[f][0] is "<<stat[f][0]<<" stat[f][1]  is "<<stat[f][1]<<endl;
-				  if (conFeatureRangeC[i][f][1] <= stat[f][0]){
-					indicators[f][i] = 1;
-				}
-				else if (conFeatureRangeC[i][f][0] >= stat[f][1]){ //max
-				indicators[f][i] = 3;
-				}
-
-			else if ((conFeatureRangeC[i][f][0] >= stat[f][0]) && (conFeatureRangeC[i][f][1] <= stat[f][1])){ //average
-				indicators[f][i] = 2;
-						
-			}
-	}else{
+//		if (conFilteredFeatures[f]){
+//		//	cout<<"stat[f][0] is "<<stat[f][0]<<" stat[f][1]  is "<<stat[f][1]<<endl;
+//				  if (conFeatureRangeC[i][f][1] <= stat[f][0]){
+//					indicators[f][i] = 1;
+//				}
+//				else if (conFeatureRangeC[i][f][0] >= stat[f][1]){ //max
+//				indicators[f][i] = 3;
+//				}
+//
+//			else if ((conFeatureRangeC[i][f][0] >= stat[f][0]) && (conFeatureRangeC[i][f][1] <= stat[f][1])){ //average
+//				indicators[f][i] = 2;
+//						
+//			}
+//	}else{
 			
 				if (range[f][1] <= stat[f][0]){
 					indicators[f][i] = 1;
@@ -634,7 +634,7 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, double*** conFeat
 			else if ((range[f][0] >= stat[f][0]) && (range[f][1] <= stat[f][1])){ //average
 				indicators[f][i] = 2;
 			}
-		  }
+//		  }
 			
 	//		else if (range[f][1] <= stat[f][1]){
 	//			if ((range[f][1] - stat[f][0]) >= (stat[f][0] - range[f][0])){

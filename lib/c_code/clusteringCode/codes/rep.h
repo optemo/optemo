@@ -153,7 +153,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 	string product_nodes = productName;
 	product_nodes += "_nodes";	
 	//don't need to do so much work if the number of accepted ids are smaller than 9!
-	
+
 	if (smallNFlag){
 		
 		for(int i=0; i<productN; i++){
@@ -226,57 +226,12 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 				}
 				command += ");" ;
 				}				
-		
+			//	
 						res = stmt->executeQuery(command);
 						res->next();
 						clusterIds[i] = res->getInt("id");
 						
-						string command2 = "select price";
-						conFeatureRangeC[i][0][0] = 10000000;
-						conFeatureRangeC[i][0][1] = 1e-5;
-						for(int f=1; f<conFeatureN; f++){
-							command2 += ", ";
-							ostringstream fst;
-							fst << conFeatureNames[f];
-							command2 += fst.str();
-							
-							////
-							conFeatureRangeC[i][f][0] = 10000000;
-							conFeatureRangeC[i][f][1] = 1e-5;
-							///
-						} 
-						command2 += " from ";
-						command2 += product_nodes;
-						command2 += " where cluster_id=";
-						ostringstream idSt;
-						idSt << clusterIds[i];
-						command2 += idSt.str();
-						
-						command2 += " AND (id=";
-						ostringstream proSt; 
-						proSt<< productIds[0];
-						command2 += proSt.str();
-						for(int p=0; p<productN; p++){
-							command2 += ", ";
-							ostringstream proSt2; 
-							proSt2<< productIds[0];
-							command2 += proSt2.str();
-						} 
-						command2 += ");";
-						
-						double fValue;
-						res = stmt->executeQuery(command2);
-						while (res->next()){
-							for (int f=0; f<conFeatureN; f++){
-								fValue = res->getDouble(conFeatureNames[f]);
-								if (fValue < conFeatureRangeC[i][f][0]){
-									conFeatureRangeC[i][f][0] = fValue;
-								}
-								else if (fValue > conFeatureRangeC[i][f][1]){
-									conFeatureRangeC[i][f][1] = fValue;
-								} 
-							}	
-						}
+				
 					
 					
 						command = "select distinct product_id, cluster_id from ";
@@ -508,9 +463,14 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 					j=0;
 					while(res2->next()){
 						reps[j] = res2->getInt("product_id");
+				
+					
+						
+						
+						
 						j++;
 					}
-					return reped;
+					return reped; ///////////////////////////////////////////////////////////////
 				}
 			}	
 	
@@ -575,6 +535,13 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 				if (rep>0){
 				
 					reps[j] = rep;
+				
+				/////
+						
+				
+				
+				
+				////
 				
 					clusterIds[j] = cId;
 				
@@ -889,6 +856,59 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 		reped=true;
 	} 		
 }
+
+
+for (int r=0; r<repW; r++){
+			string command2 = "select price";
+			conFeatureRangeC[r][0][0] = 10000000;
+			conFeatureRangeC[r][0][1] = 1e-5;
+			for(int f=1; f<conFeatureN; f++){
+				command2 += ", ";
+				ostringstream fst;
+				fst << conFeatureNames[f];
+				command2 += fst.str();
+				
+				////
+				conFeatureRangeC[r][f][0] = 10000000;
+				conFeatureRangeC[r][f][1] = 1e-5;
+				///
+			} 
+			command2 += " from ";
+			command2 += product_nodes;
+			command2 += " where cluster_id=";
+			ostringstream idSt;
+			idSt << clusterIds[r];
+			command2 += idSt.str();
+			
+			command2 += " AND (id=";
+			ostringstream proSt; 
+			proSt<< productIds[0];
+			command2 += proSt.str();
+			for(int p=0; p<productN; p++){
+				command2 += " OR id=";
+				ostringstream proSt2; 
+				proSt2<< productIds[0];
+				command2 += proSt2.str();
+			} 
+			command2 += ");";
+			
+			double fValue;
+			//cout<<"command is "<<command2<<endl;
+			res = stmt->executeQuery(command2);
+			//	cout<<"getRep"<<endl;
+			while (res->next()){
+				for (int f=0; f<conFeatureN; f++){
+					fValue = res->getDouble(conFeatureNames[f]);
+					if (fValue < conFeatureRangeC[r][f][0]){
+						conFeatureRangeC[r][f][0] = fValue;
+					}
+					else if (fValue > conFeatureRangeC[r][f][1]){
+						conFeatureRangeC[r][f][1] = fValue;
+					} 
+				}	
+			}
+}
+   
 	
 	return reped;	
 }
