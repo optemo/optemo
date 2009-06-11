@@ -1,20 +1,19 @@
 <div class="cell">
-<div class="first">	
-<%= image_tag(product.imagemurl, :width => product.imagemw, :height => product.imagemh, :onClick => "fadeout(#{product.id});", :style => "cursor: pointer;") %>
-</div>
-<ul>
-	<% countVar = 0 %>
-	<% session[:productType].constantize::InterestingFeatures.each do |f| %>
-	    <!-- If the interesting feature should be displayed then display -->
-		<% if @interestingFeatureDisplayed[countVar] == true %>
-			<!-- Display Unavailable instead of Unknown-->
-			<% if product.display(f) == 'Unknown' %>
-				<li> Unavailable </li>
-			<% else %>
-				<li><%= product.display(f)[0..20] %></li>
-			<% end %>
-		<% end %>		
-		<% countVar = countVar + 1 %>
-	  <% end %>
-</ul>
+	<!-- If the interesting feature should be displayed then display -->
+	<% if @interestingFeatureDisplayed[countVar] == true %>
+		<td>
+		<% if column == 'brand'%>
+			<%= product.display(column) + ' ' +product.display('model') %>
+		<!-- Display Unavailable instead of Unknown-->
+		<% elsif product.display(column) == 'Unknown' %>
+			Unavailable 
+		<% elsif product.display(column) == 'true' %>
+			&#10003; 
+		<% elsif product.display(column) == 'false' %>
+			x
+		<% else %>
+			<%= product.display(column)[0..20] %>
+		<% end %>			
+		</td>
+	<% end %>
 </div>
