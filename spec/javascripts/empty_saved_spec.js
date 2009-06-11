@@ -3,7 +3,7 @@ require("../../public/javascripts/application.js");
 
 Screw.Unit(function(){
 
-	describe("Saved Items bar", function(){
+	describe("Empty Saved Items bar", function(){
 
 		describe("When empty ", function() {
 			

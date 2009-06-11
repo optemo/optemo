@@ -6,7 +6,7 @@ class CompareController < ApplicationController
   # GET /saveds.xml
     
   def index
-    @products = []
+    @products = [] # Will keep product IDs of saved items
     @displayString = ""
     # To track whether an interesting feature is displayed or not-
     @interestingFeatureDisplayed = Array.new(session[:productType].constantize::DisplayedFeatures.count, false)
