@@ -1,6 +1,6 @@
 <div class="navigator_box" style="left: <%= (i%3)*247 %>px;">
 <div id="box<%=i%>" class="borderbox">
-	<div class='title'><%# (d = @c.desc[i].select{|ii|ii[0]=='descString'}[0][1]).blank? ? "All-Purpose" : d%><%= description(i) %></div>
+	<div class='title'><%= (d = @c.desc[i].select{|ii|ii[0]=='descString'}[0][1]).blank? ? "All-Purpose" : d%></div>
 	<% if !@c.products[i].imagemwidth.blank? %>
 		<%= image_tag @c.products[i].imagemurl, :height => 100, :onClick => "fadeout(#{@c.products[i].id});", :class => "productimg" %> 	<!--:width => @c.products[i].imagemw, :height => @c.products[i].imagemh, -->
 	<%end%>
