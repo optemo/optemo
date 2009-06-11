@@ -6,6 +6,7 @@
 
 .first {
 	height: 100px;
+	text-align: center;
 }
 .first h2{
 	margin: 0;
