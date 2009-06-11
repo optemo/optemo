@@ -2,8 +2,25 @@ class CompareController < ApplicationController
   layout 'optemo'
   # GET /saveds
   # GET /saveds.xml
+  
+  def decideWhichFeaturesToDisplay
+    # To calculate which interesting features are to be displayed: 
+    # Do not display those that are Unknown for all saved printers
+    countVar = 0
+    session[:productType].constantize::InterestingFeatures.each do |column|	    
+  		for i in 0..@products.count-1
+  			if !@products[i].send(column).nil?
+  				@interestingFeatureDisplayed[countVar] = true
+  			end
+  		end
+  		countVar = countVar + 1
+    end
+  end
+  
   def index
     @products = []
+    # To track whether an interesting feature is displayed or not-
+    @interestingFeatureDisplayed = Array.new(session[:productType].constantize::InterestingFeatures.count, false)
     if params[:path_info].blank?
       @saveds = Saved.find_all_by_session_id(session[:user_id])
       @saveds.collect do |saved|
@@ -14,6 +31,8 @@ class CompareController < ApplicationController
       params[:path_info].collect do |id|
         @products << session[:productType].constantize.find(id)
       end
+      # Populate @interestingFeatureDisplayed variable first
+      decideWhichFeaturesToDisplay
       respond_to do |format|
         format.html # index.html.erb
         format.xml  { render :xml => @products }
