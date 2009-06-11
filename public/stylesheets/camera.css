@@ -230,6 +230,8 @@ div #filterbar {
 	margin-left: 5px;
 	width: 187px;
 	margin-top: 0.6em;
+}
+.space {
 	margin-bottom: 20px; /*Spacing for histogram*/
 }
 .handle img{

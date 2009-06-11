@@ -8,6 +8,7 @@ class Camera < ActiveRecord::Base
   named_scope :instock, :conditions => "instock is true"
   InterestingFeatures = %w(pricestr brand digitalzoom displaysize itemheight itemlength itemwidth itemweight label listpricestr maximumresolution maximumfocallength minimumfocallength model opticalzoom packageheight packageweight packagelength packagewidth title merchant iseligibleforsupersavershipping)
   MainFeatures = %w(maximumresolution displaysize opticalzoom)
+  BinaryFeatures = []
   MainFeaturesDisp = %w(Megapixels Display\ Size Optical\ Zoom)
   MainFeaturesLabel = Hash[*MainFeatures.zip(['','in','X']).flatten]
   ShowFeatures = %w(brand model maximumresolution opticalzoom digitalzoom displaysize maximumfocallength minimumfocallength batterydescription hasredeyereduction itemweight itemwidth packagewidth)

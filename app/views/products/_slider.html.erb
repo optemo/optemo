@@ -6,7 +6,7 @@
 	  <%= '$' if money_formatting %><%= @c.filterinfo["#{val}_min"].to_i %>-<%= '$' if money_formatting %><%=  @c.filterinfo["#{val}_max"].ceil %> <%= session[:productType].constantize::MainFeaturesLabel[val] %>
 	<% end %>
 </div>
-<div class='label'>
+<div class='label space'>
 	<%= name %>
 </div>
 <div class="hist" 
