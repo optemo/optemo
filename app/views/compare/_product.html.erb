@@ -8,7 +8,7 @@
 		<% elsif product.display(column) == 'Unknown' %>
 			Unavailable 
 		<% elsif product.display(column) == 'true' %>
-			&#10003; 
+<%= image_tag "/images/checkmark.png", :width => 18, :height => 18 %>
 		<% elsif product.display(column) == 'false' %>
 			x
 		<% else %>

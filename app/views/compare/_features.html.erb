@@ -1,0 +1,24 @@
+<td>
+	<% displayString = column.gsub(/_id$/, '').gsub(/str$/,' ').gsub(/_/,' ') %>
+
+	<!-- Change what needs to be shown -->
+	<% if displayString == 'brand'%>
+		Model
+   	<% elsif displayString == 'ppm' %>
+		Pages Per Minute
+   	<% elsif displayString == 'colorprinter' %>
+		Color Printer
+   	<% elsif displayString == 'printserver' %>
+		Print Server
+   	<% elsif displayString == 'paperinput' %>
+		Paper Input
+   	<% elsif displayString == 'ppmcolor' %>
+		Pages Per Minute, Colored
+  	<% elsif displayString == 'itemwidth' || displayString == 'itemlength' || displayString == 'itemheight' || displayString == 'itemweight' %>
+		<%= displayString[0..3].capitalize + ' ' + displayString[4..-1] %>
+ 	<% elsif displayString == 'packagewidth' || displayString == 'packagelength' || displayString == 'packageheight' || displayString == 'packageweight' %>
+		<%= displayString[0..6].capitalize + ' ' + displayString[7..-1] %>
+	<% else %>
+    	<%= displayString.capitalize %>
+    <% end %>  
+</td>
