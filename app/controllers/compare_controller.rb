@@ -21,6 +21,7 @@ class CompareController < ApplicationController
   
   def index
     @products = []
+    @displayString = "String"
     # To track whether an interesting feature is displayed or not-
     @interestingFeatureDisplayed = Array.new(session[:productType].constantize::InterestingFeatures.count, false)
     if params[:path_info].blank?
@@ -130,3 +131,29 @@ class CompareController < ApplicationController
     end
   end
 end
+
+def featuresDictionary
+  displayString = @displayString
+
+  case displayString
+    when 'brand':
+      return "Model"
+    when 'ppm': 
+    	return "Pages Per Minute"
+    when 'colorprinter':
+    	return "Color Printer"
+    when 'printserver':
+    	return "Print Server"
+    when 'paperinput': 
+    	return "Paper Input"
+    when 'ppmcolor': 
+    	return "Pages Per Minute, Colored"
+    when 'itemwidth', 'itemlength', 'itemheight', 'itemweight': 
+    	return displayString[0..3].capitalize + ' ' + displayString[4..-1] 
+    when "packagewidth", "packagelength", "packageheight", "packageweight":
+    	return  displayString[0..6].capitalize + ' ' + displayString[7..-1] 
+    else 
+      return displayString.capitalize 
+    end
+end
+
