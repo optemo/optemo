@@ -1,4 +1,6 @@
 class CompareController < ApplicationController
+# Compares products selected for comparison ('saved' products)
+  
   layout 'optemo'
   # GET /saveds
   # GET /saveds.xml
@@ -26,7 +28,11 @@ class CompareController < ApplicationController
       @saveds.collect do |saved|
         @products << saved.product_id
       end
-      redirect_to "/compare/#{@products.join('/')}"
+      if @products.empty?
+        redirect_to "/printers"
+      else
+        redirect_to "/compare/#{@products.join('/')}"
+      end
     else
       params[:path_info].collect do |id|
         @products << session[:productType].constantize.find(id)

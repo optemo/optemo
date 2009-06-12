@@ -4,6 +4,7 @@ class SavedsController < ApplicationController
 
     #Cleanse id to be only numbers
     params[:id].gsub!(/\D/,'')
+    #If product hasn't been put in Saved by that user yet:
     if Saved.find_by_product_id_and_session_id(params[:id],session[:user_id]).nil?
       @product = session[:productType].constantize.find(params[:id])
       s = Saved.new

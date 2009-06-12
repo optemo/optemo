@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
 	string** descStrings;
 	string pathS =""; //= "/optemo/site/config/database.yml";
 	//char* path;
-	string mode = "development";
+	string mode = ""; //"development";
 
 	//productName
 	var = "product_name";
@@ -328,16 +328,17 @@ if (pos>1){
 ///////////////////////////////////////////////
 		
 			try {
-			
+		
 				// Using the Driver to create a connection
 				driver = sql::mysql::get_mysql_driver_instance();
 				con = driver->connect(HOST, PORT, USER, PASS);
 				stmt = con->createStatement();
+					
 				string command = "USE ";
 				command += databaseName;
 				
 				stmt->execute(command);
-				
+			
 				int size;
 				string out = "";
 			
@@ -368,12 +369,12 @@ if (pos>1){
 				cidstream << clusterIDs[safeID];
 				command += cidstream.str();
 				command += ";";
-			
+		//	cout<<"command is "<<command<<endl;
 				res = stmt->executeQuery(command);
 				res->next();
 	
-				clusterID = res->getDouble("parent_id");
-			
+				clusterID = res->getInt("parent_id");
+				
 				if (clusterID == 0){
 				
 					command = "SELECT id from ";
@@ -394,9 +395,9 @@ if (pos>1){
 				command += cid.str();
 				
 				command += ";";
-			
+			//	cout<<"commad is "<<command<<endl;
 				res = stmt->executeQuery(command);
-						
+				
 				size = res->rowsCount();
 			}
 			}	
@@ -405,7 +406,7 @@ if (pos>1){
 			for (int f=0; f<conFeatureN; f++){
 				bucketCount[f] = new double [bucketDiv];
 			}
-	
+		
 		//if searchBoxFlag
 		if (searchBoxFlag){
 			
@@ -451,10 +452,12 @@ if (pos>1){
 				
 			}
 			else{
+							
 					reped = getRep(reps, productIDs, productN, resultClusters, childrenIDs, conFeatureRangeC, clusterCounts, childrenCount, conFeatureN, repW, stmt, 
 							res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames, searchBoxFlag);
-						
+					//	cout<<"HERE"<<endl;	
 			}
+	
 				if(reped){			
 					getIndicators(resultClusters,repW, conFeatureN, conFeatureRangeC, conFilteredFeatures, indicators, stmt, res, mergedClusterIDs, productName, conFeatureNames);
 				}

@@ -5,30 +5,36 @@
 	  <%= text_field_tag 'search' %>
 	  <%= submit_tag 'Search', {:id => 'submit_button'} %>
 	  <% end %>
-	
+
 	<!-- The Saved Items box -->
 	<div id="savebar">
 		<h2>Saved Items</h2>
 		<div id="savebar_content">
-			<% if @picked_products.empty? %>
-	  			<p id="deleteme">Save some products to add them to this list</p>
-			<% else %>
-	  			<%= render :partial => 'product', :collection => @picked_products%>
-			<% end %>
-		</div>
-		<div style = "clear: both;"><a href='/compare'>Compare them!</a>
-		</div>
-	</div>
-		
-	<!-- The Filters section -->
-	<div id="filterbar">
-		<h2>Filters</h2>
-		<% form_tag("/search/filter/#{@c.to_s}",{:id => 'filter_form'}) do %>
-		<!-- Filter partial to draw the filter controls -->
-		<%= render :partial => 'filter' %>
-		<br>
+		<p id="already_added_msg" style="display:none">You already added that product!</p>
+		<p id="deleteme"
+			<% if @picked_products.empty? %> style="display:block" 
+			<% else %> style="display:none" <% end %>
+			> Save some products to add them to this list</p>
+		<% if (@picked_products.empty? == false) %>
+		  <%= render :partial => 'product', :collection => @picked_products%>
 		<% end %>
+		</div>
+		<!-- Hide if 0 products, show if 1/more. -->
+		<div style = "clear: both;"> <a id="compare_button" 
+			<%if @picked_products.empty? %> style="display:none" 
+			<% else %> style="display:block" <% end %> 
+		 href='/compare'>Compare them!</a></div>
 	</div>
+
+<!-- The Filters section -->
+<div id="filterbar">
+	<h2>Filters</h2>
+	<% form_tag("/search/filter/#{@c.to_s}",{:id => 'filter_form'}) do %>
+		<!-- Filter partial to draw the filter controls -->
+	  	<%= render :partial => 'filter' %>
+	  	<br>
+	<% end %>
+</div>
 </div>
 
 <div class="main">
