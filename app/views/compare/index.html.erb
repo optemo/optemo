@@ -18,7 +18,7 @@
 		<% end %>
 	</tr>
 	<% countVar = 0%>
-	<% session[:productType].constantize::InterestingFeatures.each do |column| %>	    
+	<% session[:productType].constantize::DisplayedFeatures.each do |column| %>	    
 		<% if @interestingFeatureDisplayed[countVar] == true %>
 			<tr> 
 				<!-- To display the name of the feature -->

@@ -4,26 +4,12 @@ class CompareController < ApplicationController
   layout 'optemo'
   # GET /saveds
   # GET /saveds.xml
-  
-  def decideWhichFeaturesToDisplay
-    # To calculate which interesting features are to be displayed: 
-    # Do not display those that are Unknown for all saved printers
-    countVar = 0
-    session[:productType].constantize::InterestingFeatures.each do |column|	    
-  		for i in 0..@products.count-1
-  			if !@products[i].send(column).nil?
-  				@interestingFeatureDisplayed[countVar] = true
-  			end
-  		end
-  		countVar = countVar + 1
-    end
-  end
-  
+    
   def index
     @products = []
     @displayString = "String"
     # To track whether an interesting feature is displayed or not-
-    @interestingFeatureDisplayed = Array.new(session[:productType].constantize::InterestingFeatures.count, false)
+    @interestingFeatureDisplayed = Array.new(session[:productType].constantize::DisplayedFeatures.count, false)
     if params[:path_info].blank?
       @saveds = Saved.find_all_by_session_id(session[:user_id])
       @saveds.collect do |saved|
@@ -132,6 +118,37 @@ class CompareController < ApplicationController
   end
 end
 
+def decideWhichFeaturesToDisplay
+  # To calculate which interesting features are to be displayed: 
+  # Do not display those that are Unknown for all saved printers
+  countVar = 0
+  session[:productType].constantize::DisplayedFeatures.each do |column|	    
+		for i in 0..@products.count-1
+			if canShowFeature? (column, i)
+				@interestingFeatureDisplayed[countVar] = true
+			end
+		end
+		countVar = countVar + 1
+  end
+end
+
+def canShowFeature? (column, i)
+  if column == 'itemdimensions'
+    if @products[i].send('itemlength') != nil && @products[i].send('itemwidth') != nil && @products[i].send('itemheight') != nil  
+      return true
+    end
+  elsif column == 'packagedimensions'
+    if @products[i].send('packagelength') != nil && @products[i].send('packagewidth') != nil && @products[i].send('packageheight') != nil
+      return true
+    end
+  elsif @products[i].send(column).nil?
+    return false
+  else
+    return true
+  end
+end
+
+
 def featuresDictionary
   displayString = @displayString
 
@@ -148,12 +165,19 @@ def featuresDictionary
     	return "Paper Input"
     when 'ppmcolor': 
     	return "Pages Per Minute, Colored"
+    when "itemdimensions":
+      return "Item dimensions"
+    when "packagedimensions":
+      return "Package dimensions"
+    else 
+      return displayString.capitalize 
+    end
+=begin
     when 'itemwidth', 'itemlength', 'itemheight', 'itemweight': 
     	return displayString[0..3].capitalize + ' ' + displayString[4..-1] 
     when "packagewidth", "packagelength", "packageheight", "packageweight":
     	return  displayString[0..6].capitalize + ' ' + displayString[7..-1] 
-    else 
-      return displayString.capitalize 
-    end
+=end
+
 end
 
