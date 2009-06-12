@@ -14,7 +14,7 @@
 			</div>
 		</td>
 		<% for i in 0..@products.count-1%>
-		<%= render :partial => 'thumbnails', :object => @products[i] %>
+			<%= render :partial => 'thumbnails', :object => @products[i] %>			
 		<% end %>
 	</tr>
 	<% countVar = 0%>

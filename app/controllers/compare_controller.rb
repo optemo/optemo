@@ -148,7 +148,6 @@ def canShowFeature? (column, i)
   end
 end
 
-
 def featuresDictionary
   displayString = @displayString
 
@@ -167,8 +166,12 @@ def featuresDictionary
     	return "Pages Per Minute, Colored"
     when "itemdimensions":
       return "Item dimensions"
+    when "itemweight":
+      return "Item weight"
     when "packagedimensions":
       return "Package dimensions"
+    when "packageweight"
+      return "Package weight"
     else 
       return displayString.capitalize 
     end
