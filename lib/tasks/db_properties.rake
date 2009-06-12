@@ -31,26 +31,27 @@ end
 
 def create_product_properties(model)
   #Collect new properties
-  @prop = DbProperty.new
-  @prop.name = model.name
-  @prop.brands = model.instock.map{|u| u.brand}.compact.uniq.join('*')
-  @prop.price_min = model.instock.map{|p| p.price}.reject{|c|c.nil?}.sort[0]
-  @prop.price_max = model.instock.map{|p| p.price}.sort[-1]
-  @prop.save
-  model::MainFeatures.each {|name|
+  model::CategoricalFeatures.each {|name|
     f = DbFeature.new
-    f.db_property = @prop
+    f.product_type = model.name
+    f.name = name
+    f.categories = model.instock.map{|c|c.send(name.intern)}.compact.uniq.join('*')
+    f.save
+  }
+  model::ContinuousFeatures.each {|name|
+    f = DbFeature.new
+    f.product_type = model.name
     f.name = name
     f.min = model.valid.instock.map{|c|c.send(name.intern)}.reject{|c|c.nil?}.sort[0]
     f.max = model.valid.instock.map{|c|c.send(name.intern)}.sort[-1]
     f.high = model.valid.instock.map{|c|c.send(name.intern)}.sort[model.valid.instock.count*0.75]
     f.low = model.valid.instock.map{|c|c.send(name.intern)}.sort[model.valid.instock.count*0.25]
-    f.save!
+    f.save
   }
   model::BinaryFeatures.each {|name|
     f = DbFeature.new
     f.db_property = @prop
     f.name = name
-    f.save!
+    f.save
   }
 end

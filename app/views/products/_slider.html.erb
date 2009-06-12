@@ -1,9 +1,9 @@
 <div class='feature'>
 <div class='disp'>
 	<!-- MoneyFormatting -- $<%= @search.nil? ? min.to_i : @search.send("#{val}_min".intern) < min ? min.to_i : @search.send("#{val}_min".intern).to_i %>-$<%= @search.nil? ? max.ceil : @search.send("#{val}_max".intern) > max ? max.ceil : @search.send("#{val}_max".intern).ceil %>-->
-	<!-- RegularFormatting -- <%= @search.nil? ? min : @search.send("#{val}_min".intern) %>-<%= @search.nil? ? max : @search.send("#{val}_max".intern) %> <%= session[:productType].constantize::MainFeaturesLabel[val] %>-->
+	<!-- RegularFormatting -- <%= @search.nil? ? min : @search.send("#{val}_min".intern) %>-<%= @search.nil? ? max : @search.send("#{val}_max".intern) %> <%= session[:productType].constantize::ContinuousFeaturesLabel[val] %>-->
 	<% if @c.filterinfo && @c.filterinfo["#{val}_max"] %>
-	  <%= '$' if money_formatting %><%= @c.filterinfo["#{val}_min"].to_i %>-<%= '$' if money_formatting %><%=  @c.filterinfo["#{val}_max"].ceil %> <%= session[:productType].constantize::MainFeaturesLabel[val] %>
+	  <%= '$' if money_formatting %><%= @c.filterinfo["#{val}_min"].to_i %>-<%= '$' if money_formatting %><%=  @c.filterinfo["#{val}_max"].ceil %> <%= session[:productType].constantize::ContinuousFeaturesLabel[val] %>
 	<% end %>
 </div>
 <div class='label space'>

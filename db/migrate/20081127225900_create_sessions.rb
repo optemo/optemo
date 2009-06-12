@@ -6,6 +6,7 @@ class CreateSessions < ActiveRecord::Migration
       t.primary_key :id
       t.string :ip
       t.integer :parent_id
+      t.string :product_type
       t.string :brand, :default => "All Brands"
       DbFeature.find(:all).each do |f|
         min = f.name+'_min'

@@ -6,6 +6,9 @@ class CreateSearches < ActiveRecord::Migration
       t.integer :parent_id
       t.integer :cluster_id
       t.integer :product_id
+      t.integer :c0,:c1,:c2,:c3,:c4,:c5,:c6,:c7,:c8
+      t.integer :cluster_count
+      t.integer :result_count
       t.integer :filter
       t.string :brand, :default => "All Brands"
       DbFeature.find(:all).each do |f|

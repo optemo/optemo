@@ -8,14 +8,14 @@
 <%= select('myfilter', 'brand', [selectmsg.nil? ? "All Brands" : selectmsg] +@dbprops.brands.split('*'), options={}, {:onchange => "$('#filter_form').submit()"}) %>
 <%= hidden_field_tag "myfilter[Xbrand]"%>
 
-<% session[:productType].constantize::MainFeatures.each_index do |i| %>
+<% session[:productType].constantize::ContinuousFeatures.each_index do |i| %>
 	<%= render :partial => 'slider', 
-		:locals => {:name => session[:productType].constantize::MainFeaturesDisp[i], 
-		:val => session[:productType].constantize::MainFeatures[i], 
+		:locals => {:name => session[:productType].constantize::ContinuousFeaturesDisp[i], 
+		:val => session[:productType].constantize::ContinuousFeatures[i], 
 		:money_formatting => false, 
 		:ses_name => "f#{i}", 
-		:min => @dbprops.db_features.find_by_name(session[:productType].constantize::MainFeatures[i]).min, 
-		:max => @dbprops.db_features.find_by_name(session[:productType].constantize::MainFeatures[i]).max} %>
+		:min => @dbprops.db_features.find_by_name(session[:productType].constantize::ContinuousFeatures[i]).min, 
+		:max => @dbprops.db_features.find_by_name(session[:productType].constantize::ContinuousFeatures[i]).max} %>
 <% end %>
 <%= render :partial => 'slider', 
 	:locals => {:name => 'Price', 
