@@ -1,75 +1,36 @@
-require 'bestbuy_ecs'
-$PRODUCT_TYPE = 'Printer'
-$RETAILER = 'BestBuy'
-desc "Download BestBuy data with Remix"
-task :remix_BestBuy => :environment do
-  e = BestBuy::Ecs.new
-  r = e.product_search({:category => 'Laser*'})
-  puts "Total resuts: "+r.total_results.to_s
-  downloadResults(r)
+desc "Download RSS feed"
+task :bb_rss => :environment do
+  require 'simple-rss'
+  require 'open-uri'
+  source = "http://www.bestbuy.ca/RSSFEeds/GetProductsFeedForMobile.aspx?langid=EN" # url or local file
+  SimpleRSS.item_tags = SimpleRSS.item_tags + %w(FS:CategoryID FS:Manufacturer FS:ProvinceCode FS:ImageUrl FS:LongDescription FS:ItemSpecs FS:CatGroup FS:CatDept FS:CatClass FS:CatSubClass FS:Price)
+  
+  rss = SimpleRSS.parse open(source)
+  
+  puts "Root values"
+  print "RSS title: ", rss.channel.title, "\n"
+  print "RSS link: ", rss.channel.link, "\n"
+  print "RSS description: ", rss.channel.description, "\n"
+  #print "RSS publication date: ", rss.channel.date, "\n"
+
+  puts "Item values"
+  print "number of items: ", rss.items.size, "\n"
+  #puts SimpleRSS.item_tags
+  puts rss.items[0].FS_CategoryID
+  puts rss.items[1].FS_ItemSpecs
+  print "title of first item: ", rss.items[0].title, "\n"
+  print "link of first item: ", rss.items[0].link, "\n"
+  #print "description of first item: ", rss.items[0].description, "\n"
+  #print "date of first item: ", rss.items[0].date, "\n"
 end
 
-def downloadResults(r)
-  loop do
-    r.items.each do |i|
-      h = i.get_hash
-      h.delete(:"\n")
-      h[:bb_class] = h.delete(:class) #reserved ruby functions
-      h[:bb_new] = h.delete(:new)
-      if m = matchPrinter(h)
-        productOffering(m,h)
-        h[:printer_id] = m
-      end
-      p = BestBuyPrinter.new(h)
-      p.save
-    end
-    sleep(0.2) # 5 reqs / sec
-    break if (r = r.next_results).nil?
-  end
-end
-
-def productOffering(product_id,h)
-  retailer_id = Retailer.find_by_name($RETAILER).id
-  o = RetailerOffering.find_by_product_id_and_product_type_and_retailer_id(product_id,$PRODUCT_TYPE,retailer_id)
-  if o.nil?
-    o = RetailerOffering.new
-    o.product_id = product_id
-    o.product_type = $PRODUCT_TYPE
-    o.retailer_id = retailer_id
-  elsif o.priceint != (h[:salePrice].to_f*100).to_i
-    #Save old prices only if price has changed
-    if o.pricehistory.nil?
-      o.pricehistory = [o.priceUpdate.to_s(:db), o.priceint].to_yaml
-    else
-      o.pricehistory = (YAML.load(o.pricehistory) + [o.priceUpdate.to_s(:db), o.priceint]).to_yaml
-    end
-  end
-  o.active = h[:active]
-  o.activeUpdate = h[:activeUpdateDate]
-  o.stock = h[:onlineAvailability]
-  o.availability = h[:onlineAvailabilityText]
-  o.availabilityUpdate h[:onlineAvailabilityUpdateDate]
-  o.pricestr = '$' + h[:salePrice].to_s
-  o.priceint = (h[:salePrice].to_f*100).to_i
-  o.priceUpdate = h[:priceUpdateDate]
-  o.shippingCost = h[:shippingCost]
-  o.freeShipping = h[:freeShipping]
-  o.url = h[:cjAffiliateUrl]
-  o.save
-end
-
-def matchPrinter(h)
-  product = Printer.find_by_model(h[:modelNumber])
-  return product.id unless product.nil? #Easy, match by model
-  match = nil
-  Printer.all.each do |printer|
-    if printer.model && printer.model.index(h[:modelNumber])
-      if match.nil?
-        match = printer
-      else
-        raise StandardException "Double match: #{printer.id} with #{match.id} for #{h[:sku]}"
-      end
-    end
-  end
-  match.id unless match.nil?
-end
+#<IA SKU_ID="0926INGFS10113411" FS_SKU_ID="10113411" MFG_PART_NUM="G384 TRAIL BAG">
+#	<ATT DEF_AVAIL="False" ATT_ID="WEBCODE">
+#		<ATT_NAME><![CDATA[Web Code]]></ATT_NAME>
+#		<ATT_VALUE><![CDATA[10113411]]></ATT_VALUE>
+#	</ATT>
+#	<ATT DEF_AVAIL="False" ATT_ID="MFRPARTNUM">
+#		<ATT_NAME><![CDATA[Mfr. Part Number]]></ATT_NAME>
+#		<ATT_VALUE><![CDATA[G384 TRAIL BAG]]></ATT_VALUE>
+#	</ATT>
+#</IA>
