@@ -91,6 +91,8 @@ module ProductProperties
         when /[^p][^a][^p][^e][^r]size/: ' in.' 
         when /(item|package)(width|length|height)/: data = data.to_f/100
           '"'
+        when /(item|package)(weight)/: data = data.to_f/100
+          ' lbs'
         when /resolution/: ' dpi'
         when /focal/: ' mm.'
         when /ttp/: ' seconds'
