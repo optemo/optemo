@@ -170,10 +170,10 @@ ActiveRecord::Schema.define(:version => 20090608222826) do
     t.text     "specialfeatures"
     t.string   "studio"
     t.text     "title"
+    t.string   "merchant"
     t.integer  "salepriceint"
     t.string   "salepricestr"
     t.boolean  "iseligibleforsupersavershipping"
-    t.integer  "bestoffer"
     t.string   "imagesurl"
     t.integer  "imagesheight"
     t.integer  "imageswidth"
@@ -183,9 +183,11 @@ ActiveRecord::Schema.define(:version => 20090608222826) do
     t.string   "imagelurl"
     t.integer  "imagelheight"
     t.integer  "imagelwidth"
-    t.boolean  "instock"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "instock"
+    t.string   "pricehistory"
+    t.integer  "bestoffer"
   end
 
   create_table "db_features", :force => true do |t|
