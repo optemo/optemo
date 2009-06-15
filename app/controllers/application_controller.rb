@@ -27,10 +27,16 @@ class ApplicationController < ActionController::Base
   
   def update_user
    if session[:user_id].blank? || !Session.exists?(session[:user_id])
-      #Create a new session
-      mysession = Session.new
-      mysession.ip = request.remote_ip
-      mysession.save
+      #Find the user's session if there are no cookies
+      mysession = Session.find(:first, :conditions => ['ip = ? and updated_at > ?',request.remote_ip,30.minutes.ago])
+      if mysession.nil?
+        #Create a new session
+        mysession = Session.new
+        mysession.ip = request.remote_ip
+        mysession.save
+      else
+        mysession.update_attribute(:updated_at, Time.now)
+      end
       session[:user_id] = mysession.id
     end
   end

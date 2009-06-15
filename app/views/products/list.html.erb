@@ -1,6 +1,7 @@
 <% self.full_title = 'LaserPrinterHub - Find Laser Printers, Compare Prices, then Buy' %>
 <div id="leftbar">
 	Browsing <%= @c.result_count %> <%= @pt.pluralize.capitalize %>
+	<% if RAILS_ENV == 'development' %>Session id: <%= session[:user_id] %> <% end %>
 	<!-- The Search box -->
 	<% form_tag ("/search/find/#{@c.to_s}") do %>
 	  <%= text_field_tag 'search' %>
