@@ -6,8 +6,8 @@
 
 <!-- To display the names of interesting features that are known for at least one saved product-->
 <center><h1>Product Comparison</h1></center>			
-<table height="100%" width="100%" border="1" cellspacing="0" cellpadding="5">
-	<tr>
+<table id="comparisonTable" height="100%" width="100%" border="1" cellspacing="0" cellpadding="5">
+	<tr class="nodrag nodrop">
 		<td> 
 			<div class="first">				
 				<br><br>
@@ -15,11 +15,12 @@
 			</div>
 		</td>
 		<% for i in 0..@products.count-1%>
-		<%= render :partial => 'thumbnails', :object => @products[i] %>
+			<%= render :partial => 'thumbnails', :object => @products[i], :locals => {:oldBack=>:back} %>	
+																											<!-- ToDo: OldBack needs to be used to retain history after Deleting column-->		
 		<% end %>
 	</tr>
 	<% countVar = 0%>
-	<% session[:productType].constantize::InterestingFeatures.each do |column| %>	    
+	<% session[:productType].constantize::DisplayedFeatures.each do |column| %>	    
 		<% if @interestingFeatureDisplayed[countVar] == true %>
 			<tr> 
 				<!-- To display the name of the feature -->

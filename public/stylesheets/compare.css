@@ -4,6 +4,10 @@
 	overflow: hidden;
 }
 
+.rowBeingDragged{
+	background: #CCCC00;
+}
+
 .first {
 	height: 100px;
 	text-align: center;
@@ -11,6 +15,7 @@
 .first h2{
 	margin: 0;
 }
+
 #graco, #sames, #iwata, #dopag {
 width: 570px;
 border: solid 2px #7e7e7e;

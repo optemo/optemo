@@ -61,8 +61,16 @@ function removeBrand(str)
 	$('#filter_form').submit();
 }
 
-
 $(document).ready(function() {
+	// ToDo: Add code for table drag drop here
+	
+	$("#comparisonTable").tableDnD({
+		onDragClass: "rowBeingDragged",
+		onDrop: function(table, row){		
+		}
+	});
+	
+		
 	//Set up sliders
 	$('.slider').each(function () {
 		curmin = parseInt($(this).attr('data-startmin'));
