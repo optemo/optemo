@@ -6,7 +6,7 @@
 <!-- To display the names of interesting features that are known for at least one saved product-->
 <center><h1>Product Comparison</h1></center>			
 <table id="comparisonTable" height="100%" width="100%" border="1" cellspacing="0" cellpadding="5">
-	<tr class="nodrag nodrop">
+	<tr id= "firstRow" class="nodrag nodrop">
 		<td> 
 			<div class="first">				
 				<br><br>
@@ -21,7 +21,8 @@
 	<% countVar = 0%>
 	<% session[:productType].constantize::DisplayedFeatures.each do |column| %>	    
 		<% if @interestingFeatureDisplayed[countVar] == true %>
-			<tr> 
+			<!-- Assign IDs to rows. These IDs are returned by the serialize() function in javascript and is used to record user's preferences-->
+			<tr id = <%= column %> > 
 				<!-- To display the name of the feature -->
 				<%= render :partial => 'features', :locals => {:column=>column} %>
 				<!-- To display the value of each interesting feature -->

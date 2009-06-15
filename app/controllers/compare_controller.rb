@@ -7,7 +7,7 @@ class CompareController < ApplicationController
     
   def index
     @products = []
-    @displayString = "String"
+    @displayString = ""
     # To track whether an interesting feature is displayed or not-
     @interestingFeatureDisplayed = Array.new(session[:productType].constantize::DisplayedFeatures.count, false)
     if params[:path_info].blank?
@@ -34,6 +34,16 @@ class CompareController < ApplicationController
   end
   
   def list
+#    newPrefList = []
+#    newPrefList = params[:comparisonTable]
+#    eval('session[:productType].constantize::DisplayedFeatures = %w(ppm ppm)')
+#    redirect_to('/compare/index')
+    
+#    session[:productType].constantize::DisplayedFeatures = %w(brand ppm ttp resolution)
+#    eval('session[:productType].constantize::DisplayedFeatures =  newPrefList')
+  
+    #redirect_to('/compare')
+=begin
     @saveds = []
     params[:path_info].collect do |id|
       @saveds << session[:productType].constantize.find(id)
@@ -42,6 +52,7 @@ class CompareController < ApplicationController
       format.html # index.html.erb
       format.xml  { render :xml => @products }
     end
+=end
   end
 
   # GET /saveds/1

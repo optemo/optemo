@@ -67,10 +67,11 @@ $(document).ready(function() {
 	$("#comparisonTable").tableDnD({
 		onDragClass: "rowBeingDragged",
 		onDrop: function(table, row){		
+			newPreferencesString = $.tableDnD.serialize();
+			// window.location = "/compare/list?" + newPrefString
 		}
 	});
-	
-		
+			
 	//Set up sliders
 	$('.slider').each(function () {
 		curmin = parseInt($(this).attr('data-startmin'));
