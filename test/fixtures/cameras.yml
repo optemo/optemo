@@ -4,14 +4,14 @@ one:
     id: 1
     opticalzoom: 2
     maximumresolution: 9.1
-    salepriceint: 10000
-    displaysize: 2
+    price: 10000
+    displaysize: 1.5
     asin: "www.amazon.com/1" 
 
 two:
     id: 2
     opticalzoom: 4
     maximumresolution: 9.1
-    salepriceint: 100000
-    displaysize: 2
+    price: 100000
+    displaysize: 1.5
     asin: "www.amazon.com/2"  

@@ -11,12 +11,12 @@ class CreateSearches < ActiveRecord::Migration
       t.integer :result_count
       t.integer :filter
       t.string :brand, :default => "All Brands"
-      DbFeature.find(:all).each do |f|
-        min = f.name+'_min'
-        max = f.name+'_max'
-        t.float min.intern, :default => f.min.to_i
-        t.float max.intern, :default => f.max.ceil
-      end
+      #DbFeature.find(:all).each do |f|
+      #  min = f.name+'_min'
+      #  max = f.name+'_max'
+      #  t.float min.intern, :default => f.min.to_i
+      #  t.float max.intern, :default => f.max.ceil
+      #end
       t.float :price_min, :default => 0
       t.float :price_max, :default => 10000000
       t.timestamps

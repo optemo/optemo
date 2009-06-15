@@ -8,16 +8,36 @@ class Search < ActiveRecord::Base
     f = DbFeature.find_by_name_and_product_type(featureName,session.product_type)
     stepsize = (f.max-f.min)/10 
     res = []
-    0..9.each do |i|
+    #debugger
+    10.times do |i|
       min = f.min + stepsize*i
       max = min + stepsize
-      chooseclusters = 0..cluster_count.map{|c| "cluster_id = #{send ('c'+c).intern}"}.join(' OR ')
-      res << (session.product_type+'Node').constantize.find(:all, :conditions => ["#{featureName} < ? and #{featureName} >= ? and #{chooseclusters} ",max,min]).count
+      clusters = []
+      cluster_count.times do |c|
+        clusters << "cluster_id = #{send(('c'+c.to_s).intern)}"
+      end
+      chooseclusters = clusters.join(' OR ')
+      if max==min
+        res << (session.product_type+'Node').constantize.find(:all, :conditions => ["#{featureName} = ? and #{chooseclusters} ",max]).length
+      else  
+        res << (session.product_type+'Node').constantize.find(:all, :conditions => ["#{featureName} < ? and #{featureName} >= ? and #{chooseclusters} ",max,min]).length
+      end
     end
-    res
+    normalize(res)
   end
   #Range of product offerings
   def ranges()
     
+  end
+  
+  private
+  
+  def normalize(a)
+    total = a.sum
+    if total==0 
+      a  
+    else  
+      a.map{|i| i.to_f/total} 
+    end  
   end
 end

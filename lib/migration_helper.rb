@@ -3,8 +3,8 @@ module MigrationHelper
     
     t.text    :title
     
-    t.integer :salepriceint
-    t.string  :salepricestr
+    t.integer :price
+    t.string  :pricestr
     t.boolean :iseligibleforsupersavershipping
     t.integer :bestoffer
     

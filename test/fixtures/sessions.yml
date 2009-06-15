@@ -4,8 +4,9 @@
 #       created_at: 
 #       updated_at"
        ip:                      55.32.12.5
+       id:                      1    
        parent_id:               0
-       brand:                   "Brother"
+       brand:                   "Olympus"
        maximumresolution_min:   2
        maximumresolution_max:   10
        displaysize_min:         2
@@ -22,6 +23,7 @@
        resolutionarea_max:      50000000
        price_min:               0
        price_max:               10000000.0
+       product_type:            "Camera"
 
 # two:
 #   column: value

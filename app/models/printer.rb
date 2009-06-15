@@ -3,13 +3,13 @@ class Printer < ActiveRecord::Base
   include ProductProperties
   #Ultrasphinx field selection
   is_indexed :fields => ['title', 'feature']
-  named_scope :priced, :conditions => "salepriceint IS NOT NULL"
-  named_scope :valid, :conditions => %w(ppm itemwidth paperinput salepriceint resolutionarea scanner printserver).map{|i|i+' IS NOT NULL'}.join(' AND ')
-  named_scope :invalid, :conditions => %w(ppm itemwidth paperinput).map{|i|i+' IS NULL'}.join(' OR ')+" OR (salepriceint IS NULL AND listpriceint IS NULL)"
+  named_scope :priced, :conditions => "price IS NOT NULL"
+  named_scope :valid, :conditions => %w(ppm itemwidth paperinput price resolutionarea scanner printserver).map{|i|i+' IS NOT NULL'}.join(' AND ')
+  named_scope :invalid, :conditions => %w(ppm itemwidth paperinput).map{|i|i+' IS NULL'}.join(' OR ')+" OR (price IS NULL AND listpriceint IS NULL)"
   named_scope :fewfeatures, :conditions => %w(ppm ttp paperinput).map{|i|i+' IS NULL'}.join(' OR ')
   named_scope :instock, :conditions => "instock is true"
-  named_scope :newfeatures, :conditions => %w(ppm itemwidth paperinput resolutionarea salepriceint scanner printserver).map{|i|i+' IS NOT NULL'}.join(' AND ')
-  ContinuousFeatures = %w(ppm itemwidth paperinput salepriceint)
+  named_scope :newfeatures, :conditions => %w(ppm itemwidth paperinput resolutionarea price scanner printserver).map{|i|i+' IS NOT NULL'}.join(' AND ')
+  ContinuousFeatures = %w(ppm itemwidth paperinput resolutionarea price)
   BinaryFeatures = %w(scanner printserver)
   CategoricalFeatures = %w(brand)
   ContinuousFeaturesDisp = %w(Pages\ Per\ Minute Width Paper\ Tray\ Size)
@@ -21,7 +21,7 @@ class Printer < ActiveRecord::Base
   InterestingFeatures = %w(brand ppm ttp resolution colorprinter scanner printserver duplex connectivity papersize paperoutput dimensions dutycycle paperinput ppmcolor platform itemheight itemlength itemwidth itemweight packageheight packagelength packagewidth packageweight)
   
   def myvalid?
-    instock && !(ppm.nil? || itemwidth.nil? || paperinput.nil? || salepriceint.nil? || resolutionarea.nil? || scanner.nil? || printserver.nil?)
+    instock && !(ppm.nil? || itemwidth.nil? || paperinput.nil? || price.nil? || resolutionarea.nil? || scanner.nil? || printserver.nil?)
   end
   
 end
