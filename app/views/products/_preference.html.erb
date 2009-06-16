@@ -1,0 +1,8 @@
+<% session[:productType].constantize::PreferenceFeatures.each_index do |i| %>
+	<%= render :partial => 'preferenceSlider', 
+		:locals => {:name => session[:productType].constantize::PreferenceFeatures[i], #PreferenceFeaturesDisp to display better 
+		:val => session[:productType].constantize::PreferenceFeatures[i] + "Preference", 
+		:ses_name => "p#{i}"} %>
+<% end %>
+
+<!--><div class='label' style="margin-top: 0;"><%= check_box('myfilter', 'scanner', {:onchange => "$('#filter_form').submit()"})%>Scanner</div>-->
