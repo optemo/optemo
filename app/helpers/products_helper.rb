@@ -10,10 +10,10 @@ module ProductsHelper
   end
   
   def sim_link(cluster,i)
-  	unless cluster.children.nil?
+  	unless cluster.children.nil? || cluster.children.empty?
       "<div class='sim'>" +
         link_to("Explore #{cluster.cluster_size} Similar Product#{"s" if cluster.cluster_size > 1}", 
-        "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+cluster.children.join('/'), 
+        "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+cluster.children.map{|c|c.id}.join('/'), 
         :id => "sim#{i}") +
       "</div>"
     else
@@ -33,5 +33,13 @@ module ProductsHelper
   
   def history(mytype)
     @s.clusters[0].getHistory.reverse
+  end
+  
+  def dbmin(feat)
+    feat=='price' ? @dbfeat['price'].min/100 :  @dbfeat[feat].min.to_i
+  end
+  
+  def dbmax(feat)
+    feat=='price' ? (@dbfeat['price'].max.to_f/100).ceil : @dbfeat[feat].max.ceil
   end
 end

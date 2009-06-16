@@ -9,10 +9,10 @@
 <%= hidden_field_tag "myfilter[#{val}_min]", @session.send("#{val}_min".intern),{:class => 'min'}%>
 <%= hidden_field_tag "myfilter[#{val}_max]", @session.send("#{val}_max".intern),{:class => 'max'}%>
 <div class='slider' 
-data-min='<%= val=='price' ? @dbfeat['price'].min/100 :  @dbfeat[val].min.to_i%>'
-data-max='<%= val=='price' ? (@dbfeat['price'].max.to_f/100).ceil : @dbfeat[val].max.ceil%>'
-data-startmin='<%= @session.send("#{val}_min".intern) %>'
-data-startmax='<%= @session.send("#{val}_max".intern) %>'
+data-min='<%= dbmin(val)%>'
+data-max='<%= dbmax(val)%>'
+data-startmin='<%= @session.send("#{val}_min".intern).nil? ? dbmin(val) : @session.send("#{val}_min".intern).nil?%>'
+data-startmax='<%= @session.send("#{val}_max".intern).nil? ? dbmax(val) : @session.send("#{val}_max".intern).nil?%>'
 data-prodmin='<%= @s.ranges(val)[0] %>' 
 data-prodmax='<%= @s.ranges(val)[1] %>'
 <%= money_formatting ? 'data-formatting="$"' : ""  %>>
