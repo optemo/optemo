@@ -5,7 +5,7 @@
 	<% end %>
 	<% selectmsg = "Add Another Brand" %>
 <% end %>
-<%= select('myfilter', 'brand', [selectmsg.nil? ? "All Brands" : selectmsg] +@dbprops.brands.split('*'), options={}, {:onchange => "$('#filter_form').submit()"}) %>
+<%= select('myfilter', 'brand', [selectmsg.nil? ? "All Brands" : selectmsg] +@dbfeat['brand'].categories.split('*'), options={}, {:onchange => "$('#filter_form').submit()"}) %>
 <%= hidden_field_tag "myfilter[Xbrand]"%>
 
 <% session[:productType].constantize::ContinuousFeatures.each_index do |i| %>
@@ -14,14 +14,14 @@
 		:val => session[:productType].constantize::ContinuousFeatures[i], 
 		:money_formatting => false, 
 		:ses_name => "f#{i}", 
-		:min => @dbprops.db_features.find_by_name(session[:productType].constantize::ContinuousFeatures[i]).min, 
-		:max => @dbprops.db_features.find_by_name(session[:productType].constantize::ContinuousFeatures[i]).max} %>
+		:min => @dbfeat[session[:productType].constantize::ContinuousFeatures[i]].min, 
+		:max => @dbfeat[session[:productType].constantize::ContinuousFeatures[i]].max} %>
 <% end %>
 <%= render :partial => 'slider', 
 	:locals => {:name => 'Price', 
 	:val => 'price', 
 	:money_formatting => true, 
 	:ses_name => 'price', 
-	:min => @dbprops.price_min/100, 
-	:max =>(@dbprops.price_max.to_f/100).ceil} %>
+	:min => @dbfeat['price'].min/100, 
+	:max =>(@dbfeat['price'].max.to_f/100).ceil} %>
 <!--><div class='label' style="margin-top: 0;"><%= check_box('myfilter', 'scanner', {:onchange => "$('#filter_form').submit()"})%>Scanner</div>-->

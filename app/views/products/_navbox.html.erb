@@ -1,22 +1,19 @@
 <div class="navigator_box" style="left: <%= (i%3)*247 %>px;">
 <div id="box<%=i%>" class="borderbox">
-	<div class='title'><%= (d = @c.desc[i].select{|ii|ii[0]=='descString'}[0][1]).blank? ? "All-Purpose" : d%></div>
-	<% if !@c.products[i].imagemwidth.blank? %>
-		<%= image_tag @c.products[i].imagemurl, :height => 100, :onClick => "fadeout(#{@c.products[i].id});", :class => "productimg" %> 	<!--:width => @c.products[i].imagemw, :height => @c.products[i].imagemh, -->
+	<div class='title'><%= cluster.description %></div>
+	<% if !cluster.representative.imagemwidth.blank? %>
+		<%= image_tag cluster.representative.imagemurl, :height => 100, :onClick => "fadeout(#{cluster.representative.id});", :class => "productimg" %>
 	<%end%>
 
-	<p><a href="/products/show/<%=@c.products[i].id%>" onClick="fadeout(<%=@c.products[i].id%>);return false;">
-		<span class="easylink"><%= @c.products[i].smlTitle %></span>
+	<p><a href="/products/show/<%=cluster.representative.id%>" onClick="fadeout(<%=cluster.representative.id%>);return false;">
+		<span class="easylink"><%= cluster.representative.smlTitle %></span>
 	</a></p>
 	
-	<p style="font-size: 0.9em">
-		<% description(i) %>
-	</p>
-	<p><%= @c.products[i].pricestr %>  <%= link_to "&nbsp;Save it&nbsp;", "javascript:saveit(#{@c.products[i].id})", {:class => 'save'}%>
+	<p><%= cluster.representative.pricestr %>  <%= link_to "&nbsp;Save it&nbsp;", "javascript:saveit(#{cluster.representative.id})", {:class => 'save'}%>
 		<%# Randomized Product Reviews %>
 		<%# rand > 0.5 ? (rand > 0.5 ? image_tag('5star.gif') : image_tag('3star.gif')) : image_tag('4star.gif') %>
 	</p>
-	<% if RAILS_ENV == 'development' && @c.clustergraph && @c.clustergraph[i] %>
+	<% if false && RAILS_ENV == 'development' && @c.clustergraph && @c.clustergraph[i] %>
 	<div class="clustergraph">
 		<% @c.clustergraph[i].each do |u| %>
 		<% if u.length == 2 %>
@@ -26,7 +23,7 @@
 	</div>
 	<% end %>
 	<div class="bottombar">
-		<%= sim_link(i) %><!--# remove this
+		<%= sim_link(cluster,i) %><!--# remove this
 		<div class="clusterfeatures">
 		<%# if !@c.desc[i].nil? %>
 		<%# @c.desc[i].each do |item| %>

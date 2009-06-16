@@ -26,8 +26,43 @@ class Search < ActiveRecord::Base
     normalize(res)
   end
   #Range of product offerings
-  def ranges()
-    
+  def ranges(featureName)
+    f = DbFeature.find_by_name_and_product_type(featureName,session.product_type)
+    [f.min, f.max]
+  end
+  
+  def result_count
+    clusters.map{|c| c.cluster_size}.sum
+  end
+  
+  def clusters
+    if @clusters.nil?
+      @clusters = []
+      cluster_count.times do |i|
+        @clusters << (session.product_type+'Cluster').constantize.find(send(:"c#{i}"))
+      end
+    end
+    @clusters
+  end
+  
+  def self.searchFromPath(path, session)
+    ns = {}
+    mycluster = 'c0'
+    ns['cluster_count'] = path.length
+    path.each do |p|
+      ns[mycluster] = p
+      mycluster.next!
+    end
+    #s = Session.find(session[:user_id])
+    ns['session_id'] = session.id
+    #ns['parent_id'] = s
+    s = new(ns)
+    s.save
+    s
+  end
+  
+  def to_s
+    clusters.join('/')
   end
   
   private

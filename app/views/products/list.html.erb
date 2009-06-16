@@ -1,7 +1,7 @@
 <div id="leftbar">
-	Browsing <%= @c.result_count %> <%= @pt.pluralize.capitalize %>
+	Browsing <%= @s.result_count %> <%= @pt.pluralize.capitalize %>
 	<!-- The Search box -->
-	<% form_tag ("/search/find/#{@c.to_s}") do %>
+	<% form_tag ("/search/find/#{@s.to_s}") do %>
 	  <%= text_field_tag 'search' %>
 	  <%= submit_tag 'Search', {:id => 'submit_button'} %>
 	  <% end %>
@@ -29,7 +29,7 @@
 <!-- The Filters section -->
 <div id="filterbar">
 	<h2>Filters</h2>
-	<% form_tag("/search/filter/#{@c.to_s}",{:id => 'filter_form'}) do %>
+	<% form_tag("/search/filter/#{@s.to_s}",{:id => 'filter_form'}) do %>
 		<!-- Filter partial to draw the filter controls -->
 	  	<%= render :partial => 'filter' %>
 	  	<br>
@@ -53,13 +53,13 @@
 	<% end %>
 	</div>
 	
-	<% for i in 0..@c.cluster_count-1 %>
+	<% for i in 0..@s.cluster_count-1 %>
 	  <% if i%3 == 0 %>
 		<div class="rowdiv">
 		<% open = true %>
 	  <% end %>
 	  <!-- Navbox partial to draw boxes -->
-	  <%= render :partial => 'navbox', :locals => {:i => i} %>
+	  <%= render :partial => 'navbox', :locals => {:i => i, :cluster => @s.clusters[i]} %>
 	  <% if i%3 == 2 %>
 		</div>
 		<% open = false %>

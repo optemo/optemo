@@ -10,11 +10,13 @@ class ProductsController < ApplicationController
   def index
     mysession = Session.find(session[:user_id])
     mysession.clearFilters
-    c = CQuery.new(session[:productType] || $DefaultProduct)
-    if c.valid
-      redirect_to "/#{c.product_type.pluralize.downcase}/list/"+c.to_s
+    #c = CQuery.new(session[:productType] || $DefaultProduct)
+    @pt = session[:productType] || $DefaultProduct
+    cluster_ids = (@pt+'Cluster').constantize.find_all_by_parent_id(0).map{|c| c.id}
+    if cluster_ids.length == 9
+      redirect_to "/#{@pt.pluralize.downcase}/list/"+cluster_ids.join('/')
     else
-      flash[:error] = c.to_s
+      flash[:error] = "There are more than 9 original clusters"
       redirect_to '/error'
     end
   end
@@ -23,18 +25,21 @@ class ProductsController < ApplicationController
     @session = Session.find(session[:user_id])
     @pt = session[:productType] || $DefaultProduct
     @dbprops = DbProperty.find_by_name(@pt.constantize.name)
+    @dbfeat = {}
+    DbFeature.find_all_by_product_type(@pt).each {|f| @dbfeat[f.name] = f}
+    @s = Search.searchFromPath(params[:path_info], @session)
     #Check for search keyword
-    if params[:path_info][-2] == 's'
-      cluster_ids = params[:path_info][0..-3].map{|p|p.to_i}
-      searchterm = URI.decode(params[:path_info][-1])
-      @c = CQuery.new(@pt,cluster_ids,@session,searchterm) #C-code wrapper
-    else
-      @c = CQuery.new(@pt, params[:path_info].map{|p|p.to_i},@session) #C-code wrapper
-    end
-    if !@c.valid
-      flash[:error] = @c.to_s
-      redirect_to '/error'
-    end
+    #if params[:path_info][-2] == 's'
+    #  cluster_ids = params[:path_info][0..-3].map{|p|p.to_i}
+    #  searchterm = URI.decode(params[:path_info][-1])
+    #  @c = CQuery.new(@pt,cluster_ids,@session,searchterm) #C-code wrapper
+    #else
+    #  @c = CQuery.new(@pt, params[:path_info].map{|p|p.to_i},@session) #C-code wrapper
+    #end
+    #if !@c.valid
+    #  flash[:error] = @c.to_s
+    #  redirect_to '/error'
+    #end
     #Saved Bar variables
     @picked_products = @session.saveds.map {|s| @pt.constantize.find(s.product_id)}
     #Previously clicked product
