@@ -49,9 +49,6 @@ int main(int argc, char** argv) {
 	int ind, endit, startit, lengthit;
 	string var;
 	string** descStrings;
-	string pathS =""; //= "/optemo/site/config/database.yml";
-	//char* path;
-	string mode = ""; //"development";
 
 	//productName
 	var = "product_name";
@@ -86,30 +83,6 @@ int main(int argc, char** argv) {
 		productN = atoi((argu.substr(startit, lengthit)).c_str());
 		searchBoxFlag = 1;
 	}
-	
-	var = "database_config_path";
-	ind = argu.find(var, 0);
-	endit = argu.find("\n", ind);
-	startit = ind + var.length() + 2;
-	lengthit = endit - startit;
-	if (lengthit>0){
-		pathS = argu.substr(startit, lengthit);
-	}
-
-	char *path = new char[100];	
-	strcpy(path, pathS.c_str());
-	
-
-	var = "environment";
-	ind = argu.find(var, 0);
-	endit = argu.find("\n", ind);
-	startit = ind + var.length() + 2;
-	lengthit = endit - startit;
-	if (lengthit>0){
-		mode = (argu.substr(startit, lengthit)).c_str();
-	}
-	
-	
 	
 	string searchIdsString;
 	int* searchIds = new int[productN];
@@ -276,10 +249,9 @@ int* MclusterIDs = new int[clusterN];
 		string line;
 		string buf; 
 		vector<string> tokens;
-		vector<string> tokens2;
 		ifstream myfile;
 		int i=0;
-	   myfile.open(path); 
+	   myfile.open("/optemo/site/config/database.yml"); 
 	   if (myfile.is_open()){
 		while (! myfile.eof()){
 			getline (myfile,line);
@@ -294,29 +266,11 @@ int* MclusterIDs = new int[clusterN];
 			cout<<"Can't open file "<<myfile<<endl;
 	   }
 
-	mode = mode.append(":");
-	int pos = findVec(tokens, mode);
-
-
-	for (int p=pos+1; p<tokens.size(); p++){
-		tokens2.push_back(tokens.at(p));
-	}
-	
-	int pos2;
-
-if (pos>1){	
-   if ((tokens.at(pos - 1) == "#") || (tokens.at(pos - 2) == "#")){
-   		pos2 = findVec(tokens2, mode);
-   	   for (int p=0; p<pos2; p++){
-   	   	tokens2.erase(tokens2.begin());
-   	   } 
-	}
-}	
-	string databaseString = tokens2.at(findVec(tokens2, "database:") + 1);
-	string usernameString = tokens2.at(findVec(tokens2, "username:") + 1);
-	string passwordString = tokens2.at(findVec(tokens2, "password:") + 1);
-	string hostString = tokens2.at(findVec(tokens2, "host:") + 1);
-	string databaseName = tokens2.at(findVec(tokens2, "database:") + 1);
+	string databaseString = tokens.at(findVec(tokens, "database:") + 1);
+	string usernameString = tokens.at(findVec(tokens, "username:") + 1);
+	string passwordString = tokens.at(findVec(tokens, "password:") + 1);
+	string hostString = tokens.at(findVec(tokens, "host:") + 1);
+	string databaseName = tokens.at(findVec(tokens, "database:") + 1);
 
 	    #define PORT "3306"       
 	 	#define DB  databaseName
@@ -328,17 +282,15 @@ if (pos>1){
 ///////////////////////////////////////////////
 		
 			try {
-		
+			
 				// Using the Driver to create a connection
 				driver = sql::mysql::get_mysql_driver_instance();
 				con = driver->connect(HOST, PORT, USER, PASS);
 				stmt = con->createStatement();
-					
 				string command = "USE ";
 				command += databaseName;
-				
 				stmt->execute(command);
-			
+				
 				int size;
 				string out = "";
 			
@@ -369,12 +321,12 @@ if (pos>1){
 				cidstream << clusterIDs[safeID];
 				command += cidstream.str();
 				command += ";";
-		//	cout<<"command is "<<command<<endl;
+			
 				res = stmt->executeQuery(command);
 				res->next();
 	
-				clusterID = res->getInt("parent_id");
-				
+				clusterID = res->getDouble("parent_id");
+			
 				if (clusterID == 0){
 				
 					command = "SELECT id from ";
@@ -395,9 +347,9 @@ if (pos>1){
 				command += cid.str();
 				
 				command += ";";
-			//	cout<<"commad is "<<command<<endl;
+			
 				res = stmt->executeQuery(command);
-				
+						
 				size = res->rowsCount();
 			}
 			}	
@@ -406,7 +358,7 @@ if (pos>1){
 			for (int f=0; f<conFeatureN; f++){
 				bucketCount[f] = new double [bucketDiv];
 			}
-		
+	
 		//if searchBoxFlag
 		if (searchBoxFlag){
 			
@@ -452,12 +404,10 @@ if (pos>1){
 				
 			}
 			else{
-							
 					reped = getRep(reps, productIDs, productN, resultClusters, childrenIDs, conFeatureRangeC, clusterCounts, childrenCount, conFeatureN, repW, stmt, 
 							res, res2, clusterID, smallNFlag, mergedClusterIDs, mergedClusterIDInput, productName, conFeatureNames, searchBoxFlag);
-					//	cout<<"HERE"<<endl;	
+						
 			}
-	
 				if(reped){			
 					getIndicators(resultClusters,repW, conFeatureN, conFeatureRangeC, conFilteredFeatures, indicators, stmt, res, mergedClusterIDs, productName, conFeatureNames);
 				}

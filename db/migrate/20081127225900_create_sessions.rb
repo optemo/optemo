@@ -6,15 +6,15 @@ class CreateSessions < ActiveRecord::Migration
       t.primary_key :id
       t.string :ip
       t.integer :parent_id
+      t.string :product_type
       t.string :brand, :default => "All Brands"
-      DbFeature.find(:all).each do |f|
-        min = f.name+'_min'
-        max = f.name+'_max'
-        t.float min.intern, :default => f.min.to_i
-        t.float max.intern, :default => f.max.ceil
+      t.boolean :filter
+      (Camera::ContinuousFeatures | Printer::ContinuousFeatures).each do |f|
+        min = f+'_min'
+        max = f+'_max'
+        t.float min.intern #, :default => f.min.to_i
+        t.float max.intern #, :default => f.max.ceil
       end
-      t.float :price_min, :default => 0
-      t.float :price_max, :default => 10000000
     end
   end
 

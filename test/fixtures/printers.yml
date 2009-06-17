@@ -5,7 +5,7 @@ one:
     ppm: 1000
     itemwidth: 100
     paperinput: 5
-    salepriceint: 400
+    price: 400
     resolutionarea: 200
     scanner: true
     printserver: true

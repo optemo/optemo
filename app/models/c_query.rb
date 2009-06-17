@@ -25,7 +25,7 @@ class CQuery
         @msg = "Please supply a session"
         return
       end
-      myfilters = session.attributes.delete_if {|key, val| !key.index(/#{@product_type.constantize::MainFeatures.join('|')+"|price|brand"}/)}
+      myfilters = session.attributes.delete_if {|key, val| !key.index(/#{@product_type.constantize::ContinuousFeatures.join('|')+"|price|brand"}/)}
       if searchterm.nil?
         myparams = params.merge({"cluster_id" => @cluster_ids}).merge(myfilters).to_yaml
       else
@@ -117,7 +117,7 @@ class CQuery
   def calcClusterGraph(cluster)
     myclustergraph = []
     unless cluster.nil?
-      (@product_type.constantize::MainFeatures+["price"]).each do |name|
+      (@product_type.constantize::ContinuousFeatures+["price"]).each do |name|
         min = name+'_min'
         max = name+'_max'
         if name == "price"

@@ -1,13 +1,17 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
 cheap:
+  cluster_count: 2
+  c0: 2
+  c1: 3
+  session_id: 1
   brand: "All Brands"
-  maximumresolution_min: 0.0
-  maximumresolution_max: 14.7 
-  opticalzoom_min: 0
-  opticalzoom_max: 20
-  displaysize_min: 0
-  displaysize_max: 3.6 
+  #maximumresolution_min: 0.0
+  #maximumresolution_max: 14.7 
+  #opticalzoom_min: 0
+  #opticalzoom_max: 20
+  #displaysize_min: 0
+  #displaysize_max: 3.6 
   price_min: 0
   price_max: 30000
 
