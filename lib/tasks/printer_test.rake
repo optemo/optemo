@@ -1,105 +1,99 @@
 # Some tests for the laser printer site.
 namespace :printer_test do   
    
-    desc "Test the brand selector"
-    task :brand_selector => :environment do 
-
-      setup
-      sesh = Webrat.session_class.new   
-            
-      # Printer brand names
-      brands = ["Brother","Hewlett-Packard","Samsung","Xerox","Lexmark","Oki Data","Konica","Ricoh","Tektronix","Tally"]
-
-      brands.each do |brand| 
-        get_homepage(sesh)
-        
-        begin        
-          doc = sesh.response.parser   # Parser of WWW::Mechanize::Page should be a Nokogiri::HTML object
-      
-          # TODO: Pre?
-          num_brands_before = doc.css('a[title="Remove Brand Filter"]').length.to_i
-          
-          sesh.select brand
-          sesh.submit_form "filter_form" # When no submit button present use form id.
-               
-         # TODO: Post?
-         if error_page?(sesh)
-           puts "ERROR: get error page after" + brand
-         end
-                  
-         # Check if updated
-         puts "# boxes after:" + doc.css(".sim").length.to_s
-         puts "# brands after: " + doc.css('a[title="Remove Brand Filter"]').length.to_s
-        rescue Exception => e # This detects crashing.
-          msg1 = "ERROR " + e.type + " with " + brand
-          msg2 = "ERROR message:" + e.message
-          puts msg1
-          puts msg2
-        end
-      end
- 
+  desc "Test the brand selector"
+  task :brand_selector => :environment do 
+  
+    setup
+    logfile = setup_log "brand_selector" 
+    
+    sesh = Webrat.session_class.new   
+    brands = get_avail_printer_brands(sesh,logfile)
+    
+    # Try selecting every brand
+    brands.each do |brand| 
+      brand_test(sesh, brand, log)
     end
   
+    close_log logfile 
+  end
+  
   desc "Testing the search box"
-  task :search => [:environment] do 
+  task :search => :environment do 
     
     setup
     sesh = Webrat.session_class.new
-    get_homepage(sesh)
+    logfile =  setup_log("search")
     
     # Printer brand names
-    brands = ["Brother","Hewlett-Packard","Samsung","Xerox","Lexmark","Oki Data","Konica","Ricoh","Tektronix","Tally"]
-    search_test( brands, sesh)
+    brands = get_avail_printer_brands(sesh, logfile)
+    search_test( brands, sesh, logfile)
     
     # Now all lowercase
     brands.each{ |x| x.downcase! } 
-    search_test( brands, sesh)
+    search_test( brands, sesh, logfile)
     
     # Other search strings
     other = ["","asdf","apples","Sister","Helwett","Hewlett","xena", "Data","cheap"]
-    search_test( other, sesh)
+    search_test( other, sesh, logfile)
+
+    close_log logfile 
 
   end
-
+  
   desc "Exhaustive testing for Browse Similar"
   task :browse_similar => :environment do
     setup
-    
-    # Set up log file
-    logfile = File.open("./log/printer_test_log.txt", 'w+')
-        
-    # Starts a Webrat session & goes to the homepage! :)
     sesh = Webrat.session_class.new
-    get_homepage(sesh)
-    hist = "root"
+    logfile = setup_log "browse_similar" 
+    
+    get_homepage(sesh, logfile)
+    hist = ["root"]
     explore(sesh,hist,logfile)
     
-    # Close logfile
-    puts "Done! Log file at " + logfile.path
-    logfile.close
-    
+    close_log logfile
   end
   
-  def search_test( queries, session)
+  def brand_test(sesh, brand, log)
+    get_homepage(sesh, log)
+  
+    doc = sesh.response.parser   # Parser of WWW::Mechanize::Page should be a Nokogiri::HTML object
+    brands_selected_pre = doc.css('a[title="Remove Brand Filter"]')
+    
+    begin 
+      sesh.select brand
+      sesh.submit_form "filter_form" # When no submit button present use form id.           
+    rescue Exception => e # This detects crashing.
+      report_error(log, "ERROR " + e.type.to_s + " with " + brand)
+      report_error(log, "ERROR message:" + e.message.to_s )
+    else
+      report_error( log, "ERROR: get error page after" + brand) if error_page?(sesh)
+      # Check if updated
+      brands_selected_post = doc.css('a[title="Remove Brand Filter"]')
+      puts "ERROR: # brands selected not increased by one" if brands_selected_post.length - 1 != brands_selected_pre.length
+      # WIll this work? puts "ERROR: brand not selected" if !brands_selected_post.contains(brand)
+    end
+  end
+  
+  # Tests each query string in the array and uses the session given.
+  def search_test( queries, session, logger)
     queries.each do |query| 
-      get_homepage(session)
+      get_homepage(session, logger)
       begin        
         session.fill_in "search", :with => query
         session.click_button "submit_button" 
-        # TODO: check for stuff otherwise put error.
-        doc = session.response.parser   # Parser of WWW::Mechanize::Page should be a Nokogiri::HTML object
-        # 1. check sesh url
-        # 2. either none found msg or # printers showing is < before.
-        
-        puts "Success with search string '" + query + "'"
       rescue Exception => e
-        puts "Error with search string '" + query + "'"
-        puts e.type
-        puts e.message
+        report_error(logger, "Error with search string '" + query + "'")
+        logger.puts e.type.to_s
+        logger.puts e.message.to_s
+      else
+        report_error( log, "ERROR: get error page searching for " + brand) if error_page?(sesh)
+        logger.puts "Done searching for '" + query + "'"
       end
     end
   end
   
+  # Recursive method to click all browse_similar
   def explore(session, hist, logfile)
     doc = session.response.parser                      # Parser of WWW::Mechanize::Page should be a Nokogiri::HTML object
     num_boxes_less_one = doc.css(".sim").length - 1    # Find num of clicky boxes
@@ -124,43 +118,70 @@ namespace :printer_test do
       session.click_link 'sim'+num.to_s
       
       # Log stuff
+      # TODO make it use a stack type thing.
       logfile.puts "LOGGER: session url :                 " + session.current_url
-      hist_old = hist
-      hist += ",#{num+1}"
-      logfile.puts "LOGGER : history :                    "+ hist
+      hist << '#{num+1}'
+      logfile.puts "LOGGER : history :                    "+ (hist * ',').to_s
       
       # Recursive!
       explore(session,hist,logfile)
       
       # Log stuff
-      hist = hist_old
+      hist.pop
       
       session.visit return_here # Go back to where we were (hit the back button)
      end
   end
   
+  # Returns true if the page's response is the error page.
+  # TODO doesn't work too well.
   def error_page?(sesh)
      is_err_page = false
      is_err_page = (is_err_page || sesh.current_url == "http://localhost:3000/error")
      is_err_page = (is_err_page ||"http://localhost:3000/error".eql?(sesh.current_url) )
-     
-     doc = sesh.response.parser
-     is_err_page = (is_err_page ||doc.css('#error_space').length.to_i > 0 )
-     
+     #doc = sesh.response.parser
+     #is_err_page = (is_err_page ||doc.css('#error_space>*').length.to_i > 0 )
+     #puts "doc.css('#error_space>*').length.to_i > 0" + (doc.css('#error_space>*').length.to_i > 0).to_s
      return is_err_page
   end
   
+  def close_log(logfile)
+      puts "Test completed. Log file at " + logfile.path
+      logfile.close
+  end
+  
+  def setup_log(name)
+    file = File.open("./log/printertest_"+name+".log", 'w+')
+  end
+  
+  # Puts the error both in the logfile and on the console.
   def report_error(logfile, msg)
     logfile.puts "ERROR  " + msg
     puts "ERROR " + msg
   end
   
-  def get_homepage(my_session)
+  # Gets the homepage and makes sure nothing crashed.
+  def get_homepage(my_session, log) # TODO my_session,log
     # Check that it doesn't give you error page right away
     my_session.visit "http://localhost:3000/"
-    raise "Error on load homepage" if error_page?(my_session)
+    if error_page?(my_session)
+      report_error(log, "Error loading homepage")
+      raise "Error loading homepage" # TODO Should we just log it instead of throwing an exception?
+    end
+    
   end
   
+  # Gets printer brand name list from drop-down menu on main page
+  def get_avail_printer_brands( sesh, log)
+    get_homepage(sesh, log)
+    doc = sesh.response.parser
+    selector_options = doc.css("#myfilter_brand option")
+    brand_names = []
+    selector_options.each { |opt| brand_names << opt.attribute("value").to_s}
+    return brand_names
+  end
+  
+  # Sets up env and related stuff
   def setup()
     
     # Check for all the right configs
