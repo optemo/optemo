@@ -111,14 +111,7 @@ namespace :printer_test do
     num_boxes_less_one = doc.css(".sim").length - 1    # Find num of clicky boxes
     similars =  0..num_boxes_less_one                  # Make array of their indices
     
-    # Check for ERRORS!!!
-    if doc.css(".borderbox").length == 0               # If there are no borderboxes
-        report_error(logfile, "No borderboxes")
-    end
     
-    if "http://localhost:3000/error".eql?(session.current_url) # If error page
-        report_error(logfile, "Get the error page")
-    end
   
     # Log stuff
     logfile.puts "LOGGER : url when boxes calculated :   " + session.current_url
@@ -127,21 +120,24 @@ namespace :printer_test do
     (0..num_boxes_less_one).each do |num|
       return_here = session.current_url # Where we are
       
-      session.click_link 'sim'+num.to_s
-      
-      # Log stuff
-      # TODO make it use a stack type thing.
-      logfile.puts "LOGGER: session url :                 " + session.current_url
-      hist << '#{num+1}'
-      logfile.puts "LOGGER : history :                    "+ (hist * ',').to_s
-      
+      begin        
+         session.click_link 'sim'+num.to_s
+      rescue Exception => e
+        report_error(logger, "Error with box number #{num} and history" + hist + "'")
+        logger.puts e.type.to_s + e.message.to_s
+      else
+        logfile.puts "LOGGER: session url :                 " + session.current_url
+        hist << '#{num+1}'
+        logfile.puts "LOGGER : history :                    "+ (hist * ',').to_s
+        report_error(logfile, "No borderboxes") if doc.css(".borderbox").length == 0  
+        report_error(logfile, "Get the error page") if error_page?(session)
+      end
+     
       # Recursive!
       explore(session,hist,logfile)
-      
-      # Log stuff
       hist.pop
-      
       session.visit return_here # Go back to where we were (hit the back button)
+
      end
   end
   
