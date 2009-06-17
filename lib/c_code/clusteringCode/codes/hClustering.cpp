@@ -252,7 +252,7 @@ int main(int argc, char** argv){
 					for (int j=0; j<conFeatureN; j++){
 						average[j] = 0.0;
 					}
-			
+					cout<<"HERE"<<endl;
 					maxSize = hClustering(layer, clusterN,  conFeatureN,  boolFeatureN, average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
 							stmt, conFeatureNames, boolFeatureNames, productName, weights);	
 		

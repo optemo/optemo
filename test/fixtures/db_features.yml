@@ -1,14 +1,16 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
 one:
-  name: MyString
+  name: displaysize
+  product_type: Camera
   min: 1.5
   max: 1.5
   high: 1.5
   low: 1.5
 
 two:
-  name: MyString
+  name: maximumresolution
+  product_type: Camera
   min: 1.5
   max: 1.5
   high: 1.5

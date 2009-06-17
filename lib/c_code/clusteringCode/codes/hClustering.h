@@ -35,7 +35,7 @@ if 	(layer == 1){
 				
 				while (res->next()) 
 				{
-		 			saleprice = res->getInt("salepriceint");
+		 			saleprice = res->getInt("price");
 		 			price = saleprice;
 	   	 				
 		 			data[size][0] = price;

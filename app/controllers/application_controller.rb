@@ -3,6 +3,7 @@
 
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
+  helper_method :title=, :full_title=
 
   # See ActionController::RequestForgeryProtection for details
   # Uncomment the :secret if you're not using the cookie session store
@@ -14,7 +15,7 @@ class ApplicationController < ActionController::Base
   # filter_parameter_logging :password
   
   before_filter :update_user
-  
+  $SITE_TITLE = 'LaserPrinterHub.com'
   private
   $DefaultProduct = 'Printer'
   
@@ -26,12 +27,30 @@ class ApplicationController < ActionController::Base
   
   def update_user
    if session[:user_id].blank? || !Session.exists?(session[:user_id])
-      #Create a new session
-      mysession = Session.new
-      mysession.ip = request.remote_ip
-      mysession.save
+      #Find the user's session if there are no cookies
+      mysession = Session.find(:first, :conditions => ['ip = ? and updated_at > ?',request.remote_ip,30.minutes.ago])
+      if mysession.nil?
+        #Create a new session
+        mysession = Session.new
+        mysession.ip = request.remote_ip
+        mysession.save
+      else
+        mysession.update_attribute(:updated_at, Time.now)
+      end
       session[:user_id] = mysession.id
 
     end
+  end
+  
+  def title=(title)
+    @title_prefix = title
+    @template.instance_variable_set("@title_prefix", @title_prefix)  # Necessary if set from view
+  end
+  def full_title=(title)
+    @title_full = title % $SITE_TITLE
+    @template.instance_variable_set("@title_full", @title_full)  # Necessary if set from view
+  end
+  def desc=(mydescription)
+    @description = mydescription
   end
 end
