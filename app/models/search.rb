@@ -18,25 +18,22 @@ class Search < ActiveRecord::Base
       end
       chooseclusters = clusters.join(' OR ')
       if max==min
-        res << (session.product_type+'Node').constantize.find(:all, :conditions => ["#{featureName} = ? and (#{chooseclusters}) ",max]).length
+        res << (session.product_type+'Node').constantize.find(:all, :conditions => ["#{featureName} = ? and (#{chooseclusters}) #{session.filter ? " and "+Cluster.filterquery(session) : ''}",max]).length
       else  
-        res << (session.product_type+'Node').constantize.find(:all, :conditions => ["#{featureName} < ? and #{featureName} >= ? and (#{chooseclusters}) ",max,min]).length
+        res << (session.product_type+'Node').constantize.find(:all, :conditions => ["#{featureName} < ? and #{featureName} >= ? and (#{chooseclusters}) #{session.filter ? " and "+Cluster.filterquery(session) : ''}",max,min]).length
       end
     end
     round2Decim(normalize(res))
   end
   #Range of product offerings
   def ranges(featureName)
-    f = DbFeature.find_by_name_and_product_type(featureName,session.product_type)
-    if featureName == 'price'
-      [f.min.to_f/100, f.max.to_f/100]
-    else
-      [f.min, f.max]
-    end    
+    min = clusters.map{|c|c.ranges(featureName,session)[0]}.compact.sort[0]
+    max = clusters.map{|c|c.ranges(featureName,session)[1]}.compact.sort[-1]  
+    [min, max]
   end
   
   def result_count
-    clusters.map{|c| c.cluster_size}.sum
+    clusters.map{|c| c.size(session)}.sum
   end
   
   def clusters
@@ -66,7 +63,7 @@ class Search < ActiveRecord::Base
   end
   
   def to_s
-    clusters.join('/')
+    clusters.map{|c|c.id}.join('/')
   end
   
   private

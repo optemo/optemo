@@ -24,15 +24,22 @@ class SearchController < ApplicationController
         myfilter[:brand] = mysession.brand
       end
       myfilter.delete('Xbrand') if myfilter[:Xbrand]
+      
+      #Delete blank values
+      myfilter.delete_if{|k,v|v.blank?}
       myfilter.each_pair {|key, val| myfilter[key] = val.to_f if key.index('_min') || key.index('_max')}
-      #Save search values
-      mysession.update_attributes(myfilter)
-      #Send search query
-      c = CQuery.new(session[:productType], params[:path_info].map{|p|p.to_i}, mysession) #C-code wrapper
-      if c.valid
-        redirect_to "/#{session[:productType].pluralize.downcase}/list/"+c.to_s
+      #debugger
+      
+      #Find clusters that match filtering query
+      clusters = (mysession.product_type+'Cluster').constantize.find_all_by_layer(1)
+      clusters.delete_if{|c| c.isEmpty(myfilter,mysession.product_type)}
+      unless clusters.empty?
+        myfilter[:filter] = true
+        #Save search values
+        mysession.update_attributes(myfilter)
+        redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.map{|c|c.id}.join('/')
       else
-        flash[:error] = c.to_s
+        flash[:error] = "No products found."
         redirect_to "/#{session[:productType].pluralize.downcase}/list/"+params[:path_info].join('/')
       end
     end

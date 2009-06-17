@@ -5,16 +5,21 @@ class CreateCameraClusters < ActiveRecord::Migration
       t.integer :parent_id
       t.integer :layer
       t.integer :cluster_size
-      DbProperty.find_by_name('Camera').db_features.each do |f|
-        min = f.name+'_min'
-        max = f.name+'_max'
-        t.float min.intern
-        t.float max.intern
+      DbFeature.find_all_by_product_type('Camera').each do |f|
+         myname = f.name
+        if (f.feature_type == "Continuous")
+          fmin = myname+'_min'
+          fmax = myname+'_max'
+          t.float fmin.intern
+          t.float fmax.intern
+        elsif (f.feature_type == "Binary")
+          t.boolean myname.intern
+        else
+          t.string myname.intern
+        end    
       end
-      t.float :price_max, :price_min
     end
   end
-
   def self.down
     drop_table :camera_clusters
   end

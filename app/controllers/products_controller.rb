@@ -16,7 +16,7 @@ class ProductsController < ApplicationController
     if cluster_ids.length == 9
       redirect_to "/#{@pt.pluralize.downcase}/list/"+cluster_ids.join('/')
     else
-      flash[:error] = "There are more than 9 original clusters"
+      flash[:error] = "There are not 9 original clusters"
       redirect_to '/error'
     end
   end

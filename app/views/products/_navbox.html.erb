@@ -1,15 +1,15 @@
 <div class="navigator_box" style="left: <%= (i%3)*247 %>px;">
 <div id="box<%=i%>" class="borderbox">
-	<div class='title'><%= cluster.description %></div>
-	<% if !cluster.representative.imagemwidth.blank? %>
-		<%= image_tag cluster.representative.imagemurl, :height => 100, :onClick => "fadeout(#{cluster.representative.id});", :class => "productimg" %>
+	<div class='title'><%= cluster.description(@session) %></div>
+	<% if !cluster.representative(@session).imagemwidth.blank? %>
+		<%= image_tag cluster.representative(@session).imagemurl, :height => 100, :onClick => "fadeout(#{cluster.representative(@session).id});", :class => "productimg" %>
 	<%end%>
 
-	<p><a href="/products/show/<%=cluster.representative.id%>" onClick="fadeout(<%=cluster.representative.id%>);return false;">
-		<span class="easylink"><%= cluster.representative.smlTitle %></span>
+	<p><a href="/products/show/<%=cluster.representative(@session).id%>" onClick="fadeout(<%=cluster.representative(@session).id%>);return false;">
+		<span class="easylink"><%= cluster.representative(@session).smlTitle %></span>
 	</a></p>
 	
-	<p><%= cluster.representative.pricestr %>  <%= link_to "&nbsp;Save it&nbsp;", "javascript:saveit(#{cluster.representative.id})", {:class => 'save'}%>
+	<p><%= cluster.representative(@session).pricestr %>  <%= link_to "&nbsp;Save it&nbsp;", "javascript:saveit(#{cluster.representative(@session).id})", {:class => 'save'}%>
 		<%# Randomized Product Reviews %>
 		<%# rand > 0.5 ? (rand > 0.5 ? image_tag('5star.gif') : image_tag('3star.gif')) : image_tag('4star.gif') %>
 	</p>

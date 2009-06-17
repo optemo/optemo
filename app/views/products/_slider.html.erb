@@ -1,6 +1,6 @@
 <div class='feature'>
 <div class='disp'>
-	  <%= '$' if money_formatting %><%= @s.ranges(val)[0].to_i %>-<%= '$' if money_formatting %><%= @s.ranges(val)[1].ceil %> <%= session[:productType].constantize::ContinuousFeaturesLabel[val] %>
+	  <%= '$' if money_formatting %><%=(val== 'price' ? @s.ranges(val)[0].to_f/100 : @s.ranges(val)[0]).to_i %>-<%= '$' if money_formatting %><%= (val== 'price' ? @s.ranges(val)[1].to_f/100 : @s.ranges(val)[1]).ceil %> <%= session[:productType].constantize::ContinuousFeaturesLabel[val] %>
 </div>
 <div class='label space'>
 	<%= name %>
@@ -11,10 +11,10 @@
 <div class='slider' 
 data-min='<%= dbmin(val)%>'
 data-max='<%= dbmax(val)%>'
-data-startmin='<%= @session.send("#{val}_min".intern).nil? ? dbmin(val) : @session.send("#{val}_min".intern).nil?%>'
-data-startmax='<%= @session.send("#{val}_max".intern).nil? ? dbmax(val) : @session.send("#{val}_max".intern).nil?%>'
-data-prodmin='<%= @s.ranges(val)[0] %>' 
-data-prodmax='<%= @s.ranges(val)[1] %>'
+data-startmin='<%= @session.send("#{val}_min".intern).nil? ? dbmin(val) : @session.send("#{val}_min".intern)%>'
+data-startmax='<%= @session.send("#{val}_max".intern).nil? ? dbmax(val) : @session.send("#{val}_max".intern)%>'
+data-prodmin='<%= val== 'price' ? @s.ranges(val)[0].to_f/100 : @s.ranges(val)[0] %>' 
+data-prodmax='<%= val== 'price' ? @s.ranges(val)[1].to_f/100 : @s.ranges(val)[1] %>'
 <%= money_formatting ? 'data-formatting="$"' : ""  %>>
 	<div class="endlabel_min"><%= min.to_i %></div>
 	<div class="endlabel_max"><%= max.ceil %></div>

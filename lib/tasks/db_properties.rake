@@ -13,11 +13,11 @@ end
 
 #Support methods
 def create_product_properties(model)
-  #Collect new properties
-  db = DbProperty.find_by_name(model.name)
+  #Collect new properties  
   model::CategoricalFeatures.each {|name|
     f = DbFeature.new
     f.product_type = model.name
+    f.feature_type = 'Categorical'
     f.name = name
     f.categories = model.instock.map{|c|c.send(name.intern)}.compact.uniq.join('*')
     f.save
@@ -25,6 +25,7 @@ def create_product_properties(model)
   model::ContinuousFeatures.each {|name|
     f = DbFeature.new
     f.product_type = model.name
+    f.feature_type = 'Continuous'
     f.name = name
     f.min = model.valid.instock.map{|c|c.send(name.intern)}.reject{|c|c.nil?}.sort[0]
     f.max = model.valid.instock.map{|c|c.send(name.intern)}.sort[-1]
@@ -35,6 +36,7 @@ def create_product_properties(model)
   model::BinaryFeatures.each {|name|
     f = DbFeature.new
     f.product_type = model.name
+    f.feature_type = 'Binary'
     f.name = name
     f.save
   }

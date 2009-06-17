@@ -14,6 +14,8 @@ class Printer < ActiveRecord::Base
   CategoricalFeatures = %w(brand)
   ContinuousFeaturesDisp = %w(Pages\ Per\ Minute Width Paper\ Tray\ Size Resolution Price)
   ContinuousFeaturesLabel = Hash[*ContinuousFeatures.zip(['','in','','dpi','']).flatten]
+  ContinuousFeaturesDescLow = Hash[*ContinuousFeatures.zip(['Slow', 'Small', 'Low Capacity', 'Low Resolution', 'Cheap']).flatten]
+  ContinuousFeaturesDescHigh = Hash[*ContinuousFeatures.zip(['Fast', 'Large', 'High Capacity', 'High Resolution', 'Expensive']).flatten]
   ShowFeatures = %w(brand model ppm paperinput ttp resolution itemwidth itemheight itemlength duplex connectivity papersize scanner printserver platform)
   ShowFeaturesDisp = %w(Brand Model Pages\ Per\ Minute Paper\ Tray\ Size Time\ To\ Print Resolution Width Height Length Duplex Connectivity Paper\ Size Scanner Print\ Server OS)
   # Older interesting features

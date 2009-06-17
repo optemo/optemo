@@ -8,6 +8,7 @@ class CreateSessions < ActiveRecord::Migration
       t.integer :parent_id
       t.string :product_type
       t.string :brand, :default => "All Brands"
+      t.boolean :filter
       (Camera::ContinuousFeatures | Printer::ContinuousFeatures).each do |f|
         min = f+'_min'
         max = f+'_max'

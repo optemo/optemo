@@ -6,14 +6,16 @@ one:
   maximumresolution: 9.1
   displaysize: 1.5
   opticalzoom: 2
+  brand: "Olympus"
   price: 10000
 
 two:
   cluster_id: 1
   product_id: 2
   maximumresolution: 9.1
-  displaysize: 2
+  displaysize: 1.5
   opticalzoom: 4
+  brand: "Olympus"
   price: 100000
   
 three:
@@ -22,5 +24,6 @@ three:
  maximumresolution: 9.1
  displaysize: 1.5
  opticalzoom: 4
+ brand: "Olympus"
  price: 100000
   
