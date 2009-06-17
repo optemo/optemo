@@ -31,7 +31,7 @@ class SearchController < ApplicationController
     @session = Session.find(session[:user_id])
     sphinx = searchSphinx(params[:search])
     product_ids = sphinx.results.delete_if{|r|r.class.name != @session.product_type || !r.myvalid?}.map{|p|p.id}
-    if sphinx.total_entries == 0
+    if product_ids.length == 0
       flash[:error] = "No products were found"
       redirect_to "/#{session[:productType].pluralize.downcase}/list/"+params[:path_info].join('/')
     else
@@ -48,7 +48,7 @@ class SearchController < ApplicationController
     @session.searchterm = ""
     @session.searchpids = ""
     @session.save
-    redirect_to "/#{session[:productType].pluralize.downcase}/list/"+params[:path_info].join('/')
+    redirect_to "/#{session[:productType].pluralize.downcase}/"
   end
   private
   

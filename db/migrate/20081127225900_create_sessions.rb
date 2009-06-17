@@ -9,7 +9,7 @@ class CreateSessions < ActiveRecord::Migration
       t.string :product_type
       t.boolean :filter
       t.string :searchterm
-      t.string :searchpids
+      t.text :searchpids
       (Camera::ContinuousFeatures | Printer::ContinuousFeatures).each do |f|
         min = f+'_min'
         max = f+'_max'

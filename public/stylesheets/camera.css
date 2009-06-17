@@ -1,66 +1,67 @@
-div.rowdiv { height: 225px; width: 745px; }
-.sim { background: url(../images/sim_button.png) no-repeat; margin: auto; padding: 4px 2px 0px; height: 26px; width: 104px; }
-.featurebar { margin: 1px 0px; background-color: purple; height: 3px; width: 25px; }
-.easynav a { color: black; text-decoration: none; padding: 6px; }
-.easynav .cont a { background-color: #999; }
-#submit_button { margin-top: 2px; }
-div #filterbar { position: relative; background: #ddd; margin: 0.5em 0.1em; padding: 0em; text-align: center; }
-a.save { font-size: 0.9em; background: url(../images/save_button.png) no-repeat; line-height: 1.2em; color: black; text-decoration: none; }
-.easylink { text-decoration: underline; color: blue; }
-.easynav { height: 30px; width: 738px; }
-.ui-slider .ui-slider-handle { position: absolute; overflow: hidden; background: url(../../../images/diamond.gif) no-repeat; height: 13px; z-index: 2; width: 9px; }
-.ui-slider-horizontal .ui-slider-handle { margin-left: -4px; top: -3px; }
-.clusterfeatures { font-size: 0.70em; margin-top: 1px; width: 134px; float: right; }
-.productimg { cursor: pointer; }
-.easynav .cont a:hover { background-color: #693; }
-div #leftbar { position: relative; margin: 0; padding: 0; text-align: center; float: left; width: 195px; }
-div #savebar { margin: 0.5em 0.1em 0; background: #ddd; padding: 0em 0em 0.5em 0em; text-align: center; }
-.deleteX { left: 75px; position: absolute; top: 0; }
-.space { margin-bottom: 20px; }
-.handle { position: absolute; cursor: move; margin-top: -3px; height: 13px; width: 9px; }
-.sim a { font-size: 0.9em; line-height: 0.9em; color: black; text-decoration: none; display: block; height: 100%; width: 100%; }
-.up img { vertical-align: middle; }
-.easynav .buttons a { background-color: #999; }
-.easynav .buttons a:hover { background-color: #693; }
-#savebar h2 { margin: 0; }
-.ui-slider-horizontal .ui-slider-range { height: 100%; top: 0; }
-div.main { padding: 0; text-align: left; margin-left: 5px; float: left; }
-div.borderbox { margin: 5px 0px 0px 5px; height: 210px; width: 235px; }
-.sim:hover { background: url(../images/sim_button_high.png) no-repeat; }
-.clustergraph { background-color: white; border: solid thin black; float: left; width: 50px; }
-.easynav .buttons { padding-top: 4px; float: left; }
-#search { margin-top: 0.5em; width: 130px; }
-#deleteme { font-size: 0.8em; margin: 0 5px; }
-.navigator_box p { margin: 0px 0px 5px; line-height: 1.2em; padding: 0; }
-.rightbar { position: absolute; right: 0; top: 0; width: 45px; }
+.easynav .cont { padding-top: 4px; height: 100%; float: right; }
 .easynav .title { font-size: 0.8em; border: medium solid black; height: 100%; width: 65px; float: left; }
-.saveditem { position: relative; height: 85px; text-align: center; float: left; width: 95px; }
-.handle img { float: left; }
-.endlabel_max { position: absolute; font-size: 0.5em; bottom: -5px; right: -1px; }
-.ui-slider { position: relative; text-align: left; }
 .ui-slider .ui-slider-range { position: absolute; font-size: .7em; border: 0; display: block; z-index: 1; }
-.ui-slider-horizontal { background: url(../../../images/slider.gif) no-repeat; height: 13px; }
-a img { border: none; }
-p.smalldesc { font-size: 0.8em; line-height: 1em; padding: 0; }
-.slider { position: relative; margin: 0 0 0.8em 7px; background: url(../images/slider.gif) no-repeat; padding-top: 0px; height: 13px; padding-bottom: 6px; width: 177px; }
-.borderbox a { text-decoration: none; color: black; }
-.backlink a { color: #891D1D; margin-left: 10px; }
-.down { color: #000; text-decoration: none; }
-.disp { position: absolute; font-size: 0.8em; text-align: left; right: 0; top: 0; width: 80px; }
-.hist { left: 7px; position: absolute; text-align: left; top: 16px; }
-.ui-slider-horizontal .ui-slider-range-max { right: 0; }
-.bottombar { width: 100%; }
-.down img { vertical-align: middle; }
-.easynav .title a { padding: 0; }
-.label { font-size: 0.8em; margin-top: 0.6em; text-align: left; margin-left: 5px; width: 187px; }
-.endlabel_min { left: -1px; position: absolute; font-size: 0.5em; bottom: -5px; }
-a.link { margin-left: 10px; margin-right: 10px; }
-.up { color: #000; text-decoration: none; }
-#filterbar h2 { margin: 0; }
+.space { margin-bottom: 20px; }
 div.navigator_box { font-size: small; background: url(../images/navigatorbox_u.png) no-repeat; margin: 0px 2px 0px 0px; padding: 0px; height: 225px; text-align: center; background-image: url(../images/navigatorbox_u.gif); width: 245px; float: left; }
+.feature { position: relative; }
+.bottombar { width: 100%; }
+.easynav .title a { padding: 0; }
+a img { border: none; }
+.slider { position: relative; margin: 0 0 0.8em 7px; background: url(../images/slider.gif) no-repeat; padding-top: 0px; height: 13px; padding-bottom: 6px; width: 177px; }
+.saveditem { position: relative; height: 85px; text-align: center; float: left; width: 95px; }
+div.main { padding: 0; text-align: left; margin-left: 5px; float: left; }
+.easynav .buttons { padding-top: 4px; float: left; }
+div #filterbar { position: relative; background: #ddd; margin: 0.5em 0.1em; padding: 0em; text-align: center; }
 div.navigator_box:hover { background: url(../images/navigatorbox_s.png) no-repeat; }
 .saveold { padding: 2px 1px 0px; height: 15px; right: 3px; width: 45px; }
-.title { font-size: 16px; color: #0B4F13; }
-.easynav .cont { padding-top: 4px; height: 100%; float: right; }
-.feature { position: relative; }
 .ui-slider-horizontal .ui-slider-range-min { left: 0; }
+.navigator_box p { margin: 0px 0px 5px; line-height: 1.2em; padding: 0; }
+#deleteme { font-size: 0.8em; margin: 0 5px; }
+.deleteX { left: 75px; position: absolute; top: 0; }
+a.save { font-size: 0.9em; background: url(../images/save_button.png) no-repeat; line-height: 1.2em; color: black; text-decoration: none; }
+.easylink { text-decoration: underline; color: blue; }
+.ui-slider .ui-slider-handle { position: absolute; overflow: hidden; background: url(../../../images/diamond.gif) no-repeat; height: 13px; z-index: 2; width: 9px; }
+.disp { position: absolute; font-size: 0.8em; text-align: left; right: 0; top: 0; width: 80px; }
+.easynav a { color: black; text-decoration: none; padding: 6px; }
+.sim a { font-size: 0.9em; line-height: 0.9em; color: black; text-decoration: none; display: block; height: 100%; width: 100%; }
+div #savebar { margin: 0.5em 0.1em 0; background: #ddd; padding: 0em 0em 0.5em 0em; text-align: center; }
+#filterbar h2 { margin: 0; }
+.down { color: #000; text-decoration: none; }
+.handle img { float: left; }
+.ui-slider-horizontal { background: url(../../../images/slider.gif) no-repeat; height: 13px; }
+.handle { position: absolute; cursor: move; margin-top: -3px; height: 13px; width: 9px; }
+.endlabel_max { position: absolute; font-size: 0.5em; bottom: -5px; right: -1px; }
+div.borderbox { margin: 5px 0px 0px 5px; height: 210px; width: 235px; }
+.easynav .buttons a:hover { background-color: #693; }
+.productimg { cursor: pointer; }
+.clustergraph { background-color: white; border: solid thin black; float: left; width: 50px; }
+.featurebar { margin: 1px 0px; background-color: purple; height: 3px; width: 25px; }
+a.link { margin-left: 10px; margin-right: 10px; }
+div #leftbar { position: relative; margin: 0; padding: 0; text-align: center; float: left; width: 195px; }
+.up img { vertical-align: middle; }
+.clusterfeatures { font-size: 0.70em; margin-top: 1px; width: 134px; float: right; }
+.easynav { height: 30px; width: 738px; }
+.endlabel_min { left: -1px; position: absolute; font-size: 0.5em; bottom: -5px; }
+.sim:hover { background: url(../images/sim_button_high.png) no-repeat; }
+.title { font-size: 16px; color: #0B4F13; }
+.ui-slider-horizontal .ui-slider-range { height: 100%; top: 0; }
+div.rowdiv { height: 225px; width: 745px; }
+.hist { left: 7px; position: absolute; text-align: left; top: 16px; }
+.rightbar { position: absolute; right: 0; top: 0; width: 45px; }
+.ui-slider { position: relative; text-align: left; }
+.easynav .buttons a { background-color: #999; }
+.down img { vertical-align: middle; }
+.label { font-size: 0.8em; margin-top: 0.6em; text-align: left; margin-left: 5px; width: 187px; }
+.backlink a { color: #891D1D; margin-left: 10px; }
+#submit_button { margin-top: 2px; }
+.up { color: #000; text-decoration: none; }
+.borderbox a { text-decoration: none; color: black; }
+.ui-slider-horizontal .ui-slider-handle { margin-left: -4px; top: -3px; }
+.easynav .cont a { background-color: #999; }
+#clearsearch { font-size: small; }
+p.smalldesc { font-size: 0.8em; line-height: 1em; padding: 0; }
+#search { margin-top: 0.5em; width: 130px; }
+.easynav .cont a:hover { background-color: #693; }
+.sim { background: url(../images/sim_button.png) no-repeat; margin: auto; padding: 4px 2px 0px; height: 26px; width: 104px; }
+.ui-slider-horizontal .ui-slider-range-max { right: 0; }
+#savebar h2 { margin: 0; }
