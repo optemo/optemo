@@ -1,4 +1,10 @@
 class SearchController < ApplicationController
+  
+  # TODO this is for testing
+  # Disable csrf protection on controller-by-controller basis:
+  skip_before_filter :verify_authenticity_token
+  
+  
   def filter
     myfilter = params[:myfilter]
     if myfilter.nil?

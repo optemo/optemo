@@ -10,7 +10,13 @@ module NavigationHelpers
     
     when /the homepage/
       '/'
-        
+      
+    when /Printers Page/
+      'printers'
+    
+    when /Why Buy A Printer/
+      '/laserprinters'
+    
     # Add more mappings here.
     # Here is a more fancy example:
     #

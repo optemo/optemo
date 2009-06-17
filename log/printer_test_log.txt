@@ -1,326 +1,326 @@
 LOGGER : url when boxes calculated :   http://localhost:3000/
 LOGGER : # boxes =                  9
-LOGGER: session url :                 http://localhost:3000/printers/list/3315/3316/3317/3318/3319/3320/3321/3322/3323
+LOGGER: session url :                 http://localhost:3000/printers/list/4029/4030/4031/4032/4033/4034/4035/4036/4037
 LOGGER : history :                    root,1
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3315/3316/3317/3318/3319/3320/3321/3322/3323
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4029/4030/4031/4032/4033/4034/4035/4036/4037
 LOGGER : # boxes =                  9
-LOGGER: session url :                 http://localhost:3000/printers/list/3494
+LOGGER: session url :                 http://localhost:3000/printers/list/4137
 LOGGER : history :                    root,1,1
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3494
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4137
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3480/3481
+LOGGER: session url :                 http://localhost:3000/printers/list/4132/4133
 LOGGER : history :                    root,1,2
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3480/3481
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4132/4133
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3488/3489
+LOGGER: session url :                 http://localhost:3000/printers/list/4134/4135/4136
 LOGGER : history :                    root,1,3
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3488/3489
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4134/4135/4136
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3461/3462/3463/3464
+LOGGER: session url :                 http://localhost:3000/printers/list/4138/4139/4140
 LOGGER : history :                    root,1,4
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3461/3462/3463/3464
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4138/4139/4140
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3490/3491/3492/3493
+LOGGER: session url :                 http://localhost:3000/printers/list/4147/4148/4149/4150
 LOGGER : history :                    root,1,5
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3490/3491/3492/3493
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4147/4148/4149/4150
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3495/3496/3497/3498
+LOGGER: session url :                 http://localhost:3000/printers/list/4119/4120/4121/4122/4123
 LOGGER : history :                    root,1,6
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3495/3496/3497/3498
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4119/4120/4121/4122/4123
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3465/3466/3467/3468/3469/3470
+LOGGER: session url :                 http://localhost:3000/printers/list/4141/4142/4143/4144/4145/4146
 LOGGER : history :                    root,1,7
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3465/3466/3467/3468/3469/3470
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4141/4142/4143/4144/4145/4146
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3482/3483/3484/3485/3486/3487
+LOGGER: session url :                 http://localhost:3000/printers/list/4151/4152/4153/4154/4155/4156/4157/4158
 LOGGER : history :                    root,1,8
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3482/3483/3484/3485/3486/3487
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4151/4152/4153/4154/4155/4156/4157/4158
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3471/3472/3473/3474/3475/3476/3477/3478/3479
+LOGGER: session url :                 http://localhost:3000/printers/list/4124/4125/4126/4127/4128/4129/4130/4131
 LOGGER : history :                    root,1,9
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3471/3472/3473/3474/3475/3476/3477/3478/3479
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4124/4125/4126/4127/4128/4129/4130/4131
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3288/3289/3290/3291/3292/3293/3294/3295/3296
+LOGGER: session url :                 http://localhost:3000/printers/list/4047/4048/4049/4050/4051/4052/4053/4054/4055
 LOGGER : history :                    root,2
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3288/3289/3290/3291/3292/3293/3294/3295/3296
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4047/4048/4049/4050/4051/4052/4053/4054/4055
 LOGGER : # boxes =                  9
-LOGGER: session url :                 http://localhost:3000/printers/list/3430
+LOGGER: session url :                 http://localhost:3000/printers/list/4178
 LOGGER : history :                    root,2,1
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3430
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4178
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3424/3425
+LOGGER: session url :                 http://localhost:3000/printers/list/4179
 LOGGER : history :                    root,2,2
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3424/3425
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4179
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3410/3411/3412
+LOGGER: session url :                 http://localhost:3000/printers/list/4180
 LOGGER : history :                    root,2,3
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3410/3411/3412
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4180
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3421/3422/3423
+LOGGER: session url :                 http://localhost:3000/printers/list/4188
 LOGGER : history :                    root,2,4
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3421/3422/3423
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4188
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3406/3407/3408/3409
+LOGGER: session url :                 http://localhost:3000/printers/list/4189/4190/4191
 LOGGER : history :                    root,2,5
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3406/3407/3408/3409
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4189/4190/4191
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3413/3414/3415/3416
+LOGGER: session url :                 http://localhost:3000/printers/list/4192/4193/4194
 LOGGER : history :                    root,2,6
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3413/3414/3415/3416
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4192/4193/4194
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3417/3418/3419/3420
+LOGGER: session url :                 http://localhost:3000/printers/list/4173/4174/4175/4176/4177
 LOGGER : history :                    root,2,7
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3417/3418/3419/3420
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4173/4174/4175/4176/4177
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3426/3427/3428/3429
+LOGGER: session url :                 http://localhost:3000/printers/list/4181/4182/4183/4184/4185/4186/4187
 LOGGER : history :                    root,2,8
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3426/3427/3428/3429
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4181/4182/4183/4184/4185/4186/4187
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3431/3432/3433/3434/3435/3436
+LOGGER: session url :                 http://localhost:3000/printers/list/4083/4084/4085/4086/4087/4088/4089/4090/4091
 LOGGER : history :                    root,2,9
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3431/3432/3433/3434/3435/3436
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4083/4084/4085/4086/4087/4088/4089/4090/4091
+LOGGER : # boxes =                  9
+LOGGER: session url :                 http://localhost:3000/printers/list/4258
+LOGGER : history :                    root,2,9,1
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4258
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3270/3271/3272/3273/3274/3275/3276/3277/3278
+LOGGER: session url :                 http://localhost:3000/printers/list/4259
+LOGGER : history :                    root,2,9,2
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4259
+LOGGER : # boxes =                  0
+LOGGER: session url :                 http://localhost:3000/printers/list/4260
+LOGGER : history :                    root,2,9,3
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4260
+LOGGER : # boxes =                  0
+LOGGER: session url :                 http://localhost:3000/printers/list/4261
+LOGGER : history :                    root,2,9,4
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4261
+LOGGER : # boxes =                  0
+LOGGER: session url :                 http://localhost:3000/printers/list/4262
+LOGGER : history :                    root,2,9,5
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4262
+LOGGER : # boxes =                  0
+LOGGER: session url :                 http://localhost:3000/printers/list/4266
+LOGGER : history :                    root,2,9,6
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4266
+LOGGER : # boxes =                  0
+LOGGER: session url :                 http://localhost:3000/printers/list/4256
+LOGGER : history :                    root,2,9,7
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4256
+LOGGER : # boxes =                  0
+LOGGER: session url :                 http://localhost:3000/printers/list/4257
+LOGGER : history :                    root,2,9,8
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4257
+LOGGER : # boxes =                  0
+LOGGER: session url :                 http://localhost:3000/printers/list/4263/4264/4265
+LOGGER : history :                    root,2,9,9
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4263/4264/4265
+LOGGER : # boxes =                  0
+LOGGER: session url :                 http://localhost:3000/printers/list/4065/4066/4067/4068/4069/4070/4071/4072/4073
 LOGGER : history :                    root,3
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3270/3271/3272/3273/3274/3275/3276/3277/3278
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4065/4066/4067/4068/4069/4070/4071/4072/4073
 LOGGER : # boxes =                  9
-LOGGER: session url :                 http://localhost:3000/printers/list/3389
+LOGGER: session url :                 http://localhost:3000/printers/list/4221
 LOGGER : history :                    root,3,1
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3389
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4221
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3372
+LOGGER: session url :                 http://localhost:3000/printers/list/4212
 LOGGER : history :                    root,3,2
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3372
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4212
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3373
+LOGGER: session url :                 http://localhost:3000/printers/list/4219/4220
 LOGGER : history :                    root,3,3
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3373
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4219/4220
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3374
+LOGGER: session url :                 http://localhost:3000/printers/list/4226/4227
 LOGGER : history :                    root,3,4
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3374
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4226/4227
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3375/3376
+LOGGER: session url :                 http://localhost:3000/printers/list/4213/4214/4215
 LOGGER : history :                    root,3,5
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3375/3376
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4213/4214/4215
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3377/3378/3379/3380
+LOGGER: session url :                 http://localhost:3000/printers/list/4216/4217/4218
 LOGGER : history :                    root,3,6
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3377/3378/3379/3380
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4216/4217/4218
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3381/3382/3383/3384
+LOGGER: session url :                 http://localhost:3000/printers/list/4228/4229/4230
 LOGGER : history :                    root,3,7
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3381/3382/3383/3384
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4228/4229/4230
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3385/3386/3387/3388
+LOGGER: session url :                 http://localhost:3000/printers/list/4222/4223/4224/4225
 LOGGER : history :                    root,3,8
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3385/3386/3387/3388
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4222/4223/4224/4225
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3367/3368/3369/3370/3371
+LOGGER: session url :                 http://localhost:3000/printers/list/4205/4206/4207/4208/4209/4210/4211
 LOGGER : history :                    root,3,9
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3367/3368/3369/3370/3371
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4205/4206/4207/4208/4209/4210/4211
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3252/3253/3254/3255/3256/3257/3258/3259/3260
+LOGGER: session url :                 http://localhost:3000/printers/list/4074/4075/4076/4077/4078/4079/4080/4081/4082
 LOGGER : history :                    root,4
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3252/3253/3254/3255/3256/3257/3258/3259/3260
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4074/4075/4076/4077/4078/4079/4080/4081/4082
 LOGGER : # boxes =                  9
-LOGGER: session url :                 http://localhost:3000/printers/list/3350
+LOGGER: session url :                 http://localhost:3000/printers/list/4240
 LOGGER : history :                    root,4,1
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3350
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4240
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3335
+LOGGER: session url :                 http://localhost:3000/printers/list/4245
 LOGGER : history :                    root,4,2
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3335
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4245
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3343
+LOGGER: session url :                 http://localhost:3000/printers/list/4231
 LOGGER : history :                    root,4,3
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3343
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4231
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3344
+LOGGER: session url :                 http://localhost:3000/printers/list/4238/4239
 LOGGER : history :                    root,4,4
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3344
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4238/4239
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3345
+LOGGER: session url :                 http://localhost:3000/printers/list/4254/4255
 LOGGER : history :                    root,4,5
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3345
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4254/4255
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3340/3341/3342
+LOGGER: session url :                 http://localhost:3000/printers/list/4251/4252/4253
 LOGGER : history :                    root,4,6
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3340/3341/3342
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4251/4252/4253
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3331/3332/3333/3334
+LOGGER: session url :                 http://localhost:3000/printers/list/4241/4242/4243/4244
 LOGGER : history :                    root,4,7
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3331/3332/3333/3334
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4241/4242/4243/4244
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3336/3337/3338/3339
+LOGGER: session url :                 http://localhost:3000/printers/list/4246/4247/4248/4249/4250
 LOGGER : history :                    root,4,8
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3336/3337/3338/3339
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4246/4247/4248/4249/4250
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3346/3347/3348/3349
+LOGGER: session url :                 http://localhost:3000/printers/list/4232/4233/4234/4235/4236/4237
 LOGGER : history :                    root,4,9
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3346/3347/3348/3349
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4232/4233/4234/4235/4236/4237
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3261/3262/3263/3264/3265/3266/3267/3268/3269
+LOGGER: session url :                 http://localhost:3000/printers/list/4020/4021/4022/4023/4024/4025/4026/4027/4028
 LOGGER : history :                    root,5
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3261/3262/3263/3264/3265/3266/3267/3268/3269
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4020/4021/4022/4023/4024/4025/4026/4027/4028
 LOGGER : # boxes =                  9
-LOGGER: session url :                 http://localhost:3000/printers/list/3366
+LOGGER: session url :                 http://localhost:3000/printers/list/4107
 LOGGER : history :                    root,5,1
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3366
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4107
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3351
+LOGGER: session url :                 http://localhost:3000/printers/list/4110
 LOGGER : history :                    root,5,2
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3351
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4110
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3355
+LOGGER: session url :                 http://localhost:3000/printers/list/4111
 LOGGER : history :                    root,5,3
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3355
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4111
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3356
+LOGGER: session url :                 http://localhost:3000/printers/list/4117
 LOGGER : history :                    root,5,4
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3356
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4117
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3359
+LOGGER: session url :                 http://localhost:3000/printers/list/4118
 LOGGER : history :                    root,5,5
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3359
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4118
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3357/3358
+LOGGER: session url :                 http://localhost:3000/printers/list/4105
 LOGGER : history :                    root,5,6
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3357/3358
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4105
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3360/3361
+LOGGER: session url :                 http://localhost:3000/printers/list/4106
 LOGGER : history :                    root,5,7
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3360/3361
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4106
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3352/3353/3354
+LOGGER: session url :                 http://localhost:3000/printers/list/4108/4109
 LOGGER : history :                    root,5,8
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3352/3353/3354
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4108/4109
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3362/3363/3364/3365
+LOGGER: session url :                 http://localhost:3000/printers/list/4112/4113/4114/4115/4116
 LOGGER : history :                    root,5,9
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3362/3363/3364/3365
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4112/4113/4114/4115/4116
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3279/3280/3281/3282/3283/3284/3285/3286/3287
+LOGGER: session url :                 http://localhost:3000/printers/list/4038/4039/4040/4041/4042/4043/4044/4045/4046
 LOGGER : history :                    root,6
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3279/3280/3281/3282/3283/3284/3285/3286/3287
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4038/4039/4040/4041/4042/4043/4044/4045/4046
 LOGGER : # boxes =                  9
-LOGGER: session url :                 http://localhost:3000/printers/list/3392
+LOGGER: session url :                 http://localhost:3000/printers/list/4162
 LOGGER : history :                    root,6,1
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3392
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4162
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3393
+LOGGER: session url :                 http://localhost:3000/printers/list/4165
 LOGGER : history :                    root,6,2
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3393
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4165
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3400
+LOGGER: session url :                 http://localhost:3000/printers/list/4168
 LOGGER : history :                    root,6,3
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3400
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4168
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3401
+LOGGER: session url :                 http://localhost:3000/printers/list/4159
 LOGGER : history :                    root,6,4
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3401
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4159
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3390/3391
+LOGGER: session url :                 http://localhost:3000/printers/list/4163/4164
 LOGGER : history :                    root,6,5
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3390/3391
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4163/4164
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3394/3395
+LOGGER: session url :                 http://localhost:3000/printers/list/4166/4167
 LOGGER : history :                    root,6,6
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3394/3395
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4166/4167
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3402/3403
+LOGGER: session url :                 http://localhost:3000/printers/list/4169/4170
 LOGGER : history :                    root,6,7
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3402/3403
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4169/4170
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3404/3405
+LOGGER: session url :                 http://localhost:3000/printers/list/4171/4172
 LOGGER : history :                    root,6,8
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3404/3405
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4171/4172
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3396/3397/3398/3399
+LOGGER: session url :                 http://localhost:3000/printers/list/4160/4161
 LOGGER : history :                    root,6,9
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3396/3397/3398/3399
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4160/4161
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3297/3298/3299/3300/3301/3302/3303/3304/3305
+LOGGER: session url :                 http://localhost:3000/printers/list/4056/4057/4058/4059/4060/4061/4062/4063/4064
 LOGGER : history :                    root,7
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3297/3298/3299/3300/3301/3302/3303/3304/3305
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4056/4057/4058/4059/4060/4061/4062/4063/4064
 LOGGER : # boxes =                  9
-LOGGER: session url :                 http://localhost:3000/printers/list/3437
+LOGGER: session url :                 http://localhost:3000/printers/list/4197
 LOGGER : history :                    root,7,1
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3437
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4197
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3441
+LOGGER: session url :                 http://localhost:3000/printers/list/4198
 LOGGER : history :                    root,7,2
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3441
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4198
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3442
+LOGGER: session url :                 http://localhost:3000/printers/list/4199
 LOGGER : history :                    root,7,3
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3442
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4199
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3445
+LOGGER: session url :                 http://localhost:3000/printers/list/4200
 LOGGER : history :                    root,7,4
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3445
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4200
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3446
+LOGGER: session url :                 http://localhost:3000/printers/list/4203
 LOGGER : history :                    root,7,5
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3446
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4203
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3447
+LOGGER: session url :                 http://localhost:3000/printers/list/4204
 LOGGER : history :                    root,7,6
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3447
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4204
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3448
+LOGGER: session url :                 http://localhost:3000/printers/list/4195
 LOGGER : history :                    root,7,7
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3448
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4195
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3443/3444
+LOGGER: session url :                 http://localhost:3000/printers/list/4196
 LOGGER : history :                    root,7,8
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3443/3444
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4196
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3438/3439/3440
+LOGGER: session url :                 http://localhost:3000/printers/list/4201/4202
 LOGGER : history :                    root,7,9
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3438/3439/3440
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4201/4202
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3306/3307/3308/3309/3310/3311/3312/3313/3314
+LOGGER: session url :                 http://localhost:3000/printers/list/4096/4097/4098/4099/4100/4101/4102/4103/4104
 LOGGER : history :                    root,8
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3306/3307/3308/3309/3310/3311/3312/3313/3314
-LOGGER : # boxes =                  9
-LOGGER: session url :                 http://localhost:3000/printers/list/3455
-LOGGER : history :                    root,8,1
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3455
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4096/4097/4098/4099/4100/4101/4102/4103/4104
 LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3458
-LOGGER : history :                    root,8,2
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3458
-LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3459
-LOGGER : history :                    root,8,3
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3459
-LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3460
-LOGGER : history :                    root,8,4
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3460
-LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3449
-LOGGER : history :                    root,8,5
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3449
-LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3453
-LOGGER : history :                    root,8,6
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3453
-LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3454
-LOGGER : history :                    root,8,7
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3454
-LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3456/3457
-LOGGER : history :                    root,8,8
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3456/3457
-LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3450/3451/3452
-LOGGER : history :                    root,8,9
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3450/3451/3452
-LOGGER : # boxes =                  0
-LOGGER: session url :                 http://localhost:3000/printers/list/3324/3325/3326/3327/3328/3329/3330
+LOGGER: session url :                 http://localhost:3000/printers/list/4092/4093/4094/4095
 LOGGER : history :                    root,9
-LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/3324/3325/3326/3327/3328/3329/3330
+LOGGER : url when boxes calculated :   http://localhost:3000/printers/list/4092/4093/4094/4095
 LOGGER : # boxes =                  0
