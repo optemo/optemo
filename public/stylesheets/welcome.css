@@ -1,17 +1,13 @@
 html { margin: 0; padding: 0; height: 100%; }
 h2.compact { margin-bottom: 1em; margin-top: 0.05em; }
 p.last { margin-bottom: 0px; }
+#header_buttons img { margin-top: 0px; vertical-align: middle; }
 #header_buttons { position: absolute; bottom: 5px; height: 30px; right: 0; }
 .pass { margin: 0px 10px 0px 0px; float: left; }
+ul li { line-height: 1.5em; }
 ul { margin: 0.5em 0px 0px 1.5em; padding: 0px; }
 .small { font-size: 0.8em; }
-#header_buttons img { margin-top: 0px; vertical-align: middle; }
-.article h1 { padding-bottom: 15px !important; }
-.dialog .content { position: relative; padding: 0px 8px 0px 0px; overflow-y: hidden; zoom: 1; }
-.dialog .b { font-size: 1px; height: 20px; }
-.dialog h1 { padding-bottom: 0px; }
 body { position: relative; margin: 0; font-family: arial; padding: 0; height: 100%; }
-.dialog .hd { position: relative; }
 #logo { text-decoration: none; margin-right: 5px; float: left; }
 #error_space { text-align: left; }
 h2.tight { margin-bottom: 0.5em; }
@@ -19,31 +15,34 @@ h2.tight { margin-bottom: 0.5em; }
 div #header_clear, #footer_options { position: relative; clear: both; height: 1px; }
 #bottomlinks { font-size: small; margin: 2px 0px; text-align: center; }
 #mycenter { position: relative; margin-left: auto; margin-right: auto; width: 958px; }
+.dialog .content { position: relative; padding: 0px 8px 0px 0px; zoom: 1; }
+.dialog p { margin: 0px; padding: 0.5em 0px 0.5em 0px; }
+.dialog .wrapper { position: static; overflow: auto; margin: 0; min-height: 776px; max-height: 1500px; }
+.dialog .bd { position: relative; margin-top: 4px; }
+.dialog .ft { position: relative; }
+.dialog .t { left: 0px; position: absolute; height: 100%; margin-left: -18px; background-position: top left; width: 18px; top: 0px; }
+.dialog .content, .t, .b, .b div { background: transparent url(../images/mainbg.png) no-repeat top right; }
+.dialog h1 { margin: 0px; padding: 0.5em 0px 0.5em 0px; padding-bottom: 0px; }
+.dialog .b div { position: relative; font-size: 1px; height: 20px; margin-left: -18px; background-position: bottom left; width: 18px; }
+.dialog .b { position: relative; font-size: 1px; height: 20px; width: 100%; background-position: bottom right; }
+.dialog .hd { position: relative; }
 .dialog { max-width: 1460px; position: relative; min-width: 8em; margin: 0px auto; margin-left: 18px; z-index: 1; width: 958px; }
 p { font-size: 1.1em; font-family: Arial; }
 .thin { margin: 0.5em 5em; }
-#whylaser span { left: 160px; position: absolute; font-size: small; color: black; visibility: hidden; width: 100px; top: 0px; }
-.backGroundTransParentAndImage { background: transparent url(../images/mainbg.png) no-repeat top right; background-image: url(../images/mainbg.gif); }
-.dialog .b div { position: relative; font-size: 1px; height: 20px; margin-left: -18px; background-position: bottom left; width: 18px; }
-.dialog .wrapper { position: static; overflow: auto; margin: 0; min-height: 776px; max-height: 1500px; }
 h1, h2 { letter-spacing: -0.5px; }
 p.compact { margin: 0px; padding: 0px; }
-.heightBottomCapShade { font-size: 1px; height: 20px; }
-ul li { line-height: 1.5em; }
 #logo span { left: 230px; position: absolute; font-family: monaco, arial; color: #693; visibility: hidden; top: 54px; }
+#whylaser span { left: 160px; position: absolute; font-size: small; color: black; visibility: hidden; width: 100px; top: 0px; }
 #whylaser { position: relative; text-decoration: none; margin-left: 20px; }
 .article_link { font-size: 1.4em; margin-top: 2em; text-align: center; }
-.dialog .bd { margin-top: 4px; }
 p, ul { font-size: 0.9em; }
 #header { position: relative; margin-top: 15px; height: 82px; margin-left: 20px; width: 920px; }
 a.link { line-height: 1.5em; }
 div #headerbar { left: -3px; position: absolute; background: transparent url(../images/divider.gif); height: 5px; z-index: 2; width: 953px; top: 92px; }
 div #left { padding-left: 30px; text-align: left; width: 45%; float: left; }
-.dialog .t { left: 0px; position: absolute; height: 1600px; margin-left: -18px; background-position: top left; width: 18px; top: 0px; }
-.dialog .ft { position: relative; }
 h2 { font-size: 1.25em; font-style: italic; letter-spacing: 0px; }
 h2 em { text-decoration: underline; }
 div #right { padding-left: 30px; text-align: left; width: 45%; float: right; }
 div.pass img { border: medium double gray; }
+.article h1 { padding-bottom: 15px !important; }
 .article { margin: 0px 30px; line-height: 1.5em; }
-.dialog p { margin: 0px; padding: 0.5em 0px 0.5em 0px; }

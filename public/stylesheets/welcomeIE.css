@@ -1,0 +1,13 @@
+@import url(welcome.css);
+
+.dialog .content, .dialog .t, .dialog .b, .dialog .b div {
+ _background-image:url(../images/mainbg.gif);
+}
+
+.dialog .content {
+ _overflow-y:hidden;
+}
+
+.dialog .t {
+ _height:1600px; /* arbitrary long height, IE 6 */
+}
