@@ -12,7 +12,7 @@ namespace :printer_test do
     
     # Try selecting every brand
     brands.each do |brand| 
-      brand_test(sesh, brand, log)
+      brand_test(sesh, brand, logfile)
     end
   
     close_log logfile 
@@ -58,20 +58,32 @@ namespace :printer_test do
     get_homepage(sesh, log)
   
     doc = sesh.response.parser   # Parser of WWW::Mechanize::Page should be a Nokogiri::HTML object
-    brands_selected_pre = doc.css('a[title="Remove Brand Filter"]')
+    num_brands_before = doc.css('a[title="Remove Brand Filter"]').length
     
     begin 
       sesh.select brand
       sesh.submit_form "filter_form" # When no submit button present use form id.           
     rescue Exception => e # This detects crashing.
-      report_error(log, "ERROR " + e.type.to_s + " with " + brand)
-      report_error(log, "ERROR message:" + e.message.to_s )
+      report_error(log, e.type.to_s + " with " + brand+ ", message:" + e.message.to_s)
     else
-      report_error( log, "ERROR: get error page after" + brand) if error_page?(sesh)
-      # Check if updated
-      brands_selected_post = doc.css('a[title="Remove Brand Filter"]')
-      puts "ERROR: # brands selected not increased by one" if brands_selected_post.length - 1 != brands_selected_pre.length
-      # WIll this work? puts "ERROR: brand not selected" if !brands_selected_post.contains(brand)
+      report_error( log, "get error page after" + brand) if error_page?(sesh)
+      doc = sesh.response.parser   # Parser of WWW::Mechanize::Page should be a Nokogiri::HTML object
+      num_brands_after = doc.css('a[title="Remove Brand Filter"]').length
+      
+      
+      if(brand == "All Brands" || brand == "Add Another Brand")
+        report_error log, "# brands shown changed and" + brand + " selected" if(num_brands_before != num_brands_after)
+      elsif(num_brands_before == num_brands_after)
+        #if ()
+        #report_error log, "# brands shown not incremented for " + brand if 
+        log.puts "# brands not incremented for " + brand
+      elsif(num_brands_before == num_brands_after - 1)  
+        #report_error log, "# brands shown incremented for " + brand + " although no new products found" if   
+        log.puts "# brands incremented for " + brand
+      else
+        report_error log, "Funny changes to # brands after " + brand
+      end
+      
     end
   end
   
@@ -87,7 +99,7 @@ namespace :printer_test do
         logger.puts e.type.to_s
         logger.puts e.message.to_s
       else
-        report_error( log, "ERROR: get error page searching for " + brand) if error_page?(sesh)
+        report_error( log, "get error page searching for " + brand) if error_page?(session)
         logger.puts "Done searching for '" + query + "'"
       end
     end
