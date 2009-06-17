@@ -29,7 +29,7 @@ div.navigator_box {
 	margin: 0px 2px 0px 0px;
 	padding: 0px;
 	background: url(../images/navigatorbox_u.png) no-repeat;
-	_background-image:url(../images/navigatorbox_u.gif);}
+	}
 div.navigator_box:hover {
 	background: url(../images/navigatorbox_s.png) no-repeat;}
 div.borderbox {
@@ -62,10 +62,22 @@ div.borderbox {
 	height: 26px;
 	padding: 4px 2px 0px;
 	margin: auto;
-	background: url(../images/sim_button.png) no-repeat;}
+	background: url(../images/sim_button.png) no-repeat;
+	a {
+		text-decoration: none;
+		color: black;
+		display: block;
+		width: 100%;
+		height: 100%;
+		font-size: 0.9em;
+		line-height: 0.9em;
+	}
+}
+
 .sim:hover{
 	background: url(../images/sim_button_high.png) no-repeat;
 }
+
 a.save {
 	font-size: 0.9em;
 	line-height: 1.2em;
@@ -74,14 +86,7 @@ a.save {
 	text-decoration: none;
 	background: url(../images/save_button.png) no-repeat;
 	color: black;}
-.sim a {
-	text-decoration: none;
-	color: black;
-	display: block;
-	width: 100%;
-	height: 100%;
-	font-size: 0.9em;
-	line-height: 0.9em;}
+
 .bottombar {
 	width: 100%;}
 .up {
@@ -92,8 +97,7 @@ a.save {
 	text-decoration: none;
 	/*color: #f63;*/
 	color: #000;}
-.up img, 
-.down img {
+.up img, .down img {
 	vertical-align: middle;}
 .clusterfeatures {
 	float: right;
@@ -126,36 +130,42 @@ a.save {
 	width: 25px;
 }
 /*Easy Nav*/
-.easynav .title {
+.easynav {
+ width: 738px;
+ height: 30px;
+ .title {
 	float:left;
 	height: 100%;
 	width: 65px;
 	border: medium solid black;
 	font-size: 0.8em;}
-.easynav .cont {
+ .cont {
 	float: right;
 	height: 100%;
 	padding-top: 4px;}
-.easynav a {
+ a {
 	text-decoration: none;
 	color: black;
 	padding: 6px;}
-.easynav .buttons a {
-	background-color: #999;}
-.easynav .buttons a:hover {
-	background-color: #693;}
-.easynav .title a {
-	padding: 0;}
-.easynav .cont a {
-	background-color: #999;}
-.easynav .cont a:hover {
-	background-color: #693;}
-.easynav {
-	width: 738px;
-	height: 30px;}
-.easynav .buttons {
+ .buttons {
+ 	a {
+		background-color: #999;}
+ 	a:hover {
+		background-color: #693;}
+	}
+ .buttons {
 	float: left;
 	padding-top: 4px;}
+}
+	
+ .title a {
+	padding: 0;}
+ .cont a {
+	background-color: #999;}
+ .cont a:hover {
+	background-color: #693;}
+
+
 
 /* Left Bar */
 div #leftbar {
@@ -174,9 +184,6 @@ div #leftbar {
 /* Search */
 #submit_button {
 	margin-top: 2px;
-}
-#clearsearch {
-	font-size: 0.8em;
 }
 	
 /* Save Box */
@@ -220,8 +227,10 @@ div #filterbar {
 	margin: 0;
 }
 .slider {
+	background: url(../images/slider.gif) no-repeat;
 	margin: 0 0 0.8em 7px;
 	width: 177px;
+	height: 13px;
 	padding-top: 0px;
 	padding-bottom: 6px;
 	position: relative;}
@@ -243,20 +252,20 @@ div #filterbar {
 .space {
 	margin-bottom: 20px; /*Spacing for histogram*/
 }
-.sliderlabel {
-	font-size: 0.6em;
-	padding-top: 17px;
-	text-decoration: none;
-	color: black;
-}
+.handle img{
+	float: left;}
+.handle {
+	width: 9px;
+	height: 13px;
+	margin-top: -3px;
+	cursor: move;
+	position: absolute;}
 .endlabel_min {
-	display: none;
 	position: absolute;
 	bottom: -5px;
 	left: -1px;
 	font-size: 0.5em;}
 .endlabel_max {
-	display: none;
 	position: absolute;
 	bottom: -5px;
 	right: -1px;
@@ -279,7 +288,7 @@ div #filterbar {
 	top: 16px;
 }
 .ui-slider { position: relative; text-align: left; }
-.ui-slider .ui-slider-handle { background:url(../../../images/diamond.gif) no-repeat; height:13px; width:9px;text-decoration:none;outline:none;position:absolute;z-index:2;}/*{ position: absolute; z-index: 2; width: 1.2em; height: 1.2em; cursor: default; }
+.ui-slider .ui-slider-handle { background:url(../../../images/diamond.gif) no-repeat; height:13px; width:9px; overflow:hidden;position:absolute;z-index:2;}/*{ position: absolute; z-index: 2; width: 1.2em; height: 1.2em; cursor: default; }
 */
 .ui-slider .ui-slider-range { position: absolute; z-index: 1; font-size: .7em; display: block; border: 0; }
 
