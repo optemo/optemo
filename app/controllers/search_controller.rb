@@ -47,17 +47,27 @@ class SearchController < ApplicationController
   
   def find
     mysession = Session.find(session[:user_id])
-    #Send search query
-    c = CQuery.new(session[:productType], params[:path_info].map{|p|p.to_i}, mysession, params[:search]) #C-code wrapper
-    if c.valid
-      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+c.to_s+"/s/#{URI.encode(params[:search])}"
-    else
-      flash[:error] = c.to_s
+    sphinx = searchSphinx(params[:search])
+    cluster_ids = sphinx.results.delete_if{|r|r.class.name != mysession.product_type || !r.myvalid?}.map{|pid|
+      (mysession.product_type+'Node').constantize.find_by_product_id(pid, :order => 'cluster_id').cluster_id}
+    
+    #search_ids = sphinx.results.map{|r| r[1]} #Remove Classname from results
+    if sphinx.count == 0
+      flash[:error] = "No products were found"
       redirect_to "/#{session[:productType].pluralize.downcase}/list/"+params[:path_info].join('/')
+    else
+      flash[:notice] = "#{sphinx.count} results found for '#{params[:search]}'"
+      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+cluster_ids.uniq.sort[0..8].join('/')
     end
   end
   
   private
+  
+  def searchSphinx(searchterm)
+    search = Ultrasphinx::Search.new(:query => searchterm, :per_page => 10000)
+    search.run
+    search
+  end
   
     def search(s, opts = {})
       q = {}

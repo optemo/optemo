@@ -24,7 +24,6 @@ class ProductsController < ApplicationController
   def list
     @session = Session.find(session[:user_id])
     @pt = session[:productType] || $DefaultProduct
-    @dbprops = DbProperty.find_by_name(@pt.constantize.name)
     @dbfeat = {}
     DbFeature.find_all_by_product_type(@pt).each {|f| @dbfeat[f.name] = f}
     @s = Search.searchFromPath(params[:path_info], @session)
