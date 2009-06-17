@@ -37,16 +37,6 @@
 	  	<br>
 	<% end %>
 </div>
-
-<div id="preferenceBar">
-	<h2>Preferences</h2>
-	<% form_tag("/search/preference/#{@c.to_s}",{:id => 'preference_form'}) do %>
-		<!-- Preference partial to draw the preference controls -->
-	  	<%= render :partial => 'preference' %>
-	  	<br>
-	<% end %>
-</div>
-
 </div>
 
 <div class="main">
