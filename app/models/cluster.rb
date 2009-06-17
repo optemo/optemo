@@ -14,21 +14,20 @@ module Cluster
     unless @children
       @children = self.class.find_all_by_parent_id(id)
       #Check that children are not empty
-      if session.filter
+      if session.filter || !session.searchpids.blank?
         f = Cluster.findFilteringConditions(session)
-        @children.delete_if{|c| c.isEmpty(f,session.product_type)}
+        @children.delete_if{|c| c.isEmpty(f,session)}
       end
     end
     @children
   end
   
   def ranges(featureName, session)
-    unless session.filter
-      
+    unless session.filter || !session.searchpids.blank?
       [send(featureName+'_min'), send(featureName+'_max')]
     else
+      #debugger
       nodeclass = session.product_type + 'Node'
-      #return [nil,nil] if nodes(session).nil?
       values = nodes(session).map{|n| n.send(featureName)}.sort
       nodes_min = values[0]
       nodes_max = values[-1] 
@@ -39,7 +38,8 @@ module Cluster
   def nodes(session)
     unless @nodes
       @nodes = (session.product_type + 'Node').constantize.find(:all, :order => 'price ASC', 
-        :conditions => ["cluster_id = ?#{session.filter ? " and "+Cluster.filterquery(session) : ''}",id])
+        :conditions => ["cluster_id = ?#{session.filter && !Cluster.filterquery(session).blank? ? ' and '+Cluster.filterquery(session) : ''}#{
+          session.searchpids.blank? ? '' : ' and ('+session.searchpids+')'}",id])
     end
     @nodes
   end
@@ -51,27 +51,35 @@ module Cluster
   end
   
   def self.filterquery(session)
-    fqarray = []
-    Cluster.findFilteringConditions(session).each_pair do |k,v|
-      unless v.nil? || v == 'All Brands'
-        if k.index(/(.+)_max$/)
-          fqarray << "#{Regexp.last_match[1]} <= #{v}"
-          #fqarray << "#{k} <= #{v}"
-        elsif k.index(/(.+)_min$/)
-          fqarray << "#{Regexp.last_match[1]} >= #{v}"
-          #fqarray << "#{k} >= #{v}"
-        else
-          fqarray << "#{k} = '#{v}'"
+    unless @filterquery
+      fqarray = []
+      Cluster.findFilteringConditions(session).each_pair do |k,v|
+        unless v.nil? || v == 'All Brands'
+          if k.index(/(.+)_max$/)
+            fqarray << "#{Regexp.last_match[1]} <= #{v}"
+          elsif k.index(/(.+)_min$/)
+            fqarray << "#{Regexp.last_match[1]} >= #{v}"
+          #Categorical feature which needs to be deliminated
+          elsif v.class == String && v.index('*')
+            cats = []
+            v.split('*').each do |w|
+              cats << "#{k} = '#{w}'"
+            end
+            fqarray << "(#{cats.join(' OR ')})"
+          else
+            fqarray << "#{k} = '#{v}'"
+          end
         end
       end
+      @filterquery = fqarray.join(' AND ')
     end
-    fqarray.join(' AND ')
+    @filterquery
   end
   
   
   def size(session)
     unless @size
-      if session.filter
+      if session.filter || !session.searchpids.blank?
         nodeclass = session.product_type + 'Node'
         @size = nodes(session).length
       else
@@ -103,36 +111,38 @@ module Cluster
     atts.delete_if {|key, val| !(key.index(/#{(session.product_type.constantize::ContinuousFeatures.map{|f|f+'_(max|min)'}+session.product_type.constantize::CategoricalFeatures+session.product_type.constantize::BinaryFeatures).join('|')}/))}
   end
   
-  def isEmpty(filters, product_type)
-    empty = false
-    product_type.constantize::ContinuousFeatures.each do |f|
-      unless filters[f+'_max'].nil? || filters[f+'_max'].nil?
-        if send((f+'_min').intern) > filters[f+'_max'] || send((f+'_max').intern) < filters[f+'_min']
-          empty = true
-          break
+  def isEmpty(filters, session)
+    if !session.searchpids.blank?
+      nodes(session).empty?
+    else
+      empty = false
+      session.product_type.constantize::ContinuousFeatures.each do |f|
+        unless filters[f+'_max'].nil? || filters[f+'_max'].nil?
+          if send((f+'_min').intern) > filters[f+'_max'] || send((f+'_max').intern) < filters[f+'_min']
+            empty = true
+            break
+          end
         end
       end
+      session.product_type.constantize::BinaryFeatures.each do |f|
+        unless filters[f].nil?
+          if filters[f] && !send(f.intern)
+            empty = true
+            break
+          end
+        end
+      end if !empty
+      session.product_type.constantize::CategoricalFeatures.each do |f|
+        if filters.key?(f) && filters['brand'] != "All Brands"
+          cats = filters[f].split('*')
+          clustercats = send(f.intern).split('*')
+          if (cats & clustercats).empty?
+            empty = true
+            break
+          end
+        end
+      end if !empty
+      empty
     end
-    product_type.constantize::BinaryFeatures.each do |f|
-      unless filters[f].nil?
-        if filters[f] && !send(f.intern)
-          empty = true
-          break
-        end
-      end
-    end if !empty
-    #product_type.constantize::CategoricalFeatures.each do |f|
-    #  if filters.key?(f) && filters['brand'] != "All Brands"
-    #    cats = filters[f].split('*')
-    #    clustercats = send(f.intern).split('*')
-    #    if (cats & clustercats).empty?
-    #      empty = true
-    #      break
-    #    end
-    #  end
-    #end if !empty
-    empty
   end
-  
-  
 end

@@ -12,6 +12,7 @@ class SearchController < ApplicationController
       if !myfilter[:Xbrand].blank?
         #Remove a brand
         myfilter[:brand] = mysession.brand.split('*').delete_if{|b|b == myfilter[:Xbrand]}.join('*')
+        myfilter[:brand] = 'All Brands' if myfilter[:brand].blank?
       elsif new_brand != "All Brands" && new_brand != "Add Another Brand"
         old_brand = mysession.brand
         #Add a brand
@@ -24,7 +25,6 @@ class SearchController < ApplicationController
         myfilter[:brand] = mysession.brand
       end
       myfilter.delete('Xbrand') if myfilter[:Xbrand]
-      
       #Delete blank values
       myfilter.delete_if{|k,v|v.blank?}
       myfilter.each_pair {|key, val| myfilter[key] = val.to_f if key.index('_min') || key.index('_max')}
@@ -32,7 +32,7 @@ class SearchController < ApplicationController
       
       #Find clusters that match filtering query
       clusters = (mysession.product_type+'Cluster').constantize.find_all_by_layer(1)
-      clusters.delete_if{|c| c.isEmpty(myfilter,mysession.product_type)}
+      clusters.delete_if{|c| c.isEmpty(myfilter,mysession)}
       unless clusters.empty?
         myfilter[:filter] = true
         #Save search values
@@ -48,19 +48,26 @@ class SearchController < ApplicationController
   def find
     mysession = Session.find(session[:user_id])
     sphinx = searchSphinx(params[:search])
-    cluster_ids = sphinx.results.delete_if{|r|r.class.name != mysession.product_type || !r.myvalid?}.map{|pid|
-      (mysession.product_type+'Node').constantize.find_by_product_id(pid, :order => 'cluster_id').cluster_id}
-    
-    #search_ids = sphinx.results.map{|r| r[1]} #Remove Classname from results
-    if sphinx.count == 0
+    product_ids = sphinx.results.delete_if{|r|r.class.name != mysession.product_type || !r.myvalid?}.map{|p|p.id}
+    if sphinx.total_entries == 0
       flash[:error] = "No products were found"
       redirect_to "/#{session[:productType].pluralize.downcase}/list/"+params[:path_info].join('/')
     else
-      flash[:notice] = "#{sphinx.count} results found for '#{params[:search]}'"
+      mysession.searchterm = params[:search]
+      mysession.searchpids = product_ids.map{|id| "product_id = #{id}"}.join(' OR ')
+      mysession.save
+      cluster_ids = product_ids.map{|p|(mysession.product_type+'Node').constantize.find_by_product_id(p, :order => 'cluster_id').cluster_id}
       redirect_to "/#{session[:productType].pluralize.downcase}/list/"+cluster_ids.uniq.sort[0..8].join('/')
     end
   end
   
+  def delete
+    mysession = Session.find(session[:user_id])
+    mysession.searchterm = ""
+    mysession.searchpids = ""
+    mysession.save
+    redirect_to "/#{session[:productType].pluralize.downcase}/list/"+params[:path_info].join('/')
+  end
   private
   
   def searchSphinx(searchterm)
