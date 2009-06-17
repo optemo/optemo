@@ -3,5 +3,6 @@ class PrintersController < ProductsController
   
   def pickProduct
     session[:productType] = 'Printer'
+
   end
 end

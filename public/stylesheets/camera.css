@@ -224,6 +224,14 @@ div #filterbar {
 	padding-top: 0px;
 	padding-bottom: 6px;
 	position: relative;}
+.preferenceSlider {
+		background: url(../images/slider.gif) no-repeat;
+		margin: 0 0 0.8em 7px;
+		width: 177px;
+		height: 13px;
+		padding-top: 0px;
+		padding-bottom: 6px;
+		position: relative;}
 .label {
 	text-align: left;
 	font-size: 0.8em;

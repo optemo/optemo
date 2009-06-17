@@ -170,10 +170,10 @@ ActiveRecord::Schema.define(:version => 20090608222826) do
     t.text     "specialfeatures"
     t.string   "studio"
     t.text     "title"
+    t.string   "merchant"
     t.integer  "salepriceint"
     t.string   "salepricestr"
     t.boolean  "iseligibleforsupersavershipping"
-    t.integer  "bestoffer"
     t.string   "imagesurl"
     t.integer  "imagesheight"
     t.integer  "imageswidth"
@@ -183,9 +183,11 @@ ActiveRecord::Schema.define(:version => 20090608222826) do
     t.string   "imagelurl"
     t.integer  "imagelheight"
     t.integer  "imagelwidth"
-    t.boolean  "instock"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "instock"
+    t.string   "pricehistory"
+    t.integer  "bestoffer"
   end
 
   create_table "db_features", :force => true do |t|
@@ -485,23 +487,30 @@ ActiveRecord::Schema.define(:version => 20090608222826) do
     t.datetime "updated_at"
     t.string   "ip"
     t.integer  "parent_id"
-    t.string   "brand",                 :default => "All Brands"
-    t.float    "maximumresolution_min", :default => 0.0
-    t.float    "maximumresolution_max", :default => 15.0
-    t.float    "displaysize_min",       :default => 0.0
-    t.float    "displaysize_max",       :default => 4.0
-    t.float    "opticalzoom_min",       :default => 0.0
-    t.float    "opticalzoom_max",       :default => 20.0
-    t.float    "ppm_min",               :default => 8.0
-    t.float    "ppm_max",               :default => 60.0
-    t.float    "itemwidth_min",         :default => 850.0
-    t.float    "itemwidth_max",         :default => 6100.0
-    t.float    "paperinput_min",        :default => 100.0
-    t.float    "paperinput_max",        :default => 3550.0
-    t.float    "resolutionarea_min",    :default => 360000.0
-    t.float    "resolutionarea_max",    :default => 5760000.0
-    t.float    "price_min",             :default => 0.0
-    t.float    "price_max",             :default => 10000000.0
+    t.string   "product_type"
+    t.string   "brand",                  :default => "All Brands"
+    t.boolean  "filter"
+    t.float    "maximumresolution_min"
+    t.float    "maximumresolution_max"
+    t.float    "maximumresolution_pref", :default => 0.0
+    t.float    "displaysize_min"
+    t.float    "displaysize_max"
+    t.float    "displaysize_pref",       :default => 0.0
+    t.float    "opticalzoom_min"
+    t.float    "opticalzoom_max"
+    t.float    "opticalzoom_pref",       :default => 0.0
+    t.float    "ppm_min"
+    t.float    "ppm_max"
+    t.float    "ppm_pref",               :default => 0.0
+    t.float    "itemwidth_min"
+    t.float    "itemwidth_max"
+    t.float    "itemwidth_pref",         :default => 0.0
+    t.float    "paperinput_min"
+    t.float    "paperinput_max"
+    t.float    "paperinput_pref",        :default => 0.0
+    t.float    "price_min",              :default => 0.0
+    t.float    "price_max",              :default => 10000000.0
+    t.float    "price_pref",             :default => 0.0
   end
 
   create_table "vieweds", :force => true do |t|

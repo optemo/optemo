@@ -1,22 +1,7 @@
-<div class='label space'>
-	<%= name %>
-</div>
-
-<%= hidden_field_tag "myfilter[#{val}_min]", @session.send("#{val}_min".intern),{:class => 'min'}%>
-<%= hidden_field_tag "myfilter[#{val}_max]", @session.send("#{val}_max".intern),{:class => 'max'}%>
-
-<div class='slider' 
-data-min=0
-data-max=1
-data-startmin='<%= @session.send("#{val}_min".intern) %>'
-data-startmax='<%= @session.send("#{val}_max".intern) %>'
-
-<% if @c.filterinfo %>
-data-prodmin='<%= @c.filterinfo["#{val"+ "Preference" + "}_min"] %>' 
-data-prodmax='<%= @c.filterinfo["#{val"+ "Preference" + "}_max"] %>'
-<% end %>
->
-	<div class="endlabel_min"><%= min.to_i %></div>
-	<div class="endlabel_max"><%= max.ceil %></div>
-</div>
+<div class="preferenceSlider" id='<%= "#{val}_pref" + "Slider"%>' pref-value='<%= @session.send("#{val}_pref".intern) %>'>
+	<div class='label space'>
+		<%= val %>
+	</div>	
+	<div class="endlabel_min">0</div>
+	<div class="endlabel_max">1</div>
 </div>

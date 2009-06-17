@@ -31,6 +31,7 @@ class ApplicationController < ActionController::Base
       mysession.ip = request.remote_ip
       mysession.save
       session[:user_id] = mysession.id
+
     end
   end
 end
