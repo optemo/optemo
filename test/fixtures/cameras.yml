@@ -1,11 +1,19 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
-#one:
-#  desc: MyString
-#  optical-zoom: MyString
-#  maximumresolution: MyString
+one:
+    id: 1
+    opticalzoom: 2
+    maximumresolution: 9.1
+    price: 10000
+    displaysize: 1.5
+    asin: "www.amazon.com/1" 
+    brand: "Olympus"
 
-#two:
-#  desc: MyString
-#  optical-zoom: MyString
-#  maximumresolution: MyString
+two:
+    id: 2
+    opticalzoom: 4
+    maximumresolution: 9.1
+    price: 100000
+    displaysize: 1.5
+    brand: "Olympus"
+    asin: "www.amazon.com/2"  

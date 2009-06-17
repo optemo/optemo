@@ -171,8 +171,8 @@ ActiveRecord::Schema.define(:version => 20090608222826) do
     t.string   "studio"
     t.text     "title"
     t.string   "merchant"
-    t.integer  "salepriceint"
-    t.string   "salepricestr"
+    t.integer  "price"
+    t.string   "pricestr"
     t.boolean  "iseligibleforsupersavershipping"
     t.string   "imagesurl"
     t.integer  "imagesheight"
@@ -191,12 +191,14 @@ ActiveRecord::Schema.define(:version => 20090608222826) do
   end
 
   create_table "db_features", :force => true do |t|
-    t.integer  "db_property_id"
+    t.string   "product_type"
+    t.string   "feature_type"
     t.string   "name"
     t.float    "min"
     t.float    "max"
     t.float    "high"
     t.float    "low"
+    t.text     "categories"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -367,8 +369,8 @@ ActiveRecord::Schema.define(:version => 20090608222826) do
     t.string   "systemmemorytype"
     t.text     "title"
     t.string   "warranty"
-    t.integer  "salepriceint"
-    t.string   "salepricestr"
+    t.integer  "price"
+    t.string   "pricestr"
     t.boolean  "iseligibleforsupersavershipping"
     t.string   "imagesurl"
     t.integer  "imagesheight"
@@ -458,26 +460,20 @@ ActiveRecord::Schema.define(:version => 20090608222826) do
   create_table "searches", :force => true do |t|
     t.integer  "session_id"
     t.integer  "parent_id"
-    t.integer  "cluster_id"
-    t.integer  "product_id"
-    t.integer  "filter"
-    t.string   "brand",                 :default => "All Brands"
-    t.float    "maximumresolution_min", :default => 0.0
-    t.float    "maximumresolution_max", :default => 15.0
-    t.float    "displaysize_min",       :default => 0.0
-    t.float    "displaysize_max",       :default => 4.0
-    t.float    "opticalzoom_min",       :default => 0.0
-    t.float    "opticalzoom_max",       :default => 20.0
-    t.float    "ppm_min",               :default => 8.0
-    t.float    "ppm_max",               :default => 60.0
-    t.float    "itemwidth_min",         :default => 850.0
-    t.float    "itemwidth_max",         :default => 6100.0
-    t.float    "paperinput_min",        :default => 100.0
-    t.float    "paperinput_max",        :default => 3550.0
-    t.float    "resolutionarea_min",    :default => 360000.0
-    t.float    "resolutionarea_max",    :default => 5760000.0
-    t.float    "price_min",             :default => 0.0
-    t.float    "price_max",             :default => 10000000.0
+    t.integer  "c0"
+    t.integer  "c1"
+    t.integer  "c2"
+    t.integer  "c3"
+    t.integer  "c4"
+    t.integer  "c5"
+    t.integer  "c6"
+    t.integer  "c7"
+    t.integer  "c8"
+    t.integer  "cluster_count"
+    t.integer  "result_count"
+    t.string   "brand",         :default => "All Brands"
+    t.float    "price_min",     :default => 0.0
+    t.float    "price_max",     :default => 10000000.0
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -499,6 +495,9 @@ ActiveRecord::Schema.define(:version => 20090608222826) do
     t.float    "opticalzoom_min"
     t.float    "opticalzoom_max"
     t.float    "opticalzoom_pref",       :default => 0.0
+    t.float    "price_min"
+    t.float    "price_max"
+    t.float    "price_pref",             :default => 0.0
     t.float    "ppm_min"
     t.float    "ppm_max"
     t.float    "ppm_pref",               :default => 0.0
@@ -508,9 +507,9 @@ ActiveRecord::Schema.define(:version => 20090608222826) do
     t.float    "paperinput_min"
     t.float    "paperinput_max"
     t.float    "paperinput_pref",        :default => 0.0
-    t.float    "price_min",              :default => 0.0
-    t.float    "price_max",              :default => 10000000.0
-    t.float    "price_pref",             :default => 0.0
+    t.float    "resolutionarea_min"
+    t.float    "resolutionarea_max"
+    t.float    "resolutionarea_pref",    :default => 0.0
   end
 
   create_table "vieweds", :force => true do |t|

@@ -8,37 +8,12 @@ module ProductsHelper
     end
     
   end
-  def description(i)
-    text = []
-		session[:productType].constantize::MainFeatures.each do |f|
-		  res = @dbprops.toPhrase(f,@c.products[i].send(f))
-			text << res unless res.blank?
-		end
-		text.join(', ')
-  end
   
-  def sim_link(i)
-    #Clustering present
-    return "" unless @c.desc
-    a = @c.desc[i].select{|ii|ii[0]=='cluster_count'}
-    count = a[0][1] if !a.nil? && !a[0].nil?
-    @c.desc[i].each_index do |ii|
-      item = @c.desc[i][ii]
-      if item[1] == 0 || item[0] == 'cluster_count' || item[0] == 'childrenCount'
-  	    @c.desc[i][ii] = nil
-  	  else
-  	    @c.desc[i][ii][1] = case item[1]
-  	        when 1: 'low'
-  	        when 2: 'avg'
-  	        when 3: 'high'
-  	    end
-  	  end
-  	end
-  	@c.desc[i].compact!.each{|a|a.reverse!}
-  	unless @c.subclusters[i].nil?
+  def sim_link(cluster,i)
+  	unless cluster.children(@session).nil? || cluster.children(@session).empty?
       "<div class='sim'>" +
-        link_to("Explore #{count} Similar Product#{"s" if count > 1}", 
-        "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+@c.subclusters[i], 
+        link_to("Explore #{cluster.size(@session)} Similar Product#{"s" if cluster.size(@session) > 1}", 
+        "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+cluster.children(@session).map{|c|c.id}.join('/'), 
         :id => "sim#{i}") +
       "</div>"
     else
@@ -57,6 +32,14 @@ module ProductsHelper
   end
   
   def history(mytype)
-    (mytype+'Cluster').constantize.find(@c.cluster_ids[0]).getHistory.reverse
+    @s.clusters[0].getHistory.reverse
+  end
+  
+  def dbmin(feat)
+    feat=='price' ? @dbfeat['price'].min/100 :  @dbfeat[feat].min.to_i
+  end
+  
+  def dbmax(feat)
+    feat=='price' ? (@dbfeat['price'].max.to_f/100).ceil : @dbfeat[feat].max.ceil
   end
 end
