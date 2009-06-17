@@ -283,24 +283,10 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 	//Finding the accepted clusters 
 	if (clusterID ==0){
 	
-		command = "SELECT DISTINCT ";
-		command += product_nodes;
-		command += ".cluster_id, ";
-		command += product_clusters;
-		command += ".cluster_size, ";
-		command += product_clusters;
-		command +=".layer FROM ";
-		command += product_nodes;
-		command +=", ";
-		command += product_clusters;
-		command +=" WHERE (";
-		command +=product_clusters;
-		command += ".id=";
-		command += product_nodes;
-		command += ".cluster_id AND (product_id=";
-		ostringstream idstr;
-    	idstr << productIds[0]; 
-		command += idstr.str(); 
+		command = "SELECT DISTINCT ";command += product_nodes;command += ".cluster_id, ";command += product_clusters;command += ".cluster_size, ";command += product_clusters;
+		command +=".layer FROM ";command += product_nodes;command +=", ";command += product_clusters;command +=" WHERE (";command +=product_clusters;command += ".id=";
+		command += product_nodes;	command += ".cluster_id AND (product_id=";ostringstream idstr;idstr << productIds[0]; command += idstr.str(); 
+		
 		for (int i=1; i<productN; i++){
 			command += " OR product_id=";
 			ostringstream idStream;
@@ -308,7 +294,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 			command += idStream.str();
 		}
 			command += ")) order by layer, cluster_size DESC;";
-	//	cout<<"CLUS command "<<command<<endl;
+
 			res = stmt->executeQuery(command);
 		if (searchBoxFlag){
 		
@@ -463,11 +449,6 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 					j=0;
 					while(res2->next()){
 						reps[j] = res2->getInt("product_id");
-				
-					
-						
-						
-						
 						j++;
 					}
 					return reped; ///////////////////////////////////////////////////////////////
@@ -535,15 +516,7 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 				if (rep>0){
 				
 					reps[j] = rep;
-				
-				/////
-						
-				
-				
-				
-				////
-				
-					clusterIds[j] = cId;
+			clusterIds[j] = cId;
 				
 			if (searchBoxFlag){				
 					command = "SELECT ";
@@ -606,19 +579,12 @@ bool getRep(int* reps, int* productIds, int productN, int* clusterIds, int** chi
 						command += cidstream.str();
 							command += ");";
 					}
-				//	cout<<"command is  "<<command<<endl;
 					res2 = stmt->executeQuery(command);
 					int cSize = 0;
-				
 					while(res2->next()){
 						childrenIDs[j][cSize] = res2->getInt("id");
-					//	cout<<"cSize is "<<cSize<<endl;
 						cSize++;
-					}	
-				//	if (smallNFlag){
-				//		childrenCount[j] = 0;
-				//	}
-					
+					}
 					childrenCount[j] = cSize;
 				
 					clusterCounts[j] = clusterCount;
