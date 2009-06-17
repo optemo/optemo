@@ -12,8 +12,10 @@ class CreateSessions < ActiveRecord::Migration
       (Camera::ContinuousFeatures | Printer::ContinuousFeatures).each do |f|
         min = f+'_min'
         max = f+'_max'
+        pref = f + '_pref'
         t.float min.intern #, :default => f.min.to_i
         t.float max.intern #, :default => f.max.ceil
+        t.float pref.intern, :default => 0
       end
     end
   end

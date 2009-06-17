@@ -43,7 +43,11 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/printers/list/*path_info', :controller => 'printers', :action => 'list'
   map.connect '/products/list/*path_info', :controller => 'products', :action => 'list'
   map.connect '/search/:action/*path_info', :controller => 'search'
+  # Added route for changes preference by drag-drop
+  # map.connect 'compare/list/*path_info', :controller => 'compare', :action => 'list'
   map.connect 'compare/*path_info', :controller => 'compare', :action => 'index'
+
+
   map.connect ':controller/:action/:id'
   map.connect ':controller/:action/:id.:format'
   map.connect ':controller/:action'

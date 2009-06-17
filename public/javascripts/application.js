@@ -61,8 +61,17 @@ function removeBrand(str)
 	$('#filter_form').submit();
 }
 
-
 $(document).ready(function() {
+	// ToDo: Add code for table drag drop here
+	
+	$("#comparisonTable").tableDnD({
+		onDragClass: "rowBeingDragged",
+		onDrop: function(table, row){		
+			newPreferencesString = $.tableDnD.serialize();
+			// window.location = "/compare/list?" + newPrefString
+		}
+	});
+			
 	//Set up sliders
 	$('.slider').each(function () {
 		curmin = parseInt($(this).attr('data-startmin'));
@@ -99,7 +108,40 @@ $(document).ready(function() {
 				}
 		});
 		histogram($(this).siblings('.hist')[0],(sessmin-rangemin)/(rangemax-rangemin),(sessmax-rangemin)/(rangemax-rangemin));
+	});
+
+	sum = 0.0
+	
+	$(".preferenceSlider").each(function() {
+		prefVal = parseInt($(this).attr('pref-value'));
+		$(this).slider({
+			max: 100,
+			min: 0,
+			step: 1,
+			// value: (Get value of preferences from session) 
+			value: prefVal,
+			// setting slide to false can prevent user from sliding further. This can constrain the sum of values of sliders to be <= 1
+			stop: function(e,ui)
+			{
+				// ToDo: Can put a check here to ensure that the 4 preferences always sum up to 1.
+				$('.preferenceSlider').each(function(){
+					sum = sum + $(this).slider('option', 'value');					
+				})				
+				if (sum >= 100)
+				{
+					currValue = ui.value;
+					autoVal = currValue-sum+100;
+					//alert("this val should be= " + newVal);
+					$('this').slider('option', 'value', autoVal);
+					sum = 0.0;
+					return;
+				}
+				sum = 0.0			
+			}
 		});
+	});
+	
+	
 	//Draw cluster graphs
 	$('.clustergraph').each(function () {
 		Raphael.getColor.reset();

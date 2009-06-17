@@ -2,7 +2,9 @@ desc "Download RSS feed"
 task :bb_rss => :environment do
   require 'simple-rss'
   require 'open-uri'
-  source = "http://www.bestbuy.ca/RSSFEeds/GetProductsFeedForMobile.aspx?langid=EN" # url or local file
+  require 'Nokogiri'
+  #source = "http://www.bestbuy.ca/RSSFEeds/GetProductsFeedForMobile.aspx?langid=EN" # url or local file
+  source = "./tmp/bbdata.rss"
   SimpleRSS.item_tags = SimpleRSS.item_tags + %w(FS:CategoryID FS:Manufacturer FS:ProvinceCode FS:ImageUrl FS:LongDescription FS:ItemSpecs FS:CatGroup FS:CatDept FS:CatClass FS:CatSubClass FS:Price)
   
   rss = SimpleRSS.parse open(source)
@@ -16,10 +18,23 @@ task :bb_rss => :environment do
   puts "Item values"
   print "number of items: ", rss.items.size, "\n"
   #puts SimpleRSS.item_tags
-  puts rss.items[0].FS_CategoryID
-  puts rss.items[1].FS_ItemSpecs
-  print "title of first item: ", rss.items[0].title, "\n"
-  print "link of first item: ", rss.items[0].link, "\n"
+  #rss.items.each do |i|
+  #  puts i.FS_ItemSpecs if i.FS_ItemSpecs
+  #end
+  #puts rss.items[0].FS_CategoryID
+  item = rss.items[1]
+  #puts item.FS_ItemSpecs
+  doc = Nokogiri::XML(item.FS_ItemSpecs)
+  if doc.css('ATT').count > 30
+    puts item.NAME
+    doc.css('ATT').each do |a_tag|
+      #puts a_tag.attributes
+      puts a_tag.css('ATT_NAME')[0].content + ': ' + a_tag.css('ATT_VALUE')[0].content
+    end
+  end
+  #puts rss.items[2].FS_ItemSpecs
+  #print "title of first item: ", rss.items[0].title, "\n"
+  #print "link of first item: ", rss.items[0].link, "\n"
   #print "description of first item: ", rss.items[0].description, "\n"
   #print "date of first item: ", rss.items[0].date, "\n"
 end

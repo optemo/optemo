@@ -1,3 +1,4 @@
+<% self.title = "Product Comparison" %>
 <br>&lt;&lt;&nbsp;<%= link_to 'Go back to navigation', :back, {:style => 'position:relative'}%>
 <!-- <%= link_to 'Go back to navigation', :back, {:style => 'position:absolute; top:0;left:0;'}%> -->
 <%# Descriptions %>
@@ -5,8 +6,8 @@
 
 <!-- To display the names of interesting features that are known for at least one saved product-->
 <center><h1>Product Comparison</h1></center>			
-<table height="100%" width="100%" border="1" cellspacing="0" cellpadding="5">
-	<tr>
+<table id="comparisonTable" height="100%" width="100%" border="1" cellspacing="0" cellpadding="5">
+	<tr id= "firstRow" class="nodrag nodrop">
 		<td> 
 			<div class="first">				
 				<br><br>
@@ -14,13 +15,15 @@
 			</div>
 		</td>
 		<% for i in 0..@products.count-1%>
-		<%= render :partial => 'thumbnails', :object => @products[i] %>
+			<%= render :partial => 'thumbnails', :object => @products[i], :locals => {:oldBack=>:back} %>	
+																											<!-- ToDo: OldBack needs to be used to retain history after Deleting column-->		
 		<% end %>
 	</tr>
 	<% countVar = 0%>
-	<% session[:productType].constantize::InterestingFeatures.each do |column| %>	    
+	<% session[:productType].constantize::DisplayedFeatures.each do |column| %>	    
 		<% if @interestingFeatureDisplayed[countVar] == true %>
-			<tr> 
+			<!-- Assign IDs to rows. These IDs are returned by the serialize() function in javascript and is used to record user's preferences-->
+			<tr id = <%= column %> > 
 				<!-- To display the name of the feature -->
 				<%= render :partial => 'features', :locals => {:column=>column} %>
 				<!-- To display the value of each interesting feature -->
