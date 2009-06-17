@@ -23,16 +23,19 @@ module Cluster
   end
   
   def ranges(featureName, session)
-    unless session.filter || !session.searchpids.blank?
-      [send(featureName+'_min'), send(featureName+'_max')]
-    else
-      #debugger
-      nodeclass = session.product_type + 'Node'
-      values = nodes(session).map{|n| n.send(featureName)}.sort
-      nodes_min = values[0]
-      nodes_max = values[-1] 
-      [nodes_min, nodes_max]    
-    end 
+    @range ||= {}
+    if @range[featureName].nil?
+      unless session.filter || !session.searchpids.blank?
+        @range[featureName] = [send(featureName+'_min'), send(featureName+'_max')]
+      else
+        nodeclass = session.product_type + 'Node'
+        values = nodes(session).map{|n| n.send(featureName)}.sort
+        nodes_min = values[0]
+        nodes_max = values[-1]
+        @range[featureName] = [nodes_min, nodes_max]    
+      end
+    end
+    @range[featureName]
   end
   
   def nodes(session)
@@ -51,29 +54,26 @@ module Cluster
   end
   
   def self.filterquery(session)
-    unless @filterquery
-      fqarray = []
-      Cluster.findFilteringConditions(session).each_pair do |k,v|
-        unless v.nil? || v == 'All Brands'
-          if k.index(/(.+)_max$/)
-            fqarray << "#{Regexp.last_match[1]} <= #{v}"
-          elsif k.index(/(.+)_min$/)
-            fqarray << "#{Regexp.last_match[1]} >= #{v}"
-          #Categorical feature which needs to be deliminated
-          elsif v.class == String && v.index('*')
-            cats = []
-            v.split('*').each do |w|
-              cats << "#{k} = '#{w}'"
-            end
-            fqarray << "(#{cats.join(' OR ')})"
-          else
-            fqarray << "#{k} = '#{v}'"
+    fqarray = []
+    Cluster.findFilteringConditions(session).each_pair do |k,v|
+      unless v.nil? || v == 'All Brands'
+        if k.index(/(.+)_max$/)
+          fqarray << "#{Regexp.last_match[1]} <= #{v}"
+        elsif k.index(/(.+)_min$/)
+          fqarray << "#{Regexp.last_match[1]} >= #{v}"
+        #Categorical feature which needs to be deliminated
+        elsif v.class == String && v.index('*')
+          cats = []
+          v.split('*').each do |w|
+            cats << "#{k} = '#{w}'"
           end
+          fqarray << "(#{cats.join(' OR ')})"
+        else
+          fqarray << "#{k} = '#{v}'"
         end
       end
-      @filterquery = fqarray.join(' AND ')
     end
-    @filterquery
+    fqarray.join(' AND ')
   end
   
   
