@@ -27,6 +27,7 @@ class ProductsController < ApplicationController
     @dbfeat = {}
     DbFeature.find_all_by_product_type(@pt).each {|f| @dbfeat[f.name] = f}
     @s = Search.searchFromPath(params[:path_info], @session)
+    
     #Check for search keyword
     #if params[:path_info][-2] == 's'
     #  cluster_ids = params[:path_info][0..-3].map{|p|p.to_i}
