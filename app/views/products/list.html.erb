@@ -1,13 +1,14 @@
 <% self.full_title = 'LaserPrinterHub - Find Laser Printers, Compare Prices, then Buy' %>
 <div id="leftbar">
 	Browsing <%= @s.result_count %> <%= @pt.pluralize.capitalize %>
-	<% if RAILS_ENV == 'development' %>Session id: <%= session[:user_id] %> <% end %>
+	<% if RAILS_ENV == 'development' %><br>Session id: <%= session[:user_id] %> <% end %>
 	<!-- The Search box -->
-	<% form_tag ("/search/find/#{@s.to_s}") do %>
-	  <%= text_field_tag 'search' %>
+	<% form_tag ("/search/find/#{@s.to_s}",{:id => 'search_form'}) do %>
+	  <%= @session.searchterm.blank? ? text_field_tag('search') : text_field_tag('search', @session.searchterm) %>
 	  <%= submit_tag 'Search', {:id => 'submit_button'} %>
-	  <% end %>
-
+	  <%= @session.searchterm ? link_to('Clear Search', "/search/delete/", :id => 'clearsearch') : '' %>
+	<% end %>
+	
 	<!-- The Saved Items box -->
 	<div id="savebar">
 		<h2>Saved Items</h2>
@@ -40,8 +41,7 @@
 </div>
 
 <div class="main">
-	<span style="color:red;"><%= flash[:error] %></span>
-	
+	<span style="color:red;"><%= flash[:error] %></span><span class="title"><%= flash[:notice] %></span>
 	<!-- count variable to print << after every Go Back link -->
 	<% count=1 %>	
 	<div class='backlink'>

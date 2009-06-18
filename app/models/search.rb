@@ -17,10 +17,14 @@ class Search < ActiveRecord::Base
         clusters << "cluster_id = #{send(('c'+c.to_s).intern)}"
       end
       chooseclusters = clusters.join(' OR ')
+      #Keyword search parameters
+      options = session.searchpids.blank? ? '' : ' and ('+session.searchpids+')'
+      #Filtering parameters
+      options += session.filter && !Cluster.filterquery(session).blank? ? ' and '+Cluster.filterquery(session) : ''
       if max==min
-        res << (session.product_type+'Node').constantize.find(:all, :conditions => ["#{featureName} = ? and (#{chooseclusters}) #{session.filter ? " and "+Cluster.filterquery(session) : ''}",max]).length
+        res << (session.product_type+'Node').constantize.find(:all, :conditions => ["#{featureName} = ? and (#{chooseclusters}) #{options}",max]).length
       else  
-        res << (session.product_type+'Node').constantize.find(:all, :conditions => ["#{featureName} < ? and #{featureName} >= ? and (#{chooseclusters}) #{session.filter ? " and "+Cluster.filterquery(session) : ''}",max,min]).length
+        res << (session.product_type+'Node').constantize.find(:all, :conditions => ["#{featureName} < ? and #{featureName} >= ? and (#{chooseclusters}) #{options}",max,min]).length
       end
     end
     round2Decim(normalize(res))
