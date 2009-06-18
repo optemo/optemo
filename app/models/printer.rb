@@ -26,7 +26,7 @@ class Printer < ActiveRecord::Base
   
   # Currently only 4 preferences
   PreferenceFeatures = %w(ppm itemwidth paperinput price)
-  
+    
   def myvalid?
     instock && !(ppm.nil? || itemwidth.nil? || paperinput.nil? || price.nil? || resolutionarea.nil? || scanner.nil? || printserver.nil?)
   end
