@@ -20,7 +20,7 @@ task :calculate_factors => :environment do
     end   
 end
 
-def CalculateFactor (fVal, f, fMax, fMin)  #productId                       # productId should be changed to fVal
+def CalculateFactor (fVal, f, fMax, fMin)  
   # Calculate Denominator value
   denominator = fMax - fMin
   if (denominator == 0)
