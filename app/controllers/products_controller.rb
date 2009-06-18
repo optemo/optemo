@@ -13,6 +13,7 @@ class ProductsController < ApplicationController
     #c = CQuery.new(session[:productType] || $DefaultProduct)
     @pt = session[:productType] || $DefaultProduct
     cluster_ids = (@pt+'Cluster').constantize.find_all_by_parent_id(0).map{|c| c.id}
+    
     if cluster_ids.length == 9
       redirect_to "/#{@pt.pluralize.downcase}/list/"+cluster_ids.join('/')
     else
@@ -52,6 +53,7 @@ class ProductsController < ApplicationController
     #     currentsearch = Search.find(currentsearch.parent_id)
     #  end
     #end
+        
   end
 
   # GET /products/1
