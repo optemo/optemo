@@ -18,6 +18,10 @@ class ApplicationController < ActionController::Base
   $SITE_TITLE = 'LaserPrinterHub.com'
   private
   $DefaultProduct = 'Printer'
+  # Define Global variable for storing direction for each preference
+  $PrefDirection = Hash.new(1) # Set 1 i.e. Up as the default value for direction
+  $PrefDirection["price"] = -1 # -1 for down direction for preferences
+  $PrefDirection["itemwidth"] = -1
   
   def call_rake(task, options = {})
     options[:rails_env] ||= Rails.env

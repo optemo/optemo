@@ -17,8 +17,7 @@ function fadein()
 {
 	$('#myfilter_brand').css('visibility', 'visible');
 	$('#fade').css('display', 'none');
-	$('#info').css('display', 'none');
-	
+	$('#info').css('display', 'none');	
 }
 
 // When you click the Save button:
@@ -121,9 +120,10 @@ $(document).ready(function() {
 			// value: (Get value of preferences from session) 
 			value: prefVal,
 			// setting slide to false can prevent user from sliding further. This can constrain the sum of values of sliders to be <= 1
-			stop: function(e,ui)
+			slide: function(e,ui)
 			{
-				// ToDo: Can put a check here to ensure that the 4 preferences always sum up to 1.
+				// ToDo:
+				// Put a check here to ensure that the 4 preferences always sum up to 1.
 				$('.preferenceSlider').each(function(){
 					sum = sum + $(this).slider('option', 'value');					
 				})				
@@ -133,14 +133,14 @@ $(document).ready(function() {
 					autoVal = currValue-sum+100;
 					//alert("this val should be= " + newVal);
 					$('this').slider('option', 'value', autoVal);
-					sum = 0.0;
-					return;
 				}
 				sum = 0.0			
+			},
+			stop: function(e,ui)
+			{
 			}
 		});
 	});
-	
 	
 	//Draw cluster graphs
 	$('.clustergraph').each(function () {

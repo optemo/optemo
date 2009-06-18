@@ -1,5 +1,6 @@
 @import url(camera.css);
 
-div.navigator_box {
- 	_background-image:url(../images/navigatorbox_u.gif);
-	}
+div.navigator_box 
+{
+	_background-image:url(../images/navigatorbox_u.gif);
+}

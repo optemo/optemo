@@ -1,15 +1,18 @@
 div.rowdiv { height: 225px; width: 745px; }
-.sim a { font-size: 0.9em; line-height: 0.9em; color: black; text-decoration: none; display: block; height: 100%; width: 100%; }
 .sim { background: url(../images/sim_button.png) no-repeat; margin: auto; padding: 4px 2px 0px; height: 26px; width: 104px; }
 .featurebar { margin: 1px 0px; background-color: purple; height: 3px; width: 25px; }
-.title a { padding: 0; }
 #submit_button { margin-top: 2px; }
 div #filterbar { position: relative; background: #ddd; margin: 0.5em 0.1em; padding: 0em; text-align: center; }
 a.save { font-size: 0.9em; background: url(../images/save_button.png) no-repeat; line-height: 1.2em; color: black; text-decoration: none; }
 .easylink { text-decoration: underline; color: blue; }
+.easynav .title a { padding: 0; }
 .easynav a { color: black; text-decoration: none; padding: 6px; }
+.easynav .buttons a { background-color: #999; }
 .easynav .cont { padding-top: 4px; height: 100%; float: right; }
+.easynav .cont a { background-color: #999; }
+.easynav .cont a:hover { background-color: #693; }
 .easynav .buttons { padding-top: 4px; float: left; }
+.easynav buttons a:hover { background-color: #693; }
 .easynav .title { font-size: 0.8em; border: medium solid black; height: 100%; width: 65px; float: left; }
 .easynav { height: 30px; width: 738px; }
 .ui-slider .ui-slider-handle { position: absolute; overflow: hidden; background: url(../../../images/diamond.gif) no-repeat; height: 13px; z-index: 2; width: 9px; }
@@ -21,7 +24,7 @@ div #savebar { margin: 0.5em 0.1em 0; background: #ddd; padding: 0em 0em 0.5em 0
 .deleteX { left: 75px; position: absolute; top: 0; }
 .space { margin-bottom: 20px; }
 .handle { position: absolute; cursor: move; margin-top: -3px; height: 13px; width: 9px; }
-.cont a { background-color: #999; }
+.sim a { font-size: 0.9em; line-height: 0.9em; color: black; text-decoration: none; display: block; height: 100%; width: 100%; }
 #savebar h2 { margin: 0; }
 .ui-slider-horizontal .ui-slider-range { height: 100%; top: 0; }
 div.main { padding: 0; text-align: left; margin-left: 5px; float: left; }
@@ -32,7 +35,6 @@ div.borderbox { margin: 5px 0px 0px 5px; height: 210px; width: 235px; }
 #deleteme { font-size: 0.8em; margin: 0 5px; }
 .navigator_box p { margin: 0px 0px 5px; line-height: 1.2em; padding: 0; }
 .rightbar { position: absolute; right: 0; top: 0; width: 45px; }
-.cont a:hover { background-color: #693; }
 .saveditem { position: relative; height: 85px; text-align: center; float: left; width: 95px; }
 .handle img { float: left; }
 .endlabel_max { position: absolute; font-size: 0.5em; bottom: -5px; right: -1px; }
