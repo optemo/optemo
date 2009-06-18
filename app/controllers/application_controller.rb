@@ -1,3 +1,4 @@
+require 'GlobalDeclarations'
 # Filters added to this controller apply to all controllers in the application.
 # Likewise, all the methods added will be available for all controllers.
 
@@ -15,13 +16,9 @@ class ApplicationController < ActionController::Base
   # filter_parameter_logging :password
   
   before_filter :update_user
-  $SITE_TITLE = 'LaserPrinterHub.com'
+ 
   private
   $DefaultProduct = 'Printer'
-  # Define Global variable for storing direction for each preference
-  $PrefDirection = Hash.new(1) # Set 1 i.e. Up as the default value for direction
-  $PrefDirection["price"] = -1 # -1 for down direction for preferences
-  $PrefDirection["itemwidth"] = -1
   
   def call_rake(task, options = {})
     options[:rails_env] ||= Rails.env
