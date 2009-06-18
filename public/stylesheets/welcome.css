@@ -1,48 +1,291 @@
-html { margin: 0; padding: 0; height: 100%; }
-h2.compact { margin-bottom: 1em; margin-top: 0.05em; }
-p.last { margin-bottom: 0px; }
-#header_buttons img { margin-top: 0px; vertical-align: middle; }
-#header_buttons { position: absolute; bottom: 5px; height: 30px; right: 0; }
-.pass { margin: 0px 10px 0px 0px; float: left; }
-ul li { line-height: 1.5em; }
-ul { margin: 0.5em 0px 0px 1.5em; padding: 0px; }
-.small { font-size: 0.8em; }
-body { position: relative; margin: 0; font-family: arial; padding: 0; height: 100%; }
-#logo { text-decoration: none; margin-right: 5px; float: left; }
-#error_space { text-align: left; }
-h2.tight { margin-bottom: 0.5em; }
-.index { font-size: 1.2em; text-align: center; }
-div #header_clear, #footer_options { position: relative; clear: both; height: 1px; }
-#bottomlinks { font-size: small; margin: 2px 0px; text-align: center; }
-#mycenter { position: relative; margin-left: auto; margin-right: auto; width: 958px; }
-.dialog .content { position: relative; padding: 0px 8px 0px 0px; zoom: 1; }
-.dialog p { margin: 0px; padding: 0.5em 0px 0.5em 0px; }
-.dialog .wrapper { position: static; overflow: auto; margin: 0; min-height: 776px; max-height: 1500px; }
-.dialog .bd { position: relative; margin-top: 4px; }
-.dialog .ft { position: relative; }
-.dialog .t { left: 0px; position: absolute; height: 100%; margin-left: -18px; background-position: top left; width: 18px; top: 0px; }
-.dialog .content, .t, .b, .b div { background: transparent url(../images/mainbg.png) no-repeat top right; }
-.dialog h1 { margin: 0px; padding: 0.5em 0px 0.5em 0px; padding-bottom: 0px; }
-.dialog .b div { position: relative; font-size: 1px; height: 20px; margin-left: -18px; background-position: bottom left; width: 18px; }
-.dialog .b { position: relative; font-size: 1px; height: 20px; width: 100%; background-position: bottom right; }
-.dialog .hd { position: relative; }
-.dialog { max-width: 1460px; position: relative; min-width: 8em; margin: 0px auto; margin-left: 18px; z-index: 1; width: 958px; }
-p { font-size: 1.1em; font-family: Arial; }
-.thin { margin: 0.5em 5em; }
-h1, h2 { letter-spacing: -0.5px; }
-p.compact { margin: 0px; padding: 0px; }
-#logo span { left: 230px; position: absolute; font-family: monaco, arial; color: #693; visibility: hidden; top: 54px; }
-#whylaser span { left: 160px; position: absolute; font-size: small; color: black; visibility: hidden; width: 100px; top: 0px; }
-#whylaser { position: relative; text-decoration: none; margin-left: 20px; }
-.article_link { font-size: 1.4em; margin-top: 2em; text-align: center; }
-p, ul { font-size: 0.9em; }
-#header { position: relative; margin-top: 15px; height: 82px; margin-left: 20px; width: 920px; }
-a.link { line-height: 1.5em; }
-div #headerbar { left: -3px; position: absolute; background: transparent url(../images/divider.gif); height: 5px; z-index: 2; width: 953px; top: 92px; }
-div #left { padding-left: 30px; text-align: left; width: 45%; float: left; }
-h2 { font-size: 1.25em; font-style: italic; letter-spacing: 0px; }
-h2 em { text-decoration: underline; }
-div #right { padding-left: 30px; text-align: left; width: 45%; float: right; }
-div.pass img { border: medium double gray; }
-.article h1 { padding-bottom: 15px !important; }
-.article { margin: 0px 30px; line-height: 1.5em; }
+/* Demo styles, page-specific - not needed for your use. */
+
+html {
+ height:100%;
+ margin: 0;
+ padding: 0;
+}
+
+body {
+ /*font: normal verdana,tahoma,arial; removed because Firefox doesn't like it*/
+ font-family: arial;
+ padding: 0;
+ margin: 0;
+ height: 100%;
+ position: relative; /*IE6 Resize bug*/
+}
+
+h1, h2 {
+ letter-spacing:-0.5px; /* it isn't web 2.0 otherwise, right? ;) */
+}
+
+h2 {
+ font-size:1.25em;
+ letter-spacing:0px;
+ font-style:italic;
+}
+
+h2.compact {
+ margin-top:0.05em;
+ margin-bottom:1em;
+}
+
+h2.tight {
+ margin-bottom:0.5em;
+}
+
+h2 em {
+ text-decoration:underline;
+}
+
+ul {
+ margin:0.5em 0px 0px 1.5em;
+ padding:0px;
+}
+
+ul li {
+ line-height:1.5em;
+}
+
+p {
+ margin:0.5em 0px 1.25em 0px;
+ padding:0px;
+ line-height:1.5em;
+}
+
+p.last {
+ margin-bottom:0px;
+}
+
+p.compact {
+ margin:0px;
+ padding:0px;
+}
+
+p, ul {
+ font-size:0.9em;
+}
+
+.small {
+  font-size: 0.8em;
+}
+
+#logo {
+	float:left;
+	margin-right: 5px;
+	text-decoration: none;
+}
+#logo span{
+	position: absolute;
+	top: 54px;
+	left: 230px;
+	color: #693;
+	visibility: hidden;
+	font-family: monaco, arial;
+}
+p {
+	font-size: 1.1em;
+	font-family: Arial;
+}
+.index {
+	text-align: center;
+	font-size: 1.2em;
+}
+.thin {
+	margin: 0.5em 5em;
+}
+#header {
+   margin-top: 15px;
+   margin-left: 20px;
+   position: relative;
+   width: 920px;
+   height: 82px;
+}
+#header_buttons {
+	position: absolute;
+	height: 30px;
+	bottom: 5px;
+	right: 0;
+}
+#header_buttons img{
+	margin-top: 0px;
+	vertical-align: middle;
+}
+a.link {
+	/*margin-left: 10px;
+	margin-right: 10px;*/
+	line-height: 1.5em;
+}
+div #header_clear, #footer_options {
+    /*background-color: #c8c8ff;*/
+    /*background-color: #669933;*/
+	clear: both;
+	height: 1px;
+	position: relative;
+	
+}
+div #headerbar {
+	position: absolute;
+	left: -3px;
+	top: 92px;
+	height: 5px;
+	width: 953px;
+	z-index: 2;
+	/*width: 800px;*/
+    background:transparent url(../images/divider.gif);
+}
+div #left {
+	text-align: left;
+	float: left;
+	width: 45%;
+	padding-left: 30px;
+}
+div #right {
+	text-align: left;
+	float: right;
+	width: 45%;
+	padding-left: 30px;
+}
+div.pass img{
+	border: medium double gray;
+}
+
+.pass {
+	float: left;
+	margin: 0px 10px 0px 0px;
+}
+
+#error_space {
+	text-align: left;
+}
+#bottomlinks {
+	text-align: center;
+	font-size: small;
+	margin: 2px 0px;
+}
+#whylaser {
+	margin-left: 20px;
+	position: relative;
+	text-decoration: none;
+}
+#whylaser span{
+	position: absolute;
+	top: 0px;
+	left: 160px;
+	color: black;
+	font-size: small;
+	width: 100px;
+	visibility: hidden;
+}
+/* Website Content */
+.article {
+	margin: 0px 30px;
+	line-height: 1.5em;
+}
+.article h1 {
+	padding-bottom: 15px !important;
+}
+.article_link {
+	font-size: 1.4em;
+	text-align: center;
+	margin-top: 2em;
+}
+
+/* From: http://www.schillmania.com/projects/dialog2/ */
+/* 
+  -- Even more rounded corners with CSS: Base stylesheet --
+*/
+#mycenter { 
+	margin-left: auto; 
+	margin-right: auto; 
+	width: 958px;
+	position: relative;
+}
+.dialog {
+ position:relative;
+ margin:0px auto;
+ width: 958px;
+ min-width:8em;
+ max-width:1460px; /* based on image dimensions - not quite consistent with drip styles yet */
+ /*color:#fff;*/
+ z-index:1;
+ margin-left:18px; /* default, width of left corner */
+ /*margin-bottom:0.5em; /* spacing under dialog */
+}
+
+.dialog .content,
+.dialog .t,
+.dialog .b,
+.dialog .b div {
+ background:transparent url(../images/mainbg.png) no-repeat top right;
+ _background-image:url(../images/mainbg.gif);
+}
+
+.dialog .content {
+ position:relative;
+ zoom:1; /*removed because Firefox doesn't like it*/
+ _overflow-y:hidden;
+ padding:0px 8px 0px 0px;
+}
+
+.dialog .t {
+ /* top+left vertical slice */
+ position:absolute;
+ left:0px;
+ top:0px;
+ width:18px; /* top slice width */
+ margin-left:-18px;
+ height:100%;
+ _height:1600px; /* arbitrary long height, IE 6 */
+ background-position:top left;
+}
+
+.dialog .b {
+ /* bottom */
+ position:relative;
+ background-position:bottom right;
+ width:100%;
+}
+
+.dialog .b,
+.dialog .b div {
+ height:20px; /* height of bottom cap/shade */
+ font-size:1px;
+}
+
+
+.dialog .b div {
+ position:relative;
+ width:18px; /* bottom corner width */
+ margin-left:-18px;
+ background-position:bottom left;
+}
+
+.dialog .hd,
+.dialog .bd,
+.dialog .ft {
+ position:relative;
+}
+
+.dialog .bd {
+	margin-top: 4px;
+}
+
+.dialog .wrapper {
+ /* extra content protector - preventing vertical overflow (past background) */
+ position:static;
+ margin: 0;
+ max-height:1500px;
+ min-height: 776px;
+ overflow:auto; /* note that overflow:auto causes a rather annoying redraw "lag" in Firefox 2, and may degrade performance. Might be worth trying without if you aren't worried about height/overflow issues. */
+}
+
+.dialog h1,
+.dialog p {
+ margin:0px; /* margins will blow out backgrounds, leaving whitespace. */
+ padding:0.5em 0px 0.5em 0px;
+}
+
+.dialog h1 {
+ padding-bottom:0px;
+}
