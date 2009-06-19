@@ -193,24 +193,3 @@ def featuresDictionary
     	return  displayString[0..6].capitalize + ' ' + displayString[7..-1] 
 =end
 end
-
-
-ContinuousFeatures = %w(ppm itemwidth paperinput resolutionarea price)
-
-# Returns a row of the factor table
-def LookupFactorRow (pType, productId)
-  return Factor.find(:first, :conditions => ['product_id = ? and product_type = ?', productId, pType])
-end
-
-# Calculates the Utility of a product, based on user-preferences
-def CalculateUtility(product)
-  cost = 0.0
-  #getFactorRow = LookupFactorRow(session[:productType], product.id)
-      getFactorRow = LookupFactorRow('Printer', 7)                    : TODO:
-  # For all features
-  ContinuousFeatures.each do |f|
-    # Multiply factor value by the User's preference for that feature (weight) and add to cost
-    cost = cost + getFactorRow.send(f) * Session.find(:first, :conditions => ['id = ?', session[:user_id]]).send("#{f}_pref")
-  end      
-  return cost
-end
