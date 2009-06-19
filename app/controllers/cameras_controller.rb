@@ -9,4 +9,5 @@ class CamerasController < ProductsController
     $nodemodel = CameraNode
     $clustermodel = CameraCluster
   end
+
 end
