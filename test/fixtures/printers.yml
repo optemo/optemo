@@ -9,6 +9,3 @@ one:
     resolutionarea: 200
     scanner: true
     printserver: true
-
-# two:
-#   column: value

@@ -1,7 +1,6 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
-one:
-    id: 1
+Canon_cheap:
     opticalzoom: 2
     maximumresolution: 9.1
     price: 10000
@@ -9,8 +8,7 @@ one:
     asin: "www.amazon.com/1" 
     brand: "Olympus"
 
-two:
-    id: 2
+Canon_expensive:
     opticalzoom: 4
     maximumresolution: 9.1
     price: 100000

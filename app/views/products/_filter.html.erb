@@ -1,10 +1,11 @@
 <div class='label' style="margin-top: 0;">Brands</div>
 <% if @session.brand != "All Brands" %>
 	<% @session.brand.split('*').each do |b| %>
-	<div><%= link_to image_tag('close.png', :width => '13'), "javascript:removeBrand('#{b}');", {:title => "Remove Brand Filter"} %> <%= b %></div>
+	<div id='selected_brands'><%= link_to image_tag('close.png', :width => '13'), "javascript:removeBrand('#{b}');", {:title => "Remove Brand Filter"} %> <%= b %></div>
 	<% end %>
 	<% selectmsg = "Add Another Brand" %>
 <% end %>
+<%# debugger %>
 <%= select('myfilter', 'brand', [selectmsg.nil? ? "All Brands" : selectmsg] +@dbfeat['brand'].categories.split('*'), options={}, {:onchange => "$('#filter_form').submit()"}) %>
 <%= hidden_field_tag "myfilter[Xbrand]"%>
 

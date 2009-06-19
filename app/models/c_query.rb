@@ -32,12 +32,12 @@ class CQuery
         sphinx = searchSphinx(searchterm)
         search_ids = sphinx.results.delete_if{|r|r.class.name != @product_type || !r.myvalid?}.map{|r|r.id}
         #search_ids = sphinx.results.map{|r| r[1]} #Remove Classname from results
-        if sphinx.count == 0
+        if sphinx.page_count == 0
           @msg = "No results found."
           return
         end
         myparams = params.merge({"cluster_id" => @cluster_ids, "product_name" => @product_type.downcase, "search_ids" => search_ids, 
-          "search_count" => sphinx.count}).merge(myfilters).to_yaml
+          "search_count" => sphinx.page_count}).merge(myfilters).to_yaml
       end
     end
     output = sendCQuery myparams
