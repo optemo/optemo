@@ -22,6 +22,19 @@ module Cluster
     @children
   end
   
+def deepChildren(session)
+  myid = id
+  if self.size == 1
+    deepC << mychild.id
+  else
+    mychildren = self.class.find_all_by_parents_id(myid)
+    mychildren.each do |mc|
+        mc.deepChildren(session)
+    end  
+  end    
+end
+
+  
   def ranges(featureName, session)
     unless session.filter || !session.searchpids.blank?
       [send(featureName+'_min'), send(featureName+'_max')]

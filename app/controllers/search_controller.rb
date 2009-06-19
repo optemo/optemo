@@ -33,7 +33,15 @@ class SearchController < ApplicationController
       #Find clusters that match filtering query
       clusters = (mysession.product_type+'Cluster').constantize.find_all_by_layer(1)
       clusters.delete_if{|c| c.isEmpty(myfilter,mysession)}
+       
       unless clusters.empty?
+         mysearch = Search.searchFromPath(params[:path_info], mysession)
+         rc = mysearch.result_count 
+         if (rc < 9)
+           flash[:error] = "Less than 10!"
+           redirect_to "/#{session[:productType].pluralize.downcase}/list/"+params[:path_info].join('/')
+           #redirect_to "/#{session[:productType].pluralize.downcase}/list/"+deepChildren(session).join('/')
+         end  
         myfilter[:filter] = true
         #Save search values
         mysession.update_attributes(myfilter)
