@@ -1,3 +1,4 @@
+require 'merged_cluster'
 class Search < ActiveRecord::Base
   belongs_to :session
   belongs_to :cluster
@@ -44,7 +45,15 @@ class Search < ActiveRecord::Base
     if @clusters.nil?
       @clusters = []
       cluster_count.times do |i|
-        @clusters << (session.product_type+'Cluster').constantize.find(send(:"c#{i}"))
+        cluster_id = send(:"c#{i}")
+        if cluster_id.index('+')
+          cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
+          #Merged Cluster
+          @clusters << MergedCluster.new(session.product_type,cluster_id.split('+'))
+        else
+          #Single, normal Cluster
+          @clusters << (session.product_type+'Cluster').constantize.find(cluster_id.to_i)
+        end
       end
     end
     @clusters

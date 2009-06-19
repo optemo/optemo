@@ -28,11 +28,9 @@ module Cluster
       unless session.filter || !session.searchpids.blank?
         @range[featureName] = [send(featureName+'_min'), send(featureName+'_max')]
       else
-        nodeclass = session.product_type + 'Node'
         values = nodes(session).map{|n| n.send(featureName)}.sort
         nodes_min = values[0]
         nodes_max = values[-1]
-        #debugger if nodes_min.nil? || nodes_max.nil?
         @range[featureName] = [nodes_min, nodes_max]    
       end
     end
@@ -51,7 +49,6 @@ module Cluster
   #The represetative product for this cluster
   def representative(session)
     node = nodes(session).first
-    debugger if node.nil?
     session.product_type.constantize.find(node.product_id) if node
   end
   
@@ -83,7 +80,6 @@ module Cluster
   def size(session)
     unless @size
       if session.filter || !session.searchpids.blank?
-        nodeclass = session.product_type + 'Node'
         @size = nodes(session).length
       else
         @size = cluster_size

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090608222826) do
+ActiveRecord::Schema.define(:version => 20090618175546) do
 
   create_table "amazon_groups", :force => true do |t|
     t.datetime "created_at"
@@ -213,6 +213,21 @@ ActiveRecord::Schema.define(:version => 20090608222826) do
     t.float    "price_high"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "factors", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "product_type"
+    t.integer  "product_id"
+    t.float    "maximumresolution"
+    t.float    "displaysize"
+    t.float    "opticalzoom"
+    t.float    "price"
+    t.float    "ppm"
+    t.float    "itemwidth"
+    t.float    "paperinput"
+    t.float    "resolutionarea"
   end
 
   create_table "newegg_printers", :force => true do |t|
@@ -464,15 +479,15 @@ ActiveRecord::Schema.define(:version => 20090608222826) do
   create_table "searches", :force => true do |t|
     t.integer  "session_id"
     t.integer  "parent_id"
-    t.integer  "c0"
-    t.integer  "c1"
-    t.integer  "c2"
-    t.integer  "c3"
-    t.integer  "c4"
-    t.integer  "c5"
-    t.integer  "c6"
-    t.integer  "c7"
-    t.integer  "c8"
+    t.string   "c0"
+    t.string   "c1"
+    t.string   "c2"
+    t.string   "c3"
+    t.string   "c4"
+    t.string   "c5"
+    t.string   "c6"
+    t.string   "c7"
+    t.string   "c8"
     t.integer  "cluster_count"
     t.integer  "result_count"
     t.string   "brand",         :default => "All Brands"
