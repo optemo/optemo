@@ -11,7 +11,6 @@ module Cluster
     @children
   end
   
-<<<<<<< HEAD:app/models/cluster.rb
   
   # finding the deepChildren(clusters with size 1) in clusters
   def deepChildren(session, dC = [])
@@ -26,20 +25,6 @@ module Cluster
     end 
     dC
   end
-=======
-def deepChildren(session)
-  myid = id
-  if self.size == 1
-    deepC << mychild.id
-  else
-    mychildren = self.class.find_all_by_parents_id(myid)
-    mychildren.each do |mc|
-        mc.deepChildren(session)
-    end  
-  end    
-end
->>>>>>> deepChildren method and calling it in the search_controller:app/models/cluster.rb
-
   
   def ranges(featureName, session)
     @range ||= {}
@@ -58,39 +43,24 @@ end
   
   def nodes(session, filters=nil)
     unless @nodes
-<<<<<<< HEAD:app/models/cluster.rb
       @nodes = $nodemodel.find(:all, :order => 'price ASC', :conditions => ["cluster_id = ?#{session.filter && !Cluster.filterquery(session).blank? ?
          ' and '+Cluster.filterquery(session) : ''}#{session.searchpids.blank? ? '' : ' and ('+session.searchpids+')'}",id])
-=======
-      @nodes = (session.product_type + 'Node').constantize.find(:all, :order => 'price ASC', 
-        :conditions => ["cluster_id = ?#{(session.filter || filters) && !Cluster.filterquery(session,filters).blank? ? ' and '+Cluster.filterquery(session,filters) : ''}#{
-          session.searchpids.blank? ? '' : ' and ('+session.searchpids+')'}",id])
->>>>>>> Fixed filtering bug and page description bug:app/models/cluster.rb
     end
     @nodes
   end
   
   #The represetative product for this cluster
   def representative(session)
-<<<<<<< HEAD:app/models/cluster.rb
     unless @rep
       node = nodes(session).first
       @rep = $model.find(node.product_id) if node
     end
     @rep
-=======
-    node = nodes(session).first
-    session.product_type.constantize.find(node.product_id) if node
->>>>>>> Fixed filtering bug and page description bug:app/models/cluster.rb
   end
   
   def self.filterquery(session, filters=nil)
     fqarray = []
-<<<<<<< HEAD:app/models/cluster.rb
     filters = Cluster.findFilteringConditions(session)
-=======
-    filters = Cluster.findFilteringConditions(session) if filters.nil?
->>>>>>> Fixed filtering bug and page description bug:app/models/cluster.rb
     filters.each_pair do |k,v|
       unless v.nil? || v == 'All Brands'
         if k.index(/(.+)_max$/)
@@ -147,12 +117,7 @@ end
     session.attributes.delete_if {|key, val| !(key.index(/#{($model::ContinuousFeatures.map{|f|f+'_(max|min)'}+$model::CategoricalFeatures+$model::BinaryFeatures).join('|')}/))}
   end
   
-<<<<<<< HEAD:app/models/cluster.rb
   def isEmpty(session)
     nodes(session).empty?
-=======
-  def isEmpty(session, filters=nil)
-    nodes(session, filters).empty?
->>>>>>> Fixed filtering bug and page description bug:app/models/cluster.rb
   end
 end
