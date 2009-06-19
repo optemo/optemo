@@ -62,9 +62,13 @@ class Search < ActiveRecord::Base
     ns['session_id'] = session.id
     #ns['parent_id'] = s
     s = new(ns)
+    s['result_count'] = s.result_count
     s.save
     s
   end
+  
+
+  
   
   def to_s
     clusters.map{|c|c.id}.join('/')

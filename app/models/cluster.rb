@@ -22,16 +22,25 @@ module Cluster
     @children
   end
   
+  
+# finding the deepChildren(clusters with size 1) in clusters
 def deepChildren(session)
-  myid = id
-  if self.size == 1
-    deepC << mychild.id
+  dC = []
+  dC = deepChildrenH(session, dC)
+end
+# deepChildren recursive helper function
+def deepChildrenH(session, dC)
+  #store the cluster id if the cluster_size is 1 and the cluster accepts the filtering conditions 
+  if (self.cluster_size == 1) && (self.size(session)>0)
+  #  debugger
+    dC << id
   else
-    mychildren = self.class.find_all_by_parents_id(myid)
+    mychildren = self.class.find_all_by_parent_id(id)
     mychildren.each do |mc|
-        mc.deepChildren(session)
+        dC = mc.deepChildrenH(session, dC)
     end  
-  end    
+  end 
+  dC
 end
 
   
