@@ -50,7 +50,6 @@ end
         values = nodes(session).map{|n| n.send(featureName)}.sort
         nodes_min = values[0]
         nodes_max = values[-1]
-        #debugger if nodes_min.nil? || nodes_max.nil?
         @range[featureName] = [nodes_min, nodes_max]    
       end
     end
@@ -81,7 +80,6 @@ end
     @rep
 =======
     node = nodes(session).first
-    debugger if node.nil?
     session.product_type.constantize.find(node.product_id) if node
 >>>>>>> Fixed filtering bug and page description bug:app/models/cluster.rb
   end
