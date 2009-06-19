@@ -4,7 +4,7 @@ module ApplicationHelper
     h(@title_full ? @title_full : [@title_prefix, $SITE_TITLE].compact.join(' - '))
   end
   
-  def header_description
+  def describe
     h(@description ? @description : "LaserPrinterHub provides price comparisons and detailed information to help you find the right printer for you.")
   end
 end

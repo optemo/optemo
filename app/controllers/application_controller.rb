@@ -3,7 +3,8 @@
 
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
-  helper_method :title=, :full_title=
+  helper_method :title=, :full_title=, :describe=
+  @description
 
   # See ActionController::RequestForgeryProtection for details
   # Uncomment the :secret if you're not using the cookie session store
@@ -16,7 +17,7 @@ class ApplicationController < ActionController::Base
   
   before_filter :update_user
   $SITE_TITLE = 'LaserPrinterHub.com'
-  private
+  protected
   $DefaultProduct = 'Printer'
   
   def call_rake(task, options = {})
@@ -50,7 +51,8 @@ class ApplicationController < ActionController::Base
     @title_full = title % $SITE_TITLE
     @template.instance_variable_set("@title_full", @title_full)  # Necessary if set from view
   end
-  def desc=(mydescription)
+  def describe=(mydescription)
     @description = mydescription
+    @template.instance_variable_set("@description", @description)  # Necessary if set from view
   end
 end

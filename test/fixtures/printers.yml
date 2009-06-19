@@ -9,18 +9,3 @@ one:
     resolutionarea: 200
     scanner: true
     printserver: true
-
-el_cheapo_printer:
-   brand:              "Hewlett-Packard"
-   ppm:                20.0
-   platform:           "PC, Mac"
-   itemwidth:          16
-   manufacturer:       "Hewlett Packard"
-   model:              1300
-   packageheight:      15.75
-   packagelength:      19.0 
-   packagewidth:       17.0 
-   packageweight:      3250
-   id:                  54
-# two:
-#   column: value

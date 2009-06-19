@@ -1,26 +1,35 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
-one:
-  cluster_id: 1
-  product_id: 1
+parent_Canon_cheap:
+  cluster_id: <%= 'parent'.hash.abs %>
+  product_id: <%= 'Canon_cheap'.hash.abs %>
   maximumresolution: 9.1
   displaysize: 1.5
   opticalzoom: 2
   brand: "Olympus"
   price: 10000
 
-two:
-  cluster_id: 1
-  product_id: 2
+parent_Canon_expensive:
+  cluster_id: <%= 'parent'.hash.abs %>
+  product_id: <%= 'Canon_expensive'.hash.abs %>
   maximumresolution: 9.1
   displaysize: 1.5
   opticalzoom: 4
   brand: "Olympus"
   price: 100000
   
-three:
- cluster_id: 2
- product_id: 2
+Canon_cheap:
+ cluster_id: <%= 'cheap'.hash.abs %>
+ product_id: <%= 'Canon_cheap'.hash.abs %>
+ maximumresolution: 9.1
+ displaysize: 1.5
+ opticalzoom: 2
+ brand: "Olympus"
+ price: 10000
+ 
+Canon_expensive:
+ cluster_id: <%= 'expensive'.hash.abs %>
+ product_id: <%= 'Canon_expensive'.hash.abs %>
  maximumresolution: 9.1
  displaysize: 1.5
  opticalzoom: 4
