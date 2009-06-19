@@ -135,7 +135,7 @@ def decideWhichFeaturesToDisplay
   countVar = 0
   session[:productType].constantize::DisplayedFeatures.each do |column|	    
 		for i in 0..@products.count-1
-			if canShowFeature? (column, i)
+			if canShowFeature?(column, i)
 				@interestingFeatureDisplayed[countVar] = true
 			end
 		end
@@ -143,7 +143,7 @@ def decideWhichFeaturesToDisplay
   end
 end
 
-def canShowFeature? (column, i)
+def canShowFeature?(column, i)
   if column == 'itemdimensions'
     if @products[i].send('itemlength') != nil && @products[i].send('itemwidth') != nil && @products[i].send('itemheight') != nil  
       return true

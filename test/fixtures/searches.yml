@@ -2,8 +2,8 @@
 
 cheap:
   cluster_count: 2
-  c0: 2
-  c1: 3
+  c0: <%= 'parent'.hash.abs %>
+  c1: <%= 'cheap'.hash.abs %>
   session_id: 1
   brand: "All Brands"
   #maximumresolution_min: 0.0

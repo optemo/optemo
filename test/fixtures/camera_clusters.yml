@@ -1,7 +1,6 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
-one:
-    id: 1
+parent:
     parent_id: 0
     layer: 1
     cluster_size: 222
@@ -11,27 +10,27 @@ one:
     displaysize_min: 2
     opticalzoom_max: 7
     opticalzoom_min: 2
-    price_max: 44999
+    price_max: 100000
     price_min: 6900
+    brand: "Olympus"
     
                   
-two:
-    id: 2
-    parent_id: 1
+cheap:
+    parent_id: <%= 'parent'.hash.abs %>
     layer: 2
     cluster_size: 22
     maximumresolution_max: 8.2
     maximumresolution_min: 7
     displaysize_max: 2.7
     displaysize_min: 2
-    opticalzoom_max: 7
+    opticalzoom_max: 2
     opticalzoom_min: 2
-    price_max: 44999
+    price_max: 10000
     price_min: 6900
+    brand: "Olympus"
       
-three:
-    id: 3
-    parent_id: 1
+expensive:
+    parent_id: <%= 'parent'.hash.abs %>
     layer: 2
     cluster_size: 22
     maximumresolution_max: 8.2
@@ -39,6 +38,7 @@ three:
     displaysize_max: 2.7
     displaysize_min: 2
     opticalzoom_max: 7
-    opticalzoom_min: 2
-    price_max: 44999
+    opticalzoom_min: 4
+    price_max: 100000
     price_min: 6900
+    brand: "Olympus"

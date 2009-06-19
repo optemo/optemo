@@ -16,6 +16,6 @@ class SearchTest < ActiveSupport::TestCase
   
   def test_result_count
     searchM = Search.first
-    assert searchM.result_count == 1, "Failed to get the result count"
+    assert searchM.result_count == 3, "Failed to get the result count"
   end  
 end

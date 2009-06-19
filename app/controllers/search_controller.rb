@@ -20,7 +20,7 @@ class SearchController < ApplicationController
       myfilter.each_pair {|key, val| myfilter[key] = val.to_f if key.index('_min') || key.index('_max')}
       #Find clusters that match filtering query
       clusters = (@session.product_type+'Cluster').constantize.find_all_by_layer(1)
-      clusters.delete_if{|c| c.isEmpty(myfilter,@session)}
+      clusters.delete_if{|c| c.isEmpty(@session,myfilter)}
       unless clusters.empty?
         myfilter[:filter] = true
         #Save search values
