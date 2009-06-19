@@ -549,8 +549,6 @@ ActiveRecord::Schema.define(:version => 20090622171904) do
     t.string   "product_type"
     t.string   "brand",                 :default => "All Brands"
     t.boolean  "filter"
-    t.string   "searchterm"
-    t.text     "searchpids"
     t.float    "maximumresolution_min"
     t.float    "maximumresolution_max"
     t.float    "displaysize_min"

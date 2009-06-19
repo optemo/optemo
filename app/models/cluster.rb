@@ -11,6 +11,7 @@ module Cluster
     @children
   end
   
+<<<<<<< HEAD:app/models/cluster.rb
   
   # finding the deepChildren(clusters with size 1) in clusters
   def deepChildren(session, dC = [])
@@ -25,6 +26,19 @@ module Cluster
     end 
     dC
   end
+=======
+def deepChildren(session)
+  myid = id
+  if self.size == 1
+    deepC << mychild.id
+  else
+    mychildren = self.class.find_all_by_parents_id(myid)
+    mychildren.each do |mc|
+        mc.deepChildren(session)
+    end  
+  end    
+end
+>>>>>>> deepChildren method and calling it in the search_controller:app/models/cluster.rb
 
   
   def ranges(featureName, session)
