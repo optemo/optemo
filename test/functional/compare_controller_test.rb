@@ -12,4 +12,15 @@ class CompareControllerTest < ActionController::TestCase
 #      end
 #  end
 
+  def test_ReorderProducts
+    @products = []
+    @utility = []
+    @products << Printer.find(:first, :conditions => ['price = 1000'])
+    @products << Printer.find(:first, :conditions => ['price = 2000'])
+    
+ReorderProducts()    
+#    assert_equal(@products[0].send('id'), 1)
+assert_equal(@sortedProducts[0].send('id'), 2)
+
+  end
 end

@@ -70,10 +70,10 @@ class ApplicationController < ActionController::Base
   # For every Product,
   # => 2 Database lookups      (Can be reduced to 1)
   # => |Continuous Features| * 2 Arithmetic operations
-  def CalculateUtility()  
+  def CalculateUtility(p)  
     cost = 0.0
     #getFactorRow = LookupFactorRow(session[:productType], product.id)
-        getFactorRow = LookupFactorRow('Printer', 7)                    # TODO:
+        getFactorRow = LookupFactorRow('Printer', p.id)                    # TODO:
     userSession = Session.find(:first, :conditions => ['id = ?', session[:user_id]])
     # For all features
       session[:productType].constantize::ContinuousFeatures.each do |f|

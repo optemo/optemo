@@ -15,8 +15,17 @@
 			</div>
 		</td>
 		<% for i in 0..@products.count-1%>
-			<%= render :partial => 'thumbnails', :object => @products[i], :locals => {:oldBack=>:back} %>	
-																											<!-- ToDo: OldBack needs to be used to retain history after Deleting column-->		
+			<%= render :partial => 'thumbnails', :object => @products[i], :locals => {:oldBack=>:back} %>			<!-- ToDo: OldBack needs to be used to retain history after Deleting column-->		
+		<% end %>
+	</tr>
+	<tr>
+		<td> 
+			Utility		
+		</td>
+		<% for i in 0..@products.count-1%>
+			<td>
+				<%= @utility[i] %>
+			</td>
 		<% end %>
 	</tr>
 	<% countVar = 0%>

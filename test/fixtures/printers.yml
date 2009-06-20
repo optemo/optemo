@@ -9,3 +9,29 @@ one:
     resolutionarea: 200
     scanner: true
     printserver: true
+
+Compare_test_one:
+    id: 1
+    instock: true
+    ppm: 1000
+    itemwidth: 100
+    paperinput: 5
+    price: 1000
+    resolutionarea: 200
+    scanner: true
+    printserver: true
+
+Compare_test_two:
+    id: 2
+    instock: true
+    ppm: 1000
+    itemwidth: 100
+    paperinput: 5
+    price: 2000
+    resolutionarea: 200
+    scanner: true
+    printserver: true
+
+
+# two:
+#   column: value

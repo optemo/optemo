@@ -6,7 +6,8 @@ class CompareController < ApplicationController
   # GET /saveds.xml
     
   def index
-    @products = [] # Will keep product IDs of saved items
+    @products = []
+    @utility = []
     @displayString = ""
     # To track whether an interesting feature is displayed or not-
     @interestingFeatureDisplayed = Array.new(session[:productType].constantize::DisplayedFeatures.count, false)
@@ -24,8 +25,14 @@ class CompareController < ApplicationController
       params[:path_info].collect do |id|
         @products << session[:productType].constantize.find(id)
       end
-      # Populate @interestingFeatureDisplayed variable first
+      
+      # Reorder the product columns based on product utility
+      ReorderProducts()      
+      # Populate @interestingFeatureDisplayed variable
       decideWhichFeaturesToDisplay
+      # Reorder the feature rows based on feature utility
+      ReorderFeatures()
+      
       respond_to do |format|
         format.html # index.html.erb
         format.xml  { render :xml => @products }
@@ -192,4 +199,67 @@ def featuresDictionary
     when "packagewidth", "packagelength", "packageheight", "packageweight":
     	return  displayString[0..6].capitalize + ' ' + displayString[7..-1] 
 =end
+end
+
+def ReorderProducts
+#  @productUtils = @products
+#  for i in 0..@products.count-1                   # ToDo: Is this creating Hash or Array?
+#    @productUtils[@products[i].send('id')] = 1.0; # CalculateUtility
+#  end
+=begin
+@productUtils = {}
+@sortedProductUtils = {}
+@productUtils[@products[0].send('id')] = 1.0; #CalculateUtility
+@productUtils[@products[1].send('id')] = 2.0; #CalculateUtility
+
+  @sortedProductUtils = @productUtils.sort {|a,b| a[1]<=>b[1]}
+  for i in 0..@products.count-1
+    @sortedProducts[i] = @products.find() 
+    # @products[i] where @products[i].send(id) == @sortedProductUtils[i]
+  end
+=end  
+
+  @sortedProducts = []
+
+#  for i in 0..@products.count-1
+#    @utility[i] = # calculate utility
+#  end
+  @utility[0] = 1.0
+  @utility[1] = 2.0
+  
+  maxUtility = 0.0    # -1.0?
+  index = 0           # -1?
+  counter = 0
+  
+  while counter < @products.count
+    maxUtility = 0.0
+    index = 0
+    for i in 0..@products.count-1       # Find Max Utility
+      if(@utility[i] > maxUtility)
+        maxUtility = @utility[i]
+        index = i
+      end
+    end
+    @sortedProducts[counter] = @products[index]
+    counter = counter + 1
+    @utility[index] = 0.0
+  end
+
+end
+  
+=begin  @products.each do |p|
+    @utility[p.send('id')] = 1 # CalculateUtility(@products[index of p])    
+  end
+  @sortedIds = []
+  @sortedProducts = []
+  @utility.sort{|a,b| a[1]< =>b[1]}.each { |item|
+    @sortedIds << item[0]}
+  }
+  for i in 0..@products.count-1
+    @sortedProducts = @products.find()
+  end
+=end
+
+
+def ReorderFeatures
 end
