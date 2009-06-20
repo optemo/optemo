@@ -59,6 +59,8 @@ class ApplicationController < ActionController::Base
     @template.instance_variable_set("@description", @description)  # Necessary if set from view
   end
   
+
+end
   
   # Returns a row of the factor table
   def LookupFactorRow (pType, productId)
@@ -73,7 +75,7 @@ class ApplicationController < ActionController::Base
   def CalculateUtility(p)  
     cost = 0.0
     #getFactorRow = LookupFactorRow(session[:productType], product.id)
-        getFactorRow = LookupFactorRow('Printer', p.id)                    # TODO:
+        getFactorRow = LookupFactorRow('Printer', p.send('id'))                    # TODO:
     userSession = Session.find(:first, :conditions => ['id = ?', session[:user_id]])
     # For all features
       session[:productType].constantize::ContinuousFeatures.each do |f|
@@ -82,4 +84,3 @@ class ApplicationController < ActionController::Base
       end      
     return cost
   end
-end

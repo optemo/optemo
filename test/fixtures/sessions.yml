@@ -82,3 +82,22 @@ four:
        paperinput_pref:         0.20
        resolutionarea_pref:     0.20
        price_pref:              0.20
+
+for_compare_test_2:
+      id:                       1
+      product_type:            "Printer"
+      ppm_pref:                0.20
+      itemwidth_pref:          0.20
+      paperinput_pref:         0.20
+      resolutionarea_pref:     0.20
+      price_pref:              0.20
+              
+for_compare_test_3:
+      id:                       2  
+      product_type:            "Printer"
+      ppm_pref:                0.20
+      itemwidth_pref:          0.20
+      paperinput_pref:         0.20
+      resolutionarea_pref:     0.20
+      price_pref:              0.20
+                

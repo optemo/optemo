@@ -13,6 +13,7 @@ class CompareControllerTest < ActionController::TestCase
 #  end
 
   def test_ReorderProducts
+    session[:productType] = 'Printer'
     @products = []
     @utility = []
     @products << Printer.find(:first, :conditions => ['price = 1000'])
