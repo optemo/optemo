@@ -12,6 +12,22 @@ module Cluster
     @children
   end
   
+  
+  # finding the deepChildren(clusters with size 1) in clusters
+  def deepChildren(session, dC = [])
+    #store the cluster id if the cluster_size is 1 and the cluster accepts the filtering conditions 
+    if (self.cluster_size == 1) && (self.size(session)>0)
+      dC << self
+    else
+      mychildren = self.class.find_all_by_parent_id(id)
+      mychildren.each do |mc|
+          dC = mc.deepChildren(session, dC)
+      end  
+    end 
+    dC
+  end
+
+  
   def ranges(featureName, session)
     @range ||= {}
     if @range[featureName].nil?

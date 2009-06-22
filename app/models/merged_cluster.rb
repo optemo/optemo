@@ -34,6 +34,11 @@ class MergedCluster
     @clusters
   end
   
+  # finding the deepChildren(clusters with size 1) in clusters
+  def deepChildren(session, dC = [])
+    clusters.map{|c| c.deepChildren(@session)}.flatten
+  end
+  
   def ranges(featureName, session)
     @range ||= {}
     if @range[featureName].nil?

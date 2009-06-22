@@ -31,7 +31,14 @@ class SearchController < ApplicationController
         myfilter[:filter] = true
         #Save search values
         @session.update_attributes(myfilter)
-        clusters = splitClusters(clusters) if clusters.length < 9 && clusters.map{|c| c.size(@session)}.sum >= 9
+        if clusters.length < 9
+          if clusters.map{|c| c.size(@session)}.sum >= 9
+            clusters = splitClusters(clusters)
+          else
+            #Display only the deep children
+            clusters = clusters.map{|c| c.deepChildren(@session)}.flatten
+          end
+        end
         redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.map{|c|c.id}.join('/')
       else
         flash[:error] = "No products found."

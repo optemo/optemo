@@ -1,6 +1,68 @@
 # Some tests for the laser printer site.
 namespace :printer_test do   
    
+  desc "Test the sliders"
+  task :sliders => :environment do
+    setup
+    sesh = Webrat.session_class.new
+    logfile =  setup_log "sliders" 
+    
+    get_homepage sesh, logfile
+    doc = sesh.response.parser
+    
+    slider_min_names = []
+    doc.css(".feature input.min").each do |x| slider_min_names << x.attribute("name").to_s end
+    
+    slider_max_names = []
+    doc.css(".feature input.max").each do |x| slider_max_names << x.attribute("name").to_s end
+    
+    slider_max = []
+    doc.css(".feature .endlabel_max").each do |x| slider_max << x.content.to_i end
+    
+    slider_min = []
+    doc.css(".feature .endlabel_min").each do |x| slider_min << x.content.to_i end
+    
+    1000.times do
+      pick_slider = rand slider_min_names.length
+      
+      distance =slider_min[pick_slider] + rand(slider_max[pick_slider]-slider_min[pick_slider])
+      logfile.puts "LOGGER    Testing the " + slider_min_names[pick_slider] + " slider. Moving it to " +  distance.to_s
+      
+      new_min = slider_min[pick_slider]
+      new_max = slider_max[pick_slider]
+      (rand >= 0.5)? new_min = distance : new_max = distance
+      
+      # Test the sliders.
+      begin
+        sesh.set_hidden_field slider_max_names[pick_slider], :to => new_max
+        sesh.set_hidden_field slider_min_names[pick_slider], :to => new_min
+        
+        logfile.puts "LOGGER    Setting " + slider_min_names[pick_slider] + " Slider to (#{new_min},#{new_max})" 
+        
+        sesh.submit_form "filter_form" # When no submit button present use form id.
+      rescue Exception => e
+        report_error logfile, e.type.to_s
+        report_error logfile, e.message.to_s
+        break
+        get_homepage sesh, logfile
+        logfile.puts "LOGGER     Starting over from homepage."
+      else
+        doc = sesh.response.parser
+        if none_selected?(doc) 
+          logfile.puts "LOGGER    No printers found."
+        else
+          logfile.puts "LOGGER    Number of printers matching criteria: " + num_printers(doc).to_s
+        end
+        # Error checking code 
+        report_error(log, "Error loading homepage") if error_page?(sesh)
+        # End error checking code
+      end
+      
+    end
+    
+    close_log logfile
+  end
+
   desc "Test the brand selector"
   task :brand_selector => :environment do 
   
@@ -53,13 +115,14 @@ namespace :printer_test do
     
     close_log logfile
   end
-  
+   
+  # Tests the brand selector for the given brand.
   def brand_test(sesh, brand, log)
     get_homepage(sesh, log)
   
     doc = sesh.response.parser   # Parser of WWW::Mechanize::Page should be a Nokogiri::HTML object
     num_brands_before = doc.css('a[title="Remove Brand Filter"]').length
-    
+    num_printers_before = num_printers(doc)
     begin 
       sesh.select brand
       sesh.submit_form "filter_form" # When no submit button present use form id.           
@@ -69,20 +132,38 @@ namespace :printer_test do
       report_error( log, "get error page after" + brand) if error_page?(sesh)
       doc = sesh.response.parser   # Parser of WWW::Mechanize::Page should be a Nokogiri::HTML object
       num_brands_after = doc.css('a[title="Remove Brand Filter"]').length
+      num_printers_after = num_printers(doc)
+      log.puts "LOGGER      Number of printers selected is "  + num_printers_after
+      log.puts "No printers found for "+ brand if none_selected? doc
       
-      
-      if(brand == "All Brands" || brand == "Add Another Brand")
-        report_error log, "# brands shown changed and" + brand + " selected" if(num_brands_before != num_brands_after)
-      elsif(num_brands_before == num_brands_after)
-        #if ()
-        #report_error log, "# brands shown not incremented for " + brand if 
-        log.puts "# brands not incremented for " + brand
-      elsif(num_brands_before == num_brands_after - 1)  
-        #report_error log, "# brands shown incremented for " + brand + " although no new products found" if   
-        log.puts "# brands incremented for " + brand
+      # ERROR CHECKING CODE. 
+      if brand == "All Brands" or brand == "Add Another Brand" 
+        if(num_brands_before != num_brands_after)
+          report_error log, "# brands shown changed and" + brand + " selected" 
+        end
+        if(num_printers_before != num_printers_after)
+          report_error log, "# printers changed and" + brand + " selected" 
+        end
       else
-        report_error log, "Funny changes to # brands after " + brand
+        if num_brands_before == num_brands_after 
+         if !none_selected?(doc) 
+           report_error "# brands not incremented for " + brand + " and 'no matching printers' message not shown."
+         end
+         if num_printers_before != num_printers_after
+           report_error log, "# brands not incremented for " + brand + " and # of printers changed"
+         end
+        elsif num_brands_before == num_brands_after - 1 
+          if num_printers_before == num_printers_after   
+            report_error log, "# brands incremented for " + brand + " although no new products found" 
+          end
+          if none_selected?(doc)  
+            report_error log, "# brands incremented for " + brand + " and 'no matching printers' message showing." 
+          end
+        else
+          report_error log, "# brands changed by " + (num_brands_after - num_brands_before).to_s + " for " + brand
+        end
       end
+      # END of the error checking code.
       
     end
   end
@@ -91,7 +172,8 @@ namespace :printer_test do
   def search_test( queries, session, logger)
     queries.each do |query| 
       get_homepage(session, logger)
-      begin        
+      begin
+        logger.puts "LOGGER    Searching for " + query        
         session.fill_in "search", :with => query
         session.click_button "submit_button" 
       rescue Exception => e
@@ -100,57 +182,98 @@ namespace :printer_test do
         logger.puts e.message.to_s
       else
         report_error( log, "get error page searching for " + brand) if error_page?(session)
-        logger.puts "Done searching for '" + query + "'"
+        doc = session.response.parser
+        logger.puts "LOGGER    Search gives 0 results" if none_selected? doc 
+        logger.puts "LOGGER    Done searching for '" + query + "'"
       end
     end
   end
   
   # Recursive method to click all browse_similar
+  # and check for errors.
   def explore(session, hist, logfile)
     doc = session.response.parser                      # Parser of WWW::Mechanize::Page should be a Nokogiri::HTML object
-    num_boxes_less_one = doc.css(".sim").length - 1    # Find num of clicky boxes
-    similars =  0..num_boxes_less_one                  # Make array of their indices
+    highest_link_index = doc.css(".sim").length - 1    # Find num of clicky boxes
     
-    
-  
     # Log stuff
     logfile.puts "LOGGER : url when boxes calculated :   " + session.current_url
-    logfile.puts "LOGGER : # boxes =                  #{num_boxes_less_one+1}"
+    logfile.puts "LOGGER : # boxes =                  "+doc.css(".borderbox").length.to_s
+    logfile.puts "LOGGER : # links =                  #{highest_link_index+1}"
   
-    (0..num_boxes_less_one).each do |num|
-      return_here = session.current_url # Where we are
+    (0..highest_link_index).each do |num|
+      return_here = session.current_url # Current page
       
       begin        
          session.click_link 'sim'+num.to_s
       rescue Exception => e
-        report_error(logger, "Error with box number #{num} and history" + hist + "'")
-        logger.puts e.type.to_s + e.message.to_s
+        report_error(logger, "Error with link number #{num} and history" + hist + "'")
+        logfile.puts e.type.to_s + e.message.to_s
       else
         logfile.puts "LOGGER: session url :                 " + session.current_url
-        hist << '#{num+1}'
+        hist << (num+1).to_s
         logfile.puts "LOGGER : history :                    "+ (hist * ',').to_s
-        report_error(logfile, "No borderboxes") if doc.css(".borderbox").length == 0  
+        
+        # ERROR CHECKING CODE
+        
+        doc = session.response.parser
+        num_boxes = doc.css(".borderbox").length.to_s
+        num_printers_showing = num_printers(doc)
+        report_error(logfile, "No borderboxes") if  num_boxes.to_i == 0
         report_error(logfile, "Get the error page") if error_page?(session)
+        if num_printers_showing.to_i < 10 
+          if num_boxes.to_i != num_printers_showing.to_i
+            report_error logfile, "number of borderboxes: " + num_boxes +", number of printers :" +num_printers_showing
+          end
+          if doc.css(".sim").length != 0
+            report_error logfile, doc.css(".sim").length.to_s + " Similar Links showing with " + num_printers_showing +" printers displayed." 
+          end
+        else 
+          if doc.css(".sim").length != 9
+            report_error logfile, doc.css(".sim").length.to_s + " Similar Links showing with " + num_printers_showing +" printers displayed." 
+          end
+          report_error logfile, "Less than 9 boxes for"+ num_printers_showing +" printers" if num_boxes.to_i < 9
+        end
+        
+        # END OF ERROR CHECKING CODE
+        
       end
      
       # Recursive!
       explore(session,hist,logfile)
       hist.pop
-      session.visit return_here # Go back to where we were (hit the back button)
+      session.visit return_here
 
      end
+  end
+  
+  # Tells you if there is a "No printers selected" message displayed.
+  def none_selected?(doc)
+    # Message is in the first span tag in the div with id main.
+    msg_span = doc.css(".main span").first.content.to_s
+    # TODO we should give this span tag an id! 
+    printer_phrase = msg_span.match('No products ').to_s
+    return (printer_phrase.length > 0)
+  end
+  
+  # Returns the number of printers on a printers/list type page.
+  # Very useful for checking if filtering did anything.
+  def num_printers(doc)
+    leftbar = doc.css("#leftbar").first.content.to_s
+    printer_phrase = leftbar.match('Browsing \d+ Printers').to_s
+    num_printers = printer_phrase.match('\d+').to_s
+    return num_printers
   end
   
   # Returns true if the page's response is the error page.
   # TODO doesn't work too well.
   def error_page?(sesh)
-     is_err_page = false
-     is_err_page = (is_err_page || sesh.current_url == "http://localhost:3000/error")
-     is_err_page = (is_err_page ||"http://localhost:3000/error".eql?(sesh.current_url) )
-     #doc = sesh.response.parser
-     #is_err_page = (is_err_page ||doc.css('#error_space>*').length.to_i > 0 )
-     #puts "doc.css('#error_space>*').length.to_i > 0" + (doc.css('#error_space>*').length.to_i > 0).to_s
-     return is_err_page
+     return true if sesh.current_url == "http://localhost:3000/error"
+     return true if "http://localhost:3000/error".eql?(sesh.current_url) 
+     doc = sesh.response.parser
+     bd_div = doc.css('div.bd').first.content.to_s
+     err_msg = bd_div.match("We're sorry but the website has experienced an error").to_s
+     return true if err_msg.length > 0
+     return false
   end
   
   def close_log(logfile)
@@ -191,10 +314,9 @@ namespace :printer_test do
   
   # Sets up env and related stuff
   def setup()
-    
     # Check for all the right configs
     raise "Rails test environment not being used." if ENV["RAILS_ENV"] != 'test' 
-    raise  "Forgery protection turned on in test environment."  if (ActionController::Base.allow_forgery_protection) 
+    #raise  "Forgery protection turned on in test environment."  if (ActionController::Base.allow_forgery_protection) 
     
     # Requires.
     require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
@@ -204,7 +326,7 @@ namespace :printer_test do
     Webrat.configure do |conf|
       conf.mode = :mechanize # Can't be rails or Webrat won't work
     end
-      
-      
+
   end
+  
 end
