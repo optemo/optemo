@@ -27,50 +27,6 @@ class ProductsController < ApplicationController
     @dbfeat = {}
     DbFeature.find_all_by_product_type(@pt).each {|f| @dbfeat[f.name] = f}
     @s = Search.searchFromPath(params[:path_info], @session)
-    c = @s.clusters
-  
-#    if (c.length == 1)
-#      
-#      cc = c[0].children(@session)
-#      i=0
-#  
-#      (cc.length).times do |i| 
-#    #    #(session.product_type+'Cluster').constantize.find(send(:"c#{i}"))
-#        @s[:"c#{i}"] = cc[i].id
-#      end
-#      debugger  
-##      cs.map{|c| Cluster.filterquery(session, filters).}
-#     
-#    end
-  #  if cs.length == 1 # if it is the parent?
-  #    
-  #    @picked_clusters = (@pt+'Clusters').constantize.find_by_parent_id() 
-  #  else 
-    #Check for search keyword
-    #if params[:path_info][-2] == 's'
-    #  cluster_ids = params[:path_info][0..-3].map{|p|p.to_i}
-    #  searchterm = URI.decode(params[:path_info][-1])
-    #  @c = CQuery.new(@pt,cluster_ids,@session,searchterm) #C-code wrapper
-    #else
-    #  @c = CQuery.new(@pt, params[:path_info].map{|p|p.to_i},@session) #C-code wrapper
-    #end
-    #if !@c.valid
-    #  flash[:error] = @c.to_s
-    #  redirect_to '/error'
-    #end
-    #Saved Bar variables
-    @picked_products = @session.saveds.map {|s| @pt.constantize.find(s.product_id)}
-    #Previously clicked product
-    #@searches = []
-    #if session[:search_id]
-    #  @search = Search.find(session[:search_id]) 
-    #  currentsearch = @search
-    #  while (!currentsearch.parent_id.nil?) do
-    #    @searches<<currentsearch.id
-    #     currentsearch = Search.find(currentsearch.parent_id)
-    #  end
-    #end
-   #end
   end
 
   # GET /products/1
