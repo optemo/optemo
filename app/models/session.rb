@@ -120,4 +120,10 @@ class Session < ActiveRecord::Base
     end
     clusters
   end
+    
+  def features
+    #Return row of Product's Feature table 
+    (product_type + 'Features').constantize.find(:first, :conditions => ['id = ?', id])
+  end
+  
 end

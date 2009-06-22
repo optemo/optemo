@@ -34,6 +34,11 @@ class ApplicationController < ActionController::Base
       #if mysession.nil?
         #Create a new session
         mysession = Session.new
+        # Create a row in corresponding product-features table
+        myProduct = ('Printer' + 'Features').constantize.new
+        myProduct.save
+        myProduct.id = mysession.id                                 
+        
         mysession.ip = request.remote_ip
         mysession.save
       #else
