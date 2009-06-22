@@ -4,7 +4,6 @@ class SearchController < ApplicationController
   # Disable csrf protection on controller-by-controller basis:
   skip_before_filter :verify_authenticity_token
   
-  
   def filter
     myfilter = params[:myfilter]
     if myfilter.nil?
@@ -18,13 +17,21 @@ class SearchController < ApplicationController
       #Delete blank values
       myfilter.delete_if{|k,v|v.blank?}
       myfilter.each_pair {|key, val| myfilter[key] = val.to_f if key.index('_min') || key.index('_max')}
+      #Fix price, because it's stored as int in db
+      myfilter[:price_max] = (myfilter[:price_max]*100).to_i if myfilter[:price_max]
+      myfilter[:price_min] = (myfilter[:price_min]*100).to_i if myfilter[:price_min]
       #Find clusters that match filtering query
-      clusters = (@session.product_type+'Cluster').constantize.find_all_by_layer(1)
-      clusters.delete_if{|c| c.isEmpty(@session,myfilter)}
+      model = (@session.product_type+'Cluster').constantize
+      clusters = []
+      params[:path_info].each do |cid|
+         c = model.find(cid)
+         clusters << c unless c.isEmpty(@session,myfilter)
+      end
       unless clusters.empty?
         myfilter[:filter] = true
         #Save search values
         @session.update_attributes(myfilter)
+        clusters = splitClusters(clusters) if clusters.length < 9 && clusters.map{|c| c.size(@session)}.sum >= 9
         redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.map{|c|c.id}.join('/')
       else
         flash[:error] = "No products found."
@@ -84,5 +91,19 @@ class SearchController < ApplicationController
     end
     myfilter.delete('Xbrand') if myfilter[:Xbrand]
     myfilter
+  end
+  
+  def splitClusters(clusters)
+    while clusters.length != 9
+      clusters.sort! {|a,b| b.size(@session) <=> a.size(@session)}
+      clusters = split(clusters.shift.children(@session)) + clusters
+    end
+    clusters.sort! {|a,b| b.size(@session) <=> a.size(@session)}
+  end
+  
+  def split(children)
+    return children if children.length == 1
+    children.sort! {|a,b| b.size(@session) <=> a.size(@session)}
+    [children.shift, MergedCluster.new(children)]
   end
 end

@@ -1,18 +1,8 @@
 module Cluster
-  def getHistory
-    history = []
-    currentCluster = self
-    while ((c = currentCluster.parent_id) != 0)
-      currentCluster = self.class.find(c)
-      history << currentCluster
-    end
-    history
-  end
-  
   #The subclusters
   def children(session)
     unless @children
-      @children = self.class.find_all_by_parent_id(id)
+      @children = self.class.find_all_by_parent_id(id, :order => 'cluster_size DESC')
       #Check that children are not empty
       if session.filter || !session.searchpids.blank?
         #debugger
@@ -48,8 +38,11 @@ module Cluster
   
   #The represetative product for this cluster
   def representative(session)
-    node = nodes(session).first
-    session.product_type.constantize.find(node.product_id) if node
+    unless @rep
+      node = nodes(session).first
+      @rep = session.product_type.constantize.find(node.product_id) if node
+    end
+    @rep
   end
   
   def self.filterquery(session, filters=nil)

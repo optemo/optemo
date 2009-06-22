@@ -1,24 +1,37 @@
 class MergedCluster
-  attr_reader :product_type, :clusters
-  def initialize(product_type,clusters)
-    @product_type = product_type
-    @clusters = []
+  attr_reader :clusters
+  
+  def initialize(clusters)
+    @clusters = clusters
+  end
+  
+  
+  def self.fromIDs(product_type,clusters)
+    product_type = product_type
+    clusterobj = []
     clusters.compact.each do |c|
-      @clusters << (@product_type+'Cluster').constantize.find(c.to_i)
+      clusterobj << (product_type+'Cluster').constantize.find(c.to_i)
     end
+    new(clusterobj)
+  end
+  
+  def id
+    @clusters.map{|c|c.id}.join('+')
   end
   
   #The subclusters
   def children(session)
-    unless @children
-      parentsonly = @clusters.map{|c| "parent_id = #{c.id}"}.join(' or ')
-      @children = (@product_type+'Cluster').constantize.find(:all, :conditions => parentsonly)
-      #Check that children are not empty
-      if session.filter || !session.searchpids.blank?
-        @children.delete_if{|c| c.isEmpty(session)}
-      end
-    end
-    @children
+    #unless @children
+    #  parentsonly = @clusters.map{|c| "parent_id = #{c.id}"}.join(' or ')
+    #  @children = (session.product_type+'Cluster').constantize.find(:all, :order => 'cluster_size DESC', :conditions => parentsonly)
+    #  #Check that children are not empty
+    #  if session.filter || !session.searchpids.blank?
+    #    @children.delete_if{|c| c.isEmpty(session)}
+    #  end
+    #  @children = @children [0..8] #Only top nine children
+    #end
+    #@children
+    @clusters
   end
   
   def ranges(featureName, session)

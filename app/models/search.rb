@@ -49,7 +49,7 @@ class Search < ActiveRecord::Base
         if cluster_id.index('+')
           cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
           #Merged Cluster
-          @clusters << MergedCluster.new(session.product_type,cluster_id.split('+'))
+          @clusters << MergedCluster.fromIDs(session.product_type,cluster_id.split('+'))
         else
           #Single, normal Cluster
           @clusters << (session.product_type+'Cluster').constantize.find(cluster_id.to_i)
