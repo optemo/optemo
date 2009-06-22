@@ -19,7 +19,7 @@ def create_product_properties(model)
     f.product_type = model.name
     f.feature_type = 'Categorical'
     f.name = name
-    f.categories = model.instock.map{|c|c.send(name.intern)}.compact.uniq.join('*')
+    f.categories = model.valid.instock.map{|c|c.send(name.intern)}.compact.uniq.join('*')
     f.save
   }
   model::ContinuousFeatures.each {|name|

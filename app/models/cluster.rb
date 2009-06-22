@@ -5,7 +5,6 @@ module Cluster
       @children = self.class.find_all_by_parent_id(id, :order => 'cluster_size DESC')
       #Check that children are not empty
       if session.filter || !session.searchpids.blank?
-        #debugger
         @children.delete_if{|c| c.isEmpty(session)}
       end
     end
