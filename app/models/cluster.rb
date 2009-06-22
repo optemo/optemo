@@ -84,7 +84,6 @@ module Cluster
     fqarray.join(' AND ')
   end
   
-  
   def size(session)
     unless @size
       if session.filter || !session.searchpids.blank?

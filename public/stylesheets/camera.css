@@ -175,6 +175,9 @@ div #leftbar {
 #submit_button {
 	margin-top: 2px;
 }
+#clearsearch {
+	font-size: 0.8em;
+}
 	
 /* Save Box */
 div #savebar {
@@ -217,10 +220,8 @@ div #filterbar {
 	margin: 0;
 }
 .slider {
-	background: url(../images/slider.gif) no-repeat;
 	margin: 0 0 0.8em 7px;
 	width: 177px;
-	height: 13px;
 	padding-top: 0px;
 	padding-bottom: 6px;
 	position: relative;}
@@ -242,20 +243,20 @@ div #filterbar {
 .space {
 	margin-bottom: 20px; /*Spacing for histogram*/
 }
-.handle img{
-	float: left;}
-.handle {
-	width: 9px;
-	height: 13px;
-	margin-top: -3px;
-	cursor: move;
-	position: absolute;}
+.sliderlabel {
+	font-size: 0.6em;
+	padding-top: 17px;
+	text-decoration: none;
+	color: black;
+}
 .endlabel_min {
+	display: none;
 	position: absolute;
 	bottom: -5px;
 	left: -1px;
 	font-size: 0.5em;}
 .endlabel_max {
+	display: none;
 	position: absolute;
 	bottom: -5px;
 	right: -1px;
@@ -278,7 +279,7 @@ div #filterbar {
 	top: 16px;
 }
 .ui-slider { position: relative; text-align: left; }
-.ui-slider .ui-slider-handle { background:url(../../../images/diamond.gif) no-repeat; height:13px; width:9px; overflow:hidden;position:absolute;z-index:2;}/*{ position: absolute; z-index: 2; width: 1.2em; height: 1.2em; cursor: default; }
+.ui-slider .ui-slider-handle { background:url(../../../images/diamond.gif) no-repeat; height:13px; width:9px;text-decoration: none;position:absolute;z-index:2;}/*{ position: absolute; z-index: 2; width: 1.2em; height: 1.2em; cursor: default; }
 */
 .ui-slider .ui-slider-range { position: absolute; z-index: 1; font-size: .7em; display: block; border: 0; }
 

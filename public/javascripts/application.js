@@ -90,23 +90,23 @@ $(document).ready(function() {
 				{
 					min = Math.floor(ui.values[0]);
 					max = Math.ceil(ui.values[1]);
-					dispstr = "$"+min+"-$"+max;
 				}
 				else
 				{
 					min = Math.floor(ui.values[0]*10)/10;
 					max = Math.ceil(ui.values[1]*10)/10;
-					//dispstr = ($(filter_min).value.indexOf('.') == -1 ? $(filter_min).value+".0" : $(filter_min).value) +"-"+($(filter_max).value.indexOf('.') == -1 ? $(filter_max).value+".0" : $(filter_max).value)+" "+label;
-					dispstr = min+"-"+max;
 				}
-				$(this).siblings('.disp').html(dispstr);
 				$(this).siblings('.min').attr('value',min);
 				$(this).siblings('.max').attr('value',max);
+				$('.sliderlabel:first', this).html(min);
+				$('.sliderlabel:last', this).html(max);
 				},
 			stop: 	function(e,ui) {
 				$('#filter_form').submit();
 				}
 		});
+		$('a:first', this).html('<div class="sliderlabel">'+curmin+'</div>')
+		$('a:last', this).html('<div class="sliderlabel">'+curmax+'</div>')
 		histogram($(this).siblings('.hist')[0],(sessmin-rangemin)/(rangemax-rangemin),(sessmax-rangemin)/(rangemax-rangemin));
 	});
 	

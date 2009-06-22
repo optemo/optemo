@@ -21,7 +21,5 @@ data-startmax='<%= @session.send("#{val}_max".intern).nil? ? dbmax(val) : (val =
 data-prodmin='<%= val== 'price' ? @s.ranges(val)[0]/100 : @s.ranges(val)[0] %>' 
 data-prodmax='<%= val== 'price' ? @s.ranges(val)[1]/100 : @s.ranges(val)[1] %>'
 <%= money_formatting ? 'data-formatting="$"' : ""  %>>
-	<div class="endlabel_min"><%= min.to_i %></div>
-	<div class="endlabel_max"><%= max.ceil %></div>
 </div>
 </div>

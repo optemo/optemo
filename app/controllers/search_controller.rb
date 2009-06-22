@@ -22,10 +22,15 @@ class SearchController < ApplicationController
       myfilter[:price_min] = (myfilter[:price_min]*100).to_i if myfilter[:price_min]
       #Find clusters that match filtering query
       model = (@session.product_type+'Cluster').constantize
-      clusters = []
-      params[:path_info].each do |cid|
-         c = model.find(cid)
-         clusters << c unless c.isEmpty(@session,myfilter)
+      if expandedFiltering?(myfilter)
+        clusters = model.find_all_by_layer(1)
+        clusters.delete_if{|c| c.isEmpty(@session,myfilter)}
+      else
+        clusters = []
+        params[:path_info].each do |cid|
+           c = model.find(cid)
+           clusters << c unless c.isEmpty(@session,myfilter)
+        end
       end
       unless clusters.empty?
         myfilter[:filter] = true
@@ -112,5 +117,20 @@ class SearchController < ApplicationController
     return children if children.length == 1
     children.sort! {|a,b| b.size(@session) <=> a.size(@session)}
     [children.shift, MergedCluster.new(children)]
+  end
+  
+  def expandedFiltering?(filtering)
+    filtering.keys.each do |key|
+      if key.index(/(.+)_min/)
+        fname = Regexp.last_match[1]
+        max = fname+'_max'
+        maxv = @session.send(max.intern)
+        next if maxv.nil?
+        oldrange = maxv - @session.send(key.intern)
+        newrange = filtering[max] - filtering[key]
+        return true if newrange > oldrange
+      end
+    end
+    false
   end
 end
