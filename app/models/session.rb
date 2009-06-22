@@ -57,6 +57,11 @@ class Session < ActiveRecord::Base
     @oldsession.update_attributes(attributes)
     
   end
+    
+  def features
+    #Return row of Product's Feature table 
+    (product_type + 'Features').constantize.find(:first, :conditions => ['id = ?', id])
+  end
   
   private
   
@@ -121,9 +126,4 @@ class Session < ActiveRecord::Base
     clusters
   end
     
-  def features
-    #Return row of Product's Feature table 
-    (product_type + 'Features').constantize.find(:first, :conditions => ['id = ?', id])
-  end
-  
 end
