@@ -211,6 +211,7 @@ def ReorderProducts
   for i in 0..@products.count-1
     @utility[i] = CalculateUtility(@products[i])
   end
+  
   while counter < @products.count
     maxUtility = 0.0
     index = 0

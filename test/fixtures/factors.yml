@@ -3,7 +3,7 @@
 one:
     id:             1
     product_type:   Printer
-    product_id:     7
+    product_id:     5
     ppm:            50
     itemwidth:      1000
     paperinput:     200
@@ -13,7 +13,7 @@ one:
 two:
         id:             2
         product_type:   Printer
-        product_id:     8
+        product_id:     6
         ppm:            20
         itemwidth:      1000
         paperinput:     200

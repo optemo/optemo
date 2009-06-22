@@ -11,7 +11,7 @@ one:
     printserver: true
 
 Compare_test_one:
-    id: 1
+    id: 5
     instock: true
     ppm: 1000
     itemwidth: 100
@@ -22,7 +22,7 @@ Compare_test_one:
     printserver: true
 
 Compare_test_two:
-    id: 2
+    id: 6
     instock: true
     ppm: 1000
     itemwidth: 100

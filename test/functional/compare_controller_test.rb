@@ -14,14 +14,19 @@ class CompareControllerTest < ActionController::TestCase
 
   def test_ReorderProducts
     session[:productType] = 'Printer'
+    session[:user_id] = 5
     @products = []
     @utility = []
-    @products << Printer.find(:first, :conditions => ['price = 1000'])
-    @products << Printer.find(:first, :conditions => ['price = 2000'])
     
-ReorderProducts()    
-#    assert_equal(@products[0].send('id'), 1)
-assert_equal(@sortedProducts[0].send('id'), 2)
+    # Add 2 printers
+    @products << Printer.find(:first, :conditions => ['price = 2000'])
+    assert_equal(@products[0].send('id'), 6)
+    @products << Printer.find(:first, :conditions => ['price = 1000'])
+    assert_equal(@products[1].send('id'), 5)
+    # Test the ReorderProducts() function
+    ReorderProducts()    
+    assert_equal(@sortedProducts[0].send('id'), 5)
 
+    # ToDo: Test ReorderProducts() for product_type = Camera
   end
 end
