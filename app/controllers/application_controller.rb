@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
   end
   
   def update_user
-    if session[:user_id].blank? || !Session.exists?(session[:user_id])
+   if session[:user_id].blank? || !Session.exists?(session[:user_id])
       #Find the user's session if there are no cookies -- doesn't work for proxy's and firewalls
       #mysession = Session.find(:first, :conditions => ['ip = ? and updated_at > ?',request.remote_ip,30.minutes.ago])
       #if mysession.nil?

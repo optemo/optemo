@@ -20,6 +20,12 @@ data-startmin='<%= @session.send("#{val}_min".intern).nil? ? dbmin(val) : (val =
 data-startmax='<%= @session.send("#{val}_max".intern).nil? ? dbmax(val) : (val == 'price') ? @session.send("#{val}_max".intern)/100 : @session.send("#{val}_max".intern)%>'
 data-prodmin='<%= val== 'price' ? @s.ranges(val)[0]/100 : @s.ranges(val)[0] %>' 
 data-prodmax='<%= val== 'price' ? @s.ranges(val)[1]/100 : @s.ranges(val)[1] %>'
+<<<<<<< HEAD:app/views/products/_slider.html.erb
 <%= money_formatting ? 'data-formatting="$"' : (val == 'resolutionarea' ? 'data-formatting="res"' : '')  %>>
+=======
+<%= money_formatting ? 'data-formatting="$"' : ""  %>>
+	<div class="endlabel_min"><%= min.to_i %></div>
+	<div class="endlabel_max"><%= max.ceil %></div>
+>>>>>>> Finished splitting clusters:app/views/products/_slider.html.erb
 </div>
 </div>

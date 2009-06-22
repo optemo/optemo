@@ -79,8 +79,4 @@ class SearchController < ApplicationController
     myfilter.delete('Xbrand') if myfilter[:Xbrand]
     myfilter
   end
-<<<<<<< HEAD:app/controllers/search_controller.rb
 end
-=======
-end
->>>>>>> deepChildren method in cluster model:app/controllers/search_controller.rb
