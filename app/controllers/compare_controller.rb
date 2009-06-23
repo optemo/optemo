@@ -6,8 +6,7 @@ class CompareController < ApplicationController
   # GET /saveds.xml
     
   def index
-    @session = Session.find(session[:user_id])  # @session is required by vertical sliders
-    
+    @session = Session.find(session[:user_id])  # @session is required to retrieve preferences    
     @products = []
     @utility = []
     @displayString = ""
@@ -204,35 +203,58 @@ def featuresDictionary
 end
 
 def ReorderProducts
-
-  @sortedProducts = []
-  @finalUtility = []
-  tempUtility = []
-  maxUtility = 0.0    # -1.0?
-  index = 0           # -1?
-  counter = 0
-  
+  # To sort: @products
+  # Based on: @utility
   for i in 0..@products.count-1
     @utility[i] = CalculateUtility(@products[i])
   end
-  tempUtility = @utility.dup
-  while counter < @products.count
-    maxUtility = 0.0
-    index = 0
-    for i in 0..@products.count-1       # Find Max Utility
-      if(tempUtility[i] > maxUtility)
-        maxUtility = tempUtility[i]
-        index = i
-      end
-    end
-    @sortedProducts[counter] = @products[index]
-    @finalUtility[counter] = @utility[index]
-    counter = counter + 1
-    tempUtility[index] = 0.0
-  end
-  @products = @sortedProducts
-  @utility = @finalUtility
+  @toSort = @products.dup
+  @basedOn = @utility.dup
+  SortArray()
+  @products = @sortedArray
+  @utility = @finalBasedOn
 end
   
 def ReorderFeatures
+  # To sort: InterestingFeatures
+  # Based on: userPreferences for ContinuousFeatures
+  
+  prefHash = {}
+  session[:productType].constantize::DisplayedFeatures.each do |f|
+    if session[:productType].constantize::ContinuousFeatures.index(f) == nil
+      prefHash[f] = 0
+    else
+      prefHash[f] = @session.features.send((f + "_pref").intern)
+    end
+  end
+  # Reorder features in DisplayedFeatures into @preferredDisplayFeatures 
+  @preferredDisplayFeatures = prefHash.sort{|a,b| a[1]<=>b[1]}.reverse  
+end
+
+def SortArray
+  @sortedArray = []
+  @finalBasedOn = []
+  tempBasedOn = []
+
+  maxBasedOn = 0.0    
+  index = 0           
+  counter = 0
+
+  tempBasedOn = @basedOn.dup
+
+  while counter < @toSort.count
+    maxBasedOn = 0.0
+    index = 0
+    
+    for i in 0..@toSort.count-1       # Find Max Utility
+      if(tempBasedOn[i] > maxBasedOn)
+        maxBasedOn = tempBasedOn[i]
+        index = i
+      end
+    end
+    @sortedArray[counter] = @toSort[index]
+    @finalBasedOn[counter] = @basedOn[index]
+    counter = counter + 1
+    tempBasedOn[index] = -1.0
+  end  
 end
