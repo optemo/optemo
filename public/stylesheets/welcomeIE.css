@@ -5,7 +5,7 @@
 .dialog .b,
 .dialog .b div 
 {
- 	background-image:url(../images/mainbg.gif);
+ 	_background-image:url(../images/mainbg.gif);
 }
 
 .dialog .content 

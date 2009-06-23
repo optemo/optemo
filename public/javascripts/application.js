@@ -134,11 +134,9 @@ $(document).ready(function() {
 			// setting slide to false can prevent user from sliding further. This can constrain the sum of values of sliders to be <= 1
 			slide: function(e,ui)
 			{
-				prefVal = parseInt($(this).attr('pref-value'));
-				alert(prefVal)
 				// ToDo:
 				// Put a check here to ensure that the 4 preferences always sum up to 1.
-				$('.preferenceSlider').each(function(){
+				/*$('.preferenceSlider').each(function(){
 					sum = sum + $(this).slider('option', 'value');					
 				})				
 				if (sum >= 100)
@@ -148,10 +146,7 @@ $(document).ready(function() {
 					//alert("this val should be= " + newVal);
 					$('this').slider('option', 'value', autoVal);
 				}
-				sum = 0.0			
-			},
-			stop: function(e,ui)
-			{
+				sum = 0.0*/			
 			}
 		});
 	});
