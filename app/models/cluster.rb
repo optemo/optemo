@@ -76,8 +76,10 @@ module Cluster
             cats << "#{k} = '#{w}'"
           end
           fqarray << "(#{cats.join(' OR ')})"
-        else
+        elsif v.class == String
           fqarray << "#{k} = '#{v}'"
+        else
+          fqarray << "#{k} = #{v}"
         end
       end
     end

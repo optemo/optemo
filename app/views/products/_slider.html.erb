@@ -20,6 +20,6 @@ data-startmin='<%= @session.send("#{val}_min".intern).nil? ? dbmin(val) : (val =
 data-startmax='<%= @session.send("#{val}_max".intern).nil? ? dbmax(val) : (val == 'price') ? @session.send("#{val}_max".intern)/100 : @session.send("#{val}_max".intern)%>'
 data-prodmin='<%= val== 'price' ? @s.ranges(val)[0]/100 : @s.ranges(val)[0] %>' 
 data-prodmax='<%= val== 'price' ? @s.ranges(val)[1]/100 : @s.ranges(val)[1] %>'
-<%= money_formatting ? 'data-formatting="$"' : ""  %>>
+<%= money_formatting ? 'data-formatting="$"' : (val == 'resolutionarea' ? 'data-formatting="res"' : '')  %>>
 </div>
 </div>

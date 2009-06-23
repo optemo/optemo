@@ -86,20 +86,32 @@ $(document).ready(function() {
 			max: rangemax,
 			values: [curmin,curmax],
 			slide: function(e,ui) {
-				if ($(this).attr('data-formatting') == '$')
+				switch($(this).attr('data-formatting'))
 				{
-					min = Math.floor(ui.values[0]);
-					max = Math.ceil(ui.values[1]);
+					case '$':
+						min = Math.floor(ui.values[0]);
+						max = Math.ceil(ui.values[1]);
+						$(this).siblings('.min').attr('value',min);
+						$(this).siblings('.max').attr('value',max);
+						$('.sliderlabel:first', this).html(min);
+						$('.sliderlabel:last', this).html(max);
+						break;
+					case 'res':
+						$(this).siblings('.min').attr('value',ui.values[0]);
+						$(this).siblings('.max').attr('value',ui.values[1]);
+						min = Math.floor(Math.sqrt(ui.values[0]));
+						max = Math.ceil(Math.sqrt(ui.values[1]));
+						$('.sliderlabel:first', this).html(min+' x '+min);
+						$('.sliderlabel:last', this).html(max+' x '+max);
+						break;
+					default:
+						min = Math.floor(ui.values[0]*10)/10;
+						max = Math.ceil(ui.values[1]*10)/10;
+						$(this).siblings('.min').attr('value',min);
+						$(this).siblings('.max').attr('value',max);
+						$('.sliderlabel:first', this).html(min);
+						$('.sliderlabel:last', this).html(max);
 				}
-				else
-				{
-					min = Math.floor(ui.values[0]*10)/10;
-					max = Math.ceil(ui.values[1]*10)/10;
-				}
-				$(this).siblings('.min').attr('value',min);
-				$(this).siblings('.max').attr('value',max);
-				$('.sliderlabel:first', this).html(min);
-				$('.sliderlabel:last', this).html(max);
 				},
 			stop: 	function(e,ui) {
 				$('#filter_form').submit();

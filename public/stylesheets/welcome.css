@@ -165,13 +165,12 @@ div.pass img{
 }
 #whylaser {
 	margin-left: 20px;
-	position: relative;
 	text-decoration: none;
 }
 #whylaser span{
 	position: absolute;
-	top: 0px;
-	left: 160px;
+	top: 54px;
+	left: 610px;
 	color: black;
 	font-size: small;
 	width: 100px;

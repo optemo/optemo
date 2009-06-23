@@ -12,6 +12,7 @@ class SearchController < ApplicationController
       redirect_to "/#{session[:productType].pluralize.downcase}/list/"+params[:path_info].join('/')
     else
       @session = Session.find(session[:user_id])
+      @model = @session.product_type.constantize
       #Allow for multiple brands
       myfilter = multipleBrands(myfilter)
       #Delete blank values
@@ -20,12 +21,18 @@ class SearchController < ApplicationController
       #Fix price, because it's stored as int in db
       myfilter[:price_max] = (myfilter[:price_max]*100).to_i if myfilter[:price_max]
       myfilter[:price_min] = (myfilter[:price_min]*100).to_i if myfilter[:price_min]
+      myfilter = handle_false_booleans(myfilter)
+      
+      #debugger
+      
       #Find clusters that match filtering query
       model = (@session.product_type+'Cluster').constantize
       if expandedFiltering?(myfilter)
+        #Search is expanded, so use all products to begin with
         clusters = model.find_all_by_layer(1)
         clusters.delete_if{|c| c.isEmpty(@session,myfilter)}
       else
+        #Search is narrowed, so use current products to begin with
         clusters = []
         params[:path_info].each do |cid|
            c = model.find(cid)
@@ -140,5 +147,15 @@ class SearchController < ApplicationController
       end
     end
     clusters
+  end
+  
+  def handle_false_booleans(myfilter)
+    @model::BinaryFeatures.each do |f|
+      if myfilter[f] == '0' 
+        myfilter.delete(f) 
+        @session.update_attribute(f,nil) if @session.send(f.intern) == true
+      end
+    end
+    myfilter
   end
 end

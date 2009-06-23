@@ -9,8 +9,8 @@
 <%= select('myfilter', 'brand', [selectmsg.nil? ? "All Brands" : selectmsg] +@dbfeat['brand'].categories.split('*'), options={}, {:onchange => "$('#filter_form').submit()"}) %>
 <%= hidden_field_tag "myfilter[Xbrand]"%>
 
-<% session[:productType].constantize::ContinuousFeatures.each_index do |i| %>
-	<% feat = session[:productType].constantize::ContinuousFeatures[i] %>
+<% @model::ContinuousFeatures.each_index do |i| %>
+	<% feat = @model::ContinuousFeatures[i] %>
 	<% if feat == 'price' %>
 		<%= render :partial => 'slider', 
 			:locals => {:name => 'Price', 
@@ -21,7 +21,7 @@
 			:max =>(@dbfeat['price'].max.to_f/100).ceil} %>
 	<% else %>
 		<%= render :partial => 'slider', 
-			:locals => {:name => session[:productType].constantize::ContinuousFeaturesDisp[i], 
+			:locals => {:name => @model::ContinuousFeaturesDisp[i], 
 			:val => feat, 
 			:money_formatting => false, 
 			:ses_name => "f#{i}", 
@@ -29,4 +29,7 @@
 			:max => @dbfeat[feat].max} %>
 	<% end %>
 <% end %>
-<!--><div class='label' style="margin-top: 0;"><%= check_box('myfilter', 'scanner', {:onchange => "$('#filter_form').submit()"})%>Scanner</div>-->
+<% @model::BinaryFeatures.each_index do |i| %>
+	<% feat = @model::BinaryFeatures[i] %>
+	<div class='label' style="margin-top: 0;"><%= check_box('myfilter', feat, {:onchange => "$('#filter_form').submit()", :checked => @session.send(feat.intern) ? 'checked' : false})%><%= feat.capitalize %></div>
+<% end %>

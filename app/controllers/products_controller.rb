@@ -24,6 +24,7 @@ class ProductsController < ApplicationController
   def list
     @session = Session.find(session[:user_id])
     @pt = session[:productType] || $DefaultProduct
+    @model = @pt.constantize
     @dbfeat = {}
     DbFeature.find_all_by_product_type(@pt).each {|f| @dbfeat[f.name] = f}
     #Previously clicked product
@@ -39,7 +40,8 @@ class ProductsController < ApplicationController
     #Cleanse id to be only numbers
     params[:id].gsub!(/\D/,'')
     pt = session[:productType] || $DefaultProduct
-    @product = pt.constantize.find(params[:id])
+    @model = pt.constantize
+    @product = @model.find(params[:id])
     @offerings = RetailerOffering.find_all_by_product_id_and_product_type(params[:id],pt)
     #Session Tracking
     s = Viewed.new
