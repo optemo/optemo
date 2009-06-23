@@ -1,14 +1,13 @@
 <% self.full_title = 'LaserPrinterHub - Find Laser Printers, Compare Prices, then Buy' %>
 <div id="leftbar">
 	Browsing <%= @s.result_count %> <%= @pt.pluralize.capitalize %>
-	<% if RAILS_ENV == 'development' %><br>Session id: <%= session[:user_id] %> <% end %>
+	<% if RAILS_ENV == 'development' %>Session id: <%= session[:user_id] %> <% end %>
 	<!-- The Search box -->
-	<% form_tag("/search/find/#{@s.to_s}",{:id => 'search_form'}) do %>
-	  <%= @session.searchterm.blank? ? text_field_tag('search') : text_field_tag('search', @session.searchterm) %>
+	<% form_tag ("/search/find/#{@s.to_s}") do %>
+	  <%= text_field_tag 'search' %>
 	  <%= submit_tag 'Search', {:id => 'submit_button'} %>
-	  <%= @session.searchterm ? link_to('Clear Search', "/search/delete/", :id => 'clearsearch') : '' %>
-	<% end %>
-	
+	  <% end %>
+
 	<!-- The Saved Items box -->
 	<div id="savebar">
 		<h2>Saved Items</h2>
@@ -38,19 +37,30 @@
 	  	<br>
 	<% end %>
 </div>
+
+<div id="preferenceBar">
+	<h2>Preferences</h2>
+	<% form_tag("/search/preference/#{@c.to_s}",{:id => 'preference_form'}) do %>
+		<!-- Preference partial to draw the preference controls -->
+	  	<%= render :partial => 'preference' %>
+	  	<br>
+	<% end %>
+</div>
+
 </div>
 
 <div class="main">
-	<span style="color:red;"><%= flash[:error] %></span><span class="title"><%= flash[:notice] %></span>
+	<span style="color:red;"><%= flash[:error] %></span>
+	
 	<!-- count variable to print << after every Go Back link -->
 	<% count=1 %>	
 	<div class='backlink'>
-	<% @searches.each do |s| %>
+	<% history(@pt).each do |s| %>
  	  <!-- If s>1 then print << -->
 	  <% if count>1 %>
 		&nbsp;&nbsp;&lt;&lt;
 	  <% end %>   
-	  <%= link_to "Go back to previous #{@pt.pluralize}", "/#{@pt.pluralize.downcase}/list/#{s.to_s}"%>
+	  <%= link_to "Go back to previous #{@pt.pluralize}", :action => 'list', :id => s.id%>
 	  <% count = count+1 %>
 	<% end %>
 	</div>
