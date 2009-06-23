@@ -1,6 +1,6 @@
 class PrintersController < ProductsController
   before_filter :pickProduct
-  
+
   def pickProduct
     session[:productType] = 'Printer'
     s = Session.find(session[:user_id])

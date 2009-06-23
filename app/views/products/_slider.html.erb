@@ -7,17 +7,17 @@
 </div>
 <div class="hist" data-data="<%= @s.distribution(val).join(',') %>"></div>
 <% if val == 'price' %>
-	<%= hidden_field_tag "myfilter[price_min]", @session.price_min ? @session.price_min/100 : '',{:class => 'min'}%>
-	<%= hidden_field_tag "myfilter[price_max]", @session.price_max ? @session.price_max/100 : '',{:class => 'max'}%>
+	<%= hidden_field_tag "myfilter[price_min]", @session.features.price_min ? @session.price_min/100 : '',{:class => 'min'}%>
+	<%= hidden_field_tag "myfilter[price_max]", @session.features.price_max ? @session.price_max/100 : '',{:class => 'max'}%>
 <% else %>
-	<%= hidden_field_tag "myfilter[#{val}_min]", @session.send("#{val}_min".intern),{:class => 'min'}%>
-	<%= hidden_field_tag "myfilter[#{val}_max]", @session.send("#{val}_max".intern),{:class => 'max'}%>
+	<%= hidden_field_tag "myfilter[#{val}_min]", @session.features.send("#{val}_min".intern),{:class => 'min'}%>
+	<%= hidden_field_tag "myfilter[#{val}_max]", @session.features.send("#{val}_max".intern),{:class => 'max'}%>
 <% end %>
 <div class='slider' 
 data-min='<%= dbmin(val)%>'
 data-max='<%= dbmax(val)%>'
-data-startmin='<%= @session.send("#{val}_min".intern).nil? ? dbmin(val) : (val == 'price') ? @session.send("#{val}_min".intern)/100 : @session.send("#{val}_min".intern) %>'
-data-startmax='<%= @session.send("#{val}_max".intern).nil? ? dbmax(val) : (val == 'price') ? @session.send("#{val}_max".intern)/100 : @session.send("#{val}_max".intern)%>'
+data-startmin='<%= @session.features.send("#{val}_min".intern).nil? ? dbmin(val) : (val == 'price') ? @session.features.send("#{val}_min".intern)/100 : @session.features.send("#{val}_min".intern) %>'
+data-startmax='<%= @session.features.send("#{val}_max".intern).nil? ? dbmax(val) : (val == 'price') ? @session.features.send("#{val}_max".intern)/100 : @session.features.send("#{val}_max".intern)%>'
 data-prodmin='<%= val== 'price' ? @s.ranges(val)[0]/100 : @s.ranges(val)[0] %>' 
 data-prodmax='<%= val== 'price' ? @s.ranges(val)[1]/100 : @s.ranges(val)[1] %>'
 <<<<<<< HEAD:app/views/products/_slider.html.erb

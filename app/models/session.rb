@@ -60,7 +60,7 @@ class Session < ActiveRecord::Base
     
   def features
     #Return row of Product's Feature table 
-    (product_type + 'Features').constantize.find(:first, :conditions => ['id = ?', id])
+    (product_type + 'Features').constantize.find(:first, :conditions => ['session_id = ?', id])
   end
   
   private

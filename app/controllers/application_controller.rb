@@ -28,19 +28,22 @@ class ApplicationController < ActionController::Base
   end
   
   def update_user
-   if session[:user_id].blank? || !Session.exists?(session[:user_id])
+#    session[:user_id] = nil
+#    return
+    if session[:user_id].blank? || !Session.exists?(session[:user_id])
       #Find the user's session if there are no cookies -- doesn't work for proxy's and firewalls
       #mysession = Session.find(:first, :conditions => ['ip = ? and updated_at > ?',request.remote_ip,30.minutes.ago])
       #if mysession.nil?
         #Create a new session
         mysession = Session.new
-        # Create a row in corresponding product-features table
-        myProduct = ('Printer' + 'Features').constantize.new
-        myProduct.save
-        myProduct.id = mysession.id                                 
-        
         mysession.ip = request.remote_ip
         mysession.save
+        # Create a row in every product-features table
+        $ProdTypeList.each do |p|
+          myProduct = (p + 'Features').constantize.new
+          myProduct.session_id = mysession.id        
+          myProduct.save
+        end
       #else
       #  mysession.update_attribute(:updated_at, Time.now)
       #end
@@ -85,7 +88,7 @@ end
     # For all features
       session[:productType].constantize::ContinuousFeatures.each do |f|
       # Multiply factor value by the User's preference for that feature (weight) and add to cost
-        cost = cost + getFactorRow.send(f) * userSession.send("#{f}_pref")
+        cost = cost + getFactorRow.send(f) * userSession.features.send("#{f}_pref")
       end      
     return cost
   end

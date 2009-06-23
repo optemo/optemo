@@ -204,6 +204,8 @@ end
 def ReorderProducts
 
   @sortedProducts = []
+  @finalUtility = []
+  tempUtility = []
   maxUtility = 0.0    # -1.0?
   index = 0           # -1?
   counter = 0
@@ -211,21 +213,23 @@ def ReorderProducts
   for i in 0..@products.count-1
     @utility[i] = CalculateUtility(@products[i])
   end
-  
+  tempUtility = @utility.dup
   while counter < @products.count
     maxUtility = 0.0
     index = 0
     for i in 0..@products.count-1       # Find Max Utility
-      if(@utility[i] > maxUtility)
-        maxUtility = @utility[i]
+      if(tempUtility[i] > maxUtility)
+        maxUtility = tempUtility[i]
         index = i
       end
     end
     @sortedProducts[counter] = @products[index]
+    @finalUtility[counter] = @utility[index]
     counter = counter + 1
-    @utility[index] = 0.0
+    tempUtility[index] = 0.0
   end
-
+  @products = @sortedProducts
+  @utility = @finalUtility
 end
   
 def ReorderFeatures

@@ -4,6 +4,7 @@ class CreateCameraFeatures < ActiveRecord::Migration
 
       t.timestamps
       t.primary_key :id
+      t.integer :session_id
       t.string :brand, :default => "All Brands" 
       (Camera::ContinuousFeatures).each do |f|
         min = f+'_min'
