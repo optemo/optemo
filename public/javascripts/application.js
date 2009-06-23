@@ -151,6 +151,19 @@ $(document).ready(function() {
 		});
 	});
 	
+	$(".preferenceSliderVertical").each(function() {
+		prefVal = parseInt($(this).attr('pref-value'));
+		$(this).slider({
+			orientation: 'vertical',
+			max: 100,
+			min: 0,
+			step: 1,
+			// value: (Get value of preferences from session) 
+			value: prefVal,
+			// setting slide to false can prevent user from sliding further. This can constrain the sum of values of sliders to be <= 1
+		});
+	});
+	
 	//Draw cluster graphs
 	$('.clustergraph').each(function () {
 		Raphael.getColor.reset();

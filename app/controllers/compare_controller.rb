@@ -6,6 +6,8 @@ class CompareController < ApplicationController
   # GET /saveds.xml
     
   def index
+    @session = Session.find(session[:user_id])  # @session is required by vertical sliders
+    
     @products = []
     @utility = []
     @displayString = ""
