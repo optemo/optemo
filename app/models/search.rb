@@ -7,7 +7,6 @@ class Search < ActiveRecord::Base
   #Array of normalized product counts
   def distribution(featureName)
     f = DbFeature.find_by_name_and_product_type(featureName,session.product_type)
-    nodemodel = (session.product_type+'Node').constantize
     stepsize = (f.max-f.min).to_f/10 
     res = []
     #debugger
@@ -24,9 +23,9 @@ class Search < ActiveRecord::Base
       #Filtering parameters
       options += session.filter && !Cluster.filterquery(session).blank? ? ' and '+Cluster.filterquery(session) : ''
       if max==min
-        res << nodemodel.find(:all, :conditions => ["#{featureName} = ? and (#{chooseclusters}) #{options}",max]).length
+        res << $nodemodel.find(:all, :conditions => ["#{featureName} = ? and (#{chooseclusters}) #{options}",max]).length
       else  
-        res << nodemodel.find(:all, :conditions => ["#{featureName} < ? and #{featureName} >= ? and (#{chooseclusters}) #{options}",max,min]).length
+        res << $nodemodel.find(:all, :conditions => ["#{featureName} < ? and #{featureName} >= ? and (#{chooseclusters}) #{options}",max,min]).length
       end
     end
     round2Decim(normalize(res))
@@ -53,7 +52,7 @@ class Search < ActiveRecord::Base
           @clusters << MergedCluster.fromIDs(session.product_type,cluster_id.split('+'))
         else
           #Single, normal Cluster
-          @clusters << (session.product_type+'Cluster').constantize.find(cluster_id.to_i)
+          @clusters << $clustermodel.find(cluster_id.to_i)
         end
       end
     end
@@ -68,9 +67,7 @@ class Search < ActiveRecord::Base
       ns[mycluster] = p
       mycluster.next!
     end
-    #s = Session.find(session[:user_id])
     ns['session_id'] = session.id
-    #ns['parent_id'] = s
     s = new(ns)
     s['result_count'] = s.result_count
     s.save

@@ -32,7 +32,7 @@
 <!-- The Filters section -->
 <div id="filterbar">
 	<h2>Filters</h2>
-	<% form_tag("/search/filter/#{@s.to_s}",{:id => 'filter_form'}) do %>
+	<% form_tag("/search/filter",{:id => 'filter_form'}) do %>
 		<!-- Filter partial to draw the filter controls -->
 	  	<%= render :partial => 'filter' %>
 	  	<br>

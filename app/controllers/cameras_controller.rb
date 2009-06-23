@@ -5,5 +5,8 @@ class CamerasController < ProductsController
     session[:productType] = 'Camera'
     s = Session.find(session[:user_id])
     s.update_attribute('product_type', 'Camera') if s.product_type.nil? || s.product_type != 'Camera'
+    $model = Camera
+    $nodemodel = CameraNode
+    $clustermodel = CameraCluster
   end
 end

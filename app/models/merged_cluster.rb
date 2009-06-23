@@ -10,7 +10,7 @@ class MergedCluster
     product_type = product_type
     clusterobj = []
     clusters.compact.each do |c|
-      clusterobj << (product_type+'Cluster').constantize.find(c.to_i)
+      clusterobj << $clustermodel.find(c.to_i)
     end
     new(clusterobj)
   end
@@ -21,16 +21,6 @@ class MergedCluster
   
   #The subclusters
   def children(session)
-    #unless @children
-    #  parentsonly = @clusters.map{|c| "parent_id = #{c.id}"}.join(' or ')
-    #  @children = (session.product_type+'Cluster').constantize.find(:all, :order => 'cluster_size DESC', :conditions => parentsonly)
-    #  #Check that children are not empty
-    #  if session.filter || !session.searchpids.blank?
-    #    @children.delete_if{|c| c.isEmpty(session)}
-    #  end
-    #  @children = @children [0..8] #Only top nine children
-    #end
-    #@children
     @clusters
   end
   
@@ -50,12 +40,11 @@ class MergedCluster
     @range[featureName]
   end
   
-  def nodes(session, filters=nil)
+  def nodes(session)
     unless @nodes
       clustersquery = @clusters.map{|c| "cluster_id = #{c.id}"}.join(' or ')
-      @nodes = (session.product_type + 'Node').constantize.find(:all, :order => 'price ASC', 
-        :conditions => "(#{clustersquery}) #{(session.filter || filters) && !Cluster.filterquery(session,filters).blank? ? ' and '+Cluster.filterquery(session,filters) : ''}#{
-          session.searchpids.blank? ? '' : ' and ('+session.searchpids+')'}")
+      @nodes = $nodemodel.find(:all, :order => 'price ASC', :conditions => "(#{clustersquery}) #{session.filter && !Cluster.filterquery(session).blank? ?
+       ' and '+Cluster.filterquery(session) : ''}#{session.searchpids.blank? ? '' : ' and ('+session.searchpids+')'}")
     end
     @nodes
   end
@@ -63,7 +52,7 @@ class MergedCluster
   #The represetative product for this cluster
   def representative(session)
     node = nodes(session).first
-    session.product_type.constantize.find(node.product_id) if node
+    $model.find(node.product_id) if node
   end 
   
   def size(session)
@@ -86,16 +75,16 @@ class MergedCluster
         clusterR = ranges(f.name, session)
         return 'Empty' if clusterR[0].nil? || clusterR[1].nil?
         if (clusterR[1]<=low)
-          des <<  session.product_type.constantize::ContinuousFeaturesDescLow[f.name]
+          des <<  $model::ContinuousFeaturesDescLow[f.name]
         elsif (clusterR[0]>=high)
-          des <<  session.product_type.constantize::ContinuousFeaturesDescHigh[f.name]
+          des <<  $model::ContinuousFeaturesDescHigh[f.name]
         end
       end 
       res = des.join(', ')
       res.blank? ? 'All Purpose' : res
   end
   
-  def isEmpty(session, filters=nil)
-    nodes(session, filters).empty?
+  def isEmpty(session)
+    nodes(session).empty?
   end
 end

@@ -18,4 +18,106 @@ class Session < ActiveRecord::Base
   def self.ip_total
     self.all.map{|s|s.ip}.delete_if{|i|i =~ /^(192\.168.|127.0.|::1)/}
   end
+  
+  def createFromFilters(myfilter)
+    #Delete blank values
+    myfilter.delete_if{|k,v|v.blank?}
+    #Fix price, because it's stored as int in db
+    myfilter[:price_max] = (myfilter[:price_max]*100).to_i if myfilter[:price_max]
+    myfilter[:price_min] = (myfilter[:price_min]*100).to_i if myfilter[:price_min]
+    myfilter = handle_false_booleans(myfilter)
+    myfilter[:parent_id] = id
+    myfilter[:filter] = true
+    Session.new(attributes.merge(myfilter))
+  end
+  
+  def clusters
+    #Find clusters that match filtering query
+    @oldsession = Session.find(parent_id)
+    if expandedFiltering?
+      #Search is expanded, so use all products to begin with
+      clusters = $clustermodel.find_all_by_layer(1)
+    else
+      #Search is narrowed, so use current products to begin with
+      clusters = []
+      clusters = @oldsession.oldclusters
+    end
+    clusters.delete_if{|c| c.isEmpty(self)}
+    fillDisplay(clusters)
+  end
+  
+  def oldclusters
+    searches.last.clusters
+  end
+  
+  def commit
+    @oldsession = Session.find(parent_id) unless @oldsession
+    parent_id = nil
+    #Save search values
+    @oldsession.update_attributes(attributes)
+    
+  end
+  
+  private
+  
+  def handle_false_booleans(myfilter)
+    $model::BinaryFeatures.each do |f|
+      myfilter.delete(f) if myfilter[f] == '0' && send(f.intern) != true
+    end
+    myfilter
+  end
+  
+  def expandedFiltering?
+    attributes.keys.each do |key|
+      if key.index(/(.+)_min/)
+        fname = Regexp.last_match[1]
+        max = fname+'_max'
+        maxv = @oldsession.send(max.intern)
+        next if maxv.nil?
+        oldrange = maxv - @oldsession.send(key.intern)
+        newrange = attributes[max] - attributes[key]
+        return true if newrange > oldrange
+      elsif key.index(/#{$model::BinaryFeatures.join('|')}/)
+        if attributes[key] == false
+          #Only works for one item submitted at a time
+          send((key+'=').intern, nil)
+          return true 
+        end
+      elsif key.index(/#{$model::CategoricalFeatures.join('|')}/)
+        oldv = @oldsession.send(key.intern)
+        if oldv
+          new_a = attributes[key] == "All Brands" ? [] : attributes[key].split('*')
+          old_a = oldv == "All Brands" ? [] : oldv.split('*')
+          return true if new_a.length < old_a.length
+        end
+      end
+    end
+    false
+  end
+  
+  def splitClusters(clusters)
+    while clusters.length != 9
+      clusters.sort! {|a,b| b.size(self) <=> a.size(self)}
+      clusters = split(clusters.shift.children(self)) + clusters
+    end
+    clusters.sort! {|a,b| b.size(self) <=> a.size(self)}
+  end
+  
+  def split(children)
+    return children if children.length == 1
+    children.sort! {|a,b| b.size(self) <=> a.size(self)}
+    [children.shift, MergedCluster.new(children)]
+  end
+  
+  def fillDisplay(clusters)
+    if clusters.length < 9
+      if clusters.map{|c| c.size(self)}.sum >= 9
+        clusters = splitClusters(clusters)
+      else
+        #Display only the deep children
+        clusters = clusters.map{|c| c.deepChildren(self)}.flatten
+      end
+    end
+    clusters
+  end
 end
