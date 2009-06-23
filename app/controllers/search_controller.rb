@@ -36,14 +36,7 @@ class SearchController < ApplicationController
         myfilter[:filter] = true
         #Save search values
         @session.update_attributes(myfilter)
-        if clusters.length < 9
-          if clusters.map{|c| c.size(@session)}.sum >= 9
-            clusters = splitClusters(clusters)
-          else
-            #Display only the deep children
-            clusters = clusters.map{|c| c.deepChildren(@session)}.flatten
-          end
-        end
+        clusters = fillDisplay(clusters)
         redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.map{|c|c.id}.join('/')
       else
         flash[:error] = "No products found."
@@ -63,8 +56,11 @@ class SearchController < ApplicationController
       @session.searchterm = params[:search]
       @session.searchpids = product_ids.map{|id| "product_id = #{id}"}.join(' OR ')
       @session.save
-      cluster_ids = product_ids.map{|p|(@session.product_type+'Node').constantize.find_by_product_id(p, :order => 'cluster_id').cluster_id}
-      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+cluster_ids.uniq.sort[0..8].join('/')
+      model = (@session.product_type+'Node').constantize
+      cluster_ids = product_ids.map{|p| model.find_by_product_id(p, :order => 'cluster_id').cluster_id}
+      model = (@session.product_type+'Cluster').constantize
+      clusters = fillDisplay(cluster_ids.uniq.sort[0..8].compact.map{|c|model.find(c)})
+      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.map{|c|c.id}.join('/')
     end
   end
   
@@ -132,5 +128,17 @@ class SearchController < ApplicationController
       end
     end
     false
+  end
+  
+  def fillDisplay(clusters)
+    if clusters.length < 9
+      if clusters.map{|c| c.size(@session)}.sum >= 9
+        clusters = splitClusters(clusters)
+      else
+        #Display only the deep children
+        clusters = clusters.map{|c| c.deepChildren(@session)}.flatten
+      end
+    end
+    clusters
   end
 end
