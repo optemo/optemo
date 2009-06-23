@@ -9,7 +9,7 @@
 <% end %>
 	<p style="margin: 15px 0px 0px 20px"><%= URI.decode(@product.title) %></p>
 	<div id="image">
-		<% if @product.imagelurl %>
+		<% unless @product.imagelurl.blank? %>
 			<%= link_to image_tag(@product.imagelurl, :width => @product.imagelw, :height => @product.imagelh), @product.imagelurl, :popup => true %>
 		<% else %>
 			<br><br>No Image Available
