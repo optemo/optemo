@@ -1,7 +1,7 @@
 
 #include "kmeans.h"
 #include "helpers.h"
-
+#include "saveClustered.h"
 
 
 int hClustering(int layer, int clusterN, int conFeatureN, int boolFeatureN, double *average, double** conFeatureRange, double*** conFeatureRangeC,
@@ -42,6 +42,7 @@ if 	(layer == 1){
 		 			for (int f=1; f<conFeatureN; f++){
 		 				data[size][f] = res->getDouble(conFeatureNames[f]);
 		 			}	
+			
 		 			for (int f=0; f<boolFeatureN; f++){
 		 				data[size][conFeatureN+f] = res->getDouble(boolFeatureNames[f]);
 		 			}
@@ -94,10 +95,14 @@ if 	(layer == 1){
 					   				}	 
 					     }
 	
-		////////////////////////////////  Change clusteredData to vector 
+		////////////////////////////////  Change clusteredData to vector
+		
 					    int **clusteredData = new int* [clusterN];
-						for (int j=0; j<clusterN; j++){
-						 		clusteredData[j] = new int[size];	
+						int** clusteredDataOrder = new int* [clusterN];
+						double ** dataCluster;
+						for (int c=0; c<clusterN; c++){
+						 		clusteredData[c] = new int[size];	
+								clusteredDataOrder[c] = new int[size];
 						 	}
 				   		for (int c=0; c<clusterN; c++){
 						 		clusteredData[c][0] = 0;
@@ -112,12 +117,30 @@ if 	(layer == 1){
 						 		clusteredData[centersA[j]][ts[centersA[j]]] = idA[j];
 						 		clusteredData[centersA[j]][0]++;
 						 	}
+						
+								
+					   for (int c=0; c<clusterN; c++){
+					   	dataCluster = new double* [clusteredData[c][0]];
+					
+					   	for (int j=0; j<clusteredData[c][0]; j++){
+					   		dataCluster[j] = new double [conFeatureN+boolFeatureN]; 
+					   		for (int f=0; f<conFeatureN; f++){
+								double d = dataN[find(idA, clusteredData[c][j+1], size)][f];
+								
+					   		    dataCluster[j][f] = d; 
+					   		}
+							clusteredDataOrder[c][j] = clusteredData[c][j+1];
+					   	}
+					
+					   	//void repOrder(double* dataCluster, int size, String mode, int conFeatureN, int boolFeatureN, double* prefWeights, int* order)
+						repOrder(dataCluster, clusteredData[c][0], "median", conFeatureN, boolFeatureN, clusteredDataOrder[c]);
+					  }			
 
 					   // save it to the database
 						
 					   getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);		
-
-					   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName);
+				
+					   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, clusteredDataOrder, conFeatureRangeC, layer, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName);
 					
 						for (int c=0; c<clusterN; c++){
 								if (clusteredData[c][0]>maxSize){
@@ -248,7 +271,38 @@ if (layer > 1){
 			
  	   		getStatisticsData(data, clusteredData, indicators, idA, s, clusterN, conFeatureN, conFeatureRangeC);
 
-		saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName);
+////////////
+				int** clusteredDataOrder = new int* [clusterN];
+				double ** dataCluster;
+				for (int c=0; c<clusterN; c++){
+						clusteredDataOrder[c] = new int[size];
+						for (int j=0; j<clusteredData[c][0]; j++){
+							clusteredDataOrder[c][j] = clusteredData[c][j+1];
+						}
+				 	}
+		
+			   for (int c=0; c<clusterN; c++){
+			   	dataCluster = new double* [clusteredData[c][0]];
+			
+			   	for (int j=0; j<clusteredData[c][0]; j++){
+			   		dataCluster[j] = new double [conFeatureN+boolFeatureN]; 
+			   		for (int f=0; f<conFeatureN; f++){
+						double d = dataN[find(idA, clusteredData[c][j+1], size)][f];
+						
+			   		    dataCluster[j][f] = d; 
+			   		}
+			   	}
+			
+			   	//void repOrder(double* dataCluster, int size, String mode, int conFeatureN, int boolFeatureN, double* prefWeights, int* order)
+				repOrder(dataCluster, clusteredData[c][0], "median", conFeatureN, boolFeatureN, clusteredDataOrder[c]);
+			  }
+
+
+
+
+///////////
+
+		saveClusteredData(data, idA, size, brands, parent_id,clusteredData, clusteredDataOrder, conFeatureRangeC, layer, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName);
 
 		
 			for (int c=0; c<clusterN; c++){
