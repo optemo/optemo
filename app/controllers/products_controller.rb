@@ -11,17 +11,7 @@ class ProductsController < ApplicationController
     mysession = Session.find(session[:user_id])
     mysession.clearFilters
     @pt = session[:productType] || $DefaultProduct
-    if @pt == 'Printer' && s = Search.find_by_session_id(0)
-      path = s.to_s
-    else
-      path = PrinterCluster.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
-    end
-    if path
-      redirect_to "/#{@pt.pluralize.downcase}/list/"+path
-    else
-      flash[:error] = "There was a problem selecting the initial products"
-      redirect_to '/error'
-    end
+    homepage
   end
   
   def list
@@ -33,6 +23,11 @@ class ProductsController < ApplicationController
     @searches = [Search.find_by_session_id(@session.id, :order => 'updated_at desc')]
     @s = Search.searchFromPath(params[:path_info], @session.id)
     @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
+    #No products found
+    if @s.result_count == 0
+      flash[:error] = "No products were found, so you were redirected to the home page"
+      homepage
+    end
   end
 
   # GET /products/1
@@ -56,6 +51,22 @@ class ProductsController < ApplicationController
                       render :http => 'show' , :layout => 'optemo'
                     end }
       format.xml  { render :xml => @product }
+    end
+  end
+  
+  private
+  
+  def homepage
+    if @pt == 'Printer' && s = Search.find_by_session_id(0)
+      path = s.to_s
+    else
+      path = PrinterCluster.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
+    end
+    if path
+      redirect_to "/#{@pt.pluralize.downcase}/list/"+path
+    else
+      flash[:error] = "There was a problem selecting the initial products"
+      redirect_to '/error'
     end
   end
 end

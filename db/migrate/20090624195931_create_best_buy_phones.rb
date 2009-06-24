@@ -1,11 +1,23 @@
 class CreateBestBuyPhones < ActiveRecord::Migration
   def self.up
     create_table :best_buy_phones do |t|
+      #Basics
       t.string :title
       t.string :description
       t.string :link
       t.string :category
       t.string :guid
+      
+      t.string :CategoryID 
+      t.string :Manufacturer 
+      t.string :ProvinceCode
+      t.string :ImageUrl
+      t.string :LongDescription 
+      t.string :CatGroup
+      t.string :CatDept
+      t.string :CatClass
+      t.string :CatSubClass
+      t.string :Price
       #Atts
       t.string :BacklitKeypad
       t.string :BatteryType
