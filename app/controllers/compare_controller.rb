@@ -11,7 +11,7 @@ class CompareController < ApplicationController
     @utility = []
     @displayString = ""
     # To track whether an interesting feature is displayed or not-
-    @interestingFeatureDisplayed = Array.new(session[:productType].constantize::DisplayedFeatures.count, false)
+    @interestingFeatureDisplayed = {} # Array.new(session[:productType].constantize::DisplayedFeatures.count, false)
     if params[:path_info].blank?
       @saveds = Saved.find_all_by_session_id(session[:user_id])
       @saveds.collect do |saved|
@@ -140,14 +140,14 @@ end
 def decideWhichFeaturesToDisplay
   # To calculate which interesting features are to be displayed: 
   # Do not display those that are Unknown for all saved printers
-  countVar = 0
   session[:productType].constantize::DisplayedFeatures.each do |column|	    
 		for i in 0..@products.count-1
 			if canShowFeature?(column, i)
-				@interestingFeatureDisplayed[countVar] = true
+				@interestingFeatureDisplayed[column] = true
+			else                                                # can do without
+			  @interestingFeatureDisplayed[column] = false
 			end
 		end
-		countVar = countVar + 1
   end
 end
 

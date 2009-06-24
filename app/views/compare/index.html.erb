@@ -38,19 +38,17 @@
 			</td>
 		<% end %>
 	</tr>
-	<% countVar = 0%>
 																	<!-- <% #session[:productType].constantize::DisplayedFeatures.each do |column| %>-->
 	<% @preferredDisplayFeatures.each do |column| %>	    		<!-- @preferredDisplayFeatures array is created from DisplayedFeatures array, by the ReorderFeatures() -->
-		<% if @interestingFeatureDisplayed[countVar] == true %>
+		<% if @interestingFeatureDisplayed[column[0]] == true %>
 			<!-- Assign IDs to rows. These IDs are returned by the serialize() function in javascript and is used to record user's preferences-->
 			<tr id = <%= column %> > 
 				<!-- To display the name of the feature -->
 				<%= render :partial => 'features', :locals => {:column=>column[0]} %>
 				<!-- To display the value of each interesting feature -->
-				<%= render :partial => 'product', :collection => @products, :locals => {:countVar=>countVar, :column=>column[0]} %>
+				<%= render :partial => 'product', :collection => @products, :locals => {:column=>column[0]} %>
 			</tr>
 		<% end %>
-		<% countVar = countVar + 1 %>
 	<% end %>
 </table>
 

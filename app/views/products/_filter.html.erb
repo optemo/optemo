@@ -31,5 +31,5 @@
 <% end %>
 <% $model::BinaryFeatures.each_index do |i| %>
 	<% feat = $model::BinaryFeatures[i] %>
-	<div class='label' style="margin-top: 0;"><%= check_box('myfilter', feat, {:onchange => "$('#filter_form').submit()", :checked => @session.send(feat.intern) ? 'checked' : false})%><%= feat.capitalize %></div>
+	<div class='label' style="margin-top: 0;"><%= check_box('myfilter', feat, {:onchange => "$('#filter_form').submit()", :checked => @session.features.send(feat.intern) ? 'checked' : false})%><%= feat.capitalize %></div>
 <% end %>
