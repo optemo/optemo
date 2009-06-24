@@ -86,27 +86,39 @@ $(document).ready(function() {
 			max: rangemax,
 			values: [curmin,curmax],
 			slide: function(e,ui) {
-				if ($(this).attr('data-formatting') == '$')
+				switch($(this).attr('data-formatting'))
 				{
-					min = Math.floor(ui.values[0]);
-					max = Math.ceil(ui.values[1]);
-					dispstr = "$"+min+"-$"+max;
+					case '$':
+						min = Math.floor(ui.values[0]);
+						max = Math.ceil(ui.values[1]);
+						$(this).siblings('.min').attr('value',min);
+						$(this).siblings('.max').attr('value',max);
+						$('.sliderlabel:first', this).html(min);
+						$('.sliderlabel:last', this).html(max);
+						break;
+					case 'res':
+						$(this).siblings('.min').attr('value',ui.values[0]);
+						$(this).siblings('.max').attr('value',ui.values[1]);
+						min = Math.floor(Math.sqrt(ui.values[0]));
+						max = Math.ceil(Math.sqrt(ui.values[1]));
+						$('.sliderlabel:first', this).html(min+' x '+min);
+						$('.sliderlabel:last', this).html(max+' x '+max);
+						break;
+					default:
+						min = Math.floor(ui.values[0]*10)/10;
+						max = Math.ceil(ui.values[1]*10)/10;
+						$(this).siblings('.min').attr('value',min);
+						$(this).siblings('.max').attr('value',max);
+						$('.sliderlabel:first', this).html(min);
+						$('.sliderlabel:last', this).html(max);
 				}
-				else
-				{
-					min = Math.floor(ui.values[0]*10)/10;
-					max = Math.ceil(ui.values[1]*10)/10;
-					//dispstr = ($(filter_min).value.indexOf('.') == -1 ? $(filter_min).value+".0" : $(filter_min).value) +"-"+($(filter_max).value.indexOf('.') == -1 ? $(filter_max).value+".0" : $(filter_max).value)+" "+label;
-					dispstr = min+"-"+max;
-				}
-				$(this).siblings('.disp').html(dispstr);
-				$(this).siblings('.min').attr('value',min);
-				$(this).siblings('.max').attr('value',max);
 				},
 			stop: 	function(e,ui) {
 				$('#filter_form').submit();
 				}
 		});
+		$('a:first', this).html('<div class="sliderlabel">'+curmin+'</div>')
+		$('a:last', this).html('<div class="sliderlabel">'+curmax+'</div>')
 		histogram($(this).siblings('.hist')[0],(sessmin-rangemin)/(rangemax-rangemin),(sessmax-rangemin)/(rangemax-rangemin));
 	});
 	

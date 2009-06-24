@@ -25,7 +25,7 @@ class CQuery
         @msg = "Please supply a session"
         return
       end
-      myfilters = session.attributes.delete_if {|key, val| !key.index(/#{@product_type.constantize::ContinuousFeatures.join('|')+"|price|brand"}/)}
+      myfilters = session.attributes.delete_if {|key, val| !key.index(/#{$model::ContinuousFeatures.join('|')+"|price|brand"}/)}
       if searchterm.nil?
         myparams = params.merge({"cluster_id" => @cluster_ids}).merge(myfilters).to_yaml
       else
@@ -82,7 +82,7 @@ class CQuery
       #Pop array of products and clusters
       @cluster_ids ||= output.delete('clusters') #Might not be needed since clusters were passed in
       @result_count = output.delete('result_count')
-      @products = output.delete('products').map{|p|@product_type.constantize.find(p)}
+      @products = output.delete('products').map{|p|$model.find(p)}
       @cluster_count = @products.length
       details = output.delete('clusterdetails')
       processClusterDetails(details) if details
@@ -101,7 +101,7 @@ class CQuery
       else
         #Find the cluster's description
         cluster_id = myc.delete('cluster_id')
-        realc = (@product_type+"Cluster").constantize.find(cluster_id)
+        realc = $clustermodel.find(cluster_id)
         @clustergraph << calcClusterGraph(realc)
         children = myc.delete('children')
         if children.nil?
@@ -117,7 +117,7 @@ class CQuery
   def calcClusterGraph(cluster)
     myclustergraph = []
     unless cluster.nil?
-      (@product_type.constantize::ContinuousFeatures+["price"]).each do |name|
+      ($model::ContinuousFeatures+["price"]).each do |name|
         min = name+'_min'
         max = name+'_max'
         if name == "price"

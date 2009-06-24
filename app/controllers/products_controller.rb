@@ -10,13 +10,16 @@ class ProductsController < ApplicationController
   def index
     mysession = Session.find(session[:user_id])
     mysession.clearFilters
-    #c = CQuery.new(session[:productType] || $DefaultProduct)
     @pt = session[:productType] || $DefaultProduct
-    cluster_ids = (@pt+'Cluster').constantize.find_all_by_parent_id(0).map{|c| c.id}
-    if cluster_ids.length == 9
-      redirect_to "/#{@pt.pluralize.downcase}/list/"+cluster_ids.join('/')
+    if @pt == 'Printer' && s = Search.find_by_session_id(0)
+      path = s.to_s
     else
-      flash[:error] = "There are not 9 original clusters"
+      path = PrinterCluster.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
+    end
+    if path
+      redirect_to "/#{@pt.pluralize.downcase}/list/"+path
+    else
+      flash[:error] = "There was a problem selecting the initial products"
       redirect_to '/error'
     end
   end
@@ -26,7 +29,14 @@ class ProductsController < ApplicationController
     @pt = session[:productType] || $DefaultProduct
     @dbfeat = {}
     DbFeature.find_all_by_product_type(@pt).each {|f| @dbfeat[f.name] = f}
+<<<<<<< HEAD:app/controllers/products_controller.rb
     @s = Search.searchFromPath(params[:path_info], @session)
+=======
+    #Previously clicked product
+    @searches = [Search.find_by_session_id(@session.id, :order => 'updated_at desc')]
+    @s = Search.searchFromPath(params[:path_info], @session.id)
+    @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
+>>>>>>> c0bbd4109e97e7565b41411f15ffb90d847999c3:app/controllers/products_controller.rb
   end
 
   # GET /products/1
@@ -36,7 +46,7 @@ class ProductsController < ApplicationController
     #Cleanse id to be only numbers
     params[:id].gsub!(/\D/,'')
     pt = session[:productType] || $DefaultProduct
-    @product = pt.constantize.find(params[:id])
+    @product = $model.find(params[:id])
     @offerings = RetailerOffering.find_all_by_product_id_and_product_type(params[:id],pt)
     #Session Tracking
     s = Viewed.new

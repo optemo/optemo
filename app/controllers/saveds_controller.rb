@@ -6,7 +6,7 @@ class SavedsController < ApplicationController
     params[:id].gsub!(/\D/,'')
     #If product hasn't been put in Saved by that user yet:
     if Saved.find_by_product_id_and_session_id(params[:id],session[:user_id]).nil?
-      @product = session[:productType].constantize.find(params[:id])
+      @product = $model.find(params[:id])
       s = Saved.new
       s.session_id = session[:user_id]
       s.product_id = params[:id]

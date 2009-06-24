@@ -4,38 +4,24 @@ class SearchController < ApplicationController
   # Disable csrf protection on controller-by-controller basis:
   skip_before_filter :verify_authenticity_token
   
-  
   def filter
+    @session = Session.find(session[:user_id])
     myfilter = params[:myfilter]
     if myfilter.nil?
       #No post info passed
       flash[:error] = "Search could not be completed."
-      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+params[:path_info].join('/')
+      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+@session.oldclusters.map{|c|c.id}.join('/')
     else
-      @session = Session.find(session[:user_id])
       #Allow for multiple brands
       myfilter = multipleBrands(myfilter)
-      #Delete blank values
-      myfilter.delete_if{|k,v|v.blank?}
-      myfilter.each_pair {|key, val| myfilter[key] = val.to_f if key.index('_min') || key.index('_max')}
-      #Find clusters that match filtering query
-      clusters = (@session.product_type+'Cluster').constantize.find_all_by_layer(1)
-      clusters.delete_if{|c| c.isEmpty(@session,myfilter)}
-      unless clusters.empty?   
-        myfilter[:filter] = true
-        #Save search values
-        @session.update_attributes(myfilter)
-        mysearch = Search.searchFromPath(params[:path_info], @session)
-        # checking to see if the result is less than 9  
-        if (mysearch.result_count < 9)
-              ls = clusters.map{|c| c.deepChildren(@session)}.join('/')
-              redirect_to "/#{session[:productType].pluralize.downcase}/list/"+ls
-        else
-         redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.map{|c|c.id}.join('/')
-        end
+      mysession = @session.createFromFilters(myfilter)
+      clusters = mysession.clusters
+      unless clusters.empty?
+        mysession.commit
+        redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.map{|c|c.id}.join('/')
       else
         flash[:error] = "No products found."
-        redirect_to "/#{session[:productType].pluralize.downcase}/list/"+params[:path_info].join('/')
+        redirect_to "/#{session[:productType].pluralize.downcase}/list/"+@session.oldclusters.map{|c|c.id}.join('/')
       end
     end
   end
@@ -51,8 +37,9 @@ class SearchController < ApplicationController
       @session.searchterm = params[:search]
       @session.searchpids = product_ids.map{|id| "product_id = #{id}"}.join(' OR ')
       @session.save
-      cluster_ids = product_ids.map{|p|(@session.product_type+'Node').constantize.find_by_product_id(p, :order => 'cluster_id').cluster_id}
-      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+cluster_ids.uniq.sort[0..8].join('/')
+      cluster_ids = product_ids.map{|p| $nodemodel.find_by_product_id(p, :order => 'cluster_id').cluster_id}
+      clusters = fillDisplay(cluster_ids.uniq.sort[0..8].compact.map{|c|$clustermodel.find(c)})
+      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.map{|c|c.id}.join('/')
     end
   end
   
@@ -63,6 +50,7 @@ class SearchController < ApplicationController
     @session.save
     redirect_to "/#{session[:productType].pluralize.downcase}/"
   end
+  
   private
   
   def searchSphinx(searchterm)
@@ -77,7 +65,6 @@ class SearchController < ApplicationController
       #Remove a brand
       myfilter[:brand] = @session.brand.split('*').delete_if{|b|b == myfilter[:Xbrand]}.join('*')
       myfilter[:brand] = 'All Brands' if myfilter[:brand].blank?
-      @session.update_attribute('brand',myfilter[:brand])
     elsif new_brand != "All Brands" && new_brand != "Add Another Brand"
       old_brand = @session.brand
       #Add a brand

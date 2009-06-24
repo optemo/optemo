@@ -1,3 +1,4 @@
+require 'merged_cluster'
 class Search < ActiveRecord::Base
   belongs_to :session
   belongs_to :cluster
@@ -22,9 +23,9 @@ class Search < ActiveRecord::Base
       #Filtering parameters
       options += session.filter && !Cluster.filterquery(session).blank? ? ' and '+Cluster.filterquery(session) : ''
       if max==min
-        res << (session.product_type+'Node').constantize.find(:all, :conditions => ["#{featureName} = ? and (#{chooseclusters}) #{options}",max]).length
+        res << $nodemodel.find(:all, :conditions => ["#{featureName} = ? and (#{chooseclusters}) #{options}",max]).length
       else  
-        res << (session.product_type+'Node').constantize.find(:all, :conditions => ["#{featureName} < ? and #{featureName} >= ? and (#{chooseclusters}) #{options}",max,min]).length
+        res << $nodemodel.find(:all, :conditions => ["#{featureName} < ? and #{featureName} >= ? and (#{chooseclusters}) #{options}",max,min]).length
       end
     end
     round2Decim(normalize(res))
@@ -44,13 +45,21 @@ class Search < ActiveRecord::Base
     if @clusters.nil?
       @clusters = []
       cluster_count.times do |i|
-        @clusters << (session.product_type+'Cluster').constantize.find(send(:"c#{i}"))
+        cluster_id = send(:"c#{i}")
+        if cluster_id.to_s.index('+')
+          cluster_id.to_s.gsub(/[^(\d|+)]/,'') #Clean URL input
+          #Merged Cluster
+          @clusters << MergedCluster.fromIDs(session.product_type,cluster_id.to_s.split('+'))
+        else
+          #Single, normal Cluster
+          @clusters << $clustermodel.find(cluster_id.to_i)
+        end
       end
     end
     @clusters
   end
   
-  def self.searchFromPath(path, session)
+  def self.searchFromPath(path, session_id)
     ns = {}
     mycluster = 'c0'
     ns['cluster_count'] = path.length
@@ -58,15 +67,13 @@ class Search < ActiveRecord::Base
       ns[mycluster] = p
       mycluster.next!
     end
-    #s = Session.find(session[:user_id])
-    ns['session_id'] = session.id
-    #ns['parent_id'] = s
+    ns['session_id'] = session_id
     s = new(ns)
     s['result_count'] = s.result_count
     s.save
     s
   end
-
+  
   def to_s
     clusters.map{|c|c.id}.join('/')
   end

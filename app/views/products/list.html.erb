@@ -32,7 +32,7 @@
 <!-- The Filters section -->
 <div id="filterbar">
 	<h2>Filters</h2>
-	<% form_tag("/search/filter/#{@s.to_s}",{:id => 'filter_form'}) do %>
+	<% form_tag("/search/filter",{:id => 'filter_form'}) do %>
 		<!-- Filter partial to draw the filter controls -->
 	  	<%= render :partial => 'filter' %>
 	  	<br>
@@ -45,12 +45,12 @@
 	<!-- count variable to print << after every Go Back link -->
 	<% count=1 %>	
 	<div class='backlink'>
-	<% history(@pt).each do |s| %>
+	<% @searches.each do |s| %>
  	  <!-- If s>1 then print << -->
 	  <% if count>1 %>
 		&nbsp;&nbsp;&lt;&lt;
 	  <% end %>   
-	  <%= link_to "Go back to previous #{@pt.pluralize}", :action => 'list', :id => s.id%>
+	  <%= link_to "Go back to previous #{@pt.pluralize}", "/#{@pt.pluralize.downcase}/list/#{s.to_s}"%>
 	  <% count = count+1 %>
 	<% end %>
 	</div>

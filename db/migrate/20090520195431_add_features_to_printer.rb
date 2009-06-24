@@ -1,6 +1,6 @@
 class AddFeaturesToPrinter < ActiveRecord::Migration
   def self.up
-    add_column :printers, :resolutionarea, :integer
+    add_column :printers, :resolutionmax, :integer
   end
 
   def self.down

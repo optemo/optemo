@@ -8,7 +8,6 @@ class CameraClusterTest < ActiveSupport::TestCase
   def test_children
     first_cluster = CameraCluster.find('parent'.hash.abs)
     session = Session.first
-    puts first_cluster.children(session)
     assert first_cluster.children(session).length == 2
   end
   def test_size
