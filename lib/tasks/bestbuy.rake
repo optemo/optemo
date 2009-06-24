@@ -22,16 +22,25 @@ task :bb_rss => :environment do
   #  puts i.FS_ItemSpecs if i.FS_ItemSpecs
   #end
   #puts rss.items[0].FS_CategoryID
-  item = rss.items[1]
   #puts item.FS_ItemSpecs
-  doc = Nokogiri::XML(item.FS_ItemSpecs)
-  if doc.css('ATT').count > 30
-    puts item.NAME
-    doc.css('ATT').each do |a_tag|
-      #puts a_tag.attributes
-      puts a_tag.css('ATT_NAME')[0].content + ': ' + a_tag.css('ATT_VALUE')[0].content
+  h = {} #Products Hash
+  atts = []
+  rss.items.each do |item|
+    doc = Nokogiri::XML(item.FS_ItemSpecs)
+    if doc.css('ATT').count > 10
+      #puts item.title + ' - ' + item.guid
+      h[item.guid] = {}
+      doc.css('ATT').each do |a_tag|
+        h[item.guid][a_tag.css('ATT_NAME')[0].content] = a_tag.css('ATT_VALUE')[0].content
+        
+        atts << a_tag.css('ATT_NAME')[0].content.gsub(/\(.*\)|\/.*/,'').tr(' .()','')
+      end
     end
   end
+  puts atts.uniq.sort
+  puts h.length
+  puts atts.uniq.count
+  
   #puts rss.items[2].FS_ItemSpecs
   #print "title of first item: ", rss.items[0].title, "\n"
   #print "link of first item: ", rss.items[0].link, "\n"
