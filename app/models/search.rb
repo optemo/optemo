@@ -46,13 +46,13 @@ class Search < ActiveRecord::Base
       @clusters = []
       cluster_count.times do |i|
         cluster_id = send(:"c#{i}")
-        if cluster_id.to_s.index('+')
-          cluster_id.to_s.gsub(/[^(\d|+)]/,'') #Clean URL input
+        if cluster_id.index('+')
+          cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
           #Merged Cluster
-          @clusters << MergedCluster.fromIDs(session.product_type,cluster_id.to_s.split('+'))
+          @clusters << MergedCluster.fromIDs(session.product_type,cluster_id.split('+'))
         else
           #Single, normal Cluster
-          @clusters << $clustermodel.find(cluster_id.to_i)
+          @clusters << $clustermodel.find(cluster_id)
         end
       end
     end
