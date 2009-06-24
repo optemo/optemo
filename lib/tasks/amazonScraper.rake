@@ -3,7 +3,7 @@ require 'scrubyt'
 
 desc "Scraping Amazon"
 task :scrape_amazon => :environment do
-  Printer.fewfeatures.find(:all, :order => 'rand()', :conditions => 'scrapedat IS NULL AND nodetails IS NOT TRUE').each { |p|
+  Printer.fewfeatures.find(:all, :conditions => 'scrapedat IS NULL AND nodetails IS NOT TRUE').each { |p|
     scrape_details(p)
     sleep(1+rand()) #Be nice to Amazon
     sleep(rand()*30) #Be really nice to Amazon!

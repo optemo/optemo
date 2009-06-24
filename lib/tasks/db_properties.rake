@@ -13,7 +13,7 @@ end
 
 def cache_index
   #Store default starting point for printers
-  cluster_ids = PrinterCluster.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}
+  cluster_ids = PrinterCluster.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id.to_s}
   s = Search.find_all_by_session_id(0)
   s.each {|s|s.destroy}
   $clustermodel = PrinterCluster
