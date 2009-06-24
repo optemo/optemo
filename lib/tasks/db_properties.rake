@@ -7,8 +7,22 @@ namespace :db do
     end
     create_product_properties(Camera)
     create_product_properties(Printer)
-
+    cache_index
   end
+end
+
+def cache_index
+  #Store default starting point for printers
+  cluster_ids = PrinterCluster.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}
+  s = Search.find_all_by_session_id(0)
+  s.each {|s|s.destroy}
+  $clustermodel = PrinterCluster
+  $model = Printer
+  session = Session.new({:product_type => 'Printer'})
+  session.save
+  search = Search.searchFromPath(cluster_ids,session.id)
+  search.update_attribute('session_id',0)
+  session.destroy
 end
 
 #Support methods

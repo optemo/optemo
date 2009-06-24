@@ -10,13 +10,16 @@ class ProductsController < ApplicationController
   def index
     mysession = Session.find(session[:user_id])
     mysession.clearFilters
-    #c = CQuery.new(session[:productType] || $DefaultProduct)
     @pt = session[:productType] || $DefaultProduct
-    cluster_ids = $clustermodel.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}
-    if cluster_ids.length == 9
-      redirect_to "/#{@pt.pluralize.downcase}/list/"+cluster_ids.join('/')
+    if @pt == 'Printer' && s = Search.find_by_session_id(0)
+      path = s.to_s
     else
-      flash[:error] = "There are not 9 original clusters"
+      path = PrinterCluster.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
+    end
+    if path
+      redirect_to "/#{@pt.pluralize.downcase}/list/"+path
+    else
+      flash[:error] = "There was a problem selecting the initial products"
       redirect_to '/error'
     end
   end
@@ -28,7 +31,7 @@ class ProductsController < ApplicationController
     DbFeature.find_all_by_product_type(@pt).each {|f| @dbfeat[f.name] = f}
     #Previously clicked product
     @searches = [Search.find_by_session_id(@session.id, :order => 'updated_at desc')]
-    @s = Search.searchFromPath(params[:path_info], @session)
+    @s = Search.searchFromPath(params[:path_info], @session.id)
     @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
   end
 

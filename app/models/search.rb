@@ -46,10 +46,10 @@ class Search < ActiveRecord::Base
       @clusters = []
       cluster_count.times do |i|
         cluster_id = send(:"c#{i}")
-        if cluster_id.index('+')
-          cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
+        if cluster_id.to_s.index('+')
+          cluster_id.to_s.gsub(/[^(\d|+)]/,'') #Clean URL input
           #Merged Cluster
-          @clusters << MergedCluster.fromIDs(session.product_type,cluster_id.split('+'))
+          @clusters << MergedCluster.fromIDs(session.product_type,cluster_id.to_s.split('+'))
         else
           #Single, normal Cluster
           @clusters << $clustermodel.find(cluster_id.to_i)
@@ -59,7 +59,7 @@ class Search < ActiveRecord::Base
     @clusters
   end
   
-  def self.searchFromPath(path, session)
+  def self.searchFromPath(path, session_id)
     ns = {}
     mycluster = 'c0'
     ns['cluster_count'] = path.length
@@ -67,7 +67,7 @@ class Search < ActiveRecord::Base
       ns[mycluster] = p
       mycluster.next!
     end
-    ns['session_id'] = session.id
+    ns['session_id'] = session_id
     s = new(ns)
     s['result_count'] = s.result_count
     s.save
