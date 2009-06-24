@@ -58,6 +58,18 @@ class Session < ActiveRecord::Base
     
   end
   
+  def fillDisplay(clusters)
+    if clusters.length < 9
+      if clusters.map{|c| c.size(self)}.sum >= 9
+        clusters = splitClusters(clusters)
+      else
+        #Display only the deep children
+        clusters = clusters.map{|c| c.deepChildren(self)}.flatten
+      end
+    end
+    clusters
+  end
+  
   private
   
   def handle_false_booleans(myfilter)
@@ -108,17 +120,5 @@ class Session < ActiveRecord::Base
     return children if children.length == 1
     children.sort! {|a,b| b.size(self) <=> a.size(self)}
     [children.shift, MergedCluster.new(children)]
-  end
-  
-  def fillDisplay(clusters)
-    if clusters.length < 9
-      if clusters.map{|c| c.size(self)}.sum >= 9
-        clusters = splitClusters(clusters)
-      else
-        #Display only the deep children
-        clusters = clusters.map{|c| c.deepChildren(self)}.flatten
-      end
-    end
-    clusters
   end
 end
