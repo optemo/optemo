@@ -1,6 +1,7 @@
 class CreateBestBuyPrinters < ActiveRecord::Migration
   def self.up
     create_table :best_buy_printers do |t|
+      #BBProductOffering
       t.string    :bb_class
       t.integer   :classId
       t.string    :subclass
