@@ -224,7 +224,7 @@ end
 
 desc "Get real features from Printer special features"
 task :interpret_special_features => :environment do
-  Printer.find(:all, :order => 'rand()', :conditions => 'specialfeatures IS NOT NULL').each do |p|
+  Printer.find(:all, :conditions => 'specialfeatures IS NOT NULL').each do |p|
     #p = Printer.find(:first, :order => 'rand()', :conditions => 'specialfeatures IS NOT NULL')
     sf = p.specialfeatures
     a = sf[3..-1].split('|') #Remove leading nv:
