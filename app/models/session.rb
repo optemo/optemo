@@ -68,7 +68,7 @@ class Session < ActiveRecord::Base
     #Save search values
     @oldsession.update_attributes(attributes)
     # => features.session_id = @oldsession.id
-    features.commit(@oldsession.send('id'.intern))
+    features.commit(@oldsession.id)
     #f = (product_type + 'Features').constantize.find(:first, :conditions => ['session_id = ?', @oldsession.id])
     #f.update_attributes(features)
   end
