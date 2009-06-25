@@ -7,7 +7,6 @@ class SearchController < ApplicationController
   def filter
     @session = Session.find(session[:user_id])
     myfilter = params[:myfilter]
-    
     if myfilter.nil?
       #No post info passed
       flash[:error] = "Search could not be completed."
@@ -19,8 +18,6 @@ class SearchController < ApplicationController
       clusters = mysession.clusters
       unless clusters.empty?
         mysession.commit
-        # myfeatures.session_id = mysession.id        Do not have ID
-        # myfeatures.commit
         redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.map{|c|c.id}.join('/')
       else
         flash[:error] = "No products found."

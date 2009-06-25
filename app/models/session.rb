@@ -37,12 +37,13 @@ class Session < ActiveRecord::Base
     myfilter = handle_false_booleans(myfilter)
     myfilter[:parent_id] = id
     myfilter[:filter] = true
-    feature_filter[:brand] = myfilter.delete(:brand)    
+    feature_filter[:brand] = myfilter.delete(:brand)   
+    # feature_filter[:session_id] = myfilter[:id] 
     mysession =  Session.new(attributes.merge(myfilter))
-    @features = (product_type + 'Features').constantize.new(feature_filter)  # (attributes.merge(feature_filter))
-    return mysession
+    mysession.features = (product_type + 'Features').constantize.new(feature_filter)  # (attributes.merge(feature_filter))
+    mysession
   end
-  
+ 
   def clusters
     #Find clusters that match filtering query
     @oldsession = Session.find(parent_id)
@@ -64,10 +65,16 @@ class Session < ActiveRecord::Base
   
   def commit
     @oldsession = Session.find(parent_id) unless @oldsession
-    parent_id = nil
     #Save search values
     @oldsession.update_attributes(attributes)
-    
+    # => features.session_id = @oldsession.id
+    features.commit(@oldsession.send('id'.intern))
+    #f = (product_type + 'Features').constantize.find(:first, :conditions => ['session_id = ?', @oldsession.id])
+    #f.update_attributes(features)
+  end
+  
+  def features=(f)
+    @features = f
   end
         
   def features

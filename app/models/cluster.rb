@@ -41,7 +41,7 @@ module Cluster
     @range[featureName]
   end
   
-  def nodes(session, filters=nil)
+  def nodes(session)
     unless @nodes
       @nodes = $nodemodel.find(:all, :order => 'price ASC', :conditions => ["cluster_id = ?#{session.filter && !Cluster.filterquery(session).blank? ?
          ' and '+Cluster.filterquery(session) : ''}#{session.searchpids.blank? ? '' : ' and ('+session.searchpids+')'}",id])
@@ -58,7 +58,7 @@ module Cluster
     @rep
   end
   
-  def self.filterquery(session, filters=nil)
+  def self.filterquery(session)
     fqarray = []
     filters = Cluster.findFilteringConditions(session)
     filters.each_pair do |k,v|
@@ -114,8 +114,9 @@ module Cluster
   
   
   def self.findFilteringConditions(session)
-    @features
-    # session.features.attributes.delete_if {|key, val| key=='id' || key=='session_id'}
+    # @features
+    session.features.attributes.delete_if {|key, val| key=='id' || key=='session_id' || key.index('_pref')}
+    #session.features.attributes
   end
   
   def isEmpty(session)

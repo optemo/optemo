@@ -1,9 +1,8 @@
 class PrinterFeatures < ActiveRecord::Base
 
-  def commit
-    @oldfeatures = PrinterFeatures.find(:first, :conditions => ['session_id = ?', session_id]) unless @oldfeatures
-    @oldfeatures.update_attributes(attributes)
-    
+  def commit(sessionId)
+    oldfeatures = PrinterFeatures.find(:first, :conditions => ['session_id = ?', sessionId])
+    oldfeatures.update_attributes(attributes)
   end
   
 end
