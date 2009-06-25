@@ -118,7 +118,6 @@ ActiveRecord::Schema.define(:version => 20090622171904) do
     t.float   "opticalzoom_max"
     t.float   "price_min"
     t.float   "price_max"
-  end
 
   create_table "camera_features", :force => true do |t|
     t.datetime "created_at"

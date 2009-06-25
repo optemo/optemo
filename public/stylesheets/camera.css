@@ -272,6 +272,7 @@ div #filterbar {
 }
 .endlabel_min {
 	display: none;
+
 	position: absolute;
 	bottom: -5px;
 	left: -1px;
