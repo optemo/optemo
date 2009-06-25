@@ -5,7 +5,6 @@ class CreatePrinterFeatures < ActiveRecord::Migration
       t.timestamps
       t.primary_key :id
       t.integer :session_id
-      t.string :brand, :default => "All Brands" 
       (Printer::ContinuousFeatures).each do |f|
         min = f+'_min'
         max = f+'_max'

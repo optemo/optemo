@@ -114,7 +114,7 @@ module Cluster
   
   
   def self.findFilteringConditions(session)
-    session.attributes.delete_if {|key, val| !(key.index(/#{($model::ContinuousFeatures.map{|f|f+'_(max|min)'}+$model::CategoricalFeatures+$model::BinaryFeatures).join('|')}/))}
+    session.features.attributes.delete_if {|key, val| key=='id' || key=='session_id'}
   end
   
   def isEmpty(session)

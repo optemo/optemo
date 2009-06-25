@@ -7,8 +7,8 @@
 </div>
 <div class="hist" data-data="<%= @s.distribution(val).join(',') %>"></div>
 <% if val == 'price' %>
-	<%= hidden_field_tag "myfilter[price_min]", @session.features.price_min ? @session.price_min/100 : '',{:class => 'min'}%>
-	<%= hidden_field_tag "myfilter[price_max]", @session.features.price_max ? @session.price_max/100 : '',{:class => 'max'}%>
+	<%= hidden_field_tag "myfilter[price_min]", @session.features.price_min ? @session.features.price_min/100 : '',{:class => 'min'}%>
+	<%= hidden_field_tag "myfilter[price_max]", @session.features.price_max ? @session.features.price_max/100 : '',{:class => 'max'}%>
 <% else %>
 	<%= hidden_field_tag "myfilter[#{val}_min]", @session.features.send("#{val}_min".intern),{:class => 'min'}%>
 	<%= hidden_field_tag "myfilter[#{val}_max]", @session.features.send("#{val}_max".intern),{:class => 'max'}%>

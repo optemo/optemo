@@ -20,15 +20,28 @@ class Session < ActiveRecord::Base
   end
   
   def createFromFilters(myfilter)
+    # Create two objects, mysession and myfeatures
+    # mysession stores attributes for the sessions table
+    # myfeatures stores attributes for the "Product"Features table 
+    feature_filter = {}
     #Delete blank values
     myfilter.delete_if{|k,v|v.blank?}
     #Fix price, because it's stored as int in db
-    myfilter[:price_max] = (myfilter[:price_max]*100).to_i if myfilter[:price_max]
-    myfilter[:price_min] = (myfilter[:price_min]*100).to_i if myfilter[:price_min]
+    feature_filter[:price_max] = (myfilter.delete(:price_max)*100).to_i if myfilter[:price_max]
+    feature_filter[:price_min] = (myfilter.delete(:price_min)*100).to_i if myfilter[:price_min]
+    (product_type + 'Features').constantize.column_names.each do |column|
+      if !(column == 'id' || column == 'session_id')# || column == 'price_max' || column == 'price_min')
+        feature_filter[column.intern] = myfilter.delete(column.intern) if myfilter[column.intern]
+      end
+    end 
     myfilter = handle_false_booleans(myfilter)
     myfilter[:parent_id] = id
     myfilter[:filter] = true
-    Session.new(attributes.merge(myfilter))
+    feature_filter[:brand] = myfilter.delete(:brand)    
+    mysession =  Session.new(attributes.merge(myfilter))
+    myfeatures = (product_type + 'Features').constantize.new(feature_filter)  # (attributes.merge(feature_filter))
+    @features = myfeatures
+    return mysession, myfeatures
   end
   
   def clusters
@@ -57,17 +70,20 @@ class Session < ActiveRecord::Base
     @oldsession.update_attributes(attributes)
     
   end
-    
+        
   def features
-    #Return row of Product's Feature table 
-    (product_type + 'Features').constantize.find(:first, :conditions => ['session_id = ?', id])
+    #Return row of Product's Feature table
+    unless @features
+      @features = (product_type + 'Features').constantize.find(:first, :conditions => ['session_id = ?', id])
+    end
+    @features
   end
   
   private
   
   def handle_false_booleans(myfilter)
     $model::BinaryFeatures.each do |f|
-      myfilter.delete(f) if myfilter[f] == '0' && send(f.intern) != true
+      myfilter.delete(f) if myfilter[f] == '0' && features.send(f.intern) != true
     end
     myfilter
   end

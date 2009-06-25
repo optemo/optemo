@@ -7,6 +7,7 @@ class SearchController < ApplicationController
   def filter
     @session = Session.find(session[:user_id])
     myfilter = params[:myfilter]
+    
     if myfilter.nil?
       #No post info passed
       flash[:error] = "Search could not be completed."
@@ -14,10 +15,12 @@ class SearchController < ApplicationController
     else
       #Allow for multiple brands
       myfilter = multipleBrands(myfilter)
-      mysession = @session.createFromFilters(myfilter)
+      mysession, myfeatures = @session.createFromFilters(myfilter)
       clusters = mysession.clusters
       unless clusters.empty?
         mysession.commit
+        # myfeatures.session_id = mysession.id        Do not have ID
+        # myfeatures.commit
         redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.map{|c|c.id}.join('/')
       else
         flash[:error] = "No products found."
@@ -63,10 +66,10 @@ class SearchController < ApplicationController
     new_brand = myfilter[:brand]
     if !myfilter[:Xbrand].blank?
       #Remove a brand
-      myfilter[:brand] = @session.brand.split('*').delete_if{|b|b == myfilter[:Xbrand]}.join('*')
+      myfilter[:brand] = @session.features.brand.split('*').delete_if{|b|b == myfilter[:Xbrand]}.join('*')
       myfilter[:brand] = 'All Brands' if myfilter[:brand].blank?
     elsif new_brand != "All Brands" && new_brand != "Add Another Brand"
-      old_brand = @session.brand
+      old_brand = @session.features.brand
       #Add a brand
       if myfilter[:brand].nil?
         myfilter[:brand] = old_brand if old_brand != "All Brands" && old_brand != "Add Another Brand"
@@ -74,7 +77,7 @@ class SearchController < ApplicationController
         myfilter[:brand]+= '*'+old_brand if !old_brand.blank? && old_brand != "All Brands" && old_brand != "Add Another Brand"
       end
     elsif new_brand == "Add Another Brand"
-      myfilter[:brand] = @session.brand
+      myfilter[:brand] = @session.features.brand
     end
     myfilter.delete('Xbrand') if myfilter[:Xbrand]
     myfilter
