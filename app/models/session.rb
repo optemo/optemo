@@ -37,8 +37,7 @@ class Session < ActiveRecord::Base
     myfilter = handle_false_booleans(myfilter)
     myfilter[:parent_id] = id
     myfilter[:filter] = true
-    feature_filter[:brand] = myfilter.delete(:brand)   
-    # feature_filter[:session_id] = myfilter[:id] 
+    # feature_filter[:session_id] = myfilter[:id]
     mysession =  Session.new(attributes.merge(myfilter))
     mysession.features = (product_type + 'Features').constantize.new(feature_filter)  # (attributes.merge(feature_filter))
     mysession
