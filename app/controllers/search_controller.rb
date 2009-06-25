@@ -15,7 +15,7 @@ class SearchController < ApplicationController
     else
       #Allow for multiple brands
       myfilter = multipleBrands(myfilter)
-      mysession, myfeatures = @session.createFromFilters(myfilter)
+      mysession = @session.createFromFilters(myfilter)
       clusters = mysession.clusters
       unless clusters.empty?
         mysession.commit

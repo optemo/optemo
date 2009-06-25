@@ -39,9 +39,8 @@ class Session < ActiveRecord::Base
     myfilter[:filter] = true
     feature_filter[:brand] = myfilter.delete(:brand)    
     mysession =  Session.new(attributes.merge(myfilter))
-    myfeatures = (product_type + 'Features').constantize.new(feature_filter)  # (attributes.merge(feature_filter))
-    @features = myfeatures
-    return mysession, myfeatures
+    @features = (product_type + 'Features').constantize.new(feature_filter)  # (attributes.merge(feature_filter))
+    return mysession
   end
   
   def clusters
