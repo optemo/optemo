@@ -115,7 +115,7 @@ module Cluster
   
   def self.findFilteringConditions(session)
     # @features
-    session.features.attributes.delete_if {|key, val| key=='id' || key=='session_id' || key.index('_pref')}
+    session.features.attributes.delete_if {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at'}
     #session.features.attributes
   end
   
