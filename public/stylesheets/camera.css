@@ -257,6 +257,10 @@ div #filterbar {
 	margin-bottom: 20px; /*Spacing for histogram*/
 }
 
+.preferences{
+	color: #777;
+}
+
 .sliderlabel {
 	font-size: 0.6em;
 	padding-top: 17px;
@@ -283,6 +287,22 @@ div #filterbar {
 	bottom: -5px;
 	right: -1px;
 	font-size: 0.5em;}
+.endlabel_min_Preferences 
+{
+	display: relative;
+	position: absolute;
+	bottom: -5px;
+	left: -1px;
+	font-size: 0.5em;
+}
+.endlabel_max_Preferences 
+{
+	display: relative;
+	position: absolute;
+	bottom: -5px;
+	right: -1px;
+	font-size: 0.5em;
+}
 .disp {
 	width: 80px;
 	position: absolute;

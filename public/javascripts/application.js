@@ -134,6 +134,7 @@ $(document).ready(function() {
 			// setting slide to false can prevent user from sliding further. This can constrain the sum of values of sliders to be <= 1
 			slide: function(e,ui)
 			{
+				$('.sliderlabel', this).html(ui.value/100);
 				// ToDo:
 				// Put a check here to ensure that the 4 preferences always sum up to 1.
 				/*$('.preferenceSlider').each(function(){
@@ -147,8 +148,13 @@ $(document).ready(function() {
 					$('this').slider('option', 'value', autoVal);
 				}
 				sum = 0.0*/			
+			},
+			stop: 	function(e,ui) 
+			{
+				//$('#preference_form').submit();
 			}
 		});
+		$('a', this).html('<div class="sliderlabel">' + prefVal/100 + '</div>')
 	});
 	
 	$(".preferenceSliderVertical").each(function() {
@@ -160,7 +166,6 @@ $(document).ready(function() {
 			step: 1,
 			// value: (Get value of preferences from session) 
 			value: prefVal,
-			// setting slide to false can prevent user from sliding further. This can constrain the sum of values of sliders to be <= 1
 		});
 	});
 	

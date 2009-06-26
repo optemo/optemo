@@ -108,17 +108,12 @@ class Session < ActiveRecord::Base
             return true
           end
         end
-=begin
       elsif key.index(/#{$model::BinaryFeatures.join('|')}/)
-        if features.attributes[key]!=nil 
-          if features.attributes[key] == false
-            #Only works for one item submitted at a time
-            features.send((key+'=').intern, nil)
-debugger
-            return true 
-          end
+        if features.attributes[key] == false
+          #Only works for one item submitted at a time
+          features.send((key+'=').intern, nil)
+          return true 
         end
-=end
       elsif key.index(/#{$model::CategoricalFeatures.join('|')}/)
         oldv = @oldsession.features.send(key.intern)
         if oldv

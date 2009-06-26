@@ -43,6 +43,11 @@ class SearchController < ApplicationController
     end
   end
   
+  def preference
+    @session = Session.find(session[:user_id])
+    
+  end
+  
   def delete
     @session = Session.find(session[:user_id])
     @session.searchterm = ""
