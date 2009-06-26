@@ -143,9 +143,7 @@ def decideWhichFeaturesToDisplay
   session[:productType].constantize::DisplayedFeatures.each do |column|	    
 		for i in 0..@products.count-1
 			if canShowFeature?(column, i)
-				@interestingFeatureDisplayed[column] = true
-			else                                                # can do without
-			  @interestingFeatureDisplayed[column] = false
+				@interestingFeatureDisplayed[column] = true   # If once set, the feature dispaly will be true for all products
 			end
 		end
   end
