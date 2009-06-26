@@ -23,8 +23,8 @@ class Session < ActiveRecord::Base
     #Delete blank values
     myfilter.delete_if{|k,v|v.blank?}
     #Fix price, because it's stored as int in db
-    myfilter[:price_max] = (myfilter[:price_max]*100).to_i if myfilter[:price_max]
-    myfilter[:price_min] = (myfilter[:price_min]*100).to_i if myfilter[:price_min]
+    myfilter[:price_max] = myfilter[:price_max].to_i*100 if myfilter[:price_max]
+    myfilter[:price_min] = myfilter[:price_min].to_i*100 if myfilter[:price_min]
     myfilter = handle_false_booleans(myfilter)
     myfilter[:parent_id] = id
     myfilter[:filter] = true
