@@ -10,7 +10,6 @@ class Printer < ActiveRecord::Base
   named_scope :instock, :conditions => "instock is true"
   named_scope :newfeatures, :conditions => %w(ppm itemwidth paperinput resolutionarea price scanner printserver).map{|i|i+' IS NOT NULL'}.join(' AND ')
   ContinuousFeatures = %w(ppm itemwidth paperinput resolutionmax price)
-  #ContinuousFeaturesLearning = ContinuousFeatures << 'resolutionarea'
   BinaryFeatures = %w(scanner printserver)
   CategoricalFeatures = %w(brand)
   ContinuousFeaturesDisp = %w(Pages\ Per\ Minute Width Paper\ Tray\ Size Resolution Price)

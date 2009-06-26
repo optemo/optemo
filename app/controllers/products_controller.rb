@@ -8,9 +8,6 @@ class ProductsController < ApplicationController
   # GET /products
   # GET /products.xml
   def index
-    mysession = Session.find(session[:user_id])
-    mysession.clearFilters
-    @pt = session[:productType] || $DefaultProduct
     homepage
   end
   
@@ -57,10 +54,13 @@ class ProductsController < ApplicationController
   private
   
   def homepage
+    mysession = Session.find(session[:user_id])
+    mysession.clearFilters
+    @pt = session[:productType] || $DefaultProduct
     if @pt == 'Printer' && s = Search.find_by_session_id(0)
       path = s.to_s
     else
-      path = PrinterCluster.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
+      path = $clustermodel.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
     end
     if path
       redirect_to "/#{@pt.pluralize.downcase}/list/"+path
