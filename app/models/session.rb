@@ -4,10 +4,18 @@ class Session < ActiveRecord::Base
   has_many :searches
   
   def clearFilters
+    # In Sessions table, 
+    # Set all attributes except some, to their default values
     Session.column_names.delete_if{|i| %w(id created_at updated_at ip parent_id product_type).index(i)}.each do |name|
       send((name+'=').intern, Session.columns_hash[name].default)
     end
+    # In Product-features table,
+    # Set all attributes (EXCEPT id,session_id, created_at, updated_at & all the preference values) to defaults
+    (product_type + 'Features').constantize.column_names.delete_if {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at'}.each do |name|
+      features.send((name+'=').intern, (product_type + 'Features').constantize.columns_hash[name].default)
+    end
     save
+    features.save
   end
   
   def self.ip_uniques
@@ -20,8 +28,6 @@ class Session < ActiveRecord::Base
   end
   
   def createFromFilters(myfilter)
-    # Create two objects, mysession and myfeatures
-    # mysession stores attributes for the sessions table
     # myfeatures stores attributes for the "Product"Features table 
     feature_filter = {}
     #Delete blank values
@@ -64,12 +70,8 @@ class Session < ActiveRecord::Base
   
   def commit
     @oldsession = Session.find(parent_id) unless @oldsession
-    #Save search values
     @oldsession.update_attributes(attributes)
-    # => features.session_id = @oldsession.id
-    features.commit(@oldsession.id)
-    #f = (product_type + 'Features').constantize.find(:first, :conditions => ['session_id = ?', @oldsession.id])
-    #f.update_attributes(features)
+    features.commit(@oldsession.id)    
   end
   
   def features=(f)
@@ -94,25 +96,33 @@ class Session < ActiveRecord::Base
   end
   
   def expandedFiltering?
-    attributes.keys.each do |key|
+    features.attributes.keys.each do |key|
       if key.index(/(.+)_min/)
         fname = Regexp.last_match[1]
         max = fname+'_max'
-        maxv = @oldsession.send(max.intern)
-        next if maxv.nil?
-        oldrange = maxv - @oldsession.send(key.intern)
-        newrange = attributes[max] - attributes[key]
-        return true if newrange > oldrange
-      elsif key.index(/#{$model::BinaryFeatures.join('|')}/)
-        if attributes[key] == false
-          #Only works for one item submitted at a time
-          send((key+'=').intern, nil)
-          return true 
+        maxv = @oldsession.features.send(max.intern)  
+        if !maxv.nil? # If the oldsession max value is not nil then calculate newrange
+          oldrange = maxv - @oldsession.features.send(key.intern)
+          newrange = features.attributes[max] - features.attributes[key]
+          if newrange > oldrange
+            return true
+          end
         end
+=begin
+      elsif key.index(/#{$model::BinaryFeatures.join('|')}/)
+        if features.attributes[key]!=nil 
+          if features.attributes[key] == false
+            #Only works for one item submitted at a time
+            features.send((key+'=').intern, nil)
+debugger
+            return true 
+          end
+        end
+=end
       elsif key.index(/#{$model::CategoricalFeatures.join('|')}/)
-        oldv = @oldsession.send(key.intern)
+        oldv = @oldsession.features.send(key.intern)
         if oldv
-          new_a = attributes[key] == "All Brands" ? [] : attributes[key].split('*')
+          new_a = features.attributes[key] == "All Brands" ? [] : features.attributes[key].split('*')
           old_a = oldv == "All Brands" ? [] : oldv.split('*')
           return true if new_a.length < old_a.length
         end
