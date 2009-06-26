@@ -121,4 +121,12 @@ module Cluster
   def isEmpty(session)
     nodes(session).empty?
   end
+  
+  def clearCache
+    @nodes = nil
+    @size = nil
+    @rep = nil
+    @range = nil
+    @children = nil
+  end
 end

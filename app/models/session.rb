@@ -41,7 +41,9 @@ class Session < ActiveRecord::Base
       #Search is narrowed, so use current products to begin with
       clusters = []
       clusters = @oldsession.oldclusters
+      clusters.each{|c|c.clearCache}
     end
+    #debugger
     clusters.delete_if{|c| c.isEmpty(self)}
     fillDisplay(clusters)
   end
