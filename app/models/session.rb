@@ -61,7 +61,7 @@ class Session < ActiveRecord::Base
   end
   
   def fillDisplay(clusters)
-    if clusters.length < 9
+    if clusters.length < 9 && clusters.length > 0
       if clusters.map{|c| c.size(self)}.sum >= 9
         clusters = splitClusters(clusters)
       else

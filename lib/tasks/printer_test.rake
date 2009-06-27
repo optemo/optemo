@@ -641,13 +641,16 @@ namespace :printer_test do
    
  # Requires.
     require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
+    require 'nokogiri'
     require 'webrat'
     require 'mechanize' # Needed to make Webrat work
     require 'test_session'
   
      Webrat.configure do |conf| 
       conf.mode = :mechanize  # Can't be rails or Webrat won't work 
+      conf.parse_with_nokogiri = true
      end
+     WWW::Mechanize.html_parser = Nokogiri::HTML
    end
 
 end
