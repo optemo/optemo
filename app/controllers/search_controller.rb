@@ -44,7 +44,7 @@ class SearchController < ApplicationController
   end
   
   def preference
-    @session = Session.find(session[:user_id])
+    #@session.features.send("#{val}_pref".intern)
     
   end
   

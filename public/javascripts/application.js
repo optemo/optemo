@@ -137,9 +137,11 @@ $(document).ready(function() {
 				}
 				sum = 0.0*/			
 			},
-			stop: 	function(e,ui) 
+			stop: function(e,ui) 
 			{
-				//$('#preference_form').submit();
+					$(this).attr('pref-value',ui.value);					
+					$('#preference_form').submit();
+					
 			}
 		});
 		$('a', this).html('<div class="sliderlabel">' + prefVal/100 + '</div>')
