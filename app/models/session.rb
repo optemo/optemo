@@ -35,19 +35,18 @@ class Session < ActiveRecord::Base
     #Delete blank values
     myfilter.delete_if{|k,v|v.blank?}
     #Fix price, because it's stored as int in db
-    feature_filter[:price_max] = (myfilter.delete(:price_max)*100).to_i if myfilter[:price_max]
-    feature_filter[:price_min] = (myfilter.delete(:price_min)*100).to_i if myfilter[:price_min]
-    (product_type + 'Features').constantize.column_names.each do |column|
-      if !(column == 'id' || column == 'session_id')# || column == 'price_max' || column == 'price_min')
+    myfilter[:price_max] = myfilter[:price_max].to_i*100 if myfilter[:price_max]
+    myfilter[:price_min] = myfilter[:price_min].to_i*100 if myfilter[:price_min]
+    $featuremodel.column_names.each do |column|
+      if !(column == 'id' || column == 'session_id')
         feature_filter[column.intern] = myfilter.delete(column.intern) if myfilter[column.intern]
       end
     end 
-    myfilter = handle_false_booleans(myfilter)
+    feature_filter = handle_false_booleans(feature_filter)
     myfilter[:parent_id] = id
     myfilter[:filter] = true
-    # feature_filter[:session_id] = myfilter[:id]
     mysession =  Session.new(attributes.merge(myfilter))
-    mysession.features = (product_type + 'Features').constantize.new(feature_filter)  # (attributes.merge(feature_filter))
+    mysession.features = $featuremodel.new(feature_filter)  # (attributes.merge(feature_filter))
     mysession
   end
  
@@ -61,7 +60,9 @@ class Session < ActiveRecord::Base
       #Search is narrowed, so use current products to begin with
       clusters = []
       clusters = @oldsession.oldclusters
+      clusters.each{|c|c.clearCache}
     end
+    #debugger
     clusters.delete_if{|c| c.isEmpty(self)}
     fillDisplay(clusters)
   end
@@ -83,16 +84,28 @@ class Session < ActiveRecord::Base
   def features
     #Return row of Product's Feature table
     unless @features
-      @features = (product_type + 'Features').constantize.find(:first, :conditions => ['session_id = ?', id])
+      @features = $featuremodel.find(:first, :conditions => ['session_id = ?', id])
     end
     @features
+  end
+  
+  def fillDisplay(clusters)
+    if clusters.length < 9 && clusters.length > 0
+      if clusters.map{|c| c.size(self)}.sum >= 9
+        clusters = splitClusters(clusters)
+      else
+        #Display only the deep children
+        clusters = clusters.map{|c| c.deepChildren(self)}.flatten
+      end
+    end
+    clusters
   end
   
   private
   
   def handle_false_booleans(myfilter)
     $model::BinaryFeatures.each do |f|
-      myfilter.delete(f) if myfilter[f] == '0' && features.send(f.intern) != true
+      myfilter.delete(f.intern) if myfilter[f.intern] == '0' && features.send(f.intern) != true
     end
     myfilter
   end
@@ -107,21 +120,22 @@ class Session < ActiveRecord::Base
           oldrange = maxv - @oldsession.features.send(key.intern)
           newrange = features.attributes[max] - features.attributes[key]
           if newrange > oldrange
-            return true
+            return true #Continuous
           end
         end
       elsif key.index(/#{$model::BinaryFeatures.join('|')}/)
         if features.attributes[key] == false
           #Only works for one item submitted at a time
           features.send((key+'=').intern, nil)
-          return true 
+          return true #Binary
         end
       elsif key.index(/#{$model::CategoricalFeatures.join('|')}/)
         oldv = @oldsession.features.send(key.intern)
         if oldv
-          new_a = features.attributes[key] == "All Brands" ? [] : features.attributes[key].split('*')
-          old_a = oldv == "All Brands" ? [] : oldv.split('*')
-          return true if new_a.length < old_a.length
+          new_a = features.attributes[key] == "All Brands" ? [] : features.attributes[key].split('*').uniq
+          old_a = oldv == "All Brands" ? [] : oldv.split('*').uniq
+          return true if new_a.length == 0 && old_a.length > 0
+          return true if new_a.length > 0 && new_a.length > old_a.length
         end
       end
     end
@@ -141,17 +155,4 @@ class Session < ActiveRecord::Base
     children.sort! {|a,b| b.size(self) <=> a.size(self)}
     [children.shift, MergedCluster.new(children)]
   end
-  
-  def fillDisplay(clusters)
-    if clusters.length < 9
-      if clusters.map{|c| c.size(self)}.sum >= 9
-        clusters = splitClusters(clusters)
-      else
-        #Display only the deep children
-        clusters = clusters.map{|c| c.deepChildren(self)}.flatten
-      end
-    end
-    clusters
-  end
-    
 end

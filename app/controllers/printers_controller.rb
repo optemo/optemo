@@ -8,5 +8,6 @@ class PrintersController < ProductsController
     $model = Printer
     $nodemodel = PrinterNode
     $clustermodel = PrinterCluster
+    $featuremodel = PrinterFeatures
   end
 end

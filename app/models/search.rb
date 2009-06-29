@@ -49,17 +49,23 @@ class Search < ActiveRecord::Base
         if cluster_id.index('+')
           cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
           #Merged Cluster
-          @clusters << MergedCluster.fromIDs(session.product_type,cluster_id.split('+'))
+          c = MergedCluster.fromIDs(session.product_type,cluster_id.split('+'))
         else
           #Single, normal Cluster
-          @clusters << $clustermodel.find(cluster_id.to_i)
+          c = $clustermodel.find(cluster_id)
+        end
+        #Remove empty clusters
+        if c.isEmpty(session)
+          self.cluster_count -= 1
+        else
+          @clusters << c 
         end
       end
     end
     @clusters
   end
   
-  def self.searchFromPath(path, session)
+  def self.searchFromPath(path, session_id)
     ns = {}
     mycluster = 'c0'
     ns['cluster_count'] = path.length
@@ -67,15 +73,12 @@ class Search < ActiveRecord::Base
       ns[mycluster] = p
       mycluster.next!
     end
-    ns['session_id'] = session.id
+    ns['session_id'] = session_id
     s = new(ns)
     s['result_count'] = s.result_count
     s.save
     s
   end
-  
-
-  
   
   def to_s
     clusters.map{|c|c.id}.join('/')
