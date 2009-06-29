@@ -43,3 +43,22 @@ module ProductsHelper
     feat=='price' ? (@dbfeat['price'].max.to_f/100).ceil : @dbfeat[feat].max.ceil
   end
 end
+
+# this function gets an stack of searches and gets rid of the ones with repetitive
+# layer numbers
+def zipStack(stack)
+   @z = []
+   i= 0
+   until (stack[-1 -i].layer == 1)
+     s = stack[-1-i]
+     ls = @z.map{|r| r.layer}
+   
+     if ((ls.index(s.layer).nil?) && (ls[-1] > s.layer))
+       @z.unshift(s) 
+     end   
+     i = i+1
+   end    
+   @z.unshift(stack[-1-i]) if (stack[-1-i].layer==1)  
+  # @z.pop
+   @z
+end
