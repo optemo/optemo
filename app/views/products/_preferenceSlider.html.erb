@@ -1,3 +1,5 @@
+<div> <!-- Need this for javascript to access this slider's value -->
+<%= hidden_field_tag "mypreference[#{val}_pref]", @session.features.send("#{val}_pref".intern), {:class => 'prefValue'} %>
 <div class="preferenceSlider" id='<%= "#{val}_pref" + "Slider"%>' pref-value='<%= @session.features.send("#{val}_pref".intern) * 100%>'>
 								<!-- X 100 because preference value is stored in (0,1) but showed in (0,100)-->
 	<div class='label space preferences'>
@@ -5,4 +7,5 @@
 	</div>	
 	<div class="endlabel_min_Preferences"> 0 </div>
 	<div class="endlabel_max_Preferences"> 1 </div>
+</div>
 </div>

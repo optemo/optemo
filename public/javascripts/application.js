@@ -151,7 +151,9 @@ $(document).ready(function() {
 			},
 			stop: function(e,ui) 
 			{
-					$(this).attr('pref-value',ui.value);					
+					$(this).siblings('.prefValue').attr('value',ui.value/100);
+					alert("success");
+					// $(this).attr('pref-value',ui.value);					
 					$('#preference_form').submit();
 					
 			}

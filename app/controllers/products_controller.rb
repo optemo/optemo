@@ -54,4 +54,15 @@ class ProductsController < ApplicationController
       format.xml  { render :xml => @product }
     end
   end
+  
+  def preference
+     @session = Session.find(session[:user_id])
+     mypreference = params[:mypreference]
+     pricePref = mypreference[:price_pref]
+     $model::ContinuousFeatures.each do |f|
+       @session.features.update_attribute(f+"_pref", mypreference[f+"_pref"])
+     end
+     redirect_to "www.google.com"
+   end
+   
 end
