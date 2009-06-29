@@ -8,17 +8,6 @@ class ProductsController < ApplicationController
   # GET /products
   # GET /products.xml
   def index
-    mysession = Session.find(session[:user_id])
-    mysession.clearFilters
-    #c = CQuery.new(session[:productType] || $DefaultProduct)
-    @pt = session[:productType] || $DefaultProduct
-    cluster_ids = (@pt+'Cluster').constantize.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}
-    if cluster_ids.length == 9
-      redirect_to "/#{@pt.pluralize.downcase}/list/"+cluster_ids.join('/')
-    else
-      flash[:error] = "There are not 9 original clusters"
-      redirect_to '/error'
-    end
     homepage
   end
   
