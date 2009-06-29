@@ -80,9 +80,6 @@ class Search < ActiveRecord::Base
     s
   end
   
-
-  
-  
   def to_s
     clusters.map{|c|c.id}.join('/')
   end

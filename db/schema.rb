@@ -376,7 +376,7 @@ ActiveRecord::Schema.define(:version => 20090624195931) do
     t.float    "ppm"
     t.float    "itemwidth"
     t.float    "paperinput"
-    t.float    "resolutionarea"
+    t.float    "resolutionmax"
   end
 
   create_table "newegg_printers", :force => true do |t|
