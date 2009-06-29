@@ -43,6 +43,11 @@ class SearchController < ApplicationController
     end
   end
   
+  def preference
+    @session = Session.find(session[:user_id])
+    
+  end
+  
   def delete
     @session = Session.find(session[:user_id])
     @session.searchterm = ""
@@ -63,10 +68,10 @@ class SearchController < ApplicationController
     new_brand = myfilter[:brand]
     if !myfilter[:Xbrand].blank?
       #Remove a brand
-      myfilter[:brand] = @session.brand.split('*').delete_if{|b|b == myfilter[:Xbrand]}.join('*')
+      myfilter[:brand] = @session.features.brand.split('*').delete_if{|b|b == myfilter[:Xbrand]}.join('*')
       myfilter[:brand] = 'All Brands' if myfilter[:brand].blank?
     elsif new_brand != "All Brands" && new_brand != "Add Another Brand"
-      old_brand = @session.brand
+      old_brand = @session.features.brand
       #Add a brand
       if myfilter[:brand].nil?
         myfilter[:brand] = old_brand if old_brand != "All Brands" && old_brand != "Add Another Brand"
@@ -74,7 +79,7 @@ class SearchController < ApplicationController
         myfilter[:brand]+= '*'+old_brand if !old_brand.blank? && old_brand != "All Brands" && old_brand != "Add Another Brand"
       end
     elsif new_brand == "Add Another Brand"
-      myfilter[:brand] = @session.brand
+      myfilter[:brand] = @session.features.brand
     end
     myfilter.delete('Xbrand') if myfilter[:Xbrand]
     myfilter

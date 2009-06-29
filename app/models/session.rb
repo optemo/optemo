@@ -4,10 +4,18 @@ class Session < ActiveRecord::Base
   has_many :searches
   
   def clearFilters
+    # In Sessions table, 
+    # Set all attributes except some, to their default values
     Session.column_names.delete_if{|i| %w(id created_at updated_at ip parent_id product_type).index(i)}.each do |name|
       send((name+'=').intern, Session.columns_hash[name].default)
     end
+    # In Product-features table,
+    # Set all attributes (EXCEPT id,session_id, created_at, updated_at & all the preference values) to defaults
+    (product_type + 'Features').constantize.column_names.delete_if {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at'}.each do |name|
+      features.send((name+'=').intern, (product_type + 'Features').constantize.columns_hash[name].default)
+    end
     save
+    features.save
   end
   
   def self.ip_uniques
@@ -20,17 +28,26 @@ class Session < ActiveRecord::Base
   end
   
   def createFromFilters(myfilter)
+    # myfeatures stores attributes for the "Product"Features table 
+    feature_filter = {}
     #Delete blank values
     myfilter.delete_if{|k,v|v.blank?}
     #Fix price, because it's stored as int in db
     myfilter[:price_max] = myfilter[:price_max].to_i*100 if myfilter[:price_max]
     myfilter[:price_min] = myfilter[:price_min].to_i*100 if myfilter[:price_min]
+    $featuremodel.column_names.each do |column|
+      if !(column == 'id' || column == 'session_id')
+        feature_filter[column.intern] = myfilter.delete(column.intern) if myfilter[column.intern]
+      end
+    end 
     myfilter = handle_false_booleans(myfilter)
     myfilter[:parent_id] = id
     myfilter[:filter] = true
-    Session.new(attributes.merge(myfilter))
+    mysession =  Session.new(attributes.merge(myfilter))
+    mysession.features = $featuremodel.new(feature_filter)  # (attributes.merge(feature_filter))
+    mysession
   end
-  
+ 
   def clusters
     #Find clusters that match filtering query
     @oldsession = Session.find(parent_id)
@@ -54,10 +71,20 @@ class Session < ActiveRecord::Base
   
   def commit
     @oldsession = Session.find(parent_id) unless @oldsession
-    parent_id = nil
-    #Save search values
     @oldsession.update_attributes(attributes)
-    
+    features.commit(@oldsession.id)    
+  end
+  
+  def features=(f)
+    @features = f
+  end
+        
+  def features
+    #Return row of Product's Feature table
+    unless @features
+      @features = $featuremodel.find(:first, :conditions => ['session_id = ?', id])
+    end
+    @features
   end
   
   def fillDisplay(clusters)
@@ -76,31 +103,34 @@ class Session < ActiveRecord::Base
   
   def handle_false_booleans(myfilter)
     $model::BinaryFeatures.each do |f|
-      myfilter.delete(f) if myfilter[f] == '0' && send(f.intern) != true
+      myfilter.delete(f) if myfilter[f] == '0' && features.send(f.intern) != true
     end
     myfilter
   end
   
   def expandedFiltering?
-    attributes.keys.each do |key|
+    features.attributes.keys.each do |key|
       if key.index(/(.+)_min/)
         fname = Regexp.last_match[1]
         max = fname+'_max'
-        maxv = @oldsession.send(max.intern)
-        next if maxv.nil?
-        oldrange = maxv - @oldsession.send(key.intern)
-        newrange = attributes[max] - attributes[key]
-        return true if newrange > oldrange
+        maxv = @oldsession.features.send(max.intern)  
+        if !maxv.nil? # If the oldsession max value is not nil then calculate newrange
+          oldrange = maxv - @oldsession.features.send(key.intern)
+          newrange = features.attributes[max] - features.attributes[key]
+          if newrange > oldrange
+            return true
+          end
+        end
       elsif key.index(/#{$model::BinaryFeatures.join('|')}/)
-        if attributes[key] == false
+        if features.attributes[key] == false
           #Only works for one item submitted at a time
-          send((key+'=').intern, nil)
+          features.send((key+'=').intern, nil)
           return true 
         end
       elsif key.index(/#{$model::CategoricalFeatures.join('|')}/)
-        oldv = @oldsession.send(key.intern)
+        oldv = @oldsession.features.send(key.intern)
         if oldv
-          new_a = attributes[key] == "All Brands" ? [] : attributes[key].split('*').uniq
+          new_a = features.attributes[key] == "All Brands" ? [] : features.attributes[key].split('*').uniq
           old_a = oldv == "All Brands" ? [] : oldv.split('*').uniq
           return true if new_a.length == 0 && old_a.length > 0
           return true if new_a.length > 0 && new_a.length > old_a.length

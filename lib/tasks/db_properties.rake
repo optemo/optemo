@@ -17,6 +17,8 @@ def cache_index
   s = Search.find_all_by_session_id(0)
   s.each {|s|s.destroy}
   $clustermodel = PrinterCluster
+  $nodemodel = PrinterNode
+  $featuremodel = PrinterFeatures
   $model = Printer
   session = Session.new({:product_type => 'Printer'})
   session.save

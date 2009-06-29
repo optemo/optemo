@@ -1,5 +1,4 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
 one:
 #       created_at: 
 #       updated_at
@@ -23,6 +22,7 @@ one:
        resolutionarea_max:      50000000
        price_min:               0
        price_max:               10000000.0
+       price_pref:        0.5
        filter:                  1
        product_type:            "Camera"
 
@@ -73,3 +73,22 @@ three:
        price_max:               10000000.0
        filter:                  1
        product_type:            "Camera"
+
+four:
+       id:                      4
+       product_type:            "Printer"
+       ppm_pref:                0.20
+       itemwidth_pref:          0.20
+       paperinput_pref:         0.20
+       resolutionarea_pref:     0.20
+       price_pref:              0.20
+
+for_compare_test:
+      id:                       5
+      product_type:            "Printer"
+      ppm_pref:                0.20
+      itemwidth_pref:          0.20
+      paperinput_pref:         0.20
+      resolutionarea_pref:     0.20
+      price_pref:              0.20
+                

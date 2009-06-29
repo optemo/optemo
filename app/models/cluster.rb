@@ -25,7 +25,6 @@ module Cluster
     end 
     dC
   end
-
   
   def ranges(featureName, session)
     @range ||= {}
@@ -115,7 +114,9 @@ module Cluster
   
   
   def self.findFilteringConditions(session)
-    session.attributes.delete_if {|key, val| !(key.index(/#{($model::ContinuousFeatures.map{|f|f+'_(max|min)'}+$model::CategoricalFeatures+$model::BinaryFeatures).join('|')}/))}
+    # @features
+    session.features.attributes.delete_if {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at'}
+    #session.features.attributes
   end
   
   def isEmpty(session)

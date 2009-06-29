@@ -16,7 +16,6 @@ class ProductsController < ApplicationController
     @pt = session[:productType] || $DefaultProduct
     @dbfeat = {}
     DbFeature.find_all_by_product_type(@pt).each {|f| @dbfeat[f.name] = f}
-    #Previously clicked product
     @searches = [Search.find_by_session_id(@session.id, :order => 'updated_at desc')]
     @s = Search.searchFromPath(params[:path_info], @session.id)
     @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}

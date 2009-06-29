@@ -1,0 +1,24 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+    id:             1
+    product_type:   Printer
+    product_id:     5
+    ppm:            50
+    itemwidth:      1000
+    paperinput:     200
+    resolutionarea: 360000
+    price:          1000
+        
+two:
+        id:             2
+        product_type:   Printer
+        product_id:     6
+        ppm:            20
+        itemwidth:      1000
+        paperinput:     200
+        resolutionarea: 360000
+        price:          1000
+
+# two:
+#   column: value

@@ -1,11 +1,10 @@
 <div class='label' style="margin-top: 0;">Brands</div>
-<% if @session.brand != "All Brands" %>
-	<% @session.brand.split('*').each do |b| %>
+<% if @session.features.brand != "All Brands" %>
+	<% @session.features.brand.split('*').each do |b| %>
 	<div class='selected_brands'><%= link_to image_tag('close.png', :width => '13'), "javascript:removeBrand('#{b}');", {:title => "Remove Brand Filter"} %> <%= b %></div>
 	<% end %>
 	<% selectmsg = "Add Another Brand" %>
 <% end %>
-<%# debugger %>
 <%= select('myfilter', 'brand', [selectmsg.nil? ? "All Brands" : selectmsg] +@dbfeat['brand'].categories.split('*'), options={}, {:onchange => "$('#filter_form').submit()"}) %>
 <%= hidden_field_tag "myfilter[Xbrand]"%>
 
@@ -31,5 +30,5 @@
 <% end %>
 <% $model::BinaryFeatures.each_index do |i| %>
 	<% feat = $model::BinaryFeatures[i] %>
-	<div class='label' style="margin-top: 0;"><%= check_box('myfilter', feat, {:onchange => "$('#filter_form').submit()", :checked => @session.send(feat.intern) ? 'checked' : false})%><%= feat.capitalize %></div>
+	<div class='label' style="margin-top: 0;"><%= check_box('myfilter', feat, {:onchange => "$('#filter_form').submit()", :checked => @session.features.send(feat.intern) ? 'checked' : false})%><%= feat.capitalize %></div>
 <% end %>

@@ -10,20 +10,6 @@ class CreateSessions < ActiveRecord::Migration
       t.boolean :filter
       t.string :searchterm
       t.text :searchpids
-      (Camera::ContinuousFeatures | Printer::ContinuousFeatures).each do |f|
-        min = f+'_min'
-        max = f+'_max'
-        pref = f + '_pref'
-        t.float min.intern #, :default => f.min.to_i
-        t.float max.intern #, :default => f.max.ceil
-        t.float pref.intern, :default => 0
-      end
-      (Camera::CategoricalFeatures | Printer::CategoricalFeatures).each do |f|
-        t.string f.intern, :default => "All Brands"
-      end
-      (Camera::BinaryFeatures | Printer::BinaryFeatures).each do |f|
-        t.boolean f.intern
-      end
     end
   end
 
