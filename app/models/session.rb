@@ -42,7 +42,7 @@ class Session < ActiveRecord::Base
         feature_filter[column.intern] = myfilter.delete(column.intern) if myfilter[column.intern]
       end
     end 
-    myfilter = handle_false_booleans(myfilter)
+    feature_filter = handle_false_booleans(feature_filter)
     myfilter[:parent_id] = id
     myfilter[:filter] = true
     mysession =  Session.new(attributes.merge(myfilter))
@@ -105,7 +105,7 @@ class Session < ActiveRecord::Base
   
   def handle_false_booleans(myfilter)
     $model::BinaryFeatures.each do |f|
-      myfilter.delete(f) if myfilter[f] == '0' && features.send(f.intern) != true
+      myfilter.delete(f.intern) if myfilter[f.intern] == '0' && features.send(f.intern) != true
     end
     myfilter
   end
@@ -120,14 +120,14 @@ class Session < ActiveRecord::Base
           oldrange = maxv - @oldsession.features.send(key.intern)
           newrange = features.attributes[max] - features.attributes[key]
           if newrange > oldrange
-            return true
+            return true #Continuous
           end
         end
       elsif key.index(/#{$model::BinaryFeatures.join('|')}/)
         if features.attributes[key] == false
           #Only works for one item submitted at a time
           features.send((key+'=').intern, nil)
-          return true 
+          return true #Binary
         end
       elsif key.index(/#{$model::CategoricalFeatures.join('|')}/)
         oldv = @oldsession.features.send(key.intern)
