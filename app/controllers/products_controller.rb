@@ -26,11 +26,11 @@ class ProductsController < ApplicationController
       unless l == 1 # can't reach the first layer in the given time frame
            pid =  @z[0].parent_id
            r = Search.new 
-           cluster = (@pt+'Cluster').constantize.find(pid)            
+           cluster = $clustermodel.find(pid)            
            while (l>1)
               mycluster = 'c0'
               ppid = cluster.parent_id  
-              cs = (@pt + 'Cluster').constantize.find_all_by_parent_id(ppid)
+              cs = $clustermodel.find_all_by_parent_id(ppid)
               cs.each do |c|
                 r[mycluster] = c.id.to_s
                 mycluster.next!
@@ -40,7 +40,6 @@ class ProductsController < ApplicationController
            @z.unshift(r)
       end
     end   
-end
     #No products found
     if @s.result_count == 0
       flash[:error] = "No products were found, so you were redirected to the home page"
