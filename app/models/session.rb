@@ -11,11 +11,13 @@ class Session < ActiveRecord::Base
     end
     # In Product-features table,
     # Set all attributes (EXCEPT id,session_id, created_at, updated_at & all the preference values) to defaults
-    (product_type + 'Features').constantize.column_names.delete_if {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at'}.each do |name|
-      features.send((name+'=').intern, (product_type + 'Features').constantize.columns_hash[name].default)
-    end
     save
-    features.save
+    if (!product_type.nil?)
+      (product_type + 'Features').constantize.column_names.delete_if {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at'}.each do |name|
+        features.send((name+'=').intern, (product_type + 'Features').constantize.columns_hash[name].default)
+      end
+      features.save
+    end
   end
   
   def self.ip_uniques
