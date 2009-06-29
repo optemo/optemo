@@ -18,6 +18,7 @@ def downloadResults(r)
       h[:bb_new] = h.delete(:new)
       if m = matchPrinter(h)
         productOffering(m,h)
+        bestbuyPrinter(m,h)
         h[:printer_id] = m
       end
       p = BestBuyPrinter.new(h)
@@ -56,6 +57,74 @@ def productOffering(product_id,h)
   o.freeShipping = h[:freeShipping]
   o.url = h[:cjAffiliateUrl]
   o.save
+  #Create an offering page specific to BestBuy
+  bestbuyOffering(o.id,h)
+end
+
+def bestbuyOffering(offering_id,h)
+  o = BestBuyOffering.find_or_create_by_retailer_offering_id(offering_id)
+  o.bb_class      = h[:bb_class]
+  o.classId       = h[:classId]
+  o.sublcass      = h[:subclass]
+  o.subclassId    = h[:subclassId]
+  o.productId     = h[:productId]
+  o.department    = h[:department]
+  o.departmentId  = h[:departmentId]
+  o.type          = h[:type]
+  o.categoryPath  = h[:categoryPath]
+  o.addToCartUrl  = h[:addToCartUrl]
+  o.affiliateUrl  = h[:affiliateUrl]
+  o.affiliateAddToCartUrl = h[:affiliateAddToCartUrl]
+  o.mobileUrl     = h[:mobileUrl]
+  o.url           = h[:url]
+  o.cjAffiliateUrl = h[:cjAffiliateUrl]
+  o.cjAffiliateAddToCardUrl = h[:cjAffiliateAddToCartUrl]
+  o.sku           = h[:sku]
+  o.warrantyParts = h[:warrantyParts]
+  o.warrantyLabor = h[:warrantyLabor]
+  o.bb_new        = h[:bb_new]
+  o.nationalFeatured = h[:nationalFeatured]
+  o.navigability  = h[:navigability]
+  o.releaseDate   = h[:releaseDate]
+  o.startDate     = h[:startDate]
+  o.itemUpdateDate= h[:itemUpdateDate]
+  o.save
+end
+
+def bestbuyPrinter(product_id,h)
+  p = BestBuyProduct.find_or_create_by_product_id_and_product_type(product_id,"Printer")
+  #Product Specific Features
+  p.accessoriesImage   = h[:accessoriesImage]
+  p.angleImage         = h[:angleImage]
+  p.remoteControlImage = h[:remoteControlImage]
+  p.alternateViewsImage= h[:alternateViewsImage]
+  p.leftViewImage      = h[:leftViewImage]
+  p.rightViewImage     = h[:rightViewImage]
+  p.backViewImage      = h[:backViewImage]
+  p.topViewImage       = h[:topViewImage]
+  p.largeFrontImage    = h[:largeFrontImage]
+  p.thumbnailImage     = h[:thumbnailImage]
+  p.image              = h[:image]
+  p.mediumImage        = h[:mediumImage]
+  p.largeImage         = h[:largeImage]
+  p.energyGuideImage   = h[:energyGuideImage]
+
+  p.name               = h[:name]
+  p.upc                = h[:upc]
+  p.modelNumber        = h[:modelNumber]
+  p.description        = h[:description]
+  p.shortDescription   = h[:shortDescription]
+  p.longDescription    = h[:longDescription]
+  p.manufacturer       = h[:manufacturer]
+  p.weight             = h[:weight]
+  p.width              = h[:width]
+  p.height             = h[:height]
+  p.depth              = h[:depth]
+  p.shippingWeight     = h[:shippingWeight]
+
+  p.customerReviewCount = h[:customerReviewCount]
+  p.customerReviewAverage = h[:customerReviewAverage]
+  p.save
 end
 
 def matchPrinter(h)

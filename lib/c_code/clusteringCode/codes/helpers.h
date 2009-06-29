@@ -1,24 +1,9 @@
+
 int find(int *idA, int value, int size){
 		
 	int ind = -1;
 	for(int i=0; i<size; i++){
 		if (idA[i] == value){
-			ind = i;
-			return ind;
-		}
-	}
-	
-	return ind;  
-}
-
-
-
-int findString(string *idA, string value, int size){
-		
-	int ind = -1;
-	for(int i=0; i<size; i++){
-		if (idA[i] == value){
-			
 			ind = i;
 			return ind;
 		}
@@ -370,7 +355,119 @@ void getStatisticsData1(double** data, int** indicators, double* average, int si
 	  	}
 
 
-	
+		void saveClusteredData(double ** data, int* idA, int size, string* brands, int parent_id, int** clusteredData, double*** conFeatureRange, int layer, 
+		int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, sql::ResultSet *res2, string productName){
+		///Saving to cluster table 	
+			ostringstream layerStream; 
+			layerStream<<layer;
+		    ostringstream parent_idStream;
+			parent_idStream<<parent_id;
+			int cluster_id;
+			string command2;
+			for (int c=0; c<clusterN; c++){
+				ostringstream nodeStream;
+				ostringstream cluster_idStream; 
+
+				ostringstream clusterSizeStream;
+				clusterSizeStream<<clusteredData[c][0];
+				string command = "INSERT INTO ";
+				command += productName;
+				command += "_clusters (layer, parent_id, cluster_size,price_min, price";
+				for (int i=1; i<conFeatureN; i++){
+					command += "_max, ";
+					command += conFeatureNames[i];
+					command += "_min, ";
+					command += conFeatureNames[i];
+				}
+				
+				command += "_max) values (";
+				command += layerStream.str();
+				command += ", ";
+				command += parent_idStream.str();
+				command += ", ";
+				command += clusterSizeStream.str();
+				for (int f=0; f<conFeatureN; f++){
+					for (int r=0; r<2; r++){
+						command += ", ";
+						ostringstream rangeStream;
+						rangeStream<<conFeatureRange[c][f][r];
+						command += rangeStream.str();
+					}
+				}
+				
+				command +=");";
+			
+				stmt->execute(command);
+
+				command = "SELECT last_insert_id();"; // from clusters;"
+				res2 = stmt->executeQuery(command);
+
+				if (res2->next()){
+					cluster_id = res2->getInt("last_insert_id()");
+				}
+
+			////// saving in the nodes table
+				for (int j=0; j<clusteredData[c][0]; j++){	  
+					command = "INSERT INTO ";
+					command += productName;
+					command += "_nodes (cluster_id, product_id, price";
+					for (int i=1; i<conFeatureN; i++){
+							command += ", ";
+							command += conFeatureNames[i];
+					}
+					for (int i=0; i<boolFeatureN; i++){
+							command += ", ";
+							command += boolFeatureNames[i];
+					}
+					command += ", brand) values(";
+					ostringstream cluster_idStream;
+					cluster_idStream<<cluster_id;
+					command += cluster_idStream.str();
+					command += ", ";
+					ostringstream idStream;
+					idStream<<clusteredData[c][j+1];
+					command +=  idStream.str();	
+					for (int f=0; f<conFeatureN; f++){
+						command +=", ";
+						ostringstream featureStream;
+						featureStream<<data[find(idA, clusteredData[c][j+1], size)][f];
+
+						command += featureStream.str();
+					}
+					
+					for (int f=0; f<boolFeatureN; f++){
+						command +=", ";
+						ostringstream featureStream;
+						command2 = "Select ";
+						command2 += boolFeatureNames[f];
+						command2 += " from ";
+						command2 += productName;
+						command2 += "s where id=";
+						ostringstream idS;
+						idS << idA[j];
+						command2 += idS.str();
+						command2 += ";";
+						
+						res2 = stmt->executeQuery(command2);
+						
+						res2->next();   
+						featureStream<<res2->getInt(boolFeatureNames[f]);
+						
+						command += featureStream.str();
+					}
+			        command +=", \"";
+					ostringstream featureStream;
+
+					featureStream<<brands[find(idA, clusteredData[c][j+1], size)];
+					command += featureStream.str();   
+					command +="\");"; 
+			
+					stmt->execute(command);
+				
+			 }
+			}
+
+		}	
 
 
 
@@ -433,7 +530,7 @@ void sort(double** data, int* idA, int** sortedA, int size, int conFeatureN){
 }
 
 
-void getIndicators(int* clusterIDs, int repW, int conFeatureN,  double*** conFeatureRangeC, bool* conFilteredFeatures, int** indicators, sql::Statement *stmt,
+void getIndicators(int* clusterIDs, int repW, int conFeatureN, double*** conFeatureRangeC, bool* conFilteredFeatures, int** indicators, sql::Statement *stmt,
  sql::ResultSet *res, int* mergedClusterIDs, string productName, string* conFeatureNames){
 
     string capProductName = productName;
@@ -445,8 +542,6 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN,  double*** conFea
 		stat[f] = new double[2]; 
 		range[f]= new double[2]; 
 	}
-	
-
 	
 	for (int f=1; f<conFeatureN; f++){
 		command = "select low, high from db_features where name=\'";
@@ -514,6 +609,21 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN,  double*** conFea
 
 	
 		for (int f=0; f<conFeatureN; f++){  //min
+//		if (conFilteredFeatures[f]){
+//		//	cout<<"stat[f][0] is "<<stat[f][0]<<" stat[f][1]  is "<<stat[f][1]<<endl;
+//				  if (conFeatureRangeC[i][f][1] <= stat[f][0]){
+//					indicators[f][i] = 1;
+//				}
+//				else if (conFeatureRangeC[i][f][0] >= stat[f][1]){ //max
+//				indicators[f][i] = 3;
+//				}
+//
+//			else if ((conFeatureRangeC[i][f][0] >= stat[f][0]) && (conFeatureRangeC[i][f][1] <= stat[f][1])){ //average
+//				indicators[f][i] = 2;
+//						
+//			}
+//	}else{
+			
 				if (range[f][1] <= stat[f][0]){
 					indicators[f][i] = 1;
 				}
@@ -637,167 +747,3 @@ void median2(double** data, int size, int conFeatureN, int* sortedA){
 
 //#endif	/* _EXAMPLES_H */
 
-void saveClusteredData(double ** data, int* idA, int size, string* brands, int parent_id, int** clusteredData, double*** conFeatureRange, int layer, 
-int clusterN, int conFeatureN, int catFeatureN, int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, sql::ResultSet *res2, string productName){
-///Saving to cluster table 	
-	ostringstream layerStream; 
-	layerStream<<layer;
-    ostringstream parent_idStream;
-	parent_idStream<<parent_id;
-	int cluster_id;
-	string command2;
-	string *brandNames = new string [100];
-	int brandN;
-	string b;
-	bool* boolFeatureAll = new bool[boolFeatureN];
-	bool* boolFeatures = new bool[boolFeatureN];
-	bool* firstBool = new bool[boolFeatureN];
-
-	
-	for (int c=0; c<clusterN; c++){
-		brandN = 0;
-		ostringstream nodeStream;
-		ostringstream cluster_idStream; 
-		for (int f=0; f<boolFeatureN; f++){
-			boolFeatureAll[f] = 0; 
-		}
-
-		ostringstream clusterSizeStream;
-		clusterSizeStream<<clusteredData[c][0];
-		
-		for (int f= 0; f<boolFeatureN; f++){
-			firstBool[f] = data[0][conFeatureN+f];
-		}
-		for (int s= 0; s<clusteredData[c][0]; s++){
-			
-			//brand  -- later all categorical
-			b = brands[find(idA, clusteredData[c][s+1], size)];
-			if (findString(brandNames, b, brandN) == -1){
-				brandNames[brandN] = b;
-				brandN ++;
-		   }
-		   //boolean features
-			for (int f=0; f<boolFeatureN; f++){
-		   		if (data[s][conFeatureN+ f] == firstBool[f]){
-					
-					firstBool[f] = data[s][conFeatureN+ f]; 
-					if (s == (clusteredData[c][0]-1)){
-						boolFeatureAll[f] = 1;
-						boolFeatures[f] = firstBool[f];
-					}
-				}else{
-				     
-					break;
-				}	
-			}	
-		}
-		string command = "INSERT INTO ";
-		command += productName;
-		command += "_clusters (layer, parent_id, cluster_size,price_min, price";
-		for (int i=1; i<conFeatureN; i++){
-			command += "_max, ";
-			command += conFeatureNames[i];
-			command += "_min, ";
-			command += conFeatureNames[i];
-		}
-		
-		command += "_max";
-		for (int f=0; f<boolFeatureN; f++){
-			if (boolFeatureAll[f]){
-				command += ", ";
-				command += boolFeatureNames[f];
-			}	
-		}
-		command += ", brand)";
-		//for (int f=1; f<catFeatureN){}
-		
-		command += " values (";
-		command += layerStream.str();
-		command += ", ";
-		command += parent_idStream.str();
-		command += ", ";
-		command += clusterSizeStream.str();
-		for (int f=0; f<conFeatureN; f++){
-			for (int r=0; r<2; r++){
-				command += ", ";
-				ostringstream rangeStream;
-				rangeStream<<conFeatureRange[c][f][r];
-				command += rangeStream.str();
-			}
-		}
-   		for (int f=0; f<boolFeatureN; f++){
-   			if (boolFeatureAll[f]){
-   				command +=", ";
-   				ostringstream bfStr;
-   				bfStr << boolFeatures[f];
-   				command += bfStr.str();
-   			}
-   		}
-		command += ", \'";
-		command += brandNames[0];
-		for (int b=1; b<brandN; b++){
-			command += "*";
-			command += brandNames[b];
-		}	
-		
-		command +="\');";
-		stmt->execute(command);
-
-		command = "SELECT last_insert_id();"; // from clusters;"
-		res2 = stmt->executeQuery(command);
-
-		if (res2->next()){
-			cluster_id = res2->getInt("last_insert_id()");
-		}
-
-	////// saving in the nodes table
-		for (int j=0; j<clusteredData[c][0]; j++){	  
-			command = "INSERT INTO ";
-			command += productName;
-			command += "_nodes (cluster_id, product_id, price";
-			for (int f=1; f<conFeatureN; f++){
-					command += ", ";
-					command += conFeatureNames[f];
-			}
-		
-			for (int f=0; f<boolFeatureN; f++){
-					command += ", ";
-					command += boolFeatureNames[f];
-			}
-			
-			command += ", brand) values(";
-			ostringstream cluster_idStream;
-			cluster_idStream<<cluster_id;
-			command += cluster_idStream.str();
-			command += ", ";
-			ostringstream idStream;
-			idStream<<clusteredData[c][j+1];
-			command +=  idStream.str();	
-			for (int f=0; f<conFeatureN; f++){
-				command +=", ";
-				ostringstream featureStream;
-				featureStream<<data[find(idA, clusteredData[c][j+1], size)][f];
-
-				command += featureStream.str();
-			}
-			for (int f=0; f<boolFeatureN; f++){
-				command += ", ";
-				ostringstream bfSt;
-				bfSt<<data[find(idA, clusteredData[c][j+1], size)][conFeatureN+f];
-				command += bfSt.str() ;
-			}
-		
-
-	        command +=", \"";
-			ostringstream featureStream;
-
-			featureStream<<brands[find(idA, clusteredData[c][j+1], size)];
-			command += featureStream.str();   
-			command +="\");"; 
-
-			stmt->execute(command);
-		
-	 }
-	}
-
-}

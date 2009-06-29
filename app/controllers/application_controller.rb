@@ -28,8 +28,6 @@ class ApplicationController < ActionController::Base
   end
   
   def update_user
-#    session[:user_id] = nil
-#    return
     if session[:user_id].blank? || !Session.exists?(session[:user_id])
       #Find the user's session if there are no cookies -- doesn't work for proxy's and firewalls
       #mysession = Session.find(:first, :conditions => ['ip = ? and updated_at > ?',request.remote_ip,30.minutes.ago])
@@ -52,6 +50,7 @@ class ApplicationController < ActionController::Base
     $model = (session[:productType] || $DefaultProduct).constantize
     $nodemodel = ((session[:productType] || $DefaultProduct)+'Node').constantize
     $clustermodel = ((session[:productType] || $DefaultProduct)+'Cluster').constantize
+    $featuremodel = ((session[:productType] || $DefaultProduct)+'Features').constantize
   end
   
   def title=(title)

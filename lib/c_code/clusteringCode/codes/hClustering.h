@@ -1,11 +1,10 @@
 
 #include "kmeans.h"
-#include "saveCluster.h"
 #include "helpers.h"
 
 
 
-int hClustering(int layer, int clusterN, int conFeatureN, int catFeatureN, int boolFeatureN, double *average, double** conFeatureRange, double*** conFeatureRangeC,
+int hClustering(int layer, int clusterN, int conFeatureN, int boolFeatureN, double *average, double** conFeatureRange, double*** conFeatureRangeC,
 	sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *resClus, sql::ResultSet *resNodes, sql::Statement *stmt, 
 	string* conFeatureNames, string* boolFeatureNames, string productName, double* weights){				
 	
@@ -29,17 +28,16 @@ if 	(layer == 1){
 			
 				size = 0;
 				
-			
+				double listprice = 0.0;
 				double saleprice = 0.0;
 				double price = 0.0;
 		
 				
 				while (res->next()) 
 				{
-					
 		 			saleprice = res->getInt("price");
 		 			price = saleprice;
-	   	 			
+	   	 				
 		 			data[size][0] = price;
 		 			for (int f=1; f<conFeatureN; f++){
 		 				data[size][f] = res->getDouble(conFeatureNames[f]);
@@ -118,10 +116,9 @@ if 	(layer == 1){
 					   // save it to the database
 						
 					   getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);		
- 
-				
-					   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, catFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName);
-			
+
+					   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName);
+					
 						for (int c=0; c<clusterN; c++){
 								if (clusteredData[c][0]>maxSize){
 									maxSize = clusteredData[c][0];
@@ -174,12 +171,10 @@ if (layer > 1){
 			data = new double*[size];
 			idA = new int [size];
 			brands = new string [size];
-		
-		
 			for (int j=0; j<size; j++){
 				data[j] = new double[conFeatureN+boolFeatureN];
 			}
-		
+
 			int s = 0;
 			while(resNodes->next()){
 					
@@ -195,7 +190,7 @@ if (layer > 1){
 				idA[s] = resNodes->getInt("product_id"); 
 			
 				brands[s] = resNodes->getString("brand");
-	
+
 				for (int f=0; f<conFeatureN; f++){
 				
      				average[f] += data[s][f];
@@ -253,7 +248,7 @@ if (layer > 1){
 			
  	   		getStatisticsData(data, clusteredData, indicators, idA, s, clusterN, conFeatureN, conFeatureRangeC);
 
-		saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, catFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName);
+		saveClusteredData(data, idA, size, brands, parent_id,clusteredData, conFeatureRangeC, layer, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName);
 
 		
 			for (int c=0; c<clusterN; c++){
@@ -317,12 +312,7 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 					command += conFeatureNames[i];
 				}
 				
-				command += "_max";
-				for (int f=0; f<boolFeatureN; f++){
-					command += ", ";
-					command += boolFeatureNames[f];
-				}
-				command += ", brand) values (";
+				command += "_max) values (";
 				ostringstream layerStream;
 				layerStream << layer+1;
 				command += layerStream.str();
@@ -341,20 +331,14 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 						command += ", ";
 						command += feavalStream.str();
 				}
-				for (int f=0; f<boolFeatureN; f++){
-						command += ", ";
-						double feaVal = res2->getInt(boolFeatureNames[f]);
-						ostringstream feavalStream;
-						feavalStream << feaVal;
-						command += feavalStream.str();
-				}		
-				string b = res2->getString("brand");
-				command += ", \'";
-				command += b;
-				command +="\');";
+			
+				command +=");";
+				
 				stmt->execute(command);
+			
 				command = "SELECT last_insert_id();"; // from clusters;"
 				res3 = stmt->executeQuery(command);
+
 				if (res3->next()){
 					cluster_id = res3->getInt("last_insert_id()");
 				}

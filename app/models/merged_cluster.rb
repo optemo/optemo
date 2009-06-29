@@ -26,8 +26,7 @@ class MergedCluster
   
   # finding the deepChildren(clusters with size 1) in clusters
   def deepChildren(session, dC = [])
-    clusters.map{|c| c.deepChildren(session)}.flatten #ToDo: @session
-
+    clusters.map{|c| c.deepChildren(session)}.flatten
   end
   
   def ranges(featureName, session)
@@ -87,5 +86,9 @@ class MergedCluster
   
   def isEmpty(session)
     nodes(session).empty?
+  end
+  
+  def clearCache
+    @clusters.each{|c|c.clearCache}
   end
 end
