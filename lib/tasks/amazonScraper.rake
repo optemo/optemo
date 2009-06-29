@@ -3,96 +3,107 @@ require 'scrubyt'
 
 desc "Scraping Amazon"
 task :scrape_amazon => :environment do
-  Printer.fewfeatures.find(:all, :conditions => 'scrapedat IS NULL AND nodetails IS NOT TRUE').each { |p|
+  Printer.fewfeatures.find(:all, :conditions => 'nodetails IS NOT TRUE').each { |p|
     scrape_details(p)
     sleep(1+rand()) #Be nice to Amazon
     sleep(rand()*30) #Be really nice to Amazon!
   }  
 end
 
+desc "Scraping Amazon"
+task :scrape_printer => :environment do
+  scrape_details(Printer.fewfeatures.find(:first))  
+end
+
 def scrape_details(p)
+  require 'webrat'
   puts 'ASIN='+p.asin
-  extractor = Scrubyt::Extractor.define do
-    begin
-    fetch('http://www.amazon.com/o/asin/' + p.asin, :user_agent => "User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_6; en-us) AppleWebKit/525.27.1 (KHTML, like Gecko) Version/3.2.1 Safari/525.27.1")
-    #fetch 'http://www.amazon.com/o/asin/' + 'B000F005U0'
-    #fetch 'http://www.amazon.com/Magicolor-2550-Dn-Color-Laser/dp/tech-data/B000I7VK22/ref=de_a_smtd'
-      click_link('See more technical details')
-    rescue
-      p.nodetails = true
-      p.save
-      return
-    end
-    features("Brand Name: #{p.brand}", { :generalize => true }) #, :write_text => true 
-    #features("Brand Name: Xerox", { :generalize => true }) #, :write_text => true 
+  sesh = regularsetup
+  begin
+  sesh.visit('http://www.amazon.com/o/asin/' + p.asin)
+  #fetch 'http://www.amazon.com/o/asin/' + 'B000F005U0'
+  #fetch 'http://www.amazon.com/Magicolor-2550-Dn-Color-Laser/dp/tech-data/B000I7VK22/ref=de_a_smtd'
+    sesh.click_link('See more technical details')
+  rescue
+    p.nodetails = true
+    p.save
+    return
   end
-  product_data_hash = extractor.to_hash
-  array = product_data_hash.map{|i| i[:features] if i[:features].index(':')}.compact
+  doc = Nokogiri::HTML(sesh.response.body)
+  array = doc.css('.rcmBody li')
   features = {}
   array.each {|i|
-    t = i.split(': ')
-    features[t[0]]=t[1]
+    t = i.content.split(': ')
+    features[t[0].downcase.tr(' -\(\)_','')]=t[1]
     }
   
   #pp features
   res = []
   features.each {|key, value| 
-    if key[/(M|m)aximum( |_)?(P|p)rint( |_)?(S|s)peed/]
+    if key[/maximumprintspeed/]
       p.ppm = value.to_f unless !p.ppm.nil? && p.ppm >= value.to_i #Keep fastest value
       #puts 'PPM: '+p.ppm.to_s
     end
-    if key[/(M|m)aximum( |_)?(P|p)rint( |_)?(S|s)peed/] && key[/(C|c)olou?r/] #Color
+    if key[/maximumprintspeed/] && key[/colou?r/] #Color
       p.ppmcolor = value.to_f
       #puts 'PPM(Color): '+p.ppmcolor.to_s
     end
-    if key[/(F|f)irst( |_)?(P|p)age( |_)?(O|o)utput( |_)?(T|t)ime/]
+    if key[/firstpageoutputtime|timetoprint/]
       p.ttp = value.match(/\d+(.\d+)?/)[0].to_f
       #puts 'TTP:'+p.ttp.to_s
     end
-    if key[/(M|m)aximum( |_)?(S|s)heet( |_)?(C|c)apacity/]
-      p.paperinput = value.to_i unless !p.paperinput.nil? && p.paperinput > value.to_i #Keep largest value
+    if key[/maximumsheetcapacity|standardpapercapacity/]
+      p.paperinput = value.match(/\d+/)[0].to_i unless !p.paperinput.nil? && p.paperinput > value.to_i #Keep largest value
       #puts 'Paper Input:'+p.paperinput.to_s
     end
-    if key[/(R|r)esolution/] && res.size < 2
-      res << value.match(/\d+/)[0]
+    if key[/resolution/] && res.size < 2
+      tmp = value.match(/(\d,\d{3}|\d+) ?x?X? ?(\d,\d{3}|\d+)?/)[1,2].compact
+      tmp*=2 if tmp.size == 1
+      p.resolution = tmp.sort{|a,b| 
+        a.gsub!(',','')
+        b.gsub!(',','')
+        a.to_i < b.to_i ? 1 : a.to_i > b.to_i ? -1 : 0
+      }.join(' x ')
     end
-    if key[/(P|p)rinter( |_)?(I|i)nterface/] || (key[/Connectivity Technology/] && value != 'Wired')
+    if key[/printerinterface/] || (key[/connectivitytechnology/] && value != 'Wired')
       p.connectivity = value
       #puts p.connectivity
     end
-    if key[/(H|h)ardware( |_)?(P|p)latform/]
+    if key[/hardwareplatform/]
       p.platform = value
       #puts 'HW: '+p.platform
     end
-    if key[/Width/]
+    if key[/width/]
       #puts 'Width: ' + p.itemwidth.to_s + ' <> ' + value rescue nil
       p.itemwidth = value.to_f * 100
       #puts 'Width: ' + p.itemwidth.to_s
     end
-    if key[/RAM/]
+    if key[/ram/]
       p.systemmemorysize = value.match(/\d+/)[0]
       #puts "RAM" + p.systemmemorysize.to_s
     end
-    if key[/(P|p)rinter( |_)?(O|o)utput/]
+    if key[/printeroutput/]
       p.colorprinter = !value[/(C|c)olou?r/].nil?
       #puts 'Color:' + (p.colorprinter ? 'True' : 'False')
     end
-    if key[/(S|s)canner( |_)?(T|t)ype/]
+    if key[/scannertype/]
       p.scanner = value[/(N|n)one/].nil?
       #puts 'Scanner:' + (p.scanner ? 'True' : 'False')
     end
-    if key[/(N|n)etworking(_| )?(F|f)eature/]
+    if key[/networkingfeature/]
       p.printserver = !value[/(S|s)erver/].nil?
     end
+    if key[/printtechnology/]
+      p.colorprinter = value.index(/(B|b)(\/|&)?(W|w)/).nil?
+    end
+    if key[/duplex/]
+      p.duplex = !value.downcase.index('yes').nil?
+    end
+    if key[/dutycycle/]
+      p.dutycycle = value.match(/(\d|,)+/)[0].tr(',','').to_i
+    end
   }
-  if p.resolution.nil?
-    p.resolution = res.sort{|a,b| 
-      a.gsub!(',','')
-      b.gsub!(',','')
-      a.to_i < b.to_i ? 1 : a.to_i > b.to_i ? -1 : 0
-    }.join(' x ')
-    #puts "Res: "+p.resolution
-  end
+  
   p.scrapedat = Time.now
   p.save
 end
@@ -132,5 +143,21 @@ def download(url)
     ret = ""
   end
   ret
+end
+
+# Sets up env and related stuff
+def regularsetup
+  # Requires.
+  require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
+  require 'webrat'
+  require 'mechanize' # Needed to make Webrat work
+  
+  Webrat.configure do |conf|
+    conf.mode = :mechanize # Can't be rails or Webrat won't work
+  end
+  sesh = Webrat.session_class.new
+  sesh.mechanize.user_agent_alias = 'Mac Safari'
+  sesh.mechanize.user_agent = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_6; en-us) AppleWebKit/525.27.1 (KHTML, like Gecko) Version/3.2.1 Safari/525.27.1"
+  sesh
 end
  

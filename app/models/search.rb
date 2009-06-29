@@ -49,10 +49,16 @@ class Search < ActiveRecord::Base
         if cluster_id.index('+')
           cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
           #Merged Cluster
-          @clusters << MergedCluster.fromIDs(session.product_type,cluster_id.split('+'))
+          c = MergedCluster.fromIDs(session.product_type,cluster_id.split('+'))
         else
           #Single, normal Cluster
-          @clusters << $clustermodel.find(cluster_id)
+          c = $clustermodel.find(cluster_id)
+        end
+        #Remove empty clusters
+        if c.isEmpty(session)
+          self.cluster_count -= 1
+        else
+          @clusters << c 
         end
       end
     end

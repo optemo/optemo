@@ -6,10 +6,12 @@ class CompareController < ApplicationController
   # GET /saveds.xml
     
   def index
-    @products = [] # Will keep product IDs of saved items
+    @session = Session.find(session[:user_id])  # @session is required to retrieve preferences    
+    @products = []
+    @utility = []
     @displayString = ""
     # To track whether an interesting feature is displayed or not-
-    @interestingFeatureDisplayed = Array.new(session[:productType].constantize::DisplayedFeatures.count, false)
+    @interestingFeatureDisplayed = {} # Array.new(session[:productType].constantize::DisplayedFeatures.count, false)
     if params[:path_info].blank?
       @saveds = Saved.find_all_by_session_id(session[:user_id])
       @saveds.collect do |saved|
@@ -24,8 +26,14 @@ class CompareController < ApplicationController
       params[:path_info].collect do |id|
         @products << session[:productType].constantize.find(id)
       end
-      # Populate @interestingFeatureDisplayed variable first
+      
+      # Reorder the product columns based on product utility
+      ReorderProducts()      
+      # Populate @interestingFeatureDisplayed variable
       decideWhichFeaturesToDisplay
+      # Reorder the feature rows based on feature utility
+      ReorderFeatures()
+      
       respond_to do |format|
         format.html # index.html.erb
         format.xml  { render :xml => @products }
@@ -132,14 +140,12 @@ end
 def decideWhichFeaturesToDisplay
   # To calculate which interesting features are to be displayed: 
   # Do not display those that are Unknown for all saved printers
-  countVar = 0
   session[:productType].constantize::DisplayedFeatures.each do |column|	    
 		for i in 0..@products.count-1
 			if canShowFeature?(column, i)
-				@interestingFeatureDisplayed[countVar] = true
+				@interestingFeatureDisplayed[column] = true   # If once set, the feature dispaly will be true for all products
 			end
 		end
-		countVar = countVar + 1
   end
 end
 
@@ -192,6 +198,61 @@ def featuresDictionary
     when "packagewidth", "packagelength", "packageheight", "packageweight":
     	return  displayString[0..6].capitalize + ' ' + displayString[7..-1] 
 =end
-
 end
 
+def ReorderProducts
+  # To sort: @products
+  # Based on: @utility
+  for i in 0..@products.count-1
+    @utility[i] = CalculateUtility(@products[i])
+  end
+  @toSort = @products.dup
+  @basedOn = @utility.dup
+  SortArray()
+  @products = @sortedArray
+  @utility = @finalBasedOn
+end
+  
+def ReorderFeatures
+  # To sort: InterestingFeatures
+  # Based on: userPreferences for ContinuousFeatures
+  
+  prefHash = {}
+  session[:productType].constantize::DisplayedFeatures.each do |f|
+    if session[:productType].constantize::ContinuousFeatures.index(f) == nil
+      prefHash[f] = 0
+    else
+      prefHash[f] = @session.features.send((f + "_pref").intern)
+    end
+  end
+  # Reorder features in DisplayedFeatures into @preferredDisplayFeatures 
+  @preferredDisplayFeatures = prefHash.sort{|a,b| a[1]<=>b[1]}.reverse  
+end
+
+def SortArray
+  @sortedArray = []
+  @finalBasedOn = []
+  tempBasedOn = []
+
+  maxBasedOn = 0.0    
+  index = 0           
+  counter = 0
+
+  tempBasedOn = @basedOn.dup
+
+  while counter < @toSort.count
+    maxBasedOn = 0.0
+    index = 0
+    
+    for i in 0..@toSort.count-1       # Find Max Utility
+      if(tempBasedOn[i] > maxBasedOn)
+        maxBasedOn = tempBasedOn[i]
+        index = i
+      end
+    end
+    @sortedArray[counter] = @toSort[index]
+    @finalBasedOn[counter] = @basedOn[index]
+    counter = counter + 1
+    tempBasedOn[index] = -1.0
+  end  
+end

@@ -94,4 +94,8 @@ class MergedCluster
   def isEmpty(session)
     nodes(session).empty?
   end
+  
+  def clearCache
+    @clusters.each{|c|c.clearCache}
+  end
 end

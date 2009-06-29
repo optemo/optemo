@@ -224,15 +224,27 @@ div #filterbar {
 	width: 177px;
 	padding-top: 0px;
 	padding-bottom: 6px;
-	position: relative;}
+	position: relative;
+}
 .preferenceSlider {
-		background: url(../images/slider.gif) no-repeat;
-		margin: 0 0 0.8em 7px;
-		width: 177px;
-		height: 13px;
-		padding-top: 0px;
-		padding-bottom: 6px;
-		position: relative;}
+	background: url(../images/slider.gif) no-repeat;
+	margin: 0 0 0.8em 7px;
+	width: 177px;
+	height: 13px;
+	padding-top: 0px;
+	padding-bottom: 6px;
+	position: relative;
+}
+.preferenceSliderVertical {
+	background: url(../images/slider_vertical.gif) no-repeat;
+	margin: 0 0 0.8em 7px;
+	width: 10px;
+	height: 50px;
+	padding-top: 0px;
+	padding-bottom: 6px;
+	position: relative;
+}
+
 .label {
 	text-align: left;
 	font-size: 0.8em;
@@ -240,17 +252,31 @@ div #filterbar {
 	width: 187px;
 	margin-top: 0.6em;
 }
+
 .space {
 	margin-bottom: 20px; /*Spacing for histogram*/
 }
+
+.preferences{
+	color: #777;
+}
+
 .sliderlabel {
 	font-size: 0.6em;
 	padding-top: 17px;
 	text-decoration: none;
 	color: black;
 }
+
+.labelVerticalPrefs{
+	font-size: 0.8em;
+	color: #888;
+	margin-left: 0px;
+	margin-top: 0px;
+}
 .endlabel_min {
 	display: none;
+
 	position: absolute;
 	bottom: -5px;
 	left: -1px;
@@ -261,6 +287,22 @@ div #filterbar {
 	bottom: -5px;
 	right: -1px;
 	font-size: 0.5em;}
+.endlabel_min_Preferences 
+{
+	display: relative;
+	position: absolute;
+	bottom: -5px;
+	left: -1px;
+	font-size: 0.5em;
+}
+.endlabel_max_Preferences 
+{
+	display: relative;
+	position: absolute;
+	bottom: -5px;
+	right: -1px;
+	font-size: 0.5em;
+}
 .disp {
 	width: 80px;
 	position: absolute;
@@ -288,3 +330,5 @@ div #filterbar {
 .ui-slider-horizontal .ui-slider-range { top: 0; height: 100%; }
 .ui-slider-horizontal .ui-slider-range-min { left: 0; }
 .ui-slider-horizontal .ui-slider-range-max { right: 0; }
+
+.ui-slider-vertical .ui-slider-handle { background:url(../../../images/diamond_vertical.gif) no-repeat; height:13px; width:9px; overflow:hidden;position:absolute;z-index:2;}

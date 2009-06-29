@@ -8,6 +8,7 @@ class ProductsController < ApplicationController
   # GET /products
   # GET /products.xml
   def index
+<<<<<<< HEAD:app/controllers/products_controller.rb
     mysession = Session.find(session[:user_id])
     mysession.clearFilters
     #c = CQuery.new(session[:productType] || $DefaultProduct)
@@ -19,6 +20,7 @@ class ProductsController < ApplicationController
       flash[:error] = "There are not 9 original clusters"
       redirect_to '/error'
     end
+    homepage
   end
   
   def list
@@ -27,10 +29,8 @@ class ProductsController < ApplicationController
     @dbfeat = {}
     @s = Search.searchFromPath(params[:path_info], @session)
     DbFeature.find_all_by_product_type(@pt).each {|f| @dbfeat[f.name] = f}
-    #Previously clicked product
-    #@searches  = [Search.find_by_session_id(@session.id, :order => 'updated_at desc')]
     @allSearches = Search.find_all_by_session_id(@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.minute.ago}\'")
-    @picked_products = @session.saveds.map {|s| @pt.constantize.find(s.product_id)}
+    @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
     @z = zipStack(@allSearches) 
     unless ((@z.empty?) || (@z.nil?))
       @layer = @z[-1].layer
@@ -53,6 +53,12 @@ class ProductsController < ApplicationController
       end
     end   
 end
+    #No products found
+    if @s.result_count == 0
+      flash[:error] = "No products were found, so you were redirected to the home page"
+      homepage
+    end
+  end
 
   # GET /products/1
   # GET /products/1.xml
@@ -75,6 +81,25 @@ end
                       render :http => 'show' , :layout => 'optemo'
                     end }
       format.xml  { render :xml => @product }
+    end
+  end
+  
+  private
+  
+  def homepage
+    mysession = Session.find(session[:user_id])
+    mysession.clearFilters
+    @pt = session[:productType] || $DefaultProduct
+    if @pt == 'Printer' && s = Search.find_by_session_id(0)
+      path = s.cluster_count.times.map{|i| s.send(:"c#{i}")}.join('/')
+    else
+      path = $clustermodel.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
+    end
+    if path
+      redirect_to "/#{@pt.pluralize.downcase}/list/"+path
+    else
+      flash[:error] = "There was a problem selecting the initial products"
+      redirect_to '/error'
     end
   end
 end

@@ -17,8 +17,7 @@ function fadein()
 {
 	$('#myfilter_brand').css('visibility', 'visible');
 	$('#fade').css('display', 'none');
-	$('#info').css('display', 'none');
-	
+	$('#info').css('display', 'none');	
 }
 
 // When you click the Save button:
@@ -108,6 +107,56 @@ $(document).ready(function() {
 		$('a:first', this).html('<div class="sliderlabel">'+curmin+'</div>')
 		$('a:last', this).html('<div class="sliderlabel">'+curmax+'</div>')
 		histogram($(this).siblings('.hist')[0],(sessmin-rangemin)/(rangemax-rangemin),(sessmax-rangemin)/(rangemax-rangemin));
+	});
+
+	sum = 0.0
+	
+	$(".preferenceSlider").each(function() {
+		prefVal = parseInt($(this).attr('pref-value'));
+		$(this).slider({
+			max: 100,
+			min: 0,
+			step: 1,
+			// value: (Get value of preferences from session) 
+			value: prefVal,
+			// setting slide to false can prevent user from sliding further. This can constrain the sum of values of sliders to be <= 1
+			slide: function(e,ui)
+			{
+				$('.sliderlabel', this).html(ui.value/100);
+				// ToDo:
+				// Put a check here to ensure that the 4 preferences always sum up to 1.
+				/*$('.preferenceSlider').each(function(){
+					sum = sum + $(this).slider('option', 'value');					
+				})				
+				if (sum >= 100)
+				{
+					currValue = ui.value;
+					autoVal = currValue-sum+100;
+					//alert("this val should be= " + newVal);
+					$('this').slider('option', 'value', autoVal);
+				}
+				sum = 0.0*/			
+			},
+			stop: function(e,ui) 
+			{
+					$(this).attr('pref-value',ui.value);					
+					$('#preference_form').submit();
+					
+			}
+		});
+		$('a', this).html('<div class="sliderlabel">' + prefVal/100 + '</div>')
+	});
+	
+	$(".preferenceSliderVertical").each(function() {
+		prefVal = parseInt($(this).attr('pref-value'));
+		$(this).slider({
+			orientation: 'vertical',
+			max: 100,
+			min: 0,
+			step: 1,
+			// value: (Get value of preferences from session) 
+			value: prefVal,
+		});
 	});
 	
 	//Draw cluster graphs

@@ -1,332 +1,656 @@
 # Some tests for the laser printer site.
 namespace :printer_test do   
-   
-  desc "Test the sliders"
+
+  # ------------------- TESTING ALGORITHMS ---------------------#
+  
+  desc 'A series of clever moves to get back button errors.'
+  task :tricky => :environment do
+      setup "tricky" 
+      
+      test_back_button
+      
+      (@sesh.num_brands_in_dropdown-1).times{ |i|
+        (@sesh.num_brands_in_dropdown-1).times{ |j|
+          test_click_home_logo
+          test_add_brand i+1
+          one_brand = @sesh.num_printers
+          test_add_brand j+1
+          both_brands = @sesh.num_printers
+          test_back_button
+          one_brand_return = @sesh.num_printers
+      
+          report_error "Was #{one_brand} printers, now #{one_brand_return}." if one_brand != one_brand_return
+        }
+      }
+      close_log
+  end
+  
+  desc 'Ignore me please.'
+  task :sandbox => :environment do
+    setup 'sandbox'
+    #this works
+    #puts @sesh.current_url
+    #@sesh.within('#header') do |scope| scope.click_link('LaserPrinterHub.com') end
+    #puts @sesh.current_url
+    
+    # This works
+    #@sesh.within('.navigator_box:nth-of-type(2)') do |scope| scope.dom end
+    
+    
+    #@sesh.visit('file:///Users/maria/Desktop/sandbox/index.html')
+    
+    #@sesh.visit('file:///Users/maria/Desktop/sandbox/links_w_javascript.html'
+  
+   # begin
+    #  @sesh.click_link "2"
+   # rescue Exception =>e
+  #    puts "Exception on link 2:" + e.message.to_s + e.type.to_s
+  #  end
+  #  
+  #  begin
+  #    @sesh.click_link "1"
+  #  rescue Exception =>e
+  #    puts "Exception on link 1:" + e.message.to_s + e.type.to_s
+  #  end
+  #  
+  #  begin
+  #    @sesh.visit 'alert("Works")'
+  #  rescue Exception =>e
+  #    puts "Exception on link 1:" + e.message.to_s + e.type.to_s
+  #  end
+    
+    
+    #@sesh.click_link 'Save it'
+    #@sesh.visit 'javascript:saveit(227)'
+    
+    
+    
+   # test_add_brand 1
+    #puts @sesh.num_brands_selected
+    
+     
+    #@sesh.click_link 'Remove'
+    #@sesh.visit "javascript:removeBrand('Brother');"
+      
+    #Try this
+    #@sesh.within('.navigator_box:nth-of-type(2)') do |scope| scope.click_link "Save it" end
+    
+   # puts @sesh.num_saved_items.to_s + " saveds"
+   # test_add_brand 1
+    #test_add_brand 2
+   # puts @sesh.num_brands_selected
+   # s
+    # Try this
+   # @sesh.click_link 'Remove'
+    
+   # puts @sesh.num_brands_selected
+    
+    # Gets me the last thing
+   # @sesh.within('.selected_brands') do |scope| puts scope.dom end
+    
+    # Gives errors WTF WTF !!!!
+    #@sesh.within('.selected_brands:nth-of-type(1)') do |scope| puts scope.dom end
+  end
+  
+  desc "Test the sliders."
   task :sliders => :environment do
-    setup
-    sesh = Webrat.session_class.new
-    logfile =  setup_log "sliders" 
+    setup "sliders" 
     
-    get_homepage sesh, logfile
-    doc = sesh.response.parser
-    
-    slider_min_names = []
-    doc.css(".feature input.min").each do |x| slider_min_names << x.attribute("name").to_s end
-    
-    slider_max_names = []
-    doc.css(".feature input.max").each do |x| slider_max_names << x.attribute("name").to_s end
-    
-    slider_max = []
-    doc.css(".feature .endlabel_max").each do |x| slider_max << x.content.to_i end
-    
-    slider_min = []
-    doc.css(".feature .endlabel_min").each do |x| slider_min << x.content.to_i end
-    
-    1000.times do
-      pick_slider = rand slider_min_names.length
+    20.times do
+      pick_slider = rand @sesh.num_sliders
       
-      distance =slider_min[pick_slider] + rand(slider_max[pick_slider]-slider_min[pick_slider])
-      logfile.puts "LOGGER    Testing the " + slider_min_names[pick_slider] + " slider. Moving it to " +  distance.to_s
+      distance =@sesh.slider_min(pick_slider) + rand(@sesh.slider_range(pick_slider))
+      # TODO This tests integer inputs ONLY!
+      # TODO Testing non-integers might require changes in my assert code!
+      log "Testing the " + @sesh.slider_name(pick_slider) + " slider. Moving it to " +  distance.to_s
       
-      new_min = slider_min[pick_slider]
-      new_max = slider_max[pick_slider]
+      new_min = @sesh.slider_min(pick_slider)
+      new_max = @sesh.slider_max(pick_slider)
       (rand >= 0.5)? new_min = distance : new_max = distance
       
-      # Test the sliders.
-      begin
-        sesh.set_hidden_field slider_max_names[pick_slider], :to => new_max
-        sesh.set_hidden_field slider_min_names[pick_slider], :to => new_min
-        
-        logfile.puts "LOGGER    Setting " + slider_min_names[pick_slider] + " Slider to (#{new_min},#{new_max})" 
-        
-        sesh.submit_form "filter_form" # When no submit button present use form id.
-      rescue Exception => e
-        report_error logfile, e.type.to_s
-        report_error logfile, e.message.to_s
-        break
-        get_homepage sesh, logfile
-        logfile.puts "LOGGER     Starting over from homepage."
-      else
-        doc = sesh.response.parser
-        if none_selected?(doc) 
-          logfile.puts "LOGGER    No printers found."
-        else
-          logfile.puts "LOGGER    Number of printers matching criteria: " + num_printers(doc).to_s
-        end
-        # Error checking code 
-        report_error(log, "Error loading homepage") if error_page?(sesh)
-        # End error checking code
-      end
+      test_move_sliders(pick_slider, new_min, new_max)
       
     end
     
-    close_log logfile
+    close_log
   end
 
-  desc "Test the brand selector"
+  desc "Test the brand selector."
   task :brand_selector => :environment do 
-  
-    setup
-    logfile = setup_log "brand_selector" 
-    
-    sesh = Webrat.session_class.new   
-    brands = get_avail_printer_brands(sesh,logfile)
+    setup "brand_selector" 
     
     # Try selecting every brand
-    brands.each do |brand| 
-      brand_test(sesh, brand, logfile)
+    (1..@sesh.num_brands_in_dropdown).each do |brand| 
+      test_add_brand (brand - 1)      
+      test_click_home_logo
     end
   
-    close_log logfile 
+    close_log
   end
   
-  desc "Testing the search box"
+  desc "Test the search box."
   task :search => :environment do 
-    
-    setup
-    sesh = Webrat.session_class.new
-    logfile =  setup_log("search")
-    
-    # Printer brand names
-    brands = get_avail_printer_brands(sesh, logfile)
-    search_test( brands, sesh, logfile)
-    
-    # Now all lowercase
-    brands.each{ |x| x.downcase! } 
-    search_test( brands, sesh, logfile)
+      setup "search"
+
+      # Brand name based search strings
+      (1..@sesh.num_brands_in_dropdown).each do |brand| 
+        test_search_for @sesh.brand_name(brand)
+        test_search_for @sesh.brand_name(brand).downcase         
+      end
     
     # Other search strings
     other = ["","asdf","apples","Sister","Helwett","Hewlett","xena", "Data","cheap"]
-    search_test( other, sesh, logfile)
+    other.each do |x|
+      test_search_for x
+    end
 
-    close_log logfile 
-
+    close_log
   end
   
-  desc "Exhaustive testing for Browse Similar"
+  desc "Exhaustive testing for Browse Similar."
   task :browse_similar => :environment do
-    setup
-    sesh = Webrat.session_class.new
-    logfile = setup_log "browse_similar" 
+    setup "browse_similar" 
     
-    get_homepage(sesh, logfile)
     hist = ["root"]
-    explore(sesh,hist,logfile)
+    explore(hist)
     
-    close_log logfile
+    close_log
+  end
+  
+  # Recursive method to test all browse_similar.
+  def explore(hist)
+    previous_url = @sesh.current_url
+    (1..@sesh.num_similar_links).each do |num|
+      log "Testing #{num}th browse similar link with history: " + hist * ", "
+      come_back_here = @sesh.current_url
+      test_browse_similar(num)
+      hist << num.to_s
+      explore(hist)
+      hist.pop
+      @sesh.visit come_back_here
+    end
   end
    
-  # Tests the brand selector for the given brand.
-  def brand_test(sesh, brand, log)
-    get_homepage(sesh, log)
-  
-    doc = sesh.response.parser   # Parser of WWW::Mechanize::Page should be a Nokogiri::HTML object
-    num_brands_before = doc.css('a[title="Remove Brand Filter"]').length
-    num_printers_before = num_printers(doc)
-    begin 
-      sesh.select brand
-      sesh.submit_form "filter_form" # When no submit button present use form id.           
-    rescue Exception => e # This detects crashing.
-      report_error(log, e.type.to_s + " with " + brand+ ", message:" + e.message.to_s)
-    else
-      report_error( log, "get error page after" + brand) if error_page?(sesh)
-      doc = sesh.response.parser   # Parser of WWW::Mechanize::Page should be a Nokogiri::HTML object
-      num_brands_after = doc.css('a[title="Remove Brand Filter"]').length
-      num_printers_after = num_printers(doc)
-      log.puts "LOGGER      Number of printers selected is "  + num_printers_after
-      log.puts "No printers found for "+ brand if none_selected? doc
+  desc "Simulate a user session and test almost everything."
+  task :random => :environment do
+      setup "random" 
       
-      # ERROR CHECKING CODE. 
-      if brand == "All Brands" or brand == "Add Another Brand" 
-        if(num_brands_before != num_brands_after)
-          report_error log, "# brands shown changed and" + brand + " selected" 
-        end
-        if(num_printers_before != num_printers_after)
-          report_error log, "# printers changed and" + brand + " selected" 
-        end
-      else
-        if num_brands_before == num_brands_after 
-         if !none_selected?(doc) 
-           report_error "# brands not incremented for " + brand + " and 'no matching printers' message not shown."
-         end
-         if num_printers_before != num_printers_after
-           report_error log, "# brands not incremented for " + brand + " and # of printers changed"
-         end
-        elsif num_brands_before == num_brands_after - 1 
-          if num_printers_before == num_printers_after   
-            report_error log, "# brands incremented for " + brand + " although no new products found" 
-          end
-          if none_selected?(doc)  
-            report_error log, "# brands incremented for " + brand + " and 'no matching printers' message showing." 
-          end
-        else
-          report_error log, "# brands changed by " + (num_brands_after - num_brands_before).to_s + " for " + brand
-        end
-      end
-      # END of the error checking code.
+      search_strings = ["","asdf","apples","Sister","Helwett","Hewlett","xena", "Data","cheap"]
       
-    end
-  end
-  
-  # Tests each query string in the array and uses the session given.
-  def search_test( queries, session, logger)
-    queries.each do |query| 
-      get_homepage(session, logger)
-      begin
-        logger.puts "LOGGER    Searching for " + query        
-        session.fill_in "search", :with => query
-        session.click_button "submit_button" 
-      rescue Exception => e
-        report_error(logger, "Error with search string '" + query + "'")
-        logger.puts e.type.to_s
-        logger.puts e.message.to_s
-      else
-        report_error( log, "get error page searching for " + brand) if error_page?(session)
-        doc = session.response.parser
-        logger.puts "LOGGER    Search gives 0 results" if none_selected? doc 
-        logger.puts "LOGGER    Done searching for '" + query + "'"
+      (@sesh.num_brands_in_dropdown-1).times do |x| 
+        bname = @sesh.brand_name (x+1)
+        search_strings << bname
+        search_strings << bname.downcase
       end
-    end
-  end
-  
-  # Recursive method to click all browse_similar
-  # and check for errors.
-  def explore(session, hist, logfile)
-    doc = session.response.parser                      # Parser of WWW::Mechanize::Page should be a Nokogiri::HTML object
-    highest_link_index = doc.css(".sim").length - 1    # Find num of clicky boxes
-    
-    # Log stuff
-    logfile.puts "LOGGER : url when boxes calculated :   " + session.current_url
-    logfile.puts "LOGGER : # boxes =                  "+doc.css(".borderbox").length.to_s
-    logfile.puts "LOGGER : # links =                  #{highest_link_index+1}"
-  
-    (0..highest_link_index).each do |num|
-      return_here = session.current_url # Current page
       
-      begin        
-         session.click_link 'sim'+num.to_s
-      rescue Exception => e
-        report_error(logger, "Error with link number #{num} and history" + hist + "'")
-        logfile.puts e.type.to_s + e.message.to_s
-      else
-        logfile.puts "LOGGER: session url :                 " + session.current_url
-        hist << (num+1).to_s
-        logfile.puts "LOGGER : history :                    "+ (hist * ',').to_s
+      20.times do
         
-        # ERROR CHECKING CODE
+        pick_action = rand 7
+        # For the error page, the # of possible actions is very limited.
+        pick_action = 5 + rand(2) if @sesh.error_page?
         
-        doc = session.response.parser
-        num_boxes = doc.css(".borderbox").length.to_s
-        num_printers_showing = num_printers(doc)
-        report_error(logfile, "No borderboxes") if  num_boxes.to_i == 0
-        report_error(logfile, "Get the error page") if error_page?(session)
-        if num_printers_showing.to_i < 10 
-          if num_boxes.to_i != num_printers_showing.to_i
-            report_error logfile, "number of borderboxes: " + num_boxes +", number of printers :" +num_printers_showing
-          end
-          if doc.css(".sim").length != 0
-            report_error logfile, doc.css(".sim").length.to_s + " Similar Links showing with " + num_printers_showing +" printers displayed." 
-          end
-        else 
-          if doc.css(".sim").length != 9
-            report_error logfile, doc.css(".sim").length.to_s + " Similar Links showing with " + num_printers_showing +" printers displayed." 
-          end
-          report_error logfile, "Less than 9 boxes for"+ num_printers_showing +" printers" if num_boxes.to_i < 9
-        end
-        
-        # END OF ERROR CHECKING CODE
-        
-      end
-     
-      # Recursive!
-      explore(session,hist,logfile)
-      hist.pop
-      session.visit return_here
+        if pick_action == 0                     #0 Test move sliders.
+          slide_me = rand @sesh.num_sliders
 
+          offset = rand(@sesh.slider_range(slide_me))
+          distance = @sesh.slider_min(slide_me) + offset
+          
+          new_min = @sesh.current_slider_min(slide_me)
+          new_max = @sesh.current_slider_max(slide_me)
+          (rand >= 0.5)? new_min = distance : new_max = distance
+
+          test_move_sliders(slide_me, new_min, new_max)
+        elsif pick_action == 1                  #1 Test add brand
+          brand_to_add = rand(@sesh.num_brands_in_dropdown)
+          test_add_brand brand_to_add
+        elsif pick_action == 2                  #2 Test search
+          search_me = search_strings[rand(search_strings.length)] 
+          rand(2).times do 
+            (rand >= 0.5)? connector = " and " : connector = ' or '
+            search_me += connector + search_strings[rand(search_strings.length)] 
+          end
+          test_search_for search_me
+        elsif pick_action == 3                 #3 Test browse similar
+          if @sesh.num_similar_links > 0
+            click_me = rand( @sesh.num_similar_links) + 1
+            test_browse_similar click_me
+          end
+        elsif pick_action == 4                  #5 Test clear search
+          if @sesh.num_clear_search_links > 0
+            test_remove_search 
+          end
+        elsif pick_action == 5                  #6 Test home logo
+            test_click_home_logo
+        elsif pick_action == 6                  #7 Test back button
+          test_back_button
+        end
+
+      end
+
+      close_log
+  end
+  
+  # ------------------ POSSIBLE USER ACTIONS ----------------------#
+
+  def test_move_sliders(slider, min, max)
+    log "Testing the " + @sesh.slider_name(slider) + " slider. Moving it to (#{min},#{max})"
+    snapshot
+    
+    begin
+      @sesh.set_slider(slider, min, max)
+      @sesh.submit_form "filter_form" # When no submit button present use form id.
+    rescue Exception => e
+      report_error e.type.to_s + e.message.to_s
+    else
+      assert_not_error_page
+      assert_well_formed_page
+      assert_saveds_same
+      assert_brands_same
+      assert_clear_search_links_same
+      
+      if !@sesh.no_printers_found_msg? 
+        assert_slider_range(slider, min, max)
+        #assert_slider_range(slider, min.floor, max.ceil)
+      end
+      
+      if min > max
+        assert_no_results_msg_displayed
+      end
+    end
+    log "Done testing move sliders"
+  end
+  
+  def test_back_button
+    log "Testing the back button."
+    begin
+      @sesh.click_link 'Go back to previous Printers'
+    rescue Exception => e
+      report_error e.type.to_s + e.message.to_s
+    else
+      @history.pop
+      
+      # Just like status quo except no snapshot taken before, so we're comparing to last time
+      assert_brands_same
+      assert_saveds_same
+      assert_num_printers_same
+      assert_clear_search_links_same
+      assert_session_id_same
+      
+    end
+    log "Done back button test"
+  end
+    
+  def test_goto_homepage
+    
+    log "Testing Goto Homepage"
+    snapshot
+    @sesh.get_homepage
+    
+    assert_brands_clear
+    assert_search_history_clear
+    assert_saveds_clear
+    assert_no_results_msg_hidden
+    assert_browsing_all_printers
+    assert_sliders_clear
+    
+    log "Done testing goto homepage"
+    
+  end
+  
+  def test_click_home_logo
+    
+    log "Testing Click Homepage logo"
+    snapshot
+    @sesh.click_link 'LaserPrinterHub.com'
+    
+    assert_brands_clear
+    assert_search_history_clear
+    assert_saveds_clear
+    assert_no_results_msg_hidden
+    assert_browsing_all_printers
+    assert_sliders_clear
+    
+    log "Done testing click homepage logo"
+  end
+  
+  def test_browse_similar which_link
+    
+    log "Clicking on the #{which_link} browse similar link"
+    snapshot
+    
+    begin        
+      @sesh.click_link 'sim' + (which_link-1).to_s
+    rescue Exception => e
+      report_error "Error with box number #{which_link} \n" + e.type.to_s + e.message.to_s
+    else
+      assert_not_error_page
+      assert_well_formed_page
+      assert_num_printers_decreased
+    end
+   
+    log "Done testing browse similar"
+  end
+    
+  def test_search_for query
+    log "Searching for " + query
+    snapshot
+    
+    begin        
+      @sesh.fill_in "search", :with => query
+      @sesh.click_button "submit_button" 
+    rescue Exception => e
+      report_error "Error with search string '" + query + "'" + "\n" + e.type.to_s + e.message.to_s
+    else
+      assert_not_error_page
+      assert_well_formed_page
+      
+      if @sesh.no_printers_found_msg?
+        assert_clear_search_links_same
+      else
+        assert_has_search_history
+      end
+      
+    end
+    
+    log "Done searching"
+  end
+  
+   def test_remove_search
+     log "Testing clear search history"
+     snapshot
+     begin
+       @sesh.click_link 'clearsearch'
+     rescue Exception => e
+       report_error "Clear search history error, " + e.type.to_s + e.message.to_s
+     else
+     # TODO more asserts?
+      assert_not_error_page
+      assert_well_formed_page
+      
+      assert_search_history_clear
+      assert_brands_same
+      assert_saveds_same
+      assert_session_id_same
+    end
+    log "Done testing clear search history."
+   end
+   
+   def test_add_brand brand
+     log "Adding brand " + @sesh.brand_name(brand)
+     # Preconditions & stuff.
+     snapshot
+     @brand_selected_before = @sesh.brand_selected? brand
+     
+     begin 
+       @sesh.select_brand brand
+       @sesh.submit_form "filter_form"           
+     rescue Exception => e # This detects crashing.
+       report_error e.type.to_s + " with " + @sesh.brand_name(brand) + ", message:" + e.message.to_s
+     else
+       assert_not_error_page
+       assert_well_formed_page
+       
+       if @sesh.brand_name(brand) == "All Brands" or @sesh.brand_name(brand) == "Add Another Brand"
+         assert_brands_same
+         assert_num_printers_same
+       elsif brand == 0
+         puts "But it should be going to the loop above"
+         
+       elsif @brand_selected_before
+         log "This brand was selected before."
+         assert_num_printers_same
+         assert_brand_selected brand
+       
+       elsif @sesh.no_printers_found_msg?
+         log "There were no printers found for this brand."
+         assert_brand_deselected brand
+         assert_num_printers_same
+         assert_brands_same
+       
+       else
+         assert_brand_selected brand
+         # TODO other asserts!
+       end
+         
      end
+     
+     log "Done testing add brand " + @sesh.brand_name(brand)
+   end
+   
+   def test_remove_brand which_brand
+     report_error "Please implement test_remove_brand. (Requires Selenium.) This test will be ignored and no code will be run."
+     #snapshot
+     #begin
+    #   removed_name = @sesh.remove_nth_selected_brand(which_brand)
+    # rescue Exception => e
+    #   report_error "Error removing #{which_brand}th brand. " + e.type.to_s + e.message.to_s
+    # else
+    #   removed_id = @sesh.brand_id removed_name
+    #   log "Removing #{removed_id}th brand selected: " + removed_name
+    #   assert_brand_deselected removed_id
+    # end
+   end
+   
+   def test_status_quo
+     log "Testing status quo (not doing anythign)"
+     
+     snapshot
+     
+     assert_brands_same
+     assert_saveds_same
+     assert_num_printers_same
+     assert_clear_search_links_same
+     assert_session_id_same
+     log "Done testing status quo"
+   end
+  
+   # ------ ASSERTS ------ #
+   
+   def assert_no_results_msg_displayed
+     report_error "No results msg hidden" if !@sesh.no_printers_found_msg?
+   end
+   
+   def assert_no_results_msg_hidden
+     report_error "No results msg displayed" if @sesh.no_printers_found_msg?
+   end
+   
+   def assert_not_error_page
+     report_error "Error page displayed" if @sesh.error_page?
+   end
+
+   def assert_well_formed_page
+     
+     # More than 0 boxes
+     report_error "No borderboxes" if @sesh.num_boxes == 0
+     
+     if @sesh.num_printers <= 9  
+       
+       if @sesh.num_similar_links > 0
+         report_error "Browse similar links available when browsing less than 9 printers"
+       end
+       
+       if @sesh.num_boxes !=@sesh.num_printers
+          report_error @sesh.num_boxes.to_s + " boxes but " + @sesh.num_similar_links.to_s +  " 'explore similar' links."
+       end
+       
+     end
+     
+     if @sesh.num_printers > 9 and @sesh.num_similar_links == 0
+       report_error "Browse similar links not available when browsing more than 9 printers"
+     end
+       
+     if @sesh.num_boxes < 9 and @sesh.num_printers >= 9
+       report_error "Less than 9 borderboxes for 9 or more printers"
+     end
+     
+     # TODO other checks?
+     
+   end
+   
+   def assert_brand_selected brand
+     report_error @sesh.brand_name(brand) +" not selected" unless (@sesh.brand_selected?(brand))
+   end
+   
+   def assert_brand_deselected brand
+     report_error @sesh.brand_name(brand) + ", brand number #{brand}, selected" if @sesh.brand_selected? brand
+   end
+   
+  def assert_brands_same
+    report_error "# of brands was changed." if @sesh.num_brands_selected != @num_brands_selected_before
   end
   
-  # Tells you if there is a "No printers selected" message displayed.
-  def none_selected?(doc)
-    # Message is in the first span tag in the div with id main.
-    msg_span = doc.css(".main span").first.content.to_s
-    # TODO we should give this span tag an id! 
-    printer_phrase = msg_span.match('No products ').to_s
-    return (printer_phrase.length > 0)
+  def assert_brands_clear
+    report_error "Brands not cleared" if @sesh.num_brands_selected != 0 
   end
   
-  # Returns the number of printers on a printers/list type page.
-  # Very useful for checking if filtering did anything.
-  def num_printers(doc)
-    leftbar = doc.css("#leftbar").first.content.to_s
-    printer_phrase = leftbar.match('Browsing \d+ Printers').to_s
-    num_printers = printer_phrase.match('\d+').to_s
-    return num_printers
+  def assert_slider_range slider, min, max
+    actual_min = @sesh.current_slider_min slider
+    actual_max = @sesh.current_slider_max slider
+    if actual_min != min or actual_max != max
+      report_error "Slider " + @sesh.slider_name(slider) + " has wrong range. Expected (#{min},#{max}) and got (#{actual_min}, #{actual_max}). " 
+    end
   end
   
-  # Returns true if the page's response is the error page.
-  # TODO doesn't work too well.
-  def error_page?(sesh)
-     return true if sesh.current_url == "http://localhost:3000/error"
-     return true if "http://localhost:3000/error".eql?(sesh.current_url) 
-     doc = sesh.response.parser
-     bd_div = doc.css('div.bd').first.content.to_s
-     err_msg = bd_div.match("We're sorry but the website has experienced an error").to_s
-     return true if err_msg.length > 0
-     return false
+  def assert_sliders_clear
+    # All sliders' current max/min match absolute max/min
+    (0..@sesh.num_sliders-1).each do |slider|
+       if @sesh.current_slider_min( slider ) != @sesh.slider_min( slider )
+         report_error "Slider min not reset for " + @sesh.slider_name( slider ) + ", ie slider #{slider}"
+         report_error "Expected " + @sesh.slider_min(slider).to_s + ", got " + @sesh.current_slider_min(slider).to_s
+       end 
+       if @sesh.current_slider_max (slider) != @sesh.slider_max (slider)
+         report_error "Slider max not reset for " + @sesh.slider_name (slider) + ", ie slider #{slider}"
+         report_error "Expected " + @sesh.slider_max(slider).to_s + ", got " + @sesh.current_slider_max(slider).to_s
+       end
+    end
+  end
+ 
+  def assert_saveds_incremented
+   if @sesh.num_saved_items == @num_saved_items_before
+     report_error "Saved item not added" 
+   elsif @sesh.num_saved_items != @num_saved_items_before + 1
+     report_error "Weird number of saved items: was #{@num_saved_items_before}, now " + @sesh.num_saved_items.to_s
+   end
+  end
+
+  def assert_saveds_same
+    report_error "# of saved items was changed." if @sesh.num_saved_items != @num_saved_items_before
+  end
+   
+  def assert_saveds_clear
+    report_error "Saved printers not cleared" if @sesh.num_saved_items != 0 
   end
   
-  def close_log(logfile)
-      puts "Test completed. Log file at " + logfile.path
-      logfile.close
+  def assert_browsing_all_printers
+  # Total printers = current browsing printers
+    report_error "Not all printers displayed" if @sesh.total_printers != @sesh.num_printers
+  
+  end
+  
+  def assert_num_printers_decreased
+    if @sesh.num_printers >= @num_printers_before
+      report_error "Number of printers browsed not decreased: was #{@num_printers_before}, now " + @sesh.num_printers.to_s 
+    end
+  end
+  
+  def assert_num_printers_same
+    if @sesh.num_printers != @num_printers_before
+      report_error "Number of printers browsed changed. Was #{@num_printers_before}, now " + @sesh.num_printers.to_s
+    end
+  end
+  
+  def assert_num_printers_increased
+    if @sesh.num_printers <= @num_printers_before
+      report_error "Number of printers browsed not increased: was #{@num_printers_before}, now " + @sesh.num_printers.to_s 
+    end
+     
+  end
+  
+  def assert_clear_search_links_same
+    if @sesh.num_clear_search_links != @num_clear_search_links_before
+      report_error "Different number of Clear Search link" 
+    end
+  end
+  
+  def assert_has_search_history
+    if @sesh.num_clear_search_links == 0
+      report_error "No Clear Search link" 
+    end
+  end
+  
+  def assert_search_history_clear
+    report_error "Search not cleared" if @sesh.num_clear_search_links != 0
+  end
+  
+  def assert_session_id_same
+    report_error "Session ID changed" if @sesh.session_id != @session_id_before
+  end
+  
+  def assert_session_id_changed
+    report_error "Session ID same" if @sesh.session_id == @session_id_before
+  end
+  
+ 
+ # ---------------- OTHER HELPER METHODS ----------------- #
+ 
+  # Take a 'snapshot' of the current page for comparison for later.
+  def snapshot
+    @num_printers_before = @sesh.num_printers
+    @num_brands_selected_before = @sesh.num_brands_selected
+    @num_boxes_before = @sesh.num_boxes
+    @num_saved_items_before = @sesh.num_saved_items
+    @num_similar_links_before = @sesh.num_similar_links
+    @num_clear_search_links_before = @sesh.num_clear_search_links
+    @session_id_before = @sesh.session_id 
+    @no_printers_found_msg_before = @sesh.no_printers_found_msg?
+    @error_page_before = @sesh.error_page?
+    @url_before = @sesh.current_url
+    @history.push @sesh.current_url
+  end
+  
+  def log msg
+    @logfile.puts "LOGGER      " + msg
+  end
+  
+  def report_error msg
+    @sesh.report_error msg
+  end
+  
+  def close_log
+      puts "Test completed. Log file at " + @logfile.path
+      @logfile.close
   end
   
   def setup_log(name)
-    file = File.open("./log/printertest_"+name+".log", 'w+')
+    @logfile = File.open("./log/printertest_"+name+".log", 'w+')
   end
-  
-  # Puts the error both in the logfile and on the console.
-  def report_error(logfile, msg)
-    logfile.puts "ERROR  " + msg
-    puts "ERROR " + msg
+
+  def setup logname
+    setup_env
+    setup_log logname 
+    @sesh = TestSession.new @logfile
+    @history = []
+    snapshot
   end
-  
-  # Gets the homepage and makes sure nothing crashed.
-  def get_homepage(my_session, log) # TODO my_session,log
-    # Check that it doesn't give you error page right away
-    my_session.visit "http://localhost:3000/"
-    if error_page?(my_session)
-      report_error(log, "Error loading homepage")
-      raise "Error loading homepage" # TODO Should we just log it instead of throwing an exception?
-    end
-    
-  end
-  
-  # Gets printer brand name list from drop-down menu on main page
-  def get_avail_printer_brands( sesh, log)
-    get_homepage(sesh, log)
-    doc = sesh.response.parser
-    selector_options = doc.css("#myfilter_brand option")
-    brand_names = []
-    selector_options.each { |opt| brand_names << opt.attribute("value").to_s}
-    return brand_names
-  end
-  
+
   # Sets up env and related stuff
-  def setup()
-    # Check for all the right configs
-    raise "Rails test environment not being used." if ENV["RAILS_ENV"] != 'test' 
-    #raise  "Forgery protection turned on in test environment."  if (ActionController::Base.allow_forgery_protection) 
-    
-    # Requires.
+  def setup_env
+   # Check for all the right configs
+   #raise "Rails test environment not being used." if ENV["RAILS_ENV"] != 'test' 
+   #raise  "Forgery protection turned on in test environment."  if (ActionController::Base.allow_forgery_protection) 
+   
+ # Requires.
     require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
+    require 'nokogiri'
     require 'webrat'
     require 'mechanize' # Needed to make Webrat work
-    
-    Webrat.configure do |conf|
-      conf.mode = :mechanize # Can't be rails or Webrat won't work
-    end
-
-  end
+    require 'test_session'
   
+     Webrat.configure do |conf| 
+      conf.mode = :mechanize  # Can't be rails or Webrat won't work 
+      conf.parse_with_nokogiri = true
+     end
+     WWW::Mechanize.html_parser = Nokogiri::HTML
+   end
+
 end

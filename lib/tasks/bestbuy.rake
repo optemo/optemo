@@ -3,8 +3,8 @@ task :bb_rss => :environment do
   require 'simple-rss'
   require 'open-uri'
   require 'Nokogiri'
-  #source = "http://www.bestbuy.ca/RSSFEeds/GetProductsFeedForMobile.aspx?langid=EN" # url or local file
-  source = "./tmp/bbdata.rss"
+  source = "http://www.bestbuy.ca/RSSFEeds/GetProductsFeedForMobile.aspx?langid=EN" # url or local file
+  #source = "./tmp/bbdata.rss"
   SimpleRSS.item_tags = SimpleRSS.item_tags + %w(FS:CategoryID FS:Manufacturer FS:ProvinceCode FS:ImageUrl FS:LongDescription FS:ItemSpecs FS:CatGroup FS:CatDept FS:CatClass FS:CatSubClass FS:Price)
   
   rss = SimpleRSS.parse open(source)
@@ -23,23 +23,39 @@ task :bb_rss => :environment do
   #end
   #puts rss.items[0].FS_CategoryID
   #puts item.FS_ItemSpecs
-  h = {} #Products Hash
   atts = []
   rss.items.each do |item|
     doc = Nokogiri::XML(item.FS_ItemSpecs)
     if doc.css('ATT').count > 10
       #puts item.title + ' - ' + item.guid
-      h[item.guid] = {}
+      h = {}
+      h['guid'] = item.guid
+      h['title'] = item.title
+      h['description'] = item.description
+      h['link'] = item.link
+      h['category'] = item.category
+      h['CategoryID'] =      item.FS_CategoryID
+      h['Manufacturer'] =    item.FS_Manufacturer
+      h['ProvinceCode'] =    item.FS_ProvinceCode
+      h['ImageUrl'] =        item.FS_ImageUrl
+      h['LongDescription'] = item.FS_LongDescription
+      h['CatGroup'] =        item.FS_CatGroup
+      h['CatDept'] =         item.FS_CatDept
+      h['CatClass'] =        item.FS_CatClass
+      h['CatSubClass'] =     item.FS_CatSubClass
+      h['Price'] =           item.FS_Price
+      
       doc.css('ATT').each do |a_tag|
-        h[item.guid][a_tag.css('ATT_NAME')[0].content] = a_tag.css('ATT_VALUE')[0].content
-        
-        atts << a_tag.css('ATT_NAME')[0].content.gsub(/\(.*\)|\/.*/,'').tr(' .()','')
+        key = a_tag.css('ATT_NAME')[0].content.gsub(/\(.*\)|\/.*/,'').tr(' .()','')
+        #Special Cases
+        key = 'OrderConditions' if key == 'OrderConditons'
+        key = 'CustomizableRingTones' if key == 'CustomizableRingtones'
+        h[key] = a_tag.css('ATT_VALUE')[0].content
       end
+      b = BestBuyPhone.new(h)
+      b.save if b
     end
   end
-  puts atts.uniq.sort
-  puts h.length
-  puts atts.uniq.count
   
   #puts rss.items[2].FS_ItemSpecs
   #print "title of first item: ", rss.items[0].title, "\n"
@@ -48,13 +64,6 @@ task :bb_rss => :environment do
   #print "date of first item: ", rss.items[0].date, "\n"
 end
 
-#<IA SKU_ID="0926INGFS10113411" FS_SKU_ID="10113411" MFG_PART_NUM="G384 TRAIL BAG">
-#	<ATT DEF_AVAIL="False" ATT_ID="WEBCODE">
-#		<ATT_NAME><![CDATA[Web Code]]></ATT_NAME>
-#		<ATT_VALUE><![CDATA[10113411]]></ATT_VALUE>
-#	</ATT>
-#	<ATT DEF_AVAIL="False" ATT_ID="MFRPARTNUM">
-#		<ATT_NAME><![CDATA[Mfr. Part Number]]></ATT_NAME>
-#		<ATT_VALUE><![CDATA[G384 TRAIL BAG]]></ATT_VALUE>
-#	</ATT>
-#</IA>
+task :clean => :environment do
+  
+end

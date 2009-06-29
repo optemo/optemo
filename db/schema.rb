@@ -26,6 +26,104 @@ ActiveRecord::Schema.define(:version => 20090622171904) do
     t.datetime "scrapedAt"
   end
 
+<<<<<<< HEAD:db/schema.rb
+=======
+  create_table "best_buy_offerings", :force => true do |t|
+    t.integer  "retailer_offering_id"
+    t.string   "bb_class"
+    t.integer  "classId"
+    t.string   "subclass"
+    t.integer  "subclassId"
+    t.integer  "productId"
+    t.string   "department"
+    t.integer  "departmentId"
+    t.string   "type"
+    t.string   "categoryPath"
+    t.string   "addToCartUrl"
+    t.string   "affiliateUrl"
+    t.string   "affiliateAddToCartUrl"
+    t.string   "mobileUrl"
+    t.string   "url"
+    t.string   "cjAffiliateUrl"
+    t.string   "cjAffiliateAddToCartUrl"
+    t.string   "sku"
+    t.string   "warrantyParts"
+    t.string   "warrantyLabor"
+    t.boolean  "bb_new"
+    t.boolean  "nationalFeatured"
+    t.boolean  "navigability"
+    t.datetime "releaseDate"
+    t.datetime "startDate"
+    t.datetime "itemUpdateDate"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "best_buy_phones", :force => true do |t|
+    t.string   "title"
+    t.string   "description"
+    t.string   "link"
+    t.string   "category"
+    t.string   "guid"
+    t.string   "CategoryID"
+    t.string   "Manufacturer"
+    t.string   "ProvinceCode"
+    t.string   "ImageUrl"
+    t.string   "LongDescription"
+    t.string   "CatGroup"
+    t.string   "CatDept"
+    t.string   "CatClass"
+    t.string   "CatSubClass"
+    t.string   "Price"
+    t.string   "BacklitKeypad"
+    t.string   "BatteryType"
+    t.string   "CPUSpeed"
+    t.string   "Calculator"
+    t.string   "Calendar"
+    t.string   "Carrier"
+    t.string   "ChangeableFaceplateCapable"
+    t.string   "ConnectionPort"
+    t.string   "CustomizableRingTones"
+    t.string   "DataCapabilities"
+    t.string   "DisplayType"
+    t.string   "ExpansionSlots"
+    t.string   "Extras"
+    t.string   "FlashUpgradeable"
+    t.string   "Games"
+    t.string   "HandsfreeSpeakerphone"
+    t.string   "IncludedInBox"
+    t.string   "KeyboardType"
+    t.string   "KeypadLock"
+    t.string   "MP3Capable"
+    t.string   "MemorySize"
+    t.string   "MfrPartNumber"
+    t.string   "ModemType"
+    t.string   "NumberofDisplayLines"
+    t.string   "NumberofModes"
+    t.string   "OperatingSystem"
+    t.string   "OperatingSystemCompatibility"
+    t.string   "OrderConditions"
+    t.string   "PhoneBookCapacity"
+    t.string   "ProductDimensions"
+    t.string   "ProductWarranty"
+    t.string   "ProductWeight"
+    t.string   "ROMSize"
+    t.string   "Resolution"
+    t.string   "Spreadsheet"
+    t.string   "StandbyTime"
+    t.string   "StylusEntry"
+    t.string   "SupportsCallerID"
+    t.string   "TalkTime"
+    t.string   "VibrateMode"
+    t.string   "VoiceRecording"
+    t.string   "WebBrowser"
+    t.string   "WebCode"
+    t.string   "WordProcessor"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+>>>>>>> e368e258ef0d77f58e78a2cde92fd50706822805:db/schema.rb
   create_table "best_buy_printers", :force => true do |t|
     t.string   "bb_class"
     t.integer  "classId"
@@ -123,6 +221,7 @@ ActiveRecord::Schema.define(:version => 20090622171904) do
   create_table "camera_features", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "session_id"
     t.string   "brand",                  :default => "All Brands"
     t.float    "maximumresolution_min"
     t.float    "maximumresolution_max"
@@ -245,7 +344,7 @@ ActiveRecord::Schema.define(:version => 20090622171904) do
     t.float    "ppm"
     t.float    "itemwidth"
     t.float    "paperinput"
-    t.float    "resolutionarea"
+    t.float    "resolutionmax"
   end
 
   create_table "newegg_printers", :force => true do |t|
@@ -331,6 +430,10 @@ ActiveRecord::Schema.define(:version => 20090622171904) do
     t.datetime "updated_at"
   end
 
+  create_table "optemo_development", :force => true do |t|
+    t.string "label", :limit => 1
+  end
+
   create_table "printer_clusters", :force => true do |t|
     t.integer "parent_id"
     t.integer "layer"
@@ -353,22 +456,25 @@ ActiveRecord::Schema.define(:version => 20090622171904) do
   create_table "printer_features", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "brand",               :default => "All Brands"
+    t.integer  "session_id"
     t.float    "ppm_min"
     t.float    "ppm_max"
-    t.float    "ppm_pref",            :default => 0.2
+    t.float    "ppm_pref",           :default => 0.2
     t.float    "itemwidth_min"
     t.float    "itemwidth_max"
-    t.float    "itemwidth_pref",      :default => 0.2
+    t.float    "itemwidth_pref",     :default => 0.2
     t.float    "paperinput_min"
     t.float    "paperinput_max"
-    t.float    "paperinput_pref",     :default => 0.2
-    t.float    "resolutionarea_min"
-    t.float    "resolutionarea_max"
-    t.float    "resolutionarea_pref", :default => 0.2
+    t.float    "paperinput_pref",    :default => 0.2
+    t.float    "resolutionmax_min"
+    t.float    "resolutionmax_max"
+    t.float    "resolutionmax_pref", :default => 0.2
     t.float    "price_min"
     t.float    "price_max"
-    t.float    "price_pref",          :default => 0.2
+    t.float    "price_pref",         :default => 0.2
+    t.string   "brand",              :default => "All Brands"
+    t.boolean  "scanner"
+    t.boolean  "printserver"
   end
 
   create_table "printer_nodes", :force => true do |t|
@@ -547,6 +653,7 @@ ActiveRecord::Schema.define(:version => 20090622171904) do
     t.boolean  "filter"
     t.string   "searchterm"
     t.text     "searchpids"
+<<<<<<< HEAD:db/schema.rb
     t.float    "maximumresolution_min"
     t.float    "maximumresolution_max"
     t.float    "maximumresolution_pref", :default => 0.0
@@ -574,6 +681,8 @@ ActiveRecord::Schema.define(:version => 20090622171904) do
     t.string   "brand",                  :default => "All Brands"
     t.boolean  "scanner"
     t.boolean  "printserver"
+=======
+>>>>>>> e368e258ef0d77f58e78a2cde92fd50706822805:db/schema.rb
   end
 
   create_table "vieweds", :force => true do |t|
