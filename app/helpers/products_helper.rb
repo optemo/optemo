@@ -53,8 +53,13 @@ def zipStack(stack)
      s = stack[-1-i]
      ls = @z.map{|r| r.layer}
    
-     if ((ls.index(s.layer).nil?) && (ls[-1] > s.layer))
-       @z.unshift(s) 
+     if (ls.index(s.layer).nil?)
+       #debugger
+        if (ls.empty?)
+          @z.unshift(s)
+        elsif (ls[0] > s.layer)
+          @z.unshift(s) 
+        end  
      end   
      i = i+1
    end    
