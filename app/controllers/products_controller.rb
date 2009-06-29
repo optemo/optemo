@@ -8,9 +8,6 @@ class ProductsController < ApplicationController
   # GET /products
   # GET /products.xml
   def index
-    mysession = Session.find(session[:user_id])
-    mysession.clearFilters
-    @pt = session[:productType] || $DefaultProduct
     homepage
   end
   
@@ -19,7 +16,6 @@ class ProductsController < ApplicationController
     @pt = session[:productType] || $DefaultProduct
     @dbfeat = {}
     DbFeature.find_all_by_product_type(@pt).each {|f| @dbfeat[f.name] = f}
-    #Previously clicked product
     @searches = [Search.find_by_session_id(@session.id, :order => 'updated_at desc')]
     @s = Search.searchFromPath(params[:path_info], @session.id)
     @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
@@ -57,10 +53,13 @@ class ProductsController < ApplicationController
   private
   
   def homepage
+    mysession = Session.find(session[:user_id])
+    mysession.clearFilters
+    @pt = session[:productType] || $DefaultProduct
     if @pt == 'Printer' && s = Search.find_by_session_id(0)
-      path = s.to_s
+      path = s.cluster_count.times.map{|i| s.send(:"c#{i}")}.join('/')
     else
-      path = PrinterCluster.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
+      path = $clustermodel.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
     end
     if path
       redirect_to "/#{@pt.pluralize.downcase}/list/"+path

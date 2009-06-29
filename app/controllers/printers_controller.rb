@@ -1,6 +1,6 @@
 class PrintersController < ProductsController
   before_filter :pickProduct
-  
+
   def pickProduct
     session[:productType] = 'Printer'
     s = Session.find(session[:user_id])
@@ -8,5 +8,6 @@ class PrintersController < ProductsController
     $model = Printer
     $nodemodel = PrinterNode
     $clustermodel = PrinterCluster
+    $featuremodel = PrinterFeatures
   end
 end

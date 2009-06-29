@@ -12,6 +12,8 @@ class Camera < ActiveRecord::Base
   BinaryFeatures = []
   ContinuousFeaturesDisp = %w(Megapixels Display\ Size Optical\ Zoom)
   ContinuousFeaturesLabel = Hash[*ContinuousFeatures.zip(['','in','X']).flatten]
+  ContinuousFeaturesDescLow = Hash[*ContinuousFeatures.zip(['Low Resolution', 'Small Screen', 'Low Zoom', 'Cheap']).flatten]
+  ContinuousFeaturesDescHigh = Hash[*ContinuousFeatures.zip(['High Resolution', 'Large Screen', 'High Zoom', 'Expensive']).flatten]
   ShowFeatures = %w(brand model maximumresolution opticalzoom digitalzoom displaysize maximumfocallength minimumfocallength batterydescription hasredeyereduction itemweight itemwidth packagewidth)
   ShowFeaturesDisp = %w(Brand Model Megapixels Optical\ Zoom Digital\ Zoom Display\ Size Maximum\ Focal\ Length Minimum\ Focal\ Length Battery Red\ Eye\ Reduction Weight Camera\ Width Package\ Width)
 

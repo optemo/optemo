@@ -1,6 +1,6 @@
 <div class="cell">
 	<!-- If the interesting feature should be displayed then display -->
-	<% if @interestingFeatureDisplayed[countVar] == true %>
+	<% if @interestingFeatureDisplayed[column] == true %>
 		<td>
 		<% if column == 'brand'%>
 			<%= product.display(column) + ' ' + product.display('model') %>
