@@ -78,7 +78,7 @@ class ProductsController < ApplicationController
     mysession.clearFilters
     @pt = session[:productType] || $DefaultProduct
     if @pt == 'Printer' && s = Search.find_by_session_id(0)
-      path = s.cluster_count.times.map{|i| s.send(:"c#{i}")}.join('/')
+      path = 0.upto(s.cluster_count-1).map{|i| s.send(:"c#{i}")}.join('/')
     else
       path = $clustermodel.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
     end
