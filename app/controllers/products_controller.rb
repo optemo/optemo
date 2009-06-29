@@ -8,7 +8,6 @@ class ProductsController < ApplicationController
   # GET /products
   # GET /products.xml
   def index
-<<<<<<< HEAD:app/controllers/products_controller.rb
     mysession = Session.find(session[:user_id])
     mysession.clearFilters
     #c = CQuery.new(session[:productType] || $DefaultProduct)
