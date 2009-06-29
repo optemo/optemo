@@ -122,7 +122,6 @@ $(document).ready(function() {
 	});
 
 	sum = 0.0
-	
 	$(".preferenceSlider").each(function() {
 		prefVal = parseInt($(this).attr('pref-value'));
 		$(this).slider({
@@ -131,31 +130,44 @@ $(document).ready(function() {
 			step: 1,
 			// value: (Get value of preferences from session) 
 			value: prefVal,
-			// setting slide to false can prevent user from sliding further. This can constrain the sum of values of sliders to be <= 1
+			start: function(e, ui)
+			{
+				sum = 0.0;
+				$('.preferenceSlider').each(function(){
+					sum = sum + $(this).slider('option', 'value');					
+				})				
+			 	if(sum >= 100)	
+				{
+					sum = -1.0; 	
+				}
+			},
+			// Sliders have to be dragged slowly, otherwise they exceed the 100 limit before event gets raised
 			slide: function(e,ui)
 			{
-				$('.sliderlabel', this).html(ui.value/100);
-				// ToDo:
-				// Put a check here to ensure that the 4 preferences always sum up to 1.
-				/*$('.preferenceSlider').each(function(){
+				// Check to ensure that the preferences always sum up to less than or equal to 1.
+				$('.preferenceSlider').each(function(){
 					sum = sum + $(this).slider('option', 'value');					
 				})				
 				if (sum >= 100)
 				{
 					currValue = ui.value;
-					autoVal = currValue-sum+100;
-					//alert("this val should be= " + newVal);
-					$('this').slider('option', 'value', autoVal);
+					autoValue = currValue - sum + 100;
+					// alert("this val should be= " + autoValue);
+					$('this').slider('option', 'value', autoValue);					
+					sum = 0.0;
+					return false;
 				}
-				sum = 0.0*/			
+				else
+				{
+					$('.sliderlabel', this).html(ui.value/100);
+				}
+				sum = 0.0				
 			},
 			stop: function(e,ui) 
 			{
 					$(this).siblings('.prefValue').attr('value',ui.value/100);
-					alert("success");
 					// $(this).attr('pref-value',ui.value);					
 					$('#preference_form').submit();
-					
 			}
 		});
 		$('a', this).html('<div class="sliderlabel">' + prefVal/100 + '</div>')

@@ -57,12 +57,12 @@ class ProductsController < ApplicationController
   
   def preference
      @session = Session.find(session[:user_id])
-     mypreference = params[:mypreference]
-     pricePref = mypreference[:price_pref]
+     mypreferences = params[:mypreference]
      $model::ContinuousFeatures.each do |f|
-       @session.features.update_attribute(f+"_pref", mypreference[f+"_pref"])
+       @session.features.update_attribute(f+"_pref", mypreferences[f+"_pref"])
      end
-     redirect_to "www.google.com"
+     # To stay on the current page 
+     redirect_to ""
    end
    
 end
