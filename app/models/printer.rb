@@ -25,6 +25,6 @@ class Printer < ActiveRecord::Base
   def myvalid?
     instock && !(ppm.nil? || itemwidth.nil? || paperinput.nil? || price.nil? || resolutionarea.nil? || scanner.nil? || printserver.nil?)
   end
-  
+    
 end
 

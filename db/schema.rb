@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090624195931) do
+ActiveRecord::Schema.define(:version => 20090630220513) do
 
   create_table "amazon_groups", :force => true do |t|
     t.datetime "created_at"
@@ -462,8 +462,13 @@ ActiveRecord::Schema.define(:version => 20090624195931) do
     t.datetime "updated_at"
   end
 
-  create_table "optemo_development", :force => true do |t|
-    t.string "label", :limit => 1
+  create_table "preference_relations", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "session_id"
+    t.integer  "lower"
+    t.integer  "higher"
+    t.float    "weight"
   end
 
   create_table "printer_clusters", :force => true do |t|

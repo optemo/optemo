@@ -7,3 +7,7 @@ $PrefDirection["price"] = -1 # -1 for down direction for preferences
 $PrefDirection["itemwidth"] = -1
 
 $ProdTypeList = ['Printer','Camera']
+
+# Define weights assigned to user navigation tasks that determine preferences
+$Weight["representative"] = 10
+$Weight["saveit"] = 20
