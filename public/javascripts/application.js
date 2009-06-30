@@ -108,7 +108,11 @@ $(document).ready(function() {
 		$('a:last', this).html('<div class="sliderlabel">'+curmax+'</div>')
 		histogram($(this).siblings('.hist')[0],(sessmin-rangemin)/(rangemax-rangemin),(sessmax-rangemin)/(rangemax-rangemin));
 	});
-
+	
+	$(".usecase").click(function() { 
+		name = $(this).attr('data-name');
+		$.get('/products/select/'+name);
+	});
 	sum = 0.0
 	
 	$(".preferenceSlider").each(function() {

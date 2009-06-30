@@ -108,8 +108,8 @@ task :get_camera_attributes => :environment do
   r = res.first_item.search_and_convert('offers/offer')
   @camera.merchant = r.get('merchant/merchantid')
   @camera.condition = r.get('offerattributes/condition')
-  @camera.salepriceint = r.get('offerlisting/price/amount')
-  @camera.salepricestr = r.get('offerlisting/price/formattedprice')
+  @camera.price = r.get('offerlisting/price/amount')
+  @camera.pricestr = r.get('offerlisting/price/formattedprice')
   @camera.iseligibleforsupersavershipping = r.get('offerlisting/iseligibleforsupersavershipping')
   
   #Lookup images
@@ -323,8 +323,8 @@ def findprice(p)
     os.each do |o| 
       if o.stock && o.priceint && o.priceint < lowest
         lowest = o.priceint
-        p.salepriceint = lowest
-        p.salepricestr = o.pricestr
+        p.price = lowest
+        p.pricestr = o.pricestr
         p.bestoffer = o.id
         p.instock = true
       end
@@ -351,9 +351,9 @@ def saveoffer(p,retailer,merchant)
     elsif o.priceint != offer.get('offerlisting/price/amount')
       #Save old prices only if price has changed
       if o.pricehistory.nil?
-        o.pricehistory = [o.priceUpdate.to_s(:db), o.priceint].to_yaml
+        o.pricehistory = [o.priceUpdate.to_s(:db), o.priceint].to_yaml if o.priceUpdate
       else
-        o.pricehistory = (YAML.load(o.pricehistory) + [o.priceUpdate.to_s(:db), o.priceint]).to_yaml
+        o.pricehistory = (YAML.load(o.pricehistory) + [o.priceUpdate.to_s(:db), o.priceint]).to_yaml if o.priceUpdate
       end
     end
   end
@@ -372,6 +372,7 @@ def saveoffer(p,retailer,merchant)
     o.iseligibleforsupersavershipping = offer.get('offerlisting/iseligibleforsupersavershipping')
     o.merchant = merchant
     o.url = 'http://amazon.com/gp/product/'+p.asin+'?tag=optemo-20&m='+merchant
+    o.priceUpdate = Time.now.to_s(:db)
     o.save
   end
 end
