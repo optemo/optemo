@@ -46,10 +46,9 @@ ActionController::Routing::Routes.draw do |map|
   # Added route for changes preference by drag-drop
   # map.connect 'compare/list/*path_info', :controller => 'compare', :action => 'list'
   map.connect 'compare/*path_info', :controller => 'compare', :action => 'index'
-
-
   map.connect ':controller/:action/:id'
   map.connect ':controller/:action/:id.:format'
   map.connect ':controller/:action'
   map.connect ':action', :controller => 'content'
+  map.connect '*', :controller => 'content', :action => 'error'
 end
