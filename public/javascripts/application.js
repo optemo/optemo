@@ -120,42 +120,33 @@ $(document).ready(function() {
 			value: prefVal,
 			start: function(e, ui)
 			{
-				sum = 0.0;
-				$('.preferenceSlider').each(function(){
-					sum = sum + $(this).slider('option', 'value');					
-				})				
-			 	if(sum >= 100)	
-				{
-					sum = -1.0; 	
-				}
+				sum = 0;
 			},
-			// Sliders have to be dragged slowly, otherwise they exceed the 100 limit before event gets raised
+			// On slide, update the value of the text displayed under handle 
 			slide: function(e,ui)
 			{
-				// Check to ensure that the preferences always sum up to less than or equal to 1.
+				$('.sliderlabel', this).html(ui.value/100);		
+			},
+			// When stopped sliding, check for condition of sum of preferences <= 1
+			stop: function(e,ui) 
+			{
 				$('.preferenceSlider').each(function(){
 					sum = sum + $(this).slider('option', 'value');					
-				})				
-				if (sum >= 100)
+				})
+				if (sum > 100)
 				{
-					currValue = ui.value;
-					autoValue = currValue - sum + 100;
-					// alert("this val should be= " + autoValue);
-					$('this').slider('option', 'value', autoValue);					
-					sum = 0.0;
+					autoValue = $(this).slider('option', 'value')-(sum-100);
+					$(this).slider('option', 'value', autoValue);
+					$('.sliderlabel', this).html(autoValue/100);		
+					$(this).siblings('.prefValue').attr('value',autoValue/100);
+					$('#preference_form').submit();
 					return false;
 				}
 				else
 				{
-					$('.sliderlabel', this).html(ui.value/100);
-				}
-				sum = 0.0				
-			},
-			stop: function(e,ui) 
-			{
 					$(this).siblings('.prefValue').attr('value',ui.value/100);
-					// $(this).attr('pref-value',ui.value);					
 					$('#preference_form').submit();
+				}				
 			}
 		});
 		$('a', this).html('<div class="sliderlabel">' + prefVal/100 + '</div>')
