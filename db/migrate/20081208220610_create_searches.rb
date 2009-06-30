@@ -4,6 +4,7 @@ class CreateSearches < ActiveRecord::Migration
       t.primary_key :id
       t.integer :session_id
       t.integer :parent_id
+      t.integer :layer
       t.string :c0,:c1,:c2,:c3,:c4,:c5,:c6,:c7,:c8
       t.integer :cluster_count
       t.integer :result_count

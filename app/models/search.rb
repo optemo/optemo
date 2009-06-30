@@ -76,6 +76,8 @@ class Search < ActiveRecord::Base
     ns['session_id'] = session_id
     s = new(ns)
     s['result_count'] = s.result_count
+    s['parent_id'] = s.clusters.map{|c| c.parent_id}.sort[0]
+    s['layer'] = s.clusters.map{|c| c.layer}.sort[0]
     s.save
     s
   end
@@ -83,6 +85,10 @@ class Search < ActiveRecord::Base
   def to_s
     clusters.map{|c|c.id}.join('/')
   end
+  
+  def self.copySearch(olds)
+    news = Search.new(olds.attributes)
+  end  
   
   private
   

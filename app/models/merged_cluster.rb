@@ -19,6 +19,13 @@ class MergedCluster
     @clusters.map{|c|c.id}.join('+')
   end
   
+  def parent
+    @clusters.map{|c| c.parent}.sort[0]
+  end
+  
+  def layer
+    @clusters.map{|c| c.layer}.sort[0]
+  end    
   #The subclusters
   def children(session)
     @clusters

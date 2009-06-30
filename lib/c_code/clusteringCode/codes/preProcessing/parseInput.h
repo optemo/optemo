@@ -125,7 +125,7 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 			conFeatureNames[1]= "ppm";  
 		    conFeatureNames[2]= "itemwidth";
 		    conFeatureNames[3]= "paperinput";
-			conFeatureNames[4] = "resolutionarea";
+			conFeatureNames[4] = "resolutionmax";
 			
 			boolFeatureNames[0] = "scanner";
 			boolFeatureNames[1] = "printserver";
@@ -141,8 +141,8 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 			varNames[8] = "itemwidth_max";
 			varNames[9] = "paperinput_min";
 			varNames[10] = "paperinput_max";
-			varNames[11] = "resolutionarea_min";
-			varNames[12] = "resolutionarea_max";
+			varNames[11] = "resolutionmax_min";
+			varNames[12] = "resolutionmax_max";
 			varNames[13] = "scanner";
 			varNames[14] = "printserver";
 		    
@@ -151,7 +151,7 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 			indicatorNames[1] = "ppm";
 			indicatorNames[2] = "itemwidth";
 			indicatorNames[3] = "paperinput";
-			indicatorNames[4] = "resolutionarea";
+			indicatorNames[4] = "resolutionmax";
 			indicatorNames[5] = "scanner";
 			indicatorNames[6] = "printserver";
 		
@@ -239,11 +239,11 @@ int parseInput(string* varNames, map<const string, int>productNames, string prod
 			     	    filteredRange[3][1] = atof((argument.substr(startit, lengthit)).c_str());
 					   	conFilteredFeatures[3] = 1;		
 					}
-					else if (var == "resolutionarea_min"){
+					else if (var == "resolutionmax_min"){
 				     	filteredRange[4][0] = atof((argument.substr(startit, lengthit)).c_str());
 						conFilteredFeatures[4] = 1;		
 					}
-					else if (var == "resolutionarea_max"){
+					else if (var == "resolutionmax_max"){
 				     	filteredRange[4][1] = atof((argument.substr(startit, lengthit)).c_str());
 						conFilteredFeatures[4] = 1;		
 					}
