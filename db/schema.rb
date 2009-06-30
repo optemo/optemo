@@ -462,10 +462,6 @@ ActiveRecord::Schema.define(:version => 20090624195931) do
     t.datetime "updated_at"
   end
 
-  create_table "optemo_development", :force => true do |t|
-    t.string "label", :limit => 1
-  end
-
   create_table "printer_clusters", :force => true do |t|
     t.integer "parent_id"
     t.integer "layer"
@@ -657,6 +653,7 @@ ActiveRecord::Schema.define(:version => 20090624195931) do
   create_table "searches", :force => true do |t|
     t.integer  "session_id"
     t.integer  "parent_id"
+    t.integer  "layer"
     t.string   "c0"
     t.string   "c1"
     t.string   "c2"

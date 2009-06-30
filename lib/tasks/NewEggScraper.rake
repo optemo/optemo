@@ -1,8 +1,8 @@
 require 'rubygems'
-require 'scrubyt'
 
 desc "Scraping NewEgg"
 task :scrape_newegg => :environment do
+  require 'scrubyt'
   link ='http://www.newegg.com/Product/ProductList.aspx?Submit=ENE&N=2010270630&page=1&bop=And&Pagesize=20'
   product_data = Scrubyt::Extractor.define do
      fetch link 

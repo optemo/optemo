@@ -1,7 +1,6 @@
 desc "Discovering Amazon Categories"
 task :amazon_test => :environment do
   require 'rubygems'
-  require 'scrubyt'
  #$: << File.join(File.dirname(__FILE__), '..')
    #link = 'http://www.amazon.com/s/qid=1225325162/ref=sr_pg_2?ie=UTF8&rs=330405011&rh=n%3A502394%2Cn%3A281052%2Cn%3A330405011&page=1'
 link = "http://www.amazon.com/s/qid=1226364020/ref=sr_nr_p_display_size-bin_1/182-9087234-8363816?ie=UTF8&rs=330405011&bbn=330405011&rnid=15785001&rh=n%3A502394%2Cn%3A281052%2Cn%3A330405011%2Cp_4%3ACanon%2Cp_n_feature_two_browse-bin%3A405450011%2Cp_display_size-bin%3A00"
