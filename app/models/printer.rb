@@ -23,7 +23,7 @@ class Printer < ActiveRecord::Base
   InterestingFeatures = %w(brand price ppm ttp resolution colorprinter scanner printserver duplex connectivity papersize paperoutput dimensions dutycycle paperinput ppmcolor platform itemheight itemlength itemwidth itemweight packageheight packagelength packagewidth packageweight)
   DisplayedFeatures = %w(brand price ppm ttp resolution colorprinter scanner printserver duplex connectivity papersize paperoutput dutycycle paperinput ppmcolor platform itemdimensions itemweight packagedimensions packageweight)
   def myvalid?
-    instock && !(ppm.nil? || itemwidth.nil? || paperinput.nil? || price.nil? || resolutionarea.nil? || scanner.nil? || printserver.nil?)
+    instock && !(ppm.nil? || itemwidth.nil? || paperinput.nil? || price.nil? || resolutionmax.nil? || scanner.nil? || printserver.nil?)
   end
   
 end
