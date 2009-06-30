@@ -52,7 +52,7 @@ class ProductsController < ApplicationController
   def show
     @plain = params[:plain].nil? ? false : true
     #Cleanse id to be only numbers
-    params[:id].gsub!(/\D/,'')
+    params[:id] = params[:id][/^\d+/]
     pt = session[:productType] || $DefaultProduct
     @product = pt.constantize.find(params[:id])
     @offerings = RetailerOffering.find_all_by_product_id_and_product_type(params[:id],pt)
