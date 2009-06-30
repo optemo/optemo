@@ -60,6 +60,11 @@ function removeBrand(str)
 	$('#filter_form').submit();
 }
 
+function submitPreferences()
+{
+	$('#preference_form').submit();
+}
+
 $(document).ready(function() {
 	// ToDo: Add code for table drag drop here
 	
@@ -120,20 +125,27 @@ $(document).ready(function() {
 			value: prefVal,
 			start: function(e, ui)
 			{
-				sum = 0;
 			},
 			// On slide, update the value of the text displayed under handle 
 			slide: function(e,ui)
 			{
-				$('.sliderlabel', this).html(ui.value/100);		
+				$('.sliderlabel', this).html(" ");
 			},
 			// When stopped sliding, check for condition of sum of preferences <= 1
 			stop: function(e,ui) 
-			{
+			{	
+				sum = 0
 				$('.preferenceSlider').each(function(){
 					sum = sum + $(this).slider('option', 'value');					
 				})
-				if (sum > 100)
+				
+				$('.preferenceSlider').each(function(){
+					normValue = ($(this).slider('option', 'value')/sum);	// normValue is upto many decimal places
+					$('.sliderlabel', this).html(normValue.toFixed(2));		// Display only upto 2 decimal places
+					$(this).siblings('.prefValue').attr('value',normValue);
+				})
+				
+				/*if (sum > 100)
 				{
 					autoValue = $(this).slider('option', 'value')-(sum-100);
 					$(this).slider('option', 'value', autoValue);
@@ -146,7 +158,7 @@ $(document).ready(function() {
 				{
 					$(this).siblings('.prefValue').attr('value',ui.value/100);
 					$('#preference_form').submit();
-				}				
+				}*/				
 			}
 		});
 		$('a', this).html('<div class="sliderlabel">' + prefVal/100 + '</div>')

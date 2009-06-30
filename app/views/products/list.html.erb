@@ -43,8 +43,10 @@
 	<% form_tag("/products/preference/",{:id => 'preference_form'}) do %>
 		<!-- Preference partial to draw the preference controls -->
 	  	<%= render :partial => 'preference' %>
-	  	<br>
 	<% end %>
+	<div class="label">
+	<%= link_to 'Submit', 'javascript:submitPreferences()' %>
+	</div>
 </div>
 </div>
 

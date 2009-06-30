@@ -89,17 +89,6 @@ module ProductProperties
         when /resolution/: ' dpi'
         when /focal/: ' mm.'
         when /ttp/: ' seconds'
-        when /price/: 
-# => ToDo: Add code here to display commas in the price
-#          dataString = data.to_s % 3
-#          i = dataString.length
-#          while i <= data.to_s.length
-#           data = data[0..i] + ',' + data[i..data.length]
-#            i = i+4
-#          end
-          data = data/100.to_f
-          data = '$ ' + data.to_s
-          ''
         else ''
       end
     end
