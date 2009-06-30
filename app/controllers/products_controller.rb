@@ -16,10 +16,31 @@ class ProductsController < ApplicationController
     @session = Session.find(session[:user_id])
     @pt = session[:productType] || $DefaultProduct
     @dbfeat = {}
+    @s = Search.searchFromPath(params[:path_info], @session)
     DbFeature.find_all_by_product_type(@pt).each {|f| @dbfeat[f.name] = f}
-    @searches = [Search.find_by_session_id(@session.id, :order => 'updated_at desc')]
-    @s = Search.searchFromPath(params[:path_info], @session.id)
+    @allSearches = Search.find_all_by_session_id(@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.minute.ago}\'")
     @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
+    @z = zipStack(@allSearches) 
+    unless ((@z.empty?) || (@z.nil?))
+      @layer = @z[-1].layer
+      l = @z[0].layer
+      unless l == 1 # can't reach the first layer in the given time frame
+           pid =  @z[0].parent_id
+           r = Search.new 
+           cluster = $clustermodel.find(pid)            
+           while (l>1)
+              mycluster = 'c0'
+              ppid = cluster.parent_id  
+              cs = $clustermodel.find_all_by_parent_id(ppid)
+              cs.each do |c|
+                r[mycluster] = c.id.to_s
+                mycluster.next!
+              end  
+           end   
+           r['parent_id'] = pid2
+           @z.unshift(r)
+      end
+    end   
     #No products found
     if @s.result_count == 0
       flash[:error] = "No products were found, so you were redirected to the home page"
@@ -34,7 +55,7 @@ class ProductsController < ApplicationController
     #Cleanse id to be only numbers
     params[:id] = params[:id][/^\d+/]
     pt = session[:productType] || $DefaultProduct
-    @product = $model.find(params[:id])
+    @product = pt.constantize.find(params[:id])
     @offerings = RetailerOffering.find_all_by_product_id_and_product_type(params[:id],pt)
     #Session Tracking
     s = Viewed.new
