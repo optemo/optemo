@@ -10,15 +10,13 @@ class Session < ActiveRecord::Base
     Session.column_names.delete_if{|i| %w(id created_at updated_at ip parent_id product_type).index(i)}.each do |name|
       send((name+'=').intern, Session.columns_hash[name].default)
     end
+    save
     # In Product-features table,
     # Set all attributes (EXCEPT id,session_id, created_at, updated_at & all the preference values) to defaults
-    save
-    if (!product_type.nil?)
-      (product_type + 'Features').constantize.column_names.delete_if {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at'}.each do |name|
-        features.send((name+'=').intern, (product_type + 'Features').constantize.columns_hash[name].default)
-      end
-      features.save
+    $featuremodel.column_names.delete_if {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at'}.each do |name|
+      features.send((name+'=').intern, $featuremodel.columns_hash[name].default)
     end
+    features.save
   end
   
   def self.ip_uniques
@@ -80,6 +78,11 @@ class Session < ActiveRecord::Base
   
   def features=(f)
     @features = f
+  end
+  
+  def defaultFeatures(mode)
+    update_attribute('filter', true)
+    features.update_attributes($featuremodel.find($DefaultUses[mode]).attributes.delete_if{|k,v|v.nil? || k=='id' || k.index('_at')})
   end
         
   def features

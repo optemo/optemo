@@ -20,9 +20,16 @@ class CreatePrinterFeatures < ActiveRecord::Migration
         t.boolean f.intern
       end      
     end
+    loadUses
   end
 
   def self.down
     drop_table :printer_features
+  end
+  
+  def self.loadUses
+    YAML.load(File.open("#{RAILS_ROOT}/lib/uses.yml")).each do |k,v|
+        PrinterFeatures.new(v).save
+    end
   end
 end

@@ -8,6 +8,7 @@ class ProductsController < ApplicationController
   # GET /products
   # GET /products.xml
   def index
+    @link = initialClusters
     homepage
   end
   
@@ -31,7 +32,7 @@ class ProductsController < ApplicationController
   def show
     @plain = params[:plain].nil? ? false : true
     #Cleanse id to be only numbers
-    params[:id].gsub!(/\D/,'')
+    params[:id] = params[:id][/^\d+/]
     pt = session[:productType] || $DefaultProduct
     @product = $model.find(params[:id])
     @offerings = RetailerOffering.find_all_by_product_id_and_product_type(params[:id],pt)
@@ -60,6 +61,11 @@ class ProductsController < ApplicationController
      redirect_to ""
    end
    
+  def select
+    @session = Session.find(session[:user_id])
+    @session.defaultFeatures(URI.encode(params[:id]))
+  end
+  
   private
   
   def homepage
@@ -67,7 +73,7 @@ class ProductsController < ApplicationController
     mysession.clearFilters
     @pt = session[:productType] || $DefaultProduct
     if @pt == 'Printer' && s = Search.find_by_session_id(0)
-      path = s.cluster_count.times.map{|i| s.send(:"c#{i}")}.join('/')
+      path = 0.upto(s.cluster_count-1).map{|i| s.send(:"c#{i}")}.join('/')
     else
       path = $clustermodel.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
     end
@@ -77,5 +83,17 @@ class ProductsController < ApplicationController
       flash[:error] = "There was a problem selecting the initial products"
       redirect_to '/error'
     end
+  end
+  
+  def initialClusters
+    mysession = Session.find(session[:user_id])
+    mysession.clearFilters
+    @pt = session[:productType] || $DefaultProduct
+    if @pt == 'Printer' && s = Search.find_by_session_id(0)
+      path = 0.upto(s.cluster_count-1).map{|i| s.send(:"c#{i}")}.join('/')
+    else
+      path = $clustermodel.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
+    end
+    "/#{@pt.pluralize.downcase}/list/"+path
   end
 end

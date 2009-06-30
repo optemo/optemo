@@ -74,6 +74,10 @@ module ProductProperties
     [brand,model.split(' ')[0]].join(' ')
   end
   
+  def descurl
+    [id,brand,model].join('-')
+  end
+  
   def display(attr)
     data = self.send(attr)
     if data.nil?

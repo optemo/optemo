@@ -1,9 +1,8 @@
 require 'rubygems'
-require 'scrubyt'
 
 desc "Scraping Amazon"
 task :scrape_amazon => :environment do
-  Printer.fewfeatures.find(:all, :conditions => 'nodetails IS NOT TRUE').each { |p|
+  Printer.fewfeatures.find(:all, :conditions => ["scrapedat < ? and nodetails IS NOT TRUE",30.minutes.ago]).each { |p|
     scrape_details(p)
     sleep(1+rand()) #Be nice to Amazon
     sleep(rand()*30) #Be really nice to Amazon!
@@ -12,7 +11,10 @@ end
 
 desc "Scraping Amazon"
 task :scrape_printer => :environment do
-  scrape_details(Printer.fewfeatures.find(:first))  
+  #printer = Printer.fewfeatures.find(:first, :order => 'rand()')
+  printer = Printer.find_by_asin('B00292BV96')
+  scrape_details(printer).attributes.each_pair{|k,v| puts k + ": "+ v.to_s}
+  puts printer.asin
 end
 
 def scrape_details(p)
@@ -30,7 +32,7 @@ def scrape_details(p)
     return
   end
   doc = Nokogiri::HTML(sesh.response.body)
-  array = doc.css('.rcmBody li')
+  array = doc.css('.content ul li')
   features = {}
   array.each {|i|
     t = i.content.split(': ')
@@ -40,6 +42,7 @@ def scrape_details(p)
   #pp features
   res = []
   features.each {|key, value| 
+    next if value.nil?
     if key[/maximumprintspeed/]
       p.ppm = value.to_f unless !p.ppm.nil? && p.ppm >= value.to_i #Keep fastest value
       #puts 'PPM: '+p.ppm.to_s
@@ -57,13 +60,15 @@ def scrape_details(p)
       #puts 'Paper Input:'+p.paperinput.to_s
     end
     if key[/resolution/] && res.size < 2
-      tmp = value.match(/(\d,\d{3}|\d+) ?x?X? ?(\d,\d{3}|\d+)?/)[1,2].compact
-      tmp*=2 if tmp.size == 1
-      p.resolution = tmp.sort{|a,b| 
-        a.gsub!(',','')
-        b.gsub!(',','')
-        a.to_i < b.to_i ? 1 : a.to_i > b.to_i ? -1 : 0
-      }.join(' x ')
+      if v = value.match(/(\d,\d{3}|\d+) ?x?X? ?(\d,\d{3}|\d+)?/)
+        tmp = v[1,2].compact
+        tmp*=2 if tmp.size == 1
+        p.resolution = tmp.sort{|a,b| 
+          a.gsub!(',','')
+          b.gsub!(',','')
+          a.to_i < b.to_i ? 1 : a.to_i > b.to_i ? -1 : 0
+        }.join(' x ')
+      end
     end
     if key[/printerinterface/] || (key[/connectivitytechnology/] && value != 'Wired')
       p.connectivity = value

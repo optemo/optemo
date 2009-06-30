@@ -11,3 +11,6 @@ $ProdTypeList = ['Printer','Camera']
 # Define weights assigned to user navigation tasks that determine preferences
 $Weight["representative"] = 10
 $Weight["saveit"] = 20
+
+#These are the default use cases which should match the uses.yml file
+$DefaultUses = Hash[*%w(corporate small_office home_office photography).sort.reverse.zip((1..4).to_a).flatten]

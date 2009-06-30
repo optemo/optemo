@@ -662,6 +662,7 @@ ActiveRecord::Schema.define(:version => 20090630220513) do
   create_table "searches", :force => true do |t|
     t.integer  "session_id"
     t.integer  "parent_id"
+    t.integer  "layer"
     t.string   "c0"
     t.string   "c1"
     t.string   "c2"
