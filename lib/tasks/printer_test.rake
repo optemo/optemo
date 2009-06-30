@@ -1,112 +1,14 @@
 # Some tests for the laser printer site.
-namespace :printer_test_java do   
+namespace :printer_test do   
 
   require 'printer_test_asserts'
   include PrinterTestAsserts
 
   # ------------------- TESTING ALGORITHMS ---------------------#
   
-  desc 'Everything!!!'
-  task :all => [:tricky, :sliders, :browse_similar, :search, :brand_selector, :random, :random_nojava]
+   desc 'Run all tests.'
+   task :all => [:tricky, :sliders, :browse_similar, :search, :brand_selector, :random, :random_nojava]
   
-  desc 'Ignore me please.'
-  task :javaonly => :environment do
-    
-   setup_java 'javaonly'
-   @sesh.visit 'http://localhost:3000/'
-   
-   
-   # Works:
-   puts "Testing save & remove saved"
-   
-       puts @sesh.num_saved_items
-   test_save_item 1
-       puts @sesh.num_saved_items
-   test_save_item 5
-       puts @sesh.num_saved_items
-    test_save_item 5
-        puts @sesh.num_saved_items
-   test_remove_saved 2
-       puts @sesh.num_saved_items
-   test_remove_saved 1
-       puts @sesh.num_saved_items
- 
- 
-       # Works:  
-  puts "Testing add & remove brand"
-    
-      puts @sesh.num_brands_selected
-   test_add_brand 1
-      puts @sesh.num_brands_selected
-   test_add_brand 8
-      puts @sesh.num_brands_selected
-   test_remove_brand 2
-      puts @sesh.num_brands_selected
-   test_remove_brand 1
-      puts @sesh.num_brands_selected
- 
- 
-  end
-  
-  desc 'Ignore me please.'
-  task :sandbox => :environment do
-    
-   setup_java 'sandbox_new'
-   @sesh.visit 'http://localhost:3000/'
-   puts @sesh.selenium.location
-   
-   #this works
-   puts @sesh.current_url
-   
-   # This works
-   @sesh.browser.type 'search','Lexmark' 
-   # One way
-   @sesh.browser.click 'id=submit_button' 
-   @sesh.selenium.wait_for_page_to_load
-   # Another way
-   #@sesh.selenium.click 'submit_button', :wait_for => :page
-   puts @sesh.num_printers.to_s + " printers selected. Should be less than " + @sesh.total_printers.to_s
-   
-   @sesh.browser.select 'myfilter_brand',"Lexmark"
-   @sesh.browser.submit "filter_form"
-   @sesh.selenium.wait_for_page_to_load
- 
-   # This works
-   puts @sesh.num_brands_selected.to_s + " selected, should be 1"
-   @sesh.selenium.click "xpath=//a[@title='Remove Brand Filter'][1]"
-   
-   # Either or both of these will wait for AJAX
-   #@sesh.selenium.wait_for_condition 'selenium.browserbot.getCurrentWindow().jQuery.active == 0'
-   @sesh.selenium.wait_for_condition 'window.jQuery.active == 0'
-   
-   # You have to wait for page reload because the javascript submits a form.
-   @sesh.selenium.wait_for_page_to_load
-   
-   puts @sesh.num_brands_selected.to_s + " selected, should be 0"
-
-   # This works.
-   @sesh.selenium.click "xpath=(//a[@class='save'])[9]"
-   # Either or both will work:
-   @sesh.selenium.wait_for_condition("selenium.browserbot.getCurrentWindow().jQuery.active==0", 30000)
-   @sesh.selenium.wait_for_condition("window.jQuery.active==0", 30000)
-   puts @sesh.num_saved_items.to_s + " saved. Should be 1..."
-   
-   
-   # This works.
-    #@sesh.selenium.click "xpath=//form[@id='filter_form']/a[@class='deleteX'][1])"
-    #@sesh.selenium.click "xpath=//a[4]"  # This works
-    #@sesh.selenium.click "xpath=//form/a" # THis works
-    # @sesh.selenium.click "xpath=//form[1]/a" # THis works
-     @sesh.selenium.click "xpath=(//div[@class='saveditem']/a)[1]" 
-     
-    # Either or both will work. 
-    # Actually none will also work but I think it's just because it goes very quickly.
-    @sesh.selenium.wait_for_condition("selenium.browserbot.getCurrentWindow().jQuery.active==0", 30000)
-    @sesh.selenium.wait_for_condition("window.jQuery.active==0", 30000)
-    puts @sesh.num_saved_items.to_s + " saved. Should be 0..."
-
-  end
-
    desc 'A series of clever moves to get back button errors.'
    task :tricky => :environment do
        setup "tricky" 
@@ -292,7 +194,7 @@ namespace :printer_test_java do
          search_strings << bname.downcase
        end
 
-       20.times do
+       50.times do
 
          pick_action = rand 7
          # For the error page, the # of possible actions is very limited.
@@ -618,7 +520,7 @@ namespace :printer_test_java do
       assert_session_id_same
       
       log "Done testing status quo"
-    end
+   end
 
   # ---------------- HELPER METHODS ----------------- #
 
@@ -640,7 +542,7 @@ namespace :printer_test_java do
       @error_page_before = @sesh.error_page?
       @url_before = @sesh.current_url
       @history.push @sesh.current_url
-    end
+   end
     
    def log msg
      @logfile.puts "LOGGER      " + msg
@@ -674,7 +576,7 @@ namespace :printer_test_java do
     @sesh = JavaTestSession.new @logfile
     @history = []
     snapshot
-  end
+   end
 
    def setup_env
     # Check for all the right configs
@@ -700,14 +602,14 @@ namespace :printer_test_java do
    #raise "Rails test environment not being used." if ENV["RAILS_ENV"] != 'test' 
    #raise  "Forgery protection turned on in test environment."  if (ActionController::Base.allow_forgery_protection) 
    
-   require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
-   require 'webrat'
-   require 'webrat/selenium'
-   require 'java_test_session'
+     require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
+     require 'webrat'
+     require 'webrat/selenium'
+     require 'java_test_session'
    
-   Webrat.configure do |config|
-     config.mode = :selenium 
+     Webrat.configure do |config|
+       config.mode = :selenium 
+     end
+   
    end
-   
-  end
 end
