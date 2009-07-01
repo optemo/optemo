@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'scrubyt'
 
 desc "Scraping Amazon"
 task :scrape_amazon => :environment do

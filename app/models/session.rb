@@ -9,15 +9,13 @@ class Session < ActiveRecord::Base
     Session.column_names.delete_if{|i| %w(id created_at updated_at ip parent_id product_type).index(i)}.each do |name|
       send((name+'=').intern, Session.columns_hash[name].default)
     end
+    save
     # In Product-features table,
     # Set all attributes (EXCEPT id,session_id, created_at, updated_at & all the preference values) to defaults
-    save
-    if (!product_type.nil?)
-      (product_type + 'Features').constantize.column_names.delete_if {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at'}.each do |name|
-        features.send((name+'=').intern, (product_type + 'Features').constantize.columns_hash[name].default)
-      end
-      features.save
+    $featuremodel.column_names.delete_if {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at'}.each do |name|
+      features.send((name+'=').intern, $featuremodel.columns_hash[name].default)
     end
+    features.save
   end
   
   def self.ip_uniques
@@ -53,12 +51,11 @@ class Session < ActiveRecord::Base
   def clusters
     #Find clusters that match filtering query
     @oldsession = Session.find(parent_id)
-    if expandedFiltering?
+    if expandedFiltering? || @oldsession.oldclusters.nil?
       #Search is expanded, so use all products to begin with
       clusters = $clustermodel.find_all_by_layer(1)
     else
       #Search is narrowed, so use current products to begin with
-      clusters = []
       clusters = @oldsession.oldclusters
       clusters.each{|c|c.clearCache}
     end
@@ -68,7 +65,7 @@ class Session < ActiveRecord::Base
   end
   
   def oldclusters
-    searches.last.clusters
+    searches.last.clusters if searches.last
   end
   
   def commit
@@ -79,6 +76,11 @@ class Session < ActiveRecord::Base
   
   def features=(f)
     @features = f
+  end
+  
+  def defaultFeatures(mode)
+    update_attribute('filter', true)
+    features.update_attributes($featuremodel.find($DefaultUses[mode]).attributes.delete_if{|k,v|v.nil? || k=='id' || k.index('_at')})
   end
         
   def features
