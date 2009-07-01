@@ -17,7 +17,7 @@ class ProductsController < ApplicationController
     @dbfeat = {}
     @s = Search.searchFromPath(params[:path_info], @session)
     DbFeature.find_all_by_product_type(@pt).each {|f| @dbfeat[f.name] = f}
-    @allSearches = Search.find_all_by_session_id(@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.minute.ago}\'")
+    @allSearches = Search.find_all_by_session_id(@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.hour.ago}\'")
     @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
     @z = zipStack(@allSearches) 
     unless ((@z.empty?) || (@z.nil?))
