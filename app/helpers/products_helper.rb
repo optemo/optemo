@@ -55,7 +55,6 @@ def zipStack(stack)
       ls = @z.map{|r| r.layer}
     
       if (ls.index(s.layer).nil?)
-        #debugger
          if (ls.empty?)
            @z.unshift(s)
          elsif (ls[0] > s.layer)
@@ -66,7 +65,7 @@ def zipStack(stack)
     end    
     @z.unshift(stack[-1-i]) if (stack[-1-i].layer==1)  
    end
-   
+
    unless ((@z.empty?) || (@z.nil?))
      @layer = @z[-1].layer
      l = @z[0].layer
@@ -87,5 +86,6 @@ def zipStack(stack)
           @z.unshift(r)
      end
    end
+
    @z
 end
