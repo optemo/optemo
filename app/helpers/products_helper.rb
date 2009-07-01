@@ -68,6 +68,7 @@ def zipStack(stack)
    end
    
    unless ((@z.empty?) || (@z.nil?))
+     @layer = @z[-1].layer
      l = @z[0].layer
      unless l == 1 # can't reach the first layer in the given time frame
           pid =  @z[0].parent_id

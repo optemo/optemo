@@ -51,12 +51,11 @@ class Session < ActiveRecord::Base
   def clusters
     #Find clusters that match filtering query
     @oldsession = Session.find(parent_id)
-    if expandedFiltering?
+    if expandedFiltering? || @oldsession.oldclusters.nil?
       #Search is expanded, so use all products to begin with
       clusters = $clustermodel.find_all_by_layer(1)
     else
       #Search is narrowed, so use current products to begin with
-      clusters = []
       clusters = @oldsession.oldclusters
       clusters.each{|c|c.clearCache}
     end
@@ -66,7 +65,7 @@ class Session < ActiveRecord::Base
   end
   
   def oldclusters
-    searches.last.clusters
+    searches.last.clusters if searches.last
   end
   
   def commit
