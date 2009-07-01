@@ -19,7 +19,7 @@ class MergedCluster
     @clusters.map{|c|c.id}.join('+')
   end
   
-  def parent
+  def parent_id
     @clusters.map{|c| c.parent}.sort[0]
   end
   
