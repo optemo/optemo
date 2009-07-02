@@ -60,9 +60,8 @@ class Session < ActiveRecord::Base
       clusters = @oldsession.oldclusters
       clusters.each{|c|c.clearCache}
     end
-    #debugger
     clusters.delete_if{|c| c.isEmpty(self)}
-    fillDisplay(clusters)
+    clusters
   end
   
   def oldclusters
@@ -90,18 +89,6 @@ class Session < ActiveRecord::Base
       @features = $featuremodel.find(:first, :conditions => ['session_id = ?', id])
     end
     @features
-  end
-  
-  def fillDisplay(clusters)
-    if clusters.length < 9 && clusters.length > 0
-      if clusters.map{|c| c.size(self)}.sum >= 9
-        clusters = splitClusters(clusters)
-      else
-        #Display only the deep children
-        clusters = clusters.map{|c| c.deepChildren(self)}.flatten
-      end
-    end
-    clusters
   end
   
   private
@@ -135,27 +122,14 @@ class Session < ActiveRecord::Base
       elsif key.index(/#{$model::CategoricalFeatures.join('|')}/)
         oldv = @oldsession.features.send(key.intern)
         if oldv
+          debugger
           new_a = features.attributes[key] == "All Brands" ? [] : features.attributes[key].split('*').uniq
           old_a = oldv == "All Brands" ? [] : oldv.split('*').uniq
           return true if new_a.length == 0 && old_a.length > 0
-          return true if new_a.length > 0 && new_a.length > old_a.length
+          return true if old_a.length > 0 && new_a.length > old_a.length
         end
       end
     end
     false
-  end
-  
-  def splitClusters(clusters)
-    while clusters.length != 9
-      clusters.sort! {|a,b| b.size(self) <=> a.size(self)}
-      clusters = split(clusters.shift.children(self)) + clusters
-    end
-    clusters.sort! {|a,b| b.size(self) <=> a.size(self)}
-  end
-  
-  def split(children)
-    return children if children.length == 1
-    children.sort! {|a,b| b.size(self) <=> a.size(self)}
-    [children.shift, MergedCluster.new(children)]
   end
 end
