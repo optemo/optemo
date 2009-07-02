@@ -241,7 +241,7 @@ int main(int argc, char** argv){
 				command += "_nodes;";
 		
 				stmt->execute(command);
-				cout<<"filteriig com is:"<<filteringCommand<<endl;
+
 			
 			    res = stmt->executeQuery(filteringCommand); 
 	
@@ -252,7 +252,7 @@ int main(int argc, char** argv){
 					for (int j=0; j<conFeatureN; j++){
 						average[j] = 0.0;
 					}
-					cout<<"HERE"<<endl;
+					cout<<"layer "<<layer<<endl;
 					maxSize = hClustering(layer, clusterN,  conFeatureN,  boolFeatureN, average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
 							stmt, conFeatureNames, boolFeatureNames, productName, weights);	
 		
