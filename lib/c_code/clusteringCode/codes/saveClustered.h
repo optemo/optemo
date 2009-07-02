@@ -8,8 +8,6 @@
 		parent_idStream<<parent_id;
 		int cluster_id;
 		string command2;
-		int* repOrder;	
-		int distinctBrandN;
 				
 		for (int c=0; c<clusterN; c++){
 		
@@ -52,12 +50,12 @@
 			command2 += productName;
 			command2 += "s where (id=";
 			ostringstream pidstrm;
-			pidstrm << clusteredData[c][1];
+			pidstrm << clusteredDataOrdered[c][0];
 			command2 += pidstrm.str();
 			for (int i=1; i<clusteredData[c][0]; i++){
 				command2 += " OR id = ";
 				ostringstream pidstrm2;
-				pidstrm2 << clusteredData[c][i+1];	
+				pidstrm2 << clusteredDataOrdered[c][i];	
 				command2 += pidstrm2.str();
 			}		
 			command2 += ");";
@@ -94,8 +92,6 @@
 					command2 += pidstr2.str();	
 				}		
 				command2 += "));";
-				
-				
 				res2 = stmt->executeQuery(command2);
 					
 				if (res2->rowsCount()==1){ //it is only one value
@@ -152,24 +148,11 @@
 				}
 				
 				for (int f=0; f<boolFeatureN; f++){
-					command +=", ";
-					ostringstream featureStream;
-					command2 = "Select ";
-					command2 += boolFeatureNames[f];
-					command2 += " from ";
-					command2 += productName;
-					command2 += "s where id=";
-					ostringstream idS;
-					idS << idA[j];
-					command2 += idS.str();
-					command2 += ";";
-					
-					res2 = stmt->executeQuery(command2);
-					
-					res2->next();   
-					featureStream<<res2->getInt(boolFeatureNames[f]);
-					
-					command += featureStream.str();
+				   command +=", ";
+				   ostringstream featureStream;
+				   featureStream<<data[find(idA, clusteredDataOrdered[c][j], size)][conFeatureN+f];
+				   command += featureStream.str();
+	
 				}
 		        command +=", \"";
 				ostringstream featureStream;
