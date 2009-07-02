@@ -47,12 +47,16 @@
 		<%(@layer-1).times do |l| %>
 	 	  <!-- If s>1 then print << -->
 		  <% if l>0 %>
-			&nbsp;&nbsp;&lt;&lt;
-		    <%= link_to "Go to #{(@pt+'Cluster').constantize.find_by_id(@allSearches[l].parent_id).description(@session)} #{@pt.pluralize}",         "/#{@pt.pluralize.downcase}/list/#{@allSearches[l].to_s}"%>
+		    <%= link_to "#{(@pt+'Cluster').constantize.find_by_id(@allSearches[l].parent_id).description(@session)} #{@pt.pluralize}",         "/#{@pt.pluralize.downcase}/list/#{@allSearches[l].to_s}"%>
 		  <%else%>
-		  	   <%= link_to "Go to All #{@pt.pluralize}", "/#{@pt.pluralize.downcase}/list/#{@allSearches[l].to_s}"%>	
+		  	   <%= link_to "All #{@pt.pluralize}", "/#{@pt.pluralize.downcase}/list/#{@allSearches[l].to_s}"%>	
 		  <%end%>
+		  &lt;&lt;
 	   <%end %>
+	<% if @layer>1%>
+		&nbsp;
+		<%= "#{(@pt+'Cluster').constantize.find_by_id(@allSearches[-1].parent_id).description(@session)} #{@pt.pluralize}"%>
+	<%end%>
 	<%end%>	
 	</div>
 	
