@@ -50,22 +50,17 @@
 
 <div class="main">
 	<span style="color:red;"><%= flash[:error] %></span><span class="title"><%= flash[:notice] %></span>
-	<!-- count variable to print << after every Go Back link -->
-	<% count=1 %>	
 	<div class='backlink'>	
-	<% unless @z.empty? %>	
+	<% unless @allSearches.empty? %>
 		<%(@layer-1).times do |l| %>
 	 	  <!-- If s>1 then print << -->
-		  <% if count>1 %>
+		  <% if l>0 %>
 			&nbsp;&nbsp;&lt;&lt;
-		  <% end %>   
-		  <%if l>0 %>
-		      <%= link_to "Go Back to All #{(@pt+'Cluster').constantize.find_by_id(@z[l].parent_id).description(@session)} #{@pt.pluralize}", "/#{@pt.pluralize.downcase}/list/#{@z[l].to_s}"%>
+		    <%= link_to "Go to #{(@pt+'Cluster').constantize.find_by_id(@allSearches[l].parent_id).description(@session)} #{@pt.pluralize}",         "/#{@pt.pluralize.downcase}/list/#{@allSearches[l].to_s}"%>
 		  <%else%>
-		  	   <%= link_to "Go Back to All #{@pt.pluralize}", "/#{@pt.pluralize.downcase}/list/#{@z[l].to_s}"%>	
+		  	   <%= link_to "Go to All #{@pt.pluralize}", "/#{@pt.pluralize.downcase}/list/#{@allSearches[l].to_s}"%>	
 		  <%end%>
-		<% count = count+1 %>
-		<% end %>
+	   <%end %>
 	<%end%>	
 	</div>
 	

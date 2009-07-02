@@ -139,9 +139,7 @@ if 	(layer == 1){
 					   // save it to the database
 						
 					   getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);		
-				
 					   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, clusteredDataOrder, conFeatureRangeC, layer, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName);
-					
 						for (int c=0; c<clusterN; c++){
 								if (clusteredData[c][0]>maxSize){
 									maxSize = clusteredData[c][0];
@@ -366,7 +364,12 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 					command += conFeatureNames[i];
 				}
 				
-				command += "_max) values (";
+				command += "_max, brand";
+				for (int f=0; f<boolFeatureN; f++){
+					command += ", ";
+					command += boolFeatureNames[f];
+				}
+				command += ") values (";
 				ostringstream layerStream;
 				layerStream << layer+1;
 				command += layerStream.str();
@@ -385,9 +388,18 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 						command += ", ";
 						command += feavalStream.str();
 				}
-			
-				command +=");";
 				
+				command += ", \'";
+				command += res2->getString("brand");
+				command += "\'";
+				
+				for (int f=0; f<boolFeatureN; f++){
+		    			command += ", ";
+		    			ostringstream feavalStream;
+		    			feavalStream << res2->getBoolean(boolFeatureNames[f]);
+		    			command += feavalStream.str();
+		    	}
+				command +=");";
 				stmt->execute(command);
 			
 				command = "SELECT last_insert_id();"; // from clusters;"
@@ -425,7 +437,7 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 			for (int f=0; f<boolFeatureN; f++){
 				command += ", ";
 				ostringstream feaVStream;
-				feaVStream << res2->getDouble(boolFeatureNames[f]);
+				feaVStream << res2->getBoolean(boolFeatureNames[f]);
 				command += feaVStream.str();
 			}
 			command += ", \'";
