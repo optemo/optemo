@@ -17,7 +17,7 @@ class ProductsController < ApplicationController
     @pt = session[:productType] || $DefaultProduct
     @dbfeat = {}
     DbFeature.find_all_by_product_type(@pt).each {|f| @dbfeat[f.name] = f}
-    @s = Search.searchFromPath(params[:path_info], @session)
+    @s = Search.searchFromPath(params[:path_info], @session.id)
     @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
     allSearches = Search.find_all_by_session_id(@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.hour.ago}\'")
     @z = zipStack(allSearches) 
@@ -69,8 +69,13 @@ class ProductsController < ApplicationController
   
   def buildrelations
     @session = Session.find(session[:user_id])
-    cluster = params[:id]
-    
+    source = params[:source]
+    itemId = params[:itemId]
+    # Convert the parameter string into an array of integers
+    otherItems = params[:otherItems].split(",").collect{ |s| s.to_i }
+    for otherItem in 0..otherItems.count-1
+      PreferenceRelation.createBinaryRelation(itemId, otherItems[otherItem], @session.id, $Weight[source])
+    end    
   end
   
   private

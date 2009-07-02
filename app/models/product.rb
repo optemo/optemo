@@ -98,4 +98,5 @@ module ProductProperties
     end
     data.to_s+ending
   end
+ 
 end

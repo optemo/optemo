@@ -115,8 +115,21 @@ $(document).ready(function() {
 	});
 	
 	$(".save").click(function() { 
-		clusterId = $(this).attr('clusterId');
-		$.get('/products/buildrelations/' + clusterId);
+		// product id of the chosen item
+		itemId = $(this).attr('itemId');
+		// product ids of all other items displayed
+		var otherItems = new Array(8)
+		i = 0;
+		$(".save").each(function()
+		{
+			if($(this).attr('itemId') != itemId)
+			{
+				otherItems[i] = $(this).attr('itemId');
+				i = i + 1;
+			}
+		});
+		// The source field helps identify weight
+		$.get('/products/buildrelations?source=saveit&itemId=' + itemId + '&otherItems=' + otherItems);
 	});
 	
 	$(".usecase").click(function() { 
