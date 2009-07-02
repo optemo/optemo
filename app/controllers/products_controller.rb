@@ -19,8 +19,8 @@ class ProductsController < ApplicationController
     DbFeature.find_all_by_product_type(@pt).each {|f| @dbfeat[f.name] = f}
     @s = Search.searchFromPath(params[:path_info], @session.id)
     @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
-    allSearches = Search.find_all_by_session_id(@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.hour.ago}\'")
-    @z = zipStack(allSearches) 
+    z = Search.find_all_by_session_id(@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.hour.ago}\'")
+    @allSearches = zipStack(z) 
     #No products found
     if @s.result_count == 0
       flash[:error] = "No products were found, so you were redirected to the home page"
