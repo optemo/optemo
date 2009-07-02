@@ -53,7 +53,7 @@
 	<!-- count variable to print << after every Go Back link -->
 	<% count=1 %>	
 	<div class='backlink'>	
-	<%unless @z.nil?%>	
+	<% unless @z.empty? %>	
 		<%(@layer-1).times do |l| %>
 	 	  <!-- If s>1 then print << -->
 		  <% if count>1 %>
