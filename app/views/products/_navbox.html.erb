@@ -5,7 +5,7 @@
 		<%= image_tag cluster.representative(@session).imagemurl, :height => 100, :onClick => "fadeout(#{cluster.representative(@session).id});", :class => "productimg" %>
 	<%end%>
 
-	<p><a href="/products/show/<%=cluster.representative(@session).descurl%>" onClick="fadeout(<%=cluster.representative(@session).id%>);return false;">
+	<p><a href="<%=cluster.representative(@session).descurl%>" onClick="fadeout(<%=cluster.representative(@session).id%>);return false;">
 		<span class="easylink"><%= cluster.representative(@session).smlTitle %></span>
 	</a></p>
 	

@@ -31,10 +31,6 @@ module ProductsHelper
     end
   end
   
-  def history(mytype)
-    @s.clusters[0].getHistory.reverse
-  end
-  
   def dbmin(feat)
     feat=='price' ? @dbfeat['price'].min/100 :  @dbfeat[feat].min.to_i
   end
