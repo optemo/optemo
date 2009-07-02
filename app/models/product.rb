@@ -75,7 +75,7 @@ module ProductProperties
   end
   
   def descurl
-    [id,brand,model].join('-')
+    "/products/show/"+[id,brand,model].join('-')
   end
   
   def display(attr)
