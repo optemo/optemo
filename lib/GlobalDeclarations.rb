@@ -9,6 +9,7 @@ $PrefDirection["itemwidth"] = -1
 $ProdTypeList = ['Printer','Camera']
 
 # Define weights assigned to user navigation tasks that determine preferences
+$Weight = Hash.new(0) # Set 0 as the default value for direction
 $Weight["representative"] = 10
 $Weight["saveit"] = 20
 

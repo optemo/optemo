@@ -114,6 +114,11 @@ $(document).ready(function() {
 		histogram($(this).siblings('.hist')[0],(sessmin-rangemin)/(rangemax-rangemin),(sessmax-rangemin)/(rangemax-rangemin));
 	});
 	
+	$(".save").click(function() { 
+		clusterId = $(this).attr('clusterId');
+		$.get('/products/buildrelations/' + clusterId);
+	});
+	
 	$(".usecase").click(function() { 
 		name = $(this).attr('data-name');
 		$.get('/products/select/'+name);

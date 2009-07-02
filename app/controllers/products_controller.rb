@@ -87,6 +87,12 @@ class ProductsController < ApplicationController
     @session.defaultFeatures(URI.encode(params[:id]))
   end
   
+  def buildrelations
+    @session = Session.find(session[:user_id])
+    cluster = params[:id]
+    
+  end
+  
   private
   
   def homepage

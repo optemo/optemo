@@ -9,7 +9,7 @@
 		<span class="easylink"><%= cluster.representative(@session).smlTitle %></span>
 	</a></p>
 	
-	<p><%= cluster.representative(@session).pricestr %>  <%= link_to "&nbsp;Save it&nbsp;", "javascript:saveit(#{cluster.representative(@session).id})", {:class => 'save'}%>
+	<p><%= cluster.representative(@session).pricestr %>  <%= link_to "&nbsp;Save it&nbsp;", "javascript:saveit(#{cluster.representative(@session).id})", {:class => 'save', :clusterId => "#{cluster.id}" } %>
 		<%# Randomized Product Reviews %>
 		<%# rand > 0.5 ? (rand > 0.5 ? image_tag('5star.gif') : image_tag('3star.gif')) : image_tag('4star.gif') %>
 	</p>
