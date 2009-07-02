@@ -8,7 +8,7 @@ module ProductsHelper
     end
     
   end
-  
+=begin  
   def sim_link(cluster,i)
   	unless cluster.children(@session).nil? || cluster.children(@session).empty? || (cluster.size(@session)==1)
       "<div class='sim'>" +
@@ -20,6 +20,18 @@ module ProductsHelper
       ""
     end
   end
+=end
+  
+  def sim_link(cluster,i)
+  	unless cluster.children(@session).nil? || cluster.children(@session).empty? || (cluster.size(@session)==1)
+      "<div class='sim'>" +
+        "Explore #{cluster.size(@session)} Similar Product#{"s" if cluster.size(@session) > 1}" +
+      "</div>"
+    else
+      ""
+    end
+  end
+  
   def combine_list(a)
     case a.length
     when 0: "similar properties to the given product."

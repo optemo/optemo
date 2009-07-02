@@ -78,7 +78,14 @@ class ProductsController < ApplicationController
     otherItems = params[:otherItems].split(",").collect{ |s| s.to_i }
     for otherItem in 0..otherItems.count-1
       PreferenceRelation.createBinaryRelation(itemId, otherItems[otherItem], @session.id, $Weight[source])
-    end    
+    end 
+
+    clusterNo = params[:clusterNo].to_i
+    cluster = @session.clusters[clusterNo]
+debugger
+    redirect_to "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+cluster.children(@session).map{|c|c.id}.join('/') + "?id=sim"+clusterNo.to_s
+    # , :id => 
+       
   end
   
   private

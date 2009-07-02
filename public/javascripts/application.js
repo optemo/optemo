@@ -114,11 +114,36 @@ $(document).ready(function() {
 		histogram($(this).siblings('.hist')[0],(sessmin-rangemin)/(rangemax-rangemin),(sessmax-rangemin)/(rangemax-rangemin));
 	});
 	
+	$(".bottombar").click(function() {
+		itemId = $(this).attr('name');
+		// product ids of all other items displayed
+		var otherItems = new Array(8);
+		i = 0;
+		$(".bottombar").each(function()
+		{
+			if($(this).attr('name') != itemId)
+			{
+				otherItems[i] = $(this).attr('name');
+				i = i + 1;
+			}
+		});
+		// The source parameter helps identify weight
+		clusterNo = $(this).attr('id');
+		alert("Cluster No: " + clusterNo);
+		$.get('/products/buildrelations?source=sim&itemId=' + itemId + '&otherItems=' + otherItems + '&clusterNo=' + clusterNo);
+		alert("2");
+	});
+	
 	$(".save").click(function() { 
 		// product id of the chosen item
 		itemId = $(this).attr('itemId');
+		// Check that item has not already been saved
+		if(null != document.getElementById('c'+itemId))
+		{
+			return;
+		}		
 		// product ids of all other items displayed
-		var otherItems = new Array(8)
+		var otherItems = new Array(8);
 		i = 0;
 		$(".save").each(function()
 		{
@@ -128,7 +153,7 @@ $(document).ready(function() {
 				i = i + 1;
 			}
 		});
-		// The source field helps identify weight
+		// The source parameter helps identify weight
 		$.get('/products/buildrelations?source=saveit&itemId=' + itemId + '&otherItems=' + otherItems);
 	});
 	
