@@ -121,7 +121,6 @@ class Session < ActiveRecord::Base
       elsif key.index(/#{$model::CategoricalFeatures.join('|')}/)
         oldv = @oldsession.features.send(key.intern)
         if oldv
-          debugger
           new_a = features.attributes[key] == "All Brands" ? [] : features.attributes[key].split('*').uniq
           old_a = oldv == "All Brands" ? [] : oldv.split('*').uniq
           return true if new_a.length == 0 && old_a.length > 0
