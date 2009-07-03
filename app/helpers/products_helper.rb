@@ -8,18 +8,57 @@ module ProductsHelper
     end
     
   end
-  
-  def sim_link(cluster,i)
-  	unless cluster.children(@session).nil? || cluster.children(@session).empty? || (cluster.size(@session)==1)
+
+  def array_to_csv(iArray)
+    # converts iArray, an array of integers, to a string in csv format
+    csv = ""
+    for i in 0..iArray.count-1
+      csv = csv + iArray[i] + ","
+    end
+    # Chop off the last comma
+    csv = csv.chop    
+    csv
+  end
+
+  def sim_link(cluster,i, sess)
+    itemId = cluster.representative(@session).id.to_i
+    # Link to sim_redirect action, and pass selected item's Id, path_info, 
+    # and the page to redirect_to after database operation as query
+    pathInfo = params[:path_info]
+    # pathInfo is an array. Convert into string
+    path_info = array_to_csv(pathInfo)
+    unless cluster.children(@session).nil? || cluster.children(@session).empty? || (cluster.size(@session)==1)
       "<div class='sim'>" +
-        link_to("Explore #{cluster.size(@session)} Similar Product#{"s" if cluster.size(@session) > 1}", 
-        "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+cluster.children(@session).map{|c|c.id}.join('/'), 
-        :id => "sim#{i}") +
+      link_to("Explore #{cluster.size(@session)} Similar Product#{"s" if cluster.size(@session) > 1}",
+      "/products/sim_redirect?id=sim#{i}&itemId=" + itemId.to_s + "&path_info=" + path_info + "&query=" + "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+cluster.children(@session).map{|c|c.id}.join('/')) +
       "</div>"
     else
       ""
     end
+=begin    # Id of the chosen item
+        itemId = cluster.representative(@session).id.to_i
+        # Populate otherItems string, in CSV format
+        otherItems = ""
+      	for i in 0..sess.cluster_count-1
+      	  if(sess.clusters[i].representative(@session).id != itemId)
+      	    otherItems = otherItems + sess.clusters[i].representative(@session).id.to_s + ","
+    	    end
+    	  end
+    	  # Chop off the last comma
+    	  otherItems = otherItems.chop
+      	# Link to sim_redirect action, and pass selected item's Id, other items' Ids, 
+      	# and the page to redirect_to after database operation as query
+      	unless cluster.children(@session).nil? || cluster.children(@session).empty? || (cluster.size(@session)==1)
+          "<div class='sim'>" +
+            link_to("Explore #{cluster.size(@session)} Similar Product#{"s" if cluster.size(@session) > 1}",
+            "/products/sim_redirect?id=sim#{i}&itemId=" + itemId.to_s + "&otherItems=" + otherItems + "&query=" + "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+cluster.children(@session).map{|c|c.id}.join('/')) +
+          "</div>"
+        else
+          ""
+        end
+=end
   end
+  
   def combine_list(a)
     case a.length
     when 0: "similar properties to the given product."

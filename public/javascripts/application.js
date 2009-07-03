@@ -114,24 +114,6 @@ $(document).ready(function() {
 		histogram($(this).siblings('.hist')[0],(sessmin-rangemin)/(rangemax-rangemin),(sessmax-rangemin)/(rangemax-rangemin));
 	});
 	
-	$(".bottombar").click(function() {
-		itemId = $(this).attr('name');
-		// product ids of all other items displayed
-		var otherItems = new Array(8);
-		i = 0;
-		$(".bottombar").each(function()
-		{
-			if($(this).attr('name') != itemId)
-			{
-				otherItems[i] = $(this).attr('name');
-				i = i + 1;
-			}
-		});
-		// The source parameter helps identify weight
-		alert('/products/buildrelations?source=sim&itemId=' + itemId + '&otherItems=' + otherItems);
-		$.get('/products/buildrelations?source=sim&itemId=' + itemId + '&otherItems=' + otherItems);		
-	});
-	
 	$(".save").click(function() { 
 		// product id of the chosen item
 		itemId = $(this).attr('itemId');
