@@ -128,10 +128,8 @@ $(document).ready(function() {
 			}
 		});
 		// The source parameter helps identify weight
-		clusterNo = $(this).attr('id');
-		alert("Cluster No: " + clusterNo);
-		$.get('/products/buildrelations?source=sim&itemId=' + itemId + '&otherItems=' + otherItems + '&clusterNo=' + clusterNo);
-		alert("2");
+		alert('/products/buildrelations?source=sim&itemId=' + itemId + '&otherItems=' + otherItems);
+		$.get('/products/buildrelations?source=sim&itemId=' + itemId + '&otherItems=' + otherItems);		
 	});
 	
 	$(".save").click(function() { 
