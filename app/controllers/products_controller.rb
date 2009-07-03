@@ -80,30 +80,7 @@ class ProductsController < ApplicationController
       PreferenceRelation.createBinaryRelation(itemId, otherItems[otherItem], @session.id, $Weight[source])
     end    
   end
-  
-  def sim_redirect
-    # Initialize source to decide weight
-    source = "sim"
-    @session = Session.find(session[:user_id])
-    itemId = params[:itemId].to_i
-    # searchFromPath function accepts array of strings as path info. So convert csv string to array of strings
-    pathInfo = params[:path_info].split(",").collect{ |s| s.to_s }
-    sess = Search.searchFromPath(pathInfo, @session.id)
-    # Create otherItems array
-    otherItems = []
-  	for i in 0..sess.cluster_count-1
-  	  if(sess.clusters[i].representative(@session).id != itemId)
-  	    otherItems<<sess.clusters[i].representative(@session).id
-	    end
-	  end
-    # For every otherItem, create a binary relation
-    for otherItem in 0..otherItems.count-1
-      PreferenceRelation.createBinaryRelation(itemId, otherItems[otherItem], @session.id, $Weight[source])
-    end
-    # Finally, redirect to the page that shows the similar products
-    redirect_to params[:query], :id => params[:id]
-  end
-  
+ 
   private
   
   def homepage

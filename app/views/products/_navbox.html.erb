@@ -22,8 +22,9 @@
 		<% end %>
 	</div>
 	<% end %>
-	<div class="bottombar">
-		<%= sim_link(cluster,i, @s) %>
+	<div class="bottombar" name ="<%= cluster.representative(@session).id %>">
+		<%= sim_link(cluster,i, cluster.representative(@session).id) %>
 	</div>
+	
 </div>
 </div>
