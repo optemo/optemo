@@ -28,7 +28,11 @@ function saveit(id)
 		$("#already_added_msg").attr("style","display:block");
 	}else{
 		// Update just the savebar_content div after doing get on /saveds/create/[id here].
-		$.get('/saveds/create/'+id, function(data){ $(data).appendTo('#savebar_content');});
+		$.get('/saveds/create/'+id, function(data){ 
+			$(data).click(function() {
+				savedProductRemoval($(".deleteX", this));
+			}).appendTo('#savebar_content');
+		});
 		$("#already_added_msg").attr("style","display:none");
 	}
 	
@@ -38,6 +42,16 @@ function saveit(id)
 	// 2. hide 'add stuff here' message
 	$("#deleteme").attr("style","display:none");
 	
+}
+
+function savedProductRemoval(obj)
+{
+	// itemId = Pick product Id of deleted item from 
+	// otherItems = [product ids of other Saved items]
+	itemId = $(obj).attr('data-name');
+	otherItems = buildOtherItemsArray(".deleteX", "data-name", itemId);
+	source = "unsave";
+	$.get('/products/buildrelations?source='+ source +'&itemId='+ itemId +'&otherItems='+ otherItems);
 }
 
 // When you click the X on a saved product:
@@ -63,6 +77,22 @@ function removeBrand(str)
 function submitPreferences()
 {
 	$('#preference_form').submit();
+}
+
+function buildOtherItemsArray(root, attr_name, itemId)
+// To populate the otherItems array, that stores all objects with which a binay relation has to be created
+{
+	var otherItems = new Array();
+	i = 0;
+	$(root).each(function()
+	{
+		if($(this).attr(attr_name) != itemId)
+		{
+			otherItems[i] = $(this).attr(attr_name);
+			i = i + 1;
+		}
+	});
+	return otherItems;
 }
 
 $(document).ready(function() {
@@ -115,26 +145,13 @@ $(document).ready(function() {
 	});
 	
 	$(".deleteX").click(function() {
-		// itemId = Pick product Id of deleted item from 
-		// otherItems = [product ids of other Saved items]
-		itemId = $(this).attr('data-name');
-		alert(itemId);
-		
+		savedProductRemoval(this);
 	});
 	
 	$(".simlinks").click(function() {
 		itemId = $(this).attr('name');
 		// product ids of all other items displayed
-		var otherItems = new Array(8);
-		i = 0;
-		$(".bottombar").each(function()
-		{
-			if($(this).attr('name') != itemId)
-			{
-				otherItems[i] = $(this).attr('name');
-				i = i + 1;
-			}
-		});
+		otherItems = buildOtherItemsArray(".bottombar", "name", itemId);
 		// The source parameter helps identify weight
 		$.get('/products/buildrelations?source=sim&itemId=' + itemId + '&otherItems=' + otherItems);	
 		// On Safari, only one of the two(javascript & hyperlink) was getting called. 
