@@ -114,6 +114,14 @@ $(document).ready(function() {
 		histogram($(this).siblings('.hist')[0],(sessmin-rangemin)/(rangemax-rangemin),(sessmax-rangemin)/(rangemax-rangemin));
 	});
 	
+	$(".deleteX").click(function() {
+		// itemId = Pick product Id of deleted item from 
+		// otherItems = [product ids of other Saved items]
+		itemId = $(this).attr('data-name');
+		alert(itemId);
+		
+	});
+	
 	$(".simlinks").click(function() {
 		itemId = $(this).attr('name');
 		// product ids of all other items displayed

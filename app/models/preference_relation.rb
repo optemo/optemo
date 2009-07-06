@@ -8,7 +8,7 @@ class PreferenceRelation < ActiveRecord::Base
      relation[:lower] = lower
      relation[:session_id] = sessionId
      relation[:weight] = 0  # Keep weight 0 initially. Then if record is found or new record is created, add weight
-     newRelation = PreferenceRelation.find_or_create_by_higher_and_lower(relation)
+     newRelation = PreferenceRelation.find_or_create_by_higher_and_lower_and_session_id(relation)
      newRelation.weight = newRelation.weight + weight
      newRelation.save
    end

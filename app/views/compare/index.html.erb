@@ -1,10 +1,6 @@
 <% self.title = "Product Comparison" %>
 <br>&lt;&lt;&nbsp;<%= link_to 'Go back to navigation', :back, {:style => 'position:relative'}%>
-<!-- <%= link_to 'Go back to navigation', :back, {:style => 'position:absolute; top:0;left:0;'}%> -->
-<%# Descriptions %>
-<!-- <div class="cell"> -->
 
-<!-- To display the names of interesting features that are known for at least one saved product-->
 <center><h1>Product Comparison</h1></center>			
 <table id="comparisonTable" height="100%" width="100%" border="1" cellspacing="0" cellpadding="5">
 	<tr id= "firstRow" class="nodrag nodrop">
@@ -38,7 +34,7 @@
 			</td>
 		<% end %>
 	</tr>
-																	<!-- <% #session[:productType].constantize::DisplayedFeatures.each do |column| %>-->
+
 	<% @preferredDisplayFeatures.each do |column| %>	    		<!-- @preferredDisplayFeatures array is created from DisplayedFeatures array, by the ReorderFeatures() -->
 		<% if @interestingFeatureDisplayed[column[0]] == true %>
 			<!-- Assign IDs to rows. These IDs are returned by the serialize() function in javascript and is used to record user's preferences-->
