@@ -1,6 +1,6 @@
-set :application, "laserprinterhub"
+set :application, "optemo_site"
 set :repository,  "git@jaguar:site.git"
-set :domain, "optemo"
+set :domain, "jaguar"
 set :branch, "staging"
 
 # If you aren't deploying to /u/apps/#{application} on the target
@@ -44,6 +44,7 @@ task :serversetup do
 end
 
 after :deploy, "serversetup"
-after :serversetup, "passenger:restart"
+after :serversetup, "compilec"
+after :compilec, "passenger:restart"
 
 
