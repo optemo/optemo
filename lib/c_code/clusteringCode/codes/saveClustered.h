@@ -1,6 +1,6 @@
 	void saveClusteredData(double ** data, int* idA, int size, string* brands, int parent_id, int** clusteredData, int** clusteredDataOrdered, double*** conFeatureRange, 
     int layer, 
-	int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, sql::ResultSet *res2, string productName){
+	int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, sql::ResultSet *res2, string productName, int version){
 	///Saving to cluster table 	
 		ostringstream layerStream; 
 		layerStream<<layer;
@@ -8,7 +8,9 @@
 		parent_idStream<<parent_id;
 		int cluster_id;
 		string command2;
-				
+		ostringstream vs; 
+		vs<< version;		
+		
 		for (int c=0; c<clusterN; c++){
 		
 			ostringstream nodeStream;
@@ -17,7 +19,7 @@
 			clusterSizeStream<<clusteredData[c][0];
 			string command = "INSERT INTO ";
 			command += productName;
-			command += "_clusters (layer, parent_id, cluster_size,price_min, price";
+			command += "_clusters (version, layer, parent_id, cluster_size,price_min, price";
 			for (int f=1; f<conFeatureN; f++){
 				command += "_max, ";
 				command += conFeatureNames[f];
@@ -31,6 +33,8 @@
 				command += boolFeatureNames[f];
 			}
 			command += ") values (";
+			command += vs.str();
+			command += ", ";
 			command += layerStream.str();
 			command += ", ";
 			command += parent_idStream.str();
@@ -92,8 +96,9 @@
 					command2 += pidstr2.str();	
 				}		
 				command2 += "));";
+		
 				res2 = stmt->executeQuery(command2);
-					
+		
 				if (res2->rowsCount()==1){ //it is only one value
 					command += ", ";
 					res2->next();
@@ -106,8 +111,9 @@
 				}
 			}	
 			command +=");";
-	
+		
 			stmt->execute(command);
+	
 
 			command = "SELECT last_insert_id();"; // from clusters;"
 			res2 = stmt->executeQuery(command);
@@ -120,7 +126,7 @@
 			for (int j=0; j<clusteredData[c][0]; j++){	  
 				command = "INSERT INTO ";
 				command += productName;
-				command += "_nodes (cluster_id, product_id, price";
+				command += "_nodes (version, cluster_id, product_id, price";
 				for (int i=1; i<conFeatureN; i++){
 						command += ", ";
 						command += conFeatureNames[i];
@@ -132,7 +138,9 @@
 				command += ", brand) values(";
 				//add rep
 
+				command += vs.str();
 				ostringstream cluster_idStream;
+				command += ", ";
 				cluster_idStream<<cluster_id;
 				command += cluster_idStream.str();
 				command += ", ";
@@ -160,7 +168,6 @@
 				featureStream<<brands[find(idA, clusteredDataOrdered[c][j], size)];
 				command += featureStream.str();   
 				command +="\");"; 
-		
 				stmt->execute(command);
 			
 		 }
