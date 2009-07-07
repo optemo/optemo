@@ -1,8 +1,8 @@
-require 'bestbuy_ecs'
 $PRODUCT_TYPE = 'Printer'
 $RETAILER = 'BestBuy'
 desc "Download BestBuy data with Remix"
 task :remix_BestBuy => :environment do
+  require 'bestbuy_ecs'
   e = BestBuy::Ecs.new
   r = e.product_search({:category => 'Laser*'})
   puts "Total resuts: "+r.total_results.to_s
