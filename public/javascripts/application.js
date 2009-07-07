@@ -68,6 +68,12 @@ function remove(id)
 	}
 }
 
+function removeFromComparison(id)
+{
+	remove(id);
+	window.location.href = "/compare?navUrl=" + $('.backToNavigation').attr('href');	 
+}
+
 function removeBrand(str)
 {
 	$('#myfilter_Xbrand').attr('value', str);

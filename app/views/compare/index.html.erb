@@ -1,5 +1,5 @@
 <% self.title = "Product Comparison" %>
-<br>&lt;&lt;&nbsp;<%= link_to 'Go back to navigation', :back, {:style => 'position:relative'}%>
+<br>&lt;&lt;&nbsp;<%= link_to 'Go back to navigation', @navigationUrl, {:class => 'backToNavigation', :style => 'position:relative'}%>
 
 <center><h1>Product Comparison</h1></center>			
 <table id="comparisonTable" height="100%" width="100%" border="1" cellspacing="0" cellpadding="5">
@@ -20,7 +20,7 @@
 			</div>
 		</td>
 		<% for i in 0..@products.count-1%>
-			<%= render :partial => 'thumbnails', :object => @products[i], :locals => {:oldBack=>:back} %>			<!-- ToDo: OldBack needs to be used to retain history after Deleting column-->		
+			<%= render :partial => 'thumbnails', :object => @products[i], :locals => {:navBack => :back} %>			<!-- ToDo: OldBack needs to be used to retain history after Deleting column-->		
 		<% end %>
 	</tr>
 	<!-- The following row is only for testing purposes -->

@@ -12,7 +12,7 @@ $ProdTypeList = ['Printer','Camera']
 $Weight = Hash.new(0) # Set 0 as the default value for direction
 $Weight["sim"] = 1
 $Weight["saveit"] = 2
-$Weight["unsave"] = -2
+$Weight["unsave"] = 3
 
 #These are the default use cases which should match the uses.yml file
 $DefaultUses = Hash[*%w(corporate small_office home_office photography).sort.reverse.zip((1..4).to_a).flatten]

@@ -77,7 +77,13 @@ class ProductsController < ApplicationController
     # Convert the parameter string into an array of integers
     otherItems = params[:otherItems].split(",").collect{ |s| s.to_i }
     for otherItem in 0..otherItems.count-1
-      PreferenceRelation.createBinaryRelation(itemId, otherItems[otherItem], @session.id, $Weight[source])
+      # If the source is unsave i.e. a saved product has been dropped, then
+      # create relations with lower as the dropped item and higher as all other saved items 
+      if source == "unsave"
+        PreferenceRelation.createBinaryRelation(otherItems[otherItem], itemId, @session.id, $Weight[source])
+      else
+        PreferenceRelation.createBinaryRelation(itemId, otherItems[otherItem], @session.id, $Weight[source])
+      end
     end    
   end
  
