@@ -10,25 +10,17 @@ class CompareController < ApplicationController
     @products = []
     @utility = []
     @displayString = ""
-    @backToNavUrl = ""
-    # Link to previous page
-    @navigationUrl = request.referer
-    # To save the navigation link url
-    if !params[:navUrl].nil?
-      @navigationUrl = params[:navUrl]  # In order to preserve link to the navigation page
-    end
+    # Link to latest product navigation page
+    @navigationUrl = "/printers/list/" + Search.find_all_by_session_id(session[:user_id], :order => 'updated_at DESC').first.to_s
     # To track whether an interesting feature is displayed or not-
     @interestingFeatureDisplayed = {} # Array.new(session[:productType].constantize::DisplayedFeatures.count, false)
-    if params[:path_info].blank?
-      @saveds = Saved.find_all_by_session_id(session[:user_id])
-      @saveds.collect do |saved|
-        @products << session[:productType].constantize.find(saved.product_id)
-      end
-      if @products.empty?
-        # When all products are dropped from comparison, return to navigation page
-        redirect_to @navigationUrl
-        return
-      end
+    @saveds = Saved.find_all_by_session_id(session[:user_id])
+    @saveds.collect do |saved|
+      @products << session[:productType].constantize.find(saved.product_id)
+    end
+    if @products.empty?
+      redirect_to @navigationUrl
+      return
     end
     # Reorder the product columns based on product utility
     ReorderProducts()      

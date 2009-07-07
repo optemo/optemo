@@ -71,7 +71,7 @@ function remove(id)
 function removeFromComparison(id)
 {
 	remove(id);
-	window.location.href = "/compare?navUrl=" + $('.backToNavigation').attr('href');	 
+	window.location.href = "/compare";
 }
 
 function removeBrand(str)
