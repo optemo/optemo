@@ -79,7 +79,7 @@ class ProductsController < ApplicationController
     for otherItem in 0..otherItems.count-1
       # If the source is unsave i.e. a saved product has been dropped, then
       # create relations with lower as the dropped item and higher as all other saved items 
-      if source == "unsave"
+      if source == "unsave" || source == "unsaveComp"
         PreferenceRelation.createBinaryRelation(otherItems[otherItem], itemId, @session.id, $Weight[source])
       else
         PreferenceRelation.createBinaryRelation(itemId, otherItems[otherItem], @session.id, $Weight[source])
