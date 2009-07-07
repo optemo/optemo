@@ -7,3 +7,6 @@ $PrefDirection["price"] = -1 # -1 for down direction for preferences
 $PrefDirection["itemwidth"] = -1
 
 $ProdTypeList = ['Printer','Camera']
+
+#These are the default use cases which should match the uses.yml file
+$DefaultUses = Hash[*%w(corporate small_office home_office photography).sort.reverse.zip((1..4).to_a).flatten]

@@ -36,9 +36,7 @@ string preClustering(string* varNames, map<const string, int>productNames, strin
 				conFeatureNames[1]= "ppm";  
 			    conFeatureNames[2]= "itemwidth";
 			    conFeatureNames[3]= "paperinput";
-				conFeatureNames[4] = "resolutionarea";
-				
-				
+				conFeatureNames[4] = "resolutionmax";
 				boolFeatureNames[0] = "scanner";
 				boolFeatureNames[1] = "printserver";
 				
@@ -46,14 +44,14 @@ string preClustering(string* varNames, map<const string, int>productNames, strin
 				indicatorNames[1]= "ppm";  
 			    indicatorNames[2]= "itemwidth";
 			    indicatorNames[3]= "paperinput";
-				indicatorNames[4] = "Resolution Area";
+				indicatorNames[4] = "Maximum Resolution";
 				indicatorNames[5] = "scanner";
 				indicatorNames[6] = "printserver";
 				
 				filteringCommand = "SELECT * FROM ";
 				filteringCommand += productName;
 				
-				filteringCommand += "s where (instock=1 and (scanner IS NOT NULL) and (printserver IS NOT NULL) and (resolutionarea IS NOT NULL));";
+				filteringCommand += "s where (instock=1 and (scanner IS NOT NULL) and (printserver IS NOT NULL) and (resolutionmax IS NOT NULL));";
 			
 				break;
 		default: 

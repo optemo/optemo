@@ -42,17 +42,21 @@
 
 <div class="main">
 	<span style="color:red;"><%= flash[:error] %></span><span class="title"><%= flash[:notice] %></span>
-	<!-- count variable to print << after every Go Back link -->
-	<% count=1 %>	
-	<div class='backlink'>
-	<% @searches.each do |s| %>
- 	  <!-- If s>1 then print << -->
-	  <% if count>1 %>
-		&nbsp;&nbsp;&lt;&lt;
-	  <% end %>   
-	  <%= link_to "Go back to previous #{@pt.pluralize}", "/#{@pt.pluralize.downcase}/list/#{s.to_s}"%>
-	  <% count = count+1 %>
-	<% end %>
+	<div class='backlink'>	
+	<% unless @allSearches.empty? %>
+		<%(@layer-1).times do |l| %>
+	 	  <!-- If s>1 then print << -->
+		  <% if l>0 %>
+		    <%= link_to "#{$clustermodel.find_by_id(@allSearches[l].parent_id).description(@session)}", "/#{@pt.pluralize.downcase}/list/#{@allSearches[l].to_s}"%>
+		  <%else%>
+		  	   <%= link_to "All #{@pt.pluralize}", "/#{@pt.pluralize.downcase}/list/#{@allSearches[l].to_s}"%>	
+		  <%end%>
+		  &lt;&lt;
+	   <%end %>
+	<% if @layer>1%>
+		<%= "#{$clustermodel.find_by_id(@allSearches[-1].parent_id).description(@session)}"%>
+	<%end%>
+	<%end%>	
 	</div>
 	
 	<% for i in 0..@s.cluster_count-1 %>

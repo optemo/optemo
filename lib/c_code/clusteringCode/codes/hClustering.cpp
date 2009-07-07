@@ -12,7 +12,7 @@
 #include <algorithm>
 using namespace std;
 
-													//return 9 cameras
+												
 // Public interface of the MySQL Connector/C++
 #include <cppconn/mysql_public_iface.h>
 
