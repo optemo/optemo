@@ -35,6 +35,8 @@ class Session < ActiveRecord::Base
     #Fix price, because it's stored as int in db
     myfilter[:price_max] = myfilter[:price_max].to_i*100 if myfilter[:price_max]
     myfilter[:price_min] = myfilter[:price_min].to_i*100 if myfilter[:price_min]
+    myfilter[:itemwidth_max] = myfilter[:itemwidth_max].to_i*100 if myfilter[:itemwidth_max]
+    myfilter[:itemwidth_min] = myfilter[:itemwidth_min].to_i*100 if myfilter[:itemwidth_min]
     $featuremodel.column_names.each do |column|
       if !(column == 'id' || column == 'session_id')
         feature_filter[column.intern] = myfilter.delete(column.intern) if myfilter[column.intern]

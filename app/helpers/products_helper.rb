@@ -31,12 +31,12 @@ module ProductsHelper
     end
   end
   
-  def dbmin(feat)
-    feat=='price' ? @dbfeat['price'].min/100 :  @dbfeat[feat].min.to_i
+  def dbmin(i2f, feat)
+    i2f ? @dbfeat[feat].min/100 :  @dbfeat[feat].min.to_i
   end
   
-  def dbmax(feat)
-    feat=='price' ? (@dbfeat['price'].max.to_f/100).ceil : @dbfeat[feat].max.ceil
+  def dbmax(i2f, feat)
+    i2f ? (@dbfeat[feat].max.to_f/100).ceil : @dbfeat[feat].max.ceil
   end
 end
 
