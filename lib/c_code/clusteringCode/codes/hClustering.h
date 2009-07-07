@@ -6,7 +6,7 @@
 
 int hClustering(int layer, int clusterN, int conFeatureN, int boolFeatureN, double *average, double** conFeatureRange, double*** conFeatureRangeC,
 	sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *resClus, sql::ResultSet *resNodes, sql::Statement *stmt, 
-	string* conFeatureNames, string* boolFeatureNames, string productName, double* weights){				
+	string* conFeatureNames, string* boolFeatureNames, string productName, double* weights, int version){				
 	
 int maxSize = -2;	
 double **data;
@@ -135,9 +135,10 @@ if 	(layer == 1){
 					  }			
 
 					   // save it to the database
-						
+					
 					   getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);		
-					   saveClusteredData(data, idA, size, brands, parent_id,clusteredData, clusteredDataOrder, conFeatureRangeC, layer, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName);
+				 
+					 saveClusteredData(data, idA, size, brands, parent_id,clusteredData, clusteredDataOrder, conFeatureRangeC, layer, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName, version);
 						for (int c=0; c<clusterN; c++){
 								if (clusteredData[c][0]>maxSize){
 									maxSize = clusteredData[c][0];
@@ -154,7 +155,11 @@ if (layer > 1){
 	// getting all cluster ids in this layer
 	string command = "SELECT * FROM ";
 	command += productName;
-	command += "_clusters WHERE layer=";
+	command += "_clusters WHERE (version=";
+	ostringstream vs;
+	vs << version;
+	command += vs.str();
+	command += " AND layer=";
 	ostringstream layerStream; 
 	layerStream << layer - 1; 
 	command += layerStream.str();
@@ -162,7 +167,7 @@ if (layer > 1){
 	ostringstream cluster_sizeStream;
 	cluster_sizeStream<< (clusterN);
 	command += cluster_sizeStream.str();
-	command += ";";
+	command += ");";
 	resClus = stmt->executeQuery(command); 
 	
 	
@@ -171,7 +176,11 @@ if (layer > 1){
 		parent_id = resClus->getInt("id");
 		command = "SELECT * FROM ";
 		command += productName;
-		command += "_nodes WHERE cluster_id=";
+		command += "_nodes WHERE version=";
+		ostringstream vstream;
+		vstream << version;
+		command += vstream.str();
+		command += " AND cluster_id=";
 		ostringstream cidStream;
 		ostringstream cluster_idStream;
 		cluster_id = resClus->getInt("id");
@@ -209,9 +218,7 @@ if (layer > 1){
 				brands[s] = resNodes->getString("brand");
 
 				for (int f=0; f<conFeatureN; f++){
-				
      				average[f] += data[s][f];
-			
 		        }
 		        s++;					
 	        }
@@ -296,7 +303,7 @@ if (layer > 1){
 
 ///////////
 
-		saveClusteredData(data, idA, size, brands, parent_id,clusteredData, clusteredDataOrder, conFeatureRangeC, layer, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName);
+		saveClusteredData(data, idA, size, brands, parent_id,clusteredData, clusteredDataOrder, conFeatureRangeC, layer, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName, version);
 
 		
 			for (int c=0; c<clusterN; c++){
@@ -319,7 +326,8 @@ if (layer > 1){
 
 //leafClustering(layer, conFeatureN, res, stmt, productName);
 
-void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* conFeatureNames, string* boolFeatureNames, sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *res3, sql::Statement *stmt, string productName){
+void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* conFeatureNames, string* boolFeatureNames, 
+					sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *res3, sql::Statement *stmt, string productName, int version){
 	
 	string command;
 	int cluster_id;
@@ -328,13 +336,19 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 	   
 		command = "SELECT id, layer from ";
 		command += productName;
-		command += "_clusters where (cluster_size<";
+		command += "_clusters where (version=";
+		ostringstream vstream;
+		vstream << version;
+		command += vstream.str();
+		command += " AND cluster_size<";
 		ostringstream sizeStream;
 		sizeStream << clusterN+1;
 		command += sizeStream.str();
 		command += ");";
-	
+		
+		
 		res = stmt->executeQuery(command);
+	
 		while(res->next()){
 			ostringstream parent_idStream;
 			int pid =  res->getInt("id");
@@ -344,15 +358,20 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 			clusterSizeStream <<1;
 			command = "select * from ";
 			command += productName;
-			command += "_nodes where cluster_id=";
+			command += "_nodes where (version=";
+			ostringstream vs;
+			vs << version;
+			command += vs.str();
+			command += " AND cluster_id=";
 			command += parent_idStream.str();
-			command += ";";
-			
+			command += ");";
+		
 			res2 = stmt->executeQuery(command);
-		   while(res2->next()){			
+		
+		    while(res2->next()){			
 			command = "INSERT INTO ";
 			command += productName;
-			command += "_clusters (layer, parent_id, cluster_size,price_min, price";
+			command += "_clusters (version, layer, parent_id, cluster_size,price_min, price";
 				for (int i=1; i<conFeatureN; i++){
 					command += "_max, ";
 					command += conFeatureNames[i];
@@ -366,6 +385,8 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 					command += boolFeatureNames[f];
 				}
 				command += ") values (";
+				command += vs.str();
+				command += ", ";
 				ostringstream layerStream;
 				layerStream << layer+1;
 				command += layerStream.str();
@@ -406,7 +427,7 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 				}
 			command = "INSERT INTO ";
 			command += productName;
-			command += "_nodes (cluster_id, product_id";
+			command += "_nodes (version, cluster_id, product_id";
 			for (int i=0; i<conFeatureN; i++){
 				command += ", ";
 				command += conFeatureNames[i];
@@ -416,7 +437,9 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 				command += boolFeatureNames[i];
 			}
 			command += ", brand) values (";
+			command += vs.str();
 			ostringstream cidStream2; 
+			command += ", ";
 			cidStream2<< cluster_id;
 			command += cidStream2.str();
 			command += ", ";
