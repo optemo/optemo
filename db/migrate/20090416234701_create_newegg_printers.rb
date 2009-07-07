@@ -1,90 +1,115 @@
 class CreateNeweggPrinters < ActiveRecord::Migration
   def self.up
     create_table :newegg_printers do |t|
-      t.primary_key :id
-      t.string :asin
-      t.text :detailpageurl
-      t.string :binding
-      t.string :brand
-      t.string :color
-      t.string :cpumanufacturer
-      t.float :cpuspeed
-      t.string :cputype
-      t.float :displaysize
-      t.string :ean
-      t.text :feature
-      t.string :graphicsmemorysize
-      t.boolean :isautographed
-      t.boolean :ismemorabilia
-      t.integer :itemheight
-      t.integer :itemlength
-      t.integer :itemwidth
-      t.integer :itemweight
-      t.string :label
-      t.string :language
-      t.string :legaldisclaimer
-      t.string :listpricestr
-      t.integer :listpriceint
-      t.string :manufacturer
-      t.string :model
-      t.string :modemdescription
-      t.string :mpn
-      t.string :nativeresolution
-      t.integer :numberofitems
-      t.integer :packageheight 
-      t.integer :packagelength
-      t.integer :packagewidth
-      t.integer :packageweight
-      t.integer :processorcount 
-      t.string :productgroup
-      t.string :publisher
-      t.text :specialfeatures
-      t.string :studio
-      t.integer :systemmemorysize
-      t.string :systemmemorytype
-      t.text :title
-      t.integer :upc
-      t.string :warranty
-
-      t.string :merchantid
-      t.string :merchantname
-      t.integer :salepriceint
-      t.string :salepricestr
-      t.string :availability
-      t.boolean :iseligibleforsupersavershipping
-
-      t.string :imagesurl
-      t.integer :imagesheight
-      t.integer :imageswidth
-      t.string :imagemurl
-      t.integer :imagemheight
-      t.integer :imagemwidth 
-      t.string :imagelurl 
-      t.integer :imagelheight   
-      t.integer :imagelwidth
       
-      #Added features
-      t.boolean :toolow
-      t.float :ppm          
-      t.float :ttp          
-      t.string :resolution   
-      t.string  :duplex       
-      t.string  :connectivity 
-      t.string  :papersize    
-      t.integer :paperoutput  
-      t.string  :dimensions   
-      t.integer :dutycycle    
-      t.integer :paperinput   
-      t.string  :special      
-      t.float   :ppmcolor     
-      t.string  :platform     
-      t.boolean :colorprinter 
-      t.boolean :scanner      
-      t.datetime :scrapedat    
-      t.boolean :nodetails    
+      t.primary_key :id
+      t.string :item_number
+      
+      t.string :model
+      t.string :series   # Unique to Newegg
+      t.string :brand
+      
+      t.integer :listpriceint
+      t.string :listpricestr
+      
+      t.string :imageurl
+      t.text :detailpageurl
+      
+      t.string :recommendeduse  # Unique to Newegg
+      t.string :dimensions
+      
+      t.integer :itemheight
+      t.integer :itemwidth
+      t.integer :itemlength
+      t.integer :itemweight # In pounds
+      
+      # TODO package lwh? and weight?
+     
+      t.boolean :colorprinter
       t.boolean :printserver
-      t.string :pricehistory
-      t.timestamps
+      t.boolean :scanner
+      t.datetime :scrapedat
+      
+      t.string :lasertechnology # Unique to Newegg
+      
+      t.string :platform
+      t.string :warranty
+            
+      t.float  :ppm       
+      t.float  :ppmcolor
+      t.float  :ttp         
+      t.string :resolution 
+      
+      t.string :language 
+      t.string :duplex
+      t.integer :dutycycle
+      
+      t.integer :paperinput # std in Newegg
+      t.integer :paperinputmax # Unique to Newegg
+      t.integer :paperoutput  # std in Newegg
+      t.integer :paperoutputmax # Unique to Newegg
+      
+      t.string :systemmemory 
+      t.string :systemmemorymax
+      
+      t.string :mediatype # Type of paper 
+      t.string :papersize
+      
+      t.string :cputype
+      t.float :cpuspeed  #string :processormhz
+      
+      t.string :connectivity
+      
+      t.string :special
+      
+      
+      # --- Unique to Newegg ---- #
+      
+        # Ports
+      t.string :usbports  
+      t.string :lptports
+      t.string :networkports
+      t.string :otherports
+      t.string :comports
+      
+        # Copier stuff
+      t.string :copyspeedblack
+      t.string :copyspeedcolor
+      t.string :copyqualityblack
+      t.string :copyqualitycolor
+      t.string :maxnumberofcopies
+      
+        # Scanner stuff
+      t.string :scanresolutionenhanced
+      t.string :maxdocumentenlargement
+      t.string :maxdocumentreduction
+      t.string :scancolordepth
+      t.string :scanresolutionoptical
+      t.string :scanresolutionhardware
+      t.string :scanelement
+      
+        # Fax stuff
+      t.string :faxfeatures
+      t.string :faxmemory
+      t.string :faxtransmissionspeed
+      t.string :colorfax
+      t.string :faxresolutions
+      
+        # Other
+      t.string :noiselevelapprox
+      t.string :modemspeed
+      t.string :emulations
+      t.string :display
+      t.string :packagecontents
+      t.string :softwareincluded
+      t.string :borderlessphotosizes
+      t.string :colorresolution
+      t.string :papertraysstd 
+      t.string :papertraysmax
+      
+      t.string :cartridgescompatible 
+      t.string :powerrequirements 
+      t.string :powerconsumption
     end
   end
 
