@@ -5,46 +5,21 @@ class CreatePrinters < ActiveRecord::Migration
     create_table :printers do |t|
       addBasicProductFeatures
       t.primary_key :id
-      t.string :asin
-      t.text :detailpageurl
-      t.string :binding
       t.string :brand
-      t.string :color
-      t.string :cpumanufacturer
-      t.float :cpuspeed
-      t.string :cputype
       t.float :displaysize
       t.string :ean
       t.text :feature
-      t.string :graphicsmemorysize
-      t.boolean :isautographed
-      t.boolean :ismemorabilia
       t.integer :itemheight
       t.integer :itemlength
       t.integer :itemwidth
       t.integer :itemweight
-      t.string :label
-      t.string :language
-      t.string :legaldisclaimer
-      t.string :listpricestr
-      t.integer :listpriceint
-      t.string :manufacturer
+      t.integer :listpriceint #rename to listprice
       t.string :model
-      t.string :modemdescription
       t.string :mpn
-      t.string :nativeresolution
-      t.integer :numberofitems
       t.integer :packageheight 
       t.integer :packagelength
       t.integer :packagewidth
       t.integer :packageweight
-      t.integer :processorcount 
-      t.string :productgroup
-      t.string :publisher
-      t.text :specialfeatures
-      t.string :studio
-      t.integer :systemmemorysize
-      t.string :systemmemorytype
       t.string :warranty
       
       t.float :ppm

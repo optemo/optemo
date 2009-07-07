@@ -1,5 +1,6 @@
 class Dummy < ActiveRecord::Migration
   def self.up
+    add_column :amazon_printers, :product_id, :integer
   end
 
   def self.down
