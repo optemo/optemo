@@ -5,7 +5,7 @@ a.link {
 div.main {
 	padding: 0;
 	float: left;
-	/*margin-left: 203px;*/
+	width: 745px;
 	margin-left: 5px;
 	text-align: left;}
 div.rowdiv {
@@ -42,7 +42,7 @@ div.borderbox {
 	text-decoration: none;
 }
 .backlink a{
-	margin-left: 10px;
+	/*margin-left: 10px;*/
 	color: #891D1D;
 }
 .saveold {

@@ -28,11 +28,9 @@ if 	(layer == 1){
 			
 				size = 0;
 				
-				double listprice = 0.0;
 				double saleprice = 0.0;
 				double price = 0.0;
 		
-				
 				while (res->next()) 
 				{
 		 			saleprice = res->getInt("price");
@@ -202,12 +200,10 @@ if (layer > 1){
 				for (int f=0; f<conFeatureN; f++){	
 					data[s][f] = resNodes->getDouble(conFeatureNames[f]);
 				}	
-				 
 				for (int f=0; f<boolFeatureN; f++){
 		
 					data[s][f+conFeatureN] = resNodes->getDouble(boolFeatureNames[f]);
 				}
-				
 				idA[s] = resNodes->getInt("product_id"); 
 			
 				brands[s] = resNodes->getString("brand");
