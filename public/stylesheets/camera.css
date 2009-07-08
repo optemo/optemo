@@ -274,6 +274,15 @@ div #filterbar {
 	margin-left: 0px;
 	margin-top: 0px;
 }
+
+.lowlightfeature {
+	color: #777;
+}
+
+.regularfeature {
+	color: #000;
+}
+
 .endlabel_min {
 	display: none;
 

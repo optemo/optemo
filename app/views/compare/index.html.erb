@@ -24,7 +24,7 @@
 		<% end %>
 	</tr>
 	<!-- The following row is only for testing purposes -->
-	<tr>
+	<tr class="lowlight">
 		<td> 
 			Utility		
 		</td>
@@ -35,10 +35,14 @@
 		<% end %>
 	</tr>
 
-	<% @preferredDisplayFeatures.each do |column| %>	    		<!-- @preferredDisplayFeatures array is created from DisplayedFeatures array, by the ReorderFeatures() -->
+	<% @preferredDisplayFeatures.each do |column| %>	<!-- @preferredDisplayFeatures array is created from DisplayedFeatures array, by the ReorderFeatures() -->
 		<% if @interestingFeatureDisplayed[column[0]] == true %>
-			<!-- Assign IDs to rows. These IDs are returned by the serialize() function in javascript and is used to record user's preferences-->
-			<tr id = '<%= column[0] %>' > 
+			<% if sameFeatureValue(column[0]) == true %>
+				<!-- Assign IDs to rows. These IDs are returned by the serialize() function in javascript and is used to record user's preferences-->
+				<tr class="lowlightfeature" id='<%= column[0] %>' > 
+			<% else %>
+				<tr class="regularfeature" id='<%= column[0] %>' > 
+			<% end %>
 				<!-- To display the name of the feature -->
 				<%= render :partial => 'features', :locals => {:column=>column[0]} %>
 				<!-- To display the value of each interesting feature -->
