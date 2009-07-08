@@ -29,27 +29,17 @@ class ApplicationController < ActionController::Base
   
   def update_user
     if session[:user_id].blank? || !Session.exists?(session[:user_id])
-      #Find the user's session if there are no cookies -- doesn't work for proxy's and firewalls
-      #mysession = Session.find(:first, :conditions => ['ip = ? and updated_at > ?',request.remote_ip,30.minutes.ago])
-      #if mysession.nil?
-        #Create a new session
-        mysession = Session.new
-        mysession.ip = request.remote_ip
-        mysession.save
-        # Create a row in every product-features table
-        $ProdTypeList.each do |p|
-          myProduct = (p + 'Features').constantize.new
-          myProduct.session_id = mysession.id        
-          myProduct.save
-        end
-      #else
-      #  mysession.update_attribute(:updated_at, Time.now)
-      #end
-      session[:user_id] = mysession.id      
-      
-      # Following line is temporarily placed here. This will go where user preference values are calculated/updated
-      PreferenceRelation.deleteBinaryRelations      # Lose the Binary Relations between products for previous user      
-    end
+      mysession = Session.new
+      mysession.ip = request.remote_ip
+      mysession.save
+      # Create a row in every product-features table
+      $ProdTypeList.each do |p|
+        myProduct = (p + 'Features').constantize.new
+        myProduct.session_id = mysession.id        
+        myProduct.save
+      end
+      session[:user_id] = mysession.id
+      end
     $model = (session[:productType] || $DefaultProduct).constantize
     $nodemodel = ((session[:productType] || $DefaultProduct)+'Node').constantize
     $clustermodel = ((session[:productType] || $DefaultProduct)+'Cluster').constantize
