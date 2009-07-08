@@ -82,6 +82,7 @@ p, ul {
 	color: #693;
 	visibility: hidden;
 	font-family: monaco, arial;
+	font-weight: bold;
 }
 p {
 	font-size: 1.1em;

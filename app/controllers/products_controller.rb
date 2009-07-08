@@ -9,7 +9,7 @@ class ProductsController < ApplicationController
   # GET /products.xml
   def index
     @link = initialClusters
-    homepage
+    #homepage
   end
   
   def list
@@ -68,6 +68,7 @@ class ProductsController < ApplicationController
   def select
     @session = Session.find(session[:user_id])
     @session.defaultFeatures(URI.encode(params[:id]))
+    render :nothing => true
   end
   
   def buildrelations
@@ -85,6 +86,7 @@ class ProductsController < ApplicationController
         PreferenceRelation.createBinaryRelation(itemId, otherItems[otherItem], @session.id, $Weight[source])
       end
     end    
+    render :nothing => true
   end
  
   private
