@@ -37,8 +37,6 @@ string preClustering(string* varNames, map<const string, int>productNames, strin
 			    conFeatureNames[2]= "itemwidth";
 			    conFeatureNames[3]= "paperinput";
 				conFeatureNames[4] = "resolutionmax";
-				
-				
 				boolFeatureNames[0] = "scanner";
 				boolFeatureNames[1] = "printserver";
 				

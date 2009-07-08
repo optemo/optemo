@@ -55,24 +55,44 @@ class ProductsController < ApplicationController
     end
   end
   
+  def preference
+     @session = Session.find(session[:user_id])
+     mypreferences = params[:mypreference]
+     $model::ContinuousFeatures.each do |f|
+       @session.features.update_attribute(f+"_pref", mypreferences[f+"_pref"])
+     end
+     # To stay on the current page 
+     redirect_to ""
+   end
+   
   def select
     @session = Session.find(session[:user_id])
     @session.defaultFeatures(URI.encode(params[:id]))
   end
   
+  def buildrelations
+    @session = Session.find(session[:user_id])
+    source = params[:source]
+    itemId = params[:itemId]
+    # Convert the parameter string into an array of integers
+    otherItems = params[:otherItems].split(",").collect{ |s| s.to_i }
+    for otherItem in 0..otherItems.count-1
+      # If the source is unsave i.e. a saved product has been dropped, then
+      # create relations with lower as the dropped item and higher as all other saved items 
+      if source == "unsave"
+        PreferenceRelation.createBinaryRelation(otherItems[otherItem], itemId, @session.id, $Weight[source])
+      else
+        PreferenceRelation.createBinaryRelation(itemId, otherItems[otherItem], @session.id, $Weight[source])
+      end
+    end    
+  end
+ 
   private
   
   def homepage
-    mysession = Session.find(session[:user_id])
-    mysession.clearFilters
-    @pt = session[:productType] || $DefaultProduct
-    if @pt == 'Printer' && s = Search.find_by_session_id(0)
-      path = 0.upto(s.cluster_count-1).map{|i| s.send(:"c#{i}")}.join('/')
-    else
-      path = $clustermodel.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
-    end
+    path = initialClusters
     if path
-      redirect_to "/#{@pt.pluralize.downcase}/list/"+path
+      redirect_to path
     else
       flash[:error] = "There was a problem selecting the initial products"
       redirect_to '/error'
@@ -86,7 +106,9 @@ class ProductsController < ApplicationController
     if @pt == 'Printer' && s = Search.find_by_session_id(0)
       path = 0.upto(s.cluster_count-1).map{|i| s.send(:"c#{i}")}.join('/')
     else
-      path = $clustermodel.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
+      current_version = $clustermodel.last.version
+      path = $clustermodel.find_all_by_parent_id_and_version(0, current_version, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
+      #path = $clustermodel.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
     end
     "/#{@pt.pluralize.downcase}/list/"+path
   end
