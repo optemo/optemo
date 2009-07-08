@@ -1,7 +1,7 @@
 <div class="cell">
 	<td>
 		<div align="right">
-			<%= link_to image_tag('close.png'), "javascript:remove(#{thumbnails.id})", :width => '13' %> 
+			<%= link_to image_tag('close.png'), "javascript:removeFromComparison(#{thumbnails.id})", :width => '13' %> 
 		</div>
 		<div class="first">	
  			<%= image_tag(thumbnails.imagemurl, :width => thumbnails.imagemw, :height => thumbnails.imagemh, :onClick => "fadeout(#{thumbnails.id});", :style => "cursor: pointer;") %>

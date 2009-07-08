@@ -21,6 +21,7 @@ class CreatePrinters < ActiveRecord::Migration
       t.integer :packagewidth
       t.integer :packageweight
       t.string :warranty
+      t.string :manufacturerproducturl
       
       t.float :ppm
       t.float :ttp

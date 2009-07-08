@@ -638,6 +638,10 @@ ActiveRecord::Schema.define(:version => 20090707195544) do
     t.string   "powerconsumption"
   end
 
+  create_table "optemo_development", :force => true do |t|
+    t.string "label", :limit => 1
+  end
+
   create_table "printer_clusters", :force => true do |t|
     t.integer "parent_id"
     t.integer "layer"
@@ -751,6 +755,7 @@ ActiveRecord::Schema.define(:version => 20090707195544) do
     t.integer  "bestoffer"
     t.integer  "resolutionarea"
     t.integer  "resolutionmax"
+    t.string   "manufacturerproducturl"
   end
 
   create_table "referrals", :force => true do |t|

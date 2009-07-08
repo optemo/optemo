@@ -10,6 +10,9 @@
 		
 		<% elsif column == 'packagedimensions'%>
 			<%= product.display('packagelength') + " x " + product.display('packagewidth') + " x " + product.display('packageheight') %>
+
+		<% elsif column == 'price'%>
+			<%= product.display('pricestr') %>
 		
 		<!-- Display Unavailable instead of Unknown-->
 		<% elsif product.display(column) == 'Unknown' %>

@@ -42,12 +42,7 @@ class SearchController < ApplicationController
       redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.join('/')
     end
   end
-  
-  def preference
-    #@session.features.send("#{val}_pref".intern)
-    
-  end
-  
+   
   def delete
     @session = Session.find(session[:user_id])
     @session.searchterm = ""

@@ -55,11 +55,38 @@ class ProductsController < ApplicationController
     end
   end
   
+  def preference
+     @session = Session.find(session[:user_id])
+     mypreferences = params[:mypreference]
+     $model::ContinuousFeatures.each do |f|
+       @session.features.update_attribute(f+"_pref", mypreferences[f+"_pref"])
+     end
+     # To stay on the current page 
+     redirect_to ""
+   end
+   
   def select
     @session = Session.find(session[:user_id])
     @session.defaultFeatures(URI.encode(params[:id]))
   end
   
+  def buildrelations
+    @session = Session.find(session[:user_id])
+    source = params[:source]
+    itemId = params[:itemId]
+    # Convert the parameter string into an array of integers
+    otherItems = params[:otherItems].split(",").collect{ |s| s.to_i }
+    for otherItem in 0..otherItems.count-1
+      # If the source is unsave i.e. a saved product has been dropped, then
+      # create relations with lower as the dropped item and higher as all other saved items 
+      if source == "unsave"
+        PreferenceRelation.createBinaryRelation(otherItems[otherItem], itemId, @session.id, $Weight[source])
+      else
+        PreferenceRelation.createBinaryRelation(itemId, otherItems[otherItem], @session.id, $Weight[source])
+      end
+    end    
+  end
+ 
   private
   
   def homepage
