@@ -84,7 +84,8 @@ class ProductsController < ApplicationController
       else
         PreferenceRelation.createBinaryRelation(itemId, otherItems[otherItem], @session.id, $Weight[source])
       end
-    end    
+    end 
+    render :nothing => true
   end
  
   private

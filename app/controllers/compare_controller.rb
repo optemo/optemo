@@ -16,8 +16,6 @@ class CompareController < ApplicationController
     @interestingFeatureDisplayed = {} 
     @featureCssClass = {}
     @saveds = Saved.find_all_by_session_id(session[:user_id])
-    @dbfeat = {}
-    DbFeature.find_all_by_product_type(session[:productType]).each {|f| @dbfeat[f.name] = f}
     @saveds.collect do |saved|
       @products << session[:productType].constantize.find(saved.product_id)
     end
@@ -220,7 +218,10 @@ def finalDisplay(product, column)
         when 'Unknown' 
     	    return "Unavailable"
         when "true"
-          return image_tag '/images/checkmark.png', :width => 18, :height => 18
+          return "&#10003;" # This is not IE6 compatible
+          # To make it IE compatible, replace by-
+          # image_tag '/images/checkmark.png', :width => 18, :height => 18
+          # But then need to do something to fade out image when row is faded
         when "false"
     	    return "x"		
         else
@@ -260,33 +261,67 @@ def ReorderFeatures
 end
 
 def sameFeatureValue(f)
-  for i in 0..@products.count-2
-    # if finalDisplay(@products[i], f) != finalDisplay(@products[i+1], f)
-    if notSimilarFeatures(f, finalDisplay(@products[i], f), finalDisplay(@products[i+1], f))
-      return false
+  if @products.count == 1
+    return false
+  end
+  for i in 0..@products.count-1
+    for j in 0..@products.count-1
+      if i > j # So that a feature value gets compared with every other, exactly once
+        if notSimilarFeatures(f, @products[i], @products[j])
+          return false
+        end
+      end
     end
   end
   return true
 end
 
-def notSimilarFeatures(f, f1, f2)
+def notSimilarFeatures(f, p1, p2)
 # Definition of similarity, for different features can be provided here
-debugger
+# f iterates over PreferredDisplayFeatures
   case f
-    when "scanner" || "printserver" || "colorprinter"
+    when "scanner", "printserver", "colorprinter"
+      f1 = finalDisplay(p1, f)
+      f2 = finalDisplay(p2, f)
       if (f1 == f2)
         return false
       end
-    when "ppm" || "papersize" || "itemweight" || "paperoutput" || "packageweight" # f in continuous features???
-      margin = @dbfeat[f].max - @dbfeat[f].min
-      margin = margin/10
-      if (f1.to_f - f2.to_f).abs <= margin 
-        return false
+    when "itemdimensions", "packagedimensions"
+      # If any dimension is Unknown, then keep the row faded. However, if there is any pair of products with  a difference
+      # greater than the margin, then the row must be highlighted 
+      if f=="itemdimensions"
+        return false if (l1=p1.send("itemlength")).nil? || (w1=p1.send("itemwidth")).nil? || (h1=p1.send("itemheight")).nil? ||
+            (l2=p2.send("itemlength")).nil? || (w2=p2.send("itemwidth")).nil? || (h2=p2.send("itemheight")).nil?
+      elsif f=="packagedimensions"
+        return false if (l1=p1.send("packagelength")).nil? || (w1=p1.send("packagewidth")).nil? || (h1=p1.send("packageheight")).nil? ||
+            (l2=p2.send("packagelength")).nil? || (w2=p2.send("packagewidth")).nil? || (h2=p2.send("packageheight")).nil?
       end
+      f1 = l1 * w1 * h1
+      f2 = l2 * w2 * h2
+      smaller = f1 <= f2 ? f1 : f2
+      if (f1-f2).abs*100/smaller.to_f >= $margin
+        return true
+      end
+    when "resolution"
       return true
+    when "connectivity", "platform"
+      # These are CSV strings
+      f1 = p1.send(f)
+      f2 = p2.send(f)
+      if (f1 != f2)
+        return true
+      end
+    when "price", "ppm", "paperinput" #, "ppmcolor", "itemweight", "packageweight", "paperoutput"
+    # If the difference in the value of feature is greater than margin% of the smaller value, then the difference is significant
+      f1 = p1.send(f)
+      f2 = p2.send(f)
+      smaller = f1 <= f2 ? f1 : f2
+      if (f1-f2).abs*100/smaller.to_f >= $margin
+        return true
+      end
     else
       return true
-    end
+    end    
 end
 
 def SortArray

@@ -15,5 +15,8 @@ $Weight["saveit"] = 2
 $Weight["unsave"] = 3
 $Weight["unsaveComp"] = 4
 
+# Parameter that decides how much difference in values (of a feature for different products) is considered significant
+$margin = 10    # in %
+
 #These are the default use cases which should match the uses.yml file
 $DefaultUses = Hash[*%w(corporate small_office home_office photography).sort.reverse.zip((1..4).to_a).flatten]
