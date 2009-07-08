@@ -21,6 +21,7 @@ class SavedsController < ApplicationController
 
   def destroy
     Saved.find_by_session_id_and_product_id(session[:user_id], params[:id]).destroy
+    render :nothing => true
   end
 
 end
