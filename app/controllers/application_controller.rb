@@ -46,9 +46,6 @@ class ApplicationController < ActionController::Base
       #  mysession.update_attribute(:updated_at, Time.now)
       #end
       session[:user_id] = mysession.id      
-      
-      # Following line is temporarily placed here. This will go where user preference values are calculated/updated
-      PreferenceRelation.deleteBinaryRelations      # Lose the Binary Relations between products for previous user      
     end
     $model = (session[:productType] || $DefaultProduct).constantize
     $nodemodel = ((session[:productType] || $DefaultProduct)+'Node').constantize

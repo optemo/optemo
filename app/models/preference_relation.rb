@@ -13,11 +13,17 @@ class PreferenceRelation < ActiveRecord::Base
      newRelation.save
    end
    
-   # ToDo: Edit this
-   # This function should accept a session_id and for that session id, delete all records in the preference_relations table
-   def self.deleteBinaryRelations
+   def self.deleteBinaryRelations(sessionId)
       # PreferenceRelation.delete_all() # Delete does not reset ID field, so use TRUNCATE
-      ActiveRecord::Base.connection.execute('TRUNCATE preference_relations')
+      # ActiveRecord::Base.connection.execute('TRUNCATE preference_relations')
+      PreferenceRelation.find_all_by_session_id(sessionId).each do |rel| 
+        rel.destroy
+      end
    end
    
+   # To manually drop the table and reset the ID field
+   def self.truncateBinaryRelationsTable(sessionId)
+      # PreferenceRelation.delete_all() # Delete does not reset ID field, so use TRUNCATE
+      ActiveRecord::Base.connection.execute('TRUNCATE preference_relations')
+    end
 end

@@ -7,6 +7,10 @@ class CompareController < ApplicationController
     
   def index
     @session = Session.find(session[:user_id])  # @session is required to retrieve preferences    
+    
+    # Following line is temporarily placed here. This will go where user preference values are calculated/updated
+    PreferenceRelation.deleteBinaryRelations(@session.id)      # Lose the Binary Relations between products for previous user      
+    
     @products = []
     @utility = []
     @displayString = ""
