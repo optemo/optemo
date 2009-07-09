@@ -32,8 +32,7 @@ end
 
 desc "Compile C-Code"
 task :compilec do
-  run "cp -rf #{current_path}/lib/c_code/clusteringCodeLinuxStaging/* #{current_path}/lib/c_code/clusteringCode"
-  run "cd #{current_path}/lib/c_code/clusteringCode/ && make clean && make connect"
+  run "cd #{current_path}/lib/c_code/clusteringCodes/ && make hCluster"
 end
 
 desc "Configure the server files"

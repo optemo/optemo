@@ -30,20 +30,25 @@ task :get_printer_ASINs => :environment do
   response_group = 'ItemIds'
   Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
   current_page = 1
+  count = 0
   loop do
     res = Amazon::Ecs.item_search('',:browse_node => browse_node_id, :search_index => search_index, :response_group => response_group, :item_page => current_page)
     total_pages = res.total_pages unless total_pages
     res.items.each do |item|
-      asin = item.get('asin')\
-      if Printer.find_by_asin(asin).nil?
-        product = Printer.new
+      asin = item.get('asin')
+      if AmazonPrinter.find_by_asin(asin).nil?
+        product = AmazonPrinter.new
         product.asin = asin
         product.save!
+        puts asin
+        count += 1
+      end
     end
     current_page += 1
     sleep(0.2)
     break if (current_page > total_pages)
   end
+  puts "Total new printers: " + count.to_s
 end
 
 desc "Get the Camera attributes of a particular ASIN"
