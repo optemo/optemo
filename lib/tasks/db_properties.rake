@@ -23,7 +23,7 @@ def cache_index
   s.each {|s|s.destroy}
   session = Session.new({:product_type => 'Printer'})
   session.save
-  search = Search.searchFromPath(cluster_ids,session.id)
+  search = Search.createFromPath(cluster_ids,session.id)
   search.update_attribute('session_id',0)
   session.destroy
 end
