@@ -77,4 +77,7 @@ dups.each do |asin|
   RetailerOffering.find_all_by_product_id_and_product_type(dead,'Printer').each {|ro|ro.destroy}
   Printer.find(dead).destroy
 end
+
+#Printer.find_all_by_brand(nil, :conditions => ["manufacturer LIKE (?)", "%LEXMARK%"]).update_attribute('brand','Lexmark')
+
 end

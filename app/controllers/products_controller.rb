@@ -17,7 +17,7 @@ class ProductsController < ApplicationController
     @pt = session[:productType] || $DefaultProduct
     @dbfeat = {}
     DbFeature.find_all_by_product_type(@pt).each {|f| @dbfeat[f.name] = f}
-    @s = Search.searchFromPath(params[:path_info], @session.id)
+    @s = Search.createFromPath_and_commit(params[:path_info], @session.id)
     @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
     @allSearches = []
     z = Search.find_all_by_session_id(@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.hour.ago}\'")
@@ -68,6 +68,7 @@ class ProductsController < ApplicationController
   def select
     @session = Session.find(session[:user_id])
     @session.defaultFeatures(URI.encode(params[:id]))
+    render :nothing => true
   end
   
   def buildrelations
@@ -84,23 +85,16 @@ class ProductsController < ApplicationController
       else
         PreferenceRelation.createBinaryRelation(itemId, otherItems[otherItem], @session.id, $Weight[source])
       end
-    end 
+    end    
     render :nothing => true
   end
  
   private
   
   def homepage
-    mysession = Session.find(session[:user_id])
-    mysession.clearFilters
-    @pt = session[:productType] || $DefaultProduct
-    if @pt == 'Printer' && s = Search.find_by_session_id(0)
-      path = 0.upto(s.cluster_count-1).map{|i| s.send(:"c#{i}")}.join('/')
-    else
-      path = $clustermodel.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
-    end
+    path = initialClusters
     if path
-      redirect_to "/#{@pt.pluralize.downcase}/list/"+path
+      redirect_to path
     else
       flash[:error] = "There was a problem selecting the initial products"
       redirect_to '/error'
@@ -114,7 +108,9 @@ class ProductsController < ApplicationController
     if @pt == 'Printer' && s = Search.find_by_session_id(0)
       path = 0.upto(s.cluster_count-1).map{|i| s.send(:"c#{i}")}.join('/')
     else
-      path = $clustermodel.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
+      current_version = $clustermodel.last.version
+      path = $clustermodel.find_all_by_parent_id_and_version(0, current_version, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
+      #path = $clustermodel.find_all_by_parent_id(0, :order => 'cluster_size DESC').map{|c| c.id}.join('/')
     end
     "/#{@pt.pluralize.downcase}/list/"+path
   end

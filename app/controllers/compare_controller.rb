@@ -21,12 +21,14 @@ class CompareController < ApplicationController
     @featureCssClass = {}
     @saveds = Saved.find_all_by_session_id(session[:user_id])
     @saveds.collect do |saved|
-      @products << session[:productType].constantize.find(saved.product_id)
+      @products << $model.find(saved.product_id)
     end
     if @products.empty?
       redirect_to @navigationUrl
       return
     end
+    cluster_ids = @products.map{|p| $nodemodel.find_by_product_id(p.id, :order => 'id DESC').cluster_id.to_s}
+    @search = Search.createFromPath(cluster_ids, @session.id)
     # Reorder the product columns based on product utility
     ReorderProducts()      
     # Populate @interestingFeatureDisplayed variable

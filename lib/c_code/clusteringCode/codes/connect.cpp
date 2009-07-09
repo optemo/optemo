@@ -12,11 +12,9 @@
 #include <algorithm>
 using namespace std;
 
-													//return 9 cameras
+//return 9 cameras
 // Public interface of the MySQL Connector/C++
 #include <cppconn/mysql_public_iface.h>
-
-
 //
 #include "hClustering.h"
 #include "preProcessing.h"
@@ -33,6 +31,7 @@ int main(int argc, char** argv){
 	int varNamesN;
 	int range;
 	int layer = 1;
+	int version;
 	string var;
 	
 	//argument is the productName
@@ -60,12 +59,9 @@ int main(int argc, char** argv){
 					for (int f=2; f<conFeatureN; f++){
 						weights[f] = 1;
 					}
-
 				    for (int f=0; f<boolFeatureN; f++){
 				    	weights[conFeatureN+f] = 0.5;
 				    }
-					
-				
 					break;
 			
 		case 2:
@@ -231,41 +227,51 @@ int main(int argc, char** argv){
 				stmt->execute(command);
 					
 				//deleting the current node and cluster tables
-				command = "DELETE FROM ";
-				command += productName;
-				command += "_clusters;";
-				stmt->execute(command);
-					
-				command = "DELETE FROM ";
-				command += productName;
-				command += "_nodes;";
-		
-				stmt->execute(command);
+			//	command = "DELETE FROM ";
+			//	command += productName;
+			//	command += "_clusters;";
+			//	stmt->execute(command);
+			//		
+			//	command = "DELETE FROM ";
+			//	command += productName;
+			//	command += "_nodes;";
+		    //
+			//	stmt->execute(command);
 
+			   
+				command = "SELECT version from ";
+				command += productName;
+				command += "_clusters order by id DESC LIMIT 1";
+				res = stmt->executeQuery(command);
+				if (res->next()){
+					version = res->getInt("version");
+					version++;
+				}
+				else{
+					version = 0;
+				}
 			
 			    res = stmt->executeQuery(filteringCommand); 
 	
 				int maxSize = 10000;
 			
+				cout<<"Version: "<<version<<endl;	
 			   while (maxSize>clusterN){
 							
 					for (int j=0; j<conFeatureN; j++){
 						average[j] = 0.0;
 					}
-					cout<<"layer "<<layer<<endl;
-					maxSize = hClustering(layer, clusterN,  conFeatureN,  boolFeatureN, average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
-							stmt, conFeatureNames, boolFeatureNames, productName, weights);	
-		
 					
+					
+					maxSize = hClustering(layer, clusterN,  conFeatureN,  boolFeatureN, average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
+							stmt, conFeatureNames, boolFeatureNames, productName, weights, version);	
+					cout<<"layer "<<layer<<endl;
 					layer++;
-		
 				}
-		
-				leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, res3, stmt, productName);
-		
-		
+				
+				leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, res3, stmt, productName, version);	
+				cout<<"layer "<<layer<<endl;
 //Generating the output string 
-
 
  	delete stmt;
  	delete con;
