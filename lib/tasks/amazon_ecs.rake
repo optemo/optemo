@@ -144,7 +144,7 @@ end
 desc "Get all the Amazon data for the current Printer ASINs"
 task :get_printer_data_for_ASINs => :environment do
   require 'amazon/ecs'
-  Printer.find(:all, :conditions => "instock is null").each do |p|
+  AmazonPrinter.find_all_by_brand(nil).each do |p|
     if !p.asin.blank?
       puts 'Processing' + p.asin
       Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
@@ -193,9 +193,6 @@ task :get_printer_data_for_ASINs => :environment do
       p.systemmemorytype = atts.get('systemmemorytype')
       p.title = atts.get('title')
       p.warranty = atts.get('warranty')
-
-      p = findprice(p)
-      sleep(0.5) #One Req per sec
   
       #Lookup images
       res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'Images')
@@ -210,6 +207,8 @@ task :get_printer_data_for_ASINs => :environment do
       p.imagelheight = r.get('largeimage/height')
       p.imagelwidth = r.get('largeimage/width')
       p.save!
+      #p = findprice(p)
+      sleep(0.5) #One Req per sec
       end
     end
   end
