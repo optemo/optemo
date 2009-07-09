@@ -254,6 +254,10 @@ div #filterbar {
 	color: #000;
 }
 
+.comparisonfeature {
+	color: green;
+}
+
 .endlabel_min {
 	display: none;
 

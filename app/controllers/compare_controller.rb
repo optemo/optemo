@@ -27,10 +27,11 @@ class CompareController < ApplicationController
       redirect_to @navigationUrl
       return
     end
-    cluster_ids = @products.map{|p| $nodemodel.find_by_product_id(p.id, :order => 'id DESC').cluster_id.to_s}
-    @search = Search.createFromPath(cluster_ids, @session.id)
     # Reorder the product columns based on product utility
     ReorderProducts()      
+    # After @products has been re-ordered, create the @search object
+    cluster_ids = @products.map{|p| $nodemodel.find_by_product_id(p.id, :order => 'id DESC').cluster_id.to_s}
+    @search = Search.createFromPath(cluster_ids, @session.id)
     # Populate @interestingFeatureDisplayed variable
     decideWhichFeaturesToDisplay
     # Reorder the feature rows based on feature utility
@@ -381,4 +382,23 @@ def numberOfStars(utility)
 		when 0.9..1:
 		  return 5
   end	
+end
+
+def displayComparisonFeature(i)
+  returnString = ""
+  DbFeature.find_all_by_product_type_and_feature_type($model.name, 'Continuous').each do |f|
+   valThisProduct = @products[i].send(f.name)
+   
+  # Preference Direction can be used to display only good qualities (min or max)
+  if $PrefDirection[f.name] == -1
+    if valThisProduct == @search.minimum(f.name)
+      returnString = returnString + "Minimum " + (f.name) + "<br>"
+    end
+  else
+    if valThisProduct == @search.maximum(f.name)
+      returnString = returnString + "Maximum " + (f.name) + "<br>"
+    end
+  end  
+ end
+ return returnString
 end

@@ -37,6 +37,24 @@ class Search < ActiveRecord::Base
     [min, max]
   end
   
+  def minimum(feature)
+    feature = feature + "_min"
+    min = clusters[0].send(feature)
+    for i in 1..cluster_count-1
+      min = clusters[i].send(feature) if clusters[i].send(feature) < min
+    end
+    min
+  end
+  
+  def maximum(feature)
+    feature = feature + "_max"
+    max = clusters[0].send(feature)
+    for i in 1..cluster_count-1
+      max = clusters[i].send(feature) if clusters[i].send(feature) > max
+    end
+    max
+  end
+    
   def result_count
     clusters.map{|c| c.size(session)}.sum
   end
