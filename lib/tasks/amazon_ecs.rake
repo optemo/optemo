@@ -216,7 +216,7 @@ task :update_prices => :environment do
   Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
   $model = Printer
   $model.find(:all).each{|p|#, :conditions => ['updated_at < ?', 1.day.ago]).each {|p|
-    puts 'Processing ' + p.id
+    puts 'Processing ' + p.id.to_s
     p = findprice(p)
     p.save
     sleep(0.5) #One Req per sec
@@ -293,18 +293,16 @@ def findprice(p)
         next
       end
       offers = [] << offers unless offers.class == Array
-      offers.each {|o| 
-        if o.get('offerlisting/price/formattedprice') != 'Too low to display'
-          price = o.get('offerlisting/price/amount').to_i
-          merchantid = o.get('merchant/merchantid')
-          merchant = merchantid == AmazonID ? "Amazon" : "Amazon Marketplace"
-          if price < lowestprice[merchant]
-            lowestprice[merchant] = price
-            lowestentry[merchant] = e
-            lowmerchant[merchant] = merchantid
-          end
+      offers.each do |o| 
+        price = o.get('offerlisting/price/amount').to_i
+        merchantid = o.get('merchant/merchantid')
+        merchant = merchantid == AmazonID ? "Amazon" : "Amazon Marketplace"
+        if price < lowestprice[merchant]
+          lowestprice[merchant] = price
+          lowestentry[merchant] = e
+          lowmerchant[merchant] = merchantid
         end
-      }
+      end
       current_page += 1
       sleep(2) #One Req per sec
     end while (current_page <= total_pages)
@@ -312,7 +310,7 @@ def findprice(p)
   sleep(1) #Be Nice
   #Save lowest prices
   merchants.each do |merchant|
-    if merchant != 'Amazon' && lowmerchant[merchant].blank? #Force save for amazon due to low display
+    if lowmerchant[merchant].blank?
       offer = RetailerOffering.find_by_product_id_and_product_type_and_retailer_id(p.id,p.class.name,Retailer.find_by_name(merchant).id)
       offer.update_attribute(:stock,false) unless offer.nil?
     else
@@ -340,7 +338,7 @@ def findprice(p)
 end
 
 def saveoffer(p,retailer,merchant)
-  puts [p.product_id,retailer,merchant].join(' ')
+  puts [p.product_id,Retailer.find(retailer).name,merchant].join(' ')
   res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => merchant)
   offer = res.first_item
   #Look for old Retail Offering
