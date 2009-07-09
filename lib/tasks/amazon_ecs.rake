@@ -214,8 +214,9 @@ desc "Updating Amazon Price"
 task :update_prices => :environment do
   require 'amazon/ecs'
   Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
-  Printer.find(:all).each{|p|#, :conditions => ['updated_at < ?', 1.day.ago]).each {|p|
-    puts 'Processing ' + p.asin
+  $model = Printer
+  $model.find(:all).each{|p|#, :conditions => ['updated_at < ?', 1.day.ago]).each {|p|
+    puts 'Processing ' + p.id
     p = findprice(p)
     p.save
     sleep(0.5) #One Req per sec
@@ -272,49 +273,54 @@ AmazonID = 'ATVPDKIKX0DER'
 
 def findprice(p)
   #Find the lowest price
-  highestprice = 100000000
-  lowestprice = highestprice
-  lowmerchant = ''
+  highestprice = 1000000000
+  merchants = ["Amazon", "Amazon Marketplace"]
+  lowestprice = Hash[*merchants.zip([highestprice]*merchants.size).flatten]
+  lowmerchant = Hash[*merchants.zip(['']*merchants.size).flatten]
+  lowestentry = Hash[*merchants.zip([nil]*merchants.size).flatten]
   current_page = 1
-  begin
-    res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => 'All', :offer_page => current_page)
-    total_pages = res.total_pages unless total_pages
-    if res.first_item.nil?
-      current_page += 1
-      next
-    end
-    offers = res.first_item.search_and_convert('offers/offer')
-    if offers.nil?
-      current_page += 1
-      next
-    end
-    offers = [] << offers unless offers.class == Array
-    offers.each {|o| 
-      if o.get('offerlisting/price/formattedprice') != 'Too low to display'
-        price = o.get('offerlisting/price/amount').to_i
-        merchant = o.get('merchant/merchantid')
-        if price < lowestprice && merchant != AmazonID
-          lowestprice = price
-          lowmerchant = merchant
-        end
+  AmazonPrinter.find_all_by_product_id(p.id).each do |e|
+    begin
+      res = Amazon::Ecs.item_lookup(e.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => 'All', :offer_page => current_page)
+      total_pages = res.total_pages unless total_pages
+      if res.first_item.nil?
+        current_page += 1
+        next
       end
-    }
-    current_page += 1
-    sleep(2) #One Req per sec
-  end while (current_page <= total_pages)
-  
-  #Save Amazon Price
-  sleep(1) #Be Nice
-  saveoffer(p,Retailer.find_by_name('Amazon').id,AmazonID)
-  sleep(2) #One Req per sec
-  #Save lowest Marketplace price
-  if lowmerchant.blank?
-    offer = RetailerOffering.find_by_product_id_and_product_type_and_retailer_id(p.id,p.class.name,Retailer.find_by_name('Amazon Marketplace').id)
-    offer.update_attribute(:stock,false) unless offer.nil?
-  else
-    saveoffer(p,Retailer.find_by_name('Amazon Marketplace').id,lowmerchant)
-    sleep(1) #One Req per sec
+      offers = res.first_item.search_and_convert('offers/offer')
+      if offers.nil?
+        current_page += 1
+        next
+      end
+      offers = [] << offers unless offers.class == Array
+      offers.each {|o| 
+        if o.get('offerlisting/price/formattedprice') != 'Too low to display'
+          price = o.get('offerlisting/price/amount').to_i
+          merchantid = o.get('merchant/merchantid')
+          merchant = merchantid == AmazonID ? "Amazon" : "Amazon Marketplace"
+          if price < lowestprice[merchant]
+            lowestprice[merchant] = price
+            lowestentry[merchant] = e
+            lowmerchant[merchant] = merchantid
+          end
+        end
+      }
+      current_page += 1
+      sleep(2) #One Req per sec
+    end while (current_page <= total_pages)
   end
+  sleep(1) #Be Nice
+  #Save lowest prices
+  merchants.each do |merchant|
+    if merchant != 'Amazon' && lowmerchant[merchant].blank? #Force save for amazon due to low display
+      offer = RetailerOffering.find_by_product_id_and_product_type_and_retailer_id(p.id,p.class.name,Retailer.find_by_name(merchant).id)
+      offer.update_attribute(:stock,false) unless offer.nil?
+    else
+      saveoffer(lowestentry[merchant],Retailer.find_by_name(merchant).id,lowmerchant[merchant])
+      sleep(2) #One Req per sec
+    end
+  end
+  
   #Find lowest product price
   os = RetailerOffering.find_all_by_product_id_and_product_type(p.id,p.class.name)
   lowest = highestprice
@@ -334,20 +340,17 @@ def findprice(p)
 end
 
 def saveoffer(p,retailer,merchant)
-  puts [p,retailer,merchant].join(' ')
+  puts [p.product_id,retailer,merchant].join(' ')
   res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => merchant)
   offer = res.first_item
   #Look for old Retail Offering
-  o = RetailerOffering.find_by_product_id_and_product_type_and_retailer_id(p.id,p.class.name,retailer)
-  if o.nil?
-    o = RetailerOffering.new
-    o.product_id = p.id
-    o.product_type = p.class.name
-    o.retailer_id = retailer
-  else
-    if offer.nil?
-      o.stock = false
-      o.save
+  unless offer.nil?
+    o = RetailerOffering.find_by_product_id_and_product_type_and_retailer_id(p.product_id,$model.name,retailer)
+    if o.nil?
+      o = RetailerOffering.new
+      o.product_id = p.product_id
+      o.product_type = p.class.name
+      o.retailer_id = retailer
     elsif o.priceint != offer.get('offerlisting/price/amount')
       #Save old prices only if price has changed
       if o.pricehistory.nil?
@@ -356,8 +359,6 @@ def saveoffer(p,retailer,merchant)
         o.pricehistory = (YAML.load(o.pricehistory) + [o.priceUpdate.to_s(:db), o.priceint]).to_yaml if o.priceUpdate
       end
     end
-  end
-  if !offer.nil?
     #Too Low to Display
     if offer.get('offerlisting/price/formattedprice') == 'Too low to display'
       o.toolow = true

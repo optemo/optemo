@@ -33,7 +33,7 @@ source printers_main
 sql_db = optemo_production
 sql_host = localhost
 sql_pass = tinydancer
-sql_user = jaguar
+sql_user = optemo
 sql_query_range = SELECT MIN(id) , MAX(id) FROM printers 
 sql_query = SELECT (printers.id * 1 + 0) AS id, 'Printer' AS class, 0 AS class_id, printers.feature AS feature, printers.title AS title FROM printers WHERE printers.id >= $start AND printers.id <= $end GROUP BY printers.id
 
