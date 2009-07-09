@@ -229,7 +229,7 @@ end
 
 desc "Get real features from Printer special features"
 task :interpret_special_features => :environment do
-  Printer.find(:all, :conditions => 'specialfeatures IS NOT NULL').each do |p|
+  AmazonPrinter.find(:all, :conditions => 'specialfeatures IS NOT NULL AND product_id IS NULL').each do |p|
     #p = Printer.find(:first, :order => 'rand()', :conditions => 'specialfeatures IS NOT NULL')
     sf = p.specialfeatures
     a = sf[3..-1].split('|') #Remove leading nv:
@@ -271,6 +271,22 @@ task :interpret_special_features => :environment do
     p.save
   end
 end
+
+desc "Create new printers for new AmazonPrinters"
+task :create_printers => :environment do
+  require 'amazon/ecs'
+  $model = Printer
+  Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
+  AmazonPrinter.find(:all, :conditions => ['created_at > ?', 1.day.ago]).each do |p|
+    printer = Printer.new
+    printer = getAtts(printer, p)
+    printer.save
+    p.update_attribute('product_id',printer.id)
+    printer = findprice(printer)
+    printer.save
+  end
+end
+
 
 private
 AmazonID = 'ATVPDKIKX0DER'
@@ -389,4 +405,12 @@ def scrape_hidden_prices(p)
   priceint = price.innerHTML.gsub(/\D/,'').to_i unless price.nil?
   sleep(1+rand()*30) #Be nice to Amazon
   priceint
+end
+
+def getAtts(n, o)
+  cols = $model.column_names.delete_if{|c|c.index(/id|updated_at|created_at|manufacturerproducturl/)}
+  cols.each do |c|
+    n.send((c+'=').intern, o.send(c.intern))
+  end
+  n
 end
