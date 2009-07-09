@@ -12,7 +12,7 @@ set :scm, :git
 set :deploy_via, :remote_cache
 #ssh_options[:paranoid] = false
 default_run_options[:pty] = true
-set :use_sudo, false
+set :use_sudo, true
 
 
 role :app, domain
@@ -30,6 +30,11 @@ namespace :passenger do
   end
 end
 
+desc "Reindex search index"
+task :reindex do
+  sudo "rake -f #{current_path}/Rakefile ultrasphinx:index"
+end
+
 desc "Compile C-Code"
 task :compilec do
   run "cp -rf #{current_path}/lib/c_code/clusteringCodeLinux/* #{current_path}/lib/c_code/clusteringCode"
@@ -44,7 +49,7 @@ task :serversetup do
 end
 
 after :deploy, "serversetup"
-after :serversetup, "compilec"
-after :compilec, "passenger:restart"
+#after :serversetup, "compilec"
+after :serversetup, "passenger:restart"
 
 
