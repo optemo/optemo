@@ -16,10 +16,12 @@ lib/c_code/clusteringCodes/CMakeFiles/*
 lib/c_code/clusteringCodes/CMakeFiles/*/*
 lib/c_code/clusteringCodes/Makefile
 lib/c_code/clusteringCodes/cmake_install.cmake
+lib/c_code/clusteringCodes/CMakeCache.txt
+
 
 lib/c_code/clusteringCodes/cppconn/CMakeFiles/*
 lib/c_code/clusteringCodes/cppconn/CMakeFiles/*/*
-lib/c_code/clusteringCodes/cppconc/Makefile
+lib/c_code/clusteringCodes/cppconn/Makefile
 lib/c_code/clusteringCodes/cppconn/cmake_install.cmake
 
 lib/c_code/clusteringCodes/codes/CMakeFiles/*
