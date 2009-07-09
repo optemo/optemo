@@ -13,6 +13,7 @@ set :deploy_via, :remote_cache
 #ssh_options[:paranoid] = false
 default_run_options[:pty] = true
 set :use_sudo, true
+set :runner, 'jan'
 
 
 role :app, domain

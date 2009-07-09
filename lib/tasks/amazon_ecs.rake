@@ -144,7 +144,7 @@ end
 desc "Get all the Amazon data for the current Printer ASINs"
 task :get_printer_data_for_ASINs => :environment do
   require 'amazon/ecs'
-  Printer.find(:all, :conditions => "instock is null").each do |p|
+  AmazonPrinter.find_all_by_brand(nil).each do |p|
     if !p.asin.blank?
       puts 'Processing' + p.asin
       Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
@@ -193,9 +193,6 @@ task :get_printer_data_for_ASINs => :environment do
       p.systemmemorytype = atts.get('systemmemorytype')
       p.title = atts.get('title')
       p.warranty = atts.get('warranty')
-
-      p = findprice(p)
-      sleep(0.5) #One Req per sec
   
       #Lookup images
       res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'Images')
@@ -210,6 +207,8 @@ task :get_printer_data_for_ASINs => :environment do
       p.imagelheight = r.get('largeimage/height')
       p.imagelwidth = r.get('largeimage/width')
       p.save!
+      #p = findprice(p)
+      sleep(0.5) #One Req per sec
       end
     end
   end
@@ -230,7 +229,7 @@ end
 
 desc "Get real features from Printer special features"
 task :interpret_special_features => :environment do
-  Printer.find(:all, :conditions => 'specialfeatures IS NOT NULL').each do |p|
+  AmazonPrinter.find(:all, :conditions => 'specialfeatures IS NOT NULL AND product_id IS NULL').each do |p|
     #p = Printer.find(:first, :order => 'rand()', :conditions => 'specialfeatures IS NOT NULL')
     sf = p.specialfeatures
     a = sf[3..-1].split('|') #Remove leading nv:
@@ -272,6 +271,22 @@ task :interpret_special_features => :environment do
     p.save
   end
 end
+
+desc "Create new printers for new AmazonPrinters"
+task :create_printers => :environment do
+  require 'amazon/ecs'
+  $model = Printer
+  Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
+  AmazonPrinter.find(:all, :conditions => ['created_at > ?', 1.day.ago]).each do |p|
+    printer = Printer.new
+    printer = getAtts(printer, p)
+    printer.save
+    p.update_attribute('product_id',printer.id)
+    printer = findprice(printer)
+    printer.save
+  end
+end
+
 
 private
 AmazonID = 'ATVPDKIKX0DER'
@@ -390,4 +405,12 @@ def scrape_hidden_prices(p)
   priceint = price.innerHTML.gsub(/\D/,'').to_i unless price.nil?
   sleep(1+rand()*30) #Be nice to Amazon
   priceint
+end
+
+def getAtts(n, o)
+  cols = $model.column_names.delete_if{|c|c.index(/id|updated_at|created_at|manufacturerproducturl/)}
+  cols.each do |c|
+    n.send((c+'=').intern, o.send(c.intern))
+  end
+  n
 end

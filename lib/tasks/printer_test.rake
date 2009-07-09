@@ -2,6 +2,8 @@
 namespace :printer_test do   
 
   # ------------------- TESTING ALGORITHMS ---------------------#
+  desc "EVERYTHING!!!"
+  task :all => [:sliders,:brand_selector,:search,:browse_similar]
   
   desc 'A series of clever moves to get back button errors.'
   task :tricky => :environment do
