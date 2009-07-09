@@ -49,7 +49,7 @@ task :serversetup do
 end
 
 after :deploy, "serversetup"
-after :serversetup, "compilec"
-after :compilec, "passenger:restart"
+#after :serversetup, "compilec"
+after :serversetup, "passenger:restart"
 
 
