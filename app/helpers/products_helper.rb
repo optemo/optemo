@@ -8,18 +8,30 @@ module ProductsHelper
     end
     
   end
-  
-  def sim_link(cluster,i)
-  	unless cluster.children(@session).nil? || cluster.children(@session).empty? || (cluster.size(@session)==1)
+
+  def array_to_csv(iArray)
+    # converts iArray, an array of integers, to a string in csv format
+    csv = ""
+    for i in 0..iArray.count-1
+      csv = csv + iArray[i] + ","
+    end
+    # Chop off the last comma
+    csv = csv.chop    
+    csv
+  end
+
+  def sim_link(cluster,i, itemId)
+    unless cluster.children(@session).nil? || cluster.children(@session).empty? || (cluster.size(@session)==1)
       "<div class='sim'>" +
         link_to("Explore #{cluster.size(@session)} Similar Product#{"s" if cluster.size(@session) > 1}", 
         "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+cluster.children(@session).map{|c|c.id}.join('/'), 
-        :id => "sim#{i}") +
+        :id => "sim#{i}", :class => 'simlinks', :name => itemId) +
       "</div>"
     else
       ""
     end
   end
+  
   def combine_list(a)
     case a.length
     when 0: "similar properties to the given product."
@@ -31,12 +43,12 @@ module ProductsHelper
     end
   end
   
-  def dbmin(feat)
-    feat=='price' ? @dbfeat['price'].min/100 :  @dbfeat[feat].min.to_i
+  def dbmin(i2f, feat)
+    i2f ? @dbfeat[feat].min/100 :  @dbfeat[feat].min.to_i
   end
   
-  def dbmax(feat)
-    feat=='price' ? (@dbfeat['price'].max.to_f/100).ceil : @dbfeat[feat].max.ceil
+  def dbmax(i2f, feat)
+    i2f ? (@dbfeat[feat].max.to_f/100).ceil : @dbfeat[feat].max.ceil
   end
 end
 

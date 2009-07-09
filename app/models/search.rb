@@ -65,7 +65,7 @@ class Search < ActiveRecord::Base
     @clusters
   end
   
-  def self.searchFromPath(path, session_id)
+  def self.createFromPath(path, session_id)
     ns = {}
     mycluster = "c0"
     ns['cluster_count'] = path.length
@@ -75,10 +75,14 @@ class Search < ActiveRecord::Base
     end
     ns['session_id'] = session_id
     s = new(ns)
-    
     s.fillDisplay
     s.parent_id = s.clusters.map{|c| c.parent_id}.sort[0]
     s.layer = s.clusters.map{|c| c.layer}.sort[0]
+    s
+  end
+  
+  def self.createFromPath_and_commit(path, session_id)
+    s = createFromPath(path, session_id)
     s.save
     s
   end

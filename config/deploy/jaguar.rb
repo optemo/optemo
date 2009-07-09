@@ -12,7 +12,7 @@ set :scm, :git
 set :deploy_via, :remote_cache
 #ssh_options[:paranoid] = false
 default_run_options[:pty] = true
-set :use_sudo, false
+set :use_sudo, true
 
 
 role :app, domain
@@ -28,6 +28,11 @@ namespace :passenger do
   task :restart do
     run "touch #{current_path}/tmp/restart.txt"
   end
+end
+
+desc "Reindex search index"
+task :reindex do
+  sudo "rake -f #{current_path}/Rakefile ultrasphinx:index"
 end
 
 desc "Compile C-Code"

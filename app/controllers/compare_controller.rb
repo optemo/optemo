@@ -10,34 +10,30 @@ class CompareController < ApplicationController
     @products = []
     @utility = []
     @displayString = ""
+    # Link to latest product navigation page
+    @navigationUrl = "/printers/list/" + Search.find_all_by_session_id(session[:user_id], :order => 'updated_at DESC').first.to_s
     # To track whether an interesting feature is displayed or not-
     @interestingFeatureDisplayed = {} # Array.new(session[:productType].constantize::DisplayedFeatures.count, false)
-    if params[:path_info].blank?
-      @saveds = Saved.find_all_by_session_id(session[:user_id])
-      @saveds.collect do |saved|
-        @products << saved.product_id
-      end
-      if @products.empty?
-        redirect_to "/printers"
-      else
-        redirect_to "/compare/#{@products.join('/')}"
-      end
-    else
-      params[:path_info].collect do |id|
-        @products << session[:productType].constantize.find(id)
-      end
-      
-      # Reorder the product columns based on product utility
-      ReorderProducts()      
-      # Populate @interestingFeatureDisplayed variable
-      decideWhichFeaturesToDisplay
-      # Reorder the feature rows based on feature utility
-      ReorderFeatures()
-      
-      respond_to do |format|
-        format.html # index.html.erb
-        format.xml  { render :xml => @products }
-      end
+    @saveds = Saved.find_all_by_session_id(session[:user_id])
+    @saveds.collect do |saved|
+      @products << $model.find(saved.product_id)
+    end
+    if @products.empty?
+      redirect_to @navigationUrl
+      return
+    end
+    cluster_ids = @products.map{|p| $nodemodel.find_by_product_id(p.id, :order => 'id DESC').cluster_id.to_s}
+    @search = Search.createFromPath(cluster_ids, @session.id)
+    # Reorder the product columns based on product utility
+    ReorderProducts()      
+    # Populate @interestingFeatureDisplayed variable
+    decideWhichFeaturesToDisplay
+    # Reorder the feature rows based on feature utility
+    ReorderFeatures()
+    
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml  { render :xml => @products }
     end
   end
   

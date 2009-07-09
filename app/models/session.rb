@@ -2,6 +2,7 @@ class Session < ActiveRecord::Base
   has_many :saveds
   has_many :vieweds
   has_many :searches
+  has_many :preference_relations
   
   def clearFilters
     # In Sessions table, 
@@ -35,6 +36,8 @@ class Session < ActiveRecord::Base
     #Fix price, because it's stored as int in db
     myfilter[:price_max] = myfilter[:price_max].to_i*100 if myfilter[:price_max]
     myfilter[:price_min] = myfilter[:price_min].to_i*100 if myfilter[:price_min]
+    myfilter[:itemwidth_max] = myfilter[:itemwidth_max].to_i*100 if myfilter[:itemwidth_max]
+    myfilter[:itemwidth_min] = myfilter[:itemwidth_min].to_i*100 if myfilter[:itemwidth_min]
     $featuremodel.column_names.each do |column|
       if !(column == 'id' || column == 'session_id')
         feature_filter[column.intern] = myfilter.delete(column.intern) if myfilter[column.intern]
@@ -53,7 +56,8 @@ class Session < ActiveRecord::Base
     @oldsession = Session.find(parent_id)
     if expandedFiltering? || @oldsession.oldclusters.nil?
       #Search is expanded, so use all products to begin with
-      clusters = $clustermodel.find_all_by_layer(1)
+      current_version = $clustermodel.last.version
+      clusters = $clustermodel.find_all_by_layer_and_version(1,current_version)
     else
       #Search is narrowed, so use current products to begin with
       clusters = @oldsession.oldclusters
