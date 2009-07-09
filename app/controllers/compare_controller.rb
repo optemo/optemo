@@ -15,7 +15,7 @@ class CompareController < ApplicationController
     @utility = []
     @displayString = ""
     # Link to latest product navigation page
-    @navigationUrl = "/printers/list/" + Search.find_all_by_session_id(session[:user_id], :order => 'updated_at DESC').first.to_s
+    @navigationUrl = $model.name.pluralize.downcase + "/list/" + Search.find_by_session_id(session[:user_id], :order => 'updated_at DESC').to_s
     # To track whether an interesting feature is displayed or not-
     @interestingFeatureDisplayed = {} 
     @featureCssClass = {}
@@ -354,4 +354,29 @@ def SortArray
     counter = counter + 1
     tempBasedOn[index] = -1.0
   end  
+end
+
+def numberOfStars(utility)
+  case utility
+		when 0..0.1:
+		  return 0.5
+		when 0.1..0.2
+		  return 1
+		when 0.2..0.3
+		  return 1.5
+		when 0.3..0.4:
+		  return 2
+		when 0.4..0.5:
+		  return 2.5
+		when 0.5..0.6:
+		  return 3
+		when 0.6..0.7:
+		  return 3.5
+		when 0.7..0.8:
+      return 4
+		when 0.8..0.9:
+		  return 4.5
+		when 0.9..1:
+		  return 5
+  end	
 end

@@ -20,11 +20,11 @@
 			</div>
 		</td>
 		<% for i in 0..@products.count-1%>
-			<%= render :partial => 'thumbnails', :object => @products[i], :locals => {:navBack => :back} %>			<!-- ToDo: OldBack needs to be used to retain history after Deleting column-->		
+			<%= render :partial => 'thumbnails', :object => @products[i], :locals => {:navBack => :back, :i => i} %>			<!-- ToDo: OldBack needs to be used to retain history after Deleting column-->		
 		<% end %>
 	</tr>
-	<!-- The following row is only for testing purposes -->
-	<tr class="lowlight">
+	<!-- The following row is only for testing purposes 
+	<tr class="lowlightfeature">
 		<td> 
 			Utility		
 		</td>
@@ -34,7 +34,7 @@
 			</td>
 		<% end %>
 	</tr>
-
+	-->
 	<% @preferredDisplayFeatures.each do |column| %>	<!-- @preferredDisplayFeatures array is created from DisplayedFeatures array, by the ReorderFeatures() -->
 		<% if @interestingFeatureDisplayed[column[0]] == true %>
 			<% if sameFeatureValue(column[0]) == true %>

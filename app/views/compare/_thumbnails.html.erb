@@ -1,5 +1,14 @@
 <div class="cell">
-	<td>
+	<td style="width:auto;min-width:150px;">
+		<div align="left" style="float:left">
+			<% num = numberOfStars(@utility[i]) %>
+			<% for j in 0..num-1 %>
+				<%= image_tag("fullstar.gif", :width => 20, :height => 20, :onClick => "fadeout(100);") %>
+			<% end %>
+			<% if num%1 != 0 %>
+				<%= image_tag("halfstar.gif", :width => 20, :height => 20, :onClick => "fadeout(100);") %>
+			<% end %>
+		</div>
 		<div align="right">
 			<%= link_to image_tag('close.png'), "javascript:removeFromComparison(#{thumbnails.id})", :"data-name" => thumbnails.id, :class => 'deleteXComp', :width => '13' %> 
 		</div>
