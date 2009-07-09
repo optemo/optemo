@@ -7,6 +7,15 @@
 		<td> 
 			<div class="first">								
 				<h2>Product Features</h2>
+				<div id="preferenceBarVertical">
+					<% form_tag("/search/preferenceVertical/#{@c.to_s}",{:id => 'preferenceVertical_form'}) do %>
+					        <!-- Preference partial to draw the preference controls -->
+					<table boder=0 height=100% width=100%>          
+					        <tr>
+					                <%= render :partial => 'preferenceVertical' %>                                          
+					        </tr>
+					</table>
+					<% end %>
 			</div>
 		</td>
 		<% for i in 0..@products.count-1%>
