@@ -1,8 +1,8 @@
 //preProcessing.h
 #include <map>
-#include "preClustering.h"
-#include "parseInput.h"
-#include "generateOutput.h"
+#include "preProcessing/preClustering.h"
+#include "preProcessing/parseInput.h"
+#include "preProcessing/generateOutput.h"
 
 //preClustering sets variables appropriately based to generate clusters and node tables for each product
 

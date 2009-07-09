@@ -18,28 +18,46 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-cmake_minimum_required(VERSION 2.6)
-
-SET(CMAKE_VERBOSE_MAKEFILE 0)
+ADD_DEFINITIONS("-DCPPDBC_EXPORTS")
 
 INCLUDE_DIRECTORIES(${MYSQLCPPCONN_SOURCE_DIR})
-LINK_DIRECTORIES(${MYSQLCPPCONN_SOURCE_DIR}/cppconn)
+INCLUDE_DIRECTORIES(${MYSQLCPPCONN_SOURCE_DIR}/cppconn)
+
+SET(cppcon_sources
+	mysql_connection.cpp
+	mysql_constructed_resultset.cpp
+	mysql_driver.cpp
+	mysql_exception.cpp
+	mysql_metadata.cpp
+	mysql_prepared_statement.cpp
+	mysql_ps_resultset.cpp
+	mysql_resultset.cpp
+	mysql_resultset_metadata.cpp
+	mysql_res_wrapper.cpp
+	mysql_statement.cpp)
+
+ADD_LIBRARY(mysqlcppconn SHARED ${cppcon_sources})
+ADD_LIBRARY(mysqlcppconn-static STATIC ${cppcon_sources})
 
 IF(WIN32)
-	INCLUDE_DIRECTORIES(${MYSQLCPPCONN_SOURCE_DIR/cppconn})
-
+	INCLUDE_DIRECTORIES(${MYSQL_DIR}/include)
 	IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
 		LINK_DIRECTORIES(${MYSQL_DIR}/lib/debug)
 	ELSEIF(CMAKE_BUILD_TYPE STREQUAL "")
 		LINK_DIRECTORIES(${MYSQL_DIR}/lib/opt)
 	ENDIF(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	
 
-	SET(MY_TARGET_LINK_LIBRARIES mysqlcppconn libmysql)
+	SET(MY_TARGET_LINK_LIBRARIES_DYNAMIC libmysql ws2_32)
+	SET(MY_TARGET_LINK_LIBRARIES_STATIC mysqlclient ws2_32)
 ELSEIF(NOT WIN32)
-	SET(MY_TARGET_LINK_LIBRARIES mysqlcppconn-static mysqlclient_r)
+	SET(MY_TARGET_LINK_LIBRARIES_DYNAMIC ${MYSQL_LIBRARIES} ${MYSQL_LINK_FLAGS})
+	SET(MY_TARGET_LINK_LIBRARIES_STATIC ${MYSQL_LIBRARIES} ${MYSQL_LINK_FLAGS})
 ENDIF(WIN32)
 
-ADD_EXECUTABLE(hCluster hClustering.cpp)
-TARGET_LINK_LIBRARIES(hCluster ${MY_TARGET_LINK_LIBRARIES})
 
-MESSAGE(STATUS "Configuring examples")
+
+TARGET_LINK_LIBRARIES(mysqlcppconn ${MY_TARGET_LINK_LIBRARIES_DYNAMIC})
+TARGET_LINK_LIBRARIES(mysqlcppconn-static ${MY_TARGET_LINK_LIBRARIES_STATIC})
+
+MESSAGE(STATUS "Configuring cppconn")
