@@ -38,16 +38,11 @@ class SearchController < ApplicationController
       @session.searchpids = product_ids.map{|id| "product_id = #{id}"}.join(' OR ')
       @session.save
       cluster_ids = product_ids.map{|p| $nodemodel.find_by_product_id(p, :order => 'cluster_id').cluster_id}
-      clusters = @session.fillDisplay(cluster_ids.uniq.sort[0..8].compact.map{|c|$clustermodel.find(c)})
-      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.map{|c|c.id}.join('/')
+      clusters = cluster_ids.uniq.sort[0..8].compact
+      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.join('/')
     end
   end
-  
-  def preference
-    #@session.features.send("#{val}_pref".intern)
-    
-  end
-  
+   
   def delete
     @session = Session.find(session[:user_id])
     @session.searchterm = ""

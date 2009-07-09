@@ -8,18 +8,30 @@ module ProductsHelper
     end
     
   end
-  
-  def sim_link(cluster,i)
-  	unless cluster.children(@session).nil? || cluster.children(@session).empty? || (cluster.size(@session)==1)
+
+  def array_to_csv(iArray)
+    # converts iArray, an array of integers, to a string in csv format
+    csv = ""
+    for i in 0..iArray.count-1
+      csv = csv + iArray[i] + ","
+    end
+    # Chop off the last comma
+    csv = csv.chop    
+    csv
+  end
+
+  def sim_link(cluster,i, itemId)
+    unless cluster.children(@session).nil? || cluster.children(@session).empty? || (cluster.size(@session)==1)
       "<div class='sim'>" +
         link_to("Explore #{cluster.size(@session)} Similar Product#{"s" if cluster.size(@session) > 1}", 
         "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+cluster.children(@session).map{|c|c.id}.join('/'), 
-        :id => "sim#{i}") +
+        :id => "sim#{i}", :class => 'simlinks', :name => itemId) +
       "</div>"
     else
       ""
     end
   end
+  
   def combine_list(a)
     case a.length
     when 0: "similar properties to the given product."
@@ -31,61 +43,56 @@ module ProductsHelper
     end
   end
   
-  def history(mytype)
-    @s.clusters[0].getHistory.reverse
+  def dbmin(i2f, feat)
+    i2f ? @dbfeat[feat].min/100 :  @dbfeat[feat].min.to_i
   end
   
-  def dbmin(feat)
-    feat=='price' ? @dbfeat['price'].min/100 :  @dbfeat[feat].min.to_i
-  end
-  
-  def dbmax(feat)
-    feat=='price' ? (@dbfeat['price'].max.to_f/100).ceil : @dbfeat[feat].max.ceil
+  def dbmax(i2f, feat)
+    i2f ? (@dbfeat[feat].max.to_f/100).ceil : @dbfeat[feat].max.ceil
   end
 end
 
 # this function gets an stack of searches and gets rid of the ones with repetitive
 # layer numbers
 def zipStack(stack)
-   @z = []
-   i= 0
-   unless stack.empty?
-    until (stack[-1 -i].layer == 1)
-      s = stack[-1-i]
-      ls = @z.map{|r| r.layer}
-    
-      if (ls.index(s.layer).nil?)
-         if (ls.empty?)
-           @z.unshift(s)
-         elsif (ls[0] > s.layer)
-           @z.unshift(s) 
-         end  
-      end   
-      i = i+1
-    end    
-    @z.unshift(stack[-1-i]) if (stack[-1-i].layer==1)  
+  
+   allSearches = []
+   i=0
+   until (stack[-1 -i].layer == 1)
+     s = stack[-1-i]
+     ls = allSearches.map{|r| r.layer}
+   
+     if (ls.index(s.layer).nil?)
+        if (ls.empty?)
+          allSearches.unshift(s)
+        elsif (ls[0] > s.layer)
+          allSearches.unshift(s) 
+        end  
+     end   
+     i = i+1
+   end    
+   allSearches.unshift(stack[-1-i]) if (stack[-1-i].layer==1)  
+   layer = allSearches[-1].layer
+  
+   # When can't reach the first layer in the given time frame 
+   # Must create searches for higher layers
+   l = allSearches[0].layer
+   unless l == 1 
+        pid =  allSearches[0].parent_id
+        r = Search.new 
+        cluster = $clustermodel.find(pid)            
+        while (l>1)
+           mycluster = 'c0'
+           ppid = cluster.parent_id  
+           cs = $clustermodel.find_all_by_parent_id(ppid)
+           cs.each do |c|
+             r[mycluster] = c.id.to_s
+             mycluster.next!
+           end  
+        end   
+        r['parent_id'] = pid2
+        allSearches.unshift(r)
    end
-
-   unless ((@z.empty?) || (@z.nil?))
-     @layer = @z[-1].layer
-     l = @z[0].layer
-     unless l == 1 # can't reach the first layer in the given time frame
-          pid =  @z[0].parent_id
-          r = Search.new 
-          cluster = $clustermodel.find(pid)            
-          while (l>1)
-             mycluster = 'c0'
-             ppid = cluster.parent_id  
-             cs = $clustermodel.find_all_by_parent_id(ppid)
-             cs.each do |c|
-               r[mycluster] = c.id.to_s
-               mycluster.next!
-             end  
-          end   
-          r['parent_id'] = pid2
-          @z.unshift(r)
-     end
-   end
-
-   @z
+   
+   return layer, allSearches
 end

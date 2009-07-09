@@ -63,3 +63,21 @@ task :copy_camera => :environment do
     p.save
   end
 end
+
+desc "Remove duplicate asins"
+task :remove_double_asins => :environment do
+prev = nil
+dups = []
+Printer.all.map{|p|p.asin}.sort.each do |p|
+  dups << p if p == prev
+  prev = p
+end
+dups.each do |asin|
+  dead = Printer.find_all_by_asin(asin)[1].id
+  RetailerOffering.find_all_by_product_id_and_product_type(dead,'Printer').each {|ro|ro.destroy}
+  Printer.find(dead).destroy
+end
+
+#Printer.find_all_by_brand(nil, :conditions => ["manufacturer LIKE (?)", "%LEXMARK%"]).update_attribute('brand','Lexmark')
+
+end

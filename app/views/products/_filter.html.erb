@@ -10,23 +10,13 @@
 
 <% $model::ContinuousFeatures.each_index do |i| %>
 	<% feat = $model::ContinuousFeatures[i] %>
-	<% if feat == 'price' %>
-		<%= render :partial => 'slider', 
-			:locals => {:name => 'Price', 
-			:val => 'price', 
-			:money_formatting => true, 
-			:ses_name => 'price', 
-			:min => @dbfeat['price'].min/100, 
-			:max =>(@dbfeat['price'].max.to_f/100).ceil} %>
-	<% else %>
-		<%= render :partial => 'slider', 
-			:locals => {:name => $model::ContinuousFeaturesDisp[i], 
-			:val => feat, 
-			:money_formatting => false, 
-			:ses_name => "f#{i}", 
-			:min => @dbfeat[feat].min, 
-			:max => @dbfeat[feat].max} %>
-	<% end %>
+	<%= render :partial => 'slider', 
+		:locals => {:name => $model::ContinuousFeaturesDisp[i], 
+		:i2f => (feat == 'price' || feat == 'itemwidth'),
+		:val => feat, 
+		:money_formatting => feat == 'price', 
+		:min => @dbfeat[feat].min, 
+		:max => @dbfeat[feat].max} %>
 <% end %>
 <% $model::BinaryFeatures.each_index do |i| %>
 	<% feat = $model::BinaryFeatures[i] %>

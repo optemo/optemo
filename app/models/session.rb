@@ -2,6 +2,7 @@ class Session < ActiveRecord::Base
   has_many :saveds
   has_many :vieweds
   has_many :searches
+  has_many :preference_relations
   
   def clearFilters
     # In Sessions table, 
@@ -35,6 +36,8 @@ class Session < ActiveRecord::Base
     #Fix price, because it's stored as int in db
     myfilter[:price_max] = myfilter[:price_max].to_i*100 if myfilter[:price_max]
     myfilter[:price_min] = myfilter[:price_min].to_i*100 if myfilter[:price_min]
+    myfilter[:itemwidth_max] = myfilter[:itemwidth_max].to_i*100 if myfilter[:itemwidth_max]
+    myfilter[:itemwidth_min] = myfilter[:itemwidth_min].to_i*100 if myfilter[:itemwidth_min]
     $featuremodel.column_names.each do |column|
       if !(column == 'id' || column == 'session_id')
         feature_filter[column.intern] = myfilter.delete(column.intern) if myfilter[column.intern]
@@ -53,15 +56,15 @@ class Session < ActiveRecord::Base
     @oldsession = Session.find(parent_id)
     if expandedFiltering? || @oldsession.oldclusters.nil?
       #Search is expanded, so use all products to begin with
-      clusters = $clustermodel.find_all_by_layer(1)
+      current_version = $clustermodel.last.version
+      clusters = $clustermodel.find_all_by_layer_and_version(1,current_version)
     else
       #Search is narrowed, so use current products to begin with
       clusters = @oldsession.oldclusters
       clusters.each{|c|c.clearCache}
     end
-    #debugger
     clusters.delete_if{|c| c.isEmpty(self)}
-    fillDisplay(clusters)
+    clusters
   end
   
   def oldclusters
@@ -89,18 +92,6 @@ class Session < ActiveRecord::Base
       @features = $featuremodel.find(:first, :conditions => ['session_id = ?', id])
     end
     @features
-  end
-  
-  def fillDisplay(clusters)
-    if clusters.length < 9 && clusters.length > 0
-      if clusters.map{|c| c.size(self)}.sum >= 9
-        clusters = splitClusters(clusters)
-      else
-        #Display only the deep children
-        clusters = clusters.map{|c| c.deepChildren(self)}.flatten
-      end
-    end
-    clusters
   end
   
   private
@@ -137,24 +128,10 @@ class Session < ActiveRecord::Base
           new_a = features.attributes[key] == "All Brands" ? [] : features.attributes[key].split('*').uniq
           old_a = oldv == "All Brands" ? [] : oldv.split('*').uniq
           return true if new_a.length == 0 && old_a.length > 0
-          return true if new_a.length > 0 && new_a.length > old_a.length
+          return true if old_a.length > 0 && new_a.length > old_a.length
         end
       end
     end
     false
-  end
-  
-  def splitClusters(clusters)
-    while clusters.length != 9
-      clusters.sort! {|a,b| b.size(self) <=> a.size(self)}
-      clusters = split(clusters.shift.children(self)) + clusters
-    end
-    clusters.sort! {|a,b| b.size(self) <=> a.size(self)}
-  end
-  
-  def split(children)
-    return children if children.length == 1
-    children.sort! {|a,b| b.size(self) <=> a.size(self)}
-    [children.shift, MergedCluster.new(children)]
   end
 end

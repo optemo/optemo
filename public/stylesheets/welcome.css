@@ -82,6 +82,7 @@ p, ul {
 	color: #693;
 	visibility: hidden;
 	font-family: monaco, arial;
+	font-weight: bold;
 }
 p {
 	font-size: 1.1em;
@@ -188,6 +189,11 @@ div.pass img{
 	font-size: 1.4em;
 	text-align: center;
 	margin-top: 2em;
+}
+.listing {
+	font-size: 0.8em;
+	padding: 0 !important;
+	line-height: 1;
 }
 
 /* From: http://www.schillmania.com/projects/dialog2/ */

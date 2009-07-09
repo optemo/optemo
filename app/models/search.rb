@@ -65,9 +65,9 @@ class Search < ActiveRecord::Base
     @clusters
   end
   
-  def self.searchFromPath(path, session_id)
+  def self.createFromPath(path, session_id)
     ns = {}
-    mycluster = 'c0'
+    mycluster = "c0"
     ns['cluster_count'] = path.length
     path.each do |p|
       ns[mycluster] = p
@@ -75,9 +75,14 @@ class Search < ActiveRecord::Base
     end
     ns['session_id'] = session_id
     s = new(ns)
-    s['result_count'] = s.result_count
-    s['parent_id'] = s.clusters.map{|c| c.parent_id}.sort[0]
-    s['layer'] = s.clusters.map{|c| c.layer}.sort[0]
+    s.fillDisplay
+    s.parent_id = s.clusters.map{|c| c.parent_id}.sort[0]
+    s.layer = s.clusters.map{|c| c.layer}.sort[0]
+    s
+  end
+  
+  def self.createFromPath_and_commit(path, session_id)
+    s = createFromPath(path, session_id)
     s.save
     s
   end
@@ -86,11 +91,45 @@ class Search < ActiveRecord::Base
     clusters.map{|c|c.id}.join('/')
   end
   
-  def self.copySearch(olds)
-    news = Search.new(olds.attributes)
-  end  
+  def fillDisplay
+    if cluster_count < 9 && cluster_count > 0
+      if clusters.map{|c| c.size(session)}.sum >= 9
+        myclusters = splitClusters(clusters)
+      else
+        #Display only the deep children
+        myclusters = clusters.map{|c| c.deepChildren(session)}.flatten
+      end
+    else
+      myclusters = clusters
+    end
+    updateClusters(myclusters)
+  end
   
   private
+  
+  def updateClusters(myclusters)
+    self.cluster_count = myclusters.length
+    myc = "c0="
+    cluster_count.times do |i|
+      send(myc.intern,myclusters[i].id)
+      myc.next!
+    end
+    @clusters = myclusters
+  end
+  
+  def splitClusters(myclusters)
+    while myclusters.length != 9
+      myclusters.sort! {|a,b| b.size(session) <=> a.size(session)}
+      myclusters = split(myclusters.shift.children(session)) + myclusters
+    end
+    myclusters.sort! {|a,b| b.size(session) <=> a.size(session)}
+  end
+  
+  def split(children)
+    return children if children.length == 1
+    children.sort! {|a,b| b.size(session) <=> a.size(session)}
+    [children.shift, MergedCluster.new(children)]
+  end
   
   def normalize(a)
     total = a.sum

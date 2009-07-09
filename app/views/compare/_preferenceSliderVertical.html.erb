@@ -1,0 +1,18 @@
+<table height=100% cellspacing=0 cellpadding=0>
+<tr>
+	<td>
+		<div class="preferenceSliderVertical" id='<%= "#{val}_pref" + "SliderVertical"%>' pref-value='<%= @session.features.send("#{val}_pref".intern) * 100%>'>
+								<!-- X 100 because preference value is stored in (0,1) but showed in (0,100)-->
+		</div>
+	</td>
+</tr>
+<tr>
+	<td>
+			<div class='labelVerticalPrefs'>
+				<%= val.to_s[0..4] %>
+		<!-- 	<%= @session.features.send("#{val}_pref".intern)  %> -->
+			</div>
+
+	</td>
+</tr>
+</table>
