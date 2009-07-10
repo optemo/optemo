@@ -2,31 +2,7 @@
 	<!-- If the interesting feature should be displayed then display -->
 	<% if @interestingFeatureDisplayed[column] == true %>
 		<td>
-		<% if column == 'brand'%>
-			<%= product.display(column) + ' ' + product.display('model') %>
-		
-		<% elsif column == 'itemdimensions'%>
-			<%= product.display('itemlength') + " x " + product.display('itemwidth') + " x " + product.display('itemheight') %>
-		
-		<% elsif column == 'packagedimensions'%>
-			<%= product.display('packagelength') + " x " + product.display('packagewidth') + " x " + product.display('packageheight') %>
-
-		<% elsif column == 'price'%>
-			<%= product.display('pricestr') %>
-		
-		<!-- Display Unavailable instead of Unknown-->
-		<% elsif product.display(column) == 'Unknown' %>
-			Unavailable 
-		
-		<% elsif product.display(column) == 'true' %>
-			<%= image_tag "/images/checkmark.png", :width => 18, :height => 18 %>
-		
-		<% elsif product.display(column) == 'false' %>
-			x		
-		
-		<% else %>
-			<%= product.display(column)[0..20] %>
-		<% end %>			
+		<%= finalDisplay(product, column) %>
 		</td>
 	<% end %>
 </div>

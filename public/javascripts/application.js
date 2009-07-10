@@ -51,7 +51,10 @@ function savedProductRemoval(obj)
 	itemId = $(obj).attr('data-name');
 	otherItems = buildOtherItemsArray(".deleteX", "data-name", itemId);
 	source = "unsave";
-	$.get('/products/buildrelations?source='+ source +'&itemId='+ itemId +'&otherItems='+ otherItems);
+	if(otherItems.length != 0)
+	{	
+		$.get('/products/buildrelations?source='+ source +'&itemId='+ itemId +'&otherItems='+ otherItems);
+	}
 }
 
 // When you click the X on a saved product:
@@ -70,6 +73,13 @@ function remove(id)
 
 function removeFromComparison(id)
 {
+	itemId = id;
+	otherItems = buildOtherItemsArray(".deleteXComp", "data-name", itemId);
+	source = "unsaveComp";
+	if(otherItems.length != 0)
+	{	
+		$.get('/products/buildrelations?source='+ source +'&itemId='+ itemId +'&otherItems='+ otherItems);
+	}
 	remove(id);
 	window.location.href = "/compare";
 }
@@ -159,7 +169,10 @@ $(document).ready(function() {
 		// product ids of all other items displayed
 		otherItems = buildOtherItemsArray(".bottombar", "name", itemId);
 		// The source parameter helps identify weight
-		$.get('/products/buildrelations?source=sim&itemId=' + itemId + '&otherItems=' + otherItems);	
+		if(otherItems.length != 0)
+		{	
+			$.get('/products/buildrelations?source=sim&itemId=' + itemId + '&otherItems=' + otherItems);	
+		}
 		// On Safari, only one of the two(javascript & hyperlink) was getting called. 
 		// To resolve that problem, redirect to the href and disable the hyperlink
 		window.location = $(this).attr('href');
@@ -186,7 +199,10 @@ $(document).ready(function() {
 			}
 		});
 		// The source parameter helps identify weight
-		$.get('/products/buildrelations?source=saveit&itemId=' + itemId + '&otherItems=' + otherItems);
+		if(otherItems.length != 0)
+		{	
+			$.get('/products/buildrelations?source=saveit&itemId=' + itemId + '&otherItems=' + otherItems);
+		}
 	});
 	
 	$(".usecase").click(function() { 
@@ -222,22 +238,7 @@ $(document).ready(function() {
 					normValue = ($(this).slider('option', 'value')/sum);	// normValue is upto many decimal places
 					$('.sliderlabel', this).html(normValue.toFixed(2));		// Display only upto 2 decimal places
 					$(this).siblings('.prefValue').attr('value',normValue);
-				})
-				
-				/*if (sum > 100)
-				{
-					autoValue = $(this).slider('option', 'value')-(sum-100);
-					$(this).slider('option', 'value', autoValue);
-					$('.sliderlabel', this).html(autoValue/100);		
-					$(this).siblings('.prefValue').attr('value',autoValue/100);
-					$('#preference_form').submit();
-					return false;
-				}
-				else
-				{
-					$(this).siblings('.prefValue').attr('value',ui.value/100);
-					$('#preference_form').submit();
-				}*/				
+				})				
 			}
 		});
 		$('a', this).html('<div class="sliderlabel">' + prefVal/100 + '</div>')

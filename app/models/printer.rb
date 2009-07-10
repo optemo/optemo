@@ -8,7 +8,6 @@ class Printer < ActiveRecord::Base
   named_scope :invalid, :conditions => %w(ppm itemwidth paperinput).map{|i|i+' IS NULL'}.join(' OR ')+" OR (price IS NULL AND listpriceint IS NULL)"
   named_scope :fewfeatures, :conditions => %w(ppm itemwidth paperinput).map{|i|i+' IS NULL'}.join(' OR ')
   named_scope :instock, :conditions => "instock is true"
-  named_scope :newfeatures, :conditions => %w(ppm itemwidth paperinput resolutionmax price scanner printserver).map{|i|i+' IS NOT NULL'}.join(' AND ')
   ContinuousFeatures = %w(ppm itemwidth paperinput resolutionmax price)
   BinaryFeatures = %w(scanner printserver)
   CategoricalFeatures = %w(brand)

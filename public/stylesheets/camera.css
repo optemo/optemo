@@ -245,6 +245,22 @@ div #filterbar {
 	margin-left: 0px;
 	margin-top: 0px;
 }
+
+.lowlightfeature {
+	color: #777;
+}
+
+.regularfeature {
+	color: #000;
+}
+
+.comparisonfeature {
+	position:absolute;
+	color: green;
+	float: left;
+	font-size: 0.9em;
+}
+
 .endlabel_min {
 	display: none;
 

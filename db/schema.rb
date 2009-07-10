@@ -646,6 +646,7 @@ ActiveRecord::Schema.define(:version => 20090707195544) do
     t.string   "cartridgescompatible"
     t.string   "powerrequirements"
     t.string   "powerconsumption"
+
   end
 
   create_table "preference_relations", :force => true do |t|

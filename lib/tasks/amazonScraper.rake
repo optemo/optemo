@@ -2,7 +2,7 @@ require 'rubygems'
 
 desc "Scraping Amazon"
 task :scrape_amazon => :environment do
-  AmazonPrinter.fewfeatures.find(:all, :conditions => ["created_at < ? and nodetails IS NOT TRUE",1.day.ago]).each { |p|
+  AmazonPrinter.fewfeatures.find(:all, :conditions => ["created_at > ? and nodetails IS NOT TRUE",1.day.ago]).each { |p|
     scrape_details(p)
     sleep(1+rand()) #Be nice to Amazon
     sleep(rand()*30) #Be really nice to Amazon!
