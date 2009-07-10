@@ -360,45 +360,65 @@ def SortArray
 end
 
 def numberOfStars(utility)
-  case utility
-		when 0..0.1:
-		  return 0.5
-		when 0.1..0.2
-		  return 1
-		when 0.2..0.3
-		  return 1.5
-		when 0.3..0.4:
-		  return 2
-		when 0.4..0.5:
-		  return 2.5
-		when 0.5..0.6:
-		  return 3
-		when 0.6..0.7:
-		  return 3.5
-		when 0.7..0.8:
-      return 4
-		when 0.8..0.9:
-		  return 4.5
-		when 0.9..1:
-		  return 5
-  end	
+ return ((utility*10).ceil)*0.5
+ #  This formula is equivalent to:
+ #    case utility
+ #     	when 0..0.1:
+ #     	  return 0.5
+ #     	when 0.1..0.2
+ #     	  return 1
+ #     	when 0.2..0.3
+ #     	  return 1.5
+ #     	when 0.3..0.4:
+ #     	  return 2
+ #     	when 0.4..0.5:
+ #     	  return 2.5
+ #     	when 0.5..0.6:
+ #     	  return 3
+ #     	when 0.6..0.7:
+ #     	  return 3.5
+ #     	when 0.7..0.8:
+ #         return 4
+ #     	when 0.8..0.9:
+ #     	  return 4.5
+ #     	when 0.9..1:
+ #     	  return 5
+ #     end	
+end
+
+def contDispDictionary(feature)
+  case feature
+    when "ppm":
+      return "PPM"
+    when "paperinput":
+      return "Paper Input"
+    when "resolutionmax":
+      return "Resolution"
+    when "itemwidth":
+      return "Width"
+    else
+      return feature.capitalize
+  end
 end
 
 def displayComparisonFeature(i)
   returnString = ""
   DbFeature.find_all_by_product_type_and_feature_type($model.name, 'Continuous').each do |f|
-   valThisProduct = @products[i].send(f.name)
-   
-  # Preference Direction can be used to display only good qualities (min or max)
-  if $PrefDirection[f.name] == -1
-    if valThisProduct == @search.minimum(f.name)
-      returnString = returnString + "Minimum " + (f.name) + "<br>"
+    f_pref = @session.features.send(f.name+"_pref") 
+    # Only if the user preferences indicate that this feature is important to the user
+    if f_pref > $SignificantFeatureThreshold
+      valThisProduct = @products[i].send(f.name)
+      # Preference Direction can be used to display only good qualities (min or max)
+      if $PrefDirection[f.name] == -1 
+        if valThisProduct == @search.minimum(f.name)
+          returnString = returnString + "&#10003 " + contDispDictionary(f.name) + "<br>"
+        end      
+      else
+        if valThisProduct == @search.maximum(f.name)
+          returnString = returnString + "&#10003 " + contDispDictionary(f.name) + "<br>"
+        end
+      end  
     end
-  else
-    if valThisProduct == @search.maximum(f.name)
-      returnString = returnString + "Maximum " + (f.name) + "<br>"
-    end
-  end  
- end
+  end
  return returnString
 end

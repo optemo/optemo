@@ -33,7 +33,7 @@
 			</td>
 		<% end %>
 	</tr>
-	<tr class="comparisonfeature">
+	<!-- <tr class="comparisonfeature">
 		<td> 
 			Comparison		
 		</td>
@@ -42,7 +42,7 @@
 				<%= displayComparisonFeature(i) %>				
 			</td>
 		<% end %>
-	</tr>
+	</tr> -->
 	
 	<% @preferredDisplayFeatures.each do |column| %>	<!-- @preferredDisplayFeatures array is created from DisplayedFeatures array, by the ReorderFeatures() -->
 		<% if @interestingFeatureDisplayed[column[0]] == true %>
@@ -61,5 +61,6 @@
 	<% end %>
 </table>
 
+<%= 0.4.ceil %>
 <%# This moves the border to the bottom %>
 <div class="clear"></div>

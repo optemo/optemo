@@ -255,7 +255,10 @@ div #filterbar {
 }
 
 .comparisonfeature {
+	position:absolute;
 	color: green;
+	float: left;
+	font-size: 0.9em;
 }
 
 .endlabel_min {
