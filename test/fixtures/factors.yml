@@ -7,7 +7,7 @@ one:
     ppm:            50
     itemwidth:      1000
     paperinput:     200
-    resolutionarea: 360000
+    resolutionmax:  360000
     price:          1000
         
 two:
@@ -17,7 +17,7 @@ two:
         ppm:            20
         itemwidth:      1000
         paperinput:     200
-        resolutionarea: 360000
+        resolutionmax:  360000
         price:          1000
 
 # two:

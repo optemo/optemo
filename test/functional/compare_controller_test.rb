@@ -29,4 +29,27 @@ class CompareControllerTest < ActionController::TestCase
 
     # ToDo: Test ReorderProducts() for product_type = Camera
   end
+  
+  def test_numberOfStars
+    utility = 0.08
+    assert_equal(numberOfStars(utility), 0.5)
+    
+    utility = 0.13
+    assert_equal(numberOfStars(utility), 1)
+    
+    utility = 0.218
+    assert_equal(numberOfStars(utility), 1.5)
+    
+    utility = 0.299
+    assert_equal(numberOfStars(utility), 1.5)
+    
+    utility = 0.3
+    assert_equal(numberOfStars(utility), 1.5)
+    
+    utility = 0.31
+    assert_equal(numberOfStars(utility), 2)
+    
+    utility = 0.99
+    assert_equal(numberOfStars(utility), 5)    
+  end
 end

@@ -368,7 +368,7 @@ def saveoffer(p,retailer,merchant)
     if o.nil?
       o = RetailerOffering.new
       o.product_id = p.product_id
-      o.product_type = p.class.name
+      o.product_type = $model.name
       o.retailer_id = retailer
     elsif o.priceint != offer.get('offerlisting/price/amount')
       #Save old prices only if price has changed

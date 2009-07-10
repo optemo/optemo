@@ -3,6 +3,8 @@ require 'GlobalDeclarations'
 
 desc "Calculate factors for all features of all products"
 task :calculate_factors => :environment do
+    # Truncate the existing factors table
+    ActiveRecord::Base.connection.execute('TRUNCATE factors')
     $ProdTypeList.each do |pType|
       @dbfeat = {}
       DbFeature.find_all_by_product_type(pType).each {|f| @dbfeat[f.name] = f}
