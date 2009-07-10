@@ -3,7 +3,7 @@ class CreateAmazonPrinters < ActiveRecord::Migration
   extend MigrationHelper
   def self.up
     create_table :amazon_printers do |t|
-      addBasicProductFeatures
+      addBasicProductFeatures(t)
       t.primary_key :id
       t.string :asin
       t.text :detailpageurl
@@ -65,10 +65,17 @@ class CreateAmazonPrinters < ActiveRecord::Migration
       t.datetime :scrapedat
       t.boolean :nodetails
       t.boolean :printserver
+      t.integer :resolutionmax
+      t.boolean :fax
+      t.boolean :bw
+      t.integer :resolutionarea
+      
+      t.integer :product_id
+      t.string :product_type, :default => 'Printer'
     end
   end
 
   def self.down
-    drop_table :printers
+    drop_table :amazon_printers
   end
 end

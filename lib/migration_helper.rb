@@ -7,6 +7,7 @@ module MigrationHelper
     t.string  :pricestr
     t.boolean :iseligibleforsupersavershipping
     t.integer :bestoffer
+    t.string  :pricehistory
     
     t.string  :imagesurl
     t.integer :imagesheight
