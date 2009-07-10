@@ -73,6 +73,9 @@ div .right{
 	width: 390px;
 	
 }
+div .spacer {
+	clear: both;
+}
 #full_link{
 	clear: both;
 }
