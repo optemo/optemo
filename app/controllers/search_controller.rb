@@ -32,7 +32,7 @@ class SearchController < ApplicationController
     product_ids = sphinx.results.delete_if{|r|r.class.name != @session.product_type || !r.myvalid?}.map{|p|p.id}
     if product_ids.length == 0
       flash[:error] = "No products were found"
-      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+params[:path_info].join('/')
+      redirect_to request.referer
     else
       @session.searchterm = params[:search]
       @session.searchpids = product_ids.map{|id| "product_id = #{id}"}.join(' OR ')

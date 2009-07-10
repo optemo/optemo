@@ -277,7 +277,7 @@ task :create_printers => :environment do
   require 'amazon/ecs'
   $model = Printer
   Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
-  AmazonPrinter.find(:all, :conditions => ['created_at > ?', 1.day.ago]).each do |p|
+  AmazonPrinter.find_all_by_product_id(nil, :conditions => ['created_at > ?', 1.day.ago]).each do |p|
     printer = Printer.new
     printer = getAtts(printer, p)
     printer.save
@@ -301,6 +301,7 @@ def findprice(p)
   current_page = 1
   AmazonPrinter.find_all_by_product_id(p.id).each do |e|
     begin
+      sleep(2) #Be nice
       res = Amazon::Ecs.item_lookup(e.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => 'All', :offer_page => current_page)
       total_pages = res.total_pages unless total_pages
       if res.first_item.nil?
@@ -324,7 +325,7 @@ def findprice(p)
         end
       end
       current_page += 1
-      sleep(2) #One Req per sec
+      sleep(5) #One Req per sec
     end while (current_page <= total_pages)
   end
   sleep(1) #Be Nice
