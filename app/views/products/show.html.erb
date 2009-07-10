@@ -43,10 +43,12 @@
 	<% @offerings.each do |offer| %>
 		<% next if !offer.stock || offer.priceint.blank? %>
 		<div class="left">	
-			<%= link_to "#{offer.pricestr}", {:controller => 'link', :action => 'create', :id => offer.id}, :popup => true %>
+			<%= link_to "#{offer.pricestr}", {:controller => 'link', :action => 'create', :id => offer.id}, :popup => true, :rel => 'nofollow' %>
 		</div>
 		<div class="right">
 			 <%=  link_to image_tag(offer.retailer.image), {:controller => 'link', :action => 'create', :id => offer.id}, :popup => true %>
+		</div>
+		<div class="spacer">
 		</div>
 	<% end %>
 	</div>

@@ -41,6 +41,11 @@ class CreatePrinters < ActiveRecord::Migration
       t.datetime :scrapedat
       t.boolean :nodetails
       t.boolean :printserver
+      t.integer :resolutionmax
+      t.boolean :fax
+      t.boolean :bw
+      
+      t.string :manufacturerproducturl
     end
   end
 

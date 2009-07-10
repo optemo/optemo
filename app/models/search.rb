@@ -88,7 +88,7 @@ class Search < ActiveRecord::Base
   end
   
   def to_s
-    clusters.map{|c|c.id}.join('/')
+    clusters.map{|c|c.id}.join('-')
   end
   
   def fillDisplay

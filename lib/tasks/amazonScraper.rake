@@ -2,7 +2,7 @@ require 'rubygems'
 
 desc "Scraping Amazon"
 task :scrape_amazon => :environment do
-  Printer.fewfeatures.find(:all, :conditions => ["scrapedat < ? and nodetails IS NOT TRUE",30.minutes.ago]).each { |p|
+  AmazonPrinter.fewfeatures.find(:all, :conditions => ["created_at < ? and nodetails IS NOT TRUE",1.day.ago]).each { |p|
     scrape_details(p)
     sleep(1+rand()) #Be nice to Amazon
     sleep(rand()*30) #Be really nice to Amazon!
@@ -12,7 +12,7 @@ end
 desc "Scraping Amazon"
 task :scrape_printer => :environment do
   #printer = Printer.fewfeatures.find(:first, :order => 'rand()')
-  printer = Printer.find_by_asin('B00292BV96')
+  printer = AmazonPrinter.find_by_asin('B00292BV96')
   scrape_details(printer).attributes.each_pair{|k,v| puts k + ": "+ v.to_s}
   puts printer.asin
 end

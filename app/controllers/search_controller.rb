@@ -10,7 +10,7 @@ class SearchController < ApplicationController
     if myfilter.nil?
       #No post info passed
       flash[:error] = "Search could not be completed."
-      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+@session.oldclusters.map{|c|c.id}.join('/')
+      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+@session.oldclusters.map{|c|c.id}.join('-')
     else
       #Allow for multiple brands
       myfilter = multipleBrands(myfilter)
@@ -18,10 +18,10 @@ class SearchController < ApplicationController
       clusters = mysession.clusters
       unless clusters.empty?
         mysession.commit
-        redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.map{|c|c.id}.join('/')
+        redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.map{|c|c.id}.join('-')
       else
         flash[:error] = "No products found."
-        redirect_to "/#{session[:productType].pluralize.downcase}/list/"+@session.oldclusters.map{|c|c.id}.join('/')
+        redirect_to "/#{session[:productType].pluralize.downcase}/list/"+@session.oldclusters.map{|c|c.id}.join('-')
       end
     end
   end
@@ -32,14 +32,14 @@ class SearchController < ApplicationController
     product_ids = sphinx.results.delete_if{|r|r.class.name != @session.product_type || !r.myvalid?}.map{|p|p.id}
     if product_ids.length == 0
       flash[:error] = "No products were found"
-      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+params[:path_info].join('/')
+      redirect_to request.referer
     else
       @session.searchterm = params[:search]
       @session.searchpids = product_ids.map{|id| "product_id = #{id}"}.join(' OR ')
       @session.save
       cluster_ids = product_ids.map{|p| $nodemodel.find_by_product_id(p, :order => 'cluster_id').cluster_id}
       clusters = cluster_ids.uniq.sort[0..8].compact
-      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.join('/')
+      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.join('-')
     end
   end
    

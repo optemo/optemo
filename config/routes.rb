@@ -39,10 +39,10 @@ ActionController::Routing::Routes.draw do |map|
   # Note: These default routes make all actions in every controller accessible via GET requests. You should
   # consider removing the them or commenting them out if you're using named routes and resources.
   map.root :controller => 'products'
-  map.connect '/cameras/list/*path_info', :controller => 'cameras', :action => 'list'
-  map.connect '/printers/list/*path_info', :controller => 'printers', :action => 'list'
-  map.connect '/products/list/*path_info', :controller => 'products', :action => 'list'
-  map.connect '/search/:action/*path_info', :controller => 'search'
+  #map.connect '/cameras/list/*path_info', :controller => 'cameras', :action => 'list'
+#map.connect '/printers/list/*path_info', :controller => 'printers', :action => 'list'
+  #map.connect '/products/list/*path_info', :controller => 'products', :action => 'list'
+  #map.connect '/search/:action/*path_info', :controller => 'search'
   # Added route for changes preference by drag-drop
   # map.connect 'compare/list/*path_info', :controller => 'compare', :action => 'list'
   map.connect 'compare/*path_info', :controller => 'compare', :action => 'index'
