@@ -277,7 +277,7 @@ task :create_printers => :environment do
   require 'amazon/ecs'
   $model = Printer
   Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
-  AmazonPrinter.find_all_by_product_id(nil, :conditions => ['created_at > ?', 1.day.ago]).each do |p|
+  AmazonPrinter.find_all_by_product_id(nil, :conditions => ['created_at > ?', 2.days.ago]).each do |p|
     printer = Printer.new
     printer = getAtts(printer, p)
     printer.save
