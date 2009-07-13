@@ -30,6 +30,11 @@ namespace :passenger do
   end
 end
 
+desc "Reindex search index"
+task :reindex do
+  sudo "rake -f #{current_path}/Rakefile ultrasphinx:index RAILS_ENV=production"
+end
+
 desc "Compile C-Code"
 task :compilec do
   run "cp -rf #{current_path}/lib/c_code/clusteringCodeLinux/* #{current_path}/lib/c_code/clusteringCode"

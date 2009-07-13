@@ -1,12 +1,38 @@
-<div class="main">
-	<h1>Welcome to Laserprinterhub</h1>
-	<p>Please choose your intended use for the laser printer to help us find you the right one</p>
-	<a href="<%= @link %>" title="Printers for all uses">All-Purpose</a>
-	<a href="<%= @link %>" data-name="home_office" class="usecase" title="">Home Office</a><!--smaller width-->
-	<a href="<%= @link %>" data-name="corporate" class="usecase" title="">Corporate</a><!--Printserver, larger paper tray, and faster printing(pages per minute)-->
-	<a href="<%= @link %>" data-name="small_office" class="usecase" title="">Small Office</a><!--printserver-->
-	<a href="<%= @link %>" data-name="photography" class="usecase" title="">Photography</a><!--Higher resolution-->
+
+	<h1>Find, compare and buy the right laser printer</h1>
+	<p>We are committed to offering you a large range of laserprinters, while not overwhelming you with information. Our unique discovery browsing system facilitates searches with any knowledge levels, while also allowing you to learn more about the products and their technical properties.</p>
+<div align="center"><h3>What will this printer be used for?</h3></div>
+<div class="category">
+	<a href="<%= @link %>" title="Printers for all uses">
+	<%= image_tag 'allinone.jpg' %><br>
+	All-Purpose</a>
+	<p class='description'>As the category suggests, you can find a large variety of versatile printers here.</p>
 </div>
+<div class="category">
+	<a href="<%= @link %>" data-name="home_office" class="usecase" title="">
+	<%= image_tag 'home_office.jpg' %><br>
+	Home Office</a><!--smaller width-->	
+	<p class='description'>If you're working from home you may find that your physical space is perhaps limited. Printers in this category are more compact and will fit easily into your office.</p>
+</div>
+<div class="category">
+	<a href="<%= @link %>" data-name="small_office" class="usecase" title="">
+	<%= image_tag 'network.jpg' %><br>
+	Small Office</a><!--printserver-->
+	<p class='description'>Laser printers in this category come equipped with a network print server.</p>
+</div>
+<div class="category">
+	<a href="<%= @link %>" data-name="corporate" class="usecase" title="">
+	<%= image_tag 'corporate.jpg' %><br>
+	Corporate Use</a><!--Printserver, larger paper tray, and faster printing(pages per minute)-->
+	<p class='description'>Printers pre-screened for corporate uses are veritable powerhouses. They come equipped with a print server, larger paper tray, faster printing, and keep up easily with the fast turnaround pace necessary for a corporate setting.</p>
+</div>
+<div class="category">
+	<a href="<%= @link %>" data-name="photography" class="usecase" title="">
+	<%= image_tag 'camera.jpg' %><br>
+	Photography</a><!--Higher resolution-->
+	<p class='description'>All printers in the photography category have high resolution (1200x600 dpi and above!).</p>
+</div>
+
 
 
 	

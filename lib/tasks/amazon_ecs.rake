@@ -24,8 +24,8 @@ task :get_printer_ASINs => :environment do
   require 'amazon/ecs'
   #browse_node for printers: 172635
   #browse_node for all-in-one:172583
-  #Use browse id for Laser Printers
-  browse_node_id = '172648'
+  #Use browse id for Laser Printers - 172648
+  browse_node_id = '172583'
   search_index = 'Electronics'
   response_group = 'ItemIds'
   Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
@@ -36,8 +36,8 @@ task :get_printer_ASINs => :environment do
     total_pages = res.total_pages unless total_pages
     res.items.each do |item|
       asin = item.get('asin')
-      if AmazonPrinter.find_by_asin(asin).nil?
-        product = AmazonPrinter.new
+      if AmazonAll.find_by_asin(asin).nil?
+        product = AmazonAll.new
         product.asin = asin
         product.save!
         puts asin
@@ -144,9 +144,9 @@ end
 desc "Get all the Amazon data for the current Printer ASINs"
 task :get_printer_data_for_ASINs => :environment do
   require 'amazon/ecs'
-  AmazonPrinter.find(:all, :conditions => ['created_at > ?', 2.days.ago]).each do |p|
+  AmazonAll.find(:all, :conditions => 'scrapedat is null').each do |p|
     if !p.asin.blank?
-      puts 'Processing' + p.asin
+      puts 'Processing: ' + p.asin
       Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
       res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'ItemAttributes')
       r = res.first_item
@@ -188,6 +188,7 @@ task :get_printer_data_for_ASINs => :environment do
       p.productgroup = atts.get('productgroup')
       p.publisher = atts.get('publisher')
       p.specialfeatures = atts.get('specialfeatures')
+      p = interpret_special_features(p) if p.specialfeatures
       p.studio = atts.get('studio')
       p.systemmemorysize = atts.get('systemmemorysize')
       p.systemmemorytype = atts.get('systemmemorytype')
@@ -206,9 +207,12 @@ task :get_printer_data_for_ASINs => :environment do
       p.imagelurl = r.get('largeimage/url')
       p.imagelheight = r.get('largeimage/height')
       p.imagelwidth = r.get('largeimage/width')
+      
+      p = scrape_details(p)
+      
       p.save!
       #p = findprice(p)
-      sleep(0.5) #One Req per sec
+      sleep(1+rand()*30) #Be really nice to Amazon!
       end
     end
   end
@@ -225,51 +229,6 @@ task :update_prices => :environment do
     p.save
     sleep(0.5) #One Req per sec
   }
-end
-
-desc "Get real features from Printer special features"
-task :interpret_special_features => :environment do
-  AmazonPrinter.find(:all, :conditions => 'specialfeatures IS NOT NULL AND product_id IS NULL').each do |p|
-    #p = Printer.find(:first, :order => 'rand()', :conditions => 'specialfeatures IS NOT NULL')
-    sf = p.specialfeatures
-    a = sf[3..-1].split('|') #Remove leading nv:
-    features = {}
-    a.map{|l| 
-      c = l.split('^') 
-      features[c[0]] = c[1]
-    }
-    p.ppm = features['Print Speed'].match(/\d+[.]?\d*/)[0] if features['Print Speed']
-    p.ttp = features['First Page Output Time'].match(/\d+[.]?\d*/)[0] if features['First Page Output Time']
-    if features['Resolution']
-      tmp = features['Resolution'].match(/(\d,\d{3}|\d+) ?x?X? ?(\d,\d{3}|\d+)?/)[1,2].compact
-      tmp*=2 if tmp.size == 1
-      p.resolution = tmp.sort{|a,b| 
-        a.gsub!(',','')
-        b.gsub!(',','')
-        a.to_i < b.to_i ? 1 : a.to_i > b.to_i ? -1 : 0
-      }.join(' x ') 
-    end # String drop down style
-    p.duplex = features['Duplex Printing'] # String
-    p.connectivity = features['Connectivity'] # String
-    p.papersize = features['Paper Sizes Supported'] # String
-    p.paperoutput = features['Standard Paper Output'].match(/(\d,\d{3}|\d+)/)[0] if features['Standard Paper Output'] #Numeric
-    p.dimensions = features['Dimensions'] #Not parsed yet
-    p.dutycycle = features['Maximum Duty Cycle'].match(/(\d{1,3}(,\d{3})+|\d+)/)[0].gsub(',','') if features['Maximum Duty Cycle']
-    p.paperinput = features['Standard Paper Input'].match(/(\d,\d{3}|\d+)/)[0] if features['Standard Paper Input'] && features['Standard Paper Input'].match(/(\d,\d{3}|\d+)/) #Numeric
-    #Parse out special features
-    if !features['Special Features'].nil?
-      if features['Special Features'] == "Duplex Printing"
-        features['Special Features'] = nil
-        p.duplex = "Yes" if p.duplex.nil?
-      end
-    end
-    p.special = features['Special Features']
-    #pp features
-    #if features['Dimensions']
-    #  puts features['Dimensions']
-    #puts features['Dimensions'] + " => #{p.itemheight} #{p.itemwidth} #{p.itemlength}"
-    p.save
-  end
 end
 
 desc "Create new printers for new AmazonPrinters"
@@ -290,6 +249,45 @@ end
 
 private
 AmazonID = 'ATVPDKIKX0DER'
+
+def interpret_special_features(p)
+  #p = Printer.find(:first, :order => 'rand()', :conditions => 'specialfeatures IS NOT NULL')
+  sf = p.specialfeatures
+  a = sf[3..-1].split('|') #Remove leading nv:
+  features = {}
+  a.map{|l| 
+    c = l.split('^') 
+    features[c[0]] = c[1]
+  }
+  p.ppm = features['Print Speed'].match(/\d+[.]?\d*/)[0] if features['Print Speed']
+  p.ttp = features['First Page Output Time'].match(/\d+[.]?\d*/)[0] if features['First Page Output Time'] && features['First Page Output Time'].match(/\d+[.]?\d*/)
+  if features['Resolution']
+    tmp = features['Resolution'].match(/(\d,\d{3}|\d+) ?x?X? ?(\d,\d{3}|\d+)?/)[1,2].compact
+    tmp*=2 if tmp.size == 1
+    p.resolution = tmp.sort{|a,b| 
+      a.gsub!(',','')
+      b.gsub!(',','')
+      a.to_i < b.to_i ? 1 : a.to_i > b.to_i ? -1 : 0
+    }.join(' x ') 
+    p.resolutionmax = p.resolution.split(' x ')[0]
+  end # String drop down style
+  p.duplex = features['Duplex Printing'] # String
+  p.connectivity = features['Connectivity'] # String
+  p.papersize = features['Paper Sizes Supported'] # String
+  p.paperoutput = features['Standard Paper Output'].match(/(\d,\d{3}|\d+)/)[0] if features['Standard Paper Output'] #Numeric
+  p.dimensions = features['Dimensions'] #Not parsed yet
+  p.dutycycle = features['Maximum Duty Cycle'].match(/(\d{1,3}(,\d{3})+|\d+)/)[0].gsub(',','') if features['Maximum Duty Cycle']
+  p.paperinput = features['Standard Paper Input'].match(/(\d,\d{3}|\d+)/)[0] if features['Standard Paper Input'] && features['Standard Paper Input'].match(/(\d,\d{3}|\d+)/) #Numeric
+  #Parse out special features
+  if !features['Special Features'].nil?
+    if features['Special Features'] == "Duplex Printing"
+      features['Special Features'] = nil
+      p.duplex = "Yes" if p.duplex.nil?
+    end
+  end
+  p.special = features['Special Features']
+  p
+end
 
 def findprice(p)
   #Find the lowest price
