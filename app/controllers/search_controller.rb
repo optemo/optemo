@@ -37,7 +37,8 @@ class SearchController < ApplicationController
       @session.searchterm = params[:search]
       @session.searchpids = product_ids.map{|id| "product_id = #{id}"}.join(' OR ')
       @session.save
-      cluster_ids = product_ids.map{|p| $nodemodel.find_by_product_id(p, :order => 'cluster_id').cluster_id}
+      current_version = $clustermodel.last.version
+      cluster_ids = product_ids.map{|p| $nodemodel.find_by_product_id_and_version(p, current_version, :order => 'cluster_id').cluster_id}
       clusters = cluster_ids.uniq.sort[0..8].compact
       redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.join('-')
     end

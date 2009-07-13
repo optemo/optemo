@@ -9,7 +9,7 @@ class ProductsController < ApplicationController
   # GET /products.xml
   def index
     @link = initialClusters
-    homepage
+    #homepage
   end
   
   def list

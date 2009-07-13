@@ -3,7 +3,8 @@ require 'rubygems'
 desc "Scraping Amazon"
 task :scrape_amazon => :environment do
   AmazonPrinter.fewfeatures.find(:all, :conditions => ["created_at > ? and nodetails IS NOT TRUE",1.day.ago]).each { |p|
-    scrape_details(p)
+    p = scrape_details(p)
+    p.save
     sleep(1+rand()) #Be nice to Amazon
     sleep(rand()*30) #Be really nice to Amazon!
   }  
@@ -68,6 +69,7 @@ def scrape_details(p)
           b.gsub!(',','')
           a.to_i < b.to_i ? 1 : a.to_i > b.to_i ? -1 : 0
         }.join(' x ')
+        p.resolutionmax = p.resolution.split(' x ')[0]
       end
     end
     if key[/printerinterface/] || (key[/connectivitytechnology/] && value != 'Wired')
@@ -110,7 +112,7 @@ def scrape_details(p)
   }
   
   p.scrapedat = Time.now
-  p.save
+  p
 end
 
 require 'open-uri'

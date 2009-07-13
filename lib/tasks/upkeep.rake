@@ -22,6 +22,28 @@ task :calculate_factors => :environment do
     end   
 end
 
+desc "Assign lowest price to printers"
+task :assign_lowest_price => :environment do
+  Printer.find(:all, :conditions => ['created_at > ?', 4.days.ago]).each do |p|
+    #Find lowest product price
+    os = RetailerOffering.find_all_by_product_id_and_product_type(p.id,p.class.name)
+    lowest = 1000000000
+    p.instock = false
+    if !os.nil? && !os.empty?
+      os.each do |o| 
+        if o.stock && o.priceint && o.priceint < lowest
+          lowest = o.priceint
+          p.price = lowest
+          p.pricestr = o.pricestr
+          p.bestoffer = o.id
+          p.instock = true
+        end
+      end
+    end
+    p.save
+  end
+end
+
 def CalculateFactor (fVal, f, fMax, fMin)  
   # Calculate Denominator value
   denominator = fMax - fMin

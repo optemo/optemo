@@ -33,7 +33,7 @@ end
 
 desc "Reindex search index"
 task :reindex do
-  sudo "rake -f #{current_path}/Rakefile ultrasphinx:index"
+  sudo "rake -f #{current_path}/Rakefile ultrasphinx:index RAILS_ENV=production"
 end
 
 desc "Compile C-Code"
