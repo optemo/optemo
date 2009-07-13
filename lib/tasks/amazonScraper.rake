@@ -29,8 +29,7 @@ def scrape_details(p)
     sesh.click_link('See more technical details')
   rescue
     p.nodetails = true
-    p.save
-    return
+    return p
   end
   doc = Nokogiri::HTML(sesh.response.body)
   array = doc.css('.content ul li')

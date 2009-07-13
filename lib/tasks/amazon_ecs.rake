@@ -144,7 +144,7 @@ end
 desc "Get all the Amazon data for the current Printer ASINs"
 task :get_printer_data_for_ASINs => :environment do
   require 'amazon/ecs'
-  AmazonAll.find(:all, :conditions => ['created_at > ?', 2.days.ago]).each do |p|
+  AmazonAll.find(:all, :conditions => 'scrapedat is null').each do |p|
     if !p.asin.blank?
       puts 'Processing: ' + p.asin
       Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
@@ -260,7 +260,7 @@ def interpret_special_features(p)
     features[c[0]] = c[1]
   }
   p.ppm = features['Print Speed'].match(/\d+[.]?\d*/)[0] if features['Print Speed']
-  p.ttp = features['First Page Output Time'].match(/\d+[.]?\d*/)[0] if features['First Page Output Time']
+  p.ttp = features['First Page Output Time'].match(/\d+[.]?\d*/)[0] if features['First Page Output Time'] && features['First Page Output Time'].match(/\d+[.]?\d*/)
   if features['Resolution']
     tmp = features['Resolution'].match(/(\d,\d{3}|\d+) ?x?X? ?(\d,\d{3}|\d+)?/)[1,2].compact
     tmp*=2 if tmp.size == 1
