@@ -98,5 +98,10 @@ module ProductProperties
     end
     data.to_s+ending
   end
- 
+  
+  def myvalid?
+    self.class::ContinuousFeatures.map{|f|!send(f).nil?}.inject(true){|s,n|s&&n} && #No nil values
+    self.class::ContinuousFeatures.map{|f|send(f)!=0}.inject(true){|s,n|s&&n} && #No zero values
+    self.class::BinaryFeatures.map{|f|!send(f).nil?}.inject(true){|s,n|s&&n} #No nil values
+  end
 end

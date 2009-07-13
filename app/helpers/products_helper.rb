@@ -24,7 +24,7 @@ module ProductsHelper
     unless cluster.children(@session).nil? || cluster.children(@session).empty? || (cluster.size(@session)==1)
       "<div class='sim'>" +
         link_to("Explore #{cluster.size(@session)} Similar Product#{"s" if cluster.size(@session) > 1}", 
-        "/#{!session[:productType].nil? ? session[:productType].pluralize.downcase : $DefaultProduct.pluralize.downcase}/list/"+cluster.children(@session).map{|c|c.id}.join('-'), 
+        "/#{$model.urlname}/compare/"+cluster.children(@session).map{|c|c.id}.join('-'), 
         :id => "sim#{i}", :class => 'simlinks', :name => itemId) +
       "</div>"
     else

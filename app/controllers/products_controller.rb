@@ -12,7 +12,7 @@ class ProductsController < ApplicationController
     #homepage
   end
   
-  def list
+  def compare
     @session = Session.find(session[:user_id])
     @pt = session[:productType] || $DefaultProduct
     @dbfeat = {}
@@ -104,13 +104,12 @@ class ProductsController < ApplicationController
   def initialClusters
     mysession = Session.find(session[:user_id])
     mysession.clearFilters
-    @pt = session[:productType] || $DefaultProduct
-    if @pt == 'Printer' && s = Search.find_by_session_id(0)
+    if $model == Printer && s = Search.find_by_session_id(0)
       path = 0.upto(s.cluster_count-1).map{|i| s.send(:"c#{i}")}.join('-')
     else
       current_version = $clustermodel.last.version
       path = $clustermodel.find_all_by_parent_id_and_version(0, current_version, :order => 'cluster_size DESC').map{|c| c.id}.join('-')
     end
-    "/#{@pt.pluralize.downcase}/list/"+path
+    "/#{$model.urlname}/compare/"+path
   end
 end
