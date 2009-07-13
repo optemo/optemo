@@ -10,7 +10,7 @@ class SearchController < ApplicationController
     if myfilter.nil?
       #No post info passed
       flash[:error] = "Search could not be completed."
-      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+@session.oldclusters.map{|c|c.id}.join('-')
+      redirect_to "/#{$model.urlname}/compare/"+@session.oldclusters.map{|c|c.id}.join('-')
     else
       #Allow for multiple brands
       myfilter = multipleBrands(myfilter)
@@ -18,10 +18,10 @@ class SearchController < ApplicationController
       clusters = mysession.clusters
       unless clusters.empty?
         mysession.commit
-        redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.map{|c|c.id}.join('-')
+        redirect_to "/#{$model.urlname}/compare/"+clusters.map{|c|c.id}.join('-')
       else
         flash[:error] = "No products found."
-        redirect_to "/#{session[:productType].pluralize.downcase}/list/"+@session.oldclusters.map{|c|c.id}.join('-')
+        redirect_to "/#{$model.urlname}/compare/"+@session.oldclusters.map{|c|c.id}.join('-')
       end
     end
   end
@@ -40,7 +40,7 @@ class SearchController < ApplicationController
       current_version = $clustermodel.last.version
       cluster_ids = product_ids.map{|p| $nodemodel.find_by_product_id_and_version(p, current_version, :order => 'cluster_id').cluster_id}
       clusters = cluster_ids.uniq.sort[0..8].compact
-      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.join('-')
+      redirect_to "/#{$model.urlname}/compare/"+clusters.join('-')
     end
   end
    
@@ -49,7 +49,7 @@ class SearchController < ApplicationController
     @session.searchterm = ""
     @session.searchpids = ""
     @session.save
-    redirect_to "/#{session[:productType].pluralize.downcase}/"
+    redirect_to "/#{$model.urlname}/"
   end
   
   private

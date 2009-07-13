@@ -47,9 +47,9 @@
 		<%(@layer-1).times do |l| %>
 	 	  <!-- If s>1 then print << -->
 		  <% if l>0 %>
-		    <%= link_to "#{$clustermodel.find_by_id(@allSearches[l].parent_id).description(@session)}", "/#{@pt.pluralize.downcase}/list/#{@allSearches[l].to_s}"%>
+		    <%= link_to "#{$clustermodel.find_by_id(@allSearches[l].parent_id).description(@session)}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>
 		  <%else%>
-		  	   <%= link_to "All #{@pt.pluralize}", "/#{@pt.pluralize.downcase}/list/#{@allSearches[l].to_s}"%>	
+		  	   <%= link_to "All #{@pt.pluralize}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>	
 		  <%end%>
 		  &lt;&lt;
 	   <%end %>

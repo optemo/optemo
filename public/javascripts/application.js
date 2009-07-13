@@ -208,6 +208,8 @@ $(document).ready(function() {
 	$(".usecase").click(function() { 
 		name = $(this).attr('data-name');
 		$.get('/products/select/'+name);
+		window.location = $(this).attr('href');
+		return false;
 	});
 	sum = 0.0
 	$(".preferenceSlider").each(function() {
