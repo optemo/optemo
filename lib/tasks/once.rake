@@ -64,6 +64,14 @@ task :copy_camera => :environment do
   end
 end
 
+desc "Copy AmazonAll info"
+task :copy_amazonall => :environment do
+  AmazonAll.all.each do |c|
+    p = AmazonPrinter.new(c.attributes)
+    p.save
+  end
+end
+
 desc "Remove duplicate asins"
 task :remove_double_asins => :environment do
 prev = nil
