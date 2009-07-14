@@ -144,7 +144,7 @@ end
 desc "Get all the Amazon data for the current Printer ASINs"
 task :get_printer_data_for_ASINs => :environment do
   require 'amazon/ecs'
-  AmazonAll.find(:all, :conditions => 'scrapedat is null').each do |p|
+  AmazonAll.find(:all).each do |p|#, :conditions => 'scrapedat is null').each do |p|
     if !p.asin.blank?
       puts 'Processing: ' + p.asin
       Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
