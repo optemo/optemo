@@ -55,7 +55,7 @@ def scrape_details(p)
       p.ttp = value.match(/\d+(.\d+)?/)[0].to_f
       #puts 'TTP:'+p.ttp.to_s
     end
-    if key[/maximumsheetcapacity|standardpapercapacity/]
+    if key[/sheetcapacity|standardpapercapacity/]
       p.paperinput = value.match(/\d+/)[0].to_i unless !p.paperinput.nil? && p.paperinput > value.to_i #Keep largest value
       #puts 'Paper Input:'+p.paperinput.to_s
     end
