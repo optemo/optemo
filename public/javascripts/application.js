@@ -207,8 +207,7 @@ $(document).ready(function() {
 	
 	$(".usecase").click(function() { 
 		name = $(this).attr('data-name');
-		$.get('/products/select/'+name);
-		window.location = $(this).attr('href');
+		$.get('/products/select/'+name,function() {window.location = $(".usecase").attr('href');});
 		return false;
 	});
 	sum = 0.0
