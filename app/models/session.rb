@@ -83,7 +83,7 @@ class Session < ActiveRecord::Base
   
   def defaultFeatures(mode)
     update_attribute('filter', true)
-    features.update_attributes($featuremodel.find($DefaultUses[mode]).attributes.delete_if{|k,v|v.nil? || k=='id' || k.index('_at')})
+    features.update_attributes($featuremodel.find($DefaultUses[mode]).attributes.delete_if{|k,v| k=='id' || k=='created_at' || k=='updated_at' || k=='session_id'})
   end
         
   def features

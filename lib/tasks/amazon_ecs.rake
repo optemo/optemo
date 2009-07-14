@@ -51,6 +51,13 @@ task :get_printer_ASINs => :environment do
   puts "Total new printers: " + count.to_s
 end
 
+desc "Collect Product Reviews"
+task :download_reviews => :environment do
+  require 'amazon/ecs'
+  Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
+  download_review(Printer.valid.first)
+end
+
 desc "Get the Camera attributes of a particular ASIN"
 task :get_camera_attributes => :environment do
   require 'amazon/ecs'
@@ -236,7 +243,7 @@ task :create_printers => :environment do
   require 'amazon/ecs'
   $model = Printer
   Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
-  AmazonPrinter.find_all_by_product_id(nil, :conditions => ['created_at > ?', 2.days.ago]).each do |p|
+  AmazonPrinter.find_all_by_product_id(nil, :conditions => ['created_at > ?', 1.day.ago]).each do |p|
     printer = Printer.new
     printer = getAtts(printer, p)
     printer.save
@@ -358,7 +365,11 @@ end
 
 def saveoffer(p,retailer,merchant)
   puts [p.product_id,Retailer.find(retailer).name,merchant].join(' ')
-  res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => merchant)
+  begin
+    res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => merchant)
+  rescue Exception => exc
+    puts "Error: #{exc.message} for product #{p.asin} and merchant #{merchant}"
+  end
   offer = res.first_item
   #Look for old Retail Offering
   unless offer.nil?
@@ -407,9 +418,33 @@ def scrape_hidden_prices(p)
 end
 
 def getAtts(n, o)
-  cols = $model.column_names.delete_if{|c|c.index(/id|updated_at|created_at|manufacturerproducturl/)}
+  cols = $model.column_names.delete_if{|c|c.index(/^id|updated_at|created_at|manufacturerproducturl$/)}
   cols.each do |c|
     n.send((c+'=').intern, o.send(c.intern))
   end
   n
+end
+
+def download_review(p)
+  current_page = 1
+  begin
+    a = AmazonPrinter.find_by_product_id_and_product_type(p.id,p.class.name)
+    puts a.asin
+    res = Amazon::Ecs.item_lookup(a.asin, :response_group => 'Reviews', :condition => 'New', :merchant_id => 'All', :offer_page => current_page)
+  rescue Exception => exc
+    puts "Error: #{exc.message} for product #{p.asin} and merchant #{merchant}"
+  end
+    result = res.first_item
+    #Look for old Retail Offering
+    unless result.nil?
+      puts result.get('averagerating')
+      puts result.get('totalreviewpages')
+      reviews = result.search_and_convert('review')
+      reviews.each do |r|
+      puts reviews.length
+      end
+      pp reviews[0].get_hash
+    else
+      pp res
+    end
 end

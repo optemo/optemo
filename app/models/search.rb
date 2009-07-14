@@ -110,6 +110,7 @@ class Search < ActiveRecord::Base
   end
   
   def fillDisplay
+    clusters #instantiate clusters to update cluster_count
     if cluster_count < 9 && cluster_count > 0
       if clusters.map{|c| c.size(session)}.sum >= 9
         myclusters = splitClusters(clusters)
