@@ -1,0 +1,227 @@
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples
+END
+testGub2.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/testGub2.cpp
+END
+Makefile.in
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/Makefile.in
+END
+testBasis.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/testBasis.cpp
+END
+ekk.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/ekk.cpp
+END
+minimum.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/minimum.cpp
+END
+testGub.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/testGub.cpp
+END
+decompose.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/decompose.cpp
+END
+testQP.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/testQP.cpp
+END
+rowColumn.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/rowColumn.cpp
+END
+INSTALL
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/INSTALL
+END
+testBarrier.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/testBarrier.cpp
+END
+modify.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/modify.cpp
+END
+addColumns.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/addColumns.cpp
+END
+decomp2.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/decomp2.cpp
+END
+decomp3.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/decomp3.cpp
+END
+myPdco.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/myPdco.cpp
+END
+driverC.c
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/driverC.c
+END
+myPdco.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/myPdco.hpp
+END
+sprint2.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/sprint2.cpp
+END
+hello.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/hello.cpp
+END
+addRows.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/addRows.cpp
+END
+gparm.tiny
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/gparm.tiny
+END
+defaults.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/defaults.cpp
+END
+addBits.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/addBits.cpp
+END
+driver2.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/driver2.cpp
+END
+sprint.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/sprint.cpp
+END
+input.130
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/input.130
+END
+hello.mps
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/hello.mps
+END
+makeDual.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/makeDual.cpp
+END
+dualCuts.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/dualCuts.cpp
+END
+useVolume.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/useVolume.cpp
+END
+piece.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/piece.cpp
+END
+pdco.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/pdco.cpp
+END
+g.tiny
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/g.tiny
+END
+network.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/network.cpp
+END
+ekk_interface.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/ekk_interface.cpp
+END
+driver.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/examples/driver.cpp
+END

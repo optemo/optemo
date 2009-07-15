@@ -240,7 +240,7 @@ int main(int argc, char** argv){
 		    //
 			//	stmt->execute(command);
 
-			   
+			
 				command = "SELECT version from ";
 				command += productName;
 				command += "_clusters order by id DESC LIMIT 1";
