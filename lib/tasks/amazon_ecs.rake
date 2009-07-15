@@ -56,6 +56,7 @@ task :download_reviews => :environment do
   require 'amazon/ecs'
   Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
   Printer.all.each do |p|
+    puts "Downloading: #{p.id}"
     download_review(p)
   end
 end
