@@ -55,7 +55,7 @@ desc "Collect Product Reviews"
 task :download_reviews => :environment do
   require 'amazon/ecs'
   Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
-  Printer.all.each do |p|
+  Printer.find(:all, :conditions => 'totalreviews is NULL').each do |p|
     puts "Downloading: #{p.id}"
     download_review(p)
   end
@@ -452,6 +452,7 @@ def download_review(p)
       totalreviews ||= result.get('totalreviews').to_i
       totalreviewpages ||= result.get('totalreviewpages').to_i
       reviews = result.search_and_convert('review')
+      reviews = [reviews] unless reviews.class == Array #Fix single and no review possibility
       reviews.each do |r|
         r = Review.new(r.get_hash.merge({'product_type' => a.product_type, 'product_id' => a.product_id, "source" => "Amazon"}))
         r.save
