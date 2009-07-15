@@ -55,7 +55,9 @@ desc "Collect Product Reviews"
 task :download_reviews => :environment do
   require 'amazon/ecs'
   Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
-  download_review(Printer.valid.first)
+  Printer.all.each do |p|
+    download_review(p)
+  end
 end
 
 desc "Get the Camera attributes of a particular ASIN"
@@ -427,24 +429,43 @@ end
 
 def download_review(p)
   current_page = 1
+  a = nil
   begin
     a = AmazonPrinter.find_by_product_id_and_product_type(p.id,p.class.name)
-    puts a.asin
-    res = Amazon::Ecs.item_lookup(a.asin, :response_group => 'Reviews', :condition => 'New', :merchant_id => 'All', :offer_page => current_page)
-  rescue Exception => exc
-    puts "Error: #{exc.message} for product #{p.asin} and merchant #{merchant}"
+  rescue
+    return
   end
+  return if a.nil?
+  puts a.asin
+  averagerating,totalreviews,totalreviewpages = nil
+  loop do
+    begin
+      res = Amazon::Ecs.item_lookup(a.asin, :response_group => 'Reviews', :condition => 'New', :merchant_id => 'All', :review_page => current_page)
+    rescue Exception => exc
+      puts "Error: #{exc.message} for product #{p.asin} and merchant #{merchant}"
+    end
     result = res.first_item
     #Look for old Retail Offering
     unless result.nil?
-      puts result.get('averagerating')
-      puts result.get('totalreviewpages')
+      averagerating ||= result.get('averagerating')
+      totalreviews ||= result.get('totalreviews').to_i
+      totalreviewpages ||= result.get('totalreviewpages').to_i
       reviews = result.search_and_convert('review')
       reviews.each do |r|
-      puts reviews.length
+        r = Review.new(r.get_hash.merge({'product_type' => a.product_type, 'product_id' => a.product_id, "source" => "Amazon"}))
+        r.save
       end
-      pp reviews[0].get_hash
     else
       pp res
     end
+    current_page += 1
+    break if current_page > totalreviewpages
+    sleep(2) #Be nice to Amazon
+  end
+  a.averagereviewrating = averagerating
+  a.totalreviews = totalreviews
+  a.save
+  p.averagereviewrating = averagerating
+  p.totalreviews = totalreviews
+  p.save
 end

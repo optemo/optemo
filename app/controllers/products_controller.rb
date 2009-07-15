@@ -37,9 +37,8 @@ class ProductsController < ApplicationController
     @plain = params[:plain].nil? ? false : true
     #Cleanse id to be only numbers
     params[:id] = params[:id][/^\d+/]
-    pt = session[:productType] || $DefaultProduct
-    @product = pt.constantize.find(params[:id])
-    @offerings = RetailerOffering.find_all_by_product_id_and_product_type(params[:id],pt)
+    @product = $model.find(params[:id])
+    @offerings = RetailerOffering.find_all_by_product_id_and_product_type(params[:id],$model.name,:order => 'priceint ASC')
     #Session Tracking
     s = Viewed.new
     s.session_id = session[:user_id]

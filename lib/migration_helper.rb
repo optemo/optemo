@@ -20,6 +20,8 @@ module MigrationHelper
     t.integer :imagelwidth
     
     t.boolean :instock
+    t.float   :averagereviewrating
+    t.integer :totalreviews
     t.timestamps
   end
   

@@ -51,7 +51,8 @@ string preClustering(string* varNames, map<const string, int>productNames, strin
 				filteringCommand = "SELECT * FROM ";
 				filteringCommand += productName;
 				
-				filteringCommand += "s where (instock=1 and (scanner IS NOT NULL) and (printserver IS NOT NULL) and (resolutionmax IS NOT NULL));";
+				filteringCommand += "s where (instock=1 and (scanner IS NOT NULL) and (printserver IS NOT NULL) and ";
+				filteringCommand += "(resolutionmax >0) and (ppm >0 ) and (itemwidth > 0) and (paperinput > 0))";
 			
 				break;
 		default: 

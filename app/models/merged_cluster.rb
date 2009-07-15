@@ -98,4 +98,8 @@ class MergedCluster
   def clearCache
     @clusters.each{|c|c.clearCache}
   end
+  
+  def utility(session)
+    @clusters.map{|c|c.utility(session)}.sum/size(session)
+  end
 end

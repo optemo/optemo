@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090713180311) do
+ActiveRecord::Schema.define(:version => 20090715223914) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -196,6 +196,8 @@ ActiveRecord::Schema.define(:version => 20090713180311) do
     t.integer  "resolutionarea"
     t.integer  "product_id"
     t.string   "product_type",                    :default => "Printer"
+    t.float    "averagereviewrating"
+    t.integer  "totalreviews"
   end
 
   create_table "best_buy_offerings", :force => true do |t|
@@ -512,6 +514,8 @@ ActiveRecord::Schema.define(:version => 20090713180311) do
     t.boolean  "instock"
     t.string   "pricehistory"
     t.integer  "bestoffer"
+    t.float    "averagereviewrating"
+    t.integer  "totalreviews"
   end
 
   create_table "db_features", :force => true do |t|
@@ -737,6 +741,8 @@ ActiveRecord::Schema.define(:version => 20090713180311) do
     t.string   "cartridgescompatible"
     t.string   "powerrequirements"
     t.string   "powerconsumption"
+    t.integer  "resolutionmax"
+    t.string   "title"
   end
 
   create_table "preference_relations", :force => true do |t|
@@ -862,6 +868,8 @@ ActiveRecord::Schema.define(:version => 20090713180311) do
     t.integer  "resolutionarea"
     t.integer  "resolutionmax"
     t.string   "manufacturerproducturl"
+    t.float    "averagereviewrating"
+    t.integer  "totalreviews"
   end
 
   create_table "referrals", :force => true do |t|
@@ -887,7 +895,7 @@ ActiveRecord::Schema.define(:version => 20090713180311) do
     t.string   "availability"
     t.boolean  "iseligibleforsupersavershipping"
     t.string   "merchant"
-    t.string   "url"
+    t.text     "url"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.float    "shippingCost"
@@ -902,6 +910,22 @@ ActiveRecord::Schema.define(:version => 20090713180311) do
     t.string   "url"
     t.string   "name"
     t.string   "image"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "reviews", :force => true do |t|
+    t.string   "product_type"
+    t.integer  "product_id"
+    t.integer  "rating"
+    t.integer  "helpfulvotes"
+    t.datetime "date"
+    t.string   "customerid"
+    t.integer  "totalvotes"
+    t.text     "content"
+    t.string   "asin"
+    t.string   "source"
+    t.string   "summary"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -947,10 +971,58 @@ ActiveRecord::Schema.define(:version => 20090713180311) do
     t.text     "searchpids"
   end
 
+  create_table "tiger_printers", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "tigerurl"
+    t.string   "brand"
+    t.string   "model"
+    t.string   "mfgpartno"
+    t.string   "upcno"
+    t.integer  "itemheight"
+    t.integer  "itemlength"
+    t.integer  "itemwidth"
+    t.integer  "itemweight"
+    t.integer  "listprice"
+    t.integer  "packageheight"
+    t.integer  "packagelength"
+    t.integer  "packagewidth"
+    t.integer  "packageweight"
+    t.string   "warranty"
+    t.float    "ppm"
+    t.float    "ttp"
+    t.string   "resolution"
+    t.string   "duplex"
+    t.string   "connectivity"
+    t.string   "papersize"
+    t.integer  "paperoutput"
+    t.string   "dimensions"
+    t.integer  "dutycycle"
+    t.integer  "paperinput"
+    t.string   "special"
+    t.float    "ppmcolor"
+    t.string   "platform"
+    t.boolean  "colorprinter"
+    t.boolean  "scanner"
+    t.datetime "scrapedat"
+    t.boolean  "nodetails"
+    t.boolean  "printserver"
+  end
+
   create_table "tiger_scrapeds", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "tigerurl"
+    t.string   "manufacturedby"
+    t.string   "warrantyprovidedby"
+    t.string   "shippingweight"
+    t.string   "mfgpartno"
+    t.string   "upcno"
+    t.string   "boxsize"
+    t.string   "finalprice"
+    t.string   "instantsavings"
+    t.string   "originalprice"
+    t.string   "price"
     t.string   "allinone"
     t.string   "approximatepageyield"
     t.string   "automaticfeeder"
