@@ -78,6 +78,7 @@ class Search < ActiveRecord::Base
         else
           @clusters << c 
         end
+        #@clusters.sort!{|a,b|b.utility(session) <=> a.utility(session)}
       end
     end
     @clusters

@@ -50,20 +50,13 @@ module Cluster
   end
   
   #The represetative product for this cluster
-# def representative(session)
-#   unless @rep
-#     @rep =  self.nodes[first].product_id unless self.nodes.nil?
-#   end
-#   @rep
-# end    
-  
- def representative(session)
-   unless @rep
-     node = nodes(session).first
-     @rep = $model.find(node.product_id) if node
-   end
-   @rep
- end
+  def representative(session)
+    unless @rep
+      node = nodes(session).first
+      @rep = $model.find(node.product_id) if node
+    end
+    @rep
+  end
 
   def self.filterquery(session)
     fqarray = []
@@ -136,5 +129,9 @@ module Cluster
     @rep = nil
     @range = nil
     @children = nil
+  end
+  
+  def utility(session)
+    nodes(session).map{|n|n.utility}.sum/size(session)
   end
 end

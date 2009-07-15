@@ -438,10 +438,11 @@ def download_review(p)
     #Look for old Retail Offering
     unless result.nil?
       puts result.get('averagerating')
+      puts result.get('totalreviews')
       puts result.get('totalreviewpages')
       reviews = result.search_and_convert('review')
       reviews.each do |r|
-      puts reviews.length
+        r.get_hash.merge({'product_type' => a.product_type, 'product_id' => a.product_id})
       end
       pp reviews[0].get_hash
     else
