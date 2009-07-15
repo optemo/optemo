@@ -1,0 +1,665 @@
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/CoinUtils/!svn/ver/1146/stable/2.5/CoinUtils/src
+END
+CoinPresolveSubst.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveSubst.hpp
+END
+CoinPresolveTighten.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveTighten.hpp
+END
+CoinPresolveZeros.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveZeros.hpp
+END
+CoinPresolveHelperFunctions.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveHelperFunctions.cpp
+END
+Makefile.in
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/Makefile.in
+END
+CoinMessage.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinMessage.hpp
+END
+CoinPresolveMatrix.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveMatrix.hpp
+END
+CoinWarmStart.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinWarmStart.hpp
+END
+CoinMpsIO.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinMpsIO.hpp
+END
+CoinSort.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinSort.hpp
+END
+CoinError.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinError.hpp
+END
+CoinSnapshot.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinSnapshot.cpp
+END
+CoinParam.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinParam.cpp
+END
+CoinWarmStartPrimalDual.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinWarmStartPrimalDual.hpp
+END
+CoinPresolveImpliedFree.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveImpliedFree.cpp
+END
+CoinModel.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinModel.hpp
+END
+CoinPresolveDupcol.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveDupcol.cpp
+END
+CoinIndexedVector.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinIndexedVector.hpp
+END
+CoinPresolveUseless.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveUseless.hpp
+END
+CoinUtility.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinUtility.hpp
+END
+CoinShallowPackedVector.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinShallowPackedVector.hpp
+END
+CoinPackedVectorBase.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPackedVectorBase.hpp
+END
+CoinPragma.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPragma.hpp
+END
+CoinPresolvePsdebug.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolvePsdebug.hpp
+END
+CoinParamUtils.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinParamUtils.cpp
+END
+CoinPresolveSingleton.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveSingleton.cpp
+END
+CoinPresolveEmpty.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveEmpty.hpp
+END
+CoinFinite.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinFinite.hpp
+END
+Coin_C_defines.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/Coin_C_defines.h
+END
+CoinPresolveFixed.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveFixed.hpp
+END
+CoinStructuredModel.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinStructuredModel.cpp
+END
+CoinModelUseful.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinModelUseful.hpp
+END
+CoinSearchTree.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinSearchTree.hpp
+END
+CoinWarmStartDual.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinWarmStartDual.cpp
+END
+CoinDenseFactorization.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinDenseFactorization.cpp
+END
+CoinBuild.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinBuild.cpp
+END
+CoinAlloc.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinAlloc.hpp
+END
+CoinTime.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinTime.hpp
+END
+CoinPresolveDual.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveDual.cpp
+END
+CoinPresolveTripleton.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveTripleton.hpp
+END
+CoinSimpFactorization.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinSimpFactorization.cpp
+END
+CoinWarmStartBasis.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinWarmStartBasis.cpp
+END
+CoinLpIO.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinLpIO.hpp
+END
+CoinPresolveForcing.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveForcing.hpp
+END
+CoinFileIO.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinFileIO.hpp
+END
+CoinWarmStartVector.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinWarmStartVector.hpp
+END
+CoinPackedVector.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPackedVector.hpp
+END
+CoinPresolveDoubleton.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveDoubleton.hpp
+END
+CoinPresolveSubst.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveSubst.cpp
+END
+CoinPackedMatrix.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPackedMatrix.hpp
+END
+CoinFactorization.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinFactorization.hpp
+END
+CoinPresolveTighten.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveTighten.cpp
+END
+CoinPresolveZeros.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveZeros.cpp
+END
+CoinMessage.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinMessage.cpp
+END
+CoinPresolveMatrix.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveMatrix.cpp
+END
+CoinDenseVector.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinDenseVector.hpp
+END
+CoinMpsIO.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/CoinUtils/!svn/ver/1146/stable/2.5/CoinUtils/src/CoinMpsIO.cpp
+END
+CoinMessageHandler.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinMessageHandler.hpp
+END
+CoinError.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinError.cpp
+END
+CoinPresolveIsolated.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveIsolated.hpp
+END
+CoinPrePostsolveMatrix.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPrePostsolveMatrix.cpp
+END
+CoinDistance.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinDistance.hpp
+END
+CoinWarmStartPrimalDual.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinWarmStartPrimalDual.cpp
+END
+CoinModel.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinModel.cpp
+END
+CoinFloatEqual.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinFloatEqual.hpp
+END
+CoinIndexedVector.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinIndexedVector.cpp
+END
+CoinPresolveUseless.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveUseless.cpp
+END
+CoinShallowPackedVector.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinShallowPackedVector.cpp
+END
+CoinSnapshot.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinSnapshot.hpp
+END
+CoinParam.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinParam.hpp
+END
+CoinPackedVectorBase.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPackedVectorBase.cpp
+END
+CoinModelUseful2.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinModelUseful2.cpp
+END
+CoinPresolvePsdebug.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolvePsdebug.cpp
+END
+CoinPresolveImpliedFree.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveImpliedFree.hpp
+END
+CoinPresolveDupcol.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveDupcol.hpp
+END
+CoinPresolveEmpty.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveEmpty.cpp
+END
+CoinPresolveFixed.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveFixed.cpp
+END
+CoinPostsolveMatrix.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPostsolveMatrix.cpp
+END
+CoinModelUseful.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinModelUseful.cpp
+END
+CoinSearchTree.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinSearchTree.cpp
+END
+CoinPresolveSingleton.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveSingleton.hpp
+END
+CoinAlloc.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinAlloc.cpp
+END
+CoinStructuredModel.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinStructuredModel.hpp
+END
+CoinUtilsConfig.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinUtilsConfig.h
+END
+CoinFactorization1.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinFactorization1.cpp
+END
+CoinFactorization2.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinFactorization2.cpp
+END
+CoinFactorization3.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinFactorization3.cpp
+END
+CoinWarmStartDual.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinWarmStartDual.hpp
+END
+CoinFactorization4.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinFactorization4.cpp
+END
+CoinDenseFactorization.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinDenseFactorization.hpp
+END
+CoinPresolveTripleton.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveTripleton.cpp
+END
+CoinLpIO.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinLpIO.cpp
+END
+CoinBuild.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinBuild.hpp
+END
+CoinPresolveForcing.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveForcing.cpp
+END
+CoinFileIO.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinFileIO.cpp
+END
+CoinWarmStartVector.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinWarmStartVector.cpp
+END
+CoinTypes.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinTypes.hpp
+END
+CoinPresolveDual.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveDual.hpp
+END
+CoinPackedVector.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPackedVector.cpp
+END
+CoinSimpFactorization.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinSimpFactorization.hpp
+END
+CoinPresolveDoubleton.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveDoubleton.cpp
+END
+CoinWarmStartBasis.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinWarmStartBasis.hpp
+END
+CoinPackedMatrix.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPackedMatrix.cpp
+END
+CoinHelperFunctions.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinHelperFunctions.hpp
+END
+Makefile.am
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/Makefile.am
+END
+CoinDenseVector.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinDenseVector.cpp
+END
+CoinSmartPtr.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinSmartPtr.hpp
+END
+CoinMessageHandler.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinMessageHandler.cpp
+END
+CoinSignal.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinSignal.hpp
+END
+CoinPresolveIsolated.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/CoinUtils/!svn/ver/1143/stable/2.5/CoinUtils/src/CoinPresolveIsolated.cpp
+END

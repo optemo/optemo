@@ -1,0 +1,689 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/Clp/!svn/ver/1364/stable/1.10/Clp/src
+END
+Makefile.in
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/Makefile.in
+END
+Clp_C_Interface.h
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/Clp_C_Interface.h
+END
+ClpParameters.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpParameters.hpp
+END
+ClpPrimalQuadraticDantzig.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpPrimalQuadraticDantzig.hpp
+END
+ClpQuadraticObjective.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpQuadraticObjective.cpp
+END
+Idiot.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/Clp/!svn/ver/1364/stable/1.10/Clp/src/Idiot.cpp
+END
+ClpLinearObjective.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpLinearObjective.hpp
+END
+ClpFactorization.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpFactorization.cpp
+END
+ClpHelperFunctions.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpHelperFunctions.hpp
+END
+ClpNetworkMatrix.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpNetworkMatrix.cpp
+END
+ClpDynamicMatrix.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpDynamicMatrix.hpp
+END
+CbcOrClpParam.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/CbcOrClpParam.hpp
+END
+ClpPrimalColumnSteepest.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpPrimalColumnSteepest.cpp
+END
+ClpCholeskyWssmp.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpCholeskyWssmp.hpp
+END
+ClpPdcoBase.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpPdcoBase.cpp
+END
+ClpPackedMatrix.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpPackedMatrix.hpp
+END
+ClpNonLinearCost.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpNonLinearCost.hpp
+END
+ClpPredictorCorrector.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpPredictorCorrector.hpp
+END
+ClpSimplexOther.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpSimplexOther.cpp
+END
+ClpMain.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpMain.cpp
+END
+ClpEventHandler.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpEventHandler.hpp
+END
+ClpLsqr.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpLsqr.hpp
+END
+ClpSimplex.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpSimplex.hpp
+END
+ClpCholeskyUfl.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpCholeskyUfl.cpp
+END
+ClpSolve.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpSolve.cpp
+END
+ClpMessage.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpMessage.hpp
+END
+MyMessageHandler.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/MyMessageHandler.cpp
+END
+ClpNode.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpNode.hpp
+END
+MyEventHandler.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/MyEventHandler.hpp
+END
+ClpSimplexNonlinear.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpSimplexNonlinear.hpp
+END
+ClpDualRowDantzig.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpDualRowDantzig.cpp
+END
+ClpMatrixBase.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpMatrixBase.cpp
+END
+ClpDualRowPivot.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpDualRowPivot.cpp
+END
+ClpDualRowSteepest.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpDualRowSteepest.hpp
+END
+ClpPresolve.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpPresolve.cpp
+END
+ClpInterior.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpInterior.hpp
+END
+ClpModel.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpModel.hpp
+END
+ClpCholeskyDense.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpCholeskyDense.hpp
+END
+ClpGubMatrix.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpGubMatrix.hpp
+END
+ClpGubDynamicMatrix.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpGubDynamicMatrix.cpp
+END
+ClpCholeskyMumps.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpCholeskyMumps.hpp
+END
+ClpObjective.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpObjective.cpp
+END
+ClpNetworkBasis.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpNetworkBasis.hpp
+END
+ClpCholeskyTaucs.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpCholeskyTaucs.cpp
+END
+ClpCholeskyBase.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpCholeskyBase.hpp
+END
+ClpConstraintQuadratic.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpConstraintQuadratic.cpp
+END
+ClpPrimalColumnDantzig.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpPrimalColumnDantzig.cpp
+END
+ClpConstraintLinear.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpConstraintLinear.hpp
+END
+ClpDummyMatrix.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpDummyMatrix.hpp
+END
+ClpDynamicExampleMatrix.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpDynamicExampleMatrix.cpp
+END
+ClpPdco.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpPdco.cpp
+END
+ClpPlusMinusOneMatrix.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpPlusMinusOneMatrix.cpp
+END
+ClpSimplexPrimal.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpSimplexPrimal.cpp
+END
+ClpSimplexDual.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/Clp/!svn/ver/1359/stable/1.10/Clp/src/ClpSimplexDual.cpp
+END
+ClpConstraint.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpConstraint.hpp
+END
+ClpPrimalColumnPivot.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpPrimalColumnPivot.hpp
+END
+ClpCholeskyWssmpKKT.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpCholeskyWssmpKKT.hpp
+END
+ClpLinearObjective.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpLinearObjective.cpp
+END
+ClpHelperFunctions.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpHelperFunctions.cpp
+END
+ClpDynamicMatrix.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpDynamicMatrix.cpp
+END
+CbcOrClpParam.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/CbcOrClpParam.cpp
+END
+ClpConfig.h
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpConfig.h
+END
+ClpCholeskyWssmp.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpCholeskyWssmp.cpp
+END
+ClpPackedMatrix.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpPackedMatrix.cpp
+END
+ClpQuadraticObjective.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpQuadraticObjective.hpp
+END
+ClpNonLinearCost.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpNonLinearCost.cpp
+END
+ClpPredictorCorrector.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpPredictorCorrector.cpp
+END
+Idiot.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/Idiot.hpp
+END
+ClpEventHandler.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpEventHandler.cpp
+END
+ClpLsqr.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpLsqr.cpp
+END
+ClpFactorization.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpFactorization.hpp
+END
+ClpSimplex.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/Clp/!svn/ver/1363/stable/1.10/Clp/src/ClpSimplex.cpp
+END
+ClpNetworkMatrix.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpNetworkMatrix.hpp
+END
+ClpMessage.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpMessage.cpp
+END
+ClpPrimalColumnSteepest.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpPrimalColumnSteepest.hpp
+END
+ClpNode.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpNode.cpp
+END
+ClpPdcoBase.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpPdcoBase.hpp
+END
+MyEventHandler.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/MyEventHandler.cpp
+END
+ClpSimplexNonlinear.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpSimplexNonlinear.cpp
+END
+ClpSimplexOther.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpSimplexOther.hpp
+END
+ClpDualRowSteepest.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpDualRowSteepest.cpp
+END
+ClpInterior.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpInterior.cpp
+END
+ClpCholeskyUfl.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpCholeskyUfl.hpp
+END
+ClpSolve.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpSolve.hpp
+END
+MyMessageHandler.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/MyMessageHandler.hpp
+END
+ClpModel.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpModel.cpp
+END
+ClpCholeskyDense.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpCholeskyDense.cpp
+END
+Clp_C_Interface.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/Clp_C_Interface.cpp
+END
+ClpGubMatrix.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpGubMatrix.cpp
+END
+ClpCholeskyMumps.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpCholeskyMumps.cpp
+END
+ClpDualRowDantzig.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpDualRowDantzig.hpp
+END
+ClpMatrixBase.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpMatrixBase.hpp
+END
+ClpDualRowPivot.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpDualRowPivot.hpp
+END
+ClpPresolve.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpPresolve.hpp
+END
+ClpNetworkBasis.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpNetworkBasis.cpp
+END
+ClpGubDynamicMatrix.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpGubDynamicMatrix.hpp
+END
+ClpCholeskyBase.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpCholeskyBase.cpp
+END
+ClpConstraintLinear.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpConstraintLinear.cpp
+END
+ClpObjective.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpObjective.hpp
+END
+IdiSolve.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/IdiSolve.cpp
+END
+ClpDummyMatrix.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpDummyMatrix.cpp
+END
+unitTest.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/unitTest.cpp
+END
+ClpConstraint.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpConstraint.cpp
+END
+ClpPrimalColumnPivot.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpPrimalColumnPivot.cpp
+END
+ClpCholeskyWssmpKKT.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpCholeskyWssmpKKT.cpp
+END
+ClpCholeskyTaucs.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpCholeskyTaucs.hpp
+END
+ClpConstraintQuadratic.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpConstraintQuadratic.hpp
+END
+ClpPrimalColumnDantzig.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpPrimalColumnDantzig.hpp
+END
+Makefile.am
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/Makefile.am
+END
+ClpDynamicExampleMatrix.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpDynamicExampleMatrix.hpp
+END
+ClpPdco.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpPdco.hpp
+END
+ClpPlusMinusOneMatrix.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpPlusMinusOneMatrix.hpp
+END
+ClpSimplexPrimal.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpSimplexPrimal.hpp
+END
+ClpSimplexDual.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/Clp/!svn/ver/1347/stable/1.10/Clp/src/ClpSimplexDual.hpp
+END
