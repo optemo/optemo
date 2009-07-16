@@ -453,6 +453,7 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.float   "price"
     t.string  "brand"
     t.integer "version"
+    t.float   "utility"
   end
 
   create_table "cameras", :force => true do |t|
@@ -573,10 +574,10 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.boolean  "stock"
     t.string   "availability"
     t.datetime "availabilityUpdate"
-    t.string   "url"
     t.boolean  "active"
     t.datetime "activeUpdate"
     t.boolean  "freeShipping"
+    t.text     "url"
   end
 
   create_table "newegg_printer_scraped_datas", :force => true do |t|
@@ -810,6 +811,7 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.float   "price"
     t.string  "brand"
     t.integer "version"
+    t.float   "utility"
   end
 
   create_table "printers", :force => true do |t|

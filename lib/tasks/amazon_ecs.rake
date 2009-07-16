@@ -452,7 +452,7 @@ def download_review(p)
       totalreviews ||= result.get('totalreviews').to_i
       totalreviewpages ||= result.get('totalreviewpages').to_i
       reviews = result.search_and_convert('review')
-      reviews = [reviews] unless reviews.class == Array #Fix single and no review possibility
+      reviews = Array(reviews) unless reviews.class == Array #Fix single and no review possibility
       reviews.each do |r|
         r = Review.new(r.get_hash.merge({'product_type' => a.product_type, 'product_id' => a.product_id, "source" => "Amazon"}))
         r.save
