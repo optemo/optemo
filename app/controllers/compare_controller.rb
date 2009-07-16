@@ -15,7 +15,7 @@ class CompareController < ApplicationController
     @utility = []
     @displayString = ""
     # Link to latest product navigation page
-    @navigationUrl = $model.name.pluralize.downcase + "/list/" + Search.find_by_session_id(session[:user_id], :order => 'updated_at DESC').to_s
+    @navigationUrl = $model.urlname + "/compare/" + Search.find_by_session_id(session[:user_id], :order => 'updated_at DESC').to_s
     # To track whether an interesting feature is displayed or not-
     @interestingFeatureDisplayed = {} 
     @featureCssClass = {}
