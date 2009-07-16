@@ -10,20 +10,21 @@
 		string command2;
 		ostringstream vs; 
 		vs<< version;	
-		double utility;	
+		double utility, average_utility;	
+		
 		string capProductName = productName;
 		capProductName[0] = productName[0] - 32;
 		int i=0;
 		
 		for (int c=0; c<clusterN; c++){
-		
+			average_utility = 0.0;
 			ostringstream nodeStream;
 			ostringstream cluster_idStream; 
 			ostringstream clusterSizeStream;
 			clusterSizeStream<<clusteredData[c][0];
 			string command = "INSERT INTO ";
 			command += productName;
-			command += "_clusters (version, layer, parent_id, cluster_size,price_min, price";
+			command += "_clusters (version, layer, parent_id, cluster_size, price_min, price";
 			for (int f=1; f<conFeatureN; f++){
 				command += "_max, ";
 				command += conFeatureNames[f];
@@ -125,6 +126,8 @@
 			if (res2->next()){
 				cluster_id = res2->getInt("last_insert_id()");
 			}
+			
+			cluster_idStream<<cluster_id;
 
 		////// saving in the nodes table
 			for (int j=0; j<clusteredData[c][0]; j++){	
@@ -145,9 +148,9 @@
 				//add rep
 
 				command += vs.str();
-				ostringstream cluster_idStream;
+				
 				command += ", ";
-				cluster_idStream<<cluster_id;
+				
 				command += cluster_idStream.str();
 				command += ", ";
 				ostringstream idStream;
@@ -178,6 +181,7 @@
 						utility += res2->getDouble(conFeatureNames[f]);
 					}	
 				}
+				average_utility += utility;
 				
 				ostringstream ustr; 
 				ustr << utility;
@@ -204,6 +208,17 @@
 				command +="\");"; 
 				stmt->execute(command);
 		 }
+		average_utility = average_utility / clusteredData[c][0];
+		command = "UPDATE ";
+		command += productName;
+		command += "_clusters SET cached_utility=";
+		ostringstream auStr;
+		auStr << average_utility;
+		command += auStr.str();
+		command += " where id=";
+		command += cluster_idStream.str();
+		command += ";";
+		stmt->execute(command);
 		}
 
 	}	
