@@ -29,10 +29,14 @@ class SearchController < ApplicationController
   def find
     @session = Session.find(session[:user_id])
     sphinx = searchSphinx(params[:search])
-    product_ids = sphinx.results.delete_if{|r|r.class.name != @session.product_type || !r.myvalid?}.map{|p|p.id}
+    product_ids = sphinx.results.delete_if{|r|r.class != $model || !r.myvalid?}.map{|p|p.id}
     if product_ids.length == 0
       flash[:error] = "No products were found"
-      redirect_to request.referer
+      if request.referer.nil?
+        redirect_to "/#{$model.urlname}"
+      else
+        redirect_to request.referer
+      end
     else
       @session.searchterm = params[:search]
       @session.searchpids = product_ids.map{|id| "product_id = #{id}"}.join(' OR ')
