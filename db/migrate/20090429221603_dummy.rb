@@ -8,8 +8,10 @@ class Dummy < ActiveRecord::Migration
     #add_column :cameras, :totalreviews, :integer
     #add_column :amazon_printers, :averagereviewrating, :float
     #add_column :amazon_printers, :totalreviews, :integer
-    add_column :printer_nodes, :utility, :float
-    add_column :camera_nodes, :utility, :float
+    #add_column :printer_nodes, :utility, :float
+    #add_column :camera_nodes, :utility, :float
+    add_column :printer_clusters, :utility, :float
+    add_column :camera_clusters, :utility, :float
   end
 
   def self.down
