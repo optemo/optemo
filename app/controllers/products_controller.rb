@@ -39,6 +39,7 @@ class ProductsController < ApplicationController
     params[:id] = params[:id][/^\d+/]
     @product = $model.find(params[:id])
     @offerings = RetailerOffering.find_all_by_product_id_and_product_type(params[:id],$model.name,:order => 'priceint ASC')
+    @review = Review.find_by_product_id_and_product_type(params[:id],$model.name, :order => 'helpfulvotes DESC')
     #Session Tracking
     s = Viewed.new
     s.session_id = session[:user_id]

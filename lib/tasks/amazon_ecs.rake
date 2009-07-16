@@ -458,7 +458,7 @@ def download_review(p)
         r.save
       end
     else
-      pp res
+      return
     end
     current_page += 1
     break if current_page > totalreviewpages
