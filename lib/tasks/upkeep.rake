@@ -8,13 +8,14 @@ task :calculate_factors => :environment do
     $ProdTypeList.each do |pType|
       @dbfeat = {}
       DbFeature.find_all_by_product_type(pType).each {|f| @dbfeat[f.name] = f}
-      pType.constantize.valid.instock.each do |product|
+      products = pType.constantize.valid.instock
+      products.each do |product|
         newFactorRow = Factor.new
         newFactorRow.product_id = product.id 
         newFactorRow.product_type = pType
         pType.constantize::ContinuousFeatures.each do |f|
           fVal = product.send(f.intern) 
-          result = CalculateFactor(fVal, f, @dbfeat[f].max, @dbfeat[f].min)
+          result = calculateFactor(products, fVal, f)
           newFactorRow.send((f+'=').intern, result)
         end
         newFactorRow.save
@@ -44,21 +45,11 @@ task :assign_lowest_price => :environment do
   end
 end
 
-def CalculateFactor (fVal, f, fMax, fMin)  
-  # Calculate Denominator value
-  denominator = fMax - fMin
-  if (denominator == 0)
-    return 0
-  end  
-  # Retrieve the direction value from global variable
-  # If direction is Up
-  if ($PrefDirection[f] == 1)
-    numerator = fVal - fMin
-  # If direction is Down
-  elsif ($PrefDirection[f] == -1)
-    numerator = fMax - fVal
-  end
-  # Use formula to calculate factor (the factor is a value: v(f))
-  factor = numerator/denominator.to_f
-  return factor
+def calculateFactor(products, fVal, f)
+  #Order the feature values, reversed to give the highest value to duplicates
+  ordered = products.map{|p|p.send(f.intern)}.sort
+  ordered = ordered.reverse if $PrefDirection[f] == 1
+  pos = ordered.index(fVal)
+  len = ordered.length
+  (len - pos)/len.to_f
 end

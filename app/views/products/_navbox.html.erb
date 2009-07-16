@@ -13,15 +13,18 @@
 		<%# Randomized Product Reviews %>
 		<%# rand > 0.5 ? (rand > 0.5 ? image_tag('5star.gif') : image_tag('3star.gif')) : image_tag('4star.gif') %>
 	</p>
-	<% if false && RAILS_ENV == 'development' && @c.clustergraph && @c.clustergraph[i] %>
+	<% if false && RAILS_ENV == 'development' && cluster.clustergraph && cluster.clustergraph[i] %>
 	<div class="clustergraph">
-		<% @c.clustergraph[i].each do |u| %>
+		<% cluster.clustergraph[i].each do |u| %>
 		<% if u.length == 2 %>
 		<div class="featurebar" data-left="<%= u[0] %>" data-width="<%= u[1] %>"></div>
 		<% end %>
 		<% end %>
 	</div>
 	<% end %>
+	<div class="clustergraph">
+		<%= cluster.utility(@session) %>
+	</div>
 	<div class="bottombar" name ="<%= cluster.representative(@session).id %>">
 		<%= sim_link(cluster,i, cluster.representative(@session).id) %>
 	</div>

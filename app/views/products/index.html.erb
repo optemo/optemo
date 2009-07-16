@@ -1,22 +1,23 @@
-
+<% self.full_title = "Welcome to LaserPrinterHub - Find Laser Printers, Compare Prices, then Buy" %>
+<% self.describe = "At Laserprinterhub you can compare printers and then buy them. Please choose what the printer will be used for to narrow the search." %>
 	<h1>Find, compare and buy the right laser printer</h1>
 	<p>We are committed to offering you a large range of laserprinters, while not overwhelming you with information. Our unique discovery browsing system facilitates searches with any knowledge levels, while also allowing you to learn more about the products and their technical properties.</p>
 <div align="center"><h3>What will this printer be used for?</h3></div>
 <div class="category">
 	<a href="<%= @link %>" title="Printers for all uses">
-	<%= image_tag 'allinone.jpg' %><br>
+	<%= image_tag 'allinone.jpg' , :alt => 'All-purpose printers'%><br>
 	All-Purpose</a>
 	<p class='description'>As the category suggests, you can find a large variety of versatile printers here.</p>
 </div>
 <div class="category">
 	<a href="<%= @link %>" data-name="home_office" class="usecase" title="">
-	<%= image_tag 'home_office.jpg' %><br>
+	<%= image_tag 'home_office.jpg' , :alt => 'Home office (m2j2)'%><br>
 	Home Office</a><!--smaller width-->	
 	<p class='description'>If you're working from home you may find that your physical space is perhaps limited. Printers in this category are more compact and will fit easily into your office.</p>
 </div>
 <div class="category">
 	<a href="<%= @link %>" data-name="small_office" class="usecase" title="">
-	<%= image_tag 'network.jpg' %><br>
+	<%= image_tag 'network.jpg' , :alt => "Small office (siradavis)" %><br>
 	Small Office</a><!--printserver-->
 	<p class='description'>Laser printers in this category come equipped with a network print server.</p>
 </div>
@@ -28,7 +29,7 @@
 </div>
 <div class="category">
 	<a href="<%= @link %>" data-name="photography" class="usecase" title="">
-	<%= image_tag 'camera.jpg' %><br>
+	<%= image_tag 'camera.jpg' , :alt => 'Photography (angel_caido)'%><br>
 	Photography</a><!--Higher resolution-->
 	<p class='description'>All printers in the photography category have high resolution (1200x600 dpi and above!).</p>
 </div>
