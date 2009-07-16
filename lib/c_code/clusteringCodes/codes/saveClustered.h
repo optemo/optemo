@@ -9,7 +9,11 @@
 		int cluster_id;
 		string command2;
 		ostringstream vs; 
-		vs<< version;		
+		vs<< version;	
+		double utility;	
+		string capProductName = productName;
+		capProductName[0] = productName[0] - 32;
+		int i=0;
 		
 		for (int c=0; c<clusterN; c++){
 		
@@ -123,10 +127,11 @@
 			}
 
 		////// saving in the nodes table
-			for (int j=0; j<clusteredData[c][0]; j++){	  
+			for (int j=0; j<clusteredData[c][0]; j++){	
+			
 				command = "INSERT INTO ";
 				command += productName;
-				command += "_nodes (version, cluster_id, product_id, price";
+				command += "_nodes (version, cluster_id, product_id, utility, price";
 				for (int i=1; i<conFeatureN; i++){
 						command += ", ";
 						command += conFeatureNames[i];
@@ -135,6 +140,7 @@
 						command += ", ";
 						command += boolFeatureNames[i];
 				}
+				
 				command += ", brand) values(";
 				//add rep
 
@@ -146,12 +152,40 @@
 				command += ", ";
 				ostringstream idStream;
 				idStream<<clusteredDataOrdered[c][j];
-				command +=  idStream.str();	
+				command +=  idStream.str();
+				command += ", ";
+				
+				//utility
+				command2 = "SELECT ";
+				command2 += conFeatureNames[0];
+			
+				for (int f=1; f<conFeatureN; f++){
+					command2 += ", ";
+					command2 += conFeatureNames[f]; 
+				}	
+				command2 += " from factors where (product_type= \'";
+				
+				command2 += capProductName;
+				command2 += "\' and product_id=";
+				command2 += idStream.str();
+				command2 += ");";
+			
+				res2 = stmt->executeQuery(command2);
+				utility = 0.0;
+				if (res2->rowsCount()>0){
+					res2->next();
+					for (int f=0; f<conFeatureN; f++){
+						utility += res2->getDouble(conFeatureNames[f]);
+					}	
+				}
+				
+				ostringstream ustr; 
+				ustr << utility;
+				command +=  ustr.str();
 				for (int f=0; f<conFeatureN; f++){
 					command +=", ";
 					ostringstream featureStream;
 					featureStream<<data[find(idA, clusteredDataOrdered[c][j], size)][f];
-
 					command += featureStream.str();
 				}
 				
@@ -169,7 +203,6 @@
 				command += featureStream.str();   
 				command +="\");"; 
 				stmt->execute(command);
-			
 		 }
 		}
 
