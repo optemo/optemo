@@ -1,6 +1,6 @@
 <% self.full_title = 'LaserPrinterHub - Find Laser Printers, Compare Prices, then Buy' %>
 <div id="leftbar">
-	Browsing <%= @s.result_count %> <%= @pt.pluralize.capitalize %>
+	Browsing <%= @s.result_count %> <%= $model.urlname.capitalize %>
 	<% if RAILS_ENV == 'development' %><br>Session id: <%= session[:user_id] %> <% end %>
 	<!-- The Search box -->
 	<% form_tag("/search/find",{:id => 'search_form'}) do %>
@@ -49,7 +49,7 @@
 		  <% if l>0 %>
 		    <%= link_to "#{$clustermodel.find_by_id(@allSearches[l].parent_id).description(@session)}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>
 		  <%else%>
-		  	   <%= link_to "All #{@pt.pluralize}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>	
+		  	   <%= link_to "All #{$model.urlname.capitalize}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>	
 		  <%end%>
 		  &lt;&lt;
 	   <%end %>

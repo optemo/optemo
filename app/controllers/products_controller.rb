@@ -14,9 +14,8 @@ class ProductsController < ApplicationController
   
   def compare
     @session = Session.find(session[:user_id])
-    @pt = session[:productType] || $DefaultProduct
     @dbfeat = {}
-    DbFeature.find_all_by_product_type(@pt).each {|f| @dbfeat[f.name] = f}
+    DbFeature.find_all_by_product_type($model.name).each {|f| @dbfeat[f.name] = f}
     @s = Search.createFromPath_and_commit(params[:id].split('-'), @session.id)
     @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
     @allSearches = []

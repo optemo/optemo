@@ -8,6 +8,7 @@ class CreateCameraNodes < ActiveRecord::Migration
       end
       t.float :price
       t.string :brand
+      t.float :utility
     end
   end
 

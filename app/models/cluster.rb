@@ -132,6 +132,14 @@ module Cluster
   end
   
   def utility(session)
-    nodes(session).map{|n|n.utility}.sum/size(session)
+    if session.filter || !session.searchpids.blank?
+      if size(session) == 0
+        @utility ||= 0
+      else
+        @utility ||= nodes(session).map{|n|n.utility}.sum/size(session)
+      end
+    else
+      cached_utility
+    end
   end
 end

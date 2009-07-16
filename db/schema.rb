@@ -533,17 +533,6 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.datetime "updated_at"
   end
 
-  create_table "db_properties", :force => true do |t|
-    t.string   "name"
-    t.text     "brands"
-    t.float    "price_min"
-    t.float    "price_max"
-    t.float    "price_low"
-    t.float    "price_high"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "factors", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
