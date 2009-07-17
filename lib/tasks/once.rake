@@ -1,6 +1,6 @@
 desc "Calculate Printer Resolution for an area"
 task :fill_in_resolution => :environment do
-  Printer.find(:all, :conditions => 'resolution is not null').each do |p|
+  AmazonPrinter.find(:all, :conditions => 'resolution is not null').each do |p|
     if !p.resolution.blank?
       #p.resolutionarea = p.resolution.split(' x ').inject(1) {|a,b| a.to_i*b.to_i}
       p.resolutionmax = p.resolution.split(' x ')[0]
@@ -61,5 +61,37 @@ task :copy_camera => :environment do
   Camera.all.each do |c|
     p = Phlamera.new(c.attributes)
     p.save
+  end
+end
+
+desc "Copy AmazonAll info"
+task :copy_amazonall => :environment do
+  AmazonAll.all.each do |c|
+    p = AmazonPrinter.new(c.attributes)
+    p.save
+  end
+end
+
+desc "Remove duplicate asins"
+task :remove_double_asins => :environment do
+prev = nil
+dups = []
+Printer.all.map{|p|p.asin}.sort.each do |p|
+  dups << p if p == prev
+  prev = p
+end
+dups.each do |asin|
+  dead = Printer.find_all_by_asin(asin)[1].id
+  RetailerOffering.find_all_by_product_id_and_product_type(dead,'Printer').each {|ro|ro.destroy}
+  Printer.find(dead).destroy
+end
+#Printer.find_all_by_brand(nil, :conditions => ["manufacturer LIKE (?)", "%LEXMARK%"]).update_attribute('brand','Lexmark')
+
+end
+
+desc "Copy itemwidth from AmazonPrinter to Printer"
+task :fill_in_itemwidth => :environment do
+  AmazonPrinter.find(:all, :conditions => ['created_at > ?', 4.days.ago]).each do |p|
+    Printer.find(p.product_id).update_attribute('itemwidth', p.itemwidth)
   end
 end

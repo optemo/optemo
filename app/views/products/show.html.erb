@@ -35,7 +35,13 @@
 	<% end %>
 	<div id="reviews">
 		<h3>Reviews</h3>
-		There are no reviews for this item yet.
+		<% if @review.nil? %>
+			There are no reviews for this item yet.
+		<% else %>
+			Helpfulness: <%= @review.helpfulvotes %><br>
+			<p><b><%= @review.summary %></o>
+			<%= @review.content %>
+		<% end %>
 		<!--People agree this is a <strong>very good</strong> camera. Reviewers admire the <strong>large display</strong>, <strong>customer service</strong>, and <strong>sharp lens</strong> despite qualms with the video quality and portability. It is recommended if you're comfortable with the video quality and portability. -->
 	</div>
 	<div class="showtable">
@@ -43,10 +49,12 @@
 	<% @offerings.each do |offer| %>
 		<% next if !offer.stock || offer.priceint.blank? %>
 		<div class="left">	
-			<%= link_to "#{offer.pricestr}", {:controller => 'link', :action => 'create', :id => offer.id}, :popup => true %>
+			<%= link_to "#{offer.pricestr}", {:controller => 'link', :action => 'create', :id => offer.id}, :popup => true, :rel => 'nofollow' %>
 		</div>
 		<div class="right">
 			 <%=  link_to image_tag(offer.retailer.image), {:controller => 'link', :action => 'create', :id => offer.id}, :popup => true %>
+		</div>
+		<div class="spacer">
 		</div>
 	<% end %>
 	</div>

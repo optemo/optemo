@@ -1,33 +1,39 @@
-<div class="main">
-	<h1>Userstudy: Find your camera</h1>
-	<p style="text-align:left;">Welcome to our camera shopping service. On the next page you will find Optemo's camera browsing and exploration platform.<br> 
-		
-	9 cameras will be displayed at a time. These cameras have been selected to represent the different types of cameras available.<br>
-	
-	 If you feel that your ideal camera is close to one of those, click on the yellow button to explore similar cameras. We will then focus the search to show you cameras that are closer to what you have in mind.
-		<br> 
-		The platform also allows you to filter cameras based on different features and brands. At the beginning or in the middle of the search you could use the filtering panel on the left and press filter for a more narrow exploration.<br>
-		
-		At any time if you feel you are interested in a camera you could click on the camera pictures or the link below the picture to see a detailed product description and get directed to sellers. 
-			<br>
-			
-			 You could save your selections by hitting the orange "save" button. Saved selections could be compared by clicking on "compare them" link. </p> 
-	<%= link_to 'Continue', :controller => 'search' %>
-<p><%= link_to image_tag('OptemoScreenShot.png')%> </p>
-
+<% self.full_title = "Welcome to LaserPrinterHub - Find Laser Printers, Compare Prices, then Buy" %>
+<% self.describe = "At Laserprinterhub you can compare printers and then buy them. Please choose what the printer will be used for to narrow the search." %>
+	<h1>Find, compare and buy the right laser printer</h1>
+	<p>We are committed to offering you a large range of laserprinters, while not overwhelming you with information. Our unique discovery browsing system facilitates searches with any knowledge levels, while also allowing you to learn more about the products and their technical properties.</p>
+<div align="center"><h3>What will this printer be used for?</h3></div>
+<div class="category">
+	<a href="<%= @link %>" title="Printers for all uses">
+	<%= image_tag 'allinone.jpg' , :alt => 'All-purpose printers'%><br>
+	All-Purpose</a>
+	<p class='description'>As the category suggests, you can find a large variety of versatile printers here.</p>
+</div>
+<div class="category">
+	<a href="<%= @link %>" data-name="home_office" class="usecase" title="">
+	<%= image_tag 'home_office.jpg' , :alt => 'Home office (m2j2)'%><br>
+	Home Office</a><!--smaller width-->	
+	<p class='description'>If you're working from home you may find that your physical space is perhaps limited. Printers in this category are more compact and will fit easily into your office.</p>
+</div>
+<div class="category">
+	<a href="<%= @link %>" data-name="small_office" class="usecase" title="">
+	<%= image_tag 'network.jpg' , :alt => "Small office (siradavis)" %><br>
+	Small Office</a><!--printserver-->
+	<p class='description'>Laser printers in this category come equipped with a network print server.</p>
+</div>
+<div class="category">
+	<a href="<%= @link %>" data-name="corporate" class="usecase" title="">
+	<%= image_tag 'corporate.jpg' %><br>
+	Corporate Use</a><!--Printserver, larger paper tray, and faster printing(pages per minute)-->
+	<p class='description'>Printers pre-screened for corporate uses are veritable powerhouses. They come equipped with a print server, larger paper tray, faster printing, and keep up easily with the fast turnaround pace necessary for a corporate setting.</p>
+</div>
+<div class="category">
+	<a href="<%= @link %>" data-name="photography" class="usecase" title="">
+	<%= image_tag 'camera.jpg' , :alt => 'Photography (angel_caido)'%><br>
+	Photography</a><!--Higher resolution-->
+	<p class='description'>All printers in the photography category have high resolution (1200x600 dpi and above!).</p>
 </div>
 
-
-
-<div class="main2" style="display:none;">
-	<p>Welcome to our camera shopping service. We allow you to browse all the cameras on Amazon efficiently. If you see a camera you like you can click on see more and it will then show you similar cameras. In this way you can narrow your search very quickly.</p>
-	
-	<p>Please choose what kind of cameras are you interested in?</p>
-	
-	<p><%= link_to image_tag('pointnshoot.jpg'), :controller => 'search' %></p>
-	
-	<p><%= link_to image_tag('slr.jpg'), :controller => 'search' %></p>
-</div>
 
 
 	

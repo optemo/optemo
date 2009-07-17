@@ -24,25 +24,40 @@ task :get_printer_ASINs => :environment do
   require 'amazon/ecs'
   #browse_node for printers: 172635
   #browse_node for all-in-one:172583
-  #Use browse id for Laser Printers
-  browse_node_id = '172648'
+  #Use browse id for Laser Printers - 172648
+  browse_node_id = '172583'
   search_index = 'Electronics'
   response_group = 'ItemIds'
   Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
   current_page = 1
+  count = 0
   loop do
     res = Amazon::Ecs.item_search('',:browse_node => browse_node_id, :search_index => search_index, :response_group => response_group, :item_page => current_page)
     total_pages = res.total_pages unless total_pages
     res.items.each do |item|
-      asin = item.get('asin')\
-      if Printer.find_by_asin(asin).nil?
-        product = Printer.new
+      asin = item.get('asin')
+      if AmazonAll.find_by_asin(asin).nil?
+        product = AmazonAll.new
         product.asin = asin
         product.save!
+        puts asin
+        count += 1
+      end
     end
     current_page += 1
     sleep(0.2)
     break if (current_page > total_pages)
+  end
+  puts "Total new printers: " + count.to_s
+end
+
+desc "Collect Product Reviews"
+task :download_reviews => :environment do
+  require 'amazon/ecs'
+  Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
+  Printer.find(:all, :conditions => 'totalreviews is NULL').each do |p|
+    puts "Downloading: #{p.id}"
+    download_review(p)
   end
 end
 
@@ -108,8 +123,8 @@ task :get_camera_attributes => :environment do
   r = res.first_item.search_and_convert('offers/offer')
   @camera.merchant = r.get('merchant/merchantid')
   @camera.condition = r.get('offerattributes/condition')
-  @camera.salepriceint = r.get('offerlisting/price/amount')
-  @camera.salepricestr = r.get('offerlisting/price/formattedprice')
+  @camera.price = r.get('offerlisting/price/amount')
+  @camera.pricestr = r.get('offerlisting/price/formattedprice')
   @camera.iseligibleforsupersavershipping = r.get('offerlisting/iseligibleforsupersavershipping')
   
   #Lookup images
@@ -139,9 +154,9 @@ end
 desc "Get all the Amazon data for the current Printer ASINs"
 task :get_printer_data_for_ASINs => :environment do
   require 'amazon/ecs'
-  Printer.find(:all, :conditions => "instock is null").each do |p|
+  AmazonAll.find(:all).each do |p|#, :conditions => 'scrapedat is null').each do |p|
     if !p.asin.blank?
-      puts 'Processing' + p.asin
+      puts 'Processing: ' + p.asin
       Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
       res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'ItemAttributes')
       r = res.first_item
@@ -183,14 +198,12 @@ task :get_printer_data_for_ASINs => :environment do
       p.productgroup = atts.get('productgroup')
       p.publisher = atts.get('publisher')
       p.specialfeatures = atts.get('specialfeatures')
+      p = interpret_special_features(p) if p.specialfeatures
       p.studio = atts.get('studio')
       p.systemmemorysize = atts.get('systemmemorysize')
       p.systemmemorytype = atts.get('systemmemorytype')
       p.title = atts.get('title')
       p.warranty = atts.get('warranty')
-
-      p = findprice(p)
-      sleep(0.5) #One Req per sec
   
       #Lookup images
       res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'Images')
@@ -204,7 +217,12 @@ task :get_printer_data_for_ASINs => :environment do
       p.imagelurl = r.get('largeimage/url')
       p.imagelheight = r.get('largeimage/height')
       p.imagelwidth = r.get('largeimage/width')
+      
+      p = scrape_details(p)
+      
       p.save!
+      #p = findprice(p)
+      sleep(1+rand()*30) #Be really nice to Amazon!
       end
     end
   end
@@ -214,107 +232,122 @@ desc "Updating Amazon Price"
 task :update_prices => :environment do
   require 'amazon/ecs'
   Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
-  Printer.find(:all).each{|p|#, :conditions => ['updated_at < ?', 1.day.ago]).each {|p|
-    puts 'Processing ' + p.asin
+  $model = Printer
+  $model.find(:all).each{|p|#, :conditions => ['updated_at < ?', 1.day.ago]).each {|p|
+    puts 'Processing ' + p.id.to_s
     p = findprice(p)
     p.save
     sleep(0.5) #One Req per sec
   }
 end
 
-desc "Get real features from Printer special features"
-task :interpret_special_features => :environment do
-  Printer.find(:all, :conditions => 'specialfeatures IS NOT NULL').each do |p|
-    #p = Printer.find(:first, :order => 'rand()', :conditions => 'specialfeatures IS NOT NULL')
-    sf = p.specialfeatures
-    a = sf[3..-1].split('|') #Remove leading nv:
-    features = {}
-    a.map{|l| 
-      c = l.split('^') 
-      features[c[0]] = c[1]
-    }
-    p.ppm = features['Print Speed'].match(/\d+[.]?\d*/)[0] if features['Print Speed']
-    p.ttp = features['First Page Output Time'].match(/\d+[.]?\d*/)[0] if features['First Page Output Time']
-    if features['Resolution']
-      tmp = features['Resolution'].match(/(\d,\d{3}|\d+) ?x?X? ?(\d,\d{3}|\d+)?/)[1,2].compact
-      tmp*=2 if tmp.size == 1
-      p.resolution = tmp.sort{|a,b| 
-        a.gsub!(',','')
-        b.gsub!(',','')
-        a.to_i < b.to_i ? 1 : a.to_i > b.to_i ? -1 : 0
-      }.join(' x ') 
-    end # String drop down style
-    p.duplex = features['Duplex Printing'] # String
-    p.connectivity = features['Connectivity'] # String
-    p.papersize = features['Paper Sizes Supported'] # String
-    p.paperoutput = features['Standard Paper Output'].match(/(\d,\d{3}|\d+)/)[0] if features['Standard Paper Output'] #Numeric
-    p.dimensions = features['Dimensions'] #Not parsed yet
-    p.dutycycle = features['Maximum Duty Cycle'].match(/(\d{1,3}(,\d{3})+|\d+)/)[0].gsub(',','') if features['Maximum Duty Cycle']
-    p.paperinput = features['Standard Paper Input'].match(/(\d,\d{3}|\d+)/)[0] if features['Standard Paper Input'] && features['Standard Paper Input'].match(/(\d,\d{3}|\d+)/) #Numeric
-    #Parse out special features
-    if !features['Special Features'].nil?
-      if features['Special Features'] == "Duplex Printing"
-        features['Special Features'] = nil
-        p.duplex = "Yes" if p.duplex.nil?
-      end
-    end
-    p.special = features['Special Features']
-    #pp features
-    #if features['Dimensions']
-    #  puts features['Dimensions']
-    #puts features['Dimensions'] + " => #{p.itemheight} #{p.itemwidth} #{p.itemlength}"
-    p.save
+desc "Create new printers for new AmazonPrinters"
+task :create_printers => :environment do
+  require 'amazon/ecs'
+  $model = Printer
+  Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
+  AmazonPrinter.find_all_by_product_id(nil, :conditions => ['created_at > ?', 1.day.ago]).each do |p|
+    printer = Printer.new
+    printer = getAtts(printer, p)
+    printer.save
+    p.update_attribute('product_id',printer.id)
+    printer = findprice(printer)
+    printer.save
   end
 end
+
 
 private
 AmazonID = 'ATVPDKIKX0DER'
 
+def interpret_special_features(p)
+  #p = Printer.find(:first, :order => 'rand()', :conditions => 'specialfeatures IS NOT NULL')
+  sf = p.specialfeatures
+  a = sf[3..-1].split('|') #Remove leading nv:
+  features = {}
+  a.map{|l| 
+    c = l.split('^') 
+    features[c[0]] = c[1]
+  }
+  p.ppm = features['Print Speed'].match(/\d+[.]?\d*/)[0] if features['Print Speed']
+  p.ttp = features['First Page Output Time'].match(/\d+[.]?\d*/)[0] if features['First Page Output Time'] && features['First Page Output Time'].match(/\d+[.]?\d*/)
+  if features['Resolution']
+    tmp = features['Resolution'].match(/(\d,\d{3}|\d+) ?x?X? ?(\d,\d{3}|\d+)?/)[1,2].compact
+    tmp*=2 if tmp.size == 1
+    p.resolution = tmp.sort{|a,b| 
+      a.gsub!(',','')
+      b.gsub!(',','')
+      a.to_i < b.to_i ? 1 : a.to_i > b.to_i ? -1 : 0
+    }.join(' x ') 
+    p.resolutionmax = p.resolution.split(' x ')[0]
+  end # String drop down style
+  p.duplex = features['Duplex Printing'] # String
+  p.connectivity = features['Connectivity'] # String
+  p.papersize = features['Paper Sizes Supported'] # String
+  p.paperoutput = features['Standard Paper Output'].match(/(\d,\d{3}|\d+)/)[0] if features['Standard Paper Output'] #Numeric
+  p.dimensions = features['Dimensions'] #Not parsed yet
+  p.dutycycle = features['Maximum Duty Cycle'].match(/(\d{1,3}(,\d{3})+|\d+)/)[0].gsub(',','') if features['Maximum Duty Cycle']
+  p.paperinput = features['Standard Paper Input'].match(/(\d,\d{3}|\d+)/)[0] if features['Standard Paper Input'] && features['Standard Paper Input'].match(/(\d,\d{3}|\d+)/) #Numeric
+  #Parse out special features
+  if !features['Special Features'].nil?
+    if features['Special Features'] == "Duplex Printing"
+      features['Special Features'] = nil
+      p.duplex = "Yes" if p.duplex.nil?
+    end
+  end
+  p.special = features['Special Features']
+  p
+end
+
 def findprice(p)
   #Find the lowest price
-  highestprice = 100000000
-  lowestprice = highestprice
-  lowmerchant = ''
+  highestprice = 1000000000
+  merchants = ["Amazon", "Amazon Marketplace"]
+  lowestprice = Hash[*merchants.zip([highestprice]*merchants.size).flatten]
+  lowmerchant = Hash[*merchants.zip(['']*merchants.size).flatten]
+  lowestentry = Hash[*merchants.zip([nil]*merchants.size).flatten]
   current_page = 1
-  begin
-    res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => 'All', :offer_page => current_page)
-    total_pages = res.total_pages unless total_pages
-    if res.first_item.nil?
-      current_page += 1
-      next
-    end
-    offers = res.first_item.search_and_convert('offers/offer')
-    if offers.nil?
-      current_page += 1
-      next
-    end
-    offers = [] << offers unless offers.class == Array
-    offers.each {|o| 
-      if o.get('offerlisting/price/formattedprice') != 'Too low to display'
+  AmazonPrinter.find_all_by_product_id(p.id).each do |e|
+    begin
+      sleep(2) #Be nice
+      res = Amazon::Ecs.item_lookup(e.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => 'All', :offer_page => current_page)
+      total_pages = res.total_pages unless total_pages
+      if res.first_item.nil?
+        current_page += 1
+        next
+      end
+      offers = res.first_item.search_and_convert('offers/offer')
+      if offers.nil?
+        current_page += 1
+        next
+      end
+      offers = [] << offers unless offers.class == Array
+      offers.each do |o| 
         price = o.get('offerlisting/price/amount').to_i
-        merchant = o.get('merchant/merchantid')
-        if price < lowestprice && merchant != AmazonID
-          lowestprice = price
-          lowmerchant = merchant
+        merchantid = o.get('merchant/merchantid')
+        merchant = merchantid == AmazonID ? "Amazon" : "Amazon Marketplace"
+        if price < lowestprice[merchant]
+          lowestprice[merchant] = price
+          lowestentry[merchant] = e
+          lowmerchant[merchant] = merchantid
         end
       end
-    }
-    current_page += 1
-    sleep(2) #One Req per sec
-  end while (current_page <= total_pages)
-  
-  #Save Amazon Price
-  sleep(1) #Be Nice
-  saveoffer(p,Retailer.find_by_name('Amazon').id,AmazonID)
-  sleep(2) #One Req per sec
-  #Save lowest Marketplace price
-  if lowmerchant.blank?
-    offer = RetailerOffering.find_by_product_id_and_product_type_and_retailer_id(p.id,p.class.name,Retailer.find_by_name('Amazon Marketplace').id)
-    offer.update_attribute(:stock,false) unless offer.nil?
-  else
-    saveoffer(p,Retailer.find_by_name('Amazon Marketplace').id,lowmerchant)
-    sleep(1) #One Req per sec
+      current_page += 1
+      sleep(5) #One Req per sec
+    end while (current_page <= total_pages)
   end
+  sleep(1) #Be Nice
+  #Save lowest prices
+  merchants.each do |merchant|
+    if lowmerchant[merchant].blank?
+      offer = RetailerOffering.find_by_product_id_and_product_type_and_retailer_id(p.id,p.class.name,Retailer.find_by_name(merchant).id)
+      offer.update_attribute(:stock,false) unless offer.nil?
+    else
+      saveoffer(lowestentry[merchant],Retailer.find_by_name(merchant).id,lowmerchant[merchant])
+      sleep(2) #One Req per sec
+    end
+  end
+  
   #Find lowest product price
   os = RetailerOffering.find_all_by_product_id_and_product_type(p.id,p.class.name)
   lowest = highestprice
@@ -323,8 +356,8 @@ def findprice(p)
     os.each do |o| 
       if o.stock && o.priceint && o.priceint < lowest
         lowest = o.priceint
-        p.salepriceint = lowest
-        p.salepricestr = o.pricestr
+        p.price = lowest
+        p.pricestr = o.pricestr
         p.bestoffer = o.id
         p.instock = true
       end
@@ -334,30 +367,29 @@ def findprice(p)
 end
 
 def saveoffer(p,retailer,merchant)
-  puts [p,retailer,merchant].join(' ')
-  res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => merchant)
+  puts [p.product_id,Retailer.find(retailer).name,merchant].join(' ')
+  begin
+    res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => merchant)
+  rescue Exception => exc
+    puts "Error: #{exc.message} for product #{p.asin} and merchant #{merchant}"
+  end
   offer = res.first_item
   #Look for old Retail Offering
-  o = RetailerOffering.find_by_product_id_and_product_type_and_retailer_id(p.id,p.class.name,retailer)
-  if o.nil?
-    o = RetailerOffering.new
-    o.product_id = p.id
-    o.product_type = p.class.name
-    o.retailer_id = retailer
-  else
-    if offer.nil?
-      o.stock = false
-      o.save
+  unless offer.nil?
+    o = RetailerOffering.find_by_product_id_and_product_type_and_retailer_id(p.product_id,$model.name,retailer)
+    if o.nil?
+      o = RetailerOffering.new
+      o.product_id = p.product_id
+      o.product_type = $model.name
+      o.retailer_id = retailer
     elsif o.priceint != offer.get('offerlisting/price/amount')
       #Save old prices only if price has changed
       if o.pricehistory.nil?
-        o.pricehistory = [o.priceUpdate.to_s(:db), o.priceint].to_yaml
+        o.pricehistory = [o.priceUpdate.to_s(:db), o.priceint].to_yaml if o.priceUpdate
       else
-        o.pricehistory = (YAML.load(o.pricehistory) + [o.priceUpdate.to_s(:db), o.priceint]).to_yaml
+        o.pricehistory = (YAML.load(o.pricehistory) + [o.priceUpdate.to_s(:db), o.priceint]).to_yaml if o.priceUpdate
       end
     end
-  end
-  if !offer.nil?
     #Too Low to Display
     if offer.get('offerlisting/price/formattedprice') == 'Too low to display'
       o.toolow = true
@@ -372,6 +404,7 @@ def saveoffer(p,retailer,merchant)
     o.iseligibleforsupersavershipping = offer.get('offerlisting/iseligibleforsupersavershipping')
     o.merchant = merchant
     o.url = 'http://amazon.com/gp/product/'+p.asin+'?tag=optemo-20&m='+merchant
+    o.priceUpdate = Time.now.to_s(:db)
     o.save
   end
 end
@@ -385,4 +418,56 @@ def scrape_hidden_prices(p)
   priceint = price.innerHTML.gsub(/\D/,'').to_i unless price.nil?
   sleep(1+rand()*30) #Be nice to Amazon
   priceint
+end
+
+def getAtts(n, o)
+  cols = $model.column_names.delete_if{|c|c.index(/^id|updated_at|created_at|manufacturerproducturl$/)}
+  cols.each do |c|
+    n.send((c+'=').intern, o.send(c.intern))
+  end
+  n
+end
+
+def download_review(p)
+  current_page = 1
+  a = nil
+  begin
+    a = AmazonPrinter.find_by_product_id_and_product_type(p.id,p.class.name)
+  rescue
+    return
+  end
+  return if a.nil?
+  puts a.asin
+  averagerating,totalreviews,totalreviewpages = nil
+  loop do
+    begin
+      res = Amazon::Ecs.item_lookup(a.asin, :response_group => 'Reviews', :condition => 'New', :merchant_id => 'All', :review_page => current_page)
+    rescue Exception => exc
+      puts "Error: #{exc.message} for product #{p.asin} and merchant #{merchant}"
+    end
+    result = res.first_item
+    #Look for old Retail Offering
+    unless result.nil?
+      averagerating ||= result.get('averagerating')
+      totalreviews ||= result.get('totalreviews').to_i
+      totalreviewpages ||= result.get('totalreviewpages').to_i
+      reviews = result.search_and_convert('review')
+      reviews = Array(reviews) unless reviews.class == Array #Fix single and no review possibility
+      reviews.each do |r|
+        r = Review.new(r.get_hash.merge({'product_type' => a.product_type, 'product_id' => a.product_id, "source" => "Amazon"}))
+        r.save
+      end
+    else
+      return
+    end
+    current_page += 1
+    break if current_page > totalreviewpages
+    sleep(2) #Be nice to Amazon
+  end
+  a.averagereviewrating = averagerating
+  a.totalreviews = totalreviews
+  a.save
+  p.averagereviewrating = averagerating
+  p.totalreviews = totalreviews
+  p.save
 end

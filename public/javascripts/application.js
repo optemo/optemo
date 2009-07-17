@@ -28,7 +28,11 @@ function saveit(id)
 		$("#already_added_msg").attr("style","display:block");
 	}else{
 		// Update just the savebar_content div after doing get on /saveds/create/[id here].
-		$.get('/saveds/create/'+id, function(data){ $(data).appendTo('#savebar_content');});
+		$.get('/saveds/create/'+id, function(data){ 
+			$(data).click(function() {
+				savedProductRemoval($(".deleteX", this));
+			}).appendTo('#savebar_content');
+		});
 		$("#already_added_msg").attr("style","display:none");
 	}
 	
@@ -38,6 +42,19 @@ function saveit(id)
 	// 2. hide 'add stuff here' message
 	$("#deleteme").attr("style","display:none");
 	
+}
+
+function savedProductRemoval(obj)
+{
+	// itemId = Pick product Id of deleted item from 
+	// otherItems = [product ids of other Saved items]
+	itemId = $(obj).attr('data-name');
+	otherItems = buildOtherItemsArray(".deleteX", "data-name", itemId);
+	source = "unsave";
+	if(otherItems.length != 0)
+	{	
+		$.get('/products/buildrelations?source='+ source +'&itemId='+ itemId +'&otherItems='+ otherItems);
+	}
 }
 
 // When you click the X on a saved product:
@@ -54,10 +71,44 @@ function remove(id)
 	}
 }
 
+function removeFromComparison(id)
+{
+	itemId = id;
+	otherItems = buildOtherItemsArray(".deleteXComp", "data-name", itemId);
+	source = "unsaveComp";
+	if(otherItems.length != 0)
+	{	
+		$.get('/products/buildrelations?source='+ source +'&itemId='+ itemId +'&otherItems='+ otherItems);
+	}
+	remove(id);
+	window.location.href = "/compare";
+}
+
 function removeBrand(str)
 {
 	$('#myfilter_Xbrand').attr('value', str);
 	$('#filter_form').submit();
+}
+
+function submitPreferences()
+{
+	$('#preference_form').submit();
+}
+
+function buildOtherItemsArray(root, attr_name, itemId)
+// To populate the otherItems array, that stores all objects with which a binay relation has to be created
+{
+	var otherItems = new Array();
+	i = 0;
+	$(root).each(function()
+	{
+		if($(this).attr(attr_name) != itemId)
+		{
+			otherItems[i] = $(this).attr(attr_name);
+			i = i + 1;
+		}
+	});
+	return otherItems;
 }
 
 $(document).ready(function() {
@@ -108,9 +159,58 @@ $(document).ready(function() {
 		$('a:last', this).html('<div class="sliderlabel">'+curmax+'</div>')
 		histogram($(this).siblings('.hist')[0],(sessmin-rangemin)/(rangemax-rangemin),(sessmax-rangemin)/(rangemax-rangemin));
 	});
-
-	sum = 0.0
 	
+	$(".deleteX").click(function() {
+		savedProductRemoval(this);
+	});
+	
+	$(".simlinks").click(function() {
+		itemId = $(this).attr('name');
+		// product ids of all other items displayed
+		otherItems = buildOtherItemsArray(".bottombar", "name", itemId);
+		// The source parameter helps identify weight
+		if(otherItems.length != 0)
+		{	
+			$.get('/products/buildrelations?source=sim&itemId=' + itemId + '&otherItems=' + otherItems);	
+		}
+		// On Safari, only one of the two(javascript & hyperlink) was getting called. 
+		// To resolve that problem, redirect to the href and disable the hyperlink
+		window.location = $(this).attr('href');
+		return false;
+	});
+	
+	$(".save").click(function() { 
+		// product id of the chosen item
+		itemId = $(this).attr('itemId');
+		// Check that item has not already been saved
+		if(null != document.getElementById('c'+itemId))
+		{
+			return;
+		}		
+		// product ids of all other items displayed
+		var otherItems = new Array(8);
+		i = 0;
+		$(".save").each(function()
+		{
+			if($(this).attr('itemId') != itemId)
+			{
+				otherItems[i] = $(this).attr('itemId');
+				i = i + 1;
+			}
+		});
+		// The source parameter helps identify weight
+		if(otherItems.length != 0)
+		{	
+			$.get('/products/buildrelations?source=saveit&itemId=' + itemId + '&otherItems=' + otherItems);
+		}
+	});
+	
+	$(".usecase").click(function() { 
+		name = $(this).attr('data-name');
+		$.get('/products/select/'+name,function() {window.location = $(".usecase").attr('href');});
+		return false;
+	});
+	sum = 0.0
 	$(".preferenceSlider").each(function() {
 		prefVal = parseInt($(this).attr('pref-value'));
 		$(this).slider({
@@ -119,29 +219,27 @@ $(document).ready(function() {
 			step: 1,
 			// value: (Get value of preferences from session) 
 			value: prefVal,
-			// setting slide to false can prevent user from sliding further. This can constrain the sum of values of sliders to be <= 1
+			start: function(e, ui)
+			{
+			},
+			// On slide, update the value of the text displayed under handle 
 			slide: function(e,ui)
 			{
-				$('.sliderlabel', this).html(ui.value/100);
-				// ToDo:
-				// Put a check here to ensure that the 4 preferences always sum up to 1.
-				/*$('.preferenceSlider').each(function(){
-					sum = sum + $(this).slider('option', 'value');					
-				})				
-				if (sum >= 100)
-				{
-					currValue = ui.value;
-					autoVal = currValue-sum+100;
-					//alert("this val should be= " + newVal);
-					$('this').slider('option', 'value', autoVal);
-				}
-				sum = 0.0*/			
+				$('.sliderlabel', this).html(" ");
 			},
+			// When stopped sliding, check for condition of sum of preferences <= 1
 			stop: function(e,ui) 
-			{
-					$(this).attr('pref-value',ui.value);					
-					$('#preference_form').submit();
-					
+			{	
+				sum = 0
+				$('.preferenceSlider').each(function(){
+					sum = sum + $(this).slider('option', 'value');					
+				})
+				
+				$('.preferenceSlider').each(function(){
+					normValue = ($(this).slider('option', 'value')/sum);	// normValue is upto many decimal places
+					$('.sliderlabel', this).html(normValue.toFixed(2));		// Display only upto 2 decimal places
+					$(this).siblings('.prefValue').attr('value',normValue);
+				})				
 			}
 		});
 		$('a', this).html('<div class="sliderlabel">' + prefVal/100 + '</div>')

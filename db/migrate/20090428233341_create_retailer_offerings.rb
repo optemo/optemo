@@ -18,7 +18,7 @@ class CreateRetailerOfferings < ActiveRecord::Migration
       t.string :availability
       t.datetime :availabilityUpdate
       t.boolean :iseligibleforsupersavershipping
-      t.string :url
+      t.text :url
       t.boolean   :active
       t.datetime  :activeUpdate
       t.boolean   :freeShipping

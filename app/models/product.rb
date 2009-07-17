@@ -75,7 +75,7 @@ module ProductProperties
   end
   
   def descurl
-    [id,brand,model].join('-')
+    "/products/show/"+[id,brand,model].join('-')
   end
   
   def display(attr)
@@ -93,20 +93,16 @@ module ProductProperties
         when /resolution/: ' dpi'
         when /focal/: ' mm.'
         when /ttp/: ' seconds'
-        when /price/: 
-# => ToDo: Add code here to display commas in the price
-#          dataString = data.to_s % 3
-#          i = dataString.length
-#          while i <= data.to_s.length
-#           data = data[0..i] + ',' + data[i..data.length]
-#            i = i+4
-#          end
-          data = data/100.to_f
-          data = '$ ' + data.to_s
-          ''
         else ''
       end
     end
     data.to_s+ending
+  end
+  
+  def myvalid?
+    self.instock &&
+    self.class::ContinuousFeatures.map{|f|!send(f).nil?}.inject(true){|s,n|s&&n} && #No nil values
+    self.class::ContinuousFeatures.map{|f|send(f)!=0}.inject(true){|s,n|s&&n} && #No zero values
+    self.class::BinaryFeatures.map{|f|!send(f).nil?}.inject(true){|s,n|s&&n} #No nil values
   end
 end

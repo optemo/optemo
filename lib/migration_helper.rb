@@ -7,6 +7,7 @@ module MigrationHelper
     t.string  :pricestr
     t.boolean :iseligibleforsupersavershipping
     t.integer :bestoffer
+    t.string  :pricehistory
     
     t.string  :imagesurl
     t.integer :imagesheight
@@ -19,6 +20,8 @@ module MigrationHelper
     t.integer :imagelwidth
     
     t.boolean :instock
+    t.float   :averagereviewrating
+    t.integer :totalreviews
     t.timestamps
   end
   

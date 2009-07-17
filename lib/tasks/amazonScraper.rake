@@ -1,10 +1,10 @@
 require 'rubygems'
-require 'scrubyt'
 
 desc "Scraping Amazon"
 task :scrape_amazon => :environment do
-  Printer.fewfeatures.find(:all, :conditions => ["scrapedat < ? and nodetails IS NOT TRUE",30.minutes.ago]).each { |p|
-    scrape_details(p)
+  AmazonPrinter.fewfeatures.find(:all, :conditions => ["created_at > ? and nodetails IS NOT TRUE",1.day.ago]).each { |p|
+    p = scrape_details(p)
+    p.save
     sleep(1+rand()) #Be nice to Amazon
     sleep(rand()*30) #Be really nice to Amazon!
   }  
@@ -13,7 +13,7 @@ end
 desc "Scraping Amazon"
 task :scrape_printer => :environment do
   #printer = Printer.fewfeatures.find(:first, :order => 'rand()')
-  printer = Printer.find_by_asin('B00292BV96')
+  printer = AmazonPrinter.find_by_asin('B00292BV96')
   scrape_details(printer).attributes.each_pair{|k,v| puts k + ": "+ v.to_s}
   puts printer.asin
 end
@@ -29,8 +29,7 @@ def scrape_details(p)
     sesh.click_link('See more technical details')
   rescue
     p.nodetails = true
-    p.save
-    return
+    return p
   end
   doc = Nokogiri::HTML(sesh.response.body)
   array = doc.css('.content ul li')
@@ -56,7 +55,7 @@ def scrape_details(p)
       p.ttp = value.match(/\d+(.\d+)?/)[0].to_f
       #puts 'TTP:'+p.ttp.to_s
     end
-    if key[/maximumsheetcapacity|standardpapercapacity/]
+    if key[/sheetcapacity|standardpapercapacity/]
       p.paperinput = value.match(/\d+/)[0].to_i unless !p.paperinput.nil? && p.paperinput > value.to_i #Keep largest value
       #puts 'Paper Input:'+p.paperinput.to_s
     end
@@ -69,6 +68,7 @@ def scrape_details(p)
           b.gsub!(',','')
           a.to_i < b.to_i ? 1 : a.to_i > b.to_i ? -1 : 0
         }.join(' x ')
+        p.resolutionmax = p.resolution.split(' x ')[0]
       end
     end
     if key[/printerinterface/] || (key[/connectivitytechnology/] && value != 'Wired')
@@ -111,7 +111,7 @@ def scrape_details(p)
   }
   
   p.scrapedat = Time.now
-  p.save
+  p
 end
 
 require 'open-uri'

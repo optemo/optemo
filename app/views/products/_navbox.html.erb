@@ -2,36 +2,32 @@
 <div id="box<%=i%>" class="borderbox">
 	<div class='title'><%= cluster.description(@session) %></div>
 	<% if !cluster.representative(@session).imagemwidth.blank? %>
-		<%= image_tag cluster.representative(@session).imagemurl, :height => 100, :onClick => "fadeout(#{cluster.representative(@session).id});", :class => "productimg" %>
+		<%= image_tag cluster.representative(@session).imagemurl, :height => 100, :onClick => "fadeout(#{cluster.representative(@session).id});", :class => "productimg", :alt => cluster.representative(@session).smlTitle %>
 	<%end%>
 
-	<p><a href="/products/show/<%=cluster.representative(@session).descurl%>" onClick="fadeout(<%=cluster.representative(@session).id%>);return false;">
+	<p><a href="<%=cluster.representative(@session).descurl%>" onClick="fadeout(<%=cluster.representative(@session).id%>);return false;">
 		<span class="easylink"><%= cluster.representative(@session).smlTitle %></span>
 	</a></p>
 	
-	<p><%= cluster.representative(@session).pricestr %>  <%= link_to "&nbsp;Save it&nbsp;", "javascript:saveit(#{cluster.representative(@session).id})", {:class => 'save'}%>
+	<p><%= cluster.representative(@session).pricestr %>  <%= link_to "&nbsp;Save it&nbsp;", "javascript:saveit(#{cluster.representative(@session).id})", {:class => 'save', :itemId => "#{cluster.representative(@session).id}" } %>
 		<%# Randomized Product Reviews %>
 		<%# rand > 0.5 ? (rand > 0.5 ? image_tag('5star.gif') : image_tag('3star.gif')) : image_tag('4star.gif') %>
 	</p>
-	<% if false && RAILS_ENV == 'development' && @c.clustergraph && @c.clustergraph[i] %>
+	<% if false && RAILS_ENV == 'development' && cluster.clustergraph && cluster.clustergraph[i] %>
 	<div class="clustergraph">
-		<% @c.clustergraph[i].each do |u| %>
+		<% cluster.clustergraph[i].each do |u| %>
 		<% if u.length == 2 %>
 		<div class="featurebar" data-left="<%= u[0] %>" data-width="<%= u[1] %>"></div>
 		<% end %>
 		<% end %>
 	</div>
 	<% end %>
-	<div class="bottombar">
-		<%= sim_link(cluster,i) %><!--# remove this
-		<div class="clusterfeatures">
-		<%# if !@c.desc[i].nil? %>
-		<%# @c.desc[i].each do |item| %>
-		    <%# next if item[1] == 0 || item[0] == 'cluster_count' %>
-			<%# link_to "#{item[0]}#{item[1]>0 ? image_tag('up.gif') : image_tag('down.gif')}", {:action => "#{item[0]}"}, {:class => "#{item[1]>0 ? 'up' : 'down'}"}%>
-		<%# end %>
-		<%# end %>
-		</div>-->
+	<!--<div class="clustergraph">
+		<%# cluster.utility(@session) %>
+	</div>-->
+	<div class="bottombar" name ="<%= cluster.representative(@session).id %>">
+		<%= sim_link(cluster,i, cluster.representative(@session).id) %>
 	</div>
+	
 </div>
 </div>

@@ -10,7 +10,7 @@ class SearchController < ApplicationController
     if myfilter.nil?
       #No post info passed
       flash[:error] = "Search could not be completed."
-      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+@session.oldclusters.map{|c|c.id}.join('/')
+      redirect_to "/#{$model.urlname}/compare/"+@session.oldclusters.map{|c|c.id}.join('-')
     else
       #Allow for multiple brands
       myfilter = multipleBrands(myfilter)
@@ -18,10 +18,10 @@ class SearchController < ApplicationController
       clusters = mysession.clusters
       unless clusters.empty?
         mysession.commit
-        redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.map{|c|c.id}.join('/')
+        redirect_to "/#{$model.urlname}/compare/"+clusters.map{|c|c.id}.join('-')
       else
         flash[:error] = "No products found."
-        redirect_to "/#{session[:productType].pluralize.downcase}/list/"+@session.oldclusters.map{|c|c.id}.join('/')
+        redirect_to "/#{$model.urlname}/compare/"+@session.oldclusters.map{|c|c.id}.join('-')
       end
     end
   end
@@ -29,31 +29,31 @@ class SearchController < ApplicationController
   def find
     @session = Session.find(session[:user_id])
     sphinx = searchSphinx(params[:search])
-    product_ids = sphinx.results.delete_if{|r|r.class.name != @session.product_type || !r.myvalid?}.map{|p|p.id}
+    product_ids = sphinx.results.delete_if{|r|r.class != $model || !r.myvalid?}.map{|p|p.id}
     if product_ids.length == 0
       flash[:error] = "No products were found"
-      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+params[:path_info].join('/')
+      if request.referer.nil?
+        redirect_to "/#{$model.urlname}"
+      else
+        redirect_to request.referer
+      end
     else
       @session.searchterm = params[:search]
       @session.searchpids = product_ids.map{|id| "product_id = #{id}"}.join(' OR ')
       @session.save
-      cluster_ids = product_ids.map{|p| $nodemodel.find_by_product_id(p, :order => 'cluster_id').cluster_id}
-      clusters = @session.fillDisplay(cluster_ids.uniq.sort[0..8].compact.map{|c|$clustermodel.find(c)})
-      redirect_to "/#{session[:productType].pluralize.downcase}/list/"+clusters.map{|c|c.id}.join('/')
+      current_version = $clustermodel.last.version
+      cluster_ids = product_ids.map{|p| $nodemodel.find_by_product_id_and_version(p, current_version, :order => 'cluster_id').cluster_id}
+      clusters = cluster_ids.uniq.sort[0..8].compact
+      redirect_to "/#{$model.urlname}/compare/"+clusters.join('-')
     end
   end
-  
-  def preference
-    #@session.features.send("#{val}_pref".intern)
-    
-  end
-  
+   
   def delete
     @session = Session.find(session[:user_id])
     @session.searchterm = ""
     @session.searchpids = ""
     @session.save
-    redirect_to "/#{session[:productType].pluralize.downcase}/"
+    redirect_to "/#{$model.urlname}/"
   end
   
   private

@@ -1,6 +1,6 @@
-set :application, "optemo_site"
+set :application, "laserprinterhub"
 set :repository,  "git@jaguar:site.git"
-set :domain, "jaguar"
+set :domain, "optemo"
 set :branch, "staging"
 
 # If you aren't deploying to /u/apps/#{application} on the target
@@ -30,6 +30,11 @@ namespace :passenger do
   end
 end
 
+desc "Reindex search index"
+task :reindex do
+  sudo "rake -f #{current_path}/Rakefile ultrasphinx:index RAILS_ENV=production"
+end
+
 desc "Compile C-Code"
 task :compilec do
   run "cp -rf #{current_path}/lib/c_code/clusteringCodeLinux/* #{current_path}/lib/c_code/clusteringCode"
@@ -44,7 +49,6 @@ task :serversetup do
 end
 
 after :deploy, "serversetup"
-after :serversetup, "compilec"
-after :compilec, "passenger:restart"
+after :serversetup, "passenger:restart"
 
 

@@ -5,6 +5,8 @@ namespace :printer_test do
   include PrinterTestAsserts
 
   # ------------------- TESTING ALGORITHMS ---------------------#
+  desc "EVERYTHING!!!"
+  task :all => [:sliders,:brand_selector,:search,:browse_similar]
   
    desc 'Run all tests.'
    task :all => [:tricky, :sliders, :browse_similar, :search, :brand_selector, :random, :random_nojava]

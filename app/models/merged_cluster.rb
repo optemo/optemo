@@ -19,6 +19,13 @@ class MergedCluster
     @clusters.map{|c|c.id}.join('+')
   end
   
+  def parent_id
+    @clusters.map{|c| c.parent_id}.sort[0]
+  end
+  
+  def layer
+    @clusters.map{|c| c.layer}.sort[0]
+  end    
   #The subclusters
   def children(session)
     @clusters
@@ -90,5 +97,9 @@ class MergedCluster
   
   def clearCache
     @clusters.each{|c|c.clearCache}
+  end
+  
+  def utility(session)
+    @clusters.map{|c|c.utility(session)}.sum/size(session)
   end
 end

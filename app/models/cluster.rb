@@ -57,7 +57,7 @@ module Cluster
     end
     @rep
   end
-  
+
   def self.filterquery(session)
     fqarray = []
     filters = Cluster.findFilteringConditions(session)
@@ -129,5 +129,9 @@ module Cluster
     @rep = nil
     @range = nil
     @children = nil
+  end
+  
+  def utility(session)
+    nodes(session).map{|n|n.utility}.sum/size(session)
   end
 end

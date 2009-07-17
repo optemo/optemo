@@ -1,0 +1,11 @@
+#Be sure to update the global declaration DefaultUses when making changes here
+corporate:
+       printserver:             1
+       paperinput_min:          800
+       ppm_min:                 30
+small_office:
+       printserver:             1
+home_office:
+       itemwidth_max:           2000
+photography:
+       resolutionmax_min:       1200
