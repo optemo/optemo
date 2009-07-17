@@ -2,6 +2,7 @@ set :application, "staging"
 set :repository,  "git@jaguar:site.git"
 set :domain, "jaguar"
 set :branch, "staging"
+set :user, 'jan'
 
 # If you aren't deploying to /u/apps/#{application} on the target
 # servers (which is the default), you can specify the actual location
@@ -22,14 +23,6 @@ role :db,  domain, :primary => true
 ############################################################
 #	Passenger
 #############################################################
-
-namespace :passenger do
-  desc "Restart Application"
-  task :restart do
-    run "touch #{current_path}/tmp/restart.txt"
-  end
-end
-
 desc "Compile C-Code"
 task :compilec do
   run "cd #{current_path}/lib/c_code/clusteringCodes/ && make hCluster"
@@ -41,9 +34,18 @@ task :serversetup do
   run "cd #{current_path}/config              && cp -f database.yml.deploy database.yml"
   run "cd #{current_path}/config/ultrasphinx   && cp -f development.conf.deploy development.conf && cp -f production.conf.deploy production.conf"
 end
-
+namespace :deploy do
+desc "Sync the public/assets directory."
+  task :assets do
+    system "rsync -vr --exclude='.DS_Store' public/system #{user}@#{domain}:#{shared_path}"
+  end
+  desc "Restart Application"
+  task :restart do
+    run "touch #{current_path}/tmp/restart.txt"
+  end
+end
 after :deploy, "serversetup"
 after :serversetup, "compilec"
-after :compilec, "passenger:restart"
+after :compilec, "deploy:restart"
 
 
