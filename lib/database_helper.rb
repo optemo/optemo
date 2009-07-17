@@ -2,6 +2,14 @@ module DatabaseHelper
   
   $general_ignore_list = ['id','created_at','updated_at']
   
+  # Should return itself and any other matching printers.
+  def match_printer_to_printer ptr  
+    makes = [nofunnychars(ptr.brand)].delete_if{ |x| x.nil? or x == ""}
+    modelnames = [nofunnychars(ptr.model),nofunnychars(ptr.mpn)].delete_if{ |x| x.nil? or x == ""}
+    
+    return match_rec_to_printer makes, modelnames
+  end
+  
   def match_rec_to_printer rec_makes, modelnames
     matching = []
     makes = rec_makes
