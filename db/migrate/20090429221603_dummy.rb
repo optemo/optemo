@@ -1,10 +1,10 @@
 class Dummy < ActiveRecord::Migration
   def self.up
-    add_column :amazon_printers, :product_id, :integer
+    add_column :newegg_offerings, :url, :text
   end
 
   def self.down
-    #remove_column :cameras, :availability
+    remove_column :newegg_offerings, :url
     #remove_column :printers, :availability
   end
 end

@@ -2,6 +2,8 @@
 namespace :printer_test do   
 
   # ------------------- TESTING ALGORITHMS ---------------------#
+  desc "EVERYTHING!!!"
+  task :all => [:tricky,:sliders,:brand_selector,:search,:browse_similar,:random]
   
   desc 'A series of clever moves to get back button errors.'
   task :tricky => :environment do
@@ -23,73 +25,6 @@ namespace :printer_test do
         }
       }
       close_log
-  end
-  
-  desc 'Ignore me please.'
-  task :sandbox => :environment do
-    setup 'sandbox'
-    #this works
-    #puts @sesh.current_url
-    #@sesh.within('#header') do |scope| scope.click_link('LaserPrinterHub.com') end
-    #puts @sesh.current_url
-    
-    # This works
-    #@sesh.within('.navigator_box:nth-of-type(2)') do |scope| scope.dom end
-    
-    
-    #@sesh.visit('file:///Users/maria/Desktop/sandbox/index.html')
-    
-    #@sesh.visit('file:///Users/maria/Desktop/sandbox/links_w_javascript.html'
-  
-   # begin
-    #  @sesh.click_link "2"
-   # rescue Exception =>e
-  #    puts "Exception on link 2:" + e.message.to_s + e.type.to_s
-  #  end
-  #  
-  #  begin
-  #    @sesh.click_link "1"
-  #  rescue Exception =>e
-  #    puts "Exception on link 1:" + e.message.to_s + e.type.to_s
-  #  end
-  #  
-  #  begin
-  #    @sesh.visit 'alert("Works")'
-  #  rescue Exception =>e
-  #    puts "Exception on link 1:" + e.message.to_s + e.type.to_s
-  #  end
-    
-    
-    #@sesh.click_link 'Save it'
-    #@sesh.visit 'javascript:saveit(227)'
-    
-    
-    
-   # test_add_brand 1
-    #puts @sesh.num_brands_selected
-    
-     
-    #@sesh.click_link 'Remove'
-    #@sesh.visit "javascript:removeBrand('Brother');"
-      
-    #Try this
-    #@sesh.within('.navigator_box:nth-of-type(2)') do |scope| scope.click_link "Save it" end
-    
-   # puts @sesh.num_saved_items.to_s + " saveds"
-   # test_add_brand 1
-    #test_add_brand 2
-   # puts @sesh.num_brands_selected
-   # s
-    # Try this
-   # @sesh.click_link 'Remove'
-    
-   # puts @sesh.num_brands_selected
-    
-    # Gets me the last thing
-   # @sesh.within('.selected_brands') do |scope| puts scope.dom end
-    
-    # Gives errors WTF WTF !!!!
-    #@sesh.within('.selected_brands:nth-of-type(1)') do |scope| puts scope.dom end
   end
   
   desc "Test the sliders."

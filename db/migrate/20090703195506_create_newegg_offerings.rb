@@ -6,26 +6,30 @@ class CreateNeweggOfferings < ActiveRecord::Migration
 
       t.timestamps
       
-      t.string    :item_number  # Map to Newegg Printer
+      t.integer   :printer_id   # The NeweggPrinter entry it links to
+      t.string    :item_number  # Item number assigned by Newegg
       
-     # t.integer :product_id     # Do not set this!
-     # t.string :product_type # printer for all of them
+      # TODO Repetitive because NeweggPrinter (to which this links) already has these two:
+      t.integer   :product_id     # matches the Printer entry id
+      t.string    :product_type # printer for all of them
       
-      t.integer :retailer_id  # TODO: 2 difft retailers, Newegg (id=4) 
-                              # and NeweggRefurbished (id=5).
+      t.integer   :offering_id  # Matches the Offering entry id
       
-      t.integer :priceint    
-      t.string :pricestr      
-      t.boolean :toolow       
-      t.datetime :priceUpdate 
+      t.integer   :retailer_id  # 2 difft retailers, Newegg (id=4) 
+                              # and NeweggRefurbished (id=6).
       
-      
-      t.boolean :stock        
-      t.string :availability  
-      t.datetime :availabilityUpdate 
+      t.integer   :priceint    
+      t.string    :pricestr      
+      t.boolean   :toolow       
+      t.datetime  :priceUpdate 
       
       
-      t.string    :url          
+      t.boolean   :stock        
+      t.string    :availability  
+      t.datetime  :availabilityUpdate 
+      
+      
+      t.text      :url          
       t.boolean   :active     
       t.datetime  :activeUpdate 
       t.boolean   :freeShipping
@@ -34,6 +38,6 @@ class CreateNeweggOfferings < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :newegg_offerings
+    drop_table    :newegg_offerings
   end
 end

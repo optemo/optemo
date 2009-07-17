@@ -16,6 +16,13 @@ class CreateNeweggPrinterScrapedDatas < ActiveRecord::Migration
       t.float :listprice
       t.string :imageurl
        
+      t.boolean :recertified
+      t.boolean :openbox
+      t.string :shipping
+      t.string :title
+      t.string :manufacturerproducturl
+      t.string :stock
+       
       t.string :model
       t.string :recommendeduse  
       t.string :dimensions
