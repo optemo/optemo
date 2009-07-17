@@ -24,7 +24,11 @@ role :db,  domain, :primary => true
 #	Passenger
 #############################################################
 
-namespace :passenger do
+namespace :deploy do
+desc "Sync the public/assets directory."
+  task :assets do
+    system "rsync -vr --exclude='.DS_Store' public/system #{user}@#{domain}:#{shared_path}"
+  end
   desc "Restart Application"
   task :restart do
     run "touch #{current_path}/tmp/restart.txt"
@@ -51,6 +55,6 @@ end
 
 after :deploy, "serversetup"
 #after :serversetup, "compilec"
-after :serversetup, "passenger:restart"
+after :serversetup, "deploy:restart"
 
 
