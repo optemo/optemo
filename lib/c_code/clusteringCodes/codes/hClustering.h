@@ -327,9 +327,13 @@ if (layer > 1){
 void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* conFeatureNames, string* boolFeatureNames, 
 					sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *res3, sql::Statement *stmt, string productName, int version){
 	
-	string command;
+	string command, command2;
+	string capProductName = productName;
+	capProductName[0] = capProductName[0] - 32;
+	
 	int cluster_id;
 	int layer;
+	double utility;
 //	for (int l=1; l<layer; l++){
 	   
 		command = "SELECT id, layer from ";
@@ -369,7 +373,7 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 		    while(res2->next()){			
 			command = "INSERT INTO ";
 			command += productName;
-			command += "_clusters (version, layer, parent_id, cluster_size,price_min, price";
+			command += "_clusters (version, layer, parent_id, cluster_size,cached_utility, price_min, price";
 				for (int i=1; i<conFeatureN; i++){
 					command += "_max, ";
 					command += conFeatureNames[i];
@@ -393,6 +397,12 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 				command += parent_idStream.str();
 				command += ", ";
 				command += clusterSizeStream.str();
+				
+				
+				ostringstream auStr; 
+				auStr << res2->getDouble("utility");
+				command += ", ";
+				command += auStr.str();
 				
 				for (int f=0; f<conFeatureN; f++){
 						command += ", ";
@@ -425,7 +435,7 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 				}
 			command = "INSERT INTO ";
 			command += productName;
-			command += "_nodes (version, cluster_id, product_id";
+			command += "_nodes (version, cluster_id, product_id, utility";
 			for (int i=0; i<conFeatureN; i++){
 				command += ", ";
 				command += conFeatureNames[i];
@@ -444,6 +454,37 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 			ostringstream pIdStream;
 			pIdStream << res2->getInt("product_id");
 			command += pIdStream.str();
+			command += ", ";
+			
+			//utility
+			command2 = "SELECT ";
+			command2 += conFeatureNames[0];
+		
+			for (int f=1; f<conFeatureN; f++){
+				command2 += ", ";
+				command2 += conFeatureNames[f]; 
+			}	
+			command2 += " from factors where (product_type= \'";
+			
+			command2 += capProductName;
+			command2 += "\' and product_id=";
+			command2 += pIdStream.str();
+			command2 += ");";
+	
+			res3 = stmt->executeQuery(command2);
+			utility = 0.0;
+			if (res3->rowsCount()>0){
+				res3->next();
+				for (int f=0; f<conFeatureN; f++){
+					utility += res3->getDouble(conFeatureNames[f]);
+				}	
+			}
+			
+			ostringstream ustr; 
+			ustr << utility;
+			command +=  ustr.str();	
+			
+			
 			for (int f=0; f<conFeatureN; f++){
 				command += ", ";
 				ostringstream feaVStream;
