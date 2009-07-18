@@ -3,6 +3,13 @@ require 'nokogiri'
 
 module PrinterPageHelpers
   
+  @@uses = {0 => "All-Purpose", 1 =>"Home Office", \
+    2 => "Small Office", 3 => "Corporate Use", 4 => "Photography"}
+  
+  def self.uses
+    return @@uses
+  end
+  
   def get_init_values
      
      @slider_min_names= []
@@ -34,6 +41,12 @@ module PrinterPageHelpers
      
   end
    
+   def get_detail_page_link which_product
+     @box_hrefs = doc.xpath("(//a[span[@class='easylink']]/@href)[#{which_product}]").to_s
+     return nil unless @box_hrefs
+     return @box_hrefs
+   end
+   
    def num_sliders
      return @slider_min_names.length
    end
@@ -56,6 +69,7 @@ module PrinterPageHelpers
    
     def current_slider_min which_slider
       x= doc.css('div[data-startmin]')[which_slider]
+      return nil unless x
       return x.attribute('data-startmin').to_s.to_f
     end
    
@@ -68,7 +82,7 @@ module PrinterPageHelpers
     all_brands = doc.css("#myfilter_brand option")
     all_brands.each_with_index { |el,i| return i if el.attribute('value').to_s == brandname }
     return -1
-  end
+   end
    
    def brand_name which_brand
      brand_el = doc.css("#myfilter_brand option")[which_brand]
@@ -87,6 +101,7 @@ module PrinterPageHelpers
    def brand_selected? which_brand
       if num_brands_selected > 0
         selected_brands = doc.css('.selected_brands')
+        return false unless selected_brands
         selected_brands.each do |brand_el| 
           if brand_el.content.to_s.match(brand_name(which_brand))
             return true
@@ -103,7 +118,9 @@ module PrinterPageHelpers
 
    # Reads the number of printers being browsed from the page.
    def num_printers
-      leftbar = doc.css("#leftbar").first.content.to_s
+      leftbar_el =get_el doc.css("#leftbar")
+      return 0 if leftbar_el.nil?
+      leftbar = leftbar_el.content.to_s
       printer_phrase = leftbar.match('Browsing \d+ Printers').to_s
       num_printers = printer_phrase.match('\d+').to_s
       return num_printers.to_i
@@ -131,7 +148,9 @@ module PrinterPageHelpers
    
    # Reads the Session ID from the page.
    def session_id
-      leftbar = doc.css("#leftbar").first.content.to_s
+      leftbar_el =get_el doc.css("#leftbar")
+      return nil if leftbar_el.nil?
+      leftbar = leftbar_el.content.to_s
       session_phrase = leftbar.match('Session id: \d+').to_s
       sesh_id = session_phrase.match('\d+').to_s.to_i
       sesh_id ||= -1
@@ -141,9 +160,12 @@ module PrinterPageHelpers
    # Tells you if there is a "No printers selected" message displayed.
    def no_printers_found_msg?
      # Message is in the first span tag in the div with id main.
-     msg_span = doc.css(".main span").first.content.to_s
+     msg_span_el = get_el doc.css(".main span")
+     return false if msg_span_el.nil?
+     msg_span = msg_span_el.content.to_s
+     
      # TODO we should give this span tag an id! 
-     printer_phrase = msg_span.match('No products ').to_s
+     printer_phrase = msg_span.match('No products').to_s
      return (printer_phrase.length > 0)
    end
    
@@ -151,20 +173,32 @@ module PrinterPageHelpers
      return @total_printers
    end
 
+   def home_page?
+     return true if self.current_url == 'http://localhost:3000/'
+     return true if self.current_url == 'http://localhost:3000/printers/'
+     bd_div_content = get_bd_div_text
+     welcome_msg = bd_div_content.match("Find, compare and buy the right laser printer")
+     return !welcome_msg.nil?  
+   end
+   
+   def get_bd_div_text
+     bd_div = doc.css('div.bd').first
+     if(bd_div == nil) 
+       bd_div_content = '' 
+       report_error 'No bd_div in page! Malformed page.'
+     else 
+       bd_div_content = bd_div.content.to_s 
+     end
+     return bd_div_content
+   end
+   
    # Returns true if the page's response is the error page.
    def error_page?
       return true if self.current_url == "http://localhost:3000/error"
       return true if "http://localhost:3000/error".eql?(self.current_url) 
-      bd_div = doc.css('div.bd').first
-      if(bd_div == nil) 
-        bd_div_content = '' 
-        report_error 'No bd_div in page! Malformed page.'
-      else 
-        bd_div_content = bd_div.content.to_s 
-      end
-      err_msg = bd_div_content.match("We're sorry but the website has experienced an error").to_s
-      return true if err_msg.length > 0
-      return false
+      bd_div_content = get_bd_div_text
+      err_msg = bd_div_content.match("error")
+      return !err_msg.nil?
    end
 
    # Writes the error both in the logfile and the console.
@@ -174,15 +208,21 @@ module PrinterPageHelpers
    end
    
    def already_saved_msg?
-     return (doc.css('#already_added_msg').first.attribute('style').to_s.match('none').nil?)
+     msg_el = get_el doc.css('#already_added_msg')
+     return false if msg_span_el.nil?
+     return (msg_el.attribute('style').to_s.match('none').nil?)
    end
    
    def save_here_msg?
-     return (doc.css('#deleteme').first.attribute('style').to_s.match('none').nil?)
+     msg_el = get_el doc.css('#deleteme')
+     return false if msg_el.nil?
+     return (msg_el.attribute('style').to_s.match('none').nil?)
    end
 
    def compare_button?
-     return (doc.css('#compare_button').first.attribute('style').to_s.match('none').nil?)
+     button_el = get_el doc.css('#compare_button')
+     return false unless button_el
+     return (button_el.attribute('style').to_s.match('none').nil?)
    end
    
    def pid_by_box which_box

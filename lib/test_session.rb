@@ -4,6 +4,7 @@ require 'mechanize'
 require 'webrat/mechanize'
 #require 'rubygems'
 require 'printer_page_helpers'
+include PrinterPageHelpers
 
 class TestSession < Webrat::MechanizeSession
   
@@ -13,7 +14,7 @@ class TestSession < Webrat::MechanizeSession
      super
      @logfile = log
      get_homepage
-     
+     pick_printer_use "All-Purpose"
      get_init_values
      
   end
@@ -29,15 +30,6 @@ class TestSession < Webrat::MechanizeSession
      return self.response.parser
    end
    
-   # Gets the homepage and makes sure nothing crashed.
-   def get_homepage
-      visit "http://localhost:3000/"
-      if error_page?
-        report_error "Error loading homepage" 
-        raise "Error loading homepage" 
-      end
-   end
-
    def select_brand which_brand
      select brand_name(which_brand), :from => 'myfilter_brand'
      submit_form 'filter_form'
@@ -52,9 +44,18 @@ class TestSession < Webrat::MechanizeSession
       click_button "submit_button"
     end
 
+    def pick_printer_use which_use
+      use = PrinterPageHelpers.uses[which_use] || which_use
+      click_link use
+    end
+
     # Gets the homepage and makes sure nothing crashed.
     def get_homepage
+      begin
        visit "http://localhost:3000/"
+      rescue Timeout::Error => e
+        report_error "#{e.type} #{e.message}"
+      end
        if error_page?
          report_error "Error loading homepage" 
          raise "Error loading homepage" 
@@ -63,10 +64,6 @@ class TestSession < Webrat::MechanizeSession
 
     def click_browse_similar which_link
       click_link 'sim' + (which_link-1).to_s
-    end
-
-    def click_back_button
-       click_link 'Go back to previous Printers'
     end
 
     def click_home_logo 

@@ -1,7 +1,5 @@
 module TigerDirectScraper
   
-  #$model = Printer
-  
   def scrape all_links
     @logfile.puts " #{all_links.length} printers not yet scraped."
     
@@ -188,26 +186,21 @@ namespace :scrape_tiger do
   desc 'everything in a sequence'
   task :all => [:scrape, :clean, :validate]
   
-  desc 'sandbox'
-  task :sandbox => :init do
+  desc 'Maps the printers to db -- draft version so far'
+  task :map_to_db => :init do
     @logfile = File.open("./log/tiger_sandbox.log", 'w+')
-    matcha = []
-    twos = {}
+    how_many_match = []
     
     TigerPrinter.all.each do |tp|
-      #debugger
-      
       matches = match_tiger_to_printer tp
-      matcha << matches.length
-      #twos.merge! {tp.id => matches.collect{|x| x.id}}
+      how_many_match << matches.length
     end
     
-    puts matcha * ', '
-    puts twos
+    puts how_many_match * ', '
     @logfile.close
   end
     
-  desc 'clean'
+  desc 'Clean the data: move it from TigerScraped to TigerPrinter.'
   task :clean => :init do
     TigerScraped.all.each do |ts|
       properties = {}

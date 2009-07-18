@@ -3,6 +3,14 @@ module PrinterTestAsserts
     report_error "Already saved msg hidden" unless @sesh.already_saved_msg?
   end
   
+  def assert_is_homepage
+    report_error "Is not the homepage" unless @sesh.home_page?
+  end
+  
+  def assert_not_homepage
+    report_error "Is the homepage" if @sesh.home_page?
+  end
+  
   def assert_already_saved_msg_hidden
     report_error "Already saved msg showing" if @sesh.already_saved_msg?
   end

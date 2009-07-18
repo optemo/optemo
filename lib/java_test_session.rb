@@ -58,6 +58,11 @@ class JavaTestSession < Webrat::SeleniumSession
       end
    end
    
+   def pick_printer_use which_use
+     browser.click "link=#{@@uses[which_use] || which_use}" 
+     wait_for_load
+   end
+   
    def click_browse_similar which_link
      linkid='sim' + (which_link-1).to_s
       # TODO Check for element presence.

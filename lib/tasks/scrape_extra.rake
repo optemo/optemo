@@ -1,3 +1,6 @@
+# Rakefile and module used to scrape additional data
+# such as product images and models from UPC number.
+
 module ScrapeExtra
   
   def file_exists_for itemnum, sz=''
@@ -14,7 +17,7 @@ module ScrapeExtra
   end
   
   def url_from_item_and_sz itemnum, sz
-    return "http://localhost:3000/images/newegg/#{itemnum}_#{sz}.JPEG"
+    return "/images/newegg/#{itemnum}_#{sz}.JPEG"
   end
   
   def filename_from_itemnum itemnum, sz=''
