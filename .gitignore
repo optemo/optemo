@@ -10,7 +10,7 @@ db/*.sqlite3
 config/ultrasphinx/*.conf
 
 
-
+public/system
 
 lib/c_code/clusteringCodes/CMakeFiles/*
 lib/c_code/clusteringCodes/CMakeFiles/*/*
