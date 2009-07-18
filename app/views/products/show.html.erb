@@ -38,9 +38,8 @@
 		<% if @review.nil? %>
 			There are no reviews for this item yet.
 		<% else %>
-			Helpfulness: <%= @review.helpfulvotes %><br>
-			<p><b><%= @review.summary %></o>
-			<%= @review.content %>
+			<b><%= @review.summary %></b> <em>from Amazon</em>
+			<p class="review"><%= @review.content.length > 680 ? @review.content[0..680]+'...' : @review.content %></p>
 		<% end %>
 		<!--People agree this is a <strong>very good</strong> camera. Reviewers admire the <strong>large display</strong>, <strong>customer service</strong>, and <strong>sharp lens</strong> despite qualms with the video quality and portability. It is recommended if you're comfortable with the video quality and portability. -->
 	</div>

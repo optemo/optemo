@@ -100,6 +100,10 @@ class MergedCluster
   end
   
   def utility(session)
-    @clusters.map{|c|c.utility(session)}.sum/size(session)
+    if size(session) == 0
+      @utility ||= 0
+    else
+      @utility ||= @clusters.map{|c|c.utility(session)}.sum/size(session)
+    end
   end
 end
