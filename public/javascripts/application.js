@@ -296,8 +296,8 @@ function histogram(element,min,max) {
 	step = peak + 2*trans,
 	height = 20,
 	length = 177,
-	paper = Raphael(element,length,height),
-	shapelayer = paper.group(),
+	shapelayer = Raphael(element,length,height),
+	//shapelayer = paper.group(),
 	t = shapelayer.path({fill: Raphael.getColor(), opacity: 0.75});//Raphael.hsb2rgb(Math.abs(Math.sin(parseInt(element,36))),1,1).hex, opacity: 0.5});
 	
 	t.moveTo(0,height);
