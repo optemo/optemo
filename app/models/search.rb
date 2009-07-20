@@ -37,6 +37,24 @@ class Search < ActiveRecord::Base
     [min, max]
   end
   
+  def description(session)
+    des = []
+
+    DbFeature.find_all_by_product_type_and_feature_type(session.product_type, 'Continuous').each do |f|
+            low = f.low
+            high = f.high
+            searchR = ranges(f.name)
+            return 'Empty' if searchR[0].nil? || searchR[1].nil?
+            if (searchR[1]<=low)
+                 des <<  $model::ContinuousFeaturesDescLow[f.name]
+            elsif (searchR[0]>=high)
+                 des <<  $model::ContinuousFeaturesDescHigh[f.name]
+            end
+    end   
+    res = des.join(', ')
+    res.blank? ? 'All Purpose' : res
+  end
+  
   def minimum(feature)
     feature = feature + "_min"
     min = clusters[0].send(feature)
@@ -143,7 +161,7 @@ class Search < ActiveRecord::Base
       myclusters = split(myclusters.shift.children(session)) + myclusters
     end
     myclusters.sort! {|a,b| b.size(session) <=> a.size(session)}
-  end
+  end  
   
   def split(children)
     return children if children.length == 1
