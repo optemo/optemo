@@ -1,6 +1,3 @@
-require 'webrat'
-require 'nokogiri'
-
 module PrinterPageHelpers
   
   @@uses = {0 => "All-Purpose", 1 =>"Home Office", \
