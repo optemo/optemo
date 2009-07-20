@@ -19,15 +19,17 @@ class ProductsController < ApplicationController
     @s = Search.createFromPath_and_commit(params[:id].split('-'), @session.id)
     @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
     @allSearches = []
-    z = Search.find_all_by_session_id(@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.hour.ago}\'")
-    unless (z.nil? || z.empty?)
-      @layer, @allSearches = zipStack(z) 
-    end  
-    #No products found
-    if @s.result_count == 0
-      flash[:error] = "No products were found, so you were redirected to the home page"
-      homepage
-    end
+    if @session.searchpids.blank? #|| @session.searchpids.size > 9)
+      z = Search.find_all_by_session_id(@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.hour.ago}\'")
+      unless (z.nil? || z.empty?)
+        @layer, @allSearches = zipStack(z) 
+      end  
+      #No products found
+      if @s.result_count == 0
+        flash[:error] = "No products were found, so you were redirected to the home page"
+        homepage
+      end
+   end  
   end
 
   # GET /products/1
