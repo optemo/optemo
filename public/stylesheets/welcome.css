@@ -305,7 +305,7 @@ h3 {
 .dialog h1,
 .dialog p {
  margin:0px; /* margins will blow out backgrounds, leaving whitespace. */
- padding:0.5em 0px 0.5em 0px;
+ /*padding:0.5em 0px 0.5em 0px;*/
 }
 
 .dialog h1 {

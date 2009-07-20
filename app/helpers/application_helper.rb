@@ -7,4 +7,5 @@ module ApplicationHelper
   def describe
     h(@description ? @description : "LaserPrinterHub provides price comparisons and detailed information to help you find the right printer for you.")
   end
+  
 end

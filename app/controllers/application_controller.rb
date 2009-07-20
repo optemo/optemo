@@ -59,28 +59,15 @@ class ApplicationController < ActionController::Base
     @template.instance_variable_set("@description", @description)  # Necessary if set from view
   end
   
-
+  def initialClusters
+    mysession = Session.find(session[:user_id])
+    mysession.clearFilters
+    if $model == Printer && s = Search.find_by_session_id(0)
+      path = 0.upto(s.cluster_count-1).map{|i| s.send(:"c#{i}")}.join('-')
+    else
+      current_version = $clustermodel.last.version
+      path = $clustermodel.find_all_by_parent_id_and_version(0, current_version, :order => 'cluster_size DESC').map{|c| c.id}.join('-')
+    end
+    "/#{$model.urlname}/compare/"+path
+  end
 end
-  
-  # Returns a row of the factor table
-  def LookupFactorRow (pType, productId)
-    return Factor.find(:first, :conditions => ['product_id = ? and product_type = ?', productId, pType])
-  end
-
-  # Calculates the Utility of a product, based on user-preferences
-  # Computation:
-  # For every Product,
-  # => 2 Database lookups      (Can be reduced to 1)
-  # => |Continuous Features| * 2 Arithmetic operations
-  def CalculateUtility(p)  
-    cost = 0.0
-    #getFactorRow = LookupFactorRow(session[:productType], product.id)
-        getFactorRow = LookupFactorRow('Printer', p.send('id'))                    # TODO:
-    userSession = Session.find(:first, :conditions => ['id = ?', session[:user_id]])
-    # For all features
-      session[:productType].constantize::ContinuousFeatures.each do |f|
-      # Multiply factor value by the User's preference for that feature (weight) and add to cost
-        cost = cost + getFactorRow.send(f) * userSession.features.send("#{f}_pref")
-      end      
-    return cost
-  end

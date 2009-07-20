@@ -53,7 +53,7 @@ class SearchController < ApplicationController
     @session.searchterm = ""
     @session.searchpids = ""
     @session.save
-    redirect_to "/#{$model.urlname}/"
+    redirect_to initialClusters
   end
   
   private
