@@ -1,9 +1,6 @@
 # Scrape new-egg printers
 
 module NeweggScraper
-  
-  
-                        
 
   # Creates new offerings for the specified printer
   # and updates the bestoffer on the Printer entry.
@@ -269,23 +266,23 @@ module NeweggScraper
   end
 end
 namespace :scrape_newegg do
-
-  require 'rubygems'
-  require 'nokogiri'
-
-  require 'database_helper'
-  include DatabaseHelper
-
-  require 'scraping_helper'
-  include ScrapingHelper
-
-  require 'validation_helper'
-  include ValidationHelper
-  
-  include NeweggScraper
   
   desc 'Initialize'
   task :init => :environment do
+    require 'rubygems'
+    require 'nokogiri'
+
+    require 'database_helper'
+    include DatabaseHelper
+
+    require 'scraping_helper'
+    include ScrapingHelper
+
+    require 'validation_helper'
+    include ValidationHelper
+
+    include NeweggScraper
+    
     $model = Printer
     
     @offering_colnames  = { 'saleprice' => 'priceint',  'updated_at' =>  'priceUpdate' }
