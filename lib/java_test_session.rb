@@ -1,13 +1,11 @@
-
-require 'webrat'
-require 'webrat/selenium'
-require 'printer_page_helpers'
-
 class JavaTestSession < Webrat::SeleniumSession
   
   include PrinterPageHelpers
      
   def initialize (log)
+    require 'webrat'
+    require 'webrat/selenium'
+    require 'printer_page_helpers'
      super
      @logfile = log
      get_homepage
