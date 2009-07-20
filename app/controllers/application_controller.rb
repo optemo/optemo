@@ -28,22 +28,22 @@ class ApplicationController < ActionController::Base
   end
   
   def update_user
+    $model = (session[:productType] || $DefaultProduct).constantize
+    $nodemodel = ((session[:productType] || $DefaultProduct)+'Node').constantize
+    $clustermodel = ((session[:productType] || $DefaultProduct)+'Cluster').constantize
+    $featuremodel = ((session[:productType] || $DefaultProduct)+'Features').constantize
     if session[:user_id].blank? || !Session.exists?(session[:user_id])
       mysession = Session.new
       mysession.ip = request.remote_ip
       mysession.save
       # Create a row in every product-features table
       $ProdTypeList.each do |p|
-        myProduct = (p + 'Features').constantize.new
+        myProduct = $featuremodel.new
         myProduct.session_id = mysession.id        
         myProduct.save
       end
       session[:user_id] = mysession.id
       end
-    $model = (session[:productType] || $DefaultProduct).constantize
-    $nodemodel = ((session[:productType] || $DefaultProduct)+'Node').constantize
-    $clustermodel = ((session[:productType] || $DefaultProduct)+'Cluster').constantize
-    $featuremodel = ((session[:productType] || $DefaultProduct)+'Features').constantize
   end
   
   def title=(title)

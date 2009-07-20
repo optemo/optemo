@@ -43,9 +43,16 @@ desc "Sync the public/assets directory."
   task :restart do
     run "touch #{current_path}/tmp/restart.txt"
   end
+  desc "Create asset packages for production" 
+  task :after_update_code, :roles => [:web] do
+    run <<-EOF
+      cd #{release_path} && rake asset:packager:build_all
+    EOF
+  end
 end
 after :deploy, "serversetup"
-after :serversetup, "compilec"
+after :serversetup, "deploy:after_update_code"
+after :after_update_code, "compilec"
 after :compilec, "deploy:restart"
 
 

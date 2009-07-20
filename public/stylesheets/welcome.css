@@ -311,3 +311,22 @@ h3 {
 .dialog h1 {
  padding-bottom:0px;
 }
+
+/** IE6 Compatibility **/
+.dialog .content,
+.dialog .t,
+.dialog .b,
+.dialog .b div 
+{
+ 	_background-image:url(../images/mainbg.gif);
+}
+
+.dialog .content 
+{
+ 	_overflow-y:hidden;
+}
+
+.dialog .t 
+{
+ 	_height:1600px; /* arbitrary long height, IE 6 */
+}

@@ -32,6 +32,12 @@ desc "Sync the public/assets directory."
   task :restart do
     run "touch #{current_path}/tmp/restart.txt"
   end
+  desc "Create asset packages for production" 
+  task :after_update_code, :roles => [:web] do
+    run <<-EOF
+      cd #{release_path} && rake asset:packager:build_all
+    EOF
+  end
 end
 
 desc "Reindex search index"
