@@ -3,7 +3,7 @@ class CreatePrinters < ActiveRecord::Migration
   extend MigrationHelper
   def self.up
     create_table :printers do |t|
-      addBasicProductFeatures
+      addBasicProductFeatures(t)
       t.primary_key :id
       t.string :brand
       t.float :displaysize

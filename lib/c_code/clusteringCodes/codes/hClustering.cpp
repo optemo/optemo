@@ -39,6 +39,12 @@ int main(int argc, char** argv){
 	//argument is the productName
 
 	string productName = argv[1];
+	if ((productName != "camera") || (productName != "printer")){
+		cout<<"Wrong Product Type"<<endl;
+		 return EXIT_FAILURE;
+	}
+	string environment = argv[2];
+	
 	string tableName = productName;
 	tableName.append("s");
 	map<const string, int> productNames;
@@ -48,7 +54,6 @@ int main(int argc, char** argv){
 	switch(productNames[productName]){
 		
 		case 1:
-		
 					clusterN = 9; 
 					conFeatureN= 4;
 					catFeatureN= 1;
@@ -208,6 +213,7 @@ int main(int argc, char** argv){
 	string hostString = tokens.at(findVec(tokens, "host:") + 1);
 	string databaseName = tokens.at(findVec(tokens, "database:") + 1);
 	
+	
 	    #define PORT "3306"       
 		#define DB   databaseName
 		#define HOST hostString    
@@ -227,19 +233,6 @@ int main(int argc, char** argv){
 				command += databaseName;
 				
 				stmt->execute(command);
-					
-				//deleting the current node and cluster tables
-			//	command = "DELETE FROM ";
-			//	command += productName;
-			//	command += "_clusters;";
-			//	stmt->execute(command);
-			//		
-			//	command = "DELETE FROM ";
-			//	command += productName;
-			//	command += "_nodes;";
-		    //
-			//	stmt->execute(command);
-
 			
 				command = "SELECT version from ";
 				command += productName;
