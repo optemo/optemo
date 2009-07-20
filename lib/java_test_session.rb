@@ -11,9 +11,15 @@ class JavaTestSession < Webrat::SeleniumSession
      super
      @logfile = log
      get_homepage
-     
+     pick_printer_use
      get_init_values
-     
+     PrinterPageHelpers.uses.keys.each do |u|
+        get_homepage
+        pick_printer_use u
+        set_total_printers u, self.num_printers 
+     end
+     get_homepage
+     pick_printer_use
   end
      
    def move_slider which_slider, min, max
@@ -58,7 +64,7 @@ class JavaTestSession < Webrat::SeleniumSession
       end
    end
    
-   def pick_printer_use which_use
+   def pick_printer_use which_use=0
      browser.click "link=#{@@uses[which_use] || which_use}" 
      wait_for_load
    end

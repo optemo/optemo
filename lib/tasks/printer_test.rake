@@ -11,6 +11,9 @@ namespace :printer_test do
   include PrinterPageHelpers
   
   
+   desc 'Run Java test 20 times'
+   task :many_javas => [:random,  :random] #, :random, :random,:random, :random,:random, :random,:random, :random,:random, :random,:random, :random,:random, :random,:random, :random,:random, :random]
+  
    desc 'Run all tests'
    task :all_java => [:sliders, :browse_similar, :search, :brand_selector, :random]
   
@@ -117,11 +120,12 @@ namespace :printer_test do
          search_strings << bname.downcase
        end
 
-       20.times do
+       100.times do
 
          pick_action = (rand 10).floor
          # For the error page, the # of possible actions is very limited.
-         pick_action = (8 + rand(2)).floor if @sesh.error_page?
+         pick_action = 8 + rand(2) if @sesh.error_page?
+         pick_action = 10 if @sesh.home_page?
 
          if pick_action == 0                     #0 Test move sliders.
            slide_me = rand @sesh.num_sliders
@@ -170,6 +174,9 @@ namespace :printer_test do
              test_click_home_logo
          elsif pick_action == 9                  #6 Test back button
            # No back button test is implemented
+         elsif pick_action == 10                  #7 Test clicking a use button
+           pickme = rand(PrinterPageHelpers.uses.length)
+           test_pick_use pickme
          end
 
        end
@@ -273,9 +280,14 @@ namespace :printer_test do
         require 'webrat'
         require 'webrat/selenium'
         require 'java_test_session'
-
+        
+        #config.gem 'selenium-client', :lib => 'selenium/client'  
+        #config.gem 'webrat'
+        
         Webrat.configure do |config|
-          config.mode = :selenium 
+          config.mode = :selenium
+          config.application_environment = :test  
+          config.application_framework = :rails
         end
 
       

@@ -37,9 +37,13 @@ module PrinterPageHelpers
        @slider_nicknames << x.gsub(/(\w+\[)/){''}.gsub(/(_.+)/){''} 
      end
      
-     @total_printers = self.num_printers
+     @total_printers = [nil,nil,nil,nil,nil]
      
   end
+  
+   def set_total_printers index, value
+     @total_printers[index] = value
+   end
    
    def get_detail_page_link which_product
      @box_hrefs = doc.xpath("(//a[span[@class='easylink']]/@href)[#{which_product}]").to_s
@@ -209,7 +213,7 @@ module PrinterPageHelpers
    
    def already_saved_msg?
      msg_el = get_el doc.css('#already_added_msg')
-     return false if msg_span_el.nil?
+     return false if msg_el.nil?
      return (msg_el.attribute('style').to_s.match('none').nil?)
    end
    

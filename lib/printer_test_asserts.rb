@@ -126,10 +126,10 @@ module PrinterTestAsserts
     report_error "Saved printers not cleared" if @sesh.num_saved_items != 0 
   end
   
-  def assert_browsing_all_printers
-  # Total printers = current browsing printers
-    report_error "Not all printers displayed" if @sesh.total_printers != @sesh.num_printers
-  
+  def assert_browsing_all_printers i=0
+    if @sesh.total_printers[i] != @sesh.num_printers
+      report_error "Not all printers displayed: should be #{@sesh.total_printers[i]}, is #{@sesh.num_printers}" 
+    end
   end
   
   def assert_num_printers_decreased

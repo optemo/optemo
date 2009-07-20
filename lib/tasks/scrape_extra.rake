@@ -46,10 +46,6 @@ end
 
 namespace :scrape_extra do
   
-  require 'scraping_helper'
-  include ScrapingHelper
-  require 'RMagick'
-  include ScrapeExtra
   
   desc 'resize it'
   task :resize_all => :init do
@@ -178,6 +174,10 @@ namespace :scrape_extra do
   
   desc 'init'
   task :init => :environment do
+    require 'scraping_helper'
+    include ScrapingHelper
+    require 'RMagick'
+    include ScrapeExtra
     
     $folder= 'public'
     $size_names = ['s','m','l']

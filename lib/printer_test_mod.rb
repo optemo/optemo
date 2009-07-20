@@ -50,6 +50,7 @@ module PrinterTest
     assert_not_error_page
     assert_well_formed_page
 
+    assert_browsing_all_printers pickme
     assert_brands_clear
     assert_search_history_clear
     assert_saveds_clear
@@ -57,14 +58,12 @@ module PrinterTest
     log "Done picking"
  end
 
- def test_goto_homepage pickme=0
-
+ def test_goto_homepage
    log "Testing Goto Homepage"
    snapshot
    @sesh.get_homepage  
    assert_is_homepage
    log "Done testing goto homepage"
-
  end
 
  def test_checkbox selectme
@@ -325,7 +324,7 @@ module PrinterTest
  end
  
  def setup_log(name)
-   @logfile = File.open("./log/printertest_"+name+".log", 'w+')
+   @logfile = File.open("./log/printertest_"+name+Time.now.to_s.gsub(/ /, '_')+".log", 'w+')
  end
  
  def setup logname
