@@ -51,6 +51,16 @@ module PrinterPageHelpers
      return @box_hrefs
    end
    
+   def num_checkboxes
+     return doc.css('#filter_form input[@type="checkbox"]').length
+   end
+   
+   def checkbox_selected? which_checkbox
+     checkbox_el = doc.css('#filter_form input[@type="checkbox"]')[which_checkbox]
+     return false unless checkbox_el
+     return (!checkbox_el.[]('checked').nil? and checkbox_el.[]('checked')=='checked')
+   end
+   
    def num_sliders
      return @slider_min_names.length
    end
@@ -122,7 +132,7 @@ module PrinterPageHelpers
 
    # Reads the number of printers being browsed from the page.
    def num_printers
-      leftbar_el =get_el doc.css("#leftbar")
+      leftbar_el = get_el doc.css("#leftbar")
       return 0 if leftbar_el.nil?
       leftbar = leftbar_el.content.to_s
       printer_phrase = leftbar.match('Browsing \d+ Printers').to_s

@@ -66,10 +66,16 @@ module PrinterTest
    log "Done testing goto homepage"
  end
 
- def test_checkbox selectme
-   # TODO
+ def test_checkbox klikme
+   debugger
+   snapshot
+   was_selected = checkbox_selected?(klikme)
+   click_checkbox klikme 
+   debugger
+   puts "ADF"
    
-   report_error "NOT IMPLEMENTED!!"
+   # TODO asserts here
+   
  end
  
  def test_detail_page product
@@ -296,6 +302,7 @@ module PrinterTest
  
   # Take a 'snapshot' of the current page for comparison for later.
  def snapshot
+   debugger
     @num_printers_before = @sesh.num_printers
     @num_brands_selected_before = @sesh.num_brands_selected
     @num_boxes_before = @sesh.num_boxes

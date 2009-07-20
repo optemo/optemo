@@ -22,6 +22,13 @@ class JavaTestSession < Webrat::SeleniumSession
      pick_printer_use
   end
      
+  def click_checkbox clickme
+    cbox_id = doc.css('#filter_form input[@type="checkbox"]')[clickme].[]('id')
+    selenium.click cbox_id
+    browser.submit "filter_form"
+    wait_for_load
+  end   
+     
    def move_slider which_slider, min, max
      fill_in @slider_max_names[which_slider], :with => max
      fill_in @slider_min_names[which_slider], :with => min

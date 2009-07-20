@@ -12,8 +12,12 @@ namespace :printer_test do
   
   
    desc 'Run Java test 20 times'
-   task :many_javas => [:random,  :random] #, :random, :random,:random, :random,:random, :random,:random, :random,:random, :random,:random, :random,:random, :random,:random, :random,:random, :random]
-  
+   task :sandbox => :java_init do
+      setup_java 'sandbox'
+      @sesh.test_checkbox 0
+      close_log
+   end 
+     
    desc 'Run all tests'
    task :all_java => [:sliders, :browse_similar, :search, :brand_selector, :random]
   
@@ -21,7 +25,7 @@ namespace :printer_test do
    task :all => [:sliders, :browse_similar, :search, :brand_selector, :homepage, :random_nojava]
    
    desc 'sandbox'
-   task :sandbox => :init do
+   task :sandbox2 => :init do
      setup 'sandbox'
      @sesh.num_boxes.times do |i|
         puts @sesh.get_detail_page_link(i+1)
