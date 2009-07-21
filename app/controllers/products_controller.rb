@@ -27,7 +27,7 @@ class ProductsController < ApplicationController
       #No products found
       if @s.result_count == 0
         flash[:error] = "No products were found, so you were redirected to the home page"
-        homepage
+        redirect_to initialClusters
       end
    end  
   end

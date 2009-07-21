@@ -58,8 +58,11 @@ class MergedCluster
   
   #The represetative product for this cluster
   def representative(session)
-    node = nodes(session).first
-    $model.find(node.product_id) if node
+    unless @rep
+      node = nodes(session).first
+      @rep = $model.find(node.product_id) if node
+    end
+    @rep
   end 
   
   def size(session)
@@ -97,6 +100,10 @@ class MergedCluster
   
   def clearCache
     @clusters.each{|c|c.clearCache}
+    @nodes = nil
+    @size = nil
+    @rep = nil
+    @range = nil
   end
   
   def utility(session)
