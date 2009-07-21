@@ -10,14 +10,7 @@ module PrinterPageHelpers
   def num_uses
     return @@uses.length
   end
-  
-  def get_detail_page which_box
-    link = get_detail_page_link which_box
-    visit link  
-    detail_el = get_el doc.css("#container")
-    return detail_el 
-  end
-  
+    
   def get_init_values
      
      @slider_min_names= []
@@ -54,9 +47,12 @@ module PrinterPageHelpers
    end
    
    def get_detail_page_link which_product
-     @box_hrefs = doc.xpath("(//a[span[@class='easylink']]/@href)[#{which_product}]").to_s
-     return nil unless @box_hrefs
-     return @box_hrefs
+     pid = pid_by_box(which_product)
+     return  "/products/show/#{pid}"
+   end
+   
+   def detail_page?
+     return ( self.current_url.match(/products\/show/) and !self.error_page?)
    end
    
    def num_checkboxes

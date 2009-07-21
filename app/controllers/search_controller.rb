@@ -41,6 +41,7 @@ class SearchController < ApplicationController
         redirect_to request.referer
       end
     else
+      @session.clearFilters
       @session.searchterm = params[:search]
       @session.searchpids = nodes.map{|p| "product_id = #{p.product_id}"}.join(' OR ')
       @session.save

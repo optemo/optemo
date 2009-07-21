@@ -20,6 +20,11 @@ class JavaTestSession < Webrat::SeleniumSession
      pick_printer_use
   end
      
+  def get_detail_page pid
+    visit get_detail_page_link(pid)
+    wait_for_load
+  end   
+     
   def click_checkbox clickme
     cbox_id = doc.css('#filter_form input[@type="checkbox"]')[clickme].[]('id')
     selenium.click cbox_id

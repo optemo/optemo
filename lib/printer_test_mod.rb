@@ -1,18 +1,21 @@
 module PrinterTest
 
   def test_detail_page my_details
+    log "Getting Detail page for #{my_details}th box"
     come_back_here = @sesh.current_url
     begin
-      detail_el = @sesh.get_detail_page my_details
+      @sesh.get_detail_page my_details
     rescue Exception => e
       report_error "Problem getting detail page"
       report_error "#{e.type} #{e.message}"
     else
-      assert_price_not_nil detail_el
-      assert_pic_not_nil detail_el
+      assert_not_error_page
+      assert_not_homepage
+      assert_detail_price_not_nil
+      assert_detail_pic_not_nil
     end
     @sesh.visit come_back_here
-    # TODO this is not java friendly 
+    @sesh.wait_for_load if java_enabled?
     assert_not_error_page
     assert_well_formed_page
     assert_not_homepage
@@ -25,7 +28,7 @@ module PrinterTest
 
    begin
      # TODO change methods to move_slider
-     @sesh.move_slider(slider, min, max)
+     @sesh.move_slider(slider, min.to_i, max.to_i)
    rescue Exception => e
      report_error e.type.to_s + e.message.to_s
    else
@@ -36,7 +39,7 @@ module PrinterTest
      assert_clear_search_links_same
 
      if !@sesh.no_printers_found_msg? 
-       assert_slider_range(slider, min, max)
+       assert_slider_range(slider, min.to_i, max.to_i)
        #assert_slider_range(slider, min.floor, max.ceil)
      end
 
@@ -72,9 +75,7 @@ module PrinterTest
     assert_browsing_all_printers pickme
     assert_brands_clear
     assert_search_history_clear
-    assert_saveds_clear
     assert_no_results_msg_hidden
-    assert_boxes_clear
     log "Done picking"
  end
 
@@ -318,7 +319,7 @@ module PrinterTest
 # ---------------- HELPER METHODS ----------------- #
 
  def java_enabled?
-   return true if(@sesh.type == JavaTestSession)
+   return true if(@sesh.type.to_s == "JavaTestSession")
    return false
  end
  
@@ -359,6 +360,7 @@ module PrinterTest
    setup_log logname 
    @sesh = TestSession.new @logfile
    @history = []
+   
    snapshot
  end
  
