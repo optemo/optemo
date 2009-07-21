@@ -2,7 +2,6 @@
 require 'webrat'
 require 'mechanize'
 require 'webrat/mechanize'
-#require 'rubygems'
 require 'printer_page_helpers'
 include PrinterPageHelpers
 
@@ -14,9 +13,15 @@ class TestSession < Webrat::MechanizeSession
      super
      @logfile = log
      get_homepage
-     pick_printer_use "All-Purpose"
+     pick_printer_use
      get_init_values
-     
+     PrinterPageHelpers.uses.keys.each do |u|
+        get_homepage
+        pick_printer_use u
+        set_total_printers u, self.num_printers 
+     end
+     get_homepage
+     pick_printer_use 
   end
      
    def move_slider which_slider, min, max
@@ -44,9 +49,10 @@ class TestSession < Webrat::MechanizeSession
       click_button "submit_button"
     end
 
-    def pick_printer_use which_use
-      use = PrinterPageHelpers.uses[which_use] || which_use
-      click_link use
+    def pick_printer_use which_use=0
+      #use = PrinterPageHelpers.uses[which_use] || which_use
+      the_link = doc.css('div.category a')[which_use]
+      visit the_link.[]('href') if the_link
     end
 
     # Gets the homepage and makes sure nothing crashed.
@@ -63,7 +69,9 @@ class TestSession < Webrat::MechanizeSession
     end
 
     def click_browse_similar which_link
-      click_link 'sim' + (which_link-1).to_s
+      the_link = doc.css('.simlinks')[which_link-1]
+      click_link the_link.text if the_link
+      report_error "#{which_link}th browse sim. link not found" if the_link.nil?
     end
 
     def click_home_logo 

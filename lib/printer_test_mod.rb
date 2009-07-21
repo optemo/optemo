@@ -1,5 +1,24 @@
 module PrinterTest
 
+  def test_detail_page my_details
+    come_back_here = @sesh.current_url
+    begin
+      detail_el = @sesh.get_detail_page my_details
+    rescue Exception => e
+      report_error "Problem getting detail page"
+      report_error "#{e.type} #{e.message}"
+    else
+      assert_price_not_nil detail_el
+      assert_pic_not_nil detail_el
+    end
+    @sesh.visit come_back_here
+    # TODO this is not java friendly 
+    assert_not_error_page
+    assert_well_formed_page
+    assert_not_homepage
+  end
+
+
  def test_move_sliders(slider, min, max)
    log "Testing the " + @sesh.slider_name(slider) + " slider. Moving it to (#{min},#{max})"
    snapshot
@@ -50,33 +69,41 @@ module PrinterTest
     assert_not_error_page
     assert_well_formed_page
 
+    assert_browsing_all_printers pickme
     assert_brands_clear
     assert_search_history_clear
     assert_saveds_clear
     assert_no_results_msg_hidden
+    assert_boxes_clear
     log "Done picking"
  end
 
- def test_goto_homepage pickme=0
-
+ def test_goto_homepage
    log "Testing Goto Homepage"
    snapshot
    @sesh.get_homepage  
    assert_is_homepage
    log "Done testing goto homepage"
-
  end
 
- def test_checkbox selectme
-   # TODO
+ def test_checkbox klikme
+   log "Testing clicking #{klikme+1}th checkbox"
+   snapshot
+   was_selected = @sesh.checkbox_selected?(klikme)
+   @sesh.click_checkbox klikme 
    
-   report_error "NOT IMPLEMENTED!!"
- end
- 
- def test_detail_page product
-   report_error "NOT IMPLEMENTED!!"
-   # Has a price
-   # 
+   if !was_selected
+     assert_num_printers_decreased
+     assert_box_checked klikme
+   else
+     assert_num_printers_increased
+     assert_box_unchecked klikme
+   end
+   
+   assert_not_error_page
+   assert_well_formed_page
+   
+   log "Done clicking checkbox"
  end
 
  def test_click_home_logo
@@ -325,7 +352,7 @@ module PrinterTest
  end
  
  def setup_log(name)
-   @logfile = File.open("./log/printertest_"+name+".log", 'w+')
+   @logfile = File.open("./log/printertest_"+name+Time.now.to_s.gsub(/ /, '_')+".log", 'w+')
  end
  
  def setup logname
