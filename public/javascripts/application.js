@@ -253,7 +253,7 @@ $(document).ready(function() {
 			min: 0,
 			step: 1,
 			// value: (Get value of preferences from session) 
-			value: prefVal,
+			value: prefVal
 		});
 	});
 	
