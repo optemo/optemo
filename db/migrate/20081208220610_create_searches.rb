@@ -6,6 +6,7 @@ class CreateSearches < ActiveRecord::Migration
       t.integer :parent_id
       t.integer :layer
       t.string :c0,:c1,:c2,:c3,:c4,:c5,:c6,:c7,:c8
+      t.string :desc
       t.integer :cluster_count
       t.integer :result_count
       t.string :brand, :default => "All Brands"

@@ -9,7 +9,6 @@ class Search < ActiveRecord::Base
     f = DbFeature.find_by_name_and_product_type(featureName,session.product_type)
     stepsize = (f.max-f.min).to_f/10 
     res = []
-    #debugger
     10.times do |i|
       min = f.min + stepsize*i
       max = min + stepsize
@@ -33,27 +32,80 @@ class Search < ActiveRecord::Base
   #Range of product offerings
   def ranges(featureName)
     min = clusters.map{|c|c.ranges(featureName,session)[0]}.compact.sort[0]
-    max = clusters.map{|c|c.ranges(featureName,session)[1]}.compact.sort[-1]  
+    max = clusters.map{|c|c.ranges(featureName,session)[1]}.compact.sort[-1] 
     [min, max]
   end
   
   def description(session)
     des = []
+    clusterDs = {}
+    cluster_count.times do |j| 
+      clusterDs["c#{j}"] = []
+    end  
+    ds = []
 
     DbFeature.find_all_by_product_type_and_feature_type(session.product_type, 'Continuous').each do |f|
-            low = f.low
-            high = f.high
-            searchR = ranges(f.name)
-            return 'Empty' if searchR[0].nil? || searchR[1].nil?
-            if (searchR[1]<=low)
-                 des <<  $model::ContinuousFeaturesDescLow[f.name]
-            elsif (searchR[0]>=high)
-                 des <<  $model::ContinuousFeaturesDescHigh[f.name]
-            end
-    end   
-    res = des.join(', ')
-    res.blank? ? 'All Purpose' : res
+      low = f.low
+      high = f.high
+      searchR = ranges(f.name)
+      fL = true
+      return 'Empty' if searchR[0].nil? || searchR[1].nil?
+      if (searchR[1]<=low)
+           des <<  $model::ContinuousFeaturesDescLow[f.name]
+           fL = false
+      elsif (searchR[0]>=high)
+           des <<  $model::ContinuousFeaturesDescHigh[f.name]
+           fL = false
+      end
+      ds[0] = des
+      if fL
+        
+        for j in 1..cluster_count 
+              cluster_id = send(:"c#{j-1}")
+              
+              c = $clustermodel.find(cluster_id)
+              cRanges = c.ranges(f.name, session)
+              if (cRanges[0] >= high)
+
+                clusterDs["c#{j-1}"] <<  $model::ContinuousFeaturesDescHigh[f.name]
+                    
+              elsif (cRanges[1] <= low)
+                  
+                clusterDs["c#{j-1}"] << $model::ContinuousFeaturesDescLow[f.name]
+  
+              end
+        end 
+       
+      end    
+    end  
+
+    for j in 1..cluster_count
+      ds[j] = clusterDs["c#{j-1}"]
+    end  
+
+    res = ds.map{|d| #d.blank? ? 'All Purpose' : 
+      d.join(', ')}         
+    res
   end
+  
+
+  def searchDescription(session)
+    des = []
+    DbFeature.find_all_by_product_type_and_feature_type(session.product_type, 'Continuous').each do |f|
+      low = f.low
+      high = f.high
+      searchR = ranges(f.name)
+      return 'Empty' if searchR[0].nil? || searchR[1].nil?
+      if (searchR[1]<=low)
+           des <<  $model::ContinuousFeaturesDescLow[f.name]
+      elsif (searchR[0]>=high)
+           des <<  $model::ContinuousFeaturesDescHigh[f.name]
+      end
+    end  
+    res = des.join(', ')
+    res.blank? ? 'All Purpose' : res 
+  end
+  
   
   def minimum(feature)
     feature = feature + "_min"
@@ -115,12 +167,15 @@ class Search < ActiveRecord::Base
     s.fillDisplay
     s.parent_id = s.clusters.map{|c| c.parent_id}.sort[0]
     s.layer = s.clusters.map{|c| c.layer}.sort[0]
+    s.desc = s.searchDescription(Session.find(session_id))
     s
   end
   
   def self.createFromPath_and_commit(path, session_id)
     s = createFromPath(path, session_id)
     s.save
+  #  ActiveRecord::Base.connection.execute("update #{$model}_features set search_id = #{s['id']} where session_id = #{session_id}")
+    ActiveRecord::Base.connection.execute("update printer_features set search_id = #{s['id']} where session_id = #{session_id}")
     s
   end
   

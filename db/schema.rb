@@ -423,7 +423,7 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.float   "price_min"
     t.float   "price_max"
     t.integer "version"
-    t.float   "utility"
+    t.float   "cached_utility"
   end
 
   create_table "camera_features", :force => true do |t|
@@ -763,13 +763,14 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.boolean "scanner"
     t.boolean "printserver"
     t.integer "version"
-    t.float   "utility"
+    t.float   "cached_utility"
   end
 
   create_table "printer_features", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "session_id"
+    t.integer  "search_id"
     t.float    "ppm_min"
     t.float    "ppm_max"
     t.float    "ppm_pref",           :default => 0.2
@@ -944,6 +945,7 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.string   "c6"
     t.string   "c7"
     t.string   "c8"
+    t.string   "desc"
     t.integer  "cluster_count"
     t.integer  "result_count"
     t.string   "brand",         :default => "All Brands"
