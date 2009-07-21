@@ -10,6 +10,8 @@ db/*.sqlite3
 config/ultrasphinx/*.conf
 public/system
 
+webrat.log
+
 public/system
 
 lib/c_code/clusteringCodes/CMakeFiles/*
