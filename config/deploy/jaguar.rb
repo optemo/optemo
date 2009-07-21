@@ -2,6 +2,7 @@ set :application, "optemo_site"
 set :repository,  "git@jaguar:site.git"
 set :domain, "jaguar"
 set :branch, "staging"
+set :user, 'jan'
 
 # If you aren't deploying to /u/apps/#{application} on the target
 # servers (which is the default), you can specify the actual location
@@ -33,6 +34,12 @@ desc "Sync the public/assets directory."
   task :restart do
     run "touch #{current_path}/tmp/restart.txt"
   end
+  desc "Create asset packages for production" 
+  task :after_update_code, :roles => [:web] do
+    run <<-EOF
+      cd #{release_path} && rake asset:packager:build_all
+    EOF
+  end
 end
 
 desc "Reindex search index"
@@ -54,7 +61,7 @@ task :serversetup do
 end
 
 after :deploy, "serversetup"
-#after :serversetup, "compilec"
-after :serversetup, "deploy:restart"
+after :serversetup, "deploy:after_update_code"
+after :after_update_code, "deploy:restart"
 
 

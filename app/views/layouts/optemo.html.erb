@@ -7,24 +7,11 @@
   <title><%= title %></title>
   <meta name="description" content="<%= describe %>" />
 <meta name="keywords" content="laser, printer, printers, buy, prices, price comparison, reviews, recommendation, HP, Canon, Xerox" />
-<meta name="robots" content="index,all,follow,NOODP" />
+<meta name="robots" content="index,all,follow" />
 <meta name="classification" content="Laser Printers" />
 <meta name="rating" content="General" />
-  <%= stylesheet_link_tag 'welcomeIE' %>
-  <%= stylesheet_link_tag 'cameraIE' %>
-  <%= stylesheet_link_tag 'show' %>
-  <%= stylesheet_link_tag 'compare' %>
-  <%# stylesheet_link_tag 'smoothness/jquery-ui-1.7.1.custom.css' %>
-	<link rel="shortcut icon" href="/favicon.ico" >
-  <%# javascript_include_tag :defaults %>
-  <%= javascript_include_tag 'jquery-1.3.2.min', {:include_google_js => true}%>
-  <%= javascript_include_tag 'jqueryui-1.7.2.min', {:include_google_js => true}%>
-  <!-- JQuery plugin for Table Drag and Drop, TableDnd -->
-  <%= javascript_include_tag 'jquery.tablednd_0_5', {:include_google_js => true}%>
-
-  <%= javascript_include_tag 'application' %>
-  <%# javascript_include_tag 'slider' %>
-  <%= javascript_include_tag 'raphael' %>
+<link rel="shortcut icon" href="/favicon.ico" >
+<%= stylesheet_link_merged :base %>
 </head>
 <body>
 <div id="mycenter">
@@ -85,5 +72,8 @@
 </div>
 <div id="fade" onClick="fadein();">&nbsp;</div>
 <div id="info">&nbsp;</div>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+<%= javascript_include_merged :base %>
 </body>
 </html>

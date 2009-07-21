@@ -1,6 +1,3 @@
-require 'webrat'
-require 'nokogiri'
-
 module PrinterPageHelpers
   
   @@uses = {0 => "All-Purpose", 1 =>"Home Office", \
@@ -8,6 +5,17 @@ module PrinterPageHelpers
   
   def self.uses
     return @@uses
+  end
+  
+  def num_uses
+    return @@uses.length
+  end
+  
+  def get_detail_page which_box
+    link = get_detail_page_link which_box
+    visit link  
+    detail_el = get_el doc.css("#container")
+    return detail_el 
   end
   
   def get_init_values
@@ -37,14 +45,28 @@ module PrinterPageHelpers
        @slider_nicknames << x.gsub(/(\w+\[)/){''}.gsub(/(_.+)/){''} 
      end
      
-     @total_printers = self.num_printers
+     @total_printers = [nil,nil,nil,nil,nil]
      
   end
+  
+   def set_total_printers index, value
+     @total_printers[index] = value
+   end
    
    def get_detail_page_link which_product
      @box_hrefs = doc.xpath("(//a[span[@class='easylink']]/@href)[#{which_product}]").to_s
      return nil unless @box_hrefs
      return @box_hrefs
+   end
+   
+   def num_checkboxes
+     return doc.css('#filter_form input[@type="checkbox"]').length
+   end
+   
+   def checkbox_selected? which_checkbox
+     checkbox_el = doc.css('#filter_form input[@type="checkbox"]')[which_checkbox]
+     return false unless checkbox_el
+     return (!checkbox_el.[]('checked').nil? and checkbox_el.[]('checked')=='checked')
    end
    
    def num_sliders
@@ -118,7 +140,7 @@ module PrinterPageHelpers
 
    # Reads the number of printers being browsed from the page.
    def num_printers
-      leftbar_el =get_el doc.css("#leftbar")
+      leftbar_el = get_el(doc.css("#leftbar"))
       return 0 if leftbar_el.nil?
       leftbar = leftbar_el.content.to_s
       printer_phrase = leftbar.match('Browsing \d+ Printers').to_s
@@ -209,7 +231,7 @@ module PrinterPageHelpers
    
    def already_saved_msg?
      msg_el = get_el doc.css('#already_added_msg')
-     return false if msg_span_el.nil?
+     return false if msg_el.nil?
      return (msg_el.attribute('style').to_s.match('none').nil?)
    end
    

@@ -28,7 +28,7 @@ class ProductsController < ApplicationController
       #No products found
       if @s.result_count == 0
         flash[:error] = "No products were found, so you were redirected to the home page"
-        homepage
+        redirect_to initialClusters
       end
    end  
   end
@@ -90,28 +90,52 @@ class ProductsController < ApplicationController
     end    
     render :nothing => true
   end
- 
+  
   private
   
-  def homepage
-    path = initialClusters
-    if path
-      redirect_to path
-    else
-      flash[:error] = "There was a problem selecting the initial products"
-      redirect_to '/error'
-    end
+  # this function gets an stack of searches and gets rid of the ones with repetitive
+  # layer numbers
+  def zipStack(stack)
+
+     allSearches = []
+     i=0
+     until (stack[-1 -i].layer == 1)
+       s = stack[-1-i]
+       ls = allSearches.map{|r| r.layer}
+
+       if (ls.index(s.layer).nil?)
+          if (ls.empty?)
+            allSearches.unshift(s)
+          elsif (ls[0] > s.layer)
+            allSearches.unshift(s) 
+          end  
+       end   
+       i = i+1
+     end    
+     allSearches.unshift(stack[-1-i]) if (stack[-1-i].layer==1)  
+     layer = allSearches[-1].layer
+
+     # When can't reach the first layer in the given time frame 
+     # Must create searches for higher layers
+     l = allSearches[0].layer
+     unless l == 1 
+          pid =  allSearches[0].parent_id
+          r = Search.new 
+          cluster = $clustermodel.find(pid)            
+          while (l>1)
+             mycluster = 'c0'
+             ppid = cluster.parent_id  
+             cs = $clustermodel.find_all_by_parent_id(ppid)
+             cs.each do |c|
+               r[mycluster] = c.id.to_s
+               mycluster.next!
+             end  
+          end   
+          r['parent_id'] = pid2
+          allSearches.unshift(r)
+     end
+
+     return layer, allSearches
   end
-  
-  def initialClusters
-    mysession = Session.find(session[:user_id])
-    mysession.clearFilters
-    if $model == Printer && s = Search.find_by_session_id(0)
-      path = 0.upto(s.cluster_count-1).map{|i| s.send(:"c#{i}")}.join('-')
-    else
-      current_version = $clustermodel.last.version
-      path = $clustermodel.find_all_by_parent_id_and_version(0, current_version, :order => 'cluster_size DESC').map{|c| c.id}.join('-')
-    end
-    "/#{$model.urlname}/compare/"+path
-  end
+ 
 end

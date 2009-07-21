@@ -172,17 +172,6 @@ end
 
 namespace :scrape_tiger do
   
-  require 'rubygems'
-  require 'nokogiri'
-  
-  require 'scraping_helper'
-  include ScrapingHelper
-  
-  require 'validation_helper'
-  include ValidationHelper
-  
-  include TigerDirectScraper
-  
   desc 'everything in a sequence'
   task :all => [:scrape, :clean, :validate]
   
@@ -278,6 +267,17 @@ namespace :scrape_tiger do
   
   desc 'Initialize'
   task :init => :environment do
+    require 'rubygems'
+    require 'nokogiri'
+
+    require 'scraping_helper'
+    include ScrapingHelper
+
+    require 'validation_helper'
+    include ValidationHelper
+
+    include TigerDirectScraper
+    
     $model = Printer
     
     @base_url = "http://www.tigerdirect.com/"

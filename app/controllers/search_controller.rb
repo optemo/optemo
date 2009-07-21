@@ -20,7 +20,7 @@ class SearchController < ApplicationController
         mysession.commit
         redirect_to "/#{$model.urlname}/compare/"+clusters.map{|c|c.id}.join('-')
       else
-        flash[:error] = "No products found."
+        flash[:error] = "No products were found."
         redirect_to "/#{$model.urlname}/compare/"+@session.oldclusters.map{|c|c.id}.join('-')
       end
     end
@@ -29,9 +29,12 @@ class SearchController < ApplicationController
   def find
     @session = Session.find(session[:user_id])
     sphinx = searchSphinx(params[:search])
-    product_ids = sphinx.results.delete_if{|r|r.class != $model || !r.myvalid?}.map{|p|p.id}
-    if product_ids.length == 0
-      flash[:error] = "No products were found"
+    product_ids = sphinx.results.delete_if{|r|r[0] != $model.name}.map{|r|r[1]}
+    current_version = $clustermodel.last.version
+    nodes = product_ids.map{|p| $nodemodel.find_by_product_id_and_version(p, current_version)}.compact
+    cluster_ids = nodes.map{|n|n.cluster_id}
+    if cluster_ids.length == 0
+      flash[:error] = "No products were found."
       if request.referer.nil?
         redirect_to "/#{$model.urlname}"
       else
@@ -39,11 +42,9 @@ class SearchController < ApplicationController
       end
     else
       @session.searchterm = params[:search]
-      @session.searchpids = product_ids.map{|id| "product_id = #{id}"}.join(' OR ')
+      @session.searchpids = nodes.map{|p| "product_id = #{p.product_id}"}.join(' OR ')
       @session.save
-      current_version = $clustermodel.last.version
-      cluster_ids = product_ids.map{|p| $nodemodel.find_by_product_id_and_version(p, current_version, :order => 'cluster_id').cluster_id}
-      clusters = cluster_ids.uniq.sort[0..8].compact
+      clusters = cluster_ids.sort.uniq[0..8]
       redirect_to "/#{$model.urlname}/compare/"+clusters.join('-')
     end
   end
@@ -53,14 +54,14 @@ class SearchController < ApplicationController
     @session.searchterm = ""
     @session.searchpids = ""
     @session.save
-    redirect_to "/#{$model.urlname}/"
+    redirect_to initialClusters
   end
   
   private
   
   def searchSphinx(searchterm)
     search = Ultrasphinx::Search.new(:query => searchterm, :per_page => 10000)
-    search.run
+    search.run(false)
     search
   end
   

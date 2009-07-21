@@ -1,0 +1,148 @@
+ a.link {margin-left: 10px; margin-right: 10px;}
+div.main {padding: 0; float: left; width: 745px; margin-left: 5px; text-align: left;}
+div.rowdiv {width: 745px; height: 225px}
+a img {border: none;}
+ .navigator_box p {margin: 0px 0px 5px; padding: 0; line-height:1.2em;}
+div.navigator_box {text-align: center; font-size: small; float: left; width:245px; height:225px; margin: 0px 2px 0px 0px; padding: 0px; background: url(../images/navigatorbox_u.png) no-repeat; _background-image:url(../images/navigatorbox_u.gif);}
+div.navigator_box:hover {background: url(../images/navigatorbox_s.png) no-repeat;}
+div.borderbox {margin: 5px 0px 0px 5px; height: 210px; width: 235px}
+.borderbox a {color: black; text-decoration: none}
+.backlink a{  color: #891D1D}
+.saveold {width: 45px; height: 15px; padding: 2px 1px 0px; right: 3px}
+.rightbar {width: 45px; position: absolute; right: 0; top: 0}
+.sim {width: 104px; height: 26px; padding: 4px 2px 0px; margin: auto; background: url(../images/sim_button.png) no-repeat;}
+.sim:hover{ background: url(../images/sim_button_high.png) no-repeat}
+a.save {font-size: 0.9em; line-height: 1.2em; text-decoration: none; background: url(../images/save_button.png) no-repeat; color: black;}
+.sim a {text-decoration: none; color: black; display: block; width: 100%; height: 100%; font-size: 0.9em; line-height: 0.9em;}
+.bottombar {width: 100%;}
+.up {text-decoration: none;  color: #000;}
+.down {text-decoration: none;  color: #000;}
+.up img, .down img {vertical-align: middle;}
+.clusterfeatures {float: right; margin-top: 1px; width: 134px; font-size: 0.70em;}
+.easylink {color: blue; text-decoration: underline}
+.title {color: #0B4F13; font-size: 16px}
+.productimg {cursor: pointer}
+ .clustergraph {border: solid thin black; background-color: white; width: 50px; float: left}
+.featurebar {background-color: purple; margin: 1px 0px; height: 3px; width: 25px}
+ div #leftbar {padding: 0; margin: 0; width: 195px; text-align: center; float: left; position: relative}
+#search {margin-top: 0.5em; width: 130px}
+ #submit_button {margin-top: 2px}
+#clearsearch {font-size: 0.8em}
+ div #savebar {background: #ddd; margin: 0.5em 0.1em 0; padding: 0em 0em 0.5em 0em; text-align: center;}
+#savebar h2 {margin: 0}
+.deleteX {position: absolute; left: 75px; top: 0;}
+#deleteme {font-size: 0.8em; margin: 0 5px}
+.saveditem {position: relative; text-align: center; width: 95px; height: 85px; float: left}
+p.smalldesc {font-size: 0.8em; line-height: 1em; padding: 0}
+#already_added_msg {color: red; margin-bottom: 4px}
+ div #filterbar {margin: 0.5em 0.1em; padding: 0em; text-align: center; position: relative; background: #ddd;}
+#filterbar h2 {margin: 0}
+.slider {margin: 0 0 0.8em 7px; width: 177px; padding-top: 0px; padding-bottom: 6px; position: relative}
+.preferenceSlider {background: url(../images/slider.gif) no-repeat; margin: 0 0 0.8em 7px; width: 177px; height: 13px; padding-top: 0px; padding-bottom: 6px; position: relative}
+.preferenceSliderVertical {background: url(../images/slider_vertical.gif) no-repeat; margin: 0 0 0.8em 7px; width: 10px; height: 50px; padding-top: 0px; padding-bottom: 6px; position: relative}
+.label {text-align: left; font-size: 0.8em; margin-left: 5px; width: 187px; margin-top: 0.6em}
+.space {margin-bottom: 20px;  }
+.preferences{ color: #777}
+.sliderlabel {font-size: 0.6em; padding-top: 17px; text-decoration: none; color: black}
+.labelVerticalPrefs{ font-size: 0.8em; color: #888; margin-left: 0px; margin-top: 0px}
+.lowlightfeature {color: #777}
+.regularfeature {color: #000}
+.comparisonfeature {position:absolute; color: green; float: left; font-size: 0.9em}
+.endlabel_min {display: none; position: absolute; bottom: -5px; left: -1px; font-size: 0.5em;}
+.endlabel_max {display: none; position: absolute; bottom: -5px; right: -1px; font-size: 0.5em;}
+.endlabel_min_Preferences {display: relative; position: absolute; bottom: -5px; left: -1px; font-size: 0.5em}
+.endlabel_max_Preferences {display: relative; position: absolute; bottom: -5px; right: -1px; font-size: 0.5em}
+.disp {width: 80px; position: absolute; right: 0; top: 0; font-size: 0.8em; text-align: left}
+.feature {position: relative}
+.hist {position: absolute; text-align: left; left: 7px; top: 16px}
+.ui-slider {position: relative; text-align: left}
+.ui-slider .ui-slider-handle {background:url(../../../images/diamond.gif) no-repeat; height:13px; width:9px;text-decoration:none;outline:none;position:absolute;z-index:2;}
+.ui-slider .ui-slider-range {position: absolute; z-index: 1; font-size: .7em; display: block; border: 0}
+.ui-slider-horizontal {background:url(../../../images/slider.gif) no-repeat; height: 13px}
+.ui-slider-horizontal .ui-slider-handle {top: -3px; margin-left: -4px}
+.ui-slider-horizontal .ui-slider-range {top: 0; height: 100%}
+.ui-slider-horizontal .ui-slider-range-min {left: 0}
+.ui-slider-horizontal .ui-slider-range-max {right: 0}
+.ui-slider-vertical .ui-slider-handle {background:url(../../../images/diamond_vertical.gif) no-repeat; height:13px; width:9px; overflow:hidden;position:absolute;z-index:2;}
+ div.navigator_box {_background-image:url(../images/navigatorbox_u.gif)}
+.cell{ float: left; width: 200px; overflow: hidden}
+.rowBeingDragged{ background: #CCCC00}
+.first {height: 100px; text-align: center}
+.first h2{ margin: 0}
+#graco, #sames, #iwata, #dopag {width: 570px; border: solid 2px #7e7e7e; padding:0; display:table; background-color: #d2d2d2}
+#graco h2 {margin:0; background-color: #fff; background-image: url(Graco.gif); background-repeat: no-repeat; width: 200px; height: 150px; text-indent:-999em; float:left}
+#graco ul, #sames ul, #iwata ul, #dopag ul {width: 350px; margin: 0; padding: 8px 0; display:table-cell; vertical-align: middle}
+#graco li, #sames li, #iwata li, #dopag li {margin-left: 40px}
+.clear{clear:both;}
+div#fade {background-color: black; position: absolute; top: 0; left: 0; width: 100%; height: 5000px; z-index: 1; opacity: 0.5; filter: alpha(opacity = 50); display: none}
+div#info {background: white; position: absolute; top: 20px;  width: 800px; height: 770px; z-index: 3; display: none;}
+#close {position: absolute; top: 0px; left: 781px}
+div #container {padding: 0px 5px; width: 790px; height: 100%; background-color: white; margin: 0px auto}
+div #outside {background-color: #ff9; margin: 0px; padding: 0px}
+#image {text-align: center; width: 400px; float: left}
+#features {width: 390px; float: left}
+div#textfeatures, #reviews{ clear:both}
+#features ul {list-style-type: none}
+div .showtable{ clear: both; text-align: center}
+div .left{ float: left; text-align: right; margin-top: 5px; margin-bottom: 10px; width: 390px}
+div .right{ float: right; text-align: left; margin-bottom: 10px; width: 390px}
+div .spacer {clear: both}
+#full_link{ clear: both}
+.review {font-size: 0.8em}
+html {height:100%; margin: 0; padding: 0}
+body { font-family: arial; padding: 0; margin: 0; height: 100%; position: relative;  }
+h1, h2 {letter-spacing:-0.5px;  }
+h2 {font-size:1.25em; letter-spacing:0px; font-style:italic}
+h2.compact {margin-top:0.05em; margin-bottom:1em}
+h2.tight {margin-bottom:0.5em}
+h2 em {text-decoration:underline}
+ul {margin:0.5em 0px 0px 1.5em; padding:0px}
+ul li {line-height:1.5em}
+p {margin:0.5em 0px 1.25em 0px; padding:0px; line-height:1.5em}
+p.last {margin-bottom:0px}
+p.compact {margin:0px; padding:0px}
+p, ul {font-size:0.9em}
+.small {font-size: 0.8em}
+#logo {float:left; margin-right: 5px; text-decoration: none}
+#logo span{ position: absolute; top: 54px; left: 230px; color: #693; visibility: hidden; font-family: monaco, arial; font-weight: bold}
+p {font-size: 1.1em; font-family: Arial}
+.index {text-align: center; font-size: 1.2em}
+.thin {margin: 0.5em 5em}
+#header {margin-top: 15px; margin-left: 20px; position: relative; width: 920px; height: 82px}
+#header_buttons {position: absolute; height: 30px; bottom: 5px; right: 0}
+#header_buttons img{ margin-top: 0px; vertical-align: middle}
+a.link { line-height: 1.5em}
+div #header_clear, #footer_options {  clear: both; height: 1px; position: relative}
+div #headerbar {position: absolute; left: -3px; top: 92px; height: 5px; width: 953px; z-index: 2;  background:transparent url(../images/divider.gif)}
+div #left {text-align: left; float: left; width: 45%; padding-left: 30px}
+div #right {text-align: left; float: right; width: 45%; padding-left: 30px}
+div.pass img{ border: medium double gray}
+.pass {float: left; margin: 0px 10px 0px 0px}
+#error_space {text-align: left}
+#bottomlinks {text-align: center; font-size: small; margin: 2px 0px}
+#whylaser {margin-left: 20px; text-decoration: none}
+#whylaser span{ position: absolute; top: 54px; left: 610px; color: black; font-size: small; width: 100px; visibility: hidden}
+ .category {width: 175px; margin: 5px; float: left; text-align: center}
+.category a{ text-decoration: none}
+h3 {margin: 5px}
+.description {text-align: left; padding: 0; font-size: 0.9em}
+ .article {margin: 0px 30px; line-height: 1.5em}
+.article h1 {padding-bottom: 15px !important}
+.article_link {font-size: 1.4em; text-align: center; margin-top: 2em}
+.listing {font-size: 0.8em; padding: 0 !important; line-height: 1}
+  #mycenter {margin-left: auto; margin-right: auto; width: 958px; position: relative}
+.dialog {position:relative; margin:0px auto; width: 958px; min-width:8em; max-width:1460px;   z-index:1; margin-left:18px;   }
+.dialog .content, .dialog .t, .dialog .b, .dialog .b div {background:transparent url(../images/mainbg.png) no-repeat top right; _background-image:url(../images/mainbg.gif)}
+.dialog .content {position:relative; zoom:1;  _overflow-y:hidden; padding:0px 8px 0px 0px}
+.dialog .t { position:absolute; left:0px; top:0px; width:18px;  margin-left:-18px; height:100%; _height:1600px;  background-position:top left}
+.dialog .b { position:relative; background-position:bottom right; width:100%}
+.dialog .b, .dialog .b div {height:20px;  font-size:1px}
+.dialog .b div {position:relative; width:18px;  margin-left:-18px; background-position:bottom left}
+.dialog .hd, .dialog .bd, .dialog .ft {position:relative}
+.dialog .bd {margin-top: 4px}
+.dialog .wrapper { position:static; margin: 0; max-height:1500px; min-height: 776px; overflow:auto;  }
+.dialog h1, .dialog p {margin:0px;  padding:0.5em 0px 0.5em 0px}
+.dialog h1 {padding-bottom:0px}
+ .dialog .content, .dialog .t, .dialog .b, .dialog .b div {_background-image:url(../images/mainbg.gif)}
+.dialog .content {_overflow-y:hidden}
+.dialog .t {_height:1600px;  }

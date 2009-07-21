@@ -41,6 +41,9 @@ div.borderbox {
 	color: black;
 	text-decoration: none;
 }
+.borderbox p {
+	padding: 0.1em 0;
+}
 .backlink a{
 	/*margin-left: 10px;*/
 	color: #891D1D;
@@ -319,3 +322,9 @@ div #filterbar {
 .ui-slider-horizontal .ui-slider-range-max { right: 0; }
 
 .ui-slider-vertical .ui-slider-handle { background:url(../../../images/diamond_vertical.gif) no-repeat; height:13px; width:9px; overflow:hidden;position:absolute;z-index:2;}
+
+/** IE6 Compatibility **/
+div.navigator_box 
+{
+	_background-image:url(../images/navigatorbox_u.gif);
+}

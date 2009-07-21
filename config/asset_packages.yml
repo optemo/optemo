@@ -1,0 +1,12 @@
+--- 
+javascripts: 
+- base: 
+  - raphael
+  - application
+  - jquery.tablednd_0_5
+stylesheets: 
+- base: 
+  - camera
+  - compare
+  - show
+  - welcome

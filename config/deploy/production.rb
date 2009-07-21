@@ -13,7 +13,7 @@ set :deploy_via, :remote_cache
 #ssh_options[:paranoid] = false
 default_run_options[:pty] = true
 set :use_sudo, false
-
+set :user, 'jan'
 
 role :app, domain
 role :web, domain
@@ -31,6 +31,12 @@ desc "Sync the public/assets directory."
   desc "Restart Application"
   task :restart do
     run "touch #{current_path}/tmp/restart.txt"
+  end
+  desc "Create asset packages for production" 
+  task :after_update_code, :roles => [:web] do
+    run <<-EOF
+      cd #{release_path} && rake asset:packager:build_all
+    EOF
   end
 end
 
