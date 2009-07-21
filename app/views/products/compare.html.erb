@@ -48,14 +48,15 @@
 		<%(@layer-1).times do |l| %>
 	 	  <!-- If s>1 then print << -->
 		<% if l>0 %>
-		    <%= link_to "#{@allSearches[l].description(@session)}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>
+	
+		    <%= link_to "#{@allSearches[l].desc}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>
 		  <%else%>
-		  	   <%= link_to "All #{$model.urlname.capitalize}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>	
+		  	   <%= link_to "All Kinds of #{$model.urlname.capitalize}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>	
 		  <%end%>
 		  &lt;&lt;
 	   <%end %>
 	<% if @layer>1%>
-		<%= "#{@allSearches[-1].description(@session)}"%>
+		<%= "#{@allSearches[@layer-1].desc}"%>
 	<%end%>
 	<%end%>	
 	</div>
@@ -66,6 +67,7 @@
 		<% open = true %>
 	  <% end %>
 	  <!-- Navbox partial to draw boxes -->
+	  <%@descriptions = @s.description(@session) %>
 	  <%= render :partial => 'navbox', :locals => {:i => i, :cluster => @s.clusters[i]} %>
 	  <% if i%3 == 2 %>
 		</div>
