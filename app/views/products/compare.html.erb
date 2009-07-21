@@ -68,7 +68,6 @@
 		<% open = true %>
 	  <% end %>
 	  <!-- Navbox partial to draw boxes -->
-	  <%@descriptions = @s.description(@session) %>
 	  <%= render :partial => 'navbox', :locals => {:i => i, :cluster => @s.clusters[i]} %>
 	  <% if i%3 == 2 %>
 		</div>

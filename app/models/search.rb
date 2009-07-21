@@ -36,8 +36,7 @@ class Search < ActiveRecord::Base
     [min, max]
   end
   
-  def description(session)
-    des = []
+  def clusterDescription(session)
     clusterDs = {}
     cluster_count.times do |j| 
       clusterDs["c#{j}"] = []
@@ -48,41 +47,22 @@ class Search < ActiveRecord::Base
       low = f.low
       high = f.high
       searchR = ranges(f.name)
-      fL = true
-      return 'Empty' if searchR[0].nil? || searchR[1].nil?
-      if (searchR[1]<=low)
-           des <<  $model::ContinuousFeaturesDescLow[f.name]
-           fL = false
-      elsif (searchR[0]>=high)
-           des <<  $model::ContinuousFeaturesDescHigh[f.name]
-           fL = false
-      end
-      ds[0] = des
-      if fL
-        
+      unless (searchR[0] >= high && searchR[1]<=low)
         for j in 1..cluster_count 
               cluster_id = send(:"c#{j-1}")
-              
               c = $clustermodel.find(cluster_id)
               cRanges = c.ranges(f.name, session)
               if (cRanges[0] >= high)
-
                 clusterDs["c#{j-1}"] <<  $model::ContinuousFeaturesDescHigh[f.name]
-                    
               elsif (cRanges[1] <= low)
-                  
                 clusterDs["c#{j-1}"] << $model::ContinuousFeaturesDescLow[f.name]
-  
-              end
-        end 
-       
-      end    
+              end    
+        end  
+      end
     end  
-
-    for j in 1..cluster_count
-      ds[j] = clusterDs["c#{j-1}"]
+    for j in 0..cluster_count-1
+      ds[j] = clusterDs["c#{j}"]
     end  
-
     res = ds.map{|d| #d.blank? ? 'All Purpose' : 
       d.join(', ')}         
     res
@@ -95,13 +75,13 @@ class Search < ActiveRecord::Base
       low = f.low
       high = f.high
       searchR = ranges(f.name)
-      return 'Empty' if searchR[0].nil? || searchR[1].nil?
       if (searchR[1]<=low)
            des <<  $model::ContinuousFeaturesDescLow[f.name]
       elsif (searchR[0]>=high)
            des <<  $model::ContinuousFeaturesDescHigh[f.name]
       end
     end  
+   
     res = des.join(', ')
     res.blank? ? 'All Purpose' : res 
   end
