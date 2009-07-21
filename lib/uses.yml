@@ -2,10 +2,10 @@
 corporate:
        printserver:             1
        paperinput_min:          800
-       ppm_min:                 30
+       ppm_min:                 40
 small_office:
        printserver:             1
 home_office:
-       itemwidth_max:           2000
+       itemwidth_max:           1570
 photography:
-       resolutionmax_min:       1200
+       resolutionmax_min:       2400

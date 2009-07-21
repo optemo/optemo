@@ -61,8 +61,8 @@ div.borderbox {
 	top: 0;
 }
 .sim {
-	width: 104px;
-	height: 26px;
+	width: 132px;
+	height: 38px;
 	padding: 4px 2px 0px;
 	margin: auto;
 	background: url(../images/sim_button.png) no-repeat;}
@@ -80,9 +80,7 @@ a.save {
 	color: black;
 	display: block;
 	width: 100%;
-	height: 100%;
-	font-size: 0.9em;
-	line-height: 0.9em;}
+	height: 100%;}
 .bottombar {
 	width: 100%;}
 .up {
