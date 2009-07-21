@@ -14,7 +14,7 @@ class JavaTestSession < Webrat::SeleniumSession
      PrinterPageHelpers.uses.keys.each do |u|
         get_homepage
         pick_printer_use u
-        set_total_printers u, self.num_printers 
+        set_total_printers u, (self.num_printers) 
      end
      get_homepage
      pick_printer_use

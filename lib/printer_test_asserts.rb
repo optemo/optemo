@@ -3,6 +3,38 @@ module PrinterTestAsserts
     report_error "Already saved msg hidden" unless @sesh.already_saved_msg?
   end
   
+  def assert_boxes_clear 
+    @sesh.num_checkboxes.times do |i|
+      assert_box_unchecked i
+    end
+  end
+  
+  def assert_box_checked boxnum
+    report_error "Checkbox not selected" unless @sesh.checkbox_selected? boxnum
+  end
+  
+  def assert_box_unchecked boxnum
+    report_error "Checkbox selected" if @sesh.checkbox_selected? boxnum
+  end
+  
+  def assert_pic_not_nil details
+    unless details 
+      report_error "Detail page is nil"
+      return
+    end
+    price_el = details.css('div.showtable .left')
+    report_error "Nil price in detail page" unless (price_el and price_el.first.content.match(/\$/) )
+  end
+  
+  def assert_price_not_nil details
+    unless details 
+      report_error "Detail page is nil"
+      return
+    end
+    pic_el = details.css('#image img')
+    report_error "Nil image in detail page" unless (pic_el and pic_el.first)
+  end
+  
   def assert_is_homepage
     report_error "Is not the homepage" unless @sesh.home_page?
   end

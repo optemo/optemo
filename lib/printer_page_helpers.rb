@@ -7,6 +7,17 @@ module PrinterPageHelpers
     return @@uses
   end
   
+  def num_uses
+    return @@uses.length
+  end
+  
+  def get_detail_page which_box
+    link = get_detail_page_link which_box
+    visit link  
+    detail_el = get_el doc.css("#container")
+    return detail_el 
+  end
+  
   def get_init_values
      
      @slider_min_names= []
@@ -129,7 +140,7 @@ module PrinterPageHelpers
 
    # Reads the number of printers being browsed from the page.
    def num_printers
-      leftbar_el = get_el doc.css("#leftbar")
+      leftbar_el = get_el(doc.css("#leftbar"))
       return 0 if leftbar_el.nil?
       leftbar = leftbar_el.content.to_s
       printer_phrase = leftbar.match('Browsing \d+ Printers').to_s
