@@ -1,28 +1,29 @@
 # Rake tasks to test the Laserprinter website
 namespace :printer_test do   
 
-  require 'printer_test_asserts'
-  include PrinterTestAsserts
-  
-  require 'printer_test_mod'
-  include PrinterTest
-  
-  require 'printer_page_helpers'
-  include PrinterPageHelpers
-  
-  
    desc 'Run all tests'
-   task :all_java => [:sliders, :browse_similar, :search, :brand_selector, :random]
+   task :all => [:sliders, :browse_similar, :search, :brand_selector, :random]
+  
+   desc 'Both randoms'
+   task :all_random => [:random_nojava, :random]
   
    desc 'Run all tests.'
-   task :all => [:sliders, :browse_similar, :search, :brand_selector, :homepage, :random_nojava]
+   task :all_nojava => [:sliders, :browse_similar, :search, :brand_selector, :homepage, :random_nojava]
    
-   desc 'sandbox'
-   task :sandbox => :init do
-     setup 'sandbox'
-     @sesh.num_boxes.times do |i|
-        puts @sesh.get_detail_page_link(i+1)
+   desc 'Check and uncheck every chekbox'
+   task :checkboxes => :java_init do
+      setup_java 'checkboxes'
+      @sesh.num_checkboxes.times do |i|
+        2.times {test_checkbox i}
       end
+      close_log
+   end
+   
+   desc 'detail page'
+   task :detail_page => :init do 
+     setup 'detail_page'
+     test_detail_page 1
+     test_detail_page 2
      close_log
    end
    
@@ -31,7 +32,7 @@ namespace :printer_test do
      
      setup 'homepage'
      
-     PrinterPageHelpers.uses.length.times do |x|
+     @sesh.num_uses.times do |x|
        test_click_home_logo
        test_pick_use x
      end
@@ -44,7 +45,7 @@ namespace :printer_test do
      setup "sliders" 
 
      100.times do
-       pick_slider = rand @sesh.num_sliders
+       pick_slider = rand num_sliders
 
        distance =@sesh.slider_min(pick_slider) + rand(@sesh.slider_range(pick_slider))
        # TODO This tests integer inputs ONLY!
@@ -117,11 +118,12 @@ namespace :printer_test do
          search_strings << bname.downcase
        end
 
-       20.times do
+       200.times do
 
-         pick_action = (rand 10).floor
+         pick_action = (rand 12).floor
          # For the error page, the # of possible actions is very limited.
-         pick_action = (8 + rand(2)).floor if @sesh.error_page?
+         pick_action = 10 + rand(2) if @sesh.error_page?
+         pick_action = 12 if @sesh.home_page?
 
          if pick_action == 0                     #0 Test move sliders.
            slide_me = rand @sesh.num_sliders
@@ -161,15 +163,24 @@ namespace :printer_test do
              unsave_me = (rand(@sesh.num_saved_items) + 1).floor
              test_remove_saved unsave_me
            end
-         elsif pick_action == 7                 #5 Test remove brand
+         elsif pick_action == 7                 #7 Test remove brand
            if( @sesh.num_brands_selected > 0 )
              deselect_me = (rand(@sesh.num_brands_selected) + 1).floor
              test_remove_brand deselect_me
            end
-         elsif pick_action == 8                  #5 Test home logo
-             test_click_home_logo
-         elsif pick_action == 9                  #6 Test back button
+         elsif pick_action == 8                 #8 Test checkboxes
+           clickme = rand(@sesh.num_checkboxes)
+           test_checkbox clickme
+         #elsif pick_action == 9                 # Test details 
+        #   detailme = rand(@sesh.num_boxes)
+        #   test_detail_page detailme
+         elsif pick_action == 10                  #10 Test home logo
+           test_click_home_logo
+         elsif pick_action == 11                  #11 Test back button
            # No back button test is implemented
+         elsif pick_action == 12                  #12 Test clicking a use button
+           pickme = rand(@sesh.num_uses.length)
+           test_pick_use pickme
          end
 
        end
@@ -189,12 +200,12 @@ namespace :printer_test do
          search_strings << bname.downcase
        end
 
-       50.times do
+       200.times do
 
-         pick_action = rand 7
+         pick_action = rand 8
          # For the error page, the # of possible actions is very limited.
-         pick_action = 5 + rand(2) if @sesh.error_page?
-         pick_action = 7 if @sesh.home_page?
+         pick_action = 6 + rand(2) if @sesh.error_page?
+         pick_action = 8 if @sesh.home_page?
 
          if pick_action == 0                     #0 Test move sliders.
            slide_me = rand @sesh.num_sliders
@@ -226,13 +237,15 @@ namespace :printer_test do
            if @sesh.num_clear_search_links > 0
              test_remove_search 
            end
-         elsif pick_action == 5                  #5 Test home logo
+         elsif pick_action == 5                 #5 Test details 
+            detailme = rand(@sesh.num_boxes)
+            test_detail_page detailme
+         elsif pick_action == 6                  #6 Test home logo
              test_click_home_logo
-         elsif pick_action == 6                  #6 Test back button
+         elsif pick_action == 7                  #7 Test back button
             #Back button test not implemented
-         elsif pick_action == 7                  #7 Test clicking a use button
-           pickme = rand(PrinterPageHelpers.uses.length)
-           test_pick_use pickme
+         elsif pick_action == 8                  #8 Test clicking a use button
+           test_pick_use 0
          end
 
        end
@@ -251,6 +264,16 @@ namespace :printer_test do
         require 'webrat'
         require 'mechanize' # Needed to make Webrat work
         require 'test_session'
+        
+        require 'scraping_helper'
+        include ScrapingHelper
+        
+
+        require 'printer_test_mod'
+        include PrinterTest
+        
+        require 'printer_test_asserts'
+        include PrinterTestAsserts
         
         Webrat.configure do |conf| 
          conf.mode = :mechanize  # Can't be rails or Webrat won't work 
@@ -273,9 +296,21 @@ namespace :printer_test do
         require 'webrat'
         require 'webrat/selenium'
         require 'java_test_session'
+        
+        require 'scraping_helper'
+        include ScrapingHelper
 
+        require 'printer_test_mod'
+        include PrinterTest
+        
+        require 'printer_test_asserts'
+        include PrinterTestAsserts
+
+        
         Webrat.configure do |config|
-          config.mode = :selenium 
+          config.mode = :selenium
+          config.application_environment = :test  
+          config.application_framework = :rails
         end
 
       

@@ -3,6 +3,38 @@ module PrinterTestAsserts
     report_error "Already saved msg hidden" unless @sesh.already_saved_msg?
   end
   
+  def assert_boxes_clear 
+    @sesh.num_checkboxes.times do |i|
+      assert_box_unchecked i
+    end
+  end
+  
+  def assert_box_checked boxnum
+    report_error "Checkbox not selected" unless @sesh.checkbox_selected? boxnum
+  end
+  
+  def assert_box_unchecked boxnum
+    report_error "Checkbox selected" if @sesh.checkbox_selected? boxnum
+  end
+  
+  def assert_pic_not_nil details
+    unless details 
+      report_error "Detail page is nil"
+      return
+    end
+    price_el = details.css('div.showtable .left')
+    report_error "Nil price in detail page" unless (price_el and price_el.first.content.match(/\$/) )
+  end
+  
+  def assert_price_not_nil details
+    unless details 
+      report_error "Detail page is nil"
+      return
+    end
+    pic_el = details.css('#image img')
+    report_error "Nil image in detail page" unless (pic_el and pic_el.first)
+  end
+  
   def assert_is_homepage
     report_error "Is not the homepage" unless @sesh.home_page?
   end
@@ -126,10 +158,10 @@ module PrinterTestAsserts
     report_error "Saved printers not cleared" if @sesh.num_saved_items != 0 
   end
   
-  def assert_browsing_all_printers
-  # Total printers = current browsing printers
-    report_error "Not all printers displayed" if @sesh.total_printers != @sesh.num_printers
-  
+  def assert_browsing_all_printers i=0
+    if @sesh.total_printers[i] != @sesh.num_printers
+      report_error "Not all printers displayed: should be #{@sesh.total_printers[i]}, is #{@sesh.num_printers}" 
+    end
   end
   
   def assert_num_printers_decreased

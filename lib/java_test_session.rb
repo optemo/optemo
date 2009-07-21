@@ -9,10 +9,23 @@ class JavaTestSession < Webrat::SeleniumSession
      super
      @logfile = log
      get_homepage
-     
+     pick_printer_use
      get_init_values
-     
+     PrinterPageHelpers.uses.keys.each do |u|
+        get_homepage
+        pick_printer_use u
+        set_total_printers u, (self.num_printers) 
+     end
+     get_homepage
+     pick_printer_use
   end
+     
+  def click_checkbox clickme
+    cbox_id = doc.css('#filter_form input[@type="checkbox"]')[clickme].[]('id')
+    selenium.click cbox_id
+    browser.submit "filter_form"
+    wait_for_load
+  end   
      
    def move_slider which_slider, min, max
      fill_in @slider_max_names[which_slider], :with => max
@@ -56,7 +69,7 @@ class JavaTestSession < Webrat::SeleniumSession
       end
    end
    
-   def pick_printer_use which_use
+   def pick_printer_use which_use=0
      browser.click "link=#{@@uses[which_use] || which_use}" 
      wait_for_load
    end
