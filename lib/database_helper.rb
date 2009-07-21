@@ -34,7 +34,7 @@ module DatabaseHelper
   
   def create_printer rec
     atts_to_copy = only_overlapping_atts rec.attributes, $model
-    p = Printer.new(atts_to_copy)
+    p = $model.new(atts_to_copy)
     p.save
     return p
   end

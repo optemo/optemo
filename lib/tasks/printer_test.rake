@@ -22,8 +22,19 @@ namespace :printer_test do
    desc 'detail page'
    task :detail_page => :init do 
      setup 'detail_page'
-     test_detail_page 1
-     test_detail_page 2
+      
+     #urls = recursively_get_urls([@sesh.current_url])
+     
+     #while !urls.empty?
+     #  next_url = urls.pop
+    #  log "Visiting #{next_url}"
+    #  @sesh.visit next_url
+    #  (1..@sesh.num_boxes).each do |num|
+    #     log "Testing #{num}th detail page"
+    #     test_detail_page(num)
+    #     log "Done testing #{num}th detail page"
+    #   end
+    # end
      close_log
    end
    
@@ -45,16 +56,17 @@ namespace :printer_test do
      setup "sliders" 
 
      100.times do
-       pick_slider = rand num_sliders
 
-       distance =@sesh.slider_min(pick_slider) + rand(@sesh.slider_range(pick_slider))
+       pick_slider = rand @sesh.num_sliders
+
+       distance =@sesh.slider_min(pick_slider).to_i + rand(@sesh.slider_range(pick_slider)).to_i
        # TODO This tests integer inputs ONLY!
        # TODO Testing non-integers might require changes in my assert code!
        log "Testing the " + @sesh.slider_name(pick_slider) + " slider. Moving it to " +  distance.to_s
 
-       new_min = @sesh.current_slider_min(pick_slider)
-       new_max = @sesh.current_slider_max(pick_slider)
-       (rand >= 0.5)? new_min = distance : new_max = distance
+       new_min = @sesh.current_slider_min(pick_slider).to_i
+       new_max = @sesh.current_slider_max(pick_slider).to_i
+       (rand >= 0.5)? new_min = distance.to_i : new_max = distance.to_i
 
        test_move_sliders(pick_slider, new_min, new_max)
 
@@ -124,6 +136,7 @@ namespace :printer_test do
          # For the error page, the # of possible actions is very limited.
          pick_action = 10 + rand(2) if @sesh.error_page?
          pick_action = 12 if @sesh.home_page?
+         pick_action = 13 if @sesh.get_bd_div_text == ''
 
          if pick_action == 0                     #0 Test move sliders.
            slide_me = rand @sesh.num_sliders
@@ -131,9 +144,9 @@ namespace :printer_test do
            offset = rand(@sesh.slider_range(slide_me))
            distance = @sesh.slider_min(slide_me).floor + offset
 
-           new_min = @sesh.current_slider_min(slide_me)
-           new_max = @sesh.current_slider_max(slide_me)
-           (rand >= 0.5)? new_min = distance : new_max = distance
+           new_min = @sesh.current_slider_min(slide_me).to_i
+           new_max = @sesh.current_slider_max(slide_me).to_i
+           (rand >= 0.5)? new_min = distance.to_i : new_max = distance.to_i
 
            test_move_sliders(slide_me, new_min, new_max)
          elsif pick_action == 1                  #1 Test add brand
@@ -179,8 +192,10 @@ namespace :printer_test do
          elsif pick_action == 11                  #11 Test back button
            # No back button test is implemented
          elsif pick_action == 12                  #12 Test clicking a use button
-           pickme = rand(@sesh.num_uses.length)
+           pickme = rand(@sesh.num_uses)
            test_pick_use pickme
+         elsif pick_action == 13
+           break 
          end
 
        end
@@ -268,7 +283,6 @@ namespace :printer_test do
         require 'scraping_helper'
         include ScrapingHelper
         
-
         require 'printer_test_mod'
         include PrinterTest
         

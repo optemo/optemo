@@ -17,21 +17,21 @@ module PrinterTestAsserts
     report_error "Checkbox selected" if @sesh.checkbox_selected? boxnum
   end
   
-  def assert_pic_not_nil details
-    unless details 
-      report_error "Detail page is nil"
+  def assert_detail_pic_not_nil
+    unless @sesh.detail_page?
+      report_error "Not the detail page" 
       return
     end
-    price_el = details.css('div.showtable .left')
+    price_el = @sesh.doc.css('div.showtable .left')
     report_error "Nil price in detail page" unless (price_el and price_el.first.content.match(/\$/) )
   end
   
-  def assert_price_not_nil details
-    unless details 
-      report_error "Detail page is nil"
+  def assert_detail_price_not_nil
+    unless @sesh.detail_page?
+      report_error "Not the detail page" 
       return
     end
-    pic_el = details.css('#image img')
+    pic_el = @sesh.doc.css('#image img')
     report_error "Nil image in detail page" unless (pic_el and pic_el.first)
   end
   

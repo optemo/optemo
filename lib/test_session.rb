@@ -48,6 +48,10 @@ class TestSession < Webrat::MechanizeSession
       fill_in "search", :with => query
       click_button "submit_button"
     end
+    
+    def get_detail_page pid
+      visit get_detail_page_link(pid)
+    end
 
     def pick_printer_use which_use=0
       #use = PrinterPageHelpers.uses[which_use] || which_use
