@@ -39,7 +39,7 @@ class Session < ActiveRecord::Base
     myfilter[:itemwidth_max] = myfilter[:itemwidth_max].to_i*100 if myfilter[:itemwidth_max]
     myfilter[:itemwidth_min] = myfilter[:itemwidth_min].to_i*100 if myfilter[:itemwidth_min]
     $featuremodel.column_names.each do |column|
-      if !(column == 'id' || column == 'session_id')
+      if !(column == 'id' || column == 'session_id' || column == 'search_id')
         feature_filter[column.intern] = myfilter.delete(column.intern) if myfilter[column.intern]
       end
     end 
@@ -61,6 +61,7 @@ class Session < ActiveRecord::Base
     else
       #Search is narrowed, so use current products to begin with
       clusters = @oldsession.oldclusters
+      #Clear cache so it can be recalculated with new filtering
       clusters.each{|c|c.clearCache}
     end
     clusters.delete_if{|c| c.isEmpty(self)}
