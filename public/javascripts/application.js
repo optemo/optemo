@@ -20,6 +20,49 @@ function fadein()
 	$('#info').css('display', 'none');	
 }
 
+function spinner(holderid, R1, R2, count, stroke_width, colour) {
+                var sectorsCount = count || 12,
+                    color = colour || "#fff",
+                    width = stroke_width || 15,
+                    r1 = Math.min(R1, R2) || 35,
+                    r2 = Math.max(R1, R2) || 60,
+                    cx = r2 + width,
+                    cy = r2 + width,
+                    r = Raphael(holderid, r2 * 2 + width * 2, r2 * 2 + width * 2),
+                    
+                    sectors = [],
+                    opacity = [],
+                    beta = 2 * Math.PI / sectorsCount,
+
+                    pathParams = {stroke: color, "stroke-width": width, "stroke-linecap": "round"};
+                    Raphael.getColor.reset();
+                for (var i = 0; i < sectorsCount; i++) {
+                    var alpha = beta * i - Math.PI / 2,
+                        cos = Math.cos(alpha),
+                        sin = Math.sin(alpha);
+                    opacity[i] = 1 / sectorsCount * i;
+                    sectors[i] = r.path(pathParams)
+                                    .moveTo(cx + r1 * cos, cy + r1 * sin)
+                                    .lineTo(cx + r2 * cos, cy + r2 * sin);
+                    if (color == "rainbow") {
+                        sectors[i].attr("stroke", Raphael.getColor());
+                    }
+                }
+                var tick;
+                (function ticker() {
+                    opacity.unshift(opacity.pop());
+                    for (var i = 0; i < sectorsCount; i++) {
+                        sectors[i].attr("opacity", opacity[i]);
+                    }
+                    r.safari();
+                    tick = setTimeout(ticker, 1000 / sectorsCount);
+                })();
+                return function () {
+                    clearTimeout(tick);
+                    r.remove();
+                };
+            }
+
 // When you click the Save button:
 function saveit(id)
 {	
@@ -121,9 +164,17 @@ $(document).ready(function() {
 			// window.location = "/compare/list?" + newPrefString
 		}
 	});
-			
+	
+	//Display loading spinner
+	$('#myfilter_brand').change(function() {
+		$('#filter_form').submit();
+		spinner("myspinner", 11, 20, 9, 5, "#000");
+		$('#loading').css('left', ((document.body.clientWidth-100)/2)+'px')
+			.css('display', 'inline');
+	});
+	
 	//Set up sliders
-	$('.slider').each(function () {
+	$('.slider').each(function() {
 		curmin = parseInt($(this).attr('data-startmin'));
 		curmax = parseInt($(this).attr('data-startmax'));
 		rangemin = parseInt($(this).attr('data-min'));

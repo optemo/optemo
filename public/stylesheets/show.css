@@ -20,6 +20,15 @@ div#info {
 	height: 770px;
 	z-index: 3;
 	display: none;}
+div#loading {
+	top: 300px;
+	left: 500px;
+	position: absolute;
+	display: none;
+	z-index: 2;
+	width: 100px;
+	font-size: 2em;
+}
 #close {
 	position: absolute;
 	top: 0px;
