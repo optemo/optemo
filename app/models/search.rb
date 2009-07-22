@@ -156,8 +156,6 @@ class Search < ActiveRecord::Base
   def self.createFromPath_and_commit(path, session_id)
     s = createFromPath(path, session_id)
     s.save
-  #  ActiveRecord::Base.connection.execute("update #{$model}_features set search_id = #{s['id']} where session_id = #{session_id}")
-    ActiveRecord::Base.connection.execute("update printer_features set search_id = #{s['id']} where session_id = #{session_id}")
     s
   end
   
