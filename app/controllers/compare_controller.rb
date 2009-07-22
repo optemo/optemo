@@ -225,9 +225,9 @@ def finalDisplay(product, column)
         when 'Unknown' 
     	    return "Unavailable"
         when "true"
-          return "&#10003;" # This is not IE6 compatible
+          # return "&#10003;" # This is not IE6 compatible
           # To make it IE compatible, replace by-
-          # image_tag '/images/checkmark.png', :width => 18, :height => 18
+          image_tag '/images/checkmark.png', :width => 18, :height => 18
           # But then need to do something to fade out image when row is faded
         when "false"
     	    return "x"		
