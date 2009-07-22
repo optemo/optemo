@@ -44,20 +44,18 @@
 	<span style="color:red;"><%= flash[:error] %></span><span class="title"><%= flash[:notice] %></span>
 	<div class='backlink'>	
 	<% unless @allSearches.empty? %>
-	 
-		<%(@layer-1).times do |l| %>
+		<%for l in 0..(@allSearches.size - 1)%>
 	 	  <!-- If s>1 then print << -->
-		<% if l>0 %>
-	
-		    <%= link_to "#{@allSearches[l].desc}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>
-		  <%else%>
-		  	   <%= link_to "All Kinds of #{$model.urlname.capitalize}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>	
+		  <%if l==0%>
+		 		<%= link_to "#{$model.urlname.capitalize}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>
+		  <%else%> 
+		  		<%= link_to "#{@allSearches[l].desc}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>
 		  <%end%>
-		  &lt;&lt;
+          <%if l<@allSearches.size - 1%>
+		  	&lt;&lt;
+		  <%end%> 
 	   <%end %>
-	<% if @layer>1%>
-		<%= "#{@allSearches[@layer-1].desc}"%>
-	<%end%>
+
 	<%end%>	
 	</div>
 	
