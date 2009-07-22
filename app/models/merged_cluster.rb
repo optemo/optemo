@@ -51,8 +51,12 @@ class MergedCluster
   def nodes(session)
     unless @nodes
       clustersquery = @clusters.map{|c| "cluster_id = #{c.id}"}.join(' or ')
-      @nodes = $nodemodel.find(:all, :order => 'price ASC', :conditions => "(#{clustersquery}) #{session.filter && !Cluster.filterquery(session).blank? ?
-       ' and '+Cluster.filterquery(session) : ''}#{session.searchpids.blank? ? '' : ' and ('+session.searchpids+')'}")
+      if clustersquery.blank?
+        @nodes = []
+      else
+        @nodes = $nodemodel.find(:all, :order => 'price ASC', :conditions => "(#{clustersquery}) #{session.filter && !Cluster.filterquery(session).blank? ?
+        ' and '+Cluster.filterquery(session) : ''}#{session.searchpids.blank? ? '' : ' and ('+session.searchpids+')'}")
+      end
     end
     @nodes
   end
