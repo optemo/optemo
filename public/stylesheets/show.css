@@ -21,16 +21,19 @@ div#info {
 	z-index: 3;
 	display: none;}
 div#loading {
-	top: 300px;
+	top: 345px;
+	left: 447px;
 	position: absolute;
 	display: none;
 	z-index: 2;
 	width: 200px;
 	font-size: 2em;
-	background-color: green;
+	background-color: #eee;
+	border: solid black 3px;
+	padding: 20px;
 }
 #loading div {
-	margin-top: -4px;
+	margin-top: -7px;
 }
 #close {
 	position: absolute;
