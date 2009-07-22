@@ -154,6 +154,13 @@ function buildOtherItemsArray(root, attr_name, itemId)
 	return otherItems;
 }
 
+function submit_filter()
+{
+	$('#filter_form').submit();
+	spinner("myspinner", 11, 20, 9, 5, "#000");
+	$('#loading').css('display', 'inline');
+}
+
 $(document).ready(function() {
 	// ToDo: Add code for table drag drop here
 	
@@ -166,12 +173,7 @@ $(document).ready(function() {
 	});
 	
 	//Display loading spinner
-	$('#myfilter_brand').change(function() {
-		$('#filter_form').submit();
-		spinner("myspinner", 11, 20, 9, 5, "#000");
-		$('#loading').css('left', ((document.body.clientWidth-100)/2)+'px')
-			.css('display', 'inline');
-	});
+	$('#myfilter_brand').change(function() {submit_filter();});
 	
 	//Set up sliders
 	$('.slider').each(function() {
@@ -202,9 +204,7 @@ $(document).ready(function() {
 				$('.sliderlabel:first', this).html(min);
 				$('.sliderlabel:last', this).html(max);
 				},
-			stop: 	function(e,ui) {
-				$('#filter_form').submit();
-				}
+			stop: function(e,ui){submit_filter();}
 		});
 		$('a:first', this).html('<div class="sliderlabel">'+curmin+'</div>')
 		$('a:last', this).html('<div class="sliderlabel">'+curmax+'</div>')
