@@ -32,7 +32,7 @@ module DatabaseHelper
     return matching
   end
   
-  def create_printer rec
+  def create_product_from_rec rec
     atts_to_copy = only_overlapping_atts rec.attributes, $model
     p = $model.new(atts_to_copy)
     p.save

@@ -46,6 +46,42 @@ end
 
 namespace :scrape_extra do
   
+  desc 'yoopsie UPC lookup'
+  task :yoopsie => :init do 
+    require 'webrat'
+    require 'nokogiri'
+    
+    Webrat.configure do |conf| 
+     conf.mode = :mechanize  # Can't be rails or Webrat won't work 
+    end
+
+    WWW::Mechanize.html_parser = Nokogiri::HTML
+    
+    @sesh = Webrat.session_class.new
+    countrycode = 'US'
+    
+    AmazonPrinter.all.each do |ap|
+      asin = ap.asin
+      @sesh.visit "http://yoopsie.com/query.php?query=#{asin}&locale=#{countrycode}&index=All"
+      doc = @sesh.response.parser
+      equiv_id_list = doc.css('span.upc')
+      upc = nil
+      equiv_id_list.each do |eid|
+        removeme = /upc\s?:/i
+        upc_hdr = eid.text.match(removeme )
+        if upc_hdr
+          upc = eid.text.gsub(removeme , '')
+        end
+      end
+      #title = doc.css('h3 a')
+      
+      puts "#{ap.id} | #{ap.asin} | #{upc}" if upc
+      puts "No matching upc" if upc.nil?
+      
+      sleep(20)
+    end
+  end
+  
   desc 'resize it'
   task :resize_all => :init do
 
@@ -94,6 +130,34 @@ namespace :scrape_extra do
         end
       end
     end
+  end
+  
+  desc 'Fills in '
+  task :fill_in_pic_stats => :init do
+    no_img_sizes = []
+    $size_names.each do |sz|
+      no_img_sizes = no_img_sizes | Printer.find( :all, \
+        :conditions => ["(image#{sz}height IS NULL OR image#{sz}width IS NULL) AND image#{sz}url IS NOT NULL"])
+    end  
+    
+    no_img_sizes.each do |printer|
+      image = nil
+      $size_names.each do |sz|        
+        begin
+          unless printer.[]( "image#{sz}url" ).nil?
+            image = Magick::ImageList.new(printer.[]( "image#{sz}url" ))
+            image = image.first if image.class == Magick::ImageList
+          end
+        rescue
+          image = nil
+        end
+        if image
+          fill_in "image#{sz}height", image.rows, printer if image.rows
+          fill_in "image#{sz}width", image.columns, printer if image.columns
+        end
+      end
+    end
+    
   end
   
   desc 'sandbox'

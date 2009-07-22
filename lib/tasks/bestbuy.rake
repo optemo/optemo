@@ -1,3 +1,27 @@
+
+desc "Sandbox"
+task :try_conversions => :environment do
+  require 'conversion_helper'
+  include ConversionHelper
+  
+  puts "Parsing '1 m 1 sec' and converting to seconds"
+  puts (to_sec parse_time("1 m 1 Sec"))
+  puts "Parsing 1 yr 2 mo and converting to days"
+  puts (to_days parse_long_time("1 Yr 2 mo"))
+  
+  puts "Dimensions..."
+  puts (BestBuyPhone.all.collect{|x| parse_dimensions(x.ProductDimensions)}.uniq * ", ")
+  
+  puts "Mem... "
+  puts (BestBuyPhone.all.collect {|x| x.MemorySize}.uniq  * ', ')
+  puts (BestBuyPhone.all.collect {|x| to_kb( parse_memory x.MemorySize)}.uniq  * ', ')
+  
+  puts "Weight.."
+  puts ( BestBuyPhone.all.collect{|x| to_grams(parse_weight(x.ProductWeight))}* ",")
+  
+  puts "Done!"
+end
+
 desc "Download RSS feed"
 task :bb_rss => :environment do
   require 'simple-rss'

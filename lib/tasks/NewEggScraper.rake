@@ -615,7 +615,7 @@ namespace :scrape_newegg do
     
     NeweggPrinter.all.each do |np|
       puts "Mapping NeweggPrinter #{np.id}..." # TODO
-      p = (match_newegg_to_printer np)[0] || (create_printer np)
+      p = (match_newegg_to_printer np)[0] || (create_product_from_rec np)
       fill_in 'product_id', p.id, np
       fill_in 'product_type', 'Printer', np
       create_offerings np, p

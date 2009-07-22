@@ -20,8 +20,8 @@ class JavaTestSession < Webrat::SeleniumSession
      pick_printer_use
   end
      
-  def get_detail_page pid
-    visit get_detail_page_link(pid)
+  def get_detail_page box
+    visit get_detail_page_link(box)
     wait_for_load
   end   
      

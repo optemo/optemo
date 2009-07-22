@@ -23,18 +23,33 @@ namespace :printer_test do
    task :detail_page => :init do 
      setup 'detail_page'
       
-     #urls = recursively_get_urls([@sesh.current_url])
+     all_pages = []
+     test_detail_page 0
      
-     #while !urls.empty?
-     #  next_url = urls.pop
-    #  log "Visiting #{next_url}"
-    #  @sesh.visit next_url
-    #  (1..@sesh.num_boxes).each do |num|
-    #     log "Testing #{num}th detail page"
-    #     test_detail_page(num)
-    #     log "Done testing #{num}th detail page"
-    #   end
-    # end
+     n = 1
+     hist = [1]
+     url_hist = [@sesh.current_url]
+     
+     while !url_hist.empty?
+       if( @sesh.num_similar_links == 0 or @sesh.num_similar_links < n)
+          all_pages << url_hist.pop
+          n = hist.pop + 1
+          @sesh.visit url_hist.last unless url_hist.empty?
+       elsif(@sesh.num_similar_links >= n)
+          @sesh.click_browse_similar n
+          hist << n 
+          url_hist << @sesh.current_url
+       end
+     end
+     
+     all_pages.each do |page|
+       @sesh.visit page
+       (0..@sesh.num_boxes-1).each do |n|
+          @sesh.visit page
+          test_detail_page n
+       end
+     end
+     
      close_log
    end
    
@@ -184,9 +199,9 @@ namespace :printer_test do
          elsif pick_action == 8                 #8 Test checkboxes
            clickme = rand(@sesh.num_checkboxes)
            test_checkbox clickme
-         #elsif pick_action == 9                 # Test details 
-        #   detailme = rand(@sesh.num_boxes)
-        #   test_detail_page detailme
+         elsif pick_action == 9                 # Test details 
+           detailme = rand(@sesh.num_boxes)
+           test_detail_page detailme
          elsif pick_action == 10                  #10 Test home logo
            test_click_home_logo
          elsif pick_action == 11                  #11 Test back button
