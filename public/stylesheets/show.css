@@ -22,12 +22,15 @@ div#info {
 	display: none;}
 div#loading {
 	top: 300px;
-	left: 500px;
 	position: absolute;
 	display: none;
 	z-index: 2;
-	width: 100px;
+	width: 200px;
 	font-size: 2em;
+	background-color: green;
+}
+#loading div {
+	margin-top: -4px;
 }
 #close {
 	position: absolute;

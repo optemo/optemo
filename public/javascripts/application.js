@@ -165,12 +165,15 @@ $(document).ready(function() {
 		}
 	});
 	
+	
+	spinner("myspinner", 11, 20, 9, 5, "#000");
+	mywidth = parseInt($('#loading').css('width'));
+	$('#loading').css('left', ((document.body.clientWidth-mywidth)/2)+'px')
+		.css('display', 'inline');
+		
 	//Display loading spinner
 	$('#myfilter_brand').change(function() {
 		$('#filter_form').submit();
-		spinner("myspinner", 11, 20, 9, 5, "#000");
-		$('#loading').css('left', ((document.body.clientWidth-100)/2)+'px')
-			.css('display', 'inline');
 	});
 	
 	//Set up sliders

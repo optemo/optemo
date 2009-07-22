@@ -45,6 +45,7 @@
 	<div style="text-align: center;"><h1><%= @allSearches.last.desc unless @allSearches.empty? %> <%= $model.urlname.capitalize %></h1></div>
 	<div class='backlink'>	
 	<% unless @allSearches.empty? %>
+		<%= link_to "All #{$model.urlname.capitalize}", "/#{$model.urlname}/homepage" %> &lt;&lt;
 		<%for l in 0..(@allSearches.size - 1)%>
 	 	  <!-- If s>1 then print << -->
           <%if l<@allSearches.size - 1%>

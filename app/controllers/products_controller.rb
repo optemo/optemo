@@ -91,6 +91,10 @@ class ProductsController < ApplicationController
     render :nothing => true
   end
   
+  def homepage
+    redirect_to initialClusters
+  end
+  
   private
   
   # this function gets an stack of searches and gets rid of the ones with repetitive

@@ -44,8 +44,11 @@ div.borderbox {
 .borderbox p {
 	padding: 0.1em 0;
 }
+.backlink {
+	margin-top: 3px;
+	font-size: 0.8em;
+}
 .backlink a{
-	/*margin-left: 10px;*/
 	color: #891D1D;
 }
 .saveold {
