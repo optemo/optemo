@@ -6,11 +6,12 @@ class MergedCluster
   end
   
   
-  def self.fromIDs(product_type,clusters)
+  def self.fromIDs(product_type,clusters,session)
     product_type = product_type
     clusterobj = []
     clusters.compact.each do |c|
-      clusterobj << $clustermodel.find(c.to_i)
+      newcluster = $clustermodel.find(c.to_i)
+      clusterobj << newcluster unless newcluster.isEmpty(session)
     end
     new(clusterobj)
   end
