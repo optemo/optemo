@@ -38,7 +38,7 @@ class ApplicationController < ActionController::Base
       mysession.save
       # Create a row in every product-features table
       $ProdTypeList.each do |p|
-        myProduct = $featuremodel.new
+        myProduct = (p + 'Features').constantize.new
         myProduct.session_id = mysession.id        
         myProduct.save
       end
