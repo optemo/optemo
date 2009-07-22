@@ -47,16 +47,13 @@
 	<% unless @allSearches.empty? %>
 		<%for l in 0..(@allSearches.size - 1)%>
 	 	  <!-- If s>1 then print << -->
-		  <%if l==0%>
-		 		<%= link_to "#{$model.urlname.capitalize}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>
-		  <%else%> 
-		  		<%= link_to "#{@allSearches[l].desc}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>
-		  <%end%>
           <%if l<@allSearches.size - 1%>
+			<%= link_to "#{@allSearches[l].desc}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>
 		  	&lt;&lt;
-		  <%end%> 
+		 <%else%>
+			<%= "#{@allSearches[l].desc}"%>
+		 <%end%> 
 	   <%end %>
-
 	<%end%>	
 	</div>
 	
