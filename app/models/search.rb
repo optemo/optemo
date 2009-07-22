@@ -31,9 +31,13 @@ class Search < ActiveRecord::Base
   end
   #Range of product offerings
   def ranges(featureName)
-    min = clusters.map{|c|c.ranges(featureName,session)[0]}.compact.sort[0]
-    max = clusters.map{|c|c.ranges(featureName,session)[1]}.compact.sort[-1] 
-    [min, max]
+     @sRange ||= {}
+      if @sRange[featureName].nil?
+        min = clusters.map{|c|c.ranges(featureName,session)[0]}.compact.sort[0]
+        max = clusters.map{|c|c.ranges(featureName,session)[1]}.compact.sort[-1] 
+        @sRange[featureName] = [min, max]
+      end
+      @sRange[featureName]  
   end
   
   def clusterDescription(session)
@@ -42,12 +46,12 @@ class Search < ActiveRecord::Base
       clusterDs["c#{j}"] = []
     end  
     ds = []
-
+    cRanges = []
     DbFeature.find_all_by_product_type_and_feature_type(session.product_type, 'Continuous').each do |f|
       low = f.low
       high = f.high
       searchR = ranges(f.name)
-      unless (searchR[0] >= high && searchR[1]<=low)
+      unless (searchR[0] >= high || searchR[1]<=low)
         for j in 1..cluster_count 
               cluster_id = send(:"c#{j-1}")
               c = $clustermodel.find(cluster_id)
@@ -58,11 +62,11 @@ class Search < ActiveRecord::Base
                 clusterDs["c#{j-1}"] << $model::ContinuousFeaturesDescLow[f.name]
               end    
         end  
-      end
-    end  
+      end 
+    end 
     for j in 0..cluster_count-1
       ds[j] = clusterDs["c#{j}"]
-    end  
+    end 
     res = ds.map{|d| #d.blank? ? 'All Purpose' : 
       d.join(', ')}         
     res
