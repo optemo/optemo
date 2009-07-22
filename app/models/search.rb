@@ -41,9 +41,9 @@ class Search < ActiveRecord::Base
   end
   
   def clusterDescription(session)
-    clusterDs = {}
+    clusterDs = []
     cluster_count.times do |j| 
-      clusterDs["c#{j}"] = []
+      clusterDs[j] = []
     end  
     ds = []
     cRanges = []
@@ -51,21 +51,20 @@ class Search < ActiveRecord::Base
       low = f.low
       high = f.high
       searchR = ranges(f.name)
-      unless (searchR[0] >= high || searchR[1]<=low)
-        for j in 1..cluster_count 
-              cluster_id = send(:"c#{j-1}")
-              c = $clustermodel.find(cluster_id)
-              cRanges = c.ranges(f.name, session)
-              if (cRanges[0] >= high)
-                clusterDs["c#{j-1}"] <<  $model::ContinuousFeaturesDescHigh[f.name]
-              elsif (cRanges[1] <= low)
-                clusterDs["c#{j-1}"] << $model::ContinuousFeaturesDescLow[f.name]
-              end    
-        end  
+      unless (searchR[0] >= high || searchR[1]<=low)    
+        j=0   
+        clusters.map{|c| cRanges = c.ranges(f.name, session)
+           if (cRanges[0] >= high)
+             clusterDs[j] <<  $model::ContinuousFeaturesDescHigh[f.name]
+           elsif (cRanges[1] <= low)
+             clusterDs[j] << $model::ContinuousFeaturesDescLow[f.name]
+           end
+           j +=1 
+        }
       end 
     end 
     for j in 0..cluster_count-1
-      ds[j] = clusterDs["c#{j}"]
+      ds[j] = clusterDs[j]
     end 
     res = ds.map{|d| #d.blank? ? 'All Purpose' : 
       d.join(', ')}         
