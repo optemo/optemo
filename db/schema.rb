@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090715223914) do
+ActiveRecord::Schema.define(:version => 20090723223930) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -28,6 +28,8 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.integer  "imagelheight"
     t.integer  "imagelwidth"
     t.boolean  "instock"
+    t.float    "averagereviewrating"
+    t.integer  "totalreviews"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "asin"
@@ -198,6 +200,7 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.string   "product_type",                    :default => "Printer"
     t.float    "averagereviewrating"
     t.integer  "totalreviews"
+    t.string   "region",                          :default => "us"
   end
 
   create_table "best_buy_offerings", :force => true do |t|
@@ -407,6 +410,7 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.float    "customerReviewAverage"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "region",                :default => "us"
   end
 
   create_table "camera_clusters", :force => true do |t|
@@ -422,15 +426,16 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.float   "opticalzoom_max"
     t.float   "price_min"
     t.float   "price_max"
-    t.integer "version"
+    t.integer "version",               :default => 0
     t.float   "cached_utility"
+    t.string  "region",                :default => "us"
   end
 
   create_table "camera_features", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "session_id"
-    t.integer  "search_id"
+    t.string   "brand",                  :default => "All Brands"
     t.float    "maximumresolution_min"
     t.float    "maximumresolution_max"
     t.float    "maximumresolution_pref", :default => 0.25
@@ -443,7 +448,7 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.float    "price_min"
     t.float    "price_max"
     t.float    "price_pref",             :default => 0.25
-    t.string   "brand",                  :default => "All Brands"
+    t.integer  "search_id"
   end
 
   create_table "camera_nodes", :force => true do |t|
@@ -454,8 +459,9 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.float   "opticalzoom"
     t.float   "price"
     t.string  "brand"
-    t.integer "version"
+    t.integer "version",           :default => 0
     t.float   "utility"
+    t.string  "region",            :default => "us"
   end
 
   create_table "cameras", :force => true do |t|
@@ -519,6 +525,9 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.integer  "bestoffer"
     t.float    "averagereviewrating"
     t.integer  "totalreviews"
+    t.integer  "price_ca"
+    t.string   "price_ca_str"
+    t.boolean  "instock_ca"
   end
 
   create_table "db_features", :force => true do |t|
@@ -530,6 +539,18 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.float    "high"
     t.float    "low"
     t.text     "categories"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "region",       :default => "us"
+  end
+
+  create_table "db_properties", :force => true do |t|
+    t.string   "name"
+    t.text     "brands"
+    t.float    "price_min"
+    t.float    "price_max"
+    t.float    "price_low"
+    t.float    "price_high"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -565,10 +586,10 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.boolean  "stock"
     t.string   "availability"
     t.datetime "availabilityUpdate"
+    t.text     "url"
     t.boolean  "active"
     t.datetime "activeUpdate"
     t.boolean  "freeShipping"
-    t.text     "url"
   end
 
   create_table "newegg_printer_scraped_datas", :force => true do |t|
@@ -735,6 +756,7 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.string   "powerconsumption"
     t.integer  "resolutionmax"
     t.string   "title"
+    t.string   "region",                 :default => "us"
   end
 
   create_table "preference_relations", :force => true do |t|
@@ -763,15 +785,15 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.string  "brand"
     t.boolean "scanner"
     t.boolean "printserver"
-    t.integer "version"
+    t.integer "version",           :default => 0
     t.float   "cached_utility"
+    t.string  "region",            :default => "us"
   end
 
   create_table "printer_features", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "session_id"
-    t.integer  "search_id"
     t.float    "ppm_min"
     t.float    "ppm_max"
     t.float    "ppm_pref",           :default => 0.2
@@ -790,6 +812,7 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.string   "brand",              :default => "All Brands"
     t.boolean  "scanner"
     t.boolean  "printserver"
+    t.integer  "search_id"
   end
 
   create_table "printer_nodes", :force => true do |t|
@@ -803,8 +826,9 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.boolean "printserver"
     t.float   "price"
     t.string  "brand"
-    t.integer "version"
+    t.integer "version",       :default => 0
     t.float   "utility"
+    t.string  "region",        :default => "us"
   end
 
   create_table "printers", :force => true do |t|
@@ -865,6 +889,9 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.string   "manufacturerproducturl"
     t.float    "averagereviewrating"
     t.integer  "totalreviews"
+    t.integer  "price_ca"
+    t.string   "price_ca_str"
+    t.boolean  "instock_ca"
   end
 
   create_table "referrals", :force => true do |t|
@@ -890,7 +917,7 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.string   "availability"
     t.boolean  "iseligibleforsupersavershipping"
     t.string   "merchant"
-    t.text     "url"
+    t.string   "url"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.float    "shippingCost"
@@ -899,6 +926,7 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.datetime "availabilityUpdate"
     t.boolean  "active"
     t.datetime "activeUpdate"
+    t.string   "region",                          :default => "us"
   end
 
   create_table "retailers", :force => true do |t|
@@ -907,6 +935,7 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.string   "image"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "region",     :default => "us"
   end
 
   create_table "reviews", :force => true do |t|
@@ -946,7 +975,6 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.string   "c6"
     t.string   "c7"
     t.string   "c8"
-    t.string   "desc"
     t.integer  "cluster_count"
     t.integer  "result_count"
     t.string   "brand",         :default => "All Brands"
@@ -954,6 +982,7 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.float    "price_max",     :default => 10000000.0
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "desc"
   end
 
   create_table "sessions", :force => true do |t|
@@ -965,6 +994,7 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.boolean  "filter"
     t.string   "searchterm"
     t.text     "searchpids"
+    t.string   "region",       :default => "us"
   end
 
   create_table "tiger_printers", :force => true do |t|
@@ -1009,6 +1039,7 @@ ActiveRecord::Schema.define(:version => 20090715223914) do
     t.datetime "scrapedat"
     t.boolean  "nodetails"
     t.boolean  "printserver"
+    t.string   "region",        :default => "us"
   end
 
   create_table "tiger_scrapeds", :force => true do |t|
