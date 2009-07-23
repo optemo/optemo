@@ -5,7 +5,6 @@ class SearchController < ApplicationController
   skip_before_filter :verify_authenticity_token
   
   def filter
-    @session = Session.find(session[:user_id])
     myfilter = params[:myfilter]
     if myfilter.nil?
       #No post info passed
@@ -27,7 +26,6 @@ class SearchController < ApplicationController
   end
   
   def find
-    @session = Session.find(session[:user_id])
     sphinx = searchSphinx(params[:search])
     product_ids = sphinx.results.delete_if{|r|r[0] != $model.name}.map{|r|r[1]}
     current_version = $clustermodel.last.version
@@ -51,7 +49,6 @@ class SearchController < ApplicationController
   end
    
   def delete
-    @session = Session.find(session[:user_id])
     @session.searchterm = ""
     @session.searchpids = ""
     @session.save
