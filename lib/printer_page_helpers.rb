@@ -46,8 +46,8 @@ module PrinterPageHelpers
      @total_printers[index] = value
    end
    
-   def get_detail_page_link which_product
-     pid = pid_by_box(which_product)
+   def get_detail_page_link box
+     pid = pid_by_box(box)
      return  "/products/show/#{pid}"
    end
    

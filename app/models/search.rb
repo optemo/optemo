@@ -40,10 +40,10 @@ class Search < ActiveRecord::Base
       @sRange[featureName]  
   end
   
-  def clusterDescription(session)
-    clusterDs = {}
+  def clusterDescription
+    clusterDs = []
     cluster_count.times do |j| 
-      clusterDs["c#{j}"] = []
+      clusterDs[j] = []
     end  
     ds = []
     cRanges = []
@@ -51,21 +51,19 @@ class Search < ActiveRecord::Base
       low = f.low
       high = f.high
       searchR = ranges(f.name)
-      unless (searchR[0] >= high || searchR[1]<=low)
-        for j in 1..cluster_count 
-              cluster_id = send(:"c#{j-1}")
-              c = $clustermodel.find(cluster_id)
-              cRanges = c.ranges(f.name, session)
-              if (cRanges[0] >= high)
-                clusterDs["c#{j-1}"] <<  $model::ContinuousFeaturesDescHigh[f.name]
-              elsif (cRanges[1] <= low)
-                clusterDs["c#{j-1}"] << $model::ContinuousFeaturesDescLow[f.name]
-              end    
-        end  
+      unless (searchR[0] >= high || searchR[1]<=low) 
+        clusters.each_index {|i| 
+          cRanges = clusters[i].ranges(f.name, session)
+           if (cRanges[0] >= high)
+             clusterDs[i] << $model::ContinuousFeaturesDescHigh[f.name]
+           elsif (cRanges[1] <= low)
+             clusterDs[i] << $model::ContinuousFeaturesDescLow[f.name]
+           end
+        }
       end 
     end 
     for j in 0..cluster_count-1
-      ds[j] = clusterDs["c#{j}"]
+      ds[j] = clusterDs[j]
     end 
     res = ds.map{|d| #d.blank? ? 'All Purpose' : 
       d.join(', ')}         
@@ -73,7 +71,7 @@ class Search < ActiveRecord::Base
   end
   
 
-  def searchDescription(session)
+  def searchDescription
     des = []
     DbFeature.find_all_by_product_type_and_feature_type(session.product_type, 'Continuous').each do |f|
       low = f.low
@@ -121,7 +119,7 @@ class Search < ActiveRecord::Base
         if cluster_id.index('+')
           cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
           #Merged Cluster
-          c = MergedCluster.fromIDs(session.product_type,cluster_id.split('+'))
+          c = MergedCluster.fromIDs(session.product_type,cluster_id.split('+'),session)
         else
           #Single, normal Cluster
           c = $clustermodel.find(cluster_id)
@@ -151,15 +149,13 @@ class Search < ActiveRecord::Base
     s.fillDisplay
     s.parent_id = s.clusters.map{|c| c.parent_id}.sort[0]
     s.layer = s.clusters.map{|c| c.layer}.sort[0]
-    s.desc = s.searchDescription(Session.find(session_id))
+    s.desc = s.searchDescription
     s
   end
   
   def self.createFromPath_and_commit(path, session_id)
     s = createFromPath(path, session_id)
     s.save
-  #  ActiveRecord::Base.connection.execute("update #{$model}_features set search_id = #{s['id']} where session_id = #{session_id}")
-    ActiveRecord::Base.connection.execute("update printer_features set search_id = #{s['id']} where session_id = #{session_id}")
     s
   end
   

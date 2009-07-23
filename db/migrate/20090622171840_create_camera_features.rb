@@ -1,11 +1,10 @@
 class CreateCameraFeatures < ActiveRecord::Migration
   def self.up
     create_table :camera_features do |t|
-
       t.timestamps
       t.primary_key :id
       t.integer :session_id
-      t.string :brand, :default => "All Brands" 
+      t.integer :search_id
       (Camera::ContinuousFeatures).each do |f|
         min = f+'_min'
         max = f+'_max'
@@ -13,6 +12,12 @@ class CreateCameraFeatures < ActiveRecord::Migration
         t.float min.intern #, :default => f.min.to_i
         t.float max.intern #, :default => f.max.ceil
         t.float pref.intern, :default => 1/Camera::ContinuousFeatures.count.to_f
+      end      
+      (Camera::CategoricalFeatures).each do |f|
+        t.string f.intern, :default => "All Brands"
+      end
+      (Camera::BinaryFeatures).each do |f|
+        t.boolean f.intern
       end
     end
   end

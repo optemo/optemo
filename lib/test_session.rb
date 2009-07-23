@@ -49,8 +49,8 @@ class TestSession < Webrat::MechanizeSession
       click_button "submit_button"
     end
     
-    def get_detail_page pid
-      visit get_detail_page_link(pid)
+    def get_detail_page box
+      visit get_detail_page_link(box)
     end
 
     def pick_printer_use which_use=0

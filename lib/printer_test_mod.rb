@@ -1,12 +1,12 @@
 module PrinterTest
 
-  def test_detail_page my_details
-    log "Getting Detail page for #{my_details}th box"
+  def test_detail_page box_index
+    log "Getting Detail page for #{box_index+1}th box, product id #{@sesh.pid_by_box(box_index+1)}"
     come_back_here = @sesh.current_url
     begin
-      @sesh.get_detail_page my_details
+      @sesh.get_detail_page (box_index+1)
     rescue Exception => e
-      report_error "Problem getting detail page"
+      report_error "Problem getting detail page for product #{@sesh.pid_by_box(box_index+1)}"
       report_error "#{e.type} #{e.message}"
     else
       assert_not_error_page
@@ -52,7 +52,6 @@ module PrinterTest
 
  # Recursive method to test all browse_similar.
  def explore(hist)
-   previous_url = @sesh.current_url
    (1..@sesh.num_similar_links).each do |num|
      log "Testing #{num}th browse similar link with history: " + hist * ", "
      come_back_here = @sesh.current_url
@@ -93,9 +92,12 @@ module PrinterTest
    was_selected = @sesh.checkbox_selected?(klikme)
    @sesh.click_checkbox klikme 
    
-   if !was_selected
+   if !was_selected and !@sesh.no_printers_found_msg?
      assert_num_printers_decreased
      assert_box_checked klikme
+   elsif !was_selected
+     assert_num_printers_same
+     assert_box_unchecked klikme
    else
      assert_num_printers_increased
      assert_box_unchecked klikme

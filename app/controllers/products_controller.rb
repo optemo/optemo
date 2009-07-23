@@ -19,7 +19,7 @@ class ProductsController < ApplicationController
     @s = Search.createFromPath_and_commit(params[:id].split('-'), @session.id)
     @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
     @allSearches = []
-    @descriptions = @s.clusterDescription(@session) 
+    @descriptions = @s.clusterDescription
     if @session.searchpids.blank? #|| @session.searchpids.size > 9)
       z = Search.find_all_by_session_id(@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.hour.ago}\'")
       unless (z.nil? || z.empty?)

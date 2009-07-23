@@ -5,8 +5,30 @@ module ConversionHelper
   require 'scraping_helper'
   include ScrapingHelper   
   
-  def parse_res str
-    mp = 0 # TODO
+  def to_kb mem
+    return nil if mem.nil?
+    return mem[2]+1024*(mem[1]+ 1024*mem[0])
+  end
+  
+  def parse_memory str
+    return nil if str.nil?
+    gb = get_f_with_units( str,  /(\s)?g(iga)?b(yte(s)?)?/i ) || 0
+    mb = get_f_with_units( str,  /(\s)?m(ega)?b(yte(s)?)?/i ) || 0
+    kb = get_f_with_units( str,  /(\s)?k(ilo)?b(yte(s)?)?/i ) || 0
+    return [gb, mb, kb] 
+  end
+  
+  # Returns [WIDTH, DEPTH, HEIGHT]
+  def parse_dimensions str
+    return nil if (str.nil? or str=='')
+    dims = [nil,nil,nil]
+    str.split('x').each do |dim| 
+      dims[0] = get_f(dim) if (dim.match(/w/i) and get_f(dim) != 0)
+      dims[1] = get_f(dim) if (dim.match(/[dl]/i) and get_f(dim) != 0)
+      dims[2] = get_f(dim) if (dim.match(/h/i)  and get_f(dim) != 0)
+    end
+    return dims unless dims.uniq == [nil]
+    return nil
   end
   
   def self.float_rxp
@@ -14,6 +36,7 @@ module ConversionHelper
   end
   
   def to_grams wt
+    return nil if wt.nil? or wt.length ==2
     return (wt[0]*1000+wt[1]+wt[2]/1000)
   end
   
@@ -36,13 +59,26 @@ module ConversionHelper
     return time[3] + 60*(time[2]+ 60*( time[1] + 24*time[0])  )
   end
   
+  def to_days time
+    return time[3]+ 7*(time[2]+ 30*( time[1] + 365*time[0])  )
+  end
+  
   def parse_time str
     return nil unless str
     day = get_f_with_units( str, /(\s)?d(ay(s)?)?/i ) || 0
     hr = get_f_with_units( str, /(\s)?h((ou)?r(s)?)?/i ) || 0
     min = get_f_with_units( str,  /(\s)?m(in(ute)?(s)?)?/i ) || 0
     sec = get_f_with_units( str,  /(\s)?s(ec(s)?)?/i ) || 0
-    return [day,hr,min,sec] 
+   # return [yr,mo,wk,day,hr,min,sec] 
+   return [day,hr,min,sec]
+  end
+  
+  def parse_long_time str
+    yr = get_f_with_units( str, /(\s)?y((ea)?r(s)?)?/i ) || 0
+    month = get_f_with_units( str, /(\s)?m(o(nth)?(s)?)?/i ) || 0
+    wk = get_f_with_units( str, /(\s)?w((ee)?k(s)?)?/i ) || 0
+    short = parse_time str
+    return [yr,month,wk,short].flatten
   end
   
   def get_f_with_units str, unit_regex
