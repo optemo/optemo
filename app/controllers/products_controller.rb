@@ -4,24 +4,25 @@ class ProductsController < ApplicationController
   #require 'scrubyt'
   layout 'optemo'
   require 'open-uri'
-  
   # GET /products
   # GET /products.xml
+  
   def index
+    
     @link = initialClusters
+    
     #homepage
   end
   
   def compare
-    #@session = Session.find(session[:user_id])
-    debugger if @@session.nil?
+    @session = @@session
     @dbfeat = {}
     DbFeature.find_all_by_product_type($model.name).each {|f| @dbfeat[f.name] = f}
     @s = Search.createFromPath_and_commit(params[:id].split('-'), @session.id)
     @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
     @allSearches = []
-    @descriptions = @s.clusterDescription
-    if @session.searchpids.blank? #|| @session.searchpids.size > 9)
+    @clusterDescs = @s.clusterDescription
+    if @session.searchpids.blank? #|| @@session.searchpids.size > 9)
       z = Search.find_all_by_session_id(@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.hour.ago}\'")
       unless (z.nil? || z.empty?)
         @layer, @allSearches = zipStack(z) 
@@ -59,23 +60,20 @@ class ProductsController < ApplicationController
   end
   
   def preference
-    @session = Session.find(session[:user_id])
-     mypreferences = params[:mypreference]
-     $model::ContinuousFeatures.each do |f|
-       @session.features.update_attribute(f+"_pref", mypreferences[f+"_pref"])
-     end
-     # To stay on the current page 
-     redirect_to ""
-   end
+    mypreferences = params[:mypreference]
+    $model::ContinuousFeatures.each do |f|
+      @@session.features.update_attribute(f+"_pref", mypreferences[f+"_pref"])
+    end
+    # To stay on the current page 
+    redirect_to ""
+  end
    
   def select
-    @session = Session.find(session[:user_id])
-    @session.defaultFeatures(URI.encode(params[:id]))
+    @@session.defaultFeatures(URI.encode(params[:id]))
     render :nothing => true
   end
   
   def buildrelations
-    @session = Session.find(session[:user_id])
     source = params[:source]
     itemId = params[:itemId]
     # Convert the parameter string into an array of integers
@@ -84,9 +82,9 @@ class ProductsController < ApplicationController
       # If the source is unsave i.e. a saved product has been dropped, then
       # create relations with lower as the dropped item and higher as all other saved items 
       if source == "unsave" || source == "unsaveComp"
-        PreferenceRelation.createBinaryRelation(otherItems[otherItem], itemId, @session.id, $Weight[source])
+        PreferenceRelation.createBinaryRelation(otherItems[otherItem], itemId, @@session.id, $Weight[source])
       else
-        PreferenceRelation.createBinaryRelation(itemId, otherItems[otherItem], @session.id, $Weight[source])
+        PreferenceRelation.createBinaryRelation(itemId, otherItems[otherItem], @@session.id, $Weight[source])
       end
     end    
     render :nothing => true

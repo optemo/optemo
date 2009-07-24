@@ -5,7 +5,7 @@
 	<% end %>
 	<% selectmsg = "Add Another Brand" %>
 <% end %>
-<%= select('myfilter', 'brand', [selectmsg.nil? ? "All Brands" : selectmsg] +@dbfeat['brand'].categories.split('*')) %>
+<%= select('myfilter', 'brand', [selectmsg.nil? ? "All Brands" : selectmsg] +@dbfeat['brand'].categories.split('*'), options={}, {:onchange => "$('#filter_form').submit()"}) %>
 <%= hidden_field_tag "myfilter[Xbrand]"%>
 
 <% $model::ContinuousFeatures.each_index do |i| %>

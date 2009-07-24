@@ -98,6 +98,7 @@ module Cluster
   def description(session)
     des = []
     DbFeature.find_all_by_product_type_and_feature_type(session.product_type, 'Continuous').each do |f|
+   # @dbfeat.each do |f|
         low = f.low
         high = f.high  
         clusterR = ranges(f.name, session)
