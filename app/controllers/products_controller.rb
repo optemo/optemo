@@ -18,12 +18,12 @@ class ProductsController < ApplicationController
     @session = @@session
     @dbfeat = {}
     DbFeature.find_all_by_product_type($model.name).each {|f| @dbfeat[f.name] = f}
-    @s = Search.createFromPath_and_commit(params[:id].split('-'), @@session.id)
-    @picked_products = @@session.saveds.map {|s| $model.find(s.product_id)}
+    @s = Search.createFromPath_and_commit(params[:id].split('-'), @session.id)
+    @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
     @allSearches = []
     @clusterDescs = @s.clusterDescription
-    if @@session.searchpids.blank? #|| @@session.searchpids.size > 9)
-      z = Search.find_all_by_session_id(@@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.hour.ago}\'")
+    if @session.searchpids.blank? #|| @@session.searchpids.size > 9)
+      z = Search.find_all_by_session_id(@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.hour.ago}\'")
       unless (z.nil? || z.empty?)
         @layer, @allSearches = zipStack(z) 
       end  
@@ -60,6 +60,7 @@ class ProductsController < ApplicationController
   end
   
   def preference
+    @session = Session.find(session[:user_id])
      mypreferences = params[:mypreference]
      $model::ContinuousFeatures.each do |f|
        @@session.features.update_attribute(f+"_pref", mypreferences[f+"_pref"])
@@ -74,6 +75,7 @@ class ProductsController < ApplicationController
   end
   
   def buildrelations
+    @session = Session.find(session[:user_id])
     source = params[:source]
     itemId = params[:itemId]
     # Convert the parameter string into an array of integers

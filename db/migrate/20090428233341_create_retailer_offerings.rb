@@ -5,6 +5,7 @@ class CreateRetailerOfferings < ActiveRecord::Migration
       t.string :product_type
       t.integer :retailer_id
       t.string :pricehistory
+      t.string :region
       t.string :merchant
       
       t.integer :priceint
