@@ -6,7 +6,9 @@ class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
   helper_method :title=, :full_title=, :describe=
   @description
-
+ 
+  
+  #
   # See ActionController::RequestForgeryProtection for details
   # Uncomment the :secret if you're not using the cookie session store
   protect_from_forgery # :secret => 'f613bda42e728a55dc8f0670fc000291'
@@ -16,10 +18,14 @@ class ApplicationController < ActionController::Base
   # from your application log (in this case, all fields with names like "password"). 
   # filter_parameter_logging :password
   
-  before_filter :update_user
- 
+  before_filter :update_user 
+  
+  
+  @@session = nil 
   private
-  $DefaultProduct = 'Printer'
+
+   
+    
   
   def call_rake(task, options = {})
     options[:rails_env] ||= Rails.env
@@ -32,6 +38,7 @@ class ApplicationController < ActionController::Base
     $nodemodel = ((session[:productType] || $DefaultProduct)+'Node').constantize
     $clustermodel = ((session[:productType] || $DefaultProduct)+'Cluster').constantize
     $featuremodel = ((session[:productType] || $DefaultProduct)+'Features').constantize
+   
     if session[:user_id].blank? || !Session.exists?(session[:user_id])
       mysession = Session.new
       mysession.ip = request.remote_ip
@@ -43,7 +50,10 @@ class ApplicationController < ActionController::Base
         myProduct.save
       end
       session[:user_id] = mysession.id
-      end
+      @@session = mysession
+    else
+      @@session = Session.find(session[:user_id])
+    end  
   end
   
   def title=(title)
@@ -62,6 +72,7 @@ class ApplicationController < ActionController::Base
   def initialClusters
     mysession = Session.find(session[:user_id])
     mysession.clearFilters
+
     if $model == Printer && s = Search.find_by_session_id(0)
       path = 0.upto(s.cluster_count-1).map{|i| s.send(:"c#{i}")}.join('-')
     else

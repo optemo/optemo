@@ -9,18 +9,18 @@ class SearchController < ApplicationController
     if myfilter.nil?
       #No post info passed
       flash[:error] = "Search could not be completed."
-      redirect_to "/#{$model.urlname}/compare/"+@session.oldclusters.map{|c|c.id}.join('-')
+      redirect_to "/#{$model.urlname}/compare/"+@@session.oldclusters.map{|c|c.id}.join('-')
     else
       #Allow for multiple brands
       myfilter = multipleBrands(myfilter)
-      mysession = @session.createFromFilters(myfilter)
+      mysession = @@session.createFromFilters(myfilter)
       clusters = mysession.clusters
       unless clusters.empty?
         mysession.commit
         redirect_to "/#{$model.urlname}/compare/"+clusters.map{|c|c.id}.join('-')
       else
         flash[:error] = "No products were found."
-        redirect_to "/#{$model.urlname}/compare/"+@session.oldclusters.map{|c|c.id}.join('-')
+        redirect_to "/#{$model.urlname}/compare/"+@@session.oldclusters.map{|c|c.id}.join('-')
       end
     end
   end
@@ -39,19 +39,19 @@ class SearchController < ApplicationController
         redirect_to request.referer
       end
     else
-      @session.clearFilters
-      @session.searchterm = params[:search]
-      @session.searchpids = nodes.map{|p| "product_id = #{p.product_id}"}.join(' OR ')
-      @session.save
+      @@session.clearFilters
+      @@session.searchterm = params[:search]
+      @@session.searchpids = nodes.map{|p| "product_id = #{p.product_id}"}.join(' OR ')
+      @@session.save
       clusters = cluster_ids.sort.uniq[0..8]
       redirect_to "/#{$model.urlname}/compare/"+clusters.join('-')
     end
   end
    
   def delete
-    @session.searchterm = ""
-    @session.searchpids = ""
-    @session.save
+    @@session.searchterm = ""
+    @@session.searchpids = ""
+    @@session.save
     redirect_to initialClusters
   end
   
@@ -67,10 +67,10 @@ class SearchController < ApplicationController
     new_brand = myfilter[:brand]
     if !myfilter[:Xbrand].blank?
       #Remove a brand
-      myfilter[:brand] = @session.features.brand.split('*').delete_if{|b|b == myfilter[:Xbrand]}.join('*')
+      myfilter[:brand] = @@session.features.brand.split('*').delete_if{|b|b == myfilter[:Xbrand]}.join('*')
       myfilter[:brand] = 'All Brands' if myfilter[:brand].blank?
     elsif new_brand != "All Brands" && new_brand != "Add Another Brand"
-      old_brand = @session.features.brand
+      old_brand = @@session.features.brand
       #Add a brand
       if myfilter[:brand].nil?
         myfilter[:brand] = old_brand if old_brand != "All Brands" && old_brand != "Add Another Brand"
@@ -78,7 +78,7 @@ class SearchController < ApplicationController
         myfilter[:brand]+= '*'+old_brand if !old_brand.blank? && old_brand != "All Brands" && old_brand != "Add Another Brand"
       end
     elsif new_brand == "Add Another Brand"
-      myfilter[:brand] = @session.features.brand
+      myfilter[:brand] = @@session.features.brand
     end
     myfilter.delete('Xbrand') if myfilter[:Xbrand]
     myfilter

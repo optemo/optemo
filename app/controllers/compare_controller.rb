@@ -6,8 +6,7 @@ class CompareController < ApplicationController
   # GET /saveds.xml
     
   def index
-  #  @session = Session.find(session[:user_id])  # @session is required to retrieve preferences    
-    
+    @session = @@session
     # Following line is temporarily placed here. This will go where user preference values are calculated/updated
     PreferenceRelation.deleteBinaryRelations(@session.id)      # Lose the Binary Relations between products for previous user      
     
@@ -31,6 +30,7 @@ class CompareController < ApplicationController
       # After @products has been re-ordered, create the @search object
       cluster_ids = @products.map{|p| $nodemodel.find_by_product_id(p.id, :order => 'id DESC').cluster_id.to_s}
       @search = Search.createFromPath(cluster_ids, @session.id)
+     # @clusterDescs = @search.clusterDescription
       # Populate @interestingFeatureDisplayed variable
       decideWhichFeaturesToDisplay
       # Reorder the feature rows based on feature utility
@@ -403,7 +403,7 @@ end
 
 def displayComparisonFeature(i)
   returnString = ""
-  DbFeature.find_all_by_product_type_and_feature_type($model.name, 'Continuous').each do |f|
+  DbFeature.find_all_by_product_type_and_feature_type(@session.product_type, 'Continuous').each do |f|
     f_pref = @session.features.send(f.name+"_pref") 
     # Only if the user preferences indicate that this feature is important to the user
     if f_pref > $SignificantFeatureThreshold
