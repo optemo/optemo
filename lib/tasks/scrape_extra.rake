@@ -245,11 +245,6 @@ namespace :scrape_extra do
     $folder= 'public'
     $size_names = ['s','m','l']
     $sizes = [[70,50],[140,100],[400,300]]
-    
-    require 'scraping_helper'
-    include ScrapingHelper
-    require 'RMagick'
-    include ScrapeExtra
   end
   
 end 

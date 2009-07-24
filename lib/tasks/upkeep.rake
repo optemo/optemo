@@ -53,3 +53,13 @@ def calculateFactor(products, fVal, f)
   len = ordered.length
   (len - pos)/len.to_f
 end
+
+desc "Run c-code to recluster"
+task :c_clustering do
+  `lib/c_code/clusteringCodes/codes/hCluster printer`
+end
+
+desc "Recluster printers"
+task :recluster => [:calculate_factors,:c_clustering] do
+  Rake::Task['db:properties'].invoke
+end
