@@ -38,6 +38,10 @@
 		<a href="<%= url_for '/' %>" id ="logo" title="LaserPrinterHub.com"><%= image_tag('logo.jpg') %><span>Home</span></a>
 	  </div>
 		<a href="<%= url_for '/laserprinters' %>" title="Why to buy a laser printer?" id='whylaser'><%= image_tag('whylaser.jpg') %><span>Click to find out</span></a>
+	  <div id="flags">
+		<%= link_to image_tag('us.gif'), url_for('com') %>
+		<%= link_to image_tag('ca.gif'), url_for('ca') %>
+	  </div>
 	  <div id="header_buttons">
 	    powered by <%= link_to image_tag('optemo.jpg'), 'http://www.optemo.com', {:title => 'Optemo'} %>
 	  </div>

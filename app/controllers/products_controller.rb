@@ -13,7 +13,8 @@ class ProductsController < ApplicationController
   end
   
   def compare
-    @session = Session.find(session[:user_id])
+    #@session = Session.find(session[:user_id])
+    debugger if @@session.nil?
     @dbfeat = {}
     DbFeature.find_all_by_product_type($model.name).each {|f| @dbfeat[f.name] = f}
     @s = Search.createFromPath_and_commit(params[:id].split('-'), @session.id)

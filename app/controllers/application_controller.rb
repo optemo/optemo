@@ -17,9 +17,8 @@ class ApplicationController < ActionController::Base
   # filter_parameter_logging :password
   
   before_filter :update_user
- 
+  @@session = nil
   private
-  $DefaultProduct = 'Printer'
   
   def call_rake(task, options = {})
     options[:rails_env] ||= Rails.env
@@ -43,7 +42,10 @@ class ApplicationController < ActionController::Base
         myProduct.save
       end
       session[:user_id] = mysession.id
-      end
+      @@session = mysession
+    else
+      @@session = Session.find(session[:user_id])
+    end
   end
   
   def title=(title)
