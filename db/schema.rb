@@ -642,10 +642,10 @@ ActiveRecord::Schema.define(:version => 20090723231123) do
     t.boolean  "stock"
     t.string   "availability"
     t.datetime "availabilityUpdate"
+    t.text     "url"
     t.boolean  "active"
     t.datetime "activeUpdate"
     t.boolean  "freeShipping"
-    t.text     "url"
   end
 
   create_table "newegg_printer_scraped_datas", :force => true do |t|

@@ -58,7 +58,7 @@ class ProductsController < ApplicationController
   end
   
   def preference
-     @session = Session.find(session[:user_id])
+    @session = Session.find(session[:user_id])
      mypreferences = params[:mypreference]
      $model::ContinuousFeatures.each do |f|
        @session.features.update_attribute(f+"_pref", mypreferences[f+"_pref"])
