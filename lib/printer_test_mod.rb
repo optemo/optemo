@@ -40,7 +40,6 @@ module PrinterTest
 
      if !@sesh.no_printers_found_msg? 
        assert_slider_range(slider, min.to_i, max.to_i)
-       #assert_slider_range(slider, min.floor, max.ceil)
      end
 
      if min > max
@@ -93,13 +92,11 @@ module PrinterTest
    @sesh.click_checkbox klikme 
    
    if !was_selected and !@sesh.no_printers_found_msg?
-     assert_num_printers_decreased
      assert_box_checked klikme
    elsif !was_selected
      assert_num_printers_same
      assert_box_unchecked klikme
    else
-     assert_num_printers_increased
      assert_box_unchecked klikme
    end
    
@@ -174,6 +171,8 @@ module PrinterTest
     assert_not_homepage
     assert_well_formed_page
  
+    debugger
+    
     assert_search_history_clear
     assert_brands_same
     assert_saveds_same

@@ -3,7 +3,7 @@ class CreateNeweggOfferings < ActiveRecord::Migration
     create_table :newegg_offerings do |t|
       
       t.primary_key :id
-
+ 
       t.timestamps
       
       t.integer   :printer_id   # The NeweggPrinter entry it links to
@@ -36,7 +36,7 @@ class CreateNeweggOfferings < ActiveRecord::Migration
       
     end
   end
-
+ 
   def self.down
     drop_table    :newegg_offerings
   end

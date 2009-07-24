@@ -28,7 +28,7 @@ module ScrapingHelper
         name = row.css(name_css).first.content.to_s.strip
         desc = row.css(val_css).last.content.to_s.strip
         
-        name = just_alphanumeric(no_leading_spaces(name))
+        name = proper_start(just_alphanumeric(no_leading_spaces(no_tags(name))))
         desc = no_leading_spaces(desc)
         
         unless desc.nil? or desc == "" then
@@ -109,6 +109,11 @@ module ScrapingHelper
     return str.strip.match(/(\d+,)?\d+/).to_s.gsub(/,/,'').to_i
   end
   
+  def proper_start str
+    return "_#{str}" if str.match(/^[1-9]/) 
+    return str
+  end
+  
   # Returns the first float in the string, or null
   # Eliminates thousand-separating commas
   def get_f str
@@ -122,6 +127,13 @@ module ScrapingHelper
   def just_alphanumeric label
     return label.downcase.gsub(/ /,'').gsub(/[^a-zA-Z 0-9]/, "")
   end
+  
+  
+  # Takes out any characters that are not alphanumeric. Spaces too.
+  def no_tags label
+    return label.gsub(/\<.+\/?\>/,'')
+  end
+  
   
   # Removes all leading & trailing spaces
   # Deals with weirdness found on TigerDirect website

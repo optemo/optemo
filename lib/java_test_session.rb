@@ -80,11 +80,13 @@ class JavaTestSession < Webrat::SeleniumSession
    end
    
    def click_browse_similar which_link
-     linkid='sim' + (which_link-1).to_s
-      # TODO Check for element presence.
-      # TO DO TO DO 
-      browser.click linkid
-      wait_for_load
+     the_link = doc.css('.simlinks')[which_link-1]
+     if the_link and !the_link.text.nil? and !the_link.text.trim.empty?
+       browser.click "link=#{the_link.text}" 
+       wait_for_load
+     else
+       report_error "#{which_link}th Browse Similar Link not found"
+     end
    end
       
    def click_back_button

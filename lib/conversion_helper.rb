@@ -5,17 +5,24 @@ module ConversionHelper
   require 'scraping_helper'
   include ScrapingHelper   
   
-  def to_kb mem
-    return nil if mem.nil?
-    return mem[2]+1024*(mem[1]+ 1024*mem[0])
+  def get_inches str
+    return nil unless str
+    inches = get_f_with_units( str,  /\s?(in(ch(es)?)? |\")/i )
+    return nil unless inches
+    return inches
   end
   
-  def parse_memory str
+  def to_mpix res
+    return nil if res.nil?
+    return res[2]+ res[1]/1_000 +res[0]/1_000_000
+  end
+  
+  def parse_res str
     return nil if str.nil?
-    gb = get_f_with_units( str,  /(\s)?g(iga)?b(yte(s)?)?/i ) || 0
-    mb = get_f_with_units( str,  /(\s)?m(ega)?b(yte(s)?)?/i ) || 0
-    kb = get_f_with_units( str,  /(\s)?k(ilo)?b(yte(s)?)?/i ) || 0
-    return [gb, mb, kb] 
+    mp = get_f_with_units( str,  /(\s)?m(ega)?\s?p(ixel(s)?)?/i ) || 0
+    mp = get_f_with_units( str,  /(\s)?k(ilo)?\s?p(ixel(s)?)?/i ) || 0
+    p = get_f_with_units( str,  /(\s)b(yte(s)?)?/i ) || 0
+    return [mp, kp, p] 
   end
   
   # Returns [WIDTH, DEPTH, HEIGHT]
