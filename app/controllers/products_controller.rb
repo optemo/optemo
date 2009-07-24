@@ -13,6 +13,7 @@ class ProductsController < ApplicationController
   end
   
   def compare
+    @session = Session.find(session[:user_id])
     @dbfeat = {}
     DbFeature.find_all_by_product_type($model.name).each {|f| @dbfeat[f.name] = f}
     @s = Search.createFromPath_and_commit(params[:id].split('-'), @session.id)
@@ -57,6 +58,7 @@ class ProductsController < ApplicationController
   end
   
   def preference
+    @session = Session.find(session[:user_id])
      mypreferences = params[:mypreference]
      $model::ContinuousFeatures.each do |f|
        @session.features.update_attribute(f+"_pref", mypreferences[f+"_pref"])
@@ -66,11 +68,13 @@ class ProductsController < ApplicationController
    end
    
   def select
+    @session = Session.find(session[:user_id])
     @session.defaultFeatures(URI.encode(params[:id]))
     render :nothing => true
   end
   
   def buildrelations
+    @session = Session.find(session[:user_id])
     source = params[:source]
     itemId = params[:itemId]
     # Convert the parameter string into an array of integers
