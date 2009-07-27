@@ -1,5 +1,6 @@
 
 $SITE_TITLE = 'LaserPrinterHub.com'
+$DefaultProduct = 'Printer'
 
 # Define Global variable for storing direction for each preference
 $PrefDirection = Hash.new(1) # Set 1 i.e. Up as the default value for direction

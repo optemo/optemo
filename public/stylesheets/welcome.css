@@ -82,6 +82,9 @@ p, ul {
 	font-family: monaco, arial;
 	font-weight: bold;
 }
+#flags {
+	float: right;
+}
 p {
 	font-size: 1.1em;
 	font-family: Arial;

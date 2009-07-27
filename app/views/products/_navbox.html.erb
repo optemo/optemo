@@ -1,7 +1,8 @@
 <div class="navigator_box" style="left: <%= (i%3)*247 %>px;">
 <div id="box<%=i%>" class="borderbox">
-	<div class='title'><%= @descriptions[i] %></div>
-	<% if !cluster.representative(@session).imagemurl.blank? %>
+	<div class='title'><%= cluster.description(@session) %></div>
+
+	<% if !cluster.representative(@session).imagemwidth.blank? %>
 		<%= image_tag cluster.representative(@session).imagemurl, :height => 100, :onClick => "fadeout(#{cluster.representative(@session).id});", :class => "productimg", :alt => cluster.representative(@session).smlTitle %>
 	<%end%>
 
@@ -22,6 +23,9 @@
 		<% end %>
 	</div>
 	<% end %>
+	<!--<div class="clustergraph">
+		<%# cluster.utility(@session) %>
+	</div>-->
 	<div class="bottombar" name ="<%= cluster.representative(@session).id %>">
 		<%= sim_link(cluster,i, cluster.representative(@session).id) %>
 	</div>

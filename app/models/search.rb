@@ -47,7 +47,7 @@ class Search < ActiveRecord::Base
     end  
     ds = []
     cRanges = []
-    DbFeature.find_all_by_product_type_and_feature_type(session.product_type, 'Continuous').each do |f|
+    @dbfeatCon.each do |f|
       low = f.low
       high = f.high
       searchR = ranges(f.name)
@@ -73,7 +73,8 @@ class Search < ActiveRecord::Base
 
   def searchDescription
     des = []
-    DbFeature.find_all_by_product_type_and_feature_type(session.product_type, 'Continuous').each do |f|
+   @dbfeatCon = DbFeature.find_all_by_product_type_and_feature_type(session.product_type, 'Continuous')
+   @dbfeatCon.each do |f|
       low = f.low
       high = f.high
       searchR = ranges(f.name)

@@ -2,9 +2,10 @@ class PrintersController < ProductsController
   before_filter :pickProduct
 
   def pickProduct
+
     session[:productType] = 'Printer'
-    s = Session.find(session[:user_id])
-    s.update_attribute('product_type', 'Printer') if s.product_type.nil? || s.product_type != 'Printer'
+    @@session[:productType] = 'Printer'
+    @@session.update_attribute('product_type', 'Printer') if @@session.product_type.nil? || @@session.product_type != 'Printer'
     $model = Printer
     $nodemodel = PrinterNode
     $clustermodel = PrinterCluster
