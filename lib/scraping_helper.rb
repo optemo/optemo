@@ -1,6 +1,8 @@
 module ScrapingHelper
   
-  @general_ignore_list = ['id','created_at','updated_at']
+  @@general_ignore_list = ['id','created_at','updated_at']
+  
+  @@float_rxp = /(\d+,)?\d+(\.\d+)?/
   
   def download_img url, folder, fname=nil
     return nil if url.nil? or url.empty?
@@ -42,9 +44,24 @@ module ScrapingHelper
     return spec_hash
   end
   
+  def get_max_f str
+    return nil if str.nil?
+    strsplit = str.split(/[\s-]/).collect{|x| get_f x}.delete_if{|x| x.nil?}.sort
+    myfloat =  strsplit.last if strsplit
+    return myfloat
+  end
+  
+  def get_min_f str
+    return nil if str.nil?
+    strsplit = str.split(/[\s-]/).collect{|x| get_f x}.delete_if{|x| x.nil? or x == 0}.sort
+    myfloat =  strsplit.first if strsplit
+    return myfloat
+  end
+  
+  
   def maxres_from_res res
     return nil if res.nil?
-    maxres = res.scan(/\d+/).collect{|x|x.to_i}.sort.last
+    maxres = get_max_f(res)
     return maxres
   end
   
@@ -119,12 +136,13 @@ module ScrapingHelper
   def get_f str
     return nil if str.nil? or str.empty?
     myfloat =  str.strip.match(/(\d+,)?\d+(\.\d+)?/).to_s.gsub(/,/,'').to_f
-    #return nil if myfloat == 0 
+    return nil if myfloat == 0 
     return myfloat
   end
   
   # Takes out any characters that are not alphanumeric. Spaces too.
   def just_alphanumeric label
+   return nil if label.nil?
     return label.downcase.gsub(/ /,'').gsub(/[^a-zA-Z 0-9]/, "")
   end
   
@@ -164,8 +182,8 @@ module ScrapingHelper
     return val
   end
   
-  def fill_in_all hsh, rec
-    hsh.each{ |name,val| fill_in name, val, rec }
+  def fill_in_all hsh, rec, ignorelist=[]
+    hsh.each{ |name,val| fill_in name, val, rec, ignorelist }
   end
   
   # When the element exists, fills in the 
@@ -177,14 +195,13 @@ module ScrapingHelper
   
   # Fills in value for attribute in record.
   # Cleverly avoids cases with nonexistent things.
-  def fill_in name, desc, record
-        
-    unless record.has_attribute? name
-      @logfile.puts "#{name} missing from attribute list"
-      return
-    end
+  def fill_in name, desc, record, ignorelist=[]
     
+    ignore = ignorelist + @@general_ignore_list     
+        
+    return unless record.has_attribute? name
     return if desc.nil?
+    return if ignorelist.include?(name)
     
     case (record.class.columns_hash[name].type)
       when :integer

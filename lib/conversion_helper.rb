@@ -5,34 +5,77 @@ module ConversionHelper
   require 'scraping_helper'
   include ScrapingHelper   
   
+  def parse_lens str
+    return nil if str.nil?
+    lens_substr = str.scan(/with.*?\d+?.*?\d+?.*?lens/i).to_s #  || str
+    return nil if lens_substr.nil?
+    lens_params = lens_substr.match(/\d+(mm)?\s?-?\s?\d+(mm)?/).to_s
+    return nil if lens_substr.nil? or lens_substr.strip == ""
+    zoom = focal_lengths_to_zoom(lens_params)
+    return zoom
+  end
+  
+  def focal_lengths_to_zoom str
+    min_focal_length = get_min_f(str)
+    max_focal_length = get_max_f(str)
+    zoom = (max_focal_length / min_focal_length) if min_focal_length and max_focal_length
+    debugger if zoom <= 1
+    return zoom || nil
+  end
+  
+  def parse_ozoom str
+    return nil if str.nil?
+    ozoom =  get_f ( str.match(append_regex (@@float_rxp, /\s?x (optical )?zoom/i)).to_s )
+    return ozoom if ozoom and ozoom >= 1
+    return nil 
+  end
+  
   def get_inches str
     return nil unless str
     inches = get_f_with_units( str,  /\s?(in(ch(es)?)? |\")/i )
-    return nil unless inches
+    return nil unless (inches and inches > 0)
     return inches
   end
   
   def to_mpix res
     return nil if res.nil?
-    return res[2]+ res[1]/1_000 +res[0]/1_000_000
+    return res[0]+ res[1]/1_000 +res[2]/1_000_000
   end
   
   def parse_res str
     return nil if str.nil?
     mp = get_f_with_units( str,  /(\s)?m(ega)?\s?p(ixel(s)?)?/i ) || 0
-    mp = get_f_with_units( str,  /(\s)?k(ilo)?\s?p(ixel(s)?)?/i ) || 0
-    p = get_f_with_units( str,  /(\s)b(yte(s)?)?/i ) || 0
+    kp = get_f_with_units( str,  /(\s)?k(ilo)?\s?p(ixel(s)?)?/i ) || 0
+    p = get_f_with_units( str,  /(\s)?p(ixel(s)?)?/i ) || 0
     return [mp, kp, p] 
   end
   
+  def to_cm length
+    return nil if (length.nil? or length.size < 3)
+    return length[0]*100 + length[1] + length[2]/10
+  end
+  
+  def parse_metric_length str
+    return nil if (str.nil? or str=='')
+    mm = get_f_with_units( str,  /(\s)m(illi)?m(et(er|re)(s)?)?/i ) || 0
+    cm = get_f_with_units( str, /(\s)c(enti)?m(et(er|re)(s)?)?/i ) || 0
+    m = get_f_with_units( str,  /(\s)m(et(er|re)(s)?)?/i ) || 0
+    
+    return [m, cm, mm] unless [m, cm, mm].uniq == [0]
+    return nil
+  end
+  
   # Returns [WIDTH, DEPTH, HEIGHT]
-  def parse_dimensions str
+  def parse_metric_dimensions str
     return nil if (str.nil? or str=='')
     dims = [nil,nil,nil]
-    str.split('x').each do |dim| 
-      dims[0] = get_f(dim) if (dim.match(/w/i) and get_f(dim) != 0)
-      dims[1] = get_f(dim) if (dim.match(/[dl]/i) and get_f(dim) != 0)
-      dims[2] = get_f(dim) if (dim.match(/h/i)  and get_f(dim) != 0)
+    str.split('x').each do |dim|
+      dim_cm = to_cm(parse_metric_length(dim))
+      if (dim_cm != 0)
+        dims[0] = dim_cm if dim.match(/w/i) 
+        dims[1] = dim_cm if dim.match(/[dl]/i)
+        dims[2] = dim_cm if dim.match(/h/i)  
+      end
     end
     return dims unless dims.uniq == [nil]
     return nil

@@ -2,211 +2,81 @@ class CreateBestbuyScrapeds < ActiveRecord::Migration
   def self.up
     create_table :bestbuy_scrapeds do |t|
 
-      t.timestamps
-      t.primary_key :id
-      t.string :_35mmequivalent
-      t.string :acadapter
-      t.string :additionalcompatiblebatteriesnotinc
-      t.string :afassistbeam
-      t.string :afpoints
-      t.string :afpointselection
-      t.string :aftype
-      t.string :aperturerange
-      t.string :audiooutput
-      t.string :autoflashmode
-      t.string :autofocussystem
-      t.string :automode
-      t.string :autoofffunction
-      t.string :autowhitebalance
-      t.string :backupbattery
-      t.string :batteries
-      t.string :batterycharger
-      t.string :batterytype
-      t.string :batterytypequantity
-      t.string :blackwhite
-      t.string :bodycolour
-      t.string :bodyconstruction
-      t.string :brightnessadjustment
-      t.string :builtinflash
-      t.string :builtinflashtype
-      t.string :cablerelease
-      t.string :cables
-      t.string :catclass
-      t.string :catdept
-      t.string :category
-      t.string :categoryid
-      t.string :catgroup
-      t.string :catsubclass
-      t.string :centreweightedaveragemeteringmode
-      t.string :colour
-      t.string :colourfiltersystem
-      t.string :colourspace
-      t.string :compactflashiiicf
-      t.string :computercompatibility
-      t.string :computerinterface
-      t.string :computerinterfacecable
-      t.string :continuousshootinghighestquality
-      t.string :continuousshootinglowestquality
-      t.string :continuousshootingmediumquality
-      t.string :crushproof
-      t.string :datainterface
-      t.string :depth
-      t.string :depthoffieldpreview
-      t.string :description
-      t.string :digitalstoragemedia
-      t.string :digitalzoom
-      t.string :dimensionsdepth
-      t.string :dimensionsheight
-      t.string :dimensionswidth
-      t.string :drivemodes
-      t.string :drivemodes2
-      t.string :dustreduction
-      t.string :effectivepixels
-      t.string :evaluativemeteringmode
-      t.string :exposurecompensation
-      t.string :facedetection
-      t.string :fillinflashmode
-      t.string :filtersize
-      t.string :flashexposurecompensation
-      t.string :flashguideno
-      t.string :flashmeteringsystem
-      t.string :flashonoffmode
-      t.string :flashrange
-      t.string :flashsync
-      t.string :focallength
-      t.string :focallengthconversionfactor
-      t.string :focusingmodes1
-      t.string :focusingmodes2
-      t.string :focuslock
-      t.string :focusrange
-      t.string :framerate1024x768resolution
-      t.string :framerate160x120resolution
-      t.string :framerate320x240resolution
-      t.string :framerate640x480resolution
-      t.string :framerate800x600resolution
-      t.string :framerateotherresolutions
-      t.string :freezeproof
-      t.string :fsskuid
-      t.string :glossary
-      t.string :guid
-      t.string :height
-      t.string :imageplaybackmodes1
-      t.string :imageplaybackmodes2
-      t.string :imageprocessor
-      t.string :imagequalitymodes
-      t.string :imagesper1gbhighestresolution
-      t.string :imagestabilization
-      t.string :imageurl
-      t.string :includedbatterymodel
-      t.string :includedinbox
-      t.string :includedstoragemediumsize
-      t.string :intelligentshoe
-      t.string :internalmemory
-      t.string :iso
-      t.string :isosensitivity
-      t.string :jpeg
-      t.string :languagessupported
-      t.string :lcdmonitor
-      t.string :lcdmonitorresolution
-      t.string :lcdresolution
-      t.string :lcdsize
-      t.string :lensframecolour
-      t.string :lensmount
-      t.string :lensrange
-      t.string :lensweight
-      t.string :link
-      t.string :livepreview
-      t.string :longdescription
-      t.string :lowpassfilter
-      t.string :macromode
-      t.string :manual
-      t.string :manualmodes
-      t.string :manufacturer
-      t.string :manufacturerwarrantylabour
-      t.string :manufacturerwarrantyparts
-      t.string :maxburstjpeg
-      t.string :maxburstotherformat
-      t.string :maxburstraw
-      t.string :maxburstrawjpeg
-      t.string :megapixels
-      t.string :memorystickproproduo
-      t.string :mfgpartnum
-      t.string :mfrpartnumber
-      t.string :microdrive
-      t.string :minutesofvideoper1gbhighestresolution
-      t.string :modelnumber
-      t.string :moviefileformats
-      t.string :movieplaybackmodes
-      t.string :nightmode
-      t.string :numberofpresetscenemodes
-      t.string :opticalzoom
-      t.string :other
-      t.string :otherconnectiontype
-      t.string :otherflashmodes
-      t.string :otherformats
-      t.string :otherincameraeffects
-      t.string :othermeteringmodes
-      t.string :othershootingmodes1
-      t.string :othershootingmodes2
-      t.string :pictbridge
-      t.string :playbacktime
-      t.string :portraitmode
-      t.string :powersavingmodes
-      t.string :price
-      t.string :processor
-      t.string :provincecode
-      t.string :raw
-      t.string :rawjpeg
-      t.string :recyclingtime
-      t.string :redeyereductionflashmode
-      t.string :redeyeremoval
-      t.string :resolutionhighestqualitymode
-      t.string :resolutionlowestqualitymode
-      t.string :resolutionmediumqualitymode
-      t.string :saleenddate
-      t.string :saleprice
-      t.string :savings
-      t.string :securedigitalhighcapacitysdhc
-      t.string :securedigitalsd
-      t.string :selftimer
-      t.string :sensorsize
-      t.string :sensortype
-      t.string :sepia
-      t.string :shockproof
-      t.string :shootingcapacity
-      t.string :shutterlag
-      t.string :shutterspeedrange
-      t.string :shutterspeeds
-      t.string :shuttertype
-      t.string :skuid
-      t.string :slowsynchro
-      t.string :software
-      t.string :soundquality
-      t.string :specialvideomodes
-      t.string :spotmeteringmode
-      t.string :stabilized
-      t.string :stillimagefileformats
-      t.string :strap
-      t.string :systemrequirements
-      t.string :title
-      t.string :totalpixels
-      t.string :videointerface
-      t.string :videomodes
-      t.string :videooutput
-      t.string :videooutputformat
-      t.string :viewfindertype
-      t.string :warrantylabour
-      t.string :warrantyparts
-      t.string :waterproof
-      t.string :webcode
-      t.string :weight
-      t.string :weightwithbatteries
-      t.string :whitebalancebracketing
-      t.string :whitebalancemodes1
-      t.string :whitebalancemodes2
-      t.string :whitebalancesettings1
-      t.string :whitebalancesettings2
-      t.string :width
+       t.timestamps
+
+       t.primary_key :id
+
+       # IDs etc from BestBuy
+       t.string      :category
+       t.string      :categoryid
+       t.string      :catgroup
+       t.string      :catsubclass
+       t.string      :fsskuid
+       t.string      :skuid
+       t.string      :guid
+
+       t.text      :label 
+       t.text        :detailpageurl 
+       t.text        :imageurl
+       t.text      :glossary
+
+       t.text      :description
+
+       t.string :includedbatterymodel
+
+       t.text     :longdescription
+
+       t.string :redeyereductionflashmode
+       t.string :redeyeremoval
+
+       t.string :resolutionhighestqualitymode
+       t.string :resolutionlowestqualitymode
+       t.string :resolutionmediumqualitymode
+
+       t.string :saleenddate
+       t.string :saleprice
+       t.string :savings
+
+       t.string :viewfindertype
+       t.string :webcode
+
+      # # IMPORTANT!
+      # 
+      t.string      :mpn
+      t.string      :brand
+      t.string      :model
+      # 
+      t.float       :displaysize
+      # 
+      t.string      :listpricestr
+      t.integer     :listpriceint
+      # 
+      t.float       :opticalzoom 
+      t.float       :digitalzoom
+      # 
+      t.float       :maximumresolution
+      # 
+      #  # I might have this somewhere...
+      # t.boolean     :batteriesincluded
+      # t.string      :batterydescription
+      # t.string      :binding
+      # t.string      :connectivity
+      # t.string      :ean
+      # t.text        :feature
+      # t.boolean     :hasredeyereduction
+      # t.string      :includedsoftware
+       t.float     :itemheight
+       t.float     :itemlength
+       t.float     :itemwidth
+       t.float     :itemweight
+      # t.float       :maximumfocallength
+      # t.float       :minimumfocallength
+      # t.integer     :packageheight 
+      # t.integer     :packagelength
+      # t.integer     :packagewidth
+      # t.integer     :packageweight 
+      # t.date        :releasedate
+      # t.text        :specialfeatures
     end
   end
 
