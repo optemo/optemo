@@ -6,7 +6,7 @@
 
 int hClustering(int layer, int clusterN, int conFeatureN, int boolFeatureN, double *average, double** conFeatureRange, double*** conFeatureRangeC,
 	sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *resClus, sql::ResultSet *resNodes, sql::Statement *stmt, 
-	string* conFeatureNames, string* boolFeatureNames, string productName, double* weights, int version){				
+	string* conFeatureNames, string* boolFeatureNames, string productName, double* weights, int version, string region){				
 	
 int maxSize = -2;	
 double **data;
@@ -75,6 +75,7 @@ if 	(layer == 1){
 			 	   	    	centroids[j]=new double[conFeatureN];
 			 	   		}
 
+
 			 	       	centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights); 
 					
 				
@@ -137,7 +138,8 @@ if 	(layer == 1){
 					   // save it to the database
 					
 					 getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);		
-					 saveClusteredData(data, idA, size, brands, parent_id,clusteredData, clusteredDataOrder, conFeatureRangeC, layer, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName, version);
+					 saveClusteredData(data, idA, size, brands, parent_id,clusteredData, clusteredDataOrder, conFeatureRangeC, layer, clusterN, conFeatureN, 
+										boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName, version, region);
 						for (int c=0; c<clusterN; c++){
 								if (clusteredData[c][0]>maxSize){
 									maxSize = clusteredData[c][0];
@@ -157,7 +159,9 @@ if (layer > 1){
 	ostringstream vs;
 	vs << version;
 	command += vs.str();
-	command += " AND layer=";
+	command += " AND region='";
+	command += region;
+	command += "' AND layer=";
 	ostringstream layerStream; 
 	layerStream << layer - 1; 
 	command += layerStream.str();
@@ -296,12 +300,10 @@ if (layer > 1){
 				repOrder(dataCluster, clusteredData[c][0], "median", conFeatureN, boolFeatureN, clusteredDataOrder[c]);
 			  }
 
-
-
-
 ///////////
 
-		saveClusteredData(data, idA, size, brands, parent_id,clusteredData, clusteredDataOrder, conFeatureRangeC, layer, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName, version);
+		saveClusteredData(data, idA, size, brands, parent_id,clusteredData, clusteredDataOrder, conFeatureRangeC, layer, clusterN, conFeatureN, 
+							boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName, version, region);
 
 		
 			for (int c=0; c<clusterN; c++){
@@ -325,7 +327,7 @@ if (layer > 1){
 //leafClustering(layer, conFeatureN, res, stmt, productName);
 
 void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* conFeatureNames, string* boolFeatureNames, 
-					sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *res3, sql::Statement *stmt, string productName, int version){
+					sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *res3, sql::Statement *stmt, string productName, int version, string region){
 	
 	string command, command2;
 	string capProductName = productName;
@@ -342,7 +344,10 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 		ostringstream vstream;
 		vstream << version;
 		command += vstream.str();
-		command += " AND cluster_size<";
+		command += " AND region='";
+		command += region;
+		
+		command += "' AND cluster_size<";
 		ostringstream sizeStream;
 		sizeStream << clusterN+1;
 		command += sizeStream.str();
@@ -364,7 +369,9 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 			ostringstream vs;
 			vs << version;
 			command += vs.str();
-			command += " AND cluster_id=";
+			command += " AND region='";
+			command += region;
+			command += "' AND cluster_id=";
 			command += parent_idStream.str();
 			command += ");";
 		
@@ -373,7 +380,7 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 		    while(res2->next()){			
 			command = "INSERT INTO ";
 			command += productName;
-			command += "_clusters (version, layer, parent_id, cluster_size,cached_utility, price_min, price";
+			command += "_clusters (version, region, layer, parent_id, cluster_size,cached_utility, price_min, price";
 				for (int i=1; i<conFeatureN; i++){
 					command += "_max, ";
 					command += conFeatureNames[i];
@@ -388,7 +395,9 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 				}
 				command += ") values (";
 				command += vs.str();
-				command += ", ";
+				command += ", '";
+				command += region;
+				command += "', ";
 				ostringstream layerStream;
 				layerStream << layer+1;
 				command += layerStream.str();
@@ -435,7 +444,7 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 				}
 			command = "INSERT INTO ";
 			command += productName;
-			command += "_nodes (version, cluster_id, product_id, utility";
+			command += "_nodes (version, region, cluster_id, product_id, utility";
 			for (int i=0; i<conFeatureN; i++){
 				command += ", ";
 				command += conFeatureNames[i];
@@ -446,8 +455,10 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 			}
 			command += ", brand) values (";
 			command += vs.str();
-			ostringstream cidStream2; 
-			command += ", ";
+			command += ", '";
+			command += region;
+			command += "', ";
+			ostringstream cidStream2; 			
 			cidStream2<< cluster_id;
 			command += cidStream2.str();
 			command += ", ";

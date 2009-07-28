@@ -1,4 +1,4 @@
-string preClustering(string* varNames, map<const string, int>productNames, string productName, string* conFeatureNames, string* catFeatureNames, string* boolFeatureNames, string* indicatorNames){
+string preClustering(string* varNames, map<const string, int>productNames, string productName, string* conFeatureNames, string* catFeatureNames, string* boolFeatureNames, string* indicatorNames, string region){
 	
 	string filteringCommand;
 	
@@ -50,8 +50,12 @@ string preClustering(string* varNames, map<const string, int>productNames, strin
 				
 				filteringCommand = "SELECT * FROM ";
 				filteringCommand += productName;
-				
-				filteringCommand += "s where (instock=1 and (scanner IS NOT NULL) and (printserver IS NOT NULL) and ";
+				if (region == "us"){
+					filteringCommand += "s where (instock=1 and instock_ca=0 and (scanner IS NOT NULL) and (printserver IS NOT NULL) and ";
+				}else if(region == "ca"){
+					filteringCommand += "s where (instock=1 and instock_ca=1 and (scanner IS NOT NULL) and (printserver IS NOT NULL) and ";
+				}
+					
 				filteringCommand += "(resolutionmax >0) and (ppm >0 ) and (itemwidth > 0) and (paperinput > 0))";
 			
 				break;
