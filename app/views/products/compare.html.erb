@@ -42,7 +42,7 @@
 
 <div class="main">
 	<span style="color:red;"><%= flash[:error] %></span><span class="title"><%= flash[:notice] %></span>
-	<div style="text-align: center;"><h1><%= @allSearches.last.desc unless @allSearches.empty? %> <%= $model.urlname.capitalize %></h1></div>
+	<div style="text-align: center;"><h1><%= h1title %></h1></div>
 	<div class='backlink'>	
 	<% unless @allSearches.empty? %>
 		<%= link_to "All #{$model.urlname.capitalize}", "/#{$model.urlname}/homepage" %> &lt;&lt;

@@ -29,8 +29,8 @@ class SearchController < ApplicationController
     @session = @@session
     sphinx = searchSphinx(params[:search])
     product_ids = sphinx.results.delete_if{|r|r[0] != $model.name}.map{|r|r[1]}
-    current_version = $clustermodel.last.version
-    nodes = product_ids.map{|p| $nodemodel.find_by_product_id_and_version(p, current_version)}.compact
+    current_version = $clustermodel.find_last_by_region($region).version
+    nodes = product_ids.map{|p| $nodemodel.find_by_product_id_and_version_and_region(p, current_version, $region)}.compact
     cluster_ids = nodes.map{|n|n.cluster_id}
     if cluster_ids.length == 0
       flash[:error] = "No products were found."
