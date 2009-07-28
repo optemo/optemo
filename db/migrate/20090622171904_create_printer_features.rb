@@ -33,7 +33,7 @@ class CreatePrinterFeatures < ActiveRecord::Migration
         #Set both min and max from the db:features field
         dbfeat = {}
         flip = {"min" => "max", "max" => "min"}
-        DbFeature.find_all_by_product_type(Printer.name).each {|f| dbfeat[f.name] = f}
+        DbFeature.find_all_by_product_type_and_region(Printer.name,"us").each {|f| dbfeat[f.name] = f}
         v.keys.each do |key|
           if key.index(/(.+)_(min|max)/) && !v.keys.include?(Regexp.last_match[1]+flip[Regexp.last_match[2]])
             feat = Regexp.last_match[1]+"_"+flip[Regexp.last_match[2]]

@@ -84,7 +84,7 @@ class MergedCluster
   #Description for each cluster
   def description(session)
     des = []
-    DbFeature.find_all_by_product_type_and_feature_type(session.product_type, 'Continuous').each do |f|
+    DbFeature.find_all_by_product_type_and_feature_type_and_region(session.product_type, 'Continuous',$region).each do |f|
         low = f.low
         high = f.high  
         clusterR = ranges(f.name, session)
