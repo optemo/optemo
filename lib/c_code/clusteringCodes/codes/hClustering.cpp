@@ -10,9 +10,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
-
 using namespace std;
-
 
 #include <cppconn/mysql_public_iface.h>
 //
@@ -274,7 +272,7 @@ int main(int argc, char** argv){
 					version = 0;
 				}
 				bool clustered = 0;
-			cout<<"filtering Command is "<<filteringCommand<<endl;
+
 			    res = stmt->executeQuery(filteringCommand); 
 				
 				int maxSize = res->rowsCount();
@@ -291,11 +289,13 @@ int main(int argc, char** argv){
 					layer++;
 					clustered = 1;
 				}
-				if (!clustered){
+				if (clustered){
+				leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, res3, stmt, productName, version, region);	
+				cout<<"layer "<<layer<<endl;
+			}else{
 					smallNumberClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, stmt, productName, version, region);	
 					cout<<"layer "<<layer<<endl;
 				}
-			
 //Generating the output string 
 
  	delete stmt;

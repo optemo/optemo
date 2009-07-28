@@ -16,10 +16,10 @@ void smallNumberClustering(int conFeatureN, int boolFeatureN, int clusterN, stri
 	ostringstream cidstr;
 	pstream << 0; 
 	sizestr << 1;
-	
+	string brand; 
 	
 	while (res->next()){
-		
+		brand = res->getString("brand");
 		idStream << res->getInt("id");
 		command = "INSERT INTO ";
 		command += productName;
@@ -89,22 +89,21 @@ void smallNumberClustering(int conFeatureN, int boolFeatureN, int clusterN, stri
 		command += ",";
 		command += vstream.str();
 	}	
-	for (int f=0; f<boolFeatureN; f++){ // min and max are the same
-		command += ", "	;
-		value = res->getDouble(boolFeatureNames[f]);
-		
-		ostringstream vstream;
-		vstream << value;
-		command +=vstream.str();
-	}
+
 		
 	command += ", '";
 
-	command += res->getString("brand");
+	command += brand;
 	
-	command += "');"; 
-
-	
+	command += "'";
+	for (int f=0; f<boolFeatureN; f++){ // min and max are the same
+		command += ", "	;
+		value = res->getInt(boolFeatureNames[f]);
+		ostringstream vstream;
+		vstream << value;
+		command +=vstream.str();
+	} 
+	command += ");";
 	stmt->execute(command);	
     
 	//NODES
@@ -172,19 +171,21 @@ for (int f=0; f<conFeatureN; f++){
 	vstream << value;
 	command +=vstream.str();
 }	
+
+command += ", '";
+command += brand;
+command += "'";	
 for (int f=0; f<boolFeatureN; f++){ // min and max are the same
 	command += ", "	;
-	value = res->getDouble(boolFeatureNames[f]);
+	value = res->getInt(boolFeatureNames[f]);
 	
 	ostringstream vstream;
 	vstream << value;
 	command +=vstream.str();
 
-}	
-command += ", '";
-command += res->getString("brand");
-command += "');";	
-	stmt->execute(command);		
+}
+command += ");";
+stmt->execute(command);		
 	}
 	
 	
