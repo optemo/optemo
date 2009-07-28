@@ -26,7 +26,8 @@ def cache_index
   session = Session.new({:product_type => 'Printer'})
   session.save
   search = Search.createFromPath(cluster_ids,session.id)
-  search.update_attribute('session_id',0)
+  search.session_id = 0
+  search.save
   session.destroy
 end
 
@@ -38,7 +39,7 @@ def create_product_properties(model,region)
   else
     products = model.valid.instock_ca
   end
-  unless products.nil?
+  unless products.nil? || products.empty?
     model::CategoricalFeatures.each {|name|
       f = DbFeature.new
       f.product_type = model.name
@@ -56,8 +57,8 @@ def create_product_properties(model,region)
       f.region = region
       f.min = products.map{|c|c.send(name.intern)}.reject{|c|c.nil?}.sort[0]
       f.max = products.map{|c|c.send(name.intern)}.sort[-1]
-      f.high = products.map{|c|c.send(name.intern)}.sort[model.valid.instock.count*0.75]
-      f.low = products.map{|c|c.send(name.intern)}.sort[model.valid.instock.count*0.25]
+      f.high = products.map{|c|c.send(name.intern)}.sort[products.count*0.75]
+      f.low = products.map{|c|c.send(name.intern)}.sort[products.count*0.25]
       f.save
     }
     model::BinaryFeatures.each {|name|

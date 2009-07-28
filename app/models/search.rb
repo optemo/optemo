@@ -6,7 +6,7 @@ class Search < ActiveRecord::Base
   
   #Array of normalized product counts
   def distribution(featureName)
-    f = DbFeature.find_by_name_and_product_type(featureName,session.product_type)
+    f = DbFeature.find_by_name_and_product_type_and_region(featureName,session.product_type,$region)
     stepsize = (f.max-f.min).to_f/10 
     res = []
     10.times do |i|
@@ -101,7 +101,7 @@ class Search < ActiveRecord::Base
 
   def searchDescription
     des = []
-   @dbfeatCon = DbFeature.find_all_by_product_type_and_feature_type(session.product_type, 'Continuous')
+   @dbfeatCon = DbFeature.find_all_by_product_type_and_feature_type_and_region(session.product_type, 'Continuous',$region)
    @dbfeatCon.each do |f|
       low = f.low
       high = f.high
