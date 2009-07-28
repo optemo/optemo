@@ -1,6 +1,6 @@
 	void saveClusteredData(double ** data, int* idA, int size, string* brands, int parent_id, int** clusteredData, int** clusteredDataOrdered, double*** conFeatureRange, 
     int layer, 
-	int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, sql::ResultSet *res2, string productName, int version){
+	int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, sql::ResultSet *res2, string productName, int version, string region){
 	///Saving to cluster table 	
 		ostringstream layerStream; 
 		layerStream<<layer;
@@ -24,7 +24,7 @@
 			clusterSizeStream<<clusteredData[c][0];
 			string command = "INSERT INTO ";
 			command += productName;
-			command += "_clusters (version, layer, parent_id, cluster_size, price_min, price";
+			command += "_clusters (version, region, layer, parent_id, cluster_size, price_min, price";
 			for (int f=1; f<conFeatureN; f++){
 				command += "_max, ";
 				command += conFeatureNames[f];
@@ -39,7 +39,9 @@
 			}
 			command += ") values (";
 			command += vs.str();
-			command += ", ";
+			command += ", '";
+			command += region;
+			command += "', ";
 			command += layerStream.str();
 			command += ", ";
 			command += parent_idStream.str();
@@ -134,7 +136,7 @@
 			
 				command = "INSERT INTO ";
 				command += productName;
-				command += "_nodes (version, cluster_id, product_id, utility, price";
+				command += "_nodes (version, region, cluster_id, product_id, utility, price";
 				for (int i=1; i<conFeatureN; i++){
 						command += ", ";
 						command += conFeatureNames[i];
@@ -148,8 +150,10 @@
 				//add rep
 
 				command += vs.str();
+				command += ", '";
 				
-				command += ", ";
+				command += region;
+				command += "', ";
 				
 				command += cluster_idStream.str();
 				command += ", ";

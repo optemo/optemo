@@ -10,17 +10,15 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+
 using namespace std;
 
 
-
-//return 9 cameras
-// Public interface of the MySQL Connector/C++
 #include <cppconn/mysql_public_iface.h>
 //
 #include "hClustering.h"
 #include "preProcessing.h"
-
+#include "smallNumberClustering.h"
 using namespace std;
 
 int main(int argc, char** argv){	
@@ -37,14 +35,31 @@ int main(int argc, char** argv){
 	string var;
 	
 	//argument is the productName
-
-	string productName = argv[1];
-	if ((productName != "camera") || (productName != "printer")){
-		cout<<"Wrong Product Type"<<endl;
-		 return EXIT_FAILURE;
+    if (argc <4){
+		cout<<" Wrong number of arguments, you need 3 (product name, region and environment)"<<endl;
+		return EXIT_FAILURE;
 	}
-	string environment = argv[2];
+	string productName = argv[1];
+	//cout<<productName<<endl;
+	if ((productName != "camera") && (productName != "printer")){
+		cout<<"Wrong Product Type! You should enter either printer or camera"<<endl;
+		return EXIT_FAILURE;
+	}
 	
+	string region = argv[2];
+	//cout<<region<<endl;
+	if ((region != "us") && (region != "ca")){
+		cout<<"Wrong Region! You should enter either us or ca"<<endl;
+		return EXIT_FAILURE;
+	}
+	
+	string env = argv[3];
+	if ((env != "test") && (env != "development") && (env != "production")){
+		cout<<"Wrong environment! You should either enter test, development or production"<<endl;
+		return EXIT_FAILURE;
+	}
+	
+
 	string tableName = productName;
 	tableName.append("s");
 	map<const string, int> productNames;
@@ -170,7 +185,7 @@ int main(int argc, char** argv){
 //void preClustering(string* varNames, map<const string, int>productNames, string productName, string* conFeatureNames, string* catFeatureNames, string* indicatorNames)
 
 
- string filteringCommand = preClustering(varNames, productNames, productName, conFeatureNames, catFeatureNames, boolFeatureNames, indicatorNames);
+ string filteringCommand = preClustering(varNames, productNames, productName, conFeatureNames, catFeatureNames, boolFeatureNames, indicatorNames, region);
 
 
 //}
@@ -187,6 +202,7 @@ int main(int argc, char** argv){
 	sql::ResultSet	*res3;
     sql::ResultSet	*resClus;
     sql::ResultSet	*resNodes;
+	
 		string line;
 		string buf; 
 		vector<string> tokens;
@@ -207,6 +223,14 @@ int main(int argc, char** argv){
 			cout<<"Can't open file "<<myfile<<endl;
 	   }
 
+	env += ":";
+	
+	while (tokens.size() > 0 && tokens.at(0) != env){
+		tokens.erase(tokens.begin());
+	}
+	
+  
+
 	string databaseString = tokens.at(findVec(tokens, "database:") + 1);
 	string usernameString = tokens.at(findVec(tokens, "username:") + 1);
 	string passwordString = tokens.at(findVec(tokens, "password:") + 1);
@@ -219,8 +243,7 @@ int main(int argc, char** argv){
 		#define HOST hostString    
 		#define USER usernameString 
 	    #define PASS passwordString 
-
-
+	
 ///////////////////////////////////////////////
 		
 			try {
@@ -236,8 +259,13 @@ int main(int argc, char** argv){
 			
 				command = "SELECT version from ";
 				command += productName;
-				command += "_clusters order by id DESC LIMIT 1";
+				command += "_clusters where (region='";
+				command += region;
+				command += "') order by id DESC LIMIT 1";
+			//	cout <<"command is "<<command<<endl;
 				res = stmt->executeQuery(command);
+
+				
 				if (res->next()){
 					version = res->getInt("version");
 					version++;
@@ -245,10 +273,11 @@ int main(int argc, char** argv){
 				else{
 					version = 0;
 				}
-			
+				bool clustered = 0;
+			cout<<"filtering Command is "<<filteringCommand<<endl;
 			    res = stmt->executeQuery(filteringCommand); 
-	
-				int maxSize = 10000;
+				
+				int maxSize = res->rowsCount();
 			
 				cout<<"Version: "<<version<<endl;	
 			   while (maxSize>clusterN){
@@ -256,16 +285,17 @@ int main(int argc, char** argv){
 					for (int j=0; j<conFeatureN; j++){
 						average[j] = 0.0;
 					}
-					
-					
 					maxSize = hClustering(layer, clusterN,  conFeatureN,  boolFeatureN, average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
-							stmt, conFeatureNames, boolFeatureNames, productName, weights, version);	
+							stmt, conFeatureNames, boolFeatureNames, productName, weights, version, region);	
 					cout<<"layer "<<layer<<endl;
 					layer++;
+					clustered = 1;
 				}
-				
-				leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, res3, stmt, productName, version);	
-				cout<<"layer "<<layer<<endl;
+				if (!clustered){
+					smallNumberClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, stmt, productName, version, region);	
+					cout<<"layer "<<layer<<endl;
+				}
+			
 //Generating the output string 
 
  	delete stmt;
