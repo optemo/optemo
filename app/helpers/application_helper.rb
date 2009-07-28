@@ -8,7 +8,7 @@ module ApplicationHelper
     h(@description ? @description : "LaserPrinterHub provides price comparisons and detailed information to help you find the right printer for you.")
   end
   
-  def url_for(region)
+  def url_for_intl(region)
     case region
     when "com"
       request.url.gsub(".ca",".com")
