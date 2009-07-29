@@ -15,7 +15,8 @@ class ProductsController < ApplicationController
     @session = @@session
     @dbfeat = {}
     DbFeature.find_all_by_product_type_and_region($model.name,$region).each {|f| @dbfeat[f.name] = f}
-    @s = Search.createFromPath_and_commit(params[:id].split('-'), @session.id)
+    @s = Search.createFromPath_and_commit(params[:id].split('-'), @session.id)  
+   # @dists = @s.distributions
     @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
     @allSearches = []
     @clusterDescs = @s.clusterDescription

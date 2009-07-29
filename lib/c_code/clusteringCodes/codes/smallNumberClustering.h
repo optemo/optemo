@@ -9,16 +9,18 @@ void smallNumberClustering(int conFeatureN, int boolFeatureN, int clusterN, stri
 	vstream << version;
 	lstream << 1;
 	double value;
-	ostringstream idStream;
+	
 	ostringstream pstream;
 	ostringstream ustr;
 	ostringstream sizestr;
-	ostringstream cidstr;
+
 	pstream << 0; 
 	sizestr << 1;
 	string brand; 
 	
 	while (res->next()){
+			ostringstream cidstr;
+			ostringstream idStream;
 		brand = res->getString("brand");
 		idStream << res->getInt("id");
 		command = "INSERT INTO ";
@@ -110,8 +112,9 @@ void smallNumberClustering(int conFeatureN, int boolFeatureN, int clusterN, stri
 	command2 = "SELECT last_insert_id();"; // from clusters;"
 	res2 = stmt->executeQuery(command2);
 		res2->next();
-	cidstr << res2->getInt("last_insert_id()");
-	
+	int cluster_id = res2->getInt("last_insert_id()");
+	cidstr << cluster_id;
+	cout<<"last inseted id "<<cluster_id<<endl;
 	
 	command = "INSERT INTO ";
 	command += productName;
@@ -133,6 +136,7 @@ void smallNumberClustering(int conFeatureN, int boolFeatureN, int clusterN, stri
 	command += region;
 	command += "', ";
 	command += cidstr.str();
+	cout<<"cidstr is "<<cidstr.str()<<endl;
 	command += ", ";
 	
    //utility
@@ -185,6 +189,7 @@ for (int f=0; f<boolFeatureN; f++){ // min and max are the same
 
 }
 command += ");";
+cout<<"command is "<<command<<endl;
 stmt->execute(command);		
 	}
 	

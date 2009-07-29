@@ -29,6 +29,33 @@ class Search < ActiveRecord::Base
     end
     round2Decim(normalize(res))
   end
+  
+#def distributions
+#    dists = {}
+#     
+#    dbfeat = DbFeature.find_all_by_product_type_and_feature_type(session.product_type, 'Continuous')
+#    acceptedNodes = clusters.map{|c| c.nodes(session)}.flatten ###??? more efficent way?
+#    dbfeat.each do |f|
+#      # intializing 
+#      #dists{f.name} = Array.new(10,0) 
+#      stepsize = (f.max-f.min).to_f/10 
+#      acceptedNodes.each do |n| 
+#        10.times do |i| 
+#            min = f.min + stepsize * i
+#            max = min + stepsize
+#            if (max == min)
+#              dists[f.name][i] += 1 if n.send(f.name) == min
+#
+#            elsif (n.send(f.name)>=min && n.send(f.name) < max)
+#              debugger
+#              dists[f.name][i] += 1 
+#            end
+#        end
+#      end      
+#   end    
+#end 
+
+  
   #Range of product offerings
   def ranges(featureName)
      @sRange ||= {}
