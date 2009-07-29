@@ -32,9 +32,9 @@ class Search < ActiveRecord::Base
   
   def distributions
       dists = {}
+        debugger
       dbfeat = DbFeature.find_all_by_product_type_and_feature_type(session.product_type, 'Continuous')
-      acceptedNodes = clusters.map{|c| c.nodes(session)} ###??? more efficent way?
-      debugger
+      acceptedNodes = clusters.map{|c| c.nodes(session)}.flatten ###??? more efficent way?
       dbfeat.each do |f|
         # intializing 
         #dists{f.name} = Array.new(10,0) 
