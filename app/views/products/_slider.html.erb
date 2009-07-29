@@ -5,7 +5,7 @@
 <div class='label space'>
 	<%= name %>
 </div>
-<div class="hist" data-data="<%= @s.distribution(val).join(',') %>"></div>
+<div class="hist" data-data="<%= @dists[val].join(',') %>"></div>
 <%= hidden_field_tag "myfilter[#{val}_min]", i2f ?
 	((mymin = @session.features.send("#{val}_min".intern)).nil? ? '' : mymin/100) : 
 	@session.features.send("#{val}_min".intern),
