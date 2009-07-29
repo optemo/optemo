@@ -35,6 +35,7 @@ class ApplicationController < ActionController::Base
     $nodemodel = ((session[:productType] || $DefaultProduct)+'Node').constantize
     $clustermodel = ((session[:productType] || $DefaultProduct)+'Cluster').constantize
     $featuremodel = ((session[:productType] || $DefaultProduct)+'Features').constantize
+    $region = request.url.match(/\.ca/) ? "ca" : "us"
    
     if session[:user_id].blank? || !Session.exists?(session[:user_id])
       mysession = Session.new
@@ -70,11 +71,11 @@ class ApplicationController < ActionController::Base
     mysession = Session.find(session[:user_id])
     mysession.clearFilters
 
-    if $model == Printer && s = Search.find_by_session_id(0)
+    if $model == Printer && $region == "us" && s = Search.find_by_session_id(0)
       path = 0.upto(s.cluster_count-1).map{|i| s.send(:"c#{i}")}.join('-')
     else
-      current_version = $clustermodel.last.version
-      path = $clustermodel.find_all_by_parent_id_and_version(0, current_version, :order => 'cluster_size DESC').map{|c| c.id}.join('-')
+      current_version = $clustermodel.find_last_by_region($region).version
+      path = $clustermodel.find_all_by_parent_id_and_version_and_region(0, current_version, $region, :order => 'cluster_size DESC').map{|c| c.id}.join('-')
     end
     "/#{$model.urlname}/compare/"+path
   end

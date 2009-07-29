@@ -403,7 +403,7 @@ end
 
 def displayComparisonFeature(i)
   returnString = ""
-  DbFeature.find_all_by_product_type_and_feature_type(@session.product_type, 'Continuous').each do |f|
+  DbFeature.find_all_by_product_type_and_feature_type_and_region(@session.product_type, 'Continuous',$region).each do |f|
     f_pref = @session.features.send(f.name+"_pref") 
     # Only if the user preferences indicate that this feature is important to the user
     if f_pref > $SignificantFeatureThreshold

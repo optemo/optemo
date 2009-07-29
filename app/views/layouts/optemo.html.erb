@@ -16,37 +16,22 @@
 <body>
 <div id="mycenter">
 <div class="dialog">
-
- <!-- top/right PNG -->
  <div class="content">
-
-  <!-- optional: vertical scroll wrapper -->
   <div class="wrapper">
-
-   <!-- top/left PNG -->
    <div class="t"></div>
-
-   <!-- Your content goes here -->
-
-   <!-- Optional: Standard Module Format (hd/bd/ft)
-   for providing semantic, meaningful content.
-   Not required for visual effect. -->
-
    <div class="hd">
 	<div id="header">
 	  <div id="logo">
-		<a href="<%= url_for '/' %>" id ="logo" title="LaserPrinterHub.com"><%= image_tag('logo.jpg') %><span>Home</span></a>
+		<a href="<%= url_for '/' %>" id ="logo" title="LaserPrinterHub.com"><%= $region == "us" ? image_tag('logo.jpg') : image_tag('logo_ca.jpg')%><span>Home</span></a>
 	  </div>
 		<a href="<%= url_for '/laserprinters' %>" title="Why to buy a laser printer?" id='whylaser'><%= image_tag('whylaser.jpg') %><span>Click to find out</span></a>
 	  <div id="flags">
-		<%= link_to image_tag('us.gif'), url_for('com') %>
-		<%= link_to image_tag('ca.gif'), url_for('ca') %>
+		<%= link_to image_tag('us.gif'), url_for_intl('com') %>
+		<%= link_to image_tag('ca.gif'), url_for_intl('ca') %>
 	  </div>
 	  <div id="header_buttons">
 	    powered by <%= link_to image_tag('optemo.jpg'), 'http://www.optemo.com', {:title => 'Optemo'} %>
 	  </div>
-	  
-
 	</div>
    </div>
    <div id="headerbar"><!--IE min line height--></div>
@@ -56,10 +41,7 @@
    </div>
 
    <div class="ft"><!--IE min line height--></div>
-  <!-- end content -->
   </div>
-
- <!-- end scroll wrapper -->
  </div>
 
  <!-- bottom PNG -->

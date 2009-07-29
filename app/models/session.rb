@@ -56,8 +56,8 @@ class Session < ActiveRecord::Base
     @oldsession = Session.find(parent_id)
     if expandedFiltering? || @oldsession.oldclusters.nil?
       #Search is expanded, so use all products to begin with
-      current_version = $clustermodel.last.version
-      clusters = $clustermodel.find_all_by_layer_and_version(1,current_version)
+      current_version = $clustermodel.find_last_by_region($region).version
+      clusters = $clustermodel.find_all_by_layer_and_version_and_region(1,current_version,$region)
     else
       #Search is narrowed, so use current products to begin with
       clusters = @oldsession.oldclusters

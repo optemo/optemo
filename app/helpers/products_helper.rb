@@ -50,4 +50,16 @@ module ProductsHelper
   def dbmax(i2f, feat)
     i2f ? (@dbfeat[feat].max.to_f/100).ceil : @dbfeat[feat].max.ceil
   end
+  
+  def h1title
+    if @allSearches.empty?
+      if @session.searchterm.nil?
+        $model.urlname.capitalize
+      else
+        "Search: '#{@session.searchterm}'"
+      end
+    else
+      "#{@allSearches.last.desc} #{$model.urlname.capitalize}"
+    end
+  end
 end
