@@ -147,6 +147,7 @@ class Search < ActiveRecord::Base
     end
     ns['session_id'] = session_id
     s = new(ns)
+    
     s.fillDisplay
     s.parent_id = s.clusters.map{|c| c.parent_id}.sort[0]
     s.layer = s.clusters.map{|c| c.layer}.sort[0]
