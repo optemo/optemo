@@ -4,6 +4,10 @@ module ScrapingHelper
   
   @@float_rxp = /(\d+,)?\d+(\.\d+)?/
   
+  def self.general_ignore_list
+    @@general_ignore_list
+  end
+  
   def download_img url, folder, fname=nil
     return nil if url.nil? or url.empty?
     return url if url.include?(folder)
@@ -196,13 +200,11 @@ module ScrapingHelper
   # Fills in value for attribute in record.
   # Cleverly avoids cases with nonexistent things.
   def fill_in name, desc, record, ignorelist=[]
-    
     ignore = ignorelist + @@general_ignore_list     
-        
+    
     return unless record.has_attribute? name
     return if desc.nil?
-    return if ignorelist.include?(name)
-    
+    return if ignore.include?(name)
     case (record.class.columns_hash[name].type)
       when :integer
         val = get_i(desc.to_s)

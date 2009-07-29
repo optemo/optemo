@@ -6,6 +6,8 @@ class CreateBestBuyCameras < ActiveRecord::Migration
       
       t.primary_key :id
       
+      t.string    :skuid
+      
       t.text      :label 
       t.text      :detailpageurl 
       t.text      :imageurl

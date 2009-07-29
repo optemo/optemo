@@ -32,14 +32,16 @@ module ConversionHelper
   
   def get_inches str
     return nil unless str
-    inches = get_f_with_units( str,  /\s?(in(ch(es)?)? |\")/i )
+    inches = get_f_with_units( str,  /(\s|-)?(in(ch(es)?)? |\")/i )
     return nil unless (inches and inches > 0)
     return inches
   end
   
   def to_mpix res
     return nil if res.nil?
-    return res[0]+ res[1]/1_000 +res[2]/1_000_000
+    mpix = res[0]+ res[1]/1_000 +res[2]/1_000_000
+    return mpix unless mpix == 0
+    return nil
   end
   
   def parse_res str
@@ -133,6 +135,10 @@ module ConversionHelper
   
   def get_f_with_units str, unit_regex
     return (get_f str.match(append_regex( @@float_rxp, unit_regex)).to_s) 
+  end
+  
+  def float_and_regex x
+    return append_regex @@float_rxp, x
   end
   
   def append_regex x, y

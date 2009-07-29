@@ -3,47 +3,70 @@ class CreateCameras < ActiveRecord::Migration
   extend MigrationHelper
   def self.up
     create_table :cameras do |t|
-      addBasicProductFeatures
-      t.primary_key :id
-      t.string      :asin
-      t.text        :detailpageurl
-      t.boolean     :batteriesincluded
-      t.string      :batterydescription
-      t.string      :binding
+       addBasicProductFeatures(t)
+
+       t.primary_key :id
+
+       t.text      :label 
+       t.text      :detailpageurl 
+       t.text      :imageurl
+       t.text      :glossary
+
+       t.string :viewfindertype # TODO
+
+       t.boolean :waterproof
+       t.boolean :slr
+
+      t.string      :mpn
       t.string      :brand
-      t.string      :connectivity
-      t.float       :digitalzoom
+      t.string      :model
+      # 
       t.float       :displaysize
-      t.string      :ean
-      t.text        :feature
-      t.string      :floppydiskdrivedescription
-      t.boolean     :hasredeyereduction
-      t.string      :includedsoftware
-      t.boolean     :isautographed
-      t.boolean     :ismemorabilia
-      t.integer     :itemheight
-      t.integer     :itemlength
-      t.integer     :itemwidth
-      t.integer     :itemweight
-      t.string      :label
+      # 
       t.string      :listpricestr
       t.integer     :listpriceint
-      t.string      :manufacturer
-      t.float       :maximumfocallength
-      t.float       :maximumresolution
-      t.float       :minimumfocallength
-      t.string      :model
-      t.string      :mpn
+      # 
       t.float       :opticalzoom 
-      t.integer     :packageheight 
-      t.integer     :packagelength
-      t.integer     :packagewidth
-      t.integer     :packageweight 
-      t.string      :productgroup
-      t.string      :publisher
-      t.date        :releasedate
-      t.text        :specialfeatures
-      t.string      :studio
+      t.float       :digitalzoom
+      # 
+      t.float       :maximumresolution
+      # 
+      #  # I might have this somewhere...
+      # t.boolean     :batteriesincluded
+      t.string      :batterydescription
+      # t.string      :binding
+      # t.string      :connectivity
+      # t.string      :ean
+      # t.text        :feature
+      t.boolean     :hasredeyereduction
+      # t.string      :includedsoftware
+       t.float     :itemheight
+       t.float     :itemlength
+       t.float     :itemwidth
+       t.float     :itemweight
+      # t.float       :maximumfocallength
+      # t.float       :minimumfocallength
+      # t.integer     :packageheight 
+      # t.integer     :packagelength
+      # t.integer     :packagewidth
+      # t.integer     :packageweight 
+      # t.date        :releasedate
+      # t.text        :specialfeatures
+
+      t.string      :category
+      t.string      :categoryid
+      t.string      :catgroup
+      t.string      :catsubclass
+      t.string      :fsskuid
+      t.string      :skuid
+      t.string      :guid
+      t.string      :webcode
+      
+      t.string     :saleenddate
+      t.string     :saleprice
+      t.string     :savings
+      
+
     end  
   end
 

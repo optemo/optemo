@@ -28,9 +28,6 @@ class CreateBestBuyPilotOfferings < ActiveRecord::Migration
        t.string     :saleenddate
        t.string     :saleprice
        t.string     :savings
-
-       t.string     :pricestr
-       t.integer    :priceint
        
        # Standard offering stuff
        t.integer    :product_id

@@ -3,14 +3,14 @@ module DatabaseHelper
   $general_ignore_list = ['id','created_at','updated_at']
   
   # Should return itself and any other matching printers.
-  def match_printer_to_printer ptr, recclass=$model  
+  def match_printer_to_printer ptr, recclass=$model  , series=[]
     makes = [just_alphanumeric(ptr.brand)].delete_if{ |x| x.nil? or x == ""}
     modelnames = [just_alphanumeric(ptr.model),just_alphanumeric(ptr.mpn)].delete_if{ |x| x.nil? or x == ""}
     
-    return match_rec_to_printer makes, modelnames,recclass
+    return match_rec_to_printer makes, modelnames,recclass, series
   end
   
-  def match_rec_to_printer rec_makes, modelnames, recclass=$model
+  def match_rec_to_printer rec_makes, rec_modelnames, recclass=$model, series=[]
     matching = []
     makes = rec_makes
     rec_makes.each do |make|
@@ -23,20 +23,14 @@ module DatabaseHelper
     end
     makes.uniq
     
+    modelnames = rec_modelnames
+    series.each { |ser| modelnames.each {|mn| mn.gsub!(/\s#{ser}\s/,'') }}
+    
     recclass.all.each do |ptr|
       p_makes = [just_alphanumeric(ptr.brand)].delete_if{ |x| x.nil? or x == ""}
       p_modelnames = [just_alphanumeric(ptr.model),just_alphanumeric(ptr.mpn)].delete_if{ |x| x.nil? or x == ""}
 
-      #if !(p_makes & makes).empty?
-      #  p_modelnames.each do |pmn|
-      #    modelnames.each do |mn|
-      #      if( pmn.include?(mn) or mn.include?(pmn))
-      #        matching << ptr
-      #        return
-      #      end
-      #    end
-      #  end
-      #end
+      series.each { |ser| p_modelnames.each {|pmn| pmn.gsub!(/#{ser}/,'') } }
 
       matching << ptr unless ( (p_makes & makes).empty? or (p_modelnames & modelnames).empty? )
     end
