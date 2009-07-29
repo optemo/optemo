@@ -221,6 +221,15 @@ $(document).ready(function() {
 					 function(){$('#logo > span').css('visibility', 'hidden')});
 	$('#whylaser').hover(function(){$('#whylaser > span').css('visibility', 'visible')},
 					 function(){$('#whylaser > span').css('visibility', 'hidden')});
+					
+	// Piwik
+	try {
+	var piwikTracker = Piwik.getTracker("http://pj.laserprinterhub.com/piwik.php", 1);
+	piwikTracker.trackPageView();
+	piwikTracker.enableLinkTracking();
+	} 
+	catch( err ) {}
+	
 });
 
 //Draw slider histogram
