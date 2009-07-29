@@ -150,6 +150,7 @@ end
     s = new(ns)
     
     s.fillDisplay
+    return nil if s.cluster_count == 0 
     s.parent_id = s.clusters.map{|c| c.parent_id}.sort[0]
     s.layer = s.clusters.map{|c| c.layer}.sort[0]
     s.desc = s.searchDescription
@@ -158,7 +159,7 @@ end
   
   def self.createFromPath_and_commit(path, session_id)
     s = createFromPath(path, session_id)
-    s.save
+    s.save if s
     s
   end
   

@@ -43,8 +43,8 @@ module Cluster
   
   def nodes(session)
     unless @nodes
-      @nodes = $nodemodel.find(:all, :order => 'price ASC', :conditions => ["cluster_id = ?#{session.filter && !Cluster.filterquery(session).blank? ?
-         ' and '+Cluster.filterquery(session) : ''}#{session.searchpids.blank? ? '' : ' and ('+session.searchpids+')'}",id])
+      @nodes = $nodemodel.find(:all, :order => 'price ASC', :conditions => ["cluster_id = ? and region = ?#{session.filter && !Cluster.filterquery(session).blank? ?
+         ' and '+Cluster.filterquery(session) : ''}#{session.searchpids.blank? ? '' : ' and ('+session.searchpids+')'}",id,$region])
     end
     @nodes
   end
