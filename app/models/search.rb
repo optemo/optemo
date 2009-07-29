@@ -4,31 +4,32 @@ class Search < ActiveRecord::Base
   belongs_to :cluster
   has_many :vieweds
   
-  #Array of normalized product counts
-  def distribution(featureName)
-    f = DbFeature.find_by_name_and_product_type_and_region(featureName,session.product_type,$region)
-    stepsize = (f.max-f.min).to_f/10 
-    res = []
-    10.times do |i|
-      min = f.min + stepsize*i
-      max = min + stepsize
-      clusters = []
-      cluster_count.times do |c|
-        clusters << "cluster_id = #{send(('c'+c.to_s).intern)}"
-      end
-      chooseclusters = clusters.join(' OR ')
-      #Keyword search parameters
-      options = session.searchpids.blank? ? '' : ' and ('+session.searchpids+')'
-      #Filtering parameters
-      options += session.filter && !Cluster.filterquery(session).blank? ? ' and '+Cluster.filterquery(session) : ''
-      if max==min
-        res << $nodemodel.find(:all, :conditions => ["#{featureName} = ? and (#{chooseclusters}) #{options}",max]).length
-      else  
-        res << $nodemodel.find(:all, :conditions => ["#{featureName} < ? and #{featureName} >= ? and (#{chooseclusters}) #{options}",max,min]).length
-      end
-    end
-    round2Decim(normalize(res))
-  end
+  
+## Computes distribtutions (arrays of normalized product counts) for all continuous features 
+def distributions
+    dists = {}
+    dbfeat = DbFeature.find_all_by_region_and_product_type_and_feature_type($region, session.product_type, 'Continuous')
+    acceptedNodes = clusters.map{|c| c.nodes(session)}.flatten 
+    dbfeat.each do |f|
+      dist = Array.new(10,0)  
+      stepsize = (f.max-f.min).to_f/10 
+      acceptedNodes.each do |n| 
+        10.times do |i| 
+            min = f.min + stepsize * i
+            max = min + stepsize
+            if (max == min)
+              dist[i] += 1 if n.send(f.name) == min
+            elsif (n.send(f.name)>=min && n.send(f.name) < max)
+              dist[i] += 1 
+            end
+        end
+      end  
+      dists[f.name] = round2Decim(normalize(dist))  
+   end    
+   dists
+end 
+
+  
   #Range of product offerings
   def ranges(featureName)
      @sRange ||= {}
@@ -147,6 +148,7 @@ class Search < ActiveRecord::Base
     end
     ns['session_id'] = session_id
     s = new(ns)
+    
     s.fillDisplay
     s.parent_id = s.clusters.map{|c| c.parent_id}.sort[0]
     s.layer = s.clusters.map{|c| c.layer}.sort[0]
@@ -177,6 +179,32 @@ class Search < ActiveRecord::Base
       myclusters = clusters
     end
     updateClusters(myclusters)
+  end
+  
+  #Array of normalized product counts
+  def distribution(featureName)
+    f = DbFeature.find_by_name_and_product_type_and_region(featureName,session.product_type,$region)
+    stepsize = (f.max-f.min).to_f/10 
+    res = []
+    10.times do |i|
+      min = f.min + stepsize*i
+      max = min + stepsize
+      clusters = []
+      cluster_count.times do |c|
+        clusters << "cluster_id = #{send(('c'+c.to_s).intern)}"
+      end
+      chooseclusters = clusters.join(' OR ')
+      #Keyword search parameters
+      options = session.searchpids.blank? ? '' : ' and ('+session.searchpids+')'
+      #Filtering parameters
+      options += session.filter && !Cluster.filterquery(session).blank? ? ' and '+Cluster.filterquery(session) : ''
+      if max==min
+        res << $nodemodel.find(:all, :conditions => ["#{featureName} = ? and (#{chooseclusters}) #{options}",max]).length
+      else  
+        res << $nodemodel.find(:all, :conditions => ["#{featureName} < ? and #{featureName} >= ? and (#{chooseclusters}) #{options}",max,min]).length
+      end
+    end
+    round2Decim(normalize(res))
   end
   
   private
