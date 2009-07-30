@@ -143,6 +143,18 @@ $(document).ready(function() {
 		}
 	});
 	
+	//Show Descriptions
+	$('.feature .label a').click(function(){
+		$(this).siblings('.desc').css('display','block');
+		return false;
+	});
+	
+	//Hide Descriptions
+	$('.feature .deleteX').click(function(){
+		$(this).parent().css('display','none');
+		return false;
+	});
+	
 	//Display loading spinner
 	$('#myfilter_brand').change(function() {submit_filter();});
 	

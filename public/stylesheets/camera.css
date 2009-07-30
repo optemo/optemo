@@ -161,7 +161,7 @@ div #savebar {
 }
 .deleteX {
 	position: absolute;
-	left: 75px;
+	right: 0px;
 	top: 0;}
 #deleteme {
 	font-size: 0.8em;
@@ -226,6 +226,7 @@ div #filterbar {
 	margin-left: 5px;
 	width: 187px;
 	margin-top: 0.6em;
+	position: relative;
 }
 
 .space {
@@ -304,6 +305,16 @@ div #filterbar {
 }
 .feature {
 	position: relative;
+}
+.desc {
+	display: none;
+	position: absolute;
+	bottom: 1.5em;
+	left: 0px;
+	padding: 4px 19px 4px 4px;
+	border: solid thin black;
+	background-color: #fff;
+	z-index: 10;
 }
 .hist {
 	position: absolute;

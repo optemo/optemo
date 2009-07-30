@@ -1,12 +1,17 @@
-<div class='label' style="margin-top: 0;">Brands</div>
-<% if @session.features.brand != "All Brands" %>
-	<% @session.features.brand.split('*').each do |b| %>
-	<div class='selected_brands'><%= link_to image_tag('close.png', :width => '13'), "javascript:removeBrand('#{b}');", {:title => "Remove Brand Filter"} %> <%= b %></div>
+<div class='feature'>
+	<div class='label'>
+		<%= render :partial => 'desc', :locals => {:feat => "brand"} %>
+		<%= link_to 'Brands', '#' %>
+	</div>
+	<% if @session.features.brand != "All Brands" %>
+		<% @session.features.brand.split('*').each do |b| %>
+		<div class='selected_brands'><%= link_to image_tag('close.png', :width => '13'), "javascript:removeBrand('#{b}');", {:title => "Remove Brand Filter"} %> <%= b %></div>
+		<% end %>
+		<% selectmsg = "Add Another Brand" %>
 	<% end %>
-	<% selectmsg = "Add Another Brand" %>
-<% end %>
-<%= select('myfilter', 'brand', [selectmsg.nil? ? "All Brands" : selectmsg] +@dbfeat['brand'].categories.split('*'), options={}, {:onchange => "$('#filter_form').submit()"}) %>
-<%= hidden_field_tag "myfilter[Xbrand]"%>
+	<%= select('myfilter', 'brand', [selectmsg.nil? ? "All Brands" : selectmsg] +@dbfeat['brand'].categories.split('*'), options={}, {:onchange => "$('#filter_form').submit()"}) %>
+	<%= hidden_field_tag "myfilter[Xbrand]"%>
+</div>
 
 <% $model::ContinuousFeatures.each_index do |i| %>
 	<% feat = $model::ContinuousFeatures[i] %>
@@ -20,5 +25,11 @@
 <% end %>
 <% $model::BinaryFeatures.each_index do |i| %>
 	<% feat = $model::BinaryFeatures[i] %>
-	<div class='label' style="margin-top: 0;"><%= check_box('myfilter', feat, {:onchange => "$('#filter_form').submit()", :checked => @session.features.send(feat.intern) ? 'checked' : false})%><%= feat.capitalize %></div>
+	<div class='feature'>
+		<div class='label'>
+			<%= render :partial => 'desc', :locals => {:feat => feat} %>
+			<%= check_box('myfilter', feat, {:onchange => "$('#filter_form').submit()", :checked => @session.features.send(feat.intern) ? 'checked' : false})%>
+			<%= link_to feat.capitalize, "#" %>
+		</div>
+	</div>
 <% end %>

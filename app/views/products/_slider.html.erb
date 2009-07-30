@@ -2,8 +2,10 @@
 <div class='disp'>
 	  <%= '$' if money_formatting %><%=(i2f ? @s.ranges(val)[0]/100 : @s.ranges(val)[0]).to_i %>-<%= '$' if money_formatting %><%= (i2f ? @s.ranges(val)[1]/100 : @s.ranges(val)[1]).ceil %> <%= $model::ContinuousFeaturesLabel[val] %>
 </div>
+
 <div class='label space'>
-	<%= name %>
+	<%= render :partial => 'desc', :locals => {:feat => val} %>
+	<%= link_to name, "#" %>
 </div>
 <div class="hist" data-data="<%= @dists[val].join(',') %>"></div>
 <%= hidden_field_tag "myfilter[#{val}_min]", i2f ?
