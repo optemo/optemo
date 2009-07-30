@@ -6,6 +6,9 @@ class CreateTigerScrapeds < ActiveRecord::Migration
       
        t.string :tigerurl # The relative url that gets you the detail page. use as id for now
       
+      # REgional
+       t.string :region
+      
        # Yellow Box
        t.string :manufacturedby
        t.string :warrantyprovidedby
