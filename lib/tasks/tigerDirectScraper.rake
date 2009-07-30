@@ -1,19 +1,19 @@
 module TigerDirectScraper
   
-  def scrape all_links
-    @logfile.puts " #{all_links.length} printers not yet scraped."
+  def scrape link_list
+    @logfile.puts " #{link_list.length} printers not yet scraped."
     
-    all_links.each_with_index do |x,i| 
+    link_list.each_with_index do |x,i| 
       begin
-        scrape_all_from_link x 
+        scrape_all_from_link x
         puts "#{i+1}th printer scraped!"
       rescue Exception => e
         @logfile.puts "ERROR :#{e.type.to_s}, #{e.message.to_s}"
         puts "#{i}th printer had error while scraping"
       end
-      sleep(10)
+      sleep(15)
       puts "Waiting waiting..."
-      sleep(100)
+      sleep(15)
     end
   end
   
@@ -34,39 +34,50 @@ module TigerDirectScraper
   end
 
   def clean_all atts
-    atts['resolution'] = atts['resolution'].downcase.gsub(/dpi/,'').strip if atts['resolution']
-    
-    atts['fax'] = get_b(atts['fax'])
-    atts['fax'] ||= (atts['speciafeatures'] || "").match(/fax/i)
-    atts['fax'] = true if atts['faxcapability'] == "Yes"
-    
-    atts['scanner'] = !(atts['speciafeatures'] || "").match(/scan/i).nil?
-    
-    # TODO also check connectivity and optionalconnectivity!
-    atts['printserver'] = !(atts['speciafeatures'] || "").match(/network/i).nil?
-    
-    atts['display'] = (atts['speciafeatures'] || "").split(',').delete_if{|x| x.match(/display/i).nil?}.first
-    
-    # PRICES
-    atts['pricestr'].strip! if atts['pricestr']
-    atts['listpricestr'].strip! if atts['listpricestr']
-    atts['price'] = get_price_i( get_f(atts['pricestr']) )
-    atts['listpriceint'] = get_price_i( get_f atts['listpricestr'] )
-    
+    # Brand is clean by default
+    # Model:
     atts['model'] = atts['mfgpartno'] if atts['model'].nil?
     
+    # Resolutionmax
+    atts['resolution'] = atts['resolution'].downcase.gsub(/dpi/,'').strip if atts['resolution']
+    atts['resolutionmax'] = maxres_from_res atts['resolution']
+    
+    # PPM
     atts['ppm'] = atts['ppmbw'] if atts['ppm'].nil?
     atts['ppm'] = atts['ppmcolor'] if atts['ppm'].nil?
     
+    # Paperinput should be clean by default
+        
+    # Item height, width, depth
     (atts['dimensions'] || "").split('x').each do |dim| 
       atts['itemlength'] = get_f(dim) if dim.include? 'D'
       atts['itemwidth'] = get_f(dim) if dim.include? 'W'
       atts['itemheight'] = get_f(dim) if dim.include? 'H'
     end
     
-    atts['resolutionmax'] = maxres_from_res atts['resolution']
-    atts['instock'] = atts['itmdets'].match(/unavail/i).nil?
-    atts['availability'] = "No" if atts['instock'] == false
+    # Scanner and printserver
+    atts['scanner'] = !(atts['speciafeatures'] || "").match(/scan/i).nil?
+    atts['printserver'] = !(atts['speciafeatures'] || "").match(/network/i).nil?
+    # TODO also check connectivity and optionalconnectivity!
+    
+    
+    # Optionals
+    atts['display'] = (atts['speciafeatures'] || "").split(',').delete_if{|x| x.match(/display/i).nil?}.first
+    
+    atts['fax'] = get_b(atts['fax'])
+    atts['fax'] ||= (atts['speciafeatures'] || "").match(/fax/i)
+    atts['fax'] = true if atts['faxcapability'] == "Yes"
+    
+    # For the OFFERING
+    atts['stock'] = atts['itmdets'].match(/unavail/i).nil?
+    atts['priceint'] = get_price_i( get_f(atts['pricestr']) )
+    atts['pricestr'].strip! if atts['pricestr']
+    
+    # For the PRODUCT
+    if atts['region'] == 'CA' then suffix = '_ca' else suffix='' end
+    atts["listpricestr#{suffix}"].strip! if atts["listpricestr#{suffix}"]
+    atts["listpriceint#{suffix}"] = get_price_i( get_f atts["listpriceint#{suffix}"] )
+    # Fill in price, pricestr, bestoffer, instock etc later!
     
     return atts
   end
@@ -81,23 +92,10 @@ module TigerDirectScraper
    return links
   end
   
-  def scrape_all_links 
-    pages = []
-    
-    4.times do |page_num| 
-      pages << Nokogiri::HTML(open("scrape_me/tiger/tiger_printers_#{page_num+1}_of_4.html"))
-    end
-    
-    count = 0
-  
-    all_links = []
-    
-    pages.each_with_index do |doc, i|
-      all_links = (scrape_links doc) | all_links
-    end  
-    
-    puts "Found #{all_links.length} links altogether"
-    return all_links
+  def url_by_region region, tigerurl=''
+    ccode = '.com' 
+    ccode = '.ca' if region=='CA'
+    return "http://www.tigerdirect.#{ccode}#{tigerurl}"
   end
   
   def scrape_all_from_link link    
@@ -105,7 +103,7 @@ module TigerDirectScraper
     info_page = Nokogiri::HTML(open(url))
     
     props = {}
-    ts = TigerScraped.find_or_create_by_tigerurl(link)
+    ts = TigerScraped.find_or_create_by_tigerurl_and_region(link,@region)
   
     puts "Scraping #{ts.id}"
     props.merge! scrape_data info_page
@@ -113,6 +111,8 @@ module TigerDirectScraper
     props.merge! scrape_yellow_box info_page
     props.merge! scrape_itmdets info_page
     props.merge! scrape_availty info_page
+    
+    props['region'] = @region
     
     props.delete_if{ |x,y| not TigerScraped.column_names.include? x}
     
@@ -173,7 +173,7 @@ end
 namespace :scrape_tiger do
   
   desc 'everything in a sequence'
-  task :all => [:scrape, :clean, :validate]
+  task :all => [:scrape, :clean]
   
   desc 'Maps the printers to db -- draft version so far'
   task :map_to_db => :init do
@@ -191,79 +191,60 @@ namespace :scrape_tiger do
     
   desc 'Clean the data: move it from TigerScraped to TigerPrinter.'
   task :clean => :init do
-    TigerScraped.all.each do |ts|
+    
+    cleanme = TigerScraped.find_all_by_region('CA')
+    
+    cleanme.each do |ts|
       properties = {}
       ts.attributes.delete_if{|x,y| y.nil?}.each{ |k,v| properties.store( @printer_colnames[k] || k, v )  }
       
       clean_all properties
-      properties = only_overlapping_atts properties, TigerPrinter, @ignore_list
+      to = TigerOffering.find_by_tigerurl_and_region(ts.tigerurl, ts.region)
+      to = TigerOffering.new if to.nil?
+      fill_in_all properties, to
       
+      # TODO Check for duplicates?
       tp = TigerPrinter.find_or_create_by_tigerurl(ts.tigerurl)
-       # TODO should I be deleting tigerurl from props?
-      fill_in_all properties, tp
+      fill_in_all properties, tp, @ignore_list
+      fill_in 'tiger_printer_id', tp.id, to
       
       puts "Cleaned #{ts.id}th scraped data, put it into #{tp.id}th printer."
     end
   end
     
-  desc 'scrape data for a subset'
-  task :scrape_subset => :init do
-    @logfile = File.open("./log/tiger_scrape_subset.log", 'w+')
-   
-    all_links = ['/applications/SearchTools/item-details.asp?EdpNo=4375998&CatId=244']
-   
-      # Do only the ones that I haven't scraped yet.
-      # all_links.delete_if { |x| TigerScraped.exists?(:tigerurl => x) }
-   
-      @logfile.puts " #{all_links.length} printers not yet scraped."
-   
-      all_links.each_with_index do |x,i| 
-        begin
-          scrape_all_from_link x 
-          puts "#{i+1}th printer scraped!"
-        rescue Exception => e
-          @logfile.puts "ERROR :#{e.type.to_s}, #{e.message.to_s}"
-          puts "#{i}th printer had error while scraping"
-        end
-        sleep(10)
-        puts "Waiting waiting..."
-        sleep(100)
-      end
-    @logfile.close
-   
-  end  
     
   desc "Acquire data for all printers"
   task :scrape => :init do
     
     @logfile = File.open("./log/tiger_scraper.log", 'w+')
     
-    all_links = scrape_all_links
+    @region   = 'US'
+    @base_url = "http://www.tigerdirect.com/"
+    us_links = []
     
-    # Do only the ones that I haven't scraped yet.
-    # all_links.delete_if { |x| TigerScraped.exists?(:tigerurl => x) }
+    # Scrape US site
+    4.times do |page_num| 
+      page = Nokogiri::HTML(open("scrape_me/tiger/tiger_printers_#{page_num+1}_of_4.html"))
+      us_links = (scrape_links page) | us_links
+    end
     
-    scrape all_links
+    scrape us_links
     
+    @region   = 'CA'
+    @base_url = "http://www.tigerdirect.ca/"
+    ca_links = []
+    
+    # Scrape Canadian site
+    6.times do |page_num| 
+      page =  Nokogiri::HTML(open("scrape_me/tiger/canada_#{page_num+1}.html"))
+      ca_links = (scrape_links page) | ca_links
+    end
+    
+    scrape ca_links
+    
+    @logfile.puts "Scraped #{us_links.length} US printers and #{ca_links.length} CA printers."
     @logfile.close
   end
-  
-  desc "Blah"
-  task :update => :init do
-  end
-  
-  desc "Check for wonky data"
-  task :validate => :init do
-    assert_no_nils TigerPrinter.all, 'tigerurl'
-    assert_no_0_values TigerPrinter.all, 'listprice'
-    assert_no_0_values TigerPrinter.all, 'itemheight'
-    assert_no_0_values TigerPrinter.all, 'itemwidth'
-    assert_no_0_values TigerPrinter.all, 'itemweight'
-    assert_no_0_values TigerPrinter.all, 'ppm'
-    assert_no_0_values TigerPrinter.all, 'ttp'
-    # TODO more
-  end
-  
   
   desc 'Initialize'
   task :init => :environment do
@@ -280,8 +261,8 @@ namespace :scrape_tiger do
     
     $model = Printer
     
-    @base_url = "http://www.tigerdirect.com/"
-    @ignore_list = ['tigerurl']
+    @ignore_list = ['tigerurl', 'pricestr', 'price']
+
 
     @printer_colnames = { \
       'dimensions'          =>'dimensions'  ,\
@@ -294,8 +275,8 @@ namespace :scrape_tiger do
       'printspeedcolor'     => 'ppmcolor'   , \
       'standardpaperinput'  =>'paperinput'  ,\
       'manufacturedby'      => 'brand'      ,\
-      'shippingweight'      => 'packageweight',  'originalprice'=>'listpricestr'  ,'price'=>'pricestr'  ,  'faxcapability'       => 'fax'       ,'mfgpartno'           => 'model'     ,  'standardpaperoutput' =>'paperoutput'}
-
+      'shippingweight'      => 'packageweight', \
+      'originalprice'       =>'listpricestr'  ,      'price'               =>'pricestr'  ,      'faxcapability'       => 'fax' ,      'mfgpartno'           => 'model'     ,      'standardpaperoutput' =>'paperoutput'}
 
   end
   

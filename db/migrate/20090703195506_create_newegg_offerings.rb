@@ -1,9 +1,9 @@
-class CreateNeweggOfferings < ActiveRecord::Migration
+VERSION=20090713223521class CreateNeweggOfferings < ActiveRecord::Migration
   def self.up
     create_table :newegg_offerings do |t|
       
       t.primary_key :id
-
+ 
       t.timestamps
       
       t.integer   :printer_id   # The NeweggPrinter entry it links to
@@ -19,12 +19,14 @@ class CreateNeweggOfferings < ActiveRecord::Migration
                               # and NeweggRefurbished (id=6).
       
       t.integer   :priceint    
-      t.string    :pricestr      
+      t.string    :pricestr   
+      t.string    :region   
+      t.boolean   :instock        
+         
       t.boolean   :toolow       
       t.datetime  :priceUpdate 
       
       
-      t.boolean   :stock        
       t.string    :availability  
       t.datetime  :availabilityUpdate 
       
@@ -36,7 +38,7 @@ class CreateNeweggOfferings < ActiveRecord::Migration
       
     end
   end
-
+ 
   def self.down
     drop_table    :newegg_offerings
   end

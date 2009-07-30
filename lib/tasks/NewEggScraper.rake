@@ -360,10 +360,10 @@ namespace :scrape_newegg do
   end
  
   desc "Get the latest updates to the Newegg list"
-  task :update => :init do 
+  task :rss_update => :init do 
     @logfile = File.open("./log/newegg_update.log", 'w+')
     
-    feed_url = "http://www.newegg.com/Product/RSS.aspx?Submit=ENE&N=2000330630&ShowDeactivatedMark=False"
+    feed_url = "http://www.newegg.com/Product/RSS.aspx?Submit=ENE&N=2000330630&ShowDeactivatedMark=True"
     feed = Nokogiri::XML(open(feed_url))
     
     recent_els = feed.css("item guid")
@@ -378,16 +378,57 @@ namespace :scrape_newegg do
       
     end
     
-    # Find the printers assoc. with these product numbers
-    recent_np = recent.collect do |x| NeweggPrinterScrapedData.find_by_item_number(x) end
     
-    recent_np.each_with_index do |np, i|
-        puts "Scraping Newegg #{np.item_number} (id #{np.id})"
-        scrape_all_data np
-        # TODO clean it.
-        puts "Progress: done #{i} of #{recent_np.length} printers..."
-        sleep(30)
+    # Find those with item #s already in db. (offering exists)
+    not_really_new = recent.collect do |x| x if NeweggOffering.find_by_item_number(x) end
+    not_really_new.each do |inum|
+      npsd = NeweggPrinterScrapedData.find_by_item_number(inum)
+      offering = NeweggOffering.find_by_item_number(inum)
+      infopage = Nokogiri::HTML(open(id_to_url(np.item_number)))
+      #scrape_prices npsd,infopage
+      debugger
+      sleep(1)
+      #atts = only_overlapping_atts( clean_offering(npsd.attributes), NeweggOffering )
+      # TODO update offering copy_atts = only_overlapping_atts no.attributes, RetailerOffering
+      # TODO price history
+      # fill_in_all atts, offering
+      # TODO put in 'last updated' as Time.now
+      # >... that's it!
     end
+      
+    #... and those without matching make/model in db (nothing exists).
+    totally_new = []
+    (recent - not_really_new).each do |inum|
+      npsd = NeweggPrinterScrapedData.find_by_item_number(inum)
+      printer = nil
+      if(!npsd.nil?)
+        totally_new << inum
+        #NeweggPrinterScrapedData.create(:item_number => inum)
+        #scrape_all_data npsd
+        #sleep(30)
+        # Try to match with old printer?
+      else
+        # Match with printer object
+        
+      end
+      
+      puts not_really_new * ', '
+      
+      puts totally_new * ', '
+      
+      puts "#{recent.count} in total"
+      puts "#{not_really_new.count} not really new"
+      puts "#{totally_new.count} completely new"
+      
+    end
+    
+    #recent_np.each_with_index do |np, i|
+    #    puts "Scraping Newegg #{np.item_number} (id #{np.id})"
+    #    scrape_all_data np
+    #    # TODO clean it.
+    #    puts "Progress: done #{i} of #{recent_np.length} printers..."
+    #    sleep(30)
+    #end
         
     @logfile.close
   end

@@ -87,13 +87,14 @@ module PrinterPageHelpers
    
     def current_slider_min which_slider
       x= doc.css('div[data-startmin]')[which_slider]
-      return nil unless x
-      return x.attribute('data-startmin').to_s.to_f
+      return x.attribute('data-startmin').to_s.to_f if x
+      return nil
     end
    
    def current_slider_max which_slider
      x= doc.css('div[data-startmax]')[which_slider]
-     return x.attribute( 'data-startmax').to_s.to_f
+     return x.attribute( 'data-startmax').to_s.to_f if x
+     return nil
    end
    
    def brand_id brandname

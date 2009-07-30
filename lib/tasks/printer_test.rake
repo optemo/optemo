@@ -10,6 +10,14 @@ namespace :printer_test do
    desc 'Run all tests.'
    task :all_nojava => [:sliders, :browse_similar, :search, :brand_selector, :homepage, :random_nojava]
    
+   desc 'sandbox'
+   task :sandbox => :init do
+     setup 'sandbox'
+    test_search_for 'Xerox'
+    test_remove_search
+    close_log
+   end
+   
    desc 'Check and uncheck every chekbox'
    task :checkboxes => :java_init do
       setup_java 'checkboxes'
@@ -200,8 +208,8 @@ namespace :printer_test do
            clickme = rand(@sesh.num_checkboxes)
            test_checkbox clickme
          elsif pick_action == 9                 # Test details 
-           detailme = rand(@sesh.num_boxes)
-           test_detail_page detailme
+           #detailme = rand(@sesh.num_boxes)
+           #test_detail_page detailme
          elsif pick_action == 10                  #10 Test home logo
            test_click_home_logo
          elsif pick_action == 11                  #11 Test back button
