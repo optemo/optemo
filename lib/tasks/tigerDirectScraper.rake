@@ -75,8 +75,8 @@ module TigerDirectScraper
     
     # For the PRODUCT
     if atts['region'] == 'CA' then suffix = '_ca' else suffix='' end
-    atts["listpricestr#{suffix}"].strip! if atts['listpricestr']
-    atts["listpriceint#{suffix}"] = get_price_i( get_f atts['listpricestr'] )
+    atts["listpricestr#{suffix}"].strip! if atts["listpricestr#{suffix}"]
+    atts["listpriceint#{suffix}"] = get_price_i( get_f atts["listpriceint#{suffix}"] )
     # Fill in price, pricestr, bestoffer, instock etc later!
     
     return atts
