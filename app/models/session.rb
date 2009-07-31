@@ -7,7 +7,7 @@ class Session < ActiveRecord::Base
   def clearFilters
     # In Sessions table, 
     # Set all attributes except some, to their default values
-    Session.column_names.delete_if{|i| %w(id created_at updated_at ip parent_id product_type).index(i)}.each do |name|
+    Session.column_names.delete_if{|i| %w(id created_at updated_at ip parent_id product_type user).index(i)}.each do |name|
       send((name+'=').intern, Session.columns_hash[name].default)
     end
     save
@@ -84,7 +84,7 @@ class Session < ActiveRecord::Base
   
   def defaultFeatures(mode)
     update_attribute('filter', true)
-    features.update_attributes($featuremodel.find($DefaultUses[mode]).attributes.delete_if{|k,v| k=='id' || k=='created_at' || k=='updated_at' || k=='session_id'})
+    features.update_attributes($featuremodel.find($DefaultUses[mode]).attributes.delete_if{|k,v| k.index('_pref') || k=='id' || k=='created_at' || k=='updated_at' || k=='session_id'})
   end
         
   def features

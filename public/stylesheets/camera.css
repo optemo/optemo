@@ -76,8 +76,9 @@ a.save {
 	font-size: 0.9em;
 	line-height: 1.2em;
 	text-decoration: none;
-	background: url(../images/save_button.png) no-repeat;
-	color: black;}
+/*	background: url(../images/save_try.png) no-repeat;*/
+	color: black;
+	}
 .sim a {
 	text-decoration: none;
 	color: black;
@@ -266,6 +267,13 @@ div #filterbar {
 	font-size: 0.9em;
 }
 
+.thumbnaildetails {
+	position:absolute;
+	color: #F00;
+	float: left;
+	font-size: 1.0em;
+}
+
 .endlabel_min {
 	display: none;
 
@@ -322,6 +330,32 @@ div #filterbar {
 	left: 7px;
 	top: 16px;
 }
+.betterlink {
+	font-size: 0.8em;
+	color: green;
+}
+.betterlink:visited {
+	color: green;
+}
+.betterlinkdiv {
+	float: left;
+	position: absolute;
+	left: 390px;
+}
+a.savedisabled {
+	font-size: 0.9em;
+	line-height: 1.2em;
+	text-decoration: none;
+/*	background: url(../images/save_try.png) no-repeat; */
+	color: black;
+}
+a.savedisabled:hover {
+	cursor: default;
+}
+.save:hover {
+	cursor:pointer;
+}
+
 .ui-slider { position: relative; text-align: left; }
 .ui-slider .ui-slider-handle { background:url(../../../images/diamond.gif) no-repeat; height:13px; width:9px;text-decoration:none;outline:none;position:absolute;z-index:2;}/*{ position: absolute; z-index: 2; width: 1.2em; height: 1.2em; cursor: default; }
 */

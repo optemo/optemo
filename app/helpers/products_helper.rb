@@ -19,7 +19,7 @@ module ProductsHelper
     csv = csv.chop    
     csv
   end
-
+  
   def sim_link(cluster,i, itemId)
     unless cluster.children(@session).nil? || cluster.children(@session).empty? || (cluster.size(@session)==1)
       "<div class='sim'>" +

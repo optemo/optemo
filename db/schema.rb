@@ -28,8 +28,6 @@ ActiveRecord::Schema.define(:version => 20090730181217) do
     t.integer  "imagelheight"
     t.integer  "imagelwidth"
     t.boolean  "instock"
-    t.float    "averagereviewrating"
-    t.integer  "totalreviews"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "asin"
@@ -568,7 +566,7 @@ ActiveRecord::Schema.define(:version => 20090730181217) do
     t.float   "opticalzoom"
     t.float   "price"
     t.string  "brand"
-    t.integer "version",           :default => 0
+    t.integer "version"
     t.float   "utility"
     t.string  "region",            :default => "us"
   end
@@ -935,7 +933,7 @@ ActiveRecord::Schema.define(:version => 20090730181217) do
     t.boolean "printserver"
     t.float   "price"
     t.string  "brand"
-    t.integer "version",       :default => 0
+    t.integer "version"
     t.float   "utility"
     t.string  "region",        :default => "us"
   end
@@ -1026,7 +1024,7 @@ ActiveRecord::Schema.define(:version => 20090730181217) do
     t.string   "availability"
     t.boolean  "iseligibleforsupersavershipping"
     t.string   "merchant"
-    t.string   "url"
+    t.text     "url"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.float    "shippingCost"
@@ -1097,6 +1095,7 @@ ActiveRecord::Schema.define(:version => 20090730181217) do
   create_table "sessions", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "user"
     t.string   "ip"
     t.integer  "parent_id"
     t.string   "product_type"

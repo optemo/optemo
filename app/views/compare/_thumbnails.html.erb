@@ -10,14 +10,33 @@
 			<% end %>
 		</div>
 		<div align="right">
-			<%= link_to image_tag('close.png'), "javascript:removeFromComparison(#{thumbnails.id})", :"data-name" => thumbnails.id, :class => 'deleteXComp', :width => '13' %> 
+			<!-- If camera is saved then display shaded saveit button -->
+			<% if @alreadySaved[thumbnails.id] != true %>
+				<img src="/images/save.png" onClick="saveit(<%=thumbnails.id%>);disableit(<%=thumbnails.id%>);" class="save" name="<%=thumbnails.id.to_s + '_save'%>">
+			<% else %>
+				<img src="/images/save_disabled.png" class="savedisabled">
+			<% end %>
+			<%= link_to image_tag('close.png'), "javascript:removeFromComparison(#{thumbnails.id})", :"data-name" => thumbnails.id, :class => 'deleteXComp', :width => '13', :style => "position:relative;top:-3px;" %>
 		</div>
-		<div class="comparisonfeature">
-			<br>
-			<%= displayComparisonFeature(i) %>
-		</div>
+			<div class="thumbnaildetails">
+			 	<div style="font-size:1.1em; color:gray;"> <%= finalDisplay(thumbnails, "brand") %> </div> 
+				<div style="font-size: 0.9em; color:gray;"> <%= finalDisplay(thumbnails, "model") %> </div>
+				<br><br>
+				<div> <%= finalDisplay(thumbnails, "price") %> </div>
+				<br>
+			</div>
+		<!-- <% if total > 1 %> -->
+			<!-- <div class="comparisonfeature"> -->
+			<!-- <br> -->
+				<!-- <%= displayComparisonFeature(i) %> -->
+			<!-- ></div> -->
+		<!-- <% end %> -->
 		<div class="first">	
  			<%= image_tag(thumbnails.imagemurl, :width => thumbnails.imagemw, :height => thumbnails.imagemh, :onClick => "fadeout(#{thumbnails.id});", :style => "cursor: pointer;") %>
  		</div>
+	<div align="center" style="font-size:0.9em; color:gray;">
+	(<%= @search.clusters[i].description(@session) %>)
+	</div>
+
 	</td>
 </div>

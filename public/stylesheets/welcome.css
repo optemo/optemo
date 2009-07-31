@@ -113,6 +113,15 @@ p {
 	margin-top: 0px;
 	vertical-align: middle;
 }
+#logindisplay
+{
+	font-size: 0.8em;
+	position: absolute;
+	/*top: 18px;
+	right: 0px;*/
+	top: 4px;
+	right: 45px;
+}
 a.link {
 	/*margin-left: 10px;
 	margin-right: 10px;*/
@@ -226,6 +235,15 @@ h3 {
 	width: 958px;
 	position: relative;
 }
+
+#linkUserLogout {
+	text-decoration: none;
+	color: #2882DF;
+}
+#linkUserLogout:hover {
+	text-decoration: underline;
+}
+
 .dialog {
  position:relative;
  margin:0px auto;

@@ -1,11 +1,15 @@
-<%= link_to image_tag('close.gif'), "javascript:fadein();", :id => 'close' if @plain%>
+<%= link_to image_tag('close.gif'), "javascript:fadein();", :style => "top:10px;", :id => 'close' if @plain %>
+<div>
+	<img src="top"> 
+</div>
+
 <% if !@plain %><div id="outside">
 	<% self.title = @product.smlTitle %>
 	<span style="float: left;"><%= nav_link %></span>
 	<div id="container" style="margin-left: 149px">
 <% else %>		
 	<div id="container">
-	<%= link_to "&nbsp;Save it&nbsp;", "javascript:saveit(#{@product.id})", {:class => 'save'}%>
+		<img align="right" style="position:relative;top:-7px;right:20px;" src="/images/save.png" onClick="saveit(<%=@product.id%>);" class="save">
 <% end %>
 	<p style="margin: 15px 0px 0px 20px"><%= URI.decode(@product.title) %></p>
 	<div id="image">
@@ -21,7 +25,16 @@
 			<% f_name = $model::ShowFeatures[i] %>
 			<% f = @product.send(f_name) %>
 			<% if !f.nil? %>
-				<li><span class="detail_label"><%= $model::ShowFeaturesDisp[i] %>: </span><%= @product.display f_name %></li>
+				<li>
+					<% if $model::ContinuousFeatures.index($model.SFtoCFdictionary(f_name)) != nil %>
+						<% if request.referer.index($model.urlname) == nil %> <!-- that is, if popup was not called from main navigation page, then show "better" links -->
+						<div class="betterlinkdiv">
+							<%= link_to "better", "javascript:findBetter('#{@product.id}', '#{$model.SFtoCFdictionary(f_name)}')", :"data-id" => f_name, :class => 'betterlink' %>
+						</div>
+						<% end %>
+					<% end %>
+				 	<span class="detail_label"><%= $model::ShowFeaturesDisp[i] %>: </span><%= @product.display f_name %>
+				</li>
 			<% end %>
 		<% end %>
 	</ul>
@@ -62,7 +75,9 @@
 	<% if @plain %>
 	<%= link_to 'Open as full page', :action => 'show', :id => @product%>
 	<% end %>
-	</div>
-	
+	</div>	
+	<div id="betternotfoundmsg" style="padding-left:10px;padding-top:10px;color:green;visibility:hidden;"> There is no better product available for a better price </div>
 </div>
 <% if !@plain %></div><% end %>
+	
+	

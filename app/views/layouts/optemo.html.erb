@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml" xml:lang="en" lang="en">
 <head>
   <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
   <title><%= title %></title>
@@ -12,6 +12,10 @@
 <meta name="rating" content="General" />
 <link rel="shortcut icon" href="/favicon.ico" >
 <%= stylesheet_link_merged :base %>
+
+<%= javascript_include_tag 'facebooksessionops' %>	
+	<script type="text/javascript" src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
+	<script type="text/javascript"> FB.init('<%= $AppKey %>',"/xd_receiver.html");</script>
 </head>
 <body>
 <div id="mycenter">
@@ -29,9 +33,26 @@
 		<%= link_to image_tag('us.gif'), url_for_intl('com') %>
 		<%= link_to image_tag('ca.gif'), url_for_intl('ca') %>
 	  </div>
-	  <div id="header_buttons">
-	    powered by <%= link_to image_tag('optemo.jpg'), 'http://www.optemo.com', {:title => 'Optemo'} %>
-	  </div>
+     <div id="logindisplay" style="display:none;">                                                                                               
+   		<% if !cookies[$AppKey +"_user"].nil? %>
+		<div style="float:left">
+		   			<fb:profile-pic uid='loggedinuser' facebook-logo='true' height="30" size="square"></fb:profile-pic>	                                       
+		</div>
+		<div style="float:left">
+			&nbsp;
+		</div>
+		<div style="float:left">
+			<fb:name uid='loggedinuser' useyou='false' firstnameonly='true'></fb:name>
+			<br>
+			<a href="#" id="linkUserLogout"> logout </a>
+		</div>
+		<% else %>
+			<fb:login-button size="short" onlogin="window.location.href='/login/do_login';" autologoutlink="false"> </fb:login-button>
+		<% end %>
+     </div>
+	 <div id="header_buttons">                                                                                             
+       powered by <%= link_to image_tag('optemo.jpg'), 'http://www.optemo.com', {:title => 'Optemo'} %>                    
+     </div>                                                                                                                
 	</div>
    </div>
    <div id="headerbar"><!--IE min line height--></div>
