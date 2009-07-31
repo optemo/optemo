@@ -18,10 +18,23 @@ class CompareController < ApplicationController
     # To track whether an interesting feature is displayed or not-
     @interestingFeatureDisplayed = {} 
     @featureCssClass = {}
+    @alreadySaved = {}
     @saveds = Saved.find_all_by_session_id(session[:user_id])
     @saveds.collect do |saved|
-      @products << $model.find(saved.product_id)
+      prod = $model.find(saved.product_id)
+      @products << prod
+      @alreadySaved[prod.id] = true
     end
+
+    # If no product ids are passed in query string then build @products from saved products    
+    if !params[:id].nil?
+      @products = []
+      # Build @products from ids passed in query string
+      sQuery = params[:id];
+      idArray = sv_to_array(sQuery, '-')
+      idArray.each{|pid| @products << $model.find(pid)}
+    end
+
     if @products.empty?
       redirect_to @navigationUrl
     else
@@ -36,6 +49,8 @@ class CompareController < ApplicationController
       # Reorder the feature rows based on feature utility
       ReorderFeatures()
       
+      @bestvalue = {}
+      CalculateBestValues()
       respond_to do |format|
         format.html # index.html.erb
         format.xml  { render :xml => @products }
@@ -137,6 +152,53 @@ class CompareController < ApplicationController
       format.xml  { head :ok }
     end
   end
+  
+  def better
+    original = params[:original]
+    feature = $model.SFtoCFdictionary(params[:feature])
+    current_version = $clustermodel.last.version
+    nodes = $nodemodel.find_all_by_product_id_and_version(original, current_version).compact
+    # Find all clusters that this product exists in, for the current version of clustering 
+    cluster_ids = nodes.map{|n|n.cluster_id}
+    if cluster_ids.length == 0
+      flash[:error] = "There were no better/similar products found"
+      redirect_to request.referer      
+    else
+      # Sort these clusters. The last cluster (with the largest cluster_id contains only that product)
+      # All other clusters contain more products. Proceed up the hierarchy (decreasing cluster_id) to find a better product
+      clusters = cluster_ids.sort.uniq[0..8].reverse
+      clusters.each do |cluster|
+        clusternodes = $nodemodel.find_all_by_cluster_id(cluster)   # ToDo: Add region constraint?
+        productids = clusternodes.map{|n|n.product_id}
+        thisproduct = $nodemodel.find_by_cluster_id_and_product_id(cluster, original)
+        # Initialize original product id as the best product id for this cluster
+        bestproduct = thisproduct
+        productids.each do |pid|
+            # If it is a better product, then redirect
+            thatproduct = $nodemodel.find_by_cluster_id_and_product_id(cluster, pid)
+            if isBetter(bestproduct, thatproduct, feature) && thatproduct!=thisproduct
+              bestproduct = thatproduct
+            end
+        end
+        if bestproduct.product_id.to_s != original
+          render :text => bestproduct.product_id.to_s
+          return
+        end        
+      end
+      # No better product was found, return a product id of -1
+      render :text => "-1"
+      return
+    end
+  end
+end
+
+def isBetter(thisproduct, thatproduct, feature)
+  # If value of feature is better, and price is lower then return true
+  if $PrefDirection[feature]*thatproduct.send(feature) >= $PrefDirection[feature]*thisproduct.send(feature) && thatproduct.price <= thisproduct.price
+    return true
+  else
+    return false
+  end
 end
 
 def decideWhichFeaturesToDisplay
@@ -202,8 +264,8 @@ def DispContFeatureDictionary(f)
   case f
     when "resolution"
       return "resolutionmax"
-    when "ppmcolor"
-      return "ppm"
+    when "itemdimensions"
+      return "itemwidth"
     else 
       return f 
     end
@@ -211,8 +273,8 @@ end
 
 def finalDisplay(product, column)
   case column
-    when 'brand'
-      return product.display(column) + ' ' + product.display('model') 
+#    when 'brand'
+#      return product.display(column) + ' ' + product.display('model') 
     when 'itemdimensions'
       return product.display('itemlength') + " x " + product.display('itemwidth') + " x " + product.display('itemheight') 
     when 'packagedimensions'
@@ -243,11 +305,7 @@ def ReorderProducts
   for i in 0..@products.count-1
     @utility[i] = CalculateUtility(@products[i])
   end
-  @toSort = @products.dup
-  @basedOn = @utility.dup
-  SortArray()
-  @products = @sortedArray
-  @utility = @finalBasedOn
+  @products, @utility = SortArray(@products, @utility)
 end
   
 def ReorderFeatures
@@ -331,32 +389,33 @@ def notSimilarFeatures(f, p1, p2)
     end    
 end
 
-def SortArray
-  @sortedArray = []
-  @finalBasedOn = []
+def SortArray(toSort, basedOn)
+  sortedArray = []
+  finalBasedOn = []
   tempBasedOn = []
 
   maxBasedOn = 0.0    
   index = 0           
   counter = 0
 
-  tempBasedOn = @basedOn.dup
+  tempBasedOn = basedOn.dup
 
-  while counter < @toSort.count
+  while counter < toSort.count
     maxBasedOn = 0.0
     index = 0
     
-    for i in 0..@toSort.count-1       # Find Max Utility
+    for i in 0..toSort.count-1       # Find Max Utility
       if(tempBasedOn[i] > maxBasedOn)
         maxBasedOn = tempBasedOn[i]
         index = i
       end
     end
-    @sortedArray[counter] = @toSort[index]
-    @finalBasedOn[counter] = @basedOn[index]
+    sortedArray[counter] = toSort[index]
+    finalBasedOn[counter] = basedOn[index]
     counter = counter + 1
     tempBasedOn[index] = -1.0
   end  
+  return sortedArray, finalBasedOn
 end
 
 def numberOfStars(utility)
@@ -386,19 +445,14 @@ def numberOfStars(utility)
  #     end	
 end
 
-def contDispDictionary(feature)
-  case feature
-    when "ppm":
-      return "PPM"
-    when "paperinput":
-      return "Paper Input"
-    when "resolutionmax":
-      return "Resolution"
-    when "itemwidth":
-      return "Width"
-    else
-      return feature.capitalize
-  end
+def contSpecialFeaturesDictionary(feature)
+  if feature.index(' ').nil?
+    spacePos = feature.length
+  else 
+    spacePos = feature.index(' ')
+  end    
+  firstWord = feature[0..spacePos-1]
+  return firstWord + "est" + feature[spacePos..-1]
 end
 
 def displayComparisonFeature(i)
@@ -411,16 +465,31 @@ def displayComparisonFeature(i)
       # Preference Direction can be used to display only good qualities (min or max)
       if $PrefDirection[f.name] == -1 
         if valThisProduct == @search.minimum(f.name)
-          returnString = returnString + "&#10003 " + contDispDictionary(f.name) + "<br>"
+          returnString = returnString + "- " + contSpecialFeaturesDictionary(session[:productType].constantize::ContinuousFeaturesDescLow[f.name]) + "<br>"
         end      
       else
         if valThisProduct == @search.maximum(f.name)
-          returnString = returnString + "&#10003 " + contDispDictionary(f.name) + "<br>"
+          returnString = returnString + "- " + contSpecialFeaturesDictionary(session[:productType].constantize::ContinuousFeaturesDescHigh[f.name]) + "<br>"
         end
       end  
     end
   end
  return returnString
+end
+
+# Separated value string to array converter. Separated value could be for example, '-'
+def sv_to_array(svString, separator)
+  oArray = []
+  last = svString.index(separator)
+  while last != nil
+    item = svString[0..last]
+    item = item.chop
+    oArray<<item
+    svString = svString[last+1..-1]
+    last = svString.index(separator)
+  end
+  oArray<<svString
+  oArray
 end
 
 private
@@ -446,4 +515,30 @@ def CalculateUtility(p)
       cost = cost + getFactorRow.send(f) * userSession.features.send("#{f}_pref")
     end      
   return cost
+end
+
+def CalculateBestValues()
+  # For every feature in ContinuousFeatures
+    # For every product in @products
+      # Find the min value and assign @bestvalue[feature]=product-id
+  $model::ContinuousFeatures.each do |feature|
+    bestval = @products[0].send(feature)
+    @bestvalue[feature] = @products[0].id
+    @products.each do |product|
+      if product.send(feature)*$PrefDirection[feature] > bestval*$PrefDirection[feature]
+        @bestvalue[feature] = product.id
+        bestval = product.send(feature)
+      elsif product.send(feature)*$PrefDirection[feature] == bestval && product!=@products[0]
+        @bestvalue[feature] = @bestvalue[feature].to_s + "," + product.id.to_s;
+      end
+    end
+  end
+end
+
+def IsPresentInCSV(item, csvString)
+  # Parse csv string into array
+  # match item with each element of array, and return true if match occurs
+  values = csvString.to_s.split(',')
+  return true if !values.index(item.to_s).nil?
+  return false
 end

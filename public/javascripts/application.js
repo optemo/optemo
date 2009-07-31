@@ -1,5 +1,23 @@
 // Place your application-specific JavaScript functions and classes here
 // This file is automatically included by javascript_include_tag :defaults
+function findBetter(id, feat)
+{
+       // Check if better product exists for that feature using /compare/better Rails me
+       // Query.get( url, [data], [callback], [type] )
+       $.get("/compare/better?original=" + id + "&feature=" + feat, 
+               function(data){
+                       if (data == "-1")
+                       {
+                               $('#betternotfoundmsg').css('visibility', 'visible');
+                       }
+                       else
+                       {
+                               // found better printer (with id stored in data)
+                               window.location = "/compare/index/" + id + "-" + data;
+                       }
+               }, "text");
+}
+
 function fadeout(id)
 {
 	$('#fade').css('height', getDocHeight()+'px').css('display', 'inline');
@@ -93,7 +111,7 @@ function saveit(id)
 // When you click the X on a saved product:
 function remove(id)
 {
-	$.get('/saveds/destroy/'+id)
+	$.get('/saveds/destroy/'+id);
 	$('#c'+id).remove();
 	
 	$("#already_added_msg").attr("style","display:none");

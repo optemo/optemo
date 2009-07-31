@@ -11,7 +11,8 @@
 	</a></p>
 	
 	<p><%= $region == "us" ? cluster.representative(@session).pricestr : cluster.representative(@session).price_ca_str %>  
-		<%= link_to "&nbsp;Save it&nbsp;", "javascript:saveit(#{cluster.representative(@session).id})", {:class => 'save', :itemId => "#{cluster.representative(@session).id}" } %>
+		<img src="/images/save_navbox_16.png" onClick="saveit(<%=cluster.representative(@session).id%>);" class="save" itemId="cluster.representative(@session).id" style="position:relative; right:-4px;bottom:-2px;">
+		 <b><%= link_to "Save it", "javascript:saveit(#{cluster.representative(@session).id})", {:class => 'save', :itemId => "#{cluster.representative(@session).id}" } %></b>
 		<%# Randomized Product Reviews %>
 		<%# rand > 0.5 ? (rand > 0.5 ? image_tag('5star.gif') : image_tag('3star.gif')) : image_tag('4star.gif') %>
 	</p>

@@ -1,26 +1,15 @@
 <% self.title = "Product Comparison" %>
 <br>&lt;&lt;&nbsp;<%= link_to 'Go back to navigation', @navigationUrl, {:class => 'backToNavigation', :style => 'position:relative'}%>
-
-<center><h1>Product Comparison</h1></center>			
+<center><h1><%= $model.name %> Comparison</h1></center>			
 <table id="comparisonTable" height="100%" width="100%" border="1" cellspacing="0" cellpadding="5">
 	<tr id= "firstRow" class="nodrag nodrop">
 		<td> 
 			<div class="first">								
-				<h2>Product Features</h2>
+				<h2> <%= $model.name %> Features</h2>
 		</td>
 		<% for i in 0..@products.count-1%>
-			<%= render :partial => 'thumbnails', :object => @products[i], :locals => {:navBack => :back, :i => i} %>			<!-- ToDo: OldBack needs to be used to retain history after Deleting column-->		
-		<% end %>
-	</tr>
-	<!-- The following row is only for testing purposes -->
-	<tr class="lowlightfeature">
-		<td> 
-			Features		
-		</td>
-		<% for i in 0..@products.count-1%>
-			<td>
-				<%= @search.clusters[i].description(@session) %>
-			</td>
+			<%= render :partial => 'thumbnails', :object => @products[i], :locals => {:navBack => :back, :i => i, :total => @products.count} %>
+
 		<% end %>
 	</tr>
 	<% @preferredDisplayFeatures.each do |column| %>	<!-- @preferredDisplayFeatures array is created from DisplayedFeatures array, by the ReorderFeatures() -->
