@@ -18,8 +18,8 @@ module TigerDirectScraper
   end
   
   def match_tiger_to_printer tp
-    makes = [nofunnychars (tp.brand)].delete_if{ |x| x.nil? or x == ""}
-    modelnames = [nofunnychars (tp.model), nofunnychars (tp.mfgpartno)].delete_if{ |x| x.nil? or x == ""}
+    makes = [just_alphanumeric (tp.brand)].delete_if{ |x| x.nil? or x == ""}
+    modelnames = [just_alphanumeric (tp.model),just_alphanumeric (tp.mfgpartno)].delete_if{ |x| x.nil? or x == ""}
     
     matching = match_rec_to_printer makes, modelnames
     @logfile.puts "ERROR! Duplicate matches for #{tp.id}: #{tp.mfgpartno} #{tp.model} #{tp.brand}" if matching.length > 1
@@ -80,6 +80,10 @@ module TigerDirectScraper
     # Fill in price, pricestr, bestoffer, instock etc later!
     
     return atts
+  end
+  
+  def optemo_special_url tigerurl, region
+   # TODO
   end
   
   def scrape_links doc
@@ -188,6 +192,64 @@ namespace :scrape_tiger do
     puts how_many_match * ', '
     @logfile.close
   end
+  
+  task :update => :init do
+    
+    tiger_offerings = RetailerOffering.find_all_by_retailer_id(12) | RetailerOffering.find_all_by_retailer_id(14)
+    
+    tiger_offerings.each do |ro|
+      # Update RetailerOfferings: price, availability
+      #  -- scrape website for price & availty for each offering (url?)
+      #  -- clean 
+      #  -- fill in price + availty
+      # Update Printer: bestoffer, price, pricestr, and CA equivalents
+    end
+  end
+    
+  task :toprinter => :init do
+    # TODO
+    
+    TigerPrinter.all.each do |tp|
+      matching = match_tiger_to_printer tp
+      if matching.length == 1
+        p = matching[0]
+        puts "#{p.id} matches #{tp.id}"
+        # fill_in_all_missing tp.attributes, p
+      elsif matching.length > 1 
+        # TODO ERROR!! should not happen
+        puts "Uh oh"
+      else
+        #New printer
+        p = nil
+        puts "No match for #{tp.id}"
+        # fill in all specs
+      end
+      
+      toes = []
+      toes = TigerOffering.find_all_by_tiger_printer_id(tp.id) unless p.nil?
+      #toes.each do |to|
+      #  retailer = 12 
+      #  retailer = 14 if to.region == 'ca'
+      #  #RetailerOffering.find_or_create_by_productid_and_retailer
+      #  # 2. Create offerings
+      #    fill_in 'url', optemo_special_url(to.tigerurl, to.region), to
+      #    fill_in 'product_id', p.id, to
+      #    fill_in 'product_type', $model.to_s, to
+      #    if no.offering_id.nil? # If no RetailerOffering is mapped to this NeweggOffering:
+      #      copy_atts = only_overlapping_atts no.attributes, RetailerOffering
+      #      o = RetailerOffering.new(copy_atts)
+      #      o.save
+      #      fill_in 'offering_id', o.id, no
+      #    end
+        #  -- Link them to the printer entry
+        #  -- fill in product type (Printer)
+        # 3. Update bestoffer and bestoffer_ca
+        # TODO move existing code to helper
+      #end
+    end
+    
+    
+  end 
     
   desc 'Clean the data: move it from TigerScraped to TigerPrinter.'
   task :clean => :init do
@@ -254,6 +316,9 @@ namespace :scrape_tiger do
     require 'scraping_helper'
     include ScrapingHelper
 
+    require 'database_helper'
+    include DatabaseHelper
+    
     require 'validation_helper'
     include ValidationHelper
 
@@ -261,8 +326,7 @@ namespace :scrape_tiger do
     
     $model = Printer
     
-    @ignore_list = ['tigerurl', 'pricestr', 'price']
-
+    @ignore_list = ['tigerurl', 'pricestr', 'price', 'region']
 
     @printer_colnames = { \
       'dimensions'          =>'dimensions'  ,\
