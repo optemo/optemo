@@ -90,7 +90,7 @@ module Amazon
           end
         end
         current_page += 1
-        sleep(5) #One Req per sec
+        sleep(2) #One Req per sec
       end while (current_page <= total_pages)
     end
     sleep(1) #Be Nice
@@ -141,6 +141,9 @@ module Amazon
       res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => merchant, :country => region.intern)
     rescue Exception => exc
       puts "Error: #{exc.message} for product #{p.asin} and merchant #{merchant} in region #{region}"
+      sleep(30)
+      saveoffer(p,retailer,merchant,region)
+      return
     end
     offer = res.first_item
     #Look for old Retail Offering

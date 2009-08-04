@@ -103,7 +103,7 @@ module Amazon
       
       res = Net::HTTP.get_response(URI::parse(request_url))
       unless res.kind_of? Net::HTTPSuccess
-        raise Amazon::RequestError, "HTTP Response: #{res.code} #{res.message}"
+        raise Amazon::RequestError, "HTTP Response: #{res.code} #{res.message} for #{request_url}"
       end
       Response.new(res.body)
     end
