@@ -6,18 +6,18 @@ class CreatePrinterFeatures < ActiveRecord::Migration
       t.primary_key :id
       t.integer :session_id
       t.integer :search_id
-      (Printer::ContinuousFeatures).each do |f|
+      (Printer::ContinuousFeaturesF).each do |f|
         min = f+'_min'
         max = f+'_max'
         pref = f + '_pref'
-        t.float min.intern #, :default => f.min.to_i
-        t.float max.intern #, :default => f.max.ceil
+        t.float min.intern
+        t.float max.intern
         t.float pref.intern, :default => 1/Printer::ContinuousFeatures.count.to_f
       end      
       (Printer::CategoricalFeatures).each do |f|
         t.string f.intern, :default => "All Brands"
       end
-      (Printer::BinaryFeatures).each do |f|
+      (Printer::BinaryFeaturesF).each do |f|
         t.boolean f.intern
       end      
     end

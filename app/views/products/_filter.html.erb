@@ -1,35 +1,35 @@
-<div class='feature'>
-	<div class='label'>
-		<%= render :partial => 'desc', :locals => {:feat => "brand"} %>
-		<%= link_to 'Brands', '#' %>
-	</div>
-	<% if @session.features.brand != "All Brands" %>
-		<% @session.features.brand.split('*').each do |b| %>
-		<div class='selected_brands'><%= link_to image_tag('close.png', :width => '13'), "javascript:removeBrand('#{b}');", {:title => "Remove Brand Filter"} %> <%= b %></div>
+<% $model::CategoricalFeatures.each do |feat| %>
+	<div class='feature'>
+		<div class='label'>
+			<%= render :partial => 'desc', :locals => {:feat => feat} %>
+			<%= link_to $model::CategoricalFeaturesDisp[feat], '#' %>
+		</div>
+		<% if @session.features.brand != "All Brands" %>
+			<% @session.features.brand.split('*').each do |b| %>
+			<div class='selected_brands'><%= link_to image_tag('close.png', :width => '13'), "javascript:removeBrand('#{b}');", {:title => "Remove Brand Filter"} %> <%= b %></div>
+			<% end %>
+			<% selectmsg = "Add Another Brand" %>
 		<% end %>
-		<% selectmsg = "Add Another Brand" %>
-	<% end %>
-	<%= select('myfilter', 'brand', [selectmsg.nil? ? "All Brands" : selectmsg] +@dbfeat['brand'].categories.split('*'), options={}, {:onchange => "$('#filter_form').submit()"}) %>
-	<%= hidden_field_tag "myfilter[Xbrand]"%>
-</div>
-
-<% $model::ContinuousFeatures.each_index do |i| %>
-	<% feat = $model::ContinuousFeatures[i] %>
+		<%= select('myfilter', feat, [selectmsg.nil? ? "All Brands" : selectmsg] +@dbfeat[feat].categories.split('*'), options={}, {:onchange => "$('#filter_form').submit()"})%>
+		<%= hidden_field_tag "myfilter[X#{feat}]"%>
+	</div>
+<% end %>
+<% $model::ContinuousFeaturesF.each_index do |i| %>
+	<% feat = $model::ContinuousFeaturesF[i] %>
 	<%= render :partial => 'slider', 
-		:locals => {:name => $model::ContinuousFeaturesDisp[i], 
+		:locals => {:name => $model::ContinuousFeaturesFDisp[i], 
 		:i2f => (feat == 'price' || feat == 'itemwidth'),
 		:val => feat, 
 		:money_formatting => feat == 'price', 
 		:min => @dbfeat[feat].min, 
 		:max => @dbfeat[feat].max} %>
 <% end %>
-<% $model::BinaryFeatures.each_index do |i| %>
-	<% feat = $model::BinaryFeatures[i] %>
+<% $model::BinaryFeaturesF.each do |feat| %>
 	<div class='feature'>
 		<div class='label'>
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
 			<%= check_box('myfilter', feat, {:onchange => "$('#filter_form').submit()", :checked => @session.features.send(feat.intern) ? 'checked' : false})%>
-			<%= link_to feat.capitalize, "#" %>
+			<%= link_to $model::BinaryFeaturesFDisp[feat], "#" %>
 		</div>
 	</div>
 <% end %>

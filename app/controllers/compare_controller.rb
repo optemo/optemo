@@ -309,7 +309,6 @@ def ReorderProducts
 end
   
 def ReorderFeatures
-  # To sort: InterestingFeatures
   # Based on: userPreferences for ContinuousFeatures
   
   prefHash = {}

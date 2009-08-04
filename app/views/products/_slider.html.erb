@@ -1,6 +1,6 @@
 <div class='feature'>
 <div class='disp'>
-	  <%= '$' if money_formatting %><%=(i2f ? @s.ranges(val)[0]/100 : @s.ranges(val)[0]).to_i %>-<%= '$' if money_formatting %><%= (i2f ? @s.ranges(val)[1]/100 : @s.ranges(val)[1]).ceil %> <%= $model::ContinuousFeaturesLabel[val] %>
+	  <%= '$' if money_formatting %><%=(i2f ? @s.ranges(val)[0]/100 : @s.ranges(val)[0]).to_i %>-<%= '$' if money_formatting %><%= (i2f ? @s.ranges(val)[1]/100 : @s.ranges(val)[1]).ceil %> <%= $model::ContinuousFeaturesFLabel[val] %>
 </div>
 
 <div class='label space'>
