@@ -3,27 +3,27 @@ class Camera < ActiveRecord::Base
   include ProductProperties
   has_many :camera_nodes
   is_indexed :fields => ['title', 'feature']
-  ContinuousFeatures      = %w(maximumresolution displaysize   opticalzoom   price)
-  ContinuousFeaturesDisp  = %w(Resolution        Display\ Size Optical\ Zoom Price)
-  Label                   = %w(MP                in.           X             \     )
-  Low                     = %w(Low\ Resolution   Small Screen  Low\ Zoom     Cheap)  
-  High                    = %w(High\ Resolution  Large Screen  High\ Zoom    Expensive)
-  ContinuousFeaturesF = ContinuousFeatures +          %w()
-  ContinuousFeaturesFDisp = ContinuousFeaturesDisp +  %w()
-  LabelF = Label +                                    %w()
-  CategoricalFeatures = %w(brand)
-  CDisp               = %w(Brand)
-  BinaryFeatures = %w()
-  BFDisp         = %w()
-  BinaryFeaturesF = BinaryFeatures + %w()
-  BFFDisp = BFDisp +                 %w()
+           #                                (c)luster 
+           #                                (f)ilter 
+           #     db_name           Type     (e)xtra Display     Label   Low Desc     High Desc  
+  Features = [%w(maximumresolution Continuous  cf  Resolution     MP  Low\ Resolution High\ Resolution),
+              %w(displaysize       Continuous  cf  Display\ Size  in. Small\ Screen   Large\ Screen),
+              %w(opticalzoom       Continuous  cf  Optical\ Zoom  X   Low\ Zoom       High\ Zoom),
+              %w(price             Continuous  cf  Price          \   Cheap           Expensive),
+              %w(brand             Categorical f   Brand          \   \               \ ),
+              %w(slr               Binary      cf  SLR            \   \               \ )]
   
-  ContinuousFeaturesFLabel = Hash[*ContinuousFeaturesF.zip(LabelF).flatten]
-  ContinuousFeaturesDescLow = Hash[*ContinuousFeatures.zip(Low).flatten]
-  ContinuousFeaturesDescHigh = Hash[*ContinuousFeatures.zip(High).flatten]
-  BinaryFeaturesDisp = Hash[*BinaryFeatures.zip(BFDisp).flatten]
-  BinaryFeaturesFDisp= Hash[*BinaryFeaturesF.zip(BFFDisp).flatten]
-  CategoricalFeaturesDisp = Hash[*CategoricalFeatures.zip(CDisp).flatten]
+  ContinuousFeatures = Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[0]}
+  ContinuousFeaturesF = Features.select{|f|f[1] == "Continuous" && f[2].index("f")}.map{|f|f[0]}
+  BinaryFeatures = Features.select{|f|f[1] == "Binary" && f[2].index("c")}.map{|f|f[0]}
+  BinaryFeaturesF = Features.select{|f|f[1] == "Binary" && f[2].index("f")}.map{|f|f[0]}
+  CategoricalFeatures = Features.select{|f|f[1] == "Categorical" && f[2].index("c")}.map{|f|f[0]}
+  CategoricalFeaturesF = Features.select{|f|f[1] == "Categorical" && f[2].index("f")}.map{|f|f[0]}
+  FeaturesLabel = Hash[*Features.select{|f|f[4] != " "}.map{|f|f[0]}.zip(Features.select{|f|f[4] != " "}.map{|f|f[4]}).flatten]
+  FeaturesDisp = Hash[*Features.map{|f|f[0]}.zip(Features.map{|f|f[3]}).flatten]
+  ContinuousFeaturesDescLow = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[5]}).flatten]
+  ContinuousFeaturesDescHigh = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[6]}).flatten]
+  ExtraFeature = Hash[*Features.select{|f|f[2].index("e")}.map{|f|[f[0],true]}.flatten]
   ShowFeatures = %w(brand model maximumresolution opticalzoom digitalzoom displaysize batterydescription hasredeyereduction itemweight itemwidth)
   ShowFeaturesDisp = %w(Brand Model Megapixels Optical\ Zoom Digital\ Zoom Display\ Size Battery Red\ Eye\ Reduction Weight Camera\ Width)
   DisplayedFeatures = %w(pricestr brand digitalzoom displaysize itemdimensions itemweight label maximumresolution model opticalzoom title)
