@@ -1036,6 +1036,7 @@ ActiveRecord::Schema.define(:version => 20090805214304) do
     t.boolean  "active"
     t.datetime "activeUpdate"
     t.string   "region",                          :default => "us"
+    t.string   "condition",                       :default => "New"
   end
 
   create_table "retailers", :force => true do |t|
