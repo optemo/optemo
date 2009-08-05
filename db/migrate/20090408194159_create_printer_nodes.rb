@@ -3,15 +3,18 @@ class CreatePrinterNodes < ActiveRecord::Migration
     create_table :printer_nodes do |t|
       t.integer :cluster_id
       t.integer :product_id
-      DbProperty.find_by_name('Printer').db_features.each do |f|
+      Printer::ContiuousFeaturesF.each do |name|
         t.float f.name.intern
       end
-      Printer::BinaryFeatures.each do |name|
+      Printer::CategoricalFeatures.each do |name|
+        t.string name.intern
+      end
+      Printer::BinaryFeaturesF.each do |name|
         t.boolean name.intern
       end
-      t.float :price
-      t.string :brand
       t.float :utility
+      t.string :region
+      t.integer :version
     end
   end
 

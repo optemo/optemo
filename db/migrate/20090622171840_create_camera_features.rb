@@ -5,18 +5,18 @@ class CreateCameraFeatures < ActiveRecord::Migration
       t.primary_key :id
       t.integer :session_id
       t.integer :search_id
-      (Camera::ContinuousFeatures).each do |f|
+      (Camera::ContinuousFeaturesF).each do |f|
         min = f+'_min'
         max = f+'_max'
         pref = f + '_pref'
-        t.float min.intern #, :default => f.min.to_i
-        t.float max.intern #, :default => f.max.ceil
-        t.float pref.intern, :default => 1/Camera::ContinuousFeatures.count.to_f
+        t.float min.intern
+        t.float max.intern
+        t.float pref.intern, :default => 1/Camera::ContinuousFeaturesF.count.to_f
       end      
       (Camera::CategoricalFeatures).each do |f|
         t.string f.intern, :default => "All Brands"
       end
-      (Camera::BinaryFeatures).each do |f|
+      (Camera::BinaryFeaturesF).each do |f|
         t.boolean f.intern
       end
     end

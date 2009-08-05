@@ -2,7 +2,6 @@ class BestBuyCamera < ActiveRecord::Base
   # Copied from Camera.
 
   include ProductProperties
-  InterestingFeatures = %w(pricestr brand digitalzoom displaysize itemheight itemlength itemwidth itemweight label listpricestr maximumresolution  model mpn opticalzoom title) # maximumfocallength minimumfocallength
   ContinuousFeatures = %w(maximumresolution displaysize opticalzoom listpriceint)
   CategoricalFeatures = %w(brand)
   BinaryFeatures = []
