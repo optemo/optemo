@@ -9,7 +9,7 @@ module TigerDirectScraper
         puts "#{i+1}th printer scraped!"
       rescue Exception => e
         @logfile.puts "ERROR :#{e.type.to_s}, #{e.message.to_s}"
-        puts "#{i}th printer had error while scraping"
+        puts "#{i+1}th printer had error while scraping"
       end
       sleep(15)
       puts "Waiting waiting..."
@@ -132,7 +132,7 @@ module TigerDirectScraper
   
   def rescrape_price to
     # TODO base_url must be by country
-    url = @base_url + to.tigerurl
+    url = @regional_urls[to.region] + to.tigerurl
     info_page = Nokogiri::HTML(open(url))
     
     props = {}
@@ -198,7 +198,7 @@ module TigerDirectScraper
     returnme['title'] = title_el.text if title_el
     
     itemno_row = info_page.xpath('//tr[td[text()="Item Number:"]]')
-    itemno_el = avail_row.xpath('td[2]')
+    itemno_el = itemno_row.xpath('td[2]')
     returnme['itemnumber'] = itemno_el.text if itemno_el
     
     return returnme
@@ -233,12 +233,20 @@ end
 
 namespace :scrape_tiger do
   
+  
   desc 'everything in a sequence'
   task :all => [:scrape, :clean]
   
+  task :validate => :init do 
+    assert_within_range TigerPrinter.all, 'listpriceint', 0, 10_000_00
+    assert_within_range TigerPrinter.all, 'itemheight', 0, 100
+    assert_within_range TigerPrinter.all, 'itemlength', 0, 70
+    assert_within_range TigerPrinter.all, 'itemwidth', 0, 70
+  end
+  
   desc 'Maps the printers to db -- draft version so far'
-  task :map_to_db => :init do
-    @logfile = File.open("./log/tiger_map_to_db.log", 'w+')
+  task :sandbox => :init do
+    @logfile = File.open("./log/sandbox.log", 'w+')
     how_many_match = []
     
     TigerPrinter.all.each do |tp|
@@ -249,6 +257,8 @@ namespace :scrape_tiger do
         matches.each do |p|
           @logfile.puts "Matches #{tp.id}: #{p.mpn} #{p.model} #{p.brand}"
         end
+      elsif matches.length == 0
+        @logfile.puts "No matches for #{tp.id}"
       end
     end
     
@@ -279,36 +289,22 @@ namespace :scrape_tiger do
         @logfile.puts "ERROR  #{tp.id} has multiple matching printers" if matching.length > 1
         p = matching[0]
         @logfile.puts "#{p.id} matches #{tp.id}"
-        # TODO
-        # fill_in_all_missing tp.attributes, p
+        fill_in_all_missing tp.attributes, p
       else
-        #TODO create new printer
-        p = nil
+        p = create_product_from_atts specific_o.attributes
         @logfile.puts "No match for #{tp.id}"
-        # fill in all specs
+        # TODO fill in the specs!!!
       end
       
       toes = []
-      toes = TigerOffering.find_all_by_tiger_printer_id(tp.id) unless p.nil?
-      #toes.each do |to|
-      #  retailer = 12 
-      #  retailer = 14 if to.region == 'ca'
-      #  #RetailerOffering.find_or_create_by_productid_and_retailer
-      #  # 2. Create offerings
-      #    fill_in 'url', optemo_special_url(to.tigerurl, to.region), to
-      #    fill_in 'product_id', p.id, to
-      #    fill_in 'product_type', $model.to_s, to
-      #    if no.offering_id.nil? # If no RetailerOffering is mapped to this NeweggOffering:
-      #      copy_atts = only_overlapping_atts no.attributes, RetailerOffering
-      #      o = RetailerOffering.new(copy_atts)
-      #      o.save
-      #      fill_in 'offering_id', o.id, no
-      #    end
-        #  -- Link them to the printer entry
-        #  -- fill in product type (Printer)
-        # 3. Update bestoffer and bestoffer_ca
-        # TODO move existing code to helper
-      #end
+      toes = TigerOffering.find_all_by_tiger_printer_id(tp.id) unless p.nil? # TODO
+      toes.each do |to|
+        retailer = 12 
+        retailer = 14 if to.region == 'ca'
+        fill_in 'url', optemo_special_url(to.tigerurl, to.region), to
+        fill_in 'retailer', retailer, to
+        create_retailer_offering to, tp
+      end
     end
     
     
@@ -317,7 +313,7 @@ namespace :scrape_tiger do
   desc 'Clean the data: move it from TigerScraped to TigerPrinter.'
   task :clean => :init do
     
-    cleanme = TigerScraped.find_all_by_region('CA')
+    cleanme = TigerScraped.all
     
     cleanme.each do |ts|
       properties = {}
@@ -328,6 +324,7 @@ namespace :scrape_tiger do
       to = TigerOffering.new if to.nil?
       fill_in_all properties, to
       
+      # Check for duplicates:
       tp = find_matching_tiger(properties['brand'], properties['model'], properties['mpn'])
       tp = TigerPrinter.find_or_create_by_tigerurl(ts.tigerurl) if tp.nil?
       fill_in_all properties, tp, @ignore_list
@@ -392,6 +389,8 @@ namespace :scrape_tiger do
     @conditions = ["New", "Refurbished", "OEM"]
     
     @ignore_list = ['tigerurl', 'pricestr', 'price', 'region']
+
+    @regional_urls = { 'US' => "http://www.tigerdirect.com/", 'CA' => "http://www.tigerdirect.ca/"}
 
     @printer_colnames = { \
       'dimensions'          =>'dimensions'  ,\

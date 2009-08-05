@@ -1,6 +1,7 @@
 module DatabaseHelper
   
   $general_ignore_list = ['id','created_at','updated_at']
+  $region_suffixes = {'CA' => '_ca', 'US' => ''}
   
   # Should return itself and any other matching printers.
   def match_printer_to_printer ptr, recclass=$model  , series=[]
@@ -48,20 +49,40 @@ module DatabaseHelper
     return create_product_from_atts rec.attributes, recclass
   end
   
+  def create_retailer_offering specific_o, product
+    fill_in 'product_id', product.id, specific_o
+    fill_in 'product_type', $model.name, specific_o
+    if specific_o.offering_id.nil? # If no RetailerOffering is mapped to this brand-specific offering:
+      o = create_product_from_atts specific_o.attributes, RetailerOffering
+      fill_in 'offering_id', o.id, specific_o
+    else
+      o = RetailerOffering.find(specific_o.offering_id)
+    end
+    return o
+  end
+  
   def update_bestoffer p
-    matching_ro = RetailerOffering.find_all_by_product_id_and_product_type(p.id,$model.name).delete_if{ |x| 
-      x.stock == false or x.priceint.nil?
-    }
+    
+    $region_suffixes.keys.each do |region|
+      update_bestoffer_regional p, region
+    end
+    
+  end
+  
+  def update_bestoffer_regional p, region
+    matching_ro = RetailerOffering.find(:all, :conditions => \
+      "product_id LIKE #{p.id} and product_type LIKE '#{$model.name}' and region LIKE #{region}").\
+      reject{ |x| !x.instock or x.price.nil? }
     return if matching_ro.empty?
     
     lowest = matching_ro.sort{ |x,y|
       x.priceint <=> y.priceint
     }.first
     
-    fill_in 'bestoffer', lowest.id, p
-    fill_in 'price', lowest.priceint, p
-    fill_in 'pricestr', lowest.pricestr, p
-    fill_in 'instock', true, p
+    fill_in "bestoffer#{$region_suffixes[region]}", lowest.id, p
+    fill_in "price#{$region_suffixes[region]}", lowest.priceint, p
+    fill_in "pricestr#{$region_suffixes[region]}", lowest.pricestr, p
+    fill_in "instock#{$region_suffixes[region]}", true, p
   end
   
   def only_overlapping_atts atts, other_recs_class, ignore_list=[]

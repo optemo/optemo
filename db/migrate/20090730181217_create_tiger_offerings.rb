@@ -8,6 +8,7 @@ class CreateTigerOfferings < ActiveRecord::Migration
       
       # ID
       t.text     :tigerurl
+      t.integer  :offering_id  # Matches the Offering entry id
       
       # MUST FILL IN:
       t.integer  :tiger_printer_id

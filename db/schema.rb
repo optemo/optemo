@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090724215612) do
+ActiveRecord::Schema.define(:version => 20090730181217) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -326,6 +326,45 @@ ActiveRecord::Schema.define(:version => 20090724215612) do
     t.datetime "updated_at"
   end
 
+  create_table "best_buy_pilot_offerings", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "category"
+    t.string   "categoryid"
+    t.string   "catgroup"
+    t.string   "catsubclass"
+    t.string   "fsskuid"
+    t.string   "skuid"
+    t.string   "guid"
+    t.string   "webcode"
+    t.integer  "bb_camera_id"
+    t.text     "link"
+    t.text     "imageurl"
+    t.text     "glossary"
+    t.string   "saleenddate"
+    t.string   "saleprice"
+    t.string   "savings"
+    t.string   "pricestr"
+    t.integer  "priceint"
+    t.integer  "product_id"
+    t.string   "product_type"
+    t.integer  "retailer_id"
+    t.string   "pricehistory"
+    t.string   "region"
+    t.datetime "priceUpdate"
+    t.integer  "shippingCost"
+    t.integer  "tax"
+    t.string   "state"
+    t.boolean  "stock"
+    t.boolean  "toolow"
+    t.string   "availability"
+    t.datetime "availabilityUpdate"
+    t.text     "url"
+    t.boolean  "active"
+    t.datetime "activeUpdate"
+    t.boolean  "freeShipping"
+  end
+
   create_table "best_buy_printers", :force => true do |t|
     t.string   "bb_class"
     t.integer  "classId"
@@ -487,57 +526,51 @@ ActiveRecord::Schema.define(:version => 20090724215612) do
     t.integer "parent_id"
     t.integer "layer"
     t.integer "cluster_size"
-    t.float   "cached_utility"
+    t.string  "brand"
     t.float   "maximumresolution_min"
     t.float   "maximumresolution_max"
-    t.float   "itemweight_min"
-    t.float   "itemweight_max"
+    t.float   "displaysize_min"
+    t.float   "displaysize_max"
     t.float   "opticalzoom_min"
     t.float   "opticalzoom_max"
     t.float   "price_min"
     t.float   "price_max"
-    t.boolean "slr"
-    t.float   "price"
-    t.string  "brand"
-    t.string  "region"
-    t.integer "version"
+    t.integer "version",               :default => 0
+    t.float   "cached_utility"
+    t.string  "region",                :default => "us"
   end
 
   create_table "camera_features", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "session_id"
-    t.integer  "search_id"
+    t.string   "brand",                  :default => "All Brands"
     t.float    "maximumresolution_min"
     t.float    "maximumresolution_max"
     t.float    "maximumresolution_pref", :default => 0.25
-    t.float    "itemweight_min"
-    t.float    "itemweight_max"
-    t.float    "itemweight_pref",        :default => 0.25
+    t.float    "displaysize_min"
+    t.float    "displaysize_max"
+    t.float    "displaysize_pref",       :default => 0.25
     t.float    "opticalzoom_min"
     t.float    "opticalzoom_max"
     t.float    "opticalzoom_pref",       :default => 0.25
     t.float    "price_min"
     t.float    "price_max"
     t.float    "price_pref",             :default => 0.25
-    t.string   "brand",                  :default => "All Brands"
-    t.boolean  "slr"
-    t.boolean  "bulb"
+    t.integer  "search_id"
   end
 
   create_table "camera_nodes", :force => true do |t|
     t.integer "cluster_id"
     t.integer "product_id"
     t.float   "maximumresolution"
-    t.float   "itemweight"
+    t.float   "displaysize"
     t.float   "opticalzoom"
     t.float   "price"
-    t.boolean "slr"
     t.string  "brand"
     t.integer "version",           :default => 0
     t.float   "utility"
-    t.string  "region"
-    t.integer "version"
+    t.string  "region",            :default => "us"
   end
 
   create_table "cameras", :force => true do |t|
@@ -615,7 +648,18 @@ ActiveRecord::Schema.define(:version => 20090724215612) do
     t.float    "high"
     t.float    "low"
     t.text     "categories"
-    t.string   "region"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "region",       :default => "us"
+  end
+
+  create_table "db_properties", :force => true do |t|
+    t.string   "name"
+    t.text     "brands"
+    t.float    "price_min"
+    t.float    "price_max"
+    t.float    "price_low"
+    t.float    "price_high"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -626,7 +670,7 @@ ActiveRecord::Schema.define(:version => 20090724215612) do
     t.string   "product_type"
     t.integer  "product_id"
     t.float    "maximumresolution"
-    t.float    "itemweight"
+    t.float    "displaysize"
     t.float    "opticalzoom"
     t.float    "price"
     t.float    "ppm"
@@ -1062,55 +1106,86 @@ ActiveRecord::Schema.define(:version => 20090724215612) do
     t.string   "region",       :default => "us"
   end
 
+  create_table "tiger_offerings", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "tigerurl"
+    t.integer  "tiger_printer_id"
+    t.integer  "priceint"
+    t.string   "pricestr"
+    t.boolean  "toolow"
+    t.boolean  "stock"
+    t.string   "region"
+    t.text     "url"
+    t.string   "condition"
+    t.string   "pricehistory"
+    t.datetime "priceUpdate"
+    t.integer  "shippingCost"
+    t.integer  "tax"
+    t.string   "state"
+    t.string   "availability"
+    t.datetime "availabilityUpdate"
+    t.boolean  "active"
+    t.datetime "activeUpdate"
+    t.boolean  "freeShipping"
+  end
+
   create_table "tiger_printers", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "tigerurl"
     t.text     "title"
-    t.integer  "price"
-    t.string   "pricestr"
-    t.boolean  "instock"
     t.string   "brand"
     t.string   "model"
-    t.string   "mfgpartno"
+    t.text     "tigerurl"
+    t.string   "mpn"
     t.string   "upcno"
-    t.string   "availability"
+    t.integer  "price"
+    t.string   "pricestr"
+    t.integer  "listpriceint"
+    t.string   "listpricestr"
+    t.integer  "bestoffer"
+    t.boolean  "instock"
+    t.integer  "price_ca"
+    t.string   "pricestr_ca"
+    t.integer  "listpriceint_ca"
+    t.string   "listpricestr_ca"
+    t.boolean  "instock_ca"
+    t.float    "ppm"
+    t.integer  "paperinput"
+    t.integer  "resolutionmax"
     t.integer  "itemheight"
     t.integer  "itemlength"
     t.integer  "itemwidth"
+    t.boolean  "scanner"
+    t.boolean  "printserver"
     t.integer  "itemweight"
-    t.integer  "listpriceint"
     t.integer  "packageheight"
     t.integer  "packagelength"
     t.integer  "packagewidth"
     t.integer  "packageweight"
     t.string   "warranty"
-    t.float    "ppm"
     t.float    "ttp"
     t.string   "resolution"
-    t.integer  "resolutionmax"
     t.string   "duplex"
     t.string   "connectivity"
     t.string   "papersize"
     t.integer  "paperoutput"
     t.string   "dimensions"
     t.integer  "dutycycle"
-    t.integer  "paperinput"
-    t.string   "special"
     t.float    "ppmcolor"
     t.string   "platform"
     t.boolean  "colorprinter"
-    t.boolean  "scanner"
     t.datetime "scrapedat"
-    t.boolean  "nodetails"
-    t.boolean  "printserver"
-    t.string   "region",        :default => "us"
   end
 
   create_table "tiger_scrapeds", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "tigerurl"
+    t.text     "title"
+    t.string   "itemnumber"
+    t.string   "model"
+    t.string   "region"
     t.string   "manufacturedby"
     t.string   "warrantyprovidedby"
     t.string   "shippingweight"
@@ -1166,6 +1241,12 @@ ActiveRecord::Schema.define(:version => 20090724215612) do
     t.integer  "session_id"
     t.integer  "product_id"
     t.integer  "search_id"
+  end
+
+  create_table "welcomes", :force => true do |t|
+    t.string   "email"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
 end
