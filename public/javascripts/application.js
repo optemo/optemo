@@ -173,6 +173,22 @@ $(document).ready(function() {
 		return false;
 	});
 	
+	//Show Additional Features
+	$('#morefilters').click(function(){
+		$('.extra').show("slide",{direction: "up"},100);
+		$(this).css('display','none');
+		$('#lessfilters').css('display','block');
+		return false;
+	});
+	
+	//Hide Additional Features
+	$('#lessfilters').click(function(){
+		$('.extra').hide("slide",{direction: "up"},100);
+		$(this).css('display','none');
+		$('#morefilters').css('display','block');
+		return false;
+	});
+	
 	//Display loading spinner
 	$('#myfilter_brand').change(function() {submit_filter();});
 	

@@ -117,13 +117,13 @@ class Session < ActiveRecord::Base
             return true #Continuous
           end
         end
-      elsif key.index(/#{$model::BinaryFeatures.join('|')}/)
+      elsif key.index(/#{$model::BinaryFeaturesF.join('|')}/)
         if features.attributes[key] == false
           #Only works for one item submitted at a time
           features.send((key+'=').intern, nil)
           return true #Binary
         end
-      elsif key.index(/#{$model::CategoricalFeatures.join('|')}/)
+      elsif key.index(/#{$model::CategoricalFeaturesF.join('|')}/)
         oldv = @oldsession.features.send(key.intern)
         if oldv
           new_a = features.attributes[key] == "All Brands" ? [] : features.attributes[key].split('*').uniq

@@ -3,27 +3,29 @@ class Printer < ActiveRecord::Base
   include ProductProperties
   #Ultrasphinx field selection
   is_indexed :fields => ['title', 'feature']
-  ContinuousFeatures      = %w(ppm                itemwidth paperinput        resolutionmax    price)
-  ContinuousFeaturesDisp  = %w(Pages\ Per\ Minute Width     Paper\ Tray\ Size Resolution       Price)
-  Label                   = %w(\                  in.       \                 dpi.             \ )
-  Low                     = %w(Slow               Small     Low\ Capacity     Low\ Resolution  Cheap)  
-  High                    = %w(Fast               Large     High\ Capacity    High\ Resolution Expensive)
-  ContinuousFeaturesF = ContinuousFeatures +          %w()
-  ContinuousFeaturesFDisp = ContinuousFeaturesDisp +  %w()
-  LabelF = Label +                                    %w()
-  CategoricalFeatures = %w(brand)
-  CDisp               = %w(Brand)
-  BinaryFeatures = %w(scanner printserver)
-  BFDisp         = %w(Scanner Networked\ Printer)
-  BinaryFeaturesF = BinaryFeatures + %w()
-  BFFDisp = BFDisp +                 %w()
+           #                                (c)luster 
+           #                                (f)ilter 
+           #     db_name           Type     (e)xtra Display          Label    Low Desc     High Desc  
+  Features = [%w(ppm               Continuous  cf  Pages\ Per\ Minute  \    Slow            Fast            ),
+              %w(itemwidth         Continuous  cf  Width               in.  Small           Large),
+              %w(paperinput        Continuous  cf  Paper\ Tray\ Size   \    Low\ Capacity   High\ Capacity),
+              %w(resolutionmax     Continuous  cf  Resolution          dpi. Low\ Resolution High\ Resolution),
+              %w(price             Continuous  cf  Price               \    Cheap           Expensive),
+              %w(brand             Categorical f   Brand               \    \               \ ),
+              %w(scanner           Binary      cf  Scanner             \    \               \ ),
+              %w(printserver       Binary      cf  Networked\ Printer  \    \               \ )]
   
-  ContinuousFeaturesFLabel = Hash[*ContinuousFeaturesF.zip(LabelF).flatten]
-  ContinuousFeaturesDescLow = Hash[*ContinuousFeatures.zip(Low).flatten]
-  ContinuousFeaturesDescHigh = Hash[*ContinuousFeatures.zip(High).flatten]
-  BinaryFeaturesDisp = Hash[*BinaryFeatures.zip(BFDisp).flatten]
-  BinaryFeaturesFDisp= Hash[*BinaryFeaturesF.zip(BFFDisp).flatten]
-  CategoricalFeaturesDisp = Hash[*CategoricalFeatures.zip(CDisp).flatten]
+  ContinuousFeatures = Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[0]}
+  ContinuousFeaturesF = Features.select{|f|f[1] == "Continuous" && f[2].index("f")}.map{|f|f[0]}
+  BinaryFeatures = Features.select{|f|f[1] == "Binary" && f[2].index("c")}.map{|f|f[0]}
+  BinaryFeaturesF = Features.select{|f|f[1] == "Binary" && f[2].index("f")}.map{|f|f[0]}
+  CategoricalFeatures = Features.select{|f|f[1] == "Categorical" && f[2].index("c")}.map{|f|f[0]}
+  CategoricalFeaturesF = Features.select{|f|f[1] == "Categorical" && f[2].index("f")}.map{|f|f[0]}
+  FeaturesLabel = Hash[*Features.select{|f|f[4] != " "}.map{|f|f[0]}.zip(Features.select{|f|f[4] != " "}.map{|f|f[4]}).flatten]
+  FeaturesDisp = Hash[*Features.map{|f|f[0]}.zip(Features.map{|f|f[3]}).flatten]
+  ContinuousFeaturesDescLow = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[5]}).flatten]
+  ContinuousFeaturesDescHigh = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[6]}).flatten]
+  ExtraFeature = Hash[*Features.select{|f|f[2].index("e")}.map{|f|[f[0],true]}.flatten]
   ShowFeatures = %w(brand model ppm paperinput ttp resolution itemwidth itemheight itemlength duplex connectivity papersize scanner printserver platform)
   ShowFeaturesDisp = %w(Brand Model Pages\ Per\ Minute Paper\ Tray\ Size Time\ To\ Print Resolution Width Height Length Duplex Connectivity Paper\ Size Scanner Print\ Server OS)
   DisplayedFeatures = %w(brand price ppm ttp resolution colorprinter scanner printserver duplex connectivity papersize paperoutput dutycycle paperinput ppmcolor platform itemdimensions itemweight packagedimensions packageweight)
@@ -34,8 +36,8 @@ class Printer < ActiveRecord::Base
     "paperinput" => "Paper Tray Size: The number of blank sheets of paper the printer can hold.",
     "resolutionmax" => "Resolution: The largest resolution (in dots per inch) of either the vertical or horizontal direction.",
     "price" => "Price: The lowest price for the item.",
-    "scanner" => "Scanner: Click here to select printers that can scan documents.",
-    "printserver" => "Printer Server: Click here to select printers that have wired or wireless networking. A printserver can be used by multiple computers without having to be connected to a computer that is always on."
+    "scanner" => "Scanner: Printers that can scan documents.",
+    "printserver" => "Printer Server: Printers that have wired or wireless networking. A printserver can be used by multiple computers without having to be connected to a computer that is always on."
     }
 
   named_scope :priced, :conditions => "price > 0"

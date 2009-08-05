@@ -355,7 +355,10 @@ a.savedisabled:hover {
 .save:hover {
 	cursor:pointer;
 }
-
+.changefilters {
+	font-size: 0.8em;
+	padding: 3px;
+}
 .ui-slider { position: relative; text-align: left; }
 .ui-slider .ui-slider-handle { background:url(../../../images/diamond.gif) no-repeat; height:13px; width:9px;text-decoration:none;outline:none;position:absolute;z-index:2;}/*{ position: absolute; z-index: 2; width: 1.2em; height: 1.2em; cursor: default; }
 */
