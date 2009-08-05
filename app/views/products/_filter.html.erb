@@ -16,6 +16,7 @@
 <% end %>
 <% $model::ContinuousFeaturesF.each_index do |i| %>
 	<% feat = $model::ContinuousFeaturesF[i] %>
+	<% debugger if @dbfeat[feat].nil? %>
 	<%= render :partial => 'slider', 
 		:locals => {:name => $model::ContinuousFeaturesFDisp[i], 
 		:i2f => (feat == 'price' || feat == 'itemwidth'),

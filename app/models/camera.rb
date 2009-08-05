@@ -3,20 +3,20 @@ class Camera < ActiveRecord::Base
   include ProductProperties
   has_many :camera_nodes
   is_indexed :fields => ['title', 'feature']
-  ContinuousFeatures      = %w(maximumresolution itemweight opticalzoom   price)
-  ContinuousFeaturesDisp  = %w(Resolution        Weight     Optical\ Zoom Price)
-  Label                   = %w(MP                g          X                  )
-  Low                     = %w(Low\ Resolution   Light      Low\ Zoom     Cheap)  
-  High                    = %w(High\ Resolution  Heavy      High\ Zoom    Expensive)
+  ContinuousFeatures      = %w(maximumresolution displaysize   opticalzoom   price)
+  ContinuousFeaturesDisp  = %w(Resolution        Display\ Size Optical\ Zoom Price)
+  Label                   = %w(MP                in.           X             \     )
+  Low                     = %w(Low\ Resolution   Small Screen  Low\ Zoom     Cheap)  
+  High                    = %w(High\ Resolution  Large Screen  High\ Zoom    Expensive)
   ContinuousFeaturesF = ContinuousFeatures +          %w()
   ContinuousFeaturesFDisp = ContinuousFeaturesDisp +  %w()
   LabelF = Label +                                    %w()
   CategoricalFeatures = %w(brand)
   CDisp               = %w(Brand)
-  BinaryFeatures = %w(slr)
-  BFDisp         = %w(SLR)
-  BinaryFeaturesF = BinaryFeatures + %w(bulb)
-  BFFDisp = BFDisp +                 %w(Bulb)
+  BinaryFeatures = %w()
+  BFDisp         = %w()
+  BinaryFeaturesF = BinaryFeatures + %w()
+  BFFDisp = BFDisp +                 %w()
   
   ContinuousFeaturesFLabel = Hash[*ContinuousFeaturesF.zip(LabelF).flatten]
   ContinuousFeaturesDescLow = Hash[*ContinuousFeatures.zip(Low).flatten]

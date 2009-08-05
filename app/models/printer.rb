@@ -15,8 +15,8 @@ class Printer < ActiveRecord::Base
   CDisp               = %w(Brand)
   BinaryFeatures = %w(scanner printserver)
   BFDisp         = %w(Scanner Networked\ Printer)
-  BinaryFeaturesF = BinaryFeatures + %w(bulb)
-  BFFDisp = BFDisp +                 %w(Bulb)
+  BinaryFeaturesF = BinaryFeatures + %w()
+  BFFDisp = BFDisp +                 %w()
   
   ContinuousFeaturesFLabel = Hash[*ContinuousFeaturesF.zip(LabelF).flatten]
   ContinuousFeaturesDescLow = Hash[*ContinuousFeatures.zip(Low).flatten]
