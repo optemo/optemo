@@ -17,6 +17,20 @@ class CreateTigerOfferings < ActiveRecord::Migration
       t.boolean  :stock
       t.string   :region
       t.text     :url 
+      t.string   :condition
+      
+      # OTHER
+      t.string :pricehistory
+      t.datetime :priceUpdate
+      t.integer :shippingCost
+      t.integer :tax
+      t.string :state
+      t.string :availability
+      t.datetime :availabilityUpdate
+      t.boolean   :active
+      t.datetime  :activeUpdate
+      t.boolean   :freeShipping
+        
     end
   end
 

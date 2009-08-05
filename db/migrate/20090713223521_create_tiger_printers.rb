@@ -12,7 +12,7 @@ class CreateTigerPrinters < ActiveRecord::Migration
       
       # Tiger-specific identification
       t.text   :tigerurl
-      t.string :mfgpartno
+      t.string :mpn
       t.string :upcno
 
       # US price stuff
@@ -57,12 +57,10 @@ class CreateTigerPrinters < ActiveRecord::Migration
       t.integer :paperoutput
       t.string  :dimensions
       t.integer :dutycycle 
-      t.string  :special
       t.float   :ppmcolor
       t.string  :platform
       t.boolean :colorprinter
       t.datetime :scrapedat
-      t.boolean :nodetails
       
     end
   end

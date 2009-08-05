@@ -17,12 +17,32 @@ module TigerDirectScraper
     end
   end
   
+  def find_matching_tiger make, model, mpn
+    matches = find_all_matching_tiger make, model, mpn
+    return nil if matches.length == 0
+    return matches[0]
+  end
+  
+  def find_all_matching_tiger make, model, mpn
+    makes = [just_alphanumeric (make)].delete_if{ |x| x.nil? or x == ""}
+    modelnames = [just_alphanumeric (model),just_alphanumeric (mpn)].delete_if{ |x| x.nil? or x == ""}
+    
+    matching = []
+    TigerPrinter.all.each do |ptr|
+      p_makes = [just_alphanumeric (ptr.brand)].delete_if{ |x| x.nil? or x == ""}
+      p_modelnames = [just_alphanumeric(ptr.model),just_alphanumeric(ptr.mpn)].delete_if{ |x| x.nil? or x == ""}
+
+      matching << ptr unless ( (p_makes & makes).empty? or (p_modelnames & modelnames).empty? )
+    end
+    return matching
+  end
+  
   def match_tiger_to_printer tp
     makes = [just_alphanumeric (tp.brand)].delete_if{ |x| x.nil? or x == ""}
-    modelnames = [just_alphanumeric (tp.model),just_alphanumeric (tp.mfgpartno)].delete_if{ |x| x.nil? or x == ""}
+    modelnames = [just_alphanumeric (tp.model),just_alphanumeric (tp.mpn)].delete_if{ |x| x.nil? or x == ""}
     
     matching = match_rec_to_printer makes, modelnames
-    @logfile.puts "ERROR! Duplicate matches for #{tp.id}: #{tp.mfgpartno} #{tp.model} #{tp.brand}" if matching.length > 1
+    @logfile.puts "ERROR! Duplicate matches for #{tp.id}: #{tp.mpn} #{tp.model} #{tp.brand}" if matching.length > 1
     
     if matching.length > 1
       matching.each do |p|
@@ -36,7 +56,7 @@ module TigerDirectScraper
   def clean_all atts
     # Brand is clean by default
     # Model:
-    atts['model'] = atts['mfgpartno'] if atts['model'].nil?
+    atts['model'] = atts['mpn'] if atts['model'].nil?
     
     # Resolutionmax
     atts['resolution'] = atts['resolution'].downcase.gsub(/dpi/,'').strip if atts['resolution']
@@ -79,11 +99,19 @@ module TigerDirectScraper
     atts["listpriceint#{suffix}"] = get_price_i( get_f atts["listpriceint#{suffix}"] )
     # Fill in price, pricestr, bestoffer, instock etc later!
     
+    # is it refurbished, etc
+    atts['condition'] = 'New'
+    atts['condition'] = "Refurbished" if ((atts['upcno']||'').match(/^RB-/) or (atts['model']||'').match(/^RB-/) or (atts['title']||'').match(/refurbished/i) )
+    atts['condition'] = "OEM" if (atts['title']||'').match(/oem/i) 
+    
     return atts
   end
   
   def optemo_special_url tigerurl, region
-   # TODO
+    link = "http://click.linksynergy.com/fs-bin/click?id=lI8cIt0J/v0&subid=&offerid=102327.1&type=10&tmpid=3883&RD_PARM1=#{tigerurl}" if region == 'US'
+    link = "http://click.linksynergy.com/fs-bin/click?id=lI8cIt0J/v0&subid=&offerid=102328.1&type=10&tmpid=3879&RD_PARM1=#{tigerurl}" if region == 'CA'
+    return CGI.escape(link) if link
+    return nil
   end
   
   def scrape_links doc
@@ -102,6 +130,24 @@ module TigerDirectScraper
     return "http://www.tigerdirect.#{ccode}#{tigerurl}"
   end
   
+  def rescrape_price to
+    # TODO base_url must be by country
+    url = @base_url + to.tigerurl
+    info_page = Nokogiri::HTML(open(url))
+    
+    props = {}
+    
+    puts "Re-scraping #{ts.id}"
+    props.merge! scrape_prices info_page 
+    props.merge! scrape_availty info_page
+    
+    props.delete_if{ |x,y| !TigerScraped.column_names.include? x}
+    
+    fill_in_all props, to
+    
+    return props
+  end
+  
   def scrape_all_from_link link    
     url = @base_url + link
     info_page = Nokogiri::HTML(open(url))
@@ -113,9 +159,8 @@ module TigerDirectScraper
     props.merge! scrape_data info_page
     props.merge! scrape_prices info_page 
     props.merge! scrape_yellow_box info_page
-    props.merge! scrape_itmdets info_page
     props.merge! scrape_availty info_page
-    
+    props.merge! scrape_modelinfo info_page
     props['region'] = @region
     
     props.delete_if{ |x,y| not TigerScraped.column_names.include? x}
@@ -124,14 +169,7 @@ module TigerDirectScraper
     
     return props
   end
-  
-  def scrape_itmdets info_page
     
-    itmdets = get_el info_page.css('form[name="itmdets"]')
-    return {'itmdets', itmdets.text} if itmdets
-    return {}
-  end
-  
   def scrape_yellow_box info_page
     yellow_boxes = info_page.css('[bgcolor="#ffff99"] font')
     hsh = {}
@@ -149,14 +187,33 @@ module TigerDirectScraper
         end
       end
     end
+    
     return hsh
   end
   
+  def scrape_modelinfo info_page
+    returnme = {}
+    
+    title_el = info_page.css('td.font_size4bold h1')
+    returnme['title'] = title_el.text if title_el
+    
+    itemno_row = info_page.xpath('//tr[td[text()="Item Number:"]]')
+    itemno_el = avail_row.xpath('td[2]')
+    returnme['itemnumber'] = itemno_el.text if itemno_el
+    
+    return returnme
+  end
+  
   def scrape_availty info_page
+    hsh = {}
     avail_row = info_page.xpath('//tr[td[text()="Availability:"]]')
     avail_el = avail_row.xpath('td[2]')
-    return {'availability' => avail_el.text} if avail_el
-    return {}
+    hsh['availability'] = avail_el.text if avail_el
+    
+    itmdets = get_el info_page.css('form[name="itmdets"]')
+    hsh['itmdets'] = itmdets.text if itmdets
+    
+    return hsh
   end
   
   def scrape_prices info_page
@@ -181,15 +238,21 @@ namespace :scrape_tiger do
   
   desc 'Maps the printers to db -- draft version so far'
   task :map_to_db => :init do
-    @logfile = File.open("./log/tiger_sandbox.log", 'w+')
+    @logfile = File.open("./log/tiger_map_to_db.log", 'w+')
     how_many_match = []
     
     TigerPrinter.all.each do |tp|
-      matches = match_tiger_to_printer tp
+      matches = find_all_matching_tiger tp.brand, tp.model, tp.mpn
       how_many_match << matches.length
+      
+      if matches.length > 1
+        matches.each do |p|
+          @logfile.puts "Matches #{tp.id}: #{p.mpn} #{p.model} #{p.brand}"
+        end
+      end
     end
     
-    puts how_many_match * ', '
+    puts how_many_match.uniq
     @logfile.close
   end
   
@@ -199,6 +262,7 @@ namespace :scrape_tiger do
     
     tiger_offerings.each do |ro|
       # Update RetailerOfferings: price, availability
+      rescrape_price to
       #  -- scrape website for price & availty for each offering (url?)
       #  -- clean 
       #  -- fill in price + availty
@@ -206,22 +270,21 @@ namespace :scrape_tiger do
     end
   end
     
-  task :toprinter => :init do
-    # TODO
+  task :to_printer => :init do
+    @logfile = File.open("./log/tiger_to_printer.log", 'w+')
     
     TigerPrinter.all.each do |tp|
       matching = match_tiger_to_printer tp
-      if matching.length == 1
+      if matching.length > 0
+        @logfile.puts "ERROR  #{tp.id} has multiple matching printers" if matching.length > 1
         p = matching[0]
-        puts "#{p.id} matches #{tp.id}"
+        @logfile.puts "#{p.id} matches #{tp.id}"
+        # TODO
         # fill_in_all_missing tp.attributes, p
-      elsif matching.length > 1 
-        # TODO ERROR!! should not happen
-        puts "Uh oh"
       else
-        #New printer
+        #TODO create new printer
         p = nil
-        puts "No match for #{tp.id}"
+        @logfile.puts "No match for #{tp.id}"
         # fill in all specs
       end
       
@@ -265,8 +328,8 @@ namespace :scrape_tiger do
       to = TigerOffering.new if to.nil?
       fill_in_all properties, to
       
-      # TODO Check for duplicates?
-      tp = TigerPrinter.find_or_create_by_tigerurl(ts.tigerurl)
+      tp = find_matching_tiger(properties['brand'], properties['model'], properties['mpn'])
+      tp = TigerPrinter.find_or_create_by_tigerurl(ts.tigerurl) if tp.nil?
       fill_in_all properties, tp, @ignore_list
       fill_in 'tiger_printer_id', tp.id, to
       
@@ -326,6 +389,8 @@ namespace :scrape_tiger do
     
     $model = Printer
     
+    @conditions = ["New", "Refurbished", "OEM"]
+    
     @ignore_list = ['tigerurl', 'pricestr', 'price', 'region']
 
     @printer_colnames = { \
@@ -340,7 +405,7 @@ namespace :scrape_tiger do
       'standardpaperinput'  =>'paperinput'  ,\
       'manufacturedby'      => 'brand'      ,\
       'shippingweight'      => 'packageweight', \
-      'originalprice'       =>'listpricestr'  ,      'price'               =>'pricestr'  ,      'faxcapability'       => 'fax' ,      'mfgpartno'           => 'model'     ,      'standardpaperoutput' =>'paperoutput'}
+      'originalprice'       =>'listpricestr'  ,      'price'               =>'pricestr'  ,      'faxcapability'       => 'fax' ,      'mfgpartno'           => 'mpn'     ,      'standardpaperoutput' =>'paperoutput'}
 
   end
   
