@@ -75,7 +75,6 @@ module TigerDirectScraper
     atts['brand'] = atts['brand'].gsub(/\(.+\)/,'').strip
     
     # Model:
-    
     if atts['model'].nil? or atts['model'] == atts['mpn']
       dirty_model_str = atts['title'].match(/.+\sprinter/i).to_s.gsub(/ - /,'')
       clean_model_str = dirty_model_str.gsub(/(mfp|multi-?funct?ion|duplex|faxcent(er|re)|workcent(re|er)|mono|laser|dig(ital)?|color|(black(\sand\s|\s?\/\s?)white)|network|all(\s?-?\s?)in(\s?-?\s?)one)\s?/i,'')

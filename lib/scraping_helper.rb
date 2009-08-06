@@ -4,6 +4,120 @@ module ScrapingHelper
   
   @@float_rxp = /(\d+,)?\d+(\.\d+)?/
   
+  def generic_printer_cleaning_code atts
+    
+    # TODO
+    # TODO 
+    
+    
+    atts['brand'] = atts['brand'].gsub(/\(.+\)/,'').strip
+    
+    # Model:
+    if atts['model'].nil? or atts['model'] == atts['mpn']
+      # TODO combine with other model cleaner code
+      dirty_model_str = atts['title'].match(/.+\sprinter/i).to_s.gsub(/ - /,'')
+      clean_model_str = dirty_model_str.gsub(/(mfp|multi-?funct?ion|duplex|faxcent(er|re)|workcent(re|er)|mono|laser|dig(ital)?|color|(black(\sand\s|\s?\/\s?)white)|network|all(\s?-?\s?)in(\s?-?\s?)one)\s?/i,'')
+      clean_model_str.gsub!(/printer\s?/i,'')
+      clean_model_str.gsub!(/#{atts['brand']}\s?/i,'')
+      @brand_alternatives.each do |alts|
+        if alts.include? atts['brand'].downcase
+          alts.each do |altbrand|
+            clean_model_str.gsub!(/#{altbrand}\s?/i,'')
+          end
+        end
+      end
+      $series.each do |ser|
+        clean_model_str.gsub!(/#{ser}\s?/i,'')
+      end
+      clean_model_str.strip!
+      atts['model'] = clean_model_str
+    end
+    
+    atts['model'] = atts['mpn'] if atts['model'].nil? or atts['model'] ==''
+    
+    # Resolution
+    atts['resolution'] = atts['resolution'].downcase.gsub(/dpi/i,'').strip if atts['resolution']
+    atts['resolutionmax'] = maxres_from_res atts['resolution']
+    
+    # PPM
+    atts['ppm'] = atts['ppmcolor'] if atts['ppm'].nil?
+        
+    # Item height, width, depth
+    (atts['dimensions'] || "").split('x').each do |dim| 
+      atts['itemlength'] = get_f(dim) if dim.include? 'D' and !atts['itemlength']
+      atts['itemwidth'] = get_f(dim) if dim.include? 'W' and !atts['itemwidth']
+      atts['itemheight'] = get_f(dim) if dim.include? 'H' and !atts['itemheight']
+    end
+    
+    # For the OFFERING
+    atts['priceint'] = get_price_i( get_f((atts['pricestr'] || '').gsub(/\*/,'')) )
+    atts['pricestr'].strip! if atts['pricestr']
+    
+    # For the PRODUCT
+    if atts['region'] == 'CA' then suffix = '_ca' else suffix='' end
+    atts["listpricestr#{suffix}"].strip! if atts["listpricestr#{suffix}"]
+    atts["listpriceint#{suffix}"] = get_price_i( get_f atts["listpriceint#{suffix}"] )
+    
+    atts['condition'] = "Refurbished" if (atts['title']||'').match(/refurbished/i) )
+    atts['condition'] = "OEM" if (atts['title']||'').match(/oem/i)
+    
+    # Booleans
+    atts['printserver'] = clean_bool(atts['printserver'])
+    atts['scanner'] = clean_bool(atts['scanner'])
+    
+    # TODO clean paperinput
+    
+  end
+  
+  def clean_bool dirty_val
+    val = get_b(dirty_val)
+    if val.nil?
+      val = !dirty_val.nil?
+    end
+  end
+  
+  def get_property_name str_dirty, model=$model
+    paramnames = get_property_names str_dirty, model
+    return nil if paramnames.length == 0
+    return paramnames[0] # TODO get most/least specific?
+  end
+  
+  def get_property_names str_dirty, model=$model
+    str = just_alphanumeric(str_dirty)
+    
+    param_names= []
+    # B&W:
+    # black; b(lack)?\s?(\/|and|&)\s?w(hite)?; mono(chrome)? 
+    
+    model.column_names.each do |param|
+      param_names << param if str.match(/#{param}/)
+    end
+    
+    param_names << 'ttp' if str.match(/(firstpageoutputtime|timeto(firstpage|print))/)
+    param_names << 'ppm' if str.match(/print(ing)?speed/)  
+    param_names << 'brand' if str.match(/manufacture(d|r$)/)
+    param_names << 'packageweight' if str.match(/shippingweight/)
+    param_names << 'listpricestr' if str.match(/originalprice/)
+    param_names << 'mpn' if str.match(/mfgpartn(o|um)/)
+    param_names << 'paperinput' if str.match(/(input|sheet|paper)capacity/)
+    param_names << 'paperoutput' if str.match(/outputcapacity/)
+    param_names << 'resolution' if str.match(/print(ing)?quality/)
+    param_names << 'papersize' if str.match(/mediasize/)
+    param_names << 'connectivity' if str.match(/printerinterface/)
+    param_names << 'itemwidth' if str.match(/width/) # TODO
+    param_names << 'packagewidth' if str.match(/width/) # TODO
+    param_names << 'printserver' if str.match(/(network|server)/)
+    param_names << 'colorprinter' if str.match(/(colou?r|printtechnology|printeroutput)/)
+    
+    if str.match(/colou?r/)
+      param_names << 'ppmcolor' if param_names.include? 'ppm'
+    end
+    
+    param_names << 'dimensions' if str.match(/dimensions/)
+    
+    return param_names
+  end
+  
   def self.general_ignore_list
     @@general_ignore_list
   end
@@ -61,7 +175,6 @@ module ScrapingHelper
     myfloat =  strsplit.first if strsplit
     return myfloat
   end
-  
   
   def maxres_from_res res
     return nil if res.nil?
@@ -150,12 +263,10 @@ module ScrapingHelper
     return label.downcase.gsub(/ /,'').gsub(/[^a-zA-Z 0-9]/, "")
   end
   
-  
-  # Takes out any characters that are not alphanumeric. Spaces too.
+  # Takes out stuff inside html-style tags.
   def no_tags label
     return label.gsub(/\<.+\/?\>/,'')
   end
-  
   
   # Removes all leading & trailing spaces
   # Deals with weirdness found on TigerDirect website
