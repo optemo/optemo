@@ -31,7 +31,7 @@ class CreateTigerOfferings < ActiveRecord::Migration
       t.boolean   :active
       t.datetime  :activeUpdate
       t.boolean   :freeShipping
-        
+      t.integer   :retailer_id 
     end
   end
 

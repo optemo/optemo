@@ -1112,6 +1112,7 @@ ActiveRecord::Schema.define(:version => 20090805214304) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "tigerurl"
+    t.integer  "offering_id"
     t.integer  "tiger_printer_id"
     t.integer  "priceint"
     t.string   "pricestr"
@@ -1130,6 +1131,7 @@ ActiveRecord::Schema.define(:version => 20090805214304) do
     t.boolean  "active"
     t.datetime "activeUpdate"
     t.boolean  "freeShipping"
+    t.integer  "retailer_id"
   end
 
   create_table "tiger_printers", :force => true do |t|

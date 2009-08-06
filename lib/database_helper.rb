@@ -50,14 +50,17 @@ module DatabaseHelper
   end
   
   def create_retailer_offering specific_o, product
-    fill_in 'product_id', product.id, specific_o
-    fill_in 'product_type', $model.name, specific_o
+    
     if specific_o.offering_id.nil? # If no RetailerOffering is mapped to this brand-specific offering:
       o = create_product_from_atts specific_o.attributes, RetailerOffering
       fill_in 'offering_id', o.id, specific_o
     else
       o = RetailerOffering.find(specific_o.offering_id)
+      fill_in_all specific_o.attributes, o
     end
+    
+    fill_in 'product_type', $model.name, o # TODO
+    fill_in 'product_id', product.id, o
     return o
   end
   

@@ -1,5 +1,22 @@
 module TigerDirectScraper
   
+  def update_ca p
+    matching_ro = RetailerOffering.find(:all, :conditions => \
+      "product_id LIKE #{p.id} and product_type LIKE '#{$model.name}' and region LIKE 'CA'").\
+    reject{ |x| !x.stock or x.priceint.nil? }
+    
+    return if matching_ro.empty?
+
+    lowest = matching_ro.sort{ |x,y|
+      x.priceint <=> y.priceint
+    }.first
+
+    fill_in "price_ca", lowest.priceint, p
+    fill_in "price_ca_str", lowest.pricestr, p
+    fill_in "instock_ca", true, p
+    
+  end
+  
   def scrape link_list
     @logfile.puts " #{link_list.length} printers not yet scraped."
     
@@ -46,7 +63,7 @@ module TigerDirectScraper
     
     if matching.length > 1
       matching.each do |p|
-        @logfile.puts "Matches #{tp.id}: #{p.mpn} #{p.model} #{p.brand}"
+        @logfile.puts "Printer #{p.id} matches #{tp.id}: #{p.mpn} #{p.model} #{p.brand}"
       end
     end
     
@@ -54,9 +71,31 @@ module TigerDirectScraper
   end
 
   def clean_all atts
-    # Brand is clean by default
+    
+    atts['brand'] = atts['brand'].gsub(/\(.+\)/,'').strip
+    
     # Model:
-    atts['model'] = atts['mpn'] if atts['model'].nil?
+    
+    if atts['model'].nil? or atts['model'] == atts['mpn']
+      dirty_model_str = atts['title'].match(/.+\sprinter/i).to_s.gsub(/ - /,'')
+      clean_model_str = dirty_model_str.gsub(/(mfp|multi-?funct?ion|duplex|faxcent(er|re)|workcent(re|er)|mono|laser|dig(ital)?|color|(black(\sand\s|\s?\/\s?)white)|network|all(\s?-?\s?)in(\s?-?\s?)one)\s?/i,'')
+      clean_model_str.gsub!(/printer\s?/i,'')
+      clean_model_str.gsub!(/#{atts['brand']}\s?/i,'')
+      @brand_alternatives.each do |alts|
+        if alts.include? atts['brand'].downcase
+          alts.each do |altbrand|
+            clean_model_str.gsub!(/#{altbrand}\s?/i,'')
+          end
+        end
+      end
+      $series.each do |ser|
+        clean_model_str.gsub!(/#{ser}\s?/i,'')
+      end
+      clean_model_str.strip!
+      atts['model'] = clean_model_str
+    end
+    
+    atts['model'] = atts['mpn'] if atts['model'].nil? or atts['model'] ==''
     
     # Resolutionmax
     atts['resolution'] = atts['resolution'].downcase.gsub(/dpi/,'').strip if atts['resolution']
@@ -90,7 +129,7 @@ module TigerDirectScraper
     
     # For the OFFERING
     atts['stock'] = atts['itmdets'].match(/unavail/i).nil?
-    atts['priceint'] = get_price_i( get_f(atts['pricestr']) )
+    atts['priceint'] = get_price_i( get_f((atts['pricestr'] || '').gsub(/\*/,'')) )
     atts['pricestr'].strip! if atts['pricestr']
     
     # For the PRODUCT
@@ -108,9 +147,9 @@ module TigerDirectScraper
   end
   
   def optemo_special_url tigerurl, region
-    link = "http://click.linksynergy.com/fs-bin/click?id=lI8cIt0J/v0&subid=&offerid=102327.1&type=10&tmpid=3883&RD_PARM1=#{tigerurl}" if region == 'US'
-    link = "http://click.linksynergy.com/fs-bin/click?id=lI8cIt0J/v0&subid=&offerid=102328.1&type=10&tmpid=3879&RD_PARM1=#{tigerurl}" if region == 'CA'
-    return CGI.escape(link) if link
+    link_prefix = "http://click.linksynergy.com/fs-bin/click?id=lI8cIt0J/v0&subid=&offerid=102327.1&type=10&tmpid=3883&RD_PARM1=" if region == 'US'
+    link_prefix = "http://click.linksynergy.com/fs-bin/click?id=lI8cIt0J/v0&subid=&offerid=102328.1&type=10&tmpid=3879&RD_PARM1=" if region == 'CA'
+    return (link_prefix+CGI.escape(url_by_region(region, tigerurl))) if link_prefix
     return nil
   end
   
@@ -125,8 +164,8 @@ module TigerDirectScraper
   end
   
   def url_by_region region, tigerurl=''
-    ccode = '.com' 
-    ccode = '.ca' if region=='CA'
+    ccode = 'com' 
+    ccode = 'ca' if region=='CA'
     return "http://www.tigerdirect.#{ccode}#{tigerurl}"
   end
   
@@ -246,7 +285,7 @@ namespace :scrape_tiger do
   
   desc 'Maps the printers to db -- draft version so far'
   task :sandbox => :init do
-    @logfile = File.open("./log/sandbox.log", 'w+')
+    @logfile = File.open("./log/tiger_sandbox.log", 'w+')
     how_many_match = []
     
     TigerPrinter.all.each do |tp|
@@ -266,6 +305,17 @@ namespace :scrape_tiger do
     @logfile.close
   end
   
+  task :fill_in_ca_price_and_stock => :init do
+    fill_me_in = RetailerOffering.find_all_by_retailer_id(12) | RetailerOffering.find_all_by_retailer_id(14)
+    fill_me_in.collect!{|x| Printer.find(x.product_id)}
+    
+    fill_me_in.each do |p|
+      update_ca p
+    end
+    
+    
+  end
+  
   task :update => :init do
     
     tiger_offerings = RetailerOffering.find_all_by_retailer_id(12) | RetailerOffering.find_all_by_retailer_id(14)
@@ -282,31 +332,37 @@ namespace :scrape_tiger do
     
   task :to_printer => :init do
     @logfile = File.open("./log/tiger_to_printer.log", 'w+')
-    
+    num_matching = 0
     TigerPrinter.all.each do |tp|
       matching = match_tiger_to_printer tp
       if matching.length > 0
         @logfile.puts "ERROR  #{tp.id} has multiple matching printers" if matching.length > 1
         p = matching[0]
         @logfile.puts "#{p.id} matches #{tp.id}"
-        fill_in_all_missing tp.attributes, p
-      else
-        p = create_product_from_atts specific_o.attributes
+        num_matching += 1
+        #fill_in_all_missing tp.attributes, p
+      else  
+        p = nil # TODO this is temporary
         @logfile.puts "No match for #{tp.id}"
-        # TODO fill in the specs!!!
+        #p = create_product_from_atts specific_o.attributes
       end
       
       toes = []
       toes = TigerOffering.find_all_by_tiger_printer_id(tp.id) unless p.nil? # TODO
       toes.each do |to|
         retailer = 12 
-        retailer = 14 if to.region == 'ca'
+        retailer = 14 if to.region == 'CA'
         fill_in 'url', optemo_special_url(to.tigerurl, to.region), to
-        fill_in 'retailer', retailer, to
-        create_retailer_offering to, tp
+        fill_in 'retailer_id', retailer, to
+        # TODO
+        fill_in 'toolow', false, to
+        o = create_retailer_offering to, p
+      
       end
+      
     end
     
+    puts "#{num_matching} of #{TigerPrinter.count} match a Printer"
     
   end 
     
@@ -389,8 +445,12 @@ namespace :scrape_tiger do
     @conditions = ["New", "Refurbished", "OEM"]
     
     @ignore_list = ['tigerurl', 'pricestr', 'price', 'region']
+    
+    $series = ['Jet', 'imageCLASS', 'Phaser']
 
     @regional_urls = { 'US' => "http://www.tigerdirect.com/", 'CA' => "http://www.tigerdirect.ca/"}
+
+    @brand_alternatives = [ ['hp', 'hewlett packard', 'hewlett-packard'], ['konica', 'konica-minolta', 'konica minolta'], ['okidata', 'oki data', 'oki'] ]
 
     @printer_colnames = { \
       'dimensions'          =>'dimensions'  ,\
