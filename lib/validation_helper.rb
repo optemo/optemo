@@ -1,5 +1,16 @@
 module ValidationHelper
   
+  def assert_within_range reclist, att, min, max
+    values = get_values reclist, att
+    values = values.reject{|x| x.nil?}.sort
+    if values.length == 0
+      log_v "All values nil for #{reclist[0].type.to_s}'s #{att} attribute"
+      return
+    end
+    log_v "Smallest #{att} below min for #{reclist[0].type.to_s}: #{values.first}" if values.first < min
+    log_v "Largest #{att} above max for #{reclist[0].type.to_s}: #{values.last}" if values.last > max 
+  end
+  
   def assert_no_repeats reclist, att
     values = get_values reclist, att
     log_v " Repeated values in #{reclist.first.class}'s #{att}" if values.uniq.count != values.count

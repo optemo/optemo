@@ -1,5 +1,22 @@
 module TigerDirectScraper
   
+  def update_ca p
+    matching_ro = RetailerOffering.find(:all, :conditions => \
+      "product_id LIKE #{p.id} and product_type LIKE '#{$model.name}' and region LIKE 'CA'").\
+    reject{ |x| !x.stock or x.priceint.nil? }
+    
+    return if matching_ro.empty?
+
+    lowest = matching_ro.sort{ |x,y|
+      x.priceint <=> y.priceint
+    }.first
+
+    fill_in "price_ca", lowest.priceint, p
+    fill_in "price_ca_str", lowest.pricestr, p
+    fill_in "instock_ca", true, p
+    
+  end
+  
   def scrape link_list
     @logfile.puts " #{link_list.length} printers not yet scraped."
     
@@ -9,7 +26,7 @@ module TigerDirectScraper
         puts "#{i+1}th printer scraped!"
       rescue Exception => e
         @logfile.puts "ERROR :#{e.type.to_s}, #{e.message.to_s}"
-        puts "#{i}th printer had error while scraping"
+        puts "#{i+1}th printer had error while scraping"
       end
       sleep(15)
       puts "Waiting waiting..."
@@ -17,16 +34,36 @@ module TigerDirectScraper
     end
   end
   
+  def find_matching_tiger make, model, mpn
+    matches = find_all_matching_tiger make, model, mpn
+    return nil if matches.length == 0
+    return matches[0]
+  end
+  
+  def find_all_matching_tiger make, model, mpn
+    makes = [just_alphanumeric (make)].delete_if{ |x| x.nil? or x == ""}
+    modelnames = [just_alphanumeric (model),just_alphanumeric (mpn)].delete_if{ |x| x.nil? or x == ""}
+    
+    matching = []
+    TigerPrinter.all.each do |ptr|
+      p_makes = [just_alphanumeric (ptr.brand)].delete_if{ |x| x.nil? or x == ""}
+      p_modelnames = [just_alphanumeric(ptr.model),just_alphanumeric(ptr.mpn)].delete_if{ |x| x.nil? or x == ""}
+
+      matching << ptr unless ( (p_makes & makes).empty? or (p_modelnames & modelnames).empty? )
+    end
+    return matching
+  end
+  
   def match_tiger_to_printer tp
     makes = [just_alphanumeric (tp.brand)].delete_if{ |x| x.nil? or x == ""}
-    modelnames = [just_alphanumeric (tp.model),just_alphanumeric (tp.mfgpartno)].delete_if{ |x| x.nil? or x == ""}
+    modelnames = [just_alphanumeric (tp.model),just_alphanumeric (tp.mpn)].delete_if{ |x| x.nil? or x == ""}
     
     matching = match_rec_to_printer makes, modelnames
-    @logfile.puts "ERROR! Duplicate matches for #{tp.id}: #{tp.mfgpartno} #{tp.model} #{tp.brand}" if matching.length > 1
+    @logfile.puts "ERROR! Duplicate matches for #{tp.id}: #{tp.mpn} #{tp.model} #{tp.brand}" if matching.length > 1
     
     if matching.length > 1
       matching.each do |p|
-        @logfile.puts "Matches #{tp.id}: #{p.mpn} #{p.model} #{p.brand}"
+        @logfile.puts "Printer #{p.id} matches #{tp.id}: #{p.mpn} #{p.model} #{p.brand}"
       end
     end
     
@@ -34,9 +71,31 @@ module TigerDirectScraper
   end
 
   def clean_all atts
-    # Brand is clean by default
+    
+    atts['brand'] = atts['brand'].gsub(/\(.+\)/,'').strip
+    
     # Model:
-    atts['model'] = atts['mfgpartno'] if atts['model'].nil?
+    
+    if atts['model'].nil? or atts['model'] == atts['mpn']
+      dirty_model_str = atts['title'].match(/.+\sprinter/i).to_s.gsub(/ - /,'')
+      clean_model_str = dirty_model_str.gsub(/(mfp|multi-?funct?ion|duplex|faxcent(er|re)|workcent(re|er)|mono|laser|dig(ital)?|color|(black(\sand\s|\s?\/\s?)white)|network|all(\s?-?\s?)in(\s?-?\s?)one)\s?/i,'')
+      clean_model_str.gsub!(/printer\s?/i,'')
+      clean_model_str.gsub!(/#{atts['brand']}\s?/i,'')
+      @brand_alternatives.each do |alts|
+        if alts.include? atts['brand'].downcase
+          alts.each do |altbrand|
+            clean_model_str.gsub!(/#{altbrand}\s?/i,'')
+          end
+        end
+      end
+      $series.each do |ser|
+        clean_model_str.gsub!(/#{ser}\s?/i,'')
+      end
+      clean_model_str.strip!
+      atts['model'] = clean_model_str
+    end
+    
+    atts['model'] = atts['mpn'] if atts['model'].nil? or atts['model'] ==''
     
     # Resolutionmax
     atts['resolution'] = atts['resolution'].downcase.gsub(/dpi/,'').strip if atts['resolution']
@@ -70,7 +129,7 @@ module TigerDirectScraper
     
     # For the OFFERING
     atts['stock'] = atts['itmdets'].match(/unavail/i).nil?
-    atts['priceint'] = get_price_i( get_f(atts['pricestr']) )
+    atts['priceint'] = get_price_i( get_f((atts['pricestr'] || '').gsub(/\*/,'')) )
     atts['pricestr'].strip! if atts['pricestr']
     
     # For the PRODUCT
@@ -79,11 +138,19 @@ module TigerDirectScraper
     atts["listpriceint#{suffix}"] = get_price_i( get_f atts["listpriceint#{suffix}"] )
     # Fill in price, pricestr, bestoffer, instock etc later!
     
+    # is it refurbished, etc
+    atts['condition'] = 'New'
+    atts['condition'] = "Refurbished" if ((atts['upcno']||'').match(/^RB-/) or (atts['model']||'').match(/^RB-/) or (atts['title']||'').match(/refurbished/i) )
+    atts['condition'] = "OEM" if (atts['title']||'').match(/oem/i) 
+    
     return atts
   end
   
   def optemo_special_url tigerurl, region
-   # TODO
+    link_prefix = "http://click.linksynergy.com/fs-bin/click?id=lI8cIt0J/v0&subid=&offerid=102327.1&type=10&tmpid=3883&RD_PARM1=" if region == 'US'
+    link_prefix = "http://click.linksynergy.com/fs-bin/click?id=lI8cIt0J/v0&subid=&offerid=102328.1&type=10&tmpid=3879&RD_PARM1=" if region == 'CA'
+    return (link_prefix+CGI.escape(url_by_region(region, tigerurl))) if link_prefix
+    return nil
   end
   
   def scrape_links doc
@@ -97,9 +164,27 @@ module TigerDirectScraper
   end
   
   def url_by_region region, tigerurl=''
-    ccode = '.com' 
-    ccode = '.ca' if region=='CA'
+    ccode = 'com' 
+    ccode = 'ca' if region=='CA'
     return "http://www.tigerdirect.#{ccode}#{tigerurl}"
+  end
+  
+  def rescrape_price to
+    # TODO base_url must be by country
+    url = @regional_urls[to.region] + to.tigerurl
+    info_page = Nokogiri::HTML(open(url))
+    
+    props = {}
+    
+    puts "Re-scraping #{ts.id}"
+    props.merge! scrape_prices info_page 
+    props.merge! scrape_availty info_page
+    
+    props.delete_if{ |x,y| !TigerScraped.column_names.include? x}
+    
+    fill_in_all props, to
+    
+    return props
   end
   
   def scrape_all_from_link link    
@@ -113,9 +198,8 @@ module TigerDirectScraper
     props.merge! scrape_data info_page
     props.merge! scrape_prices info_page 
     props.merge! scrape_yellow_box info_page
-    props.merge! scrape_itmdets info_page
     props.merge! scrape_availty info_page
-    
+    props.merge! scrape_modelinfo info_page
     props['region'] = @region
     
     props.delete_if{ |x,y| not TigerScraped.column_names.include? x}
@@ -124,14 +208,7 @@ module TigerDirectScraper
     
     return props
   end
-  
-  def scrape_itmdets info_page
     
-    itmdets = get_el info_page.css('form[name="itmdets"]')
-    return {'itmdets', itmdets.text} if itmdets
-    return {}
-  end
-  
   def scrape_yellow_box info_page
     yellow_boxes = info_page.css('[bgcolor="#ffff99"] font')
     hsh = {}
@@ -149,14 +226,33 @@ module TigerDirectScraper
         end
       end
     end
+    
     return hsh
   end
   
+  def scrape_modelinfo info_page
+    returnme = {}
+    
+    title_el = info_page.css('td.font_size4bold h1')
+    returnme['title'] = title_el.text if title_el
+    
+    itemno_row = info_page.xpath('//tr[td[text()="Item Number:"]]')
+    itemno_el = itemno_row.xpath('td[2]')
+    returnme['itemnumber'] = itemno_el.text if itemno_el
+    
+    return returnme
+  end
+  
   def scrape_availty info_page
+    hsh = {}
     avail_row = info_page.xpath('//tr[td[text()="Availability:"]]')
     avail_el = avail_row.xpath('td[2]')
-    return {'availability' => avail_el.text} if avail_el
-    return {}
+    hsh['availability'] = avail_el.text if avail_el
+    
+    itmdets = get_el info_page.css('form[name="itmdets"]')
+    hsh['itmdets'] = itmdets.text if itmdets
+    
+    return hsh
   end
   
   def scrape_prices info_page
@@ -176,21 +272,48 @@ end
 
 namespace :scrape_tiger do
   
+  
   desc 'everything in a sequence'
   task :all => [:scrape, :clean]
   
+  task :validate => :init do 
+    assert_within_range TigerPrinter.all, 'listpriceint', 0, 10_000_00
+    assert_within_range TigerPrinter.all, 'itemheight', 0, 100
+    assert_within_range TigerPrinter.all, 'itemlength', 0, 70
+    assert_within_range TigerPrinter.all, 'itemwidth', 0, 70
+  end
+  
   desc 'Maps the printers to db -- draft version so far'
-  task :map_to_db => :init do
+  task :sandbox => :init do
     @logfile = File.open("./log/tiger_sandbox.log", 'w+')
     how_many_match = []
     
     TigerPrinter.all.each do |tp|
-      matches = match_tiger_to_printer tp
+      matches = find_all_matching_tiger tp.brand, tp.model, tp.mpn
       how_many_match << matches.length
+      
+      if matches.length > 1
+        matches.each do |p|
+          @logfile.puts "Matches #{tp.id}: #{p.mpn} #{p.model} #{p.brand}"
+        end
+      elsif matches.length == 0
+        @logfile.puts "No matches for #{tp.id}"
+      end
     end
     
-    puts how_many_match * ', '
+    puts how_many_match.uniq
     @logfile.close
+  end
+  
+  task :fill_in_ca_price_and_stock => :init do
+    fill_me_in = RetailerOffering.find_all_by_retailer_id(12) | RetailerOffering.find_all_by_retailer_id(14)
+    fill_me_in.collect!{|x| Printer.find(x.product_id)}
+    
+    fill_me_in.each do |p|
+      update_ca p
+    end
+    
+    
   end
   
   task :update => :init do
@@ -199,6 +322,7 @@ namespace :scrape_tiger do
     
     tiger_offerings.each do |ro|
       # Update RetailerOfferings: price, availability
+      rescrape_price to
       #  -- scrape website for price & availty for each offering (url?)
       #  -- clean 
       #  -- fill in price + availty
@@ -206,55 +330,46 @@ namespace :scrape_tiger do
     end
   end
     
-  task :toprinter => :init do
-    # TODO
-    
+  task :to_printer => :init do
+    @logfile = File.open("./log/tiger_to_printer.log", 'w+')
+    num_matching = 0
     TigerPrinter.all.each do |tp|
       matching = match_tiger_to_printer tp
-      if matching.length == 1
+      if matching.length > 0
+        @logfile.puts "ERROR  #{tp.id} has multiple matching printers" if matching.length > 1
         p = matching[0]
-        puts "#{p.id} matches #{tp.id}"
-        # fill_in_all_missing tp.attributes, p
-      elsif matching.length > 1 
-        # TODO ERROR!! should not happen
-        puts "Uh oh"
-      else
-        #New printer
-        p = nil
-        puts "No match for #{tp.id}"
-        # fill in all specs
+        @logfile.puts "#{p.id} matches #{tp.id}"
+        num_matching += 1
+        #fill_in_all_missing tp.attributes, p
+      else  
+        p = nil # TODO this is temporary
+        @logfile.puts "No match for #{tp.id}"
+        #p = create_product_from_atts specific_o.attributes
       end
       
       toes = []
-      toes = TigerOffering.find_all_by_tiger_printer_id(tp.id) unless p.nil?
-      #toes.each do |to|
-      #  retailer = 12 
-      #  retailer = 14 if to.region == 'ca'
-      #  #RetailerOffering.find_or_create_by_productid_and_retailer
-      #  # 2. Create offerings
-      #    fill_in 'url', optemo_special_url(to.tigerurl, to.region), to
-      #    fill_in 'product_id', p.id, to
-      #    fill_in 'product_type', $model.to_s, to
-      #    if no.offering_id.nil? # If no RetailerOffering is mapped to this NeweggOffering:
-      #      copy_atts = only_overlapping_atts no.attributes, RetailerOffering
-      #      o = RetailerOffering.new(copy_atts)
-      #      o.save
-      #      fill_in 'offering_id', o.id, no
-      #    end
-        #  -- Link them to the printer entry
-        #  -- fill in product type (Printer)
-        # 3. Update bestoffer and bestoffer_ca
-        # TODO move existing code to helper
-      #end
+      toes = TigerOffering.find_all_by_tiger_printer_id(tp.id) unless p.nil? # TODO
+      toes.each do |to|
+        retailer = 12 
+        retailer = 14 if to.region == 'CA'
+        fill_in 'url', optemo_special_url(to.tigerurl, to.region), to
+        fill_in 'retailer_id', retailer, to
+        # TODO
+        fill_in 'toolow', false, to
+        o = create_retailer_offering to, p
+      
+      end
+      
     end
     
+    puts "#{num_matching} of #{TigerPrinter.count} match a Printer"
     
   end 
     
   desc 'Clean the data: move it from TigerScraped to TigerPrinter.'
   task :clean => :init do
     
-    cleanme = TigerScraped.find_all_by_region('CA')
+    cleanme = TigerScraped.all
     
     cleanme.each do |ts|
       properties = {}
@@ -265,8 +380,9 @@ namespace :scrape_tiger do
       to = TigerOffering.new if to.nil?
       fill_in_all properties, to
       
-      # TODO Check for duplicates?
-      tp = TigerPrinter.find_or_create_by_tigerurl(ts.tigerurl)
+      # Check for duplicates:
+      tp = find_matching_tiger(properties['brand'], properties['model'], properties['mpn'])
+      tp = TigerPrinter.find_or_create_by_tigerurl(ts.tigerurl) if tp.nil?
       fill_in_all properties, tp, @ignore_list
       fill_in 'tiger_printer_id', tp.id, to
       
@@ -326,7 +442,15 @@ namespace :scrape_tiger do
     
     $model = Printer
     
+    @conditions = ["New", "Refurbished", "OEM"]
+    
     @ignore_list = ['tigerurl', 'pricestr', 'price', 'region']
+    
+    $series = ['Jet', 'imageCLASS', 'Phaser']
+
+    @regional_urls = { 'US' => "http://www.tigerdirect.com/", 'CA' => "http://www.tigerdirect.ca/"}
+
+    @brand_alternatives = [ ['hp', 'hewlett packard', 'hewlett-packard'], ['konica', 'konica-minolta', 'konica minolta'], ['okidata', 'oki data', 'oki'] ]
 
     @printer_colnames = { \
       'dimensions'          =>'dimensions'  ,\
@@ -340,7 +464,7 @@ namespace :scrape_tiger do
       'standardpaperinput'  =>'paperinput'  ,\
       'manufacturedby'      => 'brand'      ,\
       'shippingweight'      => 'packageweight', \
-      'originalprice'       =>'listpricestr'  ,      'price'               =>'pricestr'  ,      'faxcapability'       => 'fax' ,      'mfgpartno'           => 'model'     ,      'standardpaperoutput' =>'paperoutput'}
+      'originalprice'       =>'listpricestr'  ,      'price'               =>'pricestr'  ,      'faxcapability'       => 'fax' ,      'mfgpartno'           => 'mpn'     ,      'standardpaperoutput' =>'paperoutput'}
 
   end
   
