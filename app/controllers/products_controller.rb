@@ -71,7 +71,6 @@ class ProductsController < ApplicationController
   end
    
   def select
-    #@@session.update_attribute('expert',true) if params[:id] == "corporate"
     @@session.defaultFeatures(URI.encode(params[:id]))
     render :nothing => true
   end

@@ -1,5 +1,5 @@
 <% $model::CategoricalFeaturesF.each do |feat| %>
-	<div class='feature<%= " extra" if $model::ExtraFeature[feat] %>'>
+	<div class='feature<%= " extra" if $model::ExtraFeature[feat] %>' <%= "style='display:none;'" if $model::ExtraFeature[feat] %>>
 		<div class='label'>
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
 			<%= link_to $model::FeaturesDisp[feat], '#' %>
@@ -25,7 +25,7 @@
 		:max => @dbfeat[feat].max} %>
 <% end %>
 <% $model::BinaryFeaturesF.each do |feat| %>
-	<div class='feature<%= " extra" if $model::ExtraFeature[feat] %>' <%= "style='display:none;'" if $model::ExtraFeature[feat] && !@session.expert %>>
+	<div class='feature<%= " extra" if $model::ExtraFeature[feat] %>' <%= "style='display:none;'" if $model::ExtraFeature[feat] %>>
 		<div class='label'>
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
 			<%= check_box('myfilter', feat, {:onchange => "$('#filter_form').submit()", :checked => @session.features.send(feat.intern) ? 'checked' : false})%>
@@ -35,12 +35,7 @@
 <% end %>
 <% if $model::ExtraFeature.values.inject(false){|a,b|a||b} %>
 <div class='changefilters'>
-	<% if @session.expert %>
-		<%= link_to "More Filters", "#", :id => "morefilters", :style => "display: none;" %>
-		<%= link_to "Less Filters", "#", :id => "lessfilters" %>
-	<% else %>
-		<%= link_to "More Filters", "#", :id => "morefilters" %>
-		<%= link_to "Less Filters", "#", :id => "lessfilters", :style => "display: none;" %>
-	<% end %>
+	<%= link_to "More Filters", "#", :id => "morefilters" %>
+	<%= link_to "Less Filters", "#", :id => "lessfilters", :style => "display: none;" %>
 </div>
 <% end %>
