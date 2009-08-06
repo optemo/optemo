@@ -10,8 +10,7 @@ class Camera < ActiveRecord::Base
               %w(displaysize       Continuous  cf  Display\ Size  in. Small\ Screen   Large\ Screen),
               %w(opticalzoom       Continuous  cf  Optical\ Zoom  X   Low\ Zoom       High\ Zoom),
               %w(price             Continuous  cf  Price          \   Cheap           Expensive),
-              %w(brand             Categorical f   Brand          \   \               \ ),
-              %w(slr               Binary      cf  SLR            \   \               \ )]
+              %w(brand             Categorical f   Brand          \   \               \ )]
   
   ContinuousFeatures = Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[0]}
   ContinuousFeaturesF = Features.select{|f|f[1] == "Continuous" && f[2].index("f")}.map{|f|f[0]}

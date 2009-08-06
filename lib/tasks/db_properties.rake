@@ -40,7 +40,7 @@ def create_product_properties(model,region)
     products = model.valid.instock_ca
   end
   unless products.nil? || products.empty?
-    model::CategoricalFeatures.each {|name|
+    model::CategoricalFeaturesF.each {|name|
       f = DbFeature.new
       f.product_type = model.name
       f.feature_type = 'Categorical'
@@ -49,7 +49,7 @@ def create_product_properties(model,region)
       f.categories = products.map{|c|c.send(name.intern)}.compact.uniq.join('*')
       f.save
     }
-    model::ContinuousFeatures.each {|name|
+    model::ContinuousFeaturesF.each {|name|
       f = DbFeature.new
       f.product_type = model.name
       f.feature_type = 'Continuous'
@@ -61,7 +61,7 @@ def create_product_properties(model,region)
       f.low = products.map{|c|c.send(name.intern)}.sort[products.count*0.25]
       f.save
     }
-    model::BinaryFeatures.each {|name|
+    model::BinaryFeaturesF.each {|name|
       f = DbFeature.new
       f.product_type = model.name
       f.feature_type = 'Binary'
