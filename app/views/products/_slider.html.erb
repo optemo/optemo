@@ -1,4 +1,4 @@
-<div class='feature<%= " extra" if extra %>'>
+<div class='feature<%= " extra" if extra %>' <%= "style='display:none;'" if extra %>>
 <div class='disp'>
 	  <%= '$' if money_formatting %><%=(i2f ? @s.ranges(val)[0]/100 : @s.ranges(val)[0]).to_i %>-<%= '$' if money_formatting %><%= (i2f ? @s.ranges(val)[1]/100 : @s.ranges(val)[1]).ceil %> <%= $model::FeaturesLabel[val] %>
 </div>

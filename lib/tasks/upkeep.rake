@@ -63,8 +63,6 @@ task :calculate_factors => :environment do
     # Truncate the existing factors table
     ActiveRecord::Base.connection.execute('TRUNCATE factors')
     $ProdTypeList.each do |pType|
-      @dbfeat = {}
-      DbFeature.find_all_by_product_type_and_region(pType,"us").each {|f| @dbfeat[f.name] = f}
       products = pType.constantize.valid.instock
       products.each do |product|
         newFactorRow = Factor.new

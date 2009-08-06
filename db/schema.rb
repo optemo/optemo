@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090805214304) do
+ActiveRecord::Schema.define(:version => 20090730181217) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -1105,7 +1105,6 @@ ActiveRecord::Schema.define(:version => 20090805214304) do
     t.string   "searchterm"
     t.text     "searchpids"
     t.string   "region",       :default => "us"
-    t.boolean  "expert",       :default => false
   end
 
   create_table "tiger_offerings", :force => true do |t|
