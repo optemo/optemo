@@ -1,14 +1,20 @@
 module ValidationHelper
   
+  def assert_all_valid model
+    log_v "Not all #{model.name} valid" if model.valid.count < model.count
+  end
+  
   def assert_within_range reclist, att, min, max
     values = get_values reclist, att
-    values = values.reject{|x| x.nil?}.sort
-    if values.length == 0
+    values.delete_if{|x,y| x.nil?}
+    if values.keys.length == 0
       log_v "All values nil for #{reclist[0].type.to_s}'s #{att} attribute"
       return
     end
-    log_v "Smallest #{att} below min for #{reclist[0].type.to_s}: #{values.first}" if values.first < min
-    log_v "Largest #{att} above max for #{reclist[0].type.to_s}: #{values.last}" if values.last > max 
+    outliers = values.reject{|x,y| (x < min || x > max) }
+    log_v "Smallest #{att} below min for #{reclist[0].type.to_s}: #{values.keys.sort.first}" if values.keys.sort.first < min
+    log_v "Largest #{att} above max for #{reclist[0].type.to_s}: #{values.keys.sort.last}" if values.keys.sort.last > max 
+    log_v  "Outliers: #{outliers.collect{|x,y| y}*', '}" if outliers.size > 0 and outliers.size < 10
   end
   
   def assert_no_repeats reclist, att
@@ -19,18 +25,22 @@ module ValidationHelper
   
   def assert_no_0_values reclist, att 
     values = get_values reclist, att
-    log_v " There are 0s in #{reclist.first.class}'s #{att} " if values.include? 0
+    outliers = values.reject{|x,y| x==0}
+    log_v " There are 0s in #{reclist.first.class}'s #{att} " if outliers.size > 0
+    log_v  "Outliers: #{outliers.collect{|x,y| y}*', '}" if outliers.size > 0  and outliers.size < 10
   end
   
   
   def assert_not_all_nils reclist, att 
     values = get_values reclist, att
-    log_v " There are nils in #{reclist.first.class}'s #{att} " if values.uniq == [nil]
+    log_v " There are nils in #{reclist.first.class}'s #{att} " if values.keys.uniq == [nil]
   end
   
   def assert_no_nils reclist, att 
     values = get_values reclist, att
-    log_v " There are nils in #{reclist.first.class}'s #{att} " if values.include? nil
+    outliers = values.reject{|x,y| x.nil?}
+    log_v " There are nils in #{reclist.first.class}'s #{att} " if outliers.size > 0
+    log_v "Outliers: #{outliers.collect{|x,y| y}*', '}" if outliers.size > 0 and outliers.size < 10
   end
   
   # TODO !!
@@ -61,8 +71,8 @@ module ValidationHelper
   
   # Should be made private
   def get_values reclist, att
-    values = reclist.inject([]) { |r,x| 
-      r << x.[](att)
+    values = reclist.inject({}) { |r,x| 
+      r[x.[](att)]  = x.id
       r
     }
     return values
