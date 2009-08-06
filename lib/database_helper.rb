@@ -1,10 +1,13 @@
 module DatabaseHelper
   
+  require 'scraping_helper'
+  include ScrapingHelper
+  
   $general_ignore_list = ['id','created_at','updated_at']
   $region_suffixes = {'CA' => '_ca', 'US' => ''}
   
   # Should return itself and any other matching printers.
-  def match_printer_to_printer ptr, recclass=$model  , series=[]
+  def match_printer_to_printer ptr, recclass=$model, series=[]
     makes = [just_alphanumeric(ptr.brand)].delete_if{ |x| x.nil? or x == ""}
     modelnames = [just_alphanumeric(ptr.model),just_alphanumeric(ptr.mpn)].delete_if{ |x| x.nil? or x == ""}
     
