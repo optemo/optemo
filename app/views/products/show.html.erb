@@ -1,11 +1,11 @@
-<%= link_to image_tag('close.gif'), "javascript:fadein();", :style => "top:10px;", :id => 'close' if @plain %>
 <% if !@plain %><div id="outside">
 	<% self.title = @product.smlTitle %>
 	<span style="float: left;"><%= nav_link %></span>
 	<div id="container" style="margin-left: 149px">
-<% else %>		
+<% else %>
+	<%= link_to image_tag('save.png'), "javascript:saveit(#{@product.id});", :id => 'showsave' %>
+	<%= link_to image_tag('close.gif'), "javascript:fadein();", :id => 'close' %>
 	<div id="container">
-		<img align="right" style="position:relative;top:-7px;right:20px;" src="/images/save.png" onClick="saveit(<%=@product.id%>);" class="save">
 <% end %>
 	<p style="margin: 15px 0px 0px 20px"><%= URI.decode(@product.title) %></p>
 	<div id="image">

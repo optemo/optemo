@@ -32,7 +32,7 @@ class Printer < ActiveRecord::Base
   FInfo = {
     "brand" => "Brands: The manufacturer of the product. You can choose more than just one brand.",
     "ppm" => "Pages Per Minute: The number of pages that can be printed per minute in black and white.",
-    "itemwidth" => "Display Size: The diagonal length of the LCD display.",
+    "itemwidth" => "Width: The width of the printer accross the front.",
     "paperinput" => "Paper Tray Size: The number of blank sheets of paper the printer can hold.",
     "resolutionmax" => "Resolution: The largest resolution (in dots per inch) of either the vertical or horizontal direction.",
     "price" => "Price: The lowest price for the item.",
