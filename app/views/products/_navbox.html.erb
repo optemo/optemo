@@ -3,11 +3,11 @@
 	<div class='title'><%= @clusterDescs[i] %></div>
 
 	<% if !cluster.representative(@session).imagemwidth.blank? %>
-		<%= image_tag cluster.representative(@session).imagemurl, :height => 100, :onClick => "fadeout(#{cluster.representative(@session).id});", :class => "productimg", :alt => cluster.representative(@session).smlTitle %>
+		<%= image_tag cluster.representative(@session).imagemurl, :height => 100, :"data-id" => cluster.representative(@session).id, :class => "productimg", :alt => cluster.representative(@session).smlTitle %>
 	<%end%>
 
-	<p><a href="<%=cluster.representative(@session).descurl%>" onClick="fadeout(<%=cluster.representative(@session).id%>);return false;">
-		<span class="easylink"><%= cluster.representative(@session).smlTitle %></span>
+	<p><a href="<%=cluster.representative(@session).descurl%>" data-id="<%=cluster.representative(@session).id%>" class="easylink">
+		<%= cluster.representative(@session).smlTitle %>
 	</a></p>
 	
 	<p><%= $region == "us" ? cluster.representative(@session).pricestr : cluster.representative(@session).price_ca_str %>  

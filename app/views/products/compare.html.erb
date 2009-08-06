@@ -37,6 +37,7 @@
 	  	<%= render :partial => 'filter' %>
 	<% end %>
 </div>
+<p><%= link_to "Request a Feature", "#", :id => "requestafeature" %></p>
 </div>
 
 <div class="main">
@@ -79,11 +80,3 @@
 	
 	<div id="loading">&nbsp;Loading<div id="myspinner" style="float: left;"></div></div>
 </div>
-
-<% content_for :header do %>
-	<% if @product %>
-		<div style="float:left">Viewing<br><%= @result_count %> Similar<br>products to:</div>
-		<%= render :partial => 'product', :locals => {:nox => true, :product => @product} %>
-		<%# @session.msg %>
-	<% end %>
-<% end %>

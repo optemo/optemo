@@ -1,5 +1,5 @@
 class ContentController < ApplicationController
-layout 'optemo'
+layout 'optemo', :except => ['request']
 
 def sitemap
   @products = $model.valid

@@ -18,7 +18,7 @@ function findBetter(id, feat)
                }, "text");
 }
 
-function fadeout(id)
+function fadeout(url)
 {
 	$('#fade').css('height', getDocHeight()+'px').css('display', 'inline');
 	//IE Compatibility
@@ -28,7 +28,7 @@ function fadeout(id)
 		.css('top', (dsoctop+5)+'px')
 		.css('display', 'inline');
 	$('#myfilter_brand').css('visibility', 'hidden');
-	$('#info').load('/products/show/'+id+'?plain=true');
+	$('#info').load(url);
 }
 
 function fadein()
@@ -159,6 +159,18 @@ $(document).ready(function() {
 			newPreferencesString = $.tableDnD.serialize();
 			// window.location = "/compare/list?" + newPrefString
 		}
+	});
+	
+	//Fadeout labels
+	$(".easylink, .productimg").click(function(){
+		fadeout('/products/show/'+$(this).attr('data-id')+'?plain=true');
+		return false;
+	});
+	
+	//Request a feature
+	$("#requestafeature").click(function(){
+		fadeout('/content/request');
+		return false;
 	});
 	
 	//Show Descriptions

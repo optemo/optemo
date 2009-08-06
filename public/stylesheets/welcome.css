@@ -45,11 +45,11 @@ ul li {
  line-height:1.5em;
 }
 
-p {
+/*p {
  margin:0.5em 0px 1.25em 0px;
  padding:0px;
  line-height:1.5em;
-}
+}*/
 
 p.last {
  margin-bottom:0px;
