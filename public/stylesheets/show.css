@@ -37,8 +37,13 @@ div#loading {
 }
 #close {
 	position: absolute;
-	top: 0px;
+	top: 3px;
 	left: 781px;
+}
+#showsave {
+	position: absolute;
+	top: 0px;
+	left: 751px;
 }
 
 div #container {

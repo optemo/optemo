@@ -85,7 +85,7 @@ end
 desc "Run c-code to recluster"
 task :c_clustering do
   env = ENV['RAILS_ENV'] || 'development'
-  `lib/c_code/clusteringCodes/codes/hCluster printer ca #{env}`
+  `lib/c_code/clusteringCodes/codes/hCluster printer us #{env}`
 end
 
 desc "Recluster printers"
