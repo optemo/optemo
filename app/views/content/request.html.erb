@@ -2,12 +2,14 @@
 <div style="padding:0px 20px">
 	<h1>Feature Request/Comments</h1>
 	<p>Let us know what features or functionalities would be good for you. Also feel free to leave comments about your shopping experience.</p>
+	<% form_tag({:controller => "content", :action => "create_request"},:id => "requestform") do %>
 	 <% fields_for "request" do |form| %>
 	<p><label for="name">Name</label> <%= form.text_field :name %></p>
 	<p><label for="email">Email</label> <%= form.text_field :email %></p>
 	<p><%= form.check_box :anonymous %> <label for="anonymous">Anonymous</label></p>
 	<p><label for="content">Request/Comment</label><br>
 	<%= form.text_area :content, :size => "80x20" %></p>
-	<%= submit_tag 'Submit' %>
+	<% end %>
+	<%= submit_tag "Submit", :id => "requestsubmit" %>
 	<% end %>
 </div>

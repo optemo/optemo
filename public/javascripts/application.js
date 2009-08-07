@@ -28,7 +28,7 @@ function fadeout(url)
 		.css('top', (dsoctop+5)+'px')
 		.css('display', 'inline');
 	$('#myfilter_brand').css('visibility', 'hidden');
-	$('#info').load(url);
+	$('#info').css('width',800).css('height',770).load(url,loadOverlay);
 }
 
 function fadein()
@@ -36,6 +36,14 @@ function fadein()
 	$('#myfilter_brand').css('visibility', 'visible');
 	$('#fade').css('display', 'none');
 	$('#info').css('display', 'none');	
+}
+
+function loadOverlay() {
+	$('#requestsubmit').click(function(){
+		$.post("/content/create_request",$("#requestform").serialize());
+		$('#info').html("<h3><span style='color: green;'>Thank you for submitting your feedback.</span></h3><a href='javascript:fadein();' id='close'><img src='/images/close.gif'></a>").effect("scale",{percent: 20, scale: 'box'})//.css('width',400).css('height',100)
+		return false;
+	});
 }
 
 function spinner(holderid, R1, R2, count, stroke_width, colour) {

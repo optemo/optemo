@@ -15,7 +15,6 @@ div#info {
 	background: white;
 	position: absolute;
 	top: 20px;
-	/*left: 110px;*/
 	width: 800px;
 	height: 770px;
 	z-index: 3;
@@ -38,7 +37,7 @@ div#loading {
 #close {
 	position: absolute;
 	top: 3px;
-	left: 781px;
+	right: 0px;
 }
 #showsave {
 	position: absolute;
