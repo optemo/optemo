@@ -265,20 +265,6 @@ div #filterbar {
 	float: left;
 	font-size: 1.0em;
 }
-
-.endlabel_min {
-	display: none;
-
-	position: absolute;
-	bottom: -5px;
-	left: -1px;
-	font-size: 0.5em;}
-.endlabel_max {
-	display: none;
-	position: absolute;
-	bottom: -5px;
-	right: -1px;
-	font-size: 0.5em;}
 .endlabel_min_Preferences 
 {
 	display: relative;

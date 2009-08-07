@@ -158,6 +158,12 @@ function submit_filter()
 	$('#loading').css('display', 'inline');
 }
 
+function closeDesc(id){
+	$(id).siblings('.desc').css('display','none');
+	$(id).click(openDesc(id));
+	return false;
+}
+
 $(document).ready(function() {
 	// ToDo: Add code for table drag drop here
 	
@@ -180,16 +186,16 @@ $(document).ready(function() {
 		fadeout('/content/request');
 		return false;
 	});
-	
-	//Show Descriptions
-	$('.feature .label a').click(function(){
-		$(this).siblings('.desc').css('display','block');
-		return false;
-	});
-	
-	//Hide Descriptions
-	$('.feature .deleteX').click(function(){
-		$(this).parent().css('display','none');
+	//Show and Hide Descriptions
+	$('.feature .label a, .feature .deleteX').click(function(){
+		if($(this).parent().attr('class') == "desc")
+			{var obj = $(this).parent();}
+		else
+			{var obj = $(this).siblings('.desc');}
+		var flip=parseInt(obj.attr('name-flip'));
+		if (isNaN(flip)){flip = 0;}
+		obj.toggle(flip++ % 2 == 0);
+		obj.attr('name-flip',flip);
 		return false;
 	});
 	
@@ -240,11 +246,12 @@ $(document).ready(function() {
 				$(this).siblings('.max').attr('value',max);
 				$('.sliderlabel:first', this).html(min);
 				$('.sliderlabel:last', this).html(max);
+				$('.ui-state-focus .sliderlabel',this).css('margin-top','-29px');
 				},
 			stop: function(e,ui){submit_filter();}
 		});
-		$('a:first', this).html('<div class="sliderlabel">'+curmin+'</div>')
-		$('a:last', this).html('<div class="sliderlabel">'+curmax+'</div>')
+		$('a:first', this).html('<div class="sliderlabel">'+curmin+'</div>').addClass("moveontop")
+		$('a:last', this).html('<div class="sliderlabel">'+curmax+'</div>').addClass("moveontop")
 		histogram($(this).siblings('.hist')[0],(sessmin-rangemin)/(rangemax-rangemin),(sessmax-rangemin)/(rangemax-rangemin));
 	});
 	
