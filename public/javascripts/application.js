@@ -20,13 +20,13 @@ function findBetter(id, feat)
 
 function fadeout(url)
 {
-	$('#fade').css('height', getDocHeight()+'px').css('display', 'inline');
 	//IE Compatibility
 	var iebody=(document.compatMode && document.compatMode != "BackCompat")? document.documentElement : document.body
 	var dsoctop=document.all? iebody.scrollTop : pageYOffset
 	$('#info').css('left', ((document.body.clientWidth-800)/2)+'px')
 		.css('top', (dsoctop+5)+'px')
 		.css('display', 'inline');
+	$('#fade').css('height', getDocHeight()+'px').css('display', 'inline');
 	$('#myfilter_brand').css('visibility', 'hidden');
 	$('#info').css('width',800).css('height',770).load(url,loadOverlay);
 }
