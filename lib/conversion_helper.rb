@@ -5,6 +5,13 @@ module ConversionHelper
   require 'scraping_helper'
   include ScrapingHelper   
   
+  def parse_max_num_pages str
+    debugger if str.nil?
+    numpages = get_f_with_units( (str || '').gsub(/\+\s?\d+/,''),  /page(s)?/i )
+    return numpages.to_i if numpages
+    return nil
+  end
+  
   def parse_lens str
     return nil if str.nil?
     lens_substr = str.scan(/with.*?\d+?.*?\d+?.*?lens/i).to_s #  || str

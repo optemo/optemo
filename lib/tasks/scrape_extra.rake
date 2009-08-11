@@ -55,6 +55,9 @@ namespace :scrape_extra do
     require 'scraping_helper'
     include ScrapingHelper
 
+    require 'conversion_helper'
+    include ConversionHelper
+
     require 'database_helper'
     include DatabaseHelper
     
@@ -62,6 +65,8 @@ namespace :scrape_extra do
     include ValidationHelper
     
     $model = Printer
+    
+    ok_fields = ['ppm', 'resolution', 'resolutionmax', 'paperinput','scanner']
     
     # Lexmark:
     links = []
@@ -71,7 +76,9 @@ namespace :scrape_extra do
     end
     puts "#{links.count} printers found in Lexmark"
     
-    fieldname = 'resolutionmax'
+    just_continue = false
+    
+    fieldname = 'printserver'
     debugme = []
     repeats = []
     nomatch = 0
@@ -84,20 +91,31 @@ namespace :scrape_extra do
       mapped_specs_readable = {}
       specs.each{|x,y| get_property_names(x).each do |prop| 
         mapped_specs_readable[prop] = (mapped_specs_readable[prop] || '') + " #{x}:#{y}" unless y.nil?
-        mapped_specs[prop] = (mapped_specs[prop] || '') + " #{y}" unless y.nil?
+        mapped_specs[prop] = (mapped_specs[prop] || '') + "#{ScrapingHelper.sep}#{y}" unless y.nil?
         end
       }
       mapped_specs['brand'] = 'Lexmark'
       mapped_specs['model'] = get_el(page.css('div#prodInfo h1')).content if get_el(page.css('div#prodInfo h1'))
       clean_specs = generic_printer_cleaning_code mapped_specs
       
+      #debugger
+      
       # TODO more effective find?
       ps = Printer.find_all_by_brand_and_model(clean_specs['brand'] , clean_specs['model'] )
-      nomatch += 1 if ps.length == 0
-      repeats << ps.collect{|x| x.id}
-      fill_in_missing 'ppm', clean_specs['ppm'], ps.first if ps.length == 1
+      
+      if ps.length == 1
+        ok_fields.each do |field|
+          fill_in_missing field, clean_specs[field], ps.first
+        end
+      elsif ps.length == 0
+        nomatch += 1 
+      else
+        repeats << ps.collect{|x| x.id}
+      end
       debugme << clean_specs[fieldname]
+      
       sleep(20)
+      
     end
     
     puts "#{debugme.uniq.count} unique values in #{fieldname}"

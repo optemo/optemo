@@ -4,11 +4,20 @@ module ScrapingHelper
   
   @@float_rxp = /(\d+,)?\d+(\.\d+)?/
   
+  @@sep = '!@!'
+  
+  def self.sep
+    return @@sep
+  end
+  
   def generic_printer_cleaning_code atts
     
     atts['ppm'] = get_max_f(atts['ppm'])
     atts['ppmcolor'] = get_max_f(atts['ppmcolor'])
     atts['ttp'] = get_min_f(atts['ttp'])
+    
+    atts['paperinput'] = (atts['paperinput'] || '').split(@@sep).collect{|x| parse_max_num_pages(x)}.reject{|x| x.nil?}.max 
+    debugger if atts['paperinput'] and atts['paperinput'] < 100
     
     atts['brand'] = atts['brand'].gsub(/\(.+\)/,'').strip if atts['brand']
     # Model:
@@ -69,10 +78,21 @@ module ScrapingHelper
     return atts
   end
   
-  def clean_bool dirty_val
-    val = get_b(dirty_val)
-    if val.nil?
-      val = !dirty_val.nil?
+  def clean_bool dirty_vals
+    vals = []
+    (dirty_vals || '').split(@@sep).each { |dirty_val| 
+      val = get_b(dirty_val)
+      if val.nil? and !dirty_val.nil?
+        val = dirty_val.match(/(not applicable|n\/a|not available)/i).nil?
+      end
+      vals << val
+    }
+    if vals.empty? or vals.uniq == [nil]
+      return nil
+    elsif vals.include? true
+      return true
+    else
+      return false
     end
   end
   
@@ -298,6 +318,13 @@ module ScrapingHelper
     return val
   end
   
+  # Fill in only nils!
+  def fill_in_all_missing hsh, rec, ignorelist=[]
+    hsh.each{ |name,val| 
+      fill_in_missing(name, val, rec, ignorelist) 
+    }
+  end
+  
   def fill_in_all hsh, rec, ignorelist=[]
     hsh.each{ |name,val| fill_in name, val, rec, ignorelist }
   end
@@ -307,6 +334,12 @@ module ScrapingHelper
   # with the text inside the element.
   def fill_in_optional name, el, record
     fill_in( name , el.text, record )if el
+  end
+  
+  def fill_in_missing(name, val, rec, ignorelist=[])
+    if !rec.attribute_present? name or rec.[](name).to_s.strip==''
+      fill_in(name, val, rec, ignorelist)
+    end
   end
   
   # Fills in value for attribute in record.
