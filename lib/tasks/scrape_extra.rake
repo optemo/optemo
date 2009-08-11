@@ -52,9 +52,6 @@ namespace :scrape_extra do
     require 'rubygems'
     require 'nokogiri'
 
-    require 'scraping_helper'
-    include ScrapingHelper
-
     require 'conversion_helper'
     include ConversionHelper
 
@@ -168,7 +165,7 @@ namespace :scrape_extra do
   end
   
   desc 'resize it'
-  task :resize_all => :init do
+  task :resize_all => :pic_init do
 
     failed = []
     NeweggPrinter.all.collect{|x| x.item_number}.each do |itemnum|
@@ -190,7 +187,7 @@ namespace :scrape_extra do
   end
   
   desc 'sandbox'
-  task :reduced_pic_stats => :init do
+  task :reduced_pic_stats => :pic_init do
     
    NeweggPrinter.all.collect{|x| x.item_number}.each do |itemnum|
     #['N82E16828112055'].each do |itemnum|
@@ -218,7 +215,7 @@ namespace :scrape_extra do
   end
   
   desc 'Fills in '
-  task :fill_in_pic_stats => :init do
+  task :fill_in_pic_stats => :pic_init do
     no_img_sizes = []
     $size_names.each do |sz|
       no_img_sizes = no_img_sizes | Printer.find( :all, \
@@ -246,7 +243,7 @@ namespace :scrape_extra do
   end
   
   desc 'sandbox'
-  task :pic_stats => :init do
+  task :pic_stats => :pic_init do
     
     resolutions = {}
     dimensions = {}
@@ -286,7 +283,7 @@ namespace :scrape_extra do
   end
   
   desc 'Get a pic for every printer'
-  task :download_pix => :init do
+  task :download_pix => :pic_init do
     
     failed = []
     
@@ -312,12 +309,18 @@ namespace :scrape_extra do
     puts failed * "\n"
   end
   
+  desc 'pic-init'
+  task :pic_init => :init do
+  
+    require 'RMagick'
+    include ScrapeExtra
+  
+  end
+  
   desc 'init'
   task :init => :environment do
     require 'scraping_helper'
     include ScrapingHelper
-    require 'RMagick'
-    include ScrapeExtra
     
     $folder= 'public'
     $size_names = ['s','m','l']
