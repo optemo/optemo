@@ -58,7 +58,7 @@ module ScrapingHelper
     atts["listpricestr#{suffix}"].strip! if atts["listpricestr#{suffix}"]
     atts["listpriceint#{suffix}"] = get_price_i( get_f atts["listpriceint#{suffix}"] )
     
-    atts['condition'] = "Refurbished" if (atts['title']||'').match(/refurbished/i) )
+    atts['condition'] = "Refurbished" if (atts['title']||'').match(/refurbished/i) 
     atts['condition'] = "OEM" if (atts['title']||'').match(/oem/i)
     
     # Booleans

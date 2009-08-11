@@ -171,8 +171,6 @@ module PrinterTest
     assert_not_homepage
     assert_well_formed_page
  
-    debugger
-    
     assert_search_history_clear
     assert_brands_same
     assert_saveds_same

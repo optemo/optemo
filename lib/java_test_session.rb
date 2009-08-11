@@ -81,7 +81,7 @@ class JavaTestSession < Webrat::SeleniumSession
    
    def click_browse_similar which_link
      the_link = doc.css('.simlinks')[which_link-1]
-     if the_link and !the_link.text.nil? and !the_link.text.trim.empty?
+     if the_link and !the_link.text.nil? and !the_link.text.strip.empty?
        browser.click "link=#{the_link.text}" 
        wait_for_load
      else

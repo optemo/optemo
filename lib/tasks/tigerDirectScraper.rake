@@ -12,7 +12,7 @@ module TigerDirectScraper
     }.first
 
     fill_in "price_ca", lowest.priceint, p
-    fill_in "price_ca_str", lowest.pricestr, p
+    fill_in "price_ca_str", "CDN"+ lowest.pricestr, p
     fill_in "instock_ca", true, p
     
   end
@@ -372,7 +372,7 @@ namespace :scrape_tiger do
     
     cleanme.each do |ts|
       properties = {}
-      ts.attributes.delete_if{|x,y| y.nil?}.each{ |k,v| properties.store( @printer_colnames[k] || k, v )  }
+      ts.attributes.delete_if{|x,y| y.nil?}.each{ |k,v| properties.store( (@printer_colnames[k] || get_property_name k || k ), v )  }
       
       clean_all properties
       to = TigerOffering.find_by_tigerurl_and_region(ts.tigerurl, ts.region)
@@ -451,19 +451,12 @@ namespace :scrape_tiger do
 
     @brand_alternatives = [ ['hp', 'hewlett packard', 'hewlett-packard'], ['konica', 'konica-minolta', 'konica minolta'], ['okidata', 'oki data', 'oki'] ]
 
-    @printer_colnames = { \
-      'dimensions'          =>'dimensions'  ,\
-      'duplexprinting'      => 'duplex'     ,\
-      'firstpageoutputtime' => 'ttp'        ,\
-      'maximumdutycycle'    => 'dutycycle'  ,\
-      'papersizessupported' => 'papersize'  ,\
+    @printer_colnames = { 'faxcapability'       => 'fax' ,      'mfgpartno'           => 'mpn'  ,\
       'printspeed'          =>'ppm'         ,\
       'printspeedbw'        => 'ppmbw'      ,\
       'printspeedcolor'     => 'ppmcolor'   , \
-      'standardpaperinput'  =>'paperinput'  ,\
-      'manufacturedby'      => 'brand'      ,\
       'shippingweight'      => 'packageweight', \
-      'originalprice'       =>'listpricestr'  ,      'price'               =>'pricestr'  ,      'faxcapability'       => 'fax' ,      'mfgpartno'           => 'mpn'     ,      'standardpaperoutput' =>'paperoutput'}
+      'originalprice'       =>'listpricestr'  ,      'price'               =>'pricestr'  }
 
   end
   
