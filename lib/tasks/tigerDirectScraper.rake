@@ -372,7 +372,7 @@ namespace :scrape_tiger do
     
     cleanme.each do |ts|
       properties = {}
-      ts.attributes.delete_if{|x,y| y.nil?}.each{ |k,v| properties.store( (@printer_colnames[k] || get_property_name k || k ), v )  }
+      ts.attributes.delete_if{|x,y| y.nil?}.each{ |k,v| properties.store( (@printer_colnames[k] || get_property_name(k) || k ), v )  }
       
       clean_all properties
       to = TigerOffering.find_by_tigerurl_and_region(ts.tigerurl, ts.region)

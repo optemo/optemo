@@ -46,6 +46,73 @@ end
 
 namespace :scrape_extra do
   
+  desc 'Add data from elsewhere'
+  task :moredata  => :init do
+    
+    require 'rubygems'
+    require 'nokogiri'
+
+    require 'scraping_helper'
+    include ScrapingHelper
+
+    require 'database_helper'
+    include DatabaseHelper
+    
+    require 'validation_helper'
+    include ValidationHelper
+    
+    $model = Printer
+    
+    # Lexmark:
+    links = []
+    3.times do |pg_index|    
+      page = Nokogiri::HTML(open("scrape_me/manfpages/lexmark_#{pg_index+1}.html"))
+      links += page.css('div#content a').collect{|x| x.[]('href')}.uniq
+    end
+    puts "#{links.count} printers found in Lexmark"
+    
+    fieldname = 'resolutionmax'
+    debugme = []
+    repeats = []
+    nomatch = 0
+    links.each do |link|
+      page = Nokogiri::HTML(open(link))
+      specs = scrape_table(page.css('div.specs tr'), 'td.spectitle', 'td.specinfo')
+      
+      # TODO use inject()?
+      mapped_specs = {}
+      mapped_specs_readable = {}
+      specs.each{|x,y| get_property_names(x).each do |prop| 
+        mapped_specs_readable[prop] = (mapped_specs_readable[prop] || '') + " #{x}:#{y}" unless y.nil?
+        mapped_specs[prop] = (mapped_specs[prop] || '') + " #{y}" unless y.nil?
+        end
+      }
+      mapped_specs['brand'] = 'Lexmark'
+      mapped_specs['model'] = get_el(page.css('div#prodInfo h1')).content if get_el(page.css('div#prodInfo h1'))
+      clean_specs = generic_printer_cleaning_code mapped_specs
+      
+      # TODO more effective find?
+      ps = Printer.find_all_by_brand_and_model(clean_specs['brand'] , clean_specs['model'] )
+      nomatch += 1 if ps.length == 0
+      repeats << ps.collect{|x| x.id}
+      fill_in_missing 'ppm', clean_specs['ppm'], ps.first if ps.length == 1
+      debugme << clean_specs[fieldname]
+      sleep(20)
+    end
+    
+    puts "#{debugme.uniq.count} unique values in #{fieldname}"
+    puts "#{debugme.reject{|x| !x.nil?}.count} nils in #{fieldname}"
+    puts "Values in #{fieldname}:"
+    puts debugme.uniq.reject{|x| x.nil?}.sort * ', '
+    puts "#{nomatch} not matched "
+    puts " Repeats listed below: "
+    repeats.each{|x| 
+      puts x * ','
+    }
+    puts " --- "
+    
+  end
+  
   desc 'yoopsie UPC lookup'
   task :yoopsie => :init do 
     require 'webrat'
@@ -197,14 +264,6 @@ namespace :scrape_extra do
     
     dimensions.each do |x,n|
       puts "#{x} : #{n} times"
-    end
-  end
-  
-  desc 'asdf'
-  task :asdf => :init do
-    NeweggPrinterScrapedData.all.each do |npsd|
-      np = NeweggPrinter.find_by_item_number(npsd.item_number.gsub(/R$/,''))
-      fill_in 'imageurl', npsd.imageurl, np if np
     end
   end
   

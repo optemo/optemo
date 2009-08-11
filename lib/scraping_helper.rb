@@ -6,41 +6,41 @@ module ScrapingHelper
   
   def generic_printer_cleaning_code atts
     
-    # TODO
-    # TODO 
+    atts['ppm'] = get_max_f(atts['ppm'])
+    atts['ppmcolor'] = get_max_f(atts['ppmcolor'])
+    atts['ttp'] = get_min_f(atts['ttp'])
     
-    
-    atts['brand'] = atts['brand'].gsub(/\(.+\)/,'').strip
-    
+    atts['brand'] = atts['brand'].gsub(/\(.+\)/,'').strip if atts['brand']
     # Model:
-    if atts['model'].nil? or atts['model'] == atts['mpn']
+    if (atts['model'].nil? or atts['model'] == atts['mpn']) and atts['title']
       # TODO combine with other model cleaner code
-      dirty_model_str = atts['title'].match(/.+\sprinter/i).to_s.gsub(/ - /,'')
-      clean_model_str = dirty_model_str.gsub(/(mfp|multi-?funct?ion|duplex|faxcent(er|re)|workcent(re|er)|mono|laser|dig(ital)?|color|(black(\sand\s|\s?\/\s?)white)|network|all(\s?-?\s?)in(\s?-?\s?)one)\s?/i,'')
-      clean_model_str.gsub!(/printer\s?/i,'')
-      clean_model_str.gsub!(/#{atts['brand']}\s?/i,'')
-      @brand_alternatives.each do |alts|
+      dirty_model_str = atts['title'].match(/.+\sprinter/i).to_s.gsub(/ - /,'') 
+      
+    end
+    if atts['model']
+      atts['model'].gsub!(/(mfp|multi-?funct?ion|duplex|faxcent(er|re)|workcent(re|er)|mono|laser|dig(ital)?|color|(black(\sand\s|\s?\/\s?)white)|network|all(\s?-?\s?)in(\s?-?\s?)one)\s?/i,'')
+      atts['model'].gsub!(/printer\s?/i,'')
+      atts['model'].gsub!(/#{atts['brand']}\s?/i,'')
+      # TODO
+      (@brand_alternatives || []).each do |alts|
         if alts.include? atts['brand'].downcase
           alts.each do |altbrand|
-            clean_model_str.gsub!(/#{altbrand}\s?/i,'')
+            atts['model'].gsub!(/#{altbrand}\s?/i,'')
           end
         end
       end
-      $series.each do |ser|
-        clean_model_str.gsub!(/#{ser}\s?/i,'')
+      ($series || []).each do |ser|
+        atts['model'].gsub!(/#{ser}\s?/i,'')
       end
-      clean_model_str.strip!
-      atts['model'] = clean_model_str
+      atts['model'].strip!
     end
+    
     
     atts['model'] = atts['mpn'] if atts['model'].nil? or atts['model'] ==''
     
     # Resolution
-    atts['resolution'] = atts['resolution'].downcase.gsub(/dpi/i,'').strip if atts['resolution']
+    atts['resolution'] = atts['resolution'].scan(/\d+\s?x\s?\d+/i).uniq * ', '
     atts['resolutionmax'] = maxres_from_res atts['resolution']
-    
-    # PPM
-    atts['ppm'] = atts['ppmcolor'] if atts['ppm'].nil?
         
     # Item height, width, depth
     (atts['dimensions'] || "").split('x').each do |dim| 
@@ -66,7 +66,7 @@ module ScrapingHelper
     atts['scanner'] = clean_bool(atts['scanner'])
     
     # TODO clean paperinput
-    
+    return atts
   end
   
   def clean_bool dirty_val
@@ -108,6 +108,7 @@ module ScrapingHelper
     param_names << 'packagewidth' if str.match(/width/) # TODO
     param_names << 'printserver' if str.match(/(network|server)/)
     param_names << 'colorprinter' if str.match(/(colou?r|printtechnology|printeroutput)/)
+    param_names << 'dimensions' if str.match(/size/)
     
     if str.match(/colou?r/)
       param_names << 'ppmcolor' if param_names.include? 'ppm'
