@@ -12,11 +12,14 @@ module ScrapingHelper
   
   def generic_printer_cleaning_code atts
     
+    atts.each{|x,y| atts[x] = y.gsub(/#{@@sep}/,'') if y.scan(/#{@@sep}/).length == 1 }
+    
     atts['ppm'] = get_max_f(atts['ppm'])
     atts['ppmcolor'] = get_max_f(atts['ppmcolor'])
     atts['ttp'] = get_min_f(atts['ttp'])
     
-    atts['paperinput'] = (atts['paperinput'] || '').split(@@sep).collect{|x| parse_max_num_pages(x)}.reject{|x| x.nil?}.max 
+    atts['paperinput'] = (atts['paperinput'] || '').scan(/(?-mix:\d*,?\d+\s?-?)(?i-mx:sheets?)|(?i-mx:pages?)/).collect{|x| get_max_f x}.max
+    #split(@@sep).collect{|x| get_max_f((x||'').to_s)}.reject{|x| x.nil?}.max 
     debugger if atts['paperinput'] and atts['paperinput'] < 100
     
     atts['brand'] = atts['brand'].gsub(/\(.+\)/,'').strip if atts['brand']
@@ -48,7 +51,7 @@ module ScrapingHelper
     atts['model'] = atts['mpn'] if atts['model'].nil? or atts['model'] ==''
     
     # Resolution
-    atts['resolution'] = atts['resolution'].scan(/\d+\s?x\s?\d+/i).uniq * ', '
+    atts['resolution'] = atts['resolution'].scan(/\d*,?\d+\s?x\s?\d*,?\d+/i).uniq * " #{@@sep} " if atts['resolution']
     atts['resolutionmax'] = maxres_from_res atts['resolution']
         
     # Item height, width, depth
@@ -74,7 +77,7 @@ module ScrapingHelper
     atts['printserver'] = clean_bool(atts['printserver'])
     atts['scanner'] = clean_bool(atts['scanner'])
     
-    # TODO clean paperinput
+    atts.each{|x,y| atts[x] = y.gsub(/#{@@sep}/,',') if y.type==String} 
     return atts
   end
   
@@ -132,6 +135,10 @@ module ScrapingHelper
     
     if str.match(/colou?r/)
       param_names << 'ppmcolor' if param_names.include? 'ppm'
+    end
+    
+    if str.match(/(scan|cop(y|ie(s|r)))/i)
+      param_names.delete_if{|x| x== 'resolution' or x=='ppm' or x='paperinput' or x='paperoutput'}
     end
     
     param_names << 'dimensions' if str.match(/dimensions/)

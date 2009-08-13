@@ -1,0 +1,2109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html lang="en">
+  <head>
+    <!-- hps_head.jsp BEGIN -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Code for dynamically generating Metakeywords and description starts here -->
+
+<title>HP Home & Home Office Store - We're sorry, the page requested was not found</title> 
+
+
+
+<!--startindex-->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<meta name="hp_design_version" content="hpweb.1.2a">
+<meta name="web_section_id" content="R329">
+<meta name="segment" content="HHO">
+<meta name="user_type" content="Non_technical_end_user">
+<meta name="target_country" content="US">
+<meta name="content_country_applicability" content="US">
+<meta name="allow-search" content="Yes">
+<meta name="IMGURL" content>
+
+<meta name="page_content" content="Products">
+<meta name="lifecycle" content="Catalog">
+
+<meta name="robots" content="noindex,nofollow">
+
+<!--stopindex-->
+
+
+
+  <link href="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/css/hp_screen_003366.css" rel="stylesheet" type="text/css" media="screen">
+  <link href="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/css/hp_handheld_003366.css" rel="stylesheet" type="text/css" media="handheld">
+  <link href="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/css/hp_print_003366.css" rel="stylesheet" type="text/css" media="print">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script language="JavaScript">
+  function openWin(url, width, height, win_name) {
+    bName = navigator.appName;
+    var new_url="";
+    if(bName=="Microsoft Internet Explorer") {
+      for(var i=0; i<url.length; i++) {
+        var c=url.charAt(i);
+        if(c=='%') {
+          i += 1;
+          var d = url.charAt(i);
+          new_url += "%25" + d;
+        } else {
+          new_url += c;
+        }
+      }
+    } else {
+      new_url=url;
+    }
+    if(win_name==null) {
+       win_name = "newPopupWindow";
+    }
+    varn = open(new_url, win_name, "resizable=yes,toolbar=0,scrollbars=yes,directories=0,status=0,menubar=0,width=" + width + ",height=" + height);
+  }
+
+  function openSecWin(url, width, height, win_name) {
+    bName = navigator.appName;
+    var new_url="";
+    if(bName=="Microsoft Internet Explorer") {
+      for(var i=0; i<url.length; i++) {
+        var c=url.charAt(i);
+        if(c=='%') {
+          i += 1;
+          var d = url.charAt(i);
+          new_url += "%25" + d;
+        } else {
+          new_url += c;
+        }
+      }
+    } else {
+      new_url=url;
+    }
+    if(win_name==null) {
+       win_name = "newPopupWindow";
+    }
+    varn = open(new_url, win_name, "location=1,resizable=yes,toolbar=0,scrollbars=yes,directories=0,status=1,menubar=0,width=" + width + ",height=" + height);
+  }
+
+  function strtrim(str) {
+    if (str !=  null) {
+      return str.replace(/^\s+/,'').replace(/\s+$/,'');
+    }
+  }
+
+  function isEmptyString(s) {
+    return (s == null || /^ *$/.test(s));
+  }
+
+  function decodeHtml(str){
+    str = str + "";
+    str = str.replace(/&quot;/g,'"');
+    return str;
+  }
+
+  var isNN = (navigator.appName.indexOf("Netscape")!=-1);
+
+  function autoTab(input, len, e) {
+    var keyCode = (isNN) ? e.which : e.keyCode;
+    var filter = (isNN) ? [0,8,9] : [0,8,9,16,17,18,37,38,39,40,46];
+    if(input.value.length >= len && !containsElement(filter,keyCode)) {
+      input.value = input.value.slice(0, len);
+      var next = input.form[(getIndex(input)+1) % input.form.length];
+      next.focus();
+      setSelRange(next, 0, next.maxLength);
+    }
+    return true;
+  }
+
+  function containsElement(arr, ele) {
+    var found = false;
+    var index = 0;
+    while(!found && index < arr.length) {
+      if(arr[index] == ele) {
+        found = true;
+      } else {
+        index++;
+      }
+    }
+    return found;
+  }
+
+  function getIndex(input) {
+    var index = -1;
+    var found = false;
+    var form = input.form;
+
+    for (var i=0; i<form.length; i++) {
+      if (form.elements[i] == input) {
+        index = i;
+        break;
+      }
+    }
+    return index;
+  }
+
+  function setSelRange(input, selStart, selEnd) {
+    if (input.setSelectionRange) {
+      input.focus();
+      input.setSelectionRange(selStart, selEnd);
+    } else if (input.createTextRange) {
+      var range = input.createTextRange();
+      range.collapse(true);
+      range.moveEnd('character', selEnd);
+      range.moveStart('character', selStart);
+      range.select();
+    }
+  }
+
+function setFocus(formName, filedName) 
+{
+  var i=0, j=0;
+  for(i=0; i < document.forms.length; i++ ) {
+    if(document.forms[i].name == formName) {
+      for(j=0; j <document.forms[i].length; j++)
+      {
+         elementName = document.forms[i].elements[j].name;
+         elementValue = document.forms[i].elements[j].value;
+        if (elementName==filedName) {     
+         document.forms[i].elements[j].focus();
+        }
+      }
+      break;
+    }  
+  }
+}
+function MM_timelinePlay(tmLnName, myID) { //v1.2
+  //Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Macromedia, Inc. All rights reserved.
+  var i,j,tmLn,props,keyFrm,sprite,numKeyFr,firstKeyFr,propNum,theObj,firstTime=false;
+  if (document.MM_Time == null) MM_initTimelines(); //if *very* 1st time
+  tmLn = document.MM_Time[tmLnName];
+  if (myID == null) { myID = ++tmLn.ID; firstTime=true;}//if new call, incr ID
+  if (myID == tmLn.ID) { //if Im newest
+    setTimeout('MM_timelinePlay("'+tmLnName+'",'+myID+')',tmLn.delay);
+    fNew = ++tmLn.curFrame;
+    for (i=0; i<tmLn.length; i++) {
+      sprite = tmLn[i];
+      if (sprite.charAt(0) == 's') {
+        if (sprite.obj) {
+          numKeyFr = sprite.keyFrames.length; firstKeyFr = sprite.keyFrames[0];
+          if (fNew >= firstKeyFr && fNew <= sprite.keyFrames[numKeyFr-1]) {//in range
+            keyFrm=1;
+            for (j=0; j<sprite.values.length; j++) {
+              props = sprite.values[j]; 
+              if (numKeyFr != props.length) {
+                if (props.prop2 == null) sprite.obj[props.prop] = props[fNew-firstKeyFr];
+                else        sprite.obj[props.prop2][props.prop] = props[fNew-firstKeyFr];
+              } else {
+                while (keyFrm<numKeyFr && fNew>=sprite.keyFrames[keyFrm]) keyFrm++;
+                if (firstTime || fNew==sprite.keyFrames[keyFrm-1]) {
+                  if (props.prop2 == null) sprite.obj[props.prop] = props[keyFrm-1];
+                  else        sprite.obj[props.prop2][props.prop] = props[keyFrm-1];
+        } } } } }
+      } else if (sprite.charAt(0)=='b' && fNew == sprite.frame) eval(sprite.value);
+      if (fNew > tmLn.lastFrame) tmLn.ID = 0;
+  } }
+}
+
+function MM_initTimelines() { //v4.0
+    //MM_initTimelines() Copyright 1997 Macromedia, Inc. All rights reserved.
+    var ns = navigator.appName == "Netscape";
+    var ns4 = (ns && parseInt(navigator.appVersion) == 4);
+    var ns5 = (ns && parseInt(navigator.appVersion) > 4);
+    document.MM_Time = new Array(1);
+    document.MM_Time[0] = new Array(1);
+    document.MM_Time["Timeline1"] = document.MM_Time[0];
+    document.MM_Time[0].MM_Name = "Timeline1";
+    document.MM_Time[0].fps = 15;
+    document.MM_Time[0][0] = new String("sprite");
+    document.MM_Time[0][0].slot = 1;
+    document.MM_Time[0][0].obj = document.getElementById("recentCart");
+    /*if (ns4)
+        document.MM_Time[0][0].obj = document["recentCart"];
+    else if (ns5)
+        document.MM_Time[0][0].obj = document.getElementById("recentCart");
+    else
+        document.MM_Time[0][0].obj = document.all ? document.all["recentCart"] : null;*/
+    document.MM_Time[0][0].keyFrames = new Array(1, 24, 64, 98);
+    document.MM_Time[0][0].values = new Array(2);
+    if (ns5)
+        document.MM_Time[0][0].values[0] = new Array("542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px", "542px");
+    else
+        document.MM_Time[0][0].values[0] = new Array(542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542,542);
+    document.MM_Time[0][0].values[0].prop = "left";
+    if (ns5)
+        document.MM_Time[0][0].values[1] = new Array("-223px", "-210px", "-196px", "-183px", "-169px", "-156px", "-142px", "-129px", "-115px", "-102px", "-88px", "-75px", "-63px", "-51px", "-40px", "-29px", "-19px", "-10px", "-1px", "8px", "16px", "24px", "31px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "38px", "33px", "29px", "24px", "18px", "13px", "7px", "2px", "-4px", "-10px", "-17px", "-23px", "-30px", "-38px", "-45px", "-53px", "-61px", "-69px", "-77px", "-86px", "-95px", "-104px", "-113px", "-123px", "-132px", "-141px", "-150px", "-159px", "-168px", "-177px", "-186px", "-196px", "-205px", "-214px", "-223px");
+    else
+        document.MM_Time[0][0].values[1] = new Array(-223,-210,-196,-183,-169,-156,-142,-129,-115,-102,-88,-75,-63,-51,-40,-29,-19,-10,-1,8,16,24,31,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,33,29,24,18,13,7,2,-4,-10,-17,-23,-30,-38,-45,-53,-61,-69,-77,-86,-95,-104,-113,-123,-132,-141,-150,-159,-168,-177,-186,-196,-205,-214,-223);
+    document.MM_Time[0][0].values[1].prop = "top";
+    if (!ns4) {
+        document.MM_Time[0][0].values[0].prop2 = "style";
+        document.MM_Time[0][0].values[1].prop2 = "style";
+    }
+    document.MM_Time[0].lastFrame = 98;
+    for (i=0; i<document.MM_Time.length; i++) {
+        document.MM_Time[i].ID = null;
+        document.MM_Time[i].curFrame = 0;
+        document.MM_Time[i].delay = 1000/document.MM_Time[i].fps;
+    }
+}
+
+  //Added for STO Add to Cart Ajax Part
+ 
+  function cartSubmitConfigForm(productId, conversationId, eppPrefix, brandName,  configId)
+  {
+    document.revisePCPC.productId.value = productId;
+    document.revisePCPC.conversationId.value = conversationId;
+    document.revisePCPC.configurationId.value = configId;
+    document.revisePCPC.eppPrefix.value = eppPrefix;
+    document.revisePCPC.brandName.value = brandName;
+    document.revisePCPC.submit();
+  }
+
+  function showPersistentCart(state) 
+  { 
+    var divEle = document.getElementById("persistentCartItems");
+    if(divEle != null && !isEmptyString(divEle.innerHTML)) {
+      divEle.style.display = (state) ? "" : "none";
+    }
+  } 
+
+  function showPersistentCartRecentItem()
+  { 
+    var recentAddedHtml = document.getElementById("recentlyAddedItems").innerHTML;
+    recentAddedHtml = strtrim(recentAddedHtml);
+    if(isEmptyString(recentAddedHtml)) {
+      return;
+    }
+    
+    var recentCartHeight = (recentAddedHtml.indexOf("View all items") > -1) ? 30 : 0; 
+
+    if(recentAddedHtml.indexOf("Instant savings") > -1) {
+      recentCartHeight += 16;
+    }
+
+    if(recentAddedHtml.indexOf("After mail-in rebates") > -1) {
+      recentCartHeight += 16;
+    }
+
+    var recentCartDiv = document.getElementById("recentCart");
+    recentCartDiv.innerHTML = recentAddedHtml;
+    recentCartDiv.style.height = recentCartHeight + "px";
+    document.MM_Time = null;
+    MM_timelinePlay('Timeline1');
+  }
+
+  var flashlinks = null;
+  var flashObj = null;
+  var i = 0;
+  var which = 0;
+  var type;
+  var color;
+  function flashSelected()
+  {
+    flashlinks = null;
+    i = 0;
+    if (document.all && document.all.flashlink) {
+      flashlinks = document.all.flashlink;
+      if (flashlinks.length == null) {
+        flashlinks[0] = document.all.flashlink;
+      }
+      which = 0;
+      type = flashlinks[0].flashtype;
+      color = flashlinks[0].flashcolor;
+
+      flashObj = self.setInterval("changeColor()", 200);
+    }
+  }
+
+  function changeColor()
+  {
+    if (flashlinks == null) {
+      window.clearInterval(flashObj);
+      return;
+    }
+
+    i++;
+    if (type == 1 && i < 11) {
+      if (flashlinks[which].style.backgroundColor == color) {
+        flashlinks[which].style.backgroundColor = '';
+      } else {
+        flashlinks[which].style.backgroundColor = color;
+      }
+    } else {
+      window.clearInterval(flashObj);
+    }
+  }
+
+</script>
+
+
+
+
+<script language="JavaScript">
+  <!--
+  function Rcertify()
+  {
+    popupWin = window.open('http://www.bbbonline.org/cks.asp?id=1216000050', 'Participant', 'location=yes,scrollbars=yes,width=450,height=300');
+    window.name = 'opener';
+  }
+  // -->
+</script>
+
+
+<script language="JavaScript">
+  function submitLowestConfigForm()
+  {
+    document.lowestConfig.submit();
+  }
+  function submitDefaultConfigForm()
+  {
+    document.defaultConfig.submit();
+  }
+</script>
+
+
+  <script language="javascript">
+  function qs_valSearch(thisform)
+  {
+    var qryStr = document.forms[thisform].qry2.value;
+    if ( qryStr.length != 0)
+    {
+      document.forms[thisform].submit();
+    }
+    return false;
+  }
+
+ function checkQSString(thisform)
+    {
+        if (thisform.qry2.value == "")
+         alert("Please enter a quick shop code") ;
+    }
+
+</script>
+
+
+
+
+<!--startindex-->
+<meta http-equiv="description" name="description" content="HP Home & Home Office Store - We're sorry, the page requested was not found. Enjoy the convenience of shopping for new and refurbished HP and Compaq laptops, desktops, monitors, handhelds, calculators, printers, all-in-ones, digital cameras, televisions, service plans, accessories, and printing supplies. Order online with the confidence of buying directly from Hewlett-Packard.">
+<meta name="allow-search" content="Yes">
+
+<meta http-equiv="keywords" name="keywords" content="HP Home & Home Office Store - We're sorry, the page requested was not found">
+
+<!--stopindex-->
+<script language="JavaScript" src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/jsi/newsletter_catalog_utils.js"></script>
+<script type="text/javascript" language="JavaScript" src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/jsi/search_utils.js"></script>
+<script type="text/javascript" language="JavaScript">
+function HP_Date()
+{
+  var arrDays = new Array("Sun","Mon","Tue","Wed","Thu","Fri","Sat");
+  var arrMonths = new Array("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");
+  var theDate = new Date();
+  var strDate = arrDays[theDate.getDay()] + ", " + arrMonths[theDate.getMonth()] + " " + theDate.getDate() + ", " + theDate.getFullYear();
+  document.write(strDate);
+}
+</script>
+<script type="text/javascript" language="JavaScript">
+function HP_Bottom_Date()
+{
+  var bottom_date = new Date();
+  document.write(bottom_date.getFullYear());
+}
+</script>
+<script language="JavaScript">
+function strtrim(pageTitle)
+{
+  if (pageTitle !=  null)
+   return pageTitle.replace(/^\s+/,'').replace(/\s+$/,'');
+}
+</script>
+<script language="javascript">
+function qs_valSearch(thisform)
+{
+  var qryStr = document.forms[thisform].qry2.value;
+  if ( qryStr.length != 0)
+  {
+    document.forms[thisform].submit();
+  }
+  return false;
+}
+// copyright 1999 Idocs, Inc. http://www.idocs.com
+// Distribute this script freely but keep this notice in place
+function letternumber(e)
+{
+  var key;
+  var keychar;
+
+  if (window.event)
+     key = window.event.keyCode;
+  else if (e)
+     key = e.which;
+  else
+     return true;
+  keychar = String.fromCharCode(key);
+  keychar = keychar.toLowerCase();
+
+  if ((key==null) || (key==0) || (key==8) || (key==9) || (key==13) || (key==27))
+     return true;
+  else if ((("abcdefghijklmnopqrstuvwxyz0123456789").indexOf(keychar) > -1))
+     return true;
+  else
+     return false;
+}
+</script>
+<script language="javascript">
+  var s_eVar15 = '';
+  var s_eVar20 = '';
+  var s_eVar16 = '';
+  var s_eVar17 = '';
+  var s_eVar18 = '';
+  var s_eVar19 = '';
+  var s_eVar3 = '';
+  
+</script>
+<script language="javascript">   
+function openSurvey(affloid)
+{
+  if (affloid == "0")
+  {
+    affloid = "";
+  }
+
+  var expDays = 180;
+ if ((document.cookie.indexOf("HP_EBUS=true")==-1))
+ {
+    var expires = new Date();
+    expires.setTime(expires.getTime()+(expDays*24*60*60*1000));
+    var ref = self.location.href;
+    var pg_title = document.title;
+    var url = " ";
+    var randomNumber = Math.random(); 
+	var landing = '';
+	var contentPage = '/shopping/common/web_error.jsp';
+	var categoryAttr = '';
+
+
+    //generate global unique identifier
+    TempDate = new Date();
+
+    var guid = (TempDate.getMonth()+1) + "-" + TempDate.getDate() + "-" + TempDate.getYear() + "_" + TempDate.getHours() + "-" + TempDate.getMinutes() + "-" + TempDate.getSeconds() + "-" + TempDate.getMilliseconds() + "_" + TempDate.getTimezoneOffset() + "_";
+    for (var i = 1; i <= 32; i++)
+    {
+      var n = Math.floor(Math.random() *16.0).toString(16);
+      guid += n;
+      if ((i == 8) || (i == 12) || (i == 16) || (i == 20)) guid += "-";
+    }
+
+	if (contentPage != null && (contentPage.indexOf("computer_series_detail.jsp") > -1 || contentPage.indexOf("cs_can_landing.jsp") > -1 || contentPage.indexOf("series_can.jsp") > -1) && (landing == "notebooks" || categoryAttr == "notebooks"))
+	  {
+		
+			if (randomNumber < .200000)
+		  {
+			 url="http://g1w2399g.austin.hp.com/Community/se.ashx?s=3BC1E4C13F753B9A&prop9=hho&reference="+escape(ref)+"&pg_title="+escape(pg_title)+"&aoid="+affloid+"&guid=" + escape(guid);
+		  }
+
+			else if(randomNumber > .200000 && randomNumber < .900000)
+		  {
+           url="http://g1w2399g.austin.hp.com/Community/se.ashx?s=3BC1E4C177E4634B&prop9=hho&reference="+escape(ref)+"&pg_title="+escape(pg_title)+"&aoid="+affloid+"&guid=" + escape(guid);
+		  }
+
+			else if(randomNumber > .900000 )
+		  {
+           url="http://g1w2399g.austin.hp.com/Community/se.ashx?s=3BC1E4C139B9E2B2&prop9=hho&reference="+escape(ref)+"&pg_title="+escape(pg_title)+"&aoid="+affloid+"&guid=" + escape(guid);
+          }
+			 
+	  }
+	 
+  else{
+   if (randomNumber < .333333){
+	   
+           url="http://g1w2399g.austin.hp.com/Community/se.ashx?s=3BC1E4C13F753B9A&prop9=hho&reference="+escape(ref)+"&pg_title="+escape(pg_title)+"&aoid="+affloid+"&guid=" + escape(guid);
+        }
+   else{
+	   
+           url="http://g1w2399g.austin.hp.com/Community/se.ashx?s=3BC1E4C177E4634B&prop9=hho&reference="+escape(ref)+"&pg_title="+escape(pg_title)+"&aoid="+affloid+"&guid=" + escape(guid);
+        }
+  } 
+
+    if (navigator.appName == "Microsoft Internet Explorer")
+	{if (event.clientX < 0 && event.clientY < 0)
+      {
+        document.cookie = "HP_EBUS=true;path=/;Expires="+expires.toGMTString();
+        window.open(url, "","height=550,width=750,scrollbars=yes,resizable=yes");
+      }
+    }
+    if (navigator.appName == "Netscape")
+    {
+      document.cookie = "HP_EBUS=true;path=/;Expires="+expires.toGMTString();
+      window.open(url, "","height=550,width=750,scrollbars=yes,resizable=yes");
+    }
+  }
+}
+
+
+function MM_preloadImages() { //v3.0
+  var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();
+    var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i<a.length; i++)
+    if (a[i].indexOf("#")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}
+}
+
+function MM_swapImgRestore() { //v3.0
+  var i,x,a=document.MM_sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;
+}
+
+function MM_findObj(n, d) { //v4.01
+  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
+    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
+  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
+  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document);
+  if(!x && d.getElementById) x=d.getElementById(n); return x;
+}
+
+function MM_swapImage() { //v3.0
+  var i,j=0,x,a=MM_swapImage.arguments; document.MM_sr=new Array; for(i=0;i<(a.length-2);i+=3)
+   if ((x=MM_findObj(a[i]))!=null){document.MM_sr[j++]=x; if(!x.oSrc) x.oSrc=x.src; x.src=a[i+2];}
+}
+</script>
+<!-- hps_head.jsp: END -->
+<LINK REL="SHORTCUT ICON" HREF="http://www.hp.com/favicon.ico">
+
+  </head>
+  <body bgcolor="#FFFFFF" text="#000000" link="#003366" alink="#003366" vlink="#660066" marginheight="0" marginwidth="0" leftmargin="0" topmargin="0" >
+    <noscript><a href="http://welcome.hp.com/country/us/en/noscript.html">summary of site-wide JavaScript functionality</a></noscript>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+  // This function check for the blank string
+  function checkQSString(thisform)
+  {
+    if (thisform.qry2.value == "") alert("Please enter a quick shop code") ;
+  }
+</script>
+
+
+  <!--Begin Top Bar Area -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Begin Top Navigation Area -->
+
+<!-- Begin Page Title and Profile link Area -->
+
+  <div class="logoTitleArea" valign="middle">
+  <p id="logo"><a href="http://www.hp.com/?mtxs=logo&mtxb=store&jumpid=in_R329_prodexp%2Fhhoslp%2Fsplit%2Fhome"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" alt="HP.com home" width="49" height="50" border="0" longdesc=""></a></p>
+
+<h1 id="homeLink" class="themebody " style="padding-top:10px;"><a href="http://www.shopping.hp.com/webapp/shopping/home.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733" class="themelink">Home &amp; Home Office</a></h1>
+
+  
+
+   <div class="w275" style="margin-left:335px">
+   <div class="titleArea1">
+     <p class="themebody mb0">&raquo;&nbsp;<a href="https://www.shopping.hp.com/webapp/shopping/order_status_sign_in.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp%2Fhhoslp%2Fsplit%2Forderstatus" class="themelink">My orders</a></p>
+     <p class="themebody mb0">&raquo;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/help.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733" class="themelink">Customer service</a></p>
+  </div>
+        <div class="titleArea2">
+   <p class="themebody  mb0">&raquo;&nbsp;<a href="https://www.shopping.hp.com/webapp/shopping/sign_in.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?destinationURL=edit_profile.do&amp;jumpid=re_R329_prodexp%2Fhhoslp%2Fsplit%2Fregister" class="themelink">My account</a></p>
+   <p class="themebody mb0" id="signInLink">&raquo;&nbsp;<a href="https://www.shopping.hp.com/webapp/shopping/sign_in.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=re_R329_prodexp%2Fhhoslp%2Fsplit%2Fsignin" class="themelink">Sign in</a></p></div>
+
+
+    <div class="titleArea3">&nbsp;</div>
+
+
+
+ </div>
+</div>
+<!-- End Page Title and Profile links Area -->
+
+<div class="topNavbar">
+<!--BEGIN SEARCH HPL TAG -->
+  <!-- hps_top_search.jsp: BEGIN -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="cb"></div>
+<script language="JavaScript">
+  function checkSearchString(thisForm)
+  {
+    var searchForm = document.forms[thisForm];
+    var searchText = searchForm.searchQuery.value;
+    var selectedIndex = 0;
+    if (isEmptyString(searchText)) {
+      alert("Please type a Search term in the entry box");
+      return false;
+    } else if (searchText == "keyword or QS code (QS-XXXX)") {
+      alert("Please type a Search term in the entry box");
+      return false;
+    } else if (selectedIndex == 0) {
+      searchForm.action = 'http://www.shopping.hp.com/webapp/shopping/search_request.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733';
+    } else if (selectedIndex == 1) {
+      searchForm.method = 'post';
+      searchForm.action = 'http://www.hp.com/search/?cc=us&lang=en&hps=Home+%26+Home+Office&hpr=http%3A%2F%2Fwww.shopping.hp.com%2Fwebapp%2Fshopping%2Fhome.do%3BHHOJSID%3DyLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW%21-66024733&h_audience=hho&hpvc=HHOsupt&hpo=hphqhhomktg&hpn=Return+to+Home+%26+Home+Office&hpa=http%3A%2F%2Fwww.homeandoffice.hp.com%2Fhho%2Fus%2Fen%2Fcontact_hp.html&qt=' + searchText;
+    } else if (selectedIndex == 2) {
+      searchForm.method = 'post';
+      searchForm.action = 'http://www.hp.com/search/?cc=us&lang=en&hps=Home+%26+Home+Office&hpr=http%3A%2F%2Fwww.shopping.hp.com%2Fwebapp%2Fshopping%2Fhome.do%3BHHOJSID%3DyLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW%21-66024733&h_audience=hho&hpvc=HHOall&hpo=hphqhhomktg&hpn=Return+to+Home+%26+Home+Office&hpa=http%3A%2F%2Fwww.homeandoffice.hp.com%2Fhho%2Fus%2Fen%2Fcontact_hp.html&qt=' + searchText;
+    }
+    return true;
+  }
+
+  function searchbox(boxId)
+  {
+    var searchBox = document.getElementById(boxId);
+    if (searchBox != null) {
+      searchBox.style.color = '#000000'
+      if (searchBox.defaultValue == searchBox.value) { 
+        searchBox.value = '';
+      }
+    }
+    return true;
+  }
+</script>
+<script src="http://cts.channelintelligence.com/9919466_landing.js"></script>
+<form name="searchTop" id="searchForm" action="" method="get" onSubmit="return checkSearchString('searchTop');">
+  
+  <input type="hidden" name="searchType" value="keyword">
+  <input type="hidden" name="inkTonerSearchQuery" value="">
+  <input type="hidden" name="pageName" value="We%27re+sorry%2C+the+page+requested+was+not+found_weberror">
+  <input type="hidden" name="Printer_Search_Query" value="">
+  <input type="hidden" name="Cartridge_Search_Query" value="">
+  <input type="hidden" name="printerOrCartridgeSearch" value="">
+  <p class="fl bold pt5 m0505 small">United States&mdash;English</p>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          <p class="fl bold pt5 m0505 small">Shop by phone:&nbsp;1 (888) 999-4747</p>
+ 
+
+  <!-- Begin Holiday Policy Link -->
+  <!-- p class="fl bold pt5 m0505 small"><a href="javascript:openWin('/webapp/shopping/holiday_policies.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733',480,480);" title="Holiday policies"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/holiday/holiday_policies_icon_2003.gif" border="0" alt="Holiday policies" class="in"></a><a href="javascript:openWin('/webapp/shopping/holiday_policies.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733',480,480);" title="Holiday policies" class="udrline">Holiday policies</a></p -->
+  <!-- End Holiday Policy Link -->
+  <p class="fr bold pr5 m0 small">
+    <label for="searchQSbox">Search for:</label>
+    <input type="text" name="searchQuery" size="32" maxlength="100" id="searchQSbox" value="keyword or QS code (QS-XXXX)" onfocus="javascript:searchbox('searchQSbox');" style="color:#999999;font-size:10px;">&nbsp;<a id="country" onmouseover="status='search using the specified criteria';return true;" onmouseout="status='';return true;" onfocus="status='search using the specified criteria';return true;" onBlur="status='';return true;"></a>
+    <input type="submit" name="submitSearchTop" value="&raquo;" align="center" class="themeButton_15" border="0" title="Begin your search" style="width:15px;">
+  </p>
+</form>
+<!-- hps_top_search.jsp: END -->
+
+<!-- END SEARCH HPL TAG -->
+  <div class="cb"></div>
+</div>
+
+<!-- Begin Presistent Cart Area -->
+
+<!-- Included Persistent Cart taglib -->
+
+
+     <div id="persistentcartDiv"> <form name="revisePCPC" method="post" action="http://www.shopping.hp.com/webapp/shopping/cto.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733">
+  <input type="hidden" name="conversationId" value="">
+  <input type="hidden" name="configurationId" value="">
+  <input type="hidden" name="destination" value="review">
+  <input type="hidden" name="brandName" value="">
+  <input type="hidden" name="productId" value="">
+  <input type="hidden" name="eppPrefix" value="">
+  <input type="hidden" name="pageVisited" value="village_home">
+  <input type="hidden" name="catLevel" value="1">
+  <input type="hidden" name="doBvPageData" value="true">
+</form>
+<div class="topWhite" style="width:196px;z-index:550;"></div>
+<div id="persistentCartTopRight" class="topRight" style="width:197px;z-index:550;">
+<span style="margin-right:10px;width:180px;">
+  <table border="0" cellspacing="0" cellpadding="0" style="margin-left:10px">
+<tr>
+  <td align="left" class="shopCart"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="14" height="13" border="0" alt="No items added to the cart"></td>
+  <td nowrap class="themebody" title="No items added to the cart">&nbsp;<b>My cart</b>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td rowspan="2">&nbsp;</td>
+</tr>
+<tr>
+  <td colspan="3" align="left" nowrap class="themebody" title="No items added to the cart">0 items in My cart</td>
+</tr>
+  </table>
+</span>
+</div>
+<div id="persistentCartItems" class="shoppingCart" style="position:absolute;margin-left:15px;padding:0;height:0;left:542px;top:40px;display:none;z-index:600"onblur="javascript:showPersistentCart(false)" onmouseover="javascript:showPersistentCart(true)"onfocus="javascript:showPersistentCart(true)" onmouseout="javascript:showPersistentCart(false)">
+</div>
+<div id="recentCart" style="position:absolute;margin-left:15px;height:185px;left:542px;top:-223px;z-index:500;"></div>
+<div id="recentlyAddedItems" style="display:none">
+</div>
+</div>
+
+
+
+<!-- End Presistent Cart Area -->
+
+
+
+
+
+ 
+
+  <!--End Top Bar Area -->
+
+
+
+  <!--startindex-->
+  <!-- anchor for skip link -->
+  <a name="jumptocats"></a>
+  
+    
+
+
+
+
+
+
+
+
+
+  
+
+
+<style type="text/css">
+<--
+#topnav { background-color: #fff }
+#menuLearnNew{left:172px;position:absolute;top:114px;}
+#menuSupportNew{left:344px;position:absolute;top:114px;}
+
+-->
+</style>
+
+<script language="JavaScript" type="text/JavaScript">
+function MM_findObj(n, d) { //v4.01
+  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
+    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
+  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
+  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document);
+  if(!x && d.getElementById) x=d.getElementById(n); return x;
+}
+function MM_showHideLayers() { //v6.0
+  var i,p,v,obj,args=MM_showHideLayers.arguments;
+  for (i=0; i<(args.length-2); i+=3) if ((obj=MM_findObj(args[i]))!=null) { v=args[i+2];
+    if (obj.style) { obj=obj.style; v=(v=='show')?'visible':(v=='hide')?'hidden':v; }
+    obj.visibility=v; }
+}
+var DHTML = (document.getElementById || document.all || document.layers);
+function getObj(name) {
+  if (document.getElementById)
+  {
+	this.obj = document.getElementById(name);
+        if ( this.obj != null )
+        {
+	  this.style = document.getElementById(name).style;
+        }
+  }
+  else if (document.all)
+  {
+	this.obj = document.all[name];
+	this.style = document.all[name].style;
+  }
+  else if (document.layers)
+  {
+	this.obj = document.layers[name];
+	this.style = document.layers[name];
+  }
+}
+function changeCol(colora,x) {
+	if (!DHTML) return;
+	var x = new getObj(x);
+        if ( x != null ) 
+        {
+          if ( x.style != null )
+          {
+	    x.style.color = colora;
+          }
+        }
+}
+function changeTD(colorb,colorc,y) {
+	if (!DHTML) return;
+	var y = new getObj(y);
+        if ( y != null )
+        {
+          if ( y.style != null )
+          {
+	    y.style.className = 'tdMouseOn';
+	    y.style.backgroundColor = colorb;
+	    y.style.color = colorc;
+          }
+        }
+}
+
+// begin positioning code
+
+var ns4=document.layers?1:0
+var ie4=document.all?1:0
+var ns6=document.getElementById&&!document.all?1:0
+
+function xDef() {
+  for(var i=0; i<arguments.length; ++i){if(typeof(arguments[i])=='undefined') return false;}
+  return true;
+}
+
+function xParent(e,bNode){
+  var p=null;
+  if (!bNode && xDef(e.offsetParent)) p=e.offsetParent;
+  else if (xDef(e.parentNode)) p=e.parentNode;
+  else if (xDef(e.parentElement)) p=e.parentElement;
+  else if (xDef(e.parentLayer)){if (e.parentLayer!=window) p=e.parentLayer;}
+  return p;
+}
+  
+function xPageY(e) {
+  if (xDef(e.pageY)) return e.pageY;
+  var y = 0;
+  while (e) {
+    if (xDef(e.offsetTop)) y += e.offsetTop;
+    e = xParent(e);
+  }
+  return y;
+}
+function xPageX(e) {
+  if (xDef(e.pageX)) return e.pageX;
+  var x = 0;
+  while (e) {
+    if (xDef(e.offsetLeft)) x += e.offsetLeft;
+    e = xDef(e.offsetParent) ? e.offsetParent : null;
+  }
+  return x;
+}
+
+function alignMenuTop(markerID) {
+  var topmenuid = markerID;
+  var mm = HM_DOM ? document.getElementById(topmenuid) : HM_IE4 ? document.all(topmenuid) : eval("window." + topmenuid);
+
+  var my = xPageY(mm);
+
+  return my;
+}
+
+function alignMenuLeft(markerID) {
+  var topmenuid = markerID;
+
+  var mm1 = HM_DOM ? document.getElementById(topmenuid) : HM_IE4 ? document.all(topmenuid) : eval("window." + topmenuid);
+  var mx = xPageX(mm1);
+
+  return mx;
+}
+
+function alignMenu() {
+  HM_UserAgent = navigator.userAgent;
+  HM_DOM = (document.getElementById) ? true : false;
+  HM_NS4 = (document.layers) ? true : false;
+  HM_IE = (document.all) ? true : false;
+  HM_IE4 = HM_IE && !HM_DOM;
+  HM_Mac = (navigator.appVersion.indexOf("Mac") != -1);
+  HM_IE4M = HM_IE4 && HM_Mac;
+
+   if (ie4) {
+     menu2.style.pixelTop = alignMenuTop('menu2Marker'); menu2.style.pixelLeft = alignMenuLeft('menu2Marker');
+     menu3.style.pixelTop = alignMenuTop('menu3Marker'); menu3.style.pixelLeft = alignMenuLeft('menu3Marker');
+     menu4.style.pixelTop = alignMenuTop('menu4Marker'); menu4.style.pixelLeft = alignMenuLeft('menu4Marker');
+     menu5.style.pixelTop = alignMenuTop('menu5Marker'); menu5.style.pixelLeft = alignMenuLeft('menu5Marker');
+     menu6.style.pixelTop = alignMenuTop('menu6Marker'); menu6.style.pixelLeft = alignMenuLeft('menu6Marker');
+     menu7.style.pixelTop = alignMenuTop('menu7Marker'); menu7.style.pixelLeft = alignMenuLeft('menu7Marker');
+     menu8.style.pixelTop = alignMenuTop('menu8Marker'); menu8.style.pixelLeft = alignMenuLeft('menu8Marker');
+     menu9.style.pixelTop = alignMenuTop('menu9Marker'); menu9.style.pixelLeft = alignMenuLeft('menu9Marker');
+   }
+   else if (ns6) {
+     document.getElementById("menu2").style.top = alignMenuTop('menu2Marker');; document.getElementById("menu2").style.left = alignMenuLeft('menu2Marker');
+     document.getElementById("menu3").style.top = alignMenuTop('menu3Marker'); document.getElementById("menu3").style.left = alignMenuLeft('menu3Marker');
+     document.getElementById("menu4").style.top = alignMenuTop('menu4Marker'); document.getElementById("menu4").style.left = alignMenuLeft('menu4Marker');
+     document.getElementById("menu5").style.top = alignMenuTop('menu5Marker'); document.getElementById("menu5").style.left = alignMenuLeft('menu5Marker');
+     document.getElementById("menu7").style.top = alignMenuTop('menu7Marker'); document.getElementById("menu7").style.left = alignMenuLeft('menu7Marker');
+     document.getElementById("menu8").style.top = alignMenuTop('menu8Marker'); document.getElementById("menu8").style.left = alignMenuLeft('menu8Marker');
+     document.getElementById("menu9").style.top = alignMenuTop('menu9Marker'); document.getElementById("menu9").style.left = alignMenuLeft('menu9Marker');
+   }
+}
+
+// end positioning code
+
+function DivSetMenu2Visible(state) 
+{ 
+  if (!self.innerHeight) {
+    var DivRef = document.getElementById("menu2");  
+    var IfrRef = document.getElementById("DivShimMenu2");
+    if (IfrRef != null)
+    {	 
+      if(state) {  
+        DivRef.style.visibility = "visible"; 
+        IfrRef.style.width = DivRef.offsetWidth - 10; 
+        IfrRef.style.height = '145px'; //DivRef.offsetHeight;  
+        IfrRef.style.top = DivRef.style.top;  
+        IfrRef.style.left = DivRef.style.left;  
+        IfrRef.style.zIndex = DivRef.style.zIndex - 1;  
+        IfrRef.style.display = "block"; 
+      }  
+      else {  
+        DivRef.style.visibility = "hidden";  
+        IfrRef.style.display = "none";  
+      }
+    }
+  }
+} 
+//-->
+</script>
+
+
+
+
+<table cellpadding="0" cellspacing="0" border="0" width="98%"><tr><td><div class="tabsHHO">
+  <p class="fl w350" style="margin:0;padding:0px 0 0 0;"><a href="http://www.shopping.hp.com/webapp/shopping/home.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?displayTab=shop" id="tabMenuShop" onblur="MM_showHideLayers('menuShop','','hide'); return false;" onmouseover="alignMenu(false); MM_showHideLayers('menuShop','','show'); return false;" onfocus="alignMenu(false); MM_showHideLayers('menuShopn','','show'); return false;" onmouseout="MM_showHideLayers('menuShop','','hide'); return false;"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/home/tab_shop_off.gif" alt="Shop" name="Image1" id="Image1" onMouseOver="MM_swapImage('Image1','','http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/home/tab_shop_over.gif',1);" onMouseOut="MM_swapImgRestore()" style="vertical-align:bottom;"></a><a href="http://www.shopping.hp.com/webapp/shopping/home.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?displayTab=learnAbout" id="tabMenuLearn" onblur="MM_showHideLayers('menuLearnNew','','hide'); return false;" onmouseover="alignMenu(false); MM_showHideLayers('menuLearnNew','','show'); return false;" onfocus="alignMenu(false); MM_showHideLayers('menuLearnNew','','show'); return false;" onmouseout="MM_showHideLayers('menuLearnNew','','hide'); return false;"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/home/tab_learn_use_create_off.gif" name="Image2" id="Image2" onMouseOver="MM_swapImage('Image2','','http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/home/tab_learn_use_create_over.gif',2)" onMouseOut="MM_swapImgRestore()" alt="Learn, use and create" style="vertical-align:bottom;"></a><a href="http://welcome.hp.com/country/us/en/support.html?pageDisplay=support&jumpid=in_R329_prodexp%2Fhhoslp%2Fsplit%2Fsupport" id="tabMenuSupport" onblur="MM_showHideLayers('menuSupportNew','','hide'); return false;" onmouseover="alignMenu(false); MM_showHideLayers('menuSupportNew','','show'); return false;" onfocus="alignMenu(false); MM_showHideLayers('menuSupportNew','','show'); return false;" onmouseout="MM_showHideLayers('menuSupportNew','','hide'); return false;"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/home/tab_support_drivers_off.gif" name="Image3" id="Image3" onMouseOver="MM_swapImage('Image3','','http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/home/tab_support_drivers_over.gif',3)" onMouseOut="MM_swapImgRestore()" alt="Support and drivers" style="vertical-align:bottom;"></a></p>
+
+
+
+
+  <div class="cb"></div>
+</div></td></tr></table>
+
+<div class="mainContentNew theme_border_top"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td>
+<!-- begin desktops -->
+
+
+<div id="menu2" style="visibility:hidden;z-index:3;" onMouseOver="MM_showHideLayers('menu2','','show'); DivSetMenu2Visible(true); changeCol('#003366','navbarlink2'); changeTD('#FFFFFF','#003366','navbartd2'); return false;" onfocus="MM_showHideLayers('menu2','','show'); DivSetMenu2Visible(true); changeCol('#003366','navbarlink2'); changeTD('#FFFFFF','#003366','navbartd2'); return false;" onMouseOut="MM_showHideLayers('menu2','','hide'); DivSetMenu2Visible(false); changeCol('#FFFFFF','navbarlink2'); changeTD('#333333','#FFFFFF','navbartd2'); return false;" onblur="MM_showHideLayers('menu2','','hide'); DivSetMenu2Visible(false); changeCol('#FFFFFF','navbarlink2'); changeTD('#333333','#FFFFFF','navbartd2'); return false;"> 
+
+
+
+<table class="ddmenu" border="0" cellpadding="6" cellspacing="0" width="180">
+  <tr>
+    <td>
+      <table class="ddmenusub" border="0" cellpadding="0" cellspacing="0">
+	      <tr>
+          <td valign="top" width="180" style="font-size: 11px;">
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/series_can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=computer_store&landing=desktops&a1=Category&v1=Everyday%20computing&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_everyday_computing_desktops">Everyday computing</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/series_can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=computer_store&landing=desktops&a1=Category&v1=Slim%20and%20sleek&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_slim_sleek_desktops">Slim and sleek</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/series_can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=computer_store&landing=desktops&a1=Category&v1=Performance%20and%20entertainment&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_performance_entertainment_desktops">Performance and entertainment</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/series_can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=computer_store&landing=desktops&a1=Category&v1=All-in-One%20PCs&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_all_in_one_desktops">All-in-One PCs</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=storefronts&catLevel=1&landing=rts_desktop&category=rts_desktop&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_quick_ship_desktops">Quick-ship models</a></p>
+            
+	      <p class="pad10"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/stdnav/ddmenu_div.gif" height="1" width="160" alt=""></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/can/esp/Desktop/1/storefronts;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_extended_service_plan_desktops">Extended service plans</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/accessories-store/computer;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_accessories_desktops">Accessories</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/can/display/display/1/storefronts;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_monitors_desktops">Monitors</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/can/computer/categories/home_servers/1/accessories;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_server_media_desktops">Home servers</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/can/computer/categories/storage_solutions/1/accessories;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_storage_desktops">Storage</a></p>
+            
+            
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=accessories&landing=computer&category=categories&subcat1=cd_dvd_media&orderflow=1&a1=Type+of+products&v1=media_drives&catLevel=2&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_dvd_writer_desktops">DVD writers</a></p>
+          </td>
+	      </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</div>
+<!-- end desktops -->
+<iframe
+  id="DivShimMenu2"
+  src="javascript:false;"
+  scrolling="no"
+  frameborder="0"
+  style="position:absolute; top:0px; left:0px; display:none; ">
+</iframe>
+<!-- begin notebooks -->
+
+
+
+<div id="menu3" style="visibility:hidden;z-index:4;" onMouseOver="MM_showHideLayers('menu3','','show'); changeCol('#003366','navbarlink3'); changeTD('#FFFFFF','#003366','navbartd3'); return false;" onfocus="MM_showHideLayers('menu3','','show'); changeCol('#003366','navbarlink3'); changeTD('#FFFFFF','#003366','navbartd3'); return false;" onMouseOut="MM_showHideLayers('menu3','','hide'); changeCol('#FFFFFF','navbarlink3'); changeTD('#333333','#FFFFFF','navbartd3'); return false;" onblur="MM_showHideLayers('menu3','','hide'); changeCol('#FFFFFF','navbarlink3'); changeTD('#333333','#FFFFFF','navbartd3'); return false;"> 
+<table class="ddmenu" border="0" cellpadding="6" cellspacing="0" width="180">
+  <tr>
+    <td>
+      <table class="ddmenusub" border="0" cellpadding="0" cellspacing="0">
+	      <tr>
+          <td valign="top" width="180" style="font-size: 11px;">
+            <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/series_can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=computer_store&landing=notebooks&a1=Category&v1=Mini&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_mini_notebooks">Mini</a></p>
+            <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/series_can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=computer_store&landing=notebooks&a1=Category&v1=Everyday%20computing&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_versatile_performance_notebooks">Everyday computing</a></p>
+            <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/series_can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=computer_store&landing=notebooks&a1=Category&v1=Ultra-Portable&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_mobility_notebooks">Ultra-Portable</a></p>
+            <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/series_can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=computer_store&landing=notebooks&a1=Category&v1=Performance%20and%20entertainment&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_entertainment_powerhouse_notebooks">Performance and entertainment</a></p>
+            <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=storefronts&catLevel=1&landing=voodoo&category=envy&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_voodoo_notebooks">Voodoo Envy 133</a></p>
+            <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=storefronts&catLevel=1&landing=rts_notebook&category=rts_notebook&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_quick_ship_notebooks">Quick-ship models</a></p>
+            <p class="pad10"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/stdnav/ddmenu_div.gif" height="1" width="160" alt=""></p>
+          
+            <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/can/esp/Notebook/1/storefronts;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_extended_service_plan_notebooks">Extended service plans</a></p>
+            <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/accessories-store/computer;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_accessories_notebooks">Accessories</a></p>
+            <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/can/computer/categories/home_servers/1/accessories;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_server_media_notebooks">Home servers</a></p>
+            <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/can/computer/categories/storage_solutions/1/accessories;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_storage_notebooks">Storage</a></p>
+          
+          
+            <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=accessories&landing=computer&category=categories&subcat1=cd_dvd_media&orderflow=1&a1=Type+of+products&v1=media_drives&catLevel=2&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_dvd_writer_notebooks">DVD writers</a></p>
+          </td>
+	      </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</div>
+<!-- end desktops -->
+
+<!-- begin handheld -->
+
+
+<div id="menu4" style="visibility:hidden;z-index:5;" onMouseOver="MM_showHideLayers('menu4','','show'); changeCol('#003366','navbarlink4'); changeTD('#FFFFFF','#003366','navbartd4'); return false;" onfocus="MM_showHideLayers('menu4','','show'); changeCol('#003366','navbarlink4'); changeTD('#FFFFFF','#003366','navbartd4'); return false;" onMouseOut="MM_showHideLayers('menu4','','hide'); changeCol('#FFFFFF','navbarlink4'); changeTD('#333333','#FFFFFF','navbartd4'); return false;" onblur="MM_showHideLayers('menu4','','hide'); changeCol('#FFFFFF','navbarlink4'); changeTD('#333333','#FFFFFF','navbartd4'); return false;"> 
+<table class="ddmenu" border="0" cellpadding="6" cellspacing="0" width="180">
+  <tr>
+    <td>
+      <table class="ddmenusub" border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td valign="top" width="180" style="font-size: 11px;">
+          		<p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?landing=handheld&category=Travel&catLevel=1&storeName=storefronts&lanAttr=Type&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_ipaq_device_handhelds">iPAQ GPS devices</a></p>
+            	<p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?landing=handheld&category=Messenger&catLevel=1&storeName=storefronts&lanAttr=Type&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_ipaq_smartphone_handhelds">iPAQ Smartphones</a></p>
+            	<p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?landing=handheld&lanAttr=Type&category=HP&catLevel=1&storeName=storefronts&lanAttr=Type&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_ipaq_pda_handhelds">iPAQ PDAs</a></p>
+            
+              <p class="pad10"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/stdnav/ddmenu_div.gif" height="1" width="160" alt=""></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/can/esp/TV_handheld/1/storefronts;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_extended_service_plan_handhelds">Extended service plans</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/accessories-store/handheld;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_accessories_handhelds">Accessories</a></p>
+            
+            
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</div>
+<!-- end handheld -->
+
+<!-- begin printer -->
+
+
+<div id="menu5" style="visibility:hidden;z-index:5;" onMouseOver="MM_showHideLayers('menu5','','show'); changeCol('#003366','navbarlink5'); changeTD('#FFFFFF','#003366','navbartd5'); return false;" onfocus="MM_showHideLayers('menu5','','show'); changeCol('#003366','navbarlink5'); changeTD('#FFFFFF','#003366','navbartd5'); return false;" onMouseOut="MM_showHideLayers('menu5','','hide'); changeCol('#FFFFFF','navbarlink5'); changeTD('#333333','#FFFFFF','navbartd5'); return false;" onblur="MM_showHideLayers('menu5','','hide'); changeCol('#FFFFFF','navbarlink5'); changeTD('#333333','#FFFFFF','navbartd5'); return false;"> 
+<table class="ddmenu" border="0" cellpadding="6" cellspacing="0" width="180">
+  <tr>
+    <td>
+      <table class="ddmenusub" border="0" cellpadding="0" cellspacing="0">
+	<tr>
+	  <td valign="top" width="180" style="font-size: 11px;">
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?landing=printer&category=Officejet&catLevel=1&storeName=storefronts&jumpid=in_R329_prodexp/hhoslp/ipg/lateralnav_officejets">Officejet</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?landing=printer&category=Photosmart&catLevel=1&storeName=storefronts&jumpid=in_R329_prodexp/hhoslp/ipg/lateralnav_photosmarts">Photosmart</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?landing=printer&category=LaserJet&catLevel=1&storeName=storefronts&jumpid=in_R329_prodexp/hhoslp/ipg/lateralnav_laserjets">LaserJet</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?landing=printer&category=Deskjet&catLevel=1&storeName=storefronts&jumpid=in_R329_prodexp/hhoslp/ipg/lateralnav_deskjets">Deskjet</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?landing=printer&category=Designjet&catLevel=1&storeName=storefronts&jumpid=in_R329_prodexp/hhoslp/ipg/lateralnav_designjets">Designjet</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?landing=printer&lanAttr=Brand&category=Inkjet&catLevel=1&storeName=storefronts&jumpid=in_R329_prodexp/hhoslp/ipg/lateralnav_business_Inkjets">Business Inkjet</a></p>              
+              <p class="pad10"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/stdnav/ddmenu_div.gif" height="1" width="160" alt=""></p>
+            
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/fax;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/ipg/lateralnav_faxes">Fax machines</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/can/esp/Printer/1/storefronts;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/ipg/lateralnav_extended_service_plan_printers">Extended service plans</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/accessories-store/printer;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/ipg/lateralnav_accessories_printers">Accessories</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/scat/landcat/printer_networking/printer_networking/2/storefronts;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/ipg/lateralnav_networking_printers">Networking</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/supplies/ink;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/ipg/lateralnav_ink_toner_printers">Ink &amp; Toner</a></p>
+            
+            
+          </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</div>
+<!-- end printer -->
+
+<!-- begin ink -->
+
+
+<div id="menu6" style="visibility:hidden;z-index:6;" onMouseOver="MM_showHideLayers('menu6','','show'); changeCol('#003366','navbarlink6'); changeTD('#FFFFFF','#003366','navbartd6'); return false;" onfocus="MM_showHideLayers('menu6','','show'); changeCol('#003366','navbarlink6'); changeTD('#FFFFFF','#003366','navbartd6'); return false; " onMouseOut="MM_showHideLayers('menu6','','hide'); changeCol('#FFFFFF','navbarlink6'); changeTD('#333333','#FFFFFF','navbartd6'); return false;" onblur="MM_showHideLayers('menu6','','hide'); changeCol('#FFFFFF','navbarlink6'); changeTD('#333333','#FFFFFF','navbartd6'); return false;"> 
+<table class="ddmenu" border="0" cellpadding="6" cellspacing="0" width="180">
+  <tr>
+     <td>
+       <table class="ddmenusub" border="0" cellpadding="0" cellspacing="0">
+         <tr>
+           <td valign="top" width="180" style="font-size: 11px;">
+             
+               <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/supplies/printing_supplies/paper;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/ipg/lateralnav_paper">Paper</a></p>
+               <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/accessories-store/printer;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/ipg/lateralnav_accessories_printers">Printer accessories</a></p>
+             
+             
+           </td>
+         </tr>
+       </table>
+    </td>
+  </tr>
+</table>
+
+</div>
+<!-- end ink -->
+
+<!-- begin calculators -->
+
+
+<div id="menu7" style="visibility:hidden;z-index:7;" onMouseOver="MM_showHideLayers('menu7','','show'); changeCol('#003366','navbarlink7'); changeTD('#FFFFFF','#003366','navbartd7'); return false;" onfocus="MM_showHideLayers('menu7','','show'); changeCol('#003366','navbarlink7'); changeTD('#FFFFFF','#003366','navbartd7'); return false;" onMouseOut="MM_showHideLayers('menu7','','hide'); changeCol('#FFFFFF','navbarlink7'); changeTD('#333333','#FFFFFF','navbartd7'); return false;" onblur="MM_showHideLayers('menu7','','hide'); changeCol('#FFFFFF','navbarlink7'); changeTD('#333333','#FFFFFF','navbartd7'); return false;"> 
+<table class="ddmenu" border="0" cellpadding="6" cellspacing="0" width="180">
+  <tr>
+    <td>
+      <table class="ddmenusub" border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td valign="top" width="180" style="font-size: 11px;">
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/store_access.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?template_type=storefronts&landing=calculator&category=Financial&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_financial_calculators">Financial</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/store_access.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?template_type=storefronts&landing=calculator&category=Scientific&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_scientific_calculators">Graphing and scientific</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/store_access.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?template_type=storefronts&landing=calculator&category=Office&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_home_office_calculators">Home and office</a></p>              
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</div>
+<!-- end calculators -->
+
+<!-- begin scanner -->
+
+
+<div id="menu8" style="visibility:hidden;z-index:8;" onMouseOver="MM_showHideLayers('menu8','','show'); changeCol('#003366','navbarlink8'); changeTD('#FFFFFF','#003366','navbartd8'); return false;" onfocus="MM_showHideLayers('menu8','','show'); changeCol('#003366','navbarlink8'); changeTD('#FFFFFF','#003366','navbartd8'); return false;" onMouseOut="MM_showHideLayers('menu8','','hide'); changeCol('#FFFFFF','navbarlink8'); changeTD('#333333','#FFFFFF','navbartd8'); return false;" onblur="MM_showHideLayers('menu8','','hide'); changeCol('#FFFFFF','navbarlink8'); changeTD('#333333','#FFFFFF','navbartd8'); return false;"> 
+<table class="ddmenu" border="0" cellpadding="6" cellspacing="0" width="180">
+  <tr>
+    <td>
+      <table class="ddmenusub" border="0" cellpadding="0" cellspacing="0">
+	      <tr>
+          <td valign="top" width="180" style="font-size: 11px;">
+            
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/can/esp/Printer/1/storefronts;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/ipg/lateralnav_extended_service_plan_scanners">Extended service plans</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/accessories-store/scanner;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/ipg/lateralnav_accessories_scanners">Accessories</a></p>
+            
+            
+          </td>
+	      </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</div>
+<!-- end scanner -->
+
+<!-- begin gift_cards -->
+
+
+<div id="menu9" style="visibility:hidden;z-index:9;" onMouseOver="MM_showHideLayers('menu9','','show'); changeCol('#003366','navbarlink9'); changeTD('#FFFFFF','#003366','navbartd9'); return false;" onfocus="MM_showHideLayers('menu9','','show'); changeCol('#003366','navbarlink9'); changeTD('#FFFFFF','#003366','navbartd9'); return false;" onMouseOut="MM_showHideLayers('menu9','','hide'); changeCol('#FFFFFF','navbarlink9'); changeTD('#333333','#FFFFFF','navbartd9'); return false;" onblur="MM_showHideLayers('menu9','','hide'); changeCol('#FFFFFF','navbarlink9'); changeTD('#333333','#FFFFFF','navbartd9'); return false;"> 
+
+</div>
+<!-- end gift_cards -->
+
+<!-- begin outlet -->
+
+
+<div id="menu10" style="visibility:hidden;z-index:10;width:0" onMouseOver="MM_showHideLayers('menu10','','show'); changeCol('#003366','navbarlink10'); changeTD('#FFFFFF','#003366','navbartd10'); return false;" onfocus="MM_showHideLayers('menu10','','show'); changeCol('#003366','navbarlink10'); changeTD('#FFFFFF','#003366','navbartd10'); return false;" onMouseOut="MM_showHideLayers('menu10','','hide'); changeCol('#FFFFFF','navbarlink10'); changeTD('#333333','#FFFFFF','navbartd10'); return false;" onblur="MM_showHideLayers('menu10','','hide'); changeCol('#FFFFFF','navbarlink10'); changeTD('#333333','#FFFFFF','navbartd10'); return false;"> 
+<table class="ddmenu" border="0" cellpadding="6" cellspacing="0" width="180">
+  <tr>
+    <td>
+      <table class="ddmenusub" border="0" cellpadding="0" cellspacing="0">
+	      <tr>
+          <td valign="top" width="180" style="font-size: 11px;">
+            
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/accessories-store;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/split/lateralnav_accessories">Accessories Store</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/biz;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/split/lateralnav_business">Business Solutions Center</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/design;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/split/lateralnav_design">Design Center</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/express;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/split/lateralnav_express">Express Store</a></p>
+              <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/outlet;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/split/lateralnav_outlet">Outlet Store</a></p>
+            
+            
+            <p class="pad10"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/stdnav/ddmenu_div.gif" height="1" width="160" alt=""></p>
+            <p class="pad7">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/home.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/split/lateralnav_home">HHO Home Page</a></p>
+          </td>
+	      </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</div>
+<!-- end outlet -->
+
+<!-- begin all -->
+
+  <div id="menu11" style="visibility:hidden;" onMouseOver="MM_showHideLayers('menu11','','show'); changeCol('#003366','navbarlink11'); changeTD('#FFFFFF','#003366','navbartd11'); return false;" onfocus="MM_showHideLayers('menu11','','show'); changeCol('#003366','navbarlink11'); changeTD('#FFFFFF','#003366','navbartd11'); return false;" onMouseOut="MM_showHideLayers('menu11','','hide'); changeCol('#FFFFFF','navbarlink11'); changeTD('#333333','#FFFFFF','navbartd11'); return false;" onblur="MM_showHideLayers('menu11','','hide'); changeCol('#FFFFFF','navbarlink11'); changeTD('#333333','#FFFFFF','navbartd11'); return false;"> 
+</div>
+<!-- end all -->
+
+
+<!-- begin MAIN LINK  -->
+
+<table cellspacing="0" cellpadding="0" border="0" bgcolor="#333333" width="100%">
+  <tr>
+    <td>
+      <table cellspacing="0" cellpadding="0" border="0" summary="This table contains HP Home &amp; Home Office Store product category links" class="navbar" width="1000">
+        <tr>
+          
+<!-- Begin home.do -->
+<style type="text/css">
+ #menu1,#menu2,#menu3,#menu4,#menu5,#menu5,#menu6,#menu7,#menu8,#menu9,#menu10,#menu11{;position:absolute;top:20px !important;}
+</style>
+          
+          <td bgcolor="#333333" width="90" style="color: #FFF; text-decoration: none; font: 11px Arial,Verdana,Helvetica,Sans-serif" class="tdMouseOff" onMouseOver="MM_showHideLayers('menu1','','show','menu2','','hide','menu3','','hide','menu4','','hide','menu5','','hide','menu6','','hide','menu7','','hide','menu8','','hide','menu9','','hide','menu10','','hide','menu11','','hide'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink1'); return false;" onfocus="MM_showHideLayers('menu1','','show','menu2','','hide','menu3','','hide','menu4','','hide','menu5','','hide','menu6','','hide','menu7','','hide','menu8','','hide','menu9','','hide','menu10','','hide','menu11','','hide'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink1'); return false;" onMouseOut="MM_showHideLayers('menu1','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink1'); return false;" onblur="MM_showHideLayers('menu1','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink1'); return false;" id="navbartd1">&nbsp;&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/home.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/split/lateralnav_home" style="color:#FFFFFF" id="navbarlink1">Home</a></td>
+
+
+<!-- End home.do -->
+
+          <div id="menu1Marker"></div>
+          <td bgcolor="#999999" width="1" height="20"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="20" alt="" longdesc=""><div id="menu2Marker"></div></td>
+
+          
+          <td bgcolor="#333333" width="145" style="color: #FFF; text-decoration: none; font: 11px Arial,Verdana,Helvetica,Sans-serif" class="tdMouseOff" onMouseOver="alignMenu();MM_showHideLayers('menu2','','show'); DivSetMenu2Visible(true); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink2'); return false;" onfocus="alignMenu();MM_showHideLayers('menu2','','show'); DivSetMenu2Visible(true); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink2'); return false;" onMouseOut="MM_showHideLayers('menu2','','hide');DivSetMenu2Visible(false); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink2'); return false;" onblur="MM_showHideLayers('menu2','','hide');DivSetMenu2Visible(false); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink2'); return false;" id="navbartd2">&nbsp;&nbsp;&#187;&nbsp;
+          
+            <a href="http://www.shopping.hp.com/desktops;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_desktops" onclick="DivSetMenu2Visible(false); document.getElementByID('menu2').style.visibility='visible';" style="color:#FFFFFF" id="navbarlink2">Desktop & All-in-One PCs</a>
+          
+          
+          </td> 
+
+          <td bgcolor="#999999" width="1" height="20"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="20" alt="" longdesc=""><div id="menu3Marker"></div></td>
+          
+          <td bgcolor="#333333" width="75" style="color: #FFF; text-decoration: none; font: 11px Arial,Verdana,Helvetica,Sans-serif" class="tdMouseOff" onMouseOver="alignMenu();MM_showHideLayers('menu3','','show'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink3'); return false;" onfocus="alignMenu();MM_showHideLayers('menu3','','show'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink3'); return false;" onMouseOut="MM_showHideLayers('menu3','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink3'); return false;" onblur="MM_showHideLayers('menu3','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink3'); return false;" id="navbartd3">&nbsp;&nbsp;&#187;&nbsp;
+          
+            <a href="http://www.shopping.hp.com/notebooks;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_notebooks" style="color:#FFFFFF" id="navbarlink3">Laptops</a>
+          
+          
+          </td> 
+
+          <td bgcolor="#999999" width="1" height="20"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="20" alt="" longdesc=""><div id="menu4Marker"></div></td>
+
+          
+          <td bgcolor="#333333" width="75" style="color: #FFF; text-decoration: none; font: 11px Arial,Verdana,Helvetica,Sans-serif" class="tdMouseOff" onMouseOver="alignMenu();MM_showHideLayers('menu4','','show'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink4'); return false;" onfocus="alignMenu();MM_showHideLayers('menu4','','show'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink4'); return false;" onMouseOut="MM_showHideLayers('menu4','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink4'); return false;" onblur="MM_showHideLayers('menu4','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink4'); return false;" id="navbartd4">&nbsp;&nbsp;&#187;&nbsp;
+          
+            <a href="http://www.shopping.hp.com/handheld;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_handhelds" style="color:#FFFFFF" id="navbarlink4">Handhelds</a>
+          
+          
+          </td> 
+
+          <td bgcolor="#999999" width="1" height="20"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="20" alt="" longdesc=""><div id="menu5Marker"></div></td>
+
+          
+          <td bgcolor="#333333" width="125" style="color: #FFF; text-decoration: none; font: 11px Arial,Verdana,Helvetica,Sans-serif" class="tdMouseOff" onMouseOver="alignMenu();MM_showHideLayers('menu5','','show'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink5'); return false;" onfocus="alignMenu();MM_showHideLayers('menu5','','show'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink5'); return false;" onMouseOut="MM_showHideLayers('menu5','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink5'); return false;" onblur="MM_showHideLayers('menu5','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink5'); return false;" id="navbartd5">&nbsp;&nbsp;&#187;&nbsp;
+          
+            <a href="http://www.shopping.hp.com/printer;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/ipg/lateralnav_printers" style="color:#FFFFFF" id="navbarlink5">Printers & All-in-Ones</a>
+          
+          
+          </td> 
+
+          <td bgcolor="#999999" width="1" height="20"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="20" alt="" longdesc=""><div id="menu6Marker"></div></td>
+          
+          <td bgcolor="#333333" width="80" style="color: #FFF; text-decoration: none; font: 11px Arial,Verdana,Helvetica,Sans-serif" class="tdMouseOff" onMouseOver="alignMenu();MM_showHideLayers('menu6','','show'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink6'); return false;" onfocus="alignMenu();MM_showHideLayers('menu6','','show'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink6'); return false;" onMouseOut="MM_showHideLayers('menu6','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink6'); return false;" onblur="MM_showHideLayers('menu6','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink6'); return false;" id="navbartd6">&nbsp;&nbsp;&#187;&nbsp;
+          
+            <a href="http://www.shopping.hp.com/supplies/ink;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/ipg/lateralnav_ink_toners" style="color:#FFFFFF" id="navbarlink6">Ink &amp; Toner</a>
+          
+          
+          </td> 
+
+          <td bgcolor="#999999" width="1" height="20"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="20" alt="" longdesc=""><div id="menu7Marker"></div></td>
+
+          
+          <td bgcolor="#333333" width="80" style="color: #FFF; text-decoration: none; font: 11px Arial,Verdana,Helvetica,Sans-serif" class="tdMouseOff" onMouseOver="alignMenu();MM_showHideLayers('menu7','','show'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink7'); return false;" onfocus="alignMenu();MM_showHideLayers('menu7','','show'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink7'); return false;" onMouseOut="MM_showHideLayers('menu7','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink7'); return false;" onblur="MM_showHideLayers('menu7','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink7'); return false;" id="navbartd7">&nbsp;&nbsp;&#187;&nbsp;
+            <a href="http://www.shopping.hp.com/webapp/shopping/store_access.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?template_type=landing&landing=calculator&selectMenu=calculator&jumpid=in_R329_prodexp/hhoslp/psg/lateralnav_calculators" style="color:#FFFFFF" id="navbarlink7">Calculators</a>
+          </td> 
+
+          <td bgcolor="#999999" width="1" height="20"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="20" alt="" longdesc=""><div id="menu8Marker"></div></td>
+
+          
+          <td bgcolor="#333333" width="75" style="color: #FFF; text-decoration: none; font: 11px Arial,Verdana,Helvetica,Sans-serif" class="tdMouseOff" onMouseOver="alignMenu();MM_showHideLayers('menu8','','show'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink8'); return false;" onfocus="alignMenu();MM_showHideLayers('menu8','','show'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink8'); return false;" onMouseOut="MM_showHideLayers('menu8','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink8'); return false;" onblur="MM_showHideLayers('menu8','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink8'); return false;" id="navbartd8">&nbsp;&nbsp;&#187;&nbsp;
+          
+            <a href="http://www.shopping.hp.com/scanner;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/ipg/lateralnav_scanners" style="color:#FFFFFF" id="navbarlink8">Scanners</a>
+          
+          
+          </td> 
+
+          <td bgcolor="#999999" width="1" height="20"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="20" alt="" longdesc=""><div id="menu9Marker"></div></td>
+
+          
+          <td bgcolor="#333333" width="75" style="color: #FFF; text-decoration: none; font: 11px Arial,Verdana,Helvetica,Sans-serif" class="tdMouseOff" onMouseOver="alignMenu();MM_showHideLayers('menu9','','show'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink9'); return false;" onfocus="alignMenu();MM_showHideLayers('menu9','','show'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink9'); return false;" onMouseOut="MM_showHideLayers('menu9','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink9'); return false;" onblur="MM_showHideLayers('menu9','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink9'); return false;" id="navbartd9">&nbsp;&nbsp;&#187;&nbsp;
+          
+            <a href="http://www.shopping.hp.com/gift_cards;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/split/lateralnav_giftcards" style="color:#FFFFFF" id="navbarlink9">Gift Cards</a>
+          
+          
+          </td> 
+
+          <td bgcolor="#999999" width="1" height="20"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="20" alt="" longdesc=""><div id="menu10Marker"></div></td>
+
+          
+          <td bgcolor="#333333" width="100" style="color: #FFF; text-decoration: none; font: 11px Arial,Verdana,Helvetica,Sans-serif" class="tdMouseOff" onMouseOver="alignMenu();MM_showHideLayers('menu10','','show'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink10'); return false;" onfocus="alignMenu();MM_showHideLayers('menu10','','show'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink10'); return false;" onMouseOut="MM_showHideLayers('menu10','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink10'); return false;" onblur="MM_showHideLayers('menu10','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink10'); return false;" id="navbartd10">&nbsp;&nbsp;&nbsp;
+          <a style="color:#FFFFFF; text-decoration:none;" id="navbarlink10">Specialty Stores</a>
+          </td> 
+
+          <td bgcolor="#999999" width="1" height="20"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="20" alt="" longdesc=""><div id="menu11Marker"></div></td>
+
+          
+          <td bgcolor="#333333" width="60" style="color: #FFF; text-decoration: none; font-family: Arial, Verdana, Helvetica, Sans-serif; font-size: 11px;" class="tdMouseOff" onMouseOver="MM_showHideLayers('menu11','','show'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink11'); return false;" onfocus="MM_showHideLayers('menu11','','show'); this.className='tdMouseOn'; this.style.backgroundColor='#FFFFFF'; this.style.color='#003366'; changeCol('#003366','navbarlink11'); return false;" onMouseOut="MM_showHideLayers('menu11','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink11'); return false;" onblur="MM_showHideLayers('menu11','','hide'); this.className='tdMouseOff'; this.style.backgroundColor='#333333'; this.style.color='#FFFFFF'; changeCol('#FFFFFF','navbarlink11'); return false;" id="navbartd11">&nbsp;&nbsp;&#187;&nbsp;
+          
+            <a href="http://www.shopping.hp.com/allproducts;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp/hhoslp/split/lateralnav_see_all" style="color:#FFFFFF" id="navbarlink11">See All</a>
+          
+          
+          </td> 
+
+          <td bgcolor="#999999" width="1" height="20"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="20" alt="" longdesc=""></td>
+          <td bgcolor="#333333" class="navbar" align="center"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="10" height="1" alt="" longdesc=""></td>
+        </tr>
+      </table></td>
+  </tr>
+</table>
+<!-- end MAIN LINK  -->
+
+
+  
+  <!--stopindex-->
+
+
+  </div>
+</div>
+<!-- End Page Title and Printable Version Area -->
+
+    <!-- Begin Left Navigation and Content Area -->
+    <table border="0" cellpadding="0" cellspacing="0" width="740">
+      <tr>
+      <td>
+           
+          <!-- Start Left Navigation -->
+          
+            <td width="170" align="left" valign="top" bgcolor="#F0F0F0" localized="false" urlOnly="true">
+          
+            <table width="171" border="0" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF" summary="Space above left nav">
+              <tr>
+                <td><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="30" alt="" longdesc=""></td>
+              </tr>
+            </table>
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script language="JavaScript">
+<!--
+function Rcertify()
+{
+popupWin = window.open('http://www.bbbonline.org/cks.asp?id=1216000050', 'Participant','location=yes,scrollbars=yes,width=450,height=300');
+window.name = 'opener';
+}
+// -->
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--BEGIN Home page url Table-->
+
+
+  <div class="hide"></div>
+
+
+
+
+
+<!--END Home page url Table-->
+
+
+
+
+
+    <div class="hide"></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+  <!--
+  .formfield
+  {
+    font-size: 11px;
+    color: #666666;
+  }
+  -->
+</style>
+
+
+<script language="JavaScript" src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/jsi/newsletter_catalog_utils.js"></script>
+
+
+<script language = "Javascript">
+function validateEmail()
+{
+    var emailID=document.getElementById("emailaddress");
+    if ((emailID.value==null)||(emailID.value==""))
+    {
+      alert("Please Enter your Email ID");
+      emailID.focus();
+      return false;
+    }
+       
+    if (echeck(emailID.value)==false)
+    {
+   	 emailID.value = "Enter e-mail address";
+	 emailID.focus();
+     return false;
+    }
+ 	 else if (echeck(emailID.value)==true)
+  	{
+      var url = 'https://www.shopping.hp.com/webapp/shopping/newsletter.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?destPage=news_sub&s=3';
+   	   document.hhoImageForm.action = url;
+	   document.hhoImageForm.submit(); 
+	}
+    
+}
+</script>
+
+
+<script language = "Javascript">
+function validateEnter(e)
+{
+  var key;
+  var keychar;
+
+   if(window.event)
+      key = window.event.keyCode;
+   else if(e)
+      key = e.which;
+                   
+   if(key==13)
+   {
+     return validateEmail();
+   }
+   return true;
+}
+</script>
+
+
+
+
+
+<table border="0" cellpadding="0" cellspacing="0" width="170" class="cb">
+  <tr>
+    <td width="170" align="left" valign="top" bgcolor="#E7E7E7" localized="false" urlOnly="true">
+       <div class="color666666bg w170">
+          <h3 class="colorFFFFFF p110110">Sign up</h3>
+       </div>
+    </td>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="170">
+  <tr class="decoration">
+        <td><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="6" alt=""></td>
+  </tr>
+</table>
+<table  border="0" cellspacing="0" cellpadding="0">
+  <tr align="left" valign="middle" class="decoration">
+    <td valign="top" width="10"><spacer type="block" width="10" height="1"></td>
+    <td height="10" colspan="2">Sign up for e-mail updates</td>
+  </tr>
+  <tr align="left" valign="middle" class="decoration">
+    <td height="2" colspan="3"><spacer type="block" width="1" height="2"></td>
+  </tr>
+  <tr align="left" valign="middle" class="decoration">
+    <td valign="top" width="10"><spacer type="block" width="10" height="1"></td>
+    <form id="hhoImageForm" name="hhoImageForm" method="post" action="https://www.shopping.hp.com/webapp/shopping/newsletter.do?destPage=news_sub&s=3" onsubmit="return validateEmail();" class="zeroMargin">
+    <td nowrap><input type="text" valign="left" name="eAddr" size="18" maxlength="49" style="width:124px" class="formfield" id="emailaddress" value="Enter e-mail address" onchange="javascript:this.value=this.value.toLowerCase();" onClick="removeInstructionalText();" onkeypress = "return validateEnter(event);"></td>
+    <td nowrap>&nbsp;<input type="submit" class = "themeButton_15" align="center" value = "&raquo" title="Submit e-mail address to receive updates and promotions" style="width:15px;" border="0"></td> </form>
+  </tr>
+  
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+<!--BEGIN EPP url Table-->
+
+
+
+
+
+
+<table width="160" border="0" cellspacing="0" cellpadding="0" summary="This table contains other HP Home &amp; Home Office Store links">
+  <tr>
+    <td valign="top" width="10"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="10" height="1" alt="" longdesc=""></td>
+    <td width="150" class="color003366">
+      <ul class="ULbody2">
+       
+        
+         
+         
+        
+     </ul>
+    </td>
+  </tr>
+  <tr class="decoration">
+    <td align="left" width="150" colspan="4"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="150" height="10" alt="" longdesc=""></td>
+  </tr>
+</table>
+<!--END EPP url Table-->
+ 
+
+<table width="170" border="0" cellspacing="0" cellpadding="0" summary="space line">
+  <tr>
+	<td><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="10" alt=""></td>
+  </tr>
+  <tr class="decoration">
+	<td class="colorCCCCCCbg"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="2" alt=""></td>
+  </tr>
+  <tr>
+	<td><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="20" alt=""></td>
+  </tr>
+</table>
+
+
+
+<p align="center" class="small"><script type="text/javascript" language="JavaScript">HP_Date();</script></p>
+
+<p class="mt20" align="center"><a href=";HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733#" onclick="javascript:openWin('http://www.paypal.com/cgi-bin/webscr?cmd=xpt/popup/OLCWhatIsPayPal-outside', 'olcwhatispaypal', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=400, height=350');" onkeypress="javascript:openWin('http://www.paypal.com/cgi-bin/webscr?cmd=xpt/popup/OLCWhatIsPayPal-outside', 'olcwhatispaypal', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=400, height=350');"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/logos/hp_accept_paypal_150x40.gif"  WIDTH="150" HEIGHT="40" border="0" alt="Now accepting PayPal" longdesc=""></a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="bbonline">
+<p class="mt20" align="center"><a href=";HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733#" onclick="javascript:openWin('http://sanjose.bbb.org/BusinessReport.aspx?CompanyID=207934','olcwhatisbbonline', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=800, height=450');return false;" onkeypress="javascript:openWin('http://sanjose.bbb.org/BusinessReport.aspx?CompanyID=207934','olcwhatisbbonline', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=800, height=450');return false;"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/logos/BBBOnlineLogo.gif"  WIDTH="135" HEIGHT="52" border="0" alt="BBB Accredited Business" longdesc=""></a></p>
+</div>
+
+
+          
+          
+      </td>
+          
+          <!-- End Left Navigation -->
+        
+        <!-- Begin Gutter Cell 10px Wide -->
+          
+         <td width="10" valign="top"><a name="jumptocontent"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="10" height="1" alt=""></a></td>
+         
+        <!-- End Gutter Cell 10px Wide -->
+        <!--startindex-->
+        <!-- Start Content Area -->
+          
+            <td width="100%" align="left" valign="top">
+          
+          
+            
+              <a name="defaultAnchor"></a>
+               
+                <table width="560" border="0" cellpadding="0" cellspacing="0" summary="Page Title">
+              
+                <tr valign="top">
+                  <td nowrap align="left"><img src="http://welcome.hp-ww.com/img/s.gif" width="1" height="20" border="0" alt=""><h1>We're sorry, the page requested was not found</h1></td>
+                </tr>
+                <tr>
+                  <td><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="10" alt="" longdesc=""></td>
+                </tr>
+              </table>
+            
+          
+
+          
+          <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="Center content">
+            <tr valign="top">
+              <td align="left">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table>
+     <tr>
+       <td colspan="4"> <img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="800" height="1"></td>
+     </tr>
+ </table>
+
+<table width="100%" summary="hpshopping_error table" border=0 cellspacing=0 cellpadding=0>
+
+<p class="mb5">Either the Web address was entered incorrectly or this page no longer exists.</p>
+<p class="mb10">Please click the "back" button in your browser and try again, or use these navigation links:</p>
+<div class="theme p110110 mb10">
+ <h2 class="themeheader">Links to site </h2>
+</div>
+<div class="col23pctL">
+
+ <h3>Computing </h3>
+ <ul class="ULbody2 mb10">
+  <li><span class="color003366">&raquo; </span>&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/cs_can_landing.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?landing=notebooks&storeName=computer_store&catLevel=2&selectMenu=notebooks&jumpid=in_R329_prodexp%2Fhhoslp%2Fpsg%2Fnotebooks">Laptop & tablet PCs</a> </li>
+  <li><span class="color003366">&raquo; </span>&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/cs_can_landing.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?landing=desktops&storeName=computer_store&catLevel=2&selectMenu=desktops&jumpid=in_R329_prodexp%2Fhhoslp%2Fpsg%2Fdesktops">Desktops</a> </li>
+  <li><span class="color003366">&raquo; </span>&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?landing=display&category=display&catLevel=1&storeName=storefronts">Monitors</a> </li>
+
+  <li><span class="color003366">&raquo; </span>&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/accessories_landing.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=accessories&landing=computer">Accessories</a> </li>
+ </ul>
+</div>
+<div class="col2pctL">&nbsp;</div>
+<div class="col23pctL">
+ <h3>Printing &amp; Supplies </h3>
+ <ul class="ULbody2 mb10">
+
+  <li><span class="color003366">&raquo; </span>&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/generic_landing.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?landing=printer&storeName=storefronts&selectMenu=printer&jumpid=in_R329_prodexp%2Fhhoslp%2Fipg%2Fprinter">Printers &amp; All-in-Ones</a> </li>
+  <li><span class="color003366">&raquo; </span>&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/print_supp_acc_landing.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp%2Fhhoslp%2Fipg%2Fsupplies">Ink &amp; Toner</a> </li>
+  <li><span class="color003366">&raquo; </span>&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/accessories_landing.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?landing=printer&subMenuID=sm60">Accessories</a> </li>
+
+  </ul>
+</div>
+<div class="col2pctL">&nbsp;</div>
+<div class="col23pctL">
+ <h3>Consumer Electronics </h3>
+ <ul class="ULbody2 mb10">
+
+  <li><span class="color003366">&raquo; </span>&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/generic_landing.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=storefronts&landing=handheld&catLevel=1">iPAQ Handhelds</a> </li>
+  <li><span class="color003366">&raquo; </span>&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/generic_landing.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=storefronts&landing=calculator&catLevel=1">Calculators</a> </li>
+  <li><span class="color003366">&raquo; </span>&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/generic_landing.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=storefronts&landing=scanner&catLevel=1">Scanners</a> </li>  
+  <li><span class="color003366">&raquo; </span>&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/can.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=storefronts&landing=fax&category=fax&catLevel=1">FAX</a></li>
+	
+  </ul>
+</div>
+<div class="col2pctL">&nbsp;</div>
+<div class="col23pctL">
+ <h3>More products </h3>
+ <ul class="ULbody2 mb10">
+  
+  <li><span class="color003366">&raquo; </span>&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/generic_landing.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=storefronts&landing=esp&jumpid=in_R329_prodexp%2Fhhoslp%2Fsplit%2Fserviceplans">Service Plans</a> </li>
+  <li><span class="color003366">&raquo; </span>&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/generic_landing.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=storefronts&landing=outlet&jumpid=in_R329_prodexp%2Fhhoslp%2Fsplit%2Foutlet">Outlet Center</a> </li>
+  <li><span class="color003366">&raquo; </span>&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/generic_landing.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?storeName=storefronts&landing=gift_cards&jumpid=in_R329_prodexp%2Fhhoslp%2Fsplit%2Fgiftcards">Gift Cards</a> </li>
+
+ </ul>
+</div>
+<div class="cb"></div>
+<div class="theme p110110 mb10">
+ <h2 class="themeheader">Search </h2>
+</div><!--BEGIN SEARCH HPL TAG -->
+  <!-- hps_top_search.jsp: BEGIN -->
+  <form name="searchTop2" id="searchForm2" action="" method="get" onsubmit="return checkSearchString('searchTop2');">
+   <input name="inkTonerSearchQuery" value="" type="hidden">
+   <input name="Printer_Search_Query" value="" type="hidden">
+   <input type="hidden" name="searchType" value="keyword">
+   <input name="Cartridge_Search_Query" value="" type="hidden">
+   <input name="printerOrCartridgeSearch" value="" type="hidden">
+   <p class="bold small"><label for="searchQSbox2">Search for:</label>
+    <input name="searchQuery" size="32" maxlength="100" id="searchQSbox2" onfocus="javascript:searchbox('searchQSbox2'); if(this.defaultValue==this.value) this.value='';" style="color: rgb(153, 153, 153); font-size: 10px;" value="keyword or QS code (QS-XXXX)" type="text">&nbsp;<a id="country" onmouseover="status='search using the specified criteria';return true;" onmouseout="status='';return true;" onfocus="status='search using the specified criteria';return true;" onblur="status='';return true;"></a>
+    <input type="submit" name="submitSearchTop1" value="&raquo;" align="center" class="themeButton_15" border="0" title="Begin your search" style="width:15px;">
+  <div class="cb"></div>
+  <div class="cb"></div>
+
+<div class="theme p110110 mb10">
+ <h2 class="themeheader">Contact a sales agent </h2>
+</div>
+<p><a href="#" onclick="window.open('http://www.shopping.hp.com/webapp/shopping/customer_help.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?pageName=%2Fshopping%2Fcan%2Fcs_can_landing.jsp&webChat=1&click2Call=0','custOptionWindow', 'scrollbars=yes,resizable=yes,toolbar=no,directories=0,status=0,menubar=0, width=850,height=300,left=200,top=100');" title="Click for sales help via Chat, Phone or E-mail"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/icons/icon_live_assist.gif" longdesc="" alt="Click for sales help via Chat, Phone or E-mail" style="vertical-align: middle;" border="0"></a>&nbsp;
+<a href="#" onclick="window.open('http://www.shopping.hp.com/webapp/shopping/customer_help.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?pageName=%2Fshopping%2Fcan%2Fcs_can_landing.jsp&webChat=1&click2Call=0','custOptionWindow', 'scrollbars=yes,resizable=yes,toolbar=no,directories=0,status=0,menubar=0, width=850,height=300,left=200,top=100');" title="Click for sales help via Chat, Phone or E-mail">Live assistance</a></p>
+<h3>Get help via chat, phone, or e-mail. </h3></td>
+ </tr></tbody></table>
+<div class="cb"></div>
+
+
+
+
+<SCRIPT LANGUAGE="JavaScript">
+      var s_pageName = 'hho:gs:error:content';
+      var s_channel = 'error';
+      var s_prop25 = 'error:content';
+      var s_prop4 = 'null|Content Error';
+</SCRIPT>
+
+
+</td>
+            </tr>
+          </table>
+        </td>
+          
+          
+        <!-- End Content Area -->
+        <!--stopindex-->
+      </tr>
+    </table>
+    <!-- End Left Navigation and Content Area -->
+    <!-- Begin Footer Area -->
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- Begin Printable Version -->
+  <table border="0" cellpadding="0" cellspacing="0" width="0">
+	<tr>
+		<td align="center" valign="bottom" width="170"><a href="/webapp/shopping/generic_category.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?hpweb_printable=true" name='printableImg'><img src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/stdnav/hpweb_1-2_prnt_icn.gif" width="19" height="13" alt="click for Printable version" longdesc="" border="0"></a><a href="/webapp/shopping/generic_category.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?hpweb_printable=true" class="udrlinebold"  name='printableLink'">Printable version</a></td>
+		<td width="10"></td>
+		<td width="0"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="60" border="0" alt=""></td>
+	</tr>
+	<tr>
+		<td align="center" valign="bottom" width="170"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="1" border="0" alt=""></td>
+		<td width="10"></td>
+		<td width="0"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/s.gif" width="1" height="20" border="0" alt=""></td>
+	</tr>
+</table>
+
+  <!-- End Printable Version -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--Begin bottom navigation-->
+<!-- DHTML submenus code -->	
+<SCRIPT language="JavaScript" type="text/JavaScript">
+// BEGIN dropdown menu code
+function getStyleObject(objectId) {
+    // cross-browser function to get an object's style object given its id
+    if(document.getElementById && document.getElementById(objectId)) {
+	// W3C DOM
+	return document.getElementById(objectId).style;
+    } else if (document.all && document.all(objectId)) {
+	// MSIE 4 DOM
+	return document.all(objectId).style;
+    } else if (document.layers && document.layers[objectId]) {
+	// NN 4 DOM.. note: this won't find nested layers
+	return document.layers[objectId];
+    } else {
+	return false;
+    }
+} // getStyleObject
+
+function changeObjectVisibility(objectId, newVisibility) {
+    var styleObject = getStyleObject(objectId);
+    if(styleObject) {
+	   styleObject.visibility = newVisibility;
+	   return true;
+    } else {
+	   return false;
+    }
+} // changeObjectVisibility
+
+function showMenu(mOrder, eventObj) {
+    hideMenus();
+    var mId = 'menu' + mOrder;
+    if(changeObjectVisibility(mId, 'visible')) {
+	   eventObj.cancelBubble = true;
+	   return true;
+    } else {
+	   return false;
+    }
+}
+
+var numMenus = 5;
+
+function hideMenus() {
+    for(j = 1; j <= numMenus; j++) {
+	  changeObjectVisibility('menu' + j, 'hidden');
+    }
+}
+function hideMenu(menuNumber) {
+	changeObjectVisibility('menu' + menuNumber, 'hidden');
+}
+
+document.onclick = hideMenus;
+// END dropdown menu code
+
+
+
+//-->
+</SCRIPT>
+
+
+<script type="text/javascript" language="JavaScript" src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/jsi/newsletter_catalog_utils.js"></script>
+
+
+<div id="bottomMenu" class="cb mt20">
+   <div class="menuBlock" onmouseover="return !showMenu('A', event);" onfocus="return !showMenu('A', event);" onMouseOut="hideMenu('A');" onblur="hideMenu('A');">
+     <div id="menuMoreWaysButton" style="text-align:center;">More ways to shop &nbsp;<img src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/icons/bottom_arrow.gif" width="6" height="4" border="0" style="margin-bottom:2px;" alt="" longdesc=""></div>
+       <div id="menuA" onclick="event.cancelBubble = true;" OnKeyPress="event.cancelBubble = true;">
+          <div class="linksUnit" style="padding:0 5px 0 8px; color:#fff;">
+	 
+          <div class="colorFFFFFF p5">&#187;&nbsp;<a href="#" onClick="javascript:openCatalogWin('yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733!1250105796835');return false;" onKeyPress="javascript:openCatalogWin('yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733!1250105796835');return false;" class="whiteline">E-catalog</a></div>
+          <div class="colorFFFFFF p5">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/efinance_center.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733" class="whiteline">E-Financing</a></div>
+	</div>
+    </div>
+</div>
+
+<div class="menuBlock" onmouseover="return !showMenu('B', event);" onfocus="return !showMenu('B', event);" onMouseOut="hideMenu('B');" onblur="hideMenu('B');">
+   <div id="menuHelp" style="text-align:center;">Shopping help &nbsp;<img src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/icons/bottom_arrow.gif" width="6" height="4" border="0" style="margin-bottom:2px;" alt="" longdesc=""></div>
+      <div id="menuB" onclick="event.cancelBubble = true;" OnKeyPress="event.cancelBubble = true;">
+         <div class="linksUnit" style="padding:0 5px 0 8px; color:#fff;">
+         <div class="colorFFFFFF p5">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/why_buy.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733" class="whiteline">Why buy directly from HP</a></div>
+         <div class="colorFFFFFF p5">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/help.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733" class="whiteline">Customer service</a></div>
+         <div class="colorFFFFFF p5">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/shipping_policy.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733" class="whiteline">Shipping &amp; delivery</a></div>
+         <div class="colorFFFFFF p5">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/return_exchange.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733" class="whiteline">Returns</a></div>
+       </div>
+   </div>
+</div>
+	
+<div class="menuBlock" onmouseover="return !showMenu('C', event);" onfocus="return !showMenu('C', event);" onMouseOut="hideMenu('C');" onblur="hideMenu('C');">
+   <div id="menuOffers" style="text-align:center;">Offers &amp; Rebates &nbsp;<img src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/icons/bottom_arrow.gif" border="0" width="6" height="4" style="margin-bottom:2px;" alt="" longdesc=""></div>
+      <div id="menuC" onclick="event.cancelBubble = true;" OnKeyPress="event.cancelBubble = true;">
+         <div class="linksUnit" style="padding:0 5px 0 8px; color:#fff;">
+	 <div class="colorFFFFFF p5">&#187;&nbsp;<a href="http://h30014.www3.hp.com/offers/us/home.aspx?jumpid=in_R329_prodexp%2Fhhoslp%2Fsplit%2Fallrebates"class="whiteline">All HP offers &amp; rebates</a></div>
+         <div class="colorFFFFFF p5">&#187;&nbsp;<a href="/webapp/shopping/rebates.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp%2Fhhoslp%2Fsplit%2Fstorerebates" class="whiteline">Home &amp; Home Office product rebates</a></div>
+         <div class="colorFFFFFF p5">&#187;&nbsp;<a href="http://h30172.www3.hp.com/paperless/step1.asp"class="whiteline">Submit your HP manufacturer rebate online</a></div>
+         <div class="colorFFFFFF p5">&#187;&nbsp;<a href="http://www.hp.com/united-states/hho/buyback-recycle/index.html?jumpid=ex_R602_go/ConsumerBuyback"class="whiteline">Trade-in or Recycle</a></div>
+    </div>
+  </div>
+</div>
+	
+<div class="menuBlock" onmouseover="return !showMenu('D', event);" onfocus="return !showMenu('D', event);" onMouseOut="hideMenu('D');" onblur="hideMenu('D');" style="border-right:0px">
+  <div id="menuNewsletter" style="text-align:center;">E-newsletter sign up &nbsp;<img src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/icons/bottom_arrow.gif" width="6" height="4" border="0" style="margin-bottom:2px;" alt="" longdesc=""></div>
+     <div id="menuD" class="small" onclick="event.cancelBubble = true;" OnKeyPress="event.cancelBubble = true;">
+ 	<div class="colorFFFFFFbld mt5">Sign-up for:</div>		
+        <hr>
+	<div class="colorFFFFFF mt5">&#187;&nbsp;<a href="https://www.shopping.hp.com/webapp/shopping/newsletter.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?destPage=news_sub&s=3&l=null" class="whiteline">Latest offers &amp; deals</a></div>
+	<div class="colorFFFFFF mt5">&#187;&nbsp;<a href="http://h30189.www3.hp.com/signUp.jsp?jumpid=in_R329_prodexp%2Fhhoslp%2Fsplit%2Fmarketingnewsletter" class="whiteline">Product tips &amp; project ideas</a></div>
+        <div class="colorFFFFFF mt5">&#187;&nbsp;<a href="http://www.shopping.hp.com/webapp/shopping/catalogRequest.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733" class="whiteline">Request Catalog</a></div>
+        <div class="colorFFFFFF mt5">&#187;&nbsp;<script type="text/javascript">function RSSDoNothing(){}</script><a href="javascript:RSSDoNothing();" onClick="window.open('http://www.hp.com/go/RSSfeed','RSSpopup', 'scrollbars=yes,resizable=yes,toolbar=no,directories=0,status=0,menubar=0, width=800,height=600,left=200,top=100');" class="whiteline">Subscribe To RSS</a></div>
+     </div>
+  </div>
+</div>
+
+<div id="footer" style="text-align:left">
+  <div style="width: 1003px; text-align: center">
+    <a href="http://www.hp.com/country/us/en/privacy.html?jumpid=in_R329_prodexp%2Fhhoslp%2Fsplit%2Fprivacy" class="udrlinesmall">Privacy statement</a>&nbsp;|&nbsp;
+    <a href="http://welcome.hp.com/country/us/en/termsofuse.html?jumpid=in_R329_prodexp%2Fhhoslp%2Fsplit%2Ftermsofuse" class="udrlinesmall">Using this site means you accept its terms</a>&nbsp;|&nbsp;
+    <a href="http://www.shopping.hp.com/webapp/shopping/terms.do;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733?jumpid=in_R329_prodexp%2Fhhoslp%2Fsplit%2Ftermsofsale" class="udrlinesmall">Terms and conditions of sale and service</a>&nbsp;|&nbsp;
+    <a href="http://welcome.hp.com/country/us/en/privacy/limited_warranty.html" target="_blank" class="udrlinesmall">Limited Warranty Statement</a>
+    &nbsp;|&nbsp;<a href="https://signup.cj.com/member/brandedPublisherSignUp.do?air_refmerchantid=1752853" class="udrlinesmall">Affiliate program</a>&nbsp;|&nbsp;
+    
+	<a href="http://www.shopping.hp.com/sitemap;HHOJSID=yLrPKDZGtS1c9ZTRhN1fdLlQXhn3TctTtwRldGG9J2RmTyGsGwWW!-66024733" class="udrlinesmall">Site Map</a>
+    
+    &nbsp;|&nbsp;
+   
+    <a href="javascript:RSSDoNothing();" onClick="javascript:window.open('http://www.hp.com/go/RSSfeed','RSSpopup', 'scrollbars=yes,resizable=yes,toolbar=no,directories=0,status=0,menubar=0, width=800,height=600,left=200,top=100');"><img src="http://hpshopping.speedera.net/www.shopping.hp.com/shopping/images/icons/rssicon.gif" width="28" height="14" border="0" align="top" alt="RSS"></a>
+    <script type="text/javascript">function RSSDoNothing(){}</script><a href="javascript:RSSDoNothing();" class="udrlinesmall" onClick="window.open('http://www.hp.com/go/RSSfeed','RSSpopup', 'scrollbars=yes,resizable=yes,toolbar=no,directories=0,status=0,menubar=0, width=800,height=600,left=200,top=100');">RSS Feed</a>
+         
+  </div>
+</div>
+<div id="copyright" class="small">&#169; <script LANGUAGE='Javascript'>HP_Bottom_Date();</script> Hewlett-Packard Development Company, L.P.</div>
+
+</div> <!-- this closing div tag for storelinks.jsp -->
+<div id="bid"></div> <!-- bottom id -->
+
+  <!-- SiteCatalyst code version: F.3.
+  Copyright 2002 Omniture, Inc. More info available at
+  http://www.omniture.com -->
+  <script language="JavaScript">
+  <!--
+    /* set global variables */
+    var s_server = "www.hpshopping.com";
+    /* set campaign name */
+    
+    var s_campaign = '';
+    s_campaign = (s_campaign == "null") ? "" : s_campaign;
+    /********* INSERT THE DOMAIN AND PATH TO YOUR CODE BELOW ************/
+    /********** DO NOT ALTER ANYTHING ELSE BELOW THIS LINE! *************/
+    //-->
+  
+  </script>
+   
+  
+  <script type="text/javascript" language="JavaScript" src="http://welcome.hp-ww.com/cma/region/na/metricsHHOstore.js"></script>
+  
+  <SCRIPT LANGUAGE='JavaScript'>
+    s_eVar15 = '';
+    s_eVar20 = '';
+    s_eVar16 = '';
+    s_eVar17 = '';
+    s_eVar18 = '';
+    s_eVar19 = '';
+    s_eVar3 = '';
+  </SCRIPT>
+  
+  <!-- End SiteCatalyst code version: F.3. -->
+
+<script language="JavaScript">
+  var stringOfSrv = '11ma20498';
+</script>
+
+
+    <!-- End Footer Area -->
+  </body>
+</html>
+

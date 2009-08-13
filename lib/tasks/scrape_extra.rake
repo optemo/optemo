@@ -46,6 +46,97 @@ end
 
 namespace :scrape_extra do
   
+  desc 'add data from amazon'
+  task :moredata_amazon => :init do
+    
+    require 'webrat'
+    require 'mechanize' # Needed to make Webrat work
+    
+    require 'rubygems'
+    require 'nokogiri'
+
+    require 'conversion_helper'
+    include ConversionHelper
+
+    require 'database_helper'
+    include DatabaseHelper
+    
+    require 'validation_helper'
+    include ValidationHelper
+    
+    $model = Printer
+    
+    Webrat.configure do |conf| 
+     conf.mode = :mechanize  # Can't be rails or Webrat won't work 
+    end
+
+    WWW::Mechanize.html_parser = Nokogiri::HTML
+    
+    interesting_fields = ['ppm', 'resolution', 'resolutionmax', 'paperinput','scanner', 'printserver'].inject({}){|r, x| r.merge({x,[]})}
+    ok_fields = ['ppm', 'paperinput']
+    
+    validids = Printer.valid.collect{|x| x.id}
+    validanyway = 0
+    
+    watever = false
+    
+    sesh = Webrat.session_class.new
+    problems = 0
+    
+    amazonprinterids = (AmazonPrinter.all - AmazonPrinter.find_all_by_asin(nil)).reject{|x| 
+      x.product_id.nil? or validids.include?(x.product_id) }.collect{|x| x.id}
+    
+    amazonprinterids.each do |apid|
+      ap = AmazonPrinter.find(apid)
+      p = Printer.find(ap.product_id)
+      
+      puts 'ASIN='+ap.asin 
+      begin
+        sesh.visit('http://www.amazon.com/o/asin/' + ap.asin)
+        sesh.click_link('See more technical details')
+      rescue
+        puts "Uh oh"
+        problems += 1 
+      else
+        doc = Nokogiri::HTML(sesh.response.body)
+        array = doc.css('.content ul li')
+        features = {}
+        array.each {|i|
+          t = i.content.split(': ')
+          features[t[0].downcase.tr(' -\(\)_','')]=t[1]
+        }
+        
+        # TODO use inject()?
+        mapped_specs = {}
+        features.each{|x,y| get_property_names(x).each do |prop| 
+          mapped_specs[prop] = (mapped_specs[prop] || '') + "#{ScrapingHelper.sep}#{y}" unless y.nil?
+          end
+        }
+        clean_specs = generic_printer_cleaning_code mapped_specs
+        
+        puts "#{p.id} rescraped"
+        
+        
+        debugger if clean_specs['paperinput'].nil?
+        
+        validanyway += 1 if (validids.include?p.id)
+        puts "Yay! I'm useful!" unless (validids.include?p.id)
+        ok_fields.each do |field|
+          fill_in_missing field, clean_specs[field], p
+        end
+        interesting_fields.keys.each do |f|
+          interesting_fields[f] << clean_specs[f]
+        end
+        
+        sleep(15) if watever
+      end  
+    end
+      puts "Done with #{problems} problems"
+      debugger
+      puts " --- "
+    
+  end
+  
   desc 'Add data from elsewhere'
   task :moredata  => :init do
     
@@ -63,7 +154,7 @@ namespace :scrape_extra do
     
     $model = Printer
     
-    ok_fields = ['ppm', 'resolution', 'resolutionmax', 'paperinput','scanner']
+    ok_fields = ['ppm', 'resolution', 'resolutionmax', 'paperinput','scanner', 'printserver']
     
     # Lexmark:
     links = []
@@ -74,12 +165,13 @@ namespace :scrape_extra do
     puts "#{links.count} printers found in Lexmark"
     
     just_continue = false
-    
-    fieldname = 'printserver'
+    validids = Printer.valid.collect{|x| x.id}
+    validanyway = 0
+    fieldname = 'dimensions'
     debugme = []
     repeats = []
     nomatch = 0
-    links.each do |link|
+    links.each_with_index do |link, index|
       page = Nokogiri::HTML(open(link))
       specs = scrape_table(page.css('div.specs tr'), 'td.spectitle', 'td.specinfo')
       
@@ -98,9 +190,10 @@ namespace :scrape_extra do
       #debugger
       
       # TODO more effective find?
-      ps = Printer.find_all_by_brand_and_model(clean_specs['brand'] , clean_specs['model'] )
-      
+      ps = match_rec_to_printer [clean_specs['brand']], [clean_specs['model']], $model,[]
       if ps.length == 1
+        validanyway += 1 if (validids.include?ps.first.id)
+        puts "Yay! I'm useful!" unless (validids.include?ps.first.id)
         ok_fields.each do |field|
           fill_in_missing field, clean_specs[field], ps.first
         end
@@ -111,7 +204,8 @@ namespace :scrape_extra do
       end
       debugme << clean_specs[fieldname]
       
-      sleep(20)
+      puts " Done #{index+1}th printer and waiting. "
+      sleep(15)
       
     end
     
@@ -120,6 +214,7 @@ namespace :scrape_extra do
     puts "Values in #{fieldname}:"
     puts debugme.uniq.reject{|x| x.nil?}.sort * ', '
     puts "#{nomatch} not matched "
+    puts "#{validanyway} valid anyway "
     puts " Repeats listed below: "
     repeats.each{|x| 
       puts x * ','
