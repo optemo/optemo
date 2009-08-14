@@ -16,8 +16,8 @@ module DatabaseHelper
   
   def match_rec_to_printer rec_makes, rec_modelnames, recclass=$model, series=[]
     matching = []
-    makes = rec_makes
-    rec_makes.each do |make|
+    makes = rec_makes.collect{ |x| just_alphanumeric(x) }
+    makes.each do |make|
       # Stupid brand inconsistencies..
       if(make.include? 'oki')
         makes += ['oki', 'okidata']
@@ -27,7 +27,7 @@ module DatabaseHelper
     end
     makes.uniq
     
-    modelnames = rec_modelnames
+    modelnames = rec_modelnames.collect{ |x| just_alphanumeric(x) }
     series.each { |ser| modelnames.each {|mn| mn.gsub!(/\s#{ser}\s/,'') }}
     
     recclass.all.each do |ptr|

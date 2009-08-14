@@ -7,7 +7,7 @@ module ConversionHelper
   
   def parse_max_num_pages str
     debugger if str.nil?
-    numpages = get_f_with_units( (str || '').gsub(/\+\s?\d+/,''),  /page(s)?/i )
+    numpages = get_f_with_units( (str || '').gsub(/\+\s?\d+/,''),  /(sheet|page)(s)?/i )
     return numpages.to_i if numpages
     return nil
   end

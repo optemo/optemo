@@ -10,13 +10,21 @@ module ScrapingHelper
     return @@sep
   end
   
+  def generic_printer_blurb_cleaner blurb
+    paperinput = blurb.scan(/(?-mix:\d*,?\d+\s?-?)(?i-mx:sheets?)|(?i-mx:pages?)\s(?i-mx:paper)?(?i-mx:priority)?(?i-mx:\stray)/).collect{|x| get_max_f x}.max
+    return {'paperinput' => paperinput} if paperinput
+  end
+  
   def generic_printer_cleaning_code atts
+    
+    atts.each{|x,y| atts[x] = y.gsub(/#{@@sep}/,'') if y.scan(/#{@@sep}/).length == 1 }
     
     atts['ppm'] = get_max_f(atts['ppm'])
     atts['ppmcolor'] = get_max_f(atts['ppmcolor'])
     atts['ttp'] = get_min_f(atts['ttp'])
     
-    atts['paperinput'] = (atts['paperinput'] || '').split(@@sep).collect{|x| parse_max_num_pages(x)}.reject{|x| x.nil?}.max 
+    atts['paperinput'] = (atts['paperinput'] || '').scan(/(?-mix:\d*,?\d+\s?-?)(?i-mx:sheets?)|(?i-mx:pages?)/).collect{|x| get_max_f x}.max
+    #split(@@sep).collect{|x| get_max_f((x||'').to_s)}.reject{|x| x.nil?}.max 
     debugger if atts['paperinput'] and atts['paperinput'] < 100
     
     atts['brand'] = atts['brand'].gsub(/\(.+\)/,'').strip if atts['brand']
@@ -48,7 +56,7 @@ module ScrapingHelper
     atts['model'] = atts['mpn'] if atts['model'].nil? or atts['model'] ==''
     
     # Resolution
-    atts['resolution'] = atts['resolution'].scan(/\d+\s?x\s?\d+/i).uniq * ', '
+    atts['resolution'] = atts['resolution'].scan(/\d*,?\d+\s?x\s?\d*,?\d+/i).uniq * " #{@@sep} " if atts['resolution']
     atts['resolutionmax'] = maxres_from_res atts['resolution']
         
     # Item height, width, depth
@@ -71,10 +79,29 @@ module ScrapingHelper
     atts['condition'] = "OEM" if (atts['title']||'').match(/oem/i)
     
     # Booleans
+    
+    atts.each{|x,y| atts[x] = nil if y=='' or (y.type==String and y.strip =='') }
+    
+    if(atts['colorprinter'])
+      if atts['colorprinter'].match(/color/i)
+        atts['colorprinter'] = true
+      elsif atts['colorprinter'].match(/b(lack)?\s?(and|&|\/)?\s?w(hite)?/i)
+        atts['colorprinter'] = false
+      else
+        debugger
+        atts['colorprinter']= clean_bool(atts['colorprinter'])
+      end
+    end
+    
+    atts['printserver'] = 'true' if (atts.values.to_s).match(/(wire(d|less)|network|server)/i)
     atts['printserver'] = clean_bool(atts['printserver'])
+    
     atts['scanner'] = clean_bool(atts['scanner'])
     
-    # TODO clean paperinput
+    atts['duplex'] = false if atts['duplex'].downcase == 'manual'
+    atts['duplex'] = clean_bool(atts['duplex'])
+    atts.each{|x,y| atts[x] = y.gsub(/^#{@@sep}/,'').gsub(/#{@@sep}/,' | ') if y.type==String} 
+    
     return atts
   end
   
@@ -82,9 +109,9 @@ module ScrapingHelper
     vals = []
     (dirty_vals || '').split(@@sep).each { |dirty_val| 
       val = get_b(dirty_val)
-      if val.nil? and !dirty_val.nil?
-        val = dirty_val.match(/(not applicable|n\/a|not available)/i).nil?
-      end
+      #if val.nil? and (!dirty_val.nil? and dirty_val.strip!='')
+      #  val = dirty_val.match(/(not applicable|n\/a|not available)/i).nil?
+      #end
       vals << val
     }
     if vals.empty? or vals.uniq == [nil]
@@ -127,11 +154,16 @@ module ScrapingHelper
     param_names << 'itemwidth' if str.match(/width/) # TODO
     param_names << 'packagewidth' if str.match(/width/) # TODO
     param_names << 'printserver' if str.match(/(network|server)/)
+    param_names << 'scanner' if str.match(/scan/)
     param_names << 'colorprinter' if str.match(/(colou?r|printtechnology|printeroutput)/)
     param_names << 'dimensions' if str.match(/size/)
     
     if str.match(/colou?r/)
       param_names << 'ppmcolor' if param_names.include? 'ppm'
+    end
+    
+    if str.match(/(scan|cop(y|ie(s|r)))/i)
+      param_names.delete_if{|x| x== 'resolution' or x=='ppm' or x='paperinput' or x='paperoutput'}
     end
     
     param_names << 'dimensions' if str.match(/dimensions/)
@@ -306,8 +338,8 @@ module ScrapingHelper
   
   def get_b x
     return nil if x.nil?
-    trues = ["yes","1"]
-    falses = ["no", "0"]
+    trues = ["yes", 'y',"1", 'true', 'optional']
+    falses = ["no", 'n', "0", 'false']
     if trues.include? x.to_s.downcase.strip
       val = true
     elsif falses.include? x.to_s.downcase.strip
