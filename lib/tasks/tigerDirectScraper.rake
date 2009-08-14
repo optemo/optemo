@@ -73,6 +73,7 @@ module TigerDirectScraper
   def clean_all atts
     
     atts['brand'] = atts['brand'].gsub(/\(.+\)/,'').strip
+    atts['brand'] = 'Canon' if atts['brand'].match(/canon/i)
     
     # Model:
     if atts['model'].nil? or atts['model'] == atts['mpn']
@@ -90,7 +91,10 @@ module TigerDirectScraper
       $series.each do |ser|
         clean_model_str.gsub!(/#{ser}\s?/i,'')
       end
+      
+      clean_model_str.gsub!(/(ink|chrome|tabloid|aio\sint|\(|,|\d+\s?x\s?\d+\s?(dpi)?|fast\sethernet|led).*/i,'')
       clean_model_str.strip!
+      
       atts['model'] = clean_model_str
     end
     
@@ -141,6 +145,8 @@ module TigerDirectScraper
     atts['condition'] = 'New'
     atts['condition'] = "Refurbished" if ((atts['upcno']||'').match(/^RB-/) or (atts['model']||'').match(/^RB-/) or (atts['title']||'').match(/refurbished/i) )
     atts['condition'] = "OEM" if (atts['title']||'').match(/oem/i) 
+    
+    atts['duplex'] = false if (atts['duplex'] || '').downcase.strip == 'manual'
     
     return atts
   end
@@ -277,9 +283,13 @@ namespace :scrape_tiger do
   
   task :validate => :init do 
     assert_within_range TigerPrinter.all, 'listpriceint', 0, 10_000_00
-    assert_within_range TigerPrinter.all, 'itemheight', 0, 100
-    assert_within_range TigerPrinter.all, 'itemlength', 0, 70
-    assert_within_range TigerPrinter.all, 'itemwidth', 0, 70
+    assert_within_range TigerPrinter.all, 'itemheight', 100, 10000
+    assert_within_range TigerPrinter.all, 'itemlength', 100, 7000
+    assert_within_range TigerPrinter.all, 'itemwidth', 100, 7000
+    assert_within_range TigerPrinter.all, 'ppm', 2, 50
+    assert_within_range TigerPrinter.all, 'paperinput', 20,2000
+    assert_within_range TigerPrinter.all, 'ttp', 7,40
+    assert_within_range TigerPrinter.all, 'resolutionmax', 600, 4800
   end
   
   desc 'Maps the printers to db -- draft version so far'
@@ -312,7 +322,6 @@ namespace :scrape_tiger do
       update_ca p
     end
     
-    
   end
   
   task :update => :init do
@@ -328,22 +337,46 @@ namespace :scrape_tiger do
       # Update Printer: bestoffer, price, pricestr, and CA equivalents
     end
   end
+  
+  task :important => :init do
+    
+    TigerPrinter.all.each do |tp|
+      newmodel = (tp.model || '').gsub(/(ink|chrome|tabloid|aio\sint|\(|,|\d+\s?x\s?\d+\s?(dpi)?|fast\sethernet|led).*/i,'').strip
+      newmodel.gsub(/#{tp.brand}/i, '')
+      if newmodel != tp.model and tp.model and newmodel
+        debugger if newmodel.length < 5
+        fill_in 'model', newmodel, tp 
+      end
+    end
+    
+  end
     
   task :to_printer => :init do
     @logfile = File.open("./log/tiger_to_printer.log", 'w+')
     num_matching = 0
     TigerPrinter.all.each do |tp|
       matching = match_tiger_to_printer tp
+      
+      matching.each do |rec|
+        fill_in_all_missing tp.attributes, rec
+        fill_in 'itemlength', tp.itemlength, rec
+        fill_in 'itemwidth', tp.itemwidth, rec
+        fill_in 'itemheight', tp.itemheight, rec
+      end
+      
       if matching.length > 0
         @logfile.puts "ERROR  #{tp.id} has multiple matching printers" if matching.length > 1
         p = matching[0]
         @logfile.puts "#{p.id} matches #{tp.id}"
         num_matching += 1
-        #fill_in_all_missing tp.attributes, p
       else  
         p = nil # TODO this is temporary
         @logfile.puts "No match for #{tp.id}"
-        #p = create_product_from_atts specific_o.attributes
+        #puts "#{tp.ppm} ppm, #{tp.paperinput} input, #{tp.resolutionmax} res"
+        #puts "#{tp.itemlength} x #{tp.itemwidth} x #{tp.itemheight}"
+        #puts "#{tp.brand} #{tp.model}"
+        #debugger
+        p = create_product_from_atts tp.attributes
       end
       
       toes = []
@@ -353,7 +386,6 @@ namespace :scrape_tiger do
         retailer = 14 if to.region == 'CA'
         fill_in 'url', optemo_special_url(to.tigerurl, to.region), to
         fill_in 'retailer_id', retailer, to
-        # TODO
         fill_in 'toolow', false, to
         o = create_retailer_offering to, p
       
