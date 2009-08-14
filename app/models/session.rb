@@ -98,7 +98,7 @@ class Session < ActiveRecord::Base
   private
   
   def handle_false_booleans(myfilter)
-    $model::BinaryFeatures.each do |f|
+    $model::BinaryFeaturesF.each do |f|
       myfilter.delete(f.intern) if myfilter[f.intern] == '0' && features.send(f.intern) != true
     end
     myfilter
