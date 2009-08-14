@@ -3,6 +3,72 @@
 
 module ScrapeExtra
   
+  def do_it p, ok_fields, interesting_fields, clean_specs
+    ok_fields.each do |field|
+      fill_in_missing field, clean_specs[field], p
+    end
+    interesting_fields.keys.each do |f|
+      interesting_fields[f] << clean_specs[f]
+    end
+    
+    return interesting_fields
+  end
+  
+  def get_cleaned_table dirty_table
+    return {} if dirty_table.nil? or dirty_table.length == 0
+    mapped_specs = {}
+    dirty_table.each{|x,y| (get_property_names(x) || []).each do |prop| 
+      mapped_specs[prop] = (mapped_specs[prop] || '') + "#{ScrapingHelper.sep}#{y}" unless y.nil?
+      end
+    }
+    clean_specs = generic_printer_cleaning_code mapped_specs
+    return clean_specs
+  end
+  
+  def get_table_xerox ln
+    ln_spec = ln.gsub(/\/enca.html$/, '/spec-enca.html')
+    begin
+      page = Nokogiri::HTML(open(ln_spec))
+      table = scrape_table (page.css('table.specs tr'), 'td', 'td')
+      debugger
+      sleep(15)
+      return table
+    rescue
+      #debugger
+      return nil
+    end
+  end
+  
+  def get_table_ama asin, sesh
+    
+    puts 'ASIN='+asin 
+    begin
+      sesh.visit('http://www.amazon.com/o/asin/' + asin)
+      sesh.click_link('See more technical details')
+    rescue
+      # NOthing 
+    end
+    doc = Nokogiri::HTML(sesh.response.body)
+    array = doc.css('.content ul li')
+    features = {}
+    array.each {|i|
+      t = i.content.split(': ')
+      features[t[0].downcase.tr(' -\(\)_','')]=t[1] if t.length == 2
+    }
+    sleep(15)
+    return features
+    
+  end
+  
+  def get_table_bro bp
+    mdl = just_alphanumeric(bp.model || bp.mpn).downcase
+    brolink = "http://www.brother-usa.com/Printer/modeldetail.aspx?PRODUCTID=#{mdl}&tab=spec"
+    page = Nokogiri::HTML(open(brolink))
+    table = scrape_table(page.css('table.AccSpecTable tr'), 'td.SpecTableRow span', 'td.SpecTableRow span')
+    sleep(15)
+    return table
+  end
+  
   def file_exists_for itemnum, sz=''
      begin
         image = Magick::ImageList.new(filename_from_itemnum(itemnum,sz))
@@ -46,36 +112,95 @@ end
 
 namespace :scrape_extra do
   
-  desc 'add data from amazon'
-  task :moredata_amazon => :init do
+  desc 'add data from xerox site'
+  task :moredata_xerox => :data_init do
+    $model = Printer
+    links = []
     
-    require 'webrat'
-    require 'mechanize' # Needed to make Webrat work
+    interesting_fields = ['ppm', 'paperinput', 'resolution', 'resolutionmax'].inject({}){|r, x| 
+      r.merge({x,[]})}
+    counter = 0
     
-    require 'rubygems'
-    require 'nokogiri'
-
-    require 'conversion_helper'
-    include ConversionHelper
-
-    require 'database_helper'
-    include DatabaseHelper
+    validids = Printer.valid.collect{|x| x.id}  
     
-    require 'validation_helper'
-    include ValidationHelper
+    # 1. Get Xerox printer links.
+    2.times do |pg_index|    
+      page = Nokogiri::HTML(open("scrape_me/manfpages/xerox_#{pg_index+1}.html"))
+      links += page.css('form#select_form option').collect{|x| x.[]('value')}.reject{|x| x.nil? or x == ''}
+    end
+  
+    links.uniq!
+    
+    links.each do |ln|
+      mdl = just_alphanumeric(ln.split('/')[-2])
+      if (mdl and mdl.strip != '')
+        ps = match_rec_to_printer ['xerox'], [mdl], Printer, []
+        if ps.length  == 1 # and !validids.include?p.id
+          p = ps.first
+          #if mdl.match(/phaser/i)
+           
+            # THIS IS HARD because of some small variations on models being in the same table 
+            
+            features = get_table_xerox ln
+            clean_specs = get_cleaned_table features
+            counter += 1
+          #end
+        else
+          puts " DUPLICATE " if ps.length > 1
+        end
+        
+        
+      end
+    end
+    
+    debugger
+    puts "Done!"
+    
+  end
+  
+  desc 'add data from brother'
+  task :moredata_bro => :data_init do
     
     $model = Printer
     
-    Webrat.configure do |conf| 
-     conf.mode = :mechanize  # Can't be rails or Webrat won't work 
+    interesting_fields = ['scanner', 'printserver', 'colorprinter', 'ttp'].inject({}){|r, x| r.merge({x,[]})}
+    ok_fields = ['ppm', 'resolution', 'resolutionmax', 'paperinput', 'duplex', 'colorprinter']
+    # TODO re fill-in colorprinter
+    validids = Printer.valid.collect{|x| x.id}  
+    broprinters = Printer.find_all_by_brand('brother').reject{|w| 
+      validids.include? w.id or (w.model || w.mpn).nil?}
+      
+    broprinters.each do |bp|
+      
+      features = get_table_bro bp
+      clean_specs = get_cleaned_table features
+      
+      unless clean_specs['colorprinter'].nil?
+        puts features['printtechnology']
+        puts clean_specs['colorprinter']
+        debugger 
+        fill_in 'colorprinter', clean_specs['colorprinter'], bp
+      end
+      
+      interesting_fields = do_it bp, ok_fields, interesting_fields, clean_specs
+      
     end
 
-    WWW::Mechanize.html_parser = Nokogiri::HTML
+      debugger
+      puts " Done "
+  end
+  
+  desc 'add data from amazon'
+  task :moredata_amazon => [:data_init, :web_init] do
     
-    interesting_fields = ['ppm', 'resolution', 'resolutionmax', 'paperinput','scanner', 'printserver'].inject({}){|r, x| r.merge({x,[]})}
-    ok_fields = ['ppm', 'paperinput']
+    $model = Printer
     
-    validids = Printer.valid.collect{|x| x.id}
+    interesting_fields = ['paperinput','scanner', 'duplex', 'printserver'].inject({}){|r, x| r.merge({x,[]})}
+    ok_fields = ['ppm', 'paperinput','resolution', 'resolutionmax']
+    
+    printerids = Printer.all.collect{|x| x.id}
+    validids = (Printer.all-Printer.find_all_by_paperinput(nil)).collect{|x| x.id}
+    #validids = Printer.valid.collect{|x| x.id}
     validanyway = 0
     
     watever = false
@@ -84,52 +209,30 @@ namespace :scrape_extra do
     problems = 0
     
     amazonprinterids = (AmazonPrinter.all - AmazonPrinter.find_all_by_asin(nil)).reject{|x| 
-      x.product_id.nil? or validids.include?(x.product_id) }.collect{|x| x.id}
+      x.product_id.nil? or validids.include?(x.product_id) or !printerids.include?(x.product_id) }.collect{|x| x.id}
     
     amazonprinterids.each do |apid|
       ap = AmazonPrinter.find(apid)
       p = Printer.find(ap.product_id)
       
-      puts 'ASIN='+ap.asin 
-      begin
-        sesh.visit('http://www.amazon.com/o/asin/' + ap.asin)
-        sesh.click_link('See more technical details')
-      rescue
-        puts "Uh oh"
-        problems += 1 
-      else
-        doc = Nokogiri::HTML(sesh.response.body)
-        array = doc.css('.content ul li')
-        features = {}
-        array.each {|i|
-          t = i.content.split(': ')
-          features[t[0].downcase.tr(' -\(\)_','')]=t[1]
-        }
-        
-        # TODO use inject()?
-        mapped_specs = {}
-        features.each{|x,y| get_property_names(x).each do |prop| 
-          mapped_specs[prop] = (mapped_specs[prop] || '') + "#{ScrapingHelper.sep}#{y}" unless y.nil?
-          end
-        }
-        clean_specs = generic_printer_cleaning_code mapped_specs
-        
-        puts "#{p.id} rescraped"
-        
-        
-        debugger if clean_specs['paperinput'].nil?
-        
-        validanyway += 1 if (validids.include?p.id)
-        puts "Yay! I'm useful!" unless (validids.include?p.id)
-        ok_fields.each do |field|
-          fill_in_missing field, clean_specs[field], p
-        end
-        interesting_fields.keys.each do |f|
-          interesting_fields[f] << clean_specs[f]
-        end
-        
-        sleep(15) if watever
-      end  
+      features = get_table_ama (ap.asin, sesh)
+      clean_specs = get_cleaned_table features
+      
+      
+      debugger if !p.scanner.nil? and !clean_specs['scanner'].nil? and (p.scanner xor clean_specs['scanner'])
+      puts "#{p.id} rescraped"
+      
+      puts "No data" if clean_specs['paperinput'].nil?
+      debugger unless watever()
+      
+      ok_fields.each do |field|
+        fill_in_missing field, clean_specs[field], p
+      end
+      interesting_fields.keys.each do |f|
+        interesting_fields[f] << clean_specs[f]
+      end
+      
+      sleep(15) if watever
     end
       puts "Done with #{problems} problems"
       debugger
@@ -138,19 +241,7 @@ namespace :scrape_extra do
   end
   
   desc 'Add data from elsewhere'
-  task :moredata  => :init do
-    
-    require 'rubygems'
-    require 'nokogiri'
-
-    require 'conversion_helper'
-    include ConversionHelper
-
-    require 'database_helper'
-    include DatabaseHelper
-    
-    require 'validation_helper'
-    include ValidationHelper
+  task :moredata_lex  => :data_init do
     
     $model = Printer
     
@@ -175,9 +266,7 @@ namespace :scrape_extra do
       page = Nokogiri::HTML(open(link))
       specs = scrape_table(page.css('div.specs tr'), 'td.spectitle', 'td.specinfo')
       
-      # TODO use inject()?
       mapped_specs = {}
-      mapped_specs_readable = {}
       specs.each{|x,y| get_property_names(x).each do |prop| 
         mapped_specs_readable[prop] = (mapped_specs_readable[prop] || '') + " #{x}:#{y}" unless y.nil?
         mapped_specs[prop] = (mapped_specs[prop] || '') + "#{ScrapingHelper.sep}#{y}" unless y.nil?
@@ -186,9 +275,7 @@ namespace :scrape_extra do
       mapped_specs['brand'] = 'Lexmark'
       mapped_specs['model'] = get_el(page.css('div#prodInfo h1')).content if get_el(page.css('div#prodInfo h1'))
       clean_specs = generic_printer_cleaning_code mapped_specs
-      
-      #debugger
-      
+            
       # TODO more effective find?
       ps = match_rec_to_printer [clean_specs['brand']], [clean_specs['model']], $model,[]
       if ps.length == 1
@@ -412,10 +499,40 @@ namespace :scrape_extra do
   
   end
   
+  task :data_init => :init do
+    
+    require 'rubygems'
+    require 'nokogiri'
+
+    require 'conversion_helper'
+    include ConversionHelper
+
+    require 'database_helper'
+    include DatabaseHelper
+    
+    require 'validation_helper'
+    include ValidationHelper
+    
+  end
+  
+  task :web_init do
+    
+    require 'webrat'
+    require 'mechanize' # Needed to make Webrat work
+    
+    Webrat.configure do |conf| 
+     conf.mode = :mechanize  # Can't be rails or Webrat won't work 
+    end
+
+    WWW::Mechanize.html_parser = Nokogiri::HTML
+  end
+  
   desc 'init'
   task :init => :environment do
     require 'scraping_helper'
     include ScrapingHelper
+    
+    include ScrapeExtra
     
     $folder= 'public'
     $size_names = ['s','m','l']

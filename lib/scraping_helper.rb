@@ -10,6 +10,11 @@ module ScrapingHelper
     return @@sep
   end
   
+  def generic_printer_blurb_cleaner blurb
+    paperinput = blurb.scan(/(?-mix:\d*,?\d+\s?-?)(?i-mx:sheets?)|(?i-mx:pages?)\s(?i-mx:paper)?(?i-mx:priority)?(?i-mx:\stray)/).collect{|x| get_max_f x}.max
+    return {'paperinput' => paperinput} if paperinput
+  end
+  
   def generic_printer_cleaning_code atts
     
     atts.each{|x,y| atts[x] = y.gsub(/#{@@sep}/,'') if y.scan(/#{@@sep}/).length == 1 }
@@ -74,10 +79,29 @@ module ScrapingHelper
     atts['condition'] = "OEM" if (atts['title']||'').match(/oem/i)
     
     # Booleans
+    
+    atts.each{|x,y| atts[x] = nil if y=='' or (y.type==String and y.strip =='') }
+    
+    if(atts['colorprinter'])
+      if atts['colorprinter'].match(/color/i)
+        atts['colorprinter'] = true
+      elsif atts['colorprinter'].match(/b(lack)?\s?(and|&|\/)?\s?w(hite)?/i)
+        atts['colorprinter'] = false
+      else
+        debugger
+        atts['colorprinter']= clean_bool(atts['colorprinter'])
+      end
+    end
+    
+    atts['printserver'] = 'true' if (atts.values.to_s).match(/(wire(d|less)|network|server)/i)
     atts['printserver'] = clean_bool(atts['printserver'])
+    
     atts['scanner'] = clean_bool(atts['scanner'])
     
-    atts.each{|x,y| atts[x] = y.gsub(/#{@@sep}/,',') if y.type==String} 
+    atts['duplex'] = false if atts['duplex'].downcase == 'manual'
+    atts['duplex'] = clean_bool(atts['duplex'])
+    atts.each{|x,y| atts[x] = y.gsub(/^#{@@sep}/,'').gsub(/#{@@sep}/,' | ') if y.type==String} 
+    
     return atts
   end
   
@@ -85,9 +109,9 @@ module ScrapingHelper
     vals = []
     (dirty_vals || '').split(@@sep).each { |dirty_val| 
       val = get_b(dirty_val)
-      if val.nil? and !dirty_val.nil?
-        val = dirty_val.match(/(not applicable|n\/a|not available)/i).nil?
-      end
+      #if val.nil? and (!dirty_val.nil? and dirty_val.strip!='')
+      #  val = dirty_val.match(/(not applicable|n\/a|not available)/i).nil?
+      #end
       vals << val
     }
     if vals.empty? or vals.uniq == [nil]
@@ -130,6 +154,7 @@ module ScrapingHelper
     param_names << 'itemwidth' if str.match(/width/) # TODO
     param_names << 'packagewidth' if str.match(/width/) # TODO
     param_names << 'printserver' if str.match(/(network|server)/)
+    param_names << 'scanner' if str.match(/scan/)
     param_names << 'colorprinter' if str.match(/(colou?r|printtechnology|printeroutput)/)
     param_names << 'dimensions' if str.match(/size/)
     
@@ -313,8 +338,8 @@ module ScrapingHelper
   
   def get_b x
     return nil if x.nil?
-    trues = ["yes","1"]
-    falses = ["no", "0"]
+    trues = ["yes", 'y',"1", 'true', 'optional']
+    falses = ["no", 'n', "0", 'false']
     if trues.include? x.to_s.downcase.strip
       val = true
     elsif falses.include? x.to_s.downcase.strip
