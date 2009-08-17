@@ -9,6 +9,8 @@
 			<% end %>
 		</div>
 		<%= link_to image_tag('backarrow.png'), landing? ? url_for(:controller => 'products') : 'javascript:history.back()'%>
+		<div style="height: 20px;"></div>
+		<%= link_to "Request a Feature", "#", :id => "requestafeature" %>
 	</div>
 	<div id="container" style="margin-left: 149px">
 <% else %>
