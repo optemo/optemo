@@ -68,8 +68,8 @@ end
         clusters.each_index {|i| 
           if clusters[i].indicator(f.name, session)
             clusterDs[i] << $model::FeaturesDisp[f.name]
-             desCount[i] += 1
-             statDs[i] << 1
+            # desCount[i] += 1
+            # statDs[i] << 1
           end  
         }    
       end 
@@ -85,62 +85,62 @@ end
           cRanges = clusters[i].ranges(f.name, session)
            if (cRanges[1] <=llow)
              clusterDs[i] << $model::ContinuousFeaturesDescLlow[f.name]
-             desCount[i] += 1
-             if ($PrefDirection[f.name]==-1)
-                  statDs[i] << 1
-             else
-                  statDs[i] << 0   
-             end   
+            #desCount[i] += 1
+            #if ($PrefDirection[f.name]==-1)
+            #     statDs[i] << 1
+            #else
+            #     statDs[i] << 0   
+            #end   
            elsif (cRanges[1] <= low)
              clusterDs[i] << $model::ContinuousFeaturesDescLow[f.name]
-             desCount[i] += 1
-             if ($PrefDirection[f.name]==-1)
-               statDs[i] << 1
-             else
-               statDs[i] << 0  
-             end  
+             #desCount[i] += 1
+             #if ($PrefDirection[f.name]==-1)
+             #  statDs[i] << 1
+             #else
+             #  statDs[i] << 0  
+             #end  
            elsif(cRanges[0] >= hhigh )
              clusterDs[i] << $model::ContinuousFeaturesDescHhigh[f.name]
-             desCount[i] += 1
-             if ($PrefDirection[f.name]==1)
-                 statDs[i] << 1
-             else
-                 statDs[i] << 0  
-             end         
+             #desCount[i] += 1
+             #if ($PrefDirection[f.name]==1)
+             #    statDs[i] << 1
+             #else
+             #    statDs[i] << 0  
+             #end         
            elsif (cRanges[0] >= high)
              clusterDs[i] <<  $model::ContinuousFeaturesDescHigh[f.name]
-             desCount[i] += 1
-             if ($PrefDirection[f.name]==1)
-                  statDs[i] << 1
-              else
-                  statDs[i] << 0    
-             end     
+             #desCount[i] += 1
+             #if ($PrefDirection[f.name]==1)
+             #     statDs[i] << 1
+             # else
+             #     statDs[i] << 0    
+             #end     
            end
         }
       end 
     end 
-    clusters.each_index {|i| 
-       newD = []
-        newC = 0
-        if desCount[i]>3
-          statDs[i].each_index {|j|
-            if ((statDs[i][j]==1) && (newC<3)) 
-              newD << clusterDs[i][j]
-              newC +=1
-            end
-          }
-          while newC <2
-              newD << clusterDs[i][newC]
-              newC +=1
-          end
-          clusterDs[i] = newD
-      end            
-    }
+    #clusters.each_index {|i| 
+    #   newD = []
+    #    newC = 0
+    #    if desCount[i]>3
+    #      statDs[i].each_index {|j|
+    #        if ((statDs[i][j]==1) && (newC<3)) 
+    #          newD << clusterDs[i][j]
+    #          newC +=1
+    #        end
+    #      }
+    #      while newC <2
+    #          newD << clusterDs[i][newC]
+    #          newC +=1
+    #      end
+    #      clusterDs[i] = newD
+    #  end            
+    #}
     for j in 0..cluster_count-1
       ds[j] = clusterDs[j]
     end 
     res = ds.map{|d| #d.blank? ? 'All Purpose' : 
-      d.compact.join(', ')}         
+      d.join(', ')}         
     res
   end
   
@@ -153,8 +153,8 @@ end
    DbFeature.find_all_by_product_type_and_feature_type_and_region(session.product_type, 'Binary',$region).each do |f|
      if indicator(f.name)
          des << $model::FeaturesDisp[f.name]
-         desCount += 1
-         statDs << 1
+      #   desCount += 1
+      #   statDs << 1
      end  
    end
    @dbfeatCon.each do |f|
@@ -166,56 +166,56 @@ end
       searchR = ranges(f.name)
       if (searchR[1]<=llow)
            des <<  $model::ContinuousFeaturesDescLlow[f.name]
-           desCount += 1
-           if ($PrefDirection[f.name]==-1)
-                 statDs << 1
-           else
-                 statDs << 0   
-           end
+       #    desCount += 1
+       #    if ($PrefDirection[f.name]==-1)
+       #          statDs << 1
+       #    else
+       #          statDs << 0   
+       #    end
       elsif (searchR[1] <= low)
            des << $model::ContinuousFeaturesDescLow[f.name]
-           desCount += 1
-           if ($PrefDirection[f.name]==-1)
-                 statDs << 1
-           else
-                 statDs << 0   
-           end 
+        #   desCount += 1
+        #   if ($PrefDirection[f.name]==-1)
+        #         statDs << 1
+        #   else
+        #         statDs << 0   
+        #   end 
       elsif (searchR[0] >= hhigh) 
            des << $model::ContinuousFeaturesDescHhigh[f.name]   
-           desCount += 1
-           if ($PrefDirection[f.name]==1)
-                 statDs << 1
-           else
-                 statDs << 0   
-           end
+        #  desCount += 1
+        #  if ($PrefDirection[f.name]==1)
+        #        statDs << 1
+        #  else
+        #        statDs << 0   
+        #  end
       elsif (searchR[0]>=high)
            des << $model::ContinuousFeaturesDescHigh[f.name]   
-           desCount += 1
-           if ($PrefDirection[f.name]==1)
-                 statDs << 1
-           else
-                 statDs << 0   
-           end 
+         #  desCount += 1
+         #  if ($PrefDirection[f.name]==1)
+         #        statDs << 1
+         #  else
+         #        statDs << 0   
+         #  end 
       end
     end  
   
-       newD = []
-       newC = 0
-        if desCount>3
-          statDs.each_index {|j|
-            if ((statDs[j]==1) && (newC<3)) 
-              newD << des[j]
-              newC +=1
-            end
-          }
-          while newC <2
-             statDs.each_index {|j|
-                  newD << des[j]
-                  newC +=1
-            }      
-          end
-          des = newD
-      end            
+    #   newD = []
+    #   newC = 0
+    #    if desCount>3
+    #      statDs.each_index {|j|
+    #        if ((statDs[j]==1) && (newC<3)) 
+    #          newD << des[j]
+    #          newC +=1
+    #        end
+    #      }
+    #      while newC <2
+    #         statDs.each_index {|j|
+    #              newD << des[j]
+    #              newC +=1
+    #        }      
+    #      end
+    #      des = newD
+    #  end            
     res = des.compact.join(', ')
     res.blank? ? 'All Purpose' : res 
   end
