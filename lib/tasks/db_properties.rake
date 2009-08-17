@@ -15,10 +15,11 @@ end
 
 def cache_index
   #Store default starting point for printers
-  $clustermodel = CameraCluster
-  $nodemodel = CameraNode
-  $featuremodel = CameraFeatures
-  $model = Camera
+  $clustermodel = PrinterCluster
+  $nodemodel = PrinterNode
+  $featuremodel = PrinterFeatures
+  $model = Printer
+  $region = "us"
   current_version = $clustermodel.find_last_by_region("us").version
   cluster_ids = $clustermodel.find_all_by_parent_id_and_version_and_region(0, current_version, "us", :order => 'cluster_size DESC').map{|c| c.id.to_s}
   s = Search.find_all_by_session_id(0)
@@ -36,8 +37,8 @@ def create_product_properties(model,region)
   #Collect valid products
   if region == "us"
     products = model.valid.instock
- # else
-  #  products = model.valid.instock_ca
+  else
+    products = model.valid.instock_ca
   end
   unless products.nil? || products.empty?
     model::CategoricalFeaturesF.each {|name|

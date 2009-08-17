@@ -3,15 +3,15 @@ class Camera < ActiveRecord::Base
   include ProductProperties
   has_many :camera_nodes
   is_indexed :fields => ['title', 'feature']
-           #                                (c)luster 
-           #                                (f)ilter 
-           #     db_name           Type     (e)xtra Display     Label   Low Desc     High Desc  
-  Features = [%w(price             Continuous  cf  Price          \   Cheap           Expensive),
-              %w(maximumresolution Continuous  cf  Resolution     MP  Low\ Resolution High\ Resolution),
-              %w(opticalzoom       Continuous  cf  Optical\ Zoom  X   Low\ Zoom       High\ Zoom),
-              %w(displaysize       Continuous  cf  Display\ Size  in. Small\ Screen   Large\ Screen),
-              %w(brand             Categorical f   Brand          \   \               \ )]
-  
+           #                                               (c)luster 
+           #                                               (f)ilter 
+           #   db_name                Type        (e)xtra Display                              Label Very Low Desc       Low Desc                Average Desc                   High Desc            Very High Desc
+  Features = [%w(price                Continuous  cf                  Price                    \     Very\ Cheap         Cheap                   Average\ Price                 Average\ Price       Expensive),
+              %w(maximumresolution    Continuous  cf                  Resolution               MP    Low\ Resolution     Average\ Resolution     Somewhat\ High\ Resolution     High\ Resolution     Very\ High\ Resolution),
+              %w(opticalzoom          Continuous  cf                  Optical\ Zoom            X     Low\ Zoom           Average\ Zoom           Somewhat\ Zoom                 High\ Zoom           Very\ High\ Zoom),
+              %w(displaysize          Continuous  cf                  Display\ Size            in    Small\ LCD          Somewhat\ Small\ LCD    Average\ LCD                   Large\ LCD           Very\ Large\ LCD),
+              %w(brand                Categorical f                   Brand                    \     \                   \                        \                              \                   \ )]
+              
   ContinuousFeatures = Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[0]}
   
   $PrefDirection = Hash.new(1) 
@@ -47,12 +47,11 @@ class Camera < ActiveRecord::Base
     "waterproof" => "Water Proof: "
     }
   named_scope :priced, :conditions => "price > 0"
-  named_scope :valid, :conditions => ["(bodyonly = true OR (#{%w(minf maximumfocallength minimumfocallength).map{|f|f+" > 0"}.join(" AND ")}))",ContinuousFeatures.select{|f|!f.match(/^minf|maximumfocallength|minimumfocallength$/)}.map{|i|i+' > 0'}.join(' AND '),BinaryFeatures.map{|i|i+' IS NOT NULL'}.join(' AND '),['brand','model'].map{|i|i+' IS NOT NULL'}.join(' AND ')].delete_if{|l|l.blank?}.join(' AND ')
+  named_scope :valid, :conditions => [BinaryFeatures.map{|i|i+' IS NOT NULL'}.join(' AND '),['brand','model'].map{|i|i+' IS NOT NULL'}.join(' AND ')].delete_if{|l|l.blank?}.join(' AND ')
   named_scope :instock, :conditions => "instock is true"
   named_scope :instock_ca, :conditions => "instock_ca is true"
-  named_scope :valid_and_modelled, :conditions => [ContinuousFeatures.map{|i|i+' > 0'}.join(' AND '),BinaryFeatures.map{|i|i+' IS NOT NULL'}.join(' AND '),['brand','model', 'aa_batteries', 'maximumshutterspeed'].map{|i|i+' IS NOT NULL'}.join(' AND ')].delete_if{|l|l.blank?}.join(' AND ')
+#  named_scope :valid_and_modelled, :conditions => [ContinuousFeatures.map{|i|i+' > 0'}.join(' AND '),BinaryFeatures.map{|i|i+' IS NOT NULL'}.join(' AND ')].delete_if{|l|l.blank?}.join(' AND ')
   def self.urlname
     @urlname ||= name.pluralize.downcase
   end
 end
-  
