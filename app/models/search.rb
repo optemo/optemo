@@ -19,7 +19,7 @@ def distributions
             max = min + stepsize
             if (max == min)
               dist[i] += 1 if n.send(f.name) == min
-            elsif (n.send(f.name)>=min && n.send(f.name) < max)
+            elsif (n.send(f.name)>=min && n.send(f.name) <= max)
               dist[i] += 1 
             end
         end
@@ -67,7 +67,7 @@ end
       ds[j] = clusterDs[j]
     end 
     res = ds.map{|d| #d.blank? ? 'All Purpose' : 
-      d.join(', ')}         
+      d.compact.join(', ')}         
     res
   end
   
@@ -86,7 +86,7 @@ end
       end
     end  
    
-    res = des.join(', ')
+    res = des.compact.join(', ')
     res.blank? ? 'All Purpose' : res 
   end
   
