@@ -19,6 +19,7 @@ def cache_index
   $nodemodel = PrinterNode
   $featuremodel = PrinterFeatures
   $model = Printer
+  $region = 'us'
   current_version = $clustermodel.find_last_by_region("us").version
   cluster_ids = $clustermodel.find_all_by_parent_id_and_version_and_region(0, current_version, "us", :order => 'cluster_size DESC').map{|c| c.id.to_s}
   s = Search.find_all_by_session_id(0)
