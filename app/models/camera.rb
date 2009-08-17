@@ -6,10 +6,10 @@ class Camera < ActiveRecord::Base
            #                                (c)luster 
            #                                (f)ilter 
            #     db_name           Type     (e)xtra Display     Label   Low Desc     High Desc  
-  Features = [%w(maximumresolution Continuous  cf  Resolution     MP  Low\ Resolution High\ Resolution),
-              %w(displaysize       Continuous  cf  Display\ Size  in. Small\ Screen   Large\ Screen),
+  Features = [%w(price             Continuous  cf  Price          \   Cheap           Expensive),
+              %w(maximumresolution Continuous  cf  Resolution     MP  Low\ Resolution High\ Resolution),
               %w(opticalzoom       Continuous  cf  Optical\ Zoom  X   Low\ Zoom       High\ Zoom),
-              %w(price             Continuous  cf  Price          \   Cheap           Expensive),
+              %w(displaysize       Continuous  cf  Display\ Size  in. Small\ Screen   Large\ Screen),
               %w(brand             Categorical f   Brand          \   \               \ )]
   
   ContinuousFeatures = Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[0]}
