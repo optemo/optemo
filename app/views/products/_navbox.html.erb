@@ -1,6 +1,7 @@
 <div class="navigator_box" style="left: <%= (i%3)*247 %>px;">
 <div id="box<%=i%>" class="borderbox">
 	<div class='title'><%= @clusterDescs[i] %></div>
+	<div style="position: absolute; bottom: 0px; width: 100%">
 
 	<% if !cluster.representative(@session).imagemwidth.blank? %>
 		<%= image_tag cluster.representative(@session).imagemurl, :height => 100, :"data-id" => cluster.representative(@session).id, :class => "productimg", :alt => cluster.representative(@session).smlTitle %>
@@ -27,6 +28,7 @@
 	<% end %>
 	<div class="bottombar" name ="<%= cluster.representative(@session).id %>">
 		<%= sim_link(cluster,i, cluster.representative(@session).id) %>
+	</div>
 	</div>
 	
 	<img src="/images/white-pix.gif" style="position:absolute;right:-3px;bottom:-3px;">

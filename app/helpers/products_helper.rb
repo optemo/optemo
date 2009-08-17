@@ -1,12 +1,6 @@
 module ProductsHelper
-  def nav_link
-    
-    if request.env['HTTP_REFERER'] && request.env['HTTP_REFERER'].match('laserprinterhub|localhost')
-      link_to 'Go back<br> to navigation', 'javascript:history.back()'
-    else
-      link_to 'Browse more products', :controller => 'products'
-    end
-    
+  def landing?
+    ! (request.referer && request.referer.match('laserprinterhub|localhost'))
   end
 
   def array_to_csv(iArray)
