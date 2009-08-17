@@ -1,6 +1,6 @@
 module ProductsHelper
   def landing?
-    ! (request.referer && request.referer.match('laserprinterhub|localhost'))
+    ! (request.referer && request.referer.match(/http:\/\/(laserprinterhub|localhost)/))
   end
 
   def array_to_csv(iArray)
