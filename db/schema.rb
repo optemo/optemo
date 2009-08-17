@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090807164159) do
+ActiveRecord::Schema.define(:version => 20090817181427) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -639,6 +639,60 @@ ActiveRecord::Schema.define(:version => 20090807164159) do
     t.boolean  "instock_ca"
   end
 
+  create_table "cartridges", :force => true do |t|
+    t.string   "brand"
+    t.string   "model"
+    t.string   "mpn"
+    t.string   "asin"
+    t.string   "yieldstr"
+    t.integer  "yield"
+    t.string   "shelflifestr"
+    t.integer  "shelflife"
+    t.string   "color"
+    t.string   "brandnameprice"
+    t.integer  "brandnamepriceint"
+    t.text     "title"
+    t.integer  "price"
+    t.string   "pricestr"
+    t.boolean  "iseligibleforsupersavershipping"
+    t.integer  "bestoffer"
+    t.string   "pricehistory"
+    t.string   "imagesurl"
+    t.integer  "imagesheight"
+    t.integer  "imageswidth"
+    t.string   "imagemurl"
+    t.integer  "imagemheight"
+    t.integer  "imagemwidth"
+    t.string   "imagelurl"
+    t.integer  "imagelheight"
+    t.integer  "imagelwidth"
+    t.boolean  "instock"
+    t.float    "averagereviewrating"
+    t.integer  "totalreviews"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "dimensions"
+    t.integer  "itemwidth"
+    t.integer  "itemlength"
+    t.integer  "itemheight"
+    t.integer  "packageheight"
+    t.integer  "packagelength"
+    t.integer  "packagewidth"
+    t.integer  "packageweight"
+    t.string   "warranty"
+    t.text     "manufacturerproducturl"
+    t.datetime "scrapedat"
+  end
+
+  create_table "compatibilities", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "accessory_id"
+    t.string   "accessory_type"
+    t.integer  "product_id"
+    t.string   "product_type"
+  end
+
   create_table "db_features", :force => true do |t|
     t.string   "product_type"
     t.string   "feature_type"
@@ -646,11 +700,13 @@ ActiveRecord::Schema.define(:version => 20090807164159) do
     t.float    "min"
     t.float    "max"
     t.float    "high"
+    t.float    "hhigh"
     t.float    "low"
+    t.float    "llow"
     t.text     "categories"
+    t.string   "region"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "region",       :default => "us"
   end
 
   create_table "db_properties", :force => true do |t|
@@ -1036,7 +1092,7 @@ ActiveRecord::Schema.define(:version => 20090807164159) do
     t.string   "availability"
     t.boolean  "iseligibleforsupersavershipping"
     t.string   "merchant"
-    t.string   "url"
+    t.text     "url"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.float    "shippingCost"

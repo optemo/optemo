@@ -15,10 +15,10 @@ end
 
 def cache_index
   #Store default starting point for printers
-  $clustermodel = PrinterCluster
-  $nodemodel = PrinterNode
-  $featuremodel = PrinterFeatures
-  $model = Printer
+  $clustermodel = CameraCluster
+  $nodemodel = CameraNode
+  $featuremodel = CameraFeatures
+  $model = Camera
   current_version = $clustermodel.find_last_by_region("us").version
   cluster_ids = $clustermodel.find_all_by_parent_id_and_version_and_region(0, current_version, "us", :order => 'cluster_size DESC').map{|c| c.id.to_s}
   s = Search.find_all_by_session_id(0)
@@ -36,8 +36,8 @@ def create_product_properties(model,region)
   #Collect valid products
   if region == "us"
     products = model.valid.instock
-  else
-    products = model.valid.instock_ca
+ # else
+  #  products = model.valid.instock_ca
   end
   unless products.nil? || products.empty?
     model::CategoricalFeaturesF.each {|name|
@@ -57,8 +57,10 @@ def create_product_properties(model,region)
       f.region = region
       f.min = products.map{|c|c.send(name.intern)}.reject{|c|c.nil?}.sort[0]
       f.max = products.map{|c|c.send(name.intern)}.sort[-1]
-      f.high = products.map{|c|c.send(name.intern)}.sort[products.count*0.75]
-      f.low = products.map{|c|c.send(name.intern)}.sort[products.count*0.25]
+      f.hhigh = products.map{|c|c.send(name.intern)}.sort[products.count*0.85]
+      f.high = products.map{|c|c.send(name.intern)}.sort[products.count*0.6]
+      f.low = products.map{|c|c.send(name.intern)}.sort[products.count*0.4]
+      f.llow = products.map{|c|c.send(name.intern)}.sort[products.count*0.15]
       f.save
     }
     model::BinaryFeaturesF.each {|name|
