@@ -32,8 +32,8 @@ class Camera < ActiveRecord::Base
   ContinuousFeaturesDescAverage = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[7]}).flatten]
   BinaryFeaturesDesc = Hash[*BinaryFeatures.zip(Features.select{|f|f[1] == "Binary" && f[2].index("c")}.map{|f|f[3]}).flatten]
   ExtraFeature = Hash[*Features.select{|f|f[2].index("e")}.map{|f|[f[0],true]}.flatten]
-  ShowFeatures = %w(brand model maximumresolution opticalzoom digitalzoom displaysize itemweight itemwidth sensordiagonal crushproof freezeproof waterproof aa_batteries aperturerange minimumfocallength maximumfocallength minf shutterspeedrange slr)
-  ShowFeaturesDisp = %w(Brand Model Resolution Optical\ Zoom Digital\ Zoom Display\ Size Weight Camera\ Width Sensor\ Diagonal Crush\ Proof Freeze\ Proof Water\ Proof AA\ Batteries Aperture\ Range Min\ Focal\ Length Max\ Focal\ Length Min\ F-Number Shutter\ Speed SLR)
+  ShowFeatures = %w(brand model maximumresolution opticalzoom digitalzoom displaysize itemweight itemwidth)
+  ShowFeaturesDisp = %w(Brand Model Resolution Optical\ Zoom Digital\ Zoom Display\ Size Weight Camera\ Width)
   DisplayedFeatures = %w(pricestr brand digitalzoom displaysize itemdimensions itemweight label maximumresolution model opticalzoom title)
   FInfo = {
     "brand" => "Brands: The manufacturer of the product. You can choose more than just one brand.",
@@ -53,5 +53,9 @@ class Camera < ActiveRecord::Base
 #  named_scope :valid_and_modelled, :conditions => [ContinuousFeatures.map{|i|i+' > 0'}.join(' AND '),BinaryFeatures.map{|i|i+' IS NOT NULL'}.join(' AND ')].delete_if{|l|l.blank?}.join(' AND ')
   def self.urlname
     @urlname ||= name.pluralize.downcase
+  end
+  # Show Features to Continuous Features dictionary
+  def self.SFtoCFdictionary(sf)
+    sf
   end
 end

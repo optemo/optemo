@@ -3,12 +3,12 @@
 	<div style="float: left;">
 		<div style="float:right; margin-left: 3px;">
 			<% if landing? %>
-				<%= link_to "Browse more<br> #{$model.urlname}", :controller => 'products' %>
+				<%= link_to "Browse more<br> #{$model.urlname}", "/products/homepage" %>
 			<% else %>
   				<%= link_to "Go back<br> to navigation", 'javascript:history.back()'%>
 			<% end %>
 		</div>
-		<%= link_to image_tag('backarrow.png'), landing? ? url_for(:controller => 'products') : 'javascript:history.back()'%>
+		<%= link_to image_tag('backarrow.png'), landing? ? '/products/homepage' : 'javascript:history.back()'%>
 		<div style="height: 20px;"></div>
 		<%= link_to "Request a Feature", "#", :id => "requestafeature" %>
 	</div>
