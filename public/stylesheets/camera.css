@@ -34,9 +34,9 @@ div.navigator_box:hover {
 	border: 3px solid #bbb;
 }
 div.borderbox {
-	position: relative;
-	width: 100%;
-	height: 100%;
+	/*position: relative;*/
+	width: 235px;
+	height: 205px;
 }
 .borderbox p {
 	padding: 0.1em 0;
