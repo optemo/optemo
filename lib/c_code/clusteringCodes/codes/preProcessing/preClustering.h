@@ -1,31 +1,30 @@
-string preClustering(string* varNames, map<const string, int>productNames, string productName, string* conFeatureNames, string* catFeatureNames, string* boolFeatureNames, string* indicatorNames, string region){
-	
+string preClustering(map<const string, int>productNames, string productName, string* conFeatureNames, string* catFeatureNames, string* boolFeatureNames, string* indicatorNames, string region){
+
 	string filteringCommand;
 	
 	string brand = "";
 	string var;
 	catFeatureNames[0]= "brand";
 	conFeatureNames[0]= "price";
-	
 	switch(productNames[productName]){
 		case 1:
-				conFeatureNames[1]= "displaysize";  
+				conFeatureNames[1]= "itemweight";  
 			    conFeatureNames[2]= "opticalzoom";
 			    conFeatureNames[3]= "maximumresolution";
-				varNames[0] = "layer";
-				varNames[1] = "camid";
-				varNames[2] = "brand";
-				varNames[3] = "price_min";
-				varNames[4] = "price_max";
-				varNames[5] = "displaysize_min";
-				varNames[6] = "displaysize_max";
-				varNames[7] = "opticalzoom_min";
-				varNames[8] = "opticalzoom_max";
-				varNames[9] = "maximumresolution_min";
-				varNames[10] = "maximumresolution_max";
-				varNames[11] = "session_id";
+				conFeatureNames[4] = "displaysize";
+				conFeatureNames[5] = "minimumfocallength";
+				conFeatureNames[6] = "maximumfocallength";
+				conFeatureNames[7] = "minimumshutterspeed";
+				conFeatureNames[8] = "maximumshutterspeed";
+				boolFeatureNames[0] = "slr";
+				boolFeatureNames[1] = "waterproof";
+				boolFeatureNames[2] = "bulb";
+			
+			
+				
+				
 				indicatorNames[0] = "Price";
-				indicatorNames[1] = "Display Size";
+				indicatorNames[1] = "Item Weight";
 				indicatorNames[2] = "Optical Zoom";
 				indicatorNames[3] = "MegaPixels";
 				filteringCommand = "SELECT * FROM ";
@@ -51,7 +50,7 @@ string preClustering(string* varNames, map<const string, int>productNames, strin
 				filteringCommand = "SELECT * FROM ";
 				filteringCommand += productName;
 				if (region == "us"){
-					filteringCommand += "s where (instock=1  and (scanner IS NOT NULL) and (printserver IS NOT NULL) and ";
+					filteringCommand += "s where (instock=1 and (scanner IS NOT NULL) and (printserver IS NOT NULL) ";
 				}else if(region == "ca"){
 					filteringCommand += "s where (instock_ca=1 and (scanner IS NOT NULL) and (printserver IS NOT NULL) and ";
 				}
