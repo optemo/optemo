@@ -8,23 +8,23 @@ string preClustering(map<const string, int>productNames, string productName, str
 	conFeatureNames[0]= "price";
 	switch(productNames[productName]){
 		case 1:
-				conFeatureNames[1]= "itemweight";  
+				//conFeatureNames[1]= "itemweight";  
 			    conFeatureNames[2]= "opticalzoom";
 			    conFeatureNames[3]= "maximumresolution";
-				conFeatureNames[4] = "displaysize";
-				conFeatureNames[5] = "minimumfocallength";
-				conFeatureNames[6] = "maximumfocallength";
-				conFeatureNames[7] = "minimumshutterspeed";
-				conFeatureNames[8] = "maximumshutterspeed";
-				boolFeatureNames[0] = "slr";
-				boolFeatureNames[1] = "waterproof";
-				boolFeatureNames[2] = "bulb";
+				conFeatureNames[1] = "displaysize";
+			//	conFeatureNames[5] = "minimumfocallength";
+			//	conFeatureNames[6] = "maximumfocallength";
+			//	conFeatureNames[7] = "minimumshutterspeed";
+			//	conFeatureNames[8] = "maximumshutterspeed";
+			//	boolFeatureNames[0] = "slr";
+			//	boolFeatureNames[1] = "waterproof";
+			//	boolFeatureNames[2] = "bulb";
 			
 			
 				
 				
 				indicatorNames[0] = "Price";
-				indicatorNames[1] = "Item Weight";
+			//	indicatorNames[1] = "Item Weight";
 				indicatorNames[2] = "Optical Zoom";
 				indicatorNames[3] = "MegaPixels";
 				filteringCommand = "SELECT * FROM ";

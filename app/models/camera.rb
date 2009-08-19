@@ -3,15 +3,15 @@ class Camera < ActiveRecord::Base
   include ProductProperties
   has_many :camera_nodes
   is_indexed :fields => ['title', 'feature']
-           #                                               (c)luster 
-           #                                               (f)ilter 
-           #   db_name                Type        (e)xtra Display                              Label Very Low Desc       Low Desc                Average Desc                   High Desc            Very High Desc
-  Features = [%w(price                Continuous  cf                  Price                    \     Very\ Cheap         Cheap                   Average\ Price                 Average\ Price       Expensive),
-              %w(maximumresolution    Continuous  cf                  Resolution               MP    Low\ Resolution     Average\ Resolution     Somewhat\ High\ Resolution     High\ Resolution     Very\ High\ Resolution),
-              %w(opticalzoom          Continuous  cf                  Optical\ Zoom            X     Low\ Zoom           Average\ Zoom           Somewhat\ Zoom                 High\ Zoom           Very\ High\ Zoom),
-              %w(displaysize          Continuous  cf                  Display\ Size            in    Small\ LCD          Somewhat\ Small\ LCD    Average\ LCD                   Large\ LCD           Very\ Large\ LCD),
-              %w(brand                Categorical f                   Brand                    \     \                   \                        \                              \                   \ )]
-              
+           #                                      (c)luster 
+           #                                      (f)ilter 
+           #   db_name                Type        (e)xtra Display                              Label       Low Desc                Average Desc                   High Desc         #Very Low Desc           Very High Desc
+  Features = [%w(price                Continuous  cf                  Price                    \           Cheap                   Average\ Price                 Average\ Price),    #Very\ Cheap            Expensive),
+              %w(maximumresolution    Continuous  cf                  Resolution               MP          Average\ Resolution     Somewhat\ High\ Resolution     High\ Resolution),  #Low\ Resolution        Very\ High\ Resolution),
+              %w(opticalzoom          Continuous  cf                  Optical\ Zoom            X           Average\ Zoom           Somewhat\ Zoom                 High\ Zoom),        #Low\ Zoom              Very\ High\ Zoom),
+              %w(displaysize          Continuous  cf                  Display\ Size            in          Somewhat\ Small\ LCD    Average\ LCD                   Large\ LCD),        #Small\ LCD             Very\ Large\ LCD),
+              %w(brand                Categorical f                   Brand                    \           \                        \                             \ )]                # \                      \)]
+                                                                                                                                                                                   
   ContinuousFeatures = Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[0]}
   
   $PrefDirection = Hash.new(1) 
@@ -25,10 +25,10 @@ class Camera < ActiveRecord::Base
   CategoricalFeaturesF = Features.select{|f|f[1] == "Categorical" && f[2].index("f")}.map{|f|f[0]}
   FeaturesLabel = Hash[*Features.select{|f|f[4] != " "}.map{|f|f[0]}.zip(Features.select{|f|f[4] != " "}.map{|f|f[4]}).flatten]
   FeaturesDisp = Hash[*Features.map{|f|f[0]}.zip(Features.map{|f|f[3]}).flatten]
-  ContinuousFeaturesDescLlow = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[5]}).flatten]
+  #ContinuousFeaturesDescLlow = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[5]}).flatten]
   ContinuousFeaturesDescLow = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[6]}).flatten]
   ContinuousFeaturesDescHigh = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[8]}).flatten]
-  ContinuousFeaturesDescHhigh = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[9]}).flatten]
+  #ContinuousFeaturesDescHhigh = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[9]}).flatten]
   ContinuousFeaturesDescAverage = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[7]}).flatten]
   BinaryFeaturesDesc = Hash[*BinaryFeatures.zip(Features.select{|f|f[1] == "Binary" && f[2].index("c")}.map{|f|f[3]}).flatten]
   ExtraFeature = Hash[*Features.select{|f|f[2].index("e")}.map{|f|[f[0],true]}.flatten]

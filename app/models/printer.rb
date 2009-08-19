@@ -5,15 +5,15 @@ class Printer < ActiveRecord::Base
   is_indexed :fields => ['title', 'feature']
            #                                (c)luster 
            #                                (f)ilter 
-           #     db_name           Type     (e)xtra Display          Label     Very Low Desc         Low Desc        High Desc            Very High Desc
-  Features = [%w(ppm               Continuous  cf  Pages\ Per\ Minute  \       Very\ Slow            Slow            Fast                 Very\ Fast),
-              %w(itemwidth         Continuous  cf  Width               in.     Very\ Small           Small           Large                Very\ Large),
-              %w(paperinput        Continuous  cf  Paper\ Tray\ Size   \       Low\ Capacity         Low\ Capacity   High\ Capacity       Very\ High\ Capacity),
-              %w(resolutionmax     Continuous  cf  Resolution          dpi.    Low\ Resolution       Low\ Resolution High\ Resolution     Very\ High\ Resolution),
-              %w(price             Continuous  cf  Price               \       Very\ Cheap           Cheap           Somewhat\ Expensive  Expensive),
-              %w(brand             Categorical f   Brand               \       \                     \               \                    \ ),
-              %w(scanner           Binary      cf  Scanner             \       \                     \               \                    \ ),
-              %w(printserver       Binary      cf  Networked\ Printer  \       \                     \               \                    \ )]
+           #     db_name           Type     (e)xtra Display          Label              Low Desc        High Desc                         # Very Low Desc      Very High Desc
+  Features = [%w(ppm               Continuous  cf  Pages\ Per\ Minute  \                Slow            Fast   ),                         # Very\ Slow         Very\ Fast),
+              %w(itemwidth         Continuous  cf  Width               in.              Small           Large  ),                         # Very\ Small        Very\ Large),
+              %w(paperinput        Continuous  cf  Paper\ Tray\ Size   \                Low\ Capacity   High\ Capacity),                  # Low\ Capacity      Very\ High\ Capacity),
+              %w(resolutionmax     Continuous  cf  Resolution          dpi.             Low\ Resolution High\ Resolution),                # Low\ Resolution    Very\ High\ Resolution),
+              %w(price             Continuous  cf  Price               \                Cheap           Expensive),                       # Very\ Cheap        Expensive),
+              %w(brand             Categorical f   Brand               \                \               \                  ),             # \                  \ ),
+              %w(scanner           Binary      cf  Scanner             \                \               \                  ),             # \                  \ ),
+              %w(printserver       Binary      cf  Networked\ Printer  \                \               \                  )]             # \                  \ )]
   
   ContinuousFeatures = Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[0]}
   ContinuousFeaturesF = Features.select{|f|f[1] == "Continuous" && f[2].index("f")}.map{|f|f[0]}

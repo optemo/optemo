@@ -58,10 +58,10 @@ def create_product_properties(model,region)
       f.region = region
       f.min = products.map{|c|c.send(name.intern)}.reject{|c|c.nil?}.sort[0]
       f.max = products.map{|c|c.send(name.intern)}.sort[-1]
-      f.hhigh = products.map{|c|c.send(name.intern)}.sort[products.count*0.85]
+     #f.hhigh = products.map{|c|c.send(name.intern)}.sort[products.count*0.85]
       f.high = products.map{|c|c.send(name.intern)}.sort[products.count*0.6]
       f.low = products.map{|c|c.send(name.intern)}.sort[products.count*0.4]
-      f.llow = products.map{|c|c.send(name.intern)}.sort[products.count*0.15]
+     #f.llow = products.map{|c|c.send(name.intern)}.sort[products.count*0.15]
       f.save
     }
     model::BinaryFeaturesF.each {|name|

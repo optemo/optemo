@@ -65,31 +65,31 @@ int main(int argc, char** argv){
 	double* weights;
 	map<const string, double> weightHash;
 	weightHash["price"] = 1;
-		weightHash["itemweight"] = 1;
+		//weightHash["itemweight"] = 1;
 		weightHash["opticalzoom"] = 1;
 		weightHash["displaysize"] = 1;
 		weightHash["maximumresolution"] = 1;
-		weightHash["minimumfocallength"] = 0.08;
-		weightHash["maximumfocallength"] = 0.08;
-		weightHash["minimumshutterspeed"] = 1;
-		weightHash["maximumshutterspeed"] = 1;
-	    weightHash["bulb"] = 0.001;
-		weightHash["slr"] = 1;
-		weightHash["waterproof"] = 0.5;
+		//weightHash["minimumfocallength"] = 0.08;
+		//weightHash["maximumfocallength"] = 0.08;
+		//weightHash["minimumshutterspeed"] = 1;
+		//weightHash["maximumshutterspeed"] = 1;
+	    //weightHash["bulb"] = 0.001;
+		//weightHash["slr"] = 1;
+		//weightHash["waterproof"] = 0.5;
 	switch(productNames[productName]){
 		
 		case 1:
 					clusterN = 9; 
-					conFeatureN= 9;
+					conFeatureN= 4;
 					catFeatureN= 1;
-					boolFeatureN= 3;
+					boolFeatureN= 0;
 					weights = new double [conFeatureN + boolFeatureN];
 					for (int f=0; f<conFeatureN; f++){
 						weights[f] = 1;
 					}
-					weights[conFeatureN] = 2;
-					weights[conFeatureN+1] = 0.01;
-					weights[conFeatureN+2] = 0.01;
+					//weights[conFeatureN] = 2;
+					//weights[conFeatureN+1] = 0.01;
+					//weights[conFeatureN+2] = 0.01;
 					range= 2;
 					break;
 			

@@ -6,7 +6,7 @@
 
 int hClustering(int layer, int clusterN, int conFeatureN, int boolFeatureN, double *average, double** conFeatureRange, double*** conFeatureRangeC,
 	sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *resClus, sql::ResultSet *resNodes, sql::Statement *stmt, 
-	string* conFeatureNames, string* boolFeatureNames, string productName, double* weights, int version, string region){				
+	string* conFeatureNames, string* boolFeatureNames, string productName,map<const string, double> weightHash, int version, string region){				
 	
 int maxSize = -2;	
 double **data;
@@ -15,6 +15,15 @@ int *idA;
 string *brands; 
 int parent_id = 0;
 int size, sized, cluster_id;
+double* weights = new double[conFeatureN+boolFeatureN];
+
+for(int f=0; f<conFeatureN; f++){
+	weights[f] = weightHash[conFeatureNames[f]];
+}
+
+for (int f=0; f<boolFeatureN; f++){
+	weights[conFeatureN+f] = weightHash[boolFeatureNames[f]];
+}
 				
 if 	(layer == 1){	
 	
@@ -30,7 +39,7 @@ if 	(layer == 1){
 				
 				double saleprice = 0.0;
 				double price = 0.0;
-		
+				
 				while (res->next()) 
 				{
 		 			saleprice = res->getInt("price");
@@ -40,7 +49,7 @@ if 	(layer == 1){
 		 			for (int f=1; f<conFeatureN; f++){
 		 				data[size][f] = res->getDouble(conFeatureNames[f]);
 		 			}	
-			
+		
 		 			for (int f=0; f<boolFeatureN; f++){
 		 				data[size][conFeatureN+f] = res->getDouble(boolFeatureNames[f]);
 		 			}
@@ -75,7 +84,7 @@ if 	(layer == 1){
 			 	   	    	centroids[j]=new double[conFeatureN];
 			 	   		}
 
-
+								
 			 	       	centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights); 
 					
 				
@@ -137,7 +146,8 @@ if 	(layer == 1){
 
 					   // save it to the database
 					
-					 getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);		
+					 getStatisticsClusteredData(data, clusteredData, indicators, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);	
+					
 					 saveClusteredData(data, idA, size, brands, parent_id,clusteredData, clusteredDataOrder, conFeatureRangeC, layer, clusterN, conFeatureN, 
 										boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName, version, region);
 						for (int c=0; c<clusterN; c++){
@@ -194,7 +204,6 @@ if (layer > 1){
 		resNodes = stmt->executeQuery(command); 
 		
 		size = resNodes->rowsCount();
-	
 	
 		if (size>clusterN){
 	 
@@ -299,22 +308,29 @@ if (layer > 1){
 			   	//void repOrder(double* dataCluster, int size, String mode, int conFeatureN, int boolFeatureN, double* prefWeights, int* order)
 				repOrder(dataCluster, clusteredData[c][0], weights, "median", conFeatureN, boolFeatureN, clusteredDataOrder[c]);
 			  }
+
 ///////////
 
 		saveClusteredData(data, idA, size, brands, parent_id,clusteredData, clusteredDataOrder, conFeatureRangeC, layer, clusterN, conFeatureN, 
 							boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName, version, region);
+
+		
 			for (int c=0; c<clusterN; c++){
 					if (clusteredData[c][0]>maxSize){
 						maxSize = clusteredData[c][0];
 					}
 				}
+				
 		delete data;	
 		delete clusteredData;
 		delete dist;
+	
 	}
 	}	
 }	
+
 		return maxSize;
+
  }
 
 //leafClustering(layer, conFeatureN, res, stmt, productName);
@@ -507,7 +523,10 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 			stmt->execute(command);	
 		}
 		
-		// insert in node tables	
+		// insert in node tables
+		
+		
+	
 	}		
 	
 }
