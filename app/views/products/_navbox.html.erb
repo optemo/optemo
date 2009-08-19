@@ -6,7 +6,7 @@
 		<%= image_tag cluster.representative(@session).imagemurl, :height => 100, :"data-id" => cluster.representative(@session).id, :class => "productimg", :alt => cluster.representative(@session).smlTitle %>
 	<%end%>
 
-	<p><%= cluster.utility(@session) %><a href="<%=cluster.representative(@session).descurl%>" data-id="<%=cluster.representative(@session).id%>" class="easylink">
+	<p><%= cluster.utility(@session) if RAILS_ENV == 'development'%><a href="<%=cluster.representative(@session).descurl%>" data-id="<%=cluster.representative(@session).id%>" class="easylink">
 		<%= cluster.representative(@session).smlTitle %>
 	</a></p>
 	
