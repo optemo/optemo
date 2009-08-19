@@ -26,7 +26,6 @@ int main(int argc, char** argv){
 	int conFeatureN;
 	int catFeatureN;
 	int boolFeatureN;
-	int varNamesN;
 	int range;
 	int layer = 1;
 	int version;
@@ -52,8 +51,8 @@ int main(int argc, char** argv){
 	}
 	
 	string env = argv[3];
-	if ((env != "test") && (env != "development") && (env != "production")){
-		cout<<"Wrong environment! You should either enter test, development or production"<<endl;
+	if ((env != "test") && (env != "development") && (env != "production") && (env != "bestbuy")){
+		cout<<"Wrong environment! You should either enter test, development, bestbuy or production"<<endl;
 		return EXIT_FAILURE;
 	}
 	
@@ -64,24 +63,34 @@ int main(int argc, char** argv){
 	productNames["camera"] = 1;
 	productNames["printer"] = 2;
 	double* weights;
+	map<const string, double> weightHash;
+	weightHash["price"] = 1;
+		weightHash["itemweight"] = 1;
+		weightHash["opticalzoom"] = 1;
+		weightHash["displaysize"] = 1;
+		weightHash["maximumresolution"] = 1;
+		weightHash["minimumfocallength"] = 0.08;
+		weightHash["maximumfocallength"] = 0.08;
+		weightHash["minimumshutterspeed"] = 1;
+		weightHash["maximumshutterspeed"] = 1;
+	    weightHash["bulb"] = 0.001;
+		weightHash["slr"] = 1;
+		weightHash["waterproof"] = 0.5;
 	switch(productNames[productName]){
 		
 		case 1:
 					clusterN = 9; 
-					conFeatureN= 4;
+					conFeatureN= 9;
 					catFeatureN= 1;
-					boolFeatureN= 0;
-					varNamesN= 12;
-					range= 2;
+					boolFeatureN= 3;
 					weights = new double [conFeatureN + boolFeatureN];
-					weights[0] = 1;
-					weights[1] = 1;
-					for (int f=2; f<conFeatureN; f++){
+					for (int f=0; f<conFeatureN; f++){
 						weights[f] = 1;
 					}
-				    for (int f=0; f<boolFeatureN; f++){
-				    	weights[conFeatureN+f] = 1;
-				    }
+					weights[conFeatureN] = 2;
+					weights[conFeatureN+1] = 0.01;
+					weights[conFeatureN+2] = 0.01;
+					range= 2;
 					break;
 			
 		case 2:
@@ -90,7 +99,6 @@ int main(int argc, char** argv){
 					catFeatureN= 1;
 					boolFeatureN= 2;
 					weights = new double [conFeatureN + boolFeatureN];
-					varNamesN= 12;
 					range= 2;
 					weights[0] = 1.2;
 					for (int f=1; f<conFeatureN-1; f++){
@@ -107,7 +115,6 @@ int main(int argc, char** argv){
 					conFeatureN= 4;
 					catFeatureN= 1;
 					boolFeatureN= 0;
-					varNamesN= 12;
 					range= 2;
 					break;
 	}
@@ -120,8 +127,7 @@ int main(int argc, char** argv){
 	
 	string* indicatorNames = new string [conFeatureN + boolFeatureN];
 
-		
-	string *varNames = new string[varNamesN];	
+			
 	string *catFeatureNames = new string[catFeatureN];
 	string *boolFeatureNames = new string [boolFeatureN];
 	string *conFeatureNames = new string[conFeatureN];
@@ -164,26 +170,7 @@ int main(int argc, char** argv){
 		boolFilteredFeatures[f] = 0;
 	}
 
-
-//	string var;
-
-	varNames[0] = "layer";
-	varNames[1] = "camid";
-	varNames[2] = "brand";
-	varNames[3] = "price_min";
-	varNames[4] = "price_max";
-	varNames[5] = "displaysize_min";
-	varNames[6] = "displaysize_max";
-	varNames[7] = "opticalzoom_min";
-	varNames[8] = "opticalzoom_max";
-	varNames[9] = "maximumresolution_min";
-	varNames[10] = "maximumresolution_max";
-	varNames[11] = "session_id";	
-   
-//void preClustering(string* varNames, map<const string, int>productNames, string productName, string* conFeatureNames, string* catFeatureNames, string* indicatorNames)
-
-
- string filteringCommand = preClustering(varNames, productNames, productName, conFeatureNames, catFeatureNames, boolFeatureNames, indicatorNames, region);
+ string filteringCommand = preClustering(productNames, productName, conFeatureNames, catFeatureNames, boolFeatureNames, indicatorNames, region);
 
 
 //}
@@ -260,7 +247,6 @@ int main(int argc, char** argv){
 				command += "_clusters where (region='";
 				command += region;
 				command += "') order by id DESC LIMIT 1";
-			//	cout <<"command is "<<command<<endl;
 				res = stmt->executeQuery(command);
 
 				
@@ -272,9 +258,8 @@ int main(int argc, char** argv){
 					version = 0;
 				}
 				bool clustered = 0;
-
 			    res = stmt->executeQuery(filteringCommand); 
-				
+			
 				int maxSize = res->rowsCount();
 			
 				cout<<"Version: "<<version<<endl;	
@@ -284,7 +269,7 @@ int main(int argc, char** argv){
 						average[j] = 0.0;
 					}
 					maxSize = hClustering(layer, clusterN,  conFeatureN,  boolFeatureN, average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
-							stmt, conFeatureNames, boolFeatureNames, productName, weights, version, region);	
+							stmt, conFeatureNames, boolFeatureNames, productName, weightHash, version, region);	
 					cout<<"layer "<<layer<<endl;
 					layer++;
 					clustered = 1;
