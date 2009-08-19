@@ -14,7 +14,7 @@ class CreatePrinterFeatures < ActiveRecord::Migration
         t.float max.intern
         t.float pref.intern, :default => 1/Printer::ContinuousFeatures.count.to_f
       end      
-      (Printer::CategoricalFeatures).each do |f|
+      (Printer::CategoricalFeaturesF).each do |f|
         t.string f.intern, :default => "All Brands"
       end
       (Printer::BinaryFeaturesF).each do |f|

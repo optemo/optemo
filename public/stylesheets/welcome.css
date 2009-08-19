@@ -329,8 +329,9 @@ h3 {
  /*padding:0.5em 0px 0.5em 0px;*/
 }
 
-.dialog h1 {
+h1 {
  padding-bottom:0px;
+ font-size: 1.4em;
 }
 
 /** IE6 Compatibility **/

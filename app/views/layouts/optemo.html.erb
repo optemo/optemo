@@ -25,14 +25,15 @@
    <div class="t"></div>
    <div class="hd">
 	<div id="header">
-	  <div id="logo">
-		<a href="<%= url_for '/' %>" id ="logo" title="LaserPrinterHub.com"><%= $region == "us" ? image_tag('logo.jpg') : image_tag('logo_ca.jpg')%><span>Home</span></a>
-	  </div>
-		<a href="<%= url_for '/laserprinters' %>" title="Why to buy a laser printer?" id='whylaser'><%= image_tag('whylaser.jpg') %><span>Click to find out</span></a>
 	  <div id="flags">
 		<%= link_to image_tag('us.gif'), url_for_intl('com') %>
 		<%= link_to image_tag('ca.gif'), url_for_intl('ca') %>
 	  </div>
+	  <div id="logo">
+		<a href="<%= url_for '/' %>" id ="logo" title="LaserPrinterHub.com"><%= $region == "us" ? image_tag('logo.jpg') : image_tag('logo_ca.jpg')%><span>Home</span></a>
+	  </div>
+		<a href="<%= url_for '/laserprinters' %>" title="Why to buy a laser printer?" id='whylaser'><%= image_tag('whylaser.jpg') %><span>Click to find out</span></a>
+	  
      <div id="logindisplay" style="display:none;">                                                                                               
    		<% if !cookies[$AppKey +"_user"].nil? %>
 		<div style="float:left">
@@ -79,8 +80,19 @@
 </div>
 <div id="fade" onClick="fadein();">&nbsp;</div>
 <div id="info">&nbsp;</div>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+<!--[if lt IE 7]><style>
+/* style for IE6 + IE5.5 + IE5.0 */
+.gainlayout { height: 0; }
+</style><![endif]-->
+ 
+<!--[if IE 7]><style>
+.gainlayout { zoom: 1; }
+</style><![endif]-->
+
+<!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>-->
+<%= javascript_include_tag 'jquery-1.3.2.min.js' %>
+<%= javascript_include_tag 'jqueryui-1.7.2.min.js' %>
 <%= javascript_include_merged :base %>
 <noscript><p><img src="http://pj.laserprinterhub.com/piwik.php?idsite=1" style="border:0" alt=""/></p></noscript>
 </body>
