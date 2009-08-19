@@ -75,12 +75,12 @@ int main(int argc, char** argv){
 					range= 2;
 					weights = new double [conFeatureN + boolFeatureN];
 					weights[0] = 1;
-					weights[1] = 0.8;
+					weights[1] = 1;
 					for (int f=2; f<conFeatureN; f++){
 						weights[f] = 1;
 					}
 				    for (int f=0; f<boolFeatureN; f++){
-				    	weights[conFeatureN+f] = 0.5;
+				    	weights[conFeatureN+f] = 1;
 				    }
 					break;
 			

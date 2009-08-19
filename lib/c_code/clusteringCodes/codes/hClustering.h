@@ -132,7 +132,7 @@ if 	(layer == 1){
 					   	}
 					
 					   	//void repOrder(double* dataCluster, int size, String mode, int conFeatureN, int boolFeatureN, double* prefWeights, int* order)
-						repOrder(dataCluster, clusteredData[c][0], "median", conFeatureN, boolFeatureN, clusteredDataOrder[c]);
+						repOrder(dataCluster, clusteredData[c][0], weights, "median", conFeatureN, boolFeatureN, clusteredDataOrder[c]);
 					  }			
 
 					   // save it to the database
@@ -297,31 +297,24 @@ if (layer > 1){
 			   	}
 			
 			   	//void repOrder(double* dataCluster, int size, String mode, int conFeatureN, int boolFeatureN, double* prefWeights, int* order)
-				repOrder(dataCluster, clusteredData[c][0], "median", conFeatureN, boolFeatureN, clusteredDataOrder[c]);
+				repOrder(dataCluster, clusteredData[c][0], weights, "median", conFeatureN, boolFeatureN, clusteredDataOrder[c]);
 			  }
-
 ///////////
 
 		saveClusteredData(data, idA, size, brands, parent_id,clusteredData, clusteredDataOrder, conFeatureRangeC, layer, clusterN, conFeatureN, 
 							boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName, version, region);
-
-		
 			for (int c=0; c<clusterN; c++){
 					if (clusteredData[c][0]>maxSize){
 						maxSize = clusteredData[c][0];
 					}
 				}
-				
 		delete data;	
 		delete clusteredData;
 		delete dist;
-	
 	}
 	}	
 }	
-
 		return maxSize;
-
  }
 
 //leafClustering(layer, conFeatureN, res, stmt, productName);
@@ -514,10 +507,7 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 			stmt->execute(command);	
 		}
 		
-		// insert in node tables
-		
-		
-	
+		// insert in node tables	
 	}		
 	
 }

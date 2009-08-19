@@ -570,8 +570,23 @@ void median(double** data, int size, int conFeatureN, int* sortedA){
 	
 	insertion_sort(distan, sortedA, size);
 }
-void median2(double** data, int size, int conFeatureN, int* sortedA){
 
+
+void weightedMedian(double** data, int size, double* weights, int conFeatureN, int* sortedA){
+
+	double* distan = new double[size];
+	for (int j=0; j<size; j++){
+	    distan[j] = 0;
+		for (int i=0; i<size; i++){
+			for (int f=0; f<conFeatureN; f++){
+				distan[j] += weights[f]* (data[j][f] - data[i][f]) *  (data[j][f] - data[i][f]);
+		   }
+		}	
+	}
+	
+	insertion_sort(distan, sortedA, size);
+}
+void median2(double** data, int size, int conFeatureN, int* sortedA){
 	double* distan = new double[size];
 	for (int j=0; j<size; j++){
 	    distan[j] = 0;
@@ -581,18 +596,14 @@ void median2(double** data, int size, int conFeatureN, int* sortedA){
 		   }
 		}	
 	}
-	
 	insertion_sort(distan, sortedA, size);
-
 }
 
-
-void repOrder(double** dataCluster, int size, string mode, int conFeatureN, int boolFeatureN, int* order){
-	
+void repOrder(double** dataCluster, int size, double* weights, string mode, int conFeatureN, int boolFeatureN, int* order){
 	if (mode=="median"){
 		median(dataCluster, size, conFeatureN, order);
+		//weightedMedian(dataCluster, size, weights, conFeatureN, order);
 	}
-
 }
 
 //#endif	/* _EXAMPLES_H */
