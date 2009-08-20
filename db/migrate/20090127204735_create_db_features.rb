@@ -9,6 +9,7 @@ class CreateDbFeatures < ActiveRecord::Migration
       t.float :high
       t.float :low
       t.text :categories
+      t.string :region
       t.timestamps
     end
   end

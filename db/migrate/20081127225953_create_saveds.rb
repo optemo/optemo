@@ -4,6 +4,7 @@ class CreateSaveds < ActiveRecord::Migration
 
       t.timestamps
       t.integer :session_id, :product_id, :search_id
+      t.string :product_type
     end
   end
 

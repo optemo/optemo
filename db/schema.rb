@@ -1071,9 +1071,12 @@ ActiveRecord::Schema.define(:version => 20090818174011) do
     t.datetime "activeUpdate"
     t.boolean  "freeShipping"
     t.datetime "scrapedat"
+<<<<<<< HEAD:db/schema.rb
     t.boolean  "ink"
     t.string   "condition"
     t.boolean  "real"
+=======
+>>>>>>> 9bf569bde8544fd072646cc91aee7acce741fe45:db/schema.rb
   end
 
   create_table "preference_relations", :force => true do |t|

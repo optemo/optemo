@@ -506,11 +506,12 @@ end
 def CalculateUtility(p)  
   cost = 0.0
   #getFactorRow = LookupFactorRow(session[:productType], product.id)
-      getFactorRow = LookupFactorRow('Printer', p.send('id'))                    # TODO:
+      getFactorRow = LookupFactorRow($model.name, p.send('id'))                    # TODO:
   userSession = Session.find(:first, :conditions => ['id = ?', session[:user_id]])
   # For all features
     session[:productType].constantize::ContinuousFeatures.each do |f|
     # Multiply factor value by the User's preference for that feature (weight) and add to cost
+    debugger if getFactorRow.nil?
       cost = cost + getFactorRow.send(f) * userSession.features.send("#{f}_pref")
     end      
   return cost

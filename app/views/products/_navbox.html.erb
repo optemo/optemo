@@ -1,17 +1,17 @@
-<div class="navigator_box" style="left: <%= (i%3)*247 %>px;">
-<div id="box<%=i%>" class="borderbox">
+<div class="navigator_box">
 	<div class='title'><%= @clusterDescs[i] %></div>
+	<div style="position: absolute; bottom: 0px; left: 0px; width: 100%">
 
 	<% if !cluster.representative(@session).imagemwidth.blank? %>
 		<%= image_tag cluster.representative(@session).imagemurl, :height => 100, :"data-id" => cluster.representative(@session).id, :class => "productimg", :alt => cluster.representative(@session).smlTitle %>
 	<%end%>
 
-	<p><a href="<%=cluster.representative(@session).descurl%>" data-id="<%=cluster.representative(@session).id%>" class="easylink">
+	<p><%= cluster.utility(@session) if RAILS_ENV == 'development'%><a href="<%=cluster.representative(@session).descurl%>" data-id="<%=cluster.representative(@session).id%>" class="easylink">
 		<%= cluster.representative(@session).smlTitle %>
 	</a></p>
 	
 	<p><%= $region == "us" ? cluster.representative(@session).pricestr : cluster.representative(@session).price_ca_str %>  
-		<img src="/images/save_navbox_16.png" onClick="saveit(<%=cluster.representative(@session).id%>);" class="save" itemId="cluster.representative(@session).id" style="position:relative; right:-4px;bottom:-2px;">
+		<img src="/images/save_navbox_16.png" onClick="saveit(<%=cluster.representative(@session).id%>);" class="save" itemId="cluster.representative(@session).id" style="margin-right:-4px;margin-bottom:-2px;">
 		 <b><%= link_to "Save it", "javascript:saveit(#{cluster.representative(@session).id})", {:class => 'save', :itemId => "#{cluster.representative(@session).id}" } %></b>
 		<%# Randomized Product Reviews %>
 		<%# rand > 0.5 ? (rand > 0.5 ? image_tag('5star.gif') : image_tag('3star.gif')) : image_tag('4star.gif') %>
@@ -28,6 +28,7 @@
 	<div class="bottombar" name ="<%= cluster.representative(@session).id %>">
 		<%= sim_link(cluster,i, cluster.representative(@session).id) %>
 	</div>
+	</div>
 	
 	<img src="/images/white-pix.gif" style="position:absolute;right:-3px;bottom:-3px;">
 	<img src="/images/white-pix.gif" style="position:absolute;right:-2px;bottom:-3px;">
@@ -41,5 +42,4 @@
 	<img src="/images/white-pix.gif" style="position:absolute;left:-3px;top:-3px;">
 	<img src="/images/white-pix.gif" style="position:absolute;left:-2px;top:-3px;">
 	<img src="/images/white-pix.gif" style="position:absolute;left:-3px;top:-2px;">
-</div>
 </div>

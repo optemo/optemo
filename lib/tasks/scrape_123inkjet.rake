@@ -116,7 +116,6 @@ namespace :scrape_123 do
       fill_in 'compatiblebrand', compatbrand, matching_c
       
       make_offering_from_atts(cart.attributes, cart.web_id)
-      
     end
   end
   

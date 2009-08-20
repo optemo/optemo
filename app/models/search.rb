@@ -19,7 +19,7 @@ def distributions
             max = min + stepsize
             if (max == min)
               dist[i] += 1 if n.send(f.name) == min
-            elsif (n.send(f.name)>=min && n.send(f.name) < max)
+            elsif (n.send(f.name)>=min && n.send(f.name) <= max)
               dist[i] += 1 
             end
         end
@@ -41,24 +41,44 @@ end
       @sRange[featureName]  
   end
   
+ #def indicator(featureName)
+ #  indic = false
+ #  values = clusters.map{|c| c.indicator(featureName, session)}
+ #  if values.index(false).nil?
+ #    indic = true
+ #  end  
+ #  indic
+ #end
+  
+    
   def clusterDescription
     clusterDs = []
+    statDs = []
+    desCount = Array.new(clusters.size)
     cluster_count.times do |j| 
       clusterDs[j] = []
-    end  
+      statDs[j] = []
+      desCount[j] = 0
+   end  
     ds = []
     cRanges = []
     @dbfeatCon.each do |f|
+      #llow = f.llow
       low = f.low
+      #hhigh = f.hhigh
       high = f.high
       searchR = ranges(f.name)
       unless (searchR[0] >= high || searchR[1]<=low) 
         clusters.each_index {|i| 
           cRanges = clusters[i].ranges(f.name, session)
-           if (cRanges[0] >= high)
-             clusterDs[i] << $model::ContinuousFeaturesDescHigh[f.name]
-           elsif (cRanges[1] <= low)
+           #if (cRanges[1] <=llow)
+           #  clusterDs[i] << $model::ContinuousFeaturesDescLlow[f.name]  
+           if (cRanges[1] <= low)
              clusterDs[i] << $model::ContinuousFeaturesDescLow[f.name]
+           #elsif(cRanges[0] >= hhigh )
+           #  clusterDs[i] << $model::ContinuousFeaturesDescHhigh[f.name]      
+           elsif (cRanges[0] >= high)
+             clusterDs[i] <<  $model::ContinuousFeaturesDescHigh[f.name]    
            end
         }
       end 
@@ -67,30 +87,39 @@ end
       ds[j] = clusterDs[j]
     end 
     res = ds.map{|d| #d.blank? ? 'All Purpose' : 
-      d.join(', ')}         
+      d.compact.join(', ')}         
     res
   end
   
-
+  
   def searchDescription
     des = []
+    desCount = 0
+    statDs = [] 
    @dbfeatCon = DbFeature.find_all_by_product_type_and_feature_type_and_region(session.product_type, 'Continuous',$region)
    @dbfeatCon.each do |f|
+      #llow = f.llow
       low = f.low
+      #hhigh = f.hhigh
       high = f.high
+      
       searchR = ranges(f.name)
-      if (searchR[1]<=low)
-           des <<  $model::ContinuousFeaturesDescLow[f.name]
+      #if (searchR[1]<=llow)
+      #     des <<  $model::ContinuousFeaturesDescLlow[f.name]
+      if (searchR[1] <= low)
+           des << $model::ContinuousFeaturesDescLow[f.name]
+
+      #elsif (searchR[0] >= hhigh) 
+      #     des << $model::ContinuousFeaturesDescHhigh[f.name]   
       elsif (searchR[0]>=high)
-           des <<  $model::ContinuousFeaturesDescHigh[f.name]
+           des << $model::ContinuousFeaturesDescHigh[f.name]   
       end
     end  
-   
-    res = des.join(', ')
+    res = des.compact.join(', ')
     res.blank? ? 'All Purpose' : res 
   end
   
-  
+    
   def minimum(feature)
     feature = feature + "_min"
     min = clusters[0].send(feature)
@@ -150,7 +179,6 @@ end
     s = new(ns)
     
     s.fillDisplay
-    return nil if s.cluster_count == 0 
     s.parent_id = s.clusters.map{|c| c.parent_id}.sort[0]
     s.layer = s.clusters.map{|c| c.layer}.sort[0]
     s.desc = s.searchDescription
@@ -159,7 +187,7 @@ end
   
   def self.createFromPath_and_commit(path, session_id)
     s = createFromPath(path, session_id)
-    s.save if s
+    s.save
     s
   end
   

@@ -1,3 +1,12 @@
+void orderedRepCluster(double** data, int* oriIds, int size, int conFeatureN, int* sortedIds){
+
+		int* sortedIds = new int[size]
+			for (int i=0; i<size; i++){
+				sortedIds[i] = oriIds[i]
+			}
+		median2(data, size, conFeatureN, sortedIds);
+}
+
 int getRepCluster(int clusterID, int conFeatureN, sql::Statement *stmt , sql::ResultSet *res, int productN, int* productIDs, int* reps, int repSize, string productName, 
 			 string* conFeatureNames){ 
 
@@ -34,21 +43,16 @@ int getRepCluster(int clusterID, int conFeatureN, sql::Statement *stmt , sql::Re
 	for (int f=0; f<conFeatureN; f++){
 		data[f] = new double[size];
 	}
-	
 	int* sortedA = new int [size];
 	int i=0;
-	while(res->next()){
-			
+	while(res->next()){	
 		data[0][i] = res->getInt("price");
 		for (int f=1; f<conFeatureN; f++){
 			data[f][i] = res->getDouble(conFeatureNames[f]);
 		}
-
 		sortedA[i] = res->getInt("product_id");
-	
 		i++;
 	}
-
 	median2(data, size, conFeatureN, sortedA);
 	for(int j=0; j<size; j++){
 		while (turn <= repSize){

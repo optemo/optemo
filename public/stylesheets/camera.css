@@ -4,9 +4,8 @@ a.link {
 	margin-right: 10px;}
 div.main {
 	padding: 0;
-	float: left;
 	width: 730px;
-	margin-left: 5px;
+	margin-left: 210px;
 	text-align: left;}
 div.rowdiv {
 	width: 100%;
@@ -24,6 +23,7 @@ div.navigator_box {
 	text-align: center;
 	font-size: small;
 	float: left;
+	position: relative;
 	width:235px;
 	height: 100%;
 	margin: 0px 2px 2px 0px;
@@ -32,14 +32,6 @@ div.navigator_box {
 }
 div.navigator_box:hover {
 	border: 3px solid #bbb;
-}
-div.borderbox {
-	position: relative;
-	width: 100%;
-	height: 100%;
-}
-.borderbox p {
-	padding: 0.1em 0;
 }
 .backlink {
 	margin-top: 3px;

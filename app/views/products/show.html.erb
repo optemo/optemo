@@ -1,13 +1,24 @@
-<% if !@plain %><div id="outside">
+<% if !@plain %><div id="outside" class="gainlayout">
 	<% self.title = @product.smlTitle %>
-	<span style="float: left;"><%= nav_link %></span>
-	<div id="container" style="margin-left: 149px">
+	<div id="showleftbar">
+		<div id="showbacklink">
+		<%= link_to image_tag('backarrow.png'), landing? ? '/products/homepage' : 'javascript:history.back()'%>
+		</div>
+			<% if landing? %>
+				<%= link_to "Browse more<br> #{$model.urlname}", "/products/homepage" %>
+			<% else %>
+  				<%= link_to "Go back<br> to navigation", 'javascript:history.back()'%>
+			<% end %>
+		<div style="height: 20px;"></div>
+		<%= link_to "Request a Feature", "#", :id => "requestafeature" %>
+	</div>
+	<div id="container" class="gainlayout">
 <% else %>
 	<%= link_to image_tag('save.png'), "javascript:saveit(#{@product.id});", :id => 'showsave' %>
 	<%= link_to image_tag('close.gif'), "javascript:fadein();", :id => 'close' %>
-	<div id="container">
+	<div id="container" class="gainlayout">
 <% end %>
-	<p style="margin: 15px 0px 0px 20px"><%= URI.decode(@product.title) %></p>
+	<h1><%= URI.decode(@product.title) %></h1>
 	<div id="image">
 		<% unless @product.imagelurl.blank? %>
 			<%= link_to image_tag(@product.imagelurl, :width => @product.imagelw, :height => @product.imagelh), @product.imagelurl, :popup => true %>
@@ -23,7 +34,7 @@
 			<% if !f.nil? %>
 				<li>
 					<% if $model::ContinuousFeatures.index($model.SFtoCFdictionary(f_name)) != nil %>
-						<% if request.referer.index($model.urlname) == nil %> <!-- that is, if popup was not called from main navigation page, then show "better" links -->
+						<% if @plain && (request.referer.nil? || request.referer.index($model.urlname).nil?) %> <!-- that is, if popup was not called from main navigation page, then show "better" links -->
 						<div class="betterlinkdiv">
 							<%= link_to "better", "javascript:findBetter('#{@product.id}', '#{$model.SFtoCFdictionary(f_name)}')", :"data-id" => f_name, :class => 'betterlink' %>
 						</div>
@@ -74,6 +85,6 @@
 	</div>	
 	<div id="betternotfoundmsg" style="padding-left:10px;padding-top:10px;color:green;visibility:hidden;"> There is no better product available for a better price </div>
 </div>
-<% if !@plain %></div><% end %>
+<% if !@plain %><div style="clear: both;"></div></div><% end %>
 	
 	

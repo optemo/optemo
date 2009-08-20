@@ -13,7 +13,7 @@ class CreateCameraFeatures < ActiveRecord::Migration
         t.float max.intern
         t.float pref.intern, :default => 1/Camera::ContinuousFeaturesF.count.to_f
       end      
-      (Camera::CategoricalFeatures).each do |f|
+      (Camera::CategoricalFeaturesF).each do |f|
         t.string f.intern, :default => "All Brands"
       end
       (Camera::BinaryFeaturesF).each do |f|
