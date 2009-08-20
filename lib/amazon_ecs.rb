@@ -1,5 +1,5 @@
 #--
-# Copyright (c) 2006 Herryanto Siatono, Pluit Solutions
+# Copyright (c) 2009 Herryanto Siatono, Pluit Solutions
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -24,20 +24,26 @@
 require 'net/http'
 require 'hpricot'
 require 'cgi'
+require 'hmac-sha2'
+require 'base64'
 
 module Amazon
   class RequestError < StandardError; end
   
   class Ecs
-    SERVICE_URLS = {:us => 'http://webservices.amazon.com/onca/xml?Service=AWSECommerceService',
-        :uk => 'http://webservices.amazon.co.uk/onca/xml?Service=AWSECommerceService',
-        :ca => 'http://webservices.amazon.ca/onca/xml?Service=AWSECommerceService',
-        :de => 'http://webservices.amazon.de/onca/xml?Service=AWSECommerceService',
-        :jp => 'http://webservices.amazon.co.jp/onca/xml?Service=AWSECommerceService',
-        :fr => 'http://webservices.amazon.fr/onca/xml?Service=AWSECommerceService'
+    SERVICE_URLS = {:us => 'http://webservices.amazon.com/onca/xml?',
+        :uk => 'http://webservices.amazon.co.uk/onca/xml?',
+        :ca => 'http://webservices.amazon.ca/onca/xml?',
+        :de => 'http://webservices.amazon.de/onca/xml?',
+        :jp => 'http://webservices.amazon.co.jp/onca/xml?',
+        :fr => 'http://webservices.amazon.fr/onca/xml?'
     }
     
-    @@options = {}
+    @@options = {
+      :version => "2009-01-06",
+      :service => "AWSECommerceService"
+    }
+    
     @@debug = false
 
     # Default search options
@@ -81,12 +87,6 @@ module Amazon
       self.send_request(opts)
     end
 
-    # For other search type other than keywords, please specify :type => [search type param name].
-    def self.node_search(opts = {})
-      opts[:operation] = 'BrowseNodeLookup'
-      self.send_request(opts)
-    end
-
     # Search an item by ASIN no.
     def self.item_lookup(item_id, opts = {})
       opts[:operation] = 'ItemLookup'
@@ -98,6 +98,10 @@ module Amazon
     # Generic send request to ECS REST service. You have to specify the :operation parameter.
     def self.send_request(opts)
       opts = self.options.merge(opts) if self.options
+      
+      # Include other required options
+      opts[:timestamp] = Time.now.utc.strftime("%Y-%m-%dT%H:%M:%SZ")
+
       request_url = prepare_url(opts)
       log "Request URL: #{request_url}"
       
@@ -133,6 +137,11 @@ module Amazon
       # Return error message.
       def error
         Element.get(@doc, "error/message")
+      end
+      
+      # Return error code
+      def error_code
+        Element.get(@doc, "error/code")
       end
       
       # Return an array of Amazon::Element item objects.
@@ -191,19 +200,55 @@ module Amazon
         country = (country.nil?) ? 'us' : country
         request_url = SERVICE_URLS[country.to_sym]
         raise Amazon::RequestError, "Invalid country '#{country}'" unless request_url
+
+        secret_key = opts.delete(:aWS_secret_key)
+        request_host = URI.parse(request_url).host
         
         qs = ''
-        opts.each {|k,v|
-          next unless v
-          v = v.join(',') if v.is_a? Array
-          qs << "&#{camelize(k.to_s)}=#{URI.encode(v.to_s)}"
-        }
-        "#{request_url}#{qs}"
+        
+        opts = opts.collect do |a,b| 
+          [camelize(a.to_s), b.to_s] 
+        end
+        
+        opts = opts.sort do |c,d| 
+          c[0].to_s <=> d[0].to_s
+        end
+        
+        opts.each do |e| 
+          log "Adding #{e[0]}=#{e[1]}"
+          next unless e[1]
+          e[1] = e[1].join(',') if e[1].is_a? Array
+          # v = URI.encode(e[1].to_s, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+          v = self.url_encode(e[1].to_s)
+          qs << "&" unless qs.length == 0
+          qs << "#{e[0]}=#{v}"
+        end
+        
+        signature = ''
+        unless secret_key.nil?
+          request_to_sign="GET\n#{request_host}\n/onca/xml\n#{qs}"
+          signature = "&Signature=#{sign_request(request_to_sign, secret_key)}"
+        end
+
+        "#{request_url}#{qs}#{signature}"
+      end
+      
+      def self.url_encode(string)
+        string.gsub( /([^a-zA-Z0-9_.~-]+)/ ) do
+          '%' + $1.unpack( 'H2' * $1.size ).join( '%' ).upcase
+        end
       end
       
       def self.camelize(s)
         s.to_s.gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_)(.)/) { $2.upcase }
       end
+      
+      def self.sign_request(url, key)
+        return nil if key.nil?
+        signature = URI.escape( Base64.encode64( HMAC::SHA256.digest(key, url) ).strip, Regexp.new("[+=]") )
+        return signature
+      end
+      
   end
 
   # Internal wrapper class to provide convenient method to access Hpricot element value.

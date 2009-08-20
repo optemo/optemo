@@ -130,10 +130,7 @@ module TigerDirectScraper
     atts['fax'] ||= (atts['speciafeatures'] || "").match(/fax/i)
     atts['fax'] = true if atts['faxcapability'] == "Yes"
     
-    # For the OFFERING
-    atts['stock'] = atts['itmdets'].match(/unavail/i).nil?
-    atts['priceint'] = get_price_i( get_f((atts['pricestr'] || '').gsub(/\*/,'')) )
-    atts['pricestr'].strip! if atts['pricestr']
+    clean_offering_stuff atts
     
     # For the PRODUCT
     if atts['region'] == 'CA' then suffix = '_ca' else suffix='' end
@@ -147,6 +144,16 @@ module TigerDirectScraper
     atts['condition'] = "OEM" if (atts['title']||'').match(/oem/i) 
     
     atts['duplex'] = false if (atts['duplex'] || '').downcase.strip == 'manual'
+    
+    return atts
+  end
+  
+  def clean_offering_stuff atts
+    
+    # For the OFFERING
+    atts['stock'] = atts['itmdets'].match(/unavail/i).nil?
+    atts['priceint'] = get_price_i( get_f((atts['pricestr'] || '').gsub(/\*/,'')) )
+    atts['pricestr'].strip! if atts['pricestr']
     
     return atts
   end
@@ -181,13 +188,12 @@ module TigerDirectScraper
     
     props = {}
     
-    puts "Re-scraping #{ts.id}"
+    puts "Re-scraping #{to.id} offering"
     props.merge! scrape_prices info_page 
     props.merge! scrape_availty info_page
     
     props.delete_if{ |x,y| !TigerScraped.column_names.include? x}
     
-    fill_in_all props, to
     
     return props
   end
@@ -329,12 +335,13 @@ namespace :scrape_tiger do
     tiger_offerings = RetailerOffering.find_all_by_retailer_id(12) | RetailerOffering.find_all_by_retailer_id(14)
     
     tiger_offerings.each do |ro|
-      # Update RetailerOfferings: price, availability
-      rescrape_price to
-      #  -- scrape website for price & availty for each offering (url?)
-      #  -- clean 
-      #  -- fill in price + availty
-      # Update Printer: bestoffer, price, pricestr, and CA equivalents
+      
+      to = TigerOffering.find_by_offering_id(ro.id)
+      params = rescrape_price to
+      params = clean_offering_stuff params
+      fill_in_all params, to
+      fill_in_all params, ro
+      # TODO fill in availability and price updates!!
     end
   end
   

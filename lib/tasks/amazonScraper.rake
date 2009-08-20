@@ -1,169 +1,284 @@
-require 'rubygems'
-
-desc "Scraping Amazon"
-task :scrape_amazon => :environment do
-  AmazonPrinter.fewfeatures.find(:all, :conditions => ["created_at > ? and nodetails IS NOT TRUE",1.day.ago]).each { |p|
-    p = scrape_details(p)
-    p.save
-    sleep(1+rand()) #Be nice to Amazon
-    sleep(rand()*30) #Be really nice to Amazon!
-  }  
-end
-
-desc "Scraping Amazon"
-task :scrape_printer => :environment do
-  #printer = Printer.fewfeatures.find(:first, :order => 'rand()')
-  printer = AmazonPrinter.find_by_asin('B00292BV96')
-  scrape_details(printer).attributes.each_pair{|k,v| puts k + ": "+ v.to_s}
-  puts printer.asin
-end
-
-def scrape_details(p)
-  require 'webrat'
-  puts 'ASIN='+p.asin
-  sesh = regularsetup
-  begin
-  sesh.visit('http://www.amazon.com/o/asin/' + p.asin)
-  #fetch 'http://www.amazon.com/o/asin/' + 'B000F005U0'
-  #fetch 'http://www.amazon.com/Magicolor-2550-Dn-Color-Laser/dp/tech-data/B000I7VK22/ref=de_a_smtd'
-    sesh.click_link('See more technical details')
-  rescue
-    p.nodetails = true
-    return p
+module AmazonScraper
+  def download(url)
+    return nil if url.nil?
+    return url if url.index(/\/images\/Amazon\//)
+    url = 'http://ecx.images-amazon.com/images/I/'+url if url.length < 30 
+    filename = url.split('/').pop
+    puts filename
+    ret = '/images/Amazon/'+filename
+    begin
+    f = open('/optemo/site/public/images/Amazon/'+filename,"w").write(open(url).read)
+    rescue OpenURI::HTTPError
+      ret = ""
+    end
+    ret
   end
-  doc = Nokogiri::HTML(sesh.response.body)
-  array = doc.css('.content ul li')
-  features = {}
-  array.each {|i|
-    t = i.content.split(': ')
-    features[t[0].downcase.tr(' -\(\)_','')]=t[1]
+
+  # Sets up env and related stuff
+  def regularsetup
+    # Requires.
+    require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
+    require 'webrat'
+    require 'mechanize' # Needed to make Webrat work
+  
+    Webrat.configure do |conf|
+      conf.mode = :mechanize # Can't be rails or Webrat won't work
+    end
+    sesh = Webrat.session_class.new
+    sesh.mechanize.user_agent_alias = 'Mac Safari'
+    sesh.mechanize.user_agent = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_6; en-us) AppleWebKit/525.27.1 (KHTML, like Gecko) Version/3.2.1 Safari/525.27.1"
+    sesh
+  end
+
+  def details_from_one_page doc, model=$model
+    array = doc.css('.content ul li')
+    features = {}
+    array.each_with_index {|i, index|
+      t = i.content.split(/:/)
+      props = get_property_names(t[0], model)
+      props.uniq.each do |property|
+        features[property]= t[1].strip  + " #{features[property] || ''}" if t[1]
+      end
+    }
+    return features
+  end
+
+  def scrape_compatibility(asin,sesh=nil)
+  
+    sesh = regularsetup unless sesh
+   
+    features = {}
+    
+    begin
+      sesh.visit('http://www.amazon.com/o/asin/' + asin)
+      doc = Nokogiri::HTML(sesh.response.body)
+      compatible_el = get_el(doc.css('div.content').reject{|x| x.text.nil? \
+        || x.text.match(/(compatible|use with)/i).nil?})
+      
+      if(compatible_el and compatible_el.css('li').count > 0)
+        compatible_el = get_el( compatible_el.css('li').\
+        reject{|x| x.text.nil? || x.text.match(/(compatible|use with)/i).nil?})
+      end
+      features['compatible'] = compatible_el.text.gsub(/.*(compatible|use with)/i,'') if compatible_el
+      
+      sleep(10)
+    end
+    doc = Nokogiri::HTML(sesh.response.body)
+    
+    return features
+  end
+
+  def scrape_details_general(asin,sesh=nil)
+  
+    sesh = regularsetup unless sesh
+   
+    features = {}
+    
+    begin
+      sesh.visit('http://www.amazon.com/o/asin/' + asin)
+      doc = Nokogiri::HTML(sesh.response.body)
+      features['region'] = 'US'
+      features['title'] = get_el(doc.css('h1')).content if get_el(doc.css('h1'))
+      
+      features['imageurl'] = get_el(doc.css('img#prodImage')).attribute('src') if get_el(doc.css('img#prodImage'))
+      brand_el = doc.css('span').reject{|x| x.content.match(/other products by/i).nil?}.first
+      
+      features['brand'] = brand_el.css('a').text if brand_el
+      
+      features.merge!( details_from_one_page(doc) || {} )
+      sleep(10)
+      sesh.click_link('See more technical details')       
+      doc = Nokogiri::HTML(sesh.response.body)
+      features.merge!( details_from_one_page(doc) || {} )
+      sleep(10)
+    rescue
+      features['nodetails'] = true
+    end
+    doc = Nokogiri::HTML(sesh.response.body)
+    
+    return features
+  end
+
+  def scrape_details(p)
+    require 'webrat'
+    puts 'ASIN='+p.asin
+    sesh = regularsetup
+    begin
+    sesh.visit('http://www.amazon.com/o/asin/' + p.asin)
+    #fetch 'http://www.amazon.com/o/asin/' + 'B000F005U0'
+    #fetch 'http://www.amazon.com/Magicolor-2550-Dn-Color-Laser/dp/tech-data/B000I7VK22/ref=de_a_smtd'
+    sesh.click_link('See more technical details')
+    rescue
+      p.nodetails = true
+      return p
+    end
+    doc = Nokogiri::HTML(sesh.response.body)
+    array = doc.css('.content ul li')
+    features = {}
+    array.each {|i|
+      t = i.content.split(': ')
+      features[t[0].downcase.tr(' -\(\)_','')]=t[1]
+      }
+  
+    #pp features
+    res = []
+    features.each {|key, value| 
+      next if value.nil?
+      if key[/maximumprintspeed/]
+        p.ppm = value.to_f unless !p.ppm.nil? && p.ppm >= value.to_i #Keep fastest value
+        #puts 'PPM: '+p.ppm.to_s
+      end
+      if key[/maximumprintspeed/] && key[/colou?r/] #Color
+        p.ppmcolor = value.to_f
+        #puts 'PPM(Color): '+p.ppmcolor.to_s
+      end
+      if key[/firstpageoutputtime|timetoprint/]
+        p.ttp = value.match(/\d+(.\d+)?/)[0].to_f
+        #puts 'TTP:'+p.ttp.to_s
+      end
+      if key[/sheetcapacity|standardpapercapacity/]
+        p.paperinput = value.match(/\d+/)[0].to_i unless !p.paperinput.nil? && p.paperinput > value.to_i #Keep largest value
+        #puts 'Paper Input:'+p.paperinput.to_s
+      end
+      if key[/resolution/] && res.size < 2
+        if v = value.match(/(\d,\d{3}|\d+) ?x?X? ?(\d,\d{3}|\d+)?/)
+          tmp = v[1,2].compact
+          tmp*=2 if tmp.size == 1
+          p.resolution = tmp.sort{|a,b| 
+            a.gsub!(',','')
+            b.gsub!(',','')
+            a.to_i < b.to_i ? 1 : a.to_i > b.to_i ? -1 : 0
+          }.join(' x ')
+          p.resolutionmax = p.resolution.split(' x ')[0]
+        end
+      end
+      if key[/printerinterface/] || (key[/connectivitytechnology/] && value != 'Wired')
+        p.connectivity = value
+        #puts p.connectivity
+      end
+      if key[/hardwareplatform/]
+        p.platform = value
+        #puts 'HW: '+p.platform
+      end
+      if key[/width/]
+        #puts 'Width: ' + p.itemwidth.to_s + ' <> ' + value rescue nil
+        p.itemwidth = value.to_f * 100
+        #puts 'Width: ' + p.itemwidth.to_s
+      end
+      if key[/ram/]
+        p.systemmemorysize = value.match(/\d+/)[0]
+        #puts "RAM" + p.systemmemorysize.to_s
+      end
+      if key[/printeroutput/]
+        p.colorprinter = !value[/(C|c)olou?r/].nil?
+        #puts 'Color:' + (p.colorprinter ? 'True' : 'False')
+      end
+      if key[/scannertype/]
+        p.scanner = value[/(N|n)one/].nil?
+        #puts 'Scanner:' + (p.scanner ? 'True' : 'False')
+      end
+      if key[/networkingfeature/]
+        p.printserver = !value[/(S|s)erver/].nil?
+      end
+      if key[/printtechnology/]
+        p.colorprinter = value.index(/(B|b)(\/|&)?(W|w)/).nil?
+      end
+      if key[/duplex/]
+        p.duplex = !value.downcase.index('yes').nil?
+      end
+      if key[/dutycycle/]
+        p.dutycycle = value.match(/(\d|,)+/)[0].tr(',','').to_i
+      end
     }
   
-  #pp features
-  res = []
-  features.each {|key, value| 
-    next if value.nil?
-    if key[/maximumprintspeed/]
-      p.ppm = value.to_f unless !p.ppm.nil? && p.ppm >= value.to_i #Keep fastest value
-      #puts 'PPM: '+p.ppm.to_s
-    end
-    if key[/maximumprintspeed/] && key[/colou?r/] #Color
-      p.ppmcolor = value.to_f
-      #puts 'PPM(Color): '+p.ppmcolor.to_s
-    end
-    if key[/firstpageoutputtime|timetoprint/]
-      p.ttp = value.match(/\d+(.\d+)?/)[0].to_f
-      #puts 'TTP:'+p.ttp.to_s
-    end
-    if key[/sheetcapacity|standardpapercapacity/]
-      p.paperinput = value.match(/\d+/)[0].to_i unless !p.paperinput.nil? && p.paperinput > value.to_i #Keep largest value
-      #puts 'Paper Input:'+p.paperinput.to_s
-    end
-    if key[/resolution/] && res.size < 2
-      if v = value.match(/(\d,\d{3}|\d+) ?x?X? ?(\d,\d{3}|\d+)?/)
-        tmp = v[1,2].compact
-        tmp*=2 if tmp.size == 1
-        p.resolution = tmp.sort{|a,b| 
-          a.gsub!(',','')
-          b.gsub!(',','')
-          a.to_i < b.to_i ? 1 : a.to_i > b.to_i ? -1 : 0
-        }.join(' x ')
-        p.resolutionmax = p.resolution.split(' x ')[0]
-      end
-    end
-    if key[/printerinterface/] || (key[/connectivitytechnology/] && value != 'Wired')
-      p.connectivity = value
-      #puts p.connectivity
-    end
-    if key[/hardwareplatform/]
-      p.platform = value
-      #puts 'HW: '+p.platform
-    end
-    if key[/width/]
-      #puts 'Width: ' + p.itemwidth.to_s + ' <> ' + value rescue nil
-      p.itemwidth = value.to_f * 100
-      #puts 'Width: ' + p.itemwidth.to_s
-    end
-    if key[/ram/]
-      p.systemmemorysize = value.match(/\d+/)[0]
-      #puts "RAM" + p.systemmemorysize.to_s
-    end
-    if key[/printeroutput/]
-      p.colorprinter = !value[/(C|c)olou?r/].nil?
-      #puts 'Color:' + (p.colorprinter ? 'True' : 'False')
-    end
-    if key[/scannertype/]
-      p.scanner = value[/(N|n)one/].nil?
-      #puts 'Scanner:' + (p.scanner ? 'True' : 'False')
-    end
-    if key[/networkingfeature/]
-      p.printserver = !value[/(S|s)erver/].nil?
-    end
-    if key[/printtechnology/]
-      p.colorprinter = value.index(/(B|b)(\/|&)?(W|w)/).nil?
-    end
-    if key[/duplex/]
-      p.duplex = !value.downcase.index('yes').nil?
-    end
-    if key[/dutycycle/]
-      p.dutycycle = value.match(/(\d|,)+/)[0].tr(',','').to_i
-    end
-  }
-  
-  p.scrapedat = Time.now
-  p
-end
-
-require 'open-uri'
-#require 'net/http'
-desc "Download Images"
-task :download_images => :environment do
-  Camera.find(:all).each {|c|
-    c.imagesurl = download(c.imagesurl)
-    c.imagemurl = download(c.imagemurl)
-    c.imagelurl = download(c.imagelurl)
-    c.save
-  }
-end
-
-desc "Rename %2B (+)"
-task :image_unescape => :environment do
-  Camera.find(:all).each {|c|
-    s = c.imagesurl.gsub(/%2(b|B)/,'-') if !c.imagesurl.nil?
-    m = c.imagemurl.gsub(/%2(b|B)/,'-') if !c.imagemurl.nil?
-    l = c.imagelurl.gsub(/%2(b|B)/,'-') if !c.imagelurl.nil?
-    c.update_attributes(:imagelurl => l, :imagemurl => m, :imagesurl => s)
-  }
-end
-
-def download(url)
-  return nil if url.nil?
-  return url if url.index(/\/images\/Amazon\//)
-  url = 'http://ecx.images-amazon.com/images/I/'+url if url.length < 30 
-  filename = url.split('/').pop
-  puts filename
-  ret = '/images/Amazon/'+filename
-  begin
-  f = open('/optemo/site/public/images/Amazon/'+filename,"w").write(open(url).read)
-  rescue OpenURI::HTTPError
-    ret = ""
+    p.scrapedat = Time.now
+    p
   end
-  ret
+
 end
 
-# Sets up env and related stuff
-def regularsetup
-  # Requires.
-  require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
-  require 'webrat'
-  require 'mechanize' # Needed to make Webrat work
-  
-  Webrat.configure do |conf|
-    conf.mode = :mechanize # Can't be rails or Webrat won't work
+namespace :scrape_amazon do
+
+  desc "Scraping Amazon"
+  task :scrape => :init do
+    AmazonPrinter.fewfeatures.find(:all, :conditions => ["created_at > ? and nodetails IS NOT TRUE",1.day.ago]).each { |p|
+      p = scrape_details(p)
+      p.save
+      sleep(1+rand()) #Be nice to Amazon
+      sleep(rand()*30) #Be really nice to Amazon!
+    }  
   end
-  sesh = Webrat.session_class.new
-  sesh.mechanize.user_agent_alias = 'Mac Safari'
-  sesh.mechanize.user_agent = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_6; en-us) AppleWebKit/525.27.1 (KHTML, like Gecko) Version/3.2.1 Safari/525.27.1"
-  sesh
+
+  desc "Scraping Amazon"
+  task :scrape_printer => :init do
+    #printer = Printer.fewfeatures.find(:first, :order => 'rand()')
+    printer = AmazonPrinter.find_by_asin('B00292BV96')
+    scrape_details(printer).attributes.each_pair{|k,v| puts k + ": "+ v.to_s}
+    puts printer.asin
+  end
+
+  desc "Scraping cartridge data from Amazon"
+  task :cartridges => :init do
+    $amazonmodel = $model = AmazonCartridge
+    
+    require 'scraping_helper'
+    include ScrapingHelper
+  
+    require 'webrat'
+    sesh = regularsetup
+    
+    counter = 0
+    
+    scrapeme = $model.find_all_by_compatible(nil).reject{|x| x.asin.nil?}
+    
+    scrapeme.each do |cart|
+      spex = scrape_details_general(cart.asin, sesh)
+      morespex = scrape_compatibility(cart.asin, sesh)
+      spex['detailpageurl'] = sesh.current_url
+      spex.merge!(morespex) unless morespex.nil? or spex.nil?
+      clean_specs = cartridge_cleaning_code(spex)
+      fill_in_all spex, cart
+      fill_in 'scrapedat', Time.now, cart
+      counter += 1
+      puts " Done #{counter} #{$model}s "
+    end
+    
+    puts "Scraped #{counter} #{$model}s"
+  end
+
+  desc "Download Images"
+  task :download_images => :init do
+    Camera.find(:all).each {|c|
+      c.imagesurl = download(c.imagesurl)
+      c.imagemurl = download(c.imagemurl)
+      c.imagelurl = download(c.imagelurl)
+      c.save
+    }
+  end
+
+  desc "Rename %2B (+)"
+  task :image_unescape => :init do
+    Camera.find(:all).each {|c|
+      s = c.imagesurl.gsub(/%2(b|B)/,'-') if !c.imagesurl.nil?
+      m = c.imagemurl.gsub(/%2(b|B)/,'-') if !c.imagemurl.nil?
+      l = c.imagelurl.gsub(/%2(b|B)/,'-') if !c.imagelurl.nil?
+      c.update_attributes(:imagelurl => l, :imagemurl => m, :imagesurl => s)
+    }
+  end
+
+  task :init => :environment do 
+  
+    require 'rubygems'
+    require 'amazon_ecs'
+    include Amazon
+    require 'open-uri'
+    #require 'net/http'
+    include AmazonScraper
+    
+    Amazon::Ecs.options = {:aWS_access_key_id => '0NHTZ9NMZF742TQM4EG2', :aWS_secret_key => 'WOYtAuy2gvRPwhGgj0Nz/fthh+/oxCu2Ya4lkMxO'}
+
+    AmazonID =   'ATVPDKIKX0DER'
+    AmazonCAID = 'A3DWYIK6Y9EEQB'  
+  end
+
 end
- 

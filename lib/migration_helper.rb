@@ -24,6 +24,28 @@ module MigrationHelper
     t.integer :totalreviews
     t.timestamps
   end
+    
+  def addDimensions(t)
+    addProductDimensions(t)
+    addPackageDimensions(t)
+  end
+  
+  def addProductDimensions(t)
+  
+    t.string :dimensions
+    t.integer :itemwidth
+    t.integer :itemlength
+    t.integer :itemheight
+  
+  end
+  
+  def addPackageDimensions(t)
+    t.integer :packageheight 
+    t.integer :packagelength
+    t.integer :packagewidth
+    t.integer :packageweight
+  
+  end
   
   def removeBasicProductFeatures
     

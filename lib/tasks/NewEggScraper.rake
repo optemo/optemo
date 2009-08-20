@@ -68,14 +68,27 @@ module NeweggScraper
   
   def clean_offerprops atts
     
-    atts['priceint'] = get_price_i(atts['priceint']) if atts['priceint']
-    atts['pricestr'] = get_price_s(atts['pricestr']) if atts['pricestr']
+    pricefloat = get_f(atts['saleprice']) if atts['saleprice']
+    pricefloat = get_f(atts['salepricestr']) if atts['salepricestr'] and !pricefloat
+    pricefloat = get_f(atts['listprice']) if atts['listprice'] and !pricefloat
+    pricefloat = get_f(atts['listpricestr']) if atts['listpricestr'] and !pricefloat
+    
+    atts['pricestr'] = get_price_s(pricefloat) if pricefloat
+    atts['priceint'] = get_price_i(pricefloat) if pricefloat
+    
+    atts['saleprice'].strip! if atts['saleprice']
+    atts['listprice'].strip! if atts['listprice']
+    
+    atts['salepriceint'] = atts['priceint'] if atts['priceint']
+    atts['price'] = atts['pricestr'] if atts['pricestr']
+    atts['price'] = atts['pricestr'] if atts['pricestr']
+        
     atts['toolow'] = false if atts['toolow'].nil?
     atts['stock'] = true unless atts['priceint'].nil? or atts['stock'] == false
     return atts
   end
   
-  def cleaprinterprops atts
+  def cleanprinterprops atts
       
   
     atts['model'] = atts['model'] || atts['series']
@@ -168,6 +181,43 @@ module NeweggScraper
     fill_in 'recertified', (title_text.include? 'Recertified'), np
     
     fill_in_optional "title", title_el, np
+  end
+  
+  
+  def scrape_prices_2 infopage, item_number
+    
+    retme = {}
+  
+    price_el = get_el(infopage.xpath('//div[@id="pclaPriceArea"]/dl[@class="price"]'))
+    
+    sale_price_el = get_el price_el.css(".final")
+    retme['saleprice'] = sale_price_el.text if sale_price_el
+  
+    orig_price_el = get_el price_el.css(".original")
+    retme['listprice'] = orig_price_el.text if orig_price_el
+  
+    # -- Shipping --- #
+    shipping_el = get_el price_el.css('.shipping')
+    retme['shipping']  = shipping_el.text if shipping_el
+    
+    # --- Too low? --- #
+    low_price_el = get_el price_el.css('.lowestPrice')
+    
+    if (low_price_el)
+      sleep(30)
+      lowpricepage = Nokogiri::HTML(open("http://www.newegg.com/Product/MappingPrice.aspx?Item=#{item_number}"))
+      lowpage_lowprice_el = get_el lowpricepage.css('.final')
+      retme['saleprice'] = lowpage_lowprice_el.text if lowpage_lowprice_el
+      retme['toolow'] = true
+    else
+      retme['toolow'] = false
+    end
+  
+    # --- Availability --- #
+    stock_el = get_el price_el.css('.stockInfo')
+    retme['stock'] = stock_el.text if stock_el
+    
+    return retme
   end
   
   def scrape_prices infopage, np
@@ -359,6 +409,14 @@ namespace :scrape_newegg do
     @logfile.close
   end
  
+  #desc 'Update the data'
+  #task :update => [:update_prices]
+ 
+  #task :update_prices => :init do
+    
+    # TODO
+  #end
+ 
   desc "Get the latest updates to the Newegg list"
   task :rss_update => :init do 
     @logfile = File.open("./log/newegg_update.log", 'w+')
@@ -373,21 +431,38 @@ namespace :scrape_newegg do
     recent_els.each do |el|
       product_link = el.content
       product_num = product_link.gsub(/.+?Item=/,'').gsub(/&.+/,'').strip
-      # TODO get the date
+      # TODO get the date (not too important)
       recent << product_num if product_num
-      
     end
     
     
     # Find those with item #s already in db. (offering exists)
-    not_really_new = recent.collect do |x| x if NeweggOffering.find_by_item_number(x) end
+    not_really_new = recent.reject{ |x| NeweggOffering.find_by_item_number(x).nil? }
+    
+    puts "#{not_really_new.count} of #{recent_els.count} recent need to be updated. others need to be added?"
+    
     not_really_new.each do |inum|
-      npsd = NeweggPrinterScrapedData.find_by_item_number(inum)
-      offering = NeweggOffering.find_by_item_number(inum)
-      infopage = Nokogiri::HTML(open(id_to_url(np.item_number)))
-      #scrape_prices npsd,infopage
-      debugger
-      sleep(1)
+     
+      no = NeweggOffering.find_by_item_number(inum)
+      o = RetailerOffering.find(no.offering_id) if no and no.offering_id
+      
+      begin  
+        infopage = Nokogiri::HTML(open(id_to_url(inum)))
+      rescue
+          debugger
+          puts "Cant scrape #{inum}: #{id_to_url(inum)} doesnt' open"
+      else
+        params = scrape_prices_2 infopage, inum
+        params = clean_offerprops params
+        
+        #debugger
+        
+        fill_in_all params, o if o
+        debugger if o.nil? and !no.nil?
+        puts " Re-scraped prices for #{inum} ."
+      end
+      
+      sleep(10)
       #atts = only_overlapping_atts( clean_offering(npsd.attributes), NeweggOffering )
       # TODO update offering copy_atts = only_overlapping_atts no.attributes, RetailerOffering
       # TODO price history
