@@ -13,14 +13,32 @@ double **data;
 double **dataN;
 int *idA;
 string *brands; 
+string commandStat;
 int parent_id = 0;
 int size, sized, cluster_id;
+string capProductName = productName;
+capProductName[0] = productName[0] - 32;
 double* weights = new double[conFeatureN+boolFeatureN];
+
+commandStat = "SELECT * from db_features where product_type='";
+commandStat += capProductName;
+commandStat += "';";
+cout<<"commandStat is "<<commandStat<<endl;
+res2 = stmt->executeQuery(commandStat);
+
+res2->next();
+
+double* mins = new double[conFeatureN];
+double* maxs = new double[conFeatureN];
+double* averages = new double[conFeatureN];
 
 for(int f=0; f<conFeatureN; f++){
 	weights[f] = weightHash[conFeatureNames[f]];
+	mins[f] = res2->getDouble("low");
+	maxs[f] = res2->getDouble("low");
+	averages[f] = res2->getDouble("low");
 }
-
+   
 for (int f=0; f<boolFeatureN; f++){
 	weights[conFeatureN+f] = weightHash[boolFeatureNames[f]];
 }
@@ -34,12 +52,9 @@ if 	(layer == 1){
 				}
 				brands = new string [sized];
 				idA = new int[sized];	
-			
 				size = 0;
-				
 				double saleprice = 0.0;
 				double price = 0.0;
-				
 				while (res->next()) 
 				{
 		 			saleprice = res->getInt("price");
@@ -80,15 +95,41 @@ if 	(layer == 1){
 			 	   		double distan;
 
 			 	   		double** centroids = new double* [clusterN];
+						double** initials = new double* [clusterN];
 			 	   		for(int j=0; j<clusterN; j++){
-			 	   	    	centroids[j]=new double[conFeatureN];
+			 	   	    	centroids[j]=new double[conFeatureN+boolFeatureN];
+							initials[j] = new double [conFeatureN+boolFeatureN];
 			 	   		}
-
-								
-			 	       	centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights); 
+								cout<<"HERE"<<endl;	
+						//int initCounter=0;		
+						//for (int f=0; f<conFeatureN; f++){
+						//	for (int f2=0; f2<f; f2++){
+						//		initials[initCounter][f2] = averages[f2];
+						//		initials[initCounter+1][f2] = averages[f2];  
+						//    }	
+						//	initials[initCounter][f] = mins[f];
+						//	initials[initCounter+1][f] = maxs[f];
+						//	for (int f2=f; f2<conFeatureN; f2++){
+						//		initials[initCounter][f2] = averages[f2];
+						//		initials[initCounter+1][f2] = averages[f2];  
+						//    }
+						//    initCounter += 2;
+						//} 		
+						//for (int f=0; f<conFeatureN; f++){
+						//	initials[initCounter][f] = averages[f];			
+					    //}
+					    //
+								for (int i=0; i<9; i++){
+									for (int f=0; f<conFeatureN; f++){
+										initials[i][f] = dataN[rand()%size+1][f];
+									}
+								}
 					
-				
-				dist = new double* [size];
+						
+					centersA = k_meansInitial(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights, initials); 
+					
+					//	centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights); 
+				        dist = new double* [size];
 
 						for(int j=0; j<size; j++){
 					    	dist[j] = new double[clusterN]; 
@@ -415,8 +456,7 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 				command += parent_idStream.str();
 				command += ", ";
 				command += clusterSizeStream.str();
-				
-				
+
 				ostringstream auStr; 
 				auStr << res2->getDouble("utility");
 				command += ", ";
@@ -472,7 +512,8 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 			command += cidStream2.str();
 			command += ", ";
 			ostringstream pIdStream;
-			pIdStream << res2->getInt("product_id");
+			int pid2 = res2->getInt("product_id");
+			pIdStream << pid2;
 			command += pIdStream.str();
 			command += ", ";
 			
@@ -499,12 +540,10 @@ void leafClustering(int conFeatureN, int boolFeatureN, int clusterN, string* con
 					utility += res3->getDouble(conFeatureNames[f]);
 				}	
 			}
-			
 			ostringstream ustr; 
 			ustr << utility;
 			command +=  ustr.str();	
-			
-			
+
 			for (int f=0; f<conFeatureN; f++){
 				command += ", ";
 				ostringstream feaVStream;

@@ -6,9 +6,9 @@ class Camera < ActiveRecord::Base
            #                                      (c)luster 
            #                                      (f)ilter 
            #   db_name                Type        (e)xtra Display                              Label       Low Desc                Average Desc                   High Desc         #Very Low Desc           Very High Desc
-  Features = [%w(price                Continuous  cf                  Price                    \           Cheap                   Average\ Price                 Average\ Price),    #Very\ Cheap            Expensive),
+  Features = [%w(price                Continuous  cf                  Price                    \           Cheap                   Average\ Price                 Expensive),    #Very\ Cheap            Expensive),
               %w(maximumresolution    Continuous  cf                  Resolution               MP          Average\ Resolution     Somewhat\ High\ Resolution     High\ Resolution),  #Low\ Resolution        Very\ High\ Resolution),
-              %w(opticalzoom          Continuous  cf                  Optical\ Zoom            X           Average\ Zoom           Somewhat\ Zoom                 High\ Zoom),        #Low\ Zoom              Very\ High\ Zoom),
+              %w(opticalzoom          Continuous  cf                  Optical\ Zoom            X           low\ Zoom               Somewhat\ High\ Zoom             High\ Zoom),        #Low\ Zoom              Very\ High\ Zoom),
               %w(displaysize          Continuous  cf                  Display\ Size            in          Somewhat\ Small\ LCD    Average\ LCD                   Large\ LCD),        #Small\ LCD             Very\ Large\ LCD),
               %w(brand                Categorical f                   Brand                    \           \                        \                             \ )]                # \                      \)]
                                                                                                                                                                                    
@@ -26,10 +26,10 @@ class Camera < ActiveRecord::Base
   FeaturesLabel = Hash[*Features.select{|f|f[4] != " "}.map{|f|f[0]}.zip(Features.select{|f|f[4] != " "}.map{|f|f[4]}).flatten]
   FeaturesDisp = Hash[*Features.map{|f|f[0]}.zip(Features.map{|f|f[3]}).flatten]
   #ContinuousFeaturesDescLlow = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[5]}).flatten]
-  ContinuousFeaturesDescLow = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[6]}).flatten]
-  ContinuousFeaturesDescHigh = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[8]}).flatten]
+  ContinuousFeaturesDescLow = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[5]}).flatten]
+  ContinuousFeaturesDescHigh = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[7]}).flatten]
   #ContinuousFeaturesDescHhigh = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[9]}).flatten]
-  ContinuousFeaturesDescAverage = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[7]}).flatten]
+  ContinuousFeaturesDescAverage = Hash[*ContinuousFeatures.zip(Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[6]}).flatten]
   BinaryFeaturesDesc = Hash[*BinaryFeatures.zip(Features.select{|f|f[1] == "Binary" && f[2].index("c")}.map{|f|f[3]}).flatten]
   ExtraFeature = Hash[*Features.select{|f|f[2].index("e")}.map{|f|[f[0],true]}.flatten]
   ShowFeatures = %w(brand model maximumresolution opticalzoom digitalzoom displaysize itemweight itemwidth)

@@ -51,6 +51,7 @@
           <%if l<@allSearches.size - 1%>
 			<%= link_to "#{@allSearches[l].desc}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>
 		  	&lt;&lt;
+		
 		 <%else%>
 			<%= "#{@allSearches[l].desc}"%>
 		 <%end%> 

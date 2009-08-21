@@ -25,6 +25,7 @@ class ProductsController < ApplicationController
       @clusterDescs = @s.clusterDescription
       if @session.searchpids.blank? #|| @@session.searchpids.size > 9)
         z = Search.find_all_by_session_id(@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.hour.ago}\'")
+        #z = [472, 478, 514, 516, 536, 538, 540].map{|id|Search.find(id)}
         unless (z.nil? || z.empty?)
           @layer, @allSearches = zipStack(z) 
         end  
@@ -104,10 +105,10 @@ class ProductsController < ApplicationController
 
      allSearches = []
      i=0
-     until (stack[-1 -i].layer == 1)
+     
+     until ((i==stack.size) ||  stack[-1 -i].layer == 1)
        s = stack[-1-i]
        ls = allSearches.map{|r| r.layer}
-
        if (ls.index(s.layer).nil?)
           if (ls.empty?)
             allSearches.unshift(s)
@@ -117,11 +118,12 @@ class ProductsController < ApplicationController
        end   
        i = i+1
      end    
-     allSearches.unshift(stack[-1-i]) if (stack[-1-i].layer==1)  
+     allSearches.unshift(stack[-1-i]) if (!stack[-1 -i].nil? && stack[-1-i].layer==1)  
      layer = allSearches[-1].layer
 
      # When can't reach the first layer in the given time frame 
-     # Must create searches for higher layers
+     # Must create search objects for higher layers
+
      l = allSearches[0].layer
      unless l == 1 
           pid =  allSearches[0].parent_id
@@ -135,8 +137,12 @@ class ProductsController < ApplicationController
                r[mycluster] = c.id.to_s
                mycluster.next!
              end  
+             l -=1
           end   
-          r['parent_id'] = pid2
+          r['session_id'] = @session.id
+          r['parent_id'] = ppid
+          r['result_count'] = r.result_count
+          r['desc'] = r.searchDescription
           allSearches.unshift(r)
      end
 

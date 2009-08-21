@@ -79,6 +79,8 @@ end
            #  clusterDs[i] << $model::ContinuousFeaturesDescHhigh[f.name]      
            elsif (cRanges[0] >= high)
              clusterDs[i] <<  $model::ContinuousFeaturesDescHigh[f.name]    
+           elsif  (cRanges[0] >= low and cRanges[1]<=high)
+            clusterDs[i] <<  $model::ContinuousFeaturesDescAverage[f.name]      
            end
         }
       end 
@@ -97,6 +99,7 @@ end
     desCount = 0
     statDs = [] 
    @dbfeatCon = DbFeature.find_all_by_product_type_and_feature_type_and_region(session.product_type, 'Continuous',$region)
+ 
    @dbfeatCon.each do |f|
       #llow = f.llow
       low = f.low

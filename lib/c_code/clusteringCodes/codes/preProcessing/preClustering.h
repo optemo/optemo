@@ -50,7 +50,7 @@ string preClustering(map<const string, int>productNames, string productName, str
 				filteringCommand = "SELECT * FROM ";
 				filteringCommand += productName;
 				if (region == "us"){
-					filteringCommand += "s where (instock=1 and (scanner IS NOT NULL) and (printserver IS NOT NULL) ";
+					filteringCommand += "s where (instock=1 and (scanner IS NOT NULL) and (printserver IS NOT NULL) and ";
 				}else if(region == "ca"){
 					filteringCommand += "s where (instock_ca=1 and (scanner IS NOT NULL) and (printserver IS NOT NULL) and ";
 				}
