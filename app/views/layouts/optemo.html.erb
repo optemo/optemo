@@ -14,8 +14,6 @@
 <%= stylesheet_link_merged :base %>
 
 <%= javascript_include_tag 'facebooksessionops' %>	
-	<script type="text/javascript" src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
-	<script type="text/javascript"> FB.init('<%= $AppKey %>',"/xd_receiver.html");</script>
 </head>
 <body>
 <div id="mycenter">
@@ -34,7 +32,7 @@
 	  </div>
 		<a href="<%= url_for '/laserprinters' %>" title="Why to buy a laser printer?" id='whylaser'><%= image_tag('whylaser.jpg') %><span>Click to find out</span></a>
 	  
-     <div id="logindisplay" style="display:none;">                                                                                               
+     <div id="logindisplay">                                                                                               
    		<% if !cookies[$AppKey +"_user"].nil? %>
 		<div style="float:left">
 		   			<fb:profile-pic uid='loggedinuser' facebook-logo='true' height="30" size="square"></fb:profile-pic>	                                       
@@ -48,7 +46,7 @@
 			<a href="#" id="linkUserLogout"> logout </a>
 		</div>
 		<% else %>
-			<fb:login-button size="short" onlogin="window.location.href='/login/do_login';" autologoutlink="false"> </fb:login-button>
+			<fb:login-button size="small" length="short" onlogin="window.location.href='/login/do_login';" autologoutlink="false"> </fb:login-button>
 		<% end %>
      </div>
 	 <div id="header_buttons">                                                                                             
@@ -95,5 +93,7 @@
 <%= javascript_include_tag 'jqueryui-1.7.2.min.js' %>
 <%= javascript_include_merged :base %>
 <noscript><p><img src="http://pj.laserprinterhub.com/piwik.php?idsite=1" style="border:0" alt=""/></p></noscript>
+<script type="text/javascript" src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
+<script type="text/javascript"> FB.init('<%= $AppKey %>',"/xd_receiver.html");</script>
 </body>
 </html>
