@@ -5,6 +5,7 @@ javascripts:
   - piwik
   - application
   - jquery.tablednd_0_5
+  - facebooksessionops
 stylesheets: 
 - base: 
   - camera
