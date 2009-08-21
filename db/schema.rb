@@ -712,14 +712,13 @@ ActiveRecord::Schema.define(:version => 20090818174011) do
     t.string   "brand"
     t.string   "model"
     t.string   "mpn"
-    t.string   "asin"
-    t.string   "yieldstr"
+    t.string   "compatiblebrand"
     t.integer  "yield"
-    t.string   "shelflifestr"
     t.integer  "shelflife"
     t.string   "color"
     t.string   "brandnameprice"
     t.integer  "brandnamepriceint"
+    t.text     "imageurl"
     t.text     "title"
     t.integer  "price"
     t.string   "pricestr"
@@ -748,10 +747,12 @@ ActiveRecord::Schema.define(:version => 20090818174011) do
     t.integer  "packagelength"
     t.integer  "packagewidth"
     t.integer  "packageweight"
+    t.float    "costperyield"
+    t.string   "condition"
+    t.boolean  "real"
     t.string   "warranty"
     t.text     "manufacturerproducturl"
     t.datetime "scrapedat"
-    t.text     "imageurl"
   end
 
   create_table "compatibilities", :force => true do |t|
@@ -1070,6 +1071,12 @@ ActiveRecord::Schema.define(:version => 20090818174011) do
     t.datetime "activeUpdate"
     t.boolean  "freeShipping"
     t.datetime "scrapedat"
+<<<<<<< HEAD:db/schema.rb
+    t.boolean  "ink"
+    t.string   "condition"
+    t.boolean  "real"
+=======
+>>>>>>> 9bf569bde8544fd072646cc91aee7acce741fe45:db/schema.rb
   end
 
   create_table "preference_relations", :force => true do |t|

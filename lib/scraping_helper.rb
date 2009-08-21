@@ -15,23 +15,17 @@ module ScrapingHelper
     return {'paperinput' => paperinput} if paperinput
   end
   
-  def generic_printer_cleaning_code atts
-    
-    atts.each{|x,y| atts[x] = y.gsub(/#{@@sep}/,'') if y.scan(/#{@@sep}/).length == 1 }
-    
-    atts['ppm'] = get_max_f(atts['ppm'])
-    atts['ppmcolor'] = get_max_f(atts['ppmcolor'])
-    atts['ttp'] = get_min_f(atts['ttp'])
-    
-    atts['paperinput'] = (atts['paperinput'] || '').scan(/(?-mix:\d*,?\d+\s?-?)(?i-mx:sheets?)|(?i-mx:pages?)/).collect{|x| get_max_f x}.max
-    #split(@@sep).collect{|x| get_max_f((x||'').to_s)}.reject{|x| x.nil?}.max 
-    debugger if atts['paperinput'] and atts['paperinput'] < 100
-    
+  def cartridge_cleaning_code atts
+    atts = generic_cleaning_code atts
+    atts.each{|x,y| atts[x]= atts[y].strip if atts[y] and atts[y].type == 'String'}
+  end
+  
+  def generic_cleaning_code atts, model=$model
     atts['brand'] = atts['brand'].gsub(/\(.+\)/,'').strip if atts['brand']
     # Model:
     if (atts['model'].nil? or atts['model'] == atts['mpn']) and atts['title']
       # TODO combine with other model cleaner code
-      dirty_model_str = atts['title'].match(/.+\sprinter/i).to_s.gsub(/ - /,'') 
+      dirty_model_str = atts['title'].match(/.+\s#{$model}/i).to_s.gsub(/ - /,'') 
       
     end
     if atts['model']
@@ -52,8 +46,40 @@ module ScrapingHelper
       atts['model'].strip!
     end
     
-    
     atts['model'] = atts['mpn'] if atts['model'].nil? or atts['model'] ==''
+  
+    # Prices
+    
+    s_price_f = get_f((atts['salepricestr'] || atts['saleprice'] || '').strip.gsub(/\*/,'')) 
+    l_price_f = get_f((atts['listpricestr'] || atts['listprice'] || '').strip.gsub(/\*/,'')) 
+    atts['listpriceint'] = atts['listprice'] = get_price_i( l_price_f) if l_price_f
+    atts['salepriceint'] = atts['saleprice'] = get_price_i( s_price_f) if s_price_f
+    atts['listpricestr'] = get_price_s( l_price_f) if l_price_f
+    atts['salepricestr'] = get_price_s( s_price_f) if s_price_f
+    
+    price_f = get_f((atts['pricestr'] || atts['price'] || atts['priceint'] || '').strip.gsub(/\*/,'')) 
+    atts['priceint'] = atts['price'] = atts['salepriceint'] || atts['listpriceint'] || get_price_i(price_f)
+    atts['pricestr'] = atts['salepricestr'] || atts['listpricestr'] || get_price_s(price_f)
+    
+    return atts
+  
+  end
+  
+  def generic_printer_cleaning_code atts
+    
+    atts = generic_cleaning_code atts
+    
+    atts.each{|x,y| atts[x] = y.gsub(/#{@@sep}/,'') if y.scan(/#{@@sep}/).length == 1 }
+    
+    atts['ppm'] = get_max_f(atts['ppm'])
+    atts['ppmcolor'] = get_max_f(atts['ppmcolor'])
+    atts['ttp'] = get_min_f(atts['ttp'])
+    
+    atts['paperinput'] = (atts['paperinput'] || '').scan(/(?-mix:\d*,?\d+\s?-?)(?i-mx:sheets?)|(?i-mx:pages?)/).collect{|x| get_max_f x}.max
+    #split(@@sep).collect{|x| get_max_f((x||'').to_s)}.reject{|x| x.nil?}.max 
+    debugger if atts['paperinput'] and atts['paperinput'] < 100
+    
+    
     
     # Resolution
     atts['resolution'] = atts['resolution'].scan(/\d*,?\d+\s?x\s?\d*,?\d+/i).uniq * " #{@@sep} " if atts['resolution']
@@ -137,14 +163,22 @@ module ScrapingHelper
     # black; b(lack)?\s?(\/|and|&)\s?w(hite)?; mono(chrome)? 
     
     model.column_names.each do |param|
-      param_names << param if str.match(/#{param}/)
+      param_names << param if str.match(/#{param}/) or str.match(/#{param.gsub(/(str$|int$)/,'')}/)
+    end
+    
+    if str.match(/price/)
+      if str.match(/(orig(inal)?|reg(ular)?)/)
+        param_names << 'listpricestr' 
+        param_names << 'listprice'
+      else
+        param_names << 'saleprice'
+      end
     end
     
     param_names << 'ttp' if str.match(/(firstpageoutputtime|timeto(firstpage|print))/)
     param_names << 'ppm' if str.match(/print(ing)?speed/)  
     param_names << 'brand' if str.match(/manufacture(d|r$)/)
     param_names << 'packageweight' if str.match(/shippingweight/)
-    param_names << 'listpricestr' if str.match(/originalprice/)
     param_names << 'mpn' if str.match(/mfgpartn(o|um)/)
     param_names << 'paperinput' if str.match(/(input|sheet|paper)capacity/)
     param_names << 'paperoutput' if str.match(/outputcapacity/)
@@ -168,6 +202,8 @@ module ScrapingHelper
     
     param_names << 'dimensions' if str.match(/dimensions/)
     
+    param_names << 'rating' if str.match(/average.*(review|rating)/) or str.match(/stars/)
+     
     return param_names
   end
   

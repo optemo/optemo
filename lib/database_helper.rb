@@ -6,6 +6,17 @@ module DatabaseHelper
   $general_ignore_list = ['id','created_at','updated_at']
   $region_suffixes = {'CA' => '_ca', 'US' => ''}
   
+  
+  def get_matching_sets recs=$model.all
+     matchingsets = []
+     recclass = recs.first.class
+     recs.each do |rec|
+       matchingsets << (match_printer_to_printer rec, recclass, []).collect{|x| x.id}
+     end
+     matchingsets.collect{|x| x.sort}.uniq
+     return matchingsets
+  end
+  
   # Should return itself and any other matching printers.
   def match_printer_to_printer ptr, recclass=$model, series=[]
     makes = [just_alphanumeric(ptr.brand)].delete_if{ |x| x.nil? or x == ""}
@@ -23,12 +34,22 @@ module DatabaseHelper
         makes += ['oki', 'okidata']
       elsif(make.include?( 'hp') or make.include?( 'hewlett'))
         makes += ['hp','hewlettpackard']
+      elsif(make.include?( 'konica'))
+        makes += ['konica', 'konicaminolta', 'minolta']
       end
     end
     makes.uniq
-    
-    modelnames = rec_modelnames.collect{ |x| just_alphanumeric(x) }
-    series.each { |ser| modelnames.each {|mn| mn.gsub!(/\s#{ser}\s/,'') }}
+    modelnames = []
+    rec_modelnames.each{ |mn|
+      mname = mn
+      series.each { |ser|  
+        mname.gsub!(/\s#{ser}\s/i,'')
+        modelnames << mn.gsub(/\s#{ser}\s/i,'')
+      }
+      modelnames << mname if mname
+    }
+    modelnames.collect!{ |x| just_alphanumeric(x) }
+    modelnames.each{|x| makes.each{|y| x.gsub!(/#{y}/,'')}}.uniq!
     
     recclass.all.each do |ptr|
       p_makes = [just_alphanumeric(ptr.brand)].delete_if{ |x| x.nil? or x == ""}
@@ -38,6 +59,7 @@ module DatabaseHelper
 
       matching << ptr unless ( (p_makes & makes).empty? or (p_modelnames & modelnames).empty? )
     end
+    
     return matching
   end
   

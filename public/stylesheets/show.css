@@ -44,7 +44,11 @@ div#loading {
 	top: 0px;
 	left: 751px;
 }
-
+.toplinks {
+	font-size: 0.9em;
+	float: right;
+	margin: 3px 50px 0px 0px;
+}
 div #container {
 	width: 790px;
 	padding: 0px 5px;
@@ -60,13 +64,11 @@ div #outside {
 	text-align: center;
 	width: 400px;
 	float: left;
-	display: inline;
 }
 
 #features {
 	width: 390px;
 	float: left;
-	display: inline;
 }
 div#textfeatures, #reviews{
 	clear:both;
@@ -76,21 +78,33 @@ div#textfeatures, #reviews{
 }
 
 div .showtable{
-	clear: both;
+	float: left;
 	text-align: center;
+	width: 400px;
+}
+div .accesories{
+	width: 360px;
+	text-align: center;
+	margin: 10px 15px 0px 400px;
+	border: 2px solid black;
+	background-color: #ffff99;
+}
+.accesories img{
+	border: 1px solid black;
+	margin-left: 2px;
 }
 div .left{
 	float: left;
 	text-align: right;
 	margin-top: 5px;
 	margin-bottom: 10px;
-	width: 390px;
+	width: 193px;
 }
 div .right{
 	float: right;
 	text-align: left;
 	margin-bottom: 10px;
-	width: 390px;
+	width: 193px;
 	
 }
 div .spacer {
@@ -109,4 +123,7 @@ div .spacer {
 #showbacklink {
 	float:left;
 	margin-right: 3px;
+}
+.cartridgeinfo {
+	margin: 0px 0px 10px 52px;
 }

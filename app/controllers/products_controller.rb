@@ -43,10 +43,11 @@ class ProductsController < ApplicationController
   def show
     @plain = params[:plain].nil? ? false : true
     #Cleanse id to be only numbers
-    params[:id] = params[:id][/^\d+/]
-    @product = $model.find(params[:id])
-    @offerings = RetailerOffering.find_all_by_product_id_and_product_type_and_region(params[:id],$model.name,$region,:order => 'priceint ASC')
-    @review = Review.find_by_product_id_and_product_type(params[:id],$model.name, :order => 'helpfulvotes DESC')
+    @product = $model.find(params[:id][/^\d+/])
+    @offerings = RetailerOffering.find_all_by_product_id_and_product_type_and_region(@product.id,$model.name,$region,:order => 'priceint ASC')
+    @review = Review.find_by_product_id_and_product_type(@product.id,$model.name, :order => 'helpfulvotes DESC')
+    @cartridges = Compatibility.find_all_by_product_id_and_product_type(@product.id,$model.name).map{|c|Cartridge.find_by_id(c.accessory_id)}
+    @cartridgeprices = @cartridges.map{|c|RetailerOffering.find_by_product_type_and_product_id("Cartridge",c.id)}
     #Session Tracking
     s = Viewed.new
     s.session_id = session[:user_id]

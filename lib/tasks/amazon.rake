@@ -389,13 +389,18 @@ task :get_product_ASINs => :init do
   #browse_node for all-in-one:172583
   #browse_node for digital point and shoot cameras: 330405011
   #Use browse id for Laser Printers - 172648
-  browse_node_id = '172583'
+  #browse node for cartridges: 172638
+  #browse node for laser cartridges: 172641
+  browse_node_id = '172641'
   search_index = 'Electronics'
   response_group = 'ItemIds'
+  $amazonmodel = AmazonCartridge
   current_page = 1
   count = 0
   loop do
     res = Amazon::Ecs.item_search('',:browse_node => browse_node_id, :search_index => search_index, :response_group => response_group, :item_page => current_page)
+    puts "ERROR: #{res.error} " if  res.has_error?    
+    
     total_pages = res.total_pages unless total_pages
     res.items.each do |item|
       asin = item.get('asin')
@@ -470,11 +475,12 @@ task :update_prices_ca => :init do
 end
 
 task :init => :environment do
-  require 'amazon/ecs'
+  require 'amazon_ecs'
   include Amazon
   $model = Printer
-  $amazonmodel = AmazonPrinter
-  Amazon::Ecs.options = {:aWS_access_key_id => '1JATDYR69MNPGRHXPQG2'}
+  $amazonmodel = AmazonPrinter 
+  Amazon::Ecs.options = {:aWS_access_key_id => '0NHTZ9NMZF742TQM4EG2', :aWS_secret_key => 'WOYtAuy2gvRPwhGgj0Nz/fthh+/oxCu2Ya4lkMxO'}
+  
   AmazonID =   'ATVPDKIKX0DER'
   AmazonCAID = 'A3DWYIK6Y9EEQB'
 end
