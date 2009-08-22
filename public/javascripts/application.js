@@ -165,7 +165,12 @@ function closeDesc(id){
 }
 
 $(document).ready(function() {
-	// ToDo: Add code for table drag drop here
+	
+	$("#linkUserLogout").click(function(){
+		$.get(’/login/do_logout’);
+		FB.Connect.logoutAndRedirect("/homepage");
+		return false;
+	});
 	
 	$("#comparisonTable").tableDnD({
 		onDragClass: "rowBeingDragged",

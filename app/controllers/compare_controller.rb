@@ -309,6 +309,7 @@ def ReorderProducts
 end
   
 def ReorderFeatures
+  # To sort: InterestingFeatures
   # Based on: userPreferences for ContinuousFeatures
   
   prefHash = {}
@@ -511,7 +512,6 @@ def CalculateUtility(p)
   # For all features
     session[:productType].constantize::ContinuousFeatures.each do |f|
     # Multiply factor value by the User's preference for that feature (weight) and add to cost
-    debugger if getFactorRow.nil?
       cost = cost + getFactorRow.send(f) * userSession.features.send("#{f}_pref")
     end      
   return cost
