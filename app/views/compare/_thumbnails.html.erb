@@ -32,7 +32,7 @@
 			<!-- ></div> -->
 		<!-- <% end %> -->
 		<div class="first">	
- 			<%= image_tag(thumbnails.imagemurl, :width => thumbnails.imagemw, :height => thumbnails.imagemh, :onClick => "fadeout(#{thumbnails.id});", :style => "cursor: pointer;") %>
+ 			<%= image_tag(thumbnails.imagemurl, :width => thumbnails.imagemw, :height => thumbnails.imagemh, :"data-id" => thumbnails.id, :class => 'productimg', :style => "cursor: pointer;") %>
  		</div>
 	<div align="center" style="font-size:0.9em; color:gray;">
 	(<%= @search.clusters[i].description(@session) %>)
