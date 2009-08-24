@@ -3,7 +3,7 @@ $SITE_TITLE = 'LaserPrinterHub.com'
 $DefaultProduct = 'Printer'
 
 # Configuration: Application Key provided by Facebook
-$AppKey = "7c4d489a9344487977b9dc2d41cb7d9d"
+$AppKey = "7aeec628ded26fb3b03829fb4142da01"
 
 # Define Global variable for storing direction for each preference
 $PrefDirection = Hash.new(1) # Set 1 i.e. Up as the default value for direction
