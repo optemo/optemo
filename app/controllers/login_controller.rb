@@ -23,5 +23,6 @@ class LoginController < ApplicationController
   
   def do_logout
     session[:user_id] = nil;
+    redirect_to "/"
   end
 end

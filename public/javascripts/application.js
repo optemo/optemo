@@ -166,12 +166,6 @@ function closeDesc(id){
 
 $(document).ready(function() {
 	
-	$("#linkUserLogout").click(function(){
-		$.get(’/login/do_logout’);
-		FB.Connect.logoutAndRedirect("/homepage");
-		return false;
-	});
-	
 	$("#comparisonTable").tableDnD({
 		onDragClass: "rowBeingDragged",
 		onDrop: function(table, row){		

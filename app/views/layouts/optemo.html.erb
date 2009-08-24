@@ -33,7 +33,7 @@
      <div id="logindisplay">                                                                                               
    		<% if !cookies[$AppKey +"_user"].nil? %>
 		<div style="float:left">
-		   			<fb:profile-pic uid='loggedinuser' facebook-logo='true' height="30" size="square"></fb:profile-pic>	                                       
+			<fb:profile-pic uid='loggedinuser' size="thumb" height="30" facebook-logo='true'></fb:profile-pic>
 		</div>
 		<div style="float:left">
 			&nbsp;
@@ -41,7 +41,7 @@
 		<div style="float:left">
 			<fb:name uid='loggedinuser' useyou='false' firstnameonly='true'></fb:name>
 			<br>
-			<a href="#" id="linkUserLogout"> logout </a>
+			<a href="#" id="linkUserLogout" onClick="user_logout();"> logout </a>
 		</div>
 		<% else %>
 			<fb:login-button size="small" length="short" onlogin="window.location.href='/login/do_login';" autologoutlink="false"> </fb:login-button>
