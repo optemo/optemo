@@ -308,9 +308,9 @@ $(document).ready(function() {
 function histogram(element,min,max) {
 	var raw = $(element).attr('data-data');
 	if (raw)
-		var data = raw.split(',');
+		{var data = raw.split(',');}
 	else
-		var data = [0.5,0.7,0.1,0,0.3,0.8,0.6,0.4,0.3,0.3];
+		{var data = [0.5,0.7,0.1,0,0.3,0.8,0.6,0.4,0.3,0.3];}
 	//Data is assumed to be 10 normalized elements in an array
 	
 	var peak = 10,
