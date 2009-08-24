@@ -10,18 +10,19 @@ class LoginController < ApplicationController
       if session[:user_id].nil?
         redirect_to request.referer
       end
-      currentSession = Session.find_by_id(session[:user_id]);
+      currentSession = Session.find(session[:user_id]);
       currentSession.user = fbid
       currentSession.save
     else
       # User has logged in previously
       # Session.delete(session[:user_id]);    # Can discard this row
       session[:user_id] = findSession.id;
-    end    
-   redirect_to request.referer
+    end
+   redirect_to params[:currpage]
   end
   
   def do_logout
     session[:user_id] = nil;
+    redirect_to "/"
   end
 end

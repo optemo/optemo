@@ -13,12 +13,10 @@
 		}
 	}); */	
 
-/*function user_logout()
+function user_logout()
 {
-//	FB.Connect.logoutAndRedirect("/products");
-	FB.Connect.logout(function() { FB.XFBML.Host.parseDomTree(); });
-
-}*/
+	FB.Connect.logoutAndRedirect("/login/do_logout");
+}
 
 function user_logged_in(backtoaddress)
 {
