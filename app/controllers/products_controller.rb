@@ -53,6 +53,16 @@ class ProductsController < ApplicationController
     s.session_id = session[:user_id]
     s.product_id = @product.id
     s.save
+    
+    # Determine whether or not to show the Save Button
+    @showSaveButton = true
+    @saveds = Saved.find_all_by_session_id(session[:user_id])
+    @saveds.collect do |saved|
+      if @product.id == saved.product_id
+        @showSaveButton = false
+      end      
+    end
+    
     respond_to do |format|
       format.html { if @plain
                       render :layout => false
