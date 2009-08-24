@@ -79,8 +79,8 @@ end
            #  clusterDs[i] << $model::ContinuousFeaturesDescHhigh[f.name]      
            elsif (cRanges[0] >= high)
              clusterDs[i] <<  $model::ContinuousFeaturesDescHigh[f.name]    
-           elsif  (cRanges[0] >= low and cRanges[1]<=high)
-            clusterDs[i] <<  $model::ContinuousFeaturesDescAverage[f.name]      
+           #elsif  (cRanges[0] >= low and cRanges[1]<=high)
+           # clusterDs[i] <<  $model::ContinuousFeaturesDescAverage[f.name]      
            end
         }
       end 
