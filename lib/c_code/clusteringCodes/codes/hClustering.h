@@ -23,7 +23,7 @@ double** initials = new double* [clusterN];
 commandStat = "SELECT * from db_features where product_type='";
 commandStat += capProductName;
 commandStat += "';";
-cout<<"commandStat is "<<commandStat<<endl;
+//cout<<"commandStat is "<<commandStat<<endl;
 res2 = stmt->executeQuery(commandStat);
 
 res2->next();
@@ -80,7 +80,7 @@ if 	(layer == 1){
 				  dataN = new double*[size];
 			 	   	    for(int j=0; j<size; j++){
 			 	   				dataN[j] = new double[conFeatureN+boolFeatureN]; 
-								initials[j] = new double [conFeatureN+boolFeatureN];
+							//	initials[j] = new double [conFeatureN+boolFeatureN];
 			 	   		}
 
 			 	   		int **indicators = new int* [conFeatureN];
@@ -99,7 +99,7 @@ if 	(layer == 1){
 						
 			 	   		for(int j=0; j<clusterN; j++){
 			 	   	    	centroids[j]= new double[conFeatureN+boolFeatureN];
-							initials[j] = new double [conFeatureN+boolFeatureN];
+						//	initials[j] = new double [conFeatureN+boolFeatureN];
 			 	   		}
 								//cout<<"HERE"<<endl;	
 					  // int initCounter=0;		
@@ -120,16 +120,16 @@ if 	(layer == 1){
 					  // 	   initials[initCounter][f] = averages[f];			
 					  // }
 					   
-								for (int i=0; i<9; i++){
-									for (int f=0; f<conFeatureN; f++){
-										initials[i][f] = dataN[rand()%size+1][f];
-									}
-								}
+							//	for (int i=0; i<9; i++){
+							//		for (int f=0; f<conFeatureN; f++){
+							//			initials[i][f] = dataN[rand()%size+1][f];
+							//		}
+							//	}
 					
 						
-					centersA = k_meansInitial(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights, initials); 
+					//centersA = k_meansInitial(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights, initials); 
 					
-					//	centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights); 
+						centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights); 
 				        dist = new double* [size];
 
 						for(int j=0; j<size; j++){
@@ -224,7 +224,7 @@ if (layer > 1){
 	command += cluster_sizeStream.str();
 	command += ");";
 	resClus = stmt->executeQuery(command); 
-	
+
 	
 	while(resClus->next()){
 	
@@ -294,14 +294,15 @@ if (layer > 1){
  	   		double** centroids = new double* [clusterN];
  	   		for(int j=0; j<clusterN; j++){
  	   	    	centroids[j]=new double[conFeatureN];
-				initials[j] = new double [conFeatureN+boolFeatureN];
+				//initials[j] = new double [conFeatureN+boolFeatureN];
  	   		}
-     	      	for (int i=0; i<9; i++){
-					for (int f=0; f<conFeatureN; f++){
-						
-						initials[i][f] = dataN[rand()%100+1][f];
-					}
-				}
+     	      //for (int i=0; i<9; i++){
+			  //	for (int f=0; f<conFeatureN; f++){
+			  //		
+			  //		initials[i][f] = dataN[rand()%100+1][f];
+			  //	}
+			  //}
+			
  	       	centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights); 
 	        dist = new double* [size];
 		
