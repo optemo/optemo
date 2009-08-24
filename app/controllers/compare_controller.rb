@@ -41,7 +41,7 @@ class CompareController < ApplicationController
       # Reorder the product columns based on product utility
       ReorderProducts()      
       # After @products has been re-ordered, create the @search object
-      cluster_ids = @products.map{|p| $nodemodel.find_by_product_id(p.id, :order => 'id DESC').cluster_id.to_s}
+      cluster_ids = @products.map{|p| $nodemodel.find_by_product_id_and_region(p.id, $region, :order => 'id DESC').cluster_id.to_s}
       @search = Search.createFromPath(cluster_ids, @session.id)
      # @clusterDescs = @search.clusterDescription
       # Populate @interestingFeatureDisplayed variable
