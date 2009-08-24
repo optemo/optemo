@@ -44,7 +44,7 @@
 			<a href="#" id="linkUserLogout" onClick="user_logout();"> logout </a>
 		</div>
 		<% else %>
-			<fb:login-button size="small" length="short" onlogin="window.location.href='/login/do_login';" autologoutlink="false"> </fb:login-button>
+			<fb:login-button size="small" length="short" onlogin="window.location.href='/login/do_login?currpage=' + window.location;" autologoutlink="false"> </fb:login-button>
 		<% end %>
      </div>
 	 <div id="header_buttons">                                                                                             
