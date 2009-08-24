@@ -346,11 +346,12 @@ def notSimilarFeatures(f, p1, p2)
 # f iterates over PreferredDisplayFeatures
   case f
     when "scanner", "printserver", "colorprinter"
-      f1 = finalDisplay(p1, f)
-      f2 = finalDisplay(p2, f)
+      f1 = p1.send(f)
+      f2 = p2.send(f)
       if (f1 == f2)
         return false
       end
+      return true
     when "itemdimensions", "packagedimensions"
       # If any dimension is Unknown, then keep the row faded. However, if there is any pair of products with  a difference
       # greater than the margin, then the row must be highlighted 
@@ -368,6 +369,7 @@ def notSimilarFeatures(f, p1, p2)
         return true
       end
     when "resolution"
+      # What is the condition for similar resolution?
       return true
     when "connectivity", "platform"
       # These are CSV strings
@@ -386,7 +388,7 @@ def notSimilarFeatures(f, p1, p2)
       end
     else
       return true
-    end    
+    end
 end
 
 def SortArray(toSort, basedOn)
