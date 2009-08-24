@@ -10,7 +10,7 @@ class LoginController < ApplicationController
       if session[:user_id].nil?
         redirect_to request.referer
       end
-      currentSession = Session.find_by_id(session[:user_id]);
+      currentSession = Session.find(session[:user_id]);
       currentSession.user = fbid
       currentSession.save
     else
