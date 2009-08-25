@@ -165,7 +165,15 @@ ActiveRecord::Schema.define(:version => 20090818174011) do
     t.boolean  "active"
     t.datetime "activeUpdate"
     t.boolean  "freeShipping"
+    t.boolean  "real"
+    t.boolean  "toner"
+    t.string   "condition"
+    t.string   "realbrand"
+    t.string   "compatiblebrand"
+    t.integer  "offering_id"
     t.datetime "scrapedat"
+    t.integer  "numberofitems"
+    t.text     "specialfeatures"
   end
 
   create_table "amazon_groups", :force => true do |t|
@@ -1071,12 +1079,10 @@ ActiveRecord::Schema.define(:version => 20090818174011) do
     t.datetime "activeUpdate"
     t.boolean  "freeShipping"
     t.datetime "scrapedat"
-<<<<<<< HEAD:db/schema.rb
     t.boolean  "ink"
     t.string   "condition"
     t.boolean  "real"
-=======
->>>>>>> 9bf569bde8544fd072646cc91aee7acce741fe45:db/schema.rb
+    t.integer  "offering_id"
   end
 
   create_table "preference_relations", :force => true do |t|

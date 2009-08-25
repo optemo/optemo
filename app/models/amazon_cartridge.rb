@@ -10,4 +10,6 @@ class AmazonCartridge < ActiveRecord::Base
   named_scope :instock_ca, :conditions => "instock_ca is true"
   named_scope :identifiable, :conditions => [IDFeatures.map{|i|i+' IS NOT NULL'}.join(' AND ')].delete_if{|l|l.blank?}.join(' AND ')
   named_scope :scraped, :conditions => ScrapedFeatures.map{|i|i+' IS NOT NULL'}.join(' OR ')
+  named_scope :matched, :conditions => 'product_id is not null'
+  named_scope :toner, :conditions => 'toner is true'
 end

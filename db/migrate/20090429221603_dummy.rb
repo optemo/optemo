@@ -1,6 +1,7 @@
 class Dummy < ActiveRecord::Migration
   def self.up
-    add_column :one23_cartridges, :real, :boolean#, :default => "New"
+    add_column :amazon_cartridges, :numberofitems, :integer#, :default => "New"
+    add_column :amazon_cartridges, :specialfeatures, :text#, :default => "New"
   end
 
   def self.down
