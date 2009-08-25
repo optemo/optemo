@@ -64,24 +64,16 @@ end
     ds = []
     cRanges = []
     @dbfeatCon.each do |f|
-      #llow = f.llow
       low = f.low
-      #hhigh = f.hhigh
       high = f.high
       searchR = ranges(f.name)
       unless (searchR[0] >= high || searchR[1]<=low) 
         clusters.each_index {|i| 
           cRanges = clusters[i].ranges(f.name, session)
-           #if (cRanges[1] <=llow)
-           #  clusterDs[i] << $model::ContinuousFeaturesDescLlow[f.name]  
            if (cRanges[1] <= low)
-             clusterDs[i] << $model::ContinuousFeaturesDescLow[f.name]
-           #elsif(cRanges[0] >= hhigh )
-           #  clusterDs[i] << $model::ContinuousFeaturesDescHhigh[f.name]      
+             clusterDs[i] << $model::ContinuousFeaturesDescLow[f.name]  
            elsif (cRanges[0] >= high)
-             clusterDs[i] <<  $model::ContinuousFeaturesDescHigh[f.name]    
-           #elsif  (cRanges[0] >= low and cRanges[1]<=high)
-           # clusterDs[i] <<  $model::ContinuousFeaturesDescAverage[f.name]      
+             clusterDs[i] <<  $model::ContinuousFeaturesDescHigh[f.name]        
            end
         }
       end 
@@ -103,19 +95,11 @@ end
    @dbfeatCon = DbFeature.find_all_by_product_type_and_feature_type_and_region(session.product_type, 'Continuous',$region)
  
    @dbfeatCon.each do |f|
-      #llow = f.llow
       low = f.low
-      #hhigh = f.hhigh
-      high = f.high
-      
+      high = f.high 
       searchR = ranges(f.name)
-      #if (searchR[1]<=llow)
-      #     des <<  $model::ContinuousFeaturesDescLlow[f.name]
       if (searchR[1] <= low)
            des << $model::ContinuousFeaturesDescLow[f.name]
-
-      #elsif (searchR[0] >= hhigh) 
-      #     des << $model::ContinuousFeaturesDescHhigh[f.name]   
       elsif (searchR[0]>=high)
            des << $model::ContinuousFeaturesDescHigh[f.name]   
       end

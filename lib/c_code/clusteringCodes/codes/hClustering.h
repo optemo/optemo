@@ -23,6 +23,7 @@ double** initials = new double* [clusterN];
 commandStat = "SELECT * from db_features where product_type='";
 commandStat += capProductName;
 commandStat += "';";
+string priceStr = "price";
 //cout<<"commandStat is "<<commandStat<<endl;
 res2 = stmt->executeQuery(commandStat);
 
@@ -42,6 +43,12 @@ for(int f=0; f<conFeatureN; f++){
 for (int f=0; f<boolFeatureN; f++){
 	weights[conFeatureN+f] = weightHash[boolFeatureNames[f]];
 }
+
+if (region!="us"){
+	priceStr +="_";
+	priceStr += region;
+}
+
 				
 if 	(layer == 1){	
 	
@@ -57,7 +64,8 @@ if 	(layer == 1){
 				double price = 0.0;
 				while (res->next()) 
 				{
-		 			saleprice = res->getInt("price");
+		 			saleprice = res->getInt(priceStr);
+				
 		 			price = saleprice;
 	   	 				
 		 			data[size][0] = price;
@@ -200,7 +208,7 @@ if 	(layer == 1){
 					delete data;	
 					delete clusteredData;
 					delete dist;
-					cout<<"HERE"<<endl;
+		
 				
 			}
 if (layer > 1){
