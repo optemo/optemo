@@ -10,12 +10,8 @@
 <meta name="robots" content="index,all,follow" />
 <meta name="classification" content="Laser Printers" />
 <meta name="rating" content="General" />
-<link rel="shortcut icon" href="/favicon.ico" >
+<link rel="shortcut icon" href="/favicon.ico" />
 <%= stylesheet_link_merged :base %>
-
-<%= javascript_include_tag 'facebooksessionops' %>	
-	<script type="text/javascript" src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
-	<script type="text/javascript"> FB.init('<%= $AppKey %>',"/xd_receiver.html");</script>
 </head>
 <body>
 <div id="mycenter">
@@ -34,21 +30,21 @@
 	  </div>
 		<a href="<%= url_for '/laserprinters' %>" title="Why to buy a laser printer?" id='whylaser'><%= image_tag('whylaser.jpg') %><span>Click to find out</span></a>
 	  
-     <div id="logindisplay" style="display:none;">                                                                                               
+     <div id="logindisplay">                                                                                               
    		<% if !cookies[$AppKey +"_user"].nil? %>
-		<div style="float:left">
-		   			<fb:profile-pic uid='loggedinuser' facebook-logo='true' height="30" size="square"></fb:profile-pic>	                                       
+		<div style="float:left;height:16px;width:16px;overflow:hidden;">
+			<fb:profile-pic uid='loggedinuser' height="16" width="16" size="square" facebook-logo='true'></fb:profile-pic>
 		</div>
-		<div style="float:left">
+		<div style="float:left;">
 			&nbsp;
 		</div>
-		<div style="float:left">
+		<div style="float:left;">
 			<fb:name uid='loggedinuser' useyou='false' firstnameonly='true'></fb:name>
 			<br>
-			<a href="#" id="linkUserLogout"> logout </a>
+			<a href="#" id="linkUserLogout" onClick="user_logout();return false;"> logout </a>
 		</div>
 		<% else %>
-			<fb:login-button size="short" onlogin="window.location.href='/login/do_login';" autologoutlink="false"> </fb:login-button>
+			<fb:login-button size="small" length="short" onlogin="window.location.href='/login/do_login?currpage=' + window.location;" autologoutlink="false"> </fb:login-button>
 		<% end %>
      </div>
 	 <div id="header_buttons">                                                                                             
@@ -67,7 +63,7 @@
  </div>
 
  <!-- bottom PNG -->
- <div class="b"><div></div></div>
+ <div class="b"><div><!--IE min line height--></div></div>
  <div id="bottomlinks">
 	<%= link_to 'Home', '/' %> |
 	<%= link_to 'Terms of Use', '/termsofuse', {:title => 'Legal'}  %> |
@@ -89,11 +85,13 @@
 .gainlayout { zoom: 1; }
 </style><![endif]-->
 
-<!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>-->
-<%= javascript_include_tag 'jquery-1.3.2.min.js' %>
-<%= javascript_include_tag 'jqueryui-1.7.2.min.js' %>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+<!--<%= javascript_include_tag 'jquery-1.3.2.min.js' %>
+<%= javascript_include_tag 'jqueryui-1.7.2.min.js' %>-->
 <%= javascript_include_merged :base %>
 <noscript><p><img src="http://pj.laserprinterhub.com/piwik.php?idsite=1" style="border:0" alt=""/></p></noscript>
+<script type="text/javascript" src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
+<script type="text/javascript"> FB.init('<%= $AppKey %>',"/xd_receiver.html");</script>
 </body>
 </html>

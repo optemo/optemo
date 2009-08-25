@@ -38,6 +38,12 @@ function fadein()
 	$('#info').css('display', 'none');	
 }
 
+function disableit(pid)
+{
+	name = pid.toString() + "_save";
+	document[name].src = '/images/save_disabled.png';
+	
+}
 function loadOverlay() {
 	$('#requestsubmit').click(function(){
 		$.post("/content/create_request",$("#requestform").serialize());
@@ -165,7 +171,6 @@ function closeDesc(id){
 }
 
 $(document).ready(function() {
-	// ToDo: Add code for table drag drop here
 	
 	$("#comparisonTable").tableDnD({
 		onDragClass: "rowBeingDragged",
@@ -309,9 +314,9 @@ $(document).ready(function() {
 function histogram(element,min,max) {
 	var raw = $(element).attr('data-data');
 	if (raw)
-		var data = raw.split(',');
+		{var data = raw.split(',');}
 	else
-		var data = [0.5,0.7,0.1,0,0.3,0.8,0.6,0.4,0.3,0.3];
+		{var data = [0.5,0.7,0.1,0,0.3,0.8,0.6,0.4,0.3,0.3];}
 	//Data is assumed to be 10 normalized elements in an array
 	
 	var peak = 10,

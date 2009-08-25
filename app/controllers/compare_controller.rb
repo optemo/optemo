@@ -41,7 +41,7 @@ class CompareController < ApplicationController
       # Reorder the product columns based on product utility
       ReorderProducts()      
       # After @products has been re-ordered, create the @search object
-      cluster_ids = @products.map{|p| $nodemodel.find_by_product_id(p.id, :order => 'id DESC').cluster_id.to_s}
+      cluster_ids = @products.map{|p| $nodemodel.find_by_product_id_and_region(p.id, $region, :order => 'id DESC').cluster_id.to_s}
       @search = Search.createFromPath(cluster_ids, @session.id)
      # @clusterDescs = @search.clusterDescription
       # Populate @interestingFeatureDisplayed variable
@@ -309,6 +309,7 @@ def ReorderProducts
 end
   
 def ReorderFeatures
+  # To sort: InterestingFeatures
   # Based on: userPreferences for ContinuousFeatures
   
   prefHash = {}
@@ -345,11 +346,12 @@ def notSimilarFeatures(f, p1, p2)
 # f iterates over PreferredDisplayFeatures
   case f
     when "scanner", "printserver", "colorprinter"
-      f1 = finalDisplay(p1, f)
-      f2 = finalDisplay(p2, f)
+      f1 = p1.send(f)
+      f2 = p2.send(f)
       if (f1 == f2)
         return false
       end
+      return true
     when "itemdimensions", "packagedimensions"
       # If any dimension is Unknown, then keep the row faded. However, if there is any pair of products with  a difference
       # greater than the margin, then the row must be highlighted 
@@ -367,6 +369,7 @@ def notSimilarFeatures(f, p1, p2)
         return true
       end
     when "resolution"
+      # What is the condition for similar resolution?
       return true
     when "connectivity", "platform"
       # These are CSV strings
@@ -385,7 +388,7 @@ def notSimilarFeatures(f, p1, p2)
       end
     else
       return true
-    end    
+    end
 end
 
 def SortArray(toSort, basedOn)
@@ -511,7 +514,6 @@ def CalculateUtility(p)
   # For all features
     session[:productType].constantize::ContinuousFeatures.each do |f|
     # Multiply factor value by the User's preference for that feature (weight) and add to cost
-    debugger if getFactorRow.nil?
       cost = cost + getFactorRow.send(f) * userSession.features.send("#{f}_pref")
     end      
   return cost

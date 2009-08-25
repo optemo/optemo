@@ -25,6 +25,7 @@ class ProductsController < ApplicationController
       @clusterDescs = @s.clusterDescription
       if @session.searchpids.blank? #|| @@session.searchpids.size > 9)
         z = Search.find_all_by_session_id(@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.hour.ago}\'")
+        #z = [472, 478, 514, 516, 536, 538, 540].map{|id|Search.find(id)}
         unless (z.nil? || z.empty?)
           @layer, @allSearches = zipStack(z) 
         end  
@@ -42,15 +43,26 @@ class ProductsController < ApplicationController
   def show
     @plain = params[:plain].nil? ? false : true
     #Cleanse id to be only numbers
-    params[:id] = params[:id][/^\d+/]
-    @product = $model.find(params[:id])
-    @offerings = RetailerOffering.find_all_by_product_id_and_product_type_and_region(params[:id],$model.name,$region,:order => 'priceint ASC')
-    @review = Review.find_by_product_id_and_product_type(params[:id],$model.name, :order => 'helpfulvotes DESC')
+    @product = $model.find(params[:id][/^\d+/])
+    @offerings = RetailerOffering.find_all_by_product_id_and_product_type_and_region(@product.id,$model.name,$region,:order => 'priceint ASC')
+    @review = Review.find_by_product_id_and_product_type(@product.id,$model.name, :order => 'helpfulvotes DESC')
+    @cartridges = Compatibility.find_all_by_product_id_and_product_type(@product.id,$model.name).map{|c|Cartridge.find_by_id(c.accessory_id)}
+    @cartridgeprices = @cartridges.map{|c|RetailerOffering.find_by_product_type_and_product_id("Cartridge",c.id)}
     #Session Tracking
     s = Viewed.new
     s.session_id = session[:user_id]
     s.product_id = @product.id
     s.save
+    
+    # Determine whether or not to show the Save Button
+    @showSaveButton = true
+    @saveds = Saved.find_all_by_session_id(session[:user_id])
+    @saveds.collect do |saved|
+      if @product.id == saved.product_id
+        @showSaveButton = false
+      end      
+    end
+    
     respond_to do |format|
       format.html { if @plain
                       render :layout => false
@@ -104,10 +116,10 @@ class ProductsController < ApplicationController
 
      allSearches = []
      i=0
-     until (stack[-1 -i].layer == 1)
+     
+     until ((i==stack.size) ||  stack[-1 -i].layer == 1)
        s = stack[-1-i]
        ls = allSearches.map{|r| r.layer}
-
        if (ls.index(s.layer).nil?)
           if (ls.empty?)
             allSearches.unshift(s)
@@ -117,11 +129,12 @@ class ProductsController < ApplicationController
        end   
        i = i+1
      end    
-     allSearches.unshift(stack[-1-i]) if (stack[-1-i].layer==1)  
+     allSearches.unshift(stack[-1-i]) if (!stack[-1 -i].nil? && stack[-1-i].layer==1)  
      layer = allSearches[-1].layer
 
      # When can't reach the first layer in the given time frame 
-     # Must create searches for higher layers
+     # Must create search objects for higher layers
+
      l = allSearches[0].layer
      unless l == 1 
           pid =  allSearches[0].parent_id
@@ -135,8 +148,12 @@ class ProductsController < ApplicationController
                r[mycluster] = c.id.to_s
                mycluster.next!
              end  
+             l -=1
           end   
-          r['parent_id'] = pid2
+          r['session_id'] = @session.id
+          r['parent_id'] = ppid
+          r['result_count'] = r.result_count
+          r['desc'] = r.searchDescription
           allSearches.unshift(r)
      end
 

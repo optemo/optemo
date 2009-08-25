@@ -1,7 +1,7 @@
 <% self.title = "#{@allSearches.last.desc unless @allSearches.empty?} #{$model.urlname.capitalize}" %>
 <div id="leftbar">
 	Browsing <%= @s.result_count %> <%= $model.urlname.capitalize %>
-	<% if RAILS_ENV == 'development' %><br>Session id: <%= session[:user_id] %> <% end %>
+	<% if RAILS_ENV == 'development' %><br/>Session id: <%= session[:user_id] %> <% end %>
 	<!-- The Search box -->
 	<% form_tag("/search/find",{:id => 'search_form'}) do %>
 	  <%= @session.searchterm.blank? ? text_field_tag('search') : text_field_tag('search', @session.searchterm) %>
@@ -41,7 +41,12 @@
 </div>
 
 <div class="main">
-	<span style="color:red;"><%= flash[:error] %></span><span class="title"><%= flash[:notice] %></span>
+	<% if flash[:error] %>
+	<span style="color:red;"><%= flash[:error] %></span>
+	<% end %>
+	<% if flash[:notice] %>
+	<span class="notice"><%= flash[:notice] %></span>
+	<% end %>
 	<div style="text-align: center;"><h1><%= h1title %></h1></div>
 	<div class='backlink'>	
 	<% unless @allSearches.empty? %>
@@ -51,6 +56,7 @@
           <%if l<@allSearches.size - 1%>
 			<%= link_to "#{@allSearches[l].desc}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>
 		  	&lt;&lt;
+		
 		 <%else%>
 			<%= "#{@allSearches[l].desc}"%>
 		 <%end%> 

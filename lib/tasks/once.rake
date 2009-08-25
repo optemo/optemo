@@ -99,6 +99,7 @@ end
 desc "Remove duplicate product entries"
 task :remove_duplicates => :environment do
   #model = ENV['Model']
+  return unless ENV['Ids']
   ids = ENV['Ids'].split(',')
   return if ids.length != 2
   keep = ids[0]
