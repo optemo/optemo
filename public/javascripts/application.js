@@ -38,6 +38,12 @@ function fadein()
 	$('#info').css('display', 'none');	
 }
 
+function disableit(pid)
+{
+	name = pid.toString() + "_save";
+	document[name].src = '/images/save_disabled.png';
+	
+}
 function loadOverlay() {
 	$('#requestsubmit').click(function(){
 		$.post("/content/create_request",$("#requestform").serialize());
