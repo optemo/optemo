@@ -11,7 +11,7 @@ class MergedCluster
     clusterobj = []
     clusters.compact.each do |c|
       newcluster = $clustermodel.find(c.to_i)
-      clusterobj << newcluster unless newcluster.isEmpty(session)
+      clusterobj << newcluster unless newcluster.nil? || newcluster.isEmpty(session)
     end
     new(clusterobj)
   end

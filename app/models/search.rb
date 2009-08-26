@@ -28,7 +28,6 @@ def distributions
    end    
    dists
 end 
-
   
   #Range of product offerings
   def ranges(featureName)
@@ -40,16 +39,6 @@ end
       end
       @sRange[featureName]  
   end
-  
- #def indicator(featureName)
- #  indic = false
- #  values = clusters.map{|c| c.indicator(featureName, session)}
- #  if values.index(false).nil?
- #    indic = true
- #  end  
- #  indic
- #end
-  
     
   def clusterDescription
     return if clusters.empty?
@@ -158,10 +147,10 @@ end
           c = MergedCluster.fromIDs(session.product_type,cluster_id.split('+'),session)
         else
           #Single, normal Cluster
-          c = $clustermodel.find(cluster_id)
+          c = $clustermodel.find_by_id(cluster_id)
         end
         #Remove empty clusters
-        if c.isEmpty(session)
+        if c.nil? || c.isEmpty(session)
           self.cluster_count -= 1
         else
           @clusters << c 
