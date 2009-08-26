@@ -49,19 +49,19 @@
 	<% end %>
 	<div style="text-align: center;"><h1><%= h1title %></h1></div>
 	<div class='backlink'>	
-	<% unless @allSearches.empty? %>
-		<%= link_to "All #{$model.urlname.capitalize}", "/#{$model.urlname}/homepage" %> &lt;&lt;
-		<%for l in 0..(@allSearches.size - 1)%>
-	 	  <!-- If s>1 then print << -->
-          <%if l<@allSearches.size - 1%>
-			<%= link_to "#{@allSearches[l].desc}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>
-		  	&lt;&lt;
-		
-		 <%else%>
-			<%= "#{@allSearches[l].desc}"%>
-		 <%end%> 
-	   <%end %>
-	<%end%>	
+		<% unless @allSearches.empty? %>
+	    	<%= link_to "All #{$model.urlname.capitalize}", "/#{$model.urlname}/homepage" %> 
+			<%if @allSearches[0].layer==1%>
+					<%for l in 1..(@allSearches.size - 1)%>
+		 	  		<!-- If s>1 then print << -->
+	          			<%if l<@allSearches.size - 1%>
+							&lt;&lt;<%= link_to "#{@allSearches[l].desc}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>
+			 			<%else%>
+							&lt;&lt;<%= "#{@allSearches[l].desc}"%>
+			 			<%end%> 
+		   			<%end %>
+			<%end%>
+		<%end%>
 	</div>
 	
 	<% for i in 0..@s.cluster_count-1 %>
