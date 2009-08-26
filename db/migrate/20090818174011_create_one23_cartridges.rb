@@ -65,10 +65,11 @@ class CreateOne23Cartridges < ActiveRecord::Migration
             
       
       # More
-      
+      t.boolean   :real
       t.boolean   :ink
       t.string    :condition
             
+      t.integer   :offering_id
             
       t.datetime  :scrapedat
     end

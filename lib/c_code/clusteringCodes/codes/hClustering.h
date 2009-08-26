@@ -19,11 +19,12 @@ int size, sized, cluster_id;
 string capProductName = productName;
 capProductName[0] = productName[0] - 32;
 double* weights = new double[conFeatureN+boolFeatureN];
-
+double** initials = new double* [clusterN];
 commandStat = "SELECT * from db_features where product_type='";
 commandStat += capProductName;
 commandStat += "';";
-cout<<"commandStat is "<<commandStat<<endl;
+string priceStr = "price";
+//cout<<"commandStat is "<<commandStat<<endl;
 res2 = stmt->executeQuery(commandStat);
 
 res2->next();
@@ -34,14 +35,20 @@ double* averages = new double[conFeatureN];
 
 for(int f=0; f<conFeatureN; f++){
 	weights[f] = weightHash[conFeatureNames[f]];
-	mins[f] = res2->getDouble("low");
-	maxs[f] = res2->getDouble("low");
-	averages[f] = res2->getDouble("low");
+	mins[f] = res2->getDouble("min");
+	maxs[f] = res2->getDouble("max");
+	averages[f] = (res2->getDouble("low")+res2->getDouble("high"))/2;
 }
    
 for (int f=0; f<boolFeatureN; f++){
 	weights[conFeatureN+f] = weightHash[boolFeatureNames[f]];
 }
+
+if (region!="us"){
+	priceStr +="_";
+	priceStr += region;
+}
+
 				
 if 	(layer == 1){	
 	
@@ -57,7 +64,8 @@ if 	(layer == 1){
 				double price = 0.0;
 				while (res->next()) 
 				{
-		 			saleprice = res->getInt("price");
+		 			saleprice = res->getInt(priceStr);
+				
 		 			price = saleprice;
 	   	 				
 		 			data[size][0] = price;
@@ -80,6 +88,7 @@ if 	(layer == 1){
 				  dataN = new double*[size];
 			 	   	    for(int j=0; j<size; j++){
 			 	   				dataN[j] = new double[conFeatureN+boolFeatureN]; 
+							//	initials[j] = new double [conFeatureN+boolFeatureN];
 			 	   		}
 
 			 	   		int **indicators = new int* [conFeatureN];
@@ -95,40 +104,40 @@ if 	(layer == 1){
 			 	   		double distan;
 
 			 	   		double** centroids = new double* [clusterN];
-						double** initials = new double* [clusterN];
+						
 			 	   		for(int j=0; j<clusterN; j++){
-			 	   	    	centroids[j]=new double[conFeatureN+boolFeatureN];
-							initials[j] = new double [conFeatureN+boolFeatureN];
+			 	   	    	centroids[j]= new double[conFeatureN+boolFeatureN];
+						//	initials[j] = new double [conFeatureN+boolFeatureN];
 			 	   		}
-								cout<<"HERE"<<endl;	
-						//int initCounter=0;		
-						//for (int f=0; f<conFeatureN; f++){
-						//	for (int f2=0; f2<f; f2++){
-						//		initials[initCounter][f2] = averages[f2];
-						//		initials[initCounter+1][f2] = averages[f2];  
-						//    }	
-						//	initials[initCounter][f] = mins[f];
-						//	initials[initCounter+1][f] = maxs[f];
-						//	for (int f2=f; f2<conFeatureN; f2++){
-						//		initials[initCounter][f2] = averages[f2];
-						//		initials[initCounter+1][f2] = averages[f2];  
-						//    }
-						//    initCounter += 2;
-						//} 		
-						//for (int f=0; f<conFeatureN; f++){
-						//	initials[initCounter][f] = averages[f];			
-					    //}
-					    //
-								for (int i=0; i<9; i++){
-									for (int f=0; f<conFeatureN; f++){
-										initials[i][f] = dataN[rand()%size+1][f];
-									}
-								}
+								//cout<<"HERE"<<endl;	
+					  // int initCounter=0;		
+					  // for (int f=0; f<conFeatureN; f++){
+					  // 	for (int f2=0; f2<f; f2++){
+					  // 		initials[initCounter][f2] = averages[f2];
+					  // 		initials[initCounter+1][f2] = averages[f2];  
+					  //     }	
+					  // 	initials[initCounter][f] = mins[f];
+					  // 	initials[initCounter+1][f] = maxs[f];
+					  // 	for (int f2=f; f2<conFeatureN; f2++){
+					  // 		initials[initCounter][f2] = averages[f2];
+					  // 		initials[initCounter+1][f2] = averages[f2];  
+					  //     }
+					  //     initCounter += 2;
+					  // } 		
+					  // for (int f=0; f<conFeatureN; f++){
+					  // 	   initials[initCounter][f] = averages[f];			
+					  // }
+					   
+							//	for (int i=0; i<9; i++){
+							//		for (int f=0; f<conFeatureN; f++){
+							//			initials[i][f] = dataN[rand()%size+1][f];
+							//		}
+							//	}
 					
 						
-					centersA = k_meansInitial(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights, initials); 
+					//centersA = k_meansInitial(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights, initials); 
 					
-					//	centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights); 
+						centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights); 
 				        dist = new double* [size];
 
 						for(int j=0; j<size; j++){
@@ -199,6 +208,7 @@ if 	(layer == 1){
 					delete data;	
 					delete clusteredData;
 					delete dist;
+		
 				
 			}
 if (layer > 1){
@@ -222,7 +232,7 @@ if (layer > 1){
 	command += cluster_sizeStream.str();
 	command += ");";
 	resClus = stmt->executeQuery(command); 
-	
+
 	
 	while(resClus->next()){
 	
@@ -245,7 +255,7 @@ if (layer > 1){
 		resNodes = stmt->executeQuery(command); 
 		
 		size = resNodes->rowsCount();
-	
+	    
 		if (size>clusterN){
 	 
 			data = new double*[size];
@@ -292,8 +302,15 @@ if (layer > 1){
  	   		double** centroids = new double* [clusterN];
  	   		for(int j=0; j<clusterN; j++){
  	   	    	centroids[j]=new double[conFeatureN];
+				//initials[j] = new double [conFeatureN+boolFeatureN];
  	   		}
-     	      
+     	      //for (int i=0; i<9; i++){
+			  //	for (int f=0; f<conFeatureN; f++){
+			  //		
+			  //		initials[i][f] = dataN[rand()%100+1][f];
+			  //	}
+			  //}
+			
  	       	centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights); 
 	        dist = new double* [size];
 		

@@ -18,6 +18,14 @@ module ScrapingHelper
   def cartridge_cleaning_code atts
     atts = generic_cleaning_code atts
     atts.each{|x,y| atts[x]= atts[y].strip if atts[y] and atts[y].type == 'String'}
+    atts['model'].gsub!(/compatible/i,'') if atts['model']
+    atts['mpn'].gsub!(/compatible/i,'') if atts['mpn']
+    #if atts['mpn'] and atts['model']
+    #  debugger
+    #  models = [atts['mpn'],atts['model']].reject{|x| x.nil? or x.strip == ''}.sort{|x,y| x.length <=> y.length}
+    #  atts['model'] = models[0]
+    #end
+    return atts
   end
   
   def generic_cleaning_code atts, model=$model
@@ -61,6 +69,8 @@ module ScrapingHelper
     atts['priceint'] = atts['price'] = atts['salepriceint'] || atts['listpriceint'] || get_price_i(price_f)
     atts['pricestr'] = atts['salepricestr'] || atts['listpricestr'] || get_price_s(price_f)
     
+    temp = (atts['imageurl'] || '').match(/(http:\/\/).*?\.(jpg|gif|jpeg|bmp)/i)
+    atts['imageurl'] = temp.to_s if temp
     return atts
   
   end
@@ -179,7 +189,7 @@ module ScrapingHelper
     param_names << 'ppm' if str.match(/print(ing)?speed/)  
     param_names << 'brand' if str.match(/manufacture(d|r$)/)
     param_names << 'packageweight' if str.match(/shippingweight/)
-    param_names << 'mpn' if str.match(/mfgpartn(o|um)/)
+    param_names << 'mpn' if str.match(/m(fg|anufacturer)partn(o|um)/)
     param_names << 'paperinput' if str.match(/(input|sheet|paper)capacity/)
     param_names << 'paperoutput' if str.match(/outputcapacity/)
     param_names << 'resolution' if str.match(/print(ing)?quality/)
@@ -191,6 +201,7 @@ module ScrapingHelper
     param_names << 'scanner' if str.match(/scan/)
     param_names << 'colorprinter' if str.match(/(colou?r|printtechnology|printeroutput)/)
     param_names << 'dimensions' if str.match(/size/)
+    param_names << 'imageurl' if str.match(/image|pic/)
     
     if str.match(/colou?r/)
       param_names << 'ppmcolor' if param_names.include? 'ppm'

@@ -199,8 +199,6 @@ int *k_means2(double **data, int n, int m, int k, double t, double **centroids)
 //////////////
 
 
-
-
 int *k_means3(double **data, int n, int m, int k, double t, double **centroids, double* weights){
 	
 	/* output cluster label for each data point */

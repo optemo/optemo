@@ -172,6 +172,8 @@ ActiveRecord::Schema.define(:version => 20090818174011) do
     t.string   "compatiblebrand"
     t.integer  "offering_id"
     t.datetime "scrapedat"
+    t.integer  "numberofitems"
+    t.text     "specialfeatures"
   end
 
   create_table "amazon_groups", :force => true do |t|

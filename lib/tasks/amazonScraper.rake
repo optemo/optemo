@@ -30,6 +30,10 @@ module AmazonScraper
     sesh
   end
 
+  def special_url asin
+    return "http://www.amazon.com/o/asin/#{asin}"
+  end
+
   def details_from_one_page doc, model=$model
     array = doc.css('.content ul li')
     features = {}
@@ -71,7 +75,6 @@ module AmazonScraper
   def scrape_details_general(asin,sesh=nil)
   
     sesh = regularsetup unless sesh
-   
     features = {}
     
     begin
@@ -81,15 +84,16 @@ module AmazonScraper
       features['title'] = get_el(doc.css('h1')).content if get_el(doc.css('h1'))
       
       features['imageurl'] = get_el(doc.css('img#prodImage')).attribute('src') if get_el(doc.css('img#prodImage'))
-      brand_el = doc.css('span').reject{|x| x.content.match(/other products by/i).nil?}.first
       
+      brand_el = doc.css('span').reject{|x| x.content.match(/other products by/i).nil?}.first
       features['brand'] = brand_el.css('a').text if brand_el
       
-      features.merge!( details_from_one_page(doc) || {} )
+      features.merge!(( details_from_one_page(doc) || {} ).reject{|x,y| x == 'brand'})
       sleep(10)
+      
       sesh.click_link('See more technical details')       
       doc = Nokogiri::HTML(sesh.response.body)
-      features.merge!( details_from_one_page(doc) || {} )
+      features.merge!(( details_from_one_page(doc) || {} ).reject{|x,y| x == 'brand'})
       sleep(10)
     rescue
       features['nodetails'] = true
@@ -217,19 +221,140 @@ namespace :scrape_amazon do
     puts printer.asin
   end
 
-  desc "Scraping cartridge data from Amazon"
-  task :cartridges => :init do
-    $amazonmodel = $model = AmazonCartridge
+  task :sandbox => :cartinit do 
+  
+    AmazonCartridge.all.each do |ac|
+      best_model =  get_most_likely_model([ac.model,ac.mpn,ac.title], ac.brand)
+      if likely_to_be_cartridge_model_name(best_model) > 2
+        fill_in 'model', best_model, ac
+      end
+    end
+    
+  end
+  
+  task :cart_init => :init do 
+    
+    require 'cartridge_helper'
+    include CartridgeHelper
     
     require 'scraping_helper'
     include ScrapingHelper
+    
+    require 'database_helper'
+    include DatabaseHelper
+    
+    init_series
+    init_brands
+    
+    $ignoreme =  ['brand','model','id']
+    
+  end
   
-    require 'webrat'
-    sesh = regularsetup
+  task :to_cartridge => :cart_init do
+  
+    convertme = AmazonCartridge.toner.reject{|x| 
+      (likely_to_be_cartridge_model_name(x.model) < 2) or \
+      x.model.nil? or x.realbrand.nil?  or x.real.nil? 
+    }
     
+    convertme.each do |ac|
+
+      brand = nil
+      if ac.real == true
+        brand = ac.realbrand 
+      elsif ac.real == false and ac.condition != nil
+        brand = "#{ac.realbrand} #{ac.condition} #{ac.compatiblebrand}" 
+      end
+            
+      matches = match_rec_to_printer [brand], [ac.model, ac.mpn], Cartridge if brand
+      matches.reject!{|x| !x.real.nil? and !ac.real.nil? and x.real != ac.real } if matches
+      matching_c = nil
+      
+      if matches and matches.length == 0
+        atts = {'brand' => brand, 'model' => ac.model}
+        puts atts.values * '  -  '
+        matching_c = create_product_from_atts atts, Cartridge
+      elsif matches and matches.length == 1
+        matching_c = matches[0]
+      elsif matches
+        debugger
+        puts "Duplicate found"
+      end
+      
+      if matching_c
+        fill_in_all ac.attributes, matching_c, $ignoreme
+        fill_in 'product_id', matching_c.id, ac
+        fill_in 'brand', ac.realbrand, matching_c
+      end
+    end
+    
+
+  end
+  
+  task :compatibilities => :cart_init do
+  
+    start =  Time.now
+  
+    all_printer_models = Printer.all.collect{|x| [just_alphanumeric(x.model),x.id]}.uniq.reject{|x| x[0].nil? or x[0] == ''}
+    all_printer_models += Printer.all.collect{|x| [just_alphanumeric(x.mpn),x.id]}.uniq.reject{|x| x[0].nil? or x[0] == ''}
+    nice_printer_models = all_printer_models.reject{|x| likely_model_name(x[0]) < 2}.uniq
+  
     counter = 0
+  
+    AmazonCartridge.scraped[0..299].each do |ac|
+      cid = ac.product_id
+      if cid 
+        c = Cartridge.find(cid)
+        compat_txt = just_alphanumeric(ac.compatible)
+        if compat_txt and compat_txt != ''
+          nice_printer_models.each do |mdl|
+            mymatch = compat_txt.match(/#{mdl[0]}/ix)
+            if mymatch
+              puts "Match found: #{mymatch.to_s} (printer #{mdl[1]}) fits cartridge #{cid}" 
+              counter+= 1
+              create_uniq_compatibility(cid, 'Cartridge', mdl[1], 'Printer')
+            end
+          end
+        end
+      end 
+      # TODO
     
-    scrapeme = $model.find_all_by_compatible(nil).reject{|x| x.asin.nil?}
+    end
+  
+    finish = Time.now
+    puts "This took #{finish - start} seconds"
+    puts "#{counter} matching models found!"
+  end
+  
+  task :clean_cartridges => :cart_init do 
+    conditions = ['Remanufactured', 'Refurbished', 'Compatible', 'OEM', 'New']
+    cleanme = AmazonCartridge.scraped
+    cleanme.each do |cart|
+      clean_specs = cart.attributes
+      clean_specs['realbrand'] = clean_brand(clean_specs['brand'], $fake_brands+$real_brands)
+      clean_specs['compatiblebrand'] = clean_brand(clean_specs['title'])
+      clean_specs['real'] = same_brand?(clean_specs['realbrand'], clean_specs['compatiblebrand'])
+      clean_specs['toner'] = true if (clean_specs['title'] || '').match(/toner/i) 
+      clean_specs['toner'] = false if (clean_specs['title'] || '').match(/ink/i) 
+      
+      #clean_specs['model'] =  get_most_likely_model([clean_specs['model'],clean_specs['mpn']])
+      
+      conditions.each{|c| 
+        (clean_specs['condition'] = c) and break if (clean_specs['title'] || '').match(/#{c}/i)
+      }
+      
+      fill_in_all clean_specs, cart
+    end
+  end
+
+  desc "Scraping cartridge data from Amazon"
+  task :scrape_cartridges_old => :cart_init do
+    $amazonmodel = $model = AmazonCartridge
+    require 'webrat'
+    conditions = ['Remanufactured', 'Refurbished', 'Compatible', 'OEM', 'New']
+    sesh = regularsetup
+    counter = 0
+    scrapeme = $model.all.reject{|x| x.asin.nil?}
     
     scrapeme.each do |cart|
       spex = scrape_details_general(cart.asin, sesh)
@@ -237,7 +362,22 @@ namespace :scrape_amazon do
       spex['detailpageurl'] = sesh.current_url
       spex.merge!(morespex) unless morespex.nil? or spex.nil?
       clean_specs = cartridge_cleaning_code(spex)
-      fill_in_all spex, cart
+
+      debugger if clean_specs.nil?
+      
+      clean_specs['realbrand'] = clean_brand(clean_specs['brand'], $fake_brands+$real_brands)
+      clean_specs['compatiblebrand'] = clean_brand(clean_specs['title'])
+      clean_specs['real'] = same_brand?(clean_specs['realbrand'], clean_specs['compatiblebrand'])
+      clean_specs['toner'] = true if (clean_specs['title'] || '').match(/toner/i) 
+      clean_specs['toner'] = false if (clean_specs['title'] || '').match(/ink/i) 
+      
+      clean_specs['model'] =  get_most_likely_model([clean_specs['model'],clean_specs['mpn']])
+      
+      conditions.each{|c| 
+        (clean_specs['condition'] = c) and break if (clean_specs['title'] || '').match(/#{c}/i)
+      }
+      
+      fill_in_all clean_specs, cart
       fill_in 'scrapedat', Time.now, cart
       counter += 1
       puts " Done #{counter} #{$model}s "

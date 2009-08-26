@@ -378,7 +378,35 @@ module Amazon
       p.save!
     end
   end
+
+  def get_attributes(rec)
+    res = Amazon::Ecs.item_lookup(rec.asin, :response_group => 'ItemAttributes')
+    nokodoc = Nokogiri::HTML(res.doc.to_html)
+    item = nokodoc.css('item').first
+    if item
+      detailurl = item.css('detailpageurl').first.content
+      atts = item.xpath('itemattributes/*').inject({}){|r,x| 
+        val = x.content
+        val += "#{ScrapingHelper.sep} #{r[x.name]}" if r[x.name]
+        r.merge(x.name => val)
+      }
+      return atts
+    end
+    return {}
+  end
   
+  def get_printer_atts(p)
+    atts = get_attributes p
+    cleaned_atts = general_cleaning_code atts
+    fill_in_all cleaned_atts, p
+  end
+  
+  def get_cartridge_atts(cart)
+    atts = get_attributes cart
+    cleaned_atts = cartridge_cleaning_code atts
+    cleaned_atts['compatible'] = cleaned_atts['feature'] + "#{cleaned_atts['compatible']}" if cleaned_atts['feature']
+    fill_in_all cleaned_atts, cart
+  end
 end
 
 namespace :amazon do
@@ -394,7 +422,6 @@ task :get_product_ASINs => :init do
   browse_node_id = '172641'
   search_index = 'Electronics'
   response_group = 'ItemIds'
-  $amazonmodel = AmazonCartridge
   current_page = 1
   count = 0
   loop do
@@ -429,15 +456,21 @@ end
 
 desc "Get all the Amazon data for the current Camera ASINs"
 task :get_product_data_for_ASINs => :init do
-  $amazonmodel.find(:all).each do |product|
+  count = 0
+  scrapeme = $amazonmodel.find(:all)[301..700]
+  scrapeme.each do |product|
     if !product.asin.blank?
       puts 'Processing: ' + product.asin
-      if $amazonmodel == AmazonCamera
+      if $amazonmodel == nil #  AmazonCamera
         get_camera_attributes(product)
       elsif $amazonmodel == AmazonPrinter
         get_printer_attributes(product)
+      elsif $amazonmodel == AmazonCartridge
+        get_cartridge_atts(product)
       end
     end
+    count += 1
+    puts "Done #{count} of #{scrapeme.count}"
     sleep(1+rand()*30) #Be really nice to Amazon!
   end
 end
@@ -448,6 +481,16 @@ task :update_prices => :init do
     puts 'Processing ' + p.id.to_s
     p = findprice(p,"us")
     p.save
+    sleep(0.5) #One Req per sec
+  }
+end
+
+
+desc "Updating Amazon Price"
+task :update_cart_prices => :init do
+  Cartridge.all.each{|ac|
+    ac  = findprice(ac,'us')
+    ac.save
     sleep(0.5) #One Req per sec
   }
 end
@@ -474,12 +517,22 @@ task :update_prices_ca => :init do
   }
 end
 
+
 task :init => :environment do
   require 'amazon_ecs'
   include Amazon
-  $model = Printer
-  $amazonmodel = AmazonPrinter 
-  Amazon::Ecs.options = {:aWS_access_key_id => '0NHTZ9NMZF742TQM4EG2', :aWS_secret_key => 'WOYtAuy2gvRPwhGgj0Nz/fthh+/oxCu2Ya4lkMxO'}
+  
+  require 'nokogiri'
+  include Nokogiri
+  
+  require 'scraping_helper'
+  include ScrapingHelper
+    
+  $model = Cartridge
+  $amazonmodel = AmazonCartridge
+  
+  Amazon::Ecs.options = { :aWS_access_key_id => '0NHTZ9NMZF742TQM4EG2', \
+                          :aWS_secret_key => 'WOYtAuy2gvRPwhGgj0Nz/fthh+/oxCu2Ya4lkMxO'}
   
   AmazonID =   'ATVPDKIKX0DER'
   AmazonCAID = 'A3DWYIK6Y9EEQB'

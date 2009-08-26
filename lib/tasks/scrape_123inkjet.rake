@@ -1,14 +1,22 @@
 module Scrape123
   
-  def make_offering_from_atts atts, web_id
+  def make_offering_from_atts cart 
+    atts = cart.attributes
+    web_id = cart.web_id
     url = get_special_url web_id
-    offer = RetailerOffering.find(web_id)
-    offer = create_product_from_atts atts, RetailerOffering if offer.nil?
+    if cart.offering_id.nil?
+      offer = create_product_from_atts atts, RetailerOffering
+    else
+      offer = RetailerOffering.find(cart.offering_id)
+    end
+    fill_in_all atts, offer
     fill_in 'product_type', 'Cartridge', offer
     fill_in 'toolow', false, offer
     fill_in 'priceUpdate', Time.now, offer
     fill_in 'availabilityUpdate', Time.now, offer
     fill_in 'retailer_id', 16, offer
+    fill_in 'offering_id', offer.id, cart
+    fill_in 'url', url, offer
     return offer
   end
   
@@ -19,60 +27,19 @@ module Scrape123
     return url
   end
   
-  def clean_brand_rec rec
-    brand = clean_brand(rec.model, rec.title)
-    fill_in 'brand', brand, rec if brand
-  end
-  
-  def clean_brand model, title
-    brand = nil
-    if title
-      $real_brands.each do |b|
-        brand = b unless just_alphanumeric(title).match(/#{just_alphanumeric(b)}/i).nil?
-      end
-    end
-    if title and model and brand.nil?
-      debugger
-      brand = title.gsub(/.*(compatible|genuine|oem|remanufactured|refurbished|for|other)\s?/i,'').gsub(/\s?#{model}.*/,'') 
-    end
-    return brand
-  end
-  
 end
 
 namespace :scrape_123 do
   
-  task :validate => :init do 
+ # task :validate => :init do 
   
     
   
-  end
+#  end
   
   task :clean => :init do 
     
-    # Fix brand + model
-    $model.all.each{|x| clean_brand_rec(x)}
-    
-    # fill in Ink
-    $model.all.each{|x| 
-      fill_in 'ink',  true, x if x.title.match(/ink/i)
-      fill_in 'ink', false, x if x.title.match(/toner/i) 
-    }
-    
-    # fill in Real
-    $model.all.each{|x| 
-      fill_in 'real', false, x if x.title.match(/(alternative|compatible|remanufactured|refurbished)/i)
-      fill_in 'real', true, x if x.title.match(/genuine|oem/i)
-    }
-    
-    # fill in Condition
-    conditions = ['New', 'OEM', 'Remanufactured', 'Refurbished', 'Compatible']
-    $model.all.each{|x| 
-      conditions.each{|c| 
-        fill_in('condition', c, x) and break if x.title.match(/#{c}/i)
-      }
-      fill_in 'condition', 'New', x unless x.condition
-    }
+    clean_cartridges
     
   end
   
@@ -115,7 +82,7 @@ namespace :scrape_123 do
       fill_in 'product_id', matching_c.id, cart
       fill_in 'compatiblebrand', compatbrand, matching_c
       
-      make_offering_from_atts(cart.attributes, cart.web_id)
+      make_offering_from_atts(cart)
     end
   end
   
@@ -150,7 +117,7 @@ namespace :scrape_123 do
     
     counter = 0
     
-    (One23Cartridge.last.web_id-2..3000).each do |num|
+    (One23Cartridge.last.web_id-1..3000).each do |num|
       base_url = "http://www.123inkjets.com/"
       url = "#{base_url}#{num},product.html"
       
@@ -235,18 +202,16 @@ namespace :scrape_123 do
       include ScrapingHelper
       
       require 'database_helper'
-      include DatabaseHelper
+      include DatabaseHelper      
+      
+      require 'cartridge_helper'
+      include CartridgeHelper
 
       include Scrape123
       
-      $series = ['laserjet', 'laserwriter', 'oki', 'phaser',  'imagerunner', 'printer', 'printers', 'qms', \
-        'estudio', 'optra', 'pro', 'officejet', 'workcentre', 'other', 'okifax', 'lanierfax', 'okipage',\
-        'pixma', 'deskjet', 'stylus', 'docuprint', 'series','color', 'laser', 'printer']
+      init_series
       
-      $real_brands = Printer.all.collect{|x| x.brand}.uniq.reject{|x| x.nil?}
-      $real_brands += ["Apple", "Brother", "Canon", "Copystar", 'DEC',"Dell", "Easy-On", "Epson", "IBM", \
-        'Kodak', "Kyocera Mita", "Lexmark", 'Lanier', "Okidata", "Panasonic", "Pitney Bowes",\
-        "Promedia", "Ricoh","Samsung", "Sharp", "Toshiba", "Xerox"]
+      init_brands
       
   end
 end
