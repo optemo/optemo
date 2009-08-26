@@ -345,7 +345,7 @@ namespace :scrape_tiger do
     end
   end
   
-  task :important => :init do
+  task :model_cleanup => :init do
     
     TigerPrinter.all.each do |tp|
       newmodel = (tp.model || '').gsub(/(ink|chrome|tabloid|aio\sint|\(|,|\d+\s?x\s?\d+\s?(dpi)?|fast\sethernet|led).*/i,'').strip

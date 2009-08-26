@@ -1,19 +1,22 @@
 
 module ImageHelper
+  
+  require 'RMagick'
+  
   @@size_names = ['s','m','l']
   @@sizes = [[70,50],[140,100],[400,300]]
   
   def file_exists_for id, sz=''
      begin
-        image = Magick::ImageList.new(filename_from_id(id, folder, sz))
+        image = Magick::ImageList.new(filename_from_id(id,sz))
         image = image.first if image.class == Magick::ImageList
         return false if image.nil?
-      rescue
+     rescue
         return false
-      else
+     else
         return image.rows
-      end
-      return false
+     end
+     return false
   end
   
   def url_from_item_and_sz id, sz
@@ -48,7 +51,6 @@ module ImageHelper
         image = nil
       end
         no_pic << rec unless image
-      end
     end
     return no_pic
   end
@@ -61,7 +63,20 @@ module ImageHelper
     end
     return no_stats
   end
-  
+    
+  def download_img url, folder, fname=nil
+    return nil if url.nil? or url.empty?
+    return url if url.include?(folder)
+    filename = fname || url.split('/').pop
+    ret = "/#{folder}/#{filename}"
+    begin
+    f = open("/optemo/site/public/#{folder}/#{filename}","w").write(open(url).read)
+    rescue OpenURI::HTTPError => e
+      ret = nil
+      puts "#{e.type} #{e.message}"
+    end
+    ret
+  end
   
   def filename_from_id id, sz=''
     if sz==""
@@ -103,9 +118,9 @@ module ImageHelper
   def record_pic_urls recordset
     recordset.each do |rec|
       @@size_names.each do |sz|        
-        if rec.[]( "image#{sz}url" ).nil?
+        #if rec.[]( "image#{sz}url" ).nil?
           fill_in "image#{sz}url", url_from_item_and_sz(rec.skuid, sz), rec
-        end
+        #end
       end
     end
   end
@@ -137,9 +152,7 @@ module ImageHelper
         oldurl = url
         newurl = download_img oldurl, "system/#{$imgfolder}", "#{id}.jpg"
         
-        if(newurl.nil?)
-          failed << id
-        end
+        failed << id if(newurl.nil?)
         
         puts " Waiting waiting. Downloaded #{oldurl} into #{newurl}."
         sleep(30)

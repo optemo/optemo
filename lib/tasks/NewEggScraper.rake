@@ -1,9 +1,48 @@
 # Scrape new-egg printers
-
+# Abbreviations frequently used in var names: 
+# ro : retailer offering
+# no : newegg offering
+# np : newegg printer
+# p  : printer
+# o  : offering
 module NeweggScraper
 
-  # Creates new offerings for the specified printer
-  # and updates the bestoffer on the Printer entry.
+  def get_recent_els_from_feed feed_url
+    feed = Nokogiri::XML(open(feed_url))
+    
+    recent_els = feed.css("item guid")
+    recent = []
+    
+    # Scrape all product numbers of recently added/updated printers
+    recent_els.each do |el|
+      product_link = el.content
+      product_num = product_link.gsub(/.+?Item=/,'').gsub(/&.+/,'').strip
+      # TODO get the date (not too important)
+      recent << product_num if product_num
+    end
+    return recent
+  end
+
+  # --- Database insertion/matching --- #
+  def new_rec_by_itemnum id, logfile
+    x = NeweggPrinterScrapedData.find_or_initialize_by_item_number(id)
+    if(x.new_record?)
+      NeweggPrinterScrapedData.create(:item_number => id)
+    else
+      logfile.puts "Item number #{id} was already in the db"
+    end
+    return x
+  end
+
+  def map_to_db np
+    puts "Mapping NeweggPrinter #{np.id}..." # TODO
+    p = (match_newegg_to_printer np)[0] || (create_product_from_rec np)
+    fill_in 'product_id', p.id, np
+    fill_in 'product_type', 'Printer', np
+    create_offerings np, p
+    return p
+  end
+
   def create_offerings np, p
     ro_atts = RetailerOffering.column_names
     matching_no = NeweggOffering.find_all_by_printer_id(np.id)
@@ -11,7 +50,7 @@ module NeweggScraper
     @logfile.puts "ERROR: no offerings for Newegg #{np.id}" if (matching_no.nil? or matching_no.empty?)
     
     matching_no.each do |no|
-      optemo_special_url = my_special_url( id_to_url(no.item_number) )
+      optemo_special_url = my_special_url(no.item_number)
       fill_in 'url', optemo_special_url, no
       fill_in 'product_id', p.id, no
       fill_in 'product_type', 'Printer', no
@@ -24,49 +63,46 @@ module NeweggScraper
     end
     update_bestoffer p
   end
+
+  def no_and_np_from_npsd np
+    properties = {}
+    offer_properties = {}
     
-  
-  # TODO combine with scrape code?
-  def cleanup_everything_for_1 np
-  
-  properties = {}
-  offer_properties = {}
-  
-  np.attributes.each{ |k,v|
-    properties.store( @printer_colnames[k] || k, v )  
-    offer_properties.store( @offering_colnames[k] || k, v )
-  }
-  
-  offer_properties = clean_offerprops offer_properties
-  properties = cleaprinterprops properties
-  
-  properties = only_overlapping_atts properties, NeweggPrinter, ['item_number']
-  offer_properties = only_overlapping_atts offer_properties, NeweggOffering, ['item_number']
-  
-  
-  
-  printer_item_number = np.item_number.gsub(/R$/,'')
-  # Make offering & printer objects   
-  if np.recertified 
-    non_recertified = NeweggPrinterScrapedData.find(:all,:conditions => \
-        ["brand LIKE (?) AND model LIKE (?)","%#{np.brand}%", "#{np.model || np.series}"])
-    non_recertified.delete_if { |x| x.recertified } 
-    printer_item_number = non_recertified[0].item_number unless non_recertified.empty?
+    np.attributes.each{ |k,v|
+      properties.store( @printer_colnames[k] || k, v )  
+      offer_properties.store( @offering_colnames[k] || k, v )
+    }
+    
+    offer_properties = clean_offer offer_properties
+    properties = clean_printer properties
+    debugger
+    properties = only_overlapping_atts properties, NeweggPrinter, ['item_number']
+    offer_properties = only_overlapping_atts offer_properties, NeweggOffering, ['item_number']
+    
+    printer_item_number = np.item_number.gsub(/R$/,'')
+    # Make offering & printer objects   
+    if np.recertified 
+      non_recertified = NeweggPrinterScrapedData.find(:all,:conditions => \
+          ["brand LIKE (?) AND model LIKE (?)","%#{np.brand}%", "#{np.model || np.series}"])
+      non_recertified.delete_if { |x| x.recertified } 
+      printer_item_number = non_recertified[0].item_number unless non_recertified.empty?
+    end
+    
+    offering = NeweggOffering.find_or_create_by_item_number(np.item_number)
+    newnp = NeweggPrinter.find_or_create_by_item_number(printer_item_number)
+    fill_in 'printer_id', newnp.id, offering
+    
+     if np.item_number == printer_item_number then retailer_id= 4 else retailer_id= 6 end
+    
+    fill_in 'retailer_id', retailer_id.to_s, offering
+    
+    fill_in_all properties, newnp
+    fill_in_all offer_properties, offering
+    return newnp
   end
   
-  offering = NeweggOffering.find_or_create_by_item_number(np.item_number)
-  newnp = NeweggPrinter.find_or_create_by_item_number(printer_item_number)
-  fill_in 'printer_id', newnp.id, offering
-  
-   if np.item_number == printer_item_number then retailer_id= 4 else retailer_id= 6 end
-  
-  fill_in 'retailer_id', retailer_id.to_s, offering
-  
-  fill_in_all properties, newnp
-  fill_in_all offer_properties, offering
-  end
-  
-  def clean_offerprops atts
+  # --- Cleaning --- #
+  def clean_offer atts
     
     pricefloat = get_f(atts['saleprice']) if atts['saleprice']
     pricefloat = get_f(atts['salepricestr']) if atts['salepricestr'] and !pricefloat
@@ -88,8 +124,9 @@ module NeweggScraper
     return atts
   end
   
-  def cleanprinterprops atts
-      
+  def clean_printer dirtyatts
+    
+    atts = generic_printer_cleaning_code dirtyatts  
   
     atts['model'] = atts['model'] || atts['series']
   
@@ -112,14 +149,12 @@ module NeweggScraper
       atts['scanner'] = true unless atts[x].nil?
     end
   
-  
-   #   # False by default
-   #   atts['fax'] = false
-   #   # Check if it has color printer properties
-   #   faxprops = ["faxfeatures", "faxmemory", "faxtransmissionspeed", "faxresolutions", "colorfax"]
-   #   faxprops.each do |x|
-   #     atts['fax'] = true unless atts[x].nil?
-   #   end
+ 
+    # Check if it has color printer properties
+    faxprops = ["faxfeatures", "faxmemory", "faxtransmissionspeed", "faxresolutions", "colorfax"]
+    faxprops.each do |x|
+      atts['fax'] = true unless atts[x].nil?
+    end
   
     # Try to see if it's a network printer.
     atts['printserver'] = (atts['networkports'].nil? == false)
@@ -155,44 +190,44 @@ module NeweggScraper
     return atts
   end
   
-  # --- Method to scrape data for 1 printer, np. ---#
-  def scrape_all_data np
-      infopage = Nokogiri::HTML(open(id_to_url(np.item_number)))
-      scrape_prices infopage, np
-      scrape_title infopage, np
-      scrape_urls infopage, np
-      scrape_specs infopage, np
+  # --- Scraping ---#
+  def scrape_data npid
+      infopage = Nokogiri::HTML(open(id_to_details_url(npid)))
+      sleep(15)
+      atts = scrape_prices infopage, npid
+      atts.merge!(scrape_title infopage)
+      atts.merge!(scrape_urls infopage)
+      atts.merge!(scrape_specs infopage)
+      return atts
   end
   
-  def scrape_urls infopage, np
-    # ---- Manufacturer url ----#
+  def scrape_urls infopage
+    retme = {}
     manuf_url = scrape_att_via_css( infopage, \
           "#pclaManufacture a[title *= 'Manufacturer Product Page']",'href' ) 
-    fill_in "manufacturerproducturl", manuf_url, np
-    
-    #--- Image url ----#
+    retme["manufacturerproducturl"] = manuf_url
     img_url = scrape_att_via_css(infopage,'#pclaImageArea img[src]','src')
-    fill_in("imageurl", img_url, np)
+    retme["imageurl"] = img_url
+    return retme
   end
   
-  def scrape_title infopage, np
+  def scrape_title infopage
+    retme = {}
     title_el = get_el infopage.css("#bcapcHeaderArea h1")
-    title_text = title_el.text
-    fill_in 'recertified', (title_text.include? 'Recertified'), np
-    
-    fill_in_optional "title", title_el, np
+    title_text = title_el.text if title_el
+    if title_text
+      retme['recertified'] = (title_text.include? 'Recertified')
+      retme["title"] = title_text
+    end
+    return retme
   end
   
-  
-  def scrape_prices_2 infopage, item_number
-    
+  def scrape_prices infopage, item_number
     retme = {}
   
     price_el = get_el(infopage.xpath('//div[@id="pclaPriceArea"]/dl[@class="price"]'))
-    
     sale_price_el = get_el price_el.css(".final")
     retme['saleprice'] = sale_price_el.text if sale_price_el
-  
     orig_price_el = get_el price_el.css(".original")
     retme['listprice'] = orig_price_el.text if orig_price_el
   
@@ -220,96 +255,26 @@ module NeweggScraper
     return retme
   end
   
-  def scrape_prices infopage, np
-  
-    price_el = get_el(infopage.xpath('//div[@id="pclaPriceArea"]/dl[@class="price"]'))
-    
-    sale_price_el = get_el price_el.css(".final")
-    fill_in_optional 'saleprice', sale_price_el, np
-  
-    orig_price_el = get_el price_el.css(".original")
-    fill_in_optional 'listprice', orig_price_el, np
-  
-    # Data cleaning: if listprice not shown then it is just the saleprice
-    if np.saleprice and not np.listprice
-      fill_in 'listprice', np.saleprice, np
-    end
-    
-    # -- Shipping --- #
-    shipping_el = get_el price_el.css('.shipping')
-    fill_in_optional 'shipping', shipping_el, np
-    
-    
-    # --- Too low? --- #
-    low_price_el = get_el price_el.css('.lowestPrice')
-    
-    if (low_price_el)
-      sleep(30)
-      lowpricepage = Nokogiri::HTML(open("http://www.newegg.com/Product/MappingPrice.aspx?Item=#{np.item_number}"))
-      lowpage_lowprice_el = get_el lowpricepage.css('.final')
-      fill_in_optional 'saleprice', lowpage_lowprice_el, np
-      fill_in 'toolow', true ,np
-    end
-  
-    # --- Availability --- #
-    stock_el = get_el price_el.css('.stockInfo')
-    fill_in_optional 'stock', stock_el, np
-  end
-  
-  def scrape_specs infopage, np
+  def scrape_specs infopage
     tablehtml = infopage.xpath("//table[@class='specification']/tr")
     spec_table = scrape_table tablehtml, 'td.name', 'td.desc'
-    spec_table.each do |name, desc|
-        fill_in just_alphanumeric(name), desc, np
-    end
-  end
-  
-  # TODO this doesn't do the regex thingie
-  def duplicate_entries make_cols, model_cols, entry
-    matching = []
-    make_cols.each do |mkcol_entry|
-       model_cols.each do |mdlcol_entry|
-           
-         make = entry.[](mkcol_entry)
-         model = entry.[](mdlcol_entry)
-         
-         if( !make.nil? and !model.nil? and make != "" and model != "")
-           make_cols.each do |mkcol|
-               model_cols.each do |mdlcol|
-                   matching = matching | entry.class.find(:all,:conditions => \
-                       ["#{mkcol} LIKE (?) AND #{mdlcol} LIKE (?)","%#{make}%", "#{model}"])
-               end
-           end
-         end
-       end
-    end
-    return (matching.collect do |x| x.id end)
+    return spec_table
   end
   
   def match_newegg_to_printer np
-      makes = [nofunnychars (np.brand)].delete_if{ |x| x.nil? or x == ""}
-      #series = nofunnychars (np.series)
-      modelnames = [nofunnychars (np.model), nofunnychars (np.series)].delete_if{ |x| x.nil? or x == ""}
-      
-      matching = match_rec_to_printer makes, modelnames
+      matching = match_printer_to_printer np, NeweggPrinter
       @logfile.puts "ERROR! Duplicate matches for #{np.id}: #{np.model} #{np.brand}" if matching.length > 1
-      
       return matching
   end
   
+  # --- URL generation --- #
   
-  # TODO combine with other methods, rename, and move to scraping_helper
-  def nofunnychars dirty
-    return nil if dirty.nil?
-    clean = dirty.downcase.gsub(/\(.*\)/,'').tr('-/\\_','').gsub(/\s/,'')
-    return clean
-  end
-  
-  def id_to_url pid
+  def id_to_details_url pid
     return 'http://www.newegg.com/Product/Product.aspx?Item='+ pid.to_s
   end
     
-  def my_special_url url
+  def my_special_url itemnum
+    url = id_to_details_url itemnum
     special_url = "http://www.jdoqocy.com/click-***REMOVED***-10446076?url="
     special_url += CGI.escape(url)
     return special_url
@@ -322,14 +287,10 @@ namespace :scrape_newegg do
     require 'rubygems'
     require 'nokogiri'
 
-    require 'database_helper'
-    include DatabaseHelper
-
-    require 'scraping_helper'
-    include ScrapingHelper
-
-    require 'validation_helper'
-    include ValidationHelper
+    require 'data_lib'
+    include DataHelper
+    
+    require 'open-uri'
 
     include NeweggScraper
     
@@ -337,16 +298,7 @@ namespace :scrape_newegg do
     
     @offering_colnames  = { 'saleprice' => 'priceint',  'updated_at' =>  'priceUpdate' }
 
-    # TODO make ignore lists and include these in the hash.
-    # TODO rename the hash to something nice.
-    #'sale_price'             => 'salepriceint', \ # Fill in otherwise
-    # 'list_price'             => 'listpriceint', \ # fill in otherwise
-    #  'brand'                  => 'manufacturer', \ # Don't fill in manufacturer
-    #'outputtype'             => 'colorprinter', \
-    #'duplexprinting'         => 'duplex', \    # fill in otherwise
-
-
-                             # NeweggPrinter column names  =>    Printer column names
+                               # NeweggPrinter column names  =>    Printer column names
     @printer_colnames         = { 'connectivitytechnology' => 'connectivity', \
                                   'blackprintspeed'        => 'ppm', \
                                   'timetofirstpageseconds' => 'ttp', \
@@ -369,9 +321,8 @@ namespace :scrape_newegg do
   end
     
   desc 'Everything that can be done so far'
-  task :all => [:ids, :data, :clean_up, :validate]
+  task :all => [:ids, :data, :clean, :validate]
 
-  # TO METHOD!!
   desc "Get all IDs from Newegg." 
   task :ids => :init do
     @logfile = File.open("./log/newegg_scrape_ids.log", 'w+')
@@ -393,13 +344,7 @@ namespace :scrape_newegg do
         id = ''
         id = el.to_s.gsub('http://www.newegg.com/Product/Product.aspx?Item='){''}
         @logfile.puts "blank at #{i}" if (id == '')
-        x = NeweggPrinterScrapedData.find_or_initialize_by_item_number(id)
-        if(x.new_record?)
-          NeweggPrinterScrapedData.create(:item_number => id)
-        else
-          @logfile.puts "Repeated item number #{id}"
-          count = count + 1
-        end
+        x = new_rec_by_itemnum(id,@logfile)
       end
     end  
     puts "We now have #{NeweggPrinterScrapedData.count} newegg printer ids." \
@@ -409,102 +354,59 @@ namespace :scrape_newegg do
     @logfile.close
   end
  
-  #desc 'Update the data'
-  #task :update => [:update_prices]
- 
-  #task :update_prices => :init do
-    
-    # TODO
-  #end
- 
   desc "Get the latest updates to the Newegg list"
   task :rss_update => :init do 
     @logfile = File.open("./log/newegg_update.log", 'w+')
-    
+    totally_new = 0 
     feed_url = "http://www.newegg.com/Product/RSS.aspx?Submit=ENE&N=2000330630&ShowDeactivatedMark=True"
-    feed = Nokogiri::XML(open(feed_url))
+    recent = get_recent_els_from_feed feed_url
     
-    recent_els = feed.css("item guid")
-    recent = []
-    
-    # Scrape all product numbers of recently added/updated printers
-    recent_els.each do |el|
-      product_link = el.content
-      product_num = product_link.gsub(/.+?Item=/,'').gsub(/&.+/,'').strip
-      # TODO get the date (not too important)
-      recent << product_num if product_num
-    end
-    
-    
-    # Find those with item #s already in db. (offering exists)
-    not_really_new = recent.reject{ |x| NeweggOffering.find_by_item_number(x).nil? }
-    
-    puts "#{not_really_new.count} of #{recent_els.count} recent need to be updated. others need to be added?"
-    
-    not_really_new.each do |inum|
+    recent.each do |inum|
      
       no = NeweggOffering.find_by_item_number(inum)
-      o = RetailerOffering.find(no.offering_id) if no and no.offering_id
+      np = NeweggPrinter.find(no.printer_id) if no
+      p = Printer.find(no.product_id) if no
+            
+      if p.nil? # New printers only: scrape & clean specs
+        totally_new += 1
+        npsd = new_rec_by_itemnum(inum, @logfile)
+        atts = scrape_data npsd.item_number
+        
+        debugger # check: scraped ok for new printer?
+        
+        fill_in_all atts, npsd
+        np = no_and_np_from_npsd npsd
+        p = map_to_db np
+        
+        debugger # Check that no will be ok
+        no = NeweggOffering.find_by_item_number(inum) if no.nil? # need this?
+      end
       
+      o = RetailerOffering.find(no.offering_id)
+      debugger if o.nil?
+      
+      # Update prices
       begin  
-        infopage = Nokogiri::HTML(open(id_to_url(inum)))
+        infopage = Nokogiri::HTML(open(id_to_details_url(inum)))
       rescue
-          debugger
-          puts "Cant scrape #{inum}: #{id_to_url(inum)} doesnt' open"
+        debugger
+        puts "Cant scrape #{inum}: #{id_to_details_url(inum)} doesnt' open"
       else
-        params = scrape_prices_2 infopage, inum
+        params = scrape_prices infopage, inum
         params = clean_offerprops params
-        
-        #debugger
-        
-        fill_in_all params, o if o
-        debugger if o.nil? and !no.nil?
+        debugger # Check that prices are updated ok
+        fill_in_all params, o
+        debugger  # check that they were filled in
         puts " Re-scraped prices for #{inum} ."
       end
-      
-      sleep(10)
-      #atts = only_overlapping_atts( clean_offering(npsd.attributes), NeweggOffering )
-      # TODO update offering copy_atts = only_overlapping_atts no.attributes, RetailerOffering
-      # TODO price history
-      # fill_in_all atts, offering
-      # TODO put in 'last updated' as Time.now
-      # >... that's it!
-    end
-      
-    #... and those without matching make/model in db (nothing exists).
-    totally_new = []
-    (recent - not_really_new).each do |inum|
-      npsd = NeweggPrinterScrapedData.find_by_item_number(inum)
-      printer = nil
-      if(!npsd.nil?)
-        totally_new << inum
-        #NeweggPrinterScrapedData.create(:item_number => inum)
-        #scrape_all_data npsd
-        #sleep(30)
-        # Try to match with old printer?
-      else
-        # Match with printer object
-        
-      end
-      
-      puts not_really_new * ', '
-      
-      puts totally_new * ', '
-      
-      puts "#{recent.count} in total"
-      puts "#{not_really_new.count} not really new"
-      puts "#{totally_new.count} completely new"
+      update_bestoffer p
       
     end
-    
-    #recent_np.each_with_index do |np, i|
-    #    puts "Scraping Newegg #{np.item_number} (id #{np.id})"
-    #    scrape_all_data np
-    #    # TODO clean it.
-    #    puts "Progress: done #{i} of #{recent_np.length} printers..."
-    #    sleep(30)
-    #end
-        
+      
+      
+    puts "#{recent.count} in total"
+    puts "#{totally_new} completely new"
+      
     @logfile.close
   end
   
@@ -586,44 +488,6 @@ namespace :scrape_newegg do
     
   end
   
-  desc 'Repeats data cleaning for a particular prnter'
-  task :clean_subset => :init do
-      @logfile = File.open("./log/newegg_scraper_redo_clean.log", 'w+')
-
-      redo_these = [758].collect do |x| 
-        NeweggPrinterScrapedData.find_by_id( x )
-      end
-
-      redo_these.each_with_index do |np, i|
-          cleanup_everything_for_1 np
-      end
-
-      @logfile.close
-  end
-  
-  desc 'Repeats data scraping for a particular printer'
-  task :data_subset => :init do
-    @logfile = File.open("./log/newegg_redo_data.log", 'w+')
-    
-    # 6 is deactivated
-    # 226 has free shipping
-    # 44 has free shipping
-    # 22 has a price too low to be displayed
-    # 412 is recertified
-    
-   # redo_list = [380, 6, 412, 44, 20, 226, 2, 446].collect do |x| 
-   redo_list = [32].collect do |x|
-      NeweggPrinterScrapedData.find_by_item_number(NeweggPrinter.find(x).item_number) 
-    end
-    
-    redo_list.each_with_index do |np, i|
-      scrape_all_data np
-      puts "Re-scraped data for NeweggPrinter #{np.id}"
-      sleep(30)
-    end
-    @logfile.close
-  end
-  
   desc 'Remove duplicates from Printers. Currently for Amazon printers only.'
   task :del_duplicates => :init do
     
@@ -697,7 +561,8 @@ namespace :scrape_newegg do
     @logfile = File.open("./log/newegg_scraper_cleanup.log", 'w+')
     
     NeweggPrinterScrapedData.all.each_with_index do |np, i|
-        cleanup_everything_for_1 np
+        newnp = no_and_np_from_npsd np
+        map_to_db newnp
     end
     
     @logfile.close
@@ -717,26 +582,9 @@ namespace :scrape_newegg do
       end
       puts "Progress: done #{i} of #{NeweggPrinterScrapedData.count} printers..."
       @logfile.puts "Progress: done #{i} of #{NeweggPrinterScrapedData.count} printers..."
-      sleep(30)
     end
     
     @logfile.close
-    
   end
   
-  desc "Match printers from Newegg to existing Amazon records"
-  task :map_to_db => :init do
-    
-    @logfile = File.open("./log/newegg_mapper.log", 'w+')
-    
-    NeweggPrinter.all.each do |np|
-      puts "Mapping NeweggPrinter #{np.id}..." # TODO
-      p = (match_newegg_to_printer np)[0] || (create_product_from_rec np)
-      fill_in 'product_id', p.id, np
-      fill_in 'product_type', 'Printer', np
-      create_offerings np, p
-    end
-    
-    @logfile.close   
-  end
 end

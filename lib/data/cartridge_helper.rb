@@ -1,10 +1,5 @@
 module CartridgeHelper
-  
-  require 'scraping_helper'
-  include ScrapingHelper
-  require 'database_helper'
-  include DatabaseHelper
-  
+    
   def create_uniq_compatibility acc_id, acc_type, prd_id, prd_type
     atts = {'product_id' => prd_id, 'accessory_id' => acc_id, \
         'product_type' => prd_type, 'accessory_type' => acc_type}
@@ -73,7 +68,7 @@ module CartridgeHelper
     return score
   end
   
-  def likely_to_be_cartridge_model_name str
+  def likely_cartridge_model_name str
     return -10 if str.nil? or str.strip.length==0
     
     init_series 
@@ -82,6 +77,7 @@ module CartridgeHelper
   
     score += 1 if !str.include?('/')
   
+    ja = just_alphanumeric(str)
     score += 1 if !$series.inject(false){|r,x| r or ja.include?(x)}
     score -= 5 if $real_brands.inject(false){|r,x| r or ja == x}
     score -= 2 if $printer_models.inject(false){|r,x| r or ja.include?(x)}
@@ -139,7 +135,7 @@ module CartridgeHelper
   
   end
   
-  def clean_brand title, brandlist=[]
+  def brand_from_title title, brandlist=[]
     
     init_brands if $real_brands.nil?
     brandlist = $real_brands if brandlist.length ==0

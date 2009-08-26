@@ -202,6 +202,8 @@ module AmazonScraper
 end
 
 namespace :scrape_amazon do
+    
+  task :cartridges => [:clean_cartridges, :to_cartridge, :compatibilities]
 
   desc "Scraping Amazon"
   task :scrape => :init do
@@ -221,27 +223,11 @@ namespace :scrape_amazon do
     puts printer.asin
   end
 
-  task :sandbox => :cartinit do 
-  
-    AmazonCartridge.all.each do |ac|
-      best_model =  get_most_likely_model([ac.model,ac.mpn,ac.title], ac.brand)
-      if likely_to_be_cartridge_model_name(best_model) > 2
-        fill_in 'model', best_model, ac
-      end
-    end
-    
-  end
-  
   task :cart_init => :init do 
     
-    require 'cartridge_helper'
-    include CartridgeHelper
-    
-    require 'scraping_helper'
-    include ScrapingHelper
-    
-    require 'database_helper'
-    include DatabaseHelper
+    require 'data_lib'
+    include DataHelper
+    include CartridgeLib
     
     init_series
     init_brands
@@ -253,9 +239,9 @@ namespace :scrape_amazon do
   task :to_cartridge => :cart_init do
   
     convertme = AmazonCartridge.toner.reject{|x| 
-      (likely_to_be_cartridge_model_name(x.model) < 2) or \
+      (likely_cartridge_model_name(x.model) < 2) or \
       x.model.nil? or x.realbrand.nil?  or x.real.nil? 
-    }
+    }.reject{|z| z.id > 1499 or z.id < 0}
     
     convertme.each do |ac|
 
@@ -287,8 +273,6 @@ namespace :scrape_amazon do
         fill_in 'brand', ac.realbrand, matching_c
       end
     end
-    
-
   end
   
   task :compatibilities => :cart_init do
@@ -301,7 +285,7 @@ namespace :scrape_amazon do
   
     counter = 0
   
-    AmazonCartridge.scraped[0..299].each do |ac|
+    AmazonCartridge.scraped[700..999].each do |ac|
       cid = ac.product_id
       if cid 
         c = Cartridge.find(cid)
@@ -317,8 +301,6 @@ namespace :scrape_amazon do
           end
         end
       end 
-      # TODO
-    
     end
   
     finish = Time.now
@@ -326,74 +308,22 @@ namespace :scrape_amazon do
     puts "#{counter} matching models found!"
   end
   
-  task :clean_cartridges => :cart_init do 
-    conditions = ['Remanufactured', 'Refurbished', 'Compatible', 'OEM', 'New']
-    cleanme = AmazonCartridge.scraped
-    cleanme.each do |cart|
-      clean_specs = cart.attributes
-      clean_specs['realbrand'] = clean_brand(clean_specs['brand'], $fake_brands+$real_brands)
-      clean_specs['compatiblebrand'] = clean_brand(clean_specs['title'])
-      clean_specs['real'] = same_brand?(clean_specs['realbrand'], clean_specs['compatiblebrand'])
-      clean_specs['toner'] = true if (clean_specs['title'] || '').match(/toner/i) 
-      clean_specs['toner'] = false if (clean_specs['title'] || '').match(/ink/i) 
-      
-      #clean_specs['model'] =  get_most_likely_model([clean_specs['model'],clean_specs['mpn']])
-      
-      conditions.each{|c| 
-        (clean_specs['condition'] = c) and break if (clean_specs['title'] || '').match(/#{c}/i)
-      }
-      
-      fill_in_all clean_specs, cart
-    end
-  end
+  task :download_pix => :init do 
+    require 'data_lib'
+    include ImageHelper
+    failed = []
 
-  desc "Scraping cartridge data from Amazon"
-  task :scrape_cartridges_old => :cart_init do
-    $amazonmodel = $model = AmazonCartridge
-    require 'webrat'
-    conditions = ['Remanufactured', 'Refurbished', 'Compatible', 'OEM', 'New']
-    sesh = regularsetup
-    counter = 0
-    scrapeme = $model.all.reject{|x| x.asin.nil?}
+    $imgfolder = "amazon/#{$amazonmodel.name.downcase}"
+
+    urls_by_id = $amazonmodel.all.inject({}){|r,x| r.merge({x.id => x.imagelurl}) }.reject{|x,y| 
+      y.nil? or !y.include? 'http://'}
+      
+    failed = download_all_pix urls_by_id
     
-    scrapeme.each do |cart|
-      spex = scrape_details_general(cart.asin, sesh)
-      morespex = scrape_compatibility(cart.asin, sesh)
-      spex['detailpageurl'] = sesh.current_url
-      spex.merge!(morespex) unless morespex.nil? or spex.nil?
-      clean_specs = cartridge_cleaning_code(spex)
-
-      debugger if clean_specs.nil?
-      
-      clean_specs['realbrand'] = clean_brand(clean_specs['brand'], $fake_brands+$real_brands)
-      clean_specs['compatiblebrand'] = clean_brand(clean_specs['title'])
-      clean_specs['real'] = same_brand?(clean_specs['realbrand'], clean_specs['compatiblebrand'])
-      clean_specs['toner'] = true if (clean_specs['title'] || '').match(/toner/i) 
-      clean_specs['toner'] = false if (clean_specs['title'] || '').match(/ink/i) 
-      
-      clean_specs['model'] =  get_most_likely_model([clean_specs['model'],clean_specs['mpn']])
-      
-      conditions.each{|c| 
-        (clean_specs['condition'] = c) and break if (clean_specs['title'] || '').match(/#{c}/i)
-      }
-      
-      fill_in_all clean_specs, cart
-      fill_in 'scrapedat', Time.now, cart
-      counter += 1
-      puts " Done #{counter} #{$model}s "
-    end
     
-    puts "Scraped #{counter} #{$model}s"
-  end
-
-  desc "Download Images"
-  task :download_images => :init do
-    Camera.find(:all).each {|c|
-      c.imagesurl = download(c.imagesurl)
-      c.imagemurl = download(c.imagemurl)
-      c.imagelurl = download(c.imagelurl)
-      c.save
-    }
+    puts " FAILED DOWNLOADS" if failed.length > 0
+    puts failed * "\n"
+    
   end
 
   desc "Rename %2B (+)"
@@ -414,6 +344,9 @@ namespace :scrape_amazon do
     require 'open-uri'
     #require 'net/http'
     include AmazonScraper
+    
+    $amazonmodel = AmazonPrinter
+    $model = Printer
     
     Amazon::Ecs.options = {:aWS_access_key_id => '0NHTZ9NMZF742TQM4EG2', :aWS_secret_key => 'WOYtAuy2gvRPwhGgj0Nz/fthh+/oxCu2Ya4lkMxO'}
 

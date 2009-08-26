@@ -404,6 +404,23 @@ module Amazon
   def get_cartridge_atts(cart)
     atts = get_attributes cart
     cleaned_atts = cartridge_cleaning_code atts
+    
+    init_brands
+    init_series
+    
+    debugger if $fake_brands.nil?
+    
+    cleaned_atts['realbrand'] = clean_brand(cleaned_atts['brand'], $fake_brands+$real_brands)
+    cleaned_atts['compatiblebrand'] = clean_brand(cleaned_atts['title'])
+    cleaned_atts['real'] = same_brand?(cleaned_atts['realbrand'], cleaned_atts['compatiblebrand'])
+    cleaned_atts['toner'] = true if (cleaned_atts['title'] || '').match(/toner/i) 
+    cleaned_atts['toner'] = false if (cleaned_atts['title'] || '').match(/ink/i) 
+    
+    conditions = ['Remanufactured', 'Refurbished', 'Compatible', 'OEM', 'New']
+    conditions.each{|c| 
+      (cleaned_atts['condition'] = c) and break if (cleaned_atts['title'] || '').match(/#{c}/i)
+    }
+    
     cleaned_atts['compatible'] = cleaned_atts['feature'] + "#{cleaned_atts['compatible']}" if cleaned_atts['feature']
     fill_in_all cleaned_atts, cart
   end
@@ -456,8 +473,13 @@ end
 
 desc "Get all the Amazon data for the current Camera ASINs"
 task :get_product_data_for_ASINs => :init do
+  
+  require 'data_lib'
+  include DataHelper
+  include CartridgeHelper
+  
   count = 0
-  scrapeme = $amazonmodel.find(:all)[301..700]
+  scrapeme = $amazonmodel.find(:all)
   scrapeme.each do |product|
     if !product.asin.blank?
       puts 'Processing: ' + product.asin
@@ -485,11 +507,14 @@ task :update_prices => :init do
   }
 end
 
-
 desc "Updating Amazon Price"
 task :update_cart_prices => :init do
-  Cartridge.all.each{|ac|
-    ac  = findprice(ac,'us')
+  updateme = AmazonCartridge.all[1000..1499].reject{|x| x.product_id.nil?}.collect{|x| Cartridge.find(x.product_id)}
+  updateme.each{|ac|
+    ac  = findprice(ac,'us') # Update prices in the States...
+    ac.save
+    sleep(0.5) #One Req per sec
+    ac  = findprice(ac,'ca') # ...and in Canada too.
     ac.save
     sleep(0.5) #One Req per sec
   }
@@ -525,8 +550,8 @@ task :init => :environment do
   require 'nokogiri'
   include Nokogiri
   
-  require 'scraping_helper'
-  include ScrapingHelper
+  require 'data_lib'
+  include DataHelper
     
   $model = Cartridge
   $amazonmodel = AmazonCartridge

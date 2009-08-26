@@ -1,10 +1,7 @@
 module ConversionHelper
   
   @@float_rxp = /(\d+,)?\d+(\.\d+)?/
-  
-  require 'scraping_helper'
-  include ScrapingHelper   
-  
+    
   def parse_max_num_pages str
     debugger if str.nil?
     numpages = get_f_with_units( (str || '').gsub(/\+\s?\d+/,''),  /(sheet|page)(s)?/i )
@@ -32,7 +29,7 @@ module ConversionHelper
   
   def parse_ozoom str
     return nil if str.nil?
-    ozoom =  get_f ( str.match(append_regex (@@float_rxp, /\s?x (optical )?zoom/i)).to_s )
+    ozoom =  get_f( str.match( append_regex(@@float_rxp, /\s?x (optical )?zoom/i)).to_s )
     return ozoom if ozoom and ozoom >= 1
     return nil 
   end

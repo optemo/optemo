@@ -1,8 +1,5 @@
 module DatabaseHelper
   
-  require 'scraping_helper'
-  include ScrapingHelper
-  
   $general_ignore_list = ['id','created_at','updated_at']
   $region_suffixes = {'CA' => '_ca', 'US' => ''}
   
@@ -99,8 +96,8 @@ module DatabaseHelper
   
   def update_bestoffer_regional p, region
     matching_ro = RetailerOffering.find(:all, :conditions => \
-      "product_id LIKE #{p.id} and product_type LIKE '#{$model.name}' and region LIKE #{region}").\
-      reject{ |x| !x.instock or x.price.nil? }
+      "product_id LIKE #{p.id} and product_type LIKE '#{$model.name}' and region LIKE '#{region}'").\
+      reject{ |x| !x.stock or x.priceint.nil? }
     return if matching_ro.empty?
     
     lowest = matching_ro.sort{ |x,y|

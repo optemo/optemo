@@ -498,7 +498,7 @@ namespace :scrape_extra do
   end
   
   desc 'Get a pic for every printer'
-  task :download_pix => :pic_init do
+  task :download_newegg_pix => :pic_init do
     
     failed = []
     
@@ -524,7 +524,9 @@ namespace :scrape_extra do
     puts failed * "\n"
   end
   
-  desc 'pic-init'
+  
+  
+  
   task :pic_init => :init do
   
     require 'RMagick'
