@@ -24,7 +24,7 @@ class ProductsController < ApplicationController
       @allSearches = []
       @clusterDescs = @s.clusterDescription
       if @session.searchpids.blank? #|| @@session.searchpids.size > 9)
-        z = Search.find_all_by_session_id(@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.hour.ago}\'")
+        z = Search.find_all_by_session_id(@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.minute.ago}\'")
         #z = [472, 478, 514, 516, 536, 538, 540].map{|id|Search.find(id)}
         unless (z.nil? || z.empty?)
           @layer, @allSearches = zipStack(z) 
@@ -124,13 +124,12 @@ class ProductsController < ApplicationController
          if (ls.index(s.layer).nil?)
             if (ls.empty?)
               allSearches.unshift(s)
-            elsif (ls[0] > s.layer)
+            elsif (ls[0] == s.layer+1)
               allSearches.unshift(s) 
             end  
          end   
          i = i+1
        end    
-      
        allSearches.unshift(stack[-1-i]) if (!stack[-1 -i].nil? && stack[-1-i].layer==1)  
        layer = allSearches[-1].layer
 

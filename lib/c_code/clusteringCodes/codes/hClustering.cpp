@@ -66,8 +66,8 @@ int main(int argc, char** argv){
 	map<const string, double> weightHash;
 	weightHash["price"] = 1;
 		//weightHash["itemweight"] = 1;
-		weightHash["opticalzoom"] = 5;
-		weightHash["displaysize"] = 0.5;
+		weightHash["opticalzoom"] = 1;
+		weightHash["displaysize"] = 1;
 		weightHash["maximumresolution"] = 1;
 		//weightHash["minimumfocallength"] = 0.08;
 		//weightHash["maximumfocallength"] = 0.08;

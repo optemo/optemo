@@ -1,3 +1,7 @@
+#include "helpers.h"
+
+
+
 int find5(int *idA, int value, int size){
 		
 	int ind = -1;
@@ -506,18 +510,57 @@ int *k_meansPP(double **data, int n, int m, int k, double t, double **centroids,
    double old_error, error = DBL_MAX; /* sum of squared euclidean distance */
    double **c = centroids ? centroids : (double**)calloc(k, sizeof(double*));
    double **c1 = (double**)calloc(k, sizeof(double*)); /* temp centroids */
-
+   int p;	
    assert(data && k > 0 && k <= n && m > 0 && t >= 0); /* for debugging */
 
-   /****
+   int random = rand()%n;
+   double * dist = new double [n];	
+   int* ids = new int [n]; 
+   int * excludeIds;  		
+		int* centIds = new int [k];
+	/****
    ** initialization */
+    
    for (h = i = 0; i < k; h += n / k, i++) {
       c1[i] = (double*)calloc(m, sizeof(double));
       if (!centroids) {
          c[i] = (double*)calloc(m, sizeof(double));
       }
       /* pick k points as initial centroids */
-      for (j = m; j-- > 0; c[i][j] = data[h][j]);
+	if (i==0){
+		for (j=m; j-- >0; c[0][j] = data[random][j]);
+		centIds[i] = random;
+	}
+	// Distance
+	for (int t=0; t<n; t++){
+		for (j=0; j<m; j++){
+			dist[t] = (data[t][j] - c[i][j]) * (data[t][j] - c[i][j]);
+			ids[t] = t;
+		}
+	}
+	if (i>0){
+		excludeIds = new int[i-1]; 
+	
+		for (j=0; j<i-1; j++){
+			excludeIds[j] = centIds[j];
+		}
+		 //sort and pick the largest distance
+	
+		insertion_sort(dist, ids, n);
+		p= 1;
+	
+   		while (find(excludeIds, ids[n-p], n) >0 )
+   		{
+   			p++;
+   		}	
+		centIds[i] = ids[n-p]; 
+		for (j=0; j<m; j++){
+		
+			c[i][j] = data[ids[n-p]][j];
+		}
+		
+		for (j=m; j-- >0; c[0][j] = data[ids[n-1]][j]);
+     }
    }
 
 	bool* assigned = new bool[k];
