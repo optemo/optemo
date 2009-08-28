@@ -299,18 +299,8 @@ namespace :printer_test do
 
      # Requires.
         require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
-        require 'webrat'
-        require 'mechanize' # Needed to make Webrat work
-        require 'test_session'
-        
-        require 'scraping_helper'
-        include ScrapingHelper
-        
-        require 'printer_test_mod'
-        include PrinterTest
-        
-        require 'printer_test_asserts'
-        include PrinterTestAsserts
+        require 'testing_lib'
+        include NoJavaTestLib
         
         Webrat.configure do |conf| 
          conf.mode = :mechanize  # Can't be rails or Webrat won't work 
@@ -330,19 +320,8 @@ namespace :printer_test do
       #raise  "Forgery protection turned on in test environment."  if (ActionController::Base.allow_forgery_protection) 
 
         require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
-        require 'webrat'
-        require 'webrat/selenium'
-        require 'java_test_session'
-        
-        require 'scraping_helper'
-        include ScrapingHelper
-
-        require 'printer_test_mod'
-        include PrinterTest
-        
-        require 'printer_test_asserts'
-        include PrinterTestAsserts
-
+        require 'testing_lib'
+        include JavaTestLib
         
         Webrat.configure do |config|
           config.mode = :selenium

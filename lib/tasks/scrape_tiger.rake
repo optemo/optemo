@@ -182,18 +182,15 @@ module TigerDirectScraper
   end
   
   def rescrape_price to
-    # TODO base_url must be by country
     url = @regional_urls[to.region] + to.tigerurl
     info_page = Nokogiri::HTML(open(url))
     
     props = {}
-    
     puts "Re-scraping #{to.id} offering"
     props.merge! scrape_prices info_page 
     props.merge! scrape_availty info_page
     
     props.delete_if{ |x,y| !TigerScraped.column_names.include? x}
-    
     
     return props
   end

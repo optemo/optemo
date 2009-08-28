@@ -55,43 +55,51 @@ module Amazon
     $amazonmodel.find_all_by_product_id(p.id).each do |e|
       begin
         sleep(2) #Be nice
-        res = Amazon::Ecs.item_lookup(e.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => 'All', :offer_page => current_page, :country => region.intern)
-        total_pages = res.total_pages unless total_pages
-        if res.first_item.nil?
-          current_page += 1
-          next
-        end
-        offers = res.first_item.search_and_convert('offers/offer')
-        if offers.nil?
-          current_page += 1
-          next
-        end
-        offers = [] << offers unless offers.class == Array
-        offers.each do |o| 
-          price = o.get('offerlisting/price/amount').to_i
-          merchantid = o.get('merchant/merchantid')
-          merchant = case merchantid 
-            when AmazonID 
-              "Amazon"
-            when AmazonCAID
-              "Amazon.ca"
-            else
-              case region
-              when "us"
-                "Amazon Marketplace"
-              when "ca"
-                "Amazon.ca Marketplace"
-              end
+        begin
+          res = Amazon::Ecs.item_lookup(e.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => 'All', :offer_page => current_page, :country => region.intern)
+        rescue Exception => exc
+          $logfile.puts "ERROR -- #{exc.message} . Could not look up offers for #{$amazonmodel} "+\
+          "#{p.asin} (id #{p.id}) in region #{region}"
+          sleep(30) 
+          return
+        else
+          total_pages = res.total_pages unless total_pages
+          if res.first_item.nil?
+            current_page += 1
+            next
           end
-          if price < lowestprice[merchant]
-            lowestprice[merchant] = price
-            lowestentry[merchant] = e
-            lowmerchant[merchant] = merchantid
+          offers = res.first_item.search_and_convert('offers/offer')
+          if offers.nil?
+            current_page += 1
+            next
           end
+          offers = [] << offers unless offers.class == Array
+          offers.each do |o| 
+            price = o.get('offerlisting/price/amount').to_i
+            merchantid = o.get('merchant/merchantid')
+            merchant = case merchantid 
+              when AmazonID 
+                "Amazon"
+              when AmazonCAID
+                "Amazon.ca"
+              else
+                case region
+                when "us"
+                  "Amazon Marketplace"
+                when "ca"
+                  "Amazon.ca Marketplace"
+                end
+            end
+            if price < lowestprice[merchant]
+              lowestprice[merchant] = price
+              lowestentry[merchant] = e
+              lowmerchant[merchant] = merchantid
+            end
+          end
+          current_page += 1
+          sleep(2) #One Req per sec
         end
-        current_page += 1
-        sleep(2) #One Req per sec
-      end while (current_page <= total_pages)
+      end while (!total_pages.nil? and current_page <= total_pages)
     end
     sleep(1) #Be Nice
     #Save lowest prices
@@ -140,7 +148,8 @@ module Amazon
     begin
       res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => merchant, :country => region.intern)
     rescue Exception => exc
-      puts "Error: #{exc.message} for product #{p.asin} and merchant #{merchant} in region #{region}"
+      $logfile.puts "ERROR -- #{exc.message}. Could not look up offer to save for #{$amazonmodel} #{p.asin}"+\
+      " and merchant #{merchant} in region #{region}"
       sleep(30)
       saveoffer(p,retailer,merchant,region)
       return
@@ -217,7 +226,7 @@ module Amazon
       begin
         res = Amazon::Ecs.item_lookup(a.asin, :response_group => 'Reviews', :condition => 'New', :merchant_id => 'All', :review_page => current_page)
       rescue Exception => exc
-        puts "Error: #{exc.message} for product #{p.asin} and merchant #{merchant}"
+        $logfile.puts "ERROR --  #{exc.message}. Couldn't download reviews for product #{p.asin} and merchant #{merchant}"
       end
       result = res.first_item
       #Look for old Retail Offering
@@ -396,8 +405,9 @@ module Amazon
   end
   
   def get_printer_atts(p)
+    # Never been tested...
     atts = get_attributes p
-    cleaned_atts = general_cleaning_code atts
+    cleaned_atts = general_printer_cleaning_code atts
     fill_in_all cleaned_atts, p
   end
   
@@ -407,9 +417,7 @@ module Amazon
     
     init_brands
     init_series
-    
-    debugger if $fake_brands.nil?
-    
+        
     cleaned_atts['realbrand'] = clean_brand(cleaned_atts['brand'], $fake_brands+$real_brands)
     cleaned_atts['compatiblebrand'] = clean_brand(cleaned_atts['title'])
     cleaned_atts['real'] = same_brand?(cleaned_atts['realbrand'], cleaned_atts['compatiblebrand'])
@@ -427,141 +435,214 @@ module Amazon
 end
 
 namespace :amazon do
-
-desc "Collect all Product ASINs for a browse node"
-task :get_product_ASINs => :init do
-  #browse_node for printers: 172635
-  #browse_node for all-in-one:172583
-  #browse_node for digital point and shoot cameras: 330405011
-  #Use browse id for Laser Printers - 172648
-  #browse node for cartridges: 172638
-  #browse node for laser cartridges: 172641
-  browse_node_id = '172641'
-  search_index = 'Electronics'
-  response_group = 'ItemIds'
-  current_page = 1
-  count = 0
-  loop do
-    res = Amazon::Ecs.item_search('',:browse_node => browse_node_id, :search_index => search_index, :response_group => response_group, :item_page => current_page)
-    puts "ERROR: #{res.error} " if  res.has_error?    
-    
-    total_pages = res.total_pages unless total_pages
-    res.items.each do |item|
-      asin = item.get('asin')
-      if $amazonmodel.find_by_asin(asin).nil?
-        product = $amazonmodel.new
-        product.asin = asin
-        product.save!
-        puts asin
-        count += 1
+  
+  desc "Collect all Product ASINs for a browse node"
+  task :get_product_ASINs => :init do
+    response_group = 'ItemIds'
+    current_page = 1
+    count = 0
+    loop do
+      res = Amazon::Ecs.item_search('',:browse_node => $browse_node_id, :search_index => $search_index, :response_group => response_group, :item_page => current_page)
+      $logfile.puts "ERROR: #{res.error} . couldn't download ASINs" if  res.has_error?    
+      
+      total_pages = res.total_pages unless total_pages
+      res.items.each do |item|
+        asin = item.get('asin')
+        if $amazonmodel.find_by_asin(asin).nil?
+          product = $amazonmodel.new
+          product.asin = asin
+          product.save!
+          puts asin
+          count += 1
+        end
       end
+      current_page += 1
+      sleep(0.2)
+      break if (current_page > total_pages)
     end
-    current_page += 1
-    sleep(0.2)
-    break if (current_page > total_pages)
+    puts "Total new products: " + count.to_s
   end
-  puts "Total new products: " + count.to_s
-end
-
-desc "Collect Product Reviews"
-task :download_reviews => :init do
-  $model.find(:all, :conditions => 'totalreviews is NULL').each do |p|
-    puts "Downloading: #{p.id}"
-    download_review(p)
-  end
-end
-
-desc "Get all the Amazon data for the current Camera ASINs"
-task :get_product_data_for_ASINs => :init do
   
-  require 'data_lib'
-  include DataHelper
-  include CartridgeHelper
-  
-  count = 0
-  scrapeme = $amazonmodel.find(:all)
-  scrapeme.each do |product|
-    if !product.asin.blank?
-      puts 'Processing: ' + product.asin
-      if $amazonmodel == nil #  AmazonCamera
-        get_camera_attributes(product)
-      elsif $amazonmodel == AmazonPrinter
-        get_printer_attributes(product)
-      elsif $amazonmodel == AmazonCartridge
-        get_cartridge_atts(product)
-      end
+  desc "Collect Product Reviews"
+  task :download_reviews => :init do
+    $logfile.puts "Downloading reviews"
+    $model.find(:all, :conditions => 'totalreviews is NULL').each do |p|
+      puts "Downloading: #{p.id}"
+      download_review(p)
     end
-    count += 1
-    puts "Done #{count} of #{scrapeme.count}"
-    sleep(1+rand()*30) #Be really nice to Amazon!
+    $logfile.puts "Done downloading reviews"
   end
-end
-
-desc "Updating Amazon Price"
-task :update_prices => :init do
-  $model.find(:all).each{|p|# :conditions => ['updated_at < ?', 1.day.ago]).each {|p|
-    puts 'Processing ' + p.id.to_s
-    p = findprice(p,"us")
-    p.save
-    sleep(0.5) #One Req per sec
-  }
-end
-
-desc "Updating Amazon Price"
-task :update_cart_prices => :init do
-  updateme = AmazonCartridge.all[1000..1499].reject{|x| x.product_id.nil?}.collect{|x| Cartridge.find(x.product_id)}
-  updateme.each{|ac|
-    ac  = findprice(ac,'us') # Update prices in the States...
-    ac.save
-    sleep(0.5) #One Req per sec
-    ac  = findprice(ac,'ca') # ...and in Canada too.
-    ac.save
-    sleep(0.5) #One Req per sec
-  }
-end
-
-desc "Create new printers for new AmazonPrinters"
-task :create_products => :init do
-  $amazonmodel.find_all_by_product_id(nil, :conditions => ['created_at > ?', 1.day.ago]).each do |p|
-    product = $model.new
-    product = getAtts(product, p)
-    product.save
-    p.update_attribute('product_id',product.id)
-    product = findprice(product,"us")
-    product.save
+  
+  task :pic_init => :init do 
+    require 'helper_libs'
+    include ImageLib
+    require 'open-uri'
+    $id_field='id'
+    $img_url_field='imagelurl'
+    $imgfolder = "amazon/#{$amazonmodel.name.downcase}"
   end
-end
-
-desc "Find which printers are available in Canada"
-task :update_prices_ca => :init do
-  $model.find(:all).each{|p|#, :conditions => ['updated_at < ?', 1.day.ago]).each {|p|
-    puts 'Processing ' + p.id.to_s
-    p = findprice(p,"ca")
-    p.save
-    sleep(0.5) #One Req per sec
-  }
-end
-
-
-task :init => :environment do
-  require 'amazon_ecs'
-  include Amazon
   
-  require 'nokogiri'
-  include Nokogiri
-  
-  require 'data_lib'
-  include DataHelper
+  task :update_pix => :pic_init do 
+    $logfile.puts "Updating pix"
     
-  $model = Cartridge
-  $amazonmodel = AmazonCartridge
+    $logfile.puts "Downloading missing pix.."
+    dl_me = (picless_recs $amazonmodel)
+    $logfile.puts "I've got #{dl_me.length} #{$model} pictures to download"
+    failed= download_these(dl_me)
+    $logfile.puts "ERROR -- couldn't download all pictures" if failed.length > 0
+    $logfile.puts "#{failed.length} FAILED DOWNLOADS:" if failed.length > 0
+    $logfile.puts failed * "\n"
+
+    
+    $logfile.puts "Resizing pix .."
+    resize_me = unresized_recs $amazonmodel
+    failed = resize_all(resize_me.collect{|x| x.id})
+    $logfile.puts "ERROR -- couldn't resize all pictures" if failed.length > 0
+    $logfile.puts "#{failed.length} FAILED RESIZINGS:" if failed.length > 0
+    $logfile.puts failed * "\n"
+    
+    $logfile.puts "Recording missing sizes & urls for pix..."
+    measure_me = statless_recs $amazonmodel
+    failed = record_pic_stats(measure_me)
+    $logfile.puts "ERROR -- couldn't record all sizes/urls" if failed.length > 0
+    $logfile.puts "Can't record sizes/urls for #{failed.length} records:" if failed.length > 0
+    $logfile.puts failed * "\n"
+  end
   
-  Amazon::Ecs.options = { :aWS_access_key_id => '0NHTZ9NMZF742TQM4EG2', \
-                          :aWS_secret_key => 'WOYtAuy2gvRPwhGgj0Nz/fthh+/oxCu2Ya4lkMxO'}
+  task :download_pix => :pic_init do 
+
+    failed = []
+    urls_by_id = $amazonmodel.all.inject({}){|r,x| r.merge({x.id => x.imagelurl}) }.reject{|x,y| 
+      y.nil? or !y.include? 'http://'}
+      
+    failed = download_all_pix urls_by_id
+    
+    puts "#{failed.length} FAILED DOWNLOADS:" if failed.length > 0
+    puts failed * "\n"
+  end
+
+  desc "Get all the Amazon data for the current ASINs"
+  task :get_product_data_for_ASINs => :init do
+    
+    require 'helper_libs'
+    include DataLib
+    include CartridgeLib
+    
+    count = 0
+    scrapeme = $amazonmodel.find(:all)
+    scrapeme.each do |product|
+      if !product.asin.blank?
+        puts 'Processing: ' + product.asin
+        if $amazonmodel == nil #  AmazonCamera
+          get_camera_attributes(product)
+        elsif $amazonmodel == AmazonPrinter
+          get_printer_attributes(product)
+        elsif $amazonmodel == AmazonCartridge
+          get_cartridge_atts(product)
+        end
+      end
+      count += 1
+      puts "Done #{count} of #{scrapeme.count}"
+      sleep(1+rand()*30) #Be really nice to Amazon!
+    end
+  end
   
-  AmazonID =   'ATVPDKIKX0DER'
-  AmazonCAID = 'A3DWYIK6Y9EEQB'
-end
+  task :update_prices => :init do
+    $logfile.puts "Updating prices for #{$model}!"
+    $model.find(:all, :conditions => ['updated_at < ?', 1.day.ago]).each {|p|
+      puts 'Processing ' + p.id.to_s
+      p = findprice(p,"us")
+      p.save
+      sleep(0.5) #One Req per sec
+    }
+    $logfile.puts "Done updating #{$model} prices!"
+  end
+  
+  desc "Create new printers for new AmazonPrinters"
+  task :create_products => :init do
+    $amazonmodel.find_all_by_product_id(nil, :conditions => ['created_at > ?', 1.day.ago]).each do |p|
+      product = $model.new
+      product = getAtts(product, p)
+      product.save
+      p.update_attribute('product_id',product.id)
+      product = findprice(product,"us")
+      product.save
+    end
+  end
+  
+  task :update_prices_ca => :init do
+    $logfile.puts "Updating Canadian prices for #{$model}"
+    $model.find(:all, :conditions => ['updated_at < ?', 1.day.ago]).each {|p|
+      puts 'Processing ' + p.id.to_s
+      p = findprice(p,"ca")
+      p.save
+      sleep(0.5) #One Req per sec
+    }
+    $logfile.puts "Done updating prices"
+  end
+  
+  desc 'Update printer records'
+  task :update_printer_prices => [:prnt_init, :update_prices, :update_prices_ca, :closelog] 
+  
+  desc 'Update cartridge records'
+  task :update_cart_prices => [:cart_init, :update_prices, :update_prices_ca, :closelog]
+  
+  desc 'Update printer records'
+  task :update_printer_prices => [:prnt_init, :update_prices, :update_prices_ca, :closelog] 
+  
+  desc 'Update cartridge records'
+  task :update_cart_prices => [:cart_init, :update_prices, :update_prices_ca, :closelog]
+  
+  task :closelog do
+    $logfile.close
+  end
+    
+  task :crtg_init => :init do 
+    #browse node for cartridges: 172638
+    #browse node for laser cartridges: 172641    
+    $model = Cartridge
+    $amazonmodel = AmazonCartridge
+    $browse_node_id = '172641'
+    $search_index = 'Electronics'
+    $logfile = File.open("./log/amazon_cartridges.log", 'w+')
+  end
+  
+  task :cam_init => :init do 
+    #browse_node for digital point and shoot cameras: 330405011
+    $browse_node_id = '330405011'
+    $search_index = 'Electronics'
+    $model = Camera
+    #$amazonmodel = AmazonCamera
+    $logfile = File.open("./log/amazon_cameras.log", 'w+')
+  end
+  
+  task :prnt_init => :init do 
+    #browse_node for printers: 172635
+    #browse_node for all-in-one:172583
+    #Use browse id for Laser Printers - 172648
+    $browse_node_id = '172648'
+    $search_index = 'Electronics'
+    $model = Printer
+    $amazonmodel = AmazonPrinter
+    $logfile = File.open("./log/amazon_printers.log", 'w+')
+  end
+  
+  task :init => :environment do
+    require 'amazon_ecs'
+    include Amazon
+    
+    require 'nokogiri'
+    include Nokogiri
+    
+    require 'helper_libs'
+    include DataLib      
+    
+    Amazon::Ecs.options = { :aWS_access_key_id => '0NHTZ9NMZF742TQM4EG2', \
+                            :aWS_secret_key => 'WOYtAuy2gvRPwhGgj0Nz/fthh+/oxCu2Ya4lkMxO'}
+    
+    AmazonID =   'ATVPDKIKX0DER'
+    AmazonCAID = 'A3DWYIK6Y9EEQB'
+  end
 
 end
 

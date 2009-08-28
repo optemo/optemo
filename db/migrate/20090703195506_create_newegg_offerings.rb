@@ -1,4 +1,4 @@
-VERSION=20090713223521class CreateNeweggOfferings < ActiveRecord::Migration
+class CreateNeweggOfferings < ActiveRecord::Migration
   def self.up
     create_table :newegg_offerings do |t|
       

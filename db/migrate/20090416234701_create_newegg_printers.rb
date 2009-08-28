@@ -11,6 +11,7 @@ class CreateNeweggPrinters < ActiveRecord::Migration
       t.string :product_type    # printer for all of them
       
       t.string :model
+      t.string :mpn
       t.string :series   # Unique to Newegg
       t.string :brand
       

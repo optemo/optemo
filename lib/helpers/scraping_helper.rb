@@ -2,12 +2,6 @@ module ScrapingHelper
   
   @@float_rxp = /(\d+,)?\d+(\.\d+)?/
   
-  @@sep = '!@!'
-  
-  def self.sep
-    return @@sep
-  end
-  
   def get_property_name str_dirty, model=$model
     paramnames = get_property_names str_dirty, model
     return nil if paramnames.length == 0

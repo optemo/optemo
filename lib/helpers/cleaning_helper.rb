@@ -1,4 +1,31 @@
 module CleaningHelper
+  
+  @@sep = '!@!'
+  
+  def self.sep
+    return @@sep
+  end
+  
+  def likely_model_name str
+    score = 0
+    return -10 if str.nil? or str.strip.length==0
+  
+    ja = just_alphanumeric(str)
+    score += 1 if (ja.length < 17 and ja.length > 3)
+    score += 1 if (ja.length < 11 and ja.length > 4)
+    score += 1 if (ja.length < 9 and ja.length > 5)
+    
+    score -= 2 if str.match(/[0-9]/).nil?
+    str.split(/\s/).each{|x| score -= 1 if(x.match(/[0-9]/).nil?)}
+    score -= 2 if str.match(/,|\./)
+    score -= 1 if str.match(/for/)
+    score -= 3 if str.match(/\(|\)/)
+    score -= 5 if str.match(/(series|and|&)\s/i)
+  
+    return score
+  end
+  
+  
   def generic_printer_blurb_cleaner blurb
     paperinput = blurb.scan(/(?-mix:\d*,?\d+\s?-?)(?i-mx:sheets?)|(?i-mx:pages?)\s(?i-mx:paper)?(?i-mx:priority)?(?i-mx:\stray)/).collect{|x| get_max_f x}.max
     return {'paperinput' => paperinput} if paperinput
@@ -25,38 +52,29 @@ module CleaningHelper
       dirty_model_str = atts['title'].match(/.+\s#{$model}/i).to_s.gsub(/ - /,'') 
       
     end
-    if atts['model']
-      atts['model'].gsub!(/(mfp|multi-?funct?ion|duplex|faxcent(er|re)|workcent(re|er)|mono|laser|dig(ital)?|color|(black(\sand\s|\s?\/\s?)white)|network|all(\s?-?\s?)in(\s?-?\s?)one)\s?/i,'')
-      atts['model'].gsub!(/printer\s?/i,'')
-      atts['model'].gsub!(/#{atts['brand']}\s?/i,'')
+    mdls = [atts['model'], atts['mpn']].reject{|x| x.nil? or x == ''}
+    mdls.each do |x|
+      x.gsub!(/(mfp|multi-?funct?ion|duplex|faxcent(er|re)|workcent(re|er)|mono|laser|dig(ital)?|color|(black(\sand\s|\s?\/\s?)white)|network|all(\s?-?\s?)in(\s?-?\s?)one)\s?/i,'')
+      x.gsub!(/printer\s?/i,'')
+      x.gsub!(/#{atts['brand']}\s?/i,'')
       # TODO
       (@brand_alternatives || []).each do |alts|
         if alts.include? atts['brand'].downcase
           alts.each do |altbrand|
-            atts['model'].gsub!(/#{altbrand}\s?/i,'')
+            x.gsub!(/#{altbrand}\s?/i,'')
           end
         end
       end
       ($series || []).each do |ser|
-        atts['model'].gsub!(/#{ser}\s?/i,'')
+        x.gsub!(/#{ser}\s?/i,'')
       end
-      atts['model'].strip!
+      x.strip!
     end
     
     atts['model'] = atts['mpn'] if atts['model'].nil? or atts['model'] ==''
+    atts['title'].strip! if atts['title']
   
-    # Prices
-    
-    s_price_f = get_f((atts['salepricestr'] || atts['saleprice'] || '').strip.gsub(/\*/,'')) 
-    l_price_f = get_f((atts['listpricestr'] || atts['listprice'] || '').strip.gsub(/\*/,'')) 
-    atts['listpriceint'] = atts['listprice'] = get_price_i( l_price_f) if l_price_f
-    atts['salepriceint'] = atts['saleprice'] = get_price_i( s_price_f) if s_price_f
-    atts['listpricestr'] = get_price_s( l_price_f) if l_price_f
-    atts['salepricestr'] = get_price_s( s_price_f) if s_price_f
-    
-    price_f = get_f((atts['pricestr'] || atts['price'] || atts['priceint'] || '').strip.gsub(/\*/,'')) 
-    atts['priceint'] = atts['price'] = atts['salepriceint'] || atts['listpriceint'] || get_price_i(price_f)
-    atts['pricestr'] = atts['salepricestr'] || atts['listpricestr'] || get_price_s(price_f)
+    atts = clean_prices(atts)
     
     temp = (atts['imageurl'] || '').match(/(http:\/\/).*?\.(jpg|gif|jpeg|bmp)/i)
     atts['imageurl'] = temp.to_s if temp
@@ -66,7 +84,9 @@ module CleaningHelper
   
   def generic_printer_cleaning_code atts
     
-    atts = generic_cleaning_code atts
+    atts = (generic_cleaning_code atts)
+    temp = atts.keys
+    temp.each{|k| atts[k] = atts[k].to_s}
     
     atts.each{|x,y| atts[x] = y.gsub(/#{@@sep}/,'') if y.scan(/#{@@sep}/).length == 1 }
     
@@ -74,31 +94,38 @@ module CleaningHelper
     atts['ppmcolor'] = get_max_f(atts['ppmcolor'])
     atts['ttp'] = get_min_f(atts['ttp'])
     
-    atts['paperinput'] = (atts['paperinput'] || '').scan(/(?-mix:\d*,?\d+\s?-?)(?i-mx:sheets?)|(?i-mx:pages?)/).collect{|x| get_max_f x}.max
+    atts['paperinput'] = (atts['paperinput'] || '').scan(/(?-mix:\d*,?\d+\s?-?)(?i-mx:sheets?)|(?i-mx:pages?)/).collect{|x| 
+      get_max_f x}.reject{|x| x.nil?}.max
     #split(@@sep).collect{|x| get_max_f((x||'').to_s)}.reject{|x| x.nil?}.max 
     debugger if atts['paperinput'] and atts['paperinput'] < 100
-    
-    
     
     # Resolution
     atts['resolution'] = atts['resolution'].scan(/\d*,?\d+\s?x\s?\d*,?\d+/i).uniq * " #{@@sep} " if atts['resolution']
     atts['resolutionmax'] = maxres_from_res atts['resolution']
+    
+    #  --- DIMENSIONS
+    
+    # TODO make this nicer
         
-    # Item height, width, depth
+    (atts['dimensions'] or "").gsub!(/''/, '\"')
+    (atts['dimensions'] or "").gsub!(/\(.*?\)/,'')
+      
     (atts['dimensions'] || "").split('x').each do |dim| 
-      atts['itemlength'] = get_f(dim) if dim.include? 'D' and !atts['itemlength']
-      atts['itemwidth'] = get_f(dim) if dim.include? 'W' and !atts['itemwidth']
-      atts['itemheight'] = get_f(dim) if dim.include? 'H' and !atts['itemheight']
+      atts['itemlength'] = get_f(dim)*100 if dim.include? 'D' and !atts['itemlength']
+      atts['itemwidth'] = get_f(dim)*100 if dim.include? 'W' and !atts['itemwidth']
+      atts['itemheight'] = get_f(dim)*100 if dim.include? 'H' and !atts['itemheight']
     end
     
-    # For the OFFERING
-    atts['priceint'] = get_price_i( get_f((atts['pricestr'] || '').gsub(/\*/,'')) )
-    atts['pricestr'].strip! if atts['pricestr']
+    if atts['dimensions'] and !atts['itemlength']  and !atts['itemwidth'] and !atts['itemheight']
+      dims = atts['dimensions'].split('x')
+      break if dims.length < 3
+      # TODO item lwh not what I thought?
+      atts['itemlength'] = dims[2].to_f*100
+      atts['itemwidth'] = dims[0].to_f*100
+      atts['itemheight'] = dims[1].to_f*100
+    end
     
-    # For the PRODUCT
-    if atts['region'] == 'CA' then suffix = '_ca' else suffix='' end
-    atts["listpricestr#{suffix}"].strip! if atts["listpricestr#{suffix}"]
-    atts["listpriceint#{suffix}"] = get_price_i( get_f atts["listpriceint#{suffix}"] )
+    # .. done with dimensions
     
     atts['condition'] = "Refurbished" if (atts['title']||'').match(/refurbished/i) 
     atts['condition'] = "OEM" if (atts['title']||'').match(/oem/i)
@@ -113,7 +140,6 @@ module CleaningHelper
       elsif atts['colorprinter'].match(/b(lack)?\s?(and|&|\/)?\s?w(hite)?/i)
         atts['colorprinter'] = false
       else
-        debugger
         atts['colorprinter']= clean_bool(atts['colorprinter'])
       end
     end
@@ -123,9 +149,32 @@ module CleaningHelper
     
     atts['scanner'] = clean_bool(atts['scanner'])
     
-    atts['duplex'] = false if atts['duplex'].downcase == 'manual'
+    atts['duplex'] = false if (atts['duplex'] || '').downcase == 'manual'
     atts['duplex'] = clean_bool(atts['duplex'])
     atts.each{|x,y| atts[x] = y.gsub(/^#{@@sep}/,'').gsub(/#{@@sep}/,' | ') if y.type==String} 
+    
+    return atts
+  end
+  
+  def infer_boolean bool_property, indicator_properties, atts, default=nil
+    atts[bool_property] = default unless (atts[bool_property] or default.nil?)
+    indicator_properties.each do |x|
+      atts[bool_property] = true unless atts[x].nil?
+    end
+    return atts
+  end
+  
+  def clean_prices atts
+    s_price_f = get_f((atts['salepricestr'] || atts['saleprice'] || '').strip.gsub(/\*/,'')) 
+    l_price_f = get_f((atts['listpricestr'] || atts['listprice'] || '').strip.gsub(/\*/,'')) 
+    atts['listpriceint'] = atts['listprice'] = get_price_i( l_price_f) if l_price_f
+    atts['salepriceint'] = atts['saleprice'] = get_price_i( s_price_f) if s_price_f
+    atts['listpricestr'] = get_price_s( l_price_f) if l_price_f
+    atts['salepricestr'] = get_price_s( s_price_f) if s_price_f
+    
+    price_f = get_f((atts['pricestr'] || atts['price'] || atts['priceint'] || '').strip.gsub(/\*/,'')) 
+    atts['priceint'] = atts['price'] = atts['salepriceint'] || atts['listpriceint'] || get_price_i(price_f)
+    atts['pricestr'] = atts['salepricestr'] || atts['listpricestr'] || get_price_s(price_f)
     
     return atts
   end

@@ -1009,6 +1009,7 @@ ActiveRecord::Schema.define(:version => 20090818174011) do
     t.integer  "resolutionmax"
     t.string   "title"
     t.string   "region",                 :default => "us"
+    t.string   "mpn"
   end
 
   create_table "one23_cartridges", :force => true do |t|

@@ -20,12 +20,13 @@ module ImageHelper
   end
   
   def url_from_item_and_sz id, sz
+    return nil if id.nil? or id==''
     return "/images/#{$imgfolder}/#{id}_#{sz}.JPEG"
   end
   
-  def unresized_recs
+  def unresized_recs model=$model
     not_resized = []
-    $model.all.each do |rec|
+    model.all.each do |rec|
       image = nil
       @@size_names.each do |sz|        
         begin
@@ -37,12 +38,12 @@ module ImageHelper
         not_resized << rec unless image
       end
     end
-    return not_resized
+    return not_resized.uniq
   end
   
-  def picless_recs
+  def picless_recs model=$model
     no_pic = []
-    $model.all.each do |rec|
+    model.all.each do |rec|
       image = nil
       begin
         image = Magick::ImageList.new(filename_from_id(rec.[]($id_field)))
@@ -55,7 +56,7 @@ module ImageHelper
     return no_pic
   end
   
-  def statless_recs
+  def statless_recs model=$model
     no_stats = []
     @@size_names.each do |sz|
       no_stats = no_stats | $model.find( :all, \
@@ -65,15 +66,19 @@ module ImageHelper
   end
     
   def download_img url, folder, fname=nil
-    return nil if url.nil? or url.empty?
-    return url if url.include?(folder)
+    return nil if url.nil? or url == ''
+    #return url if url.include?(folder)
     filename = fname || url.split('/').pop
     ret = "/#{folder}/#{filename}"
     begin
-    f = open("/optemo/site/public/#{folder}/#{filename}","w").write(open(url).read)
+      readme = open(url)
+      writehere = open("/optemo/site/public/#{folder}/#{filename}","w")
+      writehere.write(readme.read)
     rescue OpenURI::HTTPError => e
-      ret = nil
       puts "#{e.type} #{e.message}"
+      return nil
+    rescue
+      return nil
     end
     ret
   end
@@ -144,6 +149,26 @@ module ImageHelper
     end
   end
   
+  def download_these recordset
+    failed = []
+    
+    recordset.each do |x|
+      id = x.[]($id_field)
+      url = x.[]($img_url_field)
+      unless url.nil? or url.empty? or file_exists_for(id)
+        oldurl = url
+        newurl = download_img oldurl, "system/#{$imgfolder}", "#{id}.jpg"
+        
+        failed << id if(newurl.nil?)
+        
+        puts " Waiting waiting. Downloaded #{oldurl} into #{newurl}."
+        sleep(30)
+      end
+    end
+    
+    return failed
+  end
+  
   def download_all_pix id_and_url_hash
     failed = []
     
@@ -165,7 +190,7 @@ module ImageHelper
   def resize_all ids
 
     failed = []
-    ids.each do |id|
+    ids.uniq.each do |id|
       begin
         image = Magick::ImageList.new(filename_from_id id)
         image = image.first if image.class == Magick::ImageList
@@ -183,20 +208,5 @@ module ImageHelper
     
     return failed
   end
-  
-  
-  #def download_img url, folder, fname=nil
-  #  return nil if url.nil? or url.empty?
-  #  return url if url.include?(folder)
-  #  filename = fname || url.split('/').pop
-  #  ret = "/#{folder}/#{filename}"
-  #  begin
-  #  f = open("/optemo/site/public/#{folder}/#{filename}","w").write(open(url).read)
-  #  rescue OpenURI::HTTPError => e
-  #    ret = nil
-  #    puts "#{e.type} #{e.message}"
-  #  end
-  #  ret
-  #end
   
 end

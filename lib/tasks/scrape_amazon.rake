@@ -202,8 +202,6 @@ module AmazonScraper
 end
 
 namespace :scrape_amazon do
-    
-  task :cartridges => [:clean_cartridges, :to_cartridge, :compatibilities]
 
   desc "Scraping Amazon"
   task :scrape => :init do
@@ -215,7 +213,7 @@ namespace :scrape_amazon do
     }  
   end
 
-  desc "Scraping Amazon"
+  desc "Scraping Amazon Printers"
   task :scrape_printer => :init do
     #printer = Printer.fewfeatures.find(:first, :order => 'rand()')
     printer = AmazonPrinter.find_by_asin('B00292BV96')
@@ -224,27 +222,28 @@ namespace :scrape_amazon do
   end
 
   task :cart_init => :init do 
-    
-    require 'data_lib'
-    include DataHelper
+    require 'helper_libs'
+    include DataLib
     include CartridgeLib
     
     init_series
     init_brands
     
     $ignoreme =  ['brand','model','id']
-    
+    $model = Cartridge
+    $amazonmodel = AmazonCartridge  
   end
-  
+
+  desc 'Convert AmazonCartridges to Cartridges'
   task :to_cartridge => :cart_init do
   
+    # Pick only toner cartridges with 
+    # reasonably valid model names for matching.
     convertme = AmazonCartridge.toner.reject{|x| 
       (likely_cartridge_model_name(x.model) < 2) or \
-      x.model.nil? or x.realbrand.nil?  or x.real.nil? 
-    }.reject{|z| z.id > 1499 or z.id < 0}
+      x.model.nil? or x.realbrand.nil?  or x.real.nil?}
     
     convertme.each do |ac|
-
       brand = nil
       if ac.real == true
         brand = ac.realbrand 
@@ -275,6 +274,7 @@ namespace :scrape_amazon do
     end
   end
   
+  desc 'Make entries into Compatibility table'
   task :compatibilities => :cart_init do
   
     start =  Time.now
@@ -285,7 +285,7 @@ namespace :scrape_amazon do
   
     counter = 0
   
-    AmazonCartridge.scraped[700..999].each do |ac|
+    AmazonCartridge.scraped.toner.each do |ac|
       cid = ac.product_id
       if cid 
         c = Cartridge.find(cid)
@@ -308,24 +308,6 @@ namespace :scrape_amazon do
     puts "#{counter} matching models found!"
   end
   
-  task :download_pix => :init do 
-    require 'data_lib'
-    include ImageHelper
-    failed = []
-
-    $imgfolder = "amazon/#{$amazonmodel.name.downcase}"
-
-    urls_by_id = $amazonmodel.all.inject({}){|r,x| r.merge({x.id => x.imagelurl}) }.reject{|x,y| 
-      y.nil? or !y.include? 'http://'}
-      
-    failed = download_all_pix urls_by_id
-    
-    
-    puts " FAILED DOWNLOADS" if failed.length > 0
-    puts failed * "\n"
-    
-  end
-
   desc "Rename %2B (+)"
   task :image_unescape => :init do
     Camera.find(:all).each {|c|
