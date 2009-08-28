@@ -563,7 +563,7 @@ namespace :amazon do
   
   task :update_prices => :init do
     $logfile.puts "Updating prices for #{$model}!"
-    $model.find(:all, :conditions => ['updated_at < ?', 1.day.ago]).each {|p|
+    $model.all.each {|p|
       puts 'Processing ' + p.id.to_s
       p = findprice(p,"us")
       p.save
@@ -586,7 +586,7 @@ namespace :amazon do
   
   task :update_prices_ca => :init do
     $logfile.puts "Updating Canadian prices for #{$model}"
-    $model.find(:all, :conditions => ['updated_at < ?', 1.day.ago]).each {|p|
+    $model.all.each {|p|
       puts 'Processing ' + p.id.to_s
       p = findprice(p,"ca")
       p.save
