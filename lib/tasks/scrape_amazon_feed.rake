@@ -585,13 +585,13 @@ namespace :amazon do
   task :update_printer_pix => [:prnt_init, :update_pix, :closelog] 
   
   desc 'Update cartridge records'
-  task :update_cart_pix => [:cart_init, :update_pix, :closelog]
+  task :update_cart_pix => [:crtg_init, :update_pix, :closelog]
   
   desc 'Update printer records'
   task :update_printer_prices => [:prnt_init, :update_prices, :update_prices_ca, :closelog] 
   
   desc 'Update cartridge records'
-  task :update_cart_prices => [:cart_init, :update_prices, :update_prices_ca, :closelog]
+  task :update_cart_prices => [:crtg_init, :update_prices, :update_prices_ca, :closelog]
   
   task :closelog do
     $logfile.close
