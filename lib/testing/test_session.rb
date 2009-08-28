@@ -1,10 +1,3 @@
-
-require 'webrat'
-require 'mechanize'
-require 'webrat/mechanize'
-require 'printer_page_helpers'
-include PrinterPageHelpers
-
 class TestSession < Webrat::MechanizeSession
   
   include PrinterPageHelpers

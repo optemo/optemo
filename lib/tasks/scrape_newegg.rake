@@ -357,7 +357,7 @@ namespace :scrape_newegg do
       else
         params = scrape_prices infopage, inum
         params = clean_prices params
-        fill_in_all params, o
+        update_offering params, o
         puts " Re-scraped prices for #{inum} ."
       end
       update_bestoffer p

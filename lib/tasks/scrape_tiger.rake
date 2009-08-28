@@ -337,7 +337,7 @@ namespace :scrape_tiger do
       params = rescrape_price to
       params = clean_offering_stuff params
       fill_in_all params, to
-      fill_in_all params, ro
+      update_offering params, ro
       # TODO fill in availability and price updates!!
     end
   end

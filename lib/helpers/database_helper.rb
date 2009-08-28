@@ -3,6 +3,31 @@ module DatabaseHelper
   $general_ignore_list = ['id','created_at','updated_at']
   $region_suffixes = {'CA' => '_ca', 'US' => ''}
   
+  def update_offering newparams, offering
+    newprice = newparams['priceint']
+    record_updated_price newprice, offering if newprice
+    fill_in_all params, offering
+  end
+  
+  def record_updated_price newprice, offering
+    if offering.priceint != newprice # Save old prices only if price has changed
+      
+      # Update price
+      fill_in 'priceint', newprice, offering
+      fill_in 'priceUpdate', Time.now, offering
+      
+      # Update price history
+      if offering.pricehistory.nil? and offering.priceUpdate
+        pricehistory = [offering.priceUpdate.to_s(:db), offering.priceint].to_yaml
+      else
+        pricehistory = (YAML.load(offering.pricehistory) + [offering.priceUpdate.to_s(:db), \
+          offering.priceint]).to_yaml
+      end
+      
+      fill_in 'pricehistory', pricehistory, offering
+    end
+  
+  end
   
   def get_matching_sets recs=$model.all
      matchingsets = []
