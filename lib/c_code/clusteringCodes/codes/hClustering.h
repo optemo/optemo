@@ -1,6 +1,6 @@
 
 #include "kmeans.h"
-#include "helpers.h"
+//#include "helpers.h"
 #include "saveClustered.h"
 
 
@@ -137,7 +137,7 @@ if 	(layer == 1){
 						
 					//centersA = k_meansInitial(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights, initials); 
 					
-						centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights); 
+						centersA = k_meansPP(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights); 
 				        dist = new double* [size];
 
 						for(int j=0; j<size; j++){
@@ -310,8 +310,9 @@ if (layer > 1){
 			  //		initials[i][f] = dataN[rand()%100+1][f];
 			  //	}
 			  //}
-			
- 	       	centersA = k_means3(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights); 
+		
+ 	       	centersA = k_meansPP(dataN,size,conFeatureN, clusterN, DBL_MIN, centroids, weights); 
+	
 	        dist = new double* [size];
 		
 			for(int j=0; j<size; j++){
