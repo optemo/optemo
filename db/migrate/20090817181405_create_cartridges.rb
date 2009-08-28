@@ -18,6 +18,11 @@ class CreateCartridges < ActiveRecord::Migration
       
       t.text    :imageurl
       
+      # Canadian stuff
+      t.integer :price_ca
+      t.string :price_ca_str
+      t.boolean :instock_ca
+      
       # Other stuff
       
       addBasicProductFeatures(t)

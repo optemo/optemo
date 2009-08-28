@@ -761,6 +761,9 @@ ActiveRecord::Schema.define(:version => 20090818174011) do
     t.string   "warranty"
     t.text     "manufacturerproducturl"
     t.datetime "scrapedat"
+    t.boolean  "instock_ca"
+    t.integer  "price_ca"
+    t.string   "price_ca_str"
   end
 
   create_table "compatibilities", :force => true do |t|
