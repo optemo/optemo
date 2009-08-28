@@ -29,7 +29,8 @@ module ScrapingHelper
     end
     
     param_names << 'ttp' if str.match(/(firstpageoutputtime|timeto(firstpage|print))/)
-    param_names << 'ppm' if str.match(/print(ing)?speed/)  
+    param_names << 'ppm' if str.match(/print(ing)?speed/)
+    param_names << 'ppm' if str.match(/pagespermin/)    
     param_names << 'brand' if str.match(/manufacture(d|r$)/)
     param_names << 'packageweight' if str.match(/shippingweight/)
     param_names << 'mpn' if str.match(/m(fg|anufacturer)partn(o|um)/)

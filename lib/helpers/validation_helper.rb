@@ -22,7 +22,6 @@ module ValidationHelper
     log_v " Repeated values in #{reclist.first.class}'s #{att}" if values.uniq.count != values.count
   end
   
-  
   def assert_no_0_values reclist, att 
     values = get_values reclist, att
     outliers = values.reject{|x,y| x==0}

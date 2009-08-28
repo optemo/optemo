@@ -10,7 +10,6 @@ namespace :printer_test do
    desc 'Run all tests.'
    task :all_nojava => [:sliders, :browse_similar, :search, :brand_selector, :homepage, :random_nojava]
    
-   desc 'sandbox'
    task :sandbox => :init do
      setup 'sandbox'
     test_search_for 'Xerox'

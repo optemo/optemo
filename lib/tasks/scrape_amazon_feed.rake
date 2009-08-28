@@ -612,7 +612,7 @@ namespace :amazon do
     $browse_node_id = '330405011'
     $search_index = 'Electronics'
     $model = Camera
-    #$amazonmodel = AmazonCamera
+    $amazonmodel = Camera
     $logfile = File.open("./log/amazon_cameras.log", 'w+')
   end
   
