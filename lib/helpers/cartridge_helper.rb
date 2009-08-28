@@ -1,5 +1,9 @@
+# Cartridge-specific helper methods
 module CartridgeHelper
-    
+  
+  # Creates an entry in the Compatibility table
+  # unless there is already one just like it.  
+  # Returns the Compatibility table entry with given attributes
   def create_uniq_compatibility acc_id, acc_type, prd_id, prd_type
     atts = {'product_id' => prd_id, 'accessory_id' => acc_id, \
         'product_type' => prd_type, 'accessory_type' => acc_type}
@@ -9,6 +13,8 @@ module CartridgeHelper
     return compat
   end
   
+  # Returns all cartridges which can be considered the same 
+  # for compatibility copying purposes
   def compatibility_matches c
     matching = []
     Cartridge.all.each{ |c2|
@@ -28,15 +34,9 @@ module CartridgeHelper
     return matching.uniq
   end
   
-  def get_most_likely_model arr, brand=''
-    # Include stuff in brackets
-    arr_more = arr.collect{|x| [x, (x || '').match(/\(.*?\)/).to_s]}.flatten.reject{|x| x.nil? or x == ''}
-    temp = arr_more.collect{|x| clean_model(x, brand)}
-    arr_more += temp
-    return arr_more.sort{|a,b| likely_to_be_cartridge_model_name(a) <=> likely_to_be_cartridge_model_name(b)}.last
-  end
-  
+  # Cleans a string which is supposed to be the cartridge model
   def clean_model str, brand
+    # TODO -- make this more general and move to cleaning helper 
     return nil if str.nil?
     str_array = str.split(' ')
     clean_str = str_array.reject{|x| same_brand?(x, brand)}.join(' ')
@@ -49,7 +49,10 @@ module CartridgeHelper
     return nil
   end
   
-
+  # Returns a score which tells you if the 
+  # string looks like a model name for a cartridge.
+  # I find that >= 2 means it's probably a model name
+  # that you want in your database.
   def likely_cartridge_model_name str
     return -10 if str.nil? or str.strip.length==0
     
@@ -67,11 +70,15 @@ module CartridgeHelper
     return score
   end
 
+  # Gets a better value for brand for the given record 
+  # based on the model and title attributes
   def clean_brand_rec rec, field='brand'
     brand = clean_brand(rec.model, rec.title)
     fill_in field, brand, rec if brand
   end
   
+  # Creates a RetailerOffering from a Cartridge object
+  # with the given 'special' ca$h-producing URL
   def make_offering cart, url 
     atts = cart.attributes
     if cart.offering_id.nil?
@@ -90,10 +97,10 @@ module CartridgeHelper
     return offer
   end
   
+  # Tries to find the Cartridge db record
+  # with the given real & compatible brands and if it
+  # can't then it makes a new one and copies the attributes
   def create_uniq_cartridge cart, realbrand, compatbrand
-    
-    require 'database_helper'
-    include DatabaseHelper
     
     return nil if compatbrand.nil? or cart.model.nil? #VALIDATION
     
@@ -130,16 +137,8 @@ module CartridgeHelper
     return nil
   end
   
-  def same_brand? one, two
-    brands = [just_alphanumeric(one),just_alphanumeric(two)].uniq
-    return false if brands.include?('') or brands.include?(nil)
-    brands.sort!
-    return true if brands.length == 1
-    equivalent_list = [['hewlettpackard','hp'],['oki','okidata']]
-    return true if equivalent_list.include?(brands)
-    return false
-  end
-  
+  # Cleans the title; gets condition(refurbished, OEM, etc)
+  # and figures out if it's toner or ink
   def clean_cartridges recset, default_real=nil
   
     # New must be last as the default
@@ -166,17 +165,18 @@ module CartridgeHelper
         fill_in('condition', c, x) and break if (x.title || '').match(/#{c}/i)
       }
     }
-    
-   
   end
   
+  # Initializes the list of printer
   def init_series
+  # TODO Just make this a global var w/o init
     return if !$series.nil?
     $series = ['laserjet', 'laserwriter', 'oki', 'phaser',  'imagerunner', 'printer', 'printers', 'qms', \
       'estudio', 'optra', 'pro', 'officejet', 'workcentre', 'other', 'okifax', 'lanierfax', 'okipage',\
       'pixma', 'deskjet', 'stylus', 'docuprint', 'series','color', 'laser', 'printer']
   end
   
+  # Initializes the list of printer brands($real_brands) and cartridge refill brands($fake_brands)
   def init_brands
     return unless ($real_brands.nil? or $fake_brands.nil? or $printer_models.nil?)
     $real_brands = Printer.all.collect{|x| x.brand}.uniq.reject{|x| x.nil?}
@@ -187,7 +187,7 @@ module CartridgeHelper
     $fake_brands = ["123inkjets", "4inkjets", "Best Deal Toner", "Digital Products", "G & G", \
       "General Ribbon Corporation", "Global Marketing Partners", "Ink It Up 4 Less", "Ink-Power",\
        "Inkers", "LD Products", "Mega Leader", "Mipo", "Pritop", "Q-Imaging", "Sophia Global", \
-       "TNT Toner", "Cartridge Family" ]  #"SIB", "SOL", "STC", ]
+       "TNT Toner", "Cartridge Family" ]  #"SIB", "SOL", "STC", ] <-- These are weird
     $printer_models = Printer.all.collect{|x| just_alphanumeric(x.model) }.reject{|x| x.nil? or x==''}
   end
 

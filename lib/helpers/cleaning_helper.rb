@@ -1,49 +1,23 @@
 module CleaningHelper
   
+  # This thing is used to separate values when they were
+  # both retrieved as possible values for a given attribute,
+  # so as not to use commas which are more commonplace.
   @@sep = '!@!'
-  
   def self.sep
     return @@sep
   end
   
-  def likely_model_name str
-    score = 0
-    return -10 if str.nil? or str.strip.length==0
-  
-    ja = just_alphanumeric(str)
-    score += 1 if (ja.length < 17 and ja.length > 3)
-    score += 1 if (ja.length < 11 and ja.length > 4)
-    score += 1 if (ja.length < 9 and ja.length > 5)
-    
-    score -= 2 if str.match(/[0-9]/).nil?
-    str.split(/\s/).each{|x| score -= 1 if(x.match(/[0-9]/).nil?)}
-    score -= 2 if str.match(/,|\./)
-    score -= 1 if str.match(/for/)
-    score -= 3 if str.match(/\(|\)/)
-    score -= 5 if str.match(/(series|and|&)\s/i)
-  
-    return score
-  end
-  
-  
+  # A work in progress. supposed to get info
+  # from a text blurb.
   def generic_printer_blurb_cleaner blurb
     paperinput = blurb.scan(/(?-mix:\d*,?\d+\s?-?)(?i-mx:sheets?)|(?i-mx:pages?)\s(?i-mx:paper)?(?i-mx:priority)?(?i-mx:\stray)/).collect{|x| get_max_f x}.max
     return {'paperinput' => paperinput} if paperinput
   end
   
-  def cartridge_cleaning_code atts
-    atts = generic_cleaning_code atts
-    atts.each{|x,y| atts[x]= atts[y].strip if atts[y] and atts[y].type == 'String'}
-    atts['model'].gsub!(/compatible/i,'') if atts['model']
-    atts['mpn'].gsub!(/compatible/i,'') if atts['mpn']
-    #if atts['mpn'] and atts['model']
-    #  debugger
-    #  models = [atts['mpn'],atts['model']].reject{|x| x.nil? or x.strip == ''}.sort{|x,y| x.length <=> y.length}
-    #  atts['model'] = models[0]
-    #end
-    return atts
-  end
-  
+  # Generic cleaning code for a hash of
+  # attributename => 'Attribute value [@@sep] Another att val'
+  # Returns a hash with the cleaned-up values.
   def generic_cleaning_code atts, model=$model
     atts['brand'] = atts['brand'].gsub(/\(.+\)/,'').strip if atts['brand']
     # Model:
@@ -82,6 +56,9 @@ module CleaningHelper
   
   end
   
+  # An attempt to get information from an 
+  # attribute hash given that it relates to
+  # printers. 
   def generic_printer_cleaning_code atts
     
     atts = (generic_cleaning_code atts)
@@ -156,6 +133,25 @@ module CleaningHelper
     return atts
   end
   
+  # Same thing for cartridges.
+  def cartridge_cleaning_code atts
+    atts = generic_cleaning_code atts
+    atts.each{|x,y| atts[x]= atts[y].strip if atts[y] and atts[y].type == 'String'}
+    atts['model'].gsub!(/compatible/i,'') if atts['model']
+    atts['mpn'].gsub!(/compatible/i,'') if atts['mpn']
+    #if atts['mpn'] and atts['model']
+    #  debugger
+    #  models = [atts['mpn'],atts['model']].reject{|x| x.nil? or x.strip == ''}.sort{|x,y| x.length <=> y.length}
+    #  atts['model'] = models[0]
+    #end
+    return atts
+  end
+  
+  # If any of the 'indicator properties' in the 
+  # attribute hash are not nil, the boolean property
+  # is set to true in the attribute hash. Otherwise 
+  # it's set to the default (or not set if default=nil).
+  # Returns the attribute hash.
   def infer_boolean bool_property, indicator_properties, atts, default=nil
     atts[bool_property] = default unless (atts[bool_property] or default.nil?)
     indicator_properties.each do |x|
@@ -164,6 +160,7 @@ module CleaningHelper
     return atts
   end
   
+  # Figures out all the price attributes
   def clean_prices atts
     s_price_f = get_f((atts['salepricestr'] || atts['saleprice'] || '').strip.gsub(/\*/,'')) 
     l_price_f = get_f((atts['listpricestr'] || atts['listprice'] || '').strip.gsub(/\*/,'')) 
@@ -179,6 +176,10 @@ module CleaningHelper
     return atts
   end
   
+  # Tries to match the brand to stuff from a list of acceptable
+  # brand names. This way we're going to get more uniform values 
+  # for the brand field (no unsightly capitalizations) as well as
+  # avoid writing down stuff which isn't actually a brand
   def clean_brand title, brandlist=[]
     init_brands if $real_brands.nil?
     brandlist = $real_brands if brandlist.length ==0
@@ -191,6 +192,7 @@ module CleaningHelper
     return nil
   end
   
+  # Cleans a list of Boolean values to be either true or false 
   def clean_bool dirty_vals
     vals = []
     (dirty_vals || '').split(@@sep).each { |dirty_val| 

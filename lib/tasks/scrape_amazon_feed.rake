@@ -473,6 +473,7 @@ namespace :amazon do
     $logfile.puts "Done downloading reviews"
   end
   
+  # --- Picture rake tasks ---#
   task :pic_init => :init do 
     require 'helper_libs'
     include ImageLib
@@ -521,6 +522,19 @@ namespace :amazon do
     puts failed * "\n"
   end
 
+  task :copy_pic_stats => :init do
+    imageatts = $amazonmodel.column_names.reject{|x| !x.include?'image'}
+    $amazonmodel.all.each do |ap|
+      p = nil
+      begin
+        p = $model.find(ap.product_id)
+      rescue
+        #Do nuthin
+      end
+      imageatts.each{|att| fill_in att, ap.[](att), p } if !p.nil?
+    end
+  end
+  
   desc "Get all the Amazon data for the current ASINs"
   task :get_product_data_for_ASINs => :init do
     
@@ -582,10 +596,10 @@ namespace :amazon do
   end
   
   desc 'Update printer records'
-  task :update_printer_pix => [:prnt_init, :update_pix, :closelog] 
+  task :update_printer_pix => [:prnt_init, :update_pix, :copy_pic_stats, :closelog] 
   
   desc 'Update cartridge records'
-  task :update_cart_pix => [:crtg_init, :update_pix, :closelog]
+  task :update_cart_pix => [:crtg_init, :update_pix, :copy_pic_stats, :closelog]
   
   desc 'Update printer records'
   task :update_printer_prices => [:prnt_init, :update_prices, :update_prices_ca, :closelog] 

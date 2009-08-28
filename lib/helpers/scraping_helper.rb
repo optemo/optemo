@@ -2,12 +2,19 @@ module ScrapingHelper
   
   @@float_rxp = /(\d+,)?\d+(\.\d+)?/
   
+  # Returns the first matching property or
+  # nil if none found.
   def get_property_name str_dirty, model=$model
     paramnames = get_property_names str_dirty, model
     return nil if paramnames.length == 0
     return paramnames[0] # TODO get most/least specific?
   end
   
+  # Returns a list of possible properties
+  # that the string could mean. 
+  # Example: 
+  # %> get_property_names('colour ppm', Printer)
+  # =>['ppm', 'colorprinter']
   def get_property_names str_dirty, model=$model
     str = just_alphanumeric(str_dirty)
     
@@ -88,6 +95,7 @@ module ScrapingHelper
     return spec_hash
   end
   
+  # Gets the max float from a string
   def get_max_f str
     return nil if str.nil?
     strsplit = str.split(/[\s-]/).collect{|x| get_f x}.delete_if{|x| x.nil?}.sort
@@ -95,6 +103,7 @@ module ScrapingHelper
     return myfloat
   end
   
+  # Gets the min float from a string
   def get_min_f str
     return nil if str.nil?
     strsplit = str.split(/[\s-]/).collect{|x| get_f x}.delete_if{|x| x.nil? or x == 0}.sort
@@ -169,8 +178,10 @@ module ScrapingHelper
     return str.strip.match(/(\d+,)?\d+/).to_s.gsub(/,/,'').to_i
   end
   
+  # If your string starts with a number it puts an
+  # underscore (column names can't start with #s)
   def proper_start str
-    return "_#{str}" if str.match(/^[1-9]/) 
+    return "_#{str}" if str.match(/^[0-9]/) 
     return str
   end
   
@@ -202,13 +213,14 @@ module ScrapingHelper
   
   # Useful method for getting an element if you're not
   # sure whether you have a Node or NodeSet. 
-  # Returns nil for an empty NodeSet.
+  # Returns nil for an empty NodeSet or the first Node.
   def get_el x
     returnme = x.first || x
     return nil if returnme.class != Nokogiri::XML::Element
     return returnme
   end
   
+  # Converts a string to a boolean where possible
   def get_b x
     return nil if x.nil?
     trues = ["yes", 'y',"1", 'true', 'optional']
@@ -222,10 +234,8 @@ module ScrapingHelper
     end
     return val
   end
-  
 
-  # Logs to logfile or puts on screen 
-  # if no logfile exists.
+  # Logs to logfile or puts on screen if no logfile exists.
   def log str
     if @logfile
       @logfile.puts str

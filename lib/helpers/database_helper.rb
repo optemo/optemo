@@ -1,34 +1,53 @@
+# Methods for the database.
+# Note: for more update methods see fillin_helper.rb
 module DatabaseHelper
   
+  # The idea for ignore lists is that we don't copy over 
+  # certain attributes because they're automatically generated
+  # or because we don't want to. The ones which are auto-generated
+  # are listed in the general ignore list:  
   $general_ignore_list = ['id','created_at','updated_at']
+  
+  # For internal use.
   $region_suffixes = {'CA' => '_ca', 'US' => ''}
   
+  # Does record_updated_price and copies 
+  # over other offering attributes as well.
   def update_offering newparams, offering
     newprice = newparams['priceint']
     record_updated_price newprice, offering if newprice
     fill_in_all params, offering
   end
   
+  # Records a new price for the given offering
+  # if the price has changed. Also puts a time
+  # stamp (priceUpdate) and puts the latest thing
+  # in the price history.
   def record_updated_price newprice, offering
     if offering.priceint != newprice # Save old prices only if price has changed
       
-      # Update price
-      fill_in 'priceint', newprice, offering
-      fill_in 'priceUpdate', Time.now, offering
-      
-      # Update price history
+      # Write the old price down in the history
       if offering.pricehistory.nil? and offering.priceUpdate
         pricehistory = [offering.priceUpdate.to_s(:db), offering.priceint].to_yaml
       else
         pricehistory = (YAML.load(offering.pricehistory) + [offering.priceUpdate.to_s(:db), \
           offering.priceint]).to_yaml
       end
-      
       fill_in 'pricehistory', pricehistory, offering
+      
+      # Update price & timestamp
+      fill_in 'priceint', newprice, offering
+      fill_in 'priceUpdate', Time.now, offering
     end
   
   end
   
+  # Returns sets of IDs of records that match. eg
+  # [[1,2], [3], [4,5,6]] means records with id 1 and 2
+  # are the same product; 3 doesn't match any others,
+  # just itself; and 4,5,and 6 are also the same product.
+  # OK to used for any db model that can be compared 
+  # by the brand, model, and mpn attributes.
   def get_matching_sets recs=$model.all
      matchingsets = []
      recclass = recs.first.class
@@ -39,7 +58,7 @@ module DatabaseHelper
      return matchingsets
   end
   
-  # Should return itself and any other matching printers.
+  # Returns itself and any other matching printers(or other specified model)
   def match_printer_to_printer ptr, recclass=$model, series=[]
     makes = [just_alphanumeric(ptr.brand)].delete_if{ |x| x.nil? or x == ""}
     modelnames = [just_alphanumeric(ptr.model),just_alphanumeric(ptr.mpn)].delete_if{ |x| x.nil? or x == ""}
@@ -47,6 +66,11 @@ module DatabaseHelper
     return match_rec_to_printer makes, modelnames,recclass, series
   end
   
+  # Finds a record of the given db model by 
+  # possible make(aka brand) and model lists. 
+  # Example: match_rec_to_printer( ['HP','hewlett-packard'],  ['Q123xd',nil], Printer)
+  # The series is used to clean the model name, in case you had "Phaser 100abc"
+  # Then if you list "Phaser" in the series, it'll try to match "100abc" as the model name too.
   def match_rec_to_printer rec_makes, rec_modelnames, recclass=$model, series=[]
     matching = []
     makes = rec_makes.collect{ |x| just_alphanumeric(x) }
@@ -85,6 +109,8 @@ module DatabaseHelper
     return matching
   end
   
+  # Creates a record and fills in any fitting attributes
+  # from the given attribute hash
   def create_product_from_atts atts, recclass=$model
     atts_to_copy = only_overlapping_atts atts, recclass
     p = recclass.new(atts_to_copy)
@@ -92,10 +118,15 @@ module DatabaseHelper
     return p
   end
   
+  # Like creating a product from the record's attributes
   def create_product_from_rec rec, recclass=$model
     return create_product_from_atts rec.attributes, recclass
   end
   
+  # Makes a retailer offering from a specific brand's offering.
+  # Checks if there is already a matching retailer offering via
+  # the offering_id field and if not, copies over all attributes 
+  # from the specific brand's offering into a new RetailerOffering
   def create_retailer_offering specific_o, product
     
     if specific_o.offering_id.nil? # If no RetailerOffering is mapped to this brand-specific offering:
@@ -111,14 +142,16 @@ module DatabaseHelper
     return o
   end
   
+  # Updates best offer for all regions
   def update_bestoffer p
-    
     $region_suffixes.keys.each do |region|
       update_bestoffer_regional p, region
     end
     
   end
   
+  # Finds the best offer by region and records the new
+  # bestoffer price and product id.
   def update_bestoffer_regional p, region
     matching_ro = RetailerOffering.find(:all, :conditions => \
       "product_id LIKE #{p.id} and product_type LIKE '#{$model.name}' and region LIKE '#{region}'").\
@@ -129,12 +162,20 @@ module DatabaseHelper
       x.priceint <=> y.priceint
     }.first
     
+    pricestr_fieldname = 'pricestr'
+    pricestr_fieldname = 'price_ca_str' if region == 'CA'
+    
     fill_in "bestoffer#{$region_suffixes[region]}", lowest.id, p
     fill_in "price#{$region_suffixes[region]}", lowest.priceint, p
-    fill_in "pricestr#{$region_suffixes[region]}", lowest.pricestr, p
+    fill_in "#{$pricestr_fieldname}", lowest.pricestr, p
     fill_in "instock#{$region_suffixes[region]}", true, p
   end
   
+  # Returns a hash of only those attributes which :
+  # 1. have non-nil values
+  # 2. are 'applicable to' (exist for) the given model 
+  # (eg displaysize doesn't exist for Cartridge)
+  # 3. are not in the given ignore list or the usual ignore list
   def only_overlapping_atts atts, other_recs_class, ignore_list=[]
     big_ignore_list = ignore_list + $general_ignore_list
     overlapping_atts = atts.delete_if{ |x,y| 

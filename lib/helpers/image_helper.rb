@@ -1,11 +1,19 @@
 
 module ImageHelper
   
+  # -- Global vars to set --#
+  # $model : eg Cartridge, Printer, Camera (the object not the string)
+  # $id_field : the db field which is unique for every object that has 
+  # the same picture (can just be ID)
+  # $imgfolder : the subfolder where your pictures for the given product
+  # type will go.
+  
   require 'RMagick'
   
   @@size_names = ['s','m','l']
   @@sizes = [[70,50],[140,100],[400,300]]
   
+  # Is there a file for a product with this id and this size?
   def file_exists_for id, sz=''
      begin
         image = Magick::ImageList.new(filename_from_id(id,sz))
@@ -19,11 +27,14 @@ module ImageHelper
      return false
   end
   
+  # Returns a relative URL for the file that should
+  # theoretically be in place for this product
   def url_from_item_and_sz id, sz
     return nil if id.nil? or id==''
     return "/images/#{$imgfolder}/#{id}_#{sz}.JPEG"
   end
   
+  # Returns a set of db records where the pic hasn't been resized
   def unresized_recs model=$model
     not_resized = []
     model.all.each do |rec|
@@ -41,6 +52,7 @@ module ImageHelper
     return not_resized.uniq
   end
   
+  # Returns a set of db records where the picture hasn't been downloaded
   def picless_recs model=$model
     no_pic = []
     model.all.each do |rec|
@@ -56,6 +68,7 @@ module ImageHelper
     return no_pic
   end
   
+  # Returns a set of db records which have no pic length/width/url
   def statless_recs model=$model
     no_stats = []
     @@size_names.each do |sz|
@@ -64,7 +77,10 @@ module ImageHelper
     end
     return no_stats
   end
-    
+  
+  # Downloads a pic from the given url into the given folder with an
+  # optional filename specification (else it'll use the downloaded
+  # file's name by default)  
   def download_img url, folder, fname=nil
     return nil if url.nil? or url == ''
     #return url if url.include?(folder)
@@ -83,6 +99,8 @@ module ImageHelper
     ret
   end
   
+  # Generates a systematic filename for a given picture ID
+  # and a pre-set download folder
   def filename_from_id id, sz=''
     if sz==""
       ext = 'jpg'
@@ -94,6 +112,7 @@ module ImageHelper
     return "public/system/#{$imgfolder}/#{id}#{connect}#{sz}.#{ext}"
   end
   
+  # Resizes an image to the 3 pre-set sizes
   def resize img
     filename = img.filename.gsub(/\..+$/,'')
     scaled = []
@@ -110,6 +129,7 @@ module ImageHelper
     return scaled.collect
   end
   
+  # Records missing length 'n width for all pics which have an image url
   def record_missing_pic_stats 
     no_img_sizes = []
     @@size_names.each do |sz|
@@ -149,6 +169,7 @@ module ImageHelper
     end
   end
   
+  # Download pics for each item in the set of db records
   def download_these recordset
     failed = []
     
@@ -169,6 +190,7 @@ module ImageHelper
     return failed
   end
   
+  # Donwload pics for each id in the { id => url} hash
   def download_all_pix id_and_url_hash
     failed = []
     
@@ -187,6 +209,7 @@ module ImageHelper
     return failed
   end
   
+  # Resize pictures for products with the given ids/for the given filenames.
   def resize_all ids
 
     failed = []

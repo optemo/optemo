@@ -4,6 +4,7 @@ module DataLib
   require 'helpers/database_helper'
   require 'helpers/scraping_helper'
   require 'helpers/cleaning_helper'
+  require 'helpers/compare_helper'
   require 'helpers/fillin_helper'
   require 'helpers/conversion_helper'
   include DatabaseHelper
@@ -12,6 +13,7 @@ module DataLib
   include ConversionHelper
 end
 
+# Use in conjunction with DataLib:
 module CartridgeLib
   require 'helpers/cartridge_helper'
   include CartridgeHelper
