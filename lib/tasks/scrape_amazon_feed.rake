@@ -55,7 +55,6 @@ module Amazon
     $amazonmodel.find_all_by_product_id(p.id).each do |e|
       begin
         begin
-          debugger
           res = Amazon::Ecs.item_lookup(e.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => 'All', :offer_page => current_page, :country => region.intern)
           sleep(1+rand()*30) #Be nice to Amazon
         rescue Exception => exc
@@ -64,7 +63,6 @@ module Amazon
           sleep(30) 
           return
         else
-          debugger
           total_pages = res.total_pages unless total_pages
           if res.first_item.nil?
             current_page += 1
@@ -578,7 +576,6 @@ namespace :amazon do
     $model.all.each {|p|
       puts 'Processing ' + p.id.to_s
       p = findprice(p,"us")
-      debugger
       p.save
       sleep(0.5) #One Req per sec
     }
