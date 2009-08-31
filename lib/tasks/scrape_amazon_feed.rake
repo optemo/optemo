@@ -54,15 +54,17 @@ module Amazon
     current_page = 1
     $amazonmodel.find_all_by_product_id(p.id).each do |e|
       begin
-        sleep(2) #Be nice
         begin
+          debugger
           res = Amazon::Ecs.item_lookup(e.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => 'All', :offer_page => current_page, :country => region.intern)
+          sleep(1+rand()*30) #Be nice to Amazon
         rescue Exception => exc
           $logfile.puts "ERROR -- #{exc.message} . Could not look up offers for #{$amazonmodel} "+\
           "#{p.asin} (id #{p.id}) in region #{region}"
           sleep(30) 
           return
         else
+          debugger
           total_pages = res.total_pages unless total_pages
           if res.first_item.nil?
             current_page += 1
@@ -147,6 +149,7 @@ module Amazon
     puts [p.product_id,Retailer.find(retailer).name,merchant,region].join(' ')
     begin
       res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => merchant, :country => region.intern)
+      sleep(1+rand()*30) #Be nice to Amazon
     rescue Exception => exc
       $logfile.puts "ERROR -- #{exc.message}. Could not look up offer to save for #{$amazonmodel} #{p.asin}"+\
       " and merchant #{merchant} in region #{region}"
@@ -225,6 +228,7 @@ module Amazon
     loop do
       begin
         res = Amazon::Ecs.item_lookup(a.asin, :response_group => 'Reviews', :condition => 'New', :merchant_id => 'All', :review_page => current_page)
+        sleep(1+rand()*30) #Be nice to Amazon
       rescue Exception => exc
         $logfile.puts "ERROR --  #{exc.message}. Couldn't download reviews for product #{p.asin} and merchant #{merchant}"
       end
@@ -257,6 +261,7 @@ module Amazon
   
   def get_camera_attributes(camera)
     res = Amazon::Ecs.item_lookup(camera.asin, :response_group => 'ItemAttributes')
+    sleep(1+rand()*30) #Be nice to Amazon
     r = res.first_item
     unless r.nil?
       camera.detailpageurl = r.get('detailpageurl')
@@ -303,6 +308,7 @@ module Amazon
 
     #Lookup images
     res = Amazon::Ecs.item_lookup(camera.asin, :response_group => 'Images')
+    sleep(1+rand()*30) #Be nice to Amazon
     r = res.first_item
     unless r.nil?
       camera.imagesurl = r.get('smallimage/url')
@@ -323,6 +329,7 @@ module Amazon
   
   def get_printer_attributes(p)
     res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'ItemAttributes')
+    sleep(1+rand()*30) #Be nice to Amazon
     r = res.first_item
     unless r.nil?
       p.detailpageurl = r.get('detailpageurl')
@@ -371,6 +378,7 @@ module Amazon
     
       #Lookup images
       res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'Images')
+      sleep(1+rand()*30) #Be nice to Amazon
       r = res.first_item
       p.imagesurl = r.get('smallimage/url')
       p.imagesheight = r.get('smallimage/height')
@@ -390,6 +398,7 @@ module Amazon
 
   def get_attributes(rec)
     res = Amazon::Ecs.item_lookup(rec.asin, :response_group => 'ItemAttributes')
+    sleep(1+rand()*30) #Be nice to Amazon
     nokodoc = Nokogiri::HTML(res.doc.to_html)
     item = nokodoc.css('item').first
     if item
@@ -443,6 +452,7 @@ namespace :amazon do
     count = 0
     loop do
       res = Amazon::Ecs.item_search('',:browse_node => $browse_node_id, :search_index => $search_index, :response_group => response_group, :item_page => current_page)
+      sleep(1+rand()*30) #Be nice to Amazon
       $logfile.puts "ERROR: #{res.error} . couldn't download ASINs" if  res.has_error?    
       
       total_pages = res.total_pages unless total_pages
@@ -547,6 +557,7 @@ namespace :amazon do
     scrapeme.each do |product|
       if !product.asin.blank?
         puts 'Processing: ' + product.asin
+        ($logfile.puts 'Processing: ' + product.asin) if $logfile
         if $amazonmodel == nil #  AmazonCamera
           get_camera_attributes(product)
         elsif $amazonmodel == AmazonPrinter
@@ -563,9 +574,11 @@ namespace :amazon do
   
   task :update_prices => :init do
     $logfile.puts "Updating prices for #{$model}!"
+    
     $model.all.each {|p|
       puts 'Processing ' + p.id.to_s
       p = findprice(p,"us")
+      debugger
       p.save
       sleep(0.5) #One Req per sec
     }
