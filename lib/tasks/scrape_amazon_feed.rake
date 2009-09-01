@@ -59,7 +59,7 @@ module Amazon
           sleep(1+rand()*30) #Be nice to Amazon
         rescue Exception => exc
           $logfile.puts "ERROR -- #{exc.message} . Could not look up offers for #{$amazonmodel} "+\
-          "#{p.asin} (id #{p.id}) in region #{region}"
+          "#{e.asin} (id #{p.id}) in region #{region}"
           sleep(30) 
           return
         else
