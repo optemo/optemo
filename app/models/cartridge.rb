@@ -1,7 +1,7 @@
 class Cartridge < ActiveRecord::Base
   include ProductProperties
   IDFeatures = %w(brand model)
-  CategoricalFeatures = %w(brand model color)
+  CategoricalFeatures = %w(color)
   ContinuousFeatures =  %w(yield)
   named_scope :priced, :conditions => "price > 0"
   named_scope :valid, :conditions => [ContinuousFeatures.map{|i|i+' > 0'}.join(' AND '),CategoricalFeatures.map{|i|i+' IS NOT NULL'}.join(' AND ')].delete_if{|l|l.blank?}.join(' AND ')

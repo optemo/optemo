@@ -7,10 +7,12 @@ module DataLib
   require 'helpers/compare_helper'
   require 'helpers/fillin_helper'
   require 'helpers/conversion_helper'
+  require 'helpers/global_constants'
   include DatabaseHelper
   include ScrapingHelper
   include CleaningHelper
   include ConversionHelper
+  include Constants
 end
 
 # Use in conjunction with DataLib:

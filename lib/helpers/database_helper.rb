@@ -42,6 +42,12 @@ module DatabaseHelper
   
   end
   
+  def timestamp_offering ro
+    fill_in 'availabilityUpdate', Time.now, ro
+    fill_in 'priceUpdate', Time.now, ro
+    return ro
+  end
+  
   # Returns sets of IDs of records that match. eg
   # [[1,2], [3], [4,5,6]] means records with id 1 and 2
   # are the same product; 3 doesn't match any others,
@@ -73,9 +79,11 @@ module DatabaseHelper
   # Then if you list "Phaser" in the series, it'll try to match "100abc" as the model name too.
   def match_rec_to_printer rec_makes, rec_modelnames, recclass=$model, series=[]
     matching = []
-    makes = rec_makes.collect{ |x| just_alphanumeric(x) }
+    makes = rec_makes.collect{ |x| just_alphanumeric(x) }.reject{|x| x.nil? or x == ''}
+    return nil if makes.size == 0
     makes.each do |make|
       # Stupid brand inconsistencies..
+      # TODO automate
       if(make.include? 'oki')
         makes += ['oki', 'okidata']
       elsif(make.include?( 'hp') or make.include?( 'hewlett'))
@@ -86,16 +94,14 @@ module DatabaseHelper
     end
     makes.uniq
     modelnames = []
-    rec_modelnames.each{ |mn|
-      mname = mn
-      series.each { |ser|  
-        mname.gsub!(/\s#{ser}\s/i,'')
-        modelnames << mn.gsub(/\s#{ser}\s/i,'')
+    rec_modelnames.collect{ |x| just_alphanumeric(x) }.uniq.each{ |mn|  
+      modelnames << mn
+      series.collect{|x| just_alphanumeric(x)}.each { |ser| 
+        modelnames << just_alphanumeric(mn).gsub(/#{ser}/i,'')
+        modelnames.uniq!
       }
-      modelnames << mname if mname
     }
-    modelnames.collect!{ |x| just_alphanumeric(x) }
-    modelnames.each{|x| makes.each{|y| x.gsub!(/#{y}/,'')}}.uniq!
+    modelnames.reject{|x| x.nil? or x == ''}.each{|x| makes.each{|y| x.gsub!(/#{y}/,'')}}.uniq!
     
     recclass.all.each do |ptr|
       p_makes = [just_alphanumeric(ptr.brand)].delete_if{ |x| x.nil? or x == ""}
@@ -105,7 +111,6 @@ module DatabaseHelper
 
       matching << ptr unless ( (p_makes & makes).empty? or (p_modelnames & modelnames).empty? )
     end
-    
     return matching
   end
   
@@ -127,18 +132,25 @@ module DatabaseHelper
   # Checks if there is already a matching retailer offering via
   # the offering_id field and if not, copies over all attributes 
   # from the specific brand's offering into a new RetailerOffering
-  def create_retailer_offering specific_o, product
+  def create_retailer_offering specific_o, product, model=$model
+    o  =  find_or_create_offering specific_o, specific_o.attributes
     
-    if specific_o.offering_id.nil? # If no RetailerOffering is mapped to this brand-specific offering:
-      o = create_product_from_atts specific_o.attributes, RetailerOffering
-      fill_in 'offering_id', o.id, specific_o
-    else
-      o = RetailerOffering.find(specific_o.offering_id)
-      fill_in_all specific_o.attributes, o
-    end
-    
-    fill_in 'product_type', $model.name, o # TODO
+    fill_in 'product_type', model.name, o # TODO
     fill_in 'product_id', product.id, o
+    
+    # TODO timestamps
+    return o
+  end
+  
+  def find_or_create_offering rec, atts
+    if rec.offering_id.nil? # If no RetailerOffering is mapped to this brand-specific offering:
+      o = create_product_from_atts atts, RetailerOffering
+      fill_in 'offering_id', o.id, rec
+    else
+      o = RetailerOffering.find(rec.offering_id)
+      fill_in_all atts, o
+    end
+    timestamp_offering o
     return o
   end
   

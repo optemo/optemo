@@ -164,6 +164,11 @@ module ConversionHelper
     return (get_f str.match(append_regex( @@float_rxp, unit_regex)).to_s) 
   end
   
+  # Gets a float with given units from a string
+  def get_f_with_units_in_front str, unit_regex
+    return (get_f str.match(append_regex( unit_regex, @@float_rxp)).to_s) 
+  end
+  
   # Adds on a regular expression to the regex for a float.
   def float_and_regex x
     return append_regex @@float_rxp, x
