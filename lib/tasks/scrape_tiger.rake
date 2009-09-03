@@ -18,15 +18,15 @@ module TigerDirectScraper
   end
   
   def scrape link_list
-    @logfile.puts " #{link_list.length} printers not yet scraped."
+    log "#{link_list.length} printers not yet scraped."
     
     link_list.each_with_index do |x,i| 
       begin
         scrape_all_from_link x
         puts "#{i+1}th printer scraped!"
       rescue Exception => e
-        @logfile.puts "ERROR :#{e.type.to_s}, #{e.message.to_s}"
-        puts "#{i+1}th printer had error while scraping"
+        report_error "ERROR :#{e.type.to_s}, #{e.message.to_s}"
+        report_error "#{i+1}th printer had error while scraping"
       end
       sleep(15)
       puts "Waiting waiting..."
@@ -55,15 +55,12 @@ module TigerDirectScraper
   end
   
   def match_tiger_to_printer tp
-    makes = [just_alphanumeric (tp.brand)].delete_if{ |x| x.nil? or x == ""}
-    modelnames = [just_alphanumeric (tp.model),just_alphanumeric (tp.mpn)].delete_if{ |x| x.nil? or x == ""}
-    
-    matching = match_rec_to_printer makes, modelnames, $model, $printer_series
-    @logfile.puts "ERROR! Duplicate matches for #{tp.id}: #{tp.mpn} #{tp.model} #{tp.brand}" if matching.length > 1
+    matching = match_printer_to_printer tp, $model, $printer_series
     
     if matching.length > 1
+      report_error "Duplicate matches for #{tp.id}: #{tp.mpn} #{tp.model} #{tp.brand}" 
       matching.each do |p|
-        @logfile.puts "Printer #{p.id} matches #{tp.id}: #{p.mpn} #{p.model} #{p.brand}"
+        log "Printer #{p.id} matches #{tp.id}: #{p.mpn} #{p.model} #{p.brand}"
       end
     end
     
@@ -87,9 +84,6 @@ module TigerDirectScraper
             clean_model_str.gsub!(/#{altbrand}\s?/i,'')
           end
         end
-      end
-      $series.each do |ser|
-        clean_model_str.gsub!(/#{ser}\s?/i,'')
       end
       
       clean_model_str.gsub!(/(ink|chrome|tabloid|aio\sint|\(|,|\d+\s?x\s?\d+\s?(dpi)?|fast\sethernet|led).*/i,'')
@@ -183,15 +177,18 @@ module TigerDirectScraper
   
   def rescrape_price to
     url = @regional_urls[to.region] + to.tigerurl
-    info_page = Nokogiri::HTML(open(url))
-    
     props = {}
-    puts "Re-scraping #{to.id} offering"
-    props.merge! scrape_prices info_page 
-    props.merge! scrape_availty info_page
     
+    begin
+      info_page = Nokogiri::HTML(open(url))
+      log "Re-scraping TigerOffering # #{to.id}"
+    rescue
+      report_error "Couldn't open page: #{url}. Rescraping price failed."
+    else
+      props.merge! scrape_prices info_page 
+      props.merge! scrape_availty info_page
+    end
     props.delete_if{ |x,y| !TigerScraped.column_names.include? x}
-    
     return props
   end
   
@@ -329,6 +326,9 @@ namespace :scrape_tiger do
   
   task :update => :init do
     
+    @logfile = File.open("./log/tiger_update.log", 'w+')
+    log "Started updating at : #{Time.now}."
+        
     tiger_offerings = RetailerOffering.find_all_by_retailer_id(12) | RetailerOffering.find_all_by_retailer_id(14)
     
     tiger_offerings.each do |ro|
@@ -339,6 +339,10 @@ namespace :scrape_tiger do
       fill_in_all params, to
       update_offering params, ro
     end
+    
+    log "Updated #{tiger_offerings.count} TigerDirect printer offerings."
+    log "Finished updating at : #{Time.now}"
+    @logfile.close
   end
   
   task :model_cleanup => :init do
@@ -368,9 +372,9 @@ namespace :scrape_tiger do
       end
       
       if matching.length > 0
-        @logfile.puts "ERROR  #{tp.id} has multiple matching printers" if matching.length > 1
+        report_error " #{tp.id} has multiple matching printers" if matching.length > 1
         p = matching[0]
-        @logfile.puts "#{p.id} matches #{tp.id}"
+        log "#{p.id} matches #{tp.id}"
         num_matching += 1
       else  
         p = nil # TODO this is temporary
@@ -462,15 +466,9 @@ namespace :scrape_tiger do
   task :init => :environment do
     require 'rubygems'
     require 'nokogiri'
-
-    require 'scraping_helper'
-    include ScrapingHelper
-
-    require 'database_helper'
-    include DatabaseHelper
-    
-    require 'validation_helper'
-    include ValidationHelper
+    require 'helper_libs'
+    require 'open-uri'
+    include DataLib
 
     include TigerDirectScraper
     
@@ -480,8 +478,6 @@ namespace :scrape_tiger do
     
     @ignore_list = ['tigerurl', 'pricestr', 'price', 'region']
     
-    $series = ['Jet', 'imageCLASS', 'Phaser']
-
     @regional_urls = { 'US' => "http://www.tigerdirect.com/", 'CA' => "http://www.tigerdirect.ca/"}
 
     @brand_alternatives = [ ['hp', 'hewlett packard', 'hewlett-packard'], ['konica', 'konica-minolta', 'konica minolta'], ['okidata', 'oki data', 'oki'] ]

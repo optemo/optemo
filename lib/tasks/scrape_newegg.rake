@@ -251,7 +251,6 @@ namespace :scrape_newegg do
   desc 'Everything that can be done so far'
   task :all => [:ids, :data, :clean, :validate]
 
-  desc 'Initialize'
   task :init => :environment do
     require 'rubygems'
     require 'nokogiri'
