@@ -31,16 +31,20 @@ module NeweggScraper
       NeweggPrinterScrapedData.create(:item_number => id)
     else
       logfile.puts "Item number #{id} was already in the db"
+      report_error "Item number #{id} was already in the db"
     end
     return x
   end
 
   def map_to_db np
-    puts "Mapping NeweggPrinter #{np.id}..." # TODO
+    log "Mapping NeweggPrinter #{np.id}..."
+    puts "Mapping NeweggPrinter #{np.id}..." # TODO remove
     p = (match_newegg_to_printer np)[0] || (create_product_from_rec np)
     fill_in 'product_id', p.id, np
     fill_in 'product_type', 'Printer', np
     create_offerings np, p
+    log "Matching printer is #{p.id}, created at #{p.created_at}"
+    puts "Matching printer is #{p.id}, created at #{p.created_at}" # TODO remove
     return p
   end
 
@@ -48,20 +52,16 @@ module NeweggScraper
     ro_atts = RetailerOffering.column_names
     matching_no = NeweggOffering.find_all_by_printer_id(np.id)
     
-    @logfile.puts "ERROR: no offerings for Newegg #{np.id}" if (matching_no.nil? or matching_no.empty?)
+    report_error "No offerings for Newegg #{np.id}" if (matching_no.nil? or matching_no.empty?)
     
     matching_no.each do |no|
       optemo_special_url = my_special_url(no.item_number)
       fill_in 'url', optemo_special_url, no
       fill_in 'product_id', p.id, no
-      fill_in 'product_type', 'Printer', no
-      if no.offering_id.nil? # If no RetailerOffering is mapped to this NeweggOffering:
-        copy_atts = only_overlapping_atts no.attributes, RetailerOffering
-        o = RetailerOffering.new(copy_atts)
-        o.save
-        fill_in 'offering_id', o.id, no
-      end
+      o = create_retailer_offering no, p
+      report_error "NeweggOffering not linked to RetailerOffering." if no.offering_id.nil?
     end
+    
     update_bestoffer p
   end
 
@@ -229,8 +229,8 @@ module NeweggScraper
   end
   
   def match_newegg_to_printer np
-      matching = match_printer_to_printer np, Printer
-      @logfile.puts "ERROR! Duplicate matches for #{np.id}: #{np.model} #{np.brand}" if matching.length > 1
+      matching = match_printer_to_printer np, Printer, $printer_series
+      report_error "Duplicate matches for #{np.id}: #{np.model} #{np.brand}" if matching.length > 1
       return matching
   end
   
@@ -302,14 +302,14 @@ namespace :scrape_newegg do
     
     pages.each_with_index do |doc, i|
       resultset = doc.xpath('//div[@id="bcaBreadcrumbTop"]/dl/dd').last.content.to_s
-      @logfile.puts "Scraping Page \##{i+1}: #{resultset}" 
+      log "Scraping Page \##{i+1}: #{resultset}" 
       
       printer_id_els = doc.xpath('//td[@class="midCol"]/h3/a/@href')
       
       printer_id_els.each_with_index do |el, i|
         id = ''
         id = el.to_s.gsub('http://www.newegg.com/Product/Product.aspx?Item='){''}
-        @logfile.puts "blank at #{i}" if (id == '')
+        log "blank at #{i}" if (id == '')
         x = new_rec_by_itemnum(id,@logfile)
       end
     end  
@@ -333,32 +333,33 @@ namespace :scrape_newegg do
       begin
         np = NeweggPrinter.find(no.printer_id) if no and no.printer_id
         p = Printer.find(no.product_id) if no and no.product_id
+        o = RetailerOffering.find(no.offering_id) if no and no.offering_id
       rescue
         # do nothing
       end
             
-      if p.nil? # New printers only: scrape & clean specs
+      if p.nil? or o.nil? # If the Printer or RetailerOffering entries are missing/not linked...
         totally_new += 1
         atts = scrape_all inum
         np = no_and_np_from_atts atts, inum
         p = map_to_db np
         no = NeweggOffering.find_by_item_number(inum) if no.nil? 
+        o = RetailerOffering.find(no.offering_id) if no and no.offering_id
+        log "Something was missing but now we have printer #{p.id} and offering #{o.id}"
       end
       
-      o = RetailerOffering.find(no.offering_id) if no and no.offering_id
-      debugger if o.nil?
+      report_error "No RetailerOffering matched with NeweggOffering!!" if o.nil?
       
-      # Update prices
       begin  
         infopage = Nokogiri::HTML(open(id_to_details_url(inum)))
         sleep(15)
       rescue
-        puts "Cant scrape #{inum}: #{id_to_details_url(inum)} doesnt' open"
+        report_error "Cant scrape #{inum}: #{id_to_details_url(inum)} doesnt' open"
       else
         params = scrape_prices infopage, inum
         params = clean_prices params
         update_offering params, o
-        puts " Re-scraped prices for #{inum} ."
+        log " Re-scraped prices for #{inum} ."
       end
       update_bestoffer p
     end
@@ -372,15 +373,15 @@ namespace :scrape_newegg do
     @logfile = File.open("./log/newegg_validation.log", 'w+')
     
     # 1. NeweggPrinters has no null models or brands
-    @logfile.puts "Checking Newegg for null model and/or brand"
+    log "Checking Newegg for null model and/or brand"
     nil_brands = NeweggPrinter.find_all_by_brand(nil)
     nil_models = NeweggPrinter.find_all_by_model(nil)
     
-    @logfile.puts "NeweggPrinter has #{nil_brands.length} entries with a nil brand: #{nil_brands.collect{|x|x.id.to_s + ', '}}."
-    @logfile.puts "NeweggPrinter has #{nil_models.length} entries with a nil model: #{nil_models.collect{|x|x.id.to_s + ', '}}."
+    report_error "NeweggPrinter has #{nil_brands.length} entries with a nil brand: #{nil_brands.collect{|x|x.id.to_s + ', '}}."
+    report_error "NeweggPrinter has #{nil_models.length} entries with a nil model: #{nil_models.collect{|x|x.id.to_s + ', '}}."
     
     # 2. NeweggPrinters has no duplicates
-    @logfile.puts "Checking Newegg for duplicates"
+    log "Checking Newegg for duplicates"
     
     np_make_cols = ['brand']
     np_model_cols = ['model']
@@ -389,7 +390,7 @@ namespace :scrape_newegg do
       puts "#{dupl.length} duplicates for #{np.id}: ids #{dupl * ', '}"  if dupl.length > 1 
     end
     # 3. Printers has no duplicates
-    @logfile.puts "Checking Printers for duplicates"
+    log "Checking Printers for duplicates"
     
     p_make_cols = ['brand']
     p_model_cols = ['model', 'mpn']
@@ -404,18 +405,17 @@ namespace :scrape_newegg do
     # 4. No double matches for NeweggPrinter <--> Printer
     # and at least 1 match
     
-    @logfile.puts "Checking for no double matches"
+    log "Checking for no double matches"
     double_match = false
     normal_match = false
     NeweggPrinter.all.each do |np|
     
       ap_list = match_newegg_to_printer np
-      
       if ap_list.length > 1
         double_match = true
         ids = []
         ap_list.each do |found_ap| ids << found_ap.id end
-        @logfile.puts "#{ap_list.length} matches (#{ids * ','}) for Newegg #{np.id} (#{np.model} #{np.brand})"
+        report_error "#{ap_list.length} matches (#{ids * ','}) for Newegg #{np.id} (#{np.model} #{np.brand})"
       elsif ap_list.length == 1
         normal_match = true
       end
@@ -534,12 +534,12 @@ namespace :scrape_newegg do
         atts = scrape_all np.item_number
         fill_in_all atts, np, ['product_id']
       rescue Exception => e
-        @logfile.puts 'ERROR: ' + e.message.to_s + e.type.to_s
+        report_error 'ERROR: ' + e.message.to_s + e.type.to_s
         puts "Error on #{i}th printer"
         sleep(20*60) # sleep for 20 min 
       end
       puts "Progress: done #{i} of #{NeweggPrinterScrapedData.count} printers..."
-      @logfile.puts "Progress: done #{i} of #{NeweggPrinterScrapedData.count} printers..."
+      report_error "Progress: done #{i} of #{NeweggPrinterScrapedData.count} printers..."
     end
     
     @logfile.close

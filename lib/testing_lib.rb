@@ -3,16 +3,18 @@ module NoJavaTestLib
   require 'mechanize'
   require 'webrat/mechanize'
   
-  require 'testing/printer_page_helpers'
+  require 'testing/site_nav_helpers'
+  require 'printer_helpers'
+  
   require 'testing/test_session'
   
   require 'helpers/scraping_helper'
   include ScrapingHelper
 
-  require 'testing/printer_tests'
+  require 'testing/site_tests'
   include PrinterTest
   
-  require 'testing/printer_test_asserts'
+  require 'testing/site_test_asserts'
   include PrinterTestAsserts
   
 end
@@ -20,15 +22,20 @@ end
 module JavaTestLib
   require 'webrat'
   require 'webrat/selenium'
-  require 'testing/printer_page_helpers'
+  
+  require 'testing/site_nav_helpers'
+  require 'printer_helpers'
+  
   require 'testing/java_test_session'
   
   require 'helpers/scraping_helper'
   include ScrapingHelper
 
-  require 'testing/printer_tests'
+  require 'testing/site_tests'
   include PrinterTest
   
-  require 'testing/printer_test_asserts'
+  require 'testing/site_test_asserts'
   include PrinterTestAsserts
+  
+  
 end

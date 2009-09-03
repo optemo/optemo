@@ -16,7 +16,7 @@ module DatabaseHelper
   def update_offering newparams, offering
     newprice = newparams['priceint']
     record_updated_price newprice, offering if newprice
-    fill_in_all params, offering
+    fill_in_all newparams, offering
   end
   
   # Records a new price for the given offering
@@ -29,9 +29,11 @@ module DatabaseHelper
       # Write the old price down in the history
       if offering.pricehistory.nil? and offering.priceUpdate
         pricehistory = [offering.priceUpdate.to_s(:db), offering.priceint].to_yaml
-      else
+      elsif offering.priceUpdate
         pricehistory = (YAML.load(offering.pricehistory) + [offering.priceUpdate.to_s(:db), \
           offering.priceint]).to_yaml
+      else
+        pricehistory = nil
       end
       fill_in 'pricehistory', pricehistory, offering
       
@@ -82,14 +84,12 @@ module DatabaseHelper
     makes = rec_makes.collect{ |x| just_alphanumeric(x) }.reject{|x| x.nil? or x == ''}
     return nil if makes.size == 0
     makes.each do |make|
-      # Stupid brand inconsistencies..
-      # TODO automate
-      if(make.include? 'oki')
-        makes += ['oki', 'okidata']
-      elsif(make.include?( 'hp') or make.include?( 'hewlett'))
-        makes += ['hp','hewlettpackard']
-      elsif(make.include?( 'konica'))
-        makes += ['konica', 'konicaminolta', 'minolta']
+      $brand_alternatives.each do |altmakes|
+        altmakes.collect{|x| just_alphanumeric(x)}.each do |altmake|
+          if make.include? altmake or altmake.include? make
+            makes += altmakes and break
+          end
+        end
       end
     end
     makes.uniq

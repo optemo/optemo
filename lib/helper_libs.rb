@@ -6,8 +6,14 @@ module DataLib
   require 'helpers/cleaning_helper'
   require 'helpers/compare_helper'
   require 'helpers/fillin_helper'
+  
+  
+  require 'helpers/logging_helper'
+  
   require 'helpers/conversion_helper'
   require 'helpers/global_constants'
+  
+  include LoggingHelper
   include DatabaseHelper
   include ScrapingHelper
   include CleaningHelper
@@ -24,11 +30,19 @@ end
 module ImageLib
   require 'helpers/image_helper'
   require 'helpers/fillin_helper'
+  
+  require 'helpers/logging_helper'
+  
+  include LoggingHelper
   include ImageHelper
   include ScrapingHelper
 end
 
 module ValidationLib
   require 'helpers/validation_helper'
+  
+  require 'helpers/logging_helper'
+  
+  include LoggingHelper
   include ValidationHelper
 end

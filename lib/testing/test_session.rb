@@ -1,6 +1,6 @@
 class TestSession < Webrat::MechanizeSession
   
-  include PrinterPageHelpers
+  include NavigationHelpers
      
   def initialize (log)
      super
@@ -11,7 +11,7 @@ class TestSession < Webrat::MechanizeSession
      PrinterPageHelpers.uses.keys.each do |u|
         get_homepage
         pick_printer_use u
-        set_total_printers u, self.num_printers 
+        set_total_products u, self.num_products 
      end
      get_homepage
      pick_printer_use 

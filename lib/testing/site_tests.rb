@@ -38,7 +38,7 @@ module PrinterTest
      assert_brands_same
      assert_clear_search_links_same
 
-     if !@sesh.no_printers_found_msg? 
+     if !@sesh.no_products_found_msg? 
        assert_slider_range(slider, min.to_i, max.to_i)
      end
 
@@ -70,7 +70,7 @@ module PrinterTest
     assert_not_error_page
     assert_well_formed_page
 
-    assert_browsing_all_printers pickme
+    assert_browsing_all_products pickme
     assert_brands_clear
     assert_search_history_clear
     assert_no_results_msg_hidden
@@ -91,10 +91,10 @@ module PrinterTest
    was_selected = @sesh.checkbox_selected?(klikme)
    @sesh.click_checkbox klikme 
    
-   if !was_selected and !@sesh.no_printers_found_msg?
+   if !was_selected and !@sesh.no_products_found_msg?
      assert_box_checked klikme
    elsif !was_selected
-     assert_num_printers_same
+     assert_num_products_same
      assert_box_unchecked klikme
    else
      assert_box_unchecked klikme
@@ -128,7 +128,7 @@ module PrinterTest
    else
      assert_not_error_page
      assert_well_formed_page
-     assert_num_printers_decreased
+     assert_num_products_decreased
    end
 
    log "Done testing browse similar"
@@ -146,9 +146,9 @@ module PrinterTest
      assert_not_error_page
      assert_well_formed_page
 
-     if @sesh.no_printers_found_msg?
+     if @sesh.no_products_found_msg?
        assert_clear_search_links_same
-       log "No printers found for " + query
+       log "No products found for " + query
      else
        assert_has_search_history
      end
@@ -195,19 +195,19 @@ module PrinterTest
  
      if @sesh.brand_name(brand) == "All Brands" or @sesh.brand_name(brand) == "Add Another Brand"
        assert_brands_same
-       assert_num_printers_same
+       assert_num_products_same
      elsif brand == 0
        puts "But it should be going to the loop above"
  
      elsif @brand_selected_before
        log "This brand was selected before."
-       assert_num_printers_same
+       assert_num_products_same
        assert_brand_selected brand
  
-     elsif @sesh.no_printers_found_msg?
-       log "There were no printers found for this brand."
+     elsif @sesh.no_products_found_msg?
+       log "There were no products found for this brand."
        assert_brand_deselected brand
-       assert_num_printers_same
+       assert_num_products_same
        assert_brands_same
  
      else
@@ -308,7 +308,7 @@ module PrinterTest
 
     assert_brands_same
     assert_saveds_same
-    assert_num_printers_same
+    assert_num_products_same
     assert_clear_search_links_same
     assert_session_id_same
     
@@ -324,14 +324,14 @@ module PrinterTest
  
   # Take a 'snapshot' of the current page for comparison for later.
  def snapshot
-    @num_printers_before = @sesh.num_printers
+    @num_products_before = @sesh.num_products
     @num_brands_selected_before = @sesh.num_brands_selected
     @num_boxes_before = @sesh.num_boxes
     @num_saved_items_before = @sesh.num_saved_items
     @num_similar_links_before = @sesh.num_similar_links
     @num_clear_search_links_before = @sesh.num_clear_search_links
     @session_id_before = @sesh.session_id 
-    @no_printers_found_msg_before = @sesh.no_printers_found_msg?
+    @no_products_found_msg_before = @sesh.no_products_found_msg?
     @error_page_before = @sesh.error_page?
     @url_before = @sesh.current_url
     @history.push @sesh.current_url

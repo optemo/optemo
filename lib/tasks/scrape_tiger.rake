@@ -58,7 +58,7 @@ module TigerDirectScraper
     makes = [just_alphanumeric (tp.brand)].delete_if{ |x| x.nil? or x == ""}
     modelnames = [just_alphanumeric (tp.model),just_alphanumeric (tp.mpn)].delete_if{ |x| x.nil? or x == ""}
     
-    matching = match_rec_to_printer makes, modelnames
+    matching = match_rec_to_printer makes, modelnames, $model, $printer_series
     @logfile.puts "ERROR! Duplicate matches for #{tp.id}: #{tp.mpn} #{tp.model} #{tp.brand}" if matching.length > 1
     
     if matching.length > 1
@@ -338,7 +338,6 @@ namespace :scrape_tiger do
       params = clean_offering_stuff params
       fill_in_all params, to
       update_offering params, ro
-      # TODO fill in availability and price updates!!
     end
   end
   
