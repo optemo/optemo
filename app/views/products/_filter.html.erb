@@ -1,10 +1,10 @@
 <% $model::CategoricalFeaturesF.each do |feat| %>
-	<div class='feature<%= " extra" if $model::ExtraFeature[feat] %>' <%= "style='display:none;'" if $model::ExtraFeature[feat] %>>
+	<div class='feature<%= " extra" if $model::ExtraFeature[feat] %>' <%= "style='display:none;'" if $model::ExtraFeature[feat] && !@session.expert %>>
 		<div class='label'>
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
 			<%= link_to $model::FeaturesDisp[feat], '#' %>
 		</div>
-		<% if !@session.features.brand.nil? && @session.features.brand != "All Brands" %>
+		<% unless @session.features.brand == "All Brands" || @session.features.brand.nil? %>
 			<% @session.features.brand.split('*').each do |b| %>
 			<div class='selected_brands'><%= link_to image_tag('close.png', :width => '13'), "javascript:removeBrand('#{b}');", {:title => "Remove Brand Filter"} %> <%= b %></div>
 			<% end %>
@@ -17,25 +17,31 @@
 <% $model::ContinuousFeaturesF.each do |feat| %>
 	<%= render :partial => 'slider', 
 		:locals => {:name => $model::FeaturesDisp[feat], 
-		:i2f => (feat == 'price' || feat == 'itemwidth'),
+		:i2f => $model::ItoF.include?(feat),
 		:val => feat, 
 		:extra => $model::ExtraFeature[feat],
-		:money_formatting => feat == 'price', 
+		:money_formatting => feat == 'price',
 		:min => @dbfeat[feat].min, 
 		:max => @dbfeat[feat].max} %>
 <% end %>
 <% $model::BinaryFeaturesF.each do |feat| %>
-	<div class='feature<%= " extra" if $model::ExtraFeature[feat] %>' <%= "style='display:none;'" if $model::ExtraFeature[feat] %>>
+	<div class='feature<%= " extra" if $model::ExtraFeature[feat] %>' <%= "style='display:none;'" if $model::ExtraFeature[feat] && !@session.expert %>>
 		<div class='label'>
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
 			<%= check_box('myfilter', feat, {:onchange => "$('#filter_form').submit()", :checked => @session.features.send(feat.intern) ? 'checked' : false})%>
 			<%= link_to $model::FeaturesDisp[feat], "#" %>
+			<%= "(#{@counts[feat]})"%>
 		</div>
 	</div>
 <% end %>
 <% if $model::ExtraFeature.values.inject(false){|a,b|a||b} %>
 <div class='changefilters'>
-	<%= link_to "More Filters", "#", :id => "morefilters" %>
-	<%= link_to "Less Filters", "#", :id => "lessfilters", :style => "display: none;" %>
+	<% if @session.expert %>
+	    <%= link_to "More Filters", "#", :id => "morefilters", :style => "display: none;" %>
+	    <%= link_to "Less Filters", "#", :id => "lessfilters" %>
+	<% else %>
+	    <%= link_to "More Filters", "#", :id => "morefilters" %>
+	    <%= link_to "Less Filters", "#", :id => "lessfilters", :style => "display: none;" %>
+	<% end %>
 </div>
 <% end %>

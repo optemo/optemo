@@ -4,30 +4,28 @@ class Search < ActiveRecord::Base
   belongs_to :cluster
   has_many :vieweds
   
-  
-## Computes distribtutions (arrays of normalized product counts) for all continuous features 
-def distributions
-    dists = {}
-    dbfeat = DbFeature.find_all_by_region_and_product_type_and_feature_type($region, session.product_type, 'Continuous')
-    acceptedNodes = clusters.map{|c| c.nodes(session)}.flatten 
-    dbfeat.each do |f|
-      dist = Array.new(10,0)  
-      stepsize = (f.max-f.min).to_f/10 
-      acceptedNodes.each do |n| 
-        10.times do |i| 
-            min = f.min + stepsize * i
-            max = min + stepsize
-            if (max == min)
-              dist[i] += 1 if n.send(f.name) == min
-            elsif (n.send(f.name)>=min && n.send(f.name) <= max)
-              dist[i] += 1 
-            end
+  ## Computes distributions (arrays of normalized product counts) for all continuous features 
+  def distribution(featureName)
+      @acceptedNodes ||= clusters.map{|c| c.nodes(session)}.flatten
+      dist = Array.new(21,0)
+      dbfeat = DbFeature.find_by_region_and_product_type_and_name($region, session.product_type, featureName)
+      min = dbfeat.min
+      max = dbfeat.max
+      #min = session.features.send("#{featureName}_min".intern) || ranges(featureName)[0]
+      #max = session.features.send("#{featureName}_max".intern) || ranges(featureName)[1]
+      stepsize = (max-min) / dist.length + 0.000001 #Offset prevents overflow of 10 into dist array
+      itof = $model::ItoF.include?(featureName)
+      @acceptedNodes.each do |n| 
+        if (itof==true && min>=max-1) || (itof==false && min>=max-0.1)
+          #No range so fill everything in
+          dist = Array.new(dist.length,1)
+        else
+          i = ((n.send(featureName) - min) / stepsize).to_i
+          dist[i] += 1 if i < dist.length
         end
       end  
-      dists[f.name] = round2Decim(normalize(dist))  
-   end    
-   dists
-end 
+      round2Decim(normalize(dist))
+  end
   
   #Range of product offerings
   def ranges(featureName)
