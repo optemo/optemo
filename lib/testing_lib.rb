@@ -4,7 +4,7 @@ module NoJavaTestLib
   require 'webrat/mechanize'
   
   require 'testing/site_nav_helpers'
-  require 'printer_helpers'
+  require 'testing/printer_helpers'
   
   require 'testing/test_session'
   
@@ -24,7 +24,7 @@ module JavaTestLib
   require 'webrat/selenium'
   
   require 'testing/site_nav_helpers'
-  require 'printer_helpers'
+  require 'testing/printer_helpers'
   
   require 'testing/java_test_session'
   

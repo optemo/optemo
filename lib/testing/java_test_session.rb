@@ -8,7 +8,7 @@ class JavaTestSession < Webrat::SeleniumSession
      get_homepage
      pick_printer_use
      get_init_values
-     PrinterPageHelpers.uses.keys.each do |u|
+     NavigationHelpers.uses.keys.each do |u|
         get_homepage
         pick_printer_use u
         set_total_products u, (self.num_products) 

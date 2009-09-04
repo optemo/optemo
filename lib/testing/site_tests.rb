@@ -63,7 +63,7 @@ module PrinterTest
  end
  
  def test_pick_use pickme
-    log "Testing pick #{ PrinterPageHelpers.uses[pickme]} use link"
+    log "Testing pick #{ NavigationHelpers.uses[pickme]} use link"
    
     @sesh.pick_printer_use pickme
    

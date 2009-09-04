@@ -364,33 +364,38 @@ $(document).ready(function() {
 });
 
 //Draw slider histogram
-function histogram(element,min,max) {
+function histogram(element, norange) {
 	var raw = $(element).attr('data-data');
 	if (raw)
-		{var data = raw.split(',');}
+		var data = raw.split(',');
 	else
-		{var data = [0.5,0.7,0.1,0,0.3,0.8,0.6,0.4,0.3,0.3];}
+		var data = [0.5,0.7,0.1,0,0.3,0.8,0.6,0.4,0.3,0.3];
 	//Data is assumed to be 10 normalized elements in an array
-	
-	var peak = 10,
+	var peak = 0,
 	trans = 4,
 	step = peak + 2*trans,
 	height = 20,
-	length = 177,
+	length = 168,
 	shapelayer = Raphael(element,length,height),
-	//shapelayer = paper.group(),
-	t = shapelayer.path({fill: Raphael.getColor(), opacity: 0.75});//Raphael.hsb2rgb(Math.abs(Math.sin(parseInt(element,36))),1,1).hex, opacity: 0.5});
-	
+	h = height - 1;
+	if(norange==true)	// i.e if left slider and right slider are the same value
+	{
+		t = shapelayer.path({fill: 'gray', opacity: 0.30});
+		Raphael.getColor(); //Don't want to mess up the color rotation
+	}
+	else
+		t = shapelayer.path({fill: Raphael.getColor(), opacity: 0.75});
 	t.moveTo(0,height);
+
+	init = 4;
 	for (var i = 0; i < data.length; i++)
 	{
-	t.cplineTo(i*step+trans,height*(1-Math.sqrt(data[i])),5);
-	t.lineTo(i*step+trans+peak,height*(1-Math.sqrt(data[i])));	
+	t.cplineTo(init+i*step+trans,h*(1-data[i])+1,5);
+	t.lineTo(init+i*step+trans+peak,h*(1-data[i])+1);	
+	//shapelayer.text(i*step+trans+5, height*0.5, i);
 	}
-	t.cplineTo((data.length)*step,height,5);
+	t.cplineTo(init+(data.length)*step+4,height,5);
 	t.andClose();
-	shapelayer.rect(0,0,min*length,height).attr({fill: "#dddddd", "stroke-opacity": 0});
-	shapelayer.rect(max*length,0,length,height).attr({fill: '#dddddd', "stroke-opacity": 0});
 }
 
 /* http://snipplr.com/view/1696/get-elements-by-class-name/ */

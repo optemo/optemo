@@ -27,17 +27,82 @@ class Search < ActiveRecord::Base
       round2Decim(normalize(dist))
   end
   
+  def countBinary
+    counts = {}
+     dbfeat=DbFeature.find_all_by_region_and_product_type_and_feature_type($region, session.product_type, 'Binary')
+     @acceptedNodes ||= clusters.map{|c| c.nodes(session)}.flatten 
+     dbfeat.each do |f|
+       counts[f.name] = @acceptedNodes.map{|n| n.send(f.name)? 1 : 0}.sum
+     end   
+     counts
+  end
+  
   #Range of product offerings
   def ranges(featureName)
      @sRange ||= {}
-      if @sRange[featureName].nil?
-        min = clusters.map{|c|c.ranges(featureName,session)[0]}.compact.sort[0]
-        max = clusters.map{|c|c.ranges(featureName,session)[1]}.compact.sort[-1] 
-        @sRange[featureName] = [min, max]
-      end
-      @sRange[featureName]  
+     if @sRange[featureName].nil?
+       min = clusters.map{|c|c.ranges(featureName,session)[0]}.compact.sort[0]
+       max = clusters.map{|c|c.ranges(featureName,session)[1]}.compact.sort[-1] 
+       @sRange[featureName] = [min, max]
+     end
+     @sRange[featureName]  
   end
-    
+  
+  def indicator(featureName)
+    indic = false
+    values = clusters.map{|c| c.indicator(featureName, session)}
+    if values.index(false).nil?
+      indic = true
+    end  
+    indic
+  end
+  
+  def relativeDescriptions
+    return if clusters.empty?
+    @descs ||= []
+    if @descs.empty?
+      feats = {}
+      $model::ContinuousFeaturesF.each do |f|
+        dbfeat = DbFeature.find_by_region_and_product_type_and_name($region, session.product_type, f)
+        norm = dbfeat.max - dbfeat.min
+        norm = 1 if norm == 0
+        feats[f] = clusters.map{|c| c.representative(session)[f].to_f/norm}
+      end
+      cluster_count.times do |i|
+        dist = {}
+        $model::ContinuousFeaturesF.each do |f|
+          if feats[f].min == feats[f][i]
+            dist[f] = feats[f].sort[1] - feats[f][i]
+            dist.delete(f) if dist[f] == 0 && feats[f].sort[2] == feats[f][i]#Remove ties
+          elsif feats[f].max == feats[f][i]
+            dist[f] = feats[f][i] - feats[f].sort[-2]
+            dist.delete(f) if dist[f] == 0  && feats[f].sort[-3] == feats[f][i]#Remove ties
+          #elsif feats[f].sort[4] == feats[f][i]
+          #  dist[f] = [feats[f].sort[4]-feats[f].sort[3],feats[f].sort[5]-feats[f].sort[4]].min
+          #  dist.delete(f) if dist[f] == 0 #Remove ties
+          end
+        end if cluster_count > 1
+        n = dist.count
+        d = []
+        dist.sort{|a,b| a[1] <=> b[1]}.each do |f,v|
+          dir = feats[f].min == feats[f][i] ? "Lower" : "Higher"
+          #dir = feats[f].min == feats[f][i] ? "Lower" : feats[f].max == feats[f][i] ? "Higher" : "Avg"
+          d << [dir,$model::FeaturesDisp[f]].join(" ")
+        end
+        #Add binary labels
+        d.unshift "Waterproof" if clusters[i].waterproof && layer == 1
+        d.unshift "SLR" if clusters[i].slr && layer == 1
+        if d.empty?
+          @descs << "Average"
+        else
+          @descs << d.join(", ")
+        end
+        #@descs[-1] = @descs.last + " (#{n})"
+      end
+    end
+    @descs
+  end
+  
   def clusterDescription
     return if clusters.empty?
     clusterDs = []
@@ -187,31 +252,6 @@ class Search < ActiveRecord::Base
     updateClusters(myclusters)
   end
   
-  #Array of normalized product counts
-  def distribution(featureName)
-    f = DbFeature.find_by_name_and_product_type_and_region(featureName,session.product_type,$region)
-    stepsize = (f.max-f.min).to_f/10 
-    res = []
-    10.times do |i|
-      min = f.min + stepsize*i
-      max = min + stepsize
-      clusters = []
-      cluster_count.times do |c|
-        clusters << "cluster_id = #{send(('c'+c.to_s).intern)}"
-      end
-      chooseclusters = clusters.join(' OR ')
-      #Keyword search parameters
-      options = session.searchpids.blank? ? '' : ' and ('+session.searchpids+')'
-      #Filtering parameters
-      options += session.filter && !Cluster.filterquery(session).blank? ? ' and '+Cluster.filterquery(session) : ''
-      if max==min
-        res << $nodemodel.find(:all, :conditions => ["#{featureName} = ? and (#{chooseclusters}) #{options}",max]).length
-      else  
-        res << $nodemodel.find(:all, :conditions => ["#{featureName} < ? and #{featureName} >= ? and (#{chooseclusters}) #{options}",max,min]).length
-      end
-    end
-    round2Decim(normalize(res))
-  end
   
   private
   
@@ -240,7 +280,7 @@ class Search < ActiveRecord::Base
   end
   
   def normalize(a)
-    total = a.sum
+    total = a.max
     if total==0 
       a  
     else  
