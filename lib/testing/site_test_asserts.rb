@@ -48,11 +48,11 @@ module PrinterTestAsserts
   end
   
   def assert_no_results_msg_displayed
-    report_error "No results msg hidden" if !@sesh.no_printers_found_msg?
+    report_error "No results msg hidden" if !@sesh.no_products_found_msg?
   end
   
   def assert_no_results_msg_hidden
-    report_error "No results msg displayed" if @sesh.no_printers_found_msg?
+    report_error "No results msg displayed" if @sesh.no_products_found_msg?
   end
   
   def assert_not_error_page
@@ -64,24 +64,24 @@ module PrinterTestAsserts
     # More than 0 boxes
     report_error "No borderboxes" if @sesh.num_boxes == 0
   
-    if @sesh.num_printers <= 9  
+    if @sesh.num_products <= 9  
   
       if @sesh.num_similar_links > 0
-        report_error "Browse similar links available when browsing less than 9 printers"
+        report_error "Browse similar links available when browsing less than 9 products"
       end
   
-      if @sesh.num_boxes !=@sesh.num_printers
+      if @sesh.num_boxes !=@sesh.num_products
          report_error @sesh.num_boxes.to_s + " boxes but " + @sesh.num_similar_links.to_s +  " 'explore similar' links."
       end
   
     end
   
-    if @sesh.num_printers > 9 and @sesh.num_similar_links == 0
-      report_error "Browse similar links not available when browsing more than 9 printers"
+    if @sesh.num_products > 9 and @sesh.num_similar_links == 0
+      report_error "Browse similar links not available when browsing more than 9 products"
     end
   
-    if @sesh.num_boxes < 9 and @sesh.num_printers >= 9
-      report_error "Less than 9 borderboxes for 9 or more printers"
+    if @sesh.num_boxes < 9 and @sesh.num_products >= 9
+      report_error "Less than 9 borderboxes for 9 or more products"
     end
   
     # Save here message : displayed only if no saved items.
@@ -155,30 +155,30 @@ module PrinterTestAsserts
   end
   
   def assert_saveds_clear
-    report_error "Saved printers not cleared" if @sesh.num_saved_items != 0 
+    report_error "Saved products not cleared" if @sesh.num_saved_items != 0 
   end
   
-  def assert_browsing_all_printers i=0
-    if @sesh.total_printers[i] != @sesh.num_printers
-      report_error "Not all printers displayed: should be #{@sesh.total_printers[i]}, is #{@sesh.num_printers}" 
+  def assert_browsing_all_products i=0
+    if @sesh.total_products[i] != @sesh.num_products
+      report_error "Not all products displayed: should be #{@sesh.total_products[i]}, is #{@sesh.num_products}" 
     end
   end
   
-  def assert_num_printers_decreased
-    if @sesh.num_printers >= @num_printers_before
-      report_error "Number of printers browsed not decreased: was #{@num_printers_before}, now " + @sesh.num_printers.to_s 
+  def assert_num_products_decreased
+    if @sesh.num_products >= @num_products_before
+      report_error "Number of products browsed not decreased: was #{@num_products_before}, now " + @sesh.num_products.to_s 
     end
   end
   
-  def assert_num_printers_same
-    if @sesh.num_printers != @num_printers_before
-      report_error "Number of printers browsed changed. Was #{@num_printers_before}, now " + @sesh.num_printers.to_s
+  def assert_num_products_same
+    if @sesh.num_products != @num_products_before
+      report_error "Number of products browsed changed. Was #{@num_products_before}, now " + @sesh.num_products.to_s
     end
   end
   
-  def assert_num_printers_increased
-    if @sesh.num_printers <= @num_printers_before
-      report_error "Number of printers browsed not increased: was #{@num_printers_before}, now " + @sesh.num_printers.to_s 
+  def assert_num_products_increased
+    if @sesh.num_products <= @num_products_before
+      report_error "Number of products browsed not increased: was #{@num_products_before}, now " + @sesh.num_products.to_s 
     end
   
   end

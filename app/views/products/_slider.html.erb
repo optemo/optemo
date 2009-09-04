@@ -1,13 +1,23 @@
-<div class='feature<%= " extra" if extra %>' <%= "style='display:none;'" if extra %>>
-<div class='disp'>
-	  <%= '$' if money_formatting %><%=(i2f ? @s.ranges(val)[0]/100 : @s.ranges(val)[0]).to_i %>-<%= '$' if money_formatting %><%= (i2f ? @s.ranges(val)[1]/100 : @s.ranges(val)[1]).ceil %> <%= $model::FeaturesLabel[val] %>
-</div>
+<div class='feature<%= " extra" if extra %>' <%= "style='display:none;'" if extra && !@session.expert %>>
 
 <div class='label space'>
 	<%= render :partial => 'desc', :locals => {:feat => val} %>
-	<%= link_to name, "#" %>
+	<%= link_to name, "#" %> 
+	<span class="unitdisp">
+	<% if val == 'price' %>
+		(CAD$)
+	<% else %>
+		(<%= $model::FeaturesLabel[val] %>)
+	<% end %>
+	</span>
 </div>
-<div class="hist" data-data="<%= @dists[val].join(',') %>"></div>
+<% prodmin = i2f ? @s.ranges(val)[0]/100 : roundmin(@s.ranges(val)[0]) %>
+<% prodmax = i2f ? (@s.ranges(val)[1]/100).ceil : roundmax(@s.ranges(val)[1]) %>
+<% overallmin = dbmin(i2f, val) %>
+<% overallmax = dbmax(i2f, val) %>
+<% startmin = @session.features.send("#{val}_min".intern).nil? ? overallmin : i2f ? @session.features.send("#{val}_min".intern)/100 : @session.features.send("#{val}_min".intern) %>
+<% startmax = @session.features.send("#{val}_max".intern).nil? ? overallmax : i2f ? (@session.features.send("#{val}_max".intern)/100).ceil : @session.features.send("#{val}_max".intern) %>
+<div class="hist" data-data="<%= @s.distribution(val).join(',') %>"></div>
 <%= hidden_field_tag "myfilter[#{val}_min]", i2f ?
 	((mymin = @session.features.send("#{val}_min".intern)).nil? ? '' : mymin/100) : 
 	@session.features.send("#{val}_min".intern),
@@ -16,13 +26,14 @@
 	((mymax = @session.features.send("#{val}_max".intern)).nil? ? '' : mymax/100) :
 	@session.features.send("#{val}_max".intern),
 {:class => 'max'}%>
-<div class='slider' 
-data-min='<%= dbmin(i2f, val)%>'
-data-max='<%= dbmax(i2f, val)%>'
-data-startmin='<%= @session.features.send("#{val}_min".intern).nil? ? dbmin(i2f, val) : i2f ? @session.features.send("#{val}_min".intern)/100 : @session.features.send("#{val}_min".intern) %>'
-data-startmax='<%= @session.features.send("#{val}_max".intern).nil? ? dbmax(i2f, val) : i2f ? @session.features.send("#{val}_max".intern)/100 : @session.features.send("#{val}_max".intern)%>'
-data-prodmin='<%= i2f ? @s.ranges(val)[0]/100 : @s.ranges(val)[0] %>' 
-data-prodmax='<%= i2f ? @s.ranges(val)[1]/100 : @s.ranges(val)[1] %>'
+<div class='slider'
+data-min='<%= overallmin %>'
+data-max='<%= overallmax %>'
+data-startmin='<%= startmin %>'
+data-startmax='<%= startmax %>'
+data-itof='<%= i2f %>'
 <%= money_formatting ? 'data-formatting="$"' : ""  %>>
+
+<div class="centerofslider" style="background:url(../../../images/slider.gif) no-repeat; height:13px; overflow:hidden"> </div>
 </div>
 </div>

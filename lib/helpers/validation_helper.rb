@@ -87,11 +87,4 @@ module ValidationHelper
     return values
   end
   
-  def log_v str
-    printme  = " INVALID DATA :" + str
-    @logfile.puts printme if @logfile
-    $logfile.puts printme if $logfile
-    puts printme  
-  end
-  
 end

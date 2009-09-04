@@ -228,7 +228,7 @@ module Amazon
         res = Amazon::Ecs.item_lookup(a.asin, :response_group => 'Reviews', :condition => 'New', :merchant_id => 'All', :review_page => current_page)
         sleep(1+rand()*30) #Be nice to Amazon
       rescue Exception => exc
-        $logfile.puts "ERROR --  #{exc.message}. Couldn't download reviews for product #{p.asin} and merchant #{merchant}"
+        $logfile.puts "ERROR --  #{exc.message}. Couldn't download reviews for product #{a.asin} and merchant #{merchant}"
       end
       result = res.first_item
       #Look for old Retail Offering
@@ -504,14 +504,14 @@ namespace :amazon do
 
     
     $logfile.puts "Resizing pix .."
-    resize_me = unresized_recs $amazonmodel
+    resize_me = (unresized_recs $amazonmodel) + dl_me
     failed = resize_all(resize_me.collect{|x| x.id})
     $logfile.puts "ERROR -- couldn't resize all pictures" if failed.length > 0
     $logfile.puts "#{failed.length} FAILED RESIZINGS:" if failed.length > 0
     $logfile.puts failed * "\n"
     
     $logfile.puts "Recording missing sizes & urls for pix..."
-    measure_me = statless_recs $amazonmodel
+    measure_me = $amazonmodel.all #(statless_recs $amazonmodel) + dl_me + resize_me
     failed = record_pic_stats(measure_me)
     $logfile.puts "ERROR -- couldn't record all sizes/urls" if failed.length > 0
     $logfile.puts "Can't record sizes/urls for #{failed.length} records:" if failed.length > 0

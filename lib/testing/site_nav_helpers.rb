@@ -1,4 +1,4 @@
-module PrinterPageHelpers
+module NavigationHelpers
   
   @@uses = {0 => "All-Purpose", 1 =>"Home Office", \
     2 => "Small Office", 3 => "Corporate Use", 4 => "Photography"}
@@ -38,12 +38,12 @@ module PrinterPageHelpers
        @slider_nicknames << x.gsub(/(\w+\[)/){''}.gsub(/(_.+)/){''} 
      end
      
-     @total_printers = [nil,nil,nil,nil,nil]
+     @total_products = [nil,nil,nil,nil,nil]
      
   end
   
-   def set_total_printers index, value
-     @total_printers[index] = value
+   def set_total_products index, value
+     @total_products[index] = value
    end
    
    def get_detail_page_link box
@@ -132,27 +132,27 @@ module PrinterPageHelpers
    
    # Returns the number of borderboxes on the page.
    def num_boxes
-     num_elements(".borderbox")
+     num_elements(".navigator_box")
    end
 
-   # Reads the number of printers being browsed from the page.
-   def num_printers
+   # Reads the number of products being browsed from the page.
+   def num_products
       leftbar_el = get_el(doc.css("#leftbar"))
       return 0 if leftbar_el.nil?
       leftbar = leftbar_el.content.to_s
-      printer_phrase = leftbar.match('Browsing \d+ Printers').to_s
-      num_printers = printer_phrase.match('\d+').to_s
-      return num_printers.to_i
+      printer_phrase = leftbar.match('Browsing \d+ ').to_s
+      num_products = printer_phrase.match('\d+').to_s
+      return num_products.to_i
    end
    
-   # Returns # of saved printers from the Savebar.
+   # Returns # of saved products from the Savebar.
    def num_saved_items
      num_elements('#savebar_content .saveditem')
    end
 
    # Returns the number of "browse similar" links you can click.
    def num_similar_links
-      num_elements(".sim")
+      num_elements(".sim a")
    end
 
   def num_elements el_matcher
@@ -176,8 +176,8 @@ module PrinterPageHelpers
       return sesh_id
    end
    
-   # Tells you if there is a "No printers selected" message displayed.
-   def no_printers_found_msg?
+   # Tells you if there is a "No products selected" message displayed.
+   def no_products_found_msg?
      # Message is in the first span tag in the div with id main.
      msg_span_el = get_el doc.css(".main span")
      return false if msg_span_el.nil?
@@ -188,13 +188,13 @@ module PrinterPageHelpers
      return (printer_phrase.length > 0)
    end
    
-   def total_printers
-     return @total_printers
+   def total_products
+     return @total_products
    end
 
    def home_page?
      return true if self.current_url == 'http://localhost:3000/'
-     return true if self.current_url == 'http://localhost:3000/printers/'
+     return true if self.current_url == 'http://localhost:3000/products/'
      bd_div_content = get_bd_div_text
      welcome_msg = bd_div_content.match("Find, compare and buy the right laser printer")
      return !welcome_msg.nil?  

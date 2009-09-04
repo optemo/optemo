@@ -41,6 +41,9 @@ class Printer < ActiveRecord::Base
     "scanner" => "Scanner: Printers that can scan documents.",
     "printserver" => "Printer Server: Printers that have wired or wireless networking. A printserver can be used by multiple computers without having to be connected to a computer that is always on."
     }
+    
+    
+  ItoF = %w(price itemwidth)
 
   named_scope :priced, :conditions => "price > 0"
   named_scope :valid, :conditions => [ContinuousFeatures.map{|i|i+' > 0'}.join(' AND '),BinaryFeatures.map{|i|i+' IS NOT NULL'}.join(' AND ')].delete_if{|l|l.blank?}.join(' AND ')

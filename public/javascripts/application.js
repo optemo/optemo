@@ -225,39 +225,92 @@ $(document).ready(function() {
 	
 	//Set up sliders
 	$('.slider').each(function() {
-		curmin = parseInt($(this).attr('data-startmin'));
-		curmax = parseInt($(this).attr('data-startmax'));
-		rangemin = parseInt($(this).attr('data-min'));
-		rangemax = parseInt($(this).attr('data-max'));
-		sessmin = parseInt($(this).attr('data-prodmin'));
-		sessmax = parseInt($(this).attr('data-prodmax'));
+		itof = $(this).attr('data-itof');
+		if(itof == 'false')
+		{
+			curmin = parseFloat($(this).attr('data-startmin'));
+			curmax = parseFloat($(this).attr('data-startmax'));
+			rangemin = parseFloat($(this).attr('data-min'));
+			rangemax = parseFloat($(this).attr('data-max'));
+		}
+		else
+		{
+			curmin = parseInt($(this).attr('data-startmin'));
+			curmax = parseInt($(this).attr('data-startmax'));
+			rangemin = parseInt($(this).attr('data-min'));
+			rangemax = parseInt($(this).attr('data-max'));
+		}
 		$(this).slider({
-			range: false,
-			min: rangemin,
-			max: rangemax,
-			values: [curmin,curmax],
-			slide: function(e,ui) {
-				if ($(this).attr('data-formatting') == '$')
+			orientation: 'horizontal',
+            range: true,
+            min: 0,
+            max: 100,
+            values: [((curmin-rangemin)/(rangemax-rangemin))*100,((curmax-rangemin)/(rangemax-rangemin))*100],
+			slide: function(event, ui) {
+				itof = $(this).attr('data-itof');
+				if(itof == 'false')
 				{
-					min = Math.floor(ui.values[0]);
-					max = Math.ceil(ui.values[1]);
+					curmin = parseFloat($(this).attr('data-startmin'));
+					curmax = parseFloat($(this).attr('data-startmax'));
+					rangemin = parseFloat($(this).attr('data-min'));
+					rangemax = parseFloat($(this).attr('data-max'));
 				}
 				else
 				{
-					min = Math.floor(ui.values[0]*10)/10;
-					max = Math.ceil(ui.values[1]*10)/10;
+					curmin = parseInt($(this).attr('data-startmin'));
+					curmax = parseInt($(this).attr('data-startmax'));
+					rangemin = parseInt($(this).attr('data-min'));
+					rangemax = parseInt($(this).attr('data-max'));
 				}
-				$(this).siblings('.min').attr('value',min);
-				$(this).siblings('.max').attr('value',max);
-				$('.sliderlabel:first', this).html(min);
-				$('.sliderlabel:last', this).html(max);
-				$('.ui-state-focus .sliderlabel',this).css('margin-top','-29px');
-				},
-			stop: function(e,ui){submit_filter();}
+				var min = 0;
+				var max = 100;
+				var realselectmin, realselectmax;
+				var value = ui.value;
+                if (ui.value == ui.values[0])
+				{
+					$(this).slider('values', 0, value);
+					realselectmin = (parseFloat((ui.values[0]/100))*(rangemax-rangemin))+rangemin;	// The actual feature value corresponding to slider position
+					if(itof == 'true')
+						realselectmin = parseInt(realselectmin);
+					else
+						realselectmin = parseInt(realselectmin*10)/10;
+					$('a:first', this).html(realselectmin).addClass("valbelow");
+					// Set the form values that get submitted
+					$(this).siblings('.min').attr('value',realselectmin);
+					$(this).siblings('.max').attr('value',curmax);
+                }
+                else
+				{
+                    $(this).slider('values', 1, value);
+					realselectmax = (parseFloat((ui.values[1]/100))*(rangemax-rangemin))+rangemin;
+					if(itof == 'true')
+						realselectmax = parseInt(realselectmax);
+					else
+						realselectmax = parseInt(realselectmax*10)/10;
+					$('a:last', this).html(realselectmax).addClass("valabove");
+					// Set the form values that get submitted
+					$(this).siblings('.max').attr('value',realselectmax);
+					$(this).siblings('.min').attr('value',curmin);
+			     }	
+               	return false;
+            },
+			stop: function(e,ui)
+			{
+				submit_filter();
+			}
 		});
-		$('a:first', this).html('<div class="sliderlabel">'+curmin+'</div>').addClass("moveontop")
-		$('a:last', this).html('<div class="sliderlabel">'+curmax+'</div>').addClass("moveontop")
-		histogram($(this).siblings('.hist')[0],(sessmin-rangemin)/(rangemax-rangemin),(sessmax-rangemin)/(rangemax-rangemin));
+		$(this).slider('values', 0, ((curmin-rangemin)/(rangemax-rangemin))*100);
+		$('a:first', this).html(curmin).addClass("valbelow");
+		$(this).slider('values', 1, ((curmax-rangemin)/(rangemax-rangemin))*100);
+		$('a:last', this).html(curmax).addClass("valabove");
+		if ((itof=='true' && (curmin>=curmax-1)) || (itof=='false' && curmin>=curmax-.1))	// Shade histogram if feature range is 1 for itof features and .1 for others
+		{
+			histogram($(this).siblings('.hist')[0], true);
+		}
+		else
+		{
+			histogram($(this).siblings('.hist')[0], false);
+		}
 	});
 	
 // Removed preference operations for speed-up
@@ -311,33 +364,38 @@ $(document).ready(function() {
 });
 
 //Draw slider histogram
-function histogram(element,min,max) {
+function histogram(element, norange) {
 	var raw = $(element).attr('data-data');
 	if (raw)
-		{var data = raw.split(',');}
+		var data = raw.split(',');
 	else
-		{var data = [0.5,0.7,0.1,0,0.3,0.8,0.6,0.4,0.3,0.3];}
+		var data = [0.5,0.7,0.1,0,0.3,0.8,0.6,0.4,0.3,0.3];
 	//Data is assumed to be 10 normalized elements in an array
-	
-	var peak = 10,
+	var peak = 0,
 	trans = 4,
 	step = peak + 2*trans,
 	height = 20,
-	length = 177,
+	length = 168,
 	shapelayer = Raphael(element,length,height),
-	//shapelayer = paper.group(),
-	t = shapelayer.path({fill: Raphael.getColor(), opacity: 0.75});//Raphael.hsb2rgb(Math.abs(Math.sin(parseInt(element,36))),1,1).hex, opacity: 0.5});
-	
+	h = height - 1;
+	if(norange==true)	// i.e if left slider and right slider are the same value
+	{
+		t = shapelayer.path({fill: 'gray', opacity: 0.30});
+		Raphael.getColor(); //Don't want to mess up the color rotation
+	}
+	else
+		t = shapelayer.path({fill: Raphael.getColor(), opacity: 0.75});
 	t.moveTo(0,height);
+
+	init = 4;
 	for (var i = 0; i < data.length; i++)
 	{
-	t.cplineTo(i*step+trans,height*(1-Math.sqrt(data[i])),5);
-	t.lineTo(i*step+trans+peak,height*(1-Math.sqrt(data[i])));	
+	t.cplineTo(init+i*step+trans,h*(1-data[i])+1,5);
+	t.lineTo(init+i*step+trans+peak,h*(1-data[i])+1);	
+	//shapelayer.text(i*step+trans+5, height*0.5, i);
 	}
-	t.cplineTo((data.length)*step,height,5);
+	t.cplineTo(init+(data.length)*step+4,height,5);
 	t.andClose();
-	shapelayer.rect(0,0,min*length,height).attr({fill: "#dddddd", "stroke-opacity": 0});
-	shapelayer.rect(max*length,0,length,height).attr({fill: '#dddddd', "stroke-opacity": 0});
 }
 
 /* http://snipplr.com/view/1696/get-elements-by-class-name/ */

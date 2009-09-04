@@ -37,12 +37,30 @@ module ProductsHelper
     end
   end
   
+  
+  def roundmin(n)
+    (n*10).to_i.to_f/10
+  end
+  def roundmax(n)
+    (n*10).ceil.to_f/10
+  end
+  
   def dbmin(i2f, feat)
     i2f ? @dbfeat[feat].min/100 :  @dbfeat[feat].min.to_i
   end
   
   def dbmax(i2f, feat)
     i2f ? (@dbfeat[feat].max.to_f/100).ceil : @dbfeat[feat].max.ceil
+  end
+  
+  def nav_link
+    
+    if request.env['HTTP_REFERER'] && request.env['HTTP_REFERER'].match('laserprinterhub|localhost')
+      link_to 'Go back<br> to navigation', 'javascript:history.back()'
+    else
+      link_to 'Browse more products', :controller => 'products'
+    end
+    
   end
   
   def h1title
@@ -56,4 +74,10 @@ module ProductsHelper
       "#{@allSearches.last.desc} #{$model.urlname.capitalize}"
     end
   end
+
+  
+  def repDesc(cluster)
+    cluster.representative(@session).catsubclass
+  end
+
 end

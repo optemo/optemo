@@ -133,20 +133,6 @@ module CleaningHelper
     return atts
   end
   
-  # Same thing for cartridges.
-  def cartridge_cleaning_code atts
-    atts = generic_cleaning_code atts
-    atts.each{|x,y| atts[x]= atts[y].strip if atts[y] and atts[y].type == 'String'}
-    atts['model'].gsub!(/compatible/i,'') if atts['model']
-    atts['mpn'].gsub!(/compatible/i,'') if atts['mpn']
-    #if atts['mpn'] and atts['model']
-    #  debugger
-    #  models = [atts['mpn'],atts['model']].reject{|x| x.nil? or x.strip == ''}.sort{|x,y| x.length <=> y.length}
-    #  atts['model'] = models[0]
-    #end
-    return atts
-  end
-  
   # If any of the 'indicator properties' in the 
   # attribute hash are not nil, the boolean property
   # is set to true in the attribute hash. Otherwise 

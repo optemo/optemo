@@ -10,33 +10,29 @@ class ProductsController < ApplicationController
   def index
     @link = initialClusters
   end
-  
+    
   def compare
     @session = @@session
     @dbfeat = {}
     DbFeature.find_all_by_product_type_and_region($model.name,$region).each {|f| @dbfeat[f.name] = f}
     @s = Search.createFromPath_and_commit(params[:id].split('-'), @session.id)
-    if @s.nil?
-      redirect_to initialClusters
-    else
-      @dists = @s.distributions
-      @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
-      @allSearches = []
-      @clusterDescs = @s.clusterDescription
-      if @session.searchpids.blank? #|| @@session.searchpids.size > 9)
-        z = Search.find_all_by_session_id(@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.minute.ago}\'")
-        #z = [472, 478, 514, 516, 536, 538, 540].map{|id|Search.find(id)}
-        unless (z.nil? || z.empty?)
-          @layer, @allSearches = zipStack(z) 
-        end  
-        #No products found
-        if @s.result_count == 0
-          flash[:error] = "No products were found, so you were redirected to the home page"
-          redirect_to initialClusters
-        end
+    @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
+    @allSearches = []
+    @counts = @s.countBinary
+    @clusterDescs = @s.clusterDescription
+    if @session.searchpids.blank? 
+      z = Search.find_all_by_session_id(@session.id, :order => 'updated_at ASC', :conditions => "updated_at > \'#{1.hour.ago}\'")
+      unless (z.nil? || z.empty?)
+        @layer, @allSearches = zipStack(z) 
+      end  
+      #No products found
+      if @s.result_count == 0
+        flash[:error] = "No products were found, so you were redirected to the home page"
+        redirect_to initialClusters
       end
-    end
+   end  
   end
+
 
   # GET /products/1
   # GET /products/1.xml

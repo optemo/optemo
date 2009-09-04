@@ -235,12 +235,4 @@ module ScrapingHelper
     return val
   end
 
-  # Logs to logfile or puts on screen if no logfile exists.
-  def log str
-    if @logfile
-      @logfile.puts str
-    else
-      puts str
-    end
-  end
 end

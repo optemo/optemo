@@ -1,24 +1,28 @@
 /* CSS Document */
 a.link {
 	margin-left: 10px;
-	margin-right: 10px;}
+	margin-right: 10px;
+}
 div.main {
 	padding: 0;
 	width: 730px;
 	margin-left: 210px;
-	text-align: left;}
+	text-align: left;
+}
 div.rowdiv {
 	width: 100%;
 	height: 205px;
-	}
+}
 a img {
-	border: none;}
+	border: none;
+}
 
 /* Navigator box */
 .navigator_box p {
 	margin: 0px 0px 5px;
 	padding: 0;
-	line-height:1.2em;}
+	line-height:1.2em;
+}
 div.navigator_box {
 	text-align: center;
 	font-size: small;
@@ -57,9 +61,15 @@ div.navigator_box:hover {
 	width: 225px;
 	height: 25px;
 	padding: 3px 0px 0px;
-	background: url(../images/sim_button_long.png) no-repeat;}
+	background: url(../images/sim_button_long.png) no-repeat;
+}
 .sim:hover{
 	background: url(../images/sim_button_long_high.png) no-repeat;
+}
+/* From sliders branch */
+.lifestyle {
+	color: #926C13;
+	font-size: 0.8em;
 }
 a.save {
 	font-size: 0.9em;
@@ -67,31 +77,44 @@ a.save {
 	text-decoration: none;
 /*	background: url(../images/save_try.png) no-repeat;*/
 	color: black;
-	}
+}	
+a.savedisabled {
+	font-size: 0.9em;
+	line-height: 1.2em;
+	text-decoration: none;
+	background: url(../images/save_button_disabled.png) no-repeat;
+	color: black;
+}
 .sim a {
 	text-decoration: none;
 	color: black;
 	display: block;
 	width: 100%;
-	height: 100%;}
+	height: 100%;
+}
 .bottombar {
-	width: 100%;}
+	width: 100%;
+}
 .up {
 	text-decoration: none;
 	/*color: #693;*/
-	color: #000;}
+	color: #000;
+}
 .down {
 	text-decoration: none;
 	/*color: #f63;*/
-	color: #000;}
+	color: #000;
+}
 .up img, 
 .down img {
-	vertical-align: middle;}
+	vertical-align: middle;
+}
 .clusterfeatures {
 	float: right;
 	margin-top: 1px;
 	width: 134px;
-	font-size: 0.70em;}
+	font-size: 0.70em;
+}
 .notice {
 	color: #0B4F13;
 	font-size: 1.1em;
@@ -141,14 +164,16 @@ div #savebar {
 	background: #ddd;
 	margin: 0.5em 0.1em 0;
 	padding: 0em 0em 0.5em 0em;
-	text-align: center;}
+	text-align: center;
+}
 #savebar h2 {
 	margin: 0;
 }
 .deleteX {
 	position: absolute;
 	right: 0px;
-	top: 0;}
+	top: 0;
+}
 #deleteme {
 	font-size: 0.8em;
 	margin: 0 5px;
@@ -159,7 +184,7 @@ div #savebar {
 	width: 95px;
 	height: 85px;
 	float: left;
-	}
+}
 p.smalldesc {
 	font-size: 0.8em;
 	line-height: 1em;
@@ -176,7 +201,8 @@ div #filterbar {
 	padding: 0em;
 	text-align: center;
 	position: relative;
-	background: #ddd;}
+	background: #ddd;
+}
 #filterbar h2 {
 	margin: 0;
 }
@@ -330,15 +356,88 @@ a.savedisabled:hover {
 	font-size: 0.8em;
 	padding: 3px;
 }
-.ui-slider { position: relative; text-align: left; }
-.ui-slider .ui-slider-handle { background:url(../../../images/diamond.gif) no-repeat; height:13px; width:9px;text-decoration:none;outline:none;position:absolute;z-index:2;}/*{ position: absolute; z-index: 2; width: 1.2em; height: 1.2em; cursor: default; }
-*/
-.ui-slider .ui-slider-range { position: absolute; z-index: 1; font-size: .7em; display: block; border: 0; }
 
-.ui-slider-horizontal { background:url(../../../images/slider.gif) no-repeat; height: 13px; }
+/* New stuff from sliders branch */
+.ui-slider { position: relative; text-align: left; }
+.ui-slider .ui-slider-handle { background:url(../../../images/diamond.gif) no-repeat; height:13px; width:9px;text-decoration:none;outline:none;position:absolute;z-index:2;}
+.ui-slider .ui-slider-range { position: absolute; z-index: 1; font-size: .7em; display: block; border: 0; }
+/*.ui-slider-horizontal { background:url(../../../images/slider.gif) no-repeat; height: 13px; }*/
 .ui-slider-horizontal .ui-slider-handle { top: -3px; margin-left: -4px; }
 .ui-slider-horizontal .ui-slider-range { top: 0; height: 100%; }
 .ui-slider-horizontal .ui-slider-range-min { left: 0; }
 .ui-slider-horizontal .ui-slider-range-max { right: 0; }
-
 .ui-slider-vertical .ui-slider-handle { background:url(../../../images/diamond_vertical.gif) no-repeat; height:13px; width:9px; overflow:hidden;position:absolute;z-index:2;}
+
+.valbelow {
+	font-size: 0.6em;
+	color: black;
+	padding-top: 17px;
+}
+.valabove {
+	margin-top: -13px;
+	font-size: 0.6em;
+	color: black;
+	height: 26px !important;
+	background-position: 0 100% !important;
+}
+.sliderlabelbelow {
+	font-size: 0.6em;
+	padding-top: 17px;
+	color: black;
+}
+.sliderlabelabove {
+	font-size: 0.6em;
+	text-decoration: none;
+	color: black;
+	position:relative;
+	bottom:16px;
+}
+.unitdisp {      /* Display units of features in filters */
+	font-size: 0.8em;
+}
+.leftofslider {
+	position: absolute;
+	left: 0px;
+	top: -6px;
+	background:url(../../../images/jump.gif) no-repeat;
+	width: 17px;
+}
+.leftofslider div {
+	font-size: 0.6em;
+	color: black;
+	top: 12px;
+	left:-7px;
+	position: absolute;
+}
+.rightofslider {
+    position: absolute;
+	right: 0px;
+	top: -6px;
+	background:url(../../../images/jump.gif) no-repeat;
+	width: 17px;
+}
+.rightofslider div {
+	font-size: 0.6em;
+	color: black;
+	top:12px;
+	right:-17px;
+	position: absolute;
+}
+
+/* Decision overlay */
+.decisionoverlay {
+	padding: 0px 20px;
+	font-size: 0.8em;
+	text-align: justify;
+}
+.leftbutton {
+	float:left; 
+	padding-left:140px;
+}
+.rightbutton {
+	float: left; 
+	padding-left:80px;
+}
+.surveyquestions {	
+	color:red;
+}

@@ -1,6 +1,13 @@
 # Cartridge-specific helper methods
 module CartridgeHelper
   
+  $cartridge_conditions = ['Remanufactured', 'Refurbished', 'Compatible', 'OEM', 'Genuine', 'New']
+  $cartridge_colors = ['Yellow', 'Cyan', 'Magenta', 'Black']
+  $fake_brands = ["123inkjets", "4inkjets", "Best Deal Toner", "Digital Products", "G & G", \
+      "General Ribbon Corporation", "Global Marketing Partners", "Ink It Up 4 Less", "Ink-Power",\
+       "Inkers", "LD Products", "Mega Leader", "Mipo", "Pritop", "Q-Imaging", "Sophia Global", \
+       "TNT Toner", "Cartridge Family" , 'Ink Grabber']  #"SIB", "SOL", "STC", ] <-- These are weird
+  
   # Creates an entry in the Compatibility table
   # unless there is already one just like it.  
   # Returns the Compatibility table entry with given attributes
@@ -142,7 +149,6 @@ module CartridgeHelper
   def clean_cartridges recset, default_real=nil
   
     # New must be last as the default
-    conditions = ['Remanufactured', 'Refurbished', 'Compatible', 'OEM', 'New']
     
     # fill in Ink and Real
     recset.each{|x| 
@@ -161,10 +167,88 @@ module CartridgeHelper
         fill_in 'real', default_real, x
       end
       
-      conditions.each{|c| 
+      $cartridge_conditions.each{|c| 
         fill_in('condition', c, x) and break if (x.title || '').match(/#{c}/i)
       }
     }
+  end
+  
+  # Generic cleaning code for cartridges.
+  def cartridge_cleaning_code atts, default_brand=nil, default_real=nil
+    atts = generic_cleaning_code atts
+    
+    atts.each{|x,y| atts[x]= atts[y].strip if atts[y] and atts[y].type == 'String'}
+    atts['model'].gsub!(/compatible/i,'') if atts['model']
+    atts['mpn'].gsub!(/compatible/i,'') if atts['mpn']
+    
+    atts['toner'] = false if (atts['title'] || '').match(/ink/i)
+    atts['toner'] = true if (atts['title'] || '').match(/toner/i)
+    
+    unless atts['title'].nil?
+      atts.merge!( clean_condition atts['title'], default_real )
+      atts['compatiblebrand'] = clean_brand atts['title']
+      
+      if atts['real'] == true
+          atts['brand'] = atts['realbrand'] = atts['compatiblebrand']
+      elsif atts['real'] == false and !atts['condition'].nil?
+          atts['realbrand'] = clean_brand atts['title'], $fake_brands
+          atts['realbrand'] = default_brand if atts['brand'].nil? and !default_brand.nil?
+          atts['brand'] = "#{atts['condition']} #{atts['compatiblebrand']}"
+          atts['brand'] = "#{atts['realbrand']} #{atts['brand']}" if atts['realbrand']
+      end 
+      
+      if likely_cartridge_model_name(atts['model']) < 3
+        atts['model'] = get_most_likely_model [atts['title']], atts['compatiblebrand']
+      end
+      
+    end
+    
+    atts['color'] = clean_color atts['title']
+    return atts
+  end
+  
+  # Returns the string in the array that is most 
+  # likely to be a cartridge model?
+  def get_most_likely_model arr, brand=''
+    # TODO : cartridge model not just model. change method name!
+    
+    # Includes stuff between brackets too:
+    arr_more = arr.collect{|x| [x, (x || '').match(/\(.*?\)/).to_s]}.flatten.reject{|x| x.nil? or x == ''}
+    temp = arr_more.collect{|x| clean_model(x, brand)}
+    arr_more += temp
+    return arr_more.sort{|a,b| likely_cartridge_model_name(a) <=> likely_cartridge_model_name(b)}.last
+  end
+  
+  def clean_condition str, default_real=nil
+    retme = {}
+    
+    if (str || '').match(/(alternative|compatible|remanufactured|refurbished)/i)
+      retme['real'] = false
+    elsif (str || '').match(/genuine|oem/i)
+      retme['real'] = true
+    elsif !default_real.nil? and retme['real'].nil?
+      retme['real'] = default_real
+    end
+    
+    $cartridge_conditions.each{|c| retme['condition'] = c and break if str.match(/#{c}/i)}
+    
+    return retme
+  end
+  
+  def clean_color blurb
+    color = nil
+    $cartridge_colors.each{|c|
+      if blurb.match(/#{c}/i)
+         color = 'All' if !color.nil?
+         color = c if color.nil?
+      end
+    }
+    return color
+  end
+  
+  def self.real_brands
+    init_brands
+    return $real_brands
   end
   
   # Initializes the list of printer
@@ -184,10 +268,7 @@ module CartridgeHelper
       'Kodak', "Kyocera Mita", "Lexmark", 'Lanier', "Oki Data", "Panasonic", "Pitney Bowes",\
       "Promedia", "Ricoh","Samsung", "Sharp", "Toshiba", "Xerox"]
     $real_brands.uniq!
-    $fake_brands = ["123inkjets", "4inkjets", "Best Deal Toner", "Digital Products", "G & G", \
-      "General Ribbon Corporation", "Global Marketing Partners", "Ink It Up 4 Less", "Ink-Power",\
-       "Inkers", "LD Products", "Mega Leader", "Mipo", "Pritop", "Q-Imaging", "Sophia Global", \
-       "TNT Toner", "Cartridge Family" ]  #"SIB", "SOL", "STC", ] <-- These are weird
+   
     $printer_models = Printer.all.collect{|x| just_alphanumeric(x.model) }.reject{|x| x.nil? or x==''}
   end
 
