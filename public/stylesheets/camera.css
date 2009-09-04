@@ -59,7 +59,7 @@ div.navigator_box:hover {
 	padding: 3px 0px 0px;
 	background: url(../images/sim_button_long.png) no-repeat;}
 .sim:hover{
-	background: url(../images/sim_button_high.png) no-repeat;
+	background: url(../images/sim_button_long_high.png) no-repeat;
 }
 a.save {
 	font-size: 0.9em;
