@@ -31,16 +31,18 @@
 
 <!-- The Filters section -->
 <div id="filterbar">
-	<h2>Filters</h2>
+	<h2>Browse</h2>
 	<% form_tag("/search/filter",{:id => 'filter_form'}) do %>
 		<!-- Filter partial to draw the filter controls -->
 	  	<%= render :partial => 'filter' %>
 	<% end %>
 </div>
 
-<!-- Powered By Optemo link  & Request a feature -->
-<br>powered by <br><%= link_to image_tag('optemo.jpg'), 'http://www.optemo.com', {:title => 'Optemo'} %> <br>
-<br><p><i><%= link_to "Request a Feature", "#", :id => "requestafeature" %></i></p>
+<!-- Powered By Optemo link (?)  & Request a feature -->
+<!-- <br>powered by <br><%= link_to image_tag('optemo.jpg'), 'http://www.optemo.com', {:title => 'Optemo'} %> <br>
+<br> -->
+
+<p><i><%= link_to "Request a Feature", "#", :id => "requestafeature" %></i></p>
 </div>
 
 <div class="main">

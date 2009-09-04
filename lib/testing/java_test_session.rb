@@ -6,15 +6,15 @@ class JavaTestSession < Webrat::SeleniumSession
      super
      @logfile = log
      get_homepage
-     pick_printer_use
+    # pick_printer_use
      get_init_values
      NavigationHelpers.uses.keys.each do |u|
         get_homepage
-        pick_printer_use u
+        #pick_printer_use u
         set_total_products u, (self.num_products) 
      end
      get_homepage
-     pick_printer_use
+    # pick_printer_use
   end
      
   def get_detail_page box

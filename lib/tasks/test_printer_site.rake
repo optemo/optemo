@@ -65,10 +65,10 @@ namespace :printer_test do
      
      setup 'homepage'
      
-     @sesh.num_uses.times do |x|
+     #@sesh.num_uses.times do |x|
        test_click_home_logo
-       test_pick_use x
-     end
+       #test_pick_use x
+     #end
      
      close_log
    end
@@ -105,7 +105,7 @@ namespace :printer_test do
      (1..@sesh.num_brands_in_dropdown).each do |brand| 
        test_add_brand (brand - 1)      
        test_click_home_logo
-       test_pick_use 0
+       #test_pick_use 0
      end
 
      close_log
@@ -157,7 +157,7 @@ namespace :printer_test do
          pick_action = (rand 12).floor
          # For the error page, the # of possible actions is very limited.
          pick_action = 10 + rand(2) if @sesh.error_page?
-         pick_action = 12 if @sesh.home_page?
+         #pick_action = 12 if @sesh.home_page?
          pick_action = 13 if @sesh.get_bd_div_text == ''
 
          if pick_action == 0                     #0 Test move sliders.
@@ -211,11 +211,13 @@ namespace :printer_test do
            #test_detail_page detailme
          elsif pick_action == 10                  #10 Test home logo
            test_click_home_logo
-         elsif pick_action == 11                  #11 Test back button
+         elsif pick_action == 11
+           test_goto_homepage        
+        # elsif pick_action == 11                  #11 Test back button
            # No back button test is implemented
-         elsif pick_action == 12                  #12 Test clicking a use button
-           pickme = rand(@sesh.num_uses)
-           test_pick_use pickme
+         #elsif pick_action == 12                  #12 Test clicking a use button
+        #   pickme = rand(@sesh.num_uses)
+        #   test_pick_use pickme
          elsif pick_action == 13
            break 
          end
@@ -242,7 +244,7 @@ namespace :printer_test do
          pick_action = rand 8
          # For the error page, the # of possible actions is very limited.
          pick_action = 6 + rand(2) if @sesh.error_page?
-         pick_action = 8 if @sesh.home_page?
+         #pick_action = 8 if @sesh.home_page?
 
          if pick_action == 0                     #0 Test move sliders.
            slide_me = rand @sesh.num_sliders
@@ -279,10 +281,12 @@ namespace :printer_test do
             test_detail_page detailme
          elsif pick_action == 6                  #6 Test home logo
              test_click_home_logo
-         elsif pick_action == 7                  #7 Test back button
+         elsif pick_action == 7
+           test_goto_homepage
+         #elsif pick_action == 7                  #7 Test back button
             #Back button test not implemented
-         elsif pick_action == 8                  #8 Test clicking a use button
-           test_pick_use 0
+         #elsif pick_action == 8                  #8 Test clicking a use button
+         #  test_pick_use 0
          end
 
        end

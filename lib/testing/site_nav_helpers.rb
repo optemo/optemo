@@ -194,10 +194,10 @@ module NavigationHelpers
 
    def home_page?
      return true if self.current_url == 'http://localhost:3000/'
-     return true if self.current_url == 'http://localhost:3000/products/'
+     return true if self.current_url == 'http://localhost:3000/printers/'
      bd_div_content = get_bd_div_text
-     welcome_msg = bd_div_content.match("Find, compare and buy the right laser printer")
-     return !welcome_msg.nil?  
+     welcome_msg = bd_div_content.match("All Purpose Printers")
+     return !welcome_msg.nil? 
    end
    
    def get_bd_div_text

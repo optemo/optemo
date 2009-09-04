@@ -28,7 +28,7 @@
 	  <div id="logo">
 		<a href="<%= url_for '/' %>" id ="logo" title="LaserPrinterHub.com"><%= $region == "us" ? image_tag('logo.jpg') : image_tag('logo_ca.jpg')%><span>Home</span></a>
 	  </div>
-		<a href="<%= url_for '/laserprinters' %>" title="Why to buy a laser printer?" id='whylaser'><%= image_tag('whylaser.jpg') %><span>Click to find out</span></a>
+		<a href="<%= url_for '/laserprinters' %>" title="Why buy a laser printer?" id='whylaser'>Why buy a laser printer?<span>Click to find out</span></a>
 	  
      <div id="logindisplay">                                                                                               
    		<% if !cookies[$AppKey +"_user"].nil? %>
@@ -47,9 +47,9 @@
 			<fb:login-button size="small" length="short" onlogin="window.location.href='/login/do_login?currpage=' + window.location;" autologoutlink="false"> </fb:login-button>
 		<% end %>
      </div>
-<!--	 <div id="header_buttons">                                                                                             
+	 <div id="header_buttons">                                                                                             
        powered by <%= link_to image_tag('optemo.jpg'), 'http://www.optemo.com', {:title => 'Optemo'} %>                    
-     </div>              -->                                                                                                  
+     </div>                                                                                                                
 	</div>
    </div>
    <div id="headerbar"><!--IE min line height--></div>

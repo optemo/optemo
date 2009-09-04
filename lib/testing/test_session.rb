@@ -6,15 +6,16 @@ class TestSession < Webrat::MechanizeSession
      super
      @logfile = log
      get_homepage
-     pick_printer_use
+     #pick_printer_use
      get_init_values
-     NavigationHelpers.uses.keys.each do |u|
-        get_homepage
-        pick_printer_use u
-        set_total_products u, self.num_products 
-     end
-     get_homepage
-     pick_printer_use 
+     set_total_products 0, self.num_products
+    # NavigationHelpers.uses.keys.each do |u|
+    #    get_homepage
+    #    pick_printer_use u
+    #    set_total_products u, self.num_products 
+    # end
+    # get_homepage
+    # pick_printer_use 
   end
      
    def move_slider which_slider, min, max
