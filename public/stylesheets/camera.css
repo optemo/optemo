@@ -9,6 +9,12 @@ div.main {
 	margin-left: 210px;
 	text-align: left;
 }
+div.welcome_msg {
+	
+	font-size: 0.9em;
+	margin-bottom: 2px;
+	margin-top: 2px;
+}
 div.rowdiv {
 	width: 100%;
 	height: 205px;
