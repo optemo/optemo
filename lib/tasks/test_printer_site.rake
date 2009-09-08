@@ -81,20 +81,16 @@ namespace :printer_test do
      setup "sliders" 
 
      ( $num_tests || 100).times do
+       
+       slideme = rand @sesh.num_sliders
+       new_position = @sesh.slider_percent_to_pos slideme, rand(101)
 
-       pick_slider = rand @sesh.num_sliders
+       log "Testing the " + @sesh.slider_name(slideme) + " slider. Moving it to " +  new_position.to_s
 
-       distance =@sesh.slider_min(pick_slider).to_i + rand(@sesh.slider_range(pick_slider)).to_i
-       # TODO This tests integer inputs ONLY!
-       # TODO Testing non-integers might require changes in my assert code!
-       log "Testing the " + @sesh.slider_name(pick_slider) + " slider. Moving it to " +  distance.to_s
+       new_min = new_max = new_position
+       (rand >= 0.5)? new_min = @sesh.current_slider_min(slideme) : new_max = @sesh.current_slider_max(slideme)
 
-       new_min = @sesh.current_slider_min(pick_slider).to_i
-       new_max = @sesh.current_slider_max(pick_slider).to_i
-       (rand >= 0.5)? new_min = distance.to_i : new_max = distance.to_i
-
-       test_move_sliders(pick_slider, new_min, new_max)
-
+       test_move_sliders(slideme, new_min, new_max)
      end
 
      close_log
@@ -165,13 +161,11 @@ namespace :printer_test do
 
          if pick_action == 0                     #0 Test move sliders.
            slide_me = rand @sesh.num_sliders
+           distance = @sesh.slider_percent_to_pos slide_me, rand(101)
 
-           offset = rand(@sesh.slider_range(slide_me))
-           distance = @sesh.slider_min(slide_me).floor + offset
-
-           new_min = @sesh.current_slider_min(slide_me).to_i
-           new_max = @sesh.current_slider_max(slide_me).to_i
-           (rand >= 0.5)? new_min = distance.to_i : new_max = distance.to_i
+           new_min = (@sesh.current_slider_min(slide_me)).to_i
+           new_max = (@sesh.current_slider_max(slide_me)).to_i
+           (rand >= 0.5)? new_min = distance : new_max = distance
 
            test_move_sliders(slide_me, new_min, new_max)
          elsif pick_action == 1                  #1 Test add brand
@@ -251,10 +245,8 @@ namespace :printer_test do
 
          if pick_action == 0                     #0 Test move sliders.
            slide_me = rand @sesh.num_sliders
-
-           offset = rand(@sesh.slider_range(slide_me))
-           distance = (@sesh.slider_min(slide_me) + offset).to_i
-
+           distance = @sesh.slider_percent_to_pos slide_me, rand(101)
+           
            new_min = (@sesh.current_slider_min(slide_me)).to_i
            new_max = (@sesh.current_slider_max(slide_me)).to_i
            (rand >= 0.5)? new_min = distance : new_max = distance
