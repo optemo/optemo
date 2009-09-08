@@ -8,7 +8,8 @@ class ProductsController < ApplicationController
   # GET /products.xml
   
   def index
-    @link = initialClusters
+    redirect_to initialClusters
+    #@link = initialClusters
   end
     
   def compare

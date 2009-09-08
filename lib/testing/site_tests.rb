@@ -1,24 +1,23 @@
 module PrinterTest
 
   def test_detail_page box_index
-    log "Getting Detail page for #{box_index+1}th box, product id #{@sesh.pid_by_box(box_index+1)}"
-    come_back_here = @sesh.current_url
-    begin
-      @sesh.get_detail_page (box_index+1)
-    rescue Exception => e
-      report_error "Problem getting detail page for product #{@sesh.pid_by_box(box_index+1)}"
-      report_error "#{e.type} #{e.message}"
-    else
-      assert_not_error_page
-      assert_not_homepage
-      assert_detail_price_not_nil
-      assert_detail_pic_not_nil
-    end
-    @sesh.visit come_back_here
-    @sesh.wait_for_load if java_enabled?
-    assert_not_error_page
-    assert_well_formed_page
-    assert_not_homepage
+    #log "Getting Detail page for #{box_index+1}th box, product id #{@sesh.pid_by_box(box_index+1)}"
+    #come_back_here = @sesh.current_url
+    #begin
+    #  @sesh.get_detail_page (box_index+1)
+    #rescue Exception => e
+    #  report_error "Problem getting detail page for product #{@sesh.pid_by_box(box_index+1)}"
+    #  report_error "#{e.type} #{e.message}"
+    #else
+    #  assert_not_error_page
+    #  assert_not_homepage
+    #  assert_detail_price_not_nil
+    #  assert_detail_pic_not_nil
+    #end
+    #@sesh.visit come_back_here
+    #@sesh.wait_for_load if java_enabled?
+    #assert_not_error_page
+    #assert_well_formed_page
   end
 
 
@@ -168,7 +167,6 @@ module PrinterTest
    else
    # TODO more asserts?
     assert_not_error_page
-    assert_not_homepage
     assert_well_formed_page
  
     assert_search_history_clear
@@ -352,7 +350,7 @@ module PrinterTest
  end
  
  def setup_log(name)
-   @logfile = File.open("./log/printertest_"+name+Time.now.to_s.gsub(/ /, '_')+".log", 'w+')
+   @logfile = File.open("./log/printertest_"+name+".log", 'w+') #+Time.now.to_s.gsub(/ /, '_')
  end
  
  def setup logname

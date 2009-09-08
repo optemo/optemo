@@ -4,11 +4,7 @@
 	<%= render :partial => 'desc', :locals => {:feat => val} %>
 	<%= link_to name, "#" %> 
 	<span class="unitdisp">
-	<% if val == 'price' %>
-		(CAD$)
-	<% else %>
-		(<%= $model::FeaturesLabel[val] %>)
-	<% end %>
+	(<%= $model::FeaturesLabel[val] %>)
 	</span>
 </div>
 <% prodmin = i2f ? @s.ranges(val)[0]/100 : roundmin(@s.ranges(val)[0]) %>

@@ -85,11 +85,23 @@ module NavigationHelpers
      return (slider_max(which_slider) - slider_min(which_slider))
    end
    
-    def current_slider_min which_slider
+   def slider_step which_slider
+      step = (slider_range(which_slider)/100.0)
+      return step
+   end
+   
+   def slider_percent_to_pos which_slider, percentmove
+       realmove = percentmove.to_i * slider_step(which_slider)
+       realpos = realmove + slider_min(which_slider)
+       return realpos.to_i unless which_slider == 0
+       return ((realpos*10).to_i/10.0)
+   end
+   
+   def current_slider_min which_slider
       x= doc.css('div[data-startmin]')[which_slider]
       return x.attribute('data-startmin').to_s.to_f if x
       return nil
-    end
+   end
    
    def current_slider_max which_slider
      x= doc.css('div[data-startmax]')[which_slider]
@@ -194,10 +206,10 @@ module NavigationHelpers
 
    def home_page?
      return true if self.current_url == 'http://localhost:3000/'
-     return true if self.current_url == 'http://localhost:3000/products/'
+     return true if self.current_url == 'http://localhost:3000/printers/'
      bd_div_content = get_bd_div_text
-     welcome_msg = bd_div_content.match("Find, compare and buy the right laser printer")
-     return !welcome_msg.nil?  
+     welcome_msg = bd_div_content.match("All Purpose Printers")
+     return !welcome_msg.nil? 
    end
    
    def get_bd_div_text

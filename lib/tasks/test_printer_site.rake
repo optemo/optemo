@@ -1,6 +1,10 @@
 # Rake tasks to test the Laserprinter website
 namespace :printer_test do   
 
+
+   desc 'Quick test'
+   task :quick => [:hurryinit, :sliders, :search, :brand_selector, :homepage, :random_nojava]
+   
    desc 'Run all tests'
    task :all => [:sliders, :browse_similar, :search, :brand_selector, :random]
   
@@ -10,10 +14,9 @@ namespace :printer_test do
    desc 'Run all tests.'
    task :all_nojava => [:sliders, :browse_similar, :search, :brand_selector, :homepage, :random_nojava]
    
-   task :sandbox => :init do
-     setup 'sandbox'
-    test_search_for 'Xerox'
-    test_remove_search
+   task :sandbox => :java_init do
+    setup 'sandbox'
+    
     close_log
    end
    
@@ -65,10 +68,10 @@ namespace :printer_test do
      
      setup 'homepage'
      
-     @sesh.num_uses.times do |x|
+     #@sesh.num_uses.times do |x|
        test_click_home_logo
-       test_pick_use x
-     end
+       #test_pick_use x
+     #end
      
      close_log
    end
@@ -77,21 +80,17 @@ namespace :printer_test do
    task :sliders => :init do
      setup "sliders" 
 
-     100.times do
+     ( $num_tests || 100).times do
+       
+       slideme = rand @sesh.num_sliders
+       new_position = @sesh.slider_percent_to_pos slideme, rand(101)
 
-       pick_slider = rand @sesh.num_sliders
+       log "Testing the " + @sesh.slider_name(slideme) + " slider. Moving it to " +  new_position.to_s
 
-       distance =@sesh.slider_min(pick_slider).to_i + rand(@sesh.slider_range(pick_slider)).to_i
-       # TODO This tests integer inputs ONLY!
-       # TODO Testing non-integers might require changes in my assert code!
-       log "Testing the " + @sesh.slider_name(pick_slider) + " slider. Moving it to " +  distance.to_s
+       new_min = new_max = new_position
+       (rand >= 0.5)? new_min = @sesh.current_slider_min(slideme) : new_max = @sesh.current_slider_max(slideme)
 
-       new_min = @sesh.current_slider_min(pick_slider).to_i
-       new_max = @sesh.current_slider_max(pick_slider).to_i
-       (rand >= 0.5)? new_min = distance.to_i : new_max = distance.to_i
-
-       test_move_sliders(pick_slider, new_min, new_max)
-
+       test_move_sliders(slideme, new_min, new_max)
      end
 
      close_log
@@ -105,7 +104,7 @@ namespace :printer_test do
      (1..@sesh.num_brands_in_dropdown).each do |brand| 
        test_add_brand (brand - 1)      
        test_click_home_logo
-       test_pick_use 0
+       #test_pick_use 0
      end
 
      close_log
@@ -152,23 +151,21 @@ namespace :printer_test do
          search_strings << bname.downcase
        end
 
-       200.times do
+       ( $num_random_tests || 100).times do
 
          pick_action = (rand 12).floor
          # For the error page, the # of possible actions is very limited.
          pick_action = 10 + rand(2) if @sesh.error_page?
-         pick_action = 12 if @sesh.home_page?
+         #pick_action = 12 if @sesh.home_page?
          pick_action = 13 if @sesh.get_bd_div_text == ''
 
          if pick_action == 0                     #0 Test move sliders.
            slide_me = rand @sesh.num_sliders
+           distance = @sesh.slider_percent_to_pos slide_me, rand(101)
 
-           offset = rand(@sesh.slider_range(slide_me))
-           distance = @sesh.slider_min(slide_me).floor + offset
-
-           new_min = @sesh.current_slider_min(slide_me).to_i
-           new_max = @sesh.current_slider_max(slide_me).to_i
-           (rand >= 0.5)? new_min = distance.to_i : new_max = distance.to_i
+           new_min = (@sesh.current_slider_min(slide_me)).to_i
+           new_max = (@sesh.current_slider_max(slide_me)).to_i
+           (rand >= 0.5)? new_min = distance : new_max = distance
 
            test_move_sliders(slide_me, new_min, new_max)
          elsif pick_action == 1                  #1 Test add brand
@@ -211,11 +208,13 @@ namespace :printer_test do
            #test_detail_page detailme
          elsif pick_action == 10                  #10 Test home logo
            test_click_home_logo
-         elsif pick_action == 11                  #11 Test back button
+         elsif pick_action == 11
+           test_goto_homepage        
+        # elsif pick_action == 11                  #11 Test back button
            # No back button test is implemented
-         elsif pick_action == 12                  #12 Test clicking a use button
-           pickme = rand(@sesh.num_uses)
-           test_pick_use pickme
+         #elsif pick_action == 12                  #12 Test clicking a use button
+        #   pickme = rand(@sesh.num_uses)
+        #   test_pick_use pickme
          elsif pick_action == 13
            break 
          end
@@ -237,19 +236,17 @@ namespace :printer_test do
          search_strings << bname.downcase
        end
 
-       200.times do
+       ( $num_random_tests || 200).times do
 
          pick_action = rand 8
          # For the error page, the # of possible actions is very limited.
          pick_action = 6 + rand(2) if @sesh.error_page?
-         pick_action = 8 if @sesh.home_page?
+         #pick_action = 8 if @sesh.home_page?
 
          if pick_action == 0                     #0 Test move sliders.
            slide_me = rand @sesh.num_sliders
-
-           offset = rand(@sesh.slider_range(slide_me))
-           distance = (@sesh.slider_min(slide_me) + offset).to_i
-
+           distance = @sesh.slider_percent_to_pos slide_me, rand(101)
+           
            new_min = (@sesh.current_slider_min(slide_me)).to_i
            new_max = (@sesh.current_slider_max(slide_me)).to_i
            (rand >= 0.5)? new_min = distance : new_max = distance
@@ -276,13 +273,15 @@ namespace :printer_test do
            end
          elsif pick_action == 5                 #5 Test details 
             detailme = rand(@sesh.num_boxes)
-            test_detail_page detailme
+            #test_detail_page detailme
          elsif pick_action == 6                  #6 Test home logo
              test_click_home_logo
-         elsif pick_action == 7                  #7 Test back button
+         elsif pick_action == 7
+           test_goto_homepage
+         #elsif pick_action == 7                  #7 Test back button
             #Back button test not implemented
-         elsif pick_action == 8                  #8 Test clicking a use button
-           test_pick_use 0
+         #elsif pick_action == 8                  #8 Test clicking a use button
+         #  test_pick_use 0
          end
 
        end
@@ -290,7 +289,14 @@ namespace :printer_test do
        close_log
    end
 
-   desc 'Init for normal settings (faster)'
+   task :hurryinit do
+    
+    $num_tests = 10
+    $num_random_tests = 50
+    
+   
+   end
+
    task :init => :environment do
        # Check for all the right configs
        #raise "Rails test environment not being used." if ENV["RAILS_ENV"] != 'test' 
@@ -311,7 +317,6 @@ namespace :printer_test do
        # or thiss  WWW::Mechanize.read_timeout = 0.1        
    end
    
-   desc 'Init for ajax testing and/or selenium'
    task :java_init => :environment do
      
       # Check for all the right configs

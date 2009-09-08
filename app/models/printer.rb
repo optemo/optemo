@@ -6,11 +6,11 @@ class Printer < ActiveRecord::Base
            #                                (c)luster 
            #                                (f)ilter 
            #     db_name           Type     (e)xtra Display          Label              Low Desc        High Desc                         # Very Low Desc      Very High Desc
-  Features = [%w(ppm               Continuous  cf  Pages\ Per\ Minute  \                Slow            Fast   ),                         # Very\ Slow         Very\ Fast),
+  Features = [%w(ppm               Continuous  cf  Printing\ Speed     ppm                Slow            Fast   ),                         # Very\ Slow         Very\ Fast),
               %w(itemwidth         Continuous  cf  Width               in.              Small           Large  ),                         # Very\ Small        Very\ Large),
-              %w(paperinput        Continuous  cf  Paper\ Tray\ Size   \                Low\ Capacity   High\ Capacity),                  # Low\ Capacity      Very\ High\ Capacity),
-              %w(resolutionmax     Continuous  cf  Resolution          dpi.             Low\ Resolution High\ Resolution),                # Low\ Resolution    Very\ High\ Resolution),
-              %w(price             Continuous  cf  Price               \                Cheap           Expensive),                       # Very\ Cheap        Expensive),
+              %w(paperinput        Continuous  cf  Paper\ Tray\ Size   pages                Low\ Capacity   High\ Capacity),                  # Low\ Capacity      Very\ High\ Capacity),
+              %w(resolutionmax     Continuous  cf  Resolution          dpi             Low\ Resolution High\ Resolution),                # Low\ Resolution    Very\ High\ Resolution),
+              %w(price             Continuous  cf  Price               $                Cheap           Expensive),                       # Very\ Cheap        Expensive),
               %w(brand             Categorical f   Brand               \                \               \                  ),             # \                  \ ),
               %w(scanner           Binary      cf  Scanner             \                \               \                  ),             # \                  \ ),
               %w(printserver       Binary      cf  Networked\ Printer  \                \               \                  )]             # \                  \ )]
