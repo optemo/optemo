@@ -5,8 +5,6 @@ class CreateNeweggPrinters < ActiveRecord::Migration
       t.primary_key :id
       t.string :item_number
       
-      t.string :title
-      
       t.integer :product_id     # matches the Printer entry id
       t.string :product_type    # printer for all of them
       
@@ -44,8 +42,7 @@ class CreateNeweggPrinters < ActiveRecord::Migration
       t.float  :ppm       
       t.float  :ppmcolor
       t.float  :ttp         
-      t.string :resolution 
-      t.integer :resolutionmax
+      t.string :resolution
       
       t.string :language 
       t.string :duplex
@@ -117,6 +114,12 @@ class CreateNeweggPrinters < ActiveRecord::Migration
       t.string :cartridgescompatible 
       t.string :powerrequirements 
       t.string :powerconsumption
+      
+      #Added later
+      t.integer :resolutionmax
+      t.string  :title
+      t.string  :region
+      t.string  :mpn
     end
   end
 
