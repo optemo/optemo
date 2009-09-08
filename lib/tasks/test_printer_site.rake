@@ -1,6 +1,10 @@
 # Rake tasks to test the Laserprinter website
 namespace :printer_test do   
 
+
+   desc 'Quick test'
+   task :quick => [:hurryinit, :sliders, :search, :brand_selector, :homepage, :random_nojava]
+   
    desc 'Run all tests'
    task :all => [:sliders, :browse_similar, :search, :brand_selector, :random]
   
@@ -10,10 +14,9 @@ namespace :printer_test do
    desc 'Run all tests.'
    task :all_nojava => [:sliders, :browse_similar, :search, :brand_selector, :homepage, :random_nojava]
    
-   task :sandbox => :init do
-     setup 'sandbox'
-    test_search_for 'Xerox'
-    test_remove_search
+   task :sandbox => :java_init do
+    setup 'sandbox'
+    
     close_log
    end
    
@@ -77,7 +80,7 @@ namespace :printer_test do
    task :sliders => :init do
      setup "sliders" 
 
-     100.times do
+     ( $num_tests || 100).times do
 
        pick_slider = rand @sesh.num_sliders
 
@@ -152,7 +155,7 @@ namespace :printer_test do
          search_strings << bname.downcase
        end
 
-       200.times do
+       ( $num_random_tests || 100).times do
 
          pick_action = (rand 12).floor
          # For the error page, the # of possible actions is very limited.
@@ -239,7 +242,7 @@ namespace :printer_test do
          search_strings << bname.downcase
        end
 
-       200.times do
+       ( $num_random_tests || 200).times do
 
          pick_action = rand 8
          # For the error page, the # of possible actions is very limited.
@@ -278,7 +281,7 @@ namespace :printer_test do
            end
          elsif pick_action == 5                 #5 Test details 
             detailme = rand(@sesh.num_boxes)
-            test_detail_page detailme
+            #test_detail_page detailme
          elsif pick_action == 6                  #6 Test home logo
              test_click_home_logo
          elsif pick_action == 7
@@ -294,7 +297,14 @@ namespace :printer_test do
        close_log
    end
 
-   desc 'Init for normal settings (faster)'
+   task :hurryinit do
+    
+    $num_tests = 10
+    $num_random_tests = 50
+    
+   
+   end
+
    task :init => :environment do
        # Check for all the right configs
        #raise "Rails test environment not being used." if ENV["RAILS_ENV"] != 'test' 
@@ -315,7 +325,6 @@ namespace :printer_test do
        # or thiss  WWW::Mechanize.read_timeout = 0.1        
    end
    
-   desc 'Init for ajax testing and/or selenium'
    task :java_init => :environment do
      
       # Check for all the right configs
