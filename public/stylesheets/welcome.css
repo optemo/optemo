@@ -75,8 +75,8 @@ p, ul {
 }
 #logo span{
 	position: absolute;
-	top: 49px;
-	left: 230px;
+	top: 5px;
+	left: 120px;
 	color: #693;
 	visibility: hidden;
 	font-family: monaco, arial;
@@ -101,12 +101,12 @@ p {
    margin-left: 20px;
    position: relative;
    width: 920px;
-   height: 82px;
+   height: 70px;
 }
 #header_buttons {
 	position: absolute;
 	height: 40px;
-	bottom: 5px;
+	bottom: -8px;
 	right: 0;
 }
 #header_buttons img{
@@ -183,15 +183,7 @@ div.pass img{
 	font-family:'Arial';
 	color: #669933;
 }
-#whylaser span{
-	position: absolute;
-	top: 54px;
-	left: 610px;
-	color: black;
-	font-size: small;
-	width: 100px;
-	visibility: hidden;
-}
+
 /* Index page */
 .category {
 	width: 175px;
