@@ -67,7 +67,7 @@ module AmazonFeedScraper
           res = Amazon::Ecs.item_lookup(e.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => 'All', :offer_page => current_page, :country => region.intern)
           sleep(1+rand()*30) #Be nice to Amazon
         rescue Exception => exc
-          report_error " "ERROR -- #{exc.message} . Could not look up offers for #{$amazonmodel} "+\
+          report_error "#{exc.message} . Could not look up offers for #{$amazonmodel} "+\
           "#{e.asin} (id #{p.id}) in region #{region}"
           sleep(30) 
           return
@@ -310,7 +310,7 @@ namespace :amazon do
   task :get_new_printers => [:prnt_init, :get_new_products]
 
   task :try_scraping => :prnt_init do
-    recent_asins = ['B0026JL9RG',]
+    recent_asins = ['B0026JL9RG']
   end
 
   # Get a list of all products from and (re)scrape all data
