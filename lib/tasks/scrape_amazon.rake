@@ -203,23 +203,6 @@ end
 
 namespace :scrape_amazon do
 
-  desc "Scraping Amazon"
-  task :scrape => :init do
-    AmazonPrinter.fewfeatures.find(:all, :conditions => ["created_at > ? and nodetails IS NOT TRUE",1.day.ago]).each { |p|
-      p = scrape_details(p)
-      p.save
-      sleep(1+rand()) #Be nice to Amazon
-      sleep(rand()*30) #Be really nice to Amazon!
-    }  
-  end
-
-  desc "Scraping Amazon Printers"
-  task :scrape_printer => :init do
-    #printer = Printer.fewfeatures.find(:first, :order => 'rand()')
-    printer = AmazonPrinter.find_by_asin('B00292BV96')
-    scrape_details(printer).attributes.each_pair{|k,v| puts k + ": "+ v.to_s}
-    puts printer.asin
-  end
 
   task :cart_init => :init do 
     require 'helper_libs'

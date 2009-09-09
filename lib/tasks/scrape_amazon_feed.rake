@@ -67,7 +67,7 @@ module AmazonFeedScraper
           res = Amazon::Ecs.item_lookup(e.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => 'All', :offer_page => current_page, :country => region.intern)
           sleep(1+rand()*30) #Be nice to Amazon
         rescue Exception => exc
-          $logfile.puts "ERROR -- #{exc.message} . Could not look up offers for #{$amazonmodel} "+\
+          report_error " "ERROR -- #{exc.message} . Could not look up offers for #{$amazonmodel} "+\
           "#{e.asin} (id #{p.id}) in region #{region}"
           sleep(30) 
           return
@@ -131,7 +131,7 @@ module AmazonFeedScraper
       res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => merchant, :country => region.intern)
       sleep(1+rand()*30) #Be nice to Amazon
     rescue Exception => exc
-      $logfile.puts "ERROR -- #{exc.message}. Could not look up offer to save for #{$amazonmodel} #{p.asin}"+\
+      report_error " -- #{exc.message}. Could not look up offer to save for #{$amazonmodel} #{p.asin}"+\
       " and merchant #{merchant} in region #{region}"
       sleep(30)
       saveoffer(p,retailer,merchant,region)
@@ -210,7 +210,7 @@ module AmazonFeedScraper
         res = Amazon::Ecs.item_lookup(a.asin, :response_group => 'Reviews', :condition => 'New', :merchant_id => 'All', :review_page => current_page)
         sleep(1+rand()*30) #Be nice to Amazon
       rescue Exception => exc
-        $logfile.puts "ERROR --  #{exc.message}. Couldn't download reviews for product #{a.asin} and merchant #{merchant}"
+        report_error " --  #{exc.message}. Couldn't download reviews for product #{a.asin} and merchant #{merchant}"
       end
       result = res.first_item
       #Look for old Retail Offering
@@ -294,17 +294,17 @@ namespace :amazon do
   
   # -- Useful combos -- #
   
-  desc 'Update printer records'
+  desc 'Update printer images'
   task :update_printer_pix => [:prnt_init, :update_pix, :copy_pic_stats, :closelog] 
   
-  desc 'Update cartridge records'
+  desc 'Update cartridge images'
   task :update_cart_pix => [:crtg_init, :update_pix, :copy_pic_stats, :closelog]
   
   desc 'Update printer records'
-  task :update_printer_prices => [:prnt_init, :get_new_products, :update_prices, :update_prices_ca, :closelog] 
+  task :update_printer_prices => [:prnt_init, :get_new_products, :update_prices, :closelog] 
   
   desc 'Update cartridge records'
-  task :update_cart_prices => [:crtg_init, :get_new_products, :update_prices, :update_prices_ca, :closelog]
+  task :update_cart_prices => [:crtg_init, :get_new_products, :update_prices, :closelog]
   
   desc 'Downloads new printers & scrapes the data'
   task :get_new_printers => [:prnt_init, :get_new_products]
@@ -336,20 +336,11 @@ namespace :amazon do
       p = findprice(p,"us")
       p.save
       sleep(0.5) #One Req per sec
-    }
-    $logfile.puts "Done updating #{$model} prices!"
-  end
-  
-  
-  task :update_prices_ca => :init do
-    $logfile.puts "Updating Canadian prices for #{$model}"
-    $model.all.each {|p|
-      puts 'Processing ' + p.id.to_s
       p = findprice(p,"ca")
       p.save
       sleep(0.5) #One Req per sec
     }
-    $logfile.puts "Done updating prices"
+    $logfile.puts "Done updating #{$model} prices!"
   end
   
   task :download_reviews => :init do
@@ -376,30 +367,30 @@ namespace :amazon do
   # --- Picture rake tasks ---#
   
   task :update_pix => :pic_init do 
-    $logfile.puts "Updating pix"
+    log "Updating pix"
     
-    $logfile.puts "Downloading missing pix.."
+    log "Downloading missing pix.."
     dl_me = (picless_recs $amazonmodel)
-    $logfile.puts "I've got #{dl_me.length} #{$model} pictures to download"
+    log "I've got #{dl_me.length} #{$model} pictures to download"
     failed= download_these(dl_me)
-    $logfile.puts "ERROR -- couldn't download all pictures" if failed.length > 0
-    $logfile.puts "#{failed.length} FAILED DOWNLOADS:" if failed.length > 0
-    $logfile.puts failed * "\n"
+    report_error "couldn't download all pictures" if failed.length > 0
+    log "#{failed.length} FAILED DOWNLOADS:" if failed.length > 0
+    log (failed * "\n")
 
     
-    $logfile.puts "Resizing pix .."
+    log "Resizing pix .."
     resize_me = (unresized_recs $amazonmodel) + dl_me
     failed = resize_all(resize_me.collect{|x| x.id})
-    $logfile.puts "ERROR -- couldn't resize all pictures" if failed.length > 0
-    $logfile.puts "#{failed.length} FAILED RESIZINGS:" if failed.length > 0
-    $logfile.puts failed * "\n"
+    report_error "Couldn't resize all pictures" if failed.length > 0
+    log "#{failed.length} FAILED RESIZINGS:" if failed.length > 0
+    log (failed * "\n")
     
-    $logfile.puts "Recording missing sizes & urls for pix..."
+    log "Recording missing sizes & urls for pix..."
     measure_me = $amazonmodel.all #(statless_recs $amazonmodel) + dl_me + resize_me
     failed = record_pic_stats(measure_me)
-    $logfile.puts "ERROR -- couldn't record all sizes/urls" if failed.length > 0
-    $logfile.puts "Can't record sizes/urls for #{failed.length} records:" if failed.length > 0
-    $logfile.puts failed * "\n"
+    report_error "Couldn't record all sizes/urls" if failed.length > 0
+    log "Can't record sizes/urls for #{failed.length} records:" if failed.length > 0
+    log (failed * "\n")
   end
   
   task :download_pix => :pic_init do 

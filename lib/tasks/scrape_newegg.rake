@@ -566,9 +566,9 @@ namespace :scrape_newegg do
       begin
         atts = scrape_all np.item_number
         fill_in_all atts, np, ['product_id']
-      rescue Exception => e
-        report_error 'ERROR: ' + e.message.to_s + e.type.to_s
-        puts "Error on #{i}th printer"
+      rescue Exception => e  
+        report_error "Error on #{i}th printer"
+        report_error e.message.to_s + e.type.to_s
         sleep(20*60) # sleep for 20 min 
       end
       puts "Progress: done #{i} of #{NeweggPrinterScrapedData.count} printers..."
