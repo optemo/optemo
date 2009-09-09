@@ -181,6 +181,7 @@ module TigerDirectScraper
     
     begin
       info_page = Nokogiri::HTML(open(url))
+      sleep(20)
       log "Re-scraping TigerOffering # #{to.id}"
     rescue
       report_error "Couldn't open page: #{url}. Rescraping price failed."
@@ -324,6 +325,7 @@ namespace :scrape_tiger do
     
   end
   
+  desc 'Update the data'
   task :update => :init do
     
     @logfile = File.open("./log/tiger_update.log", 'w+')

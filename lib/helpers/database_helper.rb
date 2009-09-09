@@ -24,7 +24,7 @@ module DatabaseHelper
   # stamp (priceUpdate) and puts the latest thing
   # in the price history.
   def record_updated_price newprice, offering
-    if offering.priceint != newprice # Save old prices only if price has changed
+    if offering.priceint.to_s != newprice.to_s # Save old prices only if price has changed
       
       # Write the old price down in the history
       if offering.pricehistory.nil? and offering.priceUpdate

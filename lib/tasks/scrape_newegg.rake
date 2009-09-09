@@ -83,7 +83,8 @@ module NeweggScraper
     newnp = NeweggPrinter.find_or_create_by_item_number(printer_item_number)
     fill_in 'printer_id', newnp.id, offering
     
-    if itemnum == printer_item_number then retailer_id= 4 else retailer_id= 6 end
+    if itemnum == printer_item_number then retailer_id= 4 else retailer_id= 6 
+    end
     
     fill_in 'retailer_id', retailer_id.to_s, offering
     
@@ -112,7 +113,8 @@ module NeweggScraper
     
     fill_in 'printer_id', newnp.id, offering
     
-    if np.item_number == printer_item_number then retailer_id= 4 else retailer_id= 6 end
+    if np.item_number == printer_item_number then retailer_id= 4 else retailer_id= 6 
+    end
     fill_in 'retailer_id', retailer_id.to_s, offering
     
     return newnp
@@ -123,12 +125,10 @@ module NeweggScraper
     atts['resolution'] = (atts['blackprintquality'] || '') + (atts['colorprintquality'] || '')
      #Booleans
     atts['colorprinter'] = (atts['colorprinter'] and atts['colorprinter'] == 'Color') 
-    colorprops = ["colorprinter", "ppmcolor", "copyspeedcolor", "copyqualitycolor",\
-       "scancolordepth", "colorfax", "colorresolution"]
+    colorprops = ["colorprinter", "ppmcolor", "copyspeedcolor", "copyqualitycolor", "scancolordepth", "colorfax", "colorresolution"]
     atts = infer_boolean('colorprinter', colorprops, atts)
   
-    scanprops = ["scanresolutionenhanced", "scancolordepth", \
-      "scanresolutionoptical", "scanelement", "scanresolutionhardware"]
+    scanprops = ["scanresolutionenhanced", "scancolordepth", "scanresolutionoptical", "scanelement", "scanresolutionhardware"]
     atts = infer_boolean('scanner',scanprops,atts,false)
   
     faxprops = ["faxfeatures", "faxmemory", "faxtransmissionspeed", "faxresolutions", "colorfax"]
@@ -153,11 +153,20 @@ module NeweggScraper
     # For the offering
     cleanatts['toolow'] = false if cleanatts['toolow'].nil?
     cleanatts['stock'] = true unless cleanatts['priceint'].nil? or cleanatts['stock'] == false
-    
+    cleanatts['stock'] = false unless cleanatts['stock'] == true
     return cleanatts
   end
   
   # --- Scraping ---#
+  
+  def rescrape_prices npid
+    infopage = Nokogiri::HTML(open(id_to_details_url(npid)))
+    sleep(15)
+    atts = scrape_prices infopage, npid
+    clean_atts = (clean_all atts).reject{|x,y| y.nil?}
+    return clean_atts
+  end
+  
   def scrape_all npid
       infopage = Nokogiri::HTML(open(id_to_details_url(npid)))
       sleep(15)
@@ -320,7 +329,7 @@ namespace :scrape_newegg do
   end
  
   desc "Get the latest updates to the Newegg list"
-  task :update => :init do 
+  task :update_from_feed => :init do 
     @logfile = File.open("./log/newegg_update.log", 'w+')
     totally_new = 0 
     feed_url = "http://www.newegg.com/Product/RSS.aspx?Submit=ENE&N=2000330630&ShowDeactivatedMark=True"
@@ -516,9 +525,34 @@ namespace :scrape_newegg do
   task :clean => :init do
     @logfile = File.open("./log/newegg_scraper_cleanup.log", 'w+')
     
-    NeweggPrinterScrapedData.all.each_with_index do |np, i|
-        newnp = no_and_np_from_npsd np
+    NeweggPrinterScrapedData.all.each_with_index do |npsd, i|
+        newnp = no_and_np_from_npsd npsd
         map_to_db newnp
+    end
+    
+    @logfile.close
+  end
+
+  desc "Update prices"
+  task :update => :init do
+    @logfile = File.open("./log/newegg_scraper.log", 'w+')
+    
+    NeweggOffering.all.each_with_index do |no, i|
+      begin
+        newatts = rescrape_prices no.item_number
+        if no.offering_id
+          offering = RetailerOffering.find(no.offering_id) 
+          log "Updating #{offering.pricestr} to #{newatts['pricestr']}"
+          update_offering newatts, offering if offering
+          update_bestoffer(Printer.find(no.product_id)) if no.product_id
+        else
+          report_error "Can't find a corresponding Offering for N.O. id=#{no.id}"
+        end
+      rescue Exception => e
+        report_error "with NeweggOffering #{no.id}:" + e.message.to_s + e.type.to_s
+        sleep(20*60) # sleep for 20 min 
+      end
+      puts "Done updating #{i+1} of #{NeweggOffering.count} offerings"
     end
     
     @logfile.close
@@ -538,7 +572,6 @@ namespace :scrape_newegg do
         sleep(20*60) # sleep for 20 min 
       end
       puts "Progress: done #{i} of #{NeweggPrinterScrapedData.count} printers..."
-      report_error "Progress: done #{i} of #{NeweggPrinterScrapedData.count} printers..."
     end
     
     @logfile.close
