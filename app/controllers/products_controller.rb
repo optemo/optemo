@@ -17,6 +17,11 @@ class ProductsController < ApplicationController
     @dbfeat = {}
     DbFeature.find_all_by_product_type_and_region($model.name,$region).each {|f| @dbfeat[f.name] = f}
     @s = Search.createFromPath_and_commit(params[:id].split('-'), @session.id)
+    #No products found
+    if @s.nil? || @s.result_count == 0
+      flash[:error] = "No products were found, so you were redirected to the home page"
+      redirect_to initialClusters and return
+    end
     @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
     @allSearches = []
     @counts = @s.countBinary
@@ -26,12 +31,7 @@ class ProductsController < ApplicationController
       unless (z.nil? || z.empty?)
         @layer, @allSearches = zipStack(z) 
       end  
-      #No products found
-      if @s.result_count == 0
-        flash[:error] = "No products were found, so you were redirected to the home page"
-        redirect_to initialClusters
-      end
-   end  
+    end  
   end
 
 
