@@ -1,9 +1,11 @@
+require 'migration_helper'
 class CreateRetailerOfferings < ActiveRecord::Migration
   def self.up
+    extend MigrationHelper
+    
     create_table :retailer_offerings do |t|
       t.integer :product_id
       t.string :product_type
-      t.integer :retailer_id
       t.string :pricehistory
       t.string :region
       t.string :merchant
@@ -25,6 +27,8 @@ class CreateRetailerOfferings < ActiveRecord::Migration
       t.boolean   :freeShipping
   
       t.timestamps
+      
+      linkToProductAndRetailer(t)
     end
   end
 

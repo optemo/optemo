@@ -1,5 +1,11 @@
 module TigerDirectScraper
   
+  def get_scraped_tiger_printers
+    # TODO make a more general method
+    stp = ScrapedPrinter.find_all_by_retailer_id(12) | ScrapedPrinter.find_all_by_retailer_id(14) 
+    return stp
+  end
+  
   def update_ca p
     matching_ro = RetailerOffering.find(:all, :conditions => \
       "product_id LIKE #{p.id} and product_type LIKE '#{$model.name}' and region LIKE 'CA'").\
@@ -279,53 +285,23 @@ end
 namespace :scrape_tiger do
   
   
-  desc 'everything in a sequence'
+  desc 'Scrape and clean all data from scratch'
   task :all => [:scrape, :clean]
   
+  desc 'Run some simple tests to check that the data isn\'t wonky'
   task :validate => :init do 
-    assert_within_range TigerPrinter.all, 'listpriceint', 0, 10_000_00
-    assert_within_range TigerPrinter.all, 'itemheight', 100, 10000
-    assert_within_range TigerPrinter.all, 'itemlength', 100, 7000
-    assert_within_range TigerPrinter.all, 'itemwidth', 100, 7000
-    assert_within_range TigerPrinter.all, 'ppm', 2, 50
-    assert_within_range TigerPrinter.all, 'paperinput', 20,2000
-    assert_within_range TigerPrinter.all, 'ttp', 7,40
-    assert_within_range TigerPrinter.all, 'resolutionmax', 600, 4800
+    scraped_tiger_printers = get_scraped_tiger_printers
+    assert_within_range scraped_tiger_printers, 'listpriceint', 0, 10_000_00
+    assert_within_range scraped_tiger_printers, 'itemheight', 100, 10000
+    assert_within_range scraped_tiger_printers, 'itemlength', 100, 7000
+    assert_within_range scraped_tiger_printers, 'itemwidth', 100, 7000
+    assert_within_range scraped_tiger_printers, 'ppm', 2, 50
+    assert_within_range scraped_tiger_printers, 'paperinput', 20,2000
+    assert_within_range scraped_tiger_printers, 'ttp', 7,40
+    assert_within_range scraped_tiger_printers, 'resolutionmax', 600, 4800
   end
-  
-  desc 'Maps the printers to db -- draft version so far'
-  task :sandbox => :init do
-    @logfile = File.open("./log/tiger_sandbox.log", 'w+')
-    how_many_match = []
     
-    TigerPrinter.all.each do |tp|
-      matches = find_all_matching_tiger tp.brand, tp.model, tp.mpn
-      how_many_match << matches.length
-      
-      if matches.length > 1
-        matches.each do |p|
-          @logfile.puts "Matches #{tp.id}: #{p.mpn} #{p.model} #{p.brand}"
-        end
-      elsif matches.length == 0
-        @logfile.puts "No matches for #{tp.id}"
-      end
-    end
-    
-    puts how_many_match.uniq
-    @logfile.close
-  end
-  
-  task :fill_in_ca_price_and_stock => :init do
-    fill_me_in = RetailerOffering.find_all_by_retailer_id(12) | RetailerOffering.find_all_by_retailer_id(14)
-    fill_me_in.collect!{|x| Printer.find(x.product_id)}
-    
-    fill_me_in.each do |p|
-      update_ca p
-    end
-    
-  end
-  
-  desc 'Update the data'
+  desc 'Update prices & availability for existing TigerPrinters'
   task :update => :init do
     
     @logfile = File.open("./log/tiger_update.log", 'w+')
@@ -348,8 +324,8 @@ namespace :scrape_tiger do
   end
   
   task :model_cleanup => :init do
-    
-    TigerPrinter.all.each do |tp|
+    stp = get_scraped_tiger_printers
+    stp.each do |tp|
       newmodel = (tp.model || '').gsub(/(ink|chrome|tabloid|aio\sint|\(|,|\d+\s?x\s?\d+\s?(dpi)?|fast\sethernet|led).*/i,'').strip
       newmodel.gsub(/#{tp.brand}/i, '')
       if newmodel != tp.model and tp.model and newmodel
@@ -363,7 +339,8 @@ namespace :scrape_tiger do
   task :to_printer => :init do
     @logfile = File.open("./log/tiger_to_printer.log", 'w+')
     num_matching = 0
-    TigerPrinter.all.each do |tp|
+    stp = get_scraped_tiger_printers
+    stp.each do |tp|
       matching = match_tiger_to_printer tp
       
       matching.each do |rec|
@@ -402,7 +379,7 @@ namespace :scrape_tiger do
       
     end
     
-    puts "#{num_matching} of #{TigerPrinter.count} match a Printer"
+    puts "#{num_matching} of #{stp.count} match a Printer"
     
   end 
     
@@ -422,15 +399,14 @@ namespace :scrape_tiger do
       
       # Check for duplicates:
       tp = find_matching_tiger(properties['brand'], properties['model'], properties['mpn'])
-      tp = TigerPrinter.find_or_create_by_tigerurl(ts.tigerurl) if tp.nil?
+      tp = ScrapedPrinter.find_or_create_by_local_id(ts.local_id) if tp.nil?
       fill_in_all properties, tp, @ignore_list
       fill_in 'tiger_printer_id', tp.id, to
       
       puts "Cleaned #{ts.id}th scraped data, put it into #{tp.id}th printer."
     end
   end
-    
-    
+      
   desc "Acquire data for all printers"
   task :scrape => :init do
     
@@ -478,7 +454,7 @@ namespace :scrape_tiger do
     
     @conditions = ["New", "Refurbished", "OEM"]
     
-    @ignore_list = ['tigerurl', 'pricestr', 'price', 'region']
+    @ignore_list = ['local_id', 'pricestr', 'price', 'region']
     
     @regional_urls = { 'US' => "http://www.tigerdirect.com/", 'CA' => "http://www.tigerdirect.ca/"}
 

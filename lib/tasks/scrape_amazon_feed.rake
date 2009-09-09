@@ -29,6 +29,7 @@ module AmazonFeedScraper
   end
   
   def scrape scrapeme
+    count = 0
     scrapeme.each do |product|
       if !product.asin.blank?
         log ('Processing: ' + product.asin )
@@ -42,6 +43,7 @@ module AmazonFeedScraper
         log 'Done.'
       end
       count += 1
+      debugger
       puts "Done #{count} of #{scrapeme.count}; waiting."
       sleep(1+rand()*30) #Be really nice to Amazon!
     end
@@ -248,7 +250,7 @@ module AmazonFeedScraper
       detailurl = item.css('detailpageurl').first.content
       atts = item.xpath('itemattributes/*').inject({}){|r,x| 
         val = x.content
-        val += "#{ScrapingHelper.sep} #{r[x.name]}" if r[x.name]
+        val += "#{CleaningHelper.sep} #{r[x.name]}" if r[x.name]
         r.merge(x.name => val)
       }
       return atts
@@ -259,7 +261,7 @@ module AmazonFeedScraper
   def get_printer_atts(p)
     # Never been tested...
     atts = get_attributes p
-    cleaned_atts = general_printer_cleaning_code atts
+    cleaned_atts = generic_printer_cleaning_code atts
     # TODO check that it worked..'
     debugger
     fill_in_all cleaned_atts, p
@@ -310,18 +312,20 @@ namespace :amazon do
   task :get_new_printers => [:prnt_init, :get_new_products]
 
   task :try_scraping => :prnt_init do
-    recent_asins = ['B0026JL9RG']
+    recent_asins = ['B0026JL9RG'].collect{|x| $amazonmodel.find_by_asin(x)}
+    scrape recent_asins
   end
 
   # Get a list of all products from and (re)scrape all data
   task :scrape_all => :init do
     recent_asins = get_ASINs
-    puts "Total new products: " + newasins.count.to_s
+    puts "Total new products: " + recent_asins.count.to_s
     count = 0
     scrapeme = $amazonmodel.find(:all)
     scrape scrapeme
   end
 
+  # Get a list of all products from and scrape data for new products only
   task :get_new_products do
     recent_asins = get_ASINs
     recent_entries = recent_asins.collect{|x| $amazonmodel.find_by_asin(x)}
