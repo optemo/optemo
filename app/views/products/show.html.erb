@@ -76,15 +76,18 @@
 		<% @cartridges.each_index do |c_i| %>
 		<% c = @cartridges[c_i] %>
 		<% p = @cartridgeprices[c_i] %>
-		<div style="float: left;"><%= image_tag c.imageurl, :width => "50px" %></div>
+		<%# Not showing images until they are downloaded %>
+		<% if false %><div style="float: left;"><%= image_tag c.imageurl, :width => "50px" %></div><% end %>
 		<div class="cartridgeinfo">
 		<%= [c.brand,c.model].join(' ') %><br>
-		<span style="font-size:0.70em;">(Yield: <%= c.yield %> pgs, Shelf Life: <%= c.shelflife %> months, Color: <%= c.color %>)</span><br>
-		<% if p.nil? %>
-		Unavailable
-		<% else %>
-		<%= link_to p.pricestr, p.url %>
-		<% end %>
+		<span style="font-size:0.70em;">(Yield: <%= c.yield %> pgs, Shelf Life: <%= c.shelflife %> months, Color: <%= c.color %>)</span>
+		<div class="left" style="width:154px">	
+			<%= link_to "#{p.pricestr}", {:controller => 'link', :action => 'create', :id => p.id}, :popup => true, :rel => 'nofollow' %>
+		</div>
+		<div class="right" style="width:154px;">
+			 <%=  link_to image_tag(p.retailer.image, :alt => p.retailer.name), {:controller => 'link', :action => 'create', :id => p.id}, :popup => true %>
+		</div>
+		<div class="spacer"></div>
 		</div>
 		<% end %>
 	</div>
