@@ -1,44 +1,209 @@
 module TigerDirectScraper
   
+  # -- Link scraping stuff -- #
+  def get_links_by_region region
+    link_lists = get_linklist_urls region
+    links = []
+    link_lists.each do |ll_url|
+      page = Nokogiri::HTML(open(ll_url))
+      links = (scrape_links page) | links
+    end
+    return links
+  end
+  
+  def get_linklist_url region, page
+    base_url = get_base_url region
+    return "#{base_url}/applications/category/category_slc.asp?page=#{page}&Nav=%7Cc:244%7C&Sort=0&Recs=30"
+  end
+  
+  def get_linklist_urls region
+    base_url = get_base_url region
+    firstpage_url = get_linklist_url region, 1
+    firstpage = Nokogiri::HTML(open(firstpage_url))
+    sleep(15)
+    last_pic_src = "#{base_url.sub(/tiger/, 'images.tiger').sub(/www./,'')}/search/navbar_last.gif"
+    # firstpage.xpath('//a[img[@src="http://images.tigerdirect.ca/search/navbar_last.gif"]]').collect{|x| x.[]('href')}.uniq
+    last_url = firstpage.xpath("//a[img[@src='#{last_pic_src}']]").collect{|x| x.[]('href')}.last
+    last_num = (last_url || '').match(/\?page=\d+\&/).to_s.match(/\d+/).to_s.to_i
+    urls = []
+    last_num.times do |pg|
+      urls << get_linklist_url( region, pg+1)
+    end
+    return urls
+  end
+  
+  # -- Various (mostly URL) helper methods -- # 
+  
+  def get_base_url region
+    retailer = $retailers.reject{|x| x.region.match(/#{region}/i).nil?}.first
+    return nil if retailer.nil?
+    return retailer.url
+  end
+  
   def get_scraped_tiger_printers
-    # TODO make a more general method
-    stp = ScrapedPrinter.find_all_by_retailer_id(12) | ScrapedPrinter.find_all_by_retailer_id(14) 
-    return stp
+    return sp_by_retailers([12,14])
   end
   
-  def update_ca p
-    matching_ro = RetailerOffering.find(:all, :conditions => \
-      "product_id LIKE #{p.id} and product_type LIKE '#{$model.name}' and region LIKE 'CA'").\
-    reject{ |x| !x.stock or x.priceint.nil? }
-    
-    return if matching_ro.empty?
-
-    lowest = matching_ro.sort{ |x,y|
-      x.priceint <=> y.priceint
-    }.first
-
-    fill_in "price_ca", lowest.priceint, p
-    fill_in "price_ca_str", "CDN"+ lowest.pricestr, p
-    fill_in "instock_ca", true, p
-    
-  end
-  
-  def scrape link_list
-    log "#{link_list.length} printers not yet scraped."
-    
-    link_list.each_with_index do |x,i| 
-      begin
-        scrape_all_from_link x
-        puts "#{i+1}th printer scraped!"
-      rescue Exception => e
-        report_error "ERROR :#{e.type.to_s}, #{e.message.to_s}"
-        report_error "#{i+1}th printer had error while scraping"
-      end
-      sleep(15)
-      puts "Waiting waiting..."
-      sleep(15)
+  def record_data_from_link link, retailer
+    begin
+      atts = scrape_all_from_link link, retailer
+    rescue Exception => e
+      report_error "Problem scraping data"
+      report_error "#{e.type.to_s}, #{e.message.to_s}"
+    else
+      clean_atts = clean_tiger(atts)
+      sp = find_or_create_scraped_printer(atts)
+      
+      ros = find_ros_from_sp sp
+      ro = ros.first
+      ro = create_product_from_atts clean_atts, RetailerOffering if ro.nil?
+      fill_in_all clean_atts, ro
+      timestamp_offering ro
+      
+      report_error "Multiple ROs for SP #{sp.id}: #{ros * ', '}" if ros.count > 1
+      report_error "Can't create Retailer Offering" if ro.nil?
+      
+      link_ro_and_sp(ro,sp) if ro
     end
   end
+    
+  def optemo_special_url tigerurl, region
+    link_prefix = "http://click.linksynergy.com/fs-bin/click?id=lI8cIt0J/v0&subid=&offerid=102327.1&type=10&tmpid=3883&RD_PARM1=" if region == 'US'
+    link_prefix = "http://click.linksynergy.com/fs-bin/click?id=lI8cIt0J/v0&subid=&offerid=102328.1&type=10&tmpid=3879&RD_PARM1=" if region == 'CA'
+    return (link_prefix+CGI.escape(url_by_region(region, tigerurl))) if link_prefix
+    return nil
+  end
+  
+  def url_by_region region, tigerurl=''
+     base_url = get_base_url region
+     return "#{base_url}/#{tigerurl}"
+  end
+  
+  
+  # -- Accessing the data on the website -- #
+  
+  def scrape_last_page url
+    info_page = Nokogiri::HTML(open(url))
+    snore(20)
+    pg_numbers = info_page.css()
+    return lastpg
+  end
+  
+  def scrape_yellow_box info_page
+    yellow_boxes = info_page.css('[bgcolor="#ffff99"] font')
+    hsh = {}
+    yellow_boxes.each do |box|  
+      box.to_s.gsub(/[\t\r]+/,'').split("<br>").each do |x| 
+        if x.split(/<\/?b>/).length == 2
+          temparray = x.split(/<\/?b>/)
+        elsif x.split(/\(/).length == 2
+          temparray = x.split(/\(/)
+        end
+        if temparray
+          key = just_alphanumeric( temparray[0].gsub(/<.*>/,'') )
+          val = temparray[1].gsub(/<.*>/,'').gsub(/\n/,'').strip
+          hsh.merge!( key => val )
+        end
+      end
+    end
+  
+    return hsh
+  end
+  
+  def scrape_modelinfo info_page
+    returnme = {}
+  
+    title_el = info_page.css('td.font_size4bold h1')
+    returnme['title'] = title_el.text if title_el
+  
+    itemno_row = info_page.xpath('//tr[td[text()="Item Number:"]]')
+    itemno_el = itemno_row.xpath('td[2]')
+    returnme['itemnumber'] = itemno_el.text if itemno_el
+  
+    return returnme
+  end
+  
+  def scrape_availty info_page
+    hsh = {}
+    avail_row = info_page.xpath('//tr[td[text()="Availability:"]]')
+    avail_el = avail_row.xpath('td[2]')
+    hsh['availability'] = avail_el.text if avail_el
+  
+    itmdets = get_el info_page.css('form[name="itmdets"]')
+    hsh['itmdets'] = itmdets.text if itmdets
+  
+    return hsh
+  end
+  
+  def scrape_prices info_page
+    prices_table = info_page.css('table#myPrice tr')
+    prices = scrape_table prices_table, "td", "td"
+    return prices
+  end
+  
+  def scrape_data info_page
+      puts "#{info_page.css('table.viss').length} tables found "
+      spec_table = info_page.css('table.viss tr')
+      specs = scrape_table spec_table, 'td.techspec', 'td.techvalue'
+      return specs
+    end
+
+  def scrape_links doc
+   link_els = doc.css('table.maintbl form[name="frmCompare"] a[title="Click for more information"]')
+   links = []
+   link_els.each do |link|
+     links << link.attribute('href').to_s
+   end
+   links.uniq!
+   return links
+  end
+
+  def scrape_all_from_link link, retailer    
+    url = url_by_region retailer.region, link
+    props = {}
+    begin
+      info_page = Nokogiri::HTML(open(url))
+      snore(20)
+      log "Scraping #{link}"
+    rescue
+      report_error "Couldn't open page: #{url}. Scraping failed."
+    else
+      props.merge! scrape_data info_page
+      props.merge! scrape_prices info_page 
+      props.merge! scrape_yellow_box info_page
+      props.merge! scrape_availty info_page
+      props.merge! scrape_modelinfo info_page
+      props['region'] = retailer.region
+      props['local_id']= link
+      props['retailer_id'] = retailer.id
+    end
+    return props
+  end
+
+  # -- Cleaning data -- #
+  def clean_tiger atts
+    atts['display'] = (atts['specialfeatures'] || "").split(',').delete_if{|x| x.match(/display/i).nil?}.first
+    atts['scanner'] = true if (atts['specialfeatures'] || "").match(/scan/i)
+    atts['printserver'] = true if (atts['specialfeatures'] || "").match(/network/i)
+    atts['fax'] = true if (atts['specialfeatures'] || "").match(/fax/i)
+    atts['stock'] = atts['itmdets'].match(/unavail/i).nil?
+
+    atts['condition'] = 'New'
+    atts['condition'] = "Refurbished" if ((atts['upcno']||'').match(/^RB-/) or (atts['model']||'').match(/^RB-/) or (atts['title']||'').match(/refurbished/i) )
+    atts['condition'] = "OEM" if (atts['title']||'').match(/oem/i) 
+
+    atts['product_type'] = $model.name
+
+    atts = clean_property_names atts
+    clean_atts = generic_printer_cleaning_code(atts)
+    temp = clean_brand(clean_atts['brand'], $printer_brands)
+    clean_atts['brand'] = temp if temp
+    clean_atts['model'] = clean_printer_model(clean_atts['model'], clean_atts['brand'])
+    return clean_atts
+  end
+
+  # -- Matching data --#
+  # TODO
   
   def find_matching_tiger make, model, mpn
     matches = find_all_matching_tiger make, model, mpn
@@ -72,226 +237,47 @@ module TigerDirectScraper
     
     return matching
   end
-
-  def clean_all atts
-    
-    atts['brand'] = atts['brand'].gsub(/\(.+\)/,'').strip
-    atts['brand'] = 'Canon' if atts['brand'].match(/canon/i)
-    
-    # Model:
-    if atts['model'].nil? or atts['model'] == atts['mpn']
-      dirty_model_str = atts['title'].match(/.+\sprinter/i).to_s.gsub(/ - /,'')
-      clean_model_str = dirty_model_str.gsub(/(mfp|multi-?funct?ion|duplex|faxcent(er|re)|workcent(re|er)|mono|laser|dig(ital)?|color|(black(\sand\s|\s?\/\s?)white)|network|all(\s?-?\s?)in(\s?-?\s?)one)\s?/i,'')
-      clean_model_str.gsub!(/printer\s?/i,'')
-      clean_model_str.gsub!(/#{atts['brand']}\s?/i,'')
-      @brand_alternatives.each do |alts|
-        if alts.include? atts['brand'].downcase
-          alts.each do |altbrand|
-            clean_model_str.gsub!(/#{altbrand}\s?/i,'')
-          end
-        end
-      end
-      
-      clean_model_str.gsub!(/(ink|chrome|tabloid|aio\sint|\(|,|\d+\s?x\s?\d+\s?(dpi)?|fast\sethernet|led).*/i,'')
-      clean_model_str.strip!
-      
-      atts['model'] = clean_model_str
-    end
-    
-    atts['model'] = atts['mpn'] if atts['model'].nil? or atts['model'] ==''
-    
-    # Resolutionmax
-    atts['resolution'] = atts['resolution'].downcase.gsub(/dpi/,'').strip if atts['resolution']
-    atts['resolutionmax'] = maxres_from_res atts['resolution']
-    
-    # PPM
-    atts['ppm'] = atts['ppmbw'] if atts['ppm'].nil?
-    atts['ppm'] = atts['ppmcolor'] if atts['ppm'].nil?
-    
-    # Paperinput should be clean by default
-        
-    # Item height, width, depth
-    (atts['dimensions'] || "").split('x').each do |dim| 
-      atts['itemlength'] = get_f(dim) if dim.include? 'D'
-      atts['itemwidth'] = get_f(dim) if dim.include? 'W'
-      atts['itemheight'] = get_f(dim) if dim.include? 'H'
-    end
-    
-    # Scanner and printserver
-    atts['scanner'] = !(atts['speciafeatures'] || "").match(/scan/i).nil?
-    atts['printserver'] = !(atts['speciafeatures'] || "").match(/network/i).nil?
-    # TODO also check connectivity and optionalconnectivity!
-    
-    
-    # Optionals
-    atts['display'] = (atts['speciafeatures'] || "").split(',').delete_if{|x| x.match(/display/i).nil?}.first
-    
-    atts['fax'] = get_b(atts['fax'])
-    atts['fax'] ||= (atts['speciafeatures'] || "").match(/fax/i)
-    atts['fax'] = true if atts['faxcapability'] == "Yes"
-    
-    clean_offering_stuff atts
-    
-    # For the PRODUCT
-    if atts['region'] == 'CA' then suffix = '_ca' else suffix='' end
-    atts["listpricestr#{suffix}"].strip! if atts["listpricestr#{suffix}"]
-    atts["listpriceint#{suffix}"] = get_price_i( get_f atts["listpriceint#{suffix}"] )
-    # Fill in price, pricestr, bestoffer, instock etc later!
-    
-    # is it refurbished, etc
-    atts['condition'] = 'New'
-    atts['condition'] = "Refurbished" if ((atts['upcno']||'').match(/^RB-/) or (atts['model']||'').match(/^RB-/) or (atts['title']||'').match(/refurbished/i) )
-    atts['condition'] = "OEM" if (atts['title']||'').match(/oem/i) 
-    
-    atts['duplex'] = false if (atts['duplex'] || '').downcase.strip == 'manual'
-    
-    return atts
-  end
-  
-  def clean_offering_stuff atts
-    
-    # For the OFFERING
-    atts['stock'] = atts['itmdets'].match(/unavail/i).nil?
-    atts['priceint'] = get_price_i( get_f((atts['pricestr'] || '').gsub(/\*/,'')) )
-    atts['pricestr'].strip! if atts['pricestr']
-    
-    return atts
-  end
-  
-  def optemo_special_url tigerurl, region
-    link_prefix = "http://click.linksynergy.com/fs-bin/click?id=lI8cIt0J/v0&subid=&offerid=102327.1&type=10&tmpid=3883&RD_PARM1=" if region == 'US'
-    link_prefix = "http://click.linksynergy.com/fs-bin/click?id=lI8cIt0J/v0&subid=&offerid=102328.1&type=10&tmpid=3879&RD_PARM1=" if region == 'CA'
-    return (link_prefix+CGI.escape(url_by_region(region, tigerurl))) if link_prefix
-    return nil
-  end
-  
-  def scrape_links doc
-   link_els = doc.css('table.maintbl form[name="frmCompare"] a[title="Click for more information"]')
-   links = []
-   link_els.each do |link|
-     links << link.attribute('href').to_s
-   end
-   links.uniq!
-   return links
-  end
-  
-  def url_by_region region, tigerurl=''
-    ccode = 'com' 
-    ccode = 'ca' if region=='CA'
-    return "http://www.tigerdirect.#{ccode}#{tigerurl}"
-  end
-  
-  def rescrape_price to
-    url = @regional_urls[to.region] + to.tigerurl
+ 
+  def rescrape_price ro
+    url = url_by_region ro.region, ro.local_id
     props = {}
     
     begin
       info_page = Nokogiri::HTML(open(url))
-      sleep(20)
-      log "Re-scraping TigerOffering # #{to.id}"
+      snore(20)
+      log "Re-scraping RetailerOffering # #{ro.id}"
     rescue
       report_error "Couldn't open page: #{url}. Rescraping price failed."
     else
       props.merge! scrape_prices info_page 
       props.merge! scrape_availty info_page
     end
-    props.delete_if{ |x,y| !TigerScraped.column_names.include? x}
     return props
   end
   
-  def scrape_all_from_link link    
-    url = @base_url + link
-    info_page = Nokogiri::HTML(open(url))
-    
-    props = {}
-    ts = TigerScraped.find_or_create_by_tigerurl_and_region(link,@region)
   
-    puts "Scraping #{ts.id}"
-    props.merge! scrape_data info_page
-    props.merge! scrape_prices info_page 
-    props.merge! scrape_yellow_box info_page
-    props.merge! scrape_availty info_page
-    props.merge! scrape_modelinfo info_page
-    props['region'] = @region
-    
-    props.delete_if{ |x,y| not TigerScraped.column_names.include? x}
-    
-    fill_in_all props, ts
-    
-    return props
-  end
-    
-  def scrape_yellow_box info_page
-    yellow_boxes = info_page.css('[bgcolor="#ffff99"] font')
-    hsh = {}
-    yellow_boxes.each do |box|  
-      box.to_s.gsub(/[\t\r]+/,'').split("<br>").each do |x| 
-        if x.split(/<\/?b>/).length == 2
-          temparray = x.split(/<\/?b>/)
-        elsif x.split(/\(/).length == 2
-          temparray = x.split(/\(/)
-        end
-        if temparray
-          key = just_alphanumeric( temparray[0].gsub(/<.*>/,'') )
-          val = temparray[1].gsub(/<.*>/,'').gsub(/\n/,'').strip
-          hsh.merge!( key => val )
-        end
-      end
-    end
-    
-    return hsh
-  end
-  
-  def scrape_modelinfo info_page
-    returnme = {}
-    
-    title_el = info_page.css('td.font_size4bold h1')
-    returnme['title'] = title_el.text if title_el
-    
-    itemno_row = info_page.xpath('//tr[td[text()="Item Number:"]]')
-    itemno_el = itemno_row.xpath('td[2]')
-    returnme['itemnumber'] = itemno_el.text if itemno_el
-    
-    return returnme
-  end
-  
-  def scrape_availty info_page
-    hsh = {}
-    avail_row = info_page.xpath('//tr[td[text()="Availability:"]]')
-    avail_el = avail_row.xpath('td[2]')
-    hsh['availability'] = avail_el.text if avail_el
-    
-    itmdets = get_el info_page.css('form[name="itmdets"]')
-    hsh['itmdets'] = itmdets.text if itmdets
-    
-    return hsh
-  end
-  
-  def scrape_prices info_page
-    prices_table = info_page.css('table#myPrice tr')
-    prices = scrape_table prices_table, "td", "td"
-    return prices
-  end
-  
-  def scrape_data info_page
-    puts "#{info_page.css('table.viss').length} tables found "
-    spec_table = info_page.css('table.viss tr')
-    specs = scrape_table spec_table, 'td.techspec', 'td.techvalue'
-    return specs
-  end
-
 end
 
 namespace :scrape_tiger do
   
-  
-  desc 'Scrape and clean all data from scratch'
-  task :all => [:scrape, :clean]
-  
   desc 'Run some simple tests to check that the data isn\'t wonky'
   task :validate => :init do 
+    include ValidationHelper
+    
+    @logfile = File.open("./log/tiger_validation.log", 'w+')
+    
     scraped_tiger_printers = get_scraped_tiger_printers
-    assert_within_range scraped_tiger_printers, 'listpriceint', 0, 10_000_00
+    
+    announce "Testing #{scraped_tiger_printers.count} ScrapedPrinters for validity..."
+    
+    reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'ppm', 'resolutionmax',\
+       'paperinput','scanner', 'printserver', 'brand', 'model']
+    reqd_fields.each do |rf|
+      assert_no_nils scraped_tiger_printers, rf
+    end   
+    
+    assert_no_repeats scraped_tiger_printers, 'local_id'
+    
     assert_within_range scraped_tiger_printers, 'itemheight', 100, 10000
     assert_within_range scraped_tiger_printers, 'itemlength', 100, 7000
     assert_within_range scraped_tiger_printers, 'itemwidth', 100, 7000
@@ -299,10 +285,26 @@ namespace :scrape_tiger do
     assert_within_range scraped_tiger_printers, 'paperinput', 20,2000
     assert_within_range scraped_tiger_printers, 'ttp', 7,40
     assert_within_range scraped_tiger_printers, 'resolutionmax', 600, 4800
+    
+    tiger_offerings = RetailerOffering.find_all_by_retailer_id(12) | \
+      RetailerOffering.find_all_by_retailer_id(14)
+    
+    announce "Testing #{tiger_offerings.count} RetailerOfferings for validity..."
+    
+    reqd_fields = ['priceint', 'pricestr', 'stock', 'condition', 'priceUpdate', 'toolow', \
+      'local_id', "product_type", "region", "retailer_id"]
+    reqd_fields.each do |rf|
+      assert_no_nils tiger_offerings, rf
+    end
+    
+    assert_no_repeats tiger_offerings, 'local_id'
+    assert_within_range tiger_offerings, 'priceint', 100, 10_000_00  
+    
+    @logfile.close
   end
     
   desc 'Update prices & availability for existing TigerPrinters'
-  task :update => :init do
+  task :update_prices => :init do
     
     @logfile = File.open("./log/tiger_update.log", 'w+')
     log "Started updating at : #{Time.now}."
@@ -310,11 +312,9 @@ namespace :scrape_tiger do
     tiger_offerings = RetailerOffering.find_all_by_retailer_id(12) | RetailerOffering.find_all_by_retailer_id(14)
     
     tiger_offerings.each do |ro|
-      
-      to = TigerOffering.find_by_offering_id(ro.id)
-      params = rescrape_price to
-      params = clean_offering_stuff params
-      fill_in_all params, to
+      params = rescrape_price ro
+      params = clean_tiger params
+      fill_in_all params, ro
       update_offering params, ro
     end
     
@@ -322,121 +322,26 @@ namespace :scrape_tiger do
     log "Finished updating at : #{Time.now}"
     @logfile.close
   end
-  
-  task :model_cleanup => :init do
-    stp = get_scraped_tiger_printers
-    stp.each do |tp|
-      newmodel = (tp.model || '').gsub(/(ink|chrome|tabloid|aio\sint|\(|,|\d+\s?x\s?\d+\s?(dpi)?|fast\sethernet|led).*/i,'').strip
-      newmodel.gsub(/#{tp.brand}/i, '')
-      if newmodel != tp.model and tp.model and newmodel
-        debugger if newmodel.length < 5
-        fill_in 'model', newmodel, tp 
-      end
-    end
-    
-  end
-    
-  task :to_printer => :init do
-    @logfile = File.open("./log/tiger_to_printer.log", 'w+')
-    num_matching = 0
-    stp = get_scraped_tiger_printers
-    stp.each do |tp|
-      matching = match_tiger_to_printer tp
-      
-      matching.each do |rec|
-        fill_in_all_missing tp.attributes, rec
-        fill_in 'itemlength', tp.itemlength, rec
-        fill_in 'itemwidth', tp.itemwidth, rec
-        fill_in 'itemheight', tp.itemheight, rec
-      end
-      
-      if matching.length > 0
-        report_error " #{tp.id} has multiple matching printers" if matching.length > 1
-        p = matching[0]
-        log "#{p.id} matches #{tp.id}"
-        num_matching += 1
-      else  
-        p = nil # TODO this is temporary
-        @logfile.puts "No match for #{tp.id}"
-        #puts "#{tp.ppm} ppm, #{tp.paperinput} input, #{tp.resolutionmax} res"
-        #puts "#{tp.itemlength} x #{tp.itemwidth} x #{tp.itemheight}"
-        #puts "#{tp.brand} #{tp.model}"
-        #debugger
-        p = create_product_from_atts tp.attributes
-      end
-      
-      toes = []
-      toes = TigerOffering.find_all_by_tiger_printer_id(tp.id) unless p.nil? # TODO
-      toes.each do |to|
-        retailer = 12 
-        retailer = 14 if to.region == 'CA'
-        fill_in 'url', optemo_special_url(to.tigerurl, to.region), to
-        fill_in 'retailer_id', retailer, to
-        fill_in 'toolow', false, to
-        o = create_retailer_offering to, p
-      
-      end
-      
-    end
-    
-    puts "#{num_matching} of #{stp.count} match a Printer"
-    
-  end 
-    
-  desc 'Clean the data: move it from TigerScraped to TigerPrinter.'
-  task :clean => :init do
-    
-    cleanme = TigerScraped.all
-    
-    cleanme.each do |ts|
-      properties = {}
-      ts.attributes.delete_if{|x,y| y.nil?}.each{ |k,v| properties.store( (@printer_colnames[k] || get_property_name(k) || k ), v )  }
-      
-      clean_all properties
-      to = TigerOffering.find_by_tigerurl_and_region(ts.tigerurl, ts.region)
-      to = TigerOffering.new if to.nil?
-      fill_in_all properties, to
-      
-      # Check for duplicates:
-      tp = find_matching_tiger(properties['brand'], properties['model'], properties['mpn'])
-      tp = ScrapedPrinter.find_or_create_by_local_id(ts.local_id) if tp.nil?
-      fill_in_all properties, tp, @ignore_list
-      fill_in 'tiger_printer_id', tp.id, to
-      
-      puts "Cleaned #{ts.id}th scraped data, put it into #{tp.id}th printer."
-    end
-  end
       
   desc "Acquire data for all printers"
   task :scrape => :init do
     
     @logfile = File.open("./log/tiger_scraper.log", 'w+')
     
-    @region   = 'US'
-    @base_url = "http://www.tigerdirect.com/"
-    us_links = []
-    
-    # Scrape US site
-    4.times do |page_num| 
-      page = Nokogiri::HTML(open("scrape_me/tiger/tiger_printers_#{page_num+1}_of_4.html"))
-      us_links = (scrape_links page) | us_links
+    $retailers.each do |retailer|
+      @region   = retailer.region
+      @base_url = get_base_url @region
+      # Links are the identifier for printers on the TigerDirect website.
+      links = get_links_by_region @region
+      log "#{links.length} #{$model.name}s to be scraped from #{retailer.name}."
+      links.each_with_index do |x,i| 
+        announce "Scraping #{i+1}th #{$model.name} ..."
+        record_data_from_link x, retailer
+        announce "#{i+1}th #{$model.name} scraped!"
+      end
+      log "Scraped #{links.length} #{retailer.name} #{$model.name}s."
     end
     
-    scrape us_links
-    
-    @region   = 'CA'
-    @base_url = "http://www.tigerdirect.ca/"
-    ca_links = []
-    
-    # Scrape Canadian site
-    6.times do |page_num| 
-      page =  Nokogiri::HTML(open("scrape_me/tiger/canada_#{page_num+1}.html"))
-      ca_links = (scrape_links page) | ca_links
-    end
-    
-    scrape ca_links
-    
-    @logfile.puts "Scraped #{us_links.length} US printers and #{ca_links.length} CA printers."
     @logfile.close
   end
   
@@ -451,21 +356,18 @@ namespace :scrape_tiger do
     include TigerDirectScraper
     
     $model = Printer
+    $scrapedmodel = ScrapedPrinter
     
-    @conditions = ["New", "Refurbished", "OEM"]
+    #@conditions = ["New", "Refurbished", "OEM"]
     
     @ignore_list = ['local_id', 'pricestr', 'price', 'region']
     
-    @regional_urls = { 'US' => "http://www.tigerdirect.com/", 'CA' => "http://www.tigerdirect.ca/"}
+    $retailers = [Retailer.find(12), Retailer.find(14)]
+    
+    #@brand_alternatives = [ ['hp', 'hewlett packard', 'hewlett-packard'], ['konica', 'konica-minolta', 'konica minolta'], ['okidata', 'oki data', 'oki'] ]
 
-    @brand_alternatives = [ ['hp', 'hewlett packard', 'hewlett-packard'], ['konica', 'konica-minolta', 'konica minolta'], ['okidata', 'oki data', 'oki'] ]
-
-    @printer_colnames = { 'faxcapability'       => 'fax' ,      'mfgpartno'           => 'mpn'  ,\
-      'printspeed'          =>'ppm'         ,\
-      'printspeedbw'        => 'ppmbw'      ,\
-      'printspeedcolor'     => 'ppmcolor'   , \
-      'shippingweight'      => 'packageweight', \
-      'originalprice'       =>'listpricestr'  ,      'price'               =>'pricestr'  }
+      #'shippingweight'      => 'packageweight', \
+      #'originalprice'       =>'listpricestr'  ,      'price'               =>'pricestr'  }
 
   end
   

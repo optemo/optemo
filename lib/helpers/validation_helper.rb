@@ -27,7 +27,8 @@ module ValidationHelper
   # within the dataset (reclist)?
   def assert_no_repeats reclist, att
     values = get_values reclist, att
-    log_v " Repeated values in #{reclist.first.class}'s #{att}" if values.uniq.count != values.count
+    uniques = values.keys.uniq
+    log_v "Repeated values in #{reclist.first.class}'s #{att}" if uniq.count != values.count
   end
   
   
@@ -35,8 +36,8 @@ module ValidationHelper
   # in the given data set
   def assert_no_0_values reclist, att 
     values = get_values reclist, att
-    outliers = values.reject{|x,y| x==0}
-    log_v " There are 0s in #{reclist.first.class}'s #{att} " if outliers.size > 0
+    outliers = values.reject{|x,y| x!=0}
+    log_v " There are #{outliers.size} 0s in #{reclist.first.class}'s #{att} " if outliers.size > 0
     log_v  "Outliers: #{outliers.collect{|x,y| y}*', '}" if outliers.size > 0  and outliers.size < 10
   end
   
@@ -50,8 +51,9 @@ module ValidationHelper
   # in the given data set
   def assert_no_nils reclist, att 
     values = get_values reclist, att
-    outliers = values.reject{|x,y| x.nil?}
-    log_v " There are nils in #{reclist.first.class}'s #{att} " if outliers.size > 0
+    outliers = values.reject{|x,y| !x.nil?}
+    debugger
+    log_v " There are #{outliers.size} nils in #{reclist.first.class}'s #{att} " if outliers.size > 0
     log_v "Outliers: #{outliers.collect{|x,y| y}*', '}" if outliers.size > 0 and outliers.size < 10
   end
   

@@ -20,16 +20,16 @@ module CleaningHelper
   # Returns a hash with the cleaned-up values.
   def generic_cleaning_code atts, model=$model
     atts['brand'] = atts['brand'].gsub(/\(.+\)/,'').strip if atts['brand']
+    
     # Model:
     if (atts['model'].nil? or atts['model'] == atts['mpn']) and atts['title']
       # TODO combine with other model cleaner code
       dirty_model_str = atts['title'].match(/.+\s#{$model}/i).to_s.gsub(/ - /,'') 
       
     end
+    
     mdls = [atts['model'], atts['mpn']].reject{|x| x.nil? or x == ''}
     mdls.each do |x|
-      x.gsub!(/(mfp|multi-?funct?ion|duplex|faxcent(er|re)|workcent(re|er)|mono|laser|dig(ital)?|color|(black(\sand\s|\s?\/\s?)white)|network|all(\s?-?\s?)in(\s?-?\s?)one)\s?/i,'')
-      x.gsub!(/printer\s?/i,'')
       x.gsub!(/#{atts['brand']}\s?/i,'')
       # TODO
       (@brand_alternatives || []).each do |alts|
@@ -56,6 +56,36 @@ module CleaningHelper
   
   end
   
+  def clean_printer_model dirtymodel, brand=''
+    return nil if dirtymodel == nil
+    clean_model_str = dirtymodel.gsub(/(mfp|multi-?funct?ion|duplex|faxcent(er|re)|workcent(re|er)|mono|laser|dig(ital)?|color|(black(\sand\s|\s?\/\s?)white)|network|all(\s?-?\s?)in(\s?-?\s?)one)\s?/i,'')
+    clean_model_str.gsub!(/(ink|chrome|tabloid|aio\sint|\(|,|\d+\s?x\s?\d+\s?(dpi)?|fast\sethernet|led).*/i,'')
+    clean_model_str.gsub!(/printer\s?/i,'')
+    clean_model_str.gsub!(/#{brand}\s?/i,'')
+    # TODO what if brand not given... could we scan for all brands?
+    ja_brand_alternatives = $brand_alternatives.collect{|x| x.collect{|y| just_alphanumeric(y.downcase)}}
+    ja_brand_alternatives.each do |alts|
+        if alts.include? just_alphanumeric(brand.downcase)
+            alts.each do |altbrand|
+              clean_model_str.gsub!(/#{altbrand}\s?/i,'')
+            end
+        end
+    end
+    clean_model_str.strip!
+    return clean_model_str
+  end
+  
+  def clean_property_names atts
+    clean_atts = {}.merge(atts)
+    atts.each do |x,y| 
+      props = get_property_names(x, $model)
+      props.uniq.each do |property|
+        clean_atts[property]= y.to_s.strip  + @@sep + "#{clean_atts[property] || ''}" if y
+      end 
+    end
+    return clean_atts
+  end
+  
   # An attempt to get information from an 
   # attribute hash given that it relates to
   # printers. 
@@ -66,6 +96,9 @@ module CleaningHelper
     temp.each{|k| atts[k] = atts[k].to_s}
     
     atts.each{|x,y| atts[x] = y.gsub(/#{@@sep}/,'') if y.scan(/#{@@sep}/).length == 1 }
+    
+    atts['model'] = clean_printer_model(atts['model'], atts['brand'])
+    atts['mpn'] = clean_printer_model(atts['mpn'], atts['brand'])
     
     atts['ppm'] = get_max_f(atts['ppm'])
     atts['ppmcolor'] = get_max_f(atts['ppmcolor'])
@@ -93,7 +126,7 @@ module CleaningHelper
       atts['itemheight'] = get_f(dim)*100 if dim.include? 'H' and !atts['itemheight']
     end
     
-    if atts['dimensions'] and !atts['itemlength']  and !atts['itemwidth'] and !atts['itemheight']
+    if atts['dimensions'] and [atts['itemlength'], atts['itemwidth'], atts['itemheight']].uniq == [nil]
       dims = atts['dimensions'].split('x')
       break if dims.length < 3
       # TODO item lwh not what I thought?
@@ -167,7 +200,6 @@ module CleaningHelper
   # for the brand field (no unsightly capitalizations) as well as
   # avoid writing down stuff which isn't actually a brand
   def clean_brand title, brandlist=[]
-    init_brands if $real_brands.nil?
     brandlist = $real_brands if brandlist.length ==0
     
     if title
