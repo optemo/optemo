@@ -10,6 +10,8 @@ class CreateScrapedPrinters < ActiveRecord::Migration
       
       linkToProductAndRetailer(t)
       
+      t.text :imageurl
+      
     end
   end
 

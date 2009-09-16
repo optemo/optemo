@@ -15,4 +15,8 @@ module Constants
   $brand_alternatives = [ ['hp', 'hewlett packard', 'hewlett-packard'], \
     ['konica', 'konica-minolta', 'konica minolta'], ['okidata', 'oki data', 'oki'], ['kyocera', 'kyocera mita'] ]
 
+  $conditions = ['Refurbished', 'Remanufactured', 'OEM', 'Used', 'New']
+
+  $float_rxp = /(\d+,)?\d+(\.\d+)?/
+
 end

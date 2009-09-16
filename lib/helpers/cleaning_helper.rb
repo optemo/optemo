@@ -20,14 +20,12 @@ module CleaningHelper
   # Returns a hash with the cleaned-up values.
   def generic_cleaning_code atts, model=$model
     atts['brand'] = atts['brand'].gsub(/\(.+\)/,'').strip if atts['brand']
-    
     # Model:
     if (atts['model'].nil? or atts['model'] == atts['mpn']) and atts['title']
       # TODO combine with other model cleaner code
       dirty_model_str = atts['title'].match(/.+\s#{$model}/i).to_s.gsub(/ - /,'') 
       
     end
-    
     mdls = [atts['model'], atts['mpn']].reject{|x| x.nil? or x == ''}
     mdls.each do |x|
       x.gsub!(/#{atts['brand']}\s?/i,'')
@@ -44,11 +42,15 @@ module CleaningHelper
       end
       x.strip!
     end
-    
     atts['model'] = atts['mpn'] if atts['model'].nil? or atts['model'] ==''
     atts['title'].strip! if atts['title']
   
     atts = clean_prices(atts)
+    
+    if atts['parts'] or atts['labor']
+      temp =  many_fields_to_one(['parts', 'labor'], atts, true)  
+      atts['warranty'] = (atts['warranty'] || '') + " #{temp}"
+    end  
     
     temp = (atts['imageurl'] || '').match(/(http:\/\/).*?\.(jpg|gif|jpeg|bmp)/i)
     atts['imageurl'] = temp.to_s if temp
@@ -56,6 +58,17 @@ module CleaningHelper
   
   end
   
+  def model_series_variations models, series
+    vars = []
+    models.each{ |mn|  
+        vars << mn
+        series.each { |ser| 
+          vars << mn.gsub(/#{ser}/ix,'') if mn.match(/#{ser}/ix)
+        }
+    }
+    return vars.reject{|x| x.nil?}.collect{|x| x.strip}
+  end
+
   def clean_printer_model dirtymodel, brand=''
     return nil if dirtymodel == nil
     clean_model_str = dirtymodel.gsub(/(mfp|multi-?funct?ion|duplex|faxcent(er|re)|workcent(re|er)|mono|laser|dig(ital)?|color|(black(\sand\s|\s?\/\s?)white)|network|all(\s?-?\s?)in(\s?-?\s?)one)\s?/i,'')
@@ -67,7 +80,7 @@ module CleaningHelper
     ja_brand_alternatives.each do |alts|
         if alts.include? just_alphanumeric(brand.downcase)
             alts.each do |altbrand|
-              clean_model_str.gsub!(/#{altbrand}\s?/i,'')
+              clean_model_str.gsub!(/#{altbrand}\s?/ix,'')
             end
         end
     end
@@ -90,15 +103,21 @@ module CleaningHelper
   # attribute hash given that it relates to
   # printers. 
   def generic_printer_cleaning_code atts
-    
     atts = (generic_cleaning_code atts)
     temp = atts.keys
     temp.each{|k| atts[k] = atts[k].to_s}
     
-    atts.each{|x,y| atts[x] = y.gsub(/#{@@sep}/,'') if y.scan(/#{@@sep}/).length == 1 }
+    atts.each{|x,y| atts[x] = y.split("#{@@sep}").uniq.reject{|x| x.nil?}.join("#{@@sep}") if y.type==String} 
     
-    atts['model'] = clean_printer_model(atts['model'], atts['brand'])
-    atts['mpn'] = clean_printer_model(atts['mpn'], atts['brand'])
+    ['model', 'mpn'].each do |x|
+      temp = (atts[x] || '').split(@@sep).uniq
+      temp2 = []
+      temp.each{|y| temp2 << clean_printer_model(y)}
+      temp += temp2
+      if temp.length > 0
+        atts[x] = temp.sort{|a,b| likely_model_name(a) <=> likely_model_name(b)}.last
+      end
+    end
     
     atts['ppm'] = get_max_f(atts['ppm'])
     atts['ppmcolor'] = get_max_f(atts['ppmcolor'])
@@ -110,35 +129,38 @@ module CleaningHelper
     debugger if atts['paperinput'] and atts['paperinput'] < 100
     
     # Resolution
-    atts['resolution'] = atts['resolution'].scan(/\d*,?\d+\s?x\s?\d*,?\d+/i).uniq * " #{@@sep} " if atts['resolution']
-    atts['resolutionmax'] = maxres_from_res atts['resolution']
-    
+    temp1 = (atts['resolution'] || '').scan(/\d*,?\d+\s?x\s?\d*,?\d+/i).uniq
+    temp2 =  (atts['resolution'] || '').scan(/\d*,?\d+\s?(dpi|fine\s?point)/i).uniq.reject{|x| x.nil?}.collect{|x| get_f(x.to_s)}
+    atts['resolutionmax'] = maxres_from_res((temp1 | temp2).join(' '))
     #  --- DIMENSIONS
     
     # TODO make this nicer
         
     (atts['dimensions'] or "").gsub!(/''/, '\"')
     (atts['dimensions'] or "").gsub!(/\(.*?\)/,'')
-      
-    (atts['dimensions'] || "").split('x').each do |dim| 
-      atts['itemlength'] = get_f(dim)*100 if dim.include? 'D' and !atts['itemlength']
-      atts['itemwidth'] = get_f(dim)*100 if dim.include? 'W' and !atts['itemwidth']
-      atts['itemheight'] = get_f(dim)*100 if dim.include? 'H' and !atts['itemheight']
-    end
     
-    if atts['dimensions'] and [atts['itemlength'], atts['itemwidth'], atts['itemheight']].uniq == [nil]
-      dims = atts['dimensions'].split('x')
-      break if dims.length < 3
-      # TODO item lwh not what I thought?
-      atts['itemlength'] = dims[2].to_f*100
-      atts['itemwidth'] = dims[0].to_f*100
-      atts['itemheight'] = dims[1].to_f*100
+    dimensions_data = (atts['dimensions'] || "").split("#{@@sep}").reject{|x| x.nil? or x.split('x').length < 3}.uniq
+    
+    dimensions_data.each do |dims|  
+      dims.split('x').each do |dim| 
+        atts['itemlength'] = get_f(dim)*100 if dim.include? 'D' and !atts['itemlength']
+        atts['itemwidth'] = get_f(dim)*100 if dim.include? 'W' and !atts['itemwidth']
+        atts['itemheight'] = get_f(dim)*100 if dim.include? 'H' and !atts['itemheight']
+      end
+      if [atts['itemlength'], atts['itemwidth'], atts['itemheight']].uniq == [nil]
+        dim_array = dims.split('x')
+        atts['itemwidth'] = dim_array[0].to_f*100
+        atts['itemheight'] = dim_array[1].to_f*100
+        atts['itemlength'] = dim_array[2].to_f*100
+      end
+      break if ![atts['itemlength'], atts['itemwidth'], atts['itemheight']].include?(nil)
     end
     
     # .. done with dimensions
+    # TODO is this good?
+    atts['condition'] = clean_brand atts['condition'], $conditions || atts['condition']
+    atts['condition'] = clean_brand atts['title'], $conditions unless atts['condition']
     
-    atts['condition'] = "Refurbished" if (atts['title']||'').match(/refurbished/i) 
-    atts['condition'] = "OEM" if (atts['title']||'').match(/oem/i)
     
     # Booleans
     
@@ -161,8 +183,7 @@ module CleaningHelper
     
     atts['duplex'] = false if (atts['duplex'] || '').downcase == 'manual'
     atts['duplex'] = clean_bool(atts['duplex'])
-    atts.each{|x,y| atts[x] = y.gsub(/^#{@@sep}/,'').gsub(/#{@@sep}/,' | ') if y.type==String} 
-    
+    atts.each{|x,y| atts[x] = y.split("#{@@sep}").reject{|x| x.nil?}.collect{|x| x.strip}.uniq.join(' | ') if y.type==String} 
     return atts
   end
   
@@ -208,6 +229,11 @@ module CleaningHelper
       end
     end
     return nil
+  end
+  
+  def most_likely_model arr, brand=''
+    arr_more = arr.collect{|x| [x, (x || '').match(/\(.*?\)/).to_s]}.flatten.reject{|x| x.nil? or x == ''}
+    return arr_more.sort{|a,b| likely_model_name(a) <=> likely_model_name(b)}.last
   end
   
   # Cleans a list of Boolean values to be either true or false 

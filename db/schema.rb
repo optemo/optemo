@@ -1381,6 +1381,7 @@ ActiveRecord::Schema.define(:version => 20090909190222) do
     t.integer  "product_id"
     t.integer  "retailer_id"
     t.string   "local_id"
+    t.text     "imageurl"
   end
 
   create_table "searches", :force => true do |t|

@@ -101,27 +101,6 @@ module ScrapingHelper
     return spec_hash
   end
   
-  # Gets the max float from a string
-  def get_max_f str
-    return nil if str.nil?
-    strsplit = str.split(/[\s-]/).collect{|x| get_f x}.delete_if{|x| x.nil?}.sort
-    myfloat =  strsplit.last if strsplit
-    return myfloat
-  end
-  
-  # Gets the min float from a string
-  def get_min_f str
-    return nil if str.nil?
-    strsplit = str.split(/[\s-]/).collect{|x| get_f x}.delete_if{|x| x.nil? or x == 0}.sort
-    myfloat =  strsplit.first if strsplit
-    return myfloat
-  end
-  
-  def maxres_from_res res
-    return nil if res.nil?
-    maxres = get_max_f(res)
-    return maxres
-  end
   
   # Returns the value of the given attribute
   # from the element matching the given css string

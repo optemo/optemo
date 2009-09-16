@@ -52,13 +52,15 @@ module TigerDirectScraper
       report_error "#{e.type.to_s}, #{e.message.to_s}"
     else
       clean_atts = clean_tiger(atts)
-      sp = find_or_create_scraped_printer(atts)
+      sp = find_or_create_scraped_printer(clean_atts)
       
       ros = find_ros_from_sp sp
       ro = ros.first
       ro = create_product_from_atts clean_atts, RetailerOffering if ro.nil?
       fill_in_all clean_atts, ro
       timestamp_offering ro
+      
+      announce "Made RO #{ro.id} and SP #{sp.id}"
       
       report_error "Multiple ROs for SP #{sp.id}: #{ros * ', '}" if ros.count > 1
       report_error "Can't create Retailer Offering" if ro.nil?
@@ -146,7 +148,7 @@ module TigerDirectScraper
       spec_table = info_page.css('table.viss tr')
       specs = scrape_table spec_table, 'td.techspec', 'td.techvalue'
       return specs
-    end
+  end
 
   def scrape_links doc
    link_els = doc.css('table.maintbl form[name="frmCompare"] a[title="Click for more information"]')
@@ -196,6 +198,10 @@ module TigerDirectScraper
 
     atts = clean_property_names atts
     clean_atts = generic_printer_cleaning_code(atts)
+
+    
+    atts['resolutionmax'] = get_max_f atts['resolution'] if atts['resolutionmax'].nil? and atts['resolution']
+
     temp = clean_brand(clean_atts['brand'], $printer_brands)
     clean_atts['brand'] = temp if temp
     clean_atts['model'] = clean_printer_model(clean_atts['model'], clean_atts['brand'])
@@ -305,7 +311,6 @@ namespace :scrape_tiger do
     
   desc 'Update prices & availability for existing TigerPrinters'
   task :update_prices => :init do
-    
     @logfile = File.open("./log/tiger_update.log", 'w+')
     log "Started updating at : #{Time.now}."
         
@@ -325,7 +330,6 @@ namespace :scrape_tiger do
       
   desc "Acquire data for all printers"
   task :scrape => :init do
-    
     @logfile = File.open("./log/tiger_scraper.log", 'w+')
     
     $retailers.each do |retailer|
@@ -341,7 +345,6 @@ namespace :scrape_tiger do
       end
       log "Scraped #{links.length} #{retailer.name} #{$model.name}s."
     end
-    
     @logfile.close
   end
   
@@ -358,17 +361,7 @@ namespace :scrape_tiger do
     $model = Printer
     $scrapedmodel = ScrapedPrinter
     
-    #@conditions = ["New", "Refurbished", "OEM"]
-    
     @ignore_list = ['local_id', 'pricestr', 'price', 'region']
-    
     $retailers = [Retailer.find(12), Retailer.find(14)]
-    
-    #@brand_alternatives = [ ['hp', 'hewlett packard', 'hewlett-packard'], ['konica', 'konica-minolta', 'konica minolta'], ['okidata', 'oki data', 'oki'] ]
-
-      #'shippingweight'      => 'packageweight', \
-      #'originalprice'       =>'listpricestr'  ,      'price'               =>'pricestr'  }
-
   end
-  
 end

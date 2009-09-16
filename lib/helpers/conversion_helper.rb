@@ -2,6 +2,34 @@ module ConversionHelper
   
   @@float_rxp = /(\d+,)?\d+(\.\d+)?/
   
+  def self.float_rxp
+    return @@float_rxp
+  end
+  
+  # Gets the max float from a string
+  def get_max_f str
+    return nil if str.nil?
+    strsplit = str.split(/[\s-]/).collect{|x| get_f x}.delete_if{|x| x.nil?}.sort
+    myfloat =  strsplit.last if strsplit
+    return myfloat
+  end
+  
+  
+  # Gets the min float from a string
+  def get_min_f str
+    return nil if str.nil?
+    strsplit = str.split(/[\s-]/).collect{|x| get_f x}.delete_if{|x| x.nil? or x == 0}.sort
+    myfloat =  strsplit.first if strsplit
+    return myfloat
+  end
+  
+  # Gets maximum resolution from resolution
+  def maxres_from_res res
+    return nil if res.nil?
+    maxres = get_max_f(res)
+    return maxres
+  end
+  
   # Gets the max. numerical value from something in
   # units of pages or sheets.  Returns an integer.
   def parse_max_num_pages str
@@ -161,7 +189,7 @@ module ConversionHelper
   
   # Gets a float with given units from a string
   def get_f_with_units str, unit_regex
-    return (get_f str.match(append_regex( @@float_rxp, unit_regex)).to_s) 
+    return (get_f str.match(float_and_regex(unit_regex)).to_s) 
   end
   
   # Gets a float with given units from a string

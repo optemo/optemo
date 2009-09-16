@@ -1,5 +1,7 @@
 module AmazonScraper
   
+  
+  # --- Blah blah.
   def get_ASINs
     response_group = 'ItemIds'
     current_page = 1
