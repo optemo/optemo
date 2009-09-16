@@ -130,7 +130,7 @@ namespace :printers do
     
     @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_validation.log", 'w+')
     
-    my_products = scraped_by_retailers($retailers, $scraped_model)
+    my_products = scraped_by_retailers($retailers, $scrapedmodel)
     
     announce "Testing #{my_products.count} #{$scrapedmodel.name} for validity..."
     
