@@ -23,19 +23,28 @@ module AmazonScraper
     count = 0
     added = []
     loop do
-      res = Amazon::Ecs.item_search('',:browse_node => $browse_node_id, :search_index => $search_index, :response_group => response_group, :item_page => current_page)# , :country => region.intern
-      be_nice_to_amazon
-      report_error "ERROR: #{res.error}. Couldn't download ASINs for page #{current_page}" if  res.has_error?    
-      total_pages = res.total_pages unless total_pages
-      added += res.items.collect{ |item| item.get('asin') }
-      current_page += 1
-      break if (current_page > total_pages) or current_page > 1 # TODO
+      begin
+        res = Amazon::Ecs.item_search('',:browse_node => $browse_node_id, :search_index => $search_index, :response_group => response_group, :item_page => current_page)# , :country => region.intern
+        be_nice_to_amazon
+      rescue Exception => exc
+        report_error "Problem while getting local ids, on #{current_page}th page of request."
+        report_error "#{exc.message}"
+        snore(10)
+        current_page += 1
+      else
+        report_error "#{res.error}. Couldn't download ASINs for page #{current_page}" if  res.has_error?    
+        total_pages = res.total_pages unless total_pages
+        added += res.items.collect{ |item| item.get('asin') }
+        current_page += 1
+      end
+      break if (current_page > total_pages)
     end
     return added
   end
   
   # Amazon-specific cleaning code
   def clean atts
+    atts['listprice'] = (atts['listprice'] || '').match(/\$\d+\.(\d\d)?/).to_s
     return clean_printer(atts) if $model == Printer
     return clean_cartridge(atts) if $model == Cartridge
   end
@@ -93,10 +102,16 @@ module AmazonScraper
   def scrape_best_offer asin, region
     lowestprice = 1000000000
     lowoffer = nil
+    
+    merchant_searchstring = 'All'
+    merchant_searchstring = AmazonID if curr_retailer(region).name == 'Amazon'
+    merchant_searchstring = AmazonCAID if curr_retailer(region).name == 'Amazon.ca'
+    debugger
+    
     current_page = 1    
     begin
       begin
-        res = Amazon::Ecs.item_lookup(asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => 'All', :offer_page => current_page, :country => region.intern)
+        res = Amazon::Ecs.item_lookup(asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => merchant_searchstring, :offer_page => current_page, :country => region.intern)
         be_nice_to_amazon
       rescue Exception => exc
         report_error "#{exc.message} . Could not look up offers for #{asin} in region #{region}"
@@ -114,8 +129,14 @@ module AmazonScraper
           next
         end
         offers = [] << offers unless offers.class == Array
+        debugger
         offers.each do |o| 
-          price = o.get('offerlisting/price/amount').to_i
+          price = o.get('offerlisting/price/formattedprice')
+          if price.nil? or o.get('offerlisting/price').to_s.match(/too low/i)
+            price = 0  # TODO scrape_hidden_prices(asin,region)
+          else
+            price = get_min_f(price.to_s)
+          end
           merchant = decipher_retailer(o.get('merchant/merchantid'), region)
           if price < lowestprice and merchant == (curr_retailer(region)).name
             lowestprice = price
@@ -128,6 +149,7 @@ module AmazonScraper
     end while (!total_pages.nil? and current_page <= total_pages)
     
     be_nice_to_amazon
+    debugger if lowoffer.nil?
     return lowoffer
   end
 
@@ -160,16 +182,19 @@ module AmazonScraper
   # a hash of {attribute => att value}.
   def offer_to_atthash offer, asin, region
     atts = {}
-    atts['pricestr'] = offer.get('offerlisting/price/formattedprice')
+    atts['pricestr'] = offer.get('offerlisting/price/formattedprice').to_s
+    debugger unless atts['pricestr'].match(/\$/)
     if offer.get('offerlisting/price/formattedprice') == 'Too low to display'
         atts['toolow']   = true
-        atts['pricestr'] = scrape_hidden_prices(asin,region)
+        atts['pricestr'] = nil
+        atts['stock']    = false # TODO
+        #TODO atts['pricestr'] = scrape_hidden_prices(asin,region)
     else
         atts['toolow']   = false
         atts['pricestr'] = offer.get('offerlisting/price/formattedprice')
+        atts['stock']    = true
     end
     
-    atts['stock']        = true
     atts['availability'] = offer.get('offerlisting/availability')
     atts['merchant']     = offer.get('merchant/merchantid')
     
@@ -184,13 +209,19 @@ module AmazonScraper
   # TODO -- can I get this from the feed?
   def scrape_hidden_prices(asin,region)
     require 'open-uri'
-    require 'hpricot'
+    require 'webrat'
+    require 'nokogiri'
     url = "http://www.amazon.#{region=="us" ? "com" : region}/o/asin/#{asin}"
     doc = Hpricot(open(url,{"User-Agent" => "User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_6; en-us) AppleWebKit/525.27.1 (KHTML, like Gecko) Version/3.2.1 Safari/525.27.1"}).read)
+    nokodoc = Nokogiri::HTML(doc.to_html)
+    debugger
+    nokodoc2 = Nokogiri::HTML(open(url))
     price = (doc/"b[@class='priceLarge']").first
     debugger
     priceint = price.innerHTML.gsub(/\D/,'').to_i unless price.nil?
+    debugger
     be_nice_to_amazon
+    debugger
     return priceint
   end
 
@@ -231,15 +262,14 @@ module AmazonScraper
   def clean_printer atts
     atts['cpumanufacturer'] = nil # TODO
     semi_cleaned_atts = clean_property_names(atts) 
+    semi_cleaned_atts['displaysize'] = nil # TODO it's just a weird value
+    #prices = ['listprice', 'listpriceint', 'listpricestr', 'saleprice', 'salepriceint', 'salepricestr',  'price', 'pricestr', 'priceint'].collect{|x|
+    #  (semi_cleaned_atts[x] || '').split(/#{@@sep}/)}.flatten.reject{|x| !x.match(/\./)}
     cleaned_atts = generic_printer_cleaning_code semi_cleaned_atts
     temp1 = clean_brand atts['title'], $printer_brands
     temp2 = clean_brand atts['brand'], $printer_brands
     cleaned_atts['brand'] = temp1 || temp2
     cleaned_atts['condition'] ||= 'New'
-    # TODO these are temporarily being ignored
-    ['listpriceint', 'listpricestr', 'salepriceint', 'salepricestr', 'displaysize'].each do |x|
-      cleaned_atts[x] = nil
-    end
     return cleaned_atts
   end
   

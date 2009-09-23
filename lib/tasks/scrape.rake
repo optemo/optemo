@@ -8,7 +8,7 @@ module GenericScraper
       scraped_atts['retailer_id'] = retailer.id
       scraped_atts['region'] = retailer.region
       clean_atts = clean scraped_atts
-      
+      debugger
       # TODO the only non-general line of code:
       sp = find_or_create_scraped_printer(clean_atts)
       
@@ -28,13 +28,15 @@ end
 
 namespace :printers do
   
-  task :scrape_newegg => [:newegg_init, :scrape, :match_to_products, :validate_printers]
+  task :scrape_amazon => [:amazon_init, :scrape_all]
   
-  task :scrape_tiger => [:tiger_init, :scrape, :match_to_products, :validate_printers]
+  task :scrape_newegg => [:newegg_init, :scrape_all, :match_to_products, :validate_printers]
   
-  task :update_prices_newegg => [:newegg_init, :update_prices]
+  task :scrape_tiger => [:tiger_init, :scrape_all, :match_to_products, :validate_printers]
   
-  task :update_prices_tiger => [:tiger_init, :update_prices]
+  task :update_prices_newegg => [:newegg_init, :update_prices, :scrape]
+  
+  task :update_prices_tiger => [:tiger_init, :update_prices, :scrape]
   
   task :once => :init do
     #retailers = ScrapedPrinter.all.collect{|x| x.retailer_id}.uniq
@@ -95,13 +97,16 @@ namespace :printers do
   task :scrape_all do
     @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_scraper.log", 'w+')
     $retailers.each do |retailer|
+      
       ids = scrape_all_local_ids retailer.region
       old_ids = (RetailerOffering.find_all_by_retailer_id(retailer.id)).collect{|x| x.local_id}
       ids = (ids + old_ids).uniq
+      
+      debugger
             
       ids.each_with_index do |local_id, i|
         generic_scrape(local_id, retailer)
-        puts "Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
+        announce "Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
       end
     end
     @logfile.close
@@ -118,7 +123,7 @@ namespace :printers do
             
       ids.each_with_index do |local_id, i|
         generic_scrape(local_id, retailer)
-        puts "Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
+        announce "Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
       end
     end
     @logfile.close
