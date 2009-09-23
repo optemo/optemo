@@ -8,7 +8,7 @@ module GenericScraper
       scraped_atts['retailer_id'] = retailer.id
       scraped_atts['region'] = retailer.region
       clean_atts = clean scraped_atts
-      debugger
+      
       # TODO the only non-general line of code:
       sp = find_or_create_scraped_printer(clean_atts)
       
@@ -18,6 +18,11 @@ module GenericScraper
       
       ro = create_product_from_atts clean_atts, RetailerOffering if ro.nil?
       fill_in_all clean_atts, ro
+      
+      debugger if (clean_atts['toolow'] || '').to_s == 'true'
+      # Check that it's filled in right:
+      # price stuff; stock; toolow
+      
       timestamp_offering ro       
     else
       # If there was an error while scraping: sleep 20 min
@@ -101,8 +106,6 @@ namespace :printers do
       ids = scrape_all_local_ids retailer.region
       old_ids = (RetailerOffering.find_all_by_retailer_id(retailer.id)).collect{|x| x.local_id}
       ids = (ids + old_ids).uniq
-      
-      debugger
             
       ids.each_with_index do |local_id, i|
         generic_scrape(local_id, retailer)

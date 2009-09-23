@@ -98,6 +98,9 @@ function spinner(holderid, R1, R2, count, stroke_width, colour) {
 // When you click the Save button:
 function saveit(id)
 {	
+	// Tracking	
+	try { piwikTracker.trackGoal(11)); } catch( err ) {}
+	
 	//Check if this id has already been added.
 	if(null != document.getElementById('c'+id)){
 		$("#already_added_msg").attr("style","display:block");
@@ -159,6 +162,9 @@ function submitPreferences()
 
 function submit_filter()
 {
+	// Tracking
+	try { piwikTracker.trackGoal(13); } catch( err ) {}
+	
 	$('#filter_form').submit();
 	spinner("myspinner", 11, 20, 9, 5, "#000");
 	$('#loading').css('display', 'inline');

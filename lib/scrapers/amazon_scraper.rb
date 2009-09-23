@@ -37,7 +37,7 @@ module AmazonScraper
         added += res.items.collect{ |item| item.get('asin') }
         current_page += 1
       end
-      break if (current_page > total_pages)
+      break if (current_page > total_pages) or current_page > 5 # TODO
     end
     return added
   end
@@ -45,8 +45,21 @@ module AmazonScraper
   # Amazon-specific cleaning code
   def clean atts
     atts['listprice'] = (atts['listprice'] || '').match(/\$\d+\.(\d\d)?/).to_s
-    return clean_printer(atts) if $model == Printer
-    return clean_cartridge(atts) if $model == Cartridge
+        
+    atts = clean_printer(atts) if $model == Printer
+    atts = clean_cartridge(atts) if $model == Cartridge
+    
+    if (atts['toolow'] || '').to_s  == 'true' and atts['listprice'] and atts['listprice'] != ""
+      atts['stock']    = true
+      atts['pricestr'] = "Less than #{atts['pricestr']}"
+      atts['salepricestr'] = "Less than #{atts['salepricestr']}"
+    end
+    
+    if atts['stock'] == false
+      ['price', 'priceint', 'pricestr', 'saleprice', 'salepriceint', 'salepricestr'].each{|x| atts['x'] = nil}
+    end
+    
+    return atts
   end
   
   # Re-scrape everything needed to update an offering
@@ -106,7 +119,6 @@ module AmazonScraper
     merchant_searchstring = 'All'
     merchant_searchstring = AmazonID if curr_retailer(region).name == 'Amazon'
     merchant_searchstring = AmazonCAID if curr_retailer(region).name == 'Amazon.ca'
-    debugger
     
     current_page = 1    
     begin
@@ -129,11 +141,12 @@ module AmazonScraper
           next
         end
         offers = [] << offers unless offers.class == Array
-        debugger
+        
         offers.each do |o| 
           price = o.get('offerlisting/price/formattedprice')
           if price.nil? or o.get('offerlisting/price').to_s.match(/too low/i)
             price = 0  # TODO scrape_hidden_prices(asin,region)
+            #price = lowestprice # Do not use the too-low offerings!
           else
             price = get_min_f(price.to_s)
           end
@@ -147,9 +160,7 @@ module AmazonScraper
         be_nice_to_amazon
       end
     end while (!total_pages.nil? and current_page <= total_pages)
-    
     be_nice_to_amazon
-    debugger if lowoffer.nil?
     return lowoffer
   end
 
@@ -183,11 +194,9 @@ module AmazonScraper
   def offer_to_atthash offer, asin, region
     atts = {}
     atts['pricestr'] = offer.get('offerlisting/price/formattedprice').to_s
-    debugger unless atts['pricestr'].match(/\$/)
     if offer.get('offerlisting/price/formattedprice') == 'Too low to display'
         atts['toolow']   = true
-        atts['pricestr'] = nil
-        atts['stock']    = false # TODO
+        atts['stock'] = false
         #TODO atts['pricestr'] = scrape_hidden_prices(asin,region)
     else
         atts['toolow']   = false
@@ -209,20 +218,13 @@ module AmazonScraper
   # TODO -- can I get this from the feed?
   def scrape_hidden_prices(asin,region)
     require 'open-uri'
-    require 'webrat'
     require 'nokogiri'
     url = "http://www.amazon.#{region=="us" ? "com" : region}/o/asin/#{asin}"
-    doc = Hpricot(open(url,{"User-Agent" => "User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_6; en-us) AppleWebKit/525.27.1 (KHTML, like Gecko) Version/3.2.1 Safari/525.27.1"}).read)
-    nokodoc = Nokogiri::HTML(doc.to_html)
-    debugger
-    nokodoc2 = Nokogiri::HTML(open(url))
-    price = (doc/"b[@class='priceLarge']").first
-    debugger
-    priceint = price.innerHTML.gsub(/\D/,'').to_i unless price.nil?
-    debugger
-    be_nice_to_amazon
-    debugger
-    return priceint
+    snore(15)
+    doc = Nokogiri::HTML(open(url))
+    price_el = get_el(doc.css('.listprice'))
+    price = price_el.text unless price_el.nil?
+    return price
   end
 
   # TODO 1. this is not used anywhere
