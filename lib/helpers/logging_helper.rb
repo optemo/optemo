@@ -6,9 +6,12 @@ module LoggingHelper
   end
 
   def report_error msg
-    $logfile.puts "ERROR      " + msg if $logfile
-    @logfile.puts "ERROR      " + msg if @logfile
-    puts "ERROR: " + msg
+    announce "ERROR      " + msg
+  end
+  
+  def announce msg
+    log msg
+    puts msg
   end
   
   # a special logging function for data validation
@@ -17,6 +20,11 @@ module LoggingHelper
     @logfile.puts printme if @logfile
     $logfile.puts printme if $logfile
     puts printme  
+  end
+  
+  def snore(sec)
+    puts "Sleeping for #{sec} seconds.."
+    sleep sec
   end
   
 end

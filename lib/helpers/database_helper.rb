@@ -68,8 +68,8 @@ module DatabaseHelper
   
   # Returns itself and any other matching printers(or other specified model)
   def match_printer_to_printer ptr, recclass=$model, series=[]
-    makes = [just_alphanumeric(ptr.brand)].delete_if{ |x| x.nil? or x == ""}
-    modelnames = [just_alphanumeric(ptr.model),just_alphanumeric(ptr.mpn)].delete_if{ |x| x.nil? or x == ""}
+    makes = [just_alphanumeric(ptr.brand)].reject{ |x| x.nil? or x == ""}
+    modelnames = [just_alphanumeric(ptr.model),just_alphanumeric(ptr.mpn)].reject{ |x| x.nil? or x == ""}
     
     return match_rec_to_printer makes, modelnames,recclass, series
   end
@@ -104,14 +104,27 @@ module DatabaseHelper
     modelnames.reject{|x| x.nil? or x == ''}.each{|x| makes.each{|y| x.gsub!(/#{y}/,'')}}.uniq!
     
     recclass.all.each do |ptr|
-      p_makes = [just_alphanumeric(ptr.brand)].delete_if{ |x| x.nil? or x == ""}
-      p_modelnames = [just_alphanumeric(ptr.model),just_alphanumeric(ptr.mpn)].delete_if{ |x| x.nil? or x == ""}
+      p_makes = [just_alphanumeric(ptr.brand)].reject{ |x| x.nil? or x == ""}
+      p_modelnames = [just_alphanumeric(ptr.model),just_alphanumeric(ptr.mpn)].reject{ |x| x.nil? or x == ""}
 
       series.each { |ser| p_modelnames.each {|pmn| pmn.gsub!(/#{ser}/,'') } }
 
       matching << ptr unless ( (p_makes & makes).empty? or (p_modelnames & modelnames).empty? )
     end
     return matching
+  end
+  
+  def find_or_create_scraped_printer atts 
+      rid = atts['retailer_id']
+      lid = atts['local_id']
+      return nil if rid.nil? or lid.nil?
+      sp = ScrapedPrinter.find_by_retailer_id_and_local_id(rid,lid)
+      if sp.nil?
+        sp = create_product_from_atts atts, ScrapedPrinter
+      else
+        fill_in_all atts, sp
+      end
+      return sp
   end
   
   # Creates a record and fills in any fitting attributes
@@ -138,7 +151,6 @@ module DatabaseHelper
     fill_in 'product_type', model.name, o # TODO
     fill_in 'product_id', product.id, o
     
-    # TODO timestamps
     return o
   end
   
@@ -176,10 +188,12 @@ module DatabaseHelper
     
     pricestr_fieldname = 'pricestr'
     pricestr_fieldname = 'price_ca_str' if region == 'CA'
+    price_str_prefix = ''
+    price_str_prefix = 'CAD' if region == 'CA'
     
     fill_in "bestoffer#{$region_suffixes[region]}", lowest.id, p
     fill_in "price#{$region_suffixes[region]}", lowest.priceint, p
-    fill_in "#{$pricestr_fieldname}", lowest.pricestr, p
+    fill_in "#{$pricestr_fieldname}", "#{price_str_prefix}#{lowest.pricestr}", p
     fill_in "instock#{$region_suffixes[region]}", true, p
   end
   
@@ -190,10 +204,57 @@ module DatabaseHelper
   # 3. are not in the given ignore list or the usual ignore list
   def only_overlapping_atts atts, other_recs_class, ignore_list=[]
     big_ignore_list = ignore_list + $general_ignore_list
-    overlapping_atts = atts.delete_if{ |x,y| 
+    overlapping_atts = atts.reject{ |x,y| 
       y.nil? or not other_recs_class.column_names.include? x \
       or big_ignore_list.include? x }
     return overlapping_atts
+  end
+  
+  # Gets Scraped Printer entries by a list of 
+  # matching retailer ids.
+  def scraped_by_retailers retailer_ids, scrapedmodel=$scrapedmodel
+     sps = []
+     retailer_ids.each do |ret|
+       sps = sps | scrapedmodel.find_all_by_retailer_id(ret)
+     end
+     return sps
+  end
+  
+  # --- Methods for mapping ScrapedPrinter <--> RetailerOffering (1 to many) --- #
+  
+  def find_ros_from_scraped sp, model=$model
+    ros = RetailerOffering.find_all_by_local_id_and_retailer_id(sp.local_id, sp.retailer_id)
+    return ros.reject{|x| x.product_type != $model.name}
+  end
+  
+  def link_ro_and_sp ro, sp
+    local_id = ro.local_id || sp.local_id
+    retailer_id = ro.retailer_id || sp.retailer_id
+    if local_id.nil? or retailer_id.nil?
+      report_error "Couldn't link RO #{ro.id} and SP #{sp.id}"
+      return false 
+    end
+    [ro,sp].each{|x| 
+        fill_in 'local_id', local_id, x
+        fill_in 'retailer_id', retailer_id, x
+    }
+    return true
+  end
+  
+  def find_sp_from_ro ro
+    return find_sp ro.local_id, ro.retailer_id
+  end
+  
+  def find_ros_from_sp sp
+    return find_ros(sp.local_id, sp.retailer_id)
+  end
+  
+  def find_sp local_id, retailer_id
+    return ScrapedPrinter.find_all_by_local_id_and_retailer_id(local_id, retailer_id).first
+  end
+  
+  def find_ros local_id, retailer_id
+    return RetailerOffering.find_all_by_local_id_and_retailer_id(local_id, retailer_id)
   end
   
 end

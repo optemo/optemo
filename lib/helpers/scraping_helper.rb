@@ -43,16 +43,24 @@ module ScrapingHelper
     param_names << 'mpn' if str.match(/m(fg|anufacturer)partn(o|um)/)
     param_names << 'paperinput' if str.match(/(input|sheet|paper)capacity/)
     param_names << 'paperoutput' if str.match(/outputcapacity/)
-    param_names << 'resolution' if str.match(/print(ing)?quality/)
-    param_names << 'papersize' if str.match(/mediasize/)
+    param_names << 'resolution' if str.match(/print(ing)?quality/)    
     param_names << 'connectivity' if str.match(/printerinterface/)
     param_names << 'itemwidth' if str.match(/width/) # TODO
     param_names << 'packagewidth' if str.match(/width/) # TODO
     param_names << 'printserver' if str.match(/(network|server)/)
     param_names << 'scanner' if str.match(/scan/)
     param_names << 'colorprinter' if str.match(/(colou?r|printtechnology|printeroutput)/)
-    param_names << 'dimensions' if str.match(/size/)
     param_names << 'imageurl' if str.match(/image|pic/)
+    
+    if str.match(/size/)
+      if str.match(/media|paper|sheet|document/)
+        param_names << 'papersize'
+      elsif str.match(/box|package|parcel|shipping/)
+        param_names << 'packagedimensions'
+      else
+        param_names << 'dimensions' 
+      end
+    end
     
     if str.match(/colou?r/)
       param_names << 'ppmcolor' if param_names.include? 'ppm'
@@ -61,8 +69,6 @@ module ScrapingHelper
     if str.match(/(scan|cop(y|ie(s|r)))/i)
       param_names.delete_if{|x| x== 'resolution' or x=='ppm' or x='paperinput' or x='paperoutput'}
     end
-    
-    param_names << 'dimensions' if str.match(/dimensions/)
     
     param_names << 'rating' if str.match(/average.*(review|rating)/) or str.match(/stars/)
      
@@ -95,27 +101,6 @@ module ScrapingHelper
     return spec_hash
   end
   
-  # Gets the max float from a string
-  def get_max_f str
-    return nil if str.nil?
-    strsplit = str.split(/[\s-]/).collect{|x| get_f x}.delete_if{|x| x.nil?}.sort
-    myfloat =  strsplit.last if strsplit
-    return myfloat
-  end
-  
-  # Gets the min float from a string
-  def get_min_f str
-    return nil if str.nil?
-    strsplit = str.split(/[\s-]/).collect{|x| get_f x}.delete_if{|x| x.nil? or x == 0}.sort
-    myfloat =  strsplit.first if strsplit
-    return myfloat
-  end
-  
-  def maxres_from_res res
-    return nil if res.nil?
-    maxres = get_max_f(res)
-    return maxres
-  end
   
   # Returns the value of the given attribute
   # from the element matching the given css string

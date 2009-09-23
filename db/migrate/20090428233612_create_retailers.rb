@@ -5,6 +5,8 @@ class CreateRetailers < ActiveRecord::Migration
       t.string :name
       t.string :image
 
+      t.string  :local_id_name
+
       t.timestamps
     end
   end

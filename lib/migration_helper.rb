@@ -36,7 +36,7 @@ module MigrationHelper
     t.integer :itemwidth
     t.integer :itemlength
     t.integer :itemheight
-  
+    t.integer :itemweight
   end
   
   def addPackageDimensions(t)
@@ -47,6 +47,52 @@ module MigrationHelper
   
   end
   
+  def  addPrinterTableProperties(t)
+    addBasicProductFeatures(t)
+    addDimensions(t)
+    
+    t.string :brand
+    t.float :displaysize
+    t.string :ean
+    t.text :feature
+    t.integer :listpriceint #rename to listprice
+    t.string :model
+    
+    t.string :mpn
+    t.string :warranty
+    
+    t.float :ppm
+    t.float :ttp
+    t.string :resolution
+    t.string :duplex
+    t.string :connectivity
+    t.string :papersize
+    t.integer :paperoutput
+    t.string :dimensions
+    t.integer :dutycycle 
+    t.integer :paperinput
+    
+    t.string :special
+    t.float :ppmcolor
+    t.string :platform
+    
+    t.boolean :colorprinter
+    t.boolean :scanner
+    t.datetime :scrapedat
+    t.boolean :nodetails
+    t.boolean :printserver
+    t.integer :resolutionmax
+    t.boolean :fax
+    t.boolean :bw
+    
+    t.string :manufacturerproducturl
+  end
+  def linkToProductAndRetailer(t)
+  
+    t.integer :product_id
+    t.integer :retailer_id
+    t.string  :local_id
+  end
   def removeBasicProductFeatures
     
   end

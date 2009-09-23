@@ -1,322 +1,495 @@
 module AmazonScraper
-  def download(url)
-    return nil if url.nil?
-    return url if url.index(/\/images\/Amazon\//)
-    url = 'http://ecx.images-amazon.com/images/I/'+url if url.length < 30 
-    filename = url.split('/').pop
-    puts filename
-    ret = '/images/Amazon/'+filename
-    begin
-    f = open('/optemo/site/public/images/Amazon/'+filename,"w").write(open(url).read)
-    rescue OpenURI::HTTPError
-      ret = ""
-    end
-    ret
-  end
-
-  # Sets up env and related stuff
-  def regularsetup
-    # Requires.
-    require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
-    require 'webrat'
-    require 'mechanize' # Needed to make Webrat work
   
-    Webrat.configure do |conf|
-      conf.mode = :mechanize # Can't be rails or Webrat won't work
-    end
-    sesh = Webrat.session_class.new
-    sesh.mechanize.user_agent_alias = 'Mac Safari'
-    sesh.mechanize.user_agent = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_6; en-us) AppleWebKit/525.27.1 (KHTML, like Gecko) Version/3.2.1 Safari/525.27.1"
-    sesh
-  end
-
-  def special_url asin
-    return "http://www.amazon.com/o/asin/#{asin}"
-  end
-
-  def details_from_one_page doc, model=$model
-    array = doc.css('.content ul li')
-    features = {}
-    array.each_with_index {|i, index|
-      t = i.content.split(/:/)
-      props = get_property_names(t[0], model)
-      props.uniq.each do |property|
-        features[property]= t[1].strip  + " #{features[property] || ''}" if t[1]
-      end
-    }
-    return features
-  end
-
-  def scrape_compatibility(asin,sesh=nil)
   
-    sesh = regularsetup unless sesh
-   
-    features = {}
-    
-    begin
-      sesh.visit('http://www.amazon.com/o/asin/' + asin)
-      doc = Nokogiri::HTML(sesh.response.body)
-      compatible_el = get_el(doc.css('div.content').reject{|x| x.text.nil? \
-        || x.text.match(/(compatible|use with)/i).nil?})
-      
-      if(compatible_el and compatible_el.css('li').count > 0)
-        compatible_el = get_el( compatible_el.css('li').\
-        reject{|x| x.text.nil? || x.text.match(/(compatible|use with)/i).nil?})
-      end
-      features['compatible'] = compatible_el.text.gsub(/.*(compatible|use with)/i,'') if compatible_el
-      
-      sleep(10)
-    end
-    doc = Nokogiri::HTML(sesh.response.body)
-    
-    return features
-  end
-
-  def scrape_details_general(asin,sesh=nil)
-  
-    sesh = regularsetup unless sesh
-    features = {}
-    
-    begin
-      sesh.visit('http://www.amazon.com/o/asin/' + asin)
-      doc = Nokogiri::HTML(sesh.response.body)
-      features['region'] = 'US'
-      features['title'] = get_el(doc.css('h1')).content if get_el(doc.css('h1'))
-      
-      features['imageurl'] = get_el(doc.css('img#prodImage')).attribute('src') if get_el(doc.css('img#prodImage'))
-      
-      brand_el = doc.css('span').reject{|x| x.content.match(/other products by/i).nil?}.first
-      features['brand'] = brand_el.css('a').text if brand_el
-      
-      features.merge!(( details_from_one_page(doc) || {} ).reject{|x,y| x == 'brand'})
-      sleep(10)
-      
-      sesh.click_link('See more technical details')       
-      doc = Nokogiri::HTML(sesh.response.body)
-      features.merge!(( details_from_one_page(doc) || {} ).reject{|x,y| x == 'brand'})
-      sleep(10)
-    rescue
-      features['nodetails'] = true
-    end
-    doc = Nokogiri::HTML(sesh.response.body)
-    
-    return features
-  end
-
-  def scrape_details(p)
-    require 'webrat'
-    puts 'ASIN='+p.asin
-    sesh = regularsetup
-    begin
-    sesh.visit('http://www.amazon.com/o/asin/' + p.asin)
-    #fetch 'http://www.amazon.com/o/asin/' + 'B000F005U0'
-    #fetch 'http://www.amazon.com/Magicolor-2550-Dn-Color-Laser/dp/tech-data/B000I7VK22/ref=de_a_smtd'
-    sesh.click_link('See more technical details')
-    rescue
-      p.nodetails = true
-      return p
-    end
-    doc = Nokogiri::HTML(sesh.response.body)
-    array = doc.css('.content ul li')
-    features = {}
-    array.each {|i|
-      t = i.content.split(': ')
-      features[t[0].downcase.tr(' -\(\)_','')]=t[1]
-      }
-  
-    #pp features
-    res = []
-    features.each {|key, value| 
-      next if value.nil?
-      if key[/maximumprintspeed/]
-        p.ppm = value.to_f unless !p.ppm.nil? && p.ppm >= value.to_i #Keep fastest value
-        #puts 'PPM: '+p.ppm.to_s
-      end
-      if key[/maximumprintspeed/] && key[/colou?r/] #Color
-        p.ppmcolor = value.to_f
-        #puts 'PPM(Color): '+p.ppmcolor.to_s
-      end
-      if key[/firstpageoutputtime|timetoprint/]
-        p.ttp = value.match(/\d+(.\d+)?/)[0].to_f
-        #puts 'TTP:'+p.ttp.to_s
-      end
-      if key[/sheetcapacity|standardpapercapacity/]
-        p.paperinput = value.match(/\d+/)[0].to_i unless !p.paperinput.nil? && p.paperinput > value.to_i #Keep largest value
-        #puts 'Paper Input:'+p.paperinput.to_s
-      end
-      if key[/resolution/] && res.size < 2
-        if v = value.match(/(\d,\d{3}|\d+) ?x?X? ?(\d,\d{3}|\d+)?/)
-          tmp = v[1,2].compact
-          tmp*=2 if tmp.size == 1
-          p.resolution = tmp.sort{|a,b| 
-            a.gsub!(',','')
-            b.gsub!(',','')
-            a.to_i < b.to_i ? 1 : a.to_i > b.to_i ? -1 : 0
-          }.join(' x ')
-          p.resolutionmax = p.resolution.split(' x ')[0]
+  # --- Blah blah.
+  def get_ASINs
+    response_group = 'ItemIds'
+    current_page = 1
+    count = 0
+    added = []
+    loop do
+      res = Amazon::Ecs.item_search('',:browse_node => $browse_node_id, :search_index => $search_index, :response_group => response_group, :item_page => current_page)
+      sleep(1+rand()*30) #Be nice to Amazon
+      report_error "ERROR: #{res.error}. Couldn't download ASINs for page #{current_page}" if  res.has_error?    
+      total_pages = res.total_pages unless total_pages
+      res.items.each do |item|
+        asin = item.get('asin')
+        if $amazonmodel.find_by_asin(asin).nil?
+          added << asin
+          product = $amazonmodel.new
+          product.asin = asin
+          product.save!
+          puts asin
+          count += 1
         end
       end
-      if key[/printerinterface/] || (key[/connectivitytechnology/] && value != 'Wired')
-        p.connectivity = value
-        #puts p.connectivity
-      end
-      if key[/hardwareplatform/]
-        p.platform = value
-        #puts 'HW: '+p.platform
-      end
-      if key[/width/]
-        #puts 'Width: ' + p.itemwidth.to_s + ' <> ' + value rescue nil
-        p.itemwidth = value.to_f * 100
-        #puts 'Width: ' + p.itemwidth.to_s
-      end
-      if key[/ram/]
-        p.systemmemorysize = value.match(/\d+/)[0]
-        #puts "RAM" + p.systemmemorysize.to_s
-      end
-      if key[/printeroutput/]
-        p.colorprinter = !value[/(C|c)olou?r/].nil?
-        #puts 'Color:' + (p.colorprinter ? 'True' : 'False')
-      end
-      if key[/scannertype/]
-        p.scanner = value[/(N|n)one/].nil?
-        #puts 'Scanner:' + (p.scanner ? 'True' : 'False')
-      end
-      if key[/networkingfeature/]
-        p.printserver = !value[/(S|s)erver/].nil?
-      end
-      if key[/printtechnology/]
-        p.colorprinter = value.index(/(B|b)(\/|&)?(W|w)/).nil?
-      end
-      if key[/duplex/]
-        p.duplex = !value.downcase.index('yes').nil?
-      end
-      if key[/dutycycle/]
-        p.dutycycle = value.match(/(\d|,)+/)[0].tr(',','').to_i
-      end
-    }
+      current_page += 1
+      sleep(0.2)
+      break if (current_page > total_pages)
+    end
+    return added
+  end
   
-    p.scrapedat = Time.now
-    p
+  def scrape scrapeme
+    count = 0
+    scrapeme.each do |product|
+      if !product.asin.blank?
+        log ('Processing: ' + product.asin )
+        if $amazonmodel == nil #  AmazonCamera
+          get_camera_attributes(product)
+        elsif $amazonmodel == AmazonPrinter
+          get_printer_atts(product)
+        elsif $amazonmodel == AmazonCartridge
+          get_cartridge_atts(product)
+        end
+        log 'Done.'
+      end
+      count += 1
+      debugger
+      puts "Done #{count} of #{scrapeme.count}; waiting."
+      sleep(1+rand()*30) #Be really nice to Amazon!
+    end
+  end
+  
+  def findprice(p, region)
+    region ||= "us" #Default region is US
+    #Find the lowest price
+    highestprice = 1000000000
+    merchants = case region
+      when "us"
+        ["Amazon", "Amazon Marketplace"]
+      when "ca"
+        ["Amazon.ca", "Amazon.ca Marketplace"]
+    end
+    lowestprice = Hash[*merchants.zip([highestprice]*merchants.size).flatten]
+    lowmerchant = Hash[*merchants.zip(['']*merchants.size).flatten]
+    lowestentry = Hash[*merchants.zip([nil]*merchants.size).flatten]
+    current_page = 1
+    $amazonmodel.find_all_by_product_id(p.id).each do |e|
+      begin
+        begin
+          res = Amazon::Ecs.item_lookup(e.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => 'All', :offer_page => current_page, :country => region.intern)
+          sleep(1+rand()*30) #Be nice to Amazon
+        rescue Exception => exc
+          report_error "#{exc.message} . Could not look up offers for #{$amazonmodel} "+\
+          "#{e.asin} (id #{p.id}) in region #{region}"
+          sleep(30) 
+          return
+        else
+          total_pages = res.total_pages unless total_pages
+          if res.first_item.nil?
+            current_page += 1
+            next
+          end
+          offers = res.first_item.search_and_convert('offers/offer')
+          if offers.nil?
+            current_page += 1
+            next
+          end
+          offers = [] << offers unless offers.class == Array
+          offers.each do |o| 
+            price = o.get('offerlisting/price/amount').to_i
+            merchantid = o.get('merchant/merchantid')
+            merchant = case merchantid 
+              when AmazonID 
+                "Amazon"
+              when AmazonCAID
+                "Amazon.ca"
+              else
+                case region
+                when "us"
+                  "Amazon Marketplace"
+                when "ca"
+                  "Amazon.ca Marketplace"
+                end
+            end
+            if price < lowestprice[merchant]
+              lowestprice[merchant] = price
+              lowestentry[merchant] = e
+              lowmerchant[merchant] = merchantid
+            end
+          end
+          current_page += 1
+          sleep(2) #One Req per sec
+        end
+      end while (!total_pages.nil? and current_page <= total_pages)
+    end
+    sleep(1) #Be Nice
+    #Save lowest prices
+    merchants.each do |merchant|
+      if lowmerchant[merchant].blank?
+        offer = RetailerOffering.find_by_product_id_and_product_type_and_retailer_id_and_region(p.id,p.class.name,Retailer.find_by_name(merchant).id,region)
+        offer.update_attributes({:stock => false, :toolow => false}) unless offer.nil?
+      else
+        saveoffer(lowestentry[merchant],Retailer.find_by_name_and_region(merchant,region).id,lowmerchant[merchant],region)
+        sleep(2) #One Req per sec
+      end
+    end
+
+    update_bestoffer p
   end
 
+  def saveoffer(p,retailer,merchant,region)
+    puts [p.product_id,Retailer.find(retailer).name,merchant,region].join(' ')
+    begin
+      res = Amazon::Ecs.item_lookup(p.asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => merchant, :country => region.intern)
+      sleep(1+rand()*30) #Be nice to Amazon
+    rescue Exception => exc
+      report_error " -- #{exc.message}. Could not look up offer to save for #{$amazonmodel} #{p.asin}"+\
+      " and merchant #{merchant} in region #{region}"
+      sleep(30)
+      saveoffer(p,retailer,merchant,region)
+      return
+    end
+    offer = res.first_item
+    #Look for old Retail Offering
+    unless offer.nil?
+      o = RetailerOffering.find_by_product_id_and_product_type_and_retailer_id_and_region(p.product_id,$model.name,retailer,region)
+      if o.nil?
+        o = RetailerOffering.new
+        o.product_id = p.product_id
+        o.product_type = $model.name
+        o.retailer_id = retailer
+        o.region = region
+      elsif o.priceint != offer.get('offerlisting/price/amount')
+        #Save old prices only if price has changed
+        if o.pricehistory.nil?
+          o.pricehistory = [o.priceUpdate.to_s(:db), o.priceint].to_yaml if o.priceUpdate
+        else
+          o.pricehistory = (YAML.load(o.pricehistory) + [o.priceUpdate.to_s(:db), o.priceint]).to_yaml if o.priceUpdate
+        end
+      end
+      #Too Low to Display
+      if offer.get('offerlisting/price/formattedprice') == 'Too low to display'
+        o.toolow = true
+        o.priceint = scrape_hidden_prices(p,region)
+        o.pricestr = "#{'CDN' if region == 'ca'}$" + (o.priceint.to_f/100).to_s
+      else
+        o.toolow = false
+        o.priceint = offer.get('offerlisting/price/amount')
+        o.pricestr = offer.get('offerlisting/price/formattedprice')
+      end
+      o.stock = true
+      o.availability = offer.get('offerlisting/availability')
+      o.iseligibleforsupersavershipping = offer.get('offerlisting/iseligibleforsupersavershipping')
+      o.merchant = merchant
+      o.url = "http://amazon.#{region=="us" ? "com" : region}/gp/product/"+p.asin+"?tag=#{region=="us" ? "optemo-20" : "laserprinterh-20"}&m="+merchant
+      o.priceUpdate = Time.now.to_s(:db)
+      o.save
+    end
+  end
+
+  def scrape_hidden_prices(p,region)
+    require 'open-uri'
+    require 'hpricot'
+    url = "http://www.amazon.#{region=="us" ? "com" : region}/o/asin/#{p.asin}"
+    doc = Hpricot(open(url,{"User-Agent" => "User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_6; en-us) AppleWebKit/525.27.1 (KHTML, like Gecko) Version/3.2.1 Safari/525.27.1"}).read)
+    price = (doc/"b[@class='priceLarge']").first
+    priceint = price.innerHTML.gsub(/\D/,'').to_i unless price.nil?
+    sleep(1+rand()*30) #Be nice to Amazon
+    priceint
+  end
+
+  def getAtts(n, o)
+    cols = $model.column_names.delete_if{|c|c.index(/^id|updated_at|created_at|manufacturerproducturl$/)}
+    cols.each do |c|
+      n.send((c+'=').intern, o.send(c.intern))
+    end
+    n
+  end
+
+  def download_review(p)
+    current_page = 1
+    a = nil
+    begin
+      a = AmazonPrinter.find_by_product_id_and_product_type(p.id,p.class.name)
+    rescue
+      return
+    end
+    return if a.nil?
+    puts a.asin
+    averagerating,totalreviews,totalreviewpages = nil
+    loop do
+      begin
+        res = Amazon::Ecs.item_lookup(a.asin, :response_group => 'Reviews', :condition => 'New', :merchant_id => 'All', :review_page => current_page)
+        sleep(1+rand()*30) #Be nice to Amazon
+      rescue Exception => exc
+        report_error " --  #{exc.message}. Couldn't download reviews for product #{a.asin} and merchant #{merchant}"
+      end
+      result = res.first_item
+      #Look for old Retail Offering
+      unless result.nil?
+        averagerating ||= result.get('averagerating')
+        totalreviews ||= result.get('totalreviews').to_i
+        totalreviewpages ||= result.get('totalreviewpages').to_i
+        reviews = result.search_and_convert('review')
+        reviews = Array(reviews) unless reviews.class == Array #Fix single and no review possibility
+        reviews.each do |r|
+          r = Review.new(r.get_hash.merge({'product_type' => a.product_type, 'product_id' => a.product_id, "source" => "Amazon"}))
+          r.save
+        end
+      else
+        return
+      end
+      current_page += 1
+      break if current_page > totalreviewpages
+      sleep(2) #Be nice to Amazon
+    end
+    a.averagereviewrating = averagerating
+    a.totalreviews = totalreviews
+    a.save
+    p.averagereviewrating = averagerating
+    p.totalreviews = totalreviews
+    p.save
+  end
+  
+  def get_attributes(rec)
+    res = Amazon::Ecs.item_lookup(rec.asin, :response_group => 'ItemAttributes')
+    sleep(1+rand()*30) #Be nice to Amazon
+    nokodoc = Nokogiri::HTML(res.doc.to_html)
+    item = nokodoc.css('item').first
+    if item
+      detailurl = item.css('detailpageurl').first.content
+      atts = item.xpath('itemattributes/*').inject({}){|r,x| 
+        val = x.content
+        val += "#{CleaningHelper.sep} #{r[x.name]}" if r[x.name]
+        r.merge(x.name => val)
+      }
+      return atts
+    end
+    return {}
+  end
+  
+  def get_printer_atts(p)
+    # Never been tested...
+    atts = get_attributes p
+    cleaned_atts = generic_printer_cleaning_code atts
+    # TODO check that it worked..'
+    debugger
+    fill_in_all cleaned_atts, p
+    debugger
+    return p
+  end
+  
+  def get_cartridge_atts(cart)
+    atts = get_attributes cart
+    cleaned_atts = cartridge_cleaning_code atts
+    
+    init_brands
+    init_series
+        
+    cleaned_atts['realbrand'] = clean_brand(cleaned_atts['brand'], $fake_brands+$real_brands)
+    cleaned_atts['compatiblebrand'] = clean_brand(cleaned_atts['title'])
+    cleaned_atts['real'] = same_brand?(cleaned_atts['realbrand'], cleaned_atts['compatiblebrand'])
+    cleaned_atts['toner'] = true if (cleaned_atts['title'] || '').match(/toner/i) 
+    cleaned_atts['toner'] = false if (cleaned_atts['title'] || '').match(/ink/i) 
+    
+    conditions = ['Remanufactured', 'Refurbished', 'Compatible', 'OEM', 'New']
+    conditions.each{|c| 
+      (cleaned_atts['condition'] = c) and break if (cleaned_atts['title'] || '').match(/#{c}/i)
+    }
+    
+    cleaned_atts['compatible'] = cleaned_atts['feature'] + "#{cleaned_atts['compatible']}" if cleaned_atts['feature']
+    fill_in_all cleaned_atts, cart
+  end
 end
 
 namespace :scrape_amazon do
+  
+  # -- Useful combos -- #
+  
+  desc 'Update printer images'
+  task :update_printer_pix => [:prnt_init, :update_pix, :copy_pic_stats, :closelog] 
+  
+  desc 'Update cartridge images'
+  task :update_cart_pix => [:crtg_init, :update_pix, :copy_pic_stats, :closelog]
+  
+  desc 'Update printer records'
+  task :update_printer_prices => [:prnt_init, :get_new_products, :update_prices, :closelog] 
+  
+  desc 'Update cartridge records'
+  task :update_cart_prices => [:crtg_init, :get_new_products, :update_prices, :closelog]
+  
+  desc 'Downloads new printers & scrapes the data'
+  task :get_new_printers => [:prnt_init, :get_new_products]
 
-
-  task :cart_init => :init do 
-    require 'helper_libs'
-    include DataLib
-    include CartridgeLib
-    
-    init_series
-    init_brands
-    
-    $ignoreme =  ['brand','model','id']
-    $model = Cartridge
-    $amazonmodel = AmazonCartridge  
+  task :try_scraping => :prnt_init do
+    recent_asins = ['B0026JL9RG'].collect{|x| $amazonmodel.find_by_asin(x)}
+    scrape recent_asins
   end
 
-  desc 'Convert AmazonCartridges to Cartridges'
-  task :to_cartridge => :cart_init do
+  # Get a list of all products from and (re)scrape all data
+  task :scrape_all => :init do
+    recent_asins = get_ASINs
+    puts "Total new products: " + recent_asins.count.to_s
+    count = 0
+    scrapeme = $amazonmodel.find(:all)
+    scrape scrapeme
+  end
+
+  # Get a list of all products from and scrape data for new products only
+  task :get_new_products do
+    recent_asins = get_ASINs
+    recent_entries = recent_asins.collect{|x| $amazonmodel.find_by_asin(x)}
+    scrape recent_entries
+  end
   
-    # Pick only toner cartridges with 
-    # reasonably valid model names for matching.
-    convertme = AmazonCartridge.toner.reject{|x| 
-      (likely_cartridge_model_name(x.model) < 2) or \
-      x.model.nil? or x.realbrand.nil?  or x.real.nil?}
+  task :update_prices => :init do
+    $logfile.puts "Updating prices for #{$model}!"
     
-    convertme.each do |ac|
-      brand = nil
-      if ac.real == true
-        brand = ac.realbrand 
-      elsif ac.real == false and ac.condition != nil
-        brand = "#{ac.realbrand} #{ac.condition} #{ac.compatiblebrand}" 
-      end
-            
-      matches = match_rec_to_printer [brand], [ac.model, ac.mpn], Cartridge if brand
-      matches.reject!{|x| !x.real.nil? and !ac.real.nil? and x.real != ac.real } if matches
-      matching_c = nil
-      
-      if matches and matches.length == 0
-        atts = {'brand' => brand, 'model' => ac.model}
-        puts atts.values * '  -  '
-        matching_c = create_product_from_atts atts, Cartridge
-      elsif matches and matches.length == 1
-        matching_c = matches[0]
-      elsif matches
-        debugger
-        puts "Duplicate found"
-      end
-      
-      if matching_c
-        fill_in_all ac.attributes, matching_c, $ignoreme
-        fill_in 'product_id', matching_c.id, ac
-        fill_in 'brand', ac.realbrand, matching_c
-      end
-    end
-  end
-  
-  desc 'Make entries into Compatibility table'
-  task :compatibilities => :cart_init do
-  
-    start =  Time.now
-  
-    all_printer_models = Printer.all.collect{|x| [just_alphanumeric(x.model),x.id]}.uniq.reject{|x| x[0].nil? or x[0] == ''}
-    all_printer_models += Printer.all.collect{|x| [just_alphanumeric(x.mpn),x.id]}.uniq.reject{|x| x[0].nil? or x[0] == ''}
-    nice_printer_models = all_printer_models.reject{|x| likely_model_name(x[0]) < 2}.uniq
-  
-    counter = 0
-  
-    AmazonCartridge.scraped.toner.each do |ac|
-      cid = ac.product_id
-      if cid 
-        c = Cartridge.find(cid)
-        compat_txt = just_alphanumeric(ac.compatible)
-        if compat_txt and compat_txt != ''
-          nice_printer_models.each do |mdl|
-            mymatch = compat_txt.match(/#{mdl[0]}/ix)
-            if mymatch
-              puts "Match found: #{mymatch.to_s} (printer #{mdl[1]}) fits cartridge #{cid}" 
-              counter+= 1
-              create_uniq_compatibility(cid, 'Cartridge', mdl[1], 'Printer')
-            end
-          end
-        end
-      end 
-    end
-  
-    finish = Time.now
-    puts "This took #{finish - start} seconds"
-    puts "#{counter} matching models found!"
-  end
-  
-  desc "Rename %2B (+)"
-  task :image_unescape => :init do
-    Camera.find(:all).each {|c|
-      s = c.imagesurl.gsub(/%2(b|B)/,'-') if !c.imagesurl.nil?
-      m = c.imagemurl.gsub(/%2(b|B)/,'-') if !c.imagemurl.nil?
-      l = c.imagelurl.gsub(/%2(b|B)/,'-') if !c.imagelurl.nil?
-      c.update_attributes(:imagelurl => l, :imagemurl => m, :imagesurl => s)
+    $model.all.each {|p|
+      puts 'Processing ' + p.id.to_s
+      p = findprice(p,"us")
+      p.save
+      sleep(0.5) #One Req per sec
+      p = findprice(p,"ca")
+      p.save
+      sleep(0.5) #One Req per sec
     }
+    $logfile.puts "Done updating #{$model} prices!"
+  end
+  
+  task :download_reviews => :init do
+    $logfile.puts "Downloading reviews"
+    $model.find(:all, :conditions => 'totalreviews is NULL').each do |p|
+      puts "Downloading: #{p.id}"
+      download_review(p)
+    end
+    $logfile.puts "Done downloading reviews"
+  end
+  
+  desc "Create new printers for new AmazonPrinters"
+  task :create_products => :init do
+    $amazonmodel.find_all_by_product_id(nil, :conditions => ['created_at > ?', 1.day.ago]).each do |p|
+      product = $model.new
+      product = getAtts(product, p)
+      product.save
+      p.update_attribute('product_id',product.id)
+      product = findprice(product,"us")
+      product.save
+    end
+  end
+  
+  # --- Picture rake tasks ---#
+  
+  task :update_pix => :pic_init do 
+    log "Updating pix"
+    
+    log "Downloading missing pix.."
+    dl_me = (picless_recs $amazonmodel)
+    log "I've got #{dl_me.length} #{$model} pictures to download"
+    failed= download_these(dl_me)
+    report_error "couldn't download all pictures" if failed.length > 0
+    log "#{failed.length} FAILED DOWNLOADS:" if failed.length > 0
+    log (failed * "\n")
+
+    
+    log "Resizing pix .."
+    resize_me = (unresized_recs $amazonmodel) + dl_me
+    failed = resize_all(resize_me.collect{|x| x.id})
+    report_error "Couldn't resize all pictures" if failed.length > 0
+    log "#{failed.length} FAILED RESIZINGS:" if failed.length > 0
+    log (failed * "\n")
+    
+    log "Recording missing sizes & urls for pix..."
+    measure_me = $amazonmodel.all #(statless_recs $amazonmodel) + dl_me + resize_me
+    failed = record_pic_stats(measure_me)
+    report_error "Couldn't record all sizes/urls" if failed.length > 0
+    log "Can't record sizes/urls for #{failed.length} records:" if failed.length > 0
+    log (failed * "\n")
+  end
+  
+  task :download_pix => :pic_init do 
+
+    failed = []
+    urls_by_id = $amazonmodel.all.inject({}){|r,x| r.merge({x.id => x.imagelurl}) }.reject{|x,y| 
+      y.nil? or !y.include? 'http://'}
+      
+    failed = download_all_pix urls_by_id
+    
+    puts "#{failed.length} FAILED DOWNLOADS:" if failed.length > 0
+    puts failed * "\n"
   end
 
-  task :init => :environment do 
+  task :copy_pic_stats => :init do
+    imageatts = $amazonmodel.column_names.reject{|x| !x.include?'image'}
+    $amazonmodel.all.each do |ap|
+      p = nil
+      begin
+        p = $model.find(ap.product_id)
+      rescue
+        #Do nuthin
+      end
+      imageatts.each{|att| fill_in att, ap.[](att), p } if !p.nil?
+    end
+  end
   
-    require 'rubygems'
+  #-- Inits --# 
+  
+  task :pic_init => :init do 
+    require 'helper_libs'
+    include ImageLib
+    require 'open-uri'
+    $id_field='id'
+    $img_url_field='imagelurl'
+    $imgfolder = "amazon/#{$amazonmodel.name.downcase}"
+  end
+    
+  task :crtg_init => :init do 
+    #browse node for cartridges: 172638
+    #browse node for laser cartridges: 172641    
+    $model = Cartridge
+    $amazonmodel = AmazonCartridge
+    $browse_node_id = '172641'
+    $search_index = 'Electronics'
+    $logfile = File.open("./log/amazon_cartridges.log", 'w+')
+  end
+  
+  task :cam_init => :init do 
+    #browse_node for digital point and shoot cameras: 330405011
+    $browse_node_id = '330405011'
+    $search_index = 'Electronics'
+    $model = Camera
+    $amazonmodel = Camera
+    $logfile = File.open("./log/amazon_cameras.log", 'w+')
+  end
+  
+  task :prnt_init => :init do 
+    #browse_node for printers: 172635
+    #browse_node for all-in-one:172583
+    #Use browse id for Laser Printers - 172648
+    $browse_node_id = '172648'
+    $search_index = 'Electronics'
+    $model = Printer
+    $amazonmodel = AmazonPrinter
+    $logfile = File.open("./log/amazon_printers.log", 'w+')
+  end
+  
+  task :init => :environment do
     require 'amazon_ecs'
     include Amazon
-    require 'open-uri'
-    #require 'net/http'
-    include AmazonScraper
     
-    $amazonmodel = AmazonPrinter
-    $model = Printer
+    require 'old_amazon_helpers'
+    include AmazonFeedScraper
     
-    Amazon::Ecs.options = {:aWS_access_key_id => '0NHTZ9NMZF742TQM4EG2', :aWS_secret_key => 'WOYtAuy2gvRPwhGgj0Nz/fthh+/oxCu2Ya4lkMxO'}
-
+    require 'nokogiri'
+    include Nokogiri
+    
+    require 'helper_libs'
+    include DataLib      
+    
+    Amazon::Ecs.options = { :aWS_access_key_id => '0NHTZ9NMZF742TQM4EG2', \
+                            :aWS_secret_key => 'WOYtAuy2gvRPwhGgj0Nz/fthh+/oxCu2Ya4lkMxO'}
+    
     AmazonID =   'ATVPDKIKX0DER'
-    AmazonCAID = 'A3DWYIK6Y9EEQB'  
+    AmazonCAID = 'A3DWYIK6Y9EEQB'
   end
+  
+  task :closelog do
+    $logfile.close
+  end
+  
 
 end
+
+
