@@ -153,7 +153,7 @@ module CleaningHelper
         atts['itemheight'] = dim_array[1].to_f*100
         atts['itemlength'] = dim_array[2].to_f*100
       end
-      break if ![atts['itemlength'], atts['itemwidth'], atts['itemheight']].include?(nil)
+      atts['dimensions'] = dims and break unless [atts['itemlength'], atts['itemwidth'], atts['itemheight']].include?(nil)
     end
     
     # .. done with dimensions

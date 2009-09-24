@@ -37,7 +37,7 @@ module AmazonScraper
         added += res.items.collect{ |item| item.get('asin') }
         current_page += 1
       end
-      break if (current_page > total_pages) or current_page > 5 # TODO
+      break if (current_page > total_pages) or current_page > 2
     end
     return added
   end
@@ -56,7 +56,10 @@ module AmazonScraper
     end
     
     if atts['stock'] == false
+      debugger
       ['price', 'priceint', 'pricestr', 'saleprice', 'salepriceint', 'salepricestr'].each{|x| atts['x'] = nil}
+    elsif atts['priceint'].nil?
+      debugger # TODO
     end
     
     return atts
@@ -76,6 +79,12 @@ module AmazonScraper
     atts = specs.merge(prices)
     atts['local_id'] = local_id
     atts['region'] = region
+    
+    # Check that it's scraped right
+    
+    
+    
+    
     return atts
   end
   
@@ -94,6 +103,13 @@ module AmazonScraper
         val += "#{CleaningHelper.sep} #{r[x.name]}" if r[x.name]
         r.merge(x.name => val)
       }
+      
+      item.css('itemattributes/itemdimensions/*').each do |dim|
+        atts["item#{dim.name}"] = dim.text.to_i
+        #atts["item#{dim.name}"] = atts["item#{dim.name}"]/100.0 if dim.name.match(/weight/)
+        #atts['itemdimensions'] = nil
+      end
+      
       (atts['specialfeatures'] || '').split('|').each do |x| 
         pair = x.split('^')
         next if pair.length < 2
@@ -102,7 +118,8 @@ module AmazonScraper
         next if name.strip == '' or val.strip == ''
         val += "#{CleaningHelper.sep} #{atts[name]}" if atts[name]
         atts.merge!(name => val)
-      end
+      end      
+      
       return atts
     end
     return {}
@@ -143,6 +160,10 @@ module AmazonScraper
         offers = [] << offers unless offers.class == Array
         
         offers.each do |o| 
+          if o.get('offerlisting/availability').match(/out of stock/i) 
+            debugger
+            next
+          end
           price = o.get('offerlisting/price/formattedprice')
           if price.nil? or o.get('offerlisting/price').to_s.match(/too low/i)
             price = 0  # TODO scrape_hidden_prices(asin,region)
@@ -205,10 +226,15 @@ module AmazonScraper
     end
     
     atts['availability'] = offer.get('offerlisting/availability')
+    debugger if atts['availability'].match(/out/i) 
+    # Check against the website..
+    
     atts['merchant']     = offer.get('merchant/merchantid')
     
     atts['url'] = "http://amazon.#{region=="us" ? "com" : region}/gp/product/"+asin+"?tag=#{region=="us" ? "optemo-20" : "laserprinterh-20"}&m="+atts['merchant']
     atts['iseligibleforsupersavershipping'] = offer.get('offerlisting/iseligibleforsupersavershipping')
+    
+    
     
     return atts
   end

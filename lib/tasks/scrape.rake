@@ -7,6 +7,7 @@ module GenericScraper
       scraped_atts['product_type'] = $model.name
       scraped_atts['retailer_id'] = retailer.id
       scraped_atts['region'] = retailer.region
+      
       clean_atts = clean scraped_atts
       
       # TODO the only non-general line of code:
@@ -18,11 +19,7 @@ module GenericScraper
       
       ro = create_product_from_atts clean_atts, RetailerOffering if ro.nil?
       fill_in_all clean_atts, ro
-      
-      debugger if (clean_atts['toolow'] || '').to_s == 'true'
-      # Check that it's filled in right:
-      # price stuff; stock; toolow
-      
+            
       timestamp_offering ro       
     else
       # If there was an error while scraping: sleep 20 min
@@ -32,6 +29,8 @@ module GenericScraper
 end
 
 namespace :printers do
+  
+  task :validate_amazon => [:amazon_init, :validate_printers]
   
   task :scrape_amazon => [:amazon_init, :scrape_all]
   
@@ -91,7 +90,7 @@ namespace :printers do
         report_error "with RetailerOffering #{offering.id}:" + e.message.to_s + e.type.to_s
         snore(20*60) # sleep for 20 min 
       end
-      debugger
+      #debugger
       puts "Done updating #{i+1} of #{my_offerings.count} offerings"
     end
     

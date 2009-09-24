@@ -95,12 +95,16 @@ function spinner(holderid, R1, R2, count, stroke_width, colour) {
                 };
             }
 
+function track(goal){
+				//Tracking
+	try { piwikTracker.trackGoal(goal); } catch( err ) {}
+	
+}
+
 // When you click the Save button:
 function saveit(id)
 {	
-	// Tracking	
-	try { piwikTracker.trackGoal(11)); } catch( err ) {}
-	
+	track(11)		
 	//Check if this id has already been added.
 	if(null != document.getElementById('c'+id)){
 		$("#already_added_msg").attr("style","display:block");
@@ -120,6 +124,15 @@ function saveit(id)
 	// 2. hide 'add stuff here' message
 	$("#deleteme").attr("style","display:none");
 	
+}
+
+
+// When you click a sponsored link:
+function buyit(id)
+{	
+	//track(14);		
+	$.get('/link/create/'+id);
+	//window.open('<html><body>You are being redirected <a href="http://www.amazon.com/o/asin/B000UZH526"/></body></html>');
 }
 
 // Removed preference operations for size optimization
@@ -161,10 +174,7 @@ function submitPreferences()
 // function buildOtherItemsArray(root, attr_name, itemId)
 
 function submit_filter()
-{
-	// Tracking
-	try { piwikTracker.trackGoal(13); } catch( err ) {}
-	
+{	
 	$('#filter_form').submit();
 	spinner("myspinner", 11, 20, 9, 5, "#000");
 	$('#loading').css('display', 'inline');
@@ -188,6 +198,8 @@ $(document).ready(function() {
 	
 	//Fadeout labels
 	$(".easylink, .productimg").click(function(){
+		//Tracking
+		track(15);
 		fadeout('/products/show/'+$(this).attr('data-id')+'?plain=true');
 		return false;
 	});
@@ -302,6 +314,7 @@ $(document).ready(function() {
             },
 			stop: function(e,ui)
 			{
+				track(13);
 				submit_filter();
 			}
 		});
@@ -320,16 +333,25 @@ $(document).ready(function() {
 	});
 	
 // Removed preference operations for speed-up
-/*	$(".deleteX").click(function() {
-	$(".simlinks").click(function() {
-	$(".save").click(function() { 
-*/
+//	$(".deleteX").click(function() {
+	$(".simlinks").click(function() { 
+		// Tracking
+		track(12)
+	});
 	
 	$(".usecase").click(function() { 
 		name = $(this).attr('data-name');
 		$.get('/products/select/'+name,function() {window.location = $(".usecase").attr('href');});
 		return false;
 	});
+	
+	
+	// Sponsor links to shopping carts
+	$(".buylink, .buyimg").click(function(){
+		//Tracking
+		//track(14)
+	});
+	
 
 // Removed preference sliders for size optimization
 /*	$(".preferenceSlider").each(function() {
