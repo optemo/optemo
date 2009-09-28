@@ -239,5 +239,9 @@ namespace :printers do
 
   task :init => :environment do 
     include GenericScraper
+    config   = Rails::Configuration.new
+    database = config.database_configuration[RAILS_ENV]["database"]
+    puts "Db in use: #{database}"
+    return if database == 'optemo_bestbuy'
   end
 end
