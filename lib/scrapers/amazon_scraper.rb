@@ -37,7 +37,7 @@ module AmazonScraper
         added += res.items.collect{ |item| item.get('asin') }
         current_page += 1
       end
-      break if (current_page > total_pages) or current_page > 2
+      break if (current_page > total_pages) #For testing: or current_page > 2
     end
     return added
   end
@@ -55,11 +55,13 @@ module AmazonScraper
       atts['salepricestr'] = "Less than #{atts['salepricestr']}"
     end
     
-    if atts['stock'] == false
+    if (atts['stock'] || '').to_s == 'false'
       debugger
+      # Check on site if actually out of stock
       ['price', 'priceint', 'pricestr', 'saleprice', 'salepriceint', 'salepricestr'].each{|x| atts['x'] = nil}
-    elsif atts['priceint'].nil?
-      debugger # TODO
+    elsif (atts['priceint'].nil? or atts['pricestr'].nil?)
+      debugger # Should never happen
+      0
     end
     
     return atts
@@ -79,11 +81,6 @@ module AmazonScraper
     atts = specs.merge(prices)
     atts['local_id'] = local_id
     atts['region'] = region
-    
-    # Check that it's scraped right
-    
-    
-    
     
     return atts
   end
@@ -119,6 +116,10 @@ module AmazonScraper
         val += "#{CleaningHelper.sep} #{atts[name]}" if atts[name]
         atts.merge!(name => val)
       end      
+      
+      # TODO make sure ALL possible data is being scraped
+      #debugger if atts['printspeedbw'].nil? and atts['printspeedcolor'].nil?
+      # firstpageoutputtime, standardpaperinput, resolution
       
       return atts
     end
@@ -160,10 +161,12 @@ module AmazonScraper
         offers = [] << offers unless offers.class == Array
         
         offers.each do |o| 
-          if o.get('offerlisting/availability').match(/out of stock/i) 
-            debugger
-            next
-          end
+          # Their stock info is often wrong!
+          #if o.get('offerlisting/availability').match(/out of stock/i) 
+          #  debugger
+          #  # Check that it's out of stock on the site?
+          #  next
+          #end
           price = o.get('offerlisting/price/formattedprice')
           if price.nil? or o.get('offerlisting/price').to_s.match(/too low/i)
             price = 0  # TODO scrape_hidden_prices(asin,region)
@@ -226,6 +229,9 @@ module AmazonScraper
     end
     
     atts['availability'] = offer.get('offerlisting/availability')
+    # TODO availability sometimes wrong!
+    atts['availability'] = 'In stock' if atts['availability'].match(/out of stock/i) 
+    
     debugger if atts['availability'].match(/out/i) 
     # Check against the website..
     

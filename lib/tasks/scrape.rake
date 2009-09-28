@@ -10,6 +10,9 @@ module GenericScraper
       
       clean_atts = clean scraped_atts
       
+      # TODO make sure ALL data is being properly scraped for Amazon
+      # debugger if clean_atts['ppm'].nil? # resolution, paperinput
+      
       # TODO the only non-general line of code:
       sp = find_or_create_scraped_printer(clean_atts)
       
@@ -38,9 +41,9 @@ namespace :printers do
   
   task :scrape_tiger => [:tiger_init, :scrape_all, :match_to_products, :validate_printers]
   
-  task :update_prices_newegg => [:newegg_init, :update_prices, :scrape]
+  task :update_prices_newegg => [:newegg_init, :update_prices, :scrape_new]
   
-  task :update_prices_tiger => [:tiger_init, :update_prices, :scrape]
+  task :update_prices_tiger => [:tiger_init, :update_prices, :scrape_new]
   
   task :once => :init do
     #retailers = ScrapedPrinter.all.collect{|x| x.retailer_id}.uniq
@@ -90,7 +93,6 @@ namespace :printers do
         report_error "with RetailerOffering #{offering.id}:" + e.message.to_s + e.type.to_s
         snore(20*60) # sleep for 20 min 
       end
-      #debugger
       puts "Done updating #{i+1} of #{my_offerings.count} offerings"
     end
     
@@ -115,7 +117,7 @@ namespace :printers do
   end
   
   # Scrape all data for new products only
-  task :scrape do
+  task :scrape_new do
     @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_scraper.log", 'w+')
     $retailers.each do |retailer|
       ids = scrape_all_local_ids retailer.region
