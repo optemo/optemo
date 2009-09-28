@@ -15,15 +15,18 @@ module GenericScraper
       
       # TODO the only non-general line of code:
       sp = find_or_create_scraped_printer(clean_atts)
+      if sp
+        clean_atts['url'] = id_to_sponsored_link(local_id, retailer.region, clean_atts['merchant'])
+        ros = find_ros_from_scraped sp
+        ro = ros.first
       
-      clean_atts['url'] = id_to_sponsored_link(local_id, retailer.region, clean_atts['merchant'])
-      ros = find_ros_from_scraped sp
-      ro = ros.first
-      
-      ro = create_product_from_atts clean_atts, RetailerOffering if ro.nil?
-      fill_in_all clean_atts, ro
+        ro = create_product_from_atts clean_atts, RetailerOffering if ro.nil?
+        fill_in_all clean_atts, ro
             
-      timestamp_offering ro       
+        timestamp_offering ro       
+      else
+        report_error "Couldn't create ScrapedPrinter with local_id #{local_id || 'nil'} and retailer #{retailer_id || 'nil'}."
+      end
     else
       # If there was an error while scraping: sleep 20 min
       snore(20*60)
@@ -106,7 +109,7 @@ namespace :printers do
       
       ids = scrape_all_local_ids retailer.region
       old_ids = (RetailerOffering.find_all_by_retailer_id(retailer.id)).collect{|x| x.local_id}
-      ids = (ids + old_ids).uniq
+      ids = (ids + old_ids).uniq.reject{|x| x.nil?}
             
       ids.each_with_index do |local_id, i|
         generic_scrape(local_id, retailer)
@@ -123,7 +126,7 @@ namespace :printers do
       ids = scrape_all_local_ids retailer.region
       scraped_ids = (RetailerOffering.find_all_by_retailer_id(retailer.id)).reject{|x| 
         x.product_id.nil? }.collect{|x| x.local_id}
-      ids = (ids - scraped_ids).uniq
+      ids = (ids - scraped_ids).uniq.reject{|x| x.nil?}
             
       ids.each_with_index do |local_id, i|
         generic_scrape(local_id, retailer)
@@ -241,7 +244,7 @@ namespace :printers do
     include GenericScraper
     config   = Rails::Configuration.new
     database = config.database_configuration[RAILS_ENV]["database"]
-    puts "Db in use: #{database}"
+    puts "Using database #{database}"
     return if database == 'optemo_bestbuy'
   end
 end

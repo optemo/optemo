@@ -37,7 +37,7 @@ module AmazonScraper
         added += res.items.collect{ |item| item.get('asin') }
         current_page += 1
       end
-      break if (current_page > total_pages) or current_page > 2 #For testing:
+      break if (current_page > total_pages) #or current_page > 2 # <-- For testing only!
     end
     return added
   end
