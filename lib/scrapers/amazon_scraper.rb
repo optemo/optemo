@@ -56,7 +56,7 @@ module AmazonScraper
     end
     
     if (atts['stock'] || '').to_s == 'false'
-      debugger
+      # debugger
       # Check on site if actually out of stock
       ['price', 'priceint', 'pricestr', 'saleprice', 'salepriceint', 'salepricestr'].each{|x| atts['x'] = nil}
     elsif (atts['priceint'].nil? or atts['pricestr'].nil?)
@@ -230,7 +230,8 @@ module AmazonScraper
     
     atts['availability'] = offer.get('offerlisting/availability')
     # TODO availability sometimes wrong!
-    atts['availability'] = 'In stock' if atts['availability'].match(/out of stock/i) 
+    debugger if atts['availability'].nil?
+    atts['availability'] = 'In stock' if (atts['availability'] || '').match(/out of stock/i) 
     
     debugger if atts['availability'].match(/out/i) 
     # Check against the website..

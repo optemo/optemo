@@ -104,7 +104,8 @@ function track(goal){
 // When you click the Save button:
 function saveit(id)
 {	
-	track(11)		
+	track(11);		
+	try { piwikTracker.trackGoal(16,id); } catch( err ) {}
 	//Check if this id has already been added.
 	if(null != document.getElementById('c'+id)){
 		$("#already_added_msg").attr("style","display:block");
@@ -141,6 +142,7 @@ function buyit(id)
 // When you click the X on a saved product:
 function remove(id)
 {
+	try { piwikTracker.trackGoal(16,-id); } catch( err ) {}
 	$.get('/saveds/destroy/'+id);
 	$('#c'+id).remove();
 	
