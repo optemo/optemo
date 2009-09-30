@@ -38,7 +38,7 @@ namespace :printers do
   
   task :validate_amazon => [:amazon_init, :validate_printers]
   
-  task :scrape_amazon => [:amazon_init, :scrape_all]
+  task :scrape_amazon => [:amazon_init, :scrape_new]
   
   task :scrape_newegg => [:newegg_init, :scrape_all, :match_to_products, :validate_printers]
   

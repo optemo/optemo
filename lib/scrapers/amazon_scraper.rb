@@ -230,10 +230,10 @@ module AmazonScraper
     
     atts['availability'] = offer.get('offerlisting/availability')
     # TODO availability sometimes wrong!
-    debugger if atts['availability'].nil?
+   # debugger if atts['availability'].nil?
     atts['availability'] = 'In stock' if (atts['availability'] || '').match(/out of stock/i) 
     
-    debugger if atts['availability'].match(/out/i) 
+   # debugger if (atts['availability'] || '').match(/out/i) 
     # Check against the website..
     
     atts['merchant']     = offer.get('merchant/merchantid')
