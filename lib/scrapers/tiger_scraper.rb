@@ -67,9 +67,10 @@ module TigerScraper
     begin
       info_page = Nokogiri::HTML(open(url))
       snore(20)
-      log "Re-scraping RetailerOffering # #{ro.id}"
-    rescue
+      log "Re-scraping RetailerOffering # #{local_id}"
+    rescue Exception => e
       report_error "Couldn't open page: #{url}. Rescraping price failed."
+      report_error "#{e.type.to_s}, #{e.message.to_s}"
     else
       props.merge! scrape_prices info_page 
       props.merge! scrape_availty info_page

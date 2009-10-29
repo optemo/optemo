@@ -2,6 +2,7 @@ module CleaningHelper
   
   def vote(array)
     count_votes = array.inject({}){ |r,x| r.merge( x=>(1+(r[x]||0))) }
+    return nil if count_votes.length == 0
     winner = count_votes.to_a.sort{|x,y| y[1]<=>x[1]}.first[0]
     return winner
   end

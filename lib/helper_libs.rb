@@ -12,6 +12,8 @@ module DataLib
   
   require 'helpers/conversion_helper'
   require 'helpers/global_constants'
+
+  require 'helpers/numbers'
   
   include LoggingHelper
   include DatabaseHelper

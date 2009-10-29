@@ -1,4 +1,27 @@
 module GenericScraper
+  
+  def vote_on_values product
+    sps = $scrapedmodel.find_all_by_product_id(product.id)
+    #ignore = ["id", "price", "pricestr", "region", "created_at", "updated_at", "instock", "instock_ca", "price_ca", "price_ca_str"]
+    #atts = $model.column_names - ignore
+   # atts = $reqd_fields
+   # 'itemheight', 'itemwidth','itemlength',
+    atts = [ 'itemweight',  'ppm', 'ttp', 'paperinput','scanner', 'printserver']
+    
+    all_atts = {}
+    atts.each{|x| all_atts[x] = [product.[](x)]} # Current value counts for something too?
+    atts.each do |att|
+      sps.each do |sp|
+        all_atts[att] << sp.[](att) if sp.[](att)
+      end
+    end
+    
+    avg_atts = {}
+    all_atts.each{|att,vals| avg_atts[att] = vote(vals)}
+    
+    return avg_atts
+  end
+  
   # A generic scraping algorithm for 1 offering
   def generic_scrape local_id, retailer
     scraped_atts = scrape local_id, retailer.region
@@ -38,29 +61,27 @@ namespace :printers do
   
   task :validate_amazon => [:amazon_init, :validate_printers]
   
-  task :scrape_amazon => [:amazon_init, :scrape_new]
+  task :scrape_amazon => [:amazon_init, :scrape_all, :match_to_products, :validate_printers]
   
   task :scrape_newegg => [:newegg_init, :scrape_all, :match_to_products, :validate_printers]
   
   task :scrape_tiger => [:tiger_init, :scrape_all, :match_to_products, :validate_printers]
   
-  task :update_prices_newegg => [:newegg_init, :update_prices, :scrape_new]
+  task :update_prices_newegg => [:newegg_init, :update_prices, :scrape_new, :match_to_products, :validate_printers]
   
-  task :update_prices_tiger => [:tiger_init, :update_prices, :scrape_new]
+  task :update_prices_tiger => [:tiger_init, :update_prices, :scrape_new, :match_to_products, :validate_printers]
   
-  task :once => :init do
-    #retailers = ScrapedPrinter.all.collect{|x| x.retailer_id}.uniq
-    #retailers.each do |x|
-    #  RetailerOffering.find_all_by_retailer_id(x)
-    #end
-    ids = (RetailerOffering.all.collect{|x| x.id} - RetailerOffering.find_all_by_local_id(nil).collect{|x| x.id})
-    fields = [ "product_id", "priceint", "pricestr", "tax", "state", "stock", "pricehistory", "toolow", "availability", "iseligibleforsupersavershipping", "merchant", "url", "created_at", "updated_at", "shippingCost", "freeShipping", "priceUpdate", "availabilityUpdate", "active", "activeUpdate", "region", "condition"]
-    ids.each do |id|
-      ro = RetailerOffering.find(id)
-      fields.each do |field|
-        ro.update_attribute(field,nil)
+  #TODO
+  task :update_prices_amazon => [:amazon_init, :scrape_new, :match_to_products, :validate_printers]
+  
+  task :vote => :printer_init do 
+    #include CleaningHelper
+    printers = Printer.all
+    printers.each do |p|
+      avgs = vote_on_values p
+      avgs.each do |k,v|
+        puts "#{k} -- #{v} (now #{p.[](k)}) for #{p.id}" if [v, p.[](k)].uniq.reject{|x| x.nil?}.length > 1
       end
-      0
     end
   end
   
@@ -70,6 +91,8 @@ namespace :printers do
     match_me = $scrapedmodel.all if match_me.nil?
     
     match_me.each do |scraped|
+      next if scraped.brand.nil? or (scraped.model.nil? and scraped.mpn.nil?)
+      # TODO log this?
       matches = match_printer_to_printer scraped, $model, $product_series
       real = matches.first
       real = create_product_from_atts scraped.attributes, $model if real.nil? 
@@ -110,6 +133,8 @@ namespace :printers do
       ids = scrape_all_local_ids retailer.region
       old_ids = (RetailerOffering.find_all_by_retailer_id(retailer.id)).collect{|x| x.local_id}
       ids = (ids + old_ids).uniq.reject{|x| x.nil?}
+      
+      announce "Will scrape #{ids.count} #{$model.name}s from #{retailer.name}"
             
       ids.each_with_index do |local_id, i|
         generic_scrape(local_id, retailer)
@@ -127,7 +152,9 @@ namespace :printers do
       scraped_ids = (RetailerOffering.find_all_by_retailer_id(retailer.id)).reject{|x| 
         x.product_id.nil? }.collect{|x| x.local_id}
       ids = (ids - scraped_ids).uniq.reject{|x| x.nil?}
-            
+         ids = ids[0..300]   
+      announce "Will scrape #{ids.count} #{$model.name}s from #{retailer.name}"
+      
       ids.each_with_index do |local_id, i|
         generic_scrape(local_id, retailer)
         announce "Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
@@ -146,9 +173,7 @@ namespace :printers do
     
     announce "Testing #{my_products.count} #{$scrapedmodel.name} for validity..."
     
-    reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'ppm', 'resolutionmax',\
-       'paperinput','scanner', 'printserver', 'brand', 'model']
-    reqd_fields.each do |rf|
+    $reqd_fields.each do |rf|
       assert_no_nils my_products, rf
     end   
     
@@ -166,9 +191,7 @@ namespace :printers do
     
     announce "Testing #{my_offerings.count} RetailerOfferings for validity..."
     
-    reqd_fields = ['priceint', 'pricestr', 'stock', 'condition', 'priceUpdate', 'toolow', \
-      'local_id', "product_type", "region", "retailer_id"]
-    reqd_fields.each do |rf|
+    $reqd_offering_fields.each do |rf|
       assert_no_nils my_offerings, rf
     end
     
@@ -190,6 +213,10 @@ namespace :printers do
       $model = Printer
       $scrapedmodel = ScrapedPrinter
       $product_series = $printer_series
+      $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'ppm', 'resolutionmax',\
+         'paperinput','scanner', 'printserver', 'brand', 'model']
+      $reqd_offering_fields = ['priceint', 'pricestr', 'stock', 'condition', 'priceUpdate', 'toolow', \
+         'local_id', "product_type", "region", "retailer_id"]
   end
     
   task :amazon_mkt_init => [:printer_init, :amazon_init] do
