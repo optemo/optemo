@@ -1,0 +1,75 @@
+fr:
+    products:
+        compare:
+            # All translations for /products/compare.erb.html and its partials
+            browsings:      "Parcourir {{count}} appareils photo"   # e.g. Browsing 146 Cameras
+            browsing:       "Parcourir 1 appareil photo"   # e.g. Browsing 146 Cameras
+            search:         "Recherche"
+            saved:          "Comparez les articles"
+            alreadyadded:   "Vous avez déjà ajouté ce produit"
+            toomanysaved:   "You can save only upto 4 products at a time"
+            savesome:       "Sélectionnez deux articles ou plus pour comparaison"
+            filters:        "Filtres"
+            powered:        "Alimenté par"
+            loading:        "Loading"
+            back:           "Retour"
+            all:            "Voir tous les appareils photo"                   # e.g. All Cameras
+            similar:        "{{count}} plutôt comme ceci" # e.g. 1 More like this
+            addbrand:       "Ajoutez une autre marque"
+            allbrands:      "Toutes les marques"
+            rembrandfilter: "Retirez le filtre de marque"    
+            filtersdesc:    "Limitez vos résultats par"            
+            
+        show:
+            title:          "Visualisation Rapide"
+            noimage:        "Image non disponible"
+            price:          "Notre prix"
+            sp:             "En Solde"
+            saving:         "Vous épargnez"
+            saleends:       "En solde jusqu'à"
+            model:          "Modèle"
+            webcode:        "N° web"
+            ratings:        "Classements"
+            moredetails:    "Plus de détails"    
+            
+    compare:
+        index:
+            title:          "Comparez les résultats"
+            tabletitle:     "Vous avez sélectionné ces produits pour comparaison"
+            proddetails:    "Détails du produit"
+            error:          "Vous ne pouvez sauvegarder que 4 produits à la fois"  
+            remove:         "Retirer"
+    survey:
+        decision:       "Voulez-vous prendre part au sondage?"
+        title:          "Questions du sondage"
+        decisiontext:   "Merci d’avoir visité le navigateur de découverte Best Buy. Vous avez été sélectionné pour participer à notre bref sondage qui nous permettra d’identifier les zones à améliorer afin d’offrir un meilleur service à nos clients. Faites nous part de vos commentaires. Votre réponse est anonyme."
+        yesoption:      "Oui"
+        nooption:       "Non"
+        submit:         "Soumettre"
+        error_ansone:   ""
+        thanks:         "Merci pour vos commentaires."
+        question1:      
+            question:   "Comment évaluerez-vous cet outil que vous utilisez pour trouver ce dont vous avez besoin?"
+            numberofoptions:    "4"
+            option1:            "Très efficace"
+            option2:            "Plutôt efficace"
+            option3:            "Ni l’un ni l’autre"
+            option4:            "Plutôt inefficace"
+            option5:            "Très inefficace"
+        question2:      
+            question:   "Est-ce que vous êtes d’accord pour dire qu’il est plus facile de trouver un appareil photo en utilisant cet outil que celui de navigation régulière de Bestbuy.ca (voir image ci-dessous)?"
+            numberofoptions:    "5"
+            option1:            "Tout à fait d’accord"
+            option2:            "Plutôt d’accord"
+            option3:            "Ni l’un ni l’autre"
+            option4:            "Plutôt pas d‘accord"
+            option5:            "Pas du tout d‘accord"
+        question3:
+            question:   "Est-ce que vous convenez que cet outil facilite votre expérience de magasinage sur bestbuy.ca?"
+            numberofoptions:    "5"
+            option1:            "Tout à fait d’accord"
+            option2:            "Plutôt d’accord"
+            option3:            "Ni l’un ni l’autre"
+            option4:            "Plutôt pas d‘accord"
+            option5:            "Pas du tout d‘accord"
+        questionlast:   "Avez-vous des suggestions pour des améliorations?"

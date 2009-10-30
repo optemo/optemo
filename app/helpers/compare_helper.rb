@@ -1,3 +1,6 @@
+module ContentHelper
+end
+
 module CompareHelper
   def finalDisplay(product, column)
     case column

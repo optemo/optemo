@@ -1,5 +1,6 @@
 // Place your application-specific JavaScript functions and classes here
 // This file is automatically included by javascript_include_tag :defaults
+var language;
 function findBetter(id, feat)
 {
        // Check if better product exists for that feature using /compare/better Rails me
@@ -18,24 +19,34 @@ function findBetter(id, feat)
                }, "text");
 }
 
-function fadeout(url)
+function fadeout(url,data,width,height)
 {
 	//IE Compatibility
 	var iebody=(document.compatMode && document.compatMode != "BackCompat")? document.documentElement : document.body
 	var dsoctop=document.all? iebody.scrollTop : pageYOffset
-	$('#info').css('left', ((document.body.clientWidth-800)/2)+'px')
-		.css('top', (dsoctop+5)+'px')
+	$('#info').html("");
+	$('#outsidecontainer').css('left', ((document.body.clientWidth-(width||800))/2)+'px')
+		.css('top', (dsoctop+5)+'px').css('width',width||800).css('height',height||770)
 		.css('display', 'inline');
 	$('#fade').css('height', getDocHeight()+'px').css('display', 'inline');
-	$('#myfilter_brand').css('visibility', 'hidden');
-	$('#info').css('width',800).css('height',770).load(url,loadOverlay);
+	$('#selector').css('visibility', 'hidden');
+	if (data)
+		$('#info').html(data);
+	else
+		$('#info').load(url,function(){DBinit('#info');});	
 }
 
 function fadein()
 {
-	$('#myfilter_brand').css('visibility', 'visible');
+	$('#selector').css('visibility', 'visible');
 	$('#fade').css('display', 'none');
-	$('#info').css('display', 'none');	
+	$('#outsidecontainer').css('display', 'none');	
+}
+
+function track(goal, desc){
+	// Tracking	
+	//try { piwikTracker.trackGoal(goal); } catch( err ) {}	
+	trackPage("goals/" + desc);
 }
 
 function disableit(pid)
@@ -43,13 +54,6 @@ function disableit(pid)
 	name = pid.toString() + "_save";
 	document[name].src = '/images/save_disabled.png';
 	
-}
-function loadOverlay() {
-	$('#requestsubmit').click(function(){
-		$.post("/content/create_request",$("#requestform").serialize());
-		$('#info').html("<h3><span style='color: green;'>Thank you for submitting your feedback.</span></h3><a href='javascript:fadein();' id='close'><img src='/images/close.gif'></a>").effect("scale",{percent: 20, scale: 'box'})//.css('width',400).css('height',100)
-		return false;
-	});
 }
 
 function spinner(holderid, R1, R2, count, stroke_width, colour) {
@@ -95,40 +99,50 @@ function spinner(holderid, R1, R2, count, stroke_width, colour) {
                 };
             }
 
-// When you click the Save button:
-function saveit(id)
-{	
-	//Check if this id has already been added.
-	if(null != document.getElementById('c'+id)){
-		$("#already_added_msg").attr("style","display:block");
-	}else{
-		// Update just the savebar_content div after doing get on /saveds/create/[id here].
-		$.get('/saveds/create/'+id, function(data){ 
-			$(data).click(function() {
-				savedProductRemoval($(".deleteX", this));
-			}).appendTo('#savebar_content');
-		});
-		$("#already_added_msg").attr("style","display:none");
-	}
-	
-	// There should be at least 1 saved item, so...
-	// 1. show compare button	
-	$("#compare_button").attr("style","display:block");
-	// 2. hide 'add stuff here' message
-	$("#deleteme").attr("style","display:none");
-	
-}
+			// When you click the Save button:
+			function saveit(id)
+			{	
+				if($(".saveditem").length == 4)
+				{
+					$("#too_many_saved").attr("style","display:block");
+				}
+				else
+				{
+				//Check if this id has already been added.
+				if(null != document.getElementById('c'+id)){
+					$("#already_added_msg").attr("style","display:block");
+				}else{
+					track(6, 'save');
+					// Create an empty slot for product
+					$('#savedproducts').append("<div class='saveditem' id='c" + id + "'> </div>");
+					// Update just the savebar_content div after doing get on /saveds/create/[id here].
+					$.get('/saveds/create/'+id + "?ajax=true", function(data){
+						$(data).appendTo('#c'+id);
+						//Load JS for item
+						DBinit("#c"+id);
+					});
+					$("#already_added_msg").attr("style","display:none");
+					$("#too_many_saved").attr("style","display:none");	
+				}
 
+				// There should be at least 1 saved item, so...
+				// 1. show compare button	
+				$("#compare_button").attr("style","display:block");
+				// 2. hide 'add stuff here' message
+				$("#deleteme").attr("style","display:none");
+				}
+			}
 // Removed preference operations for size optimization
 //function savedProductRemoval(obj)
 
 // When you click the X on a saved product:
 function remove(id)
 {
-	$.get('/saveds/destroy/'+id);
+	$.get('/saveds/destroy/'+id)
 	$('#c'+id).remove();
 	
 	$("#already_added_msg").attr("style","display:none");
+	$("#too_many_saved").attr("style","display:none");
 		
 	if($('.saveditem').length == 0){
 		$("#compare_button").attr("style","display:none");
@@ -146,7 +160,7 @@ function removeFromComparison(id)
 function removeBrand(str)
 {
 	$('#myfilter_Xbrand').attr('value', str);
-	$('#filter_form').submit();
+	ajaxcall("/products/filter", $("#filter_form").serialize());
 }
 
 function submitPreferences()
@@ -157,11 +171,31 @@ function submitPreferences()
 // Removed preference operations for size optimization
 // function buildOtherItemsArray(root, attr_name, itemId)
 
-function submit_filter()
+function showspinner()
 {
-	$('#filter_form').submit();
-	spinner("myspinner", 11, 20, 9, 5, "#000");
 	$('#loading').css('display', 'inline');
+}
+function hidespinner()
+{
+	$('#loading').css('display', 'none');
+}
+
+//add an item to a list
+function additem(newitem, items)
+{
+	if (items == "")
+		return newitem;
+	//var re = new RegExp('(^|\*)'+newitem+'(\*|$)');
+	//if (re.test(items) == false)
+		return items+"*"+newitem;
+}
+
+//Remove an item from a list
+function removeitem(rem, items)
+{
+	i = items.split('*');
+	i.splice(i.indexOf(rem),1);
+	return i.join("*");
 }
 
 function closeDesc(id){
@@ -169,8 +203,100 @@ function closeDesc(id){
 	$(id).click(openDesc(id));
 	return false;
 }
+function submitCategorical(){
+	ajaxcall("/products/filter", $("#filter_form").serialize());
+	track(2, 'filter/autosubmit');
+}
 
-$(document).ready(function() {
+function flashError(str)
+{
+	var errtype = 'other';
+	
+	if (/search/.test(str)==true)
+	{
+	  errtype = "search";
+	  $('#search').attr('value',"");
+	}
+	else
+	 	if (/filter/.test(str)==true)
+	 	{
+	  		errtype = "filters";
+	  	}
+	//piwikTracker.trackGoal(7);
+	trackPage('error/'+errtype);
+	hidespinner();
+	fadeout(null,str,600,100);
+}
+function submitsearch() {
+	var searchinfo = { 'search_text' : $("#search_form input#search").attr('value'), 'optemo_session': parseInt($('#seshid').attr('session-id')) };
+	piwikTracker2.setCustomData(searchinfo);
+//	piwikTracker.trackLink('search', 'search', searchinfo);
+	track(5, 'search');
+	piwikTracker2.setCustomData({});
+	ajaxcall("/products/find?ajax=true", $("#search_form").serialize(), true);
+	return false;
+}
+
+function ajaxcall(myurl,mydata,isSearch) {
+	showspinner();
+	$.ajax({
+		type: (mydata==null)?"GET":"POST",
+		data: (mydata==null)?"":mydata,
+		url: myurl,
+		success: ajaxhandler,
+		error: function(){
+			if (language=="fr")
+				flashError('<div class="poptitle">&nbsp;</div><p class="error">Désolé! Une erreur s’est produite sur le serveur.</p><p>Vous pouvez <a href="" class="ajaxlink popuplink">réinitialiser</a> l’outil et constater si le problème persiste.</p>');
+			else
+				flashError('<div class="poptitle">&nbsp;</div><p class="error">Sorry! An error has occured on the server.</p><p>You can <a href="" class="ajaxlink popuplink">reset</a> the tool and see if the problem is resolved.</p>');
+			}
+	});
+}
+
+function ajaxhandler(data)
+{
+	if (data.indexOf('[ERR]') != -1)
+	{	
+		var parts = data.split('[BRK]');
+		
+		if (parts[1] != null)
+		{
+			$('#ajaxfilter').html(parts[1]);
+			DBinit('#ajaxfilter');
+		}
+		flashError(parts[0].substr(5,parts[0].length));
+		return -1;
+	}
+	else
+	{
+		var parts = data.split('[BRK]');
+		$('#ajaxfilter').html(parts[0]);
+		$('#main').html(parts[1]);
+		$('#search').attr('value',parts[2]);
+		hidespinner();
+		DBinit();
+		return 0;
+	}
+}
+
+function trackPage(str){
+	try { 
+		piwikTracker.setDocumentTitle(str);
+		piwikTracker.trackPageView();
+		piwikTracker2.setDocumentTitle(str);
+		piwikTracker2.trackPageView();
+	} catch( err ) {}
+}
+
+function trackCategorical(name, val, type){
+	var info = {'slider_min' : val, 'slider_max' : val, 'slider_name' : name, 'optemo_session': parseInt($('#seshid').attr('session-id')), 'filter_type' : type };
+	piwikTracker2.setCustomData(info);
+	piwikTracker2.trackPageView();
+	piwikTracker2.setCustomData({});
+}
+
+
+function DBinit(context) {
 	
 	$("#comparisonTable").tableDnD({
 		onDragClass: "rowBeingDragged",
@@ -181,18 +307,20 @@ $(document).ready(function() {
 	});
 	
 	//Fadeout labels
-	$(".easylink, .productimg").click(function(){
-		fadeout('/products/show/'+$(this).attr('data-id')+'?plain=true');
+	$(".easylink, .productimg",context).click(function(){
+		fadeout('/products/show/'+$(this).attr('data-id')+'?plain=true',null, 600, 650);/*Star-h:700*/
+		trackPage('/products/show/'+$(this).attr('data-id')); 
+		//trackPage($(this).attr('href'));
 		return false;
 	});
 	
-	//Request a feature
-	$("#requestafeature").click(function(){
-		fadeout('/content/request');
+	$('.showsurveyoption',context).each(function() {
+		fadeout('/survey/decision', null, 500, 180);
 		return false;
 	});
+	
 	//Show and Hide Descriptions
-	$('.feature .label a, .feature .deleteX').click(function(){
+	$('.feature .label a, .feature .deleteX',context).click(function(){
 		if($(this).parent().attr('class') == "desc")
 			{var obj = $(this).parent();}
 		else
@@ -220,11 +348,95 @@ $(document).ready(function() {
 		return false;
 	});
 	
-	//Display loading spinner
-	$('#myfilter_brand').change(function() {submit_filter();});
+	// Sliders -- submit
+	$('.autosubmit',context).change(function() {
+		submitCategorical();
+	});
+	
+	// Checkboxes -- submit
+	$('.autosubmitbool',context).click(function() {
+		var whichbox = $(this).attr('id');
+		var box_value = $(this).attr('checked') ? 100 : 0;
+		submitCategorical();
+		trackCategorical(whichbox, box_value, 3);
+	});
+	
+	// Add a brand -- submit
+	// Handle brand spinner
+	$('#selector',context).change(function(){
+		var whichbrand = $(this).val();
+		$('#myfilter_brand').val(additem(whichbrand,$('#myfilter_brand').val()));
+		submitCategorical();
+		trackCategorical(whichbrand,100,2);
+	});
+	
+	// Remove a brand -- submit
+	// Handle brand spinner
+	$('.removeBrand',context).click(function(){
+		var whichbrand = $(this).attr('data-id');
+		$('#myfilter_brand').val(removeitem(whichbrand,$('#myfilter_brand').val()));
+		submitCategorical();
+		trackCategorical(whichbrand,0,2);
+		return false;
+	});
+	
+	//Ajax call for simlinks
+	$('.simlinks, .productlink',context).click(function(){ 
+		ajaxcall($(this).attr('href')+'?ajax=true');
+		
+		linkinfo = {'product_picked' : $(this).attr('data-id') , 'optemo_session': parseInt($('#seshid').attr('session-id'))};
+		morestuff = getAllShownProductIds(); 
+		linkinfo['product_ignored'] = morestuff;
+		piwikTracker2.setCustomData(linkinfo);
+		track(1, 'browse');
+		piwikTracker2.setCustomData({});
+		return false;
+	});
+	
+	$('.ajaxlink',context).click(function(){
+		ajaxcall($(this).attr('href')+'?ajax=true');
+		return false;
+	});
+	
+	//Link from popup
+	$('.popuplink', context).click(function(){
+		fadein();
+		return false;
+	});
+	
+	//Remove buttons on compare
+	$('.remove', context).click(function(){
+		remove($(this).attr('data-name'));
+		$(this).parents('.column').remove();
+		return false;
+	});
+	
+	$('#addtocartbutton', context).click(function(){ 
+		track(4, 'addtocart');
+	});
+	
+	$('#yesdecisionsubmit', context).click(function(){
+		track(8, 'survey/yes');
+		fadeout('/survey/index', null, 600, 835);
+		return false;
+	});
+
+	$('#nodecisionsubmit', context).click(function(){
+		fadein();
+		trackPage('survey/no');
+		return false;
+	});
+	
+	$('#surveysubmit', context).click(function(){
+		track(3,'survey/submit');
+		$('#feedback').css('display','none');
+		fadeout('/survey/submit?' + $("#surveyform").serialize(), null, 300, 70);
+		return false;
+	});
 	
 	//Set up sliders
-	$('.slider').each(function() {
+	$('.slider',context).each(function() {
+		threshold = 20;							// The parameter that identifies that 2 sliders are too close to each other
 		itof = $(this).attr('data-itof');
 		if(itof == 'false')
 		{
@@ -242,10 +454,38 @@ $(document).ready(function() {
 		}
 		$(this).slider({
 			orientation: 'horizontal',
-            range: true,
-            min: 0,
-            max: 100,
-            values: [((curmin-rangemin)/(rangemax-rangemin))*100,((curmax-rangemin)/(rangemax-rangemin))*100],
+	        range: true,
+	        min: 0,
+	        max: 100,
+	        values: [((curmin-rangemin)/(rangemax-rangemin))*100,((curmax-rangemin)/(rangemax-rangemin))*100],
+			start: function(event, ui) {
+				// At the start of sliding, if the two sliders are very close by, then push the value on other slider to the bottom
+				itof = $(this).attr('data-itof');
+				if(itof == 'false')
+				{
+					curmin = parseFloat($(this).attr('data-startmin'));
+					curmax = parseFloat($(this).attr('data-startmax'));
+				}
+				else
+				{
+					curmin = parseInt($(this).attr('data-startmin'));
+					curmax = parseInt($(this).attr('data-startmax'));
+				}
+				var diff = ui.values[1] - ui.values[0];
+				if (diff < threshold)
+				{
+					if(ui.value == ui.values[0])	// Left slider
+					{
+						$('a:last', this).html(curmax).removeClass("valabove").addClass("valbelow");
+						$('a:first', this).html(curmin).addClass("valabove");						
+					}
+					else
+					{
+						$('a:first', this).html(curmin).removeClass("valabove").addClass("valbelow");
+						$('a:last', this).html(curmax).addClass("valabove");												
+					}
+				}
+			},
 			slide: function(event, ui) {
 				itof = $(this).attr('data-itof');
 				if(itof == 'false')
@@ -266,81 +506,77 @@ $(document).ready(function() {
 				var max = 100;
 				var realselectmin, realselectmax;
 				var value = ui.value;
-                if (ui.value == ui.values[0])
+				var sliderno = -1;
+				if(ui.value == ui.values[0])
+					sliderno = 0;
+				else
+					sliderno = 1;
+				$(this).slider('values', sliderno, value);
+				realvalue = (parseFloat((ui.values[sliderno]/100))*(rangemax-rangemin))+rangemin;
+				if(itof == 'true')
+					realvalue = parseInt(realvalue);
+				else
+					realvalue = parseInt(realvalue*10)/10;
+				if (sliderno == 0 && ui.values[0] != ui.values[1])						// First slider is not identified correctly by sliderno for the case
+					$('a:first', this).html(realvalue).addClass("valabove");			// when rightslider = left slider, hence the second condition
+				else if (ui.values[0] != ui.values[1])
+					$('a:last', this).html(realvalue).addClass("valabove");
+					
+				if(sliderno == 0)
 				{
-					$(this).slider('values', 0, value);
-					realselectmin = (parseFloat((ui.values[0]/100))*(rangemax-rangemin))+rangemin;	// The actual feature value corresponding to slider position
-					if(itof == 'true')
-						realselectmin = parseInt(realselectmin);
-					else
-						realselectmin = parseInt(realselectmin*10)/10;
-					$('a:first', this).html(realselectmin).addClass("valbelow");
-					// Set the form values that get submitted
-					$(this).siblings('.min').attr('value',realselectmin);
+					$(this).siblings('.min').attr('value',realvalue);
 					$(this).siblings('.max').attr('value',curmax);
-                }
-                else
+				}
+				else
 				{
-                    $(this).slider('values', 1, value);
-					realselectmax = (parseFloat((ui.values[1]/100))*(rangemax-rangemin))+rangemin;
-					if(itof == 'true')
-						realselectmax = parseInt(realselectmax);
-					else
-						realselectmax = parseInt(realselectmax*10)/10;
-					$('a:last', this).html(realselectmax).addClass("valabove");
-					// Set the form values that get submitted
-					$(this).siblings('.max').attr('value',realselectmax);
 					$(this).siblings('.min').attr('value',curmin);
-			     }	
-               	return false;
-            },
+					$(this).siblings('.max').attr('value',realvalue);
+				}
+					
+			   	return false;
+	        },
 			stop: function(e,ui)
 			{
-				submit_filter();
+				var diff = ui.values[1] - ui.values[0];
+				if (diff > threshold)
+				{
+					$('a:first', this).removeClass("valabove").addClass("valbelow");
+					$('a:last', this).removeClass("valabove").addClass("valbelow");
+				}
+				var sliderinfo = {'slider_min' : parseFloat(ui.values[0]), 'slider_max' : parseFloat(ui.values[1]), 'slider_name' : $(this).attr('data-label'), 'optemo_session': parseInt($('#seshid').attr('session-id')), 'filter_type' : 1 };
+				piwikTracker2.setCustomData(sliderinfo);
+				track(2, 'filter/sliders');
+				piwikTracker2.setCustomData({});
+				ajaxcall("/products/filter", $("#filter_form").serialize());
 			}
 		});
 		$(this).slider('values', 0, ((curmin-rangemin)/(rangemax-rangemin))*100);
 		$('a:first', this).html(curmin).addClass("valbelow");
 		$(this).slider('values', 1, ((curmax-rangemin)/(rangemax-rangemin))*100);
-		$('a:last', this).html(curmax).addClass("valabove");
-		if ((itof=='true' && (curmin>=curmax-1)) || (itof=='false' && curmin>=curmax-.1))	// Shade histogram if feature range is 1 for itof features and .1 for others
-		{
-			histogram($(this).siblings('.hist')[0], true);
-		}
-		else
-		{
-			histogram($(this).siblings('.hist')[0], false);
-		}
+		var diff = $(this).slider('values', 1) - $(this).slider('values', 0);
+		$('a:last', this).html(curmax).addClass("valbelow");
+		if (diff < threshold)
+			$('a:last', this).html(curmax).addClass("valabove");
+		histogram($(this).siblings('.hist')[0]);
 	});
-	
+}
 // Removed preference operations for speed-up
 /*	$(".deleteX").click(function() {
 	$(".simlinks").click(function() {
 	$(".save").click(function() { 
 */
+
+$(document).ready(function() {
+	DBinit();
 	
-	$(".usecase").click(function() { 
-		name = $(this).attr('data-name');
-		$.get('/products/select/'+name,function() {window.location = $(".usecase").attr('href');});
-		return false;
-	});
+	//Find product language
+	language = (/^\s*English/.test($(".languageoptions:first").html())==true)?'en':'fr';
 
 // Removed preference sliders for size optimization
 /*	$(".preferenceSlider").each(function() {
 	$(".preferenceSliderVertical").each(function() {
 */	
-	//Draw cluster graphs
-	$('.clustergraph').each(function () {
-		Raphael.getColor.reset();
-		$(this).children().each(function () {
-			max = parseFloat($(this).parent().css('width'), 10);
-			margin = parseFloat($(this).attr('data-left')) * max;
-			width = $(this).attr('data-width') * max;
-			$(this).css('margin-left', margin+'px');
-			$(this).css('width', width+'px');
-			$(this).css('background-color', Raphael.getColor());
-		});
-	});
+
 	//Decrypt encrypted links
 	$('a.decrypt').each(function () {
 		$(this).attr('href',$(this).attr('href').replace(/[a-zA-Z]/g, function(c){
@@ -352,7 +588,47 @@ $(document).ready(function() {
 					 function(){$('#logo > span').css('visibility', 'hidden')});
 	$('#whylaser').hover(function(){$('#whylaser > span').css('visibility', 'visible')},
 					 function(){$('#whylaser > span').css('visibility', 'hidden')});
-					
+	//Fadein
+	$(".close").click(function(){
+		fadein();
+		return false;
+	});
+    
+	//Call overlay for product comparison
+	$("#compare_button").click(function(){
+		fadeout('/compare/',null, 900, 530);/*star-h:580*/
+		trackPage('goals/compare/');
+		return false;
+	});
+    
+	//Request a feature
+	$("#requestafeature").click(function(){
+		fadeout('/content/request');
+		return false;
+	});
+    
+	//Static Ajax call
+	$('.staticajax').click(function(){
+		ajaxcall($(this).attr('href')+'?ajax=true');
+		return false;
+	});
+    
+	//Search submit
+	$('#submit_button').click(function(){
+		return submitsearch();
+	});
+	//Search submit
+	$('#search').keypress(function (e) {
+		if (e.which==13)
+			return submitsearch();
+	});
+    
+	//Static feedback box
+	$('#feedback').click(function(){
+		trackPage('survey/feedback');
+		fadeout('/survey/index', null, 600, 835);
+		return false;
+	});
 	// Piwik
 	try {
 	var piwikTracker = Piwik.getTracker("http://pj.laserprinterhub.com/piwik.php", 1);
@@ -362,6 +638,14 @@ $(document).ready(function() {
 	catch( err ) {}
 	
 });
+
+function getAllShownProductIds(){
+	var currentIds = "";
+	$('.easylink').each(function(i){
+		currentIds += $(this).attr('data-id') + ',';
+	});
+	return currentIds;
+}
 
 //Draw slider histogram
 function histogram(element, norange) {
@@ -375,16 +659,10 @@ function histogram(element, norange) {
 	trans = 4,
 	step = peak + 2*trans,
 	height = 20,
-	length = 168,
+	length = 174,
 	shapelayer = Raphael(element,length,height),
 	h = height - 1;
-	if(norange==true)	// i.e if left slider and right slider are the same value
-	{
-		t = shapelayer.path({fill: 'gray', opacity: 0.30});
-		Raphael.getColor(); //Don't want to mess up the color rotation
-	}
-	else
-		t = shapelayer.path({fill: Raphael.getColor(), opacity: 0.75});
+	t = shapelayer.path({fill: "#bad0f2", stroke: "#039", opacity: 0.75});
 	t.moveTo(0,height);
 
 	init = 4;
@@ -417,11 +695,4 @@ function getDocHeight() {
         Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),
         Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     );
-
-function clickOnlyIfSomethingSelected(){
-	//TODO
-	
-	if (true) {};
-	return;
-}
 }

@@ -1,3 +1,3 @@
-module SearchHelper
+module SurveyHelper
 
 end
