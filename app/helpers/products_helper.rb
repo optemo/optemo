@@ -84,7 +84,7 @@ module ProductsHelper
   end
   
   def repDesc(cluster)
-    utfstr(cluster.representative(@session,@s).catsubclass)
+    "No Desc"
   end
   
   def prodDesc(group, i)

@@ -1,19 +1,20 @@
-<% self.title = "#{@allSearches.last.desc unless @allSearches.empty?} #{$model.urlname.capitalize}" %>
+<% self.title = "#{@s.desc} #{$model.urlname.capitalize}" %>
 <div id="leftbar">
 	Browsing <%= @s.result_count %> <%= $model.urlname.capitalize %>
 	<% if RAILS_ENV == 'development' %><br/>Session id: <%= session[:user_id] %> <% end %>
 	<!-- The Search box -->
 	<% form_tag("/search/find",{:id => 'search_form'}) do %>
-	  <%= @session.searchterm.blank? ? text_field_tag('search') : text_field_tag('search', @session.searchterm) %>
+	  <%= @s.searchterm.blank? ? text_field_tag('search') : text_field_tag('search', @s.searchterm) %>
 	  <%= submit_tag 'Search', {:id => 'submit_button'} %>
-	  <%= @session.searchterm ? link_to('Clear Search', "/search/delete/", :id => 'clearsearch') : '' %>
 	<% end %>
 	
 	<!-- The Saved Items box -->
 	<div id="savebar">
 		<h2>Saved Items</h2>
 		<div id="savebar_content">
-		<div id="already_added_msg" style="display:none">You already added that product!</div>
+		<div id="already_added_msg" class="savedmsg"> <%=t 'products.compare.alreadyadded' %> </div>
+		<div id="too_many_saved" class="savedmsg"> <%=t 'products.compare.toomanysaved' %> </div>
+		<div id="savedproducts">
 		<p id="deleteme"
 			<% if @picked_products.empty? %> style="display:block" 
 			<% else %> style="display:none" <% end %>
@@ -46,8 +47,8 @@
 </div>
 
 <div class="main">
-	<div class='welcome_msg'>Find, compare, and buy the right printer for you! Explore groups of similar products by clicking on the links in the boxes or narrow your search by using the filters on your left. Can't decide? Save a few printers and compare!</div><br>
-	<div style="text-align: center;"><h1><%= h1title %></h1></div>
+<!--	<div class='welcome_msg'>Find, compare, and buy the right printer for you! Explore groups of similar products by clicking on the links in the boxes or narrow your search by using the filters on your left. Can't decide? Save a few printers and compare!</div><br>
+	<div style="text-align: center;"><h1>My title</h1></div>
 	
 	
 	<% if flash[:error] %>
@@ -57,41 +58,7 @@
 	<span class="notice"><%= flash[:notice] %></span>
 	<% end %>
 	
-	<div class='backlink'>	
-		<% unless @allSearches.empty? %>
-	    	<%= link_to "All #{$model.urlname.capitalize}", "/#{$model.urlname}/homepage" %> 
-			<%if @allSearches[0].layer==1%>
-					<%for l in 1..(@allSearches.size - 1)%>
-		 	  		<!-- If s>1 then print << -->
-	          			<%if l<@allSearches.size - 1%>
-							&lt;&lt;<%= link_to "#{@allSearches[l].desc}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>
-			 			<%else%>
-							&lt;&lt;<%= "#{@allSearches[l].desc}"%>
-			 			<%end%> 
-		   			<%end %>
-			<%end%>
-		<%end%>
-	</div>
-	
-	<% for i in 0..@s.cluster_count-1 %>
-	  <% if i%3 == 0 %>
-		<div class="rowdiv">
-		<% open = true %>
-	  <% end %>
-	  <!-- Navbox partial to draw boxes -->
-	  <%= render :partial => 'navbox', :locals => {:i => i, :cluster => @s.clusters[i]} %>
-	  <% if i%3 == 2 %>
-		</div>
-		<% open = false %>
-	  <% end %>
-	<% end %>
-	<%= '</div>' if open %>
-	<!--<div class="easynav" style="display:none;">
-	  <div class="buttons"><%= link_to 'Higher Resolution' %><%= link_to 'Lower Price' %><%= link_to 'Bigger Display Size' %><%= link_to 'Farther Zoom' %></div>
-	  <div class="cont">
-		<%= link_to 'Show More products' %>
-	  </div>
-	</div>-->
-	
-	<div id="loading">&nbsp;Loading<div id="myspinner" style="float: left;"></div></div>
+-->
+	<%= render :partial => 'discoverybrowser' %>
 </div>
+<div id="loading">&nbsp;Loading<div id="myspinner" style="float: left;"></div></div>

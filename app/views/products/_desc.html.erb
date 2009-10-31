@@ -1,4 +1,4 @@
 <div class="desc">
-	<%= link_to image_tag('close.gif'), "#", :class => 'deleteX'%>
-	<%= $model::FInfo[feat] || "No Description" %>
+	<%= link_to image_tag('close.png'), "#", :class => 'deleteX'%>
+	<%= t("products.Info_" + feat) || t('products.show.nodesc') %>
 </div>

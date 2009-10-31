@@ -65,7 +65,6 @@ class ApplicationController < ActionController::Base
     else
       @@session = mysession
     end
-    @@session.update_attribute('actioncount',@@session.actioncount+1)
     @@keywordsearch = nil
     @@keyword = nil
     if @@session.filter && @@session.searches.last
