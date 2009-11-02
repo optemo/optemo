@@ -79,6 +79,7 @@ namespace :printers do
     printers = Printer.all
     printers.each do |p|
       avgs = vote_on_values p
+      #fill_in_all avgs, p
       avgs.each do |k,v|
         puts "#{k} -- #{v} (now #{p.[](k)}) for #{p.id}" if [v, p.[](k)].uniq.reject{|x| x.nil?}.length > 1
       end
