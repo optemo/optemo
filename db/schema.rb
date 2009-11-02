@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20091020184730) do
+ActiveRecord::Schema.define(:version => 20090909190222) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -1405,8 +1405,6 @@ ActiveRecord::Schema.define(:version => 20091020184730) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "desc"
-    t.text     "searchpids"
-    t.string   "searchterm"
   end
 
   create_table "sessions", :force => true do |t|
@@ -1417,6 +1415,8 @@ ActiveRecord::Schema.define(:version => 20091020184730) do
     t.string   "product_type"
     t.boolean  "filter"
     t.string   "region",       :default => "us"
+    t.text     "searchpids"
+    t.string   "searchterm"
   end
 
   create_table "surveys", :force => true do |t|

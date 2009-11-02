@@ -7,5 +7,9 @@ class SearchDataToSearches < ActiveRecord::Migration
   end
 
   def self.down
+    add_column :sessions, :searchpids, :text
+    add_column :sessions, :searchterm, :string
+    remove_column :searches, :searchpids
+    remove_column :searches, :searchterm
   end
 end

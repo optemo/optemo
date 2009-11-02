@@ -188,14 +188,17 @@ div #savebar {
 	height: 85px;
 	float: left;
 }
-p.smalldesc {
+div.smalldesc {
 	font-size: 0.8em;
 	line-height: 1em;
 	padding: 0;
 }
-#already_added_msg {
-	color: red;
+.savedmsg {
+	color: #F5000B;
 	margin-bottom: 4px;
+	margin-left: 6px;
+	font-size:0.9em;
+	display: none;
 }
 
 /* Filter Box */

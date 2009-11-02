@@ -75,7 +75,7 @@
 </div>
 </div>
 <div id="fade" onClick="fadein();">&nbsp;</div>
-<div id="info">&nbsp;</div>
+<div id="outsidecontainer"><%= link_to image_tag("closepopup#{fr?}.gif"), "close", :class => "close"%><div id="info">&nbsp;</div></div>
 <!--[if lt IE 7]><style>
 /* style for IE6 + IE5.5 + IE5.0 */
 .gainlayout { height: 0; }
@@ -94,7 +94,14 @@
 <noscript><p><img src="http://pj.laserprinterhub.com/piwik.php?idsite=1" style="border:0" alt=""/></p></noscript>
 <script type="text/javascript" src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
 <script type="text/javascript"> FB.init('<%= $AppKey %>',"/xd_receiver.html");</script>
-
+<!-- No Piwik Tracking -->
+<script type="text/javascript">
+	var piwikTracker2 = {
+		trackPageView: function() {},
+		setDocumentTitle: function(str) {},
+		setCustomData: function(data) {}
+	};
+</script>
 <!-- Piwik for Maria -->
 <script type="text/javascript">
 var pkBaseURL = (("https:" == document.location.protocol) ? "https://x.laserprinterhub.com/" : "http://x.laserprinterhub.com/");
