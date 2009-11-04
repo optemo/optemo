@@ -15,11 +15,6 @@
 </head>
 <body>
 <div id="mycenter">
-<div class="dialog">
- <div class="content">
-  <div class="wrapper">
-   <div class="t"></div>
-   <div class="hd">
    <div id="header">
 	  <div id="flags">
 		<%= link_to image_tag('us.gif'), url_for_intl('com') %>
@@ -47,43 +42,41 @@
 			<fb:login-button size="small" length="short" onlogin="window.location.href='/login/do_login?currpage=' + window.location;" autologoutlink="false"> </fb:login-button>
 		<% end %>
      </div>
-	 <div id="header_buttons">                                                                                             
-       powered by <%= link_to image_tag('optemo.jpg'), 'http://www.optemo.com', {:title => 'Optemo'} %>                    
-     </div>                                                                                                                
-	</div>
    </div>
-   <div id="headerbar"><!--IE min line height--></div>
+   <div class="watermark">Powered by <%= link_to 'Optemo', 'http://optemo.com', :popup => true %></div>
 	
-   <div class="bd">
+   <div class="bd rounded_bd rounded">
+	<div class="tl"></div><div class="tr"></div>
     <%= yield  %>
+	<div class="bl"></div><div class="br"></div>
    </div>
-
-   <div class="ft"><!--IE min line height--></div>
-  </div>
- </div>
-
- <!-- bottom PNG -->
- <div class="b"><div><!--IE min line height--></div></div>
- <div id="bottomlinks">
-	<%= link_to 'Home', '/' %> |
-	<%= link_to 'Terms of Use', '/termsofuse', {:title => 'Legal'}  %> |
-	<%= link_to 'Site Map', '/sitemap', {:title => 'Link to all products'} %> |
-	<%= link_to 'About Us', '/about', {:title => 'LaserPrinterHub'} %> |
-	<%= link_to 'Contact Us', "znvygb:grnz\100ynfrecevagreuho\056pbz", {:class => 'decrypt', :title => 'Email Us'}%>
- </div>
- <!-- end dialog -->
 </div>
+<div id="bottomlinks">
+   <%= link_to 'Home', '/' %> |
+   <%= link_to 'Terms of Use', '/termsofuse', {:title => 'Legal'}  %> |
+   <%= link_to 'Site Map', '/sitemap', {:title => 'Link to all products'} %> |
+   <%= link_to 'About Us', '/about', {:title => 'LaserPrinterHub'} %> |
+   <%= link_to 'Contact Us', "znvygb:grnz\100ynfrecevagreuho\056pbz", {:class => 'decrypt', :title => 'Email Us'}%>
 </div>
 <div id="fade" onClick="fadein();">&nbsp;</div>
 <div id="outsidecontainer"><%= link_to image_tag("closepopup#{fr?}.gif"), "close", :class => "close"%><div id="info">&nbsp;</div></div>
+<div id="feedback">
+<%= image_tag "feedback#{fr?}.gif" %>
+</div>
 <!--[if lt IE 7]><style>
 /* style for IE6 + IE5.5 + IE5.0 */
 .gainlayout { height: 0; }
+#info{padding: 0px 20px 0px 20px !important;}
+#feedback{position: absolute;}
 </style><![endif]-->
  
 <!--[if IE 7]><style>
 .gainlayout { zoom: 1; }
 .hist {left: 15px; }
+</style><![endif]-->
+
+<!--[if gte IE 7]><style>
+@import url("/stylesheets/welcomeIE.css");
 </style><![endif]-->
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>

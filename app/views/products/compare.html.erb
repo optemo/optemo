@@ -1,51 +1,49 @@
 <% self.title = "#{@s.desc} #{$model.urlname.capitalize}" %>
 <div id="leftbar">
-	Browsing <%= @s.result_count %> <%= $model.urlname.capitalize %>
-	<% if RAILS_ENV == 'development' %><br/>Session id: <%= session[:user_id] %> <% end %>
 	<!-- The Search box -->
-	<% form_tag("/search/find",{:id => 'search_form'}) do %>
+	<div id='searchbox' class='leftboxes rounded_leftboxes rounded'>
+	<div class="tl"></div><div class="tr"></div>
+	<h2><%=t "products.compare.search" %></h2>
+	<% form_tag("/products/find",{:id => 'search_form'}) do %>
 	  <%= @s.searchterm.blank? ? text_field_tag('search') : text_field_tag('search', @s.searchterm) %>
 	  <%= submit_tag 'Search', {:id => 'submit_button'} %>
 	<% end %>
-	
+	<div class="bl"></div><div class="br"></div>
+	</div>
 	<!-- The Saved Items box -->
-	<div id="savebar">
-		<h2>Saved Items</h2>
+	<div id="savebar" class='leftboxes gainlayout rounded_leftboxes rounded'>
+		<div class="tl"><!-- --></div><div class="tr"><!-- --></div>
+		<h2> <%=t 'products.compare.saved' %> </h2>
+		<div class="savesome"> <%=t 'products.compare.savesome'%> </div>
 		<div id="savebar_content">
 		<div id="already_added_msg" class="savedmsg"> <%=t 'products.compare.alreadyadded' %> </div>
 		<div id="too_many_saved" class="savedmsg"> <%=t 'products.compare.toomanysaved' %> </div>
 		<div id="savedproducts">
-		<p id="deleteme"
-			<% if @picked_products.empty? %> style="display:block" 
-			<% else %> style="display:none" <% end %>
-			> Save some products to add them to this list</p>
 		<% if (@picked_products.empty? == false) %>
 		  <%= render :partial => 'product', :collection => @picked_products%>
 		<% end %>
 		</div>
 		</div>
 		<!-- Hide if 0 products, show if 1/more. -->
-		<div style = "clear: both;"> <a id="compare_button" 
-			<%if @picked_products.empty? %> style="display:none" 
-			<% else %> style="display:block" <% end %> 
-		 href='/compare'>Compare them!</a></div>
+		<%= link_to image_tag("compare-button-yellow#{fr?}.gif"), "", :id => "compare_button", :style => "display:#{@picked_products.empty? ? "none" : "block"};" %>
+		<div class="bl"><!-- --></div><div class="br"><!-- --></div>
 	</div>
 
-<!-- The Filters section -->
-<div id="filterbar">
-	<h2>Browse
-		<div class="filtersdesc"><%=t 'products.compare.filtersdesc' %></div>
-	</h2>
-	<div id="ajaxfilter">
-		<%= render :partial => 'filter' %>
+	<!-- The Filters section -->
+	<div id="filterbar" class="leftboxes rounded_leftboxes rounded">
+		<div class="tl"></div><div class="tr"></div>
+		<h2><%=t 'products.compare.filters' %>
+			<div class="filtersdesc"><%=t 'products.compare.filtersdesc' %></div>
+		</h2>
+		<div id="ajaxfilter">
+			<%= render :partial => 'filter' %>
+		</div>
+		<div class="reset">
+		<%= link_to image_tag("reset#{fr?}.gif"), "/#{$model.urlname}/", :class => "staticajax" %>
+		</div>
+		<div class="bl"></div><div class="br"></div>
 	</div>
-	<div class="reset">
-	<%= link_to image_tag("reset#{fr?}.gif"), "/#{$model.urlname}/", :class => "staticajax" %>
 	</div>
-</div>
-
-<p><i><%= link_to "Request a Feature", "#", :id => "requestafeature" %></i></p>
-</div>
 
 <div id="main">
 <!--	<div class='welcome_msg'>Find, compare, and buy the right printer for you! Explore groups of similar products by clicking on the links in the boxes or narrow your search by using the filters on your left. Can't decide? Save a few printers and compare!</div><br>

@@ -629,13 +629,8 @@ $(document).ready(function() {
 		fadeout('/survey/index', null, 600, 835);
 		return false;
 	});
-	// Piwik
-	try {
-	var piwikTracker = Piwik.getTracker("http://pj.laserprinterhub.com/piwik.php", 1);
-	piwikTracker.trackPageView();
-	piwikTracker.enableLinkTracking();
-	} 
-	catch( err ) {}
+	
+	spinner("myspinner", 11, 20, 9, 5, "#000");
 	
 });
 
