@@ -42,14 +42,12 @@
 			<% f = @product.send(f_name) %>
 			<% if !f.nil? %>
 				<li>
-					<% if $model::ContinuousFeatures.index($model.SFtoCFdictionary(f_name)) != nil %>
-						<% if @plain && (request.referer.nil? || request.referer.index($model.urlname).nil?) %> <!-- that is, if popup was not called from main navigation page, then show "better" links -->
-						<div class="betterlinkdiv">
-							<%= link_to "better", "javascript:findBetter('#{@product.id}', '#{$model.SFtoCFdictionary(f_name)}')", :"data-id" => f_name, :class => 'betterlink' %>
-						</div>
-						<% end %>
+					<% if @plain && (request.referer.nil? || request.referer.index($model.urlname).nil?) %> <!-- that is, if popup was not called from main navigation page, then show "better" links -->
+					<div class="betterlinkdiv">
+						<%= link_to "better", "javascript:findBetter('#{@product.id}', '#{f_name}')", :"data-id" => f_name, :class => 'betterlink' %>
+					</div>
 					<% end %>
-				 	<span class="detail_label"><%= $model::ShowFeaturesDisp[i] %>: </span><%= @product.display f_name %>
+				 	<span class="detail_label"><%= $model::ShowFeatures[i] %>: </span><%= @product.display f_name %>
 				</li>
 			<% end %>
 		<% end %>
