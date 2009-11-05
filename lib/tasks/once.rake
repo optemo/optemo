@@ -96,6 +96,18 @@ task :fill_in_itemwidth => :environment do
   end
 end
 
+desc 'Remove printer with nil models (unidentifiable printers)'
+task :remove_unidentifiables => :environment do
+  puts "Deleting printers with nil models..."
+  deleteme = (Printer.find_all_by_model(nil)| Printer.find_all_by_brand(nil)).collect{|x| x.id} 
+  deleteme.uniq!
+  puts "Will remove #{deleteme.count} printers"
+  deleteme.each do |del|
+    Printer.find(del).destroy
+  end
+  puts "Done!"
+end
+
 desc "Remove duplicate product entries"
 task :remove_duplicates => :environment do
   #model = ENV['Model']

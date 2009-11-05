@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090909190222) do
+ActiveRecord::Schema.define(:version => 20091105005234) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -1121,6 +1121,16 @@ ActiveRecord::Schema.define(:version => 20090909190222) do
     t.float    "weight"
   end
 
+  create_table "preferences", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "prefname"
+    t.float    "prefval"
+    t.integer  "sessionid"
+    t.integer  "searchid"
+    t.string   "producttype"
+  end
+
   create_table "printer_clusters", :force => true do |t|
     t.integer "parent_id"
     t.integer "layer"
@@ -1414,9 +1424,19 @@ ActiveRecord::Schema.define(:version => 20090909190222) do
     t.integer  "parent_id"
     t.string   "product_type"
     t.boolean  "filter"
-    t.string   "searchterm"
-    t.text     "searchpids"
     t.string   "region",       :default => "us"
+    t.text     "searchpids"
+    t.string   "searchterm"
+  end
+
+  create_table "surveys", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "session_id"
+    t.string   "Question1"
+    t.string   "Question2"
+    t.string   "Question3"
+    t.text     "suggestions"
   end
 
   create_table "tiger_offerings", :force => true do |t|
