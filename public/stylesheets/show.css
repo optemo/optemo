@@ -76,6 +76,9 @@ div #outside {
 	width: 400px;
 	float: left;
 }
+#info h1 {
+	font-size: 1.2em;
+}
 
 #features {
 	width: 390px;
