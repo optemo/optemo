@@ -211,11 +211,16 @@ module DatabaseHelper
   end
   
   # Gets Scraped Printer entries by a list of 
-  # matching retailer ids.
-  def scraped_by_retailers retailer_ids, scrapedmodel=$scrapedmodel
+  # matching retailer ids, where none of the SPs
+  # are matched to a Printer.
+  def scraped_by_retailers retailer_ids, scrapedmodel=$scrapedmodel, unmatched_only=true
      sps = []
      retailer_ids.each do |ret|
-       sps = sps | scrapedmodel.find_all_by_retailer_id(ret)
+       if unmatched_only
+         sps = sps | scrapedmodel.find_all_by_retailer_id_and_product_id(ret,nil)
+       else
+         sps = sps | scrapedmodel.find_all_by_retailer_id(ret)
+       end
      end
      return sps
   end

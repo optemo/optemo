@@ -155,32 +155,37 @@ module NeweggScraper
     retme = {}
   
     price_el = get_el(infopage.xpath('//div[@id="pclaPriceArea"]/dl[@class="price"]'))
-    sale_price_el = get_el price_el.css(".final")
-    retme['saleprice'] = sale_price_el.text if sale_price_el
-    orig_price_el = get_el price_el.css(".original")
-    retme['listprice'] = orig_price_el.text if orig_price_el
+    
+    if price_el    
+      sale_price_el = get_el price_el.css(".final")
+      retme['saleprice'] = sale_price_el.text if sale_price_el
+      orig_price_el = get_el price_el.css(".original")
+      retme['listprice'] = orig_price_el.text if orig_price_el
   
-    # -- Shipping --- #
-    shipping_el = get_el price_el.css('.shipping')
-    retme['shipping']  = shipping_el.text if shipping_el
-    
-    # --- Too low? --- #
-    low_price_el = get_el price_el.css('.lowestPrice')
-    
-    if (low_price_el)
-      snore(30)
-      lowpricepage = Nokogiri::HTML(open("#{get_base_url(region)}/Product/MappingPrice.aspx?Item=#{item_number}"))
-      lowpage_lowprice_el = get_el lowpricepage.css('.final')
-      retme['saleprice'] = lowpage_lowprice_el.text if lowpage_lowprice_el
-      retme['toolow'] = true
+      # -- Shipping --- #
+      shipping_el = get_el price_el.css('.shipping')
+      retme['shipping']  = shipping_el.text if shipping_el
+      
+      # --- Too low? --- #
+      low_price_el = get_el price_el.css('.lowestPrice')
+      
+      if (low_price_el)
+        lowpricepage = Nokogiri::HTML(open("#{get_base_url(region)}/Product/MappingPrice.aspx?Item=#{item_number}"))
+        snore(15)
+        lowpage_lowprice_el = get_el lowpricepage.css('.final')
+        retme['saleprice'] = lowpage_lowprice_el.text if lowpage_lowprice_el
+        retme['toolow'] = true
+      else
+        retme['toolow'] = false
+      end
+      
+      # --- Availability --- #
+      stock_el = get_el price_el.css('.stockInfo')
+      retme['stock'] = stock_el.text if stock_el
     else
-      retme['toolow'] = false
+      retme['stock'] = false 
     end
-  
-    # --- Availability --- #
-    stock_el = get_el price_el.css('.stockInfo')
-    retme['stock'] = stock_el.text if stock_el
-    
+      
     return retme
   end
   

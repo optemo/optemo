@@ -95,6 +95,7 @@ module TigerScraper
       props.merge! scrape_yellow_box info_page
       props.merge! scrape_availty info_page
       props.merge! scrape_modelinfo info_page
+      props.merge! scrape_pic_url info_page
       props['region'] = region
       props['local_id']= local_id
     end
@@ -154,6 +155,14 @@ module TigerScraper
     end
   
     return hsh
+  end
+  
+  def scrape_pic_url info_page
+    pic_el = get_el info_page.css('img[@name="imgLarge"]')
+    if pic_el
+      return {'imageurl' => pic_el.[]('src')}
+    end
+    return {}
   end
   
   def scrape_modelinfo info_page

@@ -18,13 +18,15 @@ module AmazonScraper
   
   # All local ids from region
   def scrape_all_local_ids region
-    response_group = 'ItemIds'
+    
+    puts "[#{Time.now}] Getting a list of all Amazon IDs associated with printers. This may take a while"
+    
     current_page = 1
     count = 0
     added = []
     loop do
       begin
-        res = Amazon::Ecs.item_search('',:browse_node => $browse_node_id, :search_index => $search_index, :response_group => response_group, :item_page => current_page)# , :country => region.intern
+        res = Amazon::Ecs.item_search('',:browse_node => $browse_node_id, :search_index => $search_index, :response_group => 'ItemIds', :item_page => current_page)# , :country => region.intern
         be_nice_to_amazon
       rescue Exception => exc
         report_error "Problem while getting local ids, on #{current_page}th page of request."
@@ -37,9 +39,13 @@ module AmazonScraper
         added += res.items.collect{ |item| item.get('asin') }
         current_page += 1
       end
-      break if (current_page > total_pages) #or current_page > 2 # <-- For testing only!
+      puts "[#{Time.now}] Read #{current_page} pages..."
+      break if (current_page > total_pages) # or current_page > 5 # <-- For testing only!
     end
-    return added
+    
+    puts "[#{Time.now}] Done getting Amazon IDs!"
+    
+    return added.reject{|x| x.nil? or x == ''}
   end
   
   # Amazon-specific cleaning code
@@ -89,8 +95,9 @@ module AmazonScraper
   
   # Scrape product specs from feed
   def scrape_specs local_id
-    res = Amazon::Ecs.item_lookup(local_id, :response_group => 'ItemAttributes')
-   
+    res = Amazon::Ecs.item_lookup(local_id, :response_group => 'ItemAttributes,Images')
+    be_nice_to_amazon
+    
     nokodoc = Nokogiri::HTML(res.doc.to_html)
     item = nokodoc.css('item').first
     if item
@@ -107,6 +114,9 @@ module AmazonScraper
         #atts['itemdimensions'] = nil
       end
       
+      temp = get_el item.css('largeimage/url')
+      atts['imageurl'] = temp.content if temp
+      
       (atts['specialfeatures'] || '').split('|').each do |x| 
         pair = x.split('^')
         next if pair.length < 2
@@ -120,6 +130,18 @@ module AmazonScraper
       # TODO make sure ALL possible data is being scraped
       #debugger if atts['printspeedbw'].nil? and atts['printspeedcolor'].nil?
       # firstpageoutputtime, standardpaperinput, resolution
+      
+     #begin
+     #  res = Amazon::Ecs.item_lookup(local_id, :response_group => 'Images')
+     #  be_nice_to_amazon
+     #   nokodoc = Nokogiri::HTML(res.doc.to_html)
+     #    item = nokodoc.css('item').first
+     #    if item
+     #      atts['imageurl'] = item.css('LargeImage/URL').first.content
+     #    end
+     #rescue Exception => exc
+     #  report_error "#{exc.message} . Could not look up offers for #{asin} in region #{region}"
+     #end
       
       return atts
     end
@@ -181,10 +203,8 @@ module AmazonScraper
           end
         end
         current_page += 1
-        be_nice_to_amazon
       end
     end while (!total_pages.nil? and current_page <= total_pages)
-    be_nice_to_amazon
     return lowoffer
   end
 
@@ -206,7 +226,6 @@ module AmazonScraper
       offer_atts['stock'] = false
     else
       offer_atts = offer_to_atthash best, asin, region
-      be_nice_to_amazon
     end
     
     return offer_atts
@@ -287,7 +306,6 @@ module AmazonScraper
       end
       current_page += 1
       break if current_page > totalreviewpages
-      be_nice_to_amazon
     end
     return reviews
   end

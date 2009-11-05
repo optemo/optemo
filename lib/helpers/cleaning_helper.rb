@@ -15,48 +15,53 @@ module CleaningHelper
     return {'paperinput' => paperinput} if paperinput
   end
   
-  # Generic cleaning code for a hash of
-  # attributename => 'Attribute value [@@sep] Another att val'
-  # Returns a hash with the cleaned-up values.
-  def generic_cleaning_code atts, model=$model
-    atts['brand'] = atts['brand'].gsub(/\(.+\)/,'').strip if atts['brand']
-    # Model:
-    if (atts['model'].nil? or atts['model'] == atts['mpn']) and atts['title']
-      # TODO combine with other model cleaner code
-      dirty_model_str = atts['title'].match(/.+\s#{$model}/i).to_s.gsub(/ - /,'') 
-      
-    end
-    mdls = [atts['model'], atts['mpn']].reject{|x| x.nil? or x == ''}
-    mdls.each do |x|
-      x.gsub!(/#{atts['brand']}\s?/i,'')
-      # TODO
-      (@brand_alternatives || []).each do |alts|
-        if alts.include? atts['brand'].downcase
-          alts.each do |altbrand|
-            x.gsub!(/#{altbrand}\s?/i,'')
-          end
-        end
-      end
-      ($series || []).each do |ser|
-        x.gsub!(/#{ser}\s?/i,'')
-      end
-      x.strip!
-    end
-    atts['model'] = atts['mpn'] if atts['model'].nil? or atts['model'] ==''
-    atts['title'].strip! if atts['title']
-  
-    atts = clean_prices(atts)
-    
-    if atts['parts'] or atts['labor']
-      temp =  many_fields_to_one(['parts', 'labor'], atts, true)  
-      atts['warranty'] = (atts['warranty'] || '') + " #{temp}"
-    end  
-    
-    temp = (atts['imageurl'] || '').match(/(http:\/\/).*?\.(jpg|gif|jpeg|bmp)/i)
-    atts['imageurl'] = temp.to_s if temp
-    return atts
-  
+  def generic_model_cleaner atts
+     atts['brand'] = atts['brand'].gsub(/\(.+\)/,'').strip if atts['brand']
+     # Model:
+     if (atts['model'].nil? or atts['model'] == atts['mpn']) and atts['title']
+       # TODO combine with other model cleaner code
+       dirty_model_str = atts['title'].match(/.+\s#{$model}/i).to_s.gsub(/ - /,'') 
+
+     end
+     mdls = [atts['model'], atts['mpn']].reject{|x| x.nil? or x == ''}
+     mdls.each do |x|
+       x.gsub!(/#{atts['brand']}\s?/i,'')
+       # TODO
+       (@brand_alternatives || []).each do |alts|
+         if alts.include? atts['brand'].downcase
+           alts.each do |altbrand|
+             x.gsub!(/#{altbrand}\s?/i,'')
+           end
+         end
+       end
+       ($series || []).each do |ser|
+         x.gsub!(/#{ser}\s?/i,'')
+       end
+       x.strip!
+     end
+     atts['model'] = atts['mpn'] if atts['model'].nil? or atts['model'] ==''
+     return atts
   end
+
+   # Generic cleaning code for a hash of
+   # attributename => 'Attribute value [@@sep] Another att val'
+   # Returns a hash with the cleaned-up values.
+   def generic_cleaning_code atts, model=$model
+     atts = generic_model_cleaner(atts)
+
+     atts['title'].strip! if atts['title']
+
+     atts = clean_prices(atts)
+
+     if atts['parts'] or atts['labor']
+       temp =  many_fields_to_one(['parts', 'labor'], atts, true)  
+       atts['warranty'] = (atts['warranty'] || '') + " #{temp}"
+     end  
+
+     temp = (atts['imageurl'] || '').match(/(http:\/\/).*?\.(jpg|gif|jpeg|bmp)/i)
+     atts['imageurl'] = temp.to_s if temp
+     return atts
+   end
   
   def model_series_variations models, series
     vars = []
@@ -126,7 +131,7 @@ module CleaningHelper
     atts['paperinput'] = (atts['paperinput'] || '').scan(/(?-mix:\d*,?\d+\s?-?)(?i-mx:sheets?)|(?i-mx:pages?)/).collect{|x| 
       get_max_f x}.reject{|x| x.nil?}.max
     #split(@@sep).collect{|x| get_max_f((x||'').to_s)}.reject{|x| x.nil?}.max 
-    debugger if atts['paperinput'] and atts['paperinput'] < 100
+   # debugger if atts['paperinput'] and atts['paperinput'] < 100
     
     # Resolution
     temp1 = (atts['resolution'] || '').scan(/\d*,?\d+\s?x\s?\d*,?\d+/i).uniq

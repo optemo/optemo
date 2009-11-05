@@ -61,18 +61,23 @@ namespace :printers do
   
   task :validate_amazon => [:amazon_init, :validate_printers]
   
-  task :scrape_amazon => [:amazon_init, :scrape_all, :match_to_products, :validate_printers]
+  task :scrape => [:scrape_new, :match_to_products, :validate_printers]
   
-  task :scrape_newegg => [:newegg_init, :scrape_all, :match_to_products, :validate_printers]
+  task :scrape_amazon => [:amazon_init, :scrape]
   
-  task :scrape_tiger => [:tiger_init, :scrape_all, :match_to_products, :validate_printers]
+  task :scrape_newegg => [:newegg_init, :scrape]
   
-  task :update_prices_newegg => [:newegg_init, :update_prices, :scrape_new, :match_to_products, :validate_printers]
+  task :scrape_tiger => [:tiger_init, :scrape]
   
-  task :update_prices_tiger => [:tiger_init, :update_prices, :scrape_new, :match_to_products, :validate_printers]
+  task :update => [:update_prices, :scrape_new, :match_to_products, :validate_printers]
   
-  #TODO
-  task :update_prices_amazon => [:amazon_init, :scrape_new, :match_to_products, :validate_printers]
+  task :update_prices_newegg => [:newegg_init, :update]
+  
+  task :update_prices_tiger => [:tiger_init, :update]
+  
+  task :update_amazon => [:amazon_init, :update, :amazon_mkt_init, :update]
+  
+  task :scrape_amazon_mkt => [:amazon_mkt_init, :scrape]
   
   task :vote => :printer_init do 
     #include CleaningHelper
@@ -88,12 +93,13 @@ namespace :printers do
   
   desc 'Match ScrapedPrinter to Printer!'
   task :match_to_products do 
+    puts "[#{Time.now}] Starting to match products"
     match_me = scraped_by_retailers($retailers, $scrapedmodel) if $retailers
     match_me = $scrapedmodel.all if match_me.nil?
     
-    match_me.each do |scraped|
-      next if scraped.brand.nil? or (scraped.model.nil? and scraped.mpn.nil?)
-      # TODO log this?
+    match_me = match_me.reject{|x| (x.model.nil? and x.mpn.nil?) or x.brand.nil?}
+    
+    match_me.each_with_index do |scraped, i|
       matches = match_printer_to_printer scraped, $model, $product_series
       real = matches.first
       real = create_product_from_atts scraped.attributes, $model if real.nil? 
@@ -101,8 +107,10 @@ namespace :printers do
       fill_in 'product_id',real.id, scraped
       
       ros = find_ros_from_scraped scraped, $model
-      ros.each{ |ro| fill_in 'product_id', real.id, ro }      
+      ros.each{ |ro| fill_in 'product_id', real.id, ro }     
+      puts "[#{Time.now}] Done matching #{i+1}th scraped product." 
     end
+    puts "[#{Time.now}] Done matching products"
   end
   
   # Update prices
@@ -111,16 +119,16 @@ namespace :printers do
     my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id(x.id)}
     my_offerings.each_with_index do |offering, i|
       begin
-        next if offering.local_id.nil? # TODO
+        next if offering.local_id.nil? or offering.stock != true
         newatts = rescrape_prices offering.local_id, offering.region
-        log "Updating #{offering.pricestr} to #{newatts['pricestr']}"
+        log "[#{Time.now}] Updating #{offering.pricestr} to #{newatts['pricestr']}"
         update_offering newatts, offering if offering
         update_bestoffer($model.find(offering.product_id)) if offering.product_id
       rescue Exception => e
         report_error "with RetailerOffering #{offering.id}:" + e.message.to_s + e.type.to_s
         snore(20*60) # sleep for 20 min 
       end
-      puts "Done updating #{i+1} of #{my_offerings.count} offerings"
+      puts "[#{Time.now}] Done updating #{i+1} of #{my_offerings.count} offerings"
     end
     
     @logfile.close
@@ -139,7 +147,7 @@ namespace :printers do
             
       ids.each_with_index do |local_id, i|
         generic_scrape(local_id, retailer)
-        announce "Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
+        announce "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
       end
     end
     @logfile.close
@@ -150,15 +158,14 @@ namespace :printers do
     @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_scraper.log", 'w+')
     $retailers.each do |retailer|
       ids = scrape_all_local_ids retailer.region
-      scraped_ids = (RetailerOffering.find_all_by_retailer_id(retailer.id)).reject{|x| 
-        x.product_id.nil? }.collect{|x| x.local_id}
+      scraped_ids = (ScrapedPrinter.find_all_by_retailer_id(retailer.id)).collect{|x| x.local_id}#.reject{|x|   x.product_id.nil? }
       ids = (ids - scraped_ids).uniq.reject{|x| x.nil?}
-         ids = ids[0..300]   
+      ids = ids[0..300]
       announce "Will scrape #{ids.count} #{$model.name}s from #{retailer.name}"
       
       ids.each_with_index do |local_id, i|
         generic_scrape(local_id, retailer)
-        announce "Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
+        announce "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
       end
     end
     @logfile.close
@@ -170,7 +177,7 @@ namespace :printers do
     
     @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_validation.log", 'w+')
     
-    my_products = scraped_by_retailers($retailers, $scrapedmodel)
+    my_products = scraped_by_retailers($retailers, $scrapedmodel,false)
     
     announce "Testing #{my_products.count} #{$scrapedmodel.name} for validity..."
     

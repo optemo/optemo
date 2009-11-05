@@ -288,7 +288,7 @@ namespace :printer_test do
 
        close_log
    end
-
+   
    task :hurryinit do
     
     $num_tests = 10
