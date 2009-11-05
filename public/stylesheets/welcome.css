@@ -110,14 +110,9 @@ h2 {
 }
 a {
 	text-decoration: none;
-	color: #339;
 }
 a:hover {
 	text-decoration: underline;
-	color: #66c;
-}
-img {
-	vertical-align: top;
 }
 
 .watermark{
@@ -125,7 +120,6 @@ img {
 	bottom: -18px;
 	right: 0px;
 	font-size: 0.8em;
-	color: #339;
 }
 .bd {
 	padding-top: 5px;

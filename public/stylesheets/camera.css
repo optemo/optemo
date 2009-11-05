@@ -96,11 +96,11 @@ div.navigator_box {
 	margin: 5px 3px;
 }
 .sim a {
-	color: white;
+	color: black;
 	font-size: 1.1em;
 }
 .sim a:hover {
-	color: white;
+	color: black;
 	text-decoration: none;
 }
 .sim a img {

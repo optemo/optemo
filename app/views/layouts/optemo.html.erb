@@ -24,7 +24,9 @@
 		<a href="<%= url_for '/' %>" id ="logo" title="LaserPrinterHub.com"><%= $region == "us" ? image_tag('logo.jpg') : image_tag('logo_ca.jpg')%><span>Home</span></a>
 	  </div>
 		<a href="<%= url_for '/laserprinters' %>" title="Why buy a laser printer?" id='whylaser'>Why buy a laser printer?</a>
-	 
+	 <div>
+		Find, compare, and buy the right printer for you! We have found the best deals from various online retailers for you. <!--Explore groups of similar products by clicking on the links in the boxes or narrow your search by using the filters on your left. Can't decide? Save a few printers and compare!-->
+	</div>
      <div id="logindisplay">                                                                                               
    		<% if !cookies[$AppKey +"_user"].nil? %>
 		<div style="float:left;height:16px;width:16px;overflow:hidden;">
@@ -61,7 +63,7 @@
 <div id="fade" onClick="fadein();">&nbsp;</div>
 <div id="outsidecontainer"><%= link_to image_tag("closepopup#{fr?}.gif"), "close", :class => "close"%><div id="info">&nbsp;</div></div>
 <div id="feedback">
-<%= image_tag "feedback#{fr?}.gif" %>
+<%= image_tag "feedback#{fr?}.png" %>
 </div>
 <!--[if lt IE 7]><style>
 /* style for IE6 + IE5.5 + IE5.0 */

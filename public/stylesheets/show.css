@@ -43,8 +43,8 @@ div#loading {
 }
 .close {
 	position: absolute;
-	top: 3px;
-	right: 0px;
+	top: -22px;
+	right: 13px;
 }
 .poptitle {
 	margin: 8px 15px 25px;
