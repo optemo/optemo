@@ -1,0 +1,40 @@
+8
+
+dir
+1397
+https://projects.coin-or.org/svn/Clp/stable/1.10/Clp/MSVisualStudio/v8/ClpExamplesMinimum
+https://projects.coin-or.org/svn/Clp
+
+
+
+2007-06-28T15:36:09.642887Z
+1042
+andreasw
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+d311ca93-0c12-0410-81ba-aa187d86b09b
+
+ClpExamplesMinimum.vcproj
+file
+
+
+
+
+2009-07-10T22:24:30.000000Z
+53421856a3182ac5afb7cb0e26e76540
+2007-06-28T15:36:09.642887Z
+1042
+andreasw
+

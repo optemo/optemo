@@ -1,0 +1,40 @@
+8
+
+dir
+1185
+https://projects.coin-or.org/svn/CoinUtils/stable/2.5/CoinUtils/MSVisualStudio/v9/unitTestCoinUtils
+https://projects.coin-or.org/svn/CoinUtils
+
+
+
+2008-12-18T05:58:45.303975Z
+1121
+jpfasano
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+fb1e0aea-ec12-0410-b565-d91575c13ea3
+
+unitTestCoinUtils.vcproj
+file
+
+
+
+
+2009-07-10T22:25:25.000000Z
+d073cf52221f302be0d868ca981cb6a8
+2008-12-18T05:58:45.303975Z
+1121
+jpfasano
+
