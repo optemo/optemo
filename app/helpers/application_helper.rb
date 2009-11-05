@@ -30,10 +30,4 @@ module ApplicationHelper
       s
     end
   end
-  
-  def condition_for_survey(sess)
-    session[:user_id] % 10 == 0 && sess.actioncount > 5 && sess.offeredsurvey == false
-    # We need the offeredsurvey field because some actions do not load layout or ajax and hence the survey can 
-    # not always be offered at exactly a particular number of actions
-  end
 end

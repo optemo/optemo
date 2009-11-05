@@ -16,7 +16,7 @@
 	float: right;
 }
 #header {
-   margin-top: 12px;
+   padding-top: 8px;
    margin-left: 20px;
    position: relative;
    width: 920px;
@@ -36,9 +36,7 @@
 {
 	font-size: 0.8em;
 	position: absolute;
-	/*top: 18px;
-	right: 0px;*/
-	top: 4px;
+	top: 8px;
 	right: 45px;
 }
 

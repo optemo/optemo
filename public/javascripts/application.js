@@ -301,14 +301,9 @@ function DBinit(context) {
 	
 	//Fadeout labels
 	$(".easylink, .productimg",context).click(function(){
-		fadeout('/products/show/'+$(this).attr('data-id')+'?plain=true',null, 600, 650);/*Star-h:700*/
+		fadeout('/products/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
 		trackPage('products/show/'+$(this).attr('data-id')); 
 		//trackPage($(this).attr('href'));
-		return false;
-	});
-	
-	$('.showsurveyoption',context).each(function() {
-		fadeout('/survey/decision', null, 500, 180);
 		return false;
 	});
 	
