@@ -19,6 +19,7 @@ module DataLib
   include DatabaseHelper
   include ScrapingHelper
   include CleaningHelper
+  include CompareHelper
   include ConversionHelper
   include Constants
 end

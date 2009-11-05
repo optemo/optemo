@@ -1,5 +1,5 @@
 # The string/value comparison part of the cleaning helper
-module CleaningHelper
+module CompareHelper
   
   # Returns true if the strings are the same brand,
   # false otherwise
