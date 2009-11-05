@@ -1,45 +1,39 @@
-<div class="navigator_box">
-	<div class='title'><%= @clusterDescs[i] %></div>
-	<div style="position: absolute; bottom: 0px; left: 0px; width: 100%">
+<div id="box<%= i %>" class="navigator_box <%= group ? "nbgroup" : "nbsingle" %>" <%= "style='margin-right:0px'" if i%3 == 2 %>>
+	<div class="topbar">
+		<div class='title'>
+			<% if group %>
+				<%= prodDesc(group, i) %>
+			<% else %>
+				<%=h repDesc(cluster) %>
+				<div class="smalltitle">
+					<%= prodDesc(group, i) %>
+				</div>
+			<% end %>
+		</div>
+		<% if !cluster.representative(@session,@s.searchpids).imagemwidth.blank? %>
 
-	<% if !cluster.representative(@session).imagemwidth.blank? %>
-		<%= image_tag cluster.representative(@session).imagemurl, :height => 100, :"data-id" => cluster.representative(@session).id, :class => "productimg", :alt => cluster.representative(@session).smlTitle %>
-	<%end%>
+			<%= image_tag(cluster.representative(@session,@s.searchpids).imagemurl, :width => cluster.representative(@session,@s.searchpids).imagemw, :height => cluster.representative(@session,@s.searchpids).imagemh, :"data-id" => cluster.representative(@session,@s.searchpids).id, :class => "productimg", :alt => cluster.representative(@session,@s.searchpids).smlTitle, :"data-id" => "#{cluster.representative(@session,@s.searchpids).id}") %>
+		<%end%>
+		<div class="product">
+			<a href="<%=cluster.representative(@session,@s.searchpids).descurl%>" data-id="<%=cluster.representative(@session,@s.searchpids).id%>" class="easylink">
+		<%= cluster.representative(@session,@s.searchpids).smlTitle %></a>
+		
+		<div class="price">
+			<%= $region == "us" ? cluster.representative(@session,@s.searchpids).pricestr : cluster.representative(@session,@s.searchpids).price_ca_str %>
+		</div>
+		</div>
+	</div>
 
-	<p><%= cluster.utility(@session) if RAILS_ENV == 'development'%><a href="<%=cluster.representative(@session).descurl%>" data-id="<%=cluster.representative(@session).id%>" class="easylink">
-		<%= cluster.representative(@session).smlTitle %>
-	</a></p>
-	
-	<p><%= $region == "us" ? cluster.representative(@session).pricestr : cluster.representative(@session).price_ca_str %>  
-		<img src="/images/save_navbox_16.png" onClick="saveit(<%=cluster.representative(@session).id%>);" class="save" itemId="cluster.representative(@session).id" style="margin-right:-4px;margin-bottom:-2px;">
-		 <b><%= link_to "Save it", "javascript:saveit(#{cluster.representative(@session).id})", {:class => 'save', :itemId => "#{cluster.representative(@session).id}" } %></b>
-		<%# Randomized Product Reviews %>
-		<%# rand > 0.5 ? (rand > 0.5 ? image_tag('5star.gif') : image_tag('3star.gif')) : image_tag('4star.gif') %>
-	</p>
-	<% if false && RAILS_ENV == 'development' && cluster.clustergraph && cluster.clustergraph[i] %>
-	<div class="clustergraph">
-		<% cluster.clustergraph[i].each do |u| %>
-		<% if u.length == 2 %>
-		<div class="featurebar" data-left="<%= u[0] %>" data-width="<%= u[1] %>"></div>
-		<% end %>
+	<div class='bottombar'>
+		<% if group %>
+    		<div class='sim'>
+    	  <%= link_to(image_tag('plus.png')+t("products.compare.similar",:count => cluster.size(@session,@s.searchpids) - 1), 
+    	  "/#{$model.urlname}/sim/"+cluster.id.to_s, 
+ 		  :id => "sim#{i}", :class => 'simlinks', :"data-id" => "#{cluster.representative(@session,@s.searchpids).id}") %>
+    		</div>
+		<% else %>
+			<div class='compare'><%= link_to image_tag("compare-button-yellow#{fr?}.gif"), "javascript:saveit(#{cluster.representative(@session,@s.searchpids).id});", {:class => 'save', :itemId => "#{cluster.representative(@session,@s.searchpids).id}" } %>
+			</div>
 		<% end %>
 	</div>
-	<% end %>
-	<div class="bottombar" name ="<%= cluster.representative(@session).id %>">
-		<%= sim_link(cluster,i, cluster.representative(@session).id) %>
-	</div>
-	</div>
-	
-	<img src="/images/white-pix.gif" style="position:absolute;right:-3px;bottom:-3px;"/>
-	<img src="/images/white-pix.gif" style="position:absolute;right:-2px;bottom:-3px;"/>
-	<img src="/images/white-pix.gif" style="position:absolute;right:-3px;bottom:-2px;"/>
-	<img src="/images/white-pix.gif" style="position:absolute;right:-3px;top:-3px;"/>
-	<img src="/images/white-pix.gif" style="position:absolute;right:-2px;top:-3px;"/>
-	<img src="/images/white-pix.gif" style="position:absolute;right:-3px;top:-2px;"/>
-	<img src="/images/white-pix.gif" style="position:absolute;left:-3px;bottom:-3px;"/>
-	<img src="/images/white-pix.gif" style="position:absolute;left:-2px;bottom:-3px;"/>
-	<img src="/images/white-pix.gif" style="position:absolute;left:-3px;bottom:-2px;"/>
-	<img src="/images/white-pix.gif" style="position:absolute;left:-3px;top:-3px;"/>
-	<img src="/images/white-pix.gif" style="position:absolute;left:-2px;top:-3px;"/>
-	<img src="/images/white-pix.gif" style="position:absolute;left:-3px;top:-2px;"/>
 </div>

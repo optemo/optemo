@@ -2,7 +2,6 @@
 javascripts: 
 - base: 
   - raphael
-  - piwik
   - application
   - jquery.tablednd_0_5
   - facebooksessionops

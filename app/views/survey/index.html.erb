@@ -1,0 +1,25 @@
+<div class="poptitle"> <%=t 'survey.title' %> </div>
+<div class="surveyquestions">
+<% form_tag({:controller => "survey", :action => "submit"},:id => "surveyform") do %>
+ <% fields_for "survey" do |form| %>
+	<% @RandomQuestions.each do |quesno| %>
+	<%=t('survey.question' + quesno.to_s + '.question') %>
+	<br>
+	<% if quesno == 2 %>
+		<div class="surveyimage">
+			<%= image_tag("surveyimage#{fr?}.png") %>
+		</div>
+		<br>
+	<% end %>
+	<% (1..t('survey.question' + quesno.to_s + '.numberofoptions').to_i).each do |ansno| %>
+		<%= form.radio_button "q" + (quesno+1).to_s, ansno %> <%= t('survey.question' + quesno.to_s + '.option' + ansno.to_s) %> <br>
+	<% end %>
+	<br>
+	<% end %>
+	<%=t 'survey.questionlast' %>
+	<br>
+	<%= form.text_area "qlast", :cols => "65", :rows => "5" %>
+<% end %>
+<div style="text-align:right;margin-top:20px;"> <%= submit_tag t('survey.submit'), :id => "surveysubmit" %> </div>
+<% end %>
+</div>

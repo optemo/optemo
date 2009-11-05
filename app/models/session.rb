@@ -4,19 +4,33 @@ class Session < ActiveRecord::Base
   has_many :searches
   has_many :preference_relations
   
+  attr :oldfeatures, true
+  
   def clearFilters
     # In Sessions table, 
     # Set all attributes except some, to their default values
-    Session.column_names.delete_if{|i| %w(id created_at updated_at ip parent_id product_type user).index(i)}.each do |name|
-      send((name+'=').intern, Session.columns_hash[name].default)
-    end
-    save
-    # In Product-features table,
-    # Set all attributes (EXCEPT id,session_id, created_at, updated_at & all the preference values) to defaults
+    #saves = []
+    #Session.column_names.delete_if{|i| %w(id created_at updated_at ip parent_id product_type actioncount offeredsurvey).index(i)}.each do |name|
+    #  saves << name unless send(name.intern).nil?
+    #end
+    #update_attributes(Hash[*saves.zip([nil]*saves.length).flatten]) unless saves.empty?
+    ## In Product-features table,
+    ## Set all attributes (EXCEPT id,session_id, created_at, updated_at & all the preference values) to defaults
+    #saves = []
+    #$featuremodel.column_names.delete_if {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at'}.each do |name|
+    #  saves << name unless features.send(name.intern).nil?
+    #end
+    #features.update_attributes(Hash[*saves.zip([nil]*saves.length).flatten]) unless saves.empty?
+    
+    update_attribute('filter',false) if (filter == true)
+    saves = []
     $featuremodel.column_names.delete_if {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at'}.each do |name|
-      features.send((name+'=').intern, $featuremodel.columns_hash[name].default)
+      saves << name unless features.send(name.intern).nil?
     end
-    features.save
+    unless saves.empty?
+      @features = $featuremodel.new({'session_id' => id})
+      @features.save
+    end
   end
   
   def self.ip_uniques
@@ -28,9 +42,7 @@ class Session < ActiveRecord::Base
     self.all.map{|s|s.ip}.delete_if{|i|i =~ /^(192\.168.|127.0.|::1)/}
   end
   
-  def createFromFilters(myfilter)
-    # myfeatures stores attributes for the "Product"Features table 
-    feature_filter = {}
+  def updateFilters(myfilter)
     #Delete blank values
     myfilter.delete_if{|k,v|v.blank?}
     #Fix price, because it's stored as int in db
@@ -38,59 +50,46 @@ class Session < ActiveRecord::Base
     myfilter[:price_min] = myfilter[:price_min].to_i*100 if myfilter[:price_min]
     myfilter[:itemwidth_max] = myfilter[:itemwidth_max].to_i*100 if myfilter[:itemwidth_max]
     myfilter[:itemwidth_min] = myfilter[:itemwidth_min].to_i*100 if myfilter[:itemwidth_min]
-    $featuremodel.column_names.each do |column|
-      if !(column == 'id' || column == 'session_id' || column == 'search_id')
-        feature_filter[column.intern] = myfilter.delete(column.intern) if myfilter[column.intern]
-      end
-    end 
-    feature_filter = handle_false_booleans(feature_filter)
-    myfilter[:parent_id] = id
-    myfilter[:filter] = true
-    mysession =  Session.new(attributes.merge(myfilter))
-    mysession.features = $featuremodel.new(feature_filter)  # (attributes.merge(feature_filter))
-    mysession
+    myfilter[:session_id] = id
+    myfilter = handle_false_booleans(myfilter)
+    self.filter = true
+    @oldfeatures = features
+    @features = $featuremodel.new(myfilter)
   end
  
-  def clusters
+  def clusters(keywordsearch)
     #Find clusters that match filtering query
-    @oldsession = Session.find(parent_id)
-    if expandedFiltering? || @oldsession.oldclusters.nil?
+    if !expandedFiltering? && searches.last
+      #Search is narrowed, so use current products to begin with
+      clusters = searches.last.clusters(self)
+    else
       #Search is expanded, so use all products to begin with
       current_version = $clustermodel.find_last_by_region($region).version
       clusters = $clustermodel.find_all_by_layer_and_version_and_region(1,current_version,$region)
-    else
-      #Search is narrowed, so use current products to begin with
-      clusters = @oldsession.oldclusters
-      #Clear cache so it can be recalculated with new filtering
-      clusters.each{|c|c.clearCache}
+      clusters.delete_if{|c| c.isEmpty(self,keywordsearch)}
     end
-    clusters.delete_if{|c| c.isEmpty(self)}
     clusters
   end
   
-  def oldclusters
-    searches.last.clusters if searches.last
+  def commitFilters(search_id)
+    update_attribute('filter',true)
+    @features.search_id = search_id
+    @features.save
   end
   
-  def commit
-    @oldsession = Session.find(parent_id) unless @oldsession
-    @oldsession.update_attributes(attributes)
-    features.commit(@oldsession.id)    
-  end
-  
-  def features=(f)
-    @features = f
+  def rollback
+    @features = @oldfeatures if @oldfeatures
   end
   
   def defaultFeatures(mode)
     update_attribute('filter', true)
-    features.update_attributes($featuremodel.find($DefaultUses[mode]).attributes.delete_if{|k,v| k.index('_pref') || k=='id' || k=='created_at' || k=='updated_at' || k=='session_id'})
+    features.update_attributes($featuremodel.find($DefaultUses[mode]).attributes.delete_if{|k,v| k=='id' || k=='created_at' || k=='updated_at' || k=='session_id'})
   end
         
   def features
     #Return row of Product's Feature table
     unless @features
-      @features = $featuremodel.find(:first, :conditions => ['session_id = ?', id])
+      @features = $featuremodel.find(:last, :conditions => ['session_id = ?', id])
     end
     @features
   end
@@ -109,25 +108,25 @@ class Session < ActiveRecord::Base
       if key.index(/(.+)_min/)
         fname = Regexp.last_match[1]
         max = fname+'_max'
-        maxv = @oldsession.features.send(max.intern)  
+        maxv = @oldfeatures.send(max.intern)  
         if !maxv.nil? # If the oldsession max value is not nil then calculate newrange
-          oldrange = maxv - @oldsession.features.send(key.intern)
+          oldrange = maxv - @oldfeatures.send(key.intern)
           newrange = features.attributes[max] - features.attributes[key]
           if newrange > oldrange
             return true #Continuous
           end
         end
-      elsif key.index(/#{$model::BinaryFeaturesF.join('|')}/)
+      elsif !$model::BinaryFeaturesF.empty? && key.index(/#{$model::BinaryFeaturesF.join('|')}/)
         if features.attributes[key] == false
           #Only works for one item submitted at a time
           features.send((key+'=').intern, nil)
           return true #Binary
         end
-      elsif key.index(/#{$model::CategoricalFeaturesF.join('|')}/)
-        oldv = @oldsession.features.send(key.intern)
+      elsif !$model::CategoricalFeaturesF.empty? && key.index(/#{$model::CategoricalFeaturesF.join('|')}/)
+        oldv = @oldfeatures.send(key.intern)
         if oldv
-          new_a = features.attributes[key] == "All Brands" ? [] : features.attributes[key].split('*').uniq
-          old_a = oldv == "All Brands" ? [] : oldv.split('*').uniq
+          new_a = features.attributes[key].nil? ? [] : features.attributes[key].split('*').uniq
+          old_a = oldv.nil? ? [] : oldv.split('*').uniq
           return true if new_a.length == 0 && old_a.length > 0
           return true if old_a.length > 0 && new_a.length > old_a.length
         end

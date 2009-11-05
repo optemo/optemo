@@ -1,46 +1,109 @@
-.cell{
+.column {
 	float: left;
-	width: 200px;
-	overflow: hidden;
 }
-
-.rowBeingDragged{
-	background: #CCCC00;
+#comparisonmatrix {
+	position: relative;
+	width:100%;
 }
-
+.cell {
+	border-right: gray 1px dashed;
+	width: 160px;
+	height: 23px;
+	font-size: 0.9em;
+	padding: 7px 0px 0px 20px;
+}
+.longcolumn .cell {
+	border-right: none;
+	width: 400px;
+}
+.thumbnailcell {
+	padding-top: 15px;
+	border-right: gray 1px dashed;
+	width: 180px;
+	height: 180px;
+}
+.columntitle {
+	background: url(../images/columntitlebg.gif);
+	width: 179px;
+	height: 23px;
+	font-size: 0.9em;
+	padding-top: 7px;
+	border-right: solid 1px #ccc;
+	z-index: 4;
+	position: relative;
+}
+.longcolumn .columntitle {
+	width: 420px;
+}
+.bgrow {
+	height: 30px;
+	background: url(../images/columntitlebg.gif) repeat;
+	width: 750px;
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 0;
+	border-right: solid 1px #ccc;
+}
+.outertitle {
+	width: 179px;
+	border-right: solid 2px white;
+	z-index: 4;
+	position: relative;
+}
+.longcolumn .outertitle {
+	width: 419px;
+}
+.graybg {
+	background: #DADADA;
+}
+.whitebg {
+	background: white;
+}
+.leftmostcolumn {
+	width: 130px;
+	padding-left: 0px;
+}
+.leftcolumntext {
+	font-weight: bold;
+	padding-right: 10px;
+	text-align: right;
+}
+.leftmostoutertitle {
+	width: 129px;
+}
+.leftmostcolumntitle {
+	width: 128px;
+	border-left: solid 1px #ccc;
+}
+.tabletitle {
+	font-size:0.85em;
+	font-weight: normal;
+}
+.remove {
+	font-size: 0.8em;
+	padding-left: 10px;
+}
 .first {
 	height: 100px;
 	text-align: center;
 }
-.first h2{
-	margin: 0;
+.thumbnaillabel {
+	text-align:center;
+	padding-top: 25px;
+	color:#0A2088;
 }
-
-#graco, #sames, #iwata, #dopag {
-width: 570px;
-border: solid 2px #7e7e7e;
-padding:0;
-display:table;
-background-color: #d2d2d2;
+.thumbnaildetails {
+	color: #F5000B;
 }
-#graco h2 {
-margin:0;
-background-color: #fff;
-background-image: url(Graco.gif);
-background-repeat: no-repeat;
-width: 200px;
-height: 150px;
-text-indent:-999em;
-float:left;
+.shopcell {
+	position: relative;
+	top: 10px;
+	left: 0px;
 }
-#graco ul, #sames ul, #iwata ul, #dopag ul {
-width: 350px;
-margin: 0;
-padding: 8px 0;
-display:table-cell;
-vertical-align: middle;
+.lowlightfeature {
+	color: #777;
 }
-#graco li, #sames li, #iwata li, #dopag li {
-margin-left: 40px;
+.regularfeature {
+	color: #000;
 }
-.clear{clear:both;}

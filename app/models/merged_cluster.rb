@@ -1,4 +1,6 @@
+require 'caching'
 class MergedCluster
+  include CachingMemcached
   attr_reader :clusters
   
   def initialize(clusters)
@@ -6,18 +8,25 @@ class MergedCluster
   end
   
   
-  def self.fromIDs(product_type,clusters,session)
-    product_type = product_type
+  def self.fromIDs(clusters,session,searchpids)
     clusterobj = []
     clusters.compact.each do |c|
       newcluster = $clustermodel.find(c.to_i)
-      clusterobj << newcluster unless newcluster.nil? || newcluster.isEmpty(session)
+      clusterobj << newcluster unless newcluster.nil? || newcluster.isEmpty(session,searchpids)
     end
     new(clusterobj)
   end
   
   def id
     @clusters.map{|c|c.id}.join('+')
+  end
+  
+  def waterproof
+    @clusters.map{|c|c.waterproof}.inject(true){|a,b| a && b}
+  end
+  
+  def slr
+    @clusters.map{|c|c.slr}.inject(true){|a,b| a && b}
   end
   
   def parent_id
@@ -28,19 +37,19 @@ class MergedCluster
     @clusters.map{|c| c.layer}.sort[0]
   end    
   #The subclusters
-  def children(session)
+  def children(session, searchpids)
     @clusters
   end
   
   # finding the deepChildren(clusters with size 1) in clusters
-  def deepChildren(session, dC = [])
-    clusters.map{|c| c.deepChildren(session)}.flatten
+  def deepChildren(session, searchpids, dC = [])
+    clusters.map{|c| c.deepChildren(session, searchpids)}.flatten
   end
   
-  def ranges(featureName, session)
+  def ranges(featureName, session, searchpids)
     @range ||= {}
     if @range[featureName].nil?
-      values = nodes(session).map{|n| n.send(featureName)}.sort
+      values = nodes(session, searchpids).map{|n| n.send(featureName)}.sort
       nodes_min = values[0]
       nodes_max = values[-1]
       @range[featureName] = [nodes_min, nodes_max]    
@@ -48,32 +57,41 @@ class MergedCluster
     @range[featureName]
   end
   
-  def nodes(session)
+  def indicator(featureName, session, searchpids)
+    indic = false
+    values = nodes(session, searchpids).map{|n| n.send(featureName)}
+    if values.index(false).nil? # they are all the same
+        indic = true
+    end
+    indic
+  end
+  
+  def nodes(session, searchpids)
     unless @nodes
       clustersquery = @clusters.map{|c| "cluster_id = #{c.id}"}.join(' or ')
       if clustersquery.blank?
         @nodes = []
       else
-        @nodes = $nodemodel.find(:all, :order => 'price ASC', :conditions => ["region = ? and (#{clustersquery}) #{session.filter && !Cluster.filterquery(session).blank? ?
-        ' and '+Cluster.filterquery(session) : ''}#{session.searchpids.blank? ? '' : ' and ('+session.searchpids+')'}",$region])
+        @nodes = $nodemodel.find(:all, :conditions => "(#{clustersquery}) #{session.filter && !Cluster.filterquery(session).blank? ?
+        ' and '+Cluster.filterquery(session) : ''}#{!session.filter || searchpids.blank? ? '' : ' and ('+searchpids+')'}")
       end
     end
     @nodes
   end
   
-  #The represetative product for this cluster
-  def representative(session)
+  #The representative product for this cluster
+  def representative(session, searchpids)
     unless @rep
-      node = nodes(session).first
+      node = nodes(session, searchpids).first
       @rep = $model.find(node.product_id) if node
     end
     @rep
   end 
   
-  def size(session)
+  def size(session, searchpids)
     unless @size
-      if session.filter || !session.searchpids.blank?
-        @size = nodes(session).length
+      if session.filter
+        @size = nodes(session, searchpids).length
       else
         @size = @clusters.map{|c|c.cluster_size}.sum
       end
@@ -82,25 +100,27 @@ class MergedCluster
   end
   
   #Description for each cluster
-  def description(session)
+  def description(session, searchpids)
     des = []
-    DbFeature.find_all_by_product_type_and_feature_type_and_region(session.product_type, 'Continuous',$region).each do |f|
+    $dbfeat.each do |f|
+      if (f.featureType == 'Continuous')
         low = f.low
         high = f.high  
-        clusterR = ranges(f.name, session)
+        clusterR = ranges(f.name, session, searchpids)
         return 'Empty' if clusterR[0].nil? || clusterR[1].nil?
         if (clusterR[1]<=low)
           des <<  $model::ContinuousFeaturesDescLow[f.name]
         elsif (clusterR[0]>=high)
           des <<  $model::ContinuousFeaturesDescHigh[f.name]
         end
-      end 
+      end
+    end 
       res = des.join(', ')
       res.blank? ? 'All Purpose' : res
   end
   
-  def isEmpty(session)
-    nodes(session).empty?
+  def isEmpty(session, searchpids)
+    nodes(session, searchpids).empty?
   end
   
   def clearCache
@@ -109,13 +129,14 @@ class MergedCluster
     @size = nil
     @rep = nil
     @range = nil
+    @utility = nil
   end
   
-  def utility(session)
-    if size(session) == 0
+  def utility(session, searchpids)
+    if size(session, searchpids) == 0
       @utility ||= 0
     else
-      @utility ||= @clusters.map{|c|c.utility(session)}.sum/size(session)
+      @utility ||= @clusters.map{|c|c.utility(session)}.sum/size(session, searchpids)
     end
   end
 end

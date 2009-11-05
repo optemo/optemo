@@ -5,20 +5,27 @@ div#fade {
 	left: 0;
 	width: 100%;
 	height: 5000px;
-	z-index: 1;
+	z-index: 3;
 	opacity: 0.5;
 	filter: alpha(opacity = 50);
-	display: none;
-	/*margin-left: -6px;
-	margin-top: 11px;*/}
-div#info {
-	background: white;
+	display: none;}
+#outsidecontainer {
 	position: absolute;
 	top: 20px;
+	left: 20px;
 	width: 800px;
-	height: 770px;
-	z-index: 3;
-	display: none;}
+	height: 800px;
+	border-top: solid 33px #d1dbf3;
+	background: white;
+	z-index: 4;
+	display: none;
+}
+div#info {
+	margin-top: -33px;
+	font-size: 0.9em;
+	z-index: 5;
+	padding: 0px 23px 0px 22px;
+	}
 div#loading {
 	top: 345px;
 	left: 447px;
@@ -34,10 +41,14 @@ div#loading {
 #loading div {
 	margin-top: -7px;
 }
-#close {
+.close {
 	position: absolute;
-	top: 3px;
-	right: 0px;
+	top: -22px;
+	right: 13px;
+}
+.poptitle {
+	margin: 8px 15px 25px;
+	font-weight: bold;
 }
 #showsavebutton {
 	position: absolute;

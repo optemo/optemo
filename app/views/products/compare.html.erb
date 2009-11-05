@@ -1,53 +1,53 @@
-<% self.title = "#{@allSearches.last.desc unless @allSearches.empty?} #{$model.urlname.capitalize}" %>
+<% self.title = "#{@s.desc} #{$model.urlname.capitalize}" %>
 <div id="leftbar">
-	Browsing <%= @s.result_count %> <%= $model.urlname.capitalize %>
-	<% if RAILS_ENV == 'development' %><br/>Session id: <%= session[:user_id] %> <% end %>
 	<!-- The Search box -->
-	<% form_tag("/search/find",{:id => 'search_form'}) do %>
-	  <%= @session.searchterm.blank? ? text_field_tag('search') : text_field_tag('search', @session.searchterm) %>
+	<div id='searchbox' class='leftboxes rounded_leftboxes rounded'>
+	<div class="tl"></div><div class="tr"></div>
+	<h2><%=t "products.compare.search" %></h2>
+	<% form_tag("/products/find",{:id => 'search_form'}) do %>
+	  <%= @s.searchterm.blank? ? text_field_tag('search') : text_field_tag('search', @s.searchterm) %>
 	  <%= submit_tag 'Search', {:id => 'submit_button'} %>
-	  <%= @session.searchterm ? link_to('Clear Search', "/search/delete/", :id => 'clearsearch') : '' %>
 	<% end %>
-	
+	<div class="bl"></div><div class="br"></div>
+	</div>
 	<!-- The Saved Items box -->
-	<div id="savebar">
-		<h2>Saved Items</h2>
+	<div id="savebar" class='leftboxes gainlayout rounded_leftboxes rounded'>
+		<div class="tl"><!-- --></div><div class="tr"><!-- --></div>
+		<h2> <%=t 'products.compare.saved' %> </h2>
+		<div class="savesome"> <%=t 'products.compare.savesome'%> </div>
 		<div id="savebar_content">
-		<div id="already_added_msg" style="display:none">You already added that product!</div>
-		<p id="deleteme"
-			<% if @picked_products.empty? %> style="display:block" 
-			<% else %> style="display:none" <% end %>
-			> Save some products to add them to this list</p>
+		<div id="already_added_msg" class="savedmsg"> <%=t 'products.compare.alreadyadded' %> </div>
+		<div id="too_many_saved" class="savedmsg"> <%=t 'products.compare.toomanysaved' %> </div>
+		<div id="savedproducts">
 		<% if (@picked_products.empty? == false) %>
 		  <%= render :partial => 'product', :collection => @picked_products%>
 		<% end %>
 		</div>
+		</div>
 		<!-- Hide if 0 products, show if 1/more. -->
-		<div style = "clear: both;"> <a id="compare_button" 
-			<%if @picked_products.empty? %> style="display:none" 
-			<% else %> style="display:block" <% end %> 
-		 href='/compare'>Compare them!</a></div>
+		<%= link_to image_tag("compare-button-yellow#{fr?}.gif"), "", :id => "compare_button", :style => "display:#{@picked_products.empty? ? "none" : "block"};" %>
+		<div class="bl"><!-- --></div><div class="br"><!-- --></div>
 	</div>
 
-<!-- The Filters section -->
-<div id="filterbar">
-	<h2>Browse</h2>
-	<% form_tag("/search/filter",{:id => 'filter_form'}) do %>
-		<!-- Filter partial to draw the filter controls -->
-	  	<%= render :partial => 'filter' %>
-	<% end %>
-</div>
+	<!-- The Filters section -->
+	<div id="filterbar" class="leftboxes rounded_leftboxes rounded">
+		<div class="tl"></div><div class="tr"></div>
+		<h2><%=t 'products.compare.filters' %>
+			<div class="filtersdesc"><%=t 'products.compare.filtersdesc' %></div>
+		</h2>
+		<div id="ajaxfilter">
+			<%= render :partial => 'filter' %>
+		</div>
+		<div class="reset">
+		<%= link_to image_tag("reset#{fr?}.gif"), "/#{$model.urlname}/", :class => "staticajax" %>
+		</div>
+		<div class="bl"></div><div class="br"></div>
+	</div>
+	</div>
 
-<!-- Powered By Optemo link (?)  & Request a feature -->
-<!-- <br>powered by <br><%= link_to image_tag('optemo.jpg'), 'http://www.optemo.com', {:title => 'Optemo'} %> <br>
-<br> -->
-
-<p><i><%= link_to "Request a Feature", "#", :id => "requestafeature" %></i></p>
-</div>
-
-<div class="main">
-	<div class='welcome_msg'>Find, compare, and buy the right printer for you! Explore groups of similar products by clicking on the links in the boxes or narrow your search by using the filters on your left. Can't decide? Save a few printers and compare!</div><br>
-	<div style="text-align: center;"><h1><%= h1title %></h1></div>
+<div id="main">
+<!--	<div class='welcome_msg'>Find, compare, and buy the right printer for you! Explore groups of similar products by clicking on the links in the boxes or narrow your search by using the filters on your left. Can't decide? Save a few printers and compare!</div><br>
+	<div style="text-align: center;"><h1>My title</h1></div>
 	
 	
 	<% if flash[:error] %>
@@ -57,41 +57,7 @@
 	<span class="notice"><%= flash[:notice] %></span>
 	<% end %>
 	
-	<div class='backlink'>	
-		<% unless @allSearches.empty? %>
-	    	<%= link_to "All #{$model.urlname.capitalize}", "/#{$model.urlname}/homepage" %> 
-			<%if @allSearches[0].layer==1%>
-					<%for l in 1..(@allSearches.size - 1)%>
-		 	  		<!-- If s>1 then print << -->
-	          			<%if l<@allSearches.size - 1%>
-							&lt;&lt;<%= link_to "#{@allSearches[l].desc}", "/#{$model.urlname}/compare/#{@allSearches[l].to_s}"%>
-			 			<%else%>
-							&lt;&lt;<%= "#{@allSearches[l].desc}"%>
-			 			<%end%> 
-		   			<%end %>
-			<%end%>
-		<%end%>
-	</div>
-	
-	<% for i in 0..@s.cluster_count-1 %>
-	  <% if i%3 == 0 %>
-		<div class="rowdiv">
-		<% open = true %>
-	  <% end %>
-	  <!-- Navbox partial to draw boxes -->
-	  <%= render :partial => 'navbox', :locals => {:i => i, :cluster => @s.clusters[i]} %>
-	  <% if i%3 == 2 %>
-		</div>
-		<% open = false %>
-	  <% end %>
-	<% end %>
-	<%= '</div>' if open %>
-	<!--<div class="easynav" style="display:none;">
-	  <div class="buttons"><%= link_to 'Higher Resolution' %><%= link_to 'Lower Price' %><%= link_to 'Bigger Display Size' %><%= link_to 'Farther Zoom' %></div>
-	  <div class="cont">
-		<%= link_to 'Show More products' %>
-	  </div>
-	</div>-->
-	
-	<div id="loading">&nbsp;Loading<div id="myspinner" style="float: left;"></div></div>
+-->
+	<%= render :partial => 'discoverybrowser' %>
 </div>
+<div id="loading">&nbsp;Loading<div id="myspinner" style="float: left;"></div></div>

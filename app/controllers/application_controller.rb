@@ -21,10 +21,21 @@ class ApplicationController < ActionController::Base
   # filter_parameter_logging :password
   
   before_filter :update_user 
-  
-  @@session = nil
+  before_filter :set_locale
   
   private
+  
+  def set_locale
+    I18n.locale = extract_locale
+  end
+  
+  # Get locale code from request subdomain (like http://it.application.local:3000)
+  # You have to put something like:
+  #   127.0.0.1 gr.application.local
+  # in your /etc/hosts file to try this out locally
+  def extract_locale
+    request.subdomains.first == 'fr' ? 'fr' : 'en'
+  end
   
   def call_rake(task, options = {})
     options[:rails_env] ||= Rails.env
@@ -38,8 +49,8 @@ class ApplicationController < ActionController::Base
     $clustermodel = ((session[:productType] || $DefaultProduct)+'Cluster').constantize
     $featuremodel = ((session[:productType] || $DefaultProduct)+'Features').constantize
     $region = request.url.match(/\.ca/) ? "ca" : "us"
-   
-    if session[:user_id].blank? || !Session.exists?(session[:user_id])
+    mysession = Session.find_by_id(session[:user_id])
+    if mysession.nil?
       mysession = Session.new
       mysession.ip = request.remote_ip
       mysession.save
@@ -50,9 +61,19 @@ class ApplicationController < ActionController::Base
         myProduct.save
       end
       session[:user_id] = mysession.id
-      @@session = mysession
+      @@session = mysession      
     else
-      @@session = Session.find(session[:user_id])
+      @@session = mysession
+    end
+    @@keywordsearch = nil
+    @@keyword = nil
+    if @@session.filter && @@session.searches.last
+      @@keywordsearch = @@session.searches.last.searchpids 
+      @@keyword = @@session.searches.last.searchterm
+    end
+    $dbfeat = {}
+    if $dbfeat.empty?   
+      DbFeature.find_all_by_product_type_and_region($model.name,$region).each {|f| $dbfeat[f.name] = f}
     end
   end
   
@@ -70,15 +91,15 @@ class ApplicationController < ActionController::Base
   end
   
   def initialClusters
-    mysession = Session.find(session[:user_id])
-    mysession.clearFilters
-
+    @@session.clearFilters
+    #Remove search terms
+    @@keywordsearch = nil
+    @@keyword = nil
     if $model == Printer && $region == "us" && s = Search.find_by_session_id(0)
-      path = 0.upto(s.cluster_count-1).map{|i| s.send(:"c#{i}")}.join('-')
+      0.upto(s.cluster_count-1).map{|i| s.send(:"c#{i}")}
     else
       current_version = $clustermodel.find_last_by_region($region).version
-      path = $clustermodel.find_all_by_parent_id_and_version_and_region(0, current_version, $region, :order => 'cluster_size DESC').map{|c| c.id}.join('-')
+      $clustermodel.find_all_by_parent_id_and_version_and_region(0, current_version, $region).map{|c| c.id}
     end
-    "/#{$model.urlname}/compare/"+path
   end
 end

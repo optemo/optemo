@@ -1,32 +1,4 @@
-<% if !@plain %><div id="outside" class="gainlayout">
-	<% self.title = @product.smlTitle %>
-	<div id="showleftbar">
-		<div id="showbacklink">
-		<%= link_to image_tag('backarrow.png'), landing? ? '/products/homepage' : 'javascript:history.back()'%>
-		</div>
-			<% if landing? %>
-				<%= link_to "Browse more<br> #{$model.urlname}", "/products/homepage" %>
-			<% else %>
-  				<%= link_to "Go back<br> to navigation", 'javascript:history.back()'%>
-			<% end %>
-		<div style="height: 20px;"></div>
-		<%= link_to "Request a Feature", "#", :id => "requestafeature" %>
-	</div>
-	<div id="container" class="gainlayout">
-<% else %>
-	<div class="toplinks">
-		<%= link_to 'Open as full page', :action => 'show', :id => @product%>
-		<% if @showSaveButton == true %>
-			<%= link_to "Save #{$model.name}", "javascript:saveit(#{@product.id});disableit(#{@product.id});", :class => 'showsave' %>
-		<% end %>
-		
-	</div>
-	<% if @showSaveButton == true %>
-		<%= link_to image_tag('save.png'), "javascript:saveit(#{@product.id});disableit(#{@product.id});", :id => 'showsavebutton' %>
-	<% end %>
-	<%= link_to image_tag('close.gif'), "javascript:fadein();", :id => 'close' %>
-	<div id="container" class="gainlayout">
-<% end %>
+<div class="poptitle"><%=t 'products.show.title'%></div>
 	<h1><%= URI.decode(@product.title) %></h1>
 	<div id="image">
 		<% unless @product.imagelurl.blank? %>
@@ -42,14 +14,12 @@
 			<% f = @product.send(f_name) %>
 			<% if !f.nil? %>
 				<li>
-					<% if $model::ContinuousFeatures.index($model.SFtoCFdictionary(f_name)) != nil %>
-						<% if @plain && (request.referer.nil? || request.referer.index($model.urlname).nil?) %> <!-- that is, if popup was not called from main navigation page, then show "better" links -->
-						<div class="betterlinkdiv">
-							<%= link_to "better", "javascript:findBetter('#{@product.id}', '#{$model.SFtoCFdictionary(f_name)}')", :"data-id" => f_name, :class => 'betterlink' %>
-						</div>
-						<% end %>
+					<% if @plain && (request.referer.nil? || request.referer.index($model.urlname).nil?) %> <!-- that is, if popup was not called from main navigation page, then show "better" links -->
+					<div class="betterlinkdiv">
+						<%= link_to "better", "javascript:findBetter('#{@product.id}', '#{f_name}')", :"data-id" => f_name, :class => 'betterlink' %>
+					</div>
 					<% end %>
-				 	<span class="detail_label"><%= $model::ShowFeaturesDisp[i] %>: </span><%= @product.display f_name %>
+				 	<span class="detail_label"><%= $model::ShowFeatures[i] %>: </span><%= @product.display f_name %>
 				</li>
 			<% end %>
 		<% end %>
