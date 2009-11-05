@@ -43,12 +43,6 @@ function fadein()
 	$('#outsidecontainer').css('display', 'none');	
 }
 
-function track(goal, desc){
-	// Tracking	
-	//try { piwikTracker.trackGoal(goal); } catch( err ) {}	
-	trackPage("goals/" + desc);
-}
-
 function disableit(pid)
 {
 	name = pid.toString() + "_save";
@@ -112,7 +106,7 @@ function spinner(holderid, R1, R2, count, stroke_width, colour) {
 				if(null != document.getElementById('c'+id)){
 					$("#already_added_msg").attr("style","display:block");
 				}else{
-					track(6, 'save');
+					trackPage('goals/save');
 					// Create an empty slot for product
 					$('#savedproducts').append("<div class='saveditem' id='c" + id + "'> </div>");
 					// Update just the savebar_content div after doing get on /saveds/create/[id here].
@@ -205,7 +199,7 @@ function closeDesc(id){
 }
 function submitCategorical(){
 	ajaxcall("/products/filter", $("#filter_form").serialize());
-	track(2, 'filter/autosubmit');
+	trackPage('goals/filter/autosubmit');
 }
 
 function flashError(str)
@@ -222,7 +216,6 @@ function flashError(str)
 	 	{
 	  		errtype = "filters";
 	  	}
-	//piwikTracker.trackGoal(7);
 	trackPage('error/'+errtype);
 	hidespinner();
 	fadeout(null,str,600,100);
@@ -230,8 +223,7 @@ function flashError(str)
 function submitsearch() {
 	var searchinfo = { 'search_text' : $("#search_form input#search").attr('value'), 'optemo_session': parseInt($('#seshid').attr('session-id')) };
 	piwikTracker2.setCustomData(searchinfo);
-//	piwikTracker.trackLink('search', 'search', searchinfo);
-	track(5, 'search');
+	trackPage('goals/search');
 	piwikTracker2.setCustomData({});
 	ajaxcall("/products/find?ajax=true", $("#search_form").serialize(), true);
 	return false;
@@ -285,6 +277,7 @@ function trackPage(str){
 		piwikTracker.trackPageView();
 		piwikTracker2.setDocumentTitle(str);
 		piwikTracker2.trackPageView();
+		piwikTracker2.setDocumentTitle('');
 	} catch( err ) {}
 }
 
@@ -309,7 +302,7 @@ function DBinit(context) {
 	//Fadeout labels
 	$(".easylink, .productimg",context).click(function(){
 		fadeout('/products/show/'+$(this).attr('data-id')+'?plain=true',null, 600, 650);/*Star-h:700*/
-		trackPage('/products/show/'+$(this).attr('data-id')); 
+		trackPage('products/show/'+$(this).attr('data-id')); 
 		//trackPage($(this).attr('href'));
 		return false;
 	});
@@ -388,7 +381,7 @@ function DBinit(context) {
 		morestuff = getAllShownProductIds(); 
 		linkinfo['product_ignored'] = morestuff;
 		piwikTracker2.setCustomData(linkinfo);
-		track(1, 'browse');
+		trackPage('goals/browse');
 		piwikTracker2.setCustomData({});
 		return false;
 	});
@@ -412,11 +405,11 @@ function DBinit(context) {
 	});
 	
 	$('#addtocartbutton', context).click(function(){ 
-		track(4, 'addtocart');
+		trackPage('goals/addtocart');
 	});
 	
 	$('#yesdecisionsubmit', context).click(function(){
-		track(8, 'survey/yes');
+		trackPage('survey/yes');
 		fadeout('/survey/index', null, 600, 835);
 		return false;
 	});
@@ -428,7 +421,7 @@ function DBinit(context) {
 	});
 	
 	$('#surveysubmit', context).click(function(){
-		track(3,'survey/submit');
+		trackPage('survey/submit');
 		$('#feedback').css('display','none');
 		fadeout('/survey/submit?' + $("#surveyform").serialize(), null, 300, 70);
 		return false;
@@ -545,7 +538,7 @@ function DBinit(context) {
 				}
 				var sliderinfo = {'slider_min' : parseFloat(ui.values[0]), 'slider_max' : parseFloat(ui.values[1]), 'slider_name' : $(this).attr('data-label'), 'optemo_session': parseInt($('#seshid').attr('session-id')), 'filter_type' : 1 };
 				piwikTracker2.setCustomData(sliderinfo);
-				track(2, 'filter/sliders');
+				trackPage('goals/filter/sliders');
 				piwikTracker2.setCustomData({});
 				ajaxcall("/products/filter", $("#filter_form").serialize());
 			}
@@ -560,11 +553,6 @@ function DBinit(context) {
 		histogram($(this).siblings('.hist')[0]);
 	});
 }
-
-	$(".simlinks").click(function() { 
-		// Tracking
-		track(12)
-	});
 	
 	$(".usecase").click(function() { 
 		name = $(this).attr('data-name');
