@@ -91,19 +91,34 @@
 
 <script type="text/javascript" src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
 <script type="text/javascript"> FB.init('<%= $AppKey %>',"/xd_receiver.html");</script>
-<!-- Piwik -->
+
+<!-- Piwik (original) -->
+<script type="text/javascript">
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://pj.laserprinterhub.com/" : "http://pj.laserprinterhub.com/");
+document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script type="text/javascript">
+try {
+var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 1);
+piwikTracker.trackPageView();
+piwikTracker.enableLinkTracking();
+} catch( err ) {}
+</script><noscript><p><img src="http://pj.laserprinterhub.com/piwik.php?idsite=1" style="border:0" alt=""/></p></noscript>
+<!-- End Piwik Tag -->
+
+<!-- Piwik (preferences)-->
 <script type="text/javascript">
 var pkBaseURL = (("https:" == document.location.protocol) ? "https://p.laserprinterhub.com/" : "http://p.laserprinterhub.com/");
 document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
 </script><script type="text/javascript">
 try {
-var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 3);
-piwikTracker.trackPageView();
-piwikTracker.enableLinkTracking();
+var piwikTracker2 = Piwik.getTracker(pkBaseURL + "piwik.php", 3);
+piwikTracker2.trackPageView();
+piwikTracker2.enableLinkTracking();
 } catch( err ) {}
 </script><noscript><p><img src="http://p.laserprinterhub.com/piwik.php?idsite=3" style="border:0" alt=""/></p></noscript>
 <!-- End Piwik Tag -->
-<!-- No Piwik Tracking -->
+
+<!--Uncomment for no Piwik Tracking -->
 <!-- <script type="text/javascript">
 	var piwikTracker2 = {
 		trackPageView: function() {},
@@ -113,6 +128,7 @@ piwikTracker.enableLinkTracking();
 	var piwikTracker = piwikTracker2;
 </script>
 -->
+<!-- End no-piwik tracking -->
 
 </body>
 </html>
