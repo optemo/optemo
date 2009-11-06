@@ -61,7 +61,7 @@ int main(int argc, char** argv){
 			
 			
 			
-				cout<<"after"<<endl;
+			
 		
  	delete stmt;
  	delete con;
@@ -78,6 +78,6 @@ int main(int argc, char** argv){
 		return EXIT_FAILURE;
 	}
 
-
-return 1; //EXIT_SUCCESS;
+	cout<<"after"<<endl;
+	return 0 ; //1; //EXIT_SUCCESS;
 }
