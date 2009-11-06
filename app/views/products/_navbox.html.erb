@@ -32,7 +32,7 @@
  		  :id => "sim#{i}", :class => 'simlinks', :"data-id" => "#{cluster.representative(@session,@s.searchpids).id}") %>
     		</div>
 		<% else %>
-			<div class='compare'><%= link_to image_tag("compare-button-yellow#{fr?}.gif"), "javascript:saveit(#{cluster.representative(@session,@s.searchpids).id});", {:class => 'save', :itemId => "#{cluster.representative(@session,@s.searchpids).id}" } %>
+			<div class='compare'><%= link_to image_tag("compare#{fr?}.gif"), "javascript:saveit(#{cluster.representative(@session,@s.searchpids).id});", {:class => 'save', :itemId => "#{cluster.representative(@session,@s.searchpids).id}" } %>
 			</div>
 		<% end %>
 	</div>
