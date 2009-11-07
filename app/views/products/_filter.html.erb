@@ -1,8 +1,12 @@
 	<% form_tag("",{:id => 'filter_form'}) do %>
 <% $model::CategoricalFeaturesF.each do |feat| %>
 	<div class='feature<%= " extra" if $model::ExtraFeature[feat] %>' <%= "style='display:none;'" if $model::ExtraFeature[feat] && !@session.expert %>>
-		<div class='label'>
+		<!--div class='label'>
 			<%=t('products.' + feat)%>
+		</div-->
+		<div class='label'>
+			<%= render :partial => 'desc', :locals => {:feat => feat} %>
+			<%= link_to t('products.' + feat).tr(' ',''), "#" %>			
 		</div>
 
 		<% unless (@session.features.brand.nil? || @session.features.brand.empty?) %>
@@ -32,8 +36,8 @@
 	<div class='feature<%= " extra" if $model::ExtraFeature[feat] %>' <%= "style='display:none;'" if $model::ExtraFeature[feat] && !@session.expert %>>
 		<div class='label'>
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
+			<%= check_box('myfilter', feat, {:checked => @session.features.send(feat.intern) ? 'checked' : false, :class => 'autosubmitbool'})%>
 			<%= link_to t('products.' + feat).tr(' ',''), "#" %>
-			<%= check_box('myfilter', feat, {:checked => @session.features.send(feat.intern) ? 'checked' : false, :class => 'autosubmitbool'})%>			
 		</div>
 	</div>
 <% end %>

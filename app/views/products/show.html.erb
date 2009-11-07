@@ -19,7 +19,7 @@
 						<%= link_to "better", "javascript:findBetter('#{@product.id}', '#{f_name}')", :"data-id" => f_name, :class => 'betterlink' %>
 					</div>
 					<% end %>
-				 	<span class="detail_label"><%= $model::ShowFeatures[i] %>: </span><%= @product.display f_name %>
+				 	<span class="detail_label"><%=t 'products.'+ $model::ShowFeatures[i] %>: </span><%= @product.display f_name %>
 				</li>
 			<% end %>
 		<% end %>

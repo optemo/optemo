@@ -1,14 +1,7 @@
 <div id="box<%= i %>" class="navigator_box <%= group ? "nbgroup" : "nbsingle" %>" <%= "style='margin-right:0px'" if i%3 == 2 %>>
 	<div class="topbar">
 		<div class='title'>
-			<% if group %>
-				<%= prodDesc(group, i) %>
-			<% else %>
-				<%=h repDesc(cluster) %>
-				<div class="smalltitle">
-					<%= prodDesc(group, i) %>
-				</div>
-			<% end %>
+			<%= prodDesc(group, i) %>
 		</div>
 		<% if !cluster.representative(@session,@s.searchpids).imagemwidth.blank? %>
 

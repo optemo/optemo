@@ -1,42 +1,9 @@
-<div class="cell">
-	<td style="width:auto;min-width:235px;">
-		<div align="left" style="float:left">
-			<% num = numberOfStars(@utility[i]) %>
-			<% for j in 0..num-1 %>
-				<%= image_tag("fullstar.gif", :width => 20, :height => 20, :onClick => "") %>
-			<% end %>
-			<% if num%1 != 0 %>
-				<%= image_tag("halfstar.gif", :width => 20, :height => 20, :onClick => "") %>
-			<% end %>
-		</div>
-		<div align="right">
-			<!-- If camera is saved then display shaded saveit button -->
-			<% if @alreadySaved[thumbnails.id] != true %>
-				<img src="/images/save.png" onClick="saveit(<%=thumbnails.id%>);disableit(<%=thumbnails.id%>);" class="save" name="<%=thumbnails.id.to_s + '_save'%>">
-			<% else %>
-				<img src="/images/save_disabled.png" class="savedisabled">
-			<% end %>
-			<%= link_to image_tag('close.png'), "javascript:removeFromComparison(#{thumbnails.id})", :"data-name" => thumbnails.id, :class => 'deleteXComp', :width => '13', :style => "position:relative;top:-3px;" %>
-		</div>
-			<div class="thumbnaildetails">
-			 	<div style="font-size:1.1em; color:gray;"> <%= finalDisplay(thumbnails, "brand") %> </div> 
-				<div style="font-size: 0.9em; color:gray;"> <%= finalDisplay(thumbnails, "model") %> </div>
-				<br><br>
-				<div> <%= finalDisplay(thumbnails, "price") %> </div>
-				<br>
-			</div>
-		<!-- <% if total > 1 %> -->
-			<!-- <div class="comparisonfeature"> -->
-			<!-- <br> -->
-				<!-- <%= displayComparisonFeature(i) %> -->
-			<!-- ></div> -->
-		<!-- <% end %> -->
+<div class="thumbnailcell">
 		<div class="first">	
- 			<%= image_tag(thumbnails.imagemurl, :width => thumbnails.imagemw, :height => thumbnails.imagemh, :"data-id" => thumbnails.id, :class => 'productimg', :style => "cursor: pointer;") %>
+ 			<%= image_tag(thumbnails.imagemurl, :width => thumbnails.imagemw, :height => thumbnails.imagemh, :onClick => "fadeout('/products/show/' + #{thumbnails.id}+'?plain=true');", :style => "cursor: pointer;") %>
  		</div>
-	<div align="center" style="font-size:0.9em; color:gray;">
-	(<%= @search.clusters[i].description(@session) %>)
+	<div class="thumbnaillabel">
+   	<%= finalDisplay(thumbnails, "brand") %> <%= finalDisplay(thumbnails, "model") %>
+	<div class="thumbnaildetails">	<%= finalDisplay(thumbnails, "price") %> </div>
 	</div>
-
-	</td>
 </div>
