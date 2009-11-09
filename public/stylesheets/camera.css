@@ -296,7 +296,7 @@ div.smalldesc {
 #feedback {
 	position:fixed; 
 	right: 0px; 
-	top: 300px;
+	top: 250px;
 	z-index:2;
 	cursor: pointer;
 }
