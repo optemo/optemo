@@ -1,4 +1,10 @@
+<% if @plain %>
 <div class="poptitle"><%=t 'products.show.title'%></div>
+<% else %>
+<% self.title = "#{@product.title}" %>
+<div class="content">
+<a href="/" id="browseother">Browse Other Printers</a>
+<% end %>
 	<h1><%= URI.decode(@product.title) %></h1>
 	<div id="image">
 		<% unless @product.imagelurl.blank? %>

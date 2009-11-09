@@ -615,7 +615,7 @@ $(document).ready(function() {
 	//Static feedback box
 	$('#feedback').click(function(){
 		trackPage('survey/feedback');
-		fadeout('/survey/index', null, 600, 835);
+		fadeout('/survey/index', null, 600, 300);
 		return false;
 	});
 	

@@ -1,4 +1,3 @@
-require 'caching'
 class MergedCluster
   include CachingMemcached
   attr_reader :clusters

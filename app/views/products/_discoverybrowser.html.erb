@@ -5,10 +5,9 @@
 	<div id="navigator_bar" class="rounded_nav rounded">
 		<div class="tl"></div><div class="tr"></div>
 		<div style="float: left;">
-			<%= link_to "< "+t('products.compare.back'), "/#{$model.urlname}/back", :class => "ajaxlink blacklink" , :id => 'backlink' %>
+			<%= link_to "< "+t('products.compare.back'), "/#{$model.urlname}/back", :class => "ajaxlink blacklink" , :id => 'backlink' %> | <%= link_to "Start Over >", "/#{$model.urlname}/", :class => "ajaxlink blacklink" , :id => 'allcamslink' %>
 		</div>
 	    <%= navtitle %>
-		<%= link_to t('products.compare.all')+" >", "/#{$model.urlname}/", :class => "ajaxlink smalllink" , :id => 'allcamslink' %>
 		<div class="bl"></div><div class="br"></div>
 	</div>
 	

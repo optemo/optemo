@@ -1,4 +1,3 @@
-require 'product'
 class Camera < ActiveRecord::Base
   include ProductProperties
   has_many :camera_nodes

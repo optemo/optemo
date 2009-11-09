@@ -71,7 +71,7 @@ module ProductProperties
   end
   
   def tinyTitle
-    [brand,model.split(' ')[0]].join(' ')
+    [brand.gsub("Hewlett-Packard","HP"),model.split(' ')[0]].join(' ')
   end
   
   def descurl
