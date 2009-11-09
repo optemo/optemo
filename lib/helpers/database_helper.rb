@@ -180,7 +180,10 @@ module DatabaseHelper
     matching_ro = RetailerOffering.find(:all, :conditions => \
       "product_id LIKE #{p.id} and product_type LIKE '#{$model.name}' and region LIKE '#{region}'").\
       reject{ |x| !x.stock or x.priceint.nil? }
-    return if matching_ro.empty?
+    if matching_ro.empty?
+      fill_in "instock#{$region_suffixes[region]}", false, p
+      return
+    end
     
     lowest = matching_ro.sort{ |x,y|
       x.priceint <=> y.priceint

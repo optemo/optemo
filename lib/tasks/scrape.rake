@@ -61,23 +61,34 @@ namespace :printers do
   
   task :validate_amazon => [:amazon_init, :validate_printers]
   
-  task :scrape => [:scrape_new, :match_to_products, :validate_printers]
+  # The 2 things you can do, in terms of subtasks: scrape and update
+  task :scrape => [:scrape_new, :match_to_products, :update_bestoffers, :validate_printers]
+  task :update => [:update_prices, :scrape_new, :match_to_products, :update_bestoffers, :validate_printers]
   
-  task :scrape_amazon => [:amazon_init, :scrape]
+  # Scraping and updating by website...
   
-  task :scrape_newegg => [:newegg_init, :scrape]
+  desc 'Update Newegg printers'
+  task :update_newegg => [:newegg_init, :update]
   
-  task :scrape_tiger => [:tiger_init, :scrape]
+  desc 'Update TigerDirect printers'
+  task :update_tiger => [:tiger_init, :update]
   
-  task :update => [:update_prices, :scrape_new, :match_to_products, :validate_printers]
-  
-  task :update_prices_newegg => [:newegg_init, :update]
-  
-  task :update_prices_tiger => [:tiger_init, :update]
-  
+  desc 'Update Amazon and AmazonMarketplace printers'
   task :update_amazon => [:amazon_init, :update, :amazon_mkt_init, :update]
   
+  desc 'Scrape all data from Amazon (warning:extra long!)'
+  task :scrape_amazon => [:amazon_init, :scrape]
+  
+  desc 'Scrape all data from Newegg'
+  task :scrape_newegg => [:newegg_init, :scrape]
+  
+  desc 'Scrape all data from TigerDirect'
+  task :scrape_tiger => [:tiger_init, :scrape]
+    
+  desc 'Scrape all data from Amazon Marketplace (warning: extra long!)'
   task :scrape_amazon_mkt => [:amazon_mkt_init, :scrape]
+  
+  # The subtasks...
   
   task :vote => :printer_init do 
     #include CleaningHelper
@@ -123,7 +134,7 @@ namespace :printers do
         newatts = rescrape_prices offering.local_id, offering.region
         log "[#{Time.now}] Updating #{offering.pricestr} to #{newatts['pricestr']}"
         update_offering newatts, offering if offering
-        update_bestoffer($model.find(offering.product_id)) if offering.product_id
+        #update_bestoffer($model.find(offering.product_id)) if offering.product_id
       rescue Exception => e
         report_error "with RetailerOffering #{offering.id}:" + e.message.to_s + e.type.to_s
         snore(20*60) # sleep for 20 min 
@@ -207,6 +218,12 @@ namespace :printers do
     assert_within_range my_offerings, 'priceint', 100, 10_000_00  
     
     @logfile.close
+  end
+  
+  task :update_bestoffers do 
+    $model.all.each do |p|
+      update_bestoffer p
+    end
   end
 
   task :printer_init => :init do
