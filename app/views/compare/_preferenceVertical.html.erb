@@ -1,6 +1,0 @@
-<% session[:productType].constantize::ContinuousFeatures.each_index do |i| %>
-	<td>
-	<%= render :partial => 'preferenceSliderVertical', 
-	:locals => {:val => session[:productType].constantize::ContinuousFeatures[i]} %>
-	</td>
-<% end %>

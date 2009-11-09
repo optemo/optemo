@@ -237,9 +237,9 @@ function ajaxcall(myurl,mydata,isSearch) {
 		url: myurl,
 		success: ajaxhandler,
 		error: function(){
-			if (language=="fr")
-				flashError('<div class="poptitle">&nbsp;</div><p class="error">Désolé! Une erreur s’est produite sur le serveur.</p><p>Vous pouvez <a href="" class="ajaxlink popuplink">réinitialiser</a> l’outil et constater si le problème persiste.</p>');
-			else
+			//if (language=="fr")
+			//	flashError('<div class="poptitle">&nbsp;</div><p class="error">Désolé! Une erreur s’est produite sur le serveur.</p><p>Vous pouvez <a href="" class="ajaxlink popuplink">réinitialiser</a> l’outil et constater si le problème persiste.</p>');
+			//else
 				flashError('<div class="poptitle">&nbsp;</div><p class="error">Sorry! An error has occured on the server.</p><p>You can <a href="" class="ajaxlink popuplink">reset</a> the tool and see if the problem is resolved.</p>');
 			}
 	});
@@ -301,14 +301,9 @@ function DBinit(context) {
 	
 	//Fadeout labels
 	$(".easylink, .productimg",context).click(function(){
-		fadeout('/products/show/'+$(this).attr('data-id')+'?plain=true',null, 600, 650);/*Star-h:700*/
+		fadeout('/products/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
 		trackPage('products/show/'+$(this).attr('data-id')); 
 		//trackPage($(this).attr('href'));
-		return false;
-	});
-	
-	$('.showsurveyoption',context).each(function() {
-		fadeout('/survey/decision', null, 500, 180);
 		return false;
 	});
 	

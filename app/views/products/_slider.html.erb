@@ -2,11 +2,7 @@
 
 <div class='label space'>
 	<%= render :partial => 'desc', :locals => {:feat => val} %>
-	<% if val == "price" %>
-		<%= t('products.price') %>
-	<% else %>
-		<%= link_to t('products.'+val), "#" %>
-	<% end %>
+	<%= link_to t('products.'+val), "#" %>
 	<span class="unitdisp">(<%= t('products.' + val+"unit") %>)</span>
 </div>
 <% overallmin = dbmin(i2f, val) %>

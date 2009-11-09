@@ -1415,6 +1415,8 @@ ActiveRecord::Schema.define(:version => 20091105005234) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "desc"
+    t.text     "searchpids"
+    t.string   "searchterm"
   end
 
   create_table "sessions", :force => true do |t|
@@ -1425,8 +1427,6 @@ ActiveRecord::Schema.define(:version => 20091105005234) do
     t.string   "product_type"
     t.boolean  "filter"
     t.string   "region",       :default => "us"
-    t.text     "searchpids"
-    t.string   "searchterm"
   end
 
   create_table "surveys", :force => true do |t|

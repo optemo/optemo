@@ -82,6 +82,10 @@ module ProductProperties
     data = self.send(attr)
     if data.nil?
       return 'Unknown'
+    elsif data == false
+      return "None"
+    elsif data == true
+      return "Yes"
     else
       ending = case attr
         when /zoom/: ' X'
