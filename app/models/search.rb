@@ -1,5 +1,3 @@
-require 'merged_cluster'
-require 'caching'
 class Search < ActiveRecord::Base
   include CachingMemcached
   belongs_to :session

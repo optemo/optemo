@@ -1,4 +1,3 @@
-require 'caching'
 module Cluster
   include CachingMemcached
   #The subclusters

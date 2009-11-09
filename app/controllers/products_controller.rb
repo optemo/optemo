@@ -1,7 +1,6 @@
 class ProductsController < ApplicationController
   layout "optemo"
   require 'open-uri'
-  require "caching"
   include CachingMemcached
   
   def index

@@ -50,27 +50,6 @@ div#loading {
 	margin: 8px 15px 25px;
 	font-weight: bold;
 }
-#showsavebutton {
-	position: absolute;
-	top: 0px;
-	left: 751px;
-}
-.toplinks {
-	font-size: 0.9em;
-	float: right;
-	margin: 3px 50px 0px 0px;
-}
-div #container {
-	width: 790px;
-	padding: 0px 5px;
-	background-color: white;
-	float: left;
-}
-div #outside {
-	background-color: #ffff99;
-	margin: 0px;
-	padding: 0px;
-}
 #image {
 	text-align: center;
 	width: 360px;
@@ -79,7 +58,6 @@ div #outside {
 #info h1 {
 	font-size: 1.2em;
 }
-
 #features {
 	width: 390px;
 	float: left;
@@ -124,19 +102,13 @@ div .right{
 div .spacer {
 	clear: both;
 }
-#full_link{
-	clear: both;
-}
 .review {
 	font-size: 0.8em;
 }
-#showleftbar {
-	float: left;
-	width: 149px;
-}
-#showbacklink {
-	float:left;
-	margin-right: 3px;
+#browseother {
+	margin-top: 5px;
+	font-size: 0.85em;
+	text-decoration: underline;
 }
 .cartridgeinfo {
 	margin: 0px 0px 0px 52px;
