@@ -524,8 +524,36 @@ namespace :scrape_extra do
     puts failed * "\n"
   end
   
+  desc 'Get a pic for every printer'
+  task :download_pix => :pic_init do
+    
+    failed = []
+    todo = $model.find_all_by_imagesurl(nil)
+    
+    todo.each do |product|
+      pic_urls = $scraped_model.find_all_by_product_id(product.id).collect{|x| x.imageurl}.reject{|x| x.nil?}
+      if pic_urls.length == 0
+        # TODO log it
+        failed << product.id
+      else
+        # download it
+        download_img pic_urls.first, 'images/printers', "#{product.id}.jpg"
+        # resize it
+        
+      end
+      
+      
+    end
+    
+    puts " FAILED DOWNLOADS" if failed.length > 0
+    puts failed * "\n"
+  end
   
   
+  task :printer_init do
+      $model = Printer
+      $scraped_model = ScrapedPrinter
+  end
   
   task :pic_init => :init do
   
@@ -547,6 +575,7 @@ namespace :scrape_extra do
     
     require 'validation_helper'
     include ValidationHelper
+    
     
   end
   
