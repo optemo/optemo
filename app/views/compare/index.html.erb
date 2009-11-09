@@ -17,12 +17,6 @@
 			</div></div>
 			<%= render :partial => 'thumbnails', :object => @products[i], :locals => {:navBack => :back, :i => i, :total => @products.count} %>
 			<%= render :partial => 'featurevalues', :locals => {:featurelist => $model::DisplayedFeatures, :product => @products[i], :numberofproducts => @products.count} %>
-			
-			<div class="cell">
-				<div class="shopcell">
-				<%= link_to image_tag("shop#{fr?}.gif", :id => 'addtocartimg'), "#", :id => 'addtocartbutton', :popup => true %>
-				</div>
-			</div>
 		</div>
 	<% end %>
 	<div class="bgrow"></div>
