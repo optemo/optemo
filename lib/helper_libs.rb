@@ -33,7 +33,7 @@ end
 module ImageLib
   require 'helpers/image_helper'
   require 'helpers/fillin_helper'
-  
+  require 'open-uri'
   require 'helpers/logging_helper'
   
   include LoggingHelper

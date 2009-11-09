@@ -1,4 +1,3 @@
-
 module ImageHelper
   
   # -- Global vars to set --#
@@ -82,18 +81,24 @@ module ImageHelper
   # optional filename specification (else it'll use the downloaded
   # file's name by default)  
   def download_img url, folder, fname=nil
-    return nil if url.nil? or url == ''
+    if url.nil? or url == ''
+      puts "WARNING: null or empty URL value for #{fname}"
+      return nil 
+    end
     #return url if url.include?(folder)
     filename = fname || url.split('/').pop
     ret = "/#{folder}/#{filename}"
     begin
       readme = open(url)
-      writehere = open("/optemo/site/public/#{folder}/#{filename}","w")
+      writehere = open("public/#{folder}/#{filename}","w")
       writehere.write(readme.read)
     rescue OpenURI::HTTPError => e
+      puts "ERROR Problem downloading from #{url} into #{filename}"
       puts "#{e.type} #{e.message}"
       return nil
-    rescue
+    rescue Exception => e
+      puts "ERROR Bug in code downloading from #{url} into #{filename}"
+      puts "#{e.type} #{e.message}"
       return nil
     end
     ret
@@ -117,16 +122,16 @@ module ImageHelper
     filename = img.filename.gsub(/\..+$/,'')
     scaled = []
     trimmed = img.trim
+    trimmed.write "#{filename}_trimmed.#{img.format}"
     if trimmed.rows != img.rows or trimmed.columns != img.columns
       puts "Start with #{img.rows} by #{img.columns}, end with  #{trimmed.rows} by #{trimmed.columns}" 
     end
-    @@sizes.each do |size|
-      scaled << trimmed.resize_to_fit(size[0],size[1])
-    end
-    scaled.each_with_index do |pic, index|
+    @@sizes.each_with_index do |size, index|
+      pic = trimmed.resize_to_fit(size[0],size[1])
       pic.write "#{filename}_#{@@size_names[index]}.#{img.format}"
+      scaled << pic
     end  
-    return scaled.collect
+    return scaled
   end
   
   # Records missing length 'n width for all pics which have an image url
@@ -158,6 +163,7 @@ module ImageHelper
           image = Magick::ImageList.new(filename_from_id(rec.[]($id_field), sz))
           image = image.first if image.class == Magick::ImageList
         rescue
+          puts "WARNING: Can't get dimensions for #{sz} size pic of product #{rec.[]($id_field)}"
           image = nil
         end
         if image
@@ -226,6 +232,7 @@ module ImageHelper
       rescue
         image = nil
         failed << id
+        puts "Resizing #{id} failed"
       end
     end
     
