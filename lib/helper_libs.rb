@@ -39,6 +39,7 @@ module ImageLib
   include LoggingHelper
   include ImageHelper
   include ScrapingHelper
+  include DatabaseHelper
 end
 
 module ValidationLib

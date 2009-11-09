@@ -159,6 +159,15 @@ module TigerScraper
   
   def scrape_pic_url info_page
     pic_el = get_el info_page.css('img[@name="imgLarge"]')
+    
+    if pic_el.nil?
+      pic_el = get_el info_page.css('img[@onerror="this.src=\'http://images.tigerdirect.ca/SearchTools/no_image-med.gif\';"]')
+    end
+    
+    if pic_el.nil?
+      pic_el = get_el info_page.css('img[@onerror="this.src=\'http://images.tigerdirect.com/SearchTools/no_image-med.gif\';"]')
+    end
+    
     if pic_el
       return {'imageurl' => pic_el.[]('src')}
     end
