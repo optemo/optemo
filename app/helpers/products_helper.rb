@@ -2,17 +2,6 @@ module ProductsHelper
   def landing?
     ! (request.referer && request.referer.match(/http:\/\/(laserprinterhub|localhost)/))
   end
-
-  def array_to_csv(iArray)
-    # converts iArray, an array of integers, to a string in csv format
-    csv = ""
-    for i in 0..iArray.count-1
-      csv = csv + iArray[i] + ","
-    end
-    # Chop off the last comma
-    csv = csv.chop    
-    csv
-  end
   
   def sim_link(cluster,i, itemId)
     unless cluster.children(@session).nil? || cluster.children(@session).empty? || (cluster.size(@session)==1)
@@ -25,18 +14,6 @@ module ProductsHelper
       ""
     end
   end
-  
-  def combine_list(a)
-    case a.length
-    when 0: "similar properties to the given product."
-    when 1: a[0].join(' ')+'.'
-    else
-      ret = "and #{a.pop.join(' ')}."
-      a.each {|i| ret = i.join(' ') + ', ' + ret }
-      ret
-    end
-  end
-  
   
   def roundmin(n)
     (n*10).to_i.to_f/10
@@ -81,10 +58,6 @@ module ProductsHelper
 		else
       "#{t("products.compare.search")}: '#{@s.searchterm}', #{(@s.result_count > 1) ? t("products.compare.browsings",:count => @s.result_count) : t("products.compare.browsing")}" 
     end
-  end
-  
-  def repDesc(cluster)
-    "No Desc"
   end
   
   def prodDesc(group, i)
