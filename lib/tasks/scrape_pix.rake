@@ -56,21 +56,25 @@ namespace :pictures do
   task :resize_missing do
     
     unresized = unresized_recs
+    picless = picless_recs
+    unresized = unresized - picless
+    debugger
+    log "Resizing #{unresized.length} pictures"
+    failed = resize_all unresized.collect{|x| x.id}
+    log " Num Failed: #{failed.size}"
     
-     log "Resizing #{unresized.length} pictures"
-     failed = resize_all unresized.collect{|x| x.id}
-     log " Num Failed: #{failed.size}"
-     
-     log "Recording pic stats"
-     record_pic_stats $model.all
-     
-     puts "Done"
+    log "Recording pic stats"
+    record_pic_stats $model.all
+    
+    puts "Done"
   end
   
   
   task :dl_missing_pix do
     picless = picless_recs
-    really_picless = picless.reject{|x| !x.imagesurl.nil? and !x.imagemurl.nil? and !x.imagelurl.nil?}
+    really_picless = picless.reject{|x| (!x.imagesurl.nil? and !x.imagemurl.nil? and !x.imagelurl.nil?) or !x.instock}
+    
+    puts "Will download #{really_picless.count} pictures."
     
     failed = []
     urls = {}
@@ -84,8 +88,6 @@ namespace :pictures do
         failed << product.id
       end 
     end
-    
-    debugger
     
     log "Downloading #{urls.length} missing picture files"
     failed << download_all_pix(urls)

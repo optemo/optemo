@@ -59,6 +59,46 @@ end
 
 namespace :printers do
   
+  task :dlpixurls => [:amazon_init, :rescrape_pix]
+  
+  task :rescrape_pix do 
+    no_resized_pix = $model.find_all_by_imagesurl_and_instock(nil, true).collect{|x| x.id}
+    
+    no_pix = []
+    no_pix_fixed = []
+    
+    retailerids = $retailers.collect{|x| x.id}
+    
+    no_resized_pix.each do |pid| 
+      sps = $scrapedmodel.find_all_by_product_id(pid)
+      urls = sps.collect{|x| x.imageurl}.reject{|x| x.nil?}
+      
+      if urls.length == 0 and sps.length != 0
+        retailer_ok_sps = sps.reject{|x| !retailerids.include?(x.retailer_id)}
+        if retailer_ok_sps.length == 0
+          puts "Oops -- no scraped printer from #{$retailers.first.name} for #{pid}"
+        end
+        
+        retailer_ok_sps.each do |retailer_ok_sp|
+          local_id = retailer_ok_sp.local_id
+          retailer = Retailer.find(retailer_ok_sp.retailer_id)
+          generic_scrape(local_id, retailer)
+          
+          if retailer_ok_sp.imageurl.nil?
+            puts "Oops -- no image url available for SP #{retailer_ok_sp.id}... (printer #{pid})"
+          else
+            no_pix_fixed << pid
+            puts "Fixed printer with id #{pid}."
+            break
+          end
+        end
+        no_pix << pid 
+      end
+    end
+    puts "There were #{no_pix.count} printers w/o pic urls of which #{no_pix_fixed.count} were fixed"
+    
+  end
+  
   task :validate_amazon => [:amazon_init, :validate_printers]
   
   # The 2 things you can do, in terms of subtasks: scrape and update
