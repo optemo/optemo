@@ -1,6 +1,6 @@
 set :application, "laserprinterhub"
 set :repository,  "git@jaguar:site.git"
-set :domain, "optemo"
+set :domain, "linode"
 set :branch, "staging"
 
 # If you aren't deploying to /u/apps/#{application} on the target
@@ -12,6 +12,7 @@ set :scm, :git
 set :deploy_via, :remote_cache
 #ssh_options[:paranoid] = false
 default_run_options[:pty] = true
+ssh_options[:port] = 5151
 set :use_sudo, false
 set :user, 'jan'
 
