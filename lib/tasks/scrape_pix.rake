@@ -58,17 +58,17 @@ namespace :pictures do
   end
   
   task :resize_missing do
+    have_urls = $scrapedmodel.all.reject{|x| x.imageurl.nil?}.collect{|x| x.product_id}.uniq
+    no_resized_urls = $model.all.reject{|x| !x.imagesurl.nil? and !x.imagemurl.nil? and !x.imagelurl.nil?}
+    unresized = no_resized_urls.reject{|x| !have_urls.include?(x.id)}
     
-    unresized = unresized_recs
-    unresized = unresized.reject{|x| x.imagesurl.nil? or x.imagemurl.nil? or x.imagelurl.nil?}
+    #unresized = unresized.reject{|x| x.imagesurl.nil? or x.imagemurl.nil? or x.imagelurl.nil?}
     log "Resizing #{unresized.length} pictures"
     failed = resize_all unresized.collect{|x| x.id}
     log " Num Failed: #{failed.size}"
     
     log "Recording pic stats"
-    withpix = $model.all.reject{|x| x.imagesurl.nil?}
-    #debugger
-    record_pic_stats(withpix)
+    record_pic_stats(unresized)
     
     puts "Done"
   end
