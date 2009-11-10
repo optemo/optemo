@@ -38,14 +38,14 @@ module ProductProperties
       when 'L' then return unless imagelheight && imagelwidth
     end
     dbH = case opts[:size] 
-      when 'S' then Float.induced_from(imagesheight)
-      when 'M' then Float.induced_from(imagemheight) 
-      when 'L' then Float.induced_from(imagelheight)
+      when 'S' then Float(imagesheight)
+      when 'M' then Float(imagemheight) 
+      when 'L' then Float(imagelheight)
     end
     dbW = case opts[:size]
-      when 'S' then Float.induced_from(imageswidth)
-      when 'M' then Float.induced_from(imagemwidth) 
-      when 'L' then Float.induced_from(imagelwidth)
+      when 'S' then Float(imageswidth)
+      when 'M' then Float(imagemwidth) 
+      when 'L' then Float(imagelwidth)
     end
     maxHeight = Max[opts[:size]+'Height']
     maxWidth = Max[opts[:size]+'Width']
