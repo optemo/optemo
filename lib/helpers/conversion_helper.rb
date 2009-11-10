@@ -33,11 +33,22 @@ module ConversionHelper
   # Gets the max. numerical value from something in
   # units of pages or sheets.  Returns an integer.
   def parse_max_num_pages str
-    debugger if str.nil?
-    numpages = get_f_with_units( (str || '').gsub(/\+\s?\d+/,''),  /(sheet|page)(s)?/i )
+    return nil if str.nil?
+    numpages = get_f_with_units( (str || '').gsub(/\+\s?\d+/,''),  /-?(sheet|page)(s)?/i )
     return numpages.to_i if numpages
     return nil
   end
+  
+  
+  # Gets the max. numerical value from something in
+  # units of pages or sheets.  Returns an integer.
+  def parse_dpi str
+    return nil if str.nil?
+    res = str.match(/\d+\s?(dpi)?(\s?x\s?\d+)\s?dpi/)
+    return res.to_s if res
+    return nil
+  end
+  
   
   # Gets the zoom of a lens given a string describing
   # the lens and containing the lens' focal lengths.
@@ -57,7 +68,7 @@ module ConversionHelper
     min_focal_length = get_min_f(str)
     max_focal_length = get_max_f(str)
     zoom = (max_focal_length / min_focal_length) if min_focal_length and max_focal_length
-    debugger if zoom <= 1
+    #debugger if zoom <= 1
     return zoom || nil
   end
   
@@ -137,6 +148,11 @@ module ConversionHelper
   def to_grams wt
     return nil if wt.nil? or wt.length ==2
     return (wt[0]*1000+wt[1]+wt[2]/1000)
+  end
+  
+  def get_ppm str
+    ppm = get_f_with_units(str, /-?p(ages|rints)?\s?p(er)?\s?m(in)?(ute)?/i)
+    return ppm
   end
   
   # Gets weight from a string. If it is imperial it'll be an array 

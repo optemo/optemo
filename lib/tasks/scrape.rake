@@ -6,10 +6,14 @@ module GenericScraper
     #atts = $model.column_names - ignore
    # atts = $reqd_fields
    # 'itemheight', 'itemwidth','itemlength',
-    atts = [ 'itemweight',  'ppm', 'ttp', 'paperinput','scanner', 'printserver']
+    atts = [ 'itemweight',  'ppm', 'ttp', 'paperinput', 'resolutionmax','scanner', 'printserver']
     
     all_atts = {}
     atts.each{|x| all_atts[x] = [product.[](x)]} # Current value counts for something too?
+    #TODO This should be somewhere else:
+    if !all_atts['resolution'].nil? and all_atts['resolutionmax'].nil?
+      all_atts['resolutionmax'] = maxres_from_res(all_atts['resolution']).to_s
+    end
     atts.each do |att|
       sps.each do |sp|
         all_atts[att] << sp.[](att) if sp.[](att)
@@ -59,10 +63,13 @@ end
 
 namespace :printers do
   
-  task :dlpixurls => [:amazon_init, :rescrape_pix]
+  task :dlmorestats => [:amazon_init, :rescrape_stats, :vote]
+  
+  task :dlmorepix => [:tiger_init, :rescrape_pix]
+  
   
   task :rescrape_pix do 
-    no_resized_pix = $model.find_all_by_imagesurl_and_instock(nil, true).collect{|x| x.id}
+    no_resized_pix = $scrapedmodel.find_all_by_imageurl(nil).collect{|x| x.product_id}
     
     no_pix = []
     no_pix_fixed = []
@@ -84,7 +91,7 @@ namespace :printers do
           retailer = Retailer.find(retailer_ok_sp.retailer_id)
           generic_scrape(local_id, retailer)
           
-          if retailer_ok_sp.imageurl.nil?
+          if $scrapedmodel.find(retailer_ok_sp.id).imageurl.nil?
             puts "Oops -- no image url available for SP #{retailer_ok_sp.id}... (printer #{pid})"
           else
             no_pix_fixed << pid
@@ -96,6 +103,40 @@ namespace :printers do
       end
     end
     puts "There were #{no_pix.count} printers w/o pic urls of which #{no_pix_fixed.count} were fixed"
+    
+  end
+  
+  task :rescrape_stats do 
+    no_stats = $model.find_all_by_ppm_and_instock(nil, true).collect{|x| x.id}
+    no_stats_fixed = []
+    
+    retailerids = $retailers.collect{|x| x.id}
+    
+    no_stats.each do |pid| 
+      sps = $scrapedmodel.find_all_by_product_id(pid)
+      
+      if sps.length != 0
+        retailer_ok_sps = sps.reject{|x| !retailerids.include?(x.retailer_id)}
+        if retailer_ok_sps.length == 0
+          puts "Oops -- no scraped printer from #{$retailers.first.name} for #{pid}"
+        end
+        
+        retailer_ok_sps.each do |retailer_ok_sp|
+          local_id = retailer_ok_sp.local_id
+          retailer = Retailer.find(retailer_ok_sp.retailer_id)
+          spid = retailer_ok_sp.id
+          generic_scrape(local_id, retailer)
+          if ScrapedPrinter.find(spid).ppm.nil?
+            #debugger
+            puts "#{spid} has a nil ppm..."
+          else
+            puts "#{spid} has been fixed!"
+            no_stats_fixed << pid
+          end
+        end
+      end
+    end
+    puts "There were #{no_stats.count} printers w/o stats of which #{no_stats_fixed.count} were fixed"
     
   end
   
@@ -133,12 +174,14 @@ namespace :printers do
   task :vote => :printer_init do 
     #include CleaningHelper
     printers = Printer.all
+    bools_assume_no = ['printserver', 'scanner']
     printers.each do |p|
       avgs = vote_on_values p
-      #fill_in_all avgs, p
-      avgs.each do |k,v|
-        puts "#{k} -- #{v} (now #{p.[](k)}) for #{p.id}" if [v, p.[](k)].uniq.reject{|x| x.nil?}.length > 1
-      end
+      bools_assume_no.each{|x| avgs[x] = false if avgs[x].nil?}
+      fill_in_all avgs, p
+      #avgs.each do |k,v|
+      #  puts "#{k} -- #{v} (now #{p.[](k)}) for #{p.id}" #if [v, p.[](k)].uniq.reject{|x| x.nil?}.length > 1
+      #end
     end
   end
   

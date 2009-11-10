@@ -1,10 +1,10 @@
 namespace :pictures do
   
   desc 'Get all the missing pictures for Printers'
-  task :update_printer_pix => [:printer_init, :dl_missing_pix, :resize_missing]
+  task :update_printer_pix => [:printer_init, :dl_missing_pix, :resize_missing, :close_log]
   
   desc 'Re-download all pictures for Printers'
-  task :scrape_printer_pix => [:printer_init, :dl_pix, :resize_all]
+  task :scrape_printer_pix => [:printer_init, :dl_pix, :resize_all, :close_log]
   
   task :printer_init => :environment do 
     $model = Printer
@@ -50,21 +50,25 @@ namespace :pictures do
     failed = resize_all urls.keys
     
     puts " Num Failed: #{failed.size}"
-    record_pic_stats $model.all
+    withpix = $model.all.reject{|x| x.imagesurl.nil?}
+    #debugger
+    record_pic_stats(withpix)
+    
+    puts "Done"
   end
   
   task :resize_missing do
     
     unresized = unresized_recs
-    picless = picless_recs
-    unresized = unresized - picless
-    debugger
+    unresized = unresized.reject{|x| x.imagesurl.nil? or x.imagemurl.nil? or x.imagelurl.nil?}
     log "Resizing #{unresized.length} pictures"
     failed = resize_all unresized.collect{|x| x.id}
     log " Num Failed: #{failed.size}"
     
     log "Recording pic stats"
-    record_pic_stats $model.all
+    withpix = $model.all.reject{|x| x.imagesurl.nil?}
+    #debugger
+    record_pic_stats(withpix)
     
     puts "Done"
   end

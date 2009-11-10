@@ -66,9 +66,31 @@ module AmazonScraper
       # Check on site if actually out of stock
       ['price', 'priceint', 'pricestr', 'saleprice', 'salepriceint', 'salepricestr'].each{|x| atts['x'] = nil}
     elsif (atts['priceint'].nil? or atts['pricestr'].nil?)
-      debugger # Should never happen
+      #debugger # Should never happen
+      puts "Price is nil?!?!? HOW DID THIS HAPPEN" # TODO 
       0
     end
+    
+    (atts['feature'] || '').split(/¦|\||#{CleaningHelper.sep}/).each do |x| 
+        temp_ppm =  get_ppm(x)
+        temp_paperin = parse_max_num_pages(x)
+        temp_res = x.match(/(res|\d\s?x\s?\d)/i)
+        if temp_ppm
+          #debugger
+          atts['ppm'] ||= temp_ppm
+        elsif temp_paperin and x.match(/(input|feed)/i)
+          #debugger
+          atts['paperinput'] ||= temp_paperin
+        elsif temp_res
+          temp_res_2 = parse_dpi(x)
+          temp_resmax =  maxres_from_res(temp_res_2)
+          #debugger
+          atts['resolution'] ||= temp_res_2
+          atts['resolutionmax'] ||= temp_resmax
+        end
+     end
+     
+     atts['resolutionmax'] ||= maxres_from_res(atts['resolution']) if atts['resolution']
     
     return atts
   end
@@ -127,8 +149,8 @@ module AmazonScraper
         atts.merge!(name => val)
       end      
       
+      
       # TODO make sure ALL possible data is being scraped
-      #debugger if atts['printspeedbw'].nil? and atts['printspeedcolor'].nil?
       # firstpageoutputtime, standardpaperinput, resolution
       
      #begin

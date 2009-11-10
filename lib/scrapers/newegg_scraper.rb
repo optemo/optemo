@@ -79,6 +79,8 @@ module NeweggScraper
       cleanatts['condition'] = 'Refurbished' 
     end
     
+    #debugger if cleanatts['ppm'].nil?
+    
     return cleanatts
   end
   
@@ -156,7 +158,7 @@ module NeweggScraper
   
     price_el = get_el(infopage.xpath('//div[@id="pclaPriceArea"]/dl[@class="price"]'))
     
-    if price_el    
+    if(price_el)    
       sale_price_el = get_el price_el.css(".final")
       retme['saleprice'] = sale_price_el.text if sale_price_el
       orig_price_el = get_el price_el.css(".original")
@@ -169,7 +171,7 @@ module NeweggScraper
       # --- Too low? --- #
       low_price_el = get_el price_el.css('.lowestPrice')
       
-      if (low_price_el)
+      if(low_price_el)
         lowpricepage = Nokogiri::HTML(open("#{get_base_url(region)}/Product/MappingPrice.aspx?Item=#{item_number}"))
         snore(15)
         lowpage_lowprice_el = get_el lowpricepage.css('.final')
@@ -191,7 +193,8 @@ module NeweggScraper
   
   def scrape_specs infopage
     tablehtml = infopage.xpath("//table[@class='specification']/tr")
-    spec_table = scrape_table tablehtml, 'td.name', 'td.desc'
+    spec_table = scrape_table(tablehtml, 'td.name', 'td.desc')
+    #debugger if spec_table['printspeed'].nil? and spec_table['colorprintspeed'].nil? and spec_table['blackprintspeed'].nil?
     return spec_table
   end
   
