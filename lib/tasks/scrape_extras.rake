@@ -205,7 +205,7 @@ namespace :scrape_extra do
     # TODO re fill-in colorprinter
     validids = Printer.valid.collect{|x| x.id}  
     broprinters = Printer.find_all_by_brand('brother').reject{|w| 
-      validids.include?  => w.id or (w.model || w.mpn).nil?}
+      validids.include?(w.id) or (w.model || w.mpn).nil?}
       
     broprinters.each do |bp|
       

@@ -33,19 +33,19 @@ module ProductProperties
   
   def resize(opts = {})
     case opts[:size]
-      when 'S': return unless imagesheight && imageswidth
-      when 'M': return unless imagemheight && imagemwidth
-      when 'L': return unless imagelheight && imagelwidth
+      when 'S' then return unless imagesheight && imageswidth
+      when 'M' then return unless imagemheight && imagemwidth
+      when 'L' then return unless imagelheight && imagelwidth
     end
     dbH = case opts[:size] 
-      when 'S': Float.induced_from(imagesheight)
-      when 'M': Float.induced_from(imagemheight) 
-      when 'L': Float.induced_from(imagelheight)
+      when 'S' then Float.induced_from(imagesheight)
+      when 'M' then Float.induced_from(imagemheight) 
+      when 'L' then Float.induced_from(imagelheight)
     end
     dbW = case opts[:size]
-      when 'S': Float.induced_from(imageswidth)
-      when 'M': Float.induced_from(imagemwidth) 
-      when 'L': Float.induced_from(imagelwidth)
+      when 'S' then Float.induced_from(imageswidth)
+      when 'M' then Float.induced_from(imagemwidth) 
+      when 'L' then Float.induced_from(imagelwidth)
     end
     maxHeight = Max[opts[:size]+'Height']
     maxWidth = Max[opts[:size]+'Width']
@@ -88,15 +88,22 @@ module ProductProperties
       return "Yes"
     else
       ending = case attr
-        when /zoom/: ' X'
-        when /[^p][^a][^p][^e][^r]size/: ' in.' 
-        when /(item|package)(width|length|height)/: data = data.to_f/100
+        when /zoom/
+          ' X'
+        when /[^p][^a][^p][^e][^r]size/
+          ' in.' 
+        when /(item|package)(width|length|height)/
+          data = data.to_f/100
           '"'
-        when /(item|package)(weight)/: data = data.to_f/100
+        when /(item|package)(weight)/
+          data = data.to_f/100
           ' lbs'
-        when /resolution/: ' dpi'
-        when /focal/: ' mm.'
-        when /ttp/: ' seconds'
+        when /resolution/
+          ' dpi'
+        when /focal/
+          ' mm.'
+        when /ttp/
+          ' seconds'
         else ''
       end
     end
