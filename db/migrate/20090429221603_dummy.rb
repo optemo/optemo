@@ -3,7 +3,10 @@ class Dummy < ActiveRecord::Migration
     #remove_column :cameras, :productgroup
     #remove_column :cameras, :asin
     #add_column :scraped_cameras, :aa_batteries, :boolean
-    #add_column :cameras, :reviewtext, :text
+    #add_column :cameras, :slr, :boolean
+    #add_column :cameras, :waterproof, :boolean
+    #add_column :cameras, :aa_batteries, :boolean
+    #add_column :cameras, :bodyonly, :boolean
     #add_column :cameras, :resolution, :string
     #add_column :cameras, :resolutionmax, :float
     #add_column :scraped_cameras, :bodyonly, :boolean

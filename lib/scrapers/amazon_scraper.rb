@@ -39,8 +39,8 @@ module AmazonScraper
         added += res.items.collect{ |item| item.get('asin') }
         current_page += 1
       end
-      puts "[#{Time.now}] Read #{current_page} pages..."
-      break if (current_page > total_pages) # or current_page > 5 # <-- For testing only!
+      puts "[#{Time.now}] Read #{current_page-1} pages..."
+      break if (current_page > total_pages or current_page > 5) # <-- For testing only!
     end
     
     puts "[#{Time.now}] Done getting Amazon IDs!"
@@ -63,7 +63,7 @@ module AmazonScraper
     end
     
     if (atts['stock'] || '').to_s == 'false'
-      # debugger
+      debugger
       # Check on site if actually out of stock
       ['price', 'priceint', 'pricestr', 'saleprice', 'salepriceint', 'salepricestr'].each{|x| atts['x'] = nil}
     elsif (atts['priceint'].nil? or atts['pricestr'].nil?)
@@ -185,7 +185,7 @@ module AmazonScraper
           next
         end
         offers = [] << offers unless offers.class == Array
-        
+        debugger
         offers.each do |o| 
           # Their stock info is often wrong!
           #if o.get('offerlisting/availability').match(/out of stock/i) 
@@ -227,6 +227,7 @@ module AmazonScraper
     best = scrape_best_offer(asin, region)
     
     if best.nil?
+      debugger
       offer_atts['stock'] = false
     else
       offer_atts = offer_to_atthash best, asin, region
@@ -370,8 +371,12 @@ module AmazonScraper
   end
   
   def clean_camera atts
+    semi_cleaned_atts = clean_property_names(atts) 
+    cleaned_atts = generic_cleaning_code semi_cleaned_atts
+    cleaned_atts['resolutionmax'] = maxres_from_res(cleaned_atts['resolution'] || '')
+    atts3 = remove_sep(cleaned_atts)
     debugger
-    return atts
+    return atts3
   end
   
   # Converts Amazon's cryptic merchant ID to

@@ -714,6 +714,10 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.text     "reviewtext"
     t.string   "resolution"
     t.float    "resolutionmax"
+    t.boolean  "slr"
+    t.boolean  "waterproof"
+    t.boolean  "aa_batteries"
+    t.boolean  "bodyonly"
   end
 
   create_table "cartridges", :force => true do |t|

@@ -188,8 +188,12 @@ module CleaningHelper
     
     atts['duplex'] = false if (atts['duplex'] || '').downcase == 'manual'
     atts['duplex'] = clean_bool(atts['duplex'])
-    atts.each{|x,y| atts[x] = y.split("#{@@sep}").reject{|x| x.nil?}.collect{|x| x.strip}.uniq.join(' | ') if y.type==String} 
+    remove_sep atts
     return atts
+  end
+    
+  def remove_sep atts
+    atts.each{|x,y| atts[x] = y.split("#{@@sep}").reject{|x| x.nil?}.collect{|x| x.strip}.uniq.join(' | ') if y.type==String} 
   end
   
   # If any of the 'indicator properties' in the 
@@ -221,6 +225,25 @@ module CleaningHelper
     return atts
   end
   
+  # Cleans a list of Boolean values to be either true or false 
+  def clean_bool dirty_vals
+    vals = []
+    (dirty_vals || '').split(@@sep).each { |dirty_val| 
+      val = get_b(dirty_val)
+      #if val.nil? and (!dirty_val.nil? and dirty_val.strip!='')
+      #  val = dirty_val.match(/(not applicable|n\/a|not available)/i).nil?
+      #end
+      vals << val
+    }
+    if vals.empty? or vals.uniq == [nil]
+      return nil
+    elsif vals.include? true
+      return true
+    else
+      return false
+    end
+  end
+  
   # Tries to match the brand to stuff from a list of acceptable
   # brand names. This way we're going to get more uniform values 
   # for the brand field (no unsightly capitalizations) as well as
@@ -241,25 +264,6 @@ module CleaningHelper
     return arr_more.sort{|a,b| likely_model_name(a) <=> likely_model_name(b)}.last
   end
   
-  # Cleans a list of Boolean values to be either true or false 
-  def clean_bool dirty_vals
-    vals = []
-    (dirty_vals || '').split(@@sep).each { |dirty_val| 
-      val = get_b(dirty_val)
-      #if val.nil? and (!dirty_val.nil? and dirty_val.strip!='')
-      #  val = dirty_val.match(/(not applicable|n\/a|not available)/i).nil?
-      #end
-      vals << val
-    }
-    if vals.empty? or vals.uniq == [nil]
-      return nil
-    elsif vals.include? true
-      return true
-    else
-      return false
-    end
-  end
-  
   # Returns true if the strings are the same brand,
   # false otherwise
   def same_brand? one, two
@@ -271,9 +275,7 @@ module CleaningHelper
     return true if equivalent_list.include?(brands)
     return false
   end
-  
-  
-  
+    
   # How likely is this to be a model name?
   def likely_model_name str
     score = 0
