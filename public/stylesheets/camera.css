@@ -36,14 +36,14 @@ a img {
 .topbar {
 	position: relative;
 }
-.nbgroup .topbar {
+.nbgroup .topbar, .nbsingle .topbar {
 	height: 174px;
 }
-.nbsingle .topbar {
+/*.nbsingle .topbar {
 	height: 183px;
-}
+}*/
 .nbgroup .bottombar {
-	height: 24px;
+	height: 33px;
 }
 .nbsingle .bottombar {
 	height: 33px;
