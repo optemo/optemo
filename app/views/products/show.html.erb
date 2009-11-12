@@ -37,10 +37,10 @@
 	<% @offerings.each do |offer| %>
 		<% next if !offer.stock || offer.priceint.blank? %>
 		<div class="left">	
-			<%= link_to "#{offer.pricestr}", "javascript:buyit(#{offer.id})", {:itemId => "#{offer.id}" , :class => 'buylink'} %>
+			<%= link_to "#{offer.pricestr}", offer.url, {:itemId => offer.id , :class => 'buylink', :target => '_blank', :rel => "nofollow"} %>
 		</div>
 		<div class="right">
-			 <%=  link_to image_tag(offer.retailer.image, :alt => offer.retailer.name, :class => 'buyimg'), "javascript:buyit(#{offer.id})", {:itemId => "#{offer.id}" , :class => 'buylink', :target => '_blank'} %>
+			 <%=  link_to image_tag(offer.retailer.image, :alt => offer.retailer.name, :class => 'buyimg'), offer.url, {:itemId => offer.id , :class => 'buylink', :target => "_blank", :rel => "nofollow"} %>
 		</div>
 		<div class="spacer">
 		</div>
@@ -58,10 +58,10 @@
 		<%= [c.brand,c.model].join(' ') %><br>
 		<span style="font-size:0.70em;">(Yield: <%= c.yield %> pgs, Shelf Life: <%= c.shelflife %> months, Color: <%= c.color %>)</span>
 		<div class="left" style="width:154px">	
-			<%= link_to "#{p.pricestr}", {:controller => 'link', :action => 'create', :id => p.id}, :popup => true, :rel => 'nofollow' %>
+			<%= link_to p.pricestr, p.url, :popup => true, :rel => 'nofollow' %>
 		</div>
 		<div class="right" style="width:154px;">
-			 <%=  link_to image_tag(p.retailer.image, :alt => p.retailer.name), {:controller => 'link', :action => 'create', :id => p.id}, :popup => true %>
+			 <%=  link_to image_tag(p.retailer.image, :alt => p.retailer.name), p.url, :popup => true, :rel => 'nofollow' %>
 		</div>
 		<div class="spacer" style="clear:right;"></div>
 		</div>
