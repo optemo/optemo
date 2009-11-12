@@ -1,14 +1,49 @@
 module MigrationHelper
   def addBasicProductFeatures(t)
     
+    # Title
     t.text    :title
+    #t.text    :label
+    
+    addPicStuff(t)
     
     t.integer :price
     t.string  :pricestr
-    t.boolean :iseligibleforsupersavershipping
-    t.integer :bestoffer
+    t.boolean :instock
     t.string  :pricehistory
     
+    t.boolean :iseligibleforsupersavershipping
+    t.integer :bestoffer
+
+    
+    t.float   :averagereviewrating
+    t.integer :totalreviews
+    t.timestamps
+  end
+  
+  def addReviews(t)
+    t.float   :averagereviewrating
+    t.integer :totalreviews
+    t.text    :reviewtext
+  end
+  
+  def addIdStuff(t)
+    # ID fields
+    t.string :brand
+    t.string :model
+    t.string :mpn
+  end
+  
+  def addOfferingPriceStuff(t)
+    # Pricing stuff
+    t.integer :price
+    t.string  :pricestr
+    t.boolean :stock
+    t.string  :pricehistory
+  end
+  
+  def addPicStuff(t)
+    #Pic stuff
     t.string  :imagesurl
     t.integer :imagesheight
     t.integer :imageswidth
@@ -18,11 +53,6 @@ module MigrationHelper
     t.string  :imagelurl 
     t.integer :imagelheight   
     t.integer :imagelwidth
-    
-    t.boolean :instock
-    t.float   :averagereviewrating
-    t.integer :totalreviews
-    t.timestamps
   end
     
   def addDimensions(t)
@@ -47,52 +77,87 @@ module MigrationHelper
   
   end
   
-  def  addPrinterTableProperties(t)
+  def addListpriceStuff(t)
+    t.string      :listpricestr
+    t.integer     :listpriceint
+  end
+  
+  def addCameraProperties(t)
+    #Reqd
+    t.float       :opticalzoom
+    t.float       :resolutionmax
+    t.string      :resolution
+    t.float       :displaysize
+    t.boolean     :slr
+    t.boolean     :waterproof
+    
+    #Good info
+    t.float       :maximumfocallength
+    t.float       :minimumfocallength
+    t.float       :digitalzoom
+    
+    #Quite extra
+    t.boolean     :batteriesincluded
+    t.string      :batterydescription
+    t.string      :connectivity
+    t.boolean     :hasredeyereduction
+    t.string      :includedsoftware
+  end
+  
+  def addPrinterProperties(t)
+     # Reqd
+     t.float :ppm
+     t.string :resolution
+     t.integer :resolutionmax
+     t.integer :paperinput
+     t.boolean :scanner
+     t.boolean :printserver
+     
+     # Good info
+     t.float :displaysize
+     t.float :ttp
+     t.string :duplex
+     t.boolean :colorprinter
+     t.boolean :fax
+     t.string :papersize
+     t.integer :paperoutput
+     
+     # Quite extra
+     t.string :connectivity
+     t.integer :dutycycle 
+     t.string :special
+     t.float :ppmcolor
+     t.string :platform
+  end
+  
+  def addPrinterTableProperties(t)
     addBasicProductFeatures(t)
     addDimensions(t)
+    addIdStuff(t)
+    addPrinterProperties(t)
     
-    t.string :brand
     t.float :displaysize
     t.string :ean
     t.text :feature
-    t.integer :listpriceint #rename to listprice
-    t.string :model
     
-    t.string :mpn
+    t.integer :listpriceint #rename to listprice
+    
     t.string :warranty
     
-    t.float :ppm
-    t.float :ttp
-    t.string :resolution
-    t.string :duplex
-    t.string :connectivity
-    t.string :papersize
-    t.integer :paperoutput
-    t.string :dimensions
-    t.integer :dutycycle 
-    t.integer :paperinput
-    
-    t.string :special
-    t.float :ppmcolor
-    t.string :platform
-    
-    t.boolean :colorprinter
-    t.boolean :scanner
     t.datetime :scrapedat
     t.boolean :nodetails
-    t.boolean :printserver
-    t.integer :resolutionmax
-    t.boolean :fax
     t.boolean :bw
     
     t.string :manufacturerproducturl
   end
+
   def linkToProductAndRetailer(t)
-  
     t.integer :product_id
     t.integer :retailer_id
     t.string  :local_id
+    # merchant?
   end
+  
   def removeBasicProductFeatures
     
   end

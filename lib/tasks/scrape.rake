@@ -148,6 +148,9 @@ namespace :printers do
   
   # Scraping and updating by website...
   
+  desc 'Update Amazon cameras'
+  task :update_amazon_cams => [:amazon_init, :update]
+  
   desc 'Update Newegg printers'
   task :update_newegg => [:newegg_init, :update]
   
@@ -307,6 +310,24 @@ namespace :printers do
     $model.all.each do |p|
       update_bestoffer p
     end
+  end
+
+  task :camera_init => :init do
+      require 'rubygems'
+      require 'nokogiri'
+
+      require 'helper_libs'
+      include DataLib
+
+      require 'open-uri'
+
+      $model = Camera
+      $scrapedmodel = ScrapedCamera
+      $product_series = []
+      $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'opticalzoom', 'resolutionmax', \
+        'displaysize', 'slr', 'waterproof', 'brand', 'model', 'itemweight']
+      $reqd_offering_fields = ['priceint', 'pricestr', 'stock', 'condition', 'priceUpdate', 'toolow', \
+         'local_id', "product_type", "region", "retailer_id"]
   end
 
   task :printer_init => :init do

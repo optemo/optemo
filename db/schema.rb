@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20091105005234) do
+ActiveRecord::Schema.define(:version => 20091111215022) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -651,11 +651,9 @@ ActiveRecord::Schema.define(:version => 20091105005234) do
   end
 
   create_table "cameras", :force => true do |t|
-    t.string   "asin"
     t.text     "detailpageurl"
     t.boolean  "batteriesincluded"
     t.string   "batterydescription"
-    t.string   "binding"
     t.string   "brand"
     t.string   "connectivity"
     t.float    "digitalzoom"
@@ -685,7 +683,6 @@ ActiveRecord::Schema.define(:version => 20091105005234) do
     t.integer  "packagelength"
     t.integer  "packagewidth"
     t.integer  "packageweight"
-    t.string   "productgroup"
     t.string   "publisher"
     t.date     "releasedate"
     t.text     "specialfeatures"
@@ -714,6 +711,9 @@ ActiveRecord::Schema.define(:version => 20091105005234) do
     t.integer  "price_ca"
     t.string   "price_ca_str"
     t.boolean  "instock_ca"
+    t.text     "reviewtext"
+    t.string   "resolution"
+    t.float    "resolutionmax"
   end
 
   create_table "cartridges", :force => true do |t|
@@ -1327,6 +1327,50 @@ ActiveRecord::Schema.define(:version => 20091105005234) do
     t.integer  "product_id"
     t.integer  "search_id"
     t.string   "product_type"
+  end
+
+  create_table "scraped_cameras", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "title"
+    t.text     "imageurl"
+    t.text     "detailpageurl"
+    t.text     "manufacturerurl"
+    t.datetime "scrapedat"
+    t.string   "brand"
+    t.string   "model"
+    t.string   "mpn"
+    t.string   "dimensions"
+    t.integer  "itemwidth"
+    t.integer  "itemlength"
+    t.integer  "itemheight"
+    t.integer  "itemweight"
+    t.integer  "packageheight"
+    t.integer  "packagelength"
+    t.integer  "packagewidth"
+    t.integer  "packageweight"
+    t.float    "opticalzoom"
+    t.float    "resolutionmax"
+    t.string   "resolution"
+    t.float    "displaysize"
+    t.boolean  "slr"
+    t.boolean  "waterproof"
+    t.float    "maximumfocallength"
+    t.float    "minimumfocallength"
+    t.float    "digitalzoom"
+    t.boolean  "batteriesincluded"
+    t.string   "batterydescription"
+    t.string   "connectivity"
+    t.boolean  "hasredeyereduction"
+    t.string   "includedsoftware"
+    t.float    "averagereviewrating"
+    t.integer  "totalreviews"
+    t.text     "reviewtext"
+    t.integer  "product_id"
+    t.integer  "retailer_id"
+    t.string   "local_id"
+    t.boolean  "aa_batteries"
+    t.boolean  "bodyonly"
   end
 
   create_table "scraped_printers", :force => true do |t|
