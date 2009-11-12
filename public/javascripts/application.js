@@ -399,8 +399,9 @@ function DBinit(context) {
 		return false;
 	});
 	
-	$('#addtocartbutton', context).click(function(){ 
-		trackPage('goals/addtocart');
+	$('.buylink, .buyimg', context).click(function(){
+		var buyme_id = $(this).attr('product');
+		trackPage('goals/addtocart/'+buyme_id);
 	});
 	
 	$('#yesdecisionsubmit', context).click(function(){

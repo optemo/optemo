@@ -37,6 +37,8 @@ module GenericScraper
       
       clean_atts = clean scraped_atts
       
+      debugger # TODO
+      
       # TODO make sure ALL data is being properly scraped for Amazon
       # debugger if clean_atts['ppm'].nil? # resolution, paperinput
       
@@ -52,7 +54,7 @@ module GenericScraper
             
         timestamp_offering ro       
       else
-        report_error "Couldn't create ScrapedPrinter with local_id #{local_id || 'nil'} and retailer #{retailer_id || 'nil'}."
+        report_error "Couldn't create #{scrapedmodel} with local_id #{local_id || 'nil'} and retailer #{retailer_id || 'nil'}."
       end
     else
       # If there was an error while scraping: sleep 20 min
@@ -63,10 +65,9 @@ end
 
 namespace :printers do
   
-  task :dlmorestats => [:amazon_init, :rescrape_stats, :vote]
+  task :dlmorestats => [:printer_init, :amazon_init, :rescrape_stats, :vote]
   
   task :dlmorepix => [:tiger_init, :rescrape_pix]
-  
   
   task :rescrape_pix do 
     no_resized_pix = $scrapedmodel.find_all_by_imageurl(nil).collect{|x| x.product_id}
@@ -140,13 +141,16 @@ namespace :printers do
     
   end
   
-  task :validate_amazon => [:amazon_init, :validate_printers]
+  task :validate_amazon => [:printer_init,:amazon_init, :validate_printers]
   
   # The 2 things you can do, in terms of subtasks: scrape and update
   task :scrape => [:scrape_new, :match_to_products, :update_bestoffers, :validate_printers]
   task :update => [:update_prices, :scrape_new, :match_to_products, :update_bestoffers, :validate_printers]
   
   # Scraping and updating by website...
+  
+  desc 'Update Amazon cameras'
+  task :scrape_amazon_cams => [:cam_init, :amazon_init, :scrape_new]
   
   desc 'Update Newegg printers'
   task :update_newegg => [:newegg_init, :update]
@@ -155,10 +159,10 @@ namespace :printers do
   task :update_tiger => [:tiger_init, :update]
   
   desc 'Update Amazon and AmazonMarketplace printers'
-  task :update_amazon => [:amazon_init, :update, :amazon_mkt_init, :update]
+  task :update_amazon => [:printer_init, :amazon_init, :update, :amazon_mkt_init, :update]
   
   desc 'Scrape all data from Amazon (warning:extra long!)'
-  task :scrape_amazon => [:amazon_init, :scrape]
+  task :scrape_amazon => [:printer_init, :amazon_init, :scrape]
   
   desc 'Scrape all data from Newegg'
   task :scrape_newegg => [:newegg_init, :scrape]
@@ -167,7 +171,7 @@ namespace :printers do
   task :scrape_tiger => [:tiger_init, :scrape]
     
   desc 'Scrape all data from Amazon Marketplace (warning: extra long!)'
-  task :scrape_amazon_mkt => [:amazon_mkt_init, :scrape]
+  task :scrape_amazon_mkt => [:printer_init, :amazon_mkt_init, :scrape]
   
   # The subtasks...
   
@@ -210,14 +214,15 @@ namespace :printers do
   # Update prices
   task :update_prices do
     @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_scraper.log", 'w+')
-    my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id(x.id)}
+    my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id_and_product_type(x.id, $model.name)}
     my_offerings.each_with_index do |offering, i|
       begin
         next if offering.local_id.nil? or offering.stock != true
         newatts = rescrape_prices offering.local_id, offering.region
+        puts "#{offering.local_id}"
         log "[#{Time.now}] Updating #{offering.pricestr} to #{newatts['pricestr']}"
         update_offering newatts, offering if offering
-        #update_bestoffer($model.find(offering.product_id)) if offering.product_id
+        update_bestoffer($model.find(offering.product_id)) if offering.product_id
       rescue Exception => e
         report_error "with RetailerOffering #{offering.id}:" + e.message.to_s + e.type.to_s
         snore(20*60) # sleep for 20 min 
@@ -309,6 +314,24 @@ namespace :printers do
     end
   end
 
+  task :cam_init => :init do
+      require 'rubygems'
+      require 'nokogiri'
+
+      require 'helper_libs'
+      include DataLib
+
+      require 'open-uri'
+
+      $model = Camera
+      $scrapedmodel = ScrapedCamera
+      $product_series = []
+      $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'opticalzoom', 'resolutionmax', \
+        'displaysize', 'slr', 'waterproof', 'brand', 'model', 'itemweight']
+      $reqd_offering_fields = ['priceint', 'pricestr', 'stock', 'condition', 'priceUpdate', 'toolow', \
+         'local_id', "product_type", "region", "retailer_id"]
+  end
+
   task :printer_init => :init do
       require 'rubygems'
       require 'nokogiri'
@@ -327,11 +350,11 @@ namespace :printers do
          'local_id', "product_type", "region", "retailer_id"]
   end
     
-  task :amazon_mkt_init => [:printer_init, :amazon_init] do
+  task :amazon_mkt_init => :amazon_init do
     $retailers = [Retailer.find(2),Retailer.find(10)]
   end
   
-  task :amazon_init => :printer_init do
+  task :amazon_init do
     require 'amazon_ecs'
     include Amazon
     

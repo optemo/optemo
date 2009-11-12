@@ -37,10 +37,10 @@
 	<% @offerings.each do |offer| %>
 		<% next if !offer.stock || offer.priceint.blank? %>
 		<div class="left">	
-			<%= link_to "#{offer.pricestr}", offer.url, {:itemId => offer.id , :class => 'buylink', :target => '_blank', :rel => "nofollow"} %>
+			<%= link_to "#{offer.pricestr}", offer.url, {:itemId => offer.id , :product => offer.product_id, :class => 'buylink', :target => '_blank', :rel => "nofollow"} %>
 		</div>
 		<div class="right">
-			 <%=  link_to image_tag(offer.retailer.image, :alt => offer.retailer.name, :class => 'buyimg'), offer.url, {:itemId => offer.id , :class => 'buylink', :target => "_blank", :rel => "nofollow"} %>
+			 <%=  link_to image_tag(offer.retailer.image, :alt => offer.retailer.name, :class => 'buyimg'), offer.url, {:itemId => offer.id , :product => offer.product_id, :class => 'buylink', :target => "_blank", :rel => "nofollow"} %>
 		</div>
 		<div class="spacer">
 		</div>

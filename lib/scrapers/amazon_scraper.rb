@@ -19,7 +19,7 @@ module AmazonScraper
   # All local ids from region
   def scrape_all_local_ids region
     
-    puts "[#{Time.now}] Getting a list of all Amazon IDs associated with printers. This may take a while"
+    puts "[#{Time.now}] Getting a list of all Amazon IDs associated with #{$model}s. This may take a while"
     
     current_page = 1
     count = 0
@@ -39,8 +39,8 @@ module AmazonScraper
         added += res.items.collect{ |item| item.get('asin') }
         current_page += 1
       end
-      puts "[#{Time.now}] Read #{current_page} pages..."
-      break if (current_page > total_pages) # or current_page > 5 # <-- For testing only!
+      puts "[#{Time.now}] Read #{current_page-1} pages..."
+      break if (current_page > total_pages or current_page > 5) # <-- For testing only!
     end
     
     puts "[#{Time.now}] Done getting Amazon IDs!"
@@ -51,9 +51,10 @@ module AmazonScraper
   # Amazon-specific cleaning code
   def clean atts
     atts['listprice'] = (atts['listprice'] || '').match(/\$\d+\.(\d\d)?/).to_s
-        
+    
     atts = clean_printer(atts) if $model == Printer
     atts = clean_cartridge(atts) if $model == Cartridge
+    atts = clean_camera(atts) if $model == Camera
     
     if (atts['toolow'] || '').to_s  == 'true' and atts['listprice'] and atts['listprice'] != ""
       atts['stock']    = true
@@ -62,7 +63,7 @@ module AmazonScraper
     end
     
     if (atts['stock'] || '').to_s == 'false'
-      # debugger
+      debugger
       # Check on site if actually out of stock
       ['price', 'priceint', 'pricestr', 'saleprice', 'salepriceint', 'salepricestr'].each{|x| atts['x'] = nil}
     elsif (atts['priceint'].nil? or atts['pricestr'].nil?)
@@ -71,26 +72,7 @@ module AmazonScraper
       0
     end
     
-    (atts['feature'] || '').split(/¦|\||#{CleaningHelper.sep}/).each do |x| 
-        temp_ppm =  get_ppm(x)
-        temp_paperin = parse_max_num_pages(x)
-        temp_res = x.match(/(res|\d\s?x\s?\d)/i)
-        if temp_ppm
-          #debugger
-          atts['ppm'] ||= temp_ppm
-        elsif temp_paperin and x.match(/(input|feed)/i)
-          #debugger
-          atts['paperinput'] ||= temp_paperin
-        elsif temp_res
-          temp_res_2 = parse_dpi(x)
-          temp_resmax =  maxres_from_res(temp_res_2)
-          #debugger
-          atts['resolution'] ||= temp_res_2
-          atts['resolutionmax'] ||= temp_resmax
-        end
-     end
-     
-     atts['resolutionmax'] ||= maxres_from_res(atts['resolution']) if atts['resolution']
+    atts['resolutionmax'] ||= maxres_from_res(atts['resolution']) if atts['resolution']
     
     return atts
   end
@@ -203,7 +185,7 @@ module AmazonScraper
           next
         end
         offers = [] << offers unless offers.class == Array
-        
+        debugger
         offers.each do |o| 
           # Their stock info is often wrong!
           #if o.get('offerlisting/availability').match(/out of stock/i) 
@@ -245,6 +227,7 @@ module AmazonScraper
     best = scrape_best_offer(asin, region)
     
     if best.nil?
+      debugger
       offer_atts['stock'] = false
     else
       offer_atts = offer_to_atthash best, asin, region
@@ -281,9 +264,7 @@ module AmazonScraper
     
     atts['url'] = "http://amazon.#{region=="us" ? "com" : region}/gp/product/"+asin+"?tag=#{region=="us" ? "optemo-20" : "laserprinterh-20"}&m="+atts['merchant']
     atts['iseligibleforsupersavershipping'] = offer.get('offerlisting/iseligibleforsupersavershipping')
-    
-    
-    
+     
     return atts
   end
 
@@ -336,6 +317,24 @@ module AmazonScraper
   # to an Amazon printer
   def clean_printer atts
     atts['cpumanufacturer'] = nil # TODO
+    ((atts['feature'] || '') +'|'+ (atts['specialfeatures'])).split(/¦|\||#{CleaningHelper.sep}/).each do |x| 
+        temp_ppm =  get_ppm(x)
+        temp_paperin = parse_max_num_pages(x)
+        temp_res = x.match(/(res|\d\s?x\s?\d)/i)
+        if temp_ppm
+          #debugger
+          atts['ppm'] ||= temp_ppm
+        elsif temp_paperin and x.match(/(input|feed)/i)
+          #debugger
+          atts['paperinput'] ||= temp_paperin
+        elsif temp_res
+          temp_res_2 = parse_dpi(x)
+         # temp_resmax =  maxres_from_res(temp_res_2)
+          #debugger
+          atts['resolution'] ||= temp_res_2
+         #atts['resolutionmax'] ||= temp_resmax
+        end
+    end
     semi_cleaned_atts = clean_property_names(atts) 
     semi_cleaned_atts['displaysize'] = nil # TODO it's just a weird value
     #prices = ['listprice', 'listpriceint', 'listpricestr', 'saleprice', 'salepriceint', 'salepricestr',  'price', 'pricestr', 'priceint'].collect{|x|
@@ -369,6 +368,15 @@ module AmazonScraper
     
     cleaned_atts['compatible'] = cleaned_atts['feature'] + "#{cleaned_atts['compatible']}" if cleaned_atts['feature']
     return cleaned_atts
+  end
+  
+  def clean_camera atts
+    semi_cleaned_atts = clean_property_names(atts) 
+    cleaned_atts = generic_cleaning_code semi_cleaned_atts
+    cleaned_atts['resolutionmax'] = maxres_from_res(cleaned_atts['resolution'] || '')
+    atts3 = remove_sep(cleaned_atts)
+    debugger
+    return atts3
   end
   
   # Converts Amazon's cryptic merchant ID to
