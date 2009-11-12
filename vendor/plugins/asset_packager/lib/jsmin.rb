@@ -39,9 +39,15 @@ $theB = ""
 # dollar sign, or non-ASCII character
 def isAlphanum(c)
    return false if !c || c == EOF
-   return ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') ||
-           (c >= 'A' && c <= 'Z') || c == '_' || c == '$' ||
-           c == '\\' || c[0] > 126)
+   if RUBY_VERSION == "1.9.1"
+     return ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') ||
+              (c >= 'A' && c <= 'Z') || c == '_' || c == '$' ||
+              c == '\\' || c.ord > 126)
+   else
+     return ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') ||
+             (c >= 'A' && c <= 'Z') || c == '_' || c == '$' ||
+             c == '\\' || c[0] > 126)
+   end
 end
 
 # get -- return the next character from stdin. Watch out for lookahead. If

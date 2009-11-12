@@ -11,6 +11,7 @@ config/ultrasphinx/*.conf
 public/system
 
 webrat.log
+deploy-to-staging.sh
 
 public/system
 
