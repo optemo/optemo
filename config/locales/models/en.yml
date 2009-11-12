@@ -46,7 +46,7 @@ en:
         Info_itemwidth:             "Width - The width of the printer accross the front."
         Info_ppm:                   "Pages Per Minute - The number of pages that can be printed per minute in black and white."
         Info_brand:                 "Brand - The manufacturer of the product. You can choose more than just one brand."
-        Info_resolution:            "Resolution - The largest resolution (in dots per inch) of either the vertical or horizontal direction."
+        Info_resolutionmax:         "Resolution - The largest resolution (in dots per inch) of either the vertical or horizontal direction."
         Info_price:                 "Price - The lowest price for the item."
         Info_scanner:               "Scanner - Printers that can scan documents."
         Info_printserver:           "Printer Server - Printers that have wired or wireless networking. A printserver can be used by multiple computers without having to be connected to a computer that is always on."
