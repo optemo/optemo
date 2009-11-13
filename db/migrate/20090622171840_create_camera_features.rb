@@ -14,7 +14,7 @@ class CreateCameraFeatures < ActiveRecord::Migration
         t.float pref.intern, :default => 1/Camera::ContinuousFeaturesF.count.to_f
       end      
       (Camera::CategoricalFeaturesF).each do |f|
-        t.string f.intern, :default => "All Brands"
+        t.string f.intern
       end
       (Camera::BinaryFeaturesF).each do |f|
         t.boolean f.intern

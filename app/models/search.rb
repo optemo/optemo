@@ -129,6 +129,7 @@ class Search < ActiveRecord::Base
       
     clusterDs.sort!{|a,b| b['stat'] <=> a['stat']}
     clusterDs = clusterDs[0..1] if clusterDs.size > 2
+    clusterDs[0] = {'desc' => "average", 'stat' => 1} if clusterDs.blank?
     des << clusterDs.map{|d| d['desc']};
   end
 
