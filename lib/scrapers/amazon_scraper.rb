@@ -40,7 +40,7 @@ module AmazonScraper
         current_page += 1
       end
       puts "[#{Time.now}] Read #{current_page-1} pages..."
-      break if (current_page > total_pages or current_page > 5) # <-- For testing only!
+      break if (current_page > total_pages) #or current_page > 5) # <-- For testing only!
     end
     
     puts "[#{Time.now}] Done getting Amazon IDs!"
