@@ -151,7 +151,7 @@ namespace :printers do
   # Scraping and updating by website...
   
   desc 'Update Amazon cameras'
-  task :scrape_amazon_cams => [:cam_init, :amazon_init, :update_prices]
+  task :scrape_amazon_cams => [:cam_init, :amazon_init, :scrape_new, :update_prices]
   
   desc 'Update Newegg printers'
   task :update_newegg => [:newegg_init, :update]

@@ -133,7 +133,8 @@ module DatabaseHelper
       rid = atts['retailer_id']
       lid = atts['local_id']
       return nil if rid.nil? or lid.nil?
-      sp = $scrapedmodel.find_by_retailer_id_and_local_id_and_product_type(rid,lid, $model.name)
+      debugger
+      sp = $scrapedmodel.find_by_retailer_id_and_local_id(rid,lid)
       if sp.nil?
         sp = create_product_from_atts atts, $scrapedmodel
       else
