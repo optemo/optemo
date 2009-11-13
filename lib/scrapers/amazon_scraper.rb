@@ -63,7 +63,7 @@ module AmazonScraper
     end
     
     if (atts['stock'] || '').to_s == 'false'
-      debugger
+      #debugger
       # Check on site if actually out of stock
       ['price', 'priceint', 'pricestr', 'saleprice', 'salepriceint', 'salepricestr'].each{|x| atts['x'] = nil}
     elsif (atts['priceint'].nil? or atts['pricestr'].nil?)
@@ -185,7 +185,6 @@ module AmazonScraper
           next
         end
         offers = [] << offers unless offers.class == Array
-        debugger
         offers.each do |o| 
           # Their stock info is often wrong!
           #if o.get('offerlisting/availability').match(/out of stock/i) 
@@ -227,12 +226,10 @@ module AmazonScraper
     best = scrape_best_offer(asin, region)
     
     if best.nil?
-      debugger
       offer_atts['stock'] = false
     else
       offer_atts = offer_to_atthash best, asin, region
     end
-    
     return offer_atts
   end
   
@@ -375,7 +372,7 @@ module AmazonScraper
     cleaned_atts = generic_cleaning_code semi_cleaned_atts
     cleaned_atts['resolutionmax'] = maxres_from_res(cleaned_atts['resolution'] || '')
     atts3 = remove_sep(cleaned_atts)
-    debugger
+    #debugger
     return atts3
   end
   
@@ -401,5 +398,43 @@ module AmazonScraper
   def be_nice_to_amazon
      sleep(1+rand()*30)
   end
+  
+  #def interpret_special_features(p)
+  #  sf = p.specialfeatures
+  #  a = sf[3..-1].split('|') #Remove leading nv:
+  #  features = {}
+  #  a.map{|l| 
+  #    c = l.split('^') 
+  #    features[c[0]] = c[1]
+  #  }
+  #  p.ppm = features['Print Speed'].match(/\d+[.]?\d*/)[0] if features['Print Speed']
+  #  p.ttp = features['First Page Output Time'].match(/\d+[.]?\d*/)[0] if features['First Page Output Time'] && features['First Page Output Time'].match(/\d+[.]?\d*/)
+  #  if features['Resolution']
+  #    tmp = features['Resolution'].match(/(\d,\d{3}|\d+) ?x?X? ?(\d,\d{3}|\d+)?/)[1,2].compact
+  #    tmp*=2 if tmp.size == 1
+  #    p.resolution = tmp.sort{|a,b| 
+  #      a.gsub!(',','')
+  #      b.gsub!(',','')
+  #      a.to_i < b.to_i ? 1 : a.to_i > b.to_i ? -1 : 0
+  #    }.join(' x ') 
+  #    p.resolutionmax = p.resolution.split(' x ')[0]
+  #  end # String drop down style
+  #  p.duplex = features['Duplex Printing'] # String
+  #  p.connectivity = features['Connectivity'] # String
+  #  p.papersize = features['Paper Sizes Supported'] # String
+  #  p.paperoutput = features['Standard Paper Output'].match(/(\d,\d{3}|\d+)/)[0] if features['Standard Paper Output'] #Numeric
+  #  p.dimensions = features['Dimensions'] #Not parsed yet
+  #  p.dutycycle = features['Maximum Duty Cycle'].match(/(\d{1,3}(,\d{3})+|\d+)/)[0].gsub(',','') if features['Maximum Duty Cycle']
+  #  p.paperinput = features['Standard Paper Input'].match(/(\d,\d{3}|\d+)/)[0] if features['Standard Paper Input'] && features['Standard Paper Input'].match(/(\d,\d{3}|\d+)/) #Numeric
+  #  #Parse out special features
+  #  if !features['Special Features'].nil?
+  #    if features['Special Features'] == "Duplex Printing"
+  #      features['Special Features'] = nil
+  #      p.duplex = "Yes" if p.duplex.nil?
+  #    end
+  #  end
+  #  p.special = features['Special Features']
+  #  p
+  #end
   
 end

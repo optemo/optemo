@@ -76,7 +76,7 @@ namespace :pictures do
   
   task :dl_missing_pix do
     picless = picless_recs
-    really_picless = picless.reject{|x| (!x.imagesurl.nil? and !x.imagemurl.nil? and !x.imagelurl.nil?) or !x.instock}
+    really_picless = picless.reject{|x| (!x.imagesurl.nil? and !x.imagemurl.nil? and !x.imagelurl.nil?) or (!x.instock and !x.instock_ca)}
     
     puts "Will download #{really_picless.count} pictures."
     

@@ -37,13 +37,14 @@ module GenericScraper
       
       clean_atts = clean scraped_atts
       
-      debugger # TODO
+      #debugger # TODO
       
       # TODO make sure ALL data is being properly scraped for Amazon
       # debugger if clean_atts['ppm'].nil? # resolution, paperinput
       
       # TODO the only non-general line of code:
-      sp = find_or_create_scraped_printer(clean_atts)
+      sp = find_or_create_scraped_product(clean_atts)
+      #debugger
       if sp
         clean_atts['url'] = id_to_sponsored_link(local_id, retailer.region, clean_atts['merchant'])
         ros = find_ros_from_scraped sp
@@ -54,7 +55,7 @@ module GenericScraper
             
         timestamp_offering ro       
       else
-        report_error "Couldn't create #{scrapedmodel} with local_id #{local_id || 'nil'} and retailer #{retailer_id || 'nil'}."
+        report_error "Couldn't create #{$scrapedmodel} with local_id #{local_id || 'nil'} and retailer #{retailer_id || 'nil'}."
       end
     else
       # If there was an error while scraping: sleep 20 min
@@ -108,7 +109,7 @@ namespace :printers do
   end
   
   task :rescrape_stats do 
-    no_stats = $model.find_all_by_ppm_and_instock(nil, true).collect{|x| x.id}
+    no_stats = $model.find_all_by_ppm(nil).reject{|x| !x.instock and !x.instock_ca}.collect{|x| x.id}
     no_stats_fixed = []
     
     retailerids = $retailers.collect{|x| x.id}
@@ -150,7 +151,7 @@ namespace :printers do
   # Scraping and updating by website...
   
   desc 'Update Amazon cameras'
-  task :scrape_amazon_cams => [:cam_init, :amazon_init, :scrape_new]
+  task :scrape_amazon_cams => [:cam_init, :amazon_init, :update_prices]
   
   desc 'Update Newegg printers'
   task :update_newegg => [:newegg_init, :update]
