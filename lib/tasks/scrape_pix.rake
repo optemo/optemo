@@ -24,7 +24,6 @@ namespace :pictures do
     $logfile.close
   end
   
-  
   task :dl_pix do
     
     failed = []
