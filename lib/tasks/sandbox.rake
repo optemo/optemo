@@ -11,6 +11,16 @@ namespace :sandbox do
     end
     puts 'Done'
   end
+  task :move_data_2 => :environment do
+    puts 'Moving data'
+    require 'helper_libs'
+    include DataLib
+    Review.all.each do |rvu|
+      fill_in('local_id',rvu.asin,rvu) if rvu.asin
+    end
+    puts 'Done'
+  end
+  
   task :move_resmax => :environment do
       puts 'Moving data from maxres to resmax in Cams'
       require 'helper_libs'

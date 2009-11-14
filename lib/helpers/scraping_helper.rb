@@ -4,10 +4,11 @@ module ScrapingHelper
   
   # Returns the first matching property or
   # nil if none found.
-  def get_property_name str_dirty, model=$model
-    paramnames = get_property_names str_dirty, model
-    return nil if paramnames.length == 0
-    return paramnames[0] # TODO get most/least specific?
+  def get_property_name str_dirty, model=$model, ignorelist=[]
+    paramnames = get_property_names(str_dirty, model)
+    goodparamnames = paramnames.reject{|x| ignorelist.include?(x)}
+    return nil if goodparamnames.length == 0
+    return goodparamnames[0] # TODO get most/least specific?
   end
   
   # Returns a list of possible properties
@@ -51,6 +52,7 @@ module ScrapingHelper
     param_names << 'scanner' if str.match(/scan/)
     param_names << 'colorprinter' if str.match(/(colou?r|printtechnology|printeroutput)/)
     param_names << 'imageurl' if str.match(/image|pic/)
+    param_names << 'local_id' if str.match(/asin/)
     
     if str.match(/size/)
       if str.match(/media|paper|sheet|document/)

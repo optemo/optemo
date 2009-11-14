@@ -621,7 +621,7 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "session_id"
-    t.string   "brand",                  :default => "All Brands"
+    t.string   "brand"
     t.float    "maximumresolution_min"
     t.float    "maximumresolution_max"
     t.float    "maximumresolution_pref", :default => 0.25
@@ -789,17 +789,6 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.float    "low"
     t.text     "categories"
     t.string   "region"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "db_properties", :force => true do |t|
-    t.string   "name"
-    t.text     "brands"
-    t.float    "price_min"
-    t.float    "price_max"
-    t.float    "price_low"
-    t.float    "price_high"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -1135,6 +1124,22 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.string   "producttype"
   end
 
+  create_table "prefs", :force => true do |t|
+    t.integer  "idvisit"
+    t.string   "idcookie",        :limit => 32
+    t.integer  "product_picked"
+    t.integer  "product_ignored"
+    t.float    "weight"
+    t.float    "slider_min"
+    t.float    "slider_max"
+    t.string   "slider_name",     :limit => 40
+    t.string   "search_text"
+    t.integer  "search_numtimes", :limit => 2
+    t.datetime "servertime"
+    t.integer  "optemo_session"
+    t.integer  "filter_type",     :limit => 2
+  end
+
   create_table "printer_clusters", :force => true do |t|
     t.integer "parent_id"
     t.integer "layer"
@@ -1177,7 +1182,7 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.float    "price_min"
     t.float    "price_max"
     t.float    "price_pref",         :default => 0.2
-    t.string   "brand",              :default => "All Brands"
+    t.string   "brand"
     t.boolean  "scanner"
     t.boolean  "printserver"
   end
@@ -1317,11 +1322,17 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.string   "customerid"
     t.integer  "totalvotes"
     t.text     "content"
-    t.string   "asin"
     t.string   "source"
     t.string   "summary"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "local_id"
+    t.string   "local_review_id"
+    t.integer  "retailer_id"
+    t.text     "review_url"
+    t.text     "pros"
+    t.text     "cons"
+    t.float    "value_rating"
   end
 
   create_table "saveds", :force => true do |t|

@@ -133,7 +133,6 @@ module DatabaseHelper
       rid = atts['retailer_id']
       lid = atts['local_id']
       return nil if rid.nil? or lid.nil?
-      debugger
       sp = $scrapedmodel.find_by_retailer_id_and_local_id(rid,lid)
       if sp.nil?
         sp = create_product_from_atts atts, $scrapedmodel
@@ -279,6 +278,28 @@ module DatabaseHelper
   
   def find_ros local_id, retailer_id
     return RetailerOffering.find_all_by_local_id_and_retailer_id(local_id, retailer_id)
+  end
+  
+  # Tries to make sure that duplicate reviews aren't recorded.
+  # Has several matching 
+  def find_or_create_review(atthash)
+    # Try finding review by review ID (and retailer ID?)
+    if atthash['local_review_id'] #and atthash['retailer_id']
+      revu = Review.find_all_by_local_review_idand_product_type(atthash['local_review_id'], $model.name).first
+    end
+    if revu.nil? and atthash['local_id'] and atthash['customerid']
+      revu = Review.find_all_by_local_id_and_customerid_and_product_type(atthash['local_id'],\
+          atthash['customerid'], $model.name).first
+    end 
+    if revu.nil? and atthash['content']
+      # find by content...
+      revu = Review.find_all_by_content(atthash['content']).first
+    end
+    if revu.nil?
+      debugger
+      revu = create_product_from_atts atthash, Review
+    end
+    return revu
   end
   
 end

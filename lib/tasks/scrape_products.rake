@@ -37,19 +37,12 @@ module GenericScraper
       
       clean_atts = clean scraped_atts
       
-      #debugger # TODO
-      
-      # TODO make sure ALL data is being properly scraped for Amazon
-      # debugger if clean_atts['ppm'].nil? # resolution, paperinput
-      
-      # TODO the only non-general line of code:
       sp = find_or_create_scraped_product(clean_atts)
-      #debugger
+      
       if sp
         clean_atts['url'] = id_to_sponsored_link(local_id, retailer.region, clean_atts['merchant'])
         ros = find_ros_from_scraped sp
         ro = ros.first
-      
         ro = create_product_from_atts clean_atts, RetailerOffering if ro.nil?
         fill_in_all clean_atts, ro
             
@@ -62,9 +55,27 @@ module GenericScraper
       snore(20*60)
     end
   end
+  
 end
 
 namespace :printers do
+  
+  task :amazon_reviews => [:printer_init, :amazon_init, :reviews]
+  
+  task :reviews do    
+    $retailers.collect{|x| x.id}.each do |ret|
+      dl_revue_4_these = RetailerOffering.find_all_by_retailer_id_and_product_type(ret, $model.name)
+      dl_revue_4_ids = dl_revue_4_these.collect{|x| x.local_id}.reject{|x| x.nil?}
+      
+      dl_revue_4_ids.each do |localid|
+        revues = scrape_reviews(localid, ret)
+        revues.each{ |rvu|
+          r = find_or_create_review(rvu)
+          fill_in_all(rvu,r) if r
+        }
+      end
+    end    
+  end
   
   task :dlmorestats => [:printer_init, :amazon_init, :rescrape_stats, :vote]
   
@@ -129,7 +140,6 @@ namespace :printers do
           spid = retailer_ok_sp.id
           generic_scrape(local_id, retailer)
           if ScrapedPrinter.find(spid).ppm.nil?
-            #debugger
             puts "#{spid} has a nil ppm..."
           else
             puts "#{spid} has been fixed!"
@@ -149,6 +159,9 @@ namespace :printers do
   task :update => [:update_prices, :scrape_new, :match_to_products, :update_bestoffers, :validate_printers]
   
   # Scraping and updating by website...
+  
+  desc 'temp'
+  task :temporary => [:cam_init, :vote]
   
   desc 'Update Amazon cameras'
   task :scrape_amazon_cams => [:cam_init, :amazon_init, :scrape_new, :update_prices]
@@ -176,13 +189,11 @@ namespace :printers do
   
   # The subtasks...
   
-  task :vote => :printer_init do 
-    #include CleaningHelper
-    printers = Printer.all
-    bools_assume_no = ['printserver', 'scanner']
-    printers.each do |p|
+  task :vote do 
+    products = $model.all
+    products.each do |p|
       avgs = vote_on_values p
-      bools_assume_no.each{|x| avgs[x] = false if avgs[x].nil?}
+      $bools_assume_no.each{|x| avgs[x] = false if avgs[x].nil?}
       fill_in_all avgs, p
       #avgs.each do |k,v|
       #  puts "#{k} -- #{v} (now #{p.[](k)}) for #{p.id}" #if [v, p.[](k)].uniq.reject{|x| x.nil?}.length > 1
@@ -268,7 +279,7 @@ namespace :printers do
         announce "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
       end
     end
-    @logfile.close
+    @logfile.closep
   end
   
   desc "Check that scraped data isn't wonky"
@@ -331,6 +342,7 @@ namespace :printers do
         'displaysize', 'slr', 'waterproof', 'brand', 'model', 'itemweight']
       $reqd_offering_fields = ['priceint', 'pricestr', 'stock', 'condition', 'priceUpdate', 'toolow', \
          'local_id', "product_type", "region", "retailer_id"]
+      $bools_assume_no = []
   end
 
   task :printer_init => :init do
@@ -349,6 +361,7 @@ namespace :printers do
          'paperinput','scanner', 'printserver', 'brand', 'model']
       $reqd_offering_fields = ['priceint', 'pricestr', 'stock', 'condition', 'priceUpdate', 'toolow', \
          'local_id', "product_type", "region", "retailer_id"]
+      $bools_assume_no = ['printserver', 'scanner']
   end
     
   task :amazon_mkt_init => :amazon_init do

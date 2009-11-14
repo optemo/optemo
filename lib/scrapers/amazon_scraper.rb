@@ -99,7 +99,7 @@ module AmazonScraper
   
   # Scrape product specs from feed
   def scrape_specs local_id
-    res = Amazon::Ecs.item_lookup(local_id, :response_group => 'ItemAttributes,Images')
+    res = Amazon::Ecs.item_lookup(local_id, :response_group => 'ItemAttributes,Images,Reviews', :review_page => 1)
     be_nice_to_amazon
     
     nokodoc = Nokogiri::HTML(res.doc.to_html)
@@ -111,7 +111,6 @@ module AmazonScraper
         val += "#{CleaningHelper.sep} #{r[x.name]}" if r[x.name]
         r.merge(x.name => val)
       }
-      
       item.css('itemattributes/itemdimensions/*').each do |dim|
         atts["item#{dim.name}"] = dim.text.to_i
         #atts["item#{dim.name}"] = atts["item#{dim.name}"]/100.0 if dim.name.match(/weight/)
@@ -120,6 +119,12 @@ module AmazonScraper
       
       temp = get_el item.css('largeimage/url')
       atts['imageurl'] = temp.content if temp
+      
+      # REVIEWS
+      debugger # TODO check review stuff
+      atts["averagereviewrating"] = nil#result.get('averagerating')
+      atts['totalreviews'] = nil# result.get('totalreviews').to_i
+      
       
       (atts['specialfeatures'] || '').split('|').each do |x| 
         pair = x.split('^')
@@ -279,34 +284,87 @@ module AmazonScraper
     return price
   end
 
+  def parse_review result
+    reviews = {}
+    reviews["averagereviewrating"] = result.get('averagerating')
+    reviews['totalreviews'] = result.get('totalreviews').to_i
+    temp = result.search_and_convert('review')
+    temp = Array(temp) unless reviews.class == Array #Fix single and no review possibility
+    mytext = temp.collect{|x| "#{x.get('date')} -- #{x.get('summary')}. #{x.get('content')} "}.join(' || ')
+    reviews['reviewtext'] = mytext
+    
+    debugger
+    
+    return reviews
+  end
+
   # TODO 1. this is not used anywhere
   # and 2. it probably needs to be re-written 
   # because it won't do as it implies
-  def download_review asin
+  def scrape_review asin
+    reviews = {}
+    begin
+        res = Amazon::Ecs.item_lookup(asin, :response_group => 'Reviews', :review_page => 1)
+        be_nice_to_amazon
+    rescue Exception => exc
+        report_error " --  #{exc.message}. Couldn't download reviews for product #{asin}"
+    else
+        result = res.first_item
+        if result
+          reviews = parse_review(result)
+        end
+    end
+    
+    return reviews
+  end
+
+  # TODO 1. this is not used anywhere
+  # and 2. it probably needs to be re-written 
+  # because it won't do as it implies
+  def scrape_reviews asin, retailer_id
     reviews = []
-    averagerating,totalreviews,totalreviewpages = nil
+    #averagerating,totalreviews,totalreviewpages = nil
+    totalreviewpages = nil
+    current_page = 1
     loop do
       begin
-        res = Amazon::Ecs.item_lookup(asin, :response_group => 'Reviews', :condition => 'New', :merchant_id => 'All', :review_page => current_page)
+        res = Amazon::Ecs.item_lookup(asin, :response_group => 'Reviews', :review_page => current_page)
         be_nice_to_amazon
       rescue Exception => exc
-        report_error " --  #{exc.message}. Couldn't download reviews for product #{a.asin} and merchant #{merchant}"
-      end
-      result = res.first_item
-      #Look for old Retail Offering
-      unless result.nil?
-        averagerating ||= result.get('averagerating')
-        totalreviews ||= result.get('totalreviews').to_i
-        totalreviewpages ||= result.get('totalreviewpages').to_i
-        temp = result.search_and_convert('review')
-        temp = Array(temp) unless reviews.class == Array #Fix single and no review possibility
-        reviews << temp
+        report_error " #{exc.message}. Couldn't download reviews for product #{asin}"
       else
-        return
+        nokodoc = Nokogiri::HTML(res.doc.to_html)
+        result =  nokodoc.css('item').first
+        #Look for old Retail Offering
+        unless result.nil?
+          #averagerating ||= result.css('averagerating').text
+          #totalreviews ||= result.css('totalreviews').text.to_i
+          totalreviewpages ||= result.css('totalreviewpages').text.to_i
+          puts "#{$model.name} #{asin} review download: #{(totalreviewpages-current_page)/6} min remaining..."
+          temp = result.css('review')
+          temp = Array(temp) unless reviews.class == Array #Fix single and no review possibility
+          array_of_hashes = temp.collect{|x| x.css('*').inject({}){|r,y| r.merge({y.name => y.text})}}
+          named_array_of_hashes = []
+          array_of_hashes.each{ |hash|
+              named_hash = {}
+              hash.each{|k,v| 
+                new_k = get_property_name(k,Review, ['id'])
+                #debugger
+                named_hash[new_k] = v 
+              }
+              named_array_of_hashes << named_hash
+          }
+          reviews = reviews + named_array_of_hashes
+        else
+          report_error " Reviews result nil for product #{asin}"
+          return reviews
+        end
       end
+      current_page = totalreviewpages - 2 if current_page == 1 # Debugging purposes only! Skip middle pages
       current_page += 1
-      break if current_page > totalreviewpages
+      break if current_page > totalreviewpages #or current_page > 3 # Debugging purposes only!
     end
+    
     return reviews
   end
 
