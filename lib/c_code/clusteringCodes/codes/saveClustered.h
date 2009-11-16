@@ -193,9 +193,6 @@
 				for (int f=0; f<conFeatureN; f++){
 					command +=", ";
 					ostringstream featureStream;
-					if ((f==0) && (data[find(idA, clusteredDataOrdered[c][j], size)][f]==0)){
-						cout<<" id is "<< clusteredDataOrdered[c][j]<<endl;
-					}
 					featureStream<<data[find(idA, clusteredDataOrdered[c][j], size)][f];
 					command += featureStream.str();
 				}
