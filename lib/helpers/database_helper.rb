@@ -302,7 +302,7 @@ module DatabaseHelper
   def find_or_create_review(atthash)
     revu = recognize_review(atthash)
     if revu.nil?
-      debugger
+      #debugger
       revu = create_product_from_atts atthash, Review
     end
     return revu
