@@ -29,7 +29,7 @@ module ScrapeExtra
     ln_spec = ln.gsub(/\/enca.html$/, '/spec-enca.html')
     begin
       page = Nokogiri::HTML(open(ln_spec))
-      table = scrape_table (page.css('table.specs tr'), 'td', 'td')
+      table = scrape_table(page.css('table.specs tr'), 'td', 'td')
       debugger
       sleep(15)
       return table
@@ -151,7 +151,10 @@ namespace :scrape_extra do
     links = []
     
     interesting_fields = ['ppm', 'paperinput', 'resolution', 'resolutionmax'].inject({}){|r, x| 
-      r.merge({x,[]})}
+      r[x] = []
+      r
+    }
+      
     counter = 0
     
     validids = Printer.valid.collect{|x| x.id}  
@@ -166,7 +169,7 @@ namespace :scrape_extra do
     
     links.each do |ln|
       mdl = just_alphanumeric(ln.split('/')[-2])
-      if (mdl and mdl.strip != '')
+      if(mdl and mdl.strip != '')
         ps = match_rec_to_printer ['xerox'], [mdl], Printer, []
         if ps.length  == 1 # and !validids.include?p.id
           p = ps.first
@@ -196,12 +199,13 @@ namespace :scrape_extra do
     
     $model = Printer
     
-    interesting_fields = ['scanner', 'printserver', 'colorprinter', 'ttp'].inject({}){|r, x| r.merge({x,[]})}
+    interesting_fields = ['scanner', 'printserver', 'colorprinter', 'ttp'].inject({}){|r, x| r[x]=[]
+      r}
     ok_fields = ['ppm', 'resolution', 'resolutionmax', 'paperinput', 'duplex', 'colorprinter']
     # TODO re fill-in colorprinter
     validids = Printer.valid.collect{|x| x.id}  
     broprinters = Printer.find_all_by_brand('brother').reject{|w| 
-      validids.include? w.id or (w.model || w.mpn).nil?}
+      validids.include?(w.id) or (w.model || w.mpn).nil?}
       
     broprinters.each do |bp|
       
@@ -228,7 +232,8 @@ namespace :scrape_extra do
     
     $model = Printer
     
-    interesting_fields = ['paperinput','scanner', 'duplex', 'printserver'].inject({}){|r, x| r.merge({x,[]})}
+    interesting_fields = ['paperinput','scanner', 'duplex', 'printserver'].inject({}){|r, x| r[x]=[]
+      r}
     ok_fields = ['ppm', 'paperinput','resolution', 'resolutionmax']
     
     printerids = Printer.all.collect{|x| x.id}
@@ -248,11 +253,11 @@ namespace :scrape_extra do
       ap = AmazonPrinter.find(apid)
       p = Printer.find(ap.product_id)
       
-      features = get_table_ama (ap.asin, sesh)
+      features = get_table_ama(ap.asin, sesh)
       clean_specs = get_cleaned_table features
       
       
-      debugger if !p.scanner.nil? and !clean_specs['scanner'].nil? and (p.scanner xor clean_specs['scanner'])
+      #debugger if !p.scanner.nil? and !clean_specs['scanner'].nil? and (p.scanner xor clean_specs['scanner'])
       puts "#{p.id} rescraped"
       
       puts "No data" if clean_specs['paperinput'].nil?
@@ -524,8 +529,36 @@ namespace :scrape_extra do
     puts failed * "\n"
   end
   
+  desc 'Get a pic for every printer'
+  task :download_pix => :pic_init do
+    
+    failed = []
+    todo = $model.find_all_by_imagesurl(nil)
+    
+    todo.each do |product|
+      pic_urls = $scraped_model.find_all_by_product_id(product.id).collect{|x| x.imageurl}.reject{|x| x.nil?}
+      if pic_urls.length == 0
+        # TODO log it
+        failed << product.id
+      else
+        # download it
+        download_img pic_urls.first, 'images/printers', "#{product.id}.jpg"
+        # resize it
+        
+      end
+      
+      
+    end
+    
+    puts " FAILED DOWNLOADS" if failed.length > 0
+    puts failed * "\n"
+  end
   
   
+  task :printer_init do
+      $model = Printer
+      $scraped_model = ScrapedPrinter
+  end
   
   task :pic_init => :init do
   
@@ -547,6 +580,7 @@ namespace :scrape_extra do
     
     require 'validation_helper'
     include ValidationHelper
+    
     
   end
   

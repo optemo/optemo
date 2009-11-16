@@ -5,11 +5,11 @@ class CreateCameras < ActiveRecord::Migration
     create_table :cameras do |t|
       addBasicProductFeatures
       t.primary_key :id
-      t.string      :asin
+      #t.string      :asin
       t.text        :detailpageurl
       t.boolean     :batteriesincluded
       t.string      :batterydescription
-      t.string      :binding
+      #t.string      :binding
       t.string      :brand
       t.string      :connectivity
       t.float       :digitalzoom
@@ -31,6 +31,8 @@ class CreateCameras < ActiveRecord::Migration
       t.string      :manufacturer
       t.float       :maximumfocallength
       t.float       :maximumresolution
+      t.float       :resolutionmax
+      t.string      :resolution
       t.float       :minimumfocallength
       t.string      :model
       t.string      :mpn
@@ -39,7 +41,7 @@ class CreateCameras < ActiveRecord::Migration
       t.integer     :packagelength
       t.integer     :packagewidth
       t.integer     :packageweight 
-      t.string      :productgroup
+      #t.string      :productgroup
       t.string      :publisher
       t.date        :releasedate
       t.text        :specialfeatures

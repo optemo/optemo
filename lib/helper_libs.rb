@@ -12,11 +12,14 @@ module DataLib
   
   require 'helpers/conversion_helper'
   require 'helpers/global_constants'
+
+  require 'helpers/numbers'
   
   include LoggingHelper
   include DatabaseHelper
   include ScrapingHelper
   include CleaningHelper
+  include CompareHelper
   include ConversionHelper
   include Constants
 end
@@ -30,12 +33,13 @@ end
 module ImageLib
   require 'helpers/image_helper'
   require 'helpers/fillin_helper'
-  
+  require 'open-uri'
   require 'helpers/logging_helper'
   
   include LoggingHelper
   include ImageHelper
   include ScrapingHelper
+  include DatabaseHelper
 end
 
 module ValidationLib

@@ -18,4 +18,16 @@ module ApplicationHelper
       request.url
     end
   end
+  
+  def fr?
+    I18n.locale == "fr" ? "_fr" : ""
+  end
+  
+  def utfstr(s)
+    if RUBY_VERSION == "1.9.1"
+      s.force_encoding("UTF-8")
+    else
+      s
+    end
+  end
 end

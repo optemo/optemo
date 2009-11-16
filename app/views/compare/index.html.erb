@@ -1,32 +1,24 @@
-<% self.title = "Product Comparison" %>
-<br>&lt;&lt;&nbsp;<%= link_to 'Go back to navigation', @navigationUrl, {:class => 'backToNavigation', :style => 'position:relative'}%>
-<center><h1><%= $model.name %> Comparison</h1></center>			
-<table id="comparisonTable" height="100%" width="100%" border="1" cellspacing="0" cellpadding="5">
-	<tr id= "firstRow" class="nodrag nodrop">
-		<td> 
-			<div class="first">								
-				<h2> <%= $model.name %> Features</h2>    			
-		</td>
-		<% for i in 0..@products.count-1%>
-			<%= render :partial => 'thumbnails', :object => @products[i], :locals => {:navBack => :back, :i => i, :total => @products.count} %>
+<div class="poptitle"><%=t "compare.index.title"%></div>
 
-		<% end %>
-	</tr>
-	<% @preferredDisplayFeatures.each do |column| %>	<!-- @preferredDisplayFeatures array is created from DisplayedFeatures array, by the ReorderFeatures() -->
-		<% if @interestingFeatureDisplayed[column[0]] == true %>
-			<% if sameFeatureValue(column[0]) == true %>
-				<!-- Assign IDs to rows. These IDs are returned by the serialize() function in javascript and is used to record user's preferences-->
-				<tr class="lowlightfeature" id='<%= column[0] %>' > 
-			<% else %>
-				<tr class="regularfeature" id='<%= column[0] %>' > 
-			<% end %>
-				<!-- To display the name of the feature -->
-				<%= render :partial => 'features', :locals => {:column=>column[0]} %>
-				<!-- To display the value of each interesting feature -->
-				<%= render :partial => 'product', :collection => @products, :locals => {:column=>column[0]} %>
-			</tr>
-		<% end %>
+<div id="comparisonmatrix">
+	<div class="column">
+		<div class="outertitle leftmostcolumn leftmostoutertitle"><div class="columntitle leftmostcolumn leftmostcolumntitle"></div></div>
+		<div class="thumbnailcell leftmostcolumn">								
+			<div class="tabletitle leftcolumntext"> <%= t('compare.index.tabletitle') %> </div>
+		</div>
+		<%= render :partial => 'featurenames', :locals => {:featurelist => $model::DisplayedFeatures} %>
+		<div class="cell leftmostcolumn"> </div>
+	</div>
+
+	<% for i in 0..@products.count-1%>
+		<div class="column">
+			<div class="outertitle"><div class="columntitle">
+					<%= link_to image_tag('remove.png', :style => "vertical-align: text-top;")+" "+t('compare.index.remove'), "", :"data-name" => @products[i].id, :class => 'remove' %>
+			</div></div>
+			<%= render :partial => 'thumbnails', :object => @products[i], :locals => {:navBack => :back, :i => i, :total => @products.count} %>
+			<%= render :partial => 'featurevalues', :locals => {:featurelist => $model::DisplayedFeatures, :product => @products[i], :numberofproducts => @products.count} %>
+		</div>
 	<% end %>
-</table>
-<%# This moves the border to the bottom %>
-<div class="clear"></div>
+	<div class="bgrow"></div>
+	<div class="bgrow" style="top: 225px;"></div>
+</div>

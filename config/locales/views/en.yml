@@ -1,0 +1,75 @@
+en:
+    products:
+        compare:
+            # All translations for /products/compare.erb.html and its partials
+            browsings:      "Browsing {{count}} Printers"    # e.g. Browsing 146 Cameras
+            browsing:       "Browsing 1 Printer"   
+            search:         "Search"
+            saved:          "Compare Items"
+            alreadyadded:   "You already added that product!"
+            toomanysaved:   "You can save only up to 4 products at a time"
+            savesome:       "Select two or more items for comparison"
+            filters:        "Filters"
+            powered:        "powered by"
+            loading:        "Loading"
+            back:           "Back"
+            all:            "See all cameras"                  
+            similar:        "{{count}} more like this" # e.g. 1 More like this
+            addbrand:       "Add Another Brand"
+            allbrands:      "All Brands"
+            filtersdesc:    "Narrow your results by:"   
+            rembrandfilter: "Remove brand filter"         
+            
+        show:
+            title:          "Quick View"
+            noimage:        "No Image Available"
+            price:          "Our Price"
+            sp:             "Sale Price"
+            saving:         "You Save"
+            saleends:       "Sale Ends"
+            model:          "Model"
+            webcode:        "Web Code"
+            moredetails:    "More details"
+            ratings:        "ratings"
+            
+    compare:
+        index:
+            title:          "Compare Results"
+            tabletitle:     "You've selected these products to compare"
+            error:          "You can save only up to 4 products at a time"    
+            proddetails:    "Product Details"
+            remove:         "Remove"
+    survey:
+        decision:       "Would you like to take our survey?"
+        title:          "Survey Questions"
+        decisiontext:   "Thank you for visiting the Best Buy Discovery Browser. You’ve been selected to take part in our brief survey to let us know how we’re doing and where we can improve to serve you better in the future. Please take a moment to share your opinions. Your responses are anonymous."
+        yesoption:      "Yes"
+        nooption:       "No"
+        submit:         "Submit"
+        error_ansone:   "Please answer at least one question"
+        thanks:         "Thank you for your feedback."
+        question1:      
+            question:   "How would you rate this tool you now are using in finding what you need?"
+            numberofoptions:    "4"
+            option1:            "Very Effective"
+            option2:            "Somewhat Effective"
+            option3:            "Neither Effective nor Ineffective"
+            option4:            "Somewhat Ineffective"
+            option5:            "Very Ineffective"
+        question2:      
+            question:   "Do you agree that it was easier to find the camera you were looking for using this tool compared to the regular bestbuy.ca navigation (see image below)?"
+            numberofoptions:    "5"
+            option1:            "Strongly Agree"
+            option2:            "Somewhat Agree"
+            option3:            "Neither Agree nor Disagree"
+            option4:            "Somewhat Disagree"
+            option5:            "Strongly Disagree"
+        question3:
+            question:   "Do you agree that this tool improves your shopping experience on bestbuy.ca?"
+            numberofoptions:    "5"
+            option1:            "Strongly Agree"
+            option2:            "Somewhat Agree"
+            option3:            "Neither Agree nor Disagree"
+            option4:            "Somewhat Disagree"
+            option5:            "Strongly Disagree"
+        questionlast:   "Do you have any suggestions for improvements?"

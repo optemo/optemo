@@ -2,13 +2,9 @@
 
 <div class='label space'>
 	<%= render :partial => 'desc', :locals => {:feat => val} %>
-	<%= link_to name, "#" %> 
-	<span class="unitdisp">
-	(<%= $model::FeaturesLabel[val] %>)
-	</span>
+	<%= link_to t('products.'+val), "#" %>
+	<span class="unitdisp">(<%= t('products.' + val+"unit") %>)</span>
 </div>
-<% prodmin = i2f ? @s.ranges(val)[0]/100 : roundmin(@s.ranges(val)[0]) %>
-<% prodmax = i2f ? (@s.ranges(val)[1]/100).ceil : roundmax(@s.ranges(val)[1]) %>
 <% overallmin = dbmin(i2f, val) %>
 <% overallmax = dbmax(i2f, val) %>
 <% startmin = @session.features.send("#{val}_min".intern).nil? ? overallmin : i2f ? @session.features.send("#{val}_min".intern)/100 : @session.features.send("#{val}_min".intern) %>
@@ -23,6 +19,7 @@
 	@session.features.send("#{val}_max".intern),
 {:class => 'max'}%>
 <div class='slider'
+data-label= '<%= val %>'
 data-min='<%= overallmin %>'
 data-max='<%= overallmax %>'
 data-startmin='<%= startmin %>'
@@ -30,6 +27,6 @@ data-startmax='<%= startmax %>'
 data-itof='<%= i2f %>'
 <%= money_formatting ? 'data-formatting="$"' : ""  %>>
 
-<div class="centerofslider" style="background:url(../../../images/slider.gif) no-repeat; height:13px; overflow:hidden"> </div>
+<div class="centerofslider">&nbsp;</div>
 </div>
 </div>

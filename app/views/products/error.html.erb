@@ -1,0 +1,7 @@
+[ERR]
+<!--<%= @errortype %>-->
+<div class="poptitle">&nbsp;</div>
+<p><%=t("products.ErrorPart1")%> <%=link_to t("products.here"), "javascript:fadein();"%> <%=t("products.ErrorPart2")%></p>
+<% if @errortype == "filter" %>
+[BRK]<%= render :partial => 'filter' %>
+<% end %>

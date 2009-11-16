@@ -2,6 +2,7 @@ class SavedsController < ApplicationController
   def create
     #Session Tracking
 
+    @ajax = params[:ajax]   # Check whether Ajax call is made and accordingly decide whether to return div tag in html
     #Cleanse id to be only numbers
     params[:id].gsub!(/\D/,'')
     #If product hasn't been put in Saved by that user yet:

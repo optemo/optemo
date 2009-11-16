@@ -114,7 +114,9 @@ module DatabaseHelper
     return matching
   end
   
+  # TODO this is now obsolete...
   def find_or_create_scraped_printer atts 
+      puts "WARNING: using obsolete method, find_or_create_scraped_printer. Use find_or_create_scraped_product instead!"
       rid = atts['retailer_id']
       lid = atts['local_id']
       return nil if rid.nil? or lid.nil?
@@ -123,6 +125,20 @@ module DatabaseHelper
         sp = create_product_from_atts atts, ScrapedPrinter
       else
         fill_in_all atts, sp
+      end
+      return sp
+  end
+
+  def find_or_create_scraped_product atts 
+      rid = atts['retailer_id']
+      lid = atts['local_id']
+      return nil if rid.nil? or lid.nil?
+      debugger
+      sp = $scrapedmodel.find_by_retailer_id_and_local_id(rid,lid)
+      if sp.nil?
+        sp = create_product_from_atts atts, $scrapedmodel
+      else
+        fill_in_all(atts, sp)
       end
       return sp
   end
@@ -180,7 +196,10 @@ module DatabaseHelper
     matching_ro = RetailerOffering.find(:all, :conditions => \
       "product_id LIKE #{p.id} and product_type LIKE '#{$model.name}' and region LIKE '#{region}'").\
       reject{ |x| !x.stock or x.priceint.nil? }
-    return if matching_ro.empty?
+    if matching_ro.empty?
+      fill_in "instock#{$region_suffixes[region]}", false, p
+      return
+    end
     
     lowest = matching_ro.sort{ |x,y|
       x.priceint <=> y.priceint
@@ -211,11 +230,16 @@ module DatabaseHelper
   end
   
   # Gets Scraped Printer entries by a list of 
-  # matching retailer ids.
-  def scraped_by_retailers retailer_ids, scrapedmodel=$scrapedmodel
+  # matching retailer ids, where none of the SPs
+  # are matched to a Printer.
+  def scraped_by_retailers retailer_ids, scrapedmodel=$scrapedmodel, unmatched_only=true
      sps = []
      retailer_ids.each do |ret|
-       sps = sps | scrapedmodel.find_all_by_retailer_id(ret)
+       if unmatched_only
+         sps = sps | scrapedmodel.find_all_by_retailer_id_and_product_id(ret,nil)
+       else
+         sps = sps | scrapedmodel.find_all_by_retailer_id(ret)
+       end
      end
      return sps
   end

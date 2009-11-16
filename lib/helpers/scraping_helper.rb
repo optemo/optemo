@@ -108,8 +108,8 @@ module ScrapingHelper
   def scrape_att_via_css page, css_str, attname
     el = get_el page.css(css_str)
     # TODO deal with nils?
-    att = el.attribute(attname).to_s
-    return att
+    att = el.attribute(attname).to_s if el
+    return att || nil
   end
   
   # Same as below but difft args

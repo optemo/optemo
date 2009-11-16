@@ -1,11 +1,12 @@
 module Cluster
+  include CachingMemcached
   #The subclusters
-  def children(session)
+  def children(session, searchpids)
     unless @children
-      @children = self.class.find_all_by_parent_id(id, :order => 'cluster_size DESC')
+      @children = self.class.find_all_by_parent_id(id)
       #Check that children are not empty
-      if session.filter || !session.searchpids.blank?
-        @children.delete_if{|c| c.isEmpty(session)}
+      if session.filter
+        @children.delete_if{|c| c.isEmpty(session, searchpids)}
       end
     end
     @children
@@ -13,26 +14,26 @@ module Cluster
   
   
   # finding the deepChildren(clusters with size 1) in clusters
-  def deepChildren(session, dC = [])
+  def deepChildren(session, searchpids, dC = [])
     #store the cluster id if the cluster_size is 1 and the cluster accepts the filtering conditions 
-    if (self.cluster_size == 1) && (self.size(session)>0)
+    if (self.cluster_size == 1) && (self.size(session, searchpids)>0)
       dC << self
     else
       mychildren = self.class.find_all_by_parent_id(id)
       mychildren.each do |mc|
-          dC = mc.deepChildren(session, dC)
+          dC = mc.deepChildren(session, searchpids, dC)
       end  
     end 
     dC
   end
   
-  def ranges(featureName, session)
+  def ranges(featureName, session, searchpids)
     @range ||= {}
     if @range[featureName].nil?
-      unless session.filter || !session.searchpids.blank?
+      unless session.filter
         @range[featureName] = [send(featureName+'_min'), send(featureName+'_max')]
       else
-        values = nodes(session).map{|n| n.send(featureName)}.sort
+        values = nodes(session, searchpids).map{|n| n.send(featureName)}.sort
         nodes_min = values[0]
         nodes_max = values[-1]
         @range[featureName] = [nodes_min, nodes_max]    
@@ -40,35 +41,47 @@ module Cluster
     end
     @range[featureName]
   end
+
+# this could be integrated with ranges later
+  def indicator(featureName, session, searchpids)
+    indic = false
+     unless session.filter
+        indic = send(featureName)
+     else
+        values = nodes(session, searchpids).map{|n| n.send(featureName)}
+        if values.index(false).nil? # they are all the same
+            indic = true
+        end      
+     end
+     indic
+  end
   
-  def nodes(session)
+  def nodes(session,searchpids)
     unless @nodes
-      #@nodes = $nodemodel.find(:all, :order => 'price ASC', :conditions => ["cluster_id = ? and region = ?#{session.filter && !Cluster.filterquery(session).blank? ?
-      #   ' and '+Cluster.filterquery(session) : ''}#{session.searchpids.blank? ? '' : ' and ('+session.searchpids+')'}",id,$region])
-      @nodes = $nodemodel.find(:all, :conditions => ["cluster_id = ? and region = ?#{session.filter && !Cluster.filterquery(session).blank? ?
-         ' and '+Cluster.filterquery(session) : ''}#{session.searchpids.blank? ? '' : ' and ('+session.searchpids+')'}",id,$region])
+      @nodes = $nodemodel.find(:all, :conditions => ["cluster_id = ?#{session.filter && !Cluster.filterquery(session).blank? ?
+         ' and '+Cluster.filterquery(session) : ''}#{!session.filter || searchpids.blank? ? '' : ' and ('+searchpids+')'}",id])
     end
     @nodes
   end
   
   #The represetative product for this cluster
-  def representative(session)
+  def representative(session, searchpids)
     unless @rep
-      node = nodes(session).first
-      @rep = $model.find(node.product_id) if node
+      node = nodes(session, searchpids).first
+      @rep = findCachedProduct(node.product_id) if node
     end
     @rep
   end
-
+  
   def self.filterquery(session)
     fqarray = []
     filters = Cluster.findFilteringConditions(session)
     filters.each_pair do |k,v|
       unless v.nil? || v == 'All Brands'
         if k.index(/(.+)_max$/)
-          fqarray << "#{Regexp.last_match[1]} <= #{v}"
+          fqarray << "#{Regexp.last_match[1]} <= #{v.class == Float ? v+0.00001 : v}"
         elsif k.index(/(.+)_min$/)
-          fqarray << "#{Regexp.last_match[1]} >= #{v}"
+          fqarray << "#{Regexp.last_match[1]} >= #{v.class == Float ? v-0.00001 : v}"
         #Categorical feature which needs to be deliminated
         elsif v.class == String && v.index('*')
           cats = []
@@ -86,10 +99,10 @@ module Cluster
     fqarray.join(' AND ')
   end
   
-  def size(session)
+  def size(session, searchpids)
     unless @size
-      if session.filter || !session.searchpids.blank?
-        @size = nodes(session).length
+      if session.filter
+        @size = nodes(session, searchpids).length
       else
         @size = cluster_size
       end
@@ -97,33 +110,32 @@ module Cluster
     @size
   end
   #Description for each cluster
-  def description(session)
+  def description(session, searchpids)
     des = []
-    DbFeature.find_all_by_product_type_and_feature_type_and_region(session.product_type, 'Continuous',$region).each do |f|
-   # @dbfeat.each do |f|
+    $dbfeat.each do |f|
+      if (f.featureType == 'Continuous')
         low = f.low
         high = f.high  
-        clusterR = ranges(f.name, session)
+        clusterR = ranges(f.name, session, searchpids)
         return 'Empty' if clusterR[0].nil? || clusterR[1].nil?
         if (clusterR[1]<=low)
           des <<  $model::ContinuousFeaturesDescLow[f.name]
         elsif (clusterR[0]>=high)
           des <<  $model::ContinuousFeaturesDescHigh[f.name]
         end
-      end 
+      end  
+    end 
       res = des.join(', ')
       res.blank? ? 'All Purpose' : res
   end
   
   
   def self.findFilteringConditions(session)
-    # @features
-    session.features.attributes.delete_if {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at' || key=='search_id'}
-    #session.features.attributes
+    session.features.attributes.reject {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at' || key=='search_id'}
   end
   
-  def isEmpty(session)
-    nodes(session).empty?
+  def isEmpty(session, searchpids)
+    nodes(session, searchpids).empty?
   end
   
   def clearCache
@@ -132,17 +144,10 @@ module Cluster
     @rep = nil
     @range = nil
     @children = nil
+    @utility = nil
   end
   
-  def utility(session)
-    #if session.filter || !session.searchpids.blank?
-    #  if size(session) == 0
-    #    @utility ||= 0
-    #  else
-    #    @utility ||= nodes(session).map{|n|n.utility}.sum/size(session)
-    #  end
-    #else
-      cached_utility
-    #end
+  def utility(session, searchpids)
+    cached_utility
   end
 end
