@@ -15,6 +15,16 @@ codes/CMakeFiles/hCluster.dir/hClustering.o
  /usr/local/include/mysql_time.h
  /usr/local/include/mysql_version.h
  /usr/local/include/typelib.h
+ coin-Clp/CoinUtils/src/CoinError.hpp
+ coin-Clp/CoinUtils/src/CoinFinite.hpp
+ coin-Clp/CoinUtils/src/CoinFloatEqual.hpp
+ coin-Clp/CoinUtils/src/CoinModel.hpp
+ coin-Clp/CoinUtils/src/CoinModelUseful.hpp
+ coin-Clp/CoinUtils/src/CoinPackedMatrix.hpp
+ coin-Clp/CoinUtils/src/CoinPackedVectorBase.hpp
+ coin-Clp/CoinUtils/src/CoinPragma.hpp
+ coin-Clp/CoinUtils/src/CoinShallowPackedVector.hpp
+ coin-Clp/CoinUtils/src/CoinUtilsConfig.h
  cppconn/dbciface/connection.h
  cppconn/dbciface/driver.h
  cppconn/dbciface/exception.h

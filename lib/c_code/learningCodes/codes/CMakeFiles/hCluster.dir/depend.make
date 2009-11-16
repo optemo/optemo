@@ -14,6 +14,16 @@ codes/CMakeFiles/hCluster.dir/hClustering.o: /usr/local/include/mysql_com.h
 codes/CMakeFiles/hCluster.dir/hClustering.o: /usr/local/include/mysql_time.h
 codes/CMakeFiles/hCluster.dir/hClustering.o: /usr/local/include/mysql_version.h
 codes/CMakeFiles/hCluster.dir/hClustering.o: /usr/local/include/typelib.h
+codes/CMakeFiles/hCluster.dir/hClustering.o: coin-Clp/CoinUtils/src/CoinError.hpp
+codes/CMakeFiles/hCluster.dir/hClustering.o: coin-Clp/CoinUtils/src/CoinFinite.hpp
+codes/CMakeFiles/hCluster.dir/hClustering.o: coin-Clp/CoinUtils/src/CoinFloatEqual.hpp
+codes/CMakeFiles/hCluster.dir/hClustering.o: coin-Clp/CoinUtils/src/CoinModel.hpp
+codes/CMakeFiles/hCluster.dir/hClustering.o: coin-Clp/CoinUtils/src/CoinModelUseful.hpp
+codes/CMakeFiles/hCluster.dir/hClustering.o: coin-Clp/CoinUtils/src/CoinPackedMatrix.hpp
+codes/CMakeFiles/hCluster.dir/hClustering.o: coin-Clp/CoinUtils/src/CoinPackedVectorBase.hpp
+codes/CMakeFiles/hCluster.dir/hClustering.o: coin-Clp/CoinUtils/src/CoinPragma.hpp
+codes/CMakeFiles/hCluster.dir/hClustering.o: coin-Clp/CoinUtils/src/CoinShallowPackedVector.hpp
+codes/CMakeFiles/hCluster.dir/hClustering.o: coin-Clp/CoinUtils/src/CoinUtilsConfig.h
 codes/CMakeFiles/hCluster.dir/hClustering.o: cppconn/dbciface/connection.h
 codes/CMakeFiles/hCluster.dir/hClustering.o: cppconn/dbciface/driver.h
 codes/CMakeFiles/hCluster.dir/hClustering.o: cppconn/dbciface/exception.h

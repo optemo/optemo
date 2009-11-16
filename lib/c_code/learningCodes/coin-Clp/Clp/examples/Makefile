@@ -60,7 +60,9 @@ COINLIBDIR = /optemo/site/lib/c_code/learningCodes/coin-Clp/lib
 
 # Libraries necessary to link with Clp
 LIBS = -L$(COINLIBDIR) -lClp -lCoinUtils \
+	-L/optemo/site/lib/c_code/learningCodes/cppconn/ -lmysqlcppconn \
 	-lm  `cat /optemo/site/lib/c_code/learningCodes/coin-Clp/lib/../share/doc/coin/CoinUtils/coinutils_addlibs.txt`
+    
 
 # Necessary Include dirs (we use the CYGPATH_W variables to allow
 # compilation with Windows compilers)

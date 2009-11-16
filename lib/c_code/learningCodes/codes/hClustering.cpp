@@ -15,6 +15,7 @@ using namespace std;
 //#include "coin-Clp/include/coin/ClpSimplex.hpp"
 #include <cppconn/mysql_public_iface.h>
 
+
 using namespace std;
 
 int main(int argc, char** argv){	
@@ -47,7 +48,7 @@ int main(int argc, char** argv){
 ///////////////////////////////////////////////
 		
 			try {
-		
+		 CoinModel temp;
 				// Using the Driver to create a connection
 				driver = sql::mysql::get_mysql_driver_instance();
 				cout<<"before"<<endl;

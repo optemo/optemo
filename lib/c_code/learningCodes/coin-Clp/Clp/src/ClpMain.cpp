@@ -349,7 +349,7 @@ main (int argc, const char *argv[])
 	  for (iType=0;iType<4;iType++) {
 	    int across=0;
 	    std::cout<<types[iType]<<std::endl;
-	    for ( iParam=0; iParam<numberParameters; iParam++ ) {
+	    for ( iParam=0; iParam<numberParameters; iParam++) {
 	      int type = parameters[iParam].type();
 	      if (type>=limits[iType]
 		  &&type<limits[iType+1]) {
