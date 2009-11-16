@@ -280,9 +280,8 @@ module DatabaseHelper
     return RetailerOffering.find_all_by_local_id_and_retailer_id(local_id, retailer_id)
   end
   
-  # Tries to make sure that duplicate reviews aren't recorded.
-  # Has several matching 
-  def find_or_create_review(atthash)
+  def recognize_review(atthash)
+    revu = nil
     # Try finding review by review ID (and retailer ID?)
     if atthash['local_review_id'] #and atthash['retailer_id']
       revu = Review.find_all_by_local_review_idand_product_type(atthash['local_review_id'], $model.name).first
@@ -295,6 +294,13 @@ module DatabaseHelper
       # find by content...
       revu = Review.find_all_by_content(atthash['content']).first
     end
+    return revu
+  end
+  
+  # Tries to make sure that duplicate reviews aren't recorded.
+  # Has several matching 
+  def find_or_create_review(atthash)
+    revu = recognize_review(atthash)
     if revu.nil?
       debugger
       revu = create_product_from_atts atthash, Review

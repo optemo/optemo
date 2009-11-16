@@ -60,14 +60,19 @@ end
 
 namespace :printers do
   
-  task :amazon_reviews => [:printer_init, :amazon_init, :reviews]
+  task :amazon_reviews => [:cam_init, :amazon_init, :reviews]
   
   task :reviews do    
     $retailers.collect{|x| x.id}.each do |ret|
-      dl_revue_4_these = RetailerOffering.find_all_by_retailer_id_and_product_type(ret, $model.name)
-      dl_revue_4_ids = dl_revue_4_these.collect{|x| x.local_id}.reject{|x| x.nil?}
       
-      dl_revue_4_ids.each do |localid|
+      have_revues_4_ids = Review.find_all_by_product_type($model.name).collect{|x| x.local_id}.uniq\
+      
+      dl_revue_4_these = RetailerOffering.find_all_by_retailer_id_and_product_type(ret, $model.name)
+      dl_revue_4_ids = dl_revue_4_these.collect{|w| w.local_id}.reject{|x| 
+        x.nil? or have_revues_4_ids.include?(x)}
+      
+      
+      dl_revue_4_ids[0..10].each do |localid|
         revues = scrape_reviews(localid, ret)
         revues.each{ |rvu|
           r = find_or_create_review(rvu)

@@ -121,7 +121,7 @@ module AmazonScraper
       atts['imageurl'] = temp.content if temp
       
       # REVIEWS
-      debugger # TODO check review stuff
+      #debugger # TODO check review stuff
       atts["averagereviewrating"] = nil#result.get('averagerating')
       atts['totalreviews'] = nil# result.get('totalreviews').to_i
       
@@ -293,7 +293,7 @@ module AmazonScraper
     mytext = temp.collect{|x| "#{x.get('date')} -- #{x.get('summary')}. #{x.get('content')} "}.join(' || ')
     reviews['reviewtext'] = mytext
     
-    debugger
+    #debugger
     
     return reviews
   end
@@ -360,7 +360,7 @@ module AmazonScraper
           return reviews
         end
       end
-      current_page = totalreviewpages - 2 if current_page == 1 # Debugging purposes only! Skip middle pages
+      #current_page = totalreviewpages - 2 if current_page == 1 # Debugging purposes only! Skip middle pages
       current_page += 1
       break if current_page > totalreviewpages #or current_page > 3 # Debugging purposes only!
     end
