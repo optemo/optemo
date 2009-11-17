@@ -65,18 +65,21 @@ namespace :printers do
   task :reviews do    
     $retailers.collect{|x| x.id}.each do |ret|
       
-      have_revues_4_ids = Review.find_all_by_product_type($model.name).collect{|x| x.local_id}.uniq\
+      have_revues_4_ids = Review.find_all_by_product_type($model.name).collect{|x| x.local_id}.uniq
       
       dl_revue_4_these = RetailerOffering.find_all_by_retailer_id_and_product_type(ret, $model.name)
       dl_revue_4_ids = dl_revue_4_these.collect{|w| w.local_id}.reject{|x| 
         x.nil? or have_revues_4_ids.include?(x)}
       
-      
       dl_revue_4_ids[0..10].each do |localid|
         revues = scrape_reviews(localid, ret)
         revues.each{ |rvu|
+          #debugger
+          rvu['product_type'] = $model.name
           r = find_or_create_review(rvu)
           fill_in_all(rvu,r) if r
+          #debugger
+          #0
         }
       end
     end    

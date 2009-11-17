@@ -360,7 +360,6 @@ module AmazonScraper
           return reviews
         end
       end
-      #current_page = totalreviewpages - 2 if current_page == 1 # Debugging purposes only! Skip middle pages
       current_page += 1
       break if current_page > totalreviewpages #or current_page > 3 # Debugging purposes only!
     end
