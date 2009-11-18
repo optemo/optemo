@@ -340,7 +340,7 @@ module AmazonScraper
           #averagerating ||= result.css('averagerating').text
           #totalreviews ||= result.css('totalreviews').text.to_i
           totalreviewpages ||= result.css('totalreviewpages').text.to_i
-          puts "#{$model.name} #{asin} review download: #{(totalreviewpages-current_page)/6} min remaining..."
+          puts "#{$model.name} #{asin} review download: #{(totalreviewpages-current_page)/6} min remaining..." if current_page % 10 == 1
           temp = result.css('review')
           temp = Array(temp) unless reviews.class == Array #Fix single and no review possibility
           array_of_hashes = temp.collect{|x| x.css('*').inject({}){|r,y| r.merge({y.name => y.text})}}
@@ -356,7 +356,7 @@ module AmazonScraper
           }
           reviews = reviews + named_array_of_hashes
         else
-          report_error " Reviews result nil for product #{asin}"
+          report_error "Reviews result nil for product #{asin}"
           return reviews
         end
       end
