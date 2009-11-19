@@ -1,7 +1,13 @@
 class Printer < ActiveRecord::Base
   include ProductProperties
   #Ultrasphinx field selection
-  is_indexed :fields => ['title', 'feature']
+  #is_indexed :fields => ['title', 'feature']
+  define_index do
+    #fields
+    indexes title
+    indexes feature
+    #attributes
+  end
            #                                (c)luster 
            #                                (f)ilter 
            #                                (d)escription
