@@ -63,6 +63,8 @@ namespace :printers do
   task :amazon_reviews => [:cam_init, :amazon_init, :reviews]
   
   task :reviews do    
+    
+    total_before_script = Review.count
     $retailers.collect{|x| x.id}.each do |ret|
       
       baseline = Review.count
@@ -73,7 +75,7 @@ namespace :printers do
       dl_revue_4_ids = dl_revue_4_these.collect{|w| w.local_id}.reject{|x| 
         x.nil? or have_revues_4_ids.include?(x)}
       
-      dl_revue_4_ids[0..30].each do |localid|
+      dl_revue_4_ids[0..50].each do |localid|
         revues = scrape_reviews(localid, ret)
         revues.each{ |rvu|
           rvu['product_type'] = $model.name
@@ -84,7 +86,8 @@ namespace :printers do
         puts "#{Review.count - baseline} reviews added"
         baseline = Review.count
       end
-    end    
+    end  
+    puts  "#{Review.count - total_before_script} reviews added!"
   end
   
   task :dlmorestats => [:printer_init, :amazon_init, :rescrape_stats, :vote]
