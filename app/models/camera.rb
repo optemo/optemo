@@ -1,12 +1,12 @@
 class Camera < ActiveRecord::Base
   include ProductProperties
   has_many :camera_nodes
-  define_index do
-    #fields
-    indexes title
-    indexes feature
-    #attributes
-  end
+  #define_index do
+  #  #fields
+  #  indexes title
+  #  indexes feature
+  #  #attributes
+  #end
            #                                      (c)luster 
            #                                      (f)ilter 
            #                                      (d)escription

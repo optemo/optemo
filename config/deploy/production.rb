@@ -44,7 +44,7 @@ end
 desc "Reindex search index"
 task :reindex do
   run "rake -f #{current_path}/Rakefile ts:conf RAILS_ENV=production"
-  run "rake -f #{current_path}/Rakefile ts:index RAILS_ENV=production"
+  run "rake -f #{current_path}/Rakefile ts:rebuild RAILS_ENV=production"
 end
 
 desc "Compile C-Code"
