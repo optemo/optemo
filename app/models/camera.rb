@@ -1,7 +1,12 @@
 class Camera < ActiveRecord::Base
   include ProductProperties
   has_many :camera_nodes
-  is_indexed :fields => ['title', 'feature']
+  define_index do
+    #fields
+    indexes title
+    indexes feature
+    #attributes
+  end
            #                                      (c)luster 
            #                                      (f)ilter 
            #                                      (d)escription
