@@ -61,8 +61,5 @@ task :serversetup do
 end
 
 after :deploy, "serversetup"
-after :serversetup, "deploy:after_update_code"
-after :after_update_code, "reindex"
-after :reindex, "deploy:restart"
-
+after :serversetup, "reindex"
 
