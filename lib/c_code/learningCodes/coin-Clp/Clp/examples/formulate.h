@@ -20,36 +20,46 @@ void formulate(sql::Statement *stmt, sql::ResultSet *resPref, sql::ResultSet *re
 		//	cout<<"count is "<<resPref->rowsCount()<<endl;
 		pickedId = resPref->getDouble("product_picked");
 	
-		command ="select * from factors where product_type=";
+		command ="select * from factors where product_type=\'";
 		command += productName;
-		command += " and product_id=";
+		command += "\' and product_id=";
 		ostringstream ppIdS;
 		ppIdS << pickedId;
 		command += ppIdS.str();
-	cout<<"HERE"<<endl;
+		command += ";";
+	//	
 		resFactor = stmt->executeQuery(command);
+		
 		for (int i=0; i<conFeatureN; i++){
-			factor[i] = resFactor->getDouble(conFeatureNames[i]);
 			resFactor->next();
+			factor[i] = resFactor->getDouble(conFeatureNames[i]);
 		}	
 		
 		ignoredId = resPref->getDouble("product_ignored");
-		command ="select * from factors where product_type=";
+		command ="select * from optemo_bestbuy.factors where product_type=\'";
 		command += productName;
-		command += " and product_id=";
+		command += "\' and product_id=";
 		ostringstream ipIdS;
 		ipIdS << ignoredId;
 		command += ipIdS.str();
+		command += ";";
+		cout<<"command is "<<command<< endl;
 		resFactor = stmt->executeQuery(command);
+		cout<<"count is "<<resFactor->rowsCount()<<endl;
 		for (int i=0; i<conFeatureN; i++){
+				cout<<"HERE"<<endl;
+		    resFactor->next();
+				
+		
 			factor[i] = factor[i] - resFactor->getDouble(conFeatureNames[i]);
-			resFactor->next();
+	
 		}	
+			
 	}	
 	
 	
 		//factor vector is the coeffiecient vector for the constraints
-		//the lower bound is 0 and the upper bound is macimum utility, i.e. 1
+		//the lower bound is 0 and the upper bound is maximum utility, i.e. 1
 		
 		//constructing the objective function
 		double * objective = new double[constN+1];
@@ -57,7 +67,7 @@ void formulate(sql::Statement *stmt, sql::ResultSet *resPref, sql::ResultSet *re
 			objective[i] = alpha;
 		}
 		objective[constN] = 1;
-		
+	
 		//constructing the bounds
 		// bounds for preference weights
 		double * col_lb = new double [conFeatureN+constN+1];
