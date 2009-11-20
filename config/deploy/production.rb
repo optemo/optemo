@@ -43,7 +43,8 @@ end
 
 desc "Reindex search index"
 task :reindex do
-  sudo "rake -f #{current_path}/Rakefile ultrasphinx:index RAILS_ENV=production"
+  run "rake -f #{current_path}/Rakefile ts:conf RAILS_ENV=production"
+  run "rake -f #{current_path}/Rakefile ts:rebuild RAILS_ENV=production"
 end
 
 desc "Compile C-Code"
@@ -56,10 +57,9 @@ desc "Configure the server files"
 task :serversetup do
   # Instantiate the database.yml file
   run "cd #{current_path}/config              && cp -f database.yml.deploy database.yml"
-  run "cd #{current_path}/config/ultrasphinx   && cp -f development.conf.deploy development.conf && cp -f production.conf.deploy production.conf"
+  #run "cd #{current_path}/config/ultrasphinx   && cp -f development.conf.deploy development.conf && cp -f production.conf.deploy production.conf"
 end
 
 after :deploy, "serversetup"
-after :serversetup, "deploy:restart"
-
+after :serversetup, "reindex"
 

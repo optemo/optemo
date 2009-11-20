@@ -49,4 +49,11 @@ Rails::Initializer.run do |config|
   # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}')]
   # config.i18n.default_locale = :de
   config.i18n.load_path += Dir[File.join(RAILS_ROOT, 'config', 'locales', '**', '*.{rb,yml}')]
+  
+  #Sphinx setup
+  config.gem(
+    'thinking-sphinx',
+    :lib => 'thinking_sphinx/0.9.8',
+    :version => "1.3.4"
+  )
 end
