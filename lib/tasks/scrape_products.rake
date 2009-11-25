@@ -71,8 +71,8 @@ namespace :printers do
       have_revues_4_ids = Review.find_all_by_product_type($model.name).collect{|x| x.local_id}.uniq
       
       dl_revue_4_these = RetailerOffering.find_all_by_retailer_id_and_product_type(ret, $model.name)
-      dl_revue_4_ids = dl_revue_4_these.collect{|w| w.local_id}.reject{|x| 
-        x.nil? or have_revues_4_ids.include?(x)}
+      dl_revue_4_ids = [dl_revue_4_these.first.local_id]+dl_revue_4_these.collect{|w| w.local_id}.reject{|x| 
+        x.nil? or have_revues_4_ids.include?(x)}.reverse
       
       dl_revue_4_ids[0..100].each do |localid|
         revues = scrape_reviews(localid, ret)
