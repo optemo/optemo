@@ -842,7 +842,6 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.text     "blurb_fr"
     t.text     "blurb_en"
     t.date     "saleenddatestamp"
-    t.boolean  "noreviews"
   end
 
   create_table "cartridges", :force => true do |t|

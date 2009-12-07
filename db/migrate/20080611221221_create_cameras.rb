@@ -46,9 +46,6 @@ class CreateCameras < ActiveRecord::Migration
       t.date        :releasedate
       t.text        :specialfeatures
       t.string      :studio
-      
-      #REVIEW STUFF
-      t.boolean     :noreviews
     end  
   end
 

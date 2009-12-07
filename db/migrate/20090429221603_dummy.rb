@@ -2,7 +2,7 @@ class Dummy < ActiveRecord::Migration
   def self.up
     #remove_column :cameras, :productgroup
     #remove_column :reviews, :asin
-    #add_column :cameras, :noreviews, :boolean
+    #add_column :scraped_cameras, :noreviews, :boolean
     #add_column :cameras, :resolutionmax, :float
     #add_column :scraped_cameras, :bodyonly, :boolean
     #remove_column :cameras, :binding
@@ -13,8 +13,7 @@ class Dummy < ActiveRecord::Migration
   end
 
   def self.down
-    
-    
-    #remove_column :cameras, :binding
+    remove_column :cameras, :noreviews
+    remove_column :scraped_cameras, :noreviews
   end
 end
