@@ -73,7 +73,7 @@ namespace :printers do
       #no_revues_4_ids = ScrapedCamera.find_all_by_totalreviews(0).collect{|x| x.local_id}.uniq
       
       dl_revue_4_these = RetailerOffering.find_all_by_retailer_id_and_product_type(ret, $model.name)
-      dl_revue_4_ids = dl_revue_4_these.collect{|w| w.local_id}.uniq - have_revues_4_id
+      dl_revue_4_ids = dl_revue_4_these.collect{|w| w.local_id}.uniq - have_revues_4_ids
       #.reject{|x| 
       #  x.nil? or have_revues_4_ids.include?(x) or no_revues_4_ids.include?(x)}
       
