@@ -18,10 +18,21 @@ module ImageHelper
         image = Magick::ImageList.new(filename_from_id(id,sz))
         image = image.first if image.class == Magick::ImageList
         return false if image.nil?
-     rescue
+     rescue Magick::ImageMagickError => ime
+        error_string = "#{$0} #{$!} #{ime}"
+        if(error_string || '').match(/No such file or directory/).nil?
+          puts "ImageMagick Error"
+          puts error_string
+        else
+          puts "ImageMagick says: File not found for #{id}"
+        end
+        return false
+     rescue Exception => e
+        puts "#{e.type} #{e.message}"
         return false
      else
-        return image.rows
+        return image.rows if image
+        return false # When would this happen?
      end
      return false
   end
@@ -39,12 +50,7 @@ module ImageHelper
     model.all.each do |rec|
       image = nil
       @@size_names.each do |sz|        
-        begin
-          image = Magick::ImageList.new(filename_from_id(rec.[]($id_field), sz))
-          image = image.first if image.class == Magick::ImageList
-        rescue
-          image = nil
-        end
+        image = file_exists_for(rec[$id_field], sz)
         not_resized << rec unless image
       end
     end
@@ -56,13 +62,8 @@ module ImageHelper
     no_pic = []
     model.all.each do |rec|
       image = nil
-      begin
-        image = Magick::ImageList.new(filename_from_id(rec.[]($id_field)))
-        image = image.first if image.class == Magick::ImageList
-      rescue
-        image = nil
-      end
-        no_pic << rec unless image
+      image = file_exists_for(rec[$id_field])
+      no_pic << rec unless image
     end
     return no_pic
   end
@@ -122,13 +123,13 @@ module ImageHelper
     filename = img.filename.gsub(/\..+$/,'')
     scaled = []
     trimmed = img.trim
-    trimmed.write "#{filename}_trimmed.#{img.format}"
+    trimmed.write "#{filename}_trimmed.JPEG"
     if trimmed.rows != img.rows or trimmed.columns != img.columns
       puts "Start with #{img.rows} by #{img.columns}, end with  #{trimmed.rows} by #{trimmed.columns}" 
     end
     @@sizes.each_with_index do |size, index|
       pic = trimmed.resize_to_fit(size[0],size[1])
-      pic.write "#{filename}_#{@@size_names[index]}.#{img.format}"
+      pic.write "#{filename}_#{@@size_names[index]}.JPEG"
       scaled << pic
     end  
     return scaled
@@ -147,25 +148,24 @@ module ImageHelper
   
   def record_pic_urls recordset
     recordset.each do |rec|
-      @@size_names.each do |sz|        
-        #if rec.[]( "image#{sz}url" ).nil?
-          fill_in "image#{sz}url", url_from_item_and_sz(rec.skuid, sz), rec
-        #end
+      @@size_names.each do |sz|    
+        puts "#{ url_from_item_and_sz(rec[$id_field], sz)}"
+        debugger    
+        fill_in("image#{sz}url", url_from_item_and_sz(rec[$id_field], sz), rec)
       end
     end
   end
   
   def record_pic_stats recset
-    recset.each do |rec|
+    recset.each do |record|
       image = nil
-      @@size_names.each do |sz|        
+      rec = record
+      rec = $model.find(record) if rec.class != $model
+      @@size_names.each do |sz|
         begin
-          puts "#{filename_from_id(rec[$id_field])}"
-          puts "#{sz}"
-          image = Magick::ImageList.new(filename_from_id(rec[$id_field], sz))
-          puts "#{image.nil?}"
-          image = image.first if image.class == Magick::ImageList
-        rescue Exception => e
+          image = Magick::ImageList.new(filename_from_id(rec.[]($id_field), sz))
+          image = image.first if image and image.class.to_s == 'Magick::ImageList'
+        rescue  Exception => e
           puts "WARNING: Can't get dimensions for #{sz} size pic of product #{rec.[]($id_field)}"
           image = nil
         end
@@ -175,47 +175,40 @@ module ImageHelper
           fill_in "image#{sz}width", image.columns, rec if image.columns
         end
       end
-      puts "#{rec[$id_field]} stats recorded. image nil? #{image.nil?} "
     end
-  end
-  
-  # Download pics for each item in the set of db records
-  def download_these recordset
-    failed = []
-    
-    recordset.each do |x|
-      id = x.[]($id_field)
-      url = x.[]($img_url_field)
-      unless url.nil? or url.empty? or file_exists_for(id)
-        oldurl = url
-        newurl = download_img oldurl, "system/#{$imgfolder}", "#{id}.jpg"
-        
-        failed << id if(newurl.nil?)
-        
-        puts " Waiting waiting. Downloaded #{oldurl} into #{newurl}."
-        sleep(30)
-      end
-    end
-    
-    return failed
   end
   
   # Donwload pics for each id in the { id => url} hash
   def download_all_pix id_and_url_hash
     failed = []
-    
     id_and_url_hash.each do | id, url|
-      unless url.nil? or url.empty? or file_exists_for(id)
-        oldurl = url
-        newurl = download_img oldurl, "system/#{$imgfolder}", "#{id}.jpg"
-        
-        failed << id if(newurl.nil?)
-        
-        puts " Waiting waiting. Downloaded #{oldurl} into #{newurl}."
-        sleep(30)
+      begin
+        unless url.nil? or url.empty? or file_exists_for(id)
+          oldurl = url
+          newurl = download_img oldurl, "system/#{$imgfolder}", "#{id}.jpg"
+          if(newurl.nil?)
+            failed << id 
+            puts "Failed to download picture for #{id} from #{oldurl}"
+          else
+            puts "Downloaded #{oldurl} into #{newurl}."
+          end
+          sleep(30)
+        end
+      rescue Magick::ImageMagickError => ime
+        error_string = "#{$0} #{$!} #{ime}"
+        if(error_string || '').match(/No such file or directory/).nil?
+          puts "ImageMagick Error in download_all_pix"
+          puts error_string
+        else
+          puts "ImageMagick says: File not found for #{id}"
+        end
+        failed << id
+      rescue Exception => e
+        puts "#{e.type} #{e.message}"
+        puts "Downloading #{id} failed"
+        failed << id
       end
     end
-    
     return failed
   end
   
@@ -223,22 +216,29 @@ module ImageHelper
   def resize_all ids
     failed = []
     ids.uniq.each do |id|
+      image = nil
       begin
-        image = Magick::ImageList.new(filename_from_id(id))
-        image = image.first if image.class == Magick::ImageList
+        image = Magick::ImageList.new(filename_from_id id)
+        image = image.first if(image and image.class == Magick::ImageList)
         filenames = resize(image)
-        failed << id if filenames.length == 0
-        # TODO
-        #@@size_names.each do |sz|
-        #    fill_in "image#{sz}url", url_from_item_and_sz(id, sz), rec
-        #end
-      rescue
-        image = nil
+        failed << id if(filenames.nil? or filenames.length == 0)
+        puts "Resizing #{id} successful"
+      rescue Magick::ImageMagickError => ime
+        error_string = "#{$0} #{$!} #{ime}"
+        if(error_string || '').match(/No such file or directory/).nil?
+          puts "ImageMagick Error in resize_all"
+          puts error_string
+        else
+          puts "ImageMagick says: File not found for #{id}"
+        end
         failed << id
         puts "Resizing #{id} failed"
+      rescue Exception => e
+        puts "ERROR: #{e.type} #{e.message}"
+        puts "Resizing #{id} failed"
+        failed << id
       end
     end
-    
     return failed
   end
   

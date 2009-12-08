@@ -63,7 +63,8 @@ namespace :printers do
   task :amazon_reviews => [:cam_init, :amazon_init, :reviews]
   
   task :temp => [:cam_init, :amazon_mkt_init, :scrape]
-  
+  task :temp2 => [:cam_init, :amazon_init, :scrape]
+   
   task :reviews do    
     total_before_script = Review.count
     $retailers.collect{|x| x.id}.each do |ret|
