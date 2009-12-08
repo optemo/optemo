@@ -106,7 +106,7 @@ function spinner(holderid, R1, R2, count, stroke_width, colour) {
 				if(null != document.getElementById('c'+id)){
 					$("#already_added_msg").attr("style","display:block");
 				}else{
-					trackPage('goals/save');
+					trackPage('goals/save/'+id);
 					// Create an empty slot for product
 					$('#savedproducts').append("<div class='saveditem' id='c" + id + "'> </div>");
 					// Update just the savebar_content div after doing get on /saveds/create/[id here].
