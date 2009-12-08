@@ -6,6 +6,12 @@ namespace :pictures do
   desc 'Re-download all pictures for Printers'
   task :scrape_printer_pix => [:printer_init, :dl_pix, :resize_all, :close_log]
   
+  task :temp => :printer_init do
+    puts "Recording pic stats"
+    record_pic_stats($model.all)
+    puts "Done!"
+  end
+  
   task :printer_init => :environment do 
     $model = Printer
     $scrapedmodel = ScrapedPrinter
@@ -25,7 +31,7 @@ namespace :pictures do
   end
   
   task :dl_pix do
-    
+    puts "Downloading pictures"
     failed = []
     urls = {}
     $model.all.each do |product| 
@@ -61,9 +67,11 @@ namespace :pictures do
   
   
   task :dl_missing_pix do
+    puts "Downloading missing pictures"
     picless = picless_recs
-    really_picless = picless.reject{|x| (!x.imagesurl.nil? and !x.imagemurl.nil? and !x.imagelurl.nil?) or (!x.instock and !x.instock_ca)}
-    
+    puts "#{picless.count} #{$model.name} pictures are missing!"
+    #really_picless = picless.reject{|x| (!x.imagesurl.nil? and !x.imagemurl.nil? and !x.imagelurl.nil?) or (!x.instock and !x.instock_ca)}
+    really_picless = picless
     puts "Will download #{really_picless.count} pictures."
     
     failed = []

@@ -66,7 +66,7 @@ namespace :printers do
   task :temp2 => [:cam_init, :amazon_init, :scrape]
    
   task :reviews do    
-    limit = 1
+    limit = 3
     total_before_script = Review.count
     $retailers.collect{|x| x.id}.each do |ret|
       
@@ -86,7 +86,6 @@ namespace :printers do
           r = find_or_create_review(rvu)
           fill_in_all(rvu,r) if r
           $scrapedmodel.find_all_by_local_id(localid).each do |sp|
-            debugger
             fill_in 'averagereviewrating',rvu["averagereviewrating"], sp if rvu["averagereviewrating"]
             fill_in 'totalreviews', rvu['totalreviews'], sp if rvu["totalreviews"]
           end

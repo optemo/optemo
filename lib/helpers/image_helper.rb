@@ -91,6 +91,7 @@ module ImageHelper
       return nil 
     end
     #return url if url.include?(folder)
+    #debugger
     filename = fname || url.split('/').pop
     ret = "/#{folder}/#{filename}"
     begin
@@ -163,17 +164,24 @@ module ImageHelper
       rec = record
       rec = $model.find(record) if rec.class != $model
       @@size_names.each do |sz|
-        begin
-          image = Magick::ImageList.new(filename_from_id(rec.[]($id_field), sz))
-          image = image.first if image and image.class.to_s == 'Magick::ImageList'
-        rescue  Exception => e
-          puts "WARNING: Can't get dimensions for #{sz} size pic of product #{rec.[]($id_field)}"
-          image = nil
-        end
-        if image
-          fill_in "image#{sz}url", url_from_item_and_sz(rec.[]($id_field), sz), rec
-          fill_in "image#{sz}height", image.rows, rec if image.rows
-          fill_in "image#{sz}width", image.columns, rec if image.columns
+        if file_exists_for(rec[$id_field], sz)
+          begin
+            image = Magick::ImageList.new(filename_from_id(rec[$id_field], sz))
+            image = image.first if image and image.class.to_s == 'Magick::ImageList'
+          rescue  Exception => e
+            puts "WARNING: Can't get dimensions for #{sz} size pic of product #{rec[$id_field]}"
+            puts "#{e.type} #{e.message}"
+            image = nil
+          end
+          if image
+            fill_in "image#{sz}url", url_from_item_and_sz(rec[$id_field], sz), rec
+            fill_in "image#{sz}height", image.rows, rec if image.rows
+            fill_in "image#{sz}width", image.columns, rec if image.columns
+          end
+        else
+            fill_in "image#{sz}url", nil, rec
+            fill_in "image#{sz}height", nil, rec
+            fill_in "image#{sz}width", nil, rec
         end
       end
     end
@@ -186,7 +194,7 @@ module ImageHelper
       begin
         unless url.nil? or url.empty? or file_exists_for(id)
           oldurl = url
-          newurl = download_img oldurl, "system/#{imgfolder}", "#{id}.jpg"
+          newurl = download_img(oldurl, "system/#{imgfolder}", "#{id}.jpg")
           if(newurl.nil?)
             failed << id 
             puts "Failed to download picture for #{id} from #{oldurl}"
