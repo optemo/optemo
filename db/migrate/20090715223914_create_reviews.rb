@@ -9,7 +9,7 @@ class CreateReviews < ActiveRecord::Migration
       t.string :customerid
       t.integer :totalvotes
       t.text :content
-      t.string :asin
+      t.string :local_id
       t.string :source
       t.string :summary
       t.timestamps

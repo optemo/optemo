@@ -6,11 +6,7 @@ module MigrationHelper
     #t.text    :label
     
     addPicStuff(t)
-    
-    t.integer :price
-    t.string  :pricestr
-    t.boolean :instock
-    t.string  :pricehistory
+    addPricing(t)
     
     t.boolean :iseligibleforsupersavershipping
     t.integer :bestoffer
@@ -19,6 +15,13 @@ module MigrationHelper
     t.float   :averagereviewrating
     t.integer :totalreviews
     t.timestamps
+  end
+  
+  def addPricing(t)
+    t.integer :price
+    t.string  :pricestr
+    t.boolean :instock
+    t.string  :pricehistory
   end
   
   def addReviews(t)

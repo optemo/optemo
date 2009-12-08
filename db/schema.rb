@@ -599,58 +599,7 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.float    "itemweight"
   end
 
-  create_table "camera_clusters", :force => true do |t|
-    t.integer "parent_id"
-    t.integer "layer"
-    t.integer "cluster_size"
-    t.string  "brand"
-    t.float   "maximumresolution_min"
-    t.float   "maximumresolution_max"
-    t.float   "displaysize_min"
-    t.float   "displaysize_max"
-    t.float   "opticalzoom_min"
-    t.float   "opticalzoom_max"
-    t.float   "price_min"
-    t.float   "price_max"
-    t.integer "version",               :default => 0
-    t.float   "cached_utility"
-    t.string  "region",                :default => "us"
-  end
-
-  create_table "camera_features", :force => true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "session_id"
-    t.string   "brand",                  :default => "All Brands"
-    t.float    "maximumresolution_min"
-    t.float    "maximumresolution_max"
-    t.float    "maximumresolution_pref", :default => 0.25
-    t.float    "displaysize_min"
-    t.float    "displaysize_max"
-    t.float    "displaysize_pref",       :default => 0.25
-    t.float    "opticalzoom_min"
-    t.float    "opticalzoom_max"
-    t.float    "opticalzoom_pref",       :default => 0.25
-    t.float    "price_min"
-    t.float    "price_max"
-    t.float    "price_pref",             :default => 0.25
-    t.integer  "search_id"
-  end
-
-  create_table "camera_nodes", :force => true do |t|
-    t.integer "cluster_id"
-    t.integer "product_id"
-    t.float   "maximumresolution"
-    t.float   "displaysize"
-    t.float   "opticalzoom"
-    t.float   "price"
-    t.string  "brand"
-    t.integer "version",           :default => 0
-    t.float   "utility"
-    t.string  "region",            :default => "us"
-  end
-
-  create_table "cameras", :force => true do |t|
+  create_table "camera2", :force => true do |t|
     t.text     "detailpageurl"
     t.boolean  "batteriesincluded"
     t.string   "batterydescription"
@@ -718,6 +667,107 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.boolean  "waterproof"
     t.boolean  "aa_batteries"
     t.boolean  "bodyonly"
+  end
+
+  create_table "camera_clusters", :force => true do |t|
+    t.integer "parent_id"
+    t.integer "layer"
+    t.integer "cluster_size"
+    t.string  "brand"
+    t.float   "maximumresolution_min"
+    t.float   "maximumresolution_max"
+    t.float   "displaysize_min"
+    t.float   "displaysize_max"
+    t.float   "opticalzoom_min"
+    t.float   "opticalzoom_max"
+    t.float   "price_min"
+    t.float   "price_max"
+    t.integer "version",               :default => 0
+    t.float   "cached_utility"
+    t.string  "region",                :default => "us"
+  end
+
+  create_table "camera_features", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "session_id"
+    t.string   "brand"
+    t.float    "maximumresolution_min"
+    t.float    "maximumresolution_max"
+    t.float    "maximumresolution_pref", :default => 0.25
+    t.float    "displaysize_min"
+    t.float    "displaysize_max"
+    t.float    "displaysize_pref",       :default => 0.25
+    t.float    "opticalzoom_min"
+    t.float    "opticalzoom_max"
+    t.float    "opticalzoom_pref",       :default => 0.25
+    t.float    "price_min"
+    t.float    "price_max"
+    t.float    "price_pref",             :default => 0.25
+    t.integer  "search_id"
+  end
+
+  create_table "camera_nodes", :force => true do |t|
+    t.integer "cluster_id"
+    t.integer "product_id"
+    t.float   "maximumresolution"
+    t.float   "displaysize"
+    t.float   "opticalzoom"
+    t.float   "price"
+    t.string  "brand"
+    t.integer "version",           :default => 0
+    t.float   "utility"
+    t.string  "region",            :default => "us"
+  end
+
+  create_table "cameras", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "title"
+    t.string   "imagesurl"
+    t.integer  "imagesheight"
+    t.integer  "imageswidth"
+    t.string   "imagemurl"
+    t.integer  "imagemheight"
+    t.integer  "imagemwidth"
+    t.string   "imagelurl"
+    t.integer  "imagelheight"
+    t.integer  "imagelwidth"
+    t.text     "detailpageurl"
+    t.text     "manufacturerurl"
+    t.string   "brand"
+    t.string   "model"
+    t.string   "mpn"
+    t.string   "dimensions"
+    t.integer  "itemwidth"
+    t.integer  "itemlength"
+    t.integer  "itemheight"
+    t.integer  "itemweight"
+    t.integer  "packageheight"
+    t.integer  "packagelength"
+    t.integer  "packagewidth"
+    t.integer  "packageweight"
+    t.float    "opticalzoom"
+    t.float    "resolutionmax"
+    t.string   "resolution"
+    t.float    "displaysize"
+    t.boolean  "slr"
+    t.boolean  "waterproof"
+    t.float    "maximumfocallength"
+    t.float    "minimumfocallength"
+    t.float    "digitalzoom"
+    t.boolean  "batteriesincluded"
+    t.string   "batterydescription"
+    t.string   "connectivity"
+    t.boolean  "hasredeyereduction"
+    t.string   "includedsoftware"
+    t.float    "averagereviewrating"
+    t.integer  "totalreviews"
+    t.text     "reviewtext"
+    t.integer  "price"
+    t.string   "pricestr"
+    t.boolean  "instock"
+    t.string   "pricehistory"
   end
 
   create_table "cartridges", :force => true do |t|
@@ -793,26 +843,20 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.datetime "updated_at"
   end
 
-  create_table "db_properties", :force => true do |t|
-    t.string   "name"
-    t.text     "brands"
-    t.float    "price_min"
-    t.float    "price_max"
-    t.float    "price_low"
-    t.float    "price_high"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "factors", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "product_type"
     t.integer  "product_id"
     t.float    "maximumresolution"
-    t.float    "displaysize"
+    t.float    "itemweight"
     t.float    "opticalzoom"
     t.float    "price"
+    t.float    "displaysize"
+    t.float    "minimumfocallength"
+    t.float    "maximumfocallength"
+    t.float    "minimumshutterspeed"
+    t.float    "maximumshutterspeed"
     t.float    "ppm"
     t.float    "itemwidth"
     t.float    "paperinput"
@@ -1135,6 +1179,23 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.string   "producttype"
   end
 
+  create_table "prefs", :force => true do |t|
+    t.integer  "idvisit"
+    t.string   "idcookie",        :limit => 32
+    t.integer  "product_picked"
+    t.integer  "product_ignored"
+    t.float    "weight"
+    t.float    "slider_min"
+    t.float    "slider_max"
+    t.string   "slider_name",     :limit => 40
+    t.string   "search_text"
+    t.integer  "search_numtimes", :limit => 2
+    t.datetime "servertime"
+    t.integer  "optemo_session"
+    t.integer  "filter_type",     :limit => 2
+    t.integer  "idsite"
+  end
+
   create_table "printer_clusters", :force => true do |t|
     t.integer "parent_id"
     t.integer "layer"
@@ -1177,7 +1238,7 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.float    "price_min"
     t.float    "price_max"
     t.float    "price_pref",         :default => 0.2
-    t.string   "brand",              :default => "All Brands"
+    t.string   "brand"
     t.boolean  "scanner"
     t.boolean  "printserver"
   end
@@ -1317,11 +1378,17 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.string   "customerid"
     t.integer  "totalvotes"
     t.text     "content"
-    t.string   "asin"
     t.string   "source"
     t.string   "summary"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "local_id"
+    t.string   "local_review_id"
+    t.integer  "retailer_id"
+    t.text     "review_url"
+    t.text     "pros"
+    t.text     "cons"
+    t.float    "value_rating"
   end
 
   create_table "saveds", :force => true do |t|
