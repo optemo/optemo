@@ -1,5 +1,50 @@
 namespace :sandbox do
   
+  
+  task :fix_img_exts => :environment do
+    require 'helpers/image_helper.rb'
+    require 'fileutils'
+    include ImageHelper
+    $imgfolder = 'printers'
+    Printer.all.each do |p|
+      ['s','m','l'].each do |sz|
+        attrname = "image#{sz}url"
+        url = p[attrname]
+        if url and url.match(/JPEG/) and !url.match(/http/)
+          oldfile = url.gsub(/images/, 'public/system')
+          if !File.exist?(oldfile)
+            p.update_attribute(attrname, nil)
+          end
+        end
+      end 
+    end
+  end
+  
+  task :fix_img_filenames => :environment do
+    require 'helpers/image_helper.rb'
+    require 'fileutils'
+    include ImageHelper
+    $imgfolder = 'printers'
+    Printer.all.each do |p|
+      ['s','m','l'].each do |sz|
+        attrname = "image#{sz}url"
+        url = p[attrname]
+        if url and url.match(/images\//) and !url.match(/http/)
+          newfile = filename_from_id(p.id,sz)
+          oldfile = url.gsub(/images/, 'public/system')
+          newurl = newfile.gsub(/public\/system/, 'images')
+          if url and newurl and url != newurl and File.exist?(oldfile)
+            FileUtils.mv(".#{oldfile}", newfile)
+            p.update_attribute(attrname, newurl)
+            puts "#{oldfile} --> #{newfile}"
+          end
+        elsif url and url.match(/http/)
+          p.update_attribute(attrname, nil)
+        end
+      end 
+    end
+  end
+  
   task :fix_cam_ros => :environment do
     cro = RetailerOffering.find_all_by_product_type('Camera')
     cro_no_m = cro.reject{|x| !x.merchant.nil?}

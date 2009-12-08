@@ -12,6 +12,10 @@ module ImageHelper
   @@size_names = ['s','m','l']
   @@sizes = [[70,50],[140,100],[400,300]]
   
+  def imgfolder
+    return $imgfolder || ($model.name.downcase+'s')
+  end
+  
   # Is there a file for a product with this id and this size?
   def file_exists_for id, sz=''
      begin
@@ -41,7 +45,7 @@ module ImageHelper
   # theoretically be in place for this product
   def url_from_item_and_sz id, sz
     return nil if id.nil? or id==''
-    return "/images/#{$imgfolder}/#{id}_#{sz}.JPEG"
+    return "/images/#{imgfolder}/#{id}_#{sz}.jpg"
   end
   
   # Returns a set of db records where the pic hasn't been resized
@@ -109,13 +113,11 @@ module ImageHelper
   # and a pre-set download folder
   def filename_from_id id, sz=''
     if sz==""
-      ext = 'jpg'
       connect=""
     else
-      ext = 'JPEG'
-      connect = "_" if sz!=''
+     connect = "_" if sz!=''
     end
-    return "public/system/#{$imgfolder}/#{id}#{connect}#{sz}.#{ext}"
+    return "public/system/#{imgfolder}/#{id}#{connect}#{sz}.jpg"
   end
   
   # Resizes an image to the 3 pre-set sizes
@@ -123,13 +125,13 @@ module ImageHelper
     filename = img.filename.gsub(/\..+$/,'')
     scaled = []
     trimmed = img.trim
-    trimmed.write "#{filename}_trimmed.JPEG"
+    trimmed.write "#{filename}_trimmed.jpg"
     if trimmed.rows != img.rows or trimmed.columns != img.columns
       puts "Start with #{img.rows} by #{img.columns}, end with  #{trimmed.rows} by #{trimmed.columns}" 
     end
     @@sizes.each_with_index do |size, index|
       pic = trimmed.resize_to_fit(size[0],size[1])
-      pic.write "#{filename}_#{@@size_names[index]}.JPEG"
+      pic.write "#{filename}_#{@@size_names[index]}.jpg"
       scaled << pic
     end  
     return scaled
@@ -150,7 +152,6 @@ module ImageHelper
     recordset.each do |rec|
       @@size_names.each do |sz|    
         puts "#{ url_from_item_and_sz(rec[$id_field], sz)}"
-        debugger    
         fill_in("image#{sz}url", url_from_item_and_sz(rec[$id_field], sz), rec)
       end
     end
@@ -185,7 +186,7 @@ module ImageHelper
       begin
         unless url.nil? or url.empty? or file_exists_for(id)
           oldurl = url
-          newurl = download_img oldurl, "system/#{$imgfolder}", "#{id}.jpg"
+          newurl = download_img oldurl, "system/#{imgfolder}", "#{id}.jpg"
           if(newurl.nil?)
             failed << id 
             puts "Failed to download picture for #{id} from #{oldurl}"

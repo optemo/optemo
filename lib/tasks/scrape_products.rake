@@ -152,7 +152,7 @@ namespace :printers do
           retailer = Retailer.find(retailer_ok_sp.retailer_id)
           spid = retailer_ok_sp.id
           generic_scrape(local_id, retailer)
-          if ScrapedPrinter.find(spid).ppm.nil?
+          if $scrapedmodel.find(spid).ppm.nil?
             puts "#{spid} has a nil ppm..."
           else
             puts "#{spid} has been fixed!"
@@ -277,9 +277,8 @@ namespace :printers do
     @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_scraper.log", 'w+')
     $retailers.each do |retailer|
       ids = scrape_all_local_ids retailer.region
-      scraped_ids = (ScrapedPrinter.find_all_by_retailer_id(retailer.id)).collect{|x| x.local_id}#.reject{|x|   x.product_id.nil? }
+      scraped_ids = ($scrapedmodel.find_all_by_retailer_id(retailer.id)).collect{|x| x.local_id}#.reject{|x|   x.product_id.nil? }
       ids = (ids - scraped_ids).uniq.reject{|x| x.nil?}
-      ids = ids[0..300]
       announce "Will scrape #{ids.count} #{$model.name}s from #{retailer.name}"
       
       ids.each_with_index do |local_id, i|
@@ -287,7 +286,7 @@ namespace :printers do
         announce "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
       end
     end
-    @logfile.closep
+    @logfile.close
   end
   
   desc "Check that scraped data isn't wonky"
