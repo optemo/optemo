@@ -15,11 +15,15 @@ void formulate(sql::Statement *stmt, sql::ResultSet *resPref, sql::ResultSet *re
 	int pickedId, ignoredId, constN;
 	double* factor = new double [conFeatureN];
 	double utility;
+	int count = 1;
+	double fact;
 	while (resPref->next()){
 			
 		//	cout<<"count is "<<resPref->rowsCount()<<endl;
-		pickedId = resPref->getDouble("product_picked");
+		pickedId = resPref->getInt("product_picked");
+		
 	
+		count++;
 		command ="select * from factors where product_type=\'";
 		command += productName;
 		command += "\' and product_id=";
@@ -34,30 +38,31 @@ void formulate(sql::Statement *stmt, sql::ResultSet *resPref, sql::ResultSet *re
 			resFactor->next();
 			factor[i] = resFactor->getDouble(conFeatureNames[i]);
 		}	
-		
+			
 		ignoredId = resPref->getDouble("product_ignored");
-		command ="select * from optemo_bestbuy.factors where product_type=\'";
+		command ="select * from factors where product_type=\'";
 		command += productName;
 		command += "\' and product_id=";
 		ostringstream ipIdS;
 		ipIdS << ignoredId;
 		command += ipIdS.str();
 		command += ";";
-		cout<<"command is "<<command<< endl;
+		cout<<"command is "<<command<<endl;
 		resFactor = stmt->executeQuery(command);
-		cout<<"count is "<<resFactor->rowsCount()<<endl;
+		cout<<"count is "<<count<<" conFeatureN is "<<conFeatureN<<endl;
+		cout<<"resFactor count is "<<resFactor->rowsCount()<<endl;
 		for (int i=0; i<conFeatureN; i++){
-				cout<<"HERE"<<endl;
 		    resFactor->next();
-				
-		
-			factor[i] = factor[i] - resFactor->getDouble(conFeatureNames[i]);
-	
+			cout<<"beforerrrr"<<"  factor["<<i<<"] is "<<factor[i]<<endl;
+			fact = resFactor->getDouble(conFeatureNames[i]);
+			cout<<" fact is "<<fact<<endl;
+			factor[i] = factor[i] - fact;
+        	cout<<"HERE"<<endl;	
 		}	
 			
 	}	
 	
-	
+			
 		//factor vector is the coeffiecient vector for the constraints
 		//the lower bound is 0 and the upper bound is maximum utility, i.e. 1
 		

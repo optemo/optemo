@@ -51,7 +51,7 @@ int main (int argc, const char *argv[])
 	sql::ResultSet	*res3;
     sql::ResultSet	*resClus;
     sql::ResultSet	*resNodes;
-	int visitId = 2175;
+	int visitId = 8963;
 	ostringstream visitIdStr;
 	visitIdStr << visitId;
 	string databaseName = "optemo_development";
@@ -66,7 +66,6 @@ int main (int argc, const char *argv[])
 	
 			// Using the Driver to create a connection
 			driver = sql::mysql::get_mysql_driver_instance();
-			cout<<"before"<<endl;
 			con = driver->connect(HOST, PORT, USER, PASS);
 			stmt = con->createStatement();
 			string command = "USE ";
@@ -77,20 +76,17 @@ int main (int argc, const char *argv[])
 			command += tableName;
 			command += " where product_picked IS NOT NULL and idvisit=";
 			command += visitIdStr.str();
-			command += ";";
+			command += " order by servertime DESC limit 20;";
 			resPref = stmt->executeQuery(command);
-			
+			cout<<"prefs count is "<<resPref->rowsCount()<<endl;;
 			ClpSimplex model3;
 			string productName = "Camera";
 			int conFeatureN = 2;
 			string* conFeatureNames = new string[conFeatureN];
 			conFeatureNames[0] = "price";
 			conFeatureNames[1] = "maximumresolution";
-			cout<<"before formulate"<<endl;
 			formulate(stmt, resPref, resFactor, model3, productName,conFeatureNames, conFeatureN);
-			cout<<"after formulate"<<endl;
-	//		formulate(res, )
-			
+
 			
 
 delete stmt;
