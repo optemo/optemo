@@ -142,7 +142,7 @@ module ImageHelper
         :conditions => ["(image#{sz}height IS NULL OR image#{sz}width IS NULL) AND image#{sz}url IS NOT NULL"])
     end  
     
-    record_pic_stats no_img_sizes
+    record_pic_stats(no_img_sizes)
   end
   
   def record_pic_urls recordset
@@ -160,9 +160,12 @@ module ImageHelper
       image = nil
       @@size_names.each do |sz|        
         begin
-          image = Magick::ImageList.new(filename_from_id(rec.[]($id_field), sz))
+          puts "#{filename_from_id(rec[$id_field])}"
+          puts "#{sz}"
+          image = Magick::ImageList.new(filename_from_id(rec[$id_field], sz))
+          puts "#{image.nil?}"
           image = image.first if image.class == Magick::ImageList
-        rescue
+        rescue Exception => e
           puts "WARNING: Can't get dimensions for #{sz} size pic of product #{rec.[]($id_field)}"
           image = nil
         end
@@ -172,6 +175,7 @@ module ImageHelper
           fill_in "image#{sz}width", image.columns, rec if image.columns
         end
       end
+      puts "#{rec[$id_field]} stats recorded. image nil? #{image.nil?} "
     end
   end
   
@@ -217,13 +221,12 @@ module ImageHelper
   
   # Resize pictures for products with the given ids/for the given filenames.
   def resize_all ids
-
     failed = []
     ids.uniq.each do |id|
       begin
-        image = Magick::ImageList.new(filename_from_id id)
+        image = Magick::ImageList.new(filename_from_id(id))
         image = image.first if image.class == Magick::ImageList
-        filenames = resize image
+        filenames = resize(image)
         failed << id if filenames.length == 0
         # TODO
         #@@size_names.each do |sz|

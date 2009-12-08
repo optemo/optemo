@@ -16,7 +16,6 @@ class CreateScrapedCameras < ActiveRecord::Migration
       addDimensions(t)      # item & package sizes & weights
       addCameraProperties(t) 
       addReviews(t)
-      linkToProductAndRetailer(t) 
       
       #???"listpriceint"??
       #t.string :warranty?? -- or should this go in RO?

@@ -62,22 +62,19 @@ namespace :printers do
   
   task :amazon_reviews => [:cam_init, :amazon_init, :reviews]
   
+  task :temp => [:cam_init, :amazon_mkt_init, :scrape]
+  
   task :reviews do    
     total_before_script = Review.count
     $retailers.collect{|x| x.id}.each do |ret|
       
       baseline = Review.count
       
-      have_revues_4_ids = ScrapedCamera.all.reject{|x| x.totalreviews.nil?}
-      #have_revues_4_ids = Review.find_all_by_product_type($model.name).collect{|x| x.local_id}.uniq
-      #no_revues_4_ids = ScrapedCamera.find_all_by_totalreviews(0).collect{|x| x.local_id}.uniq
+      have_revues_4_ids = Review.find_all_by_product_type($model.name).collect{|x| x.local_id}.uniq
+      no_revues_4_ids = $scrapedmodel.find_all_by_totalreviews(0).collect{|x| x.local_id}.uniq
+      dl_revue_4_ids = $scrapedmodel.all.collect{|x| x.local_id}.uniq - have_revues_4_ids - no_revues_4_ids
       
-      dl_revue_4_these = RetailerOffering.find_all_by_retailer_id_and_product_type(ret, $model.name)
-      dl_revue_4_ids = dl_revue_4_these.collect{|w| w.local_id}.uniq - have_revues_4_ids
-      #.reject{|x| 
-      #  x.nil? or have_revues_4_ids.include?(x) or no_revues_4_ids.include?(x)}
-      
-      dl_revue_4_ids[0..200].each do |localid|
+      dl_revue_4_ids.each do |localid|
         revues = scrape_reviews(localid, ret)
         revues.each{ |rvu|
           rvu['product_type'] = $model.name
@@ -172,11 +169,6 @@ namespace :printers do
   # The 2 things you can do, in terms of subtasks: scrape and update
   task :scrape => [:scrape_new, :match_to_products, :update_bestoffers, :validate_printers]
   task :update => [:update_prices, :scrape_new, :match_to_products, :update_bestoffers, :validate_printers]
-  
-  # Scraping and updating by website...
-  
-  desc 'temp'
-  task :temporary => [:cam_init, :vote]
   
   desc 'Update Amazon cameras'
   task :scrape_amazon_cams => [:cam_init, :amazon_init, :scrape_new, :update_prices]
