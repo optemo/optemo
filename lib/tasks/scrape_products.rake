@@ -66,6 +66,7 @@ namespace :printers do
   task :temp2 => [:cam_init, :amazon_init, :scrape]
    
   task :reviews do    
+    limit = 1
     total_before_script = Review.count
     $retailers.collect{|x| x.id}.each do |ret|
       
@@ -73,14 +74,22 @@ namespace :printers do
       
       have_revues_4_ids = Review.find_all_by_product_type($model.name).collect{|x| x.local_id}.uniq
       no_revues_4_ids = $scrapedmodel.find_all_by_totalreviews(0).collect{|x| x.local_id}.uniq
-      dl_revue_4_ids = $scrapedmodel.all.collect{|x| x.local_id}.uniq - have_revues_4_ids - no_revues_4_ids
-      
-      dl_revue_4_ids.each do |localid|
+      dl_revue_4_ids = ['B001SER48S']+ ($scrapedmodel.all.collect{|x| x.local_id}.uniq - have_revues_4_ids - no_revues_4_ids)
+      limit = limit || 10000
+      puts "Need to download reviews for #{dl_revue_4_ids.count} #{$model.name}s"
+      puts "#{$scrapedmodel.all.collect{|x| x.local_id}.uniq.count - dl_revue_4_ids.count} #{$model.name}s already have reviews" 
+      puts "Will download for up to #{limit} #{$model.name}s"
+      dl_revue_4_ids[0..limit].each do |localid| # TODO
         revues = scrape_reviews(localid, ret)
         revues.each{ |rvu|
           rvu['product_type'] = $model.name
           r = find_or_create_review(rvu)
           fill_in_all(rvu,r) if r
+          $scrapedmodel.find_all_by_local_id(localid).each do |sp|
+            debugger
+            fill_in 'averagereviewrating',rvu["averagereviewrating"], sp if rvu["averagereviewrating"]
+            fill_in 'totalreviews', rvu['totalreviews'], sp if rvu["totalreviews"]
+          end
         }
         puts "[#{Time.now}] -- Done downloading reviews for #{localid}"
         puts "#{Review.count - baseline} reviews added"
@@ -277,9 +286,9 @@ namespace :printers do
     @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_scraper.log", 'w+')
     $retailers.each do |retailer|
       ids = scrape_all_local_ids retailer.region
-      scraped_ids = ($scrapedmodel.find_all_by_retailer_id(retailer.id)).collect{|x| x.local_id}#.reject{|x|   x.product_id.nil? }
+      scraped_ids = ($scrapedmodel.find_all_by_retailer_id(retailer.id)).collect{|x| x.local_id}.uniq
       ids = (ids - scraped_ids).uniq.reject{|x| x.nil?}
-      announce "Will scrape #{ids.count} #{$model.name}s from #{retailer.name}"
+      announce "Will scrape #{ids.count} #{$model.name}s from #{retailer.name}, #{scraped_ids.count} already exist"
       
       ids.each_with_index do |local_id, i|
         generic_scrape(local_id, retailer)
