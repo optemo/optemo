@@ -1,7 +1,10 @@
 namespace :pictures do
   
+  desc 'Fixes broken links and gets latest picture sizes for all printer pix'
+  task :update_printer_pic_stats => [:printer_init, :update_pic_stats]
+  
   desc 'Get all the missing pictures for Printers'
-  task :update_printer_pix => [:printer_init, :dl_missing_pix, :resize_missing, :close_log]
+  task :update_printer_pix => [:printer_init, :dl_missing_pix, :resize_missing, :update_pic_stats, :close_log]
   
   desc 'Re-download all pictures for Printers'
   task :scrape_printer_pix => [:printer_init, :dl_pix, :resize_all, :close_log]
@@ -28,6 +31,11 @@ namespace :pictures do
   
   task :close_log do
     $logfile.close
+  end
+  
+  task :update_pic_stats do
+    updateme = $model.all
+    record_pic_stats(updateme)
   end
   
   task :dl_pix do
