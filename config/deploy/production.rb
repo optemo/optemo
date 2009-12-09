@@ -14,7 +14,7 @@ set :deploy_via, :remote_cache
 default_run_options[:pty] = true
 ssh_options[:port] = 5151
 set :use_sudo, false
-#set :user, 'jan'
+set :user, 'maria'
 
 role :app, domain
 role :web, domain

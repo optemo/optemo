@@ -13,10 +13,12 @@
 using namespace std;
 
 #include <cppconn/mysql_public_iface.h>
-//
+#include <time.h>
+
 #include "hClustering.h"
 #include "preProcessing.h"
 #include "smallNumberClustering.h"
+
 using namespace std;
 
 int main(int argc, char** argv){	
@@ -30,7 +32,9 @@ int main(int argc, char** argv){
 	int layer = 1;
 	int version;
 	string var;
-	
+	int keepStep = 5;
+	string logFile = "/optemo/site/log/clustering.log";
+
 	//argument is the productName
     if (argc <4){
 		cout<<" Wrong number of arguments, you need 3 (product name, region and environment)"<<endl;
@@ -65,31 +69,19 @@ int main(int argc, char** argv){
 	double* weights;
 	map<const string, double> weightHash;
 	weightHash["price"] = 1;
-		//weightHash["itemweight"] = 1;
-		weightHash["opticalzoom"] = 1;
+		weightHash["itemweight"] = 0;
+		weightHash["opticalzoom"] = 4;
 		weightHash["displaysize"] = 1;
 		weightHash["maximumresolution"] = 1;
-		//weightHash["minimumfocallength"] = 0.08;
-		//weightHash["maximumfocallength"] = 0.08;
-		//weightHash["minimumshutterspeed"] = 1;
-		//weightHash["maximumshutterspeed"] = 1;
-	    //weightHash["bulb"] = 0.001;
-		//weightHash["slr"] = 1;
-		//weightHash["waterproof"] = 0.5;
+		weightHash["slr"] = 0;
+		weightHash["waterproof"] = 0;
 	switch(productNames[productName]){
 		
 		case 1:
 					clusterN = 9; 
-					conFeatureN= 4;
+					conFeatureN= 5;
 					catFeatureN= 1;
-					boolFeatureN= 0;
-					weights = new double [conFeatureN + boolFeatureN];
-					for (int f=0; f<conFeatureN; f++){
-						weights[f] = 1;
-					}
-					//weights[conFeatureN] = 2;
-					//weights[conFeatureN+1] = 0.01;
-					//weights[conFeatureN+2] = 0.01;
+					boolFeatureN= 2;
 					range= 2;
 					break;
 			
@@ -101,13 +93,13 @@ int main(int argc, char** argv){
 					weights = new double [conFeatureN + boolFeatureN];
 					range= 2;
 					weights[0] = 1;
-					for (int f=1; f<conFeatureN; f++){
+					for (int f=1; f<conFeatureN-1; f++){
 						weights[f] = 1;
 					}					
-					//	weights[conFeatureN-1] = 0.9;
+						weights[conFeatureN-1] = 1;
 
 					    for (int f=0; f<boolFeatureN; f++){
-					    	weights[conFeatureN+f] = 0.5;
+					    	weights[conFeatureN+f] = 1;
 					    }
 					break;
 		default:
@@ -124,6 +116,7 @@ int main(int argc, char** argv){
 	layerStream<<layer;
 
 	string nodeString;
+	string command, command2, nullCheck;
 	
 	string* indicatorNames = new string [conFeatureN + boolFeatureN];
 
@@ -140,7 +133,8 @@ int main(int argc, char** argv){
 	conFeatureNames[1]="displaysize";  
     conFeatureNames[2]="opticalzoom";
     conFeatureNames[3]="maximumresolution";
-    
+    conFeatureNames[4]="itemweight";
+
 	double *average = new double[conFeatureN]; 
 	
 
@@ -169,15 +163,24 @@ int main(int argc, char** argv){
     for (int f=0; f<boolFeatureN; f++){
 		boolFilteredFeatures[f] = 0;
 	}
-	
+
  string filteringCommand = preClustering(productNames, productName, conFeatureNames, catFeatureNames, boolFeatureNames, indicatorNames, region);
 
-
+	nullCheck = "Select * from ";
+	nullCheck += productName;
+	nullCheck += "s where (instock=1 AND ((price IS NULL) ";
+  for (int f=1; f<conFeatureN; f++){
+  	nullCheck += "OR (";
+  	nullCheck += conFeatureNames[f];
+	nullCheck += " IS NULL "; 
+	nullCheck += ") ";
+  }
+  nullCheck += "))";
+  
 //}
 // Driver Manager
 
    	sql::mysql::MySQL_Driver *driver;
-
 	// Connection, (simple, not prepared) Statement, Result Set
 	sql::Connection	*con;
 	sql::Statement	*stmt;
@@ -232,22 +235,31 @@ int main(int argc, char** argv){
 ///////////////////////////////////////////////
 		
 			try {
-		
+		  
 				// Using the Driver to create a connection
 				driver = sql::mysql::get_mysql_driver_instance();
 				con = driver->connect(HOST, PORT, USER, PASS);
 				stmt = con->createStatement();
-				string command = "USE ";
+				command = "USE ";
 				command += databaseName;
-				
 				stmt->execute(command);
+				 
+				res = stmt->executeQuery(nullCheck);
+				  if (res->rowsCount() >0){
+					cout<<"There are some null values in "<<productName<<" s table"<<endl;
+				  }
+
+			
 			
 				command = "SELECT version from ";
 				command += productName;
 				command += "_clusters where (region='";
 				command += region;
 				command += "') order by id DESC LIMIT 1";
+				
 				res = stmt->executeQuery(command);
+           
+
 
 				
 				if (res->next()){
@@ -257,13 +269,50 @@ int main(int argc, char** argv){
 				else{
 					version = 0;
 				}
+	
+				///Archiving the old clusters and nodes & deleteing the old ones
+				command2 = "INSERT into ";
+				command2 += productName;
+				command2 += "_clusters_archive select * from ";
+				command2 += productName;
+				command2 += "_clusters where version=";
+				ostringstream vstr1; 
+				vstr1 << version-keepStep;
+				command2 += vstr1.str();
+				command2 += " and region=\'";
+				command2 += region;
+				command2 += "\';";
+				stmt->execute(command2);
+			 
+				command2 = "INSERT into ";
+				command2 += productName;
+				command2 += "_nodes_archive select * from ";
+				command2 += productName;
+				command2 += "_nodes where version=";
+				ostringstream vstr2; 
+				vstr2 << version - keepStep;
+				command2 += vstr2.str();
+				command2 += " and region=\'";
+				command2 += region;
+				command2 += "\';";
+				
+				stmt->execute(command2); 
+			
+					
 				bool clustered = 0;
-			
 			    res = stmt->executeQuery(filteringCommand); 
-			
 				int maxSize = res->rowsCount();
-			
-				cout<<"Version: "<<version<<endl;	
+		
+			  time_t rawtime;
+			  struct tm * timeinfo;
+
+			  time ( &rawtime );
+			  timeinfo = localtime( &rawtime );
+			  ofstream myfile2;
+			  myfile2.open("/optemo/site/log/clustering.log", ios::app);
+			myfile2 <<endl<<timeinfo->tm_year+1900<<"-"<< timeinfo->tm_mon+1<<"-"<<timeinfo->tm_mday<<" "<< timeinfo->tm_hour<<endl;
+			 
+				myfile2<<"Version: "<<version<<endl;	
 			   while (maxSize>clusterN){
 							
 					for (int j=0; j<conFeatureN; j++){
@@ -271,21 +320,46 @@ int main(int argc, char** argv){
 					}
 					maxSize = hClustering(layer, clusterN,  conFeatureN,  boolFeatureN, average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
 							stmt, conFeatureNames, boolFeatureNames, productName, weightHash, version, region);	
-					cout<<"layer "<<layer<<endl;
+					myfile2<<"layer "<<layer<<endl;
 					layer++;
 					clustered = 1;
 				}
 				if (clustered){
 				leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, res3, stmt, productName, version, region);	
-				cout<<"layer "<<layer<<endl;
+				myfile2<<"layer "<<layer<<endl;
 			}else{
 					smallNumberClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, stmt, productName, version, region);	
-					cout<<"layer "<<layer<<endl;
+					myfile2<<"layer "<<layer<<endl;
 				}
-//Generating the output string 
+
+
+//Clearing the old clusters and nodes
+command2 = "DELETE from ";
+command2 += productName;
+command2 += "_clusters where version=";
+ostringstream vstr3; 
+vstr3 << version-keepStep;
+command2 += vstr3.str();
+command2 += " and region=\'";
+command2 += region;
+command2 += "\';";
+stmt->execute(command2);
+
+command2 = "DELETE from ";
+command2 += productName;
+command2 += "_nodes where version=";
+ostringstream vstr4; 
+vstr4 << version-keepStep;
+command2 += vstr4.str();
+command2 += " and region=\'";
+command2 += region;
+command2 += "\';";
+stmt->execute(command2);
 
  	delete stmt;
  	delete con;
+	myfile2<<"The end."<<endl;
+ myfile2.close();
 
  	} catch (sql::mysql::MySQL_DbcException *e) {
 

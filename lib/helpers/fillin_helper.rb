@@ -31,24 +31,37 @@ module DatabaseHelper
     end
   end
   
+  def fill_in name, desc, record, ignorelist=[]
+    return if desc.nil?
+    fill_in_forced name, desc, record, ignorelist
+  end
+  
+  # Specially modified for internationalization
   # Fills in value for attribute in record.
   # Cleverly avoids cases with nonexistent things.
-  def fill_in name, desc, record, ignorelist=[]
+  def fill_in_forced name, desc, record, ignorelist=[]
     ignore = ignorelist + $general_ignore_list     
     
     return unless record.has_attribute? name
-    return if desc.nil?
     return if ignore.include?(name)
-    case (record.class.columns_hash[name].type)
-      when :integer
-        val = get_i(desc.to_s)
-      when :float
-        val = get_f(desc.to_s)
-      when :string
-        val = desc.to_s.strip
-      else
-        val = desc
-    end  
+    if !desc.nil?
+      case (record.class.columns_hash[name].type)
+        when :integer
+          val = get_i(desc.to_s)
+        when :float
+          val = get_f(desc.to_s)
+        when :string
+          val = desc.to_s.strip
+        when :datetime
+          val = DateTime.parse(desc.to_s)
+        when :date
+          val = Date.parse(desc.to_s)
+        else
+          val = desc
+      end  
+    else
+      val = nil
+    end
     record.update_attribute(name, val)
   end
 end

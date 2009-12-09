@@ -221,12 +221,7 @@ void getStatisticsData(double** data, int** clusteredData, int** indicators, int
 /////
 	
 	
-void getStatisticsData1(double** data, int** indicators, double* average, int size, int conFeatureN, int boolFeatureN, double** dataN){
-		
-		 for (int j=0; j<conFeatureN; j++){
-				average[j] = average[j]/size;
-			}
-				
+void getStatisticsData1(double** data, int** indicators, int size, int conFeatureN, int boolFeatureN, double** dataN){
 			double *dif = new double[conFeatureN + boolFeatureN];
 			double **conFeatureRange = new double* [conFeatureN];
 		    for(int f=0; f<conFeatureN; f++){	
@@ -319,7 +314,7 @@ void getStatisticsData1(double** data, int** indicators, double* average, int si
 
 
 
-	void getStatisticsClusteredData(double** data, int** clusteredData, int** indicators, double* average, int* idA, int size, int clusterN, int conFeatureN, double*** conFeatureRange){
+	void getStatisticsClusteredData(double** data, int** clusteredData, double* average, int* idA, int size, int clusterN, int conFeatureN, double*** conFeatureRange){
 		int ind = 0;
 			
 		for (int j=0; j<conFeatureN; j++){
@@ -361,12 +356,12 @@ void getStatisticsData1(double** data, int** indicators, double* average, int si
 	
 
 
-
-
+	
 
 void insertion_sort(double* xOri, int* ids, int length)
 {
-  int key,i, idKey;
+  int i, idKey;
+ double key;	 
   double* x = new double [length];
   for (int j=0; j<length; j++){
      x[j] = xOri[j];
@@ -378,7 +373,7 @@ void insertion_sort(double* xOri, int* ids, int length)
 	 idKey = ids[j];	
      i=j-1;
 
-     while(x[i]>key && i>=0)
+     while(x[i]>=key && i>=0)
      {
          x[i+1]=x[i];
 		 ids[i+1] = ids[i];	
@@ -390,7 +385,6 @@ void insertion_sort(double* xOri, int* ids, int length)
 delete x;
 
 }
-
 
 
 void sortT(double** dataT, int* idA, int** sortedA, int size, int conFeatureN){
@@ -405,9 +399,6 @@ void sortT(double** dataT, int* idA, int** sortedA, int size, int conFeatureN){
 		
 	}
 }
-
-
-
 
 
 void sort(double** data, int* idA, int** sortedA, int size, int conFeatureN){
@@ -507,20 +498,6 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, double*** conFeat
 
 	
 		for (int f=0; f<conFeatureN; f++){  //min
-//		if (conFilteredFeatures[f]){
-//		//	cout<<"stat[f][0] is "<<stat[f][0]<<" stat[f][1]  is "<<stat[f][1]<<endl;
-//				  if (conFeatureRangeC[i][f][1] <= stat[f][0]){
-//					indicators[f][i] = 1;
-//				}
-//				else if (conFeatureRangeC[i][f][0] >= stat[f][1]){ //max
-//				indicators[f][i] = 3;
-//				}
-//
-//			else if ((conFeatureRangeC[i][f][0] >= stat[f][0]) && (conFeatureRangeC[i][f][1] <= stat[f][1])){ //average
-//				indicators[f][i] = 2;
-//						
-//			}
-//	}else{
 			
 				if (range[f][1] <= stat[f][0]){
 					indicators[f][i] = 1;
@@ -531,26 +508,7 @@ void getIndicators(int* clusterIDs, int repW, int conFeatureN, double*** conFeat
 		
 			else if ((range[f][0] >= stat[f][0]) && (range[f][1] <= stat[f][1])){ //average
 				indicators[f][i] = 2;
-			}
-//		  }
-			
-	//		else if (range[f][1] <= stat[f][1]){
-	//			if ((range[f][1] - stat[f][0]) >= (stat[f][0] - range[f][0])){
-	//					indicators[f][i] = 2;
-	//			} 
-	//			else{
-	//				indicators[f][i] = 1;
-	//			}
-	//		}
-	//	    else if(range[f][0] >= stat[f][0]){
-	//				if((stat[f][1] - range[f][0]) >= (range[f][1] - stat[f][1])){
-	//					indicators[f][i] = 2;
-	//				}
-	//				else{
-	//					indicators[f][i] = 3;
-	//				}
-	//		}
-		
+			}	
 		}
 	}
 }
@@ -572,21 +530,25 @@ void median(double** data, int size, int conFeatureN, int* sortedA){
 }
 
 
-void weightedMedian(double** data, int size, double* weights, int conFeatureN, int* sortedA){
+
+void weightedMedian(double** data, int size, int conFeatureN, int* sortedA, double* weights){
 
 	double* distan = new double[size];
 	for (int j=0; j<size; j++){
 	    distan[j] = 0;
 		for (int i=0; i<size; i++){
 			for (int f=0; f<conFeatureN; f++){
-				distan[j] += weights[f]* (data[j][f] - data[i][f]) *  (data[j][f] - data[i][f]);
+				distan[j] += weights[f] * (data[j][f] - data[i][f]) *  (data[j][f] - data[i][f]);
 		   }
 		}	
 	}
-	
 	insertion_sort(distan, sortedA, size);
 }
+
+
+
 void median2(double** data, int size, int conFeatureN, int* sortedA){
+
 	double* distan = new double[size];
 	for (int j=0; j<size; j++){
 	    distan[j] = 0;
@@ -596,15 +558,69 @@ void median2(double** data, int size, int conFeatureN, int* sortedA){
 		   }
 		}	
 	}
+	
 	insertion_sort(distan, sortedA, size);
+
 }
 
-void repOrder(double** dataCluster, int size, double* weights, string mode, int conFeatureN, int boolFeatureN, int* order){
+
+void repOrder(double** dataCluster, int size, string mode, int conFeatureN, int boolFeatureN, int* order, double* weights){
+	
 	if (mode=="median"){
-		median(dataCluster, size, conFeatureN, order);
-		//weightedMedian(dataCluster, size, weights, conFeatureN, order);
+		weightedMedian(dataCluster, size, conFeatureN, order, weights);
 	}
+
 }
 
+
+void utilityOrder(double** data, int* idA, int size, int** clusteredData, int** clusteredDataOrder, int** clusteredDataOrderU, int clusterN, int conFeatureN, 
+				int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, sql::ResultSet *res2, string productName){
+	//	// clusteredData, clusteredDataOrder, clusteredDataOrderU
+
+	string capProductName = productName;
+	double utility;
+	double *avgUtilities = new double [clusterN];
+	capProductName[0] = productName[0] - 32;
+	string command;
+	int* orderRec = new int [clusterN];
+
+	for (int c=0; c<clusterN; c++){	
+		utility = 0.0;
+		orderRec[c] = c;
+		for (int i=0; i<clusteredData[c][0]; i++){
+				command = "SELECT ";
+				command += conFeatureNames[0];
+				for (int f=1; f<conFeatureN; f++){
+					command += ", ";
+					command += conFeatureNames[f]; 
+				}	
+				command += " from factors where (product_type= \'";
+				command += capProductName;
+				command += "\' and product_id=";
+				ostringstream idStream; 
+				idStream << clusteredData[c][i+1];
+				command += idStream.str();
+				command += ");";
+				res2 = stmt->executeQuery(command);
+				if (res2->rowsCount()>0){
+					res2->next();
+					for (int f=0; f<conFeatureN; f++){
+						utility += res2->getDouble(conFeatureNames[f]);
+					}	
+				}
+		}
+		avgUtilities[c] = utility/clusteredData[c][0];
+	}		
+	insertion_sort(avgUtilities, orderRec, clusterN);
+	for (int c=0; c<clusterN; c++){
+		clusteredDataOrderU[clusterN-c-1][0] = clusteredData[orderRec[c]][0];
+		for (int i=0; i<clusteredData[orderRec[c]][0]; i++){
+			clusteredDataOrderU[clusterN-c-1][i+1] = clusteredDataOrder[orderRec[c]][i];
+		}	
+	}
+		
+}		    
+	
+	
 //#endif	/* _EXAMPLES_H */
 
