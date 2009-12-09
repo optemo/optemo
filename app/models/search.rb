@@ -59,8 +59,8 @@ class Search < ActiveRecord::Base
   
   def relativeDescriptions
     return if clusters.empty?
-    @descs ||= []
-    if @descs.empty?
+    @reldescs ||= []
+    if @reldescs.empty?
       feats = {}
       $model::ContinuousFeaturesF.each do |f|
         norm = $dbfeat[f].max - $dbfeat[f].min
@@ -92,14 +92,14 @@ class Search < ActiveRecord::Base
         #d.unshift "Waterproof" if clusters[i].waterproof && layer == 1
         #d.unshift "SLR" if clusters[i].slr && layer == 1
         if d.empty?
-          @descs << "avg"
+          @reldescs << ["avg"]
         else
-          @descs << d
+          @reldescs << d
         end
         #@descs[-1] = @descs.last + " (#{n})"
       end
     end
-    @descs
+    @reldescs
   end
     
   def clusterDescription(clusterNumber)
