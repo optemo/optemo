@@ -122,8 +122,8 @@ module AmazonScraper
       
       # REVIEWS
       #debugger # TODO check review stuff
-      atts["averagereviewrating"] = result.get('averagerating')
-      atts['totalreviews'] = result.get('totalreviews').to_i
+      #atts["averagereviewrating"] = result.get('averagerating')
+      #atts['totalreviews'] = result.get('totalreviews').to_i
       
       
       (atts['specialfeatures'] || '').split('|').each do |x| 
@@ -372,7 +372,7 @@ module AmazonScraper
   # to an Amazon printer
   def clean_printer atts
     atts['cpumanufacturer'] = nil # TODO
-    ((atts['feature'] || '') +'|'+ (atts['specialfeatures'])).split(/¦|\||#{CleaningHelper.sep}/).each do |x| 
+    ((atts['feature'] || '') +'|'+ (atts['specialfeatures'] || '')).split(/¦|\||#{CleaningHelper.sep}/).each do |x| 
         temp_ppm =  get_ppm(x)
         temp_paperin = parse_max_num_pages(x)
         temp_res = x.match(/(res|\d\s?x\s?\d)/i)

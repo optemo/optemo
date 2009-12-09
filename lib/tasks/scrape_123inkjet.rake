@@ -31,9 +31,6 @@ end
 
 namespace :scrape_123 do
   
- # task :validate => :init do 
-#  end
-  
   task :clean => :init do 
     
     clean_cartridges

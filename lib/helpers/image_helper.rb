@@ -28,7 +28,7 @@ module ImageHelper
           puts "ImageMagick Error"
           puts error_string
         else
-          puts "ImageMagick says: File not found for #{id}"
+          #puts "ImageMagick says: File not found for #{id}"
         end
         return false
      rescue Exception => e
@@ -91,7 +91,6 @@ module ImageHelper
       return nil 
     end
     #return url if url.include?(folder)
-    #debugger
     filename = fname || url.split('/').pop
     ret = "/#{folder}/#{filename}"
     begin
@@ -168,8 +167,9 @@ module ImageHelper
           begin
             image = Magick::ImageList.new(filename_from_id(rec[$id_field], sz))
             image = image.first if image and image.class.to_s == 'Magick::ImageList'
-          rescue  Exception => e
+          rescue Exception => e
             puts "WARNING: Can't get dimensions for #{sz} size pic of product #{rec[$id_field]}"
+            debugger
             puts "#{e.type} #{e.message}"
             image = nil
           end
@@ -179,9 +179,10 @@ module ImageHelper
             fill_in "image#{sz}width", image.columns, rec if image.columns
           end
         else
-            fill_in "image#{sz}url", nil, rec
-            fill_in "image#{sz}height", nil, rec
-            fill_in "image#{sz}width", nil, rec
+          #debugger
+          fill_in_forced "image#{sz}url", nil, rec
+          fill_in_forced "image#{sz}height", nil, rec
+          fill_in_forced "image#{sz}width", nil, rec
         end
       end
     end
@@ -209,7 +210,7 @@ module ImageHelper
           puts "ImageMagick Error in download_all_pix"
           puts error_string
         else
-          puts "ImageMagick says: File not found for #{id}"
+          #puts "ImageMagick says: File not found for #{id}"
         end
         failed << id
       rescue Exception => e
@@ -238,7 +239,7 @@ module ImageHelper
           puts "ImageMagick Error in resize_all"
           puts error_string
         else
-          puts "ImageMagick says: File not found for #{id}"
+          #puts "ImageMagick says: File not found for #{id}"
         end
         failed << id
         puts "Resizing #{id} failed"

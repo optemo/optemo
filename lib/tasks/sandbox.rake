@@ -1,5 +1,25 @@
 namespace :sandbox do
   
+  task :match_reviews => :environment do 
+    $model = Camera
+    $scrapedmodel = ScrapedCamera
+    
+    allrevus = Review.find_all_by_product_id_and_product_type(nil, $model.name)
+    
+    allrevus[0..10].each do |revu|      
+      #puts "Review #{revu.id} : "
+      #puts revu.summary
+      #puts revu.content
+      lid =  revu['local_id']
+      sms = $scrapedmodel.find_all_by_local_id(lid)
+      sms.each do |sm|
+        #puts "#{revu.id} matches #{$model.name} #{sm.product_id}, #{$model.find(sm.product_id).title}"
+        
+      end
+    end
+    
+  end
+  
   task :chek_pic_sizes => :environment do
      require 'helpers/image_helper.rb'
      require 'fileutils'
