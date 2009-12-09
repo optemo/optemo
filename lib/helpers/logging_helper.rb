@@ -4,6 +4,10 @@ module LoggingHelper
     @logfile.puts "LOGGER      " + msg if @logfile
     $logfile.puts "LOGGER      " + msg if $logfile
   end
+  
+  def timed_log msg
+    log(timed(msg))
+  end
 
   def report_error msg
     announce "ERROR      " + msg
@@ -12,6 +16,14 @@ module LoggingHelper
   def announce msg
     log msg
     puts msg
+  end
+  
+  def timed msg
+    return "#{[Time.now]} " + msg
+  end
+  
+  def timed_announce msg
+    announce(timed(msg))
   end
   
   # a special logging function for data validation

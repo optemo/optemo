@@ -66,6 +66,7 @@ namespace :printers do
   task :temp2 => [:cam_init, :amazon_init, :scrape]
    
   task :reviews do    
+    limit = 3
     total_before_script = Review.count
     $retailers.collect{|x| x.id}.each do |ret|
       
@@ -73,14 +74,22 @@ namespace :printers do
       
       have_revues_4_ids = Review.find_all_by_product_type($model.name).collect{|x| x.local_id}.uniq
       no_revues_4_ids = $scrapedmodel.find_all_by_totalreviews(0).collect{|x| x.local_id}.uniq
-      dl_revue_4_ids = $scrapedmodel.all.collect{|x| x.local_id}.uniq - have_revues_4_ids - no_revues_4_ids
-      
-      dl_revue_4_ids.each do |localid|
+      dl_revue_4_ids = ($scrapedmodel.all.collect{|x| x.local_id}.uniq - have_revues_4_ids - no_revues_4_ids).uniq
+      limit = limit || 10000
+      debugger # Why does B001SER47Y keep re-appearing? THERE IS SOMETHING WRONG HERE
+      puts "Need to download reviews for #{dl_revue_4_ids.count} #{$model.name}s"
+      puts "#{($scrapedmodel.all.collect{|x| x.local_id} - dl_revue_4_ids).uniq.count} #{$model.name}s already have reviews" 
+      puts "Will download for up to #{limit} #{$model.name}s"
+      dl_revue_4_ids[0..limit].each do |localid| # TODO
         revues = scrape_reviews(localid, ret)
         revues.each{ |rvu|
           rvu['product_type'] = $model.name
           r = find_or_create_review(rvu)
           fill_in_all(rvu,r) if r
+          $scrapedmodel.find_all_by_local_id(localid).each do |sp|
+            fill_in 'averagereviewrating',rvu["averagereviewrating"], sp if rvu["averagereviewrating"]
+            fill_in 'totalreviews', rvu['totalreviews'], sp if rvu["totalreviews"]
+          end
         }
         puts "[#{Time.now}] -- Done downloading reviews for #{localid}"
         puts "#{Review.count - baseline} reviews added"
@@ -90,53 +99,21 @@ namespace :printers do
     puts  "#{Review.count - total_before_script} reviews added!"
   end
   
-  task :dlmorestats => [:printer_init, :amazon_init, :rescrape_stats, :vote]
+  task :dlmorestats => [:printer_init, :amazon_init, :rescrape_stats]
   
   task :dlmorepix => [:tiger_init, :rescrape_pix]
   
-  task :rescrape_pix do 
-    no_resized_pix = $scrapedmodel.find_all_by_imageurl(nil).collect{|x| x.product_id}
-    
-    no_pix = []
-    no_pix_fixed = []
-    
-    retailerids = $retailers.collect{|x| x.id}
-    
-    no_resized_pix.each do |pid| 
-      sps = $scrapedmodel.find_all_by_product_id(pid)
-      urls = sps.collect{|x| x.imageurl}.reject{|x| x.nil?}
-      
-      if urls.length == 0 and sps.length != 0
-        retailer_ok_sps = sps.reject{|x| !retailerids.include?(x.retailer_id)}
-        if retailer_ok_sps.length == 0
-          puts "Oops -- no scraped printer from #{$retailers.first.name} for #{pid}"
-        end
-        
-        retailer_ok_sps.each do |retailer_ok_sp|
-          local_id = retailer_ok_sp.local_id
-          retailer = Retailer.find(retailer_ok_sp.retailer_id)
-          generic_scrape(local_id, retailer)
-          
-          if $scrapedmodel.find(retailer_ok_sp.id).imageurl.nil?
-            puts "Oops -- no image url available for SP #{retailer_ok_sp.id}... (printer #{pid})"
-          else
-            no_pix_fixed << pid
-            puts "Fixed printer with id #{pid}."
-            break
-          end
-        end
-        no_pix << pid 
-      end
-    end
-    puts "There were #{no_pix.count} printers w/o pic urls of which #{no_pix_fixed.count} were fixed"
-    
-  end
-  
   task :rescrape_stats do 
-    no_stats = $model.find_all_by_ppm(nil).reject{|x| !x.instock and !x.instock_ca}.collect{|x| x.id}
-    no_stats_fixed = []
+    att = 'imageurl' # This will be re-scraped.
     
-    retailerids = $retailers.collect{|x| x.id}
+    no_stats = $model.all.reject{|y| # These are the products for which we need to re-scrape.
+      !y[att].nil?}.reject{|x| 
+      !x.instock and !x.instock_ca}.collect{|x| 
+      x.id
+    }
+    no_stats_fixed = [] # The ones we've fixed will go here.
+    
+    retailerids = $retailers.collect{|x| x.id} 
     
     no_stats.each do |pid| 
       sps = $scrapedmodel.find_all_by_product_id(pid)
@@ -144,7 +121,7 @@ namespace :printers do
       if sps.length != 0
         retailer_ok_sps = sps.reject{|x| !retailerids.include?(x.retailer_id)}
         if retailer_ok_sps.length == 0
-          puts "Oops -- no scraped printer from #{$retailers.first.name} for #{pid}"
+          puts "Oops -- no scraped #{$model.name} from #{$retailers.first.name} for #{pid}"
         end
         
         retailer_ok_sps.each do |retailer_ok_sp|
@@ -152,8 +129,8 @@ namespace :printers do
           retailer = Retailer.find(retailer_ok_sp.retailer_id)
           spid = retailer_ok_sp.id
           generic_scrape(local_id, retailer)
-          if ScrapedPrinter.find(spid).ppm.nil?
-            puts "#{spid} has a nil ppm..."
+          if $scrapedmodel.find(spid)[att].nil?
+            puts "#{spid} has a nil #{att}..."
           else
             puts "#{spid} has been fixed!"
             no_stats_fixed << pid
@@ -277,17 +254,16 @@ namespace :printers do
     @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_scraper.log", 'w+')
     $retailers.each do |retailer|
       ids = scrape_all_local_ids retailer.region
-      scraped_ids = (ScrapedPrinter.find_all_by_retailer_id(retailer.id)).collect{|x| x.local_id}#.reject{|x|   x.product_id.nil? }
+      scraped_ids = ($scrapedmodel.find_all_by_retailer_id(retailer.id)).collect{|x| x.local_id}.uniq
       ids = (ids - scraped_ids).uniq.reject{|x| x.nil?}
-      ids = ids[0..300]
-      announce "Will scrape #{ids.count} #{$model.name}s from #{retailer.name}"
+      announce "Will scrape #{ids.count} #{$model.name}s from #{retailer.name}, #{scraped_ids.count} already exist"
       
       ids.each_with_index do |local_id, i|
         generic_scrape(local_id, retailer)
         announce "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
       end
     end
-    @logfile.closep
+    @logfile.close
   end
   
   desc "Check that scraped data isn't wonky"

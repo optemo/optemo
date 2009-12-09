@@ -122,8 +122,8 @@ module AmazonScraper
       
       # REVIEWS
       #debugger # TODO check review stuff
-      atts["averagereviewrating"] = nil#result.get('averagerating')
-      atts['totalreviews'] = nil# result.get('totalreviews').to_i
+      #atts["averagereviewrating"] = result.get('averagerating')
+      #atts['totalreviews'] = result.get('totalreviews').to_i
       
       
       (atts['specialfeatures'] || '').split('|').each do |x| 
@@ -337,8 +337,8 @@ module AmazonScraper
         result =  nokodoc.css('item').first
         #Look for old Retail Offering
         unless result.nil?
-          #averagerating ||= result.css('averagerating').text
-          #totalreviews ||= result.css('totalreviews').text.to_i
+          averagerating ||= result.css('averagerating').text
+          totalreviews ||= result.css('totalreviews').text.to_i
           totalreviewpages ||= result.css('totalreviewpages').text.to_i
           puts "#{$model.name} #{asin} review download: #{(totalreviewpages-current_page)/6} min remaining..." if current_page % 10 == 1
           temp = result.css('review')
@@ -349,9 +349,10 @@ module AmazonScraper
               named_hash = {}
               hash.each{|k,v| 
                 new_k = get_property_name(k,Review, ['id'])
-                #debugger
                 named_hash[new_k] = v 
               }
+              named_hash['totalreviews'] = totalreviews
+              named_hash['averagereviewrating'] = averagerating
               named_array_of_hashes << named_hash
           }
           reviews = reviews + named_array_of_hashes
@@ -371,7 +372,7 @@ module AmazonScraper
   # to an Amazon printer
   def clean_printer atts
     atts['cpumanufacturer'] = nil # TODO
-    ((atts['feature'] || '') +'|'+ (atts['specialfeatures'])).split(/¦|\||#{CleaningHelper.sep}/).each do |x| 
+    ((atts['feature'] || '') +'|'+ (atts['specialfeatures'] || '')).split(/¦|\||#{CleaningHelper.sep}/).each do |x| 
         temp_ppm =  get_ppm(x)
         temp_paperin = parse_max_num_pages(x)
         temp_res = x.match(/(res|\d\s?x\s?\d)/i)

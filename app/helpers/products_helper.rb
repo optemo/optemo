@@ -54,40 +54,45 @@ module ProductsHelper
   
   def navtitle
     if @s.searchterm.nil?
-		  [(@s.result_count > 1) ? t("products.compare.browsings",:count => @s.result_count) : t("products.compare.browsing")].join(" ")
+		  (@s.result_count > 1) ? t("products.compare.browsings",:count => @s.result_count) : t("products.compare.browsing") 
+		  ["Browsing", @s.result_count, $RelativeDescriptions ? "<b>"+@s.searchDescription.map{|d|t("products."+d)}.join(", ")+"</b>" : nil, (@s.result_count > 1) ? "Printers" : "Printer"].join(" ")
 		else
       "#{t("products.compare.search")}: '#{@s.searchterm}', #{(@s.result_count > 1) ? t("products.compare.browsings",:count => @s.result_count) : t("products.compare.browsing")}" 
     end
   end
   
-  def prodDesc(group, i)
-    disptranslation = []
-    dispString = ""
-	  @s.clusterDescription(i).compact.flatten.uniq.each do |property|
-	    disptranslation << t('products.' + property)
-	  end
-	  if group
-	    if disptranslation.size>2
-	      dispString = disptranslation[0..disptranslation.size-2].join(', ') + " "+t('products.' + "and") +" "+disptranslation[-1]
-	    elsif disptranslation.size==2
-	      dispString = disptranslation[0] + " "+ t('products.' + "and") + " "+ disptranslation[-1]
-	    elsif disptranslation.size==1
-	      dispString = disptranslation[0]
-	    else
-	      t('products.'+"Average")  
+  def groupDesc(group, i)
+    if $RelativeDescriptions
+      @s.relativeDescriptions[i].map{|d|t("products."+d)}.join(", ")
+    else
+      disptranslation = []
+      dispString = ""
+	    @s.clusterDescription(i).compact.flatten.uniq.each do |property|
+	      disptranslation << t('products.' + property)
 	    end
-	 else
-	   if disptranslation.size>2
-	     dispString = disptranslation[0]+ " "+ t('products.' + "and") +" "+disptranslation[1]
-	   elsif disptranslation.size==2
-	     dispString= disptranslation[0] + " "+t('products.' + "and") + " "+disptranslation[-1] 
-	   elsif disptranslation.size==1
-	     dispString=disptranslation[0]
-	   else
-	    t('products.'+"Average")  
-	   end 
-	 end      
-	 dispString
+	    if group
+	      if disptranslation.size>2
+	        dispString = disptranslation[0..disptranslation.size-2].join(', ') + " "+t('products.' + "and") +" "+disptranslation[-1]
+	      elsif disptranslation.size==2
+	        dispString = disptranslation[0] + " "+ t('products.' + "and") + " "+ disptranslation[-1]
+	      elsif disptranslation.size==1
+	        dispString = disptranslation[0]
+	      else
+	        t('products.'+"Average")  
+	      end
+      else
+	     if disptranslation.size>2
+	       dispString = disptranslation[0]+ " "+ t('products.' + "and") +" "+disptranslation[1]
+	     elsif disptranslation.size==2
+	       dispString= disptranslation[0] + " "+t('products.' + "and") + " "+disptranslation[-1] 
+	     elsif disptranslation.size==1
+	       dispString=disptranslation[0]
+	     else
+	      t('products.'+"Average")  
+	     end 
+	    end      
+	    dispString
+	  end
  end
  
   def catsforfeature(session,feat)
