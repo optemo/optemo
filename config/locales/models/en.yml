@@ -56,7 +56,7 @@ en:
         higheritemweight:           "Heavier"
         lowerprice:                 "Cheaper"
         avgprice:                   "Average Price"
-        higherprice:                "Expensive"
+        higherprice:                "More Expensive"
         lowerdisplaysize:           "Lower Display Size"
         avgdisplaysize:             "Average Display Size"
         higherdisplaysize:          "Higher Display Size"
