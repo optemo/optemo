@@ -5,7 +5,7 @@ namespace :check do
   task :products do
     include ValidationHelper
     
-    @logfile = File.open("./log/#{just_alphanumeric($model.name)}_validation.log", 'w+')
+    @logfile = File.open("./log/validate_#{just_alphanumeric($model.name)}.log", 'w+')
     timed_log 'Start general product validation'
     my_products = $model.instock
     

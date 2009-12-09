@@ -1,6 +1,5 @@
 module PrinterValidator
   
-  
   def min_price 
     return 20_00
   end 
