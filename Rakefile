@@ -10,7 +10,7 @@ require 'rake/rdoctask'
 require 'tasks/rails'
 require 'thinking_sphinx/0.9.8'
 require 'thinking_sphinx/tasks'
-require 'metric_fu'
+#require 'metric_fu'
 
 #MetricFu::Configuration.run do |config|
 #        #define which metrics you want to use
