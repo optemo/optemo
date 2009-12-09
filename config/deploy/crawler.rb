@@ -1,4 +1,4 @@
-set :application, "optemo_site"
+set :application, "crawler"
 set :repository,  "git@jaguar:site.git"
 set :domain, "jaguar"
 set :branch, "staging"
@@ -13,9 +13,7 @@ set :scm, :git
 set :deploy_via, :remote_cache
 #ssh_options[:paranoid] = false
 default_run_options[:pty] = true
-set :use_sudo, true
-set :runner, 'jan'
-
+set :use_sudo, false
 
 role :app, domain
 role :web, domain
@@ -44,7 +42,8 @@ end
 
 desc "Reindex search index"
 task :reindex do
-  sudo "rake -f #{current_path}/Rakefile ultrasphinx:index RAILS_ENV=production"
+  run "rake -f #{current_path}/Rakefile ts:conf RAILS_ENV=production"
+  run "rake -f #{current_path}/Rakefile ts:rebuild RAILS_ENV=production"
 end
 
 desc "Compile C-Code"
@@ -57,11 +56,9 @@ desc "Configure the server files"
 task :serversetup do
   # Instantiate the database.yml file
   run "cd #{current_path}/config              && cp -f database.yml.deploy database.yml"
-  run "cd #{current_path}/config/ultrasphinx   && cp -f development.conf.deploy development.conf && cp -f production.conf.deploy production.conf"
 end
 
 after :deploy, "serversetup"
-after :serversetup, "deploy:after_update_code"
-after :after_update_code, "deploy:restart"
+after :serversetup, "reindex"
 
 
