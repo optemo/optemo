@@ -7,7 +7,8 @@ namespace :check do
     
     @logfile = File.open("./log/validate_#{just_alphanumeric($model.name)}.log", 'w+')
     timed_log 'Start general product validation'
-    my_products = $model.instock
+    #my_products = $model.instock | $model.instock_ca
+    my_products = $model.all
     
     announce "Testing #{my_products.count} #{$model.name} for validity..."
     
@@ -44,7 +45,7 @@ namespace :check do
     
     @logfile = File.open("./log/#{just_alphanumeric($model.name)}_validation.log", 'a+')
     timed_log 'Start printer-specific validation'
-    my_products = $model.instock
+    my_products = $model.instock | $model.instock_ca
     
     announce "Testing #{my_products.count} #{$model.name} for validity..."
     
@@ -63,17 +64,16 @@ namespace :check do
   task :printer_pictures => [:printer_init, :pictures]
 
   task :pictures do
-    require 'validators/general_validator.rb'
-    include GeneralValidator
-    
     require 'helpers/image_helper.rb'
     include ImageHelper
+    
+    checkme = $model.instock || $model.instock_ca
     
     nopix = 0
     noresized = 0
     brokenurls = 0
     nodims = 0
-    $model.all.each do |record|
+    checkme.each do |record|
       unless pic_exists(record)
         nopix += 1
       end

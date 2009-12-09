@@ -69,7 +69,6 @@ namespace :printers do
     limit = 3
     total_before_script = Review.count
     $retailers.collect{|x| x.id}.each do |ret|
-      
       baseline = Review.count
       
       have_revues_4_ids = Review.find_all_by_product_type($model.name).collect{|x| x.local_id}.uniq
