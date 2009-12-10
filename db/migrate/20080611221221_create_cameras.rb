@@ -16,6 +16,7 @@ class CreateCameras < ActiveRecord::Migration
       addCameraProperties(t) 
       addReviews(t)
       addPricing(t)
+      addPricingCa(t)
     end  
   end
 

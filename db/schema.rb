@@ -768,6 +768,9 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.string   "pricestr"
     t.boolean  "instock"
     t.string   "pricehistory"
+    t.integer  "price_ca"
+    t.string   "price_ca_str"
+    t.boolean  "instock_ca"
   end
 
   create_table "cartridges", :force => true do |t|
@@ -1218,6 +1221,28 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.string  "region",            :default => "us"
   end
 
+  create_table "printer_clusters_archive", :force => true do |t|
+    t.integer "parent_id"
+    t.integer "layer"
+    t.integer "cluster_size"
+    t.float   "ppm_min"
+    t.float   "ppm_max"
+    t.float   "itemwidth_min"
+    t.float   "itemwidth_max"
+    t.float   "paperinput_min"
+    t.float   "paperinput_max"
+    t.integer "resolutionmax_min"
+    t.integer "resolutionmax_max"
+    t.float   "price_max"
+    t.float   "price_min"
+    t.string  "brand"
+    t.boolean "scanner"
+    t.boolean "printserver"
+    t.integer "version",           :default => 0
+    t.float   "cached_utility"
+    t.string  "region",            :default => "us"
+  end
+
   create_table "printer_features", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -1244,6 +1269,22 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
   end
 
   create_table "printer_nodes", :force => true do |t|
+    t.integer "cluster_id"
+    t.integer "product_id"
+    t.float   "ppm"
+    t.float   "itemwidth"
+    t.float   "paperinput"
+    t.integer "resolutionmax"
+    t.boolean "scanner"
+    t.boolean "printserver"
+    t.float   "price"
+    t.string  "brand"
+    t.integer "version",       :default => 0
+    t.float   "utility"
+    t.string  "region",        :default => "us"
+  end
+
+  create_table "printer_nodes_archive", :force => true do |t|
     t.integer "cluster_id"
     t.integer "product_id"
     t.float   "ppm"

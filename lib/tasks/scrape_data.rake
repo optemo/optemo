@@ -58,18 +58,17 @@ module GenericScraper
   
 end
 
-namespace :printers do
+namespace :data do
   
   task :amazon_reviews => [:cam_init, :amazon_init, :reviews]
   
-  task :temp => [:cam_init, :amazon_mkt_init, :scrape]
-  task :temp2 => [:cam_init, :amazon_init, :scrape]
+  task :temp => [:cam_init, :amazon_init, :match_to_products, :update_bestoffers, :vote]
+  task :temp2 => [:cam_init, :amazon_init, :scrape_new]
    
   task :reviews do    
     limit = 3
     total_before_script = Review.count
     $retailers.collect{|x| x.id}.each do |ret|
-      
       baseline = Review.count
       
       have_revues_4_ids = Review.find_all_by_product_type($model.name).collect{|x| x.local_id}.uniq
@@ -106,7 +105,8 @@ namespace :printers do
   task :rescrape_stats do 
     att = 'imageurl' # This will be re-scraped.
     
-    no_stats = $model.all.reject{|y| # These are the products for which we need to re-scrape.
+    allproducts = $model.instock | $model.ca # $model.all
+    no_stats = allproducts.reject{|y| # These are the products for which we need to re-scrape.
       !y[att].nil?}.reject{|x| 
       !x.instock and !x.instock_ca}.collect{|x| 
       x.id
@@ -148,28 +148,28 @@ namespace :printers do
   task :scrape => [:scrape_new, :match_to_products, :update_bestoffers, :validate_printers]
   task :update => [:update_prices, :scrape_new, :match_to_products, :update_bestoffers, :validate_printers]
   
-  desc 'Update Amazon cameras'
+  desc 'Get new prices and products from Amazon cameras'
   task :scrape_amazon_cams => [:cam_init, :amazon_init, :scrape_new, :update_prices]
   
-  desc 'Update Newegg printers'
+  desc 'Get new prices and products from Newegg printers'
   task :update_newegg => [:newegg_init, :update]
   
-  desc 'Update TigerDirect printers'
+  desc 'Get new prices and products from TigerDirect printers'
   task :update_tiger => [:tiger_init, :update]
   
-  desc 'Update Amazon and AmazonMarketplace printers'
+  desc 'Get new prices and products from Amazon and AmazonMarketplace printers'
   task :update_amazon => [:printer_init, :amazon_init, :update, :amazon_mkt_init, :update]
   
-  desc 'Scrape all data from Amazon (warning:extra long!)'
+  desc 'Get new products from Amazon (warning:extra long!)'
   task :scrape_amazon => [:printer_init, :amazon_init, :scrape]
   
-  desc 'Scrape all data from Newegg'
+  desc 'Get new products from Newegg'
   task :scrape_newegg => [:newegg_init, :scrape]
   
-  desc 'Scrape all data from TigerDirect'
+  desc 'Get new products from TigerDirect'
   task :scrape_tiger => [:tiger_init, :scrape]
     
-  desc 'Scrape all data from Amazon Marketplace (warning: extra long!)'
+  desc 'Get new products from Amazon Marketplace (warning: extra long!)'
   task :scrape_amazon_mkt => [:printer_init, :amazon_mkt_init, :scrape]
   
   # The subtasks...
