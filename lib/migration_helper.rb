@@ -1,7 +1,5 @@
 module MigrationHelper
   def addBasicProductFeatures(t)
-    
-    # Title
     t.text    :title
     #t.text    :label
     
@@ -11,17 +9,22 @@ module MigrationHelper
     t.boolean :iseligibleforsupersavershipping
     t.integer :bestoffer
 
-    
     t.float   :averagereviewrating
     t.integer :totalreviews
     t.timestamps
+  end
+  
+  def addPricingCa(t)
+    t.integer :price_ca
+    t.string  :price_ca_str
+    t.boolean :instock_ca
   end
   
   def addPricing(t)
     t.integer :price
     t.string  :pricestr
     t.boolean :instock
-    t.string  :pricehistory
+    t.string  :pricehistory # TODO remove this?
   end
   
   def addReviews(t)

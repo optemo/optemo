@@ -18,8 +18,8 @@ namespace :check do
     
     announce "Out of #{$model.count} #{$model.name}s... "
     announce " ... #{$model.valid.count} are valid"
-    announce " ... #{$model.instock.count} are in stock"
-    announce " ... #{$model.valid.instock.count} are valid and in stock"
+    announce " ... #{($model.instock | $model.instock_ca).count} are in stock (in CA or US)"
+    announce " ... #{($model.valid.instock | $model.valid.instock_ca).count} are valid and in stock"
     timed_log 'Done general product validation'
     @logfile.close
   end
@@ -40,10 +40,11 @@ namespace :check do
     end
    
     assert_within_range my_offerings, 'priceint', min_price, max_price
+    @logfile.close
   end
   
   desc "Check that scraped data isn't wonky"
-  task :printers => [:printer_init, :products] do
+  task :printers => [:printer_init, :products, :offerings] do
     
     @logfile = File.open("./log/check_#{$model.name}.log", 'a+')
     timed_log 'Start printer-specific validation'
@@ -57,7 +58,7 @@ namespace :check do
     assert_within_range( my_products, 'ppm', 2, 50)
     assert_within_range( my_products, 'paperinput', 20,2000)
     assert_within_range( my_products, 'ttp', 7,40)
-    assert_within_range( my_products, 'resolutionmax', 600, 4800)
+    assert_within_range( my_products, 'resolutionmax', 600, 9600)
     
     
     @logfile.close
@@ -69,7 +70,7 @@ namespace :check do
     require 'helpers/image_helper.rb'
     include ImageHelper
     
-    checkme = $model.instock || $model.instock_ca
+    checkme = $model.instock | $model.instock_ca
     
     nopix = 0
     noresized = 0
@@ -89,14 +90,14 @@ namespace :check do
         brokenurls += 1
       end
     end
-    puts "#{nopix} of #{$model.count} #{$model.name}s do not have a picture"
-    puts "#{noresized} of #{$model.count} #{$model.name}s do not have resized pix"
-    puts "#{nodims} of #{$model.count} #{$model.name}s do not have picture dimensions"
-    puts "#{brokenurls} of #{$model.count} #{$model.name}s have broken urls"
+    puts "#{nopix} of #{checkme.count} #{$model.name}s do not have a picture"
+    puts "#{noresized} of #{checkme.count} #{$model.name}s do not have resized pix"
+    puts "#{nodims} of #{checkme.count} #{$model.name}s do not have picture dimensions"
+    puts "#{brokenurls} of #{checkme.count} #{$model.name}s have broken urls"
   end
   
   task :printer_init => :init do
-
+      include PrinterValidationLib
       $model = Printer
       $scrapedmodel = ScrapedPrinter
       $id_field = 'id'
@@ -110,6 +111,8 @@ namespace :check do
   end
   
   task :cam_init => :init do
+      include CameraValidationLib
+    
       $model = Camera
       $scrapedmodel = ScrapedCamera
       $id_field = 'id'
