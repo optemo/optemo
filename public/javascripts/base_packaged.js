@@ -216,14 +216,14 @@ $('#info').css('left',((document.body.clientWidth-800)/2)+'px').css('top',(dsoct
 function fadein()
 {$('#myfilter_brand').css('visibility','visible');$('#fade').css('display','none');$('#info').css('display','none');}
 function saveit(id)
-{if(null!=document.getElementById('c'+id)){$("#already_added_msg").attr("style","display:block");}else{$.get('/saveds/create/'+id,function(data){$(data).click(function(){savedProductRemoval($(".deleteX",this));}).appendTo('#savebar_content');});$("#already_added_msg").attr("style","display:none");}
-$("#compare_button").attr("style","display:block");$("#deleteme").attr("style","display:none");}
+{if(null!=document.getElementById('c'+id)){$("#already_added_msg").css("display", "block");}else{$.get('/saveds/create/'+id,function(data){$(data).click(function(){savedProductRemoval($(".deleteX",this));}).appendTo('#savebar_content');});$("#already_added_msg").css("display", "none");}
+$("#compare_button").css("display", "block");$("#deleteme").css("display", "none");}
 function savedProductRemoval(obj)
 {itemId=$(obj).attr('data-name');otherItems=buildOtherItemsArray(".deleteX","data-name",itemId);source="unsave";if(otherItems.length!=0)
 {$.get('/products/buildrelations?source='+source+'&itemId='+itemId+'&otherItems='+otherItems);}}
 function remove(id)
-{$.get('/saveds/destroy/'+id)
-$('#c'+id).remove();$("#already_added_msg").attr("style","display:none");if($('.saveditem').length==0){$("#compare_button").attr("style","display:none");$("#deleteme").attr("style","display:block");}}
+{ // $.get('/saveds/destroy/'+id)
+$('#c'+id).remove();$("#already_added_msg").css("display", "none");if($('.saveditem').length==0){$("#compare_button").css("display", "none");$("#deleteme").css("display", "block");}}
 function removeFromComparison(id)
 {itemId=id;otherItems=buildOtherItemsArray(".deleteXComp","data-name",itemId);source="unsaveComp";if(otherItems.length!=0)
 {$.get('/products/buildrelations?source='+source+'&itemId='+itemId+'&otherItems='+otherItems);}
