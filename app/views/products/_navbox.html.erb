@@ -1,7 +1,7 @@
-<div id="box<%= i %>" class="navigator_box <%= group ? "nbgroup" : "nbsingle" %>" <%= "style='margin-right:0px'" if i%3 == 2 %>>
+<div id="box<%= i %>" class="navigator_box <%= group ? "nbgroup" : "nbsingle" %>" <%= "style='margin-right:0px'" if i%(Float($NumGroups)/3).ceil == (Float($NumGroups)/3).ceil - 1 %>>
 	<div class="topbar">
 		<div class='title'>
-			<%= prodDesc(group, i) %>
+			<%= groupDesc(group,i) %>
 		</div>
 		<% unless cluster.representative(@session,@s.searchpids).imagemurl.blank? %>
 

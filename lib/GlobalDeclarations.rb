@@ -1,4 +1,3 @@
-
 $SITE_TITLE = 'LaserPrinterHub.com'
 $DefaultProduct = 'Printer'
 
@@ -31,3 +30,5 @@ $DefaultUses = Hash[*%w(corporate small_office home_office photography).sort.rev
 
 #This parameter controls whether the interface features drag-and-drop comparison or not.
 $DragAndDropEnabled = 'true';
+$RelativeDescriptions = true
+$NumGroups = 9

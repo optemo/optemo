@@ -1,0 +1,89 @@
+K 25
+svn:wc:ra_dav:version-url
+V 34
+/svn/Clp/!svn/ver/1456/stable/1.10
+END
+configure
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/Clp/!svn/ver/1446/stable/1.10/configure
+END
+LICENSE
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/Clp/!svn/ver/1347/stable/1.10/LICENSE
+END
+Makefile.in
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/Clp/!svn/ver/1347/stable/1.10/Makefile.in
+END
+configure.ac
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/Clp/!svn/ver/1446/stable/1.10/configure.ac
+END
+Externals
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/Clp/!svn/ver/1456/stable/1.10/Externals
+END
+INSTALL
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/Clp/!svn/ver/1347/stable/1.10/INSTALL
+END
+depcomp
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/Clp/!svn/ver/1347/stable/1.10/depcomp
+END
+Makefile.am
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/Clp/!svn/ver/1347/stable/1.10/Makefile.am
+END
+missing
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/Clp/!svn/ver/1347/stable/1.10/missing
+END
+config.guess
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/Clp/!svn/ver/1347/stable/1.10/config.guess
+END
+README
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/Clp/!svn/ver/1347/stable/1.10/README
+END
+config.sub
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/Clp/!svn/ver/1347/stable/1.10/config.sub
+END
+ltmain.sh
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/Clp/!svn/ver/1347/stable/1.10/ltmain.sh
+END
+install-sh
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/Clp/!svn/ver/1347/stable/1.10/install-sh
+END

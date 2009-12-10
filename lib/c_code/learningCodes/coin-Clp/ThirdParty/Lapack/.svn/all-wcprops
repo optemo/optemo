@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/BuildTools/!svn/ver/1426/ThirdParty/Lapack/stable/1.0
+END
+INSTALL.LAPACK
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/BuildTools/!svn/ver/139/ThirdParty/Lapack/stable/1.0/INSTALL.LAPACK
+END
+configure
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/BuildTools/!svn/ver/1426/ThirdParty/Lapack/stable/1.0/configure
+END
+Makefile.in
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/BuildTools/!svn/ver/1423/ThirdParty/Lapack/stable/1.0/Makefile.in
+END
+configure.ac
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/BuildTools/!svn/ver/1426/ThirdParty/Lapack/stable/1.0/configure.ac
+END
+Makefile.am
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/BuildTools/!svn/ver/1423/ThirdParty/Lapack/stable/1.0/Makefile.am
+END
+get.Lapack
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/BuildTools/!svn/ver/538/ThirdParty/Lapack/stable/1.0/get.Lapack
+END

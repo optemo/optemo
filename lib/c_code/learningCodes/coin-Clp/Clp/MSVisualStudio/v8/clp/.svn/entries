@@ -1,0 +1,40 @@
+8
+
+dir
+1458
+https://projects.coin-or.org/svn/Clp/stable/1.10/Clp/MSVisualStudio/v8/clp
+https://projects.coin-or.org/svn/Clp
+
+
+
+2008-11-04T12:04:29.590190Z
+1300
+tkr
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+d311ca93-0c12-0410-81ba-aa187d86b09b
+
+clp.vcproj
+file
+
+
+
+
+2009-11-05T19:32:38.000000Z
+969b37e1d1207831a0a50f53d64682bb
+2008-11-04T12:04:29.590190Z
+1300
+tkr
+

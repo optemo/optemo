@@ -1,0 +1,148 @@
+8
+
+dir
+1458
+https://projects.coin-or.org/svn/Clp/stable/1.10/Clp
+https://projects.coin-or.org/svn/Clp
+
+
+
+2009-11-04T18:20:36.835871Z
+1455
+forrest
+has-props
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+d311ca93-0c12-0410-81ba-aa187d86b09b
+
+test
+dir
+
+configure
+file
+
+
+
+
+2009-11-05T19:32:42.000000Z
+a8f9729abe798b0bf0d3955dfb14e529
+2009-10-06T16:41:47.436708Z
+1446
+stefan
+has-props
+
+LICENSE
+file
+
+
+
+
+2009-11-05T19:32:42.000000Z
+eb4e9b885ec75aa7e660fc22c55e7cda
+2006-06-16T14:48:39.670818Z
+816
+tkr
+
+Makefile.in
+file
+
+
+
+
+2009-11-05T19:32:42.000000Z
+f230a47cfc06180f3b2936cd4a52b672
+2008-02-14T22:30:44.209252Z
+1162
+tkr
+has-props
+
+clp_addlibs.txt.in
+file
+
+
+
+
+2009-11-05T19:32:42.000000Z
+eb53c91dfee4506b68fdc64f08a4462a
+2006-05-10T21:17:57.546656Z
+754
+andreasw
+
+configure.ac
+file
+
+
+
+
+2009-11-05T19:32:42.000000Z
+4104af1df4fd82e6d84cd0eb3d3b785f
+2009-10-06T16:41:47.436708Z
+1446
+stefan
+has-props
+
+doc
+dir
+
+AUTHORS
+file
+
+
+
+
+2009-11-05T19:32:42.000000Z
+2167200f7a5ee83d0cd37746864a09be
+2006-05-10T21:17:57.546656Z
+754
+andreasw
+has-props
+
+src
+dir
+
+inc
+dir
+
+Makefile.am
+file
+
+
+
+
+2009-11-05T19:32:42.000000Z
+a4a7eab3a08b67fd11fdedcc27993f80
+2008-02-14T22:30:44.209252Z
+1162
+tkr
+has-props
+
+MSVisualStudio
+dir
+
+README
+file
+
+
+
+
+2009-11-05T19:32:42.000000Z
+6049702ff707780f2a2458b10848b665
+2007-08-20T04:05:19.309104Z
+1088
+andreasw
+has-props
+
+examples
+dir
+

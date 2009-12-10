@@ -59,11 +59,11 @@ class Search < ActiveRecord::Base
   
   def relativeDescriptions
     return if clusters.empty?
-    @descs ||= []
-    if @descs.empty?
+    @reldescs ||= []
+    if @reldescs.empty?
       feats = {}
       $model::ContinuousFeaturesF.each do |f|
-        norm = $dbfeat[featureName].max - $dbfeat[featureName].min
+        norm = $dbfeat[f].max - $dbfeat[f].min
         norm = 1 if norm == 0
         feats[f] = clusters.map{|c| c.representative(session,searchpids)[f].to_f/norm}
       end
@@ -84,22 +84,22 @@ class Search < ActiveRecord::Base
         n = dist.count
         d = []
         dist.sort{|a,b| b[1] <=> a[1]}[0..1].each do |f,v|
-          dir = feats[f].min == feats[f][i] ? "Lower" : "Higher"
-          dir = feats[f].min == feats[f][i] ? "Lower" : feats[f].max == feats[f][i] ? "Higher" : "Avg"
-          d << [dir,f].join(" ")
+          dir = feats[f].min == feats[f][i] ? "lower" : "higher"
+          dir = feats[f].min == feats[f][i] ? "lower" : feats[f].max == feats[f][i] ? "higher" : "avg"
+          d << dir+f
         end
         #Add binary labels
-        d.unshift "Waterproof" if clusters[i].waterproof && layer == 1
-        d.unshift "SLR" if clusters[i].slr && layer == 1
+        #d.unshift "Waterproof" if clusters[i].waterproof && layer == 1
+        #d.unshift "SLR" if clusters[i].slr && layer == 1
         if d.empty?
-          @descs << "Avg"
+          @reldescs << ["avg"]
         else
-          @descs << d.join(", ")
+          @reldescs << d
         end
         #@descs[-1] = @descs.last + " (#{n})"
       end
     end
-    @descs
+    @reldescs
   end
     
   def clusterDescription(clusterNumber)
@@ -131,6 +131,22 @@ class Search < ActiveRecord::Base
     clusterDs = clusterDs[0..1] if clusterDs.size > 2
     clusterDs[0] = {'desc' => "average", 'stat' => 1} if clusterDs.blank?
     des << clusterDs.map{|d| d['desc']};
+  end
+  
+  def searchDescription
+    des = []
+    $model::DescFeatures.each do |f|
+      low = $dbfeat[f].low
+      high = $dbfeat[f].high
+      searchR = ranges(f)
+      return 'Empty' if searchR[0].nil? || searchR[1].nil?
+      if (searchR[1]<=low)
+           des <<  "low_#{f}"
+      elsif (searchR[0]>=high)
+           des <<  "high_#{f}"
+      end
+    end  
+    des[0..3]
   end
 
     
@@ -223,7 +239,7 @@ class Search < ActiveRecord::Base
   
   def fillDisplay
     clusters #instantiate clusters to update cluster_count
-    if cluster_count < 9 && cluster_count > 0
+    if cluster_count < $NumGroups && cluster_count > 0
       if clusters.map{|c| c.size(session,searchpids)}.sum >= 9
         myclusters = splitClusters(clusters)
       else
@@ -249,7 +265,7 @@ class Search < ActiveRecord::Base
   end
   
   def splitClusters(myclusters)
-    while myclusters.length != 9
+    while myclusters.length != $NumGroups
       myclusters.sort! {|a,b| b.size(session,searchpids) <=> a.size(session,searchpids)}
       myclusters = split(myclusters.shift.children(session,searchpids)) + myclusters
     end
