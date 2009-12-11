@@ -5,7 +5,7 @@
 		</div>
 		<% unless cluster.representative(@session,@s.searchpids).imagemurl.blank? %>
 
-			<%= image_tag(cluster.representative(@session,@s.searchpids).imagemurl, :width => cluster.representative(@session,@s.searchpids).imagemw, :height => cluster.representative(@session,@s.searchpids).imagemh, :"data-id" => cluster.representative(@session,@s.searchpids).id, :class => "productimg", :alt => cluster.representative(@session,@s.searchpids).smlTitle, :"data-id" => "#{cluster.representative(@session,@s.searchpids).id}") %>
+			<%= image_tag(cluster.representative(@session,@s.searchpids).imagemurl, :width => cluster.representative(@session,@s.searchpids).imagemw, :height => cluster.representative(@session,@s.searchpids).imagemh, :"data-id" => cluster.representative(@session,@s.searchpids).id, :class => "productimg", :alt => cluster.representative(@session,@s.searchpids).smlTitle, :"data-id" => cluster.representative(@session,@s.searchpids).id) %>
 		<%end%>
 		<div class="product">
 			<a href="<%=cluster.representative(@session,@s.searchpids).descurl%>" data-id="<%=cluster.representative(@session,@s.searchpids).id%>" class="easylink">
@@ -25,7 +25,7 @@
  		  :id => "sim#{i}", :class => 'simlinks', :"data-id" => "#{cluster.representative(@session,@s.searchpids).id}") %>
     		</div>
 		<% else %>
-			<div class='compare'><%= link_to image_tag("compare#{fr?}.gif"), "javascript:saveit(#{cluster.representative(@session,@s.searchpids).id});", {:class => 'save', :itemId => "#{cluster.representative(@session,@s.searchpids).id}" } %>
+			<div class='compare'><%= link_to image_tag("compare#{fr?}.gif"), "javascript:saveProductForComparison(#{cluster.representative(@session,@s.searchpids).id});", {:class => 'save', :itemId => "#{cluster.representative(@session,@s.searchpids).id}" } %>
 			</div>
 		<% end %>
 	</div>

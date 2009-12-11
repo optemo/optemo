@@ -2,6 +2,9 @@
 # Note: for more update methods see fillin_helper.rb
 module DatabaseHelper
   
+  $ca = {'price'=>'price_ca', 'pricestr' => 'price_ca_str', 'bestoffer' => 'bestoffer_ca', 'instock'=> 'instock_ca','prefix' => 'CAD'}
+  $us = {'price'=>'price', 'pricestr' => 'pricestr', 'bestoffer' => 'bestoffer', 'prefix' => '', 'instock'=> 'instock'}
+  
   # The idea for ignore lists is that we don't copy over 
   # certain attributes because they're automatically generated
   # or because we don't want to. The ones which are auto-generated
@@ -204,15 +207,15 @@ module DatabaseHelper
       x.priceint <=> y.priceint
     }.first
     
-    pricestr_fieldname = 'pricestr'
-    pricestr_fieldname = 'price_ca_str' if region == 'CA'
-    price_str_prefix = ''
-    price_str_prefix = 'CAD' if region == 'CA'
-    
-    fill_in "bestoffer#{$region_suffixes[region]}", lowest.id, p
-    fill_in "price#{$region_suffixes[region]}", lowest.priceint, p
-    fill_in "#{$pricestr_fieldname}", "#{price_str_prefix}#{lowest.pricestr}", p
-    fill_in "instock#{$region_suffixes[region]}", true, p
+    regional = case region 
+      when 'CA' then $ca
+      when 'US' then $us
+      else []
+    end
+    fill_in regional['bestoffer'], lowest.id, p
+    fill_in regional['price'], lowest.priceint, p
+    fill_in regional['pricestr'], "#{regional['prefix']}#{lowest.pricestr}", p
+    fill_in regional['instock'], true, p
   end
   
   # Returns a hash of only those attributes which :

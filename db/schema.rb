@@ -771,6 +771,7 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.integer  "price_ca"
     t.string   "price_ca_str"
     t.boolean  "instock_ca"
+    t.integer  "bestoffer_ca"
   end
 
   create_table "cartridges", :force => true do |t|
@@ -1361,6 +1362,7 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.integer  "price_ca"
     t.string   "price_ca_str"
     t.boolean  "instock_ca"
+    t.integer  "bestoffer_ca"
   end
 
   create_table "referrals", :force => true do |t|

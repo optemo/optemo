@@ -2,7 +2,7 @@
 div.main {padding: 0; float: left; width: 745px; margin-left: 5px; text-align: left;}
 div.rowdiv {width: 745px; height: 225px}
 a img {border: none;}
- .navigator_box p {margin: 0px 0px 5px; padding: 0; line-height:1.2em;}
+ .navigator_box p {margin: 0px 0px 5px; padding: 0; line-height:1.2em; cursor: move;}
 div.navigator_box {text-align: center; font-size: small; float: left; width:245px; height:225px; margin: 0px 2px 0px 0px; padding: 0px; background: url(../images/navigatorbox_u.png) no-repeat; _background-image:url(../images/navigatorbox_u.gif);}
 div.navigator_box:hover {background: url(../images/navigatorbox_s.png) no-repeat;}
 div.borderbox {margin: 5px 0px 0px 5px; height: 210px; width: 235px}
@@ -28,8 +28,11 @@ a.save {font-size: 0.9em; line-height: 1.2em; text-decoration: none; background:
 #search {margin-top: 0.5em; width: 130px}
  #submit_button {margin-top: 2px}
 #clearsearch {font-size: 0.8em}
- div #savebar {background: #ddd; margin: 0.5em 0.1em 0; padding: 0em 0em 0.5em 0em; text-align: center;}
+ div #savebar {background: #ddd; margin: 0.5em 0.1em 0; padding: 0em 0em 0.5em 0em; text-align: center; }
 #savebar h2 {margin: 0}
+.savesome {width:130px; height:88px; background:"#F0FFFF";}
+.drop-box-hover { border:3px dashed #c96; }
+.ui-state-dragging {background: #fbf9ee url(../images/frosted-glass-texture.jpg) 50% 50% repeat-x; color: #363636; }
 .deleteX {position: absolute; left: 75px; top: 0;}
 #deleteme {font-size: 0.8em; margin: 0 5px}
 .saveditem {position: relative; text-align: center; width: 95px; height: 85px; float: left}
