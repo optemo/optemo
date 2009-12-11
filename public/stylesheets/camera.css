@@ -70,7 +70,7 @@ div.navigator_box {
 }
 .nbsingle {
 	background: url(../images/nb-single.png) no-repeat;
-	padding: 3px;
+	padding: 4px 3px 9px 3px;
 	width:230px;
 }
 .title {
@@ -137,7 +137,7 @@ div #leftbar {
 #submit_button {
 	margin-top: 2px;
 }
-.ui-state-dragging { border:3px dashed #c96; }
+.ui-state-dragging { border:1px dashed #c96; background: #ebe9de;}
 .drop-box-hover { background: #dbd9ce 50% 50% repeat-x; color: #363636; }
 .moving_box_ghost { opacity:0.4; }
 #savebar {
@@ -153,6 +153,24 @@ div #leftbar {
 	top: -5px;
 	z-index: 1;
 }
+
+.image_boundingbox {
+	width: 140px;
+	padding: 5px, 10px, 15px, 5px;
+	/* margin: 3px, 5px, 8px, 1px; */
+	margin-left: auto;
+	margin-right:auto;
+	position:relative;
+	text-align:center;
+}
+
+.dragHand {
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index:1;
+}
+
 .saveditem {
 	position: relative;
 	width: 77px;

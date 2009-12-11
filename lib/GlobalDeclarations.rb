@@ -29,6 +29,6 @@ $SignificantFeatureThreshold = 0.2
 $DefaultUses = Hash[*%w(corporate small_office home_office photography).sort.reverse.zip((1..4).to_a.map{|i|i*2}).flatten]
 
 #This parameter controls whether the interface features drag-and-drop comparison or not.
-$DragAndDropEnabled = 'true';
+$DragAndDropEnabled = true
 $RelativeDescriptions = true
 $NumGroups = 9

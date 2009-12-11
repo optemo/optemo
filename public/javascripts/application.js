@@ -4,7 +4,8 @@
    ---- UI Manipulation ----
    fadein()
    fadeout(url, data, width, height)  -  Puts up fading boxes
-   saveProductForComparison(id)  -  Puts comparison items in #savebar_content
+   saveProductForComparison(id, imgurl, name)  -  Puts comparison items in #savebar_content and stores them in a cookie
+   renderComparisonProducts(id, imgurl, name)  -  Does actual insertion of UI elements
    removeFromComparison(id)  -  Removes comparison items from #savebar_content
    removeBrand(str)  
    submitCategorical()
@@ -26,10 +27,8 @@
 */
 
 var language;
-var IS_DRAG_DROP_ENABLED = true;
-// This should work some day - check the HTML that ruby generates rather than using a global javascript variable here.
-// This looks for the specific span tag with id "#dragDropEnabled", in optemo.html.erb and converts to boolean.
-// ($("#dragDropEnabled").html === 'true');
+// The following is pulled from optemo.html.erb, which in turn checks GlobalDeclarations.rb
+var IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
 
 //--------------------------------------//
 //           UI Manipulation            //
@@ -60,7 +59,7 @@ function fadeout(url,data,width,height)
 }
 
 // When you click the Save button:
-function saveProductForComparison(id)
+function saveProductForComparison(id, imgurl, name)
 {	
 	if($(".saveditem").length == 4)
 	{
@@ -73,18 +72,8 @@ function saveProductForComparison(id)
 		$("#already_added_msg").css("display", "block");
 	} else {
 		trackPage('goals/save/'+id);
-		// Create an empty slot for product
-		$('#savedproducts').append("<div class='saveditem' id='c" + id + "'> </div>");
-		// Update just the savebar_content div after doing get on /saveds/create/[id here].
-		$.get('/saveds/create/'+id + "?ajax=true", function(data){
-			$(data).appendTo('#c'+id);
-			//Load JS for item
-			DBinit("#c"+id);
-		});
-		$("#already_added_msg").css("display", "none");
-		$("#too_many_saved").css("display", "none");
-		// We need to add cookie support here, and take out from the cookie in 'remove(id)' below.
-		addValueToCookie('savedProductIDs',id);
+		renderComparisonProducts(id, imgurl, name);
+		addValueToCookie('savedProductIDs', [id, imgurl, name]);
 	}
 
 	// There should be at least 1 saved item, so...
@@ -93,6 +82,33 @@ function saveProductForComparison(id)
 	// 2. hide 'add stuff here' message
 	$("#deleteme").css("display", "none");
 	}
+}
+
+function renderComparisonProducts(id, imgurl, name)
+{
+	// Create an empty slot for product
+	$('#savedproducts').append("<div class='saveditem' id='c" + id + "'> </div>");
+
+	// The best is to just leave the medium URL in place, because that image is already loaded in case of comparison, the common case.
+	// For the uncommon case of page reload, it's fine to load a larger image.
+	//	imgurl.replace(/_m/g, "_s")
+	smallProductImageAndDetail = "<img class=\"productimg\" width=\"45\" height=\"50\" src=" + 
+	//"/images/printers/"+id+"_s.jpg?1260303451" + 
+	imgurl +
+	" data-id=\""+id+"\" alt=\""+id+"_s\"/>" + 
+	"<div class=\"smalldesc\">" +
+	"<a class=\"easylink\" data-id=\""+id+"\" href=\"#\">"+
+	((name) ? getShortProductName(name) : 0) +
+	//Zevtor +
+	"</a></div>" + 
+	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"javascript:removeFromComparison("+id+")\">" + 
+	"<img src=\"/images/close.png\" alt=\"Close\"/></a>"; // do we need '?1258398853' ? I doubt it.
+
+	$(smallProductImageAndDetail).appendTo('#c'+id);
+	DBinit("#c"+id)
+
+	$("#already_added_msg").css("display", "none");
+	$("#too_many_saved").css("display", "none");
 }
 
 // When you click the X on a saved product:
@@ -230,6 +246,33 @@ function DBinit(context) {
 		}
 	}
 	
+	if (IS_DRAG_DROP_ENABLED)
+	{
+		// Make item boxes draggable. This is a jquery UI builtin.		
+		$(".image_boundingbox").each(function() {
+			$(this).draggable({ 
+				revert:true, 
+				cursor:"move", 
+				distance:5,
+				helper: 'clone',
+				start: function(e, ui) { $(ui.helper).addClass('moving_box_ghost'); }
+			});
+		});
+	
+		// Make savebar area droppable. jquery UI builtin.
+		$("#savebar").each(function() {
+			$(this).droppable({ 
+				hoverClass: 'drop-box-hover',
+				activeClass: 'ui-state-dragging', 
+				accept: ".image_boundingbox",
+				drop: function (e, ui) {
+					imgObj = $(ui.helper).find('.productimg')
+					saveProductForComparison(imgObj.attr('data-id'), imgObj.attr('src'), imgObj.attr('alt'));
+				}
+			 });
+		});
+	}
+	
 	// However, always add it to the link below the image.
 	$(".easylink",context).click(function() {
 		fadeout('/products/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
@@ -284,7 +327,7 @@ function DBinit(context) {
 	// Handle brand spinner
 	$('#selector',context).change(function(){
 		var whichbrand = $(this).val();
-		$('#myfilter_brand').val(appendStringWithStar($('#myfilter_brand').val(), whichbrand));
+		$('#myfilter_brand').val(appendStringWithToken($('#myfilter_brand').val(), whichbrand, '*'));
 		submitCategorical();
 		trackCategorical(whichbrand,100,2);
 	});
@@ -293,7 +336,7 @@ function DBinit(context) {
 	// Handle brand spinner
 	$('.removeBrand',context).click(function(){
 		var whichbrand = $(this).attr('data-id');
-		$('#myfilter_brand').val(removeStringWithStar($('#myfilter_brand').val(), whichbrand));
+		$('#myfilter_brand').val(removeStringWithToken($('#myfilter_brand').val(), whichbrand, '*'));
 		submitCategorical();
 		trackCategorical(whichbrand,0,2);
 		return false;
@@ -325,7 +368,7 @@ function DBinit(context) {
 	
 	//Remove buttons on compare
 	$('.remove', context).click(function(){
-		remove($(this).attr('data-name'));
+		removeFromComparison($(this).attr('data-name'));
 		$(this).parents('.column').remove();
 		return false;
 	});
@@ -524,57 +567,21 @@ $(document).ready(function() {
 		trackPage('goals/compare/');
 		return false;
 	});
-
-	if (IS_DRAG_DROP_ENABLED)
-	{
-		// Make item boxes draggable. This is a jquery UI builtin.		
-		$(".productimg").each(function() {
-			$(this).draggable({ 
-				revert:true, 
-				cursor:"move", 
-				distance:5,
-				helper: 'clone',
-				start: function(e, ui) { $(ui.helper).addClass('moving_box_ghost'); }
-			});
-		});
-	
-		// Make savebar area droppable. jquery UI builtin.
-		$("#savebar").each(function() {
-			$(this).droppable({ 
-				hoverClass: 'drop-box-hover',
-				activeClass: 'ui-state-dragging', 
-				accept: ".productimg",
-				drop: function (e, ui) {
-					saveProductForComparison($(ui.helper).attr('data-id'));
-				}
-			 });
-		});
-	}
 	
 	// 
 	if (savedProducts = readAllCookieValues('savedProductIDs'))
 	{
 		// There are saved products to display
-		for (var id in savedProducts)
-		{
-			$('#savedproducts').append("<div class='saveditem' id='c" + savedProducts[id] + "'> </div>");
-			// Update just the savebar_content div after doing get on /saveds/create/[id here].
-			$.get('/saveds/create/'+savedProducts[id] + "?ajax=true", function(data){
-				// We need to get the internal ID, since the ajax return call is asynchronous with the outer loop.
-				var internalID = $(data).attr('data-id')
-				$(data).appendTo('#c'+internalID);
-				//Load JS for item
-				DBinit("#c"+internalID);
-			});
-			
-			$("#already_added_msg").css("display", "none");
-			$("#too_many_saved").css("display", "none");
-			// There should be at least 1 saved item, so...
-			// 1. show compare button	
-			$("#compare_button").css("display", "block");
-			// 2. hide 'add stuff here' message
-			$("#deleteme").css("display", "none");
+		for (var tokenizedArrayID in savedProducts)
+		{	
+			tokenizedArray = savedProducts[tokenizedArrayID].split(',');
+			renderComparisonProducts(tokenizedArray[0], tokenizedArray[1], tokenizedArray[2]);
 		}
+		// There should be at least 1 saved item, so...
+		// 1. show compare button	
+		$("#compare_button").css("display", "block");
+		// 2. hide 'add stuff here' message
+		$("#deleteme").css("display", "none");
 	}
 	
 	//Request a feature
@@ -609,7 +616,6 @@ $(document).ready(function() {
 	spinner("myspinner", 11, 20, 9, 5, "#000");
 	
 });
-
 
 /* I am 99% sure that this is no longer useful, but not 100%. ZAT */
 /* http://snipplr.com/view/1696/get-elements-by-class-name/ */

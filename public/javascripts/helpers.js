@@ -9,8 +9,9 @@ getDocHeight()  -  Returns an array of scroll, offset, and client heights
 
 -------- Data -------
 getAllShownProductIds()  -  Returns currently displayed product IDs.
-appendStringWithStar(items, newitem)  -  For lists like this: "318*124*19"
-removeStringWithStar(items, rem)  -  As above, for removal
+getShortProductName(name)  -  Returns the shorter product name for printers. This should be extended in future.
+appendStringWithToken(items, newitem, token)  -  For lists like this: "318*124*19"
+removeStringWithToken(items, rem, token)  -  As above, for removal
 
 ------- Spinner -------
 spinner(holderid, R1, R2, count, stroke_width, colour)  -  returns a spinner object
@@ -123,18 +124,37 @@ function getAllShownProductIds(){
 	return currentIds;
 }
 
-// Add an item to a list with stars as tokens
-function appendStringWithStar(items, newitem)
+function getShortProductName(name) 
 {
-	return ((items == "") ? newitem : items+"*"+newitem);
+	// This is the corresponding Ruby function.
+	// I modified it slightly, since word breaks are a bit too arbitrary.
+	// [brand.gsub("Hewlett-Packard","HP"),model.split(' ')[0]].join(' ')
+	name = name.replace("Hewlett-Packard", "HP");
+	var shortname = name.substring(0,16);
+	if (name != shortname)
+		return shortname + "...";
+	else
+		return shortname;
 }
 
-// Remove an item from a list with stars as tokens
-function removeStringWithStar(items, rem)
+// Add an item to a list with a supplied token
+function appendStringWithToken(items, newitem, token)
 {
-	i = items.split('*');
-	i.splice(i.indexOf(rem),1);
-	return i.join("*");
+	return ((items == "") ? newitem : items+token+newitem);
+}
+
+// Remove an item from a list with a supplied token
+function removeStringWithToken(items, rem, token)
+{
+	i = items.split(token);
+	var newArray = [];
+	for (j in i)
+	{
+		if (i[j].match(new RegExp("^" + rem )))
+			continue;
+		newArray.push(i[j]);
+	}
+	return newArray.join(token);
 }
 
 //--------------------------------------//
@@ -205,7 +225,7 @@ function addValueToCookie(name, value)
 	if (savedData)
 	{
 		// Cookie exists, add additional values with * as the token.
-		savedData = appendStringWithStar(savedData, value);
+		savedData = appendStringWithToken(savedData, value, '*');
 		createCookie(name, savedData, numDays);
 	}
 	else
@@ -220,7 +240,7 @@ function removeValueFromCookie(name, value)
 	var savedData = readCookie(name), numDays = 30;
 	if (savedData)
 	{
-		savedData = removeStringWithStar(savedData, value)
+		savedData = removeStringWithToken(savedData, value, '*')
 		if (savedData == "") // No values left to store
 		{ 
 			eraseCookie(name);
