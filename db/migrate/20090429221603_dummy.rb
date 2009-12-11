@@ -2,7 +2,8 @@ class Dummy < ActiveRecord::Migration
   def self.up
     #remove_column :cameras, :productgroup
     #remove_column :reviews, :asin
-    #add_column :cameras, :price_ca, :integer
+    add_column :printers, :bestoffer_ca, :integer
+    add_column :cameras, :bestoffer_ca, :integer
     #add_column :cameras, :price_ca_str, :string
     #add_column :cameras, :instock_ca, :boolean
     #add_column :scraped_cameras, :bodyonly, :boolean

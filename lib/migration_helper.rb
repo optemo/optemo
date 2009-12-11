@@ -5,6 +5,7 @@ module MigrationHelper
     
     addPicStuff(t)
     addPricing(t)
+    addPricingCa(t)
     
     t.boolean :iseligibleforsupersavershipping
     t.integer :bestoffer
@@ -18,6 +19,7 @@ module MigrationHelper
     t.integer :price_ca
     t.string  :price_ca_str
     t.boolean :instock_ca
+    t.boolean :bestoffer_ca
   end
   
   def addPricing(t)
