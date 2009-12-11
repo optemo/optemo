@@ -8,7 +8,7 @@ en:
             saved:          "Compare Items"
             alreadyadded:   "You already added that product!"
             toomanysaved:   "You can save only up to 4 products at a time"
-            savesome:       "Select two or more items for comparison"
+            savesome:       "Select two or more items for comparison. Drop items in here or select \"Compare\""
             filters:        "Filters"
             powered:        "powered by"
             loading:        "Loading"
