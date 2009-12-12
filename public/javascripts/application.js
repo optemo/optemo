@@ -10,7 +10,8 @@
    removeBrand(str)  
    submitCategorical()
    submitsearch()
- 
+   histogram(element, norange)  -  draws histogram
+
    ---- Data Manipulation ----
    findBetter(id, feat) - Checks if a better product exists for that feature. PROBABLY DEPRECATED
   
@@ -233,8 +234,8 @@ function DBinit(context) {
 	});
 	
 	// If drag and drop is enabled, do NOT add product info blowup to the image.
-	if (!IS_DRAG_DROP_ENABLED)
-	{
+//	if (!IS_DRAG_DROP_ENABLED)
+//	{
 		if ($(".productimg").length)
 		{
 			$(".productimg",context).click(function (){
@@ -243,8 +244,9 @@ function DBinit(context) {
 				//trackPage($(this).attr('href'));
 				return false;
 			});
+//			$(".productimg",context).hover(
 		}
-	}
+//	}
 	
 	if (IS_DRAG_DROP_ENABLED)
 	{
@@ -257,7 +259,15 @@ function DBinit(context) {
 				helper: 'clone',
 				start: function(e, ui) { $(ui.helper).addClass('moving_box_ghost'); }
 			});
-		});
+            $(this).hover(function() {
+	                $(this).find('.dragHand').stop().animate({ opacity: 1.0 }, 150);
+					$(this).addClass('productimgborder');
+			    },
+		        function() {
+	            	$(this).find('.dragHand').stop().animate({ opacity: 0.5 }, 450);
+					$(this).removeClass('productimgborder');
+           });
+	    });
 	
 		// Make savebar area droppable. jquery UI builtin.
 		$("#savebar").each(function() {

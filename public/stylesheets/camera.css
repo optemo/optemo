@@ -141,10 +141,10 @@ div #leftbar {
 .drop-box-hover { background: #dbd9ce 50% 50% repeat-x; color: #363636; }
 .moving_box_ghost { opacity:0.4; }
 #savebar {
-/*	background-image:url(../images/blue_plus_sign.png);
-	background:transparent */
-	background-position:right;
+/* 	background-image:url(../images/bullseye.png);
+	background-position:bottom; */
 	background-repeat: no-repeat;
+	min-height:100px;
 }	
 /* Save Box */
 .deleteX {
@@ -164,11 +164,17 @@ div #leftbar {
 	text-align:center;
 }
 
+.productimgborder {
+/* 	border: 1px black dashed; */
+}
+
 .dragHand {
 	position: absolute;
 	left: 0;
 	top: 0;
 	z-index:1;
+    opacity:0.5;
+    filter:alpha(opacity=50);
 }
 
 .saveditem {
@@ -198,8 +204,8 @@ div.smalldesc {
 
 .savesome {
 	font-size: 0.8em;
-	width:130px;
-	height:88px;
+	width:180px;
+	height:58px;
 	background-color:"#F0FFFF";
 }
 #compare_button {
@@ -215,6 +221,9 @@ div.smalldesc {
 .gainlayout div {
 	zoom: 1;
 }
+
+a { color: #0000EE; }
+a:visited { color: #0000AB;}
 
 .ui-slider { position: relative; text-align: left; }
 .ui-slider .ui-slider-handle:hover {
