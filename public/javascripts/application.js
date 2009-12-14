@@ -264,7 +264,7 @@ function DBinit(context) {
 					$(this).addClass('productimgborder');
 			    },
 		        function() {
-	            	$(this).find('.dragHand').stop().animate({ opacity: 0.5 }, 450);
+	            	$(this).find('.dragHand').stop().animate({ opacity: 0.25 }, 450);
 					$(this).removeClass('productimgborder');
            });
 	    });
