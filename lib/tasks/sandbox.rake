@@ -1,5 +1,22 @@
 namespace :sandbox do
   
+  task :test_model_cleaner => :environment do
+    
+    require 'helper_libs' 
+    include PrinterConstants
+    
+    require 'helpers/mining/brands_helper'
+    require 'helpers/mining/datatype_helper'
+    include BrandsHelper
+    @@scrapedmodel.all[0..15].each do |sp|
+      puts "#{sp.title}"
+      x = model_cleaner(sp.attributes, @@brands)
+      puts "#{x * ','}"
+      puts " ------- "
+    end
+    
+  end
+  
   task :match_reviews => :environment do 
     $model = Camera
     $scrapedmodel = ScrapedCamera

@@ -283,6 +283,7 @@ module DatabaseHelper
     return RetailerOffering.find_all_by_local_id_and_retailer_id(local_id, retailer_id)
   end
   
+  # TODO This might not work as expected!
   def recognize_review(atthash)
     revu = nil
     # Try finding review by review ID (and retailer ID?)
@@ -293,9 +294,13 @@ module DatabaseHelper
       revu = Review.find_all_by_local_id_and_customerid_and_product_type(atthash['local_id'],\
           atthash['customerid'], $model.name).first
     end 
+    # TODO Check that matching by content is ok...
     if revu.nil? and atthash['content']
       # find by content...
-      revu = Review.find_all_by_content(atthash['content']).first
+      revu = Review.find_all_by_content(atthash['content']).reject{ |x| 
+        !x.local_id.nil? and !atthash['local_id'].nil? and atthash['local_id'] != !x.local_id
+      }.first
+      debugger if revu
     end
     return revu
   end

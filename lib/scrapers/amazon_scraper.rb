@@ -18,7 +18,6 @@ module AmazonScraper
   
   # All local ids from region
   def scrape_all_local_ids region
-    
     puts "[#{Time.now}] Getting a list of all Amazon IDs associated with #{$model}s. This may take a while"
     
     current_page = 1
@@ -99,8 +98,15 @@ module AmazonScraper
   
   # Scrape product specs from feed
   def scrape_specs local_id
-    res = Amazon::Ecs.item_lookup(local_id, :response_group => 'ItemAttributes,Images', :review_page => 1)
-    be_nice_to_amazon
+    begin
+      res = Amazon::Ecs.item_lookup(local_id, :response_group => 'ItemAttributes,Images', :review_page => 1)
+      be_nice_to_amazon
+    rescue Exception => exc
+      report_error "Could not look up offers for #{asin} in region #{region}"
+      report_error "#{exc.type}  #{exc.message}"
+      snore(300) 
+      return
+    end
     
     nokodoc = Nokogiri::HTML(res.doc.to_html)
     item = nokodoc.css('item').first
@@ -405,8 +411,13 @@ module AmazonScraper
     semi_cleaned_atts = clean_property_names(atts) 
     cleaned_atts = generic_cleaning_code semi_cleaned_atts
     cleaned_atts['resolutionmax'] = maxres_from_res(cleaned_atts['resolution'] || '')
+    if cleaned_atts['resolutionmax'].nil? or cleaned_atts['resolutionmax'] == 0
+      title = cleaned_atts['title']
+      res = parse_res(title)
+      mpix = to_mpix(res)
+      cleaned_atts['resolutionmax'] = mpix
+    end
     atts3 = remove_sep(cleaned_atts)
-    #debugger
     return atts3
   end
   
