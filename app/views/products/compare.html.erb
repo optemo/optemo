@@ -19,13 +19,10 @@
 		<div id="already_added_msg" class="savedmsg"> <%=t 'products.compare.alreadyadded' %> </div>
 		<div id="too_many_saved" class="savedmsg"> <%=t 'products.compare.toomanysaved' %> </div>
 		<div id="savedproducts">
-		<% if (@picked_products.empty? == false) %>
-		  <%= render :partial => 'product', :collection => @picked_products%>
-		<% end %>
 		</div>
 		</div>
 		<!-- Hide if 0 products, show if 1/more. -->
-		<%= link_to image_tag("compare#{fr?}.gif"), "", :id => "compare_button", :style => "display:#{@picked_products.empty? ? "none" : "block"};" %>
+		<%= link_to image_tag("compare#{fr?}.gif"), "", :id => "compare_button", :style => "display:none;" %>
 		<div class="bl"><!-- --></div><div class="br"><!-- --></div>
 	</div>
 
