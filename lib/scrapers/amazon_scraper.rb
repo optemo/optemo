@@ -338,7 +338,7 @@ module AmazonScraper
         end
       end
       current_page += 1
-      break if current_page > totalreviewpages #or current_page > 3 # Debugging purposes only!
+      break if current_page > totalreviewpages || 0 # In case there is a bad request, break loop
     end
     
     return reviews
