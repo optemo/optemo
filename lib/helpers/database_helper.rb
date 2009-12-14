@@ -1,58 +1,7 @@
 # Methods for the database.
 # Note: for more update methods see fillin_helper.rb
 module DatabaseHelper
-  
-  $ca = {'price'=>'price_ca', 'pricestr' => 'price_ca_str', 'bestoffer' => 'bestoffer_ca', 'instock'=> 'instock_ca','prefix' => 'CAD'}
-  $us = {'price'=>'price', 'pricestr' => 'pricestr', 'bestoffer' => 'bestoffer', 'prefix' => '', 'instock'=> 'instock'}
-  
-  # The idea for ignore lists is that we don't copy over 
-  # certain attributes because they're automatically generated
-  # or because we don't want to. The ones which are auto-generated
-  # are listed in the general ignore list:  
-  $general_ignore_list = ['id','created_at','updated_at']
-  
-  # For internal use.
-  $region_suffixes = {'CA' => '_ca', 'US' => ''}
-  
-  # Does record_updated_price and copies 
-  # over other offering attributes as well.
-  def update_offering newparams, offering
-    newprice = newparams['priceint']
-    record_updated_price newprice, offering if newprice
-    fill_in_all newparams, offering
-  end
-  
-  # Records a new price for the given offering
-  # if the price has changed. Also puts a time
-  # stamp (priceUpdate) and puts the latest thing
-  # in the price history.
-  def record_updated_price newprice, offering
-    if offering.priceint.to_s != newprice.to_s # Save old prices only if price has changed
-      
-      # Write the old price down in the history
-      if offering.pricehistory.nil? and offering.priceUpdate
-        pricehistory = [offering.priceUpdate.to_s(:db), offering.priceint].to_yaml
-      elsif offering.priceUpdate
-        pricehistory = (YAML.load(offering.pricehistory) + [offering.priceUpdate.to_s(:db), \
-          offering.priceint]).to_yaml
-      else
-        pricehistory = nil
-      end
-      fill_in 'pricehistory', pricehistory, offering
-      
-      # Update price & timestamp
-      fill_in 'priceint', newprice, offering
-      fill_in 'priceUpdate', Time.now, offering
-    end
-  
-  end
-  
-  def timestamp_offering ro
-    fill_in 'availabilityUpdate', Time.now, ro
-    fill_in 'priceUpdate', Time.now, ro
-    return ro
-  end
-  
+
   # Returns sets of IDs of records that match. eg
   # [[1,2], [3], [4,5,6]] means records with id 1 and 2
   # are the same product; 3 doesn't match any others,
@@ -159,30 +108,6 @@ module DatabaseHelper
     return create_product_from_atts rec.attributes, recclass
   end
   
-  # Makes a retailer offering from a specific brand's offering.
-  # Checks if there is already a matching retailer offering via
-  # the offering_id field and if not, copies over all attributes 
-  # from the specific brand's offering into a new RetailerOffering
-  def create_retailer_offering specific_o, product, model=$model
-    o  =  find_or_create_offering specific_o, specific_o.attributes
-    
-    fill_in 'product_type', model.name, o # TODO
-    fill_in 'product_id', product.id, o
-    
-    return o
-  end
-  
-  def find_or_create_offering rec, atts
-    if rec.offering_id.nil? # If no RetailerOffering is mapped to this brand-specific offering:
-      o = create_product_from_atts atts, RetailerOffering
-      fill_in 'offering_id', o.id, rec
-    else
-      o = RetailerOffering.find(rec.offering_id)
-      fill_in_all atts, o
-    end
-    timestamp_offering o
-    return o
-  end
   
   # Updates best offer for all regions
   def update_bestoffer p
@@ -283,37 +208,5 @@ module DatabaseHelper
     return RetailerOffering.find_all_by_local_id_and_retailer_id(local_id, retailer_id)
   end
   
-  # TODO This might not work as expected!
-  def recognize_review(atthash)
-    revu = nil
-    # Try finding review by review ID (and retailer ID?)
-    if atthash['local_review_id'] #and atthash['retailer_id']
-      revu = Review.find_all_by_local_review_idand_product_type(atthash['local_review_id'], $model.name).first
-    end
-    if revu.nil? and atthash['local_id'] and atthash['customerid']
-      revu = Review.find_all_by_local_id_and_customerid_and_product_type(atthash['local_id'],\
-          atthash['customerid'], $model.name).first
-    end 
-    # TODO Check that matching by content is ok...
-    if revu.nil? and atthash['content']
-      # find by content...
-      revu = Review.find_all_by_content(atthash['content']).reject{ |x| 
-        !x.local_id.nil? and !atthash['local_id'].nil? and atthash['local_id'] != !x.local_id
-      }.first
-      debugger if revu
-    end
-    return revu
-  end
-  
-  # Tries to make sure that duplicate reviews aren't recorded.
-  # Has several matching 
-  def find_or_create_review(atthash)
-    revu = recognize_review(atthash)
-    if revu.nil?
-      #debugger
-      revu = create_product_from_atts atthash, Review
-    end
-    return revu
-  end
   
 end

@@ -1,6 +1,6 @@
 # The part of DatabaseHelper which deals with
 # filling in attributes for a given record
-module DatabaseHelper
+module FillIn
 
   # Does fill_in_missing on all name => value 
   # pairs in the hash

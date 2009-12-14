@@ -1,5 +1,21 @@
 module ImageHelper
   
+  #IMAGES
+  #   imgfolder
+  #   file_exists_for id, sz=''
+  #   url_from_item_and_sz id, sz
+  #   unresized_recs model=$model
+  #   picless_recs model=$model
+  #   statless_recs model=$model
+  #   download_img url, folder, fname=nil
+  #   filename_from_id id, sz=''
+  #   resize img
+  #   record_missing_pic_stats 
+  #   record_pic_urls recordset
+  #   record_pic_stats recset
+  #   download_all_pix id_and_url_hash
+  #   resize_all ids
+  
   # -- Global vars to set --#
   # $model : eg Cartridge, Printer, Camera (the object not the string)
   # $id_field : the db field which is unique for every object that has 

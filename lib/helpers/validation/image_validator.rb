@@ -1,4 +1,4 @@
-module GeneralValidator
+module ImageValidator
   
   def pic_exists record
     return true if file_exists_for(record[$id_field], '')

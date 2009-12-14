@@ -1,5 +1,17 @@
 module Constants
   
+  # The idea for ignore lists is that we don't copy over 
+  # certain attributes because they're automatically generated
+  # or because we don't want to. The ones which are auto-generated
+  # are listed in the general ignore list:  
+  $general_ignore_list = ['id','created_at','updated_at']
+  
+  # For internal use.
+  $region_suffixes = {'CA' => '_ca', 'US' => ''}
+  
+  $ca = {'price'=>'price_ca', 'pricestr' => 'price_ca_str', 'bestoffer' => 'bestoffer_ca', 'instock'=> 'instock_ca','prefix' => 'CAD'}
+  $us = {'price'=>'price', 'pricestr' => 'pricestr', 'bestoffer' => 'bestoffer', 'prefix' => '', 'instock'=> 'instock'}
+    
   # The definitive list of brands...
   $printer_brands = ["3com", "Advantus", "Apple", "ASUS", "Belkin", "Brother", "Buddy", "Canon", \
      "Copystar", "Curtis Manufacturing", "Dell", "Elite", "Epson", "Fargo", "General Ribbon Corporation", \

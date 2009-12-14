@@ -1,5 +1,15 @@
 module LoggingHelper
   
+  #LOGGING
+  #   log msg
+  #   timed_log msg
+  #   report_error msg
+  #   announce msg
+  #   timed msg
+  #   timed_announce msg
+  #   log_v str
+  #   snore(sec)
+  
   def log msg
     @logfile.puts "LOGGER      " + msg if @logfile
     $logfile.puts "LOGGER      " + msg if $logfile
