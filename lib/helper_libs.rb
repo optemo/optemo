@@ -1,9 +1,5 @@
 # This file contains useful groupings of helper modules
 
-module Constants
-  require 'helpers/global_constants'
-end
-
 module DataLib
   require 'helpers/database_helper'
   require 'helpers/scraping_helper'

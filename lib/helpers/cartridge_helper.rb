@@ -1,9 +1,12 @@
 # Cartridge-specific helper methods
 module CartridgeHelper
   
-  require 'helper_libs'
-  include Constants
-  include CartridgeConstants
+  $cartridge_conditions = ['Remanufactured', 'Refurbished', 'Compatible', 'OEM', 'Genuine', 'New']
+  $cartridge_colors = ['Yellow', 'Cyan', 'Magenta', 'Black']
+  $fake_brands = ["123inkjets", "4inkjets", "Best Deal Toner", "Digital Products", "G & G", \
+      "General Ribbon Corporation", "Global Marketing Partners", "Ink It Up 4 Less", "Ink-Power",\
+       "Inkers", "LD Products", "Mega Leader", "Mipo", "Pritop", "Q-Imaging", "Sophia Global", \
+       "TNT Toner", "Cartridge Family" , 'Ink Grabber']  #"SIB", "SOL", "STC", ] <-- These are weird
   
   # Creates an entry in the Compatibility table
   # unless there is already one just like it.  
