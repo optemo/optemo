@@ -233,20 +233,18 @@ function DBinit(context) {
 		}
 	});
 	
-	// If drag and drop is enabled, do NOT add product info blowup to the image.
-//	if (!IS_DRAG_DROP_ENABLED)
-//	{
-		if ($(".productimg").length)
-		{
-			$(".productimg",context).click(function (){
-				fadeout('/products/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
-				trackPage('products/show/'+$(this).attr('data-id')); 
-				//trackPage($(this).attr('href'));
-				return false;
-			});
-//			$(".productimg",context).hover(
-		}
-//	}
+	// With the image getting cloned for drag and drop, it's fine to keep the click handler.
+	// But it's important to check that $(".productimg") actually exists, for cases of images being missing.
+	if ($(".productimg").length)
+	{
+		$(".productimg",context).click(function (){
+			fadeout('/products/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
+			trackPage('products/show/'+$(this).attr('data-id')); 
+			// As far as I can tell, the following line is deprecated. ZAT Dec 2009
+			//trackPage($(this).attr('href'));
+			return false;
+		});
+	}
 	
 	if (IS_DRAG_DROP_ENABLED)
 	{
@@ -255,6 +253,7 @@ function DBinit(context) {
 			$(this).draggable({ 
 				revert:true, 
 				cursor:"move", 
+				// The following defines the drag distance before a "drag" event is actually initiated. Helps for people who click while the mouse is slightly moving.
 				distance:5,
 				helper: 'clone',
 				start: function(e, ui) { $(ui.helper).addClass('moving_box_ghost'); }
@@ -264,7 +263,7 @@ function DBinit(context) {
 					$(this).addClass('productimgborder');
 			    },
 		        function() {
-	            	$(this).find('.dragHand').stop().animate({ opacity: 0.25 }, 450);
+	            	$(this).find('.dragHand').stop().animate({ opacity: 0.35 }, 450);
 					$(this).removeClass('productimgborder');
            });
 	    });
@@ -407,7 +406,7 @@ function DBinit(context) {
 		return false;
 	});
 	
-	//Set up sliders
+	// Set up sliders
 	$('.slider',context).each(function() {
 		threshold = 20;							// The parameter that identifies that 2 sliders are too close to each other
 		itof = $(this).attr('data-itof');
@@ -532,6 +531,29 @@ function DBinit(context) {
 			$('a:last', this).html(curmax).addClass("valabove");
 		histogram($(this).siblings('.hist')[0]);
 	});
+
+	// Set up the next image to the right
+
+/*   This image cycling code skeleton is probably not useful now.
+
+	$('.right_arrow_bounding_box').each(function(){
+		 $(this).hover(function() {
+	                $(this).stop().animate({ opacity: 1.0 }, 150);
+			    },
+		        function() {
+	            	$(this).stop().animate({ opacity: 0.35 }, 450);
+        });
+		$(this).click(function() {
+			// 0. Slide old image off to the left.
+			// 1. Animate the next image coming to the left. It should already be loaded at this point.
+			// 2. Change the back image
+			// 3. Turn off the front image
+			// 4. Reset its position
+			// 5. Reload the next click handler and image
+			//   5a. Chances are, the click handler on the right arrow is no longer on... ?
+			 
+		})
+	}); */
 }
 
 //--------------------------------------//

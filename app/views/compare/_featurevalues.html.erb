@@ -12,12 +12,11 @@
 </div>-->
 
 <% featurelist.each_index do |column| %>
+<div class="cell <%= column%2==0 ? "graybg" : "whitebg" %>">
 	<% if numberofproducts > 1 && (@bestvalue[featurelist[column]] != nil && (@bestvalue[featurelist[column]] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[featurelist[column]]))) %>
-	<div class="cell greenbg">
 		<!-- If the interesting feature should be displayed then display -->
 		<b><%= finalDisplay(product, featurelist[column]) %></b>		
 	<% else %>
-	<div class="cell <%= column%2==0 ? "graybg" : "whitebg" %>">
 		<%= finalDisplay(product, featurelist[column]) %>
 	<% end %>
 	</div>
