@@ -109,7 +109,7 @@ namespace :data do
       no_revues_4_ids = $scrapedmodel.find_all_by_totalreviews(0).collect{|x| x.local_id}.uniq
       dl_revue_4_ids = ($scrapedmodel.all.collect{|x| x.local_id}.uniq - have_revues_4_ids - no_revues_4_ids).uniq
       limit = limit || 10000
-      debugger # Why does B001SER47Y keep re-appearing? THERE IS SOMETHING WRONG HERE
+      
       puts "Need to download reviews for #{dl_revue_4_ids.count} #{$model.name}s"
       puts "#{($scrapedmodel.all.collect{|x| x.local_id} - dl_revue_4_ids).uniq.count} #{$model.name}s already have reviews" 
       puts "Will download for up to #{limit} #{$model.name}s"
