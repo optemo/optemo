@@ -1,7 +1,7 @@
 #PRICES CLEANING
 #   clean_prices atts
 
-module PricesHelper
+module PricesParser
   
   # Returns the price integer: float * 100, rounded
   def get_price_i price_f
@@ -14,9 +14,6 @@ module PricesHelper
     return nil if price_f.nil? 
     return (format "$%.2f", price_f)
   end
-  
-  
-  
   
   # Figures out all the price attributes
   def clean_prices atts

@@ -1,9 +1,16 @@
-#SEPARATOR/ETC
-#   self.sep
-#   many_fields_to_one multfields, atts, prefix=false
-#   multiple_fields_to_one multfields, newfield, oldrec, newrec, prefix=false
-#   remove_blank_strings atts
-module Separator
+# The atthash is a mapping of attribute name to value,
+# used throughout the cleaning code. It is convenient 
+# because it is similar in structure to the output from
+# our table scraping method.
+# This module contains methods useful in manipulating 
+# the atthash, but unrelated to parsing data.
+module AttHashHelper
+  
+  @@sep = '!@!'
+  
+  def self.sep 
+    return @@sep
+  end
   
   # Merges all the values from several fields to a new field
   def multiple_fields_to_one multfields, prefix=false

@@ -26,7 +26,7 @@ module CartridgeHelper
         'product_type' => prd_type, 'accessory_type' => acc_type}
     compat = Compatibility.find_by_accessory_id_and_accessory_type_and_product_id_and_product_type(\
       acc_id, acc_type, prd_id, prd_type)
-    compat = create_product_from_atts atts, Compatibility if compat.nil?
+    compat = create_record_from_atts  atts, Compatibility if compat.nil?
     return compat
   end
   
@@ -94,12 +94,14 @@ module CartridgeHelper
     fill_in field, brand, rec if brand
   end
   
+  
+  # TODO use a different method  
   # Creates a RetailerOffering from a Cartridge object
   # with the given 'special' ca$h-producing URL
   def make_offering cart, url 
     atts = cart.attributes
     if cart.offering_id.nil?
-      offer = create_product_from_atts atts, RetailerOffering
+      offer = create_record_from_atts  atts, RetailerOffering
     else
       offer = RetailerOffering.find(cart.offering_id)
     end
@@ -126,12 +128,12 @@ module CartridgeHelper
       return nil if realbrand.nil? # VALIDATION
       brand_str = "#{realbrand} #{cart.condition} #{brand_str}" 
     end
-    matches = match_rec_to_printer [brand_str], [cart.model], Cartridge
+    matches = find_matching_product [brand_str], [cart.model], Cartridge
     matching_c = nil
     
     if matches.length == 0
       atts = {'brand' => brand_str, 'model' => cart.model}
-      matching_c = create_product_from_atts atts, Cartridge
+      matching_c = create_record_from_atts  atts, Cartridge
     elsif matches.length == 1
       matching_c = matches[0]
     else

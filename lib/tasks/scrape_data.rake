@@ -43,7 +43,7 @@ module GenericScraper
         clean_atts['url'] = id_to_sponsored_link(local_id, retailer.region, clean_atts['merchant'])
         ros = find_ros_from_scraped sp
         ro = ros.first
-        ro = create_product_from_atts clean_atts, RetailerOffering if ro.nil?
+        ro = create_record_from_atts  clean_atts, RetailerOffering if ro.nil?
         fill_in_all clean_atts, ro
             
         timestamp_offering ro       
@@ -226,9 +226,9 @@ namespace :data do
     match_me = match_me.reject{|x| (x.model.nil? and x.mpn.nil?) or x.brand.nil?}
     
     match_me.each_with_index do |scraped, i|
-      matches = match_printer_to_printer scraped, $model, $product_series
+      matches = match_product_to_product scraped, $model, $product_series
       real = matches.first
-      real = create_product_from_atts scraped.attributes, $model if real.nil? 
+      real = create_record_from_atts  scraped.attributes, $model if real.nil? 
       
       fill_in 'product_id',real.id, scraped
       

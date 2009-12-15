@@ -58,10 +58,10 @@ namespace :scrape_grabber do
     GrabberCartridge.all.each do |gc|
       clean_atts = inkgrabber_clean gc.attributes
       if decently_clean_atts?(clean_atts)
-        matching_cartridges = match_rec_to_printer [clean_atts['brand']], [clean_atts['model'], clean_atts['mpn']], Cartridge
+        matching_cartridges = find_matching_product [clean_atts['brand']], [clean_atts['model'], clean_atts['mpn']], Cartridge
         puts "#{matching_cartridges.length} matching cartridges found"
         cart = matching_cartridges[0] 
-        cart = create_product_from_atts(clean_atts, Cartridge) if cart.nil? 
+        cart = create_record_from_atts (clean_atts, Cartridge) if cart.nil? 
         comp = create_uniq_compatibility cart.id, 'Cartridge', gc.printerid , 'Printer'
         goff = GrabberOffering.find_or_create_by_item_number(gc.item_number)
         fill_in 'product_id', cart.id, goff
@@ -83,7 +83,7 @@ namespace :scrape_grabber do
     
     while (line = temp_models_file.gets)
       stuff = line.split('|')
-      matching = match_rec_to_printer [stuff[0]], [stuff[1]], Printer, $printer_series
+      matching = find_matching_product [stuff[0]], [stuff[1]], Printer, $printer_series
       debugger if matching.length == 0 and stuff[0].match(/^h/i)
       puts "#{matching.length} matches for #{stuff[0]} #{stuff[1]}."
 
@@ -98,7 +98,7 @@ namespace :scrape_grabber do
     
     while (line = temp_models_file.gets)
       stuff = line.split('|')
-      matching = match_rec_to_printer [stuff[0]], [stuff[1]], Printer, $printer_series
+      matching = find_matching_product [stuff[0]], [stuff[1]], Printer, $printer_series
       puts "#{matching.length} matches for #{stuff[0]} #{stuff[1]}."
       if matching.length > 0
         printer_page_url ="#{baseurl}#{stuff[2]}"

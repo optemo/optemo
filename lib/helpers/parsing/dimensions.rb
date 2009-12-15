@@ -1,11 +1,5 @@
-
 module DimensionsHelper
   #LENGTHS/WEIGHTS
-  #   to_cm length
-  #   parse_metric_length str
-  #   parse_metric_dimensions str
-  #   to_grams wt
-  #   parse_weight str
   
   # Converts metric length(array: [m,cm,mm]) to cm
   def to_cm length
@@ -72,9 +66,11 @@ module DimensionsHelper
     return (wt[0]*1000+wt[1]+wt[2]/1000)
   end
   
-  def clean_dims dimensions, factor=100
-    str =(dimensions or "").gsub(/''/, '\"').gsub(/\(.*?\)/,'')
-    dimensions_data = separate(str).reject{|x| x.split('x').length < 3}.uniq
+  def clean_dimensions dimensions_array, factor=100
+    dimensions_data = dimensions_array.collect{|x| 
+      x.gsub(/''/, '\"').gsub(/\(.*?\)/,'')}.reject{|x| 
+      x.split('x').length < 3
+    }.uniq
     atts = {}
     dimensions_data.each do |dims|  
       dims.split('x').each do |dim| 

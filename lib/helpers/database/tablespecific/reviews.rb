@@ -1,26 +1,4 @@
 module ReviewHelper
-  #MATCHING
-  #   get_matching_sets recs=$model.all
-  #   match_printer_to_printer ptr, recclass=$model, series=[]
-  #   match_rec_to_printer rec_makes, rec_modelnames, recclass=$model, series=[]
-  #   DEPRECATE find_or_create_scraped_printer atts 
-  #   find_ros_from_scraped sp, model=$model
-  #   find_sp_from_ro ro
-  #   find_ros_from_sp sp
-  #   find_sp local_id, retailer_id
-  #   find_ros local_id, retailer_id
-  #   recognize_review(atthash)
-  #   find_or_create_review(atthash)
-  
-  #CREATION
-  #  create_product_from_atts atts, recclass=$model
-  #  create_product_from_rec rec, recclass=$model
-  
-  #   find_or_create_scraped_product atts 
-  #   find_or_create_offering rec, atts
-  
-  #   DEPRECATE match_scrapedp_to_p sp
-  
   
   # TODO This might not work as expected!
   def recognize_review(atthash)
@@ -50,7 +28,7 @@ module ReviewHelper
     revu = recognize_review(atthash)
     if revu.nil?
       #debugger
-      revu = create_product_from_atts atthash, Review
+      revu = create_record_from_atts atthash, Review
     end
     return revu
   end

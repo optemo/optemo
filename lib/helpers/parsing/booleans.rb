@@ -1,7 +1,4 @@
-#BOOLEANS
-#   infer_boolean bool_property, indicator_properties, atts, default=nil
-#   get_b x
-
+# Methods for cleaning Booleans
 module BooleanHelper
   # Converts a string to a boolean where possible
   def get_b x
@@ -17,7 +14,6 @@ module BooleanHelper
     end
     return val
   end
-  
   
   # If any of the 'indicator properties' in the 
   # attribute hash are not nil, the boolean property

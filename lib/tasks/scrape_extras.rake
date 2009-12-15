@@ -170,7 +170,7 @@ namespace :scrape_extra do
     links.each do |ln|
       mdl = just_alphanumeric(ln.split('/')[-2])
       if(mdl and mdl.strip != '')
-        ps = match_rec_to_printer ['xerox'], [mdl], Printer, []
+        ps = find_matching_product ['xerox'], [mdl], Printer, []
         if ps.length  == 1 # and !validids.include?p.id
           p = ps.first
           #if mdl.match(/phaser/i)
@@ -315,7 +315,7 @@ namespace :scrape_extra do
       clean_specs = generic_printer_cleaning_code mapped_specs
             
       # TODO more effective find?
-      ps = match_rec_to_printer [clean_specs['brand']], [clean_specs['model']], $model,[]
+      ps = find_matching_product [clean_specs['brand']], [clean_specs['model']], $model,[]
       if ps.length == 1
         validanyway += 1 if (validids.include?ps.first.id)
         puts "Yay! I'm useful!" unless (validids.include?ps.first.id)

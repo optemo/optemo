@@ -2,12 +2,8 @@ namespace :sandbox do
   
   task :test_model_cleaner => :environment do
     
-    require 'helper_libs' 
-    include PrinterConstants
-    
-    require 'helpers/mining/brands_helper'
-    require 'helpers/mining/datatype_helper'
-    include BrandsHelper
+   require 'helper_libs' 
+   
     @@scrapedmodel.all[0..15].each do |sp|
       puts "#{sp.title}"
       x = model_cleaner(sp.attributes, @@brands)
@@ -156,7 +152,7 @@ namespace :sandbox do
       atts = cam.attributes
       atts['local_id'] = atts['asin']
       atts['product_id'] = cam.id
-      create_product_from_atts(atts, ScrapedCamera)
+      create_record_from_atts (atts, ScrapedCamera)
     end
     puts 'Done'
   end

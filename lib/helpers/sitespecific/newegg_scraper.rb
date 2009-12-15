@@ -55,7 +55,8 @@ module NeweggScraper
   
     atts['printserver'] = (atts['networkports'].nil? == false)
     
-    atts['platform'] = many_fields_to_one(['windowscompatible','macintoshcompatible','windowsvista'],atts)
+    atts['platform'] = multiple_fields_to_one([atts['windowscompatible'],atts['macintoshcompatible'],\
+      atts['windowsvista']])
   
     (atts['blackprintquality'] or "").gsub!(/ dpi/,'') 
     (atts['mediasizessupported'] or "").gsub!('~','to')

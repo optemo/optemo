@@ -37,7 +37,7 @@ task :find_duplicate_printers => :environment do
   duplicate_sets = []
   
   Printer.all.each do |p|
-    matches = match_printer_to_printer p, Printer
+    matches = match_product_to_product p, Printer
     
     
     if matches.reject{|x| x.id == p.id}.length > 0

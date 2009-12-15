@@ -1,8 +1,3 @@
-#OFFERINGS
-#   create_retailer_offering specific_o, product, model=$model
-#   update_bestoffer p
-#   update_bestoffer_regional p, region
-#   make_offering cart, url
 module OfferingsHelper
 
   def timestamp_offering ro
@@ -46,7 +41,7 @@ module OfferingsHelper
   
   def find_or_create_offering rec, atts
     if rec.offering_id.nil? # If no RetailerOffering is mapped to this brand-specific offering:
-      o = create_product_from_atts atts, RetailerOffering
+      o = create_record_from_atts atts, RetailerOffering
       fill_in 'offering_id', o.id, rec
     else
       o = RetailerOffering.find(rec.offering_id)

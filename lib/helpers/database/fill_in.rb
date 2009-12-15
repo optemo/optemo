@@ -1,6 +1,6 @@
 # The part of DatabaseHelper which deals with
 # filling in attributes for a given record
-module FillIn
+module FillInHelper
   
   # Creates a record and fills in any fitting attributes
   # from the given attribute hash
@@ -9,11 +9,6 @@ module FillIn
     p = recclass.new(atts_to_copy)
     p.save
     return p
-  end
-
-  # Like creating a product from the record's attributes
-  def create_rec_from_other_rec rec, recclass=$model
-    return create_product_from_atts rec.attributes, recclass
   end
 
   # Returns a hash of only those attributes which :
@@ -58,14 +53,14 @@ module FillIn
     end
   end
   
+  # Default is to fill in unless the value is nil
   def fill_in name, desc, record, ignorelist=[]
     return if desc.nil?
     fill_in_forced name, desc, record, ignorelist
   end
   
-  # Specially modified for internationalization
-  # Fills in value for attribute in record.
-  # Cleverly avoids cases with nonexistent things.
+  # Fills in value for attribute in record even if
+  # value is nil
   def fill_in_forced name, desc, record, ignorelist=[]
     ignore = ignorelist + $general_ignore_list     
     

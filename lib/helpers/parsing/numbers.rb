@@ -1,18 +1,4 @@
-#NUMBERS CLEANING
-#   get_i str
-#   (deprecate) proper_start str
-#   get_f str
-#   get_el x
-#   clean_bool dirty_vals
-#   self.float_rxp
-#   get_max_f str
-#   maxres_from_res res
-#   get_f_with_units str, unit_regex
-#   get_f_with_units_in_front str, unit_regex
-#   float_and_regex x
-#   append_regex x, y
-
-module NumberParser
+module NumberCleaner
   
   @@float_rxp = /(\d+,)?\d+(\.\d+)?/
   
