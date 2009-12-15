@@ -320,7 +320,6 @@ module AmazonScraper
         report_error "Couldn't download reviews for product #{asin}"
         report_error "#{exc.type} #{exc.message}"
       else
-        debugger
         nokodoc = Nokogiri::HTML(res.doc.to_html)
         result =  nokodoc.css('item').first
         #Look for old Retail Offering
@@ -328,10 +327,13 @@ module AmazonScraper
           averagerating ||= result.css('averagerating').text
           totalreviews ||= result.css('totalreviews').text.to_i
           totalreviewpages ||= result.css('totalreviewpages').text.to_i
-          reviews << [{'totalreviews' => totalreviews}] if totalreviews == 0
-          puts "#{$model.name} #{asin} review download: #{(totalreviewpages-current_page)/6} min remaining..." if current_page % 10 == 1
+          if totalreviews == 0
+            puts "#{$model.name} #{asin} has no reviews -- 0 min remaining"
+            return [{'totalreviews' => totalreviews}]
+          end
+          puts "#{$model.name} #{asin} review download: less than #{(totalreviewpages-current_page)/6 + 1} min remaining..." if current_page % 10 == 1
           temp = result.css('review')
-          temp = Array(temp) unless reviews.class == Array #Fix single and no review possibility
+          temp = Array(temp) unless reviews.class == Array # Fix single and no review possibility
           array_of_hashes = temp.collect{|x| x.css('*').inject({}){|r,y| r.merge({y.name => y.text})}}
           named_array_of_hashes = []
           array_of_hashes.each{ |hash|
@@ -340,19 +342,17 @@ module AmazonScraper
                 new_k = get_property_name(k,Review, ['id'])
                 named_hash[new_k] = v 
               }
-              named_hash['totalreviews'] = totalreviews
-              named_hash['averagereviewrating'] = averagerating
+              named_hash['totalreviews'] = totalreviews # TODO can this be done automatically?
+              named_hash['averagereviewrating'] = averagerating # TODO can this be done automatically?
               named_array_of_hashes << named_hash
           }
           reviews = reviews + named_array_of_hashes
         else
-          debugger
           report_error "Reviews result nil for product #{asin}"
           return reviews
         end
       end
       current_page += 1
-      debugger if !totalreviewpages
       break if totalreviewpages and current_page > totalreviewpages # In case there is a bad request, break loop
     end
     

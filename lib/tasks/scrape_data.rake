@@ -62,21 +62,22 @@ namespace :data do
   
   task :amazon_reviews => [:cam_init, :amazon_init, :reviews]
   
-  task :temp => [:cam_init, :amazon_init, :match_to_products, :update_bestoffers, :vote]
-  task :temp2 => [:cam_init, :amazon_init, :scrape_new]
+  task :temp => [:cam_init, :amazon_mkt_init, :match_to_products, :update_bestoffers, :vote]
+  task :temp2 => [:cam_init, :amazon_mkt_init, :scrape_new, :match_to_products, :update_bestoffers, :vote]
   
   task :reviews do    
     total_before_script = Review.count
     @logfile =  File.open("./log/#{$model.name}_reviews.log", 'w+')
     $retailers.each do |ret|
       baseline = Review.count
-      log "Getting reviews for #{$model.name}s from #{ret.name}"
       
       exclusion = Review.find_all_by_product_type($model.name).collect{|x| x.local_id}
       exclusion += $scrapedmodel.find_all_by_totalreviews(0).collect{|x| x.local_id}.uniq
       exclusion.uniq!
       getmyreviews = $scrapedmodel.find_all_by_retailer_id(ret.id).collect{|x| x.local_id}.uniq
-
+      
+      log "Getting reviews for #{(getmyreviews-exclusion).count} #{$model.name}s from #{ret.name}"
+      
       getmyreviews.each do |local_id|
         next if exclusion.include?(local_id)
         baseline = Review.count
@@ -86,7 +87,7 @@ namespace :data do
           rvu['product_type'] = $model.name
           r = find_or_create_review(rvu)
           fill_in_all(rvu,r) if r
-          pid = r.product_id
+          pid = r.product_id if r
           $scrapedmodel.find_all_by_local_id_and_retailer_id(local_id, ret.id).each do |sp|
             fill_in 'averagereviewrating',rvu["averagereviewrating"], sp if rvu["averagereviewrating"]
             fill_in 'totalreviews', rvu['totalreviews'], sp if rvu["totalreviews"]

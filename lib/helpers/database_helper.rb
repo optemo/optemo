@@ -295,9 +295,18 @@ module DatabaseHelper
     end 
     if revu.nil? and atthash['content']
       # find by content...
-      revu = Review.find_all_by_content(atthash['content']).first
-    end
+      revu = Review.find_all_by_content(atthash['content']).reject{ |x| 
+        !x.local_id.nil? and !atthash['local_id'].nil? and atthash['local_id'] != !x.local_id
+      }.first
+    end    
     return revu
+  end
+  
+  def is_revue_recognizable? atthash
+    return true if atthash['local_review_id']
+    return true if atthash['local_id'] and atthash['customerid']
+    return true if atthash['content'] and atthash['content'].length > 50 # kinda arbitrary...
+    return false
   end
   
   # Tries to make sure that duplicate reviews aren't recorded.
@@ -305,8 +314,9 @@ module DatabaseHelper
   def find_or_create_review(atthash)
     revu = recognize_review(atthash)
     if revu.nil?
-      #debugger
-      revu = create_product_from_atts atthash, Review
+       if is_revue_recognizable? atthash
+         revu = create_product_from_atts atthash, Review
+       end
     end
     return revu
   end
