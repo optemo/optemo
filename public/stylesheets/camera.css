@@ -78,7 +78,7 @@ div.navigator_box {
 	margin: 3px 8px;
 	padding-bottom: 5px;
 	border-bottom: 1px solid #ccc;
-	height: 30px;
+	height: 21px;
 	font-weight: bold;
 }
 .price {
@@ -164,8 +164,12 @@ div #leftbar {
 	text-align:center;
 }
 
-.productimgborder {
-/* 	border: 1px black dashed; */
+.productimgblackborder {
+ 	border: 1px gray dashed; 
+}
+
+.productimgwhiteborder {
+ 	border: 1px white dashed; 
 }
 
 .dragHand {
