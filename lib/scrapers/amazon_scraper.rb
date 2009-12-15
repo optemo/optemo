@@ -316,7 +316,6 @@ module AmazonScraper
         res = Amazon::Ecs.item_lookup(asin, :response_group => 'Reviews', :review_page => current_page)
         be_nice_to_amazon
       rescue Exception => exc
-        debugger
         report_error "Couldn't download reviews for product #{asin}"
         report_error "#{exc.type} #{exc.message}"
       else
