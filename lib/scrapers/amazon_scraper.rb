@@ -99,38 +99,45 @@ module AmazonScraper
   
   # Scrape product specs from feed
   def scrape_specs local_id
-    res = Amazon::Ecs.item_lookup(local_id, :response_group => 'ItemAttributes,Images', :review_page => 1)
-    be_nice_to_amazon
-    
-    nokodoc = Nokogiri::HTML(res.doc.to_html)
-    item = nokodoc.css('item').first
-    if item
-      detailurl = item.css('detailpageurl').first.content
-      atts = item.xpath('itemattributes/*').inject({}){|r,x| 
-        val = x.content
-        val += "#{CleaningHelper.sep} #{r[x.name]}" if r[x.name]
-        r.merge(x.name => val)
-      }
-      item.css('itemattributes/itemdimensions/*').each do |dim|
-        atts["item#{dim.name}"] = dim.text.to_i
+    begin
+      res = Amazon::Ecs.item_lookup(local_id, :response_group => 'ItemAttributes,Images', :review_page => 1)
+      be_nice_to_amazon
+    rescue Exception => exc
+      report_error "Could not scrape #{local_id} data"
+      report_error "#{exc.type} #{exc.message}"
+      snore(120) 
+      return []
+    else
+      nokodoc = Nokogiri::HTML(res.doc.to_html)
+      item = nokodoc.css('item').first
+      if item
+        detailurl = item.css('detailpageurl').first.content
+        atts = item.xpath('itemattributes/*').inject({}){|r,x| 
+          val = x.content
+          val += "#{CleaningHelper.sep} #{r[x.name]}" if r[x.name]
+          r.merge(x.name => val)
+        }
+        item.css('itemattributes/itemdimensions/*').each do |dim|
+          atts["item#{dim.name}"] = dim.text.to_i
+        end
+        
+        temp = get_el item.css('largeimage/url')
+        atts['imageurl'] = temp.content if temp
+        
+        (atts['specialfeatures'] || '').split('|').each do |x| 
+          pair = x.split('^')
+          next if pair.length < 2
+          name = just_alphanumeric("#{pair[0]}")
+          val = "#{pair[1]}"
+          next if name.strip == '' or val.strip == ''
+          val += "#{CleaningHelper.sep} #{atts[name]}" if atts[name]
+          atts.merge!(name => val)
+        end      
+        
+        return atts
       end
-      
-      temp = get_el item.css('largeimage/url')
-      atts['imageurl'] = temp.content if temp
-      
-      (atts['specialfeatures'] || '').split('|').each do |x| 
-        pair = x.split('^')
-        next if pair.length < 2
-        name = just_alphanumeric("#{pair[0]}")
-        val = "#{pair[1]}"
-        next if name.strip == '' or val.strip == ''
-        val += "#{CleaningHelper.sep} #{atts[name]}" if atts[name]
-        atts.merge!(name => val)
-      end      
-      
-      return atts
     end
-    return {}
+    return []
   end
   
   # Find the offering with the lowest price
