@@ -1,14 +1,7 @@
+# Helpful logging functions!
+# Assumes that the log is called either 
+# @logfile or $logfile
 module LoggingHelper
-  
-  #LOGGING
-  #   log msg
-  #   timed_log msg
-  #   report_error msg
-  #   announce msg
-  #   timed msg
-  #   timed_announce msg
-  #   log_v str
-  #   snore(sec)
   
   def log msg
     @logfile.puts "LOGGER      " + msg if @logfile

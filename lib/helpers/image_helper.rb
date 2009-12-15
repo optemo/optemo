@@ -1,24 +1,8 @@
 module ImageHelper
   
-  #IMAGES
-  #   imgfolder
-  #   file_exists_for id, sz=''
-  #   url_from_item_and_sz id, sz
-  #   unresized_recs model=$model
-  #   picless_recs model=$model
-  #   statless_recs model=$model
-  #   download_img url, folder, fname=nil
-  #   filename_from_id id, sz=''
-  #   resize img
-  #   record_missing_pic_stats 
-  #   record_pic_urls recordset
-  #   record_pic_stats recset
-  #   download_all_pix id_and_url_hash
-  #   resize_all ids
-  
-  # -- Global vars to set --#
+  # -- Vars to set --#
   # $model : eg Cartridge, Printer, Camera (the object not the string)
-  # $id_field : the db field which is unique for every object that has 
+  # $id_field : the db field which is unique for every object that has (default is id)
   # the same picture (can just be ID)
   # $imgfolder : the subfolder where your pictures for the given product
   # type will go.
@@ -27,7 +11,11 @@ module ImageHelper
   
   @@size_names = ['s','m','l']
   @@sizes = [[70,50],[140,100],[400,300]]
-  
+
+  def id_field
+    return $id_field || 'id'
+  end
+    
   def imgfolder
     return $imgfolder || ($model.name.downcase+'s')
   end
@@ -70,7 +58,7 @@ module ImageHelper
     model.all.each do |rec|
       image = nil
       @@size_names.each do |sz|        
-        image = file_exists_for(rec[$id_field], sz)
+        image = file_exists_for(rec[id_field], sz)
         not_resized << rec unless image
       end
     end
@@ -82,7 +70,7 @@ module ImageHelper
     no_pic = []
     model.all.each do |rec|
       image = nil
-      image = file_exists_for(rec[$id_field])
+      image = file_exists_for(rec[id_field])
       no_pic << rec unless image
     end
     return no_pic
@@ -167,8 +155,8 @@ module ImageHelper
   def record_pic_urls recordset
     recordset.each do |rec|
       @@size_names.each do |sz|    
-        puts "#{ url_from_item_and_sz(rec[$id_field], sz)}"
-        fill_in("image#{sz}url", url_from_item_and_sz(rec[$id_field], sz), rec)
+        puts "#{ url_from_item_and_sz(rec[id_field], sz)}"
+        fill_in("image#{sz}url", url_from_item_and_sz(rec[id_field], sz), rec)
       end
     end
   end
@@ -179,18 +167,18 @@ module ImageHelper
       rec = record
       rec = $model.find(record) if rec.class != $model
       @@size_names.each do |sz|
-        if file_exists_for(rec[$id_field], sz)
+        if file_exists_for(rec[id_field], sz)
           begin
-            image = Magick::ImageList.new(filename_from_id(rec[$id_field], sz))
+            image = Magick::ImageList.new(filename_from_id(rec[id_field], sz))
             image = image.first if image and image.class.to_s == 'Magick::ImageList'
           rescue Exception => e
-            puts "WARNING: Can't get dimensions for #{sz} size pic of product #{rec[$id_field]}"
+            puts "WARNING: Can't get dimensions for #{sz} size pic of product #{rec[id_field]}"
             debugger
             puts "#{e.type} #{e.message}"
             image = nil
           end
           if image
-            fill_in "image#{sz}url", url_from_item_and_sz(rec[$id_field], sz), rec
+            fill_in "image#{sz}url", url_from_item_and_sz(rec[id_field], sz), rec
             fill_in "image#{sz}height", image.rows, rec if image.rows
             fill_in "image#{sz}width", image.columns, rec if image.columns
           end

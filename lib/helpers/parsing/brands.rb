@@ -214,4 +214,68 @@ module BrandsHelper
   
     return score
   end
+  
+  
+  # Tries to match the brand to stuff from a list of acceptable
+  # brand names. This way we're going to get more uniform values 
+  # for the brand field (no unsightly capitalizations) as well as
+  # avoid writing down stuff which isn't actually a brand
+  def clean_brand title, brandlist=[]
+    brandlist = $real_brands if brandlist.length ==0
+    
+    if title
+      brandlist.each do |b|
+        return b unless just_alphanumeric(title).match(/#{just_alphanumeric(b)}/i).nil?
+      end
+    end
+    return nil
+  end
+  
+  def most_likely_model arr, brand=''
+    arr_more = arr.collect{|x| [x, (x || '').match(/\(.*?\)/).to_s]}.flatten.reject{|x| x.nil? or x == ''}
+    return arr_more.sort{|a,b| likely_model_name(a) <=> likely_model_name(b)}.last
+  end
+  
+  def model_series_variations models, series
+    vars = []
+    models.each{ |mn|  
+        vars << mn
+        series.each { |ser| 
+          vars << mn.gsub(/#{ser}/ix,'') if mn.match(/#{ser}/ix)
+        }
+    }
+    return vars.reject{|x| x.nil?}.collect{|x| x.strip}
+  end
+  
+  # Returns true if the strings are the same brand,
+  # false otherwise
+  def same_brand? one, two
+    brands = [just_alphanumeric(one),just_alphanumeric(two)].uniq
+    return false if brands.include?('') or brands.include?(nil)
+    brands.sort!
+    return true if brands.length == 1
+    equivalent_list = [['hewlettpackard','hp'],['oki','okidata']]
+    return true if equivalent_list.include?(brands)
+    return false
+  end
+    
+  # How likely is this to be a model name?
+  def likely_model_name str
+    score = 0
+    return -10 if str.nil? or str.strip.length==0
+  
+    ja = just_alphanumeric(str)
+    score += 1 if (ja.length < 17 and ja.length > 3)
+    score += 1 if (ja.length < 11 and ja.length > 4)
+    score += 1 if (ja.length < 9 and ja.length > 5)
+    
+    score -= 2 if str.match(/[0-9]/).nil?
+    str.split(/\s/).each{|x| score -= 1 if(x.match(/[0-9]/).nil?)}
+    score -= 2 if str.match(/,|\./)
+    score -= 1 if str.match(/for/)
+    score -= 3 if str.match(/\(|\)/)
+    score -= 5 if str.match(/(series|and|&)\s/i)
+  
+    return score
+  end
 end

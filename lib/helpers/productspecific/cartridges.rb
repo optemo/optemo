@@ -10,3 +10,274 @@
 #   create_uniq_cartridge cart, realbrand, compatbrand
 #   clean_cartridges recset, default_real=nil
 #   clean_condition atts
+
+# Cartridge-specific helper methods
+module CartridgeHelper
+  
+  require 'helper_libs'
+  include Constants
+  include CartridgeConstants
+  
+  # Creates an entry in the Compatibility table
+  # unless there is already one just like it.  
+  # Returns the Compatibility table entry with given attributes
+  def create_uniq_compatibility acc_id, acc_type, prd_id, prd_type
+    atts = {'product_id' => prd_id, 'accessory_id' => acc_id, \
+        'product_type' => prd_type, 'accessory_type' => acc_type}
+    compat = Compatibility.find_by_accessory_id_and_accessory_type_and_product_id_and_product_type(\
+      acc_id, acc_type, prd_id, prd_type)
+    compat = create_product_from_atts atts, Compatibility if compat.nil?
+    return compat
+  end
+  
+  # Returns all cartridges which can be considered the same 
+  # for compatibility copying purposes
+  def compatibility_matches c
+    matching = []
+    Cartridge.all.each{ |c2|
+      if same_brand?(c.compatiblebrand, c2.compatiblebrand)
+        models = [c.model, c.mpn].collect!{ |x| just_alphanumeric(x) }.reject{|x| x.nil? or x == ''}
+        models2 = [c2.model, c2.mpn].collect!{ |x| just_alphanumeric(x) }.reject{|x| x.nil? or x == ''}
+        models.each do |m|
+          models2.each do |m2|
+            if( m2.match(Regexp.new(m)) or m.match(Regexp.new(m2)))
+              matching << c2 
+              break
+            end
+          end
+        end
+      end
+    }
+    return matching.uniq
+  end
+  
+  # Cleans a string which is supposed to be the cartridge model
+  def clean_model str, brand
+    # TODO -- make this more general and move to cleaning helper 
+    return nil if str.nil?
+    str_array = str.split(' ')
+    clean_str = str_array.reject{|x| same_brand?(x, brand)}.join(' ')
+    str_array = clean_str.split(',')
+    clean_str = str_array.reject{|x| same_brand?(x, brand)}.join(",")
+    clean_str.gsub!(/^\(|\)$/,'')
+    clean_str.gsub!(/\(.*\)/,'')
+    clean_str.gsub!(/\s?(toner|cartridge|cyan|magenta|yellow|black|drum|compatible)/i,'')
+    return clean_str.strip if clean_str
+    return nil
+  end
+  
+  # Returns a score which tells you if the 
+  # string looks like a model name for a cartridge.
+  # I find that >= 2 means it's probably a model name
+  # that you want in your database.
+  def likely_cartridge_model_name str
+    return -10 if str.nil? or str.strip.length==0
+    
+    init_series 
+    init_brands
+    score = likely_model_name str
+  
+    score += 1 if !str.include?('/')
+  
+    ja = just_alphanumeric(str)
+    score += 1 if !$series.inject(false){|r,x| r or ja.include?(x)}
+    score -= 5 if $real_brands.inject(false){|r,x| r or ja == x}
+    score -= 2 if $printer_models.inject(false){|r,x| r or ja.include?(x)}
+  
+    return score
+  end
+
+  # Gets a better value for brand for the given record 
+  # based on the model and title attributes
+  def clean_brand_rec rec, field='brand'
+    brand = clean_brand(rec.model, rec.title)
+    fill_in field, brand, rec if brand
+  end
+  
+  # Creates a RetailerOffering from a Cartridge object
+  # with the given 'special' ca$h-producing URL
+  def make_offering cart, url 
+    atts = cart.attributes
+    if cart.offering_id.nil?
+      offer = create_product_from_atts atts, RetailerOffering
+    else
+      offer = RetailerOffering.find(cart.offering_id)
+    end
+    fill_in_all atts, offer
+    fill_in 'product_type', 'Cartridge', offer
+    fill_in 'toolow', false, offer
+    fill_in 'priceUpdate', Time.now, offer
+    fill_in 'availabilityUpdate', Time.now, offer
+    fill_in 'retailer_id', 16, offer
+    fill_in 'offering_id', offer.id, cart
+    fill_in 'url', url, offer
+    return offer
+  end
+  
+  # Tries to find the Cartridge db record
+  # with the given real & compatible brands and if it
+  # can't then it makes a new one and copies the attributes
+  def create_uniq_cartridge cart, realbrand, compatbrand
+    
+    return nil if compatbrand.nil? or cart.model.nil? #VALIDATION
+    
+    brand_str = "#{compatbrand}"
+    if cart.real == false
+      return nil if realbrand.nil? # VALIDATION
+      brand_str = "#{realbrand} #{cart.condition} #{brand_str}" 
+    end
+    matches = match_rec_to_printer [brand_str], [cart.model], Cartridge
+    matching_c = nil
+    
+    if matches.length == 0
+      atts = {'brand' => brand_str, 'model' => cart.model}
+      matching_c = create_product_from_atts atts, Cartridge
+    elsif matches.length == 1
+      matching_c = matches[0]
+    else
+      debugger
+      puts "Duplicate found"
+    end
+  
+  end
+  
+  def brand_from_title title, brandlist=[]
+    
+    init_brands if $real_brands.nil?
+    brandlist = $real_brands if brandlist.length ==0
+    
+    if title
+      brandlist.each do |b|
+        return b unless just_alphanumeric(title).match(/#{just_alphanumeric(b)}/i).nil?
+      end
+    end
+    return nil
+  end
+  
+  # Cleans the title; gets condition(refurbished, OEM, etc)
+  # and figures out if it's toner or ink
+  def clean_cartridges recset, default_real=nil
+  
+    # New must be last as the default
+    
+    # fill in Ink and Real
+    recset.each{|x| 
+      init
+      # TODO Do I really want to modify the brand like that?
+      clean_brand_rec(x)
+      
+      fill_in 'toner', false, x if (x.title || '').match(/ink/i)
+      fill_in 'toner', true, x if (x.title || '').match(/toner/i) 
+ 
+      if (x.title || '').match(/(alternative|compatible|remanufactured|refurbished)/i)
+        fill_in 'real', false, x 
+      elsif (x.title || '').match(/genuine|oem/i)
+        fill_in 'real', true, x
+      elsif !default_real.nil? and x.real.nil? and !x.title.nil?
+        fill_in 'real', default_real, x
+      end
+      
+      $cartridge_conditions.each{|c| 
+        fill_in('condition', c, x) and break if (x.title || '').match(/#{c}/i)
+      }
+    }
+  end
+  
+  # Generic cleaning code for cartridges.
+  def cartridge_cleaning_code atts, default_brand=nil, default_real=nil
+    atts = generic_cleaning_code atts
+    
+    atts.each{|x,y| atts[x]= atts[y].strip if atts[y] and atts[y].type == 'String'}
+    atts['model'].gsub!(/compatible/i,'') if atts['model']
+    atts['mpn'].gsub!(/compatible/i,'') if atts['mpn']
+    
+    atts['toner'] = false if (atts['title'] || '').match(/ink/i)
+    atts['toner'] = true if (atts['title'] || '').match(/toner/i)
+    
+    unless atts['title'].nil?
+      atts.merge!( clean_condition atts['title'], default_real )
+      atts['compatiblebrand'] = clean_brand atts['title']
+      
+      if atts['real'] == true
+          atts['brand'] = atts['realbrand'] = atts['compatiblebrand']
+      elsif atts['real'] == false and !atts['condition'].nil?
+          atts['realbrand'] = clean_brand atts['title'], $fake_brands
+          atts['realbrand'] = default_brand if atts['brand'].nil? and !default_brand.nil?
+          atts['brand'] = "#{atts['condition']} #{atts['compatiblebrand']}"
+          atts['brand'] = "#{atts['realbrand']} #{atts['brand']}" if atts['realbrand']
+      end 
+      
+      if likely_cartridge_model_name(atts['model']) < 3
+        atts['model'] = best_cartridge_model [atts['title']], atts['compatiblebrand']
+      end
+      
+    end
+    
+    atts['color'] = clean_color atts['title']
+    return atts
+  end
+  
+  # Returns the string in the array that is most 
+  # likely to be a cartridge model?
+  def best_cartridge_model arr, brand=''    
+    # Includes stuff between brackets too:
+    arr_more = arr.collect{|x| [x, (x || '').match(/\(.*?\)/).to_s]}.flatten.reject{|x| x.nil? or x == ''}
+    temp = arr_more.collect{|x| clean_model(x, brand)}
+    arr_more += temp
+    return arr_more.sort{|a,b| likely_cartridge_model_name(a) <=> likely_cartridge_model_name(b)}.last
+  end
+  
+  def clean_condition str, default_real=nil
+    retme = {}
+    
+    if (str || '').match(/(alternative|compatible|remanufactured|refurbished)/i)
+      retme['real'] = false
+    elsif (str || '').match(/genuine|oem/i)
+      retme['real'] = true
+    elsif !default_real.nil? and retme['real'].nil?
+      retme['real'] = default_real
+    end
+    
+    $cartridge_conditions.each{|c| retme['condition'] = c and break if str.match(/#{c}/i)}
+    
+    return retme
+  end
+  
+  def clean_color blurb
+    color = nil
+    $cartridge_colors.each{|c|
+      if blurb.match(/#{c}/i)
+         color = 'All' if !color.nil?
+         color = c if color.nil?
+      end
+    }
+    return color
+  end
+  
+  def self.real_brands
+    init_brands
+    return $real_brands
+  end
+  
+  # Initializes the list of printer
+  def init_series
+  # TODO Just make this a global var w/o init
+    return if !$series.nil?
+    $series = ['laserjet', 'laserwriter', 'oki', 'phaser',  'imagerunner', 'printer', 'printers', 'qms', \
+      'estudio', 'optra', 'pro', 'officejet', 'workcentre', 'other', 'okifax', 'lanierfax', 'okipage',\
+      'pixma', 'deskjet', 'stylus', 'docuprint', 'series','color', 'laser', 'printer']
+  end
+  
+  # Initializes the list of printer brands($real_brands) and cartridge refill brands($fake_brands)
+  def init_brands
+    return unless ($real_brands.nil? or $fake_brands.nil? or $printer_models.nil?)
+    $real_brands = Printer.all.collect{|x| x.brand}.uniq.reject{|x| x.nil?}
+    $real_brands += ["Apple", "Brother", "Canon", "Copystar", "DEC", "Dell", "Epson", "IBM", \
+      'Kodak', "Kyocera Mita", "Lexmark", 'Lanier', "Oki Data", "Panasonic", "Pitney Bowes",\
+      "Promedia", "Ricoh","Samsung", "Sharp", "Toshiba", "Xerox"]
+    $real_brands.uniq!
+   
+    $printer_models = Printer.all.collect{|x| just_alphanumeric(x.model) }.reject{|x| x.nil? or x==''}
+  end
+
+end

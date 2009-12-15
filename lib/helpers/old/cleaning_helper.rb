@@ -1,20 +1,5 @@
 module CleaningHelper
   
-  # This thing is used to separate values when they were
-  # both retrieved as possible values for a given attribute,
-  # so as not to use commas which are more commonplace.
-  @@sep = '!@!'
-  def self.sep
-    return @@sep
-  end
-  
-  # A work in progress. supposed to get info
-  # from a text blurb.
-  def generic_printer_blurb_cleaner blurb
-    paperinput = blurb.scan(/(?-mix:\d*,?\d+\s?-?)(?i-mx:sheets?)|(?i-mx:pages?)\s(?i-mx:paper)?(?i-mx:priority)?(?i-mx:\stray)/).collect{|x| get_max_f x}.max
-    return {'paperinput' => paperinput} if paperinput
-  end
-  
   def generic_model_cleaner atts
      atts['brand'] = atts['brand'].gsub(/\(.+\)/,'').strip if atts['brand']
      # Model:
@@ -63,17 +48,6 @@ module CleaningHelper
      return atts
    end
   
-  def model_series_variations models, series
-    vars = []
-    models.each{ |mn|  
-        vars << mn
-        series.each { |ser| 
-          vars << mn.gsub(/#{ser}/ix,'') if mn.match(/#{ser}/ix)
-        }
-    }
-    return vars.reject{|x| x.nil?}.collect{|x| x.strip}
-  end
-
   def clean_printer_model dirtymodel, brand=''
     return nil if dirtymodel == nil
     clean_model_str = dirtymodel.gsub(/(mfp|multi-?funct?ion|duplex|faxcent(er|re)|workcent(re|er)|mono|laser|dig(ital)?|color|(black(\sand\s|\s?\/\s?)white)|network|all(\s?-?\s?)in(\s?-?\s?)one)\s?/i,'')
@@ -93,16 +67,6 @@ module CleaningHelper
     return clean_model_str
   end
   
-  def clean_property_names atts
-    clean_atts = {}.merge(atts)
-    atts.each do |x,y| 
-      props = get_property_names(x, $model)
-      props.uniq.each do |property|
-        clean_atts[property]= y.to_s.strip  + @@sep + "#{clean_atts[property] || ''}" if y
-      end 
-    end
-    return clean_atts
-  end
   
   # An attempt to get information from an 
   # attribute hash given that it relates to
@@ -191,108 +155,5 @@ module CleaningHelper
     remove_sep atts
     return atts
   end
-    
-  def remove_sep atts
-    atts.each{|x,y| atts[x] = y.split("#{@@sep}").reject{|x| x.nil?}.collect{|x| x.strip}.uniq.join(' | ') if y.type==String} 
-  end
   
-  # If any of the 'indicator properties' in the 
-  # attribute hash are not nil, the boolean property
-  # is set to true in the attribute hash. Otherwise 
-  # it's set to the default (or not set if default=nil).
-  # Returns the attribute hash.
-  def infer_boolean bool_property, indicator_properties, atts, default=nil
-    atts[bool_property] = default unless (atts[bool_property] or default.nil?)
-    indicator_properties.each do |x|
-      atts[bool_property] = true unless atts[x].nil?
-    end
-    return atts
-  end
-  
-  # Figures out all the price attributes
-  def clean_prices atts
-    s_price_f = get_f((atts['salepricestr'] || atts['saleprice'] || '').strip.gsub(/\*/,'')) 
-    l_price_f = get_f((atts['listpricestr'] || atts['listprice'] || '').strip.gsub(/\*/,'')) 
-    atts['listpriceint'] = atts['listprice'] = get_price_i( l_price_f) if l_price_f
-    atts['salepriceint'] = atts['saleprice'] = get_price_i( s_price_f) if s_price_f
-    atts['listpricestr'] = get_price_s( l_price_f) if l_price_f
-    atts['salepricestr'] = get_price_s( s_price_f) if s_price_f
-    
-    price_f = get_f((atts['pricestr'] || atts['price'] || atts['priceint'] || '').strip.gsub(/\*/,'')) 
-    atts['priceint'] = atts['price'] = atts['salepriceint'] || atts['listpriceint'] || get_price_i(price_f)
-    atts['pricestr'] = atts['salepricestr'] || atts['listpricestr'] || get_price_s(price_f)
-    
-    return atts
-  end
-  
-  # Cleans a list of Boolean values to be either true or false 
-  def clean_bool dirty_vals
-    vals = []
-    (dirty_vals || '').split(@@sep).each { |dirty_val| 
-      val = get_b(dirty_val)
-      #if val.nil? and (!dirty_val.nil? and dirty_val.strip!='')
-      #  val = dirty_val.match(/(not applicable|n\/a|not available)/i).nil?
-      #end
-      vals << val
-    }
-    if vals.empty? or vals.uniq == [nil]
-      return nil
-    elsif vals.include? true
-      return true
-    else
-      return false
-    end
-  end
-  
-  # Tries to match the brand to stuff from a list of acceptable
-  # brand names. This way we're going to get more uniform values 
-  # for the brand field (no unsightly capitalizations) as well as
-  # avoid writing down stuff which isn't actually a brand
-  def clean_brand title, brandlist=[]
-    brandlist = $real_brands if brandlist.length ==0
-    
-    if title
-      brandlist.each do |b|
-        return b unless just_alphanumeric(title).match(/#{just_alphanumeric(b)}/i).nil?
-      end
-    end
-    return nil
-  end
-  
-  def most_likely_model arr, brand=''
-    arr_more = arr.collect{|x| [x, (x || '').match(/\(.*?\)/).to_s]}.flatten.reject{|x| x.nil? or x == ''}
-    return arr_more.sort{|a,b| likely_model_name(a) <=> likely_model_name(b)}.last
-  end
-  
-  # Returns true if the strings are the same brand,
-  # false otherwise
-  def same_brand? one, two
-    brands = [just_alphanumeric(one),just_alphanumeric(two)].uniq
-    return false if brands.include?('') or brands.include?(nil)
-    brands.sort!
-    return true if brands.length == 1
-    equivalent_list = [['hewlettpackard','hp'],['oki','okidata']]
-    return true if equivalent_list.include?(brands)
-    return false
-  end
-    
-  # How likely is this to be a model name?
-  def likely_model_name str
-    score = 0
-    return -10 if str.nil? or str.strip.length==0
-  
-    ja = just_alphanumeric(str)
-    score += 1 if (ja.length < 17 and ja.length > 3)
-    score += 1 if (ja.length < 11 and ja.length > 4)
-    score += 1 if (ja.length < 9 and ja.length > 5)
-    
-    score -= 2 if str.match(/[0-9]/).nil?
-    str.split(/\s/).each{|x| score -= 1 if(x.match(/[0-9]/).nil?)}
-    score -= 2 if str.match(/,|\./)
-    score -= 1 if str.match(/for/)
-    score -= 3 if str.match(/\(|\)/)
-    score -= 5 if str.match(/(series|and|&)\s/i)
-  
-    return score
-  end
 end
