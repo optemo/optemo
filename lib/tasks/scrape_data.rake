@@ -65,71 +65,41 @@ namespace :data do
   task :temp => [:cam_init, :amazon_init, :match_to_products, :update_bestoffers, :vote]
   task :temp2 => [:cam_init, :amazon_init, :scrape_new]
   
-  task :udbo_printers => [:printer_init, :update_bestoffers]
-  
-  task :review_debug do    
-    limit = 1
-    total_before_script = Review.count
-    $retailers.collect{|x| x.id}.each do |ret|
-      baseline = Review.count
-      
-      have_revues_4_ids = Review.find_all_by_product_type($model.name).collect{|x| x.local_id}.uniq
-      no_revues_4_ids = $scrapedmodel.find_all_by_totalreviews(0).collect{|x| x.local_id}.uniq
-      dl_revue_4_ids = ($scrapedmodel.all.collect{|x| x.local_id}.uniq - have_revues_4_ids - no_revues_4_ids).uniq
-      limit = limit || 10000
-      debugger # Why does B001SER47Y keep re-appearing? THERE IS SOMETHING WRONG HERE
-      puts "Need to download reviews for #{dl_revue_4_ids.count} #{$model.name}s"
-      puts "#{($scrapedmodel.all.collect{|x| x.local_id} - dl_revue_4_ids).uniq.count} #{$model.name}s already have reviews" 
-      puts "Will download for up to #{limit} #{$model.name}s"
-      dl_revue_4_ids[0..limit].each do |localid| # TODO
-        revues = scrape_reviews(localid, ret)
-        revues.each{ |rvu|
-          rvu['product_type'] = $model.name
-          r = find_or_create_review(rvu)
-          fill_in_all(rvu,r) if r
-          $scrapedmodel.find_all_by_local_id(localid).each do |sp|
-            fill_in 'averagereviewrating',rvu["averagereviewrating"], sp if rvu["averagereviewrating"]
-            fill_in 'totalreviews', rvu['totalreviews'], sp if rvu["totalreviews"]
-          end
-        }
-        puts "[#{Time.now}] -- Done downloading reviews for #{localid}"
-        puts "#{Review.count - baseline} reviews added"
-        baseline = Review.count
-      end
-    end  
-  end
-   
   task :reviews do    
-    limit = 3
     total_before_script = Review.count
-    $retailers.collect{|x| x.id}.each do |ret|
+    @logfile =  File.open("./log/#{$model.name}_reviews.log", 'w+')
+    $retailers.each do |ret|
       baseline = Review.count
+      log "Getting reviews for #{$model.name}s from #{ret.name}"
       
-      have_revues_4_ids = Review.find_all_by_product_type($model.name).collect{|x| x.local_id}.uniq
-      no_revues_4_ids = $scrapedmodel.find_all_by_totalreviews(0).collect{|x| x.local_id}.uniq
-      dl_revue_4_ids = ($scrapedmodel.all.collect{|x| x.local_id}.uniq - have_revues_4_ids - no_revues_4_ids).uniq
-      limit = limit || 10000
-      
-      puts "Need to download reviews for #{dl_revue_4_ids.count} #{$model.name}s"
-      puts "#{($scrapedmodel.all.collect{|x| x.local_id} - dl_revue_4_ids).uniq.count} #{$model.name}s already have reviews" 
-      puts "Will download for up to #{limit} #{$model.name}s"
-      dl_revue_4_ids[0..limit].each do |localid| # TODO
-        revues = scrape_reviews(localid, ret)
-        revues.each{ |rvu|
+      exclusion = Review.find_all_by_product_type($model.name).collect{|x| x.local_id}
+      exclusion += $scrapedmodel.find_all_by_totalreviews(0).collect{|x| x.local_id}.uniq
+      exclusion.uniq!
+      getmyreviews = $scrapedmodel.find_all_by_retailer_id(ret.id).collect{|x| x.local_id}.uniq
+
+      getmyreviews.each do |local_id|
+        next if exclusion.include?(local_id)
+        baseline = Review.count
+
+        revues = scrape_reviews(local_id, ret.id)
+        revues.each do |rvu|
           rvu['product_type'] = $model.name
           r = find_or_create_review(rvu)
           fill_in_all(rvu,r) if r
-          $scrapedmodel.find_all_by_local_id(localid).each do |sp|
+          pid = r.product_id
+          $scrapedmodel.find_all_by_local_id_and_retailer_id(local_id, ret.id).each do |sp|
             fill_in 'averagereviewrating',rvu["averagereviewrating"], sp if rvu["averagereviewrating"]
             fill_in 'totalreviews', rvu['totalreviews'], sp if rvu["totalreviews"]
+            pid ||= sp.product_id
           end
-        }
-        puts "[#{Time.now}] -- Done downloading reviews for #{localid}"
-        puts "#{Review.count - baseline} reviews added"
-        baseline = Review.count
+          fill_in 'product_id', pid, r if pid and r
+          report_error "Review #{r.id} has nil product_id" if r and r.product_id.nil?
+        end
       end
     end  
-    puts  "#{Review.count - total_before_script} reviews added!"
+    announce "#{Review.count - total_before_script} reviews added."
+    announce "Done!"
+    @logfile.close
   end
   
   task :dlmorestats => [:printer_init, :amazon_init, :rescrape_stats]

@@ -132,8 +132,7 @@ module AmazonScraper
           next if name.strip == '' or val.strip == ''
           val += "#{CleaningHelper.sep} #{atts[name]}" if atts[name]
           atts.merge!(name => val)
-        end      
-        
+        end
         return atts
       end
     end
@@ -295,6 +294,9 @@ module AmazonScraper
         result = res.first_item
         if result
           reviews = parse_review(result)
+        #else  
+        #  debugger
+        #  reviews = [ {'totalnumreviews'=> 0}]
         end
     end
     
@@ -314,8 +316,11 @@ module AmazonScraper
         res = Amazon::Ecs.item_lookup(asin, :response_group => 'Reviews', :review_page => current_page)
         be_nice_to_amazon
       rescue Exception => exc
-        report_error " #{exc.message}. Couldn't download reviews for product #{asin}"
+        debugger
+        report_error "Couldn't download reviews for product #{asin}"
+        report_error "#{exc.type} #{exc.message}"
       else
+        debugger
         nokodoc = Nokogiri::HTML(res.doc.to_html)
         result =  nokodoc.css('item').first
         #Look for old Retail Offering
@@ -323,6 +328,7 @@ module AmazonScraper
           averagerating ||= result.css('averagerating').text
           totalreviews ||= result.css('totalreviews').text.to_i
           totalreviewpages ||= result.css('totalreviewpages').text.to_i
+          reviews << [{'totalreviews' => totalreviews}] if totalreviews == 0
           puts "#{$model.name} #{asin} review download: #{(totalreviewpages-current_page)/6} min remaining..." if current_page % 10 == 1
           temp = result.css('review')
           temp = Array(temp) unless reviews.class == Array #Fix single and no review possibility
@@ -340,12 +346,14 @@ module AmazonScraper
           }
           reviews = reviews + named_array_of_hashes
         else
+          debugger
           report_error "Reviews result nil for product #{asin}"
           return reviews
         end
       end
       current_page += 1
-      break if current_page > totalreviewpages || 0 # In case there is a bad request, break loop
+      debugger if !totalreviewpages
+      break if totalreviewpages and current_page > totalreviewpages # In case there is a bad request, break loop
     end
     
     return reviews
