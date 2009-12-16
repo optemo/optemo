@@ -1,7 +1,4 @@
-#PRICES CLEANING
-#   clean_prices atts
-
-module PricesParser
+module PricesCleaner
   
   # Returns the price integer: float * 100, rounded
   def get_price_i price_f

@@ -1,5 +1,41 @@
 namespace :sandbox do
   
+  task :abracadabra => :environment do 
+    require 'helpers/parsing/idfields'
+    require 'helpers/parsing/strings'
+    require 'helpers/global_constants'
+    #require 'helpers/constants/printer_constants'
+    include Constants
+    include PrinterConstants
+    include IdFieldsHelper
+    include StringCleaner
+    
+    # --- Test the models_from_title method
+    
+    step = 50
+    max = ScrapedPrinter.all.count
+    (max/step).times do |numstep|
+      from = step*numstep
+      to = step+from-1
+      puts "\n\n\n"
+      debugger
+      ScrapedPrinter.all[(from)..(to)].each do |ptr|   
+        #good_models = models_from_title ptr.title, ptr.brand, Printer, @@descriptors
+        #
+        temp = "#{clean_brand(ptr.title, @@brands)}"
+        temp2 = "#{ptr.brand}"
+        if temp != temp2
+          puts "#{ptr.title}"
+          puts "compare #{temp} to #{temp2}"
+          puts "------"   
+        end
+        #puts "#{good_models * ', '}"
+        #puts "Compare to #{[ptr.model,ptr.mpn].uniq * ', '}"
+             
+      end
+    end
+  end
+  
   task :test_model_cleaner => :environment do
     
    require 'helper_libs' 

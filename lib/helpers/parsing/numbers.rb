@@ -1,12 +1,11 @@
-module NumberCleaner
+module NumbersCleaner
   
   @@float_rxp = /(\d+,)?\d+(\.\d+)?/
   
   def self.float_rxp
     return @@float_rxp
   end
-  
-  
+    
   # Returns the first integer in the string, or null
   def get_i str
     return nil if str.nil? or str.empty?

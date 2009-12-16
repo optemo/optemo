@@ -143,19 +143,6 @@ module CartridgeHelper
   
   end
   
-  def brand_from_title title, brandlist=[]
-    
-    init_brands if $real_brands.nil?
-    brandlist = $real_brands if brandlist.length ==0
-    
-    if title
-      brandlist.each do |b|
-        return b unless just_alphanumeric(title).match(/#{just_alphanumeric(b)}/i).nil?
-      end
-    end
-    return nil
-  end
-  
   # Cleans the title; gets condition(refurbished, OEM, etc)
   # and figures out if it's toner or ink
   def clean_cartridges recset, default_real=nil

@@ -1,4 +1,4 @@
-module PropertyNames
+module PropertyCleaner
   
   def clean_property_names atts
     clean_atts = {}.merge(atts)

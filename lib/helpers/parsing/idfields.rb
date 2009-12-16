@@ -1,17 +1,72 @@
 #ID FIELD CLEANING
 #   clean_brand title, brandlist=[]
 #   clean_model str, brand
-#   most_likely_model arr, brand=''
 #   same_brand? one, two
-#   likely_model_name str
-#   brand_from_title title, brandlist=[]
 #   clean_condition str, default_real=nil
-#   get_most_likely_model arr, brand=''
 #   generic_model_cleaner atts
-#   model_series_variations models, series
 
 module IdFieldsHelper
+
+ # TODO obsolete  
+ #def brand_from_title title, brandlist=[]
+ #  
+ #  init_brands if $real_brands.nil?
+ #  brandlist = $real_brands if brandlist.length ==0
+ #  
+ #  if title
+ #    brandlist.each do |b|
+ #      return b unless just_alphanumeric(title).match(/#{just_alphanumeric(b)}/i).nil?
+ #    end
+ #  end
+ #  return nil
+ #end
   
+  def get_possible_models dirtybrand, dirtymodels, title, brandlist=[], serieslist=[]
+    brand = clean_brand(dirtybrand+title)
+    models = dirtymodels.reject{|x| x.nil? or x == ''}
+    models += models_from_title(title)
+    all = model_series_variations(models, serieslist)
+    return all
+  end
+
+  def clean_model_and_mpn dirtybrand, dirtymodels, title, brandlist=[], serieslist=[]
+    brand = clean_brand(dirtybrand+ ' ' + title)
+    
+    temp = get_possible_models(dirtybrand, dirtymodels, title, brandlist, serieslist)
+    return top_2_likely_models(temp, brand)
+  end
+  
+  def no_junk_in_title title, brand, prodtype, junklist
+    # Clean junk out of title
+    nojunk_title = title.gsub(/\s(with|--)\s.*/i,'')
+    (junklist+[/#{prodtype}\s?/i,/#{brand}\s?/i]).each do |subme|
+      nojunk_title.gsub!(subme,' ')
+    end
+    
+    # Clean alt. brands from title
+    ja_brand_alternatives = $brand_alternatives.collect{|x| x.collect{|y| just_alphanumeric(y.downcase)}}
+    ja_brand_alternatives.each do |alts|
+        if alts.include? just_alphanumeric(brand.downcase)
+            alts.each do |altbrand|
+              nojunk_title.gsub!(/#{altbrand}\s?/ix,'')
+            end
+        end
+    end
+    
+    (nojunk_title || '').strip!
+    
+    return (nojunk_title || '')
+  end
+  
+  def models_from_title title, brand, prodtype=$model, junklist=[]
+    clean_title = no_junk_in_title(title, brand, prodtype.name, junklist) + ' '
+    inbrackets = (title.match(/\(.*\)/) || '').to_s.gsub(/(\(|\))/,'')
+    clean_title += no_junk_in_title(inbrackets, brand, prodtype.name, junklist) if inbrackets != ''
+    possible_models = clean_title.split(/\s/)
+    good_models = possible_models.reject{|x| likely_model_name(x) < 2 }
+    return good_models
+  end
+    
   def generic_model_cleaner atts
      atts['brand'] = atts['brand'].gsub(/\(.+\)/,'').strip if atts['brand']
      # Model:
@@ -20,7 +75,7 @@ module IdFieldsHelper
        dirty_model_str = atts['title'].match(/.+\s#{$model}/i).to_s.gsub(/ - /,'') 
 
      end
-     mdls = [atts['model'], atts['mpn']].reject{|x| x.nil? or x == ''}
+     mdls = [atts['model'], atts['mpn']]
      mdls.each do |x|
        x.gsub!(/#{atts['brand']}\s?/i,'')
        # TODO
@@ -53,132 +108,39 @@ module IdFieldsHelper
      end_index =  title_words.length
      title_words.each_with_index do |word,index|
        if same_brand?(brand, word) or same_brand(atts['brand'],word) #or @@series.include?(word)
-         start_index = max(start_index,index)
+         start_index = max(start_index,index+1)
        end
        if false
-         end_index = min(end_index,index)
+         end_index = min(end_index,index-1)
        end
      end
      
      possible_models.sort{|a,b| likely_model_name(a) <=> likely_model_name(b)}
      return possible_models.uniq
   end
-
-  def clean_printer_model dirtymodel, brand=''
-    return nil if dirtymodel == nil
-    clean_model_str = dirtymodel.gsub(/(mfp|multi-?funct?ion|duplex|faxcent(er|re)|workcent(re|er)|mono|laser|dig(ital)?|color|(black(\sand\s|\s?\/\s?)white)|network|all(\s?-?\s?)in(\s?-?\s?)one)\s?/i,'')
-    clean_model_str.gsub!(/(ink|chrome|tabloid|aio\sint|\(|,|\d+\s?x\s?\d+\s?(dpi)?|fast\sethernet|led).*/i,'')
-    clean_model_str.gsub!(/printer\s?/i,'')
-    clean_model_str.gsub!(/#{brand}\s?/i,'')
-    # TODO what if brand not given... could we scan for all brands?
-    ja_brand_alternatives = $brand_alternatives.collect{|x| x.collect{|y| just_alphanumeric(y.downcase)}}
-    ja_brand_alternatives.each do |alts|
-        if alts.include? just_alphanumeric(brand.downcase)
-            alts.each do |altbrand|
-              clean_model_str.gsub!(/#{altbrand}\s?/ix,'')
-            end
-        end
+  
+  def brand_alts brand
+    return nil if brand.nil? or brand == ''
+    brands = [brand]
+    $brand_alternatives.each do |x|
+      brands += x if x.include? brand.downcase
     end
-    clean_model_str.strip!
-    return clean_model_str
+    return brands.uniq
   end
   
-  # An attempt to get information from an 
-  # attribute hash given that it relates to
-  # printers. 
-  def generic_printer_cleaning_code atts
-    atts = (generic_cleaning_code atts)
-    temp = atts.keys
-    temp.each{|k| atts[k] = atts[k].to_s}
-    
-    atts.each{|x,y| atts[x] = y.split("#{@@sep}").uniq.reject{|x| x.nil?}.join("#{@@sep}") if y.type==String} 
-    
-    ['model', 'mpn'].each do |x|
-      temp = (atts[x] || '').split(@@sep).uniq
-      temp2 = []
-      temp.each{|y| temp2 << clean_printer_model(y)}
-      temp += temp2
-      if temp.length > 0
-        atts[x] = temp.sort{|a,b| likely_model_name(a) <=> likely_model_name(b)}.last
-      end
-    end
-    
-    atts['ppm'] = get_max_f(atts['ppm'])
-    atts['ppmcolor'] = get_max_f(atts['ppmcolor'])
-    atts['ttp'] = get_min_f(atts['ttp'])
-    
-    atts['paperinput'] = (atts['paperinput'] || '').scan(/(?-mix:\d*,?\d+\s?-?)(?i-mx:sheets?)|(?i-mx:pages?)/).collect{|x| 
-      get_max_f x}.reject{|x| x.nil?}.max
-    #split(@@sep).collect{|x| get_max_f((x||'').to_s)}.reject{|x| x.nil?}.max 
-   # debugger if atts['paperinput'] and atts['paperinput'] < 100
-    
-    # Resolution
-    temp1 = (atts['resolution'] || '').scan(/\d*,?\d+\s?x\s?\d*,?\d+/i).uniq
-    temp2 =  (atts['resolution'] || '').scan(/\d*,?\d+\s?(dpi|fine\s?point)/i).uniq.reject{|x| x.nil?}.collect{|x| get_f(x.to_s)}
-    atts['resolutionmax'] = maxres_from_res((temp1 | temp2).join(' '))
-    #  --- DIMENSIONS
-    
-    # TODO make this nicer
-        
-    (atts['dimensions'] or "").gsub!(/''/, '\"')
-    (atts['dimensions'] or "").gsub!(/\(.*?\)/,'')
-    
-    dimensions_data = (atts['dimensions'] || "").split("#{@@sep}").reject{|x| x.nil? or x.split('x').length < 3}.uniq
-    
-    dimensions_data.each do |dims|  
-      dims.split('x').each do |dim| 
-        atts['itemlength'] = get_f(dim)*100 if dim.include? 'D' and !atts['itemlength']
-        atts['itemwidth'] = get_f(dim)*100 if dim.include? 'W' and !atts['itemwidth']
-        atts['itemheight'] = get_f(dim)*100 if dim.include? 'H' and !atts['itemheight']
-      end
-      if [atts['itemlength'], atts['itemwidth'], atts['itemheight']].uniq == [nil]
-        dim_array = dims.split('x')
-        atts['itemwidth'] = dim_array[0].to_f*100
-        atts['itemheight'] = dim_array[1].to_f*100
-        atts['itemlength'] = dim_array[2].to_f*100
-      end
-      atts['dimensions'] = dims and break unless [atts['itemlength'], atts['itemwidth'], atts['itemheight']].include?(nil)
-    end
-    
-    # .. done with dimensions
-    # TODO is this good?
-    atts['condition'] = clean_brand atts['condition'], $conditions || atts['condition']
-    atts['condition'] = clean_brand atts['title'], $conditions unless atts['condition']
-    
-    
-    # Booleans
-    
-    atts.each{|x,y| atts[x] = nil if y=='' or (y.type==String and y.strip =='') }
-    
-    if(atts['colorprinter'])
-      if atts['colorprinter'].match(/color/i)
-        atts['colorprinter'] = true
-      elsif atts['colorprinter'].match(/b(lack)?\s?(and|&|\/)?\s?w(hite)?/i)
-        atts['colorprinter'] = false
-      else
-        atts['colorprinter']= clean_bool(atts['colorprinter'])
-      end
-    end
-    
-    atts['printserver'] = 'true' if (atts.values.to_s).match(/(wire(d|less)|network|server)/i)
-    atts['printserver'] = clean_bool(atts['printserver'])
-    
-    atts['scanner'] = clean_bool(atts['scanner'])
-    
-    atts['duplex'] = false if (atts['duplex'] || '').downcase == 'manual'
-    atts['duplex'] = clean_bool(atts['duplex'])
-    remove_sep atts
-    return atts
-  end
-    
   # Returns true if the strings are the same brand,
   # false otherwise
   def same_brand? one, two
+    # TODO incorporate clean_brand into this method
     brands = [just_alphanumeric(one),just_alphanumeric(two)].uniq
     return false if brands.include?('') or brands.include?(nil)
     brands.sort!
     return true if brands.length == 1
-    equivalent_list = [['hewlettpackard','hp'],['oki','okidata']]
+    equivalent_list = $brand_alternatives.collect{|x| 
+      x.collect{|y| 
+        just_alphanumeric(y)
+      }.uniq
+    }
     return true if equivalent_list.include?(brands)
     return false
   end
@@ -188,11 +150,14 @@ module IdFieldsHelper
   # for the brand field (no unsightly capitalizations) as well as
   # avoid writing down stuff which isn't actually a brand
   def clean_brand title, brandlist=[]
-    brandlist = $real_brands if brandlist.length ==0
-    
+    return nil if title.nil? or title == ''
+    equivalent_list = [['hewlettpackard','hp'],['oki','okidata']]
     if title
       brandlist.each do |b|
-        return b unless just_alphanumeric(title).match(/#{just_alphanumeric(b)}/i).nil?
+        alts = brand_alts(b)
+        alts.each do |alt|
+          return b if title.match(/#{alt}/ix)
+        end
       end
     end
     return nil
