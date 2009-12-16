@@ -54,8 +54,7 @@ module GenericScraper
       # If there was an error while scraping: sleep 20 min
       snore(20*60)
     end
-  end
-  
+  end  
 end
 
 namespace :data do
