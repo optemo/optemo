@@ -11,29 +11,32 @@ namespace :sandbox do
     include StringCleaner
     
     # --- Test the models_from_title method
-    
+    result = []
     step = 50
     max = ScrapedPrinter.all.count
     (max/step).times do |numstep|
       from = step*numstep
       to = step+from-1
-      puts "\n\n\n"
-      debugger
+      #puts "\n\n\n"
+      #debugger
       ScrapedPrinter.all[(from)..(to)].each do |ptr|   
         #good_models = models_from_title ptr.title, ptr.brand, Printer, @@descriptors
         #
-        temp = "#{clean_brand(ptr.title, @@brands)}"
-        temp2 = "#{ptr.brand}"
-        if temp != temp2
+        temp = clean_brand("#{ptr.title} #{ptr.brand}", @@brands) || ''
+        temp2 = "#{ptr.brand}" || ''
+        
+        if temp != temp2 and temp == ''
+          debugger
           puts "#{ptr.title}"
           puts "compare #{temp} to #{temp2}"
-          puts "------"   
+          #puts "------"   
         end
         #puts "#{good_models * ', '}"
         #puts "Compare to #{[ptr.model,ptr.mpn].uniq * ', '}"
              
       end
     end
+    puts result * "\n"
   end
   
   task :test_model_cleaner => :environment do

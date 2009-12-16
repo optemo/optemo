@@ -151,13 +151,10 @@ module IdFieldsHelper
   # avoid writing down stuff which isn't actually a brand
   def clean_brand title, brandlist=[]
     return nil if title.nil? or title == ''
-    equivalent_list = [['hewlettpackard','hp'],['oki','okidata']]
-    if title
-      brandlist.each do |b|
-        alts = brand_alts(b)
-        alts.each do |alt|
-          return b if title.match(/#{alt}/ix)
-        end
+    brandlist.each do |b|
+      alts = brand_alts(b)
+      alts.each do |alt|
+        return b if just_alphanumeric(title).match(/#{alt}/ix)
       end
     end
     return nil

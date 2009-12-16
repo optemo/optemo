@@ -27,7 +27,8 @@ module Constants
     'pixma', 'deskjet', 'stylus', 'docuprint', 'series','color', 'laser', 'printer','jet', 'business']
 
   $brand_alternatives = [ ['hp', 'hewlett packard', 'hewlett-packard'], \
-    ['konica', 'konica-minolta', 'konica minolta'], ['okidata', 'oki data', 'oki'], ['kyocera', 'kyocera mita'] ]
+    ['konica', 'konica-minolta', 'konica minolta'], ['okidata', 'oki data', 'oki'],\
+     ['kyocera', 'kyocera mita'], ['infoprint solutions', 'infoprint'] ]
 
   $conditions = ['Refurbished', 'Remanufactured', 'OEM', 'Used', 'New']
 
