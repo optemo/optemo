@@ -106,7 +106,7 @@ module AmazonScraper
       report_error "Could not scrape #{local_id} data"
       report_error "#{exc.type} #{exc.message}"
       snore(120) 
-      return []
+      return {}
     else
       nokodoc = Nokogiri::HTML(res.doc.to_html)
       item = nokodoc.css('item').first
@@ -136,7 +136,7 @@ module AmazonScraper
         return atts
       end
     end
-    return []
+    return {}
   end
   
   # Find the offering with the lowest price
