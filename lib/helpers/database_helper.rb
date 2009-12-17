@@ -53,6 +53,23 @@ module DatabaseHelper
     return ro
   end
   
+  # TODO
+  #def get_matching_sets_efficient recs=$model.all
+  #   matchingsets = []
+  #   recclass = recs.first.class
+  #   
+  #   data_i_need = recs.collect{|rec| [rec.id, rec.brand, rec.model, rec.mpn]}
+  #   
+  #   data_i_need.each do |row|
+  #     #matchingsets << (match_printer_to_printer rec, recclass, []).collect{|x| x.id}
+  #     makes = [row[1]]
+  #     modelnames = [row[2], row[3]]
+  #     matchingsets << match_rec_to_printer(makes, modelnames,recclass, $series)
+  #   end
+  #   matchingsets.collect{|x| x.sort}.uniq
+  #   return matchingsets
+  #end
+  
   # Returns sets of IDs of records that match. eg
   # [[1,2], [3], [4,5,6]] means records with id 1 and 2
   # are the same product; 3 doesn't match any others,

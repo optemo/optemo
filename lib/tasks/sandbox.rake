@@ -1,21 +1,32 @@
 namespace :sandbox do
   
   task :match_reviews => :environment do 
+    require 'helper_libs'
+    include DataLib
+    
     $model = Camera
     $scrapedmodel = ScrapedCamera
     
     allrevus = Review.find_all_by_product_id_and_product_type(nil, $model.name)
     
-    allrevus[0..10].each do |revu|      
+    allrevus.each do |revu|      
       #puts "Review #{revu.id} : "
       #puts revu.summary
       #puts revu.content
       lid =  revu['local_id']
       sms = $scrapedmodel.find_all_by_local_id(lid)
-      sms.each do |sm|
+      sms_pids = sms.collect{|x| x.product_id}.uniq
+      if sms_pids.length != 1 and sms.length > 0
+        debugger
+        puts "oops"
+      else
+        fill_in 'product_id', sms_pids.first,revu
+      end
+      
+      #sms.each do |sm|
         #puts "#{revu.id} matches #{$model.name} #{sm.product_id}, #{$model.find(sm.product_id).title}"
         
-      end
+      #end
     end
     
   end

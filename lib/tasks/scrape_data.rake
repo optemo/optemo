@@ -1,5 +1,20 @@
 module GenericScraper
   
+  def unlink_duplicate keepme, deleteme
+    return if keepme.nil? or deleteme.nil?
+    return if keepme.id.nil? or deleteme.id.nil?
+    return if keepme.id == '' or keepme.id == 0 or deleteme.id == '' or deleteme.id == 0
+    return if $model.name.nil? or $model.name == ''
+    sps = $scrapedmodel.find_all_by_product_id(deleteme.id)
+    ros = RetailerOffering.find_all_by_product_id_and_product_type(deleteme.id, $model.name)
+    revus = Review.find_all_by_product_id_and_product_type(deleteme.id, $model.name)
+    (sps+ros+revus).each do |x|
+      fill_in 'product_id', keepme.id, x
+    end
+    temp = deleteme.id
+    $model.delete(temp)
+  end
+  
   def vote_on_values product
     sps = $scrapedmodel.find_all_by_product_id(product.id)
     #ignore = ["id", "price", "pricestr", "region", "created_at", "updated_at", "instock", "instock_ca", "price_ca", "price_ca_str"]
@@ -64,6 +79,19 @@ namespace :data do
   task :temp => [:cam_init, :amazon_mkt_init, :match_to_products, :update_bestoffers, :vote]
   task :temp2 => [:cam_init, :amazon_mkt_init, :scrape_new, :match_to_products, :update_bestoffers, :vote]
   
+  task :remove_dupl => [:cam_init] do
+    puts "#{Time.now}"
+    matchings = get_matching_sets($model.all[0..500])
+    puts "#{Time.now}"
+    debugger
+    matchings.each do |set|
+      deleteme = set
+      keepme = deleteme.shift
+      debugger
+      deleteme.each {|x| unlink_duplicate(keepme, x) }
+    end
+  end
+    
   task :reviews do    
     total_before_script = Review.count
     @logfile =  File.open("./log/#{$model.name}_reviews.log", 'w+')
@@ -207,6 +235,9 @@ namespace :data do
       
       ros = find_ros_from_scraped scraped, $model
       ros.each{ |ro| fill_in 'product_id', real.id, ro }     
+      
+      #revues = Review.find_all_by_local_id_and_product_type(scraped.local_id, $model.name)
+      #revues.each{|revu| fill_in 'product_id', real.id, revu }
       puts "[#{Time.now}] Done matching #{i+1}th scraped product." 
     end
     puts "[#{Time.now}] Done matching products"
