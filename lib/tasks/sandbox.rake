@@ -1,42 +1,76 @@
 namespace :sandbox do
   
-  task :abracadabra => :environment do 
+  task :fix_brands => :environment do 
     require 'helpers/parsing/idfields'
     require 'helpers/parsing/strings'
     require 'helpers/global_constants'
-    #require 'helpers/constants/printer_constants'
+    require 'helpers/database/fill_in'
+    include Constants
+    include CameraConstants
+    include IdFieldsHelper
+    include StringCleaner
+    include FillInHelper
+    
+    @@scrapedmodel.all.each do |ptr|   
+        temp = clean_brand("#{ptr.title} #{ptr.brand}", @@brands) || ''
+        temp2 = "#{ptr.brand}" || ''
+        
+        if temp != temp2 and temp != ''
+          #debugger 
+          fill_in 'brand', temp, ptr
+        end
+    end
+  end
+  
+  task :try_models => :environment do 
+    require 'helpers/parsing/idfields'
+    require 'helpers/parsing/strings'
+    require 'helpers/global_constants'
+    require 'helpers/database/fill_in'
     include Constants
     include PrinterConstants
     include IdFieldsHelper
     include StringCleaner
+    include FillInHelper
     
-    # --- Test the models_from_title method
-    result = []
-    step = 50
-    max = ScrapedPrinter.all.count
-    (max/step).times do |numstep|
-      from = step*numstep
-      to = step+from-1
-      #puts "\n\n\n"
-      #debugger
-      ScrapedPrinter.all[(from)..(to)].each do |ptr|   
-        #good_models = models_from_title ptr.title, ptr.brand, Printer, @@descriptors
-        #
-        temp = clean_brand("#{ptr.title} #{ptr.brand}", @@brands) || ''
-        temp2 = "#{ptr.brand}" || ''
-        
-        if temp != temp2 and temp == ''
+    newbrands = []
+    
+    @@scrapedmodel.all.each do |ptr|   
+        #newbrands << clean_brand("#{ptr.title} #{ptr.model}", @@brands) || ''
+        modelsb4 = [ptr.model, ptr.mpn].uniq.reject{|x| x.nil? or x == ''}.sort
+        modelsafter = ( get_possible_models(@@model.name, ptr.brand, modelsb4, ptr.title,\
+              @@brands, @@series, @@descriptors)).uniq.reject{|x| 
+          x.nil? or x == '' or likely_model_name(x) < 1}.sort
+        if modelsb4 != modelsafter
+          
+          puts modelsb4 * ', '
+          puts modelsafter * ', '
           debugger
-          puts "#{ptr.title}"
-          puts "compare #{temp} to #{temp2}"
-          #puts "------"   
+          
+          if((modelsb4-modelsafter).length == 0 and (modelsafter-modelsb4).length == 1)
+            mdl = (modelsafter-modelsb4).first
+            if ptr.mpn.nil? or ptr.mpn == '' or (ptr.model == ptr.mpn)
+              fill_in 'mpn', mdl, ptr
+            elsif ptr.model.nil? or ptr.model == ''
+              fill_in 'model', mdl, ptr
+            else
+              puts ptr.title
+              debugger 
+              0
+            end
+          else
+            debugger if (modelsb4-modelsafter).nil?
+            puts (modelsb4-modelsafter).length
+            puts (modelsafter-modelsb4).length
+            puts ptr.title
+            debugger
+            0
+          end
         end
-        #puts "#{good_models * ', '}"
-        #puts "Compare to #{[ptr.model,ptr.mpn].uniq * ', '}"
-             
-      end
     end
-    puts result * "\n"
+    puts newbrands.uniq * ', '
+    debugger
+    puts newbrands.reject{|x| x != ''}.count
   end
   
   task :test_model_cleaner => :environment do

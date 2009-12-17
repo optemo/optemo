@@ -6,33 +6,25 @@
 #   generic_model_cleaner atts
 
 module IdFieldsHelper
-
- # TODO obsolete  
- #def brand_from_title title, brandlist=[]
- #  
- #  init_brands if $real_brands.nil?
- #  brandlist = $real_brands if brandlist.length ==0
- #  
- #  if title
- #    brandlist.each do |b|
- #      return b unless just_alphanumeric(title).match(/#{just_alphanumeric(b)}/i).nil?
- #    end
- #  end
- #  return nil
- #end
   
-  def get_possible_models dirtybrand, dirtymodels, title, brandlist=[], serieslist=[]
-    brand = clean_brand(dirtybrand+title)
+  def get_possible_models prodtype, dirtybrand, dirtymodels, title, brandlist=[], serieslist=[], junklist=[]
+    brand = clean_brand("#{dirtybrand} #{title}", brandlist)
     models = dirtymodels.reject{|x| x.nil? or x == ''}
-    models += models_from_title(title)
-    all = model_series_variations(models, serieslist)
+    models += models_from_title(title, brand, prodtype, junklist)
+    temp = model_series_variations(models, serieslist)
+    # Remove duplicates
+    all = []
+    temp.each do |mdl|
+      if all.inject(true){|r,x| r and just_alphanumeric(x).match(/#{just_alphanumeric(mdl)}/ix).nil? }
+        all << mdl
+      end
+    end
     return all
   end
 
-  def clean_model_and_mpn dirtybrand, dirtymodels, title, brandlist=[], serieslist=[]
-    brand = clean_brand(dirtybrand+ ' ' + title)
-    
-    temp = get_possible_models(dirtybrand, dirtymodels, title, brandlist, serieslist)
+  def clean_model_and_mpn prodtype, dirtybrand, dirtymodels, title, brandlist=[], serieslist=[], junklist=[]
+    brand = clean_brand("#{dirtybrand} #{title}", brandlist)
+    temp = get_possible_models(prodtype, brand, dirtymodels, title, brandlist, serieslist, junklist)
     return top_2_likely_models(temp, brand)
   end
   
@@ -44,13 +36,9 @@ module IdFieldsHelper
     end
     
     # Clean alt. brands from title
-    ja_brand_alternatives = $brand_alternatives.collect{|x| x.collect{|y| just_alphanumeric(y.downcase)}}
-    ja_brand_alternatives.each do |alts|
-        if alts.include? just_alphanumeric(brand.downcase)
-            alts.each do |altbrand|
-              nojunk_title.gsub!(/#{altbrand}\s?/ix,'')
-            end
-        end
+    alts = brand_alts(brand)
+    alts.each do |altbrand|
+      nojunk_title.gsub!(/#{altbrand}\s?/ix,'')
     end
     
     (nojunk_title || '').strip!
@@ -58,10 +46,10 @@ module IdFieldsHelper
     return (nojunk_title || '')
   end
   
-  def models_from_title title, brand, prodtype=$model, junklist=[]
-    clean_title = no_junk_in_title(title, brand, prodtype.name, junklist) + ' '
+  def models_from_title title, brand, prodtype, junklist=[]
+    clean_title = no_junk_in_title(title, brand, prodtype, junklist) + ' '
     inbrackets = (title.match(/\(.*\)/) || '').to_s.gsub(/(\(|\))/,'')
-    clean_title += no_junk_in_title(inbrackets, brand, prodtype.name, junklist) if inbrackets != ''
+    clean_title += no_junk_in_title(inbrackets, brand, prodtype, junklist) if inbrackets != ''
     possible_models = clean_title.split(/\s/)
     good_models = possible_models.reject{|x| likely_model_name(x) < 2 }
     return good_models
@@ -79,12 +67,9 @@ module IdFieldsHelper
      mdls.each do |x|
        x.gsub!(/#{atts['brand']}\s?/i,'')
        # TODO
-       (@brand_alternatives || []).each do |alts|
-         if alts.include? atts['brand'].downcase
-           alts.each do |altbrand|
-             x.gsub!(/#{altbrand}\s?/i,'')
-           end
-         end
+       alts = brand_alts atts['brand']
+       alts.each do |altbrand|
+         x.gsub!(/#{altbrand}\s?/i,'')
        end
        ($series || []).each do |ser|
          x.gsub!(/#{ser}\s?/i,'')
@@ -120,7 +105,7 @@ module IdFieldsHelper
   end
   
   def brand_alts brand
-    return nil if brand.nil? or brand == ''
+    return [] if brand.nil? or brand == ''
     brands = [brand]
     $brand_alternatives.each do |x|
       brands += x if x.include? brand.downcase
@@ -130,10 +115,9 @@ module IdFieldsHelper
   
   # Returns true if the strings are the same brand,
   # false otherwise
-  def same_brand? one, two
-    # TODO incorporate clean_brand into this method
+  def same_brand? one, two, brandlist=[]
     brands = [just_alphanumeric(one),just_alphanumeric(two)].uniq
-    return false if brands.include?('') or brands.include?(nil)
+    return false if brands.include?('') or brands.include?(nil) or brands.length == 0
     brands.sort!
     return true if brands.length == 1
     equivalent_list = $brand_alternatives.collect{|x| 
@@ -142,6 +126,9 @@ module IdFieldsHelper
       }.uniq
     }
     return true if equivalent_list.include?(brands)
+    cleanone = clean_brand(one,brandlist)
+    cleantwo = clean_brand(two,brandlist)
+    return true if cleanone == cleantwo
     return false
   end
     
@@ -177,17 +164,27 @@ module IdFieldsHelper
     return -10 if str.nil? or str.strip.length==0
   
     ja = just_alphanumeric(str)
-    score += 1 if (ja.length < 17 and ja.length > 3)
+    score += 1 if (ja.length < 18 and ja.length > 2)
     score += 1 if (ja.length < 11 and ja.length > 4)
     score += 1 if (ja.length < 9 and ja.length > 5)
+    score -= 1 unless ja.match(/\d/) and ja.match(/\D/)
+    score += 1 if (ja.match(/^\d+\D+$/) or ja.match(/^\D+\d+$/) )
     
-    score -= 2 if str.match(/[0-9]/).nil?
+    score -= 1 if str.match(/0000/)    
+    score -= 1 if str.match(/\d\.\d/)
+    score -= 1 if str.match(/\d/).nil?
     str.split(/\s/).each{|x| score -= 1 if(x.match(/[0-9]/).nil?)}
     score -= 2 if str.match(/,|\./)
-    score -= 1 if str.match(/for/)
+    score -= 1 if str.match(/(\s|^)for(\s|$)/)
     score -= 3 if str.match(/\(|\)/)
-    score -= 5 if str.match(/(series|and|&)\s/i)
+    score -= 5 if str.match(/(\s|^)(series|and|&)(\s|$)/i)
+    
   
+    $units.each do |unit|
+      score -= 2 if str.match(/\d\s?#{unit}(s?\s|;|,)?$/)
+      score -= 2 if str.match(/\d\s?#{unit}(s?\s|;|,)?$/i)
+    end
+    
     return score
   end
   

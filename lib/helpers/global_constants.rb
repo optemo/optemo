@@ -27,12 +27,19 @@ module Constants
     'pixma', 'deskjet', 'stylus', 'docuprint', 'series','color', 'laser', 'printer','jet', 'business']
 
   $brand_alternatives = [ ['hp', 'hewlett packard', 'hewlett-packard'], \
-    ['konica', 'konica-minolta', 'konica minolta'], ['okidata', 'oki data', 'oki'],\
-     ['kyocera', 'kyocera mita'], ['infoprint solutions', 'infoprint'] ]
+    ['konica', 'konica-minolta', 'konica minolta', 'minolta'], ['okidata', 'oki data', 'oki'],\
+     ['kyocera', 'kyocera mita', 'finecam'], ['infoprint solutions', 'infoprint' ], ['argus', 'visiontek'],\
+     ['concord', 'keystone', 'concord keystone'], ['fuji', 'fujifilm'], ['gopro', 'portable usa', 'gopro / portable usa'], \
+     ['lg', 'lg electronics'], ['lomo', 'lomographic', 'lomography'], ['sea & sea', 'tabata usa'], \
+     ['rollei', 'rolleiflex'], ['svp', 'silicon valley peripherals'], ['bell howell', 'bell + howell', \
+       'bell & howell'], ['norcent', 'xias'], ['general electric', 'ge'], \
+       ['intova', 'international innovations']]
 
   $conditions = ['Refurbished', 'Remanufactured', 'OEM', 'Used', 'New']
 
   $float_rxp = /(\d+,)?\d+(\.\d+)?/
+
+  $units = ['MHz', 'ppm', 'dpi', 'MB', 'pixels', 'cm'] # TODO expand list
 
 end
 
@@ -49,7 +56,16 @@ end
 module CameraConstants
   @@model = Camera
   @@scrapedmodel = ScrapedCamera
-  @@brands = $camera_brands
+  @@brands = ["Agfa", "Akai", "Argus", "Bell & Howell", "Benq", "Bushnell", "Canon", "Casio", "Cobra", \
+  "Concord Keystone", "Contax", "Digital Concepts", "DXG", "Electrolux", "Elyssa", "Epson", "Fuji", \
+  "Gateway", "General Electric", "General Imaging", "GFM", "Go Photo", "GoPro / Portable USA", \
+  "Hewlett Packard", "Insignia", "Intova", "iSonic", "Jazz", "JVC", "JWin", "Kobian ", "Kodak", \
+  "Konica-Minolta", "Kyocera", "Largan", "Leica", "LG Electronics", "Lomographic", "Memorex", \
+  "Mercury", "Mikona", "Minox", "Mitsubishi", "Mustek", "NEC", "Nikon", "Norcent", \
+  "Olympus", "Oregon Scientific", "Panasonic", "Pentax", "Pixtreme", "Philips", "Polaroid", "Pretec", \
+  "Radioshack", "Ricoh", "Rokinon", "Rollei", "Samsung", "Sanyo", "Sea & Sea", "SeaLife",\
+   "Sigma", "SiPix", "Sony", "Silicon Valley Peripherals", "Toshiba", "VistaQuest", "Vivitar", "VuPoint", \
+   "Yashica"]
   @@series = ['finepix']
   @@descriptors = ['super', 'duper']
 end
@@ -59,9 +75,9 @@ module PrinterConstants
   @@scrapedmodel = ScrapedPrinter
   @@brands = $printer_brands
   @@series = $printer_series
-  @@descriptors = [/\smfp\s/i, /\smultifunct?ion\s/i, /\sduplex\s/i, /\sfaxcent(er|re)\s/i, \
+  @@descriptors = [/\sMFP\s/, /\smultifunct?ion\s/i, /\sduplex\s/i, /\sfaxcent(er|re)\s/i, \
     /\sworkcent(re|er)\s/i, /\smono\s/i, /\slaser\s/i, /\sdig(ital)?\s/i, /\scolou?r\s/i,\
     /\sb(lack\sand\s)?w(hite)?/i, /\snetwork\s/i, /\sall\s?-?\s?in\s?-?\s?one\s/i, /\sink\s/i,\
     /\schrome\s/i, /\stabloid\s/i, /\saio\sint\s/i, /\s\d+\s?x\s?\d+\s?(dpi)?\s/i, \
-    /\sfast\s/i, /\sethernet\s/i, /\sled\s/i, /\d+\s?ppm/i]
+    /\sfast\s/i, /\sethernet\s/i, /\sled\s/i, /\sRS232\s/]
 end
