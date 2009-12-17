@@ -81,7 +81,7 @@ namespace :data do
   
   task :remove_dupl => [:cam_init] do
     puts "#{Time.now}"
-    matchings = get_matching_sets($model.all[0..500])
+    matchings = (get_matching_sets($model.all)).reject{|x| x.length < 2}
     puts "#{Time.now}"
     debugger
     matchings.each do |set|
