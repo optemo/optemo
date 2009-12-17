@@ -6,7 +6,7 @@
 		<% unless cluster.representative(@session,@s.searchpids).imagemurl.blank? %>
 
 		<% if $DragAndDropEnabled == true %>
-			<div class='image_boundingbox productimgwhiteborder'>
+			<div class='image_boundingbox'>
 				<%= image_tag('hand_and_arrow.gif', :class => 'dragHand') %>
 		<% end %>
 				<%= image_tag(cluster.representative(@session,@s.searchpids).imagemurl, :width => cluster.representative(@session,@s.searchpids).imagemw, :height => cluster.representative(@session,@s.searchpids).imagemh, :"data-id" => cluster.representative(@session,@s.searchpids).id, :class => "productimg", :alt => cluster.representative(@session,@s.searchpids).smlTitle, :"data-id" => cluster.representative(@session,@s.searchpids).id) %>

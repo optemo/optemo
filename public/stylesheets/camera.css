@@ -164,14 +164,6 @@ div #leftbar {
 	text-align:center;
 }
 
-.productimgblackborder {
- 	border: 1px gray dashed; 
-}
-
-.productimgwhiteborder {
- 	border: 1px white dashed; 
-}
-
 .dragHand {
 	position: absolute;
 	left: 0;

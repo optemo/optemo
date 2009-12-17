@@ -260,13 +260,9 @@ function DBinit(context) {
 			});
             $(this).hover(function() {
 	                $(this).find('.dragHand').stop().animate({ opacity: 1.0 }, 150);
-					$(this).addClass('productimgblackborder');
-					$(this).removeClass('productimgwhiteborder');
 			    },
 		        function() {
 	            	$(this).find('.dragHand').stop().animate({ opacity: 0.35 }, 450);
-					$(this).removeClass('productimgblackborder');
-					$(this).addClass('productimgwhiteborder');
            });
 	    });
 	
