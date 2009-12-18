@@ -1,5 +1,9 @@
 module GenericScraper
   
+  def no_blanks array
+    return array.reject{|x| x.nil? or x.to_s.strip == ''}
+  end
+  
   def unlink_duplicate keepme, deleteme
     return if keepme.nil? or deleteme.nil?
     return if keepme.id.nil? or deleteme.id.nil?
@@ -79,17 +83,31 @@ namespace :data do
   task :temp => [:cam_init, :amazon_mkt_init, :match_to_products, :update_bestoffers, :vote]
   task :temp2 => [:cam_init, :amazon_mkt_init, :scrape_new, :match_to_products, :update_bestoffers, :vote]
   
-  task :remove_dupl => [:cam_init] do
-    puts "#{Time.now}"
-    matchings = (get_matching_sets($model.all)).reject{|x| x.length < 2}
-    puts "#{Time.now}"
-    debugger
-    matchings.each do |set|
-      deleteme = set
-      keepme = deleteme.shift
-      debugger
-      deleteme.each {|x| unlink_duplicate(keepme, x) }
+  task :temp3 => [:cam_init, :amazon_mkt_init, :match_to_products, :update_bestoffers, :match_reviews]
+  
+  task :match_reviews do 
+    require 'helper_libs'
+    include DataLib
+    
+    
+    allrevus = Review.find_all_by_product_id_and_product_type(nil, $model.name)
+    
+    allrevus.each do |revu|    
+      lid =  revu['local_id']
+      sms = $scrapedmodel.find_all_by_local_id(lid)
+      sms_pids = no_blanks(sms.collect{|x| x.product_id}.uniq)
+      if sms_pids.length != 1 and sms_pids.length > 1
+        keep = $model.find(sms_pids.first)
+        lose = sms_pids[1..-1].collect{|x| $model.find(x)}
+        lose.each do |deleteme|
+          unlink_duplicate(keep, deleteme)
+        end
+      else
+        fill_in 'product_id', sms_pids.first, revu
+      end
+      
     end
+    
   end
     
   task :reviews do    

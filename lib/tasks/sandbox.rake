@@ -9,10 +9,7 @@ namespace :sandbox do
     
     allrevus = Review.find_all_by_product_id_and_product_type(nil, $model.name)
     
-    allrevus.each do |revu|      
-      #puts "Review #{revu.id} : "
-      #puts revu.summary
-      #puts revu.content
+    allrevus.each do |revu|    
       lid =  revu['local_id']
       sms = $scrapedmodel.find_all_by_local_id(lid)
       sms_pids = sms.collect{|x| x.product_id}.uniq
@@ -23,10 +20,6 @@ namespace :sandbox do
         fill_in 'product_id', sms_pids.first,revu
       end
       
-      #sms.each do |sm|
-        #puts "#{revu.id} matches #{$model.name} #{sm.product_id}, #{$model.find(sm.product_id).title}"
-        
-      #end
     end
     
   end
