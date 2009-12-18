@@ -24,4 +24,8 @@ module StringCleaner
     return str
   end
   
+  def no_blanks array
+    return array.reject{|x| x.nil? or x.to_s.strip == ''}
+  end
+  
 end

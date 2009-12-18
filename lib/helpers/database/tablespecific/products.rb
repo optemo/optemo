@@ -1,16 +1,31 @@
 module Products
   
+  # TODO
+  def get_matching_sets_efficient recs=$model.all, series=[], brands=[]
+     matchingsets = []
+     recclass = recs.first.class
+     data = recs.collect{|x| [x.id, x.model, x.mpn, x.brand]}
+     data.each do |x|
+       makes = [x[3]]
+       modelnames = [x[1], x[2]]
+       #matchingsets << (match_product_to_product rec, recclass, series).collect{|x| x.id}
+       #matchingsets << (find_matching_product_efficient(makes, modelnames,recclass.all, series, brands)).collect{|x| x.id}
+     end
+     matchingsets.collect{|x| x.sort}.uniq
+     return matchingsets
+  end
+  
   # Returns sets of IDs of records that match. eg
   # [[1,2], [3], [4,5,6]] means records with id 1 and 2
   # are the same product; 3 doesn't match any others,
   # just itself; and 4,5,and 6 are also the same product.
   # OK to used for any db model that can be compared 
   # by the brand, model, and mpn attributes.
-  def get_matching_sets recs=$model.all
+  def get_matching_sets recs=$model.all, series=[]
      matchingsets = []
      recclass = recs.first.class
      recs.each do |rec|
-       matchingsets << (match_product_to_product rec, recclass, []).collect{|x| x.id}
+       matchingsets << (match_product_to_product rec, recclass, series).collect{|x| x.id}
      end
      matchingsets.collect{|x| x.sort}.uniq
      return matchingsets
@@ -23,7 +38,6 @@ module Products
     
     return find_matching_product makes, modelnames,recclass, series
   end
-  
   # Finds a record of the given db model by 
   # possible make(aka brand) and model lists. 
   # Example: find_matching_product( ['HP','hewlett-packard'],  ['Q123xd',nil], product)
@@ -63,6 +77,21 @@ module Products
     end
     return matching
   end  
+
+  # TODO
+  def find_matching_product_efficient rec_makes, rec_modelnames, recset, series=[], brands=$brands
+    matching = []
+    make = clean_brand(rec_makes * ", ", brands)
+    modelnames = model_series_variations(rec_modelnames, series)
+    data = recset.collect{|x| [x.id, x.model, x.mpn, x.brand] }
+    data.each do |row|
+      p_make = clean_brand(row[3], brands)
+      p_modelnames = model_series_variations([row[1], row[2]], series)
+      matching << row[0] unless ( p_make != make or (p_modelnames & modelnames).empty? )
+    end
+    return matching
+  end  
+  
 
 end
 

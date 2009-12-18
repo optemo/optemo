@@ -24,7 +24,7 @@ module Constants
   # Series: sometimes included in model names.
   $printer_series = ['imageclass','phaser','laserjet', 'laserwriter', 'oki', 'imagerunner', 'printer', 'printers', 'qms', \
     'estudio', 'optra', 'pro', 'officejet', 'workcentre', 'other', 'okifax', 'lanierfax', 'okipage',\
-    'pixma', 'deskjet', 'stylus', 'docuprint', 'series','color', 'laser', 'printer','jet', 'business']
+    'pixma', 'deskjet', 'stylus', 'docuprint', 'series','color', 'laser', 'printer','jet', 'business', 'clx']
 
   $brand_alternatives = [ ['hp', 'hewlett packard', 'hewlett-packard'], \
     ['konica', 'konica-minolta', 'konica minolta', 'minolta'], ['okidata', 'oki data', 'oki'],\
@@ -66,7 +66,7 @@ module CameraConstants
   "Radioshack", "Ricoh", "Rokinon", "Rollei", "Samsung", "Sanyo", "Sea & Sea", "SeaLife",\
    "Sigma", "SiPix", "Sony", "Silicon Valley Peripherals", "Toshiba", "VistaQuest", "Vivitar", "VuPoint", \
    "Yashica"]
-  @@series = ['finepix']
+  @@series = ['finepix',  'powershot', 'optio', 'lumix', 'elph']
   @@descriptors = ['super', 'duper']
 end
 

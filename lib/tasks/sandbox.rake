@@ -1,4 +1,71 @@
 namespace :sandbox do
+
+  task :info2 => :environment do 
+    require 'helpers/parsing/idfields'
+    require 'helpers/parsing/strings'
+    require 'helpers/global_constants'
+    require 'helpers/database/fill_in'
+    include Constants
+    include PrinterConstants
+    include IdFieldsHelper
+    include StringCleaner
+    include FillInHelper
+    $model = @@model
+    $brands = @@brands
+    $series = @@series
+
+    result = @@model.all.inject([]){|r,x|
+      r << x if likely_model_name(x.model) < 1 or likely_model_name(x.mpn) < 1 
+      r
+    }  
+    
+    debugger
+    
+    puts result
+    
+  end
+    
+  task :info => :environment do 
+    require 'helpers/parsing/idfields'
+    require 'helpers/parsing/strings'
+    require 'helpers/global_constants'
+    require 'helpers/database/fill_in'
+    include Constants
+    include PrinterConstants
+    include IdFieldsHelper
+    include StringCleaner
+    include FillInHelper
+  
+    stuff = []
+    @@model.all.each do |x|
+      stuff << x.model
+      stuff << x.mpn
+    end
+    buckets = 10
+    count = no_blanks(stuff).inject({}){|r,x|
+      
+      consec_nums = x.scan(/\d+/).collect{|x| (x || '').to_s.length}.sort.last || 0
+      #debugger if consec_nums > 6
+      #nums_only = x.gsub(/\D/,'')
+      total = just_alphanumeric(x).length
+      #num_digits = nums_only.length
+      #percent = num_digits.to_f/total
+      #bucket = ((percent*100.0)/buckets).to_i
+      
+      #bucket = case num_digits when 3..8 then 1 else 0 end
+      
+      #r[bucket] = 1 + (r[bucket] || 0)
+      
+      r[consec_nums] = 1 + (r[consec_nums] || 0)
+      
+      r
+    }
+    
+    count.keys.sort.each do |k|
+      puts "#{count[k]} have #{k} max consecutive"#{}"##{k*buckets}% -- #{(k+1)*buckets-1}% numeric chars"
+    end
+    
+  end
   
   task :fix_brands => :environment do 
     require 'helpers/parsing/idfields'
@@ -22,7 +89,7 @@ namespace :sandbox do
     end
   end
   
-  task :try_models => :environment do 
+  task :fix_models => :environment do 
     require 'helpers/parsing/idfields'
     require 'helpers/parsing/strings'
     require 'helpers/global_constants'
@@ -35,42 +102,28 @@ namespace :sandbox do
     
     newbrands = []
     
-    @@scrapedmodel.all.each do |ptr|   
-        #newbrands << clean_brand("#{ptr.title} #{ptr.model}", @@brands) || ''
-        modelsb4 = [ptr.model, ptr.mpn].uniq.reject{|x| x.nil? or x == ''}.sort
-        modelsafter = ( get_possible_models(@@model.name, ptr.brand, modelsb4, ptr.title,\
-              @@brands, @@series, @@descriptors)).uniq.reject{|x| 
-          x.nil? or x == '' or likely_model_name(x) < 1}.sort
-        if modelsb4 != modelsafter
-          
-          puts modelsb4 * ', '
-          puts modelsafter * ', '
-          debugger
-          
-          if((modelsb4-modelsafter).length == 0 and (modelsafter-modelsb4).length == 1)
-            mdl = (modelsafter-modelsb4).first
-            if ptr.mpn.nil? or ptr.mpn == '' or (ptr.model == ptr.mpn)
-              fill_in 'mpn', mdl, ptr
-            elsif ptr.model.nil? or ptr.model == ''
-              fill_in 'model', mdl, ptr
-            else
-              puts ptr.title
-              debugger 
-              0
-            end
-          else
-            debugger if (modelsb4-modelsafter).nil?
-            puts (modelsb4-modelsafter).length
-            puts (modelsafter-modelsb4).length
-            puts ptr.title
-            debugger
-            0
-          end
-        end
-    end
-    puts newbrands.uniq * ', '
+    $model= @@model
+    $series = @@series
+    $brands = @@brands
+    
+    fixme =  @@scrapedmodel.all.reject{|x| (x.model and x.mpn and likely_model_name(x.model) > 1 and likely_model_name(x.mpn) > 1 )}
     debugger
-    puts newbrands.reject{|x| x != ''}.count
+    fixme.each do |ptr|   
+        #newbrands << clean_brand("#{ptr.title} #{ptr.model}", @@brands) || ''
+        modelsb4 = no_blanks([ptr.model, ptr.mpn]).uniq
+        modelsafter = no_blanks(
+                  clean_models(
+                    @@model.name, ptr.brand, modelsb4, ptr.title,@@brands, @@series, @@descriptors
+                  )
+                ).uniq.reject{|x| 
+          (x.nil? or x == '' or likely_model_name(x) < 2)
+          }.sort{|a,b| 
+            likely_model_name(b) <=> likely_model_name(a)}
+        
+       models = modelsafter[0..1]
+       fill_in 'model', models[0], ptr
+       fill_in 'mpn', models[1], ptr
+    end
   end
   
   task :test_model_cleaner => :environment do
@@ -105,58 +158,6 @@ namespace :sandbox do
     end
     
   end
-  
-  task :chek_pic_sizes => :environment do
-     require 'helpers/image_helper.rb'
-     require 'fileutils'
-     include ImageHelper
-     $imgfolder = 'printers'
-     $model = Printer
-     
-     Printer.all.each do |p|
-       already = false
-       ['s','m','l'].each do |sz|
-         attrname = "image#{sz}url"
-         hname = "image#{sz}height"
-         wname = "image#{sz}width"
-         url = p[attrname]
-         if url.nil?
-           if p[hname] or p[wname]
-             puts "Warning: height or width exists for nil url"
-           end
-         end
-       end 
-     end
-   end
-  
-  task :chek_pix => :environment do
-     require 'helpers/image_helper.rb'
-     require 'fileutils'
-     include ImageHelper
-     $imgfolder = 'printers'
-     $model = Printer
-     counter = 0
-     pcounter = 0
-     
-     Printer.all.each do |p|
-       already = false
-       ['s','m','l'].each do |sz|
-         attrname = "image#{sz}url"
-         url = p[attrname]
-         if url
-           file = url.gsub(/images/, 'public/system')
-           if !File.exists?(".#{file}")
-             puts "Warning! #{file} does not exist locally. This is #{attrname} of #{$model.name} #{p.id}"
-             #p.update_attribute(attrname, nil)
-             counter += 1 
-             pcounter += 1 and already = true if already == false
-           end
-         end
-       end 
-     end
-     puts "#{counter} pix in #{pcounter} #{$model.name} don't exist locally"
-   end
-  
   
   task :fix_img_exts => :environment do
     require 'helpers/image_helper.rb'
