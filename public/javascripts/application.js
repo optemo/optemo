@@ -660,10 +660,12 @@ $(document).ready(function() {
 			}));
 	});
 	//Do rollover effect
+	/* I think this just seems like old code so I turned it off. ZAT
 	$('#logo').hover(function(){$('#logo > span').css('visibility', 'visible')},
 					 function(){$('#logo > span').css('visibility', 'hidden')});
 	$('#whylaser').hover(function(){$('#whylaser > span').css('visibility', 'visible')},
 					 function(){$('#whylaser > span').css('visibility', 'hidden')});
+	*/
 	//Fadein
 	$(".close").click(function(){
 		fadein();
