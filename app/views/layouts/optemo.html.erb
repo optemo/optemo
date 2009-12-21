@@ -67,7 +67,8 @@
 </div>
 <span id="dragDropEnabled" style="display:none;"><%= $DragAndDropEnabled %></span>
 <span id="sessionOld" style="display:none;"><%= 'true' if (@session && (Time.now - @session.created_at > 9)) %></span>
-<span id="seshid" session-id="<%= @session.id %>" style="display:none;"><%= @session.id %></span>
+<span id="seshid" session-id="<%= @session.id unless @session.nil? %>" style="display:none;"><%= @session.id unless @session.nil? %></span>
+
 <!--[if lt IE 7]><style>
 /* style for IE6 + IE5.5 + IE5.0 */
 .gainlayout { height: 0; }
