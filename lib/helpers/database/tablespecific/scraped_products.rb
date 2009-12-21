@@ -28,7 +28,7 @@ module ScrapedProductHelper
       return sp
   end
   
-  def find_sp local_id, retailer_id
-    return ScrapedPrinter.find_all_by_local_id_and_retailer_id(local_id, retailer_id).first
-  end
+  #def find_sp local_id, retailer_id
+  #  return ScrapedPrinter.find_all_by_local_id_and_retailer_id(local_id, retailer_id).first
+  #end
 end

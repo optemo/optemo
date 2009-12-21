@@ -1,4 +1,5 @@
 module CameraHelper
+    
   # Gets the zoom of a lens given a string describing
   # the lens and containing the lens' focal lengths.
   def parse_lens str

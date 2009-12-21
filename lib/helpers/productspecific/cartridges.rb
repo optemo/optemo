@@ -52,7 +52,7 @@ module CartridgeHelper
   end
   
   # Cleans a string which is supposed to be the cartridge model
-  def clean_model str, brand
+  def clean_ctg_model str, brand
     # TODO -- make this more general and move to cleaning helper 
     return nil if str.nil?
     str_array = str.split(' ')

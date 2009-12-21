@@ -315,10 +315,9 @@ namespace :scrape_extra do
       clean_specs = generic_printer_cleaning_code mapped_specs
             
       # TODO more effective find?
-      ps = find_matching_product [clean_specs['brand']], [clean_specs['model']], $model,[]
+      ps = find_matching_product [clean_specs['mpn']], [clean_specs['model']], $model,[]
       if ps.length == 1
         validanyway += 1 if (validids.include?ps.first.id)
-        puts "Yay! I'm useful!" unless (validids.include?ps.first.id)
         ok_fields.each do |field|
           fill_in_missing field, clean_specs[field], ps.first
         end

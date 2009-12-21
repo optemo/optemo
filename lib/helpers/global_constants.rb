@@ -16,8 +16,8 @@ module Constants
   $printer_brands = ["3com", "Advantus", "Apple", "ASUS", "Belkin", "Brother", "Buddy", "Canon", \
      "Copystar", "Curtis Manufacturing", "Dell", "Elite", "Epson", "Fargo", "General Ribbon Corporation", \
     "Genicom", "Global Marketing Partners", "Hewlett-Packard", "HP", "IBM", "Infoprint Solutions",\
-    'Kodak',"Konica", "Konica-Minolta", "Kyocera", 'Lanier', "Lenovo", "Lexmark", "Media science",\
-    "Micro Innovations", "Minolta", "Oki Data", "Omni Mount", "Panasonic",\
+    'Kodak',"Konica-Minolta", "Kyocera", 'Lanier', "Lenovo", "Lexmark", "Media science",\
+    "Micro Innovations", 'NEC', "Oki Data", "Omni Mount", "Panasonic",\
     "Pitney Bowes", "Promedia", "QMS", "Ricoh", "Samsung", "Sharp", "Sunset", \
     "Tally", "Teac", "Tektronix", "Thorens", "Toshiba", "Xerox"]
   
@@ -35,12 +35,26 @@ module Constants
        'bell & howell'], ['norcent', 'xias'], ['general electric', 'ge'], \
        ['intova', 'international innovations']]
 
+  $cam_series = {'Agfa' => ['ePhoto'],'Canon' => ['EOS', 'PowerShot','Rebel', 'Power Shot', 'PShot'],'Casio' => ['Exilim','Photax'],
+         'GoPro' => ['Digital Hero'], 'Fuji'=> ['Finepix'], 'Lomo' => ['Horizon'], 'Leica' => ['Digilux'],\
+         'HP' => ['PhotoSmart'],'Kodak' => ['EasyShare'],'Mitsubishi' => ['ColorView'],\
+         'Konica-Minolta' => ['DImage'],'Kyocera' => ['Finecam'],'Mustek' => ['GSmart', 'MDC'],\
+         'Nikon' => ['Coolpix'],'Olympus' => ['Camedia', 'Stylus Tough', 'Stylus', 'PEN'],'Panasonic' => ['DMC',"Lumix"], \
+         'Pentax' => ['Optio'],'Polaroid' => ['Photo', 'PhotoMAX', 'iZone'],\
+         'Ricoh' => ['Caplio', 'GR'], 'Rollei' => ['Flexline'],'SVP' => ['Slim', 'Xthinn'],'Samsung' => ['Digimax'],\
+         'SiPix' => ['StyleCam'],'Sony' => ['Cybershot', 'Mavica'],'Vivitar' => ['ViviCam'],'iSonic' => ['Snapbox'],\
+         'Ezonics' => ['Opus'], 'Spectra' => ['Cool-iCam'],'Sanyo' => ['Xacti']}
+
   $conditions = ['Refurbished', 'Remanufactured', 'OEM', 'Used', 'New']
 
   $float_rxp = /(\d+,)?\d+(\.\d+)?/
 
-  $units = ['MHz', 'ppm', 'dpi', 'MB', 'pixels', 'cm'] # TODO expand list
-
+  $units = ['MHz', 'ppm', 'dpi', 'MB', 'pixel', 'cm', 'mm', 'in', "\"", 'MP', 'Mpix',\
+    'megapixel', 'Megapixel', 'MegaPixel', 'Mega Pixel', 'mp'] # TODO expand list
+  
+  $colors = [ 'black', 'green', 'blue', 'pink', 'red', 'beige', 'teal', 'purple', 'grey',\
+     'gray', 'silver', 'white', 'champagne', 'pearl', 'titanium', 'crimson', 'espresso black',\
+     'yellow', 'azure']
 end
 
 module CartridgeConstants
@@ -57,17 +71,26 @@ module CameraConstants
   @@model = Camera
   @@scrapedmodel = ScrapedCamera
   @@brands = ["Agfa", "Akai", "Argus", "Bell & Howell", "Benq", "Bushnell", "Canon", "Casio", "Cobra", \
-  "Concord Keystone", "Contax", "Digital Concepts", "DXG", "Electrolux", "Elyssa", "Epson", "Fuji", \
-  "Gateway", "General Electric", "General Imaging", "GFM", "Go Photo", "GoPro / Portable USA", \
+  "Concord Keystone", "Contax", "Digital Concepts", 'Digital Blue', "DXG", "Electrolux", "Elyssa", \
+  "Epson", 'Ezonics', "Fuji", \
+  "Gateway", "General Electric", "General Imaging", "GFM", "Go Photo", "GoPro / Portable USA", 'Hasbro', \
   "Hewlett Packard", "Insignia", "Intova", "iSonic", "Jazz", "JVC", "JWin", "Kobian ", "Kodak", \
-  "Konica-Minolta", "Kyocera", "Largan", "Leica", "LG Electronics", "Lomographic", "Memorex", \
-  "Mercury", "Mikona", "Minox", "Mitsubishi", "Mustek", "NEC", "Nikon", "Norcent", \
+  "Konica-Minolta", "Kyocera", 'Labtec', "Largan", "Leica", "LG Electronics", "Lomographic", "Memorex", \
+  "Mercury", 'MGA Entertainment', "Mikona", "Minox", "Mitsubishi", "Mustek", "NEC", "Nikon", "Norcent", \
   "Olympus", "Oregon Scientific", "Panasonic", "Pentax", "Pixtreme", "Philips", "Polaroid", "Pretec", \
-  "Radioshack", "Ricoh", "Rokinon", "Rollei", "Samsung", "Sanyo", "Sea & Sea", "SeaLife",\
+  "Radioshack", "Ricoh", "Rokinon", "Rollei", 'Sakar', "Samsung", "Sanyo", "Sea & Sea", "SeaLife", "Sharp",\
    "Sigma", "SiPix", "Sony", "Silicon Valley Peripherals", "Toshiba", "VistaQuest", "Vivitar", "VuPoint", \
-   "Yashica"]
-  @@series = ['finepix',  'powershot', 'optio', 'lumix', 'elph']
-  @@descriptors = ['super', 'duper']
+   'Wildview',"Yashica"]
+  @@series =  $cam_series.values.flatten
+   #'Digital Blue' => ['Snap']
+   #'SeaLife' => ['SL'], 
+   # 'Gateway' => ['DC']
+  @@descriptors = [/(\s|^)\d*\.?\d+\s?M(ega)?P(ix(el)?)?s?(\s|,|$)/i,/(\s|^)\d+\s?GB(\s|,|$)/,  /(\s|^)body(,|\s|$)/i,\
+    /LCD(\s|,|$)/i , /Two \(2\)/, /(\s|^)\d*\s?ISO\s?\d*(\s|,|$)/i, /\d(\s|-)in(\s|-)1/ , /(\s|^)kit(,|\s|$)/i,\
+    /waterproof/i, /(\s|^)light(\s|,|$)/i, /(\s|^)SLR(\s|,|$)/, /\d*\.?\d+\s?x(\soptical|\sdigital)?(\szoom)?/i,\
+    /(optical|digital)/i, /zoom/i, /(\s|^)digi?(\s|,|$)/i, /(\d\s?-?\s?)(month|day|year)(\swarranty)?/i,\
+    /(\s|^)dark(\s|$)/i, /\d+(mm)?\s?-?\s?\d+(mm)/, /wide(\sangle)/i, /tele/i, /dual/i , /(\s|^)image(\s|,|$)/i] \
+    + $colors.collect{|x| /#{x}/i} #, 
 end
 
 module PrinterConstants
