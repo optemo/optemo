@@ -66,6 +66,8 @@
 <%= image_tag "feedback#{fr?}.png" %>
 </div>
 <span id="dragDropEnabled" style="display:none;"><%= $DragAndDropEnabled %></span>
+<span id="sessionOld" style="display:none;"><%= 'true' if (@session && (Time.now - @session.created_at > 9)) %></span>
+<span id="seshid" session-id="<%= @session.id %>" style="display:none;"><%= @session.id %></span>
 <!--[if lt IE 7]><style>
 /* style for IE6 + IE5.5 + IE5.0 */
 .gainlayout { height: 0; }
@@ -131,5 +133,40 @@ piwikTracker2.enableLinkTracking();
 -->
 <!-- End no-piwik tracking -->
 
+<div id="popupTour1" class="popupTour">
+	<a class="deleteX" href="#"><img src="/images/close.png" alt="Close"/></a>
+	<h1>Discovery Browser Tour</h1>
+	<p>Each product shown is a representative of a dynamically created group of similar products. To browse within that group, click &quot;more like this.&quot;
+		<br/><br/>
+		<a href="#" class="popupnextbutton">Next &gt;&gt;</a>
+		<br/><hr width="90%"/>
+		<span class='popupcloseinstructions'>Press escape or click X to close at any time</span>
+	</p>
+</div>
+
+<div id="popupTour2" class="popupTour">
+	<a class="deleteX" href="#"><img src="/images/close.png" alt="Close"/></a>
+	<h1>Discovery Browser Tour</h1>
+	<p>Slide the filters to constrain your search terms based on a variety of specific criteria.
+		<br/><br/>
+		<a href="#" class="popupnextbutton">Next &gt;&gt;</a>
+		<br/><hr width="90%"/>
+		<span class='popupcloseinstructions'>Press escape or click X to close at any time</span>
+	</p>
+</div>
+
+<div id="popupTour3" class="popupTour">
+	<a class="deleteX" href="#"><img src="/images/close.png" alt="Close"/></a>
+	<h1>Discovery Browser Tour</h1>
+	<p>Drag and drop products in here to compare their specs directly.
+		<br/><br/>
+		<a href="#" class="popupnextbutton">Start Browsing</a>
+		<br/><hr width="90%"/>
+		<span class='popupcloseinstructions'>Press escape or click X to close at any time</span>
+	</p>
+</div>
+
+<!-- div id="tourButton"><input type="submit" value="Tour Launch" /></div -->
+<div id="backgroundPopup"></div>
 </body>
 </html>

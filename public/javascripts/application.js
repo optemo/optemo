@@ -31,6 +31,23 @@ var language;
 // The following is pulled from optemo.html.erb, which in turn checks GlobalDeclarations.rb
 var IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
 
+// This says true if the value is older than 30 seconds.
+var IS_SESSION_OLD = ($("#sessionOld").html() === 'true');
+
+if (typeof(ActiveXObject) != "undefined")
+{
+	if (typeof(window.XMLHttpRequest) == "undefined")
+		var browserIsIE = "MSIE6";
+	else if (typeof(XDomainRequest) == "undefined") // IE8 only has this
+		var browserIsIE = "MSIE7";
+	else 
+		var browserIsIE = "MSIE";
+}
+else
+{
+	var browserIsIE = "";
+}
+
 //--------------------------------------//
 //           UI Manipulation            //
 //--------------------------------------//
@@ -102,7 +119,7 @@ function renderComparisonProducts(id, imgurl, name)
 	((name) ? getShortProductName(name) : 0) +
 	//Zevtor +
 	"</a></div>" + 
-	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"javascript:removeFromComparison("+id+")\">" + 
+	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\" onClick=\"javascript:removeFromComparison("+id+")\">" + 
 	"<img src=\"/images/close.png\" alt=\"Close\"/></a>"; // do we need '?1258398853' ? I doubt it.
 
 	$(smallProductImageAndDetail).appendTo('#c'+id);
@@ -110,6 +127,8 @@ function renderComparisonProducts(id, imgurl, name)
 
 	$("#already_added_msg").css("display", "none");
 	$("#too_many_saved").css("display", "none");
+	if (browserIsIE.indexOf('MSIE') != -1)
+		$("#savedproducts").css({"height" : ''});
 }
 
 // When you click the X on a saved product:
@@ -249,14 +268,22 @@ function DBinit(context) {
 	if (IS_DRAG_DROP_ENABLED)
 	{
 		// Make item boxes draggable. This is a jquery UI builtin.		
-		$(".image_boundingbox").each(function() {
+		$(".navigator_box").each(function() {
 			$(this).draggable({ 
 				revert:true, 
 				cursor:"move", 
 				// The following defines the drag distance before a "drag" event is actually initiated. Helps for people who click while the mouse is slightly moving.
 				distance:5,
 				helper: 'clone',
-				start: function(e, ui) { $(ui.helper).addClass('moving_box_ghost'); }
+				zIndex: 1000,
+				start: function(e, ui) { 
+					if (browserIsIE.indexOf('MSIE') == -1) // Internet Explorer sucks and cannot do transparency
+					$(this).css({'opacity':'0.4'});
+				},
+				stop: function (e, ui) {
+					if (browserIsIE.indexOf('MSIE') == -1)
+						$(this).css({'opacity':'1'});
+				}
 			});
             $(this).hover(function() {
 	                $(this).find('.dragHand').stop().animate({ opacity: 1.0 }, 150);
@@ -271,7 +298,7 @@ function DBinit(context) {
 			$(this).droppable({ 
 				hoverClass: 'drop-box-hover',
 				activeClass: 'ui-state-dragging', 
-				accept: ".image_boundingbox",
+				accept: ".navigator_box",
 				drop: function (e, ui) {
 					imgObj = $(ui.helper).find('.productimg')
 					saveProductForComparison(imgObj.attr('data-id'), imgObj.attr('src'), imgObj.attr('alt'));
@@ -402,6 +429,49 @@ function DBinit(context) {
 		$('#feedback').css('display','none');
 		fadeout('/survey/submit?' + $("#surveyform").serialize(), null, 300, 70);
 		return false;
+	});
+	
+	// Tour section	
+//	$("#tourButton").click();
+	
+	$('.popupTour').each(function(){
+		$(this).find('.deleteX').click(function(){
+			$(this).parent().fadeOut("slow");
+			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
+//			This is required for simplelayout, not for the master branch.
+//			if (browserIsIE.indexOf("MSIE7") != -1) $("#sim0").parent().removeClass('tourDrawAttention');
+		});
+	});
+	
+	$('#popupTour1').find('a.popupnextbutton').click(function(){
+		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
+		$("#popupTour2").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
+		$("#popupTour1").fadeOut("slow");
+		$("#filterbar").addClass('tourDrawAttention');
+		$("#sim0").removeClass('tourDrawAttention');
+//		if (browserIsIE.indexOf("MSIE7") != -1) $("#sim0").parent().removeClass('tourDrawAttention');
+	});
+
+	$('#popupTour2').find('a.popupnextbutton').click(function(){
+		var comparisonposition = $("#savebar").offset();
+		$("#popupTour3").css({"position":"absolute", "top" : parseInt(comparisonposition.top) + 160, "left" : parseInt(comparisonposition.left) + 70}).fadeIn("slow");
+		$("#popupTour2").fadeOut("slow");
+		$("#savebar").addClass('tourDrawAttention');
+		$("#filterbar").removeClass('tourDrawAttention');
+	});
+	
+	$('#popupTour3').find('a.popupnextbutton').click(function(){
+		$("#popupTour3").fadeOut("slow");
+		$("#savebar").removeClass('tourDrawAttention');
+	});
+	
+	// On escape press. Probably not needed anymore.
+	$(document).keypress(function(e){
+		if(e.keyCode==27){
+			$(".popupTour").fadeOut("slow");
+			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
+//			if (browserIsIE.indexOf("MSIE7") != -1) $("#sim0").parent().removeClass('tourDrawAttention');
+		}
 	});
 	
 	// Set up sliders
@@ -559,6 +629,25 @@ function DBinit(context) {
 //--------------------------------------//
 
 $(document).ready(function() {
+	// Due to a race condition in IE6, this must be before DBinit().
+	if (savedProducts = readAllCookieValues('savedProductIDs'))
+	{
+		// There are saved products to display
+		if (browserIsIE.indexOf('MSIE') != -1) {
+			fixedheight = ((savedProducts.length > 2) ? 80 : 160) + 'px';
+			$("#savedproducts").css({"height" : fixedheight});
+		}
+		for (var tokenizedArrayID in savedProducts)
+		{	
+			tokenizedArray = savedProducts[tokenizedArrayID].split(',');
+			renderComparisonProducts(tokenizedArray[0], tokenizedArray[1], tokenizedArray[2]);
+		}
+		// There should be at least 1 saved item, so...
+		// 1. show compare button	
+		$("#compare_button").css("display", "block");
+		// 2. hide 'add stuff here' message
+		$("#deleteme").css("display", "none");
+	}
 	DBinit();
 	
 	//Find product language
@@ -598,22 +687,6 @@ $(document).ready(function() {
 		return false;
 	});
 	
-	// 
-	if (savedProducts = readAllCookieValues('savedProductIDs'))
-	{
-		// There are saved products to display
-		for (var tokenizedArrayID in savedProducts)
-		{	
-			tokenizedArray = savedProducts[tokenizedArrayID].split(',');
-			renderComparisonProducts(tokenizedArray[0], tokenizedArray[1], tokenizedArray[2]);
-		}
-		// There should be at least 1 saved item, so...
-		// 1. show compare button	
-		$("#compare_button").css("display", "block");
-		// 2. hide 'add stuff here' message
-		$("#deleteme").css("display", "none");
-	}
-	
 	//Request a feature
 	$("#requestafeature").click(function(){
 		fadeout('/content/request');
@@ -645,16 +718,29 @@ $(document).ready(function() {
 	
 	spinner("myspinner", 11, 20, 9, 5, "#000");
 	
+	if (!IS_SESSION_OLD) // Launch tour
+	{	
+		var browseposition = $("#sim0").offset();
+		// This is required for the simplelayout branch, but not for the master branch.	
+/*		if (browserIsIE.indexOf("MSIE7") != -1) // So, it works fine in IE5.5, IE6, and IE8... but not IE7. 
+		{
+			$("#sim0").parent().addClass('tourDrawAttention');			
+		}
+		else */
+		$("#sim0").addClass('tourDrawAttention');
+		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
+		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
+	}
+	if (browserIsIE.indexOf("MSIE6") != -1)
+	{
+		// Make the PNG background transparent in IE6.
+		$('.navigator_box').supersleight();       
+	}
+	if (browserIsIE.indexOf("MSIE") != -1)
+	{
+		$('.draghand').each(function() {
+			$(this).fadeTo("fast", 0.35);
+		});
+	}
 });
 
-/* I am 99% sure that this is no longer useful, but not 100%. ZAT */
-/* http://snipplr.com/view/1696/get-elements-by-class-name/ */
-/* function getElementsByClassName(classname, node) {
-   if(!node) node = document.getElementsByTagName("body")[0];
-   var a = [];
-   var re = new RegExp('\\b' + classname + '\\b');
-   var els = node.getElementsByTagName("*");
-   for(var i=0,j=els.length; i<j; i++)
-   		if(re.test(els[i].className))a.push(els[i]);
-   return a;
-  } */
