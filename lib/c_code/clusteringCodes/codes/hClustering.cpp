@@ -36,8 +36,8 @@ int main(int argc, char** argv){
 	string logFile = "/optemo/site/log/clustering.log";
 
 	//argument is the productName
-    if (argc <4){
-		cout<<" Wrong number of arguments, you need 3 (product name, region and environment)"<<endl;
+    if (argc <5){
+		cout<<" Wrong number of arguments, you need 4 (product name, region, environment and number of clusters)"<<endl;
 		return EXIT_FAILURE;
 	}
 	string productName = argv[1];
@@ -60,6 +60,11 @@ int main(int argc, char** argv){
 		return EXIT_FAILURE;
 	}
 	
+	clusterN = atoi(argv[4]);
+	if (clusterN<2 || clusterN>9){
+		cout<<"your number of clusters should be between 2 and 9"<<endl;
+		return EXIT_FAILURE;
+	}
 
 	string tableName = productName;
 	tableName.append("s");
@@ -78,7 +83,7 @@ int main(int argc, char** argv){
 	switch(productNames[productName]){
 		
 		case 1:
-					clusterN = 9; 
+				
 					conFeatureN= 5;
 					catFeatureN= 1;
 					boolFeatureN= 2;
@@ -86,7 +91,7 @@ int main(int argc, char** argv){
 					break;
 			
 		case 2:
-					clusterN = 9; 
+			
 					conFeatureN= 5;
 					catFeatureN= 1;
 					boolFeatureN= 2;
@@ -103,7 +108,7 @@ int main(int argc, char** argv){
 					    }
 					break;
 		default:
-					clusterN = 9; 
+				
 					conFeatureN= 4;
 					catFeatureN= 1;
 					boolFeatureN= 0;
@@ -246,7 +251,7 @@ int main(int argc, char** argv){
 				 
 				res = stmt->executeQuery(nullCheck);
 				  if (res->rowsCount() >0){
-					cout<<"There are some null values in "<<productName<<" s table"<<endl;
+					cout<<"There are some null values in "<<productName<<"s table"<<endl;
 				  }
 
 			
