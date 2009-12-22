@@ -55,17 +55,23 @@ module GenericScraper
       scraped_atts['region'] = retailer.region
       
       clean_atts = clean scraped_atts
-      
+      debugger
       sp = find_or_create_scraped_product(clean_atts)
-      
+      debugger
       if sp
         clean_atts['url'] = id_to_sponsored_link(local_id, retailer.region, clean_atts['merchant'])
         ros = find_ros_from_scraped sp
         ro = ros.first
-        ro = create_product_from_atts clean_atts, RetailerOffering if ro.nil?
+        debugger
+        ro = create_record_from_atts  clean_atts, RetailerOffering if ro.nil?
+        debugger
         fill_in_all clean_atts, ro
-            
-        timestamp_offering ro       
+        
+        timestamp_offering ro     
+        
+        debugger
+        0
+          
       else
         report_error "Couldn't create #{$scrapedmodel} with local_id #{local_id || 'nil'} and retailer #{retailer_id || 'nil'}."
       end
@@ -80,10 +86,8 @@ namespace :data do
   
   task :amazon_reviews => [:cam_init, :amazon_init, :reviews]
   
-  task :temp => [:cam_init, :amazon_mkt_init, :match_to_products, :update_bestoffers, :vote]
-  task :temp2 => [:cam_init, :amazon_mkt_init, :scrape_new, :match_to_products, :update_bestoffers, :vote]
-  
-  task :temp3 => [:cam_init, :amazon_mkt_init, :match_to_products, :update_bestoffers, :match_reviews]
+  #task :temp => [:cam_init, :amazon_mkt_init, :match_to_products, :update_bestoffers, :vote]
+  #task :temp3 => [:cam_init, :amazon_mkt_init, :match_to_products, :update_bestoffers, :match_reviews]
   
   task :match_reviews do 
     require 'helper_libs'
@@ -229,6 +233,7 @@ namespace :data do
     products.each do |p|
       avgs = vote_on_values p
       $bools_assume_no.each{|x| avgs[x] = false if avgs[x].nil?}
+      debugger
       fill_in_all avgs, p
       #avgs.each do |k,v|
       #  puts "#{k} -- #{v} (now #{p.[](k)}) for #{p.id}" #if [v, p.[](k)].uniq.reject{|x| x.nil?}.length > 1
@@ -240,22 +245,26 @@ namespace :data do
   task :match_to_products do 
     puts "[#{Time.now}] Starting to match products"
     match_me = scraped_by_retailers($retailers, $scrapedmodel) if $retailers
+    debugger
     match_me = $scrapedmodel.all if match_me.nil?
     
     match_me = match_me.reject{|x| (x.model.nil? and x.mpn.nil?) or x.brand.nil?}
-    
     match_me.each_with_index do |scraped, i|
-      matches = match_printer_to_printer scraped, $model, $product_series
+      matches = match_product_to_product scraped, $model, $product_series
+      debugger
       real = matches.first
-      real = create_product_from_atts scraped.attributes, $model if real.nil? 
-      
+      real = create_record_from_atts  scraped.attributes, $model if real.nil? 
+      debugger
       fill_in 'product_id',real.id, scraped
       
       ros = find_ros_from_scraped scraped, $model
+      debugger
       ros.each{ |ro| fill_in 'product_id', real.id, ro }     
       
-      #revues = Review.find_all_by_local_id_and_product_type(scraped.local_id, $model.name)
-      #revues.each{|revu| fill_in 'product_id', real.id, revu }
+      revues = Review.find_all_by_local_id_and_product_type(scraped.local_id, $model.name)
+      debugger
+      revues.each{|revu| fill_in 'product_id', real.id, revu }
+      debugger
       puts "[#{Time.now}] Done matching #{i+1}th scraped product." 
     end
     puts "[#{Time.now}] Done matching products"
@@ -269,10 +278,14 @@ namespace :data do
       begin
         next if offering.local_id.nil? or offering.stock != true
         newatts = rescrape_prices offering.local_id, offering.region
+        debugger
         puts "#{offering.local_id}"
         log "[#{Time.now}] Updating #{offering.pricestr} to #{newatts['pricestr']}"
         update_offering newatts, offering if offering
+        debugger
         update_bestoffer($model.find(offering.product_id)) if offering.product_id
+        debugger 
+        0
       rescue Exception => e
         report_error "with RetailerOffering #{offering.id}:" + e.message.to_s + e.type.to_s
         snore(20*60) # sleep for 20 min 
@@ -321,7 +334,8 @@ namespace :data do
   
   desc "Check that scraped data isn't wonky"
   task :validate_printers do
-    include ValidationHelper
+    require 'helpers/validation/data_validator'
+    include DataValidator
     
     @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_validation.log", 'w+')
     
@@ -359,22 +373,21 @@ namespace :data do
   
   task :update_bestoffers do 
     $model.all.each do |p|
+      debugger
       update_bestoffer p
+      debugger
+      0
     end
   end
 
   task :cam_init => :init do
-      require 'rubygems'
-      require 'nokogiri'
-
-      require 'helper_libs'
-      include DataLib
-
-      require 'open-uri'
-
-      $model = Camera
-      $scrapedmodel = ScrapedCamera
-      $product_series = []
+      include CameraHelper
+      
+      $model = @@model
+      $brands= @@brands
+      $series = @@series
+      $descriptors = @@descriptors
+      
       $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'opticalzoom', 'resolutionmax', \
         'displaysize', 'slr', 'waterproof', 'brand', 'model', 'itemweight']
       $reqd_offering_fields = ['priceint', 'pricestr', 'stock', 'condition', 'priceUpdate', 'toolow', \
@@ -383,17 +396,14 @@ namespace :data do
   end
 
   task :printer_init => :init do
-      require 'rubygems'
-      require 'nokogiri'
-
-      require 'helper_libs'
-      include DataLib
-
-      require 'open-uri'
-
-      $model = Printer
-      $scrapedmodel = ScrapedPrinter
-      $product_series = $printer_series
+      
+      include PrinterHelper
+      
+      $model = @@model
+      $brands= @@brands
+      $series = @@series
+      $descriptors = @@descriptors
+      
       $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'ppm', 'resolutionmax',\
          'paperinput','scanner', 'printserver', 'brand', 'model']
       $reqd_offering_fields = ['priceint', 'pricestr', 'stock', 'condition', 'priceUpdate', 'toolow', \
@@ -412,7 +422,7 @@ namespace :data do
     require 'nokogiri'
     include Nokogiri
     
-    require 'scrapers/amazon_scraper'
+    require 'helpers/sitespecific/amazon_scraper'
     include AmazonScraper
     
     Amazon::Ecs.options = { :aWS_access_key_id => '0NHTZ9NMZF742TQM4EG2', \
@@ -435,19 +445,21 @@ namespace :data do
 
   task :newegg_init => :printer_init do
     
-    require 'scrapers/newegg_scraper'
+    require 'helpers/sitespecific/newegg_scraper'
     include NeweggScraper
     
     $retailers = [Retailer.find(4),Retailer.find(20)]
   end
 
   task :tiger_init => :printer_init do
-    require 'scrapers/tiger_scraper'
+    require 'helpers/sitespecific/tiger_scraper'
     include TigerScraper
 
     @ignore_list = ['local_id', 'pricestr', 'price', 'region']
     $retailers = [Retailer.find(12), Retailer.find(14)]
   end
+
+
 
   task :init => :environment do 
     include GenericScraper
@@ -455,5 +467,10 @@ namespace :data do
     database = config.database_configuration[RAILS_ENV]["database"]
     puts "Using database #{database}"
     return if database == 'optemo_bestbuy'
+    require 'rubygems'
+    require 'nokogiri'
+
+    require 'helper_libs'
+    include DataLib
   end
 end

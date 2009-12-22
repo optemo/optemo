@@ -417,11 +417,10 @@ module AmazonScraper
   
   def clean_camera atts
     semi_cleaned_atts = clean_property_names(atts) 
-    cleaned_atts = generic_cleaning_code semi_cleaned_atts
+    cleaned_atts = product_cleaner(semi_cleaned_atts)
     cleaned_atts['resolutionmax'] = maxres_from_res(cleaned_atts['resolution'] || '')
-    atts3 = remove_sep(cleaned_atts)
-    #debugger
-    return atts3
+    remove_sep!(cleaned_atts)
+    return cleaned_atts
   end
   
   # Converts Amazon's cryptic merchant ID to

@@ -1,4 +1,4 @@
-module ValidationHelper
+module DataValidator
   # If asserts are not true:
   # Logs to @logfile and $logfile if either
   # is present; prints to screen as well.
@@ -89,4 +89,14 @@ module ValidationHelper
     return values
   end
   
+  #VALIDATION
+  #   assert_all_valid model
+  #   assert_within_range reclist, att, min, max
+  #   assert_no_repeats reclist, att
+  #   assert_no_0_values reclist, att 
+  #   assert_not_all_nils reclist, att 
+  #   assert_no_nils reclist, att 
+  #   assert_no_nils_or_0s_in_att reclist, att 
+  #   both_have_real_value_for_att rec1, rec2, att
+  #   get_values reclist, att
 end

@@ -1,3 +1,16 @@
+#RANDOM CARTRIDGE STUFF	
+#   self.real_brands
+#   init_series
+#   init_brands
+#   clean_color blurb
+#   likely_cartridge_model_name str (deprecate & add param to likely_model_name w/default nil)
+#   cartridge_cleaning_code atts, default_brand=nil, default_real=nil
+#   create_uniq_compatibility acc_id, acc_type, prd_id, prd_type
+#   compatibility_matches c
+#   create_uniq_cartridge cart, realbrand, compatbrand
+#   clean_cartridges recset, default_real=nil
+#   clean_condition atts
+
 # Cartridge-specific helper methods
 module CartridgeHelper
   
@@ -16,7 +29,7 @@ module CartridgeHelper
         'product_type' => prd_type, 'accessory_type' => acc_type}
     compat = Compatibility.find_by_accessory_id_and_accessory_type_and_product_id_and_product_type(\
       acc_id, acc_type, prd_id, prd_type)
-    compat = create_product_from_atts atts, Compatibility if compat.nil?
+    compat = create_record_from_atts  atts, Compatibility if compat.nil?
     return compat
   end
   
@@ -42,7 +55,7 @@ module CartridgeHelper
   end
   
   # Cleans a string which is supposed to be the cartridge model
-  def clean_model str, brand
+  def clean_ctg_model str, brand
     # TODO -- make this more general and move to cleaning helper 
     return nil if str.nil?
     str_array = str.split(' ')
@@ -84,12 +97,14 @@ module CartridgeHelper
     fill_in field, brand, rec if brand
   end
   
+  
+  # TODO use a different method  
   # Creates a RetailerOffering from a Cartridge object
   # with the given 'special' ca$h-producing URL
   def make_offering cart, url 
     atts = cart.attributes
     if cart.offering_id.nil?
-      offer = create_product_from_atts atts, RetailerOffering
+      offer = create_record_from_atts  atts, RetailerOffering
     else
       offer = RetailerOffering.find(cart.offering_id)
     end
@@ -116,12 +131,12 @@ module CartridgeHelper
       return nil if realbrand.nil? # VALIDATION
       brand_str = "#{realbrand} #{cart.condition} #{brand_str}" 
     end
-    matches = match_rec_to_printer [brand_str], [cart.model], Cartridge
+    matches = find_matching_product [brand_str], [cart.model], Cartridge
     matching_c = nil
     
     if matches.length == 0
       atts = {'brand' => brand_str, 'model' => cart.model}
-      matching_c = create_product_from_atts atts, Cartridge
+      matching_c = create_record_from_atts  atts, Cartridge
     elsif matches.length == 1
       matching_c = matches[0]
     else
@@ -129,19 +144,6 @@ module CartridgeHelper
       puts "Duplicate found"
     end
   
-  end
-  
-  def brand_from_title title, brandlist=[]
-    
-    init_brands if $real_brands.nil?
-    brandlist = $real_brands if brandlist.length ==0
-    
-    if title
-      brandlist.each do |b|
-        return b unless just_alphanumeric(title).match(/#{just_alphanumeric(b)}/i).nil?
-      end
-    end
-    return nil
   end
   
   # Cleans the title; gets condition(refurbished, OEM, etc)
@@ -175,7 +177,7 @@ module CartridgeHelper
   
   # Generic cleaning code for cartridges.
   def cartridge_cleaning_code atts, default_brand=nil, default_real=nil
-    atts = generic_cleaning_code atts
+    atts = product_cleaner
     
     atts.each{|x,y| atts[x]= atts[y].strip if atts[y] and atts[y].type == 'String'}
     atts['model'].gsub!(/compatible/i,'') if atts['model']
@@ -198,7 +200,7 @@ module CartridgeHelper
       end 
       
       if likely_cartridge_model_name(atts['model']) < 3
-        atts['model'] = get_most_likely_model [atts['title']], atts['compatiblebrand']
+        atts['model'] = best_cartridge_model [atts['title']], atts['compatiblebrand']
       end
       
     end
@@ -209,9 +211,7 @@ module CartridgeHelper
   
   # Returns the string in the array that is most 
   # likely to be a cartridge model?
-  def get_most_likely_model arr, brand=''
-    # TODO : cartridge model not just model. change method name!
-    
+  def best_cartridge_model arr, brand=''    
     # Includes stuff between brackets too:
     arr_more = arr.collect{|x| [x, (x || '').match(/\(.*?\)/).to_s]}.flatten.reject{|x| x.nil? or x == ''}
     temp = arr_more.collect{|x| clean_model(x, brand)}

@@ -1,3 +1,6 @@
+# Helpful logging functions!
+# Assumes that the log is called either 
+# @logfile or $logfile
 module LoggingHelper
   
   def log msg

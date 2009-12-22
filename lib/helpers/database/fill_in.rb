@@ -1,6 +1,28 @@
 # The part of DatabaseHelper which deals with
 # filling in attributes for a given record
-module DatabaseHelper
+module FillInHelper
+  
+  # Creates a record and fills in any fitting attributes
+  # from the given attribute hash
+  def create_record_from_atts atts, recclass=$model
+    atts_to_copy = only_overlapping_atts atts, recclass
+    p = recclass.new(atts_to_copy)
+    p.save
+    return p
+  end
+
+  # Returns a hash of only those attributes which :
+  # 1. have non-nil values
+  # 2. are 'applicable to' (exist for) the given model 
+  # (eg displaysize doesn't exist for Cartridge)
+  # 3. are not in the given ignore list or the usual ignore list
+  def only_overlapping_atts atts, other_recs_class, ignore_list=[]
+    big_ignore_list = ignore_list + $general_ignore_list
+    overlapping_atts = atts.reject{ |x,y| 
+      y.nil? or not other_recs_class.column_names.include? x \
+      or big_ignore_list.include? x }
+    return overlapping_atts
+  end
 
   # Does fill_in_missing on all name => value 
   # pairs in the hash
@@ -31,14 +53,14 @@ module DatabaseHelper
     end
   end
   
+  # Default is to fill in unless the value is nil
   def fill_in name, desc, record, ignorelist=[]
     return if desc.nil?
     fill_in_forced name, desc, record, ignorelist
   end
   
-  # Specially modified for internationalization
-  # Fills in value for attribute in record.
-  # Cleverly avoids cases with nonexistent things.
+  # Fills in value for attribute in record even if
+  # value is nil
   def fill_in_forced name, desc, record, ignorelist=[]
     ignore = ignorelist + $general_ignore_list     
     

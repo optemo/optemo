@@ -1,184 +1,85 @@
 namespace :sandbox do
   
-  task :match_reviews => :environment do 
-    require 'helper_libs'
-    include DataLib
+  task :validate => :environment do 
+    require 'helpers/parsing/idfields'
+    require 'helpers/parsing/strings'
+    require 'helpers/global_constants'
+    include Constants
+    include PrinterConstants
+    include IdFieldsHelper
+    include StringCleaner
     
-    $model = Camera
-    $scrapedmodel = ScrapedCamera
+    $model = @@model
+    $series = @@series
+    $brands = @@brands
     
-    allrevus = Review.find_all_by_product_id_and_product_type(nil, $model.name)
     
-    allrevus.each do |revu|    
-      lid =  revu['local_id']
-      sms = $scrapedmodel.find_all_by_local_id(lid)
-      sms_pids = sms.collect{|x| x.product_id}.uniq
-      if sms_pids.length != 1 and sms.length > 0
-        debugger
-        puts "oops"
-      else
-        fill_in 'product_id', sms_pids.first,revu
-      end
+    id_able = @@scrapedmodel.all.reject{|x|  (x.model.nil? or x.mpn.nil?) 
+      }.reject{|y| likely_model_name(y.model) < 2 or likely_model_name(y.mpn) < 2 }
+    
+    puts "#{@@model.count} total, with #{@@scrapedmodel.count} scraped"
+    puts "#{id_able.count} of #{@@scrapedmodel.count} identifiable"
+    
+  end
+  
+  task :fix_models => :environment do 
+    require 'helpers/parsing/idfields'
+    require 'helpers/parsing/strings'
+    require 'helpers/global_constants'
+    require 'helpers/database/fill_in'
+    include Constants
+    include CameraConstants
+    include IdFieldsHelper
+    include StringCleaner
+    include FillInHelper
+    
+    newbrands = []
+    
+    $model= @@model
+    $series = @@series
+    $brands = @@brands
+    
+    fixme = @@scrapedmodel.all
+    
+    #fixme.delete_if{|x|  !x.model.nil? and !x.mpn.nil? and \
+    #  (likely_model_name(x.model) >= 2 ) and (likely_model_name(x.mpn) >= 2) 
+    #}
+    #
+    #fixme.delete_if{|x| (x.mpn.nil? and likely_model_name(x.model) >= 3 ) or \
+    #  (x.model.nil? and likely_model_name(x.mpn) >= 3 )
+    #}
+    counter=0
+    #numToSkip=21
+    #debugger
       
-    end
-    
-  end
-  
-  task :chek_pic_sizes => :environment do
-     require 'helpers/image_helper.rb'
-     require 'fileutils'
-     include ImageHelper
-     $imgfolder = 'printers'
-     $model = Printer
-     
-     Printer.all.each do |p|
-       already = false
-       ['s','m','l'].each do |sz|
-         attrname = "image#{sz}url"
-         hname = "image#{sz}height"
-         wname = "image#{sz}width"
-         url = p[attrname]
-         if url.nil?
-           if p[hname] or p[wname]
-             puts "Warning: height or width exists for nil url"
-           end
-         end
-       end 
-     end
-   end
-  
-  task :chek_pix => :environment do
-     require 'helpers/image_helper.rb'
-     require 'fileutils'
-     include ImageHelper
-     $imgfolder = 'printers'
-     $model = Printer
-     counter = 0
-     pcounter = 0
-     
-     Printer.all.each do |p|
-       already = false
-       ['s','m','l'].each do |sz|
-         attrname = "image#{sz}url"
-         url = p[attrname]
-         if url
-           file = url.gsub(/images/, 'public/system')
-           if !File.exists?(".#{file}")
-             puts "Warning! #{file} does not exist locally. This is #{attrname} of #{$model.name} #{p.id}"
-             #p.update_attribute(attrname, nil)
-             counter += 1 
-             pcounter += 1 and already = true if already == false
-           end
-         end
-       end 
-     end
-     puts "#{counter} pix in #{pcounter} #{$model.name} don't exist locally"
-   end
-  
-  
-  task :fix_img_exts => :environment do
-    require 'helpers/image_helper.rb'
-    require 'fileutils'
-    include ImageHelper
-    $imgfolder = 'printers'
-    Printer.all.each do |p|
-      ['s','m','l'].each do |sz|
-        attrname = "image#{sz}url"
-        url = p[attrname]
-        if url and url.match(/JPEG/) and !url.match(/http/)
-          oldfile = url.gsub(/images/, 'public/system')
-          if !File.exist?(oldfile)
-            p.update_attribute(attrname, nil)
-          end
-        end
-      end 
-    end
-  end
-  
-  task :fix_img_filenames => :environment do
-    require 'helpers/image_helper.rb'
-    require 'fileutils'
-    include ImageHelper
-    $imgfolder = 'printers'
-    Printer.all.each do |p|
-      ['s','m','l'].each do |sz|
-        attrname = "image#{sz}url"
-        url = p[attrname]
-        if url and url.match(/images\//) and !url.match(/http/)
-          newfile = filename_from_id(p.id,sz)
-          oldfile = url.gsub(/images/, 'public/system')
-          newurl = newfile.gsub(/public\/system/, 'images')
-          if url and newurl and url != newurl and File.exist?(oldfile)
-            FileUtils.mv(".#{oldfile}", newfile)
-            p.update_attribute(attrname, newurl)
-            puts "#{oldfile} --> #{newfile}"
-          end
-        elsif url and url.match(/http/)
-          p.update_attribute(attrname, nil)
-        end
-      end 
-    end
-  end
-  
-  task :fix_cam_ros => :environment do
-    cro = RetailerOffering.find_all_by_product_type('Camera')
-    cro_no_m = cro.reject{|x| !x.merchant.nil?}
-    cro_no_m.each do |ro|
-      merchant = case ro.retailer_id
-                 when 1 then "ATVPDKIKX0DER"
-                 when 8 then "A3DWYIK6Y9EEQB"
-                 else nil
-                 end
-      if(ro.merchant.nil?)
-        ro.update_attribute('merchant', merchant)
-      end
-    end
-  end
-  
- task :move_data => :environment do
-    puts 'Moving data from Cams to Scraped Cams'
-    require 'helper_libs'
-    include DataLib
-    Camera.all.each do |cam|
-      atts = cam.attributes
-      atts['local_id'] = atts['asin']
-      atts['product_id'] = cam.id
-      create_product_from_atts(atts, ScrapedCamera)
-    end
-    puts 'Done'
-  end
-  task :move_data_2 => :environment do
-    puts 'Moving data'
-    require 'helper_libs'
-    include DataLib
-    Review.all.each do |rvu|
-      fill_in('local_id',rvu.asin,rvu) if rvu.asin
-    end
-    puts 'Done'
-  end
-  
-  task :move_resmax => :environment do
-      puts 'Moving data from maxres to resmax in Cams'
-      require 'helper_libs'
-      include DataLib
-      Camera.all.each do |cam|
-        val = cam.maximumresolution
-        cam.update_attribute('resolutionmax', val)
-      end
-      puts 'Done'
-   end
-   
-   task :move_localid => :environment do
-     puts 'Moving local_id from SC to RO'
-     require 'helper_libs'
-     include DataLib
-     ScrapedCamera.all.each do |sc|
-       ros = RetailerOffering.find_all_by_product_type_and_product_id('Camera',sc.product_id)
-       val = sc.local_id
-       ros.each do |ro|
-         ro.update_attribute('local_id', val)
+    fixme.each do |ptr|   
+        x = ptr
+        next if !x.model.nil? and !x.mpn.nil? and\
+         (likely_model_name(x.model) >= 2 ) and (likely_model_name(x.mpn) >= 2) 
+        next if (x.mpn.nil? and likely_model_name(x.model) >= 3 ) 
+        next if (x.model.nil? and likely_model_name(x.mpn) >= 3 )
+      
+        #newbrands << clean_brand("#{ptr.title} #{ptr.model}", @@brands) || ''
+        modelsb4 = no_blanks([ptr.model, ptr.mpn]).uniq
+        modelsafter = no_blanks(
+                  clean_models(
+                    @@model.name, ptr.brand, modelsb4, ptr.title,@@brands, @@series, @@descriptors
+                  )
+                ).uniq.reject{|x| 
+          (x.nil? or x == '' or likely_model_name(x) < 2)
+          }.sort{|a,b| 
+            likely_model_name(b) <=> likely_model_name(a)}
+       #puts "TITLE: #{ptr.title}"
+       #puts "BEFORE: #{modelsb4 * ', '}"
+       #puts "AFTER: #{modelsafter * ', '} ... RATINGS: #{modelsafter.collect{|x| likely_model_name(x)} * ', '}"
+       #debugger if counter > (numToSkip-1)
+       unless modelsafter.length == 0
+         fill_in_forced 'model', modelsafter[0], ptr
+         fill_in_forced 'mpn', modelsafter[1], ptr
        end
-     end
-     puts "Done"
+       counter += 1
+       puts "#{counter} successful"
+    end
   end
+  
 end

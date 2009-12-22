@@ -26,6 +26,35 @@ task :validate_printers => :environment do
   
   @logfile.close
 end
+desc 'Find duplicates'
+task :find_duplicate_printers => :environment do
+  
+  require 'database_helper'
+  include DatabaseHelper
+  
+  @logfile = File.open("./log/duplicates.log", 'w+')
+  duplicate_sets = []
+  
+  Printer.all.each do |p|
+    matches = match_product_to_product p, Printer
+    
+    
+    if matches.reject{|x| x.id == p.id}.length > 0
+      duplicate_sets << matches.collect{|x| x.id}
+      matches.reject{|x| x.id == p.id}.each do |other|
+        @logfile.puts "Duplicate for #{p.id}(#{p.model} #{p.brand}): #{other.id} (#{other.model} #{other.brand})"
+      end
+    end
+  end
+  
+  @logfile.puts "Lists of duplicates:"
+  @logfile.puts duplicate_sets.uniq.collect{|x| x * ', '}
+  
+  puts "Lists of duplicates:"
+  puts duplicate_sets.uniq.collect{|x| x * ', '}
+  
+  @logfile.close
+end
 
 
 desc "Calculate factors for all features of all products"
