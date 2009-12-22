@@ -72,11 +72,6 @@ div.navigator_box {
 	width:224px;
 	margin-right:-1px;
 }
-
-.nbgroup, .product_box, .nbsingle {
-	cursor: move;
-}
-
 .topbar {
 	height: 174px;
 }
@@ -110,7 +105,7 @@ div.navigator_box {
 /*	border:1px solid #D0D0D0; */
 }
 img.productimg {
-	cursor: pointer;
+	cursor: move;
 }
 .productinfo {
 /*	position: absolute;
@@ -136,6 +131,7 @@ img.productimg {
 .sim a {
 	font-size: 1.1em;
 	padding: 4px;
+	color: black;
 }
 .sim a img {
 	vertical-align: middle;

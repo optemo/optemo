@@ -268,12 +268,12 @@ function DBinit(context) {
 	if (IS_DRAG_DROP_ENABLED)
 	{
 		// Make item boxes draggable. This is a jquery UI builtin.		
-		$(".navigator_box").each(function() {
+		$(".image_boundingbox").each(function() {
 			$(this).draggable({ 
 				revert:true, 
 				cursor:"move", 
 				// The following defines the drag distance before a "drag" event is actually initiated. Helps for people who click while the mouse is slightly moving.
-				distance:5,
+				distance:0,
 				helper: 'clone',
 				zIndex: 1000,
 				start: function(e, ui) { 
@@ -298,7 +298,7 @@ function DBinit(context) {
 			$(this).droppable({ 
 				hoverClass: 'drop-box-hover',
 				activeClass: 'ui-state-dragging', 
-				accept: ".navigator_box",
+				accept: ".image_boundingbox",
 				drop: function (e, ui) {
 					imgObj = $(ui.helper).find('.productimg')
 					saveProductForComparison(imgObj.attr('data-id'), imgObj.attr('src'), imgObj.attr('alt'));
@@ -736,11 +736,13 @@ $(document).ready(function() {
 	if (browserIsIE.indexOf("MSIE6") != -1)
 	{
 		// Make the PNG background transparent in IE6.
-		$('.navigator_box').supersleight();       
+		// This is not working right now. Need to launch without it.
+//		$('.navigator_box').supersleight();
+//		$('.sim').superslight();       
 	}
 	if (browserIsIE.indexOf("MSIE") != -1)
 	{
-		$('.draghand').each(function() {
+		$('.dragHand').each(function() {
 			$(this).fadeTo("fast", 0.35);
 		});
 	}
