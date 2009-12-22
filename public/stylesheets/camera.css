@@ -122,10 +122,11 @@ img.productimg {
 	height: 18px;
 }
 .sim {
-	height: 18px;
+	height: 35px;
 	text-align: left;
 	margin-left:10px;
 	margin: 6px 3px;
+	width:170px;
 /*	background: #73d645; */
 }
 .sim a {
