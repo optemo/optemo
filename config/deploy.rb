@@ -1,2 +1,2 @@
-set :stages, %w(staging production jaguar)
+set :stages, %w(staging production crawler)
 require 'capistrano/ext/multistage'

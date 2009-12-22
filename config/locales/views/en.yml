@@ -5,10 +5,11 @@ en:
             browsings:      "Browsing {{count}} Printers"    # e.g. Browsing 146 Cameras
             browsing:       "Browsing 1 Printer"   
             search:         "Search"
-            saved:          "Compare Items"
+            saved:          "Save And Compare"
             alreadyadded:   "You already added that product!"
             toomanysaved:   "You can save only up to 4 products at a time"
-            savesome:       "Select two or more items for comparison"
+            savesome:       "Select two or more items to compare specs"
+            savesomedrag:   "Drag and drop to save or compare products"
             filters:        "Filters"
             powered:        "powered by"
             loading:        "Loading"

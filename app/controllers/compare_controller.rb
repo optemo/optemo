@@ -2,17 +2,16 @@ class CompareController < ApplicationController
 # Compares products selected for comparison ('saved' products)
   
   layout false
-  # GET /saveds
-  # GET /saveds.xml
     
   def index
 
     @session = @@session
     @products = []
     @bestvalue = {}
-    @saveds = Saved.find_all_by_session_id(session[:user_id])
-    @saveds.collect do |saved|
-      prod = $model.find(saved.product_id)
+    # These IDs come straight from id=#savedproducts on the client side (comma-separated)
+    @saved_ids = params[:id].split(",")
+    @saved_ids.each do |saved_id|
+      prod = $model.find(saved_id)
       @products << prod
     end
     # Calculate best value for each feature, to display as bold

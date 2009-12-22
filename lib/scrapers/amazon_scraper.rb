@@ -99,7 +99,7 @@ module AmazonScraper
   
   # Scrape product specs from feed
   def scrape_specs local_id
-    res = Amazon::Ecs.item_lookup(local_id, :response_group => 'ItemAttributes,Images,Reviews', :review_page => 1)
+    res = Amazon::Ecs.item_lookup(local_id, :response_group => 'ItemAttributes,Images', :review_page => 1)
     be_nice_to_amazon
     
     nokodoc = Nokogiri::HTML(res.doc.to_html)
@@ -113,18 +113,10 @@ module AmazonScraper
       }
       item.css('itemattributes/itemdimensions/*').each do |dim|
         atts["item#{dim.name}"] = dim.text.to_i
-        #atts["item#{dim.name}"] = atts["item#{dim.name}"]/100.0 if dim.name.match(/weight/)
-        #atts['itemdimensions'] = nil
       end
       
       temp = get_el item.css('largeimage/url')
       atts['imageurl'] = temp.content if temp
-      
-      # REVIEWS
-      #debugger # TODO check review stuff
-      #atts["averagereviewrating"] = result.get('averagerating')
-      #atts['totalreviews'] = result.get('totalreviews').to_i
-      
       
       (atts['specialfeatures'] || '').split('|').each do |x| 
         pair = x.split('^')
@@ -135,22 +127,6 @@ module AmazonScraper
         val += "#{CleaningHelper.sep} #{atts[name]}" if atts[name]
         atts.merge!(name => val)
       end      
-      
-      
-      # TODO make sure ALL possible data is being scraped
-      # firstpageoutputtime, standardpaperinput, resolution
-      
-     #begin
-     #  res = Amazon::Ecs.item_lookup(local_id, :response_group => 'Images')
-     #  be_nice_to_amazon
-     #   nokodoc = Nokogiri::HTML(res.doc.to_html)
-     #    item = nokodoc.css('item').first
-     #    if item
-     #      atts['imageurl'] = item.css('LargeImage/URL').first.content
-     #    end
-     #rescue Exception => exc
-     #  report_error "#{exc.message} . Could not look up offers for #{asin} in region #{region}"
-     #end
       
       return atts
     end

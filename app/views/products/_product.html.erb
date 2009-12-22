@@ -3,7 +3,7 @@
 <% end %>
 <%= image_tag product.imagesurl, :width => product.imagesw, :height => product.imagesh, :class => "productimg", :"data-id" => product.id %>
 <div class="smalldesc"><%= link_to product.tinyTitle, "#", :class => "easylink", :"data-id" => product.id %></div>
-<%= link_to image_tag('close.png'), "javascript:remove(#{product.id})", :"data-name" => product.id, :class => 'deleteX' if local_assigns[:nox].nil?%>
+<%= link_to image_tag('close.png'), "#", :"data-name" => product.id, :class => 'deleteX' if local_assigns[:nox].nil?%>
 <% if @ajax != "true" %>
 	</div>
 <% end %>

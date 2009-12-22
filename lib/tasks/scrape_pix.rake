@@ -1,13 +1,13 @@
 namespace :pictures do
   
   desc 'Fixes broken links and gets latest picture sizes for all printer pix'
-  task :update_printer_pic_stats => [:printer_init, :update_pic_stats]
+  task :update_printer_stats => [:printer_init, :update_pic_stats]
   
   desc 'Get all the missing pictures for Printers'
-  task :update_printer_pix => [:printer_init, :dl_missing_pix, :resize_missing, :update_pic_stats, :close_log]
+  task :update_printers => [:printer_init, :dl_missing_pix, :resize_missing, :update_pic_stats, :close_log]
   
   desc 'Re-download all pictures for Printers'
-  task :scrape_printer_pix => [:printer_init, :dl_pix, :resize_all, :close_log]
+  task :scrape_printers => [:printer_init, :dl_pix, :resize_all, :close_log]
   
   task :temp => :printer_init do
     puts "Recording pic stats"
@@ -48,7 +48,6 @@ namespace :pictures do
       if temp_url
         urls[product.id] = temp_url
       else
-        #TODO log
         failed << product.id
       end 
     end  

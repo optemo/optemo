@@ -5,7 +5,7 @@ module ProductsHelper
   
   def sim_link(cluster,i, itemId)
     unless cluster.children(@session).nil? || cluster.children(@session).empty? || (cluster.size(@session)==1)
-      "<div class='sim'>" +
+      "<div class='sim rounded'>" +
         link_to("#{cluster.size(@session)-1} More Product#{"s" if cluster.size(@session) > 2} In This Group", 
         "/#{$model.urlname}/compare/"+cluster.children(@session).map{|c|c.id}.join('-'), 
         :id => "sim#{i}", :class => 'simlinks', :name => itemId) +

@@ -2,7 +2,9 @@
 javascripts: 
 - base: 
   - raphael
+  - helpers
   - application
+  - supersleight.plugin
   - jquery.tablednd_0_5
   - facebooksessionops
 stylesheets: 

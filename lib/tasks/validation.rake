@@ -2,12 +2,11 @@ namespace :check do
   
   task :cameras => [:cam_init, :products] 
   
-  task :products do
-    include ValidationHelper
-    
-    @logfile = File.open("./log/#{just_alphanumeric($model.name)}_validation.log", 'w+')
+  task :products do    
+    @logfile = File.open("./log/check_#{$model.name}.log", 'w+')
     timed_log 'Start general product validation'
-    my_products = $model.instock
+    #my_products = $model.instock | $model.instock_ca
+    my_products = $model.all
     
     announce "Testing #{my_products.count} #{$model.name} for validity..."
     
@@ -16,13 +15,18 @@ namespace :check do
     end
     
     assert_no_repeats my_products, $id_field
+    
+    announce "Out of #{$model.count} #{$model.name}s... "
+    announce " ... #{$model.valid.count} are valid"
+    announce " ... #{($model.instock | $model.instock_ca).count} are in stock (in CA or US)"
+    announce " ... #{($model.valid.instock | $model.valid.instock_ca).count} are valid and in stock"
     timed_log 'Done general product validation'
     @logfile.close
   end
   
   task :offerings do    
     my_offerings = RetailerOffering.find_all_by_product_type_and_stock($model.name, true)
-    @logfile = File.open("./log/#{just_alphanumeric($model.name)}_offerings_validation.log", 'w+')
+    @logfile = File.open("./log/check_#{$model.name}_offerings.log", 'w+')
     timed_log "Start retailer offerings validation for #{$model.name}"
     announce "Testing #{my_offerings.count} RetailerOfferings for validity..."
     
@@ -36,25 +40,25 @@ namespace :check do
     end
    
     assert_within_range my_offerings, 'priceint', min_price, max_price
+    @logfile.close
   end
   
   desc "Check that scraped data isn't wonky"
-  task :printers => [:printer_init, :products] do
-    include ValidationHelper
+  task :printers => [:printer_init, :products, :offerings] do
     
-    @logfile = File.open("./log/#{just_alphanumeric($model.name)}_validation.log", 'a+')
+    @logfile = File.open("./log/check_#{$model.name}.log", 'a+')
     timed_log 'Start printer-specific validation'
-    my_products = $model.instock
+    my_products = $model.instock | $model.instock_ca
     
-    announce "Testing #{my_products.count} #{$model.name} for validity..."
+    announce "Testing #{my_products.count} #{$model.name}s for validity..."
     
-    assert_within_range my_products, 'itemheight', 100, 10000
-    assert_within_range my_products, 'itemlength', 100, 7000
-    assert_within_range my_products, 'itemwidth', 100, 7000
-    assert_within_range my_products, 'ppm', 2, 50
-    assert_within_range my_products, 'paperinput', 20,2000
-    assert_within_range my_products, 'ttp', 7,40
-    assert_within_range my_products, 'resolutionmax', 600, 4800
+    assert_within_range( my_products, 'itemheight', 100, 10000)
+    assert_within_range( my_products, 'itemlength', 100, 7000 )
+    assert_within_range( my_products, 'itemwidth', 100, 7000)
+    assert_within_range( my_products, 'ppm', 2, 50)
+    assert_within_range( my_products, 'paperinput', 20,2000)
+    assert_within_range( my_products, 'ttp', 7,40)
+    assert_within_range( my_products, 'resolutionmax', 600, 9600)
     
     
     @logfile.close
@@ -63,17 +67,16 @@ namespace :check do
   task :printer_pictures => [:printer_init, :pictures]
 
   task :pictures do
-    require 'validators/general_validator.rb'
-    include GeneralValidator
-    
     require 'helpers/image_helper.rb'
     include ImageHelper
+    
+    checkme = $model.instock | $model.instock_ca
     
     nopix = 0
     noresized = 0
     brokenurls = 0
     nodims = 0
-    $model.all.each do |record|
+    checkme.each do |record|
       unless pic_exists(record)
         nopix += 1
       end
@@ -87,15 +90,14 @@ namespace :check do
         brokenurls += 1
       end
     end
-    puts "#{nopix} of #{$model.count} #{$model.name}s do not have a picture"
-    puts "#{noresized} of #{$model.count} #{$model.name}s do not have resized pix"
-    puts "#{nodims} of #{$model.count} #{$model.name}s do not have picture dimensions"
-    puts "#{brokenurls} of #{$model.count} #{$model.name}s have broken urls"
+    puts "#{nopix} of #{checkme.count} #{$model.name}s do not have a picture"
+    puts "#{noresized} of #{checkme.count} #{$model.name}s do not have resized pix"
+    puts "#{nodims} of #{checkme.count} #{$model.name}s do not have picture dimensions"
+    puts "#{brokenurls} of #{checkme.count} #{$model.name}s have broken urls"
   end
   
-
   task :printer_init => :init do
-
+      include PrinterValidationLib
       $model = Printer
       $scrapedmodel = ScrapedPrinter
       $id_field = 'id'
@@ -108,21 +110,22 @@ namespace :check do
       
   end
   
-
   task :cam_init => :init do
+      include CameraValidationLib
+    
       $model = Camera
       $scrapedmodel = ScrapedCamera
       $id_field = 'id'
       $product_series = []
       $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'opticalzoom', 'resolutionmax', \
-        'displaysize', 'slr', 'waterproof', 'brand', 'model', 'itemweight']
+        'displaysize', 'brand', 'model', 'itemweight'] # 'slr', 'waterproof', 
       $reqd_offering_fields = ['priceint', 'pricestr', 'stock', 'condition', 'priceUpdate', 'toolow', \
          'local_id', "product_type", "region", "retailer_id"]
   end
   
   task :init => :environment do 
-    
-    # TODO
+    require 'validator_lib'
+    include GeneralValidationLib
   end    
   
 end
