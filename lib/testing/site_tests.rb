@@ -33,7 +33,6 @@ module PrinterTest
    else
      assert_not_error_page
      assert_well_formed_page
-     assert_saveds_same
      assert_brands_same
      assert_clear_search_links_same
 
@@ -168,10 +167,8 @@ module PrinterTest
    # TODO more asserts?
     assert_not_error_page
     assert_well_formed_page
- 
     assert_search_history_clear
     assert_brands_same
-    assert_saveds_same
     assert_session_id_same
   end
   log "Done testing clear search history."

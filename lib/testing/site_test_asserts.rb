@@ -134,30 +134,6 @@ module PrinterTestAsserts
     end
   end
   
-  def assert_item_saved pid
-    report_error "Product with id #{pid} has'nt been saved." unless @sesh.was_saved? pid
-  end
-  
-  def assert_item_not_saved pid
-    report_error "Product with id #{pid} is in saved list." if @sesh.was_saved? pid
-  end
-  
-  def assert_saveds_incremented
-   if @sesh.num_saved_items == @num_saved_items_before
-     report_error "Saved item not added" 
-   elsif @sesh.num_saved_items != @num_saved_items_before + 1
-     report_error "Weird number of saved items: was #{@num_saved_items_before}, now " + @sesh.num_saved_items.to_s
-   end
-  end
-  
-  def assert_saveds_same
-    report_error "# of saved items was changed." if @sesh.num_saved_items != @num_saved_items_before
-  end
-  
-  def assert_saveds_clear
-    report_error "Saved products not cleared" if @sesh.num_saved_items != 0 
-  end
-  
   def assert_browsing_all_products i=0
     if @sesh.total_products[i] != @sesh.num_products
       report_error "Not all products displayed: should be #{@sesh.total_products[i]}, is #{@sesh.num_products}" 

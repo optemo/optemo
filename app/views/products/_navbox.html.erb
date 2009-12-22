@@ -5,10 +5,17 @@
 		</div>
 		<% unless cluster.representative(@session,@s.searchpids).imagemurl.blank? %>
 
-			<%= image_tag(cluster.representative(@session,@s.searchpids).imagemurl, :width => cluster.representative(@session,@s.searchpids).imagemw, :height => cluster.representative(@session,@s.searchpids).imagemh, :"data-id" => cluster.representative(@session,@s.searchpids).id, :class => "productimg", :alt => cluster.representative(@session,@s.searchpids).smlTitle, :"data-id" => cluster.representative(@session,@s.searchpids).id) %>
+		<% if $DragAndDropEnabled == true %>
+			<div class='image_boundingbox'>
+				<%= image_tag('hand_and_arrow.gif', :class => 'dragHand', :title => 'Click for product info. Drag to compare with other products.') %>
+		<% end %>
+				<%= image_tag(cluster.representative(@session,@s.searchpids).imagemurl, :width => cluster.representative(@session,@s.searchpids).imagemw, :height => cluster.representative(@session,@s.searchpids).imagemh, :"data-id" => cluster.representative(@session,@s.searchpids).id, :class => "productimg", :alt => cluster.representative(@session,@s.searchpids).smlTitle, :"data-id" => cluster.representative(@session,@s.searchpids).id, :"title" => 'Click for product info. Drag to compare with other products.') %>
+		<% if $DragAndDropEnabled == true %>		
+			</div>
+		<% end %>
 		<%end%>
-		<div class="product">
-			<a href="<%=cluster.representative(@session,@s.searchpids).descurl%>" data-id="<%=cluster.representative(@session,@s.searchpids).id%>" class="easylink">
+		<div class="productinfo">
+			<a href="<%=cluster.representative(@session,@s.searchpids).descurl%>" data-id="<%=cluster.representative(@session,@s.searchpids).id%>" class="easylink" title="Click for product specifications">
 		<%= cluster.representative(@session,@s.searchpids).smlTitle %></a>
 		
 		<div class="price">
@@ -19,14 +26,17 @@
 
 	<div class='bottombar'>
 		<% if group %>
-    		<div class='sim'>
+    		<div class='sim rounded'>
     	  <%= link_to(image_tag('plus.png')+t("products.compare.similar",:count => cluster.size(@session,@s.searchpids) - 1), 
     	  "/#{$model.urlname}/sim/"+cluster.id.to_s, 
- 		  :id => "sim#{i}", :class => 'simlinks', :"data-id" => "#{cluster.representative(@session,@s.searchpids).id}") %>
+ 		  :id => "sim#{i}", :class => 'simlinks rounded', :"data-id" => "#{cluster.representative(@session,@s.searchpids).id}", :"title" => "Browse through all " + cluster.size(@session,@s.searchpids).to_s + " in this group") %>
     		</div>
 		<% else %>
-			<div class='compare'><%= link_to image_tag("compare#{fr?}.gif"), "javascript:saveProductForComparison(#{cluster.representative(@session,@s.searchpids).id});", {:class => 'save', :itemId => "#{cluster.representative(@session,@s.searchpids).id}" } %>
-			</div>
+		&nbsp;
+			<%#-- <div class='compare'><%= link_to image_tag("compare#{fr?}.gif"), "javascript:saveProductForComparison(#{cluster.representative(@session,@s.searchpids).id},\"#{cluster.representative(@session,@s.searchpids).imagemurl}\",\"#{cluster.representative(@session,@s.searchpids).smlTitle}\");", {:class => 'save', :itemId => "#{cluster.representative(@session,@s.searchpids).id}" } 
+			</div> --%>
+				<p>&nbsp;
+					
 		<% end %>
 	</div>
 </div>
