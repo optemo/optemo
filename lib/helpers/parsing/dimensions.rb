@@ -60,6 +60,18 @@ module DimensionsHelper
     return nil 
   end
   
+  def to_pounds parsed
+    return nil if parsed.nil?
+    wt = 0
+    if parsed.length == 3
+      wt = (to_grams(parsed))/453.5  # 453.5 grams = 1 lb
+    elsif parsed.length == 2
+      wt = parsed[0]+(parsed[1]/16)
+    end
+    return wt unless wt == 0
+    return nil 
+  end
+  
   # Converts metric weight array([kg,g,mg]) to grams
   def to_grams wt
     return nil if wt.nil? or wt.length ==2
@@ -67,23 +79,28 @@ module DimensionsHelper
   end
   
   def clean_dimensions dimensions_array, factor=100
-    dimensions_data = dimensions_array.collect{|x| 
-      x.gsub(/''/, '\"').gsub(/\(.*?\)/,'')}.reject{|x| 
+    dimensions_data = dimensions_array.collect{ |x| 
+      x.gsub(/''/, '\"').gsub(/\(.*?\)/,'')
+    }.reject{|x| 
       x.split('x').length < 3
     }.uniq
     atts = {}
     dimensions_data.each do |dims|  
       dims.split('x').each do |dim| 
-        atts['itemlength'] = get_f(dim)*factor if dim.include? 'D' and !atts['itemlength']
-        atts['itemwidth'] =  get_f(dim)*factor if dim.include? 'W' and !atts['itemwidth']
-        atts['itemheight'] = get_f(dim)*factor if dim.include? 'H' and !atts['itemheight']
+        atts['itemwidth'] =  get_f(dim) if dim.include? 'W' and !atts['itemwidth']
+        atts['itemheight'] = get_f(dim) if dim.include? 'H' and !atts['itemheight']
+        atts['itemlength'] = get_f(dim) if dim.include? 'D' and !atts['itemlength']
       end
       if [atts['itemlength'], atts['itemwidth'], atts['itemheight']].uniq == [nil]
         dim_array = dims.split('x')
-        atts['itemwidth'] =  dim_array[0].to_f*factor
-        atts['itemheight'] = dim_array[1].to_f*factor
-        atts['itemlength'] = dim_array[2].to_f*factor
+        atts['itemwidth'] =  get_f(dim_array[0])
+        atts['itemheight'] = get_f(dim_array[1])
+        atts['itemlength'] = get_f(dim_array[2])
+      end
+      atts.keys.each do |k|
+        atts[k] = atts[k]*factor
       end
       return atts
+    end
   end
 end

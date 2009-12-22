@@ -13,7 +13,7 @@ module PricesCleaner
   end
   
   # Figures out all the price attributes
-  def clean_prices atts
+  def clean_prices! atts
     s_price_f = get_f((atts['salepricestr'] || atts['saleprice'] || '').strip.gsub(/\*/,'')) 
     l_price_f = get_f((atts['listpricestr'] || atts['listprice'] || '').strip.gsub(/\*/,'')) 
     atts['listpriceint'] = atts['listprice'] = get_price_i( l_price_f) if l_price_f

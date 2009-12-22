@@ -46,18 +46,22 @@ module TigerScraper
     atts['condition'] = "OEM" if (atts['title']||'').match(/oem/i) 
 
     atts['product_type'] = $model.name
-
+    
+    # No other info available for weight...
+    atts['itemweight'] = to_pounds(parse_weight(atts['shippingweight']))
+    
     atts = clean_property_names atts
+    
+    # Dimensions
+    temp = no_blanks([atts['dimensions'], "#{atts['itemwidth']} x #{atts['itemheight']} x #{atts['itemlength']}" ])  
+    mergeme = clean_dimensions(temp,100)
+    mergeme.each{ |key, val| atts[key] = val}
     clean_atts = generic_printer_cleaning_code(atts)
-
     
     atts['resolutionmax'] = get_max_f atts['resolution'] if atts['resolutionmax'].nil? and atts['resolution']
-
-    temp = clean_brand(clean_atts['brand'], $printer_brands)
-    clean_atts['brand'] = temp if temp
-    clean_atts['model'] = clean_printer_model(clean_atts['model'], clean_atts['brand'])
     
     clean_atts['condition'] ||= 'New' # Default is new
+    clean_prices!(clean_atts)
     return clean_atts
   end
   
@@ -75,6 +79,7 @@ module TigerScraper
       props.merge! scrape_prices info_page 
       props.merge! scrape_availty info_page
     end
+    props = clean(props)
     return props
   end
   

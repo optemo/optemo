@@ -31,7 +31,8 @@ module BooleanHelper
   # Cleans a list of Boolean values to be either true or false 
   def clean_bool dirty_vals
     vals = []
-    (dirty_vals || '').split(@@sep).each { |dirty_val| 
+    array = separate(dirty_vals)
+    array.each { |dirty_val| 
       val = get_b(dirty_val)
       #if val.nil? and (!dirty_val.nil? and dirty_val.strip!='')
       #  val = dirty_val.match(/(not applicable|n\/a|not available)/i).nil?

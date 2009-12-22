@@ -61,14 +61,12 @@ module NeweggScraper
     (atts['blackprintquality'] or "").gsub!(/ dpi/,'') 
     (atts['mediasizessupported'] or "").gsub!('~','to')
     
-    cleanatts = generic_printer_cleaning_code atts
-    temp = clean_brand cleanatts['brand'], $printer_brands
-    cleanatts['brand'] = temp if temp
+    # Dimensions
+    temp = no_blanks([clean_atts['dimensions'], "#{atts['itemwidth']} x #{atts['itemheight']} x #{atts['itemlength']}" ])  
+    mergeme = clean_dimensions(temp,100)
+    mergeme.each{ |key, val| atts[key] = val}
     
-    # Is the model in atts['series']?
-    temp = model_series_variations((atts['series'] ||'').gsub(/series/i,''), $printer_series)
-    temp_best = most_likely_model(temp, atts['brand'])
-    atts['mpn'] = temp_best if temp_best and likely_model_name(temp_best) > 2
+    cleanatts = generic_printer_cleaning_code atts
     
     # For the offering
     cleanatts['toolow'] = false if cleanatts['toolow'].nil?
@@ -79,8 +77,6 @@ module NeweggScraper
     if cleanatts['condition'] == 'New' and cleanatts['local_id'].match(/R$/)
       cleanatts['condition'] = 'Refurbished' 
     end
-    
-    #debugger if cleanatts['ppm'].nil?
     
     return cleanatts
   end

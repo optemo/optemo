@@ -56,6 +56,11 @@ module AmazonScraper
     atts = clean_cartridge(atts) if $model == Cartridge
     atts = clean_camera(atts) if $model == Camera
     
+    # Dimensions are in 100ths of inches already
+    temp = no_blanks([clean_atts['dimensions'], "#{atts['itemwidth']} x #{atts['itemheight']} x #{atts['itemlength']}" ])  
+    mergeme = clean_dimensions(temp,1)
+    mergeme.each{ |key, val| atts[key] = val}
+    
     if (atts['toolow'] || '').to_s  == 'true' and atts['listprice'] and atts['listprice'] != ""
       atts['stock']    = true
       atts['pricestr'] = "Less than #{atts['pricestr']}"
@@ -72,14 +77,9 @@ module AmazonScraper
       0
     end
     
-    atts['resolutionmax'] ||= maxres_from_res(atts['resolution']) if atts['resolution']
+    atts['resolutionmax'] ||= get_max_f(atts['resolution']) if atts['resolution']
     
     return atts
-  end
-  
-  # Re-scrape everything needed to update an offering
-  def rescrape_prices local_id, region
-    return scrape_offer local_id, region
   end
   
   # Scrape product specs and offering info (prices,
@@ -87,7 +87,7 @@ module AmazonScraper
   def scrape local_id, region
     log ("Scraping ASIN #{local_id} from #{region}" )
     specs = scrape_specs local_id
-    prices = scrape_offer local_id, region
+    prices = rescrape_prices local_id, region
     atts = specs.merge(prices)
     atts['local_id'] = local_id
     atts['region'] = region
@@ -208,7 +208,7 @@ module AmazonScraper
   # Gets a hash of attributes for the
   # best-priced offer for a given
   # asin in the given region
-  def scrape_offer asin, region
+  def rescrape_prices asin, region
     offer_atts = {}
     best = scrape_best_offer(asin, region)
     
@@ -374,7 +374,7 @@ module AmazonScraper
           atts['paperinput'] ||= temp_paperin
         elsif temp_res
           temp_res_2 = parse_dpi(x)
-         # temp_resmax =  maxres_from_res(temp_res_2)
+         # temp_resmax =  get_max_f(temp_res_2)
           #debugger
           atts['resolution'] ||= temp_res_2
          #atts['resolutionmax'] ||= temp_resmax
@@ -382,8 +382,6 @@ module AmazonScraper
     end
     semi_cleaned_atts = clean_property_names(atts) 
     semi_cleaned_atts['displaysize'] = nil # TODO it's just a weird value
-    #prices = ['listprice', 'listpriceint', 'listpricestr', 'saleprice', 'salepriceint', 'salepricestr',  'price', 'pricestr', 'priceint'].collect{|x|
-    #  (semi_cleaned_atts[x] || '').split(/#{@@sep}/)}.flatten.reject{|x| !x.match(/\./)}
     cleaned_atts = generic_printer_cleaning_code semi_cleaned_atts
     temp1 = clean_brand atts['title'], $printer_brands
     temp2 = clean_brand atts['brand'], $printer_brands
@@ -418,7 +416,7 @@ module AmazonScraper
   def clean_camera atts
     semi_cleaned_atts = clean_property_names(atts) 
     cleaned_atts = product_cleaner(semi_cleaned_atts)
-    cleaned_atts['resolutionmax'] = maxres_from_res(cleaned_atts['resolution'] || '')
+    cleaned_atts['resolutionmax'] = get_max_f(cleaned_atts['resolution'] || '')
     remove_sep!(cleaned_atts)
     return cleaned_atts
   end

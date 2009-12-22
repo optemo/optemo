@@ -4,37 +4,32 @@ module PrinterHelper
   # attribute hash given that it relates to
   # printers. 
   def generic_printer_cleaning_code atts
-    atts = (product_cleaner)
+    atts = (product_cleaner atts)
     temp = atts.keys
     temp.each{|k| atts[k] = atts[k].to_s}
     
-    atts.each{|x,y| atts[x] = y.split("#{@@sep}").uniq.reject{|x| x.nil?}.join("#{@@sep}") if y.type==String} 
+    clean_sep_fields!(atts)
     
     ['ppm', 'ppmcolor'].each do |maxfield|
       temp = get_max_f(atts[maxfield])
       atts[maxfield] = temp
     end
-    atts['ppm'] = [atts['ppm'], atts['ppmcolor']].max
+    atts['ppm'] = no_blanks([atts['ppm'], atts['ppmcolor']]).max
     
     ['ttp'].each do |minfield|
       temp = get_min_f(atts[minfield])
       atts[minfield] = temp
     end
     
-    # Dimensions
-    temp = atts['dimensions']    
-    # TODO
-    
-        
     atts['paperinput'] = (atts['paperinput'] || '').scan(/(?-mix:\d*,?\d+\s?-?)(?i-mx:sheets?)|(?i-mx:pages?)/).collect{|x| 
       get_max_f x}.reject{|x| x.nil?}.max
     
     # Resolution
     temp1 = (atts['resolution'] || '').scan(/\d*,?\d+\s?x\s?\d*,?\d+/i).uniq
     temp2 =  (atts['resolution'] || '').scan(/\d*,?\d+\s?(dpi|fine\s?point)/i).uniq.reject{|x| x.nil?}.collect{|x| get_f(x.to_s)}
-    atts['resolutionmax'] = maxres_from_res((temp1 | temp2).join(' '))
+    atts['resolutionmax'] = get_max_f((temp1 | temp2).join(' '))
     
-    atts['condition'] = clean_condition( atts['condition'], $conditions )
+    atts['condition'] = clean_condition(atts['title'], atts['condition'], $conditions )
             
     # Booleans
     
@@ -61,9 +56,7 @@ module PrinterHelper
     return atts
   end
   
-  def clean_warranty atts
-     atts = clean_prices(atts)
-  
+  def clean_warranty atts  
      if atts['parts'] or atts['labor']
        atts['warranty'] =  multiple_fields_to_one([atts['parts'], atts['labor']], true)
        atts['warranty'] = (atts['warranty'] || '') + " #{temp}"

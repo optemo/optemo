@@ -8,14 +8,14 @@ module NumbersCleaner
     
   # Returns the first integer in the string, or null
   def get_i str
-    return nil if str.nil? or str.empty?
+    return nil unless has_num(str)
     return str.strip.match(/(\d+,)?\d+/).to_s.gsub(/,/,'').to_i
   end
   
   # Returns the first float in the string, or null
   # Eliminates thousand-separating commas
   def get_f str
-    return nil if str.nil? or str.empty?
+    return nil unless has_num(str)
     myfloat =  str.strip.match(/(\d+,)?\d+(\.\d+)?/).to_s.gsub(/,/,'').to_f
     return nil if myfloat == 0 
     return myfloat
@@ -24,7 +24,7 @@ module NumbersCleaner
   
   # Gets the max float from a string
   def get_max_f str
-    return nil if str.nil?
+    return nil unless has_num(str)
     strsplit = str.split(/[\s-]/).collect{|x| get_f x}.delete_if{|x| x.nil?}.sort
     myfloat =  strsplit.last if strsplit
     return myfloat
@@ -33,7 +33,7 @@ module NumbersCleaner
   
   # Gets the min float from a string
   def get_min_f str
-    return nil if str.nil?
+    return nil unless has_num(str)
     strsplit = str.split(/[\s-]/).collect{|x| get_f x}.delete_if{|x| x.nil? or x == 0}.sort
     myfloat =  strsplit.first if strsplit
     return myfloat
@@ -59,6 +59,11 @@ module NumbersCleaner
   def append_regex x, y
     z = x.to_s + y.to_s
     return Regexp.new(z)
+  end
+  
+  def has_num str
+    return true if (str || '').to_s.match(/\d/)
+    return false
   end
   
 end

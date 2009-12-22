@@ -29,9 +29,10 @@ module GenericScraper
     
     all_atts = {}
     atts.each{|x| all_atts[x] = [product.[](x)]} # Current value counts for something too?
+    
     #TODO This should be somewhere else:
     if !all_atts['resolution'].nil? and all_atts['resolutionmax'].nil?
-      all_atts['resolutionmax'] = maxres_from_res(all_atts['resolution']).to_s
+      all_atts['resolutionmax'] = get_max_f(all_atts['resolution']).to_s
     end
     atts.each do |att|
       sps.each do |sp|
@@ -41,6 +42,15 @@ module GenericScraper
     
     avg_atts = {}
     all_atts.each{|att,vals| avg_atts[att] = vote(vals)}
+    
+    # vote on models & mpns
+    vals =  no_blanks(sps.collect{|x| [x.model,x.mpn]}.flatten)
+    debugger
+    uniq_vals = remove_duplicate_models(vals, $series)
+    temp = vote(uniq_vals)
+    uniq_vals_2 = uniq_vals - [temp]
+    avg_atts['model'] = temp
+    avg_atts['mpn'] = vote(uniq_vals_2) if uniq_vals.length > 1      
     
     return avg_atts
   end
@@ -84,16 +94,33 @@ end
 
 namespace :data do
   
+  task :no_cam_dups => [:cam_init, :match_to_products]#
+  
+  task :no_duplicates do    
+    allproducts = $model.all
+    
+    allproducts.each do |prod|    
+      dups =  match_product_to_product(prod, $model, $series)
+      timed_announce "#{dups.length-1} duplicates for #{$model.name} #{prod.id}"
+      if dups.length > 1
+        keep = dups.first
+        lose = dups[1..-1].collect{|x| $model.find(x)}
+        debugger
+        lose.each do |deleteme|
+          unlink_duplicate(keep, deleteme)
+        end
+        debugger 
+        0
+      end
+    end
+  end
+  
   task :amazon_reviews => [:cam_init, :amazon_init, :reviews]
   
   #task :temp => [:cam_init, :amazon_mkt_init, :match_to_products, :update_bestoffers, :vote]
   #task :temp3 => [:cam_init, :amazon_mkt_init, :match_to_products, :update_bestoffers, :match_reviews]
   
-  task :match_reviews do 
-    require 'helper_libs'
-    include DataLib
-    
-    
+  task :match_reviews do    
     allrevus = Review.find_all_by_product_id_and_product_type(nil, $model.name)
     
     allrevus.each do |revu|    
@@ -233,11 +260,11 @@ namespace :data do
     products.each do |p|
       avgs = vote_on_values p
       $bools_assume_no.each{|x| avgs[x] = false if avgs[x].nil?}
+      avgs.each do |k,v|
+        puts "#{k} -- #{v} (now #{p.[](k)}) for #{p.id}" #if [v, p.[](k)].uniq.reject{|x| x.nil?}.length > 1
+      end
       debugger
       fill_in_all avgs, p
-      #avgs.each do |k,v|
-      #  puts "#{k} -- #{v} (now #{p.[](k)}) for #{p.id}" #if [v, p.[](k)].uniq.reject{|x| x.nil?}.length > 1
-      #end
     end
   end
   
@@ -248,9 +275,9 @@ namespace :data do
     debugger
     match_me = $scrapedmodel.all if match_me.nil?
     
-    match_me = match_me.reject{|x| (x.model.nil? and x.mpn.nil?) or x.brand.nil?}
+    match_me.delete_if{|x| (x.model.nil? and x.mpn.nil?) or x.brand.nil?}
     match_me.each_with_index do |scraped, i|
-      matches = match_product_to_product scraped, $model, $product_series
+      matches = match_product_to_product scraped, $model, $series
       debugger
       real = matches.first
       real = create_record_from_atts  scraped.attributes, $model if real.nil? 
@@ -275,21 +302,38 @@ namespace :data do
     @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_scraper.log", 'w+')
     my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id_and_product_type(x.id, $model.name)}
     my_offerings.each_with_index do |offering, i|
-      begin
-        next if offering.local_id.nil? or offering.stock != true
-        newatts = rescrape_prices offering.local_id, offering.region
-        debugger
-        puts "#{offering.local_id}"
+      #begin
+        next if offering.local_id.nil? # or offering.stock != true
+        newatts = rescrape_prices( offering.local_id, offering.region)
+        
+        # <<< debug
+        puts "#{offering.priceint} changing to #{newatts['priceint']}"
+        debugger 
+        # end debug >>>>
+        
         log "[#{Time.now}] Updating #{offering.pricestr} to #{newatts['pricestr']}"
         update_offering newatts, offering if offering
-        debugger
+        
+        #debug
+        debugger if newatts['priceint'] != offering.priceint # uh oh
+        
         update_bestoffer($model.find(offering.product_id)) if offering.product_id
-        debugger 
-        0
-      rescue Exception => e
-        report_error "with RetailerOffering #{offering.id}:" + e.message.to_s + e.type.to_s
-        snore(20*60) # sleep for 20 min 
-      end
+        
+        #<<<< debug
+        temp = $model.find(offering.product_id)
+        if temp.price > (newatts['priceint'] || 0) # uh oh
+          puts "#{temp.price} #{newatts['priceint']}"
+          debugger 
+        end
+        if( temp.price == (newatts['priceint'] || 0) and temp.bestoffer == offering.id )
+          puts "this is the new best offer" 
+        end
+        # end debug>>>>
+          
+      #rescue Exception => e
+      #  report_error "with RetailerOffering #{offering.id}:" + e.message.to_s + e.type.to_s
+      #  snore(20*60) # sleep for 20 min 
+      #end
       puts "[#{Time.now}] Done updating #{i+1} of #{my_offerings.count} offerings"
     end
     
@@ -317,6 +361,7 @@ namespace :data do
   
   # Scrape all data for new products only
   task :scrape_new do
+    
     @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_scraper.log", 'w+')
     $retailers.each do |retailer|
       ids = scrape_all_local_ids retailer.region
@@ -382,8 +427,11 @@ namespace :data do
 
   task :cam_init => :init do
       include CameraHelper
+      include CameraConstants
       
+      # TODO get rid of this construct:
       $model = @@model
+      $scrapedmodel = @@scrapedmodel
       $brands= @@brands
       $series = @@series
       $descriptors = @@descriptors
@@ -398,8 +446,11 @@ namespace :data do
   task :printer_init => :init do
       
       include PrinterHelper
+      include PrinterConstants
       
+      # TODO get rid of this construct:
       $model = @@model
+      $scrapedmodel = @@scrapedmodel
       $brands= @@brands
       $series = @@series
       $descriptors = @@descriptors
@@ -459,18 +510,22 @@ namespace :data do
     $retailers = [Retailer.find(12), Retailer.find(14)]
   end
 
-
-
   task :init => :environment do 
-    include GenericScraper
     config   = Rails::Configuration.new
     database = config.database_configuration[RAILS_ENV]["database"]
     puts "Using database #{database}"
+    
     return if database == 'optemo_bestbuy'
     require 'rubygems'
     require 'nokogiri'
 
     require 'helper_libs'
-    include DataLib
+    
+    include GenericScraper    
+    include ParsingLib
+    include CleaningLib
+    include LoggingLib
+    include DatabaseLib
+    include ScrapingLib
   end
 end

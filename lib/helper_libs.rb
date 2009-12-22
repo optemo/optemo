@@ -26,7 +26,6 @@ require 'helpers/parsing/enums'
 require 'helpers/parsing/idfields'
 require 'helpers/parsing/numbers'
 require 'helpers/parsing/prices'
-require 'helpers/parsing/properties'
 require 'helpers/parsing/strings'
 require 'helpers/parsing/time'
 
@@ -50,16 +49,14 @@ module DatabaseLib
   include ReviewsHelper
 end
 
+# Use with parsing lib
 module CleaningLib
-  
-  
   include AtthashHelper
-  include ParsingLib
-  
+
   include CleaningHelper
   include CameraHelper
   include PrinterHelper
-  include CartridgeHelper
+  #include CartridgeHelper
 end
 
 module ParsingLib
@@ -70,7 +67,6 @@ module ParsingLib
   include IdFieldsHelper
   include NumbersCleaner
   include PricesCleaner
-  include PropertyCleaner
   include StringCleaner
   include TimeParser
 end

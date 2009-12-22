@@ -48,7 +48,7 @@ module Constants
 
   $float_rxp = /(\d+,)?\d+(\.\d+)?/
 
-  $units = ['MHz', 'ppm', 'dpi', 'MB', 'pixel', 'cm', 'mm', 'in', "\"", 'MP', 'Mpix',\
+  $units = ['MHz', 'ppm', 'MB', 'pixel', 'cm', 'mm', 'in', "\"", 'MP', 'Mpix',\
     'megapixel', 'Megapixel', 'MegaPixel', 'Mega Pixel', 'mp'] # TODO expand list
   
   $colors = [ 'black', 'green', 'blue', 'pink', 'red', 'beige', 'teal', 'purple', 'grey',\
@@ -100,6 +100,7 @@ module PrinterConstants
   @@descriptors = [/\sMFP\s/, /\smultifunct?ion\s/i, /\sduplex\s/i, /\sfaxcent(er|re)\s/i, \
     /\sworkcent(re|er)\s/i, /\smono\s/i, /\slaser\s/i, /\sdig(ital)?\s/i, /\scolou?r\s/i,\
     /\sb(lack\sand\s)?w(hite)?/i, /\snetwork\s/i, /\sall\s?-?\s?in\s?-?\s?one\s/i, /\sink\s/i,\
-    /\schrome\s/i, /\stabloid\s/i, /\saio\sint\s/i, /\s\d+\s?x\s?\d+\s?(dpi)?\s/i, \
+    /\schrome\s/i, /\stabloid\s/i, /\saio\sint\s/i, /(\s|^)\d*\s?x?\s?\d+\s?dpi(\s|,|$)/i,\
+    /(\s|^)\d+\s?x\s?\d+\s?(dpi)?(\s|,|$)/i, /\d*,?\d+\spages/i, \
     /\sfast\s/i, /\sethernet\s/i, /\sled\s/i, /\sRS232\s/]
 end
