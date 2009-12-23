@@ -95,9 +95,43 @@ end
 namespace :data do
   
   task :no_cam_dups => [:cam_init, :match_to_products]
-  
+  task :temp  => [:cam_init, :sandbox]
+
+  task :sandbox do 
+    
+    fixme = ScrapedCamera.all.reject{|x| !x.product_id.nil?}.reject{|x| (x.model.nil? and x.mpn.nil?) or x.brand.nil?}
+    puts "#{fixme.count} to fix"
+    fixme[0..2000].each do |sc|
+      ros = RetailerOffering.find_all_by_product_type_and_local_id('Camera', sc.local_id)
+      ids = ros.collect{|x| x.product_id}.reject{|x| x.nil?}.first
+      sc.update_attribute( 'product_id', ids) if ids
+    end
+  end
+
+  task :no_dups do 
+    puts "[#{Time.now}] Starting to match products"
+    match_me = $scrapedmodel.all[0..100]
+    
+    match_me.delete_if{|x| (x.model.nil? and x.mpn.nil?) or x.brand.nil?}
+    match_me.each_with_index do |scraped, i|
+      dups = match_product_to_product scraped, $model, $series
+      if dups.length > 1 
+        debugger
+        keep = dups.first
+        lose = dups[1..-1].collect{|x| $model.find(x)}
+        debugger
+        lose.each do |deleteme|
+          unlink_duplicate(keep, deleteme)
+        end
+        debugger 
+        0
+      end      
+      puts "[#{Time.now}] Done matching #{i+1}th scraped product." 
+    end
+    puts "[#{Time.now}] Done matching products"
+  end
   task :no_duplicates do    
-    allproducts = $model.all
+    chekme = $scrapedmodel.all.
     
     allproducts.each do |prod|    
       dups =  match_product_to_product(prod, $model, $series)
