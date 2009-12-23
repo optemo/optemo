@@ -324,8 +324,8 @@ namespace :printer_test do
       #raise  "Forgery protection turned on in test environment."  if (ActionController::Base.allow_forgery_protection) 
 
         require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
-        require 'testing_lib'
-        include JavaTestLib
+        #require 'testing_lib'
+        #include JavaTestLib
         
         Webrat.configure do |config|
           config.mode = :selenium

@@ -94,7 +94,7 @@ end
 
 namespace :data do
   
-  task :no_cam_dups => [:cam_init, :match_to_products]#
+  task :no_cam_dups => [:cam_init, :match_to_products]
   
   task :no_duplicates do    
     allproducts = $model.all
@@ -272,26 +272,23 @@ namespace :data do
   task :match_to_products do 
     puts "[#{Time.now}] Starting to match products"
     match_me = scraped_by_retailers($retailers, $scrapedmodel) if $retailers
-    debugger
     match_me = $scrapedmodel.all if match_me.nil?
     
     match_me.delete_if{|x| (x.model.nil? and x.mpn.nil?) or x.brand.nil?}
     match_me.each_with_index do |scraped, i|
       matches = match_product_to_product scraped, $model, $series
-      debugger
+      
       real = matches.first
       real = create_record_from_atts  scraped.attributes, $model if real.nil? 
-      debugger
+      
       fill_in 'product_id',real.id, scraped
       
       ros = find_ros_from_scraped scraped, $model
-      debugger
       ros.each{ |ro| fill_in 'product_id', real.id, ro }     
       
       revues = Review.find_all_by_local_id_and_product_type(scraped.local_id, $model.name)
-      debugger
       revues.each{|revu| fill_in 'product_id', real.id, revu }
-      debugger
+      
       puts "[#{Time.now}] Done matching #{i+1}th scraped product." 
     end
     puts "[#{Time.now}] Done matching products"
