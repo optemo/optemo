@@ -27,7 +27,7 @@
 	<div class='bottombar'>
 		<% if group %>
     		<div class='sim rounded'>
-    	  <%= link_to(image_tag('plus.gif')+t("products.compare.similar",:count => cluster.size(@session,@s.searchpids) - 1), 
+    	  <%= link_to(image_tag('plus.png')+t("products.compare.similar",:count => cluster.size(@session,@s.searchpids) - 1), 
     	  "/#{$model.urlname}/sim/"+cluster.id.to_s, 
  		  :id => "sim#{i}", :class => 'simlinks rounded', :"data-id" => "#{cluster.representative(@session,@s.searchpids).id}", :"title" => "Browse through all " + cluster.size(@session,@s.searchpids).to_s + " in this group") %>
     		</div>
