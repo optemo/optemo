@@ -12,7 +12,7 @@ class Camera < ActiveRecord::Base
            #                                      (d)escription
            #   db_name                Type        (e)xtra Display    
   Features = [%w(price                Continuous  cf    ),
-              %w(resolutionmax        Continuous  cf    ),
+              %w(maximumresolution        Continuous  cf    ),
               %w(opticalzoom          Continuous  cf    ),
               %w(displaysize          Continuous  cf    ),
               %w(brand                Categorical f     )]
