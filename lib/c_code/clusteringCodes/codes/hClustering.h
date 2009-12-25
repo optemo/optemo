@@ -51,7 +51,7 @@ if 	(layer == 1){
 				int saleprice = 0;
 				int price = 0;
 			
-			
+				size = 0;
 			
 				while (res->next()) 
 				{
@@ -60,13 +60,13 @@ if 	(layer == 1){
 						price = saleprice;
 						data[size][0] = price;
 					    
-		 				
+		 			
 						for (int f=1; f<conFeatureN; f++){
 		 					data[size][f] = res->getDouble(conFeatureNames[f]);
+				
 		 				}	
 
 		 				for (int f=0; f<boolFeatureN; f++){
-					
 		 					data[size][conFeatureN+f] = res->getDouble(boolFeatureNames[f]);
 				
 		 				}
@@ -77,7 +77,7 @@ if 	(layer == 1){
 		 					average[f] += data[size][f];
 		 				}
 						size++;
-												
+											
 				}
 				
 				
@@ -95,9 +95,10 @@ if 	(layer == 1){
 			 	  		indicators[j] = new int[size];
 				
 			 	  }
+			
                   
 			 	  getStatisticsData1(data, indicators, size, conFeatureN, boolFeatureN, dataN);  
-				
+			
 				 
 			// cluster
 			 	  int *centersA;
@@ -170,7 +171,7 @@ if 	(layer == 1){
 			
 					saveClusteredData(data, idA, size, brands, parent_id, clusteredDataOrderU, conFeatureRangeC, layer, clusterN, conFeatureN, 
 										boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName, version, region);
-										
+									
 										
 						for (int c=0; c<clusterN; c++){
 								if (clusteredData[c][0]>maxSize){
