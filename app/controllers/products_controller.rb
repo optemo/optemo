@@ -79,9 +79,19 @@ class ProductsController < ApplicationController
   def show
     @session = @@session
     @plain = params[:plain].nil? ? false : true
+    
     #Cleanse id to be only numbers
     params[:id] = params[:id][/^\d+/]
     @product = $model.find(params[:id])
+    
+    if $model.name == "Camera"
+      @imglurl = "/images/cameras/" + @product.id.to_s + "_l.jpg"
+    elsif $model.name == "Printer"
+      @imglurl = "/images/printers/" + @product.id.to_s + "_l.jpg"
+    else
+      @imglurl = "/images/printers/" + @product.id.to_s + "_l.jpg"
+    end    
+    
 # => Caching:
 #    @product = cache([$model.name, params[:id]]) do
 #      $model.find(params[:id])

@@ -54,8 +54,8 @@ module ProductsHelper
   
   def navtitle
     if @s.searchterm.nil?
-		  (@s.result_count > 1) ? t("products.compare.browsings",:count => @s.result_count) : t("products.compare.browsing") 
-		  ["Browsing", @s.result_count, $RelativeDescriptions ? "<b>"+@s.searchDescription.map{|d|t("products."+d)}.join(", ")+"</b>" : nil, (@s.result_count > 1) ? "Printers" : "Printer"].join(" ")
+		  (@s.result_count > 1) ? t("products.compare.browsings",:count => @s.result_count) + $model.name + "s" : t("products.compare.browsing") + $model.name
+		  ["Browsing", @s.result_count,$RelativeDescriptions ? "<b>"+@s.searchDescription.map{|d|t("products."+d)}.join(", ")+"</b>" : nil, ($model.name == 'Camera' ? ((@s.result_count > 1) ? "Cameras" : "Camera") : ((@s.result_count > 1) ? "Printers" : "Printer"))].join(" ")
 		else
       "#{t("products.compare.search")}: '#{@s.searchterm}', #{(@s.result_count > 1) ? t("products.compare.browsings",:count => @s.result_count) : t("products.compare.browsing")}" 
     end

@@ -33,3 +33,4 @@ lib/c_code/clusteringCodes/codes/Makefile
 lib/c_code/clusteringCodes/codes/cmake_install.cmake
 
 mkmf.log
+public/images/cameras

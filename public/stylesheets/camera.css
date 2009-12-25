@@ -231,6 +231,8 @@ div.drop-box-hover {
 	background: url(../images/savebg.png) no-repeat;
 }
 div.smalldesc {
+/*	position:absolute;
+	bottom:5px; */
 	font-size: 0.7em;
 	line-height: 1em;
 	padding: 3px 0;

@@ -44,11 +44,19 @@ class ApplicationController < ActionController::Base
   end
   
   def update_user
-    $model = (session[:productType] || $DefaultProduct).constantize
-    $nodemodel = ((session[:productType] || $DefaultProduct)+'Node').constantize
-    $clustermodel = ((session[:productType] || $DefaultProduct)+'Cluster').constantize
-    $featuremodel = ((session[:productType] || $DefaultProduct)+'Features').constantize
-    $region = request.url.match(/\.ca/) ? "ca" : "us"
+    
+    if request.domain.nil?
+      @ds = "Printer"
+    else
+      domainprefix = request.domain.split(".").first
+      if domainprefix == "cameras"
+        @ds = "Camera"
+      elsif domainprefix == "printers"
+        @ds = "Printer"
+      else
+        @ds = "Printer"
+      end  
+    end
     mysession = Session.find_by_id(session[:user_id])
     if mysession.nil?
       mysession = Session.new
@@ -65,6 +73,22 @@ class ApplicationController < ActionController::Base
     else
       @@session = mysession
     end
+
+    # Set some stuff in the session, etc., straight from cameras_controller.rb or printers_controller.rb
+    # These need to be changed to variable names from strings
+    session[:productType] = @ds
+    @@session[:productType] = @ds
+    @@session.update_attribute('product_type', @ds) if @@session.product_type.nil? || @@session.product_type != @ds
+
+    # In addition, it seems like all of these are being set below to something else. Apparently they are no longer strings after "constantize"?
+    # I would like to do memory management here to delete the object. Bug? ZAT
+
+    $model = (session[:productType] || $DefaultProduct).constantize
+    $nodemodel = ((session[:productType] || $DefaultProduct)+'Node').constantize
+    $clustermodel = ((session[:productType] || $DefaultProduct)+'Cluster').constantize
+    $featuremodel = ((session[:productType] || $DefaultProduct)+'Features').constantize
+
+    $region = request.url.match(/\.ca/) ? "ca" : "us"
     @@keywordsearch = nil
     @@keyword = nil
     if @@session.filter && @@session.searches.last

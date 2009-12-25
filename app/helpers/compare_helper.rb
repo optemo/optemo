@@ -10,8 +10,8 @@ module CompareHelper
       	return product.display('packagelength') + " x " + product.display('packagewidth') + " x " + product.display('packageheight')
       when 'price'
         return product.display('pricestr')
-      when 'opticalzoom', 'digitalzoom'
-        return '-' if product.bodyonly
+#      when 'opticalzoom', 'digitalzoom'
+#        return '-' if product.bodyonly
     end
     case product.display(column)
       # Display Unavailable instead of Unknown
