@@ -43,7 +43,7 @@ module CameraHelper
     return nil if str.nil?
     mp = get_f_with_units( str,  /(\s)?m(ega)?\s?p(ixel(s)?)?/i ) || 0
     kp = get_f_with_units( str,  /(\s)?k(ilo)?\s?p(ixel(s)?)?/i ) || 0
-    p = get_f_with_units( str,  /(\s)?p(ixel(s)?)?/i ) || 0
+    p = get_f_with_units( str,  /(\s)?(pixel(s)?|px)(\s|,|$)/i ) || 0
     return [mp, kp, p] 
   end
 end

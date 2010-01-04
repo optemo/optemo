@@ -17,11 +17,24 @@ module DataValidator
       log_v "All values nil for #{reclist[0].type.to_s}'s #{att} attribute"
       return
     end
-    outliers = values.reject{|x,y| (y >= min || y <= max) }
+    outliers = values.reject{|k,v| (v >= min and v <= max) }
     sorted_values = values.values.sort
-    log_v "Smallest #{att} below min for #{reclist[0].type.to_s}: #{sorted_values.first}" if sorted_values.first < min
-    log_v "Largest #{att} above max for #{reclist[0].type.to_s}: #{sorted_values.last}" if sorted_values.last > max 
-    log_v  "Outliers: #{outliers.collect{|x,y| x}*', '}" if outliers.size > 0 and outliers.size < 10
+    if outliers.size > 0
+      announce 'INVALID DATA:'
+      announce "#{outliers.size} invalid #{att}s."
+      announce  "Outliers: #{outliers.collect{|x,y| x}*', '}" if outliers.size < 10
+      if sorted_values.first < min
+        temp = sorted_values.reject{|x| x >= min}.count
+        announce "Smallest #{att} below min: #{sorted_values.first}. # records w/ this value: #{temp}" 
+      end
+      if sorted_values.last > max 
+        temp = sorted_values.reject{|x| x <= max}.count
+        announce "Largest #{att} above max: #{sorted_values.last}. # records w/ this value: #{temp}" 
+      end
+      announce '------'
+    else 
+      announce "Valid data for #{att}!"
+    end
   end
   
   # Does the attribute have duplicates
@@ -88,15 +101,4 @@ module DataValidator
     }
     return values
   end
-  
-  #VALIDATION
-  #   assert_all_valid model
-  #   assert_within_range reclist, att, min, max
-  #   assert_no_repeats reclist, att
-  #   assert_no_0_values reclist, att 
-  #   assert_not_all_nils reclist, att 
-  #   assert_no_nils reclist, att 
-  #   assert_no_nils_or_0s_in_att reclist, att 
-  #   both_have_real_value_for_att rec1, rec2, att
-  #   get_values reclist, att
 end

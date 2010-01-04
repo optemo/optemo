@@ -26,6 +26,7 @@ module MigrationHelper
     t.integer :price
     t.string  :pricestr
     t.boolean :instock
+    t.boolean :bestoffer
     t.string  :pricehistory # TODO remove this?
   end
   

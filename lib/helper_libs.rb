@@ -85,3 +85,4 @@ module ImageLib
   include ScrapingLib
   include ImageHelper
 end
+
