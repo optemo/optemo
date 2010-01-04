@@ -1,6 +1,25 @@
 namespace :check do
   
-  task :cameras => [:cam_init, :products] 
+  task :cameras => [:cam_init, :products, :offerings] do
+    
+    @logfile = File.open("./log/check_#{$model.name}.log", 'a+')
+    timed_log 'Start printer-specific validation'
+    my_products = $model.instock | $model.instock_ca
+    
+    announce "Testing #{my_products.count} #{$model.name}s for validity..."
+    
+    assert_within_range( my_products, 'itemheight', 200, 450)
+    assert_within_range( my_products, 'itemlength', 60, 350) # depth
+    assert_within_range( my_products, 'itemwidth', 350, 600)
+    
+    assert_within_range( my_products, 'maximumresolution', 0.5, 50)
+    
+    assert_within_range( my_products, 'price', 1_00, 10_000_00)
+    
+    @logfile.close
+    
+    
+  end
   
   task :products do    
     @logfile = File.open("./log/check_#{$model.name}.log", 'w+')
@@ -117,7 +136,7 @@ namespace :check do
       $scrapedmodel = ScrapedCamera
       $id_field = 'id'
       $product_series = []
-      $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'opticalzoom', 'resolutionmax', \
+      $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'opticalzoom', 'maximumresolution', \
         'displaysize', 'brand', 'model', 'itemweight'] # 'slr', 'waterproof', 
       $reqd_offering_fields = ['priceint', 'pricestr', 'stock', 'condition', 'priceUpdate', 'toolow', \
          'local_id', "product_type", "region", "retailer_id"]

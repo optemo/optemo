@@ -93,7 +93,7 @@ module MigrationHelper
   def addCameraProperties(t)
     #Reqd
     t.float       :opticalzoom
-    t.float       :resolutionmax
+    t.float       :maximumresolution
     t.string      :resolution
     t.float       :displaysize
     t.boolean     :slr

@@ -58,7 +58,11 @@ module TigerScraper
     mergeme.each{ |key, val| atts[key] = val}
     clean_atts = generic_printer_cleaning_code(atts)
     
-    atts['resolutionmax'] = get_max_f atts['resolution'] if atts['resolutionmax'].nil? and atts['resolution']
+    atts['resolutionmax'] = get_max_f(atts['resolution']) if atts['resolutionmax'].nil? and atts['resolution']
+    
+    res_array = separate(atts['resolution'] || '')
+    mpix = res_array.collect{ |x| to_mpix(parse_res(x)) }.reject{|x| x.nil?}.max    
+    atts['maximumresolution'] = mpix if mpix
     
     clean_atts['condition'] ||= 'New' # Default is new
     clean_prices!(clean_atts)

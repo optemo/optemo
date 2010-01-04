@@ -21,11 +21,9 @@ module GenericScraper
   
   def vote_on_values product
     sps = $scrapedmodel.find_all_by_product_id(product.id)
-    #ignore = ["id", "price", "pricestr", "region", "created_at", "updated_at", "instock", "instock_ca", "price_ca", "price_ca_str"]
-    #atts = $model.column_names - ignore
-   # atts = $reqd_fields
-   # 'itemheight', 'itemwidth','itemlength',
-    atts = [ 'itemweight',  'ppm', 'ttp', 'paperinput', 'resolutionmax','scanner', 'printserver']
+    dontvote = ['itemheight', 'itemwidth', 'itemlength', 'price', 'price_ca']
+    atts = $model::ContinuousFeatures + ['ttp', 'itemweight'] - dontvote
+    #atts = [ 'itemweight',  'ppm', 'ttp', 'paperinput', 'resolutionmax','scanner', 'printserver']
     
     all_atts = {}
     atts.each{|x| all_atts[x] = [product.[](x)]} # Current value counts for something too?
@@ -467,7 +465,7 @@ namespace :data do
       $series = @@series
       $descriptors = @@descriptors
       
-      $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'opticalzoom', 'resolutionmax', \
+      $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'opticalzoom', 'maximumresolution', \
         'displaysize', 'slr', 'waterproof', 'brand', 'model', 'itemweight']
       $reqd_offering_fields = ['priceint', 'pricestr', 'stock', 'condition', 'priceUpdate', 'toolow', \
          'local_id', "product_type", "region", "retailer_id"]

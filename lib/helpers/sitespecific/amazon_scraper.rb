@@ -77,7 +77,7 @@ module AmazonScraper
       0
     end
     
-    atts['resolutionmax'] ||= get_max_f(atts['resolution']) if atts['resolution']
+    atts['resolutionmax'] = get_max_f(atts['resolution']) if atts['resolution']
     
     return atts
   end
@@ -367,17 +367,12 @@ module AmazonScraper
         temp_paperin = parse_max_num_pages(x)
         temp_res = x.match(/(res|\d\s?x\s?\d)/i)
         if temp_ppm
-          #debugger
           atts['ppm'] ||= temp_ppm
         elsif temp_paperin and x.match(/(input|feed)/i)
-          #debugger
           atts['paperinput'] ||= temp_paperin
         elsif temp_res
           temp_res_2 = parse_dpi(x)
-         # temp_resmax =  get_max_f(temp_res_2)
-          #debugger
           atts['resolution'] ||= temp_res_2
-         #atts['resolutionmax'] ||= temp_resmax
         end
     end
     semi_cleaned_atts = clean_property_names(atts) 
@@ -416,7 +411,9 @@ module AmazonScraper
   def clean_camera atts
     semi_cleaned_atts = clean_property_names(atts) 
     cleaned_atts = product_cleaner(semi_cleaned_atts)
-    cleaned_atts['resolutionmax'] = get_max_f(cleaned_atts['resolution'] || '')
+    res_array = separate(cleaned_atts['resolution'] || '')
+    mpix = res_array.collect{ |x| to_mpix(parse_res(x)) }.reject{|x| x.nil?}.max    
+    cleaned_atts['maximumresolution'] = mpix
     remove_sep!(cleaned_atts)
     return cleaned_atts
   end
@@ -443,43 +440,5 @@ module AmazonScraper
   def be_nice_to_amazon
      sleep(1+rand()*30)
   end
-  
-  #def interpret_special_features(p)
-  #  sf = p.specialfeatures
-  #  a = sf[3..-1].split('|') #Remove leading nv:
-  #  features = {}
-  #  a.map{|l| 
-  #    c = l.split('^') 
-  #    features[c[0]] = c[1]
-  #  }
-  #  p.ppm = features['Print Speed'].match(/\d+[.]?\d*/)[0] if features['Print Speed']
-  #  p.ttp = features['First Page Output Time'].match(/\d+[.]?\d*/)[0] if features['First Page Output Time'] && features['First Page Output Time'].match(/\d+[.]?\d*/)
-  #  if features['Resolution']
-  #    tmp = features['Resolution'].match(/(\d,\d{3}|\d+) ?x?X? ?(\d,\d{3}|\d+)?/)[1,2].compact
-  #    tmp*=2 if tmp.size == 1
-  #    p.resolution = tmp.sort{|a,b| 
-  #      a.gsub!(',','')
-  #      b.gsub!(',','')
-  #      a.to_i < b.to_i ? 1 : a.to_i > b.to_i ? -1 : 0
-  #    }.join(' x ') 
-  #    p.resolutionmax = p.resolution.split(' x ')[0]
-  #  end # String drop down style
-  #  p.duplex = features['Duplex Printing'] # String
-  #  p.connectivity = features['Connectivity'] # String
-  #  p.papersize = features['Paper Sizes Supported'] # String
-  #  p.paperoutput = features['Standard Paper Output'].match(/(\d,\d{3}|\d+)/)[0] if features['Standard Paper Output'] #Numeric
-  #  p.dimensions = features['Dimensions'] #Not parsed yet
-  #  p.dutycycle = features['Maximum Duty Cycle'].match(/(\d{1,3}(,\d{3})+|\d+)/)[0].gsub(',','') if features['Maximum Duty Cycle']
-  #  p.paperinput = features['Standard Paper Input'].match(/(\d,\d{3}|\d+)/)[0] if features['Standard Paper Input'] && features['Standard Paper Input'].match(/(\d,\d{3}|\d+)/) #Numeric
-  #  #Parse out special features
-  #  if !features['Special Features'].nil?
-  #    if features['Special Features'] == "Duplex Printing"
-  #      features['Special Features'] = nil
-  #      p.duplex = "Yes" if p.duplex.nil?
-  #    end
-  #  end
-  #  p.special = features['Special Features']
-  #  p
-  #end
   
 end
