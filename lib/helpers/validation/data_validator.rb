@@ -25,15 +25,15 @@ module DataValidator
       announce  "Outliers: #{outliers.collect{|x,y| x}*', '}" if outliers.size < 10
       if sorted_values.first < min
         lowest = sorted_values.first
-        temp = sorted_values.reject{|x| x >= lowest}.count
-        temp2 = sorted_values.reject{|x| x >= min}.count
+        temp = sorted_values.reject{|x| x > lowest}.count
+        temp2 = sorted_values.reject{|x| x > min}.count
         announce "Smallest #{att} below min: #{lowest}. # records w/ this value: #{temp}" 
         announce " # records below min : #{temp2}" 
       end
       if sorted_values.last > max 
         highest = sorted_values.last
-        temp = sorted_values.reject{|x| x <= highest}.count
-        temp2 = sorted_values.reject{|x| x <= max}.count
+        temp = sorted_values.reject{|x| x < highest}.count
+        temp2 = sorted_values.reject{|x| x < max}.count
         announce "Largest #{att} above max: #{highest}. # records w/ this value: #{temp}" 
         announce " # records above max: #{temp2}"
       end
