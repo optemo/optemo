@@ -24,12 +24,18 @@ module DataValidator
       announce "#{outliers.size} invalid #{att}s."
       announce  "Outliers: #{outliers.collect{|x,y| x}*', '}" if outliers.size < 10
       if sorted_values.first < min
-        temp = sorted_values.reject{|x| x >= min}.count
-        announce "Smallest #{att} below min: #{sorted_values.first}. # records w/ this value: #{temp}" 
+        lowest = sorted_values.first
+        temp = sorted_values.reject{|x| x >= lowest}.count
+        temp2 = sorted_values.reject{|x| x >= min}.count
+        announce "Smallest #{att} below min: #{lowest}. # records w/ this value: #{temp}" 
+        announce " # records below min : #{temp2}" 
       end
       if sorted_values.last > max 
-        temp = sorted_values.reject{|x| x <= max}.count
-        announce "Largest #{att} above max: #{sorted_values.last}. # records w/ this value: #{temp}" 
+        highest = sorted_values.last
+        temp = sorted_values.reject{|x| x <= highest}.count
+        temp2 = sorted_values.reject{|x| x <= max}.count
+        announce "Largest #{att} above max: #{highest}. # records w/ this value: #{temp}" 
+        announce " # records above max: #{temp2}"
       end
       announce '------'
     else 
@@ -76,21 +82,27 @@ module DataValidator
     assert_no_0_values reclist, att
     assert_no_nils reclist, att
   end
-  
-  # This is sort of a stupid method.
-  # Should I move it somewhere else?
+
+  def assert_no_empty_values reclist, att # No 0s, no blanks, no nils
+    counter = 0
+    reclist.each do |rec|
+      counter += 1 unless has_real_value_for_att(rec, att)
+    end
+    log_v "#{counter} records have an empty #{att}" if counter != 0
+  end
+
+  def has_real_value_for_att rec, att
+    return false unless rec.has_attribute? att 
+    return false if rec.[](att).nil?
+    return false if rec.[](att).to_s.empty?
+    return false if rec.[](att).to_s.strip == ""
+    return false if rec.[](att) == 0
+    return true
+  end
+
   def both_have_real_value_for_att rec1, rec2, att
-    # All these checks!
-    return false unless rec1.has_attribute? att 
-    return false unless rec2.has_attribute? att
-    return false if rec1.[](att).nil?
-    return false if rec2.[](att).nil?
-    return false if rec1.[](att).to_s.empty?
-    return false if rec2.[](att).to_s.empty?
-    return false if rec1.[](att).to_s.strip == ""
-    return false if rec2.[](att).to_s.strip == ""
-    return false if rec1.[](att) == 0
-    return false if rec2.[](att) == 0
+    return false unless has_real_value_for_att(rec1, att)
+    return false unless has_real_value_for_att(rec2, att)
     return true
   end
   

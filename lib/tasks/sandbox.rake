@@ -1,12 +1,5 @@
 namespace :sandbox do
   
-  task :blah => :environment do 
-    
-    Camera.all.each do |c|
-      scs = ScrapedCamera.find_all_by_camera_id
-    end
-  end
-  
   task :validate => :environment do 
     require 'helpers/parsing/idfields'
     require 'helpers/parsing/strings'

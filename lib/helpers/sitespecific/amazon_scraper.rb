@@ -56,11 +56,11 @@ module AmazonScraper
     atts = clean_cartridge(atts) if $model == Cartridge
     atts = clean_camera(atts) if $model == Camera
     
-    # Dimensions are in 100ths of inches already
-    temp = no_blanks([clean_atts['dimensions'], "#{atts['itemwidth']} x #{atts['itemheight']} x #{atts['itemlength']}" ])  
-    mergeme = clean_dimensions(temp,1)
-    mergeme.each{ |key, val| atts[key] = val}
-    
+    unless atts['itemwidth'] and atts['itemheight'] and atts['itemlength']
+      temp = no_blanks([atts['dimensions']]) #, "#{atts['itemwidth']} x #{atts['itemheight']} x #{atts['itemlength']}" ])  
+      mergeme = clean_dimensions(temp,1) # Dimensions are in 100ths of inches already
+      mergeme.each{ |key, val| atts[key] = val}
+    end
     if (atts['toolow'] || '').to_s  == 'true' and atts['listprice'] and atts['listprice'] != ""
       atts['stock']    = true
       atts['pricestr'] = "Less than #{atts['pricestr']}"
@@ -112,11 +112,16 @@ module AmazonScraper
       item = nokodoc.css('item').first
       if item
         detailurl = item.css('detailpageurl').first.content
-        atts = item.xpath('itemattributes/*').inject({}){|r,x| 
-          val = x.content
-          val += "#{CleaningHelper.sep} #{r[x.name]}" if r[x.name]
-          r.merge(x.name => val)
-        }
+        atts = {}
+        
+        temphash = {}
+        item.xpath('itemattributes/*').each do |x| 
+          temphash[x.name] = (temphash[x.name] || []) + [x.content]
+        end
+        temphash.each do |k, v|
+          atts[k] = combine_for_storage(v)
+        end
+        
         item.css('itemattributes/itemdimensions/*').each do |dim|
           atts["item#{dim.name}"] = dim.text.to_i
         end
@@ -130,8 +135,12 @@ module AmazonScraper
           name = just_alphanumeric("#{pair[0]}")
           val = "#{pair[1]}"
           next if name.strip == '' or val.strip == ''
-          val += "#{CleaningHelper.sep} #{atts[name]}" if atts[name]
-          atts.merge!(name => val)
+          if atts[name]
+          	vals = combine_for_storage(separate(atts[name]) + [val])
+          else
+          	vals = val
+          end
+          atts.merge!(name => vals)
         end
         return atts
       end
@@ -412,9 +421,17 @@ module AmazonScraper
     semi_cleaned_atts = clean_property_names(atts) 
     cleaned_atts = product_cleaner(semi_cleaned_atts)
     res_array = separate(cleaned_atts['resolution'] || '')
-    mpix = res_array.collect{ |x| to_mpix(parse_res(x)) }.reject{|x| x.nil?}.max    
-    cleaned_atts['maximumresolution'] = mpix
+    mpix1 = res_array.collect{ |x| to_mpix(parse_res(x)) }.reject{|x| x.nil?}.max    
+    mpix2 = to_mpix(parse_res(cleaned_atts['title']))
+    if (mpix1 || 101) > 100
+      mpix = mpix1 / 1_000_000 if mpix1
+      mpix = mpix2 if mpix2
+    end
+    cleaned_atts['maximumresolution'] = mpix if mpix
     remove_sep!(cleaned_atts)
+    puts "#{cleaned_atts['itemlength']} x #{cleaned_atts['itemheight']} x #{cleaned_atts['itemwidth']}"
+    rearrange_dims!(cleaned_atts, ['D', 'H', 'W'], true)
+    puts "#{cleaned_atts['itemlength']} x #{cleaned_atts['itemheight']} x #{cleaned_atts['itemwidth']}"
     return cleaned_atts
   end
   

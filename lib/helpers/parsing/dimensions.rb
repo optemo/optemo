@@ -1,6 +1,8 @@
 module DimensionsHelper
   #LENGTHS/WEIGHTS
   
+  @@dimensions = {'W' =>'itemwidth', 'H' =>'itemheight', 'D' => 'itemlength'}
+  
   # Converts metric length(array: [m,cm,mm]) to cm
   def to_cm length
     return nil if (length.nil? or length.size < 3)
@@ -78,6 +80,23 @@ module DimensionsHelper
     return (wt[0]*1000+wt[1]+wt[2]/1000)
   end
   
+  def rearrange_dims! atts, order, harsh=false
+    dims = @@dimensions.collect{|k,v| get_i(atts[v]) || 0}
+    #debugger if dims.include?(0) and harsh and dims.uniq.length > 1
+    clear_dims!(atts) if dims.include?(0) and harsh
+    return atts if dims.include?(0)
+    dims.sort!
+    order.each_with_index do |whichdim, index|
+      atts[@@dimensions[whichdim]] = dims[index].to_s
+    end
+  end
+  
+  def clear_dims! atts
+    @@dimensions.values.each do |dimname|
+      atts[dimname] = nil
+    end
+  end
+  
   def clean_dimensions dimensions_array, factor=100
     dimensions_data = dimensions_array.collect{ |x| 
       x.gsub(/''/, '\"').gsub(/\(.*?\)/,'')
@@ -87,20 +106,44 @@ module DimensionsHelper
     atts = {}
     dimensions_data.each do |dims|  
       dims.split('x').each do |dim| 
-        atts['itemwidth'] =  get_f(dim) if dim.include? 'W' and !atts['itemwidth']
-        atts['itemheight'] = get_f(dim) if dim.include? 'H' and !atts['itemheight']
-        atts['itemlength'] = get_f(dim) if dim.include? 'D' and !atts['itemlength']
+        @@dimensions.each do |k,v|
+          atts[v] = get_f(dim) || 0 if dim.include?(k) and !atts[v]
+        end 
+        debugger
+        0
       end
-      if [atts['itemlength'], atts['itemwidth'], atts['itemheight']].uniq == [nil]
+      if [atts['itemlength'], atts['itemwidth'], atts['itemheight']].uniq == [0]
         dim_array = dims.split('x')
-        atts['itemwidth'] =  get_f(dim_array[0])
-        atts['itemheight'] = get_f(dim_array[1])
-        atts['itemlength'] = get_f(dim_array[2])
+        @@dimensions.values.each_with_index do |v, index|
+          atts[v] = get_f(dim_array[index]) || 0
+        end
+        debugger
+        0
       end
       atts.keys.each do |k|
-        atts[k] = atts[k]*factor
+        atts[k] = atts[k]*factor 
+        atts[k] = nil if atts[k] == 0
       end
       return atts
     end
+  end
+  
+  def vote_on_dimensions all_dimsets
+    dimset_scores = {}
+    all_dimsets.each_with_index do |set, i|
+      score = 0
+      other_dimsets = all_dimsets - [set]
+      other_dimsets.each do |other|
+        3.times do |i|
+          score += 1 if other[i] == set[i]
+          score += 1 if other.include?(set[i]) 
+        end
+        score += 2 if other.sort == set.sort
+        score += 2 if other == set
+      end
+      dimset_scores[set] = score
+    end
+    best_dimset = all_dimsets.sort{|a,b| dimset_scores[a] <=> dimset_scores[b]}
+    return best_dimset
   end
 end

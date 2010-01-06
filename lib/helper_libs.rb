@@ -77,6 +77,8 @@ end
 
 module FillInLib
   include FillInHelper
+  include NumbersCleaner
+  include StringCleaner
 end
 
 module ImageLib

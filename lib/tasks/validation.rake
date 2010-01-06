@@ -1,4 +1,38 @@
 module Check
+  
+  def chek_linkage check_me
+    unlinked = []
+    bad_linked = []
+    
+    ['', '_ca'].each do |prefix|
+      check_me.each do |product|
+        next unless product["instock#{prefix}"]
+        if product.bestoffer.nil? 
+          unlinked << product.id
+        else
+          offering = RetailerOffering.find(product["bestoffer#{prefix}"])
+          bad_linked << product.id if offering.nil?
+          bad_linked << product.id if offering.priceint != product["price#{prefix}"]
+          bad_linked << product.id if offering["stock"] != product["instock#{prefix}"]
+          bad_linked << product.id if offering.product_type != $model.name
+          bad_linked << product.id if offering.product_id != product.id
+        end
+      end
+    end
+    
+    unlinked.uniq!
+    bad_linked.uniq!
+    
+    if unlinked.length > 0
+      log_v "#{unlinked.count} #{$model.name}s are not linked"
+      announce "First few: #{unlinked[0..5] * ', '} \n --- "
+    end
+    if bad_linked.length > 0
+      log_v "#{bad_linked.count} #{$model.name}s are linked incorrectly."
+      announce "First few: #{bad_linked[0..5] * ', '} \n --- "
+    end
+  end
+  
   def chek_products my_products
     announce "Testing #{my_products.count} #{$model.name} for validity..."
     
@@ -58,7 +92,7 @@ module Check
 end
 
 namespace :check do
-  
+    
   task :cameras => [:cam_init] do #, :pictures] do
     include ValidationLib
     require 'helpers/image_helper'
@@ -69,9 +103,11 @@ namespace :check do
     timed_log 'Start camera-specific validation'
     my_products = $model.instock | $model.instock_ca
     my_offerings = RetailerOffering.find_all_by_product_type_and_stock($model.name, true)
-    #chek_pictures(my_products)
+    
+    chek_pictures(my_products)
     chek_offerings(my_offerings)
     chek_products(my_products)
+    chek_linkage(my_products)
     
     announce "Testing #{my_products.count} #{$model.name}s for validity..."
     
@@ -91,53 +127,19 @@ namespace :check do
     @logfile.close
   end
   
-  task :products do    
-    @logfile = File.open("./log/check_#{$model.name}.log", 'w+')
-    timed_log 'Start general product validation'
-    #my_products = $model.instock | $model.instock_ca
-    my_products = $model.all
-    
-    announce "Testing #{my_products.count} #{$model.name} for validity..."
-    
-    ($reqd_fields || []).each do |rf|
-      assert_no_nils my_products, rf
-    end
-    
-    assert_no_repeats my_products, $id_field
-    
-    announce "Out of #{$model.count} #{$model.name}s... "
-    announce " ... #{$model.valid.count} are valid"
-    announce " ... #{($model.instock | $model.instock_ca).count} are in stock (in CA or US)"
-    announce " ... #{($model.valid.instock | $model.valid.instock_ca).count} are valid and in stock"
-    timed_log 'Done general product validation'
-    @logfile.close
-  end
-  
-  task :offerings do    
-    my_offerings = RetailerOffering.find_all_by_product_type_and_stock($model.name, true)
-    @logfile = File.open("./log/check_#{$model.name}_offerings.log", 'w+')
-    timed_log "Start retailer offerings validation for #{$model.name}"
-    announce "Testing #{my_offerings.count} RetailerOfferings for validity..."
-    
-    $reqd_offering_fields.each do |rf|
-      assert_no_nils my_offerings, rf
-    end
-    
-    Retailer.all.each do |ret|
-      these_offerings = my_offerings.reject{|x| x.retailer_id != ret.id}
-      assert_no_repeats these_offerings, 'local_id'
-    end
-   
-    assert_within_range my_offerings, 'priceint', $min_price, $max_price
-    @logfile.close
-  end
-  
   desc "Check that scraped data isn't wonky"
-  task :printers => [:printer_init, :products, :offerings] do
+  task :printers => [:printer_init] do
     
     @logfile = File.open("./log/check_#{$model.name}.log", 'a+')
     timed_log 'Start printer-specific validation'
     my_products = $model.instock | $model.instock_ca
+    
+    my_offerings = RetailerOffering.find_all_by_product_type_and_stock($model.name, true)
+    
+    chek_pictures(my_products)
+    chek_offerings(my_offerings)
+    chek_products(my_products)
+    chek_linkage(my_products)
     
     announce "Testing #{my_products.count} #{$model.name}s for validity..."
     
@@ -161,29 +163,7 @@ namespace :check do
     include ImageValidator
     
     checkme = $model.instock | $model.instock_ca
-    
-    nopix = 0
-    noresized = 0
-    brokenurls = 0
-    nodims = 0
-    checkme.each do |record|
-      unless pic_exists(record)
-        nopix += 1
-      end
-      unless resized_pics_exist(record)
-        noresized += 1
-      end
-      unless pic_dimensions_exist( record)
-        nodims += 1
-      end
-      unless pic_urls_not_broken( record)
-        brokenurls += 1
-      end
-    end
-    puts "#{nopix} of #{checkme.count} #{$model.name}s do not have a picture"
-    puts "#{noresized} of #{checkme.count} #{$model.name}s do not have resized pix"
-    puts "#{nodims} of #{checkme.count} #{$model.name}s do not have picture dimensions"
-    puts "#{brokenurls} of #{checkme.count} #{$model.name}s have broken urls"
+    chek_pictures checkme
   end
   
   task :printer_init => :init do

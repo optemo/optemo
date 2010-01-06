@@ -63,23 +63,23 @@ module GenericScraper
       scraped_atts['region'] = retailer.region
       
       clean_atts = clean scraped_atts
-      debugger
+      unless(clean_atts['itemlength'] and clean_atts['itemwidth'] and clean_atts['itemheight'])
+        if(clean_atts['itemlength'] or clean_atts['itemwidth'] or clean_atts['itemheight'])
+          debugger
+        end
+      end
       sp = find_or_create_scraped_product(clean_atts)
-      debugger
+      #debugger if sp.id == $scrapedmodel.last.id
       if sp
         clean_atts['url'] = id_to_sponsored_link(local_id, retailer.region, clean_atts['merchant'])
-        ros = find_ros_from_scraped sp
+        ros = find_ros_from_scraped(sp)
         ro = ros.first
-        debugger
-        ro = create_record_from_atts  clean_atts, RetailerOffering if ro.nil?
-        debugger
-        fill_in_all clean_atts, ro
-        
-        timestamp_offering ro     
-        
-        debugger
-        0
-          
+        if ro.nil?
+          ro = create_record_from_atts(clean_atts, RetailerOffering)
+          #debugger 
+        end
+        fill_in_all(clean_atts, ro)
+        timestamp_offering(ro)     
       else
         report_error "Couldn't create #{$scrapedmodel} with local_id #{local_id || 'nil'} and retailer #{retailer_id || 'nil'}."
       end
@@ -93,10 +93,9 @@ end
 namespace :data do
   
   task :no_cam_dups => [:cam_init, :match_to_products]
-  task :temp  => [:cam_init, :sandbox]
+  task :temp  => [:cam_init, :amazon_init, :rescrape_stats]
 
   task :sandbox do 
-    
     fixme = ScrapedCamera.all.reject{|x| !x.product_id.nil?}.reject{|x| (x.model.nil? and x.mpn.nil?) or x.brand.nil?}
     puts "#{fixme.count} to fix"
     fixme[0..2000].each do |sc|
@@ -148,9 +147,6 @@ namespace :data do
   end
   
   task :amazon_reviews => [:cam_init, :amazon_init, :reviews]
-  
-  #task :temp => [:cam_init, :amazon_mkt_init, :match_to_products, :update_bestoffers, :vote]
-  #task :temp3 => [:cam_init, :amazon_mkt_init, :match_to_products, :update_bestoffers, :match_reviews]
   
   task :match_reviews do    
     allrevus = Review.find_all_by_product_id_and_product_type(nil, $model.name)
@@ -211,26 +207,24 @@ namespace :data do
     @logfile.close
   end
   
-  task :dlmorestats => [:printer_init, :amazon_init, :rescrape_stats]
-  
-  task :dlmorepix => [:tiger_init, :rescrape_pix]
-  
   task :rescrape_stats do 
-    att = 'imageurl' # This will be re-scraped.
-    
-    allproducts = $model.instock | $model.ca # $model.all
-    no_stats = allproducts.reject{|y| # These are the products for which we need to re-scrape.
-      !y[att].nil?}.reject{|x| 
-      !x.instock and !x.instock_ca}.collect{|x| 
-      x.id
-    }
+    #att = 'itemwidth' # This will be re-scraped.
+    atts = ['itemlength', 'itemwidth', 'itemheight']
+    allproducts = $model.instock | $model.instock_ca # $model.all
+    #no_stats = allproducts.reject{|y| # These are the products for which we need to re-scrape.
+    #  !y[att].nil? and y[att] > 100 and y[att] < 7000 # What is OK for this att
+    #}.reject{|x| 
+    #  !x.instock and !x.instock_ca}.collect{|x| 
+    #  x.id
+    #}
+    no_stats = allproducts.collect{|x| x.id}
     no_stats_fixed = [] # The ones we've fixed will go here.
     
     retailerids = $retailers.collect{|x| x.id} 
     
     no_stats.each do |pid| 
       sps = $scrapedmodel.find_all_by_product_id(pid)
-      
+      newvals = nil
       if sps.length != 0
         retailer_ok_sps = sps.reject{|x| !retailerids.include?(x.retailer_id)}
         if retailer_ok_sps.length == 0
@@ -242,17 +236,23 @@ namespace :data do
           retailer = Retailer.find(retailer_ok_sp.retailer_id)
           spid = retailer_ok_sp.id
           generic_scrape(local_id, retailer)
-          if $scrapedmodel.find(spid)[att].nil?
-            puts "#{spid} has a nil #{att}..."
-          else
+          #if retailer_ok_sp[att].nil?
+          #  puts "#{spid} has a nil #{att}..."
+          #else
+          unless atts.collect{|x| retailer_ok_sp[x]}.include?(nil)
+            newvals ||= retailer_ok_sp.attributes
             puts "#{spid} has been fixed!"
             no_stats_fixed << pid
           end
+          #end
         end
       end
+      #if newval and newval > 0 and newval < 7000
+        p = $model.find(pid)
+        atts.each{ |att| fill_in(att,newvals[att],p) } if newvals
+      #end
     end
     puts "There were #{no_stats.count} printers w/o stats of which #{no_stats_fixed.count} were fixed"
-    
   end
   
   task :validate_amazon => [:printer_init,:amazon_init, :validate_printers]

@@ -19,16 +19,13 @@ module CleaningHelper
       atts['brand'] = newbrand
       
       # Then clean the model/mpn
-      debugger
       modelsb4 = separate(atts['model']) + separate(atts['mpn'])
-      debugger
       modelsb4 = modelsb4.sort{|a,b| likely_model_name(b) <=> likely_model_name(a) }.reject{|x| likely_model_name(x) < 2 }
       modelsafter = no_blanks( clean_models( $model.name, atts['brand'], \
             modelsb4, atts['title'],$brands, $series, $descriptors )).uniq.reject{|x| 
               likely_model_name(x) < 2 }.sort{|a,b| 
               likely_model_name(b) <=> likely_model_name(a)
       }
-      debugger
       atts['model'] = modelsafter[0] || modelsb4[0]
       atts['mpn'] = modelsafter[1]
       
