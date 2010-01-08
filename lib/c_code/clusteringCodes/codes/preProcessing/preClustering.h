@@ -1,35 +1,54 @@
 string preClustering(map<const string, int>productNames, string productName, string* conFeatureNames, string* catFeatureNames, string* boolFeatureNames, string* indicatorNames, string region){
 
 	string filteringCommand;
-	
+	int conFeatureN, boolFeatureN;
 	string brand = "";
 	string var;
+	string nullCheck = "";
 	catFeatureNames[0]= "brand";
 	conFeatureNames[0]= "price";
 	switch(productNames[productName]){
 		case 1:
-				//conFeatureNames[1]= "itemweight";  
+				conFeatureN = 4;
+				boolFeatureN = 0;
+				conFeatureNames[1]= "displaysize"; 
 			    conFeatureNames[2]= "opticalzoom";
 			    conFeatureNames[3]= "maximumresolution";
-				conFeatureNames[1] = "displaysize";
-			//	conFeatureNames[5] = "minimumfocallength";
-			//	conFeatureNames[6] = "maximumfocallength";
-			//	conFeatureNames[7] = "minimumshutterspeed";
-			//	conFeatureNames[8] = "maximumshutterspeed";
-			//	boolFeatureNames[0] = "slr";
-			//	boolFeatureNames[1] = "waterproof";
-			//	boolFeatureNames[2] = "bulb";
-			
-			
-				
-				
+				//conFeatureNames[4]= "itemweight";
+				//boolFeatureNames[0] = "slr";
+				//boolFeatureNames[1] = "waterproof";
+
 				indicatorNames[0] = "Price";
-			//	indicatorNames[1] = "Item Weight";
+				indicatorNames[1] = "Item Weight";
 				indicatorNames[2] = "Optical Zoom";
 				indicatorNames[3] = "MegaPixels";
 				filteringCommand = "SELECT * FROM ";
 				filteringCommand += productName;
 				filteringCommand += "s where instock=1;";
+				filteringCommand = "SELECT * FROM ";
+				filteringCommand += productName;
+				nullCheck += "((price IS NOT NULL)";
+				for (int f=1; f<conFeatureN; f++){
+					nullCheck += " and (";
+					nullCheck += conFeatureNames[f];
+					nullCheck += " IS NOT NULL";
+					nullCheck += ")"; 
+				} 
+				for (int f=0; f<boolFeatureN; f++){
+					nullCheck += " and (";
+					nullCheck += conFeatureNames[f];
+					nullCheck += " IS NOT NULL";
+					nullCheck += ")";
+				}
+				nullCheck += ")";
+				if (region == "us"){
+					filteringCommand += "s where (instock=1 and ";
+					
+				}else if(region == "ca"){
+					filteringCommand += "s where (instock_ca=1 and (scanner IS NOT NULL) and (printserver IS NOT NULL) and ";
+				}
+				filteringCommand += nullCheck;
+				filteringCommand += ");";
 				break;
 		case 2:	
 				conFeatureNames[1]= "ppm";  

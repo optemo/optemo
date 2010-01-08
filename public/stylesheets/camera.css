@@ -1,6 +1,25 @@
-/* CSS Document */
-
-/* Navigator Bar */
+/*--------------------------------------//
+//         Global Declarations          //
+//--------------------------------------*/
+a img {	border: none; }
+a { color: #0000EE; }
+a:visited { color: #0000AB;}
+/* Delete button */
+.deleteX {
+	position: absolute;
+	right: -7px;
+	top: -5px;
+	z-index: 1;
+}
+/*--------------------------------------//
+//            Navigator Bar             //
+//--------------------------------------*/
+div#main {
+	padding: 0;
+	width: 727px;
+	margin-left: 218px;
+	text-align: left;
+}
 #navigator_bar {
 	height: 22px;
 	text-align: center;
@@ -20,101 +39,110 @@
 	font-size: 0.75em;
 	margin-left: 3px;
 }
-div#main {
-	padding: 0;
-	width: 727px;
-	margin-left: 218px;
-	text-align: left;}
-div.rowdiv {
-	height: 224px;
-	margin-bottom: 7px;
-	}
-a img {
-	border: none;}
 
-/* Navigator box */
-.topbar {
-	position: relative;
-}
-.nbgroup .topbar, .nbsingle .topbar {
-	height: 174px;
-}
-/*.nbsingle .topbar {
-	height: 183px;
-}*/
-.nbgroup .bottombar {
-	height: 33px;
-}
-.nbsingle .bottombar {
-	height: 33px;
-	border-top: 1px solid #ccc;
-}
-.product {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	width: 224px;
+/*--------------------------------------//
+//      Main Content (Right Side)       //
+//--------------------------------------*/
+
+div.rowdiv {
+/*	height: 224px; 
+	margin-bottom: 7px; */
+	margin-left: 5px;
+	margin-top:5px;
 }
 div.navigator_box {
 	text-align: center;
 	font-size: 0.85em;
 	float: left;
 	position: relative;
-/*	height: 100%; */
-	margin-right: 7px;
+	height: 100%;
+	margin-right: 7px; 
+	margin-bottom: 3px;
+	height:227px;
 }
 .nbgroup {
+	padding: 3px 9px 3px 3px;
 	background: url(../images/nb-group.png) no-repeat;
-	padding: 3px 9px 6px 3px;
 	width:224px;
+	margin-right:-1px;
 }
 .nbsingle {
+	padding: 3px 9px 3px 3px;
 	background: url(../images/nb-single.png) no-repeat;
-	padding: 3px;
-	width:230px;
+	width:224px;
+	margin-right:-1px;
 }
+.topbar {
+	height: 174px;
+}
+
 .title {
 	text-align: left;
 	margin: 3px 8px;
-	padding-bottom: 5px;
-	border-bottom: 1px solid #ccc;
-	height: 30px;
+	padding-bottom: 4px;
+	border-bottom:1px solid #CCCCCC;
+	height: 25px;
 	font-weight: bold;
+	position:relative;
+}
+/* Navigator box */
+.product_box {
+	position: relative;
+	width:160px;
+	height: 153px;
+	margin: auto;
+	margin-bottom:2px;
+}
+.image_boundingbox {
+	width: 140px;
+/*	padding: 5px, 10px, 15px, 5px; */
+	/* margin: 3px, 5px, 8px, 1px; */
+	margin-left: auto;
+	margin-right:auto;
+	position:relative;
+	text-align:center;
+/* 	background-color:#E1E1E1; */
+/*	border:1px solid #D0D0D0; */
+}
+img.productimg {
+	cursor: move;
+}
+.productinfo {
+/*	position: absolute;
+	bottom: 7px;
+	left: 0;
+	width: 160px; */
+	margin:2px auto 0 auto;
 }
 .price {
 	color: #F5000B;
 	font-size: 1.2em;
 }
-.compare {
-	float: right;
-	padding: 3px 5px;
-	margin-top: 5px;
+.bottombar {
+	height: 18px;
 }
 .sim {
-	height: 34px;
+	height: 35px;
 	text-align: left;
-	margin: 5px 3px;
+	margin-left:10px;
+	margin: 6px 3px;
+	width:170px;
+/*	background: #73d645; */
 }
 .sim a {
-	color: black;
 	font-size: 1.1em;
+	padding: 4px;
+	color: black;
 }
 .sim a img {
 	vertical-align: middle;
 	padding-right: 5px;
 }
-.smalltitle {
-	font-weight: lighter;
-	font-size: 0.8em;
-}
-.productimg {
-	cursor: pointer;
-}
-.product {
-	/*margin-top: 2px;*/
-}
 
-/* Left Bar */
+/*--------------------------------------//
+//    Main Nav Controls (Left Side)     //
+//--------------------------------------*/
+
 div #leftbar {
 	padding: 0;
 	margin: 0;
@@ -130,28 +158,67 @@ div #leftbar {
 	border: 1px solid #ccc;        
 }
 
-/* Search */
 #search {
 	width: 129px;
 }
 #submit_button {
 	margin-top: 2px;
 }
-.ui-state-dragging { border:3px dashed #c96; }
-.drop-box-hover { background: #dbd9ce 50% 50% repeat-x; color: #363636; }
-.moving_box_ghost { opacity:0.4; }
+
 #savebar {
-/*	background-image:url(../images/blue_plus_sign.png);
-	background:transparent */
-	background-position:right;
+/* 	background-image:url(../images/bullseye.png);
+	background-position:bottom; */
 	background-repeat: no-repeat;
-}	
-/* Save Box */
-.deleteX {
+/*	min-height:100px; */
+}
+
+#ajaxfilter {
+	display:inline;
+}
+
+/*--------------------------------------//
+//         Drag And Drop Compare        //
+//--------------------------------------*/
+div.ui-state-dragging { 
+	border:1px dashed #c96; 
+	background: #ebe9de;
+}
+div.drop-box-hover { 
+	background: #dbd9ce; 
+	color: #363636; 
+}
+.left_behind_box_ghost { 
+	opacity:0.4;
+}
+
+[if IE] .left_behind_box_ghost { 
+	filter:alpha(opacity=40);
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)"; /* IE8 */
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=40);  /* IE7 */    
+}
+
+/* These might be useful in future - helps with drag and drop obviousness
+.productimgblackborder {
+ 	border: 1px gray dashed; 
+}
+.productimgwhiteborder {
+ 	border: 1px #e7e7e7 dashed; 
+} */
+.dragHand {
 	position: absolute;
-	right: -7px;
-	top: -5px;
-	z-index: 1;
+	left: 0;
+	top: 0;
+	z-index:1;
+    opacity:0.35;
+}
+[ if IE ] .dragHand {
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index:1;
+    filter:alpha(opacity=35);
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=35)"; /* IE8 */
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=35);  /* IE7 */
 }
 .saveditem {
 	position: relative;
@@ -164,6 +231,8 @@ div #leftbar {
 	background: url(../images/savebg.png) no-repeat;
 }
 div.smalldesc {
+/*	position:absolute;
+	bottom:5px; */
 	font-size: 0.7em;
 	line-height: 1em;
 	padding: 3px 0;
@@ -177,12 +246,10 @@ div.smalldesc {
 	font-size:0.9em;
 	display: none;
 }
-
 .savesome {
-	font-size: 0.8em;
-	width:130px;
-	height:88px;
-	background-color:"#F0FFFF";
+	font-size: 0.9em;
+	width:180px;
+	padding:7px;
 }
 #compare_button {
 	clear: both; 
@@ -193,37 +260,58 @@ div.smalldesc {
 	vertical-align: baseline;
 }
 
-
+/* IE hack for save bar maybe? */
 .gainlayout div {
 	zoom: 1;
 }
 
-.ui-slider { position: relative; text-align: left; }
-.ui-slider .ui-slider-handle:hover {
-	color: black;
+/*--------------------------------------//
+//                Silders               //
+//--------------------------------------*/
+
+.ui-slider { 
+	position: relative; 
+	text-align: left; 
+}
+.ui-slider .ui-slider-handle:hover { 
+	color: black; 
 	text-decoration: none;
 }
 .ui-slider .ui-slider-handle { 
 	background:url(../../../images/diamond.gif) no-repeat;
 	font-size: 0.6em;
 	color: black;
-	height:13px; width:16px;text-decoration:none;outline:none;position:absolute;z-index:2;}
-.ui-slider .ui-slider-range { position: absolute; z-index: 1; font-size: .7em; display: block; border: 0; }
+	height:13px; width:16px;text-decoration:none;outline:none;position:absolute;z-index:2;
+}
+.ui-slider .ui-slider-range { 
+	position: absolute; 
+	z-index: 1; 
+	font-size: .7em; 
+	display: block; 
+	border: 0; 
+}
 /*.ui-slider-horizontal { background:url(../../../images/slider.gif) no-repeat; height: 13px; }*/
-.ui-slider-horizontal .ui-slider-handle { top: -3px; margin-left: -8px; }
-.ui-slider-horizontal .ui-slider-range { top: 0; height: 65%; /* transparency for Firefox, Safari & Opera */ opacity:0.3; /*and now for IE (other browsers will ignore this):*/filter: alpha(opacity=30);}
+.ui-slider-horizontal .ui-slider-handle { 
+	top: -3px; 
+	margin-left: -8px; 
+}
+.ui-slider-horizontal .ui-slider-range { 
+	top: 0; 
+	height: 65%; 
+	/* transparency for Firefox, Safari & Opera */ 
+	opacity:0.3; 
+	/*and now for IE (other browsers will ignore this):*/
+	filter: alpha(opacity=30);
+}
 .ui-slider-horizontal .ui-slider-range-min { left: 0; }
 .ui-slider-horizontal .ui-slider-range-max { right: 0; }
-.ui-slider-vertical .ui-slider-handle { background:url(../../../images/diamond_vertical.gif) no-repeat; height:13px; width:9px; overflow:hidden;position:absolute;z-index:2;}
-
-/* Filter Box */
-.filtersdesc {
-	font-size: 0.8em;
-	margin-bottom: 3px;
-	font-weight: lighter;
-}
-#selector {
-	width:100%;
+.ui-slider-vertical .ui-slider-handle { 
+	background:url(../../../images/diamond_vertical.gif) no-repeat; 
+	height:13px; 
+	width:9px; 
+	overflow:hidden;
+	position:absolute;
+	z-index:2;
 }
 .slider {
 	margin: 0 0 0 7px;
@@ -236,6 +324,16 @@ div.smalldesc {
 	height:13px; 
 	overflow:hidden;
 }
+/* Filter Box */
+.filtersdesc {
+	font-size: 0.8em;
+	margin-bottom: 3px;
+	font-weight: lighter;
+}
+#selector {
+	width:100%;
+}
+
 .label {
 	font-weight: bold;
 	text-align: left;
@@ -282,7 +380,10 @@ div.smalldesc {
 	top: 16px;
 }
 
-/* Survey */
+/*--------------------------------------//
+//                Survey                //
+//--------------------------------------*/
+
 .decisionoverlay {
 	padding: 35px 0px 0px 0px;
 	font-size: 0.8em;
@@ -312,7 +413,10 @@ div.smalldesc {
 	cursor: pointer;
 }
 
-/* Bottom Bar */
+/*--------------------------------------//
+//                Footer                //
+//--------------------------------------*/
+
 #bottomlinks {
 	margin: 3px;
 	text-align: center;
@@ -328,4 +432,83 @@ div.smalldesc {
 }
 .content h2 {
 	margin-top: 20px;
+}
+
+/*--------------------------------------//
+//              Tour popup              //
+//--------------------------------------*/
+
+/* #backgroundPopup{
+display:none;
+position:fixed;
+_position:absolute; // hack for internet explorer 6
+height:100%;
+width:100%;
+top:0;
+left:0;
+background:#000000;
+border:1px solid #cecece;
+z-index:1;
+}
+*/
+.popupTour{
+display:none;
+position:fixed;
+_position:absolute; /* hack for internet explorer 6*/
+height:150px;
+width:300px;
+background:#FFFFFF;
+border:3px solid #444444;
+z-index:100000;
+padding:12px;
+font-size:13px;
+}
+.popupTour h1{
+text-align:left;
+color:#5f8ed9;
+font-size:22px;
+font-weight:700;
+/* border-top:1px dotted #D3D3D3; */
+border-bottom:1px dotted #D3D3D3;
+padding-bottom:2px;
+margin-bottom:15px;
+margin-top:0px;
+}
+.popupnextbutton {
+	font-size:1.3em;
+}
+
+.popupcloseinstructions {
+	font-size:0.7em;
+}
+
+.popupTour hr {
+	border-color:#BBB;
+	border-style: solid none;
+	border-width: 1px 0;
+	height: 2px;
+}
+
+.popupTourClose{
+font-size:14px;
+line-height:14px;
+right:6px;
+top:4px;
+position:absolute;
+color:#6fa5fd;
+font-weight:700;
+display:block;
+}
+
+.tourDrawAttention
+{
+	border: 2px solid red;
+	background: #fffcd3;
+	margin:2px;
+}
+
+#tourButton{
+	position:absolute;
+	top:20px;
+	left:20px;
 }

@@ -14,7 +14,9 @@ set :deploy_via, :remote_cache
 default_run_options[:pty] = true
 ssh_options[:port] = 5151
 set :use_sudo, false
-set :user, 'maria'
+set :user, { `whoami`.chomp }
+# There is also this method, might be better in some cases:
+# { Capistrano::CLI.ui.ask("User name: ") }
 
 role :app, domain
 role :web, domain
@@ -44,7 +46,7 @@ end
 desc "Reindex search index"
 task :reindex do
   run "rake -f #{current_path}/Rakefile ts:conf RAILS_ENV=production"
-  run "rake -f #{current_path}/Rakefile ts:rebuild RAILS_ENV=production"
+  sudo "rake -f #{current_path}/Rakefile ts:rebuild RAILS_ENV=production"
 end
 
 desc "Compile C-Code"

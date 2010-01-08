@@ -21,11 +21,11 @@
 		<%= link_to image_tag('ca.gif'), url_for_intl('ca') %>
 	  </div>
 	  <div id="logo">
-		<a href="<%= url_for '/' %>" id ="logo" title="LaserPrinterHub.com"><%= $region == "us" ? image_tag('logo.jpg') : image_tag('logo_ca.jpg')%><span>Home</span></a>
+		<a href="<%= url_for '/' %>" id ="logo" title="<%= $model.name == "Camera" ? 'Cameras.BrowseThenBuy.com' : 'LaserPrinterHub.com' %>"><%= $region == "us" ? image_tag('logo'+($model.name == 'Camera' ? '_cameras' : '')+'.jpg') : image_tag('logo'+($model.name == "Camera" ? '_cameras' : '_ca')+'.jpg')%><span>Home</span></a>
 	  </div>
-		<a href="<%= url_for '/laserprinters' %>" title="Why buy a laser printer?" id='whylaser'>Why buy a laser printer?</a>
+		<% if $model.name == "Printer" %><a href="<%= url_for '/laserprinters' %>" title="Why buy a laser printer?" id='whylaser'></a><% end %>
 	 <div>
-		Find, compare, and buy the right printer for you! We have found the best deals from various online retailers for you. <!--Explore groups of similar products by clicking on the links in the boxes or narrow your search by using the filters on your left. Can't decide? Save a few printers and compare!-->
+		Find, compare, and buy the right <%= $model.name.downcase %> for you! We have found the best deals from various online retailers for you. <!--Explore groups of similar products by clicking on the links in the boxes or narrow your search by using the filters on your left. Can't decide? Save a few printers and compare!-->
 	</div>
      <div id="logindisplay">                                                                                               
    		<% if !cookies[$AppKey +"_user"].nil? %>
@@ -66,6 +66,9 @@
 <%= image_tag "feedback#{fr?}.png" %>
 </div>
 <span id="dragDropEnabled" style="display:none;"><%= $DragAndDropEnabled %></span>
+<span id="sessionOld" style="display:none;"><%= 'true' if (@session && (Time.now - @session.created_at > 9)) %></span>
+<span id="seshid" session-id="<%= @session.id unless @session.nil? %>" style="display:none;"><%= @session.id unless @session.nil? %></span>
+
 <!--[if lt IE 7]><style>
 /* style for IE6 + IE5.5 + IE5.0 */
 .gainlayout { height: 0; }
@@ -131,5 +134,40 @@ piwikTracker2.enableLinkTracking();
 -->
 <!-- End no-piwik tracking -->
 
+<div id="popupTour1" class="popupTour">
+	<a class="deleteX" href="#"><img src="/images/close.png" alt="Close"/></a>
+	<h1>Discovery Browser Tour</h1>
+	<p>Each product shown is a representative of a dynamically created group of similar products. To browse within that group, click &quot;more like this.&quot;
+		<br/><br/>
+		<a href="#" class="popupnextbutton">Next &gt;&gt;</a>
+		<br/><hr width="90%"/>
+		<span class='popupcloseinstructions'>Press escape or click X to close at any time</span>
+	</p>
+</div>
+
+<div id="popupTour2" class="popupTour">
+	<a class="deleteX" href="#"><img src="/images/close.png" alt="Close"/></a>
+	<h1>Discovery Browser Tour</h1>
+	<p>Slide the filters to constrain your search terms based on a variety of specific criteria.
+		<br/><br/>
+		<a href="#" class="popupnextbutton">Next &gt;&gt;</a>
+		<br/><hr width="90%"/>
+		<span class='popupcloseinstructions'>Press escape or click X to close at any time</span>
+	</p>
+</div>
+
+<div id="popupTour3" class="popupTour">
+	<a class="deleteX" href="#"><img src="/images/close.png" alt="Close"/></a>
+	<h1>Discovery Browser Tour</h1>
+	<p>Drag and drop products in here to compare their specs directly.
+		<br/><br/>
+		<a href="#" class="popupnextbutton">Start Browsing</a>
+		<br/><hr width="90%"/>
+		<span class='popupcloseinstructions'>Press escape or click X to close at any time</span>
+	</p>
+</div>
+
+<!-- div id="tourButton"><input type="submit" value="Tour Launch" /></div -->
+<div id="backgroundPopup"></div>
 </body>
 </html>

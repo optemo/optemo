@@ -74,6 +74,7 @@ int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string
 		}		
 		
 		command2 += ");";
+		
 		res2 = stmt->executeQuery(command2);
 		
 		command += ", \'";
@@ -123,7 +124,7 @@ int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string
 			
 		}	
 		command +=");";
-
+	
 		stmt->execute(command);
 	
 		command = "SELECT last_insert_id();"; // from clusters;"

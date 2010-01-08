@@ -1,2 +1,0 @@
-module SavedsHelper
-end
