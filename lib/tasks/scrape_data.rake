@@ -19,6 +19,19 @@ module GenericScraper
     $model.delete(temp)
   end
   
+  def vote_on_id_fields sps, avg_atts={}
+    # vote on models & mpns
+    # TODO: this shouldn't be here
+    vals =  no_blanks(sps.collect{|x| [x.model,x.mpn]}.flatten)
+    uniq_vals = remove_duplicate_models(vals, $series)
+    sorted_vals = uniq_vals.sort{|a,b| likely_model_name(b) <=> likely_model_name(a)}
+    puts "MODELS VOTING: before #{vals * ', '}, after : #{sorted_vals[0..1] * ', '}"
+    #debugger
+    avg_atts['model'] = sorted_vals[0]
+    avg_atts['mpn'] = sorted_vals[1]      
+    return avg_atts
+  end
+  
   def vote_on_values product
     sps = $scrapedmodel.find_all_by_product_id(product.id)
     dontvote = ['itemheight', 'itemwidth', 'itemlength', 'price', 'price_ca']
@@ -41,15 +54,15 @@ module GenericScraper
     avg_atts = {}
     all_atts.each{|att,vals| avg_atts[att] = vote(vals)}
     
-    # vote on models & mpns
-    vals =  no_blanks(sps.collect{|x| [x.model,x.mpn]}.flatten)
-    debugger
-    uniq_vals = remove_duplicate_models(vals, $series)
-    temp = vote(uniq_vals)
-    uniq_vals_2 = uniq_vals - [temp]
-    avg_atts['model'] = temp
-    avg_atts['mpn'] = vote(uniq_vals_2) if uniq_vals.length > 1      
+    # TODO delete this:!!!
+    #vote_on_id_fields sps, avg_atts # TODO remove this
     
+    # vote on dimensions
+    dimlabels = ['itemlength', 'itemheight', 'itemwidth']
+    all_dimsets = (sps|[product]).collect{|sp| dimlabels.collect{|x| sp[x]}}
+    all_dimsets.delete_if{|x| x.include?(nil) or x.include?(0)} # Remove invalid dimensions
+    best_dimset = vote_on_dimensions(all_dimsets)
+    dimlabels.size.times{ |i| avg_atts[dimlabels[i]] = best_dimset[i] } if best_dimset and best_dimset != []
     return avg_atts
   end
   
@@ -62,21 +75,26 @@ module GenericScraper
       scraped_atts['retailer_id'] = retailer.id
       scraped_atts['region'] = retailer.region
       
-      clean_atts = clean scraped_atts
+      clean_atts = clean(scraped_atts)
+      
+      # Debugger stuff!
       unless(clean_atts['itemlength'] and clean_atts['itemwidth'] and clean_atts['itemheight'])
         if(clean_atts['itemlength'] or clean_atts['itemwidth'] or clean_atts['itemheight'])
           debugger
         end
       end
+      # TODO remove debugger stuff when done
+      
       sp = find_or_create_scraped_product(clean_atts)
-      #debugger if sp.id == $scrapedmodel.last.id
+            
       if sp
+        debugger if sp.id == $scrapedmodel.last.id
+        
         clean_atts['url'] = id_to_sponsored_link(local_id, retailer.region, clean_atts['merchant'])
         ros = find_ros_from_scraped(sp)
         ro = ros.first
         if ro.nil?
           ro = create_record_from_atts(clean_atts, RetailerOffering)
-          #debugger 
         end
         fill_in_all(clean_atts, ro)
         timestamp_offering(ro)     
@@ -91,6 +109,55 @@ module GenericScraper
 end
 
 namespace :data do
+  
+  task :try_redo  => [:cam_init, :amazon_init, :rescrape_selected, :amazon_mkt_init, :rescrape_selected]
+  
+  task :rescrape_selected do 
+    which_fields = ['itemlength', 'itemwidth', 'itemheight']
+    #['displaysize']
+    #['itemlength', 'itemwidth', 'itemheight']
+    which_product_ids = [320, 338, 442, 478, 570, 620, 752, 1006, 1312, 1440, 1456, 1542, 1604, 1828, 1914, 1938, 2086, 2140, 2234, 2244, 2248, 2280, 2346, 2434, 2448, 2484, 2490, 2556, 2736, 2742, 2812, 2860, 2958, 3222, 3306, 3342, 3512, 3860, 4004, 4122, 4342, 4650, 4680, 4784, 4820, 4860, 5060, 5080, 5446, 5538, 5594, 5622, 5710, 5792, 5840, 5974, 5980, 6146, 6154, 6174, 6190, 6192, 6220]
+    
+    retailerids = $retailers.collect{|x| x.id} 
+    
+    which_product_ids.each do |pid| 
+    #puts "Camera #{pid}: #{$model.find(pid).title}"
+    #puts "Current resolution #{$model.find(pid).maximumresolution}"
+    
+      sps = $scrapedmodel.find_all_by_product_id(pid)
+      if sps.length != 0
+        retailer_ok_sps = sps.reject{|x| !retailerids.include?(x.retailer_id)}
+        if retailer_ok_sps.length == 0
+          puts "Oops -- no scraped #{$model.name} from #{$retailers.first.name} for #{pid}"
+        end
+        
+        retailer_ok_sps.each do |retailer_ok_sp|
+          local_id = retailer_ok_sp.local_id
+          retailer = Retailer.find(retailer_ok_sp.retailer_id)
+          spid = retailer_ok_sp.id
+          
+          debug = $scrapedmodel.find(spid)
+          puts "#{local_id} had #{which_fields[0]} #{debug[which_fields[0]] || 'nil'}"
+          which_fields.each do |fld|
+            debug.update_attribute(fld, nil)
+          end
+          
+          generic_scrape(local_id, retailer)
+          
+          debug = $scrapedmodel.find(spid) 
+          puts "#{local_id} has #{which_fields[0]} #{debug[which_fields[0]] || 'nil'}"    
+        end
+      end
+      p = $model.find(pid)
+      which_fields.each do |fld|
+        p.update_attribute(fld, nil)
+      end
+      avgs = vote_on_values(p)
+      fill_in_all avgs, p
+      puts "Done #{pid}. New #{which_fields[0]} #{$model.find(pid)[which_fields[0]]}"
+    end
+    puts "Done"
+  end
   
   task :no_cam_dups => [:cam_init, :match_to_products]
   task :temp  => [:cam_init, :amazon_init, :rescrape_stats]
@@ -247,10 +314,18 @@ namespace :data do
           #end
         end
       end
+      
+      p = $model.find(pid)
+      puts "Dims for #{pid} were: #{p.itemlength} x #{p.itemheight} x #{p.itemwidth}"
+      avgs = vote_on_values(p)
+      fill_in_all avgs, p
+      p = $model.find(pid)
+      puts "Done #{pid}. New dims #{p.itemlength} x #{p.itemheight} x #{p.itemwidth}"
       #if newval and newval > 0 and newval < 7000
-        p = $model.find(pid)
-        atts.each{ |att| fill_in(att,newvals[att],p) } if newvals
+        #p = $model.find(pid)
+        #atts.each{ |att| fill_in(att,newvals[att],p) } if newvals
       #end
+      
     end
     puts "There were #{no_stats.count} printers w/o stats of which #{no_stats_fixed.count} were fixed"
   end
@@ -295,7 +370,7 @@ namespace :data do
       avgs.each do |k,v|
         puts "#{k} -- #{v} (now #{p.[](k)}) for #{p.id}" #if [v, p.[](k)].uniq.reject{|x| x.nil?}.length > 1
       end
-      debugger
+      #debugger
       fill_in_all avgs, p
     end
   end

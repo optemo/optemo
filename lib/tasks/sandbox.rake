@@ -1,5 +1,108 @@
 namespace :sandbox do
   
+  
+  task :fix_reviews => :environment do
+    
+      require 'helper_libs'
+
+      include GenericScraper    
+      include ParsingLib
+      include CleaningLib
+      include LoggingLib
+      include DatabaseLib
+      include ScrapingLib
+      
+      Review.all.each do |product|
+        
+        debugger if product.retailer_id
+        fill_in('retailer_id', 1, product)
+              
+      end  
+  end
+  
+  
+  task :vote_on_models => :environment do
+    
+      require 'helper_libs'
+
+      include GenericScraper    
+      include ParsingLib
+      include CleaningLib
+      include LoggingLib
+      include DatabaseLib
+      include ScrapingLib
+      
+      $model.all.each do |product|
+        sps = $scrapedmodel.find_all_by_product_id(product.id)
+        avg_atts = {}
+        debugger
+        vote_on_id_fields sps, avg_atts
+        debugger
+        fill_in_all(avg_atts, product)
+      end
+  end
+    
+  task :test_stuff => :environment do
+  
+    require 'helper_libs'
+    
+    include GenericScraper    
+    include ParsingLib
+    include CleaningLib
+    include LoggingLib
+    include DatabaseLib
+    include ScrapingLib
+  
+    #samples = []
+    #samples << [[1,2,3], [1,2,3], [1,2,3] ]
+    #samples << [[1,2,4], [1,2,3], [1,2,3] ]
+    #samples << [[1,2,3], [1,2,3], [1,2,4] ]
+    #samples << [[1,2,4], [1,2,3], [1,1,1] ]
+    #samples << [[1,2,nil], [1,2,nil], [1,1,1] ]
+    #samples << [[1,2,0], [1,2,0], [1,1,1] ]
+    #
+    #samples.each do |sets|
+    #  best = vote_on_dimensions( sets) || []
+    #  puts "[#{best*','}] selected" 
+    #end
+  
+  end
+  
+  
+  task :reorder_dims => :environment do
+  
+    require 'helper_libs'
+    
+    include GenericScraper    
+    include ParsingLib
+    include CleaningLib
+    include LoggingLib
+    include DatabaseLib
+    
+    $model = Camera
+    $scrapedmodel = ScrapedCamera
+    
+    which_product_ids = Camera.all.collect{|x| x.id}
+    
+    dimlabels = ['itemlength', 'itemwidth', 'itemheight']
+    
+    which_product_ids.each do |pid| 
+      sps = ScrapedCamera.find_all_by_product_id(pid)
+      if sps.length != 0
+        sps.each do |sp|
+          atts = sp.attributes.reject{|a,b| !dimlabels.include?(a.to_s)}
+          all_vals_to_s!(atts)
+          rearrange_dims!(atts, ['D', 'H', 'W'], true)
+          fill_in_all(atts,sp)
+        end
+      end
+      p = Camera.find(pid)
+      avgs = vote_on_values(p)
+      fill_in_all(avgs, p)
+    end
+  end
+  
+  
   task :validate => :environment do 
     require 'helpers/parsing/idfields'
     require 'helpers/parsing/strings'

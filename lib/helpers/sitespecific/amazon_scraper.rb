@@ -68,16 +68,11 @@ module AmazonScraper
     end
     
     if (atts['stock'] || '').to_s == 'false'
-      #debugger
       # Check on site if actually out of stock
       ['price', 'priceint', 'pricestr', 'saleprice', 'salepriceint', 'salepricestr'].each{|x| atts['x'] = nil}
     elsif (atts['priceint'].nil? or atts['pricestr'].nil?)
-      #debugger # Should never happen
       puts "Price is nil?!?!? HOW DID THIS HAPPEN" # TODO 
-      0
     end
-    
-    atts['resolutionmax'] = get_max_f(atts['resolution']) if atts['resolution']
     
     return atts
   end
@@ -182,12 +177,6 @@ module AmazonScraper
         end
         offers = [] << offers unless offers.class == Array
         offers.each do |o| 
-          # Their stock info is often wrong!
-          #if o.get('offerlisting/availability').match(/out of stock/i) 
-          #  debugger
-          #  # Check that it's out of stock on the site?
-          #  next
-          #end
           price = o.get('offerlisting/price/formattedprice')
           if price.nil? or o.get('offerlisting/price').to_s.match(/too low/i)
             price = 0  # TODO scrape_hidden_prices(asin,region)
@@ -246,13 +235,8 @@ module AmazonScraper
     end
     
     atts['availability'] = offer.get('offerlisting/availability')
-    # TODO availability sometimes wrong!
-   # debugger if atts['availability'].nil?
     atts['availability'] = 'In stock' if (atts['availability'] || '').match(/out of stock/i) 
-    
-   # debugger if (atts['availability'] || '').match(/out/i) 
-    # Check against the website..
-    
+   
     atts['merchant']     = offer.get('merchant/merchantid')
     
     atts['url'] = "http://amazon.#{region=="us" ? "com" : region}/gp/product/"+asin+"?tag=#{region=="us" ? "optemo-20" : "laserprinterh-20"}&m="+atts['merchant']
@@ -283,9 +267,6 @@ module AmazonScraper
     temp = Array(temp) unless reviews.class == Array #Fix single and no review possibility
     mytext = temp.collect{|x| "#{x.get('date')} -- #{x.get('summary')}. #{x.get('content')} "}.join(' || ')
     reviews['reviewtext'] = mytext
-    
-    #debugger
-    
     return reviews
   end
 
@@ -303,9 +284,6 @@ module AmazonScraper
         result = res.first_item
         if result
           reviews = parse_review(result)
-        #else  
-        #  debugger
-        #  reviews = [ {'totalnumreviews'=> 0}]
         end
     end
     
@@ -391,6 +369,7 @@ module AmazonScraper
     temp2 = clean_brand atts['brand'], $printer_brands
     cleaned_atts['brand'] = temp1 || temp2
     cleaned_atts['condition'] ||= 'New'
+    atts['resolutionmax'] = get_max_f(atts['resolution']) if atts['resolution']
     return cleaned_atts
   end
   
@@ -421,17 +400,14 @@ module AmazonScraper
     semi_cleaned_atts = clean_property_names(atts) 
     cleaned_atts = product_cleaner(semi_cleaned_atts)
     res_array = separate(cleaned_atts['resolution'] || '')
-    mpix1 = res_array.collect{ |x| to_mpix(parse_res(x)) }.reject{|x| x.nil?}.max    
-    mpix2 = to_mpix(parse_res(cleaned_atts['title']))
-    if (mpix1 || 101) > 100
-      mpix = mpix1 / 1_000_000 if mpix1
-      mpix = mpix2 if mpix2
-    end
+    mpix = to_mpix(parse_res(cleaned_atts['title']))
+    mpix ||= res_array.collect{ |x| to_mpix(parse_res(x)) }.reject{|x| x.nil?}.max    
+    mpix = mpix / 1_000_000.0 if (mpix and mpix > 100)
     cleaned_atts['maximumresolution'] = mpix if mpix
     remove_sep!(cleaned_atts)
-    puts "#{cleaned_atts['itemlength']} x #{cleaned_atts['itemheight']} x #{cleaned_atts['itemwidth']}"
     rearrange_dims!(cleaned_atts, ['D', 'H', 'W'], true)
-    puts "#{cleaned_atts['itemlength']} x #{cleaned_atts['itemheight']} x #{cleaned_atts['itemwidth']}"
+    # TODO the following is hacky.
+    cleaned_atts['displaysize'] = nil if ['0', '669.2913385827'].include?(cleaned_atts['displaysize'] || '').to_s
     return cleaned_atts
   end
   

@@ -44,6 +44,18 @@ module CameraHelper
     mp = get_f_with_units( str,  /(\s)?m(ega)?\s?p(ixel(s)?)?/i ) || 0
     kp = get_f_with_units( str,  /(\s)?k(ilo)?\s?p(ixel(s)?)?/i ) || 0
     p = get_f_with_units( str,  /(\s)?(pixel(s)?|px)(\s|,|$)/i ) || 0
-    return [mp, kp, p] 
+
+    array = [mp, kp, p]
+    
+    if (array.uniq == [0] )
+      temp = str.match(/^\s*\d+\s?x\s?\d+\s*$/i)
+      if temp
+        one = (str.match(/^\s*\d+/)).to_s.to_i
+        two = (str.match(/\d+\s*$/)).to_s.to_i
+        array[2] = one * two
+      end
+    end
+    
+    return array
   end
 end

@@ -1620,7 +1620,6 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.integer  "packagewidth"
     t.integer  "packageweight"
     t.float    "opticalzoom"
-    t.float    "resolutionmax"
     t.string   "resolution"
     t.float    "displaysize"
     t.boolean  "slr"
@@ -1641,6 +1640,7 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.string   "local_id"
     t.boolean  "aa_batteries"
     t.boolean  "bodyonly"
+    t.float    "maximumresolution"
   end
 
   create_table "scraped_printers", :force => true do |t|

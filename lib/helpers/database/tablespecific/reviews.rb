@@ -32,4 +32,14 @@ module ReviewsHelper
     end
     return revu
   end
+  
+  # Can this review be identified?
+  def review_is_recognizable? revu
+    # Try finding review by review ID (and retailer ID?)
+    return false unless revu['retailer_id']
+    return true if revu['local_review_id'] 
+    return true if revu['local_id'] and revu['customerid']
+    return false
+  end
+  
 end

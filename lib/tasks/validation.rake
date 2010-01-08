@@ -92,6 +92,57 @@ module Check
 end
 
 namespace :check do
+  
+  task :reviews => :init do 
+    
+    require 'helper_libs'
+    include DatabaseLib
+    
+    chekme = Review.all.collect{|x| x.id}
+    unidentifiable = []
+    blank = []
+    unlinked = []
+    badlinked = []
+    badlinked_2 = []
+    
+    chekme.each do |revu_id|
+      revu = Review.find(revu_id)
+      unidentifiable << revu_id unless review_is_recognizable?( revu)
+      blank << revu_id unless ((revu['content'] and revu['content'].to_s.strip != '') or revu['rating'])
+      if ( revu.product_type || '').to_s != '' and (revu.product_id)
+        mdl = revu.product_type.constantize
+        if mdl
+          begin
+             product = mdl.find(revu.product_id)
+          rescue ActiveRecord::RecordNotFound => e
+             product = nil # Record not found!
+          end
+          
+          
+          badlinked << revu_id unless product
+          if revu.local_id
+            scrapeds = "Scraped#{mdl}".constantize.find_all_by_product_id(revu.product_id)
+            scrapeds.each do |scr|
+              if scr.local_id and scr.local_id != revu.local_id
+                badlinked_2 << [revu_id, scr.id]
+              end
+            end
+          end
+        else
+          badlinked << revu_id 
+        end
+      else
+        unlinked << revu_id
+      end
+    end
+    
+    puts "#{blank.count} blank reviews"
+    puts "#{unidentifiable.count} non-identifiable reviews"
+    puts "#{unlinked.count} reviews not linked"
+    puts "#{badlinked.count} incorrectly linked review-product pairs"
+    puts "#{badlinked_2.count} incorrectly linked review-scraped pairs"
+    
+  end
     
   task :cameras => [:cam_init] do #, :pictures] do
     include ValidationLib
@@ -102,27 +153,28 @@ namespace :check do
     @logfile = File.open("./log/check_#{$model.name}_2.log", 'a+')
     timed_log 'Start camera-specific validation'
     my_products = $model.instock | $model.instock_ca
+    my_valid_products = $model.valid.instock  | $model.valid.instock_ca
     my_offerings = RetailerOffering.find_all_by_product_type_and_stock($model.name, true)
     
-    chek_pictures(my_products)
-    chek_offerings(my_offerings)
-    chek_products(my_products)
-    chek_linkage(my_products)
+    #chek_pictures(my_products)
+    #chek_offerings(my_offerings)
+    #chek_products(my_products)
+    #chek_linkage(my_products)
     
-    announce "Testing #{my_products.count} #{$model.name}s for validity..."
+    announce "Testing #{my_valid_products.count} valid #{$model.name}s for wonky data..."
     
-    assert_within_range( my_products, 'itemheight', 200, 450)
-    assert_within_range( my_products, 'itemlength', 60, 350) # depth
-    assert_within_range( my_products, 'itemwidth', 350, 600)
+    assert_within_range( my_valid_products, 'itemheight', 200, 450)
+    assert_within_range( my_valid_products, 'itemlength', 60, 350) # depth
+    assert_within_range( my_valid_products, 'itemwidth', 350, 600)
+                             
+    assert_within_range( my_valid_products, 'maximumresolution', 0.5, 50)    
+    assert_within_range( my_valid_products, 'opticalzoom', 1, 26)
+    assert_within_range( my_valid_products, 'displaysize', 0.5, 4)
     
-    assert_within_range( my_products, 'maximumresolution', 0.5, 50)    
-    assert_within_range( my_products, 'opticalzoom', 1, 26)
-    assert_within_range( my_products, 'displaysize', 1.5, 4)
-    
-    assert_within_range( my_products, 'price', 1_00, 10_000_00)
+    assert_within_range( my_valid_products, 'price', 1_00, 10_000_00)
     
     # Optional fields:    
-    assert_within_range( my_products, 'digitalzoom', 1, 100)
+    assert_within_range( my_valid_products, 'digitalzoom', 1, 100)
     
     @logfile.close
   end

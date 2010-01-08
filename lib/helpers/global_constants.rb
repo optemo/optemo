@@ -52,7 +52,7 @@ module Constants
     'megapixel', 'Megapixel', 'MegaPixel', 'Mega Pixel', 'mp'] # TODO expand list
   
   $colors = [ 'black', 'green', 'blue', 'pink', 'red', 'beige', 'teal', 'purple', 'grey',\
-     'gray', 'silver', 'white', 'champagne', 'pearl', 'titanium', 'crimson', 'espresso black',\
+     'gray', 'silver', 'white', 'champagne', 'pearl', 'titanium', 'crimson', 'espresso',\
      'yellow', 'azure']
 end
 

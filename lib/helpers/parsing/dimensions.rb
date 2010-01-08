@@ -130,9 +130,11 @@ module DimensionsHelper
   
   def vote_on_dimensions all_dimsets
     dimset_scores = {}
-    all_dimsets.each_with_index do |set, i|
+    all_valid_dimsets = all_dimsets.reject{|x| x.nil? or x.include?(nil) or x.include?(0) or x.length != 3}
+    all_valid_dimsets.each_with_index do |set, i|
       score = 0
-      other_dimsets = all_dimsets - [set]
+      other_dimsets = ([]+all_valid_dimsets)
+      other_dimsets.delete_at(i)
       other_dimsets.each do |other|
         3.times do |i|
           score += 1 if other[i] == set[i]
@@ -143,7 +145,9 @@ module DimensionsHelper
       end
       dimset_scores[set] = score
     end
-    best_dimset = all_dimsets.sort{|a,b| dimset_scores[a] <=> dimset_scores[b]}
+    #puts "All: #{all_dimsets.collect{|x| "[#{x*','}]"}*'; '}"
+    #puts "Scores: #{(dimset_scores.collect{|a, b| "[#{a*','}] -- #{b}"}) * '; '}"
+    best_dimset = all_valid_dimsets.sort{|a,b| dimset_scores[b] <=> dimset_scores[a]}.first
     return best_dimset
   end
 end

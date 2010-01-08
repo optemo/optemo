@@ -59,6 +59,7 @@ module IdFieldsHelper
         next if all.include?(mdl)
         match = get_same_model(mdl, all, series) 
         addme = no_blanks([match, mdl]).uniq.sort{|a,b| likely_model_name(b) <=>  likely_model_name(a) }
+        next if all.include?(addme[0])
         all << addme[0] if addme[0]
     end
     return all
