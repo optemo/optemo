@@ -1,23 +1,39 @@
 namespace :sandbox do
   
-  task :match_reviews => :environment do 
+  task :unmatch_reviews => :environment do 
     $model = Camera
     $scrapedmodel = ScrapedCamera
     
-    allrevus = Review.find_all_by_product_id_and_product_type(nil, $model.name)
+    matchme = [0..Review.last.id].reject{|revu_id| !Review.exists?(revu_id)}
     
-    allrevus[0..10].each do |revu|      
+    count = 0
+    matchme.each do |revu_id|      
+      
+      revu = Review.find(revu_id)
+      
+      next if revu.product_id.nil?
+      next if revu.product_type != $model.name
+      
+      unless Camera.exists?(revu.product_id)
+        debugger if revu.product_type != 'Camera'
+        puts "#{revu.product_id}"
+        revu.update_attribute('product_id', nil)
+        puts "#{revu.product_id}"
+        debugger if revu.product_id
+        count += 1
+      end
+      
       #puts "Review #{revu.id} : "
       #puts revu.summary
       #puts revu.content
-      lid =  revu['local_id']
-      sms = $scrapedmodel.find_all_by_local_id(lid)
-      sms.each do |sm|
+      #lid =  revu['local_id']
+      #sms = $scrapedmodel.find_all_by_local_id(lid)
+      #sms.each do |sm|
         #puts "#{revu.id} matches #{$model.name} #{sm.product_id}, #{$model.find(sm.product_id).title}"
         
-      end
+      #end
     end
-    
+    puts "Done unlinking #{count} revues"
   end
   
   task :chek_pic_sizes => :environment do
