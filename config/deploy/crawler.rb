@@ -2,7 +2,9 @@ set :application, "crawler"
 set :repository,  "git@jaguar:site.git"
 set :domain, "jaguar"
 set :branch, "staging"
-set :user, 'maria'
+set :user, "#{ `whoami`.chomp }"
+# There is also this method, might be better in some cases:
+# { Capistrano::CLI.ui.ask("User name: ") }
 
 # If you aren't deploying to /u/apps/#{application} on the target
 # servers (which is the default), you can specify the actual location
@@ -43,7 +45,7 @@ end
 desc "Reindex search index"
 task :reindex do
   run "rake -f #{current_path}/Rakefile ts:conf RAILS_ENV=production"
-  run "rake -f #{current_path}/Rakefile ts:rebuild RAILS_ENV=production"
+  sudo "rake -f #{current_path}/Rakefile ts:rebuild RAILS_ENV=production"
 end
 
 desc "Compile C-Code"

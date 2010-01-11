@@ -5,7 +5,7 @@ module ProductsHelper
   
   def sim_link(cluster,i, itemId)
     unless cluster.children(@session).nil? || cluster.children(@session).empty? || (cluster.size(@session)==1)
-      "<div class='sim'>" +
+      "<div class='sim rounded'>" +
         link_to("#{cluster.size(@session)-1} More Product#{"s" if cluster.size(@session) > 2} In This Group", 
         "/#{$model.urlname}/compare/"+cluster.children(@session).map{|c|c.id}.join('-'), 
         :id => "sim#{i}", :class => 'simlinks', :name => itemId) +
@@ -54,8 +54,8 @@ module ProductsHelper
   
   def navtitle
     if @s.searchterm.nil?
-		  (@s.result_count > 1) ? t("products.compare.browsings",:count => @s.result_count) : t("products.compare.browsing") 
-		  ["Browsing", @s.result_count, $RelativeDescriptions ? "<b>"+@s.searchDescription.map{|d|t("products."+d)}.join(", ")+"</b>" : nil, (@s.result_count > 1) ? "Printers" : "Printer"].join(" ")
+		  (@s.result_count > 1) ? t("products.compare.browsings",:count => @s.result_count) + $model.name + "s" : t("products.compare.browsing") + $model.name
+		  ["Browsing", @s.result_count,$RelativeDescriptions ? "<b>"+@s.searchDescription.map{|d|t("products."+d)}.join(", ")+"</b>" : nil, ($model.name == 'Camera' ? ((@s.result_count > 1) ? "Cameras" : "Camera") : ((@s.result_count > 1) ? "Printers" : "Printer"))].join(" ")
 		else
       "#{t("products.compare.search")}: '#{@s.searchterm}', #{(@s.result_count > 1) ? t("products.compare.browsings",:count => @s.result_count) : t("products.compare.browsing")}" 
     end

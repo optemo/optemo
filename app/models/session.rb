@@ -1,5 +1,4 @@
 class Session < ActiveRecord::Base
-  has_many :saveds
   has_many :vieweds
   has_many :searches
   has_many :preference_relations

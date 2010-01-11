@@ -2,8 +2,6 @@ class CompareController < ApplicationController
 # Compares products selected for comparison ('saved' products)
   
   layout false
-  # GET /saveds
-  # GET /saveds.xml
     
   def index
 

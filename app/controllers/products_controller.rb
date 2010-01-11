@@ -25,7 +25,6 @@ class ProductsController < ApplicationController
   
   def classVariables(search)
     @s = search
-    @picked_products = @session.saveds.map {|s| $model.find(s.product_id)}
   end
   
   def sim
@@ -80,9 +79,19 @@ class ProductsController < ApplicationController
   def show
     @session = @@session
     @plain = params[:plain].nil? ? false : true
+    
     #Cleanse id to be only numbers
     params[:id] = params[:id][/^\d+/]
     @product = $model.find(params[:id])
+    
+    if $model.name == "Camera"
+      @imglurl = "/images/cameras/" + @product.id.to_s + "_l.jpg"
+    elsif $model.name == "Printer"
+      @imglurl = "/images/printers/" + @product.id.to_s + "_l.jpg"
+    else
+      @imglurl = "/images/printers/" + @product.id.to_s + "_l.jpg"
+    end    
+    
 # => Caching:
 #    @product = cache([$model.name, params[:id]]) do
 #      $model.find(params[:id])
@@ -91,21 +100,7 @@ class ProductsController < ApplicationController
     @review = Review.find_by_product_id_and_product_type(params[:id],$model.name, :order => 'helpfulvotes DESC')
     @cartridges = Compatibility.find_all_by_product_id_and_product_type(@product.id,$model.name).map{|c|Cartridge.find_by_id(c.accessory_id)}.reject{|c|!c.instock}
     @cartridgeprices = @cartridges.map{|c| RetailerOffering.find_by_product_type_and_product_id("Cartridge",c.id)}
-    #Session Tracking
-    s = Viewed.new
-    s.session_id = session[:user_id]
-    s.product_id = @product.id
-    s.save
-    
-    # Determine whether or not to show the Save Button
-    @showSaveButton = true
-    @saveds = Saved.find_all_by_session_id(session[:user_id])
-    @saveds.collect do |saved|
-      if @product.id == saved.product_id
-        @showSaveButton = false
-      end      
-    end
-    
+
     respond_to do |format|
       format.html { if @plain
                       render :layout => false

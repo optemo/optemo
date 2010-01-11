@@ -1590,15 +1590,6 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.float    "value_rating"
   end
 
-  create_table "saveds", :force => true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "session_id"
-    t.integer  "product_id"
-    t.integer  "search_id"
-    t.string   "product_type"
-  end
-
   create_table "scraped_cameras", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"

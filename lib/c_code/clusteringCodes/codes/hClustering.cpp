@@ -36,8 +36,8 @@ int main(int argc, char** argv){
 	string logFile = "/optemo/site/log/clustering.log";
 
 	//argument is the productName
-    if (argc <4){
-		cout<<" Wrong number of arguments, you need 3 (product name, region and environment)"<<endl;
+    if (argc <5){
+		cout<<" Wrong number of arguments, you need 4 (product name, region, environment and number of clusters)"<<endl;
 		return EXIT_FAILURE;
 	}
 	string productName = argv[1];
@@ -60,6 +60,11 @@ int main(int argc, char** argv){
 		return EXIT_FAILURE;
 	}
 	
+	clusterN = atoi(argv[4]);
+	if (clusterN<2 || clusterN>9){
+		cout<<"your number of clusters should be between 2 and 9"<<endl;
+		return EXIT_FAILURE;
+	}
 
 	string tableName = productName;
 	tableName.append("s");
@@ -69,24 +74,24 @@ int main(int argc, char** argv){
 	double* weights;
 	map<const string, double> weightHash;
 	weightHash["price"] = 1;
-		weightHash["itemweight"] = 0;
+	//	weightHash["itemweight"] = 0;
 		weightHash["opticalzoom"] = 4;
 		weightHash["displaysize"] = 1;
 		weightHash["maximumresolution"] = 1;
-		weightHash["slr"] = 0;
-		weightHash["waterproof"] = 0;
+	//	weightHash["slr"] = 0;
+	//	weightHash["waterproof"] = 0;
 	switch(productNames[productName]){
 		
 		case 1:
-					clusterN = 9; 
-					conFeatureN= 5;
+				
+					conFeatureN= 4;
 					catFeatureN= 1;
-					boolFeatureN= 2;
+					boolFeatureN= 0;
 					range= 2;
 					break;
 			
 		case 2:
-					clusterN = 9; 
+			
 					conFeatureN= 5;
 					catFeatureN= 1;
 					boolFeatureN= 2;
@@ -103,7 +108,7 @@ int main(int argc, char** argv){
 					    }
 					break;
 		default:
-					clusterN = 9; 
+				
 					conFeatureN= 4;
 					catFeatureN= 1;
 					boolFeatureN= 0;
@@ -133,7 +138,7 @@ int main(int argc, char** argv){
 	conFeatureNames[1]="displaysize";  
     conFeatureNames[2]="opticalzoom";
     conFeatureNames[3]="maximumresolution";
-    conFeatureNames[4]="itemweight";
+//    conFeatureNames[4]="itemweight";
 
 	double *average = new double[conFeatureN]; 
 	
@@ -238,15 +243,18 @@ int main(int argc, char** argv){
 		  
 				// Using the Driver to create a connection
 				driver = sql::mysql::get_mysql_driver_instance();
+			
 				con = driver->connect(HOST, PORT, USER, PASS);
 				stmt = con->createStatement();
 				command = "USE ";
 				command += databaseName;
+			
 				stmt->execute(command);
-				 
+				 //	cout<<"command is "<<nullCheck<<endl;	
 				res = stmt->executeQuery(nullCheck);
+			
 				  if (res->rowsCount() >0){
-					cout<<"There are some null values in "<<productName<<" s table"<<endl;
+					cout<<"There are some null values in "<<productName<<"s table"<<endl;
 				  }
 
 			
@@ -269,7 +277,9 @@ int main(int argc, char** argv){
 				else{
 					version = 0;
 				}
+				cout<<"version is "<<version<<endl;
 	
+	   if (version > keepStep){
 				///Archiving the old clusters and nodes & deleteing the old ones
 				command2 = "INSERT into ";
 				command2 += productName;
@@ -282,6 +292,7 @@ int main(int argc, char** argv){
 				command2 += " and region=\'";
 				command2 += region;
 				command2 += "\';";
+				cout<<"command is "<<command2<<endl;	
 				stmt->execute(command2);
 			 
 				command2 = "INSERT into ";
@@ -297,7 +308,7 @@ int main(int argc, char** argv){
 				command2 += "\';";
 				
 				stmt->execute(command2); 
-			
+			}
 					
 				bool clustered = 0;
 			    res = stmt->executeQuery(filteringCommand); 
@@ -312,7 +323,8 @@ int main(int argc, char** argv){
 			  myfile2.open("/optemo/site/log/clustering.log", ios::app);
 			myfile2 <<endl<<timeinfo->tm_year+1900<<"-"<< timeinfo->tm_mon+1<<"-"<<timeinfo->tm_mday<<" "<< timeinfo->tm_hour<<endl;
 			 
-				myfile2<<"Version: "<<version<<endl;	
+				myfile2<<"Version: "<<version<<endl;
+				
 			   while (maxSize>clusterN){
 							
 					for (int j=0; j<conFeatureN; j++){
@@ -321,6 +333,7 @@ int main(int argc, char** argv){
 					maxSize = hClustering(layer, clusterN,  conFeatureN,  boolFeatureN, average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
 							stmt, conFeatureNames, boolFeatureNames, productName, weightHash, version, region);	
 					myfile2<<"layer "<<layer<<endl;
+					cout<<"layer "<<layer<<endl;
 					layer++;
 					clustered = 1;
 				}
