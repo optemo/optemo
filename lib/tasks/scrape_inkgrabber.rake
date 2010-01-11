@@ -61,7 +61,7 @@ namespace :scrape_grabber do
         matching_cartridges = find_matching_product [clean_atts['brand']], [clean_atts['model'], clean_atts['mpn']], Cartridge
         puts "#{matching_cartridges.length} matching cartridges found"
         cart = matching_cartridges[0] 
-        cart = create_record_from_atts (clean_atts, Cartridge) if cart.nil? 
+        cart = create_record_from_atts(clean_atts, Cartridge) if cart.nil? 
         comp = create_uniq_compatibility cart.id, 'Cartridge', gc.printerid , 'Printer'
         goff = GrabberOffering.find_or_create_by_item_number(gc.item_number)
         fill_in 'product_id', cart.id, goff

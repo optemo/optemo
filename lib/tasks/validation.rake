@@ -164,7 +164,7 @@ namespace :check do
     announce "Testing #{my_valid_products.count} valid #{$model.name}s for wonky data..."
     
     assert_within_range( my_valid_products, 'itemheight', 200, 450)
-    assert_within_range( my_valid_products, 'itemlength', 60, 350) # depth
+    assert_within_range( my_valid_products, 'itemlength', 55, 350) # depth
     assert_within_range( my_valid_products, 'itemwidth', 350, 600)
                              
     assert_within_range( my_valid_products, 'maximumresolution', 0.5, 50)    
