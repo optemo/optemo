@@ -1,3 +1,4 @@
+# encoding: utf-8
 module AmazonScraper
   
   # Detail page url from local_id and region
