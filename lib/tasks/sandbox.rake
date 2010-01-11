@@ -4,7 +4,7 @@ namespace :sandbox do
     $model = Camera
     $scrapedmodel = ScrapedCamera
     
-    matchme = [0..Review.last.id].reject{|revu_id| !Review.exists?(revu_id)}
+    matchme = Review.find_all_by_product_type('Camera').reject{|revu_id| !Review.exists?(revu_id)}
     
     count = 0
     matchme.each do |revu_id|      
@@ -15,11 +15,11 @@ namespace :sandbox do
       next if revu.product_type != $model.name
       
       unless Camera.exists?(revu.product_id)
-        debugger if revu.product_type != 'Camera'
-        puts "#{revu.product_id}"
-        revu.update_attribute('product_id', nil)
-        puts "#{revu.product_id}"
-        debugger if revu.product_id
+        #debugger if revu.product_type != 'Camera'
+        #puts "#{revu.product_id}"
+        #revu.update_attribute('product_id', nil)
+        #puts "#{revu.product_id}"
+        #debugger if revu.product_id
         count += 1
       end
       
