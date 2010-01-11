@@ -1,5 +1,23 @@
 namespace :sandbox do
 
+  task :stuff => :environment do 
+    
+      require 'helper_libs'
+
+      include CameraHelper
+      include CameraConstants
+      
+      
+      $model = @@model
+      $scrapedmodel = @@scrapedmodel
+      
+      lastid = Review.last.id
+      temp = [0..lastid]
+      
+      
+
+  end
+
   task :match_ros => :environment do 
     require 'helper_libs'
    
