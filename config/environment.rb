@@ -53,7 +53,6 @@ Rails::Initializer.run do |config|
   #Sphinx setup
  config.gem(
    'thinking-sphinx',
-   :lib => 'thinking_sphinx/0.9.8',
-   :version => "1.3.4"
+   :lib => 'thinking_sphinx'
  )
 end
