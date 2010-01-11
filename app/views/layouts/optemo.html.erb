@@ -21,11 +21,11 @@
 		<%= link_to image_tag('ca.gif'), url_for_intl('ca') %>
 	  </div>
 	  <div id="logo">
-		<a href="<%= url_for '/' %>" id ="logo" title="LaserPrinterHub.com"><%= $region == "us" ? image_tag('logo.jpg') : image_tag('logo_ca.jpg')%><span>Home</span></a>
+		<a href="<%= url_for '/' %>" id ="logo" title="<%= $model.name == "Camera" ? 'Cameras.BrowseThenBuy.com' : 'LaserPrinterHub.com' %>"><%= $region == "us" ? image_tag('logo'+($model.name == 'Camera' ? '_cameras' : '')+'.jpg') : image_tag('logo'+($model.name == "Camera" ? '_cameras' : '_ca')+'.jpg')%><span>Home</span></a>
 	  </div>
-		<a href="<%= url_for '/laserprinters' %>" title="Why buy a laser printer?" id='whylaser'>Why buy a laser printer?</a>
+		<% if $model.name == "Printer" %><a href="<%= url_for '/laserprinters' %>" title="Why buy a laser printer?" id='whylaser'></a><% end %>
 	 <div>
-		Find, compare, and buy the right printer for you! We have found the best deals from various online retailers for you. <!--Explore groups of similar products by clicking on the links in the boxes or narrow your search by using the filters on your left. Can't decide? Save a few printers and compare!-->
+		Find, compare, and buy the right <%= $model.name.downcase %> for you! We have found the best deals from various online retailers for you. <!--Explore groups of similar products by clicking on the links in the boxes or narrow your search by using the filters on your left. Can't decide? Save a few printers and compare!-->
 	</div>
      <div id="logindisplay">                                                                                               
    		<% if !cookies[$AppKey +"_user"].nil? %>
@@ -141,7 +141,7 @@ piwikTracker2.enableLinkTracking();
 		<br/><br/>
 		<a href="#" class="popupnextbutton">Next &gt;&gt;</a>
 		<br/><hr width="90%"/>
-		<span class='popupcloseinstructions'>Press escape or click X to close at any time</span>
+		<span class='popupcloseinstructions'>Click X to close at any time</span>
 	</p>
 </div>
 
@@ -152,7 +152,7 @@ piwikTracker2.enableLinkTracking();
 		<br/><br/>
 		<a href="#" class="popupnextbutton">Next &gt;&gt;</a>
 		<br/><hr width="90%"/>
-		<span class='popupcloseinstructions'>Press escape or click X to close at any time</span>
+		<span class='popupcloseinstructions'>Click X to close at any time</span>
 	</p>
 </div>
 
@@ -163,7 +163,7 @@ piwikTracker2.enableLinkTracking();
 		<br/><br/>
 		<a href="#" class="popupnextbutton">Start Browsing</a>
 		<br/><hr width="90%"/>
-		<span class='popupcloseinstructions'>Press escape or click X to close at any time</span>
+		<span class='popupcloseinstructions'>Click X to close at any time</span>
 	</p>
 </div>
 

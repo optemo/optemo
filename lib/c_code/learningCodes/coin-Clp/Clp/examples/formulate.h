@@ -47,21 +47,17 @@ void formulate(sql::Statement *stmt, sql::ResultSet *resPref, sql::ResultSet *re
 		ipIdS << ignoredId;
 		command += ipIdS.str();
 		command += ";";
-		cout<<"command is "<<command<<endl;
+	
 		resFactor = stmt->executeQuery(command);
-		cout<<"count is "<<count<<" conFeatureN is "<<conFeatureN<<endl;
-		cout<<"resFactor count is "<<resFactor->rowsCount()<<endl;
+	
 		for (int i=0; i<conFeatureN; i++){
 		    resFactor->next();
-			cout<<"beforerrrr"<<"  factor["<<i<<"] is "<<factor[i]<<endl;
 			fact = resFactor->getDouble(conFeatureNames[i]);
-			cout<<" fact is "<<fact<<endl;
+			//cout<<" fact is "<<fact<<endl;
 			factor[i] = factor[i] - fact;
-        	cout<<"HERE"<<endl;	
-		}	
-			
+		}		
 	}	
-	
+
 			
 		//factor vector is the coeffiecient vector for the constraints
 		//the lower bound is 0 and the upper bound is maximum utility, i.e. 1
@@ -101,8 +97,10 @@ void formulate(sql::Statement *stmt, sql::ResultSet *resPref, sql::ResultSet *re
 		for (int i=0; i<constN; i++){
 			CoinPackedVector row1;
 			for (int f=0; f<conFeatureN; f++){
+				cout<<"factor["<<f<<"] is: "<<factor[f]<<endl;
 				row1.insert(f, factor[f]);
 			}	
+			
 			// the coeffient for m and slack
 			row1.insert(conFeatureN, -1);
 			row1.insert(conFeatureN+1, 1);

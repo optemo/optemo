@@ -79,6 +79,11 @@ function fadeout(url,data,width,height)
 // When you click the Save button:
 function saveProductForComparison(id, imgurl, name)
 {	
+	imgurlToSaveArray = imgurl.split('/');
+	
+	imgurlToSaveArray[imgurlToSaveArray.length - 1] = id + "_s.jpg";
+	imgurlToSave = imgurlToSaveArray.join("/");
+	
 	if($(".saveditem").length == 4)
 	{
 		$("#too_many_saved").css("display", "block");
@@ -91,7 +96,7 @@ function saveProductForComparison(id, imgurl, name)
 	} else {
 		trackPage('goals/save/'+id);
 		renderComparisonProducts(id, imgurl, name);
-		addValueToCookie('savedProductIDs', [id, imgurl, name]);
+		addValueToCookie('savedProductIDs', [id, imgurlToSave, name]);
 	}
 
 	// There should be at least 1 saved item, so...
@@ -110,24 +115,25 @@ function renderComparisonProducts(id, imgurl, name)
 	// The best is to just leave the medium URL in place, because that image is already loaded in case of comparison, the common case.
 	// For the uncommon case of page reload, it's fine to load a larger image.
 	//	imgurl.replace(/_m/g, "_s")
-	smallProductImageAndDetail = "<img class=\"productimg\" width=\"45\" height=\"50\" src=" + 
+	smallProductImageAndDetail = "<img class=\"productimg\" src=" + // used to have width=\"45\" height=\"50\" in there, but I think it just works for printers...
 	//"/images/printers/"+id+"_s.jpg?1260303451" + 
-	imgurl +
-	" data-id=\""+id+"\" alt=\""+id+"_s\"/>" + 
-	"<div class=\"smalldesc\">" +
-	"<a class=\"easylink\" data-id=\""+id+"\" href=\"#\">"+
+	imgurl + 
+	" data-id=\""+id+"\" alt=\""+id+"_s\"/ width=\"50\">" + 
+	"<div class=\"smalldesc\"";
+	// It looks so much better in Firefox et al, so if there's no MSIE, go ahead with special styling.
+	if (browserIsIE.indexOf("MSIE") == -1) smallProductImageAndDetail = smallProductImageAndDetail + " style=\"position:absolute; bottom:5px;\"";
+	smallProductImageAndDetail = smallProductImageAndDetail + ">" +
+	"<a class=\"easylink\" data-id=\""+id+"\" href=\"#\">" + 
 	((name) ? getShortProductName(name) : 0) +
-	//Zevtor +
 	"</a></div>" + 
 	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\" onClick=\"javascript:removeFromComparison("+id+")\">" + 
 	"<img src=\"/images/close.png\" alt=\"Close\"/></a>"; // do we need '?1258398853' ? I doubt it.
-
 	$(smallProductImageAndDetail).appendTo('#c'+id);
 	DBinit("#c"+id)
 
 	$("#already_added_msg").css("display", "none");
 	$("#too_many_saved").css("display", "none");
-	if (browserIsIE.indexOf('MSIE') != -1)
+	if (browserIsIE.indexOf('MSIE') == -1) // If it's any browser other than IE, clear the height element.
 		$("#savedproducts").css({"height" : ''});
 }
 
@@ -733,14 +739,14 @@ $(document).ready(function() {
 		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
 		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
 	}
-	if (browserIsIE.indexOf("MSIE6") != -1)
+	if (browserIsIE.indexOf("MSIE6") != -1) // If it's IE6
 	{
 		// Make the PNG background transparent in IE6.
 		// This is not working right now. Need to launch without it.
 //		$('.navigator_box').supersleight();
 //		$('.sim').superslight();       
 	}
-	if (browserIsIE.indexOf("MSIE") != -1)
+	if (browserIsIE.indexOf("MSIE") != -1) // If it's any version of IE, the transparency for the hands doesn't get done properly on page load.
 	{
 		$('.dragHand').each(function() {
 			$(this).fadeTo("fast", 0.35);
