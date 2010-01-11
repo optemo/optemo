@@ -14,7 +14,7 @@ set :deploy_via, :remote_cache
 default_run_options[:pty] = true
 ssh_options[:port] = 5151
 set :use_sudo, false
-set :user, { `whoami`.chomp }
+set :user, "#{ `whoami`.chomp }"
 # There is also this method, might be better in some cases:
 # { Capistrano::CLI.ui.ask("User name: ") }
 

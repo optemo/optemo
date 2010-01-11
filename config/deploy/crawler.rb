@@ -2,7 +2,7 @@ set :application, "crawler"
 set :repository,  "git@jaguar:site.git"
 set :domain, "jaguar"
 set :branch, "staging"
-set :user, { `whoami`.chomp }
+set :user, "#{ `whoami`.chomp }"
 # There is also this method, might be better in some cases:
 # { Capistrano::CLI.ui.ask("User name: ") }
 
