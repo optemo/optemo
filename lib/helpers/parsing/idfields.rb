@@ -126,7 +126,7 @@ module IdFieldsHelper
     return nil
   end
   
-  def model_series_variations models, series
+  def model_series_variations models, series=[]
     vars = []
     models.reject{|x| x.nil? or x == ''}.each{ |mn|  
         vars << mn

@@ -1,4 +1,87 @@
 namespace :sandbox do
+
+  task :match_ros => :environment do 
+    require 'helper_libs'
+   
+    include GenericScraper    
+    include ParsingLib
+    include CleaningLib
+    include LoggingLib
+    include DatabaseLib
+    include ScrapingLib
+    
+    include CameraHelper
+    include CameraConstants
+    
+    $model = @@model
+    $scrapedmodel = @@scrapedmodel
+    $brands= @@brands
+    $series = @@series
+    $descriptors = @@descriptors
+    
+    allros = RetailerOffering.find_all_by_product_type($model.name).reject{ |y|
+      y.local_id.nil?
+    }.collect{|x| x.id}
+    
+    count = 0
+    
+    puts "#{allros.count} total IDable ROs"
+    
+    allros.reverse.each do |roid|
+      ro = RetailerOffering.find(roid)
+      sps = $scrapedmodel.find_all_by_retailer_id_and_local_id(ro.retailer_id,ro.local_id)
+      sp = sps.first
+      if sp
+        pid = sp.product_id
+        count += 1
+      end
+      fill_in_forced('product_id', pid, ro)
+    end
+    puts "#{count} have been matched"
+  end
+  
+  desc 'No more camera duplicates'
+  task :no_more_cam_dups => :environment do 
+    require 'helper_libs'
+   
+    include GenericScraper    
+    include ParsingLib
+    include CleaningLib
+    include LoggingLib
+    include DatabaseLib
+    include ScrapingLib
+    
+    include CameraHelper
+    include CameraConstants
+    
+    $model = @@model
+    $scrapedmodel = @@scrapedmodel
+    $brands= @@brands
+    $series = @@series
+    $descriptors = @@descriptors
+    
+    allcams = $model.all.collect{|x| x.id}
+    
+    while allcams.length > 0
+      camid = allcams.last
+      cam = $model.find(camid)
+      matches = match_product_to_product cam, $model, $series
+      
+      if matches.length > 1
+          puts "#{matches.length}"
+          puts "#{matches.collect{|x| "#{x.model} , #{x.mpn}, #{x.id}"} * "\n"}"
+          removeme = (matches[1..-1]).collect{|x| x.id}
+          removeme.each do |dup|
+            $model.delete(dup)
+            allcams.delete(dup)
+          end
+      end
+      
+      allcams.delete(camid)
+      puts "[#{Time.now }] #{allcams.count} cameras left to check"
+    end
+    puts "[#{Time.now}] Done"
+  end
   
   
   task :fix_reviews => :environment do
@@ -20,7 +103,17 @@ namespace :sandbox do
       end  
   end
   
+  task :remove_unidentifiables => :environment do
+    $model = Camera
+    unid = ($model.find_all_by_model_and_mpn(nil,nil)).collect{|x| x.id} 
+    unid = (unid | ($model.find_all_by_brand(nil)).collect{|x| x.id} )
+    unid.each do |id|
+      $model.delete(unid)
+    end
+    puts "#{unid.count} unidentifiable #{$model.name}s removed"
+  end
   
+  # DONE THIS!
   task :vote_on_models => :environment do
     
       require 'helper_libs'
@@ -32,14 +125,24 @@ namespace :sandbox do
       include DatabaseLib
       include ScrapingLib
       
+      include CameraHelper
+      include CameraConstants
+      
+      # TODO get rid of this construct:
+      $model = @@model
+      $scrapedmodel = @@scrapedmodel
+      $brands= @@brands
+      $series = @@series
+      $descriptors = @@descriptors
+      
       $model.all.each do |product|
         sps = $scrapedmodel.find_all_by_product_id(product.id)
         avg_atts = {}
-        debugger
-        vote_on_id_fields sps, avg_atts
-        debugger
-        fill_in_all(avg_atts, product)
+        #vote_on_id_fields sps, avg_atts
+        #(avg_atts.keys || []).each{|k| fill_in_forced(k, nil,product)}
+        #fill_in_all(avg_atts, product)
       end
+      
   end
     
   task :test_stuff => :environment do

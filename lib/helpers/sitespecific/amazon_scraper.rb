@@ -118,7 +118,15 @@ module AmazonScraper
         end
         
         item.css('itemattributes/itemdimensions/*').each do |dim|
-          atts["item#{dim.name}"] = dim.text.to_i
+          temp = (dim.attributes['units'] || '').to_s.strip
+          case temp
+          when 'inches'
+            atts["item#{dim.name}"] =( dim.text.to_f*100).to_i
+          when 'cm'
+            puts "WARNING: dimensions in cm! Don't know how to handle"
+          else # assume it's in hundreths of inches
+            atts["item#{dim.name}"] = dim.text.to_i
+          end
         end
         
         temp = get_el item.css('largeimage/url')

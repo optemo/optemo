@@ -54,9 +54,6 @@ module GenericScraper
     avg_atts = {}
     all_atts.each{|att,vals| avg_atts[att] = vote(vals)}
     
-    # TODO delete this:!!!
-    #vote_on_id_fields sps, avg_atts # TODO remove this
-    
     # vote on dimensions
     dimlabels = ['itemlength', 'itemheight', 'itemwidth']
     all_dimsets = (sps|[product]).collect{|sp| dimlabels.collect{|x| sp[x]}}
@@ -76,14 +73,6 @@ module GenericScraper
       scraped_atts['region'] = retailer.region
       
       clean_atts = clean(scraped_atts)
-      
-      # Debugger stuff!
-      unless(clean_atts['itemlength'] and clean_atts['itemwidth'] and clean_atts['itemheight'])
-        if(clean_atts['itemlength'] or clean_atts['itemwidth'] or clean_atts['itemheight'])
-          debugger
-        end
-      end
-      # TODO remove debugger stuff when done
       
       sp = find_or_create_scraped_product(clean_atts)
             
@@ -110,7 +99,36 @@ end
 
 namespace :data do
   
-  task :try_redo  => [:cam_init, :amazon_init, :rescrape_selected, :amazon_mkt_init, :rescrape_selected]
+  task :cam_rescrape  => [:cam_init, :amazon_init, :rescrape_selected_2, :amazon_mkt_init, :rescrape_selected_2]
+  
+  task :rescrape_selected_2 do 
+    which_fields = ['itemlength', 'itemwidth', 'itemheight']
+    which_sp_ids = [2232, 2326, 2440, 2464, 2834, 2928, 3042, 3066, 3278, 3424, 3646, 3830, 4052, 4116, 4158, 4260, 4580, 4692, 4698, 4934, 5314, 5762, 5772, 5906, 6034, 6556, 7420, 7650, 7882, 8032, 8224, 8388, 8592, 8600, 8784, 9152, 9402, 9466, 9510, 9616, 9986, 10018, 10064, 10312, 10720, 11146, 11156, 11278, 11430, 11916, 12762, 12976, 12994, 13056, 13434, 13946, 14084, 14136, 14144, 14222, 14316, 14362, 14616, 14700, 14744, 14776, 14874, 14952, 15096, 15106, 15268, 15382, 15432, 15462, 15628, 15660, 15690, 15738, 15752, 15776, 15870, 15976, 16044, 16376, 16450, 16786, 16830, 17020, 17846, 18576, 18988, 19112, 19140, 19188, 19652, 19696, 19854, 19868, 19904, 20008, 20028, 20296, 20340, 20382, 20526, 20534, 20602, 20642, 20724, 20874, 21256, 21280, 21322, 21362, 21400, 21424, 21572, 21804, 21806, 22210, 22980, 23608, 23740, 23798, 23938, 24022, 24148, 24258, 24324, 24334, 24354, 24492, 24640, 25172, 25194, 25676, 25740, 25800]
+    
+    retailerids = $retailers.collect{|x| x.id} 
+    
+    sps = which_sp_ids.collect{|x| $scrapedmodel.find(x)}
+    retailer_ok_sps = sps.reject{|x| !retailerids.include?(x.retailer_id)}
+    
+    retailer_ok_sps.each do |retailer_ok_sp|
+          local_id = retailer_ok_sp.local_id
+          retailer = Retailer.find(retailer_ok_sp.retailer_id)
+          spid = retailer_ok_sp.id
+          
+          debug = $scrapedmodel.find(spid)
+          puts "#{local_id} had #{which_fields[0]} #{debug[which_fields[0]] || 'nil'}"
+          which_fields.each do |fld|
+            debug.update_attribute(fld, nil)
+          end
+          
+          generic_scrape(local_id, retailer)
+          
+          debug = $scrapedmodel.find(spid) 
+          puts "#{local_id} has #{which_fields[0]} #{debug[which_fields[0]] || 'nil'}"    
+
+    end
+    puts "Done"
+  end
   
   task :rescrape_selected do 
     which_fields = ['itemlength', 'itemwidth', 'itemheight']
@@ -159,60 +177,18 @@ namespace :data do
     puts "Done"
   end
   
-  task :no_cam_dups => [:cam_init, :match_to_products]
-  task :temp  => [:cam_init, :amazon_init, :rescrape_stats]
-
-  task :sandbox do 
-    fixme = ScrapedCamera.all.reject{|x| !x.product_id.nil?}.reject{|x| (x.model.nil? and x.mpn.nil?) or x.brand.nil?}
-    puts "#{fixme.count} to fix"
-    fixme[0..2000].each do |sc|
-      ros = RetailerOffering.find_all_by_product_type_and_local_id('Camera', sc.local_id)
-      ids = ros.collect{|x| x.product_id}.reject{|x| x.nil?}.first
-      sc.update_attribute( 'product_id', ids) if ids
-    end
-  end
-
-  task :no_dups do 
-    puts "[#{Time.now}] Starting to match products"
-    match_me = $scrapedmodel.all[0..100]
-    
-    match_me.delete_if{|x| (x.model.nil? and x.mpn.nil?) or x.brand.nil?}
-    match_me.each_with_index do |scraped, i|
-      dups = match_product_to_product scraped, $model, $series
-      if dups.length > 1 
-        debugger
-        keep = dups.first
-        lose = dups[1..-1].collect{|x| $model.find(x)}
-        debugger
-        lose.each do |deleteme|
-          unlink_duplicate(keep, deleteme)
-        end
-        debugger 
-        0
-      end      
-      puts "[#{Time.now}] Done matching #{i+1}th scraped product." 
-    end
-    puts "[#{Time.now}] Done matching products"
-  end
-  task :no_duplicates do    
-    chekme = $scrapedmodel.all.
-    
-    allproducts.each do |prod|    
-      dups =  match_product_to_product(prod, $model, $series)
-      timed_announce "#{dups.length-1} duplicates for #{$model.name} #{prod.id}"
-      if dups.length > 1
-        keep = dups.first
-        lose = dups[1..-1].collect{|x| $model.find(x)}
-        debugger
-        lose.each do |deleteme|
-          unlink_duplicate(keep, deleteme)
-        end
-        debugger 
-        0
-      end
-    end
-  end
+  task :cam_rematch => [:cam_init, :match_to_products]
   
+  task :sandbox do 
+    fixme = ScrapedCamera.all.collect{|x| x.id}
+    puts "#{fixme.count} to fix"
+    fixme[0..2000].each do |scid|
+      sc = ScrapedCamera.find(scid)
+      sc.update_attribute( 'product_id', nil)
+    end
+    puts "Done!"
+  end
+
   task :amazon_reviews => [:cam_init, :amazon_init, :reviews]
   
   task :match_reviews do    
@@ -370,7 +346,6 @@ namespace :data do
       avgs.each do |k,v|
         puts "#{k} -- #{v} (now #{p.[](k)}) for #{p.id}" #if [v, p.[](k)].uniq.reject{|x| x.nil?}.length > 1
       end
-      #debugger
       fill_in_all avgs, p
     end
   end
