@@ -78,7 +78,7 @@ module TigerScraper
       log "Re-scraping RetailerOffering # #{local_id}"
     rescue Exception => e
       report_error "Couldn't open page: #{url}. Rescraping price failed."
-      report_error "#{e.type.to_s}, #{e.message.to_s}"
+      report_error "#{e.class.name.to_s}, #{e.message.to_s}"
     else
       props.merge! scrape_prices info_page 
       props.merge! scrape_availty info_page
@@ -96,7 +96,7 @@ module TigerScraper
       announce "Scraping #{url}"
     rescue Exception => e
       report_error "Problem scraping page: #{url}."
-      report_error "#{e.type.to_s}, #{e.message.to_s}"
+      report_error "#{e.class.name.to_s}, #{e.message.to_s}"
       return nil
     else
       props.merge! scrape_data info_page

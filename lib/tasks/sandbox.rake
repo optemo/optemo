@@ -1,5 +1,26 @@
 namespace :sandbox do
   
+  task :all_together => [:mefirst, :one, :mefirst, :two]
+  
+  task :one do
+    begin
+      asdf = [1,2]
+      asdf[300] + 1
+    rescue Exception => e
+      #debugger
+      puts "#{e.message} #{e.class.name}"
+    end
+    puts "One"
+  end
+    
+  task :two do 
+    puts "Two"
+  end
+  
+  task :mefirst do 
+    puts "Me first!"
+  end
+  
   task :match_ros => :environment do 
     require 'helper_libs'
    

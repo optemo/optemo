@@ -29,7 +29,7 @@ module AtthashHelper
   
   def clean_sep_fields!(atts)
      atts.each do |x,y| 
-       if y.type==String
+       if y.class.name==String
          temp = y.split("#{@@sep}")
          temp2 = no_blanks(temp.uniq)
          atts[x] = combine_for_storage(temp2)
@@ -53,7 +53,7 @@ module AtthashHelper
   end
   
   def remove_sep! atts
-    atts.each{|x,y| atts[x] = combine_for_reading(separate(y)) if y.type == String }
+    atts.each{|x,y| atts[x] = combine_for_reading(separate(y)) if y.class.name == 'String' }
   end
   
   def remove_blank_strings! atts

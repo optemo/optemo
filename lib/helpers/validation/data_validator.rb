@@ -14,7 +14,7 @@ module DataValidator
     values = get_values reclist, att
     values.delete_if{|x,y| y.nil?}
     if values.values.length == 0
-      log_v "All values nil for #{reclist[0].type.to_s}'s #{att} attribute"
+      log_v "All values nil for #{reclist[0].class.name}'s #{att} attribute"
       return
     end
     outliers = values.reject{|k,v| (v >= min and v <= max) }

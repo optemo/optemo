@@ -76,8 +76,8 @@ module IdFieldsHelper
   # false otherwise
   def same_model? one, two, series=[]
     return true if one == two
-    vars1 = model_series_variations(one, series).collect{|x| just_alphanumeric(x)}
-    vars2 = model_series_variations(two, series).collect{|x| just_alphanumeric(x)}
+    vars1 = model_series_variations([one], series).collect{|x| just_alphanumeric(x)}
+    vars2 = model_series_variations([two], series).collect{|x| just_alphanumeric(x)}
     vars1.each do |var|
       vars2.each do |var2|
         if var.length > 2 and var2.length > 2

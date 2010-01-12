@@ -25,7 +25,7 @@ module GenericScraper
     vals =  no_blanks(sps.collect{|x| [x.model,x.mpn]}.flatten)
     uniq_vals = remove_duplicate_models(vals, $series)
     sorted_vals = uniq_vals.sort{|a,b| likely_model_name(b) <=> likely_model_name(a)}
-    puts "MODELS VOTING: before #{vals * ', '}, after : #{sorted_vals[0..1] * ', '}"
+    #puts "MODELS VOTING: before #{vals * ', '}, after : #{sorted_vals[0..1] * ', '}"
     #debugger
     avg_atts['model'] = sorted_vals[0]
     avg_atts['mpn'] = sorted_vals[1]      
@@ -73,7 +73,6 @@ module GenericScraper
       scraped_atts['region'] = retailer.region
       
       clean_atts = clean(scraped_atts)
-      
       sp = find_or_create_scraped_product(clean_atts)
             
       if sp
@@ -101,17 +100,19 @@ namespace :data do
   
   task :temp => [:cam_init, :match_to_products]
   
-  task :cam_rescrape  => [:cam_init, :amazon_init, :rescrape_selected_2, :amazon_mkt_init, :rescrape_selected_2]
+  task :cam_rescrape  => [:cam_init, :amazon_init, :rescrape_selected_2]
+  
+  task :cam_rescrape_mkt  => [:cam_init, :amazon_mkt_init, :rescrape_selected_2]
   
   task :rescrape_selected_2 do 
     which_fields = ['itemlength', 'itemwidth', 'itemheight']
-    which_sp_ids = [3278]
-    #, 3294, 3590, 3904, 3948, 4200, 4448, 4522, 4672, 4712, 4774, 5188, 5244, 5302, 5400, 5484, 5486, 5506, 5534, 5540, 5754, 5788, 5950, 6112, 6182, 6262, 6308, 6422, 6494, 7224, 7292, 7430, 7556, 7574, 7594, 7812, 7852, 8012, 8094, 8112, 8214, 8492, 8820, 8922, 9150, 9290, 9628, 9822, 9950, 10048, 10148, 10184, 10458, 10702, 10704, 10706, 10760, 10874, 10876, 10970, 11000, 11006, 11126, 11188, 11302, 11546, 11558, 11634, 11660, 11786, 11830, 12600, 12626, 12790, 13062, 13202, 13254, 13356, 13364, 13378, 13406, 13456, 13560, 13800, 13834, 13908, 13918, 13946, 13948, 14084, 14136, 14144, 14222, 14316, 14362, 14390, 14616, 14700, 14744, 14772, 14776, 14874, 14928, 14952, 15096, 15106, 15210, 15268, 15318, 15382, 15432, 15462, 15570, 15628, 15656, 15660, 15690, 15722, 15738, 15752, 15754, 15776, 15820, 15870, 15976, 16044, 16058, 16272, 16316, 16362, 16376, 16450, 16522, 16524, 16542, 16560, 16566, 16770, 16786, 16830, 16900, 17020, 17132, 17150, 17222, 17264, 17370, 17444, 17846, 18150, 18194, 18220, 18284, 18476, 18576, 18646, 18736, 18954, 18988, 19064, 19068, 19078, 19112, 19140, 19188, 19242, 19552, 19588, 19648, 19652, 19662, 19690, 19696, 19854, 19868, 19904, 20008, 20028, 20062, 20296, 20340, 20382, 20400, 20526, 20534, 20602, 20642, 20724, 20836, 20874, 20954, 20962, 21256, 21280, 21322, 21332, 21362, 21386, 21400, 21424, 21500, 21560, 21572, 21578, 21804, 21806, 21814, 21892, 21900, 21916, 21936, 22142, 22210, 22268, 22296, 22348, 22376, 22492, 22800, 22980, 23192, 23194, 23242, 23400, 23420, 23480, 23608, 23656, 23740, 23798, 23866, 23898, 23934, 23938, 23964, 24094, 24258, 24324, 24334, 24354, 24356, 24492, 24544, 24556, 24596, 24640, 25172, 25194, 25312, 25318, 25472, 25602, 25642, 25676, 25690, 25700, 25740, 25800, 25808]
+    which_sp_ids = [3590, 3904, 3948, 4200, 4448, 4522, 4672, 4712, 4774, 5188, 5244, 5302, 5400, 5484, 5486, 5506, 5534, 5540, 5754, 5788, 5950, 6112, 6182, 6262, 6308, 6422, 6494, 7224, 7292, 7430, 7556, 7574, 7594, 7812, 7852, 8012, 8094, 8112, 8214, 8492, 8820, 8922, 9150, 9290, 9628, 9822, 9950, 10048, 10148, 10184, 10458, 10702, 10704, 10706, 10760, 10874, 10876, 10970, 11000, 11006, 11126, 11188, 11302, 11546, 11558, 11634, 11660, 11786, 11830, 12600, 12626, 12790, 13062, 13202, 13254, 13356, 13364, 13378, 13406, 13456, 13560, 13800, 13834, 13908, 13918, 13946, 13948, 14084, 14136, 14144, 14222, 14316, 14362, 14390, 14616, 14700, 14744, 14772, 14776, 14874, 14928, 14952, 15096, 15106, 15210, 15268, 15318, 15382, 15432, 15462, 15570, 15628, 15656, 15660, 15690, 15722, 15738, 15752, 15754, 15776, 15820, 15870, 15976, 16044, 16058, 16272, 16316, 16362, 16376, 16450, 16522, 16524, 16542, 16560, 16566, 16770, 16786, 16830, 16900, 17020, 17132, 17150, 17222, 17264, 17370, 17444, 17846, 18150, 18194, 18220, 18284, 18476, 18576, 18646, 18736, 18954, 18988, 19064, 19068, 19078, 19112, 19140, 19188, 19242, 19552, 19588, 19648, 19652, 19662, 19690, 19696, 19854, 19868, 19904, 20008, 20028, 20062, 20296, 20340, 20382, 20400, 20526, 20534, 20602, 20642, 20724, 20836, 20874, 20954, 20962, 21256, 21280, 21322, 21332, 21362, 21386, 21400, 21424, 21500, 21560, 21572, 21578, 21804, 21806, 21814, 21892, 21900, 21916, 21936, 22142, 22210, 22268, 22296, 22348, 22376, 22492, 22800, 22980, 23192, 23194, 23242, 23400, 23420, 23480, 23608, 23656, 23740, 23798, 23866, 23898, 23934, 23938, 23964, 24094, 24258, 24324, 24334, 24354, 24356, 24492, 24544, 24556, 24596, 24640, 25172, 25194, 25312, 25318, 25472, 25602, 25642, 25676, 25690, 25700, 25740, 25800, 25808]
     
+    # PROBLEM: 3278
+      #, 3294, 
     #[2232, 2326, 2440, 2464, 2834, 2928, 3042, 3066, 3278, 3424, 3646, 3830, 4052, 4116, 4158, 4260, 4580, 4692, 4698, 4934, 5314, 5762, 5772, 5906, 6034, 6556, 7420, 7650, 7882, 8032, 8224, 8388, 8592, 8600, 8784, 9152, 9402, 9466, 9510, 9616, 9986, 10018, 10064, 10312, 10720, 11146, 11156, 11278, 11430, 11916, 12762, 12976, 12994, 13056, 13434, 13946, 14084, 14136, 14144, 14222, 14316, 14362, 14616, 14700, 14744, 14776, 14874, 14952, 15096, 15106, 15268, 15382, 15432, 15462, 15628, 15660, 15690, 15738, 15752, 15776, 15870, 15976, 16044, 16376, 16450, 16786, 16830, 17020, 17846, 18576, 18988, 19112, 19140, 19188, 19652, 19696, 19854, 19868, 19904, 20008, 20028, 20296, 20340, 20382, 20526, 20534, 20602, 20642, 20724, 20874, 21256, 21280, 21322, 21362, 21400, 21424, 21572, 21804, 21806, 22210, 22980, 23608, 23740, 23798, 23938, 24022, 24148, 24258, 24324, 24334, 24354, 24492, 24640, 25172, 25194, 25676, 25740, 25800]
     
     retailerids = $retailers.collect{|x| x.id} 
-    
     sps = which_sp_ids.collect{|x| $scrapedmodel.find(x)}
     retailer_ok_sps = sps.reject{|x| !retailerids.include?(x.retailer_id)}
     
@@ -311,38 +312,42 @@ namespace :data do
     puts "There were #{no_stats.count} printers w/o stats of which #{no_stats_fixed.count} were fixed"
   end
   
+  
+  desc 'Get new prices and products from Amazon cameras'
+  task :scrape_amazon_cams => [:cam_init, :amazon_init, :scrape_new, :update_prices]
+    
   task :validate_amazon => [:printer_init,:amazon_init, :validate_printers]
   
   # The 2 things you can do, in terms of subtasks: scrape and update
   task :scrape => [:scrape_new, :match_to_products, :update_bestoffers, :validate_printers]
   task :update => [:update_prices, :scrape_new, :match_to_products, :update_bestoffers, :validate_printers]
   
-  desc 'Get new prices and products from Amazon cameras'
-  task :scrape_amazon_cams => [:cam_init, :amazon_init, :scrape_new, :update_prices]
-  
+  # Useful combinations of the above
   desc 'Get new prices and products from Newegg printers'
-  task :update_newegg => [:newegg_init, :update]
+  task :update_newegg_printers => [:newegg_init, :update]
   
   desc 'Get new prices and products from TigerDirect printers'
-  task :update_tiger => [:tiger_init, :update]
+  task :update_tiger_printers => [:tiger_init, :update]
   
-  desc 'Get new prices and products from Amazon and AmazonMarketplace printers'
-  task :update_amazon => [:printer_init, :amazon_init, :update, :amazon_mkt_init, :update]
+  desc 'Get new prices and products from Amazon (printers)'
+  task :update_amazon_printers => [:printer_init, :amazon_init, :update]
   
+  desc 'Get new prices and products from Amazon Marketplace (printers)'
+  task :update_amazon_mkt_printers => [:printer_init, :amazon_mkt_init, :update]
+   
   desc 'Get new products from Amazon (warning:extra long!)'
-  task :scrape_amazon => [:printer_init, :amazon_init, :scrape]
+  task :scrape_amazon_printers => [:printer_init, :amazon_init, :scrape]
   
   desc 'Get new products from Newegg'
-  task :scrape_newegg => [:newegg_init, :scrape]
+  task :scrape_newegg_printers => [:newegg_init, :scrape]
   
   desc 'Get new products from TigerDirect'
-  task :scrape_tiger => [:tiger_init, :scrape]
+  task :scrape_tiger_printers => [:tiger_init, :scrape]
     
   desc 'Get new products from Amazon Marketplace (warning: extra long!)'
-  task :scrape_amazon_mkt => [:printer_init, :amazon_mkt_init, :scrape]
+  task :scrape_amazon_mkt_printers => [:printer_init, :amazon_mkt_init, :scrape]
   
-  # The subtasks...
-  
+   # The subtasks...
   task :vote do 
     products = $model.all
     products.each do |p|
@@ -381,8 +386,7 @@ namespace :data do
       
       revues = Review.find_all_by_local_id_and_product_type(scraped.local_id, $model.name)
       revues.each{|revu| fill_in 'product_id', real.id, revu }
-      
-      puts "[#{Time.now}] Done matching #{i+1}th scraped product." 
+      #puts "[#{Time.now}] Done matching #{i+1}th scraped product." 
     end
     puts "[#{Time.now}] Done matching products"
   end
@@ -392,39 +396,20 @@ namespace :data do
     @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_scraper.log", 'w+')
     my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id_and_product_type(x.id, $model.name)}
     my_offerings.each_with_index do |offering, i|
-      #begin
-        next if offering.local_id.nil? # or offering.stock != true
+      begin
+        next if offering.local_id.nil? #offering.stock != true
         newatts = rescrape_prices( offering.local_id, offering.region)
         
-        # <<< debug
-        puts "#{offering.priceint} changing to #{newatts['priceint']}"
-        debugger 
-        # end debug >>>>
-        
-        log "[#{Time.now}] Updating #{offering.pricestr} to #{newatts['pricestr']}"
+        #log "[#{Time.now}] Updating #{offering.pricestr} to #{newatts['pricestr']}"
         update_offering newatts, offering if offering
-        
-        #debug
-        debugger if newatts['priceint'] != offering.priceint # uh oh
-        
-        update_bestoffer($model.find(offering.product_id)) if offering.product_id
-        
-        #<<<< debug
-        temp = $model.find(offering.product_id)
-        if temp.price > (newatts['priceint'] || 0) # uh oh
-          puts "#{temp.price} #{newatts['priceint']}"
-          debugger 
-        end
-        if( temp.price == (newatts['priceint'] || 0) and temp.bestoffer == offering.id )
-          puts "this is the new best offer" 
-        end
-        # end debug>>>>
-          
-      #rescue Exception => e
-      #  report_error "with RetailerOffering #{offering.id}:" + e.message.to_s + e.type.to_s
-      #  snore(20*60) # sleep for 20 min 
-      #end
-      puts "[#{Time.now}] Done updating #{i+1} of #{my_offerings.count} offerings"
+        if( offering.product_id and $model.exists?(offering.product_id))
+          update_bestoffer($model.find(offering.product_id))
+        end  
+      rescue Exception => e
+        report_error "with RetailerOffering #{offering.id}: #{e.class.name} #{e.message}"
+        snore(20*60) # sleep for 20 min 
+      end
+      log "[#{Time.now}] Done updating #{i+1} of #{my_offerings.count} offerings"
     end
     
     @logfile.close
@@ -443,7 +428,7 @@ namespace :data do
             
       ids.each_with_index do |local_id, i|
         generic_scrape(local_id, retailer)
-        announce "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
+        log "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
       end
     end
     @logfile.close
@@ -461,7 +446,7 @@ namespace :data do
       
       ids.each_with_index do |local_id, i|
         generic_scrape(local_id, retailer)
-        announce "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
+        log "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
       end
     end
     @logfile.close
@@ -508,10 +493,7 @@ namespace :data do
   
   task :update_bestoffers do 
     $model.all.each do |p|
-      debugger
       update_bestoffer p
-      debugger
-      0
     end
   end
 
@@ -557,7 +539,7 @@ namespace :data do
   end
   
   task :amazon_init do
-    require 'amazon_ecs'
+    require 'amazon/ecs'
     include Amazon
     
     require 'nokogiri'

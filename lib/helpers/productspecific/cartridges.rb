@@ -179,7 +179,7 @@ module CartridgeHelper
   def cartridge_cleaning_code atts, default_brand=nil, default_real=nil
     atts = product_cleaner
     
-    atts.each{|x,y| atts[x]= atts[y].strip if atts[y] and atts[y].type == 'String'}
+    atts.each{|x,y| atts[x]= atts[y].strip if atts[y] and atts[y].class.name == 'String'}
     atts['model'].gsub!(/compatible/i,'') if atts['model']
     atts['mpn'].gsub!(/compatible/i,'') if atts['mpn']
     

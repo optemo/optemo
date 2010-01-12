@@ -36,7 +36,7 @@ module ImageHelper
           #puts "ImageMagick says: File not found for #{id}"
         end
      rescue Exception => e
-        puts "#{e.type} #{e.message}"
+        puts "#{e.class.name} #{e.message}"
      else
         if image and image.rows != 0
           GC.start
@@ -105,11 +105,11 @@ module ImageHelper
       writehere.close
     rescue OpenURI::HTTPError => e
       puts "ERROR Problem downloading from #{url} into #{filename}"
-      puts "#{e.type} #{e.message}"
+      puts "#{e.class.name} #{e.message}"
       return nil
     rescue Exception => e
       puts "ERROR Bug in code downloading from #{url} into #{filename}"
-      puts "#{e.type} #{e.message}"
+      puts "#{e.class.name} #{e.message}"
       return nil
     end
     ret
@@ -175,7 +175,7 @@ module ImageHelper
             image = image.first if image and image.class.to_s == 'Magick::ImageList'
           rescue Exception => e
             puts "WARNING: Can't get dimensions for #{sz} size pic of product #{rec[id_field]}"
-            puts "#{e.type} #{e.message}"
+            puts "#{e.class.name} #{e.message}"
             image = nil
           end
           if image
@@ -219,7 +219,7 @@ module ImageHelper
         end
         failed << id
       rescue Exception => e
-        puts "#{e.type} #{e.message}"
+        puts "#{e.class.name} #{e.message}"
         puts "Downloading #{id} failed"
         failed << id
       end
@@ -250,7 +250,7 @@ module ImageHelper
         failed << id
         puts "Resizing #{id} failed"
       rescue Exception => e
-        puts "ERROR: #{e.type} #{e.message}"
+        puts "ERROR: #{e.class.name} #{e.message}"
         puts "Resizing #{id} failed"
         failed << id
       end

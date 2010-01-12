@@ -33,7 +33,7 @@ module PrinterHelper
             
     # Booleans
     
-    atts.each{|x,y| atts[x] = nil if y=='' or (y.type==String and y.strip =='') }
+    atts.each{|x,y| atts[x] = nil if y=='' or (y.class.name=='String' and y.strip =='') }
     
     if(atts['colorprinter'])
       if atts['colorprinter'].match(/color/i)

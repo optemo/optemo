@@ -93,6 +93,30 @@ end
 
 namespace :check do
   
+  task :sc_to_c_links => :cam_init do 
+    ScrapedCamera.all.each do |sc|
+      next unless sc.product_id
+      unless Camera.exists?(sc.product_id)
+         #report_error "No match found for #{sc.id}"
+         next
+      end
+      
+      c = Camera.find(sc.product_id)
+      if c.brand != sc.brand
+        #debugger
+        report_error "Brand not matched for #{sc.id}"
+      end
+    
+      mm_c = [c.model, c.mpn].collect{|x| just_alphanumeric(x)}
+      mm_sc = [sc.model, sc.mpn].collect{|x| just_alphanumeric(x)}
+      if (mm_sc & mm_c).length < 1
+        puts "#{mm_c * ', '} VS #{mm_sc * ', '} "
+       # debugger
+        report_error "Model not matched for c-sc #{c.id} <--> #{sc.id}"
+      end
+    end
+  end
+  
   task :reviews => :init do 
     
     require 'helper_libs'

@@ -19,8 +19,7 @@ module AmazonScraper
   
   # All local ids from region
   def scrape_all_local_ids region
-    
-    puts "[#{Time.now}] Getting a list of all Amazon IDs associated with #{$model}s. This may take a while"
+    announce "[#{Time.now}] Getting a list of all Amazon IDs associated with #{$model}s. This may take a while"
     
     current_page = 1
     count = 0
@@ -40,11 +39,11 @@ module AmazonScraper
         added += res.items.collect{ |item| item.get('asin') }
         current_page += 1
       end
-      puts "[#{Time.now}] Read #{current_page-1} pages..."
+      log "[#{Time.now}] Read #{current_page-1} pages..."
       break if (current_page > total_pages) #or current_page > 5) # <-- For testing only!
     end
     
-    puts "[#{Time.now}] Done getting Amazon IDs!"
+    announce "[#{Time.now}] Done getting Amazon IDs!"
     
     return added.reject{|x| x.nil? or x == ''}
   end
@@ -72,7 +71,7 @@ module AmazonScraper
       # Check on site if actually out of stock
       ['price', 'priceint', 'pricestr', 'saleprice', 'salepriceint', 'salepricestr'].each{|x| atts['x'] = nil}
     elsif (atts['priceint'].nil? or atts['pricestr'].nil?)
-      puts "Price is nil?!?!? HOW DID THIS HAPPEN" # TODO 
+      announce "WARNING: Nil price after cleaning atts for #{atts['local_id']}"
     end
     
     return atts
@@ -100,7 +99,7 @@ module AmazonScraper
       be_nice_to_amazon
     rescue Exception => exc
       report_error "Could not scrape #{local_id} data"
-      report_error "#{exc.type} #{exc.message}"
+      report_error "#{exc.class.name} #{exc.message}"
       snore(120) 
       return {}
     else
@@ -124,7 +123,7 @@ module AmazonScraper
           when 'inches'
             atts["item#{dim.name}"] =( dim.text.to_f*100).to_i
           when 'cm'
-            puts "WARNING: dimensions in cm! Don't know how to handle"
+            report_error "WARNING: dimensions in cm! Don't know how to handle"
           else # assume it's in hundreths of inches
             atts["item#{dim.name}"] = dim.text.to_i
           end
@@ -147,7 +146,7 @@ module AmazonScraper
           atts.merge!(name => vals)
         end
         return atts
-      end
+    #  end
     end
     return {}
   end
@@ -313,7 +312,7 @@ module AmazonScraper
         be_nice_to_amazon
       rescue Exception => exc
         report_error "Couldn't download reviews for product #{asin}"
-        report_error "#{exc.type} #{exc.message}"
+        report_error "#{exc.class.name} #{exc.message}"
       else
         nokodoc = Nokogiri::HTML(res.doc.to_html)
         result =  nokodoc.css('item').first
@@ -323,10 +322,10 @@ module AmazonScraper
           totalreviews ||= result.css('totalreviews').text.to_i
           totalreviewpages ||= result.css('totalreviewpages').text.to_i
           if totalreviews == 0
-            puts "#{$model.name} #{asin} has no reviews -- 0 min remaining"
+            log "#{$model.name} #{asin} has no reviews -- 0 min remaining"
             return [{'totalreviews' => totalreviews}]
           end
-          puts "#{$model.name} #{asin} review download: less than #{(totalreviewpages-current_page)/6 + 1} min remaining..." if current_page % 10 == 1
+          log "#{$model.name} #{asin} review download: less than #{(totalreviewpages-current_page)/6 + 1} min remaining..." if current_page % 10 == 1
           temp = result.css('review')
           temp = Array(temp) unless reviews.class == Array # Fix single and no review possibility
           array_of_hashes = temp.collect{|x| x.css('*').inject({}){|r,y| r.merge({y.name => y.text})}}
