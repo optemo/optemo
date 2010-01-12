@@ -83,15 +83,8 @@ class ProductsController < ApplicationController
     #Cleanse id to be only numbers
     params[:id] = params[:id][/^\d+/]
     @product = $model.find(params[:id])
-    
-    if $model.name == "Camera"
-      @imglurl = "/images/cameras/" + @product.id.to_s + "_l.jpg"
-    elsif $model.name == "Printer"
-      @imglurl = "/images/printers/" + @product.id.to_s + "_l.jpg"
-    else
-      @imglurl = "/images/printers/" + @product.id.to_s + "_l.jpg"
-    end    
-    
+    @imglurl = "/images/" + $model.name.downcase + "s/" + @product.id.to_s + "_l.jpg"
+
 # => Caching:
 #    @product = cache([$model.name, params[:id]]) do
 #      $model.find(params[:id])
