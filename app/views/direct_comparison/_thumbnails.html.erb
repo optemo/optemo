@@ -1,7 +1,7 @@
 <div class="thumbnailcell">
 		<div class="first">
 			<% if FileTest.exist?(RAILS_ROOT + "/public/images/"+ $model.name.downcase+"s/" + thumbnails.id.to_s + "_m.jpg") %>
- 			<%= image_tag("/images/"+$model.name.downcase+"s/" + thumbnails.id.to_s + "_m.jpg", :width => 100, :onClick => "fadeout('/products/show/' + #{thumbnails.id}+'?plain=true');", :style => "cursor: pointer;") %>
+ 			<%= image_tag("/images/"+$model.name.downcase+"s/" + thumbnails.id.to_s + "_m.jpg", :width => 100, :onClick => "fadeout('/compare/show/' + #{thumbnails.id}+'?plain=true');", :style => "cursor: pointer;") %>
 			<% end %>
  		</div>
 	<div class="thumbnaillabel">
