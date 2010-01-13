@@ -129,6 +129,32 @@ namespace :printer_test do
      close_log
    end
 
+
+
+##//////////////////////
+
+desc "write into the search box."
+task :form => :init do 
+    setup "pref"
+
+    # Brand name based search strings
+    #(1..@sesh.num_brands_in_dropdown).each do |brand| 
+      test_search_for '2'#@sesh.brand_name(brand)
+    #  test_search_for @sesh.brand_name(brand).downcase         
+    #end
+
+  # Other search strings
+  #other = ["","asdf","apples","Sister","Helwett","Hewlett","xena", "Data","cheap"]
+  #other.each do |x|
+  #  test_search_for x
+  #end
+
+  close_log
+end
+
+
+##/////////////////////
+
    desc "Exhaustive testing for Browse Similar."
    task :browse_similar => :init do
      setup "browse_similar" 

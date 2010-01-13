@@ -1,7 +1,7 @@
 en:
     products:
         compare:
-            # All translations for /products/compare.erb.html and its partials
+            # All translations for /compare/compare.erb.html and its partials
             browsings:      "Browsing {{count}} "    # e.g. Browsing 146 Cameras
             browsing:       "Browsing 1 "   
             search:         "Search"

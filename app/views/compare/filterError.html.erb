@@ -3,10 +3,10 @@
 <p class="error"><%=t('products.filterErrorSorry')%></p>
 <%if params[:myfilter]["slr"] == "1"%>
 <p><%=t('products.checkBoxErrorInst')%></p>
-<p><b><%=t('products.tip')%></b><%=t("products.ErrorTip1")%> <%=link_to "reset", "/#{$model.urlname}/", :class => "ajaxlink popuplink" %> <%=t("products.SLRErrorTip2")%></p>
+<p><b><%=t('products.tip')%></b><%=t("products.ErrorTip1")%> <%=link_to "reset", "/compare/", :class => "ajaxlink popuplink" %> <%=t("products.SLRErrorTip2")%></p>
 <%elsif params[:myfilter]["waterproof"] == "1"%>
 <p><%=t('products.checkBoxErrorInst')%></p>
-<p><b><%=t('products.tip')%></b> <%=t("products.ErrorTip1")%> <%=link_to "reset", "/#{$model.urlname}/", :class => "ajaxlink popuplink" %> <%=t("products.WPErrorTip2")%></p>
+<p><b><%=t('products.tip')%></b> <%=t("products.ErrorTip1")%> <%=link_to "reset", "/compare/", :class => "ajaxlink popuplink" %> <%=t("products.WPErrorTip2")%></p>
 <%else%>
 <p><%=t('products.sliderErrorInst')%></p>
 <p><b><%=t('products.tip')%></b> <%=t('products.sliderErrorTip')%></p>
