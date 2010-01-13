@@ -1,24 +1,35 @@
-<div class="poptitle"><%=t "compare.index.title"%></div>
-
-<div id="comparisonmatrix">
-	<div class="column">
-		<div class="outertitle leftmostcolumn leftmostoutertitle"><div class="columntitle leftmostcolumn leftmostcolumntitle"></div></div>
-		<div class="thumbnailcell leftmostcolumn">								
-			<div class="tabletitle leftcolumntext"> <%= t('compare.index.tabletitle') %> </div>
-		</div>
-		<%= render :partial => 'featurenames', :locals => {:featurelist => $model::DisplayedFeatures } %>
-		<div class="cell leftmostcolumn"> </div>
-	</div>
-
-	<% for i in 0..@products.count-1%>
-		<div class="column">
-			<div class="outertitle"><div class="columntitle">
-					<%= link_to image_tag('remove.png', :style => "vertical-align: text-top;")+" "+t('compare.index.remove'), "", :"data-name" => @products[i].id, :class => 'remove' %>
-			</div></div>
-			<%= render :partial => 'thumbnails', :object => @products[i], :locals => {:navBack => :back, :i => i, :total => @products.count} %>
-			<%= render :partial => 'featurevalues', :locals => {:featurelist => $model::DisplayedFeatures, :product => @products[i], :numberofproducts => @products.count} %>
-		</div>
-	<% end %>
-	<div class="bgrow"></div>
-	<div class="bgrow" style="top: 225px;"></div>
+<% self.full_title = "LaserPrinterHub - Compare Laser Printers, Find Best Prices, Then Buy" %>
+<% self.describe = "Find the best printer for your needs. We provide the tools to compare a large selection of printers and get the best prices from reputable online retailers." %>
+	<h1>Find, compare and buy the right laser printer</h1>
+	<p>We are committed to offering you a large range of laserprinters, while not overwhelming you with information. Our unique Discovery Browsing&trade; system facilitates searches for experts and casual shoppers alike, while also allowing you to learn more about the products and their technical properties.</p>
+<h3>What will this printer be used for?</h3>
+<div class="category">
+	<a href="<%= @link %>" title="Printers for all uses">
+	<%= image_tag 'allinone.jpg' , :alt => 'All-purpose printers'%><br>
+	All-Purpose</a>
+	<p class='description'>As the category suggests, you can find a large variety of versatile printers here.</p>
+</div>
+<div class="category">
+	<a href="<%= @link %>" data-name="home_office" class="usecase" title="">
+	<%= image_tag 'home_office.jpg' , :alt => 'Home office (m2j2)'%><br>
+	Home Office</a><!--smaller width-->	
+	<p class='description'>If you're working from home you may find that your physical space is limited. Printers in this category are more compact and will fit easily into your office.</p>
+</div>
+<div class="category">
+	<a href="<%= @link %>" data-name="small_office" class="usecase" title="">
+	<%= image_tag 'network.jpg' , :alt => "Small office (siradavis)" %><br>
+	Small Office</a><!--printserver-->
+	<p class='description'>Laser printers in this category come equipped with a network print server.</p>
+</div>
+<div class="category">
+	<a href="<%= @link %>" data-name="corporate" class="usecase" title="">
+	<%= image_tag 'corporate.jpg' %><br>
+	Corporate Use</a><!--Printserver, larger paper tray, and faster printing(pages per minute)-->
+	<p class='description'>Printers pre-screened for corporate uses are veritable powerhouses. They come equipped with a print server, larger paper tray, faster printing, and keep up easily with the fast turnaround pace necessary for a corporate setting.</p>
+</div>
+<div class="category">
+	<a href="<%= @link %>" data-name="photography" class="usecase" title="">
+	<%= image_tag 'camera.jpg' , :alt => 'Photography (angel_caido)'%><br>
+	Photography</a><!--Higher resolution-->
+	<p class='description'>All printers in the photography category have high resolution (1200x600 dpi and above!).</p>
 </div>

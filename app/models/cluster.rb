@@ -109,26 +109,6 @@ module Cluster
     end
     @size
   end
-  #Description for each cluster
-  def description(session, searchpids)
-    des = []
-    $dbfeat.each do |f|
-      if (f.featureType == 'Continuous')
-        low = f.low
-        high = f.high  
-        clusterR = ranges(f.name, session, searchpids)
-        return 'Empty' if clusterR[0].nil? || clusterR[1].nil?
-        if (clusterR[1]<=low)
-          des <<  $model::ContinuousFeaturesDescLow[f.name]
-        elsif (clusterR[0]>=high)
-          des <<  $model::ContinuousFeaturesDescHigh[f.name]
-        end
-      end  
-    end 
-      res = des.join(', ')
-      res.blank? ? 'All Purpose' : res
-  end
-  
   
   def self.findFilteringConditions(session)
     session.features.attributes.reject {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at' || key=='search_id'}

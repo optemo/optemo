@@ -1,7 +1,7 @@
 fr:
     products:
         compare:
-            # All translations for /products/compare.erb.html and its partials
+            # All translations for /compare/compare.erb.html and its partials
             browsings:      "Parcourir {{count}} appareils photo"   # e.g. Browsing 146 Cameras
             browsing:       "Parcourir 1 appareil photo"   # e.g. Browsing 146 Cameras
             search:         "Recherche"
