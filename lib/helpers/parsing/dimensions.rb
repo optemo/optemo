@@ -152,8 +152,8 @@ module DimensionsHelper
   def dims_to_s atts, metric=false
     return "" if @@dimensions.values.inject(false){|r,v| r or atts[v].nil?}
     factor = metric ? 40.0 : 100.0
-    units_str = metric ? "cm" : "\""
-    str = @@dimensions.collect{|k,v| "#{atts[v]/} (#{k})"}.join(' x ')
+    units_str = metric ? " cm" : "\""
+    str = @@dimensions.collect{|k,v| "#{atts[v]/factor}#{units_str} (#{k})"}.join(' x ')
     return str
   end
 end

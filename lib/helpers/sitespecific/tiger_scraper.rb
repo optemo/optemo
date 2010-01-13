@@ -1,3 +1,4 @@
+# encoding: utf-8
 module TigerScraper
 
   def id_to_details_url local_id, region
@@ -42,7 +43,9 @@ module TigerScraper
     atts['stock'] = atts['itmdets'].match(/unavail/i).nil? if atts['itmdets']
 
     atts['condition'] = 'New'
-    atts['condition'] = "Refurbished" if ((atts['upcno']||'').match(/^RB-/) or (atts['model']||'').match(/^RB-/) or (atts['title']||'').match(/refurbished/i) )
+    atts['condition'] = "Refurbished" if ((atts['upcno']||'').force_encoding('UTF-8').match(/^RB-/) \
+      or (atts['model']||'').force_encoding('UTF-8').match(/^RB-/) \
+      or (atts['title']||'').match(/refurbished/i) )
     atts['condition'] = "OEM" if (atts['title']||'').match(/oem/i) 
 
     atts['product_type'] = $model.name
@@ -70,7 +73,7 @@ module TigerScraper
   end
   
   def rescrape_prices local_id, region
-    url = id_to_details_url local_id, region
+    url = id_to_details_url(local_id, region)
     props = {}
     begin
       info_page = Nokogiri::HTML(open(url))

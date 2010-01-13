@@ -62,7 +62,7 @@ module NeweggScraper
     (atts['mediasizessupported'] or "").gsub!('~','to')
     
     # Dimensions
-    temp = no_blanks([clean_atts['dimensions'], "#{atts['itemwidth']} x #{atts['itemheight']} x #{atts['itemlength']}" ])  
+    temp = no_blanks([atts['dimensions'], "#{atts['itemwidth']} x #{atts['itemheight']} x #{atts['itemlength']}" ])  
     mergeme = clean_dimensions(temp,100)
     mergeme.each{ |key, val| atts[key] = val}
     
@@ -87,8 +87,8 @@ module NeweggScraper
     atts = scrape_prices infopage, local_id, region
     atts['local_id'] = local_id
     atts['region'] = region
-    atts = clean_property_names atts
-    clean_atts = (clean atts).reject{|x,y| y.nil? || !RetailerOffering.column_names.include?(x)}
+    atts = clean_property_names(atts)
+    clean_atts = (clean(atts)).reject{|x,y| y.nil? || !RetailerOffering.column_names.include?(x)}
     return clean_atts
   end
   

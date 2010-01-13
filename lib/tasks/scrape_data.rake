@@ -79,8 +79,6 @@ module GenericScraper
       sp = find_or_create_scraped_product(clean_atts)
             
       if sp
-        #debugger if sp.id == $scrapedmodel.last.id
-        
         clean_atts['url'] = id_to_sponsored_link(local_id, retailer.region, clean_atts['merchant'])
         ros = find_ros_from_scraped(sp)
         ro = ros.first

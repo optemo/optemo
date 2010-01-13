@@ -1,6 +1,5 @@
 namespace :sandbox do
   
-  
   task :fix_links => :environment do 
     require 'helper_libs'
    
@@ -92,8 +91,8 @@ namespace :sandbox do
     include DatabaseLib
     include ScrapingLib
     
-    include CameraHelper
-    include CameraConstants
+    include PrinterHelper
+    include PrinterConstants
     
     $model = @@model
     $scrapedmodel = @@scrapedmodel
@@ -236,8 +235,7 @@ namespace :sandbox do
     end
     puts "[#{Time.now}] Done"
   end
-  
-  
+    
   task :fix_reviews => :environment do
     
       require 'helper_libs'
@@ -267,7 +265,6 @@ namespace :sandbox do
     puts "#{unid.count} unidentifiable #{$model.name}s removed"
   end
   
-  # DONE THIS!
   task :vote_on_models => :environment do
     
       require 'helper_libs'
@@ -325,7 +322,6 @@ namespace :sandbox do
   
   end
   
-  
   task :reorder_dims => :environment do
   
     require 'helper_libs'
@@ -358,7 +354,6 @@ namespace :sandbox do
       fill_in_all(avgs, p)
     end
   end
-  
   
   task :validate => :environment do 
     require 'helpers/parsing/idfields'

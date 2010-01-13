@@ -357,8 +357,10 @@ module AmazonScraper
   # to an Amazon printer
   def clean_printer atts
     atts['cpumanufacturer'] = nil # TODO hacky
-    # TODO is the encoding right?
-    ((atts['feature'] || '') +'|'+ (atts['specialfeatures'] || '')).force_encoding('UTF-8').split(/¦|\||#{CleaningHelper.sep}/).each do |x| 
+    temp1 = ((atts['feature'] || '') +'|'+ (atts['specialfeatures'] || '')).force_encoding('UTF-8')
+    temp2 = temp1.split(/¦|\|/)
+    temp3 = temp2.collect{|x| separate(x)}.flatten
+    temp3.each do |x| 
         temp_ppm =  get_ppm(x)
         temp_paperin = parse_max_num_pages(x)
         temp_res = x.match(/(res|\d\s?x\s?\d)/i)
