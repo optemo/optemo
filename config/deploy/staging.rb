@@ -34,7 +34,7 @@ desc "Configure the server files"
 task :serversetup do
   # Instantiate the database.yml file
   run "cd #{current_path}/config              && cp -f database.yml.deploy database.yml"
-  run "cd #{current_path}/config/ultrasphinx   && cp -f development.conf.deploy development.conf && cp -f production.conf.deploy production.conf"
+#  run "cd #{current_path}/config/ultrasphinx   && cp -f development.conf.deploy development.conf && cp -f production.conf.deploy production.conf"
 end
 namespace :deploy do
 desc "Sync the public/assets directory."

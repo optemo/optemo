@@ -13,7 +13,7 @@ div#fade {
 	position: absolute;
 	top: 20px;
 	left: 20px;
-	width: 800px;
+	width: 940px;
 	height: 800px;
 	border-top: solid 33px #80C35A;
 	background: white;
@@ -52,14 +52,14 @@ div#loading {
 }
 #image {
 	text-align: center;
-	width: 360px;
+	width: 390px;
 	float: left;
 }
 #info h1 {
 	font-size: 1.2em;
 }
 #features {
-	width: 390px;
+	width: 360px;
 	float: left;
 }
 div#textfeatures, #reviews{
