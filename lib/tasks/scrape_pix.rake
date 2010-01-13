@@ -1,7 +1,13 @@
 namespace :pictures do
   
   desc 'Fixes broken links and gets latest picture sizes for all printer pix'
-  task :update_printer_stats => [:printer_init, :update_pic_stats]
+  task :update_cam_stats => [:camera_init, :update_pic_stats]
+  
+  desc 'Get all the missing pictures for Cameras'
+  task :update_cameras => [:camera_init, :dl_missing_pix, :resize_missing, :update_pic_stats, :close_log]
+  
+  desc 'Re-download all pictures for Cameras'
+  task :scrape_cameras => [:camera_init, :dl_pix, :resize_all, :close_log]
   
   desc 'Get all the missing pictures for Printers'
   task :update_printers => [:printer_init, :dl_missing_pix, :resize_missing, :update_pic_stats, :close_log]
@@ -13,6 +19,20 @@ namespace :pictures do
     puts "Recording pic stats"
     record_pic_stats($model.all)
     puts "Done!"
+  end
+  
+  
+  task :camera_init => :environment do 
+    $model = Camera
+    $scrapedmodel = ScrapedCamera
+    $id_field = 'id'
+    $imgfolder = 'cameras'
+    
+    $logfile = File.open("./log/#{$model}_pics.log", 'w+')
+    
+    require 'helper_libs'
+    require 'RMagick'
+    include ImageLib
   end
   
   task :printer_init => :environment do 
@@ -39,7 +59,7 @@ namespace :pictures do
   end
   
   task :dl_pix do
-    puts "Downloading pictures"
+    puts "Downloading all pictures"
     failed = []
     urls = {}
     $model.all.each do |product| 
@@ -75,7 +95,7 @@ namespace :pictures do
   
   task :dl_missing_pix do
     puts "Downloading missing pictures"
-    picless = picless_recs
+    picless = picless_recs($model)
     puts "#{picless.count} #{$model.name} pictures are missing!"
     #really_picless = picless.reject{|x| (!x.imagesurl.nil? and !x.imagemurl.nil? and !x.imagelurl.nil?) or (!x.instock and !x.instock_ca)}
     really_picless = picless
@@ -84,19 +104,17 @@ namespace :pictures do
     failed = []
     urls = {}
     really_picless.each do |product| 
-      sps = $scrapedmodel.find_all_by_product_id(product.id)
+      sps = $scrapedmodel.find_all_by_product_id(product)
       temp_url = sps.collect{|x| x.imageurl}.reject{|x| x.nil?}.first
       if temp_url
-        urls[product.id] = temp_url
+        urls[product] = temp_url
       else
-        #TODO log
-        failed << product.id
+        failed << product
       end 
     end
     
     log "Downloading #{urls.length} missing picture files"
     failed << download_all_pix(urls)
     log " Num Failed: #{failed.size}"
-
   end
 end

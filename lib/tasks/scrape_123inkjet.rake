@@ -1,11 +1,12 @@
 module Scrape123
   
+  # TODO use a different method
   def make_offering_from_atts cart 
     atts = cart.attributes
     web_id = cart.web_id
     url = get_special_url web_id
     if cart.offering_id.nil?
-      offer = create_product_from_atts atts, RetailerOffering
+      offer = create_record_from_atts  atts, RetailerOffering
     else
       offer = RetailerOffering.find(cart.offering_id)
     end
@@ -59,12 +60,12 @@ namespace :scrape_123 do
       
       compatbrand = cart.brand
     
-      matches = match_rec_to_printer [realbrand], [cart.model], Cartridge
+      matches = find_matching_product [realbrand], [cart.model], Cartridge
       matching_c = nil
       
       if matches.length == 0
         atts = {'brand' => realbrand, 'model' => cart.model}
-        matching_c = create_product_from_atts atts, Cartridge
+        matching_c = create_record_from_atts  atts, Cartridge
       elsif matches.length == 1
         matching_c = matches[0]
       else
@@ -92,7 +93,7 @@ namespace :scrape_123 do
         p_br= just_alphanumeric(clean_brand '',comp)
         p_md= comp
         
-        matching += (match_rec_to_printer([p_br], [p_md], Printer, $series)).collect{|x| x.id} if p_br and p_md
+        matching += (find_matching_product([p_br], [p_md], Printer, $series)).collect{|x| x.id} if p_br and p_md
         
         prevsize = matching.size
       end
@@ -102,7 +103,7 @@ namespace :scrape_123 do
           'product_type' => 'Printer', 'accessory_type' => 'Cartridge'}
         compat = Compatibility.find_by_product_type_and_product_id_and_accessory_id_and_accessory_type(\
           'Printer',pid,cart.product_id,'Cartridge')
-        compat = create_product_from_atts atts, Compatibility if compat.nil?
+        compat = create_record_from_atts  atts, Compatibility if compat.nil?
       end
     end
   end

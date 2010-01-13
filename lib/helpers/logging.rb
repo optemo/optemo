@@ -1,3 +1,6 @@
+# Helpful logging functions!
+# Assumes that the log is called either 
+# @logfile or $logfile
 module LoggingHelper
   
   def log msg
@@ -29,9 +32,7 @@ module LoggingHelper
   # a special logging function for data validation
   def log_v str
     printme  = " INVALID DATA :" + str
-    @logfile.puts printme if @logfile
-    $logfile.puts printme if $logfile
-    puts printme  
+    announce printme
   end
   
   def snore(sec)

@@ -1,3 +1,4 @@
+# encoding: utf-8
 module AmazonScraper
   
   # Detail page url from local_id and region
@@ -18,8 +19,7 @@ module AmazonScraper
   
   # All local ids from region
   def scrape_all_local_ids region
-    
-    puts "[#{Time.now}] Getting a list of all Amazon IDs associated with #{$model}s. This may take a while"
+    announce "[#{Time.now}] Getting a list of all Amazon IDs associated with #{$model}s. This may take a while"
     
     current_page = 1
     count = 0
@@ -39,11 +39,11 @@ module AmazonScraper
         added += res.items.collect{ |item| item.get('asin') }
         current_page += 1
       end
-      puts "[#{Time.now}] Read #{current_page-1} pages..."
+      log "[#{Time.now}] Read #{current_page-1} pages..."
       break if (current_page > total_pages) #or current_page > 5) # <-- For testing only!
     end
     
-    puts "[#{Time.now}] Done getting Amazon IDs!"
+    announce "[#{Time.now}] Done getting Amazon IDs!"
     
     return added.reject{|x| x.nil? or x == ''}
   end
@@ -56,6 +56,11 @@ module AmazonScraper
     atts = clean_cartridge(atts) if $model == Cartridge
     atts = clean_camera(atts) if $model == Camera
     
+    unless atts['itemwidth'] and atts['itemheight'] and atts['itemlength']
+      temp = no_blanks([atts['dimensions']]) #, "#{atts['itemwidth']} x #{atts['itemheight']} x #{atts['itemlength']}" ])  
+      mergeme = clean_dimensions(temp,1) # Dimensions are in 100ths of inches already
+      mergeme.each{ |key, val| atts[key] = val}
+    end
     if (atts['toolow'] || '').to_s  == 'true' and atts['listprice'] and atts['listprice'] != ""
       atts['stock']    = true
       atts['pricestr'] = "Less than #{atts['pricestr']}"
@@ -63,23 +68,13 @@ module AmazonScraper
     end
     
     if (atts['stock'] || '').to_s == 'false'
-      #debugger
       # Check on site if actually out of stock
       ['price', 'priceint', 'pricestr', 'saleprice', 'salepriceint', 'salepricestr'].each{|x| atts['x'] = nil}
     elsif (atts['priceint'].nil? or atts['pricestr'].nil?)
-      #debugger # Should never happen
-      puts "Price is nil?!?!? HOW DID THIS HAPPEN" # TODO 
-      0
+      announce "WARNING: Nil price after cleaning atts for #{atts['local_id']}"
     end
     
-    atts['resolutionmax'] ||= maxres_from_res(atts['resolution']) if atts['resolution']
-    
     return atts
-  end
-  
-  # Re-scrape everything needed to update an offering
-  def rescrape_prices local_id, region
-    return scrape_offer local_id, region
   end
   
   # Scrape product specs and offering info (prices,
@@ -87,7 +82,7 @@ module AmazonScraper
   def scrape local_id, region
     log ("Scraping ASIN #{local_id} from #{region}" )
     specs = scrape_specs local_id
-    prices = scrape_offer local_id, region
+    prices = rescrape_prices local_id, region
     atts = specs.merge(prices)
     atts['local_id'] = local_id
     atts['region'] = region
@@ -99,36 +94,59 @@ module AmazonScraper
   
   # Scrape product specs from feed
   def scrape_specs local_id
-    res = Amazon::Ecs.item_lookup(local_id, :response_group => 'ItemAttributes,Images', :review_page => 1)
-    be_nice_to_amazon
-    
-    nokodoc = Nokogiri::HTML(res.doc.to_html)
-    item = nokodoc.css('item').first
-    if item
-      detailurl = item.css('detailpageurl').first.content
-      atts = item.xpath('itemattributes/*').inject({}){|r,x| 
-        val = x.content
-        val += "#{CleaningHelper.sep} #{r[x.name]}" if r[x.name]
-        r.merge(x.name => val)
-      }
-      item.css('itemattributes/itemdimensions/*').each do |dim|
-        atts["item#{dim.name}"] = dim.text.to_i
+    begin
+      res = Amazon::Ecs.item_lookup(local_id, :response_group => 'ItemAttributes,Images', :review_page => 1)
+      be_nice_to_amazon
+    rescue Exception => exc
+      report_error "Could not scrape #{local_id} data"
+      report_error "#{exc.class.name} #{exc.message}"
+      snore(120) 
+      return {}
+    else
+      nokodoc = Nokogiri::HTML(res.doc.to_html)
+      item = nokodoc.css('item').first
+      if item
+        detailurl = item.css('detailpageurl').first.content
+        atts = {}
+        
+        temphash = {}
+        item.xpath('itemattributes/*').each do |x| 
+          temphash[x.name] = (temphash[x.name] || []) + [x.content]
+        end
+        temphash.each do |k, v|
+          atts[k] = combine_for_storage(v)
+        end
+        
+        item.css('itemattributes/itemdimensions/*').each do |dim|
+          temp = (dim.attributes['units'] || '').to_s.strip
+          case temp
+          when 'inches'
+            atts["item#{dim.name}"] =( dim.text.to_f*100).to_i
+          when 'cm'
+            report_error "WARNING: dimensions in cm! Don't know how to handle"
+          else # assume it's in hundreths of inches
+            atts["item#{dim.name}"] = dim.text.to_i
+          end
+        end
+        
+        temp = get_el item.css('largeimage/url')
+        atts['imageurl'] = temp.content if temp
+        
+        (atts['specialfeatures'] || '').split('|').each do |x| 
+          pair = x.split('^')
+          next if pair.length < 2
+          name = just_alphanumeric("#{pair[0]}")
+          val = "#{pair[1]}"
+          next if name.strip == '' or val.strip == ''
+          if atts[name]
+          	vals = combine_for_storage(separate(atts[name]) + [val])
+          else
+          	vals = val
+          end
+          atts.merge!(name => vals)
+        end
+        return atts
       end
-      
-      temp = get_el item.css('largeimage/url')
-      atts['imageurl'] = temp.content if temp
-      
-      (atts['specialfeatures'] || '').split('|').each do |x| 
-        pair = x.split('^')
-        next if pair.length < 2
-        name = just_alphanumeric("#{pair[0]}")
-        val = "#{pair[1]}"
-        next if name.strip == '' or val.strip == ''
-        val += "#{CleaningHelper.sep} #{atts[name]}" if atts[name]
-        atts.merge!(name => val)
-      end      
-      
-      return atts
     end
     return {}
   end
@@ -167,12 +185,6 @@ module AmazonScraper
         end
         offers = [] << offers unless offers.class == Array
         offers.each do |o| 
-          # Their stock info is often wrong!
-          #if o.get('offerlisting/availability').match(/out of stock/i) 
-          #  debugger
-          #  # Check that it's out of stock on the site?
-          #  next
-          #end
           price = o.get('offerlisting/price/formattedprice')
           if price.nil? or o.get('offerlisting/price').to_s.match(/too low/i)
             price = 0  # TODO scrape_hidden_prices(asin,region)
@@ -202,14 +214,14 @@ module AmazonScraper
   # Gets a hash of attributes for the
   # best-priced offer for a given
   # asin in the given region
-  def scrape_offer asin, region
+  def rescrape_prices asin, region
     offer_atts = {}
     best = scrape_best_offer(asin, region)
     
     if best.nil?
       offer_atts['stock'] = false
     else
-      offer_atts = offer_to_atthash best, asin, region
+      offer_atts = offer_to_atthash( best, asin, region)
     end
     return offer_atts
   end
@@ -231,13 +243,8 @@ module AmazonScraper
     end
     
     atts['availability'] = offer.get('offerlisting/availability')
-    # TODO availability sometimes wrong!
-   # debugger if atts['availability'].nil?
     atts['availability'] = 'In stock' if (atts['availability'] || '').match(/out of stock/i) 
-    
-   # debugger if (atts['availability'] || '').match(/out/i) 
-    # Check against the website..
-    
+   
     atts['merchant']     = offer.get('merchant/merchantid')
     
     atts['url'] = "http://amazon.#{region=="us" ? "com" : region}/gp/product/"+asin+"?tag=#{region=="us" ? "optemo-20" : "laserprinterh-20"}&m="+atts['merchant']
@@ -268,9 +275,6 @@ module AmazonScraper
     temp = Array(temp) unless reviews.class == Array #Fix single and no review possibility
     mytext = temp.collect{|x| "#{x.get('date')} -- #{x.get('summary')}. #{x.get('content')} "}.join(' || ')
     reviews['reviewtext'] = mytext
-    
-    #debugger
-    
     return reviews
   end
 
@@ -307,7 +311,8 @@ module AmazonScraper
         res = Amazon::Ecs.item_lookup(asin, :response_group => 'Reviews', :review_page => current_page)
         be_nice_to_amazon
       rescue Exception => exc
-        report_error " #{exc.message}. Couldn't download reviews for product #{asin}"
+        report_error "Couldn't download reviews for product #{asin}"
+        report_error "#{exc.class.name} #{exc.message}"
       else
         nokodoc = Nokogiri::HTML(res.doc.to_html)
         result =  nokodoc.css('item').first
@@ -316,9 +321,13 @@ module AmazonScraper
           averagerating ||= result.css('averagerating').text
           totalreviews ||= result.css('totalreviews').text.to_i
           totalreviewpages ||= result.css('totalreviewpages').text.to_i
-          puts "#{$model.name} #{asin} review download: #{(totalreviewpages-current_page)/6} min remaining..." if current_page % 10 == 1
+          if totalreviews == 0
+            log "#{$model.name} #{asin} has no reviews -- 0 min remaining"
+            return [{'totalreviews' => totalreviews}]
+          end
+          log "#{$model.name} #{asin} review download: less than #{(totalreviewpages-current_page)/6 + 1} min remaining..." if current_page % 10 == 1
           temp = result.css('review')
-          temp = Array(temp) unless reviews.class == Array #Fix single and no review possibility
+          temp = Array(temp) unless reviews.class == Array # Fix single and no review possibility
           array_of_hashes = temp.collect{|x| x.css('*').inject({}){|r,y| r.merge({y.name => y.text})}}
           named_array_of_hashes = []
           array_of_hashes.each{ |hash|
@@ -327,8 +336,8 @@ module AmazonScraper
                 new_k = get_property_name(k,Review, ['id'])
                 named_hash[new_k] = v 
               }
-              named_hash['totalreviews'] = totalreviews
-              named_hash['averagereviewrating'] = averagerating
+              named_hash['totalreviews'] = totalreviews # TODO can this be done automatically?
+              named_hash['averagereviewrating'] = averagerating # TODO can this be done automatically?
               named_array_of_hashes << named_hash
           }
           reviews = reviews + named_array_of_hashes
@@ -338,7 +347,7 @@ module AmazonScraper
         end
       end
       current_page += 1
-      break if current_page > totalreviewpages #or current_page > 3 # Debugging purposes only!
+      break if totalreviewpages and current_page > totalreviewpages # In case there is a bad request, break loop
     end
     
     return reviews
@@ -347,34 +356,31 @@ module AmazonScraper
   # Cleans attributes if they belong
   # to an Amazon printer
   def clean_printer atts
-    atts['cpumanufacturer'] = nil # TODO
-    ((atts['feature'] || '') +'|'+ (atts['specialfeatures'] || '')).split(/¦|\||#{CleaningHelper.sep}/).each do |x| 
+    atts['cpumanufacturer'] = nil # TODO hacky
+    temp1 = ((atts['feature'] || '') +'|'+ (atts['specialfeatures'] || '')).force_encoding('UTF-8')
+    temp2 = temp1.split(/¦|\|/)
+    temp3 = temp2.collect{|x| separate(x)}.flatten
+    temp3.each do |x| 
         temp_ppm =  get_ppm(x)
         temp_paperin = parse_max_num_pages(x)
         temp_res = x.match(/(res|\d\s?x\s?\d)/i)
         if temp_ppm
-          #debugger
           atts['ppm'] ||= temp_ppm
         elsif temp_paperin and x.match(/(input|feed)/i)
-          #debugger
           atts['paperinput'] ||= temp_paperin
         elsif temp_res
           temp_res_2 = parse_dpi(x)
-         # temp_resmax =  maxres_from_res(temp_res_2)
-          #debugger
           atts['resolution'] ||= temp_res_2
-         #atts['resolutionmax'] ||= temp_resmax
         end
     end
     semi_cleaned_atts = clean_property_names(atts) 
     semi_cleaned_atts['displaysize'] = nil # TODO it's just a weird value
-    #prices = ['listprice', 'listpriceint', 'listpricestr', 'saleprice', 'salepriceint', 'salepricestr',  'price', 'pricestr', 'priceint'].collect{|x|
-    #  (semi_cleaned_atts[x] || '').split(/#{@@sep}/)}.flatten.reject{|x| !x.match(/\./)}
     cleaned_atts = generic_printer_cleaning_code semi_cleaned_atts
     temp1 = clean_brand atts['title'], $printer_brands
     temp2 = clean_brand atts['brand'], $printer_brands
     cleaned_atts['brand'] = temp1 || temp2
     cleaned_atts['condition'] ||= 'New'
+    atts['resolutionmax'] = get_max_f(atts['resolution']) if atts['resolution']
     return cleaned_atts
   end
   
@@ -403,11 +409,17 @@ module AmazonScraper
   
   def clean_camera atts
     semi_cleaned_atts = clean_property_names(atts) 
-    cleaned_atts = generic_cleaning_code semi_cleaned_atts
-    cleaned_atts['resolutionmax'] = maxres_from_res(cleaned_atts['resolution'] || '')
-    atts3 = remove_sep(cleaned_atts)
-    #debugger
-    return atts3
+    cleaned_atts = product_cleaner(semi_cleaned_atts)
+    res_array = separate(cleaned_atts['resolution'] || '')
+    mpix = to_mpix(parse_res(cleaned_atts['title']))
+    mpix ||= res_array.collect{ |x| to_mpix(parse_res(x)) }.reject{|x| x.nil?}.max    
+    mpix = mpix / 1_000_000.0 if (mpix and mpix > 100)
+    cleaned_atts['maximumresolution'] = mpix if mpix
+    remove_sep!(cleaned_atts)
+    rearrange_dims!(cleaned_atts, ['D', 'H', 'W'], true)
+    # TODO the following is hacky.
+    cleaned_atts['displaysize'] = nil if ['0', '669.2913385827'].include?(cleaned_atts['displaysize'] || '').to_s
+    return cleaned_atts
   end
   
   # Converts Amazon's cryptic merchant ID to
@@ -432,43 +444,5 @@ module AmazonScraper
   def be_nice_to_amazon
      sleep(1+rand()*30)
   end
-  
-  #def interpret_special_features(p)
-  #  sf = p.specialfeatures
-  #  a = sf[3..-1].split('|') #Remove leading nv:
-  #  features = {}
-  #  a.map{|l| 
-  #    c = l.split('^') 
-  #    features[c[0]] = c[1]
-  #  }
-  #  p.ppm = features['Print Speed'].match(/\d+[.]?\d*/)[0] if features['Print Speed']
-  #  p.ttp = features['First Page Output Time'].match(/\d+[.]?\d*/)[0] if features['First Page Output Time'] && features['First Page Output Time'].match(/\d+[.]?\d*/)
-  #  if features['Resolution']
-  #    tmp = features['Resolution'].match(/(\d,\d{3}|\d+) ?x?X? ?(\d,\d{3}|\d+)?/)[1,2].compact
-  #    tmp*=2 if tmp.size == 1
-  #    p.resolution = tmp.sort{|a,b| 
-  #      a.gsub!(',','')
-  #      b.gsub!(',','')
-  #      a.to_i < b.to_i ? 1 : a.to_i > b.to_i ? -1 : 0
-  #    }.join(' x ') 
-  #    p.resolutionmax = p.resolution.split(' x ')[0]
-  #  end # String drop down style
-  #  p.duplex = features['Duplex Printing'] # String
-  #  p.connectivity = features['Connectivity'] # String
-  #  p.papersize = features['Paper Sizes Supported'] # String
-  #  p.paperoutput = features['Standard Paper Output'].match(/(\d,\d{3}|\d+)/)[0] if features['Standard Paper Output'] #Numeric
-  #  p.dimensions = features['Dimensions'] #Not parsed yet
-  #  p.dutycycle = features['Maximum Duty Cycle'].match(/(\d{1,3}(,\d{3})+|\d+)/)[0].gsub(',','') if features['Maximum Duty Cycle']
-  #  p.paperinput = features['Standard Paper Input'].match(/(\d,\d{3}|\d+)/)[0] if features['Standard Paper Input'] && features['Standard Paper Input'].match(/(\d,\d{3}|\d+)/) #Numeric
-  #  #Parse out special features
-  #  if !features['Special Features'].nil?
-  #    if features['Special Features'] == "Duplex Printing"
-  #      features['Special Features'] = nil
-  #      p.duplex = "Yes" if p.duplex.nil?
-  #    end
-  #  end
-  #  p.special = features['Special Features']
-  #  p
-  #end
   
 end
