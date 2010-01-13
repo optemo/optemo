@@ -65,10 +65,12 @@ function fadeout(url,data,width,height)
 	var iebody=(document.compatMode && document.compatMode != "BackCompat")? document.documentElement : document.body
 	var dsoctop=document.all? iebody.scrollTop : pageYOffset
 	$('#info').html("");
-	$('#outsidecontainer').css('left', ((document.body.clientWidth-(width||800))/2)+'px')
-		.css('top', (dsoctop+5)+'px').css('width',width||800).css('height',height||770)
-		.css('display', 'inline');
-	$('#fade').css('height', getDocHeight()+'px').css('display', 'inline');
+	$('#outsidecontainer').css({'left' : ((document.body.clientWidth-(width||800))/2)+'px',
+								'top' : (dsoctop+5)+'px',
+								'width' : width||800,
+								'height' : height||770,
+								'display' : 'inline' });
+	$('#fade').css({'height' : getDocHeight()+'px', 'display' : 'inline'});
 	$('#selector').css('visibility', 'hidden');
 	if (data)
 		$('#info').html(data);
@@ -691,7 +693,7 @@ $(document).ready(function() {
 				productIDs = productIDs + $(this).attr('id').substring(1) + ',';
 			}
 		});
-		fadeout('/direct_comparison/index/' + productIDs, null, 900, 530);/*star-h:580*/
+		fadeout('/direct_comparison/index/' + productIDs, null, 940, 530);/*star-h:580*/
 		trackPage('goals/compare/');
 		return false;
 	});

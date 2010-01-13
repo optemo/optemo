@@ -1,3 +1,4 @@
+# encoding: utf-8
 module TigerScraper
 
   def id_to_details_url local_id, region
@@ -42,27 +43,37 @@ module TigerScraper
     atts['stock'] = atts['itmdets'].match(/unavail/i).nil? if atts['itmdets']
 
     atts['condition'] = 'New'
-    atts['condition'] = "Refurbished" if ((atts['upcno']||'').match(/^RB-/) or (atts['model']||'').match(/^RB-/) or (atts['title']||'').match(/refurbished/i) )
+    atts['condition'] = "Refurbished" if ((atts['upcno']||'').force_encoding('UTF-8').match(/^RB-/) \
+      or (atts['model']||'').force_encoding('UTF-8').match(/^RB-/) \
+      or (atts['title']||'').match(/refurbished/i) )
     atts['condition'] = "OEM" if (atts['title']||'').match(/oem/i) 
 
     atts['product_type'] = $model.name
-
-    atts = clean_property_names atts
-    clean_atts = generic_printer_cleaning_code(atts)
-
     
-    atts['resolutionmax'] = get_max_f atts['resolution'] if atts['resolutionmax'].nil? and atts['resolution']
-
-    temp = clean_brand(clean_atts['brand'], $printer_brands)
-    clean_atts['brand'] = temp if temp
-    clean_atts['model'] = clean_printer_model(clean_atts['model'], clean_atts['brand'])
+    # No other info available for weight...
+    atts['itemweight'] = to_pounds(parse_weight(atts['shippingweight']))
+    
+    atts = clean_property_names atts
+    
+    # Dimensions
+    temp = no_blanks([atts['dimensions'], "#{atts['itemwidth']} x #{atts['itemheight']} x #{atts['itemlength']}" ])  
+    mergeme = clean_dimensions(temp,100)
+    mergeme.each{ |key, val| atts[key] = val}
+    clean_atts = generic_printer_cleaning_code(atts)
+    
+    atts['resolutionmax'] = get_max_f(atts['resolution']) if atts['resolutionmax'].nil? and atts['resolution']
+    
+    res_array = separate(atts['resolution'] || '')
+    mpix = res_array.collect{ |x| to_mpix(parse_res(x)) }.reject{|x| x.nil?}.max    
+    atts['maximumresolution'] = mpix if mpix
     
     clean_atts['condition'] ||= 'New' # Default is new
+    clean_prices!(clean_atts)
     return clean_atts
   end
   
   def rescrape_prices local_id, region
-    url = id_to_details_url local_id, region
+    url = id_to_details_url(local_id, region)
     props = {}
     begin
       info_page = Nokogiri::HTML(open(url))
@@ -70,11 +81,12 @@ module TigerScraper
       log "Re-scraping RetailerOffering # #{local_id}"
     rescue Exception => e
       report_error "Couldn't open page: #{url}. Rescraping price failed."
-      report_error "#{e.type.to_s}, #{e.message.to_s}"
+      report_error "#{e.class.name.to_s}, #{e.message.to_s}"
     else
-      props.merge! scrape_prices info_page 
-      props.merge! scrape_availty info_page
+      props.merge! scrape_prices( info_page) 
+      props.merge! scrape_availty( info_page)
     end
+    props = clean(props)
     return props
   end
   
@@ -87,7 +99,7 @@ module TigerScraper
       announce "Scraping #{url}"
     rescue Exception => e
       report_error "Problem scraping page: #{url}."
-      report_error "#{e.type.to_s}, #{e.message.to_s}"
+      report_error "#{e.class.name.to_s}, #{e.message.to_s}"
       return nil
     else
       props.merge! scrape_data info_page
@@ -201,7 +213,7 @@ module TigerScraper
   
   def scrape_prices info_page
     prices_table = info_page.css('table#myPrice tr')
-    prices = scrape_table prices_table, "td", "td"
+    prices = scrape_table(prices_table, "td", "td")
     # TODO have a real test for it:
     prices['toolow'] = false
     return prices
