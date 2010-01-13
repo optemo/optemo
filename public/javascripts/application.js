@@ -150,16 +150,17 @@ function removeFromComparison(id)
 		$("#compare_button").css("display", "none");
 		$("#deleteme").css("display", "block");
 	}
+	return false;
 }
 
 function removeBrand(str)
 {
 	$('#myfilter_Xbrand').attr('value', str);
-	ajaxcall("/products/filter", $("#filter_form").serialize());
+	ajaxcall("/compare/filter", $("#filter_form").serialize());
 }
 
 function submitCategorical(){
-	ajaxcall("/products/filter", $("#filter_form").serialize());
+	ajaxcall("/compare/filter", $("#filter_form").serialize());
 	trackPage('goals/filter/autosubmit');
 }
 
@@ -168,7 +169,7 @@ function submitsearch() {
 	piwikTracker2.setCustomData(searchinfo);
 	trackPage('goals/search');
 	piwikTracker2.setCustomData({});
-	ajaxcall("/products/find?ajax=true", $("#search_form").serialize(), true);
+	ajaxcall("/compare/find?ajax=true", $("#search_form").serialize(), true);
 	return false;
 }
 
@@ -209,7 +210,7 @@ function findBetter(id, feat)
 {
        // Check if better product exists for that feature using /compare/better Rails me
        // Query.get( url, [data], [callback], [type] )
-       $.get("/compare/better?original=" + id + "&feature=" + feat, 
+       $.get("/direct_comparison/better?original=" + id + "&feature=" + feat, 
                function(data){
                        if (data == "-1")
                        {
@@ -218,7 +219,7 @@ function findBetter(id, feat)
                        else
                        {
                                // found better printer (with id stored in data)
-                               window.location = "/compare/index/" + id + "-" + data;
+                               window.location = "/direct_comparison/index/" + id + "-" + data;
                        }
                }, "text");
 }
@@ -254,7 +255,6 @@ function DBinit(context) {
 		onDragClass: "rowBeingDragged",
 		onDrop: function(table, row){		
 			newPreferencesString = $.tableDnD.serialize();
-			// window.location = "/compare/list?" + newPrefString
 		}
 	});
 	
@@ -263,7 +263,7 @@ function DBinit(context) {
 	if ($(".productimg").length)
 	{
 		$(".productimg",context).click(function (){
-			fadeout('/products/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
+			fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
 			trackPage('products/show/'+$(this).attr('data-id')); 
 			// As far as I can tell, the following line is deprecated. ZAT Dec 2009
 			//trackPage($(this).attr('href'));
@@ -315,7 +315,7 @@ function DBinit(context) {
 	
 	// However, always add it to the link below the image.
 	$(".easylink",context).click(function() {
-		fadeout('/products/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
+		fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
 		trackPage('products/show/'+$(this).attr('data-id')); 
 		//trackPage($(this).attr('href'));
 		return false;
@@ -446,6 +446,7 @@ function DBinit(context) {
 			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
 //			This is required for simplelayout, not for the master branch.
 //			if (browserIsIE.indexOf("MSIE7") != -1) $("#sim0").parent().removeClass('tourDrawAttention');
+			return false;
 		});
 	});
 	
@@ -593,7 +594,7 @@ function DBinit(context) {
 				piwikTracker2.setCustomData(sliderinfo);
 				trackPage('goals/filter/sliders');
 				piwikTracker2.setCustomData({});
-				ajaxcall("/products/filter", $("#filter_form").serialize());
+				ajaxcall("/compare/filter", $("#filter_form").serialize());
 			}
 		});
 		$(this).slider('values', 0, ((curmin-rangemin)/(rangemax-rangemin))*100);
@@ -690,7 +691,7 @@ $(document).ready(function() {
 				productIDs = productIDs + $(this).attr('id').substring(1) + ',';
 			}
 		});
-		fadeout('/compare/index/' + productIDs, null, 900, 530);/*star-h:580*/
+		fadeout('/direct_comparison/index/' + productIDs, null, 900, 530);/*star-h:580*/
 		trackPage('goals/compare/');
 		return false;
 	});

@@ -60,7 +60,15 @@ class JavaTestSession < Webrat::SeleniumSession
      browser.click 'id=submit_button' 
      wait_for_load
    end
-   
+  
+  
+  # fill in the pref form 
+  def pref_for query
+     browser.type 'price', query
+     browser.click 'id=submit_button'   
+     wait_for_load  
+  end 
+  
    # Gets the homepage and makes sure nothing crashed.
    def get_homepage
       visit "http://localhost:3000/"
