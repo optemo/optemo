@@ -79,7 +79,7 @@ module GenericScraper
       sp = find_or_create_scraped_product(clean_atts)
             
       if sp
-        debugger if sp.id == $scrapedmodel.last.id
+        #debugger if sp.id == $scrapedmodel.last.id
         
         clean_atts['url'] = id_to_sponsored_link(local_id, retailer.region, clean_atts['merchant'])
         ros = find_ros_from_scraped(sp)
@@ -375,6 +375,8 @@ namespace :data do
     #match_me = [4982, 7878, 10434, 12760, 23270,16024, 18286, 21544].collect{|x| $scrapedmodel.find(x)}
     #[25406,25468,23376,21146,18848, 19564,21852,21232,21524,23266,21232,21292,23266,21928,23720,21544]
     
+    #match_me = [3466, 8442, 14260, 23582, 5124, 10530, 15530, 23952, 25406, 25468, 3354, 8322, 13918, 19662].collect{|x| $scrapedmodel.find(x)}
+    
     match_me.each do |sc|
       sc.update_attribute('product_id',nil)
     end
@@ -412,7 +414,7 @@ namespace :data do
         newatts = rescrape_prices( offering.local_id, offering.region)
         
         #log "[#{Time.now}] Updating #{offering.pricestr} to #{newatts['pricestr']}"
-        update_offering newatts, offering if offering
+        update_offering(newatts, offering) if offering
         if( offering.product_id and $model.exists?(offering.product_id))
           update_bestoffer($model.find(offering.product_id))
         end  

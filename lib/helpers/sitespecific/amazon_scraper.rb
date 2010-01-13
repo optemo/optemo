@@ -221,7 +221,7 @@ module AmazonScraper
     if best.nil?
       offer_atts['stock'] = false
     else
-      offer_atts = offer_to_atthash best, asin, region
+      offer_atts = offer_to_atthash( best, asin, region)
     end
     return offer_atts
   end
@@ -356,8 +356,9 @@ module AmazonScraper
   # Cleans attributes if they belong
   # to an Amazon printer
   def clean_printer atts
-    atts['cpumanufacturer'] = nil # TODO
-    ((atts['feature'] || '') +'|'+ (atts['specialfeatures'] || '')).split(/¦|\||#{CleaningHelper.sep}/).each do |x| 
+    atts['cpumanufacturer'] = nil # TODO hacky
+    # TODO is the encoding right?
+    ((atts['feature'] || '') +'|'+ (atts['specialfeatures'] || '')).force_encoding('UTF-8').split(/¦|\||#{CleaningHelper.sep}/).each do |x| 
         temp_ppm =  get_ppm(x)
         temp_paperin = parse_max_num_pages(x)
         temp_res = x.match(/(res|\d\s?x\s?\d)/i)

@@ -80,8 +80,8 @@ module TigerScraper
       report_error "Couldn't open page: #{url}. Rescraping price failed."
       report_error "#{e.class.name.to_s}, #{e.message.to_s}"
     else
-      props.merge! scrape_prices info_page 
-      props.merge! scrape_availty info_page
+      props.merge! scrape_prices( info_page) 
+      props.merge! scrape_availty( info_page)
     end
     props = clean(props)
     return props
@@ -210,7 +210,7 @@ module TigerScraper
   
   def scrape_prices info_page
     prices_table = info_page.css('table#myPrice tr')
-    prices = scrape_table prices_table, "td", "td"
+    prices = scrape_table(prices_table, "td", "td")
     # TODO have a real test for it:
     prices['toolow'] = false
     return prices

@@ -109,8 +109,6 @@ module DimensionsHelper
         @@dimensions.each do |k,v|
           atts[v] = get_f(dim) || 0 if dim.include?(k) and !atts[v]
         end 
-        debugger
-        0
       end
       if [atts['itemlength'], atts['itemwidth'], atts['itemheight']].uniq == [0]
         dim_array = dims.split('x')

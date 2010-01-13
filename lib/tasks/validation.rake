@@ -113,21 +113,21 @@ namespace :check do
         puts "#{c.brand} VS #{sc.brand}"
         report_error "Brand not matched for c-sc #{c.id} <--> #{sc.id}"
       end
-    
-      #mm_c = [c.model, c.mpn].collect{|x| just_alphanumeric(x)}
-      #mm_sc = [sc.model, sc.mpn].collect{|x| just_alphanumeric(x)}
-      #if (mm_sc & mm_c).length < 1
-      #  ok = false
-      #  mm_sc.each{|el|
-      #    mm_c.each{|el2|
-      #      ok = (ok or (el.match(/#{el2}/)) or (el2.match(/#{el}/)))
-      #    }
-      #  }
-      #  unless ok
-      #    puts "#{mm_c * ', '} VS #{mm_sc * ', '} "
-      #    report_error "Model not matched for c-sc #{c.id} <--> #{sc.id}" 
-      #  end
-      #end
+      
+      mm_c = [c.model, c.mpn].collect{|x| just_alphanumeric(x)}
+      mm_sc = [sc.model, sc.mpn].collect{|x| just_alphanumeric(x)}
+      if (mm_sc & mm_c).length < 1
+        ok = false
+        mm_sc.each{|el|
+          mm_c.each{|el2|
+            ok = (ok or (el.match(/#{el2}/)) or (el2.match(/#{el}/)))
+          }
+        }
+        unless ok
+          puts "#{mm_c * ', '} VS #{mm_sc * ', '} "
+          report_error "Model not matched for c-sc #{c.id} <--> #{sc.id}" 
+        end
+      end
     end
   end
   

@@ -1,6 +1,36 @@
 namespace :sandbox do
   
   
+  task :fix_links => :environment do 
+    require 'helper_libs'
+   
+    include CameraHelper
+    include CameraConstants
+    
+    $model = @@model
+    $scrapedmodel = @@scrapedmodel
+    
+    ptype = $model.to_s
+    
+    $scrapedmodel.all.each do |sc|
+      #lid = sc.local_id
+      #rid = sc.retailer_id
+      pid = sc.product_id
+      unless $model.exists?(pid)
+        sc.update_attribute('product_id', nil)
+      end
+      #if lid and rid# and pid
+      #  ros = RetailerOffering.find_all_by_product_type_and_local_id_and_retailer_id(ptype,lid,rid)
+      #  ros.each do |ro|
+      #    if ro.product_id != pid
+      #      debugger
+      #      ro.update_attribute('product_id', pid)
+      #    end
+      #  end
+      #end
+    end
+  end
+  
   task :fix_ptr_models => :environment do 
     require 'helper_libs'
    
