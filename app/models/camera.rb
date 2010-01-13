@@ -25,7 +25,7 @@ class Camera < ActiveRecord::Base
   CategoricalFeatures = Features.select{|f|f[1] == "Categorical" && f[2].index("c")}.map{|f|f[0]}
   CategoricalFeaturesF = Features.select{|f|f[1] == "Categorical" && f[2].index("f")}.map{|f|f[0]}
   ExtraFeature = Hash[*Features.select{|f|f[2].index("e")}.map{|f|[f[0],true]}.flatten]
-  ShowFeatures = %w(brand model maximumresolution opticalzoom digitalzoom displaysize) #itemweight itemwidth sensordiagonal crushproof freezeproof waterproof aa_batteries aperturerange minimumfocallength maximumfocallength minf shutterspeedrange slr)
+  ShowFeatures = %w(brand model maximumresolution opticalzoom digitalzoom displaysize ) #itemweight itemwidth sensordiagonal crushproof freezeproof waterproof aa_batteries aperturerange minimumfocallength maximumfocallength minf shutterspeedrange slr)
   DisplayedFeatures = %w(displaysize opticalzoom maximumresolution itemweight itemdimensions digitalzoom)
   ItoF = %w(price itemwidth)
   named_scope :priced, :conditions => "price > 0"

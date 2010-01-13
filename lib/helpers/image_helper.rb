@@ -1,8 +1,10 @@
 module ImageHelper
   
-  # -- Global vars to set --#
+  include GC
+  
+  # -- Vars to set --#
   # $model : eg Cartridge, Printer, Camera (the object not the string)
-  # $id_field : the db field which is unique for every object that has 
+  # $id_field : the db field which is unique for every object that has (default is id)
   # the same picture (can just be ID)
   # $imgfolder : the subfolder where your pictures for the given product
   # type will go.
@@ -11,7 +13,11 @@ module ImageHelper
   
   @@size_names = ['s','m','l']
   @@sizes = [[70,50],[140,100],[400,300]]
-  
+
+  def id_field
+    return $id_field || 'id'
+  end
+    
   def imgfolder
     return $imgfolder || ($model.name.downcase+'s')
   end
@@ -21,22 +27,21 @@ module ImageHelper
      begin
         image = Magick::ImageList.new(filename_from_id(id,sz))
         image = image.first if image.class == Magick::ImageList
-        return false if image.nil?
      rescue Magick::ImageMagickError => ime
         error_string = "#{$0} #{$!} #{ime}"
         if(error_string || '').match(/No such file or directory/).nil?
           puts "ImageMagick Error"
           puts error_string
-        else
+        #else
           #puts "ImageMagick says: File not found for #{id}"
         end
-        return false
      rescue Exception => e
-        puts "#{e.type} #{e.message}"
-        return false
+        puts "#{e.class.name} #{e.message}"
      else
-        return image.rows if image
-        return false # When would this happen?
+        if image and image.rows != 0
+          GC.start
+          return true 
+        end
      end
      return false
   end
@@ -54,8 +59,8 @@ module ImageHelper
     model.all.each do |rec|
       image = nil
       @@size_names.each do |sz|        
-        image = file_exists_for(rec[$id_field], sz)
-        not_resized << rec unless image
+        image = file_exists_for(rec[id_field], sz)
+        not_resized << rec.id unless image
       end
     end
     return not_resized.uniq
@@ -66,10 +71,10 @@ module ImageHelper
     no_pic = []
     model.all.each do |rec|
       image = nil
-      image = file_exists_for(rec[$id_field])
-      no_pic << rec unless image
+      image = file_exists_for(rec[id_field])
+      no_pic << rec.id unless image
     end
-    return no_pic
+    return no_pic.uniq
   end
   
   # Returns a set of db records which have no pic length/width/url
@@ -97,13 +102,14 @@ module ImageHelper
       readme = open(url)
       writehere = open("public/#{folder}/#{filename}","w")
       writehere.write(readme.read)
+      writehere.close
     rescue OpenURI::HTTPError => e
       puts "ERROR Problem downloading from #{url} into #{filename}"
-      puts "#{e.type} #{e.message}"
+      puts "#{e.class.name} #{e.message}"
       return nil
     rescue Exception => e
       puts "ERROR Bug in code downloading from #{url} into #{filename}"
-      puts "#{e.type} #{e.message}"
+      puts "#{e.class.name} #{e.message}"
       return nil
     end
     ret
@@ -132,8 +138,8 @@ module ImageHelper
     @@sizes.each_with_index do |size, index|
       pic = trimmed.resize_to_fit(size[0],size[1])
       pic.write "#{filename}_#{@@size_names[index]}.jpg"
-      scaled << pic
-    end  
+      scaled << "#{filename}_#{@@size_names[index]}.jpg" if pic
+    end
     return scaled
   end
   
@@ -151,8 +157,8 @@ module ImageHelper
   def record_pic_urls recordset
     recordset.each do |rec|
       @@size_names.each do |sz|    
-        puts "#{ url_from_item_and_sz(rec[$id_field], sz)}"
-        fill_in("image#{sz}url", url_from_item_and_sz(rec[$id_field], sz), rec)
+        puts "#{ url_from_item_and_sz(rec[id_field], sz)}"
+        fill_in("image#{sz}url", url_from_item_and_sz(rec[id_field], sz), rec)
       end
     end
   end
@@ -163,18 +169,17 @@ module ImageHelper
       rec = record
       rec = $model.find(record) if rec.class != $model
       @@size_names.each do |sz|
-        if file_exists_for(rec[$id_field], sz)
+        if file_exists_for(rec[id_field], sz)
           begin
-            image = Magick::ImageList.new(filename_from_id(rec[$id_field], sz))
+            image = Magick::ImageList.new(filename_from_id(rec[id_field], sz))
             image = image.first if image and image.class.to_s == 'Magick::ImageList'
           rescue Exception => e
-            puts "WARNING: Can't get dimensions for #{sz} size pic of product #{rec[$id_field]}"
-            debugger
-            puts "#{e.type} #{e.message}"
+            puts "WARNING: Can't get dimensions for #{sz} size pic of product #{rec[id_field]}"
+            puts "#{e.class.name} #{e.message}"
             image = nil
           end
           if image
-            fill_in "image#{sz}url", url_from_item_and_sz(rec[$id_field], sz), rec
+            fill_in "image#{sz}url", url_from_item_and_sz(rec[id_field], sz), rec
             fill_in "image#{sz}height", image.rows, rec if image.rows
             fill_in "image#{sz}width", image.columns, rec if image.columns
           end
@@ -214,7 +219,7 @@ module ImageHelper
         end
         failed << id
       rescue Exception => e
-        puts "#{e.type} #{e.message}"
+        puts "#{e.class.name} #{e.message}"
         puts "Downloading #{id} failed"
         failed << id
       end
@@ -231,8 +236,9 @@ module ImageHelper
         image = Magick::ImageList.new(filename_from_id id)
         image = image.first if(image and image.class == Magick::ImageList)
         filenames = resize(image)
-        failed << id if(filenames.nil? or filenames.length == 0)
+        failed << id if(filenames.nil? or filenames.length != 3)
         puts "Resizing #{id} successful"
+        GC.start
       rescue Magick::ImageMagickError => ime
         error_string = "#{$0} #{$!} #{ime}"
         if(error_string || '').match(/No such file or directory/).nil?
@@ -244,7 +250,7 @@ module ImageHelper
         failed << id
         puts "Resizing #{id} failed"
       rescue Exception => e
-        puts "ERROR: #{e.type} #{e.message}"
+        puts "ERROR: #{e.class.name} #{e.message}"
         puts "Resizing #{id} failed"
         failed << id
       end

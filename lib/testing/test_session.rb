@@ -58,7 +58,7 @@ class TestSession < Webrat::MechanizeSession
       begin
        visit "http://localhost:3000/"
       rescue Timeout::Error => e
-        report_error "#{e.type} #{e.message}"
+        report_error "#{e.class.name} #{e.message}"
       end
        if error_page?
          report_error "Error loading homepage" 

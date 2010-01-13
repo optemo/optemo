@@ -7,10 +7,10 @@
 }
 .cell {
 	border-right: gray 1px dashed;
-	width: 160px;
+	width: 180px;
 	height: 23px;
 	font-size: 0.9em;
-	padding: 7px 0px 0px 20px;
+	padding: 7px 0px 0px 10px;
 }
 .longcolumn .cell {
 	border-right: none;
@@ -19,12 +19,12 @@
 .thumbnailcell {
 	padding-top: 15px;
 	border-right: gray 1px dashed;
-	width: 180px;
+	width: 190px;
 	height: 180px;
 }
 .columntitle {
 	background: url(../images/columntitlebg.gif);
-	width: 179px;
+	width: 189px;
 	height: 23px;
 	font-size: 0.9em;
 	padding-top: 7px;
@@ -46,7 +46,7 @@
 	border-right: solid 1px #ccc;
 }
 .outertitle {
-	width: 179px;
+	width: 189px;
 	border-right: solid 2px white;
 	z-index: 4;
 	position: relative;

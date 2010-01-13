@@ -26,7 +26,6 @@ task :validate_printers => :environment do
   
   @logfile.close
 end
-
 desc 'Find duplicates'
 task :find_duplicate_printers => :environment do
   
@@ -37,7 +36,7 @@ task :find_duplicate_printers => :environment do
   duplicate_sets = []
   
   Printer.all.each do |p|
-    matches = match_printer_to_printer p, Printer
+    matches = match_product_to_product p, Printer
     
     
     if matches.reject{|x| x.id == p.id}.length > 0
@@ -114,6 +113,8 @@ task :c_clustering do
   env = ENV['RAILS_ENV'] || 'development'
   `#{RAILS_ROOT}/lib/c_code/clusteringCodes/codes/hCluster printer us #{env} #{$NumGroups}`
   `#{RAILS_ROOT}/lib/c_code/clusteringCodes/codes/hCluster printer ca #{env} #{$NumGroups}`
+  `#{RAILS_ROOT}/lib/c_code/clusteringCodes/codes/hCluster camera us #{env} #{$NumGroups}`
+  `#{RAILS_ROOT}/lib/c_code/clusteringCodes/codes/hCluster camera ca #{env} #{$NumGroups}`
 end
 
 desc "Recluster printers"
