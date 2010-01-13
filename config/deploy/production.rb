@@ -2,6 +2,7 @@ set :application, "laserprinterhub"
 set :repository,  "git@jaguar:site.git"
 set :domain, "linode"
 set :branch, "staging"
+set :user, "#{ `whoami`.chomp }"
 
 # If you aren't deploying to /u/apps/#{application} on the target
 # servers (which is the default), you can specify the actual location
@@ -14,7 +15,6 @@ set :deploy_via, :remote_cache
 default_run_options[:pty] = true
 ssh_options[:port] = 5151
 set :use_sudo, false
-set :user, { `whoami`.chomp }
 # There is also this method, might be better in some cases:
 # { Capistrano::CLI.ui.ask("User name: ") }
 

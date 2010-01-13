@@ -97,27 +97,7 @@ class MergedCluster
     end
     @size
   end
-  
-  #Description for each cluster
-  def description(session, searchpids)
-    des = []
-    $dbfeat.each do |f|
-      if (f.featureType == 'Continuous')
-        low = f.low
-        high = f.high  
-        clusterR = ranges(f.name, session, searchpids)
-        return 'Empty' if clusterR[0].nil? || clusterR[1].nil?
-        if (clusterR[1]<=low)
-          des <<  $model::ContinuousFeaturesDescLow[f.name]
-        elsif (clusterR[0]>=high)
-          des <<  $model::ContinuousFeaturesDescHigh[f.name]
-        end
-      end
-    end 
-      res = des.join(', ')
-      res.blank? ? 'All Purpose' : res
-  end
-  
+
   def isEmpty(session, searchpids)
     nodes(session, searchpids).empty?
   end

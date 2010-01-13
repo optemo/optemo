@@ -1,0 +1,60 @@
+<% self.title = "#{@s.desc} #{$model.urlname.capitalize}" %>
+<div id="leftbar">
+	<!-- The Search box -->
+	<div id='searchbox' class='leftboxes rounded_leftboxes rounded'>
+	<div class="tl"></div><div class="tr"></div>
+	<h2><%=t "products.compare.search" %></h2>
+	<% form_tag("/compare/find",{:id => 'search_form'}) do %>
+	  <%= @s.searchterm.blank? ? text_field_tag('search') : text_field_tag('search', @s.searchterm) %>
+	  <%= submit_tag 'Search', {:id => 'submit_button'} %>
+	<% end %>
+	<div class="bl"></div><div class="br"></div>
+	</div>
+	<!-- The Saved Items box -->
+	<div id="savebar" class='leftboxes gainlayout rounded_leftboxes rounded'>
+		<div class="tl"><!-- --></div><div class="tr"><!-- --></div>
+		<h2> <%=t 'products.compare.saved' %> </h2>
+		<div class="savesome"> <% if $DragAndDropEnabled == true %> <%=t 'products.compare.savesomedrag'%> <% else %> <%=t 'products.compare.savesome'%> <% end %></div>
+		<div id="savebar_content">
+		<div id="already_added_msg" class="savedmsg"> <%=t 'products.compare.alreadyadded' %> </div>
+		<div id="too_many_saved" class="savedmsg"> <%=t 'products.compare.toomanysaved' %> </div>
+		<div id="savedproducts">
+		</div>
+		</div>
+		<!-- Hide if 0 products, show if 1/more. -->
+		<%= link_to image_tag("compare#{fr?}.gif"), "", :id => "compare_button", :style => "display:none;" %>
+		<div class="bl"><!-- --></div><div class="br"><!-- --></div>
+	</div>
+
+	<!-- The Filters section -->
+	<div id="filterbar" class="leftboxes rounded_leftboxes rounded">
+		<div class="tl"></div><div class="tr"></div>
+		<h2><%=t 'products.compare.filters' %>
+			<div class="filtersdesc"><%=t 'products.compare.filtersdesc' %></div>
+		</h2>
+		<div id="ajaxfilter">
+			<%= render :partial => 'filter' %>
+		</div>
+		<div class="reset">
+		<%= link_to image_tag("reset#{fr?}.gif"), "/compare/", :class => "staticajax" %>
+		</div>
+		<div class="bl"></div><div class="br"></div>
+	</div>
+	</div>
+
+<div id="main">
+<!--	<div class='welcome_msg'>Find, compare, and buy the right printer for you! Explore groups of similar products by clicking on the links in the boxes or narrow your search by using the filters on your left. Can't decide? Save a few printers and compare!</div><br>
+	<div style="text-align: center;"><h1>My title</h1></div>
+	
+	
+	<% if flash[:error] %>
+	<span style="color:red;"><%= flash[:error] %></span>
+	<% end %>
+	<% if flash[:notice] %>
+	<span class="notice"><%= flash[:notice] %></span>
+	<% end %>
+	
+-->
+	<%= render :partial => 'discoverybrowser' %>
+</div>
+<div id="loading">&nbsp;Loading<div id="myspinner" style="float: left;"></div></div>

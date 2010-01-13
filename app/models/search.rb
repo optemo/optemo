@@ -1,9 +1,6 @@
 class Search < ActiveRecord::Base
   include CachingMemcached
   belongs_to :session
-  belongs_to :cluster
-  has_many :vieweds
-  
   
   ## Computes distributions (arrays of normalized product counts) for all continuous features 
   def distribution(featureName)

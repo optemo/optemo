@@ -7,7 +7,7 @@ module PrinterTest
     #  @sesh.get_detail_page (box_index+1)
     #rescue Exception => e
     #  report_error "Problem getting detail page for product #{@sesh.pid_by_box(box_index+1)}"
-    #  report_error "#{e.type} #{e.message}"
+    #  report_error "#{e.class.name} #{e.message}"
     #else
     #  assert_not_error_page
     #  assert_not_homepage
@@ -29,7 +29,7 @@ module PrinterTest
      # TODO change methods to move_slider
      @sesh.move_slider(slider, min.to_i, max.to_i)
    rescue Exception => e
-     report_error e.type.to_s + e.message.to_s
+     report_error e.class.name.to_s + e.message.to_s
    else
      assert_not_error_page
      assert_well_formed_page
@@ -122,7 +122,7 @@ module PrinterTest
    begin        
      @sesh.click_browse_similar which_link
    rescue Exception => e
-     report_error "Error with box number #{which_link} \n" + e.type.to_s + e.message.to_s
+     report_error "Error with box number #{which_link} \n" + e.class.name.to_s + e.message.to_s
    else
      assert_not_error_page
      assert_well_formed_page
@@ -139,7 +139,7 @@ module PrinterTest
    begin
      @sesh.search_for query
    rescue Exception => e
-     report_error "Error with search string '" + query + "'" + "\n" + e.type.to_s + e.message.to_s
+     report_error "Error with search string '" + query + "'" + "\n" + e.class.name.to_s + e.message.to_s
    else
      assert_not_error_page
      assert_well_formed_page
@@ -162,7 +162,7 @@ module PrinterTest
    begin
      @sesh.click_clear_search
    rescue Exception => e
-     report_error "Clear search history error, " + e.type.to_s + e.message.to_s
+     report_error "Clear search history error, " + e.class.name.to_s + e.message.to_s
    else
    # TODO more asserts?
     assert_not_error_page
@@ -183,7 +183,7 @@ module PrinterTest
    begin 
      @sesh.select_brand brand          
    rescue Exception => e # This detects crashing.
-     report_error e.type.to_s + " with " + @sesh.brand_name(brand) + ", message:" + e.message.to_s
+     report_error e.class.name.to_s + " with " + @sesh.brand_name(brand) + ", message:" + e.message.to_s
    else
      assert_not_error_page
      assert_well_formed_page
@@ -230,7 +230,7 @@ module PrinterTest
      @sesh.selenium.click "xpath=(//a[@class='save'])[#{which_item}]"
      @sesh.wait_for_ajax
    rescue Exception => e
-     report_error "Crashed while saving item. Error: " + e.type.to_s + e.message.to_s
+     report_error "Crashed while saving item. Error: " + e.class.name.to_s + e.message.to_s
    else
      assert_not_error_page
      assert_well_formed_page
@@ -258,7 +258,7 @@ module PrinterTest
      @sesh.selenium.click "xpath=(//div[@class='saveditem']/a)[#{which_saved}]" 
      @sesh.wait_for_ajax
    rescue Exception => e
-     report_error "Crashed while removing saved item. Error: " + e.type.to_s + e.message.to_s
+     report_error "Crashed while removing saved item. Error: " + e.class.name.to_s + e.message.to_s
    else
        assert_not_error_page
        assert_well_formed_page
@@ -286,7 +286,7 @@ module PrinterTest
      @sesh.wait_for_ajax
      @sesh.wait_for_load
    rescue Exception => e
-     report_error "Error removing #{which_brand}th brand. " + e.type.to_s + e.message.to_s
+     report_error "Error removing #{which_brand}th brand. " + e.class.name.to_s + e.message.to_s
    else
      assert_not_error_page
      assert_well_formed_page
@@ -313,7 +313,7 @@ module PrinterTest
 # ---------------- HELPER METHODS ----------------- #
 
  def java_enabled?
-   return true if(@sesh.type.to_s == "JavaTestSession")
+   return true if(@sesh.class.name.to_s == "JavaTestSession")
    return false
  end
  
