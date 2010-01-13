@@ -47,7 +47,7 @@ class ApplicationController < ActionController::Base
     if request.domain.nil?
       @ds = "Printer"
     else
-      domainprefix = request.domain.split(".").first
+      domainprefix = request.domain(2).split(".").first
       if domainprefix == "cameras"
         @ds = "Camera"
       elsif domainprefix == "printers"
