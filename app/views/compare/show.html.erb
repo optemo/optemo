@@ -7,10 +7,11 @@
 <% end %>
 	<h1><%= URI.decode(@product.title) %></h1>
 	<div id="image">
-		<% unless @product.imagelurl.blank? %>
-			<%= link_to image_tag(@product.imagelurl, :width => @product.imagelw, :height => @product.imagelh), @product.imagelurl, :popup => true %>
+
+		<% if FileTest.exist?(RAILS_ROOT + "/public" + @imglurl) %>
+			<%= link_to image_tag(@imglurl, :width => @product.imagelw, :height => @product.imagelh), @imglurl, :popup => true %>
 		<% else %>
-			<br><br>No Image Available
+			<br><br>No Image Available <!-- (tried < % = RAILS_ROOT + "/public" + @imglurl %>) -->
 		<% end %>
 	</div>
 	<div id="features">
@@ -20,7 +21,7 @@
 			<% f = @product.send(f_name) %>
 			<% if !f.nil? %>
 				<li>
-					<% if false && @plain && (request.referer.nil? || request.referer.index($model.urlname).nil?) %> <!-- that is, if popup was not called from main navigation page, then show "better" links -->
+					<% if false && @plain && (request.referer.nil? || request.referer.index("compare").nil?) %> <!-- that is, if popup was not called from main navigation page, then show "better" links -->
 					<div class="betterlinkdiv">
 						<%= link_to "better", "javascript:findBetter('#{@product.id}', '#{f_name}')", :"data-id" => f_name, :class => 'betterlink' %>
 					</div>

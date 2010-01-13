@@ -1,9 +1,0 @@
-<div class="thumbnailcell">
-		<div class="first">	
- 			<%= image_tag(thumbnails.imagemurl, :width => thumbnails.imagemw, :height => thumbnails.imagemh, :onClick => "fadeout('/products/show/' + #{thumbnails.id}+'?plain=true');", :style => "cursor: pointer;") %>
- 		</div>
-	<div class="thumbnaillabel">
-   	<%= finalDisplay(thumbnails, "brand") %> <%= finalDisplay(thumbnails, "model") %>
-	<div class="thumbnaildetails">	<%= finalDisplay(thumbnails, "price") %> </div>
-	</div>
-</div>

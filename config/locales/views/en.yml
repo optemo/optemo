@@ -1,9 +1,9 @@
 en:
     products:
         compare:
-            # All translations for /products/compare.erb.html and its partials
-            browsings:      "Browsing {{count}} Printers"    # e.g. Browsing 146 Cameras
-            browsing:       "Browsing 1 Printer"   
+            # All translations for /compare/compare.erb.html and its partials
+            browsings:      "Browsing {{count}} "    # e.g. Browsing 146 Cameras
+            browsing:       "Browsing 1 "   
             search:         "Search"
             saved:          "Save And Compare"
             alreadyadded:   "You already added that product!"

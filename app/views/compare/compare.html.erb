@@ -4,7 +4,7 @@
 	<div id='searchbox' class='leftboxes rounded_leftboxes rounded'>
 	<div class="tl"></div><div class="tr"></div>
 	<h2><%=t "products.compare.search" %></h2>
-	<% form_tag("/products/find",{:id => 'search_form'}) do %>
+	<% form_tag("/compare/find",{:id => 'search_form'}) do %>
 	  <%= @s.searchterm.blank? ? text_field_tag('search') : text_field_tag('search', @s.searchterm) %>
 	  <%= submit_tag 'Search', {:id => 'submit_button'} %>
 	<% end %>
@@ -36,7 +36,7 @@
 			<%= render :partial => 'filter' %>
 		</div>
 		<div class="reset">
-		<%= link_to image_tag("reset#{fr?}.gif"), "/#{$model.urlname}/", :class => "staticajax" %>
+		<%= link_to image_tag("reset#{fr?}.gif"), "/compare/", :class => "staticajax" %>
 		</div>
 		<div class="bl"></div><div class="br"></div>
 	</div>

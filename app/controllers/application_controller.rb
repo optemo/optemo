@@ -8,7 +8,6 @@ class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
   helper_method :title=, :full_title=, :describe=
   @description
- 
   
   #
   # See ActionController::RequestForgeryProtection for details
@@ -20,6 +19,7 @@ class ApplicationController < ActionController::Base
   # from your application log (in this case, all fields with names like "password"). 
   # filter_parameter_logging :password
   
+  before_filter :set_model_type
   before_filter :update_user 
   before_filter :set_locale
   
@@ -42,13 +42,28 @@ class ApplicationController < ActionController::Base
     args = options.map { |n, v| "#{n.to_s.upcase}='#{v}'" }
     system "/usr/local/bin/rake #{task} #{args.join(' ')} --trace 2>&1 >> #{Rails.root}/log/rake.log &"
   end
+
+  def set_model_type
+    if request.domain.nil?
+      @ds = "Printer"
+    else
+      domainprefix = request.domain.split(".").first
+      if domainprefix == "cameras"
+        @ds = "Camera"
+      elsif domainprefix == "printers"
+        @ds = "Printer"
+      else
+        @ds = "Printer"
+      end  
+    end
+    # The "|| $DefaultProduct" part will never get hit.
+    $model = @ds.constantize
+    $nodemodel = (@ds + 'Node').constantize
+    $clustermodel = (@ds + 'Cluster').constantize
+    $featuremodel = (@ds + 'Features').constantize
+  end
   
   def update_user
-    $model = (session[:productType] || $DefaultProduct).constantize
-    $nodemodel = ((session[:productType] || $DefaultProduct)+'Node').constantize
-    $clustermodel = ((session[:productType] || $DefaultProduct)+'Cluster').constantize
-    $featuremodel = ((session[:productType] || $DefaultProduct)+'Features').constantize
-    $region = request.url.match(/\.ca/) ? "ca" : "us"
     mysession = Session.find_by_id(session[:user_id])
     if mysession.nil?
       mysession = Session.new
@@ -65,6 +80,16 @@ class ApplicationController < ActionController::Base
     else
       @@session = mysession
     end
+
+    # Set some stuff in the session, etc., straight from cameras_controller.rb or printers_controller.rb
+    # These need to be changed to variable names from strings
+    session[:productType] = @ds
+    @@session.update_attribute('product_type', @ds) if @@session.product_type.nil? || @@session.product_type != @ds
+
+    # In addition, it seems like all of these are being set below to something else. Apparently they are no longer strings after "constantize"?
+    # I would like to do memory management here to delete the object. Bug? ZAT
+
+    $region = request.url.match(/\.ca/) ? "ca" : "us"
     @@keywordsearch = nil
     @@keyword = nil
     if @@session.filter && @@session.searches.last

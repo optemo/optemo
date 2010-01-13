@@ -48,11 +48,11 @@ module NavigationHelpers
    
    def get_detail_page_link box
      pid = pid_by_box(box)
-     return  "/products/show/#{pid}"
+     return  "/compare/show/#{pid}"
    end
    
    def detail_page?
-     return ( self.current_url.match(/products\/show/) and !self.error_page?)
+     return ( self.current_url.match(/compare\/show/) and !self.error_page?)
    end
    
    def num_checkboxes
@@ -206,7 +206,7 @@ module NavigationHelpers
 
    def home_page?
      return true if self.current_url == 'http://localhost:3000/'
-     return true if self.current_url == 'http://localhost:3000/printers/'
+     return true if self.current_url == 'http://localhost:3000/compare/'
      bd_div_content = get_bd_div_text
      welcome_msg = bd_div_content.match("All Purpose Printers")
      return !welcome_msg.nil? 

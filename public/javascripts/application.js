@@ -79,6 +79,11 @@ function fadeout(url,data,width,height)
 // When you click the Save button:
 function saveProductForComparison(id, imgurl, name)
 {	
+	imgurlToSaveArray = imgurl.split('/');
+	
+	imgurlToSaveArray[imgurlToSaveArray.length - 1] = id + "_s.jpg";
+	imgurlToSave = imgurlToSaveArray.join("/");
+	
 	if($(".saveditem").length == 4)
 	{
 		$("#too_many_saved").css("display", "block");
@@ -91,7 +96,7 @@ function saveProductForComparison(id, imgurl, name)
 	} else {
 		trackPage('goals/save/'+id);
 		renderComparisonProducts(id, imgurl, name);
-		addValueToCookie('savedProductIDs', [id, imgurl, name]);
+		addValueToCookie('savedProductIDs', [id, imgurlToSave, name]);
 	}
 
 	// There should be at least 1 saved item, so...
@@ -110,24 +115,25 @@ function renderComparisonProducts(id, imgurl, name)
 	// The best is to just leave the medium URL in place, because that image is already loaded in case of comparison, the common case.
 	// For the uncommon case of page reload, it's fine to load a larger image.
 	//	imgurl.replace(/_m/g, "_s")
-	smallProductImageAndDetail = "<img class=\"productimg\" width=\"45\" height=\"50\" src=" + 
+	smallProductImageAndDetail = "<img class=\"productimg\" src=" + // used to have width=\"45\" height=\"50\" in there, but I think it just works for printers...
 	//"/images/printers/"+id+"_s.jpg?1260303451" + 
-	imgurl +
-	" data-id=\""+id+"\" alt=\""+id+"_s\"/>" + 
-	"<div class=\"smalldesc\">" +
-	"<a class=\"easylink\" data-id=\""+id+"\" href=\"#\">"+
+	imgurl + 
+	" data-id=\""+id+"\" alt=\""+id+"_s\"/ width=\"50\">" + 
+	"<div class=\"smalldesc\"";
+	// It looks so much better in Firefox et al, so if there's no MSIE, go ahead with special styling.
+	if (browserIsIE.indexOf("MSIE") == -1) smallProductImageAndDetail = smallProductImageAndDetail + " style=\"position:absolute; bottom:5px;\"";
+	smallProductImageAndDetail = smallProductImageAndDetail + ">" +
+	"<a class=\"easylink\" data-id=\""+id+"\" href=\"#\">" + 
 	((name) ? getShortProductName(name) : 0) +
-	//Zevtor +
 	"</a></div>" + 
 	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\" onClick=\"javascript:removeFromComparison("+id+")\">" + 
 	"<img src=\"/images/close.png\" alt=\"Close\"/></a>"; // do we need '?1258398853' ? I doubt it.
-
 	$(smallProductImageAndDetail).appendTo('#c'+id);
 	DBinit("#c"+id)
 
 	$("#already_added_msg").css("display", "none");
 	$("#too_many_saved").css("display", "none");
-	if (browserIsIE.indexOf('MSIE') != -1)
+	if (browserIsIE.indexOf('MSIE') == -1) // If it's any browser other than IE, clear the height element.
 		$("#savedproducts").css({"height" : ''});
 }
 
@@ -144,16 +150,17 @@ function removeFromComparison(id)
 		$("#compare_button").css("display", "none");
 		$("#deleteme").css("display", "block");
 	}
+	return false;
 }
 
 function removeBrand(str)
 {
 	$('#myfilter_Xbrand').attr('value', str);
-	ajaxcall("/products/filter", $("#filter_form").serialize());
+	ajaxcall("/compare/filter", $("#filter_form").serialize());
 }
 
 function submitCategorical(){
-	ajaxcall("/products/filter", $("#filter_form").serialize());
+	ajaxcall("/compare/filter", $("#filter_form").serialize());
 	trackPage('goals/filter/autosubmit');
 }
 
@@ -162,7 +169,7 @@ function submitsearch() {
 	piwikTracker2.setCustomData(searchinfo);
 	trackPage('goals/search');
 	piwikTracker2.setCustomData({});
-	ajaxcall("/products/find?ajax=true", $("#search_form").serialize(), true);
+	ajaxcall("/compare/find?ajax=true", $("#search_form").serialize(), true);
 	return false;
 }
 
@@ -203,7 +210,7 @@ function findBetter(id, feat)
 {
        // Check if better product exists for that feature using /compare/better Rails me
        // Query.get( url, [data], [callback], [type] )
-       $.get("/compare/better?original=" + id + "&feature=" + feat, 
+       $.get("/direct_comparison/better?original=" + id + "&feature=" + feat, 
                function(data){
                        if (data == "-1")
                        {
@@ -212,7 +219,7 @@ function findBetter(id, feat)
                        else
                        {
                                // found better printer (with id stored in data)
-                               window.location = "/compare/index/" + id + "-" + data;
+                               window.location = "/direct_comparison/index/" + id + "-" + data;
                        }
                }, "text");
 }
@@ -248,7 +255,6 @@ function DBinit(context) {
 		onDragClass: "rowBeingDragged",
 		onDrop: function(table, row){		
 			newPreferencesString = $.tableDnD.serialize();
-			// window.location = "/compare/list?" + newPrefString
 		}
 	});
 	
@@ -257,7 +263,7 @@ function DBinit(context) {
 	if ($(".productimg").length)
 	{
 		$(".productimg",context).click(function (){
-			fadeout('/products/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
+			fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
 			trackPage('products/show/'+$(this).attr('data-id')); 
 			// As far as I can tell, the following line is deprecated. ZAT Dec 2009
 			//trackPage($(this).attr('href'));
@@ -309,7 +315,7 @@ function DBinit(context) {
 	
 	// However, always add it to the link below the image.
 	$(".easylink",context).click(function() {
-		fadeout('/products/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
+		fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
 		trackPage('products/show/'+$(this).attr('data-id')); 
 		//trackPage($(this).attr('href'));
 		return false;
@@ -440,6 +446,7 @@ function DBinit(context) {
 			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
 //			This is required for simplelayout, not for the master branch.
 //			if (browserIsIE.indexOf("MSIE7") != -1) $("#sim0").parent().removeClass('tourDrawAttention');
+			return false;
 		});
 	});
 	
@@ -587,7 +594,7 @@ function DBinit(context) {
 				piwikTracker2.setCustomData(sliderinfo);
 				trackPage('goals/filter/sliders');
 				piwikTracker2.setCustomData({});
-				ajaxcall("/products/filter", $("#filter_form").serialize());
+				ajaxcall("/compare/filter", $("#filter_form").serialize());
 			}
 		});
 		$(this).slider('values', 0, ((curmin-rangemin)/(rangemax-rangemin))*100);
@@ -684,7 +691,7 @@ $(document).ready(function() {
 				productIDs = productIDs + $(this).attr('id').substring(1) + ',';
 			}
 		});
-		fadeout('/compare/index/' + productIDs, null, 900, 530);/*star-h:580*/
+		fadeout('/direct_comparison/index/' + productIDs, null, 900, 530);/*star-h:580*/
 		trackPage('goals/compare/');
 		return false;
 	});
@@ -733,14 +740,14 @@ $(document).ready(function() {
 		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
 		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
 	}
-	if (browserIsIE.indexOf("MSIE6") != -1)
+	if (browserIsIE.indexOf("MSIE6") != -1) // If it's IE6
 	{
 		// Make the PNG background transparent in IE6.
 		// This is not working right now. Need to launch without it.
 //		$('.navigator_box').supersleight();
 //		$('.sim').superslight();       
 	}
-	if (browserIsIE.indexOf("MSIE") != -1)
+	if (browserIsIE.indexOf("MSIE") != -1) // If it's any version of IE, the transparency for the hands doesn't get done properly on page load.
 	{
 		$('.dragHand').each(function() {
 			$(this).fadeTo("fast", 0.35);
