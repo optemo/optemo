@@ -1,24 +1,91 @@
 namespace :sandbox do
   
-  task :all_together => [:mefirst, :one, :mefirst, :two]
   
-  task :one do
-    begin
-      asdf = [1,2]
-      asdf[300] + 1
-    rescue Exception => e
-      #debugger
-      puts "#{e.message} #{e.class.name}"
-    end
-    puts "One"
-  end
+  task :fix_ptr_models => :environment do 
+    require 'helper_libs'
+   
+    include GenericScraper    
+    include ParsingLib
+    include CleaningLib
+    include LoggingLib
+    include DatabaseLib
+    include ScrapingLib
     
-  task :two do 
-    puts "Two"
+    include PrinterHelper
+    include PrinterConstants
+    
+    $model = @@model
+    $scrapedmodel = @@scrapedmodel
+    $brands= @@brands
+    $series = @@series
+    $descriptors = @@descriptors
+    
+    $model.all.each do |ptr|
+      atts = ptr.attributes
+      modelsb4 = separate(atts['model']) + separate(atts['mpn'])
+      moremodels = $scrapedmodel.find_all_by_product_id(ptr.id).collect{|x| [x.model, x.mpn]}.flatten.uniq
+      modelsb4 += moremodels
+      modelsb4 = modelsb4.sort{|a,b| likely_model_name(b) <=> likely_model_name(a) }.reject{|x| likely_model_name(x) < 2 }
+      
+      
+      modelsafter = no_blanks( clean_models( $model.name, atts['brand'], \
+            modelsb4, atts['title'],$brands, $series, $descriptors )).uniq.reject{|x| 
+              likely_model_name(x) < 2 }.sort{|a,b| 
+              likely_model_name(b) <=> likely_model_name(a)
+      }
+      atts['model'] = modelsafter[0]
+      atts['mpn'] = modelsafter[1]
+      if atts['model'] and atts['mpn'] and atts['model'].match(/#/)
+        temp = atts['model']
+        atts['model'] = atts['mpn']
+        atts['mpn'] = temp
+      end
+      
+      debugger unless atts['model']
+      #puts "#{atts['model']} #{atts['mpn']}"
+      ['model', 'mpn'].each do |x| 
+        fill_in_forced(x,atts[x], ptr)
+      end
+      
+      #puts "#{ptr['model']} #{ptr['mpn']}"
+    end
+    
   end
   
-  task :mefirst do 
-    puts "Me first!"
+  task :fix_dims => :environment do 
+    require 'helper_libs'
+   
+    include GenericScraper    
+    include ParsingLib
+    include CleaningLib
+    include LoggingLib
+    include DatabaseLib
+    include ScrapingLib
+    
+    include CameraHelper
+    include CameraConstants
+    
+    $model = @@model
+    $scrapedmodel = @@scrapedmodel
+    $brands= @@brands
+    $series = @@series
+    $descriptors = @@descriptors
+    
+    dimlabels = ['itemlength', 'itemwidth', 'itemheight']
+    
+    $model.all.each do |cam|
+      avg_atts = {}
+      best_dimset = dimlabels.collect{|x| cam[x]}
+      #debugger
+      if best_dimset and best_dimset != []
+        dimlabels.size.times{ |i| avg_atts[dimlabels[i]] = best_dimset[i] } 
+        str  = dims_to_s(avg_atts)
+        #debugger
+        cam.update_attribute('dimensions', str)
+      else
+        cam.update_attribute('dimensions', 'n/a') 
+      end
+    end
   end
   
   task :match_ros => :environment do 

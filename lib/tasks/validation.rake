@@ -94,6 +94,12 @@ end
 namespace :check do
   
   task :sc_to_c_links => :cam_init do 
+    
+    require 'helper_libs'
+        
+    include ParsingLib
+    include LoggingLib
+    
     ScrapedCamera.all.each do |sc|
       next unless sc.product_id
       unless Camera.exists?(sc.product_id)
@@ -104,16 +110,24 @@ namespace :check do
       c = Camera.find(sc.product_id)
       if c.brand != sc.brand
         #debugger
-        report_error "Brand not matched for #{sc.id}"
+        puts "#{c.brand} VS #{sc.brand}"
+        report_error "Brand not matched for c-sc #{c.id} <--> #{sc.id}"
       end
     
-      mm_c = [c.model, c.mpn].collect{|x| just_alphanumeric(x)}
-      mm_sc = [sc.model, sc.mpn].collect{|x| just_alphanumeric(x)}
-      if (mm_sc & mm_c).length < 1
-        puts "#{mm_c * ', '} VS #{mm_sc * ', '} "
-       # debugger
-        report_error "Model not matched for c-sc #{c.id} <--> #{sc.id}"
-      end
+      #mm_c = [c.model, c.mpn].collect{|x| just_alphanumeric(x)}
+      #mm_sc = [sc.model, sc.mpn].collect{|x| just_alphanumeric(x)}
+      #if (mm_sc & mm_c).length < 1
+      #  ok = false
+      #  mm_sc.each{|el|
+      #    mm_c.each{|el2|
+      #      ok = (ok or (el.match(/#{el2}/)) or (el2.match(/#{el}/)))
+      #    }
+      #  }
+      #  unless ok
+      #    puts "#{mm_c * ', '} VS #{mm_sc * ', '} "
+      #    report_error "Model not matched for c-sc #{c.id} <--> #{sc.id}" 
+      #  end
+      #end
     end
   end
   

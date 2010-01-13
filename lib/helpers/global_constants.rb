@@ -102,5 +102,5 @@ module PrinterConstants
     /\sb(lack\sand\s)?w(hite)?/i, /\snetwork\s/i, /\sall\s?-?\s?in\s?-?\s?one\s/i, /\sink\s/i,\
     /\schrome\s/i, /\stabloid\s/i, /\saio\sint\s/i, /(\s|^)\d*\s?x?\s?\d+\s?dpi(\s|,|$)/i,\
     /(\s|^)\d+\s?x\s?\d+\s?(dpi)?(\s|,|$)/i, /\d*,?\d+\spages/i, \
-    /\sfast\s/i, /\sethernet\s/i, /\sled\s/i, /\sRS232\s/]
+    /\sfast\s/i, /\sethernet\s/i, /\sled\s/i, /\sRS232\s/, /\d\dppm(\s|,|$)/i]
 end

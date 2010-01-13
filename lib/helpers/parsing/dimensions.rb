@@ -1,7 +1,7 @@
 module DimensionsHelper
   #LENGTHS/WEIGHTS
   
-  @@dimensions = {'W' =>'itemwidth', 'H' =>'itemheight', 'D' => 'itemlength'}
+  @@dimensions = {'D' => 'itemlength', 'W' =>'itemwidth', 'H' =>'itemheight'}
   
   # Converts metric length(array: [m,cm,mm]) to cm
   def to_cm length
@@ -149,5 +149,10 @@ module DimensionsHelper
     #puts "Scores: #{(dimset_scores.collect{|a, b| "[#{a*','}] -- #{b}"}) * '; '}"
     best_dimset = all_valid_dimsets.sort{|a,b| dimset_scores[b] <=> dimset_scores[a]}.first
     return best_dimset
+  end
+  
+  def dims_to_s atts
+    return "" if @@dimensions.values.inject(false){|r,v| r or atts[v].nil?}
+    str = @@dimensions.collect{|k,v| "#{atts[v]/100.0}\" (#{k})"}.join(' x ')
   end
 end

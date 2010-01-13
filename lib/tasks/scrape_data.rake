@@ -59,7 +59,10 @@ module GenericScraper
     all_dimsets = (sps|[product]).collect{|sp| dimlabels.collect{|x| sp[x]}}
     all_dimsets.delete_if{|x| x.include?(nil) or x.include?(0)} # Remove invalid dimensions
     best_dimset = vote_on_dimensions(all_dimsets)
-    dimlabels.size.times{ |i| avg_atts[dimlabels[i]] = best_dimset[i] } if best_dimset and best_dimset != []
+    if best_dimset and best_dimset != []
+      dimlabels.size.times{ |i| avg_atts[dimlabels[i]] = best_dimset[i] } 
+      avg_atts['dimensions'] = dims_to_s(avg_atts)
+    end
     return avg_atts
   end
   
@@ -366,8 +369,16 @@ namespace :data do
     match_me = scraped_by_retailers($retailers, $scrapedmodel) if $retailers
     match_me = $scrapedmodel.all if match_me.nil?
     
-    debugger
+    #debugger
     match_me.delete_if{|x| x.product_id}
+    
+    #match_me = [4982, 7878, 10434, 12760, 23270,16024, 18286, 21544].collect{|x| $scrapedmodel.find(x)}
+    #[25406,25468,23376,21146,18848, 19564,21852,21232,21524,23266,21232,21292,23266,21928,23720,21544]
+    
+    match_me.each do |sc|
+      sc.update_attribute('product_id',nil)
+    end
+    #debugger
     
     puts "There are #{match_me.count} #{$scrapedmodel.name}s in total."
     

@@ -146,7 +146,7 @@ module AmazonScraper
           atts.merge!(name => vals)
         end
         return atts
-    #  end
+      end
     end
     return {}
   end

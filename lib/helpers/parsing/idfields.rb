@@ -181,11 +181,11 @@ module IdFieldsHelper
     end
     
     # Don't allow series...
-    ([$model.name]+$brands+$series).each do |nonmodel|
+    ([$model.name]+($brands||[])+($series||[])).each do |nonmodel|
       score -= 3 if str.match(/(\s|^)(#{nonmodel})(\s|,|$)/i)
     end
     # ... except if it's before a very short model name
-    ($series).each do |serie|
+    ($series || []).each do |serie|
       if str.match(/^(#{serie})\s[a-zA-Z0-9]{1,3}$/i)
         score += 2 
       end

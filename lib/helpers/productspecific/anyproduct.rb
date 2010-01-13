@@ -29,6 +29,12 @@ module CleaningHelper
       atts['model'] = modelsafter[0] || modelsb4[0]
       atts['mpn'] = modelsafter[1]
       
+      if atts['model'] and atts['mpn'] and atts['model'].match(/#/)
+        temp = atts['model']
+        atts['model'] = atts['mpn']
+        atts['mpn'] = temp
+      end
+      
       # Also clean the prices
       atts = clean_prices!(atts)
    end
