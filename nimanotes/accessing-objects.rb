@@ -63,11 +63,15 @@ def find_missing_cameras(camera_ids)
   (Set.new(camera_ids) - Set.new(found_camera_ids)).to_a
 end
 
+def get_latest_cluster_version()
+  CameraCluster.maximum('version')
+end
+
 # Getting the clusters that a camera belongs to. This should be a path
 # from a singleton leaf cluster all the way up to the root cluster.
-def get_cluster_ids_for_camera(camera)
-  nodes = CameraNode.find(:all,
-                          :conditions => { :product_id => camera.id })
+def get_cluster_ids_for_camera(camera, cluster_version = get_latest_cluster_version())
+  conditions = { :product_id => camera.id, :version => cluster_version }
+  nodes = CameraNode.find(:all, :conditions => conditions)
   cluster_ids= nodes.map{ |n| n.cluster_id }
   cluster_ids
 end
