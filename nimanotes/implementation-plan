@@ -49,3 +49,9 @@ counts of the smaller clusters.
 
 - Implementation of product-review-informed cluster algorithms.
 
+Evaluation of cluster labels
+There needs to be some way of automatically rating the suitability of
+the cluster labels. The "Reading Tea Leaves" paper from NIPS 2009
+might give some good insight and references on how to do this and
+whether Mechanical Turk tasks might be a better way of rating cluster
+labels.
