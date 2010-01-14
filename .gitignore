@@ -7,7 +7,7 @@ db/*.sqlite3
 db/sphinx
 .~lock*
 *.o
-config/ultrasphinx/*.conf
+config/*.sphinx.conf
 public/system
 
 webrat.log
