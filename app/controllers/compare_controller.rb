@@ -117,8 +117,8 @@ class CompareController < ApplicationController
       classVariables(Search.createFromClustersAndCommit(initialClusters, @session, @@keywordsearch, @@keyword))
       render 'ajax', :layout => false
     else
-      sphinx = $model.search(params[:search],:per_page => 10000)
-      product_ids = sphinx.results[:matches].map{|i|i[:doc]}
+      product_ids = $model.search_for_ids(params[:search],:per_page => 10000)
+#      product_ids = sphinx.results[:matches].map{|i|i[:doc]}
       current_version = $clustermodel.find_last_by_region($region).version
       nodes = product_ids.map{|p| $nodemodel.find_by_product_id_and_version_and_region(p, current_version, $region)}.compact
       cluster_ids = nodes.map{|n|n.cluster_id}

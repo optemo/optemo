@@ -4,7 +4,6 @@ class Camera < ActiveRecord::Base
   define_index do
     #fields
     indexes title
-    indexes model
     #attributes
   end
            #                                      (c)luster 
