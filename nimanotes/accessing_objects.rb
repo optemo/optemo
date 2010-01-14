@@ -16,10 +16,10 @@ end
 
 # Getting cluster parent
 def get_cluster_parent(cluster)
-  CameraCluster.find(cluster.parent_id)
+  $clustermodel.find(cluster.parent_id)
 end
 def get_parent_cluster_ids(cluster_ids)
-  CameraCluster.find(cluster_ids).map{ |c| c.parent_id }
+  $clustermodel.find(cluster_ids).map{ |c| c.parent_id }
 end
 
 # # Why is a particular user's session being assigned to a global variable?
@@ -43,40 +43,40 @@ end
 # Getting cameras in a cluster - need to get the nodes in the cluster
 # and then find cameras that correspond to nodes. This allows cameras
 # to belong to multiple clusters (I think?).
-def get_camera_ids_in_cluster(cluster)
+def get_item_ids_in_cluster(cluster)
   nodes = cluster.nodes(Session.new, nil)
   nodes.map{ |n| n.product_id }
 end
 
-def get_cameras(camera_ids, throw_if_not_found = nil)
+def get_items(item_ids, throw_if_not_found = nil)
   if throw_if_not_found
-    Camera.find(:id, camera_ids)
+    $model.find(:id, item_ids)
   else
-    Camera.find(:all, :conditions => { :id => camera_ids })
+    $model.find(:all, :conditions => { :id => item_ids })
   end
 end
 
 require 'set'
 
-def find_missing_cameras(camera_ids)
-  found_camera_ids = get_cameras(camera_ids).map{ |c| c.id }
-  (Set.new(camera_ids) - Set.new(found_camera_ids)).to_a
+def find_missing_items(item_ids)
+  found_item_ids = get_items(item_ids).map{ |c| c.id }
+  (Set.new(item_ids) - Set.new(found_item_ids)).to_a
 end
 
 def get_latest_cluster_version()
-  CameraCluster.maximum('version')
+  $clustermodel.maximum('version')
 end
 
 # Getting the clusters that a camera belongs to. This should be a path
 # from a singleton leaf cluster all the way up to the root cluster.
-def get_cluster_ids_for_camera(camera, cluster_version = get_latest_cluster_version())
-  conditions = { :product_id => camera.id, :version => cluster_version }
-  nodes = CameraNode.find(:all, :conditions => conditions)
+def get_cluster_ids_for_item(item, cluster_version = get_latest_cluster_version())
+  conditions = { :product_id => item.id, :version => cluster_version }
+  nodes = $nodemodel.find(:all, :conditions => conditions)
   cluster_ids= nodes.map{ |n| n.cluster_id }
   cluster_ids
 end
 
 # Getting reviews
-def get_reviews_for_camera(camera)
-  Review.find(:all, :conditions => { :product_id => camera.id })
+def get_reviews_for_item(item)
+  Review.find(:all, :conditions => { :product_id => item.id })
 end
