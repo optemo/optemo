@@ -5,6 +5,7 @@ class Printer < ActiveRecord::Base
     #fields
     indexes title
     indexes feature
+    indexes model
     #attributes
   end
            #                                (c)luster 
