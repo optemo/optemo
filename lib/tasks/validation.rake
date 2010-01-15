@@ -93,6 +93,70 @@ end
 
 namespace :check do
   
+  task :ro_and_r_links => :cam_init do 
+    require 'helper_libs'
+        
+    include ParsingLib
+    include LoggingLib
+    
+    ## Check link consistency
+    #count1=0
+    #count2=0
+    #$model.all.each do |c|
+    #  ros = RetailerOffering.find_all_by_product_type_and_product_id($model.name, c.id)
+    #  rs = [] # Review.find_all_by_product_type_and_product_id($model.name, c.id)
+    #  
+    #  [ros, rs].flatten.each do |ro|
+    #    lid = ro.local_id
+    #    rid = ro.retailer_id
+    #    sc = $scrapedmodel.find_by_retailer_id_and_local_id(rid,lid)
+    #    if sc and sc.product_id != ro.product_id
+    #      puts "Link not consistent for #{ro.class.name} #{ro.id}"
+    #      #debugger
+    #      count2 += 1
+    #    elsif sc.nil?
+    #      puts "#{ro.class.name} #{ro.id} (#{ro.stock ? '' : 'not'} in stock) has no corresponding SC"        
+    #      #debugger
+    #      count1 += 1
+    #    end
+    #  end
+    #end
+    #puts "#{count1} have no matching SC, #{count2} have inconsistent link"
+    
+    # Check link consistency 2
+    count=0
+    RetailerOffering.find_all_by_product_type($model.name).each do |ro|
+      rid = ro.retailer_id
+      lid = ro.local_id
+      rs = Review.find_all_by_product_type_and_local_id($model.name, lid)
+      pids_rside = rs.collect{|x| x.product_id}.uniq
+      pids_roside = [ro.product_id]
+      if pids_rside != pids_roside
+        puts "Link not consistent for offer #{ro.id} and corresponding revues!"
+        count +=1
+      end
+    end
+    puts "#{count} inconsistent links..."
+    
+    count = 0
+    RetailerOffering.find_all_by_product_type($model.name).each do |ro|
+      unless $model.exists?(ro.product_id) or ro.product_id.nil?
+        count += 1
+        puts "#{ro.id} is a dangler -- #{$model.name} #{ro.product_id} doesnt exist"
+      end
+    end
+    puts "#{count} offerings are danglers"
+    
+    count = 0
+    Review.find_all_by_product_type($model.name).each do |ro|
+      unless $model.exists?(ro.product_id) or ro.product_id.nil?
+        count += 1
+        puts "#{ro.id} is a dangler -- #{$model.name} #{ro.product_id} doesnt exist"
+      end
+    end
+    puts "#{count} reviews are danglers"
+  end
+  
   task :sc_to_c_links => :cam_init do 
     
     require 'helper_libs'

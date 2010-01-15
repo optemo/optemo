@@ -92,18 +92,16 @@ module GenericScraper
       end
     else
       # If there was an error while scraping: sleep 20 min
-      snore(20*60)
+      log_snore(20*60)
     end
   end  
 end
 
 namespace :data do
   
-  task :temp => [:cam_init, :match_to_products]
+  task :cam_rescrape  => [:cam_init, :amazon_init, :rescrape_selected]
   
-  task :cam_rescrape  => [:cam_init, :amazon_init, :rescrape_selected_2]
-  
-  task :cam_rescrape_mkt  => [:cam_init, :amazon_mkt_init, :rescrape_selected_2]
+  task :cam_rescrape_mkt  => [:cam_init, :amazon_mkt_init, :rescrape_selected]
   
   task :rescrape_selected_2 do 
     which_fields = ['itemlength', 'itemwidth', 'itemheight']
@@ -138,10 +136,11 @@ namespace :data do
   end
   
   task :rescrape_selected do 
-    which_fields = ['itemlength', 'itemwidth', 'itemheight']
+    which_fields = ['maximumresolution']
     #['displaysize']
     #['itemlength', 'itemwidth', 'itemheight']
-    which_product_ids = [320, 338, 442, 478, 570, 620, 752, 1006, 1312, 1440, 1456, 1542, 1604, 1828, 1914, 1938, 2086, 2140, 2234, 2244, 2248, 2280, 2346, 2434, 2448, 2484, 2490, 2556, 2736, 2742, 2812, 2860, 2958, 3222, 3306, 3342, 3512, 3860, 4004, 4122, 4342, 4650, 4680, 4784, 4820, 4860, 5060, 5080, 5446, 5538, 5594, 5622, 5710, 5792, 5840, 5974, 5980, 6146, 6154, 6174, 6190, 6192, 6220]
+    which_product_ids = [740, 888, 1388, 1404, 1412, 1674, 1734, 1774, 1776, 1792, 1812, 1864, 1872, 1878, 1964, 1972, 1982, 1996, 2024, 2078, 2098, 2106, 2108, 2118, 2130, 2144, 2162, 2166, 2168, 2174, 2180, 2228, 2316, 2330, 2384, 2386, 2388, 2410, 2492, 2500, 2620, 2658, 2666, 2670, 2674, 2724, 2726, 2770, 2802, 2806, 2810, 2832, 2844, 2854, 2858, 2868, 2870, 2876, 2898, 2932, 2938, 2946, 3000, 3004, 3006, 3016, 3026, 3034, 3046, 3056, 3098, 3132, 3148, 3160, 3188, 3192, 3212, 3214, 3218, 3262, 3284, 3316, 3338, 3368, 3388, 3424, 3432, 3436, 3468, 3476, 3502, 3570, 3652, 3840, 3846, 3870, 3874, 3894, 3896, 3910, 3912, 3936, 3948, 3986, 4008, 4012, 4052, 4056, 4060, 4086, 4088, 4092, 4094, 4098, 4108, 4114, 4126, 4128, 4134, 4144, 4156, 4168, 4172, 4198, 4202, 4214, 4278, 4280, 4298, 4306, 4372, 4374, 4376, 4396, 4420, 4430, 4438, 4446, 4454, 4456, 4474, 4478, 4480, 4486, 4496, 4500, 4540, 4548, 4560, 4564, 4576, 4578, 4584, 4612, 4638, 4658, 4660, 4672, 4706, 4750, 4760, 4766, 4838, 4840, 4934, 4936, 4942, 4948, 4950, 4952, 4956, 4958, 4960, 4974, 4978, 5000, 5044, 5102, 5106, 5144, 5162, 5276, 5432, 5436, 5440, 5442, 5580, 6092, 6100, 6110, 6112, 6136, 6148, 6158, 6164, 6170, 6182, 6208, 6224]
+    #[320, 338, 442, 478, 570, 620, 752, 1006, 1312, 1440, 1456, 1542, 1604, 1828, 1914, 1938, 2086, 2140, 2234, 2244, 2248, 2280, 2346, 2434, 2448, 2484, 2490, 2556, 2736, 2742, 2812, 2860, 2958, 3222, 3306, 3342, 3512, 3860, 4004, 4122, 4342, 4650, 4680, 4784, 4820, 4860, 5060, 5080, 5446, 5538, 5594, 5622, 5710, 5792, 5840, 5974, 5980, 6146, 6154, 6174, 6190, 6192, 6220]
     
     retailerids = $retailers.collect{|x| x.id} 
     
@@ -186,21 +185,10 @@ namespace :data do
   
   task :cam_rematch => [:cam_init, :match_to_products]
   
-  task :sandbox do 
-    fixme = ScrapedCamera.all.collect{|x| x.id}
-    puts "#{fixme.count} to fix"
-    fixme[0..2000].each do |scid|
-      sc = ScrapedCamera.find(scid)
-      sc.update_attribute( 'product_id', nil)
-    end
-    puts "Done!"
-  end
-
   task :amazon_reviews => [:cam_init, :amazon_init, :reviews]
   
   task :match_reviews do    
     allrevus = Review.find_all_by_product_id_and_product_type(nil, $model.name)
-    
     allrevus.each do |revu|    
       lid =  revu['local_id']
       sms = $scrapedmodel.find_all_by_local_id(lid)
@@ -214,9 +202,7 @@ namespace :data do
       else
         fill_in 'product_id', sms_pids.first, revu
       end
-      
     end
-    
   end
     
   task :reviews do    
@@ -313,6 +299,46 @@ namespace :data do
     puts "There were #{no_stats.count} printers w/o stats of which #{no_stats_fixed.count} were fixed"
   end
   
+  task :fix_links => :cam_init do 
+    
+    ptype = $model.to_s
+    
+    what = Review
+    #what.find_all_by_product_type($model.name).each do |ro|
+    #  ro.update_attribute('product_id', nil)
+    #end
+    msgs = []
+    $scrapedmodel.all.each do |sc|
+      lid = sc.local_id
+      rid = sc.retailer_id
+      pid = sc.product_id
+      #unless pid.nil? or $model.exists?(pid)
+      #  debugger
+      #  0
+      ##  sc.update_attribute('product_id', nil)
+      #end
+      
+      if lid and rid and pid and $model.exists?(pid)
+        ro_ids = what.find_all_by_product_type_and_local_id_and_retailer_id(ptype,lid,rid).collect{|x| x.id}
+        ro_ids.each do |ro_id|
+          ro = Review.find(ro_id)
+          if( ro.product_id and ro.product_id != pid and $model.exists?(ro.product_id))
+            keep = $model.find(pid)
+            other = $model.find(ro.product_id)
+            if other
+              if(keep.title == other.title)# or keep.model.include?(other.model) or other.model.include?(keep.model))
+                puts keep.title
+                puts other.title
+                unlink_duplicate(keep, other)
+                puts "Unlinked #{other.id} -- replaced with #{keep.id}"
+              end
+            end
+          end
+        end
+      end
+    end
+    puts "#{msgs.uniq * "\n"}"
+  end
   
   desc 'Get new prices and products from Amazon cameras'
   task :scrape_amazon_cams => [:cam_init, :amazon_init, :scrape_new, :update_prices]
@@ -322,6 +348,8 @@ namespace :data do
   # The 2 things you can do, in terms of subtasks: scrape and update
   task :scrape => [:scrape_new, :match_to_products, :update_bestoffers, :validate_printers]
   task :update => [:update_prices, :scrape_new, :match_to_products, :update_bestoffers, :validate_printers]
+  
+  task :endstuff => [:match_to_products, :vote, :update_bestoffers]
   
   # Useful combinations of the above
   desc 'Get new prices and products from Newegg printers'
@@ -354,9 +382,9 @@ namespace :data do
     products.each do |p|
       avgs = vote_on_values p
       $bools_assume_no.each{|x| avgs[x] = false if avgs[x].nil?}
-      avgs.each do |k,v|
-        puts "#{k} -- #{v} (now #{p.[](k)}) for #{p.id}" #if [v, p.[](k)].uniq.reject{|x| x.nil?}.length > 1
-      end
+      #avgs.each do |k,v|
+      #  puts "#{k} -- #{v} (now #{p.[](k)}) for #{p.id}" #if [v, p.[](k)].uniq.reject{|x| x.nil?}.length > 1
+      #end
       fill_in_all avgs, p
     end
   end
@@ -418,7 +446,7 @@ namespace :data do
         end  
       rescue Exception => e
         report_error "with RetailerOffering #{offering.id}: #{e.class.name} #{e.message}"
-        snore(20*60) # sleep for 20 min 
+        log_snore(20*60) # sleep for 20 min 
       end
       log "[#{Time.now}] Done updating #{i+1} of #{my_offerings.count} offerings"
     end
@@ -517,7 +545,7 @@ namespace :data do
       $scrapedmodel = @@scrapedmodel
       $brands= @@brands
       $series = @@series
-      $descriptors = @@descriptors
+      $descriptors = @@descriptors | $colors.collect{|x| /(-|\s)?#{x}/i} 
       
       $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'opticalzoom', 'maximumresolution', \
         'displaysize', 'slr', 'waterproof', 'brand', 'model', 'itemweight']
