@@ -47,7 +47,7 @@ class ApplicationController < ActionController::Base
     if request.domain.nil?
       @ds = "Printer"
     else
-      domainprefix = request.domain.split(".").first
+      domainprefix = request.domain(2).split(".").first
       if domainprefix == "cameras"
         @ds = "Camera"
       elsif domainprefix == "printers"
@@ -56,7 +56,7 @@ class ApplicationController < ActionController::Base
         @ds = "Printer"
       end  
     end
-    # The "|| $DefaultProduct" part will never get hit.
+
     $model = @ds.constantize
     $nodemodel = (@ds + 'Node').constantize
     $clustermodel = (@ds + 'Cluster').constantize
