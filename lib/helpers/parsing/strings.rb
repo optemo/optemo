@@ -14,7 +14,7 @@ module StringCleaner
   # Removes all leading & trailing spaces
   # Deals with weirdness found on TigerDirect website
   def no_leading_spaces str
-    return str.gsub(/\302\240/,'').strip # What a hack.
+    return str.force_encoding('ASCII-8BIT').gsub(/\302\240/,'').strip # What a hack.
   end
   
   # If your string starts with a number it puts an

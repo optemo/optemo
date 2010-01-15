@@ -38,7 +38,7 @@ module IdFieldsHelper
     (temp.count-1).times do |num| 
       temp2 << "#{temp[num]} #{temp[num+1]}"
     end
-    possible_models = most_likely_models(temp+temp2)
+    possible_models = most_likely_models((temp+temp2).collect{|x| x.gsub(/-$/,'')})
     more_models = model_series_variations(possible_models, series)
     good_models = more_models.reject{|x| likely_model_name(x) < 2 }
     return good_models

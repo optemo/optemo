@@ -31,7 +31,7 @@ module AmazonScraper
       rescue Exception => exc
         report_error "Problem while getting local ids, on #{current_page}th page of request."
         report_error "#{exc.message}"
-        snore(10)
+        log_snore(10)
         current_page += 1
       else
         report_error "#{res.error}. Couldn't download ASINs for page #{current_page}" if  res.has_error?    
@@ -100,7 +100,7 @@ module AmazonScraper
     rescue Exception => exc
       report_error "Could not scrape #{local_id} data"
       report_error "#{exc.class.name} #{exc.message}"
-      snore(120) 
+      log_snore(120) 
       return {}
     else
       nokodoc = Nokogiri::HTML(res.doc.to_html)
@@ -170,7 +170,7 @@ module AmazonScraper
         be_nice_to_amazon
       rescue Exception => exc
         report_error "#{exc.message} . Could not look up offers for #{asin} in region #{region}"
-        snore(30) 
+        log_snore(30) 
         return
       else
         total_pages = res.total_pages unless total_pages
@@ -215,6 +215,7 @@ module AmazonScraper
   # best-priced offer for a given
   # asin in the given region
   def rescrape_prices asin, region
+    
     offer_atts = {}
     best = scrape_best_offer(asin, region)
     
@@ -222,7 +223,9 @@ module AmazonScraper
       offer_atts['stock'] = false
     else
       offer_atts = offer_to_atthash( best, asin, region)
-    end
+    end   
+    
+    clean_prices!(offer_atts)
     return offer_atts
   end
   
@@ -232,6 +235,7 @@ module AmazonScraper
   def offer_to_atthash offer, asin, region
     atts = {}
     atts['pricestr'] = offer.get('offerlisting/price/formattedprice').to_s
+    
     if offer.get('offerlisting/price/formattedprice') == 'Too low to display'
         atts['toolow']   = true
         atts['stock'] = false
@@ -249,7 +253,7 @@ module AmazonScraper
     
     atts['url'] = "http://amazon.#{region=="us" ? "com" : region}/gp/product/"+asin+"?tag=#{region=="us" ? "optemo-20" : "laserprinterh-20"}&m="+atts['merchant']
     atts['iseligibleforsupersavershipping'] = offer.get('offerlisting/iseligibleforsupersavershipping')
-     
+    
     return atts
   end
 
@@ -260,7 +264,7 @@ module AmazonScraper
     require 'open-uri'
     require 'nokogiri'
     url = "http://www.amazon.#{region=="us" ? "com" : region}/o/asin/#{asin}"
-    snore(15)
+    log_snore(15)
     doc = Nokogiri::HTML(open(url))
     price_el = get_el(doc.css('.listprice'))
     price = price_el.text unless price_el.nil?

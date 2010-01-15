@@ -1,15 +1,18 @@
 module ProductsHelper
   
   # TODO
-  def get_matching_sets_efficient recs=$model.all, series=[], brands=[]
+  def get_matching_sets_efficient recs=$model.all #, series=[], brands=[]
      matchingsets = []
      recclass = recs.first.class
-     data = recs.collect{|x| [x.id, x.model, x.mpn, x.brand]}
-     data.each do |x|
-       makes = [x[3]]
-       modelnames = [x[1], x[2]]
-       #matchingsets << (match_product_to_product rec, recclass, series).collect{|x| x.id}
-       #matchingsets << (find_matching_product_efficient(makes, modelnames,recclass.all, series, brands)).collect{|x| x.id}
+      recs.each do |p|
+       x = $model.find_all_by_brand_and_model(p.brand, p.model || 'ABRACADABRA')
+       y =   $model.find_all_by_brand_and_mpn(p.brand, p.model || 'ABRACADABRA')
+       z = $model.find_all_by_brand_and_model(p.brand, p.mpn || 'ABRACADABRA')
+       w =   $model.find_all_by_brand_and_mpn(p.brand, p.mpn || 'ABRACADABRA')
+       dups = (x | y | z | w).uniq.collect{|dup| dup.id}
+       if dups.length > 1
+         matchingsets << dups
+       end
      end
      matchingsets.collect{|x| x.sort}.uniq
      return matchingsets
