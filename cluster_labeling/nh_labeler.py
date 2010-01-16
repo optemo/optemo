@@ -101,3 +101,82 @@ def compute_wcs_from_child_clusters(db, cluster):
         wordcount_sum = sum_child_cluster_wcs(db, cluster, word)
         add_wc_entry(db, cluster, word, wordcount_sum)
 
+import nltk.tokenize.punkt as punkt
+import nltk.tokenize.treebank as treebank
+sentence_tokenizer = punkt.PunktSentenceTokenizer()
+word_tokenizer = treebank.TreebankWordTokenizer()
+
+# From: http://www.daniweb.com/code/snippet216879.html#
+def flatten(lst):
+    for elem in lst:
+        if type(elem) == list:
+            for i in flatten(elem):
+                yield i
+        else:
+            yield elem
+
+spurious_pos = \
+    ('TO', 'CC', '.', ':', 'DT', 'IN', 'PRP', ',',
+     'EX', 'WRB', 'RP', 'CD', 'MD', '``', '$')
+
+spurious_words = \
+    ('br', '<')
+
+def is_spurious_pos(postag):
+    return postag in spurious_pos
+
+import xml.sax.saxutils
+def remove_html_escaping(content):
+    return xml.sax.saxutils.unescape(content,
+                                     {"&apos;" : "'", "&quot;" : '"'})
+
+from nltk.corpus import stopwords
+stopword_set = set(stopwords.words('english'))
+stopword_set |= set(['br', '<', '"'])
+def is_stopword(word):
+    return word in stopword_set
+
+import nltk.stem.porter
+stemmer = nltk.stem.porter.PorterStemmer()
+
+def compute_wcs_for_review(content):
+    wcs = {}
+    
+    # Use the Punkt sentence tokenizer and the Treebank word tokenizer
+    # to get the words in the review. Perform part-of-speech tagging
+    # to get rid of spurious tokens.
+    # Should probably also do word stemming?
+    words = map(nltk.pos_tag,
+                map(word_tokenizer.tokenize,
+                    sentence_tokenizer.tokenize(remove_html_escaping(content))))
+    words = flatten(words)
+    words = map(lambda (word, pos): word,
+                filter(lambda (word, pos): not is_spurious_pos(pos),
+                       words))
+    words = filter(lambda x: not is_stopword(x), words)
+
+    for word in words:
+        wcs[word] = wcs.get(word, 0) + 1
+
+    # Create a map of stemmings and labels for stemmings
+    stemmings = {}
+    stemming_labels = {}
+    for key in wcs.iterkeys():
+        stemmed_key = stemmer.stem(key)
+
+        if stemmed_key not in stemmings:
+            stemmings[stemmed_key] = set()
+            
+        stemmings[stemmed_key].update([key])
+        
+        if (stemmed_key not in stemming_labels or
+            len(key) < stemming_labels[stemmed_key]):
+            stemming_labels[stemmed_key] = key
+
+    # Create a stemmed wordcount
+    wcs_stemmed = {}
+    for (k,v) in stemmings.iteritems():
+        wcs_stemmed[stemming_labels[k]] = sum(map(lambda x: wcs[x], v))
+
+    return wcs_stemmed
+
