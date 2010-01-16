@@ -1,8 +1,103 @@
 #!/usr/bin/env python
+import os
+import sqlite3
+
 from django.conf import settings
 
-settings.configure(DATABASE_ENGINE='mysql',
-                   DATABASE_NAME='optemo_development',
-                   DATABASE_USER='nimalan',
-                   DATABASE_PASSWORD='bobobo',
-                   DATABASE_HOST='jaguar')
+os.chdir('..')
+
+try:
+    settings.configure(DATABASE_ENGINE='mysql',
+                       DATABASE_NAME='optemo_development',
+                       DATABASE_USER='nimalan',
+                       DATABASE_PASSWORD='bobobo',
+                       DATABASE_HOST='jaguar')
+except(RuntimeError):
+    pass
+
+
+wordcount_filename = '/optemo/site/cluster_hierarchy_wordcounts'
+db = sqlite3.connect(wordcount_filename)
+
+# Create table
+wc_table_cols = \
+    {
+    "cluster_id" : "integer",
+    "parent_cluster_id" : "integer",
+    "word" : "text",
+    "count" : "integer"
+    }
+create_wc_table_sql = \
+    "CREATE TABLE wordcounts " + \
+    "(" + \
+    ', '.join(map(lambda (k,v): ' '.join([k,v]),
+                  wc_table_cols.iteritems())) + \
+    ", PRIMARY KEY (cluster_id, word), " + \
+    "CONSTRAINT count_check CHECK (count > 0)" + \
+    ")"
+
+def create_wc_table(db):
+    c = db.cursor()
+    c.execute(create_wc_table_sql)
+    db.commit()
+    c.close()
+
+def drop_wc_table(db):
+    c = db.cursor()
+    c.execute("DROP TABLE wordcounts")
+    db.commit()
+    c.close()
+
+insert_wc_entry_sql = \
+    "INSERT INTO wordcounts " + \
+    "(cluster_id, word, count, parent_cluster_id) " + \
+    "VALUES (?, ?, ?, ?)"
+def add_wc_entry(db, cluster, word, count):
+    c = db.cursor()
+    c.execute(insert_wc_entry_sql,
+              (cluster.id, word, count, cluster.parent_id))
+    db.commit()
+    c.close()
+
+select_wc_sql = \
+    "SELECT count from wordcounts WHERE cluster_id = ? AND word = ?"
+def get_wc(db, cluster, word):
+    c = db.cursor()
+    c.execute(select_wc_sql, (cluster.id, word))
+    results = c.fetchall()
+    c.close()
+
+    wordcount = None
+
+    if len(results) > 0:
+        wordcount = results[0][0]
+    
+    return wordcount
+
+sum_child_wc_sql = \
+    "SELECT SUM(count) from wordcounts " + \
+    "WHERE parent_cluster_id = ? AND word = ?"
+def sum_child_cluster_wcs(db, parent_cluster, word):
+    c = db.cursor()
+    c.execute(sum_child_wc_sql, (parent_cluster.id, word))
+    results = c.fetchall()
+    c.close()
+
+    wordcount_sum = results[0][0]    
+    if wordcount_sum == None:
+        wordcount_sum = 0
+
+    return wordcount_sum
+
+select_parent_cluster_words_sql = \
+    "SELECT DISTINCT word from wordcounts WHERE parent_cluster_id = ?"
+def compute_wcs_from_child_clusters(db, cluster):
+    c = db.cursor()
+    c.execute(select_parent_cluster_words_sql, (cluster.id, ))
+    words = map(lambda row: row[0], c)
+    c.close()
+
+    for word in words:
+        wordcount_sum = sum_child_cluster_wcs(db, cluster, word)
+        add_wc_entry(db, cluster, word, wordcount_sum)
+
