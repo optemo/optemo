@@ -184,7 +184,7 @@ namespace :check do
         ok = false
         mm_sc.each{|el|
           mm_c.each{|el2|
-            ok = (ok or (el.match(/#{el2}/)) or (el2.match(/#{el}/)))
+            ok = (ok or (el.match(/#{el2}/)) or (el2.match(/#{el}/))) if el and el2
           }
         }
         unless ok
@@ -246,7 +246,7 @@ namespace :check do
     
   end
     
-  task :cameras => [:cam_init] do #, :pictures] do
+  task :cameras => [:cam_init] do
     include ValidationLib
     require 'helpers/image_helper'
     include ImageHelper
@@ -258,10 +258,10 @@ namespace :check do
     my_valid_products = $model.valid.instock  | $model.valid.instock_ca
     my_offerings = RetailerOffering.find_all_by_product_type_and_stock($model.name, true)
     
-    #chek_pictures(my_products)
-    #chek_offerings(my_offerings)
-    #chek_products(my_products)
-    #chek_linkage(my_products)
+    chek_pictures(my_products)
+    chek_offerings(my_offerings)
+    chek_products(my_products)
+    chek_linkage(my_products)
     
     announce "Testing #{my_valid_products.count} valid #{$model.name}s for wonky data..."
     
