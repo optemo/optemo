@@ -15,6 +15,9 @@ set :scm, :git
 set :deploy_via, :remote_cache
 #ssh_options[:paranoid] = false
 default_run_options[:pty] = true
+# The above command allows for interactive commands like entering ssh passwords, but
+# the problem is that "umask = 002" is getting ignored, since .profile isn't being sourced.
+# :pty => true enables for a given command if we set the above to false eventually
 set :use_sudo, false
 
 role :app, domain
