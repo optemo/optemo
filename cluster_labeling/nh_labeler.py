@@ -85,31 +85,22 @@ def get_wc(db, cluster_id, word):
     return wordcount
 
 sum_child_wc_sql = \
-    "SELECT SUM(count) from wordcounts " + \
-    "WHERE parent_cluster_id = ? AND word = ?"
-def sum_child_cluster_wcs(db, parent_cluster, word):
+    "SELECT word, SUM(count) from wordcounts " + \
+    "WHERE parent_cluster_id = ? GROUP BY word"
+def sum_child_cluster_wcs(db, parent_cluster_id, grandparent_cluster_id):
     c = db.cursor()
-    c.execute(sum_child_wc_sql, (parent_cluster.id, word))
-    results = c.fetchall()
+    c.execute(sum_child_wc_sql, (parent_cluster_id,))
+
+    while (1):
+        row = c.fetchone()
+        if row == None:
+            break
+        
+        word, countsum = row[0:2]
+        add_wc_entry(db, parent_cluster_id, grandparent_cluster_id,
+                     word, countsum)
+        
     c.close()
-
-    wordcount_sum = results[0][0]    
-    if wordcount_sum == None:
-        wordcount_sum = 0
-
-    return wordcount_sum
-
-select_parent_cluster_words_sql = \
-    "SELECT DISTINCT word from wordcounts WHERE parent_cluster_id = ?"
-def compute_wcs_from_child_clusters(db, cluster):
-    c = db.cursor()
-    c.execute(select_parent_cluster_words_sql, (cluster.id, ))
-    words = map(lambda row: row[0], c)
-    c.close()
-
-    for word in words:
-        wordcount_sum = sum_child_cluster_wcs(db, cluster, word)
-        add_wc_entry(db, cluster, word, wordcount_sum)
 
 import nltk.tokenize.punkt as punkt
 import nltk.tokenize.treebank as treebank
