@@ -15,7 +15,6 @@ try:
 except(RuntimeError):
     pass
 
-
 wordcount_filename = '/optemo/site/cluster_hierarchy_wordcounts'
 db = sqlite3.connect(wordcount_filename)
 
@@ -52,18 +51,23 @@ insert_wc_entry_sql = \
     "INSERT INTO wordcounts " + \
     "(cluster_id, word, count, parent_cluster_id) " + \
     "VALUES (?, ?, ?, ?)"
-def add_wc_entry(db, cluster, word, count):
+def add_wc_entry(db, cluster_id, parent_cluster_id, word, count):
     c = db.cursor()
-    c.execute(insert_wc_entry_sql,
-              (cluster.id, word, count, cluster.parent_id))
-    db.commit()
-    c.close()
+
+    try:
+        c.execute(insert_wc_entry_sql,
+                  (cluster_id, word, count, parent_cluster_id))
+        db.commit()
+        c.close()
+    except IntegrityError:
+        print "Integrity error: (cluster_id, word) == (%d, %s)" % \
+              (cluster_id, word)
 
 select_wc_sql = \
     "SELECT count from wordcounts WHERE cluster_id = ? AND word = ?"
-def get_wc(db, cluster, word):
+def get_wc(db, cluster_id, word):
     c = db.cursor()
-    c.execute(select_wc_sql, (cluster.id, word))
+    c.execute(select_wc_sql, (cluster_id, word))
     results = c.fetchall()
     c.close()
 
