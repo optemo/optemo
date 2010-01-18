@@ -60,7 +60,7 @@ def add_wc_entry(db, cluster_id, parent_cluster_id, word, count):
                   (cluster_id, word, count, parent_cluster_id))
         db.commit()
         c.close()
-    except IntegrityError:
+    except sqlite3.IntegrityError:
         print "Integrity error: (cluster_id, word) == (%d, %s)" % \
               (cluster_id, word)
 
