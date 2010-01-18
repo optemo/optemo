@@ -105,6 +105,9 @@ module PrinterConstants
     /\sworkcent(re|er)\s/i, /\smono\s/i, /\slaser\s/i, /\sdig(ital)?\s/i, /\scolou?r\s/i,\
     /\sb(lack\sand\s)?w(hite)?/i, /\snetwork\s/i, /\sall\s?-?\s?in\s?-?\s?one\s/i, /\sink\s/i,\
     /\schrome\s/i, /\stabloid\s/i, /\saio\sint\s/i, /(\s|^)\d*\s?x?\s?\d+\s?dpi(\s|,|$)/i,\
-    /(\s|^)\d+\s?x\s?\d+\s?(dpi)?(\s|,|$)/i, /\d*,?\d+\spages/i, \
-    /\sfast\s/i, /\sethernet\s/i, /\sled\s/i, /\sRS232\s/, /\d\dppm(\s|,|$)/i]
+    /(\s|^)\d+\s?x\s?\d+\s?(dpi)?(\s|,|$)/i, /\d*,?\d+(\s|-)?(page|sheet)s?/i, /\d(\s|-)in(\s|-)\d/,\
+    /\sfast\s/i, /\sethernet\s/i, /\sled\s/i, /\sRS232\s/, /\d\d\s?ppm(\s|,|$)/i, /legal/i]
+    # 10/100
+    # 10/100Base-TX
+    
 end

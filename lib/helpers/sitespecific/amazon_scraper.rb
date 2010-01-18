@@ -118,7 +118,6 @@ module AmazonScraper
         end
         
         item.css('itemattributes/itemdimensions/*').each do |dim|
-          debugger if dim.name == 'weight'
           temp = (dim.attributes['units'] || '').to_s.strip
           case temp
           when 'inches'

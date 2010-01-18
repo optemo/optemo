@@ -567,7 +567,7 @@ namespace :data do
       $scrapedmodel = @@scrapedmodel
       $brands= @@brands
       $series = @@series
-      $descriptors = @@descriptors
+      $descriptors = @@descriptors + $conditions.collect{|cond| /(\s|^|;|,)#{cond}(\s|,|$)/i}
       
       $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'ppm', 'resolutionmax',\
          'paperinput','scanner', 'printserver', 'brand', 'model']

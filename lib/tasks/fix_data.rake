@@ -284,15 +284,21 @@ namespace :fixdata do
   
   task :test_fix_brands_ptr => [:debug_mode, :fix_brands_ptr]
   task :test_fix_brands_cam => [:debug_mode, :fix_brands_cam]
-  task :fix_brands_ptr => ['data:printer_init', 'data:amazon_init', :test_fix_brands]
-  task :fix_brands_cam => ['data:cam_init', 'data:amazon_init', :test_fix_brands]
+  task :fix_brands_ptr => ['data:printer_init', 'data:amazon_init', :fix_brands]
+  task :fix_brands_cam => ['data:cam_init', 'data:amazon_init', :fix_brands]
+  
+  
+  task :test_fix_models_ptr => [:debug_mode, :fix_models_ptr]
+  task :test_fix_models_cam => [:debug_mode, :fix_models_cam]
+  task :fix_models_ptr => ['data:printer_init', 'data:amazon_init', :fix_models]
+  task :fix_models_cam => ['data:cam_init', 'data:amazon_init', :fix_modelss]
   
   task :debug_mode do
     $dry_run = true
   end
   
   task :fix_brands do
-    fixme = $model.all
+    fixme = $scrapedmodel.all
     changes = []
     fixme.each do |p|
       scraped_atts = p.attributes
@@ -311,7 +317,7 @@ namespace :fixdata do
     
   end
   
-  task :fix_models => ['data:cam_init', 'data:amazon_init'] do
+  task :fix_models  do
     fixme = $model.all
     fixme.each do |p|
       scraped_atts = p.attributes
