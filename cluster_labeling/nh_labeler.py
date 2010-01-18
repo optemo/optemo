@@ -4,7 +4,8 @@ import sqlite3
 
 from django.conf import settings
 
-os.chdir('..')
+os.chdir('/optemo/site')
+import cluster_labeling.optemo_django_models as optemo
 
 try:
     settings.configure(DATABASE_ENGINE='mysql',
