@@ -1,9 +1,35 @@
 namespace :sandbox do
   
-  task :check_cam2s => :environment do 
+  task :check_new_voting =>  ['data:cam_init']  do 
+    # Get weirdo weight cams
+    #weirdos =# Camera.all.reject{|x| x['itemweight'].nil? or x['itemweight'] <= Camera::ValidRanges['itemweight'][1]}
+    dims = ['itemheight', 'itemlength', 'itemwidth']
+    weirdos = $model.all.reject{|x| 
+      dims.inject(false){|d| !x[d].nil? and x[d] == 0}
+    }
+    debugger
+    weirdos.each do |cam|
+      temp = vote_on_values(cam)
+      temp2 = {}
+      temp.each do |k,v| 
+        temp2[k] = cam[k]
+      end
+      temp.each do |k,v|
+        fill_in_forced(k,v,cam)
+      end
+      puts "Done!"
+    end
+    
+  end
   
-    puts Camera2.count
-  
+  task :clean_dims =>  ['data:cam_init']  do 
+    bad = $model.all.reject{|x| 
+      dims.inject(false){|d| !x[d].nil? and x[d] == 0}
+    }
+    debugger
+    bad.each do |b|
+      fill_in_forced(b,'')
+    end
   end
   
   task :test_remove_dups => :environment do

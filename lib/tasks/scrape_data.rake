@@ -39,15 +39,24 @@ module GenericScraper
     #atts = [ 'itemweight',  'ppm', 'ttp', 'paperinput', 'resolutionmax','scanner', 'printserver']
     
     all_atts = {}
-    atts.each{|x| all_atts[x] = [product.[](x)]} # Current value counts for something too?
+    atts.each{|x| all_atts[x] = [product.[](x)]} # Current value counts for something too...
+    
+    #... if valid! TODO: this should not, in theory, be necessary
+    atts.each do |k|
+      unless in_range?( k,all_atts[k][0],$model)
+        puts "WARNING #{k}=#{all_atts[k][0]} not in range for #{$model.name}"
+        all_atts[k] = []
+      end
+    end
     
     #TODO This should be somewhere else:
     if !all_atts['resolution'].nil? and all_atts['resolutionmax'].nil?
       all_atts['resolutionmax'] = get_max_f(all_atts['resolution']).to_s
     end
+    
     atts.each do |att|
       sps.each do |sp|
-        all_atts[att] << sp.[](att) if sp.[](att)
+        all_atts[att] << sp[att] if( sp[att] and in_range?(att,sp[att],$model) ) # and valid 
       end
     end
     
@@ -641,5 +650,6 @@ namespace :data do
     include LoggingLib
     include DatabaseLib
     include ScrapingLib
+    
   end
 end
