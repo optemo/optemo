@@ -63,6 +63,11 @@ def add_wc_entry(db, cluster_id, parent_cluster_id, word, count):
     except sqlite3.IntegrityError:
         print "Integrity error: (cluster_id, word) == (%d, %s)" % \
               (cluster_id, word)
+        
+        import pdb
+        pdb.set_trace()
+        
+        raise
 
 select_wc_sql = \
     "SELECT count from wordcounts WHERE cluster_id = ? AND word = ?"
