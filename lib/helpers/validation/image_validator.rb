@@ -1,5 +1,8 @@
 module ImageValidator
   
+  require 'helpers/image_helper'
+  include ImageHelper
+  
   def pic_exists record
     return true if file_exists_for(record[$id_field], '')
     return false
