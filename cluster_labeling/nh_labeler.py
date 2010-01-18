@@ -133,7 +133,7 @@ def remove_html_escaping(content):
 
 from nltk.corpus import stopwords
 stopword_set = set(stopwords.words('english'))
-stopword_set |= set(['br', '<', '"'])
+stopword_set |= set(['br', '<', '"', '(', ')'])
 def is_stopword(word):
     return word in stopword_set
 
@@ -146,7 +146,6 @@ def compute_wcs_for_review(content):
     # Use the Punkt sentence tokenizer and the Treebank word tokenizer
     # to get the words in the review. Perform part-of-speech tagging
     # to get rid of spurious tokens.
-    # Should probably also do word stemming?
     words = map(nltk.pos_tag,
                 map(word_tokenizer.tokenize,
                     sentence_tokenizer.tokenize(remove_html_escaping(content))))
@@ -181,3 +180,34 @@ def compute_wcs_for_review(content):
 
     return wcs_stemmed
 
+def compute_wcs_for_product(product):
+    reviews = product.get_reviews()
+    all_content = reduce(lambda x, y: x + y.content, reviews, '')
+    return compute_wcs_for_review(all_content)
+
+def compute_wcs_for_cluster(db, cluster):
+    children = cluster.get_children()
+    if children.count() == 0:
+        nodes = cluster.get_nodes()
+        assert(nodes.count() == 1)
+
+        product = nodes[0].get_product()
+        wcs =  compute_wcs_for_product(product)
+
+        for (word, count) in wcs.iteritems():
+            add_wc_entry(db, cluster.id, cluster.parent_id,
+                         word, count)
+    else:
+        map(lambda child: compute_wcs_for_cluster(db, child),
+            children)
+        sum_child_cluster_wcs(db, cluster.id, cluster.parent_id)
+
+def compute_all_wcs(db, version=optemo.CameraCluster.get_latest_version()):
+    # Get clusters just below the root
+    root_children = \
+        optemo.CameraCluster.objects.filter \
+        (parent_id=0, version=version)
+
+    map(lambda child: compute_wcs_for_cluster(db, child),
+        root_children)
+    sum_child_cluster_wcs(db, 0, -1)
