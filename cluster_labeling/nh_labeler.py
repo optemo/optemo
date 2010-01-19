@@ -242,34 +242,71 @@ def compute_wcs_for_review(content):
 
     return wcs_stemmed
 
-def compute_wcs_for_product(product):
+def compute_counts_for_product(product):
     reviews = product.get_reviews()
-    all_content = reduce(lambda x, y: x + y.content, reviews, '')
-    return compute_wcs_for_review(all_content)
+    wordcounts = \
+        map(lambda r: compute_wordcounts_for_review(r.content),
+            reviews)
 
-def compute_wcs_for_cluster(db, cluster):
+    merged_wordcount = {}
+    reviewcount = {}
+    
+    for wc in wordcounts:
+        for word, count in wc.iteritems():
+            merged_wordcount[word] = \
+                merged_wordcount.get(word, 0) + count
+            reviewcount[word] = \
+                reviewcount.get(word, 0) + 1
+
+    prodcount = dict(map(lambda k: (k, 1), reviewcount.keys()))
+
+    return merged_wordcount, reviewcount, prodcount
+
+def compute_counts_for_cluster(db, cluster):
     children = cluster.get_children()
-    if children.count() == 0:
+    numchildren = children.count()
+    
+    if numchildren == 0:
         nodes = cluster.get_nodes()
         assert(nodes.count() == 1)
 
         product = nodes[0].get_product()
-        wcs =  compute_wcs_for_product(product)
+        wordcount, reviewcount, prodcount = \
+            compute_counts_for_product(product)
 
-        for (word, count) in wcs.iteritems():
-            add_wc_entry(db, cluster.id, cluster.parent_id,
-                         word, count)
+        for (word, count) in wordcount.iteritems():
+            add_wordcount_entry(db, cluster.id, cluster.parent_id,
+                                0, word, count)
+        for (word, count) in reviewcount.iteritems():
+            add_reviewcount_entry(db, cluster.id, cluster.parent_id,
+                                  0, word, count)
+        for (word, count) in prodcount.iteritems():
+            add_prodcount_entry(db, cluster.id, cluster.parent_id,
+                                  0, word, count)
     else:
-        map(lambda child: compute_wcs_for_cluster(db, child),
+        map(lambda child: compute_counts_for_cluster(db, child),
             children)
-        sum_child_cluster_wcs(db, cluster.id, cluster.parent_id)
-
-def compute_all_wcs(db, version=optemo.CameraCluster.get_latest_version()):
-    # Get clusters just below the root
+        sum_child_cluster_wordcounts\
+            (db, cluster.id, cluster.parent_id, numchildren)
+        sum_child_cluster_reviewcounts\
+            (db, cluster.id, cluster.parent_id, numchildren)
+        sum_child_cluster_prodcounts\
+            (db, cluster.id, cluster.parent_id, numchildren)
+        
+def compute_all_counts\
+        (db, version=optemo.CameraCluster.get_latest_version()):
+    # All tables should be recreated, otherwise the resulting counts
+    # will not be valid.
+    drop_count_tables(db)
+    create_count_tables(db)
+    
+    # Get clusters just below the root.
     root_children = \
         optemo.CameraCluster.objects.filter \
         (parent_id=0, version=version)
 
-    map(lambda child: compute_wcs_for_cluster(db, child),
+    map(lambda child: compute_counts_for_cluster(db, child),
         root_children)
-    sum_child_cluster_wcs(db, 0, -1)
+    sum_child_cluster_wordcounts(db, 0, -1, root_children.count())
+    sum_child_cluster_reviewcounts(db, 0, -1, root_children.count())
+    sum_child_cluster_prodcounts(db, 0, -1, root_children.count())
