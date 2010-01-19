@@ -6,7 +6,7 @@ class CreateCameraNodes < ActiveRecord::Migration
       Camera::ContinuousFeaturesF.each do |name|
         t.float name.intern
       end
-      Printer::CategoricalFeatures.each do |name|
+      Printer::CategoricalFeaturesF.each do |name|
         t.string name.intern
       end
       Camera::BinaryFeaturesF.each do |name|
