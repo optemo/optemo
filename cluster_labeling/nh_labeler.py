@@ -21,31 +21,51 @@ wordcount_filename = '/optemo/site/cluster_hierarchy_counts'
 db = sqlite3.connect(wordcount_filename)
 
 # Create table
-wc_table_cols = \
+common_table_cols = \
     {
     "cluster_id" : "integer",
     "parent_cluster_id" : "integer",
     "word" : "text",
-    "count" : "integer"
+    "count" : "integer",
+    "numchildren" : "integer"
     }
-create_wc_table_sql = \
-    "CREATE TABLE wordcounts " + \
+def gen_create_count_table_sql(tablename, extracols = {}):
+    table_cols = common_table_cols
+    
+    if extracols != {}:
+        table_cols = list(table_cols.iteritems())
+        table_cols = dict(table_cols.extend(extracols.iteritems()))
+
+    return \
+    "CREATE TABLE " + tablename + " " + \
     "(" + \
     ', '.join(map(lambda (k,v): ' '.join([k,v]),
-                  wc_table_cols.iteritems())) + \
+                  table_cols.iteritems())) + \
     ", PRIMARY KEY (cluster_id, word), " + \
-    "CONSTRAINT count_check CHECK (count > 0)" + \
+    "CONSTRAINT count_check CHECK (count > 0) " + \
+    "CONSTRAINT numchildren_check CHECK (numchildren >= 0)" + \
     ")"
 
-def create_wc_table(db):
+# At the leaf clusters,
+# - wordcounts stores the number of a particular word found in all
+#   reviews associated with the cluster.
+# - prodcounts stores the number of a particular product associated
+#   with the cluster that contain the word. This should be equal to 1,
+#   since only one product is associated with each leaf cluster.
+# - reviewcounts stores the number of reviews of a particular product
+#   associated with the cluster that contain the word.
+count_tables = ['wordcounts', 'prodcounts', 'reviewcounts']
+def create_count_tables(db):
     c = db.cursor()
-    c.execute(create_wc_table_sql)
+    for table in count_tables:
+        c.execute(gen_create_count_table_sql(table))
     db.commit()
     c.close()
 
-def drop_wc_table(db):
+def drop_count_tables(db):
     c = db.cursor()
-    c.execute("DROP TABLE wordcounts")
+    for table in count_tables:
+        c.execute("DROP TABLE " + table)
     db.commit()
     c.close()
 
