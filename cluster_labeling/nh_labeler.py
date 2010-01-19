@@ -127,12 +127,16 @@ def get_wc(db, tablename, cluster_id, word):
     
     return wordcount
 
-sum_child_wc_sql = \
-    "SELECT word, SUM(count) from wordcounts " + \
+def gen_sum_child_counts_sql(tablename):
+    return \
+    "SELECT word, SUM(count) from " + tablename + " " + \
     "WHERE parent_cluster_id = ? GROUP BY word"
-def sum_child_cluster_wcs(db, parent_cluster_id, grandparent_cluster_id):
+
+def sum_child_cluster_counts(db,
+                          cluster_id, parent_cluster_id,
+                          numchildren, tablename):
     c = db.cursor()
-    c.execute(sum_child_wc_sql, (parent_cluster_id,))
+    c.execute(gen_sum_child_counts_sql(tablename), (cluster_id,))
 
     while (1):
         row = c.fetchone()
@@ -140,10 +144,25 @@ def sum_child_cluster_wcs(db, parent_cluster_id, grandparent_cluster_id):
             break
         
         word, countsum = row[0:2]
-        add_wc_entry(db, parent_cluster_id, grandparent_cluster_id,
-                     word, countsum)
+        add_count_entry(db, cluster_id, parent_cluster_id,
+                        numchildren, word, countsum, tablename)
         
     c.close()
+
+def sum_child_cluster_wordcounts(*args):
+    args = list(args)
+    args.append('wordcounts')
+    sum_child_cluster_counts(*args)
+
+def sum_child_cluster_prodcounts(*args):
+    args = list(args)
+    args.append('prodcounts')
+    sum_child_cluster_counts(*args)
+
+def sum_child_cluster_reviewcounts(*args):
+    args = list(args)
+    args.append('reviewcounts')
+    sum_child_cluster_counts(*args)
 
 import nltk.tokenize.punkt as punkt
 import nltk.tokenize.treebank as treebank
