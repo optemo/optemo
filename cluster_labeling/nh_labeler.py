@@ -222,6 +222,7 @@ def compute_wordcounts_for_review(content):
         words = flatten(words)
     
     words = filter(lambda x: not is_stopword(x), words)
+    words = map(lambda x: x.lower(), words)
 
     for word in words:
         wcs[word] = wcs.get(word, 0) + 1
