@@ -220,10 +220,9 @@ module TigerScraper
   end
   
   def scrape_data info_page
-      puts "#{info_page.css('table.viss').length} tables found "
-      spec_table = info_page.css('table.viss tr')
-      specs = scrape_table spec_table, 'td.techspec', 'td.techvalue'
-      return specs
+    spec_table = info_page.css('table.viss tr')
+    specs = scrape_table spec_table, 'td.techspec', 'td.techvalue'
+    return specs
   end
 
   def scrape_links doc
