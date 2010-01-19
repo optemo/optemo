@@ -388,6 +388,16 @@ namespace :data do
   desc 'Get new products from Amazon Marketplace (warning: extra long!)'
   task :scrape_amazon_mkt_printers => [:printer_init, :amazon_mkt_init, :scrape]
   
+  # ... for cams
+  
+  
+  desc 'Get new prices and products from Amazon (printers)'
+  task :update_amazon_cameras => [:cam_init, :amazon_init, :update]
+  
+  desc 'Get new prices and products from Amazon Marketplace (printers)'
+  task :update_amazon_mkt_cameras => [:cam_init, :amazon_mkt_init, :update]
+  
+  
    # The subtasks...
   task :vote do 
     products = $model.all
@@ -444,7 +454,7 @@ namespace :data do
   
   # Update prices
   task :update_prices do
-    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_scraper.log", 'w+')
+    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{$model.name}_scraper.log", 'w+')
     my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id_and_product_type(x.id, $model.name)}
     my_offerings.each_with_index do |offering, i|
       begin
@@ -468,7 +478,7 @@ namespace :data do
 
   # Scrape all data for all current products
   task :scrape_all do
-    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_scraper.log", 'w+')
+    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{$model.name}_scraper.log", 'w+')
     $retailers.each do |retailer|
       
       ids = scrape_all_local_ids retailer.region
@@ -488,7 +498,7 @@ namespace :data do
   # Scrape all data for new products only
   task :scrape_new do
     
-    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_scraper.log", 'w+')
+    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{$model.name}_scraper.log", 'w+')
     $retailers.each do |retailer|
       ids = scrape_all_local_ids retailer.region
       scraped_ids = ($scrapedmodel.find_all_by_retailer_id(retailer.id)).collect{|x| x.local_id}.uniq
@@ -508,7 +518,7 @@ namespace :data do
     require 'helpers/validation/data_validator'
     include DataValidator
     
-    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_validation.log", 'w+')
+    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{$model.name}_validation.log", 'w+')
     
     my_products = scraped_by_retailers($retailers, $scrapedmodel,false)
     
