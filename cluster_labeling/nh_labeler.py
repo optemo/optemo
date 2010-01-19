@@ -109,11 +109,14 @@ def add_reviewcount_entry(*args):
     args.append('reviewcounts')
     add_count_entry(*args)
 
-select_wc_sql = \
-    "SELECT count from wordcounts WHERE cluster_id = ? AND word = ?"
-def get_wc(db, cluster_id, word):
+def gen_select_count_entry_sql(tablename):
+    return \
+    "SELECT count from " + tablename + \
+    " WHERE cluster_id = ? AND word = ?"
+
+def get_wc(db, tablename, cluster_id, word):
     c = db.cursor()
-    c.execute(select_wc_sql, (cluster_id, word))
+    c.execute(gen_select_count_entry_sql(tablename), (cluster_id, word))
     results = c.fetchall()
     c.close()
 
