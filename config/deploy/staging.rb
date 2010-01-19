@@ -15,8 +15,10 @@ set :scm, :git
 set :deploy_via, :remote_cache
 #ssh_options[:paranoid] = false
 default_run_options[:pty] = true
+# The above command allows for interactive commands like entering ssh passwords, but
+# the problem is that "umask = 002" is getting ignored, since .profile isn't being sourced.
+# :pty => true enables for a given command if we set the above to false eventually
 set :use_sudo, false
-
 
 role :app, domain
 role :web, domain
@@ -34,7 +36,7 @@ desc "Configure the server files"
 task :serversetup do
   # Instantiate the database.yml file
   run "cd #{current_path}/config              && cp -f database.yml.deploy database.yml"
-  run "cd #{current_path}/config/ultrasphinx   && cp -f development.conf.deploy development.conf && cp -f production.conf.deploy production.conf"
+#  run "cd #{current_path}/config/ultrasphinx   && cp -f development.conf.deploy development.conf && cp -f production.conf.deploy production.conf"
 end
 namespace :deploy do
 desc "Sync the public/assets directory."

@@ -5,7 +5,7 @@ module CompareHelper
   def finalDisplay(product, column)
     case column
       when 'itemdimensions'
-        return product.display('itemlength').chop.chop + " X " + product.display('itemwidth').chop.chop + " X " + product.display('itemheight').chop.chop + " cm"
+        return product.display('dimensions')
       when 'packagedimensions'
       	return product.display('packagelength') + " x " + product.display('packagewidth') + " x " + product.display('packageheight')
       when 'price'

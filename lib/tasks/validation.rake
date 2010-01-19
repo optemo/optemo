@@ -1,13 +1,39 @@
-namespace :check do
+module Check
   
-  task :cameras => [:cam_init, :products] 
-  
-  task :products do    
-    @logfile = File.open("./log/check_#{$model.name}.log", 'w+')
-    timed_log 'Start general product validation'
-    #my_products = $model.instock | $model.instock_ca
-    my_products = $model.all
+  def chek_linkage check_me
+    unlinked = []
+    bad_linked = []
     
+    ['', '_ca'].each do |prefix|
+      check_me.each do |product|
+        next unless product["instock#{prefix}"]
+        if product.bestoffer.nil? 
+          unlinked << product.id
+        else
+          offering = RetailerOffering.find(product["bestoffer#{prefix}"])
+          bad_linked << product.id if offering.nil?
+          bad_linked << product.id if offering.priceint != product["price#{prefix}"]
+          bad_linked << product.id if offering["stock"] != product["instock#{prefix}"]
+          bad_linked << product.id if offering.product_type != $model.name
+          bad_linked << product.id if offering.product_id != product.id
+        end
+      end
+    end
+    
+    unlinked.uniq!
+    bad_linked.uniq!
+    
+    if unlinked.length > 0
+      log_v "#{unlinked.count} #{$model.name}s are not linked"
+      announce "First few: #{unlinked[0..5] * ', '} \n --- "
+    end
+    if bad_linked.length > 0
+      log_v "#{bad_linked.count} #{$model.name}s are linked incorrectly."
+      announce "First few: #{bad_linked[0..5] * ', '} \n --- "
+    end
+  end
+  
+  def chek_products my_products
     announce "Testing #{my_products.count} #{$model.name} for validity..."
     
     ($reqd_fields || []).each do |rf|
@@ -21,57 +47,9 @@ namespace :check do
     announce " ... #{($model.instock | $model.instock_ca).count} are in stock (in CA or US)"
     announce " ... #{($model.valid.instock | $model.valid.instock_ca).count} are valid and in stock"
     timed_log 'Done general product validation'
-    @logfile.close
   end
   
-  task :offerings do    
-    my_offerings = RetailerOffering.find_all_by_product_type_and_stock($model.name, true)
-    @logfile = File.open("./log/check_#{$model.name}_offerings.log", 'w+')
-    timed_log "Start retailer offerings validation for #{$model.name}"
-    announce "Testing #{my_offerings.count} RetailerOfferings for validity..."
-    
-    $reqd_offering_fields.each do |rf|
-      assert_no_nils my_offerings, rf
-    end
-    
-    Retailer.all.each do |ret|
-      these_offerings = my_offerings.reject{|x| x.retailer_id != ret.id}
-      assert_no_repeats these_offerings, 'local_id'
-    end
-   
-    assert_within_range my_offerings, 'priceint', min_price, max_price
-    @logfile.close
-  end
-  
-  desc "Check that scraped data isn't wonky"
-  task :printers => [:printer_init, :products, :offerings] do
-    
-    @logfile = File.open("./log/check_#{$model.name}.log", 'a+')
-    timed_log 'Start printer-specific validation'
-    my_products = $model.instock | $model.instock_ca
-    
-    announce "Testing #{my_products.count} #{$model.name}s for validity..."
-    
-    assert_within_range( my_products, 'itemheight', 100, 10000)
-    assert_within_range( my_products, 'itemlength', 100, 7000 )
-    assert_within_range( my_products, 'itemwidth', 100, 7000)
-    assert_within_range( my_products, 'ppm', 2, 50)
-    assert_within_range( my_products, 'paperinput', 20,2000)
-    assert_within_range( my_products, 'ttp', 7,40)
-    assert_within_range( my_products, 'resolutionmax', 600, 9600)
-    
-    
-    @logfile.close
-  end
-
-  task :printer_pictures => [:printer_init, :pictures]
-
-  task :pictures do
-    require 'helpers/image_helper.rb'
-    include ImageHelper
-    
-    checkme = $model.instock | $model.instock_ca
-    
+  def chek_pictures checkme
     nopix = 0
     noresized = 0
     brokenurls = 0
@@ -96,8 +74,253 @@ namespace :check do
     puts "#{brokenurls} of #{checkme.count} #{$model.name}s have broken urls"
   end
   
+  def chek_offerings my_offerings
+    timed_log "Start retailer offerings validation for #{$model.name}"
+    announce "Testing #{my_offerings.count} RetailerOfferings for validity..."
+    
+    $reqd_offering_fields.each do |rf|
+      assert_no_nils my_offerings, rf
+    end
+    
+    Retailer.all.each do |ret|
+      these_offerings = my_offerings.reject{|x| x.retailer_id != ret.id}
+      assert_no_repeats these_offerings, 'local_id'
+    end
+   
+    assert_within_range my_offerings, 'priceint', $min_price, $max_price
+  end
+end
+
+namespace :check do
+  
+  task :ro_and_r_links => :cam_init do 
+    require 'helper_libs'
+        
+    include ParsingLib
+    include LoggingLib
+    
+    ## Check link consistency
+    #count1=0
+    #count2=0
+    #$model.all.each do |c|
+    #  ros = RetailerOffering.find_all_by_product_type_and_product_id($model.name, c.id)
+    #  rs = [] # Review.find_all_by_product_type_and_product_id($model.name, c.id)
+    #  
+    #  [ros, rs].flatten.each do |ro|
+    #    lid = ro.local_id
+    #    rid = ro.retailer_id
+    #    sc = $scrapedmodel.find_by_retailer_id_and_local_id(rid,lid)
+    #    if sc and sc.product_id != ro.product_id
+    #      puts "Link not consistent for #{ro.class.name} #{ro.id}"
+    #      #debugger
+    #      count2 += 1
+    #    elsif sc.nil?
+    #      puts "#{ro.class.name} #{ro.id} (#{ro.stock ? '' : 'not'} in stock) has no corresponding SC"        
+    #      #debugger
+    #      count1 += 1
+    #    end
+    #  end
+    #end
+    #puts "#{count1} have no matching SC, #{count2} have inconsistent link"
+    
+    # Check link consistency 2
+    count=0
+    RetailerOffering.find_all_by_product_type($model.name).each do |ro|
+      rid = ro.retailer_id
+      lid = ro.local_id
+      rs = Review.find_all_by_product_type_and_local_id($model.name, lid)
+      pids_rside = rs.collect{|x| x.product_id}.uniq
+      pids_roside = [ro.product_id]
+      if pids_rside != pids_roside
+        puts "Link not consistent for offer #{ro.id} and corresponding revues!"
+        count +=1
+      end
+    end
+    puts "#{count} inconsistent links..."
+    
+    count = 0
+    RetailerOffering.find_all_by_product_type($model.name).each do |ro|
+      unless $model.exists?(ro.product_id) or ro.product_id.nil?
+        count += 1
+        puts "#{ro.id} is a dangler -- #{$model.name} #{ro.product_id} doesnt exist"
+      end
+    end
+    puts "#{count} offerings are danglers"
+    
+    count = 0
+    Review.find_all_by_product_type($model.name).each do |ro|
+      unless $model.exists?(ro.product_id) or ro.product_id.nil?
+        count += 1
+        puts "#{ro.id} is a dangler -- #{$model.name} #{ro.product_id} doesnt exist"
+      end
+    end
+    puts "#{count} reviews are danglers"
+  end
+  
+  task :sc_to_c_links => :cam_init do 
+    
+    require 'helper_libs'
+        
+    include ParsingLib
+    include LoggingLib
+    
+    ScrapedCamera.all.each do |sc|
+      next unless sc.product_id
+      unless Camera.exists?(sc.product_id)
+         #report_error "No match found for #{sc.id}"
+         next
+      end
+      
+      c = Camera.find(sc.product_id)
+      if c.brand != sc.brand
+        #debugger
+        puts "#{c.brand} VS #{sc.brand}"
+        report_error "Brand not matched for c-sc #{c.id} <--> #{sc.id}"
+      end
+      
+      mm_c = [c.model, c.mpn].collect{|x| just_alphanumeric(x)}
+      mm_sc = [sc.model, sc.mpn].collect{|x| just_alphanumeric(x)}
+      if (mm_sc & mm_c).length < 1
+        ok = false
+        mm_sc.each{|el|
+          mm_c.each{|el2|
+            ok = (ok or (el.match(/#{el2}/)) or (el2.match(/#{el}/)))
+          }
+        }
+        unless ok
+          puts "#{mm_c * ', '} VS #{mm_sc * ', '} "
+          report_error "Model not matched for c-sc #{c.id} <--> #{sc.id}" 
+        end
+      end
+    end
+  end
+  
+  task :reviews => :init do 
+    
+    require 'helper_libs'
+    include DatabaseLib
+    
+    chekme = Review.all.collect{|x| x.id}
+    unidentifiable = []
+    blank = []
+    unlinked = []
+    badlinked = []
+    badlinked_2 = []
+    
+    chekme.each do |revu_id|
+      revu = Review.find(revu_id)
+      unidentifiable << revu_id unless review_is_recognizable?( revu)
+      blank << revu_id unless ((revu['content'] and revu['content'].to_s.strip != '') or revu['rating'])
+      if ( revu.product_type || '').to_s != '' and (revu.product_id)
+        mdl = revu.product_type.constantize
+        if mdl
+          begin
+             product = mdl.find(revu.product_id)
+          rescue ActiveRecord::RecordNotFound => e
+             product = nil # Record not found!
+          end
+          
+          
+          badlinked << revu_id unless product
+          if revu.local_id
+            scrapeds = "Scraped#{mdl}".constantize.find_all_by_product_id(revu.product_id)
+            scrapeds.each do |scr|
+              if scr.local_id and scr.local_id != revu.local_id
+                badlinked_2 << [revu_id, scr.id]
+              end
+            end
+          end
+        else
+          badlinked << revu_id 
+        end
+      else
+        unlinked << revu_id
+      end
+    end
+    
+    puts "#{blank.count} blank reviews"
+    puts "#{unidentifiable.count} non-identifiable reviews"
+    puts "#{unlinked.count} reviews not linked"
+    puts "#{badlinked.count} incorrectly linked review-product pairs"
+    puts "#{badlinked_2.count} incorrectly linked review-scraped pairs"
+    
+  end
+    
+  task :cameras => [:cam_init] do #, :pictures] do
+    include ValidationLib
+    require 'helpers/image_helper'
+    include ImageHelper
+    include ImageValidator
+    
+    @logfile = File.open("./log/check_#{$model.name}_2.log", 'a+')
+    timed_log 'Start camera-specific validation'
+    my_products = $model.instock | $model.instock_ca
+    my_valid_products = $model.valid.instock  | $model.valid.instock_ca
+    my_offerings = RetailerOffering.find_all_by_product_type_and_stock($model.name, true)
+    
+    #chek_pictures(my_products)
+    #chek_offerings(my_offerings)
+    #chek_products(my_products)
+    #chek_linkage(my_products)
+    
+    announce "Testing #{my_valid_products.count} valid #{$model.name}s for wonky data..."
+    
+    assert_within_range( my_valid_products, 'itemheight', 200, 450)
+    assert_within_range( my_valid_products, 'itemlength', 55, 350) # depth
+    assert_within_range( my_valid_products, 'itemwidth', 350, 600)
+                             
+    assert_within_range( my_valid_products, 'maximumresolution', 0.5, 50)    
+    assert_within_range( my_valid_products, 'opticalzoom', 1, 26)
+    assert_within_range( my_valid_products, 'displaysize', 0.5, 4)
+    
+    assert_within_range( my_valid_products, 'price', 1_00, 10_000_00)
+    
+    # Optional fields:    
+    assert_within_range( my_valid_products, 'digitalzoom', 1, 100)
+    
+    @logfile.close
+  end
+  
+  desc "Check that scraped data isn't wonky"
+  task :printers => [:printer_init] do
+    
+    @logfile = File.open("./log/check_#{$model.name}.log", 'a+')
+    timed_log 'Start printer-specific validation'
+    my_products = $model.instock | $model.instock_ca
+    
+    my_offerings = RetailerOffering.find_all_by_product_type_and_stock($model.name, true)
+    
+    chek_pictures(my_products)
+    chek_offerings(my_offerings)
+    chek_products(my_products)
+    chek_linkage(my_products)
+    
+    announce "Testing #{my_products.count} #{$model.name}s for validity..."
+    
+    assert_within_range( my_products, 'itemheight', 100, 10000)
+    assert_within_range( my_products, 'itemlength', 100, 7000 )
+    assert_within_range( my_products, 'itemwidth', 100, 7000)
+    assert_within_range( my_products, 'ppm', 2, 50)
+    assert_within_range( my_products, 'paperinput', 20,2000)
+    assert_within_range( my_products, 'ttp', 7,40)
+    assert_within_range( my_products, 'resolutionmax', 600, 9600)
+    
+    
+    @logfile.close
+  end
+
+  task :printer_pictures => [:printer_init, :pictures]
+
+  task :pictures do
+    require 'helpers/image_helper'
+    include ImageHelper
+    include ImageValidator
+    
+    checkme = $model.instock | $model.instock_ca
+    chek_pictures checkme
+  end
+  
   task :printer_init => :init do
-      include PrinterValidationLib
       $model = Printer
       $scrapedmodel = ScrapedPrinter
       $id_field = 'id'
@@ -107,25 +330,30 @@ namespace :check do
          'paperinput','scanner', 'printserver', 'brand', 'model']
       $reqd_offering_fields = ['priceint', 'pricestr', 'stock', 'condition', 'priceUpdate', 'toolow', \
          'local_id', "product_type", "region", "retailer_id"]
+      $min_price = 1_00
+      $max_price = 10_000_00
       
   end
   
-  task :cam_init => :init do
-      include CameraValidationLib
-    
+  task :cam_init => :init do    
       $model = Camera
       $scrapedmodel = ScrapedCamera
       $id_field = 'id'
       $product_series = []
-      $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'opticalzoom', 'resolutionmax', \
-        'displaysize', 'brand', 'model', 'itemweight'] # 'slr', 'waterproof', 
+      $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'opticalzoom', 'maximumresolution', \
+        'displaysize', 'brand', 'model', 'itemweight'] 
+        # 'slr', 'waterproof', 
+        # , 'imagesurl', 'imagemurl', 'imagelurl'
       $reqd_offering_fields = ['priceint', 'pricestr', 'stock', 'condition', 'priceUpdate', 'toolow', \
          'local_id', "product_type", "region", "retailer_id"]
+      $min_price = 1_00
+      $max_price = 10_000_00
   end
   
   task :init => :environment do 
-    require 'validator_lib'
-    include GeneralValidationLib
+    require 'validation_libs'
+    include ValidationLib
+    include Check
   end    
   
 end
