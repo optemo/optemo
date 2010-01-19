@@ -69,16 +69,20 @@ def drop_count_tables(db):
     db.commit()
     c.close()
 
-insert_wc_entry_sql = \
-    "INSERT INTO wordcounts " + \
-    "(cluster_id, word, count, parent_cluster_id) " + \
-    "VALUES (?, ?, ?, ?)"
-def add_wc_entry(db, cluster_id, parent_cluster_id, word, count):
+def gen_insert_count_entry_sql(tablename):
+    return \
+    "INSERT INTO " + tablename + \
+    "(cluster_id, parent_cluster_id, numchildren, word, count) " + \
+    "VALUES (?, ?, ?, ?, ?)"
+
+def add_count_entry(db, cluster_id, parent_cluster_id, numchildren,
+                    word, count, tablename):
     c = db.cursor()
 
     try:
-        c.execute(insert_wc_entry_sql,
-                  (cluster_id, word, count, parent_cluster_id))
+        c.execute(gen_insert_count_entry_sql(tablename),
+                  (cluster_id, parent_cluster_id,
+                   numchildren, word, count))
         db.commit()
         c.close()
     except sqlite3.IntegrityError:
@@ -89,6 +93,21 @@ def add_wc_entry(db, cluster_id, parent_cluster_id, word, count):
         pdb.set_trace()
         
         raise
+
+def add_wordcount_entry(*args):
+    args = list(args)
+    args.append('wordcounts')
+    add_count_entry(*args)
+
+def add_prodcount_entry(*args):
+    args = list(args)
+    args.append('prodcounts')
+    add_count_entry(*args)
+
+def add_reviewcount_entry(*args):
+    args = list(args)
+    args.append('reviewcounts')
+    add_count_entry(*args)
 
 select_wc_sql = \
     "SELECT count from wordcounts WHERE cluster_id = ? AND word = ?"
