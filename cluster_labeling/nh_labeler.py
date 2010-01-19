@@ -15,9 +15,9 @@ try:
 except(RuntimeError):
     pass
 
-wordcount_filename = '/optemo/site/cluster_hierarchy_wordcounts'
 import cluster_labeling.optemo_django_models as optemo
 
+wordcount_filename = '/optemo/site/cluster_hierarchy_counts'
 db = sqlite3.connect(wordcount_filename)
 
 # Create table
