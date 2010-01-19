@@ -1,4 +1,4 @@
-module PrinterTestAsserts
+module SiteTestAsserts
   def assert_already_saved_msg_displayed
     report_error "Already saved msg hidden" unless @sesh.already_saved_msg?
   end

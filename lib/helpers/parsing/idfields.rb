@@ -114,7 +114,7 @@ module IdFieldsHelper
     	alts = no_blanks(brand_alts(b))
     	alts.each do |alt|
     		if alt.length < 4 # Consider whitespace
-    			return b if title.match(/(\s|^)#{alt}(\s|$)/i)
+    			return b if title.match(/(\s|^)#{alt}(\s|$|-|,)/i)
     		else # Ignore whitespace
     			ja_alt = just_alphanumeric(alt)
     			if ja_alt and ja_title

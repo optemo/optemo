@@ -1,23 +1,23 @@
-module PrinterTest
+module SiteTest
 
   def test_detail_page box_index
-    #log "Getting Detail page for #{box_index+1}th box, product id #{@sesh.pid_by_box(box_index+1)}"
-    #come_back_here = @sesh.current_url
-    #begin
-    #  @sesh.get_detail_page (box_index+1)
-    #rescue Exception => e
-    #  report_error "Problem getting detail page for product #{@sesh.pid_by_box(box_index+1)}"
-    #  report_error "#{e.class.name} #{e.message}"
-    #else
-    #  assert_not_error_page
-    #  assert_not_homepage
-    #  assert_detail_price_not_nil
-    #  assert_detail_pic_not_nil
-    #end
-    #@sesh.visit come_back_here
-    #@sesh.wait_for_load if java_enabled?
-    #assert_not_error_page
-    #assert_well_formed_page
+    log "Getting Detail page for #{box_index+1}th box, product id #{@sesh.pid_by_box(box_index+1)}"
+    come_back_here = @sesh.current_url
+    begin
+      @sesh.get_detail_page (box_index+1)
+    rescue Exception => e
+      report_error "Problem getting detail page for product #{@sesh.pid_by_box(box_index+1)}"
+      report_error "#{e.class.name} #{e.message}"
+    else
+      assert_not_error_page
+      assert_not_homepage
+      assert_detail_price_not_nil
+      assert_detail_pic_not_nil
+    end
+    @sesh.visit come_back_here
+    @sesh.wait_for_load if java_enabled?
+    assert_not_error_page
+    assert_well_formed_page
   end
 
 
@@ -60,21 +60,6 @@ module PrinterTest
    end
  end
  
- def test_pick_use pickme
-    log "Testing pick #{ NavigationHelpers.uses[pickme]} use link"
-   
-    @sesh.pick_printer_use pickme
-   
-    assert_not_error_page
-    assert_well_formed_page
-
-    assert_browsing_all_products pickme
-    assert_brands_clear
-    assert_search_history_clear
-    assert_no_results_msg_hidden
-    log "Done picking"
- end
-
  def test_goto_homepage
    log "Testing Goto Homepage"
    snapshot
@@ -347,7 +332,7 @@ module PrinterTest
  end
  
  def setup_log(name)
-   @logfile = File.open("./log/printertest_"+name+".log", 'w+') #+Time.now.to_s.gsub(/ /, '_')
+   @logfile = File.open("./log/site_test_"+name+".log", 'w+') #+Time.now.to_s.gsub(/ /, '_')
  end
  
  def setup logname
