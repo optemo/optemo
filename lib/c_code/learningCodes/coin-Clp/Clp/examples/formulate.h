@@ -24,7 +24,7 @@ void formulate(sql::Statement *stmt, sql::ResultSet *resPref, sql::ResultSet *re
 		
 	
 		count++;
-		command ="select * from factors where product_type=\'";
+		command ="select * from bbfactors where product_type=\'";
 		command += productName;
 		command += "\' and product_id=";
 		ostringstream ppIdS;
@@ -32,15 +32,16 @@ void formulate(sql::Statement *stmt, sql::ResultSet *resPref, sql::ResultSet *re
 		command += ppIdS.str();
 		command += ";";
 	//	
+		cout<<"commad is "<<command<<endl;
 		resFactor = stmt->executeQuery(command);
-		
+		cout<<"count is "<<resFactor->rowsCount()<<endl;
 		for (int i=0; i<conFeatureN; i++){
 			resFactor->next();
 			factor[i] = resFactor->getDouble(conFeatureNames[i]);
 		}	
-			
+					cout<<"before"<<endl;
 		ignoredId = resPref->getDouble("product_ignored");
-		command ="select * from factors where product_type=\'";
+		command ="select * from bbfactors where product_type=\'";
 		command += productName;
 		command += "\' and product_id=";
 		ostringstream ipIdS;

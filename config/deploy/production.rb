@@ -65,6 +65,10 @@ task :serversetup do
   #run "cd #{current_path}/config/ultrasphinx   && cp -f development.conf.deploy development.conf && cp -f production.conf.deploy production.conf"
 end
 
+task :redopermissions do
+  run "cd #{current_path}/../ && sudo chmod g+w -R *"
+end
+
 after :deploy, "serversetup"
 after :serversetup, "reindex"
-
+after :reindex, "redopermissions"
