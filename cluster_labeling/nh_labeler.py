@@ -202,7 +202,7 @@ def is_stopword(word):
 import nltk.stem.porter
 stemmer = nltk.stem.porter.PorterStemmer()
 
-def compute_wcs_for_review(content):
+def compute_wordcounts_for_review(content):
     wcs = {}
     
     # Use the Punkt sentence tokenizer and the Treebank word tokenizer
