@@ -206,15 +206,21 @@ def compute_wordcounts_for_review(content):
     wcs = {}
     
     # Use the Punkt sentence tokenizer and the Treebank word tokenizer
-    # to get the words in the review. Perform part-of-speech tagging
-    # to get rid of spurious tokens.
-    words = map(nltk.pos_tag,
-                map(word_tokenizer.tokenize,
-                    sentence_tokenizer.tokenize(remove_html_escaping(content))))
-    words = flatten(words)
-    words = map(lambda (word, pos): word,
-                filter(lambda (word, pos): not is_spurious_pos(pos),
-                       words))
+    # to get the words in the review.
+    words = map(word_tokenizer.tokenize,
+                sentence_tokenizer.tokenize(remove_html_escaping(content)))
+    
+    # (Don't) perform part-of-speech tagging to get rid of spurious tokens.
+    do_pos_based_elimination_of_spurious_tokens = False
+    if do_pos_based_elimination_of_spurious_tokens:
+        words = map(nltk.pos_tag, words)
+        words = flatten(words)
+        words = map(lambda (word, pos): word,
+                    filter(lambda (word, pos): not is_spurious_pos(pos),
+                           words))
+    else:
+        words = flatten(words)
+    
     words = filter(lambda x: not is_stopword(x), words)
 
     for word in words:
