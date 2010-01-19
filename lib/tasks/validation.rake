@@ -287,9 +287,7 @@ namespace :check do
     chek_pictures checkme
   end
   
-  task :printer_init => :init do
-      $model = Printer
-      $scrapedmodel = ScrapedPrinter
+  task :printer_init => [:init, 'data:printer_init' ] do
       $id_field = 'id'
       
       $product_series = $printer_series
@@ -299,11 +297,8 @@ namespace :check do
          'local_id', "product_type", "region", "retailer_id"]
   end
   
-  task :cam_init => :init do    
-      $model = Camera
-      $scrapedmodel = ScrapedCamera
+  task :cam_init => [:init, 'data:cam_init' ] do    
       $id_field = 'id'
-      $product_series = []
       $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'opticalzoom', 'maximumresolution', \
         'displaysize', 'brand', 'model', 'itemweight'] 
         # 'slr', 'waterproof', 

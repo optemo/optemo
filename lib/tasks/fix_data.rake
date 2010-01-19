@@ -291,7 +291,7 @@ namespace :fixdata do
   task :test_fix_models_ptr => [:debug_mode, :fix_models_ptr]
   task :test_fix_models_cam => [:debug_mode, :fix_models_cam]
   task :fix_models_ptr => ['data:printer_init', 'data:amazon_init', :fix_models]
-  task :fix_models_cam => ['data:cam_init', 'data:amazon_init', :fix_modelss]
+  task :fix_models_cam => ['data:cam_init', 'data:amazon_init', :fix_models]
   
   task :debug_mode do
     $dry_run = true

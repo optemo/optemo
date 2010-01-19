@@ -1,6 +1,5 @@
-# Rake tasks to test the Laserprinter website
-namespace :printer_test do   
-
+# Rake tasks to test the web app
+namespace :site_test do   
 
    desc 'Quick test'
    task :quick => [:hurryinit, :sliders, :search, :brand_selector, :homepage, :random_nojava]

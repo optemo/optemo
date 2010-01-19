@@ -8,8 +8,8 @@ module NoJavaTestLib
   
   require 'testing/test_session'
   
-  require 'helpers/scraping_helper'
-  include ScrapingHelper
+  require 'helper_libs'
+  include ScrapingLib
 
   require 'testing/site_tests'
   include PrinterTest
@@ -28,8 +28,8 @@ module JavaTestLib
   
   require 'testing/java_test_session'
   
-  require 'helpers/scraping_helper'
-  include ScrapingHelper
+  require 'helper_libs'
+  include ScrapingLib
 
   require 'testing/site_tests'
   include PrinterTest
