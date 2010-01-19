@@ -1,5 +1,91 @@
 namespace :sandbox do
   
+  task :test_remove_dups => :environment do
+    include GenericScraper
+    $model = Printer
+    $scrapedmodel = ScrapedPrinter
+    require 'rubygems'
+    require 'nokogiri'
+
+    require 'helper_libs'
+    
+    include GenericScraper    
+    include ParsingLib
+    include CleaningLib
+    include LoggingLib
+    include DatabaseLib
+    include ScrapingLib
+    
+    keep = $model.find(3308)
+    ditch = $model.find(3218)
+    
+    puts "#{ditch.title} to be merged with #{keep.title}."
+    
+    sps_keep = $scrapedmodel.find_all_by_product_id(keep.id)
+    sps_ditch = $scrapedmodel.find_all_by_product_id(ditch.id)
+    puts "These #{$scrapedmodel.name}s will be re-routed: #{sps_ditch.collect{|x| x.id} *', '}"
+    
+    ros_keep = RetailerOffering.find_all_by_product_id_and_product_type(keep.id, $model.name)
+    ros_ditch = RetailerOffering.find_all_by_product_id_and_product_type(ditch.id, $model.name)
+    puts "These ROs will be re-routed: #{ros_ditch.collect{|x| x.id} *', '}"
+    
+    revus_keep = Review.find_all_by_product_id_and_product_type(keep.id, $model.name)
+    revus_ditch = Review.find_all_by_product_id_and_product_type(ditch.id, $model.name)
+    puts "These Reviews will be re-routed: #{revus_ditch.collect{|x| x.id} *', '}"
+    
+    bestoffer_id = (ros_keep+ros_ditch).sort{|a,b| (a.priceint || 1000000) <=> (b.priceint  || 1000000)}.first.id 
+    
+    # Lets see what they are
+    debugger
+        
+    unlink_duplicate(keep, ditch)
+
+    sps_keep_2 = $scrapedmodel.find_all_by_product_id(keep.id)
+    sps_ditch_2 = $scrapedmodel.find_all_by_product_id(ditch.id)
+    
+    ros_keep_2 = RetailerOffering.find_all_by_product_id_and_product_type(keep.id, $model.name)
+    ros_ditch_2 = RetailerOffering.find_all_by_product_id_and_product_type(ditch.id, $model.name)
+    
+    revus_keep_2 = Review.find_all_by_product_id_and_product_type(keep.id, $model.name)
+    revus_ditch_2 = Review.find_all_by_product_id_and_product_type(ditch.id, $model.name)
+    
+    puts "#{sps_ditch_2.count} (SPs) should be 0"
+    puts "#{ros_ditch_2.count} (ROs) should be 0"
+    puts "#{revus_ditch_2.count} (Reviews) should be 0"
+    
+    puts "#{sps_keep_2.count} (SPs) should be #{sps_keep.count+sps_ditch.count}"
+    puts "#{ros_keep_2.count} (ROs) should be #{ros_keep.count+ros_ditch.count}"
+    puts "#{revus_keep_2.count} (Reviews) should be #{revus_keep.count+revus_ditch.count}"
+    
+    puts "#{$model.exists?(ditch.id)} should be false"
+    
+    # Lets see what they are again
+    debugger
+    puts "#{keep.id} had bestoffer #{keep.bestoffer}"
+    #update_bestoffer(keep)
+    puts "#{keep.id} now has bestoffer #{$model.find(keep.id).bestoffer} (should be #{bestoffer_id})"
+    debugger
+    
+  end
+  
+  task :remove_danglers => :environment do 
+    require 'helper_libs'
+   
+    include CameraHelper
+    include CameraConstants
+    
+    $model = @@model
+    $scrapedmodel = @@scrapedmodel
+    
+    what = Review
+    what.find_all_by_product_type($model.name).each do |ro|
+      unless $model.exists?(ro.product_id) or ro.product_id.nil?
+        ro.update_attribute('product_id', nil)
+      end
+    end
+    
+  end
+  
   task :fix_links => :environment do 
     require 'helper_libs'
    
@@ -11,23 +97,41 @@ namespace :sandbox do
     
     ptype = $model.to_s
     
+    what = Review
+    #what.find_all_by_product_type($model.name).each do |ro|
+    #  ro.update_attribute('product_id', nil)
+    #end
+    msgs = []
     $scrapedmodel.all.each do |sc|
-      #lid = sc.local_id
-      #rid = sc.retailer_id
+      lid = sc.local_id
+      rid = sc.retailer_id
       pid = sc.product_id
-      unless $model.exists?(pid)
-        sc.update_attribute('product_id', nil)
+      unless pid.nil? or $model.exists?(pid)
+        debugger
+        0
+      #  sc.update_attribute('product_id', nil)
       end
-      #if lid and rid# and pid
-      #  ros = RetailerOffering.find_all_by_product_type_and_local_id_and_retailer_id(ptype,lid,rid)
-      #  ros.each do |ro|
-      #    if ro.product_id != pid
-      #      debugger
-      #      ro.update_attribute('product_id', pid)
-      #    end
-      #  end
-      #end
+      
+      if lid and rid# and pid
+        ros = what.find_all_by_product_type_and_local_id_and_retailer_id(ptype,lid,rid)
+        ros.each do |ro|
+          if ro.product_id != pid
+            
+            if($model.find(pid).title == $model.find(ro.product_id).title or $model.find(ro.product_id).model.include?($model.find(pid).model))
+              msgs << "Duplicate: #{pid} and #{ro.product_id}"
+            else
+              msgs << "#{ro.class.name} matched to #{ro.product_id}, which #{$model.exists?(ro.product_id) ? "exists" : "doesn't exist"}"
+              msgs << "Want to change to #{pid}"
+              #debugger
+              #ro.update_attribute('product_id', pid)
+              #puts "Changed to #{pid}"
+            end
+          end
+        end
+      end
+
     end
+    puts "#{msgs.uniq * "\n"}"
   end
   
   task :fix_ptr_models => :environment do 
@@ -193,49 +297,6 @@ namespace :sandbox do
     puts "Done unlinking #{count} revues"
   end
   
-  desc 'No more camera duplicates'
-  task :no_more_cam_dups => :environment do 
-    require 'helper_libs'
-   
-    include GenericScraper    
-    include ParsingLib
-    include CleaningLib
-    include LoggingLib
-    include DatabaseLib
-    include ScrapingLib
-    
-    include CameraHelper
-    include CameraConstants
-    
-    $model = @@model
-    $scrapedmodel = @@scrapedmodel
-    $brands= @@brands
-    $series = @@series
-    $descriptors = @@descriptors
-    
-    allcams = $model.all.collect{|x| x.id}
-    
-    while allcams.length > 0
-      camid = allcams.last
-      cam = $model.find(camid)
-      matches = match_product_to_product cam, $model, $series
-      
-      if matches.length > 1
-          puts "#{matches.length}"
-          puts "#{matches.collect{|x| "#{x.model} , #{x.mpn}, #{x.id}"} * "\n"}"
-          removeme = (matches[1..-1]).collect{|x| x.id}
-          removeme.each do |dup|
-            $model.delete(dup)
-            allcams.delete(dup)
-          end
-      end
-      
-      allcams.delete(camid)
-      puts "[#{Time.now }] #{allcams.count} cameras left to check"
-    end
-    puts "[#{Time.now}] Done"
-  end
-    
   task :fix_reviews => :environment do
     
       require 'helper_libs'
@@ -253,73 +314,6 @@ namespace :sandbox do
         fill_in('retailer_id', 1, product)
               
       end  
-  end
-  
-  task :remove_unidentifiables => :environment do
-    $model = Camera
-    unid = ($model.find_all_by_model_and_mpn(nil,nil)).collect{|x| x.id} 
-    unid = (unid | ($model.find_all_by_brand(nil)).collect{|x| x.id} )
-    unid.each do |id|
-      $model.delete(unid)
-    end
-    puts "#{unid.count} unidentifiable #{$model.name}s removed"
-  end
-  
-  task :vote_on_models => :environment do
-    
-      require 'helper_libs'
-
-      include GenericScraper    
-      include ParsingLib
-      include CleaningLib
-      include LoggingLib
-      include DatabaseLib
-      include ScrapingLib
-      
-      include CameraHelper
-      include CameraConstants
-      
-      # TODO get rid of this construct:
-      $model = @@model
-      $scrapedmodel = @@scrapedmodel
-      $brands= @@brands
-      $series = @@series
-      $descriptors = @@descriptors
-      
-      $model.all.each do |product|
-        sps = $scrapedmodel.find_all_by_product_id(product.id)
-        avg_atts = {}
-        #vote_on_id_fields sps, avg_atts
-        #(avg_atts.keys || []).each{|k| fill_in_forced(k, nil,product)}
-        #fill_in_all(avg_atts, product)
-      end
-      
-  end
-    
-  task :test_stuff => :environment do
-  
-    require 'helper_libs'
-    
-    include GenericScraper    
-    include ParsingLib
-    include CleaningLib
-    include LoggingLib
-    include DatabaseLib
-    include ScrapingLib
-  
-    #samples = []
-    #samples << [[1,2,3], [1,2,3], [1,2,3] ]
-    #samples << [[1,2,4], [1,2,3], [1,2,3] ]
-    #samples << [[1,2,3], [1,2,3], [1,2,4] ]
-    #samples << [[1,2,4], [1,2,3], [1,1,1] ]
-    #samples << [[1,2,nil], [1,2,nil], [1,1,1] ]
-    #samples << [[1,2,0], [1,2,0], [1,1,1] ]
-    #
-    #samples.each do |sets|
-    #  best = vote_on_dimensions( sets) || []
-    #  puts "[#{best*','}] selected" 
-    #end
-  
   end
   
   task :reorder_dims => :environment do
@@ -377,64 +371,64 @@ namespace :sandbox do
     
   end
   
-  task :fix_models => :environment do 
-    require 'helpers/parsing/idfields'
-    require 'helpers/parsing/strings'
-    require 'helpers/global_constants'
-    require 'helpers/database/fill_in'
-    include Constants
-    include CameraConstants
-    include IdFieldsHelper
-    include StringCleaner
-    include FillInHelper
+  task :find_dups => ['data:printer_init'] do
     
-    newbrands = []
+    matchings = get_matching_sets_efficient($model.all[0..10])
+    puts( matchings.collect{|a| a * ', '} * "\n")
     
-    $model= @@model
-    $series = @@series
-    $brands = @@brands
-    
-    fixme = @@scrapedmodel.all
-    
-    #fixme.delete_if{|x|  !x.model.nil? and !x.mpn.nil? and \
-    #  (likely_model_name(x.model) >= 2 ) and (likely_model_name(x.mpn) >= 2) 
-    #}
-    #
-    #fixme.delete_if{|x| (x.mpn.nil? and likely_model_name(x.model) >= 3 ) or \
-    #  (x.model.nil? and likely_model_name(x.mpn) >= 3 )
-    #}
-    counter=0
-    #numToSkip=21
-    #debugger
+   # $model.all[0..100].each do |p|
       
-    fixme.each do |ptr|   
-        x = ptr
-        next if !x.model.nil? and !x.mpn.nil? and\
-         (likely_model_name(x.model) >= 2 ) and (likely_model_name(x.mpn) >= 2) 
-        next if (x.mpn.nil? and likely_model_name(x.model) >= 3 ) 
-        next if (x.model.nil? and likely_model_name(x.mpn) >= 3 )
-      
-        #newbrands << clean_brand("#{ptr.title} #{ptr.model}", @@brands) || ''
-        modelsb4 = no_blanks([ptr.model, ptr.mpn]).uniq
-        modelsafter = no_blanks(
-                  clean_models(
-                    @@model.name, ptr.brand, modelsb4, ptr.title,@@brands, @@series, @@descriptors
-                  )
-                ).uniq.reject{|x| 
-          (x.nil? or x == '' or likely_model_name(x) < 2)
-          }.sort{|a,b| 
-            likely_model_name(b) <=> likely_model_name(a)}
-       #puts "TITLE: #{ptr.title}"
-       #puts "BEFORE: #{modelsb4 * ', '}"
-       #puts "AFTER: #{modelsafter * ', '} ... RATINGS: #{modelsafter.collect{|x| likely_model_name(x)} * ', '}"
-       #debugger if counter > (numToSkip-1)
-       unless modelsafter.length == 0
-         fill_in_forced 'model', modelsafter[0], ptr
-         fill_in_forced 'mpn', modelsafter[1], ptr
-       end
-       counter += 1
-       puts "#{counter} successful"
-    end
+      #x = $model.find_all_by_model(p.model || 'ABRACADABRA')
+      #y =   $model.find_all_by_mpn(p.model || 'ABRACADABRA')
+      #z = $model.find_all_by_model(p.mpn || 'ABRACADABRA')
+      #w =   $model.find_all_by_mpn(p.mpn || 'ABRACADABRA')
+      #dups = (x | y | z | w).uniq
+      #if dups.length > 1
+      #  #debugger
+      #  puts "Found duplicates: #{dups.collect{|a| a.id} * ', '}"
+      #end
+   # end
+    
   end
   
+  task :test_fix_brands_ptr => ['data:printer_init', 'data:amazon_init', :test_fix_brands]
+                              
+  task :test_fix_brands_cam => ['data:cam_init', 'data:amazon_init', :test_fix_brands]
+  
+  task :test_fix_brands do
+    fixme = $model.all
+    changes = []
+    fixme.each do |p|
+      scraped_atts = p.attributes
+      clean_atts = clean(scraped_atts)
+      if "#{clean_atts['brand']}" !="#{p.brand}"
+        puts "was: #{p.brand}"
+        puts "will be: #{clean_atts['brand']}" if clean_atts
+        changes << ["#{p.brand}", "#{clean_atts['brand']}"]
+        #debugger
+        #fill_in_forced('brand', clean_atts['brand'], p)
+      end
+    end
+    changes_text = changes.uniq.collect{|a,b| "#{a} --> #{b}"}
+    puts changes_text * "\n"
+    
+  end
+  
+  task :test_fix_models => ['data:cam_init', 'data:amazon_init'] do 
+    
+    fixme = $model.all
+    fixme.each do |p|
+      scraped_atts = p.attributes
+      clean_atts = clean(scraped_atts)
+      if "#{clean_atts['model']} and #{clean_atts['mpn']}" !="#{p.model} and #{p.mpn}"
+        puts "was: #{p.model} and #{p.mpn}"
+        puts "should be: #{clean_atts['model']} and #{clean_atts['mpn']}" if clean_atts
+        #debugger
+        fill_in_forced('model', clean_atts['model'], p)
+        fill_in_forced('mpn', clean_atts['mpn'], p)
+      end
+    end
+    
+  end
+    
 end

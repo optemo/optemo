@@ -10,24 +10,27 @@ class Printer < ActiveRecord::Base
   end
            #                                (c)luster 
            #                                (f)ilter 
-           #                                (d)escription
-           # =>                             (x)compared
+           #                                (d)escription for groups
+           #                                (t)ext for single product description
+           #                                (x)compared
            #     db_name           Type     (e)xtra Display
-  Features = [%w(price             Continuous  xcfd  ),
-              %w(ppm               Continuous  xcfd  ),
-              %w(itemwidth         Continuous  xcfd  ),
-              %w(paperinput        Continuous  xcfd  ),
-              %w(resolutionmax     Continuous  xcfd  ),
-              %w(brand             Categorical xf    ),
-              %w(scanner           Binary      xcf   ),
-              %w(printserver       Binary      xcf   )]
+  Features = [%w(price             Continuous  xcfd   ),
+              %w(ppm               Continuous  txcfd  ),
+              %w(itemwidth         Continuous  txcfd  ),
+              %w(paperinput        Continuous  txcfd  ),
+              %w(resolutionmax     Continuous  xcfd   ),
+              %w(resolution        Categorical t      ),
+              %w(brand             Categorical xf     ),
+              %w(scanner           Binary      txcf   ),
+              %w(printserver       Binary      txcf   )]
                                                    
   ContinuousFeatures = Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[0]}
   DescFeatures = Features.select{|f|f[2].index("d")}.map{|f|f[0]}
+  SingleDescFeatures = Features.select{|f|f[2].index("t")}.map{|f|f[0]}
   ContinuousFeaturesF = Features.select{|f|f[1] == "Continuous" && f[2].index("f")}.map{|f|f[0]}
   BinaryFeatures = Features.select{|f|f[1] == "Binary" && f[2].index("c")}.map{|f|f[0]}
   BinaryFeaturesF = Features.select{|f|f[1] == "Binary" && f[2].index("f")}.map{|f|f[0]}
-  CategoricalFeatures = Features.select{|f|f[1] == "Categorical" && f[2].index("c")}.map{|f|f[0]}
+  CategoricalFeatures = Features.select{|f|f[1] == "Categorical"}.map{|f|f[0]}
   CategoricalFeaturesF = Features.select{|f|f[1] == "Categorical" && f[2].index("f")}.map{|f|f[0]}
   ExtraFeature = Hash[*Features.select{|f|f[2].index("e")}.map{|f|[f[0],true]}.flatten]
   ShowFeatures = %w(brand model ppm paperinput ttp resolution itemwidth itemheight itemlength duplex connectivity papersize scanner printserver platform)

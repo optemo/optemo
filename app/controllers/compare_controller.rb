@@ -118,7 +118,6 @@ class CompareController < ApplicationController
       render 'ajax', :layout => false
     else
       product_ids = $model.search_for_ids(params[:search],:per_page => 10000)
-#      product_ids = sphinx.results[:matches].map{|i|i[:doc]}
       current_version = $clustermodel.find_last_by_region($region).version
       nodes = product_ids.map{|p| $nodemodel.find_by_product_id_and_version_and_region(p, current_version, $region)}.compact
       cluster_ids = nodes.map{|n|n.cluster_id}
@@ -137,10 +136,28 @@ class CompareController < ApplicationController
       else
         @session.clearFilters
         @session.update_attribute('filter', true)
-        clusters = cluster_ids.sort.uniq[0..8]
+        product_id_array = nodes.map{ |node| node.product_id }
+        keyword = params[:search]
+        searchpids = nodes.map{|p| "product_id = #{p.product_id}"}.join(' OR ')
+
+        if !(product_id_array.nil?) && product_id_array.length < 50 # Guess; this should be profiled later.
+          node_array = product_id_array.map { |id| $nodemodel.find_last_by_product_id(id) }
+          clusters = node_array.map { |node| $clustermodel.find(node.cluster_id) }.uniq
+
+          while clusters.length > $NumGroups
+            clusters = clusters.map do |cluster|
+              if cluster.parent_id != 0 # It's possible to have clusters at different layers, so we need to check for this.
+                $clustermodel.find(cluster.parent_id) 
+              else
+                cluster
+              end
+            end
+            clusters = clusters.uniq
+          end
+        else
+          clusters = cluster_ids.uniq
+        end
         if params[:ajax]
-          searchpids = nodes.map{|p| "product_id = #{p.product_id}"}.join(' OR ')
-          keyword = params[:search]
           classVariables(Search.createFromClustersAndCommit(clusters, @session, searchpids, keyword))
           render 'ajax', :layout => false
         else

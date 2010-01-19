@@ -34,6 +34,11 @@ module LoggingHelper
     printme  = " INVALID DATA :" + str
     announce printme
   end
+
+  def log_snore(sec)
+    log "Sleeping for #{sec} seconds.."
+    sleep sec
+  end
   
   def snore(sec)
     puts "Sleeping for #{sec} seconds.."
