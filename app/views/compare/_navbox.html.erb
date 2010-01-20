@@ -3,17 +3,7 @@
 		<div class='title'>
 			<%= groupDesc(group,i) %>
 		</div>
-		<% if FileTest.exist?("public/images/" + ($model.name == 'Camera' ? "cameras" : "printers") + "/" + cluster.representative(@session,@s.searchpids).id.to_s + "_m.jpg") %>
-		
-		<% if $DragAndDropEnabled == true %>
-			<div class='image_boundingbox'>
-				<%= image_tag('hand_and_arrow.gif', :class => 'dragHand', :title => 'Click for product info. Drag to compare with other products.') %>
-		<% end %>
-				<%= image_tag(($model.name == 'Camera' ? "cameras" : "printers") + "/" + cluster.representative(@session,@s.searchpids).id.to_s + "_m.jpg" , :"data-id" => cluster.representative(@session,@s.searchpids).id, :class => "productimg", :alt => cluster.representative(@session,@s.searchpids).smlTitle, :"title" => 'Click for product info. Drag to compare with other products.') %>
-		<% if $DragAndDropEnabled == true %>		
-			</div>
-		<% end %>
-		<% end %>
+		<div class="productinfocont">
 		<div class="productinfo">
 			<a href="<%=cluster.representative(@session,@s.searchpids).descurl%>" data-id="<%=cluster.representative(@session,@s.searchpids).id%>" class="easylink" title="Click for product specifications">
 		<%= cluster.representative(@session,@s.searchpids).smlTitle %></a>
@@ -22,6 +12,18 @@
 			<%= $region == "us" ? cluster.representative(@session,@s.searchpids).pricestr : cluster.representative(@session,@s.searchpids).price_ca_str %>
 		</div>
 		</div>
+		</div>
+		<% if FileTest.exist?("public/images/" + ($model.name == 'Camera' ? "cameras" : "printers") + "/" + cluster.representative(@session,@s.searchpids).id.to_s + "_m.jpg") %>
+		
+		<% if $DragAndDropEnabled == true %>
+			<div class='image_boundingbox'>
+				<%= image_tag('hand_and_arrow.gif', :class => 'dragHand', :title => 'Click for product info. Drag to compare with other products.') %>
+		<% end %>
+				<%= image_tag(($model.name == 'Camera' ? "cameras" : "printers") + "/" + cluster.representative(@session,@s.searchpids).id.to_s + "_m.jpg" , :"data-id" => cluster.representative(@session,@s.searchpids).id, :class => "productimg", :alt => cluster.representative(@session,@s.searchpids).smlTitle, :title => cluster.representative(@session,@s.searchpids).smlTitle) %>
+		<% if $DragAndDropEnabled == true %>		
+			</div>
+		<% end %>
+		<% end %>
 	</div>
 
 	<div class='bottombar'>
@@ -32,9 +34,9 @@
 		  :"data-id" => "#{cluster.representative(@session,@s.searchpids).id}", :"title" => "Browse through all " + cluster.size(@session,@s.searchpids).to_s + " in this group") %>
     		</div>
 		<% else %>
-		&nbsp;
-			<p>&nbsp;
-					
+		<div style="margin-top: 6px; font-size: 0.8em">
+			<%= featuretext(@session,@s,cluster) %>
+		</div>
 		<% end %>
 	</div>
 </div>
