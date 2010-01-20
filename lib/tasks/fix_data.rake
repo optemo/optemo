@@ -429,40 +429,44 @@ namespace :fixdata do
   end
   
   task :fix_brands do
-    fixme = $scrapedmodel.all
-    changes = []
-    fixme.each do |p|
-      scraped_atts = p.attributes
-      clean_atts = clean(scraped_atts)
-      if "#{clean_atts['brand']}" !="#{p.brand}"
-        puts "was: #{p.brand}"
-        puts "will be: #{clean_atts['brand']}" if clean_atts
-        changes << ["#{p.brand}", "#{clean_atts['brand']}"]
-        unless $dry_run
-          fill_in_forced('brand', clean_atts['brand'], p)
+    [$model,$scrapedmodel].each do |model|
+      announce "Fixing #{model.name}"
+      fixme = model.all
+      changes = []
+      fixme.each do |p|
+        scraped_atts = p.attributes
+        clean_atts = clean(scraped_atts)
+        if "#{clean_atts['brand']}" !="#{p.brand}"
+          puts "was: #{p.brand}"
+          puts "will be: #{clean_atts['brand']}" if clean_atts
+          changes << ["#{p.brand}", "#{clean_atts['brand']}"]
+          unless $dry_run
+            fill_in_forced('brand', clean_atts['brand'], p)
+          end
         end
       end
+      changes_text = changes.uniq.collect{|a,b| "#{a} --> #{b}"}
+      puts changes_text * "\n"
     end
-    changes_text = changes.uniq.collect{|a,b| "#{a} --> #{b}"}
-    puts changes_text * "\n"
-    
   end
   
   task :fix_models  do
-    fixme = $model.all
-    fixme.each do |p|
-      scraped_atts = p.attributes
-      clean_atts = clean(scraped_atts)
-      if "#{clean_atts['model']} and #{clean_atts['mpn']}" !="#{p.model} and #{p.mpn}"
-        puts "was: #{p.model} and #{p.mpn}"
-        puts "should be: #{clean_atts['model']} and #{clean_atts['mpn']}" if clean_atts
-        unless $dry_run
-          fill_in_forced('model', clean_atts['model'], p)
-          fill_in_forced('mpn', clean_atts['mpn'], p)
+    [$model].each do |model| # [$model,$scrapedmodel].each do |model|
+      announce "Fixing #{model.name}"
+      fixme = model.all
+      fixme.each do |p|
+        scraped_atts = p.attributes
+        clean_atts = clean(scraped_atts)
+        if "#{clean_atts['model']} and #{clean_atts['mpn']}" !="#{p.model} and #{p.mpn}"
+          puts "was: #{p.model} and #{p.mpn}"
+          puts "should be: #{clean_atts['model']} and #{clean_atts['mpn']}" if clean_atts
+          unless $dry_run
+            fill_in_forced('model', clean_atts['model'], p)
+            fill_in_forced('mpn', clean_atts['mpn'], p)
+          end
         end
       end
     end
-    
   end
     
 end

@@ -162,7 +162,7 @@ namespace :data do
       end
     end  
     announce "#{Review.count - total_before_script} reviews added."
-    announce "Done!"
+    timed_announce "Done!"
     @logfile.close
   end
   
@@ -228,8 +228,8 @@ namespace :data do
   task :validate_amazon => [:printer_init,:amazon_init, :validate_printers]
   
   # The 2 things you can do, in terms of subtasks: scrape and update
-  task :scrape => [:scrape_new, :match_to_products, :update_bestoffers, :validate_printers]
-  task :update => [:update_prices, :scrape_new, :match_to_products, :update_bestoffers, :validate_printers]
+  task :scrape => [:scrape_new, :match_to_products, :update_bestoffers]
+  task :update => [:update_prices, :scrape_new, :match_to_products, :update_bestoffers]
   
   task :endstuff => [:match_to_products, :vote, :update_bestoffers]
   
@@ -303,7 +303,7 @@ namespace :data do
     puts "There are #{match_me.count} #{$scrapedmodel.name}s in total."
     
     match_me.delete_if{|x| (x.model.nil? and x.mpn.nil?) or x.brand.nil?}
-    puts "#{match_me.count} #{$scrapedmodel.name}s are identifiable -- will match these."
+    announce "#{match_me.count} #{$scrapedmodel.name}s are identifiable -- will match these."
     match_me.each_with_index do |scraped, i|
       matches = match_product_to_product scraped, $model, $series
       
@@ -319,7 +319,7 @@ namespace :data do
       revues.each{|revu| fill_in 'product_id', real.id, revu }
       #puts "[#{Time.now}] Done matching #{i+1}th scraped product." 
     end
-    puts "[#{Time.now}] Done matching products"
+    timed_announce "[#{Time.now}] Done matching products"
   end
   
   # Update prices
@@ -343,6 +343,7 @@ namespace :data do
       log "[#{Time.now}] Done updating #{i+1} of #{my_offerings.count} offerings"
     end
     
+    timed_announce "Done updating prices"
     @logfile.close
   end
 
@@ -362,12 +363,12 @@ namespace :data do
         log "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
       end
     end
+    timed_announce "Done scraping"
     @logfile.close
   end
   
   # Scrape all data for new products only
   task :scrape_new do
-    
     @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{$model.name}_scraper.log", 'w+')
     $retailers.each do |retailer|
       ids = scrape_all_local_ids retailer.region
@@ -380,6 +381,7 @@ namespace :data do
         log "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
       end
     end
+    timed_announce "Done scraping"
     @logfile.close
   end
   
@@ -418,7 +420,7 @@ namespace :data do
     
     assert_no_repeats my_offerings, 'local_id'
     assert_within_range my_offerings, 'priceint', 100, 10_000_00  
-    
+    timed_announce "Done with validation"
     @logfile.close
   end
   
@@ -426,6 +428,7 @@ namespace :data do
     $model.all.each do |p|
       update_bestoffer p
     end
+    timed_announce "Done updating bestoffers"
   end
 
   task :cam_init => :init do
@@ -447,7 +450,6 @@ namespace :data do
   end
 
   task :printer_init => :init do
-      
       include PrinterHelper
       include PrinterConstants
       
@@ -456,7 +458,8 @@ namespace :data do
       $scrapedmodel = @@scrapedmodel
       $brands= @@brands
       $series = @@series
-      $descriptors = @@descriptors + $conditions.collect{|cond| /(\s|^|;|,)#{cond}(\s|,|$)/i}
+      $descriptors = @@descriptors + $conditions.collect{|cond| /(\s|^|;|,)#{cond}(\s|,|$)/i} \
+        + $units.reject{|x| x=='in'}.collect{|y| /#{Regexp.escape(y)}/i}
       
       $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'ppm', 'resolutionmax',\
          'paperinput','scanner', 'printserver', 'brand', 'model']

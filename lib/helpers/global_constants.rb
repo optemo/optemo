@@ -106,7 +106,9 @@ module PrinterConstants
     /\sb(lack\sand\s)?w(hite)?/i, /\snetwork\s/i, /\sall\s?-?\s?in\s?-?\s?one\s/i, /\sink\s/i,\
     /\schrome\s/i, /\stabloid\s/i, /\saio\sint\s/i, /(\s|^)\d*\s?x?\s?\d+\s?dpi(\s|,|$)/i,\
     /(\s|^)\d+\s?x\s?\d+\s?(dpi)?(\s|,|$)/i, /\d*,?\d+(\s|-)?(page|sheet)s?/i, /\d(\s|-)in(\s|-)\d/,\
-    /\sfast\s/i, /\sethernet\s/i, /\sled\s/i, /\sRS232\s/, /\d\d\s?ppm(\s|,|$)/i, /legal/i]
+    /\sfast\s/i, /\sethernet\s/i, /\sled\s/i, /\sRS232\s/, /\d\d\s?ppm(\s|,|$)/i, /legal/i, \
+    /10\/100(Base-TX)?/i, /monochrome/i, /\d(\s|-)in(\s|-)1/i, /(\s|^)A4(\s|,|$)/, /(\s|^)(110|220)V(\s|-|,|$)/,
+    /\d+ image quality/i]
     # 10/100
     # 10/100Base-TX
     
