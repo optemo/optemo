@@ -20,31 +20,7 @@ import cluster_labeling.optemo_django_models as optemo
 wordcount_filename = '/optemo/site/cluster_hierarchy_counts'
 db = sqlite3.connect(wordcount_filename)
 
-# Create table
-common_table_cols = \
-    {
-    "cluster_id" : "integer",
-    "parent_cluster_id" : "integer",
-    "word" : "text",
-    "count" : "integer",
-    "numchildren" : "integer"
-    }
-def gen_create_count_table_sql(tablename, extracols = {}):
-    table_cols = common_table_cols
-    
-    if extracols != {}:
-        table_cols = list(table_cols.iteritems())
-        table_cols = dict(table_cols.extend(extracols.iteritems()))
-
-    return \
-    "CREATE TABLE " + tablename + " " + \
-    "(" + \
-    ', '.join(map(lambda (k,v): ' '.join([k,v]),
-                  table_cols.iteritems())) + \
-    ", PRIMARY KEY (cluster_id, word), " + \
-    "CONSTRAINT count_check CHECK (count > 0) " + \
-    "CONSTRAINT numchildren_check CHECK (numchildren >= 0)" + \
-    ")"
+import cluster_count_table as cct
 
 # At the leaf clusters,
 # - wordcounts stores the number of a particular word found in all
@@ -55,114 +31,7 @@ def gen_create_count_table_sql(tablename, extracols = {}):
 # - reviewcounts stores the number of reviews of a particular product
 #   associated with the cluster that contain the word.
 count_tables = ['wordcounts', 'prodcounts', 'reviewcounts']
-def create_count_tables(db):
-    c = db.cursor()
-    for table in count_tables:
-        c.execute(gen_create_count_table_sql(table))
-    db.commit()
-    c.close()
-
-def drop_count_tables(db):
-    c = db.cursor()
-    for table in count_tables:
-        c.execute("DROP TABLE IF EXISTS " + table)
-    db.commit()
-    c.close()
-
-def gen_insert_count_entry_sql(tablename):
-    return \
-    "INSERT INTO " + tablename + \
-    "(cluster_id, parent_cluster_id, numchildren, word, count) " + \
-    "VALUES (?, ?, ?, ?, ?)"
-
-def add_count_entry(db, cluster_id, parent_cluster_id, numchildren,
-                    word, count, tablename):
-    c = db.cursor()
-
-    try:
-        c.execute(gen_insert_count_entry_sql(tablename),
-                  (cluster_id, parent_cluster_id,
-                   numchildren, word, count))
-        db.commit()
-        c.close()
-    except sqlite3.IntegrityError:
-        print "Integrity error: (cluster_id, word) == (%d, %s)" % \
-              (cluster_id, word)
-        
-        import pdb
-        pdb.set_trace()
-        
-        raise
-
-def add_wordcount_entry(*args):
-    args = list(args)
-    args.append('wordcounts')
-    add_count_entry(*args)
-
-def add_prodcount_entry(*args):
-    args = list(args)
-    args.append('prodcounts')
-    add_count_entry(*args)
-
-def add_reviewcount_entry(*args):
-    args = list(args)
-    args.append('reviewcounts')
-    add_count_entry(*args)
-
-def gen_select_count_entry_sql(tablename):
-    return \
-    "SELECT count from " + tablename + \
-    " WHERE cluster_id = ? AND word = ?"
-
-def get_wc(db, tablename, cluster_id, word):
-    c = db.cursor()
-    c.execute(gen_select_count_entry_sql(tablename), (cluster_id, word))
-    results = c.fetchall()
-    c.close()
-
-    wordcount = None
-
-    if len(results) > 0:
-        wordcount = results[0][0]
-    
-    return wordcount
-
-def gen_sum_child_counts_sql(tablename):
-    return \
-    "SELECT word, SUM(count) from " + tablename + " " + \
-    "WHERE parent_cluster_id = ? GROUP BY word"
-
-def sum_child_cluster_counts(db,
-                          cluster_id, parent_cluster_id,
-                          numchildren, tablename):
-    c = db.cursor()
-    c.execute(gen_sum_child_counts_sql(tablename), (cluster_id,))
-
-    while (1):
-        row = c.fetchone()
-        if row == None:
-            break
-        
-        word, countsum = row[0:2]
-        add_count_entry(db, cluster_id, parent_cluster_id,
-                        numchildren, word, countsum, tablename)
-        
-    c.close()
-
-def sum_child_cluster_wordcounts(*args):
-    args = list(args)
-    args.append('wordcounts')
-    sum_child_cluster_counts(*args)
-
-def sum_child_cluster_prodcounts(*args):
-    args = list(args)
-    args.append('prodcounts')
-    sum_child_cluster_counts(*args)
-
-def sum_child_cluster_reviewcounts(*args):
-    args = list(args)
-    args.append('reviewcounts')
-    sum_child_cluster_counts(*args)
+count_tables = map(cct.ClusterCountTable, count_tables)
 
 import nltk.tokenize.punkt as punkt
 import nltk.tokenize.treebank as treebank
@@ -281,31 +150,23 @@ def compute_counts_for_cluster(db, cluster):
         wordcount, reviewcount, prodcount = \
             compute_counts_for_product(product)
 
-        for (word, count) in wordcount.iteritems():
-            add_wordcount_entry(db, cluster.id, cluster.parent_id,
-                                0, word, count)
-        for (word, count) in reviewcount.iteritems():
-            add_reviewcount_entry(db, cluster.id, cluster.parent_id,
-                                  0, word, count)
-        for (word, count) in prodcount.iteritems():
-            add_prodcount_entry(db, cluster.id, cluster.parent_id,
-                                  0, word, count)
+        map(lambda table, counts:
+            table.add_counts_from(db, cluster, counts),
+            count_tables, [wordcount, prodcount, reviewcount])
     else:
         map(lambda child: compute_counts_for_cluster(db, child),
             children)
-        sum_child_cluster_wordcounts\
-            (db, cluster.id, cluster.parent_id, numchildren)
-        sum_child_cluster_reviewcounts\
-            (db, cluster.id, cluster.parent_id, numchildren)
-        sum_child_cluster_prodcounts\
-            (db, cluster.id, cluster.parent_id, numchildren)
+        map(lambda table:
+            table.sum_child_cluster_counts\
+            (db, cluster.id, cluster.parent_id, numchildren),
+            count_tables)
         
 def compute_all_counts\
         (db, version=optemo.CameraCluster.get_latest_version()):
     # All tables should be recreated, otherwise the resulting counts
     # will not be valid.
-    drop_count_tables(db)
-    create_count_tables(db)
+    map(lambda table: table.drop_count_table(db), count_tables)
+    map(lambda table: table.create_count_table(db), count_tables)
     
     # Get clusters just below the root.
     root_children = \
@@ -314,6 +175,7 @@ def compute_all_counts\
 
     map(lambda child: compute_counts_for_cluster(db, child),
         root_children)
-    sum_child_cluster_wordcounts(db, 0, -1, root_children.count())
-    sum_child_cluster_reviewcounts(db, 0, -1, root_children.count())
-    sum_child_cluster_prodcounts(db, 0, -1, root_children.count())
+    map(lambda table:
+        table.sum_child_cluster_counts\
+        (db, 0, -1, root_children.count()),
+        count_tables)
