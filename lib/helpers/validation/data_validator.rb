@@ -26,20 +26,46 @@ module DataValidator
       if sorted_values.first < min
         lowest = sorted_values.first
         temp = sorted_values.reject{|x| x > lowest}.count
-        temp2 = sorted_values.reject{|x| x > min}.count
+        temp2 = sorted_values.reject{|x| x >= min}.count
         announce "Smallest #{att} below min: #{lowest}. # records w/ this value: #{temp}" 
         announce " # records below min : #{temp2}" 
       end
       if sorted_values.last > max 
         highest = sorted_values.last
         temp = sorted_values.reject{|x| x < highest}.count
-        temp2 = sorted_values.reject{|x| x < max}.count
+        temp2 = sorted_values.reject{|x| x <= max}.count
         announce "Largest #{att} above max: #{highest}. # records w/ this value: #{temp}" 
         announce " # records above max: #{temp2}"
       end
       announce '------'
     else 
-      announce "Valid data for #{att}!"
+      announce "Valid data for #{att}!\n ----- "
+    end
+  end
+  
+  # Is the attribute between min and max for the 
+  # given list of database entries (records)?
+  def assert_in_set reclist, att, set
+    values = get_values(reclist, att)
+    values.delete_if{|x,y| y.nil?}
+    if values.values.length == 0
+      log_v "All values nil for #{reclist[0].class.name}'s #{att} attribute"
+      return
+    end
+    outliers = values.reject{|k,v| set.include?(v) }
+    if outliers.size > 0
+      announce 'INVALID DATA:'
+      announce "#{outliers.size} invalid #{att}s."
+      announce  "Outliers: #{outliers.collect{|x,y| x}*', '}" if outliers.size < 10
+      if outliers.reject{|k,v| v.nil?}.count > 0
+        badvals = outliers.collect{|k,v| v}.reject{|a| a.nil?}.uniq
+        temp =  outliers.reject{|k,v| v.nil?}.count
+        announce " Bad #{att}s: #{badvals * ', '} " 
+        announce " # records with bad #{att}: #{temp}"
+      end
+      announce '------'
+    else 
+      announce "Valid data for #{att}!\n ----- "
     end
   end
   

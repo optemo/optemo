@@ -32,7 +32,8 @@ module Constants
      ['lg', 'lg electronics'], ['lomo', 'lomographic', 'lomography'], ['sea & sea', 'tabata usa'], \
      ['rollei', 'rolleiflex'], ['svp', 'silicon valley peripherals'], ['bell howell', 'bell + howell', \
        'bell & howell'], ['norcent', 'xias'], ['general electric', 'ge'], ['xerox', 'tektronix'], \
-       ['intova', 'international innovations'], ['ibm', 'infoprint', 'infoprint solutions']]
+       ['intova', 'international innovations'], ['ibm', 'infoprint', 'infoprint solutions'], ['sealife', 'reef master'],\
+       ['spectra', 'polaroid'], ['dxg', 'dxg usa', 'dxg technologies'], ['spectra', 'polaroid'], ['kodak', 'easyshare']]
 
   $cam_series = {'Agfa' => ['ePhoto'],'Canon' => ['EOS', 'PowerShot','Rebel', 'Power Shot', 'PShot'],'Casio' => ['Exilim','Photax'],
          'GoPro' => ['Digital Hero'], 'Fuji'=> ['Finepix'], 'Lomo' => ['Horizon'], 'Leica' => ['Digilux'],\
@@ -71,7 +72,8 @@ module CameraConstants
   @@scrapedmodel = ScrapedCamera
   @@brands = ["Agfa", "Akai", "Argus", "Bell & Howell", "Benq", "Bushnell", "Canon", "Casio", "Cobra", \
   "Concord Keystone", "Contax", "Digital Concepts", 'Digital Blue', "DXG", "Electrolux", "Elyssa", \
-  "Epson", 'Ezonics', "Fuji", \
+  "Epson", 'Extech', 'Ezonics', 'FLIR', "Fuji", 'Digital Peripheral Solutions', 'Pelco',  \
+  "CP Technologies",  'Lumens', 'Pelco', 'DeerCam', 'Photax', 'Diamond', 'Blue Thunder', 'Creative Labs', \
   "Gateway", "General Electric", "General Imaging", "GFM", "Go Photo", "GoPro / Portable USA", 'Hasbro', \
   "Hewlett Packard", "Insignia", "Intova", "iSonic", "Jazz", "JVC", "JWin", "Kobian ", "Kodak", \
   "Konica-Minolta", "Kyocera", 'Labtec', "Largan", "Leica", "LG Electronics", "Lomographic", "Memorex", \
@@ -80,6 +82,9 @@ module CameraConstants
   "Radioshack", "Ricoh", "Rokinon", "Rollei", 'Sakar', "Samsung", "Sanyo", "Sea & Sea", "SeaLife", "Sharp",\
    "Sigma", "SiPix", "Sony", "Silicon Valley Peripherals", "Toshiba", "VistaQuest", "Vivitar", "VuPoint", \
    'Wildview',"Yashica"]
+   # Lumens
+   #
+
   @@series =  $cam_series.values.flatten
    #'Digital Blue' => ['Snap']
    #'SeaLife' => ['SL'], 
@@ -100,6 +105,11 @@ module PrinterConstants
     /\sworkcent(re|er)\s/i, /\smono\s/i, /\slaser\s/i, /\sdig(ital)?\s/i, /\scolou?r\s/i,\
     /\sb(lack\sand\s)?w(hite)?/i, /\snetwork\s/i, /\sall\s?-?\s?in\s?-?\s?one\s/i, /\sink\s/i,\
     /\schrome\s/i, /\stabloid\s/i, /\saio\sint\s/i, /(\s|^)\d*\s?x?\s?\d+\s?dpi(\s|,|$)/i,\
-    /(\s|^)\d+\s?x\s?\d+\s?(dpi)?(\s|,|$)/i, /\d*,?\d+\spages/i, \
-    /\sfast\s/i, /\sethernet\s/i, /\sled\s/i, /\sRS232\s/, /\d\dppm(\s|,|$)/i]
+    /(\s|^)\d+\s?x\s?\d+\s?(dpi)?(\s|,|$)/i, /\d*,?\d+(\s|-)?(page|sheet)s?/i, /\d(\s|-)in(\s|-)\d/,\
+    /\sfast\s/i, /\sethernet\s/i, /\sled\s/i, /\sRS232\s/, /\d\d\s?ppm(\s|,|$)/i, /legal/i, \
+    /10\/100(Base-TX)?/i, /monochrome/i, /\d(\s|-)in(\s|-)1/i, /(\s|^)A4(\s|,|$)/, /(\s|^)(110|220)V(\s|-|,|$)/,
+    /\d+ image quality/i]
+    # 10/100
+    # 10/100Base-TX
+    
 end

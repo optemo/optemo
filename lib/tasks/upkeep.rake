@@ -1,62 +1,6 @@
 require 'GlobalDeclarations'
 #Here is where general upkeep scripts are
 
-desc 'validation'
-task :validate_printers => :environment do
-  
-  require 'validation_helper'
-  include ValidationHelper
-  
-  @logfile = File.open("./log/validate_printers.log", 'w+')
-  
-  assert_all_valid Printer
-  
-  assert_within_range Printer.all, 'itemheight', 30, 200
-  assert_within_range Printer.all, 'itemlength', 30, 100
-  assert_within_range Printer.all, 'itemdepth', 20, 100
-  
-  assert_within_range Printer.all, 'itemweight', 1_000, 30_000
-  
-  assert_within_range Printer.all, 'listpriceint', 30_00, 12_000_00
-  assert_within_range Printer.all, 'price', 30_00, 12_000_00
-  
-  assert_within_range Printer.all, 'ppm', 30_00, 6_000_00
-  assert_within_range Printer.all, 'paperinput', 10, 10_000
-  assert_within_range Printer.all, 'resolutionmax', 100, 10_000
-  
-  @logfile.close
-end
-desc 'Find duplicates'
-task :find_duplicate_printers => :environment do
-  
-  require 'database_helper'
-  include DatabaseHelper
-  
-  @logfile = File.open("./log/duplicates.log", 'w+')
-  duplicate_sets = []
-  
-  Printer.all.each do |p|
-    matches = match_product_to_product p, Printer
-    
-    
-    if matches.reject{|x| x.id == p.id}.length > 0
-      duplicate_sets << matches.collect{|x| x.id}
-      matches.reject{|x| x.id == p.id}.each do |other|
-        @logfile.puts "Duplicate for #{p.id}(#{p.model} #{p.brand}): #{other.id} (#{other.model} #{other.brand})"
-      end
-    end
-  end
-  
-  @logfile.puts "Lists of duplicates:"
-  @logfile.puts duplicate_sets.uniq.collect{|x| x * ', '}
-  
-  puts "Lists of duplicates:"
-  puts duplicate_sets.uniq.collect{|x| x * ', '}
-  
-  @logfile.close
-end
-
-
 desc "Calculate factors for all features of all products"
 task :calculate_factors => :environment do
     # Truncate the existing factors table

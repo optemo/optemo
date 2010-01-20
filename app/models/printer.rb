@@ -36,6 +36,12 @@ class Printer < ActiveRecord::Base
   ShowFeatures = %w(brand model ppm paperinput ttp resolution itemwidth itemheight itemlength duplex connectivity papersize scanner printserver platform)
   DisplayedFeatures = Features.select{|f|f[2].index("x")}.map{|f|f[0]}
   ItoF = %w(price itemwidth)
+  ValidRanges = { 'itemheight' => [1_00,100_00], 'itemlength' => [1_00,70_00], 'itemwidth' => [1_00,70_00], \
+    'ppm' => [2, 50], 'paperinput' => [10,5000], 'ttp' => [4, 50], \
+    'resolutionmax' => [600,9600], 'itemweight' => [3_00, 100_00]} #, 'priceint' => [1_00, 20_000_00] }
+  MinPrice = 1_00
+  MaxPrice = 20_000_00
+      
   named_scope :priced, :conditions => "price > 0"
   named_scope :valid, :conditions => [ContinuousFeatures.select{|f|!f.match(/^minf|maximumfocallength|minimumfocallength$/)}.map{|i|i+' > 0'}.join(' AND '),BinaryFeatures.map{|i|i+' IS NOT NULL'}.join(' AND '),['brand','model'].map{|i|i+' IS NOT NULL'}.join(' AND ')].delete_if{|l|l.blank?}.join(' AND ')
   named_scope :instock, :conditions => "instock is true"

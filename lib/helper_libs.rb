@@ -34,6 +34,8 @@ require 'helpers/productspecific/cameras'
 #require 'helpers/productspecific/cartridges'
 require 'helpers/productspecific/printers'
 
+require 'helpers/validation/in_range_helper'
+
 
 module ScrapingLib
   include ScrapingHelper
@@ -57,6 +59,8 @@ module CleaningLib
   include CameraHelper
   include PrinterHelper
   #include CartridgeHelper
+  
+  include InRangeHelper
 end
 
 module ParsingLib
