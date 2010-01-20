@@ -65,7 +65,7 @@ def create_count_tables(db):
 def drop_count_tables(db):
     c = db.cursor()
     for table in count_tables:
-        c.execute("DROP TABLE " + table)
+        c.execute("DROP TABLE IF EXISTS " + table)
     db.commit()
     c.close()
 
