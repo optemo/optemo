@@ -32,6 +32,13 @@
 	margin-top: 0px;
 	vertical-align: middle;
 }
+#tagline {
+	display:inline;
+	padding-top:18px;
+	width:420px;
+	float:left;
+}
+
 #logindisplay
 {
 	font-size: 0.8em;

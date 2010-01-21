@@ -1,151 +1,153 @@
- a.link {margin-left: 10px; margin-right: 10px;}
-div.main {padding: 0; float: left; width: 745px; margin-left: 5px; text-align: left;}
-div.rowdiv {width: 745px; height: 225px}
-a img {border: none;}
- .navigator_box p {margin: 0px 0px 5px; padding: 0; line-height:1.2em; cursor: move;}
-div.navigator_box {text-align: center; font-size: small; float: left; width:245px; height:225px; margin: 0px 2px 0px 0px; padding: 0px; background: url(../images/navigatorbox_u.png) no-repeat; _background-image:url(../images/navigatorbox_u.gif);}
-div.navigator_box:hover {background: url(../images/navigatorbox_s.png) no-repeat;}
-div.borderbox {margin: 5px 0px 0px 5px; height: 210px; width: 235px}
-.borderbox a {color: black; text-decoration: none}
-.backlink a{  color: #891D1D}
-.saveold {width: 45px; height: 15px; padding: 2px 1px 0px; right: 3px}
-.rightbar {width: 45px; position: absolute; right: 0; top: 0}
-.sim {width: 104px; height: 26px; padding: 4px 2px 0px; margin: auto; background: url(../images/sim_button.png) no-repeat;}
-.sim:hover{ background: url(../images/sim_button_high.png) no-repeat}
-a.save {font-size: 0.9em; line-height: 1.2em; text-decoration: none; background: url(../images/save_button.png) no-repeat; color: black;}
-.sim a {text-decoration: none; color: black; display: block; width: 100%; height: 100%; font-size: 0.9em; line-height: 0.9em;}
-.bottombar {width: 100%;}
-.up {text-decoration: none;  color: #000;}
-.down {text-decoration: none;  color: #000;}
-.up img, .down img {vertical-align: middle;}
-.clusterfeatures {float: right; margin-top: 1px; width: 134px; font-size: 0.70em;}
-.easylink {color: blue; text-decoration: underline}
-.title {color: #0B4F13; font-size: 16px}
-.productimg {cursor: pointer}
- .clustergraph {border: solid thin black; background-color: white; width: 50px; float: left}
-.featurebar {background-color: purple; margin: 1px 0px; height: 3px; width: 25px}
- div #leftbar {padding: 0; margin: 0; width: 195px; text-align: center; float: left; position: relative}
-#search {margin-top: 0.5em; width: 130px}
- #submit_button {margin-top: 2px}
-#clearsearch {font-size: 0.8em}
- div #savebar {background: #ddd; margin: 0.5em 0.1em 0; padding: 0em 0em 0.5em 0em; text-align: center; }
-#savebar h2 {margin: 0}
-.savesome {width:130px; height:88px; background:"#F0FFFF";}
-.drop-box-hover { border:3px dashed #c96; }
-.ui-state-dragging {background: #fbf9ee url(../images/frosted-glass-texture.jpg) 50% 50% repeat-x; color: #363636; }
-.deleteX {position: absolute; left: 75px; top: 0;}
-#deleteme {font-size: 0.8em; margin: 0 5px}
-.saveditem {position: relative; text-align: center; width: 95px; height: 85px; float: left}
-p.smalldesc {font-size: 0.8em; line-height: 1em; padding: 0}
-#already_added_msg {color: red; margin-bottom: 4px}
- div #filterbar {margin: 0.5em 0.1em; padding: 0em; text-align: center; position: relative; background: #ddd;}
-#filterbar h2 {margin: 0}
-.slider {margin: 0 0 0.8em 7px; width: 177px; padding-top: 0px; padding-bottom: 6px; position: relative}
-.preferenceSlider {background: url(../images/slider.gif) no-repeat; margin: 0 0 0.8em 7px; width: 177px; height: 13px; padding-top: 0px; padding-bottom: 6px; position: relative}
-.preferenceSliderVertical {background: url(../images/slider_vertical.gif) no-repeat; margin: 0 0 0.8em 7px; width: 10px; height: 50px; padding-top: 0px; padding-bottom: 6px; position: relative}
-.label {text-align: left; font-size: 0.8em; margin-left: 5px; width: 187px; margin-top: 0.6em}
-.space {margin-bottom: 20px;  }
-.preferences{ color: #777}
-.sliderlabel {font-size: 0.6em; padding-top: 17px; text-decoration: none; color: black}
-.labelVerticalPrefs{ font-size: 0.8em; color: #888; margin-left: 0px; margin-top: 0px}
-.lowlightfeature {color: #777}
-.regularfeature {color: #000}
-.comparisonfeature {position:absolute; color: green; float: left; font-size: 0.9em}
-.endlabel_min {display: none; position: absolute; bottom: -5px; left: -1px; font-size: 0.5em;}
-.endlabel_max {display: none; position: absolute; bottom: -5px; right: -1px; font-size: 0.5em;}
-.endlabel_min_Preferences {display: relative; position: absolute; bottom: -5px; left: -1px; font-size: 0.5em}
-.endlabel_max_Preferences {display: relative; position: absolute; bottom: -5px; right: -1px; font-size: 0.5em}
-.disp {width: 80px; position: absolute; right: 0; top: 0; font-size: 0.8em; text-align: left}
-.feature {position: relative}
-.hist {position: absolute; text-align: left; left: 7px; top: 16px}
-.ui-slider {position: relative; text-align: left}
-.ui-slider .ui-slider-handle {background:url(../../../images/diamond.gif) no-repeat; height:13px; width:9px;text-decoration:none;outline:none;position:absolute;z-index:2;}
+ a img {border: none}
+a {color: #0000EE}
+a:visited {color: #0000AB;}
+ .deleteX {position: absolute; right: -7px; top: -5px; z-index: 1}
+ div#main {padding: 0; width: 727px; margin-left: 218px; text-align: left}
+#navigator_bar {height: 22px; text-align: center; margin-bottom: 5px; padding-left: 10px; margin-right: 5px}
+.rounded_nav {background-color: #e1e1e1; border: 1px solid #d0d0d0}
+.blacklink {color: black}
+#navigator_bar .smalllink{ font-size: 0.75em; margin-left: 3px}
+ div.rowdiv { margin-left: 5px; margin-top:5px}
+div.navigator_box {text-align: center; font-size: 0.85em; float: left; position: relative; height: 100%; margin-right: 7px; margin-bottom: 3px; height:227px}
+.nbgroup {padding: 3px 9px 3px 3px; background: url(./../images/nb-group.png) no-repeat; width:224px; margin-right:-1px}
+.nbsingle {padding: 3px 9px 3px 3px; background: url(./../images/nb-single.png) no-repeat; width:224px; margin-right:-1px}
+.topbar {height: 174px}
+.title {text-align: left; margin: 3px 8px; padding-bottom: 4px; border-bottom:1px solid #CCCCCC; height: 25px; font-weight: bold; position:relative}
+ .product_box {position: relative; width:160px; height: 153px; margin: auto; margin-bottom:2px}
+.image_boundingbox {width: 140px;   margin-left: auto; margin-right:auto; position:relative; text-align:center;   }
+img.productimg {cursor: move}
+.productinfo { margin:2px auto 0 auto}
+.price {color: #F5000B; font-size: 1.2em}
+.bottombar {height: 18px}
+.sim {height: 35px; text-align: left; margin-left:10px; margin: 6px 3px; width:170px;  }
+.sim a {font-size: 1.1em; padding: 4px; color: black}
+.sim a img {vertical-align: middle; padding-right: 5px}
+ div #leftbar {padding: 0; margin: 0; width: 213px; float: left; position: relative}
+.leftboxes {margin: 0px 0px 5px 4px; padding: 6px}
+.rounded_leftboxes {border: 1px solid #ccc}
+#search {width: 129px}
+#submit_button {margin-top: 2px}
+#savebar { background-repeat: no-repeat;  }
+#ajaxfilter {display:inline}
+ div.ui-state-dragging {border:1px dashed #c96; background: #ebe9de}
+div.drop-box-hover {background: #dbd9ce; color: #363636}
+.left_behind_box_ghost {opacity:0.4}
+[if IE] .left_behind_box_ghost {filter:alpha(opacity=40); -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=40);  }
+ .dragHand {position: absolute; left: 0; top: 0; z-index:1; opacity:0.35}
+[ if IE ] .dragHand {position: absolute; left: 0; top: 0; z-index:1; filter:alpha(opacity=35); -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=35)";  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=35);  }
+.saveditem {position: relative; width: 77px; height: 80px; float: left; text-align: center; padding: 5px 1px 1px 5px; margin: 5px 0px 0px 8px; background: url(./../images/savebg.png) no-repeat}
+div.smalldesc { font-size: 0.7em; line-height: 1em; padding: 3px 0; width:70px; text-align: center}
+.savedmsg {color: #F5000B; margin-bottom: 4px; margin-left: 6px; font-size:0.9em; display: none}
+.savesome {font-size: 0.9em; width:180px; padding:7px}
+#compare_button {clear: both; padding-left: 120px; padding-top: 5px}
+.selected_brands img {vertical-align: baseline}
+ .gainlayout div {zoom: 1}
+ .ui-slider {position: relative; text-align: left}
+.ui-slider .ui-slider-handle:hover {color: black; text-decoration: none}
+.ui-slider .ui-slider-handle {background:url(./../../../images/diamond.gif) no-repeat; font-size: 0.6em; color: black; height:13px; width:16px;text-decoration:none;outline:none;position:absolute;z-index:2}
 .ui-slider .ui-slider-range {position: absolute; z-index: 1; font-size: .7em; display: block; border: 0}
-.ui-slider-horizontal {background:url(../../../images/slider.gif) no-repeat; height: 13px}
-.ui-slider-horizontal .ui-slider-handle {top: -3px; margin-left: -4px}
-.ui-slider-horizontal .ui-slider-range {top: 0; height: 100%}
+ .ui-slider-horizontal .ui-slider-handle {top: -3px; margin-left: -8px}
+.ui-slider-horizontal .ui-slider-range {top: 0; height: 65%;  opacity:0.3;  filter: alpha(opacity=30)}
 .ui-slider-horizontal .ui-slider-range-min {left: 0}
 .ui-slider-horizontal .ui-slider-range-max {right: 0}
-.ui-slider-vertical .ui-slider-handle {background:url(../../../images/diamond_vertical.gif) no-repeat; height:13px; width:9px; overflow:hidden;position:absolute;z-index:2;}
- div.navigator_box {_background-image:url(../images/navigatorbox_u.gif)}
-.cell{ float: left; width: 200px; overflow: hidden}
-.rowBeingDragged{ background: #CCCC00}
+.ui-slider-vertical .ui-slider-handle {background:url(./../../../images/diamond_vertical.gif) no-repeat; height:13px; width:9px; overflow:hidden; position:absolute; z-index:2}
+.slider {margin: 0 0 0 7px; width: 178px; padding-bottom: 6px; position: relative}
+.centerofslider {background:url(./../../../images/slider.gif) no-repeat; height:13px; overflow:hidden}
+ .filtersdesc {font-size: 0.8em; margin-bottom: 3px; font-weight: lighter}
+#selector {width:100%}
+.label {font-weight: bold; text-align: left; font-size: 0.8em; width: 187px; margin-top: 0.6em; position: relative}
+.space {margin-bottom: 20px;  }
+.reset {text-align: right}
+.valbelow {padding-top: 18px}
+.valabove {margin-top: -34px; height: 33px !important; background-position: 0 100% !important}
+.unitdisp { font-size: 0.8em; font-weight: normal}
+.feature {position: relative}
+.desc {display: none; position: absolute; bottom: 1.5em; left: 0px; padding: 4px; border: solid thin black; background-color: #fff; z-index: 10}
+.hist {position: absolute; text-align: left; left: 7px; top: 16px}
+ .decisionoverlay {padding: 35px 0px 0px 0px; font-size: 0.8em; text-align: justify}
+.leftbutton {float:left; padding-left:140px}
+.rightbutton {float: left; padding-left:80px}
+.surveyquestions {width: 560px; font-size: 0.9em; text-align: justify}
+.surveyimage {text-align: center}
+#feedback {position:fixed; right: 0px; top: 250px; z-index:2; cursor: pointer}
+ #bottomlinks {margin: 3px; text-align: center; font-size: 0.8em}
+ .listing {margin: 0}
+.content {margin: 0px 20px}
+.content h2 {margin-top: 20px}
+  .popupTour{ display:none; position:fixed; _position:absolute;  height:150px; width:300px; background:#FFFFFF; border:3px solid #444444; z-index:100000; padding:12px; font-size:13px}
+.popupTour h1{ text-align:left; color:#5f8ed9; font-size:22px; font-weight:700;  border-bottom:1px dotted #D3D3D3; padding-bottom:2px; margin-bottom:15px; margin-top:0px}
+.popupnextbutton {font-size:1.3em}
+.popupcloseinstructions {font-size:0.7em}
+.popupTour hr {border-color:#BBB; border-style: solid none; border-width: 1px 0; height: 2px}
+.popupTourClose{ font-size:14px; line-height:14px; right:6px; top:4px; position:absolute; color:#6fa5fd; font-weight:700; display:block}
+.tourDrawAttention {border: 2px solid red; background: #fffcd3; margin:2px}
+#tourButton{ position:absolute; top:20px; left:20px}
+.column {float: left}
+#comparisonmatrix {position: relative; width:100%}
+.cell {border-right: gray 1px dashed; width: 180px; height: 23px; font-size: 0.9em; padding: 7px 0px 0px 10px}
+.longcolumn .cell {border-right: none; width: 400px}
+.thumbnailcell {padding-top: 15px; border-right: gray 1px dashed; width: 190px; height: 180px}
+.columntitle {background: url(./../images/columntitlebg.gif); width: 189px; height: 23px; font-size: 0.9em; padding-top: 7px; border-right: solid 1px #ccc; z-index: 4; position: relative}
+.longcolumn .columntitle {width: 420px}
+.bgrow {height: 30px; background: url(./../images/columntitlebg.gif) repeat; width: 750px; position: absolute; top: 0; right: 0; z-index: 0; border-right: solid 1px #ccc}
+.outertitle {width: 189px; border-right: solid 2px white; z-index: 4; position: relative}
+.longcolumn .outertitle {width: 419px}
+.graybg {background: #DADADA}
+.greenbg {background: #CCEDBB}
+.whitebg {background: white}
+.leftmostcolumn {width: 130px; padding-left: 0px}
+.leftcolumntext {font-weight: bold; padding-right: 10px; text-align: right}
+.leftmostoutertitle {width: 129px}
+.leftmostcolumntitle {width: 128px; border-left: solid 1px #ccc}
+.tabletitle {font-size:0.85em; font-weight: normal}
+.remove {font-size: 0.8em; padding-left: 10px}
 .first {height: 100px; text-align: center}
-.first h2{ margin: 0}
-#graco, #sames, #iwata, #dopag {width: 570px; border: solid 2px #7e7e7e; padding:0; display:table; background-color: #d2d2d2}
-#graco h2 {margin:0; background-color: #fff; background-image: url(Graco.gif); background-repeat: no-repeat; width: 200px; height: 150px; text-indent:-999em; float:left}
-#graco ul, #sames ul, #iwata ul, #dopag ul {width: 350px; margin: 0; padding: 8px 0; display:table-cell; vertical-align: middle}
-#graco li, #sames li, #iwata li, #dopag li {margin-left: 40px}
-.clear{clear:both;}
-div#fade {background-color: black; position: absolute; top: 0; left: 0; width: 100%; height: 5000px; z-index: 1; opacity: 0.5; filter: alpha(opacity = 50); display: none}
-div#info {background: white; position: absolute; top: 20px;  width: 800px; height: 770px; z-index: 3; display: none;}
-#close {position: absolute; top: 0px; left: 781px}
-div #container {padding: 0px 5px; width: 790px; height: 100%; background-color: white; margin: 0px auto}
-div #outside {background-color: #ff9; margin: 0px; padding: 0px}
-#image {text-align: center; width: 400px; float: left}
-#features {width: 390px; float: left}
+.thumbnaillabel {text-align:center; padding-top: 25px; color:#0A2088}
+.thumbnaildetails {color: #F5000B}
+.lowlightfeature {color: #777}
+.regularfeature {color: #000}
+div#fade {background-color: black; position: absolute; top: 0; left: 0; width: 100%; height: 5000px; z-index: 3; opacity: 0.50; filter: alpha(opacity = 50); display: none;}
+#outsidecontainer {position: absolute; top: 20px; left: 20px; width: 940px; height: 800px; border-top: solid 33px #80C35A; background: white; z-index: 4; display: none}
+div#info {margin-top: -33px; font-size: 0.9em; z-index: 5; padding: 0px 23px 0px 22px}
+div#loading {top: 345px; left: 447px; position: absolute; display: none; z-index: 2; width: 200px; font-size: 2em; background-color: #eee; border: solid black 3px; padding: 20px}
+#loading div {margin-top: -7px}
+.close {position: absolute; top: -22px; right: 13px}
+.poptitle {margin: 8px 15px 25px; font-weight: bold}
+#image {text-align: center; width: 390px; float: left}
+#info h1 {font-size: 1.2em}
+#features {width: 360px; float: left}
 div#textfeatures, #reviews{ clear:both}
 #features ul {list-style-type: none}
-div .showtable{ clear: both; text-align: center}
-div .left{ float: left; text-align: right; margin-top: 5px; margin-bottom: 10px; width: 390px}
-div .right{ float: right; text-align: left; margin-bottom: 10px; width: 390px}
+div .showtable{ float: left; text-align: center; width: 400px}
+div .accesories{ width: 360px; text-align: center; margin: 10px 15px 0px 400px; border: 2px solid black; background-color: #ffff99}
+.accesories img{ border: 1px solid black; margin-left: 2px}
+div .left{ float: left; text-align: right; margin-top: 5px; margin-bottom: 10px; width: 193px}
+div .right{ float: right; text-align: left; margin-bottom: 10px; width: 193px}
 div .spacer {clear: both}
-#full_link{ clear: both}
 .review {font-size: 0.8em}
+#browseother {margin-top: 5px; font-size: 0.85em; text-decoration: underline}
+.cartridgeinfo {margin: 0px 0px 0px 52px}
+#logo {float:left; margin-right: 5px; text-decoration: none}
+#logo span{ position: absolute; top: 5px; left: 120px; color: #693; visibility: hidden; font-family: monaco, arial; font-weight: bold}
+#flags {float: right}
+#header {padding-top: 8px; margin-left: 20px; position: relative; width: 920px; height: 70px}
+#header_buttons {position: absolute; height: 40px; bottom: -8px; right: 0}
+#header_buttons img{ margin-top: 0px; vertical-align: middle}
+#logindisplay {font-size: 0.8em; position: absolute; top: 8px; right: 45px}
+#linkUserLogout {text-decoration: none; color: #2882DF}
+#linkUserLogout:hover {text-decoration: underline}
 html {height:100%; margin: 0; padding: 0}
 body { font-family: arial; padding: 0; margin: 0; height: 100%; position: relative;  }
-h1, h2 {letter-spacing:-0.5px;  }
-h2 {font-size:1.25em; letter-spacing:0px; font-style:italic}
-h2.compact {margin-top:0.05em; margin-bottom:1em}
-h2.tight {margin-bottom:0.5em}
-h2 em {text-decoration:underline}
-ul {margin:0.5em 0px 0px 1.5em; padding:0px}
-ul li {line-height:1.5em}
-p {margin:0.5em 0px 1.25em 0px; padding:0px; line-height:1.5em}
-p.last {margin-bottom:0px}
-p.compact {margin:0px; padding:0px}
-p, ul {font-size:0.9em}
-.small {font-size: 0.8em}
-#logo {float:left; margin-right: 5px; text-decoration: none}
-#logo span{ position: absolute; top: 54px; left: 230px; color: #693; visibility: hidden; font-family: monaco, arial; font-weight: bold}
-p {font-size: 1.1em; font-family: Arial}
-.index {text-align: center; font-size: 1.2em}
-.thin {margin: 0.5em 5em}
-#header {margin-top: 15px; margin-left: 20px; position: relative; width: 920px; height: 82px}
-#header_buttons {position: absolute; height: 30px; bottom: 5px; right: 0}
-#header_buttons img{ margin-top: 0px; vertical-align: middle}
-a.link { line-height: 1.5em}
-div #header_clear, #footer_options {  clear: both; height: 1px; position: relative}
-div #headerbar {position: absolute; left: -3px; top: 92px; height: 5px; width: 953px; z-index: 2;  background:transparent url(../images/divider.gif)}
-div #left {text-align: left; float: left; width: 45%; padding-left: 30px}
-div #right {text-align: left; float: right; width: 45%; padding-left: 30px}
-div.pass img{ border: medium double gray}
-.pass {float: left; margin: 0px 10px 0px 0px}
-#error_space {text-align: left}
-#bottomlinks {text-align: center; font-size: small; margin: 2px 0px}
-#whylaser {margin-left: 20px; text-decoration: none}
-#whylaser span{ position: absolute; top: 54px; left: 610px; color: black; font-size: small; width: 100px; visibility: hidden}
- .category {width: 175px; margin: 5px; float: left; text-align: center}
-.category a{ text-decoration: none}
-h3 {margin: 5px}
-.description {text-align: left; padding: 0; font-size: 0.9em}
- .article {margin: 0px 30px; line-height: 1.5em}
-.article h1 {padding-bottom: 15px !important}
-.article_link {font-size: 1.4em; text-align: center; margin-top: 2em}
-.listing {font-size: 0.8em; padding: 0 !important; line-height: 1}
-  #mycenter {margin-left: auto; margin-right: auto; width: 958px; position: relative}
-.dialog {position:relative; margin:0px auto; width: 958px; min-width:8em; max-width:1460px;   z-index:1; margin-left:18px;   }
-.dialog .content, .dialog .t, .dialog .b, .dialog .b div {background:transparent url(../images/mainbg.png) no-repeat top right; _background-image:url(../images/mainbg.gif)}
-.dialog .content {position:relative; zoom:1;  _overflow-y:hidden; padding:0px 8px 0px 0px}
-.dialog .t { position:absolute; left:0px; top:0px; width:18px;  margin-left:-18px; height:100%; _height:1600px;  background-position:top left}
-.dialog .b { position:relative; background-position:bottom right; width:100%}
-.dialog .b, .dialog .b div {height:20px;  font-size:1px}
-.dialog .b div {position:relative; width:18px;  margin-left:-18px; background-position:bottom left}
-.dialog .hd, .dialog .bd, .dialog .ft {position:relative}
-.dialog .bd {margin-top: 4px}
-.dialog .wrapper { position:static; margin: 0; max-height:1500px; min-height: 776px; overflow:auto;  }
-.dialog h1, .dialog p {margin:0px;  padding:0.5em 0px 0.5em 0px}
-.dialog h1 {padding-bottom:0px}
- .dialog .content, .dialog .t, .dialog .b, .dialog .b div {_background-image:url(../images/mainbg.gif)}
-.dialog .content {_overflow-y:hidden}
-.dialog .t {_height:1600px;  }
+#mycenter {margin-left: auto; margin-right: auto; width: 948px; position: relative}
+ .hd {color: white; margin-top: 2px; margin-bottom: 4px}
+h1 {font-size: 2.1em}
+h2 {margin: 0px 0px 3px; text-align: left; font-size: 1em; border-bottom: 1px solid #ccc}
+#title {position: absolute; left: 291px; top: 22px; display: none}
+#intro {display: none; font-family: 'arial narrow'; font-size: 1.05em; position: absolute; left: 291px; top: 93px; width: 416px}
+.languageoptions {text-align: right; font-size:0.7em}
+a {text-decoration: none}
+a:hover {text-decoration: underline}
+.watermark{ position: absolute; bottom: -18px; right: 0px; font-size: 0.8em}
+.bd {padding-top: 5px; width: 100%; height: 100%; position: relative; min-height: 600px}
+.rounded {-webkit-border-radius: 8px;  -moz-border-radius: 8px;  }
+.rounded_bd {background-color: white;  border: 1px solid #ccc;  }

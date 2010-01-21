@@ -13,13 +13,13 @@ module Constants
   $us = {'price'=>'price', 'pricestr' => 'pricestr', 'bestoffer' => 'bestoffer', 'prefix' => '', 'instock'=> 'instock'}
     
   # The definitive list of brands...
-  $printer_brands = ["3com", "Advantus", "Apple", "ASUS", "Belkin", "Brother", "Buddy", "Canon", \
+  $printer_brands = ["Advantus", "Apple", "ASUS", "Belkin", "Brother", "Buddy", "Canon", \
      "Copystar", "Curtis Manufacturing", "Dell", "Elite", "Epson", "Fargo", "General Ribbon Corporation", \
-    "Genicom", "Global Marketing Partners", "Hewlett-Packard", "HP", "IBM", "Infoprint Solutions",\
-    'Kodak',"Konica-Minolta", "Kyocera", 'Lanier', "Lenovo", "Lexmark", "Media science",\
+    "Genicom", "Global Marketing Partners", "Hewlett-Packard", "HP", "IBM", \
+    'Kodak',"Konica-Minolta", "Kyocera", 'Lanier', "Lenovo", "Lexmark", "Media Science",\
     "Micro Innovations", 'NEC', "Oki Data", "Omni Mount", "Panasonic",\
     "Pitney Bowes", "Promedia", "QMS", "Ricoh", "Samsung", "Sharp", "Sunset", \
-    "Tally", "Teac", "Tektronix", "Thorens", "Toshiba", "Xerox"]
+    "Tally", "Teac", "Thorens", "Toshiba", "Xerox"]
   
   $printer_series = ['imageclass','phaser','laserjet', 'laserwriter', 'oki', 'imagerunner', 'printer', 'printers', 'qms', \
     'estudio', 'optra', 'pro', 'officejet', 'workcentre', 'other', 'okifax', 'lanierfax', 'okipage',\
@@ -31,8 +31,9 @@ module Constants
      ['concord', 'keystone', 'concord keystone'], ['fuji', 'fujifilm'], ['gopro', 'portable usa', 'gopro / portable usa'], \
      ['lg', 'lg electronics'], ['lomo', 'lomographic', 'lomography'], ['sea & sea', 'tabata usa'], \
      ['rollei', 'rolleiflex'], ['svp', 'silicon valley peripherals'], ['bell howell', 'bell + howell', \
-       'bell & howell'], ['norcent', 'xias'], ['general electric', 'ge'], \
-       ['intova', 'international innovations']]
+       'bell & howell'], ['norcent', 'xias'], ['general electric', 'ge'], ['xerox', 'tektronix'], \
+       ['intova', 'international innovations'], ['ibm', 'infoprint', 'infoprint solutions'], ['sealife', 'reef master'],\
+       ['spectra', 'polaroid'], ['dxg', 'dxg usa', 'dxg technologies'], ['spectra', 'polaroid'], ['kodak', 'easyshare']]
 
   $cam_series = {'Agfa' => ['ePhoto'],'Canon' => ['EOS', 'PowerShot','Rebel', 'Power Shot', 'PShot'],'Casio' => ['Exilim','Photax'],
          'GoPro' => ['Digital Hero'], 'Fuji'=> ['Finepix'], 'Lomo' => ['Horizon'], 'Leica' => ['Digilux'],\
@@ -71,7 +72,8 @@ module CameraConstants
   @@scrapedmodel = ScrapedCamera
   @@brands = ["Agfa", "Akai", "Argus", "Bell & Howell", "Benq", "Bushnell", "Canon", "Casio", "Cobra", \
   "Concord Keystone", "Contax", "Digital Concepts", 'Digital Blue', "DXG", "Electrolux", "Elyssa", \
-  "Epson", 'Ezonics', "Fuji", \
+  "Epson", 'Extech', 'Ezonics', 'FLIR', "Fuji", 'Digital Peripheral Solutions', 'Pelco',  \
+  "CP Technologies",  'Lumens', 'Pelco', 'DeerCam', 'Photax', 'Diamond', 'Blue Thunder', 'Creative Labs', \
   "Gateway", "General Electric", "General Imaging", "GFM", "Go Photo", "GoPro / Portable USA", 'Hasbro', \
   "Hewlett Packard", "Insignia", "Intova", "iSonic", "Jazz", "JVC", "JWin", "Kobian ", "Kodak", \
   "Konica-Minolta", "Kyocera", 'Labtec', "Largan", "Leica", "LG Electronics", "Lomographic", "Memorex", \
@@ -80,6 +82,9 @@ module CameraConstants
   "Radioshack", "Ricoh", "Rokinon", "Rollei", 'Sakar', "Samsung", "Sanyo", "Sea & Sea", "SeaLife", "Sharp",\
    "Sigma", "SiPix", "Sony", "Silicon Valley Peripherals", "Toshiba", "VistaQuest", "Vivitar", "VuPoint", \
    'Wildview',"Yashica"]
+   # Lumens
+   #
+
   @@series =  $cam_series.values.flatten
    #'Digital Blue' => ['Snap']
    #'SeaLife' => ['SL'], 
@@ -88,8 +93,7 @@ module CameraConstants
     /LCD(\s|,|$)/i , /Two \(2\)/, /(\s|^)\d*\s?ISO\s?\d*(\s|,|$)/i, /\d(\s|-)in(\s|-)1/ , /(\s|^)kit(,|\s|$)/i,\
     /waterproof/i, /(\s|^)light(\s|,|$)/i, /(\s|^)SLR(\s|,|$)/, /\d*\.?\d+\s?x(\soptical|\sdigital)?(\szoom)?/i,\
     /(optical|digital)/i, /zoom/i, /(\s|^)digi?(\s|,|$)/i, /(\d\s?-?\s?)(month|day|year)(\swarranty)?/i,\
-    /(\s|^)dark(\s|$)/i, /\d+(mm)?\s?-?\s?\d+(mm)/, /wide(\sangle)/i, /tele/i, /dual/i , /(\s|^)image(\s|,|$)/i] \
-    + $colors.collect{|x| /#{x}/i} #, 
+    /(\s|^)dark(\s|$)/i, /\d+(mm)?\s?-?\s?\d+(mm)/, /(-|^|\s)inch(\s|$|,)/, /wide(\sangle)/i, /tele/i, /dual/i , /(\s|^)image(\s|,|$)/i]
 end
 
 module PrinterConstants
@@ -101,6 +105,11 @@ module PrinterConstants
     /\sworkcent(re|er)\s/i, /\smono\s/i, /\slaser\s/i, /\sdig(ital)?\s/i, /\scolou?r\s/i,\
     /\sb(lack\sand\s)?w(hite)?/i, /\snetwork\s/i, /\sall\s?-?\s?in\s?-?\s?one\s/i, /\sink\s/i,\
     /\schrome\s/i, /\stabloid\s/i, /\saio\sint\s/i, /(\s|^)\d*\s?x?\s?\d+\s?dpi(\s|,|$)/i,\
-    /(\s|^)\d+\s?x\s?\d+\s?(dpi)?(\s|,|$)/i, /\d*,?\d+\spages/i, \
-    /\sfast\s/i, /\sethernet\s/i, /\sled\s/i, /\sRS232\s/, /\d\dppm(\s|,|$)/i]
+    /(\s|^)\d+\s?x\s?\d+\s?(dpi)?(\s|,|$)/i, /\d*,?\d+(\s|-)?(page|sheet)s?/i, /\d(\s|-)in(\s|-)\d/,\
+    /\sfast\s/i, /\sethernet\s/i, /\sled\s/i, /\sRS232\s/, /\d\d\s?ppm(\s|,|$)/i, /legal/i, \
+    /10\/100(Base-TX)?/i, /monochrome/i, /\d(\s|-)in(\s|-)1/i, /(\s|^)A4(\s|,|$)/, /(\s|^)(110|220)V(\s|-|,|$)/,
+    /\d+ image quality/i]
+    # 10/100
+    # 10/100Base-TX
+    
 end

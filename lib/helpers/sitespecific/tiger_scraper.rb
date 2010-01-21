@@ -29,7 +29,7 @@ module TigerScraper
     links = []
     link_lists.each do |ll_url|
       page = Nokogiri::HTML(open(ll_url))
-      snore(30)
+      log_snore(30)
       links = (scrape_links page) | links
     end
     return links
@@ -77,7 +77,7 @@ module TigerScraper
     props = {}
     begin
       info_page = Nokogiri::HTML(open(url))
-      snore(20)
+      log_snore(20)
       log "Re-scraping RetailerOffering # #{local_id}"
     rescue Exception => e
       report_error "Couldn't open page: #{url}. Rescraping price failed."
@@ -95,7 +95,7 @@ module TigerScraper
     props = {}
     begin
       info_page = Nokogiri::HTML(open(url))
-      snore(20)
+      log_snore(20)
       announce "Scraping #{url}"
     rescue Exception => e
       report_error "Problem scraping page: #{url}."
@@ -143,7 +143,7 @@ module TigerScraper
   
   def scrape_last_page url
     info_page = Nokogiri::HTML(open(url))
-    snore(20)
+    log_snore(20)
     pg_numbers = info_page.css()
     return lastpg
   end
@@ -220,10 +220,9 @@ module TigerScraper
   end
   
   def scrape_data info_page
-      puts "#{info_page.css('table.viss').length} tables found "
-      spec_table = info_page.css('table.viss tr')
-      specs = scrape_table spec_table, 'td.techspec', 'td.techvalue'
-      return specs
+    spec_table = info_page.css('table.viss tr')
+    specs = scrape_table spec_table, 'td.techspec', 'td.techvalue'
+    return specs
   end
 
   def scrape_links doc

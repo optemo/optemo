@@ -24,7 +24,7 @@
 		<a href="<%= url_for '/' %>" id ="logo" title="<%= $model.name == "Camera" ? 'Cameras.BrowseThenBuy.com' : 'LaserPrinterHub.com' %>"><%= $region == "us" ? image_tag('logo'+($model.name == 'Camera' ? '_cameras' : '')+'.jpg') : image_tag('logo'+($model.name == "Camera" ? '_cameras' : '_ca')+'.jpg')%><span>Home</span></a>
 	  </div>
 		<% if $model.name == "Printer" %><a href="<%= url_for '/laserprinters' %>" title="Why buy a laser printer?" id='whylaser'></a><% end %>
-	 <div>
+	 <div id="tagline">
 		Find, compare, and buy the right <%= $model.name.downcase %> for you! We have found the best deals from various online retailers for you. <!--Explore groups of similar products by clicking on the links in the boxes or narrow your search by using the filters on your left. Can't decide? Save a few printers and compare!-->
 	</div>
      <div id="logindisplay">                                                                                               

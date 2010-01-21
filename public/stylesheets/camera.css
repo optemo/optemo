@@ -107,12 +107,14 @@ div.navigator_box {
 img.productimg {
 	cursor: move;
 }
+.productinfocont {
+	width: 224px;
+	position: absolute;
+	top: 142px;
+	left: 0px;
+}
 .productinfo {
-/*	position: absolute;
-	bottom: 7px;
-	left: 0;
-	width: 160px; */
-	margin:2px auto 0 auto;
+	margin:0 auto;
 }
 .price {
 	color: #F5000B;
@@ -126,8 +128,6 @@ img.productimg {
 	text-align: left;
 	margin-left:10px;
 	margin: 6px 3px;
-	width:170px;
-/*	background: #73d645; */
 }
 .sim a {
 	font-size: 1.1em;

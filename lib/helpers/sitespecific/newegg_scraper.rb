@@ -73,7 +73,7 @@ module NeweggScraper
     cleanatts['stock'] = true unless cleanatts['priceint'].nil? or cleanatts['stock'] == false
     cleanatts['stock'] = false unless cleanatts['stock'] == true
     
-    cleanatts['condition'] = 'New' if cleanatts['condition'].nil?
+    cleanatts['condition'] = 'New'# if cleanatts['condition'].nil?
     if cleanatts['condition'] == 'New' and cleanatts['local_id'].match(/R$/)
       cleanatts['condition'] = 'Refurbished' 
     end
@@ -83,19 +83,20 @@ module NeweggScraper
   
   def rescrape_prices local_id, region
     infopage = Nokogiri::HTML(open(id_to_details_url(local_id, region)))
-    snore(15)
+    log_snore(15)
     atts = scrape_prices infopage, local_id, region
     atts['local_id'] = local_id
     atts['region'] = region
-    atts = clean_property_names(atts)
+    
     clean_atts = (clean(atts)).reject{|x,y| y.nil? || !RetailerOffering.column_names.include?(x)}
+    
     return clean_atts
   end
   
   def scrape local_id, region
       return nil if local_id.nil? or region.nil?
       infopage = Nokogiri::HTML(open(id_to_details_url(local_id, region)))
-      snore(15)
+      log_snore(15)
       atts = scrape_prices infopage, local_id, region
       atts.merge!(scrape_title infopage)
       atts.merge!(scrape_urls infopage)
@@ -128,7 +129,7 @@ module NeweggScraper
   def get_links_page region, pagenum
     url = "#{get_base_url(region)}/Product/ProductList.aspx?Submit=ENE&N=2010330630&page=#{pagenum}&bop=And&ActiveSearchResult=True&Pagesize=100"
     page = Nokogiri::HTML(open(url))
-    snore(30)
+    log_snore(30)
     return page
   end
     
@@ -160,7 +161,7 @@ module NeweggScraper
       retme['saleprice'] = sale_price_el.text if sale_price_el
       orig_price_el = get_el price_el.css(".original")
       retme['listprice'] = orig_price_el.text if orig_price_el
-  
+      
       # -- Shipping --- #
       shipping_el = get_el price_el.css('.shipping')
       retme['shipping']  = shipping_el.text if shipping_el
@@ -170,7 +171,7 @@ module NeweggScraper
       
       if(low_price_el)
         lowpricepage = Nokogiri::HTML(open("#{get_base_url(region)}/Product/MappingPrice.aspx?Item=#{item_number}"))
-        snore(15)
+        log_snore(15)
         lowpage_lowprice_el = get_el lowpricepage.css('.final')
         retme['saleprice'] = lowpage_lowprice_el.text if lowpage_lowprice_el
         retme['toolow'] = true
@@ -191,7 +192,6 @@ module NeweggScraper
   def scrape_specs infopage
     tablehtml = infopage.xpath("//table[@class='specification']/tr")
     spec_table = scrape_table(tablehtml, 'td.name', 'td.desc')
-    #debugger if spec_table['printspeed'].nil? and spec_table['colorprintspeed'].nil? and spec_table['blackprintspeed'].nil?
     return spec_table
   end
   
