@@ -39,15 +39,24 @@ module GenericScraper
     #atts = [ 'itemweight',  'ppm', 'ttp', 'paperinput', 'resolutionmax','scanner', 'printserver']
     
     all_atts = {}
-    atts.each{|x| all_atts[x] = [product.[](x)]} # Current value counts for something too?
+    atts.each{|x| all_atts[x] = [product.[](x)]} # Current value counts for something too...
+    
+    #... if valid! TODO: this should not, in theory, be necessary
+    atts.each do |k|
+      unless in_range?( k,all_atts[k][0],$model)
+        puts "WARNING #{k}=#{all_atts[k][0]} not in range for #{$model.name}"
+        all_atts[k] = []
+      end
+    end
     
     #TODO This should be somewhere else:
     if !all_atts['resolution'].nil? and all_atts['resolutionmax'].nil?
       all_atts['resolutionmax'] = get_max_f(all_atts['resolution']).to_s
     end
+    
     atts.each do |att|
       sps.each do |sp|
-        all_atts[att] << sp.[](att) if sp.[](att)
+        all_atts[att] << sp[att] if( sp[att] and in_range?(att,sp[att],$model) ) # and valid 
       end
     end
     
@@ -92,115 +101,17 @@ module GenericScraper
       end
     else
       # If there was an error while scraping: sleep 20 min
-      snore(20*60)
+      log_snore(20*60)
     end
   end  
 end
 
 namespace :data do
   
-  task :temp => [:cam_init, :match_to_products]
-  
-  task :cam_rescrape  => [:cam_init, :amazon_init, :rescrape_selected_2]
-  
-  task :cam_rescrape_mkt  => [:cam_init, :amazon_mkt_init, :rescrape_selected_2]
-  
-  task :rescrape_selected_2 do 
-    which_fields = ['itemlength', 'itemwidth', 'itemheight']
-    which_sp_ids = [3590, 3904, 3948, 4200, 4448, 4522, 4672, 4712, 4774, 5188, 5244, 5302, 5400, 5484, 5486, 5506, 5534, 5540, 5754, 5788, 5950, 6112, 6182, 6262, 6308, 6422, 6494, 7224, 7292, 7430, 7556, 7574, 7594, 7812, 7852, 8012, 8094, 8112, 8214, 8492, 8820, 8922, 9150, 9290, 9628, 9822, 9950, 10048, 10148, 10184, 10458, 10702, 10704, 10706, 10760, 10874, 10876, 10970, 11000, 11006, 11126, 11188, 11302, 11546, 11558, 11634, 11660, 11786, 11830, 12600, 12626, 12790, 13062, 13202, 13254, 13356, 13364, 13378, 13406, 13456, 13560, 13800, 13834, 13908, 13918, 13946, 13948, 14084, 14136, 14144, 14222, 14316, 14362, 14390, 14616, 14700, 14744, 14772, 14776, 14874, 14928, 14952, 15096, 15106, 15210, 15268, 15318, 15382, 15432, 15462, 15570, 15628, 15656, 15660, 15690, 15722, 15738, 15752, 15754, 15776, 15820, 15870, 15976, 16044, 16058, 16272, 16316, 16362, 16376, 16450, 16522, 16524, 16542, 16560, 16566, 16770, 16786, 16830, 16900, 17020, 17132, 17150, 17222, 17264, 17370, 17444, 17846, 18150, 18194, 18220, 18284, 18476, 18576, 18646, 18736, 18954, 18988, 19064, 19068, 19078, 19112, 19140, 19188, 19242, 19552, 19588, 19648, 19652, 19662, 19690, 19696, 19854, 19868, 19904, 20008, 20028, 20062, 20296, 20340, 20382, 20400, 20526, 20534, 20602, 20642, 20724, 20836, 20874, 20954, 20962, 21256, 21280, 21322, 21332, 21362, 21386, 21400, 21424, 21500, 21560, 21572, 21578, 21804, 21806, 21814, 21892, 21900, 21916, 21936, 22142, 22210, 22268, 22296, 22348, 22376, 22492, 22800, 22980, 23192, 23194, 23242, 23400, 23420, 23480, 23608, 23656, 23740, 23798, 23866, 23898, 23934, 23938, 23964, 24094, 24258, 24324, 24334, 24354, 24356, 24492, 24544, 24556, 24596, 24640, 25172, 25194, 25312, 25318, 25472, 25602, 25642, 25676, 25690, 25700, 25740, 25800, 25808]
-    
-    # PROBLEM: 3278
-      #, 3294, 
-    #[2232, 2326, 2440, 2464, 2834, 2928, 3042, 3066, 3278, 3424, 3646, 3830, 4052, 4116, 4158, 4260, 4580, 4692, 4698, 4934, 5314, 5762, 5772, 5906, 6034, 6556, 7420, 7650, 7882, 8032, 8224, 8388, 8592, 8600, 8784, 9152, 9402, 9466, 9510, 9616, 9986, 10018, 10064, 10312, 10720, 11146, 11156, 11278, 11430, 11916, 12762, 12976, 12994, 13056, 13434, 13946, 14084, 14136, 14144, 14222, 14316, 14362, 14616, 14700, 14744, 14776, 14874, 14952, 15096, 15106, 15268, 15382, 15432, 15462, 15628, 15660, 15690, 15738, 15752, 15776, 15870, 15976, 16044, 16376, 16450, 16786, 16830, 17020, 17846, 18576, 18988, 19112, 19140, 19188, 19652, 19696, 19854, 19868, 19904, 20008, 20028, 20296, 20340, 20382, 20526, 20534, 20602, 20642, 20724, 20874, 21256, 21280, 21322, 21362, 21400, 21424, 21572, 21804, 21806, 22210, 22980, 23608, 23740, 23798, 23938, 24022, 24148, 24258, 24324, 24334, 24354, 24492, 24640, 25172, 25194, 25676, 25740, 25800]
-    
-    retailerids = $retailers.collect{|x| x.id} 
-    sps = which_sp_ids.collect{|x| $scrapedmodel.find(x)}
-    retailer_ok_sps = sps.reject{|x| !retailerids.include?(x.retailer_id)}
-    
-    retailer_ok_sps.each do |retailer_ok_sp|
-          local_id = retailer_ok_sp.local_id
-          retailer = Retailer.find(retailer_ok_sp.retailer_id)
-          spid = retailer_ok_sp.id
-          
-          debug = $scrapedmodel.find(spid)
-          puts "#{local_id} had #{which_fields[0]} #{debug[which_fields[0]] || 'nil'}"
-          which_fields.each do |fld|
-            debug.update_attribute(fld, nil)
-          end
-          
-          generic_scrape(local_id, retailer)
-          
-          debug = $scrapedmodel.find(spid) 
-          puts "#{local_id} has #{which_fields[0]} #{debug[which_fields[0]] || 'nil'}"    
-
-    end
-    puts "Done"
-  end
-  
-  task :rescrape_selected do 
-    which_fields = ['itemlength', 'itemwidth', 'itemheight']
-    #['displaysize']
-    #['itemlength', 'itemwidth', 'itemheight']
-    which_product_ids = [320, 338, 442, 478, 570, 620, 752, 1006, 1312, 1440, 1456, 1542, 1604, 1828, 1914, 1938, 2086, 2140, 2234, 2244, 2248, 2280, 2346, 2434, 2448, 2484, 2490, 2556, 2736, 2742, 2812, 2860, 2958, 3222, 3306, 3342, 3512, 3860, 4004, 4122, 4342, 4650, 4680, 4784, 4820, 4860, 5060, 5080, 5446, 5538, 5594, 5622, 5710, 5792, 5840, 5974, 5980, 6146, 6154, 6174, 6190, 6192, 6220]
-    
-    retailerids = $retailers.collect{|x| x.id} 
-    
-    which_product_ids.each do |pid| 
-    #puts "Camera #{pid}: #{$model.find(pid).title}"
-    #puts "Current resolution #{$model.find(pid).maximumresolution}"
-    
-      sps = $scrapedmodel.find_all_by_product_id(pid)
-      if sps.length != 0
-        retailer_ok_sps = sps.reject{|x| !retailerids.include?(x.retailer_id)}
-        if retailer_ok_sps.length == 0
-          puts "Oops -- no scraped #{$model.name} from #{$retailers.first.name} for #{pid}"
-        end
-        
-        retailer_ok_sps.each do |retailer_ok_sp|
-          local_id = retailer_ok_sp.local_id
-          retailer = Retailer.find(retailer_ok_sp.retailer_id)
-          spid = retailer_ok_sp.id
-          
-          debug = $scrapedmodel.find(spid)
-          puts "#{local_id} had #{which_fields[0]} #{debug[which_fields[0]] || 'nil'}"
-          which_fields.each do |fld|
-            debug.update_attribute(fld, nil)
-          end
-          
-          generic_scrape(local_id, retailer)
-          
-          debug = $scrapedmodel.find(spid) 
-          puts "#{local_id} has #{which_fields[0]} #{debug[which_fields[0]] || 'nil'}"    
-        end
-      end
-      p = $model.find(pid)
-      which_fields.each do |fld|
-        p.update_attribute(fld, nil)
-      end
-      avgs = vote_on_values(p)
-      fill_in_all avgs, p
-      puts "Done #{pid}. New #{which_fields[0]} #{$model.find(pid)[which_fields[0]]}"
-    end
-    puts "Done"
-  end
-  
-  task :cam_rematch => [:cam_init, :match_to_products]
-  
-  task :sandbox do 
-    fixme = ScrapedCamera.all.collect{|x| x.id}
-    puts "#{fixme.count} to fix"
-    fixme[0..2000].each do |scid|
-      sc = ScrapedCamera.find(scid)
-      sc.update_attribute( 'product_id', nil)
-    end
-    puts "Done!"
-  end
-
   task :amazon_reviews => [:cam_init, :amazon_init, :reviews]
   
   task :match_reviews do    
     allrevus = Review.find_all_by_product_id_and_product_type(nil, $model.name)
-    
     allrevus.each do |revu|    
       lid =  revu['local_id']
       sms = $scrapedmodel.find_all_by_local_id(lid)
@@ -214,9 +125,7 @@ namespace :data do
       else
         fill_in 'product_id', sms_pids.first, revu
       end
-      
     end
-    
   end
     
   task :reviews do    
@@ -253,7 +162,7 @@ namespace :data do
       end
     end  
     announce "#{Review.count - total_before_script} reviews added."
-    announce "Done!"
+    timed_announce "Done!"
     @logfile.close
   end
   
@@ -313,15 +222,16 @@ namespace :data do
     puts "There were #{no_stats.count} printers w/o stats of which #{no_stats_fixed.count} were fixed"
   end
   
-  
   desc 'Get new prices and products from Amazon cameras'
   task :scrape_amazon_cams => [:cam_init, :amazon_init, :scrape_new, :update_prices]
     
   task :validate_amazon => [:printer_init,:amazon_init, :validate_printers]
   
   # The 2 things you can do, in terms of subtasks: scrape and update
-  task :scrape => [:scrape_new, :match_to_products, :update_bestoffers, :validate_printers]
-  task :update => [:update_prices, :scrape_new, :match_to_products, :update_bestoffers, :validate_printers]
+  task :scrape => [:scrape_new, :match_to_products, :update_bestoffers]
+  task :update => [:update_prices, :scrape_new, :match_to_products, :update_bestoffers]
+  
+  task :endstuff => [:match_to_products, :vote, :update_bestoffers]
   
   # Useful combinations of the above
   desc 'Get new prices and products from Newegg printers'
@@ -348,15 +258,25 @@ namespace :data do
   desc 'Get new products from Amazon Marketplace (warning: extra long!)'
   task :scrape_amazon_mkt_printers => [:printer_init, :amazon_mkt_init, :scrape]
   
+  # ... for cams
+  
+  
+  desc 'Get new prices and products from Amazon (printers)'
+  task :update_amazon_cameras => [:cam_init, :amazon_init, :update]
+  
+  desc 'Get new prices and products from Amazon Marketplace (printers)'
+  task :update_amazon_mkt_cameras => [:cam_init, :amazon_mkt_init, :update]
+  
+  
    # The subtasks...
   task :vote do 
     products = $model.all
     products.each do |p|
       avgs = vote_on_values p
       $bools_assume_no.each{|x| avgs[x] = false if avgs[x].nil?}
-      avgs.each do |k,v|
-        puts "#{k} -- #{v} (now #{p.[](k)}) for #{p.id}" #if [v, p.[](k)].uniq.reject{|x| x.nil?}.length > 1
-      end
+      #avgs.each do |k,v|
+      #  puts "#{k} -- #{v} (now #{p.[](k)}) for #{p.id}" #if [v, p.[](k)].uniq.reject{|x| x.nil?}.length > 1
+      #end
       fill_in_all avgs, p
     end
   end
@@ -383,7 +303,7 @@ namespace :data do
     puts "There are #{match_me.count} #{$scrapedmodel.name}s in total."
     
     match_me.delete_if{|x| (x.model.nil? and x.mpn.nil?) or x.brand.nil?}
-    puts "#{match_me.count} #{$scrapedmodel.name}s are identifiable -- will match these."
+    announce "#{match_me.count} #{$scrapedmodel.name}s are identifiable -- will match these."
     match_me.each_with_index do |scraped, i|
       matches = match_product_to_product scraped, $model, $series
       
@@ -399,12 +319,12 @@ namespace :data do
       revues.each{|revu| fill_in 'product_id', real.id, revu }
       #puts "[#{Time.now}] Done matching #{i+1}th scraped product." 
     end
-    puts "[#{Time.now}] Done matching products"
+    timed_announce "[#{Time.now}] Done matching products"
   end
   
   # Update prices
   task :update_prices do
-    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_scraper.log", 'w+')
+    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{$model.name}_scraper.log", 'w+')
     my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id_and_product_type(x.id, $model.name)}
     my_offerings.each_with_index do |offering, i|
       begin
@@ -418,17 +338,18 @@ namespace :data do
         end  
       rescue Exception => e
         report_error "with RetailerOffering #{offering.id}: #{e.class.name} #{e.message}"
-        snore(20*60) # sleep for 20 min 
+        log_snore(20*60) # sleep for 20 min 
       end
       log "[#{Time.now}] Done updating #{i+1} of #{my_offerings.count} offerings"
     end
     
+    timed_announce "Done updating prices"
     @logfile.close
   end
 
   # Scrape all data for all current products
   task :scrape_all do
-    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_scraper.log", 'w+')
+    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{$model.name}_scraper.log", 'w+')
     $retailers.each do |retailer|
       
       ids = scrape_all_local_ids retailer.region
@@ -442,13 +363,13 @@ namespace :data do
         log "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
       end
     end
+    timed_announce "Done scraping"
     @logfile.close
   end
   
   # Scrape all data for new products only
   task :scrape_new do
-    
-    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_scraper.log", 'w+')
+    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{$model.name}_scraper.log", 'w+')
     $retailers.each do |retailer|
       ids = scrape_all_local_ids retailer.region
       scraped_ids = ($scrapedmodel.find_all_by_retailer_id(retailer.id)).collect{|x| x.local_id}.uniq
@@ -460,6 +381,7 @@ namespace :data do
         log "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
       end
     end
+    timed_announce "Done scraping"
     @logfile.close
   end
   
@@ -468,7 +390,7 @@ namespace :data do
     require 'helpers/validation/data_validator'
     include DataValidator
     
-    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_validation.log", 'w+')
+    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{$model.name}_validation.log", 'w+')
     
     my_products = scraped_by_retailers($retailers, $scrapedmodel,false)
     
@@ -498,7 +420,7 @@ namespace :data do
     
     assert_no_repeats my_offerings, 'local_id'
     assert_within_range my_offerings, 'priceint', 100, 10_000_00  
-    
+    timed_announce "Done with validation"
     @logfile.close
   end
   
@@ -506,6 +428,7 @@ namespace :data do
     $model.all.each do |p|
       update_bestoffer p
     end
+    timed_announce "Done updating bestoffers"
   end
 
   task :cam_init => :init do
@@ -517,7 +440,7 @@ namespace :data do
       $scrapedmodel = @@scrapedmodel
       $brands= @@brands
       $series = @@series
-      $descriptors = @@descriptors
+      $descriptors = @@descriptors | $colors.collect{|x| /(-|\s)?#{x}/i} 
       
       $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'opticalzoom', 'maximumresolution', \
         'displaysize', 'slr', 'waterproof', 'brand', 'model', 'itemweight']
@@ -527,7 +450,6 @@ namespace :data do
   end
 
   task :printer_init => :init do
-      
       include PrinterHelper
       include PrinterConstants
       
@@ -536,7 +458,8 @@ namespace :data do
       $scrapedmodel = @@scrapedmodel
       $brands= @@brands
       $series = @@series
-      $descriptors = @@descriptors
+      $descriptors = @@descriptors + $conditions.collect{|cond| /(\s|^|;|,)#{cond}(\s|,|$)/i} \
+        + $units.reject{|x| x=='in'}.collect{|y| /#{Regexp.escape(y)}/i}
       
       $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'ppm', 'resolutionmax',\
          'paperinput','scanner', 'printserver', 'brand', 'model']
@@ -610,5 +533,6 @@ namespace :data do
     include LoggingLib
     include DatabaseLib
     include ScrapingLib
+    
   end
 end

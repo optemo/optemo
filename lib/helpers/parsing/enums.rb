@@ -3,8 +3,8 @@ module EnumParser
     return nil unless dirtyenum
     temp = dirtyenum.downcase.gsub(/\s/,'')
     enumlist.each do |e|
-      return e if temp.match(/#{e}/ix)
-      return e if e.match(/#{temp}/ix)
+      return e if temp.match(/#{Regexp.escape(e)}/ix)
+      return e if e.match(/#{Regexp.escape(temp)}/ix)
     end
     return nil
   end

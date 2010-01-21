@@ -1,20 +1,14 @@
 class JavaTestSession < Webrat::SeleniumSession
   
   include NavigationHelpers
-     
+  
   def initialize (log)
      super
      @logfile = log
      get_homepage
-    # pick_printer_use
      get_init_values
-     NavigationHelpers.uses.keys.each do |u|
-        get_homepage
-        #pick_printer_use u
-        set_total_products u, (self.num_products) 
-     end
+     set_total_products(0,self.num_products) 
      get_homepage
-    # pick_printer_use
   end
      
   def get_detail_page box
@@ -70,18 +64,13 @@ class JavaTestSession < Webrat::SeleniumSession
   end 
   
    # Gets the homepage and makes sure nothing crashed.
-   def get_homepage
-      visit "http://localhost:3000/"
+   def get_homepage product_type='printer'
+      visit "http://#{product_type.downcase}s.localhost:3000/"
       wait_for_load
       if error_page?
         report_error "Error loading homepage" 
         raise "Error loading homepage" 
       end
-   end
-   
-   def pick_printer_use which_use=0
-     browser.click "link=#{@@uses[which_use] || which_use}" 
-     wait_for_load
    end
    
    def click_browse_similar which_link
@@ -94,12 +83,14 @@ class JavaTestSession < Webrat::SeleniumSession
      end
    end
       
-   def click_back_button
-      selenium.click 'link=Go back to previous Printers'
+   def click_back_button product_type='Printer'
+     # TODO what about cameras...
+      selenium.click "link=Go back to previous #{product_type}s"
       wait_for_load
    end
    
    def click_home_logo 
+     # TODO what bout cameras
      self.selenium.click 'css=a[title="LaserPrinterHub.com"]'
      self.wait_for_load
    end
