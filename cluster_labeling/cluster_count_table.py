@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import sqlite3
+
 class ClusterCountTable():
     common_table_cols = \
     {
