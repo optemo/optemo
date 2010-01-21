@@ -108,16 +108,7 @@ int main (int argc, const char *argv[])
 				
 			formulate(stmt2, resPref, resFactor, productName,conFeatureNames, conFeatureN, solutions);	
 		
-		    //Solve:
-
-			    cout<<"Solutions: "<<solutions[0]<<"\0";	
-				for (int f=1; f<conFeatureN; f++){
-					cout<<", "<<solutions[f]<<"\0";	
-				}
-				cout<<endl;
-		    
-		
-		
+		  
 delete stmt;
 delete con;
 

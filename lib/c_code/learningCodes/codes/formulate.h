@@ -110,7 +110,15 @@ void formulate(sql::Statement *stmt, sql::ResultSet *resPref, sql::ResultSet *re
 		
 		   ClpSimplex model;
 		   model.loadProblem(*matrix, col_lb, col_ub, objective, row_lb, row_ub);
-			
+		
+		   //Solve:
+		 	
 		   model.dual();
 		   solutions = model.dualColumnSolution();
+		 
+		  cout<<"Solutions: "<<solutions[0]<<"\0";	
+		  for (int f=1; f<conFeatureN; f++){
+		  	cout<<", "<<solutions[f]<<"\0";	
+		  }
+		  cout<<endl;
 	}      
