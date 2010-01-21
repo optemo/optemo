@@ -1,6 +1,5 @@
-# Rake tasks to test the Laserprinter website
-namespace :printer_test do   
-
+# Rake tasks to test the web app
+namespace :test_site do   
 
    desc 'Quick test'
    task :quick => [:hurryinit, :sliders, :search, :brand_selector, :homepage, :random_nojava]
@@ -350,8 +349,8 @@ end
       #raise  "Forgery protection turned on in test environment."  if (ActionController::Base.allow_forgery_protection) 
 
         require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
-        #require 'testing_lib'
-        #include JavaTestLib
+        require 'testing_lib'
+        include JavaTestLib
         
         Webrat.configure do |config|
           config.mode = :selenium

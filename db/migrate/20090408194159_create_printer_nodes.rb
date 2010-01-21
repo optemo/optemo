@@ -6,7 +6,7 @@ class CreatePrinterNodes < ActiveRecord::Migration
       Printer::ContiuousFeaturesF.each do |name|
         t.float f.name.intern
       end
-      Printer::CategoricalFeatures.each do |name|
+      Printer::CategoricalFeaturesF.each do |name|
         t.string name.intern
       end
       Printer::BinaryFeaturesF.each do |name|

@@ -1,18 +1,6 @@
 module NavigationHelpers
-  
-  @@uses = {0 => "All-Purpose", 1 =>"Home Office", \
-    2 => "Small Office", 3 => "Corporate Use", 4 => "Photography"}
-  
-  def self.uses
-    return @@uses
-  end
-  
-  def num_uses
-    return @@uses.length
-  end
-    
+      
   def get_init_values
-     
      @slider_min_names= []
      doc.css(".feature input.min").each do |x|
        @slider_min_names << x.attribute("name").to_s 
@@ -39,7 +27,6 @@ module NavigationHelpers
      end
      
      @total_products = [nil,nil,nil,nil,nil]
-     
   end
   
    def set_total_products index, value
@@ -152,8 +139,8 @@ module NavigationHelpers
       leftbar_el = get_el(doc.css("#leftbar"))
       return 0 if leftbar_el.nil?
       leftbar = leftbar_el.content.to_s
-      printer_phrase = leftbar.match('Browsing \d+ ').to_s
-      num_products = printer_phrase.match('\d+').to_s
+      product_phrase = leftbar.match('Browsing \d+ ').to_s
+      num_products = product_phrase.match('\d+').to_s
       return num_products.to_i
    end
    
@@ -196,8 +183,8 @@ module NavigationHelpers
      msg_span = msg_span_el.content.to_s
      
      # TODO we should give this span tag an id! 
-     printer_phrase = msg_span.match('No products').to_s
-     return (printer_phrase.length > 0)
+     product_phrase = msg_span.match('No products').to_s
+     return (product_phrase.length > 0)
    end
    
    def total_products
@@ -205,11 +192,8 @@ module NavigationHelpers
    end
 
    def home_page?
-     return true if self.current_url == 'http://localhost:3000/'
-     return true if self.current_url == 'http://localhost:3000/compare/'
-     bd_div_content = get_bd_div_text
-     welcome_msg = bd_div_content.match("All Purpose Printers")
-     return !welcome_msg.nil? 
+     return true if (self.current_url||'').match(/^http:\/\/((cameras|printers)\.)?localhost:\d+\/?(compare)?$/)
+     return false 
    end
    
    def get_bd_div_text
@@ -225,17 +209,10 @@ module NavigationHelpers
    
    # Returns true if the page's response is the error page.
    def error_page?
-      return true if self.current_url == "http://localhost:3000/error"
-      return true if "http://localhost:3000/error".eql?(self.current_url) 
+      return true if self.current_url.match(/localhost:3000\/error$/)
       bd_div_content = get_bd_div_text
       err_msg = bd_div_content.match("error")
       return !err_msg.nil?
-   end
-
-   # Writes the error both in the logfile and the console.
-   def report_error msg
-     @logfile.puts "ERROR  " + msg
-     puts "ERROR " + msg
    end
    
    def already_saved_msg?

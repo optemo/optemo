@@ -1,6 +1,8 @@
 module Check
   
   def chek_linkage check_me
+    announce "Checking offering-#{$model.name.downcase} links"
+    
     unlinked = []
     bad_linked = []
     
@@ -31,25 +33,36 @@ module Check
       log_v "#{bad_linked.count} #{$model.name}s are linked incorrectly."
       announce "First few: #{bad_linked[0..5] * ', '} \n --- "
     end
+    
+    announce "Done checking links"
   end
   
   def chek_products my_products
-    announce "Testing #{my_products.count} #{$model.name} for validity..."
+    announce "Testing #{my_products.count} #{$model.name}s for validity..."
     
     ($reqd_fields || []).each do |rf|
       assert_no_nils my_products, rf
     end
     
-    assert_no_repeats my_products, $id_field
+    assert_no_repeats(my_products, $id_field)
+    assert_in_set(my_products, 'brand', $brands)
+    assert_no_nils(my_products, 'brand')
+    assert_no_nils(my_products, 'model')
     
     announce "Out of #{$model.count} #{$model.name}s... "
     announce " ... #{$model.valid.count} are valid"
     announce " ... #{($model.instock | $model.instock_ca).count} are in stock (in CA or US)"
     announce " ... #{($model.valid.instock | $model.valid.instock_ca).count} are valid and in stock"
-    timed_log 'Done general product validation'
+    announce "Testing #{my_products.count} #{$model.name}s for wonky data..."
+    
+    $model::ValidRanges.each do |k,v|
+      assert_within_range( my_products, k, v[0], v[1])
+    end
+    announce "Done checking #{$model.name}s "
   end
   
   def chek_pictures checkme
+    announce "Checking pictures for #{$model.name}s"
     nopix = 0
     noresized = 0
     brokenurls = 0
@@ -68,10 +81,11 @@ module Check
         brokenurls += 1
       end
     end
-    puts "#{nopix} of #{checkme.count} #{$model.name}s do not have a picture"
-    puts "#{noresized} of #{checkme.count} #{$model.name}s do not have resized pix"
-    puts "#{nodims} of #{checkme.count} #{$model.name}s do not have picture dimensions"
-    puts "#{brokenurls} of #{checkme.count} #{$model.name}s have broken urls"
+    announce "#{nopix} of #{checkme.count} #{$model.name}s do not have a picture"
+    announce "#{noresized} of #{checkme.count} #{$model.name}s do not have resized pix"
+    announce "#{nodims} of #{checkme.count} #{$model.name}s do not have picture dimensions"
+    announce "#{brokenurls} of #{checkme.count} #{$model.name}s have broken urls"
+    announce "Done checking pictures"
   end
   
   def chek_offerings my_offerings
@@ -87,11 +101,16 @@ module Check
       assert_no_repeats these_offerings, 'local_id'
     end
    
-    assert_within_range my_offerings, 'priceint', $min_price, $max_price
+    assert_within_range my_offerings, 'priceint', $model::MinPrice, $model::MaxPrice
+    
+    announce "Done checking offerings"
   end
 end
 
 namespace :check do
+  
+  task :cameras => [:cam_init, :products]
+  task :printers => [:printer_init, :products]
   
   task :ro_and_r_links => :cam_init do 
     require 'helper_libs'
@@ -184,7 +203,7 @@ namespace :check do
         ok = false
         mm_sc.each{|el|
           mm_c.each{|el2|
-            ok = (ok or (el.match(/#{el2}/)) or (el2.match(/#{el}/)))
+            ok = (ok or (el.match(/#{el2}/)) or (el2.match(/#{el}/))) if el and el2
           }
         }
         unless ok
@@ -246,71 +265,27 @@ namespace :check do
     
   end
     
-  task :cameras => [:cam_init] do #, :pictures] do
+  task :products do
     include ValidationLib
     require 'helpers/image_helper'
     include ImageHelper
     include ImageValidator
     
-    @logfile = File.open("./log/check_#{$model.name}_2.log", 'a+')
+    @logfile = File.open("./log/check_#{$model.name}.log", 'a+')
     timed_log 'Start camera-specific validation'
-    my_products = $model.instock | $model.instock_ca
-    my_valid_products = $model.valid.instock  | $model.valid.instock_ca
+    my_products = $model.all
+   # my_valid_products = $model.valid.instock  | $model.valid.instock_ca
     my_offerings = RetailerOffering.find_all_by_product_type_and_stock($model.name, true)
     
-    #chek_pictures(my_products)
-    #chek_offerings(my_offerings)
-    #chek_products(my_products)
-    #chek_linkage(my_products)
+    chek_linkage(my_products)
     
-    announce "Testing #{my_valid_products.count} valid #{$model.name}s for wonky data..."
+    chek_offerings(my_offerings)
     
-    assert_within_range( my_valid_products, 'itemheight', 200, 450)
-    assert_within_range( my_valid_products, 'itemlength', 55, 350) # depth
-    assert_within_range( my_valid_products, 'itemwidth', 350, 600)
-                             
-    assert_within_range( my_valid_products, 'maximumresolution', 0.5, 50)    
-    assert_within_range( my_valid_products, 'opticalzoom', 1, 26)
-    assert_within_range( my_valid_products, 'displaysize', 0.5, 4)
-    
-    assert_within_range( my_valid_products, 'price', 1_00, 10_000_00)
-    
-    # Optional fields:    
-    assert_within_range( my_valid_products, 'digitalzoom', 1, 100)
-    
+    chek_products(my_products)
+        
     @logfile.close
   end
   
-  desc "Check that scraped data isn't wonky"
-  task :printers => [:printer_init] do
-    
-    @logfile = File.open("./log/check_#{$model.name}.log", 'a+')
-    timed_log 'Start printer-specific validation'
-    my_products = $model.instock | $model.instock_ca
-    
-    my_offerings = RetailerOffering.find_all_by_product_type_and_stock($model.name, true)
-    
-    chek_pictures(my_products)
-    chek_offerings(my_offerings)
-    chek_products(my_products)
-    chek_linkage(my_products)
-    
-    announce "Testing #{my_products.count} #{$model.name}s for validity..."
-    
-    assert_within_range( my_products, 'itemheight', 100, 10000)
-    assert_within_range( my_products, 'itemlength', 100, 7000 )
-    assert_within_range( my_products, 'itemwidth', 100, 7000)
-    assert_within_range( my_products, 'ppm', 2, 50)
-    assert_within_range( my_products, 'paperinput', 20,2000)
-    assert_within_range( my_products, 'ttp', 7,40)
-    assert_within_range( my_products, 'resolutionmax', 600, 9600)
-    
-    
-    @logfile.close
-  end
-
-  task :printer_pictures => [:printer_init, :pictures]
-
   task :pictures do
     require 'helpers/image_helper'
     include ImageHelper
@@ -320,9 +295,7 @@ namespace :check do
     chek_pictures checkme
   end
   
-  task :printer_init => :init do
-      $model = Printer
-      $scrapedmodel = ScrapedPrinter
+  task :printer_init => [:init, 'data:printer_init' ] do
       $id_field = 'id'
       
       $product_series = $printer_series
@@ -330,24 +303,16 @@ namespace :check do
          'paperinput','scanner', 'printserver', 'brand', 'model']
       $reqd_offering_fields = ['priceint', 'pricestr', 'stock', 'condition', 'priceUpdate', 'toolow', \
          'local_id', "product_type", "region", "retailer_id"]
-      $min_price = 1_00
-      $max_price = 10_000_00
-      
   end
   
-  task :cam_init => :init do    
-      $model = Camera
-      $scrapedmodel = ScrapedCamera
+  task :cam_init => [:init, 'data:cam_init' ] do    
       $id_field = 'id'
-      $product_series = []
       $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'opticalzoom', 'maximumresolution', \
         'displaysize', 'brand', 'model', 'itemweight'] 
         # 'slr', 'waterproof', 
         # , 'imagesurl', 'imagemurl', 'imagelurl'
       $reqd_offering_fields = ['priceint', 'pricestr', 'stock', 'condition', 'priceUpdate', 'toolow', \
          'local_id', "product_type", "region", "retailer_id"]
-      $min_price = 1_00
-      $max_price = 10_000_00
   end
   
   task :init => :environment do 

@@ -3,39 +3,28 @@ module NoJavaTestLib
   require 'mechanize'
   require 'webrat/mechanize'
   
-  require 'testing/site_nav_helpers'
-  require 'testing/printer_helpers'
-  
+  require 'testing/navigation_helpers'  
+  require 'helper_libs'
+  require 'testing/site_test_asserts'
+  require 'testing/site_tests'
   require 'testing/test_session'
   
-  require 'helpers/scraping_helper'
-  include ScrapingHelper
-
-  require 'testing/site_tests'
-  include PrinterTest
-  
-  require 'testing/site_test_asserts'
-  include PrinterTestAsserts
-  
+  include ScrapingLib
+  include SiteTest
+  include SiteTestAsserts
 end
 
 module JavaTestLib
   require 'webrat'
   require 'webrat/selenium'
   
-  require 'testing/site_nav_helpers'
-  require 'testing/printer_helpers'
-  
+  require 'testing/navigation_helpers'
+  require 'helper_libs'
+  require 'testing/site_test_asserts'
+  require 'testing/site_tests'
   require 'testing/java_test_session'
   
-  require 'helpers/scraping_helper'
-  include ScrapingHelper
-
-  require 'testing/site_tests'
-  include PrinterTest
-  
-  require 'testing/site_test_asserts'
-  include PrinterTestAsserts
-  
-  
+  include SiteTest
+  include ScrapingLib
+  include SiteTestAsserts
 end

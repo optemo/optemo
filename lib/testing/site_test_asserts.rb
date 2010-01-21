@@ -1,4 +1,4 @@
-module PrinterTestAsserts
+module SiteTestAsserts
   def assert_already_saved_msg_displayed
     report_error "Already saved msg hidden" unless @sesh.already_saved_msg?
   end
@@ -127,8 +127,8 @@ module PrinterTestAsserts
          report_error "Slider min not reset for " + @sesh.slider_name( slider ) + ", ie slider #{slider}"
          report_error "Expected " + @sesh.slider_min(slider).to_s + ", got " + @sesh.current_slider_min(slider).to_s
        end 
-       if @sesh.current_slider_max (slider) != @sesh.slider_max (slider)
-         report_error "Slider max not reset for " + @sesh.slider_name (slider) + ", ie slider #{slider}"
+       if @sesh.current_slider_max( slider ) != @sesh.slider_max( slider )
+         report_error "Slider max not reset for " + @sesh.slider_name(slider) + ", ie slider #{slider}"
          report_error "Expected " + @sesh.slider_max(slider).to_s + ", got " + @sesh.current_slider_max(slider).to_s
        end
     end
