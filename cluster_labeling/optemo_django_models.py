@@ -5,7 +5,17 @@ from django.db.models import Max
 def raise_abstract_method_error():
     raise NotImplementedError('Abstract method should not be called')
 
-class Cluster(models.Model):
+default_db = 'optemo'
+
+class OptemoModel(models.Model):
+    class Meta:
+        abstract = True
+    
+    @classmethod
+    def get_manager(cls):
+        return cls.objects.using(default_db)    
+
+class Cluster(OptemoModel):
     class Meta:
         abstract = True
 
@@ -26,22 +36,23 @@ class Cluster(models.Model):
 
     @classmethod
     def get_latest_version(cls):
-        return cls.objects.aggregate(Max('version'))['version__max']
+        manager = cls.get_manager()
+        return manager.aggregate(Max('version'))['version__max']
 
 class CameraCluster(Cluster):
     class Meta:
         db_table = 'camera_clusters'
 
     def get_children(self):
-        return CameraCluster.objects.filter(parent_id=self.id)
+        return CameraCluster.get_manager().filter(parent_id=self.id)
 
     def get_nodes(self):
-        return CameraNode.objects.filter(cluster_id=self.id)
+        return CameraNode.get_manager().filter(cluster_id=self.id)
 
     def get_parent(self):
-        return CameraCluster.objects.filter(id=self.parent_id)[0]
+        return CameraCluster.get_manager().filter(id=self.parent_id)[0]
 
-class Node(models.Model):
+class Node(OptemoModel):
     class Meta:
         abstract = True
 
@@ -61,16 +72,16 @@ class CameraNode(Node):
         db_table = 'camera_nodes'
     
     def get_cluster(self):
-        qs = CameraCluster.objects.filter(id=self.cluster_id)
+        qs = CameraCluster.get_manager().filter(id=self.cluster_id)
         assert(qs.count() == 1)
         return qs[0]
 
     def get_product(self):
-        qs = Camera.objects.filter(id=self.product_id)
+        qs = Camera.get_manager().filter(id=self.product_id)
         assert(qs.count() == 1)
         return qs[0]
 
-class Camera(models.Model):
+class Camera(OptemoModel):
     class Meta:
         db_table = 'cameras'
 
@@ -83,17 +94,18 @@ class Camera(models.Model):
     reviewtext = models.TextField()
 
     def get_clusters(self, version = CameraCluster.get_latest_version()):
-        node_qs = CameraNode.objects.filter(product_id = self.id,
-                                            version = version)
+        node_qs = CameraNode.get_manager().filter\
+                  (product_id = self.id, version = version)
         cluster_ids = map(lambda n: n.cluster_id, node_qs)
-        cluster_qs = CameraCluster.objects.filter(id__in=cluster_qs)
+        cluster_qs = CameraCluster.get_manager().filter\
+                     (id__in=cluster_qs)
 
         return cluster_qs
 
     def get_reviews(self):
-        return Review.objects.filter(product_id=self.id)
+        return Review.get_manager().filter(product_id=self.id)
 
-class Review(models.Model):
+class Review(OptemoModel):
     class Meta:
         db_table = 'reviews'
     
