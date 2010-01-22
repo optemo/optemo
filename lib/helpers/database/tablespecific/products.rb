@@ -9,12 +9,17 @@ module ProductsHelper
        y =   $model.find_all_by_brand_and_mpn(p.brand, p.model || 'ABRACADABRA')
        z = $model.find_all_by_brand_and_model(p.brand, p.mpn || 'ABRACADABRA')
        w =   $model.find_all_by_brand_and_mpn(p.brand, p.mpn || 'ABRACADABRA')
-       dups = (x | y | z | w).uniq.collect{|dup| dup.id}
+       dups = (x | y | z | w).uniq.collect{|dup| dup.id}.sort
        if dups.length > 1
-         matchingsets << dups
+          if matchingsets.last and matchingsets.last[0] == dups[0]
+            temp = (matchingsets.last | dups).sort.uniq
+            matchingsets.pop
+            matchingsets << dups
+          else
+            matchingsets << dups unless matchingsets.include?(dups)
+          end
        end
      end
-     matchingsets.collect{|x| x.sort}.uniq
      return matchingsets
   end
   

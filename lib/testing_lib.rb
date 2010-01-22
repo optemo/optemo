@@ -12,6 +12,7 @@ module NoJavaTestLib
   include ScrapingLib
   include SiteTest
   include SiteTestAsserts
+  include LoggingLib
 end
 
 module JavaTestLib
@@ -27,4 +28,5 @@ module JavaTestLib
   include SiteTest
   include ScrapingLib
   include SiteTestAsserts
+  include LoggingLib
 end

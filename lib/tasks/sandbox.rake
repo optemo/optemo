@@ -121,13 +121,64 @@ namespace :sandbox do
   end
   
   task :test_remove_all_dups => ['data:printer_init'] do
-    
+    timed_announce "Starting to look for matching sets"
     matchings = get_matching_sets_efficient($model.all)
-    puts( matchings[0..10].collect{|a| a * ', '} * "\n")
-    debugger
+    timed_announce "Done looking for matching sets"
     puts "#{matchings.count} sets of duplicates"
     puts "#{matchings.flatten.count - matchings.count} duplicates will be removed"
-    
+    matchings.each do |set|
+      skipthis = false
+      bestoffer_id = nil
+      puts "\n---\n#{set.collect{|y| Printer.find(y).title} * "\n"}\n---\n"
+      debugger
+      next if skipthis
+      
+      keep = $model.find(set[0])
+      set[1..-1].each do |ditch_id|
+        ditch = $model.find(ditch_id)
+        puts "#{ditch.title} to be merged with #{keep.title}."
+        
+        sps_keep = $scrapedmodel.find_all_by_product_id(keep.id)
+        sps_ditch = $scrapedmodel.find_all_by_product_id(ditch.id)
+        puts "These #{$scrapedmodel.name}s will be re-routed: #{sps_ditch.collect{|x| x.id} *', '}"
+      
+        ros_keep = RetailerOffering.find_all_by_product_id_and_product_type(keep.id, $model.name)
+        ros_ditch = RetailerOffering.find_all_by_product_id_and_product_type(ditch.id, $model.name)
+        puts "These ROs will be re-routed: #{ros_ditch.collect{|x| x.id} *', '}"
+      
+        revus_keep = Review.find_all_by_product_id_and_product_type(keep.id, $model.name)
+        revus_ditch = Review.find_all_by_product_id_and_product_type(ditch.id, $model.name)
+        puts "These Reviews will be re-routed: #{revus_ditch.collect{|x| x.id} *', '}"
+        bestoffer_id = (ros_keep+ros_ditch).sort{|a,b| (a.priceint || 1000000) <=> (b.priceint  || 1000000)}.first.id 
+      
+        unlink_duplicate(keep, ditch)
+      
+        sps_keep_2 = $scrapedmodel.find_all_by_product_id(keep.id)
+        sps_ditch_2 = $scrapedmodel.find_all_by_product_id(ditch.id)
+      
+        ros_keep_2 = RetailerOffering.find_all_by_product_id_and_product_type(keep.id, $model.name)
+        ros_ditch_2 = RetailerOffering.find_all_by_product_id_and_product_type(ditch.id, $model.name)
+      
+        revus_keep_2 = Review.find_all_by_product_id_and_product_type(keep.id, $model.name)
+        revus_ditch_2 = Review.find_all_by_product_id_and_product_type(ditch.id, $model.name)
+      
+        puts "#{sps_ditch_2.count} (SPs) should be 0"
+        puts "#{ros_ditch_2.count} (ROs) should be 0"
+        puts "#{revus_ditch_2.count} (Reviews) should be 0"
+      
+        puts "#{sps_keep_2.count} (SPs) should be #{sps_keep.count+sps_ditch.count}"
+        puts "#{ros_keep_2.count} (ROs) should be #{ros_keep.count+ros_ditch.count}"
+        puts "#{revus_keep_2.count} (Reviews) should be #{revus_keep.count+revus_ditch.count}"
+      
+        puts "#{$model.exists?(ditch.id)} should be false"
+      
+      end
+      
+      puts "#{keep.id} had bestoffer #{keep.bestoffer}"
+      update_bestoffer(keep)
+      puts "#{keep.id} now has bestoffer #{$model.find(keep.id).bestoffer} (should be #{bestoffer_id})"
+    end
+      
   end
   
 end

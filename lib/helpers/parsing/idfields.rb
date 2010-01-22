@@ -35,10 +35,13 @@ module IdFieldsHelper
     temp = no_blanks(clean_title.split(/\s/))
     temp2 = []
     # Take advantage of two-part model names or really short names w/ series:
+    ja_title = just_alphanumeric(title)
     (temp.count-1).times do |num| 
-      temp2 << "#{temp[num]} #{temp[num+1]}"
+      ja_combined = just_alphanumeric("#{temp[num]} #{temp[num+1]}")
+      temp2 << "#{temp[num]} #{temp[num+1]}" if ja_title.match(/#{Regexp.escape(ja_combined)}/i)
     end
-    possible_models = most_likely_models((temp+temp2).collect{|x| x.gsub(/-$/,'')})
+    # Get most likely models and remove any weirdness from the start/end:
+    possible_models = most_likely_models((temp+temp2).collect{|x| x.gsub(/(^(-|,|\/)+)|((-|,|\/)$)/,'')})
     more_models = model_series_variations(possible_models, series)
     good_models = more_models.reject{|x| likely_model_name(x) < 2 }
     return good_models

@@ -15,25 +15,26 @@ class JavaTestSession < Webrat::SeleniumSession
     visit get_detail_page_link(box)
     wait_for_load
   end   
+    
+  def close_popup_tour
+    selenium.click('css=div.popupTour a.deleteX')
+  end
      
   def click_checkbox clickme
     cbox_id = doc.css('#filter_form input[@type="checkbox"]')[clickme].[]('id')
     selenium.click cbox_id
-    browser.submit "filter_form"
-    wait_for_load
+    wait_for_ajax
   end   
      
    def move_slider which_slider, min, max
      fill_in @slider_max_names[which_slider], :with => max
      fill_in @slider_min_names[which_slider], :with => min
-     browser.submit "filter_form"
-     wait_for_load
+     wait_for_ajax
    end
    
    def select_brand which_brand
      self.selenium.select( 'myfilter_brand', 'value='+ brand_name(which_brand).to_s) 
-     browser.submit "filter_form" 
-     wait_for_load
+     wait_for_ajax
    end
    
    def current_url
@@ -52,7 +53,7 @@ class JavaTestSession < Webrat::SeleniumSession
    def search_for query 
      browser.type 'search', query
      browser.click 'id=submit_button' 
-     wait_for_load
+     wait_for_ajax
    end
   
   
@@ -65,7 +66,7 @@ class JavaTestSession < Webrat::SeleniumSession
   
    # Gets the homepage and makes sure nothing crashed.
    def get_homepage product_type='printer'
-      visit "http://#{product_type.downcase}s.localhost:3000/"
+      visit "http://#{product_type.downcase}s.localhost:#{$port}/"
       wait_for_load
       if error_page?
         report_error "Error loading homepage" 
@@ -77,7 +78,7 @@ class JavaTestSession < Webrat::SeleniumSession
      the_link = doc.css('.simlinks')[which_link-1]
      if the_link and !the_link.text.nil? and !the_link.text.strip.empty?
        browser.click "link=#{the_link.text}" 
-       wait_for_load
+       wait_for_ajax
      else
        report_error "#{which_link}th Browse Similar Link not found"
      end
@@ -85,8 +86,9 @@ class JavaTestSession < Webrat::SeleniumSession
       
    def click_back_button product_type='Printer'
      # TODO what about cameras...
-      selenium.click "link=Go back to previous #{product_type}s"
-      wait_for_load
+     the_link = get_el(doc.css('#backlink'))
+     selenium.click "link=#{the_link.text}"
+     wait_for_ajax
    end
    
    def click_home_logo 

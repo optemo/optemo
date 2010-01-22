@@ -4,8 +4,8 @@
 module LoggingHelper
   
   def log msg
-    @logfile.puts "LOGGER      " + msg if @logfile
-    $logfile.puts "LOGGER      " + msg if $logfile
+    @logfile.puts "LOGGER      " + msg if @logfile and !@logfile.closed?
+    $logfile.puts "LOGGER      " + msg if $logfile and !$logfile.closed?
   end
   
   def timed_log msg
