@@ -1,104 +1,81 @@
 #!/usr/bin/env python
-import sqlite3
+from django.db import models
+from django.db.models import Max
 
-class ClusterCountTable():
-    common_table_cols = \
-    {
-    "cluster_id" : "integer",
-    "parent_cluster_id" : "integer",
-    "word" : "text",
-    "count" : "integer",
-    "numchildren" : "integer"
-    }
+from django.db import connections, transaction
 
+from django.core.management.color import no_style
+
+class LocalModel(models.Model):
+    class Meta:
+        abstract = True
+        
+    default_db = 'default'
+
+    common_table_cols = None
     tablename = None
 
-    def __init__(self, tablename):
-        self.tablename = tablename
+    @classmethod
+    def get_manager(cls):
+        return cls.objects.using(cls.default_db)
 
-    def gen_create_count_table_sql(self, extracols = {}):
-        table_cols = self.common_table_cols
+    @classmethod
+    def get_db_conn(cls):
+        return connections[cls.default_db]
 
-        if extracols != {}:
-            table_cols = list(table_cols.iteritems())
-            table_cols = dict(table_cols.extend(extracols.iteritems()))
+    @classmethod
+    def gen_create_table_sql(cls):
+        return cls.get_db_conn().creation.sql_create_model(cls, no_style())[0][0]
 
+    @classmethod
+    @transaction.commit_on_success
+    def create_table(cls):
+        c = cls.get_db_conn().cursor()
+        c.execute(cls.gen_create_table_sql())
+        transaction.set_dirty()
+
+    @classmethod
+    def gen_drop_table_sql(cls):
+        return cls.get_db_conn().creation.sql_destroy_model(cls, {}, no_style())[0]
+
+    @classmethod
+    @transaction.commit_on_success
+    def drop_table(cls):
+        c = cls.get_db_conn().cursor()
+        c.execute(cls.gen_drop_table_sql())
+        transaction.set_dirty()
+
+class ClusterCount(LocalModel):
+    class Meta:
+        abstract = True
+        unique_together = (("cluster_id", "word"))
+
+    common_table_cols = \
+    {
+        "cluster_id" : "integer",
+        "parent_cluster_id" : "integer",
+        "word" : "text",
+        "count" : "integer",
+        "numchildren" : "integer"
+    }
+ 
+    cluster_id = models.IntegerField()
+    parent_cluster_id = models.IntegerField()
+    word = models.CharField(max_length=255)
+    count = models.IntegerField()
+    numchildren = models.IntegerField()
+
+    @classmethod
+    def gen_sum_child_counts_sql(cls):
         return \
-        "CREATE TABLE " + self.tablename + " " + \
-        "(" + \
-        ', '.join(map(lambda (k,v): ' '.join([k,v]),
-                      table_cols.iteritems())) + \
-        ", PRIMARY KEY (cluster_id, word), " + \
-        "CONSTRAINT count_check CHECK (count > 0) " + \
-        "CONSTRAINT numchildren_check CHECK (numchildren >= 0)" + \
-        ")"
-
-    def create_count_table(self, db):
-        c = db.cursor()
-        c.execute(self.gen_create_count_table_sql())
-        db.commit()
-        c.close()
-
-    def drop_count_table(self, db):
-        c = db.cursor()
-        c.execute("DROP TABLE IF EXISTS " + self.tablename)
-        db.commit()
-        c.close()
-
-    def gen_insert_count_entry_sql(self):
-        return \
-        "INSERT INTO " + self.tablename + \
-        "(cluster_id, parent_cluster_id, numchildren, word, count) " + \
-        "VALUES (?, ?, ?, ?, ?)"
-
-    def add_count_entry(self, db, cluster_id, parent_cluster_id,
-                        numchildren, word, count):
-        c = db.cursor()
-
-        try:
-            c.execute(self.gen_insert_count_entry_sql(),
-                      (cluster_id, parent_cluster_id,
-                       numchildren, word, count))
-            db.commit()
-            c.close()
-        except sqlite3.IntegrityError:
-            print "Integrity error: (cluster_id, word) == (%d, %s)" % \
-                  (cluster_id, word)
-
-            import pdb
-            pdb.set_trace()
-
-            raise
-
-    def gen_select_count_entry_sql(self):
-        return \
-        "SELECT count from " + self.tablename + \
-        " WHERE cluster_id = ? AND word = ?"
-
-    def get_count(self, db, cluster_id, word):
-        c = db.cursor()
-        c.execute(self.gen_select_count_entry_sql(),
-                  (cluster_id, word))
-        results = c.fetchall()
-        c.close()
-
-        wordcount = None
-
-        if len(results) > 0:
-            wordcount = results[0][0]
-
-        return wordcount
-
-    def gen_sum_child_counts_sql(self):
-        return \
-        "SELECT word, SUM(count) from " + self.tablename + " " + \
+        "SELECT word, SUM(count) from " + cls.tablename + " " + \
         "WHERE parent_cluster_id = ? GROUP BY word"
 
-    def sum_child_cluster_counts(self, db,
-                                 cluster_id, parent_cluster_id,
-                                 numchildren):
-        c = db.cursor()
-        c.execute(self.gen_sum_child_counts_sql(), (cluster_id,))
+    @classmethod
+    def sum_child_cluster_counts\
+            (cls, db, cluster_id, parent_cluster_id, numchildren):
+        c = cls.get_db_conn().cursor()
+        c.execute(cls.gen_sum_child_counts_sql(), (cluster_id,))
 
         while (1):
             row = c.fetchone()
@@ -106,13 +83,35 @@ class ClusterCountTable():
                 break
 
             word, countsum = row[0:2]
-            self.add_count_entry(db, cluster_id, parent_cluster_id,
-                                 numchildren, word, countsum)
 
-        c.close()
+            cluster_count = \
+                cls(cluster_id=cluster_id,
+                    parent_cluster_id=parent_cluster_id,
+                    word=word, count=countsum,
+                    numchildren=numchildren)
+            cluster_count.save()
 
-    def add_counts_from(self, db, cluster, dict):
+    @classmethod
+    def add_counts_from(cls, db, cluster, dict):
         numchildren = cluster.get_children().count()
         for (word, count) in dict.iteritems():
-            self.add_count_entry(db, cluster.id, cluster.parent_id,
-                                 numchildren, word, count)
+            cluster_count = \
+                cls(cluster_id=cluster.id,
+                    parent_cluster_id=cluster.parent_id,
+                    word=word, count=count, numchildren=numchildren)
+            cluster_count.save()
+
+    def save(self):
+        LocalModel.save(self, force_insert=True)
+
+class ClusterWordCount(ClusterCount):
+    class Meta:
+        db_table = 'wordcounts'
+
+class ClusterProdCount(ClusterCount):
+    class Meta:
+        db_table = 'prodcounts'
+
+class ClusterReviewCount(ClusterCount):
+    class Meta:
+        db_table = 'reviewcounts'
