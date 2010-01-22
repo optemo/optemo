@@ -283,7 +283,8 @@ namespace :data do
   
   desc 'Match ScrapedPrinter to Printer!'
   task :match_to_products do 
-    puts "[#{Time.now}] Starting to match products"
+    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{$model.name}_matcher.log", 'w+')
+  puts "[#{Time.now}] Starting to match products"
     match_me = scraped_by_retailers($retailers, $scrapedmodel) if $retailers
     match_me = $scrapedmodel.all if match_me.nil?
     
@@ -308,6 +309,7 @@ namespace :data do
       revues.each{|revu| fill_in 'product_id', real.id, revu }
     end
     timed_announce "[#{Time.now}] Done matching products"
+    @logfile.close unless @logfile.closed?
   end
   
   # Update prices
