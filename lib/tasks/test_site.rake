@@ -14,23 +14,30 @@ namespace :test_site do
    task :all_nojava => [:sliders, :browse_similar, :search, :brand_selector, :homepage, :random_nojava]
    
    task :sandbox => :java_init do
-    setup 'sandbox'
-    
+    setup_java 'sandbox_1'
+    test_search_for('asdf')
+    debugger
     close_log
    end
    
    desc 'Check and uncheck every chekbox'
    task :checkboxes => :java_init do
       setup_java 'checkboxes'
+      if @sesh.popup_tour?
+        @sesh.close_popup_tour
+      end
+      debugger
       @sesh.num_checkboxes.times do |i|
-        2.times {test_checkbox i}
+        2.times do
+          test_checkbox i
+        end
       end
       close_log
    end
    
    desc 'detail page'
-   task :detail_page => :init do 
-     setup 'detail_page'
+   task :detail_page => :java_init do 
+     setup_java 'detail_page'
       
      all_pages = []
      test_detail_page 0
@@ -63,9 +70,9 @@ namespace :test_site do
    end
    
    desc 'Tests homepage clicking'
-   task :homepage => :init do
+   task :homepage => :java_init do
      
-     setup 'homepage'
+     setup_java 'homepage'
      
      #@sesh.num_uses.times do |x|
        test_click_home_logo
@@ -76,8 +83,8 @@ namespace :test_site do
    end
   
    desc "Test the sliders."
-   task :sliders => :init do
-     setup "sliders" 
+   task :sliders => :java_init do
+     setup_java "sliders" 
 
      ( $num_tests || 100).times do
        
@@ -96,8 +103,8 @@ namespace :test_site do
    end
 
    desc "Test the brand selector."
-   task :brand_selector => :init do 
-     setup "brand_selector" 
+   task :brand_selector => :java_init do 
+     setup_java "brand_selector" 
 
      # Try selecting every brand
      (1..@sesh.num_brands_in_dropdown).each do |brand| 
@@ -110,8 +117,8 @@ namespace :test_site do
    end
 
    desc "Test the search box."
-   task :search => :init do 
-       setup "search"
+   task :search => :java_init do 
+       setup_java "search"
 
        # Brand name based search strings
        (1..@sesh.num_brands_in_dropdown).each do |brand| 
@@ -133,8 +140,8 @@ namespace :test_site do
 ##//////////////////////
 
 desc "write into the search box."
-task :form => :init do 
-    setup "pref"
+task :form => :java_init do 
+    setup_java "pref"
 
     # Brand name based search strings
     #(1..@sesh.num_brands_in_dropdown).each do |brand| 
@@ -155,8 +162,8 @@ end
 ##/////////////////////
 
    desc "Exhaustive testing for Browse Similar."
-   task :browse_similar => :init do
-     setup "browse_similar" 
+   task :browse_similar => :java_init do
+     setup_java "browse_similar" 
 
      hist = ["root"]
      explore(hist)
@@ -250,8 +257,8 @@ end
    end
 
    desc "Simulate a user session and test almost everything."
-   task :random_nojava => :init do
-       setup "random" 
+   task :random_nojava => :java_init do
+       setup_java "random" 
 
        search_strings = ["","asdf","apples","Sister","Helwett","Hewlett","xena", "Data","cheap"]
 
@@ -315,11 +322,8 @@ end
    end
    
    task :hurryinit do
-    
     $num_tests = 10
     $num_random_tests = 50
-    
-   
    end
 
    task :init => :environment do
@@ -340,10 +344,12 @@ end
         
        # Want something like this: WWW::Mechanize.open_timeout = 0.1
        # or thiss  WWW::Mechanize.read_timeout = 0.1        
+       
+       $port="3002" # Your Favourite Port!
    end
    
    task :java_init => :environment do
-     
+       
       # Check for all the right configs
       #raise "Rails test environment not being used." if ENV["RAILS_ENV"] != 'test' 
       #raise  "Forgery protection turned on in test environment."  if (ActionController::Base.allow_forgery_protection) 
@@ -358,7 +364,7 @@ end
           config.application_framework = :rails
         end
 
-      
+        $port="3002"
    end
 
 end

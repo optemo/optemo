@@ -50,12 +50,11 @@ module SiteTest
   def explore(hist)
     (1..@sesh.num_similar_links).each do |num|
       log "Testing #{num}th browse similar link with history: " + hist * ", "
-      come_back_here = @sesh.current_url
       test_browse_similar(num)
       hist << num.to_s
       explore(hist)
       hist.pop
-      @sesh.visit come_back_here
+      @sesh.click_back_button
     end
   end
   
@@ -99,7 +98,6 @@ module SiteTest
   end
   
   def test_browse_similar which_link
-  
     log "Clicking on the #{which_link}th browse similar link"
     snapshot
   
@@ -112,7 +110,6 @@ module SiteTest
       assert_well_formed_page
       assert_num_products_decreased
     end
-  
     log "Done testing browse similar"
   end
   
@@ -316,22 +313,13 @@ module SiteTest
      @history.push @sesh.current_url
   end
    
-  def log msg
-    @logfile.puts "LOGGER      " + msg
-  end
-  
-  def report_error msg
-    @logfile.puts "ERROR      " + msg
-    puts "ERROR: " + msg
-  end
-  
   def close_log
       puts "Test completed. Log file at " + @logfile.path
       @logfile.close
   end
   
   def setup_log(name)
-    @logfile = File.open("./log/site_test_"+name+".log", 'w+') #+Time.now.to_s.gsub(/ /, '_')
+    @logfile = File.open("./log/site_tests/"+name+".log", 'w+') #+Time.now.to_s.gsub(/ /, '_')
   end
   
   def setup logname
@@ -347,6 +335,10 @@ module SiteTest
   @sesh = JavaTestSession.new @logfile
   @history = []
   snapshot
+  # TODO take this out?
+  if @sesh.popup_tour?
+    @sesh.close_popup_tour
+  end
  end
  
 end
