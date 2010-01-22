@@ -5,15 +5,15 @@ from django.db.models import Max
 def raise_abstract_method_error():
     raise NotImplementedError('Abstract method should not be called')
 
-default_db = 'optemo'
-
 class OptemoModel(models.Model):
     class Meta:
         abstract = True
+
+    default_db = 'optemo'
     
     @classmethod
     def get_manager(cls):
-        return cls.objects.using(default_db)    
+        return cls.objects.using(cls.default_db)
 
 class Cluster(OptemoModel):
     class Meta:
