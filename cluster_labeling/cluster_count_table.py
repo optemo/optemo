@@ -66,8 +66,8 @@ class ClusterCount(LocalModel):
     @classmethod
     def gen_sum_child_counts_sql(cls):
         return \
-        "SELECT word, SUM(count) from " + cls.tablename + " " + \
-        "WHERE parent_cluster_id = ? GROUP BY word"
+        "SELECT word, SUM(count) from " + cls._meta.db_table + " " + \
+        "WHERE parent_cluster_id = %s GROUP BY word"
 
     @classmethod
     def sum_child_cluster_counts\
