@@ -11,15 +11,16 @@ try:
     settings.configure\
     (DATABASES = {
          'default' : {
-             'ENGINE' : 'django.db.backends.sqlite3',
-             'NAME' : wordcount_filename
+            'ENGINE' : 'django.db.backends.sqlite3',
+            'NAME' : wordcount_filename,
+            'TIMEOUT' : 30
           },
          'optemo' : {
-             'ENGINE' : 'django.db.backends.mysql',
-             'HOST' : 'jaguar',
-             'NAME' : 'optemo_development',
-             'USER' : 'nimalan',
-             'PASSWORD' : 'bobobo'
+            'ENGINE' : 'django.db.backends.mysql',
+            'HOST' : 'jaguar',
+            'NAME' : 'optemo_development',
+            'USER' : 'nimalan',
+            'PASSWORD' : 'bobobo'
           }
       })
 
