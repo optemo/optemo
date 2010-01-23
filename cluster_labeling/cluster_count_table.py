@@ -45,6 +45,13 @@ class LocalModel(models.Model):
         c.execute(cls.gen_drop_table_sql())
         transaction.set_dirty()
 
+    @classmethod
+    @transaction.commit_on_success
+    def drop_table_if_exists(cls):
+        c = cls.get_db_conn().cursor()
+        c.execute("DROP TABLE IF EXISTS %s" % (cls._meta.db_table))
+        transaction.set_dirty()
+
 class ClusterCount(LocalModel):
     class Meta:
         abstract = True
