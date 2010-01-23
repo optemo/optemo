@@ -57,15 +57,6 @@ class ClusterCount(LocalModel):
         abstract = True
         unique_together = (("cluster_id", "word"))
 
-    common_table_cols = \
-    {
-        "cluster_id" : "integer",
-        "parent_cluster_id" : "integer",
-        "word" : "text",
-        "count" : "integer",
-        "numchildren" : "integer"
-    }
- 
     cluster_id = models.IntegerField()
     parent_cluster_id = models.IntegerField()
     word = models.CharField(max_length=255)
