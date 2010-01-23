@@ -70,16 +70,18 @@ class ClusterCount(LocalModel):
         "WHERE parent_cluster_id = %s GROUP BY word"
 
     @classmethod
+    @transaction.commit_on_success
     def sum_child_cluster_counts\
-            (cls, db, cluster_id, parent_cluster_id, numchildren):
+            (cls, cluster_id, parent_cluster_id, numchildren):
         c = cls.get_db_conn().cursor()
-        c.execute(cls.gen_sum_child_counts_sql(), (cluster_id,))
+        c.execute(cls.gen_sum_child_counts_sql(), [str(cluster_id)])
 
-        while (1):
-            row = c.fetchone()
-            if row == None:
-                break
+        transaction.set_dirty()
 
+        # Using fetchone() and save()ing clustercounts concurrenctly
+        # results in badness, possibly because the same cursor is
+        # being used. Stupid Django..
+        for row in c.fetchall():
             word, countsum = row[0:2]
 
             cluster_count = \
@@ -90,7 +92,7 @@ class ClusterCount(LocalModel):
             cluster_count.save()
 
     @classmethod
-    def add_counts_from(cls, db, cluster, dict):
+    def add_counts_from(cls, cluster, dict):
         numchildren = cluster.get_children().count()
         for (word, count) in dict.iteritems():
             cluster_count = \
