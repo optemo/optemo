@@ -57,10 +57,10 @@ class ClusterCount(LocalModel):
         abstract = True
         unique_together = (("cluster_id", "word"))
 
-    cluster_id = models.IntegerField()
-    parent_cluster_id = models.IntegerField()
+    cluster_id = models.BigIntegerField()
+    parent_cluster_id = models.BigIntegerField()
     word = models.CharField(max_length=255)
-    count = models.IntegerField()
+    count = models.BigIntegerField()
     numchildren = models.IntegerField()
 
     @classmethod
