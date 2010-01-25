@@ -136,7 +136,7 @@ module NavigationHelpers
 
    # Reads the number of products being browsed from the page.
    def num_products
-      leftbar_el = get_el(doc.css("#leftbar"))
+      leftbar_el = get_el(doc.css("#navigator_bar"))
       return 0 if leftbar_el.nil?
       leftbar = leftbar_el.content.to_s
       product_phrase = leftbar.match('Browsing \d+ ').to_s
@@ -166,7 +166,7 @@ module NavigationHelpers
    
    # Reads the Session ID from the page.
    def session_id
-      leftbar_el =get_el doc.css("#leftbar")
+      leftbar_el =get_el doc.css("#navigator_bar")
       return nil if leftbar_el.nil?
       leftbar = leftbar_el.content.to_s
       session_phrase = leftbar.match('Session id: \d+').to_s
@@ -196,6 +196,12 @@ module NavigationHelpers
      return false 
    end
    
+   def popup_tour?
+     ptour = get_el(doc.css('div.popupTour'))
+     vis = ptour.css('@style').to_s.match('display: block') if ptour
+     return !vis.nil?
+   end
+   
    def get_bd_div_text
      bd_div = doc.css('div.bd').first
      if(bd_div == nil) 
@@ -209,10 +215,11 @@ module NavigationHelpers
    
    # Returns true if the page's response is the error page.
    def error_page?
-      return true if self.current_url.match(/localhost:3000\/error$/)
-      bd_div_content = get_bd_div_text
-      err_msg = bd_div_content.match("error")
-      return !err_msg.nil?
+      popup_msg = get_el(doc.css('div#outsidecontainer'))
+      return false if popup_msg.nil?
+      return false if popup_msg.css('@style').to_s.match('display: none')
+      return true if popup_msg.to_s.match(/error/i)
+      return false
    end
    
    def already_saved_msg?
@@ -222,7 +229,7 @@ module NavigationHelpers
    end
    
    def save_here_msg?
-     msg_el = get_el doc.css('#deleteme')
+     msg_el = get_el doc.css('.savesome')
      return false if msg_el.nil?
      return (msg_el.attribute('style').to_s.match('none').nil?)
    end

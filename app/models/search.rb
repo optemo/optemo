@@ -136,7 +136,7 @@ class Search < ActiveRecord::Base
       low = $dbfeat[f].low
       high = $dbfeat[f].high
       searchR = ranges(f)
-      return 'Empty' if searchR[0].nil? || searchR[1].nil?
+      return ['Empty'] if searchR[0].nil? || searchR[1].nil?
       if (searchR[1]<=low)
            des <<  "low_#{f}"
       elsif (searchR[0]>=high)

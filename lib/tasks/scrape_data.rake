@@ -163,7 +163,7 @@ namespace :data do
     end  
     announce "#{Review.count - total_before_script} reviews added."
     timed_announce "Done!"
-    @logfile.close
+    @logfile.close unless @logfile.closed?
   end
   
   task :rescrape_stats do 
@@ -283,24 +283,14 @@ namespace :data do
   
   desc 'Match ScrapedPrinter to Printer!'
   task :match_to_products do 
-    puts "[#{Time.now}] Starting to match products"
+    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{$model.name}_matcher.log", 'w+')
+  puts "[#{Time.now}] Starting to match products"
     match_me = scraped_by_retailers($retailers, $scrapedmodel) if $retailers
     match_me = $scrapedmodel.all if match_me.nil?
     
-    #debugger
     match_me.delete_if{|x| x.product_id}
     
-    #match_me = [4982, 7878, 10434, 12760, 23270,16024, 18286, 21544].collect{|x| $scrapedmodel.find(x)}
-    #[25406,25468,23376,21146,18848, 19564,21852,21232,21524,23266,21232,21292,23266,21928,23720,21544]
-    
-    #match_me = [3466, 8442, 14260, 23582, 5124, 10530, 15530, 23952, 25406, 25468, 3354, 8322, 13918, 19662].collect{|x| $scrapedmodel.find(x)}
-    
-    match_me.each do |sc|
-      sc.update_attribute('product_id',nil)
-    end
-    #debugger
-    
-    puts "There are #{match_me.count} #{$scrapedmodel.name}s in total."
+    puts "We have #{match_me.count} #{$scrapedmodel.name}s unmatched products."
     
     match_me.delete_if{|x| (x.model.nil? and x.mpn.nil?) or x.brand.nil?}
     announce "#{match_me.count} #{$scrapedmodel.name}s are identifiable -- will match these."
@@ -317,9 +307,9 @@ namespace :data do
       
       revues = Review.find_all_by_local_id_and_product_type(scraped.local_id, $model.name)
       revues.each{|revu| fill_in 'product_id', real.id, revu }
-      #puts "[#{Time.now}] Done matching #{i+1}th scraped product." 
     end
     timed_announce "[#{Time.now}] Done matching products"
+    @logfile.close unless @logfile.closed?
   end
   
   # Update prices
@@ -328,12 +318,11 @@ namespace :data do
     my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id_and_product_type(x.id, $model.name)}
     my_offerings.each_with_index do |offering, i|
       begin
-        next if offering.local_id.nil? #offering.stock != true
-        newatts = rescrape_prices( offering.local_id, offering.region)
+        next if offering.local_id.nil?
+        newatts = rescrape_prices(offering.local_id, offering.region)
         
-        #log "[#{Time.now}] Updating #{offering.pricestr} to #{newatts['pricestr']}"
         update_offering(newatts, offering) if offering
-        if( offering.product_id and $model.exists?(offering.product_id))
+        if(offering.product_id and $model.exists?(offering.product_id))
           update_bestoffer($model.find(offering.product_id))
         end  
       rescue Exception => e
@@ -344,7 +333,7 @@ namespace :data do
     end
     
     timed_announce "Done updating prices"
-    @logfile.close
+    @logfile.close unless @logfile.closed?
   end
 
   # Scrape all data for all current products
@@ -364,7 +353,7 @@ namespace :data do
       end
     end
     timed_announce "Done scraping"
-    @logfile.close
+    @logfile.close unless @logfile.closed?
   end
   
   # Scrape all data for new products only
@@ -382,7 +371,7 @@ namespace :data do
       end
     end
     timed_announce "Done scraping"
-    @logfile.close
+    @logfile.close unless @logfile.closed?
   end
   
   desc "Check that scraped data isn't wonky"
@@ -421,7 +410,7 @@ namespace :data do
     assert_no_repeats my_offerings, 'local_id'
     assert_within_range my_offerings, 'priceint', 100, 10_000_00  
     timed_announce "Done with validation"
-    @logfile.close
+    @logfile.close unless @logfile.closed?
   end
   
   task :update_bestoffers do 
@@ -458,8 +447,9 @@ namespace :data do
       $scrapedmodel = @@scrapedmodel
       $brands= @@brands
       $series = @@series
-      $descriptors = @@descriptors + $conditions.collect{|cond| /(\s|^|;|,)#{cond}(\s|,|$)/i} \
-        + $units.reject{|x| x=='in'}.collect{|y| /#{Regexp.escape(y)}/i}
+      $descriptors = @@descriptors + $conditions.collect{|cond| /(\s|^|;|,)#{cond}(\s|,|$)/i}
+      # \
+      #  + $units.reject{|x| x=='in'}.collect{|y| /#{Regexp.escape(y)}/i}
       
       $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'ppm', 'resolutionmax',\
          'paperinput','scanner', 'printserver', 'brand', 'model']

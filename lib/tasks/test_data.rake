@@ -49,15 +49,33 @@ module Check
     assert_no_nils(my_products, 'brand')
     assert_no_nils(my_products, 'model')
     
+    $model::ValidRanges.each do |k,v|
+      assert_within_range( my_products, k, v[0], v[1])
+    end
+    
+    bad_mdls = {}
+    my_products.each do |product|
+      ['model', 'mpn'].each do |mdl_field|
+        mdl_value = product[mdl_field]
+        if mdl_value
+          mdl_quality = likely_model_name(mdl_value) 
+          if mdl_quality < 2
+            bad_mdls[mdl_value] = mdl_quality
+          end
+        end
+      end
+    end
+    announce "#{bad_mdls.size} #{$model.name}s have bad id fields"
+    if bad_mdls.size > 0
+      announce "Poor models are: #{bad_mdls.keys * ', '}."
+    end
+    
     announce "Out of #{$model.count} #{$model.name}s... "
     announce " ... #{$model.valid.count} are valid"
     announce " ... #{($model.instock | $model.instock_ca).count} are in stock (in CA or US)"
     announce " ... #{($model.valid.instock | $model.valid.instock_ca).count} are valid and in stock"
     announce "Testing #{my_products.count} #{$model.name}s for wonky data..."
     
-    $model::ValidRanges.each do |k,v|
-      assert_within_range( my_products, k, v[0], v[1])
-    end
     announce "Done checking #{$model.name}s "
   end
   
