@@ -6,15 +6,6 @@ from django.conf import settings
 
 os.chdir('/optemo/site')
 
-try:
-    settings.configure(DATABASE_ENGINE='mysql',
-                       DATABASE_NAME='optemo_development',
-                       DATABASE_USER='nimalan',
-                       DATABASE_PASSWORD='bobobo',
-                       DATABASE_HOST='jaguar')
-except(RuntimeError):
-    pass
-
 import cluster_labeling.optemo_django_models as optemo
 
 wordcount_filename = '/optemo/site/cluster_hierarchy_counts'
