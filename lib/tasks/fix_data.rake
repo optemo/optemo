@@ -373,6 +373,20 @@ namespace :fixdata do
       end  
   end
   
+  task :revote_cam_stuff => ['data:cam_init', :revote_forced]
+  
+  task :revote_forced do
+    stuff = ['itemlength', 'itemwidth', 'itemheight']
+    $model.all.each do |cam|
+      newdims = vote_on_values(cam)
+      stuff.each do |a|
+        if cam[a] != newdims[a]
+          fill_in_forced(a,newdims[a],cam)
+        end
+      end
+    end
+  end
+  
   task :reorder_dims => :environment do
   
     require 'helper_libs'

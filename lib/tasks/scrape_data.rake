@@ -67,7 +67,16 @@ module GenericScraper
     dimlabels = ['itemlength', 'itemheight', 'itemwidth']
     all_dimsets = (sps|[product]).collect{|sp| dimlabels.collect{|x| sp[x]}}
     all_dimsets.delete_if{|x| x.include?(nil) or x.include?(0)} # Remove invalid dimensions
-    best_dimset = vote_on_dimensions(all_dimsets)
+    all_valid_ds = all_dimsets.reject{|x| 
+      x.inject(false){|r,y|
+        r = (r or dimlabels.inject(true){|s,z|
+           s = (s and !in_range?(z,y,$model))
+           s
+          })
+        r
+      }
+    } # Remove invalid dimensions
+    best_dimset = vote_on_dimensions(all_valid_ds)
     if best_dimset and best_dimset != []
       dimlabels.size.times{ |i| avg_atts[dimlabels[i]] = best_dimset[i] } 
       avg_atts['dimensions'] = dims_to_s(avg_atts)
@@ -227,6 +236,8 @@ namespace :data do
     
   task :validate_amazon => [:printer_init,:amazon_init, :validate_printers]
   
+  task :camvote => [:cam_init,:vote]
+  
   # The 2 things you can do, in terms of subtasks: scrape and update
   task :scrape => [:scrape_new, :match_to_products, :update_bestoffers]
   task :update => [:update_prices, :scrape_new, :match_to_products, :update_bestoffers]
@@ -266,7 +277,6 @@ namespace :data do
   
   desc 'Get new prices and products from Amazon Marketplace (printers)'
   task :update_amazon_mkt_cameras => [:cam_init, :amazon_mkt_init, :update]
-  
   
    # The subtasks...
   task :vote do 
