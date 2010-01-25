@@ -42,7 +42,7 @@ class TestSession < Webrat::MechanizeSession
    # Gets the homepage and makes sure nothing crashed.
    def get_homepage product_type='printer'
      begin
-      visit "http://#{product_type.downcase}s.localhost:3000/"
+      visit "http://#{product_type.downcase}s.localhost:#{$port}/"
      rescue Timeout::Error => e
        report_error "#{e.class.name} #{e.message}"
      end
@@ -50,6 +50,12 @@ class TestSession < Webrat::MechanizeSession
         report_error "Error loading homepage" 
         raise "Error loading homepage" 
       end
+   end
+   
+   def close_popup_tour
+     the_link = get_el(doc.css('div.popupTour a.deleteX'))
+     click_link the_link.text if the_link
+     report_error "close popup tour link not found" if the_link.nil?
    end
    
    def click_browse_similar which_link

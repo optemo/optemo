@@ -1,6 +1,5 @@
 namespace :fixdata do
   
-  
   task :cam_rescrape  => ['data:cam_init', 'data:amazon_init', :rescrape_selected_2]
   
   task :cam_rescrape_mkt  => ['data:cam_init', 'data:amazon_mkt_init', :rescrape_selected]
@@ -91,14 +90,8 @@ namespace :fixdata do
   # TODO this is temporary
   task :cam_rematch => ['data:cam_init', 'data:match_to_products']
   
-  task :remove_danglers => :environment do 
+  task :remove_danglers do 
     require 'helper_libs'
-   
-    include CameraHelper
-    include CameraConstants
-    
-    $model = @@model
-    $scrapedmodel = @@scrapedmodel
     
     what = Review
     what.find_all_by_product_type($model.name).each do |ro|
@@ -109,7 +102,7 @@ namespace :fixdata do
     
   end
   
-  task :fix_links => ['data:cam_init'] do 
+  task :fix_links_2 => ['data:cam_init'] do 
     
     ptype = $model.to_s
     
