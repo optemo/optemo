@@ -22,16 +22,16 @@ class ClusterCount(local.LocalInsertOnlyModel):
         (cls, cluster_id, parent_cluster_id, numchildren):
         qs = cls.objects.\
              filter(parent_cluster_id = cluster_id).\
-             values('word').annotate(countsum=Sum('count'))
+             values('word').annotate(count_sum=Sum('count'))
 
         for row in qs:
             word = row['word']
-            countsum = row['countsum']
+            count_sum = row['count_sum']
 
             cluster_count = \
                 cls(cluster_id=cluster_id,
                     parent_cluster_id=parent_cluster_id,
-                    word=word, count=countsum,
+                    word=word, count=count_sum,
                     numchildren=numchildren)
             cluster_count.save()
 
