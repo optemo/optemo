@@ -12,7 +12,7 @@ wordcount_filename = '/optemo/site/cluster_hierarchy_counts'
 db = sqlite3.connect(wordcount_filename)
 
 import cluster_count_table as cct
-# import cluster_totalcounts_table as ctct
+import cluster_totalcounts_table as ctct
 
 # At the leaf clusters,
 # - wordcounts stores the number of a particular word found in all
@@ -22,13 +22,11 @@ import cluster_count_table as cct
 #   since only one product is associated with each leaf cluster.
 # - reviewcounts stores the number of reviews of a particular product
 #   associated with the cluster that contain the word.
-count_tablenames = ['wordcounts', 'prodcounts', 'reviewcounts']
-## totalcount_tables = map(ctct.ClusterTotalCountTable,
-##                         map(lambda tablename: tablename + "_total" ,
-##                             count_tablenames))
-
-count_tables = [cct.ClusterWordCount, cct.ClusterProdCount,
+count_tables = [cct.ClusterProdCount, cct.ClusterWordCount,
                 cct.ClusterReviewCount]
+totalcount_tables = [ctct.ClusterProdTotalCount,
+                     ctct.ClusterWordTotalCount,
+                     ctct.ClusterReviewTotalCount]
 
 import nltk.tokenize.punkt as punkt
 import nltk.tokenize.treebank as treebank
@@ -149,23 +147,26 @@ def compute_counts_for_cluster(cluster):
 
         map(lambda table, counts:
             table.add_counts_from(cluster, counts),
-            count_tables, [wordcount, prodcount, reviewcount])
+            count_tables, [prodcount, wordcount, reviewcount])
 
-##         totalcounts_to_add = [1]
-##         totalcount_tables_to_mod_idx = [1]
+        totalcounts_to_mod_values = [1]
+        totalcounts_to_mod = [ctct.ClusterProdTotalCount]
 
-##         if wordcount != {}:
-##             totalcounts_to_add.extend\
-##             ([sum(wordcount.itervalues()),
-##               product.get_reviews().count()])
-##             totalcount_tables_to_mod_idx.extend([0, 2])
+        # Total counts for reviews and words only need to be added if
+        # the product actually contains reviews.
+        if wordcount != {}:
+            totalcounts_to_mod_values.extend\
+            ([sum(wordcount.itervalues()),
+              product.get_reviews().count()])
+            totalcounts_to_mod.extend([ctct.ClusterWordTotalCount,
+                                       ctct.ClusterReviewTotalCount])
 
-##         map(lambda table_idx, totalcount:
-##             totalcount_tables[table_idx].add_totalcount_entry\
-##             (db, cluster.id, cluster.parent_id,
-##              numchildren, totalcount),
-##             totalcount_tables_to_mod_idx, totalcounts_to_add)
-
+        map(lambda table, totalcount:
+            table\
+            (cluster_id = cluster.id,
+             parent_cluster_id = cluster.parent_id,
+             totalcount = totalcount, numchildren = 0).save(),
+            totalcounts_to_mod, totalcounts_to_mod_values)
     else:
         map(lambda child: compute_counts_for_cluster(child),
             children)
@@ -174,22 +175,20 @@ def compute_counts_for_cluster(cluster):
             table.sum_child_cluster_counts\
             (cluster.id, cluster.parent_id, numchildren),
             count_tables)
-##         map(lambda table:
-##             table.sum_child_cluster_totalcounts\
-##             (db, cluster.id, cluster.parent_id, numchildren),
-##             totalcount_tables)
+        map(lambda table:
+            table.sum_child_cluster_totalcounts\
+            (cluster.id, cluster.parent_id, numchildren),
+            totalcount_tables)
         
 def compute_all_counts\
         (version=optemo.CameraCluster.get_latest_version()):
     # All tables should be recreated, otherwise the resulting counts
     # will not be valid.
     map(lambda table: table.drop_table_if_exists(), count_tables)
-##     map(lambda table: table.drop_totalcount_table(db),
-##         totalcount_tables)
+    map(lambda table: table.drop_table_if_exists(), totalcount_tables)
     
     map(lambda table: table.create_table(), count_tables)
-##     map(lambda table: table.create_totalcount_table(db),
-##         totalcount_tables)
+    map(lambda table: table.create_table(), totalcount_tables)
     
     # Get clusters just below the root.
     root_children = \
@@ -201,8 +200,8 @@ def compute_all_counts\
 
     map(lambda table:
         table.sum_child_cluster_counts(0, -1, root_children.count()),
-        count_tables)
-##     map(lambda table:
-##         table.sum_child_cluster_totalcounts\
-##         (db, 0, -1, root_children.count()),
-##         totalcount_tables)
+        count_tables)    
+    map(lambda table:
+        table.sum_child_cluster_totalcounts\
+        (0, -1, root_children.count()),
+        totalcount_tables)
