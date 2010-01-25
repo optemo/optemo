@@ -12,7 +12,7 @@ wordcount_filename = '/optemo/site/cluster_hierarchy_counts'
 db = sqlite3.connect(wordcount_filename)
 
 import cluster_count_table as cct
-import cluster_totalcounts_table as ctct
+import cluster_totalcount_table as ctct
 
 # At the leaf clusters,
 # - wordcounts stores the number of a particular word found in all
