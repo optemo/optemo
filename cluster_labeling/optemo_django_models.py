@@ -98,7 +98,7 @@ class Camera(OptemoModel):
                   (product_id = self.id, version = version)
         cluster_ids = map(lambda n: n.cluster_id, node_qs)
         cluster_qs = CameraCluster.get_manager().filter\
-                     (id__in=cluster_qs)
+                     (id__in=cluster_ids)
 
         return cluster_qs
 
