@@ -48,3 +48,10 @@ class LocalModel(models.Model):
         c = cls.get_db_conn().cursor()
         c.execute("DROP TABLE IF EXISTS %s" % (cls._meta.db_table))
         transaction.set_dirty()
+
+class LocalInsertOnlyModel(LocalModel):
+    class Meta:
+        abstract = True
+
+    def save(self):
+        LocalModel.save(self, force_insert=True)

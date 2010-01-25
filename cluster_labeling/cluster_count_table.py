@@ -6,7 +6,7 @@ from django.db.models import Sum
 
 import cluster_labeling.local_django_models as local
 
-class ClusterCount(local.LocalModel):
+class ClusterCount(local.LocalInsertOnlyModel):
     class Meta:
         abstract = True
         unique_together = (("cluster_id", "word"))
@@ -44,9 +44,6 @@ class ClusterCount(local.LocalModel):
                     parent_cluster_id=cluster.parent_id,
                     word=word, count=count, numchildren=numchildren)
             cluster_count.save()
-
-    def save(self):
-        local.LocalModel.save(self, force_insert=True)
 
 class ClusterWordCount(ClusterCount):
     class Meta:
