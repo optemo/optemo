@@ -2,6 +2,8 @@
 from django.db import models
 from django.db import connections, transaction
 
+from django.db.models import Sum
+
 import cluster_labeling.local_django_models as local
 
 class ClusterCount(local.LocalModel):
@@ -16,25 +18,15 @@ class ClusterCount(local.LocalModel):
     numchildren = models.IntegerField()
 
     @classmethod
-    def gen_sum_child_counts_sql(cls):
-        return \
-        "SELECT word, SUM(count) from " + cls._meta.db_table + " " + \
-        "WHERE parent_cluster_id = %s GROUP BY word"
-
-    @classmethod
-    @transaction.commit_on_success
     def sum_child_cluster_counts\
-            (cls, cluster_id, parent_cluster_id, numchildren):
-        c = cls.get_db_conn().cursor()
-        c.execute(cls.gen_sum_child_counts_sql(), [str(cluster_id)])
+        (cls, cluster_id, parent_cluster_id, numchildren):
+        qs = cls.objects.\
+             filter(parent_cluster_id = cluster_id).\
+             values('word').annotate(countsum=Sum('count'))
 
-        transaction.set_dirty()
-
-        # Using fetchone() and save()ing clustercounts concurrenctly
-        # results in badness, possibly because the same cursor is
-        # being used. Stupid Django..
-        for row in c.fetchall():
-            word, countsum = row[0:2]
+        for row in qs:
+            word = row['word']
+            countsum = row['countsum']
 
             cluster_count = \
                 cls(cluster_id=cluster_id,
@@ -54,7 +46,7 @@ class ClusterCount(local.LocalModel):
             cluster_count.save()
 
     def save(self):
-        LocalModel.save(self, force_insert=True)
+        local.LocalModel.save(self, force_insert=True)
 
 class ClusterWordCount(ClusterCount):
     class Meta:
