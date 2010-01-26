@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from django.db import models
 import cluster_labeling.local_django_models as local
 
 class ClusterValueForWord(local.LocalInsertOnlyModel):

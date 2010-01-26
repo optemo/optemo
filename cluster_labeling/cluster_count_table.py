@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from django.db import models
 import cluster_labeling.cluster_value_for_word_table as cvfwt
 
 from django.db.models import Sum
