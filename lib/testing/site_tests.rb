@@ -2,7 +2,6 @@ module SiteTest
 
   def test_detail_page box_index
     log "Getting Detail page for #{box_index+1}th box, product id #{@sesh.pid_by_box(box_index+1)}"
-    come_back_here = @sesh.current_url
     begin
       @sesh.get_detail_page (box_index+1)
     rescue Exception => e
@@ -14,7 +13,7 @@ module SiteTest
       assert_detail_price_not_nil
       assert_detail_pic_not_nil
     end
-    @sesh.visit come_back_here
+    @sesh.click_back_button
     @sesh.wait_for_load if java_enabled?
     assert_not_error_page
     assert_well_formed_page
@@ -56,6 +55,20 @@ module SiteTest
       hist.pop
       @sesh.click_back_button
     end
+  end
+  
+  def test_back_button
+     #@num_products_before = @sesh.num_products
+     #@num_brands_selected_before = @sesh.num_brands_selected
+     #@num_boxes_before = @sesh.num_boxes
+     #@num_saved_items_before = @sesh.num_saved_items
+     #@num_similar_links_before = @sesh.num_similar_links
+     #@num_clear_search_links_before = @sesh.num_clear_search_links
+     #@session_id_before = @sesh.session_id 
+     #@no_products_found_msg_before = @sesh.no_products_found_msg?
+     #@error_page_before = @sesh.error_page?
+     #@url_before = @sesh.current_url
+     #@history.push @sesh.current_url 
   end
   
   def test_goto_homepage
@@ -159,13 +172,16 @@ module SiteTest
     log "Adding brand " + @sesh.brand_name(brand)
     # Preconditions & stuff.
     snapshot
+    debugger
     @brand_selected_before = @sesh.brand_selected? brand
   
     begin 
+      debugger
       @sesh.select_brand brand          
     rescue Exception => e # This detects crashing.
       report_error e.class.name.to_s + " with " + @sesh.brand_name(brand) + ", message:" + e.message.to_s
     else
+      debugger
       assert_not_error_page
       assert_well_formed_page
   
@@ -174,25 +190,20 @@ module SiteTest
         assert_num_products_same
       elsif brand == 0
         puts "But it should be going to the loop above"
-  
       elsif @brand_selected_before
         log "This brand was selected before."
         assert_num_products_same
         assert_brand_selected brand
-  
       elsif @sesh.no_products_found_msg?
         log "There were no products found for this brand."
         assert_brand_deselected brand
         assert_num_products_same
         assert_brands_same
-  
       else
         assert_brand_selected brand
         # TODO other asserts!
       end
-  
     end
-  
     log "Done testing add brand " + @sesh.brand_name(brand)
   end
   

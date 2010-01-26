@@ -21,28 +21,9 @@ module AmazonScraper
   def scrape_all_local_ids region
     announce "[#{Time.now}] Getting a list of all Amazon IDs associated with #{$model}s. This may take a while"
     
-    current_page = 1
-    count = 0
-    added = []
-    loop do
-      begin
-        res = Amazon::Ecs.item_search('',:browse_node => $browse_node_id, :search_index => $search_index, :response_group => 'ItemIds', :item_page => current_page)# , :country => region.intern
-        be_nice_to_amazon
-      rescue Exception => exc
-        report_error "Problem while getting local ids, on #{current_page}th page of request."
-        report_error "#{exc.message}"
-        log_snore(10)
-        current_page += 1
-      else
-        report_error "#{res.error}. Couldn't download ASINs for page #{current_page}" if  res.has_error?    
-        total_pages = res.total_pages unless total_pages
-        added += res.items.collect{ |item| item.get('asin') }
-        current_page += 1
-      end
-      log "[#{Time.now}] Read #{current_page-1} pages..."
-      break if (current_page > total_pages) #or current_page > 5) # <-- For testing only!
-    end
-    
+    cachefile = open_cache(curr_retailer(region))
+    nokocache = Nokogiri::HTML(cachefile)
+    added = nokocache.css('item/asin').collect{|x| x.content}
     announce "[#{Time.now}] Done getting Amazon IDs!"
     
     return added.reject{|x| x.nil? or x == ''}
@@ -86,122 +67,95 @@ module AmazonScraper
     atts = specs.merge(prices)
     atts['local_id'] = local_id
     atts['region'] = region
-    
     return atts
   end
   
   private
   
+  #DO NOT CACHE THIS STUFF
   # Scrape product specs from feed
-  def scrape_specs local_id
-    begin
-      res = Amazon::Ecs.item_lookup(local_id, :response_group => 'ItemAttributes,Images', :review_page => 1)
-      be_nice_to_amazon
-    rescue Exception => exc
-      report_error "Could not scrape #{local_id} data"
-      report_error "#{exc.class.name} #{exc.message}"
-      log_snore(120) 
-      return {}
-    else
-      nokodoc = Nokogiri::HTML(res.doc.to_html)
-      item = nokodoc.css('item').first
-      if item
-        detailurl = item.css('detailpageurl').first.content
-        atts = {}
-        
-        temphash = {}
-        item.xpath('itemattributes/*').each do |x| 
-          temphash[x.name] = (temphash[x.name] || []) + [x.content]
-        end
-        temphash.each do |k, v|
-          atts[k] = combine_for_storage(v)
-        end
-        
-        item.css('itemattributes/itemdimensions/*').each do |dim|
-          temp = (dim.attributes['units'] || '').to_s.strip
-          case temp
-          when 'inches'
-            atts["item#{dim.name}"] =( dim.text.to_f*100).to_i
-          when 'cm'
-            report_error "WARNING: dimensions in cm! Don't know how to handle"
-          else # assume it's in hundreths of inches
-            atts["item#{dim.name}"] = dim.text.to_i
-          end
-        end
-        
-        temp = get_el item.css('largeimage/url')
-        atts['imageurl'] = temp.content if temp
-        
-        (atts['specialfeatures'] || '').split('|').each do |x| 
-          pair = x.split('^')
-          next if pair.length < 2
-          name = just_alphanumeric("#{pair[0]}")
-          val = "#{pair[1]}"
-          next if name.strip == '' or val.strip == ''
-          if atts[name]
-          	vals = combine_for_storage(separate(atts[name]) + [val])
-          else
-          	vals = val
-          end
-          atts.merge!(name => vals)
-        end
-        return atts
-      end
-    end
-    return {}
-  end
+   def scrape_specs local_id
+     begin
+       res = Amazon::Ecs.item_lookup(local_id, :response_group => 'ItemAttributes,Images', :review_page => 1)
+       be_nice_to_amazon
+     rescue Exception => exc
+       report_error "Could not scrape #{local_id} data"
+       report_error "#{exc.class.name} #{exc.message}"
+       log_snore(120) 
+       return {}
+     else
+       nokodoc = Nokogiri::HTML(res.doc.to_html)
+       item = nokodoc.css('item').first
+       if item
+         detailurl = item.css('detailpageurl').first.content
+         atts = {}
+
+         temphash = {}
+         item.xpath('itemattributes/*').each do |x| 
+           temphash[x.name] = (temphash[x.name] || []) + [x.content]
+         end
+         temphash.each do |k, v|
+           atts[k] = combine_for_storage(v)
+         end
+
+         item.css('itemattributes/itemdimensions/*').each do |dim|
+           temp = (dim.attributes['units'] || '').to_s.strip
+           case temp
+           when 'inches'
+             atts["item#{dim.name}"] =( dim.text.to_f*100).to_i
+           when 'cm'
+             report_error "WARNING: dimensions in cm! Don't know how to handle"
+           else # assume it's in hundreths of inches
+             atts["item#{dim.name}"] = dim.text.to_i
+           end
+         end
+
+         atts['imageurl'] = get_text(item.css('largeimage/url'))
+
+         (atts['specialfeatures'] || '').split('|').each do |x| 
+           pair = x.split('^')
+           next if pair.length < 2
+           name = just_alphanumeric("#{pair[0]}")
+           val = "#{pair[1]}"
+           next if name.strip == '' or val.strip == ''
+           if atts[name]
+           	vals = combine_for_storage(separate(atts[name]) + [val])
+           else
+           	vals = val
+           end
+           atts.merge!(name => vals)
+         end
+         return atts
+       end
+     end
+     return {}
+   end
   
   # Find the offering with the lowest price
   # for a given asin and region. 
   # precondition -- $retailers should only
   # contain one retailer per region
-  def scrape_best_offer asin, region
-    lowestprice = 1000000000
-    lowoffer = nil
-    
-    merchant_searchstring = 'All'
-    merchant_searchstring = AmazonID if curr_retailer(region).name == 'Amazon'
-    merchant_searchstring = AmazonCAID if curr_retailer(region).name == 'Amazon.ca'
-    
-    current_page = 1    
-    begin
-      begin
-        res = Amazon::Ecs.item_lookup(asin, :response_group => 'OfferListings', :condition => 'New', :merchant_id => merchant_searchstring, :offer_page => current_page, :country => region.intern)
-        be_nice_to_amazon
-      rescue Exception => exc
-        report_error "#{exc.message} . Could not look up offers for #{asin} in region #{region}"
-        log_snore(30) 
-        return
-      else
-        total_pages = res.total_pages unless total_pages
-        if res.first_item.nil?
-          current_page += 1
-          next
-        end
-        offers = res.first_item.search_and_convert('offers/offer')
-        if offers.nil?
-          current_page += 1
-          next
-        end
-        offers = [] << offers unless offers.class == Array
-        offers.each do |o| 
-          price = o.get('offerlisting/price/formattedprice')
-          if price.nil? or o.get('offerlisting/price').to_s.match(/too low/i)
-            price = 0  # TODO scrape_hidden_prices(asin,region)
-            #price = lowestprice # Do not use the too-low offerings!
-          else
-            price = get_min_f(price.to_s)
-          end
-          merchant = decipher_retailer(o.get('merchant/merchantid'), region)
-          if price < lowestprice and merchant == (curr_retailer(region)).name
-            lowestprice = price
-            lowoffer = o
-          end
-        end
-        current_page += 1
+  def scrape_best_offer asin, region, nokocache=nil
+    ret = curr_retailer(region)
+    nokocache = Nokogiri::HTML(open_cache(ret)) unless nokocache
+    item = nokocache.css("item").reject{|x| get_text(x.css('asin')) != asin}.first
+    if item
+      offers = item.css('offers/offer')
+      unless ret.name.match(/marketplace/i)
+         debugger if offers.length > 1
+         return offers.first if offers.length > 0
+         return nil
       end
-    end while (!total_pages.nil? and current_page <= total_pages)
-    return lowoffer
+      #bestprice ||= item.css('offersummary/lowestnewprice/*')
+      offers.each do |o| 
+        temp = get_text(o.css('merchant/merchantid'))
+        next if decipher_retailer(temp,region) != ret.name
+        debugger
+        0
+        return o
+      end
+    end
+    return nil
   end
 
   # Returns retailer name by region.
@@ -215,7 +169,6 @@ module AmazonScraper
   # best-priced offer for a given
   # asin in the given region
   def rescrape_prices asin, region
-    
     offer_atts = {}
     best = scrape_best_offer(asin, region)
     
@@ -233,27 +186,28 @@ module AmazonScraper
   # as it is in the feed and puts it into
   # a hash of {attribute => att value}.
   def offer_to_atthash offer, asin, region
-    atts = {}
-    atts['pricestr'] = offer.get('offerlisting/price/formattedprice').to_s
+    atts = {'local_id' => asin, 'region' => region.downcase}
+    atts['pricestr'] = offer.css('offerlisting/price/formattedprice').text
     
-    if offer.get('offerlisting/price/formattedprice') == 'Too low to display'
+    if get_text(offer.css('offerlisting/price/formattedprice')) == 'Too low to display'
         atts['toolow']   = true
-        atts['stock'] = false
+        #atts['stock'] = false
         #TODO atts['pricestr'] = scrape_hidden_prices(asin,region)
     else
         atts['toolow']   = false
-        atts['pricestr'] = offer.get('offerlisting/price/formattedprice')
+        atts['pricestr'] = get_text(offer.css('offerlisting/price/formattedprice'))
         atts['stock']    = true
     end
     
-    atts['availability'] = offer.get('offerlisting/availability')
+    atts['availability'] = get_text(offer.css('offerlisting/availability'))
     atts['availability'] = 'In stock' if (atts['availability'] || '').match(/out of stock/i) 
    
-    atts['merchant']     = offer.get('merchant/merchantid')
+    atts['merchant']     = get_text(offer.css('merchant/merchantid'))
     
-    atts['url'] = "http://amazon.#{region=="us" ? "com" : region}/gp/product/"+asin+"?tag=#{region=="us" ? "optemo-20" : "laserprinterh-20"}&m="+atts['merchant']
-    atts['iseligibleforsupersavershipping'] = offer.get('offerlisting/iseligibleforsupersavershipping')
+    atts['condition'] = get_text(offer.css('condition'))
     
+    atts['url'] = id_to_sponsored_link(asin, region, atts['merchant'])
+    atts['iseligibleforsupersavershipping'] = get_text(offer.css('offerlisting/iseligibleforsupersavershipping'))
     return atts
   end
 
@@ -266,11 +220,11 @@ module AmazonScraper
     url = "http://www.amazon.#{region=="us" ? "com" : region}/o/asin/#{asin}"
     log_snore(15)
     doc = Nokogiri::HTML(open(url))
-    price_el = get_el(doc.css('.listprice'))
+    price_el = get_text(doc.css('.listprice'))
     price = price_el.text unless price_el.nil?
     return price
   end
-
+  
   def parse_review result
     reviews = {}
     reviews["averagereviewrating"] = result.get('averagerating')
@@ -383,7 +337,7 @@ module AmazonScraper
     temp1 = clean_brand atts['title'], $printer_brands
     temp2 = clean_brand atts['brand'], $printer_brands
     cleaned_atts['brand'] = temp1 || temp2
-    cleaned_atts['condition'] ||= 'New'
+    #cleaned_atts['condition'] ||= 'New'
     atts['resolutionmax'] = get_max_f(atts['resolution']) if atts['resolution']
     return cleaned_atts
   end
@@ -403,9 +357,9 @@ module AmazonScraper
     cleaned_atts['toner'] = false if (cleaned_atts['title'] || '').match(/ink/i) 
     
     conditions = ['Remanufactured', 'Refurbished', 'Compatible', 'OEM', 'New']
-    conditions.each{|c| 
+    conditions.each do |c| 
       (cleaned_atts['condition'] = c) and break if (cleaned_atts['title'] || '').match(/#{c}/i)
-    }
+    end
     
     cleaned_atts['compatible'] = cleaned_atts['feature'] + "#{cleaned_atts['compatible']}" if cleaned_atts['feature']
     return cleaned_atts
@@ -449,4 +403,78 @@ module AmazonScraper
      sleep(1+rand()*30)
   end
   
-end
+  # CACHING
+  
+  def get_merchant_str retailer_name
+    merchant_searchstring = nil
+    merchant_searchstring = AmazonID if retailer_name == 'Amazon'
+    merchant_searchstring = AmazonCAID if retailer_name == 'Amazon.ca'
+    return merchant_searchstring
+  end
+  
+  def cachefile_name(retailer)
+    return "./cache/#{retailer.name.gsub(/(\s|\.)/,'_').downcase}_#{$model.name.downcase}.html"
+  end
+  
+  def open_cache(retailer)
+    cfname = cachefile_name(retailer)
+    if(!File.exists?(cfname) or ((Time.now-File.mtime(cfname)).to_i/3600 > 12) )
+      refresh_cache(retailer)
+    end
+    return File.open(cfname, 'r') if File.exists?(cfname)
+    return nil
+  end
+  
+  def refresh_cache(retailer)
+    cachefile = File.open(cachefile_name(retailer), 'w')
+    # params for the request...
+      merch = get_merchant_str(retailer.name) || 'All'
+      bnode = browse_node_id(retailer.region, $model)
+      place = retailer.region.intern
+    current_page = 1
+    loop do
+      begin
+        res = Amazon::Ecs.item_search('',:browse_node => bnode, :search_index => $search_index, \
+          :merchant_id => merch, :country => place, :response_group => 'Offers',\
+          :item_page => current_page, :service => 'AWSECommerceService')
+        be_nice_to_amazon
+      rescue Exception => exc
+        report_error "Couldn't download Offers for page #{current_page}"
+        report_error "#{exc.class.name} #{exc.message}"
+      else
+        if(res)
+          totalpages ||= res.total_pages
+          nokodoc = res.doc.to_html
+          cachefile.puts("#{nokodoc}")
+        end      
+      end
+      timed_announce "Done #{current_page} of #{totalpages} pages"
+      current_page += 1
+      break if totalpages and current_page > totalpages # In case there is a bad request, break loop
+    end
+    cachefile.close
+  end
+  
+  def browse_node_id region, model=$model
+    case model.name
+      when 'Printer'
+        if region.downcase == 'ca'
+          return '677265011'
+        else 
+          return '172648'
+        end
+      when 'Camera'
+        if region.downcase == 'ca'
+          return '677235011'
+        else 
+          return '330405011'
+        end
+      when 'Cartridge'
+        return '172641'
+    end
+  end
+  
+end  
+ #  res = Amazon::Ecs.item_search('',:browse_node => bn, :search_index => $search_index,\
+ # :merchant_id => merchant_searchstring, :country => reg, \ #:availability => 'Available', #  :condition => 'New', 
+ #  :response_group => 'Offers', :item_page => current_page, :service=> 'AWSECommerceService')

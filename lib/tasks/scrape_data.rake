@@ -34,9 +34,9 @@ module GenericScraper
   
   def vote_on_values product
     sps = $scrapedmodel.find_all_by_product_id(product.id)
-    dontvote = ['itemheight', 'itemwidth', 'itemlength', 'price', 'price_ca']
+    dimlabels = ['itemlength', 'itemheight', 'itemwidth']
+    dontvote = ['price', 'price_ca'] | dimlabels
     atts = $model::ContinuousFeatures + ['ttp', 'itemweight'] - dontvote
-    #atts = [ 'itemweight',  'ppm', 'ttp', 'paperinput', 'resolutionmax','scanner', 'printserver']
     
     all_atts = {}
     atts.each{|x| all_atts[x] = [product.[](x)]} # Current value counts for something too...
@@ -64,10 +64,21 @@ module GenericScraper
     all_atts.each{|att,vals| avg_atts[att] = vote(vals)}
     
     # vote on dimensions
-    dimlabels = ['itemlength', 'itemheight', 'itemwidth']
-    all_dimsets = (sps|[product]).collect{|sp| dimlabels.collect{|x| sp[x]}}
-    all_dimsets.delete_if{|x| x.include?(nil) or x.include?(0)} # Remove invalid dimensions
-    best_dimset = vote_on_dimensions(all_dimsets)
+    dimsets = []
+    # Get VALID DIM SETS ONLY
+    (sps|[product]).each do |sp| 
+      dimhash = dimlabels.inject({}){|r,x|
+        r[x] = sp[x]
+        r
+      }
+      next if dimhash.keys.include?(nil)
+      validity = dimhash.collect{|k,v| in_range?(k,(v || 0),$model)}
+      if validity.uniq == [true]
+        dimsets << dimhash.values
+      end
+    end
+    
+    best_dimset = vote_on_dimensions(dimsets)
     if best_dimset and best_dimset != []
       dimlabels.size.times{ |i| avg_atts[dimlabels[i]] = best_dimset[i] } 
       avg_atts['dimensions'] = dims_to_s(avg_atts)
@@ -195,9 +206,6 @@ namespace :data do
           retailer = Retailer.find(retailer_ok_sp.retailer_id)
           spid = retailer_ok_sp.id
           generic_scrape(local_id, retailer)
-          #if retailer_ok_sp[att].nil?
-          #  puts "#{spid} has a nil #{att}..."
-          #else
           unless atts.collect{|x| retailer_ok_sp[x]}.include?(nil)
             newvals ||= retailer_ok_sp.attributes
             puts "#{spid} has been fixed!"
@@ -226,6 +234,8 @@ namespace :data do
   task :scrape_amazon_cams => [:cam_init, :amazon_init, :scrape_new, :update_prices]
     
   task :validate_amazon => [:printer_init,:amazon_init, :validate_printers]
+  
+  task :camvote => [:cam_init,:vote]
   
   # The 2 things you can do, in terms of subtasks: scrape and update
   task :scrape => [:scrape_new, :match_to_products, :update_bestoffers]
@@ -266,7 +276,6 @@ namespace :data do
   
   desc 'Get new prices and products from Amazon Marketplace (printers)'
   task :update_amazon_mkt_cameras => [:cam_init, :amazon_mkt_init, :update]
-  
   
    # The subtasks...
   task :vote do 
@@ -317,18 +326,13 @@ namespace :data do
     @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{$model.name}_scraper.log", 'w+')
     my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id_and_product_type(x.id, $model.name)}
     my_offerings.each_with_index do |offering, i|
-      begin
-        next if offering.local_id.nil?
-        newatts = rescrape_prices(offering.local_id, offering.region)
-        
-        update_offering(newatts, offering) if offering
-        if(offering.product_id and $model.exists?(offering.product_id))
-          update_bestoffer($model.find(offering.product_id))
-        end  
-      rescue Exception => e
-        report_error "with RetailerOffering #{offering.id}: #{e.class.name} #{e.message}"
-        log_snore(20*60) # sleep for 20 min 
-      end
+      next if offering.local_id.nil?
+      newatts = rescrape_prices(offering.local_id, offering.region)
+      
+      update_offering(newatts, offering) if offering
+      if(offering.product_id and $model.exists?(offering.product_id))
+        update_bestoffer($model.find(offering.product_id))
+      end  
       log "[#{Time.now}] Done updating #{i+1} of #{my_offerings.count} offerings"
     end
     
@@ -457,7 +461,7 @@ namespace :data do
          'local_id', "product_type", "region", "retailer_id"]
       $bools_assume_no = ['printserver', 'scanner']
   end
-    
+  
   task :amazon_mkt_init => :amazon_init do
     $retailers = [Retailer.find(2),Retailer.find(10)]
   end
@@ -465,31 +469,23 @@ namespace :data do
   task :amazon_init do
     require 'amazon/ecs'
     include Amazon
-    
+  
     require 'nokogiri'
     include Nokogiri
-    
+  
     require 'helpers/sitespecific/amazon_scraper'
     include AmazonScraper
-    
+  
     Amazon::Ecs.options = { :aWS_access_key_id => '0NHTZ9NMZF742TQM4EG2', \
                             :aWS_secret_key => 'WOYtAuy2gvRPwhGgj0Nz/fthh+/oxCu2Ya4lkMxO'}
-    
+  
     AmazonID =   'ATVPDKIKX0DER'
     AmazonCAID = 'A3DWYIK6Y9EEQB'
-    
+  
     $search_index = 'Electronics'
-    $browse_node_id = case $model.name
-      when 'Printer'
-        '172648'
-      when 'Camera'
-        '330405011'
-      when 'Cartridge'
-        '172641'
-    end
     $retailers = [Retailer.find(1),Retailer.find(8)]
   end
-
+  
   task :newegg_init => :printer_init do
     
     require 'helpers/sitespecific/newegg_scraper'

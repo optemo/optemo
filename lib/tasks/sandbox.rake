@@ -181,4 +181,78 @@ namespace :sandbox do
       
   end
   
+  task :test_amazon_cache => ['data:printer_init', 'data:amazon_mkt_init'] do
+    
+    $retailers.each do |ret|
+      start = Time.now
+      mycache = open_cache(ret)
+      time = Time.now - start
+      puts "Took #{time} seconds to get #{ret.name} #{$model.name} cache"
+      nokocache = Nokogiri::HTML(mycache)
+      # Test num available items
+      num_items = nokocache.css('item').count
+      puts "#{num_items} items in #{ret.name} cache"
+      debugger
+      my_offerings = RetailerOffering.find_all_by_retailer_id_and_product_type(ret.id, $model.name).reject{|x| x.local_id.nil?}[2..5]
+     #my_offerings = ['B001XUQP9G', 'B0006UGKUI', 'B000XZ1LJG', 'B0027ISA1Y'].collect{|x| RetailerOffering.find_by_local_id_and_product_type(x, $model.name)}.reject{|x| x.nil?}
+      my_offerings.each do |offering|
+          next if offering.local_id.nil?
+          newatts = rescrape_prices(offering.local_id, ret.region)
+          puts "Was it toolow? #{newatts['toolow']}"
+          puts "Was it in stock? #{newatts['stock']}"
+          puts "Price will be #{newatts['pricestr']}"
+          deciphered = (decipher_retailer( newatts['merchant'], newatts['region']))
+          puts "The new RO appears to be from #{deciphered} (should be from #{ret.name})"
+          puts "Now please check availability for #{id_to_details_url( offering.local_id, ret.region)}"
+          puts "Should be #{newatts['availability']}"
+          debugger 
+          0
+      end
+    end
+    #puts "Done"
+  end
+  
+  
+  
+  task :test_redo_amazon_cache => ['data:printer_init', 'data:amazon_init'] do
+    
+    $retailers.each do |ret|
+      start = Time.now
+      mycache = refresh_cache(ret)
+      time = Time.now - start
+      puts "Took #{time} seconds to get #{ret.name} #{$model.name} cache"
+      nokocache = Nokogiri::HTML(mycache)
+    end
+    #puts "Done"
+  end
+  
+  task :time_amazon_update => ['data:printer_init', 'data:amazon_init', :update_timer]
+  
+  task :update_timer do
+    #num_to_update = 10_000
+    my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id_and_product_type(x.id, $model.name)}#[1..num_to_update]
+    num_to_update = my_offerings.count
+    
+    time = Time.now
+    my_offerings.each_with_index do |offering, i|
+      begin
+        next if offering.local_id.nil?
+        newatts = rescrape_prices(offering.local_id, offering.region)
+        
+        update_offering(newatts, offering) if offering
+        if(offering.product_id and $model.exists?(offering.product_id))
+          update_bestoffer($model.find(offering.product_id))
+        end  
+      rescue Exception => e
+        report_error "with RetailerOffering #{offering.id}: #{e.class.name} #{e.message}"
+        sleep(1) # Do not skew timing results
+      end
+      log "[#{Time.now}] Done updating #{i+1} of #{my_offerings.count} offerings"
+    end
+    
+    time = Time.now - time
+    puts "Took #{time} seconds to get #{num_to_update} offerings"
+  end
+  
+  
 end

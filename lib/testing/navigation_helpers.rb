@@ -97,19 +97,19 @@ module NavigationHelpers
    end
    
    def brand_id brandname
-    all_brands = doc.css("#myfilter_brand option")
+    all_brands = doc.css("#selector option")
     all_brands.each_with_index { |el,i| return i if el.attribute('value').to_s == brandname }
     return -1
    end
    
    def brand_name which_brand
-     brand_el = doc.css("#myfilter_brand option")[which_brand]
+     brand_el = doc.css("#selector option")[which_brand]
      return "" if (brand_el.nil?)
      return brand_el.attribute( 'value').to_s
    end
    
    def num_brands_in_dropdown
-     return num_elements('#myfilter_brand option')
+     return num_elements('select#selector option')
    end
    
    def num_brands_selected

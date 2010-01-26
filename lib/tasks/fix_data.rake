@@ -1,4 +1,4 @@
-namespace :fixdata do
+namespace :fix_data do
   
   task :cam_rescrape  => ['data:cam_init', 'data:amazon_init', :rescrape_selected_2]
   
@@ -278,6 +278,36 @@ namespace :fixdata do
     end
   end
   
+  task :fix_pricehist => 'data:cam_init' do
+    require 'yaml'
+    ros = RetailerOffering.all.reject{|x| x.pricehistory.nil?}
+    ros.each_with_index do |ro|
+      hist = ro.pricehistory
+      puts "#{ro.id}" if hist and hist.match(/\n$/).nil?
+      hist += "\n" if hist and hist.match(/\n$/).nil?
+      #debugger if hist != ro.pricehistory
+      fill_in('pricehistory', hist,ro)
+      #debugger
+      begin
+        hist_obj = YAML::load(hist)
+      rescue Exception => e
+        debugger
+        0
+      else
+        next if hist_obj.class == Hash
+        puts "Uh oh #{ro.id}"
+        #hist_hash = {}
+        #hist_obj.each_with_index do |x,i|
+        #  next if i%2 == 1 
+        #  hist_hash[hist_obj[i]]= hist_obj[i+1]
+        #end
+        #newhist_yaml = YAML::dump(hist_hash)
+        #debugger if newhist_yaml.match(/\n$/).nil?
+        #fill_in_forced('pricehistory', newhist_yaml, ro)
+      end
+    end    
+  end
+  
   task :match_ros => :environment do 
     require 'helper_libs'
    
@@ -373,6 +403,20 @@ namespace :fixdata do
       end  
   end
   
+  task :revote_cam_stuff => ['data:cam_init', :revote_forced]
+  
+  task :revote_forced do
+    stuff = ['itemlength', 'itemwidth', 'itemheight', 'dimensions']
+    $model.all.each do |cam|
+      newdims = vote_on_values(cam)
+      stuff.each do |a|
+        if cam[a] != newdims[a]
+          fill_in_forced(a,newdims[a],cam)
+        end
+      end
+    end
+  end
+  
   task :reorder_dims => :environment do
   
     require 'helper_libs'
@@ -386,24 +430,27 @@ namespace :fixdata do
     $model = Camera
     $scrapedmodel = ScrapedCamera
     
-    which_product_ids = Camera.all.collect{|x| x.id}
+    #which_product_ids = Camera.all.collect{|x| x.id}
     
     dimlabels = ['itemlength', 'itemwidth', 'itemheight']
     
-    which_product_ids.each do |pid| 
-      sps = ScrapedCamera.find_all_by_product_id(pid)
+    #which_product_ids.each do |pid| 
+    #  sps = ScrapedCamera.find_all_by_product_id(pid)
+    sps = ScrapedCamera.all
       if sps.length != 0
         sps.each do |sp|
           atts = sp.attributes.reject{|a,b| !dimlabels.include?(a.to_s)}
           all_vals_to_s!(atts)
           rearrange_dims!(atts, ['D', 'H', 'W'], true)
-          fill_in_all(atts,sp)
+          dimlabels.each do |dim|
+            fill_in_forced(dim,atts[dim], sp)
+          end
         end
       end
-      p = Camera.find(pid)
-      avgs = vote_on_values(p)
-      fill_in_all(avgs, p)
-    end
+      #p = Camera.find(pid)
+      #avgs = vote_on_values(p)
+      #fill_in_all(avgs, p)
+   # end
   end
   
   task :test_fix_brands_ptr => [:debug_mode, :fix_brands_ptr]

@@ -33,7 +33,7 @@ class JavaTestSession < Webrat::SeleniumSession
    end
    
    def select_brand which_brand
-     self.selenium.select( 'myfilter_brand', 'value='+ brand_name(which_brand).to_s) 
+     self.selenium.select( 'selector', 'value='+ brand_name(which_brand).to_s) 
      wait_for_ajax
    end
    
