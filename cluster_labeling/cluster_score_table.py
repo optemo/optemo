@@ -9,3 +9,8 @@ class ClusterScore(cvfwt.ClusterValueForWord):
 
     value_name = "score"
     score = models.BigIntegerField()
+
+class ClusterMIScore(ClusterScore):
+    class Meta:
+        db_table = 'mi_scores'
+        unique_together = (("cluster_id", "word"))
