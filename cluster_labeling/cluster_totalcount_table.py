@@ -19,7 +19,7 @@ class ClusterTotalCount(local.LocalInsertOnlyModel):
     @classmethod
     def sum_child_cluster_totalcounts\
         (cls, cluster_id, parent_cluster_id, numchildren):
-        qs = cls.objects.\
+        qs = cls.get_manager().\
              filter(parent_cluster_id = cluster_id).\
              aggregate(totalcount_sum=Sum('totalcount'))
 
