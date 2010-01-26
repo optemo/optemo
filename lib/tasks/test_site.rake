@@ -26,7 +26,6 @@ namespace :test_site do
       if @sesh.popup_tour?
         @sesh.close_popup_tour
       end
-      debugger
       @sesh.num_checkboxes.times do |i|
         2.times do
           test_checkbox i
@@ -105,7 +104,7 @@ namespace :test_site do
    desc "Test the brand selector."
    task :brand_selector => :java_init do 
      setup_java "brand_selector" 
-
+     
      # Try selecting every brand
      (1..@sesh.num_brands_in_dropdown).each do |brand| 
        test_add_brand (brand - 1)      
@@ -256,77 +255,12 @@ end
        close_log
    end
 
-   desc "Simulate a user session and test almost everything."
-   task :random_nojava => :java_init do
-       setup_java "random" 
-
-       search_strings = ["","asdf","apples","Sister","Helwett","Hewlett","xena", "Data","cheap"]
-
-       (@sesh.num_brands_in_dropdown-1).times do |x| 
-         bname = @sesh.brand_name (x+1)
-         search_strings << bname
-         search_strings << bname.downcase
-       end
-
-       ( $num_random_tests || 200).times do
-
-         pick_action = rand 8
-         # For the error page, the # of possible actions is very limited.
-         pick_action = 6 + rand(2) if @sesh.error_page?
-         #pick_action = 8 if @sesh.home_page?
-
-         if pick_action == 0                     #0 Test move sliders.
-           slide_me = rand @sesh.num_sliders
-           distance = @sesh.slider_percent_to_pos slide_me, rand(101)
-           
-           new_min = (@sesh.current_slider_min(slide_me)).to_i
-           new_max = (@sesh.current_slider_max(slide_me)).to_i
-           (rand >= 0.5)? new_min = distance : new_max = distance
-
-           test_move_sliders(slide_me, new_min, new_max)
-         elsif pick_action == 1                  #1 Test add brand
-           brand_to_add = rand(@sesh.num_brands_in_dropdown)
-           test_add_brand brand_to_add
-         elsif pick_action == 2                  #2 Test search
-           search_me = search_strings[rand(search_strings.length)] 
-           rand(2).times do 
-             (rand >= 0.5)? connector = " and " : connector = ' or '
-             search_me += connector + search_strings[rand(search_strings.length)] 
-           end
-           test_search_for search_me
-         elsif pick_action == 3                 #3 Test browse similar
-           if @sesh.num_similar_links > 0
-             click_me = rand( @sesh.num_similar_links) + 1
-             test_browse_similar click_me
-           end
-         elsif pick_action == 4                  #4 Test clear search
-           if @sesh.num_clear_search_links > 0
-             test_remove_search 
-           end
-         elsif pick_action == 5                 #5 Test details 
-            detailme = rand(@sesh.num_boxes)
-            #test_detail_page detailme
-         elsif pick_action == 6                  #6 Test home logo
-             test_click_home_logo
-         elsif pick_action == 7
-           test_goto_homepage
-         #elsif pick_action == 7                  #7 Test back button
-            #Back button test not implemented
-         #elsif pick_action == 8                  #8 Test clicking a use button
-         #  test_pick_use 0
-         end
-
-       end
-
-       close_log
-   end
-   
    task :hurryinit do
     $num_tests = 10
     $num_random_tests = 50
    end
 
-   task :init => :environment do
+   task :init =>  [:environment, :port_init] do
        # Check for all the right configs
        #raise "Rails test environment not being used." if ENV["RAILS_ENV"] != 'test' 
        #raise  "Forgery protection turned on in test environment."  if (ActionController::Base.allow_forgery_protection) 
@@ -343,12 +277,10 @@ end
         WWW::Mechanize.html_parser = Nokogiri::HTML
         
        # Want something like this: WWW::Mechanize.open_timeout = 0.1
-       # or thiss  WWW::Mechanize.read_timeout = 0.1        
-       
-       $port="3002" # Your Favourite Port!
+       # or thiss  WWW::Mechanize.read_timeout = 0.1      
    end
    
-   task :java_init => :environment do
+   task :java_init => [:environment, :port_init] do
        
       # Check for all the right configs
       #raise "Rails test environment not being used." if ENV["RAILS_ENV"] != 'test' 
@@ -364,7 +296,10 @@ end
           config.application_framework = :rails
         end
 
-        $port="3002"
+   end
+   
+   task :port_init do
+      $port="3000" # Your Favourite Port! (or Sherry.)
    end
 
 end

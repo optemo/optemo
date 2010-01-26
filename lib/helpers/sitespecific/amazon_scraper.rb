@@ -110,8 +110,7 @@ module AmazonScraper
            end
          end
 
-         temp = get_text(item.css('largeimage/url'))
-         atts['imageurl'] = temp.content if temp
+         atts['imageurl'] = get_text(item.css('largeimage/url'))
 
          (atts['specialfeatures'] || '').split('|').each do |x| 
            pair = x.split('^')

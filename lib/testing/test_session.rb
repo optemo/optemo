@@ -22,7 +22,7 @@ class TestSession < Webrat::MechanizeSession
    end
    
    def select_brand which_brand
-     select brand_name(which_brand), :from => 'myfilter_brand'
+     select brand_name(which_brand), :from => 'selector'
      submit_form 'filter_form'
    end
 

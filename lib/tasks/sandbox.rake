@@ -181,7 +181,7 @@ namespace :sandbox do
       
   end
   
-  task :test_amazon_cache => ['data:printer_init', :amazon_efficient_mkt_init] do
+  task :test_amazon_cache => ['data:printer_init', 'data:amazon_mkt_init'] do
     
     $retailers.each do |ret|
       start = Time.now
@@ -214,7 +214,7 @@ namespace :sandbox do
   
   
   
-  task :test_redo_amazon_cache => ['data:printer_init', :amazon_efficient_init] do
+  task :test_redo_amazon_cache => ['data:printer_init', 'data:amazon_init'] do
     
     $retailers.each do |ret|
       start = Time.now
@@ -226,7 +226,7 @@ namespace :sandbox do
     #puts "Done"
   end
   
-  task :time_amazon_update => ['data:printer_init', :amazon_efficient_init, :update_timer]
+  task :time_amazon_update => ['data:printer_init', 'data:amazon_init', :update_timer]
   
   task :update_timer do
     #num_to_update = 10_000
@@ -235,7 +235,7 @@ namespace :sandbox do
     
     time = Time.now
     my_offerings.each_with_index do |offering, i|
-      #begin
+      begin
         next if offering.local_id.nil?
         newatts = rescrape_prices(offering.local_id, offering.region)
         
@@ -243,10 +243,10 @@ namespace :sandbox do
         if(offering.product_id and $model.exists?(offering.product_id))
           update_bestoffer($model.find(offering.product_id))
         end  
-      #rescue Exception => e
-      #  report_error "with RetailerOffering #{offering.id}: #{e.class.name} #{e.message}"
-      #  sleep(1) # Do not skew timing results
-      #end
+      rescue Exception => e
+        report_error "with RetailerOffering #{offering.id}: #{e.class.name} #{e.message}"
+        sleep(1) # Do not skew timing results
+      end
       log "[#{Time.now}] Done updating #{i+1} of #{my_offerings.count} offerings"
     end
     
@@ -254,28 +254,5 @@ namespace :sandbox do
     puts "Took #{time} seconds to get #{num_to_update} offerings"
   end
   
-  task :amazon_efficient_mkt_init => :amazon_efficient_init do
-    $retailers = [Retailer.find(2),Retailer.find(10)]
-  end
-  
-  task :amazon_efficient_init do
-    require 'amazon/ecs'
-    include Amazon
-    
-    require 'nokogiri'
-    include Nokogiri
-    
-    require 'helpers/sitespecific/amazon_scraper_efficient' # Difference here.
-    include AmazonScraper
-    
-    Amazon::Ecs.options = { :aWS_access_key_id => '0NHTZ9NMZF742TQM4EG2', \
-                            :aWS_secret_key => 'WOYtAuy2gvRPwhGgj0Nz/fthh+/oxCu2Ya4lkMxO'}
-    
-    AmazonID =   'ATVPDKIKX0DER'
-    AmazonCAID = 'A3DWYIK6Y9EEQB'
-    
-    $search_index = 'Electronics'
-    $retailers = [Retailer.find(1),Retailer.find(8)]
-  end
   
 end
