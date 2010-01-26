@@ -191,9 +191,7 @@ def compute_all_counts\
     map(lambda table: table.create_table(), totalcount_tables)
     
     # Get clusters just below the root.
-    root_children = \
-        optemo.CameraCluster.get_manager().filter \
-        (parent_id=0, version=version)
+    root_children = optemo.CameraCluster.get_root_children(version)
 
     map(lambda child: compute_counts_for_cluster(child),
         root_children)

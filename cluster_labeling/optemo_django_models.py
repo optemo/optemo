@@ -39,6 +39,16 @@ class Cluster(OptemoModel):
         manager = cls.get_manager()
         return manager.aggregate(Max('version'))['version__max']
 
+    @classmethod
+    def get_root_children(cls, version = None):
+        if version == None:
+            version = cls.get_latest_version()
+            
+        # Get clusters just below the root.
+        root_children = \
+            cls.get_manager().filter \
+            (parent_id=0, version=version)
+
 class CameraCluster(Cluster):
     class Meta:
         db_table = 'camera_clusters'
