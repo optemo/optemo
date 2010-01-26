@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from django.db import models
-from django.db import connections, transaction
 
 from django.db.models import Sum
 
