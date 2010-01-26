@@ -24,3 +24,23 @@ class ClusterValueForWord(local.LocalInsertOnlyModel):
                       "numchildren" : numchildren}
             cluster_value = cls(**kwargs)
             cluster_value.save()
+
+    @classmethod
+    def get_value(cls, cluster_id, word):
+        qs = cls.get_manager().filter\
+             (cluster_id = cluster_id, word = word).values(cls.value_name)
+
+        numrows = qs.count()
+        assert(numrows <= 1)
+
+        if numrows == 0:
+            return None
+        else:
+            return qs[0][cls.value_name]
+
+    @classmethod
+    def get_words_for_cluster(cls, cluster_id):
+        qs = cls.get_manager().filter\
+             (cluster_id = cluster_id).distinct().values('word')
+        words = map(lambda x: x['word'], qs)
+        return words
