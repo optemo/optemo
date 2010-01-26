@@ -1,4 +1,5 @@
 module OfferingsHelper
+  require 'yaml'
 
   def timestamp_offering ro
     fill_in 'availabilityUpdate', Time.now, ro
@@ -23,14 +24,17 @@ module OfferingsHelper
       
       # Write the old price down in the history
       if offering.pricehistory.nil? and offering.priceUpdate
-        pricehistory = [offering.priceUpdate.to_s(:db), offering.priceint].to_yaml
+        pricehist_obj = {offering.priceUpdate.to_s(:db) => (offering.priceint || 0)}
+        pricehistory = YAML::dump(pricehist_obj)
       elsif offering.priceUpdate
-        pricehistory = (YAML.load(offering.pricehistory) + [offering.priceUpdate.to_s(:db), \
-          offering.priceint]).to_yaml
+        hist_hash = YAML::load(offering.pricehistory)
+        hist_hash[offering.priceUpdate.to_s(:db)] = (offering.priceint || 0) 
+        pricehistory = YAML::dump(hist_hash)
       else
         pricehistory = nil
       end
-      fill_in 'pricehistory', pricehistory, offering
+      debugger if pricehistory.match(/\n$/).nil?
+      fill_in 'pricehistory', pricehistory
       
       # Update price & timestamp
       fill_in 'priceint', newprice, offering

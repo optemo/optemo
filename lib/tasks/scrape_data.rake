@@ -34,9 +34,9 @@ module GenericScraper
   
   def vote_on_values product
     sps = $scrapedmodel.find_all_by_product_id(product.id)
-    dontvote = ['itemheight', 'itemwidth', 'itemlength', 'price', 'price_ca']
+    dimlabels = ['itemlength', 'itemheight', 'itemwidth']
+    dontvote = ['price', 'price_ca'] | dimlabels
     atts = $model::ContinuousFeatures + ['ttp', 'itemweight'] - dontvote
-    #atts = [ 'itemweight',  'ppm', 'ttp', 'paperinput', 'resolutionmax','scanner', 'printserver']
     
     all_atts = {}
     atts.each{|x| all_atts[x] = [product.[](x)]} # Current value counts for something too...
@@ -64,19 +64,21 @@ module GenericScraper
     all_atts.each{|att,vals| avg_atts[att] = vote(vals)}
     
     # vote on dimensions
-    dimlabels = ['itemlength', 'itemheight', 'itemwidth']
-    all_dimsets = (sps|[product]).collect{|sp| dimlabels.collect{|x| sp[x]}}
-    all_dimsets.delete_if{|x| x.include?(nil) or x.include?(0)} # Remove invalid dimensions
-    all_valid_ds = all_dimsets.reject{|x| 
-      x.inject(false){|r,y|
-        r = (r or dimlabels.inject(true){|s,z|
-           s = (s and !in_range?(z,y,$model))
-           s
-          })
+    dimsets = []
+    # Get VALID DIM SETS ONLY
+    (sps|[product]).each do |sp| 
+      dimhash = dimlabels.inject({}){|r,x|
+        r[x] = sp[x]
         r
       }
-    } # Remove invalid dimensions
-    best_dimset = vote_on_dimensions(all_valid_ds)
+      next if dimhash.keys.include?(nil)
+      validity = dimhash.collect{|k,v| in_range?(k,(v || 0),$model)}
+      if validity.uniq == [true]
+        dimsets << dimhash.values
+      end
+    end
+    
+    best_dimset = vote_on_dimensions(dimsets)
     if best_dimset and best_dimset != []
       dimlabels.size.times{ |i| avg_atts[dimlabels[i]] = best_dimset[i] } 
       avg_atts['dimensions'] = dims_to_s(avg_atts)
@@ -204,9 +206,6 @@ namespace :data do
           retailer = Retailer.find(retailer_ok_sp.retailer_id)
           spid = retailer_ok_sp.id
           generic_scrape(local_id, retailer)
-          #if retailer_ok_sp[att].nil?
-          #  puts "#{spid} has a nil #{att}..."
-          #else
           unless atts.collect{|x| retailer_ok_sp[x]}.include?(nil)
             newvals ||= retailer_ok_sp.attributes
             puts "#{spid} has been fixed!"

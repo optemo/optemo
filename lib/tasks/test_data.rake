@@ -118,6 +118,23 @@ module Check
       these_offerings = my_offerings.reject{|x| x.retailer_id != ret.id}
       assert_no_repeats these_offerings, 'local_id'
     end
+    
+    my_offerings.each do |ro|
+      hist = ro.pricehistory
+      if hist
+        if hist.match(/\n$/).nil?
+          report_error "#{ro.id} has malformed price history (missing newline)" 
+        else
+           begin
+              hist_obj = YAML::load(hist)
+           rescue Exception => e
+              report_error "Problem loading #{ro.id}'s price history: #{e.class.name} #{e.message}"
+           else
+             report_error "#{ro.id} price history not a hash" if hist_obj.class != Hash
+           end
+        end
+      end
+    end
    
     assert_within_range my_offerings, 'priceint', $model::MinPrice, $model::MaxPrice
     
@@ -295,9 +312,9 @@ namespace :check do
     my_valid_products = $model.valid.instock  | $model.valid.instock_ca
     my_offerings = RetailerOffering.find_all_by_product_type_and_stock($model.name, true)
     
-    #chek_linkage(my_products)
+    chek_linkage(my_products)
     
-    #chek_offerings(my_offerings)
+    chek_offerings(my_offerings)
     
     chek_products(my_valid_products)
         
