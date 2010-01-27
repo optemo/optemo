@@ -105,11 +105,10 @@ namespace :test_site do
    task :brand_selector => :java_init do 
      setup_java "brand_selector" 
      
-     # Try selecting every brand
+     # Try selecting & deselecting every brand
      (1..@sesh.num_brands_in_dropdown).each do |brand| 
        test_add_brand (brand - 1)      
-       test_click_home_logo
-       #test_pick_use 0
+       test_remove_brand(1)
      end
 
      close_log

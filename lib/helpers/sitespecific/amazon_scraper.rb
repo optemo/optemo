@@ -150,8 +150,6 @@ module AmazonScraper
       offers.each do |o| 
         temp = get_text(o.css('merchant/merchantid'))
         next if decipher_retailer(temp,region) != ret.name
-        debugger
-        0
         return o
       end
     end

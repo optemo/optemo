@@ -172,20 +172,17 @@ module SiteTest
     log "Adding brand " + @sesh.brand_name(brand)
     # Preconditions & stuff.
     snapshot
-    debugger
-    @brand_selected_before = @sesh.brand_selected? brand
-  
+    bname = @sesh.brand_name(brand)
+    @brand_selected_before = @sesh.brand_selected?(bname)
     begin 
-      debugger
-      @sesh.select_brand brand          
+      @sesh.select_brand(brand)          
     rescue Exception => e # This detects crashing.
-      report_error e.class.name.to_s + " with " + @sesh.brand_name(brand) + ", message:" + e.message.to_s
+      report_error e.class.name.to_s + " with " + bname + ", message:" + e.message.to_s
     else
-      debugger
       assert_not_error_page
       assert_well_formed_page
   
-      if @sesh.brand_name(brand) == "All Brands" or @sesh.brand_name(brand) == "Add Another Brand"
+      if @sesh.is_all_brands?(bname)
         assert_brands_same
         assert_num_products_same
       elsif brand == 0
@@ -193,18 +190,19 @@ module SiteTest
       elsif @brand_selected_before
         log "This brand was selected before."
         assert_num_products_same
-        assert_brand_selected brand
+        assert_brand_selected(bname)
       elsif @sesh.no_products_found_msg?
         log "There were no products found for this brand."
-        assert_brand_deselected brand
+        assert_brand_deselected(bname)
         assert_num_products_same
         assert_brands_same
       else
-        assert_brand_selected brand
+        debugger unless @sesh.brand_selected?(bname)
+        assert_brand_selected(bname)
         # TODO other asserts!
       end
     end
-    log "Done testing add brand " + @sesh.brand_name(brand)
+    log "Done testing add brand " + bname
   end
   
   def test_save_item which_item
@@ -262,29 +260,19 @@ module SiteTest
   end
   
   def test_remove_brand which_brand
-    
     return unless java_enabled?
     
     log "Testing remove brand"
     snapshot
     
-    link_xpath = "(//a[@title='Remove Brand Filter'])[#{which_brand}]"
-    removed_name = @sesh.doc.xpath(link_xpath+"/@href").first.to_s.gsub("javascript:removeBrand('"){''}.gsub("');"){''}
-    
+    removed_name = @sesh.selected_brand_name(which_brand)
+    @sesh.remove_brand(which_brand)
     log "Removing " + removed_name + ", #{which_brand}th brand in the list."
     
-    begin
-      @sesh.selenium.click ("xpath=" +link_xpath)
-      @sesh.wait_for_ajax
-      @sesh.wait_for_load
-    rescue Exception => e
-      report_error "Error removing #{which_brand}th brand. " + e.class.name.to_s + e.message.to_s
-    else
-      assert_not_error_page
-      assert_well_formed_page
-      removed_id = @sesh.brand_id removed_name
-      assert_brand_deselected removed_id
-    end
+    assert_not_error_page
+    assert_well_formed_page
+    assert_brand_deselected(removed_name)
+    
     log "Done removing brand"
   end
   
@@ -342,14 +330,14 @@ module SiteTest
   end
   
   def setup_java logname
-  setup_log "java_"+logname 
-  @sesh = JavaTestSession.new @logfile
-  @history = []
-  snapshot
-  # TODO take this out?
-  if @sesh.popup_tour?
-    @sesh.close_popup_tour
+    setup_log "java_"+logname 
+    @sesh = JavaTestSession.new @logfile
+    @history = []
+    snapshot
+    # TODO take this out?
+    if @sesh.popup_tour?
+      @sesh.close_popup_tour
+    end
   end
- end
  
 end

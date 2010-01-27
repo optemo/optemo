@@ -83,6 +83,12 @@ class JavaTestSession < Webrat::SeleniumSession
        report_error "#{which_link}th Browse Similar Link not found"
      end
    end
+   
+   def remove_brand which_brand
+     debugger
+     selenium.click "css=.selected_brand/a"
+     wait_for_ajax
+   end
       
    def click_back_button product_type='Printer'
      # TODO what about cameras...
