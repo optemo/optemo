@@ -296,14 +296,14 @@ namespace :fix_data do
       else
         next if hist_obj.class == Hash
         puts "Uh oh #{ro.id}"
-        #hist_hash = {}
-        #hist_obj.each_with_index do |x,i|
-        #  next if i%2 == 1 
-        #  hist_hash[hist_obj[i]]= hist_obj[i+1]
-        #end
-        #newhist_yaml = YAML::dump(hist_hash)
-        #debugger if newhist_yaml.match(/\n$/).nil?
-        #fill_in_forced('pricehistory', newhist_yaml, ro)
+        hist_hash = {}
+        hist_obj.each_with_index do |x,i|
+          next if i%2 == 1 
+          hist_hash[hist_obj[i]]= hist_obj[i+1]
+        end
+        newhist_yaml = YAML::dump(hist_hash)
+        debugger if newhist_yaml.match(/\n$/).nil?
+        fill_in_forced('pricehistory', newhist_yaml, ro)
       end
     end    
   end

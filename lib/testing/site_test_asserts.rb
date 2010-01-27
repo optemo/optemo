@@ -97,11 +97,11 @@ module SiteTestAsserts
   end
   
   def assert_brand_selected brand
-    report_error @sesh.brand_name(brand) +" not selected" unless (@sesh.brand_selected?(brand))
+    report_error "#{brand} not selected" unless (@sesh.brand_selected?(brand))
   end
   
   def assert_brand_deselected brand
-     report_error @sesh.brand_name(brand) + ", brand number #{brand}, selected" if @sesh.brand_selected? brand
+     report_error "#{brand} selected" if @sesh.brand_selected?(brand)
    end
   
   def assert_brands_same

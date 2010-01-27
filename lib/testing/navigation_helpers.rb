@@ -102,12 +102,25 @@ module NavigationHelpers
     return -1
    end
    
+   def is_all_brands? bname
+     return true if bname == 'All Brands'
+     return true if bname == 'Add Another Brand'
+     return false
+   end
+   
    def brand_name which_brand
      brand_el = doc.css("#selector option")[which_brand]
      return "" if (brand_el.nil?)
      return brand_el.attribute( 'value').to_s
    end
    
+   def selected_brand_name which_brand
+     brand_el = doc.css(".selected_brands")[which_brand]
+     return "" if (brand_el.nil?)
+     debugger
+     return brand_el.attribute( 'value').to_s
+   end
+  
    def num_brands_in_dropdown
      return num_elements('select#selector option')
    end
@@ -116,15 +129,11 @@ module NavigationHelpers
      return num_elements('.selected_brands')
    end
    
-   def brand_selected? which_brand
+   def brand_selected? bname
       if num_brands_selected > 0
-        selected_brands = doc.css('.selected_brands')
+        selected_brands = doc.css('.selected_brands').collect{|x| x.text.strip}
         return false unless selected_brands
-        selected_brands.each do |brand_el| 
-          if brand_el.content.to_s.match(brand_name(which_brand))
-            return true
-          end
-        end
+        return true if selected_brands.include?(bname)
       end
       return false
    end
@@ -177,9 +186,10 @@ module NavigationHelpers
    
    # Tells you if there is a "No products selected" message displayed.
    def no_products_found_msg?
-     # Message is in the first span tag in the div with id main.
-     msg_span_el = get_el doc.css(".main span")
-     return false if msg_span_el.nil?
+     msg_vis = get_el(doc.css("#outsidecontainer"))
+     return false unless msg_vis and msg_vis.css('@style').to_s.match(/display: inline/)
+     msg = get_text(doc.css("#outsidecontainer #info"))
+     return true if (msg || '').match(/no matching results/i)
      msg_span = msg_span_el.content.to_s
      
      # TODO we should give this span tag an id! 

@@ -33,8 +33,8 @@ module OfferingsHelper
       else
         pricehistory = nil
       end
-      debugger if pricehistory.match(/\n$/).nil?
-      fill_in 'pricehistory', pricehistory
+      #debugger if pricehistory.match(/\n$/).nil?
+      fill_in('pricehistory', pricehistory, offering)
       
       # Update price & timestamp
       fill_in 'priceint', newprice, offering
