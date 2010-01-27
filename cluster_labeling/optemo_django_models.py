@@ -49,6 +49,8 @@ class Cluster(OptemoModel):
             cls.get_manager().filter \
             (parent_id=0, version=version)
 
+        return root_children
+
 class CameraCluster(Cluster):
     class Meta:
         db_table = 'camera_clusters'
