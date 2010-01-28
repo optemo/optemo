@@ -102,7 +102,7 @@ namespace :fix_data do
     
   end
   
-  task :fix_links_2 => ['data:cam_init'] do 
+  task :links_2 => ['data:cam_init'] do 
     
     ptype = $model.to_s
     
@@ -143,7 +143,7 @@ namespace :fix_data do
     puts "#{msgs.uniq * "\n"}"
   end
   
-  task :fix_links => :environment do 
+  task :links => :environment do 
     require 'helper_libs'
    
     include CameraHelper
@@ -191,7 +191,7 @@ namespace :fix_data do
     puts "#{msgs.uniq * "\n"}"
   end
   
-  task :fix_ptr_models => :environment do 
+  task :ptr_models => :environment do 
     require 'helper_libs'
    
     include GenericScraper    
@@ -242,7 +242,7 @@ namespace :fix_data do
     
   end
   
-  task :fix_dims => :environment do 
+  task :dims => :environment do 
     require 'helper_libs'
    
     include GenericScraper    
@@ -278,7 +278,7 @@ namespace :fix_data do
     end
   end
   
-  task :fix_pricehist => 'data:cam_init' do
+  task :pricehist => 'data:cam_init' do
     require 'yaml'
     ros = RetailerOffering.all.reject{|x| x.pricehistory.nil?}
     ros.each_with_index do |ro|
@@ -453,10 +453,10 @@ namespace :fix_data do
    # end
   end
   
-  task :test_fix_brands_ptr => [:debug_mode, :fix_brands_ptr]
-  task :test_fix_brands_cam => [:debug_mode, :fix_brands_cam]
-  task :fix_brands_ptr => ['data:printer_init', 'data:amazon_init', :fix_brands]
-  task :fix_brands_cam => ['data:cam_init', 'data:amazon_init', :fix_brands]
+  task :test_ptr_brands => [:debug_mode, :fix_brands_ptr]
+  task :test_cam_brands => [:debug_mode, :fix_brands_cam]
+  task :ptr_brands => ['data:printer_init', 'data:amazon_init', :fix_brands]
+  task :cam_brands => ['data:cam_init', 'data:amazon_init', :fix_brands]
   
   
   task :test_fix_models_ptr => [:debug_mode, :fix_models_ptr]

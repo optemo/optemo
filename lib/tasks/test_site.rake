@@ -15,8 +15,29 @@ namespace :test_site do
    
    task :sandbox => :java_init do
     setup_java 'sandbox_1'
-    test_search_for('asdf')
-    debugger
+    20.times do 
+     
+     slideme = rand @sesh.num_sliders
+     new_position = @sesh.slider_percent_to_pos slideme, rand(101)
+
+     log "Testing the " + @sesh.slider_name(slideme) + " slider. Moving it to " +  new_position.to_s
+
+     new_min = new_max = new_position
+     (rand >= 0.5)? new_min = @sesh.current_slider_min(slideme) : new_max = @sesh.current_slider_max(slideme)
+
+     test_move_sliders(slideme, new_min, new_max)
+     
+     if(@sesh.no_products_found_msg?)
+       debugger
+       test_close_msg_box
+     end
+     
+     if(@sesh.error_page?)
+       debugger
+       test_close_msg_box
+     end
+     
+    end
     close_log
    end
    
@@ -96,6 +117,10 @@ namespace :test_site do
        (rand >= 0.5)? new_min = @sesh.current_slider_min(slideme) : new_max = @sesh.current_slider_max(slideme)
 
        test_move_sliders(slideme, new_min, new_max)
+       
+       if(@sesh.no_products_found_msg? or @sesh.error_page?)
+          test_close_msg_box
+       end
      end
 
      close_log
