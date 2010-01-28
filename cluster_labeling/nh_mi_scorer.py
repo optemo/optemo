@@ -8,7 +8,7 @@ import cluster_labeling.cluster_totalcount_table as ctct
 
 import cluster_labeling.cluster_score_table as cst
 
-from cluster_labeling.utils import *
+from cluster_labeling.score_utils import *
 
 def compute_MI(N_UC, prior_count = 1):
     # Add prior counts to the probability distribution to avoid all of
