@@ -180,7 +180,7 @@ function clearStyles(nameArray, styleclassname)
 /* This gets the currently displayed product ids client-side from the text beneath the product images. */
 function getAllShownProductIds(){
 	var currentIds = "";
-	$('.easylink').each(function(i){
+	$('#main .easylink').each(function(i){
 		currentIds += $(this).attr('data-id') + ',';
 	});
 	return currentIds;
