@@ -1,5 +1,26 @@
 namespace :sandbox do
   
+  task :ptr_rm_idjunk => ['data:printer_init',:idfields_rm_junk]
+  
+  task :cam_rm_idjunk => ['data:cam_init',:idfields_rm_junk]
+  
+  task :idfields_rm_junk do
+    $model.all.each do |product|
+      
+      ids = {'model' => product.model, 'mpn' => product.mpn}
+      
+      $descriptors.each do |d|
+        ids.each do |idname,idval|
+          next if idval.nil?
+          if idval.match(d)
+            puts "#{idval} has #{d}" 
+            fill_in_forced(idname,nil,product)
+          end
+        end
+      end
+    end
+  end
+  
   task :check_new_voting =>  ['data:cam_init']  do 
     # Get weirdo weight cams
     #weirdos =# Camera.all.reject{|x| x['itemweight'].nil? or x['itemweight'] <= Camera::ValidRanges['itemweight'][1]}

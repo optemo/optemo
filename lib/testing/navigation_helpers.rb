@@ -167,11 +167,6 @@ module NavigationHelpers
     elements = doc.css(el_matcher)
     if elements then return elements.length else return 0 end
   end
-  
-   # Tells you if the Clear Search link is showing.
-   def num_clear_search_links
-     num_elements('a#clearsearch')
-   end
    
    # Reads the Session ID from the page.
    def session_id
@@ -190,11 +185,7 @@ module NavigationHelpers
      return false unless msg_vis and msg_vis.css('@style').to_s.match(/display: inline/)
      msg = get_text(doc.css("#outsidecontainer #info"))
      return true if (msg || '').match(/no matching results/i)
-     msg_span = msg_span_el.content.to_s
-     
-     # TODO we should give this span tag an id! 
-     product_phrase = msg_span.match('No products').to_s
-     return (product_phrase.length > 0)
+     return false
    end
    
    def total_products
@@ -264,5 +255,22 @@ module NavigationHelpers
      end
      return false
    end
+  
+  def searched_term
+    header_text = get_text(doc.css('#navigator_bar'))
+    return nil unless header_text
+    msg = (header_text.match(/Search: '.+'/)||'').to_s
+    if msg and msg.length > 0
+      term = (msg.match(/'.+'/)||'').to_s.gsub(/'/, '')
+      if term and term.length > 0
+        return term
+      end
+    end
+    return nil
+  end
+  
+  def has_search_history?
+    return true if self.searched_term
+  end
   
 end

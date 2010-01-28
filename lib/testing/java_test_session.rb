@@ -46,16 +46,25 @@ class JavaTestSession < Webrat::SeleniumSession
      return Nokogiri::HTML(self.response.body)
    end
    
-   def click_clear_search 
-     selenium.click 'clearsearch'
-   end
-   
    def search_for query 
      browser.type 'search', query
      browser.click 'id=submit_button' 
      wait_for_ajax
    end
   
+  def close_msg_box
+    msg_vis = get_el(doc.css("#outsidecontainer"))
+    return false unless msg_vis and msg_vis.css('@style').to_s.match(/display: inline/)
+    browser.click 'css=#outsidecontainer a.close'
+    wait_for_ajax
+  end
+
+  def click_link_in_msg_box
+    msg_vis = get_el(doc.css("#outsidecontainer"))
+    return false unless msg_vis and msg_vis.css('@style').to_s.match(/display: inline/)
+    browser.click 'css=#outsidecontainer #info a'
+    wait_for_ajax
+  end
   
   # fill in the pref form 
   def pref_for query
@@ -85,8 +94,7 @@ class JavaTestSession < Webrat::SeleniumSession
    end
    
    def remove_brand which_brand
-     debugger
-     selenium.click "css=.selected_brand/a"
+     selenium.click "css=.selected_brands a"
      wait_for_ajax
    end
       

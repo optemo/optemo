@@ -107,8 +107,10 @@ namespace :test_site do
      
      # Try selecting & deselecting every brand
      (1..@sesh.num_brands_in_dropdown).each do |brand| 
-       test_add_brand (brand - 1)      
-       test_remove_brand(1)
+       test_add_brand (brand - 1)
+       if(@sesh.num_brands_selected > 0)      
+         test_remove_brand(1)
+       end
      end
 
      close_log
@@ -118,16 +120,22 @@ namespace :test_site do
    task :search => :java_init do 
        setup_java "search"
 
-       # Brand name based search strings
-       (1..@sesh.num_brands_in_dropdown).each do |brand| 
-         test_search_for @sesh.brand_name(brand)
-         test_search_for @sesh.brand_name(brand).downcase         
+       testme = []
+       (1..@sesh.num_brands_in_dropdown).each do |brand|
+         testme << @sesh.brand_name(brand)
+         testme << @sesh.brand_name(brand).downcase
        end
 
-     # Other search strings
-     other = ["","asdf","apples","Sister","Helwett","Hewlett","xena", "Data","cheap"]
-     other.each do |x|
+        # Other search strings
+        other = ["","asdf","apples","Sister","Helwett","Hewlett","xena", "Data","cheap"]
+        
+       testme += other
+     testme.each do |x|
        test_search_for x
+       if(@sesh.no_products_found_msg?)
+        test_close_msg_box
+         # TODO test_close_popup
+       end
      end
 
      close_log
@@ -214,9 +222,9 @@ end
              test_browse_similar click_me
            end
          elsif pick_action == 4                  #4 Test clear search
-           if @sesh.num_clear_search_links > 0
-             test_remove_search 
-           end
+           #if @sesh.num_clear_search_links > 0
+           #  test_remove_search 
+           #end
          elsif pick_action == 5                 #5 Test save item
             save_me = (rand( @sesh.num_boxes) + 1).floor
             test_save_item save_me

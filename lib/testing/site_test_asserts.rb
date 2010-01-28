@@ -155,24 +155,27 @@ module SiteTestAsserts
   def assert_num_products_increased
     if @sesh.num_products <= @num_products_before
       report_error "Number of products browsed not increased: was #{@num_products_before}, now " + @sesh.num_products.to_s 
-    end
-  
+    end  
   end
   
-  def assert_clear_search_links_same
-    if @sesh.num_clear_search_links != @num_clear_search_links_before
-      report_error "Different number of Clear Search link" 
+  def assert_has_search_history term=nil
+    unless @sesh.has_search_history?
+      report_error "No search history in navbar" 
+      return
     end
-  end
-  
-  def assert_has_search_history
-    if @sesh.num_clear_search_links == 0
-      report_error "No Clear Search link" 
+    if term and @sesh.searched_term != term
+      report error "Wrong search term in nav bar: have #{@sesh.searched_term}, expected #{term}"
     end
   end
   
   def assert_search_history_clear
-    report_error "Search not cleared" if @sesh.num_clear_search_links != 0
+    report_error "Search not cleared" if @sesh.has_search_history?
+  end
+  
+  def assert_search_history_same
+    if @search_before != @sesh.searched_term
+       report_error "Search history changed from #{@search_before} to #{@sesh.searched_term}"
+    end
   end
   
   def assert_session_id_same

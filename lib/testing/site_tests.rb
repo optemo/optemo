@@ -19,6 +19,14 @@ module SiteTest
     assert_well_formed_page
   end
 
+  def test_close_msg_box
+    log "Testing close msg box"
+    snapshot
+    @sesh.close_msg_box
+    assert_no_results_msg_hidden
+    log "Done testing close msg box"
+  end
+
   def test_move_sliders(slider, min, max)
     log "Testing the " + @sesh.slider_name(slider) + " slider. Moving it to (#{min},#{max})"
     snapshot
@@ -32,7 +40,6 @@ module SiteTest
       assert_not_error_page
       assert_well_formed_page
       assert_brands_same
-      assert_clear_search_links_same
   
       if !@sesh.no_products_found_msg? 
         assert_slider_range(slider, min.to_i, max.to_i)
@@ -63,7 +70,6 @@ module SiteTest
      #@num_boxes_before = @sesh.num_boxes
      #@num_saved_items_before = @sesh.num_saved_items
      #@num_similar_links_before = @sesh.num_similar_links
-     #@num_clear_search_links_before = @sesh.num_clear_search_links
      #@session_id_before = @sesh.session_id 
      #@no_products_found_msg_before = @sesh.no_products_found_msg?
      #@error_page_before = @sesh.error_page?
@@ -138,34 +144,19 @@ module SiteTest
       assert_not_error_page
       assert_well_formed_page
   
-      if @sesh.no_products_found_msg?
-        assert_clear_search_links_same
+      if(query.nil? or query ==  '')
+      assert_search_history_clear
+        
+      elsif @sesh.no_products_found_msg?
+        assert_num_products_same
+        assert_search_history_same
         log "No products found for " + query
       else
-        assert_has_search_history
+        assert_has_search_history(query)
       end
-  
     end
   
     log "Done searching"
-  end
-  
-  def test_remove_search
-    log "Testing clear search history"
-    snapshot
-    begin
-      @sesh.click_clear_search
-    rescue Exception => e
-      report_error "Clear search history error, " + e.class.name.to_s + e.message.to_s
-    else
-    # TODO more asserts?
-     assert_not_error_page
-     assert_well_formed_page
-     assert_search_history_clear
-     assert_brands_same
-     assert_session_id_same
-   end
-   log "Done testing clear search history."
   end
   
   def test_add_brand brand
@@ -284,7 +275,6 @@ module SiteTest
      assert_brands_same
      assert_saveds_same
      assert_num_products_same
-     assert_clear_search_links_same
      assert_session_id_same
      
      log "Done testing status quo"
@@ -304,12 +294,12 @@ module SiteTest
      @num_boxes_before = @sesh.num_boxes
      @num_saved_items_before = @sesh.num_saved_items
      @num_similar_links_before = @sesh.num_similar_links
-     @num_clear_search_links_before = @sesh.num_clear_search_links
      @session_id_before = @sesh.session_id 
      @no_products_found_msg_before = @sesh.no_products_found_msg?
      @error_page_before = @sesh.error_page?
      @url_before = @sesh.current_url
      @history.push @sesh.current_url
+     @search_before = @sesh.searched_term
   end
    
   def close_log
