@@ -2,7 +2,7 @@
 def bin_to_int(idx):
     return int(idx, 2)
 
-def get_Nxx(cluster_id, word):
+def get_N_UC(cluster_id, word):
     count_table = cct.ClusterReviewCount
     totalcount_table = ctct.ClusterReviewTotalCount
 

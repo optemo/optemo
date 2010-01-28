@@ -40,7 +40,7 @@ def compute_MI(N_UC, prior_count = 1):
     return score
 
 def compute_MI_for_word(cluster_id, word):
-    N_UC = get_Nxx(cluster, word)
+    N_UC = get_N_UC(cluster, word)
     return compute_MI(N_UC)
 
 def compute_MI_scores_for_cluster(cluster_id):
