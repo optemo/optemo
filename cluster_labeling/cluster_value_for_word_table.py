@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 from django.db import models
+from django.db import transaction
+
 import cluster_labeling.local_django_models as local
 
 class ClusterValueForWord(local.LocalInsertOnlyModel):
@@ -15,6 +17,7 @@ class ClusterValueForWord(local.LocalInsertOnlyModel):
     numchildren = models.IntegerField()
 
     @classmethod
+    @transaction.commit_on_success
     def add_values_from(cls, cluster, dict):
         numchildren = cluster.get_children().count()
         for (word, value) in dict.iteritems():

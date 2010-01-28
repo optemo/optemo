@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from django.db import models
+from django.db import transaction
 import cluster_labeling.cluster_value_for_word_table as cvfwt
 
 from django.db.models import Sum
@@ -13,6 +14,7 @@ class ClusterCount(cvfwt.ClusterValueForWord):
     count = models.BigIntegerField()
 
     @classmethod
+    @transaction.commit_on_success
     def sum_child_cluster_counts\
         (cls, cluster_id, parent_cluster_id, numchildren):
         qs = cls.get_manager().\
