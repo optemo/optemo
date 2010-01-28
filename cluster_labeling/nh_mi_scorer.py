@@ -19,16 +19,8 @@ def compute_MI(N_UC, prior_count = 1):
     Z = sum(N_UC)
     P_UC = map(lambda x: x / Z, N_UC)
     
-    # This method needs to handle inf values and division by zero.
-    P_C = map(lambda probs: reduce(lambda x, y: x + y, probs),
-              map(lambda vars: map(lambda var: P_UC[bin_to_int(var)],
-                                   vars),
-                  [['11', '01'], ['10', '00']]))
-
-    P_U = map(lambda probs: reduce(lambda x, y: x + y, probs),
-              map(lambda vars: map(lambda var: P_UC[bin_to_int(var)],
-                                   vars),
-                  [['11', '10'], ['01', '00']]))
+    P_C = P_UC_to_P_C(P_UC)
+    P_U = P_UC_to_P_U(P_UC)
 
     score = 0
 

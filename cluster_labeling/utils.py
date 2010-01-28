@@ -16,3 +16,17 @@ def get_N_UC(cluster_id, word):
         totalcount_table.get_value(0) - N_01 - N_10 - N11
 
     return N
+
+def P_UC_to_P_C(P_UC):
+    P_C = map(lambda probs: reduce(lambda x, y: x + y, probs),
+              map(lambda vars: map(lambda var: P_UC[bin_to_int(var)],
+                                   vars),
+                  [['11', '01'], ['10', '00']]))
+    return P_C
+
+def P_UC_to_P_U(P_UC):
+    P_U = map(lambda probs: reduce(lambda x, y: x + y, probs),
+              map(lambda vars: map(lambda var: P_UC[bin_to_int(var)],
+                                   vars),
+                  [['11', '10'], ['01', '00']]))
+    return P_U
