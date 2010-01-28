@@ -8,8 +8,7 @@ import cluster_labeling.cluster_totalcount_table as ctct
 
 import cluster_labeling.cluster_score_table as cst
 
-def bin_to_int(idx):
-    return int(idx, 2)
+from cluster_labeling.utils import *
 
 def get_MI_MLE_Pxx(cluster_id, word):
     count_table = cct.ClusterReviewCount
