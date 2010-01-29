@@ -8,4 +8,5 @@ class ClusterScore(cvfwt.ClusterValueForWord):
         unique_together = (("cluster_id", "word"))
 
     value_name = "score"
-    score = models.BigIntegerField()
+    score = models.FloatField()
+
