@@ -1,6 +1,8 @@
 # encoding: utf-8
 module AmazonScraper
   
+  @nokocaches
+  
   # Detail page url from local_id and region
   def id_to_details_url local_id, region
     return "#{get_base_url(region)}/gp/product/#{local_id}"
@@ -21,8 +23,9 @@ module AmazonScraper
   def scrape_all_local_ids region
     announce "[#{Time.now}] Getting a list of all Amazon IDs associated with #{$model}s. This may take a while"
     
-    cachefile = open_cache(curr_retailer(region))
-    nokocache = Nokogiri::HTML(cachefile)
+    #cachefile = open_cache(curr_retailer(region))
+    #nokocache = Nokogiri::HTML(cachefile)
+    nokocache = open_nokocache(curr_retailer(region))
     added = nokocache.css('item/asin').collect{|x| x.content}
     announce "[#{Time.now}] Done getting Amazon IDs!"
     
@@ -137,7 +140,7 @@ module AmazonScraper
   # contain one retailer per region
   def scrape_best_offer asin, region, nokocache=nil
     ret = curr_retailer(region)
-    nokocache = Nokogiri::HTML(open_cache(ret)) unless nokocache
+    nokocache = open_nokocache(ret) #Nokogiri::HTML(open_cache(ret)) unless nokocache
     item = nokocache.css("item").reject{|x| get_text(x.css('asin')) != asin}.first
     if item
       offers = item.css('offers/offer')
@@ -423,7 +426,20 @@ module AmazonScraper
     return nil
   end
   
+  # Cache the cache. Aha so clever.
+  def open_nokocache(retailer)
+    unless @nokocaches
+      @nokocaches = {}
+    end
+    cfname = cachefile_name(retailer)
+    unless @nokocaches[cfname]
+      @nokocaches[cfname] = Nokogiri::HTML(open_cache(retailer))
+    end
+    return @nokocaches[cfname]
+  end
+  
   def refresh_cache(retailer)
+    Dir.mkdir('cache') unless File.directory?('cache')
     cachefile = File.open(cachefile_name(retailer), 'w')
     # params for the request...
       merch = get_merchant_str(retailer.name) || 'All'

@@ -22,8 +22,8 @@ module SiteTestAsserts
       report_error "Not the detail page" 
       return
     end
-    price_el = @sesh.doc.css('div.showtable .left')
-    report_error "Nil price in detail page" unless (price_el and price_el.first.content.match(/\$/) )
+    price_el = get_el(@sesh.doc.css('div.showtable .left'))
+    report_error "Nil price in detail page" unless (price_el and price_el.content.match(/\$/) )
   end
   
   def assert_detail_price_not_nil

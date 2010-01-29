@@ -34,8 +34,9 @@ module NavigationHelpers
    end
    
    def get_detail_page_link box
-     pid = pid_by_box(box)
-     return  "/compare/show/#{pid}"
+     the_link = doc.css('div.productinfo .easylink')[box]
+     the_href = the_link.css('@href').text
+     return the_href
    end
    
    def detail_page?

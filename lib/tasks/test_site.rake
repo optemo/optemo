@@ -15,29 +15,15 @@ namespace :test_site do
    
    task :sandbox => :java_init do
     setup_java 'sandbox_1'
-    20.times do 
-     
-     slideme = rand @sesh.num_sliders
-     new_position = @sesh.slider_percent_to_pos slideme, rand(101)
-
-     log "Testing the " + @sesh.slider_name(slideme) + " slider. Moving it to " +  new_position.to_s
-
-     new_min = new_max = new_position
-     (rand >= 0.5)? new_min = @sesh.current_slider_min(slideme) : new_max = @sesh.current_slider_max(slideme)
-
-     test_move_sliders(slideme, new_min, new_max)
-     
-     if(@sesh.no_products_found_msg?)
-       debugger
-       test_close_msg_box
-     end
-     
-     if(@sesh.error_page?)
-       debugger
-       test_close_msg_box
-     end
-     
+    test_back_button
+    save_me = (rand( @sesh.num_boxes) + 1).floor
+    test_save_item save_me
+    if @sesh.num_saved_items > 0
+       unsave_me = (rand(@sesh.num_saved_items) + 1).floor
+       test_remove_saved unsave_me
     end
+    
+    test_click_home_logo
     close_log
    end
    

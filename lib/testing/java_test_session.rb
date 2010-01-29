@@ -12,8 +12,10 @@ class JavaTestSession < Webrat::SeleniumSession
   end
      
   def get_detail_page box
-    visit get_detail_page_link(box)
-    wait_for_load
+    the_link = doc.css('div.productinfo .easylink')[box]
+    the_text = (the_link.text || '').strip
+    selenium.click("link=#{the_text}")
+    wait_for_ajax  
   end   
     
   def close_popup_tour
@@ -103,6 +105,7 @@ class JavaTestSession < Webrat::SeleniumSession
    def click_back_button product_type='Printer'
      # TODO what about cameras...
      the_link = get_el(doc.css('#backlink'))
+     debugger unless the_link
      selenium.click "link=#{the_link.text}"
      wait_for_ajax
    end

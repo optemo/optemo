@@ -452,6 +452,28 @@ namespace :fix_data do
       #fill_in_all(avgs, p)
    # end
   end
+
+  task :rm_stupid_cam_prices => ['data:cam_init', :rm_stupid_prices]
+  task :rm_stupid_ptr_prices => ['data:printer_init', :rm_stupid_prices]
+  
+  
+  task :rm_stupid_prices do
+    stupid = []
+    ros  = RetailerOffering.find_all_by_product_type($model.name)
+  
+    ros.each do |ro|
+      stupid << ro.id if ro.priceint and (ro['priceint'] > $model::MaxPrice)
+    end
+   
+    stupid.each do |x|
+      xobj = RetailerOffering.find(x)
+      fill_in('stock', false, xobj)
+      fill_in_forced('priceint', nil, xobj)
+    end
+    
+    puts "Done removing #{stupid.count} stupid prices"
+  
+  end
   
   task :test_ptr_brands => [:debug_mode, :fix_brands_ptr]
   task :test_cam_brands => [:debug_mode, :fix_brands_cam]

@@ -247,12 +247,12 @@ namespace :sandbox do
     #puts "Done"
   end
   
-  task :time_amazon_update => ['data:printer_init', 'data:amazon_init', :update_timer]
+  task :time_amazon_update => ['data:cam_init', 'data:amazon_init', :update_timer]
   
   task :update_timer do
-    #num_to_update = 10_000
-    my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id_and_product_type(x.id, $model.name)}#[1..num_to_update]
-    num_to_update = my_offerings.count
+    num_to_update = 50
+    my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id_and_product_type(x.id, $model.name)}[1..num_to_update]
+    #num_to_update = my_offerings.count
     
     time = Time.now
     my_offerings.each_with_index do |offering, i|
@@ -261,9 +261,9 @@ namespace :sandbox do
         newatts = rescrape_prices(offering.local_id, offering.region)
         
         update_offering(newatts, offering) if offering
-        if(offering.product_id and $model.exists?(offering.product_id))
-          update_bestoffer($model.find(offering.product_id))
-        end  
+        #if(offering.product_id and $model.exists?(offering.product_id))
+        #  update_bestoffer($model.find(offering.product_id))
+        #end  
       rescue Exception => e
         report_error "with RetailerOffering #{offering.id}: #{e.class.name} #{e.message}"
         sleep(1) # Do not skew timing results
