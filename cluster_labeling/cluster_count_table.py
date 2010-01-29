@@ -46,3 +46,4 @@ class ClusterReviewCount(ClusterCount):
     class Meta:
         db_table = 'reviewcounts'
         unique_together = (("cluster_id", "word"))
+
