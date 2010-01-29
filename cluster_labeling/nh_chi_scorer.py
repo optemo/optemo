@@ -12,7 +12,11 @@ class ClusterChiSquaredScore(cst.ClusterScore):
         db_table = 'chi_squared_scores'
         unique_together = (("cluster_id", "word"))
 
-def compute_chi_squared_score(N_UC):
+def compute_chi_squared_score(N_UC, prior_count = 1):
+    # Add prior counts to the probability distribution to avoid all of
+    # the issues introduced by zeroes.
+    N_UC += prior_count
+
     # Normalize
     Z = sum(N_UC)
     P_UC = N_UC / Z
