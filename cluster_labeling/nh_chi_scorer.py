@@ -33,7 +33,7 @@ def compute_chi_squared_score(N_UC):
 
 def compute_chi_squared_score_for_word(cluster_id, word):
     N_UC = get_N_UC(cluster_id, word)
-    score = compute_chi_squared_score(N_UC)
+    return compute_chi_squared_score(N_UC)
 
 def compute_all_chi_squared_scores\
         (version=optemo.CameraCluster.get_latest_version()):
