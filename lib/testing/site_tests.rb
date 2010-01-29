@@ -1,20 +1,17 @@
 module SiteTest
 
   def test_detail_page box_index
-    log "Getting Detail page for #{box_index+1}th box, product id #{@sesh.pid_by_box(box_index+1)}"
+    log "Getting Detail page for #{box_index+1}th box, product id #{@sesh.pid_by_box(box_index)}"
     begin
-      @sesh.get_detail_page (box_index+1)
+      @sesh.get_detail_page(box_index)
     rescue Exception => e
-      report_error "Problem getting detail page for product #{@sesh.pid_by_box(box_index+1)}"
+      report_error "Problem getting detail page for product #{@sesh.pid_by_box(box_index)}"
       report_error "#{e.class.name} #{e.message}"
     else
       assert_not_error_page
-      assert_not_homepage
       assert_detail_price_not_nil
       assert_detail_pic_not_nil
     end
-    @sesh.click_back_button
-    @sesh.wait_for_load if java_enabled?
     assert_not_error_page
     assert_well_formed_page
   end
@@ -107,7 +104,6 @@ module SiteTest
   end
   
   def test_click_home_logo
-  
     log "Testing Click Homepage logo"
     snapshot
     @sesh.click_home_logo
@@ -197,9 +193,6 @@ module SiteTest
   end
   
   def test_save_item which_item
-    
-    return unless java_enabled?
-    
     log "Saving item number #{which_item}"
     snapshot
     
@@ -208,7 +201,8 @@ module SiteTest
     already_saved = @sesh.was_saved?( pid_to_save)
     
     begin
-      @sesh.selenium.click "xpath=(//a[@class='save'])[#{which_item}]"
+      debugger
+      @sesh.selenium.run_script "saveProductForComparison(#{pid_to_save}, NULL, NULL)"
       @sesh.wait_for_ajax
     rescue Exception => e
       report_error "Crashed while saving item. Error: " + e.class.name.to_s + e.message.to_s

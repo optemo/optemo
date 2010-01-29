@@ -15,15 +15,18 @@ namespace :test_site do
    
    task :sandbox => :java_init do
     setup_java 'sandbox_1'
-    test_back_button
-    save_me = (rand( @sesh.num_boxes) + 1).floor
-    test_save_item save_me
-    if @sesh.num_saved_items > 0
-       unsave_me = (rand(@sesh.num_saved_items) + 1).floor
-       test_remove_saved unsave_me
-    end
-    
+    test_browse_similar(1)
     test_click_home_logo
+    #save_me = (rand( @sesh.num_boxes) + 1).floor
+    #test_save_item save_me
+    #if @sesh.num_saved_items > 0
+    #   unsave_me = (rand(@sesh.num_saved_items) + 1).floor
+    #   test_remove_saved unsave_me
+    #end
+    
+    test_detail_page(1)
+    test_close_msg_box
+    test_detail_page(1)
     close_log
    end
    
@@ -199,6 +202,7 @@ end
          search_strings << bname
          search_strings << bname.downcase
        end
+       
 
        ( $num_random_tests || 100).times do
 
@@ -232,18 +236,18 @@ end
              click_me = (rand( @sesh.num_similar_links) + 1).floor
              test_browse_similar click_me
            end
-         elsif pick_action == 4                  #4 Test clear search
+         #elsif pick_action == 4                  #4 Test clear search
            #if @sesh.num_clear_search_links > 0
            #  test_remove_search 
            #end
-         elsif pick_action == 5                 #5 Test save item
-            save_me = (rand( @sesh.num_boxes) + 1).floor
-            test_save_item save_me
-         elsif pick_action == 6                 #6 Test remove saved item
-           if @sesh.num_saved_items > 0
-             unsave_me = (rand(@sesh.num_saved_items) + 1).floor
-             test_remove_saved unsave_me
-           end
+         #elsif pick_action == 5                 #5 Test save item
+           # save_me = (rand( @sesh.num_boxes) + 1).floor
+          #  test_save_item save_me
+         #elsif pick_action == 6                 #6 Test remove saved item
+           #if @sesh.num_saved_items > 0
+           #  unsave_me = (rand(@sesh.num_saved_items) + 1).floor
+           #  test_remove_saved unsave_me
+           #end
          elsif pick_action == 7                 #7 Test remove brand
            if( @sesh.num_brands_selected > 0 )
              deselect_me = (rand(@sesh.num_brands_selected) + 1).floor
@@ -253,17 +257,14 @@ end
            clickme = rand(@sesh.num_checkboxes)
            test_checkbox clickme
          elsif pick_action == 9                 # Test details 
-           #detailme = rand(@sesh.num_boxes)
-           #test_detail_page detailme
+           detailme = rand(@sesh.num_boxes)
+           test_detail_page detailme
          elsif pick_action == 10                  #10 Test home logo
            test_click_home_logo
          elsif pick_action == 11
            test_goto_homepage        
-        # elsif pick_action == 11                  #11 Test back button
-           # No back button test is implemented
-         #elsif pick_action == 12                  #12 Test clicking a use button
-        #   pickme = rand(@sesh.num_uses)
-        #   test_pick_use pickme
+         elsif pick_action == 11                  #11 Test back button
+           test_back_button
          elsif pick_action == 13
            break 
          end
