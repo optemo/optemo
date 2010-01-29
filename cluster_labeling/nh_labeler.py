@@ -158,7 +158,8 @@ def compute_counts_for_cluster(cluster):
             compute_counts_for_product(product)
 
         map(lambda table, counts:
-            table.add_values_from(cluster, counts),
+            table.add_values_from(cluster.id, cluster.parent_id,
+                                  numchildren, counts),
             count_tables, [prodcount, wordcount, reviewcount])
 
         totalcounts_to_mod_values = [1]

@@ -15,11 +15,11 @@ class ClusterMIScore(cst.ClusterScore):
 def compute_MI(N_UC, prior_count = 1):
     # Add prior counts to the probability distribution to avoid all of
     # the issues introduced by zeroes.
-    N_UC = map(lambda x: x + prior_count, N_UC)
+    N_UC += prior_count
 
     # Normalize
     Z = sum(N_UC)
-    P_UC = map(lambda x: x / Z, N_UC)
+    P_UC = N_UC / Z
     
     P_C = P_UC_to_P_C(P_UC)
     P_U = P_UC_to_P_U(P_UC)
@@ -28,15 +28,16 @@ def compute_MI(N_UC, prior_count = 1):
 
     for et in [1, 0]:
         for ec in [1, 0]:
-            p_uc = P_UC[bin_to_int(str(et) + str(ec))]
+            p_uc = P_UC[et, ec]
             score += p_uc * math.log(p_uc / (P_U[et] * P_C[ec]), 2)
 
     return score
 
 def compute_MI_for_word(cluster_id, word):
-    N_UC = get_N_UC(cluster, word)
+    N_UC = get_N_UC(cluster_id, word)
     return compute_MI(N_UC)
 
 def compute_all_MI_scores\
         (version=optemo.CameraCluster.get_latest_version()):
     compute_all_scores(version, compute_MI_for_word, ClusterMIScore)
+

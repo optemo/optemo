@@ -36,6 +36,19 @@ class ClusterTotalCount(local.LocalInsertOnlyModel):
                 numchildren=numchildren)
         cluster_totalcount.save()
 
+    @classmethod
+    def get_value(cls, cluster_id):
+        qs = cls.get_manager().filter\
+             (cluster_id = cluster_id).values('totalcount')
+
+        numrows = qs.count()
+        assert(numrows <= 1)
+
+        if numrows == 0:
+            return None
+        else:
+            return qs[0]['totalcount']
+
 class ClusterWordTotalCount(ClusterTotalCount):
     class Meta:
         db_table = 'wordtotalcounts'

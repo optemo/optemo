@@ -15,7 +15,7 @@ class ClusterChiSquaredScore(cst.ClusterScore):
 def compute_chi_squared_score(N_UC):
     # Normalize
     Z = sum(N_UC)
-    P_UC = map(lambda x: x / Z, N_UC)
+    P_UC = N_UC / Z
 
     P_C = P_UC_to_P_C(P_UC)
     P_U = P_UC_to_P_U(P_UC)
@@ -24,7 +24,7 @@ def compute_chi_squared_score(N_UC):
 
     for et in [1, 0]:
         for ec in [1, 0]:
-            N_uc = N_UC[bin_to_int(str(et) + str(ec))]
+            N_uc = N_UC[et, ec]
             E_uc = Z * P_U[et] * P_C[ec]
 
             score += ((N_uc - E_uc)**2)/E_uc
@@ -39,3 +39,4 @@ def compute_all_chi_squared_scores\
         (version=optemo.CameraCluster.get_latest_version()):
     compute_all_scores(version, compute_chi_squared_score_for_word,
                        ClusterChiSquaredScore)
+

@@ -18,13 +18,13 @@ class ClusterValueForWord(local.LocalInsertOnlyModel):
 
     @classmethod
     @transaction.commit_on_success
-    def add_values_from(cls, cluster, dict):
-        numchildren = cluster.get_children().count()
+    def add_values_from(cls, cluster_id, parent_cluster_id,
+                        numclusterchildren, dict):
         for (word, value) in dict.iteritems():
-            kwargs = {"cluster_id" : cluster.id,
-                      "parent_cluster_id" : cluster.parent_id,
+            kwargs = {"cluster_id" : cluster_id,
+                      "parent_cluster_id" : parent_cluster_id,
                       "word": word, cls.value_name : value,
-                      "numchildren" : numchildren}
+                      "numchildren" : numclusterchildren}
             cluster_value = cls(**kwargs)
             cluster_value.save()
 
