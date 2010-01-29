@@ -94,6 +94,9 @@ def compute_wordcounts_for_review(content):
         words_punct_split.extend(splitwords)
     words = words_punct_split
 
+    # Filter out everything is only 1 character long
+    words = filter(lambda x: len(x) > 1, words)
+
     # Filter out everything that only consists of numbers
     words = filter(lambda x: not number_re.match(x), words)
 
