@@ -63,6 +63,7 @@ stemmer = nltk.stem.porter.PorterStemmer()
 
 import re
 punct_re = re.compile('\W+')
+number_re = re.compile('^\d+$')
 
 def compute_wordcounts_for_review(content):
     wcs = {}
@@ -92,6 +93,9 @@ def compute_wordcounts_for_review(content):
         splitwords = filter(lambda x: len(x) > 0, punct_re.split(word))
         words_punct_split.extend(splitwords)
     words = words_punct_split
+
+    # Filter out everything that only consists of numbers
+    words = filter(lambda x: not number_re.match(x), words)
 
     for word in words:
         wcs[word] = wcs.get(word, 0) + 1
