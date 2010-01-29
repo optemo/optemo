@@ -105,7 +105,16 @@ module GenericScraper
         if ro.nil?
           ro = create_record_from_atts(clean_atts, RetailerOffering)
         end
+        
+        # Validation!
+        if clean_atts['priceint'] and (clean_atts['priceint'].to_i > $model::MaxPrice)# or newatts['priceint'] < $model::MinPrice)
+          clean_atts['stock'] = false
+          clean_atts['priceint'] = nil
+        end
+        
         fill_in_all(clean_atts, ro)
+        fill_in_forced(clean_atts['priceint'], ro) # Also validation
+        
         timestamp_offering(ro)     
       else
         report_error "Couldn't create #{$scrapedmodel} with local_id #{local_id || 'nil'} and retailer #{retailer_id || 'nil'}."
@@ -330,7 +339,7 @@ namespace :data do
       newatts = rescrape_prices(offering.local_id, offering.region)
       
       # Validation!
-      if newatts['priceint'] and (newatts['priceint'] > $model::MaxPrice)# or newatts['priceint'] < $model::MinPrice)
+      if newatts['priceint'] and (newatts['priceint'].to_i > $model::MaxPrice)# or newatts['priceint'] < $model::MinPrice)
         newatts['stock'] = false
         newatts['priceint'] = nil
       end

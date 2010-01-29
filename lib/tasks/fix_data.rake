@@ -32,7 +32,6 @@ namespace :fix_data do
           
           debug = $scrapedmodel.find(spid) 
           puts "#{local_id} has #{which_fields[0]} #{debug[which_fields[0]] || 'nil'}"    
-
     end
     puts "Done"
   end
