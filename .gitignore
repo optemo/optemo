@@ -27,7 +27,6 @@ lib/c_code/clusteringCodes/cppconn/cmake_install.cmake
 lib/c_code/clusteringCodes/codes/CMakeFiles
 lib/c_code/clusteringCodes/codes/Makefile
 lib/c_code/clusteringCodes/codes/cmake_install.cmake
-lib/c_code/clusteringCodes/codes/hCluster
 lib/c_code/clusteringCodes/cppconn/libmysqlcppconn-static.a
 
 mkmf.log
