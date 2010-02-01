@@ -37,8 +37,8 @@ module OfferingsHelper
       fill_in('pricehistory', pricehistory, offering)
       
       # Update price & timestamp
-      fill_in 'priceint', newprice, offering
-      fill_in 'priceUpdate', Time.now, offering
+      fill_in_forced( 'priceint', newprice, offering)
+      fill_in( 'priceUpdate', Time.now, offering)
     end
   
   end
