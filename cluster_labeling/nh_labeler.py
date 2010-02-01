@@ -100,6 +100,16 @@ def compute_wordcounts_for_review(content):
     # Filter out everything that only consists of numbers
     words = filter(lambda x: not number_re.match(x), words)
 
+    # Filter out everything that has as many or more numbers than
+    # letters. This gets rid of a lot of model numbers.
+    words = filter(lambda word:
+                   reduce(lambda n, l: n + 1 if str.isalpha() else 0,
+                          word, 0)
+                   >
+                   (len(word)/2),
+                   words)
+
+    # Populate word counts
     for word in words:
         wcs[word] = wcs.get(word, 0) + 1
 
