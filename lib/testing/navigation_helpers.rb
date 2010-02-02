@@ -33,14 +33,22 @@ module NavigationHelpers
      @total_products[index] = value
    end
    
+   def num_detail_page_links
+      return doc.css('.easylink').length
+   end
+   
    def get_detail_page_link box
-     the_link = doc.css('div.productinfo .easylink')[box]
+     the_link = doc.css('.easylink')[box]
      the_href = the_link.css('@href').text
      return the_href
    end
    
    def detail_page?
-     return ( self.current_url.match(/compare\/show/) and !self.error_page?)
+     msg_vis = get_el(doc.css("#outsidecontainer"))
+     return false unless msg_vis and msg_vis.css('@style').to_s.match(/display: inline/)
+     return false if self.error_page?
+     title = get_text(msg_vis.css('#info .poptitle'))
+     return !title.match(/quick view/i).nil?
    end
    
    def num_checkboxes
@@ -243,7 +251,9 @@ module NavigationHelpers
    end
    
    def pid_by_box which_box
-     @box_hrefs = doc.xpath("((//a[@class='save'])[#{which_box}])/@href")
+     boxes = doc.css(".navigator_box .easylink")
+     box = boxes[which_box]
+     pid = (box.css("@data-id")||'').to_s
      return @box_hrefs.to_s.match('\d+').to_s.to_i
    end
    

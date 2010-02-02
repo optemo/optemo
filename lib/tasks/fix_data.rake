@@ -1,5 +1,8 @@
 namespace :fix_data do
   
+  task :ptr_redo_endstuff  => ['data:printer_init', 'data:update_bestoffers']
+  
+  
   task :cam_rescrape  => ['data:cam_init', 'data:amazon_init', :rescrape_selected_2]
   
   task :cam_rescrape_mkt  => ['data:cam_init', 'data:amazon_mkt_init', :rescrape_selected]
@@ -18,20 +21,20 @@ namespace :fix_data do
     retailer_ok_sps = sps.reject{|x| !retailerids.include?(x.retailer_id)}
     
     retailer_ok_sps.each do |retailer_ok_sp|
-          local_id = retailer_ok_sp.local_id
-          retailer = Retailer.find(retailer_ok_sp.retailer_id)
-          spid = retailer_ok_sp.id
-          
-          debug = $scrapedmodel.find(spid)
-          puts "#{local_id} had #{which_fields[0]} #{debug[which_fields[0]] || 'nil'}"
-          which_fields.each do |fld|
-            debug.update_attribute(fld, nil)
-          end
-          
-          generic_scrape(local_id, retailer)
-          
-          debug = $scrapedmodel.find(spid) 
-          puts "#{local_id} has #{which_fields[0]} #{debug[which_fields[0]] || 'nil'}"    
+       local_id = retailer_ok_sp.local_id
+       retailer = Retailer.find(retailer_ok_sp.retailer_id)
+       spid = retailer_ok_sp.id
+       
+       debug = $scrapedmodel.find(spid)
+       puts "#{local_id} had #{which_fields[0]} #{debug[which_fields[0]] || 'nil'}"
+       which_fields.each do |fld|
+         debug.update_attribute(fld, nil)
+       end
+       
+       generic_scrape(local_id, retailer)
+       
+       debug = $scrapedmodel.find(spid) 
+       puts "#{local_id} has #{which_fields[0]} #{debug[which_fields[0]] || 'nil'}"    
     end
     puts "Done"
   end

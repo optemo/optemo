@@ -141,6 +141,27 @@ namespace :sandbox do
     
   end
   
+  task :rm_ptr_dups => ['data:printer_init', :remove_dups, 'data:update_bestoffers']
+  
+  task :rm_cam_dups => ['data:cam_init', :remove_dups, 'data:update_bestoffers']
+  
+  task :remove_dups do
+    timed_announce "Starting to look for matching sets"
+    matchings = get_matching_sets_efficient($model.all)
+    timed_announce "Done looking for matching sets"
+    puts "#{matchings.count} sets of duplicates"
+    puts "#{matchings.flatten.count - matchings.count} duplicates will be removed"
+    matchings.each_with_index do |set,i|
+      keep = $model.find(set[0])
+      set[1..-1].each do |ditch_id|
+        ditch = $model.find(ditch_id)
+        unlink_duplicate(keep, ditch)
+      end
+      timed_announce "Done #{i+1}/#{matchings.count}"
+    end
+      
+  end
+  
   task :test_remove_all_dups => ['data:printer_init'] do
     timed_announce "Starting to look for matching sets"
     matchings = get_matching_sets_efficient($model.all)
@@ -156,6 +177,7 @@ namespace :sandbox do
       
       keep = $model.find(set[0])
       set[1..-1].each do |ditch_id|
+        next unless $model.exists?(ditch_id)
         ditch = $model.find(ditch_id)
         puts "#{ditch.title} to be merged with #{keep.title}."
         

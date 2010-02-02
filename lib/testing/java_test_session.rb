@@ -112,7 +112,7 @@ class JavaTestSession < Webrat::SeleniumSession
    
    def click_home_logo 
      # TODO what bout cameras
-     self.selenium.click 'css=a[title="LaserPrinterHub.com"]'
+     self.selenium.click 'css=a#logo'
      self.wait_for_load
    end
    
