@@ -5,8 +5,8 @@ class Search < ActiveRecord::Base
   ## Computes distributions (arrays of normalized product counts) for all continuous features 
   def distribution(featureName)
        dist = Array.new(21,0)
-       min = $dbfeat[featureName].min
-       max = $dbfeat[featureName].max
+       min = DbFeature.cache[featureName].min
+       max = DbFeature.cache[featureName].max
        stepsize = (max-min) / dist.length + 0.000001 #Offset prevents overflow of 10 into dist array
        itof = $model::ItoF.include?(featureName)
        acceptedNodes.each do |n| 
@@ -60,7 +60,7 @@ class Search < ActiveRecord::Base
     if @reldescs.empty?
       feats = {}
       $model::ContinuousFeaturesF.each do |f|
-        norm = $dbfeat[f].max - $dbfeat[f].min
+        norm = DbFeature.cache[f].max - DbFeature.cache[f].min
         norm = 1 if norm == 0
         feats[f] = clusters.map{|c| c.representative(session,searchpids)[f].to_f/norm}
       end
@@ -114,11 +114,11 @@ class Search < ActiveRecord::Base
       $model::ContinuousFeatures.each do |f|
         if $model::DescFeatures.include?(f) && !(f == "opticalzoom" && slr == 1)
               cRanges = clusters[clusterNumber].ranges(f, session, searchpids)
-              if (cRanges[1] < $dbfeat[f]["low"])
+              if (cRanges[1] < DbFeature.cache[f]["low"])
                  clusterDs << {'desc' => "low_"+f, 'stat' => 0}  
-              elsif (cRanges[0] > $dbfeat[f]["high"])
+              elsif (cRanges[0] > DbFeature.cache[f]["high"])
                  clusterDs <<  {'desc' => "high_"+f, 'stat' => 2}  
-              elsif ((cRanges[0] >= $dbfeat[f]["low"]) && (cRanges[1] <= $dbfeat[f]["high"])) 
+              elsif ((cRanges[0] >= DbFeature.cache[f]["low"]) && (cRanges[1] <= DbFeature.cache[f]["high"])) 
                   clusterDs <<  {'desc' => "avg_"+f, 'stat' => 1}
               end 
         end   
@@ -133,8 +133,8 @@ class Search < ActiveRecord::Base
   def searchDescription
     des = []
     $model::DescFeatures.each do |f|
-      low = $dbfeat[f].low
-      high = $dbfeat[f].high
+      low = DbFeature.cache[f].low
+      high = DbFeature.cache[f].high
       searchR = ranges(f)
       return ['Empty'] if searchR[0].nil? || searchR[1].nil?
       if (searchR[1]<=low)

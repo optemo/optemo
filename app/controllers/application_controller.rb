@@ -96,11 +96,6 @@ class ApplicationController < ActionController::Base
       @@keywordsearch = @@session.searches.last.searchpids 
       @@keyword = @@session.searches.last.searchterm
     end
-    $dbfeat = {}
-    if $dbfeat.empty? 
-      #debugger
-      DbFeature.find_all_by_product_type_and_region($model.name,$region).each {|f| $dbfeat[f.name] = f}
-    end
   end
   
   def title=(title)
