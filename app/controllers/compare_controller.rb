@@ -115,8 +115,8 @@ class CompareController < ApplicationController
       product_ids = $model.search_for_ids(params[:search],:per_page => 10000)
       current_version = $clustermodel.find_last_by_region($region).version
       nodes = product_ids.map{|p| $nodemodel.find_by_product_id_and_version_and_region(p, current_version, $region)}.compact
-      cluster_ids = nodes.map{|n|n.cluster_id}
-      if cluster_ids.length == 0
+      
+      if nodes.length == 0
         if params[:ajax]
           @errortype = "search"
           render 'error', :layout=>true
@@ -133,44 +133,29 @@ class CompareController < ApplicationController
         Session.current.update_attribute('filter', true)
         Session.current.keyword = params[:search]
         Session.current.keywordpids = nodes.map{|p| "product_id = #{p.product_id}"}.join(' OR ')
-        product_id_array = nodes.map{ |node| node.product_id }
-        if !(product_id_array.nil?) && product_id_array.length < 50 # Guess; this should be profiled later.
-          node_array = product_id_array.map { |id| $nodemodel.find_last_by_product_id(id) }
-          clusters = node_array.map { |node| $clustermodel.find(node.cluster_id) }.uniq
-
-          while clusters.length > $NumGroups
-            clusters = clusters.map do |cluster|
-              if cluster.parent_id != 0 # It's possible to have clusters at different layers, so we need to check for this.
-                $clustermodel.find(cluster.parent_id) 
-              else
-                cluster
-              end
-            end
-            clusters = clusters.uniq
-          end
-        else
-          clusters = cluster_ids.uniq
-        end
+        
         if params[:ajax]
-          classVariables(Search.createFromClustersAndCommit(clusters))
+          classVariables(Search.createFromKeywordSearch(nodes))
           render 'ajax', :layout => false
         else
           #This is broken without AJAX because searchterm is not updated in Search object
-          redirect_to "/compare/compare/"+clusters.join('-')
+          redirect_to "/compare/compare/"+nodes.map{|n|n.cluster_id}.join('-')
         end
       end
     end
   end
   
   def back
-    session = Session.current
+    mysession = Session.current
     #Remove last selection
-    destroyed_search = session.searches.last.destroy.id
-    feature = $featuremodel.find(:first, :conditions => ["session_id = ? and search_id = ?", session.id,destroyed_search])
+    destroyed_search = mysession.searches.last.destroy.id
+    feature = $featuremodel.find(:first, :conditions => ["session_id = ? and search_id = ?", mysession.id,destroyed_search])
     feature.destroy if feature
-    newsearch = session.searches.last
+    newsearch = mysession.searches.last
     #In case back button is hit in the beginning
     newsearch = Search.createFromClustersAndCommit(initialClusters) if newsearch.nil?
+    mysession.keywordpids = newsearch.searchpids 
+    mysession.keyword = newsearch.searchterm
     classVariables(newsearch)
     render 'ajax', :layout => false
   end

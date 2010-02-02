@@ -230,6 +230,28 @@ class Search < ActiveRecord::Base
     s
   end
   
+  def self.createFromKeywordSearch(nodes)
+    product_id_array = nodes.map{ |node| node.product_id }
+    if !(product_id_array.nil?) && product_id_array.length < 50 # Guess; this should be profiled later.
+      node_array = product_id_array.map { |id| $nodemodel.find_last_by_product_id(id) }
+      clusters = node_array.map { |node| $clustermodel.find(node.cluster_id) }.uniq
+
+      while clusters.length > $NumGroups
+        clusters = clusters.map do |cluster|
+          if cluster.parent_id != 0 # It's possible to have clusters at different layers, so we need to check for this.
+            $clustermodel.find(cluster.parent_id) 
+          else
+            cluster
+          end
+        end
+        clusters = clusters.uniq
+      end
+    else
+      clusters = nodes.map{|n|n.cluster_id}.uniq
+    end
+    createFromClustersAndCommit(clusters)
+  end
+  
   def to_s
     clusters.map{|c|c.id}.join('-')
   end

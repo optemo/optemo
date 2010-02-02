@@ -75,16 +75,17 @@ class ApplicationController < ActionController::Base
         myProduct.save
       end
       session[:user_id] = mysession.id
-      Session.current = mysession
-    else
-      Session.current = mysession
     end
     
     #Check for keyword search
     if mysession.filter && mysession.searches.last
       mysession.keywordpids = mysession.searches.last.searchpids 
       mysession.keyword = mysession.searches.last.searchterm
+    else
+      mysession.keywordpids = nil
+      mysession.keyword = nil
     end
+    Session.current = mysession
   end
   
   def title=(title)
