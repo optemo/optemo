@@ -12,8 +12,10 @@ class JavaTestSession < Webrat::SeleniumSession
   end
      
   def get_detail_page box
-    visit get_detail_page_link(box)
-    wait_for_load
+    the_link = doc.css('div.productinfo .easylink')[box]
+    the_text = (the_link.text || '').strip
+    selenium.click("link=#{the_text}")
+    wait_for_ajax  
   end   
     
   def close_popup_tour
@@ -29,6 +31,8 @@ class JavaTestSession < Webrat::SeleniumSession
    def move_slider which_slider, min, max
      fill_in @slider_max_names[which_slider], :with => max
      fill_in @slider_min_names[which_slider], :with => min
+     browser.run_script('submitCategorical()')
+     #browser.run_script('ajaxcall("/products/filter", $("#filter_form").serialize())')
      wait_for_ajax
    end
    
@@ -46,16 +50,25 @@ class JavaTestSession < Webrat::SeleniumSession
      return Nokogiri::HTML(self.response.body)
    end
    
-   def click_clear_search 
-     selenium.click 'clearsearch'
-   end
-   
    def search_for query 
      browser.type 'search', query
      browser.click 'id=submit_button' 
      wait_for_ajax
    end
   
+  def close_msg_box
+    msg_vis = get_el(doc.css("#outsidecontainer"))
+    return false unless msg_vis and msg_vis.css('@style').to_s.match(/display: inline/)
+    browser.click 'css=#outsidecontainer a.close'
+    wait_for_ajax
+  end
+
+  def click_link_in_msg_box
+    msg_vis = get_el(doc.css("#outsidecontainer"))
+    return false unless msg_vis and msg_vis.css('@style').to_s.match(/display: inline/)
+    browser.click 'css=#outsidecontainer #info a'
+    wait_for_ajax
+  end
   
   # fill in the pref form 
   def pref_for query
@@ -85,21 +98,21 @@ class JavaTestSession < Webrat::SeleniumSession
    end
    
    def remove_brand which_brand
-     debugger
-     selenium.click "css=.selected_brand/a"
+     selenium.click "css=.selected_brands a"
      wait_for_ajax
    end
       
    def click_back_button product_type='Printer'
      # TODO what about cameras...
      the_link = get_el(doc.css('#backlink'))
+     debugger unless the_link
      selenium.click "link=#{the_link.text}"
      wait_for_ajax
    end
    
    def click_home_logo 
      # TODO what bout cameras
-     self.selenium.click 'css=a[title="LaserPrinterHub.com"]'
+     self.selenium.click 'css=a#logo'
      self.wait_for_load
    end
    

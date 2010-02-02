@@ -1,5 +1,26 @@
 namespace :sandbox do
   
+  task :ptr_rm_idjunk => ['data:printer_init',:idfields_rm_junk]
+  
+  task :cam_rm_idjunk => ['data:cam_init',:idfields_rm_junk]
+  
+  task :idfields_rm_junk do
+    $model.all.each do |product|
+      
+      ids = {'model' => product.model, 'mpn' => product.mpn}
+      
+      $descriptors.each do |d|
+        ids.each do |idname,idval|
+          next if idval.nil?
+          if idval.match(d)
+            puts "#{idval} has #{d}" 
+            fill_in_forced(idname,nil,product)
+          end
+        end
+      end
+    end
+  end
+  
   task :check_new_voting =>  ['data:cam_init']  do 
     # Get weirdo weight cams
     #weirdos =# Camera.all.reject{|x| x['itemweight'].nil? or x['itemweight'] <= Camera::ValidRanges['itemweight'][1]}
@@ -120,6 +141,27 @@ namespace :sandbox do
     
   end
   
+  task :rm_ptr_dups => ['data:printer_init', :remove_dups, 'data:update_bestoffers']
+  
+  task :rm_cam_dups => ['data:cam_init', :remove_dups, 'data:update_bestoffers']
+  
+  task :remove_dups do
+    timed_announce "Starting to look for matching sets"
+    matchings = get_matching_sets_efficient($model.all)
+    timed_announce "Done looking for matching sets"
+    puts "#{matchings.count} sets of duplicates"
+    puts "#{matchings.flatten.count - matchings.count} duplicates will be removed"
+    matchings.each_with_index do |set,i|
+      keep = $model.find(set[0])
+      set[1..-1].each do |ditch_id|
+        ditch = $model.find(ditch_id)
+        unlink_duplicate(keep, ditch)
+      end
+      timed_announce "Done #{i+1}/#{matchings.count}"
+    end
+      
+  end
+  
   task :test_remove_all_dups => ['data:printer_init'] do
     timed_announce "Starting to look for matching sets"
     matchings = get_matching_sets_efficient($model.all)
@@ -135,6 +177,7 @@ namespace :sandbox do
       
       keep = $model.find(set[0])
       set[1..-1].each do |ditch_id|
+        next unless $model.exists?(ditch_id)
         ditch = $model.find(ditch_id)
         puts "#{ditch.title} to be merged with #{keep.title}."
         
@@ -226,12 +269,12 @@ namespace :sandbox do
     #puts "Done"
   end
   
-  task :time_amazon_update => ['data:printer_init', 'data:amazon_init', :update_timer]
+  task :time_amazon_update => ['data:cam_init', 'data:amazon_init', :update_timer]
   
   task :update_timer do
-    #num_to_update = 10_000
-    my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id_and_product_type(x.id, $model.name)}#[1..num_to_update]
-    num_to_update = my_offerings.count
+    num_to_update = 50
+    my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id_and_product_type(x.id, $model.name)}[1..num_to_update]
+    #num_to_update = my_offerings.count
     
     time = Time.now
     my_offerings.each_with_index do |offering, i|
@@ -240,9 +283,9 @@ namespace :sandbox do
         newatts = rescrape_prices(offering.local_id, offering.region)
         
         update_offering(newatts, offering) if offering
-        if(offering.product_id and $model.exists?(offering.product_id))
-          update_bestoffer($model.find(offering.product_id))
-        end  
+        #if(offering.product_id and $model.exists?(offering.product_id))
+        #  update_bestoffer($model.find(offering.product_id))
+        #end  
       rescue Exception => e
         report_error "with RetailerOffering #{offering.id}: #{e.class.name} #{e.message}"
         sleep(1) # Do not skew timing results

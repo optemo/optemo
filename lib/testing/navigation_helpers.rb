@@ -33,13 +33,22 @@ module NavigationHelpers
      @total_products[index] = value
    end
    
+   def num_detail_page_links
+      return doc.css('.easylink').length
+   end
+   
    def get_detail_page_link box
-     pid = pid_by_box(box)
-     return  "/compare/show/#{pid}"
+     the_link = doc.css('.easylink')[box]
+     the_href = the_link.css('@href').text
+     return the_href
    end
    
    def detail_page?
-     return ( self.current_url.match(/compare\/show/) and !self.error_page?)
+     msg_vis = get_el(doc.css("#outsidecontainer"))
+     return false unless msg_vis and msg_vis.css('@style').to_s.match(/display: inline/)
+     return false if self.error_page?
+     title = get_text(msg_vis.css('#info .poptitle'))
+     return !title.match(/quick view/i).nil?
    end
    
    def num_checkboxes
@@ -167,11 +176,6 @@ module NavigationHelpers
     elements = doc.css(el_matcher)
     if elements then return elements.length else return 0 end
   end
-  
-   # Tells you if the Clear Search link is showing.
-   def num_clear_search_links
-     num_elements('a#clearsearch')
-   end
    
    # Reads the Session ID from the page.
    def session_id
@@ -190,11 +194,7 @@ module NavigationHelpers
      return false unless msg_vis and msg_vis.css('@style').to_s.match(/display: inline/)
      msg = get_text(doc.css("#outsidecontainer #info"))
      return true if (msg || '').match(/no matching results/i)
-     msg_span = msg_span_el.content.to_s
-     
-     # TODO we should give this span tag an id! 
-     product_phrase = msg_span.match('No products').to_s
-     return (product_phrase.length > 0)
+     return false
    end
    
    def total_products
@@ -251,7 +251,9 @@ module NavigationHelpers
    end
    
    def pid_by_box which_box
-     @box_hrefs = doc.xpath("((//a[@class='save'])[#{which_box}])/@href")
+     boxes = doc.css(".navigator_box .easylink")
+     box = boxes[which_box]
+     pid = (box.css("@data-id")||'').to_s
      return @box_hrefs.to_s.match('\d+').to_s.to_i
    end
    
@@ -264,5 +266,22 @@ module NavigationHelpers
      end
      return false
    end
+  
+  def searched_term
+    header_text = get_text(doc.css('#navigator_bar'))
+    return nil unless header_text
+    msg = (header_text.match(/Search: '.+'/)||'').to_s
+    if msg and msg.length > 0
+      term = (msg.match(/'.+'/)||'').to_s.gsub(/'/, '')
+      if term and term.length > 0
+        return term
+      end
+    end
+    return nil
+  end
+  
+  def has_search_history?
+    return true if self.searched_term
+  end
   
 end

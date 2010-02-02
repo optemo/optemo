@@ -37,22 +37,25 @@ module OfferingsHelper
       fill_in('pricehistory', pricehistory, offering)
       
       # Update price & timestamp
-      fill_in 'priceint', newprice, offering
-      fill_in 'priceUpdate', Time.now, offering
+      fill_in_forced( 'priceint', newprice, offering)
+      fill_in( 'priceUpdate', Time.now, offering)
     end
   
   end
   
   def find_or_create_offering rec, atts
-    if rec.offering_id.nil? # If no RetailerOffering is mapped to this brand-specific offering:
-      o = create_record_from_atts atts, RetailerOffering
-      fill_in 'offering_id', o.id, rec
-    else
-      o = RetailerOffering.find(rec.offering_id)
-      fill_in_all atts, o
-    end
-    timestamp_offering o
-    return o
+  # TODO phase out this method
+    return nil
+    #if rec.offering_id.nil? # If no RetailerOffering is mapped to this brand-specific offering:
+    #  return nil if (atts['price']||0) > 20_000_00
+    #  o = create_record_from_atts atts, RetailerOffering
+    #  fill_in 'offering_id', o.id, rec
+    #else
+    #  o = RetailerOffering.find(rec.offering_id)
+    #  fill_in_all atts, o unless (atts['price']||0) > 20_000_00
+    #end
+    #timestamp_offering o
+    #return o
   end
   
   # Updates best offer for all regions

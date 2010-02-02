@@ -105,7 +105,16 @@ module GenericScraper
         if ro.nil?
           ro = create_record_from_atts(clean_atts, RetailerOffering)
         end
+        
+        # Validation!
+        if clean_atts['priceint'] and (clean_atts['priceint'].to_i > $model::MaxPrice)# or newatts['priceint'] < $model::MinPrice)
+          clean_atts['stock'] = false
+          clean_atts['priceint'] = nil
+        end
+        
         fill_in_all(clean_atts, ro)
+        fill_in_forced('priceint',clean_atts['priceint'], ro) # Also validation
+        
         timestamp_offering(ro)     
       else
         report_error "Couldn't create #{$scrapedmodel} with local_id #{local_id || 'nil'} and retailer #{retailer_id || 'nil'}."
@@ -231,7 +240,7 @@ namespace :data do
   end
   
   desc 'Get new prices and products from Amazon cameras'
-  task :scrape_amazon_cams => [:cam_init, :amazon_init, :scrape_new, :update_prices]
+  task :scrape_amazon_cams => [:cam_init, :amazon_init, :scrape_new, :update_prices, :update_bestoffers]
     
   task :validate_amazon => [:printer_init,:amazon_init, :validate_printers]
   
@@ -241,7 +250,7 @@ namespace :data do
   task :scrape => [:scrape_new, :match_to_products, :update_bestoffers]
   task :update => [:update_prices, :scrape_new, :match_to_products, :update_bestoffers]
   
-  task :endstuff => [:match_to_products, :vote, :update_bestoffers]
+  task :endstuff => [:vote, :update_bestoffers]
   
   # Useful combinations of the above
   desc 'Get new prices and products from Newegg printers'
@@ -329,10 +338,16 @@ namespace :data do
       next if offering.local_id.nil?
       newatts = rescrape_prices(offering.local_id, offering.region)
       
+      # Validation!
+      if newatts['priceint'] and (newatts['priceint'].to_i > $model::MaxPrice)# or newatts['priceint'] < $model::MinPrice)
+        newatts['stock'] = false
+        newatts['priceint'] = nil
+      end
+      
       update_offering(newatts, offering) if offering
-      if(offering.product_id and $model.exists?(offering.product_id))
-        update_bestoffer($model.find(offering.product_id))
-      end  
+      #if(offering.product_id and $model.exists?(offering.product_id))
+      #  update_bestoffer($model.find(offering.product_id))
+      #end  
       log "[#{Time.now}] Done updating #{i+1} of #{my_offerings.count} offerings"
     end
     

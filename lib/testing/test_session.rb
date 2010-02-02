@@ -25,10 +25,6 @@ class TestSession < Webrat::MechanizeSession
      select brand_name(which_brand), :from => 'selector'
      submit_form 'filter_form'
    end
-
-   def click_clear_search 
-     click_link 'clearsearch'
-   end
    
    def search_for query 
      fill_in "search", :with => query

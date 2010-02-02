@@ -15,8 +15,18 @@ namespace :test_site do
    
    task :sandbox => :java_init do
     setup_java 'sandbox_1'
-    test_search_for('asdf')
-    debugger
+    test_browse_similar(1)
+    test_click_home_logo
+    #save_me = (rand( @sesh.num_boxes) + 1).floor
+    #test_save_item save_me
+    #if @sesh.num_saved_items > 0
+    #   unsave_me = (rand(@sesh.num_saved_items) + 1).floor
+    #   test_remove_saved unsave_me
+    #end
+    
+    test_detail_page(1)
+    test_close_msg_box
+    test_detail_page(1)
     close_log
    end
    
@@ -96,6 +106,10 @@ namespace :test_site do
        (rand >= 0.5)? new_min = @sesh.current_slider_min(slideme) : new_max = @sesh.current_slider_max(slideme)
 
        test_move_sliders(slideme, new_min, new_max)
+       
+       if(@sesh.no_products_found_msg? or @sesh.error_page?)
+          test_close_msg_box
+       end
      end
 
      close_log
@@ -107,8 +121,10 @@ namespace :test_site do
      
      # Try selecting & deselecting every brand
      (1..@sesh.num_brands_in_dropdown).each do |brand| 
-       test_add_brand (brand - 1)      
-       test_remove_brand(1)
+       test_add_brand (brand - 1)
+       if(@sesh.num_brands_selected > 0)      
+         test_remove_brand(1)
+       end
      end
 
      close_log
@@ -118,16 +134,22 @@ namespace :test_site do
    task :search => :java_init do 
        setup_java "search"
 
-       # Brand name based search strings
-       (1..@sesh.num_brands_in_dropdown).each do |brand| 
-         test_search_for @sesh.brand_name(brand)
-         test_search_for @sesh.brand_name(brand).downcase         
+       testme = []
+       (1..@sesh.num_brands_in_dropdown).each do |brand|
+         testme << @sesh.brand_name(brand)
+         testme << @sesh.brand_name(brand).downcase
        end
 
-     # Other search strings
-     other = ["","asdf","apples","Sister","Helwett","Hewlett","xena", "Data","cheap"]
-     other.each do |x|
+        # Other search strings
+        other = ["","asdf","apples","Sister","Helwett","Hewlett","xena", "Data","cheap"]
+        
+       testme += other
+     testme.each do |x|
        test_search_for x
+       if(@sesh.no_products_found_msg?)
+        test_close_msg_box
+         # TODO test_close_popup
+       end
      end
 
      close_log
@@ -180,74 +202,61 @@ end
          search_strings << bname
          search_strings << bname.downcase
        end
+       
 
        ( $num_random_tests || 100).times do
 
-         pick_action = (rand 12).floor
-         # For the error page, the # of possible actions is very limited.
-         pick_action = 10 + rand(2) if @sesh.error_page?
-         #pick_action = 12 if @sesh.home_page?
-         pick_action = 13 if @sesh.get_bd_div_text == ''
-
-         if pick_action == 0                     #0 Test move sliders.
-           slide_me = rand @sesh.num_sliders
-           distance = @sesh.slider_percent_to_pos slide_me, rand(101)
-
-           new_min = (@sesh.current_slider_min(slide_me)).to_i
-           new_max = (@sesh.current_slider_max(slide_me)).to_i
-           (rand >= 0.5)? new_min = distance : new_max = distance
-
-           test_move_sliders(slide_me, new_min, new_max)
-         elsif pick_action == 1                  #1 Test add brand
-           brand_to_add = rand(@sesh.num_brands_in_dropdown)
-           test_add_brand brand_to_add
-         elsif pick_action == 2                  #2 Test search
-           search_me = search_strings[rand(search_strings.length)] 
-           rand(2).times do 
-             (rand >= 0.5)? connector = " and " : connector = ' or '
-             search_me += connector + search_strings[rand(search_strings.length)] 
+         pick_action = (rand 10).floor
+         
+         if(@sesh.no_products_found_msg? or @sesh.error_page? or @sesh.detail_page?)
+            test_close_msg_box
+         elsif(@sesh.doc.nil?)
+            break
+         else
+           case pick_action
+           when 0                     #0 Test move sliders.
+             slide_me = rand @sesh.num_sliders
+             distance = @sesh.slider_percent_to_pos slide_me, rand(101)
+           
+             new_min = (@sesh.current_slider_min(slide_me)).to_i
+             new_max = (@sesh.current_slider_max(slide_me)).to_i
+             (rand >= 0.5)? new_min = distance : new_max = distance
+           
+             test_move_sliders(slide_me, new_min, new_max)
+           when 1                  #1 Test add brand
+             brand_to_add = rand(@sesh.num_brands_in_dropdown)
+             test_add_brand brand_to_add
+           when 2                  #2 Test search
+             search_me = search_strings[rand(search_strings.length)] 
+             rand(2).times do 
+               (rand >= 0.5)? connector = " and " : connector = ' or '
+               search_me += connector + search_strings[rand(search_strings.length)] 
+             end
+             test_search_for search_me
+           when 3                 #3 Test browse similar
+             if @sesh.num_similar_links > 0
+               click_me = (rand( @sesh.num_similar_links) + 1).floor
+               test_browse_similar click_me
+             end
+           when 4                 #7 Test remove brand
+             if( @sesh.num_brands_selected > 0 )
+               deselect_me = (rand(@sesh.num_brands_selected) + 1).floor
+               test_remove_brand deselect_me
+             end
+           when 5                 #8 Test checkboxes
+             clickme = rand(@sesh.num_checkboxes)
+             test_checkbox clickme
+           when 6                 # Test details 
+             detailme = rand(@sesh.num_boxes)
+             test_detail_page detailme
+           when 7                  #10 Test home logo
+             test_click_home_logo
+           when 8                #Test goto homepage
+             test_goto_homepage        
+           when 9                  #11 Test back button
+             test_back_button
            end
-           test_search_for search_me
-         elsif pick_action == 3                 #3 Test browse similar
-           if @sesh.num_similar_links > 0
-             click_me = (rand( @sesh.num_similar_links) + 1).floor
-             test_browse_similar click_me
-           end
-         elsif pick_action == 4                  #4 Test clear search
-           if @sesh.num_clear_search_links > 0
-             test_remove_search 
-           end
-         elsif pick_action == 5                 #5 Test save item
-            save_me = (rand( @sesh.num_boxes) + 1).floor
-            test_save_item save_me
-         elsif pick_action == 6                 #6 Test remove saved item
-           if @sesh.num_saved_items > 0
-             unsave_me = (rand(@sesh.num_saved_items) + 1).floor
-             test_remove_saved unsave_me
-           end
-         elsif pick_action == 7                 #7 Test remove brand
-           if( @sesh.num_brands_selected > 0 )
-             deselect_me = (rand(@sesh.num_brands_selected) + 1).floor
-             test_remove_brand deselect_me
-           end
-         elsif pick_action == 8                 #8 Test checkboxes
-           clickme = rand(@sesh.num_checkboxes)
-           test_checkbox clickme
-         elsif pick_action == 9                 # Test details 
-           #detailme = rand(@sesh.num_boxes)
-           #test_detail_page detailme
-         elsif pick_action == 10                  #10 Test home logo
-           test_click_home_logo
-         elsif pick_action == 11
-           test_goto_homepage        
-        # elsif pick_action == 11                  #11 Test back button
-           # No back button test is implemented
-         #elsif pick_action == 12                  #12 Test clicking a use button
-        #   pickme = rand(@sesh.num_uses)
-        #   test_pick_use pickme
-         elsif pick_action == 13
-           break 
-         end
+        end
 
        end
 
