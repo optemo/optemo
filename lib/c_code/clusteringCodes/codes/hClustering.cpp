@@ -12,7 +12,7 @@
 #include <algorithm>
 using namespace std;
 
-#include <cppconn/mysql_public_iface.h>
+#include </usr/local/mysql/mysql-connector-c++/driver/mysql_public_iface.h>
 #include <time.h>
 
 #include "hClustering.h"
@@ -185,10 +185,12 @@ int main(int argc, char** argv){
 //}
 // Driver Manager
 
-   	sql::mysql::MySQL_Driver *driver;
-	// Connection, (simple, not prepared) Statement, Result Set
-	sql::Connection	*con;
-	sql::Statement	*stmt;
+
+
+  // 	sql::mysql::MySQL_Driver *driver;
+  //  // Connection, (simple, not prepared) Statement, Result Set
+  //  sql::Connection	*con;
+   sql::Statement	*stmt;
 	
 	sql::ResultSet	*res;
 	sql::ResultSet	*res2;
@@ -241,11 +243,22 @@ int main(int argc, char** argv){
 		
 			try {
 		  
+		
+		
+		         
+				 sql::Driver * driver = get_driver_instance();
+				                /* Using the Driver to create a connection */
+				                std::auto_ptr< sql::Connection > con(driver->connect(HOST, USER, PASS));
+
+				                /* Creating a "simple" statement - "simple" = not a prepared statement */
+							//	std::auto_ptr< sql::Statement > stmt(con->createStatement());
+							sql::Statement*  stmt(con->createStatement());
+								
 				// Using the Driver to create a connection
-				driver = sql::mysql::get_mysql_driver_instance();
+		//		driver = sql::mysql::get_mysql_driver_instance();
 			
-				con = driver->connect(HOST, PORT, USER, PASS);
-				stmt = con->createStatement();
+				//con = driver->connect(HOST, PORT, USER, PASS);
+				//stmt = con->createStatement();
 				command = "USE ";
 				command += databaseName;
 			
@@ -257,7 +270,7 @@ int main(int argc, char** argv){
 					cout<<"There are some null values in "<<productName<<"s table"<<endl;
 				  }
 
-			
+		
 			
 				command = "SELECT version from ";
 				command += productName;
@@ -267,8 +280,8 @@ int main(int argc, char** argv){
 				
 				res = stmt->executeQuery(command);
            
-
-
+        
+        
 				
 				if (res->next()){
 					version = res->getInt("version");
@@ -278,7 +291,7 @@ int main(int argc, char** argv){
 					version = 0;
 				}
 				cout<<"version is "<<version<<endl;
-	
+	    
 	   if (version > keepStep){
 				///Archiving the old clusters and nodes & deleteing the old ones
 				command2 = "INSERT into ";
@@ -338,7 +351,7 @@ int main(int argc, char** argv){
 					clustered = 1;
 				}
 				if (clustered){
-				leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, res3, stmt, productName, version, region);	
+				leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames,res, res2, res3, stmt, productName, version, region);	
 				myfile2<<"layer "<<layer<<endl;
 			}else{
 					smallNumberClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, stmt, productName, version, region);	
@@ -369,22 +382,14 @@ command2 += region;
 command2 += "\';";
 stmt->execute(command2);
 
- 	delete stmt;
- 	delete con;
 	myfile2<<"The end."<<endl;
  myfile2.close();
 
- 	} catch (sql::mysql::MySQL_DbcException *e) {
+ 	} catch (sql::SQLException &e) {
 
-		delete e;
 		return EXIT_FAILURE;
 
-	} catch (sql::DbcException *e) {
-		/* Exception is not caused by the MySQL Server */
-
-		delete e;
-		return EXIT_FAILURE;
-	}
+	} 
 
 
 return 1; //EXIT_SUCCESS;

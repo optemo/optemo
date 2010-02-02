@@ -1,6 +1,6 @@
 void saveClusteredData(double ** data, int* idA, int size, string* brands, int parent_id, int** clusteredDataOrderU, double*** conFeatureRange, 
 int layer, 
-int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, sql::ResultSet *res2, string productName, int version, string region){
+int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string* boolFeatureNames,  sql::Statement *stmt, string productName, int version, string region){
 
 ///Saving to cluster table 	
 	ostringstream layerStream; 
@@ -74,9 +74,9 @@ int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string
 		}		
 		
 		command2 += ");";
-		
-		res2 = stmt->executeQuery(command2);
-		
+		//	std::auto_ptr<sql::ResultSet> res2(stmt->executeQuery(command));
+		std::auto_ptr<sql::ResultSet> res2(stmt->executeQuery(command2));
+	
 		command += ", \'";
 		res2->next();
 		
@@ -88,8 +88,9 @@ int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string
 			command += res2 ->getString("brand");
 		}
 		command += "\' ";
-			
+						
 	///Bool Features	
+	
 		for (int f=0; f<boolFeatureN; f++){
 			command2 = "SELECT DISTINCT ";
 			command2 += boolFeatureNames[f];
@@ -101,6 +102,7 @@ int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string
 			ostringstream pidstr;
 			pidstr << clusteredDataOrderU[c][1];
 			command2 += pidstr.str();
+
 			for (int i=1; i<clusteredDataOrderU[c][0]; i++){
 				command2 += " OR id = ";
 				ostringstream pidstr2;
@@ -108,8 +110,8 @@ int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string
 				command2 += pidstr2.str();	
 			}		
 			command2 += "));";
-	
-			res2 = stmt->executeQuery(command2);
+			
+			std::auto_ptr<sql::ResultSet> res2(stmt->executeQuery(command2));
 	
 			if (res2->rowsCount()==1){ //it is only one value
 				command += ", ";
@@ -124,18 +126,18 @@ int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string
 			
 		}	
 		command +=");";
-	
+			
 		stmt->execute(command);
 	
 		command = "SELECT last_insert_id();"; // from clusters;"
-	
-		res2 = stmt->executeQuery(command);
-	
-		if (res2->next()){
-			cluster_id = res2->getInt("last_insert_id()");
+
+	  	std::auto_ptr<sql::ResultSet> res3(stmt->executeQuery(command));
+
+		if (res3->next()){
+			cluster_id = res3->getInt("last_insert_id()");
 		}
 		cluster_idStream<<cluster_id;
-
+	
 	////// saving in the nodes table
 		for (int j=0; j<clusteredDataOrderU[c][0]; j++){	
 		
@@ -182,13 +184,14 @@ int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string
 			command2 += "\' and product_id=";
 			command2 += idStream.str();
 			command2 += ");";
+		
+		    std::auto_ptr<sql::ResultSet> res4(stmt->executeQuery(command2));
 			
-			res2 = stmt->executeQuery(command2);
 			utility = 0.0;
-			if (res2->rowsCount()>0){
-				res2->next();
+			if (res4->rowsCount()>0){
+				res4->next();
 				for (int f=0; f<conFeatureN; f++){
-					utility += res2->getDouble(conFeatureNames[f]);
+					utility += res4->getDouble(conFeatureNames[f]);
 				}	
 			}
 			
