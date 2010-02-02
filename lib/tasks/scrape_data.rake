@@ -250,7 +250,7 @@ namespace :data do
   task :scrape => [:scrape_new, :match_to_products, :update_bestoffers]
   task :update => [:update_prices, :scrape_new, :match_to_products, :update_bestoffers]
   
-  task :endstuff => [:match_to_products, :vote, :update_bestoffers]
+  task :endstuff => [:vote, :update_bestoffers]
   
   # Useful combinations of the above
   desc 'Get new prices and products from Newegg printers'

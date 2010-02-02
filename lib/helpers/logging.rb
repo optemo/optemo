@@ -3,9 +3,13 @@
 # @logfile or $logfile
 module LoggingHelper
   
-  def log msg
+  def write_to_log msg
     @logfile.puts "LOGGER      " + msg if @logfile and !@logfile.closed?
     $logfile.puts "LOGGER      " + msg if $logfile and !$logfile.closed?
+  end
+  
+  def log msg
+    write_to_log( "LOGGER      " + msg )
   end
   
   def timed_log msg
@@ -13,7 +17,8 @@ module LoggingHelper
   end
 
   def report_error msg
-    announce "ERROR      " + msg
+    write_to_log "ERROR      " + msg
+    puts "ERROR      " + msg
   end
   
   def announce msg
