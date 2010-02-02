@@ -4,8 +4,7 @@ class CompareController < ApplicationController
   include CachingMemcached
   
   def index
-    @session = @@session
-    classVariables(Search.createFromClustersAndCommit(initialClusters, @session, @@keywordsearch, @@keyword))
+    classVariables(Search.createFromClustersAndCommit(initialClusters))
     if params[:ajax]
       render 'ajax', :layout => false
     else
@@ -14,8 +13,7 @@ class CompareController < ApplicationController
   end
   
   def compare
-    @session = @@session
-    classVariables(Search.createFromClustersAndCommit(params[:id].split('-'), @session, @@keywordsearch, @@keyword))
+    classVariables(Search.createFromClustersAndCommit(params[:id].split('-')))
     #No products found
     if @s.result_count == 0
       flash[:error] = "No products were found, so you were redirected to the home page"
@@ -28,22 +26,21 @@ class CompareController < ApplicationController
   end
   
   def sim
-    @session = @@session
     cluster_id = params[:id]
     if cluster_id.index('+')
       cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
       #Merged Cluster
-      cluster = MergedCluster.fromIDs(cluster_id.split('+'),@session,@@keywordsearch)
+      cluster = MergedCluster.fromIDs(cluster_id.split('+'))
     else
       #Single, normal Cluster
       cluster = findCachedCluster(cluster_id)
     end
     unless cluster.nil?
       if params[:ajax]
-        classVariables(Search.createFromClustersAndCommit(cluster.children(@session, @@keywordsearch),@session,@@keywordsearch, @@keyword))
+        classVariables(Search.createFromClustersAndCommit(cluster.children))
         render 'ajax', :layout => false
       else
-        redirect_to "/compare/compare/"+cluster.children(@session, @@keywordsearch).map{|c|c.id}.join('-')
+        redirect_to "/compare/compare/"+cluster.children.map{|c|c.id}.join('-')
       end
     else
       redirect_to initialClusters
@@ -51,23 +48,23 @@ class CompareController < ApplicationController
   end
 
   def filter
-    @session = @@session
+    session = Session.current
     if params[:myfilter].nil?
       #No post info passed
       render :text =>  "[ERR]Search could not be completed."
     else
       #Fixes the fact that the brand selector value is not used
       params[:myfilter].delete("brand1")
-      @session.updateFilters(params[:myfilter])
-      clusters = @session.clusters(@@keywordsearch)
+      session.updateFilters(params[:myfilter])
+      clusters = session.clusters
       unless clusters.empty?
-        s = Search.createFromClustersAndCommit(clusters,@session,@@keywordsearch, @@keyword)
-        @session.commitFilters(s.id)
+        s = Search.createFromClustersAndCommit(clusters)
+        session.commitFilters(s.id)
         classVariables(s)
         render 'ajax', :layout => false
       else
-        @session.rollback
-        @s = @session.searches.last
+        session.rollback
+        @s = session.searches.last
         @errortype = "filter"
         render 'error', :layout=>true
       end
@@ -77,7 +74,6 @@ class CompareController < ApplicationController
   # GET /products/1
   # GET /products/1.xml
   def show
-    @session = @@session
     @plain = params[:plain].nil? ? false : true
     
     #Cleanse id to be only numbers
@@ -112,9 +108,8 @@ class CompareController < ApplicationController
   end
   
   def find
-    @session = @@session
     if params[:search].blank? && params[:ajax]
-      classVariables(Search.createFromClustersAndCommit(initialClusters, @session, @@keywordsearch, @@keyword))
+      classVariables(Search.createFromClustersAndCommit(initialClusters))
       render 'ajax', :layout => false
     else
       product_ids = $model.search_for_ids(params[:search],:per_page => 10000)
@@ -134,12 +129,11 @@ class CompareController < ApplicationController
           end
         end
       else
-        @session.clearFilters
-        @session.update_attribute('filter', true)
+        Session.current.clearFilters
+        Session.current.update_attribute('filter', true)
+        Session.current.keyword = params[:search]
+        Session.current.keywordpids = nodes.map{|p| "product_id = #{p.product_id}"}.join(' OR ')
         product_id_array = nodes.map{ |node| node.product_id }
-        keyword = params[:search]
-        searchpids = nodes.map{|p| "product_id = #{p.product_id}"}.join(' OR ')
-
         if !(product_id_array.nil?) && product_id_array.length < 50 # Guess; this should be profiled later.
           node_array = product_id_array.map { |id| $nodemodel.find_last_by_product_id(id) }
           clusters = node_array.map { |node| $clustermodel.find(node.cluster_id) }.uniq
@@ -158,7 +152,7 @@ class CompareController < ApplicationController
           clusters = cluster_ids.uniq
         end
         if params[:ajax]
-          classVariables(Search.createFromClustersAndCommit(clusters, @session, searchpids, keyword))
+          classVariables(Search.createFromClustersAndCommit(clusters))
           render 'ajax', :layout => false
         else
           #This is broken without AJAX because searchterm is not updated in Search object
@@ -169,14 +163,14 @@ class CompareController < ApplicationController
   end
   
   def back
-    @session = @@session
+    session = Session.current
     #Remove last selection
-    destroyed_search = @session.searches.last.destroy.id
-    feature = $featuremodel.find(:first, :conditions => ["session_id = ? and search_id = ?", @session.id,destroyed_search])
+    destroyed_search = session.searches.last.destroy.id
+    feature = $featuremodel.find(:first, :conditions => ["session_id = ? and search_id = ?", session.id,destroyed_search])
     feature.destroy if feature
-    newsearch = @session.searches.last
+    newsearch = session.searches.last
     #In case back button is hit in the beginning
-    newsearch = Search.createFromClustersAndCommit(initialClusters, @session, @@keywordsearch, @@keyword) if newsearch.nil?
+    newsearch = Search.createFromClustersAndCommit(initialClusters) if newsearch.nil?
     classVariables(newsearch)
     render 'ajax', :layout => false
   end

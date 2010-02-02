@@ -4,10 +4,10 @@ module CompareHelper
   end
   
   def sim_link(cluster,i, itemId)
-    unless cluster.children(@session).nil? || cluster.children(@session).empty? || (cluster.size(@session)==1)
+    unless cluster.children.nil? || cluster.children.empty? || (cluster.size==1)
       "<div class='sim rounded'>" +
-        link_to("#{cluster.size(@session)-1} More Product#{"s" if cluster.size(@session) > 2} In This Group", 
-        "/compare/compare/"+cluster.children(@session).map{|c|c.id}.join('-'), 
+        link_to("#{cluster.size-1} More Product#{"s" if cluster.size > 2} In This Group", 
+        "/compare/compare/"+cluster.children.map{|c|c.id}.join('-'), 
         :id => "sim#{i}", :class => 'simlinks', :name => itemId) +
       "</div>"
     else
@@ -31,24 +31,10 @@ module CompareHelper
   end
   
   def nav_link
-    
     if request.env['HTTP_REFERER'] && request.env['HTTP_REFERER'].match('laserprinterhub|localhost')
       link_to 'Go back<br> to navigation', 'javascript:history.back()'
     else
       link_to 'Browse more products', :controller => 'products'
-    end
-    
-  end
-  
-  def h1title
-    if @allSearches.empty?
-      if @session.searchterm.nil?
-        $model.urlname.capitalize
-      else
-        "Search: '#{@session.searchterm}'"
-      end
-    else
-      "#{@allSearches.last.desc} #{$model.urlname.capitalize}"
     end
   end
   
@@ -95,23 +81,23 @@ module CompareHelper
 	  end
  end
  
-  def catsforfeature(session,feat)
-    chosen_brands = @session.features.brand.split('*')
+  def catsforfeature(feat)
+    chosen_brands = Session.current.features.brand.split('*')
     DbFeature.cache[feat].categories.split('*').reject {|b| chosen_brands.index(b)}
   end
   
-  def featuretext(session,search,cluster)
+  def featuretext(search,cluster)
     out = []
     $model::SingleDescFeatures.each do |feat|
       if $model::BinaryFeatures.include?(feat) 
-			  out << t("products.#{feat}") if cluster.representative(session,search.searchpids).send(feat.intern)
+			  out << t("products.#{feat}") if cluster.representative.send(feat.intern)
 			elsif $model::CategoricalFeatures.include?(feat)
-		    out << cluster.representative(session,search.searchpids).send(feat.intern)
+		    out << cluster.representative.send(feat.intern)
 			else
 			  if $model::ItoF.include?(feat)
-			    feature = cluster.representative(session,search.searchpids).send(feat.intern).to_f/100
+			    feature = cluster.representative.send(feat.intern).to_f/100
 			  else
-			    feature = cluster.representative(session,search.searchpids).send(feat.intern).to_i
+			    feature = cluster.representative.send(feat.intern).to_i
 			  end
 			  out << "#{feature} #{t("products.#{feat}text")}"
 			end

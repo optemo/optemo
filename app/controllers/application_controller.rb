@@ -19,9 +19,7 @@ class ApplicationController < ActionController::Base
   # from your application log (in this case, all fields with names like "password"). 
   # filter_parameter_logging :password
   
-  before_filter :set_model_type
-  before_filter :update_user 
-  before_filter :set_locale
+  before_filter :set_model_type, :update_user, :set_locale
   
   private
   
@@ -45,25 +43,26 @@ class ApplicationController < ActionController::Base
 
   def set_model_type
     if request.domain.nil?
-      @ds = "Printer"
+      ds = $DefaultProduct
     else
-      domainprefix = request.domain(2).split(".").first
-      if domainprefix == "cameras"
-        @ds = "Camera"
-      elsif domainprefix == "printers"
-        @ds = "Printer"
+      ds = case request.domain(2).split(".").first
+      when "cameras"
+        "Camera"
+      when "printers"
+        "Printer"
       else
-        @ds = "Printer"
+        $DefaultProduct
       end  
     end
 
-    $model = @ds.constantize
-    $nodemodel = (@ds + 'Node').constantize
-    $clustermodel = (@ds + 'Cluster').constantize
-    $featuremodel = (@ds + 'Features').constantize
+    $model = ds.constantize
+    $nodemodel = (ds + 'Node').constantize
+    $clustermodel = (ds + 'Cluster').constantize
+    $featuremodel = (ds + 'Features').constantize
   end
   
   def update_user
+    $region = request.url.match(/\.ca/) ? "ca" : "us"
     mysession = Session.find_by_id(session[:user_id])
     if mysession.nil?
       mysession = Session.new
@@ -76,25 +75,15 @@ class ApplicationController < ActionController::Base
         myProduct.save
       end
       session[:user_id] = mysession.id
-      @@session = mysession      
+      Session.current = mysession
     else
-      @@session = mysession
+      Session.current = mysession
     end
-
-    # Set some stuff in the session, etc., straight from cameras_controller.rb or printers_controller.rb
-    # These need to be changed to variable names from strings
-    session[:productType] = @ds
-    @@session.update_attribute('product_type', @ds) if @@session.product_type.nil? || @@session.product_type != @ds
-
-    # In addition, it seems like all of these are being set below to something else. Apparently they are no longer strings after "constantize"?
-    # I would like to do memory management here to delete the object. Bug? ZAT
-
-    $region = request.url.match(/\.ca/) ? "ca" : "us"
-    @@keywordsearch = nil
-    @@keyword = nil
-    if @@session.filter && @@session.searches.last
-      @@keywordsearch = @@session.searches.last.searchpids 
-      @@keyword = @@session.searches.last.searchterm
+    
+    #Check for keyword search
+    if mysession.filter && mysession.searches.last
+      mysession.keywordpids = mysession.searches.last.searchpids 
+      mysession.keyword = mysession.searches.last.searchterm
     end
   end
   
@@ -112,10 +101,10 @@ class ApplicationController < ActionController::Base
   end
   
   def initialClusters
-    @@session.clearFilters
+    Session.current.clearFilters
     #Remove search terms
-    @@keywordsearch = nil
-    @@keyword = nil
+    Session.current.keywordpids = nil
+    Session.current.keyword = nil
     if $model == Printer && $region == "us" && s = Search.find_by_session_id(0)
       0.upto(s.cluster_count-1).map{|i| s.send(:"c#{i}")}
     else

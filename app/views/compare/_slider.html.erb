@@ -1,4 +1,4 @@
-<div class='feature<%= " extra" if extra %>' <%= "style='display:none;'" if extra && !@session.expert %>>
+<div class='feature<%= " extra" if extra %>' <%= "style='display:none;'" if extra && !Session.current.expert %>>
 
 <div class='label space'>
 	<%= render :partial => 'desc', :locals => {:feat => val} %>
@@ -7,16 +7,16 @@
 </div>
 <% overallmin = dbmin(i2f, val) %>
 <% overallmax = dbmax(i2f, val) %>
-<% startmin = @session.features.send("#{val}_min".intern).nil? ? overallmin : i2f ? @session.features.send("#{val}_min".intern)/100 : @session.features.send("#{val}_min".intern) %>
-<% startmax = @session.features.send("#{val}_max".intern).nil? ? overallmax : i2f ? (@session.features.send("#{val}_max".intern)/100).ceil : @session.features.send("#{val}_max".intern) %>
+<% startmin = Session.current.features.send("#{val}_min".intern).nil? ? overallmin : i2f ? Session.current.features.send("#{val}_min".intern)/100 : Session.current.features.send("#{val}_min".intern) %>
+<% startmax = Session.current.features.send("#{val}_max".intern).nil? ? overallmax : i2f ? (Session.current.features.send("#{val}_max".intern)/100).ceil : Session.current.features.send("#{val}_max".intern) %>
 <div class="hist" data-data="<%= @s.distribution(val).join(',') %>"></div>
 <%= hidden_field_tag "myfilter[#{val}_min]", i2f ?
-	((mymin = @session.features.send("#{val}_min".intern)).nil? ? '' : mymin/100) : 
-	@session.features.send("#{val}_min".intern),
+	((mymin = Session.current.features.send("#{val}_min".intern)).nil? ? '' : mymin/100) : 
+	Session.current.features.send("#{val}_min".intern),
 {:class => 'min'}%>
 <%= hidden_field_tag "myfilter[#{val}_max]", i2f ? 
-	((mymax = @session.features.send("#{val}_max".intern)).nil? ? '' : mymax/100) :
-	@session.features.send("#{val}_max".intern),
+	((mymax = Session.current.features.send("#{val}_max".intern)).nil? ? '' : mymax/100) :
+	Session.current.features.send("#{val}_max".intern),
 {:class => 'max'}%>
 <div class='slider'
 data-label= '<%= val %>'

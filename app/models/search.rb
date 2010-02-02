@@ -31,15 +31,15 @@ class Search < ActiveRecord::Base
   end
   
   def acceptedNodes
-    @acceptedNodes ||= clusters.map{|c| c.nodes(session, searchpids)}.flatten 
+    @acceptedNodes ||= clusters.map{|c| c.nodes}.flatten 
   end
   
   #Range of product offerings
   def ranges(featureName)
      @sRange ||= {}
      if @sRange[featureName].nil?
-       min = clusters.map{|c|c.ranges(featureName,session,searchpids)[0]}.compact.sort[0]
-       max = clusters.map{|c|c.ranges(featureName,session,searchpids)[1]}.compact.sort[-1] 
+       min = clusters.map{|c|c.ranges(featureName)[0]}.compact.sort[0]
+       max = clusters.map{|c|c.ranges(featureName)[1]}.compact.sort[-1] 
        @sRange[featureName] = [min, max]
      end
      @sRange[featureName]  
@@ -47,7 +47,7 @@ class Search < ActiveRecord::Base
   
   def indicator(featureName)
     indic = false
-    values = clusters.map{|c| c.indicator(featureName, session, searchpids)}
+    values = clusters.map{|c| c.indicator(featureName)}
     if values.index(false).nil?
       indic = true
     end  
@@ -62,7 +62,7 @@ class Search < ActiveRecord::Base
       $model::ContinuousFeaturesF.each do |f|
         norm = DbFeature.cache[f].max - DbFeature.cache[f].min
         norm = 1 if norm == 0
-        feats[f] = clusters.map{|c| c.representative(session,searchpids)[f].to_f/norm}
+        feats[f] = clusters.map{|c| c.representative[f].to_f/norm}
       end
       cluster_count.times do |i|
         dist = {}
@@ -105,7 +105,7 @@ class Search < ActiveRecord::Base
     des = []
     slr=0
       $model::BinaryFeatures.each do |f|
-        if clusters[clusterNumber].indicator(f, session, searchpids)
+        if clusters[clusterNumber].indicator(f)
           (f=='slr' && indicator("slr"))? slr = 1 : slr =0
           des<< f if $model::DescFeatures.include?(f) 
         end
@@ -113,7 +113,7 @@ class Search < ActiveRecord::Base
       
       $model::ContinuousFeatures.each do |f|
         if $model::DescFeatures.include?(f) && !(f == "opticalzoom" && slr == 1)
-              cRanges = clusters[clusterNumber].ranges(f, session, searchpids)
+              cRanges = clusters[clusterNumber].ranges(f)
               if (cRanges[1] < DbFeature.cache[f]["low"])
                  clusterDs << {'desc' => "low_"+f, 'stat' => 0}  
               elsif (cRanges[0] > DbFeature.cache[f]["high"])
@@ -166,14 +166,14 @@ class Search < ActiveRecord::Base
   end
     
   def result_count
-    clusters.map{|c| c.size(session, searchpids)}.sum
+    clusters.map{|c| c.size}.sum
   end
   
   def clusters= (clusters)
     @clusters = clusters
   end
   
-  def clusters(mysession = session)
+  def clusters
     if @clusters.nil?
       @clusters = []
       cluster_count.times do |i|
@@ -181,13 +181,13 @@ class Search < ActiveRecord::Base
         if cluster_id.index('+')
           cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
           #Merged Cluster
-          c = MergedCluster.fromIDs(cluster_id.split('+'),mysession,searchpids)
+          c = MergedCluster.fromIDs(cluster_id.split('+'))
         else
           #Single, normal Cluster
           c = findCachedCluster(cluster_id)
         end
         #Remove empty clusters
-        if c.nil? || c.isEmpty(mysession,searchpids)
+        if c.nil? || c.isEmpty
           self.cluster_count -= 1
         else
           @clusters << c 
@@ -198,7 +198,7 @@ class Search < ActiveRecord::Base
   end
   
   #The clusters argument can either be an array of cluster ids or an array of cluster objects if they have already been initialized
-  def self.createFromClusters(clusters, session, keywordsearch, keyword)
+  def self.createFromClusters(clusters)
     ns = {}
     mycluster = "c0"
     ns['cluster_count'] = clusters.length
@@ -210,13 +210,13 @@ class Search < ActiveRecord::Base
       end
       mycluster.next!
     end
-    ns['session_id'] = session.id
-    ns['searchpids'] = keywordsearch
-    ns['searchterm'] = keyword
+    ns['session_id'] = Session.current.id
+    ns['searchpids'] = Session.current.keywordpids
+    ns['searchterm'] = Session.current.keyword
     s = new(ns)
-    s.session = session
+    s.session = Session.current
     unless clusters.nil? || clusters.empty? || clusters.first.class == String || clusters.first.class == Fixnum
-        s.clusters = clusters.sort{|a,b| (a.size(session,keywordsearch)>1 ? -1 : 1) <=> (b.size(session,keywordsearch)>1 ? -1 : 1)}
+        s.clusters = clusters.sort{|a,b| (a.size>1 ? -1 : 1) <=> (b.size>1 ? -1 : 1)}
     end
     s.fillDisplay
     s.parent_id = s.clusters.map{|c| c.parent_id}.sort[0]
@@ -224,8 +224,8 @@ class Search < ActiveRecord::Base
     s
   end
   
-  def self.createFromClustersAndCommit(clusters, session, keywordsearch, keyword)
-    s = createFromClusters(clusters, session, keywordsearch, keyword)
+  def self.createFromClustersAndCommit(clusters)
+    s = createFromClusters(clusters)
     s.save
     s
   end
@@ -237,11 +237,11 @@ class Search < ActiveRecord::Base
   def fillDisplay
     clusters #instantiate clusters to update cluster_count
     if cluster_count < $NumGroups && cluster_count > 0
-      if clusters.map{|c| c.size(session,searchpids)}.sum >= 9
+      if clusters.map{|c| c.size}.sum >= 9
         myclusters = splitClusters(clusters)
       else
         #Display only the deep children
-        myclusters = clusters.map{|c| c.deepChildren(session,searchpids)}.flatten
+        myclusters = clusters.map{|c| c.deepChildren}.flatten
       end
     else
       myclusters = clusters
@@ -263,15 +263,15 @@ class Search < ActiveRecord::Base
   
   def splitClusters(myclusters)
     while myclusters.length != $NumGroups
-      myclusters.sort! {|a,b| b.size(session,searchpids) <=> a.size(session,searchpids)}
-      myclusters = split(myclusters.shift.children(session,searchpids)) + myclusters
+      myclusters.sort! {|a,b| b.size <=> a.size}
+      myclusters = split(myclusters.shift.children) + myclusters
     end
-    myclusters.sort! {|a,b| b.size(session,searchpids) <=> a.size(session,searchpids)}
+    myclusters.sort! {|a,b| b.size <=> a.size}
   end  
   
   def split(children)
     return children if children.length == 1
-    children.sort! {|a,b| b.size(session,searchpids) <=> a.size(session,searchpids)}
+    children.sort! {|a,b| b.size <=> a.size}
     [children.shift, MergedCluster.new(children)]
   end
   

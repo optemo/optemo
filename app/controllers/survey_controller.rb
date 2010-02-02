@@ -1,7 +1,7 @@
 class SurveyController < ApplicationController
 
 def decision
-  @@session.update_attribute('offeredsurvey',true)
+  Session.current.update_attribute('offeredsurvey',true)
 end
 
 def index
@@ -22,7 +22,7 @@ def submit
     return
   end
   oSurvey = Survey.new
-  oSurvey.session_id = @@session.id
+  oSurvey.session_id = Session.current.id
   # Save the Survey answers
   columnname = ""
   (1..Survey::TotalQuestions).each do |quesno|
