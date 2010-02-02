@@ -12,7 +12,7 @@
 #include <algorithm>
 using namespace std;
 
-#include </usr/local/mysql/mysql-connector-c++/driver/mysql_public_iface.h>
+#include </usr/local/include/mysql-connector-c++/driver/mysql_public_iface.h>
 #include <time.h>
 
 #include "hClustering.h"
