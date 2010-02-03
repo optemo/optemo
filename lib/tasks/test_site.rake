@@ -2,31 +2,37 @@
 namespace :test_site do   
 
    desc 'Quick test'
-   task :quick => [:hurryinit, :sliders, :search, :brand_selector, :homepage, :random_nojava]
+   task :quick => [:hurryinit, :sliders, :search, :brand_selector, :homepage]
    
    desc 'Run all tests'
    task :all => [:sliders, :browse_similar, :search, :brand_selector, :random]
-  
-   desc 'Both randoms'
-   task :all_random => [:random_nojava, :random]
-  
-   desc 'Run all tests.'
-   task :all_nojava => [:sliders, :browse_similar, :search, :brand_selector, :homepage, :random_nojava]
    
    task :sandbox => :java_init do
     setup_java 'sandbox_1'
-    test_browse_similar(1)
-    test_click_home_logo
-    #save_me = (rand( @sesh.num_boxes) + 1).floor
-    #test_save_item save_me
-    #if @sesh.num_saved_items > 0
-    #   unsave_me = (rand(@sesh.num_saved_items) + 1).floor
-    #   test_remove_saved unsave_me
-    #end
-    
-    test_detail_page(1)
-    test_close_msg_box
-    test_detail_page(1)
+    test_add_brand(10) # add canon
+    if(@sesh.no_products_found_msg? or @sesh.error_page? or @sesh.detail_page?)
+        test_close_msg_box
+     elsif(@sesh.doc.nil?)
+        break
+      end
+    test_browse_similar(1) # 1st browse link
+    if(@sesh.no_products_found_msg? or @sesh.error_page? or @sesh.detail_page?)
+        test_close_msg_box
+     elsif(@sesh.doc.nil?)
+        break
+      end
+    test_checkbox(0) # 1st checkbox
+    if(@sesh.no_products_found_msg? or @sesh.error_page? or @sesh.detail_page?)
+        test_close_msg_box
+     elsif(@sesh.doc.nil?)
+        break
+      end
+    test_add_brand(11) # add genicom
+    if(@sesh.no_products_found_msg? or @sesh.error_page? or @sesh.detail_page?)
+        test_close_msg_box
+     elsif(@sesh.doc.nil?)
+        break
+      end
     close_log
    end
    

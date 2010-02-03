@@ -150,7 +150,7 @@ namespace :data do
     
   task :reviews do    
     total_before_script = Review.count
-    @logfile =  File.open("./log/#{$model.name}_reviews.log", 'w+')
+    @logfile =  File.open("./log/scrape/reviews/#{$model.name}.log", 'w+')
     $retailers.each do |ret|
       baseline = Review.count
       
@@ -332,7 +332,7 @@ namespace :data do
   
   # Update prices
   task :update_prices do
-    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{$model.name}_scraper.log", 'w+')
+    @logfile = File.open("./log/scrape/#{just_alphanumeric($retailers.first.name)}_#{$model.name}.log", 'w+')
     my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id_and_product_type(x.id, $model.name)}
     my_offerings.each_with_index do |offering, i|
       next if offering.local_id.nil?
@@ -357,7 +357,7 @@ namespace :data do
 
   # Scrape all data for all current products
   task :scrape_all do
-    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{$model.name}_scraper.log", 'w+')
+    @logfile = File.open("./log/scrape/#{just_alphanumeric($retailers.first.name)}_#{$model.name}.log", 'w+')
     $retailers.each do |retailer|
       
       ids = scrape_all_local_ids retailer.region
@@ -377,7 +377,7 @@ namespace :data do
   
   # Scrape all data for new products only
   task :scrape_new do
-    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{$model.name}_scraper.log", 'w+')
+    @logfile = File.open("./log/scrape/#{just_alphanumeric($retailers.first.name)}_#{$model.name}.log", 'w+')
     $retailers.each do |retailer|
       ids = scrape_all_local_ids retailer.region
       scraped_ids = ($scrapedmodel.find_all_by_retailer_id(retailer.id)).collect{|x| x.local_id}.uniq
@@ -398,7 +398,7 @@ namespace :data do
     require 'helpers/validation/data_validator'
     include DataValidator
     
-    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{$model.name}_validation.log", 'w+')
+    @logfile = File.open("./log/validate/#{just_alphanumeric($retailers.first.name)}_#{$model.name}.log", 'w+')
     
     my_products = scraped_by_retailers($retailers, $scrapedmodel,false)
     

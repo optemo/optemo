@@ -5,21 +5,21 @@
 		</div>
 		<div class="productinfocont">
 		<div class="productinfo">
-			<a href="<%=cluster.representative(@session,@s.searchpids).descurl%>" data-id="<%=cluster.representative(@session,@s.searchpids).id%>" class="easylink" title="Click for product specifications">
-		<%= cluster.representative(@session,@s.searchpids).smlTitle %></a>
+			<a href="<%=cluster.representative.descurl%>" data-id="<%=cluster.representative.id%>" class="easylink" title="Click for product specifications">
+		<%= cluster.representative.smlTitle %></a>
 		
 		<div class="price">
-			<%= $region == "us" ? cluster.representative(@session,@s.searchpids).pricestr : cluster.representative(@session,@s.searchpids).price_ca_str %>
+			<%= $region == "us" ? cluster.representative.pricestr : cluster.representative.price_ca_str %>
 		</div>
 		</div>
 		</div>
-		<% if FileTest.exist?("public/images/" + ($model.name == 'Camera' ? "cameras" : "printers") + "/" + cluster.representative(@session,@s.searchpids).id.to_s + "_m.jpg") %>
+		<% if FileTest.exist?("public/images/" + ($model.name == 'Camera' ? "cameras" : "printers") + "/" + cluster.representative.id.to_s + "_m.jpg") %>
 		
 		<% if $DragAndDropEnabled == true %>
 			<div class='image_boundingbox'>
 				<%= image_tag('hand_and_arrow.gif', :class => 'dragHand', :title => 'Click for product info. Drag to compare with other products.') %>
 		<% end %>
-				<%= image_tag(($model.name == 'Camera' ? "cameras" : "printers") + "/" + cluster.representative(@session,@s.searchpids).id.to_s + "_m.jpg" , :"data-id" => cluster.representative(@session,@s.searchpids).id, :class => "productimg", :alt => cluster.representative(@session,@s.searchpids).smlTitle, :title => cluster.representative(@session,@s.searchpids).smlTitle) %>
+				<%= image_tag(($model.name == 'Camera' ? "cameras" : "printers") + "/" + cluster.representative.id.to_s + "_m.jpg" , :"data-id" => cluster.representative.id, :class => "productimg", :alt => cluster.representative.smlTitle, :title => cluster.representative.smlTitle) %>
 		<% if $DragAndDropEnabled == true %>		
 			</div>
 		<% end %>
@@ -29,13 +29,13 @@
 	<div class='bottombar'>
 		<% if group %>
     		<div class='sim rounded'>
-    	  <%= link_to(image_tag('plus.png')+t("products.compare.similar",:count => cluster.size(@session,@s.searchpids) - 1), 
+    	  <%= link_to(image_tag('plus.png')+t("products.compare.similar",:count => cluster.size - 1), 
     	  "/compare/sim/#{cluster.id}", :id => "sim#{i}", :class => 'simlinks rounded', 
-		  :"data-id" => "#{cluster.representative(@session,@s.searchpids).id}", :"title" => "Browse through all " + cluster.size(@session,@s.searchpids).to_s + " in this group") %>
+		  :"data-id" => "#{cluster.representative.id}", :"title" => "Browse through all " + cluster.size.to_s + " in this group") %>
     		</div>
 		<% else %>
 		<div style="margin-top: 6px; font-size: 0.8em">
-			<%= featuretext(@session,@s,cluster) %>
+			<%= featuretext(@s,cluster) %>
 		</div>
 		<% end %>
 	</div>
