@@ -36,3 +36,5 @@ public/images/cameras
 cache/*
 
 lib/c_code/clusteringCodes/cppconn/libmysqlcppconn.dylib
+
+lib/helpers/fixClusters.sql
