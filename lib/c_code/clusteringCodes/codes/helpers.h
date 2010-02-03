@@ -574,7 +574,7 @@ void repOrder(double** dataCluster, int size, string mode, int conFeatureN, int 
 
 
 void utilityOrder(double** data, int* idA, int size, int** clusteredData, int** clusteredDataOrder, int** clusteredDataOrderU, int clusterN, int conFeatureN, 
-				int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, sql::ResultSet *res2, string productName){
+				int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, string productName){
 	//	// clusteredData, clusteredDataOrder, clusteredDataOrderU
 
 	string capProductName = productName;
@@ -601,7 +601,7 @@ void utilityOrder(double** data, int* idA, int size, int** clusteredData, int** 
 				idStream << clusteredData[c][i+1];
 				command += idStream.str();
 				command += ");";
-				res2 = stmt->executeQuery(command);
+				std::auto_ptr<sql::ResultSet> res2(stmt->executeQuery(command));
 				if (res2->rowsCount()>0){
 					res2->next();
 					for (int f=0; f<conFeatureN; f++){
