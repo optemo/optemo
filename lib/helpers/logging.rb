@@ -4,8 +4,8 @@
 module LoggingHelper
   
   def write_to_log msg
-    @logfile.puts "LOGGER      " + msg if @logfile and !@logfile.closed?
-    $logfile.puts "LOGGER      " + msg if $logfile and !$logfile.closed?
+    @logfile.puts msg if @logfile and !@logfile.closed?
+    $logfile.puts msg if $logfile and !$logfile.closed?
   end
   
   def log msg

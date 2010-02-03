@@ -91,6 +91,7 @@ module SiteTest
     if !was_selected and !@sesh.no_products_found_msg?
       assert_box_checked klikme
     elsif !was_selected
+      log "No products found for checkbox #{klikme+1}"
       assert_num_products_same
       assert_box_unchecked klikme
     else
