@@ -108,6 +108,33 @@ def get_words_from_review(content):
                    words)
     return words
 
+import cluster_labeling.pn_spellcheck as pnsc
+
+default_spellchecker_fn = '/optemo/site/cluster_labeling/spellchecker.pkl'
+
+def train_spellchecker_on_reviews\
+        (spellchecker_fn = default_spellchecker_fn):
+    spellchecker = pnsc.PNSpellChecker()
+
+    i = 0
+
+    content = ""
+    for review in optemo.Review.get_manager().all():
+        i += 1
+        content += " " + review.content
+
+        print i, ": ", len(content)
+        
+        if len(content) > 2**20:
+            words = get_words_from_review(content)
+            spellchecker.train(words)
+            content = ""
+
+    words = get_words_from_review(content)
+    spellchecker.train(words)
+
+    pnsc.save_spellchecker(spellchecker, spellchecker_fn)
+
 def compute_wordcounts_for_review(content):
     wcs = {}
 
