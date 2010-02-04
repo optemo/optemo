@@ -185,7 +185,7 @@ module SiteTest
         assert_num_products_same
         assert_brands_same
       else
-        debugger unless @sesh.brand_selected?(bname)
+        #debugger unless @sesh.brand_selected?(bname)
         assert_brand_selected(bname)
         # TODO other asserts!
       end
