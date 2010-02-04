@@ -44,11 +44,10 @@ import math
 
 class PNSpellChecker():
     alphabet = 'abcdefghijklmnopqrstuvwxyz'
-    nWords = None
+    nWords = {}
     prior_count = 1
 
     def train(self, words):
-        self.nWords = {}
         for w in words:
             w = w.lower()
             self.nWords[w] = self.nWords.get(w, self.prior_count) + 1
