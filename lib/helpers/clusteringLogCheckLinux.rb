@@ -3,6 +3,7 @@ module Clusteringlogchecklinux
     begin
       logName = "#{RAILS_ROOT}/log/clustering.log"
       sqlFileName = "#{RAILS_ROOT}/lib/helpers/fixClusters.sql"
+      return unless File.exists?(logName)
       file = File.open(logName, 'r')
         while (line = file.gets)
           if line.include? "#{Time.now.year}-"     
@@ -20,6 +21,7 @@ module Clusteringlogchecklinux
           end
         end  
      if endLine.nil? || endLine.chomp != "The end." 
+      return unless verLine
       ver = verLine.gsub(/Version: /, '').chomp
       config   = Rails::Configuration.new
       db = config.database_configuration[RAILS_ENV]["database"]
