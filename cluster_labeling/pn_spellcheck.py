@@ -47,6 +47,8 @@ class PNSpellChecker():
     nWords = {}
     prior_count = 1
 
+    cache = {}
+
     def train(self, words):
         for w in words:
             w = w.lower()
@@ -136,6 +138,9 @@ class PNSpellChecker():
     def correct(self, word):
         word = word.lower()
 
+        if word in self.cache:
+            return self.cache[word]
+
         candidates = {}
         candidates.update(self.known_edits2(word))
         candidates.update(self.prune_unknown(self.edits1(word)))
@@ -157,8 +162,10 @@ class PNSpellChecker():
                       math.sqrt(self.nWords.get(k, self.prior_count)))
                   for k, s in candidates.iteritems()])
 
-        return max(candidates.iteritems(),
+        corr = max(candidates.iteritems(),
                    key=operator.itemgetter(1))[0]
+        self.cache[word] = corr
+        return corr
 
 import cPickle
 def save_spellchecker(schecker, fn):
