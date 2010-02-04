@@ -65,9 +65,7 @@ import re
 punct_re = re.compile('\W+')
 number_re = re.compile('^\d+$')
 
-def compute_wordcounts_for_review(content):
-    wcs = {}
-    
+def get_words_from_review(content):
     # Use the Punkt sentence tokenizer and the Treebank word tokenizer
     # to get the words in the review.
     words = map(word_tokenizer.tokenize,
@@ -103,11 +101,17 @@ def compute_wordcounts_for_review(content):
     # Filter out everything that has as many or more numbers than
     # letters. This gets rid of a lot of model numbers.
     words = filter(lambda word:
-                   reduce(lambda n, l: n + 1 if str.isalpha() else 0,
+                   reduce(lambda n, l: n + 1 if l.isalpha() else 0,
                           word, 0)
                    >
                    (len(word)/2),
                    words)
+    return words
+
+def compute_wordcounts_for_review(content):
+    wcs = {}
+
+    words = get_words_from_review(content)
 
     # Populate word counts
     for word in words:
