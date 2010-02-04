@@ -65,9 +65,7 @@ import re
 punct_re = re.compile('\W+')
 number_re = re.compile('^\d+$')
 
-def compute_wordcounts_for_review(content):
-    wcs = {}
-    
+def get_words_from_review(content):
     # Use the Punkt sentence tokenizer and the Treebank word tokenizer
     # to get the words in the review.
     words = map(word_tokenizer.tokenize,
@@ -100,6 +98,52 @@ def compute_wordcounts_for_review(content):
     # Filter out everything that only consists of numbers
     words = filter(lambda x: not number_re.match(x), words)
 
+    # Filter out everything that has as many or more numbers than
+    # letters. This gets rid of a lot of model numbers.
+    words = filter(lambda word:
+                   reduce(lambda n, l: n + 1 if l.isalpha() else 0,
+                          word, 0)
+                   >
+                   (len(word)/2),
+                   words)
+    return words
+
+import cluster_labeling.pn_spellcheck as pnsc
+
+default_spellchecker_fn = '/optemo/site/cluster_labeling/spellchecker.pkl'
+
+def train_spellchecker_on_reviews\
+        (spellchecker_fn = default_spellchecker_fn):
+    spellchecker = pnsc.PNSpellChecker()
+
+    i = 0
+
+    content = ""
+    for review in optemo.Review.get_manager().all():
+        i += 1
+        content += " " + review.content
+
+        print i, ": ", len(content)
+        
+        if len(content) > 2**20:
+            words = get_words_from_review(content)
+            spellchecker.train(words)
+            content = ""
+
+    words = get_words_from_review(content)
+    spellchecker.train(words)
+
+    pnsc.save_spellchecker(spellchecker, spellchecker_fn)
+
+def compute_wordcounts_for_review(content, spellchecker):
+    wcs = {}
+
+    words = get_words_from_review(content)
+
+    # Perform spell-checking
+    words = map(spellchecker.correct, words)
+
+    # Populate word counts
     for word in words:
         wcs[word] = wcs.get(word, 0) + 1
 
@@ -125,10 +169,10 @@ def compute_wordcounts_for_review(content):
 
     return wcs_stemmed
 
-def compute_counts_for_product(product):
+def compute_counts_for_product(product, spellchecker):
     reviews = product.get_reviews()
     wordcounts = \
-        map(lambda r: compute_wordcounts_for_review(r.content),
+        map(lambda r: compute_wordcounts_for_review(r.content, spellchecker),
             reviews)
 
     merged_wordcount = {}
@@ -145,7 +189,7 @@ def compute_counts_for_product(product):
 
     return merged_wordcount, reviewcount, prodcount
 
-def compute_counts_for_cluster(cluster):
+def compute_counts_for_cluster(cluster, spellchecker):
     children = cluster.get_children()
     numchildren = children.count()
     
@@ -155,7 +199,7 @@ def compute_counts_for_cluster(cluster):
 
         product = nodes[0].get_product()
         wordcount, reviewcount, prodcount = \
-            compute_counts_for_product(product)
+            compute_counts_for_product(product, spellchecker)
 
         map(lambda table, counts:
             table.add_values_from(cluster.id, cluster.parent_id,
@@ -181,7 +225,8 @@ def compute_counts_for_cluster(cluster):
              totalcount = totalcount, numchildren = 0).save(),
             totalcounts_to_mod, totalcounts_to_mod_values)
     else:
-        map(lambda child: compute_counts_for_cluster(child),
+        map(lambda child:
+            compute_counts_for_cluster(child, spellchecker),
             children)
         
         map(lambda table:
@@ -194,7 +239,11 @@ def compute_counts_for_cluster(cluster):
             totalcount_tables)
         
 def compute_all_counts\
-        (version=optemo.CameraCluster.get_latest_version()):
+        (spellchecker = None,
+        version=optemo.CameraCluster.get_latest_version()):
+    if spellchecker == None:
+        spellchecker = pnsc.load_spellchecker(default_spellchecker_fn)
+    
     # All tables should be recreated, otherwise the resulting counts
     # will not be valid.
     map(lambda table: table.drop_table_if_exists(), count_tables)
@@ -206,7 +255,7 @@ def compute_all_counts\
     # Get clusters just below the root.
     root_children = optemo.CameraCluster.get_root_children(version)
 
-    map(lambda child: compute_counts_for_cluster(child),
+    map(lambda child: compute_counts_for_cluster(child, spellchecker),
         root_children)
 
     map(lambda table:
