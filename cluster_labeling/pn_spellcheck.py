@@ -64,10 +64,10 @@ class PNSpellChecker():
         return set(e2
                    for e1 in self.edits1(word)
                    for e2 in self.edits1(e1)
-                   if e2.lower() in self.nWords)
+                   if re.sub('\0', '', e2.lower()) in self.nWords)
 
     def known(self, words):
-        return set(w for w in words if w.lower() in self.nWords)
+        return set(w for w in words if re.sub('\0', '', w.lower()) in self.nWords)
 
     def compute_change_score(self, word, candidate):
         # Align the two words. This works because of the way that the
