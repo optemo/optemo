@@ -62,8 +62,11 @@ end
 
 desc "Configure the server files"
 task :serversetup do
+  hc_path = "#{current_path}/lib/c_code/clusteringCodes/codes"
   # Instantiate the database.yml file
   run "cd #{current_path}/config              && cp -f database.yml.deploy database.yml"
+  # Link to precompiled hCluster file
+  run "cd #{hc_path} && ln -s hCluster-jaguar hCluster"
 end
 
 after :deploy, "serversetup"

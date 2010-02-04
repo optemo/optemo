@@ -182,14 +182,7 @@ int main(int argc, char** argv){
   }
   nullCheck += "))";
   
-//}
-// Driver Manager
 
-
-
-  // 	sql::mysql::MySQL_Driver *driver;
-  //  // Connection, (simple, not prepared) Statement, Result Set
-  //  sql::Connection	*con;
    sql::Statement	*stmt;
 	
 	sql::ResultSet	*res;
@@ -247,28 +240,20 @@ int main(int argc, char** argv){
 		
 		         
 				 sql::Driver * driver = get_driver_instance();
-				                /* Using the Driver to create a connection */
-				                std::auto_ptr< sql::Connection > con(driver->connect(HOST, USER, PASS));
-
-				                /* Creating a "simple" statement - "simple" = not a prepared statement */
-							//	std::auto_ptr< sql::Statement > stmt(con->createStatement());
-							sql::Statement*  stmt(con->createStatement());
+				    
+			    std::auto_ptr< sql::Connection > con(driver->connect(HOST, USER, PASS));        
+				sql::Statement*  stmt(con->createStatement());
 								
-				// Using the Driver to create a connection
-		//		driver = sql::mysql::get_mysql_driver_instance();
-			
-				//con = driver->connect(HOST, PORT, USER, PASS);
-				//stmt = con->createStatement();
 				command = "USE ";
 				command += databaseName;
 			
 				stmt->execute(command);
-				 //	cout<<"command is "<<nullCheck<<endl;	
+				
 				res = stmt->executeQuery(nullCheck);
 			
-				  if (res->rowsCount() >0){
-					cout<<"There are some null values in "<<productName<<"s table"<<endl;
-				  }
+				// if (res->rowsCount() >0){
+				//   cout<<"There are some null values in "<<productName<<"s table"<<endl;
+				// }
 
 		
 			
@@ -304,8 +289,7 @@ int main(int argc, char** argv){
 				command2 += vstr1.str();
 				command2 += " and region=\'";
 				command2 += region;
-				command2 += "\';";
-				cout<<"command is "<<command2<<endl;	
+				command2 += "\';";	
 				stmt->execute(command2);
 			 
 				command2 = "INSERT into ";
