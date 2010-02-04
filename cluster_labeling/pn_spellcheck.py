@@ -54,10 +54,10 @@ class PNSpellChecker():
 
     def edits1(self, word):
         splits     = [(word[:i], word[i:]) for i in range(len(word) + 1)]
-        deletes    = [a + '\0' + b[1:] for a, b in splits if b]
+        deletes    = [a + '\0' + b[1:] for a, b in splits if b and b[0].islower()]
         transposes = [a + b[1] + b[0] + b[2:] for a, b in splits if len(b)>1]
         replaces   = [a + c + b[1:] for a, b in splits for c in self.alphabet if b and b[0].islower()]
-        inserts    = [a + c.upper() + b     for a, b in splits for c in self.alphabet]
+        inserts    = [a + c.upper() + b for a, b in splits for c in self.alphabet]
         return set(deletes + transposes + replaces + inserts)
 
     def known_edits2(self, word):
