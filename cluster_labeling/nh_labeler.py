@@ -135,10 +135,13 @@ def train_spellchecker_on_reviews\
 
     pnsc.save_spellchecker(spellchecker, spellchecker_fn)
 
-def compute_wordcounts_for_review(content):
+def compute_wordcounts_for_review(content, spellchecker):
     wcs = {}
 
     words = get_words_from_review(content)
+
+    # Perform spell-checking
+    words = map(spellchecker.correct, words)
 
     # Populate word counts
     for word in words:
@@ -166,10 +169,10 @@ def compute_wordcounts_for_review(content):
 
     return wcs_stemmed
 
-def compute_counts_for_product(product):
+def compute_counts_for_product(product, spellchecker):
     reviews = product.get_reviews()
     wordcounts = \
-        map(lambda r: compute_wordcounts_for_review(r.content),
+        map(lambda r: compute_wordcounts_for_review(r.content, spellchecker),
             reviews)
 
     merged_wordcount = {}
@@ -186,7 +189,7 @@ def compute_counts_for_product(product):
 
     return merged_wordcount, reviewcount, prodcount
 
-def compute_counts_for_cluster(cluster):
+def compute_counts_for_cluster(cluster, spellchecker):
     children = cluster.get_children()
     numchildren = children.count()
     
@@ -196,7 +199,7 @@ def compute_counts_for_cluster(cluster):
 
         product = nodes[0].get_product()
         wordcount, reviewcount, prodcount = \
-            compute_counts_for_product(product)
+            compute_counts_for_product(product, spellchecker)
 
         map(lambda table, counts:
             table.add_values_from(cluster.id, cluster.parent_id,
@@ -222,7 +225,8 @@ def compute_counts_for_cluster(cluster):
              totalcount = totalcount, numchildren = 0).save(),
             totalcounts_to_mod, totalcounts_to_mod_values)
     else:
-        map(lambda child: compute_counts_for_cluster(child),
+        map(lambda child:
+            compute_counts_for_cluster(child, spellchecker),
             children)
         
         map(lambda table:
@@ -235,7 +239,11 @@ def compute_counts_for_cluster(cluster):
             totalcount_tables)
         
 def compute_all_counts\
-        (version=optemo.CameraCluster.get_latest_version()):
+        (spellchecker = None,
+        version=optemo.CameraCluster.get_latest_version()):
+    if spellchecker == None:
+        spellchecker = pnsc.load_spellchecker(default_spellchecker_fn)
+    
     # All tables should be recreated, otherwise the resulting counts
     # will not be valid.
     map(lambda table: table.drop_table_if_exists(), count_tables)
@@ -247,7 +255,7 @@ def compute_all_counts\
     # Get clusters just below the root.
     root_children = optemo.CameraCluster.get_root_children(version)
 
-    map(lambda child: compute_counts_for_cluster(child),
+    map(lambda child: compute_counts_for_cluster(child, spellchecker),
         root_children)
 
     map(lambda table:
