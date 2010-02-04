@@ -132,3 +132,18 @@ class PNSpellChecker():
 
         return max(change_score_dict.iteritems(),
                    key=operator.itemgetter(1))[0]
+
+import cPickle
+def save_spellchecker(schecker, fn):
+    output_fn = open(fn, 'wb')
+    cPickle.dump(schecker.nWords, output_fn)
+    output_fn.close()
+
+def load_spellchecker(fn):
+    input_fn = open(fn, 'rb')
+    nWords = cPickle.load(input_fn)
+    input_fn.close()
+
+    schecker = PNSpellChecker()
+    schecker.nWords = nWords
+    return schecker
