@@ -4,6 +4,23 @@ namespace :sandbox do
   
   task :cam_rm_idjunk => ['data:cam_init',:idfields_rm_junk]
   
+  task :parse_c_log => :environment do
+    logName = "log/sample1.log"
+    file = File.open(logName, 'r')
+      while (line = file.gets)
+       if line.include? "#{Time.now.year}-"     
+         timeLine = line
+         verLine = file.gets
+         endLine = file.gets
+         while endLine and (endLine.include? "layer")
+            endLine = file.gets   
+         end    
+       end
+      end
+    debugger 
+    file.close
+  end
+  
   task :idfields_rm_junk do
     $model.all.each do |product|
       
