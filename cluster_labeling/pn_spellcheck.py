@@ -120,15 +120,14 @@ class PNSpellChecker():
                             change_scores)
 
         change_scores = zip(candidates, change_scores)
-        change_scores = \
-            map(lambda (c, s):
-                (c, s * math.sqrt(self.nWords.get(c.lower(), self.prior_count))),
-                change_scores)
 
         change_score_dict = {}
         for (c, s) in change_scores:
-            c = c.lower()
+            c = re.sub('\0', '', c.lower())
             change_score_dict[c] = change_score_dict.get(c, 0) + s
+
+        for c, s in change_score_dict.iteritems():
+            change_score_dict[c] *= math.sqrt(self.nWords.get(c, self.prior_count))
 
         return max(change_score_dict.iteritems(),
                    key=operator.itemgetter(1))[0]
