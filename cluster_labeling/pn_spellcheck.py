@@ -49,27 +49,62 @@ class PNSpellChecker():
     nWords = {}
     prior_count = 1
 
+    cache = {}
+
     def train(self, words):
         for w in words:
             w = w.lower()
             self.nWords[w] = self.nWords.get(w, self.prior_count) + 1
 
-    def edits1(self, word):
-        splits     = [(word[:i], word[i:]) for i in range(len(word) + 1)]
-        deletes    = [a + '\0' + b[1:] for a, b in splits if b and b[0].islower()]
+    def fill_edits_table(self, etable, word_unalign, word = None):
+        if word == None:
+            word = word_unalign
+        
+        splits = [(word[:i], word[i:]) for i in range(len(word) + 1)]
+            
+        deletes = [(a + b[1:], a + '\0' + b[1:]) for a, b in splits if b and b[0].islower()]
+        etable.update(deletes)
+
+        inserts = [(a + c + b, a + c.upper() + b) for a, b in splits for c in self.alphabet]
+        etable.update(inserts)
+
         transposes = [a + b[1] + b[0] + b[2:] for a, b in splits if len(b)>1]
-        replaces   = [a + c + b[1:] for a, b in splits for c in self.alphabet if b and b[0].islower()]
-        inserts    = [a + c.upper() + b for a, b in splits for c in self.alphabet]
-        return set(deletes + transposes + replaces + inserts)
+        transposes = zip(transposes, transposes)
+        etable.update(transposes)
+        
+        replaces = [a + c + b[1:] for a, b in splits for c in self.alphabet if b and b[0].islower()]
+        replaces = zip(replaces, replaces)
+        etable.update(replaces)
+
+        return etable
+
+    def edits1(self, word):
+        etable = {}
+        self.fill_edits_table(etable, word)
+        return etable
 
     def known_edits2(self, word):
-        return set(e2
-                   for e1 in self.edits1(word)
-                   for e2 in self.edits1(e1)
-                   if re.sub('\0', '', e2.lower()) in self.nWords)
+        e1_table = self.edits1(word)
 
-    def known(self, words):
-        return set(w for w in words if re.sub('\0', '', w.lower()) in self.nWords)
+        e2_table = {}
+        for (e1, e1_align) in e1_table.iteritems():
+            e2_table_add = {}
+            
+            if len(e1) == len(e1_align) - 1:
+                # This was a delete - need to remove the '\0's
+                self.fill_edits_table(e2_table_add, e1, e1_align)
+                e2_table_add = dict([(re.sub('\0', '', k), v) for k, v in
+                                     e2_table_add.iteritems()])
+            else:
+                assert(len(e1) == len(e1_align))
+                self.fill_edits_table(e2_table_add, e1, e1_align)
+
+            e2_table.update(self.prune_unknown(e2_table_add))
+        
+        return e2_table
+
+    def prune_unknown(self, etable):
+        return dict([(k, v) for k, v in etable.iteritems() if k in self.nWords])
 
     def compute_change_score(self, word, candidate):
         # Align the two words. This works because of the way that the
@@ -104,35 +139,35 @@ class PNSpellChecker():
 
     def correct(self, word):
         word = word.lower()
-        
-        candidates = [word]
-        candidates.extend(self.known(self.edits1(word)))
-        candidates.extend(self.known_edits2(word))
 
-        change_scores = map(lambda c:
-                            self.compute_change_score(word, c),
-                            candidates)
+        if word in self.cache:
+            return self.cache[word]
+
+        candidates = {}
+        candidates.update(self.known_edits2(word))
+        candidates.update(self.prune_unknown(self.edits1(word)))
+        candidates.update({word : word})
+
+        candidates = \
+            dict((k, self.compute_change_score(word, v))
+                 for k, v in candidates.iteritems())
 
         # Turn change scores into ~p(w | c), unnormalized.
         # This basically amounts to finding a way to make large change
         # scores become low unnormalized probabilties and to make
         # small change scores become high unnormalized probabilities.
-        change_score_ceil = max(change_scores) * 1.1
-        change_scores = map(lambda s: (change_score_ceil - s)**2,
-                            change_scores)
+        change_score_ceil = \
+            max([s for k, s in candidates.iteritems()]) * 1.1
 
-        change_scores = zip(candidates, change_scores)
+        candidates = \
+            dict([(k, ((change_score_ceil - s)**2) * \
+                      math.sqrt(self.nWords.get(k, self.prior_count)))
+                  for k, s in candidates.iteritems()])
 
-        change_score_dict = {}
-        for (c, s) in change_scores:
-            c = re.sub('\0', '', c.lower())
-            change_score_dict[c] = change_score_dict.get(c, 0) + s
-
-        for c, s in change_score_dict.iteritems():
-            change_score_dict[c] *= math.sqrt(self.nWords.get(c, self.prior_count))
-
-        return max(change_score_dict.iteritems(),
+        corr = max(candidates.iteritems(),
                    key=operator.itemgetter(1))[0]
+        self.cache[word] = corr
+        return corr
 
 import cPickle
 def save_spellchecker(schecker, fn):
