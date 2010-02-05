@@ -55,8 +55,8 @@ end
 desc "Compile C-Code"
 task :compilec do
   sudo "cmake #{current_path}/lib/c_code/clusteringCodes/"
-  sudo "chmod -R a+w #{current_path}/lib/c_code/clusteringCodes/codes/CMakeFiles/"
-  run "cd #{current_path}/lib/c_code/clusteringCodes/codes && make hCluster"
+  sudo "make hCluster"
+  sudo "cp hCluster #{current_path}/lib/c_code/clusteringCodes/codes/hCluster"
 end
 
 desc "Configure the server files"
