@@ -1,5 +1,43 @@
 namespace :sandbox do
   
+  task :ptr_rm_idjunk => ['data:printer_init',:idfields_rm_junk]
+  
+  task :cam_rm_idjunk => ['data:cam_init',:idfields_rm_junk]
+  
+  task :parse_c_log => :environment do
+    logName = "log/sample1.log"
+    file = File.open(logName, 'r')
+      while (line = file.gets)
+       if line.include? "#{Time.now.year}-"     
+         timeLine = line
+         verLine = file.gets
+         endLine = file.gets
+         while endLine and (endLine.include? "layer")
+            endLine = file.gets   
+         end    
+       end
+      end
+    debugger 
+    file.close
+  end
+  
+  task :idfields_rm_junk do
+    $model.all.each do |product|
+      
+      ids = {'model' => product.model, 'mpn' => product.mpn}
+      
+      $descriptors.each do |d|
+        ids.each do |idname,idval|
+          next if idval.nil?
+          if idval.match(d)
+            puts "#{idval} has #{d}" 
+            fill_in_forced(idname,nil,product)
+          end
+        end
+      end
+    end
+  end
+  
   task :check_new_voting =>  ['data:cam_init']  do 
     # Get weirdo weight cams
     #weirdos =# Camera.all.reject{|x| x['itemweight'].nil? or x['itemweight'] <= Camera::ValidRanges['itemweight'][1]}
@@ -120,6 +158,27 @@ namespace :sandbox do
     
   end
   
+  task :rm_ptr_dups => ['data:printer_init', :remove_dups, 'data:update_bestoffers']
+  
+  task :rm_cam_dups => ['data:cam_init', :remove_dups, 'data:update_bestoffers']
+  
+  task :remove_dups do
+    timed_announce "Starting to look for matching sets"
+    matchings = get_matching_sets_efficient($model.all)
+    timed_announce "Done looking for matching sets"
+    puts "#{matchings.count} sets of duplicates"
+    puts "#{matchings.flatten.count - matchings.count} duplicates will be removed"
+    matchings.each_with_index do |set,i|
+      keep = $model.find(set[0])
+      set[1..-1].each do |ditch_id|
+        ditch = $model.find(ditch_id)
+        unlink_duplicate(keep, ditch)
+      end
+      timed_announce "Done #{i+1}/#{matchings.count}"
+    end
+      
+  end
+  
   task :test_remove_all_dups => ['data:printer_init'] do
     timed_announce "Starting to look for matching sets"
     matchings = get_matching_sets_efficient($model.all)
@@ -135,6 +194,7 @@ namespace :sandbox do
       
       keep = $model.find(set[0])
       set[1..-1].each do |ditch_id|
+        next unless $model.exists?(ditch_id)
         ditch = $model.find(ditch_id)
         puts "#{ditch.title} to be merged with #{keep.title}."
         
@@ -180,5 +240,79 @@ namespace :sandbox do
     end
       
   end
+  
+  task :test_amazon_cache => ['data:printer_init', 'data:amazon_mkt_init'] do
+    
+    $retailers.each do |ret|
+      start = Time.now
+      mycache = open_cache(ret)
+      time = Time.now - start
+      puts "Took #{time} seconds to get #{ret.name} #{$model.name} cache"
+      nokocache = Nokogiri::HTML(mycache)
+      # Test num available items
+      num_items = nokocache.css('item').count
+      puts "#{num_items} items in #{ret.name} cache"
+      debugger
+      my_offerings = RetailerOffering.find_all_by_retailer_id_and_product_type(ret.id, $model.name).reject{|x| x.local_id.nil?}[2..5]
+     #my_offerings = ['B001XUQP9G', 'B0006UGKUI', 'B000XZ1LJG', 'B0027ISA1Y'].collect{|x| RetailerOffering.find_by_local_id_and_product_type(x, $model.name)}.reject{|x| x.nil?}
+      my_offerings.each do |offering|
+          next if offering.local_id.nil?
+          newatts = rescrape_prices(offering.local_id, ret.region)
+          puts "Was it toolow? #{newatts['toolow']}"
+          puts "Was it in stock? #{newatts['stock']}"
+          puts "Price will be #{newatts['pricestr']}"
+          deciphered = (decipher_retailer( newatts['merchant'], newatts['region']))
+          puts "The new RO appears to be from #{deciphered} (should be from #{ret.name})"
+          puts "Now please check availability for #{id_to_details_url( offering.local_id, ret.region)}"
+          puts "Should be #{newatts['availability']}"
+          debugger 
+          0
+      end
+    end
+    #puts "Done"
+  end
+  
+  
+  
+  task :test_redo_amazon_cache => ['data:printer_init', 'data:amazon_init'] do
+    
+    $retailers.each do |ret|
+      start = Time.now
+      mycache = refresh_cache(ret)
+      time = Time.now - start
+      puts "Took #{time} seconds to get #{ret.name} #{$model.name} cache"
+      nokocache = Nokogiri::HTML(mycache)
+    end
+    #puts "Done"
+  end
+  
+  task :time_amazon_update => ['data:cam_init', 'data:amazon_init', :update_timer]
+  
+  task :update_timer do
+    num_to_update = 50
+    my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id_and_product_type(x.id, $model.name)}[1..num_to_update]
+    #num_to_update = my_offerings.count
+    
+    time = Time.now
+    my_offerings.each_with_index do |offering, i|
+      begin
+        next if offering.local_id.nil?
+        newatts = rescrape_prices(offering.local_id, offering.region)
+        
+        update_offering(newatts, offering) if offering
+        #if(offering.product_id and $model.exists?(offering.product_id))
+        #  update_bestoffer($model.find(offering.product_id))
+        #end  
+      rescue Exception => e
+        report_error "with RetailerOffering #{offering.id}: #{e.class.name} #{e.message}"
+        sleep(1) # Do not skew timing results
+      end
+      log "[#{Time.now}] Done updating #{i+1} of #{my_offerings.count} offerings"
+    end
+    
+    time = Time.now - time
+    puts "Took #{time} seconds to get #{num_to_update} offerings"
+  end
+  
   
 end

@@ -73,7 +73,8 @@ module FillInHelper
         when :float
           val = get_f(desc.to_s)
         when :string
-          val = desc.to_s.strip
+          val = desc
+          val = desc.to_s.strip unless name == 'pricehistory'
         when :datetime
           val = DateTime.parse(desc.to_s)
         when :date

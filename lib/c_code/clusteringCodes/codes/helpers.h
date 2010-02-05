@@ -262,14 +262,14 @@ void getStatisticsData1(double** data, int** indicators, int size, int conFeatur
 	}
 
 	void getStatisticsData2(double** data, double* average, int size, int conFeatureN, int boolFeatureN, double** dataN){
-
-	
 		   for (int j=0; j<conFeatureN; j++){
-				average[j] = average[j]/size;
-			}
+			 if (size>0){
+			 	average[j] = average[j]/size;
+			  }else{
+				average[j] = 0;
+			  }	
+		    }
 				
-
-
 		 	double *dif = new double[conFeatureN+boolFeatureN];
 			double **conFeatureRange = new double* [conFeatureN];
 			
@@ -278,9 +278,6 @@ void getStatisticsData1(double** data, int** indicators, int size, int conFeatur
 	  	         conFeatureRange[f][1] = data[0][f]; 
 	             conFeatureRange[f][0] = data[0][f]; 
 			}
-
-
-	/////
 
 			for (int f=0; f<conFeatureN; f++){
 	      		for(int j = 1; j<size; j++){
@@ -293,26 +290,24 @@ void getStatisticsData1(double** data, int** indicators, int size, int conFeatur
 				}
 			}
 
-
 			for (int f=0; f<conFeatureN; f++){
 				dif[f] = conFeatureRange[f][1] - conFeatureRange[f][0];
 			}
-			for (int f=0; f<(conFeatureN+boolFeatureN); f++){
-			   for(int j=0; j<size; j++){
-				if (dif[f] == 0){
-					dataN[j][f] = 0;
-				}
-				else{
-				
-			    	dataN[j][f] = (data[j][f] - conFeatureRange[f][0])/ dif[f];
-			   	}
-		}  }
+			for (int j=0; j<size; j++){
+  				for (int f=0; f<conFeatureN; f++){
+			   
+					if (dif[f] == 0){
+						dataN[j][f] = 0;
+					}
+					else{
+			    		dataN[j][f] = (data[j][f] - conFeatureRange[f][0])/ dif[f];
+			    	}
+		       }
+	    		for (int f=conFeatureN; f<conFeatureN+boolFeatureN; f++){
+					dataN[j][f] = 	data[j][f];
+			  }  
+			}
 	  	}
-
-
-
-
-
 
 	void getStatisticsClusteredData(double** data, int** clusteredData, double* average, int* idA, int size, int clusterN, int conFeatureN, double*** conFeatureRange){
 		int ind = 0;
@@ -574,7 +569,7 @@ void repOrder(double** dataCluster, int size, string mode, int conFeatureN, int 
 
 
 void utilityOrder(double** data, int* idA, int size, int** clusteredData, int** clusteredDataOrder, int** clusteredDataOrderU, int clusterN, int conFeatureN, 
-				int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, sql::ResultSet *res2, string productName){
+				int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, string productName){
 	//	// clusteredData, clusteredDataOrder, clusteredDataOrderU
 
 	string capProductName = productName;
@@ -601,7 +596,7 @@ void utilityOrder(double** data, int* idA, int size, int** clusteredData, int** 
 				idStream << clusteredData[c][i+1];
 				command += idStream.str();
 				command += ");";
-				res2 = stmt->executeQuery(command);
+				std::auto_ptr<sql::ResultSet> res2(stmt->executeQuery(command));
 				if (res2->rowsCount()>0){
 					res2->next();
 					for (int f=0; f<conFeatureN; f++){
