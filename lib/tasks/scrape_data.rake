@@ -113,7 +113,7 @@ module GenericScraper
         end
         
         fill_in_all(clean_atts, ro)
-        fill_in_forced('priceint',clean_atts['priceint'], ro) # Also validation
+        fill_in_forced('priceint', clean_atts['priceint'], ro) # Also validation
         
         timestamp_offering(ro)     
       else
