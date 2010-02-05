@@ -71,5 +71,6 @@ end
 
 after :deploy, "serversetup"
 after :serversetup, "reindex"
+after :reindex, "compilec"
 
 
