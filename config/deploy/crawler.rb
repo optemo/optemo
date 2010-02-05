@@ -51,12 +51,11 @@ task :reindex do
   sudo "rake -f #{current_path}/Rakefile ts:rebuild RAILS_ENV=production"
 end
 
+
 desc "Compile C-Code"
 task :compilec do
-  run "cd #{current_path}/lib/c_code/clusteringCodes/"
-  sudo "cmake ."
-  run "cd codes"
-  sudo "make hCluster"
+  sudo "cd #{current_path}/lib/c_code/clusteringCodes/ && cmake ." 
+  sudo "cd #{current_path}/lib/c_code/clusteringCodes/codes && make hCluster"
 end
 
 desc "Configure the server files"
