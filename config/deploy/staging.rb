@@ -1,7 +1,7 @@
 set :application, "staging"
 set :repository,  "git@jaguar:site.git"
 set :domain, "jaguar"
-set :branch, "master"
+set :branch, "staging"
 set :user, "#{ `whoami`.chomp }"
 # There is also this method, might be better in some cases:
 # { Capistrano::CLI.ui.ask("User name: ") }
