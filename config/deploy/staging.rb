@@ -29,7 +29,9 @@ role :db,  domain, :primary => true
 #############################################################
 desc "Compile C-Code"
 task :compilec do
-  run "cd #{current_path}/lib/c_code/clusteringCodes/ && make hCluster"
+  sudo "cmake #{current_path}/lib/c_code/clusteringCodes/"
+  sudo "make hCluster"
+  sudo "cp codes/hCluster #{current_path}/lib/c_code/clusteringCodes/codes/hCluster"
 end
 
 desc "Configure the server files"
