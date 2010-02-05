@@ -4,6 +4,15 @@ class Session < ActiveRecord::Base
   has_many :preference_relations
   
   attr :oldfeatures, true
+  attr :keyword, true
+  attr :keywordpids, true
+  def self.current
+    @@current
+  end
+  
+  def self.current=(s)
+    @@current = s
+  end
   
   def clearFilters
     # In Sessions table, 
@@ -56,16 +65,16 @@ class Session < ActiveRecord::Base
     @features = $featuremodel.new(myfilter)
   end
  
-  def clusters(keywordsearch)
+  def clusters
     #Find clusters that match filtering query
     if !expandedFiltering? && searches.last
       #Search is narrowed, so use current products to begin with
-      clusters = searches.last.clusters(self)
+      clusters = searches.last.clusters
     else
       #Search is expanded, so use all products to begin with
       current_version = $clustermodel.find_last_by_region($region).version
       clusters = $clustermodel.find_all_by_layer_and_version_and_region(1,current_version,$region)
-      clusters.delete_if{|c| c.isEmpty(self,keywordsearch)}
+      clusters.delete_if{|c| c.isEmpty}
     end
     clusters
   end

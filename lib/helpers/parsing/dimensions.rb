@@ -143,8 +143,6 @@ module DimensionsHelper
       end
       dimset_scores[set] = score
     end
-    #puts "All: #{all_dimsets.collect{|x| "[#{x*','}]"}*'; '}"
-    #puts "Scores: #{(dimset_scores.collect{|a, b| "[#{a*','}] -- #{b}"}) * '; '}"
     best_dimset = all_valid_dimsets.sort{|a,b| dimset_scores[b] <=> dimset_scores[a]}.first
     return best_dimset
   end

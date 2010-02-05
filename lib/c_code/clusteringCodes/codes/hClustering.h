@@ -5,12 +5,14 @@
 
 int hClustering(int layer, int clusterN, int conFeatureN, int boolFeatureN, double *average, double** conFeatureRange, double*** conFeatureRangeC,
 	sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *resClus, sql::ResultSet *resNodes, sql::Statement *stmt, 
-	string* conFeatureNames, string* boolFeatureNames, string productName,map<const string, double> weightHash, int version, string region){				
+	string* conFeatureNames, string* boolFeatureNames, string productName,map<const string, double> weightHash, int version, string region){
+		
+			
 	
 int maxSize = -2;	
-double **data, **data1, **data2, **data3;
-double **dataN, **dataN1, **dataN2, **dataN3;
-int *idA, *idA1, *idA2, *idA3;
+double **data;
+double **dataN;
+int *idA;
 string *brands; 
 int parent_id = 0;
 int size, sized, cluster_id;
@@ -163,16 +165,15 @@ if 	(layer == 1){
 					  // save it to the database
 				
 					
-				     utilityOrder(data, idA, size, clusteredData, clusteredDataOrder, clusteredDataOrderU, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName); 
-			
+				     utilityOrder(data, idA, size, clusteredData, clusteredDataOrder, clusteredDataOrderU, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, productName); 
 				 getStatisticsClusteredData(data, clusteredDataOrderU, average, idA, size, clusterN, conFeatureN, conFeatureRangeC);	
 			
 			
 			
 					saveClusteredData(data, idA, size, brands, parent_id, clusteredDataOrderU, conFeatureRangeC, layer, clusterN, conFeatureN, 
-										boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName, version, region);
+										boolFeatureN, conFeatureNames, boolFeatureNames, stmt, productName, version, region);
 									
-										
+								
 						for (int c=0; c<clusterN; c++){
 								if (clusteredData[c][0]>maxSize){
 									maxSize = clusteredData[c][0];
@@ -334,12 +335,12 @@ if (layer > 1){
 
 ///////////
 
-			utilityOrder(data, idA, size, clusteredData, clusteredDataOrder, clusteredDataOrderU, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName); 
+			utilityOrder(data, idA, size, clusteredData, clusteredDataOrder, clusteredDataOrderU, clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, productName); 
 				getStatisticsData(data, clusteredDataOrderU, indicators, idA, s, clusterN, conFeatureN, conFeatureRangeC);
 		
 		// 
 		saveClusteredData(data, idA, size, brands, parent_id,clusteredDataOrderU, conFeatureRangeC, layer, clusterN, conFeatureN, 
-							boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName, version, region);
+							boolFeatureN, conFeatureNames, boolFeatureNames, stmt, productName, version, region);
 
 		
 			for (int c=0; c<clusterN; c++){

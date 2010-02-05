@@ -66,7 +66,7 @@ task :serversetup do
 end
 
 task :redopermissions do
-  run "cd #{current_path}/../ && sudo chmod g+w -R *"
+  run "cd #{current_path}/../ && sudo chmod g+w -R current shared"
 end
 
 after :deploy, "serversetup"

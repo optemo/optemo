@@ -51,22 +51,23 @@ task :reindex do
   sudo "rake -f #{current_path}/Rakefile ts:rebuild RAILS_ENV=production"
 end
 
+
 desc "Compile C-Code"
 task :compilec do
-  run "cp -rf #{current_path}/lib/c_code/clusteringCodeLinux/* #{current_path}/lib/c_code/clusteringCode"
-  run "cd #{current_path}/lib/c_code/clusteringCode/"
-  sudo "cmake ."
-  run "cd codes"
+  sudo "cmake #{current_path}/lib/c_code/clusteringCodes/"
   sudo "make hCluster"
+  sudo "cp codes/hCluster #{current_path}/lib/c_code/clusteringCodes/codes/hCluster"
 end
 
 desc "Configure the server files"
 task :serversetup do
+  hc_path = "#{current_path}/lib/c_code/clusteringCodes/codes"
   # Instantiate the database.yml file
   run "cd #{current_path}/config              && cp -f database.yml.deploy database.yml"
 end
 
 after :deploy, "serversetup"
 after :serversetup, "reindex"
+after :reindex, "compilec"
 
 
