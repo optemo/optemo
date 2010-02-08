@@ -27,7 +27,13 @@ module OfferingsHelper
         pricehist_obj = {offering.priceUpdate.to_s(:db) => (offering.priceint || 0)}
         pricehistory = YAML::dump(pricehist_obj)
       elsif offering.priceUpdate
-        hist_hash = YAML::load(offering.pricehistory)
+        hist_hash = {}
+        begin
+          hist_hash = YAML::load(offering.pricehistory)
+        rescue Exception => e
+          report_error "Price history was : #{offering.pricehistory} for RO #{offering.id}"
+          hist_hash = YAML::load("#{offering.pricehistory}\n")
+        end
         hist_hash[offering.priceUpdate.to_s(:db)] = (offering.priceint || 0) 
         pricehistory = YAML::dump(hist_hash)
       else
