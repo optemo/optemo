@@ -54,11 +54,15 @@ end
 
 desc "Run c-code to recluster"
 task :c_clustering do
+  require 'helpers/clusteringLogCheckLinux'
+  include Clusteringlogchecklinux
   env = ENV['RAILS_ENV'] || 'development'
-  `#{RAILS_ROOT}/lib/c_code/clusteringCodes/codes/hCluster printer us #{env} #{$NumGroups}`
-  `#{RAILS_ROOT}/lib/c_code/clusteringCodes/codes/hCluster printer ca #{env} #{$NumGroups}`
-  `#{RAILS_ROOT}/lib/c_code/clusteringCodes/codes/hCluster camera us #{env} #{$NumGroups}`
-  `#{RAILS_ROOT}/lib/c_code/clusteringCodes/codes/hCluster camera ca #{env} #{$NumGroups}`
+  ['printer', 'camera'].each do |prodtype|
+    ['us','ca'].each do |region|
+      `#{RAILS_ROOT}/lib/c_code/clusteringCodes/codes/hCluster #{prodtype} #{region} #{env} #{$NumGroups}`
+      cleanupInvalidDatabase(prodtype)
+    end
+  end
 end
 
 desc "Recluster printers"

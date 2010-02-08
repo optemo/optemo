@@ -1,23 +1,27 @@
 module SiteTest
 
   def test_detail_page box_index
-    log "Getting Detail page for #{box_index+1}th box, product id #{@sesh.pid_by_box(box_index+1)}"
-    come_back_here = @sesh.current_url
+    log "Getting Detail page for #{box_index+1}th box, product id #{@sesh.pid_by_box(box_index)}"
     begin
-      @sesh.get_detail_page (box_index+1)
+      @sesh.get_detail_page(box_index)
     rescue Exception => e
-      report_error "Problem getting detail page for product #{@sesh.pid_by_box(box_index+1)}"
+      report_error "Problem getting detail page for product #{@sesh.pid_by_box(box_index)}"
       report_error "#{e.class.name} #{e.message}"
     else
       assert_not_error_page
-      assert_not_homepage
       assert_detail_price_not_nil
       assert_detail_pic_not_nil
     end
-    @sesh.visit come_back_here
-    @sesh.wait_for_load if java_enabled?
     assert_not_error_page
     assert_well_formed_page
+  end
+
+  def test_close_msg_box
+    log "Testing close msg box"
+    snapshot
+    @sesh.close_msg_box
+    assert_no_results_msg_hidden
+    log "Done testing close msg box"
   end
 
   def test_move_sliders(slider, min, max)
@@ -33,7 +37,6 @@ module SiteTest
       assert_not_error_page
       assert_well_formed_page
       assert_brands_same
-      assert_clear_search_links_same
   
       if !@sesh.no_products_found_msg? 
         assert_slider_range(slider, min.to_i, max.to_i)
@@ -58,6 +61,19 @@ module SiteTest
     end
   end
   
+  def test_back_button
+     #@num_products_before = @sesh.num_products
+     #@num_brands_selected_before = @sesh.num_brands_selected
+     #@num_boxes_before = @sesh.num_boxes
+     #@num_saved_items_before = @sesh.num_saved_items
+     #@num_similar_links_before = @sesh.num_similar_links
+     #@session_id_before = @sesh.session_id 
+     #@no_products_found_msg_before = @sesh.no_products_found_msg?
+     #@error_page_before = @sesh.error_page?
+     #@url_before = @sesh.current_url
+     #@history.push @sesh.current_url 
+  end
+  
   def test_goto_homepage
     log "Testing Goto Homepage"
     snapshot
@@ -75,6 +91,7 @@ module SiteTest
     if !was_selected and !@sesh.no_products_found_msg?
       assert_box_checked klikme
     elsif !was_selected
+      log "No products found for checkbox #{klikme+1}"
       assert_num_products_same
       assert_box_unchecked klikme
     else
@@ -88,7 +105,6 @@ module SiteTest
   end
   
   def test_click_home_logo
-  
     log "Testing Click Homepage logo"
     snapshot
     @sesh.click_home_logo
@@ -125,81 +141,59 @@ module SiteTest
       assert_not_error_page
       assert_well_formed_page
   
-      if @sesh.no_products_found_msg?
-        assert_clear_search_links_same
+      if(query.nil? or query ==  '')
+      assert_search_history_clear
+        
+      elsif @sesh.no_products_found_msg?
+        assert_num_products_same
+        assert_search_history_same
         log "No products found for " + query
       else
-        assert_has_search_history
+        assert_has_search_history(query)
       end
-  
     end
   
     log "Done searching"
-  end
-  
-  def test_remove_search
-    log "Testing clear search history"
-    snapshot
-    begin
-      @sesh.click_clear_search
-    rescue Exception => e
-      report_error "Clear search history error, " + e.class.name.to_s + e.message.to_s
-    else
-    # TODO more asserts?
-     assert_not_error_page
-     assert_well_formed_page
-     assert_search_history_clear
-     assert_brands_same
-     assert_session_id_same
-   end
-   log "Done testing clear search history."
   end
   
   def test_add_brand brand
     log "Adding brand " + @sesh.brand_name(brand)
     # Preconditions & stuff.
     snapshot
-    @brand_selected_before = @sesh.brand_selected? brand
-  
+    bname = @sesh.brand_name(brand)
+    @brand_selected_before = @sesh.brand_selected?(bname)
     begin 
-      @sesh.select_brand brand          
+      @sesh.select_brand(brand)          
     rescue Exception => e # This detects crashing.
-      report_error e.class.name.to_s + " with " + @sesh.brand_name(brand) + ", message:" + e.message.to_s
+      report_error e.class.name.to_s + " with " + bname + ", message:" + e.message.to_s
     else
       assert_not_error_page
       assert_well_formed_page
   
-      if @sesh.brand_name(brand) == "All Brands" or @sesh.brand_name(brand) == "Add Another Brand"
+      if @sesh.is_all_brands?(bname)
         assert_brands_same
         assert_num_products_same
       elsif brand == 0
         puts "But it should be going to the loop above"
-  
       elsif @brand_selected_before
         log "This brand was selected before."
         assert_num_products_same
-        assert_brand_selected brand
-  
+        assert_brand_selected(bname)
       elsif @sesh.no_products_found_msg?
         log "There were no products found for this brand."
-        assert_brand_deselected brand
+        assert_brand_deselected(bname)
         assert_num_products_same
         assert_brands_same
-  
       else
-        assert_brand_selected brand
+        #debugger unless @sesh.brand_selected?(bname)
+        assert_brand_selected(bname)
         # TODO other asserts!
       end
-  
     end
-  
-    log "Done testing add brand " + @sesh.brand_name(brand)
+    log "Done testing add brand " + bname
   end
   
   def test_save_item which_item
-    
-    return unless java_enabled?
-    
     log "Saving item number #{which_item}"
     snapshot
     
@@ -208,7 +202,8 @@ module SiteTest
     already_saved = @sesh.was_saved?( pid_to_save)
     
     begin
-      @sesh.selenium.click "xpath=(//a[@class='save'])[#{which_item}]"
+      debugger
+      @sesh.selenium.run_script "saveProductForComparison(#{pid_to_save}, NULL, NULL)"
       @sesh.wait_for_ajax
     rescue Exception => e
       report_error "Crashed while saving item. Error: " + e.class.name.to_s + e.message.to_s
@@ -251,29 +246,19 @@ module SiteTest
   end
   
   def test_remove_brand which_brand
-    
     return unless java_enabled?
     
     log "Testing remove brand"
     snapshot
     
-    link_xpath = "(//a[@title='Remove Brand Filter'])[#{which_brand}]"
-    removed_name = @sesh.doc.xpath(link_xpath+"/@href").first.to_s.gsub("javascript:removeBrand('"){''}.gsub("');"){''}
-    
+    removed_name = @sesh.selected_brand_name(which_brand)
+    @sesh.remove_brand(which_brand)
     log "Removing " + removed_name + ", #{which_brand}th brand in the list."
     
-    begin
-      @sesh.selenium.click ("xpath=" +link_xpath)
-      @sesh.wait_for_ajax
-      @sesh.wait_for_load
-    rescue Exception => e
-      report_error "Error removing #{which_brand}th brand. " + e.class.name.to_s + e.message.to_s
-    else
-      assert_not_error_page
-      assert_well_formed_page
-      removed_id = @sesh.brand_id removed_name
-      assert_brand_deselected removed_id
-    end
+    assert_not_error_page
+    assert_well_formed_page
+    assert_brand_deselected(removed_name)
+    
     log "Done removing brand"
   end
   
@@ -285,7 +270,6 @@ module SiteTest
      assert_brands_same
      assert_saveds_same
      assert_num_products_same
-     assert_clear_search_links_same
      assert_session_id_same
      
      log "Done testing status quo"
@@ -305,12 +289,12 @@ module SiteTest
      @num_boxes_before = @sesh.num_boxes
      @num_saved_items_before = @sesh.num_saved_items
      @num_similar_links_before = @sesh.num_similar_links
-     @num_clear_search_links_before = @sesh.num_clear_search_links
      @session_id_before = @sesh.session_id 
      @no_products_found_msg_before = @sesh.no_products_found_msg?
      @error_page_before = @sesh.error_page?
      @url_before = @sesh.current_url
      @history.push @sesh.current_url
+     @search_before = @sesh.searched_term
   end
    
   def close_log
@@ -331,14 +315,14 @@ module SiteTest
   end
   
   def setup_java logname
-  setup_log "java_"+logname 
-  @sesh = JavaTestSession.new @logfile
-  @history = []
-  snapshot
-  # TODO take this out?
-  if @sesh.popup_tour?
-    @sesh.close_popup_tour
+    setup_log "java_"+logname 
+    @sesh = JavaTestSession.new @logfile
+    @history = []
+    snapshot
+    # TODO take this out?
+    if @sesh.popup_tour?
+      @sesh.close_popup_tour
+    end
   end
- end
  
 end

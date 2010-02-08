@@ -1,5 +1,38 @@
 module Check
   
+  #def csv_names_row
+  #  first =  ['data set', 'total', 'brand', 'model/mpn']
+  #  #second = $model::Features.collect{|x| x[0]}
+  #  #third = ['itemheight', 'itemwidth', 'itemlength']
+  #  validitable = $model::ValidRanges.keys
+  #  retme = first + validitable + ['priceint']
+  #  return retme
+  #end
+  
+  
+  def csv_names_row
+    first =  ['data set', 'total', 'wacky brand', 'nil brand', 'nil model']
+    validitable = $model::ValidRanges.keys
+    retme = (first + validitable.collect{|x| ["nils in #{x}", "0s in #{x}", "#{x} out of range"]}).flatten
+    return retme
+  end
+  
+  def csv_row my_products, dataset_name='' 
+    array = [dataset_name, my_products.count]
+    
+    array << count_not_in_set(my_products, 'brand', $brands)
+    array << count_nils(my_products, 'brand')
+    array << count_nils(my_products, 'model')
+    
+    $model::ValidRanges.each do |k,v|
+      array << count_nils( my_products, k)
+      array << count_0_values( my_products, k)
+      array << count_not_in_range( my_products, k, v[0], v[1])
+    end
+    
+    return array
+  end
+  
   def chek_linkage check_me
     announce "Checking offering-#{$model.name.downcase} links"
     
@@ -118,6 +151,23 @@ module Check
       these_offerings = my_offerings.reject{|x| x.retailer_id != ret.id}
       assert_no_repeats these_offerings, 'local_id'
     end
+    
+    my_offerings.each do |ro|
+      hist = ro.pricehistory
+      if hist
+        if hist.match(/\n$/).nil?
+          report_error "#{ro.id} has malformed price history (missing newline)" 
+        else
+           begin
+              hist_obj = YAML::load(hist)
+           rescue Exception => e
+              report_error "Problem loading #{ro.id}'s price history: #{e.class.name} #{e.message}"
+           else
+             report_error "#{ro.id} price history not a hash" if hist_obj.class != Hash
+           end
+        end
+      end
+    end
    
     assert_within_range my_offerings, 'priceint', $model::MinPrice, $model::MaxPrice
     
@@ -126,6 +176,9 @@ module Check
 end
 
 namespace :check do
+  
+  task :cam_csv => [:cam_init, :csv]
+  task :ptr_csv => [:printer_init, :csv]
   
   task :cameras => [:cam_init, :products]
   task :printers => [:printer_init, :products]
@@ -283,23 +336,46 @@ namespace :check do
     
   end
     
+  task :csv do 
+    include ValidationLib
+    
+    config   = Rails::Configuration.new
+    database = config.database_configuration[RAILS_ENV]["database"]
+    
+    @logfile = File.open("./log/check/#{database}_#{$model.name.downcase}.csv", 'w')
+    @logfile.puts(csv_names_row*", ")
+    
+    x = csv_row $model.all, 'all'
+    @logfile.puts(x * ", ")
+    x = csv_row $model.valid, 'valid'
+    @logfile.puts(x * ", ")
+    x = csv_row ($model.instock|$model.instock_ca), 'in stock'
+    @logfile.puts(x * ", ")
+    x = csv_row ($model.instock.valid|$model.instock_ca.valid), 'valid & instock'
+    @logfile.puts(x * ", ")
+    x = csv_row ($model.all-$model.valid), 'invalid'
+    @logfile.puts(x * ", ")
+    
+    @logfile.close
+  end  
+    
   task :products do
     include ValidationLib
     require 'helpers/image_helper'
     include ImageHelper
     include ImageValidator
     
-    @logfile = File.open("./log/check_#{$model.name}.log", 'a+')
+    @logfile = File.open("./log/check/#{$model.name}.log", 'a+')
     timed_log 'Start camera-specific validation'
     my_products = $model.all
-   # my_valid_products = $model.valid.instock  | $model.valid.instock_ca
+    my_valid_products = $model.valid.instock  | $model.valid.instock_ca
     my_offerings = RetailerOffering.find_all_by_product_type_and_stock($model.name, true)
     
     chek_linkage(my_products)
     
     chek_offerings(my_offerings)
     
-    chek_products(my_products)
+    chek_products(my_valid_products)
         
     @logfile.close
   end

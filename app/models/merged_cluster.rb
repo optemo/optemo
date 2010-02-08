@@ -7,11 +7,11 @@ class MergedCluster
   end
   
   
-  def self.fromIDs(clusters,session,searchpids)
+  def self.fromIDs(clusters)
     clusterobj = []
     clusters.compact.each do |c|
       newcluster = $clustermodel.find(c.to_i)
-      clusterobj << newcluster unless newcluster.nil? || newcluster.isEmpty(session,searchpids)
+      clusterobj << newcluster unless newcluster.nil? || newcluster.isEmpty
     end
     new(clusterobj)
   end
@@ -36,19 +36,19 @@ class MergedCluster
     @clusters.map{|c| c.layer}.sort[0]
   end    
   #The subclusters
-  def children(session, searchpids)
+  def children
     @clusters
   end
   
   # finding the deepChildren(clusters with size 1) in clusters
-  def deepChildren(session, searchpids, dC = [])
-    clusters.map{|c| c.deepChildren(session, searchpids)}.flatten
+  def deepChildren(dC = [])
+    clusters.map{|c| c.deepChildren}.flatten
   end
   
-  def ranges(featureName, session, searchpids)
+  def ranges(featureName)
     @range ||= {}
     if @range[featureName].nil?
-      values = nodes(session, searchpids).map{|n| n.send(featureName)}.sort
+      values = nodes.map{|n| n.send(featureName)}.sort
       nodes_min = values[0]
       nodes_max = values[-1]
       @range[featureName] = [nodes_min, nodes_max]    
@@ -56,41 +56,41 @@ class MergedCluster
     @range[featureName]
   end
   
-  def indicator(featureName, session, searchpids)
+  def indicator(featureName)
     indic = false
-    values = nodes(session, searchpids).map{|n| n.send(featureName)}
+    values = nodes.map{|n| n.send(featureName)}
     if values.index(false).nil? # they are all the same
         indic = true
     end
     indic
   end
   
-  def nodes(session, searchpids)
+  def nodes
     unless @nodes
       clustersquery = @clusters.map{|c| "cluster_id = #{c.id}"}.join(' or ')
       if clustersquery.blank?
         @nodes = []
       else
-        @nodes = $nodemodel.find(:all, :conditions => "(#{clustersquery}) #{session.filter && !Cluster.filterquery(session).blank? ?
-        ' and '+Cluster.filterquery(session) : ''}#{!session.filter || searchpids.blank? ? '' : ' and ('+searchpids+')'}")
+        @nodes = $nodemodel.find(:all, :conditions => "(#{clustersquery}) #{Session.current.filter && !Cluster.filterquery(Session.current).blank? ?
+        ' and '+Cluster.filterquery(Session.current) : ''}#{!Session.current.filter || Session.current.keywordpids.blank? ? '' : ' and ('+Session.current.keywordpids+')'}")
       end
     end
     @nodes
   end
   
   #The representative product for this cluster
-  def representative(session, searchpids)
+  def representative
     unless @rep
-      node = nodes(session, searchpids).first
+      node = nodes.first
       @rep = $model.find(node.product_id) if node
     end
     @rep
   end 
   
-  def size(session, searchpids)
+  def size
     unless @size
-      if session.filter
-        @size = nodes(session, searchpids).length
+      if Session.current.filter
+        @size = nodes.length
       else
         @size = @clusters.map{|c|c.cluster_size}.sum
       end
@@ -98,8 +98,8 @@ class MergedCluster
     @size
   end
 
-  def isEmpty(session, searchpids)
-    nodes(session, searchpids).empty?
+  def isEmpty
+    nodes.empty?
   end
   
   def clearCache
@@ -111,11 +111,11 @@ class MergedCluster
     @utility = nil
   end
   
-  def utility(session, searchpids)
-    if size(session, searchpids) == 0
+  def utility
+    if size == 0
       @utility ||= 0
     else
-      @utility ||= @clusters.map{|c|c.utility(session)}.sum/size(session, searchpids)
+      @utility ||= @clusters.map{|c|c.utility}.sum/@clusters.length
     end
   end
 end
