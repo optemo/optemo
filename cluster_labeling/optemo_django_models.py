@@ -82,7 +82,7 @@ class Node(OptemoModel):
 class CameraNode(Node):
     class Meta:
         db_table = 'camera_nodes'
-    
+
     def get_cluster(self):
         qs = CameraCluster.get_manager().filter(id=self.cluster_id)
         assert(qs.count() == 1)
@@ -97,13 +97,39 @@ class Camera(OptemoModel):
     class Meta:
         db_table = 'cameras'
 
+    title = models.TextField()
     brand = models.CharField(max_length=255)
     model = models.CharField(max_length=255)
+    
+    itemwidth = models.IntegerField()
+    itemlength = models.IntegerField()
+    itemheight = models.IntegerField()
+    itemweight = models.IntegerField()
+
+    opticalzoom = models.FloatField()
+    digitalzoom = models.FloatField()
+
+    maximumresolution = models.FloatField()
+    displaysize = models.FloatField()
+
     slr = models.BooleanField()
     waterproof = models.BooleanField()
+
+    maximumfocallength = models.FloatField()
+    minimumfocallength = models.FloatField()
+
+    batteriesincluded = models.BooleanField()
+
+    connectivity = models.CharField(max_length=255)
+
+    hasredeyereduction = models.BooleanField()
+    includedsoftware = models.CharField(max_length=255)
+
     averagereviewrating = models.FloatField()
     totalreviews = models.IntegerField()
-    reviewtext = models.TextField()
+
+    price = models.IntegerField()
+    price_ca = models.IntegerField()
 
     def get_clusters(self, version = CameraCluster.get_latest_version()):
         node_qs = CameraNode.get_manager().filter\
