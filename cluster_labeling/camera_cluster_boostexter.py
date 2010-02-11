@@ -40,9 +40,13 @@ boosting_fields = [
 def get_labels(cluster):
     return [cluster.id, cluster.parent_id]
 
-def generate_names_file(cluster):
+def get_names_filename(cluster):
     filestem = subdir + str(cluster.id)
     filename = filestem + ".names"
+    return filename
+
+def generate_names_file(cluster):
+    filename = get_names_filename(cluster)
     f = open(filename, 'w')
 
     labels = get_labels(cluster)
@@ -63,9 +67,13 @@ def generate_names_file(cluster):
 
     f.close()
 
-def generate_data_file(cluster):
+def get_data_filename(cluster):
     filestem = subdir + str(cluster.id)
     filename = filestem + ".data"
+    return filename
+
+def generate_data_file(cluster):
+    filename = get_data_filename(cluster)
     f = open(filename, 'w')
 
     version = cluster.version
