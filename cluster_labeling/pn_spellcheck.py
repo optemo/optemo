@@ -25,6 +25,8 @@ def soundex_mod(name):
             sndx += d
         elif c == '\0':
             sndx += '\0'
+        else:
+            sndx += 'z' # unknown kind of character (i.e. number)
 
     # replace first digit with first alpha character
     sndx = fc + sndx[1:]
