@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import cluster_labeling.optemo_django_models as optemo
 import subprocess
+import time
 
 subdir = 'cc_boostexter_files/'
 
@@ -100,8 +101,23 @@ def generate_data_file(cluster):
         f.write(', ')
         f.write(str(cluster_id) + '.\n')
 
-def train_boostexter():
-    pass
+def train_boostexter(cluster):
+    # See the boosexter README for description of commands
+    boostexter_prog = './BoosTexter2_1/boostexter'
+    boostexter_args = {
+        'numrounds' : ('-n', 10),
+        'ngram_maxlen' : ('-W', 2),
+        'ngram_type' : ('-N', 'ngram'),
+        'filename_stem' : ('-S', subdir + str(cluster.id))
+        }
+
+    cmd = boostexter_prog + " " + \
+          " ".join([arg[0] + " " + str(arg[1]) for opt, arg in
+                    boostexter_args.iteritems()])
+
+    proc = subprocess.Popen(cmd)
+    retcode = proc.wait()
+    assert(retcode == 0)
 
 def get_boostexter_rules():
     pass
