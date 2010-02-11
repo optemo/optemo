@@ -13,6 +13,15 @@ local_sqlite3 = \
     'TIMEOUT' : 30
 }
 
+localhost_mysql = \
+{
+    'ENGINE' : 'django.db.backends.mysql',
+    'HOST' : 'localhost',
+    'NAME' : 'optemo_development',
+    'USER' : 'nimalan',
+    'PASSWORD' : 'bobobo'
+}
+
 optemo_mysql = \
 {
     'ENGINE' : 'django.db.backends.mysql',
