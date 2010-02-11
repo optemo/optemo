@@ -66,8 +66,8 @@
 <%= image_tag "feedback#{fr?}.png" %>
 </div>
 <span id="dragDropEnabled" style="display:none;"><%= $DragAndDropEnabled %></span>
-<span id="sessionOld" style="display:none;"><%= 'true' if (@session && (Time.now - @session.created_at > 9)) %></span>
-<span id="seshid" session-id="<%= @session.id unless @session.nil? %>" style="display:none;"><%= @session.id unless @session.nil? %></span>
+<span id="sessionOld" style="display:none;"><%= 'true' if (Session.current && (Time.now - Session.current.created_at > 9)) %></span>
+<span id="seshid" session-id="<%= Session.current.id unless Session.current.nil? %>" style="display:none;"><%= Session.current.id unless Session.current.nil? %></span>
 
 <!--[if lt IE 7]><style>
 /* style for IE6 + IE5.5 + IE5.0 */

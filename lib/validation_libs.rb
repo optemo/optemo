@@ -8,10 +8,16 @@ module ValidationLib
   require     'helpers/validation/data_validator'
   require    'helpers/validation/image_validator'
   
+  require    'helpers/validation/data_validity_analyzer'
+  
   include LoggingHelper
   
   include DataValidator
   include ImageValidator
   include InRangeHelper
+  
+  
+  include DataValidityAnalyzer
+  
 end
 

@@ -4,8 +4,6 @@ class DirectComparisonController < ApplicationController
   layout false
     
   def index
-
-    @session = @@session
     @products = []
     @bestvalue = {}
     # These IDs come straight from id=#savedproducts on the client side (comma-separated)

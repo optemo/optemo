@@ -12,7 +12,7 @@
 #include <algorithm>
 using namespace std;
 
-#include <cppconn/mysql_public_iface.h>
+#include </usr/local/include/mysql-connector-c++/driver/mysql_public_iface.h>
 #include <time.h>
 
 #include "hClustering.h"
@@ -21,8 +21,16 @@ using namespace std;
 
 using namespace std;
 
-int main(int argc, char** argv){	
 
+
+int main(int argc, char** argv){	
+ 
+    string path = string(argv[0]);
+    int found=path.rfind('/hCluster');
+	string logFile = path; 
+	logFile.replace (found-7, found,"../../../../log/clustering.log");
+
+ 
 	stringstream sql;
 	int clusterN;
 	int conFeatureN;
@@ -33,7 +41,7 @@ int main(int argc, char** argv){
 	int version;
 	string var;
 	int keepStep = 5;
-	string logFile = "/optemo/site/log/clustering.log";
+
 
 	//argument is the productName
     if (argc <5){
@@ -182,13 +190,8 @@ int main(int argc, char** argv){
   }
   nullCheck += "))";
   
-//}
-// Driver Manager
 
-   	sql::mysql::MySQL_Driver *driver;
-	// Connection, (simple, not prepared) Statement, Result Set
-	sql::Connection	*con;
-	sql::Statement	*stmt;
+   sql::Statement	*stmt;
 	
 	sql::ResultSet	*res;
 	sql::ResultSet	*res2;
@@ -201,8 +204,12 @@ int main(int argc, char** argv){
 		vector<string> tokens;
 		ifstream myfile;
 		int i=0;
-	   myfile.open("/optemo/site/config/database.yml"); 
-	   if (myfile.is_open()){
+		string ymlFile = path;
+		ymlFile.replace (found-7, found,"../../../../config/database.yml");
+	
+	    myfile.open(ymlFile.c_str());
+	
+	  if (myfile.is_open()){
 		while (! myfile.eof()){
 			getline (myfile,line);
 			stringstream ss(line);
@@ -230,35 +237,34 @@ int main(int argc, char** argv){
 	string hostString = tokens.at(findVec(tokens, "host:") + 1);
 	string databaseName = tokens.at(findVec(tokens, "database:") + 1);
 	
-	
+
 	    #define PORT "3306"       
 		#define DB   databaseName
 		#define HOST hostString    
 		#define USER usernameString 
 	    #define PASS passwordString 
-	
+
 ///////////////////////////////////////////////
 		
 			try {
 		  
-				// Using the Driver to create a connection
-				driver = sql::mysql::get_mysql_driver_instance();
-			
-				con = driver->connect(HOST, PORT, USER, PASS);
-				stmt = con->createStatement();
+
+				sql::Driver * driver = get_driver_instance();
+				    
+			    std::auto_ptr< sql::Connection > con(driver->connect(HOST, USER, PASS));        
+				sql::Statement*  stmt(con->createStatement());
+								
 				command = "USE ";
 				command += databaseName;
 			
 				stmt->execute(command);
-				 //	cout<<"command is "<<nullCheck<<endl;	
+				
 				res = stmt->executeQuery(nullCheck);
 			
-				  if (res->rowsCount() >0){
-					cout<<"There are some null values in "<<productName<<"s table"<<endl;
-				  }
+			    if (res->rowsCount() >0){
+			      cout<<"There are some null values in "<<productName<<"s table"<<endl;
+			    }
 
-			
-			
 				command = "SELECT version from ";
 				command += productName;
 				command += "_clusters where (region='";
@@ -266,10 +272,7 @@ int main(int argc, char** argv){
 				command += "') order by id DESC LIMIT 1";
 				
 				res = stmt->executeQuery(command);
-           
-
-
-				
+         
 				if (res->next()){
 					version = res->getInt("version");
 					version++;
@@ -278,7 +281,7 @@ int main(int argc, char** argv){
 					version = 0;
 				}
 				cout<<"version is "<<version<<endl;
-	
+	    
 	   if (version > keepStep){
 				///Archiving the old clusters and nodes & deleteing the old ones
 				command2 = "INSERT into ";
@@ -291,8 +294,7 @@ int main(int argc, char** argv){
 				command2 += vstr1.str();
 				command2 += " and region=\'";
 				command2 += region;
-				command2 += "\';";
-				cout<<"command is "<<command2<<endl;	
+				command2 += "\';";	
 				stmt->execute(command2);
 			 
 				command2 = "INSERT into ";
@@ -320,8 +322,11 @@ int main(int argc, char** argv){
 			  time ( &rawtime );
 			  timeinfo = localtime( &rawtime );
 			  ofstream myfile2;
-			  myfile2.open("/optemo/site/log/clustering.log", ios::app);
-			myfile2 <<endl<<timeinfo->tm_year+1900<<"-"<< timeinfo->tm_mon+1<<"-"<<timeinfo->tm_mday<<" "<< timeinfo->tm_hour<<endl;
+				
+			    myfile2.open(logFile.c_str(), ios::app);
+		
+			  
+		     	myfile2 <<endl<<timeinfo->tm_year+1900<<"-"<< timeinfo->tm_mon+1<<"-"<<timeinfo->tm_mday<<" "<< timeinfo->tm_hour<<endl;
 			 
 				myfile2<<"Version: "<<version<<endl;
 				
@@ -338,7 +343,7 @@ int main(int argc, char** argv){
 					clustered = 1;
 				}
 				if (clustered){
-				leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, res3, stmt, productName, version, region);	
+				leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames,res, res2, res3, stmt, productName, version, region);	
 				myfile2<<"layer "<<layer<<endl;
 			}else{
 					smallNumberClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, stmt, productName, version, region);	
@@ -369,22 +374,14 @@ command2 += region;
 command2 += "\';";
 stmt->execute(command2);
 
- 	delete stmt;
- 	delete con;
 	myfile2<<"The end."<<endl;
  myfile2.close();
 
- 	} catch (sql::mysql::MySQL_DbcException *e) {
+ 	} catch (sql::SQLException &e) {
 
-		delete e;
 		return EXIT_FAILURE;
 
-	} catch (sql::DbcException *e) {
-		/* Exception is not caused by the MySQL Server */
-
-		delete e;
-		return EXIT_FAILURE;
-	}
+	} 
 
 
 return 1; //EXIT_SUCCESS;

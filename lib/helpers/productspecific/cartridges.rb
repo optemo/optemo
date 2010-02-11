@@ -272,4 +272,12 @@ module CartridgeHelper
     $printer_models = Printer.all.collect{|x| just_alphanumeric(x.model) }.reject{|x| x.nil? or x==''}
   end
 
+  def parse_yield str
+    return nil if str.nil?
+    yld = get_f_with_units( str,  /\s?(sheet|page)(s)?/i )
+    yld = get_f_with_units(str,  /\s?y(ie)?ld/i) if yld.nil?
+    yld = get_f_with_units_in_front(str,  /y(ie)?ld\s*-*/i) if yld.nil?
+    return yld
+  end
+
 end

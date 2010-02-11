@@ -30,9 +30,10 @@ class Camera < ActiveRecord::Base
   ShowFeatures = %w(brand model maximumresolution opticalzoom digitalzoom displaysize ) #itemweight itemwidth sensordiagonal crushproof freezeproof waterproof aa_batteries aperturerange minimumfocallength maximumfocallength minf shutterspeedrange slr)
   DisplayedFeatures = %w(displaysize opticalzoom maximumresolution itemweight itemdimensions digitalzoom)
   ItoF = %w(price itemwidth)
-  ValidRanges = { 'itemheight' => [200,450], 'itemlength' => [55,350], 'itemwidth' => [350,600], \
+  ValidRanges = { 'itemheight' => [200,450], 'itemlength' => [40,350], 'itemwidth' => [350,1000], \
     'maximumresolution' => [0.2, 50], 'opticalzoom' => [1,26], 'digitalzoom' => [1, 100], \
     'displaysize' => [0.5,4], 'itemweight' => [0_20,8_00]} #, 'priceint' => [1_00, 10_000_00] }
+    #'itemheight' => [200,450], 'itemlength' => [55,350], 'itemwidth' => [350,600], \
   MinPrice = 1_00
   MaxPrice = 10_000_00
   

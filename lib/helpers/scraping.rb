@@ -9,6 +9,12 @@ module ScrapingHelper
     return returnme
   end
   
+  def get_text x
+    returnme = x.first || x
+    return nil if returnme.class != Nokogiri::XML::Element
+    return returnme.text
+  end
+  
   # Returns a hash of (name, value) from a table where
   # each row has a name cell and a value cell.
   # Pass the table as Nokogiri element 

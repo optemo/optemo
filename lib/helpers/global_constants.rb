@@ -91,7 +91,7 @@ module CameraConstants
    # 'Gateway' => ['DC']
   @@descriptors = [/(\s|^)\d*\.?\d+\s?M(ega)?P(ix(el)?)?s?(\s|,|$)/i,/(\s|^)\d+\s?GB(\s|,|$|\/)/,  /(\s|^)body(,|\s|$)/i,\
     /LCD(\s|,|$)/i , /Two \(2\)/, /(\s|^)\d*\s?ISO\s?\d*(\s|,|$)/i, /\d(\s|-)in(\s|-)1/ , /(\s|^)kit(,|\s|$)/i,\
-    /waterproof/i, /(\s|^)light(\s|,|$)/i, /(\s|^)SLR(\s|,|$)/, /\d*\.?\d+\s?x(\soptical|\sdigital)?(\szoom)?/i,\
+    /waterproof/i, /(\s|^)light(\s|,|$)/i, /(\s|^)SLR(\s|,|$)/, /(\s|^)\d*\.?\d+\s?x(\soptical|\sdigital)?(\szoom)?/i,\
     /(optical|digital)/i, /zoom/i, /(\s|^)digi?(\s|,|$)/i, /(\d\s?-?\s?)(month|day|year)(\swarranty)?/i,\
     /(\s|^)dark(\s|$)/i, /\d+(mm)?\s?-?\s?\d+(mm)/, /(-|^|\s)inch(\s|$|,)/, /wide(\sangle)/i, /tele/i, /dual/i , /(\s|^)image(\s|,|$)/i]
 end
