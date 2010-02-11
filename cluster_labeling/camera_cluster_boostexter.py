@@ -63,10 +63,34 @@ def generate_names_file(cluster):
 
     f.close()
 
-def generate_data_file\
-        (filestem,
-         version = optemo.CameraCluster.get_latest_version()):
-    pass
+def generate_data_file(cluster):
+    filestem = subdir + str(cluster.id)
+    filename = filestem + ".data"
+    f = open(filename, 'w')
+
+    version = cluster.version
+
+    parent_cluster = optemo.CameraCluster.get_manager()\
+                     .filter(id = cluster.parent_id)[0]
+
+    cameras_this = map(lambda x: x.get_product(), cluster.get_nodes())
+    cameras_parent = \
+        filter(lambda x:
+               cluster.id not in
+                   set(map(lambda y: y.id, x.get_clusters(cluster.version))),
+               map(lambda x: x.get_product(),
+                   parent_cluster.get_nodes()))
+    
+    cameras_this = map(lambda x: (x, cluster.id), cameras_this)
+    cameras_parent = map(lambda x: (x, cluster.parent_id), cameras_parent)
+
+    cameras = cameras_this
+    cameras.extend(cameras_parent)
+    
+    for camera, cluster_id in cameras:
+        f.write(', '.join([str(camera.__getattribute__(fieldname)) for fieldname, _ in boosting_fields]))
+        f.write(', ')
+        f.write(str(cluster_id) + '.\n')
 
 def train_boostexter():
     pass
