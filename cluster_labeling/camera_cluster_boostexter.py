@@ -4,38 +4,38 @@ import subprocess
 
 subdir = 'cc_boostexter_files/'
 
-boosting_fields = {
-    'title' : 'text',
-    'brand' : 'text',
-    'model' : 'text',
+boosting_fields = [
+    ('title', 'text'),
+    ('brand', 'text'),
+    ('model', 'text'),
     
-    'itemwidth' : 'continuous',
-    'itemlength' : 'continuous',
-    'itemheight' : 'continuous',
-    'itemweight' : 'continuous',
+    ('itemwidth', 'continuous'),
+    ('itemlength', 'continuous'),
+    ('itemheight', 'continuous'),
+    ('itemweight', 'continuous'),
 
-    'opticalzoom' : 'continuous',
-    'digitalzoom' : 'continuous',
+    ('opticalzoom', 'continuous'),
+    ('digitalzoom', 'continuous'),
 
-    'slr' : ['True', 'False'],
-    'waterproof' : ['True', 'False'],
+    ('slr', ['True', 'False']),
+    ('waterproof', ['True', 'False']),
 
-    'maximumfocallength' : 'continuous',
-    'minimumfocallength' : 'continuous',
+    ('maximumfocallength', 'continuous'),
+    ('minimumfocallength', 'continuous'),
 
-    'batteriesincluded' : ['True', 'False'],
+    ('batteriesincluded', ['True', 'False']),
 
-    'connectivity' : 'text',
+    ('connectivity', 'text'),
     
-    'hasredeyereduction' : ['True', 'False'],
-    'includedsoftware' : 'text',
+    ('hasredeyereduction', ['True', 'False']),
+    ('includedsoftware', 'text'),
 
-    'averagereviewrating' : 'continuous',
-    'totalreviews' : 'continuous',
+    ('averagereviewrating', 'continuous'),
+    ('totalreviews', 'continuous'),
 
-    'price' : 'continuous',
-    'price_ca' : 'continuous',
-    }
+    ('price', 'continuous'),
+    ('price_ca', 'continuous')
+    ]
 
 def get_labels(cluster):
     return [cluster.id, cluster.parent_id]
@@ -48,7 +48,7 @@ def generate_names_file(cluster):
     labels = get_labels(cluster)
     f.write(', '.join(map(str, labels)) + '.\n')
 
-    for fieldname, fielddesc in boosting_fields.iteritems():
+    for fieldname, fielddesc in boosting_fields:
         f.write(fieldname + ": ")
 
         if type(fielddesc) == list:
