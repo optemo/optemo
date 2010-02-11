@@ -2,6 +2,8 @@
 import cluster_labeling.optemo_django_models as optemo
 import subprocess
 
+subdir = 'cc_boostexter_files/'
+
 boosting_fields = {
     'title' : 'text',
     'brand' : 'text',
@@ -35,19 +37,15 @@ boosting_fields = {
     'price_ca' : 'continuous',
     }
 
-def get_labels(version = optemo.CameraCluster.get_latest_version()):
-    labels = [x['id'] for x in optemo.CameraCluster.get_manager().filter(version = version).values('id')]
-    labels.append(0)
+def get_labels(cluster):
+    return [cluster.id, cluster.parent_id]
 
-    return labels
-
-def generate_names_file\
-        (filestem,
-         version = optemo.CameraCluster.get_latest_version()):
+def generate_names_file(cluster):
+    filestem = subdir + str(cluster.id)
     filename = filestem + ".names"
     f = open(filename, 'w')
 
-    labels = get_labels(version)    
+    labels = get_labels(cluster)
     f.write(', '.join(map(str, labels)) + '.\n')
 
     for fieldname, fielddesc in boosting_fields.iteritems():
