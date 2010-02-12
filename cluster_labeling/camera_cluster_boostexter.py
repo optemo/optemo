@@ -3,6 +3,8 @@ import cluster_labeling.optemo_django_models as optemo
 import subprocess
 import time
 
+import re
+
 output_subdir = 'cluster_labeling/cc_boostexter_files/'
 boostexter_subdir = 'cluster_labeling/BoosTexter2_1/'
 
@@ -80,41 +82,64 @@ def generate_data_file(cluster):
 
     version = cluster.version
 
-    parent_cluster = optemo.CameraCluster.get_manager()\
-                     .filter(id = cluster.parent_id)[0]
+    cameras_this = map(lambda x: (x.get_product(), cluster.id),
+                       cluster.get_nodes())
 
-    cameras_this = map(lambda x: x.get_product(), cluster.get_nodes())
+    parent_cluster_nodes = None
+    if cluster.parent_id == 0:
+        clusters = optemo.CameraCluster.get_manager()\
+                   .filter(parent_id = 0, version=version)
+
+        parent_cluster_nodes = []
+        for parent_child_cluster in clusters:
+            parent_cluster_nodes.extend(parent_child_cluster.get_nodes())
+    else:
+        parent_cluster = optemo.CameraCluster.get_manager()\
+                         .filter(id = cluster.parent_id)[0]
+        parent_cluster_nodes = parent_cluster.get_nodes()
+
     cameras_parent = \
         filter(lambda x:
                cluster.id not in
                    set(map(lambda y: y.id, x.get_clusters(cluster.version))),
-               map(lambda x: x.get_product(),
-                   parent_cluster.get_nodes()))
+               map(lambda x: x.get_product(), parent_cluster_nodes))
     
-    cameras_this = map(lambda x: (x, cluster.id), cameras_this)
     cameras_parent = map(lambda x: (x, cluster.parent_id), cameras_parent)
 
     cameras = cameras_this
     cameras.extend(cameras_parent)
     
     for camera, cluster_id in cameras:
-        f.write(', '.join([str(camera.__getattribute__(fieldname)) for fieldname, _ in boosting_fields]))
-        f.write(', ')
+        for fieldname, fielddesc in boosting_fields:
+            fieldval = camera.__getattribute__(fieldname)
+
+            if fielddesc == ['True', 'False']:
+                if fieldval == '1' or fieldval == 'True':
+                    fieldval = 'True'
+                else:
+                    fieldval = 'False'
+            elif fieldval == None:
+                fieldval = '?' # unknown value
+
+            fieldval = re.sub(u'([-:,&]|#)', ' ', unicode(fieldval), re.UNICODE)
+            fieldval = re.sub(u'(\w+)\.(\D|$)', r'\1 \2', unicode(fieldval), re.UNICODE)
+
+            f.write(fieldval.encode('utf-8') + ', ')
+
         f.write(str(cluster_id) + '.\n')
 
 def train_boostexter(cluster):
     # See the boosexter README for description of commands
     boostexter_prog = boostexter_subdir + 'boostexter'
-    boostexter_args = {
-        'numrounds' : ('-n', 10),
-        'ngram_maxlen' : ('-W', 2),
-        'ngram_type' : ('-N', 'ngram'),
-        'filename_stem' : ('-S', output_subdir + str(cluster.id))
-        }
+    boostexter_args = [
+        '-n', str(20), # numrounds 
+        '-W', str(2), # ngram_maxlen
+        '-N', 'ngram', # ngram_type
+        '-S', output_subdir + str(cluster.id) # 'filename_stem'
+        ]
 
-    cmd = boostexter_prog + " " + \
-          " ".join([arg[0] + " " + str(arg[1]) for opt, arg in
-                    boostexter_args.iteritems()])
+    cmd = [boostexter_prog]
+    cmd.extend(boostexter_args)
 
     proc = subprocess.Popen(cmd)
     retcode = proc.wait()
