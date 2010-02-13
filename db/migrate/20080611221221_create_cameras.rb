@@ -17,6 +17,7 @@ class CreateCameras < ActiveRecord::Migration
       addReviews(t)
       addPricing(t)
       addPricingCa(t)
+      add_index :instock, :instock_ca
     end  
   end
 

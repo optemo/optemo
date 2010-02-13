@@ -55,4 +55,7 @@ Rails::Initializer.run do |config|
    'thinking-sphinx',
    :lib => 'thinking_sphinx'
  )
+ 
+ config.gem "newrelic_rpm"
+ 
 end

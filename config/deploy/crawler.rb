@@ -66,8 +66,13 @@ task :serversetup do
   run "cd #{current_path}/config              && cp -f database.yml.deploy database.yml"
 end
 
+#task :restartmemcached
+# Need this before next deploy
+#end
+
 after :deploy, "serversetup"
 after :serversetup, "reindex"
 after :reindex, "compilec"
 
+#after :compilec, "restartmemcached"
 
