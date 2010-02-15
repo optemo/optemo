@@ -315,10 +315,22 @@ def get_boostexter_rules(cluster):
     assert(len(rules) == numrules)
     return rules
 
-def train_boostexter_on_all_clusters\
+def make_boostexter_labels_for_all_clusters\
         (version = optemo.CameraCluster.get_latest_version()):
     qs = optemo.CameraCluster.get_manager().filter(version=version)
 
+    cluster_labels = []
+
+    for cluster in qs:
+        rules = get_rules(cluster)
+        labels = make_labels_from_rules(rules)
+        cluster_labels.append((cluster.id, labels))
+
+    return cluster_labels
+
+def train_boostexter_on_all_clusters\
+        (version = optemo.CameraCluster.get_latest_version()):
+    qs = optemo.CameraCluster.get_manager().filter(version=version)
     for cluster in qs:
         generate_names_file(cluster)
         generate_data_file(cluster)
