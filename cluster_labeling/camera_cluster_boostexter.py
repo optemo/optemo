@@ -344,6 +344,30 @@ def get_field_ranks(rules):
                sorted(field_ranks.iteritems(),
                       key=operator.itemgetter(1)))
 
+def combine_sgram_rules(fieldname, rules):
+    # Just pick the first meaningful sgram and check whether it is a
+    # positive label or a negative label.
+    for rule in rules:
+        if nh.is_stopword(rule.sgram):
+            continue
+            
+        label = rule.sgram
+        direction = None
+
+        weights = rule.weights
+        weights = weights[1, :] - weights[0, :]
+
+        if weights[0] > 0 and weights[1] < 0:
+            direction = 'pos'
+        elif weights[0] < 0 and weights[1] > 0:
+            direction = 'neg'
+        else:
+            assert(False)
+
+        print label, direction
+
+        # return label, direction
+
 def make_label_for_rules_for_field(fieldname, rules):
     rule_types = set(map(lambda x: str(type(x)), rules))
     assert(len(rule_types) == 1)
