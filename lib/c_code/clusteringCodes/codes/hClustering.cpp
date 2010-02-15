@@ -21,8 +21,16 @@ using namespace std;
 
 using namespace std;
 
-int main(int argc, char** argv){	
 
+
+int main(int argc, char** argv){	
+ 
+    string path = string(argv[0]);
+    int found=path.rfind('/hCluster');
+	string logFile = path; 
+	logFile.replace (found-7, found,"../../../../log/clustering.log");
+
+ 
 	stringstream sql;
 	int clusterN;
 	int conFeatureN;
@@ -33,7 +41,7 @@ int main(int argc, char** argv){
 	int version;
 	string var;
 	int keepStep = 5;
-	string logFile = "/optemo/site/log/clustering.log";
+
 
 	//argument is the productName
     if (argc <5){
@@ -196,8 +204,12 @@ int main(int argc, char** argv){
 		vector<string> tokens;
 		ifstream myfile;
 		int i=0;
-	   myfile.open("/optemo/site/config/database.yml"); 
-	   if (myfile.is_open()){
+		string ymlFile = path;
+		ymlFile.replace (found-7, found,"../../../../config/database.yml");
+	
+	    myfile.open(ymlFile.c_str());
+	
+	  if (myfile.is_open()){
 		while (! myfile.eof()){
 			getline (myfile,line);
 			stringstream ss(line);
@@ -225,21 +237,19 @@ int main(int argc, char** argv){
 	string hostString = tokens.at(findVec(tokens, "host:") + 1);
 	string databaseName = tokens.at(findVec(tokens, "database:") + 1);
 	
-	
+
 	    #define PORT "3306"       
 		#define DB   databaseName
 		#define HOST hostString    
 		#define USER usernameString 
 	    #define PASS passwordString 
-	
+
 ///////////////////////////////////////////////
 		
 			try {
 		  
-		
-		
-		         
-				 sql::Driver * driver = get_driver_instance();
+
+				sql::Driver * driver = get_driver_instance();
 				    
 			    std::auto_ptr< sql::Connection > con(driver->connect(HOST, USER, PASS));        
 				sql::Statement*  stmt(con->createStatement());
@@ -251,12 +261,10 @@ int main(int argc, char** argv){
 				
 				res = stmt->executeQuery(nullCheck);
 			
-				// if (res->rowsCount() >0){
-				//   cout<<"There are some null values in "<<productName<<"s table"<<endl;
-				// }
+			    if (res->rowsCount() >0){
+			      cout<<"There are some null values in "<<productName<<"s table"<<endl;
+			    }
 
-		
-			
 				command = "SELECT version from ";
 				command += productName;
 				command += "_clusters where (region='";
@@ -264,10 +272,7 @@ int main(int argc, char** argv){
 				command += "') order by id DESC LIMIT 1";
 				
 				res = stmt->executeQuery(command);
-           
-        
-        
-				
+         
 				if (res->next()){
 					version = res->getInt("version");
 					version++;
@@ -317,8 +322,11 @@ int main(int argc, char** argv){
 			  time ( &rawtime );
 			  timeinfo = localtime( &rawtime );
 			  ofstream myfile2;
-			  myfile2.open("/optemo/site/log/clustering.log", ios::app);
-			myfile2 <<endl<<timeinfo->tm_year+1900<<"-"<< timeinfo->tm_mon+1<<"-"<<timeinfo->tm_mday<<" "<< timeinfo->tm_hour<<endl;
+				
+			    myfile2.open(logFile.c_str(), ios::app);
+		
+			  
+		     	myfile2 <<endl<<timeinfo->tm_year+1900<<"-"<< timeinfo->tm_mon+1<<"-"<<timeinfo->tm_mday<<" "<< timeinfo->tm_hour<<endl;
 			 
 				myfile2<<"Version: "<<version<<endl;
 				
