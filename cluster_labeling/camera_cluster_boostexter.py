@@ -344,6 +344,8 @@ def get_field_ranks(rules):
                sorted(field_ranks.iteritems(),
                       key=operator.itemgetter(1)))
 
+import cluster_labeling.nh_labeler as nh
+
 def combine_sgram_rules(fieldname, rules):
     # Just pick the first meaningful sgram and check whether it is a
     # positive label or a negative label.
