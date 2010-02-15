@@ -344,6 +344,99 @@ def get_field_ranks(rules):
                sorted(field_ranks.iteritems(),
                       key=operator.itemgetter(1)))
 
+def get_interval_from_threshold_rule(rule):
+    weights = rule.weights
+    weights = weights[2, :] - weights[1, :]
+
+    if weights[0] > 0 and weights[1] < 0:
+        return [[rule.threshold, Inf], abs(weights[0])]
+    elif weights[0] < 0 and weights[1] > 0:
+        return [[-Inf, rule.threshold], abs(weights[0])]
+    else:
+        assert(False)
+
+def merge_intervals(int0, int1):
+    w0 = int0[1]
+    w1 = int1[1]
+
+    int0 = int0[0]
+    int1 = int1[0]
+
+    endpoints = set(int0)
+    endpoints |= set(int1)
+    endpoints = list(endpoints)
+    endpoints.sort()
+
+    numendpoints = len(endpoints)
+    
+    result = []
+    for i in xrange(numendpoints - 1):
+        interval = endpoints[i:i+2]
+        weight = 0
+
+        if interval[0] >= int0[0] and interval[1] <= int0[1]:
+            weight += w0
+        if interval[0] >= int1[0] and interval[1] <= int1[1]:
+            weight += w1
+
+        result.append([interval, weight])
+
+    return result
+
+def intervals_intersect(int0, int1):
+    int0 = int0[0]
+    int1 = int1[0]
+
+    result = None
+
+    if int0[0] <= int1[0]:
+        result = list(int0)
+        result.extend(int1)
+    else:
+        result = list(int1)
+        result.extend(int0)
+
+    sorted_result = sorted(result)
+
+    return not sorted_result == result
+
+# interval_set is made up of non-overlapping intervals in sorted order.
+def merge_interval_with_interval_set(int0, interval_set):
+    result = []
+    overlaps = []
+
+    numintervals = len(interval_set)
+    i = 0
+
+    while i < numintervals:
+        if not intervals_intersect(int0, interval_set[i]):
+            result.append(interval_set[i])
+            i += 1
+        else:
+            break
+    
+    while i < numintervals:
+        if not intervals_intersect(int0, interval_set[i]):
+            break
+
+        new_ints = merge_intervals(int0, interval_set[i])
+
+        int0 = new_ints[-1]
+        result.extend(new_ints[0:len(new_ints)-1])
+
+        i += 1
+
+    result.append(int0)
+    result.extend(interval_set[i:len(interval_set)])
+
+    return result
+
+def combine_threshold_rules(fieldname, rules):
+    # Find the intervals encoded in the rules. These intervals may not
+    # be contiguous, i.e. everything with really wide or really narrow
+    # zoom ranges.
+    pass
+
 import cluster_labeling.nh_labeler as nh
 
 def combine_sgram_rules(fieldname, rules):
