@@ -297,7 +297,7 @@ def parse_next_rule(fh):
     else:
         raise ParseError(line)
 
-def get_boostexter_rules(cluster):
+def get_rules(cluster):
     filename = get_strong_hypothesis_filename(cluster)
     shyp = open(filename, 'r')
 
@@ -314,6 +314,35 @@ def get_boostexter_rules(cluster):
 
     assert(len(rules) == numrules)
     return rules
+
+def gather_rules(rules):
+    rules_a = {}
+
+    for rule in rules:
+        fieldname = rule.fieldname
+        rules_for_fieldname = rules_a.get(fieldname, [])
+        rules_for_fieldname.append(rule)
+        rules_a[fieldname] = rules_for_fieldname
+
+    return rules_a
+
+import operator
+
+def get_field_ranks(rules):
+    field_ranks = {}
+
+    i = 0
+    for rule in rules:
+        fieldname = rule.fieldname
+        if fieldname in field_ranks:
+            continue
+        
+        field_ranks[fieldname] = i
+        i += 1
+
+    return map(lambda f, r: f,
+               sorted(field_ranks.iteritems(),
+                      key=operator.itemgetter(1)))
 
 def make_boostexter_labels_for_all_clusters\
         (version = optemo.CameraCluster.get_latest_version()):
