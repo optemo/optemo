@@ -344,6 +344,30 @@ def get_field_ranks(rules):
                sorted(field_ranks.iteritems(),
                       key=operator.itemgetter(1)))
 
+def make_label_for_rules_for_field(fieldname, rules):
+    rule_types = set(map(lambda x: str(type(x)), rules))
+    assert(len(rule_types) == 1)
+
+    rule_type = rule_types.pop()
+
+    if rule_type == str(BoosTexterThresholdRule):
+        return combine_threshold_rules(fieldname, rules)
+    elif rule_type == str(BoosTexterSGramRule):
+        return combine_sgram_rules(fieldname, rules)
+    else:
+        assert(False)
+
+def make_labels_from_rules(rules):
+    # Put all rules for a particular field together
+    rules_a = gather_rules(rules)
+    field_ranks = get_field_ranks(rules)
+
+    labels = []
+    for fieldname in field_ranks:
+        label = make_label_for_rules_for_field\
+                (fieldname, rules_a[fieldname])
+        labels.append(label)
+
 def make_boostexter_labels_for_all_clusters\
         (version = optemo.CameraCluster.get_latest_version()):
     qs = optemo.CameraCluster.get_manager().filter(version=version)
