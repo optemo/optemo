@@ -408,6 +408,11 @@ def merge_interval_with_interval_set(int0, interval_set):
     numintervals = len(interval_set)
     i = 0
 
+    if int0[0][1] < interval_set[i][0][0]:
+        result.append(int0)
+        result.extend(interval_set)
+        return result
+
     while i < numintervals:
         if not intervals_intersect(int0, interval_set[i]):
             result.append(interval_set[i])
