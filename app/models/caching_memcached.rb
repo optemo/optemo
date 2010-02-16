@@ -14,7 +14,7 @@ module CachingMemcached
   def findCachedNodeByPID(productid)
     unless ENV['RAILS_ENV'] == 'development'
       current_version = Session.current.version
-      Rails.cache.fetch("#{$nodemodel}ByPID#{current_version}#{product}") { $nodemodel.find_by_product_id_and_version_and_region(productid, current_version, $region) }
+      Rails.cache.fetch("#{$nodemodel}ByPID#{current_version}#{productid}") { $nodemodel.find_by_product_id_and_version_and_region(productid, current_version, $region) }
     else
       $nodemodel.find_by_product_id_and_version_and_region(productid, current_version, $region)
     end    
