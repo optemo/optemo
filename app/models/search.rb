@@ -62,7 +62,7 @@ class Search < ActiveRecord::Base
       $model::ContinuousFeaturesF.each do |f|
         norm = DbFeature.featurecache(f).max - DbFeature.featurecache(f).min
         norm = 1 if norm == 0
-        feats[f] = clusters.map{|c| c.representative[f].to_f/norm}
+        feats[f] = clusters.map{ |c| c.representative}.compact.map {|c| c[f].to_f/norm } 
       end
       cluster_count.times do |i|
         dist = {}
@@ -231,10 +231,8 @@ class Search < ActiveRecord::Base
   end
   
   def self.createFromKeywordSearch(nodes)
-    product_id_array = nodes.map{ |node| node.product_id }
-    if !(product_id_array.nil?) && product_id_array.length < 50 # Guess; this should be profiled later.
-      node_array = product_id_array.map { |id| Session.current.findCachedNode(id) } # This might not be ideal but it should work
-      clusters = node_array.map { |node| Session.current.findCachedCluster(node.cluster_id) }.uniq
+    if !(nodes.nil?) && nodes.length < 50 # Guess; this should be profiled later.
+      clusters = nodes.map { |node| Session.current.findCachedCluster(node.cluster_id) }.uniq
 
       while clusters.length > $NumGroups
         clusters = clusters.map do |cluster|
