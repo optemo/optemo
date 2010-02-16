@@ -488,6 +488,8 @@ def compute_weighted_average(cluster, fieldname, interval_set):
     avg_w /= Z
     return avg_w
 
+import math
+
 def compute_parent_cluster_quartiles(cluster, fieldname):
     filters = {
         "cameranode__cluster__id" : cluster.parent_id,
@@ -497,8 +499,8 @@ def compute_parent_cluster_quartiles(cluster, fieldname):
 
     num_products = products.count()
 
-    q_25 = ceil(num_products/4)
-    q_75 = floor(3*num_products/4)
+    q_25 = int(math.floor(num_products/4))
+    q_75 = int(math.floor(3*num_products/4))
 
     q_25 = products.order_by(fieldname).\
            values(fieldname)[q_25][fieldname]
