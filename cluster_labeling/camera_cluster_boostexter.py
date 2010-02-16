@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from __future__ import division
+
 import cluster_labeling.optemo_django_models as optemo
 import subprocess
 import time
@@ -435,6 +437,32 @@ def merge_interval_with_interval_set(int0, interval_set):
     result.extend(interval_set[i:len(interval_set)])
 
     return result
+
+def interval_binsearch(interval_set, value):
+    min_idx = 0
+    max_idx = len(interval_set) - 1
+
+    i = 0
+
+    while True:
+        mid_idx = min_idx + int(floor((max_idx - min_idx)/2))
+
+        gte_lep = interval_set[mid_idx][0][0] <= value
+        lte_rep = value <= interval_set[mid_idx][0][1]
+
+        if gte_lep and lte_rep:
+            return mid_idx
+        elif min_idx == max_idx:
+            return -1
+        elif gte_lep:
+            min_idx = mid_idx+1
+        elif lte_rep:
+            max_idx = mid_idx-1
+        else:
+            assert(False)
+
+        i += 1
+        assert(i < len(interval_set))
 
 def combine_threshold_rules(fieldname, rules):
     # Find the intervals encoded in the rules. These intervals may not
