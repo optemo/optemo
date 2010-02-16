@@ -465,9 +465,13 @@ def interval_binsearch(interval_set, value):
         assert(i < len(interval_set))
 
 def compute_weighted_average(cluster, fieldname, interval_set):
-    product_fields = \
-        map(lambda x: x.product.__getattribute__(fieldname),
-            cluster.get_nodes())
+    filters = {
+        "cameranode__cluster__id" : cluster.parent_id,
+        "itemweight__isnull" : False
+        }
+    products = optemo.Camera.get_manager().filter(**filters)
+    product_fields = map(lambda x: x[fieldname],
+                         products.values(fieldname))
 
     Z = 0
     avg_w = 0
