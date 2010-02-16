@@ -488,6 +488,25 @@ def compute_weighted_average(cluster, fieldname, interval_set):
     avg_w /= Z
     return avg_w
 
+def compute_parent_cluster_quartiles(cluster, fieldname):
+    filters = {
+        "cameranode__cluster__id" : cluster.parent_id,
+        "itemweight__isnull" : False
+        }
+    products = optemo.Camera.get_manager().filter(**filters)
+
+    num_products = products.count()
+
+    q_25 = ceil(num_products/4)
+    q_75 = floor(3*num_products/4)
+
+    q_25 = products.order_by(fieldname).\
+           values(fieldname)[q_25][fieldname]
+    q_75 = products.order_by(fieldname).\
+           values(fieldname)[q_75][fieldname]
+
+    return q_25, q_75
+
 def combine_threshold_rules(fieldname, rules):
     # Find the intervals encoded in the rules. These intervals may not
     # be contiguous, i.e. everything with really wide or really narrow
