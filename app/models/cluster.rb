@@ -57,7 +57,7 @@ module Cluster
   
   def nodes
     unless @nodes
-      if (Session.current.filter && (!Cluster.filterquery(Session.current).blank? || Session.current.keywordpids.blank?))
+      if ((Session.current.filter && !Cluster.filterquery(Session.current).blank?) || !Session.current.keywordpids.blank?)
         @nodes = $nodemodel.find(:all, :conditions => ["cluster_id = ?#{Session.current.filter && !Cluster.filterquery(Session.current).blank? ? ' and '+Cluster.filterquery(Session.current) : ''}#{!Session.current.filter || Session.current.keywordpids.blank? ? '' : ' and ('+Session.current.keywordpids+')'}",id])
       else 
         @nodes = findCachedNodes(id)
