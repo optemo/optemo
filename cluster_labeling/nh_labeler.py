@@ -197,7 +197,7 @@ def compute_counts_for_cluster(cluster, spellchecker):
         nodes = cluster.get_nodes()
         assert(nodes.count() == 1)
 
-        product = nodes[0].get_product()
+        product = nodes[0].product
         wordcount, reviewcount, prodcount = \
             compute_counts_for_product(product, spellchecker)
 

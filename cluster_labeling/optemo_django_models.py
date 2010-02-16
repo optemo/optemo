@@ -73,26 +73,6 @@ class Node(OptemoModel):
     brand = models.CharField(max_length=255)
     version = models.IntegerField()
 
-    def get_cluster(self):
-        raise_abstract_method_error()
-
-    def get_product(self):
-        raise_abstract_method_error()
-
-class CameraNode(Node):
-    class Meta:
-        db_table = 'camera_nodes'
-
-    def get_cluster(self):
-        qs = CameraCluster.get_manager().filter(id=self.cluster_id)
-        assert(qs.count() == 1)
-        return qs[0]
-
-    def get_product(self):
-        qs = Camera.get_manager().filter(id=self.product_id)
-        assert(qs.count() == 1)
-        return qs[0]
-
 class Camera(OptemoModel):
     class Meta:
         db_table = 'cameras'
@@ -142,6 +122,13 @@ class Camera(OptemoModel):
 
     def get_reviews(self):
         return Review.get_manager().filter(product_id=self.id)
+
+class CameraNode(Node):
+    class Meta:
+        db_table = 'camera_nodes'
+
+    cluster = models.ForeignKey(CameraCluster)
+    product = models.ForeignKey(Camera)
 
 class Review(OptemoModel):
     class Meta:

@@ -84,7 +84,7 @@ def generate_data_file(cluster):
 
     version = cluster.version
 
-    cameras_this = map(lambda x: (x.get_product(), cluster.id),
+    cameras_this = map(lambda x: (x.product, cluster.id),
                        cluster.get_nodes())
 
     parent_cluster_nodes = None
@@ -104,7 +104,7 @@ def generate_data_file(cluster):
         filter(lambda x:
                cluster.id not in
                    set(map(lambda y: y.id, x.get_clusters(cluster.version))),
-               map(lambda x: x.get_product(), parent_cluster_nodes))
+               map(lambda x: x.product, parent_cluster_nodes))
     
     cameras_parent = map(lambda x: (x, cluster.parent_id), cameras_parent)
 
@@ -466,7 +466,7 @@ def interval_binsearch(interval_set, value):
 
 def compute_weighted_average(cluster, fieldname, interval_set):
     product_fields = \
-        map(lambda x: x.get_product().__getattribute__(fieldname),
+        map(lambda x: x.product.__getattribute__(fieldname),
             cluster.get_nodes())
 
     Z = 0
