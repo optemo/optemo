@@ -233,13 +233,13 @@ class Search < ActiveRecord::Base
   def self.createFromKeywordSearch(nodes)
     product_id_array = nodes.map{ |node| node.product_id }
     if !(product_id_array.nil?) && product_id_array.length < 50 # Guess; this should be profiled later.
-      node_array = product_id_array.map { |id| findCachedNode(id) }
-      clusters = node_array.map { |node| findCachedCluster(node.cluster_id) }.uniq
+      node_array = product_id_array.map { |id| nodes.first.findCachedNode(id) }
+      clusters = node_array.map { |node| node.findCachedCluster(node.cluster_id) }.uniq
 
       while clusters.length > $NumGroups
         clusters = clusters.map do |cluster|
           if cluster.parent_id != 0 # It's possible to have clusters at different layers, so we need to check for this.
-            findCachedCluster(cluster.parent_id)
+            cluster.findCachedCluster(cluster.parent_id)
           else
             cluster
           end
