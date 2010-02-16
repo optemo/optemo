@@ -464,6 +464,26 @@ def interval_binsearch(interval_set, value):
         i += 1
         assert(i < len(interval_set))
 
+def compute_weighted_average(cluster, fieldname, interval_set):
+    product_fields = \
+        map(lambda x: x.get_product().__getattribute__(fieldname),
+            cluster.get_nodes())
+
+    Z = 0
+    avg_w = 0
+
+    for value in product_fields:
+        # Find interval that the value belongs in.
+        idx = interval_binsearch(interval_set, value)
+        weight = interval_set[weight][1]
+        
+        # Multiply value by the appropriate weight and add to avg.
+        avg_w += weight * value
+        Z += weight
+
+    avg_w /= Z
+    return avg_w
+
 def combine_threshold_rules(fieldname, rules):
     # Find the intervals encoded in the rules. These intervals may not
     # be contiguous, i.e. everything with really wide or really narrow
