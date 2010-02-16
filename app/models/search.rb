@@ -233,8 +233,8 @@ class Search < ActiveRecord::Base
   def self.createFromKeywordSearch(nodes)
     product_id_array = nodes.map{ |node| node.product_id }
     if !(product_id_array.nil?) && product_id_array.length < 50 # Guess; this should be profiled later.
-      node_array = product_id_array.map { |id| Cluster.new.findCachedNode(id) } # This might not be ideal but it should work
-      clusters = node_array.map { |node| Cluster.new.findCachedCluster(node.cluster_id) }.uniq
+      node_array = product_id_array.map { |id| Session.current.findCachedNode(id) } # This might not be ideal but it should work
+      clusters = node_array.map { |node| Session.current.findCachedCluster(node.cluster_id) }.uniq
 
       while clusters.length > $NumGroups
         clusters = clusters.map do |cluster|
