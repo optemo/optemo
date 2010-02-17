@@ -623,9 +623,13 @@ def combine_sgram_rules(fieldname, rules):
         else:
             assert(False)
 
-        print label, direction
+        quality_desc = fieldname_to_quality[fieldname]
 
-        # return label, direction
+        if direction == 'pos':
+            return quality_desc + ": " + label
+        else:
+            return quality_desc + ": " + "Not " + label
+
 
 def make_label_for_rules_for_field(cluster, fieldname, rules):
     rule_types = set(map(lambda x: str(type(x)), rules))
