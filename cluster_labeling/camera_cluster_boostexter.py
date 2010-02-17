@@ -635,6 +635,9 @@ def combine_sgram_rules(fieldname, rules):
         weights = rule.weights
         weights = weights[1, :] - weights[0, :]
 
+        if weights[0] == 0 and weights[1] == 0:
+            return None
+
         if weights[0] > 0 and weights[1] < 0:
             direction = 'pos'
         elif weights[0] < 0 and weights[1] > 0:
