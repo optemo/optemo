@@ -568,11 +568,38 @@ def compute_parent_cluster_quartiles(cluster, fieldname):
 
     return q_25, q_75
 
-def combine_threshold_rules(fieldname, rules):
+def combine_threshold_rules(cluster, fieldname, rules):
     # Find the intervals encoded in the rules. These intervals may not
     # be contiguous, i.e. everything with really wide or really narrow
     # zoom ranges.
-    pass
+    intervals = map(get_interval_from_threshold_rule, rules)
+    interval_set = []
+
+    for interval in intervals:
+        interval_set = \
+            merge_interval_with_interval_set(interval, interval_set)
+
+    avg_w = compute_weighted_average(cluster, fieldname, interval_set)
+    q_25, q_75 = compute_parent_cluster_quartiles(cluster, fieldname)
+
+    label_idx = None
+
+    if avg_w <= q_25:
+        label_idx = 0
+    elif q_25 < avg_w and avg_w < q_75:
+        label_idx = 1
+    elif q_75 <= avg_w:
+        label_idx = 2
+    else:
+        assert(False)
+
+    quality_desc = fieldname_to_quality[fieldname]
+    full_labels_given = quality_desc[2]
+
+    if full_labels_given:
+        return quality_desc[1][label_idx]
+    else:
+        return quality_desc[1][label_idx] + " " + quality_desc[0]
 
 import cluster_labeling.nh_labeler as nh
 
@@ -600,20 +627,20 @@ def combine_sgram_rules(fieldname, rules):
 
         # return label, direction
 
-def make_label_for_rules_for_field(fieldname, rules):
+def make_label_for_rules_for_field(cluster, fieldname, rules):
     rule_types = set(map(lambda x: str(type(x)), rules))
     assert(len(rule_types) == 1)
 
     rule_type = rule_types.pop()
 
     if rule_type == str(BoosTexterThresholdRule):
-        return combine_threshold_rules(fieldname, rules)
+        return combine_threshold_rules(cluster, fieldname, rules)
     elif rule_type == str(BoosTexterSGramRule):
         return combine_sgram_rules(fieldname, rules)
     else:
         assert(False)
 
-def make_labels_from_rules(rules):
+def make_labels_from_rules(cluster, rules):
     # Put all rules for a particular field together
     rules_a = gather_rules(rules)
     field_ranks = get_field_ranks(rules)
@@ -621,8 +648,15 @@ def make_labels_from_rules(rules):
     labels = []
     for fieldname in field_ranks:
         label = make_label_for_rules_for_field\
-                (fieldname, rules_a[fieldname])
+                (cluster, fieldname, rules_a[fieldname])
         labels.append(label)
+
+    return labels
+
+def make_boostexter_labels_for_cluster(cluster):
+    rules = get_rules(cluster)
+    labels = make_labels_from_rules(cluster, rules)
+    return labels
 
 def make_boostexter_labels_for_all_clusters\
         (version = optemo.CameraCluster.get_latest_version()):
@@ -631,8 +665,7 @@ def make_boostexter_labels_for_all_clusters\
     cluster_labels = []
 
     for cluster in qs:
-        rules = get_rules(cluster)
-        labels = make_labels_from_rules(rules)
+        labels = make_boostexter_labels_for_cluster(cluster)
         cluster_labels.append((cluster.id, labels))
 
     return cluster_labels
