@@ -494,10 +494,21 @@ def compute_weighted_average(cluster, fieldname, interval_set):
 import math
 
 def compute_parent_cluster_quartiles(cluster, fieldname):
-    filters = {
-        "cameranode__cluster__id" : cluster.parent_id,
-        "itemweight__isnull" : False
-        }
+    filters = None
+    
+    if cluster.parent_id == 0:
+        version = cluster.version
+        topcluster_ids = \
+            map(lambda x: x['id'],
+                optemo.CameraCluster.get_manager().\
+                filter(version=version, parent_id=0).values('id'))
+
+        filters = {"cameranode__cluster_id__in" : topcluster_ids}
+    else:
+        filters = {"cameranode__cluster_id" : cluster.parent_id}
+
+    filters[fieldname + "__isnull"] = False
+    
     products = optemo.Camera.get_manager().filter(**filters)
 
     num_products = products.count()
