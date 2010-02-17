@@ -342,7 +342,7 @@ def get_field_ranks(rules):
         field_ranks[fieldname] = i
         i += 1
 
-    return map(lambda f, r: f,
+    return map(lambda (f, r): f,
                sorted(field_ranks.iteritems(),
                       key=operator.itemgetter(1)))
 
