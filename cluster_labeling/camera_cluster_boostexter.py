@@ -521,6 +521,12 @@ def compute_weighted_average(cluster, fieldname, interval_set):
     product_fields = map(lambda x: x[fieldname],
                          products.values(fieldname))
 
+    # It could be that all of the products have NULL values for the
+    # field. There is nothing that can be said about whether the
+    # cluster's products are low, average or high for this field.
+    if products.count() == 0:
+        return None
+
     Z = 0
     avg_w = 0
 
@@ -580,6 +586,13 @@ def combine_threshold_rules(cluster, fieldname, rules):
             merge_interval_with_interval_set(interval, interval_set)
 
     avg_w = compute_weighted_average(cluster, fieldname, interval_set)
+
+    # All of the cluster's products had NULL values for this field, so
+    # nothing can be said about whether it is low, average or
+    # high. There will be no label for the field.
+    if avg_w == None:
+        return None
+
     q_25, q_75 = compute_parent_cluster_quartiles(cluster, fieldname)
 
     label_idx = None
@@ -654,16 +667,21 @@ def make_labels_from_rules(cluster, rules):
     field_ranks = get_field_ranks(rules)
 
     labels = []
+    skipped_fields = []
     for fieldname in field_ranks:
         label = make_label_for_rules_for_field\
                 (cluster, fieldname, rules_a[fieldname])
-        labels.append(label)
 
-    return labels
+        if label is None:
+            skipped_fields.append(label)
+        else:
+            labels.append(label)
+
+    return labels, skipped_fields
 
 def make_boostexter_labels_for_cluster(cluster):
     rules = get_rules(cluster)
-    labels = make_labels_from_rules(cluster, rules)
+    labels, _ = make_labels_from_rules(cluster, rules)
     return labels
 
 def make_boostexter_labels_for_all_clusters\
