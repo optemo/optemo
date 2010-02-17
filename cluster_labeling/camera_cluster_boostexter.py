@@ -234,7 +234,7 @@ def is_blankline(line):
     return re.match('^\s*$', line) != None
 
 rule_header_re = \
-re.compile('^\s*(\d+(\.\d+)?)\s+Text:([A-Z]+):([a-z_]+):([A-Za-z_#\(\)\n]+)?\s*$')
+re.compile('^\s*(\d+(\.\d+)?)\s+Text:([A-Z]+):([a-z_]+):([A-Za-z0-9_#\(\)\n\.]+)?\s*$')
 def parse_rule_header(line):
     match = rule_header_re.match(line)
 
