@@ -48,9 +48,9 @@ fieldname_to_type = dict(boosting_fields)
 fieldname_to_quality = {
     'brand' : ('Brand'),
     'itemwidth' : ('Width',
-                   ['Narrow', 'Average Width', 'Wide'], True),
+                   ['Thin', 'Average Width', 'Not Thin'], True),
     'itemlength' : ('Length',
-                    ['Short', 'Average Length', 'Long'], True),
+                    ['Narrow', 'Average Length', 'Long'], True),
     'itemheight' : ('Height',
                     ['Short', 'Average Height', 'Tall'], True),
     'itemweight' : ('Weight',
