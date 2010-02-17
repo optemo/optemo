@@ -511,15 +511,20 @@ def interval_binsearch(interval_set, value):
             assert(False)
 
         i += 1
-        assert(i < len(interval_set))
+
+        try:
+            assert(i < len(interval_set))
+        except AssertionError as e:
+            print interval_set, value
+            print min_idx, mid_idx, max_idx
+            print idexes
+            raise e
 
 def compute_weighted_average(cluster, fieldname, interval_set):
     filters = {"cameranode__cluster_id" : cluster.id,
                fieldname + "__isnull" : False}
  
     products = optemo.Camera.get_manager().filter(**filters)
-    product_fields = map(lambda x: x[fieldname],
-                         products.values(fieldname))
 
     # It could be that all of the products have NULL values for the
     # field. There is nothing that can be said about whether the
@@ -530,7 +535,8 @@ def compute_weighted_average(cluster, fieldname, interval_set):
     Z = 0
     avg_w = 0
 
-    for value in product_fields:
+    for value in products.values(fieldname):
+        value = value[fieldname]
         # Find interval that the value belongs in.
         idx = interval_binsearch(interval_set, value)
         weight = interval_set[idx][1]
