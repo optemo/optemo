@@ -630,6 +630,10 @@ def combine_sgram_rules(fieldname, rules):
         else:
             return quality_desc + ": " + "Not " + label
 
+def combine_boolean_rules(fieldname, rules):
+    # So.. boolean rules are not selected at all, because pretty much
+    # all of the boolean flags are NULL.
+    pass
 
 def make_label_for_rules_for_field(cluster, fieldname, rules):
     rule_types = set(map(lambda x: str(type(x)), rules))
