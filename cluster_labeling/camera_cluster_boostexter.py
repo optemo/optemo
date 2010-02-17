@@ -234,7 +234,7 @@ def is_blankline(line):
     return re.match('^\s*$', line) != None
 
 rule_header_re = \
-re.compile('^\s*(\d+(\.\d+)?)\s+Text:([A-Z]+):([a-z_]+):([A-Za-z_#]+)?\s*$')
+re.compile('^\s*(\d+(\.\d+)?)\s+Text:([A-Z]+):([a-z_]+):([A-Za-z_#\(\)\n]+)?\s*$')
 def parse_rule_header(line):
     match = rule_header_re.match(line)
 
@@ -250,7 +250,7 @@ def parse_rule_header(line):
     rule_info['fieldname'] = match.group(4)
 
     if rule_info['type'] == 'SGRAM':
-        rule_info['sgram'] = re.sub('#', ' ', match.group(5))
+        rule_info['sgram'] = re.sub('[#\s]', ' ', match.group(5)).strip()
 
     return rule_info
 
