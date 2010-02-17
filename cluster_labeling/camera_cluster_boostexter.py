@@ -408,6 +408,10 @@ def merge_interval_with_interval_set(int0, interval_set):
     overlaps = []
 
     numintervals = len(interval_set)
+
+    if numintervals == 0:
+        return [int0]
+
     i = 0
 
     if int0[0][1] < interval_set[i][0][0]:
