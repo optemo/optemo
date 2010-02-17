@@ -43,6 +43,51 @@ boosting_fields = [
     ('price_ca', 'continuous')
     ]
 
+fieldname_to_type = dict(boosting_fields)
+
+fieldname_to_quality = {
+    'brand' : ('Brand'),
+    'itemwidth' : ('Width',
+                   ['Narrow', 'Average Width', 'Wide'], True),
+    'itemlength' : ('Length',
+                    ['Short', 'Average Length', 'Long'], True),
+    'itemheight' : ('Height',
+                    ['Short', 'Average Height', 'Tall'], True),
+    'itemweight' : ('Weight',
+                    ['Lightweight', 'Average Weight', 'Heavy'], True),
+
+    'opticalzoom' : ('Optical Zoom',
+                     ['Low', 'Average', 'High'], False),
+    'digitalzoom' : ('Digital Zoom',
+                     ['Low', 'Average', 'High'], False),
+    
+    'slr' : ('SLR'),
+    'waterproof' : ('waterproof'),
+
+    'maximumfocallength' :  ('Maximum Focal Length',
+                             ['Low', 'Average', 'High'], False),
+    'minimumfocallength' : ('Minimum Focal Length',
+                            ['Low', 'Average', 'High'], False),
+
+    'batteriesincluded' : ('Batteries Included'),
+
+    'connectivity' : ('Connectivity'),
+
+    'hasredeyereduction' : ('Has Red-Eye Reduction'),
+    'includedsoftware' : ('Included Software'),
+    
+    'averagereviewrating' :
+    ('Average Review Rating',
+     ['Low Rating', 'Average Rating', 'Highly Rated'], True),
+    'totalreviews' :
+    ('Total Reviews',
+     ['Few Reviews' 'Average Number of Reviews', 'Many Reviews'],
+     True),
+
+    'price' : ('Price', ['Low', 'Average', 'High'], False),
+    'price_ca' : ('Price (CAD)', ['Low', 'Average', 'High'], False)
+    }
+
 def get_labels(cluster):
     return [cluster.id, cluster.parent_id]
 
