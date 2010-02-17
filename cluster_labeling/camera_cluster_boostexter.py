@@ -482,7 +482,7 @@ def compute_weighted_average(cluster, fieldname, interval_set):
     for value in product_fields:
         # Find interval that the value belongs in.
         idx = interval_binsearch(interval_set, value)
-        weight = interval_set[weight][1]
+        weight = interval_set[idx][1]
         
         # Multiply value by the appropriate weight and add to avg.
         avg_w += weight * value
