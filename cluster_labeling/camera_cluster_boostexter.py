@@ -81,7 +81,7 @@ fieldname_to_quality = {
      ['Low Rating', 'Average Rating', 'Highly Rated'], True),
     'totalreviews' :
     ('Total Reviews',
-     ['Few Reviews' 'Average Number of Reviews', 'Many Reviews'],
+     ['Few Reviews', 'Average Number of Reviews', 'Many Reviews'],
      True),
 
     'price' : ('Price', ['Low', 'Average', 'High'], False),
