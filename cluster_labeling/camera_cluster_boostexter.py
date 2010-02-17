@@ -456,7 +456,7 @@ def interval_binsearch(interval_set, value):
 
         if gte_lep and lte_rep:
             return mid_idx
-        elif min_idx == max_idx:
+        elif min_idx >= max_idx:
             return -1
         elif gte_lep:
             min_idx = mid_idx+1
