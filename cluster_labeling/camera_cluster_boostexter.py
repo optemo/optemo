@@ -688,22 +688,44 @@ def make_labels_from_rules(cluster, rules):
 
     return labels, skipped_fields
 
+import cluster_labeling.cluster_score_table as cst
+class ClusterBoosTexterLabel(cst.ClusterScore):
+    class Meta:
+        db_table = 'boostexter_labels'
+        unique_together = (("cluster_id", "word"))
+
+from django.db import transaction
+@transaction.commit_on_success
 def make_boostexter_labels_for_cluster(cluster):
     rules = get_rules(cluster)
     labels, _ = make_labels_from_rules(cluster, rules)
-    return labels
+
+    numclusterchildren = cluster.get_children().count()
+
+    # Insert labels into database
+    i = 0
+    for label in labels:
+        kwargs = {"cluster_id" : cluster.id,
+                  "parent_cluster_id" : cluster.parent_id,
+                  "word" : label, "score" : i,
+                  "numchildren" : numclusterchildren}
+        boostexter_label = ClusterBoosTexterLabel(**kwargs)
+        boostexter_label.save()
+        
+        i += 1
 
 def make_boostexter_labels_for_all_clusters\
         (version = optemo.CameraCluster.get_latest_version()):
+    # Drop/create the score table.
+    ClusterBoosTexterLabel.drop_table_if_exists()
+    ClusterBoosTexterLabel.create_table()
+    
     qs = optemo.CameraCluster.get_manager().filter(version=version)
 
     cluster_labels = []
 
     for cluster in qs:
-        labels = make_boostexter_labels_for_cluster(cluster)
-        cluster_labels.append((cluster.id, labels))
-
-    return cluster_labels
+        make_boostexter_labels_for_cluster(cluster)
 
 def train_boostexter_on_all_clusters\
         (version = optemo.CameraCluster.get_latest_version()):
