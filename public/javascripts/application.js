@@ -553,6 +553,19 @@ function DBinit(context) {
 				}
 				var min = 0;
 				var max = 100;
+				// These acceptable increments can be tweaked as necessary. Multiples of 5 and 10 look cleanest; 20 looks OK but 2 and 0.2 look weird.
+				var acceptableincrements = [1000, 500, 100, 50, 10, 5, 1, 0.5, 0.1, 0.05, 0.01];
+				var increment = (rangemax - rangemin) / 100.0;
+				for (var i = 0; i < acceptableincrements.length; i++) // Just so that it doesn't go off the scale for weird error case (increment == 0)
+				{
+					if ((increment * 1.1) < acceptableincrements[i])  // The fudge factor here is required.
+						continue;
+					else // so, for example, increment is 51 and increment is 100
+						increment = acceptableincrements[i];
+					// could do this with a state machine a bit cleaner but this works fine. After the first time that the increment is in range, stop the loop immediately
+					break;
+				}
+				
 				var realselectmin, realselectmax;
 				var value = ui.value;
 				var sliderno = -1;
@@ -562,10 +575,21 @@ function DBinit(context) {
 					sliderno = 1;
 				$(this).slider('values', sliderno, value);
 				realvalue = (parseFloat((ui.values[sliderno]/100))*(rangemax-rangemin))+rangemin;
-				if(itof == 'true')
-					realvalue = parseInt(realvalue);
+
+				if (increment < 1) { 
+					// floating point division has problems; avoid it 
+					tempinc = parseInt(1.0 / increment);
+					realvalue = parseInt(realvalue * tempinc) / tempinc;
+				}
 				else
-					realvalue = parseInt(realvalue*10)/10;
+					realvalue = parseInt(realvalue / increment) * increment;
+				
+				// This makes sure that when sliding to the extremes, you get back to the real starting points
+				if (sliderno == 1 && ui.values[1] == 100)
+					realvalue = rangemax;
+				if (sliderno == 0 && ui.values[0] == 0)
+					realvalue = rangemin;
+					
 				if (sliderno == 0 && ui.values[0] != ui.values[1])						// First slider is not identified correctly by sliderno for the case
 					$('a:first', this).html(realvalue).addClass("valabove");			// when rightslider = left slider, hence the second condition
 				else if (ui.values[0] != ui.values[1])
@@ -608,29 +632,6 @@ function DBinit(context) {
 			$('a:last', this).html(curmax).addClass("valabove");
 		histogram($(this).siblings('.hist')[0]);
 	});
-
-	// Set up the next image to the right
-
-/*   This image cycling code skeleton is probably not useful now.
-
-	$('.right_arrow_bounding_box').each(function(){
-		 $(this).hover(function() {
-	                $(this).stop().animate({ opacity: 1.0 }, 150);
-			    },
-		        function() {
-	            	$(this).stop().animate({ opacity: 0.35 }, 450);
-        });
-		$(this).click(function() {
-			// 0. Slide old image off to the left.
-			// 1. Animate the next image coming to the left. It should already be loaded at this point.
-			// 2. Change the back image
-			// 3. Turn off the front image
-			// 4. Reset its position
-			// 5. Reload the next click handler and image
-			//   5a. Chances are, the click handler on the right arrow is no longer on... ?
-			 
-		})
-	}); */
 }
 
 //--------------------------------------//
@@ -668,13 +669,7 @@ $(document).ready(function() {
 			return String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26);
 			}));
 	});
-	//Do rollover effect
-	/* I think this just seems like old code so I turned it off. ZAT
-	$('#logo').hover(function(){$('#logo > span').css('visibility', 'visible')},
-					 function(){$('#logo > span').css('visibility', 'hidden')});
-	$('#whylaser').hover(function(){$('#whylaser > span').css('visibility', 'visible')},
-					 function(){$('#whylaser > span').css('visibility', 'hidden')});
-	*/
+
 	//Fadein
 	$(".close").click(function(){
 		fadein();
