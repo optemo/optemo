@@ -2,6 +2,7 @@ class CreateCameraClusters < ActiveRecord::Migration
   def self.up
     create_table :camera_clusters do |t|
       t.primary_key :id
+      add_index :parent_id, :version, :cached_utility
       t.integer :parent_id
       t.integer :layer
       t.integer :cluster_size

@@ -56,9 +56,14 @@ desc "Sync the public/assets directory."
     EOF
   end
 end
+
+#task :restartmemcached
+# Need this before next deploy
+#end
+
 after :deploy, "serversetup"
 after :serversetup, "deploy:after_update_code"
 after :after_update_code, "compilec"
 after :compilec, "deploy:restart"
-
+#after deploy:restart, "restartmemcached"
 

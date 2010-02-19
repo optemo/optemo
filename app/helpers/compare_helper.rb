@@ -23,11 +23,11 @@ module CompareHelper
   end
   
   def dbmin(i2f, feat)
-    i2f ? DbFeature.cache[feat].min.to_i/100 :  roundmin(DbFeature.cache[feat].min)
+    i2f ? DbFeature.featurecache(feat).min.to_i/100 :  roundmin(DbFeature.featurecache(feat).min)
   end
   
   def dbmax(i2f, feat)
-    i2f ? (DbFeature.cache[feat].max.to_f/100).ceil : feat=='itemweight' ? roundmax(DbFeature.cache[feat].max).ceil : roundmax(DbFeature.cache[feat].max)
+    i2f ? (DbFeature.featurecache(feat).max.to_f/100).ceil : feat=='itemweight' ? roundmax(DbFeature.featurecache(feat).max).ceil : roundmax(DbFeature.featurecache(feat).max)
   end
   
   def nav_link
@@ -83,7 +83,7 @@ module CompareHelper
  
   def catsforfeature(feat)
     chosen_brands = Session.current.features.brand.split('*')
-    DbFeature.cache[feat].categories.split('*').reject {|b| chosen_brands.index(b)}
+    DbFeature.featurecache(feat).categories.split('*').reject {|b| chosen_brands.index(b)}
   end
   
   def featuretext(search,cluster)

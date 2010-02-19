@@ -1,4 +1,5 @@
 class Session < ActiveRecord::Base
+  include CachingMemcached
   has_many :vieweds
   has_many :searches
   has_many :preference_relations
@@ -6,6 +7,7 @@ class Session < ActiveRecord::Base
   attr :oldfeatures, true
   attr :keyword, true
   attr :keywordpids, true
+  attr :version, true
   def self.current
     @@current
   end
@@ -72,8 +74,8 @@ class Session < ActiveRecord::Base
       clusters = searches.last.clusters
     else
       #Search is expanded, so use all products to begin with
-      current_version = $clustermodel.find_last_by_region($region).version
-      clusters = $clustermodel.find_all_by_layer_and_version_and_region(1,current_version,$region)
+      current_version = Session.current.version
+      clusters = findAllCachedClusters(0)
       clusters.delete_if{|c| c.isEmpty}
     end
     clusters

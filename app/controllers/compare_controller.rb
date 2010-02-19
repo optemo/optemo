@@ -78,20 +78,13 @@ class CompareController < ApplicationController
     
     #Cleanse id to be only numbers
     params[:id] = params[:id][/^\d+/]
-    @product = $model.find(params[:id])
-    
-    if $model.name == "Camera"
-      @imglurl = "/images/cameras/" + @product.id.to_s + "_l.jpg"
-    elsif $model.name == "Printer"
-      @imglurl = "/images/printers/" + @product.id.to_s + "_l.jpg"
+    @product = findCachedProduct(params[:id])
+    if $model.name
+      @imglurl = "/images/" + $model.name.downcase + "s/" + @product.id.to_s + "_l.jpg"
     else
       @imglurl = "/images/printers/" + @product.id.to_s + "_l.jpg"
-    end    
-    
-# => Caching:
-#    @product = cache([$model.name, params[:id]]) do
-#      $model.find(params[:id])
-#    end
+    end
+
     @offerings = RetailerOffering.find_all_by_product_id_and_product_type_and_region(params[:id],$model.name,$region,:order => 'priceint ASC')
     @review = Review.find_by_product_id_and_product_type(params[:id],$model.name, :order => 'helpfulvotes DESC')
     @cartridges = Compatibility.find_all_by_product_id_and_product_type(@product.id,$model.name).map{|c|Cartridge.find_by_id(c.accessory_id)}.reject{|c|!c.instock}
@@ -113,8 +106,8 @@ class CompareController < ApplicationController
       render 'ajax', :layout => false
     else
       product_ids = $model.search_for_ids(params[:search],:per_page => 10000)
-      current_version = $clustermodel.find_last_by_region($region).version
-      nodes = product_ids.map{|p| $nodemodel.find_by_product_id_and_version_and_region(p, current_version, $region)}.compact
+      current_version = Session.current.version
+      nodes = product_ids.map{|p| findCachedNodeByPID(p) }.compact
       
       if nodes.length == 0
         if params[:ajax]

@@ -1,6 +1,6 @@
 class DirectComparisonController < ApplicationController
 # Compares products selected for comparison ('saved' products)
-  
+  include CachingMemcached
   layout false
     
   def index
@@ -9,7 +9,7 @@ class DirectComparisonController < ApplicationController
     # These IDs come straight from id=#savedproducts on the client side (comma-separated)
     @saved_ids = params[:id].split(",")
     @saved_ids.each do |saved_id|
-      prod = $model.find(saved_id)
+      prod = findCachedProduct(saved_id)
       @products << prod
     end
     # Calculate best value for each feature, to display as bold
