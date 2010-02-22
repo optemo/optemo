@@ -276,12 +276,12 @@ function DBinit(context) {
 	if (IS_DRAG_DROP_ENABLED)
 	{
 		// Make item boxes draggable. This is a jquery UI builtin.		
-		$(".image_boundingbox").each(function() {
+		$(".image_boundingbox img").each(function() {
 			$(this).draggable({ 
 				revert:true, 
 				cursor:"move", 
 				// The following defines the drag distance before a "drag" event is actually initiated. Helps for people who click while the mouse is slightly moving.
-				distance:0,
+				distance:2,
 				helper: 'clone',
 				zIndex: 1000,
 				start: function(e, ui) { 
@@ -306,7 +306,7 @@ function DBinit(context) {
 			$(this).droppable({ 
 				hoverClass: 'drop-box-hover',
 				activeClass: 'ui-state-dragging', 
-				accept: ".image_boundingbox",
+				accept: ".ui-draggable",
 				drop: function (e, ui) {
 					imgObj = $(ui.helper).find('.productimg')
 					saveProductForComparison(imgObj.attr('data-id'), imgObj.attr('src'), imgObj.attr('alt'));
