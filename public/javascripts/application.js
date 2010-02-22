@@ -84,6 +84,8 @@ function saveProductForComparison(id, imgurl, name)
 	imgurlToSaveArray = imgurl.split('/');
 	
 	imgurlToSaveArray[imgurlToSaveArray.length - 1] = id + "_s.jpg";
+	productType = imgurlToSaveArray[(imgurlToSaveArray.length - 2)];
+	productType = productType.substring(0, productType.length-1);
 	imgurlToSave = imgurlToSaveArray.join("/");
 	
 	if($(".saveditem").length == 4)
@@ -98,7 +100,7 @@ function saveProductForComparison(id, imgurl, name)
 	} else {
 		trackPage('goals/save/'+id);
 		renderComparisonProducts(id, imgurl, name);
-		addValueToCookie('savedProductIDs', [id, imgurlToSave, name]);
+		addValueToCookie('savedProductIDs', [id, imgurlToSave, name, productType]);
 	}
 
 	// There should be at least 1 saved item, so...
@@ -308,7 +310,7 @@ function DBinit(context) {
 				activeClass: 'ui-state-dragging', 
 				accept: ".ui-draggable",
 				drop: function (e, ui) {
-					imgObj = $(ui.helper).find('.productimg')
+					imgObj = $(ui.helper);
 					saveProductForComparison(imgObj.attr('data-id'), imgObj.attr('src'), imgObj.attr('alt'));
 				}
 			 });
@@ -640,6 +642,7 @@ function DBinit(context) {
 
 $(document).ready(function() {
 	// Due to a race condition in IE6, this must be before DBinit().
+	var tokenizedArrayID = 0;
 	if (savedProducts = readAllCookieValues('savedProductIDs'))
 	{
 		// There are saved products to display
@@ -647,9 +650,10 @@ $(document).ready(function() {
 			fixedheight = ((savedProducts.length > 2) ? 80 : 160) + 'px';
 			$("#savedproducts").css({"height" : fixedheight});
 		}
-		for (var tokenizedArrayID in savedProducts)
+		for (tokenizedArrayID = 0; tokenizedArrayID < savedProducts.length; tokenizedArrayID++)
 		{	
 			tokenizedArray = savedProducts[tokenizedArrayID].split(',');
+			// In future, tokenizedArray[3] contains the product type. As of Feb 2010, each website has separate cookies, so it's not necessary to read this data.
 			renderComparisonProducts(tokenizedArray[0], tokenizedArray[1], tokenizedArray[2]);
 		}
 		// There should be at least 1 saved item, so...
