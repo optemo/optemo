@@ -105,7 +105,7 @@ class JavaTestSession < Webrat::SeleniumSession
    def click_back_button product_type='Printer'
      # TODO what about cameras...
      the_link = get_el(doc.css('#backlink'))
-     debugger unless the_link
+     #debugger unless the_link
      selenium.click "link=#{the_link.text}"
      wait_for_ajax
    end
