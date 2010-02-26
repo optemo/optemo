@@ -112,7 +112,7 @@ module GenericScraper
           clean_atts['priceint'] = nil
         end
         
-        fill_in_all(clean_atts, ro)
+        fill_in_all(clean_atts, ro, ['pricehistory'])
         fill_in_forced('priceint', clean_atts['priceint'], ro) # Also validation
         
         timestamp_offering(ro)     
