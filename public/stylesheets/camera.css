@@ -347,6 +347,8 @@ div.smalldesc {
 }
 .reset {
 	text-align: right;
+	float: right;
+	margin-top: -23px;
 }
 .valbelow {
 	padding-top: 18px;
@@ -509,8 +511,9 @@ display:block;
 
 #tourButton{
 	position:absolute;
-	top:20px;
-	left:20px;
+	right:2px;
+	top:87px;
+	z-index:3;
 }
 
 /*--------------------------------------//

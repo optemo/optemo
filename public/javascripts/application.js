@@ -305,8 +305,8 @@ function DBinit(context) {
 		// Make item boxes draggable. This is a jquery UI builtin.		
 		$(".image_boundingbox img").each(function() {
 			$(this).draggable({ 
-				revert:true, 
-				cursor:"move", 
+				revert: 'invalid', 
+				cursor: "move", 
 				// The following defines the drag distance before a "drag" event is actually initiated. Helps for people who click while the mouse is slightly moving.
 				distance:2,
 				helper: 'clone',
@@ -337,6 +337,7 @@ function DBinit(context) {
 				drop: function (e, ui) {
 					imgObj = $(ui.helper);
 					saveProductForComparison(imgObj.attr('data-id'), imgObj.attr('src'), imgObj.attr('alt'));
+					console.log(imgObj);
 				}
 			 });
 		});
@@ -467,7 +468,12 @@ function DBinit(context) {
 	});
 	
 	// Tour section	
-//	$("#tourButton").click();
+	$("#tourButton").click(function() {
+		var browseposition = $("#sim0").offset();
+		$("#sim0").addClass('tourDrawAttention');
+		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
+		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
+	});
 	
 	$('.popupTour').each(function(){
 		$(this).find('.deleteX').click(function(){
@@ -667,6 +673,7 @@ function DBinit(context) {
 
 $(document).ready(function() {
 	// Due to a race condition in IE6, this must be before DBinit().
+	$('#noJavascript').hide();
 	var tokenizedArrayID = 0;
 	if (savedProducts = readAllCookieValues('savedProductIDs'))
 	{
