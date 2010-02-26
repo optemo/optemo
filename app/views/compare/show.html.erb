@@ -11,7 +11,7 @@
 		<% if FileTest.exist?(RAILS_ROOT + "/public" + @imglurl) %>
 			<%= link_to image_tag(@imglurl, :width => @product.imagelw, :height => @product.imagelh), @imglurl, :popup => true %>
 		<% else %>
-			<br><br>No Image Available <!-- (tried < % = RAILS_ROOT + "/public" + @imglurl %>) -->
+			<br><br>No Image Available
 		<% end %>
 	</div>
 	<div id="features">
@@ -57,8 +57,9 @@
 		<% if false %><div style="float: left;"><%= image_tag c.imageurl, :width => "50px" %></div><% end %>
 		<div class="cartridgeinfo">
 		<%= [c.brand,c.model].join(' ') %><br>
-		<span style="font-size:0.70em;">(Yield: <%= c.yield %> pgs, Shelf Life: <%= c.shelflife %> months, Color: <%= c.color %>)</span>
-		<div class="left" style="width:154px">	
+		<span class="cartridgespecifics">(Yield: <%= c.yield %> pgs, Shelf Life: <%= c.shelflife %> months, Color: <%= c.color %>)</span>
+		<div style="clear:both;"></div>
+		<div class="left" style="width:112px">	
 			<%= link_to p.pricestr, p.url, :popup => true, :rel => 'nofollow' %>
 		</div>
 		<div class="right" style="width:154px;">
@@ -77,7 +78,6 @@
 			<b><%= @review.summary %></b> <em>from Amazon</em>
 			<p class="review"><%= @review.content.length > 680 ? @review.content[0..680]+'...' : @review.content %></p>
 		<% end %>
-		<!--People agree this is a <strong>very good</strong> camera. Reviewers admire the <strong>large display</strong>, <strong>customer service</strong>, and <strong>sharp lens</strong> despite qualms with the video quality and portability. It is recommended if you're comfortable with the video quality and portability. -->
 	</div>
 	<%= flash[:notice] %>
 	<div id="betternotfoundmsg" style="padding-left:10px;padding-top:10px;color:green;visibility:hidden;"> There is no better product available for a better price </div>
