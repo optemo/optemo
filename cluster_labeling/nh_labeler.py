@@ -58,8 +58,7 @@ stopword_set |= set(['br', '<', '"', '(', ')'])
 def is_stopword(word):
     return word in stopword_set
 
-import nltk.stem.porter
-stemmer = nltk.stem.porter.PorterStemmer()
+import cluster_labeling.stemmer as stm
 
 import re
 punct_re = re.compile('\W+')
@@ -151,7 +150,7 @@ def compute_wordcounts_for_review(content, spellchecker):
     stemmings = {}
     stemming_labels = {}
     for key in wcs.iterkeys():
-        stemmed_key = stemmer.stem(key)
+        stemmed_key = stm.stem(key)
 
         if stemmed_key not in stemmings:
             stemmings[stemmed_key] = set()
