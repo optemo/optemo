@@ -3,9 +3,11 @@ class Printer < ActiveRecord::Base
   #Ultrasphinx field selection
   define_index do
     #fields
-    indexes title
-    indexes feature
-    indexes :model
+    indexes "LOWER(title)", :as => :title
+    indexes "LOWER(feature)", :as => :feature
+    indexes "LOWER(model)", :as => :model
+    set_property :enable_star => true
+    set_property :min_prefix_len => 2
     #attributes
   end
            #                                (c)luster 

@@ -105,7 +105,7 @@ class CompareController < ApplicationController
       classVariables(Search.createFromClustersAndCommit(initialClusters))
       render 'ajax', :layout => false
     else
-      product_ids = $model.search_for_ids(params[:search],:per_page => 10000)
+      product_ids = $model.search_for_ids(params[:search].downcase, :per_page => 10000, :star => true)
       current_version = Session.current.version
       nodes = product_ids.map{|p| findCachedNodeByPID(p) }.compact
       
@@ -138,6 +138,17 @@ class CompareController < ApplicationController
     end
   end
   
+  def searchterms
+    # There is a strange beauty in the illegibility of the following line.
+    # Must do a join followed by a split since the initial mapping of titles is like this: ["keywords are here", "and also here", ...]
+    # The two gsub lines are to take out the parentheses on both sides. It is supposed to be 
+    #   equivalent to s/\(\)//g, which is what I actually want to do
+    @searchterms = findCachedTitles.join(" ").split(" ").uniq.map{|t| t.gsub(/[()](.*)/, '\\1').gsub(/[()](.*)/, '\\1')}.join("[BRK]")
+    if params[:ajax]
+      render 'searchterms', :layout => false
+    end
+  end
+  
   def back
     mysession = Session.current
     #Remove last selection
@@ -152,13 +163,4 @@ class CompareController < ApplicationController
     classVariables(newsearch)
     render 'ajax', :layout => false
   end
-  
-  private
-  
-  def searchSphinx(searchterm)
-    search = Ultrasphinx::Search.new(:query => searchterm, :per_page => 10000)
-    search.run(false)
-    search
-  end
- 
 end

@@ -55,4 +55,12 @@ module CachingMemcached
       $model.find(productid)
     end
   end
+  def findCachedTitles()
+    unless ENV['RAILS_ENV'] == 'development'
+      current_version = Session.current.version
+      Rails.cache.fetch("#{$model}#{current_version}Titles") { $model.find(:all, :select => "title").map{|c|c.title} }
+    else
+      $model.find(:all, :select => "title").map{|c|c.title}
+    end
+  end
 end
