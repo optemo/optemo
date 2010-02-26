@@ -255,6 +255,31 @@ function trackCategorical(name, val, type){
 
 function DBinit(context) {
 	
+	// I cannot get this to work today.
+/*	if (context != '') {
+		$.ajax({
+			type: "GET",
+			data: "",
+			url: "/compare/searchterms",
+			success: function (data) {
+				// autocomplete is expecting data like this:
+				// data.split('[BRK]')
+				//"Core Selectors Attributes Traversing Manipulation CSS Events Effects Ajax Utilities".split(" ");
+//				console.log(data.split('[BRK]'));
+				$("#search_form").autoComplete("Core Selectors Attributes Traversing Manipulation CSS Events Effects Ajax Utilities".split(" "),
+					{
+						minChars: 0,
+						max: 12,
+						autoFill: true,
+						mustMatch: true,
+						matchContains: false,
+						scrollHeight: 220
+					}
+				);			
+			}
+		});
+	} */
+	
 	$("#comparisonTable").tableDnD({
 		onDragClass: "rowBeingDragged",
 		onDrop: function(table, row){		
