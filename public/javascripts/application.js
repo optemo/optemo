@@ -84,6 +84,8 @@ function saveProductForComparison(id, imgurl, name)
 	imgurlToSaveArray = imgurl.split('/');
 	
 	imgurlToSaveArray[imgurlToSaveArray.length - 1] = id + "_s.jpg";
+	productType = imgurlToSaveArray[(imgurlToSaveArray.length - 2)];
+	productType = productType.substring(0, productType.length-1);
 	imgurlToSave = imgurlToSaveArray.join("/");
 	
 	if($(".saveditem").length == 4)
@@ -98,7 +100,7 @@ function saveProductForComparison(id, imgurl, name)
 	} else {
 		trackPage('goals/save/'+id);
 		renderComparisonProducts(id, imgurl, name);
-		addValueToCookie('savedProductIDs', [id, imgurlToSave, name]);
+		addValueToCookie('savedProductIDs', [id, imgurlToSave, name, productType]);
 	}
 
 	// There should be at least 1 saved item, so...
@@ -253,6 +255,31 @@ function trackCategorical(name, val, type){
 
 function DBinit(context) {
 	
+	// I cannot get this to work today.
+/*	if (context != '') {
+		$.ajax({
+			type: "GET",
+			data: "",
+			url: "/compare/searchterms",
+			success: function (data) {
+				// autocomplete is expecting data like this:
+				// data.split('[BRK]')
+				//"Core Selectors Attributes Traversing Manipulation CSS Events Effects Ajax Utilities".split(" ");
+//				console.log(data.split('[BRK]'));
+				$("#search_form").autoComplete("Core Selectors Attributes Traversing Manipulation CSS Events Effects Ajax Utilities".split(" "),
+					{
+						minChars: 0,
+						max: 12,
+						autoFill: true,
+						mustMatch: true,
+						matchContains: false,
+						scrollHeight: 220
+					}
+				);			
+			}
+		});
+	} */
+	
 	$("#comparisonTable").tableDnD({
 		onDragClass: "rowBeingDragged",
 		onDrop: function(table, row){		
@@ -276,12 +303,12 @@ function DBinit(context) {
 	if (IS_DRAG_DROP_ENABLED)
 	{
 		// Make item boxes draggable. This is a jquery UI builtin.		
-		$(".image_boundingbox").each(function() {
+		$(".image_boundingbox img").each(function() {
 			$(this).draggable({ 
 				revert:true, 
 				cursor:"move", 
 				// The following defines the drag distance before a "drag" event is actually initiated. Helps for people who click while the mouse is slightly moving.
-				distance:0,
+				distance:2,
 				helper: 'clone',
 				zIndex: 1000,
 				start: function(e, ui) { 
@@ -306,9 +333,9 @@ function DBinit(context) {
 			$(this).droppable({ 
 				hoverClass: 'drop-box-hover',
 				activeClass: 'ui-state-dragging', 
-				accept: ".image_boundingbox",
+				accept: ".ui-draggable",
 				drop: function (e, ui) {
-					imgObj = $(ui.helper).find('.productimg')
+					imgObj = $(ui.helper);
 					saveProductForComparison(imgObj.attr('data-id'), imgObj.attr('src'), imgObj.attr('alt'));
 				}
 			 });
@@ -640,6 +667,7 @@ function DBinit(context) {
 
 $(document).ready(function() {
 	// Due to a race condition in IE6, this must be before DBinit().
+	var tokenizedArrayID = 0;
 	if (savedProducts = readAllCookieValues('savedProductIDs'))
 	{
 		// There are saved products to display
@@ -647,9 +675,10 @@ $(document).ready(function() {
 			fixedheight = ((savedProducts.length > 2) ? 80 : 160) + 'px';
 			$("#savedproducts").css({"height" : fixedheight});
 		}
-		for (var tokenizedArrayID in savedProducts)
+		for (tokenizedArrayID = 0; tokenizedArrayID < savedProducts.length; tokenizedArrayID++)
 		{	
 			tokenizedArray = savedProducts[tokenizedArrayID].split(',');
+			// In future, tokenizedArray[3] contains the product type. As of Feb 2010, each website has separate cookies, so it's not necessary to read this data.
 			renderComparisonProducts(tokenizedArray[0], tokenizedArray[1], tokenizedArray[2]);
 		}
 		// There should be at least 1 saved item, so...
