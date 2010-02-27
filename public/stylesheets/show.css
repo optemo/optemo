@@ -62,9 +62,10 @@ div#loading {
 	width: 360px;
 	float: left;
 }
-div#textfeatures, #reviews {
+div#textfeatures, div#reviews {
 	clear:both;
 }
+
 #features ul {
 	list-style-type: none;
 }
@@ -73,6 +74,8 @@ div .showtable{
 	float: left;
 	text-align: center;
 	width: 400px;
+	margin-right:10px;
+	border: 1px dotted black;
 }
 div .accesories{
 	width: 300px;
@@ -107,6 +110,7 @@ div .spacer {
 .review {
 	font-size: 0.8em;
 	margin:10px;
+	padding:5px;
 }
 #browseother {
 	margin-top: 5px;
