@@ -346,9 +346,7 @@ div.smalldesc {
 	margin-bottom: 20px; /*Spacing for histogram*/
 }
 .reset {
-	text-align: right;
-	float: right;
-	margin-top: -23px;
+	font-size: 0.8em;
 }
 .valbelow {
 	padding-top: 18px;
@@ -510,10 +508,8 @@ display:block;
 }
 
 #tourButton{
-	position:absolute;
-	right:2px;
-	top:87px;
-	z-index:3;
+	font-size: 0.8em;
+	text-align: center;
 }
 
 /*--------------------------------------//
