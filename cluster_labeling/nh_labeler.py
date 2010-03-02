@@ -1,9 +1,4 @@
 #!/usr/bin/env python
-import os
-import sqlite3
-
-from django.conf import settings
-
 import cluster_labeling.optemo_django_models as optemo
 
 import cluster_count_table as cct
