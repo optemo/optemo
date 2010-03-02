@@ -145,12 +145,14 @@ class CompareController < ApplicationController
   def searchterms
     # There is a strange beauty in the illegibility of the following line.
     # Must do a join followed by a split since the initial mapping of titles is like this: ["keywords are here", "and also here", ...]
-    # The two gsub lines are to take out the parentheses on both sides. It is supposed to be 
-    #   equivalent to s/\(\)//g, which is what I actually want to do
-    @searchterms = findCachedTitles.join(" ").split(" ").uniq.map{|t| t.gsub(/[()](.*)/, '\\1').gsub(/[()](.*)/, '\\1')}.join("[BRK]")
-    if params[:ajax]
-      render 'searchterms', :layout => false
-    end
+    # The gsub lines are to take out the parentheses on both sides, take out commas, and take out trailing slashes.
+    searchterms = findCachedTitles.join(" ").split(" ").map{|t| t.gsub(/[()](.*)/, '\\1').gsub(/[()](.*)/, '\\1').gsub(/,/,' ').gsub(/\/$/,'').gsub(//,'').chomp}.uniq
+    # Delete all the 1200x1200dpi, the "/" or "&" strings, all two-letter strings, and things that don't start with a letter or number.
+    searchterms.delete_if {|t| t == '' || t.match('[0-9]+.[0-9]+') || t.match('^..?$') || t.match('^[^A-Za-z0-9]') || t.downcase.match('^print')}
+#    duplicates = searchterms.inject({}) {|h,v| h[v]=h[v].to_i+1; h}.reject{|k,v| v==1}.keys
+    @searchterms = searchterms.map{|t|t.match(/[^A-Za-z0-9]$/)? t.chop.downcase : t.downcase }.uniq.join('[BRK]')
+    # Particular to this data
+    render 'searchterms', :layout => false
   end
   
   def back

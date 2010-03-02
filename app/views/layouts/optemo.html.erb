@@ -87,7 +87,8 @@
 </style><![endif]-->
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+<!-- This script is being included locally until the release of jquery-ui 1.8. -->
+<!--script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script -->
 <%= javascript_include_merged :base %>
 
 
@@ -169,6 +170,6 @@ piwikTracker2.enableLinkTracking();
 
 <!-- div id="tourButton"><input type="submit" value="Tour Launch" /></div -->
 <div id="backgroundPopup"></div>
-<div id="noJavascript" style="position:absolute; top: 40px; left:30px; width:250px; background: #FFFFFF; opacity:0.8"><b>Javascript is disabled.</b>For full functionality of the discovery browser, please enable javascript.</div>
+<noscript><div id="noJavascript" style="position:absolute; top: 40px; left:30px; width:250px; background: #FFFFFF; opacity:0.8"><b>Javascript is disabled.</b>For full functionality of the discovery browser, please enable javascript.</div></noscript>
 </body>
 </html>

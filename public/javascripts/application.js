@@ -254,32 +254,28 @@ function trackCategorical(name, val, type){
 //--------------------------------------//
 
 function DBinit(context) {
-	
-	// I cannot get this to work today.
-/*	if (context != '') {
+
+if (context == undefined && typeof($("#search").attr("autocomplete")) == 'undefined') {
 		$.ajax({
 			type: "GET",
 			data: "",
 			url: "/compare/searchterms",
 			success: function (data) {
 				// autocomplete is expecting data like this:
-				// data.split('[BRK]')
-				//"Core Selectors Attributes Traversing Manipulation CSS Events Effects Ajax Utilities".split(" ");
-//				console.log(data.split('[BRK]'));
-				$("#search_form").autoComplete("Core Selectors Attributes Traversing Manipulation CSS Events Effects Ajax Utilities".split(" "),
-					{
-						minChars: 0,
-						max: 12,
-						autoFill: true,
-						mustMatch: true,
-						matchContains: false,
-						scrollHeight: 220
-					}
-				);			
+				// "Lexmark[BRK]Metered[BRK]DeskJet"
+				terms = data.split('[BRK]');
+				$("#search").autocomplete(terms, {
+					minChars: 1,
+					max: 10,
+					autoFill: false,
+					mustMatch: false,
+					matchContains: true,
+					scrollHeight: 220
+				});
 			}
 		});
-	} */
-	
+	}
+
 	$("#comparisonTable").tableDnD({
 		onDragClass: "rowBeingDragged",
 		onDrop: function(table, row){		
@@ -337,7 +333,6 @@ function DBinit(context) {
 				drop: function (e, ui) {
 					imgObj = $(ui.helper);
 					saveProductForComparison(imgObj.attr('data-id'), imgObj.attr('src'), imgObj.attr('alt'));
-					console.log(imgObj);
 				}
 			 });
 		});
@@ -512,7 +507,7 @@ function DBinit(context) {
 		if(e.keyCode==27){
 			$(".popupTour").fadeOut("slow");
 			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
-//			if (browserIsIE.indexOf("MSIE7") != -1) $("#sim0").parent().removeClass('tourDrawAttention');
+			if (browserIsIE.indexOf("MSIE7") != -1) $("#sim0").parent().removeClass('tourDrawAttention');
 		}
 	});
 	
@@ -664,7 +659,14 @@ function DBinit(context) {
 		if (diff < threshold)
 			$('a:last', this).html(curmax).addClass("valabove");
 		histogram($(this).siblings('.hist')[0]);
+		$(this).removeClass('ui-widget').removeClass('ui-widget-content').removeClass('ui-corner-all');
+		$(this).find('a').each(function(){
+			$(this).removeClass('ui-state-default').removeClass('ui-corner-all');
+			$(this).unbind('mouseenter mouseleave');
+		});
+		
 	});
+
 }
 
 //--------------------------------------//
@@ -745,12 +747,13 @@ $(document).ready(function() {
 	$('#submit_button').click(function(){
 		return submitsearch();
 	});
+	
 	//Search submit
 	$('#search').keypress(function (e) {
 		if (e.which==13)
 			return submitsearch();
 	});
-    
+
 	//Static feedback box
 	$('#feedback').click(function(){
 		trackPage('survey/feedback');

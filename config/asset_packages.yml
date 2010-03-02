@@ -5,8 +5,10 @@ javascripts:
   - helpers
   - application
   - supersleight.plugin
+  - jquery-ui-1.8rc3.custom.min
   - jquery.tablednd_0_5
   - facebooksessionops
+  - jquery.autocomplete.min
 stylesheets: 
 - base: 
   - camera
