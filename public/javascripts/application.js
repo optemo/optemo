@@ -468,6 +468,7 @@ if (context == undefined && typeof($("#search").attr("autocomplete")) == 'undefi
 		$("#sim0").addClass('tourDrawAttention');
 		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
 		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
+		return false;
 	});
 	
 	$('.popupTour').each(function(){

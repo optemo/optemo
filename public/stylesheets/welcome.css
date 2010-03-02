@@ -41,10 +41,8 @@
 
 #logindisplay
 {
-	font-size: 0.8em;
-	position: absolute;
-	top: 8px;
-	right: 45px;
+	float: right;
+	margin-right: 5px;
 }
 
 #linkUserLogout {

@@ -29,7 +29,7 @@
 	<!-- The Filters section -->
 	<div id="filterbar" class="leftboxes rounded_leftboxes rounded">
 		<div class="tl"></div><div class="tr"></div>
-		<h2><%=t 'products.compare.filters' %></h2><div class="reset"><%= link_to 'reset', "/compare/", :class => "staticajax" %> </div>
+		<h2><%=t 'products.compare.filters' %> <%= link_to "(reset)", "/compare/", :class => "staticajax reset" %></h2>
 			<div class="filtersdesc"><%=t 'products.compare.filtersdesc' %></div>
 		<div id="ajaxfilter">
 			<%= render :partial => 'filter' %>
