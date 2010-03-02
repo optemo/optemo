@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import cluster_labeling.optemo_django_models as optemo
-
-import nh_labeler as nh
+import cluster_labeling.text_handling as th
 
 import nltk.stem.porter
 stemmer = nltk.stem.porter.PorterStemmer()
@@ -30,7 +29,7 @@ def build_stem_label_table\
 @transaction.commit_on_success
 def compute_stem_labels_for_review(review):
     content = review.content
-    words = nh.get_words_from_review(content)
+    words = th.get_words_from_string(content)
 
     for word in words:
         stem = stemmer.stem(word)
@@ -50,7 +49,7 @@ def compute_stem_labels_for_review(review):
         sl.label = word
         sl.save()
 
-def stem(word):
+def get_stem_label(word):
     stem = stemmer.stem(word)
     qs = StemLabel.get_manager().filter(stem=stem)
     if qs.count() == 0:
