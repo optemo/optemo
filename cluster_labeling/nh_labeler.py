@@ -18,7 +18,7 @@ totalcount_tables = [ctct.ClusterProdTotalCount,
                      ctct.ClusterWordTotalCount,
                      ctct.ClusterReviewTotalCount]
 
-import cluster_labeling.stemmer as stm
+import cluster_labeling.stem_labels as stm
 import cluster_labeling.text_handling as th
 
 import cluster_labeling.pn_spellcheck as pnsc
