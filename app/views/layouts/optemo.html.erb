@@ -25,9 +25,8 @@
 	  </div>
 		<% if $model.name == "Printer" %><a href="<%= url_for '/laserprinters' %>" title="Why buy a laser printer?" id='whylaser'></a><% end %>
 	 <div id="tagline">
-		Find, compare, and buy the right <%= $model.name.downcase %> for you! We have found the best deals from various online retailers for you. <!--Explore groups of similar products by clicking on the links in the boxes or narrow your search by using the filters on your left. Can't decide? Save a few printers and compare!-->
+		Find, compare, and buy the right <%= $model.name.downcase %> for you! We have found the best deals from various online retailers for you.
 	</div>
-	<div id="tourButton"><input type="submit" value="Launch Tour" /></div>
      <div id="logindisplay">                                                                                               
    		<% if !cookies[$AppKey +"_user"].nil? %>
 		<div style="float:left;height:16px;width:16px;overflow:hidden;">
@@ -45,6 +44,7 @@
 			<fb:login-button size="small" length="short" onlogin="window.location.href='/login/do_login?currpage=' + window.location;" autologoutlink="false"> </fb:login-button>
 		<% end %>
      </div>
+	 <div id="tourButton"><%= link_to "Launch Tour" %></div>
    </div>
    <div class="watermark">Powered by <%= link_to 'Optemo', 'http://optemo.com', :popup => true %></div>
 	
@@ -87,7 +87,8 @@
 </style><![endif]-->
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+<!-- This script is being included locally until the release of jquery-ui 1.8. -->
+<!--script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script -->
 <%= javascript_include_merged :base %>
 
 
@@ -169,6 +170,6 @@ piwikTracker2.enableLinkTracking();
 
 <!-- div id="tourButton"><input type="submit" value="Tour Launch" /></div -->
 <div id="backgroundPopup"></div>
-<div id="noJavascript" style="position:absolute; top: 40px; left:30px; width:250px; background: #FFFFFF; opacity:0.8"><b>Javascript is disabled.</b>For full functionality of the discovery browser, please enable javascript.</div>
+<noscript><div id="noJavascript" style="position:absolute; top: 40px; left:30px; width:250px; background: #FFFFFF; opacity:0.8"><b>Javascript is disabled.</b>For full functionality of the discovery browser, please enable javascript.</div></noscript>
 </body>
 </html>
