@@ -54,6 +54,7 @@ def stem(word):
     stem = stemmer.stem(word)
     qs = StemLabel.get_manager().filter(stem=stem)
     if qs.count() == 0:
-        return word
+        errstr = 'Stem label not found: word=%s, stem=%s' % (word, stem)
+        raise Exception(errstr)
 
     return qs[0].label
