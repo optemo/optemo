@@ -144,3 +144,12 @@ class Review(OptemoModel):
     cons = models.TextField()
     
     product_id = models.IntegerField()
+    product_type = models.CharField(max_length=255)
+
+class CameraReview(Review):
+    class Meta:
+        proxy = True
+
+    @classmethod
+    def get_manager(cls):
+        return Review.get_manager().filter(product_type='Camera')
