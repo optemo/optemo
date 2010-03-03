@@ -72,8 +72,7 @@ class MergedCluster
       if clustersquery.blank?
         @nodes = []
       else
-        @nodes = $nodemodel.find(:all, :conditions => "(#{clustersquery}) #{Session.current.filter && !Cluster.filterquery(Session.current).blank? ?
-        ' and '+Cluster.filterquery(Session.current) : ''}#{!Session.current.filter || Session.current.keywordpids.blank? ? '' : ' and ('+Session.current.keywordpids+')'}")
+        @nodes = $nodemodel.find(:all, :conditions => "(#{clustersquery}) #{Session.current.filter && !Cluster.filterquery(Session.current).blank? ? ' and '+Cluster.filterquery(Session.current) : ''}#{!Session.current.filter || Session.current.keywordpids.blank? ? '' : ' and ('+Session.current.keywordpids+')'}")
       end
     end
     @nodes

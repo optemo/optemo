@@ -12,9 +12,9 @@ module CachingMemcached
   # The caching function really could probably be combined into fewer functions.
   # The reason not to is that it kept things simpler in terms of what to use as keys, search types, and so forth.
   def findCachedNodeByPID(productid)
+    current_version = Session.current.version
     unless ENV['RAILS_ENV'] == 'development'
-      current_version = Session.current.version
-      Rails.cache.fetch("#{$nodemodel}ByPID#{current_version}#{product}") { $nodemodel.find_by_product_id_and_version_and_region(productid, current_version, $region) }
+      Rails.cache.fetch("#{$nodemodel}ByPID#{current_version}#{productid}") { $nodemodel.find_by_product_id_and_version_and_region(productid, current_version, $region) }
     else
       $nodemodel.find_by_product_id_and_version_and_region(productid, current_version, $region)
     end    
@@ -53,6 +53,14 @@ module CachingMemcached
       Rails.cache.fetch("#{$model}#{current_version}#{productid}") { $model.find(productid) }
     else
       $model.find(productid)
+    end
+  end
+  def findCachedTitles()
+    unless ENV['RAILS_ENV'] == 'development'
+      current_version = Session.current.version
+      Rails.cache.fetch("#{$model}#{current_version}Titles") { $model.find(:all, :select => "title").map{|c|c.title} }
+    else
+      $model.find(:all, :select => "title").map{|c|c.title}
     end
   end
 end

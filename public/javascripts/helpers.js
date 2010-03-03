@@ -1,7 +1,9 @@
 /*   Helper functions. All of these are used in application.js.
 -------- AJAX ---------
-ajaxcall(myurl,mydata,isSearch)  -  Shows spinner, does AJAX call through jquery, returns through ajaxhandler(data)
+ajaxsend(hash,myurl,mydata)  -  Does AJAX call through jquery, returns through ajaxhandler(data)
 ajaxhandler(data)  -  Splits up data from the ajax call in a thoroughly undocumented manner
+ajaxerror() - Displays error message if the ajax send call fails
+ajaxcall(myurl,mydata) - adds a hash with the number of searches to the history path
 flashError(str)  -  Puts an error message on a specific part of the screen
 
 -------- Layout -------
@@ -29,25 +31,39 @@ readCookie(name)  -  Gets raw cookie 'value' data.
 eraseCookie(name)
 */
 
+//The loading spinner object with a dummy function to start
+var myspinner = {
+	begin: function(){},
+	end: function(){}
+};
+
 //--------------------------------------//
 //                AJAX                  //
 //--------------------------------------//
 
 /* Does a relatively generic ajax call and returns data to the handler below */
-function ajaxcall(myurl,mydata,isSearch) {
-	showspinner();
+function ajaxsend(hash,myurl,mydata,hidespinner) {
+	if (hidespinner != true)
+		showspinner();
+	if (myurl != null)
+	{
 	$.ajax({
 		type: (mydata==null)?"GET":"POST",
 		data: (mydata==null)?"":mydata,
 		url: myurl,
 		success: ajaxhandler,
-		error: function(){
-			//if (language=="fr")
-			//	flashError('<div class="poptitle">&nbsp;</div><p class="error">Désolé! Une erreur s’est produite sur le serveur.</p><p>Vous pouvez <a href="" class="ajaxlink popuplink">réinitialiser</a> l’outil et constater si le problème persiste.</p>');
-			//else
-				flashError('<div class="poptitle">&nbsp;</div><p class="error">Sorry! An error has occured on the server.</p><p>You can <a href="" class="ajaxlink popuplink">reset</a> the tool and see if the problem is resolved.</p>');
-			}
+		error: ajaxerror
 	});
+	}
+	else if (typeof(hash) != "undefined" && hash != null)
+	{
+		$.ajax({
+			type: "GET",
+			url: "/compare/compare/?hist="+hash,
+			success: ajaxhandler,
+			error: ajaxerror
+		});
+	}
 }
 
 /* The ajax handler takes data from the ajax call and processes it according to some (unknown) rules. */
@@ -75,6 +91,19 @@ function ajaxhandler(data)
 		DBinit();
 		return 0;
 	}
+}
+
+function ajaxerror(){
+	//if (language=="fr")
+	//	flashError('<div class="poptitle">&nbsp;</div><p class="error">Désolé! Une erreur s’est produite sur le serveur.</p><p>Vous pouvez <a href="" class="ajaxlink popuplink">réinitialiser</a> l’outil et constater si le problème persiste.</p>');
+	//else
+		flashError('<div class="poptitle">&nbsp;</div><p class="error">Sorry! An error has occured on the server.</p><p>You can <a href="" class="ajaxlink popuplink">reset</a> the tool and see if the problem is resolved.</p>');
+}
+
+function ajaxcall(myurl,mydata)
+{
+	actioncount = parseInt($("#actioncount").html()) + 1;
+	$.historyLoad(""+actioncount,myurl,mydata);
 }
 
 /* Puts an ajax-related error message in a specific part of the screen */
@@ -252,29 +281,35 @@ function spinner(holderid, R1, R2, count, stroke_width, colour) {
 	        sectors[i].attr("stroke", Raphael.getColor());
 	    }
 	}
-	var tick;
-	(function ticker() {
+	this.runspinner = false;
+	this.begin = function() {
+		this.runspinner = true;
+		setTimeout(ticker, 1000 / sectorsCount);
+	};
+	this.end = function() {
+		this.runspinner = false;
+	};
+	function ticker() {
 	    opacity.unshift(opacity.pop());
 	    for (var i = 0; i < sectorsCount; i++) {
 	        sectors[i].attr("opacity", opacity[i]);
 	    }
 	    r.safari();
-	    tick = setTimeout(ticker, 1000 / sectorsCount);
-	})();
-	return function () {
-	    clearTimeout(tick);
-	    r.remove();
+		if (myspinner.runspinner)
+	    	setTimeout(ticker, 1000 / sectorsCount);
 	};
 }
 
 function showspinner()
 {
+	myspinner.begin();
 	$('#loading').css('display', 'inline');
 }
 
 function hidespinner()
 {
 	$('#loading').css('display', 'none');
+	myspinner.end();
 }
 
 //--------------------------------------//

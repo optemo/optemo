@@ -202,7 +202,6 @@ module SiteTest
     already_saved = @sesh.was_saved?( pid_to_save)
     
     begin
-      debugger
       @sesh.selenium.run_script "saveProductForComparison(#{pid_to_save}, NULL, NULL)"
       @sesh.wait_for_ajax
     rescue Exception => e

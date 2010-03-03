@@ -1,11 +1,11 @@
-<% self.title = "#{@s.desc} #{$model.urlname.capitalize}" %>
+<%# self.title = "#{Session.current.search.desc} #{$model.urlname.capitalize}" %>
 <div id="leftbar">
 	<!-- The Search box -->
 	<div id='searchbox' class='leftboxes rounded_leftboxes rounded'>
 	<div class="tl"></div><div class="tr"></div>
 	<h2><%=t "products.compare.search" %></h2>
 	<% form_tag("/compare/find",{:id => 'search_form'}) do %>
-	  <%= @s.searchterm.blank? ? text_field_tag('search') : text_field_tag('search', @s.searchterm) %>
+	  <%= Session.current.keyword.blank? ? text_field_tag('search') : text_field_tag('search', Session.current.keyword) %>
 	  <%= submit_tag 'Search', {:id => 'submit_button'} %>
 	<% end %>
 	<div class="bl"></div><div class="br"></div>
@@ -29,20 +29,22 @@
 	<!-- The Filters section -->
 	<div id="filterbar" class="leftboxes rounded_leftboxes rounded">
 		<div class="tl"></div><div class="tr"></div>
-		<h2><%=t 'products.compare.filters' %>
+		<h2><%=t 'products.compare.filters' %> <%= link_to "(reset)", "/compare/", :class => "staticajax reset" %></h2>
 			<div class="filtersdesc"><%=t 'products.compare.filtersdesc' %></div>
-		</h2>
 		<div id="ajaxfilter">
-			<%= render :partial => 'filter' %>
-		</div>
-		<div class="reset">
-		<%= link_to image_tag("reset#{fr?}.gif"), "/compare/", :class => "staticajax" %>
+			<% unless @indexload %>
+				<%= render :partial => 'filter' %>
+			<% end  %>
 		</div>
 		<div class="bl"></div><div class="br"></div>
 	</div>
 	</div>
 
 <div id="main">
-	<%= render :partial => 'discoverybrowser' %>
+	<% if @indexload %>
+		<div id="ajaxload"></div>
+	<% else %>
+		<%= render :partial => 'discoverybrowser' %>
+	<% end %>
 </div>
-<div id="loading">&nbsp;Loading<div id="myspinner" style="float: left;"></div></div>
+<div id="loading"><div id="myspinner" style="float: left;"></div><div style="margin: 7px 0px 0px 60px;">Loading</div></div>

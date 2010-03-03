@@ -4,7 +4,11 @@ class CompareController < ApplicationController
   include CachingMemcached
   
   def index
-    classVariables(Search.createFromClustersAndCommit(initialClusters))
+    if Session.isCrawler?(request.user_agent) || params[:ajax]
+      Search.createInitialClusters
+    else
+      @indexload = true
+    end
     if params[:ajax]
       render 'ajax', :layout => false
     else
@@ -13,28 +17,47 @@ class CompareController < ApplicationController
   end
   
   def compare
-    classVariables(Search.createFromClustersAndCommit(params[:id].split('-')))
+    hist = params[:hist].gsub(/\D/,'').to_i
+    #Going back to a previous search
+    if hist
+      search_history = Session.current.searches
+      if hist < search_history.length && hist > 0
+        mysearch = search_history[hist-1]
+        Session.current.keywordpids = mysearch.searchpids 
+        Session.current.keyword = mysearch.searchterm
+        classVariables(mysearch)
+      else
+        Search.createInitialClusters
+      end
+    else
+      classVariables(Search.createFromClustersAndCommit(params[:id].split('-')))
+    end
     #No products found
-    if @s.result_count == 0
+    if Session.current.search.result_count == 0
       flash[:error] = "No products were found, so you were redirected to the home page"
-      redirect_to "/compare/compare/"+initialClusters.join('-')
+      redirect_to "/compare/compare/"
+    end
+    if hist
+      render 'ajax', :layout => false
     end
   end
   
   def classVariables(search)
     @s = search
+    Session.current.search = search
   end
   
   def sim
     cluster_id = params[:id]
+    cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
     if cluster_id.index('+')
-      cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
       #Merged Cluster
       cluster = MergedCluster.fromIDs(cluster_id.split('+'))
     else
       #Single, normal Cluster
       cluster = findCachedCluster(cluster_id)
     end
+    Session.current.search = Session.current.searches.last
     unless cluster.nil?
       if params[:ajax]
         classVariables(Search.createFromClustersAndCommit(cluster.children))
@@ -43,7 +66,7 @@ class CompareController < ApplicationController
         redirect_to "/compare/compare/"+cluster.children.map{|c|c.id}.join('-')
       end
     else
-      redirect_to initialClusters
+      redirect_to "/compare/compare/"
     end
   end
 
@@ -55,6 +78,7 @@ class CompareController < ApplicationController
     else
       #Fixes the fact that the brand selector value is not used
       params[:myfilter].delete("brand1")
+      Session.current.search = Session.current.searches.last #My last search used for finding the right filters
       session.updateFilters(params[:myfilter])
       clusters = session.clusters
       unless clusters.empty?
@@ -64,7 +88,7 @@ class CompareController < ApplicationController
         render 'ajax', :layout => false
       else
         session.rollback
-        @s = session.searches.last
+        Session.current.search = session.searches.last
         @errortype = "filter"
         render 'error', :layout=>true
       end
@@ -87,6 +111,10 @@ class CompareController < ApplicationController
 
     @offerings = RetailerOffering.find_all_by_product_id_and_product_type_and_region(params[:id],$model.name,$region,:order => 'priceint ASC')
     @review = Review.find_by_product_id_and_product_type(params[:id],$model.name, :order => 'helpfulvotes DESC')
+    # Take out offending <br />
+    if @review && @review.content
+      @review.content = @review.content.gsub(/\r\&lt\;br \/\&gt\;/, '').gsub(/\t/,' ').strip
+    end
     @cartridges = Compatibility.find_all_by_product_id_and_product_type(@product.id,$model.name).map{|c|Cartridge.find_by_id(c.accessory_id)}.reject{|c|!c.instock}
     @cartridgeprices = @cartridges.map{|c| RetailerOffering.find_by_product_type_and_product_id("Cartridge",c.id)}
 
@@ -102,10 +130,10 @@ class CompareController < ApplicationController
   
   def find
     if params[:search].blank? && params[:ajax]
-      classVariables(Search.createFromClustersAndCommit(initialClusters))
+      Search.createInitialClusters
       render 'ajax', :layout => false
     else
-      product_ids = $model.search_for_ids(params[:search],:per_page => 10000)
+      product_ids = $model.search_for_ids(params[:search].downcase, :per_page => 10000, :star => true)
       current_version = Session.current.version
       nodes = product_ids.map{|p| findCachedNodeByPID(p) }.compact
       
@@ -122,7 +150,7 @@ class CompareController < ApplicationController
           end
         end
       else
-        Session.current.clearFilters
+        Search.createInitialClusters
         Session.current.update_attribute('filter', true)
         Session.current.keyword = params[:search]
         Session.current.keywordpids = nodes.map{|p| "product_id = #{p.product_id}"}.join(' OR ')
@@ -138,27 +166,17 @@ class CompareController < ApplicationController
     end
   end
   
-  def back
-    mysession = Session.current
-    #Remove last selection
-    destroyed_search = mysession.searches.last.destroy.id
-    feature = $featuremodel.find(:first, :conditions => ["session_id = ? and search_id = ?", mysession.id,destroyed_search])
-    feature.destroy if feature
-    newsearch = mysession.searches.last
-    #In case back button is hit in the beginning
-    newsearch = Search.createFromClustersAndCommit(initialClusters) if newsearch.nil?
-    mysession.keywordpids = newsearch.searchpids 
-    mysession.keyword = newsearch.searchterm
-    classVariables(newsearch)
-    render 'ajax', :layout => false
+  def searchterms
+    # There is a strange beauty in the illegibility of the following line.
+    # Must do a join followed by a split since the initial mapping of titles is like this: ["keywords are here", "and also here", ...]
+    # The gsub lines are to take out the parentheses on both sides, take out commas, and take out trailing slashes.
+    searchterms = findCachedTitles.join(" ").split(" ").map{|t| t.tr("()", '').gsub(/,/,' ').gsub(/\/$/,'').chomp}.uniq
+    # Delete all the 1200x1200dpi, the "/" or "&" strings, all two-letter strings, and things that don't start with a letter or number.
+    searchterms.delete_if {|t| t == '' || t.match('[0-9]+.[0-9]+') || t.match('^..?$') || t.match('^[^A-Za-z0-9]') || t.downcase.match('^print')}
+#    duplicates = searchterms.inject({}) {|h,v| h[v]=h[v].to_i+1; h}.reject{|k,v| v==1}.keys
+    @searchterms = searchterms.map{|t|t.match(/[^A-Za-z0-9]$/)? t.chop.downcase : t.downcase }.uniq.join('[BRK]')
+    # Particular to this data
+    render 'searchterms', :layout => false
   end
   
-  private
-  
-  def searchSphinx(searchterm)
-    search = Ultrasphinx::Search.new(:query => searchterm, :per_page => 10000)
-    search.run(false)
-    search
-  end
- 
 end
