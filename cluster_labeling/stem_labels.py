@@ -8,6 +8,7 @@ stemmer = nltk.stem.porter.PorterStemmer()
 import cluster_labeling.local_django_models as local
 from django.db import models
 from django.db import transaction
+from django.db.models import F
 
 class StemLabel(local.LocalModel):
     class Meta:
@@ -29,7 +30,6 @@ def populate_word_stem_table():
     WordStem.create_table()
 
     for review in optemo.CameraReview.get_manager():
-        build_stem_labels_for_review(review)
         content = review.content
         words = th.get_words_from_string(content)
 
