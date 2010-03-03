@@ -1,7 +1,9 @@
 /*   Helper functions. All of these are used in application.js.
 -------- AJAX ---------
-ajaxcall(myurl,mydata,isSearch)  -  Shows spinner, does AJAX call through jquery, returns through ajaxhandler(data)
+ajaxsend(hash,myurl,mydata)  -  Does AJAX call through jquery, returns through ajaxhandler(data)
 ajaxhandler(data)  -  Splits up data from the ajax call in a thoroughly undocumented manner
+ajaxerror() - Displays error message if the ajax send call fails
+ajaxcall(myurl,mydata) - adds a hash with the number of searches to the history path
 flashError(str)  -  Puts an error message on a specific part of the screen
 
 -------- Layout -------
@@ -28,6 +30,12 @@ createCookie(name,value,days)  -  Try not to use this or the two below directly 
 readCookie(name)  -  Gets raw cookie 'value' data.
 eraseCookie(name)
 */
+
+//The loading spinner object with a dummy function to start
+var myspinner = {
+	begin: function(){},
+	end: function(){}
+};
 
 //--------------------------------------//
 //                AJAX                  //
@@ -277,29 +285,35 @@ function spinner(holderid, R1, R2, count, stroke_width, colour) {
 	        sectors[i].attr("stroke", Raphael.getColor());
 	    }
 	}
-	var tick;
-	(function ticker() {
+	this.runspinner = false;
+	this.begin = function() {
+		this.runspinner = true;
+		setTimeout(ticker, 1000 / sectorsCount);
+	};
+	this.end = function() {
+		this.runspinner = false;
+	};
+	function ticker() {
 	    opacity.unshift(opacity.pop());
 	    for (var i = 0; i < sectorsCount; i++) {
 	        sectors[i].attr("opacity", opacity[i]);
 	    }
 	    r.safari();
-	    tick = setTimeout(ticker, 1000 / sectorsCount);
-	})();
-	return function () {
-	    clearTimeout(tick);
-	    r.remove();
+		if (myspinner.runspinner)
+	    	setTimeout(ticker, 1000 / sectorsCount);
 	};
 }
 
 function showspinner()
 {
+	myspinner.begin();
 	$('#loading').css('display', 'inline');
 }
 
 function hidespinner()
 {
 	$('#loading').css('display', 'none');
+	myspinner.end();
 }
 
 //--------------------------------------//

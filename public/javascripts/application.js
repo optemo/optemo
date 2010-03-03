@@ -765,8 +765,8 @@ $(document).ready(function() {
 		return false;
 	});
 	
-	spinner("myspinner", 11, 20, 9, 5, "#000");
-	
+	myspinner = new spinner("myspinner", 11, 20, 9, 5, "#000");
+
 	if (!IS_SESSION_OLD) // Launch tour
 	{	
 		var browseposition = $("#sim0").offset();

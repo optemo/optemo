@@ -14,6 +14,7 @@ class CompareController < ApplicationController
   
   def compare
     hist = params[:hist].gsub(/\D/,'').to_i
+    #Going back to a previous search
     if hist
       search_history = Session.current.searches
       if hist < search_history.length && hist > 0
@@ -44,14 +45,15 @@ class CompareController < ApplicationController
   
   def sim
     cluster_id = params[:id]
+    cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
     if cluster_id.index('+')
-      cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
       #Merged Cluster
       cluster = MergedCluster.fromIDs(cluster_id.split('+'))
     else
       #Single, normal Cluster
       cluster = findCachedCluster(cluster_id)
     end
+    Session.current.search = Session.current.searches.last
     unless cluster.nil?
       if params[:ajax]
         classVariables(Search.createFromClustersAndCommit(cluster.children))
@@ -144,7 +146,7 @@ class CompareController < ApplicationController
           end
         end
       else
-        Session.current.clearFilters
+        Search.createInitialClusters
         Session.current.update_attribute('filter', true)
         Session.current.keyword = params[:search]
         Session.current.keywordpids = nodes.map{|p| "product_id = #{p.product_id}"}.join(' OR ')
