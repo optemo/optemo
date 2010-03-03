@@ -22,4 +22,4 @@
 	  <% end %>
 	<% end %>
 	<%= '</div>' if open %>
-	<div style="clear:both;"><span id="actioncount" style="display:none"><%= Session.current.searches.count %></span></div>
+	<div style="clear:both;"><span id="actioncount" style="display:none"><%= Session.current.searches.count %></span><%= '<span id="tourautostart">&nbsp;</span>' if (Session.current && (Time.now - Session.current.created_at < 3)) %></div>

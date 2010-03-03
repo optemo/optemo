@@ -31,23 +31,6 @@ var language;
 // The following is pulled from optemo.html.erb, which in turn checks GlobalDeclarations.rb
 var IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
 
-// This says true if the value is older than 30 seconds.
-var IS_SESSION_OLD = ($("#sessionOld").html() === 'true');
-
-if (typeof(ActiveXObject) != "undefined")
-{
-	if (typeof(window.XMLHttpRequest) == "undefined")
-		var browserIsIE = "MSIE6";
-	else if (typeof(XDomainRequest) == "undefined") // IE8 only has this
-		var browserIsIE = "MSIE7";
-	else 
-		var browserIsIE = "MSIE";
-}
-else
-{
-	var browserIsIE = "";
-}
-
 //--------------------------------------//
 //           UI Manipulation            //
 //--------------------------------------//
@@ -125,7 +108,7 @@ function renderComparisonProducts(id, imgurl, name)
 	" data-id=\""+id+"\" alt=\""+id+"_s\"/ width=\"50\">" + 
 	"<div class=\"smalldesc\"";
 	// It looks so much better in Firefox et al, so if there's no MSIE, go ahead with special styling.
-	if (browserIsIE.indexOf("MSIE") == -1) smallProductImageAndDetail = smallProductImageAndDetail + " style=\"position:absolute; bottom:5px;\"";
+	if ($.browser.msie) smallProductImageAndDetail = smallProductImageAndDetail + " style=\"position:absolute; bottom:5px;\"";
 	smallProductImageAndDetail = smallProductImageAndDetail + ">" +
 	"<a class=\"easylink\" data-id=\""+id+"\" href=\"#\">" + 
 	((name) ? getShortProductName(name) : 0) +
@@ -137,7 +120,7 @@ function renderComparisonProducts(id, imgurl, name)
 
 	$("#already_added_msg").css("display", "none");
 	$("#too_many_saved").css("display", "none");
-	if (browserIsIE.indexOf('MSIE') == -1) // If it's any browser other than IE, clear the height element.
+	if ($.browser.msie) // If it's any browser other than IE, clear the height element.
 		$("#savedproducts").css({"height" : ''});
 }
 
@@ -204,6 +187,14 @@ function histogram(element, norange) {
 	}
 	t.cplineTo(init+(data.length)*step+4,height,5);
 	t.andClose();
+}
+
+function launchtour() {
+	var browseposition = $("#sim0").offset();
+	$("#sim0").addClass('tourDrawAttention');
+	// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
+	$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
+	return false;
 }
 
 //--------------------------------------//
@@ -308,11 +299,11 @@ if (context == undefined && typeof($("#search").attr("autocomplete")) == 'undefi
 				helper: 'clone',
 				zIndex: 1000,
 				start: function(e, ui) { 
-					if (browserIsIE.indexOf('MSIE') == -1) // Internet Explorer sucks and cannot do transparency
+					if ($.browser.msie) // Internet Explorer sucks and cannot do transparency
 					$(this).css({'opacity':'0.4'});
 				},
 				stop: function (e, ui) {
-					if (browserIsIE.indexOf('MSIE') == -1)
+					if ($.browser.msie)
 						$(this).css({'opacity':'1'});
 				}
 			});
@@ -463,20 +454,13 @@ if (context == undefined && typeof($("#search").attr("autocomplete")) == 'undefi
 	});
 	
 	// Tour section	
-	$("#tourButton").click(function() {
-		var browseposition = $("#sim0").offset();
-		$("#sim0").addClass('tourDrawAttention');
-		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
-		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
-		return false;
-	});
+	
+	$('#tourautostart', context).each(launchtour); //Automatically launch tour
 	
 	$('.popupTour').each(function(){
 		$(this).find('.deleteX').click(function(){
 			$(this).parent().fadeOut("slow");
 			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
-//			This is required for simplelayout, not for the master branch.
-//			if (browserIsIE.indexOf("MSIE7") != -1) $("#sim0").parent().removeClass('tourDrawAttention');
 			return false;
 		});
 	});
@@ -487,7 +471,6 @@ if (context == undefined && typeof($("#search").attr("autocomplete")) == 'undefi
 		$("#popupTour1").fadeOut("slow");
 		$("#filterbar").addClass('tourDrawAttention');
 		$("#sim0").removeClass('tourDrawAttention');
-//		if (browserIsIE.indexOf("MSIE7") != -1) $("#sim0").parent().removeClass('tourDrawAttention');
 	});
 
 	$('#popupTour2').find('a.popupnextbutton').click(function(){
@@ -508,7 +491,7 @@ if (context == undefined && typeof($("#search").attr("autocomplete")) == 'undefi
 		if(e.keyCode==27){
 			$(".popupTour").fadeOut("slow");
 			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
-			if (browserIsIE.indexOf("MSIE7") != -1) $("#sim0").parent().removeClass('tourDrawAttention');
+			if ($.browser.msie && $.browser.version = "7.0") $("#sim0").parent().removeClass('tourDrawAttention');
 		}
 	});
 	
@@ -681,7 +664,7 @@ $(document).ready(function() {
 	if (savedProducts = readAllCookieValues('savedProductIDs'))
 	{
 		// There are saved products to display
-		if (browserIsIE.indexOf('MSIE') != -1) {
+		if ($.browser.msie) {
 			fixedheight = ((savedProducts.length > 2) ? 80 : 160) + 'px';
 			$("#savedproducts").css({"height" : fixedheight});
 		}
@@ -766,28 +749,10 @@ $(document).ready(function() {
 	});
 
 	myspinner = new spinner("myspinner", 11, 20, 9, 5, "#000");
-
-	if (!IS_SESSION_OLD) // Launch tour
-	{	
-		var browseposition = $("#sim0").offset();
-		// This is required for the simplelayout branch, but not for the master branch.	
-/*		if (browserIsIE.indexOf("MSIE7") != -1) // So, it works fine in IE5.5, IE6, and IE8... but not IE7. 
-		{
-			$("#sim0").parent().addClass('tourDrawAttention');			
-		}
-		else */
-		$("#sim0").addClass('tourDrawAttention');
-		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
-		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
-	}
-	if (browserIsIE.indexOf("MSIE6") != -1) // If it's IE6
-	{
-		// Make the PNG background transparent in IE6.
-		// This is not working right now. Need to launch without it.
-//		$('.navigator_box').supersleight();
-//		$('.sim').superslight();       
-	}
-	if (browserIsIE.indexOf("MSIE") != -1) // If it's any version of IE, the transparency for the hands doesn't get done properly on page load.
+	
+	$("#tourButton").click(launchtour); //Launch tour when this is clicked
+	
+	if ($.browser.msie) // If it's any version of IE, the transparency for the hands doesn't get done properly on page load.
 	{
 		$('.dragHand').each(function() {
 			$(this).fadeTo("fast", 0.35);

@@ -68,7 +68,6 @@
 </div>
 <div style="display:none;">
 <span id="dragDropEnabled"><%= $DragAndDropEnabled %></span>
-<span id="sessionOld"><%= 'true' if (Session.current && (Time.now - Session.current.created_at > 2)) %></span>
 <span id="seshid" session-id="<%= Session.current.id unless Session.current.nil? %>"><%= Session.current.id unless Session.current.nil? %></span>
 </div>
 
