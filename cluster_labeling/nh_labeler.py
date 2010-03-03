@@ -22,30 +22,6 @@ import cluster_labeling.stem_labels as stm
 import cluster_labeling.text_handling as th
 
 import cluster_labeling.pn_spellcheck as pnsc
-default_spellchecker_fn = '/optemo/site/cluster_labeling/spellchecker.pkl'
-
-def train_spellchecker_on_reviews\
-        (spellchecker_fn = default_spellchecker_fn):
-    spellchecker = pnsc.PNSpellChecker()
-
-    i = 0
-
-    content = ""
-    for review in optemo.CameraReview.get_manager().all():
-        i += 1
-        content += " " + review.content
-
-        print i, ": ", len(content)
-        
-        if len(content) > 2**20:
-            words = th.get_words_from_string(content)
-            spellchecker.train(words)
-            content = ""
-
-    words = th.get_words_from_string(content)
-    spellchecker.train(words)
-
-    pnsc.save_spellchecker(spellchecker, spellchecker_fn)
 
 def compute_wordcounts_for_review(content, spellchecker):
     wcs = {}
@@ -140,7 +116,7 @@ def compute_all_counts\
         (spellchecker = None,
         version=optemo.CameraCluster.get_latest_version()):
     if spellchecker == None:
-        spellchecker = pnsc.load_spellchecker(default_spellchecker_fn)
+        spellchecker = pnsc.PNSpellChecker.load_spellchecker(pnsc.default_spellchecker_fn)
     
     # All tables should be recreated, otherwise the resulting counts
     # will not be valid.

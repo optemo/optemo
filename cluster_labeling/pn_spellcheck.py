@@ -44,6 +44,8 @@ import re
 import operator
 import math
 
+import cPickle
+
 class PNSpellChecker():
     alphabet = 'abcdefghijklmnopqrstuvwxyz'
     nWords = {}
@@ -169,17 +171,43 @@ class PNSpellChecker():
         self.cache[word] = corr
         return corr
 
-import cPickle
-def save_spellchecker(schecker, fn):
-    output_fn = open(fn, 'wb')
-    cPickle.dump(schecker.nWords, output_fn)
-    output_fn.close()
+    def save_spellchecker(self, fn):
+        output_fn = open(fn, 'wb')
+        cPickle.dump(self.nWords, output_fn)
+        output_fn.close()
+    
+    @classmethod
+    def load_spellchecker(cls, fn):
+        input_fn = open(fn, 'rb')
+        nWords = cPickle.load(input_fn)
+        input_fn.close()
 
-def load_spellchecker(fn):
-    input_fn = open(fn, 'rb')
-    nWords = cPickle.load(input_fn)
-    input_fn.close()
+        schecker = PNSpellChecker()
+        schecker.nWords = nWords
+        return schecker
 
-    schecker = PNSpellChecker()
-    schecker.nWords = nWords
-    return schecker
+default_spellchecker_fn = '/optemo/site/cluster_labeling/spellchecker.pkl'
+
+import cluster_labeling.text_handling as th
+def train_spellchecker_on_reviews\
+        (spellchecker_fn = default_spellchecker_fn):
+    spellchecker = PNSpellChecker()
+
+    i = 0
+
+    content = ""
+    for review in optemo.CameraReview.get_manager().all():
+        i += 1
+        content += " " + review.content
+
+        print i, ": ", len(content)
+        
+        if len(content) > 2**20:
+            words = th.get_words_from_string(content)
+            spellchecker.train(words)
+            content = ""
+
+    words = th.get_words_from_string(content)
+    spellchecker.train(words)
+
+    spellchecker.save_spellchecker(spellchecker_fn)
