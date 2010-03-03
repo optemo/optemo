@@ -620,13 +620,13 @@ def combine_threshold_rules(cluster, fieldname, rules):
     else:
         return quality_desc[1][label_idx] + " " + quality_desc[0]
 
-import cluster_labeling.nh_labeler as nh
+import cluster_labeling.text_handling as th
 
 def combine_sgram_rules(fieldname, rules):
     # Just pick the first meaningful sgram and check whether it is a
     # positive label or a negative label.
     for rule in rules:
-        if nh.is_stopword(rule.sgram):
+        if th.is_stopword(rule.sgram):
             continue
             
         label = rule.sgram
