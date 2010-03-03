@@ -38,9 +38,6 @@ div#loading {
 	border: solid black 3px;
 	padding: 20px;
 }
-#loading div {
-	margin-top: -7px;
-}
 .close {
 	position: absolute;
 	top: -22px;

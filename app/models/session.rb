@@ -8,6 +8,7 @@ class Session < ActiveRecord::Base
   attr :keyword, true
   attr :keywordpids, true
   attr :version, true
+  attr :search, true
   def self.current
     @@current
   end
@@ -99,7 +100,11 @@ class Session < ActiveRecord::Base
   def features
     #Return row of Product's Feature table
     unless @features
-      @features = $featuremodel.find(:last, :conditions => ['session_id = ?', id])
+      if Session.current.search.nil?
+        @features = $featuremodel.find(:last, :conditions => ['session_id = ?', id])
+      else
+        @features = $featuremodel.find(:last, :conditions => ['session_id = ? and search_id = ?', id, Session.current.search.id])
+      end
     end
     @features
   end

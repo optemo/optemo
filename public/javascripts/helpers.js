@@ -34,20 +34,27 @@ eraseCookie(name)
 //--------------------------------------//
 
 /* Does a relatively generic ajax call and returns data to the handler below */
-function ajaxcall(myurl,mydata,isSearch) {
+function ajaxsend(hash,myurl,mydata) {
 	showspinner();
+	if (myurl != null)
+	{
 	$.ajax({
 		type: (mydata==null)?"GET":"POST",
 		data: (mydata==null)?"":mydata,
 		url: myurl,
 		success: ajaxhandler,
-		error: function(){
-			//if (language=="fr")
-			//	flashError('<div class="poptitle">&nbsp;</div><p class="error">Désolé! Une erreur s’est produite sur le serveur.</p><p>Vous pouvez <a href="" class="ajaxlink popuplink">réinitialiser</a> l’outil et constater si le problème persiste.</p>');
-			//else
-				flashError('<div class="poptitle">&nbsp;</div><p class="error">Sorry! An error has occured on the server.</p><p>You can <a href="" class="ajaxlink popuplink">reset</a> the tool and see if the problem is resolved.</p>');
-			}
+		error: ajaxerror
 	});
+	}
+	else if (typeof(hash) != "undefined" && hash != null)
+	{
+		$.ajax({
+			type: "GET",
+			url: "/compare/compare/?hist="+hash,
+			success: ajaxhandler,
+			error: ajaxerror
+		});
+	}
 }
 
 /* The ajax handler takes data from the ajax call and processes it according to some (unknown) rules. */
@@ -75,6 +82,24 @@ function ajaxhandler(data)
 		DBinit();
 		return 0;
 	}
+}
+
+function ajaxerror(){
+	//if (language=="fr")
+	//	flashError('<div class="poptitle">&nbsp;</div><p class="error">Désolé! Une erreur s’est produite sur le serveur.</p><p>Vous pouvez <a href="" class="ajaxlink popuplink">réinitialiser</a> l’outil et constater si le problème persiste.</p>');
+	//else
+		flashError('<div class="poptitle">&nbsp;</div><p class="error">Sorry! An error has occured on the server.</p><p>You can <a href="" class="ajaxlink popuplink">reset</a> the tool and see if the problem is resolved.</p>');
+}
+
+function ajaxcall(myurl,mydata)
+{
+	var path = location.hash.match(/#(\d+)$/);
+	if (typeof(path) != "undefined" && path != null)
+		var hash = parseInt(path[1])+1;
+	else
+		var hash = 1;
+	a = parseInt($("#actioncount").html()) + 1;
+	$.historyLoad(""+a,myurl,mydata);
 }
 
 /* Puts an ajax-related error message in a specific part of the screen */

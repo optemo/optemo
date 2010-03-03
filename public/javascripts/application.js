@@ -173,7 +173,7 @@ function submitsearch() {
 	piwikTracker2.setCustomData(searchinfo);
 	trackPage('goals/search');
 	piwikTracker2.setCustomData({});
-	ajaxcall("/compare/find?ajax=true", $("#search_form").serialize(), true);
+	ajaxcall("/compare/find?ajax=true", $("#search_form").serialize());
 	return false;
 }
 
@@ -697,6 +697,9 @@ $(document).ready(function() {
 		// 2. hide 'add stuff here' message
 		$("#deleteme").css("display", "none");
 	}
+	
+	$.historyInit(ajaxsend);
+	
 	DBinit();
 	
 	//Find product language

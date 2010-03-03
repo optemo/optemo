@@ -13,16 +13,35 @@ class CompareController < ApplicationController
   end
   
   def compare
-    classVariables(Search.createFromClustersAndCommit(params[:id].split('-')))
+    hist = params[:hist].gsub(/\D/,'').to_i
+    if hist
+      search_history = Session.current.searches
+      if hist < search_history.length && hist > 0
+        mysearch = search_history[hist-1]
+        Session.current.keywordpids = mysearch.searchpids 
+        Session.current.keyword = mysearch.searchterm
+        classVariables(mysearch)
+      else
+        Session.current.keywordpids = nil
+        Session.current.keyword = nil
+        classVariables(Search.createFromClustersAndCommit(initialClusters))
+      end
+    else
+      classVariables(Search.createFromClustersAndCommit(params[:id].split('-')))
+    end
     #No products found
     if @s.result_count == 0
       flash[:error] = "No products were found, so you were redirected to the home page"
       redirect_to "/compare/compare/"+initialClusters.join('-')
     end
+    if hist
+      render 'ajax', :layout => false
+    end
   end
   
   def classVariables(search)
     @s = search
+    Session.current.search = search
   end
   
   def sim

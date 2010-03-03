@@ -7,6 +7,7 @@ javascripts:
   - supersleight.plugin
   - jquery-ui-1.8rc3.custom.min
   - jquery.tablednd_0_5
+  - jquery.history
   - facebooksessionops
   - jquery.autocomplete.min
 stylesheets: 
