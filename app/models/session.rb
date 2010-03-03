@@ -75,7 +75,6 @@ class Session < ActiveRecord::Base
       clusters = searches.last.clusters
     else
       #Search is expanded, so use all products to begin with
-      current_version = Session.current.version
       clusters = findAllCachedClusters(0)
       clusters.delete_if{|c| c.isEmpty}
     end
@@ -101,9 +100,10 @@ class Session < ActiveRecord::Base
     #Return row of Product's Feature table
     unless @features
       if Session.current.search.nil?
-        @features = $featuremodel.find(:last, :conditions => ['session_id = ?', id])
+        debugger
       else
         @features = $featuremodel.find(:last, :conditions => ['session_id = ? and search_id = ?', id, Session.current.search.id])
+        @features = $featuremodel.new({'session_id' => id, 'search_id' => Session.current.search.id}) if @features.nil?
       end
     end
     @features

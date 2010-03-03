@@ -4,7 +4,7 @@ class CompareController < ApplicationController
   include CachingMemcached
   
   def index
-    classVariables(Search.createFromClustersAndCommit(initialClusters))
+    Search.createInitialClusters
     if params[:ajax]
       render 'ajax', :layout => false
     else
@@ -22,17 +22,15 @@ class CompareController < ApplicationController
         Session.current.keyword = mysearch.searchterm
         classVariables(mysearch)
       else
-        Session.current.keywordpids = nil
-        Session.current.keyword = nil
-        classVariables(Search.createFromClustersAndCommit(initialClusters))
+        Search.createInitialClusters
       end
     else
       classVariables(Search.createFromClustersAndCommit(params[:id].split('-')))
     end
     #No products found
-    if @s.result_count == 0
+    if Session.current.search.result_count == 0
       flash[:error] = "No products were found, so you were redirected to the home page"
-      redirect_to "/compare/compare/"+initialClusters.join('-')
+      redirect_to "/compare/compare/"
     end
     if hist
       render 'ajax', :layout => false
@@ -62,7 +60,7 @@ class CompareController < ApplicationController
         redirect_to "/compare/compare/"+cluster.children.map{|c|c.id}.join('-')
       end
     else
-      redirect_to initialClusters
+      redirect_to "/compare/compare/"
     end
   end
 
@@ -74,6 +72,7 @@ class CompareController < ApplicationController
     else
       #Fixes the fact that the brand selector value is not used
       params[:myfilter].delete("brand1")
+      Session.current.search = Session.current.searches.last #My last search used for finding the right filters
       session.updateFilters(params[:myfilter])
       clusters = session.clusters
       unless clusters.empty?
@@ -83,7 +82,7 @@ class CompareController < ApplicationController
         render 'ajax', :layout => false
       else
         session.rollback
-        @s = session.searches.last
+        Session.current.searches = session.searches.last
         @errortype = "filter"
         render 'error', :layout=>true
       end
@@ -125,7 +124,7 @@ class CompareController < ApplicationController
   
   def find
     if params[:search].blank? && params[:ajax]
-      classVariables(Search.createFromClustersAndCommit(initialClusters))
+      Search.createInitialClusters
       render 'ajax', :layout => false
     else
       product_ids = $model.search_for_ids(params[:search].downcase, :per_page => 10000, :star => true)
@@ -182,7 +181,7 @@ class CompareController < ApplicationController
     feature.destroy if feature
     newsearch = mysession.searches.last
     #In case back button is hit in the beginning
-    newsearch = Search.createFromClustersAndCommit(initialClusters) if newsearch.nil?
+    #newsearch = Search.createFromClustersAndCommit(initialClusters) if newsearch.nil?
     mysession.keywordpids = newsearch.searchpids 
     mysession.keyword = newsearch.searchterm
     classVariables(newsearch)

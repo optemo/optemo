@@ -12,13 +12,13 @@
 	</div>
 	
 	
-	<% for i in 0..[@s.cluster_count,$NumGroups].min-1 %>
+	<% for i in 0..[Session.current.search.cluster_count,$NumGroups].min-1 %>
 	  <% if i%(Float($NumGroups)/3).ceil == 0 %>
 		<div class="rowdiv">
 		<% open = true %>
 	  <% end %>
 	  <!-- Navbox partial to draw boxes -->
-	  <%= render :partial => 'navbox', :locals => {:i => i, :cluster => @s.clusters[i] , :group => @s.clusters[i].size>1} %>
+	  <%= render :partial => 'navbox', :locals => {:i => i, :cluster => Session.current.search.clusters[i] , :group => Session.current.search.clusters[i].size>1} %>
 	  <% if i%(Float($NumGroups)/3).ceil == (Float($NumGroups)/3).ceil - 1 %>
 		</div>
 		<% open = false %>

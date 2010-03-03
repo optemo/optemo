@@ -1,11 +1,11 @@
-<% self.title = "#{@s.desc} #{$model.urlname.capitalize}" %>
+<% self.title = "#{Session.current.search.desc} #{$model.urlname.capitalize}" %>
 <div id="leftbar">
 	<!-- The Search box -->
 	<div id='searchbox' class='leftboxes rounded_leftboxes rounded'>
 	<div class="tl"></div><div class="tr"></div>
 	<h2><%=t "products.compare.search" %></h2>
 	<% form_tag("/compare/find",{:id => 'search_form'}) do %>
-	  <%= @s.searchterm.blank? ? text_field_tag('search') : text_field_tag('search', @s.searchterm) %>
+	  <%= Session.current.keyword.blank? ? text_field_tag('search') : text_field_tag('search', Session.current.keyword) %>
 	  <%= submit_tag 'Search', {:id => 'submit_button'} %>
 	<% end %>
 	<div class="bl"></div><div class="br"></div>

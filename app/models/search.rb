@@ -250,6 +250,14 @@ class Search < ActiveRecord::Base
     createFromClustersAndCommit(clusters)
   end
   
+  def self.createInitialClusters
+    #Remove search terms
+    Session.current.keywordpids = nil
+    Session.current.keyword = nil
+    Session.current.filter = false #Maybe this should be saved
+    Session.current.search = self.createFromClustersAndCommit(Session.current.findAllCachedClusters(0))
+  end
+  
   def to_s
     clusters.map{|c|c.id}.join('-')
   end
