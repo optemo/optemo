@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import cluster_labeling.optemo_django_models as optemo
 
-import cluster_count_table as cct
-import cluster_totalcount_table as ctct
+import cluster_labeling.cluster_count_table as cct
+import cluster_labeling.cluster_totalcount_table as ctct
 
 # At the leaf clusters,
 # - wordcounts stores the number of a particular word found in all
