@@ -179,18 +179,4 @@ class CompareController < ApplicationController
     render 'searchterms', :layout => false
   end
   
-  def back
-    mysession = Session.current
-    #Remove last selection
-    destroyed_search = mysession.searches.last.destroy.id
-    feature = $featuremodel.find(:first, :conditions => ["session_id = ? and search_id = ?", mysession.id,destroyed_search])
-    feature.destroy if feature
-    newsearch = mysession.searches.last
-    #In case back button is hit in the beginning
-    #newsearch = Search.createFromClustersAndCommit(initialClusters) if newsearch.nil?
-    mysession.keywordpids = newsearch.searchpids 
-    mysession.keyword = newsearch.searchterm
-    classVariables(newsearch)
-    render 'ajax', :layout => false
-  end
 end
