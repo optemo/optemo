@@ -16,38 +16,50 @@ class StemLabel(local.LocalModel):
     label = models.CharField(max_length=255, unique=True)
     stem = models.CharField(max_length=255, unique=True)
 
-def build_stem_label_table\
-        (version=optemo.CameraCluster.get_latest_version()):
+class WordStem(local.LocalModel):
+    class Meta:
+        db_table='word_stems'
+    
+    word = models.CharField(max_length=255, unique=True)
+    stem = models.CharField(max_length=255)
+    count = models.BigIntegerField()
+
+def populate_word_stem_table():
+    WordStem.drop_table_if_exists()
+    WordStem.create_table()
+
+    for review in optemo.CameraReview.get_manager():
+        build_stem_labels_for_review(review)
+        content = review.content
+        words = th.get_words_from_string(content)
+
+        for word in words:
+            word_qs = WordStem.get_manager().filter(word=word)
+
+            assert(word_qs.count() <= 1)
+
+            if word_qs.count() == 1:
+                ws = word_qs[0]
+                ws.count = F('count') + 1
+            else:
+                stem = stemmer.stem(word)
+                ws = WordStem(word=word, stem=stem, count=1)
+            
+            ws.save()
+
+def populate_stem_label_table():
+    populate_word_stem_table()
+    
     StemLabel.drop_table_if_exists()
     StemLabel.create_table()
 
-    # Compute all stem labels
-    qs = optemo.CameraReview.get_manager().all()
-    for review in qs:
-        compute_stem_labels_for_review(review)
-
-@transaction.commit_on_success
-def compute_stem_labels_for_review(review):
-    content = review.content
-    words = th.get_words_from_string(content)
-
-    for word in words:
-        stem = stemmer.stem(word)
-        qs = StemLabel.get_manager().filter(stem=stem)
-
-        if qs.count() == 0:
-            sl = StemLabel(label=word, stem=stem)
-            sl.save()
-            continue
-
-        assert(qs.count() == 1)
-
-        sl = qs[0]
-        if len(sl.label) < len(word):
-            continue
-
-        sl.label = word
+    stem_qs = WordStem.get_manager().values('stem').distinct()
+    for stem in stem_qs:
+        label = WordStem.get_manager().filter(stem=stem).order_by('-count')[0]
+        sl = StemLabel(stem=stem, label=label)
         sl.save()
+
+    WordStem.drop_table()
 
 def get_stem_label(word):
     stem = stemmer.stem(word)
