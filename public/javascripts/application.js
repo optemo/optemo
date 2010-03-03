@@ -491,7 +491,7 @@ if (context == undefined && typeof($("#search").attr("autocomplete")) == 'undefi
 		if(e.keyCode==27){
 			$(".popupTour").fadeOut("slow");
 			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
-			if ($.browser.msie && $.browser.version = "7.0") $("#sim0").parent().removeClass('tourDrawAttention');
+			if ($.browser.msie && $.browser.version == "7.0") $("#sim0").parent().removeClass('tourDrawAttention');
 		}
 	});
 	
