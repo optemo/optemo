@@ -42,8 +42,9 @@ var myspinner = {
 //--------------------------------------//
 
 /* Does a relatively generic ajax call and returns data to the handler below */
-function ajaxsend(hash,myurl,mydata) {
-	showspinner();
+function ajaxsend(hash,myurl,mydata,hidespinner) {
+	if (hidespinner != true)
+		showspinner();
 	if (myurl != null)
 	{
 	$.ajax({
@@ -101,13 +102,8 @@ function ajaxerror(){
 
 function ajaxcall(myurl,mydata)
 {
-	var path = location.hash.match(/#(\d+)$/);
-	if (typeof(path) != "undefined" && path != null)
-		var hash = parseInt(path[1])+1;
-	else
-		var hash = 1;
-	a = parseInt($("#actioncount").html()) + 1;
-	$.historyLoad(""+a,myurl,mydata);
+	actioncount = parseInt($("#actioncount").html()) + 1;
+	$.historyLoad(""+actioncount,myurl,mydata);
 }
 
 /* Puts an ajax-related error message in a specific part of the screen */

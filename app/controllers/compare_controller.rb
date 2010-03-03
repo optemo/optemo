@@ -4,7 +4,11 @@ class CompareController < ApplicationController
   include CachingMemcached
   
   def index
-    Search.createInitialClusters
+    if Session.isCrawler?(request.user_agent) || params[:ajax]
+      Search.createInitialClusters
+    else
+      @indexload = true
+    end
     if params[:ajax]
       render 'ajax', :layout => false
     else
@@ -84,7 +88,7 @@ class CompareController < ApplicationController
         render 'ajax', :layout => false
       else
         session.rollback
-        Session.current.searches = session.searches.last
+        Session.current.search = session.searches.last
         @errortype = "filter"
         render 'error', :layout=>true
       end

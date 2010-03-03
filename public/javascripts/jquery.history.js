@@ -47,8 +47,9 @@ jQuery.extend({
 			
 			jQuery.isFirst = true;
 		}
-		if(current_hash)
-			jQuery.historyCallback(current_hash.replace(/^#/, ''));
+		//### Took out initial call for hash because we do this earlier in the load process
+		//if(current_hash)
+		//	jQuery.historyCallback(current_hash.replace(/^#/, ''));
 		setInterval(jQuery.historyCheck, 100);
 	},
 	

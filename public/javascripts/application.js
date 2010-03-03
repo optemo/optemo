@@ -764,7 +764,7 @@ $(document).ready(function() {
 		fadeout('/survey/index', null, 600, 300);
 		return false;
 	});
-	
+
 	myspinner = new spinner("myspinner", 11, 20, 9, 5, "#000");
 
 	if (!IS_SESSION_OLD) // Launch tour
@@ -795,3 +795,12 @@ $(document).ready(function() {
 	}
 });
 
+//Load start page via ajax
+if ($('#ajaxload'))
+{
+	if (location.hash)
+		ajaxsend(location.hash.replace(/^#/, ''),null,null,true);
+	else
+		ajaxsend(null,'/?ajax=true',null,true);
+	
+}
