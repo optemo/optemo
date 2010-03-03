@@ -22,7 +22,7 @@ def build_stem_label_table\
     StemLabel.create_table()
 
     # Compute all stem labels
-    qs = optemo.Review.get_manager().all()
+    qs = optemo.CameraReview.get_manager().all()
     for review in qs:
         compute_stem_labels_for_review(review)
 

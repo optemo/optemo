@@ -31,7 +31,7 @@ def train_spellchecker_on_reviews\
     i = 0
 
     content = ""
-    for review in optemo.Review.get_manager().all():
+    for review in optemo.CameraReview.get_manager().all():
         i += 1
         content += " " + review.content
 

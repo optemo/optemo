@@ -121,7 +121,7 @@ class Camera(OptemoModel):
         return cluster_qs
 
     def get_reviews(self):
-        return Review.get_manager().filter(product_id=self.id)
+        return CameraReview.get_manager().filter(product_id=self.id)
 
 class CameraNode(Node):
     class Meta:
