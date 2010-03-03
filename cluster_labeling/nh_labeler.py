@@ -139,13 +139,3 @@ def compute_all_counts\
         table.sum_child_cluster_totalcounts\
         (0, -1, root_children.count()),
         totalcount_tables)
-
-import cluster_labeling.nh_mi_scorer as mi_score
-import cluster_labeling.nh_chi_scorer as chi_score
-
-def gen_word_scores\
-        (version=optemo.CameraCluster.get_latest_version()):
-    compute_all_counts(version)
-    mi_score.compute_all_MI_scores(version)
-    chi_score.compute_all_chi_squared_scores(version)
-
