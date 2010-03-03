@@ -59,8 +59,6 @@ def populate_stem_label_table():
         sl = StemLabel(stem=stem, label=label)
         sl.save()
 
-    WordStem.drop_table()
-
 def get_stem_label(word):
     stem = stemmer.stem(word)
     qs = StemLabel.get_manager().filter(stem=stem)
