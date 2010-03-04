@@ -38,9 +38,6 @@ div#loading {
 	border: solid black 3px;
 	padding: 20px;
 }
-#loading div {
-	margin-top: -7px;
-}
 .close {
 	position: absolute;
 	top: -22px;
@@ -77,7 +74,7 @@ div .showtable{
 	margin-right:10px;
 	border: 1px dotted black;
 }
-div .accesories{
+div .accessories{
 	width: 300px;
 	text-align: center;
 	border: 2px solid black;
@@ -85,8 +82,9 @@ div .accesories{
 	height: 300px;
 	overflow: auto;
 	float:right;
+	display:inline;
 }
-.accesories img{
+.accessories img{
 	border: 1px solid black;
 	margin-left: 2px;
 }
@@ -111,6 +109,7 @@ div .spacer {
 	font-size: 0.8em;
 	margin:10px;
 	padding:5px;
+	display:inline;
 }
 #browseother {
 	margin-top: 5px;

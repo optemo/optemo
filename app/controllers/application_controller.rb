@@ -4,8 +4,6 @@ require 'GlobalDeclarations'
 # Likewise, all the methods added will be available for all controllers.
 
 class ApplicationController < ActionController::Base
-  
-  include CachingMemcached
   helper :all # include all helpers, all the time
   helper_method :title=, :full_title=, :describe=
   @description
@@ -101,13 +99,5 @@ class ApplicationController < ActionController::Base
   def describe=(mydescription)
     @description = mydescription
     @template.instance_variable_set("@description", @description)  # Necessary if set from view
-  end
-  
-  def initialClusters
-    Session.current.clearFilters
-    #Remove search terms
-    Session.current.keywordpids = nil
-    Session.current.keyword = nil
-    return findAllCachedClusters(0)
   end
 end

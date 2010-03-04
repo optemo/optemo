@@ -32,9 +32,6 @@ div#main {
 	border: 1px solid #d0d0d0;
 }
 
-.blacklink {
-	color: black;
-}
 #navigator_bar .smalllink{
 	font-size: 0.75em;
 	margin-left: 3px;
@@ -438,19 +435,6 @@ div.smalldesc {
 //              Tour popup              //
 //--------------------------------------*/
 
-/* #backgroundPopup{
-display:none;
-position:fixed;
-_position:absolute; // hack for internet explorer 6
-height:100%;
-width:100%;
-top:0;
-left:0;
-background:#000000;
-border:1px solid #cecece;
-z-index:1;
-}
-*/
 .popupTour{
 display:none;
 position:fixed;
@@ -550,10 +534,6 @@ display:block;
 	*/
 	line-height: 16px;
 	overflow: hidden;
-}
-
-.ac_loading {
-	background: white url('indicator.gif') right center no-repeat;
 }
 
 .ac_odd {

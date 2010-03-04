@@ -39,21 +39,21 @@ module CompareHelper
   end
   
   def navtitle
-    if @s.searchterm.nil?
-		  (@s.result_count > 1) ? t("products.compare.browsings",:count => @s.result_count) + $model.name + "s" : t("products.compare.browsing") + $model.name
-		  ["Browsing", @s.result_count,$RelativeDescriptions ? "<b>"+@s.searchDescription.map{|d|t("products."+d)}.join(", ")+"</b>" : nil, ($model.name == 'Camera' ? ((@s.result_count > 1) ? "Cameras" : "Camera") : ((@s.result_count > 1) ? "Printers" : "Printer"))].join(" ")
+    if Session.current.keyword.nil?
+		  (Session.current.search.result_count > 1) ? t("products.compare.browsings",:count => Session.current.search.result_count) + $model.name + "s" : t("products.compare.browsing") + $model.name
+		  ["Browsing", Session.current.search.result_count,$RelativeDescriptions ? "<b>"+Session.current.search.searchDescription.map{|d|t("products."+d)}.join(", ")+"</b>" : nil, ($model.name == 'Camera' ? ((Session.current.search.result_count > 1) ? "Cameras" : "Camera") : ((Session.current.search.result_count > 1) ? "Printers" : "Printer"))].join(" ")
 		else
-      "#{t("products.compare.search")}: '#{@s.searchterm}', #{(@s.result_count > 1) ? t("products.compare.browsings",:count => @s.result_count) : t("products.compare.browsing")}" 
+      "#{t("products.compare.search")}: '#{Session.current.keyword}', #{(Session.current.search.result_count > 1) ? t("products.compare.browsings",:count => Session.current.search.result_count) : t("products.compare.browsing")}" 
     end
   end
   
   def groupDesc(group, i)
     if $RelativeDescriptions
-      @s.relativeDescriptions[i].map{|d|t("products."+d)}.join(", ")
+      Session.current.search.relativeDescriptions[i].map{|d|t("products."+d)}.join(", ")
     else
       disptranslation = []
       dispString = ""
-	    @s.clusterDescription(i).compact.flatten.uniq.each do |property|
+	    Session.current.search.clusterDescription(i).compact.flatten.uniq.each do |property|
 	      disptranslation << t('products.' + property)
 	    end
 	    if group

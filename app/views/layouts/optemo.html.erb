@@ -66,9 +66,10 @@
 <div id="feedback">
 <%= image_tag "feedback#{fr?}.png" %>
 </div>
-<span id="dragDropEnabled" style="display:none;"><%= $DragAndDropEnabled %></span>
-<span id="sessionOld" style="display:none;"><%= 'true' if (Session.current && (Time.now - Session.current.created_at > 2)) %></span>
-<span id="seshid" session-id="<%= Session.current.id unless Session.current.nil? %>" style="display:none;"><%= Session.current.id unless Session.current.nil? %></span>
+<div style="display:none;">
+<span id="dragDropEnabled"><%= $DragAndDropEnabled %></span>
+<span id="seshid" session-id="<%= Session.current.id unless Session.current.nil? %>"><%= Session.current.id unless Session.current.nil? %></span>
+</div>
 
 <!--[if lt IE 7]><style>
 /* style for IE6 + IE5.5 + IE5.0 */
@@ -87,10 +88,9 @@
 </style><![endif]-->
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+<!-- This script is being included locally until the release of jquery-ui 1.8. -->
+<!--script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script -->
 <%= javascript_include_merged :base %>
-
-
 
 <script type="text/javascript" src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
 <script type="text/javascript"> FB.init('<%= $AppKey %>',"/xd_receiver.html");</script>
@@ -167,8 +167,7 @@ piwikTracker2.enableLinkTracking();
 	</p>
 </div>
 
-<!-- div id="tourButton"><input type="submit" value="Tour Launch" /></div -->
 <div id="backgroundPopup"></div>
-<div id="noJavascript" style="position:absolute; top: 40px; left:30px; width:250px; background: #FFFFFF; opacity:0.8"><b>Javascript is disabled.</b>For full functionality of the discovery browser, please enable javascript.</div>
+<noscript><div id="noJavascript" style="position:absolute; top: 40px; left:30px; width:250px; background: #FFFFFF; opacity:0.8"><b>Javascript is disabled.</b>For full functionality of the discovery browser, please enable javascript.</div></noscript>
 </body>
 </html>
