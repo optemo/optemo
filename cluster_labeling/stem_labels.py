@@ -54,8 +54,9 @@ def populate_stem_label_table():
     StemLabel.create_table()
 
     stem_qs = WordStem.get_manager().values('stem').distinct()
-    for stem in stem_qs:
-        label = WordStem.get_manager().filter(stem=stem).order_by('-count')[0]
+    for row in stem_qs:
+        stem = row['stem']
+        label = WordStem.get_manager().filter(stem=stem).order_by('-count')[0].word
         sl = StemLabel(stem=stem, label=label)
         sl.save()
 
