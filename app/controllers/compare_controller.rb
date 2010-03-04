@@ -17,7 +17,7 @@ class CompareController < ApplicationController
   end
   
   def compare
-    hist = params[:hist].gsub(/\D/,'').to_i
+    hist = params[:hist].gsub(/\D/,'').to_i if params[:hist]
     #Going back to a previous search
     if hist
       search_history = Session.current.searches
