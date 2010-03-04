@@ -26,6 +26,15 @@
    document.ready()  -  The jquery call that gets everything started.
 
 */
+//Load start page via ajax
+if ($('#ajaxload'))
+{
+	if (location.hash)
+		ajaxsend(location.hash.replace(/^#/, ''),null,null,true);
+	else
+		ajaxsend(null,'/?ajax=true',null,true);
+	
+}
 
 var language;
 // The following is pulled from optemo.html.erb, which in turn checks GlobalDeclarations.rb
@@ -113,7 +122,7 @@ function renderComparisonProducts(id, imgurl, name)
 	"<a class=\"easylink\" data-id=\""+id+"\" href=\"#\">" + 
 	((name) ? getShortProductName(name) : 0) +
 	"</a></div>" + 
-	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\" onClick=\"javascript:removeFromComparison("+id+")\">" + 
+	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\" onClick=\"javascript:removeFromComparison("+id+");return false;\">" + 
 	"<img src=\"/images/close.png\" alt=\"Close\"/></a>"; // do we need '?1258398853' ? I doubt it.
 	$(smallProductImageAndDetail).appendTo('#c'+id);
 	DBinit("#c"+id)
@@ -245,52 +254,77 @@ function trackCategorical(name, val, type){
 //--------------------------------------//
 
 function DBinit(context) {
-
-if (context == undefined && typeof($("#search").attr("autocomplete")) == 'undefined') {
-		$.ajax({
-			type: "GET",
-			data: "",
-			url: "/compare/searchterms",
-			success: function (data) {
-				// autocomplete is expecting data like this:
-				// "Lexmark[BRK]Metered[BRK]DeskJet"
-				terms = data.split('[BRK]');
-				$("#search").autocomplete(terms, {
-					minChars: 1,
-					max: 10,
-					autoFill: false,
-					mustMatch: false,
-					matchContains: true,
-					scrollHeight: 220
-				});
-			}
-		});
-	}
-
-	$("#comparisonTable").tableDnD({
+console.log("Calling DBinit with context: "+context);
+	
+	//-------Info Popup--------//
+	$("#comparisonTable",context).tableDnD({
 		onDragClass: "rowBeingDragged",
 		onDrop: function(table, row){		
 			newPreferencesString = $.tableDnD.serialize();
 		}
 	});
 	
-	// With the image getting cloned for drag and drop, it's fine to keep the click handler.
-	// But it's important to check that $(".productimg") actually exists, for cases of images being missing.
-	if ($(".productimg").length)
-	{
-		$(".productimg",context).click(function (){
-			fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
-			trackPage('products/show/'+$(this).attr('data-id')); 
-			// As far as I can tell, the following line is deprecated. ZAT Dec 2009
-			//trackPage($(this).attr('href'));
-			return false;
-		});
-	}
+	//Link from popup (used for error messages)
+	$('.popuplink', context).click(function(){
+		ajaxcall($(this).attr('href')+'?ajax=true');
+		fadein();
+		return false;
+	});
+	
+	//Remove buttons on compare
+	$('.remove', context).click(function(){
+		removeFromComparison($(this).attr('data-name'));
+		$(this).parents('.column').remove();
+		return false;
+	});
+	
+	$('.buylink, .buyimg', context).click(function(){
+		var buyme_id = $(this).attr('product');
+		trackPage('goals/addtocart/'+buyme_id);
+	});
+	
+	$('#yesdecisionsubmit', context).click(function(){
+		trackPage('survey/yes');
+		fadeout('/survey/index', null, 600, 835);
+		return false;
+	});
+
+	$('#nodecisionsubmit', context).click(function(){
+		fadein();
+		trackPage('survey/no');
+		return false;
+	});
+	
+	$('#surveysubmit', context).click(function(){
+		trackPage('survey/submit');
+		$('#feedback').css('display','none');
+		fadeout('/survey/submit?' + $("#surveyform").serialize(), null, 300, 70);
+		return false;
+	});
+	
+	//--------Product Section-------//
+	//Used in Main Section and Saved items box
+	
+	$(".productimg",context).click(function (){
+		fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
+		trackPage('products/show/'+$(this).attr('data-id')); 
+		return false;
+	});
+	
+	// However, always add it to the link below the image.
+	$(".easylink",context).click(function() {
+		fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
+		trackPage('products/show/'+$(this).attr('data-id')); 
+		//trackPage($(this).attr('href'));
+		return false;
+	});
+	
+	//-------Main Section-------//
 	
 	if (IS_DRAG_DROP_ENABLED)
 	{
 		// Make item boxes draggable. This is a jquery UI builtin.		
-		$(".image_boundingbox img").each(function() {
+		$(".image_boundingbox img",context).each(function() {
 			$(this).draggable({ 
 				revert: 'invalid', 
 				cursor: "move", 
@@ -314,28 +348,24 @@ if (context == undefined && typeof($("#search").attr("autocomplete")) == 'undefi
 	            	$(this).find('.dragHand').stop().animate({ opacity: 0.35 }, 450);
            });
 	    });
-	
-		// Make savebar area droppable. jquery UI builtin.
-		$("#savebar").each(function() {
-			$(this).droppable({ 
-				hoverClass: 'drop-box-hover',
-				activeClass: 'ui-state-dragging', 
-				accept: ".ui-draggable",
-				drop: function (e, ui) {
-					imgObj = $(ui.helper);
-					saveProductForComparison(imgObj.attr('data-id'), imgObj.attr('src'), imgObj.attr('alt'));
-				}
-			 });
-		});
 	}
 	
-	// However, always add it to the link below the image.
-	$(".easylink",context).click(function() {
-		fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
-		trackPage('products/show/'+$(this).attr('data-id')); 
-		//trackPage($(this).attr('href'));
+	//Ajax call for simlinks
+	$('.simlinks, .productlink',context).click(function(){ 
+		ajaxcall($(this).attr('href')+'?ajax=true');
+		
+		linkinfo = {'product_picked' : $(this).attr('data-id') , 'optemo_session': parseInt($('#seshid').attr('session-id'))};
+		morestuff = getAllShownProductIds(); 
+		linkinfo['product_ignored'] = morestuff;
+		piwikTracker2.setCustomData(linkinfo);
+		trackPage('goals/browse');
+		piwikTracker2.setCustomData({});
 		return false;
 	});
+	
+	$('#tourautostart', context).each(launchtour); //Automatically launch tour
+	
+	//-------Filters Section-------//
 	
 	//Show and Hide Descriptions
 	$('.feature .label a, .feature .deleteX',context).click(function(){
@@ -351,7 +381,7 @@ if (context == undefined && typeof($("#search").attr("autocomplete")) == 'undefi
 	});
 	
 	//Show Additional Features
-	$('#morefilters').click(function(){
+	$('#morefilters',context).click(function(){
 		$('.extra').show("slide",{direction: "up"},100);
 		$(this).css('display','none');
 		$('#lessfilters').css('display','block');
@@ -359,7 +389,7 @@ if (context == undefined && typeof($("#search").attr("autocomplete")) == 'undefi
 	});
 	
 	//Hide Additional Features
-	$('#lessfilters').click(function(){
+	$('#lessfilters',context).click(function(){
 		$('.extra').hide("slide",{direction: "up"},100);
 		$(this).css('display','none');
 		$('#morefilters').css('display','block');
@@ -396,103 +426,6 @@ if (context == undefined && typeof($("#search").attr("autocomplete")) == 'undefi
 		submitCategorical();
 		trackCategorical(whichbrand,0,2);
 		return false;
-	});
-	
-	//Ajax call for simlinks
-	$('.simlinks, .productlink',context).click(function(){ 
-		ajaxcall($(this).attr('href')+'?ajax=true');
-		
-		linkinfo = {'product_picked' : $(this).attr('data-id') , 'optemo_session': parseInt($('#seshid').attr('session-id'))};
-		morestuff = getAllShownProductIds(); 
-		linkinfo['product_ignored'] = morestuff;
-		piwikTracker2.setCustomData(linkinfo);
-		trackPage('goals/browse');
-		piwikTracker2.setCustomData({});
-		return false;
-	});
-	
-	$('.ajaxlink',context).click(function(){
-		ajaxcall($(this).attr('href')+'?ajax=true');
-		return false;
-	});
-	
-	//Link from popup
-	$('.popuplink', context).click(function(){
-		fadein();
-		return false;
-	});
-	
-	//Remove buttons on compare
-	$('.remove', context).click(function(){
-		removeFromComparison($(this).attr('data-name'));
-		$(this).parents('.column').remove();
-		return false;
-	});
-	
-	$('.buylink, .buyimg', context).click(function(){
-		var buyme_id = $(this).attr('product');
-		trackPage('goals/addtocart/'+buyme_id);
-	});
-	
-	$('#yesdecisionsubmit', context).click(function(){
-		trackPage('survey/yes');
-		fadeout('/survey/index', null, 600, 835);
-		return false;
-	});
-
-	$('#nodecisionsubmit', context).click(function(){
-		fadein();
-		trackPage('survey/no');
-		return false;
-	});
-	
-	$('#surveysubmit', context).click(function(){
-		trackPage('survey/submit');
-		$('#feedback').css('display','none');
-		fadeout('/survey/submit?' + $("#surveyform").serialize(), null, 300, 70);
-		return false;
-	});
-	
-	// Tour section	
-	
-	$('#tourautostart', context).each(launchtour); //Automatically launch tour
-	
-	$('.popupTour').each(function(){
-		$(this).find('.deleteX').click(function(){
-			$(this).parent().fadeOut("slow");
-			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
-			return false;
-		});
-	});
-	
-	$('#popupTour1').find('a.popupnextbutton').click(function(){
-		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
-		$("#popupTour2").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
-		$("#popupTour1").fadeOut("slow");
-		$("#filterbar").addClass('tourDrawAttention');
-		$("#sim0").removeClass('tourDrawAttention');
-	});
-
-	$('#popupTour2').find('a.popupnextbutton').click(function(){
-		var comparisonposition = $("#savebar").offset();
-		$("#popupTour3").css({"position":"absolute", "top" : parseInt(comparisonposition.top) + 160, "left" : parseInt(comparisonposition.left) + 70}).fadeIn("slow");
-		$("#popupTour2").fadeOut("slow");
-		$("#savebar").addClass('tourDrawAttention');
-		$("#filterbar").removeClass('tourDrawAttention');
-	});
-	
-	$('#popupTour3').find('a.popupnextbutton').click(function(){
-		$("#popupTour3").fadeOut("slow");
-		$("#savebar").removeClass('tourDrawAttention');
-	});
-	
-	// On escape press. Probably not needed anymore.
-	$(document).keypress(function(e){
-		if(e.keyCode==27){
-			$(".popupTour").fadeOut("slow");
-			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
-			if ($.browser.msie && $.browser.version == "7.0") $("#sim0").parent().removeClass('tourDrawAttention');
-		}
 	});
 	
 	// Set up sliders
@@ -659,7 +592,7 @@ if (context == undefined && typeof($("#search").attr("autocomplete")) == 'undefi
 
 $(document).ready(function() {
 	// Due to a race condition in IE6, this must be before DBinit().
-	$('#noJavascript').hide();
+	
 	var tokenizedArrayID = 0;
 	if (savedProducts = readAllCookieValues('savedProductIDs'))
 	{
@@ -683,7 +616,9 @@ $(document).ready(function() {
 	
 	$.historyInit(ajaxsend);
 	
-	DBinit();
+	//Only load DBinit if it will not be loaded by the upcoming ajax call
+	if (!$('#ajaxload'))
+		DBinit();
 	
 	//Find product language
 	language = (/^\s*English/.test($(".languageoptions:first").html())==true)?'en':'fr';
@@ -701,6 +636,22 @@ $(document).ready(function() {
 		return false;
 	});
     
+	if (IS_DRAG_DROP_ENABLED)
+	{
+		// Make savebar area droppable. jquery UI builtin.
+		$("#savebar").each(function() {
+			$(this).droppable({ 
+				hoverClass: 'drop-box-hover',
+				activeClass: 'ui-state-dragging', 
+				accept: ".ui-draggable",
+				drop: function (e, ui) {
+					imgObj = $(ui.helper);
+					saveProductForComparison(imgObj.attr('data-id'), imgObj.attr('src'), imgObj.attr('alt'));
+				}
+			 });
+		});
+	}
+	
 	//Call overlay for product comparison
 	$("#compare_button").click(function(){
 		var productIDs = '';
@@ -747,6 +698,66 @@ $(document).ready(function() {
 		fadeout('/survey/index', null, 600, 300);
 		return false;
 	});
+	
+	//Tour section
+	
+	$('.popupTour').each(function(){
+		$(this).find('.deleteX').click(function(){
+			$(this).parent().fadeOut("slow");
+			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
+			return false;
+		});
+	});
+	
+	$('#popupTour1').find('a.popupnextbutton').click(function(){
+		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
+		$("#popupTour2").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
+		$("#popupTour1").fadeOut("slow");
+		$("#filterbar").addClass('tourDrawAttention');
+		$("#sim0").removeClass('tourDrawAttention');
+	});
+
+	$('#popupTour2').find('a.popupnextbutton').click(function(){
+		var comparisonposition = $("#savebar").offset();
+		$("#popupTour3").css({"position":"absolute", "top" : parseInt(comparisonposition.top) + 160, "left" : parseInt(comparisonposition.left) + 70}).fadeIn("slow");
+		$("#popupTour2").fadeOut("slow");
+		$("#savebar").addClass('tourDrawAttention');
+		$("#filterbar").removeClass('tourDrawAttention');
+	});
+	
+	$('#popupTour3').find('a.popupnextbutton').click(function(){
+		$("#popupTour3").fadeOut("slow");
+		$("#savebar").removeClass('tourDrawAttention');
+	});
+	
+	// On escape press. Probably not needed anymore.
+	$(document).keypress(function(e){
+		if(e.keyCode==27){
+			$(".popupTour").fadeOut("slow");
+			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
+			if ($.browser.msie && $.browser.version == "7.0") $("#sim0").parent().removeClass('tourDrawAttention');
+		}
+	});
+
+	//Autocomplete for searchterms
+	$.ajax({
+		type: "GET",
+		data: "",
+		url: "/compare/searchterms",
+		success: function (data) {
+			// autocomplete is expecting data like this:
+			// "Lexmark[BRK]Metered[BRK]DeskJet"
+			terms = data.split('[BRK]');
+			$("#search").autocomplete(terms, {
+				minChars: 1,
+				max: 10,
+				autoFill: false,
+				mustMatch: false,
+				matchContains: true,
+				scrollHeight: 220
+			});
+		}
+	});
 
 	myspinner = new spinner("myspinner", 11, 20, 9, 5, "#000");
 	
@@ -760,12 +771,3 @@ $(document).ready(function() {
 	}
 });
 
-//Load start page via ajax
-if ($('#ajaxload'))
-{
-	if (location.hash)
-		ajaxsend(location.hash.replace(/^#/, ''),null,null,true);
-	else
-		ajaxsend(null,'/?ajax=true',null,true);
-	
-}

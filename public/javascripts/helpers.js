@@ -88,16 +88,16 @@ function ajaxhandler(data)
 		$('#main').html(parts[1]);
 		$('#search').attr('value',parts[2]);
 		hidespinner();
-		DBinit();
+		DBinit('#ajaxfilter, #main, #search');
 		return 0;
 	}
 }
 
 function ajaxerror(){
 	//if (language=="fr")
-	//	flashError('<div class="poptitle">&nbsp;</div><p class="error">Désolé! Une erreur s’est produite sur le serveur.</p><p>Vous pouvez <a href="" class="ajaxlink popuplink">réinitialiser</a> l’outil et constater si le problème persiste.</p>');
+	//	flashError('<div class="poptitle">&nbsp;</div><p class="error">Désolé! Une erreur s’est produite sur le serveur.</p><p>Vous pouvez <a href="" class="popuplink">réinitialiser</a> l’outil et constater si le problème persiste.</p>');
 	//else
-		flashError('<div class="poptitle">&nbsp;</div><p class="error">Sorry! An error has occured on the server.</p><p>You can <a href="" class="ajaxlink popuplink">reset</a> the tool and see if the problem is resolved.</p>');
+		flashError('<div class="poptitle">&nbsp;</div><p class="error">Sorry! An error has occured on the server.</p><p>You can <a href="" class="popuplink">reset</a> the tool and see if the problem is resolved.</p>');
 }
 
 function ajaxcall(myurl,mydata)
