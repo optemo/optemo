@@ -254,7 +254,6 @@ function trackCategorical(name, val, type){
 //--------------------------------------//
 
 function DBinit(context) {
-console.log("Calling DBinit with context: "+context);
 	
 	//-------Info Popup--------//
 	$("#comparisonTable",context).tableDnD({
