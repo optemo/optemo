@@ -24,24 +24,20 @@ import cluster_labeling.text_handling as th
 import cluster_labeling.pn_spellcheck as pnsc
 
 def compute_wordcounts_for_review(content, spellchecker):
-    wcs = {}
-
     words = th.get_words_from_string(content)
 
     # Perform spell-checking
     words = map(spellchecker.correct, words)
 
+    # Perform stemming
+    words = map(stm.get_stem_label, words)
+
     # Populate word counts
+    wcs = {}
     for word in words:
         wcs[word] = wcs.get(word, 0) + 1
 
-    # Create a stemmed wordcount
-    wcs_stemmed = {}
-    for (k,v) in wcs.iteritems():
-        stem_label = stm.get_stem_label(k)
-        wcs_stemmed[stem_label] = wcs_stemmed.get(stem_label, 0) + v
-
-    return wcs_stemmed
+    return wcs
 
 def compute_counts_for_product(product, spellchecker):
     reviews = product.get_reviews()
