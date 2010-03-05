@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from __future__ import division
+import enchant
 
 # This soundex implementation is taken from:
 # http://code.activestate.com/recipes/52213/
@@ -53,6 +54,8 @@ class PNSpellChecker():
 
     cache = {}
 
+    en_dict = enchant.Dict('en_US')
+
     def train(self, words):
         for w in words:
             w = w.lower()
@@ -105,6 +108,12 @@ class PNSpellChecker():
         
         return e2_table
 
+    def is_in_dictionary(self, word):
+        return PNSpellChecker.en_dict.check(word)
+
+    def prune_non_dictionary_words(self, etable):
+        return dict([(k, v) for k, v in etable.iteritems() if self.is_in_dictionary(k)])
+
     def prune_unknown(self, etable):
         return dict([(k, v) for k, v in etable.iteritems() if k in self.nWords])
 
@@ -145,10 +154,25 @@ class PNSpellChecker():
         if word in self.cache:
             return self.cache[word]
 
+        if self.is_in_dictionary(word):
+            self.cache[word] = word
+            return word
+
         candidates = {}
         candidates.update(self.known_edits2(word))
         candidates.update(self.prune_unknown(self.edits1(word)))
+
+        if len(candidates) == 0:
+            return word
+
         candidates.update({word : word})
+
+        candidates_indict = \
+            self.prune_non_dictionary_words(candidates)
+        if len(candidates_indict) > 0:
+            candidates = candidates_indict
+        else:
+            candidates_indict = None
 
         candidates = \
             dict((k, self.compute_change_score(word, v))
