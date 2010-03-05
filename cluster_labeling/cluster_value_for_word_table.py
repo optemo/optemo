@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from django.db import models
 from django.db import transaction
+from django.db.models import F
 
 import cluster_labeling.local_django_models as local
 
