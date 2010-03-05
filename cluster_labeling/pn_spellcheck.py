@@ -94,15 +94,11 @@ class PNSpellChecker():
         e2_table = {}
         for (e1, e1_align) in e1_table.iteritems():
             e2_table_add = {}
-            
-            if len(e1) == len(e1_align) - 1:
-                # This was a delete - need to remove the '\0's
-                self.fill_edits_table(e2_table_add, e1, e1_align)
-                e2_table_add = dict([(re.sub('\0', '', k), v) for k, v in
-                                     e2_table_add.iteritems()])
-            else:
-                assert(len(e1) == len(e1_align))
-                self.fill_edits_table(e2_table_add, e1, e1_align)
+                
+            self.fill_edits_table(e2_table_add, e1, e1_align)
+            e2_table_add = \
+                dict([(re.sub('\0', '', k.lower()), v)
+                      for (k, v ) in e2_table_add.iteritems()])
 
             e2_table.update(self.prune_unknown(e2_table_add))
         
