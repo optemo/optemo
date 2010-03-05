@@ -60,9 +60,15 @@ def populate_stem_label_table():
         sl = StemLabel(stem=stem, label=label)
         sl.save()
 
+stem_label_cache = {}
 def get_stem_label(word, throw_if_not_found=False):
     stem = stemmer.stem(word)
+
+    if stem in stem_label_cache:
+        return stem_label_cache[stem]
+
     qs = StemLabel.get_manager().filter(stem=stem)
+    assert(qs.count() <= 1)
 
     if qs.count() == 0:
         if throw_if_not_found:
@@ -71,4 +77,7 @@ def get_stem_label(word, throw_if_not_found=False):
         else:
             return stem
 
-    return qs[0].label
+    stem_label = qs[0].label
+    stem_label_cache[stem] = stem_label
+    return stem_label
+
