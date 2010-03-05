@@ -167,13 +167,6 @@ class PNSpellChecker():
 
         candidates.update({word : word})
 
-        candidates_indict = \
-            self.prune_non_dictionary_words(candidates)
-        if len(candidates_indict) > 0:
-            candidates = candidates_indict
-        else:
-            candidates_indict = None
-
         candidates = \
             dict((k, self.compute_change_score(word, v))
                  for k, v in candidates.iteritems())
