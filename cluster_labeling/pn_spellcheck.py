@@ -142,7 +142,7 @@ class PNSpellChecker():
                     change_score += 4
             elif (sndex_w[i] == '0' and sndex_c[i] == '\0') or \
                  (sndex_w[i] == '\0' and sndex_c[i] == '0'):
-                continue # Deletions of vowels is okay
+                change_score += 0.5 # Deletions of vowels is more okay
             else:
                 change_score += 1
 
