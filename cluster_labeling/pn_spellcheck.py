@@ -197,15 +197,25 @@ class PNSpellChecker():
 
         candidates = \
             dict([(k,
-                   1 * (1 if self.is_in_dictionary(k) else 0) +
-                   5 * (s/max_change_score) + \
-                   1 * (wordcounts[k]/max_wordcount))
+                   self.combine_scores(k, s, wordcounts,
+                                       max_wordcount, max_change_score))
                   for k, s in change_scores.iteritems()])
 
         corr = max(candidates.iteritems(),
                    key=operator.itemgetter(1))[0]
         self.cache[word] = corr
         return corr
+
+    def combine_scores(self, candidate, score, wordcounts,
+                       max_wordcount, max_change_score):
+        combined_score = 1 * (1 if self.is_in_dictionary(candidate) else 0) + \
+                         1 * (wordcounts[candidate]/max_wordcount)
+        
+        if max_change_score == 0:
+            return combined_score
+
+        combined_score += 5 * (combined_score/max_change_score)
+        return combined_score
 
     def save_spellchecker(self, fn):
         output_fn = open(fn, 'wb')
