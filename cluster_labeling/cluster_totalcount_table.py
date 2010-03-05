@@ -2,10 +2,11 @@
 from django.db import models
 
 from django.db.models import Sum
+from django.db.models import F
 
 import cluster_labeling.local_django_models as local
 
-class ClusterTotalCount(local.LocalInsertOnlyModel):
+class ClusterTotalCount(local.LocalModel):
     class Meta:
         abstract = True
         unique_together = (("cluster_id"))
@@ -35,6 +36,25 @@ class ClusterTotalCount(local.LocalInsertOnlyModel):
                 totalcount=totalcount_sum,
                 numchildren=numchildren)
         cluster_totalcount.save()
+
+    @classmethod
+    def increment_totalcount(cls, cluster_id, parent_cluster_id,
+                             numclusterchildren, totalcount):
+        kwargs = {"cluster_id" : cluster_id,
+                  "parent_cluster_id" : parent_cluster_id,
+                  "numchildren" : numclusterchildren}
+        qs = cls.get_manager().filter(**kwargs)
+
+        assert(qs.count() <= 1)
+
+        if qs.count() == 0:
+            kwargs['totalcount'] = totalcount
+            cluster_value = cls(**kwargs)
+            cluster_value.save()
+        else:
+            cluster_value = qs[0]
+            cluster_value.totalcount = F('totalcount') + totalcount
+            cluster_value.save()
 
     @classmethod
     def get_value(cls, cluster_id):

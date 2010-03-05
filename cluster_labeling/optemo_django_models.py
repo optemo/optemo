@@ -25,6 +25,9 @@ class Cluster(OptemoModel):
     cluster_size = models.IntegerField()
     brand = models.CharField(max_length=255)
 
+    def get_products(self):
+        raise_abstract_method_error()
+
     def get_children(self):
         raise_abstract_method_error()
 
@@ -54,6 +57,9 @@ class Cluster(OptemoModel):
 class CameraCluster(Cluster):
     class Meta:
         db_table = 'camera_clusters'
+
+    def get_products(self):
+        return Camera.get_manager().filter(cameranode__cluster__id=self.id)
 
     def get_children(self):
         return CameraCluster.get_manager().filter(parent_id=self.id)

@@ -64,36 +64,33 @@ def compute_counts_for_cluster(cluster, spellchecker):
     numchildren = children.count()
     
     if numchildren == 0:
-        nodes = cluster.get_nodes()
-        assert(nodes.count() == 1)
+        for product in cluster.get_products():
+            wordcount, reviewcount, prodcount = \
+                compute_counts_for_product(product, spellchecker)
 
-        product = nodes[0].product
-        wordcount, reviewcount, prodcount = \
-            compute_counts_for_product(product, spellchecker)
+            map(lambda table, counts:
+                table.increment_values_from\
+                (cluster.id, cluster.parent_id, numchildren, counts),
+                count_tables, [prodcount, wordcount, reviewcount])
 
-        map(lambda table, counts:
-            table.add_values_from(cluster.id, cluster.parent_id,
-                                  numchildren, counts),
-            count_tables, [prodcount, wordcount, reviewcount])
+            totalcounts_to_mod_values = [1]
+            totalcounts_to_mod = [ctct.ClusterProdTotalCount]
 
-        totalcounts_to_mod_values = [1]
-        totalcounts_to_mod = [ctct.ClusterProdTotalCount]
+            # Total counts for reviews and words only need to be added
+            # if the product actually contains reviews.
+            if wordcount != {}:
+                totalcounts_to_mod_values.extend\
+                ([sum(wordcount.itervalues()),
+                  product.get_reviews().count()])
+                totalcounts_to_mod.extend\
+                ([ctct.ClusterWordTotalCount,
+                  ctct.ClusterReviewTotalCount])
+                
+            map(lambda table, totalcount:
+                table.increment_totalcount\
+                (cluster.id, cluster.parent_id, 0, totalcount),
+                totalcounts_to_mod, totalcounts_to_mod_values)
 
-        # Total counts for reviews and words only need to be added if
-        # the product actually contains reviews.
-        if wordcount != {}:
-            totalcounts_to_mod_values.extend\
-            ([sum(wordcount.itervalues()),
-              product.get_reviews().count()])
-            totalcounts_to_mod.extend([ctct.ClusterWordTotalCount,
-                                       ctct.ClusterReviewTotalCount])
-
-        map(lambda table, totalcount:
-            table\
-            (cluster_id = cluster.id,
-             parent_cluster_id = cluster.parent_id,
-             totalcount = totalcount, numchildren = 0).save(),
-            totalcounts_to_mod, totalcounts_to_mod_values)
     else:
         map(lambda child:
             compute_counts_for_cluster(child, spellchecker),

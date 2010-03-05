@@ -4,7 +4,7 @@ from django.db import transaction
 
 import cluster_labeling.local_django_models as local
 
-class ClusterValueForWord(local.LocalInsertOnlyModel):
+class ClusterValueForWord(local.LocalModel):
     class Meta:
         abstract = True
         unique_together = (("cluster_id", "word"))
@@ -27,6 +27,28 @@ class ClusterValueForWord(local.LocalInsertOnlyModel):
                       "numchildren" : numclusterchildren}
             cluster_value = cls(**kwargs)
             cluster_value.save()
+
+    @classmethod
+    def increment_values_from\
+        (cls, cluster_id, parent_cluster_id,
+         numclusterchildren, dict):
+        for (word, value) in dict.iteritems():
+            kwargs = {"cluster_id" : cluster_id,
+                      "parent_cluster_id" : parent_cluster_id,
+                      "word": word,
+                      "numchildren" : numclusterchildren}
+            qs = cls.get_manager().filter(**kwargs)
+
+            assert(qs.count() <= 1)
+
+            if qs.count() == 0:
+                kwargs[cls.value_name] = value
+                cluster_value = cls(**kwargs)
+                cluster_value.save()
+            else:
+                cluster_value = qs[0]
+                cluster_value.__setattr__(cls.value_name, F(cls.value_name) + value)
+                cluster_value.save()
 
     @classmethod
     def get_value(cls, cluster_id, word):
