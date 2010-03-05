@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from __future__ import division
+import enchant
 
 # This soundex implementation is taken from:
 # http://code.activestate.com/recipes/52213/
@@ -53,6 +54,8 @@ class PNSpellChecker():
 
     cache = {}
 
+    en_dict = enchant.Dict('en_US')
+
     def train(self, words):
         for w in words:
             w = w.lower()
@@ -91,19 +94,21 @@ class PNSpellChecker():
         e2_table = {}
         for (e1, e1_align) in e1_table.iteritems():
             e2_table_add = {}
-            
-            if len(e1) == len(e1_align) - 1:
-                # This was a delete - need to remove the '\0's
-                self.fill_edits_table(e2_table_add, e1, e1_align)
-                e2_table_add = dict([(re.sub('\0', '', k), v) for k, v in
-                                     e2_table_add.iteritems()])
-            else:
-                assert(len(e1) == len(e1_align))
-                self.fill_edits_table(e2_table_add, e1, e1_align)
+                
+            self.fill_edits_table(e2_table_add, e1, e1_align)
+            e2_table_add = \
+                dict([(re.sub('\0', '', k.lower()), v)
+                      for (k, v ) in e2_table_add.iteritems()])
 
             e2_table.update(self.prune_unknown(e2_table_add))
         
         return e2_table
+
+    def is_in_dictionary(self, word):
+        return PNSpellChecker.en_dict.check(word)
+
+    def prune_non_dictionary_words(self, etable):
+        return dict([(k, v) for k, v in etable.iteritems() if self.is_in_dictionary(k)])
 
     def prune_unknown(self, etable):
         return dict([(k, v) for k, v in etable.iteritems() if k in self.nWords])
@@ -122,7 +127,7 @@ class PNSpellChecker():
 
         change_score = 0
 
-        if word[0] != candidate[0]:
+        if sndex_w[0] != sndex_c[0]:
             change_score += 8
 
         for i in xrange(1, len(word)):
@@ -134,9 +139,12 @@ class PNSpellChecker():
                     change_score += 2
                 else:
                     change_score += 4
+            elif (sndex_w[i] == '0' and sndex_c[i] == '\0') or \
+                 (sndex_w[i] == '\0' and sndex_c[i] == '0'):
+                continue # Deletions of vowels is okay
             else:
                 change_score += 1
-        
+
         return change_score
 
     def correct(self, word):
@@ -145,10 +153,25 @@ class PNSpellChecker():
         if word in self.cache:
             return self.cache[word]
 
+        if self.is_in_dictionary(word):
+            self.cache[word] = word
+            return word
+
         candidates = {}
         candidates.update(self.known_edits2(word))
         candidates.update(self.prune_unknown(self.edits1(word)))
+
+        if len(candidates) == 0:
+            return word
+
         candidates.update({word : word})
+
+        candidates_indict = \
+            self.prune_non_dictionary_words(candidates)
+        if len(candidates_indict) > 0:
+            candidates = candidates_indict
+        else:
+            candidates_indict = None
 
         candidates = \
             dict((k, self.compute_change_score(word, v))
@@ -159,12 +182,24 @@ class PNSpellChecker():
         # scores become low unnormalized probabilties and to make
         # small change scores become high unnormalized probabilities.
         change_score_ceil = \
-            max([s for k, s in candidates.iteritems()]) * 1.1
+            max([s for k, s in candidates.iteritems()])
+
+        change_scores = \
+            dict([(k, (change_score_ceil - s)**2)
+                  for k, s in candidates.iteritems()])
+        
+        wordcounts = \
+            dict([(k, math.sqrt(self.nWords.get(k, self.prior_count)))
+                  for k, s in candidates.iteritems()])
+
+        max_change_score = max(change_scores.values())
+        max_wordcount = max(wordcounts.values())
 
         candidates = \
-            dict([(k, ((change_score_ceil - s)**2) * \
-                      math.sqrt(self.nWords.get(k, self.prior_count)))
-                  for k, s in candidates.iteritems()])
+            dict([(k,
+                   20 * (s/max_change_score) + \
+                   (wordcounts[k]/max_wordcount))
+                  for k, s in change_scores.iteritems()])
 
         corr = max(candidates.iteritems(),
                    key=operator.itemgetter(1))[0]
