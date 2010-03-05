@@ -16,7 +16,7 @@ def soundex_mod(name):
     # digits holds the soundex values for the alphabet
     digits = '01230120022455012623010202'
     sndx = ''
-    fc = ''
+    fc = None
 
     # translate alpha chars in name to soundex digits
     for c in name.upper():
@@ -29,8 +29,10 @@ def soundex_mod(name):
         else:
             sndx += 'z' # unknown kind of character (i.e. number)
 
-    # replace first digit with first alpha character
-    sndx = fc + sndx[1:]
+    # replace first digit with first alpha character, unless there were no
+    # alpha characters
+    if fc:
+        sndx = fc + sndx[1:]
 
     # return soundex code padded to len characters
     return sndx
@@ -216,7 +218,7 @@ class PNSpellChecker():
         schecker.nWords = nWords
         return schecker
 
-default_spellchecker_fn = '/optemo/site/cluster_labeling/spellchecker.pkl'
+default_spellchecker_fn = '/home/nimalan/site_optemo_dbs/cluster_labeling/spellchecker.pkl'
 
 import cluster_labeling.text_handling as th
 def train_spellchecker_on_reviews\
