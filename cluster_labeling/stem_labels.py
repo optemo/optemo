@@ -60,11 +60,15 @@ def populate_stem_label_table():
         sl = StemLabel(stem=stem, label=label)
         sl.save()
 
-def get_stem_label(word):
+def get_stem_label(word, throw_if_not_found=False):
     stem = stemmer.stem(word)
     qs = StemLabel.get_manager().filter(stem=stem)
+
     if qs.count() == 0:
-        errstr = 'Stem label not found: word=%s, stem=%s' % (word, stem)
-        raise Exception(errstr)
+        if throw_if_not_found:
+            errstr = 'Stem label not found: word=%s, stem=%s' % (word, stem)
+            raise Exception(errstr)
+        else:
+            return stem
 
     return qs[0].label
