@@ -111,7 +111,8 @@ class PNSpellChecker():
         return dict([(k, v) for k, v in etable.iteritems() if self.is_in_dictionary(k)])
 
     def prune_unknown(self, etable):
-        return dict([(k, v) for k, v in etable.iteritems() if k in self.nWords])
+        return dict([(k, v) for k, v in etable.iteritems()
+                     if k in self.nWords or self.is_in_dictionary(k)])
 
     def compute_change_score(self, word, candidate):
         # Align the two words. This works because of the way that the
