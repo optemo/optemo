@@ -127,7 +127,7 @@ class PNSpellChecker():
 
         change_score = 0
 
-        if word[0] != candidate[0]:
+        if sndex_w[0] != sndex_c[0]:
             change_score += 8
 
         for i in xrange(1, len(word)):
