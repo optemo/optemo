@@ -33,6 +33,8 @@ def soundex_mod(name):
     # alpha characters
     if fc:
         sndx = fc + sndx[1:]
+    else:
+        sndx = 'z' + sndx[1:]
 
     # return soundex code padded to len characters
     return sndx
