@@ -198,8 +198,9 @@ class PNSpellChecker():
 
         candidates = \
             dict([(k,
-                   20 * (s/max_change_score) + \
-                   (wordcounts[k]/max_wordcount))
+                   1 * (1 if self.is_in_dictionary(k) else 0) +
+                   5 * (s/max_change_score) + \
+                   1 * (wordcounts[k]/max_wordcount))
                   for k, s in change_scores.iteritems()])
 
         corr = max(candidates.iteritems(),
