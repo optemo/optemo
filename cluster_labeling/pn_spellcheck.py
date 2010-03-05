@@ -139,9 +139,12 @@ class PNSpellChecker():
                     change_score += 2
                 else:
                     change_score += 4
+            elif (sndex_w[i] == '0' and sndex_c[i] == '\0') or \
+                 (sndex_w[i] == '\0' and sndex_c[i] == '0'):
+                continue # Deletions of vowels is okay
             else:
                 change_score += 1
-        
+
         return change_score
 
     def correct(self, word):
