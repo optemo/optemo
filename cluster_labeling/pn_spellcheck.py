@@ -182,12 +182,24 @@ class PNSpellChecker():
         # scores become low unnormalized probabilties and to make
         # small change scores become high unnormalized probabilities.
         change_score_ceil = \
-            max([s for k, s in candidates.iteritems()]) * 1.1
+            max([s for k, s in candidates.iteritems()])
+
+        change_scores = \
+            dict([(k, (change_score_ceil - s)**2)
+                  for k, s in candidates.iteritems()])
+        
+        wordcounts = \
+            dict([(k, math.sqrt(self.nWords.get(k, self.prior_count)))
+                  for k, s in candidates.iteritems()])
+
+        max_change_score = max(change_scores.values())
+        max_wordcount = max(wordcounts.values())
 
         candidates = \
-            dict([(k, ((change_score_ceil - s)**2) * \
-                      math.sqrt(self.nWords.get(k, self.prior_count)))
-                  for k, s in candidates.iteritems()])
+            dict([(k,
+                   20 * (s/max_change_score) + \
+                   (wordcounts[k]/max_wordcount))
+                  for k, s in change_scores.iteritems()])
 
         corr = max(candidates.iteritems(),
                    key=operator.itemgetter(1))[0]
