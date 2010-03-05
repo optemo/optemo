@@ -109,6 +109,8 @@ class PNSpellChecker():
         return e2_table
 
     def is_in_dictionary(self, word):
+        if len(word) == 0:
+            return False
         return PNSpellChecker.en_dict.check(word)
 
     def prune_non_dictionary_words(self, etable):
