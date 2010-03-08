@@ -30,6 +30,7 @@ class ClusterValueForWord(local.LocalModel):
             cluster_value.save()
 
     @classmethod
+    @transaction.commit_on_success
     def increment_values_from\
         (cls, cluster_id, parent_cluster_id,
          numclusterchildren, dict):
