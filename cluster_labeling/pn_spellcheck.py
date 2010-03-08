@@ -53,6 +53,8 @@ import math
 
 import cPickle
 
+import cluster_labeling.text_handling as th
+
 class PNSpellChecker():
     alphabet = 'abcdefghijklmnopqrstuvwxyz'
     nWords = {}
@@ -192,6 +194,7 @@ class PNSpellChecker():
         candidates.update(self.prune_unknown(self.edits1(word)))
 
         if len(candidates) == 0:
+            self.cache_correction(word, word)
             return word
 
         candidates.update({word : word})
@@ -232,7 +235,8 @@ class PNSpellChecker():
 
     def combine_scores(self, candidate, score, wordcounts,
                        max_wordcount, max_change_score):
-        combined_score = 1 * (1 if self.is_in_dictionary(candidate) else 0) + \
+        combined_score = 1 * (1 if not th.is_stopword(candidate) else 0) + \
+                         1 * (1 if self.is_in_dictionary(candidate) else 0) + \
                          1 * (wordcounts[candidate]/max_wordcount)
         
         if max_change_score == 0:
@@ -258,7 +262,6 @@ class PNSpellChecker():
 
 default_spellchecker_fn = '/home/nimalan/site_optemo_dbs/cluster_labeling/spellchecker.pkl'
 
-import cluster_labeling.text_handling as th
 def train_spellchecker_on_reviews\
         (spellchecker_fn = default_spellchecker_fn):
     spellchecker = PNSpellChecker()
