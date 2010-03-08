@@ -122,9 +122,9 @@ class PNSpellChecker():
         return dict([(k, v) for k, v in etable.iteritems() if self.is_in_dictionary(k)])
 
     def is_known(self, word):
-        return k in self.nWords or \
-               k in camera_terms.known_terms or \
-               self.is_in_dictionary(k)
+        return word in self.nWords or \
+               word in camera_terms.known_terms or \
+               self.is_in_dictionary(word)
 
     def prune_unknown(self, etable):
         return dict([(k, v) for k, v in etable.iteritems()
