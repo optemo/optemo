@@ -54,6 +54,7 @@ import math
 import cPickle
 
 import cluster_labeling.text_handling as th
+import cluster_labeling.camera_terms as camera_terms
 
 class PNSpellChecker():
     alphabet = 'abcdefghijklmnopqrstuvwxyz'
@@ -120,9 +121,14 @@ class PNSpellChecker():
     def prune_non_dictionary_words(self, etable):
         return dict([(k, v) for k, v in etable.iteritems() if self.is_in_dictionary(k)])
 
+    def is_known(self, word):
+        return k in self.nWords or \
+               k in camera_terms.known_terms or \
+               self.is_in_dictionary(k)
+
     def prune_unknown(self, etable):
         return dict([(k, v) for k, v in etable.iteritems()
-                     if k in self.nWords or self.is_in_dictionary(k)])
+                     if self.is_known(k)])
 
     def compute_change_score(self, word, candidate):
         # Align the two words. This works because of the way that the
@@ -185,7 +191,8 @@ class PNSpellChecker():
                 self.cache[word] = word
                 return word_db.correction
 
-        if self.is_in_dictionary(word):
+        if word in camera_terms.known_terms or \
+           self.is_in_dictionary(word):
             self.cache_correction(word, word)
             return word
 
