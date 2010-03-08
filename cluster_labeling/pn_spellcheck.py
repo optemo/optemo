@@ -243,7 +243,7 @@ class PNSpellChecker():
     def combine_scores(self, candidate, score, wordcounts,
                        max_wordcount, max_change_score):
         combined_score = 1 * (1 if not th.is_stopword(candidate) else 0) + \
-                         1 * (1 if self.is_in_dictionary(candidate) else 0) + \
+                         0.5 * (1 if self.is_in_dictionary(candidate) else 0) + \
                          1 * (wordcounts[candidate]/max_wordcount)
         
         if max_change_score == 0:
