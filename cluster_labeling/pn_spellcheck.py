@@ -192,8 +192,8 @@ class PNSpellChecker():
             dict([(k, math.sqrt(self.nWords.get(k, self.prior_count)))
                   for k, s in candidates.iteritems()])
 
-        max_change_score = max(change_scores.values())
-        max_wordcount = max(wordcounts.values())
+        max_change_score = max(change_scores.itervalues())
+        max_wordcount = max(wordcounts.itervalues())
 
         candidates = \
             dict([(k,
