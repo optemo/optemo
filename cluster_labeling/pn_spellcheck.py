@@ -156,6 +156,19 @@ class PNSpellChecker():
 
         return change_score
 
+    def cache_correction(self, word, corr):
+        self.cache[word] = corr
+
+        word_qs = words.Word.get_manager().filter(word=word)
+        assert(word_qs.count() <= 1)
+        # If the word does not exist in the database, then don't
+        # create a correction for it, because the countdata would be
+        # null, making the entry not very useful.
+        if word_qs.count() == 1:
+            word_db = word_qs[0]
+            word_db.correction = corr
+            word_db.save()
+
     def correct(self, word):
         word = word.lower()
 
@@ -171,7 +184,7 @@ class PNSpellChecker():
                 return word_db.correction
 
         if self.is_in_dictionary(word):
-            self.cache[word] = word
+            self.cache_correction(word, word)
             return word
 
         candidates = {}
@@ -214,18 +227,7 @@ class PNSpellChecker():
         corr = max(candidates.iteritems(),
                    key=operator.itemgetter(1))[0]
 
-        word_qs = words.Word.get_manager().filter(word=word)
-        assert(word_qs.count() <= 1)
-
-        # If the word does not exist in the database, then don't
-        # create a correction for it, because the countdata would be
-        # null, making the entry not very useful.
-        if word_qs.count() == 1:
-            word_db = word_qs[0]
-            word_db.correction = corr
-            word_db.save()
-        
-        self.cache[word] = corr
+        self.cache_correction(word, corr)
         return corr
 
     def combine_scores(self, candidate, score, wordcounts,
