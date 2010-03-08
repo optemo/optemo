@@ -267,7 +267,7 @@ class PNSpellChecker():
         schecker.nWords = nWords
         return schecker
 
-default_spellchecker_fn = '/home/nimalan/site_optemo_dbs/cluster_labeling/spellchecker.pkl'
+default_spellchecker_fn = 'cluster_labeling/spellchecker.pkl'
 
 def train_spellchecker_on_reviews\
         (spellchecker_fn = default_spellchecker_fn):

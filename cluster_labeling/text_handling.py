@@ -29,10 +29,15 @@ def remove_html_escaping(content):
                                      {"&apos;" : "'", "&quot;" : '"'})
 
 from nltk.corpus import stopwords
-stopword_set = set(stopwords.words('english'))
-stopword_set |= set(['br', '<', '"', '(', ')'])
+en_stopword_set = set(stopwords.words('english'))
+stopword_set = en_stopword_set | set(['br', '<', '"', '(', ')'])
 def is_stopword(word):
     return word in stopword_set
+
+en_longer_stopword_set = \
+    set(filter(lambda w: len(w) >= 2, stopwords.words('english')))
+def is_english(word_set):
+    return len(word_set & en_longer_stopword_set) > 0
 
 import re
 punct_re = re.compile('\W+')

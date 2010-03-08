@@ -25,6 +25,9 @@ def populate_word_table():
         content = review.content
         words = th.get_words_from_string(content)
 
+        if not th.is_english(set(words)):
+            continue
+
         for word in words:
             word_qs = Word.get_manager().filter(word=word)
 
