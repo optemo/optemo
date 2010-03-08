@@ -15,7 +15,7 @@ class Word(local.LocalModel):
     word = models.CharField(max_length=255, unique=True)
     stem = models.CharField(max_length=255)
     count = models.BigIntegerField()
-    correction = models.CharField(max_length=255)
+    correction = models.CharField(max_length=255, null=True, blank=True)
 
 def populate_word_table():
     Word.drop_table_if_exists()
