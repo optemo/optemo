@@ -105,12 +105,12 @@ def compute_counts_for_cluster(cluster, spellchecker):
             (cluster.id, cluster.parent_id, numchildren),
             totalcount_tables)
         
+default_spellchecker = pnsc.PNSpellChecker.load_spellchecker(pnsc.default_spellchecker_fn)
 def compute_all_counts\
         (version=optemo.CameraCluster.get_latest_version(),
          spellchecker = None):
     if spellchecker == None:
-        spellchecker = \
-            pnsc.PNSpellChecker.load_spellchecker(pnsc.default_spellchecker_fn)
+        spellchecker = default_spellchecker
 
     # All tables should be recreated, otherwise the resulting counts
     # will not be valid.
