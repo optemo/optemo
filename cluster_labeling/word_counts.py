@@ -111,14 +111,6 @@ def compute_all_counts\
     if spellchecker == None:
         spellchecker = \
             pnsc.PNSpellChecker.load_spellchecker(pnsc.default_spellchecker_fn)
-
-    # All tables should be recreated, otherwise the resulting counts
-    # will not be valid.
-    map(lambda table: table.drop_table_if_exists(), count_tables)
-    map(lambda table: table.drop_table_if_exists(), totalcount_tables)
-    
-    map(lambda table: table.create_table(), count_tables)
-    map(lambda table: table.create_table(), totalcount_tables)
     
     # Get clusters just below the root.
     root_children = optemo.CameraCluster.get_root_children(version)
@@ -133,3 +125,10 @@ def compute_all_counts\
         table.sum_child_cluster_totalcounts\
         (0, -1, root_children.count()),
         totalcount_tables)
+
+def drop_all_count_tables():
+    map(lambda table: table.drop_table_if_exists(), count_tables)
+    map(lambda table: table.drop_table_if_exists(), totalcount_tables)
+    
+    map(lambda table: table.create_table(), count_tables)
+    map(lambda table: table.create_table(), totalcount_tables)
