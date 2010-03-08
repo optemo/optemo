@@ -2,6 +2,8 @@
 from __future__ import division
 import enchant
 
+import cluster_labeling.words as words
+
 # This soundex implementation is taken from:
 # http://code.activestate.com/recipes/52213/
 # Modifications:
@@ -160,6 +162,14 @@ class PNSpellChecker():
         if word in self.cache:
             return self.cache[word]
 
+        word_qs = words.Word.get_manager().filter(word=word)
+        assert(word_qs.count() <= 1)
+        if word_qs.count() == 1:
+            word_db = word_qs[0]
+            if word_db.correction is not None:
+                self.cache[word] = word
+                return word_db.correction
+
         if self.is_in_dictionary(word):
             self.cache[word] = word
             return word
@@ -203,6 +213,18 @@ class PNSpellChecker():
 
         corr = max(candidates.iteritems(),
                    key=operator.itemgetter(1))[0]
+
+        word_qs = words.Word.get_manager().filter(word=word)
+        assert(word_qs.count() <= 1)
+
+        # If the word does not exist in the database, then don't
+        # create a correction for it, because the countdata would be
+        # null, making the entry not very useful.
+        if word_qs.count() == 1:
+            word_db = word_qs[0]
+            word_db.correction = corr
+            word_db.save()
+        
         self.cache[word] = corr
         return corr
 
