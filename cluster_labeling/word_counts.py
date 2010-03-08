@@ -26,6 +26,10 @@ import cluster_labeling.pn_spellcheck as pnsc
 def compute_wordcounts_for_review(content, spellchecker):
     words = th.get_words_from_string(content)
 
+    # Skip non-English reviews
+    if not th.is_english(set(words)):
+        return {}
+
     # Perform spell-checking
     words = map(spellchecker.correct, words)
 
