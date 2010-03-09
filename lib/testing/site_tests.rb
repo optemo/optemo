@@ -302,7 +302,9 @@ module SiteTest
   end
   
   def setup_log(name)
-    @logfile = File.open("./log/site_tests/"+name+".log", 'w+') #+Time.now.to_s.gsub(/ /, '_')
+    logdir = "./log/site_tests"
+    FileUtils.mkdir_p(logdir)
+    @logfile = File.open(logdir+"/"+name+".log", 'w+') #+Time.now.to_s.gsub(/ /, '_')
   end
   
   def setup logname

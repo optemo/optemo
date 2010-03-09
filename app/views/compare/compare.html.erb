@@ -1,4 +1,4 @@
-<%# self.title = "#{Session.current.search.desc} #{$model.urlname.capitalize}" %>
+<% self.title = "#{Session.current.search.desc} #{$model.urlname.capitalize}" unless @indexload%>
 <div id="leftbar">
 	<!-- The Search box -->
 	<div id='searchbox' class='leftboxes rounded_leftboxes rounded'>
