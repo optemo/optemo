@@ -51,3 +51,22 @@ def populate_usecases_and_indicator_words():
             usecase.indicator_words.create(word=word)
 
         usecase.save()
+
+import cluster_labeling.nh_chi_scorer as chi
+
+def score_usecase_for_cluster(cluster, usecase):
+    # Get indicator words for usecase
+    iwords = usecase.indicator_words
+    
+    # Compute chi-squared score for all indicator words
+    iword_scores = \
+        map(lambda iw: chi.get_chi_squared_score(cluster.id, iw),
+            iwords)
+
+    # Combine all chi-squared scores in a way that is not influenced
+    # by the number of indicator words associated with the cluster
+    # i.e. take the average:
+    iword_scores = map(lambda s: 0 if s is None else s, iword_scores)
+    score = sum(iword_scores) / len(iword_scores)
+
+    return score
