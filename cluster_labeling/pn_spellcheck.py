@@ -291,3 +291,12 @@ def train_spellchecker_on_reviews\
     spellchecker.train(words)
 
     spellchecker.save_spellchecker(spellchecker_fn)
+
+def compute_all_corrections():
+    spellchecker = PNSpellChecker()
+    
+    for word in words.Word.get_manager():
+        assert(word.correction is None)
+
+        word.correction = spellchecker.correct(word)
+        word.save()
