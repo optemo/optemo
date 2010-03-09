@@ -52,13 +52,19 @@ class ApplicationController < ActionController::Base
       else
         $DefaultProduct
       end  
-    end
+   end
 
     $model = ds.constantize
     $nodemodel = (ds + 'Node').constantize
     $clustermodel = (ds + 'Cluster').constantize
     $featuremodel = (ds + 'Features').constantize
   end
+  
+# def set_version
+#   ds = case request.url.match(/\?version=\d\d/) ? 
+#   
+#   
+# end
   
   def update_user
     $region = request.url.match(/\.ca/) ? "ca" : "us"
@@ -84,7 +90,7 @@ class ApplicationController < ActionController::Base
       mysession.keywordpids = nil
       mysession.keyword = nil
     end
-    mysession.version = $clustermodel.find_last_by_region($region).version
+    mysession.version = 23 #$clustermodel.find_last_by_region($region).version
     Session.current = mysession
   end
   
