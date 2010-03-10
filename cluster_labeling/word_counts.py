@@ -64,6 +64,7 @@ def compute_counts_for_product(product, spellchecker):
     return merged_wordcount, reviewcount, prodcount
 
 def compute_counts_for_cluster(cluster, spellchecker):
+    version = cluster.version
     children = cluster.get_children()
     numchildren = children.count()
     
@@ -74,7 +75,8 @@ def compute_counts_for_cluster(cluster, spellchecker):
 
             map(lambda table, counts:
                 table.increment_values_from\
-                (cluster.id, cluster.parent_id, numchildren, counts),
+                (cluster.id, cluster.parent_id,
+                 numchildren, version, counts),
                 count_tables, [prodcount, wordcount, reviewcount])
 
             totalcounts_to_mod_values = [1]
@@ -92,9 +94,9 @@ def compute_counts_for_cluster(cluster, spellchecker):
                 
             map(lambda table, totalcount:
                 table.increment_totalcount\
-                (cluster.id, cluster.parent_id, 0, totalcount),
+                (cluster.id, cluster.parent_id,
+                 0, version, totalcount),
                 totalcounts_to_mod, totalcounts_to_mod_values)
-
     else:
         map(lambda child:
             compute_counts_for_cluster(child, spellchecker),
@@ -102,11 +104,11 @@ def compute_counts_for_cluster(cluster, spellchecker):
         
         map(lambda table:
             table.sum_child_cluster_counts\
-            (cluster.id, cluster.parent_id, numchildren),
+            (cluster.id, cluster.parent_id, numchildren, version),
             count_tables)
         map(lambda table:
             table.sum_child_cluster_totalcounts\
-            (cluster.id, cluster.parent_id, numchildren),
+            (cluster.id, cluster.parent_id, numchildren, version),
             totalcount_tables)
         
 default_spellchecker = pnsc.PNSpellChecker.load_spellchecker(pnsc.default_spellchecker_fn)

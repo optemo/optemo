@@ -9,18 +9,19 @@ import cluster_labeling.local_django_models as local
 class ClusterTotalCount(local.LocalModel):
     class Meta:
         abstract = True
-        unique_together = (("cluster_id"))
+        unique_together = (("cluster_id", "version"))
 
     cluster_id = models.BigIntegerField(primary_key=True)
     parent_cluster_id = models.BigIntegerField()
     totalcount = models.BigIntegerField()
     numchildren = models.IntegerField()
+    version = models.IntegerField()
 
     @classmethod
     def sum_child_cluster_totalcounts\
-        (cls, cluster_id, parent_cluster_id, numchildren):
+        (cls, cluster_id, parent_cluster_id, numchildren, version):
         qs = cls.get_manager().\
-             filter(parent_cluster_id = cluster_id).\
+             filter(parent_cluster_id=cluster_id, version=version).\
              aggregate(totalcount_sum=Sum('totalcount'))
 
         totalcount_sum = qs['totalcount_sum']
@@ -34,15 +35,16 @@ class ClusterTotalCount(local.LocalModel):
             cls(cluster_id=cluster_id,
                 parent_cluster_id=parent_cluster_id,
                 totalcount=totalcount_sum,
-                numchildren=numchildren)
+                numchildren=numchildren, version=version)
         cluster_totalcount.save()
 
     @classmethod
     def increment_totalcount(cls, cluster_id, parent_cluster_id,
-                             numclusterchildren, totalcount):
+                             numclusterchildren, version, totalcount):
         kwargs = {"cluster_id" : cluster_id,
                   "parent_cluster_id" : parent_cluster_id,
-                  "numchildren" : numclusterchildren}
+                  "numchildren" : numclusterchildren,
+                  "version" : version}
         qs = cls.get_manager().filter(**kwargs)
 
         assert(qs.count() <= 1)
@@ -57,9 +59,10 @@ class ClusterTotalCount(local.LocalModel):
             cluster_value.save()
 
     @classmethod
-    def get_value(cls, cluster_id):
-        qs = cls.get_manager().filter\
-             (cluster_id = cluster_id).values('totalcount')
+    def get_value(cls, cluster_id, version):
+        qs = cls.get_manager()\
+             .filter(cluster_id=cluster_id, version=version)\
+             .values('totalcount')
 
         numrows = qs.count()
         assert(numrows <= 1)

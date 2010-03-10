@@ -5,7 +5,7 @@ import cluster_labeling.cluster_value_for_word_table as cvfwt
 class ClusterScore(cvfwt.ClusterValueForWord):
     class Meta:
         abstract = True
-        unique_together = (("cluster_id", "word"))
+        unique_together = (("cluster_id", "version", "word"))
 
     value_name = "score"
     score = models.FloatField()
