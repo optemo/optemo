@@ -313,7 +313,7 @@ end
    end
    
    task :port_init do
-      $port="3001" # Your Favourite Port! (or Sherry.)
+      $port="3000" # Your Favourite Port! (or Sherry.)
    end
 
 end
