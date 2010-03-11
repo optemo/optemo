@@ -1,4 +1,5 @@
 class Session < ActiveRecord::Base
+  include CachingMemcached
   has_many :vieweds
   has_many :searches
   has_many :preference_relations
@@ -6,6 +7,8 @@ class Session < ActiveRecord::Base
   attr :oldfeatures, true
   attr :keyword, true
   attr :keywordpids, true
+  attr :version, true
+  attr :search, true
   def self.current
     @@current
   end
@@ -50,6 +53,10 @@ class Session < ActiveRecord::Base
     self.all.map{|s|s.ip}.delete_if{|i|i =~ /^(192\.168.|127.0.|::1)/}
   end
   
+  def self.isCrawler?(str)
+    str.match(/Google|msnbot|Rambler|Yahoo|AbachoBOT|accoona|AcioRobot|ASPSeek|CocoCrawler|Dumbot|FAST-WebCrawler|GeonaBot|Gigabot|Lycos|MSRBOT|Scooter|AltaVista|IDBot|eStyle|ScrubbyBloglines subscriber|Dumbot|Sosoimagespider|QihooBot|FAST-WebCrawler|Superdownloads Spiderman|LinkWalker|msnbot|ASPSeek|WebAlta Crawler|Lycos|FeedFetcher-Google|Yahoo|YoudaoBot|AdsBot-Google|Googlebot|Scooter|Gigabot|Charlotte|eStyle|AcioRobot|GeonaBot|msnbot-media|Baidu|CocoCrawler|Google|Charlotte t|Yahoo! Slurp China|Sogou web spider|YodaoBot|MSRBOT|AbachoBOT|Sogou head spider|AltaVista|IDBot|Sosospider|Yahoo! Slurp|Java VM|DotBot|LiteFinder|Yeti|Rambler|Scrubby|Baiduspider|accoona/i)
+  end
+  
   def updateFilters(myfilter)
     #Delete blank values
     myfilter.delete_if{|k,v|v.blank?}
@@ -72,9 +79,9 @@ class Session < ActiveRecord::Base
       clusters = searches.last.clusters
     else
       #Search is expanded, so use all products to begin with
-      current_version = $clustermodel.find_last_by_region($region).version
-      clusters = $clustermodel.find_all_by_layer_and_version_and_region(1,current_version,$region)
-      clusters.delete_if{|c| c.isEmpty}
+      clusters = findAllCachedClusters(0)
+      clusters.delete_if{|c| c.isEmpty} #This is broken for test profile in Rails 2.3.5
+      #clusters = clusters.map{|c| c unless c.isEmpty}.compact
     end
     clusters
   end
@@ -97,7 +104,12 @@ class Session < ActiveRecord::Base
   def features
     #Return row of Product's Feature table
     unless @features
-      @features = $featuremodel.find(:last, :conditions => ['session_id = ?', id])
+      if Session.current.search.nil?
+        debugger
+      else
+        @features = $featuremodel.find(:last, :conditions => ['session_id = ? and search_id = ?', id, Session.current.search.id])
+        @features = $featuremodel.new({'session_id' => id, 'search_id' => Session.current.search.id}) if @features.nil?
+      end
     end
     @features
   end

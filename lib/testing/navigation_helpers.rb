@@ -126,7 +126,7 @@ module NavigationHelpers
    def selected_brand_name which_brand
      brand_el = doc.css(".selected_brands")[which_brand]
      return "" if (brand_el.nil?)
-     debugger
+     #debugger
      return brand_el.attribute( 'value').to_s
    end
   

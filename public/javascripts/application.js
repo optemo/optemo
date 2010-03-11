@@ -26,27 +26,19 @@
    document.ready()  -  The jquery call that gets everything started.
 
 */
+//Load start page via ajax
+if ($('#ajaxload'))
+{
+	if (location.hash)
+		ajaxsend(location.hash.replace(/^#/, ''),null,null,true);
+	else
+		ajaxsend(null,'/?ajax=true',null,true);
+	
+}
 
 var language;
 // The following is pulled from optemo.html.erb, which in turn checks GlobalDeclarations.rb
 var IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
-
-// This says true if the value is older than 30 seconds.
-var IS_SESSION_OLD = ($("#sessionOld").html() === 'true');
-
-if (typeof(ActiveXObject) != "undefined")
-{
-	if (typeof(window.XMLHttpRequest) == "undefined")
-		var browserIsIE = "MSIE6";
-	else if (typeof(XDomainRequest) == "undefined") // IE8 only has this
-		var browserIsIE = "MSIE7";
-	else 
-		var browserIsIE = "MSIE";
-}
-else
-{
-	var browserIsIE = "";
-}
 
 //--------------------------------------//
 //           UI Manipulation            //
@@ -84,6 +76,8 @@ function saveProductForComparison(id, imgurl, name)
 	imgurlToSaveArray = imgurl.split('/');
 	
 	imgurlToSaveArray[imgurlToSaveArray.length - 1] = id + "_s.jpg";
+	productType = imgurlToSaveArray[(imgurlToSaveArray.length - 2)];
+	productType = productType.substring(0, productType.length-1);
 	imgurlToSave = imgurlToSaveArray.join("/");
 	
 	if($(".saveditem").length == 4)
@@ -98,7 +92,7 @@ function saveProductForComparison(id, imgurl, name)
 	} else {
 		trackPage('goals/save/'+id);
 		renderComparisonProducts(id, imgurl, name);
-		addValueToCookie('savedProductIDs', [id, imgurlToSave, name]);
+		addValueToCookie('savedProductIDs', [id, imgurlToSave, name, productType]);
 	}
 
 	// There should be at least 1 saved item, so...
@@ -123,19 +117,19 @@ function renderComparisonProducts(id, imgurl, name)
 	" data-id=\""+id+"\" alt=\""+id+"_s\"/ width=\"50\">" + 
 	"<div class=\"smalldesc\"";
 	// It looks so much better in Firefox et al, so if there's no MSIE, go ahead with special styling.
-	if (browserIsIE.indexOf("MSIE") == -1) smallProductImageAndDetail = smallProductImageAndDetail + " style=\"position:absolute; bottom:5px;\"";
+	if ($.browser.msie) smallProductImageAndDetail = smallProductImageAndDetail + " style=\"position:absolute; bottom:5px;\"";
 	smallProductImageAndDetail = smallProductImageAndDetail + ">" +
 	"<a class=\"easylink\" data-id=\""+id+"\" href=\"#\">" + 
 	((name) ? getShortProductName(name) : 0) +
 	"</a></div>" + 
-	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\" onClick=\"javascript:removeFromComparison("+id+")\">" + 
+	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\" onClick=\"javascript:removeFromComparison("+id+");return false;\">" + 
 	"<img src=\"/images/close.png\" alt=\"Close\"/></a>"; // do we need '?1258398853' ? I doubt it.
 	$(smallProductImageAndDetail).appendTo('#c'+id);
 	DBinit("#c"+id)
 
 	$("#already_added_msg").css("display", "none");
 	$("#too_many_saved").css("display", "none");
-	if (browserIsIE.indexOf('MSIE') == -1) // If it's any browser other than IE, clear the height element.
+	if ($.browser.msie) // If it's any browser other than IE, clear the height element.
 		$("#savedproducts").css({"height" : ''});
 }
 
@@ -171,7 +165,7 @@ function submitsearch() {
 	piwikTracker2.setCustomData(searchinfo);
 	trackPage('goals/search');
 	piwikTracker2.setCustomData({});
-	ajaxcall("/compare/find?ajax=true", $("#search_form").serialize(), true);
+	ajaxcall("/compare/find?ajax=true", $("#search_form").serialize());
 	return false;
 }
 
@@ -202,6 +196,14 @@ function histogram(element, norange) {
 	}
 	t.cplineTo(init+(data.length)*step+4,height,5);
 	t.andClose();
+}
+
+function launchtour() {
+	var browseposition = $("#sim0").offset();
+	$("#sim0").addClass('tourDrawAttention');
+	// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
+	$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
+	return false;
 }
 
 //--------------------------------------//
@@ -253,43 +255,88 @@ function trackCategorical(name, val, type){
 
 function DBinit(context) {
 	
-	$("#comparisonTable").tableDnD({
+	//-------Info Popup--------//
+	$("#comparisonTable",context).tableDnD({
 		onDragClass: "rowBeingDragged",
 		onDrop: function(table, row){		
 			newPreferencesString = $.tableDnD.serialize();
 		}
 	});
 	
-	// With the image getting cloned for drag and drop, it's fine to keep the click handler.
-	// But it's important to check that $(".productimg") actually exists, for cases of images being missing.
-	if ($(".productimg").length)
-	{
-		$(".productimg",context).click(function (){
-			fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
-			trackPage('products/show/'+$(this).attr('data-id')); 
-			// As far as I can tell, the following line is deprecated. ZAT Dec 2009
-			//trackPage($(this).attr('href'));
-			return false;
-		});
-	}
+	//Link from popup (used for error messages)
+	$('.popuplink', context).click(function(){
+		ajaxcall($(this).attr('href')+'?ajax=true');
+		fadein();
+		return false;
+	});
+	
+	//Remove buttons on compare
+	$('.remove', context).click(function(){
+		removeFromComparison($(this).attr('data-name'));
+		$(this).parents('.column').remove();
+		return false;
+	});
+	
+	$('.buylink, .buyimg', context).click(function(){
+		var buyme_id = $(this).attr('product');
+		trackPage('goals/addtocart/'+buyme_id);
+	});
+	
+	$('#yesdecisionsubmit', context).click(function(){
+		trackPage('survey/yes');
+		fadeout('/survey/index', null, 600, 835);
+		return false;
+	});
+
+	$('#nodecisionsubmit', context).click(function(){
+		fadein();
+		trackPage('survey/no');
+		return false;
+	});
+	
+	$('#surveysubmit', context).click(function(){
+		trackPage('survey/submit');
+		$('#feedback').css('display','none');
+		fadeout('/survey/submit?' + $("#surveyform").serialize(), null, 300, 70);
+		return false;
+	});
+	
+	//--------Product Section-------//
+	//Used in Main Section and Saved items box
+	
+	$(".productimg",context).click(function (){
+		fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
+		trackPage('products/show/'+$(this).attr('data-id')); 
+		return false;
+	});
+	
+	// However, always add it to the link below the image.
+	$(".easylink",context).click(function() {
+		fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
+		trackPage('products/show/'+$(this).attr('data-id')); 
+		//trackPage($(this).attr('href'));
+		return false;
+	});
+	
+	//-------Main Section-------//
 	
 	if (IS_DRAG_DROP_ENABLED)
 	{
 		// Make item boxes draggable. This is a jquery UI builtin.		
-		$(".image_boundingbox").each(function() {
+		$(".image_boundingbox img",context).each(function() {
 			$(this).draggable({ 
-				revert:true, 
-				cursor:"move", 
+				revert: 'invalid', 
+				cursor: "move", 
 				// The following defines the drag distance before a "drag" event is actually initiated. Helps for people who click while the mouse is slightly moving.
-				distance:0,
+				distance:2,
 				helper: 'clone',
 				zIndex: 1000,
 				start: function(e, ui) { 
-					if (browserIsIE.indexOf('MSIE') == -1) // Internet Explorer sucks and cannot do transparency
+					if ($.browser.msie) // Internet Explorer sucks and cannot do transparency
 					$(this).css({'opacity':'0.4'});
 				},
 				stop: function (e, ui) {
-					if (browserIsIE.indexOf('MSIE') == -1)
+					if ($.browser.msie)
 						$(this).css({'opacity':'1'});
 				}
 			});
@@ -300,28 +347,24 @@ function DBinit(context) {
 	            	$(this).find('.dragHand').stop().animate({ opacity: 0.35 }, 450);
            });
 	    });
-	
-		// Make savebar area droppable. jquery UI builtin.
-		$("#savebar").each(function() {
-			$(this).droppable({ 
-				hoverClass: 'drop-box-hover',
-				activeClass: 'ui-state-dragging', 
-				accept: ".image_boundingbox",
-				drop: function (e, ui) {
-					imgObj = $(ui.helper).find('.productimg')
-					saveProductForComparison(imgObj.attr('data-id'), imgObj.attr('src'), imgObj.attr('alt'));
-				}
-			 });
-		});
 	}
 	
-	// However, always add it to the link below the image.
-	$(".easylink",context).click(function() {
-		fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
-		trackPage('products/show/'+$(this).attr('data-id')); 
-		//trackPage($(this).attr('href'));
+	//Ajax call for simlinks
+	$('.simlinks, .productlink',context).click(function(){ 
+		ajaxcall($(this).attr('href')+'?ajax=true');
+		
+		linkinfo = {'product_picked' : $(this).attr('data-id') , 'optemo_session': parseInt($('#seshid').attr('session-id'))};
+		morestuff = getAllShownProductIds(); 
+		linkinfo['product_ignored'] = morestuff;
+		piwikTracker2.setCustomData(linkinfo);
+		trackPage('goals/browse');
+		piwikTracker2.setCustomData({});
 		return false;
 	});
+	
+	$('#tourautostart', context).each(launchtour); //Automatically launch tour
+	
+	//-------Filters Section-------//
 	
 	//Show and Hide Descriptions
 	$('.feature .label a, .feature .deleteX',context).click(function(){
@@ -337,7 +380,7 @@ function DBinit(context) {
 	});
 	
 	//Show Additional Features
-	$('#morefilters').click(function(){
+	$('#morefilters',context).click(function(){
 		$('.extra').show("slide",{direction: "up"},100);
 		$(this).css('display','none');
 		$('#lessfilters').css('display','block');
@@ -345,7 +388,7 @@ function DBinit(context) {
 	});
 	
 	//Hide Additional Features
-	$('#lessfilters').click(function(){
+	$('#lessfilters',context).click(function(){
 		$('.extra').hide("slide",{direction: "up"},100);
 		$(this).css('display','none');
 		$('#morefilters').css('display','block');
@@ -382,105 +425,6 @@ function DBinit(context) {
 		submitCategorical();
 		trackCategorical(whichbrand,0,2);
 		return false;
-	});
-	
-	//Ajax call for simlinks
-	$('.simlinks, .productlink',context).click(function(){ 
-		ajaxcall($(this).attr('href')+'?ajax=true');
-		
-		linkinfo = {'product_picked' : $(this).attr('data-id') , 'optemo_session': parseInt($('#seshid').attr('session-id'))};
-		morestuff = getAllShownProductIds(); 
-		linkinfo['product_ignored'] = morestuff;
-		piwikTracker2.setCustomData(linkinfo);
-		trackPage('goals/browse');
-		piwikTracker2.setCustomData({});
-		return false;
-	});
-	
-	$('.ajaxlink',context).click(function(){
-		ajaxcall($(this).attr('href')+'?ajax=true');
-		return false;
-	});
-	
-	//Link from popup
-	$('.popuplink', context).click(function(){
-		fadein();
-		return false;
-	});
-	
-	//Remove buttons on compare
-	$('.remove', context).click(function(){
-		removeFromComparison($(this).attr('data-name'));
-		$(this).parents('.column').remove();
-		return false;
-	});
-	
-	$('.buylink, .buyimg', context).click(function(){
-		var buyme_id = $(this).attr('product');
-		trackPage('goals/addtocart/'+buyme_id);
-	});
-	
-	$('#yesdecisionsubmit', context).click(function(){
-		trackPage('survey/yes');
-		fadeout('/survey/index', null, 600, 835);
-		return false;
-	});
-
-	$('#nodecisionsubmit', context).click(function(){
-		fadein();
-		trackPage('survey/no');
-		return false;
-	});
-	
-	$('#surveysubmit', context).click(function(){
-		trackPage('survey/submit');
-		$('#feedback').css('display','none');
-		fadeout('/survey/submit?' + $("#surveyform").serialize(), null, 300, 70);
-		return false;
-	});
-	
-	// Tour section	
-//	$("#tourButton").click();
-	
-	$('.popupTour').each(function(){
-		$(this).find('.deleteX').click(function(){
-			$(this).parent().fadeOut("slow");
-			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
-//			This is required for simplelayout, not for the master branch.
-//			if (browserIsIE.indexOf("MSIE7") != -1) $("#sim0").parent().removeClass('tourDrawAttention');
-			return false;
-		});
-	});
-	
-	$('#popupTour1').find('a.popupnextbutton').click(function(){
-		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
-		$("#popupTour2").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
-		$("#popupTour1").fadeOut("slow");
-		$("#filterbar").addClass('tourDrawAttention');
-		$("#sim0").removeClass('tourDrawAttention');
-//		if (browserIsIE.indexOf("MSIE7") != -1) $("#sim0").parent().removeClass('tourDrawAttention');
-	});
-
-	$('#popupTour2').find('a.popupnextbutton').click(function(){
-		var comparisonposition = $("#savebar").offset();
-		$("#popupTour3").css({"position":"absolute", "top" : parseInt(comparisonposition.top) + 160, "left" : parseInt(comparisonposition.left) + 70}).fadeIn("slow");
-		$("#popupTour2").fadeOut("slow");
-		$("#savebar").addClass('tourDrawAttention');
-		$("#filterbar").removeClass('tourDrawAttention');
-	});
-	
-	$('#popupTour3').find('a.popupnextbutton').click(function(){
-		$("#popupTour3").fadeOut("slow");
-		$("#savebar").removeClass('tourDrawAttention');
-	});
-	
-	// On escape press. Probably not needed anymore.
-	$(document).keypress(function(e){
-		if(e.keyCode==27){
-			$(".popupTour").fadeOut("slow");
-			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
-//			if (browserIsIE.indexOf("MSIE7") != -1) $("#sim0").parent().removeClass('tourDrawAttention');
-		}
 	});
 	
 	// Set up sliders
@@ -553,6 +497,19 @@ function DBinit(context) {
 				}
 				var min = 0;
 				var max = 100;
+				// These acceptable increments can be tweaked as necessary. Multiples of 5 and 10 look cleanest; 20 looks OK but 2 and 0.2 look weird.
+				var acceptableincrements = [1000, 500, 100, 50, 10, 5, 1, 0.5, 0.1, 0.05, 0.01];
+				var increment = (rangemax - rangemin) / 100.0;
+				for (var i = 0; i < acceptableincrements.length; i++) // Just so that it doesn't go off the scale for weird error case (increment == 0)
+				{
+					if ((increment * 1.1) < acceptableincrements[i])  // The fudge factor here is required.
+						continue;
+					else // so, for example, increment is 51 and increment is 100
+						increment = acceptableincrements[i];
+					// could do this with a state machine a bit cleaner but this works fine. After the first time that the increment is in range, stop the loop immediately
+					break;
+				}
+				
 				var realselectmin, realselectmax;
 				var value = ui.value;
 				var sliderno = -1;
@@ -562,10 +519,21 @@ function DBinit(context) {
 					sliderno = 1;
 				$(this).slider('values', sliderno, value);
 				realvalue = (parseFloat((ui.values[sliderno]/100))*(rangemax-rangemin))+rangemin;
-				if(itof == 'true')
-					realvalue = parseInt(realvalue);
+
+				if (increment < 1) { 
+					// floating point division has problems; avoid it 
+					tempinc = parseInt(1.0 / increment);
+					realvalue = parseInt(realvalue * tempinc) / tempinc;
+				}
 				else
-					realvalue = parseInt(realvalue*10)/10;
+					realvalue = parseInt(realvalue / increment) * increment;
+				
+				// This makes sure that when sliding to the extremes, you get back to the real starting points
+				if (sliderno == 1 && ui.values[1] == 100)
+					realvalue = rangemax;
+				if (sliderno == 0 && ui.values[0] == 0)
+					realvalue = rangemin;
+					
 				if (sliderno == 0 && ui.values[0] != ui.values[1])						// First slider is not identified correctly by sliderno for the case
 					$('a:first', this).html(realvalue).addClass("valabove");			// when rightslider = left slider, hence the second condition
 				else if (ui.values[0] != ui.values[1])
@@ -607,30 +575,14 @@ function DBinit(context) {
 		if (diff < threshold)
 			$('a:last', this).html(curmax).addClass("valabove");
 		histogram($(this).siblings('.hist')[0]);
+		$(this).removeClass('ui-widget').removeClass('ui-widget-content').removeClass('ui-corner-all');
+		$(this).find('a').each(function(){
+			$(this).removeClass('ui-state-default').removeClass('ui-corner-all');
+			$(this).unbind('mouseenter mouseleave');
+		});
+		
 	});
 
-	// Set up the next image to the right
-
-/*   This image cycling code skeleton is probably not useful now.
-
-	$('.right_arrow_bounding_box').each(function(){
-		 $(this).hover(function() {
-	                $(this).stop().animate({ opacity: 1.0 }, 150);
-			    },
-		        function() {
-	            	$(this).stop().animate({ opacity: 0.35 }, 450);
-        });
-		$(this).click(function() {
-			// 0. Slide old image off to the left.
-			// 1. Animate the next image coming to the left. It should already be loaded at this point.
-			// 2. Change the back image
-			// 3. Turn off the front image
-			// 4. Reset its position
-			// 5. Reload the next click handler and image
-			//   5a. Chances are, the click handler on the right arrow is no longer on... ?
-			 
-		})
-	}); */
 }
 
 //--------------------------------------//
@@ -639,16 +591,19 @@ function DBinit(context) {
 
 $(document).ready(function() {
 	// Due to a race condition in IE6, this must be before DBinit().
+	
+	var tokenizedArrayID = 0;
 	if (savedProducts = readAllCookieValues('savedProductIDs'))
 	{
 		// There are saved products to display
-		if (browserIsIE.indexOf('MSIE') != -1) {
+		if ($.browser.msie) {
 			fixedheight = ((savedProducts.length > 2) ? 80 : 160) + 'px';
 			$("#savedproducts").css({"height" : fixedheight});
 		}
-		for (var tokenizedArrayID in savedProducts)
+		for (tokenizedArrayID = 0; tokenizedArrayID < savedProducts.length; tokenizedArrayID++)
 		{	
 			tokenizedArray = savedProducts[tokenizedArrayID].split(',');
+			// In future, tokenizedArray[3] contains the product type. As of Feb 2010, each website has separate cookies, so it's not necessary to read this data.
 			renderComparisonProducts(tokenizedArray[0], tokenizedArray[1], tokenizedArray[2]);
 		}
 		// There should be at least 1 saved item, so...
@@ -657,7 +612,12 @@ $(document).ready(function() {
 		// 2. hide 'add stuff here' message
 		$("#deleteme").css("display", "none");
 	}
-	DBinit();
+	
+	$.historyInit(ajaxsend);
+	
+	//Only load DBinit if it will not be loaded by the upcoming ajax call
+	if (!$('#ajaxload'))
+		DBinit();
 	
 	//Find product language
 	language = (/^\s*English/.test($(".languageoptions:first").html())==true)?'en':'fr';
@@ -668,19 +628,29 @@ $(document).ready(function() {
 			return String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26);
 			}));
 	});
-	//Do rollover effect
-	/* I think this just seems like old code so I turned it off. ZAT
-	$('#logo').hover(function(){$('#logo > span').css('visibility', 'visible')},
-					 function(){$('#logo > span').css('visibility', 'hidden')});
-	$('#whylaser').hover(function(){$('#whylaser > span').css('visibility', 'visible')},
-					 function(){$('#whylaser > span').css('visibility', 'hidden')});
-	*/
+
 	//Fadein
 	$(".close").click(function(){
 		fadein();
 		return false;
 	});
     
+	if (IS_DRAG_DROP_ENABLED)
+	{
+		// Make savebar area droppable. jquery UI builtin.
+		$("#savebar").each(function() {
+			$(this).droppable({ 
+				hoverClass: 'drop-box-hover',
+				activeClass: 'ui-state-dragging', 
+				accept: ".ui-draggable",
+				drop: function (e, ui) {
+					imgObj = $(ui.helper);
+					saveProductForComparison(imgObj.attr('data-id'), imgObj.attr('src'), imgObj.attr('alt'));
+				}
+			 });
+		});
+	}
+	
 	//Call overlay for product comparison
 	$("#compare_button").click(function(){
 		var productIDs = '';
@@ -714,12 +684,13 @@ $(document).ready(function() {
 	$('#submit_button').click(function(){
 		return submitsearch();
 	});
+	
 	//Search submit
 	$('#search').keypress(function (e) {
 		if (e.which==13)
 			return submitsearch();
 	});
-    
+
 	//Static feedback box
 	$('#feedback').click(function(){
 		trackPage('survey/feedback');
@@ -727,29 +698,71 @@ $(document).ready(function() {
 		return false;
 	});
 	
-	spinner("myspinner", 11, 20, 9, 5, "#000");
+	//Tour section
 	
-	if (!IS_SESSION_OLD) // Launch tour
-	{	
-		var browseposition = $("#sim0").offset();
-		// This is required for the simplelayout branch, but not for the master branch.	
-/*		if (browserIsIE.indexOf("MSIE7") != -1) // So, it works fine in IE5.5, IE6, and IE8... but not IE7. 
-		{
-			$("#sim0").parent().addClass('tourDrawAttention');			
+	$('.popupTour').each(function(){
+		$(this).find('.deleteX').click(function(){
+			$(this).parent().fadeOut("slow");
+			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
+			return false;
+		});
+	});
+	
+	$('#popupTour1').find('a.popupnextbutton').click(function(){
+		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
+		$("#popupTour2").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
+		$("#popupTour1").fadeOut("slow");
+		$("#filterbar").addClass('tourDrawAttention');
+		$("#sim0").removeClass('tourDrawAttention');
+	});
+
+	$('#popupTour2').find('a.popupnextbutton').click(function(){
+		var comparisonposition = $("#savebar").offset();
+		$("#popupTour3").css({"position":"absolute", "top" : parseInt(comparisonposition.top) + 160, "left" : parseInt(comparisonposition.left) + 70}).fadeIn("slow");
+		$("#popupTour2").fadeOut("slow");
+		$("#savebar").addClass('tourDrawAttention');
+		$("#filterbar").removeClass('tourDrawAttention');
+	});
+	
+	$('#popupTour3').find('a.popupnextbutton').click(function(){
+		$("#popupTour3").fadeOut("slow");
+		$("#savebar").removeClass('tourDrawAttention');
+	});
+	
+	// On escape press. Probably not needed anymore.
+	$(document).keypress(function(e){
+		if(e.keyCode==27){
+			$(".popupTour").fadeOut("slow");
+			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
+			if ($.browser.msie && $.browser.version == "7.0") $("#sim0").parent().removeClass('tourDrawAttention');
 		}
-		else */
-		$("#sim0").addClass('tourDrawAttention');
-		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
-		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
-	}
-	if (browserIsIE.indexOf("MSIE6") != -1) // If it's IE6
-	{
-		// Make the PNG background transparent in IE6.
-		// This is not working right now. Need to launch without it.
-//		$('.navigator_box').supersleight();
-//		$('.sim').superslight();       
-	}
-	if (browserIsIE.indexOf("MSIE") != -1) // If it's any version of IE, the transparency for the hands doesn't get done properly on page load.
+	});
+
+	//Autocomplete for searchterms
+	$.ajax({
+		type: "GET",
+		data: "",
+		url: "/compare/searchterms",
+		success: function (data) {
+			// autocomplete is expecting data like this:
+			// "Lexmark[BRK]Metered[BRK]DeskJet"
+			terms = data.split('[BRK]');
+			$("#search").autocomplete(terms, {
+				minChars: 1,
+				max: 10,
+				autoFill: false,
+				mustMatch: false,
+				matchContains: true,
+				scrollHeight: 220
+			});
+		}
+	});
+
+	myspinner = new spinner("myspinner", 11, 20, 9, 5, "#000");
+	
+	$("#tourButton").click(launchtour); //Launch tour when this is clicked
+	
+	if ($.browser.msie) // If it's any version of IE, the transparency for the hands doesn't get done properly on page load.
 	{
 		$('.dragHand').each(function() {
 			$(this).fadeTo("fast", 0.35);
