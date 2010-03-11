@@ -125,11 +125,11 @@ def compute_all_counts\
         root_children)
 
     map(lambda table:
-        table.sum_child_cluster_counts(0, -1, root_children.count()),
+        table.sum_child_cluster_counts(0, -1, root_children.count(), version),
         count_tables)    
     map(lambda table:
         table.sum_child_cluster_totalcounts\
-        (0, -1, root_children.count()),
+        (0, -1, root_children.count(), version),
         totalcount_tables)
 
 def drop_all_count_tables():
