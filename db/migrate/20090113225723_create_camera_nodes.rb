@@ -1,6 +1,8 @@
 class CreateCameraNodes < ActiveRecord::Migration
   def self.up
     create_table :camera_nodes do |t|
+      t.primary_key :id
+      add_index :cluster_id, :product_id
       t.integer :cluster_id
       t.integer :product_id
       Camera::ContinuousFeaturesF.each do |name|

@@ -1,0 +1,14 @@
+LOGGER      Searching for Brother
+LOGGER      Done searching
+LOGGER      Searching for brother
+LOGGER      Done searching
+LOGGER      Searching for Hewlett-Packard
+LOGGER      Done searching
+LOGGER      Searching for hewlett-packard
+LOGGER      Done searching
+LOGGER      Searching for Samsung
+LOGGER      Done searching
+LOGGER      Searching for samsung
+ERROR      Error with search string 'samsung'
+Interrupt
+LOGGER      Done searching

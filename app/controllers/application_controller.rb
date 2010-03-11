@@ -4,7 +4,6 @@ require 'GlobalDeclarations'
 # Likewise, all the methods added will be available for all controllers.
 
 class ApplicationController < ActionController::Base
-  
   helper :all # include all helpers, all the time
   helper_method :title=, :full_title=, :describe=
   @description
@@ -85,6 +84,7 @@ class ApplicationController < ActionController::Base
       mysession.keywordpids = nil
       mysession.keyword = nil
     end
+    mysession.version = $clustermodel.find_last_by_region($region).version
     Session.current = mysession
   end
   
@@ -99,18 +99,5 @@ class ApplicationController < ActionController::Base
   def describe=(mydescription)
     @description = mydescription
     @template.instance_variable_set("@description", @description)  # Necessary if set from view
-  end
-  
-  def initialClusters
-    Session.current.clearFilters
-    #Remove search terms
-    Session.current.keywordpids = nil
-    Session.current.keyword = nil
-    if $model == Printer && $region == "us" && s = Search.find_by_session_id(0)
-      0.upto(s.cluster_count-1).map{|i| s.send(:"c#{i}")}
-    else
-      current_version = $clustermodel.find_last_by_region($region).version
-      $clustermodel.find_all_by_parent_id_and_version_and_region(0, current_version, $region).map{|c| c.id}
-    end
   end
 end
