@@ -4,25 +4,22 @@
 	<% end %>
 	<div id="navigator_bar" class="rounded_nav rounded">
 		<div class="tl"></div><div class="tr"></div>
-		<div style="float: left;">
-			<%= link_to "< "+t('products.compare.back'), "/compare/back", :class => "ajaxlink blacklink" , :id => 'backlink' %> | <%= link_to "Start Over >", "/compare/", :class => "ajaxlink blacklink" , :id => 'allcamslink' %>
-		</div>
 	    <%= navtitle %>
 		<div class="bl"></div><div class="br"></div>
 	</div>
 	
 	
-	<% for i in 0..[@s.cluster_count,$NumGroups].min-1 %>
+	<% for i in 0..[Session.current.search.cluster_count,$NumGroups].min-1 %>
 	  <% if i%(Float($NumGroups)/3).ceil == 0 %>
 		<div class="rowdiv">
 		<% open = true %>
 	  <% end %>
 	  <!-- Navbox partial to draw boxes -->
-	  <%= render :partial => 'navbox', :locals => {:i => i, :cluster => @s.clusters[i] , :group => @s.clusters[i].size>1} %>
+	  <%= render :partial => 'navbox', :locals => {:i => i, :cluster => Session.current.search.clusters[i] , :group => Session.current.search.clusters[i].size>1} %>
 	  <% if i%(Float($NumGroups)/3).ceil == (Float($NumGroups)/3).ceil - 1 %>
 		</div>
 		<% open = false %>
 	  <% end %>
 	<% end %>
 	<%= '</div>' if open %>
-	<div style="clear:both;"></div>
+	<div style="clear:both;"><span id="actioncount" style="display:none"><%= Session.current.searches.count %></span><%= '<span id="tourautostart">&nbsp;</span>' if (Session.current && (Time.now - Session.current.created_at < 3)) %></div>

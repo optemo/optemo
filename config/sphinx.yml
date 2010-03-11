@@ -1,6 +1,12 @@
 development:
-    port: 3315
-    bin_path: '/usr/local/bin'
+  port: 3315
+  bin_path: '/usr/local/bin'
 production:
-    port: 3315
-    bin_path: '/usr/local/bin'
+  port: 3315
+  bin_path: '/usr/local/bin'
+test:
+  port: 3315
+  bin_path: '/usr/local/bin'
+profile:
+  port: 3315
+  bin_path: '/usr/local/bin'

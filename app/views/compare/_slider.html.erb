@@ -9,7 +9,7 @@
 <% overallmax = dbmax(i2f, val) %>
 <% startmin = Session.current.features.send("#{val}_min".intern).nil? ? overallmin : i2f ? Session.current.features.send("#{val}_min".intern)/100 : Session.current.features.send("#{val}_min".intern) %>
 <% startmax = Session.current.features.send("#{val}_max".intern).nil? ? overallmax : i2f ? (Session.current.features.send("#{val}_max".intern)/100).ceil : Session.current.features.send("#{val}_max".intern) %>
-<div class="hist" data-data="<%= @s.distribution(val).join(',') %>"></div>
+<div class="hist" data-data="<%= Session.current.search.distribution(val).join(',') %>"></div>
 <%= hidden_field_tag "myfilter[#{val}_min]", i2f ?
 	((mymin = Session.current.features.send("#{val}_min".intern)).nil? ? '' : mymin/100) : 
 	Session.current.features.send("#{val}_min".intern),
