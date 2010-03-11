@@ -630,7 +630,7 @@ def combine_threshold_rules(cluster, fieldname, rules):
         return max_abs_weight,\
                quality_desc[1][label_idx] + " " + quality_desc[0]
 
-import cluster_labeling.nh_labeler as nh
+import cluster_labeling.text_handling as th
 
 def combine_sgram_rules(fieldname, rules):
     # Just pick the meaningful sgram with highest weight and check
@@ -639,7 +639,7 @@ def combine_sgram_rules(fieldname, rules):
     max_abs_weight_label = None
 
     for rule in rules:
-        if nh.is_stopword(rule.sgram):
+        if th.is_stopword(rule.sgram):
             continue
             
         label = rule.sgram

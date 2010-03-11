@@ -25,6 +25,9 @@ class Cluster(OptemoModel):
     cluster_size = models.IntegerField()
     brand = models.CharField(max_length=255)
 
+    def get_products(self):
+        raise_abstract_method_error()
+
     def get_children(self):
         raise_abstract_method_error()
 
@@ -54,6 +57,9 @@ class Cluster(OptemoModel):
 class CameraCluster(Cluster):
     class Meta:
         db_table = 'camera_clusters'
+
+    def get_products(self):
+        return Camera.get_manager().filter(cameranode__cluster__id=self.id)
 
     def get_children(self):
         return CameraCluster.get_manager().filter(parent_id=self.id)
@@ -121,7 +127,7 @@ class Camera(OptemoModel):
         return cluster_qs
 
     def get_reviews(self):
-        return Review.get_manager().filter(product_id=self.id)
+        return CameraReview.get_manager().filter(product_id=self.id)
 
 class CameraNode(Node):
     class Meta:
@@ -144,3 +150,12 @@ class Review(OptemoModel):
     cons = models.TextField()
     
     product_id = models.IntegerField()
+    product_type = models.CharField(max_length=255)
+
+class CameraReview(Review):
+    class Meta:
+        proxy = True
+
+    @classmethod
+    def get_manager(cls):
+        return Review.get_manager().filter(product_type='Camera')

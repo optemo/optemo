@@ -7,16 +7,16 @@ from numpy import *
 def bin_to_int(idx):
     return int(idx, 2)
 
-def get_N_UC(cluster_id, word):
+def get_N_UC(cluster_id, version, word):
     count_table = cct.ClusterReviewCount
     totalcount_table = ctct.ClusterReviewTotalCount
 
     N = zeros((2, 2))
 
-    N[1, 1] = count_table.get_value(cluster_id, word)
-    N[1, 0] = count_table.get_value(0, word) - N[1, 1]
-    N[0, 1] = totalcount_table.get_value(cluster_id) - N[1, 1]
-    N[0, 0] = totalcount_table.get_value(0) - N[0, 1] - N[1, 0] - N[1, 1]
+    N[1, 1] = count_table.get_value(cluster_id, version, word)
+    N[1, 0] = count_table.get_value(0, version, word) - N[1, 1]
+    N[0, 1] = totalcount_table.get_value(cluster_id, version) - N[1, 1]
+    N[0, 0] = totalcount_table.get_value(0, version) - N[0, 1] - N[1, 0] - N[1, 1]
 
     return N
 
@@ -29,12 +29,16 @@ def P_UC_to_P_U(P_UC):
     return P_U
 
 def compute_scores_for_cluster(cluster_id, parent_cluster_id,
-                               numchildren, score_fn, score_table):
-    words = cct.ClusterReviewCount.get_words_for_cluster(cluster_id)
-    miscores = dict(map(lambda word: (word, score_fn(cluster_id, word)), words))
+                               numchildren, version,
+                               score_fn, score_table):
+    words = cct.ClusterReviewCount\
+            .get_words_for_cluster(cluster_id, version)
+    miscores = dict(map(lambda word:
+                        (word, score_fn(cluster_id, version, word)),
+                        words))
     
     score_table.add_values_from(cluster_id, parent_cluster_id,
-                                numchildren, miscores)
+                                numchildren, version, miscores)
 
 import cluster_labeling.optemo_django_models as optemo
 def compute_all_scores(version, score_fn, score_table):
@@ -49,7 +53,7 @@ def compute_all_scores(version, score_fn, score_table):
     clusters_todo = []
     clusters_todo.extend(root_children)
 
-    compute_scores_for_cluster(0, -1, root_children.count(),
+    compute_scores_for_cluster(0, -1, root_children.count(), version,
                                score_fn, score_table)
 
     while len(clusters_todo) > 0:
@@ -57,7 +61,8 @@ def compute_all_scores(version, score_fn, score_table):
         curr_cluster_children = curr_cluster.get_children()
         clusters_todo.extend(curr_cluster_children)
 
-        compute_scores_for_cluster(curr_cluster.id, curr_cluster.parent_id,
-                                   curr_cluster_children.count(),
-                                   score_fn, score_table)
+        compute_scores_for_cluster\
+            (curr_cluster.id, curr_cluster.parent_id,
+             curr_cluster_children.count(), version,
+             score_fn, score_table)
 

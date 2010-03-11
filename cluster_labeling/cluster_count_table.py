@@ -8,7 +8,7 @@ from django.db.models import Sum
 class ClusterCount(cvfwt.ClusterValueForWord):
     class Meta:
         abstract = True
-        unique_together = (("cluster_id", "word"))
+        unique_together = (("cluster_id", "version", "word"))
 
     value_name = "count"
     count = models.BigIntegerField()
@@ -16,10 +16,10 @@ class ClusterCount(cvfwt.ClusterValueForWord):
     @classmethod
     @transaction.commit_on_success
     def sum_child_cluster_counts\
-        (cls, cluster_id, parent_cluster_id, numchildren):
-        qs = cls.get_manager().\
-             filter(parent_cluster_id = cluster_id).\
-             values('word').annotate(count_sum=Sum('count'))
+        (cls, cluster_id, parent_cluster_id, numchildren, version):
+        qs = cls.get_manager()\
+             .filter(parent_cluster_id=cluster_id, version=version)\
+             .values('word').annotate(count_sum=Sum('count'))
 
         for row in qs:
             word = row['word']
@@ -29,7 +29,7 @@ class ClusterCount(cvfwt.ClusterValueForWord):
                 cls(cluster_id=cluster_id,
                     parent_cluster_id=parent_cluster_id,
                     word=word, count=count_sum,
-                    numchildren=numchildren)
+                    numchildren=numchildren, version=version)
             cluster_count.save()
 
 class ClusterWordCount(ClusterCount):

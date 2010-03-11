@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 from django.db import models
 from django.db import transaction
+from django.db.models import F
 
 import cluster_labeling.local_django_models as local
 
-class ClusterValueForWord(local.LocalInsertOnlyModel):
+class ClusterValueForWord(local.LocalModel):
     class Meta:
         abstract = True
-        unique_together = (("cluster_id", "word"))
+        unique_together = (("cluster_id", "version", "word"))
 
     value_name = None
 
@@ -16,22 +17,53 @@ class ClusterValueForWord(local.LocalInsertOnlyModel):
     word = models.CharField(max_length=255)
     numchildren = models.IntegerField()
 
+    # version is only needed because the top cluster has the same id,
+    # 0, across all cluster hierarchies.
+    version = models.IntegerField()
+
     @classmethod
     @transaction.commit_on_success
     def add_values_from(cls, cluster_id, parent_cluster_id,
-                        numclusterchildren, dict):
+                        numclusterchildren, version, dict):
         for (word, value) in dict.iteritems():
             kwargs = {"cluster_id" : cluster_id,
                       "parent_cluster_id" : parent_cluster_id,
                       "word": word, cls.value_name : value,
-                      "numchildren" : numclusterchildren}
+                      "numchildren" : numclusterchildren,
+                      "version" : version}
             cluster_value = cls(**kwargs)
             cluster_value.save()
 
     @classmethod
-    def get_value(cls, cluster_id, word):
-        qs = cls.get_manager().filter\
-             (cluster_id = cluster_id, word = word).values(cls.value_name)
+    @transaction.commit_on_success
+    def increment_values_from\
+        (cls, cluster_id, parent_cluster_id,
+         numclusterchildren, version, dict):
+        for (word, value) in dict.iteritems():
+            kwargs = {"cluster_id" : cluster_id,
+                      "parent_cluster_id" : parent_cluster_id,
+                      "word": word,
+                      "numchildren" : numclusterchildren,
+                      "version" : version}
+            qs = cls.get_manager().filter(**kwargs)
+
+            assert(qs.count() <= 1)
+
+            if qs.count() == 0:
+                kwargs[cls.value_name] = value
+                cluster_value = cls(**kwargs)
+                cluster_value.save()
+            else:
+                cluster_value = qs[0]
+                cluster_value.__setattr__(cls.value_name, F(cls.value_name) + value)
+                cluster_value.save()
+
+    @classmethod
+    def get_value(cls, cluster_id, version, word):
+        qs = cls.get_manager()\
+             .filter(cluster_id=cluster_id, version=version,
+                     word=word)\
+             .values(cls.value_name)
 
         numrows = qs.count()
         assert(numrows <= 1)
@@ -42,8 +74,9 @@ class ClusterValueForWord(local.LocalInsertOnlyModel):
             return qs[0][cls.value_name]
 
     @classmethod
-    def get_words_for_cluster(cls, cluster_id):
-        qs = cls.get_manager().filter\
-             (cluster_id = cluster_id).distinct().values('word')
+    def get_words_for_cluster(cls, cluster_id, version):
+        qs = cls.get_manager()\
+             .filter(cluster_id=cluster_id, version=version)\
+             .distinct().values('word')
         words = map(lambda x: x['word'], qs)
         return words
