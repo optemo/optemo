@@ -580,6 +580,19 @@ def compute_parent_cluster_quartiles(cluster, fieldname):
 
     return q_25, q_75
 
+def is_interval_set_disjoint(interval_set):
+    num_intervals = len(interval_set)
+    
+    for i in xrange(1, num_intervals):
+        int_l = interval_set[i-1][0]
+        int_r = interval_set[i][0]
+        
+        if int_l[1] < int_r[0]:
+            # there's a gap!
+            return True
+
+    return False
+
 def combine_threshold_rules(cluster, fieldname, rules):
     # Find the intervals encoded in the rules. These intervals may not
     # be contiguous, i.e. everything with really wide or really narrow
@@ -590,6 +603,9 @@ def combine_threshold_rules(cluster, fieldname, rules):
     for interval in intervals:
         interval_set = \
             merge_interval_with_interval_set(interval, interval_set)
+
+    if is_interval_set_disjoint(interval_set):
+        return None
 
     avg_w = compute_weighted_average(cluster, fieldname, interval_set)
 
