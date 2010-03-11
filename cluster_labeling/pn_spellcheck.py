@@ -250,3 +250,13 @@ class PNSpellChecker():
 
         combined_score += 5 * (combined_score/max_change_score)
         return combined_score
+
+def compute_all_corrections():
+    spellchecker = PNSpellChecker()
+    
+    for word in words.Word.get_manager():
+        assert(word.correction is None)
+
+        word.correction = spellchecker.correct(word)
+        word.save()
+
