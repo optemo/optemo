@@ -32,9 +32,6 @@ div#main {
 	border: 1px solid #d0d0d0;
 }
 
-.blacklink {
-	color: black;
-}
 #navigator_bar .smalllink{
 	font-size: 0.75em;
 	margin-left: 3px;
@@ -346,7 +343,7 @@ div.smalldesc {
 	margin-bottom: 20px; /*Spacing for histogram*/
 }
 .reset {
-	text-align: right;
+	font-size: 0.8em;
 }
 .valbelow {
 	padding-top: 18px;
@@ -438,19 +435,6 @@ div.smalldesc {
 //              Tour popup              //
 //--------------------------------------*/
 
-/* #backgroundPopup{
-display:none;
-position:fixed;
-_position:absolute; // hack for internet explorer 6
-height:100%;
-width:100%;
-top:0;
-left:0;
-background:#000000;
-border:1px solid #cecece;
-z-index:1;
-}
-*/
 .popupTour{
 display:none;
 position:fixed;
@@ -508,7 +492,56 @@ display:block;
 }
 
 #tourButton{
-	position:absolute;
-	top:20px;
-	left:20px;
+	font-size: 0.8em;
+	text-align: center;
 }
+
+/*--------------------------------------//
+//             Autocomplete             //
+//--------------------------------------*/
+
+.ac_results {
+	padding: 0px;
+	border: 1px solid black;
+	background-color: white;
+	overflow: hidden;
+	z-index: 99999;
+}
+
+.ac_results ul {
+	width: 100%;
+	list-style-position: outside;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.ac_results li {
+	margin: 0px;
+	padding: 2px 5px;
+	cursor: default;
+	display: block;
+	/* 
+	if width will be 100% horizontal scrollbar will apear 
+	when scroll mode will be used
+	*/
+	/*width: 100%;*/
+	font: menu;
+	font-size: 12px;
+	/* 
+	it is very important, if line-height not setted or setted 
+	in relative units scroll will be broken in firefox
+	*/
+	line-height: 16px;
+	overflow: hidden;
+}
+
+.ac_odd {
+	background-color: #eee;
+}
+
+.ac_over {
+	background-color: #0A246A;
+	color: white;
+}
+

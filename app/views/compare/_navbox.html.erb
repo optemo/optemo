@@ -35,7 +35,7 @@
     		</div>
 		<% else %>
 		<div style="margin-top: 6px; font-size: 0.8em">
-			<%= featuretext(@s,cluster) %>
+			<%= featuretext(Session.current.search,cluster) %>
 		</div>
 		<% end %>
 	</div>

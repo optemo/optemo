@@ -29,7 +29,9 @@ role :db,  domain, :primary => true
 #############################################################
 desc "Compile C-Code"
 task :compilec do
-  run "cd #{current_path}/lib/c_code/clusteringCodes/ && make hCluster"
+  sudo "cmake #{current_path}/lib/c_code/clusteringCodes/"
+  sudo "make hCluster"
+  sudo "cp codes/hCluster #{current_path}/lib/c_code/clusteringCodes/codes/hCluster"
 end
 
 desc "Configure the server files"
@@ -54,9 +56,14 @@ desc "Sync the public/assets directory."
     EOF
   end
 end
+
+#task :restartmemcached
+# Need this before next deploy
+#end
+
 after :deploy, "serversetup"
 after :serversetup, "deploy:after_update_code"
 after :after_update_code, "compilec"
 after :compilec, "deploy:restart"
-
+#after deploy:restart, "restartmemcached"
 

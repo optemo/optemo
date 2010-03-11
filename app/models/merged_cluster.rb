@@ -10,7 +10,8 @@ class MergedCluster
   def self.fromIDs(clusters)
     clusterobj = []
     clusters.compact.each do |c|
-      newcluster = $clustermodel.find(c.to_i)
+      # Need to include .first so as to get at the instantiation method (there is no class method)
+      newcluster = $clustermodel.first.findCachedCluster(c.to_i)
       clusterobj << newcluster unless newcluster.nil? || newcluster.isEmpty
     end
     new(clusterobj)
@@ -71,8 +72,7 @@ class MergedCluster
       if clustersquery.blank?
         @nodes = []
       else
-        @nodes = $nodemodel.find(:all, :conditions => "(#{clustersquery}) #{Session.current.filter && !Cluster.filterquery(Session.current).blank? ?
-        ' and '+Cluster.filterquery(Session.current) : ''}#{!Session.current.filter || Session.current.keywordpids.blank? ? '' : ' and ('+Session.current.keywordpids+')'}")
+        @nodes = $nodemodel.find(:all, :conditions => "(#{clustersquery}) #{Session.current.filter && !Cluster.filterquery(Session.current).blank? ? ' and '+Cluster.filterquery(Session.current) : ''}#{!Session.current.filter || Session.current.keywordpids.blank? ? '' : ' and ('+Session.current.keywordpids+')'}")
       end
     end
     @nodes
@@ -82,7 +82,7 @@ class MergedCluster
   def representative
     unless @rep
       node = nodes.first
-      @rep = $model.find(node.product_id) if node
+      @rep = findCachedProduct(node.product_id) if node
     end
     @rep
   end 

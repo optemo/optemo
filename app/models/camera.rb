@@ -3,7 +3,9 @@ class Camera < ActiveRecord::Base
   has_many :camera_nodes
   define_index do
     #fields
-    indexes title
+    indexes "LOWER(title)", :as => :title
+    set_property :enable_star => true
+    set_property :min_prefix_len => 2
     #attributes
   end
            #                                (c)luster 

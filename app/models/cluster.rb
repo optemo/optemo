@@ -12,7 +12,6 @@ module Cluster
     @children
   end
   
-  
   # finding the deepChildren(clusters with size 1) in clusters
   def deepChildren(dC = [])
     #store the cluster id if the cluster_size is 1 and the cluster accepts the filtering conditions 
@@ -58,8 +57,11 @@ module Cluster
   
   def nodes
     unless @nodes
-      @nodes = $nodemodel.find(:all, :conditions => ["cluster_id = ?#{Session.current.filter && !Cluster.filterquery(Session.current).blank? ?
-         ' and '+Cluster.filterquery(Session.current) : ''}#{!Session.current.filter || Session.current.keywordpids.blank? ? '' : ' and ('+Session.current.keywordpids+')'}",id])
+      if ((Session.current.filter && !Cluster.filterquery(Session.current).blank?) || !Session.current.keywordpids.blank?)
+        @nodes = $nodemodel.find(:all, :conditions => ["cluster_id = ?#{Session.current.filter && !Cluster.filterquery(Session.current).blank? ? ' and '+Cluster.filterquery(Session.current) : ''}#{!Session.current.filter || Session.current.keywordpids.blank? ? '' : ' and ('+Session.current.keywordpids+')'}",id])
+      else 
+        @nodes = findCachedNodes(id)
+      end
     end
     @nodes
   end

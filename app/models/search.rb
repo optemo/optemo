@@ -5,11 +5,11 @@ class Search < ActiveRecord::Base
   ## Computes distributions (arrays of normalized product counts) for all continuous features 
   def distribution(featureName)
        dist = Array.new(21,0)
-       min = DbFeature.cache[featureName].min
-       max = DbFeature.cache[featureName].max
+       min = DbFeature.featurecache(featureName).min
+       max = DbFeature.featurecache(featureName).max
        stepsize = (max-min) / dist.length + 0.000001 #Offset prevents overflow of 10 into dist array
        itof = $model::ItoF.include?(featureName)
-       acceptedNodes.each do |n| 
+       acceptedNodes.each do |n|
          if (itof==true && min>=max-1) || (itof==false && min>=max-0.1)
            #No range so fill everything in
            dist = Array.new(dist.length,1)
@@ -60,9 +60,9 @@ class Search < ActiveRecord::Base
     if @reldescs.empty?
       feats = {}
       $model::ContinuousFeaturesF.each do |f|
-        norm = DbFeature.cache[f].max - DbFeature.cache[f].min
+        norm = DbFeature.featurecache(f).max - DbFeature.featurecache(f).min
         norm = 1 if norm == 0
-        feats[f] = clusters.map{|c| c.representative[f].to_f/norm}
+        feats[f] = clusters.map{ |c| c.representative}.compact.map {|c| c[f].to_f/norm } 
       end
       cluster_count.times do |i|
         dist = {}
@@ -114,11 +114,11 @@ class Search < ActiveRecord::Base
       $model::ContinuousFeatures.each do |f|
         if $model::DescFeatures.include?(f) && !(f == "opticalzoom" && slr == 1)
               cRanges = clusters[clusterNumber].ranges(f)
-              if (cRanges[1] < DbFeature.cache[f]["low"])
+              if (cRanges[1] < DbFeature.featurecache(f).low)
                  clusterDs << {'desc' => "low_"+f, 'stat' => 0}  
-              elsif (cRanges[0] > DbFeature.cache[f]["high"])
+              elsif (cRanges[0] > DbFeature.featurecache(f).high)
                  clusterDs <<  {'desc' => "high_"+f, 'stat' => 2}  
-              elsif ((cRanges[0] >= DbFeature.cache[f]["low"]) && (cRanges[1] <= DbFeature.cache[f]["high"])) 
+              elsif ((cRanges[0] >= DbFeature.featurecache(f).low) && (cRanges[1] <= DbFeature.featurecache(f).high)) 
                   clusterDs <<  {'desc' => "avg_"+f, 'stat' => 1}
               end 
         end   
@@ -133,8 +133,8 @@ class Search < ActiveRecord::Base
   def searchDescription
     des = []
     $model::DescFeatures.each do |f|
-      low = DbFeature.cache[f].low
-      high = DbFeature.cache[f].high
+      low = DbFeature.featurecache(f).low
+      high = DbFeature.featurecache(f).high
       searchR = ranges(f)
       return ['Empty'] if searchR[0].nil? || searchR[1].nil?
       if (searchR[1]<=low)
@@ -231,15 +231,13 @@ class Search < ActiveRecord::Base
   end
   
   def self.createFromKeywordSearch(nodes)
-    product_id_array = nodes.map{ |node| node.product_id }
-    if !(product_id_array.nil?) && product_id_array.length < 50 # Guess; this should be profiled later.
-      node_array = product_id_array.map { |id| $nodemodel.find_last_by_product_id(id) }
-      clusters = node_array.map { |node| $clustermodel.find(node.cluster_id) }.uniq
+    if !(nodes.nil?) && nodes.length < 50 # Guess; this should be profiled later.
+      clusters = nodes.map { |node| Session.current.findCachedCluster(node.cluster_id) }.uniq
 
       while clusters.length > $NumGroups
         clusters = clusters.map do |cluster|
           if cluster.parent_id != 0 # It's possible to have clusters at different layers, so we need to check for this.
-            $clustermodel.find(cluster.parent_id) 
+            cluster.findCachedCluster(cluster.parent_id)
           else
             cluster
           end
@@ -250,6 +248,14 @@ class Search < ActiveRecord::Base
       clusters = nodes.map{|n|n.cluster_id}.uniq
     end
     createFromClustersAndCommit(clusters)
+  end
+  
+  def self.createInitialClusters
+    #Remove search terms
+    Session.current.keywordpids = nil
+    Session.current.keyword = nil
+    Session.current.filter = false #Maybe this should be saved
+    Session.current.search = self.createFromClustersAndCommit(Session.current.findAllCachedClusters(0))
   end
   
   def to_s
