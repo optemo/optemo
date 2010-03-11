@@ -188,8 +188,9 @@ class PNSpellChecker():
         if word_qs.count() == 1:
             word_db = word_qs[0]
             if word_db.correction is not None:
-                self.cache[word] = word
-                return word_db.correction
+                correction = word_db.correction
+                self.cache[word] = correction
+                return correction
 
         if word in camera_terms.known_terms or \
            self.is_in_dictionary(word):
