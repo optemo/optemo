@@ -4,4 +4,4 @@ known_terms = \
          "powershot", "ebay", "pentax", "tv", "zeiss", "cyber",
          "kodak", "sd", "fuji", "internet", "cd", "pc", "optio",
          "google", "prosumer", "ccd", "hdtv", "iso", "nimh", "iphoto",
-         "jpg", "dvd", "avi"])
+         "jpg", "dvd", "avi", "hd", "jpeg"])
