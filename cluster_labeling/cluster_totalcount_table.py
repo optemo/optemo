@@ -75,11 +75,15 @@ class ClusterTotalCount(local.LocalModel):
 class ClusterWordTotalCount(ClusterTotalCount):
     class Meta:
         db_table = 'wordtotalcounts'
+        unique_together = (("cluster_id", "version"))
 
 class ClusterProdTotalCount(ClusterTotalCount):
     class Meta:
         db_table = 'prodtotalcounts'
+        unique_together = (("cluster_id", "version"))
 
 class ClusterReviewTotalCount(ClusterTotalCount):
     class Meta:
         db_table = 'reviewtotalcounts'
+        unique_together = (("cluster_id", "version"))
+

@@ -10,7 +10,7 @@ from cluster_labeling.score_utils import *
 class ClusterMIScore(cst.ClusterScore):
     class Meta:
         db_table = 'mi_scores'
-        unique_together = (("cluster_id", "word"))
+        unique_together = (("cluster_id", "version", "word"))
 
 def compute_MI(N_UC, prior_count = 1):
     # Add prior counts to the probability distribution to avoid all of

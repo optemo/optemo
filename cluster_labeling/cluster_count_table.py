@@ -35,15 +35,15 @@ class ClusterCount(cvfwt.ClusterValueForWord):
 class ClusterWordCount(ClusterCount):
     class Meta:
         db_table = 'wordcounts'
-        unique_together = (("cluster_id", "word"))
+        unique_together = (("cluster_id", "version", "word"))
 
 class ClusterProdCount(ClusterCount):
     class Meta:
         db_table = 'prodcounts'
-        unique_together = (("cluster_id", "word"))
+        unique_together = (("cluster_id", "version", "word"))
 
 class ClusterReviewCount(ClusterCount):
     class Meta:
         db_table = 'reviewcounts'
-        unique_together = (("cluster_id", "word"))
+        unique_together = (("cluster_id", "version", "word"))
 
