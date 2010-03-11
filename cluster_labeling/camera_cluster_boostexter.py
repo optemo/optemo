@@ -373,23 +373,13 @@ def gather_rules(rules):
 
     return rules_a
 
-import operator
+def get_abs_weight_from_threshold_rule(rule):
+    weights = rule.weights
+    weights = weights[2, :] - weights[1, :]
 
-def get_field_ranks(rules):
-    field_ranks = {}
+    assert(abs(weights[0]) == abs(weights[1]))
 
-    i = 0
-    for rule in rules:
-        fieldname = rule.fieldname
-        if fieldname in field_ranks:
-            continue
-        
-        field_ranks[fieldname] = i
-        i += 1
-
-    return map(lambda (f, r): f,
-               sorted(field_ranks.iteritems(),
-                      key=operator.itemgetter(1)))
+    return abs(weights[0])
 
 def get_interval_from_threshold_rule(rule):
     weights = rule.weights
@@ -580,7 +570,23 @@ def compute_parent_cluster_quartiles(cluster, fieldname):
 
     return q_25, q_75
 
+def is_interval_set_disjoint(interval_set):
+    num_intervals = len(interval_set)
+    
+    for i in xrange(1, num_intervals):
+        int_l = interval_set[i-1][0]
+        int_r = interval_set[i][0]
+        
+        if int_l[1] < int_r[0]:
+            # there's a gap!
+            return True
+
+    return False
+
 def combine_threshold_rules(cluster, fieldname, rules):
+    max_abs_weight = \
+        max(map(lambda r: get_abs_weight_from_threshold_rule(r), rules))
+
     # Find the intervals encoded in the rules. These intervals may not
     # be contiguous, i.e. everything with really wide or really narrow
     # zoom ranges.
@@ -591,13 +597,16 @@ def combine_threshold_rules(cluster, fieldname, rules):
         interval_set = \
             merge_interval_with_interval_set(interval, interval_set)
 
+    if is_interval_set_disjoint(interval_set):
+        return None, None
+
     avg_w = compute_weighted_average(cluster, fieldname, interval_set)
 
     # All of the cluster's products had NULL values for this field, so
     # nothing can be said about whether it is low, average or
     # high. There will be no label for the field.
     if avg_w == None:
-        return None
+        return None, None
 
     q_25, q_75 = compute_parent_cluster_quartiles(cluster, fieldname)
 
@@ -616,15 +625,19 @@ def combine_threshold_rules(cluster, fieldname, rules):
     full_labels_given = quality_desc[2]
 
     if full_labels_given:
-        return quality_desc[1][label_idx]
+        return max_abs_weight, quality_desc[1][label_idx]
     else:
-        return quality_desc[1][label_idx] + " " + quality_desc[0]
+        return max_abs_weight,\
+               quality_desc[1][label_idx] + " " + quality_desc[0]
 
 import cluster_labeling.text_handling as th
 
 def combine_sgram_rules(fieldname, rules):
-    # Just pick the first meaningful sgram and check whether it is a
-    # positive label or a negative label.
+    # Just pick the meaningful sgram with highest weight and check
+    # whether it is a positive label or a negative label.
+    max_abs_weight = 0
+    max_abs_weight_label = None
+
     for rule in rules:
         if th.is_stopword(rule.sgram):
             continue
@@ -635,12 +648,15 @@ def combine_sgram_rules(fieldname, rules):
         weights = rule.weights
         weights = weights[1, :] - weights[0, :]
 
-        if weights[0] == 0 and weights[1] == 0:
-            return None
+        assert(abs(weights[0]) == abs(weights[1]))
+        weight = weights[0]
 
-        if weights[0] > 0 and weights[1] < 0:
+        if abs(weight) <= max_abs_weight:
+            continue
+
+        if weight > 0:
             direction = 'pos'
-        elif weights[0] < 0 and weights[1] > 0:
+        elif weight < 0:
             direction = 'neg'
         else:
             assert(False)
@@ -648,9 +664,17 @@ def combine_sgram_rules(fieldname, rules):
         quality_desc = fieldname_to_quality[fieldname]
 
         if direction == 'pos':
-            return quality_desc + ": " + label
+            label = quality_desc + ": " + label
         else:
-            return quality_desc + ": " + "Not " + label
+            label = quality_desc + ": " + "Not " + label
+
+        max_abs_weight = abs(weight)
+        max_abs_weight_label = label
+
+    if max_abs_weight == 0:
+        return None, None
+    else:
+        return max_abs_weight, max_abs_weight_label
 
 def combine_boolean_rules(fieldname, rules):
     # So.. boolean rules are not selected at all, because pretty much
@@ -673,19 +697,21 @@ def make_label_for_rules_for_field(cluster, fieldname, rules):
 def make_labels_from_rules(cluster, rules):
     # Put all rules for a particular field together
     rules_a = gather_rules(rules)
-    field_ranks = get_field_ranks(rules)
 
     labels = []
     skipped_fields = []
-    for fieldname in field_ranks:
-        label = make_label_for_rules_for_field\
-                (cluster, fieldname, rules_a[fieldname])
+
+    for (fieldname, rules_for_field) in rules_a.iteritems():
+        label, maxweight = \
+            make_label_for_rules_for_field\
+            (cluster, fieldname, rules_for_field)
 
         if label is None:
-            skipped_fields.append(label)
+            skipped_fields.append(fieldname)
         else:
-            labels.append(label)
+            labels.append((maxweight, label))
 
+    labels = map(lambda x: x[1], sorted(labels, key=lambda x: x[0])[::-1])
     return labels, skipped_fields
 
 import cluster_labeling.cluster_score_table as cst
