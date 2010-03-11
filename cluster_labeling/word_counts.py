@@ -111,7 +111,7 @@ def compute_counts_for_cluster(cluster, spellchecker):
             (cluster.id, cluster.parent_id, numchildren, version),
             totalcount_tables)
         
-default_spellchecker = pnsc.PNSpellChecker.load_spellchecker(pnsc.default_spellchecker_fn)
+default_spellchecker = pnsc.PNSpellChecker()
 def compute_all_counts\
         (version=optemo.CameraCluster.get_latest_version(),
          spellchecker = None):

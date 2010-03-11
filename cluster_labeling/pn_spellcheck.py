@@ -51,24 +51,16 @@ import re
 import operator
 import math
 
-import cPickle
-
 import cluster_labeling.text_handling as th
 import cluster_labeling.camera_terms as camera_terms
 
 class PNSpellChecker():
     alphabet = 'abcdefghijklmnopqrstuvwxyz'
-    nWords = {}
     prior_count = 1
 
     cache = {}
 
     en_dict = enchant.Dict('en_US')
-
-    def train(self, words):
-        for w in words:
-            w = w.lower()
-            self.nWords[w] = self.nWords.get(w, self.prior_count) + 1
 
     def fill_edits_table(self, etable, word_unalign, word = None):
         if word == None:
@@ -121,10 +113,16 @@ class PNSpellChecker():
     def prune_non_dictionary_words(self, etable):
         return dict([(k, v) for k, v in etable.iteritems() if self.is_in_dictionary(k)])
 
+    def get_word_count(self, word):
+        return words.Word.get_manager().filter(word=word).count()
+
     def is_known(self, word):
-        return word in self.nWords or \
-               word in camera_terms.known_terms or \
-               self.is_in_dictionary(word)
+        if word in camera_terms.known_terms: return True
+
+        if self.get_word_count(word) > 0:
+            return True
+
+        return self.is_in_dictionary(word)
 
     def prune_unknown(self, etable):
         return dict([(k, v) for k, v in etable.iteritems()
@@ -223,7 +221,7 @@ class PNSpellChecker():
                   for k, s in candidates.iteritems()])
         
         wordcounts = \
-            dict([(k, math.sqrt(self.nWords.get(k, self.prior_count)))
+            dict([(k, math.sqrt(max(self.get_word_count(k), self.prior_count))
                   for k, s in candidates.iteritems()])
 
         max_change_score = max(change_scores.itervalues())
@@ -252,43 +250,3 @@ class PNSpellChecker():
 
         combined_score += 5 * (combined_score/max_change_score)
         return combined_score
-
-    def save_spellchecker(self, fn):
-        output_fn = open(fn, 'wb')
-        cPickle.dump(self.nWords, output_fn)
-        output_fn.close()
-    
-    @classmethod
-    def load_spellchecker(cls, fn):
-        input_fn = open(fn, 'rb')
-        nWords = cPickle.load(input_fn)
-        input_fn.close()
-
-        schecker = PNSpellChecker()
-        schecker.nWords = nWords
-        return schecker
-
-default_spellchecker_fn = 'cluster_labeling/spellchecker.pkl'
-
-def train_spellchecker_on_reviews\
-        (spellchecker_fn = default_spellchecker_fn):
-    spellchecker = PNSpellChecker()
-
-    i = 0
-
-    content = ""
-    for review in optemo.CameraReview.get_manager().all():
-        i += 1
-        content += " " + review.content
-
-        print i, ": ", len(content)
-        
-        if len(content) > 2**20:
-            words = th.get_words_from_string(content)
-            spellchecker.train(words)
-            content = ""
-
-    words = th.get_words_from_string(content)
-    spellchecker.train(words)
-
-    spellchecker.save_spellchecker(spellchecker_fn)
