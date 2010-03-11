@@ -23,11 +23,11 @@ module CompareHelper
   end
   
   def dbmin(i2f, feat)
-    i2f ? DbFeature.cache[feat].min.to_i/100 :  roundmin(DbFeature.cache[feat].min)
+    i2f ? DbFeature.featurecache(feat).min.to_i/100 :  roundmin(DbFeature.featurecache(feat).min)
   end
   
   def dbmax(i2f, feat)
-    i2f ? (DbFeature.cache[feat].max.to_f/100).ceil : feat=='itemweight' ? roundmax(DbFeature.cache[feat].max).ceil : roundmax(DbFeature.cache[feat].max)
+    i2f ? (DbFeature.featurecache(feat).max.to_f/100).ceil : feat=='itemweight' ? roundmax(DbFeature.featurecache(feat).max).ceil : roundmax(DbFeature.featurecache(feat).max)
   end
   
   def nav_link
@@ -39,21 +39,21 @@ module CompareHelper
   end
   
   def navtitle
-    if @s.searchterm.nil?
-		  (@s.result_count > 1) ? t("products.compare.browsings",:count => @s.result_count) + $model.name + "s" : t("products.compare.browsing") + $model.name
-		  ["Browsing", @s.result_count,$RelativeDescriptions ? "<b>"+@s.searchDescription.map{|d|t("products."+d)}.join(", ")+"</b>" : nil, ($model.name == 'Camera' ? ((@s.result_count > 1) ? "Cameras" : "Camera") : ((@s.result_count > 1) ? "Printers" : "Printer"))].join(" ")
+    if Session.current.keyword.nil?
+		  (Session.current.search.result_count > 1) ? t("products.compare.browsings",:count => Session.current.search.result_count) + $model.name + "s" : t("products.compare.browsing") + $model.name
+		  ["Browsing", Session.current.search.result_count,$RelativeDescriptions ? "<b>"+Session.current.search.searchDescription.map{|d|t("products."+d)}.join(", ")+"</b>" : nil, ($model.name == 'Camera' ? ((Session.current.search.result_count > 1) ? "Cameras" : "Camera") : ((Session.current.search.result_count > 1) ? "Printers" : "Printer"))].join(" ")
 		else
-      "#{t("products.compare.search")}: '#{@s.searchterm}', #{(@s.result_count > 1) ? t("products.compare.browsings",:count => @s.result_count) : t("products.compare.browsing")}" 
+      "#{t("products.compare.search")}: '#{Session.current.keyword}', #{(Session.current.search.result_count > 1) ? t("products.compare.browsings",:count => Session.current.search.result_count) : t("products.compare.browsing")}" 
     end
   end
   
   def groupDesc(group, i)
     if $RelativeDescriptions
-      @s.relativeDescriptions[i].map{|d|t("products."+d)}.join(", ")
+      Session.current.search.relativeDescriptions[i].map{|d|t("products."+d)}.join(", ")
     else
       disptranslation = []
       dispString = ""
-	    @s.clusterDescription(i).compact.flatten.uniq.each do |property|
+	    Session.current.search.clusterDescription(i).compact.flatten.uniq.each do |property|
 	      disptranslation << t('products.' + property)
 	    end
 	    if group
@@ -83,7 +83,7 @@ module CompareHelper
  
   def catsforfeature(feat)
     chosen_brands = Session.current.features.brand.split('*')
-    DbFeature.cache[feat].categories.split('*').reject {|b| chosen_brands.index(b)}
+    DbFeature.featurecache(feat).categories.split('*').reject {|b| chosen_brands.index(b)}
   end
   
   def featuretext(search,cluster)

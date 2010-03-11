@@ -66,8 +66,18 @@ task :serversetup do
   run "cd #{current_path}/config              && cp -f database.yml.deploy database.yml"
 end
 
+task :redopermissions do
+  run "cd #{current_path}/../ && sudo chmod g+w -R current shared"
+end
+
+#task :restartmemcached
+# Need this before next deploy
+#end
+
 after :deploy, "serversetup"
 after :serversetup, "reindex"
-after :reindex, "compilec"
+after :reindex, "redopermissions"
+after :redopermissions, "compilec"
 
+#after :compilec, "restartmemcached"
 
