@@ -102,12 +102,9 @@ class JavaTestSession < Webrat::SeleniumSession
      wait_for_ajax
    end
       
-   def click_back_button product_type='Printer'
-     # TODO what about cameras...
-     the_link = get_el(doc.css('#backlink'))
-     debugger unless the_link
-     selenium.click "link=#{the_link.text}"
-     wait_for_ajax
+   def click_back_button
+     selenium.go_back #:wait_for => :ajax, :javascript_framework => :jquery
+     sleep 5 #sleep because wait_for does not seem to work
    end
    
    def click_home_logo 

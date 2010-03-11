@@ -16,10 +16,9 @@
 			<% end %>
 			<%= select('myfilter', feat+"1", [t('products.compare.addbrand')] +catsforfeature(feat), options={}, {:id => "selector"})%>
 		<% else %>
-			<%= select('myfilter', feat+"1", [t('products.compare.allbrands')] + DbFeature.cache[feat].categories.split('*'), options={}, {:id => "selector"})%>
+			<%= select('myfilter', feat+"1", [t('products.compare.allbrands')] + DbFeature.featurecache(feat).categories.split('*'), options={}, {:id => "selector"})%>
 		<% end %>
-			
-		<%= hidden_field_tag "myfilter[#{feat}]", Session.current.features.brand%>
+		<%= hidden_field_tag "myfilter[#{feat}]", Session.current.features.brand %>
 	</div>
 <% end %>
 <% $model::ContinuousFeaturesF.each do |feat| %>
@@ -29,8 +28,8 @@
 		:val => feat, 
 		:extra => $model::ExtraFeature[feat],
 		:money_formatting => feat == 'price',
-		:min => DbFeature.cache[feat].min, 
-		:max => DbFeature.cache[feat].max} %>
+		:min => DbFeature.featurecache(feat).min, 
+		:max => DbFeature.featurecache(feat).max} %>
 <% end %>
 <% $model::BinaryFeaturesF.each do |feat| %>
 	<div class='feature<%= " extra" if $model::ExtraFeature[feat] %>' <%= "style='display:none;'" if $model::ExtraFeature[feat] && !Session.current.expert %>>

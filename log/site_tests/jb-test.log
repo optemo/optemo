@@ -1,0 +1,29 @@
+LOGGER      Adding brand All Brands
+LOGGER      Done testing add brand All Brands
+LOGGER      Adding brand Brother
+LOGGER      Done testing add brand Brother
+LOGGER      Testing remove brand
+LOGGER      Removing , 1th brand in the list.
+LOGGER      Done removing brand
+LOGGER      Adding brand Hewlett-Packard
+LOGGER      Done testing add brand Hewlett-Packard
+LOGGER      Testing remove brand
+LOGGER      Removing , 1th brand in the list.
+LOGGER      Done removing brand
+LOGGER      Adding brand Samsung
+ERROR      Error page displayed
+ERROR      Samsung not selected
+LOGGER      Done testing add brand Samsung
+LOGGER      Adding brand Xerox
+ERROR      Error page displayed
+LOGGER      Done testing add brand Xerox
+LOGGER      Testing remove brand
+LOGGER      Removing , 1th brand in the list.
+ERROR      Error page displayed
+LOGGER      Done removing brand
+LOGGER      Adding brand Ricoh
+ERROR      Error page displayed
+LOGGER      Done testing add brand Ricoh
+LOGGER      Testing remove brand
+LOGGER      Removing , 1th brand in the list.
+ERROR      Error page displayed

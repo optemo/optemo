@@ -43,7 +43,6 @@ ActionController::Routing::Routes.draw do |map|
   map.connect 'products/show/:id', :controller => 'compare', :action => 'show'
   map.connect ':controller/:action/:id'
   map.connect ':controller/:action/:id.:format'
-  map.connect ':controller/:action'
   map.connect ':action', :controller => 'content'
   map.connect '*', :controller => 'content', :action => 'error'
 end
