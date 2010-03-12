@@ -35,8 +35,9 @@ def compute_chi_squared_score(N_UC, prior_count = 1):
             
     return score
 
-def compute_chi_squared_score_for_word(cluster_id, version, word):
-    N_UC = get_N_UC(cluster_id, version, word)
+def compute_chi_squared_score_for_word\
+    (cluster_id, parent_cluster_id, version, word):
+    N_UC = get_N_UC(cluster_id, parent_cluster_id, version, word)
     return compute_chi_squared_score(N_UC)
 
 def compute_all_chi_squared_scores\

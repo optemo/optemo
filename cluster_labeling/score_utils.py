@@ -7,16 +7,16 @@ from numpy import *
 def bin_to_int(idx):
     return int(idx, 2)
 
-def get_N_UC(cluster_id, version, word):
+def get_N_UC(cluster_id, parent_cluster_id, version, word):
     count_table = cct.ClusterReviewCount
     totalcount_table = ctct.ClusterReviewTotalCount
 
     N = zeros((2, 2))
 
     N[1, 1] = count_table.get_value(cluster_id, version, word)
-    N[1, 0] = count_table.get_value(0, version, word) - N[1, 1]
+    N[1, 0] = count_table.get_value(parent_cluster_id, version, word) - N[1, 1]
     N[0, 1] = totalcount_table.get_value(cluster_id, version) - N[1, 1]
-    N[0, 0] = totalcount_table.get_value(0, version) - N[0, 1] - N[1, 0] - N[1, 1]
+    N[0, 0] = totalcount_table.get_value(parent_cluster_id, version) - N[0, 1] - N[1, 0] - N[1, 1]
 
     return N
 
@@ -33,12 +33,13 @@ def compute_scores_for_cluster(cluster_id, parent_cluster_id,
                                score_fn, score_table):
     words = cct.ClusterReviewCount\
             .get_words_for_cluster(cluster_id, version)
-    miscores = dict(map(lambda word:
-                        (word, score_fn(cluster_id, version, word)),
-                        words))
+    scores = dict(map(lambda word:
+                      (word,
+                       score_fn(cluster_id, parent_cluster_id, version, word)),
+                      words))
     
     score_table.add_values_from(cluster_id, parent_cluster_id,
-                                numchildren, version, miscores)
+                                numchildren, version, scores)
 
 import cluster_labeling.optemo_django_models as optemo
 def compute_all_scores(version, score_fn, score_table):
