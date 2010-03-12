@@ -45,7 +45,7 @@ import cluster_labeling.optemo_django_models as optemo
 def compute_all_scores(version, score_fn, score_table):
     # Recursively compute score for each word in each cluster and
     # store it in the score table.
-    root_children = optemo.CameraCluster.get_root_children()
+    root_children = optemo.CameraCluster.get_root_children(version)
 
     clusters_todo = []
     clusters_todo.extend(root_children)
