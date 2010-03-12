@@ -9,6 +9,14 @@ import cluster_labeling.word_counts as wc
 import cluster_labeling.nh_chi_scorer as chi
 import cluster_labeling.nh_mi_scorer as mi
 
+wc.drop_all_count_tables()
+
+chi.ClusterChiSquaredScore.drop_table_if_exists()
+chi.ClusterChiSquaredScore.create_table()
+
+mi.ClusterMIScore.drop_table_if_exists()
+mi.ClusterMIScore.create_table()
+
 cluster_vers = [23, 24]
 
 for ver in cluster_vers:
