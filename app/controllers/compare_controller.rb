@@ -1,6 +1,7 @@
 class CompareController < ApplicationController
   layout "optemo"
   require 'open-uri'
+  require 'iconv'
   include CachingMemcached
   
   def index
@@ -171,6 +172,9 @@ class CompareController < ApplicationController
     # Must do a join followed by a split since the initial mapping of titles is like this: ["keywords are here", "and also here", ...]
     # The gsub lines are to take out the parentheses on both sides, take out commas, and take out trailing slashes.
     searchterms = findCachedTitles.join(" ").split(" ").map{|t| t.tr("()", '').gsub(/,/,' ').gsub(/\/$/,'').chomp}.uniq
+    # Sanitize RSS-fed UTF-8 character input.
+    ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
+    searchterms = searchterms.map {|t| ic.iconv(t << ' ')[0..-2]}
     # Delete all the 1200x1200dpi, the "/" or "&" strings, all two-letter strings, and things that don't start with a letter or number.
     searchterms.delete_if {|t| t == '' || t.match('[0-9]+.[0-9]+') || t.match('^..?$') || t.match('^[^A-Za-z0-9]') || t.downcase.match('^print')}
 #    duplicates = searchterms.inject({}) {|h,v| h[v]=h[v].to_i+1; h}.reject{|k,v| v==1}.keys
