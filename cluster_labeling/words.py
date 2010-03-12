@@ -24,7 +24,7 @@ def populate_word_table_from_review(review):
     words = th.get_words_from_string(content)
 
     if not th.is_english(set(words)):
-        continue
+        return
 
     wc = {}
     for word in words:
@@ -51,4 +51,4 @@ def populate_word_table():
     Word.create_table()
 
     for review in optemo.CameraReview.get_manager():
-        populate_word_table_for_review(review)
+        populate_word_table_from_review(review)
