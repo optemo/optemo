@@ -718,7 +718,7 @@ import cluster_labeling.cluster_score_table as cst
 class ClusterBoosTexterLabel(cst.ClusterScore):
     class Meta:
         db_table = 'boostexter_labels'
-        unique_together = (("cluster_id", "word"))
+        unique_together = (("cluster_id", "version", "word"))
 
 from django.db import transaction
 @transaction.commit_on_success
@@ -728,12 +728,15 @@ def make_boostexter_labels_for_cluster(cluster):
 
     numclusterchildren = cluster.get_children().count()
 
+    version = cluster.version
+
     # Insert labels into database
     i = 0
     for label in labels:
         kwargs = {"cluster_id" : cluster.id,
                   "parent_cluster_id" : cluster.parent_id,
                   "word" : label, "score" : i,
+                  "version" : version,
                   "numchildren" : numclusterchildren}
         boostexter_label = ClusterBoosTexterLabel(**kwargs)
         boostexter_label.save()
