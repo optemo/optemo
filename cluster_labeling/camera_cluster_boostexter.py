@@ -745,14 +745,7 @@ def make_boostexter_labels_for_cluster(cluster):
 
 def make_boostexter_labels_for_all_clusters\
         (version = optemo.CameraCluster.get_latest_version()):
-    # Drop/create the score table.
-    ClusterBoosTexterLabel.drop_table_if_exists()
-    ClusterBoosTexterLabel.create_table()
-    
     qs = optemo.CameraCluster.get_manager().filter(version=version)
-
-    cluster_labels = []
-
     for cluster in qs:
         make_boostexter_labels_for_cluster(cluster)
 
@@ -763,3 +756,4 @@ def train_boostexter_on_all_clusters\
         generate_names_file(cluster)
         generate_data_file(cluster)
         train_boostexter(cluster)
+
