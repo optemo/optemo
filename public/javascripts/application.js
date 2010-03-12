@@ -72,7 +72,7 @@ function fadeout(url,data,width,height)
 	if (data)
 		$('#info').html(data);
 	else
-		$('#info').load(url,function(){DBinit();});	
+		$('#info').load(url,function(){CompareInit();DBinit();});	
 }
 
 // When you click the Save button:
@@ -477,6 +477,11 @@ function CompareInit() {
 	$('.remove').click(function(){
 		removeFromComparison($(this).attr('data-name'));
 		$(this).parents('.column').remove();
+		
+		// If this is the last one, take the comparison screen down too
+		if ($('#comparisonmatrix .column').length == 1) {
+			fadein();
+		}
 		return false;
 	});
 }
@@ -632,7 +637,6 @@ $(document).ready(function() {
 		});
 		fadeout('/direct_comparison/index/' + productIDs, null, 940, 530);/*star-h:580*/
 		trackPage('goals/compare/');
-		CompareInit();
 		return false;
 	});
     
