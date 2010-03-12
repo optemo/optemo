@@ -50,9 +50,6 @@ def compute_all_scores(version, score_fn, score_table):
     clusters_todo = []
     clusters_todo.extend(root_children)
 
-    compute_scores_for_cluster(0, -1, root_children.count(), version,
-                               score_fn, score_table)
-
     while len(clusters_todo) > 0:
         curr_cluster = clusters_todo.pop()
         curr_cluster_children = curr_cluster.get_children()
