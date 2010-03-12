@@ -702,7 +702,7 @@ def make_labels_from_rules(cluster, rules):
     skipped_fields = []
 
     for (fieldname, rules_for_field) in rules_a.iteritems():
-        label, maxweight = \
+        maxweight, label = \
             make_label_for_rules_for_field\
             (cluster, fieldname, rules_for_field)
 
