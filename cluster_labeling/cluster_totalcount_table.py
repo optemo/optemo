@@ -11,7 +11,7 @@ class ClusterTotalCount(local.LocalModel):
         abstract = True
         unique_together = (("cluster_id", "version"))
 
-    cluster_id = models.BigIntegerField(primary_key=True)
+    cluster_id = models.BigIntegerField()
     parent_cluster_id = models.BigIntegerField()
     totalcount = models.BigIntegerField()
     numchildren = models.IntegerField()
