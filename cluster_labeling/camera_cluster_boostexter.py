@@ -11,30 +11,17 @@ output_subdir = 'cluster_labeling/cc_boostexter_files/'
 boostexter_subdir = 'cluster_labeling/BoosTexter2_1/'
 
 boosting_fields = [
-    ('title', 'text'),
-    ('brand', 'text'),
-    ('model', 'text'),
-    
-    ('itemwidth', 'continuous'),
-    ('itemlength', 'continuous'),
-    ('itemheight', 'continuous'),
     ('itemweight', 'continuous'),
+
+    ('displaysize', 'continuous'),
 
     ('opticalzoom', 'continuous'),
     ('digitalzoom', 'continuous'),
 
-    ('slr', ['True', 'False']),
-    ('waterproof', ['True', 'False']),
+    ('maximumresolution', 'continuous'),
 
     ('maximumfocallength', 'continuous'),
     ('minimumfocallength', 'continuous'),
-
-    ('batteriesincluded', ['True', 'False']),
-
-    ('connectivity', 'text'),
-    
-    ('hasredeyereduction', ['True', 'False']),
-    ('includedsoftware', 'text'),
 
     ('averagereviewrating', 'continuous'),
     ('totalreviews', 'continuous'),
@@ -56,10 +43,16 @@ fieldname_to_quality = {
     'itemweight' : ('Weight',
                     ['Lightweight', 'Average Weight', 'Heavy'], True),
 
+    'displaysize' : ('Display Size',
+                     ['Small', 'Average', 'Large'], False),
+
     'opticalzoom' : ('Optical Zoom',
                      ['Low', 'Average', 'High'], False),
     'digitalzoom' : ('Digital Zoom',
                      ['Low', 'Average', 'High'], False),
+
+    'maximumresolution' : ('Resolution',
+                           ['Low', 'Average', 'High'], False),
     
     'slr' : ('SLR'),
     'waterproof' : ('waterproof'),
