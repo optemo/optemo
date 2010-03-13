@@ -614,6 +614,11 @@ def combine_threshold_rules(cluster, fieldname, rules):
     else:
         assert(False)
 
+    if label_idx == 1:
+        # The label_idx is the neutral one, i.e. 'Average'. Don't
+        # bother making a label for neutral quantities.
+        return None, None
+
     quality_desc = fieldname_to_quality[fieldname]
     full_labels_given = quality_desc[2]
 
