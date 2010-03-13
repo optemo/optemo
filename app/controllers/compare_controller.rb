@@ -44,7 +44,6 @@ class CompareController < ApplicationController
   end
   
   def classVariables(search)
-    @s = search
     Session.current.search = search
   end
   
