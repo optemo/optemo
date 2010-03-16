@@ -686,11 +686,82 @@ def combine_boolean_rules(fieldname, rules):
     # all of the boolean flags are NULL.
     pass
 
-def make_label_for_rules_for_field(cluster, fieldname, rules):
-    rule_types = set(map(lambda x: str(type(x)), rules))
-    assert(len(rule_types) == 1)
+import cluster_labeling.local_django_models as local
+from django.db import models
 
-    rule_type = rule_types.pop()
+class BoosTexterCombinedRule(local.LocalModel):
+    class Meta:
+        db_table = "boostexter_combined_rules"
+        unique_together = (("fieldname", "cluster_id", "version"))
+    
+    fieldname = models.CharField(max_length=255)
+    weight = models.FloatField()
+
+    cluster_id = models.IntegerField()
+    version = models.IntegerField()
+    
+    yaml_repr = models.TextField()
+
+def get_rule_type(rule):
+    return str(type(rule))
+
+def all_rules_are_for_same_field(rules):
+    rule_types = set(map(lambda x: get_rule_type(x), rules))
+    return len(rule_types) == 1
+
+import yaml
+
+def convert_interval_set_to_yaml_style(interval_set):
+    return map(lambda x: {'interval':x[0], 'weight':x[1]},
+               interval_set)
+
+def save_combined_threshold_rule_for_field(cluster, fieldname, rules):
+    max_abs_weight = get_max_abs_weight_from_threshold_rules(rules)
+    interval_set = get_weighted_interval_set_from_threshold_rules(rules)
+
+    if is_interval_set_disjoint(interval_set):
+        return None, None
+
+    yaml_repr = \
+        yaml.dump(convert_interval_set_to_yaml_style(interval_set))
+    
+    combined_rule = \
+        BoosTexterCombinedRule\
+        (fieldname=fieldname,
+         weight=max_abs_weight, cluster_id=cluster.id,
+         version=cluster.version, yaml_repr=yaml_repr)
+
+    combined_rule.save()
+
+def save_combined_sgram_rule_for_field(fieldname, rules):
+    max_abs_weight, label = combine_sgram_rules(fieldname, rules)
+    yaml_repr = yaml.dump({'label':label})
+    
+    combined_rule = \
+        BoosTexterCombinedRule\
+        (fieldname=fieldname,
+         weight=max_abs_weight, cluster_id=cluster.id,
+         version=cluster.version, yaml_repr=yaml_repr)
+
+    combined_rule.save()
+
+def save_combined_rule_for_field(cluster, fieldname, rules):
+    assert(all_rules_are_for_same_field(rules))
+
+    rule_type = get_rule_type(rules[0])
+
+    if rule_type == str(BoosTexterThresholdRule):
+        save_combined_threshold_rule_for_field\
+        (cluster, fieldname, rules)
+    elif rule_type == str(BoosTexterSGramRule):
+        save_combined_sgram_rule_for_field(fieldname, rules)    
+    else:
+        assert(False)
+
+def make_label_for_rules_for_field(cluster, fieldname, rules):
+    assert(all_rules_are_for_same_field(rules))
+
+    rule_type = get_rule_type(rules[0])
 
     if rule_type == str(BoosTexterThresholdRule):
         return combine_threshold_rules(cluster, fieldname, rules)
@@ -698,6 +769,14 @@ def make_label_for_rules_for_field(cluster, fieldname, rules):
         return combine_sgram_rules(fieldname, rules)
     else:
         assert(False)
+
+def save_combined_rules_from_rules(cluster, rules):
+    # Put all rules for a particular field together
+    rules_a = gather_rules(rules)
+
+    for (fieldname, rules_for_field) in rules_a.iteritems():
+        save_combined_rule_for_field\
+            (cluster, fieldname, rules_for_field)
 
 def make_labels_from_rules(cluster, rules):
     # Put all rules for a particular field together
@@ -725,6 +804,10 @@ class ClusterBoosTexterLabel(cst.ClusterScore):
         db_table = 'boostexter_labels'
         unique_together = (("cluster_id", "version", "word"))
 
+def save_combined_rules_for_cluster(cluster):
+    rules = get_rules(cluster)
+    save_combined_rules_from_rules(cluster, rules)
+
 from django.db import transaction
 @transaction.commit_on_success
 def make_boostexter_labels_for_cluster(cluster):
@@ -747,6 +830,12 @@ def make_boostexter_labels_for_cluster(cluster):
         boostexter_label.save()
         
         i += 1
+
+def save_combined_rules_for_all_clusters\
+        (version = optemo.CameraCluster.get_latest_version()):
+    qs = optemo.CameraCluster.get_manager().filter(version=version)
+    for cluster in qs:
+        save_combined_rules_for_cluster(cluster)
 
 def make_boostexter_labels_for_all_clusters\
         (version = optemo.CameraCluster.get_latest_version()):
