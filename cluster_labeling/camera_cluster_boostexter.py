@@ -576,10 +576,11 @@ def is_interval_set_disjoint(interval_set):
 
     return False
 
-def combine_threshold_rules(cluster, fieldname, rules):
-    max_abs_weight = \
-        max(map(lambda r: get_abs_weight_from_threshold_rule(r), rules))
+def get_max_abs_weight_from_threshold_rules(rules):
+    return max(map(lambda r: get_abs_weight_from_threshold_rule(r),
+                   rules))
 
+def get_weighted_interval_set_from_threshold_rules(rules):
     # Find the intervals encoded in the rules. These intervals may not
     # be contiguous, i.e. everything with really wide or really narrow
     # zoom ranges.
@@ -589,6 +590,12 @@ def combine_threshold_rules(cluster, fieldname, rules):
     for interval in intervals:
         interval_set = \
             merge_interval_with_interval_set(interval, interval_set)
+
+    return interval_set
+
+def combine_threshold_rules(cluster, fieldname, rules):
+    max_abs_weight = get_max_abs_weight_from_threshold_rules(rules)
+    interval_set = get_weighted_interval_set_from_threshold_rules(rules)
 
     if is_interval_set_disjoint(interval_set):
         return None, None
