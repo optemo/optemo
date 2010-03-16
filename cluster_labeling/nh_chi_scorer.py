@@ -45,8 +45,8 @@ def compute_all_chi_squared_scores\
     compute_all_scores(version, compute_chi_squared_score_for_word,
                        ClusterChiSquaredScore)
 
-def get_chi_squared_score(cluster_id, word):
-    kwargs = {'word' : word, 'cluster_id' : cluster_id}
+def get_chi_squared_score(cluster_id, version, word):
+    kwargs = {'word':word, 'version':version, 'cluster_id':cluster_id}
     qs = ClusterChiSquaredScore.get_manager().filter(**kwargs)
     
     if qs.count() == 0:
