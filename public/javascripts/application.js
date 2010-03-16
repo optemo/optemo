@@ -532,6 +532,7 @@ function DBinit() {
            });
 	    });
 	}
+	
 	//Ajax call for simlinks
 	$('.simlinks').unbind("click").click(function(){ 
 		ajaxcall($(this).attr('href')+'?ajax=true');
@@ -543,6 +544,24 @@ function DBinit() {
 		trackPage('goals/browse');
 		piwikTracker2.setCustomData({});
 		return false;
+	});
+	//Autocomplete for searchterms
+	// First, get the model type by checking the src of a product image:
+	model = $("img.productimg")[0].src.replace(/\/[^/]+$/,"");
+	// These lines actually work as expected despite stupid syntax highlighting. The regular expression is [^/]+ followed by a slash, \/
+	model = model.replace(/^[^/]+\/\//,''); 
+	while (model.match(/^[^/]*\//)) { 
+		model = model.replace(/^[^/]*\//,''); 
+	}
+	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
+	terms = eval(model.substring(0, model.length - 1) + "_searchterms"); // terms now = ["waterproof", "digital", ... ]
+	$("#search").autocomplete(terms, {
+		minChars: 1,
+		max: 10,
+		autoFill: false,
+		mustMatch: false,
+		matchContains: true,
+		scrollHeight: 220
 	});
 }
 
@@ -730,27 +749,6 @@ $(document).ready(function() {
 
 	if ($('#tourautostart').length) { launchtour; } //Automatically launch tour if appropriate
 	$("#tourButton a").click(launchtour); //Launch tour when this is clicked
-
-
-	//Autocomplete for searchterms
-//	$.ajax({
-//		type: "GET",
-//		data: "",
-//		url: "/compare/searchterms",
-//		success: function (data) {
-//			// autocomplete is expecting data like this:
-//			// "Lexmark[BRK]Metered[BRK]DeskJet"
-//			terms = data.split('[BRK]');
-//			$("#search").autocomplete(terms, {
-//				minChars: 1,
-//				max: 10,
-//				autoFill: false,
-//				mustMatch: false,
-//				matchContains: true,
-//				scrollHeight: 220
-//			});
-//		}
-//	});
 
 	myspinner = new spinner("myspinner", 11, 20, 9, 5, "#000");
 	

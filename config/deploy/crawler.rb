@@ -70,14 +70,20 @@ task :redopermissions do
   run "cd #{current_path}/../ && sudo chmod g+w -R current shared"
 end
 
+task :fetchAutocomplete do
+  run "rake autocomplete:fetch"
+end
+
 #task :restartmemcached
 # Need this before next deploy
 #end
 
 after :deploy, "serversetup"
 after :serversetup, "reindex"
-after :reindex, "redopermissions"
+after :reindex, "fetchAutocomplete"
+after :fetchAutocomplete, "redopermissions"
 after :redopermissions, "compilec"
+
 
 #after :compilec, "restartmemcached"
 

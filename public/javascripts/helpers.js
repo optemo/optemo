@@ -8,7 +8,6 @@ flashError(str)  -  Puts an error message on a specific part of the screen
 
 -------- Layout -------
 getDocHeight()  -  Returns an array of scroll, offset, and client heights
-$.fn.makeAbsolute  -  Adds to the jquery function list. Can operate on a matched set of elements as expected.
 
 -------- Data -------
 getAllShownProductIds()  -  Returns currently displayed product IDs.
@@ -140,20 +139,6 @@ function getDocHeight() {
         Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),
         Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     );
-}
-
-/* This function gets the absolute position of an element, popping it out of the document hierarchy. 
-   It might be useful later. */
-$.fn.makeAbsolute = function(rebase) {
-    return this.each(function() {
-        var el = $(this);
-        var pos = el.position();
-        el.css({ position: "absolute",
-            marginLeft: 0, marginTop: 0,
-            top: pos.top, left: pos.left });
-        if (rebase)
-            el.remove().appendTo("body");
-    });
 }
 
 // Takes an array of div IDs and removes either inline styles or a named class style from all of them.

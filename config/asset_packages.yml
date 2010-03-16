@@ -9,6 +9,7 @@ javascripts:
   - jquery.history
   - facebooksessionops
   - jquery.autocomplete.min
+  - autocomplete_terms
 stylesheets: 
 - base: 
   - camera
