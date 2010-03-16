@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from __future__ import division
+
 import cluster_labeling.local_django_models as local
 import cluster_labeling.optemo_django_models as optemo
 import cluster_labeling.text_handling as th
@@ -23,7 +25,7 @@ class UsecaseClusterScore(local.LocalModel):
         db_table='usecase_cluster_scores'
 
     usecase = models.ForeignKey(Usecase)
-    score = models.BigIntegerField()
+    score = models.FloatField()
 
     cluster_id = models.BigIntegerField()
     version = models.IntegerField()
@@ -66,7 +68,8 @@ import cluster_labeling.nh_chi_scorer as chi
 
 def score_usecases_for_all_clusters\
         (version=optemo.CameraCluster.get_latest_version()):
-    clusters = optemo.CameraCluster.get_manager()
+    clusters = optemo.CameraCluster.get_manager()\
+               .filter(version=version)
 
     for cluster in clusters:
         score_usecases_for_cluster(cluster)
@@ -89,13 +92,13 @@ def score_usecases_for_cluster(cluster):
 
 def score_usecase_for_cluster(cluster, usecase):
     # Get indicator words for usecase
-    iwords = usecase.indicator_words
+    iwords = usecase.indicator_words.all()
     
     # Compute chi-squared score for all indicator words
     iword_scores = \
         map(lambda iw:
             chi.get_chi_squared_score\
-            (cluster.id, cluster.version, iw),
+            (cluster.id, cluster.version, iw.word),
             iwords)
 
     # Combine all chi-squared scores in a way that is not influenced
