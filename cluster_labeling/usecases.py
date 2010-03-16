@@ -50,7 +50,7 @@ def populate_usecases_and_indicator_words():
         
         indicator_words = th.get_words_from_string(usecase_label)
         iw_qs = IndicatorWord.get_manager()\
-                .filter('word__in' = indicator_words)
+                .filter(word__in=indicator_words)
         indicator_words = set(indicator_words)
 
         for iw in iw_qs:
