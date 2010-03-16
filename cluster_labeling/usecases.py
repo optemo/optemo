@@ -23,8 +23,10 @@ class UsecaseClusterScore(local.LocalModel):
         db_table='usecase_cluster_scores'
 
     usecase = models.ForeignKey(Usecase)
-    cluster = models.ForeignKey(optemo.CameraCluster)
     score = models.BigIntegerField()
+
+    cluster_id = models.BigIntegerField()
+    version = models.IntegerField()
 
 # This list also includes meta-features, for now.
 usecases = [
