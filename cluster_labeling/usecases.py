@@ -77,7 +77,8 @@ def score_usecases_for_cluster(cluster):
     for usecase in usecases:
         score = score_usecase_for_cluster(cluster, usecase)
 
-        kwargs = {'usecase' : usecase, 'cluster' : cluster}
+        kwargs = {'usecase':usecase, 'version':cluster.version,
+                  'cluster_id':cluster.id}
         qs = UsecaseClusterScore.get_manager().filter(**kwargs)
 
         assert(qs.count() == 0)
@@ -92,7 +93,9 @@ def score_usecase_for_cluster(cluster, usecase):
     
     # Compute chi-squared score for all indicator words
     iword_scores = \
-        map(lambda iw: chi.get_chi_squared_score(cluster.id, iw),
+        map(lambda iw:
+            chi.get_chi_squared_score\
+            (cluster.id, cluster.version, iw),
             iwords)
 
     # Combine all chi-squared scores in a way that is not influenced
