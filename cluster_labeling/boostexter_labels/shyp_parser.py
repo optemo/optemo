@@ -1,3 +1,5 @@
+import re
+
 class ParseError(Exception):
     line = None
     

@@ -1,3 +1,5 @@
+import cluster_labeling.optemo_django_models as optemo
+
 def get_labels(cluster):
     return [cluster.id, cluster.parent_id]
 

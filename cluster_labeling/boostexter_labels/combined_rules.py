@@ -1,3 +1,4 @@
+import cluster_labeling.optemo_django_models as optemo
 import cluster_labeling.local_django_models as local
 from django.db import models
 
