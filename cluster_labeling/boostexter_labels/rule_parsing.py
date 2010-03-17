@@ -1,3 +1,5 @@
+import cluster_labeling.boostexter_labels.filenames as fn
+
 import re
 
 class ParseError(Exception):
@@ -124,7 +126,7 @@ def parse_next_rule(fh):
         raise ParseError(line)
 
 def get_rules(cluster):
-    filename = get_strong_hypothesis_filename(cluster)
+    filename = fn.get_strong_hypothesis_filename(cluster)
     shyp = open(filename, 'r')
 
     numrules = int(re.match('(\d+)', shyp.readline()).group(1))

@@ -1,10 +1,11 @@
 import cluster_labeling.optemo_django_models as optemo
+import cluster_labeling.boostexter_labels.filenames as fn
 
 def get_labels(cluster):
     return [cluster.id, cluster.parent_id]
 
 def generate_names_file(cluster):
-    filename = get_names_filename(cluster)
+    filename = fn.get_names_filename(cluster)
     f = open(filename, 'w')
 
     labels = get_labels(cluster)
@@ -26,7 +27,7 @@ def generate_names_file(cluster):
     f.close()
 
 def generate_data_file(cluster):
-    filename = get_data_filename(cluster)
+    filename = fn.get_data_filename(cluster)
     f = open(filename, 'w')
 
     version = cluster.version
