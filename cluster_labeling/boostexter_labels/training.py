@@ -93,11 +93,3 @@ def train_boostexter(cluster):
     proc = subprocess.Popen(cmd)
     retcode = proc.wait()
     assert(retcode == 0)
-
-def train_boostexter_on_all_clusters\
-        (version = optemo.CameraCluster.get_latest_version()):
-    qs = optemo.CameraCluster.get_manager().filter(version=version)
-    for cluster in qs:
-        generate_names_file(cluster)
-        generate_data_file(cluster)
-        train_boostexter(cluster)

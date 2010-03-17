@@ -184,8 +184,3 @@ def save_combined_rules_from_rules(cluster, rules):
         save_combined_rule_for_field\
             (cluster, fieldname, rules_for_field)
         
-def save_combined_rules_for_all_clusters\
-        (version = optemo.CameraCluster.get_latest_version()):
-    qs = optemo.CameraCluster.get_manager().filter(version=version)
-    for cluster in qs:
-        save_combined_rules_for_cluster(cluster)

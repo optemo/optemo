@@ -124,9 +124,3 @@ def make_boostexter_labels_for_cluster(cluster):
         boostexter_label.save()
         
         i += 1
-
-def make_boostexter_labels_for_all_clusters\
-        (version = optemo.CameraCluster.get_latest_version()):
-    qs = optemo.CameraCluster.get_manager().filter(version=version)
-    for cluster in qs:
-        make_boostexter_labels_for_cluster(cluster)
