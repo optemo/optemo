@@ -2,6 +2,8 @@ import cluster_labeling.optemo_django_models as optemo
 import cluster_labeling.local_django_models as local
 from django.db import models
 
+from cluster_labeling.boostexter_labels.rules import *
+
 class BoosTexterCombinedRule(local.LocalModel):
     class Meta:
         db_table = "boostexter_combined_rules"
