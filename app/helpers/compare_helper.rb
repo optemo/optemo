@@ -49,7 +49,7 @@ module CompareHelper
   
   def groupDesc(group, i)
     if $RelativeDescriptions
-      Session.current.search.relativeDescriptions[i].map{|d|t("products."+d)}.join(", ")
+      Session.current.search.boostexterClusterDescriptions[i].map{|d|t("products."+d)}.join(", ")
     else
       disptranslation = []
       dispString = ""

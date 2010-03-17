@@ -99,6 +99,78 @@ class Search < ActiveRecord::Base
     @reldescs
   end
     
+  # This works well when not filtering, which misses the point but is a good starting point.
+  def boostexterClusterDescriptions
+    if @returned_taglines 
+      return @returned_taglines
+    else
+      @returned_taglines = []
+    end
+    return if clusters.empty?
+    descriptions = Array.new
+    
+    if clusters[0].parent_id == 0
+      root_cluster_ids = clusters.map { |c| c.id }.join(", ")
+      parent_cluster_prod_count = ActiveRecord::Base.connection.select_one("select count(*) from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE n.cluster_id = cc.id AND n.product_id = p.id AND cc.id IN (#{root_cluster_ids})")
+    else
+      root_cluster_ids = ""
+      parent_cluster_prod_count = ActiveRecord::Base.connection.select_one("select count(*) from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE n.cluster_id = cc.id AND n.product_id = p.id AND cc.id = #{clusters[0].parent_id}")
+    end
+    clusters.each do |c|
+      current_cluster_tagline = []
+      rules = BoostexterCombinedRule.find(:all, :order => "weight DESC", :conditions => {"cluster_id" => c.id, "version" => Session.current.version})
+      
+      # This is bad.
+      # Cache this later.
+      products = $model.find_by_sql("select * from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE n.cluster_id = cc.id AND n.product_id = p.id AND cc.id = #{c.id}")
+      
+      #product_ids = c.nodes.map {|n| n.product_id }
+      return "Empty" if products.empty?
+
+      rules.each do |r|
+        unpacked_weighted_intervals = YAML.load(r.yaml_repr).map {|i| [i["interval"], i["weight"]]}
+        z = 0
+        weighted_average = 0
+        products.each do |product| 
+          feature_value = product.send(r.fieldname)
+          next unless feature_value
+          weight = find_weight_for_value(unpacked_weighted_intervals, feature_value)
+          weighted_average += weight * feature_value
+          z += weight
+        end
+        weighted_average /= z
+        
+        quartiles = compute_quartile(r.fieldname, parent_cluster_prod_count["count(*)"].to_i, root_cluster_ids)
+        if weighted_average < quartiles[0].to_f
+          # This is low for the given feature
+          current_cluster_tagline.push("lower#{r.fieldname}")
+        elsif weighted_average > quartiles[1].to_f
+          current_cluster_tagline.push("higher#{r.fieldname}")
+          # This is high for the given feature
+        else # Inclusion. It's between 25% and 50%
+          # This is boring. Do nothing.
+          # current_cluster_tagline.push("avg#{r.fieldname}")
+        end
+        break if current_cluster_tagline.length == 2
+      end
+      @returned_taglines.push(current_cluster_tagline)
+    end
+    return @returned_taglines # [ ["avgdisplaysize", "highminimumfocallength"],["avgprice", ""] , ...] 
+  end
+
+def compute_quartile(featurename, product_count, root_cluster_ids)
+  q25offset = (product_count / 4.0).floor
+  q75offset = ((product_count * 3) / 4.0).floor
+  if clusters[0].parent_id == 0
+    q25 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE n.cluster_id = cc.id AND n.product_id = p.id AND cc.id IN (#{root_cluster_ids}) ORDER BY #{featurename} LIMIT 1 OFFSET #{q25offset}")
+    q75 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE n.cluster_id = cc.id AND n.product_id = p.id AND cc.id IN (#{root_cluster_ids}) ORDER BY #{featurename} LIMIT 1 OFFSET #{q75offset}")
+  else
+    q25 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE n.cluster_id = cc.id AND n.product_id = p.id AND cc.id = #{clusters[0].parent_id} ORDER BY #{featurename} LIMIT 1 OFFSET #{q25offset}")
+    q75 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE n.cluster_id = cc.id AND n.product_id = p.id AND cc.id = #{clusters[0].parent_id} ORDER BY #{featurename} LIMIT 1 OFFSET #{q75offset}")
+  end
+  [q25[featurename], q75[featurename]]
+end
+  
   def clusterDescription(clusterNumber)
     return if clusters.empty?
     clusterDs = Array.new 
@@ -218,7 +290,7 @@ class Search < ActiveRecord::Base
     unless clusters.nil? || clusters.empty? || clusters.first.class == String || clusters.first.class == Fixnum
         s.clusters = clusters.sort{|a,b| (a.size>1 ? -1 : 1) <=> (b.size>1 ? -1 : 1)}
     end
-    s.fillDisplay
+#    s.fillDisplay
     s.parent_id = s.clusters.map{|c| c.parent_id}.sort[0]
     s.layer = s.clusters.map{|c| c.layer}.sort[0]
     s
@@ -315,5 +387,16 @@ class Search < ActiveRecord::Base
   def round2Decim(a)
     a.map{|n| (n*1000).round.to_f/1000}
   end  
+
+  def find_weight_for_value(unpacked_weighted_intervals, feature_value)
+    weight = 0
+    unpacked_weighted_intervals.each do |uwi| 
+      if (uwi[0][0] < feature_value && uwi[0][1] >= feature_value)
+        weight = uwi[1]
+        break
+      end
+    end
+    weight
+  end
 end
 
