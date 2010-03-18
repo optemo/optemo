@@ -1,7 +1,7 @@
 import cluster_labeling.optemo_django_models as optemo
 import cluster_labeling.cluster_score_table as cst
 
-from cluster_lableing.boostexter_labels.rules import *
+from cluster_labeling.boostexter_labels.rules import *
 
 class ClusterBoosTexterLabel(cst.ClusterScore):
     class Meta:
