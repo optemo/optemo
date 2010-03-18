@@ -53,7 +53,7 @@ module CompareHelper
     else
       disptranslation = []
       dispString = ""
-	    Session.current.search.clusterDescription(i).compact.flatten.uniq.each do |property|
+	    Session.current.search.boostexterClusterDescription(i).compact.flatten.uniq.each do |property|
 	      disptranslation << t('products.' + property)
 	    end
 	    if group

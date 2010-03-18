@@ -1,4 +1,5 @@
 class Search < ActiveRecord::Base
+  require 'set'
   include CachingMemcached
   belongs_to :session
   
@@ -106,68 +107,87 @@ class Search < ActiveRecord::Base
     else
       @returned_taglines = []
     end
+    weighted_averages = {}
     return if clusters.empty?
     descriptions = Array.new
-    
-    if clusters[0].parent_id == 0
-      root_cluster_ids = clusters.map { |c| c.id }.join(", ")
-      parent_cluster_prod_count = ActiveRecord::Base.connection.select_one("select count(*) from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE n.cluster_id = cc.id AND n.product_id = p.id AND cc.id IN (#{root_cluster_ids})")
-    else
-      root_cluster_ids = ""
-      parent_cluster_prod_count = ActiveRecord::Base.connection.select_one("select count(*) from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE n.cluster_id = cc.id AND n.product_id = p.id AND cc.id = #{clusters[0].parent_id}")
-    end
+    featureNameSet = Set.new
     clusters.each do |c|
-      current_cluster_tagline = []
+      weighted_averages[c.id] = {}
+      current_nodes = c.nodes
+      product_ids = current_nodes.map {|n| n.product_id }
+
       rules = BoostexterCombinedRule.find(:all, :order => "weight DESC", :conditions => {"cluster_id" => c.id, "version" => Session.current.version})
       
       # This is bad.
       # Cache this later.
-      products = $model.find_by_sql("select * from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE n.cluster_id = cc.id AND n.product_id = p.id AND cc.id = #{c.id}")
-      
-      #product_ids = c.nodes.map {|n| n.product_id }
-      return "Empty" if products.empty?
-
-      rules.each do |r|
-        unpacked_weighted_intervals = YAML.load(r.yaml_repr).map {|i| [i["interval"], i["weight"]]}
-        z = 0
-        weighted_average = 0
-        products.each do |product| 
-          feature_value = product.send(r.fieldname)
-          next unless feature_value
-          weight = find_weight_for_value(unpacked_weighted_intervals, feature_value)
-          weighted_average += weight * feature_value
-          z += weight
+      #products = $model.find_by_sql("select * from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE n.cluster_id = cc.id AND n.product_id = p.id AND cc.id = #{c.id}")
+     
+      unless product_ids.empty?
+        rules.each do |r|
+          unpacked_weighted_intervals = YAML.load(r.yaml_repr).map {|i| [i["interval"], i["weight"]]}
+          z = 0
+          weighted_average = 0
+          # Change this next bit to cache based on the list of product_ids. Then load those into memory. The hash key should probably be an MD5 of the product ids.
+          product_ids.each do |id| 
+            product = c.findCachedProduct(id)
+            feature_value = product.send(r.fieldname)
+            next unless feature_value
+            weight = find_weight_for_value(unpacked_weighted_intervals, feature_value)
+            weighted_average += weight * feature_value
+            z += weight
+          end
+          next if z == 0
+          weighted_average /= z
+          weighted_averages[c.id][r.fieldname] = weighted_average
+          featureNameSet.add(r.fieldname)
         end
-        weighted_average /= z
-        
-        quartiles = compute_quartile(r.fieldname, parent_cluster_prod_count["count(*)"].to_i, root_cluster_ids)
+      end
+    end
+    weighted_averages.each do |cluster_id,featurehash|
+      current_cluster_tagline = []
+      featurehash.each do |featurename,weighted_average|
+        quartiles = compute_quartile(featurename)
         if weighted_average < quartiles[0].to_f
           # This is low for the given feature
-          current_cluster_tagline.push("lower#{r.fieldname}")
+          current_cluster_tagline.push("lower#{featurename}")
         elsif weighted_average > quartiles[1].to_f
-          current_cluster_tagline.push("higher#{r.fieldname}")
+          current_cluster_tagline.push("higher#{featurename}")
           # This is high for the given feature
         else # Inclusion. It's between 25% and 50%
           # This is boring. Do nothing.
-          # current_cluster_tagline.push("avg#{r.fieldname}")
+          current_cluster_tagline.push("avg#{featurename}")
         end
-        break if current_cluster_tagline.length == 2
+#        break if current_cluster_tagline.length == 2
       end
       @returned_taglines.push(current_cluster_tagline)
     end
     return @returned_taglines # [ ["avgdisplaysize", "highminimumfocallength"],["avgprice", ""] , ...] 
   end
 
-def compute_quartile(featurename, product_count, root_cluster_ids)
+def compute_quartile(featurename)
+  filter_query_thing = ""
+  filter_query_thing = Cluster.filterquery(Session.current, 'n.') + " AND " if Session.current.filter && !Cluster.filterquery(Session.current, 'n.').blank?
+  cluster_ids = clusters.map{|c| c.id}.join(", ")
+  product_count = ActiveRecord::Base.connection.select_one("select count(distinct(p.id)) from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids})")
+  product_count = product_count["count(distinct(p.id))"].to_i
   q25offset = (product_count / 4.0).floor
   q75offset = ((product_count * 3) / 4.0).floor
-  if clusters[0].parent_id == 0
-    q25 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE n.cluster_id = cc.id AND n.product_id = p.id AND cc.id IN (#{root_cluster_ids}) ORDER BY #{featurename} LIMIT 1 OFFSET #{q25offset}")
-    q75 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE n.cluster_id = cc.id AND n.product_id = p.id AND cc.id IN (#{root_cluster_ids}) ORDER BY #{featurename} LIMIT 1 OFFSET #{q75offset}")
-  else
-    q25 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE n.cluster_id = cc.id AND n.product_id = p.id AND cc.id = #{clusters[0].parent_id} ORDER BY #{featurename} LIMIT 1 OFFSET #{q25offset}")
-    q75 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE n.cluster_id = cc.id AND n.product_id = p.id AND cc.id = #{clusters[0].parent_id} ORDER BY #{featurename} LIMIT 1 OFFSET #{q75offset}")
-  end
+  q25 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids}) ORDER BY #{featurename} LIMIT 1 OFFSET #{q25offset}")
+  q75 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids}) ORDER BY #{featurename} LIMIT 1 OFFSET #{q75offset}")
+    
+#   @nodes = $nodemodel.find(:all, :conditions => ["cluster_id = ?#{
+#     Session.current.filter && !Cluster.filterquery(Session.current).blank? ? 
+#     ' and '+Cluster.filterquery(Session.current) 
+#     : ''
+#     }
+#     #{
+#     !Session.current.filter || Session.current.keywordpids.blank? ? 
+#     '' 
+#     : 
+#     ' and ('+Session.current.keywordpids+')'
+#     }",current_cluster.id])
+#   
+#   SELECT * FROM `camera_nodes` WHERE (cluster_id = 84158 and n.displaysize <= 3.60001 AND n.displaysize >= 0.99999 AND n.maximumresolution <= 14.70001 AND n.maximumresolution >= 0.99999 AND n.opticalzoom <= 26.00001 AND n.opticalzoom >= 0.99999 AND n.price <= 11000.00001 AND n.price >= 2199.99999)
   [q25[featurename], q75[featurename]]
 end
   
