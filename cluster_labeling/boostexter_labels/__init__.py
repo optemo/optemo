@@ -1,8 +1,8 @@
 import cluster_labeling.optemo_django_models as optemo
 
-import cluster_labeling.boostexter_labels.training as training
-import cluster_labeling.boostexter_labels.combined_rules as combined_rules
-import cluster_labeling.boostexter_labels.labels as labels
+from . import training
+from . import combined_rules
+from . import labels
 
 def train_boostexter_on_all_clusters\
         (version = optemo.CameraCluster.get_latest_version()):

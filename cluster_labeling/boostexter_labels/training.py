@@ -1,5 +1,9 @@
 import cluster_labeling.optemo_django_models as optemo
-import cluster_labeling.boostexter_labels.filepaths as fn
+
+from . import filepaths as fn
+from . import fields
+
+import re
 
 def get_labels(cluster):
     return [cluster.id, cluster.parent_id]
@@ -11,7 +15,7 @@ def generate_names_file(cluster):
     labels = get_labels(cluster)
     f.write(', '.join(map(str, labels)) + '.\n')
 
-    for fieldname, fielddesc in boosting_fields:
+    for fieldname, fielddesc in fields.boosting_fields:
         f.write(fieldname + ": ")
 
         if type(fielddesc) == list:
@@ -60,7 +64,7 @@ def generate_data_file(cluster):
     cameras.extend(cameras_parent)
     
     for camera, cluster_id in cameras:
-        for fieldname, fielddesc in boosting_fields:
+        for fieldname, fielddesc in fields.boosting_fields:
             fieldval = camera.__getattribute__(fieldname)
 
             if fielddesc == ['True', 'False']:
