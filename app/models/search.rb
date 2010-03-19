@@ -127,16 +127,20 @@ class Search < ActiveRecord::Base
           unpacked_weighted_intervals = YAML.load(r.yaml_repr).map {|i| [i["interval"], i["weight"]]}
           z = 0
           weighted_average = 0
-          # Change this next bit to cache based on the list of product_ids. Then load those into memory. The hash key should probably be an MD5 of the product ids.
+          # The products hash has all the cache hits for cameras serialized as a single request.
+          #products = c.findCachedProducts(product_ids)
           product_ids.each do |id| 
-            product = c.findCachedProduct(id)
+            # This is out of cachingMemcached.
+            #product = products["#{$model}#{Session.current.version}#{id}"]
+            # Caching is done using @@products, as with db_features, etc.
+            product = $model.productcache(id)
             feature_value = product.send(r.fieldname)
             next unless feature_value
             weight = find_weight_for_value(unpacked_weighted_intervals, feature_value)
             weighted_average += weight * feature_value
             z += weight
           end
-          next if z == 0
+          next if z == 0 # Loop back to the beginning; do not add this field name for this cluster
           weighted_average /= z
           weighted_averages[c.id][r.fieldname] = weighted_average
           featureNameSet.add(r.fieldname)
@@ -147,17 +151,15 @@ class Search < ActiveRecord::Base
       current_cluster_tagline = []
       featurehash.each do |featurename,weighted_average|
         quartiles = compute_quartile(featurename)
-        if weighted_average < quartiles[0].to_f
-          # This is low for the given feature
+        if weighted_average < quartiles[0].to_f # This is low for the given feature
           current_cluster_tagline.push("lower#{featurename}")
-        elsif weighted_average > quartiles[1].to_f
+        elsif weighted_average > quartiles[1].to_f # This is high for the given feature
           current_cluster_tagline.push("higher#{featurename}")
-          # This is high for the given feature
         else # Inclusion. It's between 25% and 50%
           # This is boring. Do nothing.
           current_cluster_tagline.push("avg#{featurename}")
         end
-#        break if current_cluster_tagline.length == 2
+        break if current_cluster_tagline.length == 2
       end
       @returned_taglines.push(current_cluster_tagline)
     end
@@ -165,6 +167,9 @@ class Search < ActiveRecord::Base
   end
 
 def compute_quartile(featurename)
+  # This can be sped up by the following: Instead of fetching p.maximumresolution, then p.displaysize, etc.,
+  # just do a single query for p. If there are multiple features to fetch, the rest of the query is guaranteed to be identical
+  # and doing activerecord caching will help
   filter_query_thing = ""
   filter_query_thing = Cluster.filterquery(Session.current, 'n.') + " AND " if Session.current.filter && !Cluster.filterquery(Session.current, 'n.').blank?
   cluster_ids = clusters.map{|c| c.id}.join(", ")
@@ -174,20 +179,7 @@ def compute_quartile(featurename)
   q75offset = ((product_count * 3) / 4.0).floor
   q25 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids}) ORDER BY #{featurename} LIMIT 1 OFFSET #{q25offset}")
   q75 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids}) ORDER BY #{featurename} LIMIT 1 OFFSET #{q75offset}")
-    
-#   @nodes = $nodemodel.find(:all, :conditions => ["cluster_id = ?#{
-#     Session.current.filter && !Cluster.filterquery(Session.current).blank? ? 
-#     ' and '+Cluster.filterquery(Session.current) 
-#     : ''
-#     }
-#     #{
-#     !Session.current.filter || Session.current.keywordpids.blank? ? 
-#     '' 
-#     : 
-#     ' and ('+Session.current.keywordpids+')'
-#     }",current_cluster.id])
-#   
-#   SELECT * FROM `camera_nodes` WHERE (cluster_id = 84158 and n.displaysize <= 3.60001 AND n.displaysize >= 0.99999 AND n.maximumresolution <= 14.70001 AND n.maximumresolution >= 0.99999 AND n.opticalzoom <= 26.00001 AND n.opticalzoom >= 0.99999 AND n.price <= 11000.00001 AND n.price >= 2199.99999)
+
   [q25[featurename], q75[featurename]]
 end
   
