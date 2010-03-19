@@ -10,8 +10,13 @@ os.chdir(root_path)
 
 sys.path.append(root_path)
 
-version = int(sys.argv[1])
-
 import cluster_labeling.boostexter_labels as b_lbls
+
+try:
+    version = int(sys.argv[1])
+except (IndexError, ValueError):
+    print "save_combined_boostexter_rules.py [version]"
+    sys.exit(-1)
+
 b_lbls.save_combined_rules_for_all_clusters(version)
 
