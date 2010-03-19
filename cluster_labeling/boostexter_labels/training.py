@@ -87,7 +87,7 @@ def train_boostexter(cluster):
     # See the boosexter README for description of commands
     boostexter_prog = fn.boostexter_subdir + 'boostexter'
     boostexter_args = [
-        '-n', str(20), # numrounds 
+        '-n', str(40), # numrounds 
         '-W', str(2), # ngram_maxlen
         '-N', 'ngram', # ngram_type
         '-S', fn.output_subdir + str(cluster.id) # 'filename_stem'
