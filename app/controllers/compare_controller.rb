@@ -26,9 +26,10 @@ class CompareController < ApplicationController
         mysearch = search_history[hist-1]
         Session.current.keywordpids = mysearch.searchpids 
         Session.current.keyword = mysearch.searchterm
+        Session.current.commitFilters(mysearch.id)
         classVariables(mysearch)
       else
-        Search.createInitialClusters
+        s = Search.createInitialClusters
       end
     else
       classVariables(Search.createFromClustersAndCommit(params[:id].split('-')))
