@@ -3,6 +3,9 @@ import cluster_labeling.local_django_models as local
 from django.db import models
 
 from cluster_labeling.boostexter_labels.rules import *
+from . import rule_parsing as rp
+
+from cluster_labeling.boostexter_labels.weighted_intervals import *
 
 class BoosTexterCombinedRule(local.LocalModel):
     class Meta:

@@ -1,4 +1,7 @@
-import cluster_labeling.boostexter_labels.filepaths as fn
+from cluster_labeling.boostexter_labels.rules import *
+from . import filepaths as fn
+
+from numpy import *
 
 import re
 

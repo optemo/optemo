@@ -1,3 +1,5 @@
+from numpy import *
+
 class BoosTexterRule(object):
     fieldname = None
     weights = None

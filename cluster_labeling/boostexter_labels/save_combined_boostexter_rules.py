@@ -8,8 +8,10 @@ os.chdir(root_path)
 execfile('cluster_labeling/django_settings.py')
 os.chdir(root_path)
 
-from cluster_labeling.boostexter_labels import *
+sys.path.append(root_path)
 
 version = int(sys.argv[1])
 
-save_combined_rules_for_all_clusters(version)
+import cluster_labeling.boostexter_labels as b_lbls
+b_lbls.save_combined_rules_for_all_clusters(version)
+

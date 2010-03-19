@@ -4,6 +4,7 @@ from . import filepaths as fn
 from . import fields
 
 import re
+import subprocess
 
 def get_labels(cluster):
     return [cluster.id, cluster.parent_id]
@@ -84,12 +85,12 @@ def generate_data_file(cluster):
 
 def train_boostexter(cluster):
     # See the boosexter README for description of commands
-    boostexter_prog = boostexter_subdir + 'boostexter'
+    boostexter_prog = fn.boostexter_subdir + 'boostexter'
     boostexter_args = [
         '-n', str(20), # numrounds 
         '-W', str(2), # ngram_maxlen
         '-N', 'ngram', # ngram_type
-        '-S', output_subdir + str(cluster.id) # 'filename_stem'
+        '-S', fn.output_subdir + str(cluster.id) # 'filename_stem'
         ]
 
     cmd = [boostexter_prog]
