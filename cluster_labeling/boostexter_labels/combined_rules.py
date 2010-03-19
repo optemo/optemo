@@ -188,4 +188,8 @@ def save_combined_rules_from_rules(cluster, rules):
     for (fieldname, rules_for_field) in rules_a.iteritems():
         save_combined_rule_for_field\
             (cluster, fieldname, rules_for_field)
+
+def save_combined_rules_for_cluster(cluster):
+    rules = rp.get_rules(cluster)
+    save_combined_rules_from_rules(cluster, rules)
         

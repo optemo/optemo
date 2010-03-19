@@ -100,10 +100,6 @@ def make_labels_from_rules(cluster, rules):
     labels = map(lambda x: x[1], sorted(labels, key=lambda x: x[0])[::-1])
     return labels, skipped_fields
 
-def save_combined_rules_for_cluster(cluster):
-    rules = get_rules(cluster)
-    save_combined_rules_from_rules(cluster, rules)
-
 from django.db import transaction
 @transaction.commit_on_success
 def make_boostexter_labels_for_cluster(cluster):
