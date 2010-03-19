@@ -50,6 +50,8 @@ class CompareController < ApplicationController
   def sim
     cluster_id = params[:id]
     cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
+    Session.current.search = Session.current.searches.last
+    session = Session.current
     if cluster_id.index('+')
       #Merged Cluster
       cluster = MergedCluster.fromIDs(cluster_id.split('+'))
@@ -57,10 +59,11 @@ class CompareController < ApplicationController
       #Single, normal Cluster
       cluster = findCachedCluster(cluster_id)
     end
-    Session.current.search = Session.current.searches.last
     unless cluster.nil?
       if params[:ajax]
-        classVariables(Search.createFromClustersAndCommit(cluster.children))
+        s = Search.createFromClustersAndCommit(cluster.children)
+        session.commitFilters(s.id)
+        classVariables(s)
         render 'ajax', :layout => false
       else
         redirect_to "/compare/compare/"+cluster.children.map{|c|c.id}.join('-')
