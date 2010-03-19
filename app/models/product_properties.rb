@@ -1,5 +1,6 @@
 module ProductProperties
   Max = {'SWidth' => 70, 'SHeight' => 50,'MWidth' => 140, 'MHeight' => 100, 'LWidth' => 400, 'LHeight' => 300} unless defined?(Max)
+    
   def imagesw
     @imageW ||= {}
     @imageH ||= {}
