@@ -1,5 +1,5 @@
 import cluster_labeling.optemo_django_models as optemo
-import cluster_labeling.boostexter_labels.filenames as fn
+import cluster_labeling.boostexter_labels.filepaths as fn
 
 def get_labels(cluster):
     return [cluster.id, cluster.parent_id]

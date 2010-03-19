@@ -1,4 +1,4 @@
-import cluster_labeling.boostexter_labels.filenames as fn
+import cluster_labeling.boostexter_labels.filepaths as fn
 
 import re
 
