@@ -5,7 +5,7 @@ import sys
 root_path = '/optemo/site'
 
 os.chdir(root_path)
-execfile('cluster_labeling/django_setting.py')
+execfile('cluster_labeling/django_settings.py')
 os.chdir(root_path)
 
 sys.path.append(root_path)
