@@ -30,7 +30,8 @@ def get_weighted_interval_set_from_threshold_rules(rules):
     # Find the intervals encoded in the rules. These intervals may not
     # be contiguous, i.e. everything with really wide or really narrow
     # zoom ranges.
-    intervals = map(get_interval_from_threshold_rule, rules)
+    intervals = filter(lambda x: x is not None,
+                       map(get_interval_from_threshold_rule, rules))
     interval_set = []
 
     for interval in intervals:

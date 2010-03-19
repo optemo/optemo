@@ -45,7 +45,9 @@ def get_interval_from_threshold_rule(rule):
     weights = rule.weights
     weights = weights[2, :] - weights[1, :]
 
-    if weights[0] > 0 and weights[1] < 0:
+    if weights[0] == 0 and weights[1] == 0:
+        return None
+    elif weights[0] > 0 and weights[1] < 0:
         return [[rule.threshold, Inf], float(abs(weights[0]))]
     elif weights[0] < 0 and weights[1] > 0:
         return [[-Inf, rule.threshold], float(abs(weights[0]))]
