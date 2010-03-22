@@ -55,6 +55,16 @@ module CachingMemcached
       $model.find(productid)
     end
   end
+  
+  def findCachedProducts(product_ids)
+    unless ENV['RAILS_ENV'] == 'development'
+      current_version = Session.current.version
+      Rails.cache.read_multi(product_ids.map{|p|$model.to_s + current_version.to_s + p.to_s})
+    else
+      $model.find(:all, :conditions => {:id => product_ids})
+    end  
+  end
+  
   def findCachedTitles()
     unless ENV['RAILS_ENV'] == 'development'
       current_version = Session.current.version

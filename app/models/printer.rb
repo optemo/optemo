@@ -1,5 +1,16 @@
 class Printer < ActiveRecord::Base
   include ProductProperties
+  def self.productcache(id) 
+    # Caching is better using class variable; do not change to memcached.
+    # Hash key must be based on model name (camera/printer), region, and feature name together to guarantee uniqueness.
+    unless defined? @@printers
+      @@printers = {}
+    end
+    unless @@printers.has_key?('Printer' + $region + id.to_s)
+      @@printers[('Printer' + $region + id.to_s)] = Session.current.findCachedProduct(id)
+    end
+    @@printers[('Printer' + $region + id.to_s)]
+  end
   #Ultrasphinx field selection
   define_index do
     #fields

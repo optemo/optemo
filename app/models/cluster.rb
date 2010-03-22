@@ -75,26 +75,26 @@ module Cluster
     @rep
   end
   
-  def self.filterquery(session)
+  def self.filterquery(session, tablename="")
     fqarray = []
     filters = Cluster.findFilteringConditions(session)
     filters.each_pair do |k,v|
       unless v.nil? || v == 'All Brands'
         if k.index(/(.+)_max$/)
-          fqarray << "#{Regexp.last_match[1]} <= #{v.class == Float ? v+0.00001 : v}"
+          fqarray << "#{tablename}#{Regexp.last_match[1]} <= #{v.class == Float ? v+0.00001 : v}"
         elsif k.index(/(.+)_min$/)
-          fqarray << "#{Regexp.last_match[1]} >= #{v.class == Float ? v-0.00001 : v}"
+          fqarray << "#{tablename}#{Regexp.last_match[1]} >= #{v.class == Float ? v-0.00001 : v}"
         #Categorical feature which needs to be deliminated
         elsif v.class == String && v.index('*')
           cats = []
           v.split('*').each do |w|
-            cats << "#{k} = '#{w}'"
+            cats << "#{tablename}#{k} = '#{w}'"
           end
           fqarray << "(#{cats.join(' OR ')})"
         elsif v.class == String
-          fqarray << "#{k} = '#{v}'"
+          fqarray << "#{tablename}#{k} = '#{v}'"
         else
-          fqarray << "#{k} = #{v}"
+          fqarray << "#{tablename}#{k} = #{v}"
         end
       end
     end
