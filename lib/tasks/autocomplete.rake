@@ -1,7 +1,8 @@
 namespace :autocomplete do
   desc "Fetch search terms for javascript-based autocomplete..."
   task :fetch => :environment do
-    js_file = File.open("./public/javascripts/autocomplete_terms.js", "w")
+    js_file = File.open("#{RAILS_ROOT}/public/javascripts/autocomplete_terms.js", File::WRONLY|File::TRUNC|File::CREAT)
+    
     if (js_file)
       js_file.syswrite("/* Machine-generated javascript. Run \"rake autocomplete:fetch\" to regenerate. */\n")
     

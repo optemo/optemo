@@ -71,7 +71,7 @@ task :redopermissions do
 end
 
 task :fetchAutocomplete do
-  run "rake autocomplete:fetch"
+  run "rake -f #{current_path}/Rakefile autocomplete:fetch"
 end
 
 #task :restartmemcached
