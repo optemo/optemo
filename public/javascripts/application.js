@@ -37,7 +37,6 @@ if ($('#ajaxload'))
 		ajaxsend(location.hash.replace(/^#/, ''),null,null,true);
 	else
 		ajaxsend(null,'/?ajax=true',null,true);
-	
 }
 
 // Language support disabled for now
@@ -51,9 +50,11 @@ var IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
 
 function fadein()
 {
-	$('#selector').css('visibility', 'visible');
-	$('#fade').css('display', 'none');
-	$('#outsidecontainer').css('display', 'none');	
+  FilterAndSearchInit();
+  $('#selector').css('visibility', 'visible');
+  $('#fade').css('display', 'none');
+  $('#outsidecontainer').css('display', 'none');
+  $('#outsidecontainer').unbind('click')
 }
 
 function fadeout(url,data,width,height)
@@ -487,13 +488,11 @@ function CompareInit() {
 }
 
 function ErrorInit() {
-	//Link from popup (used for error messages)
-	// Probably the resetting error message should not be ajax anyhow?
-	//	$('.popuplink').click(function(){
-	//		ajaxcall($(this).attr('href')+'?ajax=true');
-	//		fadein();
-	//		return false;
-	//	});
+    //Link from popup (used for error messages)
+    $('#outsidecontainer').unbind('click').click(function(){
+    	fadein();
+    	return false;
+    });
 }
 
 function DBinit() {

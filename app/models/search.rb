@@ -100,7 +100,6 @@ class Search < ActiveRecord::Base
     @reldescs
   end
     
-  # This works well when not filtering, which misses the point but is a good starting point.
   def boostexterClusterDescriptions
     if @returned_taglines 
       return @returned_taglines
@@ -118,10 +117,6 @@ class Search < ActiveRecord::Base
 
       rules = BoostexterCombinedRule.find(:all, :order => "weight DESC", :conditions => {"cluster_id" => c.id, "version" => Session.current.version})
       
-      # This is bad.
-      # Cache this later.
-      #products = $model.find_by_sql("select * from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE n.cluster_id = cc.id AND n.product_id = p.id AND cc.id = #{c.id}")
-     
       unless product_ids.empty?
         rules.each do |r|
           unpacked_weighted_intervals = YAML.load(r.yaml_repr).map {|i| [i["interval"], i["weight"]]}

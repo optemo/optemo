@@ -29,7 +29,7 @@ en:
         
         ErrorPart1:                 "We're sorry! There are no matching results for your selection. Please click"
         ErrorPart2:                 "to go back to the previous page."
-        here:                       "here"
+        here:                       "anywhere"
                 
         brand:                      "Brand"
         model:                      "Model"
@@ -57,9 +57,9 @@ en:
         lowerprice:                 "Cheaper"
         avgprice:                   "Average Price"
         higherprice:                "More Expensive"
-        lowerprice:                 "Cheaper"
-        avgprice:                   "Average Price"
-        higherprice:                "More Expensive"
+        lowerprice_ca:              "Cheaper"
+        avgprice_ca:                "Average Price"
+        higherprice_ca:             "More Expensive"
         lowerdisplaysize:           "Smaller Screen"
         avgdisplaysize:             "Average Screen"
         higherdisplaysize:          "Larger Screen"
