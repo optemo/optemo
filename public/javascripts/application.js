@@ -547,10 +547,13 @@ function DBinit() {
 	//Autocomplete for searchterms
 	// First, get the model type by checking the src of a product image:
 	model = $("img.productimg")[0].src.replace(/\/[^/]+$/,"");
-	// These lines actually work as expected despite stupid syntax highlighting. The regular expression is [^/]+ followed by a slash, \/
-	model = model.replace(/^[^/]+\/\//,''); 
-	while (model.match(/^[^/]*\//)) { 
-		model = model.replace(/^[^/]*\//,''); 
+    // Although these lines work properly with the regexp (e.g.) /^[^/]+\/\//, this is interpreted as a comment by the javascript packer and breaks on deploy.
+    // So, we have to use the javascript builtin RegExp constructor rather than the usual /expression/ syntax.
+    regexp = new RegExp("^[^/]+\/\/");
+    otherRegexp = new RegExp("^[^/]*\/");
+	model = model.replace(regexp,''); 
+	while (model.match(otherRegexp)) { 
+		model = model.replace(otherRegexp,''); 
 	}
 	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
 	terms = eval(model.substring(0, model.length - 1) + "_searchterms"); // terms now = ["waterproof", "digital", ... ]
