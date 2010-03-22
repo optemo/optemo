@@ -26,9 +26,10 @@ class CompareController < ApplicationController
         mysearch = search_history[hist-1]
         Session.current.keywordpids = mysearch.searchpids 
         Session.current.keyword = mysearch.searchterm
+        Session.current.commitFilters(mysearch.id)
         classVariables(mysearch)
       else
-        Search.createInitialClusters
+        s = Search.createInitialClusters
       end
     else
       classVariables(Search.createFromClustersAndCommit(params[:id].split('-')))
@@ -50,6 +51,8 @@ class CompareController < ApplicationController
   def sim
     cluster_id = params[:id]
     cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
+    Session.current.search = Session.current.searches.last
+    session = Session.current
     if cluster_id.index('+')
       #Merged Cluster
       cluster = MergedCluster.fromIDs(cluster_id.split('+'))
@@ -57,10 +60,11 @@ class CompareController < ApplicationController
       #Single, normal Cluster
       cluster = findCachedCluster(cluster_id)
     end
-    Session.current.search = Session.current.searches.last
     unless cluster.nil?
       if params[:ajax]
-        classVariables(Search.createFromClustersAndCommit(cluster.children))
+        s = Search.createFromClustersAndCommit(cluster.children)
+        session.commitFilters(s.id)
+        classVariables(s)
         render 'ajax', :layout => false
       else
         redirect_to "/compare/compare/"+cluster.children.map{|c|c.id}.join('-')
@@ -165,21 +169,4 @@ class CompareController < ApplicationController
       end
     end
   end
-  
-  def searchterms
-    # There is a strange beauty in the illegibility of the following line.
-    # Must do a join followed by a split since the initial mapping of titles is like this: ["keywords are here", "and also here", ...]
-    # The gsub lines are to take out the parentheses on both sides, take out commas, and take out trailing slashes.
-    searchterms = findCachedTitles.join(" ").split(" ").map{|t| t.tr("()", '').gsub(/,/,' ').gsub(/\/$/,'').chomp}.uniq
-    # Sanitize RSS-fed UTF-8 character input.
-    ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
-    searchterms = searchterms.map {|t| ic.iconv(t << ' ')[0..-2]}
-    # Delete all the 1200x1200dpi, the "/" or "&" strings, all two-letter strings, and things that don't start with a letter or number.
-    searchterms.delete_if {|t| t == '' || t.match('[0-9]+.[0-9]+') || t.match('^..?$') || t.match('^[^A-Za-z0-9]') || t.downcase.match('^print')}
-#    duplicates = searchterms.inject({}) {|h,v| h[v]=h[v].to_i+1; h}.reject{|k,v| v==1}.keys
-    @searchterms = searchterms.map{|t|t.match(/[^A-Za-z0-9]$/)? t.chop.downcase : t.downcase }.uniq.join('[BRK]')
-    # Particular to this data
-    render 'searchterms', :layout => false
-  end
-  
 end

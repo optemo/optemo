@@ -37,7 +37,6 @@ if ($('#ajaxload'))
 		ajaxsend(location.hash.replace(/^#/, ''),null,null,true);
 	else
 		ajaxsend(null,'/?ajax=true',null,true);
-	
 }
 
 // Language support disabled for now
@@ -51,9 +50,11 @@ var IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
 
 function fadein()
 {
-	$('#selector').css('visibility', 'visible');
-	$('#fade').css('display', 'none');
-	$('#outsidecontainer').css('display', 'none');	
+  FilterAndSearchInit();
+  $('#selector').css('visibility', 'visible');
+  $('#fade').css('display', 'none');
+  $('#outsidecontainer').css('display', 'none');
+  $('#outsidecontainer').unbind('click')
 }
 
 function fadeout(url,data,width,height)
@@ -487,13 +488,11 @@ function CompareInit() {
 }
 
 function ErrorInit() {
-	//Link from popup (used for error messages)
-	// Probably the resetting error message should not be ajax anyhow?
-	//	$('.popuplink').click(function(){
-	//		ajaxcall($(this).attr('href')+'?ajax=true');
-	//		fadein();
-	//		return false;
-	//	});
+    //Link from popup (used for error messages)
+    $('#outsidecontainer').unbind('click').click(function(){
+    	fadein();
+    	return false;
+    });
 }
 
 function DBinit() {
@@ -532,6 +531,7 @@ function DBinit() {
            });
 	    });
 	}
+	
 	//Ajax call for simlinks
 	$('.simlinks').unbind("click").click(function(){ 
 		ajaxcall($(this).attr('href')+'?ajax=true');
@@ -543,6 +543,24 @@ function DBinit() {
 		trackPage('goals/browse');
 		piwikTracker2.setCustomData({});
 		return false;
+	});
+	//Autocomplete for searchterms
+	// First, get the model type by checking the src of a product image:
+	model = $("img.productimg")[0].src.replace(/\/[^/]+$/,"");
+	// These lines actually work as expected despite stupid syntax highlighting. The regular expression is [^/]+ followed by a slash, \/
+	model = model.replace(/^[^/]+\/\//,''); 
+	while (model.match(/^[^/]*\//)) { 
+		model = model.replace(/^[^/]*\//,''); 
+	}
+	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
+	terms = eval(model.substring(0, model.length - 1) + "_searchterms"); // terms now = ["waterproof", "digital", ... ]
+	$("#search").autocomplete(terms, {
+		minChars: 1,
+		max: 10,
+		autoFill: false,
+		mustMatch: false,
+		matchContains: true,
+		scrollHeight: 220
 	});
 }
 
@@ -730,27 +748,6 @@ $(document).ready(function() {
 
 	if ($('#tourautostart').length) { launchtour; } //Automatically launch tour if appropriate
 	$("#tourButton a").click(launchtour); //Launch tour when this is clicked
-
-
-	//Autocomplete for searchterms
-//	$.ajax({
-//		type: "GET",
-//		data: "",
-//		url: "/compare/searchterms",
-//		success: function (data) {
-//			// autocomplete is expecting data like this:
-//			// "Lexmark[BRK]Metered[BRK]DeskJet"
-//			terms = data.split('[BRK]');
-//			$("#search").autocomplete(terms, {
-//				minChars: 1,
-//				max: 10,
-//				autoFill: false,
-//				mustMatch: false,
-//				matchContains: true,
-//				scrollHeight: 220
-//			});
-//		}
-//	});
 
 	myspinner = new spinner("myspinner", 11, 20, 9, 5, "#000");
 	

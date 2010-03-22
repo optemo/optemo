@@ -8,7 +8,6 @@ flashError(str)  -  Puts an error message on a specific part of the screen
 
 -------- Layout -------
 getDocHeight()  -  Returns an array of scroll, offset, and client heights
-$.fn.makeAbsolute  -  Adds to the jquery function list. Can operate on a matched set of elements as expected.
 
 -------- Data -------
 getAllShownProductIds()  -  Returns currently displayed product IDs.
@@ -97,7 +96,6 @@ function ajaxerror(){
 	//if (language=="fr")
 	//	flashError('<div class="poptitle">&nbsp;</div><p class="error">Désolé! Une erreur s’est produite sur le serveur.</p><p>Vous pouvez <a href="" class="popuplink">réinitialiser</a> l’outil et constater si le problème persiste.</p>');
 	//else
-	ErrorInit();
 	flashError('<div class="poptitle">&nbsp;</div><p class="error">Sorry! An error has occured on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
 }
 
@@ -125,6 +123,7 @@ function flashError(str)
 	trackPage('error/'+errtype);
 	hidespinner();
 	fadeout(null,str,600,100);
+	ErrorInit();
 }
 
 //--------------------------------------//
@@ -140,20 +139,6 @@ function getDocHeight() {
         Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),
         Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     );
-}
-
-/* This function gets the absolute position of an element, popping it out of the document hierarchy. 
-   It might be useful later. */
-$.fn.makeAbsolute = function(rebase) {
-    return this.each(function() {
-        var el = $(this);
-        var pos = el.position();
-        el.css({ position: "absolute",
-            marginLeft: 0, marginTop: 0,
-            top: pos.top, left: pos.left });
-        if (rebase)
-            el.remove().appendTo("body");
-    });
 }
 
 // Takes an array of div IDs and removes either inline styles or a named class style from all of them.

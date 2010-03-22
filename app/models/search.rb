@@ -1,4 +1,5 @@
 class Search < ActiveRecord::Base
+  require 'set'
   include CachingMemcached
   belongs_to :session
   
@@ -99,6 +100,84 @@ class Search < ActiveRecord::Base
     @reldescs
   end
     
+  def boostexterClusterDescriptions
+    if @returned_taglines 
+      return @returned_taglines
+    else
+      @returned_taglines = []
+    end
+    weighted_averages = {}
+    return if clusters.empty?
+    descriptions = Array.new
+    featureNameSet = Set.new
+    clusters.each do |c|
+      weighted_averages[c.id] = {}
+      current_nodes = c.nodes
+      product_ids = current_nodes.map {|n| n.product_id }
+
+      rules = BoostexterCombinedRule.find(:all, :order => "weight DESC", :conditions => {"cluster_id" => c.id, "version" => Session.current.version})
+      
+      unless product_ids.empty?
+        rules.each do |r|
+          unpacked_weighted_intervals = YAML.load(r.yaml_repr).map {|i| [i["interval"], i["weight"]]}
+          z = 0
+          weighted_average = 0
+          # The products hash has all the cache hits for cameras serialized as a single request.
+          #products = c.findCachedProducts(product_ids)
+          product_ids.each do |id| 
+            # This is out of cachingMemcached.
+            #product = products["#{$model}#{Session.current.version}#{id}"]
+            # Caching is done using @@products, as with db_features, etc.
+            product = $model.productcache(id)
+            feature_value = product.send(r.fieldname)
+            next unless feature_value
+            weight = find_weight_for_value(unpacked_weighted_intervals, feature_value)
+            weighted_average += weight * feature_value
+            z += weight
+          end
+          next if z == 0 # Loop back to the beginning; do not add this field name for this cluster
+          weighted_average /= z
+          weighted_averages[c.id][r.fieldname] = weighted_average
+          featureNameSet.add(r.fieldname)
+        end
+      end
+    end
+    weighted_averages.each do |cluster_id,featurehash|
+      current_cluster_tagline = []
+      featurehash.each do |featurename,weighted_average|
+        quartiles = compute_quartile(featurename)
+        if weighted_average < quartiles[0].to_f # This is low for the given feature
+          current_cluster_tagline.push("lower#{featurename}")
+        elsif weighted_average > quartiles[1].to_f # This is high for the given feature
+          current_cluster_tagline.push("higher#{featurename}")
+        else # Inclusion. It's between 25% and 50%
+          # This is boring. Do nothing.
+          current_cluster_tagline.push("avg#{featurename}")
+        end
+        break if current_cluster_tagline.length == 2
+      end
+      @returned_taglines.push(current_cluster_tagline)
+    end
+    return @returned_taglines # [ ["avgdisplaysize", "highminimumfocallength"],["avgprice", ""] , ...] 
+  end
+
+def compute_quartile(featurename)
+  # This can be sped up by the following: Instead of fetching p.maximumresolution, then p.displaysize, etc.,
+  # just do a single query for p. If there are multiple features to fetch, the rest of the query is guaranteed to be identical
+  # and doing activerecord caching will help
+  filter_query_thing = ""
+  filter_query_thing = Cluster.filterquery(Session.current, 'n.') + " AND " if Session.current.filter && !Cluster.filterquery(Session.current, 'n.').blank?
+  cluster_ids = clusters.map{|c| c.id}.join(", ")
+  product_count = ActiveRecord::Base.connection.select_one("select count(distinct(p.id)) from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids})")
+  product_count = product_count["count(distinct(p.id))"].to_i
+  q25offset = (product_count / 4.0).floor
+  q75offset = ((product_count * 3) / 4.0).floor
+  q25 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids}) ORDER BY #{featurename} LIMIT 1 OFFSET #{q25offset}")
+  q75 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids}) ORDER BY #{featurename} LIMIT 1 OFFSET #{q75offset}")
+
+  [q25[featurename], q75[featurename]]
+end
+  
   def clusterDescription(clusterNumber)
     return if clusters.empty?
     clusterDs = Array.new 
@@ -218,7 +297,7 @@ class Search < ActiveRecord::Base
     unless clusters.nil? || clusters.empty? || clusters.first.class == String || clusters.first.class == Fixnum
         s.clusters = clusters.sort{|a,b| (a.size>1 ? -1 : 1) <=> (b.size>1 ? -1 : 1)}
     end
-    s.fillDisplay
+#    s.fillDisplay
     s.parent_id = s.clusters.map{|c| c.parent_id}.sort[0]
     s.layer = s.clusters.map{|c| c.layer}.sort[0]
     s
@@ -315,5 +394,16 @@ class Search < ActiveRecord::Base
   def round2Decim(a)
     a.map{|n| (n*1000).round.to_f/1000}
   end  
+
+  def find_weight_for_value(unpacked_weighted_intervals, feature_value)
+    weight = 0
+    unpacked_weighted_intervals.each do |uwi| 
+      if (uwi[0][0] < feature_value && uwi[0][1] >= feature_value)
+        weight = uwi[1]
+        break
+      end
+    end
+    weight
+  end
 end
 
