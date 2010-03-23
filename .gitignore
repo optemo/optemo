@@ -37,4 +37,8 @@ cache/*
 
 lib/c_code/clusteringCodes/cppconn/libmysqlcppconn.dylib
 
+*.pyc
+
+TAGS
+
 lib/helpers/fixClusters.sql

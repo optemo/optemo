@@ -37,7 +37,6 @@ if ($('#ajaxload'))
 		ajaxsend(location.hash.replace(/^#/, ''),null,null,true);
 	else
 		ajaxsend(null,'/?ajax=true',null,true);
-	
 }
 
 // Language support disabled for now
@@ -51,9 +50,11 @@ var IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
 
 function fadein()
 {
-	$('#selector').css('visibility', 'visible');
-	$('#fade').css('display', 'none');
-	$('#outsidecontainer').css('display', 'none');	
+  FilterAndSearchInit();
+  $('#selector').css('visibility', 'visible');
+  $('#fade').css('display', 'none');
+  $('#outsidecontainer').css('display', 'none');
+  $('#outsidecontainer').unbind('click')
 }
 
 function fadeout(url,data,width,height)
@@ -252,7 +253,7 @@ function trackCategorical(name, val, type){
 
 function FilterAndSearchInit() {
 	//Show and Hide Descriptions
-	$('.feature .label a, .feature .deleteX').click(function(){
+	$('.feature .label a, .feature .deleteX').unbind('click').click(function(){
 		if($(this).parent().attr('class') == "desc")
 			{var obj = $(this).parent();}
 		else
@@ -410,7 +411,10 @@ function FilterAndSearchInit() {
 		$('a:last', this).html(curmax).addClass("valbelow");
 		if (diff < threshold)
 			$('a:last', this).html(curmax).addClass("valabove");
-		histogram($(this).siblings('.hist')[0]);
+		if (!($(this).siblings('.hist').children('svg').length))
+		{
+		    histogram($(this).siblings('.hist')[0]);
+	    }
 		$(this).removeClass('ui-widget').removeClass('ui-widget-content').removeClass('ui-corner-all');
 		$(this).find('a').each(function(){
 			$(this).removeClass('ui-state-default').removeClass('ui-corner-all');
@@ -419,7 +423,7 @@ function FilterAndSearchInit() {
 		
 	});
 	// Add a brand -- submit
-	$('#selector').change(function(){
+	$('#selector').unbind('change').change(function(){
 		var whichbrand = $(this).val();
 		$('#myfilter_brand').val(appendStringWithToken($('#myfilter_brand').val(), whichbrand, '*'));
 		submitCategorical();
@@ -427,7 +431,7 @@ function FilterAndSearchInit() {
 	});
 	
 	// Remove a brand -- submit
-	$('.removeBrand').click(function(){
+	$('.removeBrand').unbind('click').click(function(){
 		var whichbrand = $(this).attr('data-id');
 		$('#myfilter_brand').val(removeStringWithToken($('#myfilter_brand').val(), whichbrand, '*'));
 		submitCategorical();
@@ -435,7 +439,7 @@ function FilterAndSearchInit() {
 		return false;
 	});
 	//Show Additional Features
-	$('#morefilters').click(function(){
+	$('#morefilters').unbind('click').click(function(){
 		$('.extra').show("slide",{direction: "up"},100);
 		$(this).css('display','none');
 		$('#lessfilters').css('display','block');
@@ -443,7 +447,7 @@ function FilterAndSearchInit() {
 	});
 	
 	//Hide Additional Features
-	$('#lessfilters').click(function(){
+	$('#lessfilters').unbind('click').click(function(){
 		$('.extra').hide("slide",{direction: "up"},100);
 		$(this).css('display','none');
 		$('#morefilters').css('display','block');
@@ -451,12 +455,12 @@ function FilterAndSearchInit() {
 	});
 	
 	// Sliders -- submit
-	$('.autosubmit').change(function() {
+	$('.autosubmit').unbind('change').change(function() {
 		submitCategorical();
 	});
 	
 	// Checkboxes -- submit
-	$('.autosubmitbool').click(function() {
+	$('.autosubmitbool').unbind('click').click(function() {
 		var whichbox = $(this).attr('id');
 		var box_value = $(this).attr('checked') ? 100 : 0;
 		submitCategorical();
@@ -474,7 +478,7 @@ function CompareInit() {
 //		}
 //	});
 	//Remove buttons on compare
-	$('.remove').click(function(){
+	$('.remove').unbind('click').click(function(){
 		removeFromComparison($(this).attr('data-name'));
 		$(this).parents('.column').remove();
 		
@@ -487,13 +491,11 @@ function CompareInit() {
 }
 
 function ErrorInit() {
-	//Link from popup (used for error messages)
-	// Probably the resetting error message should not be ajax anyhow?
-	//	$('.popuplink').click(function(){
-	//		ajaxcall($(this).attr('href')+'?ajax=true');
-	//		fadein();
-	//		return false;
-	//	});
+    //Link from popup (used for error messages)
+    $('#outsidecontainer').unbind('click').click(function(){
+    	fadein();
+    	return false;
+    });
 }
 
 function DBinit() {
@@ -532,6 +534,7 @@ function DBinit() {
            });
 	    });
 	}
+	
 	//Ajax call for simlinks
 	$('.simlinks').unbind("click").click(function(){ 
 		ajaxcall($(this).attr('href')+'?ajax=true');
@@ -543,6 +546,27 @@ function DBinit() {
 		trackPage('goals/browse');
 		piwikTracker2.setCustomData({});
 		return false;
+	});
+	//Autocomplete for searchterms
+	// First, get the model type by checking the src of a product image:
+	model = $("img.productimg")[0].src.replace(/\/[^/]+$/,"");
+    // Although these lines work properly with the regexp (e.g.) /^[^/]+\/\//, this is interpreted as a comment by the javascript packer and breaks on deploy.
+    // So, we have to use the javascript builtin RegExp constructor rather than the usual /expression/ syntax.
+    regexp = new RegExp("^[^/]+\/\/");
+    otherRegexp = new RegExp("^[^/]*\/");
+	model = model.replace(regexp,''); 
+	while (model.match(otherRegexp)) { 
+		model = model.replace(otherRegexp,''); 
+	}
+	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
+	terms = eval(model.substring(0, model.length - 1) + "_searchterms"); // terms now = ["waterproof", "digital", ... ]
+	$("#search").autocomplete(terms, {
+		minChars: 1,
+		max: 10,
+		autoFill: false,
+		mustMatch: false,
+		matchContains: true,
+		scrollHeight: 220
 	});
 }
 
@@ -730,27 +754,6 @@ $(document).ready(function() {
 
 	if ($('#tourautostart').length) { launchtour; } //Automatically launch tour if appropriate
 	$("#tourButton a").click(launchtour); //Launch tour when this is clicked
-
-
-	//Autocomplete for searchterms
-//	$.ajax({
-//		type: "GET",
-//		data: "",
-//		url: "/compare/searchterms",
-//		success: function (data) {
-//			// autocomplete is expecting data like this:
-//			// "Lexmark[BRK]Metered[BRK]DeskJet"
-//			terms = data.split('[BRK]');
-//			$("#search").autocomplete(terms, {
-//				minChars: 1,
-//				max: 10,
-//				autoFill: false,
-//				mustMatch: false,
-//				matchContains: true,
-//				scrollHeight: 220
-//			});
-//		}
-//	});
 
 	myspinner = new spinner("myspinner", 11, 20, 9, 5, "#000");
 	

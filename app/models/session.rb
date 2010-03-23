@@ -88,6 +88,7 @@ class Session < ActiveRecord::Base
   
   def commitFilters(search_id)
     update_attribute('filter',true)
+    @features = $featuremodel.find_last_by_session_id(Session.current.id) unless @features
     @features.search_id = search_id
     @features.save
   end
