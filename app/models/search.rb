@@ -115,11 +115,10 @@ class Search < ActiveRecord::Base
       current_nodes = c.nodes
       product_ids = current_nodes.map {|n| n.product_id }
       product_query_string = "id IN (" + product_ids.join(" OR ") + ")"
-
+      
       rules = BoostexterCombinedRule.find(:all, :order => "weight DESC", :conditions => {"cluster_id" => c.id, "version" => Session.current.version})
       unless product_ids.empty?
-        # This is going to be hard to cache. There needs to be a hash created out of a string concatenation of all the product_ids maybe? Think about this one
-        @products = $model.find(:all, :conditions => {:id => product_ids }).index_by(&:id)
+        @products = findCachedProducts(product_ids).index_by(&:id)        
         rules.each do |r|
           unpacked_weighted_intervals = YAML.load(r.yaml_repr).map {|i| [i["interval"], i["weight"]]}
           z = 0
