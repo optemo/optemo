@@ -84,7 +84,7 @@ class ApplicationController < ActionController::Base
       mysession.keywordpids = nil
       mysession.keyword = nil
     end
-    mysession.version = 23 # Hard coded for boostexter testing  # $clustermodel.find_last_by_region($region).version
+    mysession.version = $clustermodel.find_last_by_region($region).version
     Session.current = mysession
   end
   

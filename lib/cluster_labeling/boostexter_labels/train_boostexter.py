@@ -2,8 +2,6 @@
 import os
 import sys
 
-root_path = '/optemo/site'
-
 os.chdir(root_path)
 execfile('cluster_labeling/django_settings.py')
 os.chdir(root_path)
@@ -14,8 +12,11 @@ import cluster_labeling.boostexter_labels as b_lbls
 
 try:
     version = int(sys.argv[1])
+    root_path = sys.argv[2]
 except (IndexError, ValueError):
-    print "train_boostexter.py [version]"
+    print "train_boostexter.py [version] [root_path]"
+    print "eg. train_boostexter 70 /optemo/site"
+    print "or train_boostexter 24 /u/apps/laserprinterhub/current"
     sys.exit(-1)
 
 # Only runs on Linux (not on OS X) because boostexter executable is
