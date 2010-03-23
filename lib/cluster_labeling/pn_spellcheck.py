@@ -117,7 +117,7 @@ class PNSpellChecker():
         return words.Word.get_manager().filter(word=word).count()
 
     def is_known(self, word):
-        if word in known_terms.known_terms: return True
+        if word in known_terms.terms: return True
 
         if self.get_word_count(word) > 0:
             return True
@@ -190,7 +190,7 @@ class PNSpellChecker():
                 self.cache[word] = correction
                 return correction
 
-        if word in known_terms.known_terms or \
+        if word in known_terms.terms or \
            self.is_in_dictionary(word):
             self.cache_correction(word, word)
             return word
