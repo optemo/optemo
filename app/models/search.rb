@@ -114,10 +114,12 @@ class Search < ActiveRecord::Base
       weighted_averages[c.id] = {}
       current_nodes = c.nodes
       product_ids = current_nodes.map {|n| n.product_id }
+      product_query_string = "id IN (" + product_ids.join(" OR ") + ")"
 
       rules = BoostexterCombinedRule.find(:all, :order => "weight DESC", :conditions => {"cluster_id" => c.id, "version" => Session.current.version})
-      
       unless product_ids.empty?
+        # This is going to be hard to cache. There needs to be a hash created out of a string concatenation of all the product_ids maybe? Think about this one
+        @products = $model.find(:all, :conditions => {:id => product_ids }).index_by(&:id)
         rules.each do |r|
           unpacked_weighted_intervals = YAML.load(r.yaml_repr).map {|i| [i["interval"], i["weight"]]}
           z = 0
@@ -127,15 +129,15 @@ class Search < ActiveRecord::Base
           product_ids.each do |id| 
             # This is out of cachingMemcached.
             #product = products["#{$model}#{Session.current.version}#{id}"]
-            # Caching is done using @@products, as with db_features, etc.
-            product = $model.productcache(id)
+            # This line here should no longer be needed # products[id] = $model.productcache(id) unless (products[id])            
+            product = @products[id]
             feature_value = product.send(r.fieldname)
             next unless feature_value
             weight = find_weight_for_value(unpacked_weighted_intervals, feature_value)
             weighted_average += weight * feature_value
             z += weight
           end
-          next if z == 0 # Loop back to the beginning; do not add this field name for this cluster
+          next if z == 0 # Loop back to the beginning; do not add this field name for this cluster.
           weighted_average /= z
           weighted_averages[c.id][r.fieldname] = weighted_average
           featureNameSet.add(r.fieldname)
@@ -150,11 +152,11 @@ class Search < ActiveRecord::Base
           current_cluster_tagline.push("lower#{featurename}")
         elsif weighted_average > quartiles[1].to_f # This is high for the given feature
           current_cluster_tagline.push("higher#{featurename}")
-        else # Inclusion. It's between 25% and 50%
-          # This is boring. Do nothing.
+        else # Inclusion. It's between 25% and 75%
+          # Do nothing? Averages are included for now, comment this out to remove
           current_cluster_tagline.push("avg#{featurename}")
         end
-        break if current_cluster_tagline.length == 2
+        break if current_cluster_tagline.length == 2 # Limit to 2 taglines per cluster (this is due to a space limitation in the UI)
       end
       @returned_taglines.push(current_cluster_tagline)
     end
@@ -172,9 +174,10 @@ def compute_quartile(featurename)
   product_count = product_count["count(distinct(p.id))"].to_i
   q25offset = (product_count / 4.0).floor
   q75offset = ((product_count * 3) / 4.0).floor
+  # Although we have @products, the database *should* be substantially faster at sorting them for each quartile computation.
+  # However, we might be limited by the network connection here instead. For database connections on localhost, probably not, so leave as-is.
   q25 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids}) ORDER BY #{featurename} LIMIT 1 OFFSET #{q25offset}")
   q75 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids}) ORDER BY #{featurename} LIMIT 1 OFFSET #{q75offset}")
-
   [q25[featurename], q75[featurename]]
 end
   
