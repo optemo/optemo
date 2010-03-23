@@ -739,24 +739,24 @@ $(document).ready(function() {
 	});
 
 	//Autocomplete for searchterms
-	$.ajax({
-		type: "GET",
-		data: "",
-		url: "/compare/searchterms",
-		success: function (data) {
-			// autocomplete is expecting data like this:
-			// "Lexmark[BRK]Metered[BRK]DeskJet"
-			terms = data.split('[BRK]');
-			$("#search").autocomplete(terms, {
-				minChars: 1,
-				max: 10,
-				autoFill: false,
-				mustMatch: false,
-				matchContains: true,
-				scrollHeight: 220
-			});
-		}
-	});
+//   $.ajax({
+//   	type: "GET",
+//   	data: "",
+//   	url: "/compare/searchterms",
+//   	success: function (data) {
+//   		// autocomplete is expecting data like this:
+//   		// "Lexmark[BRK]Metered[BRK]DeskJet"
+//   		terms = data.split('[BRK]');
+//   		$("#search").autocomplete(terms, {
+//   			minChars: 1,
+//   			max: 10,
+//   			autoFill: false,
+//   			mustMatch: false,
+//   			matchContains: true,
+//   			scrollHeight: 220
+//   		});
+//   	}
+//   });
 
 	myspinner = new spinner("myspinner", 11, 20, 9, 5, "#000");
 	
