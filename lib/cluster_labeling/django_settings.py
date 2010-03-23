@@ -20,7 +20,7 @@ def configure_django(**kwargs):
     try:
         settings.configure\
         (DATABASES = {
-            'default' : db_config
+            'default' : db_config,
             'optemo' : db_config
             })
     except RuntimeError as e:
