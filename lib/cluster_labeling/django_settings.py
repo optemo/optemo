@@ -5,7 +5,6 @@ from django.conf import settings
 
 os.chdir('/home/nimalan/site_optemo_dbs')
 
-wordcount_filename = '/optemo/site/cluster_hierarchy_counts'
 local_sqlite3 = \
 {
     'ENGINE' : 'django.db.backends.sqlite3',
