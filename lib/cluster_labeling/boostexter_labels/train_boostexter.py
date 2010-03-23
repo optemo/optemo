@@ -5,21 +5,21 @@ import sys
 try:
     version = int(sys.argv[1])
     root_path = sys.argv[2]
+    config_name = sys.argv[3]
 except (IndexError, ValueError):
-    print "train_boostexter.py [version] [root_path]"
-    print "eg. train_boostexter 70 /optemo/site"
-    print "or train_boostexter 24 /u/apps/laserprinterhub/current"
+    print "train_boostexter.py [version] [root_path] [config_name]"
     sys.exit(-1)
 
-os.chdir(root_path)
-execfile('cluster_labeling/django_settings.py')
-os.chdir(root_path)
+database_yaml_fn = os.path.join(root_path, "config/database.yml")
 
-sys.path.append(root_path)
+os.chdir(root_path)
+sys.path.append(os.path.join(root_path, "lib/"))
 
-import cluster_labeling.boostexter_labels as b_lbls
+import cluster_labeling.django_settings as django_settings
+django_settings.configure_django(database_yaml=database_yaml_fn,
+                                 config_name=config_name)
 
 # Only runs on Linux (not on OS X) because boostexter executable is
 # more than 10 years old.
+import cluster_labeling.boostexter_labels as b_lbls
 b_lbls.train_boostexter_on_all_clusters(version)
-
