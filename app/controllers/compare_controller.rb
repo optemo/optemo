@@ -1,6 +1,7 @@
 class CompareController < ApplicationController
   layout "optemo"
   require 'open-uri'
+  require 'iconv'
   include CachingMemcached
   
   def index
@@ -25,9 +26,10 @@ class CompareController < ApplicationController
         mysearch = search_history[hist-1]
         Session.current.keywordpids = mysearch.searchpids 
         Session.current.keyword = mysearch.searchterm
+        Session.current.commitFilters(mysearch.id)
         classVariables(mysearch)
       else
-        Search.createInitialClusters
+        s = Search.createInitialClusters
       end
     else
       classVariables(Search.createFromClustersAndCommit(params[:id].split('-')))
@@ -43,13 +45,14 @@ class CompareController < ApplicationController
   end
   
   def classVariables(search)
-    @s = search
     Session.current.search = search
   end
   
   def sim
     cluster_id = params[:id]
     cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
+    Session.current.search = Session.current.searches.last
+    session = Session.current
     if cluster_id.index('+')
       #Merged Cluster
       cluster = MergedCluster.fromIDs(cluster_id.split('+'))
@@ -57,10 +60,11 @@ class CompareController < ApplicationController
       #Single, normal Cluster
       cluster = findCachedCluster(cluster_id)
     end
-    Session.current.search = Session.current.searches.last
     unless cluster.nil?
       if params[:ajax]
-        classVariables(Search.createFromClustersAndCommit(cluster.children))
+        s = Search.createFromClustersAndCommit(cluster.children)
+        session.commitFilters(s.id)
+        classVariables(s)
         render 'ajax', :layout => false
       else
         redirect_to "/compare/compare/"+cluster.children.map{|c|c.id}.join('-')
@@ -165,6 +169,7 @@ class CompareController < ApplicationController
       end
     end
   end
+
   
   def searchterms
 #    # There is a strange beauty in the illegibility of the following line.
@@ -179,5 +184,5 @@ class CompareController < ApplicationController
 #    render 'searchterms', :layout => false
   render :text => "word"
   end
-  
+
 end

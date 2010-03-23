@@ -5,7 +5,6 @@ a:visited {color: #0000AB;}
  div#main {padding: 0; width: 727px; margin-left: 218px; text-align: left}
 #navigator_bar {height: 22px; text-align: center; margin-bottom: 5px; padding-left: 10px; margin-right: 5px}
 .rounded_nav {background-color: #e1e1e1; border: 1px solid #d0d0d0}
-.blacklink {color: black}
 #navigator_bar .smalllink{ font-size: 0.75em; margin-left: 3px}
  div.rowdiv { margin-left: 5px; margin-top:5px}
 div.navigator_box {text-align: center; font-size: 0.85em; float: left; position: relative; height: 100%; margin-right: 7px; margin-bottom: 3px; height:227px}
@@ -16,10 +15,11 @@ div.navigator_box {text-align: center; font-size: 0.85em; float: left; position:
  .product_box {position: relative; width:160px; height: 153px; margin: auto; margin-bottom:2px}
 .image_boundingbox {width: 140px;   margin-left: auto; margin-right:auto; position:relative; text-align:center;   }
 img.productimg {cursor: move}
-.productinfo { margin:2px auto 0 auto}
+.productinfocont {width: 224px; position: absolute; top: 142px; left: 0px}
+.productinfo {margin:0 auto}
 .price {color: #F5000B; font-size: 1.2em}
 .bottombar {height: 18px}
-.sim {height: 35px; text-align: left; margin-left:10px; margin: 6px 3px; width:170px;  }
+.sim {height: 35px; text-align: left; margin-left:10px; margin: 6px 3px}
 .sim a {font-size: 1.1em; padding: 4px; color: black}
 .sim a img {vertical-align: middle; padding-right: 5px}
  div #leftbar {padding: 0; margin: 0; width: 213px; float: left; position: relative}
@@ -57,7 +57,7 @@ div.smalldesc { font-size: 0.7em; line-height: 1em; padding: 3px 0; width:70px; 
 #selector {width:100%}
 .label {font-weight: bold; text-align: left; font-size: 0.8em; width: 187px; margin-top: 0.6em; position: relative}
 .space {margin-bottom: 20px;  }
-.reset {text-align: right}
+.reset {font-size: 0.8em}
 .valbelow {padding-top: 18px}
 .valabove {margin-top: -34px; height: 33px !important; background-position: 0 100% !important}
 .unitdisp { font-size: 0.8em; font-weight: normal}
@@ -74,14 +74,19 @@ div.smalldesc { font-size: 0.7em; line-height: 1em; padding: 3px 0; width:70px; 
  .listing {margin: 0}
 .content {margin: 0px 20px}
 .content h2 {margin-top: 20px}
-  .popupTour{ display:none; position:fixed; _position:absolute;  height:150px; width:300px; background:#FFFFFF; border:3px solid #444444; z-index:100000; padding:12px; font-size:13px}
+ .popupTour{ display:none; position:fixed; _position:absolute;  height:150px; width:300px; background:#FFFFFF; border:3px solid #444444; z-index:100000; padding:12px; font-size:13px}
 .popupTour h1{ text-align:left; color:#5f8ed9; font-size:22px; font-weight:700;  border-bottom:1px dotted #D3D3D3; padding-bottom:2px; margin-bottom:15px; margin-top:0px}
 .popupnextbutton {font-size:1.3em}
 .popupcloseinstructions {font-size:0.7em}
 .popupTour hr {border-color:#BBB; border-style: solid none; border-width: 1px 0; height: 2px}
 .popupTourClose{ font-size:14px; line-height:14px; right:6px; top:4px; position:absolute; color:#6fa5fd; font-weight:700; display:block}
 .tourDrawAttention {border: 2px solid red; background: #fffcd3; margin:2px}
-#tourButton{ position:absolute; top:20px; left:20px}
+#tourButton{ font-size: 0.8em; text-align: center}
+ .ac_results {padding: 0px; border: 1px solid black; background-color: white; overflow: hidden; z-index: 99999}
+.ac_results ul {width: 100%; list-style-position: outside; list-style: none; padding: 0; margin: 0}
+.ac_results li {margin: 0px; padding: 2px 5px; cursor: default; display: block;   font: menu; font-size: 12px;  line-height: 16px; overflow: hidden}
+.ac_odd {background-color: #eee}
+.ac_over {background-color: #0A246A; color: white}
 .column {float: left}
 #comparisonmatrix {position: relative; width:100%}
 .cell {border-right: gray 1px dashed; width: 180px; height: 23px; font-size: 0.9em; padding: 7px 0px 0px 10px}
@@ -110,30 +115,31 @@ div#fade {background-color: black; position: absolute; top: 0; left: 0; width: 1
 #outsidecontainer {position: absolute; top: 20px; left: 20px; width: 940px; height: 800px; border-top: solid 33px #80C35A; background: white; z-index: 4; display: none}
 div#info {margin-top: -33px; font-size: 0.9em; z-index: 5; padding: 0px 23px 0px 22px}
 div#loading {top: 345px; left: 447px; position: absolute; display: none; z-index: 2; width: 200px; font-size: 2em; background-color: #eee; border: solid black 3px; padding: 20px}
-#loading div {margin-top: -7px}
 .close {position: absolute; top: -22px; right: 13px}
 .poptitle {margin: 8px 15px 25px; font-weight: bold}
 #image {text-align: center; width: 390px; float: left}
 #info h1 {font-size: 1.2em}
 #features {width: 360px; float: left}
-div#textfeatures, #reviews{ clear:both}
+div#textfeatures, div#reviews {clear:both}
 #features ul {list-style-type: none}
-div .showtable{ float: left; text-align: center; width: 400px}
-div .accessories{ width: 360px; text-align: center; margin: 10px 15px 0px 400px; border: 2px solid black; background-color: #ffff99}
+div .showtable{ float: left; text-align: center; width: 400px; margin-right:10px; border: 1px dotted black}
+div .accessories{ width: 300px; text-align: center; border: 2px solid black; background-color: #ffff99; height: 300px; overflow: auto; float:right; display:inline}
 .accessories img{ border: 1px solid black; margin-left: 2px}
 div .left{ float: left; text-align: right; margin-top: 5px; margin-bottom: 10px; width: 193px}
 div .right{ float: right; text-align: left; margin-bottom: 10px; width: 193px}
 div .spacer {clear: both}
-.review {font-size: 0.8em}
+.review {font-size: 0.8em; margin:10px; padding:5px; display:inline}
 #browseother {margin-top: 5px; font-size: 0.85em; text-decoration: underline}
-.cartridgeinfo {margin: 0px 0px 0px 52px}
+.cartridgespecifics {text-align:left; margin:5px; font-size:0.7em}
+.cartridgeinfo {margin: 0}
 #logo {float:left; margin-right: 5px; text-decoration: none}
 #logo span{ position: absolute; top: 5px; left: 120px; color: #693; visibility: hidden; font-family: monaco, arial; font-weight: bold}
 #flags {float: right}
 #header {padding-top: 8px; margin-left: 20px; position: relative; width: 920px; height: 70px}
 #header_buttons {position: absolute; height: 40px; bottom: -8px; right: 0}
 #header_buttons img{ margin-top: 0px; vertical-align: middle}
-#logindisplay {font-size: 0.8em; position: absolute; top: 8px; right: 45px}
+#tagline {display:inline; padding-top:18px; width:420px; float:left}
+#logindisplay {float: right; margin-right: 5px}
 #linkUserLogout {text-decoration: none; color: #2882DF}
 #linkUserLogout:hover {text-decoration: underline}
 html {height:100%; margin: 0; padding: 0}

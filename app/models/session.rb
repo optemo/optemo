@@ -80,13 +80,15 @@ class Session < ActiveRecord::Base
     else
       #Search is expanded, so use all products to begin with
       clusters = findAllCachedClusters(0)
-      clusters.delete_if{|c| c.isEmpty}
+      clusters.delete_if{|c| c.isEmpty} #This is broken for test profile in Rails 2.3.5
+      #clusters = clusters.map{|c| c unless c.isEmpty}.compact
     end
     clusters
   end
   
   def commitFilters(search_id)
     update_attribute('filter',true)
+    @features = $featuremodel.find_last_by_session_id(Session.current.id) unless @features
     @features.search_id = search_id
     @features.save
   end
