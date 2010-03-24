@@ -26,7 +26,8 @@ fn.boostexter_subdir = \
     os.path.join(root_path, "lib/", fn.boostexter_subdir)
 
 import cluster_labeling.boostexter_labels.combined_rules as cr
-if not cr.BoosTexterCombinedRule.all_tables_exist():
+all_tables_exist, _, _ = cr.BoosTexterCombinedRule.all_tables_exist()
+if not all_tables_exist:
     recreating_tables_msg = \
         "Tables missing for %s - dropping all %s tables and recreating" % \
         (str(cr.BoosTexterCombinedRule), str(cr.BoosTexterCombinedRule))

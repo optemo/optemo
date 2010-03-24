@@ -1,6 +1,6 @@
 import cluster_labeling.optemo_django_models as optemo
 
-boosting_fields =
+boosting_fields = \
 {
     optemo.Printer :
     [('itemweight', 'continuous'),

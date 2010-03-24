@@ -136,6 +136,15 @@ class Printer(Product):
     scanner = models.BooleanField()
     printserver = models.BooleanField()
 
+    def get_clusters(self, version = PrinterCluster.get_latest_version()):
+        node_qs = PrinterNode.get_manager().filter\
+                  (product_id = self.id, version = version)
+        cluster_ids = map(lambda n: n.cluster_id, node_qs)
+        cluster_qs = PrinterCluster.get_manager().filter\
+                     (id__in=cluster_ids)
+
+        return cluster_qs
+
 class Camera(Product):
     class Meta:
         db_table = 'cameras'
@@ -229,5 +238,4 @@ product_cluster_type = eval('%sCluster' % product_type)
 product_node_type = eval('%sNode' % product_type)
 product_type = eval(product_type)
 
-product_type_tablename_prefix = \
-    product_type._meta.verbose_name_plural
+product_type_tablename_prefix =  product_type._meta.verbose_name

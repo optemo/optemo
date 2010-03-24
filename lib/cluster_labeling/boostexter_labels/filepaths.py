@@ -1,9 +1,11 @@
+import cluster_labeling.optemo_django_models as optemo
+
 output_subdir = 'cluster_labeling/cc_boostexter_files/'
 boostexter_subdir = 'cluster_labeling/BoosTexter2_1/'
 
 def get_filename_stem(cluster):
     return output_subdir + \
-           "%s_%s" % (optemo.product_type.verbose_name,
+           "%s_%s" % (optemo.product_type._meta.verbose_name,
                       str(cluster.id))
 
 def get_names_filename(cluster):
