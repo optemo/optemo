@@ -253,7 +253,7 @@ function trackCategorical(name, val, type){
 
 function FilterAndSearchInit() {
 	//Show and Hide Descriptions
-	$('.feature .label a, .feature .deleteX').click(function(){
+	$('.feature .label a, .feature .deleteX').unbind('click').click(function(){
 		if($(this).parent().attr('class') == "desc")
 			{var obj = $(this).parent();}
 		else
@@ -411,7 +411,10 @@ function FilterAndSearchInit() {
 		$('a:last', this).html(curmax).addClass("valbelow");
 		if (diff < threshold)
 			$('a:last', this).html(curmax).addClass("valabove");
-		histogram($(this).siblings('.hist')[0]);
+		if (!($(this).siblings('.hist').children('svg').length))
+		{
+		    histogram($(this).siblings('.hist')[0]);
+	    }
 		$(this).removeClass('ui-widget').removeClass('ui-widget-content').removeClass('ui-corner-all');
 		$(this).find('a').each(function(){
 			$(this).removeClass('ui-state-default').removeClass('ui-corner-all');
@@ -420,7 +423,7 @@ function FilterAndSearchInit() {
 		
 	});
 	// Add a brand -- submit
-	$('#selector').change(function(){
+	$('#selector').unbind('change').change(function(){
 		var whichbrand = $(this).val();
 		$('#myfilter_brand').val(appendStringWithToken($('#myfilter_brand').val(), whichbrand, '*'));
 		submitCategorical();
@@ -428,7 +431,7 @@ function FilterAndSearchInit() {
 	});
 	
 	// Remove a brand -- submit
-	$('.removeBrand').click(function(){
+	$('.removeBrand').unbind('click').click(function(){
 		var whichbrand = $(this).attr('data-id');
 		$('#myfilter_brand').val(removeStringWithToken($('#myfilter_brand').val(), whichbrand, '*'));
 		submitCategorical();
@@ -436,7 +439,7 @@ function FilterAndSearchInit() {
 		return false;
 	});
 	//Show Additional Features
-	$('#morefilters').click(function(){
+	$('#morefilters').unbind('click').click(function(){
 		$('.extra').show("slide",{direction: "up"},100);
 		$(this).css('display','none');
 		$('#lessfilters').css('display','block');
@@ -444,7 +447,7 @@ function FilterAndSearchInit() {
 	});
 	
 	//Hide Additional Features
-	$('#lessfilters').click(function(){
+	$('#lessfilters').unbind('click').click(function(){
 		$('.extra').hide("slide",{direction: "up"},100);
 		$(this).css('display','none');
 		$('#morefilters').css('display','block');
@@ -452,12 +455,12 @@ function FilterAndSearchInit() {
 	});
 	
 	// Sliders -- submit
-	$('.autosubmit').change(function() {
+	$('.autosubmit').unbind('change').change(function() {
 		submitCategorical();
 	});
 	
 	// Checkboxes -- submit
-	$('.autosubmitbool').click(function() {
+	$('.autosubmitbool').unbind('click').click(function() {
 		var whichbox = $(this).attr('id');
 		var box_value = $(this).attr('checked') ? 100 : 0;
 		submitCategorical();
@@ -475,7 +478,7 @@ function CompareInit() {
 //		}
 //	});
 	//Remove buttons on compare
-	$('.remove').click(function(){
+	$('.remove').unbind('click').click(function(){
 		removeFromComparison($(this).attr('data-name'));
 		$(this).parents('.column').remove();
 		

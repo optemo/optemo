@@ -88,8 +88,7 @@
 </style><![endif]-->
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-<!-- This script is being included locally until the release of jquery-ui 1.8. -->
-<!--script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script -->
+<!-- The jquery-ui script is being included locally due to the custom jquery-ui being about 45k instead of 200kb from Google's CDN -->
 <%= javascript_include_merged :base %>
 
 <script type="text/javascript" src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
