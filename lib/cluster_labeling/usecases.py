@@ -9,20 +9,23 @@ from django.db import models
 
 class Usecase(local.LocalModel):
     class Meta:
-        db_table='usecases'
+        db_table = '%s_%s' % (optemo.product_type_tablename_prefix,
+                              'usecases')
 
     label = models.CharField(max_length=255, unique=True)
     indicator_words = models.ManyToManyField('IndicatorWord')
 
 class IndicatorWord(local.LocalModel):
     class Meta:
-        db_table='indicator_words'
+        db_table = '%s_%s' % (optemo.product_type_tablename_prefix,
+                              'indicator_words')
 
     word = models.CharField(max_length=255, unique=True)
 
 class UsecaseClusterScore(local.LocalModel):
     class Meta:
-        db_table='usecase_cluster_scores'
+        db_table = '%s_%s' % (optemo.product_type_tablename_prefix,
+                              'usecase_cluster_scores')
 
     usecase = models.ForeignKey(Usecase)
     score = models.FloatField()
@@ -31,13 +34,14 @@ class UsecaseClusterScore(local.LocalModel):
     version = models.IntegerField()
 
 # This list also includes meta-features, for now.
-usecases = [
-    "Travel", "Fun", "Family photos", "Landscape/scenery",
-    "Low light", "Outdoors", "Art", "Sports/action", "Video",
-    "Wildlife", "Weddings", "Home", "Street",
-    "Build quality", "Compact", "Clunky", "Image stabilization",
-    "Viewfinder", "Manual control", "LCD"
-    ]
+known_usecases = {
+    optemo.Printer : [],
+    optemo.Camera :
+    ["Travel", "Fun", "Family photos", "Landscape/scenery",
+     "Low light", "Outdoors", "Art", "Sports/action", "Video",
+     "Wildlife", "Weddings", "Home", "Street",
+     "Build quality", "Compact", "Clunky", "Image stabilization",
+     "Viewfinder", "Manual control", "LCD"]}
 
 def populate_usecases_and_indicator_words():
     Usecase.drop_table_if_exists()
@@ -46,7 +50,7 @@ def populate_usecases_and_indicator_words():
     Usecase.create_table()
     IndicatorWord.create_table()
 
-    for usecase_label in usecases:
+    for usecase_label in known_usecases[optemo.product_type]:
         usecase = Usecase(label=usecase_label)
         usecase.save()
         
@@ -67,8 +71,8 @@ def populate_usecases_and_indicator_words():
 import cluster_labeling.nh_chi_scorer as chi
 
 def score_usecases_for_all_clusters\
-        (version=optemo.CameraCluster.get_latest_version()):
-    clusters = optemo.CameraCluster.get_manager()\
+        (version=optemo.product_cluster_type.get_latest_version()):
+    clusters = optemo.product_cluster_type.get_manager()\
                .filter(version=version)
 
     for cluster in clusters:
