@@ -38,7 +38,7 @@ def generate_data_file(cluster):
     version = cluster.version
 
     products_this = map(lambda x: (x.product, cluster.id),
-                       cluster.get_nodes())
+                        cluster.get_nodes())
 
     parent_cluster_nodes = None
     if cluster.parent_id == 0:

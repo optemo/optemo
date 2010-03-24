@@ -9,9 +9,6 @@ class LocalModel(models.Model):
         
     default_db = 'default'
 
-    common_table_cols = None
-    tablename = None
-
     @classmethod
     def get_manager(cls):
         return cls.objects.using(cls.default_db)
