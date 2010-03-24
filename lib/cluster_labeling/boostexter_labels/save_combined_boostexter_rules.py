@@ -19,5 +19,11 @@ import cluster_labeling.django_settings as django_settings
 django_settings.configure_django(database_yaml=database_yaml_fn,
                                  config_name=config_name)
 
+import cluster_labeling.boostexter_labels.filepaths as fn
+fn.output_subdir = \
+    os.path.join(root_path, "lib/", fn.output_subdir)
+fn.boostexter_subdir = \
+    os.path.join(root_path, "lib/", fn.boostexter_subdir)
+
 import cluster_labeling.boostexter_labels as b_lbls
 b_lbls.save_combined_rules_for_all_clusters(version)
