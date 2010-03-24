@@ -25,5 +25,14 @@ fn.output_subdir = \
 fn.boostexter_subdir = \
     os.path.join(root_path, "lib/", fn.boostexter_subdir)
 
+import cluster_labeling.boostexter_labels.combined_rules as cr
+if not cr.BoosTexterCombinedRule.all_tables_exist():
+    recreating_tables_msg = \
+        "Tables missing for %s - dropping all %s tables and recreating" % \
+        (str(cr.BoosTexterCombinedRule), str(cr.BoosTexterCombinedRule))
+    print recreating_tables_msg
+    cr.BoosTexterCombinedRule.drop_tables_if_exists()
+    cr.BoosTexterCombinedRule.create_tables()
+
 import cluster_labeling.boostexter_labels as b_lbls
 b_lbls.save_combined_rules_for_all_clusters(version)
