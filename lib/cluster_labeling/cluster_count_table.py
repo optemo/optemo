@@ -34,16 +34,18 @@ class ClusterCount(cvfwt.ClusterValueForWord):
 
 class ClusterWordCount(ClusterCount):
     class Meta:
-        db_table = 'wordcounts'
+        db_table = \
+            ClusterCount.get_prefixed_table_name('wordcounts')
         unique_together = (("cluster_id", "version", "word"))
 
 class ClusterProdCount(ClusterCount):
     class Meta:
-        db_table = 'prodcounts'
+        db_table = \
+            ClusterCount.get_prefixed_table_name('prodcounts')
         unique_together = (("cluster_id", "version", "word"))
 
 class ClusterReviewCount(ClusterCount):
     class Meta:
-        db_table = 'reviewcounts'
+        db_table = \
+            ClusterCount.get_prefixed_table_name('reviewcounts')
         unique_together = (("cluster_id", "version", "word"))
-

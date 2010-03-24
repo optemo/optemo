@@ -222,3 +222,12 @@ class CameraReview(Review):
     @classmethod
     def get_manager(cls):
         return Review.get_manager().filter(product_type='Camera')
+
+product_type = 'Camera'
+
+product_cluster_type = eval('%sCluster' % product_type)
+product_node_type = eval('%sNode' % product_type)
+product_type = eval(product_type)
+
+product_type_tablename_prefix = \
+    product_type._meta.verbose_name_plural

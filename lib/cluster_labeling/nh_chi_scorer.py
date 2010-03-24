@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 from __future__ import division
-
 import math
 
+import cluster_labeling.optemo_django_models as optemo
 import cluster_labeling.cluster_score_table as cst
 
 from cluster_labeling.score_utils import *
 
 class ClusterChiSquaredScore(cst.ClusterScore):
     class Meta:
-        db_table = 'chi_squared_scores'
+        db_table = \
+            cst.ClusterScore.get_prefixed_table_name('chi_squared_scores')
         unique_together = (("cluster_id", "version", "word"))
 
 def compute_chi_squared_score(N_UC, prior_count = 1):
@@ -41,7 +42,7 @@ def compute_chi_squared_score_for_word\
     return compute_chi_squared_score(N_UC)
 
 def compute_all_chi_squared_scores\
-        (version=optemo.CameraCluster.get_latest_version()):
+        (version=optemo.product_cluster_type.get_latest_version()):
     compute_all_scores(version, compute_chi_squared_score_for_word,
                        ClusterChiSquaredScore)
 
