@@ -3,6 +3,7 @@ from django.db import models
 from django.db import transaction
 from django.db.models import F
 
+import cluster_labeling.optemo_django_models as optemo
 import cluster_labeling.local_django_models as local
 
 class ClusterValueForWord(local.LocalModel):
@@ -20,6 +21,12 @@ class ClusterValueForWord(local.LocalModel):
     # version is only needed because the top cluster has the same id,
     # 0, across all cluster hierarchies.
     version = models.IntegerField()
+
+    @classmethod
+    def get_prefixed_table_name(unprefixed_table_name):
+        return '%s_%s' % \
+               (optemo.product_type_tablename_prefix,
+                unprefixed_table_name)
 
     @classmethod
     @transaction.commit_on_success

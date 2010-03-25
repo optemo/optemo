@@ -52,7 +52,7 @@ import operator
 import math
 
 import cluster_labeling.text_handling as th
-import cluster_labeling.camera_terms as camera_terms
+import cluster_labeling.known_terms as known_terms
 
 class PNSpellChecker():
     alphabet = 'abcdefghijklmnopqrstuvwxyz'
@@ -117,7 +117,7 @@ class PNSpellChecker():
         return words.Word.get_manager().filter(word=word).count()
 
     def is_known(self, word):
-        if word in camera_terms.known_terms: return True
+        if word in known_terms.terms: return True
 
         if self.get_word_count(word) > 0:
             return True
@@ -190,7 +190,7 @@ class PNSpellChecker():
                 self.cache[word] = correction
                 return correction
 
-        if word in camera_terms.known_terms or \
+        if word in known_terms.terms or \
            self.is_in_dictionary(word):
             self.cache_correction(word, word)
             return word

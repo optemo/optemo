@@ -16,7 +16,7 @@ def generate_names_file(cluster):
     labels = get_labels(cluster)
     f.write(', '.join(map(str, labels)) + '.\n')
 
-    for fieldname, fielddesc in fields.boosting_fields:
+    for fieldname, fielddesc in fields.boosting_fields[optemo.product_type]:
         f.write(fieldname + ": ")
 
         if type(fielddesc) == list:
@@ -37,36 +37,36 @@ def generate_data_file(cluster):
 
     version = cluster.version
 
-    cameras_this = map(lambda x: (x.product, cluster.id),
-                       cluster.get_nodes())
+    products_this = map(lambda x: (x.product, cluster.id),
+                        cluster.get_nodes())
 
     parent_cluster_nodes = None
     if cluster.parent_id == 0:
-        clusters = optemo.CameraCluster.get_manager()\
+        clusters = optemo.product_cluster_type.get_manager()\
                    .filter(parent_id = 0, version=version)
 
         parent_cluster_nodes = []
         for parent_child_cluster in clusters:
             parent_cluster_nodes.extend(parent_child_cluster.get_nodes())
     else:
-        parent_cluster = optemo.CameraCluster.get_manager()\
+        parent_cluster = optemo.product_cluster_type.get_manager()\
                          .filter(id = cluster.parent_id)[0]
         parent_cluster_nodes = parent_cluster.get_nodes()
 
-    cameras_parent = \
+    products_parent = \
         filter(lambda x:
                cluster.id not in
                    set(map(lambda y: y.id, x.get_clusters(cluster.version))),
                map(lambda x: x.product, parent_cluster_nodes))
     
-    cameras_parent = map(lambda x: (x, cluster.parent_id), cameras_parent)
+    products_parent = map(lambda x: (x, cluster.parent_id), products_parent)
 
-    cameras = cameras_this
-    cameras.extend(cameras_parent)
+    products = products_this
+    products.extend(products_parent)
     
-    for camera, cluster_id in cameras:
-        for fieldname, fielddesc in fields.boosting_fields:
-            fieldval = camera.__getattribute__(fieldname)
+    for product, cluster_id in products:
+        for fieldname, fielddesc in fields.boosting_fields[optemo.product_type]:
+            fieldval = product.__getattribute__(fieldname)
 
             if fielddesc == ['True', 'False']:
                 if fieldval == '1' or fieldval == 'True':
@@ -90,7 +90,7 @@ def train_boostexter(cluster):
         '-n', str(40), # numrounds 
         '-W', str(2), # ngram_maxlen
         '-N', 'ngram', # ngram_type
-        '-S', fn.output_subdir + str(cluster.id) # 'filename_stem'
+        '-S', fn.get_filename_stem(cluster) # 'filename_stem'
         ]
 
     cmd = [boostexter_prog]

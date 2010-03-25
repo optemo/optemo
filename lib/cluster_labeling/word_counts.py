@@ -113,13 +113,13 @@ def compute_counts_for_cluster(cluster, spellchecker):
         
 default_spellchecker = pnsc.PNSpellChecker()
 def compute_all_counts\
-        (version=optemo.CameraCluster.get_latest_version(),
+        (version=optemo.product_cluster_type.get_latest_version(),
          spellchecker = None):
     if spellchecker == None:
         spellchecker = default_spellchecker
     
     # Get clusters just below the root.
-    root_children = optemo.CameraCluster.get_root_children(version)
+    root_children = optemo.product_cluster_type.get_root_children(version)
 
     map(lambda child: compute_counts_for_cluster(child, spellchecker),
         root_children)
