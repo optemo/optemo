@@ -159,7 +159,7 @@ class Search < ActiveRecord::Base
           # This is boring. Do nothing.
           current_cluster_tagline.push("avg#{featurename}")
         end
-        break if current_cluster_tagline.length == 2
+        break if current_cluster_tagline.length == 4
       end
       @returned_taglines.push(current_cluster_tagline)
     end
