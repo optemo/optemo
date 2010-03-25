@@ -69,21 +69,24 @@ class Search < ActiveRecord::Base
         dist = {}
         $model::ContinuousFeaturesF.each do |f|
           if feats[f].min == feats[f][i]
-            dist[f] = feats[f].sort[1] - feats[f][i]
-            dist.delete(f) if dist[f] == 0 && feats[f].sort[2] == feats[f][i]#Remove ties
+            #This is the lowest feature
+            distance = feats[f].sort[1] - feats[f][i]
+            dist[f] = distance unless distance == 0 && feats[f].sort[2] == feats[f][i] #Remove ties
           elsif feats[f].max == feats[f][i]
-            dist[f] = feats[f][i] - feats[f].sort[-2]
-            dist.delete(f) if dist[f] == 0  && feats[f].sort[-3] == feats[f][i]#Remove ties
-          elsif feats[f].sort[4] == feats[f][i]
-            dist[f] = ([feats[f].sort[4]-feats[f].sort[3],feats[f].sort[5]-feats[f].sort[4]].min) - 1
-            dist.delete(f) if dist[f] == -1 #Remove ties
+            #This is the highest feature
+            distance = feats[f][i] - feats[f].sort[-2]
+            dist[f] = distance unless distance == 0 && feats[f].sort[-3] == feats[f][i] #Remove ties
+          #elsif feats[f].sort[4] == feats[f][i]
+          #  #This is an average feature
+          #  dist[f] = ([feats[f].sort[4]-feats[f].sort[3],feats[f].sort[5]-feats[f].sort[4]].min) - 1
+          #  dist[f] = distance unless distance == -1 #Remove ties
           end
         end if cluster_count > 1
         n = dist.count
         d = []
         dist.sort{|a,b| b[1] <=> a[1]}[0..1].each do |f,v|
           dir = feats[f].min == feats[f][i] ? "lower" : "higher"
-          dir = feats[f].min == feats[f][i] ? "lower" : feats[f].max == feats[f][i] ? "higher" : "avg"
+          #dir = feats[f].min == feats[f][i] ? "lower" : feats[f].max == feats[f][i] ? "higher" : "avg"
           d << dir+f
         end
         #Add binary labels

@@ -26,10 +26,9 @@ class CompareController < ApplicationController
         mysearch = search_history[hist-1]
         Session.current.keywordpids = mysearch.searchpids 
         Session.current.keyword = mysearch.searchterm
-        Session.current.commitFilters(mysearch.id)
         classVariables(mysearch)
       else
-        s = Search.createInitialClusters
+        Search.createInitialClusters
       end
     else
       classVariables(Search.createFromClustersAndCommit(params[:id].split('-')))
@@ -52,7 +51,7 @@ class CompareController < ApplicationController
     cluster_id = params[:id]
     cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
     Session.current.search = Session.current.searches.last
-    session = Session.current
+    Session.current.copyfeatures #create a copy of the current filters
     if cluster_id.index('+')
       #Merged Cluster
       cluster = MergedCluster.fromIDs(cluster_id.split('+'))
@@ -63,7 +62,7 @@ class CompareController < ApplicationController
     unless cluster.nil?
       if params[:ajax]
         s = Search.createFromClustersAndCommit(cluster.children)
-        session.commitFilters(s.id)
+        Session.current.commitFilters(s.id)
         classVariables(s)
         render 'ajax', :layout => false
       else
