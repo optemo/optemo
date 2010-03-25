@@ -10,17 +10,17 @@ boosting_fields = \
      ('ppm', 'continuous'),
      ('ppmcolor', 'continuous'),
 
-     ('duplex', 'text'),
+     # These text fields are not easily usable because all punctuation
+     # has to be removed from the field.
+     # ('duplex', 'text'),
+     # ('papersize', 'text'),
+     # ('special', 'text'),
+     # ('platform', 'text'),
 
      ('resolutionarea', 'continuous'),
 
-     ('papersize', 'text'),
-
      ('paperinput', 'continuous'),
      ('paperoutput', 'continuous'),
-
-     ('special', 'text'),
-     ('platform', 'text'),
 
      ('colorprinter', ['True', 'False']),
      ('scanner', ['True', 'False']),
