@@ -80,9 +80,9 @@ module CachingMemcached
   def findCachedBoostexterRules(cluster_id)
     unless ENV['RAILS_ENV'] == 'development'
       current_version = Session.current.version
-      Rails.cache.fetch("BoostexterCombinedRules#{current_version}#{cluster_id}"){ BoostexterCombinedRule.find(:all, :order => "weight DESC", :conditions => {"cluster_id" => cluster_id, "version" => Session.current.version})}
+      Rails.cache.fetch("#{$rulemodel}s#{current_version}#{cluster_id}"){ $rulemodel.find(:all, :order => "weight DESC", :conditions => {"cluster_id" => cluster_id, "version" => Session.current.version})}
     else
-      BoostexterCombinedRule.find(:all, :order => "weight DESC", :conditions => {"cluster_id" => cluster_id, "version" => Session.current.version})
+      $rulemodel.find(:all, :order => "weight DESC", :conditions => {"cluster_id" => cluster_id, "version" => Session.current.version})
     end
   end
  
