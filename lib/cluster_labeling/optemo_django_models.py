@@ -232,10 +232,26 @@ class CameraReview(Review):
     def get_manager(cls):
         return Review.get_manager().filter(product_type='Camera')
 
-product_type = 'Camera'
+product_type = None
 
-product_cluster_type = eval('%sCluster' % product_type)
-product_node_type = eval('%sNode' % product_type)
-product_type = eval(product_type)
+product_cluster_type = None
+product_node_type = None
+product_type = None
 
-product_type_tablename_prefix =  product_type._meta.verbose_name
+product_type_tablename_prefix = None
+
+# pt_str should be either 'Camera' or 'Printer'
+def set_optemo_product_type(pt_str):
+    global product_type
+    global product_cluster_type
+    global product_node_type
+    global product_type
+    global product_type_tablename_prefix
+    
+    product_type = pt_str
+    
+    product_cluster_type = eval('%sCluster' % product_type)
+    product_node_type = eval('%sNode' % product_type)
+    product_type = eval(product_type)
+
+    product_type_tablename_prefix = product_type._meta.verbose_name
