@@ -119,7 +119,7 @@ class Search < ActiveRecord::Base
       product_ids = current_nodes.map {|n| n.product_id }
       product_query_string = "id IN (" + product_ids.join(" OR ") + ")"
       
-      rules = BoostexterCombinedRule.find(:all, :order => "weight DESC", :conditions => {"cluster_id" => c.id, "version" => Session.current.version})
+      rules = $rulemodel.find(:all, :order => "weight DESC", :conditions => {"cluster_id" => c.id, "version" => Session.current.version})
       unless product_ids.empty?
         @products = findCachedProducts(product_ids).index_by(&:id)        
         rules.each do |r|

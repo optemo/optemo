@@ -49,11 +49,7 @@ module CompareHelper
   
   def groupDesc(group, i)
     if $RelativeDescriptions
-      if $model.name.downcase == "camera" # As of right now, only cameras have this type of label
-        Session.current.search.boostexterClusterDescriptions[i].map{|d|t("products."+d)}.join(", ")
-      else
-        Session.current.search.relativeDescriptions[i].map{|d|t("products."+d)}.join(", ")
-      end
+      Session.current.search.boostexterClusterDescriptions[i].map{|d|t("products."+d)}.join(", ")
     else
       disptranslation = []
       dispString = ""

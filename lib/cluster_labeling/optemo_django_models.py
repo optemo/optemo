@@ -54,6 +54,22 @@ class Cluster(OptemoModel):
 
         return root_children
 
+class PrinterCluster(Cluster):
+    class Meta:
+        db_table = 'printer_clusters'
+
+    def get_products(self):
+        return Printer.get_manager().filter(printernode__cluster__id=self.id)
+
+    def get_children(self):
+        return PrinterCluster.get_manager().filter(parent_id=self.id)
+
+    def get_nodes(self):
+        return PrinterNode.get_manager().filter(cluster_id=self.id)
+
+    def get_parent(self):
+        return PrinterCluster.get_manager().filter(id=self.parent_id)[0]
+
 class CameraCluster(Cluster):
     class Meta:
         db_table = 'camera_clusters'
@@ -70,33 +86,73 @@ class CameraCluster(Cluster):
     def get_parent(self):
         return CameraCluster.get_manager().filter(id=self.parent_id)[0]
 
-class Node(OptemoModel):
+class Product(OptemoModel):
     class Meta:
         abstract = True
-
-    cluster_id = models.IntegerField()
-    product_id = models.IntegerField()
-    brand = models.CharField(max_length=255)
-    version = models.IntegerField()
-
-class Camera(OptemoModel):
-    class Meta:
-        db_table = 'cameras'
 
     title = models.TextField()
     brand = models.CharField(max_length=255)
     model = models.CharField(max_length=255)
+
+    displaysize = models.FloatField()
     
     itemwidth = models.IntegerField()
     itemlength = models.IntegerField()
     itemheight = models.IntegerField()
     itemweight = models.IntegerField()
 
+    averagereviewrating = models.FloatField()
+    totalreviews = models.IntegerField()
+
+    price = models.IntegerField()
+    price_ca = models.IntegerField()
+
+    connectivity = models.CharField(max_length=255)
+
+class Printer(Product):
+    class Meta:
+        db_table = "printers"
+
+    feature = models.TextField()
+    
+    ppm = models.FloatField()
+    ppmcolor = models.FloatField()
+    ttp = models.FloatField() # thermal-transfer printing (?)
+
+    duplex = models.CharField(max_length=255)
+
+    resolutionarea = models.IntegerField()
+
+    papersize = models.CharField(max_length=255)
+
+    # Input/output tray sizes
+    paperinput = models.IntegerField()
+    paperoutput = models.IntegerField()
+
+    special = models.CharField(max_length=255)
+    platform = models.CharField(max_length=255)
+
+    colorprinter = models.BooleanField()
+    scanner = models.BooleanField()
+    printserver = models.BooleanField()
+
+    def get_clusters(self, version = PrinterCluster.get_latest_version()):
+        node_qs = PrinterNode.get_manager().filter\
+                  (product_id = self.id, version = version)
+        cluster_ids = map(lambda n: n.cluster_id, node_qs)
+        cluster_qs = PrinterCluster.get_manager().filter\
+                     (id__in=cluster_ids)
+
+        return cluster_qs
+
+class Camera(Product):
+    class Meta:
+        db_table = 'cameras'
+
     opticalzoom = models.FloatField()
     digitalzoom = models.FloatField()
 
     maximumresolution = models.FloatField()
-    displaysize = models.FloatField()
 
     slr = models.BooleanField()
     waterproof = models.BooleanField()
@@ -106,16 +162,8 @@ class Camera(OptemoModel):
 
     batteriesincluded = models.BooleanField()
 
-    connectivity = models.CharField(max_length=255)
-
     hasredeyereduction = models.BooleanField()
     includedsoftware = models.CharField(max_length=255)
-
-    averagereviewrating = models.FloatField()
-    totalreviews = models.IntegerField()
-
-    price = models.IntegerField()
-    price_ca = models.IntegerField()
 
     def get_clusters(self, version = CameraCluster.get_latest_version()):
         node_qs = CameraNode.get_manager().filter\
@@ -128,6 +176,22 @@ class Camera(OptemoModel):
 
     def get_reviews(self):
         return CameraReview.get_manager().filter(product_id=self.id)
+
+class Node(OptemoModel):
+    class Meta:
+        abstract = True
+
+    cluster_id = models.IntegerField()
+    product_id = models.IntegerField()
+    brand = models.CharField(max_length=255)
+    version = models.IntegerField()
+
+class PrinterNode(Node):
+    class Meta:
+        db_table = 'printer_nodes'
+
+    cluster = models.ForeignKey(PrinterCluster)
+    product = models.ForeignKey(Printer)
 
 class CameraNode(Node):
     class Meta:
@@ -152,6 +216,14 @@ class Review(OptemoModel):
     product_id = models.IntegerField()
     product_type = models.CharField(max_length=255)
 
+class PrinterReview(Review):
+    class Meta:
+        proxy = True
+
+    @classmethod
+    def get_manager(cls):
+        return Review.get_manager().filter(product_type='Printer')
+
 class CameraReview(Review):
     class Meta:
         proxy = True
@@ -159,3 +231,27 @@ class CameraReview(Review):
     @classmethod
     def get_manager(cls):
         return Review.get_manager().filter(product_type='Camera')
+
+product_type = None
+
+product_cluster_type = None
+product_node_type = None
+product_type = None
+
+product_type_tablename_prefix = None
+
+# pt_str should be either 'Camera' or 'Printer'
+def set_optemo_product_type(pt_str):
+    global product_type
+    global product_cluster_type
+    global product_node_type
+    global product_type
+    global product_type_tablename_prefix
+    
+    product_type = pt_str
+    
+    product_cluster_type = eval('%sCluster' % product_type)
+    product_node_type = eval('%sNode' % product_type)
+    product_type = eval(product_type)
+
+    product_type_tablename_prefix = product_type._meta.verbose_name
