@@ -39,5 +39,9 @@ if not all_tables_exist:
     cr.BoosTexterCombinedRule.drop_tables_if_exists()
     cr.BoosTexterCombinedRule.create_tables()
 
+# Check that the necessary paths exist
+if not os.path.exists(fn.output_subdir):
+    print "%s directory does not exist", (fn.output_subdir)
+
 import cluster_labeling.boostexter_labels as b_lbls
 b_lbls.save_combined_rules_for_all_clusters(version)
