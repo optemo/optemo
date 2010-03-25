@@ -6,13 +6,31 @@ boosting_fields = \
     [('itemweight', 'continuous'),
 
      ('displaysize', 'continuous'),
+
+     ('ppm', 'continuous'),
+     ('ppmcolor', 'continuous'),
+
+     ('duplex', 'text'),
+
+     ('resolutionarea', 'continuous'),
+
+     ('papersize', 'text'),
+
+     ('paperinput', 'continuous'),
+     ('paperoutput', 'continuous'),
+
+     ('special', 'text'),
+     ('platform', 'text'),
+
+     ('colorprinter', ['True', 'False']),
+     ('scanner', ['True', 'False']),
+     ('printserver', ['True', 'False']),
      
      ('averagereviewrating', 'continuous'),
      ('totalreviews', 'continuous'),
 
      ('price', 'continuous'),
-     ('price_ca', 'continuous')
-    ],
+     ('price_ca', 'continuous')],
     
     optemo.Camera :
     [('itemweight', 'continuous'),
