@@ -58,44 +58,35 @@ def combine_threshold_rules(cluster, fieldname, rules):
 
     q_25, q_75 = compute_parent_cluster_quartiles(cluster, fieldname)
 
-    label_idx = None
+    ranking_idx = None
 
     if avg_w <= q_25:
-        label_idx = 0
+        ranking_idx = 0
     elif q_25 < avg_w and avg_w < q_75:
-        label_idx = 1
+        ranking_idx = 1
     elif q_75 <= avg_w:
-        label_idx = 2
+        ranking_idx = 2
     else:
         assert(False)
 
-    if label_idx == 1:
-        # The label_idx is the neutral one, i.e. 'Average'. Don't
-        # bother making a label for neutral quantities.
-        return None, None
-
-    quality_desc = fieldname_to_quality[fieldname]
-    full_labels_given = quality_desc[2]
-
-    if full_labels_given:
-        return max_abs_weight, quality_desc[1][label_idx]
-    else:
-        return max_abs_weight,\
-               quality_desc[1][label_idx] + " " + quality_desc[0]
+    # Construct and return a string that will then get translated
+    # using the lookup tables located in config/locales/models/en.yml.
+    ranking = ['lower', 'avg', 'higher']
+    return max_abs_weight, ranking[ranking_idx] + fieldname
 
 import cluster_labeling.text_handling as th
 
-def combine_sgram_rules(fieldname, rules):
+def find_best_sgram_from_rules(fieldname, rules):
     # Just pick the meaningful sgram with highest weight and check
     # whether it is a positive label or a negative label.
     max_abs_weight = 0
-    max_abs_weight_label = None
+    max_abs_weight_sgram = None
 
     for rule in rules:
         if th.is_stopword(rule.sgram):
             continue
             
-        label = rule.sgram
+        sgram = rule.sgram
         direction = None
 
         weights = rule.weights
@@ -107,27 +98,21 @@ def combine_sgram_rules(fieldname, rules):
         if abs(weight) <= max_abs_weight:
             continue
 
+        direction = None
         if weight > 0:
-            direction = 'pos'
+            direction = 1
         elif weight < 0:
-            direction = 'neg'
+            direction = -1
         else:
             assert(False)
 
-        quality_desc = fieldname_to_quality[fieldname]
-
-        if direction == 'pos':
-            label = quality_desc + ": " + label
-        else:
-            label = quality_desc + ": " + "Not " + label
-
         max_abs_weight = abs(weight)
-        max_abs_weight_label = label
+        max_abs_weight_sgram = {'sgram':sgram, 'direction':direction}
 
     if max_abs_weight == 0:
         return None, None
     else:
-        return max_abs_weight, max_abs_weight_label
+        return max_abs_weight, max_abs_weight_sgram
 
 def combine_boolean_rules(fieldname, rules):
     # So.. boolean rules are not selected at all, because pretty much
@@ -159,8 +144,8 @@ def save_combined_threshold_rule_for_field(cluster, fieldname, rules):
     combined_rule.save()
 
 def save_combined_sgram_rule_for_field(fieldname, rules):
-    max_abs_weight, label = combine_sgram_rules(fieldname, rules)
-    yaml_repr = yaml.dump({'label':label})
+    max_abs_weight, sgram = find_best_sgram_from_rules(fieldname, rules)
+    yaml_repr = yaml.dump(sgram)
     
     combined_rule = \
         BoosTexterCombinedRule\
