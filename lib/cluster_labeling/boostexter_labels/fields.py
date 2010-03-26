@@ -29,8 +29,8 @@ boosting_fields = \
      ('averagereviewrating', 'continuous'),
      ('totalreviews', 'continuous'),
 
-     ('price', 'continuous'),
-     ('price_ca', 'continuous')],
+     ('price', 'continuous')],
+    # ('price_ca', 'continuous')],
     
     optemo.Camera :
     [('itemweight', 'continuous'),
