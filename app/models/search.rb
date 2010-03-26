@@ -104,11 +104,19 @@ class Search < ActiveRecord::Base
   end
     
   def boostexterClusterDescriptions
+    ActiveRecord::Base.include_root_in_json = false # json conversion is used below, and this makes it cleaner
     if @returned_taglines 
       return @returned_taglines
     else
+      # This looks quite a bit like code from CachingMemcached, but it's not of the standard Rails.cache.fetch call with a small block, so it belongs here instead.
+      unless ENV['RAILS_ENV'] == 'development'
+        cluster_ids = clusters.map{|c| c.id}.join("-")
+        @returned_taglines = Rails.cache.read("#{$model}Taglines#{Session.current.version}#{cluster_ids}#{Session.current.features.to_json(:except => [ :id, :created_at, :updated_at, :session_id, :search_id ]).hash}")
+        return @returned_taglines unless @returned_taglines.nil?
+      end
       @returned_taglines = []
     end
+
     weighted_averages = {}
     return if clusters.empty?
     descriptions = Array.new
@@ -119,7 +127,7 @@ class Search < ActiveRecord::Base
       product_ids = current_nodes.map {|n| n.product_id }
       product_query_string = "id IN (" + product_ids.join(" OR ") + ")"
       
-      rules = $rulemodel.find(:all, :order => "weight DESC", :conditions => {"cluster_id" => c.id, "version" => Session.current.version})
+      rules = findCachedBoostexterRules(c.id)
       unless product_ids.empty?
         @products = findCachedProducts(product_ids).index_by(&:id)        
         rules.each do |r|
@@ -161,6 +169,10 @@ class Search < ActiveRecord::Base
         break if current_cluster_tagline.length == 2 # Limit to 2 taglines per cluster (this is due to a space limitation in the UI)
       end
       @returned_taglines.push(current_cluster_tagline)
+    end
+    unless ENV['RAILS_ENV'] == 'development'
+      cluster_ids = clusters.map{|c| c.id}.join("-")
+      Rails.cache.write("#{$model}Taglines#{Session.current.version}#{cluster_ids}#{Session.current.features.to_json(:except => [ :id, :created_at, :updated_at, :session_id, :search_id ]).hash}", @returned_taglines)
     end
     return @returned_taglines # [ ["avgdisplaysize", "highminimumfocallength"],["avgprice", ""] , ...] 
   end
