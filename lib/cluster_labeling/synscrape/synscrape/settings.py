@@ -15,6 +15,6 @@ BOT_VERSION = '1.0'
 
 SPIDER_MODULES = ['synscrape.spiders']
 NEWSPIDER_MODULE = 'synscrape.spiders'
-DEFAULT_ITEM_CLASS = 'synscrape.items.SynscrapeItem'
+DEFAULT_ITEM_CLASS = 'synscrape.items.WordSenseItem'
 USER_AGENT = '%s/%s' % (BOT_NAME, BOT_VERSION)
 
