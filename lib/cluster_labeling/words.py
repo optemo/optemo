@@ -12,11 +12,49 @@ from django.db.models import F
 class Word(local.LocalModel):
     class Meta:
         db_table='words'
+
+    default_count = 0
     
     word = models.CharField(max_length=255, unique=True)
     stem = models.CharField(max_length=255)
     count = models.BigIntegerField()
-    correction = models.CharField(max_length=255, null=True, blank=True)
+    correction = models.CharField(max_length=255, null=True,
+                                  blank=True)
+
+    @classmethod
+    def create_if_dne_and_return(cls, word, count=None):
+        if count == None: count = cls.default_count
+        
+        word_dne = None                
+        word_qs = Word.get_manager().filter(word=word)
+        
+        if word_qs.count() == 0:
+            word = Word(word=word,
+                        stem=stemmer.stem(word), count=count)
+            word_dne = True
+        else:
+            word = word_qs[0]
+            word_dne = False
+
+        return word, word_dne
+
+    @classmethod
+    def create_multiple_if_dne_and_return\
+            (cls, words, count=None):
+        if count == None: count = cls.default_count
+        if len(words) == 0: return [], []
+        
+        existing_words_qs = Word.get_manager().filter(word__in=words)
+        existing_words = set(map(lambda x: x['word'],
+                                 existing_words_qs.values('word')))
+
+        dne_word_entries = []
+        dne_words = set(words) - existing_words
+        for word in dne_words:
+            dne_word_entries.append\
+            (Word(word=word, stem=stemmer.stem(word), count=count))
+
+        return existing_words_qs, dne_word_entries
 
 @transaction.commit_on_success
 def populate_word_table_from_review(review):
@@ -31,18 +69,11 @@ def populate_word_table_from_review(review):
         wc[word] = wc.get(word, 0) + 1
 
     for (word, count) in wc.iteritems():
-        word_qs = Word.get_manager().filter(word=word)
+        w_entry, w_entry_dne = \
+            Word.create_if_dne_and_return(word, count)
 
-        assert(word_qs.count() <= 1)
-
-        w_entry = None
-        
-        if word_qs.count() == 1:
-            w_entry = word_qs[0]
+        if not w_entry_created:
             w_entry.count = F('count') + count
-        else:
-            stem = stemmer.stem(word)
-            w_entry = Word(word=word, stem=stem, count=count)
 
         w_entry.save()
 
