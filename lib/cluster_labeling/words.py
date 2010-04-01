@@ -50,5 +50,5 @@ def populate_word_table():
     Word.drop_table_if_exists()
     Word.create_table()
 
-    for review in optemo.CameraReview.get_manager():
+    for review in optemo.Review.get_manager():
         populate_word_table_from_review(review)

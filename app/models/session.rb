@@ -71,6 +71,10 @@ class Session < ActiveRecord::Base
     @oldfeatures = features
     @features = $featuremodel.new(myfilter)
   end
+  
+  def copyfeatures
+    @features = $featuremodel.new(features.attributes)
+  end
  
   def clusters
     #Find clusters that match filtering query
@@ -88,7 +92,6 @@ class Session < ActiveRecord::Base
   
   def commitFilters(search_id)
     update_attribute('filter',true)
-    @features = $featuremodel.find_last_by_session_id(Session.current.id) unless @features
     @features.search_id = search_id
     @features.save
   end

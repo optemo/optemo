@@ -58,6 +58,7 @@ class ApplicationController < ActionController::Base
     $nodemodel = (ds + 'Node').constantize
     $clustermodel = (ds + 'Cluster').constantize
     $featuremodel = (ds + 'Features').constantize
+    $rulemodel = (ds + 'BoostexterCombinedRule').constantize
   end
   
 # def set_version

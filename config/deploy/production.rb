@@ -66,7 +66,7 @@ task :serversetup do
 end
 
 task :fetchAutocomplete do
-  run "rake autocomplete:fetch"
+  run "RAILS_ENV=production rake -f #{current_path}/Rakefile autocomplete:fetch"
 end
 
 task :redopermissions do
@@ -79,6 +79,6 @@ end
 
 after :deploy, "serversetup"
 after :serversetup, "reindex"
-after :reindex, "fetchAutocomplete"
-after :fetchAutocomplete, "redopermissions"
+after :reindex, "redopermissions"
+after :redopermissions, "fetchAutocomplete"
 #after :redopermissions, "restartmemcached"

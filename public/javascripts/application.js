@@ -411,7 +411,10 @@ function FilterAndSearchInit() {
 		$('a:last', this).html(curmax).addClass("valbelow");
 		if (diff < threshold)
 			$('a:last', this).html(curmax).addClass("valabove");
-		histogram($(this).siblings('.hist')[0]);
+		if (!($(this).siblings('.hist').children('svg').length))
+		{
+		    histogram($(this).siblings('.hist')[0]);
+	    }
 		$(this).removeClass('ui-widget').removeClass('ui-widget-content').removeClass('ui-corner-all');
 		$(this).find('a').each(function(){
 			$(this).removeClass('ui-state-default').removeClass('ui-corner-all');

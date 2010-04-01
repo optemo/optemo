@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Sum
 from django.db.models import F
 
+import cluster_labeling.optemo_django_models as optemo
 import cluster_labeling.local_django_models as local
 
 class ClusterTotalCount(local.LocalModel):
@@ -16,6 +17,12 @@ class ClusterTotalCount(local.LocalModel):
     totalcount = models.BigIntegerField()
     numchildren = models.IntegerField()
     version = models.IntegerField()
+
+    @classmethod
+    def get_prefixed_table_name(cls, unprefixed_table_name):
+        return '%s_%s' % \
+               (optemo.product_type_tablename_prefix,
+                unprefixed_table_name)
 
     @classmethod
     def sum_child_cluster_totalcounts\
@@ -74,16 +81,19 @@ class ClusterTotalCount(local.LocalModel):
 
 class ClusterWordTotalCount(ClusterTotalCount):
     class Meta:
-        db_table = 'wordtotalcounts'
+        db_table = \
+            ClusterTotalCount.get_prefixed_table_name('wordtotalcounts')
         unique_together = (("cluster_id", "version"))
 
 class ClusterProdTotalCount(ClusterTotalCount):
     class Meta:
-        db_table = 'prodtotalcounts'
+        db_table = \
+            ClusterTotalCount.get_prefixed_table_name('prodtotalcounts')
         unique_together = (("cluster_id", "version"))
 
 class ClusterReviewTotalCount(ClusterTotalCount):
     class Meta:
-        db_table = 'reviewtotalcounts'
+        db_table = \
+            ClusterTotalCount.get_prefixed_table_name('reviewtotalcounts')
         unique_together = (("cluster_id", "version"))
 

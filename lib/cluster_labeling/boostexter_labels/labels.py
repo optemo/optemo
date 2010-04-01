@@ -3,16 +3,11 @@ import cluster_labeling.cluster_score_table as cst
 
 from cluster_labeling.boostexter_labels.rules import *
 
-class ClusterBoosTexterLabel(cst.ClusterScore):
-    class Meta:
-        db_table = 'boostexter_labels'
-        unique_together = (("cluster_id", "version", "word"))
-
 def compute_weighted_average(cluster, fieldname, interval_set):
     filters = {"cameranode__cluster_id" : cluster.id,
                fieldname + "__isnull" : False}
  
-    products = optemo.Camera.get_manager().filter(**filters)
+    products = optemo.product_type.get_manager().filter(**filters)
 
     # It could be that all of the products have NULL values for the
     # field. There is nothing that can be said about whether the
@@ -45,16 +40,20 @@ def compute_parent_cluster_quartiles(cluster, fieldname):
         version = cluster.version
         topcluster_ids = \
             map(lambda x: x['id'],
-                optemo.CameraCluster.get_manager().\
+                optemo.product_cluster_type.get_manager().\
                 filter(version=version, parent_id=0).values('id'))
 
-        filters = {"cameranode__cluster_id__in" : topcluster_ids}
+        filters = {"%s__cluster_id__in" %
+                   (product_node_type._meta.verbose_name) :
+                   topcluster_ids}
     else:
-        filters = {"cameranode__cluster_id" : cluster.parent_id}
+        filters = {"%s__cluster_id" %
+                   (product_node_type._meta.verbose_name) :
+                   cluster.parent_id}
 
     filters[fieldname + "__isnull"] = False
     
-    products = optemo.Camera.get_manager().filter(**filters)
+    products = optemo.product_type.get_manager().filter(**filters)
 
     num_products = products.count()
 
@@ -99,26 +98,3 @@ def make_labels_from_rules(cluster, rules):
 
     labels = map(lambda x: x[1], sorted(labels, key=lambda x: x[0])[::-1])
     return labels, skipped_fields
-
-from django.db import transaction
-@transaction.commit_on_success
-def make_boostexter_labels_for_cluster(cluster):
-    rules = get_rules(cluster)
-    labels, _ = make_labels_from_rules(cluster, rules)
-
-    numclusterchildren = cluster.get_children().count()
-
-    version = cluster.version
-
-    # Insert labels into database
-    i = 0
-    for label in labels:
-        kwargs = {"cluster_id" : cluster.id,
-                  "parent_cluster_id" : cluster.parent_id,
-                  "word" : label, "score" : i,
-                  "version" : version,
-                  "numchildren" : numclusterchildren}
-        boostexter_label = ClusterBoosTexterLabel(**kwargs)
-        boostexter_label.save()
-        
-        i += 1

@@ -9,7 +9,8 @@ from cluster_labeling.boostexter_labels.weighted_intervals import *
 
 class BoosTexterCombinedRule(local.LocalModel):
     class Meta:
-        db_table = "boostexter_combined_rules"
+        db_table = "%s_%s" % (optemo.product_type_tablename_prefix,
+                              "boostexter_combined_rules")
         unique_together = (("fieldname", "cluster_id", "version"))
     
     fieldname = models.CharField(max_length=255)
@@ -193,4 +194,3 @@ def save_combined_rules_from_rules(cluster, rules):
 def save_combined_rules_for_cluster(cluster):
     rules = rp.get_rules(cluster)
     save_combined_rules_from_rules(cluster, rules)
-        
