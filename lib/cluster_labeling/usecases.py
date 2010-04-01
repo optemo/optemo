@@ -5,6 +5,8 @@ import cluster_labeling.local_django_models as local
 import cluster_labeling.optemo_django_models as optemo
 import cluster_labeling.text_handling as th
 
+import cluster_labeling.words as words
+
 from django.db import models
 
 class Usecase(local.LocalModel):
@@ -13,14 +15,7 @@ class Usecase(local.LocalModel):
                               'usecases')
 
     label = models.CharField(max_length=255, unique=True)
-    indicator_words = models.ManyToManyField('IndicatorWord')
-
-class IndicatorWord(local.LocalModel):
-    class Meta:
-        db_table = '%s_%s' % (optemo.product_type_tablename_prefix,
-                              'indicator_words')
-
-    word = models.CharField(max_length=255, unique=True)
+    indicator_words = models.ManyToManyField(words.Word)
 
 class UsecaseClusterScore(local.LocalModel):
     class Meta:
@@ -43,28 +38,23 @@ known_usecases = {
      "Build quality", "Compact", "Clunky", "Image stabilization",
      "Viewfinder", "Manual control", "LCD"]}
 
-def populate_usecases_and_indicator_words():
-    Usecase.drop_table_if_exists()
-    IndicatorWord.drop_table_if_exists()
-
+def populate_usecases():
+    Usecase.drop_tables_if_exist()
     Usecase.create_table()
-    IndicatorWord.create_table()
 
     for usecase_label in known_usecases[optemo.product_type]:
         usecase = Usecase(label=usecase_label)
         usecase.save()
         
         indicator_words = th.get_words_from_string(usecase_label)
-        iw_qs = IndicatorWord.get_manager()\
-                .filter(word__in=indicator_words)
-        indicator_words = set(indicator_words)
-
-        for iw in iw_qs:
-            usecase.indicator_words.add(iw)
-            indicator_words -= set([iw.word])
-
-        for word in indicator_words:
-            usecase.indicator_words.create(word=word)
+        existing_words_qs, dne_word_entries = \
+            words.Word.create_multiple_if_dne_and_return(indicator_words)
+        
+        for word in existing_words_qs:
+            usecase.indicator_words.add(word)
+        for word in dne_word_entries:
+            word.save()
+            usecase.indicator_words.add(word)
 
         usecase.save()
 
