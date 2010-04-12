@@ -3,8 +3,6 @@ from scrapy.http import Request
 
 from scrapy.selector import HtmlXPathSelector
 
-from scrapy import log
-
 from synscrape.items import WordSenseItem
 
 import re
@@ -57,9 +55,6 @@ class ThesaurusDotComSpider(BaseSpider):
     def parse_sense_part(self, word_sense, row):
         part_type = row.select('td[1]/text()')[0].extract().strip()
         part_contents = row.select('td[2]')[0]
-
-        # log.msg(part_type, level=log.DEBUG)
-        # log.msg(part_contents.extract(), level=log.DEBUG)
 
         if part_type not in ThesaurusDotComSpider.part_type_parse_fn_dict:
             raise Exception("Spider parse error: %s" % part_type)

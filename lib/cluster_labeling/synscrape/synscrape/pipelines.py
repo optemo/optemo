@@ -5,8 +5,6 @@ import scrapy.log as log
 
 class DjangoWriterPipeline(object):
     def process_item(self, spider, item):
-        log.msg(", ".join([item['word'], item['name']]), log.DEBUG)
-
         word, word_dne = words.Word.create_if_dne_and_return(item['word'])
         if word_dne: word.save()
 
