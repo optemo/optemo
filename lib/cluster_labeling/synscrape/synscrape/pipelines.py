@@ -11,7 +11,11 @@ class DjangoWriterPipeline(object):
         name, name_dne = words.Word.create_if_dne_and_return(item['name'])
         if name_dne: name.save()
 
-        pos = ws.pos_display_to_value[item['pos']]
+        try:
+            pos = ws.pos_display_to_value[item['pos']]
+        except KeyError as e:
+            log.msg("Unknown POS tag, not saving: %s" % (item['pos']))
+            return item
         
         wordsense = None
         ws_qs = ws.WordSense.get_manager()\
