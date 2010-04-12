@@ -73,6 +73,19 @@ class ThesaurusDotComSpider(BaseSpider):
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
+
+        spellhdr = hxs.select('//div[@class="Spellhdr"]')
+        if len(spellhdr) != 0:
+            # Word was not found
+            spellhdr = spellhdr[0]
+            word = spellhdr.select('h1/text()')[0].extract()
+            
+            word_sense = WordSenseItem()
+            word_sense['word'] = word
+            word_sense['found'] = False
+            
+            return [word_sense]
+        
         word = hxs.select('//h1[@class="query_h1"]/text()')[0]\
                .extract().lower()
 
