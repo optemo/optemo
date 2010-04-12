@@ -53,7 +53,7 @@ class ThesaurusDotComSpider(BaseSpider):
         word_sense['notes'] = sense_notes
 
     def parse_sense_part(self, word_sense, row):
-        part_type = row.select('td[1]/text()')[0].extract().strip()
+        part_type = ' '.join(map(lambda w: w.strip(), row.select('td[1]//text()').extract()))
         part_contents = row.select('td[2]')[0]
 
         if part_type not in ThesaurusDotComSpider.part_type_parse_fn_dict:
