@@ -65,6 +65,7 @@ class ThesaurusDotComSpider(BaseSpider):
     def parse_sense(self, word, sense_selector):
         word_sense = WordSenseItem()
         word_sense['word'] = word
+        word_sense['found'] = True
         
         for row in sense_selector.select('tr'):
             self.parse_sense_part(word_sense, row)
