@@ -35,7 +35,7 @@ class ThesaurusDotComSpider(BaseSpider):
                 di_words)
 
     def parse_sense_name(self, word_sense, part_contents):
-        sense_name = part_contents.select('text()')[0].extract()
+        sense_name = part_contents.select('.//text()')[0].extract()
         word_sense['name'] = sense_name
 
     def parse_sense_pos(self, word_sense, part_contents):
