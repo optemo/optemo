@@ -20,6 +20,8 @@ class Word(local.LocalModel):
     count = models.BigIntegerField()
     correction = models.CharField(max_length=255, null=True,
                                   blank=True)
+    
+    synonyms_last_crawled_date = models.DateField()
 
     @classmethod
     def create_if_dne_and_return(cls, word, count=None):
