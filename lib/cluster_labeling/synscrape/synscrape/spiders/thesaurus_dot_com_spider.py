@@ -44,8 +44,8 @@ class ThesaurusDotComSpider(BaseSpider):
         wordlist = \
             ','.join(part_contents.select('.//text()').extract()).split(',')
         
-        wordlist = filter(lambda x: len(x) > 0 and re.match('\w+', x),
-                          map(lambda x: x.strip(), wordlist))
+        wordlist = filter(lambda x: len(x) > 0 and re.match('^\w+$', x),
+                          map(lambda x: x.strip().lower(), wordlist))
         word_sense[ws_key] = wordlist
 
     def parse_sense_notes(self, word_sense, part_contents):
@@ -84,7 +84,7 @@ ThesaurusDotComSpider.part_type_parse_fn_dict = \
       'Part of Speech:' : ThesaurusDotComSpider.parse_sense_pos,
       'Definition:' : ThesaurusDotComSpider.parse_sense_definition,
       'Synonyms:' : ThesaurusDotComSpider.parse_sense_synonyms,
-      'Antonyms:': ThesaurusDotComSpider.parse_sense_antonyms,
+      'Antonyms:' : ThesaurusDotComSpider.parse_sense_antonyms,
       'Notes:' : ThesaurusDotComSpider.parse_sense_notes
     }
 
