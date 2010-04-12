@@ -13,10 +13,13 @@ class ThesaurusDotComSpider(BaseSpider):
 
     part_type_parse_fn_dict = None
 
+    def get_url_for_word(self, word):
+        return "http://thesaurus.com/browse/%s" % (word)
+
     def start_requests(self):
         return \
             map(lambda w:
-                Request(url="http://thesaurus.com/browse/%s" % (w),
+                Request(url=self.get_url_for_word(w.word),
                         callback=self.parse),
                 self.words)
 
