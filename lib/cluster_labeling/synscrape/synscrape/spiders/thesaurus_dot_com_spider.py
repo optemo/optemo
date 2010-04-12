@@ -6,22 +6,33 @@ from scrapy.selector import HtmlXPathSelector
 from synscrape.items import WordSenseItem
 
 import re
+import datetime
+
+import cluster_labeling.usecases as usecases
+import cluster_labeling.words as words
+
+from django.db.models import Q
 
 class ThesaurusDotComSpider(BaseSpider):
     domain_name = 'thesaurus.com'
-    words = ['clunky']
-
     part_type_parse_fn_dict = None
 
     def get_url_for_word(self, word):
         return "http://thesaurus.com/browse/%s" % (word)
 
     def start_requests(self):
+        # Get the list of words that are direct indicator words for
+        # some usecase and have not been crawled since today.
+        di_words = words.Word.get_manager()\
+                   .filter(Q(directly_indicated_usecases__isnull=False),
+                           Q(synonyms_last_crawled_date__isnull=True) |
+                           Q(synonyms_last_crawled_date__lt=datetime.date.today()))
+
         return \
             map(lambda w:
                 Request(url=self.get_url_for_word(w.word),
                         callback=self.parse),
-                self.words)
+                di_words)
 
     def parse_sense_name(self, word_sense, part_contents):
         sense_name = part_contents.select('text()')[0].extract()
