@@ -1,6 +1,8 @@
 import cluster_labeling.words as words
 import cluster_labeling.word_senses as ws
 
+import datetime
+
 import scrapy.log as log
 
 class DjangoWriterPipeline(object):
@@ -55,5 +57,8 @@ class DjangoWriterPipeline(object):
             for antonym in new_antonyms:
                 antonym.save()
                 wordsense.antonyms.add(antonym)
+
+        word.synonyms_last_crawled_date = datetime.date.today()
+        word.save()
 
         return item
