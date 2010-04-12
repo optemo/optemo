@@ -89,8 +89,15 @@ class ThesaurusDotComSpider(BaseSpider):
         word = hxs.select('//h1[@class="query_h1"]/text()')[0]\
                .extract().lower()
 
-        return map(lambda s: self.parse_sense(word, s),
-                   hxs.select('//table[@class="the_content"]'))
+        senses = []
+
+        for sense in hxs.select('//table[@class="the_content"]'):
+            if len(sense.select('div[@class="adjHdg"]')) != 0:
+                break
+
+            senses.append(sense)
+
+        return map(lambda s: self.parse_sense(word, s), senses)
 
 ThesaurusDotComSpider.part_type_parse_fn_dict = \
     { 'Main Entry:' : ThesaurusDotComSpider.parse_sense_name,
