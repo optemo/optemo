@@ -71,6 +71,9 @@ class ThesaurusDotComSpider(BaseSpider):
 
         return word_sense
 
+    def parse_do_nothing(self, word_sense, junk):
+        return word_sense
+
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
 
