@@ -8,7 +8,12 @@ import scrapy.log as log
 class DjangoWriterPipeline(object):
     def process_item(self, spider, item):
         word, word_dne = words.Word.create_if_dne_and_return(item['word'])
-        if word_dne: word.save()
+
+        word_found = item['found']
+        if not word_found:
+            word.synonyms_last_crawled_date = datetime.date.today()
+            word.save()
+            return item
 
         name, name_dne = words.Word.create_if_dne_and_return(item['name'])
         if name_dne: name.save()
