@@ -15,7 +15,12 @@ class Usecase(local.LocalModel):
                               'usecases')
 
     label = models.CharField(max_length=255, unique=True)
-    indicator_words = models.ManyToManyField(words.Word)
+    direct_indicator_words = \
+        models.ManyToManyField\
+        (words.Word, related_name='directly_indicated_usecases')
+    indicator_words = \
+        models.ManyToManyField\
+        (words.Word, related_name='indicated_usecases')
 
 class UsecaseClusterScore(local.LocalModel):
     class Meta:
@@ -40,7 +45,7 @@ known_usecases = {
 
 def populate_usecases():
     Usecase.drop_tables_if_exist()
-    Usecase.create_table()
+    Usecase.create_tables()
 
     for usecase_label in known_usecases[optemo.product_type]:
         usecase = Usecase(label=usecase_label)
@@ -51,9 +56,11 @@ def populate_usecases():
             words.Word.create_multiple_if_dne_and_return(indicator_words)
         
         for word in existing_words_qs:
+            usecase.direct_indicator_words.add(word)
             usecase.indicator_words.add(word)
         for word in dne_word_entries:
             word.save()
+            usecase.direct_indicator_words.add(word)
             usecase.indicator_words.add(word)
 
         usecase.save()
