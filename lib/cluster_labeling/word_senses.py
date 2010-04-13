@@ -17,14 +17,13 @@ pos_display_to_value = dict(map(lambda (x,y): (y,x), POS_CHOICES))
 class WordSense(local.LocalModel):
     class Meta:
         db_table='word_senses'
-        unique_together=(('word', 'name'))
+        unique_together=(('word', 'name', 'definition'))
     
     word = models.ForeignKey(words.Word, related_name='sense_set')
 
     name = models.ForeignKey(words.Word, related_name='senses_namedby_set') # This needs a better name
     pos =  models.CharField(max_length=1, choices=POS_CHOICES)
-    definition = models.ManyToManyField\
-                 (words.Word, related_name='definition_wordsense_set')
+    definition = models.CharField(max_length=255)
 
     synonyms = models.ManyToManyField\
                (words.Word, related_name='synonym_wordsense_set')

@@ -23,26 +23,22 @@ class DjangoWriterPipeline(object):
         except KeyError as e:
             log.msg("Unknown POS tag, not saving: %s" % (item['pos']))
             return item
+
+        definition = item['definition']
         
         wordsense = None
         ws_qs = ws.WordSense.get_manager()\
-                .filter(word=word, name=name)
+                .filter(word=word, name=name, definition=definition)
         
         if ws_qs.count() == 0:
             wordsense = ws.WordSense(word=word, name=name, pos=pos,
+                                     definition=definition,
                                      notes=item.get('notes', None))
-            wordsense.save()
         else:
             wordsense = ws_qs[0]
+            wordsense.definition = definition
 
-        existing_defns, new_defns = \
-            words.Word.create_multiple_if_dne_and_return(item['definition'])
-        
-        for defn in existing_defns:
-            wordsense.definition.add(defn)
-        for defn in new_defns:
-            defn.save()
-            wordsense.definition.add(defn)
+        wordsense.save()
 
         existing_synonyms, new_synonyms = \
             words.Word.create_multiple_if_dne_and_return(item['synonyms'])

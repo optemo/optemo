@@ -43,8 +43,8 @@ class ThesaurusDotComSpider(BaseSpider):
         word_sense['pos'] = sense_pos
 
     def parse_sense_definition(self, word_sense, part_contents):
-        self.parse_sense_wordlist('definition', word_sense,
-                                  part_contents)
+        word_sense['definition'] = \
+            ";".join(part_contents.select('.//text()').extract())
 
     def parse_sense_synonyms(self, word_sense, part_contents):
         self.parse_sense_wordlist('synonyms', word_sense,
