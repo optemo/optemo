@@ -58,6 +58,10 @@ class Word(local.LocalModel):
 
         return existing_words_qs, dne_word_entries
 
+    def get_all_synonyms(self):
+        return Word.get_manager()\
+               .filter(synonym_wordsense_set__word=self)
+
 @transaction.commit_on_success
 def populate_word_table_from_review(review):
     content = review.content

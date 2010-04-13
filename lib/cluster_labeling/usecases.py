@@ -51,9 +51,9 @@ def populate_usecases():
         usecase = Usecase(label=usecase_label)
         usecase.save()
         
-        indicator_words = th.get_words_from_string(usecase_label)
+        direct_indicator_words = th.get_words_from_string(usecase_label)
         existing_words_qs, dne_word_entries = \
-            words.Word.create_multiple_if_dne_and_return(indicator_words)
+            words.Word.create_multiple_if_dne_and_return(direct_indicator_words)
         
         for word in existing_words_qs:
             usecase.direct_indicator_words.add(word)
@@ -62,6 +62,10 @@ def populate_usecases():
             word.save()
             usecase.direct_indicator_words.add(word)
             usecase.indicator_words.add(word)
+
+        for word in usecase.direct_indicator_words.all():
+            for synonym in word.get_all_synonyms():
+                usecase.indicator_words.add(synonym)
 
         usecase.save()
 
