@@ -7,6 +7,7 @@ from django.conf import settings
 def configure_django(**kwargs):
     database_yaml_fn = kwargs['database_yaml']
     config_name = kwargs['config_name']
+    debug = kwargs['debug']
     
     db_config = yaml.load(open(database_yaml_fn).read())[config_name]
     db_config = {
@@ -19,10 +20,11 @@ def configure_django(**kwargs):
 
     try:
         settings.configure\
-        (DATABASES = {
+        (DATABASES={
             'default' : db_config,
             'optemo' : db_config
-            })
+            },
+         DEBUG=debug)
     except RuntimeError as e:
         print "RuntimeError occurred during django setup: %s", str(e)
         raise e
