@@ -9,6 +9,7 @@ namespace :db do
     create_product_properties(Printer,"us")
     create_product_properties(Camera,"ca")
     create_product_properties(Printer,"ca")
+    create_product_properties(Flooring,"us")
     #cache_index
   end
 end

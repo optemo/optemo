@@ -49,6 +49,8 @@ class ApplicationController < ActionController::Base
         "Camera"
       when "printers"
         "Printer"
+      when "flooring"
+        "Flooring"
       else
         $DefaultProduct
       end  
