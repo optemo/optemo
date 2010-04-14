@@ -41,36 +41,36 @@ int main(int argc, char** argv){
 	int version;
 	string var;
 	int keepStep = 5;
-
+   string exampleUsage = "Example: " << argv[0] << " Printer us development 9\n";
 
 	//argument is the productName
     if (argc <5){
-		cout<<" Wrong number of arguments, you need 4 (product name, region, environment and number of clusters)"<<endl;
+		cout<<" Wrong number of arguments, you need 4 (product name, region, environment and number of clusters)" << endl << exampleUsage;
 		return EXIT_FAILURE;
 	}
 	string productName = argv[1];
 	//cout<<productName<<endl;
-	if ((productName != "camera") && (productName != "printer")){
-		cout<<"Wrong Product Type! You should enter either printer or camera"<<endl;
+	if (!(productName == "camera" || productName == "printer" || productName == "flooring")){
+		cout<<"Unrecognized product type. Please enter 'printer', 'pamera', or 'flooring'." << endl << exampleUsage;
 		return EXIT_FAILURE;
 	}
 	
 	string region = argv[2];
 	//cout<<region<<endl;
 	if ((region != "us") && (region != "ca")){
-		cout<<"Wrong Region! You should enter either us or ca"<<endl;
+		cout<<"Wrong Region! You should enter either us or ca" << endl << exampleUsage;
 		return EXIT_FAILURE;
 	}
 	
 	string env = argv[3];
 	if ((env != "test") && (env != "development") && (env != "production") && (env != "bestbuy")){
-		cout<<"Wrong environment! You should either enter test, development, bestbuy or production"<<endl;
+		cout<<"Wrong environment! You should either enter test, development, bestbuy or production" << endl << exampleUsage;
 		return EXIT_FAILURE;
 	}
 	
 	clusterN = atoi(argv[4]);
 	if (clusterN<2 || clusterN>9){
-		cout<<"your number of clusters should be between 2 and 9"<<endl;
+		cout<<"Please enter a number of clusters between 2 and 9" << endl << exampleUsage;
 		return EXIT_FAILURE;
 	}
 
