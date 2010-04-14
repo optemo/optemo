@@ -258,7 +258,7 @@ int main(int argc, char** argv){
 	      cout<<"There are some null values in "<<productName<<"s table"<<endl;
 	    }
         else {
-            cout << "There are no null values in "<<productName<<"s table"<<endl
+            cout << "There are no null values in "<<productName<<"s table"<<endl;
         }
 		command = "SELECT version from ";
 		command += productName;
