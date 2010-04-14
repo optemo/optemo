@@ -7,6 +7,7 @@ namespace :builddirect do
   
     require 'rubygems'
     require 'nokogiri'
+    include ActionView::Helpers::NumberHelper
   end
 
   task :flooring_init => :init do
@@ -48,21 +49,29 @@ namespace :builddirect do
         xml_attr_name = attribute["NAME"]
         xml_data = attribute.children.children.to_s
         if relevant_fields.include?(xml_attr_name)
-          if xml_attr_name == "PRODUCT_NAME"
-            current_record["title"] = xml_data.chomp(" ")
-          elsif xml_attr_name == "COLOR RANGE"
-            current_record["colorrange"] = xml_data
-          else
-            hash_key = xml_attr_name.downcase
-            unless current_record[hash_key]
-              current_record[hash_key] = xml_data
+          case xml_attr_name
+            when"PRODUCT_NAME"
+              current_record["title"] = xml_data.chomp(" ")
+            when "COLOR RANGE"
+              current_record["colorrange"] = xml_data              
             else
-              current_record[hash_key] = current_record[hash_key] + " " + xml_data
-            end
+              if xml_attr_name == "PRICE"
+                current_record["pricestr"] = number_to_currency(xml_data)
+              end
+              if xml_attr_name == "RegularPrice" || xml_attr_name == "PRICE"
+                xml_data = (xml_data.to_f * 100).to_i
+              end
+              hash_key = xml_attr_name.downcase
+              unless current_record[hash_key]
+                current_record[hash_key] = xml_data
+              else
+                current_record[hash_key] = current_record[hash_key] + " " + xml_data
+              end
           end
           # attribute["NAME"] is the name of the record
           # attribute.children.children is the actual data value.
         end
+        current_record["instock"] = 1
       end
       # Store everything in a giant hash based on title. 
       # This allows records that have the same title to get grouped together with the hope of combining traits like style, etc.
@@ -91,10 +100,10 @@ namespace :builddirect do
     flooring_activerecords = flooring_records.map do |k,records| 
       # This is where we put in the features that show up multiple times. Let's browse a bit to figure out what those are.
       record = records[0]
-      colors = records.map{ |r| r["colorrange"] }.uniq.join(" ")
-      record["colorrange"] = colors
-      features = records.map{ |r| r["feature"] }.flatten.uniq.join(" ")
-      record["feature"] = features
+      ["colorrange", "feature", "width", "size"].each do |specific|
+        specifics = records.map{|r| r[specific] }.flatten.uniq.join(" ")
+        record[specific] = specifics
+      end
       Flooring.new(record)
     end
     desc 'Finished making new records'

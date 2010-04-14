@@ -11,7 +11,8 @@ class CreateFloorings < ActiveRecord::Migration
       t.text :feature
       t.text :colorrange
       t.float :width
-      t.float :price
+      t.integer :price
+      t.string :pricestr
       t.float :regularprice
       t.integer :miniorder_sq_ft
       t.integer :miniorder
@@ -24,6 +25,7 @@ class CreateFloorings < ActiveRecord::Migration
       t.float :profit_margin
       t.float :overallrating
       t.string :aggregate_desc
+      t.boolean :instock
     end  
   end
 
