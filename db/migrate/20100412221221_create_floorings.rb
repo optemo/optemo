@@ -3,7 +3,7 @@ class CreateFloorings < ActiveRecord::Migration
     create_table :floorings do |t|
       t.timestamps
       t.primary_key :id
-      
+
       t.text :title
 
       t.text :brand

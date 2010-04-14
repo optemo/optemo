@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20091111215022) do
+ActiveRecord::Schema.define(:version => 20100412221221) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -599,7 +599,8 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.float    "itemweight"
   end
 
-  create_table "camera2", :force => true do |t|
+  create_table "camera2", :id => false, :force => true do |t|
+    t.integer  "id",                              :default => 0, :null => false
     t.text     "detailpageurl"
     t.boolean  "batteriesincluded"
     t.string   "batterydescription"
@@ -669,6 +670,16 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.boolean  "bodyonly"
   end
 
+  create_table "camera_boostexter_combined_rules", :force => true do |t|
+    t.string  "fieldname",                        :null => false
+    t.float   "weight",                           :null => false
+    t.integer "cluster_id",                       :null => false
+    t.integer "version",                          :null => false
+    t.text    "yaml_repr",  :limit => 2147483647, :null => false
+  end
+
+  add_index "camera_boostexter_combined_rules", ["fieldname", "cluster_id", "version"], :name => "fieldname", :unique => true
+
   create_table "camera_clusters", :force => true do |t|
     t.integer "parent_id"
     t.integer "layer"
@@ -687,7 +698,8 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.string  "region",                :default => "us"
   end
 
-  create_table "camera_clusters_archive", :force => true do |t|
+  create_table "camera_clusters_archive", :id => false, :force => true do |t|
+    t.integer "id",                    :default => 0,    :null => false
     t.integer "parent_id"
     t.integer "layer"
     t.integer "cluster_size"
@@ -738,7 +750,8 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.string  "region",            :default => "us"
   end
 
-  create_table "camera_nodes_archive", :force => true do |t|
+  create_table "camera_nodes_archive", :id => false, :force => true do |t|
+    t.integer "id",                :default => 0,    :null => false
     t.integer "cluster_id"
     t.integer "product_id"
     t.float   "maximumresolution"
@@ -806,7 +819,8 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.integer  "bestoffer"
   end
 
-  create_table "camerasPref", :force => true do |t|
+  create_table "camerasPref", :id => false, :force => true do |t|
+    t.integer  "id",                              :default => 0, :null => false
     t.integer  "price"
     t.boolean  "iseligibleforsupersavershipping"
     t.integer  "bestoffer"
@@ -1003,6 +1017,17 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.datetime "updated_at"
   end
 
+  create_table "db_properties", :force => true do |t|
+    t.string   "name"
+    t.text     "brands"
+    t.float    "price_min"
+    t.float    "price_max"
+    t.float    "price_low"
+    t.float    "price_high"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "factors", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -1031,6 +1056,31 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.integer  "session_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "floorings", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "title"
+    t.text     "brand"
+    t.text     "species"
+    t.text     "feature"
+    t.text     "colorrange"
+    t.float    "width"
+    t.integer  "price"
+    t.string   "pricestr"
+    t.float    "regularprice"
+    t.integer  "miniorder_sq_ft"
+    t.integer  "miniorder"
+    t.text     "price_unit"
+    t.string   "warranty"
+    t.float    "thickness"
+    t.text     "size"
+    t.string   "finish"
+    t.float    "profit_margin"
+    t.float    "overallrating"
+    t.string   "aggregate_desc"
+    t.boolean  "instock"
   end
 
   create_table "grabber_cartridges", :force => true do |t|
@@ -1339,7 +1389,8 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.string   "producttype"
   end
 
-  create_table "prefs", :force => true do |t|
+  create_table "prefs", :id => false, :force => true do |t|
+    t.integer  "id",                            :default => 0, :null => false
     t.integer  "idvisit"
     t.string   "idcookie",        :limit => 32
     t.integer  "product_picked"
@@ -1355,6 +1406,16 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.integer  "filter_type",     :limit => 2
     t.integer  "idsite"
   end
+
+  create_table "printer_boostexter_combined_rules", :force => true do |t|
+    t.string  "fieldname",                        :null => false
+    t.float   "weight",                           :null => false
+    t.integer "cluster_id",                       :null => false
+    t.integer "version",                          :null => false
+    t.text    "yaml_repr",  :limit => 2147483647, :null => false
+  end
+
+  add_index "printer_boostexter_combined_rules", ["fieldname", "cluster_id", "version"], :name => "fieldname", :unique => true
 
   create_table "printer_clusters", :force => true do |t|
     t.integer "parent_id"
@@ -1378,7 +1439,8 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.string  "region",            :default => "us"
   end
 
-  create_table "printer_clusters_archive", :force => true do |t|
+  create_table "printer_clusters_archive", :id => false, :force => true do |t|
+    t.integer "id",                :default => 0,    :null => false
     t.integer "parent_id"
     t.integer "layer"
     t.integer "cluster_size"
@@ -1441,7 +1503,8 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.string  "region",        :default => "us"
   end
 
-  create_table "printer_nodes_archive", :force => true do |t|
+  create_table "printer_nodes_archive", :id => false, :force => true do |t|
+    t.integer "id",            :default => 0,    :null => false
     t.integer "cluster_id"
     t.integer "product_id"
     t.float   "ppm"
@@ -1588,6 +1651,15 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.text     "pros"
     t.text     "cons"
     t.float    "value_rating"
+  end
+
+  create_table "saveds", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "session_id"
+    t.integer  "product_id"
+    t.integer  "search_id"
+    t.string   "product_type"
   end
 
   create_table "scraped_cameras", :force => true do |t|
