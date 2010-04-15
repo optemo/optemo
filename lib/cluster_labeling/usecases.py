@@ -57,14 +57,20 @@ def populate_usecases():
         
         for word in existing_words_qs:
             usecase.direct_indicator_words.add(word)
-            usecase.indicator_words.add(word)
         for word in dne_word_entries:
             word.save()
             usecase.direct_indicator_words.add(word)
-            usecase.indicator_words.add(word)
 
-        for word in usecase.direct_indicator_words.all():
-            for synonym in word.get_all_synonyms():
+        usecase.save()
+
+def populate_indicator_words_for_usecases():
+    for usecase in Usecase.get_manager():
+        diws = usecase.direct_indicator_words
+
+        for diw in diws.all():
+            usecase.indicator_words.add(diw)
+
+            for synonym in diw.get_all_synonyms():
                 usecase.indicator_words.add(synonym)
 
         usecase.save()
