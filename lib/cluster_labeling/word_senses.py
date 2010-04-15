@@ -2,8 +2,6 @@
 import cluster_labeling.local_django_models as local
 from django.db import models
 
-import cluster_labeling.words as words
-
 POS_CHOICES = (
     ('N', 'noun'),
     ('V', 'verb'),
@@ -19,16 +17,16 @@ class WordSense(local.LocalModel):
         db_table='word_senses'
         unique_together=(('word', 'name', 'definition'))
     
-    word = models.ForeignKey(words.Word, related_name='sense_set')
+    word = models.ForeignKey("Word", related_name='sense_set')
 
-    name = models.ForeignKey(words.Word, related_name='senses_namedby_set') # This needs a better name
+    name = models.ForeignKey("Word", related_name='senses_namedby_set') # This needs a better name
     pos =  models.CharField(max_length=1, choices=POS_CHOICES)
     definition = models.CharField(max_length=255)
 
     synonyms = models.ManyToManyField\
-               (words.Word, related_name='synonym_wordsense_set')
+               ("Word", related_name='synonym_wordsense_set')
     antonyms = models.ManyToManyField\
-               (words.Word, related_name='antonym_wordsense_set')
+               ("Word", related_name='antonym_wordsense_set')
 
     notes = models.TextField(null=True)
 

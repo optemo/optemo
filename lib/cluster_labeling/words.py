@@ -9,6 +9,8 @@ from django.db import models
 from django.db import transaction
 from django.db.models import F
 
+import cluster_labeling.word_senses as word_senses
+
 class Word(local.LocalModel):
     class Meta:
         db_table='words'
