@@ -7,7 +7,7 @@ from django.conf import settings
 def configure_django(**kwargs):
     database_yaml_fn = kwargs['database_yaml']
     config_name = kwargs['config_name']
-    debug = kwargs['debug']
+    debug = kwargs.get('debug', False)
     
     db_config = yaml.load(open(database_yaml_fn).read())[config_name]
     db_config = {
