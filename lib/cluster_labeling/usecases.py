@@ -139,6 +139,9 @@ def score_usecase_for_cluster(cluster, usecase):
     iword_scores = \
         filter(lambda s: s > 0,
                map(lambda s: 0 if s is None else s, iword_scores))
-    score = sum(iword_scores) / len(iword_scores)
 
+    if len(iword_scores) == 0:
+        return 0
+
+    score = sum(iword_scores) / len(iword_scores)
     return score
