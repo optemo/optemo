@@ -79,8 +79,13 @@ class CompareController < ApplicationController
       #No post info passed
       render :text =>  "[ERR]Search could not be completed."
     else
-      #Fixes the fact that the brand selector value is not used
+      #Fixes the fact that the brand selector value is not used, among other selectors
       params[:myfilter].delete("brand1")
+      # These were introduced for Flooring
+      params[:myfilter].delete("species1")
+      params[:myfilter].delete("colorrange1")
+      params[:myfilter].delete("feature1")
+      
       Session.current.search = Session.current.searches.last #My last search used for finding the right filters
       session.updateFilters(params[:myfilter])
       clusters = session.clusters

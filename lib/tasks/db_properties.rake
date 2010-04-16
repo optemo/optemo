@@ -41,6 +41,7 @@ def create_product_properties(model,region)
   else
     products = model.valid.instock_ca
   end
+  debugger
   unless products.nil? || products.empty?
     model::CategoricalFeaturesF.each {|name|
       f = DbFeature.new
