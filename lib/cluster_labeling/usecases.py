@@ -133,7 +133,9 @@ def score_usecase_for_cluster(cluster, usecase):
     # Combine all chi-squared scores in a way that is not influenced
     # by the number of indicator words associated with the cluster
     # i.e. take the average:
-    iword_scores = map(lambda s: 0 if s is None else s, iword_scores)
+    iword_scores = \
+        filter(lambda s: s > 0,
+               map(lambda s: 0 if s is None else s, iword_scores))
     score = sum(iword_scores) / len(iword_scores)
 
     return score
