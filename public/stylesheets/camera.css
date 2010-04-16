@@ -253,7 +253,7 @@ div.smalldesc {
 	padding-left: 120px; 
 	padding-top: 5px;
 }
-.selected_brands img {
+.selected_cat_features img {
 	vertical-align: baseline;
 }
 
@@ -327,7 +327,7 @@ div.smalldesc {
 	margin-bottom: 3px;
 	font-weight: lighter;
 }
-#selector {
+.selectboxfilter {
 	width:100%;
 }
 

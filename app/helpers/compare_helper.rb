@@ -41,7 +41,7 @@ module CompareHelper
   def navtitle
     if Session.current.keyword.nil?
 		  (Session.current.search.result_count > 1) ? t("products.compare.browsings",:count => Session.current.search.result_count) + $model.name + "s" : t("products.compare.browsing") + $model.name
-		  ["Browsing", Session.current.search.result_count,$RelativeDescriptions ? "<b>"+Session.current.search.searchDescription.map{|d|t("products."+d)}.join(", ")+"</b>" : nil, ($model.name == 'Camera' ? ((Session.current.search.result_count > 1) ? "Cameras" : "Camera") : ((Session.current.search.result_count > 1) ? "Printers" : "Printer"))].join(" ")
+		  ["Browsing", Session.current.search.result_count,$RelativeDescriptions ? "<b>"+Session.current.search.searchDescription.map{|d|t("products."+d)}.join(", ")+"</b>" : nil, ($model.name == 'Camera' ? ((Session.current.search.result_count > 1) ? "Cameras" : "Camera") : ($model.name == 'Printer' ? ((Session.current.search.result_count > 1) ? "Printers" : "Printer") : (Session.current.search.result_count > 1) ? "Types of Flooring" : "Type of Flooring") )].join(" ")
 		else
       "#{t("products.compare.search")}: '#{Session.current.keyword}', #{(Session.current.search.result_count > 1) ? t("products.compare.browsings",:count => Session.current.search.result_count) : t("products.compare.browsing")}" 
     end

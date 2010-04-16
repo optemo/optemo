@@ -7,29 +7,16 @@ namespace :builddirect do
   
     require 'rubygems'
     require 'nokogiri'
+    # This next line is needed for number_to_currency
     include ActionView::Helpers::NumberHelper
   end
 
+  desc 'Initializing flooring'
   task :flooring_init => :init do
-#    include FlooringHelper
-#    include FlooringConstants
-
-    # TODO get rid of this construct:
-#    $model = @@model
-#    $scrapedmodel = @@scrapedmodel
-#    $brands= @@brands
-#    $series = @@series
-#    $descriptors = @@descriptors + $conditions.collect{|cond| /(\s|^|;|,)#{cond}(\s|,|$)/i}
-
-    # For flooring, we want: SPECIES, FEATURE, COLOR RANGE, WIDTH, PRICE, maybe RegularPrice, MINIORDER_SQ_FT, MINIORDER [one of those will be -1, depending on order type based on PRICE_UNIT], maybe WARRANTY, BRAND, THICKNESS, FINISH
-    
-    # Continuous features are: WIDTH, PRICE, maybe RegularPrice, MINIORDER_SQ_FT, MINIORDER, THICKNESS, maybe WARRANTY
-#    $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'ppm', 'resolutionmax',\
-#       'paperinput','scanner', 'printserver', 'brand', 'model']
-#    $reqd_offering_fields = ['priceint', 'pricestr', 'stock', 'condition', 'priceUpdate', 'toolow', \
-#       'local_id', "product_type", "region", "retailer_id"]
+    # This is kept as a holdover from another rake task
   end
-
+  
+  desc 'Parse builddirect XML file'
   task :parse, :fileparameter, :needs => [:flooring_init] do |t, args|
     # Open up the XML file
     ActiveRecord::Base.connection.execute("TRUNCATE floorings")
@@ -39,11 +26,12 @@ namespace :builddirect do
     end
     # Get out all the records
     all_records = doc.css("RECORD")
-    flooring_records = {}
+    flooring_records = []
     flooring_activerecords = []
-    relevant_fields = ["PRODUCT_NAME", "BRAND", "SPECIES", "FEATURE", "COLOR RANGE", "WIDTH", "PRICE", "RegularPrice", "MINIORDER_SQ_FT", "MINIORDER", "PRICE_UNIT", "WARRANTY", "BRAND", "THICKNESS", "SIZE", "FINISH", "PROFIT_MARGIN", "OVERALLRATING", "AGGREGATE_DESC"]
+    relevant_fields = ["PRODUCT_NAME", "BRAND", "SPECIES", "FEATURE", "COLOR RANGE", "WIDTH", "PRICE", "RegularPrice", "MINIORDER_SQ_FT", "MINIORDER", "MINIORDER_SQ_FT", "PRICE_UNIT", "WARRANTY", "BRAND", "THICKNESS", "SIZE", "FINISH", "PROFIT_MARGIN", "OVERALLRATING", "AGGREGATE_DESC", "IMAGELINK", "CATEGORY_ID"]
+    relevant_categories = ["8804","6950"] # These, as discovered empirically, are the hardwood flooring categories in the XML
     all_records.each do |record|
-      # File through and get out all the properties that we want. Rather than using xpath, we are using 
+      # File through and get out all the properties that we want. Rather than using xpath, we are using the .children call since it's (way) faster. 
       current_record = {}
       record.children.each do |attribute|
         xml_attr_name = attribute["NAME"]
@@ -51,9 +39,9 @@ namespace :builddirect do
         if relevant_fields.include?(xml_attr_name)
           case xml_attr_name
             when"PRODUCT_NAME"
-              current_record["title"] = xml_data.chomp(" ")
+              current_record["model"] = xml_data.chomp(" ")
             when "COLOR RANGE"
-              current_record["colorrange"] = xml_data              
+              current_record["colorrange"] = xml_data
             else
               if xml_attr_name == "PRICE"
                 current_record["pricestr"] = number_to_currency(xml_data)
@@ -65,7 +53,7 @@ namespace :builddirect do
               unless current_record[hash_key]
                 current_record[hash_key] = xml_data
               else
-                current_record[hash_key] = current_record[hash_key] + " " + xml_data
+                current_record[hash_key] = current_record[hash_key] + "*" + xml_data
               end
           end
           # attribute["NAME"] is the name of the record
@@ -78,38 +66,45 @@ namespace :builddirect do
 #     hash_key = "No Color"
 #     hash_key = current_record["colorrange"] if current_record["colorrange"]
 
-      
-      
       # Should define a hash key set of fields, and make it so that everything else is checked for. That is, right now colors and features are checked for, but it should be everything that isn't in the hash key.
       
-          
-    
-      hash_key = current_record["brand"] + " " + current_record["title"] 
-      if current_record["feature"]
-        hash_key += " " + current_record["feature"]
-      else
-        hash_key += " " + current_record["aggregate_desc"] # If no features? try without it for now.
-      end
-      unless flooring_records[hash_key]
-        flooring_records[hash_key] = Array[current_record]
-      else
-        flooring_records[hash_key].push(current_record)
-      end
+      # Here we reject everything that isn't in one of the categories.
+      next unless relevant_categories.include?(current_record["category_id"])
+      
+#      hash_key = current_record["brand"] + " " + current_record["model"] 
+#      if current_record["feature"]
+#        hash_key += " " + current_record["feature"]
+#      else
+#        hash_key += " " + current_record["aggregate_desc"] # If no features? try without it for now.
+#      end
+#      hash_key += " " + current_record["price"].to_s # This is probably the simplest way. Why didn't I think of this earlier?
+#      unless flooring_records[hash_key]
+#        flooring_records[hash_key] = Array[current_record]
+#      else
+#        flooring_records[hash_key].push(current_record)
+#      end
+      flooring_records.push(current_record)
     end
-    desc 'Finished parsing XML'
-    flooring_activerecords = flooring_records.map do |k,records| 
-      # This is where we put in the features that show up multiple times. Let's browse a bit to figure out what those are.
-      record = records[0]
-      ["colorrange", "feature", "width", "size"].each do |specific|
-        specifics = records.map{|r| r[specific] }.flatten.uniq.join(" ")
-        record[specific] = specifics
-      end
+    puts 'Finished parsing XML'
+    # flooring_records looks like this: { "brand title feature" => [item, item, item], "otherbrand title feature" => [item, item, item], ... }
+    flooring_activerecords = flooring_records.map do |record| 
+      # With our hashing, items that have only, e.g., the color different will show up here together, in an array. 
+      # We have to get the color, feature, size, and possibly other info out.
+#      record = records[0]
+#      ["colorrange", "feature", "width", "size"].each do |specific|
+#        specifics = records.map{|r| r[specific] }.flatten.uniq.join(" ")
+#        record[specific] = specifics
+#      end
+      record["title"] = record["brand"] + " " + record["model"]
+      # Make miniorder the only place where data goes in the end
+      record["miniorder"] = record["miniorder_sq_ft"]
+      record.delete("miniorder_sq_ft")
       Flooring.new(record)
     end
-    desc 'Finished making new records'
+    puts 'Finished making new records'
     Flooring.transaction do
       flooring_activerecords.each(&:save)
     end
-    desc 'Done importing'
+    puts 'Done importing'
   end
 end

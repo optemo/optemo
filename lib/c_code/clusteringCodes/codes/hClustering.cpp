@@ -112,8 +112,8 @@ int main(int argc, char** argv){
                 }
             break;
 		case 3:
-            conFeatureN = 4;
-            catFeatureN = 1; // This should be 4, but right now just set it up for brand only.
+            conFeatureN = 3; // Thickness has been taken out for now
+            catFeatureN = 4; // This should be 4, but right now just set it up for brand only.
             boolFeatureN = 0;
             range = 2;
             break;
@@ -241,7 +241,6 @@ int main(int argc, char** argv){
 ///////////////////////////////////////////////
 
     try {
-        cout << "Getting driver..."<<endl;
     	sql::Driver * driver = get_driver_instance();
 
 	    std::auto_ptr< sql::Connection > con(driver->connect(HOST, USER, PASS));        
@@ -265,7 +264,6 @@ int main(int argc, char** argv){
 		command += "_clusters where (region='";
 		command += region;
 		command += "') order by id DESC LIMIT 1";
-
 		res = stmt->executeQuery(command);
 
 		if (res->next()){
@@ -306,11 +304,9 @@ int main(int argc, char** argv){
 
 			stmt->execute(command2); 
 		}
-
         bool clustered = 0;
         res = stmt->executeQuery(filteringCommand); 
         int maxSize = res->rowsCount();
-
         time_t rawtime;
         struct tm * timeinfo;
 
@@ -327,6 +323,7 @@ int main(int argc, char** argv){
         	for (int j=0; j<conFeatureN; j++){
         		average[j] = 0.0;
         	}
+            cout << "maxSize: " << maxSize << " and clusterN: " << clusterN << endl;
         	maxSize = hClustering(layer, clusterN,  conFeatureN,  boolFeatureN, average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
         			stmt, conFeatureNames, boolFeatureNames, productName, weightHash, version, region);	
         	myfile2<<"layer "<<layer<<endl;
@@ -369,6 +366,11 @@ int main(int argc, char** argv){
         myfile2.close();
 
         } catch (sql::SQLException &e) {
+            cout << "# ERR: SQLException in " << __FILE__;
+            cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << endl;
+            cout << "# ERR: " << e.what();
+            cout << " (MySQL error code: " << e.getErrorCode();
+            cout << ", SQLState: " << e.getSQLState() << " )" << endl;
             return EXIT_FAILURE;
         }
     return 1; //EXIT_SUCCESS;

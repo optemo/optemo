@@ -51,7 +51,7 @@ var IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
 function fadein()
 {
   FilterAndSearchInit();
-  $('#selector').css('visibility', 'visible');
+  $('.selectboxfilter').css('visibility', 'visible');
   $('#fade').css('display', 'none');
   $('#outsidecontainer').css('display', 'none');
   $('#outsidecontainer').unbind('click')
@@ -69,7 +69,7 @@ function fadeout(url,data,width,height)
 								'height' : height||770,
 								'display' : 'inline' });
 	$('#fade').css({'height' : getDocHeight()+'px', 'display' : 'inline'});
-	$('#selector').css('visibility', 'hidden');
+	$('.selectboxfilter').css('visibility', 'hidden');
 	if (data)
 		$('#info').html(data);
 	else
@@ -423,11 +423,15 @@ function FilterAndSearchInit() {
 		
 	});
 	// Add a brand -- submit
-	$('#selector').unbind('change').change(function(){
-		var whichbrand = $(this).val();
-		$('#myfilter_brand').val(appendStringWithToken($('#myfilter_brand').val(), whichbrand, '*'));
-		submitCategorical();
-		trackCategorical(whichbrand,100,2);
+	$('.selectboxfilter').each(function(){
+	    $(this).unbind('change').change(function(){
+		    var whichThingSelected = $(this).val();
+		    var whichSelector = $(this).attr('name')
+		    whichSelector = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]")-1);
+    		$('#myfilter_'+whichSelector).val(appendStringWithToken($('#myfilter_'+whichSelector).val(), whichThingSelected, '*'));
+    		submitCategorical();
+    		trackCategorical(whichThingSelected,100,2);
+    	});
 	});
 	
 	// Remove a brand -- submit
@@ -552,22 +556,25 @@ function DBinit() {
 	model = $("img.productimg")[0].src.replace(/\/[^/]+$/,"");
     // Although these lines work properly with the regexp (e.g.) /^[^/]+\/\//, this is interpreted as a comment by the javascript packer and breaks on deploy.
     // So, we have to use the javascript builtin RegExp constructor rather than the usual /expression/ syntax.
-    regexp = new RegExp("^[^/]+\/\/");
-    otherRegexp = new RegExp("^[^/]*\/");
-	model = model.replace(regexp,''); 
-	while (model.match(otherRegexp)) { 
-		model = model.replace(otherRegexp,''); 
-	}
-	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
-	terms = eval(model.substring(0, model.length - 1) + "_searchterms"); // terms now = ["waterproof", "digital", ... ]
-	$("#search").autocomplete(terms, {
-		minChars: 1,
-		max: 10,
-		autoFill: false,
-		mustMatch: false,
-		matchContains: true,
-		scrollHeight: 220
-	});
+    if (model.match(/images/)) // if not, something went wrong
+    {
+        regexp = new RegExp("^[^/]+\/\/");
+        otherRegexp = new RegExp("^[^/]*\/");
+    	model = model.replace(regexp,''); 
+    	while (model.match(otherRegexp)) { 
+    		model = model.replace(otherRegexp,''); 
+    	}
+    	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
+    	terms = eval(model.substring(0, model.length - 1) + "_searchterms"); // terms now = ["waterproof", "digital", ... ]
+    	$("#search").autocomplete(terms, {
+    		minChars: 1,
+    		max: 10,
+    		autoFill: false,
+    		mustMatch: false,
+    		matchContains: true,
+    		scrollHeight: 220
+    	});
+    }
 }
 
 function ShowInit() {
