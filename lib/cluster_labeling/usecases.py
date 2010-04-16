@@ -91,6 +91,9 @@ def score_usecases_for_cluster(cluster):
     for usecase in usecases:
         score = score_usecase_for_cluster(cluster, usecase)
 
+        if score == 0:
+            continue
+
         kwargs = {'usecase':usecase, 'version':cluster.version,
                   'cluster_id':cluster.id}
         qs = UsecaseClusterScore.get_manager().filter(**kwargs)
