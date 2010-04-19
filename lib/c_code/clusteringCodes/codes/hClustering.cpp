@@ -18,6 +18,7 @@ using namespace std;
 #include "hClustering.h"
 #include "preProcessing.h"
 #include "smallNumberClustering.h"
+#include "postClustering.h"
 
 using namespace std;
 
@@ -80,14 +81,7 @@ int main(int argc, char** argv){
 	productNames["camera"] = 1;
 	productNames["printer"] = 2;
 	double* weights;
-	map<const string, double> weightHash;
-	weightHash["price"] = 1;
-	//	weightHash["itemweight"] = 0;
-		weightHash["opticalzoom"] = 4;
-		weightHash["displaysize"] = 1;
-		weightHash["maximumresolution"] = 1;
-	//	weightHash["slr"] = 0;
-	//	weightHash["waterproof"] = 0;
+	
 	switch(productNames[productName]){
 		
 		case 1:
@@ -192,7 +186,7 @@ int main(int argc, char** argv){
   
 
    sql::Statement	*stmt;
-	
+	 sql::Statement	*stmt2;
 	sql::ResultSet	*res;
 	sql::ResultSet	*res2;
 	sql::ResultSet	*res3;
@@ -238,11 +232,11 @@ int main(int argc, char** argv){
 	string databaseName = tokens.at(findVec(tokens, "database:") + 1);
 	
 
-	    #define PORT "3306"       
-		#define DB   databaseName
-		#define HOST hostString    
-		#define USER usernameString 
-	    #define PASS passwordString 
+      #define PORT "3306"       
+    #define DB   databaseName
+    #define HOST hostString    
+    #define USER usernameString 
+      #define PASS passwordString 
 
 ///////////////////////////////////////////////
 		
@@ -250,9 +244,9 @@ int main(int argc, char** argv){
 		  
 
 				sql::Driver * driver = get_driver_instance();
-				    
 			    std::auto_ptr< sql::Connection > con(driver->connect(HOST, USER, PASS));        
 				sql::Statement*  stmt(con->createStatement());
+			    sql::Statement*  stmt2(con->createStatement());
 								
 				command = "USE ";
 				command += databaseName;
@@ -330,49 +324,51 @@ int main(int argc, char** argv){
 			 
 				myfile2<<"Version: "<<version<<endl;
 				
+				vector<int> outlier_ids;	
 			   while (maxSize>clusterN){
 							
 					for (int j=0; j<conFeatureN; j++){
 						average[j] = 0.0;
 					}
 					maxSize = hClustering(layer, clusterN,  conFeatureN,  boolFeatureN, average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
-							stmt, conFeatureNames, boolFeatureNames, productName, weightHash, version, region);	
+							stmt, conFeatureNames, boolFeatureNames, productName, version, region, outlier_ids);	
 					myfile2<<"layer "<<layer<<endl;
 					cout<<"layer "<<layer<<endl;
 					layer++;
 					clustered = 1;
 				}
-				if (clustered){
-				leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames,res, res2, res3, stmt, productName, version, region);	
-				myfile2<<"layer "<<layer<<endl;
-			}else{
-					smallNumberClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, stmt, productName, version, region);	
-					myfile2<<"layer "<<layer<<endl;
-				}
+      		if (clustered){
+				insertOutliers(conFeatureN, boolFeatureN, clusterN, res, res2, stmt, stmt2, conFeatureNames, boolFeatureNames, productName, version, region, outlier_ids);	
+      			leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames,res, res2, res3, stmt, productName, version, region);	
+      			myfile2<<"layer "<<layer<<endl;
+        	}else{
+      			smallNumberClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, stmt, productName, version, region);	
+      			myfile2<<"layer "<<layer<<endl;
+     		}
 
 
 //Clearing the old clusters and nodes
-command2 = "DELETE from ";
-command2 += productName;
-command2 += "_clusters where version=";
-ostringstream vstr3; 
-vstr3 << version-keepStep;
-command2 += vstr3.str();
-command2 += " and region=\'";
-command2 += region;
-command2 += "\';";
-stmt->execute(command2);
-
-command2 = "DELETE from ";
-command2 += productName;
-command2 += "_nodes where version=";
-ostringstream vstr4; 
-vstr4 << version-keepStep;
-command2 += vstr4.str();
-command2 += " and region=\'";
-command2 += region;
-command2 += "\';";
-stmt->execute(command2);
+//command2 = "DELETE from ";
+//command2 += productName;
+//command2 += "_clusters where version=";
+//ostringstream vstr3; 
+//vstr3 << version-keepStep;
+//command2 += vstr3.str();
+//command2 += " and region=\'";
+//command2 += region;
+//command2 += "\';";
+//stmt->execute(command2);
+//
+//command2 = "DELETE from ";
+//command2 += productName;
+//command2 += "_nodes where version=";
+//ostringstream vstr4; 
+//vstr4 << version-keepStep;
+//command2 += vstr4.str();
+//command2 += " and region=\'";
+//command2 += region;
+//command2 += "\';";
+//stmt->execute(command2);
 
 	myfile2<<"The end."<<endl;
  myfile2.close();

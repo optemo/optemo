@@ -92,7 +92,7 @@ class ApplicationController < ActionController::Base
       mysession.keyword = nil
     end
 
-    mysession.version = 23 #$clustermodel.find_last_by_region($region).version
+    mysession.version = $clustermodel.find_last_by_region($region).version
 
 #    mysession.version = $clustermodel.maximum(:version, :conditions => ['region = ?', $region])
 
