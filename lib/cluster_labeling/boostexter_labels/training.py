@@ -31,6 +31,12 @@ def generate_names_file(cluster):
 
     f.close()
 
+def default_text_to_btxtr_fn(text):
+    text = re.sub(u'([-:,&]|#)', ' ', unicode(text), re.UNICODE)
+    text = re.sub(u'(\w+)\.(\D|$)', r'\1 \2',
+                  unicode(text), re.UNICODE)
+    return text
+
 def generate_data_file(cluster):
     filename = fn.get_data_filename(cluster)
     f = open(filename, 'w')
@@ -65,7 +71,8 @@ def generate_data_file(cluster):
     products.extend(products_parent)
     
     for product, cluster_id in products:
-        for fieldname, fielddesc in fields.boosting_fields[optemo.product_type]:
+        for fieldname, field in fields.boosting_fields[optemo.product_type].iteritems():
+            fielddesc = field[0]
             fieldval = product.__getattribute__(fieldname)
 
             if fielddesc == ['True', 'False']:
@@ -75,9 +82,11 @@ def generate_data_file(cluster):
                     fieldval = 'False'
             elif fieldval == None:
                 fieldval = '?' # unknown value
-
-            fieldval = re.sub(u'([-:,&]|#)', ' ', unicode(fieldval), re.UNICODE)
-            fieldval = re.sub(u'(\w+)\.(\D|$)', r'\1 \2', unicode(fieldval), re.UNICODE)
+            elif fielddesc == 'text':
+                if len(field) == 2 and 'text_to_btxtr_fn' in field[1]:
+                    fieldval = field[1]['text_to_btxtr_fn'](fieldval)
+                else:
+                    fieldval = default_text_to_btxtr_fn(fieldval)
 
             f.write(fieldval.encode('utf-8') + ', ')
 
