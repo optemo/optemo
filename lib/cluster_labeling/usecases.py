@@ -71,7 +71,8 @@ def populate_usecases():
         usecase.save()
         
         existing_words_qs, dne_word_entries = \
-            words.Word.create_multiple_if_dne_and_return(direct_indicator_words)
+            words.Word.create_multiple_if_dne_and_return\
+            (map(lambda s: s.lower(), direct_indicator_words))
         
         for word in existing_words_qs:
             usecase.direct_indicator_words.add(word)
