@@ -8,7 +8,7 @@ class CreateBoostexterCombinedRules < ActiveRecord::Migration
       t.text :yaml_repr
 
       t.timestamps
-      add_index :fieldname :cluster_id :version
+      add_index :fieldname, :cluster_id, :version
     end
   end
 

@@ -3,6 +3,7 @@
 #include "qmeasures_reza.h"
 #include "saveClustered.h"
 
+
 //map<string,int> brand2int;
 //vector<double> mean, var;
 
@@ -325,4 +326,3 @@ if 	(layer == 1){
 	return maxSize;
 
 }
-

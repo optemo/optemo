@@ -538,7 +538,6 @@ void weightedMedian(double** data, int size, int conFeatureN, int* sortedA, doub
 
 
 void median2(double** data, int size, int conFeatureN, int* sortedA){
-
 	double* distan = new double[size];
 	for (int j=0; j<size; j++){
 	    distan[j] = 0;
@@ -548,20 +547,16 @@ void median2(double** data, int size, int conFeatureN, int* sortedA){
 		   }
 		}	
 	}
-	
 	insertion_sort(distan, sortedA, size);
-
 }
 
 
 void repOrder(double** dataCluster, int size, string mode, int conFeatureN, int boolFeatureN, int* order, double* weights){
-	
 	if (mode=="median"){
 		weightedMedian(dataCluster, size, conFeatureN, order, weights);
 	}
 
 }
-
 
 void utilityOrder(double** data, int* idA, int size, int** clusteredData, int** clusteredDataOrder, int** clusteredDataOrderU, int clusterN, int conFeatureN, 
 				int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, string productName){
@@ -573,7 +568,7 @@ void utilityOrder(double** data, int* idA, int size, int** clusteredData, int** 
 	capProductName[0] = productName[0] - 32;
 	string command;
 	int* orderRec = new int [clusterN];
-
+    cout << "Checkpoint A." << endl;
 	for (int c=0; c<clusterN; c++){	
 		utility = 0.0;
 		orderRec[c] = c;
@@ -600,7 +595,8 @@ void utilityOrder(double** data, int* idA, int size, int** clusteredData, int** 
 				}
 		}
 		avgUtilities[c] = utility/clusteredData[c][0];
-	}		
+	}
+    cout << "Checkpoint B." << endl;
 	insertion_sort(avgUtilities, orderRec, clusterN);
 	for (int c=0; c<clusterN; c++){
 		clusteredDataOrderU[clusterN-c-1][0] = clusteredData[orderRec[c]][0];
