@@ -9,15 +9,16 @@
 			<%= link_to t('products.' + feat).tr(' ',''), "#" %>			
 		</div>
 
-		<% unless (Session.current.features.brand.nil? || Session.current.features.brand.empty?) %>
+		<% unless Session.current.features.send(feat).nil? || Session.current.features.send(feat).empty? %>
 			<% Session.current.features.brand.split('*').each do |b| %>
-				<div class='selected_brands'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :class => "removeBrand", :"data-id" => b} %> <%= b %>
+				<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :class => "remove"+feat, :"data-id" => b} %> <%= b %>
 				</div>
 			<% end %>
-			<%= select('myfilter', feat+"1", [t('products.compare.addbrand')] +catsforfeature(feat), options={}, {:id => "selector"})%>
+			<%= select('myfilter', feat+"1", [t('products.compare.add'+feat)] +catsforfeature(feat), options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>
 		<% else %>
-			<%= select('myfilter', feat+"1", [t('products.compare.allbrands')] + DbFeature.featurecache(feat).categories.split('*'), options={}, {:id => "selector"})%>
+			<%= select('myfilter', feat+"1", [t('products.compare.all'+feat+'s')] + DbFeature.featurecache(feat).categories.split('*').map{|f| CGI::unescapeHTML(f) }.uniq, options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>		
 		<% end %>
+
 		<%= hidden_field_tag "myfilter[#{feat}]", Session.current.features.brand %>
 	</div>
 <% end %>

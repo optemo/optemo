@@ -5,8 +5,9 @@ string preClustering(map<const string, int>productNames, string productName, str
 	string brand = "";
 	string var;
 	string nullCheck = "";
-	catFeatureNames[0]= "brand";
-	conFeatureNames[0]= "price";
+	catFeatureNames[0] = "brand";
+	conFeatureNames[0] = "price";
+	indicatorNames[0] = "Price";
 	switch(productNames[productName]){
 		case 1:
 				conFeatureN = 4;
@@ -18,7 +19,6 @@ string preClustering(map<const string, int>productNames, string productName, str
 				//boolFeatureNames[0] = "slr";
 				//boolFeatureNames[1] = "waterproof";
 
-				indicatorNames[0] = "Price";
 				indicatorNames[1] = "Item Weight";
 				indicatorNames[2] = "Optical Zoom";
 				indicatorNames[3] = "MegaPixels";
@@ -58,7 +58,6 @@ string preClustering(map<const string, int>productNames, string productName, str
 				boolFeatureNames[0] = "scanner";
 				boolFeatureNames[1] = "printserver";
 				
-				indicatorNames[0]="price";
 				indicatorNames[1]= "ppm";  
 			    indicatorNames[2]= "itemwidth";
 			    indicatorNames[3]= "paperinput";
@@ -76,6 +75,39 @@ string preClustering(map<const string, int>productNames, string productName, str
 					
 				filteringCommand += "(resolutionmax >0) and (ppm >0 ) and (itemwidth > 0) and (paperinput > 0))";
 			
+				break;
+		case 3:
+				conFeatureN = 3;
+				boolFeatureN = 0;
+				conFeatureNames[1]= "width"; 
+			    conFeatureNames[2]= "miniorder";
+			    catFeatureNames[1] = "species";
+			    catFeatureNames[2] = "feature";
+			    catFeatureNames[3] = "colorrange";
+				//conFeatureNames[4]= "itemweight";
+				//boolFeatureNames[0] = "slr";
+				//boolFeatureNames[1] = "waterproof";
+
+				indicatorNames[1] = "Item Width";
+				indicatorNames[2] = "Minimum Order";
+				filteringCommand = "SELECT * FROM ";
+				filteringCommand += productName;
+				filteringCommand += "s where instock=1 AND ";
+				nullCheck += "((price IS NOT NULL)";
+				for (int f=1; f<conFeatureN; f++){
+					nullCheck += " and (";
+					nullCheck += conFeatureNames[f];
+					nullCheck += " IS NOT NULL";
+					nullCheck += ")"; 
+				} 
+				for (int f=0; f<boolFeatureN; f++){
+					nullCheck += " and (";
+					nullCheck += conFeatureNames[f];
+					nullCheck += " IS NOT NULL";
+					nullCheck += ")";
+				}
+				nullCheck += ")";
+				filteringCommand += nullCheck;
 				break;
 		default: 
 				break;

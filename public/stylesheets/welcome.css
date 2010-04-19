@@ -39,6 +39,9 @@
 	float:left;
 }
 
+#filterbar {
+	padding-bottom: 12px;
+}
 #logindisplay
 {
 	float: right;

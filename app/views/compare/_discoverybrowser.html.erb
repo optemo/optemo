@@ -7,8 +7,7 @@
 	    <%= navtitle %>
 		<div class="bl"></div><div class="br"></div>
 	</div>
-	
-	
+
 	<% for i in 0..[Session.current.search.cluster_count,$NumGroups].min-1 %>
 	  <% if i%(Float($NumGroups)/3).ceil == 0 %>
 		<div class="rowdiv">

@@ -71,6 +71,10 @@ class Session < ActiveRecord::Base
     @oldfeatures = features
     @features = $featuremodel.new(myfilter)
   end
+  
+  def copyfeatures
+    @features = $featuremodel.new(features.attributes)
+  end
  
   def clusters
     #Find clusters that match filtering query
