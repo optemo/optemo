@@ -47,7 +47,7 @@ int main(int argc, char** argv){
 	string productName = argv[1];
 	//cout<<productName<<endl;
 	if (!(productName == "camera" || productName == "printer" || productName == "flooring")){
-		cout<<"Unrecognized product type. Please enter 'printer', 'pamera', or 'flooring'." << endl << exampleUsage;
+		cout<<"Unrecognized product type. Please enter 'printer', 'camera', or 'flooring'." << endl << exampleUsage;
 		return EXIT_FAILURE;
 	}
 

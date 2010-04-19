@@ -98,6 +98,7 @@ namespace :builddirect do
       record["title"] = record["brand"] + " " + record["model"]
       # Make miniorder the only place where data goes in the end
       record["miniorder"] = record["miniorder_sq_ft"]
+      ["species","feature", "colorrange"].each {|f| record[f] = "None" unless record[f]}
       record.delete("miniorder_sq_ft")
       Flooring.new(record)
     end
