@@ -69,21 +69,24 @@ class Search < ActiveRecord::Base
         dist = {}
         $model::ContinuousFeaturesF.each do |f|
           if feats[f].min == feats[f][i]
-            dist[f] = feats[f].sort[1] - feats[f][i]
-            dist.delete(f) if dist[f] == 0 && feats[f].sort[2] == feats[f][i]#Remove ties
+            #This is the lowest feature
+            distance = feats[f].sort[1] - feats[f][i]
+            dist[f] = distance unless distance == 0 && feats[f].sort[2] == feats[f][i] #Remove ties
           elsif feats[f].max == feats[f][i]
-            dist[f] = feats[f][i] - feats[f].sort[-2]
-            dist.delete(f) if dist[f] == 0  && feats[f].sort[-3] == feats[f][i]#Remove ties
-          elsif feats[f].sort[4] == feats[f][i]
-            dist[f] = ([feats[f].sort[4]-feats[f].sort[3],feats[f].sort[5]-feats[f].sort[4]].min) - 1
-            dist.delete(f) if dist[f] == -1 #Remove ties
+            #This is the highest feature
+            distance = feats[f][i] - feats[f].sort[-2]
+            dist[f] = distance unless distance == 0 && feats[f].sort[-3] == feats[f][i] #Remove ties
+          #elsif feats[f].sort[4] == feats[f][i]
+          #  #This is an average feature
+          #  dist[f] = ([feats[f].sort[4]-feats[f].sort[3],feats[f].sort[5]-feats[f].sort[4]].min) - 1
+          #  dist[f] = distance unless distance == -1 #Remove ties
           end
         end if cluster_count > 1
         n = dist.count
         d = []
         dist.sort{|a,b| b[1] <=> a[1]}[0..1].each do |f,v|
           dir = feats[f].min == feats[f][i] ? "lower" : "higher"
-          dir = feats[f].min == feats[f][i] ? "lower" : feats[f].max == feats[f][i] ? "higher" : "avg"
+          #dir = feats[f].min == feats[f][i] ? "lower" : feats[f].max == feats[f][i] ? "higher" : "avg"
           d << dir+f
         end
         #Add binary labels
@@ -100,13 +103,20 @@ class Search < ActiveRecord::Base
     @reldescs
   end
     
-  # This works well when not filtering, which misses the point but is a good starting point.
   def boostexterClusterDescriptions
+    ActiveRecord::Base.include_root_in_json = false # json conversion is used below, and this makes it cleaner
     if @returned_taglines 
       return @returned_taglines
     else
+      # This looks quite a bit like code from CachingMemcached, but it's not of the standard Rails.cache.fetch call with a small block, so it belongs here instead.
+      unless ENV['RAILS_ENV'] == 'development'
+        cluster_ids = clusters.map{|c| c.id}.join("-")
+        @returned_taglines = Rails.cache.read("#{$model}Taglines#{Session.current.version}#{cluster_ids}#{Session.current.features.to_json(:except => [ :id, :created_at, :updated_at, :session_id, :search_id ]).hash}")
+        return @returned_taglines unless @returned_taglines.nil?
+      end
       @returned_taglines = []
     end
+
     weighted_averages = {}
     return if clusters.empty?
     descriptions = Array.new
@@ -115,14 +125,11 @@ class Search < ActiveRecord::Base
       weighted_averages[c.id] = {}
       current_nodes = c.nodes
       product_ids = current_nodes.map {|n| n.product_id }
-
-      rules = BoostexterCombinedRule.find(:all, :order => "weight DESC", :conditions => {"cluster_id" => c.id, "version" => Session.current.version})
+      product_query_string = "id IN (" + product_ids.join(" OR ") + ")"
       
-      # This is bad.
-      # Cache this later.
-      #products = $model.find_by_sql("select * from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE n.cluster_id = cc.id AND n.product_id = p.id AND cc.id = #{c.id}")
-     
+      rules = findCachedBoostexterRules(c.id)
       unless product_ids.empty?
+        @products = findCachedProducts(product_ids).index_by(&:id)        
         rules.each do |r|
           unpacked_weighted_intervals = YAML.load(r.yaml_repr).map {|i| [i["interval"], i["weight"]]}
           z = 0
@@ -132,15 +139,15 @@ class Search < ActiveRecord::Base
           product_ids.each do |id| 
             # This is out of cachingMemcached.
             #product = products["#{$model}#{Session.current.version}#{id}"]
-            # Caching is done using @@products, as with db_features, etc.
-            product = $model.productcache(id)
+            # This line here should no longer be needed # products[id] = $model.productcache(id) unless (products[id])            
+            product = @products[id]
             feature_value = product.send(r.fieldname)
             next unless feature_value
             weight = find_weight_for_value(unpacked_weighted_intervals, feature_value)
             weighted_average += weight * feature_value
             z += weight
           end
-          next if z == 0 # Loop back to the beginning; do not add this field name for this cluster
+          next if z == 0 # Loop back to the beginning; do not add this field name for this cluster.
           weighted_average /= z
           weighted_averages[c.id][r.fieldname] = weighted_average
           featureNameSet.add(r.fieldname)
@@ -155,13 +162,17 @@ class Search < ActiveRecord::Base
           current_cluster_tagline.push("lower#{featurename}")
         elsif weighted_average > quartiles[1].to_f # This is high for the given feature
           current_cluster_tagline.push("higher#{featurename}")
-        else # Inclusion. It's between 25% and 50%
-          # This is boring. Do nothing.
+        else # Inclusion. It's between 25% and 75%
+          # Do nothing? Averages are included for now, comment this out to remove
           current_cluster_tagline.push("avg#{featurename}")
         end
-        break if current_cluster_tagline.length == 4
+        break if current_cluster_tagline.length == 2 # Limit to 2 taglines per cluster (this is due to a space limitation in the UI)
       end
       @returned_taglines.push(current_cluster_tagline)
+    end
+    unless ENV['RAILS_ENV'] == 'development'
+      cluster_ids = clusters.map{|c| c.id}.join("-")
+      Rails.cache.write("#{$model}Taglines#{Session.current.version}#{cluster_ids}#{Session.current.features.to_json(:except => [ :id, :created_at, :updated_at, :session_id, :search_id ]).hash}", @returned_taglines)
     end
     return @returned_taglines # [ ["avgdisplaysize", "highminimumfocallength"],["avgprice", ""] , ...] 
   end
@@ -177,9 +188,10 @@ def compute_quartile(featurename)
   product_count = product_count["count(distinct(p.id))"].to_i
   q25offset = (product_count / 4.0).floor
   q75offset = ((product_count * 3) / 4.0).floor
+  # Although we have @products, the database *should* be substantially faster at sorting them for each quartile computation.
+  # However, we might be limited by the network connection here instead. For database connections on localhost, probably not, so leave as-is.
   q25 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids}) ORDER BY #{featurename} LIMIT 1 OFFSET #{q25offset}")
   q75 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids}) ORDER BY #{featurename} LIMIT 1 OFFSET #{q75offset}")
-
   [q25[featurename], q75[featurename]]
 end
   

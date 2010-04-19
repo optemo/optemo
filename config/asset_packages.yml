@@ -4,11 +4,12 @@ javascripts:
   - raphael
   - helpers
   - application
-  - jquery-ui-1.8rc3.custom.min
+  - jquery-ui-1.8.custom.min
   - jquery.tablednd_0_5
   - jquery.history
   - facebooksessionops
   - jquery.autocomplete.min
+  - autocomplete_terms
 stylesheets: 
 - base: 
   - camera

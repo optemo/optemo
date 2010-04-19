@@ -62,6 +62,10 @@ task :c_clustering do
       `#{RAILS_ROOT}/lib/c_code/clusteringCodes/codes/hCluster #{prodtype} #{region} #{env} #{$NumGroups}`
       cleanupInvalidDatabase(prodtype)
     end
+    # Run each once for each product.
+    version = ActiveRecord::Base.connection.select_one("SELECT max(version) FROM #{prodtype.downcase}_nodes WHERE 1")
+    `#{RAILS_ROOT}/lib/cluster_labeling/boostexter_labels/train_boostexter.py #{version} #{RAILS_ROOT} #{env} #{prodtype}`
+    `#{RAILS_ROOT}/lib/cluster_labeling/boostexter_labels/save_combined_boostexter_rules.py #{version} #{RAILS_ROOT} #{env} #{prodtype}`
   end
 end
 
