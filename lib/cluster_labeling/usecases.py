@@ -5,6 +5,8 @@ import cluster_labeling.local_django_models as local
 import cluster_labeling.optemo_django_models as optemo
 import cluster_labeling.text_handling as th
 
+import cluster_labeling.words as words
+
 from django.db import models
 
 class Usecase(local.LocalModel):
@@ -13,14 +15,12 @@ class Usecase(local.LocalModel):
                               'usecases')
 
     label = models.CharField(max_length=255, unique=True)
-    indicator_words = models.ManyToManyField('IndicatorWord')
-
-class IndicatorWord(local.LocalModel):
-    class Meta:
-        db_table = '%s_%s' % (optemo.product_type_tablename_prefix,
-                              'indicator_words')
-
-    word = models.CharField(max_length=255, unique=True)
+    direct_indicator_words = \
+        models.ManyToManyField\
+        (words.Word, related_name='directly_indicated_usecases')
+    indicator_words = \
+        models.ManyToManyField\
+        (words.Word, related_name='indicated_usecases')
 
 class UsecaseClusterScore(local.LocalModel):
     class Meta:
@@ -35,36 +35,62 @@ class UsecaseClusterScore(local.LocalModel):
 
 # This list also includes meta-features, for now.
 known_usecases = {
-    optemo.Printer : [],
+    optemo.Printer : {},
     optemo.Camera :
-    ["Travel", "Fun", "Family photos", "Landscape/scenery",
-     "Low light", "Outdoors", "Art", "Sports/action", "Video",
-     "Wildlife", "Weddings", "Home", "Street",
-     "Build quality", "Compact", "Clunky", "Image stabilization",
-     "Viewfinder", "Manual control", "LCD"]}
+    {"Travel" : [],
+     "Fun" : [],
+     "Family photos" : ["Family"],
+     "Landscape/scenery" : [],
+     "Low light" : ["Dim"],
+     "Outdoors" : [],
+     "Art" : [],
+     "Sports/action" : ["Sports", "Action"],
+     "Video" : [],
+     "Wildlife" : [],
+     "Weddings" : [],
+     "Home" : [],
+     "Street" : [],
+     "Build quality" : [],
+     "Compact" : [],
+     "Clunky" : [],
+     "Image stabilization" : ["Stabilization"],
+     "Viewfinder" : [],
+     "Manual control" : [],
+     "LCD" : []}}
 
-def populate_usecases_and_indicator_words():
-    Usecase.drop_table_if_exists()
-    IndicatorWord.drop_table_if_exists()
+def populate_usecases():
+    Usecase.drop_tables_if_exist()
+    Usecase.create_tables()
 
-    Usecase.create_table()
-    IndicatorWord.create_table()
-
-    for usecase_label in known_usecases[optemo.product_type]:
+    for (usecase_label, direct_indicator_words) in \
+            known_usecases[optemo.product_type].iteritems():
+        if len(direct_indicator_words) == 0:
+            direct_indicator_words = th.get_words_from_string(usecase_label)
+            
         usecase = Usecase(label=usecase_label)
         usecase.save()
         
-        indicator_words = th.get_words_from_string(usecase_label)
-        iw_qs = IndicatorWord.get_manager()\
-                .filter(word__in=indicator_words)
-        indicator_words = set(indicator_words)
+        existing_words_qs, dne_word_entries = \
+            words.Word.create_multiple_if_dne_and_return\
+            (map(lambda s: s.lower(), direct_indicator_words))
+        
+        for word in existing_words_qs:
+            usecase.direct_indicator_words.add(word)
+        for word in dne_word_entries:
+            word.save()
+            usecase.direct_indicator_words.add(word)
 
-        for iw in iw_qs:
-            usecase.indicator_words.add(iw)
-            indicator_words -= set([iw.word])
+        usecase.save()
 
-        for word in indicator_words:
-            usecase.indicator_words.create(word=word)
+def populate_indicator_words_for_usecases():
+    for usecase in Usecase.get_manager():
+        diws = usecase.direct_indicator_words
+
+        for diw in diws.all():
+            usecase.indicator_words.add(diw)
+
+            for synonym in diw.get_all_synonyms():
+                usecase.indicator_words.add(synonym)
 
         usecase.save()
 
@@ -83,6 +109,9 @@ def score_usecases_for_cluster(cluster):
 
     for usecase in usecases:
         score = score_usecase_for_cluster(cluster, usecase)
+
+        if score == 0:
+            continue
 
         kwargs = {'usecase':usecase, 'version':cluster.version,
                   'cluster_id':cluster.id}
@@ -108,7 +137,12 @@ def score_usecase_for_cluster(cluster, usecase):
     # Combine all chi-squared scores in a way that is not influenced
     # by the number of indicator words associated with the cluster
     # i.e. take the average:
-    iword_scores = map(lambda s: 0 if s is None else s, iword_scores)
-    score = sum(iword_scores) / len(iword_scores)
+    iword_scores = \
+        filter(lambda s: s > 0,
+               map(lambda s: 0 if s is None else s, iword_scores))
 
+    if len(iword_scores) == 0:
+        return 0
+
+    score = sum(iword_scores) / len(iword_scores)
     return score

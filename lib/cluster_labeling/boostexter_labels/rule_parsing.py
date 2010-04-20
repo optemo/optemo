@@ -3,6 +3,10 @@ from . import filepaths as fn
 
 from numpy import *
 
+from cluster_labeling.boostexter_labels import fields
+
+import cluster_labeling.optemo_django_models as optemo
+
 import re
 
 class ParseError(Exception):
@@ -18,7 +22,7 @@ def is_blankline(line):
     return re.match('^\s*$', line) != None
 
 rule_header_re = \
-re.compile('^\s*(\d+(\.\d+)?)\s+Text:([A-Z]+):([a-z_]+):([A-Za-z0-9_#\(\)\n\.]+)?\s*$')
+re.compile('^\s*(\d+(\.\d+)?)\s+Text:([A-Z]+):([a-z_]+):([&A-Za-z0-9_#\(\)\n\.]+)?\s*$')
 def parse_rule_header(line):
     match = rule_header_re.match(line)
 
@@ -34,7 +38,14 @@ def parse_rule_header(line):
     rule_info['fieldname'] = match.group(4)
 
     if rule_info['type'] == 'SGRAM':
-        rule_info['sgram'] = re.sub('[#\s]', ' ', match.group(5)).strip()
+        sgram = re.sub('[#\s]', ' ', match.group(5)).strip()
+        field = \
+            fields.boosting_fields[optemo.product_type][rule_info['fieldname']]
+
+        if len(field) == 2 and 'text_to_btxtr_fn' in field[1]:
+            rule_info['sgram'] = field[1]['btxtr_to_text_fn'](sgram)
+        else:
+            rule_info['sgram'] = re.sub('[#\s]', ' ', match.group(5)).strip()
 
     return rule_info
 
