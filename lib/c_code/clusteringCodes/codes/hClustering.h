@@ -46,7 +46,6 @@ if 	(layer == 1){
 				int saleprice = 0;
 				int price = 0;
 				size = 0;
-			
 				while (res->next()) { 
 						saleprice = res->getInt("price");
 						price = saleprice;
@@ -60,6 +59,7 @@ if 	(layer == 1){
 		 				for (int f=0; f<conFeatureN; f++) average[f] += tdata[size][f];
 						size++;											
 				}
+                cout << "Data read " << endl;
 				///////////////
 				data = new double*[size];
 		    for(int j=0; j<size; j++){
@@ -74,13 +74,20 @@ if 	(layer == 1){
 					data[j][conFeatureN+2*boolFeatureN + brand2int[brands[j]]] = 1;		 
 				}	
 				///////////////  
-								 
+                cout << "Ranges set up "<<endl;
 				dataN = new double* [size];	
 				for (int j=0; j<size; j++)
-				  dataN[j]= new double [conFeatureN+2*boolFeatureN+brand2int.size()];  
+				{
+                    cout << "conFeatureN+2*boolFeatureN+brand2int.size(): " << (conFeatureN+2*boolFeatureN+brand2int.size()) << endl;
+                    cout << "j: " << j << " size: " << size << " brand2int.size() " << brand2int.size() << endl;
+				    dataN[j]= new double [conFeatureN+2*boolFeatureN+brand2int.size()];
+			    }
 				// data standardization
+              cout << "Mean var"<<endl;
 				get_mean_var(data, size, conFeatureN, mean, var);
+                cout << "Standardizing Data "<<endl;
 				standarize_data(data, size, conFeatureN, 2*boolFeatureN+brand2int.size(), mean, var, dataN); //reza
+                cout << "Computing weights " <<endl;
         /////////////////////////////////////////
        // computing the weights
         weights = new double [conFeatureN+2*boolFeatureN+brand2int.size()];
@@ -99,7 +106,7 @@ if 	(layer == 1){
 	    for (int j = 0; j < boolFeatureN; j++) disc_domains.push_back(2);
         disc_domains.push_back(brand2int.size());
         ///////////////  
-        // outlirer detection
+        // outlier detection
 				int H = 20; // the number of bins between max_dist and min_dist
 				double meps = .05; // the lowest allowable density			
         vector<int> non_out_index;

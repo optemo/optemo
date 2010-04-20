@@ -79,17 +79,16 @@ string preClustering(map<const string, int>productNames, string productName, str
 		case 3:
 				conFeatureN = 3;
 				boolFeatureN = 0;
-				conFeatureNames[1]= "width"; 
-			    conFeatureNames[2]= "miniorder";
-			    catFeatureNames[1] = "species";
-			    catFeatureNames[2] = "feature";
-			    catFeatureNames[3] = "colorrange";
-				//conFeatureNames[4]= "itemweight";
-				//boolFeatureNames[0] = "slr";
-				//boolFeatureNames[1] = "waterproof";
+				conFeatureNames[1] = "width"; 
+			    conFeatureNames[2] = "miniorder";
+//                conFeatureNames[3] = "species_hardness";
+//			    catFeatureNames[1] = "species";
+//			    catFeatureNames[2] = "feature";
+//			    catFeatureNames[3] = "colorrange";
 
 				indicatorNames[1] = "Item Width";
 				indicatorNames[2] = "Minimum Order";
+//				indicatorNames[3] = "Species Hardness";
 				filteringCommand = "SELECT * FROM ";
 				filteringCommand += productName;
 				filteringCommand += "s where instock=1 AND ";
@@ -99,7 +98,7 @@ string preClustering(map<const string, int>productNames, string productName, str
 					nullCheck += conFeatureNames[f];
 					nullCheck += " IS NOT NULL";
 					nullCheck += ")"; 
-				} 
+				}  
 				for (int f=0; f<boolFeatureN; f++){
 					nullCheck += " and (";
 					nullCheck += conFeatureNames[f];
