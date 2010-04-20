@@ -1482,6 +1482,20 @@ ActiveRecord::Schema.define(:version => 20100420212549) do
     t.string   "item_number"
   end
 
+  create_table "laptop_boostexter_combined_rules", :force => true do |t|
+    t.string   "fieldname"
+    t.float    "weight"
+    t.integer  "cluster_id"
+    t.integer  "version"
+    t.text     "yaml_repr"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "laptop_boostexter_combined_rules", ["cluster_id"], :name => "index_laptop_boostexter_combined_rules_on_cluster_id"
+  add_index "laptop_boostexter_combined_rules", ["fieldname"], :name => "index_laptop_boostexter_combined_rules_on_fieldname"
+  add_index "laptop_boostexter_combined_rules", ["version"], :name => "index_laptop_boostexter_combined_rules_on_version"
+
   create_table "laptop_clusters", :force => true do |t|
     t.integer "parent_id"
     t.integer "layer"
