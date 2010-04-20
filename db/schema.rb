@@ -1393,23 +1393,25 @@ ActiveRecord::Schema.define(:version => 20100420200107) do
     t.datetime "updated_at"
     t.integer  "session_id"
     t.integer  "search_id"
-    t.float    "thickness_min"
-    t.float    "thickness_max"
-    t.float    "thickness_pref", :default => 0.2
-    t.float    "width_min"
-    t.float    "width_max"
-    t.float    "width_pref",     :default => 0.2
-    t.float    "miniorder_min"
-    t.float    "miniorder_max"
-    t.float    "miniorder_pref", :default => 0.2
     t.float    "price_min"
     t.float    "price_max"
-    t.float    "price_pref",     :default => 0.2
+    t.float    "price_pref",            :default => 0.25
+    t.float    "width_min"
+    t.float    "width_max"
+    t.float    "width_pref",            :default => 0.25
+    t.float    "species_hardness_min"
+    t.float    "species_hardness_max"
+    t.float    "species_hardness_pref", :default => 0.25
+    t.float    "miniorder_min"
+    t.float    "miniorder_max"
+    t.float    "miniorder_pref",        :default => 0.25
     t.string   "brand"
-    t.string   "species",                         :null => false
-    t.string   "colorrange",                      :null => false
-    t.string   "feature",                         :null => false
+    t.string   "species"
+    t.string   "feature"
   end
+
+  add_index "flooring_features", ["search_id"], :name => "index_flooring_features_on_search_id"
+  add_index "flooring_features", ["session_id"], :name => "index_flooring_features_on_session_id"
 
   create_table "flooring_nodes", :force => true do |t|
     t.integer "cluster_id"

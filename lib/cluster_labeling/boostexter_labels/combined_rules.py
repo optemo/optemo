@@ -143,8 +143,13 @@ def save_combined_threshold_rule_for_field(cluster, fieldname, rules):
 
     combined_rule.save()
 
-def save_combined_sgram_rule_for_field(fieldname, rules):
+def save_combined_sgram_rule_for_field(cluster, fieldname, rules):
     max_abs_weight, sgram = find_best_sgram_from_rules(fieldname, rules)
+
+    if max_abs_weight is None:
+        assert(sgram is None)
+        return None, None
+
     yaml_repr = yaml.dump(sgram)
     
     combined_rule = \
@@ -164,7 +169,7 @@ def save_combined_rule_for_field(cluster, fieldname, rules):
         save_combined_threshold_rule_for_field\
         (cluster, fieldname, rules)
     elif rule_type == str(BoosTexterSGramRule):
-        save_combined_sgram_rule_for_field(fieldname, rules)    
+        save_combined_sgram_rule_for_field(cluster, fieldname, rules)
     else:
         assert(False)
 

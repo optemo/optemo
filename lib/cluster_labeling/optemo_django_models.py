@@ -54,6 +54,22 @@ class Cluster(OptemoModel):
 
         return root_children
 
+class FlooringCluster(Cluster):
+    class Meta:
+        db_table = 'flooring_clusters'
+
+    def get_products(self):
+        return Flooring.get_manager().filter(flooringnode__cluster__id=self.id)
+
+    def get_children(self):
+        return FlooringCluster.get_manager().filter(parent_id=self.id)
+
+    def get_nodes(self):
+        return FlooringNode.get_manager().filter(cluster_id=self.id)
+
+    def get_parent(self):
+        return FlooringCluster.get_manager().filter(id=self.parent_id)[0]
+
 class PrinterCluster(Cluster):
     class Meta:
         db_table = 'printer_clusters'
@@ -94,8 +110,41 @@ class Product(OptemoModel):
     brand = models.CharField(max_length=255)
     model = models.CharField(max_length=255)
 
+class Flooring(Product):
+    class Meta:
+        db_table = "floorings"
+
+    species = models.TextField()
+    feature = models.TextField()
+    colorrange = models.TextField()
+
+    width = models.FloatField()
+
+    price = models.FloatField()
+
+    warranty = models.CharField(max_length=255)
+
+    thickness = models.FloatField()
+
+    size = models.TextField()
+
+    finish = models.CharField(max_length=255)
+
+    def get_clusters(self, version = FlooringCluster.get_latest_version()):
+        node_qs = FlooringNode.get_manager().filter\
+                  (product_id = self.id, version = version)
+        cluster_ids = map(lambda n: n.cluster_id, node_qs)
+        cluster_qs = FlooringCluster.get_manager().filter\
+                     (id__in=cluster_ids)
+
+        return cluster_qs
+
+class Printer(Product):
+    class Meta:
+        db_table = "printers"
+
     displaysize = models.FloatField()
-    
+
     itemwidth = models.IntegerField()
     itemlength = models.IntegerField()
     itemheight = models.IntegerField()
@@ -108,10 +157,6 @@ class Product(OptemoModel):
     price_ca = models.IntegerField()
 
     connectivity = models.CharField(max_length=255)
-
-class Printer(Product):
-    class Meta:
-        db_table = "printers"
 
     feature = models.TextField()
     
@@ -149,6 +194,21 @@ class Camera(Product):
     class Meta:
         db_table = 'cameras'
 
+    displaysize = models.FloatField()
+
+    itemwidth = models.IntegerField()
+    itemlength = models.IntegerField()
+    itemheight = models.IntegerField()
+    itemweight = models.IntegerField()
+
+    averagereviewrating = models.FloatField()
+    totalreviews = models.IntegerField()
+
+    price = models.IntegerField()
+    price_ca = models.IntegerField()
+
+    connectivity = models.CharField(max_length=255)
+
     opticalzoom = models.FloatField()
     digitalzoom = models.FloatField()
 
@@ -185,6 +245,13 @@ class Node(OptemoModel):
     product_id = models.IntegerField()
     brand = models.CharField(max_length=255)
     version = models.IntegerField()
+
+class FlooringNode(Node):
+    class Meta:
+        db_table = 'flooring_nodes'
+
+    cluster = models.ForeignKey(FlooringCluster)
+    product = models.ForeignKey(Flooring)
 
 class PrinterNode(Node):
     class Meta:
@@ -240,7 +307,7 @@ product_type = None
 
 product_type_tablename_prefix = None
 
-# pt_str should be either 'Camera' or 'Printer'
+# pt_str should be either 'Camera', 'Printer' or 'Flooring'
 def set_optemo_product_type(pt_str):
     global product_type
     global product_cluster_type
