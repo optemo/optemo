@@ -1,30 +1,48 @@
-<div id="box<%= i %>" class="navigator_box <%= group ? "nbgroup" : "nbsingle" %>" <%= "style='margin-right:0px'" if i%(Float($NumGroups)/3).ceil == (Float($NumGroups)/3).ceil - 1 %>>
+<div id="box<%= i %>" class="<%= $LineItemView ? "navigator_line #{((i % 2) != 0) ? 'greybg' : ''}" : (group ? "navigator_box nbgroup" : "navigator_box nbsingle") %>" <%= "style='margin-right:0px'" if i%(Float($NumGroups)/3).ceil == (Float($NumGroups)/3).ceil - 1 %>>
+	<% unless $LineItemView %>
 	<div class="topbar">
-		<div class='title'>
+	<% end %>
+		<div class="<%= $LineItemView ? 'title_line' : 'title' %>">
 			<%= groupDesc(group,i) %>
 		</div>
-		<% if FileTest.exist?("public/images/" + ($model.name == 'Camera' ? "cameras" : "printers") + "/" + cluster.representative.id.to_s + "_m.jpg") %>
+		<% if $LineItemView %>
+		<div class="navbody">
+			<div class='sim_line rounded'>
+  	  <%= link_to(image_tag("#{'plus' + ($LineItemView ? '_line.png' : '.png')}")+t("products.compare.similar_line",:count => cluster.size - 1), 
+  	  "/compare/sim/#{cluster.id}", :id => "sim#{i}", :class => 'simlinks rounded', 
+		  :"data-id" => "#{cluster.representative.id}", :"title" => "Browse through all " + cluster.size.to_s + " in this group") %>
+  		</div>
+		<% end %>
+		<% if FileTest.exist?("public/images/" + ($model.name == 'Camera' ? "cameras" : "printers") + "/" + cluster.representative.id.to_s + "_m.jpg") || $model.name == 'Flooring' %>
 		
-			<% if $DragAndDropEnabled == true %>
-				<div class='image_boundingbox'>
-					<%= image_tag('hand_and_arrow.gif', :class => 'dragHand', :title => 'Click for product info. Drag to compare with other products.') %>
+			<% if $DragAndDropEnabled %>
+				<% if $LineItemView %>
+					<div class="productinfo">
+				<% end %>
+					<div class="<%= $LineItemView ? "image_boundingbox_line" : "image_boundingbox" %>">
+					<%= image_tag('hand_and_arrow.gif', :class => "#{$LineItemView ? "dragHand_line" : "dragHand"}", :title => 'Click for product info. Drag to compare with other products.') %>
 			<% end %>
-			<%= image_tag(($model.name == 'Flooring' ? "http://www.builddirect.com" + CGI.unescapeHTML(cluster.representative.imagelink.to_s) : $model.name.downcase + "s/" + cluster.representative.id.to_s + "_m.jpg") , :"data-id" => cluster.representative.id, :class => "productimg", :alt => cluster.representative.smlTitle, :title => cluster.representative.smlTitle) %>
-			<% if $DragAndDropEnabled == true %>		
+			<%= image_tag(($model.name == 'Flooring' ? "http://www.builddirect.com" + CGI.unescapeHTML(cluster.representative.imagelink.to_s) : $model.name.downcase + "s/" + cluster.representative.id.to_s + "_m.jpg") , :"data-id" => cluster.representative.id, :class => "productimg", :alt => cluster.representative.smlTitle, :title => cluster.representative.smlTitle) %>				
+			<% if $DragAndDropEnabled %>		
 				</div>
 			<% end %>
 		<% end %>
+		<% unless $LineItemView %>
 		<div class="productinfocont">
 			<div class="productinfo">
-				<a href="<%=cluster.representative.descurl%>" data-id="<%=cluster.representative.id%>" class="easylink" title="Click for product specifications">
+				<% end %>
+				<a href="<%=cluster.representative.descurl%>" data-id="<%=cluster.representative.id%>" class="easylink<%= $LineItemView ? ' easylink_line' : '' %>" title="Click for product specifications">
 				<%= cluster.representative.smlTitle %></a>
 		
 				<div class="price">
 					<%= $region == "us" ? cluster.representative.pricestr : cluster.representative.price_ca_str %>
 				</div>
+				<% unless $LineItemView %>
 			</div>
+		<% end %>
 		</div>
 	</div>
+	<% unless $LineItemView %>
 
 	<div class='bottombar'>
 		<% if group %>
@@ -39,4 +57,5 @@
 		</div>
 		<% end %>
 	</div>
+	<% end %>
 </div>

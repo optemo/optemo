@@ -2,11 +2,11 @@ class CreateCameraClusters < ActiveRecord::Migration
   def self.up
     create_table :camera_clusters do |t|
       t.primary_key :id
-      add_index :parent_id, :version, :cached_utility
       t.integer :parent_id
       t.integer :layer
       t.integer :cluster_size
       t.float :cached_utility
+      t.string :region
       DbFeature.find_all_by_product_type_and_region('Camera',"us").each do |f|
          myname = f.name
         if (f.feature_type == "Continuous")
@@ -21,6 +21,9 @@ class CreateCameraClusters < ActiveRecord::Migration
         end    
       end
     end
+    add_index :camera_clusters, :parent_id
+    add_index :camera_clusters, :version 
+    add_index :camera_clusters, :cached_utility
   end
   def self.down
     drop_table :camera_clusters

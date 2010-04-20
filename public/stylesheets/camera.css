@@ -11,6 +11,9 @@ a:visited { color: #0000AB;}
 	top: -5px;
 	z-index: 1;
 }
+.easylink_line {
+    font-size: 0.9em;
+}
 /*--------------------------------------//
 //            Navigator Bar             //
 //--------------------------------------*/
@@ -55,7 +58,16 @@ div.navigator_box {
 	height: 100%;
 	margin-right: 7px; 
 	margin-bottom: 3px;
-	height:227px;
+	height:231px;
+}
+.navigator_line {
+    padding:1px 1px 1px 2px;
+    margin:2px;
+    width:100%;   
+}
+.navbody {
+    height:51px;
+    width:100%;
 }
 .nbgroup {
 	padding: 3px 9px 3px 3px;
@@ -69,8 +81,11 @@ div.navigator_box {
 	width:224px;
 	margin-right:-1px;
 }
+.greybg {
+    background:none repeat scroll 0 0 #EFEFEF;
+}
 .topbar {
-	height: 174px;
+	height: 180px;
 }
 
 .title {
@@ -81,6 +96,11 @@ div.navigator_box {
 	height: 28px;
 	font-weight: bold;
 	position:relative;
+}
+.title_line {
+    border-bottom:1px dotted black;
+    display:inline;
+    padding:2px 2px 0;   
 }
 /* Navigator box */
 .product_box {
@@ -101,14 +121,19 @@ div.navigator_box {
 /* 	background-color:#E1E1E1; */
 /*	border:1px solid #D0D0D0; */
 }
+.image_boundingbox_line {
+    float:left;
+    padding-right:10px;
+}
 img.productimg {
 	cursor: move;
+	width:50px;
+	height:50px;
 }
 .productinfocont {
 	width: 224px;
 	position: absolute;
-	top: 142px;
-	left: 0;
+	bottom: 51px;
 }
 .productinfo {
 	margin:0 auto;
@@ -126,12 +151,23 @@ img.productimg {
 	margin-left:10px;
 	margin: 6px 3px;
 }
+.sim_line {   
+    float:left;
+    margin-top:5px;
+    text-align:center;
+    width:120px;
+}
 .sim a {
 	font-size: 1.1em;
 	padding: 4px;
 	color: black;
 }
 .sim a img {
+	vertical-align: middle;
+	padding-right: 5px;
+}
+
+.sim_line a img {
 	vertical-align: middle;
 	padding-right: 5px;
 }
@@ -208,15 +244,24 @@ div.drop-box-hover {
 	z-index:1;
     opacity:0.35;
 }
-[ if IE ] .dragHand {
-	position: absolute;
-	left: 0;
-	top: 0;
+.dragHand_line {
+	position: relative;
+	left: 13px;
+	bottom: 30px;
 	z-index:1;
+    opacity:0.35;
+}
+[ if IE ] .dragHand {
     filter:alpha(opacity=35);
 	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=35)"; /* IE8 */
     filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=35);  /* IE7 */
 }
+[ if IE ] .dragHand_line {
+    filter:alpha(opacity=35);
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=35)"; /* IE8 */
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=35);  /* IE7 */
+}
+
 .saveditem {
 	position: relative;
 	width: 77px;
