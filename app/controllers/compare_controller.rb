@@ -112,7 +112,15 @@ class CompareController < ApplicationController
     params[:id] = params[:id][/^\d+/]
     @product = findCachedProduct(params[:id])
     if $model.name
-      @imglurl = "/images/" + $model.name.downcase + "s/" + @product.id.to_s + "_l.jpg"
+      if $model.name == "Flooring"
+        imagestring = CGI.unescapeHTML(@product.imagelink.to_s).split("&")
+        imagestring[0] = imagestring[0].split("?")[0] + "?" + imagestring[1]
+        imagestring.delete_at(1)
+        imagestring = imagestring.join("&")
+        @imglurl = "http://www.builddirect.com" + imagestring
+      else
+        @imglurl = "/images/" + $model.name.downcase + "s/" + @product.id.to_s + "_l.jpg"
+      end
     else
       @imglurl = "/images/printers/" + @product.id.to_s + "_l.jpg"
     end
