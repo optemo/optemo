@@ -28,7 +28,7 @@ class Flooring < ActiveRecord::Base
            #     db_name           Type     (e)xtra Display
   Features = [%w(price                Continuous  cf    ),
               %w(width                Continuous  tcf    ),
-              %w(colorrange_f         Continuous  tcf    ),
+              %w(species_hardness     Continuous  tcf    ),
               %w(miniorder            Continuous  tcf    ),
               %w(brand                Categorical f     ),
               %w(species              Categorical f     ),
@@ -43,10 +43,10 @@ class Flooring < ActiveRecord::Base
   CategoricalFeatures = Features.select{|f|f[1] == "Categorical"}.map{|f|f[0]}
   CategoricalFeaturesF = Features.select{|f|f[1] == "Categorical" && f[2].index("f")}.map{|f|f[0]}
   ExtraFeature = Hash[*Features.select{|f|f[2].index("e")}.map{|f|[f[0],true]}.flatten]
-  ShowFeatures = %w(brand model minorder colorrange feature)
-  DisplayedFeatures = %w(width minorder species colorrange feature)
+  ShowFeatures = %w(brand model miniorder colorrange feature)
+  DisplayedFeatures = %w(width miniorder species colorrange feature)
   ItoF = %w(price width)
-  ValidRanges = { 'width' => [2.25,5.25], 'minorder' => [0,1000]}
+  ValidRanges = { 'width' => [2.25,5.25], 'miniorder' => [0,1000], 'species_hardness' => [0, 10000]}
   MinPrice = 1_00
   MaxPrice = 10_00
   
