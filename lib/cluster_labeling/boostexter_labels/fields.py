@@ -4,6 +4,13 @@ from cluster_labeling.boostexter_labels import flooring_field_preprocessors as f
 
 boosting_fields = \
 {
+    optemo.Laptop :
+    {'price' : ['continuous'],
+     'brand' : ['text'],
+     'hd' : ['continuous'],
+     'ram' : ['continuous'],
+     'screensize' : ['continuous']},
+    
     optemo.Flooring :
     {'species' :
      ['text',

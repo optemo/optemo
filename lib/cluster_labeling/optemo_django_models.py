@@ -54,6 +54,22 @@ class Cluster(OptemoModel):
 
         return root_children
 
+class LaptopCluster(Cluster):
+    class Meta:
+        db_table = 'laptop_clusters'
+
+    def get_products(self):
+        return Laptop.get_manager().filter(laptopnode__cluster__id=self.id)
+
+    def get_children(self):
+        return LaptopCluster.get_manager().filter(parent_id=self.id)
+
+    def get_nodes(self):
+        return LaptopNode.get_manager().filter(cluster_id=self.id)
+
+    def get_parent(self):
+        return LaptopCluster.get_manager().filter(id=self.parent_id)[0]
+
 class FlooringCluster(Cluster):
     class Meta:
         db_table = 'flooring_clusters'
@@ -108,11 +124,22 @@ class Product(OptemoModel):
 
     title = models.TextField()
     brand = models.CharField(max_length=255)
-    model = models.CharField(max_length=255)
+
+class Laptop(Product):
+    class Meta:
+        db_table = "laptops"
+
+    price = models.IntegerField()
+    hd = models.IntegerField()
+    ram = models.IntegerField()
+
+    screensize = models.FloatField()
 
 class Flooring(Product):
     class Meta:
         db_table = "floorings"
+
+    model = models.CharField(max_length=255)
 
     species = models.TextField()
     feature = models.TextField()
@@ -142,6 +169,8 @@ class Flooring(Product):
 class Printer(Product):
     class Meta:
         db_table = "printers"
+
+    model = models.CharField(max_length=255)
 
     displaysize = models.FloatField()
 
@@ -194,6 +223,8 @@ class Camera(Product):
     class Meta:
         db_table = 'cameras'
 
+    model = models.CharField(max_length=255)
+
     displaysize = models.FloatField()
 
     itemwidth = models.IntegerField()
@@ -245,6 +276,13 @@ class Node(OptemoModel):
     product_id = models.IntegerField()
     brand = models.CharField(max_length=255)
     version = models.IntegerField()
+
+class LaptopNode(Node):
+    class Meta:
+        db_table = 'laptop_nodes'
+
+    cluster = models.ForeignKey(LaptopCluster)
+    product = models.ForeignKey(Laptop)
 
 class FlooringNode(Node):
     class Meta:
