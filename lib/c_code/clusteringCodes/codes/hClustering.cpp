@@ -18,6 +18,7 @@ using namespace std;
 #include "hClustering.h"
 #include "preProcessing.h"
 #include "smallNumberClustering.h"
+#include "postClustering.h"
 
 using namespace std;
 
@@ -37,7 +38,7 @@ int main(int argc, char** argv){
 	int version;
 	string var;
 	int keepStep = 5;
-    string exampleUsage = "Example: " + string(argv[0]) + " Printer us development 9\n";
+    string exampleUsage = "Example: " + string(argv[0]) + " printer us development 9\n";
 
 	//argument is the productName
     if (argc <5){
@@ -47,7 +48,7 @@ int main(int argc, char** argv){
 	string productName = argv[1];
 	//cout<<productName<<endl;
 	if (!(productName == "camera" || productName == "printer" || productName == "flooring")){
-		cout<<"Unrecognized product type. Please enter 'printer', 'pamera', or 'flooring'." << endl << exampleUsage;
+		cout<<"Unrecognized product type. Please enter 'printer', 'camera', or 'flooring'." << endl << exampleUsage;
 		return EXIT_FAILURE;
 	}
 
@@ -69,7 +70,6 @@ int main(int argc, char** argv){
 		cout<<"Please enter a number of clusters between 2 and 9" << endl << exampleUsage;
 		return EXIT_FAILURE;
 	}
-
 	string tableName = productName;
 	tableName.append("s");
 	map<const string, int> productNames;
@@ -77,18 +77,10 @@ int main(int argc, char** argv){
 	productNames["printer"] = 2;
     productNames["flooring"] = 3;
 	double* weights;
-	map<const string, double> weightHash;
-	weightHash["price"] = 1;
-	// weightHash["itemweight"] = 0;
-    weightHash["opticalzoom"] = 4;
-    weightHash["displaysize"] = 1;
-    weightHash["maximumresolution"] = 1;
-	// weightHash["slr"] = 0;
-	// weightHash["waterproof"] = 0;
-	// When entering a new product, conFeatureN is the number of continuous features, catFeatureN is the number of categorical features. range is usually 2 (min and max).
-	// Look in, for example, app/models/camera.rb to see where this is specified. 
-	// Long-term goal: Go straight to the camera table in the database to get this information
-	switch(productNames[productName]) {
+	
+	switch(productNames[productName]){
+		
+
 		case 1:
             conFeatureN = 4;
             catFeatureN = 1;
@@ -113,7 +105,7 @@ int main(int argc, char** argv){
             break;
 		case 3:
             conFeatureN = 3; // Thickness has been taken out for now
-            catFeatureN = 4; // This should be 4, but right now just set it up for brand only.
+            catFeatureN = 1; // This should be 4, but right now just set it up for brand only.
             boolFeatureN = 0;
             range = 2;
             break;
@@ -125,7 +117,6 @@ int main(int argc, char** argv){
     		range= 2;
     		break;
 	}
-
 	ostringstream session_idStream;
 	ostringstream layerStream;
 	layerStream<<layer;
@@ -141,20 +132,12 @@ int main(int argc, char** argv){
 	double **conFeatureRange = new double* [conFeatureN];
 	double ***conFeatureRangeC = new double** [clusterN];
 
-	catFeatureNames[0] = "brand";
-
-	conFeatureNames[0]="listpriceint";
-	conFeatureNames[1]="displaysize";  
-    conFeatureNames[2]="opticalzoom";
-    conFeatureNames[3]="maximumresolution";
-    // conFeatureNames[4]="itemweight";
-
 	double *average = new double[conFeatureN]; 
 
   	bool *conFilteredFeatures = new bool[conFeatureN];   
 	bool *catFilteredFeatures = new bool[catFeatureN];
 	bool *boolFilteredFeatures = new bool[boolFeatureN];
-
+    cout << "Constructing ranges ... ";
    	for(int f=0; f<conFeatureN; f++){
 		conFilteredFeatures[f] = 0;
 		conFeatureRange[f] = new double [range];
@@ -180,16 +163,17 @@ int main(int argc, char** argv){
 	nullCheck = "Select * from ";
 	nullCheck += productName;
 	nullCheck += "s where (instock=1 AND ((price IS NULL) ";
-    for (int f=1; f<conFeatureN; f++){
-        nullCheck += "OR (";
-        nullCheck += conFeatureNames[f];
-        nullCheck += " IS NULL "; 
-        nullCheck += ") ";
-    }
-    nullCheck += "))";
-
+  for (int f=1; f<conFeatureN; f++){
+  	nullCheck += "OR (";
+  	nullCheck += conFeatureNames[f];
+	nullCheck += " IS NULL "; 
+	nullCheck += ") ";
+  }
+  nullCheck += "))";
+  
+  cout << nullCheck << endl;
     sql::Statement	*stmt;
-
+	sql::Statement	*stmt2;
 	sql::ResultSet	*res;
 	sql::ResultSet	*res2;
 	sql::ResultSet	*res3;
@@ -239,131 +223,140 @@ int main(int argc, char** argv){
     #define PASS passwordString 
 
 ///////////////////////////////////////////////
+		
+			try {
+		  
 
-    try {
-    	sql::Driver * driver = get_driver_instance();
+				sql::Driver * driver = get_driver_instance();
+			    std::auto_ptr< sql::Connection > con(driver->connect(HOST, USER, PASS));        
+				sql::Statement*  stmt(con->createStatement());
+			    sql::Statement*  stmt2(con->createStatement());
+								
+				command = "USE ";
+				command += databaseName;
+			
+				stmt->execute(command);
+				
+				res = stmt->executeQuery(nullCheck);
+			
+			    if (res->rowsCount() >0){
+			      cout<<"There are some null values in "<<productName<<"s table"<<endl;
+			    }
 
-	    std::auto_ptr< sql::Connection > con(driver->connect(HOST, USER, PASS));        
-		sql::Statement*  stmt(con->createStatement());
-
-		command = "USE ";
-		command += databaseName;
-
-		stmt->execute(command);
-
-		res = stmt->executeQuery(nullCheck);
-
-	    if (res->rowsCount() >0){
-	      cout<<"There are some null values in "<<productName<<"s table"<<endl;
-	    }
-        else {
-            cout << "There are no null values in "<<productName<<"s table"<<endl;
-        }
-		command = "SELECT version from ";
-		command += productName;
-		command += "_clusters where (region='";
-		command += region;
-		command += "') order by id DESC LIMIT 1";
-		res = stmt->executeQuery(command);
-
-		if (res->next()){
-			version = res->getInt("version");
-			version++;
-		}
-		else{
-			version = 0;
-		}
-		cout<<"version is "<<version<<endl;
-
+				command = "SELECT version from ";
+				command += productName;
+				command += "_clusters where (region='";
+				command += region;
+				command += "') order by id DESC LIMIT 1";
+				
+				res = stmt->executeQuery(command);
+         
+				if (res->next()){
+					version = res->getInt("version");
+					version++;
+				}
+				else{
+					version = 0;
+				}
+				cout<<"version is "<<version<<endl;
+	    
 	   if (version > keepStep){
-			///Archiving the old clusters and nodes & deleteing the old ones
-			command2 = "INSERT into ";
-			command2 += productName;
-			command2 += "_clusters_archive select * from ";
-			command2 += productName;
-			command2 += "_clusters where version=";
-			ostringstream vstr1; 
-			vstr1 << version-keepStep;
-			command2 += vstr1.str();
-			command2 += " and region=\'";
-			command2 += region;
-			command2 += "\';";	
-			stmt->execute(command2);
+				///Archiving the old clusters and nodes & deleteing the old ones
+				command2 = "INSERT into ";
+				command2 += productName;
+				command2 += "_clusters_archive select * from ";
+				command2 += productName;
+				command2 += "_clusters where version=";
+				ostringstream vstr1; 
+				vstr1 << version-keepStep;
+				command2 += vstr1.str();
+				command2 += " and region=\'";
+				command2 += region;
+				command2 += "\';";	
+				stmt->execute(command2);
+			 
+				command2 = "INSERT into ";
+				command2 += productName;
+				command2 += "_nodes_archive select * from ";
+				command2 += productName;
+				command2 += "_nodes where version=";
+				ostringstream vstr2; 
+				vstr2 << version - keepStep;
+				command2 += vstr2.str();
+				command2 += " and region=\'";
+				command2 += region;
+				command2 += "\';";
+				
+				stmt->execute(command2); 
+			}
 
-			command2 = "INSERT into ";
-			command2 += productName;
-			command2 += "_nodes_archive select * from ";
-			command2 += productName;
-			command2 += "_nodes where version=";
-			ostringstream vstr2; 
-			vstr2 << version - keepStep;
-			command2 += vstr2.str();
-			command2 += " and region=\'";
-			command2 += region;
-			command2 += "\';";
+				bool clustered = 0;
+			    res = stmt->executeQuery(filteringCommand); 
+				int maxSize = res->rowsCount();
+		
+			  time_t rawtime;
+			  struct tm * timeinfo;
 
-			stmt->execute(command2); 
-		}
-        bool clustered = 0;
-        res = stmt->executeQuery(filteringCommand); 
-        int maxSize = res->rowsCount();
-        time_t rawtime;
-        struct tm * timeinfo;
+			  time ( &rawtime );
+			  timeinfo = localtime( &rawtime );
+			  ofstream myfile2;
+				
+			    myfile2.open(logFile.c_str(), ios::app);
 
-        time ( &rawtime );
-        timeinfo = localtime( &rawtime );
-        ofstream myfile2;
+			  
+		     	myfile2 <<endl<<timeinfo->tm_year+1900<<"-"<< timeinfo->tm_mon+1<<"-"<<timeinfo->tm_mday<<" "<< timeinfo->tm_hour<<endl;
+			 
+				myfile2<<"Version: "<<version<<endl;
+				
+				vector<int> outlier_ids;
+			   while (maxSize>clusterN){
+							
+					for (int j=0; j<conFeatureN; j++){
+						average[j] = 0.0;
+					}
+                    cout << "going into hClustering" <<endl;
+					maxSize = hClustering(layer, clusterN,  conFeatureN,  boolFeatureN, average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
+							stmt, conFeatureNames, boolFeatureNames, productName, version, region, outlier_ids);	
+					myfile2<<"layer "<<layer<<endl;
+					cout<<"layer "<<layer<<endl;
+					layer++;
+					clustered = 1;
+				}
+      		if (clustered){
+				insertOutliers(conFeatureN, boolFeatureN, clusterN, res, res2, stmt, stmt2, conFeatureNames, boolFeatureNames, productName, version, region, outlier_ids);	
+      			leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames,res, res2, res3, stmt, productName, version, region);	
+      			myfile2<<"layer "<<layer<<endl;
+        	}else{
+      			smallNumberClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, stmt, productName, version, region);	
+      			myfile2<<"layer "<<layer<<endl;
+     		}
 
-        myfile2.open(logFile.c_str(), ios::app);
-        myfile2 <<endl<<timeinfo->tm_year+1900<<"-"<< timeinfo->tm_mon+1<<"-"<<timeinfo->tm_mday<<" "<< timeinfo->tm_hour<<endl;
-        myfile2<<"Version: "<<version<<endl;
 
-        while (maxSize>clusterN){
+//Clearing the old clusters and nodes
+command2 = "DELETE from ";
+command2 += productName;
+command2 += "_clusters where version=";
+ostringstream vstr3; 
+vstr3 << version-keepStep;
+command2 += vstr3.str();
+command2 += " and region=\'";
+command2 += region;
+command2 += "\';";
+stmt->execute(command2);
 
-        	for (int j=0; j<conFeatureN; j++){
-        		average[j] = 0.0;
-        	}
-            cout << "maxSize: " << maxSize << " and clusterN: " << clusterN << endl;
-        	maxSize = hClustering(layer, clusterN,  conFeatureN,  boolFeatureN, average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
-        			stmt, conFeatureNames, boolFeatureNames, productName, weightHash, version, region);	
-        	myfile2<<"layer "<<layer<<endl;
-        	cout<<"layer "<<layer<<endl;
-        	layer++;
-        	clustered = 1;
-        }
-		if (clustered) {
-    		leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames,res, res2, res3, stmt, productName, version, region);	
-    		myfile2<<"layer "<<layer<<endl;
-        } else {
-			smallNumberClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, stmt, productName, version, region);	
-			myfile2<<"layer "<<layer<<endl;
-		}
+command2 = "DELETE from ";
+command2 += productName;
+command2 += "_nodes where version=";
+ostringstream vstr4; 
+vstr4 << version-keepStep;
+command2 += vstr4.str();
+command2 += " and region=\'";
+command2 += region;
+command2 += "\';";
+stmt->execute(command2);
 
-        //Clearing the old clusters and nodes
-        command2 = "DELETE from ";
-        command2 += productName;
-        command2 += "_clusters where version=";
-        ostringstream vstr3; 
-        vstr3 << version-keepStep;
-        command2 += vstr3.str();
-        command2 += " and region=\'";
-        command2 += region;
-        command2 += "\';";
-        stmt->execute(command2);
-
-        command2 = "DELETE from ";
-        command2 += productName;
-        command2 += "_nodes where version=";
-        ostringstream vstr4; 
-        vstr4 << version-keepStep;
-        command2 += vstr4.str();
-        command2 += " and region=\'";
-        command2 += region;
-        command2 += "\';";
-        stmt->execute(command2);
-
-        myfile2<<"The end."<<endl;
-        myfile2.close();
+	myfile2<<"The end."<<endl;
+ myfile2.close();
 
         } catch (sql::SQLException &e) {
             cout << "# ERR: SQLException in " << __FILE__;

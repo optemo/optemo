@@ -32,3 +32,6 @@ $DefaultUses = Hash[*%w(corporate small_office home_office photography).sort.rev
 $DragAndDropEnabled = true
 $RelativeDescriptions = true
 $NumGroups = 9
+
+# This parameter controls whether to go with the traditional box-layout or a line-item layout (from the hierarchy branch)
+$LineItemView = true

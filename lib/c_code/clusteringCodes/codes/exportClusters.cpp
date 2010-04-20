@@ -30,8 +30,8 @@ int main(int argc, char** argv){
 	string logFile = path; 
 	
      	
-	string clustersFile = "~/clustersMatlab/out_hartigan_qmeasure.tree";
- 	string nodesFile = "~/clustersMatlab/out_hartigan_qmeasure.leaf";
+	string clustersFile = "~/clustersMatlab/out_CalinskiHarabasz.tree";
+ 	string nodesFile = "~/clustersMatlab/out_CalinskiHarabasz.leaf";
 	string env = "development";
 	
 	stringstream sql;
@@ -133,12 +133,12 @@ int main(int argc, char** argv){
 				command = "USE ";
 				command += databaseName;
 				stmt->execute(command);         
-				version = 22;
+				version = 24;
 				stringstream verStr; 
 				verStr<< version;
 	  
 			
-/*				command = "delete from camera_nodes where version=";
+				command = "delete from camera_nodes where version=";
 				command += verStr.str();
 				command += ";";
 				stmt->execute(command);
@@ -147,14 +147,23 @@ int main(int argc, char** argv){
 				command += verStr.str();
 				command += ";";
 				stmt->execute(command);
-*/		
+	
 		
 			  ifstream myfile2;
 			  ifstream myfile3;
-			  
-	     	  myfile2.open("/Users/maryam/clustersMatlab/out_hartigan_qmeasure.tree");	
-			  myfile3.open("/Users/maryam/clustersMatlab/out_hartigan_qmeasure.leaf");
-/*
+		
+		 //22	 
+		 //     myfile2.open("/Users/maryam/clustersMatlab/out_CalinskiHarabasz.tree");	
+		 //     myfile3.open("/Users/maryam/clustersMatlab/out_CalinskiHarabasz.leaf"); 
+		
+		//23	  
+	    // 	  myfile2.open("/Users/maryam/clustersMatlab/out_hartigan_qmeasure.tree");	
+		//	  myfile3.open("/Users/maryam/clustersMatlab/out_hartigan_qmeasure.leaf");
+		
+		//24
+			  myfile2.open("/Users/maryam/clustersMatlab/out_silhouette.tree");	
+			  myfile3.open("/Users/maryam/clustersMatlab/out_silhouette.leaf");	
+			
 			i=0;
 			string tok = "";
 			int c1, c2, len, cId, pId;
@@ -177,14 +186,16 @@ int main(int argc, char** argv){
 						
 						command = "INSERT into camera_clusters (id, parent_id, layer, version, region) VALUES (";
 						command += tok.substr(c1, len);
-						command += ", ";
+						command += "+3000, ";
 						command += tok.substr(c2+1);
-						command += "-1, ";
+						command += "+3000, ";
 						command += tokens2.at(j)[0];
 						command += "-1, ";
 						command += verStr.str();
 						command += ", \'us\');";
-						stmt->execute(command);						
+						
+						stmt->execute(command);		
+								
 					}
 			}
 			else{
@@ -194,6 +205,7 @@ int main(int argc, char** argv){
 			string clusterId, parent_id;        
         	i=0;
            if (myfile3.is_open()){
+	
 				while (! myfile3.eof()){
 					getline (myfile3,line);
 					stringstream ss(line);
@@ -202,8 +214,9 @@ int main(int argc, char** argv){
 						i++;
 					}	
 				}	
+				
 				for (int j=0; j<i; j++){
-					
+				
 					tok = tokens3.at(j);
 					c1 = tok.find_first_of(",");
 					string productId = tok.substr(0, c1);
@@ -212,17 +225,18 @@ int main(int argc, char** argv){
 					command +=  productId;
 					command += ", ";
 					command += clusterId;
-					command += "-1, ";
+					command += "+3000, ";
 					command += verStr.str();
 					command += ", \'us\');";
-					stmt->execute(command);
-					
+				
+					stmt->execute(command);		
 					command2 = "select parent_id from camera_clusters where id=";
 					command2 += clusterId;
-					command2 += "-1;";
-				
+					command2 += "+3000;";
 					res = stmt->executeQuery(command2);
+				
 					res->next(); 
+					
 					int pId = res->getInt("parent_id");
 					stringstream pIdS;
 					pIdS << pId;
@@ -232,19 +246,22 @@ int main(int argc, char** argv){
 					command +=  productId;
 					command += ", ";
 					command += parentId; 
-					command += "-1, ";
+					command += ", ";
 					command += verStr.str();
 					command += ", \'us\');";
 			      
 			
-					while (pId >1){
+					while (pId >3001){
+				//		cout<<"in while"<<endl;
 					   stmt->execute(command);
 					   clusterId = parentId;   
 					   command2 = "select parent_id from camera_clusters where id=";
 					   command2 += clusterId;
 					   command2 += ";";
+				//	cout<<"command2 is "<<command2<<endl;
 					   res = stmt->executeQuery(command2);
 					   res->next();
+					
 					   pId = res->getInt("parent_id");
 					   stringstream pIdS2;
 					   pIdS2 << pId;
@@ -254,10 +271,11 @@ int main(int argc, char** argv){
 					   command +=  productId;
 					   command += ", ";
 					   command += parentId; 
-					   command += "-1, ";
+					   command += ", ";
 					   command += verStr.str();
 					   command += ", \'us\');";
       				   clusterId = parentId;
+				//	cout<<"end while"<<endl;
 					
 					}
 					//Filling out the other info in the node_table
@@ -284,20 +302,19 @@ int main(int argc, char** argv){
 				   command += " and version=";
 				   command += verStr.str();
 				   command += ";";	
-					
-				//cout<<"command is "<<command<<endl;
-				stmt->execute(command);
+    			   stmt->execute(command);
  				}	
-				cout<<"the end of if"<<endl;		
+		
 		   }
 		
 		  else{
 			cout<<"can't open leaf file"<<endl;
 		}
-*/
-		cout<<"here"<<endl;
+
+	
 		command = "SELECT id from camera_clusters where version=";
 		command += verStr.str();
+	
 		res = stmt->executeQuery(command);
 		int size;
 		double maximumresolutionmax;
@@ -311,7 +328,7 @@ int main(int argc, char** argv){
 			command += " and version=";
 			command += verStr.str();
 			command += ";"; 
-			//cout<<"command is "<<command<<endl;
+			
 			res2 = stmt->executeQuery(command);
 			size = res2->rowsCount();
 			stringstream sizeS;
@@ -351,7 +368,9 @@ int main(int argc, char** argv){
 			//cluster_size
 			command = "select count(id) from camera_nodes where cluster_id=";
 			command += clusId.str();
-			
+			command += " and version=";
+			command += verStr.str();
+			command += ";";
 			res2= stmt->executeQuery(command);
 			res2->next();
 			
@@ -359,6 +378,10 @@ int main(int argc, char** argv){
 			sizestr << res2->getInt("count(id)");
 			command = "UPDATE camera_clusters set cluster_size=";
 			command += sizestr.str();
+			command += " where id=";
+			command+= clusId.str();
+			command += " and version=";
+			command += verStr.str();
 			command += ";";
 			stmt->execute(command);
 				
@@ -378,13 +401,17 @@ int main(int argc, char** argv){
 			
 			command = "UPDATE camera_clusters set brand=\'";
 			command += brands;
-			command += "\';";
-			
+			command += "\' where id=";
+			command+= clusId.str();
+			command += " and version=";
+			command += verStr.str();
 			stmt->execute(command);
 		
 		}
 
 
+
+//
 	//	command = "select count(id) from camera_nodes where cluster_id=";
 	//	command += cluster_id;
 		
@@ -433,7 +460,16 @@ int main(int argc, char** argv){
 
  myfile2.close();
  myfile3.close();
+command = "UPDATE camera_clusters set parent_id=0 where layer=1 and version=";
+command += verStr.str();
+command += ";";
 
+stmt->execute(command);
+
+//string* boolFeatureNames = new string [0];
+////		leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames,res, res2, res3, stmt, productName, version, region);	
+//leafClustering(conFeatureN, 0, clusterN, conFeatureNames, boolFeatureNames,res, res2, res3, stmt, "camera", version, "us");
+//
 
  	} catch (sql::SQLException &e) {
 

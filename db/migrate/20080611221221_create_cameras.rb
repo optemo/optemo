@@ -17,8 +17,9 @@ class CreateCameras < ActiveRecord::Migration
       addReviews(t)
       addPricing(t)
       addPricingCa(t)
-      add_index :instock, :instock_ca
-    end  
+    end
+    add_index :cameras, :instock
+    add_index :cameras, :instock_ca
   end
 
   def self.down

@@ -360,7 +360,7 @@ end
   
   def fillDisplay
     clusters #instantiate clusters to update cluster_count
-    if cluster_count < $NumGroups && cluster_count > 0
+    if false #cluster_count < $NumGroups && cluster_count > 0
       if clusters.map{|c| c.size}.sum >= 9
         myclusters = splitClusters(clusters)
       else
