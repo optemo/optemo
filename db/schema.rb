@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100420200107) do
+ActiveRecord::Schema.define(:version => 20100420212549) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -1489,11 +1489,43 @@ ActiveRecord::Schema.define(:version => 20100420200107) do
     t.float   "cached_utility"
     t.integer "version"
     t.string  "region"
+    t.string  "brand"
+    t.float   "price_min"
+    t.float   "price_max"
+    t.float   "hd_min"
+    t.float   "hd_max"
+    t.float   "ram_min"
+    t.float   "ram_max"
+    t.float   "screensize_min"
+    t.float   "screensize_max"
   end
 
   add_index "laptop_clusters", ["cached_utility"], :name => "index_laptop_clusters_on_cached_utility"
   add_index "laptop_clusters", ["parent_id"], :name => "index_laptop_clusters_on_parent_id"
   add_index "laptop_clusters", ["version"], :name => "index_laptop_clusters_on_version"
+
+  create_table "laptop_features", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "session_id"
+    t.integer  "search_id"
+    t.float    "price_min"
+    t.float    "price_max"
+    t.float    "price_pref",      :default => 0.25
+    t.float    "hd_min"
+    t.float    "hd_max"
+    t.float    "hd_pref",         :default => 0.25
+    t.float    "ram_min"
+    t.float    "ram_max"
+    t.float    "ram_pref",        :default => 0.25
+    t.float    "screensize_min"
+    t.float    "screensize_max"
+    t.float    "screensize_pref", :default => 0.25
+    t.string   "brand"
+  end
+
+  add_index "laptop_features", ["search_id"], :name => "index_laptop_features_on_search_id"
+  add_index "laptop_features", ["session_id"], :name => "index_laptop_features_on_session_id"
 
   create_table "laptop_nodes", :force => true do |t|
     t.integer "cluster_id"
