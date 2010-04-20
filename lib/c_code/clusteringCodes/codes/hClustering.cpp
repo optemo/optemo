@@ -38,7 +38,7 @@ int main(int argc, char** argv){
 	int version;
 	string var;
 	int keepStep = 5;
-    string exampleUsage = "Example: " + string(argv[0]) + " Printer us development 9\n";
+    string exampleUsage = "Example: " + string(argv[0]) + " printer us development 9\n";
 
 	//argument is the productName
     if (argc <5){
@@ -70,7 +70,6 @@ int main(int argc, char** argv){
 		cout<<"Please enter a number of clusters between 2 and 9" << endl << exampleUsage;
 		return EXIT_FAILURE;
 	}
-
 	string tableName = productName;
 	tableName.append("s");
 	map<const string, int> productNames;
@@ -106,7 +105,7 @@ int main(int argc, char** argv){
             break;
 		case 3:
             conFeatureN = 3; // Thickness has been taken out for now
-            catFeatureN = 4; // This should be 4, but right now just set it up for brand only.
+            catFeatureN = 1; // This should be 4, but right now just set it up for brand only.
             boolFeatureN = 0;
             range = 2;
             break;
@@ -118,7 +117,6 @@ int main(int argc, char** argv){
     		range= 2;
     		break;
 	}
-
 	ostringstream session_idStream;
 	ostringstream layerStream;
 	layerStream<<layer;
@@ -134,20 +132,12 @@ int main(int argc, char** argv){
 	double **conFeatureRange = new double* [conFeatureN];
 	double ***conFeatureRangeC = new double** [clusterN];
 
-	catFeatureNames[0] = "brand";
-
-	conFeatureNames[0]="listpriceint";
-	conFeatureNames[1]="displaysize";  
-    conFeatureNames[2]="opticalzoom";
-    conFeatureNames[3]="maximumresolution";
-    // conFeatureNames[4]="itemweight";
-
 	double *average = new double[conFeatureN]; 
 
   	bool *conFilteredFeatures = new bool[conFeatureN];   
 	bool *catFilteredFeatures = new bool[catFeatureN];
 	bool *boolFilteredFeatures = new bool[boolFeatureN];
-
+    cout << "Constructing ranges ... ";
    	for(int f=0; f<conFeatureN; f++){
 		conFilteredFeatures[f] = 0;
 		conFeatureRange[f] = new double [range];
@@ -181,6 +171,7 @@ int main(int argc, char** argv){
   }
   nullCheck += "))";
   
+  cout << nullCheck << endl;
     sql::Statement	*stmt;
 	sql::Statement	*stmt2;
 	sql::ResultSet	*res;
@@ -298,7 +289,7 @@ int main(int argc, char** argv){
 				
 				stmt->execute(command2); 
 			}
-					
+
 				bool clustered = 0;
 			    res = stmt->executeQuery(filteringCommand); 
 				int maxSize = res->rowsCount();
@@ -311,18 +302,19 @@ int main(int argc, char** argv){
 			  ofstream myfile2;
 				
 			    myfile2.open(logFile.c_str(), ios::app);
-		
+
 			  
 		     	myfile2 <<endl<<timeinfo->tm_year+1900<<"-"<< timeinfo->tm_mon+1<<"-"<<timeinfo->tm_mday<<" "<< timeinfo->tm_hour<<endl;
 			 
 				myfile2<<"Version: "<<version<<endl;
 				
-				vector<int> outlier_ids;	
+				vector<int> outlier_ids;
 			   while (maxSize>clusterN){
 							
 					for (int j=0; j<conFeatureN; j++){
 						average[j] = 0.0;
 					}
+                    cout << "going into hClustering" <<endl;
 					maxSize = hClustering(layer, clusterN,  conFeatureN,  boolFeatureN, average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
 							stmt, conFeatureNames, boolFeatureNames, productName, version, region, outlier_ids);	
 					myfile2<<"layer "<<layer<<endl;
