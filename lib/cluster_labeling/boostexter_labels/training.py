@@ -16,7 +16,9 @@ def generate_names_file(cluster):
     labels = get_labels(cluster)
     f.write(', '.join(map(str, labels)) + '.\n')
 
-    for fieldname, fielddesc in fields.boosting_fields[optemo.product_type]:
+    for fieldname, field in fields.boosting_fields[optemo.product_type].iteritems():
+        fielddesc = field[0]
+
         f.write(fieldname + ": ")
 
         if type(fielddesc) == list:
