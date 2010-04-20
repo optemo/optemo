@@ -1,9 +1,10 @@
 desc 'Download laptop data'
-task :scrape_walmart do 
+task :scrape_walmart => :environment do 
   require 'nokogiri'
   doc = Nokogiri::HTML(File.open("/Users/janulrich/Desktop/walmart.html")) do |config|
   end
   all_records = doc.css(".item")
+  i_records = []
   all_records.each do |item|
     imgurl = item.css(".prodImg").attribute("src")
     title = item.css(".prodLink").first.content
@@ -13,36 +14,45 @@ task :scrape_walmart do
     pricefield = item.css(".PriceXLBold").first.content
     
     #Extract data
+    i = Laptop.new
     
-    price = pricefield[/\$\d+\.\d\d/]
-    
+    i.price = pricefield[/\$\d+\.\d\d/]
+    i.pricestr = "$#{i.price}"
     #RAM
     m = features[/(\d) ?GB\s?(DDR|Memory|memory|of memory|shared)/]
-    ram = $~[1] if m
-    unless ram
+    i.ram = $~[1] if m
+    unless i.ram
       m = features[/(\d+) MB DDR/]
-      ram = $~[1].to_i/1000 if m
+      i.ram = $~[1].to_i/1000 if m
     end
     
     #HD
     m = features[/(\d+)\s?GB\s?(hard drive|SATA|7200|5400)/i]
-    hd = $~[1] if m
-    unless hd
+    i.hd = $~[1] if m
+    unless i.hd
       m = features[/Hard Drive Capacity: (\d+)\s?GB/i] 
-      hd = $~[1] if m
+      i.hd = $~[1] if m
     end
     
     #Brand
-    brand = title.split.first
+    i.brand = title.split.first
     
     #Screen size
     m = title[/([0-9.]+)"/]
-    size = $~[1] if m
-    unless size
+    i.screensize = $~[1] if m
+    unless i.screensize
       m = features[/([0-9.]+)"/]
-      size = $~[1] if m
+      i.screensize = $~[1] if m
     end
     
+    i.title = title
+    i.instock = true
+    i.imgurl = imgurl
+    i_records << i
   end
   puts "Items found: #{all_records.count}"
+  Laptop.transaction do
+    i_records.each(&:save)
+  end
+  
 end
