@@ -28,10 +28,10 @@ class Flooring < ActiveRecord::Base
            #     db_name           Type     (e)xtra Display
   Features = [%w(price                Continuous  cf    ),
               %w(width                Continuous  tcf    ),
+              %w(colorrange_f         Continuous  tcf    ),
               %w(miniorder            Continuous  tcf    ),
               %w(brand                Categorical f     ),
               %w(species              Categorical f     ),
-              %w(colorrange           Categorical f     ),
               %w(feature              Categorical f     )]
 
   ContinuousFeatures = Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[0]}
@@ -51,7 +51,7 @@ class Flooring < ActiveRecord::Base
   MaxPrice = 10_00
   
   named_scope :priced, :conditions => "price > 0"
-  named_scope :valid, :conditions => [ContinuousFeatures.map{|i|i+' > 0'}.join(' AND '),BinaryFeatures.map{|i|i+' IS NOT NULL'}.join(' AND '),['brand'].map{|i|i+' IS NOT NULL'}.join(' AND ')].delete_if{|l|l.blank?}.join(' AND ')
+  named_scope :valid, :conditions => [ContinuousFeatures.map{|i|i+' >= 0'}.join(' AND '),BinaryFeatures.map{|i|i+' IS NOT NULL'}.join(' AND '),['brand'].map{|i|i+' IS NOT NULL'}.join(' AND ')].delete_if{|l|l.blank?}.join(' AND ')
   named_scope :instock, :conditions => "instock is true"
   def self.urlname
     @urlname ||= name.pluralize.downcase
