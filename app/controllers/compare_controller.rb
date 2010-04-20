@@ -1,6 +1,7 @@
 class CompareController < ApplicationController
   layout "optemo"
   require 'open-uri'
+  require 'iconv'
   include CachingMemcached
   
   def index
@@ -43,13 +44,14 @@ class CompareController < ApplicationController
   end
   
   def classVariables(search)
-    @s = search
     Session.current.search = search
   end
   
   def sim
     cluster_id = params[:id]
     cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
+    Session.current.search = Session.current.searches.last
+    Session.current.copyfeatures #create a copy of the current filters
     if cluster_id.index('+')
       #Merged Cluster
       cluster = MergedCluster.fromIDs(cluster_id.split('+'))
@@ -57,10 +59,11 @@ class CompareController < ApplicationController
       #Single, normal Cluster
       cluster = findCachedCluster(cluster_id)
     end
-    Session.current.search = Session.current.searches.last
     unless cluster.nil?
       if params[:ajax]
-        classVariables(Search.createFromClustersAndCommit(cluster.children))
+        s = Search.createFromClustersAndCommit(cluster.children)
+        Session.current.commitFilters(s.id)
+        classVariables(s)
         render 'ajax', :layout => false
       else
         redirect_to "/compare/compare/"+cluster.children.map{|c|c.id}.join('-')
@@ -76,8 +79,13 @@ class CompareController < ApplicationController
       #No post info passed
       render :text =>  "[ERR]Search could not be completed."
     else
-      #Fixes the fact that the brand selector value is not used
+      #Fixes the fact that the brand selector value is not used, among other selectors
       params[:myfilter].delete("brand1")
+      # These were introduced for Flooring
+      params[:myfilter].delete("species1")
+      params[:myfilter].delete("colorrange1")
+      params[:myfilter].delete("feature1")
+      
       Session.current.search = Session.current.searches.last #My last search used for finding the right filters
       session.updateFilters(params[:myfilter])
       clusters = session.clusters
@@ -165,18 +173,4 @@ class CompareController < ApplicationController
       end
     end
   end
-  
-  def searchterms
-    # There is a strange beauty in the illegibility of the following line.
-    # Must do a join followed by a split since the initial mapping of titles is like this: ["keywords are here", "and also here", ...]
-    # The gsub lines are to take out the parentheses on both sides, take out commas, and take out trailing slashes.
-    searchterms = findCachedTitles.join(" ").split(" ").map{|t| t.tr("()", '').gsub(/,/,' ').gsub(/\/$/,'').chomp}.uniq
-    # Delete all the 1200x1200dpi, the "/" or "&" strings, all two-letter strings, and things that don't start with a letter or number.
-    searchterms.delete_if {|t| t == '' || t.match('[0-9]+.[0-9]+') || t.match('^..?$') || t.match('^[^A-Za-z0-9]') || t.downcase.match('^print')}
-#    duplicates = searchterms.inject({}) {|h,v| h[v]=h[v].to_i+1; h}.reject{|k,v| v==1}.keys
-    @searchterms = searchterms.map{|t|t.match(/[^A-Za-z0-9]$/)? t.chop.downcase : t.downcase }.uniq.join('[BRK]')
-    # Particular to this data
-    render 'searchterms', :layout => false
-  end
-  
 end

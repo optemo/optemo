@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml" xml:lang="en" lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> <!-- xmlns:fb="http://www.facebook.com/2008/fbml" -->
 <head>
   <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
   <title><%= title %></title>
@@ -16,10 +16,10 @@
 <body>
 <div id="mycenter">
    <div id="header">
-	  <div id="flags">
+	  <!-- div id="flags">
 		<%= link_to image_tag('us.gif'), url_for_intl('com') %>
 		<%= link_to image_tag('ca.gif'), url_for_intl('ca') %>
-	  </div>
+	  </div-->
 	  <div id="logo">
 		<a href="<%= url_for '/' %>" id ="logo" title="<%= $model.name == "Camera" ? 'Cameras.BrowseThenBuy.com' : 'LaserPrinterHub.com' %>"><%= $region == "us" ? image_tag('logo'+($model.name == 'Camera' ? '_cameras' : '')+'.jpg') : image_tag('logo'+($model.name == "Camera" ? '_cameras' : '_ca')+'.jpg')%><span>Home</span></a>
 	  </div>
@@ -27,7 +27,7 @@
 	 <div id="tagline">
 		Find, compare, and buy the right <%= $model.name.downcase %> for you! We have found the best deals from various online retailers for you.
 	</div>
-     <div id="logindisplay">                                                                                               
+     <!-- div id="logindisplay">                                                                                               
    		<% if !cookies[$AppKey +"_user"].nil? %>
 		<div style="float:left;height:16px;width:16px;overflow:hidden;">
 			<fb:profile-pic uid='loggedinuser' height="16" width="16" size="square" facebook-logo='true'></fb:profile-pic>
@@ -43,7 +43,7 @@
 		<% else %>
 			<fb:login-button size="small" length="short" onlogin="window.location.href='/login/do_login?currpage=' + window.location;" autologoutlink="false"> </fb:login-button>
 		<% end %>
-     </div>
+     </div-->
 	 <div id="tourButton"><%= link_to "Launch Tour" %></div>
    </div>
    <div class="watermark">Powered by <%= link_to 'Optemo', 'http://optemo.com', :popup => true %></div>
@@ -88,8 +88,7 @@
 </style><![endif]-->
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-<!-- This script is being included locally until the release of jquery-ui 1.8. -->
-<!--script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script -->
+<!-- The jquery-ui script is being included locally due to the custom jquery-ui being about 45k instead of 200kb from Google's CDN -->
 <%= javascript_include_merged :base %>
 
 <script type="text/javascript" src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>

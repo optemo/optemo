@@ -103,13 +103,12 @@ div.navigator_box {
 }
 img.productimg {
 	cursor: move;
-	display: none;
 }
 .productinfocont {
 	width: 224px;
 	position: absolute;
 	top: 142px;
-	left: 0px;
+	left: 0;
 }
 .productinfo {
 	margin:0 auto;
@@ -149,7 +148,7 @@ div #leftbar {
 	position: relative;
 }
 .leftboxes {
-	margin: 0px 0px 5px 4px;
+	margin: 0 0 5px 4px;
 	padding: 6px;
 }
 .rounded_leftboxes {
@@ -225,7 +224,7 @@ div.drop-box-hover {
 	float: left;
 	text-align: center;
 	padding: 5px 1px 1px 5px;
-	margin: 5px 0px 0px 8px;
+	margin: 5px 0 0 8px;
 	background: url(../images/savebg.png) no-repeat;
 }
 div.smalldesc {
@@ -254,7 +253,7 @@ div.smalldesc {
 	padding-left: 120px; 
 	padding-top: 5px;
 }
-.selected_brands img {
+.selected_cat_features img {
 	vertical-align: baseline;
 }
 
@@ -328,7 +327,7 @@ div.smalldesc {
 	margin-bottom: 3px;
 	font-weight: lighter;
 }
-#selector {
+.selectboxfilter {
 	width:100%;
 }
 
@@ -365,7 +364,7 @@ div.smalldesc {
 	display: none;
 	position: absolute;
 	bottom: 1.5em;
-	left: 0px;
+	left: 0;
 	padding: 4px;
 	border: solid thin black;
 	background-color: #fff;
@@ -383,7 +382,7 @@ div.smalldesc {
 //--------------------------------------*/
 
 .decisionoverlay {
-	padding: 35px 0px 0px 0px;
+	padding: 35px 0 0 0;
 	font-size: 0.8em;
 	text-align: justify;
 }
@@ -405,7 +404,7 @@ div.smalldesc {
 }
 #feedback {
 	position:fixed; 
-	right: 0px; 
+	right: 0; 
 	top: 250px;
 	z-index:2;
 	cursor: pointer;
@@ -426,7 +425,7 @@ div.smalldesc {
 	margin: 0;
 }
 .content {
-	margin: 0px 20px;
+	margin: 0 20px;
 }
 .content h2 {
 	margin-top: 20px;
@@ -457,7 +456,7 @@ font-weight:700;
 border-bottom:1px dotted #D3D3D3;
 padding-bottom:2px;
 margin-bottom:15px;
-margin-top:0px;
+margin-top:0;
 }
 .popupnextbutton {
 	font-size:1.3em;
@@ -495,6 +494,7 @@ display:block;
 #tourButton{
 	font-size: 0.8em;
 	text-align: center;
+	margin-top: 20px;
 }
 
 /*--------------------------------------//
@@ -502,7 +502,7 @@ display:block;
 //--------------------------------------*/
 
 .ac_results {
-	padding: 0px;
+	padding: 0;
 	border: 1px solid black;
 	background-color: white;
 	overflow: hidden;
@@ -518,7 +518,7 @@ display:block;
 }
 
 .ac_results li {
-	margin: 0px;
+	margin: 0;
 	padding: 2px 5px;
 	cursor: default;
 	display: block;

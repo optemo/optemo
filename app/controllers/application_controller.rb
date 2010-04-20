@@ -49,6 +49,8 @@ class ApplicationController < ActionController::Base
         "Camera"
       when "printers"
         "Printer"
+      when "flooring"
+        "Flooring"
       else
         $DefaultProduct
       end  
@@ -58,6 +60,7 @@ class ApplicationController < ActionController::Base
     $nodemodel = (ds + 'Node').constantize
     $clustermodel = (ds + 'Cluster').constantize
     $featuremodel = (ds + 'Features').constantize
+    $rulemodel = (ds + 'BoostexterCombinedRule').constantize
   end
   
   def update_user
@@ -84,7 +87,7 @@ class ApplicationController < ActionController::Base
       mysession.keywordpids = nil
       mysession.keyword = nil
     end
-    mysession.version = $clustermodel.find_last_by_region($region).version
+    mysession.version = $clustermodel.maximum(:version, :conditions => ['region = ?', $region])
     Session.current = mysession
   end
   

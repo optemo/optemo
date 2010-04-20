@@ -19,9 +19,13 @@
    trackPage(str)  -  Piwik tracking per page
    trackCategorical(name, val, type)  -  Piwik tracking per category
  
-   ---- Discover Browser Initialization ----
-   DBinit(context)  -  Does context-based refresh and initialization routines for many UI elements.
- 
+   ---- JQuery Initialization Routines ----
+	FilterAndSearchInit()  -  Search and filter areas.
+ 	CompareInit()  -   Compare Products screen
+	ErrorInit()  -  Error pages
+   DBinit()  -   UI elements from the _discoverybrowser partial, also known as <div id="main">.
+	ShowInit()  -  Single product page (the compare#show action)
+	
    ---- document.ready() ----
    document.ready()  -  The jquery call that gets everything started.
 
@@ -33,10 +37,10 @@ if ($('#ajaxload'))
 		ajaxsend(location.hash.replace(/^#/, ''),null,null,true);
 	else
 		ajaxsend(null,'/?ajax=true',null,true);
-	
 }
 
-var language;
+// Language support disabled for now
+//var language;
 // The following is pulled from optemo.html.erb, which in turn checks GlobalDeclarations.rb
 var IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
 
@@ -46,9 +50,11 @@ var IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
 
 function fadein()
 {
-	$('#selector').css('visibility', 'visible');
-	$('#fade').css('display', 'none');
-	$('#outsidecontainer').css('display', 'none');	
+  FilterAndSearchInit();
+  $('.selectboxfilter').css('visibility', 'visible');
+  $('#fade').css('display', 'none');
+  $('#outsidecontainer').css('display', 'none');
+  $('#outsidecontainer').unbind('click')
 }
 
 function fadeout(url,data,width,height)
@@ -63,11 +69,11 @@ function fadeout(url,data,width,height)
 								'height' : height||770,
 								'display' : 'inline' });
 	$('#fade').css({'height' : getDocHeight()+'px', 'display' : 'inline'});
-	$('#selector').css('visibility', 'hidden');
+	$('.selectboxfilter').css('visibility', 'hidden');
 	if (data)
 		$('#info').html(data);
 	else
-		$('#info').load(url,function(){DBinit('#info');});	
+		$('#info').load(url,function(){CompareInit();DBinit();});	
 }
 
 // When you click the Save button:
@@ -125,7 +131,7 @@ function renderComparisonProducts(id, imgurl, name)
 	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\" onClick=\"javascript:removeFromComparison("+id+");return false;\">" + 
 	"<img src=\"/images/close.png\" alt=\"Close\"/></a>"; // do we need '?1258398853' ? I doubt it.
 	$(smallProductImageAndDetail).appendTo('#c'+id);
-	DBinit("#c"+id)
+	DBinit();
 
 	$("#already_added_msg").css("display", "none");
 	$("#too_many_saved").css("display", "none");
@@ -198,14 +204,6 @@ function histogram(element, norange) {
 	t.andClose();
 }
 
-function launchtour() {
-	var browseposition = $("#sim0").offset();
-	$("#sim0").addClass('tourDrawAttention');
-	// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
-	$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
-	return false;
-}
-
 //--------------------------------------//
 //          Data Manipulation           //
 //--------------------------------------//
@@ -250,124 +248,12 @@ function trackCategorical(name, val, type){
 }
 
 //--------------------------------------//
-//   Discover Browser Initialization    //
+//       Initialization Routines        //
 //--------------------------------------//
 
-function DBinit(context) {
-	
-	//-------Info Popup--------//
-	$("#comparisonTable",context).tableDnD({
-		onDragClass: "rowBeingDragged",
-		onDrop: function(table, row){		
-			newPreferencesString = $.tableDnD.serialize();
-		}
-	});
-	
-	//Link from popup (used for error messages)
-	$('.popuplink', context).click(function(){
-		ajaxcall($(this).attr('href')+'?ajax=true');
-		fadein();
-		return false;
-	});
-	
-	//Remove buttons on compare
-	$('.remove', context).click(function(){
-		removeFromComparison($(this).attr('data-name'));
-		$(this).parents('.column').remove();
-		return false;
-	});
-	
-	$('.buylink, .buyimg', context).click(function(){
-		var buyme_id = $(this).attr('product');
-		trackPage('goals/addtocart/'+buyme_id);
-	});
-	
-	$('#yesdecisionsubmit', context).click(function(){
-		trackPage('survey/yes');
-		fadeout('/survey/index', null, 600, 835);
-		return false;
-	});
-
-	$('#nodecisionsubmit', context).click(function(){
-		fadein();
-		trackPage('survey/no');
-		return false;
-	});
-	
-	$('#surveysubmit', context).click(function(){
-		trackPage('survey/submit');
-		$('#feedback').css('display','none');
-		fadeout('/survey/submit?' + $("#surveyform").serialize(), null, 300, 70);
-		return false;
-	});
-	
-	//--------Product Section-------//
-	//Used in Main Section and Saved items box
-	
-	$(".productimg",context).click(function (){
-		fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
-		trackPage('products/show/'+$(this).attr('data-id')); 
-		return false;
-	});
-	
-	// However, always add it to the link below the image.
-	$(".easylink",context).click(function() {
-		fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
-		trackPage('products/show/'+$(this).attr('data-id')); 
-		//trackPage($(this).attr('href'));
-		return false;
-	});
-	
-	//-------Main Section-------//
-	
-	if (IS_DRAG_DROP_ENABLED)
-	{
-		// Make item boxes draggable. This is a jquery UI builtin.		
-		$(".image_boundingbox img",context).each(function() {
-			$(this).draggable({ 
-				revert: 'invalid', 
-				cursor: "move", 
-				// The following defines the drag distance before a "drag" event is actually initiated. Helps for people who click while the mouse is slightly moving.
-				distance:2,
-				helper: 'clone',
-				zIndex: 1000,
-				start: function(e, ui) { 
-					if ($.browser.msie) // Internet Explorer sucks and cannot do transparency
-					$(this).css({'opacity':'0.4'});
-				},
-				stop: function (e, ui) {
-					if ($.browser.msie)
-						$(this).css({'opacity':'1'});
-				}
-			});
-            $(this).hover(function() {
-	                $(this).find('.dragHand').stop().animate({ opacity: 1.0 }, 150);
-			    },
-		        function() {
-	            	$(this).find('.dragHand').stop().animate({ opacity: 0.35 }, 450);
-           });
-	    });
-	}
-	
-	//Ajax call for simlinks
-	$('.simlinks, .productlink',context).click(function(){ 
-		ajaxcall($(this).attr('href')+'?ajax=true');
-		
-		linkinfo = {'product_picked' : $(this).attr('data-id') , 'optemo_session': parseInt($('#seshid').attr('session-id'))};
-		morestuff = getAllShownProductIds(); 
-		linkinfo['product_ignored'] = morestuff;
-		piwikTracker2.setCustomData(linkinfo);
-		trackPage('goals/browse');
-		piwikTracker2.setCustomData({});
-		return false;
-	});
-	
-	$('#tourautostart', context).each(launchtour); //Automatically launch tour
-	
-	//-------Filters Section-------//
-	
+function FilterAndSearchInit() {
 	//Show and Hide Descriptions
-	$('.feature .label a, .feature .deleteX',context).click(function(){
+	$('.feature .label a, .feature .deleteX').unbind('click').click(function(){
 		if($(this).parent().attr('class') == "desc")
 			{var obj = $(this).parent();}
 		else
@@ -378,57 +264,8 @@ function DBinit(context) {
 		obj.attr('name-flip',flip);
 		return false;
 	});
-	
-	//Show Additional Features
-	$('#morefilters',context).click(function(){
-		$('.extra').show("slide",{direction: "up"},100);
-		$(this).css('display','none');
-		$('#lessfilters').css('display','block');
-		return false;
-	});
-	
-	//Hide Additional Features
-	$('#lessfilters',context).click(function(){
-		$('.extra').hide("slide",{direction: "up"},100);
-		$(this).css('display','none');
-		$('#morefilters').css('display','block');
-		return false;
-	});
-	
-	// Sliders -- submit
-	$('.autosubmit',context).change(function() {
-		submitCategorical();
-	});
-	
-	// Checkboxes -- submit
-	$('.autosubmitbool',context).click(function() {
-		var whichbox = $(this).attr('id');
-		var box_value = $(this).attr('checked') ? 100 : 0;
-		submitCategorical();
-		trackCategorical(whichbox, box_value, 3);
-	});
-	
-	// Add a brand -- submit
-	// Handle brand spinner
-	$('#selector',context).change(function(){
-		var whichbrand = $(this).val();
-		$('#myfilter_brand').val(appendStringWithToken($('#myfilter_brand').val(), whichbrand, '*'));
-		submitCategorical();
-		trackCategorical(whichbrand,100,2);
-	});
-	
-	// Remove a brand -- submit
-	// Handle brand spinner
-	$('.removeBrand',context).click(function(){
-		var whichbrand = $(this).attr('data-id');
-		$('#myfilter_brand').val(removeStringWithToken($('#myfilter_brand').val(), whichbrand, '*'));
-		submitCategorical();
-		trackCategorical(whichbrand,0,2);
-		return false;
-	});
-	
-	// Set up sliders
-	$('.slider',context).each(function() {
+	// Initialize Sliders
+	$('.slider').each(function() {
 		threshold = 20;							// The parameter that identifies that 2 sliders are too close to each other
 		itof = $(this).attr('data-itof');
 		if(itof == 'false')
@@ -574,7 +411,10 @@ function DBinit(context) {
 		$('a:last', this).html(curmax).addClass("valbelow");
 		if (diff < threshold)
 			$('a:last', this).html(curmax).addClass("valabove");
-		histogram($(this).siblings('.hist')[0]);
+		if (!($(this).siblings('.hist').children('svg').length))
+		{
+		    histogram($(this).siblings('.hist')[0]);
+	    }
 		$(this).removeClass('ui-widget').removeClass('ui-widget-content').removeClass('ui-corner-all');
 		$(this).find('a').each(function(){
 			$(this).removeClass('ui-state-default').removeClass('ui-corner-all');
@@ -582,7 +422,166 @@ function DBinit(context) {
 		});
 		
 	});
+	// Add a brand -- submit
+	$('.selectboxfilter').each(function(){
+	    $(this).unbind('change').change(function(){
+		    var whichThingSelected = $(this).val();
+		    var whichSelector = $(this).attr('name')
+		    whichSelector = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]")-1);
+    		$('#myfilter_'+whichSelector).val(appendStringWithToken($('#myfilter_'+whichSelector).val(), whichThingSelected, '*'));
+    		submitCategorical();
+    		trackCategorical(whichThingSelected,100,2);
+    	});
+	});
+	
+	// Remove a brand -- submit
+	$('.removeBrand').unbind('click').click(function(){
+		var whichbrand = $(this).attr('data-id');
+		$('#myfilter_brand').val(removeStringWithToken($('#myfilter_brand').val(), whichbrand, '*'));
+		submitCategorical();
+		trackCategorical(whichbrand,0,2);
+		return false;
+	});
+	//Show Additional Features
+	$('#morefilters').unbind('click').click(function(){
+		$('.extra').show("slide",{direction: "up"},100);
+		$(this).css('display','none');
+		$('#lessfilters').css('display','block');
+		return false;
+	});
+	
+	//Hide Additional Features
+	$('#lessfilters').unbind('click').click(function(){
+		$('.extra').hide("slide",{direction: "up"},100);
+		$(this).css('display','none');
+		$('#morefilters').css('display','block');
+		return false;
+	});
+	
+	// Sliders -- submit
+	$('.autosubmit').unbind('change').change(function() {
+		submitCategorical();
+	});
+	
+	// Checkboxes -- submit
+	$('.autosubmitbool').unbind('click').click(function() {
+		var whichbox = $(this).attr('id');
+		var box_value = $(this).attr('checked') ? 100 : 0;
+		submitCategorical();
+		trackCategorical(whichbox, box_value, 3);
+	});
+}
 
+function CompareInit() {
+	//-------Info Popup--------//
+	// This isn't being used at the moment in any layout, as far as I can tell. ZAT 2010-03
+//	$("#comparisonTable").tableDnD({
+//		onDragClass: "rowBeingDragged",
+//		onDrop: function(table, row) {		
+//			newPreferencesString = $.tableDnD.serialize();
+//		}
+//	});
+	//Remove buttons on compare
+	$('.remove').unbind('click').click(function(){
+		removeFromComparison($(this).attr('data-name'));
+		$(this).parents('.column').remove();
+		
+		// If this is the last one, take the comparison screen down too
+		if ($('#comparisonmatrix .column').length == 1) {
+			fadein();
+		}
+		return false;
+	});
+}
+
+function ErrorInit() {
+    //Link from popup (used for error messages)
+    $('#outsidecontainer').unbind('click').click(function(){
+    	fadein();
+    	return false;
+    });
+}
+
+function DBinit() {
+	$(".productimg, .easylink").unbind("click").click(function (){
+		ShowInit();
+		fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
+		trackPage('products/show/'+$(this).attr('data-id')); 
+		return false;
+	});
+	
+	if (IS_DRAG_DROP_ENABLED)
+	{
+		// Make item boxes draggable. This is a jquery UI builtin.		
+		$(".image_boundingbox img").each(function() {
+			$(this).draggable({ 
+				revert: 'invalid', 
+				cursor: "move", 
+				// The following defines the drag distance before a "drag" event is actually initiated. Helps for people who click while the mouse is slightly moving.
+				distance:2,
+				helper: 'clone',
+				zIndex: 1000,
+				start: function(e, ui) { 
+					if ($.browser.msie) // Internet Explorer sucks and cannot do transparency
+					$(this).css({'opacity':'0.4'});
+				},
+				stop: function (e, ui) {
+					if ($.browser.msie)
+						$(this).css({'opacity':'1'});
+				}
+			});
+            $(this).hover(function() {
+	                $(this).find('.dragHand').stop().animate({ opacity: 1.0 }, 150);
+			    },
+		        function() {
+	            	$(this).find('.dragHand').stop().animate({ opacity: 0.35 }, 450);
+           });
+	    });
+	}
+	
+	//Ajax call for simlinks
+	$('.simlinks').unbind("click").click(function(){ 
+		ajaxcall($(this).attr('href')+'?ajax=true');
+		
+		linkinfo = {'product_picked' : $(this).attr('data-id') , 'optemo_session': parseInt($('#seshid').attr('session-id'))};
+		morestuff = getAllShownProductIds(); 
+		linkinfo['product_ignored'] = morestuff;
+		piwikTracker2.setCustomData(linkinfo);
+		trackPage('goals/browse');
+		piwikTracker2.setCustomData({});
+		return false;
+	});
+	//Autocomplete for searchterms
+	// First, get the model type by checking the src of a product image:
+	model = $("img.productimg")[0].src.replace(/\/[^/]+$/,"");
+    // Although these lines work properly with the regexp (e.g.) /^[^/]+\/\//, this is interpreted as a comment by the javascript packer and breaks on deploy.
+    // So, we have to use the javascript builtin RegExp constructor rather than the usual /expression/ syntax.
+    if (model.match(/images/)) // if not, something went wrong
+    {
+        regexp = new RegExp("^[^/]+\/\/");
+        otherRegexp = new RegExp("^[^/]*\/");
+    	model = model.replace(regexp,''); 
+    	while (model.match(otherRegexp)) { 
+    		model = model.replace(otherRegexp,''); 
+    	}
+    	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
+    	terms = eval(model.substring(0, model.length - 1) + "_searchterms"); // terms now = ["waterproof", "digital", ... ]
+    	$("#search").autocomplete(terms, {
+    		minChars: 1,
+    		max: 10,
+    		autoFill: false,
+    		mustMatch: false,
+    		matchContains: true,
+    		scrollHeight: 220
+    	});
+    }
+}
+
+function ShowInit() {
+	$('.buylink, .buyimg').unbind("click").click(function(){
+		var buyme_id = $(this).attr('product');
+		trackPage('goals/addtocart/'+buyme_id);
+	});
 }
 
 //--------------------------------------//
@@ -615,21 +614,25 @@ $(document).ready(function() {
 	
 	$.historyInit(ajaxsend);
 	
-	//Only load DBinit if it will not be loaded by the upcoming ajax call
-	if (!$('#ajaxload'))
-		DBinit();
+	// Only load DBinit if it will not be loaded by the upcoming ajax call
+	if (!$('#ajaxload')) {
+		// Other init routines get run when they are needed.
+		FilterAndSearchInit(); DBinit();
+	}
+	// All the initializations in a row.
 	
-	//Find product language
-	language = (/^\s*English/.test($(".languageoptions:first").html())==true)?'en':'fr';
+	//Find product language - Not used at the moment ZAT 2010-03
+//	language = (/^\s*English/.test($(".languageoptions:first").html())==true)?'en':'fr';
 
 	//Decrypt encrypted links
-	$('a.decrypt').each(function () {
-		$(this).attr('href',$(this).attr('href').replace(/[a-zA-Z]/g, function(c){
-			return String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26);
-			}));
-	});
+//	$('a.decrypt').each(function () {
+//		$(this).attr('href',$(this).attr('href').replace(/[a-zA-Z]/g, function(c){
+//			return String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26);
+//			}));
+//	});
 
-	//Fadein
+	// Global to the entire page - Fadein
+	// May want to make this a jquery .live() call; check jquery 1.4 documentation for this later
 	$(".close").click(function(){
 		fadein();
 		return false;
@@ -667,15 +670,9 @@ $(document).ready(function() {
 		trackPage('goals/compare/');
 		return false;
 	});
-	
-	//Request a feature
-	$("#requestafeature").click(function(){
-		fadeout('/content/request');
-		return false;
-	});
     
 	//Static Ajax call
-	$('.staticajax').click(function(){
+	$('#staticajax_reset').click(function(){
 		ajaxcall($(this).attr('href')+'?ajax=true');
 		return false;
 	});
@@ -698,9 +695,25 @@ $(document).ready(function() {
 		return false;
 	});
 	
-	//Tour section
+	$('#yesdecisionsubmit').click(function(){
+		trackPage('survey/yes');
+		fadeout('/survey/index', null, 600, 835);
+		return false;
+	});
+	$('#nodecisionsubmit').click(function(){
+		fadein();
+		trackPage('survey/no');
+		return false;
+	});
+	$('#surveysubmit').click(function(){
+		trackPage('survey/submit');
+		$('#feedback').css('display','none');
+		fadeout('/survey/submit?' + $("#surveyform").serialize(), null, 300, 70);
+		return false;
+	});
 	
-	$('.popupTour').each(function(){
+	//Tour section
+	$('#popupTour1, #popupTour2, #popupTour3').each(function(){
 		$(this).find('.deleteX').click(function(){
 			$(this).parent().fadeOut("slow");
 			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
@@ -738,29 +751,18 @@ $(document).ready(function() {
 		}
 	});
 
-	//Autocomplete for searchterms
-//   $.ajax({
-//   	type: "GET",
-//   	data: "",
-//   	url: "/compare/searchterms",
-//   	success: function (data) {
-//   		// autocomplete is expecting data like this:
-//   		// "Lexmark[BRK]Metered[BRK]DeskJet"
-//   		terms = data.split('[BRK]');
-//   		$("#search").autocomplete(terms, {
-//   			minChars: 1,
-//   			max: 10,
-//   			autoFill: false,
-//   			mustMatch: false,
-//   			matchContains: true,
-//   			scrollHeight: 220
-//   		});
-//   	}
-//   });
+	launchtour = (function () {
+		var browseposition = $("#sim0").offset();
+		$("#sim0").addClass('tourDrawAttention');
+		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
+		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
+		return false;
+	});
+
+	if ($('#tourautostart').length) { launchtour; } //Automatically launch tour if appropriate
+	$("#tourButton a").click(launchtour); //Launch tour when this is clicked
 
 	myspinner = new spinner("myspinner", 11, 20, 9, 5, "#000");
-	
-	$("#tourButton").click(launchtour); //Launch tour when this is clicked
 	
 	if ($.browser.msie) // If it's any version of IE, the transparency for the hands doesn't get done properly on page load.
 	{
