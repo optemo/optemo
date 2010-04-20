@@ -30,9 +30,9 @@ class Flooring < ActiveRecord::Base
               %w(width                Continuous  tcf    ),
               %w(species_hardness     Continuous  tcf    ),
               %w(miniorder            Continuous  tcf    ),
-              %w(brand                Categorical f     ),
-              %w(species              Categorical f     ),
-              %w(feature              Categorical f     )]
+              %w(brand                Categorical f     )]
+#              %w(species              Categorical f     ),
+#              %w(feature              Categorical f     )]
 
   ContinuousFeatures = Features.select{|f|f[1] == "Continuous" && f[2].index("c")}.map{|f|f[0]}
   DescFeatures = Features.select{|f|f[2].index("d")}.map{|f|f[0]}
