@@ -90,6 +90,7 @@ def generate_data_file(cluster):
                 else:
                     fieldval = default_text_to_btxtr_fn(fieldval)
 
+            fieldval = unicode(fieldval)
             f.write(fieldval.encode('utf-8') + ', ')
 
         f.write(str(cluster_id) + '.\n')
