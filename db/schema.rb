@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100420124800) do
+ActiveRecord::Schema.define(:version => 20100420200107) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -1341,7 +1341,7 @@ ActiveRecord::Schema.define(:version => 20100420124800) do
     t.float    "resolutionmax"
     t.float    "width",               :null => false
     t.float    "miniorder",           :null => false
-    t.float    "thickness",           :null => false
+    t.float    "species_hardness",    :null => false
   end
 
   create_table "feature_requests", :force => true do |t|
@@ -1393,23 +1393,25 @@ ActiveRecord::Schema.define(:version => 20100420124800) do
     t.datetime "updated_at"
     t.integer  "session_id"
     t.integer  "search_id"
-    t.float    "thickness_min"
-    t.float    "thickness_max"
-    t.float    "thickness_pref", :default => 0.2
-    t.float    "width_min"
-    t.float    "width_max"
-    t.float    "width_pref",     :default => 0.2
-    t.float    "miniorder_min"
-    t.float    "miniorder_max"
-    t.float    "miniorder_pref", :default => 0.2
     t.float    "price_min"
     t.float    "price_max"
-    t.float    "price_pref",     :default => 0.2
+    t.float    "price_pref",            :default => 0.25
+    t.float    "width_min"
+    t.float    "width_max"
+    t.float    "width_pref",            :default => 0.25
+    t.float    "species_hardness_min"
+    t.float    "species_hardness_max"
+    t.float    "species_hardness_pref", :default => 0.25
+    t.float    "miniorder_min"
+    t.float    "miniorder_max"
+    t.float    "miniorder_pref",        :default => 0.25
     t.string   "brand"
-    t.string   "species",                         :null => false
-    t.string   "colorrange",                      :null => false
-    t.string   "feature",                         :null => false
+    t.string   "species"
+    t.string   "feature"
   end
+
+  add_index "flooring_features", ["search_id"], :name => "index_flooring_features_on_search_id"
+  add_index "flooring_features", ["session_id"], :name => "index_flooring_features_on_session_id"
 
   create_table "flooring_nodes", :force => true do |t|
     t.integer "cluster_id"
@@ -1480,6 +1482,49 @@ ActiveRecord::Schema.define(:version => 20100420124800) do
     t.integer  "product_id"
     t.integer  "offering_id"
     t.string   "item_number"
+  end
+
+  create_table "laptop_clusters", :force => true do |t|
+    t.integer "parent_id"
+    t.integer "layer"
+    t.integer "cluster_size"
+    t.float   "cached_utility"
+    t.integer "version"
+    t.string  "region"
+  end
+
+  add_index "laptop_clusters", ["cached_utility"], :name => "index_laptop_clusters_on_cached_utility"
+  add_index "laptop_clusters", ["parent_id"], :name => "index_laptop_clusters_on_parent_id"
+  add_index "laptop_clusters", ["version"], :name => "index_laptop_clusters_on_version"
+
+  create_table "laptop_nodes", :force => true do |t|
+    t.integer "cluster_id"
+    t.integer "product_id"
+    t.float   "price"
+    t.float   "hd"
+    t.float   "ram"
+    t.float   "screensize"
+    t.string  "brand"
+    t.float   "utility"
+    t.string  "region"
+    t.integer "version"
+  end
+
+  add_index "laptop_nodes", ["cluster_id"], :name => "index_laptop_nodes_on_cluster_id"
+  add_index "laptop_nodes", ["product_id"], :name => "index_laptop_nodes_on_product_id"
+
+  create_table "laptops", :force => true do |t|
+    t.text     "title"
+    t.integer  "price"
+    t.string   "pricestr"
+    t.string   "brand"
+    t.integer  "hd"
+    t.integer  "ram"
+    t.float    "screensize"
+    t.boolean  "instock"
+    t.text     "imgurl"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "newegg_offerings", :force => true do |t|
