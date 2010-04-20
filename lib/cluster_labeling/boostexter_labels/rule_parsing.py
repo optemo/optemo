@@ -5,6 +5,8 @@ from numpy import *
 
 from cluster_labeling.boostexter_labels import fields
 
+import cluster_labeling.optemo_django_models as optemo
+
 import re
 
 class ParseError(Exception):
