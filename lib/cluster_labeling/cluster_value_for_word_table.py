@@ -23,7 +23,7 @@ class ClusterValueForWord(local.LocalModel):
     version = models.IntegerField()
 
     @classmethod
-    def get_prefixed_table_name(unprefixed_table_name):
+    def get_prefixed_table_name(cls, unprefixed_table_name):
         return '%s_%s' % \
                (optemo.product_type_tablename_prefix,
                 unprefixed_table_name)

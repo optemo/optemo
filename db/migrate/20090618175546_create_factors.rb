@@ -5,7 +5,7 @@ class CreateFactors < ActiveRecord::Migration
       t.primary_key :id
       t.string :product_type      
       t.integer :product_id
-      (Camera::ContinuousFeatures | Printer::ContinuousFeatures | Flooring::ContinuousFeatures).each do |f|
+      (Camera::ContinuousFeatures | Printer::ContinuousFeatures | Laptop::ContinuousFeatures | Flooring::ContinuousFeatures).each do |f|
         t.float f
       end
     end

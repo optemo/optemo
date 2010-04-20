@@ -132,9 +132,9 @@ def compute_all_counts\
         (0, -1, root_children.count(), version),
         totalcount_tables)
 
-def drop_all_count_tables():
-    map(lambda table: table.drop_table_if_exists(), count_tables)
-    map(lambda table: table.drop_table_if_exists(), totalcount_tables)
+def recreate_all_count_tables():
+    map(lambda table: table.drop_tables_if_exist(), count_tables)
+    map(lambda table: table.drop_tables_if_exist(), totalcount_tables)
     
-    map(lambda table: table.create_table(), count_tables)
-    map(lambda table: table.create_table(), totalcount_tables)
+    map(lambda table: table.create_tables(), count_tables)
+    map(lambda table: table.create_tables(), totalcount_tables)
