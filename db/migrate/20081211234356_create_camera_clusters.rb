@@ -6,6 +6,7 @@ class CreateCameraClusters < ActiveRecord::Migration
       t.integer :layer
       t.integer :cluster_size
       t.float :cached_utility
+      t.string :region
       DbFeature.find_all_by_product_type_and_region('Camera',"us").each do |f|
          myname = f.name
         if (f.feature_type == "Continuous")

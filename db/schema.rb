@@ -1370,6 +1370,7 @@ ActiveRecord::Schema.define(:version => 20100420124800) do
     t.integer "cluster_size"
     t.float   "cached_utility"
     t.integer "version"
+    t.string  "region"
     t.string  "brand"
     t.string  "species"
     t.string  "feature"
