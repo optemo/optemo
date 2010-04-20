@@ -7,6 +7,7 @@ class CreateFlooringClusters < ActiveRecord::Migration
        t.integer :cluster_size
        t.float :cached_utility
        t.integer :version
+       t.string :region
        DbFeature.find_all_by_product_type_and_region('Flooring',"us").each do |f|
          myname = f.name
          if (f.feature_type == "Continuous")
