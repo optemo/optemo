@@ -250,8 +250,8 @@ class FlooringNode(Node):
     class Meta:
         db_table = 'flooring_nodes'
 
-    cluster = models.ForeignKey(PrinterCluster)
-    product = models.ForeignKey(Printer)
+    cluster = models.ForeignKey(FlooringCluster)
+    product = models.ForeignKey(Flooring)
 
 class PrinterNode(Node):
     class Meta:
