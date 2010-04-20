@@ -16,6 +16,8 @@ class CreatePrinterNodes < ActiveRecord::Migration
       t.string :region
       t.integer :version
     end
+    add_index :printer_nodes, :product_id
+    add_index :printer_nodes, :cluster_id
   end
 
   def self.down
