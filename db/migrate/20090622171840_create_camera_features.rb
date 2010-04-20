@@ -19,8 +19,9 @@ class CreateCameraFeatures < ActiveRecord::Migration
       (Camera::BinaryFeaturesF).each do |f|
         t.boolean f.intern
       end
-      add_index :session_id, :search_id
     end
+    add_index :camera_features, :session_id
+    add_index :camera_features, :search_id
   end
 
   def self.down
