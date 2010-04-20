@@ -30,6 +30,9 @@ namespace :builddirect do
     flooring_activerecords = []
     relevant_fields = ["PRODUCT_NAME", "BRAND", "SPECIES", "FEATURE", "COLOR RANGE", "WIDTH", "PRICE", "RegularPrice", "MINIORDER_SQ_FT", "MINIORDER", "MINIORDER_SQ_FT", "PRICE_UNIT", "WARRANTY", "BRAND", "THICKNESS", "SIZE", "FINISH", "PROFIT_MARGIN", "OVERALLRATING", "AGGREGATE_DESC", "IMAGELINK", "CATEGORY_ID"]
     relevant_categories = ["8804","6950"] # These, as discovered empirically, are the hardwood flooring categories in the XML
+    colorrange_to_float_map = { "Brown" => "0", "Natural" => "0", "None" => "0", "Red" => "0", "Beige/Tan" => "0", "Orange/Amber" => "0", "Gray" => "0", "Black" => "0", "Natural/Gold" => "0", "Green" => "0", "Yellow/Gold" => "0", "White" => "0"}
+    species_to_hardness_map = {"Oak" => "1300", "Canadian Hard Maple" => "1450", "Red Oak" => "1290", "White Oak" => "1360", "Brazilian Cherry" => "2350", "None" => "", "Santos Mahogany" => "2200", "Tigerwood" => "1850", "Brazilian Walnut" => "3684", "White Ash" => "1320", "Maple" => "1450", "Taun" => "1900", "Alder" => "590", "Jatoba" => "2350", "Asian Mahogany" => "1520", "Hickory" => "1820", "Mongolian Teak" => "1155", "Manchuria Cherry" => "2350", "Acacia" => "1750", "Australian Cypress" => "1375", "Hevea" => "960", "Merbau" => "1925", "Birch" => "1100", "Beech" => "1300", "Apple" => "1730"}
+    
     all_records.each do |record|
       # File through and get out all the properties that we want. Rather than using xpath, we are using the .children call since it's (way) faster. 
       current_record = {}
@@ -42,6 +45,7 @@ namespace :builddirect do
               current_record["model"] = xml_data.chomp(" ")
             when "COLOR RANGE"
               current_record["colorrange"] = xml_data
+              # current_record["colorrange"] = colorrange_to_float_map[xml_data] # Enable this once the color map is decided on
             else
               if xml_attr_name == "PRICE"
                 current_record["pricestr"] = number_to_currency(xml_data)
@@ -99,6 +103,12 @@ namespace :builddirect do
       # Make miniorder the only place where data goes in the end
       record["miniorder"] = record["miniorder_sq_ft"]
       ["species","feature", "colorrange"].each {|f| record[f] = "None" unless record[f]}
+      if record["species"].match("\\*")
+        largest_name = ""
+        record["species"].split("*").each {|r| largest_name = r if r.length > largest_name.length }
+        record["species"] = largest_name
+      end
+      record["species_hardness"] = species_to_hardness_map[record["species"]]
       record.delete("miniorder_sq_ft")
       Flooring.new(record)
     end
