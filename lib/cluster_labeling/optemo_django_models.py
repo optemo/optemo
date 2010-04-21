@@ -135,6 +135,15 @@ class Laptop(Product):
 
     screensize = models.FloatField()
 
+    def get_clusters(self, version = LaptopCluster.get_latest_version()):
+        node_qs = LaptopNode.get_manager().filter\
+                  (product_id = self.id, version = version)
+        cluster_ids = map(lambda n: n.cluster_id, node_qs)
+        cluster_qs = LaptopCluster.get_manager().filter\
+                     (id__in=cluster_ids)
+
+        return cluster_qs
+
 class Flooring(Product):
     class Meta:
         db_table = "floorings"
