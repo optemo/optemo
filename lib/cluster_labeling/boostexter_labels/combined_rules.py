@@ -7,6 +7,9 @@ from . import rule_parsing as rp
 
 from cluster_labeling.boostexter_labels.weighted_intervals import *
 
+RULE_TYPES = (('T', 'Threshold'),
+              ('S', 'Sgram'))
+
 class BoosTexterCombinedRule(local.LocalModel):
     class Meta:
         db_table = "%s_%s" % (optemo.product_type_tablename_prefix,
@@ -20,7 +23,8 @@ class BoosTexterCombinedRule(local.LocalModel):
 
     cluster_id = models.IntegerField()
     version = models.IntegerField()
-    
+
+    rule_type = models.CharField(max_length=1, choices=RULE_TYPES)
     yaml_repr = models.TextField()
 
 def get_max_abs_weight_from_threshold_rules(rules):
@@ -139,7 +143,7 @@ def save_combined_threshold_rule_for_field(cluster, fieldname, rules):
         BoosTexterCombinedRule\
         (fieldname=fieldname,
          weight=max_abs_weight, cluster_id=cluster.id,
-         version=cluster.version, yaml_repr=yaml_repr)
+         version=cluster.version, rule_type='T', yaml_repr=yaml_repr)
 
     combined_rule.save()
 
@@ -156,7 +160,7 @@ def save_combined_sgram_rule_for_field(cluster, fieldname, rules):
         BoosTexterCombinedRule\
         (fieldname=fieldname,
          weight=max_abs_weight, cluster_id=cluster.id,
-         version=cluster.version, yaml_repr=yaml_repr)
+         version=cluster.version, rule_type='S', yaml_repr=yaml_repr)
 
     combined_rule.save()
 
