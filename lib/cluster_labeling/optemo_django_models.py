@@ -151,6 +151,8 @@ class Flooring(Product):
     model = models.CharField(max_length=255)
 
     species = models.TextField()
+    species_hardness = models.IntegerField()
+    
     feature = models.TextField()
     colorrange = models.TextField()
 
