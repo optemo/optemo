@@ -49,9 +49,9 @@ class ApplicationController < ActionController::Base
         "Camera"
       when "printers"
         "Printer"
-      when "flooring"
+      when "flooring", "builddirect"
         "Flooring"
-      when "laptops"
+      when "laptops", "walmart"
         "Laptop"
       else
         $DefaultProduct
