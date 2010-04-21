@@ -41,8 +41,8 @@ class Laptop < ActiveRecord::Base
   CategoricalFeatures = Features.select{|f|f[1] == "Categorical"}.map{|f|f[0]}
   CategoricalFeaturesF = Features.select{|f|f[1] == "Categorical" && f[2].index("f")}.map{|f|f[0]}
   ExtraFeature = Hash[*Features.select{|f|f[2].index("e")}.map{|f|[f[0],true]}.flatten]
-  ShowFeatures = %w(brand)
-  DisplayedFeatures = %w(price)
+  ShowFeatures = %w(brand price hd ram screensize)
+  DisplayedFeatures = %w(price brand hd ram screensize)
   ItoF = %w(price)
   ValidRanges = { }
   MinPrice = 1_00

@@ -142,6 +142,9 @@ function renderComparisonProducts(id, imgurl, name)
 	$("#too_many_saved").css("display", "none");
 	if ($.browser.msie) // If it's any browser other than IE, clear the height element.
 		$("#savedproducts").css({"height" : ''});
+	$("#savedproducts img").each(function() {
+	    $(this).removeClass("productimg");
+    });
 }
 
 // When you click the X on a saved product:
@@ -523,7 +526,7 @@ function DBinit() {
 	if (IS_DRAG_DROP_ENABLED)
 	{
 		// Make item boxes draggable. This is a jquery UI builtin.		
-		$(".image_boundingbox img, .image_boundingbox_line img").each(function() {
+		$(".image_boundingbox img, .image_boundingbox_line img, img.productimg").each(function() {
 			$(this).draggable({ 
 				revert: 'invalid', 
 				cursor: "move", 

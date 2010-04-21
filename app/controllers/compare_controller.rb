@@ -118,6 +118,8 @@ class CompareController < ApplicationController
         imagestring.delete_at(1)
         imagestring = imagestring.join("&")
         @imglurl = "http://www.builddirect.com" + imagestring
+      elsif $model.name == "Laptop"
+        @imglurl = @product.imgurl.to_s
       else
         @imglurl = "/images/" + $model.name.downcase + "s/" + @product.id.to_s + "_l.jpg"
       end

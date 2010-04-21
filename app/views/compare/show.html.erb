@@ -9,6 +9,8 @@
 	<div id="image">
 		<% if $model.name == "Flooring" %>
 			<%= link_to image_tag(@imglurl), @imglurl, :popup => true %>
+		<% elsif $model.name == "Laptop" %>
+			<%= link_to image_tag(@imglurl), @imglurl, :popup => true %>
 		<% elsif FileTest.exist?(RAILS_ROOT + "/public" + @imglurl) %>
 			<%= link_to image_tag(@imglurl, :width => @product.imagelw, :height => @product.imagelh), @imglurl, :popup => true %>
 		<% else %>
@@ -35,8 +37,10 @@
 	</div>
 	<div style="clear: left"></div>
 	<div class="showtable">
-	<% unless $model.name == "Flooring" %>
+	<% if $model.name == "Flooring" %>
 		<h3>Available from <a href="http://www.builddirect.com">Build Direct</a></h3>
+	<% elsif $model.name == "Laptop" %>
+		<h3>Available from <a href="http://www.walmart.com">Walmart</a></h3>
 	<% else %>
 		<h3>Available At The Following Retailers</h3>
 	<% end %>
