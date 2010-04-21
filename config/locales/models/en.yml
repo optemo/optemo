@@ -5,6 +5,7 @@ en:
         camera:                     "camera"
         title:                      "Product"
         price:                      "Price"
+        pricestr:                   "Price"
         maximumresolution:          "Resolution"
         opticalzoom:                "Optical Zoom"
         itemweight:                 "Weight"
