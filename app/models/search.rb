@@ -172,6 +172,7 @@ class Search < ActiveRecord::Base
       end
       @returned_taglines.push(current_cluster_tagline)
     end
+    @returned_taglines.push("average") if @returned_taglines.empty?
     unless ENV['RAILS_ENV'] == 'development'
       cluster_ids = clusters.map{|c| c.id}.join("-")
       Rails.cache.write("#{$model}Taglines#{Session.current.version}#{cluster_ids}#{Session.current.features.to_json(:except => [ :id, :created_at, :updated_at, :session_id, :search_id ]).hash}", @returned_taglines)
