@@ -3,6 +3,7 @@ en:
         # All language-dependent definitions in models
         cameras:                    "cameras"
         camera:                     "camera"
+        title:                      "Product"
         price:                      "Price"
         maximumresolution:          "Resolution"
         opticalzoom:                "Optical Zoom"
@@ -107,6 +108,9 @@ en:
         avgitemwidth:               "Avg Width"
         lowerwidth:                 "Wider"
         higherwidth:                "Thinner"
+        avgthickness:               "Avg Thickness"
+        lowerthickness:             "Lower Thickness"
+        higherthickness:            "Higher Thickness"
         avgwidth:                   "Avg Width"
         lowerpaperinput:            "Smaller Input Tray"
         higherpaperinput:           "Larger Input Tray"

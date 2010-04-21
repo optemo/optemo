@@ -43,7 +43,7 @@ class Flooring < ActiveRecord::Base
   CategoricalFeatures = Features.select{|f|f[1] == "Categorical"}.map{|f|f[0]}
   CategoricalFeaturesF = Features.select{|f|f[1] == "Categorical" && f[2].index("f")}.map{|f|f[0]}
   ExtraFeature = Hash[*Features.select{|f|f[2].index("e")}.map{|f|[f[0],true]}.flatten]
-  ShowFeatures = %w(brand model miniorder colorrange feature width species_hardness)
+  ShowFeatures = %w(title feature species_hardness miniorder colorrange width)
   DisplayedFeatures = %w(width miniorder species colorrange feature width species_hardness)
   ItoF = %w(price width)
   ValidRanges = { 'width' => [2.25,5.25], 'miniorder' => [0,1000], 'species_hardness' => [0, 10000]}

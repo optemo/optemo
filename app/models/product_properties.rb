@@ -68,7 +68,7 @@ module ProductProperties
   end
   
   def smlTitle
-    if self.class.name == "Laptop"
+    if self.class.name == "Laptop" || self.class.name == "Flooring"
       title
     else
       [brand,model].join(' ')
