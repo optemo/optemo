@@ -56,6 +56,7 @@ class ApplicationController < ActionController::Base
       else
         $DefaultProduct
       end  
+      $LineItemView = false if ds != "Laptop" && ds != "Flooring"
    end
 
     $model = ds.constantize
