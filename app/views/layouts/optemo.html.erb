@@ -25,7 +25,9 @@
 	  </div>
 		<% if $model.name == "Printer" %><a href="<%= url_for '/laserprinters' %>" title="Why buy a laser printer?" id='whylaser'></a><% end %>
 	 <div id="tagline">
-		Find, compare, and buy the right <%= $model.name.downcase %> for you! We have found the best deals from various online retailers for you.
+		<% unless $model.name == "Flooring" %>Find, compare, and buy the right <%= $model.name.downcase %> for you! We have found the best deals from various online retailers for you.
+		<% else %>Browse &amp; compare different types of hardwood floor to find the best deals around!
+		<% end %>
 	</div>
      <!-- div id="logindisplay">                                                                                               
    		<% if !cookies[$AppKey +"_user"].nil? %>
@@ -69,6 +71,7 @@
 <div style="display:none;">
 <span id="dragDropEnabled"><%= $DragAndDropEnabled %></span>
 <span id="seshid" session-id="<%= Session.current.id unless Session.current.nil? %>"><%= Session.current.id unless Session.current.nil? %></span>
+<span id="modelname"><%= $model.name %></span>
 </div>
 
 <!--[if lt IE 7]><style>

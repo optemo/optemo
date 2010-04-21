@@ -15,7 +15,7 @@ div#fade {
 	left: 20px;
 	width: 940px;
 	height: 800px;
-	border-top: solid 33px #80C35A;
+	border-top: solid 33px #FFB732;
 	background: white;
 	z-index: 4;
 	display: none;
@@ -49,14 +49,15 @@ div#loading {
 }
 #image {
 	text-align: center;
-	width: 390px;
+	width: 330px;
 	float: left;
+	margin-bottom:10px;
 }
 #info h1 {
 	font-size: 1.2em;
 }
 #features {
-	width: 360px;
+	width: 420px;
 	float: left;
 }
 div#textfeatures, div#reviews {

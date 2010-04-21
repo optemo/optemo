@@ -17,10 +17,10 @@
 }
 #header {
    padding-top: 8px;
-   margin-left: 20px;
+   margin-left: 5px;
+   margin-right: 5px;
    position: relative;
-   width: 920px;
-   height: 70px;
+   height: 50px;
 }
 #header_buttons {
 	position: absolute;
@@ -34,8 +34,9 @@
 }
 #tagline {
 	display:inline;
-	padding-top:18px;
-	width:420px;
+	padding-top:10px;
+	padding-right:4px;
+	padding-left:4px;
 	float:left;
 }
 

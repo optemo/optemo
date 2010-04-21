@@ -43,6 +43,7 @@ if ($('#ajaxload'))
 //var language;
 // The following is pulled from optemo.html.erb, which in turn checks GlobalDeclarations.rb
 var IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
+var MODEL_NAME = $("#modelname").html();
 
 //--------------------------------------//
 //           UI Manipulation            //
@@ -190,7 +191,12 @@ function histogram(element, norange) {
 	length = 174,
 	shapelayer = Raphael(element,length,height),
 	h = height - 1;
-	t = shapelayer.path({fill: "#bad0f2", stroke: "#039", opacity: 0.75});
+	if (MODEL_NAME == "Flooring") {
+	    t = shapelayer.path({fill: "#ffca44", stroke: "#83571d", opacity: 0.75});
+    }
+    else {
+	    t = shapelayer.path({fill: "#bad0f2", stroke: "#039", opacity: 0.75});
+    }
 	t.moveTo(0,height);
 
 	init = 4;
@@ -552,20 +558,11 @@ function DBinit() {
 		return false;
 	});
 	//Autocomplete for searchterms
-	// First, get the model type by checking the src of a product image:
-	model = $("img.productimg")[0].src.replace(/\/[^/]+$/,"");
-    // Although these lines work properly with the regexp (e.g.) /^[^/]+\/\//, this is interpreted as a comment by the javascript packer and breaks on deploy.
-    // So, we have to use the javascript builtin RegExp constructor rather than the usual /expression/ syntax.
-    if (model.match(/images/)) // if not, something went wrong
+	model = MODEL_NAME.toLowerCase();
+    if (model.match(/printer/) || model.match(/camera/)) 
     {
-        regexp = new RegExp("^[^/]+\/\/");
-        otherRegexp = new RegExp("^[^/]*\/");
-    	model = model.replace(regexp,''); 
-    	while (model.match(otherRegexp)) { 
-    		model = model.replace(otherRegexp,''); 
-    	}
     	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
-    	terms = eval(model.substring(0, model.length - 1) + "_searchterms"); // terms now = ["waterproof", "digital", ... ]
+    	terms = eval(model + "_searchterms"); // terms now = ["waterproof", "digital", ... ]
     	$("#search").autocomplete(terms, {
     		minChars: 1,
     		max: 10,
