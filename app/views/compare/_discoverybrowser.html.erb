@@ -14,7 +14,7 @@
 		<% open = true %>
 	  <% end %>
 	  <!-- Navbox partial to draw boxes -->
-	  <%= render :partial => 'listbox', :locals => {:i => i, :cluster => Session.current.search.clusters[i] , :group => Session.current.search.clusters[i].size>1} %>
+	  <%= render :partial => 'navbox', :locals => {:i => i, :cluster => Session.current.search.clusters[i] , :group => Session.current.search.clusters[i].size>1} %>
 	  <% if i%(Float($NumGroups)/3).ceil == (Float($NumGroups)/3).ceil - 1 && !$LineItemView %>
 		</div>
 		<% open = false %>
