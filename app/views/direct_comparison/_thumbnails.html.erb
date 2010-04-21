@@ -1,7 +1,11 @@
 <div class="thumbnailcell">
 		<div class="first">
-			<% if FileTest.exist?(RAILS_ROOT + "/public/images/"+ $model.name.downcase+"s/" + thumbnails.id.to_s + "_m.jpg") %>
- 			<%= image_tag("/images/"+$model.name.downcase+"s/" + thumbnails.id.to_s + "_m.jpg", :width => 100, :onClick => "fadeout('/compare/show/' + #{thumbnails.id}+'?plain=true');", :style => "cursor: pointer;") %>
+			<% unless $model.name == "Flooring" %>
+				<% if FileTest.exist?(RAILS_ROOT + "/public/images/"+ $model.name.downcase+"s/" + thumbnails.id.to_s + "_m.jpg") %>
+		 			<%= image_tag("/images/"+$model.name.downcase+"s/" + thumbnails.id.to_s + "_m.jpg", :width => 100, :onClick => "fadeout('/compare/show/' + #{thumbnails.id}+'?plain=true');", :style => "cursor: pointer;") %>
+				<% end %>
+			<% else %>
+				<%= image_tag("http://www.builddirect.com" + CGI.unescapeHTML(thumbnails.imagelink.to_s), :width => 100, :height => 100, :onClick => "fadeout('/compare/show/' + #{thumbnails.id}+'?plain=true');") %>
 			<% end %>
  		</div>
 	<div class="thumbnaillabel">

@@ -80,13 +80,17 @@ function fadeout(url,data,width,height)
 // When you click the Save button:
 function saveProductForComparison(id, imgurl, name)
 {	
+	/* We need to store the entire thing for Flooring. Eventually this will probably not be an issue 
+	since we won't be pulling images directly from another website. Keep original code below 
 	imgurlToSaveArray = imgurl.split('/');
 	
 	imgurlToSaveArray[imgurlToSaveArray.length - 1] = id + "_s.jpg";
 	productType = imgurlToSaveArray[(imgurlToSaveArray.length - 2)];
 	productType = productType.substring(0, productType.length-1);
 	imgurlToSave = imgurlToSaveArray.join("/");
-	
+*/
+	productType = MODEL_NAME;
+	imgurlToSave = imgurl;
 	if($(".saveditem").length == 4)
 	{
 		$("#too_many_saved").css("display", "block");
@@ -519,7 +523,7 @@ function DBinit() {
 	if (IS_DRAG_DROP_ENABLED)
 	{
 		// Make item boxes draggable. This is a jquery UI builtin.		
-		$(".image_boundingbox img").each(function() {
+		$(".image_boundingbox img, .image_boundingbox_line img").each(function() {
 			$(this).draggable({ 
 				revert: 'invalid', 
 				cursor: "move", 
