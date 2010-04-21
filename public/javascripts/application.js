@@ -43,6 +43,7 @@ if ($('#ajaxload'))
 //var language;
 // The following is pulled from optemo.html.erb, which in turn checks GlobalDeclarations.rb
 var IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
+var MODEL_NAME = $("#modelname").html();
 
 //--------------------------------------//
 //           UI Manipulation            //
@@ -51,7 +52,7 @@ var IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
 function fadein()
 {
   FilterAndSearchInit();
-  $('#selector').css('visibility', 'visible');
+  $('.selectboxfilter').css('visibility', 'visible');
   $('#fade').css('display', 'none');
   $('#outsidecontainer').css('display', 'none');
   $('#outsidecontainer').unbind('click')
@@ -69,7 +70,7 @@ function fadeout(url,data,width,height)
 								'height' : height||770,
 								'display' : 'inline' });
 	$('#fade').css({'height' : getDocHeight()+'px', 'display' : 'inline'});
-	$('#selector').css('visibility', 'hidden');
+	$('.selectboxfilter').css('visibility', 'hidden');
 	if (data)
 		$('#info').html(data);
 	else
@@ -79,13 +80,17 @@ function fadeout(url,data,width,height)
 // When you click the Save button:
 function saveProductForComparison(id, imgurl, name)
 {	
+	/* We need to store the entire thing for Flooring. Eventually this will probably not be an issue 
+	since we won't be pulling images directly from another website. Keep original code below 
 	imgurlToSaveArray = imgurl.split('/');
 	
 	imgurlToSaveArray[imgurlToSaveArray.length - 1] = id + "_s.jpg";
 	productType = imgurlToSaveArray[(imgurlToSaveArray.length - 2)];
 	productType = productType.substring(0, productType.length-1);
 	imgurlToSave = imgurlToSaveArray.join("/");
-	
+*/
+	productType = MODEL_NAME;
+	imgurlToSave = imgurl;
 	if($(".saveditem").length == 4)
 	{
 		$("#too_many_saved").css("display", "block");
@@ -190,7 +195,12 @@ function histogram(element, norange) {
 	length = 174,
 	shapelayer = Raphael(element,length,height),
 	h = height - 1;
-	t = shapelayer.path({fill: "#bad0f2", stroke: "#039", opacity: 0.75});
+	if (MODEL_NAME == "Flooring") {
+	    t = shapelayer.path({fill: "#ffca44", stroke: "#83571d", opacity: 0.75});
+    }
+    else {
+	    t = shapelayer.path({fill: "#bad0f2", stroke: "#039", opacity: 0.75});
+    }
 	t.moveTo(0,height);
 
 	init = 4;
@@ -423,11 +433,15 @@ function FilterAndSearchInit() {
 		
 	});
 	// Add a brand -- submit
-	$('#selector').unbind('change').change(function(){
-		var whichbrand = $(this).val();
-		$('#myfilter_brand').val(appendStringWithToken($('#myfilter_brand').val(), whichbrand, '*'));
-		submitCategorical();
-		trackCategorical(whichbrand,100,2);
+	$('.selectboxfilter').each(function(){
+	    $(this).unbind('change').change(function(){
+		    var whichThingSelected = $(this).val();
+		    var whichSelector = $(this).attr('name')
+		    whichSelector = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]")-1);
+    		$('#myfilter_'+whichSelector).val(appendStringWithToken($('#myfilter_'+whichSelector).val(), whichThingSelected, '*'));
+    		submitCategorical();
+    		trackCategorical(whichThingSelected,100,2);
+    	});
 	});
 	
 	// Remove a brand -- submit
@@ -509,7 +523,7 @@ function DBinit() {
 	if (IS_DRAG_DROP_ENABLED)
 	{
 		// Make item boxes draggable. This is a jquery UI builtin.		
-		$(".image_boundingbox img").each(function() {
+		$(".image_boundingbox img, .image_boundingbox_line img").each(function() {
 			$(this).draggable({ 
 				revert: 'invalid', 
 				cursor: "move", 
@@ -548,26 +562,20 @@ function DBinit() {
 		return false;
 	});
 	//Autocomplete for searchterms
-	// First, get the model type by checking the src of a product image:
-	model = $("img.productimg")[0].src.replace(/\/[^/]+$/,"");
-    // Although these lines work properly with the regexp (e.g.) /^[^/]+\/\//, this is interpreted as a comment by the javascript packer and breaks on deploy.
-    // So, we have to use the javascript builtin RegExp constructor rather than the usual /expression/ syntax.
-    regexp = new RegExp("^[^/]+\/\/");
-    otherRegexp = new RegExp("^[^/]*\/");
-	model = model.replace(regexp,''); 
-	while (model.match(otherRegexp)) { 
-		model = model.replace(otherRegexp,''); 
-	}
-	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
-	terms = eval(model.substring(0, model.length - 1) + "_searchterms"); // terms now = ["waterproof", "digital", ... ]
-	$("#search").autocomplete(terms, {
-		minChars: 1,
-		max: 10,
-		autoFill: false,
-		mustMatch: false,
-		matchContains: true,
-		scrollHeight: 220
-	});
+	model = MODEL_NAME.toLowerCase();
+    if (model.match(/printer/) || model.match(/camera/)) 
+    {
+    	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
+    	terms = eval(model + "_searchterms"); // terms now = ["waterproof", "digital", ... ]
+    	$("#search").autocomplete(terms, {
+    		minChars: 1,
+    		max: 10,
+    		autoFill: false,
+    		mustMatch: false,
+    		matchContains: true,
+    		scrollHeight: 220
+    	});
+    }
 }
 
 function ShowInit() {

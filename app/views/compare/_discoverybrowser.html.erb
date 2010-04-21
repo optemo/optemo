@@ -6,20 +6,21 @@
 		<div class="tl"></div><div class="tr"></div>
 	    <%= navtitle %>
 		<div class="bl"></div><div class="br"></div>
-	</div>
-	
-	
+	<%= '</div>' unless $model == Laptop %>
+	<div class='<%= $LineItemView ? "lv" : "gv" %>'>
 	<% for i in 0..[Session.current.search.cluster_count,$NumGroups].min-1 %>
-	  <% if i%(Float($NumGroups)/3).ceil == 0 %>
+	  <% if i%(Float($NumGroups)/3).ceil == 0 && !$LineItemView %>
 		<div class="rowdiv">
 		<% open = true %>
 	  <% end %>
 	  <!-- Navbox partial to draw boxes -->
-	  <%= render :partial => 'navbox', :locals => {:i => i, :cluster => Session.current.search.clusters[i] , :group => Session.current.search.clusters[i].size>1} %>
-	  <% if i%(Float($NumGroups)/3).ceil == (Float($NumGroups)/3).ceil - 1 %>
+	  <%= render :partial => ($model == Laptop ? 'listbox' : 'navbox'), :locals => {:i => i, :cluster => Session.current.search.clusters[i] , :group => Session.current.search.clusters[i].size>1} %>
+	  <% if i%(Float($NumGroups)/3).ceil == (Float($NumGroups)/3).ceil - 1 && !$LineItemView %>
 		</div>
 		<% open = false %>
 	  <% end %>
 	<% end %>
-	<%= '</div>' if open %>
+	<%= '</div>' if open && !$LineItemView %>
+	</div>
+	<%= '</div>' if $model == Laptop %>
 	<div style="clear:both;"><span id="actioncount" style="display:none"><%= Session.current.searches.count %></span><%= '<span id="tourautostart">&nbsp;</span>' if (Session.current && (Time.now - Session.current.created_at < 3)) %></div>

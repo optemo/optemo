@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20091111215022) do
+ActiveRecord::Schema.define(:version => 20100420212549) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -278,6 +278,150 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.float    "averagereviewrating"
     t.integer  "totalreviews"
     t.string   "region",                          :default => "us"
+  end
+
+  create_table "bbcameras", :force => true do |t|
+    t.integer  "price"
+    t.boolean  "iseligibleforsupersavershipping"
+    t.integer  "bestoffer"
+    t.string   "pricehistory"
+    t.string   "imagesurl"
+    t.integer  "imagesheight"
+    t.integer  "imageswidth"
+    t.string   "imagemurl"
+    t.integer  "imagemheight"
+    t.integer  "imagemwidth"
+    t.string   "imagelurl"
+    t.integer  "imagelheight"
+    t.integer  "imagelwidth"
+    t.boolean  "instock"
+    t.float    "averagereviewrating"
+    t.integer  "totalreviews"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "imageurl"
+    t.boolean  "slr"
+    t.string   "mpn"
+    t.string   "brand"
+    t.string   "model"
+    t.float    "displaysize"
+    t.integer  "listpriceint"
+    t.float    "opticalzoom"
+    t.float    "digitalzoom"
+    t.float    "maximumresolution"
+    t.float    "itemheight"
+    t.float    "itemlength"
+    t.float    "itemwidth"
+    t.float    "itemweight"
+    t.float    "maximumfocallength"
+    t.float    "minimumfocallength"
+    t.float    "maximumshutterspeed"
+    t.float    "minimumshutterspeed"
+    t.boolean  "bulb"
+    t.boolean  "waterproof"
+    t.float    "waterproof_depth"
+    t.string   "nightmode"
+    t.float    "recyclingtime"
+    t.float    "lcdresolutionnum"
+    t.string   "lensmodel"
+    t.boolean  "crushproof"
+    t.boolean  "freezeproof"
+    t.boolean  "aa_batteries"
+    t.float    "minf"
+    t.float    "sensordiagonal"
+    t.string   "sensortype"
+    t.string   "sensorsize"
+    t.float    "conversionfactor"
+    t.float    "rating"
+    t.integer  "numvotes"
+    t.boolean  "bodyonly"
+    t.string   "video"
+    t.boolean  "hasvideomode"
+    t.integer  "packageheight"
+    t.integer  "packagelength"
+    t.integer  "packagewidth"
+    t.integer  "packageweight"
+    t.boolean  "youtubecompatible"
+    t.boolean  "builtin_is"
+    t.boolean  "lens_is"
+    t.string   "categoryid"
+    t.string   "fsskuid"
+    t.string   "skuid"
+    t.string   "guid"
+    t.string   "webcode"
+    t.string   "label_fr"
+    t.string   "title_fr"
+    t.string   "detailpageurl_fr"
+    t.string   "reviews_fr"
+    t.string   "saleenddate_fr"
+    t.string   "pricestr_fr"
+    t.string   "savings_fr"
+    t.string   "saleprice_fr"
+    t.string   "listpricestr_fr"
+    t.string   "software_fr"
+    t.string   "facedetection_fr"
+    t.string   "lcdresolution_fr"
+    t.string   "iso_fr"
+    t.string   "aperturerange_fr"
+    t.string   "flashrange_fr"
+    t.string   "shutterspeedrange_fr"
+    t.string   "specialvideomodes_fr"
+    t.string   "imagestabilization_fr"
+    t.boolean  "hasfacedetection"
+    t.integer  "facesdetected"
+    t.integer  "isomin"
+    t.integer  "isomax"
+    t.float    "flashrangemin"
+    t.float    "flashrangemax"
+    t.boolean  "hasnightmode"
+    t.datetime "saleenddate_date"
+    t.string   "label_en"
+    t.string   "title_en"
+    t.string   "detailpageurl_en"
+    t.string   "reviews_en"
+    t.string   "saleenddate_en"
+    t.string   "pricestr_en"
+    t.string   "savings_en"
+    t.string   "saleprice_en"
+    t.string   "listpricestr_en"
+    t.string   "software_en"
+    t.string   "facedetection_en"
+    t.string   "lcdresolution_en"
+    t.string   "iso_en"
+    t.string   "aperturerange_en"
+    t.string   "flashrange_en"
+    t.string   "shutterspeedrange_en"
+    t.string   "specialvideomodes_en"
+    t.string   "imagestabilization_en"
+    t.string   "category_fr"
+    t.string   "catsubclass_fr"
+    t.string   "catgroup_fr"
+    t.string   "category_en"
+    t.string   "catsubclass_en"
+    t.string   "catgroup_en"
+    t.text     "blurb_fr"
+    t.text     "blurb_en"
+    t.date     "saleenddatestamp"
+  end
+
+  create_table "bbfactors", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "product_type"
+    t.integer  "product_id"
+    t.float    "maximumresolution"
+    t.float    "itemweight"
+    t.float    "opticalzoom"
+    t.float    "price"
+    t.float    "displaysize"
+    t.float    "minimumfocallength"
+    t.float    "maximumfocallength"
+    t.float    "minimumshutterspeed"
+    t.float    "maximumshutterspeed"
+    t.float    "ppm"
+    t.float    "itemwidth"
+    t.float    "paperinput"
+    t.float    "resolutionmax"
   end
 
   create_table "best_buy_cameras", :force => true do |t|
@@ -599,7 +743,8 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.float    "itemweight"
   end
 
-  create_table "camera2", :force => true do |t|
+  create_table "camera2", :id => false, :force => true do |t|
+    t.integer  "id",                              :default => 0, :null => false
     t.text     "detailpageurl"
     t.boolean  "batteriesincluded"
     t.string   "batterydescription"
@@ -669,6 +814,27 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.boolean  "bodyonly"
   end
 
+  create_table "camera_boostexter_combined_rules", :force => true do |t|
+    t.string  "fieldname",                        :null => false
+    t.float   "weight",                           :null => false
+    t.integer "cluster_id",                       :null => false
+    t.integer "version",                          :null => false
+    t.text    "yaml_repr",  :limit => 2147483647, :null => false
+  end
+
+  add_index "camera_boostexter_combined_rules", ["fieldname", "cluster_id", "version"], :name => "fieldname", :unique => true
+
+  create_table "camera_chi_squared_scores", :force => true do |t|
+    t.integer "cluster_id",        :limit => 8, :null => false
+    t.integer "parent_cluster_id", :limit => 8, :null => false
+    t.string  "word",                           :null => false
+    t.integer "numchildren",                    :null => false
+    t.integer "version",                        :null => false
+    t.float   "score",                          :null => false
+  end
+
+  add_index "camera_chi_squared_scores", ["cluster_id", "version", "word"], :name => "cluster_id", :unique => true
+
   create_table "camera_clusters", :force => true do |t|
     t.integer "parent_id"
     t.integer "layer"
@@ -687,7 +853,30 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.string  "region",                :default => "us"
   end
 
-  create_table "camera_clusters_archive", :force => true do |t|
+  add_index "camera_clusters", ["parent_id", "version", "cached_utility"], :name => "parent_id"
+
+  create_table "camera_clusters2", :force => true do |t|
+    t.integer "parent_id"
+    t.integer "layer"
+    t.integer "cluster_size"
+    t.string  "brand"
+    t.float   "maximumresolution_min"
+    t.float   "maximumresolution_max"
+    t.float   "displaysize_min"
+    t.float   "displaysize_max"
+    t.float   "opticalzoom_min"
+    t.float   "opticalzoom_max"
+    t.float   "price_min"
+    t.float   "price_max"
+    t.integer "version",               :default => 0
+    t.float   "cached_utility"
+    t.string  "region",                :default => "us"
+  end
+
+  add_index "camera_clusters2", ["parent_id", "version", "cached_utility"], :name => "parent_id"
+
+  create_table "camera_clusters_archive", :id => false, :force => true do |t|
+    t.integer "id",                    :default => 0,    :null => false
     t.integer "parent_id"
     t.integer "layer"
     t.integer "cluster_size"
@@ -725,6 +914,20 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.integer  "search_id"
   end
 
+  add_index "camera_features", ["search_id"], :name => "search_id"
+  add_index "camera_features", ["session_id"], :name => "session_id"
+
+  create_table "camera_mi_scores", :force => true do |t|
+    t.integer "cluster_id",        :limit => 8, :null => false
+    t.integer "parent_cluster_id", :limit => 8, :null => false
+    t.string  "word",                           :null => false
+    t.integer "numchildren",                    :null => false
+    t.integer "version",                        :null => false
+    t.float   "score",                          :null => false
+  end
+
+  add_index "camera_mi_scores", ["cluster_id", "version", "word"], :name => "cluster_id", :unique => true
+
   create_table "camera_nodes", :force => true do |t|
     t.integer "cluster_id"
     t.integer "product_id"
@@ -738,7 +941,10 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.string  "region",            :default => "us"
   end
 
-  create_table "camera_nodes_archive", :force => true do |t|
+  add_index "camera_nodes", ["cluster_id", "product_id"], :name => "cluster_id_2"
+  add_index "camera_nodes", ["cluster_id"], :name => "cluster_id"
+
+  create_table "camera_nodes2", :force => true do |t|
     t.integer "cluster_id"
     t.integer "product_id"
     t.float   "maximumresolution"
@@ -750,6 +956,115 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.float   "utility"
     t.string  "region",            :default => "us"
   end
+
+  add_index "camera_nodes2", ["cluster_id", "product_id"], :name => "cluster_id_2"
+  add_index "camera_nodes2", ["cluster_id"], :name => "cluster_id"
+
+  create_table "camera_nodes_archive", :id => false, :force => true do |t|
+    t.integer "id",                :default => 0,    :null => false
+    t.integer "cluster_id"
+    t.integer "product_id"
+    t.float   "maximumresolution"
+    t.float   "displaysize"
+    t.float   "opticalzoom"
+    t.float   "price"
+    t.string  "brand"
+    t.integer "version",           :default => 0
+    t.float   "utility"
+    t.string  "region",            :default => "us"
+  end
+
+  create_table "camera_prodcounts", :force => true do |t|
+    t.integer "cluster_id",        :limit => 8, :null => false
+    t.integer "parent_cluster_id", :limit => 8, :null => false
+    t.string  "word",                           :null => false
+    t.integer "numchildren",                    :null => false
+    t.integer "version",                        :null => false
+    t.integer "count",             :limit => 8, :null => false
+  end
+
+  add_index "camera_prodcounts", ["cluster_id", "version", "word"], :name => "cluster_id", :unique => true
+
+  create_table "camera_prodtotalcounts", :force => true do |t|
+    t.integer "cluster_id",        :limit => 8, :null => false
+    t.integer "parent_cluster_id", :limit => 8, :null => false
+    t.integer "totalcount",        :limit => 8, :null => false
+    t.integer "numchildren",                    :null => false
+    t.integer "version",                        :null => false
+  end
+
+  add_index "camera_prodtotalcounts", ["cluster_id", "version"], :name => "cluster_id", :unique => true
+
+  create_table "camera_reviewcounts", :force => true do |t|
+    t.integer "cluster_id",        :limit => 8, :null => false
+    t.integer "parent_cluster_id", :limit => 8, :null => false
+    t.string  "word",                           :null => false
+    t.integer "numchildren",                    :null => false
+    t.integer "version",                        :null => false
+    t.integer "count",             :limit => 8, :null => false
+  end
+
+  add_index "camera_reviewcounts", ["cluster_id", "version", "word"], :name => "cluster_id", :unique => true
+
+  create_table "camera_reviewtotalcounts", :force => true do |t|
+    t.integer "cluster_id",        :limit => 8, :null => false
+    t.integer "parent_cluster_id", :limit => 8, :null => false
+    t.integer "totalcount",        :limit => 8, :null => false
+    t.integer "numchildren",                    :null => false
+    t.integer "version",                        :null => false
+  end
+
+  add_index "camera_reviewtotalcounts", ["cluster_id", "version"], :name => "cluster_id", :unique => true
+
+  create_table "camera_usecase_cluster_scores", :force => true do |t|
+    t.integer "usecase_id",              :null => false
+    t.float   "score",                   :null => false
+    t.integer "cluster_id", :limit => 8, :null => false
+    t.integer "version",                 :null => false
+  end
+
+  create_table "camera_usecases", :force => true do |t|
+    t.string "label", :null => false
+  end
+
+  add_index "camera_usecases", ["label"], :name => "label", :unique => true
+
+  create_table "camera_usecases_direct_indicator_words", :force => true do |t|
+    t.integer "usecase_id", :null => false
+    t.integer "word_id",    :null => false
+  end
+
+  add_index "camera_usecases_direct_indicator_words", ["usecase_id", "word_id"], :name => "usecase_id", :unique => true
+  add_index "camera_usecases_direct_indicator_words", ["word_id"], :name => "word_id_refs_id_fed99dad"
+
+  create_table "camera_usecases_indicator_words", :force => true do |t|
+    t.integer "usecase_id", :null => false
+    t.integer "word_id",    :null => false
+  end
+
+  add_index "camera_usecases_indicator_words", ["usecase_id", "word_id"], :name => "usecase_id", :unique => true
+  add_index "camera_usecases_indicator_words", ["word_id"], :name => "word_id_refs_id_68ebca26"
+
+  create_table "camera_wordcounts", :force => true do |t|
+    t.integer "cluster_id",        :limit => 8, :null => false
+    t.integer "parent_cluster_id", :limit => 8, :null => false
+    t.string  "word",                           :null => false
+    t.integer "numchildren",                    :null => false
+    t.integer "version",                        :null => false
+    t.integer "count",             :limit => 8, :null => false
+  end
+
+  add_index "camera_wordcounts", ["cluster_id", "version", "word"], :name => "cluster_id", :unique => true
+
+  create_table "camera_wordtotalcounts", :force => true do |t|
+    t.integer "cluster_id",        :limit => 8, :null => false
+    t.integer "parent_cluster_id", :limit => 8, :null => false
+    t.integer "totalcount",        :limit => 8, :null => false
+    t.integer "numchildren",                    :null => false
+    t.integer "version",                        :null => false
+  end
+
+  add_index "camera_wordtotalcounts", ["cluster_id", "version"], :name => "cluster_id", :unique => true
 
   create_table "cameras", :force => true do |t|
     t.datetime "created_at"
@@ -806,7 +1121,10 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.integer  "bestoffer"
   end
 
-  create_table "camerasPref", :force => true do |t|
+  add_index "cameras", ["instock"], :name => "instock"
+
+  create_table "camerasPref", :id => false, :force => true do |t|
+    t.integer  "id",                              :default => 0, :null => false
     t.integer  "price"
     t.boolean  "iseligibleforsupersavershipping"
     t.integer  "bestoffer"
@@ -1008,19 +1326,20 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.datetime "updated_at"
     t.string   "product_type"
     t.integer  "product_id"
-    t.float    "maximumresolution"
-    t.float    "itemweight"
-    t.float    "opticalzoom"
     t.float    "price"
+    t.float    "maximumresolution"
+    t.float    "opticalzoom"
     t.float    "displaysize"
-    t.float    "minimumfocallength"
-    t.float    "maximumfocallength"
-    t.float    "minimumshutterspeed"
-    t.float    "maximumshutterspeed"
     t.float    "ppm"
     t.float    "itemwidth"
     t.float    "paperinput"
     t.float    "resolutionmax"
+    t.float    "hd"
+    t.float    "ram"
+    t.float    "screensize"
+    t.float    "width"
+    t.float    "species_hardness"
+    t.float    "miniorder"
   end
 
   create_table "feature_requests", :force => true do |t|
@@ -1031,6 +1350,113 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.integer  "session_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "flooring_boostexter_combined_rules", :force => true do |t|
+    t.string  "fieldname",                        :null => false
+    t.float   "weight",                           :null => false
+    t.integer "cluster_id",                       :null => false
+    t.integer "version",                          :null => false
+    t.text    "yaml_repr",  :limit => 2147483647, :null => false
+  end
+
+  add_index "flooring_boostexter_combined_rules", ["fieldname", "cluster_id", "version"], :name => "fieldname", :unique => true
+
+  create_table "flooring_clusters", :force => true do |t|
+    t.integer "parent_id"
+    t.integer "layer"
+    t.integer "cluster_size"
+    t.float   "cached_utility"
+    t.integer "version"
+    t.string  "region"
+    t.string  "brand"
+    t.string  "species"
+    t.string  "feature"
+    t.float   "price_min"
+    t.float   "price_max"
+    t.float   "width_min"
+    t.float   "width_max"
+    t.float   "species_hardness_min"
+    t.float   "species_hardness_max"
+    t.float   "miniorder_min"
+    t.float   "miniorder_max"
+  end
+
+  add_index "flooring_clusters", ["cached_utility"], :name => "index_flooring_clusters_on_cached_utility"
+  add_index "flooring_clusters", ["parent_id"], :name => "index_flooring_clusters_on_parent_id"
+  add_index "flooring_clusters", ["version"], :name => "index_flooring_clusters_on_version"
+
+  create_table "flooring_features", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "session_id"
+    t.integer  "search_id"
+    t.float    "price_min"
+    t.float    "price_max"
+    t.float    "price_pref",            :default => 0.25
+    t.float    "width_min"
+    t.float    "width_max"
+    t.float    "width_pref",            :default => 0.25
+    t.float    "species_hardness_min"
+    t.float    "species_hardness_max"
+    t.float    "species_hardness_pref", :default => 0.25
+    t.float    "miniorder_min"
+    t.float    "miniorder_max"
+    t.float    "miniorder_pref",        :default => 0.25
+    t.string   "brand"
+    t.string   "species"
+    t.string   "feature"
+  end
+
+  add_index "flooring_features", ["search_id"], :name => "index_flooring_features_on_search_id"
+  add_index "flooring_features", ["session_id"], :name => "index_flooring_features_on_session_id"
+
+  create_table "flooring_nodes", :force => true do |t|
+    t.integer "cluster_id"
+    t.integer "product_id"
+    t.float   "price"
+    t.float   "width"
+    t.float   "species_hardness"
+    t.float   "miniorder"
+    t.string  "brand"
+    t.string  "species"
+    t.string  "feature"
+    t.float   "utility"
+    t.string  "region"
+    t.integer "version"
+  end
+
+  add_index "flooring_nodes", ["cluster_id"], :name => "index_flooring_nodes_on_cluster_id"
+  add_index "flooring_nodes", ["product_id"], :name => "index_flooring_nodes_on_product_id"
+
+  create_table "floorings", :force => true do |t|
+    t.integer  "category_id",      :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "title"
+    t.text     "brand"
+    t.string   "model",            :null => false
+    t.string   "imagelink",        :null => false
+    t.text     "species"
+    t.integer  "species_hardness"
+    t.text     "feature"
+    t.text     "colorrange"
+    t.float    "colorrange_f"
+    t.float    "width"
+    t.float    "price"
+    t.string   "pricestr",         :null => false
+    t.float    "regularprice"
+    t.integer  "miniorder_sq_ft"
+    t.integer  "miniorder"
+    t.text     "price_unit"
+    t.string   "warranty"
+    t.float    "thickness"
+    t.text     "size",             :null => false
+    t.string   "finish"
+    t.float    "profit_margin"
+    t.float    "overallrating",    :null => false
+    t.string   "aggregate_desc",   :null => false
+    t.boolean  "instock",          :null => false
   end
 
   create_table "grabber_cartridges", :force => true do |t|
@@ -1054,6 +1480,95 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.integer  "product_id"
     t.integer  "offering_id"
     t.string   "item_number"
+  end
+
+  create_table "laptop_boostexter_combined_rules", :force => true do |t|
+    t.string   "fieldname"
+    t.float    "weight"
+    t.integer  "cluster_id"
+    t.integer  "version"
+    t.text     "yaml_repr"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "laptop_boostexter_combined_rules", ["cluster_id"], :name => "index_laptop_boostexter_combined_rules_on_cluster_id"
+  add_index "laptop_boostexter_combined_rules", ["fieldname"], :name => "index_laptop_boostexter_combined_rules_on_fieldname"
+  add_index "laptop_boostexter_combined_rules", ["version"], :name => "index_laptop_boostexter_combined_rules_on_version"
+
+  create_table "laptop_clusters", :force => true do |t|
+    t.integer "parent_id"
+    t.integer "layer"
+    t.integer "cluster_size"
+    t.float   "cached_utility"
+    t.integer "version"
+    t.string  "region"
+    t.string  "brand"
+    t.float   "price_min"
+    t.float   "price_max"
+    t.float   "hd_min"
+    t.float   "hd_max"
+    t.float   "ram_min"
+    t.float   "ram_max"
+    t.float   "screensize_min"
+    t.float   "screensize_max"
+  end
+
+  add_index "laptop_clusters", ["cached_utility"], :name => "index_laptop_clusters_on_cached_utility"
+  add_index "laptop_clusters", ["parent_id"], :name => "index_laptop_clusters_on_parent_id"
+  add_index "laptop_clusters", ["version"], :name => "index_laptop_clusters_on_version"
+
+  create_table "laptop_features", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "session_id"
+    t.integer  "search_id"
+    t.float    "price_min"
+    t.float    "price_max"
+    t.float    "price_pref",      :default => 0.25
+    t.float    "hd_min"
+    t.float    "hd_max"
+    t.float    "hd_pref",         :default => 0.25
+    t.float    "ram_min"
+    t.float    "ram_max"
+    t.float    "ram_pref",        :default => 0.25
+    t.float    "screensize_min"
+    t.float    "screensize_max"
+    t.float    "screensize_pref", :default => 0.25
+    t.string   "brand"
+  end
+
+  add_index "laptop_features", ["search_id"], :name => "index_laptop_features_on_search_id"
+  add_index "laptop_features", ["session_id"], :name => "index_laptop_features_on_session_id"
+
+  create_table "laptop_nodes", :force => true do |t|
+    t.integer "cluster_id"
+    t.integer "product_id"
+    t.float   "price"
+    t.float   "hd"
+    t.float   "ram"
+    t.float   "screensize"
+    t.string  "brand"
+    t.float   "utility"
+    t.string  "region"
+    t.integer "version"
+  end
+
+  add_index "laptop_nodes", ["cluster_id"], :name => "index_laptop_nodes_on_cluster_id"
+  add_index "laptop_nodes", ["product_id"], :name => "index_laptop_nodes_on_product_id"
+
+  create_table "laptops", :force => true do |t|
+    t.text     "title"
+    t.integer  "price"
+    t.string   "pricestr"
+    t.string   "brand"
+    t.integer  "hd"
+    t.integer  "ram"
+    t.float    "screensize"
+    t.boolean  "instock"
+    t.text     "imgurl"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "newegg_offerings", :force => true do |t|
@@ -1339,7 +1854,8 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.string   "producttype"
   end
 
-  create_table "prefs", :force => true do |t|
+  create_table "prefs", :id => false, :force => true do |t|
+    t.integer  "id",                            :default => 0, :null => false
     t.integer  "idvisit"
     t.string   "idcookie",        :limit => 32
     t.integer  "product_picked"
@@ -1355,6 +1871,16 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.integer  "filter_type",     :limit => 2
     t.integer  "idsite"
   end
+
+  create_table "printer_boostexter_combined_rules", :force => true do |t|
+    t.string  "fieldname",                        :null => false
+    t.float   "weight",                           :null => false
+    t.integer "cluster_id",                       :null => false
+    t.integer "version",                          :null => false
+    t.text    "yaml_repr",  :limit => 2147483647, :null => false
+  end
+
+  add_index "printer_boostexter_combined_rules", ["fieldname", "cluster_id", "version"], :name => "fieldname", :unique => true
 
   create_table "printer_clusters", :force => true do |t|
     t.integer "parent_id"
@@ -1378,7 +1904,8 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.string  "region",            :default => "us"
   end
 
-  create_table "printer_clusters_archive", :force => true do |t|
+  create_table "printer_clusters_archive", :id => false, :force => true do |t|
+    t.integer "id",                :default => 0,    :null => false
     t.integer "parent_id"
     t.integer "layer"
     t.integer "cluster_size"
@@ -1441,7 +1968,8 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.string  "region",        :default => "us"
   end
 
-  create_table "printer_nodes_archive", :force => true do |t|
+  create_table "printer_nodes_archive", :id => false, :force => true do |t|
+    t.integer "id",            :default => 0,    :null => false
     t.integer "cluster_id"
     t.integer "product_id"
     t.float   "ppm"
@@ -1558,6 +2086,8 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.string   "local_id"
   end
 
+  add_index "retailer_offerings", ["product_id", "product_type", "region"], :name => "product_id"
+
   create_table "retailers", :force => true do |t|
     t.string   "url"
     t.string   "name"
@@ -1588,6 +2118,17 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.text     "pros"
     t.text     "cons"
     t.float    "value_rating"
+  end
+
+  add_index "reviews", ["product_type", "product_id"], :name => "product_type"
+
+  create_table "saveds", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "session_id"
+    t.integer  "product_id"
+    t.integer  "search_id"
+    t.string   "product_type"
   end
 
   create_table "scraped_cameras", :force => true do |t|
@@ -1632,6 +2173,11 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.boolean  "aa_batteries"
     t.boolean  "bodyonly"
     t.float    "maximumresolution"
+  end
+
+  create_table "scraped_cartridges", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "scraped_printers", :force => true do |t|
@@ -1724,6 +2270,8 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.string   "searchterm"
   end
 
+  add_index "searches", ["session_id"], :name => "session_id"
+
   create_table "sessions", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -1733,6 +2281,14 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.boolean  "filter"
     t.string   "region",       :default => "us"
   end
+
+  create_table "stem_labels", :force => true do |t|
+    t.string "label", :null => false
+    t.string "stem",  :null => false
+  end
+
+  add_index "stem_labels", ["label"], :name => "label", :unique => true
+  add_index "stem_labels", ["stem"], :name => "stem", :unique => true
 
   create_table "surveys", :force => true do |t|
     t.datetime "created_at"
@@ -1888,5 +2444,41 @@ ActiveRecord::Schema.define(:version => 20091111215022) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "word_senses", :force => true do |t|
+    t.integer "word_id",                          :null => false
+    t.integer "name_id",                          :null => false
+    t.string  "pos",        :limit => 1,          :null => false
+    t.string  "definition",                       :null => false
+    t.text    "notes",      :limit => 2147483647
+  end
+
+  add_index "word_senses", ["word_id", "name_id", "definition"], :name => "word_id", :unique => true
+
+  create_table "word_senses_antonyms", :force => true do |t|
+    t.integer "wordsense_id", :null => false
+    t.integer "word_id",      :null => false
+  end
+
+  add_index "word_senses_antonyms", ["word_id"], :name => "word_id_refs_id_59472afd"
+  add_index "word_senses_antonyms", ["wordsense_id", "word_id"], :name => "wordsense_id", :unique => true
+
+  create_table "word_senses_synonyms", :force => true do |t|
+    t.integer "wordsense_id", :null => false
+    t.integer "word_id",      :null => false
+  end
+
+  add_index "word_senses_synonyms", ["word_id"], :name => "word_id_refs_id_92b01d6a"
+  add_index "word_senses_synonyms", ["wordsense_id", "word_id"], :name => "wordsense_id", :unique => true
+
+  create_table "words", :force => true do |t|
+    t.string  "word",                                    :null => false
+    t.string  "stem",                                    :null => false
+    t.integer "count",                      :limit => 8, :null => false
+    t.string  "correction"
+    t.date    "synonyms_last_crawled_date"
+  end
+
+  add_index "words", ["word"], :name => "word", :unique => true
 
 end

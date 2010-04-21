@@ -79,8 +79,13 @@ class CompareController < ApplicationController
       #No post info passed
       render :text =>  "[ERR]Search could not be completed."
     else
-      #Fixes the fact that the brand selector value is not used
+      #Fixes the fact that the brand selector value is not used, among other selectors
       params[:myfilter].delete("brand1")
+      # These were introduced for Flooring
+      params[:myfilter].delete("species1")
+      params[:myfilter].delete("colorrange1")
+      params[:myfilter].delete("feature1")
+      
       Session.current.search = Session.current.searches.last #My last search used for finding the right filters
       session.updateFilters(params[:myfilter])
       clusters = session.clusters
@@ -107,7 +112,15 @@ class CompareController < ApplicationController
     params[:id] = params[:id][/^\d+/]
     @product = findCachedProduct(params[:id])
     if $model.name
-      @imglurl = "/images/" + $model.name.downcase + "s/" + @product.id.to_s + "_l.jpg"
+      if $model.name == "Flooring"
+        imagestring = CGI.unescapeHTML(@product.imagelink.to_s).split("&")
+        imagestring[0] = imagestring[0].split("?")[0] + "?" + imagestring[1]
+        imagestring.delete_at(1)
+        imagestring = imagestring.join("&")
+        @imglurl = "http://www.builddirect.com" + imagestring
+      else
+        @imglurl = "/images/" + $model.name.downcase + "s/" + @product.id.to_s + "_l.jpg"
+      end
     else
       @imglurl = "/images/printers/" + @product.id.to_s + "_l.jpg"
     end
@@ -168,4 +181,20 @@ class CompareController < ApplicationController
       end
     end
   end
+
+  
+  def searchterms
+#    # There is a strange beauty in the illegibility of the following line.
+#    # Must do a join followed by a split since the initial mapping of titles is like this: ["keywords are here", "and also here", ...]
+#    # The gsub lines are to take out the parentheses on both sides, take out commas, and take out trailing slashes.
+#    searchterms = findCachedTitles.join(" ").split(" ").map{|t| t.tr("()", '').gsub(/,/,' ').gsub(/\/$/,'').chomp}.uniq
+#    # Delete all the 1200x1200dpi, the "/" or "&" strings, all two-letter strings, and things that don't start with a letter or number.
+#    searchterms.delete_if {|t| t == '' || t.match('[0-9]+.[0-9]+') || t.match('^..?$') || t.match('^[^A-Za-z0-9]') || t.downcase.match('^print')}
+##    duplicates = searchterms.inject({}) {|h,v| h[v]=h[v].to_i+1; h}.reject{|k,v| v==1}.keys
+#    @searchterms = searchterms.map{|t|t.match(/[^A-Za-z0-9]$/)? t.chop.downcase : t.downcase }.uniq.join('[BRK]')
+#    # Particular to this data
+#    render 'searchterms', :layout => false
+  render :text => "word"
+  end
+
 end

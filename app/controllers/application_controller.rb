@@ -49,10 +49,15 @@ class ApplicationController < ActionController::Base
         "Camera"
       when "printers"
         "Printer"
+      when "flooring", "builddirect"
+        "Flooring"
+      when "laptops", "walmart"
+        "Laptop"
       else
         $DefaultProduct
       end  
-    end
+      $LineItemView = false if ds != "Laptop" && ds != "Flooring"
+   end
 
     $model = ds.constantize
     $nodemodel = (ds + 'Node').constantize
@@ -60,6 +65,12 @@ class ApplicationController < ActionController::Base
     $featuremodel = (ds + 'Features').constantize
     $rulemodel = (ds + 'BoostexterCombinedRule').constantize
   end
+  
+# def set_version
+#   ds = case request.url.match(/\?version=\d\d/) ? 
+#   
+#   
+# end
   
   def update_user
     $region = request.url.match(/\.ca/) ? "ca" : "us"
@@ -85,7 +96,11 @@ class ApplicationController < ActionController::Base
       mysession.keywordpids = nil
       mysession.keyword = nil
     end
-    mysession.version = $clustermodel.maximum(:version, :conditions => ['region = ?', $region])
+
+    mysession.version = $clustermodel.find_last_by_region($region).version
+
+#    mysession.version = $clustermodel.maximum(:version, :conditions => ['region = ?', $region])
+
     Session.current = mysession
   end
   

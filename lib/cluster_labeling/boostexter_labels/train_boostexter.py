@@ -29,6 +29,14 @@ fn.output_subdir = \
 fn.boostexter_subdir = \
     os.path.join(root_path, "lib/", fn.boostexter_subdir)
 
+# Check that the necessary paths exist
+if not os.path.exists(fn.output_subdir):
+    print "%s directory does not exist", (fn.output_subdir)
+
+boostexter_progfn = 'boostexter'
+if not os.path.exists(os.path.join(fn.boostexter_subdir, boostexter_progfn)):
+    print "The boostexter executable %s does not exist", (fn.output_subdir)
+
 # Only runs on Linux (not on OS X) because boostexter executable is
 # more than 10 years old.
 import cluster_labeling.boostexter_labels as b_lbls

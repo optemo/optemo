@@ -66,35 +66,3 @@ def compute_parent_cluster_quartiles(cluster, fieldname):
            values(fieldname)[q_75][fieldname]
 
     return q_25, q_75
-
-def make_label_for_rules_for_field(cluster, fieldname, rules):
-    assert(all_rules_are_for_same_field(rules))
-
-    rule_type = get_rule_type(rules[0])
-
-    if rule_type == str(BoosTexterThresholdRule):
-        return combine_threshold_rules(cluster, fieldname, rules)
-    elif rule_type == str(BoosTexterSGramRule):
-        return combine_sgram_rules(fieldname, rules)
-    else:
-        assert(False)
-
-def make_labels_from_rules(cluster, rules):
-    # Put all rules for a particular field together
-    rules_a = gather_rules(rules)
-
-    labels = []
-    skipped_fields = []
-
-    for (fieldname, rules_for_field) in rules_a.iteritems():
-        maxweight, label = \
-            make_label_for_rules_for_field\
-            (cluster, fieldname, rules_for_field)
-
-        if label is None:
-            skipped_fields.append(fieldname)
-        else:
-            labels.append((maxweight, label))
-
-    labels = map(lambda x: x[1], sorted(labels, key=lambda x: x[0])[::-1])
-    return labels, skipped_fields

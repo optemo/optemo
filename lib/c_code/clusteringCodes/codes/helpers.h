@@ -316,19 +316,14 @@ void getStatisticsData1(double** data, int** indicators, int size, int conFeatur
 			average[j] = average[j]/size;
 		}
 		
-	
 			for (int c=0; c<clusterN; c++){
 				ind = find(idA, clusteredData[c][1], size);
-		
 				for(int f=0; f<conFeatureN; f++){
-					
 	  	          conFeatureRange[c][f][1] = data[ind][f]; 
-	
 	              conFeatureRange[c][f][0] = data[ind][f]; 
 				}
 	        } 
 
-	/////
 			for (int c=0; c<clusterN; c++){
 				for (int f=0; f<conFeatureN; f++){
 		      		for(int j = 0; j<clusteredData[c][0]; j++){
@@ -344,7 +339,7 @@ void getStatisticsData1(double** data, int** indicators, int size, int conFeatur
 					}
 				 }
 			}			
-	  	}
+}
 
 
 
@@ -543,7 +538,6 @@ void weightedMedian(double** data, int size, int conFeatureN, int* sortedA, doub
 
 
 void median2(double** data, int size, int conFeatureN, int* sortedA){
-
 	double* distan = new double[size];
 	for (int j=0; j<size; j++){
 	    distan[j] = 0;
@@ -553,20 +547,16 @@ void median2(double** data, int size, int conFeatureN, int* sortedA){
 		   }
 		}	
 	}
-	
 	insertion_sort(distan, sortedA, size);
-
 }
 
 
 void repOrder(double** dataCluster, int size, string mode, int conFeatureN, int boolFeatureN, int* order, double* weights){
-	
 	if (mode=="median"){
 		weightedMedian(dataCluster, size, conFeatureN, order, weights);
 	}
 
 }
-
 
 void utilityOrder(double** data, int* idA, int size, int** clusteredData, int** clusteredDataOrder, int** clusteredDataOrderU, int clusterN, int conFeatureN, 
 				int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, string productName){
@@ -578,7 +568,6 @@ void utilityOrder(double** data, int* idA, int size, int** clusteredData, int** 
 	capProductName[0] = productName[0] - 32;
 	string command;
 	int* orderRec = new int [clusterN];
-
 	for (int c=0; c<clusterN; c++){	
 		utility = 0.0;
 		orderRec[c] = c;
@@ -605,7 +594,7 @@ void utilityOrder(double** data, int* idA, int size, int** clusteredData, int** 
 				}
 		}
 		avgUtilities[c] = utility/clusteredData[c][0];
-	}		
+	}
 	insertion_sort(avgUtilities, orderRec, clusterN);
 	for (int c=0; c<clusterN; c++){
 		clusteredDataOrderU[clusterN-c-1][0] = clusteredData[orderRec[c]][0];

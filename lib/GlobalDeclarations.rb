@@ -8,8 +8,10 @@ $AppKey = "7aeec628ded26fb3b03829fb4142da01"
 $PrefDirection = Hash.new(1) # Set 1 i.e. Up as the default value for direction
 $PrefDirection["price"] = -1 # -1 for down direction for preferences
 $PrefDirection["itemwidth"] = -1
+$PrefDirection["width"] = -1
+$PrefDirection["miniorder"] = -1
 
-$ProdTypeList = ['Printer','Camera']
+$ProdTypeList = ['Printer','Camera','Flooring','Laptop']
 
 # Define weights assigned to user navigation tasks that determine preferences
 $Weight = Hash.new(0) # Set 0 as the default value for direction
@@ -32,3 +34,6 @@ $DefaultUses = Hash[*%w(corporate small_office home_office photography).sort.rev
 $DragAndDropEnabled = true
 $RelativeDescriptions = true
 $NumGroups = 9
+
+# This parameter controls whether to go with the traditional box-layout or a line-item layout (from the hierarchy branch)
+$LineItemView = true
