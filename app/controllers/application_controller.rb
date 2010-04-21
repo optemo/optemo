@@ -51,6 +51,8 @@ class ApplicationController < ActionController::Base
         "Printer"
       when "flooring"
         "Flooring"
+      when "laptops"
+        "Laptop"
       else
         $DefaultProduct
       end  

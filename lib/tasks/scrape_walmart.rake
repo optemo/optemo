@@ -6,7 +6,7 @@ task :scrape_walmart => :environment do
   all_records = doc.css(".item")
   i_records = []
   all_records.each do |item|
-    imgurl = item.css(".prodImg").attribute("src")
+    imgurl = item.css(".prodImg").attribute("src").content
     title = item.css(".prodLink").first.content
     next if item.css(".ProdDesc li").empty?
     features = item.css(".ProdDesc li").map{|d| d.content}.join(" ") #Model is still in an html tag
@@ -16,8 +16,9 @@ task :scrape_walmart => :environment do
     #Extract data
     i = Laptop.new
     
-    i.price = pricefield[/\$\d+\.\d\d/]
-    i.pricestr = "$#{i.price}"
+    price = pricefield[/\d+\.\d\d/].to_f
+    i.pricestr = "$#{"%.2f" % price}"
+    i.price = price * 100
     #RAM
     m = features[/(\d) ?GB\s?(DDR|Memory|memory|of memory|shared)/]
     i.ram = $~[1] if m
