@@ -165,8 +165,8 @@ class Search < ActiveRecord::Base
         elsif weighted_average > quartiles[1].to_f # This is high for the given feature
           current_cluster_tagline.push("higher#{featurename}")
         else # Inclusion. It's between 25% and 75%
-          # Do nothing? Averages are included for now, comment this out to remove
-          current_cluster_tagline.push("avg#{featurename}")
+          # Do nothing? Averages are not included for now, take out the comment on the next line to add
+          # current_cluster_tagline.push("avg#{featurename}")
         end
         break if current_cluster_tagline.length == 2 # Limit to 2 taglines per cluster (this is due to a space limitation in the UI)
       end
