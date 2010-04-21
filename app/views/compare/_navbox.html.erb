@@ -1,4 +1,4 @@
-<div id="box<%= i %>" class="navigator_box<%= $LineItemView ? (((i % 2) != 0) ? ' greybg' : '' ) :(group ? " nbgroup" : " nbsingle") %>" <%= $model.name == "Flooring" || $model.name == "Laptop" ? '' :("style='margin-right:0px'" if i%(Float($NumGroups)/3).ceil == (Float($NumGroups)/3).ceil - 1) %>>
+<div id="box<%= i %>" class="navigator_box<%= $LineItemView ? (((i % 2) != 0) ? ' greybg' : '' ) :(group ? " nbgroup" : " nbsingle") %>" <%= $LineItemView ? '' :("style='margin-right:0px'" if i%(Float($NumGroups)/3).ceil == (Float($NumGroups)/3).ceil - 1) %>>
 	<% unless $LineItemView %>
 	<div class="topbar">
 	<% end %>
