@@ -7,8 +7,11 @@
 <% end %>
 	<h1><%= URI.decode(@product.title) %></h1>
 	<div id="image">
-
-		<% if FileTest.exist?(RAILS_ROOT + "/public" + @imglurl) %>
+		<% if $model.name == "Flooring" %>
+			<%= link_to image_tag(@imglurl), @imglurl, :popup => true %>
+		<% elsif $model.name == "Laptop" %>
+			<%= link_to image_tag(@imglurl), @imglurl, :popup => true %>
+		<% elsif FileTest.exist?(RAILS_ROOT + "/public" + @imglurl) %>
 			<%= link_to image_tag(@imglurl, :width => @product.imagelw, :height => @product.imagelh), @imglurl, :popup => true %>
 		<% else %>
 			<br><br>No Image Available
@@ -26,7 +29,7 @@
 						<%= link_to "better", "javascript:findBetter('#{@product.id}', '#{f_name}')", :"data-id" => f_name, :class => 'betterlink' %>
 					</div>
 					<% end %>
-				 	<span class="detail_label"><%=t 'products.'+ $model::ShowFeatures[i] %>: </span><%= @product.display f_name %>
+				 	<span class="detail_label"><%=t 'products.'+ $model::ShowFeatures[i] %>: </span><%= (@product.display f_name).split('*').join(" ") %><%=' ' + t('products.'+ $model::ShowFeatures[i]+'unit', :default => '')%>
 				</li>
 			<% end %>
 		<% end %>
@@ -34,7 +37,13 @@
 	</div>
 	<div style="clear: left"></div>
 	<div class="showtable">
+	<% if $model.name == "Flooring" %>
+		<h3>Available from <a href="http://www.builddirect.com">Build Direct</a></h3>
+	<% elsif $model.name == "Laptop" %>
+		<h3>Available from <a href="http://www.walmart.com">Walmart</a></h3>
+	<% else %>
 		<h3>Available At The Following Retailers</h3>
+	<% end %>
 	<% @offerings.each do |offer| %>
 		<% next if !offer.stock || offer.priceint.blank? %>
 		<div class="left">	

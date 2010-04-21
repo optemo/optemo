@@ -16,3 +16,9 @@ stylesheets:
   - compare
   - show
   - welcome
+- secondary: 
+  - camera-z
+  - compare
+  - show-z
+  - welcome-z
+

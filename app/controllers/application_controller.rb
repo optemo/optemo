@@ -49,13 +49,18 @@ class ApplicationController < ActionController::Base
         "Camera"
       when "printers"
         "Printer"
-      when "flooring"
+      when "flooring", "builddirect"
         "Flooring"
-      when "laptops"
+      when "laptops", "walmart"
         "Laptop"
       else
         $DefaultProduct
       end  
+      if ds == "Laptop" || ds == "Flooring"
+        $LineItemView = true
+      else
+        $LineItemView = false 
+      end
    end
 
     $model = ds.constantize

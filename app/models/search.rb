@@ -131,7 +131,9 @@ class Search < ActiveRecord::Base
       unless product_ids.empty?
         @products = findCachedProducts(product_ids).index_by(&:id)        
         rules.each do |r|
-          unpacked_weighted_intervals = YAML.load(r.yaml_repr).map {|i| [i["interval"], i["weight"]]}
+          # This check will not work in future, but will work for now. There will be a type field in the YAML representation instead.
+          unpacked_weighted_intervals = YAML.load(r.yaml_repr).map {|i| [i["interval"], i["weight"]] unless i.class == Array}
+          next if unpacked_weighted_intervals.compact.empty?
           z = 0
           weighted_average = 0
           # The products hash has all the cache hits for cameras serialized as a single request.

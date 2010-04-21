@@ -1,0 +1,26 @@
+<div id="box<%= i %>" class="navigator_box<%= ' nbsingle' unless group %>">
+		
+			<% if group %>
+				<div class='sim'>
+					<%= link_to(image_tag("#{'plus' + ($LineItemView ? '_line.png' : '.png')}")+"<br>#{cluster.size}", 
+				  	  "/compare/sim/#{cluster.id}", :id => "sim#{i}", :class => 'simlinks rounded', 
+						  :"data-id" => "#{cluster.representative.id}", :"title" => "Browse through all " + cluster.size.to_s + " in this group") %>
+				</div>
+			<% end %>
+			
+	
+		<div class="title">
+			<%= groupDesc(group,i) %>
+		</div>
+	
+		<div class="productinfo rounded" onClick="javascript:location.href='<%= cluster.representative.descurl %>'">
+			<div class="productimg">
+				<%= image_tag(imgurl(cluster) , :"data-id" => cluster.representative.id, :class => "productimg", :alt => cluster.representative.smlTitle, :title => cluster.representative.smlTitle) %>
+			</div>
+			<a href="<%=cluster.representative.descurl%>" data-id="<%=cluster.representative.id%>" class="easylink" title="Click for product specifications"><%= cluster.representative.smlTitle %></a>
+			<div class="price">
+				<%= $region == "us" ? cluster.representative.pricestr : cluster.representative.price_ca_str %>
+			</div>
+		</div>
+	<div style="clear:both;"></div>
+</div>
