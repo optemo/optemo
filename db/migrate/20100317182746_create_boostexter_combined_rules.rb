@@ -8,6 +8,7 @@ class CreateBoostexterCombinedRules < ActiveRecord::Migration
       t.text :yaml_repr
 
       t.timestamps
+      t.string :rule_type
     end
     add_index :boostexter_combined_rules, :fieldname
     add_index :boostexter_combined_rules, :cluster_id
