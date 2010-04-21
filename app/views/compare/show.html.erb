@@ -35,7 +35,11 @@
 	</div>
 	<div style="clear: left"></div>
 	<div class="showtable">
+	<% unless $model.name == "Flooring" %>
+		<h3>Available from <a href="http://www.builddirect.com">Build Direct</a></h3>
+	<% else %>
 		<h3>Available At The Following Retailers</h3>
+	<% end %>
 	<% @offerings.each do |offer| %>
 		<% next if !offer.stock || offer.priceint.blank? %>
 		<div class="left">	

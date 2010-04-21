@@ -11,7 +11,7 @@
 <meta name="classification" content="Laser Printers" />
 <meta name="rating" content="General" />
 <link rel="shortcut icon" href="/favicon.ico" />
-<%= stylesheet_link_merged :base %>
+<%= $model.name == "Flooring" ? stylesheet_link_merged(:secondary) : stylesheet_link_merged(:base) %>
 </head>
 <body>
 <div id="mycenter">
@@ -21,11 +21,15 @@
 		<%= link_to image_tag('ca.gif'), url_for_intl('ca') %>
 	  </div-->
 	  <div id="logo">
-		<a href="<%= url_for '/' %>" id ="logo" title="<%= $model.name == "Camera" ? 'Cameras.BrowseThenBuy.com' : 'LaserPrinterHub.com' %>"><%= $region == "us" ? image_tag('logo'+($model.name == 'Printer' ? '' : '_' + $model.name.downcase + 's')+'.jpg') : image_tag('logo'+($model.name == "Camera" ? '_cameras' : '_ca')+'.jpg')%><span>Home</span></a>
+		<a href="<%= url_for '/' %>" id ="logo" title="<%= $model.name == "Flooring" ? 'builddirect.optemo.com' : ($model.name == "Camera" ? 'Cameras.BrowseThenBuy.com' : 'LaserPrinterHub.com') %>"><%= $region == "us" ? image_tag('logo'+($model.name == 'Printer' ? '' : '_' + $model.name.downcase + 's')+'.jpg') : image_tag('logo'+($model.name == "Camera" ? '_cameras' : '_ca')+'.jpg')%><span>Home</span></a>
 	  </div>
 		<% if $model.name == "Printer" %><a href="<%= url_for '/laserprinters' %>" title="Why buy a laser printer?" id='whylaser'></a><% end %>
 	 <div id="tagline">
+		<% if $model.name == "Laptop" %>
 		Find the right <%= $model.name.downcase %> that fits your needs! Use this product finder to browse products by similarity and attribute filters.
+		<% elsif $model.name == "Flooring" %>Browse &amp; compare different types of hardwood floor to find the best deals around!
+		<% else %>Find, compare, and buy the right <%= $model.name.downcase %> for you! We have found the best deals from various online retailers for you.
+		<% end %>
 	</div>
      <!-- div id="logindisplay">                                                                                               
    		<% if !cookies[$AppKey +"_user"].nil? %>
@@ -69,6 +73,7 @@
 <div style="display:none;">
 <span id="dragDropEnabled"><%= $DragAndDropEnabled %></span>
 <span id="seshid" session-id="<%= Session.current.id unless Session.current.nil? %>"><%= Session.current.id unless Session.current.nil? %></span>
+<span id="modelname"><%= $model.name %></span>
 </div>
 
 <!--[if lt IE 7]><style>

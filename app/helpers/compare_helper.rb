@@ -42,7 +42,7 @@ module CompareHelper
     if Session.current.keyword.nil?
       
 		  #(Session.current.search.result_count > 1) ? t("products.compare.browsings",:count => Session.current.search.result_count) + $model.name + "s" : t("products.compare.browsing") + $model.name
-		  ["Browsing", Session.current.search.result_count, (Session.current.search.result_count > 1) ? $model.name.pluralize : $model.name].join(" ")
+		  ["Browsing", Session.current.search.result_count, (Session.current.search.result_count > 1) ? ($model.name == "Flooring" ? "Types of Flooring" : $model.name.pluralize) : $model.name].join(" ")
 		else
       "#{t("products.compare.search")}: '#{Session.current.keyword}', #{(Session.current.search.result_count > 1) ? t("products.compare.browsings",:count => Session.current.search.result_count) : t("products.compare.browsing")}" 
     end
