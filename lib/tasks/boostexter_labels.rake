@@ -1,7 +1,10 @@
 desc "Run boostexter to generate strong hypothesis files for label generation"
 task :btxtr_labels_training => :environment do
      $: << File.expand_path(File.dirname(RAILS_ROOT) + "/site/lib/cluster_labeling/boostexter_labels_rb")
+     require 'hackey_hacks.rb'
      require 'train_boostexter.rb'
+
+     BtxtrLabels.set_product_type(Camera)
      BtxtrLabels.train_boostexter_on_all_clusters()
 end
 
