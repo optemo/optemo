@@ -1,5 +1,5 @@
 module BtxtrLabels
-  boosting_fields = \
+  Boosting_fields = \
   {
     Laptop => {
       'price' => ['continuous'],
