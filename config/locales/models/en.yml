@@ -136,7 +136,7 @@ en:
         lowerhd:                    "Less Storage"
         higherram:                  "More Memory"
         avgram:                     "Average Ram"
-        lowerram:                   "Less Storage"
+        lowerram:                   "Less Memory"
         higherscreensize:           "Larger Screen"
         avgscreensize:              "Average Screen Size"
         lowerscreensize:            "Smaller Screen"
