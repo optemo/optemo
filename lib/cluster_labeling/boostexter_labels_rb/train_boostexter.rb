@@ -1,4 +1,3 @@
-#!/usr/bin/env irb
 require 'training'
 
 module BtxtrLabels
