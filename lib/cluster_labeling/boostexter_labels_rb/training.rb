@@ -102,5 +102,20 @@ module BtxtrLabels
   end
 
   def BtxtrLabels.train_boostexter(cluster)
+    # See the boosexter README for description of commands
+    boostexter_prog = Boostexter_subdir + 'boostexter'
+    boostexter_args = [
+        '-n', str(40), # numrounds 
+        '-W', str(1), # ngram_maxlen
+        '-N', 'ngram', # ngram_type
+        '-S', get_filename_stem(cluster) # 'filename_stem'
+        ]
+
+    cmd = [boostexter_prog]
+    cmd.extend(boostexter_args)
+
+    cmd_str = ([boostexter_prog] + boostexter_args).join(" ")
+    IO.popen(cmd_str){|f| f.readlines()}
+    assert($?.exitstatus == 0)
   end
 end
