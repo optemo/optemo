@@ -55,4 +55,10 @@ module BtxtrLabels
       'price' => ['continuous']
     }
   }
+
+  Boosting_fields_ordered = {}
+  Boosting_fields.each_pair\
+  { |type, fields|
+    Boosting_fields_ordered[type] = {fields.sort()}
+  }
 end
