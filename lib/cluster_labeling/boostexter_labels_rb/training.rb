@@ -107,6 +107,8 @@ module BtxtrLabels
       }
       f.write(cluster_id.to_s() + ".\n")
     end
+
+    f.flush()
   end
 
   def BtxtrLabels.train_boostexter(cluster)
