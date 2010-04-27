@@ -12,6 +12,7 @@ module BtxtrLabels
 
     labels = get_labels(cluster)
     f.write(labels.map{|l| l.to_s()}.join(", "))
+    f.write(".\n")
 
     Boosting_fields[$model].each_pair\
     { |fieldname, field|
@@ -45,9 +46,11 @@ module BtxtrLabels
 
     version = cluster.version
 
-    products_this = cluster.nodes.map{|n| [n.product_id, cluster.id]}
+    products_this = cluster.nodes.map\
+    {|n| $model.find(:all, :conditions => {:id => n.product_id})[0]}
+    products_this = products_this.map{|p| [p, cluster.id]}
 
-    parent_cluster_nodes = None
+    parent_cluster_nodes = nil
 
     if cluster.parent_id == 0
       clusters = $clustermodel.find(:all, :conditions => {:parent_id => 0, :version => version})
@@ -57,11 +60,11 @@ module BtxtrLabels
       parent_cluster_nodes = parent_cluster.nodes
     end
 
-    products_parent = parent_cluster_nodes.map{|n| n.product}.find_all\
-    { |p|
+    products_parent = parent_cluster_nodes.map{|n| n.product_id}.find_all\
+    { |p_id|
       # Get clusters for product and version
       cluster_ids = \
-      $nodemodel.find(:all, :conditions => {:product_id => p.id, :version = version}).map\
+      $nodemodel.find(:all, :conditions => {:product_id => p_id, :version => version}).map\
       { |n|
         n.cluster_id
       }
@@ -69,7 +72,11 @@ module BtxtrLabels
       cluster_id_set = Set.new(cluster_ids)
       not cluster_id_set.member?(cluster.id)
     }
-    products_parent = products_parent.map{|p| [p.id, cluster.parent_id]}
+    products_parent = products_parent.map\
+    {|p_id| $model.find(:all, :conditions => {:id => p_id})[0]}
+
+    products_parent = products_parent.map\
+    {|p| [p, cluster.parent_id]}
 
     products = products_this + products_parent
 
@@ -77,25 +84,26 @@ module BtxtrLabels
       Boosting_fields[$model].each_pair\
       { |fieldname, field|
         fielddesc = field[0]
-        fieldval = product.instance_variable_get(fieldname.to_sym())
+        fieldval = product.send(fieldname.to_sym())
 
-        if fielddesc = ['True', 'False']
+        if fielddesc == ['True', 'False']
           if fieldval == '1' or fieldval == 'True'
             fieldval = 'True'
           else
             fieldval = 'False'
           end
-        elsif fieldval == None
+        elsif fieldval == nil
           fieldval = '?' # unknown value
-        elsif fielddesc = 'text'
-          if len(field) == 2 and field[1].has_key?('text_to_btxtr_fn')
-            fieldval = field[1]['text_to_btxtr_fn'](fieldval)
+        elsif fielddesc == 'text'
+          if field.length() == 2 and field[1].has_key?('text_to_btxtr_fn')
+            text_to_btxtr_fn = field[1]['text_to_btxtr_fn']
+            fieldval = text_to_btxtr_fn(fieldval)
           else
             fieldval = default_text_to_btxtr_fn(fieldval)
           end
         end
 
-        f.write(fieldval)
+        f.write(fieldval.to_s() + ", ")
       }
       f.write(cluster_id.to_s() + ".\n")
     end
@@ -103,19 +111,19 @@ module BtxtrLabels
 
   def BtxtrLabels.train_boostexter(cluster)
     # See the boosexter README for description of commands
-    boostexter_prog = Boostexter_subdir + 'boostexter'
+    boostexter_prog = Boostexter_subdir + '/boostexter'
     boostexter_args = [
-        '-n', str(40), # numrounds 
-        '-W', str(1), # ngram_maxlen
+        '-n', 40.to_s(), # numrounds 
+        '-W', 1.to_s(), # ngram_maxlen
         '-N', 'ngram', # ngram_type
         '-S', get_filename_stem(cluster) # 'filename_stem'
         ]
 
-    cmd = [boostexter_prog]
-    cmd.extend(boostexter_args)
-
     cmd_str = ([boostexter_prog] + boostexter_args).join(" ")
     IO.popen(cmd_str){|f| f.readlines()}
-    assert($?.exitstatus == 0)
+
+    if $?.exitstatus != 0
+        raise "boostexter did not run successfully"
+    end
   end
 end
