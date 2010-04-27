@@ -4,6 +4,8 @@ task :btxtr_labels_training => :environment do
      require 'hackey_hacks.rb'
      require 'train_boostexter.rb'
 
+     Session.current=Session.new
+
      BtxtrLabels.set_product_type(Camera)
      BtxtrLabels.train_boostexter_on_all_clusters()
 end
