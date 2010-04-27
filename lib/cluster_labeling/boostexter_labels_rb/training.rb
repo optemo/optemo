@@ -14,7 +14,7 @@ module BtxtrLabels
     f.write(labels.map{|l| l.to_s()}.join(", "))
     f.write(".\n")
 
-    Boosting_fields[$model].each_pair\
+    Boosting_fields_ordered[$model].map\
     { |fieldname, field|
       fielddesc = field[0]
 
@@ -81,7 +81,7 @@ module BtxtrLabels
     products = products_this + products_parent
 
     for product, cluster_id in products
-      Boosting_fields[$model].each_pair\
+      Boosting_fields_ordered[$model].map\
       { |fieldname, field|
         fielddesc = field[0]
         fieldval = product.send(fieldname.to_sym())
