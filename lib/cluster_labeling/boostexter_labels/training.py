@@ -16,7 +16,7 @@ def generate_names_file(cluster):
     labels = get_labels(cluster)
     f.write(', '.join(map(str, labels)) + '.\n')
 
-    for fieldname, field in fields.boosting_fields[optemo.product_type].iteritems():
+    for (fieldname, field) in fields.boosting_fields_ordered[optemo.product_type]:
         fielddesc = field[0]
 
         f.write(fieldname + ": ")
@@ -73,7 +73,7 @@ def generate_data_file(cluster):
     products.extend(products_parent)
     
     for product, cluster_id in products:
-        for fieldname, field in fields.boosting_fields[optemo.product_type].iteritems():
+        for (fieldname, field) in fields.boosting_fields_ordered[optemo.product_type]:
             fielddesc = field[0]
             fieldval = product.__getattribute__(fieldname)
 
