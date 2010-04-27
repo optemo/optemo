@@ -59,6 +59,6 @@ module BtxtrLabels
   Boosting_fields_ordered = {}
   Boosting_fields.each_pair\
   { |type, fields|
-    Boosting_fields_ordered[type] = {fields.sort()}
+    Boosting_fields_ordered[type] = fields.sort()
   }
 end
