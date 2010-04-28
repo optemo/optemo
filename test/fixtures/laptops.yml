@@ -1,0 +1,23 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  title: MyText
+  price: 1
+  pricestr: MyString
+  brand: MyString
+  hd: 1
+  ram: 1
+  screensize: 1.5
+  instock: false
+  imgurl: MyText
+
+two:
+  title: MyText
+  price: 1
+  pricestr: MyString
+  brand: MyString
+  hd: 1
+  ram: 1
+  screensize: 1.5
+  instock: false
+  imgurl: MyText

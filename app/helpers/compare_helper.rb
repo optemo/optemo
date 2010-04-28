@@ -40,8 +40,9 @@ module CompareHelper
   
   def navtitle
     if Session.current.keyword.nil?
-		  (Session.current.search.result_count > 1) ? t("products.compare.browsings",:count => Session.current.search.result_count) + $model.name + "s" : t("products.compare.browsing") + $model.name
-		  ["Browsing", Session.current.search.result_count,$RelativeDescriptions ? "<b>"+Session.current.search.searchDescription.map{|d|t("products."+d)}.join(", ")+"</b>" : nil, ($model.name == 'Camera' ? ((Session.current.search.result_count > 1) ? "Cameras" : "Camera") : ($model.name == 'Printer' ? ((Session.current.search.result_count > 1) ? "Printers" : "Printer") : (Session.current.search.result_count > 1) ? "Types of Flooring" : "Type of Flooring") )].join(" ")
+      
+		  #(Session.current.search.result_count > 1) ? t("products.compare.browsings",:count => Session.current.search.result_count) + $model.name + "s" : t("products.compare.browsing") + $model.name
+		  ["Browsing", Session.current.search.result_count, (Session.current.search.result_count > 1) ? ($model.name == "Flooring" ? "Types of Flooring" : $model.name.pluralize) : $model.name].join(" ")
 		else
       "#{t("products.compare.search")}: '#{Session.current.keyword}', #{(Session.current.search.result_count > 1) ? t("products.compare.browsings",:count => Session.current.search.result_count) : t("products.compare.browsing")}" 
     end
@@ -49,6 +50,7 @@ module CompareHelper
   
   def groupDesc(group, i)
     if $RelativeDescriptions
+      #Session.current.search.relativeDescriptions[i].map{|d|t("products."+d)}.join(", ")
       Session.current.search.boostexterClusterDescriptions[i].map{|d|t("products."+d)}.join(", ")
     else
       disptranslation = []
@@ -103,6 +105,14 @@ module CompareHelper
 			end
 		end
 		out.join(" / ")
+  end
+
+  def imgurl(cluster)
+    case $model.name
+      when 'Flooring' then "http://www.builddirect.com" + CGI.unescapeHTML(cluster.representative.imagelink.to_s)
+      when 'Laptop' then CGI.unescapeHTML(cluster.representative.imgurl)
+      else $model.name.downcase + "s/" + cluster.representative.id.to_s + "_m.jpg"
+    end
   end
 
 end

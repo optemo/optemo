@@ -131,7 +131,9 @@ class Search < ActiveRecord::Base
       unless product_ids.empty?
         @products = findCachedProducts(product_ids).index_by(&:id)        
         rules.each do |r|
-          unpacked_weighted_intervals = YAML.load(r.yaml_repr).map {|i| [i["interval"], i["weight"]]}
+          # This check will not work in future, but will work for now. There will be a type field in the YAML representation instead.
+          unpacked_weighted_intervals = YAML.load(r.yaml_repr).map {|i| [i["interval"], i["weight"]] unless i.class == Array}
+          next if unpacked_weighted_intervals.compact.empty?
           z = 0
           weighted_average = 0
           # The products hash has all the cache hits for cameras serialized as a single request.
@@ -163,13 +165,14 @@ class Search < ActiveRecord::Base
         elsif weighted_average > quartiles[1].to_f # This is high for the given feature
           current_cluster_tagline.push("higher#{featurename}")
         else # Inclusion. It's between 25% and 75%
-          # Do nothing? Averages are included for now, comment this out to remove
-          current_cluster_tagline.push("avg#{featurename}")
+          # Do nothing? Averages are not included for now, take out the comment on the next line to add
+          # current_cluster_tagline.push("avg#{featurename}")
         end
         break if current_cluster_tagline.length == 2 # Limit to 2 taglines per cluster (this is due to a space limitation in the UI)
       end
       @returned_taglines.push(current_cluster_tagline)
     end
+    @returned_taglines = @returned_taglines.map{|line_array| line_array.empty? ? ["average"] : line_array}
     unless ENV['RAILS_ENV'] == 'development'
       cluster_ids = clusters.map{|c| c.id}.join("-")
       Rails.cache.write("#{$model}Taglines#{Session.current.version}#{cluster_ids}#{Session.current.features.to_json(:except => [ :id, :created_at, :updated_at, :session_id, :search_id ]).hash}", @returned_taglines)

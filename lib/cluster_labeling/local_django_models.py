@@ -77,7 +77,7 @@ class LocalModel(models.Model):
     # Hack alert: Should probably not be accessing cls._meta directly.
     @classmethod
     @transaction.commit_on_success
-    def drop_tables_if_exists(cls):
+    def drop_tables_if_exist(cls):
         _, _, existing_tables = cls.all_tables_exist()
 
         c = cls.get_db_conn().cursor()

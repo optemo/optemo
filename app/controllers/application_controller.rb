@@ -46,14 +46,25 @@ class ApplicationController < ActionController::Base
     else
       ds = case request.domain(2).split(".").first
       when "cameras"
+        $SITE_TITLE="Browse Then Buy"
         "Camera"
       when "printers"
+        $SITE_TITLE="LaserPrinterHub.com"
         "Printer"
-      when "flooring"
+      when "flooring", "builddirect"
+        $SITE_TITLE="BuildDirect Hardwood Flooring"
         "Flooring"
+      when "laptops", "walmart"
+        $SITE_TITLE="Walmart Laptop Finder"
+        "Laptop"
       else
         $DefaultProduct
       end  
+      if ds == "Laptop" || ds == "Flooring"
+        $LineItemView = true
+      else
+        $LineItemView = false 
+      end
    end
 
     $model = ds.constantize

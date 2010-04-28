@@ -16,7 +16,9 @@ def generate_names_file(cluster):
     labels = get_labels(cluster)
     f.write(', '.join(map(str, labels)) + '.\n')
 
-    for fieldname, fielddesc in fields.boosting_fields[optemo.product_type]:
+    for fieldname, field in fields.boosting_fields[optemo.product_type].iteritems():
+        fielddesc = field[0]
+
         f.write(fieldname + ": ")
 
         if type(fielddesc) == list:
@@ -30,6 +32,12 @@ def generate_names_file(cluster):
         f.write('\n')
 
     f.close()
+
+def default_text_to_btxtr_fn(text):
+    text = re.sub(u'([-:,&]|#)', ' ', unicode(text), re.UNICODE)
+    text = re.sub(u'(\w+)\.(\D|$)', r'\1 \2',
+                  unicode(text), re.UNICODE)
+    return text
 
 def generate_data_file(cluster):
     filename = fn.get_data_filename(cluster)
@@ -65,7 +73,8 @@ def generate_data_file(cluster):
     products.extend(products_parent)
     
     for product, cluster_id in products:
-        for fieldname, fielddesc in fields.boosting_fields[optemo.product_type]:
+        for fieldname, field in fields.boosting_fields[optemo.product_type].iteritems():
+            fielddesc = field[0]
             fieldval = product.__getattribute__(fieldname)
 
             if fielddesc == ['True', 'False']:
@@ -75,10 +84,13 @@ def generate_data_file(cluster):
                     fieldval = 'False'
             elif fieldval == None:
                 fieldval = '?' # unknown value
+            elif fielddesc == 'text':
+                if len(field) == 2 and 'text_to_btxtr_fn' in field[1]:
+                    fieldval = field[1]['text_to_btxtr_fn'](fieldval)
+                else:
+                    fieldval = default_text_to_btxtr_fn(fieldval)
 
-            fieldval = re.sub(u'([-:,&]|#)', ' ', unicode(fieldval), re.UNICODE)
-            fieldval = re.sub(u'(\w+)\.(\D|$)', r'\1 \2', unicode(fieldval), re.UNICODE)
-
+            fieldval = unicode(fieldval)
             f.write(fieldval.encode('utf-8') + ', ')
 
         f.write(str(cluster_id) + '.\n')
@@ -88,7 +100,7 @@ def train_boostexter(cluster):
     boostexter_prog = fn.boostexter_subdir + 'boostexter'
     boostexter_args = [
         '-n', str(40), # numrounds 
-        '-W', str(2), # ngram_maxlen
+        '-W', str(1), # ngram_maxlen
         '-N', 'ngram', # ngram_type
         '-S', fn.get_filename_stem(cluster) # 'filename_stem'
         ]

@@ -68,15 +68,27 @@ module ProductProperties
   end
   
   def smlTitle
-    [brand,model].join(' ')
+    if self.class.name == "Laptop" || self.class.name == "Flooring"
+      title
+    else
+      [brand,smlModel].join(' ')
+    end
+  end
+  
+  def smlModel
+    if self.class.name == "Laptop"
+      ""
+    else
+      model
+    end
   end
   
   def tinyTitle
-    [brand.gsub("Hewlett-Packard","HP"),model.split(' ')[0]].join(' ')
+    [brand.gsub("Hewlett-Packard","HP"),smlModel.split(' ')[0]].join(' ')
   end
   
   def descurl
-    "/compare/show/"+[id,brand,model].join('-').tr(' /','_-')
+    "/compare/show/"+[id,brand,smlModel].join('-').tr(' /','_-')
   end
   
   def display(attr)
