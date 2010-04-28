@@ -2,11 +2,11 @@ require 'rules'
 require 'weighted_intervals'
 
 module BtxtrLabels
-  def get_max_abs_weight_from_threshold_rules(rules)
+  def BtxtrLabels.get_max_abs_weight_from_threshold_rules(rules)
     return rules.map{|r| get_abs_weight_from_threshold_rule(r)}.max()
   end
   
-  def get_weighted_interval_set_from_threshold_rules(rules)
+  def BtxtrLabels.get_weighted_interval_set_from_threshold_rules(rules)
     # Find the intervals encoded in the rules. These intervals may not
     # be contiguous, i.e. everything with really wide or really narrow
     # zoom ranges.
@@ -21,7 +21,7 @@ module BtxtrLabels
     return interval_set
   end
   
-  def combine_threshold_rules(cluster, fieldname, rules)
+  def BtxtrLabels.combine_threshold_rules(cluster, fieldname, rules)
     max_abs_weight = get_max_abs_weight_from_threshold_rules(rules)
     interval_set = get_weighted_interval_set_from_threshold_rules(rules)
 
@@ -58,11 +58,11 @@ module BtxtrLabels
     return max_abs_weight, ranking[ranking_idx] + fieldname
   end
 
-  def is_stopword(word)
+  def BtxtrLabels.is_stopword(word)
     return false # This should be implemented.
   end
   
-  def find_best_sgram_from_rules(fieldname, rules)
+  def BtxtrLabels.find_best_sgram_from_rules(fieldname, rules)
     # Just pick the meaningful sgram with highest weight and check
     # whether it is a positive label or a negative label.
     max_abs_weight = 0
@@ -110,17 +110,17 @@ module BtxtrLabels
     end
   end
   
-  def combine_boolean_rules(fieldname, rules)
+  def BtxtrLabels.combine_boolean_rules(fieldname, rules)
     # So.. boolean rules are not selected at all, because pretty much
     # all of the boolean flags are NULL.
     return nil
   end
   
-  def convert_interval_set_to_yaml_style(interval_set)
+  def BtxtrLabels.convert_interval_set_to_yaml_style(interval_set)
     return interval_set.map{|x| {'interval' : x[0], 'weight' : x[1]}}
   end
   
-  def save_combined_threshold_rule_for_field(cluster, fieldname, rules)
+  def BtxtrLabels.save_combined_threshold_rule_for_field(cluster, fieldname, rules)
     max_abs_weight = get_max_abs_weight_from_threshold_rules(rules)
     interval_set = get_weighted_interval_set_from_threshold_rules(rules)
 
@@ -139,7 +139,7 @@ module BtxtrLabels
     combined_rule.save()
   end
   
-  def save_combined_sgram_rule_for_field(cluster, fieldname, rules)
+  def BtxtrLabels.save_combined_sgram_rule_for_field(cluster, fieldname, rules)
     max_abs_weight, sgram = find_best_sgram_from_rules(fieldname, rules)
 
     if max_abs_weight == nil
@@ -160,7 +160,7 @@ module BtxtrLabels
     combined_rule.save()
   end
   
-  def save_combined_rule_for_field(cluster, fieldname, rules)
+  def BtxtrLabels.save_combined_rule_for_field(cluster, fieldname, rules)
     if not all_rules_are_same_type(rules)
       raise "All rules should be same type"
     end
@@ -176,7 +176,7 @@ module BtxtrLabels
     end
   end
   
-  def save_combined_rules_from_rules(cluster, rules)
+  def BtxtrLabels.save_combined_rules_from_rules(cluster, rules)
     # Put all rules for a particular field together
     rules_a = gather_rules(rules)
 
@@ -186,7 +186,7 @@ module BtxtrLabels
     }
   end
   
-  def save_combined_rules_for_cluster(cluster)
+  def BtxtrLabels.save_combined_rules_for_cluster(cluster)
     rules = get_rules(cluster)
     save_combined_rules_from_rules(cluster, rules)
   end

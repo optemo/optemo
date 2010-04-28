@@ -28,7 +28,7 @@ module BtxtrLabels
     end
   end
   
-  def gather_rules(rules)
+  def BtxtrLabels.gather_rules(rules)
     rules_a = {}
     
     for rule in rules
@@ -48,13 +48,13 @@ module BtxtrLabels
     return rules_a
   end
 
-  def get_abs_weight_from_threshold_rule(rule)
+  def BtxtrLabels.get_abs_weight_from_threshold_rule(rule)
     weights = [0, 0]
     weights[0] = rule.weights[2][0] - rule.weights[1][0]
     return abs(weights[0])
   end
 
-  def get_interval_from_threshold_rule(rule):
+  def BtxtrLabels.get_interval_from_threshold_rule(rule):
     weights = [0, 0]
     weights[0] = rule.weights[2][0] - rule.weights[1][0]
     weights[1] = rule.weights[2][1] - rule.weights[1][1]
@@ -68,7 +68,7 @@ module BtxtrLabels
     end
   end
 
-  def all_rules_are_same_type(rules)
+  def BtxtrLabels.all_rules_are_same_type(rules)
     rule_types = Set.new(rules.map{|r| r.class}).size()
   end
 end
