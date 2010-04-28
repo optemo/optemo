@@ -16,7 +16,7 @@ int hartigan_qmeasure(double **data, int N, int con_featsN, int bool_featsN, int
 		cout << "error in hartigan_qmeasure: it is called with zero points!" << endl;
 		exit(0);
     }
-    //cout << "im here 2" << endl;
+    cout << "im here 2" << endl;
     if (N==1) {
 		best_labels[0] = 0;
 		return 1;
@@ -36,11 +36,9 @@ int hartigan_qmeasure(double **data, int N, int con_featsN, int bool_featsN, int
 	int init_val = 1;
 	if (N > max_k) init_val = 2;
 	for (int k = init_val; (k <= (1+max_k)) && (k <= N); k++) {
-		//cout << "wow 1" << endl;
 	   	reza_kmeans_multiple_start(data, N, con_featsN, bool_featsN, k, method, 
 	                               restart_num, weights, to_clip, disc_domains,//input 
-								   centroid, labels, error, errors);  //output				
-	//	cout << "wow 2" << endl;											
+								   centroid, labels, error, errors);  //output														
 		// for debugging
 		//if (k > init_val) 
 		//ß	cout << " the value of hartigan mesure for " << k-1 << " is " << (old_error/error - 1) * (N - k) << endl;			

@@ -59,7 +59,6 @@ if 	(layer == 1){
 		 				for (int f=0; f<conFeatureN; f++) average[f] += tdata[size][f];
 						size++;											
 				}
-                cout << "Data read " << endl;
 				///////////////
 				data = new double*[size];
 		    for(int j=0; j<size; j++){
@@ -74,20 +73,14 @@ if 	(layer == 1){
 					data[j][conFeatureN+2*boolFeatureN + brand2int[brands[j]]] = 1;		 
 				}	
 				///////////////  
-                cout << "Ranges set up "<<endl;
 				dataN = new double* [size];	
 				for (int j=0; j<size; j++)
 				{
-                    cout << "conFeatureN+2*boolFeatureN+brand2int.size(): " << (conFeatureN+2*boolFeatureN+brand2int.size()) << endl;
-                    cout << "j: " << j << " size: " << size << " brand2int.size() " << brand2int.size() << endl;
 				    dataN[j]= new double [conFeatureN+2*boolFeatureN+brand2int.size()];
 			    }
 				// data standardization
-              cout << "Mean var"<<endl;
 				get_mean_var(data, size, conFeatureN, mean, var);
-                cout << "Standardizing Data "<<endl;
 				standarize_data(data, size, conFeatureN, 2*boolFeatureN+brand2int.size(), mean, var, dataN); //reza
-                cout << "Computing weights " <<endl;
         /////////////////////////////////////////
        // computing the weights
         weights = new double [conFeatureN+2*boolFeatureN+brand2int.size()];
@@ -117,7 +110,7 @@ if 	(layer == 1){
         int tcentersA[non_out_index.size()];
         clusterN = hartigan_qmeasure(temp_dataN, non_out_index.size(), conFeatureN, 2*boolFeatureN+brand2int.size(), max_k,
                                          method, restart_num, weights, to_clip, &disc_domains, tcentersA);
-        int centersA[size];
+		int centersA[size];
         for (int i = 0; i < size; i++) 
            centersA[i] = clusterN;
         for(int i = 0; i < non_out_index.size(); i++) 
@@ -146,6 +139,8 @@ if 	(layer == 1){
 		//	for (int i=0; i<size - non_out_index.size(); i++){
 		//		cout<<"outlier_ids[i] is "<<outlier_ids[i]<<endl;
 		//	}
+		
+	
         if (clusterN < 2) return maxSize; //it prevents going into infinite loop 
        ////////////////////////////////////////
 			int **clusteredData = new int* [clusterN];
@@ -170,15 +165,14 @@ if 	(layer == 1){
 				 		   dataCluster[j][f] = temp_data[find(temp_idA, clusteredData[c][j+1], non_out_index.size())][f]; 
 						clusteredDataOrder[c][j] = clusteredData[c][j+1];
 				}  
-				repOrder(dataCluster, clusteredData[c][0], "median", conFeatureN, boolFeatureN, clusteredDataOrder[c],  weights);
+		repOrder(dataCluster, clusteredData[c][0], "median", conFeatureN, boolFeatureN, clusteredDataOrder[c],  weights);
         for (int j = 0; j < clusteredData[c][0]; j++) free(dataCluster[j]);
 	  }
-
 			utilityOrder(temp_data, temp_idA, non_out_index.size(), clusteredData, clusteredDataOrder, clusteredDataOrderU, clusterN, conFeatureN, 
                   boolFeatureN, conFeatureNames, boolFeatureNames, stmt, productName); 
-			getStatisticsClusteredData(temp_data, clusteredDataOrderU, average, temp_idA, non_out_index.size(), clusterN, conFeatureN, conFeatureRangeC);	
 
-	      saveClusteredData(temp_data, temp_idA, non_out_index.size(), temp_brands, parent_id, clusteredDataOrderU, conFeatureRangeC, layer, clusterN, conFeatureN, 
+	     getStatisticsClusteredData(temp_data, clusteredDataOrderU, average, temp_idA, non_out_index.size(), clusterN, conFeatureN, conFeatureRangeC);	
+	     saveClusteredData(temp_data, temp_idA, non_out_index.size(), temp_brands, parent_id, clusteredDataOrderU, conFeatureRangeC, layer, clusterN, conFeatureN, 
 				   							boolFeatureN, conFeatureNames, boolFeatureNames, stmt, productName, version, region);
 	
 		
@@ -277,7 +271,6 @@ if 	(layer == 1){
                                    restart_num, weights, to_clip, &disc_domains,centersA); //reza
   
 			if (clusterN < 2) continue; //it prevents going into infinite loop
-		//	cout<<"layer_"<< layer << "_" << size << endl;
 	        double **dist = new double* [size];
 			for(int j=0; j<size; j++) 	dist[j] = new double[clusterN]; 	
 			////////////////////////////////  Change clusteredData to vector 
