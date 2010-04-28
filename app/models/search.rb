@@ -118,11 +118,12 @@ class Search < ActiveRecord::Base
     end
 
     weighted_averages = {}
+    catlabel = {}
     return if clusters.empty?
     descriptions = Array.new
-    featureNameSet = Set.new
     clusters.each do |c|
       weighted_averages[c.id] = {}
+      catlabel[c.id] = []
       current_nodes = c.nodes
       product_ids = current_nodes.map {|n| n.product_id }
       product_query_string = "id IN (" + product_ids.join(" OR ") + ")"
@@ -132,27 +133,31 @@ class Search < ActiveRecord::Base
         @products = findCachedProducts(product_ids).index_by(&:id)        
         rules.each do |r|
           # This check will not work in future, but will work for now. There will be a type field in the YAML representation instead.
-          unpacked_weighted_intervals = YAML.load(r.yaml_repr).map {|i| [i["interval"], i["weight"]] unless i.class == Array}
-          next if unpacked_weighted_intervals.compact.empty?
-          z = 0
-          weighted_average = 0
-          # The products hash has all the cache hits for cameras serialized as a single request.
-          #products = c.findCachedProducts(product_ids)
-          product_ids.each do |id| 
-            # This is out of cachingMemcached.
-            #product = products["#{$model}#{Session.current.version}#{id}"]
-            # This line here should no longer be needed # products[id] = $model.productcache(id) unless (products[id])            
-            product = @products[id]
-            feature_value = product.send(r.fieldname)
-            next unless feature_value
-            weight = find_weight_for_value(unpacked_weighted_intervals, feature_value)
-            weighted_average += weight * feature_value
-            z += weight
+          brules = YAML.load(r.yaml_repr)
+          if r.rule_type == "S"
+            catlabel[c.id] << r.fieldname + ": " + brules["sgram"] if brules["direction"] == 1
+          else
+            unpacked_weighted_intervals = brules.map {|i| [i["interval"], i["weight"]] unless i.class == Array}
+            next if unpacked_weighted_intervals.compact.empty?
+            z = 0
+            weighted_average = 0
+            # The products hash has all the cache hits for cameras serialized as a single request.
+            #products = c.findCachedProducts(product_ids)
+            product_ids.each do |id| 
+              # This is out of cachingMemcached.
+              #product = products["#{$model}#{Session.current.version}#{id}"]
+              # This line here should no longer be needed # products[id] = $model.productcache(id) unless (products[id])            
+              product = @products[id]
+              feature_value = product.send(r.fieldname)
+              next unless feature_value
+              weight = find_weight_for_value(unpacked_weighted_intervals, feature_value)
+              weighted_average += weight * feature_value
+              z += weight
+            end
+            next if z == 0 # Loop back to the beginning; do not add this field name for this cluster.
+            weighted_average /= z
+            weighted_averages[c.id][r.fieldname] = weighted_average
           end
-          next if z == 0 # Loop back to the beginning; do not add this field name for this cluster.
-          weighted_average /= z
-          weighted_averages[c.id][r.fieldname] = weighted_average
-          featureNameSet.add(r.fieldname)
         end
       end
     end
@@ -170,7 +175,7 @@ class Search < ActiveRecord::Base
         end
         break if current_cluster_tagline.length == 2 # Limit to 2 taglines per cluster (this is due to a space limitation in the UI)
       end
-      @returned_taglines.push(current_cluster_tagline)
+      @returned_taglines.push(current_cluster_tagline+catlabel[cluster_id])
     end
     @returned_taglines = @returned_taglines.map{|line_array| line_array.empty? ? ["average"] : line_array}
     unless ENV['RAILS_ENV'] == 'development'

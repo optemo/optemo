@@ -32,7 +32,7 @@ boosting_fields = \
       'warranty' :
       ['text',
        {'text_to_btxtr_fn' : floor_fp.warranty_to_btxtr,
-        'btxtr_to_text_fn' : floor_fp.flooring_field_from_btxtr}]
+        'btxtr_to_text_fn' : floor_fp.flooring_field_from_btxtr}],
 
      'width' : ['continuous'],
 #      'thickness' : ['continuous'], # Not cleaned properly
