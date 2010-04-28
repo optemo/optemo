@@ -1,3 +1,5 @@
+require 'combined_rules'
+
 module BtxtrLabels
   def BtxtrLabels.save_combined_rules_for_all_clusters(version = nil)
     if version.nil?() then
