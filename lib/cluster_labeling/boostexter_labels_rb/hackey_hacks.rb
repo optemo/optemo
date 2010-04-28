@@ -13,5 +13,6 @@ module BtxtrLabels
     $nodemodel = Kernel.const_get(product_type.to_s() + "Node")
     $clustermodel = Kernel.const_get(product_type.to_s() + "Cluster")
     $featuremodel = Kernel.const_get(product_type.to_s() + "Features")
+    $btxtr_combined_rules_model = Kernel.const_get(product_type.to_s() + "BoostexterCombinedRule")
   end
 end
