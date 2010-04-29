@@ -69,7 +69,7 @@ module BtxtrLabels
     i = 0
 
     while i < numintervals
-      if not interval_intersect(int0, interval_set[i])
+      if not intervals_intersect(int0, interval_set[i])
         result.push(interval_set[i])
         i += 1
       else
@@ -78,7 +78,7 @@ module BtxtrLabels
     end
 
     while i < numintervals
-      if not interval_intersect(int0, interval_set[i])
+      if not intervals_intersect(int0, interval_set[i])
         break
       end
 
@@ -136,7 +136,7 @@ module BtxtrLabels
   def BtxtrLabels.is_interval_set_disjoint(interval_set)
     num_intervals = interval_set.size()
 
-    for i in (1..num_intervals).to_a()
+    for i in (1..num_intervals-1).to_a()
       int_l = interval_set[i-1][0]
       int_r = interval_set[i][0]
 
