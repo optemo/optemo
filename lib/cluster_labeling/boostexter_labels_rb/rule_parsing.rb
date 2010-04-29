@@ -29,15 +29,15 @@ module BtxtrLabels
     end
 
     # Not sure what this number is for. Rule weight?
-    junk = match[0][1]
+    junk = match[0][0]
 
     rule_info = {}
 
-    rule_info['type'] = match[0][3]
-    rule_info['fieldname'] = match[0][4]
+    rule_info['type'] = match[0][2]
+    rule_info['fieldname'] = match[0][3]
 
     if rule_info['type'] == 'SGRAM'
-      sgram = match[0][5].strip().sub(/[#\s]/, ' ')
+      sgram = match[0][4].strip().sub(/[#\s]/, ' ')
       field = Boosting_fields[$model][rule_info['fieldname']]
 
       if len(field) == 2 and field[1].is_key('text_to_btxtr_fn')
@@ -59,7 +59,7 @@ module BtxtrLabels
       raise ParseError.new(line)
     end
 
-    return [match[0][1].to_f(), match[0][3].to_f()]
+    return [match[0][0].to_f(), match[0][2].to_f()]
   end
 
   def BtxtrLabels.parse_sgram_rule(fieldname, sgram, fh)
@@ -120,7 +120,7 @@ module BtxtrLabels
       if match.size() == 0
         raise ParseError.new(line)
       end
-      threshold = match[0][1].to_f()
+      threshold = match[0][0].to_f()
       break
     end
 
