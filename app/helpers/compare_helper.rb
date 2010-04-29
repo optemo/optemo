@@ -1,4 +1,5 @@
 module CompareHelper
+  include CachingMemcached
   def landing?
     ! (request.referer && request.referer.match(/http:\/\/(laserprinterhub|localhost)/))
   end
@@ -15,12 +16,12 @@ module CompareHelper
     end
   end
   
-  def featuremin(feat)
-    ContSpec.find(:all, :conditions => {:product_type => $product_type, :name => feat}.map(&:value).reject{|c|c.nil?}.sort[0]
+  def overallmin(feat)
+    (minSpec(feat)*10).to_i.to_f/10
   end
   
-  def featuremax(feat)
-    ContSpec.find(:all, :conditions => {:product_type => $product_type, :name => feat}.map(&:value).sort[-1]
+  def overallmax(feat)
+    (maxSpec(feat)*10).ceil.to_f/10
   end
   
   def isnil(a)
@@ -41,9 +42,7 @@ module CompareHelper
   
   def navtitle
     if Session.current.keyword.nil?
-      
-		  #(Session.current.search.result_count > 1) ? t("products.compare.browsings",:count => Session.current.search.result_count) + $model.name + "s" : t("products.compare.browsing") + $model.name
-		  ["Browsing", Session.current.search.result_count, (Session.current.search.result_count > 1) ? ($model.name == "Flooring" ? "Types of Flooring" : $model.name.pluralize) : $model.name].join(" ")
+		  ["Browsing", Session.current.search.result_count, (Session.current.search.result_count > 1) ? ($product_type == "Flooring" ? "Types of Flooring" : $product_type.pluralize) : $product_type].join(" ")
 		else
       "#{t("products.compare.search")}: '#{Session.current.keyword}', #{(Session.current.search.result_count > 1) ? t("products.compare.browsings",:count => Session.current.search.result_count) : t("products.compare.browsing")}" 
     end
@@ -84,24 +83,23 @@ module CompareHelper
 	  end
  end
  
-  def catsforfeature(feat)
-    chosen_brands = Session.current.features.brand.split('*')
-    DbFeature.featurecache(feat).categories.split('*').reject {|b| chosen_brands.index(b)}
+  def chosencats(feat)
+    Session.current.search.userdatacats.find_all_by_name(feat).map(&:value)
+  end
+  
+  def catspecs(feat)
+    CatSpec.find_all_by_name_and_product_type(feat,$product_type).map(&:value)
   end
   
   def featuretext(search,cluster)
     out = []
-    $model::SingleDescFeatures.each do |feat|
-      if $model::BinaryFeatures.include?(feat) 
+    $config["SingleDescFeatures"].each do |feat|
+      if $config["BinaryFeatures"].include?(feat) 
 			  out << t("products.#{feat}") if cluster.representative.send(feat.intern)
-			elsif $model::CategoricalFeatures.include?(feat)
+			elsif $config["CategoricalFeatures"].include?(feat)
 		    out << cluster.representative.send(feat.intern)
 			else
-			  if $model::ItoF.include?(feat)
-			    feature = cluster.representative.send(feat.intern).to_f/100
-			  else
-			    feature = cluster.representative.send(feat.intern).to_i
-			  end
+			  feature = cluster.representative.send(feat.intern).to_i
 			  out << "#{feature} #{t("products.#{feat}text")}"
 			end
 		end
@@ -109,10 +107,10 @@ module CompareHelper
   end
 
   def imgurl(cluster)
-    case $model.name
+    case $product_type
       when 'Flooring' then "http://www.builddirect.com" + CGI.unescapeHTML(cluster.representative.imagelink.to_s)
       when 'Laptop' then CGI.unescapeHTML(cluster.representative.imgurl)
-      else $model.name.downcase + "s/" + cluster.representative.id.to_s + "_m.jpg"
+      else $product_type.downcase + "s/" + cluster.representative.id.to_s + "_m.jpg"
     end
   end
 

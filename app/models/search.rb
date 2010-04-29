@@ -25,17 +25,17 @@ class Search < ActiveRecord::Base
   end
   
   ## Computes distributions (arrays of normalized product counts) for all continuous features 
-  def distribution(featureName)
+  def distribution(feat)
        dist = Array.new(21,0)
-       min = DbFeature.featurecache(featureName).min
-       max = DbFeature.featurecache(featureName).max
+       min = minSpec(feat)
+       max = maxSpec(feat)
        stepsize = (max-min) / dist.length + 0.000001 #Offset prevents overflow of 10 into dist array
        acceptedNodes.each do |n|
          if (min>=max-0.1)
            #No range so fill everything in
            dist = Array.new(dist.length,1)
          else
-           i = ((n.send(featureName) - min) / stepsize).to_i
+           i = ((n[feat] - min) / stepsize).to_i
            dist[i] += 1 if i < dist.length
          end
        end  
@@ -80,14 +80,14 @@ class Search < ActiveRecord::Base
     @reldescs ||= []
     if @reldescs.empty?
       feats = {}
-      $model::ContinuousFeaturesF.each do |f|
-        norm = DbFeature.featurecache(f).max - DbFeature.featurecache(f).min
+      $config["ContinuousFeaturesF"].each do |f|
+        norm = maxSpec(f) - minSpec(f)
         norm = 1 if norm == 0
         feats[f] = clusters.map{ |c| c.representative}.compact.map {|c| c[f].to_f/norm } 
       end
       cluster_count.times do |i|
         dist = {}
-        $model::ContinuousFeaturesF.each do |f|
+        $config["ContinuousFeaturesF"].each do |f|
           if feats[f].min == feats[f][i]
             #This is the lowest feature
             distance = feats[f].sort[1] - feats[f][i]
@@ -131,7 +131,7 @@ class Search < ActiveRecord::Base
       # This looks quite a bit like code from CachingMemcached, but it's not of the standard Rails.cache.fetch call with a small block, so it belongs here instead.
       unless ENV['RAILS_ENV'] == 'development'
         cluster_ids = clusters.map{|c| c.id}.join("-")
-        @returned_taglines = Rails.cache.read("#{$model}Taglines#{Session.current.version}#{cluster_ids}#{Session.current.features.to_json(:except => [ :id, :created_at, :updated_at, :session_id, :search_id ]).hash}")
+        @returned_taglines = Rails.cache.read("#{$product_type}Taglines#{Session.current.version}#{cluster_ids}#{Session.current.features.to_json(:except => [ :id, :created_at, :updated_at, :session_id, :search_id ]).hash}")
         return @returned_taglines unless @returned_taglines.nil?
       end
       @returned_taglines = []
@@ -162,7 +162,6 @@ class Search < ActiveRecord::Base
             z = 0
             weighted_average = 0
             product_ids.each do |id| 
-              # This line here should no longer be needed # products[id] = $model.productcache(id) unless (products[id])            
               product = @products[id]
               feature_value = product.send(r.fieldname)
               next unless feature_value
@@ -196,7 +195,7 @@ class Search < ActiveRecord::Base
     @returned_taglines = @returned_taglines.map{|line_array| line_array.empty? ? ["average"] : line_array}
     unless ENV['RAILS_ENV'] == 'development'
       cluster_ids = clusters.map{|c| c.id}.join("-")
-      Rails.cache.write("#{$model}Taglines#{Session.current.version}#{cluster_ids}#{Session.current.features.to_json(:except => [ :id, :created_at, :updated_at, :session_id, :search_id ]).hash}", @returned_taglines)
+      Rails.cache.write("#{$product_type}Taglines#{Session.current.version}#{cluster_ids}#{Session.current.features.to_json(:except => [ :id, :created_at, :updated_at, :session_id, :search_id ]).hash}", @returned_taglines)
     end
     return @returned_taglines # [ ["avgdisplaysize", "highminimumfocallength"],["avgprice", ""] , ...] 
   end
@@ -224,21 +223,21 @@ end
     clusterDs = Array.new 
     des = []
     slr=0
-      $model::BinaryFeatures.each do |f|
+      $config["BinaryFeatures"].each do |f|
         if clusters[clusterNumber].indicator(f)
           (f=='slr' && indicator("slr"))? slr = 1 : slr =0
-          des<< f if $model::DescFeatures.include?(f) 
+          des<< f if $config["DescFeatures"].include?(f) 
         end
       end
       
-      $model::ContinuousFeatures.each do |f|
-        if $model::DescFeatures.include?(f) && !(f == "opticalzoom" && slr == 1)
+      $config["ContinuousFeatures"].each do |f|
+        if $config["DescFeatures"].include?(f) && !(f == "opticalzoom" && slr == 1)
               cRanges = clusters[clusterNumber].ranges(f)
-              if (cRanges[1] < DbFeature.featurecache(f).low)
+              if (cRanges[1] < lowSpec(f))
                  clusterDs << {'desc' => "low_"+f, 'stat' => 0}  
-              elsif (cRanges[0] > DbFeature.featurecache(f).high)
+              elsif (cRanges[0] > highSpec(f))
                  clusterDs <<  {'desc' => "high_"+f, 'stat' => 2}  
-              elsif ((cRanges[0] >= DbFeature.featurecache(f).low) && (cRanges[1] <= DbFeature.featurecache(f).high)) 
+              elsif ((cRanges[0] >= lowSpec(f)) && (cRanges[1] <= highSpec(f))) 
                   clusterDs <<  {'desc' => "avg_"+f, 'stat' => 1}
               end 
         end   
@@ -252,14 +251,12 @@ end
   
   def searchDescription
     des = []
-    $model::DescFeatures.each do |f|
-      low = DbFeature.featurecache(f).low
-      high = DbFeature.featurecache(f).high
+    $config["DescFeatures"].each do |f|
       searchR = ranges(f)
       return ['Empty'] if searchR[0].nil? || searchR[1].nil?
-      if (searchR[1]<=low)
+      if (searchR[1]<=lowSpec(f))
            des <<  "low_#{f}"
-      elsif (searchR[0]>=high)
+      elsif (searchR[0]>=highSpec(f))
            des <<  "high_#{f}"
       end
     end  

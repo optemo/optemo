@@ -8,18 +8,19 @@
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
 			<%= link_to t('products.' + feat).tr(' ',''), "#" %>			
 		</div>
-
-		<% unless Session.current.features.send(feat).nil? || Session.current.features.send(feat).empty? %>
-			<% Session.current.features.brand.split('*').each do |b| %>
+		<% unless chosencats(feat).nil? || chosencats(feat).empty? %>
+			<%# At least one item selected %>
+			<% chosencats(feat).each do |b| %>
 				<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :class => "remove"+feat, :"data-id" => b} %> <%= b %>
 				</div>
 			<% end %>
-			<%= select('myfilter', feat+"1", [t('products.compare.add'+feat)] +catsforfeature(feat), options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>
+			<%= select('myfilter', feat+"1", [t('products.compare.add'+feat)] +catspecs(feat).reject {|b| chosencats(feat).index(b)}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>
 		<% else %>
-			<%= select('myfilter', feat+"1", [t('products.compare.all'+feat+'s')] + DbFeature.featurecache(feat).categories.split('*').map{|f| CGI::unescapeHTML(f) }.uniq, options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>		
+			<%# Nothing selected %>
+			<%= select('myfilter', feat+"1", [t('products.compare.all'+feat+'s')] + catspecs(feat).map{|f| CGI::unescapeHTML(f) }.uniq, options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>		
 		<% end %>
 
-		<%= hidden_field_tag "myfilter[#{feat}]", Session.current.features.brand %>
+		<%= hidden_field_tag "myfilter[#{feat}]", chosencats(feat).join("*") %>
 	</div>
 <% end %>
 <% $config["ContinuousFeaturesF"].each do |feat| %>
@@ -27,14 +28,14 @@
 		:locals => {:name => t('products.' + feat)
 		:val => feat
 		:money_formatting => feat == 'price',
-		:min => DbFeature.featurecache(feat).min, 
-		:max => DbFeature.featurecache(feat).max} %>
+		:min => minSpec(feat), 
+		:max => maxSpec(feat)} %>
 <% end %>
 <% $config["BinaryFeaturesF"].each do |feat| %>
 	<div class='feature'>
 		<div class='label'>
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
-			<%= check_box('myfilter', feat, {:checked => Session.current.features.send(feat.intern) ? 'checked' : false, :class => 'autosubmitbool'})%>
+			<%= check_box('myfilter', feat, {:checked => Userdatabin.find_by_search_id_and_name(Session.current.search.id,feat).value ? 'checked' : false, :class => 'autosubmitbool'})%>
 			<%= link_to t('products.' + feat).tr(' ',''), "#" %>
 		</div>
 	</div>

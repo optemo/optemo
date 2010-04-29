@@ -9,45 +9,24 @@ module CachingMemcached
     end
   end
   
+  def minSpec(feat)
+    cache_lookup("ProdMin-#{feat}"){ContSpec.find_all_by_name_and_product_type(feat,$product_type).map(&:value).min}
+  end
+  
+  def maxSpec(feat)
+    cache_lookup("ProdMax-#{feat}"){ContSpec.find_all_by_name_and_product_type(feat,$product_type).map(&:value).max}
+  end
+  
+  def lowSpec(feat)
+    cache_lookup("ProdLow-#{feat}"){ContSpec.find_all_by_name_and_product_type(feat,$product_type).map(&:value).sort[products.count*0.4]}
+  end
+  
+  def highSpec(feat)
+    cache_lookup("ProdHigh-#{feat}"){ContSpec.find_all_by_name_and_product_type(feat,$product_type).map(&:value).sort[products.count*0.6]}
+  end
+  
   # This is a good idea, but right now the boostexter_combined_rules only works for cameras (March 23). Update this in future.
   def findCachedBoostexterRules(cluster_id)
-    unless ENV['RAILS_ENV'] == 'development'
-      current_version = Session.current.version
-      Rails.cache.fetch("#{$rulemodel}s#{current_version}#{cluster_id}"){ $rulemodel.find(:all, :order => "weight DESC", :conditions => {"cluster_id" => cluster_id, "version" => Session.current.version})}
-    else
-      $rulemodel.find(:all, :order => "weight DESC", :conditions => {"cluster_id" => cluster_id, "version" => Session.current.version})
-    end
+    cache_lookup("#{$rulemodel}s#{current_version}#{cluster_id}"){$rulemodel.find(:all, :order => "weight DESC", :conditions => {"cluster_id" => cluster_id, "version" => Session.current.version})}
   end
-
-model::CategoricalFeaturesF.each {|name|
-   f = DbFeature.new
-   f.product_type = model.name
-   f.feature_type = 'Categorical'
-   f.name = name
-   f.region = region
-   f.categories = products.map{|c|c.send(name.intern)}.compact.uniq.join('*')
-   f.save
- }
- model::ContinuousFeaturesF.each {|name|
-   f = DbFeature.new
-   f.product_type = model.name
-   f.feature_type = 'Continuous'
-   f.name = name
-   f.region = region
-   f.min = products.map{|c|c.send(name.intern)}.reject{|c|c.nil?}.sort[0]
-   f.max = products.map{|c|c.send(name.intern)}.sort[-1]
-  #f.hhigh = products.map{|c|c.send(name.intern)}.sort[products.count*0.85]
-   f.high = products.map{|c|c.send(name.intern)}.sort[products.count*0.6]
-   f.low = products.map{|c|c.send(name.intern)}.sort[products.count*0.4]
-  #f.llow = products.map{|c|c.send(name.intern)}.sort[products.count*0.15]
-   f.save
- }
- model::BinaryFeaturesF.each {|name|
-   f = DbFeature.new
-   f.product_type = model.name
-   f.feature_type = 'Binary'
-   f.name = name
-   f.region = region
-   f.save
- }
 end

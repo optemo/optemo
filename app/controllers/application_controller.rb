@@ -67,11 +67,11 @@ class ApplicationController < ActionController::Base
       end
     end
     $product_type = ds
-    #$model = ds.constantize
-    #$nodemodel = (ds + 'Node').constantize
-    #$featuremodel = (ds + 'Features').constantize
+    $product_type = "Printer"
     $rulemodel = (ds + 'BoostexterCombinedRule').constantize
-    $config = YAML::load(File.open("#{RAILS_ROOT}/config/products.yml"))
+    $config = {}
+    file = YAML::load(File.open("#{RAILS_ROOT}/config/products.yml"))
+    $config = file[$product_type] unless (file.nil? || file.empty?)
   end
   
   def update_user

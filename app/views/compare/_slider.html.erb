@@ -1,27 +1,23 @@
 <div class='feature'>
-
-<div class='label space'>
-	<%= render :partial => 'desc', :locals => {:feat => val} %>
-	<%= link_to t('products.'+val), "#" %>
-	<span class="unitdisp">(<%= t('products.' + val+"unit") %>)</span>
-</div>
-<% overallmin = (featuremin(val)*10).to_i.to_f/10 %>
-<% overallmax = (featuremax(val)*10).ceil.to_f/10 %>
-<% start = isnil(Session.current.searches.userdataconts.select{|m|m.name == val}.first){UserDataCont.new("min" => overallmin, "max" => overallmax)} %>
-<div class="hist" data-data="<%= Session.current.search.distribution(val).join(',') %>"></div>
-<%= hidden_field_tag "myfilter[#{val}_min]", start.name.nil? ? nil : start.min),
-{:class => 'min'}%>
-<%= hidden_field_tag "myfilter[#{val}_max]", start.name.nil? ? nil : start.max),
-{:class => 'max'}%>
-<div class='slider'
-data-label= '<%= val %>'
-data-min='<%= overallmin %>'
-data-max='<%= overallmax %>'
-data-startmin='<%= start.min %>'
-data-startmax='<%= start.max %>'
-data-itof='<%= i2f %>'
-<%= money_formatting ? 'data-formatting="$"' : ""  %>>
-
-<div class="centerofslider">&nbsp;</div>
-</div>
+	<div class='label space'>
+		<%= render :partial => 'desc', :locals => {:feat => val} %>
+		<%= link_to t('products.'+val), "#" %>
+		<span class="unitdisp">(<%= t('products.' + val+"unit") %>)</span>
+	</div>
+	<% start = isnil(Session.current.searches.userdataconts.select{|m|m.name == val}.first){UserDataCont.new("min" => overallmin(val), "max" => overallmax(val))} %>
+	<div class="hist" data-data="<%= Session.current.search.distribution(val).join(',') %>"></div>
+	<%= hidden_field_tag "myfilter[#{val}_min]", start.name.nil? ? nil : start.min),
+	{:class => 'min'}%>
+	<%= hidden_field_tag "myfilter[#{val}_max]", start.name.nil? ? nil : start.max),
+	{:class => 'max'}%>
+	<div class='slider'
+	data-label= '<%= val %>'
+	data-min='<%= overallmin(val) %>'
+	data-max='<%= overallmax(val) %>'
+	data-startmin='<%= start.min %>'
+	data-startmax='<%= start.max %>'
+	data-itof='<%= i2f %>'
+	<%= money_formatting ? 'data-formatting="$"' : ""  %>>
+		<div class="centerofslider">&nbsp;</div>
+	</div>
 </div>

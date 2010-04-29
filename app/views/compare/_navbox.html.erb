@@ -9,7 +9,7 @@
 		<div class="navbody">
 			
 			<div class='sim rounded'>
-  	  <%= link_to(image_tag("#{'plus' + ($LineItemView ? ($model == Laptop ? '_line.png' : '_linea.png') : '.png')}")+t("products.compare.similar_line",:count => cluster.size - 1), 
+  	  <%= link_to(image_tag("#{'plus' + ($LineItemView ? ($product_type == "Laptop" ? '_line.png' : '_linea.png') : '.png')}")+t("products.compare.similar_line",:count => cluster.size - 1), 
   	  "/compare/sim/#{cluster.id}", :id => "sim#{i}", :class => 'simlinks rounded', 
 		  :"data-id" => "#{cluster.representative.id}", :"title" => "Browse through all " + cluster.size.to_s + " in this group") if group %>
   			</div>

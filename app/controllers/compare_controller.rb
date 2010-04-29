@@ -115,19 +115,19 @@ class CompareController < ApplicationController
       elsif $product_type == "Laptop"
         @imglurl = @product.imgurl.to_s
       else
-        @imglurl = "/images/" + $model.name.downcase + "s/" + @product.id.to_s + "_l.jpg"
+        @imglurl = "/images/" + $product_type.downcase + "s/" + @product.id.to_s + "_l.jpg"
       end
     else
       @imglurl = "/images/printers/" + @product.id.to_s + "_l.jpg"
     end
 
-    @offerings = RetailerOffering.find_all_by_product_id_and_product_type_and_region(params[:id],$model.name,$region,:order => 'priceint ASC')
-    @review = Review.find_by_product_id_and_product_type(params[:id],$model.name, :order => 'helpfulvotes DESC')
+    @offerings = RetailerOffering.find_all_by_product_id_and_product_type(params[:id],$product_type,:order => 'priceint ASC')
+    @review = Review.find_by_product_id_and_product_type(params[:id],$product_type, :order => 'helpfulvotes DESC')
     # Take out offending <br />
     if @review && @review.content
       @review.content = @review.content.gsub(/\r\&lt\;br \/\&gt\;/, '').gsub(/\t/,' ').strip
     end
-    @cartridges = Compatibility.find_all_by_product_id_and_product_type(@product.id,$model.name).map{|c|Cartridge.find_by_id(c.accessory_id)}.reject{|c|!c.instock}
+    @cartridges = Compatibility.find_all_by_product_id_and_product_type(@product.id,$product_type).map{|c|Cartridge.find_by_id(c.accessory_id)}.reject{|c|!c.instock}
     @cartridgeprices = @cartridges.map{|c| RetailerOffering.find_by_product_type_and_product_id("Cartridge",c.id)}
 
     respond_to do |format|
