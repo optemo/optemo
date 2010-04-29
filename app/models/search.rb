@@ -208,14 +208,14 @@ def compute_quartile(featurename)
   filter_query_thing = ""
   filter_query_thing = Cluster.filterquery(Session.current, 'n.') + " AND " if Session.current.filter && !Cluster.filterquery(Session.current, 'n.').blank?
   cluster_ids = clusters.map{|c| c.id}.join(", ")
-  product_count = ActiveRecord::Base.connection.select_one("select count(distinct(p.id)) from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids})")
+  product_count = ActiveRecord::Base.connection.select_one("select count(distinct(p.id)) from products p, nodes n, clusters cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids})")
   product_count = product_count["count(distinct(p.id))"].to_i
   q25offset = (product_count / 4.0).floor
   q75offset = ((product_count * 3) / 4.0).floor
   # Although we have @products, the database *should* be substantially faster at sorting them for each quartile computation.
   # However, we might be limited by the network connection here instead. For database connections on localhost, probably not, so leave as-is.
-  q25 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids}) ORDER BY #{featurename} LIMIT 1 OFFSET #{q25offset}")
-  q75 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from #{$model.table_name} p, #{$nodemodel.table_name} n, #{$clustermodel.table_name} cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids}) ORDER BY #{featurename} LIMIT 1 OFFSET #{q75offset}")
+  q25 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from products p, nodes n, clusters cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids}) ORDER BY #{featurename} LIMIT 1 OFFSET #{q25offset}")
+  q75 = ActiveRecord::Base.connection.select_one("select p.#{featurename} from products p, nodes n, clusters cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids}) ORDER BY #{featurename} LIMIT 1 OFFSET #{q75offset}")
   [q25[featurename], q75[featurename]]
 end
   
@@ -326,7 +326,7 @@ end
       ns[mycluster] = case p.class.name
         when "String" then p
         when "Fixnum" then p.to_s
-        when $clustermodel.name then p.id.to_s
+        when "Cluster" then p.id.to_s
       end
       mycluster.next!
     end
@@ -355,13 +355,47 @@ end
       myfilter.delete(f.intern) if myfilter[f.intern] == '0' && userdatabins.find_by_name(f).value != true
     end
     
-    @oldfeatures = features
-    @features = $featuremodel.new(myfilter)
+    s = new({:session_id => Session.current.id, :searchpids => Session.current.keywordpids, :searchterm => Session.current.keyword})
+    
+    #seperate myfilter into various parts
+    s.userdataconts = []
+    s.userdatabins = []
+    s.userdatacats = []
+    
+    myfilter.each_pair {|k,v|
+      if key.index(/(.+)_min/)
+        fname = Regexp.last_match[1]
+        max = fname+'_max'
+        s.userdataconts << Userdatacont.new({:name => fname, :min => v, :max => myfilter[max]})
+      elsif $config["BinaryFeaturesF"].index(k)
+        s.userdatabins << Userdatabin.new({:name => k, :value => v})
+      elsif $config["CategoricalFeaturesF"].index(k)
+        s.userdatacats << Userdatacat.new({:name => k, :value => v})
+      end
+    }
+    
+    #Find clusters that match filtering query
+    if !s.expandedFiltering? && Session.current.searches.last
+      #Search is narrowed, so use current products to begin with
+      s.clusters = Session.current.searches.last.clusters
+    else
+      #Search is expanded, so use all products to begin with
+      s.clusters = Cluster.byparent(0).delete_if{|c| c.isEmpty} #This is broken for test profile in Rails 2.3.5
+      #clusters = clusters.map{|c| c unless c.isEmpty}.compact
+    end
+    s
   end
   
   def self.createFromClustersAndCommit(clusters)
     s = createFromClusters(clusters)
     s.save
+    #Duplicate the features
+    os = Session.current.search
+    (os.userdataconts+os.userdatacats+os.userdatabins).each do |d|
+      nd = d.class.new(d.attributes)
+      nd.search_id = s.id
+      nd.save
+    end
     s
   end
   
@@ -391,6 +425,22 @@ end
     Session.current.keyword = nil
     Session.current.filter = false #Maybe this should be saved
     Session.current.search = self.createFromClustersAndCommit(Session.current.findAllCachedClusters(0))
+  end
+  
+  def commitfilters
+    cluster_count = clusters.length
+    mycluster = "c0"
+    clusters.each do |p|
+      send(mycluster.intern) = p.id.to_s
+      mycluster.next!
+    end
+    save
+    
+    #Save user filters
+    (userdataconts+userdatabins+userdatacats).each do |d|
+      d.search_id = id
+      d.save
+    end
   end
   
   def to_s
@@ -478,7 +528,7 @@ end
     userdatabins.each do |f|
       if f.value == false
         #Only works for one item submitted at a time
-        f.update_attribute(:value, nil)
+        userdatabins.delete(f)
         return true #Binary
       end
     end

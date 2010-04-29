@@ -51,7 +51,6 @@ class CompareController < ApplicationController
     cluster_id = params[:id]
     cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
     Session.current.search = Session.current.searches.last
-    Session.current.copyfeatures #create a copy of the current filters
     if cluster_id.index('+')
       #Merged Cluster
       cluster = MergedCluster.fromIDs(cluster_id.split('+'))
@@ -62,7 +61,6 @@ class CompareController < ApplicationController
     unless cluster.nil?
       if params[:ajax]
         s = Search.createFromClustersAndCommit(cluster.children)
-        Session.current.commitFilters(s.id)
         classVariables(s)
         render 'ajax', :layout => false
       else
@@ -74,7 +72,6 @@ class CompareController < ApplicationController
   end
 
   def filter
-    session = Session.current
     if params[:myfilter].nil?
       #No post info passed
       render :text =>  "[ERR]Search could not be completed."
@@ -86,17 +83,14 @@ class CompareController < ApplicationController
       params[:myfilter].delete("colorrange1")
       params[:myfilter].delete("feature1")
       
-      Session.current.search = Session.current.searches.last #My last search used for finding the right filters
-      session.updateFilters(params[:myfilter])
-      clusters = session.clusters
-      unless clusters.empty?
-        s = Search.createFromClustersAndCommit(clusters)
-        session.commitFilters(s.id)
+      s = Search.createFromFilters(params[:myfilter])
+      unless s.clusters.empty?
+        s.commitfilters
         classVariables(s)
         render 'ajax', :layout => false
       else
-        session.rollback
-        Session.current.search = session.searches.last
+        #Rollback
+        Session.current.search = Session.current.searches.last
         @errortype = "filter"
         render 'error', :layout=>true
       end
@@ -111,14 +105,14 @@ class CompareController < ApplicationController
     #Cleanse id to be only numbers
     params[:id] = params[:id][/^\d+/]
     @product = Product.cached(params[:id])
-    if $model.name
-      if $model.name == "Flooring"
+    if $product_type
+      if $product_type == "Flooring"
         imagestring = CGI.unescapeHTML(@product.imagelink.to_s).split("&")
         imagestring[0] = imagestring[0].split("?")[0] + "?" + imagestring[1]
         imagestring.delete_at(1)
         imagestring = imagestring.join("&")
         @imglurl = "http://www.builddirect.com" + imagestring
-      elsif $model.name == "Laptop"
+      elsif $product_type == "Laptop"
         @imglurl = @product.imgurl.to_s
       else
         @imglurl = "/images/" + $model.name.downcase + "s/" + @product.id.to_s + "_l.jpg"

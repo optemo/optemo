@@ -66,7 +66,7 @@ class Cluster < ActiveRecord::Base
       if ((Session.current.filter && !Cluster.filterquery(Session.current).blank?) || !Session.current.keywordpids.blank?)
         @nodes = Node.find(:all, :conditions => ["cluster_id = ?#{Session.current.filter && !Cluster.filterquery(Session.current).blank? ? ' and '+Cluster.filterquery(Session.current) : ''}#{!Session.current.filter || Session.current.keywordpids.blank? ? '' : ' and ('+Session.current.keywordpids+')'}",id])
       else 
-        @nodes = Nodes.bycluster(id)
+        @nodes = Node.bycluster(id)
       end
     end
     @nodes
@@ -104,7 +104,7 @@ class Cluster < ActiveRecord::Base
   end
   
   def size
-    cache_lookup("C-size#{id}"){nodes.length}
+    nodes.length
   end
   
   def self.findFilteringConditions(session)

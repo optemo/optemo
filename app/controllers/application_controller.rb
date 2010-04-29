@@ -65,35 +65,21 @@ class ApplicationController < ActionController::Base
       else
         $LineItemView = false 
       end
-   end
-
-    $model = ds.constantize
-    $nodemodel = (ds + 'Node').constantize
-    $clustermodel = (ds + 'Cluster').constantize
-    $featuremodel = (ds + 'Features').constantize
+    end
+    $product_type = ds
+    #$model = ds.constantize
+    #$nodemodel = (ds + 'Node').constantize
+    #$featuremodel = (ds + 'Features').constantize
     $rulemodel = (ds + 'BoostexterCombinedRule').constantize
-    $config = YAML::load(File.open("#{RAILS_ROOT}/config/config.yml"))
+    $config = YAML::load(File.open("#{RAILS_ROOT}/config/products.yml"))
   end
   
-# def set_version
-#   ds = case request.url.match(/\?version=\d\d/) ? 
-#   
-#   
-# end
-  
   def update_user
-    $region = request.url.match(/\.ca/) ? "ca" : "us"
     mysession = Session.find_by_id(session[:user_id])
     if mysession.nil?
       mysession = Session.new
       mysession.ip = request.remote_ip
       mysession.save
-      # Create a row in every product-features table
-      $ProdTypeList.each do |p|
-        myProduct = (p + 'Features').constantize.new
-        myProduct.session_id = mysession.id        
-        myProduct.save
-      end
       session[:user_id] = mysession.id
     end
     
@@ -106,10 +92,7 @@ class ApplicationController < ActionController::Base
       mysession.keyword = nil
     end
 
-    mysession.version = $clustermodel.find_last_by_region($region).version
-
-#    mysession.version = $clustermodel.maximum(:version, :conditions => ['region = ?', $region])
-
+    mysession.version = Cluster.find_last_by_product_type($product_type).version
     Session.current = mysession
   end
   
