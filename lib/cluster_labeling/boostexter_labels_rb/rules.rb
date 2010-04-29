@@ -62,9 +62,9 @@ module BtxtrLabels
     if weights[0] == 0 and weights[1] == 0
         return nil
     elsif weights[0] > 0 and weights[1] < 0
-        return [[rule.threshold, Infinity], float(weights[0].abs())]
+        return [[rule.threshold, Infinity], weights[0].abs().to_f()]
     elsif weights[0] < 0 and weights[1] > 0
-        return [[-Infinity, rule.threshold], float(weights[0].abs())]
+        return [[-Infinity, rule.threshold], weights[0].abs().to_f()]
     end
   end
 
