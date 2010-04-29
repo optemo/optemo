@@ -1,5 +1,6 @@
 require 'rules'
 require 'weighted_intervals'
+require 'rule_parsing'
 
 module BtxtrLabels
   def BtxtrLabels.get_max_abs_weight_from_threshold_rules(rules)
@@ -10,12 +11,12 @@ module BtxtrLabels
     # Find the intervals encoded in the rules. These intervals may not
     # be contiguous, i.e. everything with really wide or really narrow
     # zoom ranges.
-    intervals = rules.map{|r| r.get_interval_from_threshold_rules(r)}.find_all{|i| i != nil}
+    intervals = rules.map{|r| get_interval_from_threshold_rule(r)}.find_all{|i| i != nil}
 
     interval_set = []
 
-    for interval in intervals:
-        interval_set = merge_interval_with_interval_set(interval, interval_set)
+    for interval in intervals
+      interval_set = merge_interval_with_interval_set(interval, interval_set)
     end
 
     return interval_set
@@ -100,7 +101,7 @@ module BtxtrLabels
       end
 
       max_abs_weight = abs(weight)
-      max_abs_weight_sgram = {'sgram' : sgram, 'direction' : direction}
+      max_abs_weight_sgram = {'sgram' => sgram, 'direction' => direction}
     end
 
     if max_abs_weight == 0
@@ -117,7 +118,7 @@ module BtxtrLabels
   end
   
   def BtxtrLabels.convert_interval_set_to_yaml_style(interval_set)
-    return interval_set.map{|x| {'interval' : x[0], 'weight' : x[1]}}
+    return interval_set.map{|x| {'interval' => x[0], 'weight' => x[1]}}
   end
   
   def BtxtrLabels.save_combined_threshold_rule_for_field(cluster, fieldname, rules)
@@ -131,10 +132,10 @@ module BtxtrLabels
     yaml_repr = YAML::dump(convert_interval_set_to_yaml_style(interval_set))
 
     combined_rule = \
-    $btxtr_combined_rules_model.create\
-    (:fieldname => fieldname, :weight => max_abs_weight,
-     :cluster_id => cluster_id, :version => cluster.version,
-     :rule_type => "T", :yaml_repr => yaml_repr)
+    $btxtr_combined_rules_model.create(
+            :fieldname => fieldname, :weight => max_abs_weight,
+            :cluster_id => cluster.id, :version => cluster.version,
+            :rule_type => "T", :yaml_repr => yaml_repr)
 
     combined_rule.save()
   end
@@ -152,10 +153,10 @@ module BtxtrLabels
 
     yaml_repr = YAML::dump(sgram)
     combined_rule = \
-    $btxtr_combined_rules_model.create\
-    (:fieldname => fieldname, :weight => max_abs_weight,
-     :cluster_id => cluster_id, :version => cluster.version,
-     :rule_type => "S", :yaml_repr => yaml_repr)
+    $btxtr_combined_rules_model.create(
+            :fieldname => fieldname, :weight => max_abs_weight,
+            :cluster_id => cluster.id, :version => cluster.version,
+            :rule_type => "S", :yaml_repr => yaml_repr)
 
     combined_rule.save()
   end
@@ -167,7 +168,7 @@ module BtxtrLabels
 
     rule_type = rules[0].class
 
-    if rule_type == BtxtrThreshodlRule
+    if rule_type == BtxtrThresholdRule
       save_combined_threshold_rule_for_field(cluster, fieldname, rules)
     elsif rule_type == BtxtrSGramRule
       save_combined_sgram_rule_for_field(cluster, fieldname, rules)

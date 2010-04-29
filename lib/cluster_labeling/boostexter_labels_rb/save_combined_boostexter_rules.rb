@@ -7,7 +7,7 @@ module BtxtrLabels
     end
 
     clusters = \
-    $clustermodel.find(:all, :conditions = { :version => version })
+    $clustermodel.find(:all, :conditions => { :version => version })
 
     clusters.map{ |c|
       save_combined_rules_for_cluster(c)

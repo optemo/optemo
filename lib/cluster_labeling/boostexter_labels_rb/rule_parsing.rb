@@ -16,12 +16,12 @@ module BtxtrLabels
     end
   end
 
-  def is_blankline(line)
+  def BtxtrLabels.is_blankline(line)
     return (line =~ /^\s*$/) != nil
   end
 
   Rule_header_re = /^\s*(\d+(\.\d+)?)\s+Text:([A-Z]+):([a-z_]+):([&A-Za-z0-9_#\(\)\n\.]+)?\s*$/
-  def parse_rule_header(line)
+  def BtxtrLabels.parse_rule_header(line)
     match = line.scan(Rule_header_re)
 
     if match.size() == 0
@@ -41,7 +41,8 @@ module BtxtrLabels
       field = Boosting_fields[$model][rule_info['fieldname']]
 
       if len(field) == 2 and field[1].is_key('text_to_btxtr_fn')
-        rule_info['sgram'] = field[1]['btxtr_to_text_fn'](sgram)
+        btxtr_to_text_fn = field[1]['btxtr_to_text_fn']
+        rule_info['sgram'] = btxtr_to_text_fn(sgram)
       else
         rule_info['sgram'] = sgram
       end
@@ -51,7 +52,7 @@ module BtxtrLabels
   end
 
   Number_line_re = /^\s*(-?\d+(\.\d+)?)\s+(-?\d+(\.\d+)?)\s*$/
-  def parse_number_line(line)
+  def BtxtrLabels.parse_number_line(line)
     match = line.scan(Number_line_re)
 
     if match.size() == 0
@@ -61,7 +62,7 @@ module BtxtrLabels
     return [match[0][1].to_f(), match[0][3].to_f()]
   end
 
-  def parse_sgram_rule(fieldname, sgram, fh)
+  def BtxtrLabels.parse_sgram_rule(fieldname, sgram, fh)
     weights = [[0, 0], [0, 0]]
     rowidx = 0
 
@@ -85,7 +86,7 @@ module BtxtrLabels
   end
 
   Threshold_re = /^\s*(-?\d+(\.\d+)?)\s*$/
-  def parse_threshold_rule(fieldname, fh)
+  def BtxtrLabels.parse_threshold_rule(fieldname, fh)
     weights = [[0, 0], [0, 0], [0, 0]]
     threshold = nil
 
@@ -126,7 +127,7 @@ module BtxtrLabels
     return BtxtrThresholdRule.new(fieldname, weights, threshold)
   end
 
-  def parse_next_rule(fh)
+  def BtxtrLabels.parse_next_rule(fh)
     line = nil
 
     while(true)
@@ -157,7 +158,7 @@ module BtxtrLabels
     return rule
   end
 
-  def parse_num_rules(line)
+  def BtxtrLabels.parse_num_rules(line)
     match = line.scan(/^\s*(\d+)\s*$/)
     if match.size() == 0
       raise ParseError.new(line)
@@ -166,7 +167,7 @@ module BtxtrLabels
     return match[0][0].to_i()
   end
 
-  def get_rules(cluster)
+  def BtxtrLabels.get_rules(cluster)
     filename = get_strong_hypothesis_filename(cluster)
     shyp = File.new(filename, "r")
 

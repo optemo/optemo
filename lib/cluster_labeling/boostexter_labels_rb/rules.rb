@@ -41,7 +41,7 @@ module BtxtrLabels
         rules_for_fieldname = []
       end
       
-      rules_for_fieldname.append(rule)
+      rules_for_fieldname.push(rule)
       rules_a[fieldname] = rules_for_fieldname
     end
 
@@ -51,20 +51,20 @@ module BtxtrLabels
   def BtxtrLabels.get_abs_weight_from_threshold_rule(rule)
     weights = [0, 0]
     weights[0] = rule.weights[2][0] - rule.weights[1][0]
-    return abs(weights[0])
+    return weights[0].abs()
   end
 
-  def BtxtrLabels.get_interval_from_threshold_rule(rule):
+  def BtxtrLabels.get_interval_from_threshold_rule(rule)
     weights = [0, 0]
     weights[0] = rule.weights[2][0] - rule.weights[1][0]
     weights[1] = rule.weights[2][1] - rule.weights[1][1]
     
-    if weights[0] == 0 and weights[1] == 0:
-        return None
-    elsif weights[0] > 0 and weights[1] < 0:
-        return [[rule.threshold, Infinity], float(abs(weights[0]))]
-    elsif weights[0] < 0 and weights[1] > 0:
-        return [[-Infinity, rule.threshold], float(abs(weights[0]))]
+    if weights[0] == 0 and weights[1] == 0
+        return nil
+    elsif weights[0] > 0 and weights[1] < 0
+        return [[rule.threshold, Infinity], float(weights[0].abs())]
+    elsif weights[0] < 0 and weights[1] > 0
+        return [[-Infinity, rule.threshold], float(weights[0].abs())]
     end
   end
 
