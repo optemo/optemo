@@ -10,8 +10,7 @@ class MergedCluster
   def self.fromIDs(clusters)
     clusterobj = []
     clusters.compact.each do |c|
-      # Need to include .first so as to get at the instantiation method (there is no class method)
-      newcluster = $clustermodel.first.findCachedCluster(c.to_i)
+      newcluster = Cluster.cached(c.to_i)
       clusterobj << newcluster unless newcluster.nil? || newcluster.isEmpty
     end
     new(clusterobj)
@@ -82,7 +81,7 @@ class MergedCluster
   def representative
     unless @rep
       node = nodes.first
-      @rep = findCachedProduct(node.product_id) if node
+      @rep = Cluster.cached(node.product_id) if node
     end
     @rep
   end 

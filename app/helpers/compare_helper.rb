@@ -15,19 +15,20 @@ module CompareHelper
     end
   end
   
-  def roundmin(n)
-    (n*10).to_i.to_f/10
-  end
-  def roundmax(n)
-    (n*10).ceil.to_f/10
+  def featuremin(feat)
+    ContSpec.find(:all, :conditions => {:product_type => $product_type, :name => feat}.map(&:value).reject{|c|c.nil?}.sort[0]
   end
   
-  def dbmin(i2f, feat)
-    i2f ? DbFeature.featurecache(feat).min.to_i/100 :  roundmin(DbFeature.featurecache(feat).min)
+  def featuremax(feat)
+    ContSpec.find(:all, :conditions => {:product_type => $product_type, :name => feat}.map(&:value).sort[-1]
   end
   
-  def dbmax(i2f, feat)
-    i2f ? (DbFeature.featurecache(feat).max.to_f/100).ceil : feat=='itemweight' ? roundmax(DbFeature.featurecache(feat).max).ceil : roundmax(DbFeature.featurecache(feat).max)
+  def isnil(a)
+    if a.nil?
+      yield
+    else
+      a
+    end
   end
   
   def nav_link

@@ -8,7 +8,7 @@ class LinkController < ApplicationController
     r.session_id = session[:user_id]
     r.save
     if r.retailer_offering.url.blank?
-      redirect_to 'http://amazon.com/gp/product/'+findCachedProduct(r.product_id).asin+'?tag=optemo-20&m='+r.retailer_offering.merchant
+      redirect_to 'http://amazon.com/gp/product/'+Product.cached(r.product_id).asin+'?tag=optemo-20&m='+r.retailer_offering.merchant
     else
       redirect_to r.retailer_offering.url
     end

@@ -57,7 +57,7 @@ class CompareController < ApplicationController
       cluster = MergedCluster.fromIDs(cluster_id.split('+'))
     else
       #Single, normal Cluster
-      cluster = findCachedCluster(cluster_id)
+      cluster = Cluster.cached(cluster_id)
     end
     unless cluster.nil?
       if params[:ajax]
@@ -110,7 +110,7 @@ class CompareController < ApplicationController
     
     #Cleanse id to be only numbers
     params[:id] = params[:id][/^\d+/]
-    @product = findCachedProduct(params[:id])
+    @product = Product.cached(params[:id])
     if $model.name
       if $model.name == "Flooring"
         imagestring = CGI.unescapeHTML(@product.imagelink.to_s).split("&")
@@ -151,9 +151,9 @@ class CompareController < ApplicationController
       Search.createInitialClusters
       render 'ajax', :layout => false
     else
-      product_ids = $model.search_for_ids(params[:search].downcase, :per_page => 10000, :star => true)
+      product_ids = Product.search_for_ids(params[:search].downcase, :per_page => 10000, :star => true)
       current_version = Session.current.version
-      nodes = product_ids.map{|p| findCachedNodeByPID(p) }.compact
+      nodes = product_ids.map{|p| Node.byproduct(p) }.compact
       
       if nodes.length == 0
         if params[:ajax]

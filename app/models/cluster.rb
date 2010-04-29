@@ -1,9 +1,23 @@
-module Cluster
+class Cluster < ActiveRecord::Base
   include CachingMemcached
+  has_many :nodes
+  has_many :products, :through => :nodes
+  has_many :cont_specs, :through => :products
+  has_many :bin_specs, :through => :products
+  
+  def self.byparent(id)
+    current_version = Session.current.version
+    cache_lookup("Clusters#{current_version}#{id}"){find_all_by_parent_id_and_version_and_product_type(id, current_version, $product_type)}
+  end
+  
+  def self.cached(id)
+    cache_lookup("Cluster#{id}"){find(id)}
+  end
+  
   #The subclusters
   def children
     unless @children
-      @children = self.class.find_all_by_parent_id(id)
+      @children = byparent(id)
       #Check that children are not empty
       if Session.current.filter
         @children.delete_if{|c| c.isEmpty}
@@ -18,7 +32,7 @@ module Cluster
     if (self.cluster_size == 1) && (self.size>0)
       dC << self
     else
-      mychildren = self.class.find_all_by_parent_id(id)
+      mychildren = byparent(id)
       mychildren.each do |mc|
           dC = mc.deepChildren(dC)
       end  
@@ -26,17 +40,13 @@ module Cluster
     dC
   end
   
+  #Maybe we can cache this ***We need a join here
   def ranges(featureName)
     @range ||= {}
     if @range[featureName].nil?
-      unless Session.current.filter
-        @range[featureName] = [send(featureName+'_min'), send(featureName+'_max')]
-      else
-        values = nodes.map{|n| n.send(featureName)}.sort
-        nodes_min = values[0]
-        nodes_max = values[-1]
-        @range[featureName] = [nodes_min, nodes_max]    
-      end
+      nodes_min = cont_specs.select{|s|s.name == featurename}.map(&:min).sort[0]
+      nodes_max = cont_specs.select{|s|s.name == featurename}.map(&:max).sort[-1]
+      @range[featureName] = [nodes_min, nodes_max]    
     end
     @range[featureName]
   end
@@ -44,35 +54,27 @@ module Cluster
 # this could be integrated with ranges later
   def indicator(featureName)
     indic = false
-     unless Session.current.filter
-        indic = send(featureName)
-     else
-        values = nodes.map{|n| n.send(featureName)}
-        if values.index(false).nil? # they are all the same
-            indic = true
-        end      
-     end
-     indic
+      values = bin_specs.select{|s|s.name == featurename}
+      if values.index(false).nil? # they are all the same
+          indic = true
+      end 
+    indic
   end
   
   def nodes
     unless @nodes
       if ((Session.current.filter && !Cluster.filterquery(Session.current).blank?) || !Session.current.keywordpids.blank?)
-        @nodes = $nodemodel.find(:all, :conditions => ["cluster_id = ?#{Session.current.filter && !Cluster.filterquery(Session.current).blank? ? ' and '+Cluster.filterquery(Session.current) : ''}#{!Session.current.filter || Session.current.keywordpids.blank? ? '' : ' and ('+Session.current.keywordpids+')'}",id])
+        @nodes = Node.find(:all, :conditions => ["cluster_id = ?#{Session.current.filter && !Cluster.filterquery(Session.current).blank? ? ' and '+Cluster.filterquery(Session.current) : ''}#{!Session.current.filter || Session.current.keywordpids.blank? ? '' : ' and ('+Session.current.keywordpids+')'}",id])
       else 
-        @nodes = findCachedNodes(id)
+        @nodes = Nodes.bycluster(id)
       end
     end
     @nodes
   end
   
-  #The represetative product for this cluster
+  #The represetative product for this cluster, assumes nodes ordered by utility
   def representative
-    unless @rep
-      node = nodes.first
-      @rep = findCachedProduct(node.product_id) if node
-    end
-    @rep
+    Product.cached(nodes.first.product_id)
   end
   
   def self.filterquery(session, tablename="")
@@ -102,14 +104,7 @@ module Cluster
   end
   
   def size
-    unless @size
-      if Session.current.filter
-        @size = nodes.length
-      else
-        @size = cluster_size
-      end
-    end
-    @size
+    cache_lookup("C-size#{id}"){nodes.length}
   end
   
   def self.findFilteringConditions(session)
@@ -130,6 +125,6 @@ module Cluster
   end
   
   def utility
-    cached_utility
+    nodes.map{|n|n.utility}.sum/size
   end
 end

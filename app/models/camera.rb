@@ -7,7 +7,7 @@ class Camera < ActiveRecord::Base
       @@cameras = {}
     end
     unless @@cameras.has_key?('Camera' + $region + id.to_s)
-      @@cameras[('Camera' + $region + id.to_s)] = Session.current.findCachedProduct(id)
+      @@cameras[('Camera' + $region + id.to_s)] = Session.current.findCachedProduct(id) #needs to be fixed or removed
     end
     @@cameras[('Camera' + $region + id.to_s)]
   end

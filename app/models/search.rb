@@ -1,7 +1,28 @@
 class Search < ActiveRecord::Base
-  require 'set'
   include CachingMemcached
   belongs_to :session
+  attr_writer :userdataconts, :userdatacats, :userdatabins
+  
+  def userdataconts
+    unless @userdataconts
+      Userdatacont.find_all_by_search_id(id)
+    end
+    @userdataconts
+  end
+  
+  def userdatacats
+    unless @userdatacats
+      Userdatacat.find_all_by_search_id(id)
+    end
+    @userdatacats
+  end
+  
+  def userdatabins
+    unless @userdatabins
+      Userdatabin.find_all_by_search_id(id)
+    end
+    @userdatabins
+  end
   
   ## Computes distributions (arrays of normalized product counts) for all continuous features 
   def distribution(featureName)
@@ -9,9 +30,8 @@ class Search < ActiveRecord::Base
        min = DbFeature.featurecache(featureName).min
        max = DbFeature.featurecache(featureName).max
        stepsize = (max-min) / dist.length + 0.000001 #Offset prevents overflow of 10 into dist array
-       itof = $model::ItoF.include?(featureName)
        acceptedNodes.each do |n|
-         if (itof==true && min>=max-1) || (itof==false && min>=max-0.1)
+         if (min>=max-0.1)
            #No range so fill everything in
            dist = Array.new(dist.length,1)
          else
@@ -130,7 +150,7 @@ class Search < ActiveRecord::Base
       
       rules = findCachedBoostexterRules(c.id)
       unless product_ids.empty?
-        @products = findCachedProducts(product_ids).index_by(&:id)        
+        @products = Product.cached(product_ids).index_by(&:id)        
         rules.each do |r|
           # This check will not work in future, but will work for now. There will be a type field in the YAML representation instead.
           brules = YAML.load(r.yaml_repr)
@@ -141,11 +161,7 @@ class Search < ActiveRecord::Base
             next if unpacked_weighted_intervals.compact.empty?
             z = 0
             weighted_average = 0
-            # The products hash has all the cache hits for cameras serialized as a single request.
-            #products = c.findCachedProducts(product_ids)
             product_ids.each do |id| 
-              # This is out of cachingMemcached.
-              #product = products["#{$model}#{Session.current.version}#{id}"]
               # This line here should no longer be needed # products[id] = $model.productcache(id) unless (products[id])            
               product = @products[id]
               feature_value = product.send(r.fieldname)
@@ -288,7 +304,7 @@ end
           c = MergedCluster.fromIDs(cluster_id.split('+'))
         else
           #Single, normal Cluster
-          c = findCachedCluster(cluster_id)
+          c = Cluster.cached(cluster_id)
         end
         #Remove empty clusters
         if c.nil? || c.isEmpty
@@ -323,9 +339,24 @@ end
         s.clusters = clusters.sort{|a,b| (a.size>1 ? -1 : 1) <=> (b.size>1 ? -1 : 1)}
     end
 #    s.fillDisplay
-    s.parent_id = s.clusters.map{|c| c.parent_id}.sort[0]
-    s.layer = s.clusters.map{|c| c.layer}.sort[0]
+    #I think these are deprecated
+    #s.parent_id = s.clusters.map{|c| c.parent_id}.sort[0]
+    #s.layer = s.clusters.map{|c| c.layer}.sort[0]
     s
+  end
+  
+  def self.createFromFilters(myfilter)
+    #Delete blank values
+    myfilter.delete_if{|k,v|v.blank?}
+    #Fix price, because it's stored as int in db
+    myfilter[:session_id] = id
+    #Handle false booleans
+    $config["BinaryFeaturesF"].each do |f|
+      myfilter.delete(f.intern) if myfilter[f.intern] == '0' && userdatabins.find_by_name(f).value != true
+    end
+    
+    @oldfeatures = features
+    @features = $featuremodel.new(myfilter)
   end
   
   def self.createFromClustersAndCommit(clusters)
@@ -336,12 +367,12 @@ end
   
   def self.createFromKeywordSearch(nodes)
     if !(nodes.nil?) && nodes.length < 50 # Guess; this should be profiled later.
-      clusters = nodes.map { |node| Session.current.findCachedCluster(node.cluster_id) }.uniq
+      clusters = nodes.map { |node| Cluster.cached(node.cluster_id) }.uniq
 
       while clusters.length > $NumGroups
         clusters = clusters.map do |cluster|
           if cluster.parent_id != 0 # It's possible to have clusters at different layers, so we need to check for this.
-            cluster.findCachedCluster(cluster.parent_id)
+            Cluster.cached(cluster.parent_id)
           else
             cluster
           end
@@ -429,6 +460,38 @@ end
       end
     end
     weight
+  end
+  
+  def expandedFiltering?
+    #Continuous feature
+    userdataconts.each do |f|
+      old = Session.current.search.userdataconts.find_by_name(f.name) 
+      if old # If the oldsession max value is not nil then calculate newrange
+        oldrange = old.max - old.min
+        newrange = f.max - f.min
+        if newrange > oldrange
+          return true #Continuous
+        end
+      end
+    end
+    #Binary Feature
+    userdatabins.each do |f|
+      if f.value == false
+        #Only works for one item submitted at a time
+        f.update_attribute(:value, nil)
+        return true #Binary
+      end
+    end
+    #Categorical Feature
+    userdatacats.each do |f|
+      old = Session.current.search.userdatacats.find_all_by_name(f.name) 
+      unless old.empty?
+        newf = userdatacats.find_all_by_name(f.name)
+        return true if newf.length == 0 && old.length > 0
+        return true if old.length > 0 && newf.length > old.length
+      end
+    end
+    false
   end
 end
 

@@ -1,6 +1,6 @@
 	<% form_tag("",{:id => 'filter_form'}) do %>
-<% $model::CategoricalFeaturesF.each do |feat| %>
-	<div class='feature<%= " extra" if $model::ExtraFeature[feat] %>' <%= "style='display:none;'" if $model::ExtraFeature[feat] && !Session.current.expert %>>
+<% $config["CategoricalFeaturesF"].each do |feat| %>
+	<div class='feature'>
 		<!--div class='label'>
 			<%=t('products.' + feat)%>
 		</div-->
@@ -22,18 +22,16 @@
 		<%= hidden_field_tag "myfilter[#{feat}]", Session.current.features.brand %>
 	</div>
 <% end %>
-<% $model::ContinuousFeaturesF.each do |feat| %>
+<% $config["ContinuousFeaturesF"].each do |feat| %>
 	<%= render :partial => 'slider', 
-		:locals => {:name => t('products.' + feat), 
-		:i2f => $model::ItoF.include?(feat),
-		:val => feat, 
-		:extra => $model::ExtraFeature[feat],
+		:locals => {:name => t('products.' + feat)
+		:val => feat
 		:money_formatting => feat == 'price',
 		:min => DbFeature.featurecache(feat).min, 
 		:max => DbFeature.featurecache(feat).max} %>
 <% end %>
-<% $model::BinaryFeaturesF.each do |feat| %>
-	<div class='feature<%= " extra" if $model::ExtraFeature[feat] %>' <%= "style='display:none;'" if $model::ExtraFeature[feat] && !Session.current.expert %>>
+<% $config["BinaryFeaturesF"].each do |feat| %>
+	<div class='feature'>
 		<div class='label'>
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
 			<%= check_box('myfilter', feat, {:checked => Session.current.features.send(feat.intern) ? 'checked' : false, :class => 'autosubmitbool'})%>
@@ -41,7 +39,8 @@
 		</div>
 	</div>
 <% end %>
-<% if $model::ExtraFeature.values.inject(false){|a,b|a||b} %>
+<%# if $model::ExtraFeature.values.inject(false){|a,b|a||b} %>
+<!--
 <div class='changefilters'>
 	<% if Session.current.expert %>
 	    <%= link_to t('products.compare.morefilters'), "#", :id => "morefilters", :style => "display: none;" %>
@@ -50,6 +49,6 @@
 	    <%= link_to "More Filters", "#", :id => "morefilters" %>
 	    <%= link_to "Less Filters", "#", :id => "lessfilters", :style => "display: none;" %>
 	<% end %>
-</div>
-<% end %>
+</div>-->
+<%# end %>
 <% end %>

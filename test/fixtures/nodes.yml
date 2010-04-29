@@ -1,0 +1,15 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  id: 
+  cluster_id: 1
+  product_id: 1
+  product_type: MyString
+  version: 1
+
+two:
+  id: 
+  cluster_id: 1
+  product_id: 1
+  product_type: MyString
+  version: 1

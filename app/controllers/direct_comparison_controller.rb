@@ -9,7 +9,7 @@ class DirectComparisonController < ApplicationController
     # These IDs come straight from id=#savedproducts on the client side (comma-separated)
     @saved_ids = params[:id].split(",")
     @saved_ids.each do |saved_id|
-      prod = findCachedProduct(saved_id)
+      prod = Product.cached(saved_id)
       @products << prod
     end
     # Calculate best value for each feature, to display as bold

@@ -72,6 +72,7 @@ class ApplicationController < ActionController::Base
     $clustermodel = (ds + 'Cluster').constantize
     $featuremodel = (ds + 'Features').constantize
     $rulemodel = (ds + 'BoostexterCombinedRule').constantize
+    $config = YAML::load(File.open("#{RAILS_ROOT}/config/config.yml"))
   end
   
 # def set_version

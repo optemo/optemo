@@ -1,29 +1,24 @@
-<div class='feature<%= " extra" if extra %>' <%= "style='display:none;'" if extra && !Session.current.expert %>>
+<div class='feature'>
 
 <div class='label space'>
 	<%= render :partial => 'desc', :locals => {:feat => val} %>
 	<%= link_to t('products.'+val), "#" %>
 	<span class="unitdisp">(<%= t('products.' + val+"unit") %>)</span>
 </div>
-<% overallmin = dbmin(i2f, val) %>
-<% overallmax = dbmax(i2f, val) %>
-<% startmin = Session.current.features.send("#{val}_min".intern).nil? ? overallmin : i2f ? Session.current.features.send("#{val}_min".intern)/100 : Session.current.features.send("#{val}_min".intern) %>
-<% startmax = Session.current.features.send("#{val}_max".intern).nil? ? overallmax : i2f ? (Session.current.features.send("#{val}_max".intern)/100).ceil : Session.current.features.send("#{val}_max".intern) %>
+<% overallmin = (featuremin(val)*10).to_i.to_f/10 %>
+<% overallmax = (featuremax(val)*10).ceil.to_f/10 %>
+<% start = isnil(Session.current.searches.userdataconts.select{|m|m.name == val}.first){UserDataCont.new("min" => overallmin, "max" => overallmax)} %>
 <div class="hist" data-data="<%= Session.current.search.distribution(val).join(',') %>"></div>
-<%= hidden_field_tag "myfilter[#{val}_min]", i2f ?
-	((mymin = Session.current.features.send("#{val}_min".intern)).nil? ? '' : mymin/100) : 
-	Session.current.features.send("#{val}_min".intern),
+<%= hidden_field_tag "myfilter[#{val}_min]", start.name.nil? ? nil : start.min),
 {:class => 'min'}%>
-<%= hidden_field_tag "myfilter[#{val}_max]", i2f ? 
-	((mymax = Session.current.features.send("#{val}_max".intern)).nil? ? '' : mymax/100) :
-	Session.current.features.send("#{val}_max".intern),
+<%= hidden_field_tag "myfilter[#{val}_max]", start.name.nil? ? nil : start.max),
 {:class => 'max'}%>
 <div class='slider'
 data-label= '<%= val %>'
 data-min='<%= overallmin %>'
 data-max='<%= overallmax %>'
-data-startmin='<%= startmin %>'
-data-startmax='<%= startmax %>'
+data-startmin='<%= start.min %>'
+data-startmax='<%= start.max %>'
 data-itof='<%= i2f %>'
 <%= money_formatting ? 'data-formatting="$"' : ""  %>>
 
