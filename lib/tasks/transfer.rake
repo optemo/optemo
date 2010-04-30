@@ -42,7 +42,8 @@ task :move_printers => :environment do
      :itemweight],ContSpec,p,prod)
      
      create_specs(
-     [:resolution,
+     [:brand,
+     :resolution,
      :warranty,
      :duplex,
      :papersize,

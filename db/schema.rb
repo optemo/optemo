@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100430200620) do
+ActiveRecord::Schema.define(:version => 20100430230011) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -748,6 +748,17 @@ ActiveRecord::Schema.define(:version => 20100430200620) do
     t.string   "name"
     t.boolean  "value"
     t.string   "product_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "boostexter_rules", :force => true do |t|
+    t.string   "fieldname"
+    t.float    "weight"
+    t.integer  "cluster_id"
+    t.integer  "version"
+    t.text     "yaml_repr"
+    t.string   "rule_type"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
