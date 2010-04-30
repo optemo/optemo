@@ -1,4 +1,4 @@
-$SITE_TITLE = 'LaserPrinterHub.com'
+#$SITE_TITLE = 'LaserPrinterHub.com'
 $DefaultProduct = 'Printer'
 
 # Configuration: Application Key provided by Facebook

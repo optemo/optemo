@@ -77,18 +77,18 @@ string preClustering(map<const string, int>productNames, string productName, str
 			
 				break;
 		case 3:
-				conFeatureN = 3;
+				conFeatureN = 4;
 				boolFeatureN = 0;
 				conFeatureNames[1] = "width"; 
 			    conFeatureNames[2] = "miniorder";
-//                conFeatureNames[3] = "species_hardness";
+                conFeatureNames[3] = "species_hardness";
 //			    catFeatureNames[1] = "species";
 //			    catFeatureNames[2] = "feature";
 //			    catFeatureNames[3] = "colorrange";
 
 				indicatorNames[1] = "Item Width";
 				indicatorNames[2] = "Minimum Order";
-//				indicatorNames[3] = "Species Hardness";
+				indicatorNames[3] = "Species Hardness";
 				filteringCommand = "SELECT * FROM ";
 				filteringCommand += productName;
 				filteringCommand += "s where instock=1 AND ";
@@ -107,8 +107,38 @@ string preClustering(map<const string, int>productNames, string productName, str
 				}
 				nullCheck += ")";
 				filteringCommand += nullCheck;
-				break;
-		default: 
+  		break;
+  	case 4:
+  			conFeatureN = 4;
+  			boolFeatureN = 0;
+  			conFeatureNames[1] = "ram"; 
+  		    conFeatureNames[2] = "hd";
+            conFeatureNames[3] = "screensize";
+
+
+  			indicatorNames[1] = "Item Width";
+  			indicatorNames[2] = "Minimum Order";
+				indicatorNames[3] = "Species Hardness";
+  			filteringCommand = "SELECT * FROM ";
+  			filteringCommand += productName;
+  			filteringCommand += "s where instock=1 AND ";
+  			nullCheck += "((price IS NOT NULL)";
+  			for (int f=1; f<conFeatureN; f++){
+  				nullCheck += " and (";
+  				nullCheck += conFeatureNames[f];
+  				nullCheck += " IS NOT NULL";
+  				nullCheck += ")"; 
+  			}  
+  			for (int f=0; f<boolFeatureN; f++){
+  				nullCheck += " and (";
+  				nullCheck += conFeatureNames[f];
+  				nullCheck += " IS NOT NULL";
+  				nullCheck += ")";
+  			}
+  			nullCheck += ")";
+  						filteringCommand += nullCheck;
+  						break;
+  default: 
 				break;
 	}
 	return filteringCommand;

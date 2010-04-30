@@ -91,7 +91,6 @@ void reza_init_centers(double **centroids, int K, double **data, int dataN, int 
 {
 	int i;
 	vector<int> rindex;
-	
 	switch (method) {
 	   case INIT_BEGIN:
 	      for (i = 0; i < K; i++) rindex.push_back(i); 
@@ -343,15 +342,11 @@ void reza_kmeans_multiple_start(double **data, int N, int con_featsN, int bool_f
 	tcm = (double**) calloc(K, sizeof(double *));
 	for (int k = 0; k < K; k++)
 		tcm[k] = (double*) calloc(con_featsN + bool_featsN, sizeof(double));
-    //cout << "wow 0" << endl;
 	// main loop
 	for (int j = 0; j < restart_num; j++) {
-		//cout << "wow 1" << endl;
 		//cout << "multiple k=" << K << "  N=" <<  N << endl; 
 		reza_init_centers(tcm, K, data, N, con_featsN + bool_featsN, weights, method);
-		//cout << "wow 2" << endl;
 		reza_kmeans(data, N, con_featsN, bool_featsN, K, DBL_MIN, weights, REZA_KMEANS_MAX_ITER, to_clip,  disc_domains, tcm, tlabels, terror, terrors);	
-        //cout << "wow 3" << endl;
         if ((j == 0) || (terror < error)) {
 			error = terror;
 			for (int k = 0; k < K; k++) {
