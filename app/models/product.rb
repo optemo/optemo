@@ -10,5 +10,5 @@ class Product < ActiveRecord::Base
   end
   
   
-  named_scope :valid, :conditions => $config["BinaryFeaturesF"].map{|i|i+' > 0'}
+  #named_scope :valid, :conditions => $config["BinaryFeaturesF"].map{|i|i+' > 0'}
 end

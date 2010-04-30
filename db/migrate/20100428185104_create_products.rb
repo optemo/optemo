@@ -7,17 +7,18 @@ class CreateProducts < ActiveRecord::Migration
       t.string :model
       t.string :mpn
       t.boolean :instock
-      t.string :imagesurl
-      t.integer :imagesh
-      t.integer :imagesw
-      t.string :imagemurl
-      t.integer :imagemh
-      t.integer :imagemw
-      t.string :imagelurl
-      t.integer :imagelh
-      t.integer :imagelw
+      t.string :imgsurl
+      t.integer :imgsh
+      t.integer :imgsw
+      t.string :imgmurl
+      t.integer :imgmh
+      t.integer :imgmw
+      t.string :imglurl
+      t.integer :imglh
+      t.integer :imglw
       t.float :avgreviewrating
       t.integer :totalreviews
+      t.string :manufacturerurl
 
       t.timestamps
     end
