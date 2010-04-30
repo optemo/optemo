@@ -71,7 +71,6 @@ div.rowdiv {
 	padding: 3px 9px 3px 3px;
 	background: url(../images/nb-group.png) no-repeat;
 	width:224px;
-	margin-right:-1px;
 }
 .gv .nbsingle {
 	padding: 3px 9px 3px 3px;
@@ -120,7 +119,12 @@ div.rowdiv {
     float:left;
     padding-right:10px;
 }
-img.productimg {
+.gv img.productimg {
+	cursor: move;
+	height:100px;
+	padding-right: 20px;
+}
+.lv img.productimg {
 	cursor: move;
 	height:100px;
 	float: left;
@@ -134,9 +138,6 @@ img.productimg {
 }
 .gv .productinfo {
 	margin:0 auto;
-	float: left;
-	width: 500px;
-	height: 100px;
 }
 .lv .productinfo {
 	padding-top: 5px;
