@@ -24,4 +24,9 @@ import cluster_labeling.optemo_django_models as optemo
 optemo.set_optemo_product_type(product_type)
 
 import cluster_labeling.usecases as usecases
+
+if not usecases.UsecaseClusterScore.all_tables_exist()[0]:
+    usecases.UsecaseClusterScore.drop_tables_if_exist()
+    usecases.UsecaseClusterScore.create_tables()
+
 usecases.score_usecases_for_all_clusters(version)
