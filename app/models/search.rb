@@ -337,10 +337,11 @@ end
     #Delete blank values
     myfilter.delete_if{|k,v|v.blank?}
     #Fix price, because it's stored as int in db
-    myfilter[:session_id] = id
+    myfilter[:session_id] = Session.current.id
     #Handle false booleans
     $config["BinaryFeaturesF"].each do |f|
-      myfilter.delete(f.intern) if myfilter[f.intern] == '0' && userdatabins.find_by_name(f).value != true
+      dobj = Session.current.search.userdatabins.select{|d|d.name == f}.first
+      myfilter.delete(f.intern) if myfilter[f.intern] == '0' && (dobj.nil? || dobj.value != true)
     end
     
     s = new({:session_id => Session.current.id, :searchpids => Session.current.keywordpids, :searchterm => Session.current.keyword})
@@ -351,7 +352,7 @@ end
     s.userdatacats = []
     
     myfilter.each_pair {|k,v|
-      if key.index(/(.+)_min/)
+      if k.index(/(.+)_min/)
         fname = Regexp.last_match[1]
         max = fname+'_max'
         s.userdataconts << Userdatacont.new({:name => fname, :min => v, :max => myfilter[max]})
@@ -452,6 +453,38 @@ end
     updateClusters(myclusters)
   end
   
+  def expandedFiltering?
+    #Continuous feature
+    userdataconts.each do |f|
+      old = Session.current.search.userdataconts.find_by_name(f.name) 
+      if old # If the oldsession max value is not nil then calculate newrange
+        oldrange = old.max - old.min
+        newrange = f.max - f.min
+        if newrange > oldrange
+          return true #Continuous
+        end
+      end
+    end
+    #Binary Feature
+    userdatabins.each do |f|
+      if f.value == false
+        #Only works for one item submitted at a time
+        userdatabins.delete(f)
+        return true #Binary
+      end
+    end
+    #Categorical Feature
+    userdatacats.each do |f|
+      old = Session.current.search.userdatacats.find_all_by_name(f.name) 
+      unless old.empty?
+        newf = userdatacats.find_all_by_name(f.name)
+        return true if newf.length == 0 && old.length > 0
+        return true if old.length > 0 && newf.length > old.length
+      end
+    end
+    false
+  end
+  
   private
   
   def updateClusters(myclusters)
@@ -500,38 +533,6 @@ end
       end
     end
     weight
-  end
-  
-  def expandedFiltering?
-    #Continuous feature
-    userdataconts.each do |f|
-      old = Session.current.search.userdataconts.find_by_name(f.name) 
-      if old # If the oldsession max value is not nil then calculate newrange
-        oldrange = old.max - old.min
-        newrange = f.max - f.min
-        if newrange > oldrange
-          return true #Continuous
-        end
-      end
-    end
-    #Binary Feature
-    userdatabins.each do |f|
-      if f.value == false
-        #Only works for one item submitted at a time
-        userdatabins.delete(f)
-        return true #Binary
-      end
-    end
-    #Categorical Feature
-    userdatacats.each do |f|
-      old = Session.current.search.userdatacats.find_all_by_name(f.name) 
-      unless old.empty?
-        newf = userdatacats.find_all_by_name(f.name)
-        return true if newf.length == 0 && old.length > 0
-        return true if old.length > 0 && newf.length > old.length
-      end
-    end
-    false
   end
 end
 

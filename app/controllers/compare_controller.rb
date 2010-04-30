@@ -32,14 +32,8 @@ class CompareController < ApplicationController
     else
       classVariables(Search.createFromClustersAndCommit(params[:id].split('-')))
     end
-    #No products found
-    if Session.current.search.result_count == 0
-      flash[:error] = "No products were found, so you were redirected to the home page"
-      redirect_to "/compare/compare/"
-    end
-    if hist
-      render 'ajax', :layout => false
-    end
+    
+    render 'ajax', :layout => false
   end
   
   def classVariables(search)
@@ -81,7 +75,7 @@ class CompareController < ApplicationController
       params[:myfilter].delete("species1")
       params[:myfilter].delete("colorrange1")
       params[:myfilter].delete("feature1")
-      
+      Session.current.search = Session.current.searches.last
       s = Search.createFromFilters(params[:myfilter])
       unless s.clusters.empty?
         s.commitfilters
@@ -89,7 +83,6 @@ class CompareController < ApplicationController
         render 'ajax', :layout => false
       else
         #Rollback
-        Session.current.search = Session.current.searches.last
         @errortype = "filter"
         render 'error', :layout=>true
       end
