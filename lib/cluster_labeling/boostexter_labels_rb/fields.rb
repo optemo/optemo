@@ -1,7 +1,7 @@
 module BtxtrLabels
   Boosting_fields = \
   {
-    Laptop => {
+    "Laptop" => {
       'price' => ['continuous'],
       'brand' => ['text'],
       'hd' => ['continuous'],
@@ -9,13 +9,13 @@ module BtxtrLabels
       'screensize' => ['continuous']
     },
     
-    Flooring => {
+    "Flooring" => {
       'species_hardness' => ['continuous'],
       'width' => ['continuous'],
       'price' => ['continuous']
     },
     
-    Printer => {
+    "printer_us" => {
       'itemweight' => ['continuous'],
       'displaysize' => ['continuous'],
       
@@ -37,7 +37,7 @@ module BtxtrLabels
       'price' => ['continuous']
     },
     
-    Camera => {
+    "Camera" => {
       'itemweight' => ['continuous'],
       'displaysize' => ['continuous'],
 

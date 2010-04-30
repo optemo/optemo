@@ -1,9 +1,9 @@
 module BtxtrLabels
-  Output_subdir = File.expand_path(File.dirname(RAILS_ROOT) + "/site/lib/cluster_labeling/cc_boostexter_files/")
-  Boostexter_subdir = File.expand_path(File.dirname(RAILS_ROOT) + "/site/lib/cluster_labeling/BoosTexter2_1/")
+  Output_subdir = "#{RAILS_ROOT}/lib/cluster_labeling/cc_boostexter_files"
+  Boostexter_subdir = "#{RAILS_ROOT}/site/lib/cluster_labeling/BoosTexter2_1"
 
   def BtxtrLabels.get_filename_stem(cluster)
-    return Output_subdir + "/" + $model.to_s().downcase() + "_" + cluster.id.to_s()
+    return Output_subdir + "/" + $product_type + "_" + cluster.id.to_s()
   end
 
   def BtxtrLabels.get_names_filename(cluster)

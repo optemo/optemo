@@ -38,7 +38,7 @@ module BtxtrLabels
 
     if rule_info['type'] == 'SGRAM'
       sgram = match[0][4].strip().sub(/[#\s]/, ' ')
-      field = Boosting_fields[$model][rule_info['fieldname']]
+      field = Boosting_fields[$product_type][rule_info['fieldname']]
 
       if len(field) == 2 and field[1].is_key('text_to_btxtr_fn')
         btxtr_to_text_fn = field[1]['btxtr_to_text_fn']
