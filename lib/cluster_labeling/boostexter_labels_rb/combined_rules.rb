@@ -130,14 +130,16 @@ module BtxtrLabels
     end
 
     yaml_repr = YAML::dump(convert_interval_set_to_yaml_style(interval_set))
-
-    combined_rule = \
-    $btxtr_combined_rules_model.create(
-            :fieldname => fieldname, :weight => max_abs_weight,
-            :cluster_id => cluster.id, :version => cluster.version,
-            :rule_type => "T", :yaml_repr => yaml_repr)
-
-    combined_rule.save()
+    
+    atts = {:fieldname => fieldname, :weight => max_abs_weight,
+    :cluster_id => cluster.id, :version => cluster.version,
+    :rule_type => "T", :yaml_repr => yaml_repr}
+    combined_rule = BoostexterRule.find_by_cluster_id_and_version(cluster.id,cluster.version)
+    if combined_rule.nil?
+      combined_rule = BoostexterRule.new(atts).save 
+    else
+      combined_rule.update_attributes(atts)
+    end
   end
   
   def BtxtrLabels.save_combined_sgram_rule_for_field(cluster, fieldname, rules)
@@ -152,13 +154,16 @@ module BtxtrLabels
     end
 
     yaml_repr = YAML::dump(sgram)
-    combined_rule = \
-    $btxtr_combined_rules_model.create(
-            :fieldname => fieldname, :weight => max_abs_weight,
-            :cluster_id => cluster.id, :version => cluster.version,
-            :rule_type => "S", :yaml_repr => yaml_repr)
-
-    combined_rule.save()
+    
+    atts = {:fieldname => fieldname, :weight => max_abs_weight,
+    :cluster_id => cluster.id, :version => cluster.version,
+    :rule_type => "S", :yaml_repr => yaml_repr}
+    combined_rule = BoostexterRule.find_by_cluster_id_and_version(cluster.id,cluster.version)
+    if combined_rule.nil?
+      combined_rule = BoostexterRule.new(atts).save 
+    else
+      combined_rule.update_attributes(atts)
+    end
   end
   
   def BtxtrLabels.save_combined_rule_for_field(cluster, fieldname, rules)

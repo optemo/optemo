@@ -14,7 +14,7 @@ module BtxtrLabels
     f.write(labels.map{|l| l.to_s()}.join(", "))
     f.write(".\n")
 
-    Boosting_fields_ordered[$model].map\
+    Boosting_fields_ordered[$product_type].map\
     { |fieldname, field|
       fielddesc = field[0]
 
@@ -46,17 +46,16 @@ module BtxtrLabels
 
     version = cluster.version
 
-    products_this = cluster.nodes.map\
-    {|n| $model.find(:all, :conditions => {:id => n.product_id})[0]}
+    products_this = cluster.nodes.map{|n| Product.find(n.product_id)}
     products_this = products_this.map{|p| [p, cluster.id]}
 
     parent_cluster_nodes = nil
 
     if cluster.parent_id == 0
-      clusters = $clustermodel.find(:all, :conditions => {:parent_id => 0, :version => version})
+      clusters = Cluster.find(:all, :conditions => {:parent_id => 0, :version => version, :product_type => $product_type})
       parent_cluster_nodes = clusters.map{|c| c.nodes}.flatten()
     else
-      parent_cluster = $clustermodel.find(:all, :conditions => {:id => cluster.parent_id})[0]
+      parent_cluster = Cluster.find(:first, :conditions => {:id => cluster.parent_id})
       parent_cluster_nodes = parent_cluster.nodes
     end
 
@@ -64,7 +63,7 @@ module BtxtrLabels
     { |p_id|
       # Get clusters for product and version
       cluster_ids = \
-      $nodemodel.find(:all, :conditions => {:product_id => p_id, :version => version}).map\
+      Node.find(:all, :conditions => {:product_id => p_id, :version => version}).map\
       { |n|
         n.cluster_id
       }
@@ -73,7 +72,7 @@ module BtxtrLabels
       not cluster_id_set.member?(cluster.id)
     }
     products_parent = products_parent.map\
-    {|p_id| $model.find(:all, :conditions => {:id => p_id})[0]}
+    {|p_id| Product.find(p_id) }
 
     products_parent = products_parent.map\
     {|p| [p, cluster.parent_id]}
@@ -81,7 +80,7 @@ module BtxtrLabels
     products = products_this + products_parent
 
     for product, cluster_id in products
-      Boosting_fields_ordered[$model].map\
+      Boosting_fields_ordered[$product_type].map\
       { |fieldname, field|
         fielddesc = field[0]
         fieldval = product.send(fieldname.to_sym())
