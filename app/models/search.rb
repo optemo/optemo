@@ -1,34 +1,25 @@
 class Search < ActiveRecord::Base
-  include CachingMemcached
   belongs_to :session
   attr_writer :userdataconts, :userdatacats, :userdatabins
   
   def userdataconts
-    unless @userdataconts
-      Userdatacont.find_all_by_search_id(id)
-    end
-    @userdataconts
+      @userdataconts ||= Userdatacont.find_all_by_search_id(id)
   end
   
   def userdatacats
-    unless @userdatacats
-      Userdatacat.find_all_by_search_id(id)
-    end
-    @userdatacats
+      @userdatacats ||= Userdatacat.find_all_by_search_id(id)
   end
   
   def userdatabins
-    unless @userdatabins
-      Userdatabin.find_all_by_search_id(id)
-    end
-    @userdatabins
+      @userdatabins ||= Userdatabin.find_all_by_search_id(id)
   end
   
   ## Computes distributions (arrays of normalized product counts) for all continuous features 
   def distribution(feat)
        dist = Array.new(21,0)
-       min = minSpec(feat)
-       max = maxSpec(feat)
+       min = CachingMemcached.minSpec(feat)
+       max = CachingMemcached.maxSpec(feat)
+       return [] if max.nil? || min.nil?
        stepsize = (max-min) / dist.length + 0.000001 #Offset prevents overflow of 10 into dist array
        acceptedNodes.each do |n|
          if (min>=max-0.1)
@@ -81,7 +72,7 @@ class Search < ActiveRecord::Base
     if @reldescs.empty?
       feats = {}
       $config["ContinuousFeaturesF"].each do |f|
-        norm = maxSpec(f) - minSpec(f)
+        norm = CachingMemcached.maxSpec(f) - CachingMemcached.minSpec(f)
         norm = 1 if norm == 0
         feats[f] = clusters.map{ |c| c.representative}.compact.map {|c| c[f].to_f/norm } 
       end
@@ -233,11 +224,11 @@ end
       $config["ContinuousFeatures"].each do |f|
         if $config["DescFeatures"].include?(f) && !(f == "opticalzoom" && slr == 1)
               cRanges = clusters[clusterNumber].ranges(f)
-              if (cRanges[1] < lowSpec(f))
+              if (cRanges[1] < CachingMemcached.lowSpec(f))
                  clusterDs << {'desc' => "low_"+f, 'stat' => 0}  
-              elsif (cRanges[0] > highSpec(f))
+              elsif (cRanges[0] > CachingMemcached.highSpec(f))
                  clusterDs <<  {'desc' => "high_"+f, 'stat' => 2}  
-              elsif ((cRanges[0] >= lowSpec(f)) && (cRanges[1] <= highSpec(f))) 
+              elsif ((cRanges[0] >= CachingMemcached.lowSpec(f)) && (cRanges[1] <= CachingMemcached.highSpec(f))) 
                   clusterDs <<  {'desc' => "avg_"+f, 'stat' => 1}
               end 
         end   
@@ -254,9 +245,9 @@ end
     $config["DescFeatures"].each do |f|
       searchR = ranges(f)
       return ['Empty'] if searchR[0].nil? || searchR[1].nil?
-      if (searchR[1]<=lowSpec(f))
+      if (searchR[1] <= CachingMemcached.lowSpec(f))
            des <<  "low_#{f}"
-      elsif (searchR[0]>=highSpec(f))
+      elsif (searchR[0] >= CachingMemcached.highSpec(f))
            des <<  "high_#{f}"
       end
     end  
@@ -388,10 +379,12 @@ end
     s.save
     #Duplicate the features
     os = Session.current.search
-    (os.userdataconts+os.userdatacats+os.userdatabins).each do |d|
-      nd = d.class.new(d.attributes)
-      nd.search_id = s.id
-      nd.save
+    if os
+      (os.userdataconts+os.userdatacats+os.userdatabins).each do |d|
+        nd = d.class.new(d.attributes)
+        nd.search_id = s.id
+        nd.save
+      end
     end
     s
   end
@@ -421,14 +414,14 @@ end
     Session.current.keywordpids = nil
     Session.current.keyword = nil
     Session.current.filter = false #Maybe this should be saved
-    Session.current.search = self.createFromClustersAndCommit(Session.current.findAllCachedClusters(0))
+    Session.current.search = self.createFromClustersAndCommit(Cluster.byparent(0))
   end
   
   def commitfilters
     cluster_count = clusters.length
-    mycluster = "c0"
+    mycluster = "c0="
     clusters.each do |p|
-      send(mycluster.intern) = p.id.to_s
+      send(mycluster.intern, p.id.to_s)
       mycluster.next!
     end
     save

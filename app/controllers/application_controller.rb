@@ -92,7 +92,7 @@ class ApplicationController < ActionController::Base
       mysession.keyword = nil
     end
 
-    mysession.version = Cluster.find_last_by_product_type($product_type).version
+    mysession.version = 0# Cluster.find_last_by_product_type($product_type).version
     Session.current = mysession
   end
   

@@ -1,5 +1,4 @@
 class Product < ActiveRecord::Base
-  include CachingMemcached
   has_many :nodes
   has_many :cat_specs
   has_many :bin_specs
@@ -7,7 +6,7 @@ class Product < ActiveRecord::Base
   
   #This can called with a single id or an array of ids
   def self.cached(ids)
-    cache_lookup("Product#{ids}"){find(ids)}
+    CachingMemcached.cache_lookup("Product#{ids}"){find(ids)}
   end
   
   

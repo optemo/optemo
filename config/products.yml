@@ -1,21 +1,21 @@
 Camera:
   ContinuousFeaturesF:
-      -maximumresolution
-      -displaysize
-      -price
-      -opticalzoom
+      - maximumresolution
+      - displaysize
+      - price
+      - opticalzoom
   BinaryFeaturesF:
-      -slr
+      - slr
   CategoricalFeaturesF:
-      -brand
+      - brand
       
 Printer:
   ContinuousFeaturesF:
-    -price
-    -ppm
-    -resolutionmax
-    -itemwidth
+    - price
+    - ppm
+    - resolutionmax
+    - itemwidth
   BinaryFeaturesF:
-    -networkedprinter
+    - networkedprinter
   CategoricalFeaturesF:
-    -brand
+    - brand

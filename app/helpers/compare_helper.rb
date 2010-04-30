@@ -1,5 +1,4 @@
 module CompareHelper
-  include CachingMemcached
   def landing?
     ! (request.referer && request.referer.match(/http:\/\/(laserprinterhub|localhost)/))
   end
@@ -17,11 +16,13 @@ module CompareHelper
   end
   
   def overallmin(feat)
-    (minSpec(feat)*10).to_i.to_f/10
+    min = CachingMemcached.minSpec(feat) || 0
+    (min*10).to_i.to_f/10
   end
   
   def overallmax(feat)
-    (maxSpec(feat)*10).ceil.to_f/10
+    max = CachingMemcached.minSpec(feat) || 0
+    (max*10).ceil.to_f/10
   end
   
   def isnil(a)
@@ -84,7 +85,7 @@ module CompareHelper
  end
  
   def chosencats(feat)
-    Session.current.search.userdatacats.find_all_by_name(feat).map(&:value)
+    Session.current.search.userdatacats.select{|d|d.name == feat}.map(&:value)
   end
   
   def catspecs(feat)

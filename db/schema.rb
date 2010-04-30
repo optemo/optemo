@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100428185621) do
+ActiveRecord::Schema.define(:version => 20100428230230) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -2501,6 +2501,31 @@ ActiveRecord::Schema.define(:version => 20100428185621) do
     t.string   "wireless"
   end
 
+  create_table "userdatabins", :force => true do |t|
+    t.integer  "search_id"
+    t.string   "name"
+    t.boolean  "value"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "userdatacats", :force => true do |t|
+    t.integer  "search_id"
+    t.string   "name"
+    t.string   "value"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "userdataconts", :force => true do |t|
+    t.integer  "search_id"
+    t.string   "name"
+    t.float    "min"
+    t.float    "max"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "vieweds", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -2514,32 +2539,6 @@ ActiveRecord::Schema.define(:version => 20100428185621) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
-
-  create_table "word_senses", :force => true do |t|
-    t.integer "word_id",                          :null => false
-    t.integer "name_id",                          :null => false
-    t.string  "pos",        :limit => 1,          :null => false
-    t.string  "definition",                       :null => false
-    t.text    "notes",      :limit => 2147483647
-  end
-
-  add_index "word_senses", ["word_id", "name_id", "definition"], :name => "word_id", :unique => true
-
-  create_table "word_senses_antonyms", :force => true do |t|
-    t.integer "wordsense_id", :null => false
-    t.integer "word_id",      :null => false
-  end
-
-  add_index "word_senses_antonyms", ["word_id"], :name => "word_id_refs_id_59472afd"
-  add_index "word_senses_antonyms", ["wordsense_id", "word_id"], :name => "wordsense_id", :unique => true
-
-  create_table "word_senses_synonyms", :force => true do |t|
-    t.integer "wordsense_id", :null => false
-    t.integer "word_id",      :null => false
-  end
-
-  add_index "word_senses_synonyms", ["word_id"], :name => "word_id_refs_id_92b01d6a"
-  add_index "word_senses_synonyms", ["wordsense_id", "word_id"], :name => "wordsense_id", :unique => true
 
   create_table "words", :force => true do |t|
     t.string  "word",                                    :null => false

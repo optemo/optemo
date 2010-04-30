@@ -2,7 +2,6 @@ class CompareController < ApplicationController
   layout "optemo"
   require 'open-uri'
   require 'iconv'
-  include CachingMemcached
   
   def index
     if Session.isCrawler?(request.user_agent) || params[:ajax]

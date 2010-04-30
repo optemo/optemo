@@ -1,5 +1,4 @@
 class Cluster < ActiveRecord::Base
-  include CachingMemcached
   has_many :nodes
   has_many :products, :through => :nodes
   has_many :cont_specs, :through => :products
@@ -7,11 +6,11 @@ class Cluster < ActiveRecord::Base
   
   def self.byparent(id)
     current_version = Session.current.version
-    cache_lookup("Clusters#{current_version}#{id}"){find_all_by_parent_id_and_version_and_product_type(id, current_version, $product_type)}
+    CachingMemcached.cache_lookup("Clusters#{current_version}#{id}"){find_all_by_parent_id_and_version_and_product_type(id, current_version, $product_type)}
   end
   
   def self.cached(id)
-    cache_lookup("Cluster#{id}"){find(id)}
+    CachingMemcached.cache_lookup("Cluster#{id}"){find(id)}
   end
   
   #The subclusters
