@@ -67,11 +67,32 @@ class ApplicationController < ActionController::Base
       end
     end
     $product_type = ds
-    $product_type = "Printer"
+    $product_type = "printer_us"
     $rulemodel = (ds + 'BoostexterCombinedRule').constantize
-    $config = {}
+    $Continuous = Hash.new{|h,k| h[k] = []}
+    $Binary = Hash.new{|h,k| h[k] = []}
+    $Categorical = Hash.new{|h,k| h[k] = []}
     file = YAML::load(File.open("#{RAILS_ROOT}/config/products.yml"))
-    $config = file[$product_type] unless (file.nil? || file.empty?)
+    unless (file.nil? || file.empty?)
+      file[$product_type].each do |feature,stuff| 
+        type = stuff.first
+        flags = stuff.second
+        case type
+        when "Continuous"
+          flags.each{|flag| $Continuous[flag] << feature}
+        when "Binary"
+          flags.each{|flag| $Binary[flag] << feature}
+        when "Categorical"
+          flags.each{|flag| $Categorical[flag] << feature}
+        end
+      end
+      $Continuous["all"] = []
+      $Binary["all"] = []
+      $Categorical["all"] = []
+      file[$product_type].each{|feature,stuff| $Continuous["all"] << feature if stuff.first == "Continuous"}
+      file[$product_type].each{|feature,stuff| $Binary["all"] << feature if stuff.first == "Binary"}
+      file[$product_type].each{|feature,stuff| $Categorical["all"] << feature if stuff.first == "Categorical"}
+    end
   end
   
   def update_user

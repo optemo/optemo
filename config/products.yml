@@ -1,21 +1,46 @@
-Camera:
-  ContinuousFeaturesF:
-      - maximumresolution
-      - displaysize
-      - price
-      - opticalzoom
-  BinaryFeaturesF:
-      - slr
-  CategoricalFeaturesF:
-      - brand
+# c = continuous
+# cat = categorical
+# b = boolean
+# boost = boostexter feature for labels
+
+####Spaces are required between elements in an array
+
+camera_us:
+  maximumresolution: 
+    - Continuous
+    - [boost, cluster, filter]
+  displaysize:
+    - Continuous
+    - [boost, cluster, filter]
+  price:
+    - Continuous
+    - [boost, cluster, filter]
+  opticalzoom:
+    - Continuous
+    - [boost, cluster, filter]
+  slr:
+    - Binary
+    - [boost, cluster, filter]
+  brand:
+    - Categorical
+    - [boost, cluster, filter]
       
-Printer:
-  ContinuousFeaturesF:
-    - price
-    - ppm
-    - resolutionmax
-    - itemwidth
-  BinaryFeaturesF:
-    - networkedprinter
-  CategoricalFeaturesF:
-    - brand
+printer_us:
+  price:
+    - Continuous
+    - [boost, cluster, filter]
+  ppm:
+    - Continuous
+    - [boost, cluster, filter]
+  resolutionmax:
+    - Continuous
+    - [boost, cluster, filter]
+  itemwidth:
+    - Continuous
+    - [boost, cluster, filter]
+  printserver:
+    - Binary
+    - [boost, cluster, filter]
+  brand:
+    - Categorical
+    - [boost, cluster, filter]
