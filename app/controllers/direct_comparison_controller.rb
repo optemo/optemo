@@ -20,7 +20,7 @@ private
   def calculateBestValues()
     bestvalue = {}
     if @products.length > 1
-      $config["ContinuousFeaturesF"].each do |feature|
+      $Continuous["filter"].each do |feature|
         # For every feature in ContinuousFeatures
         # For every product in @products
         # Find the min value and assign @bestvalue[feature]=product-id

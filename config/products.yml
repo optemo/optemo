@@ -35,10 +35,16 @@ printer_us:
   resolutionmax:
     - Continuous
     - [boost, cluster, filter]
+  paperinput:
+    - Continuous
+    - [boost, cluster, filter]
   itemwidth:
     - Continuous
     - [boost, cluster, filter]
   printserver:
+    - Binary
+    - [boost, cluster, filter]
+  scanner:
     - Binary
     - [boost, cluster, filter]
   brand:

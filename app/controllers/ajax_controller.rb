@@ -1,7 +1,7 @@
 class AjaxController < ApplicationController
   def preference
     mypreferences = params[:mypreference]
-    $config["ContinuousFeaturesF"].each do |f|
+    $Continuous["filter"].each do |f|
       Session.current.features.update_attribute(f+"_pref", mypreferences[f+"_pref"])
     end
     # To stay on the current page 

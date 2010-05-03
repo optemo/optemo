@@ -71,14 +71,14 @@ class Search < ActiveRecord::Base
     @reldescs ||= []
     if @reldescs.empty?
       feats = {}
-      $config["ContinuousFeaturesF"].each do |f|
+      $Continuous["filter"].each do |f|
         norm = CachingMemcached.maxSpec(f) - CachingMemcached.minSpec(f)
         norm = 1 if norm == 0
         feats[f] = clusters.map{ |c| c.representative}.compact.map {|c| c[f].to_f/norm } 
       end
       cluster_count.times do |i|
         dist = {}
-        $config["ContinuousFeaturesF"].each do |f|
+        $Continuous["filter"].each do |f|
           if feats[f].min == feats[f][i]
             #This is the lowest feature
             distance = feats[f].sort[1] - feats[f][i]
@@ -214,15 +214,15 @@ end
     clusterDs = Array.new 
     des = []
     slr=0
-      $config["BinaryFeatures"].each do |f|
+      $Binary["filter"].each do |f|
         if clusters[clusterNumber].indicator(f)
           (f=='slr' && indicator("slr"))? slr = 1 : slr =0
           des<< f if $config["DescFeatures"].include?(f) 
         end
       end
       
-      $config["ContinuousFeatures"].each do |f|
-        if $config["DescFeatures"].include?(f) && !(f == "opticalzoom" && slr == 1)
+      $Continuous["desc"].each do |f|
+        if !(f == "opticalzoom" && slr == 1)
               cRanges = clusters[clusterNumber].ranges(f)
               if (cRanges[1] < CachingMemcached.lowSpec(f))
                  clusterDs << {'desc' => "low_"+f, 'stat' => 0}  
@@ -242,7 +242,7 @@ end
   
   def searchDescription
     des = []
-    $config["DescFeatures"].each do |f|
+    $Continuous["desc"].each do |f|
       searchR = ranges(f)
       return ['Empty'] if searchR[0].nil? || searchR[1].nil?
       if (searchR[1] <= CachingMemcached.lowSpec(f))
@@ -339,7 +339,7 @@ end
     #Fix price, because it's stored as int in db
     myfilter[:session_id] = Session.current.id
     #Handle false booleans
-    $config["BinaryFeaturesF"].each do |f|
+    $Binary["filter"].each do |f|
       dobj = Session.current.search.userdatabins.select{|d|d.name == f}.first
       myfilter.delete(f.intern) if myfilter[f.intern] == '0' && (dobj.nil? || dobj.value != true)
     end
@@ -356,9 +356,9 @@ end
         fname = Regexp.last_match[1]
         max = fname+'_max'
         s.userdataconts << Userdatacont.new({:name => fname, :min => v, :max => myfilter[max]})
-      elsif $config["BinaryFeaturesF"].index(k)
+      elsif $Binary["filter"].index(k)
         s.userdatabins << Userdatabin.new({:name => k, :value => v})
-      elsif $config["CategoricalFeaturesF"].index(k)
+      elsif $Categorical["filter"].index(k)
         s.userdatacats << Userdatacat.new({:name => k, :value => v})
       end
     }

@@ -1,5 +1,5 @@
 	<% form_tag("",{:id => 'filter_form'}) do %>
-<% $config["CategoricalFeaturesF"].each do |feat| %>
+<% $Categorical["filter"].each do |feat| %>
 	<div class='feature'>
 		<!--div class='label'>
 			<%=t('products.' + feat)%>
@@ -23,7 +23,7 @@
 		<%= hidden_field_tag "myfilter[#{feat}]", chosencats(feat).join("*") %>
 	</div>
 <% end %>
-<% $config["ContinuousFeaturesF"].each do |feat| %>
+<% $Continuous["filter"].each do |feat| %>
 	<%= render :partial => 'slider', 
 		:locals => {:name => t('products.' + feat),
 		:val => feat,
@@ -31,7 +31,7 @@
 		:min => CachingMemcached.minSpec(feat), 
 		:max => CachingMemcached.maxSpec(feat)} %>
 <% end %>
-<% $config["BinaryFeaturesF"].each do |feat| %>
+<% $Binary["filter"].each do |feat| %>
 	<div class='feature'>
 		<div class='label'>
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>

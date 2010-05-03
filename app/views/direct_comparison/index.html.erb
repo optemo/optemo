@@ -6,7 +6,7 @@
 		<div class="thumbnailcell leftmostcolumn">								
 			<div class="tabletitle leftcolumntext"> <%= t('compare.index.tabletitle') %> </div>
 		</div>
-		<%= render :partial => 'featurenames', :locals => {:featurelist => $config["DisplayedFeatures"]} %>
+		<%= render :partial => 'featurenames', :locals => {:featurelist => $Continuous["filter"]+$Categorical["filter"]+$Binary["filter"]} %>
 		<div class="cell leftmostcolumn"> </div>
 	</div>
 
@@ -16,7 +16,7 @@
 					<%= link_to image_tag('remove.png', :style => "vertical-align: text-top;")+" "+t('compare.index.remove'), "", :"data-name" => @products[i].id, :class => 'remove' %>
 			</div></div>
 			<%= render :partial => 'thumbnails', :object => @products[i], :locals => {:navBack => :back, :i => i, :total => @products.count} %>
-			<%= render :partial => 'featurevalues', :locals => {:featurelist => $config["DisplayedFeatures"], :product => @products[i], :numberofproducts => @products.count} %>
+			<%= render :partial => 'featurevalues', :locals => {:featurelist => $Continuous["filter"]+$Categorical["filter"]+$Binary["filter"], :product => @products[i], :numberofproducts => @products.count} %>
 		</div>
 	<% end %>
 	<div class="bgrow"></div>

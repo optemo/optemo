@@ -94,16 +94,16 @@ module CompareHelper
   
   def featuretext(search,cluster)
     out = []
-    $config["SingleDescFeatures"].each do |feat|
-      if $config["BinaryFeatures"].include?(feat) 
-			  out << t("products.#{feat}") if cluster.representative.send(feat.intern)
-			elsif $config["CategoricalFeatures"].include?(feat)
-		    out << cluster.representative.send(feat.intern)
-			else
-			  feature = cluster.representative.send(feat.intern).to_i
-			  out << "#{feature} #{t("products.#{feat}text")}"
-			end
-		end
+    $Categorical["desc"].each do |feat|
+      out << t("products.#{feat}") if cluster.representative.send(feat.intern)
+    end
+    $Continuous["desc"].each do |feat|
+      feature = cluster.representative.send(feat.intern).to_i
+		  out << "#{feature} #{t("products.#{feat}text")}"
+	  end
+	  $Binary["desc"].each do |feat|
+      out << t("products.#{feat}") if cluster.representative.send(feat.intern)
+    end
 		out.join(" / ")
   end
 

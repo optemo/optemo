@@ -19,8 +19,7 @@
 	</div>
 	<div id="features">
 	<ul>
-		<% $config["ShowFeatures"].each_index do |i| %>
-			<% f_name = $config["ShowFeatures"][i] %>
+		<% ($Continuous["show"]+$Categorical["show"]+$Binary["show"]).each do |f_name| %>
 			<% f = @product[f_name] %>
 			<% if !f.nil? %>
 				<li>
@@ -29,7 +28,7 @@
 						<%= link_to "better", "javascript:findBetter('#{@product.id}', '#{f_name}')", :"data-id" => f_name, :class => 'betterlink' %>
 					</div>
 					<% end %>
-				 	<span class="detail_label"><%=t 'products.'+ $config["ShowFeatures"][i] %>: </span><%= (@product.display f_name).split('*').join(" ") %><%=' ' + t('products.'+ $config["ShowFeatures"][i]+'unit', :default => '')%>
+				 	<span class="detail_label"><%=t 'products.'+ f_name %>: </span><%= (@product.display f_name).split('*').join(" ") %><%=' ' + t('products.'+ f_name+'unit', :default => '')%>
 				</li>
 			<% end %>
 		<% end %>
