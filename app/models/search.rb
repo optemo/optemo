@@ -22,24 +22,10 @@ class Search < ActiveRecord::Base
        return [] if max.nil? || min.nil?
        stepsize = (max-min) / dist.length + 0.000001 #Offset prevents overflow of 10 into dist array
        acceptedNodes.each do |n|
-         if (min>=max-0.1)
-           #No range so fill everything in
-           dist = Array.new(dist.length,1)
-         else
-           i = ((n[feat] - min) / stepsize).to_i
-           dist[i] += 1 if i < dist.length
-         end
+         i = ((n.cont_specs.find_by_name(feat).value - min) / stepsize).to_i
+         dist[i] += 1 if i < dist.length
        end  
        round2Decim(normalize(dist))
-  end
-  
-  def countBinary(featureName)
-     acceptedNodes.map{|n| n[featureName]? 1 : 0}.sum
-  end
-  
-  def countBrands(brandName)
-    
-    acceptedNodes.map{|n| (n["brand"]== brandName)? 1 : 0}.sum
   end
   
   def acceptedNodes
@@ -139,7 +125,7 @@ class Search < ActiveRecord::Base
       product_ids = current_nodes.map {|n| n.product_id }
       product_query_string = "id IN (" + product_ids.join(" OR ") + ")"
       
-      rules = findCachedBoostexterRules(c.id)
+      rules = BoostexterRule.bycluster(c.id)
       unless product_ids.empty?
         @products = Product.cached(product_ids).index_by(&:id)        
         rules.each do |r|

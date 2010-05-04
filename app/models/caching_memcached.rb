@@ -33,16 +33,10 @@ module CachingMemcached
     end
   end
   
-  # This is a good idea, but right now the boostexter_combined_rules only works for cameras (March 23). Update this in future.
-  def self.findCachedBoostexterRules(cluster_id)
-    CachingMemcached.cache_lookup("#{$rulemodel}s#{current_version}#{cluster_id}") do
-      $rulemodel.find(:all, :order => "weight DESC", :conditions => {"cluster_id" => cluster_id, "version" => Session.current.version})
-    end
-  end
-  
   private
   
   def self.contspecs(feat)
-    ContSpec.find_all_by_name_and_product_type(feat,$product_type).map(&:value)
+    #ContSpec.find_all_by_name_and_product_type(feat,$product_type).map(&:value)
+    Product.valid.instock.map{|p|p.cont_specs.find_by_name(feat) if p.product_type == $product_type}.compact.map(&:value)
   end
 end

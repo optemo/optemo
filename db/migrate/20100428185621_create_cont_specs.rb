@@ -9,6 +9,7 @@ class CreateContSpecs < ActiveRecord::Migration
 
       t.timestamps
     end
+    add_index :cont_specs, :product_id
   end
 
   def self.down

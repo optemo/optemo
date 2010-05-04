@@ -16,7 +16,7 @@ class Cluster < ActiveRecord::Base
   #The subclusters
   def children
     unless @children
-      @children = byparent(id)
+      @children = Cluster.byparent(id)
       #Check that children are not empty
       if Session.current.filter
         @children.delete_if{|c| c.isEmpty}
@@ -31,7 +31,7 @@ class Cluster < ActiveRecord::Base
     if (self.cluster_size == 1) && (self.size>0)
       dC << self
     else
-      mychildren = byparent(id)
+      mychildren = Cluster.byparent(id)
       mychildren.each do |mc|
           dC = mc.deepChildren(dC)
       end  
@@ -73,7 +73,7 @@ class Cluster < ActiveRecord::Base
   
   #The represetative product for this cluster, assumes nodes ordered by utility
   def representative
-    Product.cached(nodes.first.product_id)
+    Product.cached(nodes.first.product_id) if nodes.first
   end
   
   def self.filterquery(session, tablename="")

@@ -1,6 +1,9 @@
 class Node < ActiveRecord::Base
   belongs_to :cluster
   belongs_to :product
+  has_many :cont_specs, :through => :product
+  has_many :bin_specs, :through => :product
+  has_many :cat_specs, :through => :product
   
   def self.byproduct(id)
     current_version = Session.current.version

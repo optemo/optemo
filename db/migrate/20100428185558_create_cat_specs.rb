@@ -9,6 +9,7 @@ class CreateCatSpecs < ActiveRecord::Migration
 
       t.timestamps
     end
+    add_index :cat_specs, :product_id
   end
 
   def self.down

@@ -111,7 +111,7 @@ module CompareHelper
     case $product_type
       when 'Flooring' then "http://www.builddirect.com" + CGI.unescapeHTML(cluster.representative.imagelink.to_s)
       when 'Laptop' then CGI.unescapeHTML(cluster.representative.imgurl)
-      else $product_type.downcase + "s/" + cluster.representative.id.to_s + "_m.jpg"
+      else $product_type.split("_").first + "s/" + cluster.representative.id.to_s + "_m.jpg"
     end
   end
 

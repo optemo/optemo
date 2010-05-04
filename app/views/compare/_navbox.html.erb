@@ -35,7 +35,7 @@
 				<%= cluster.representative.smlTitle %></a>
 		
 				<div class="price">
-					<%= $region == "us" ? cluster.representative.pricestr : cluster.representative.price_ca_str %>
+					<%= cluster.representative.cont_specs.find_by_name("price").value %>
 				</div>
 				<% unless $LineItemView %>
 			</div>

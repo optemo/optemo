@@ -68,8 +68,6 @@ class ApplicationController < ActionController::Base
     end
     $product_type = ds
     $product_type = "printer_us"
-    $rulemodel = (ds + 'BoostexterCombinedRule').constantize
-
   end
   
   def update_user
@@ -90,7 +88,7 @@ class ApplicationController < ActionController::Base
       mysession.keyword = nil
     end
 
-    mysession.version = 0# Cluster.find_last_by_product_type($product_type).version
+    mysession.version = Cluster.find_last_by_product_type($product_type).version
     Session.current = mysession
   end
   

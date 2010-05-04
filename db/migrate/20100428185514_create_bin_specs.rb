@@ -9,6 +9,7 @@ class CreateBinSpecs < ActiveRecord::Migration
 
       t.timestamps
     end
+    add_index :bin_specs, :product_id
   end
 
   def self.down
