@@ -568,6 +568,8 @@ function DBinit() {
 	model = MODEL_NAME.toLowerCase();
     if (model.match(/printer/) || model.match(/camera/)) 
     {
+        model = model.split('_');
+        model = model[0]; // Get rid of "_us", if it exists.
     	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
     	terms = eval(model + "_searchterms"); // terms now = ["waterproof", "digital", ... ]
     	$("#search").autocomplete(terms, {
