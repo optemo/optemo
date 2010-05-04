@@ -27,11 +27,7 @@ SET(CMAKE_CXX_LINKER_PREFERENCE 30)
 SET(CMAKE_CXX_LINKER_PREFERENCE_PROPAGATES 1)
 
 # Save compiler ABI information.
-<<<<<<< Updated upstream:lib/c_code/learningCodes/cppconn/CMakeFiles/CMakeCXXCompiler.cmake
-SET(CMAKE_CXX_SIZEOF_DATA_PTR "8")
-=======
 SET(CMAKE_CXX_SIZEOF_DATA_PTR "")
->>>>>>> Stashed changes:lib/c_code/learningCodes/CMakeFiles/CMakeCXXCompiler.cmake
 SET(CMAKE_CXX_COMPILER_ABI "")
 
 IF(CMAKE_CXX_SIZEOF_DATA_PTR)
@@ -42,16 +38,8 @@ IF(CMAKE_CXX_COMPILER_ABI)
   SET(CMAKE_INTERNAL_PLATFORM_ABI "${CMAKE_CXX_COMPILER_ABI}")
 ENDIF(CMAKE_CXX_COMPILER_ABI)
 
-<<<<<<< Updated upstream:lib/c_code/learningCodes/cppconn/CMakeFiles/CMakeCXXCompiler.cmake
-SET(CMAKE_CXX_HAS_ISYSROOT "1")
-SET(CMAKE_CXX_OSX_DEPLOYMENT_TARGET_FLAG "-mmacosx-version-min=")
-
-SET(CMAKE_CXX_IMPLICIT_LINK_LIBRARIES "stdc++")
-SET(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "/usr/lib/gcc/i686-apple-darwin10/4.2.1/x86_64;/usr/lib/i686-apple-darwin10/4.2.1;/usr/lib/gcc/i686-apple-darwin10/4.2.1;/usr/lib")
-=======
 SET(CMAKE_CXX_HAS_ISYSROOT "")
 
 
 SET(CMAKE_CXX_IMPLICIT_LINK_LIBRARIES "")
 SET(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "")
->>>>>>> Stashed changes:lib/c_code/learningCodes/CMakeFiles/CMakeCXXCompiler.cmake

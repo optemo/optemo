@@ -1,1 +1,1 @@
-/usr/bin/c++    -Wl,-search_paths_first -headerpad_max_install_names -fPIC CMakeFiles/hCluster.dir/hClustering.o  -o hCluster  -L/usr/local/mysql/lib -L/optemo/site/lib/c_code/learningCodes/cppconn ../cppconn/libmysqlcppconn-static.a -lmysqlclient_r -lz -lm -lmygcc 
+/usr/bin/c++    -Wl,-search_paths_first -headerpad_max_install_names  CMakeFiles/hCluster.dir/hClustering.o  -o hCluster  -L/cppconn -lmysqlcppconn-static -lmysqlclient_r 
