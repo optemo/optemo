@@ -4,7 +4,7 @@ class Node < ActiveRecord::Base
   has_many :cont_specs, :through => :product
   has_many :bin_specs, :through => :product
   has_many :cat_specs, :through => :product
-  
+
   def self.byproduct(id)
     current_version = Session.current.version
     CachingMemcached.cache_lookup("NodesP#{current_version}#{id}"){find_all_by_product_id_and_version_and_product_type(id, current_version, $product_type)}

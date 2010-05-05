@@ -22,7 +22,8 @@ class Search < ActiveRecord::Base
        return [] if max.nil? || min.nil?
        stepsize = (max-min) / dist.length + 0.000001 #Offset prevents overflow of 10 into dist array
        acceptedNodes.each do |n|
-         i = ((ContSpec.find_by_product_id_and_name(n.product_id,feat).value - min) / stepsize).to_i
+         i = ((ContSpec.cached(n.product_id,feat).value - min) / stepsize).to_i
+#         i = ((ContSpec.featurecache(feat, n.product_id).value - min) / stepsize).to_i
          dist[i] += 1 if i < dist.length
        end  
        round2Decim(normalize(dist))

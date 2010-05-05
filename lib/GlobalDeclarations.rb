@@ -35,7 +35,6 @@ $NumGroups = 9
 # This parameter controls whether to go with the traditional box-layout or a line-item layout (from the hierarchy branch)
 #$LineItemView = true
 
-
 $Continuous = Hash.new{|h,k| h[k] = []}
 $Binary = Hash.new{|h,k| h[k] = []}
 $Categorical = Hash.new{|h,k| h[k] = []}
