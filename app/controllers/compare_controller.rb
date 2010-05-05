@@ -78,7 +78,6 @@ class CompareController < ApplicationController
       oldsearch = Session.current.searches.last
       Session.current.search = oldsearch
       s = Search.createFromFilters(params[:myfilter])
-      Session.current.search = s #Dependency in cluster model for building search queries
       unless s.clusters.empty?
         s.commitfilters
         classVariables(s)

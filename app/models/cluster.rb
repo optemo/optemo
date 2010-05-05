@@ -61,9 +61,9 @@ class Cluster < ActiveRecord::Base
     indic
   end
   
-  def nodes
+  def nodes(search = nil)
     unless @nodes
-      fq = Cluster.filterquery
+      fq = Cluster.filterquery(search)
       unless (fq.blank? && Session.current.keywordpids.blank?)
         @nodes = Node.find(:all, :conditions => "cluster_id = #{id}#{' and '+fq unless fq.blank?}#{' and ('+Session.current.keywordpids+')' unless Session.current.keywordpids.blank?}")
       else 
@@ -78,18 +78,19 @@ class Cluster < ActiveRecord::Base
     Product.cached(nodes.first.product_id) if nodes.first
   end
   
-  def self.filterquery(tablename="")
+  def self.filterquery(search=nil, tablename="")
     fqarray = []
-    return nil if Session.current.search.nil?
-    Session.current.search.userdataconts.each do |d|
+    s = search.nil? ? Session.current.search : search
+    return nil if s.nil?
+    s.userdataconts.each do |d|
       fqarray << "#{tablename}product_id in (select product_id from cont_specs where value <= #{d.max+0.00001} and name = '#{d.name}')"
       fqarray << "#{tablename}product_id in (select product_id from cont_specs where value >= #{d.min-0.00001} and name = '#{d.name}')"
     end
-    Session.current.search.userdatacats.group_by(&:name).each do |name, ds|
+    s.userdatacats.group_by(&:name).each do |name, ds|
       cats = ds.map{|d| "#{tablename}product_id in (select product_id from cat_specs where value = '#{d.value}' and name = '#{name}')"}
       fqarray << "(#{cats.join(' OR ')})"
     end
-    Session.current.search.userdatabins.each do |d|
+    s.userdatabins.each do |d|
       fqarray << "#{tablename}product_id in (select product_id from bin_specs where value = #{d.value} and name = '#{d.name}')"
     end
     fqarray.join(" AND ")
@@ -103,8 +104,8 @@ class Cluster < ActiveRecord::Base
     session.features.attributes.reject {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at' || key=='search_id'}
   end
   
-  def isEmpty
-    nodes.empty?
+  def isEmpty(search = nil)
+    nodes(search).empty?
   end
   
   def clearCache

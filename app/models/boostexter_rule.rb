@@ -78,7 +78,7 @@ class BoostexterRule < ActiveRecord::Base
     # just do a single query for p. If there are multiple features to fetch, the rest of the query is guaranteed to be identical
     # and doing activerecord caching will help
     filter_query_thing = ""
-    filter_query_thing = Cluster.filterquery('n.') + " AND " unless Cluster.filterquery('n.').blank?
+    filter_query_thing = Cluster.filterquery(nil, 'n.') + " AND " unless Cluster.filterquery('n.').blank?
     cluster_ids = clusters.map{|c| c.id}.join(", ")
     product_count = ActiveRecord::Base.connection.select_one("select count(distinct(p.id)) from products p, nodes n, clusters cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids})")
     product_count = product_count["count(distinct(p.id))"].to_i
