@@ -6,15 +6,16 @@ class Product < ActiveRecord::Base
   
   #This can called with a single id or an array of ids
   def self.cached(ids)
-    CachingMemcached.cache_lookup("Product#{ids}"){find(ids)}
+    id_string = (ids.class == Array) ? ids.join('-') : ids.to_s
+    CachingMemcached.cache_lookup("Products#{id_string.hash}"){find(ids)}
   end
   
   named_scope :instock, :conditions => {:instock => true}
-  named_scope :valid, :conditions => \
-  ($Continuous["filter"].map{|f|"id in (select product_id from cont_specs where value > 0 and name = '#{f}')"}+\
-  $Binary["filter"].map{|f|"id in (select product_id from bin_specs where value IS NOT NULL and name = '#{f}')"}+\
-  $Categorical["filter"].map{|f|"id in (select product_id from cat_specs where value IS NOT NULL and name = '#{f}')"}).join(" and ")
-  
+  named_scope :valid, lambda { \
+    {:conditions => ($Continuous["filter"].map{|f|"id in (select product_id from cont_specs where value > 0 and name = '#{f}')"}+ \
+      $Binary["filter"].map{|f|"id in (select product_id from bin_specs where value IS NOT NULL and name = '#{f}')"}+ \
+      $Categorical["filter"].map{|f|"id in (select product_id from cat_specs where value IS NOT NULL and name = '#{f}')"}).join(" and ")}
+  }
   Max = {'SWidth' => 70, 'SHeight' => 50,'MWidth' => 140, 'MHeight' => 100, 'LWidth' => 400, 'LHeight' => 300} unless defined?(Max)
     
   def imagesw
@@ -82,7 +83,12 @@ class Product < ActiveRecord::Base
     end
     opts[:dir]=='Width' ? @imageW[opts[:size]] : @imageH[opts[:size]]
   end
-  
+
+  def current_cont_specs
+    # instance variable caching for duration of request
+    @current_cont_specs ||= cont_specs
+  end
+
   def smlTitle
     #if self.class.name == "Laptop" || self.class.name == "Flooring"
     #  title

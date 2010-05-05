@@ -35,7 +35,7 @@
 				<%= cluster.representative.smlTitle %></a>
 		
 				<div class="price">
-					<%= cluster.representative.cont_specs.find_by_name("price").value %>
+					<%= cluster.representative.current_cont_specs.find_by_name("price").value %>
 				</div>
 				<% unless $LineItemView %>
 			</div>
