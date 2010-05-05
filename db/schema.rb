@@ -752,6 +752,8 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
     t.datetime "updated_at"
   end
 
+  add_index "bin_specs", ["product_id"], :name => "index_bin_specs_on_product_id"
+
   create_table "boostexter_rules", :force => true do |t|
     t.string   "fieldname"
     t.float    "weight"
@@ -1328,13 +1330,13 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
     t.datetime "updated_at"
   end
 
+  add_index "cat_specs", ["product_id"], :name => "index_cat_specs_on_product_id"
+
   create_table "clusters", :force => true do |t|
-    t.string   "product_type"
-    t.integer  "version"
-    t.integer  "layer"
-    t.integer  "parent_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.string  "product_type"
+    t.integer "version"
+    t.integer "layer"
+    t.integer "parent_id"
   end
 
   create_table "compatibilities", :force => true do |t|
@@ -1354,6 +1356,8 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "cont_specs", ["product_id"], :name => "index_cont_specs_on_product_id"
 
   create_table "db_features", :force => true do |t|
     t.string   "product_type"
@@ -1812,12 +1816,10 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
   end
 
   create_table "nodes", :force => true do |t|
-    t.integer  "cluster_id"
-    t.integer  "product_id"
-    t.string   "product_type"
-    t.integer  "version"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.integer "cluster_id"
+    t.integer "product_id"
+    t.string  "product_type"
+    t.integer "version"
   end
 
   create_table "one23_cartridges", :force => true do |t|

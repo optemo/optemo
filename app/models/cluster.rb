@@ -19,7 +19,7 @@ class Cluster < ActiveRecord::Base
     unless @children
       @children = Cluster.byparent(id)
       #Check that children are not empty
-      if Session.current.filter
+      if !Cluster.filterquery.blank?
         @children.delete_if{|c| c.isEmpty}
       end
     end
@@ -63,8 +63,9 @@ class Cluster < ActiveRecord::Base
   
   def nodes
     unless @nodes
-      if ((Session.current.filter && !Cluster.filterquery(Session.current).blank?) || !Session.current.keywordpids.blank?)
-        @nodes = Node.find(:all, :conditions => ["cluster_id = ?#{Session.current.filter && !Cluster.filterquery(Session.current).blank? ? ' and '+Cluster.filterquery(Session.current) : ''}#{!Session.current.filter || Session.current.keywordpids.blank? ? '' : ' and ('+Session.current.keywordpids+')'}",id])
+      fq = Cluster.filterquery
+      unless (fq.blank? && Session.current.keywordpids.blank?)
+        @nodes = Node.find(:all, :conditions => "cluster_id = #{id}#{' and '+fq unless fq.blank?}#{' and ('+Session.current.keywordpids+')' unless Session.current.keywordpids.blank?}")
       else 
         @nodes = Node.bycluster(id)
       end
@@ -77,30 +78,21 @@ class Cluster < ActiveRecord::Base
     Product.cached(nodes.first.product_id) if nodes.first
   end
   
-  def self.filterquery(session, tablename="")
+  def self.filterquery(tablename="")
     fqarray = []
-    filters = Cluster.findFilteringConditions(session)
-    filters.each_pair do |k,v|
-      unless v.nil? || v == 'All Brands'
-        if k.index(/(.+)_max$/)
-          fqarray << "#{tablename}#{Regexp.last_match[1]} <= #{v.class == Float ? v+0.00001 : v}"
-        elsif k.index(/(.+)_min$/)
-          fqarray << "#{tablename}#{Regexp.last_match[1]} >= #{v.class == Float ? v-0.00001 : v}"
-        #Categorical feature which needs to be deliminated
-        elsif v.class == String && v.index('*')
-          cats = []
-          v.split('*').each do |w|
-            cats << "#{tablename}#{k} = '#{w}'"
-          end
-          fqarray << "(#{cats.join(' OR ')})"
-        elsif v.class == String
-          fqarray << "#{tablename}#{k} = '#{v}'"
-        else
-          fqarray << "#{tablename}#{k} = #{v}"
-        end
-      end
+    return nil if Session.current.search.nil?
+    Session.current.search.userdataconts.each do |d|
+      fqarray << "#{tablename}product_id in (select product_id from cont_specs where value <= #{d.max+0.00001} and name = '#{d.name}')"
+      fqarray << "#{tablename}product_id in (select product_id from cont_specs where value >= #{d.min-0.00001} and name = '#{d.name}')"
     end
-    fqarray.join(' AND ')
+    Session.current.search.userdatacats.group_by(&:name).each do |name, ds|
+      cats = ds.map{|d| "#{tablename}product_id in (select product_id from cat_specs where value = '#{d.value}' and name = '#{name}')"}
+      fqarray << "(#{cats.join(' OR ')})"
+    end
+    Session.current.search.userdatabins.each do |d|
+      fqarray << "#{tablename}product_id in (select product_id from bin_specs where value = #{d.value} and name = '#{d.name}')"
+    end
+    fqarray.join(" AND ")
   end
   
   def size
@@ -117,11 +109,8 @@ class Cluster < ActiveRecord::Base
   
   def clearCache
     @nodes = nil
-    @size = nil
-    @rep = nil
     @range = nil
     @children = nil
-    @utility = nil
   end
   
   def utility

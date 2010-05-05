@@ -36,7 +36,7 @@
 		<div class='label'>
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
 			<% dobj = Userdatabin.find_by_search_id_and_name(Session.current.search.id,feat) %>
-			<%= check_box('myfilter', feat, {:checked => dobj.nil? || dobj.value ? 'checked' : false, :class => 'autosubmitbool'})%>
+			<%= check_box('myfilter', feat, {:checked => dobj.nil? || dobj.value == false ? false : 'checked', :class => 'autosubmitbool'})%>
 			<%= link_to t('products.' + feat).tr(' ',''), "#" %>
 		</div>
 	</div>

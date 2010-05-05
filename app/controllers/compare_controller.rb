@@ -75,14 +75,17 @@ class CompareController < ApplicationController
       params[:myfilter].delete("species1")
       params[:myfilter].delete("colorrange1")
       params[:myfilter].delete("feature1")
-      Session.current.search = Session.current.searches.last
+      oldsearch = Session.current.searches.last
+      Session.current.search = oldsearch
       s = Search.createFromFilters(params[:myfilter])
+      Session.current.search = s #Dependency in cluster model for building search queries
       unless s.clusters.empty?
         s.commitfilters
         classVariables(s)
         render 'ajax', :layout => false
       else
         #Rollback
+        Session.current.search = oldsearch
         @errortype = "filter"
         render 'error', :layout=>true
       end

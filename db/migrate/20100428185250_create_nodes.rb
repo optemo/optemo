@@ -7,7 +7,7 @@ class CreateNodes < ActiveRecord::Migration
       t.string :product_type
       t.integer :version
 
-      t.timestamps
+      #t.timestamps
     end
   end
 

@@ -191,7 +191,7 @@ class Search < ActiveRecord::Base
         end
         #Remove empty clusters
         if c.nil? || c.isEmpty
-          self.cluster_count -= 1
+          cluster_count -= 1
         else
           @clusters << c 
         end
@@ -267,6 +267,7 @@ class Search < ActiveRecord::Base
       s.clusters = Cluster.byparent(0).delete_if{|c| c.isEmpty} #This is broken for test profile in Rails 2.3.5
       #clusters = clusters.map{|c| c unless c.isEmpty}.compact
     end
+    s.cluster_count = s.clusters.length
     s
   end
   
@@ -309,12 +310,10 @@ class Search < ActiveRecord::Base
     #Remove search terms
     Session.current.keywordpids = nil
     Session.current.keyword = nil
-    Session.current.filter = false #Maybe this should be saved
     Session.current.search = self.createFromClustersAndCommit(Cluster.byparent(0))
   end
   
   def commitfilters
-    cluster_count = clusters.length
     mycluster = "c0="
     clusters.each do |p|
       send(mycluster.intern, p.id.to_s)
@@ -351,7 +350,7 @@ class Search < ActiveRecord::Base
   def expandedFiltering?
     #Continuous feature
     userdataconts.each do |f|
-      old = Session.current.search.userdataconts.find_by_name(f.name) 
+      old = Userdatacont.find_by_search_id_and_name(Session.current.search.id,f.name)
       if old # If the oldsession max value is not nil then calculate newrange
         oldrange = old.max - old.min
         newrange = f.max - f.min
@@ -370,7 +369,7 @@ class Search < ActiveRecord::Base
     end
     #Categorical Feature
     userdatacats.each do |f|
-      old = Session.current.search.userdatacats.find_all_by_name(f.name) 
+      old = Userdatacat.find_by_search_id_and_name(Session.current.search.id,f.name)
       unless old.empty?
         newf = userdatacats.find_all_by_name(f.name)
         return true if newf.length == 0 && old.length > 0

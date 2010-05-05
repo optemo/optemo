@@ -68,7 +68,7 @@ def create_specs(array,model,p,prod)
   array.each do |f|
       next if p[f].nil?
       #Price now stored as float
-      if f == "price"
+      if f == :price
         model.new({
           :created_at => p.created_at,
           :product_id => prod.id,

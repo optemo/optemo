@@ -10,7 +10,7 @@ class BoostexterRule < ActiveRecord::Base
     return if clusters.empty?
     ActiveRecord::Base.include_root_in_json = false # json conversion is used below, and this makes it cleaner
     cluster_ids = clusters.map(&:id).join("-")
-    selected_features = (Session.current.search.userdataconts.map{|c| c.name+c.min+c.max}+Session.current.search.userdatabins.map{|c| c.name+c.value}+Session.current.search.userdatacats.map{|c| c.name+c.value}).hash
+    selected_features = (Session.current.search.userdataconts.map{|c| c.name+c.min.to_s+c.max.to_s}+Session.current.search.userdatabins.map{|c| c.name+c.value.to_s}+Session.current.search.userdatacats.map{|c| c.name+c.value}).hash
     CachingMemcached.cache_lookup("#{$product_type}Taglines#{cluster_ids}#{selected_features}") do
       #Cache miss, so let's calculate it
       weighted_averages = {}
@@ -78,7 +78,7 @@ class BoostexterRule < ActiveRecord::Base
     # just do a single query for p. If there are multiple features to fetch, the rest of the query is guaranteed to be identical
     # and doing activerecord caching will help
     filter_query_thing = ""
-    filter_query_thing = Cluster.filterquery(Session.current, 'n.') + " AND " if Session.current.filter && !Cluster.filterquery(Session.current, 'n.').blank?
+    filter_query_thing = Cluster.filterquery('n.') + " AND " unless Cluster.filterquery('n.').blank?
     cluster_ids = clusters.map{|c| c.id}.join(", ")
     product_count = ActiveRecord::Base.connection.select_one("select count(distinct(p.id)) from products p, nodes n, clusters cc WHERE p.#{featurename} is not NULL AND #{filter_query_thing} n.product_id = p.id AND cc.id = n.cluster_id AND cc.id IN (#{cluster_ids})")
     product_count = product_count["count(distinct(p.id))"].to_i
