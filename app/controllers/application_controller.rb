@@ -60,7 +60,7 @@ class ApplicationController < ActionController::Base
       else
         $DefaultProduct
       end  
-      if $product_type == "laptop_walmart" || ds == "flooring_builddirect"
+      if $product_type == "laptop_walmart" || $product_type == "flooring_builddirect"
         $LineItemView = true
       else
         $LineItemView = false 
