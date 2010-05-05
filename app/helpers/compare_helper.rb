@@ -21,7 +21,7 @@ module CompareHelper
   end
   
   def overallmax(feat)
-    max = CachingMemcached.minSpec(feat) || 0
+    max = CachingMemcached.maxSpec(feat) || 0
     (max*10).ceil.to_f/10
   end
   

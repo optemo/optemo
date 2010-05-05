@@ -78,7 +78,7 @@ class MergedCluster
       if clustersquery.blank?
         @nodes = []
       else
-        @nodes = Node.find(:all, :conditions => "(#{clustersquery}) #{Session.current.filter && !Cluster.filterquery(Session.current).blank? ? ' and '+Cluster.filterquery(Session.current) : ''}#{!Session.current.filter || Session.current.keywordpids.blank? ? '' : ' and ('+Session.current.keywordpids+')'}")
+        @nodes = Node.find(:all, :conditions => "(#{clustersquery}) #{!Cluster.filterquery.blank? ? ' and '+Cluster.filterquery : ''}#{Session.current.keywordpids.blank? ? '' : ' and ('+Session.current.keywordpids+')'}")
       end
     end
     @nodes
@@ -90,14 +90,7 @@ class MergedCluster
   end
   
   def size
-    unless @size
-      if Session.current.filter
-        @size = nodes.length
-      else
-        @size = @clusters.map{|c|c.cluster_size}.sum
-      end
-    end
-    @size
+    nodes.length
   end
 
   def isEmpty

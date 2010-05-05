@@ -7,7 +7,7 @@ class CreateClusters < ActiveRecord::Migration
       t.integer :layer
       t.integer :parent_id
 
-      t.timestamps
+      #t.timestamps
     end
   end
 
