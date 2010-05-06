@@ -631,11 +631,11 @@ $(document).ready(function() {
 //	language = (/^\s*English/.test($(".languageoptions:first").html())==true)?'en':'fr';
 
 	//Decrypt encrypted links
-//	$('a.decrypt').each(function () {
-//		$(this).attr('href',$(this).attr('href').replace(/[a-zA-Z]/g, function(c){
-//			return String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26);
-//			}));
-//	});
+	$('a.decrypt').each(function () {
+		$(this).attr('href',$(this).attr('href').replace(/[a-zA-Z]/g, function(c){
+			return String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26);
+			}));
+	});
 
 	// Global to the entire page - Fadein
 	// May want to make this a jquery .live() call; check jquery 1.4 documentation for this later

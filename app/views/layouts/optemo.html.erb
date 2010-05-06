@@ -21,7 +21,7 @@
 		<%= link_to image_tag('ca.gif'), url_for_intl('ca') %>
 	  </div-->
 	  <div id="logo">
-		<a href="<%= url_for '/' %>" id ="logo" title="<%= $product_type == "Flooring" ? 'builddirect.optemo.com' : ($product_type == "Camera" ? 'Cameras.BrowseThenBuy.com' : 'LaserPrinterHub.com') %>"><%= $region == "us" ? image_tag('logo'+($product_type == 'Printer' ? '' : '_' + $product_type.downcase + 's')+'.jpg') : image_tag('logo'+($product_type == "Camera" ? '_cameras' : '_ca')+'.jpg')%><span>Home</span></a>
+		<a href="<%= url_for '/' %>" id ="logo" title="<%=t $product_type+".url" %>"><%= image_tag("#{$product_type}.jpg")%><span>Home</span></a>
 	  </div>
 		<% if $product_type == "Printer" %><a href="<%= url_for '/laserprinters' %>" title="Why buy a laser printer?" id='whylaser'></a><% end %>
 	 <div id="tagline">
