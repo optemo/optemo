@@ -84,11 +84,6 @@ class Product < ActiveRecord::Base
     opts[:dir]=='Width' ? @imageW[opts[:size]] : @imageH[opts[:size]]
   end
 
-  def current_cont_specs
-    # instance variable caching for duration of request
-    @current_cont_specs ||= cont_specs
-  end
-
   def smlTitle
     #if self.class.name == "Laptop" || self.class.name == "Flooring"
     #  title
