@@ -178,7 +178,7 @@ class Search < ActiveRecord::Base
     @clusters = clusters
   end
   
-  def clusters
+  def clusters(s = nil)
     if @clusters.nil?
       @clusters = []
       cluster_count.times do |i|
@@ -192,8 +192,8 @@ class Search < ActiveRecord::Base
           c = Cluster.cached(cluster_id)
         end
         #Remove empty clusters
-        if c.nil? || c.isEmpty
-          cluster_count -= 1
+        if c.nil? || c.isEmpty(s)
+          self.cluster_count -= 1
         else
           @clusters << c 
         end
@@ -263,7 +263,7 @@ class Search < ActiveRecord::Base
     #Find clusters that match filtering query
     if !s.expandedFiltering? && Session.current.searches.last
       #Search is narrowed, so use current products to begin with
-      s.clusters = Session.current.searches.last.clusters
+      s.clusters = Session.current.searches.last.clusters(s)
     else
       #Search is expanded, so use all products to begin with
       s.clusters = Cluster.byparent(0).delete_if{|c| c.isEmpty} #This is broken for test profile in Rails 2.3.5
