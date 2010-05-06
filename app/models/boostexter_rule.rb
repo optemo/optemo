@@ -24,7 +24,7 @@ class BoostexterRule < ActiveRecord::Base
         
         rules = BoostexterRule.bycluster(c.id)
         unless product_ids.empty?
-          @products = Product.cached(product_ids).index_by(&:id)        
+          @products = Product.manycached(product_ids).index_by(&:id)        
           rules.each do |r|
             # This check will not work in future, but will work for now. There will be a type field in the YAML representation instead.
             brules = YAML.load(r.yaml_repr)

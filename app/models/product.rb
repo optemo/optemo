@@ -4,10 +4,18 @@ class Product < ActiveRecord::Base
   has_many :bin_specs
   has_many :cont_specs
   
-  #This can called with a single id or an array of ids
-  def self.cached(ids)
-    id_string = (ids.class == Array) ? ids.join('-') : ids.to_s
-    CachingMemcached.cache_lookup("Products#{id_string.hash}"){find(ids)}
+  def self.cached(id)
+    CachingMemcached.cache_lookup("Products#{id}"){find(id)}
+  end
+  
+  #Returns an array of results
+  def self.manycached(ids)
+    res = CachingMemcached.cache_lookup("Products#{ids.join('-').hash}"){find(ids)}
+    if res.class == Array
+      res
+    else
+      [res]
+    end
   end
   
   named_scope :instock, :conditions => {:instock => true}

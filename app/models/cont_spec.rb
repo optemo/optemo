@@ -10,7 +10,9 @@ class ContSpec < ActiveRecord::Base
     CachingMemcached.cache_lookup("ContSpec#{feat}#{p_id}"){find_by_product_id_and_name(p_id, feat)}
   end
   def self.cachemany(p_ids, feat)
-    CachingMemcached.cache_lookup("ContSpecs#{feat}#{p_ids.join.hash}") { find(:all, :select => 'value', :conditions => ["id IN (?) and name = ? and product_type = ?", p_ids, feat, $product_type]).map(&:value) }
+    CachingMemcached.cache_lookup("ContSpecs#{feat}#{p_ids.join.hash}") do
+      find(:all, :select => 'value', :conditions => ["product_id IN (?) and name = ?", p_ids, feat]).map(&:value)
+    end
   end
   
   # This probably isn't needed anymore.
