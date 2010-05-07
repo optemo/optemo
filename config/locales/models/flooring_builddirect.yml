@@ -1,12 +1,12 @@
 en:
-    printer_us:
+    flooring_builddirect:
         # All language-dependent definitions in models
-        url:                        "LaserPrinterHub.com"
-        sitetitle:                  "LaserPrinterHub.com"
-        defaultdesc:                "LaserPrinterHub provides price comparisons and detailed information to help you find the right printer for you."
-        title:                      "Printer"
-        title-plural:               "Printers"
-        tagline:                    "Find, compare, and buy the right printer for you! We have found the best deals from various online retailers for you."
+        url:                        "BuildDirect Flooring"
+        sitetitle:                  "BuildDirect Hardwood Flooring"
+        defaultdesc:                ""
+        title:                      "Type of Flooring"
+        title-plural:               "Types of Flooring"
+        tagline:                    "Browse &amp; compare different types of hardwood floor to find the best deals around!"
         price:                      "Price"
         ppm:                        "Printing Speed"
         itemwidth:                  "Width"

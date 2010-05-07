@@ -439,9 +439,9 @@ function FilterAndSearchInit() {
 	$('.selectboxfilter').each(function(){
 	    $(this).unbind('change').change(function(){
 		    var whichThingSelected = $(this).val();
-		    var whichSelector = $(this).attr('name')
-		    whichSelector = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]")-1);
-    		$('#myfilter_'+whichSelector).val(appendStringWithToken($('#myfilter_'+whichSelector).val(), whichThingSelected, '*'));
+			var whichSelector = $(this).attr('name');
+		    var cat = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]"));
+    		$('#myfilter_'+cat).val(appendStringWithToken($('#myfilter_'+cat).val(), whichThingSelected, '*'));
     		submitCategorical();
     		trackCategorical(whichThingSelected,100,2);
     	});

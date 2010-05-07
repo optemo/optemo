@@ -1,4 +1,3 @@
-#$SITE_TITLE = 'LaserPrinterHub.com'
 $DefaultProduct = 'printer_us'
 
 # Configuration: Application Key provided by Facebook
@@ -35,27 +34,34 @@ $NumGroups = 9
 # This parameter controls whether to go with the traditional box-layout or a line-item layout (from the hierarchy branch)
 #$LineItemView = true
 
-$Continuous = Hash.new{|h,k| h[k] = []}
-$Binary = Hash.new{|h,k| h[k] = []}
-$Categorical = Hash.new{|h,k| h[k] = []}
-file = YAML::load(File.open("#{RAILS_ROOT}/config/products.yml"))
-unless (file.nil? || file.empty?)
-  file[$DefaultProduct].each do |feature,stuff| 
-    type = stuff.first
-    flags = stuff.second
-    case type
-    when "Continuous"
-      flags.each{|flag| $Continuous[flag] << feature}
-    when "Binary"
-      flags.each{|flag| $Binary[flag] << feature}
-    when "Categorical"
-      flags.each{|flag| $Categorical[flag] << feature}
+def load_defaults(product_type)
+  $product_type = product_type
+  
+  $Continuous = Hash.new{|h,k| h[k] = []}
+  $Binary = Hash.new{|h,k| h[k] = []}
+  $Categorical = Hash.new{|h,k| h[k] = []}
+  file = YAML::load(File.open("#{RAILS_ROOT}/config/products.yml"))
+  unless (file.nil? || file.empty? || file[$product_type].nil?)
+    file[$product_type].each do |feature,stuff| 
+      type = stuff.first
+      flags = stuff.second
+      case type
+      when "Continuous"
+        flags.each{|flag| $Continuous[flag] << feature}
+      when "Binary"
+        flags.each{|flag| $Binary[flag] << feature}
+      when "Categorical"
+        flags.each{|flag| $Categorical[flag] << feature}
+      end
     end
+    $Continuous["all"] = []
+    $Binary["all"] = []
+    $Categorical["all"] = []
+    file[$product_type].each{|feature,stuff| $Continuous["all"] << feature if stuff.first == "Continuous"}
+    file[$product_type].each{|feature,stuff| $Binary["all"] << feature if stuff.first == "Binary"}
+    file[$product_type].each{|feature,stuff| $Categorical["all"] << feature if stuff.first == "Categorical"}
   end
-  $Continuous["all"] = []
-  $Binary["all"] = []
-  $Categorical["all"] = []
-  file[$DefaultProduct].each{|feature,stuff| $Continuous["all"] << feature if stuff.first == "Continuous"}
-  file[$DefaultProduct].each{|feature,stuff| $Binary["all"] << feature if stuff.first == "Binary"}
-  file[$DefaultProduct].each{|feature,stuff| $Categorical["all"] << feature if stuff.first == "Categorical"}
+  
+  $LineItemView = file[$product_type]["layout"].first == "lineview" unless file[$product_type].nil? || file[$product_type]["layout"].nil?
+  $LineItemView ||= false #Default is false
 end

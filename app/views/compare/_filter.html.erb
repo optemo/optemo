@@ -6,7 +6,7 @@
 		</div-->
 		<div class='label'>
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
-			<%= link_to t('products.' + feat).tr(' ',''), "#" %>			
+			<%= link_to t('products.' + feat), "#" %>			
 		</div>
 		<% unless chosencats(feat).nil? || chosencats(feat).empty? %>
 			<%# At least one item selected %>
@@ -17,7 +17,7 @@
 			<%= select('myfilter', feat+"1", [t('products.compare.add'+feat)] +catspecs(feat).reject {|b| chosencats(feat).index(b)}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>
 		<% else %>
 			<%# Nothing selected %>
-			<%= select('myfilter', feat+"1", [t('products.compare.all'+feat+'s')] + catspecs(feat).map{|f| CGI::unescapeHTML(f) }.uniq, options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>		
+			<%= select('superfluous', feat, [t('products.compare.all'+feat+'s')] + catspecs(feat).map{|f| CGI::unescapeHTML(f) }.uniq, options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>		
 		<% end %>
 
 		<%= hidden_field_tag "myfilter[#{feat}]", chosencats(feat).join("*") %>
@@ -37,7 +37,7 @@
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
 			<% dobj = Userdatabin.find_by_search_id_and_name(Session.current.search.id,feat) %>
 			<%= check_box('myfilter', feat, {:checked => dobj.nil? || dobj.value == false ? false : 'checked', :class => 'autosubmitbool'})%>
-			<%= link_to t('products.' + feat).tr(' ',''), "#" %>
+			<%= link_to t('products.' + feat), "#" %>
 		</div>
 	</div>
 <% end %>

@@ -1,12 +1,12 @@
 en:
-    printer_us:
+    laptop_walmart:
         # All language-dependent definitions in models
         url:                        "LaserPrinterHub.com"
-        sitetitle:                  "LaserPrinterHub.com"
-        defaultdesc:                "LaserPrinterHub provides price comparisons and detailed information to help you find the right printer for you."
+        sitetitle:                  "Walmart Laptop Finder"
+        defaultdesc:                ""
         title:                      "Printer"
         title-plural:               "Printers"
-        tagline:                    "Find, compare, and buy the right printer for you! We have found the best deals from various online retailers for you."
+        tagline:                    "Find the right <%= $product_type.downcase %> that fits your needs! Use this product finder to browse products by similarity and attribute filters."
         price:                      "Price"
         ppm:                        "Printing Speed"
         itemwidth:                  "Width"

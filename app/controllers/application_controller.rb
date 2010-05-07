@@ -42,30 +42,22 @@ class ApplicationController < ActionController::Base
 
   def set_model_type
     if request.domain.nil?
-      $product_type = $DefaultProduct
+      product_type = $DefaultProduct
     else
-      $product_type = case request.domain(2).split(".").first
+      product_type = case request.domain(2).split(".").first
       when "cameras"
-        $SITE_TITLE="Browse Then Buy"
         "camera"
       when "printers"
-        $SITE_TITLE="LaserPrinterHub.com"
         "printer_us"
       when "flooring", "builddirect"
-        $SITE_TITLE="BuildDirect Hardwood Flooring"
         "flooring_builddirect"
       when "laptops", "walmart"
-        $SITE_TITLE="Walmart Laptop Finder"
         "laptop_walmart"
       else
         $DefaultProduct
       end  
-      if $product_type == "laptop_walmart" || $product_type == "flooring_builddirect"
-        $LineItemView = true
-      else
-        $LineItemView = false 
-      end
     end
+    load_defaults(product_type)
   end
   
   def update_user

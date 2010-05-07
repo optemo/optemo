@@ -23,13 +23,8 @@
 	  <div id="logo">
 		<a href="<%= url_for '/' %>" id ="logo" title="<%=t $product_type+".url" %>"><%= image_tag("#{$product_type}.jpg")%><span>Home</span></a>
 	  </div>
-		<% if $product_type == "Printer" %><a href="<%= url_for '/laserprinters' %>" title="Why buy a laser printer?" id='whylaser'></a><% end %>
 	 <div id="tagline">
-		<% if $product_type == "Laptop" %>
-		Find the right <%= $product_type.downcase %> that fits your needs! Use this product finder to browse products by similarity and attribute filters.
-		<% elsif $product_type == "Flooring" %>Browse &amp; compare different types of hardwood floor to find the best deals around!
-		<% else %>Find, compare, and buy the right <%= $product_type.downcase %> for you! We have found the best deals from various online retailers for you.
-		<% end %>
+		<%=t "#{$product_type}.tagline" %>
 	</div>
      <!-- div id="logindisplay">                                                                                               
    		<% if !cookies[$AppKey +"_user"].nil? %>

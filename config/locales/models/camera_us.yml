@@ -1,9 +1,9 @@
 en:
     printer_us:
         # All language-dependent definitions in models
-        url:                        "LaserPrinterHub.com"
-        sitetitle:                  "LaserPrinterHub.com"
-        defaultdesc:                "LaserPrinterHub provides price comparisons and detailed information to help you find the right printer for you."
+        url:                        "browsethenbuy.com"
+        sitetitle:                  "Browse Then Buy"
+        defaultdesc:                ""
         title:                      "Printer"
         title-plural:               "Printers"
         tagline:                    "Find, compare, and buy the right printer for you! We have found the best deals from various online retailers for you."

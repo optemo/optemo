@@ -43,7 +43,7 @@ module CompareHelper
   
   def navtitle
     if Session.current.keyword.nil?
-		  ["Browsing", Session.current.search.result_count, (Session.current.search.result_count > 1) ? ($product_type == "Flooring" ? "Types of Flooring" : $product_type.pluralize) : $product_type].join(" ")
+		  ["Browsing", Session.current.search.result_count, (Session.current.search.result_count > 1) ? t("#{$product_type}.title-plural") : t("#{$product_type}.title-plural")].join(" ")
 		else
       "#{t("products.compare.search")}: '#{Session.current.keyword}', #{(Session.current.search.result_count > 1) ? t("products.compare.browsings",:count => Session.current.search.result_count) : t("products.compare.browsing")}" 
     end
@@ -110,8 +110,8 @@ module CompareHelper
 
   def imgurl(cluster)
     case $product_type
-      when 'Flooring' then "http://www.builddirect.com" + CGI.unescapeHTML(cluster.representative.imagelink.to_s)
-      when 'Laptop' then CGI.unescapeHTML(cluster.representative.imgurl)
+      when "flooring_builddirect" then "http://www.builddirect.com" + CGI.unescapeHTML(cluster.representative.imgmurl.to_s)
+      when "laptop_walmart" then CGI.unescapeHTML(cluster.representative.imgmurl.to_s)
       else $product_type.split("_").first + "s/" + cluster.representative.id.to_s + "_m.jpg"
     end
   end
