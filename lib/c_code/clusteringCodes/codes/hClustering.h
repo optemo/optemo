@@ -56,7 +56,7 @@ if 	(layer == 1){
 						prodId = res->getInt("id");	
 			
 						readData(tdata[size], brands, size, prodId, resNodes, stmt, conFeatureNames, conFeatureN, boolFeatureNames, boolFeatureN, catFeatureNames, catFeatureN);
-						
+					//	readData(tdata[size], disData, brands, size, prodId, resNodes, stmt, conFeatureNames, conFeatureN, boolFeatureNames, boolFeatureN, catFeatureNames, catFeatureN);)
 		 				idA[size] = prodId; 	
 		 	        //	brands[size] = res->getString("brand");
 						iter = brand2int.find(brands[size]); 
