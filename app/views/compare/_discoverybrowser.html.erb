@@ -6,6 +6,7 @@
 		<div class="tl"></div><div class="tr"></div>
 	    <%= navtitle %>
 		<div class="bl"></div><div class="br"></div>
+	<%= '</div>' if !$LineItemView %>
 	<div class='<%= $LineItemView ? "lv" : "gv" %>'>
 	<% for i in 0..[Session.current.search.cluster_count,$NumGroups].min-1 %>
 	  <% if i%(Float($NumGroups)/3).ceil == 0 && !$LineItemView %>
@@ -21,4 +22,5 @@
 	<% end %>
 	<%= '</div>' if open && !$LineItemView %>
 	</div>
+	<%= '</div>' if $LineItemView %>
 	<div style="clear:both;"><span id="actioncount" style="display:none"><%= Session.current.searches.count %></span><%= '<span id="tourautostart">&nbsp;</span>' if (Session.current && (Time.now - Session.current.created_at < 3)) %></div>

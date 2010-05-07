@@ -256,17 +256,18 @@ class Search < ActiveRecord::Base
       elsif $Binary["filter"].index(k)
         s.userdatabins << Userdatabin.new({:name => k, :value => v})
       elsif $Categorical["filter"].index(k)
-        s.userdatacats << Userdatacat.new({:name => k, :value => v})
+        v.split("*").each do |cat|
+          s.userdatacats << Userdatacat.new({:name => k, :value => cat})
+        end
       end
     }
-    
     #Find clusters that match filtering query
     if !s.expandedFiltering? && Session.current.searches.last
       #Search is narrowed, so use current products to begin with
       s.clusters = Session.current.searches.last.clusters(s)
     else
       #Search is expanded, so use all products to begin with
-      s.clusters = Cluster.byparent(0).delete_if{|c| c.isEmpty} #This is broken for test profile in Rails 2.3.5
+      s.clusters = Cluster.byparent(0).delete_if{|c| c.isEmpty(s)} #This is broken for test profile in Rails 2.3.5
       #clusters = clusters.map{|c| c unless c.isEmpty}.compact
     end
     s.cluster_count = s.clusters.length
@@ -370,12 +371,16 @@ class Search < ActiveRecord::Base
       end
     end
     #Categorical Feature
-    userdatacats.each do |f|
-      old = Userdatacat.find_all_by_search_id_and_name(Session.current.search.id,f.name)
-      unless old.empty?
-        newf = userdatacats.select{|c|c.name == f.name}
-        return true if newf.length == 0 && old.length > 0
-        return true if old.length > 0 && newf.length > old.length
+    if userdatacats.empty?
+      return true if Userdatacat.find_by_search_id(Session.current.search.id)
+    else
+      userdatacats.each do |f|
+        old = Userdatacat.find_all_by_search_id_and_name(Session.current.search.id,f.name)
+        unless old.empty?
+          newf = userdatacats.select{|c|c.name == f.name}
+          return true if newf.length == 0 && old.length > 0
+          return true if old.length > 0 && newf.length > old.length
+        end
       end
     end
     false
