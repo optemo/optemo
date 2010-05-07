@@ -25,6 +25,7 @@ en:
         species:                    "Species"
         colorrange:                 "Color Range"
         feature:                    "Features"
+        finish:                     "Finish"    
         width:                      "Width"
         miniorder:                  "Minimum Order"
         species_hardness:           "Hardness"
