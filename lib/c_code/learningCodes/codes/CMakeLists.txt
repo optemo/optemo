@@ -40,6 +40,7 @@ ELSEIF(NOT WIN32)
 ENDIF(WIN32)
 
 ADD_EXECUTABLE(hCluster hClustering.cpp)
+ADD_EXECUTABLE(learner learner.cpp)
 TARGET_LINK_LIBRARIES(hCluster ${MY_TARGET_LINK_LIBRARIES})
 
 MESSAGE(STATUS "Configuring examples")

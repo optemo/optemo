@@ -42,57 +42,30 @@ class ApplicationController < ActionController::Base
 
   def set_model_type
     if request.domain.nil?
-      ds = $DefaultProduct
+      product_type = $DefaultProduct
     else
-      ds = case request.domain(2).split(".").first
+      product_type = case request.domain(2).split(".").first
       when "cameras"
-        $SITE_TITLE="Browse Then Buy"
-        "Camera"
+        "camera"
       when "printers"
-        $SITE_TITLE="LaserPrinterHub.com"
-        "Printer"
+        "printer_us"
       when "flooring", "builddirect"
-        $SITE_TITLE="BuildDirect Hardwood Flooring"
-        "Flooring"
+        "flooring_builddirect"
       when "laptops", "walmart"
-        $SITE_TITLE="Walmart Laptop Finder"
-        "Laptop"
+        "laptop_walmart"
       else
         $DefaultProduct
       end  
-      if ds == "Laptop" || ds == "Flooring"
-        $LineItemView = true
-      else
-        $LineItemView = false 
-      end
-   end
-
-    $model = ds.constantize
-    $nodemodel = (ds + 'Node').constantize
-    $clustermodel = (ds + 'Cluster').constantize
-    $featuremodel = (ds + 'Features').constantize
-    $rulemodel = (ds + 'BoostexterCombinedRule').constantize
+    end
+    load_defaults(product_type)
   end
   
-# def set_version
-#   ds = case request.url.match(/\?version=\d\d/) ? 
-#   
-#   
-# end
-  
   def update_user
-    $region = request.url.match(/\.ca/) ? "ca" : "us"
     mysession = Session.find_by_id(session[:user_id])
     if mysession.nil?
       mysession = Session.new
       mysession.ip = request.remote_ip
       mysession.save
-      # Create a row in every product-features table
-      $ProdTypeList.each do |p|
-        myProduct = (p + 'Features').constantize.new
-        myProduct.session_id = mysession.id        
-        myProduct.save
-      end
       session[:user_id] = mysession.id
     end
     
@@ -105,10 +78,7 @@ class ApplicationController < ActionController::Base
       mysession.keyword = nil
     end
 
-    mysession.version = $clustermodel.find_last_by_region($region).version
-
-#    mysession.version = $clustermodel.maximum(:version, :conditions => ['region = ?', $region])
-
+    mysession.version = Cluster.find_last_by_product_type($product_type).version
     Session.current = mysession
   end
   

@@ -2,7 +2,6 @@ class CompareController < ApplicationController
   layout "optemo"
   require 'open-uri'
   require 'iconv'
-  include CachingMemcached
   
   def index
     if Session.isCrawler?(request.user_agent) || params[:ajax]
@@ -33,14 +32,8 @@ class CompareController < ApplicationController
     else
       classVariables(Search.createFromClustersAndCommit(params[:id].split('-')))
     end
-    #No products found
-    if Session.current.search.result_count == 0
-      flash[:error] = "No products were found, so you were redirected to the home page"
-      redirect_to "/compare/compare/"
-    end
-    if hist
-      render 'ajax', :layout => false
-    end
+    
+    render 'ajax', :layout => false
   end
   
   def classVariables(search)
@@ -51,18 +44,16 @@ class CompareController < ApplicationController
     cluster_id = params[:id]
     cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
     Session.current.search = Session.current.searches.last
-    Session.current.copyfeatures #create a copy of the current filters
     if cluster_id.index('+')
       #Merged Cluster
       cluster = MergedCluster.fromIDs(cluster_id.split('+'))
     else
       #Single, normal Cluster
-      cluster = findCachedCluster(cluster_id)
+      cluster = Cluster.cached(cluster_id)
     end
     unless cluster.nil?
       if params[:ajax]
         s = Search.createFromClustersAndCommit(cluster.children)
-        Session.current.commitFilters(s.id)
         classVariables(s)
         render 'ajax', :layout => false
       else
@@ -74,7 +65,6 @@ class CompareController < ApplicationController
   end
 
   def filter
-    session = Session.current
     if params[:myfilter].nil?
       #No post info passed
       render :text =>  "[ERR]Search could not be completed."
@@ -85,18 +75,16 @@ class CompareController < ApplicationController
       params[:myfilter].delete("species1")
       params[:myfilter].delete("colorrange1")
       params[:myfilter].delete("feature1")
-      
-      Session.current.search = Session.current.searches.last #My last search used for finding the right filters
-      session.updateFilters(params[:myfilter])
-      clusters = session.clusters
-      unless clusters.empty?
-        s = Search.createFromClustersAndCommit(clusters)
-        session.commitFilters(s.id)
+      oldsearch = Session.current.searches.last
+      Session.current.search = oldsearch
+      s = Search.createFromFilters(params[:myfilter])
+      unless s.clusters.empty?
+        s.commitfilters
         classVariables(s)
         render 'ajax', :layout => false
       else
-        session.rollback
-        Session.current.search = session.searches.last
+        #Rollback
+        Session.current.search = oldsearch
         @errortype = "filter"
         render 'error', :layout=>true
       end
@@ -110,30 +98,30 @@ class CompareController < ApplicationController
     
     #Cleanse id to be only numbers
     params[:id] = params[:id][/^\d+/]
-    @product = findCachedProduct(params[:id])
-    if $model.name
-      if $model.name == "Flooring"
+    @product = Product.cached(params[:id])
+    if $product_type
+      if $product_type == "Flooring"
         imagestring = CGI.unescapeHTML(@product.imagelink.to_s).split("&")
         imagestring[0] = imagestring[0].split("?")[0] + "?" + imagestring[1]
         imagestring.delete_at(1)
         imagestring = imagestring.join("&")
         @imglurl = "http://www.builddirect.com" + imagestring
-      elsif $model.name == "Laptop"
+      elsif $product_type == "Laptop"
         @imglurl = @product.imgurl.to_s
       else
-        @imglurl = "/images/" + $model.name.downcase + "s/" + @product.id.to_s + "_l.jpg"
+        @imglurl = "/images/" + $product_type.downcase + "s/" + @product.id.to_s + "_l.jpg"
       end
     else
       @imglurl = "/images/printers/" + @product.id.to_s + "_l.jpg"
     end
 
-    @offerings = RetailerOffering.find_all_by_product_id_and_product_type_and_region(params[:id],$model.name,$region,:order => 'priceint ASC')
-    @review = Review.find_by_product_id_and_product_type(params[:id],$model.name, :order => 'helpfulvotes DESC')
+    @offerings = RetailerOffering.find_all_by_product_id_and_product_type(params[:id],$product_type,:order => 'priceint ASC')
+    @review = Review.find_by_product_id_and_product_type(params[:id],$product_type, :order => 'helpfulvotes DESC')
     # Take out offending <br />
     if @review && @review.content
       @review.content = @review.content.gsub(/\r\&lt\;br \/\&gt\;/, '').gsub(/\t/,' ').strip
     end
-    @cartridges = Compatibility.find_all_by_product_id_and_product_type(@product.id,$model.name).map{|c|Cartridge.find_by_id(c.accessory_id)}.reject{|c|!c.instock}
+    @cartridges = Compatibility.find_all_by_product_id_and_product_type(@product.id,$product_type).map{|c|Cartridge.find_by_id(c.accessory_id)}.reject{|c|!c.instock}
     @cartridgeprices = @cartridges.map{|c| RetailerOffering.find_by_product_type_and_product_id("Cartridge",c.id)}
 
     respond_to do |format|
@@ -151,9 +139,9 @@ class CompareController < ApplicationController
       Search.createInitialClusters
       render 'ajax', :layout => false
     else
-      product_ids = $model.search_for_ids(params[:search].downcase, :per_page => 10000, :star => true)
+      product_ids = Product.search_for_ids(params[:search].downcase, :per_page => 10000, :star => true)
       current_version = Session.current.version
-      nodes = product_ids.map{|p| findCachedNodeByPID(p) }.compact
+      nodes = product_ids.map{|p| Node.byproduct(p) }.compact
       
       if nodes.length == 0
         if params[:ajax]

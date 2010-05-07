@@ -10,8 +10,7 @@ class MergedCluster
   def self.fromIDs(clusters)
     clusterobj = []
     clusters.compact.each do |c|
-      # Need to include .first so as to get at the instantiation method (there is no class method)
-      newcluster = $clustermodel.first.findCachedCluster(c.to_i)
+      newcluster = Cluster.cached(c.to_i)
       clusterobj << newcluster unless newcluster.nil? || newcluster.isEmpty
     end
     new(clusterobj)
@@ -46,23 +45,30 @@ class MergedCluster
     clusters.map{|c| c.deepChildren}.flatten
   end
   
+  def cont_specs
+    @clusters.map(&:cont_specs).flatten
+  end
+  
   def ranges(featureName)
     @range ||= {}
     if @range[featureName].nil?
-      values = nodes.map{|n| n.send(featureName)}.sort
-      nodes_min = values[0]
-      nodes_max = values[-1]
+      nodes_min = cont_specs.select{|s|s.name == featurename}.map(&:min).sort[0]
+      nodes_max = cont_specs.select{|s|s.name == featurename}.map(&:max).sort[-1]
       @range[featureName] = [nodes_min, nodes_max]    
     end
     @range[featureName]
   end
   
+  def bin_specs
+    @clusters.map(&:bin_specs).flatten
+  end
+  
   def indicator(featureName)
     indic = false
-    values = nodes.map{|n| n.send(featureName)}
-    if values.index(false).nil? # they are all the same
-        indic = true
-    end
+      values = bin_specs.select{|s|s.name == featurename}
+      if values.index(false).nil? # they are all the same
+          indic = true
+      end 
     indic
   end
   
@@ -72,7 +78,7 @@ class MergedCluster
       if clustersquery.blank?
         @nodes = []
       else
-        @nodes = $nodemodel.find(:all, :conditions => "(#{clustersquery}) #{Session.current.filter && !Cluster.filterquery(Session.current).blank? ? ' and '+Cluster.filterquery(Session.current) : ''}#{!Session.current.filter || Session.current.keywordpids.blank? ? '' : ' and ('+Session.current.keywordpids+')'}")
+        @nodes = Node.find(:all, :conditions => "(#{clustersquery}) #{!Cluster.filterquery.blank? ? ' and '+Cluster.filterquery : ''}#{Session.current.keywordpids.blank? ? '' : ' and ('+Session.current.keywordpids+')'}")
       end
     end
     @nodes
@@ -80,22 +86,11 @@ class MergedCluster
   
   #The representative product for this cluster
   def representative
-    unless @rep
-      node = nodes.first
-      @rep = findCachedProduct(node.product_id) if node
-    end
-    @rep
-  end 
+    Product.cached(nodes.first.product_id)
+  end
   
   def size
-    unless @size
-      if Session.current.filter
-        @size = nodes.length
-      else
-        @size = @clusters.map{|c|c.cluster_size}.sum
-      end
-    end
-    @size
+    nodes.length
   end
 
   def isEmpty

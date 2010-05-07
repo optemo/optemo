@@ -7,7 +7,7 @@ class Flooring < ActiveRecord::Base
       @@floorings = {}
     end
     unless @@floorings.has_key?('Flooring' + $region + id.to_s)
-      @@floorings[('Flooring' + $region + id.to_s)] = Session.current.findCachedProduct(id)
+      @@floorings[('Flooring' + $region + id.to_s)] = Session.current.findCachedProduct(id) #Needs to be fixed or removed
     end
     @@floorings[('Flooring' + $region + id.to_s)]
   end

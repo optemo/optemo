@@ -1,31 +1,20 @@
-/* Copyright (C) 2007-2008 Sun Microsystems
+/*
+   Copyright 2007 - 2008 MySQL AB, 2008 - 2009 Sun Microsystems, Inc.  All rights reserved.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; version 2 of the License.
-
-   There are special exceptions to the terms and conditions of the GPL 
-   as it is applied to this software. View the full text of the 
-   exception in file EXCEPTIONS-CONNECTOR-C++ in the directory of this 
-   software distribution.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+   The MySQL Connector/C++ is licensed under the terms of the GPL
+   <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>, like most
+   MySQL Connectors. There are special exceptions to the terms and
+   conditions of the GPL as it is applied to this software, see the
+   FLOSS License Exception
+   <http://www.mysql.com/about/legal/licensing/foss-exception.html>.
 */
 
 #ifndef _MYSQL_CONNECTION_H_
 #define _MYSQL_CONNECTION_H_
 
-#include "dbciface/connection.h"
-#include <list>
+#include <cppconn/connection.h>
+struct st_mysql;
 
-#include "mysql_private_iface.h"
 
 namespace sql
 {
@@ -42,7 +31,7 @@ public:
 
 	int getSavepointId();
 
-	std::string &getSavepointName();
+	std::string getSavepointName();
 
 private:
 	/* Prevent use of these */
@@ -51,40 +40,47 @@ private:
 };
 
 
-class CPPDBC_PUBLIC_FUNC MySQL_Connection : public sql::Connection
+class MySQL_DebugLogger;
+class MySQL_ConnectionData; /* PIMPL */
+
+class CPPCONN_PUBLIC_FUNC MySQL_Connection : public sql::Connection
 {
 public:
-	MySQL_Connection(const std::string& hostName, 
-                     const std::string& port, 
-                     const std::string& userName, 
-                     const std::string& password);
+	MySQL_Connection(const std::string& hostName, const std::string& userName, const std::string& password);
+
+	MySQL_Connection(std::map< std::string, sql::ConnectPropertyVal > & options);
+
 	virtual ~MySQL_Connection();
 
-	MYSQL * getMySQLHandle();
+	struct ::st_mysql * getMySQLHandle();
 
 	void clearWarnings();
 
 	void close();
 
 	void commit();
-  
-	sql::Statement *createStatement();
+
+	sql::Statement * createStatement();
 
 	bool getAutoCommit();
 
-	std::string *getCatalog();
+	std::string getCatalog();
 
-	const std::string& getClientInfo(const std::string& name);
+	std::string getSchema();
 
-	sql::DatabaseMetaData *getMetaData();
-  
+	std::string getClientInfo();
+
+	void getClientOption(const std::string & optionName, void * optionValue);
+
+	sql::DatabaseMetaData * getMetaData();
+
 	enum_transaction_isolation getTransactionIsolation();
 
-	void getWarnings();
+	const SQLWarning * getWarnings();
 
 	bool isClosed();
 
-	std::string *nativeSQL(const std::string& sql);
+	std::string nativeSQL(const std::string& sql);
 
 	sql::PreparedStatement * prepareStatement(const std::string& sql);
 
@@ -98,35 +94,32 @@ public:
 
 	void setCatalog(const std::string& catalog);
 
-	sql::Savepoint *setSavepoint();
+	void setSchema(const std::string& catalog);
 
-	sql::Savepoint *setSavepoint(const std::string& name);
+	sql::Connection * setClientOption(const std::string & optionName, const void * optionValue);
+
+	sql::Savepoint * setSavepoint(const std::string& name);
 
 	void setTransactionIsolation(enum_transaction_isolation level);
 
+	std::string getSessionVariable(const std::string & varname);
 
-	std::string getSessionVariable(const char * varname);
+	void setSessionVariable(const std::string & varname, const std::string & value);
 
-private:
-	bool closed;
-	bool autocommit;
-	enum_transaction_isolation txIsolationLevel;
-	std::list<std::string> warnings;
-
-	bool is_valid;
-
+protected:
 	void checkClosed();
+	void init(std::map<std::string, sql::ConnectPropertyVal> & properties);
+
+	MySQL_ConnectionData * intern; /* pimpl */
 
 private:
 	/* Prevent use of these */
 	MySQL_Connection(const MySQL_Connection &);
 	void operator=(MySQL_Connection &);
-
-	MYSQL * mysql; /* let it be last . If wrong dll is used we will get valgrind error or runtime error !*/
 };
 
-}; /* namespace mysql */
-}; /* namespace sql */
+} /* namespace mysql */
+} /* namespace sql */
 
 #endif // _MYSQL_CONNECTION_H_
 

@@ -15,19 +15,22 @@ module CompareHelper
     end
   end
   
-  def roundmin(n)
-    (n*10).to_i.to_f/10
-  end
-  def roundmax(n)
-    (n*10).ceil.to_f/10
+  def overallmin(feat)
+    min = CachingMemcached.minSpec(feat) || 0
+    (min*10).to_i.to_f/10
   end
   
-  def dbmin(i2f, feat)
-    i2f ? DbFeature.featurecache(feat).min.to_i/100 :  roundmin(DbFeature.featurecache(feat).min)
+  def overallmax(feat)
+    max = CachingMemcached.maxSpec(feat) || 0
+    (max*10).ceil.to_f/10
   end
   
-  def dbmax(i2f, feat)
-    i2f ? (DbFeature.featurecache(feat).max.to_f/100).ceil : feat=='itemweight' ? roundmax(DbFeature.featurecache(feat).max).ceil : roundmax(DbFeature.featurecache(feat).max)
+  def isnil(a)
+    if a.nil?
+      yield
+    else
+      a
+    end
   end
   
   def nav_link
@@ -40,9 +43,7 @@ module CompareHelper
   
   def navtitle
     if Session.current.keyword.nil?
-      
-		  #(Session.current.search.result_count > 1) ? t("products.compare.browsings",:count => Session.current.search.result_count) + $model.name + "s" : t("products.compare.browsing") + $model.name
-		  ["Browsing", Session.current.search.result_count, (Session.current.search.result_count > 1) ? ($model.name == "Flooring" ? "Types of Flooring" : $model.name.pluralize) : $model.name].join(" ")
+		  ["Browsing", Session.current.search.result_count, (Session.current.search.result_count > 1) ? t("#{$product_type}.title-plural") : t("#{$product_type}.title-plural")].join(" ")
 		else
       "#{t("products.compare.search")}: '#{Session.current.keyword}', #{(Session.current.search.result_count > 1) ? t("products.compare.browsings",:count => Session.current.search.result_count) : t("products.compare.browsing")}" 
     end
@@ -51,7 +52,7 @@ module CompareHelper
   def groupDesc(group, i)
     if $RelativeDescriptions
       #Session.current.search.relativeDescriptions[i].map{|d|t("products."+d)}.join(", ")
-      Session.current.search.boostexterClusterDescriptions[i].map{|d|t("products."+d)}.join(", ")
+      Session.current.search.boostexterClusterDescriptions[i].map{|d|t("products."+d, :default => d)}.join(", ")
     else
       disptranslation = []
       dispString = ""
@@ -83,35 +84,35 @@ module CompareHelper
 	  end
  end
  
-  def catsforfeature(feat)
-    chosen_brands = Session.current.features.brand.split('*')
-    DbFeature.featurecache(feat).categories.split('*').reject {|b| chosen_brands.index(b)}
+  def chosencats(feat)
+    Session.current.search.userdatacats.select{|d|d.name == feat}.map(&:value)
+  end
+  
+  def catspecs(feat)
+#    CatSpec.find_all_by_name_and_product_type(feat,$product_type).map(&:value)
+    CatSpec.find(:all, :select => 'value', :conditions => ["product_type = ? and name = ?", $product_type, feat]).map(&:value)
   end
   
   def featuretext(search,cluster)
     out = []
-    $model::SingleDescFeatures.each do |feat|
-      if $model::BinaryFeatures.include?(feat) 
-			  out << t("products.#{feat}") if cluster.representative.send(feat.intern)
-			elsif $model::CategoricalFeatures.include?(feat)
-		    out << cluster.representative.send(feat.intern)
-			else
-			  if $model::ItoF.include?(feat)
-			    feature = cluster.representative.send(feat.intern).to_f/100
-			  else
-			    feature = cluster.representative.send(feat.intern).to_i
-			  end
-			  out << "#{feature} #{t("products.#{feat}text")}"
-			end
-		end
+    $Categorical["desc"].each do |feat|
+      out << t("products.#{feat}") if cluster.representative.send(feat.intern)
+    end
+    $Continuous["desc"].each do |feat|
+      feature = cluster.representative.send(feat.intern).to_i
+		  out << "#{feature} #{t("products.#{feat}text")}"
+	  end
+	  $Binary["desc"].each do |feat|
+      out << t("products.#{feat}") if cluster.representative.send(feat.intern)
+    end
 		out.join(" / ")
   end
 
   def imgurl(cluster)
-    case $model.name
-      when 'Flooring' then "http://www.builddirect.com" + CGI.unescapeHTML(cluster.representative.imagelink.to_s)
-      when 'Laptop' then CGI.unescapeHTML(cluster.representative.imgurl)
-      else $model.name.downcase + "s/" + cluster.representative.id.to_s + "_m.jpg"
+    case $product_type
+      when "flooring_builddirect" then "http://www.builddirect.com" + CGI.unescapeHTML(cluster.representative.imgmurl.to_s)
+      when "laptop_walmart" then CGI.unescapeHTML(cluster.representative.imgmurl.to_s)
+      else $product_type.split("_").first + "s/" + cluster.representative.id.to_s + "_m.jpg"
     end
   end
 

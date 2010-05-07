@@ -32,4 +32,4 @@ dlopen=''
 dlpreopen=''
 
 # Directory that this library needs to be installed in:
-libdir='/optemo/site/lib/c_code/learningCodes/coin-Clp/lib'
+libdir='/Users/zev/Downloads/Clp-1.11.1/lib'

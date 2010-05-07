@@ -2,7 +2,7 @@ class ContentController < ApplicationController
 layout 'optemo', :except => ['request']
 
 def sitemap
-  @products = $model.valid
+  @products = Product.valid
 end
 
 def create_request

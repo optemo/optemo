@@ -439,9 +439,9 @@ function FilterAndSearchInit() {
 	$('.selectboxfilter').each(function(){
 	    $(this).unbind('change').change(function(){
 		    var whichThingSelected = $(this).val();
-		    var whichSelector = $(this).attr('name')
-		    whichSelector = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]")-1);
-    		$('#myfilter_'+whichSelector).val(appendStringWithToken($('#myfilter_'+whichSelector).val(), whichThingSelected, '*'));
+			var whichSelector = $(this).attr('name');
+		    var cat = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]"));
+    		$('#myfilter_'+cat).val(appendStringWithToken($('#myfilter_'+cat).val(), whichThingSelected, '*'));
     		submitCategorical();
     		trackCategorical(whichThingSelected,100,2);
     	});
@@ -568,6 +568,8 @@ function DBinit() {
 	model = MODEL_NAME.toLowerCase();
     if (model.match(/printer/) || model.match(/camera/)) 
     {
+        model = model.split('_');
+        model = model[0]; // Get rid of "_us", if it exists.
     	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
     	terms = eval(model + "_searchterms"); // terms now = ["waterproof", "digital", ... ]
     	$("#search").autocomplete(terms, {
@@ -629,11 +631,11 @@ $(document).ready(function() {
 //	language = (/^\s*English/.test($(".languageoptions:first").html())==true)?'en':'fr';
 
 	//Decrypt encrypted links
-//	$('a.decrypt').each(function () {
-//		$(this).attr('href',$(this).attr('href').replace(/[a-zA-Z]/g, function(c){
-//			return String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26);
-//			}));
-//	});
+	$('a.decrypt').each(function () {
+		$(this).attr('href',$(this).attr('href').replace(/[a-zA-Z]/g, function(c){
+			return String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26);
+			}));
+	});
 
 	// Global to the entire page - Fadein
 	// May want to make this a jquery .live() call; check jquery 1.4 documentation for this later

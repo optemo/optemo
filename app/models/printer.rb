@@ -7,7 +7,7 @@ class Printer < ActiveRecord::Base
       @@printers = {}
     end
     unless @@printers.has_key?('Printer' + $region + id.to_s)
-      @@printers[('Printer' + $region + id.to_s)] = Session.current.findCachedProduct(id)
+      @@printers[('Printer' + $region + id.to_s)] = Session.current.findCachedProduct(id) #Needs to be fixed or removed
     end
     @@printers[('Printer' + $region + id.to_s)]
   end
@@ -56,6 +56,7 @@ class Printer < ActiveRecord::Base
   MaxPrice = 20_000_00
       
   named_scope :priced, :conditions => "price > 0"
+  
   named_scope :valid, :conditions => [ContinuousFeatures.select{|f|!f.match(/^minf|maximumfocallength|minimumfocallength$/)}.map{|i|i+' > 0'}.join(' AND '),BinaryFeatures.map{|i|i+' IS NOT NULL'}.join(' AND '),['brand','model'].map{|i|i+' IS NOT NULL'}.join(' AND ')].delete_if{|l|l.blank?}.join(' AND ')
   named_scope :instock, :conditions => "instock is true"
   named_scope :instock_ca, :conditions => "instock_ca is true"

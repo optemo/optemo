@@ -7,7 +7,7 @@ class Laptop < ActiveRecord::Base
       @@laptops = {}
     end
     unless @@laptops.has_key?('Laptop' + $region + id.to_s)
-      @@laptops[('Laptop' + $region + id.to_s)] = Session.current.findCachedProduct(id)
+      @@laptops[('Laptop' + $region + id.to_s)] = Session.current.findCachedProduct(id) #Needs to be fixed or removed
     end
     @@laptops[('Laptop' + $region + id.to_s)]
   end
