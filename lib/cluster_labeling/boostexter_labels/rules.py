@@ -57,6 +57,6 @@ def get_interval_from_threshold_rule(rule):
 def get_rule_type(rule):
     return str(type(rule))
 
-def all_rules_are_for_same_field(rules):
+def all_rules_are_same_type(rules):
     rule_types = set(map(lambda x: get_rule_type(x), rules))
     return len(rule_types) == 1

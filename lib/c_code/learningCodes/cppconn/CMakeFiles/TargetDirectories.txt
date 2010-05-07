@@ -1,0 +1,2 @@
+/optemo/site/lib/c_code/learningCodes/cppconn/CMakeFiles/mysqlcppconn.dir
+/optemo/site/lib/c_code/learningCodes/cppconn/CMakeFiles/mysqlcppconn-static.dir

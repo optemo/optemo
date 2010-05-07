@@ -89,6 +89,8 @@ boosting_fields = \
      'price' : ['continuous'],
      'price_ca' : ['continuous']}}
 
-fieldname_to_type = \
-    dict(map(lambda (type, fields): (type, dict(fields)),
+boosting_fields_ordered = \
+    dict(map(lambda (type, fields):
+             (type, sorted(fields.iteritems(), key=lambda (k, v): k)),
              boosting_fields.iteritems()))
+
