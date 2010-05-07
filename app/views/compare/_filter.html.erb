@@ -28,8 +28,8 @@
 		:locals => {:name => t('products.' + feat),
 		:val => feat,
 		:money_formatting => feat == 'price',
-		:min => CachingMemcached.minSpec(feat), 
-		:max => CachingMemcached.maxSpec(feat)} %>
+		:min => ContSpec.allMin(feat), 
+		:max => ContSpec.allMax(feat)} %>
 <% end %>
 <% $Binary["filter"].each do |feat| %>
 	<div class='feature'>

@@ -16,12 +16,12 @@ module CompareHelper
   end
   
   def overallmin(feat)
-    min = CachingMemcached.minSpec(feat) || 0
+    min = ContSpec.allMin(feat) || 0
     (min*10).to_i.to_f/10
   end
   
   def overallmax(feat)
-    max = CachingMemcached.maxSpec(feat) || 0
+    max = ContSpec.allMax(feat) || 0
     (max*10).ceil.to_f/10
   end
   
