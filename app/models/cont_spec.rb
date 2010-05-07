@@ -27,4 +27,36 @@ class ContSpec < ActiveRecord::Base
     end
     @@cs[($product_type + p_id + feat)]
   end
+  
+  def self.allMin(feat)
+    CachingMemcached.cache_lookup("#{$product_type}Min-#{feat}") do
+      ContSpec.allspecs(feat).min
+    end
+  end
+
+  def self.allMax(feat)
+    CachingMemcached.cache_lookup("#{$product_type}Max-#{feat}") do
+      ContSpec.allspecs(feat).max
+    end
+  end
+
+  def self.allLow(feat)
+    CachingMemcached.cache_lookup("#{$product_type}Low-#{feat}") do
+      ContSpec.allspecs(feat).sort[products.count*0.4]
+    end
+  end
+
+  def self.allHigh(feat)
+    CachingMemcached.cache_lookup("#{$product_type}High-#{feat}") do
+      ContSpec.allspecs(feat).sort[products.count*0.6]
+    end
+  end
+  
+  private
+
+  def self.allspecs(feat)
+    #ContSpec.find_all_by_name_and_product_type(feat,$product_type).map(&:value)
+    id_array = Product.valid.instock.map{|p| p.id }
+    ContSpec.cachemany(id_array, feat)
+  end
 end

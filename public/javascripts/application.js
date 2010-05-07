@@ -448,12 +448,15 @@ function FilterAndSearchInit() {
 	});
 	
 	// Remove a brand -- submit
-	$('.removeBrand').unbind('click').click(function(){
-		var whichbrand = $(this).attr('data-id');
-		$('#myfilter_brand').val(removeStringWithToken($('#myfilter_brand').val(), whichbrand, '*'));
-		submitCategorical();
-		trackCategorical(whichbrand,0,2);
-		return false;
+	$('.removefilter').each(function(){
+		$(this).unbind('click').click(function(){
+			var whichRemoved = $(this).attr('data-id');
+			var whichCat = $(this).attr('data-cat');
+			$('#myfilter_'+whichCat).val(removeStringWithToken($('#myfilter_'+whichCat).val(), whichRemoved, '*'));
+			submitCategorical();
+			trackCategorical(whichRemoved,0,2);
+			return false;
+		});
 	});
 	//Show Additional Features
 	$('#morefilters').unbind('click').click(function(){

@@ -19,10 +19,10 @@ class Product < ActiveRecord::Base
   end
   
   named_scope :instock, :conditions => {:instock => true}
-  named_scope :valid, lambda { \
-    {:conditions => ($Continuous["filter"].map{|f|"id in (select product_id from cont_specs where value > 0 and name = '#{f}')"}+ \
-      $Binary["filter"].map{|f|"id in (select product_id from bin_specs where value IS NOT NULL and name = '#{f}')"}+ \
-      $Categorical["filter"].map{|f|"id in (select product_id from cat_specs where value IS NOT NULL and name = '#{f}')"}).join(" and ")}
+  named_scope :valid, lambda {
+    {:conditions => ($Continuous["filter"].map{|f|"id in (select product_id from cont_specs where value > 0 and name = '#{f}' and product_type = '#{$product_type}')"}+\
+    $Binary["filter"].map{|f|"id in (select product_id from bin_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{$product_type}')"}+\
+    $Categorical["filter"].map{|f|"id in (select product_id from cat_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{$product_type}')"}).join(" and ")}
   }
   Max = {'SWidth' => 70, 'SHeight' => 50,'MWidth' => 140, 'MHeight' => 100, 'LWidth' => 400, 'LHeight' => 300} unless defined?(Max)
     

@@ -11,7 +11,7 @@
 		<% unless chosencats(feat).nil? || chosencats(feat).empty? %>
 			<%# At least one item selected %>
 			<% chosencats(feat).each do |b| %>
-				<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :class => "remove"+feat, :"data-id" => b} %> <%= b %>
+				<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :"data-cat" => feat, :class => "removefilter", :"data-id" => b} %> <%= b %>
 				</div>
 			<% end %>
 			<%= select('myfilter', feat+"1", [t('products.compare.add'+feat)] +catspecs(feat).reject {|b| chosencats(feat).index(b)}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>

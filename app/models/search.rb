@@ -17,8 +17,8 @@ class Search < ActiveRecord::Base
   ## Computes distributions (arrays of normalized product counts) for all continuous features 
   def distribution(feat)
        dist = Array.new(21,0)
-       min = CachingMemcached.minSpec(feat)
-       max = CachingMemcached.maxSpec(feat)
+       min = ContSpec.allMin(feat)
+       max = ContSpec.allMax(feat)
        return [] if max.nil? || min.nil?
        stepsize = (max-min) / dist.length + 0.000001 #Offset prevents overflow of 10 into dist array
        id_array = acceptedNodes.map(&:product_id)
@@ -60,7 +60,7 @@ class Search < ActiveRecord::Base
     if @reldescs.empty?
       feats = {}
       $Continuous["filter"].each do |f|
-        norm = CachingMemcached.maxSpec(f) - CachingMemcached.minSpec(f)
+        norm = ContSpec.allMax(f) - ContSpec.allMin(f)
         norm = 1 if norm == 0
         feats[f] = clusters.map{ |c| c.representative}.compact.map {|c| c[f].to_f/norm } 
       end
@@ -121,11 +121,11 @@ class Search < ActiveRecord::Base
       $Continuous["desc"].each do |f|
         if !(f == "opticalzoom" && slr == 1)
               cRanges = clusters[clusterNumber].ranges(f)
-              if (cRanges[1] < CachingMemcached.lowSpec(f))
+              if (cRanges[1] < ContSpec.allLow(f))
                  clusterDs << {'desc' => "low_"+f, 'stat' => 0}  
-              elsif (cRanges[0] > CachingMemcached.highSpec(f))
+              elsif (cRanges[0] > ContSpec.allHigh(f))
                  clusterDs <<  {'desc' => "high_"+f, 'stat' => 2}  
-              elsif ((cRanges[0] >= CachingMemcached.lowSpec(f)) && (cRanges[1] <= CachingMemcached.highSpec(f))) 
+              elsif ((cRanges[0] >= ContSpec.allLow(f)) && (cRanges[1] <= ContSpec.allHigh(f))) 
                   clusterDs <<  {'desc' => "avg_"+f, 'stat' => 1}
               end 
         end   
@@ -142,9 +142,9 @@ class Search < ActiveRecord::Base
     $Continuous["desc"].each do |f|
       searchR = ranges(f)
       return ['Empty'] if searchR[0].nil? || searchR[1].nil?
-      if (searchR[1] <= CachingMemcached.lowSpec(f))
+      if (searchR[1] <= ContSpec.allLow(f))
            des <<  "low_#{f}"
-      elsif (searchR[0] >= CachingMemcached.highSpec(f))
+      elsif (searchR[0] >= ContSpec.allHigh(f))
            des <<  "high_#{f}"
       end
     end  
