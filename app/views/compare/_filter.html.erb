@@ -14,10 +14,10 @@
 				<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :"data-cat" => feat, :class => "removefilter", :"data-id" => b} %> <%= b %>
 				</div>
 			<% end %>
-			<%= select('myfilter', feat+"1", [t('products.compare.add'+feat)] +catspecs(feat).reject {|b| chosencats(feat).index(b)}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>
+			<%= select('superfluous', feat, [t('products.compare.add'+feat)] +CatSpec.all(feat).reject {|b| chosencats(feat).index(b)}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>
 		<% else %>
 			<%# Nothing selected %>
-			<%= select('superfluous', feat, [t('products.compare.all'+feat+'s')] + catspecs(feat).map{|f| CGI::unescapeHTML(f) }.uniq, options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>		
+			<%= select('superfluous', feat, [t('products.compare.all'+feat+'s')] + CatSpec.all(feat).map{|f| CGI::unescapeHTML(f) }, options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>		
 		<% end %>
 
 		<%= hidden_field_tag "myfilter[#{feat}]", chosencats(feat).join("*") %>

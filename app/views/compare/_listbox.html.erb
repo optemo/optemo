@@ -1,29 +1,27 @@
-<div id="box<%= i %>" class="navigator_box<%= ' nbsingle' unless group %>">
-		
-			<% if group %>
-				<div class='sim'>
-					<%= link_to(image_tag("plus_line.png")+"<br>#{cluster.size}", 
-				  	  "/compare/sim/#{cluster.id}", :id => "sim#{i}", :class => 'simlinks rounded', 
-						  :"data-id" => "#{cluster.representative.id}", :"title" => "Browse through all " + cluster.size.to_s + " in this group") %>
-				</div>
+<div id="box<%= i %>" class="navigator_box <%= group ? "nbgroup" : 'nbsingle' %>">
+	<div class='sim'>
+		<% if group %>
+			<%= link_to(image_tag("plus_line.png")+"<br>#{cluster.size}", 
+		  "/compare/sim/#{cluster.id}", :id => "sim#{i}", :class => 'simlinks rounded', 
+			  :"data-id" => "#{cluster.representative.id}", :"title" => "Browse through all " + cluster.size.to_s + " in this group") %>
+		<% end %>
+	</div>
+
+	<div class="title">
+		<%= groupDesc(group,i) %>
+	</div>
+	
+	<div class="productinfo rounded" onClick="javascript:location.href='<%= cluster.representative.descurl %>'">
+		<div class="productimg">
+			<% if $DragAndDropEnabled %>
+				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
 			<% end %>
-			
-	
-		<div class="title">
-			<%= groupDesc(group,i) %>
+			<%= image_tag(imgurl(cluster) , :"data-id" => cluster.representative.id, :class => "productimg", :alt => cluster.representative.smlTitle, :title => cluster.representative.smlTitle) %>
 		</div>
-	
-		<div class="productinfo rounded" onClick="javascript:location.href='<%= cluster.representative.descurl %>'">
-			<div class="productimg">
-				<% if $DragAndDropEnabled %>
-					<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
-				<% end %>
-				<%= image_tag(imgurl(cluster) , :"data-id" => cluster.representative.id, :class => "productimg", :alt => cluster.representative.smlTitle, :title => cluster.representative.smlTitle) %>
-			</div>
-			<a href="<%=cluster.representative.descurl%>" data-id="<%=cluster.representative.id%>" class="easylink" title="Click for product specifications"><%= cluster.representative.smlTitle %></a>
-			<div class="price">
-				<%= cluster.representative.cont_specs.find_by_name("price").value %>
-			</div>
+		<a href="<%=cluster.representative.descurl%>" data-id="<%=cluster.representative.id%>" class="easylink" title="Click for product specifications"><%= cluster.representative.smlTitle %></a>
+		<div class="price">
+			$<%= cluster.representative.cont_specs.find_by_name("price").value %>
 		</div>
+	</div>
 	<div style="clear:both;"></div>
 </div>

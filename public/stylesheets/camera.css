@@ -168,7 +168,12 @@ div.rowdiv {
 	border: 1px solid #ccc;
 	-moz-border-radius: 8px 0 0 8px;
 	margin: -1px 0 0 -1px;
-	background-color:#8192ac;
+}
+.lv .nbsingle .sim {
+	background-color: #BAC5D4;
+}
+.lv .nbgroup .sim {
+	background-color: #8192ac;
 }
 .gv .sim a {
 	font-size: 1.1em;
