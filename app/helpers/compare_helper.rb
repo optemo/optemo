@@ -88,11 +88,6 @@ module CompareHelper
     Session.current.search.userdatacats.select{|d|d.name == feat}.map(&:value)
   end
   
-  def catspecs(feat)
-#    CatSpec.find_all_by_name_and_product_type(feat,$product_type).map(&:value)
-    CatSpec.find(:all, :select => 'value', :conditions => ["product_type = ? and name = ?", $product_type, feat]).map(&:value)
-  end
-  
   def featuretext(search,cluster)
     out = []
     $Categorical["desc"].each do |feat|

@@ -22,8 +22,8 @@
 				<div class="image_boundingbox">
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
 		<% end %>
-		<%= image_tag(imgurl(cluster) , :"data-id" => cluster.representative.id, :class => "productimg", :alt => cluster.representative.smlTitle, :title => cluster.representative.smlTitle) %>				
-		<% if $DragAndDropEnabled %>		
+		<%= image_tag(imgurl(cluster) , :"data-id" => cluster.representative.id, :class => "productimg", :alt => cluster.representative.smlTitle, :title => cluster.representative.smlTitle) %>
+		<% if $DragAndDropEnabled %>
 			</div>
 		<% end %>
 		

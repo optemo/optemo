@@ -371,9 +371,9 @@ class Search < ActiveRecord::Base
     end
     #Categorical Feature
     userdatacats.each do |f|
-      old = Userdatacat.find_by_search_id_and_name(Session.current.search.id,f.name)
-      unless old.nil? || old.empty?
-        newf = userdatacats.find_all_by_name(f.name)
+      old = Userdatacat.find_all_by_search_id_and_name(Session.current.search.id,f.name)
+      unless old.empty?
+        newf = userdatacats.select{|c|c.name == f.name}
         return true if newf.length == 0 && old.length > 0
         return true if old.length > 0 && newf.length > old.length
       end
