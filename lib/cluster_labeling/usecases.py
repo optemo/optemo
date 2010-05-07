@@ -34,10 +34,23 @@ class UsecaseClusterScore(local.LocalModel):
     version = models.IntegerField()
 
 # This list also includes meta-features, for now.
+# There are three ways to specific direct indicator word senses:
+# - If the list of direct indicator word senses is empty, the direct
+#   indicator words are extracted directly from the usecase title and
+#   all of their word senses are used.
+# - If the item in the list of direct indicator word senses is
+#   a string, all of its word senses are used.
+# - If the item in the list of direct indicator word senses is
+#   (word, name, definition), the matching word sense is used.
 known_usecases = {
     optemo.Printer : {},
     optemo.Camera :
-    {"Travel" : [],
+    {"Travel" :
+     [('trip', 'trip', 'journey, excursion'),
+      ('vacation', 'vacation', 'planned time spent not working'),
+      ('flight', 'flight', 'flying; journey'),
+      ('cruise', 'cruise', 'sailing expedition'),
+      ('cruise', 'excursion', 'journey')],
      "Fun" : [],
      "Family photos" : ["Family"],
      "Landscape/scenery" : [],
@@ -46,7 +59,13 @@ known_usecases = {
      "Art" : [],
      "Sports/action" : ["Sports", "Action"],
      "Video" : [],
-     "Wildlife" : [],
+     "Wildlife" :
+     [('cat', 'cat', 'feline animal, sometimes a pet'),
+      ('dog', 'dog', 'canine mammal'),
+      ('horse', 'horse', 'equine species'),
+      ('reservation', 'reservation', 'habitat for large group'),
+      ('park', 'park', 'land that is reserved for pleasure, recreation'),
+      ('cage', 'cage', 'enclosure with bars')],
      "Weddings" : [],
      "Home" : [],
      "Street" : [],
@@ -62,17 +81,32 @@ def populate_usecases():
     Usecase.drop_tables_if_exist()
     Usecase.create_tables()
 
-    for (usecase_label, direct_indicator_words) in \
-            known_usecases[optemo.product_type].iteritems():
-        if len(direct_indicator_words) == 0:
-            direct_indicator_words = th.get_words_from_string(usecase_label)
-            
+    for usecase_label in \
+            known_usecases[optemo.product_type].iterkeys():
         usecase = Usecase(label=usecase_label)
         usecase.save()
+
+def populate_direct_indicators_for_usecases():
+    for (usecase_label, direct_indicators) in \
+            known_usecases[optemo.product_type].iteritems():
+        usecase = Usecase.get_manager().filter(label=usecase_label)[0]
         
+        if len(direct_indicators) == 0:
+            direct_indicators = th.get_words_from_string(usecase_label)
+
+        di_words = []
+        for di in direct_indicators:
+            if type(di) == str:
+                di_words.append(di)
+            elif type(di) == tuple:
+                di_words.append(di[0])
+            else:
+                assert(False)
+        di_words = set(di_words)
+
         existing_words_qs, dne_word_entries = \
             words.Word.create_multiple_if_dne_and_return\
-            (map(lambda s: s.lower(), direct_indicator_words))
+            (map(lambda s: s.lower(), di_words))
         
         for word in existing_words_qs:
             usecase.direct_indicator_words.add(word)
@@ -82,14 +116,40 @@ def populate_usecases():
 
         usecase.save()
 
-def populate_indicator_words_for_usecases():
-    for usecase in Usecase.get_manager():
-        diws = usecase.direct_indicator_words
+import cluster_labeling.word_senses as ws
 
-        for diw in diws.all():
-            usecase.indicator_words.add(diw)
+def populate_indicators_for_usecases():
+    for (usecase_label, direct_indicators) in \
+            known_usecases[optemo.product_type].iteritems():
+        usecase = Usecase.get_manager().filter(label=usecase_label)[0]
 
-            for synonym in diw.get_all_synonyms():
+        di_words = []
+        di_wordsenses = []
+
+        if len(direct_indicators) == 0:
+            di_words = usecase.direct_indicator_words.all()
+        else:
+            for di in direct_indicators:
+                if type(di) == str:
+                    word = words.Word.get_manager().filter(word=di.lower())[0]
+                    di_words.append(word)
+                elif type(di) == tuple:
+                    di_wordsenses.append(di)
+                else:
+                    assert(False)
+
+        for word in di_words:
+            usecase.indicator_words.add(word)
+
+            for synonym in word.get_all_synonyms():
+                usecase.indicator_words.add(synonym)
+
+        for word, name, definition in di_wordsenses:
+            sense = ws.WordSense.get_manager().filter\
+                    (word__word=word.lower(), name__word=name.lower(),
+                     definition=definition)[0]
+            
+            for synonym in sense.synonyms.all():
                 usecase.indicator_words.add(synonym)
 
         usecase.save()

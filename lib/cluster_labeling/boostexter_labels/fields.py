@@ -32,7 +32,7 @@ boosting_fields = \
       'warranty' :
       ['text',
        {'text_to_btxtr_fn' : floor_fp.warranty_to_btxtr,
-        'btxtr_to_text_fn' : floor_fp.flooring_field_from_btxtr}]
+        'btxtr_to_text_fn' : floor_fp.flooring_field_from_btxtr}],
 
      'width' : ['continuous'],
 #      'thickness' : ['continuous'], # Not cleaned properly
@@ -89,6 +89,8 @@ boosting_fields = \
      'price' : ['continuous'],
      'price_ca' : ['continuous']}}
 
-fieldname_to_type = \
-    dict(map(lambda (type, fields): (type, dict(fields)),
+boosting_fields_ordered = \
+    dict(map(lambda (type, fields):
+             (type, sorted(fields.iteritems(), key=lambda (k, v): k)),
              boosting_fields.iteritems()))
+

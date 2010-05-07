@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100420212549) do
+ActiveRecord::Schema.define(:version => 20100430230011) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -743,6 +743,28 @@ ActiveRecord::Schema.define(:version => 20100420212549) do
     t.float    "itemweight"
   end
 
+  create_table "bin_specs", :force => true do |t|
+    t.integer  "product_id"
+    t.string   "name"
+    t.boolean  "value"
+    t.string   "product_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "bin_specs", ["product_id"], :name => "index_bin_specs_on_product_id"
+
+  create_table "boostexter_rules", :force => true do |t|
+    t.string   "fieldname"
+    t.float    "weight"
+    t.integer  "cluster_id"
+    t.integer  "version"
+    t.text     "yaml_repr"
+    t.string   "rule_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "camera2", :id => false, :force => true do |t|
     t.integer  "id",                              :default => 0, :null => false
     t.text     "detailpageurl"
@@ -820,6 +842,7 @@ ActiveRecord::Schema.define(:version => 20100420212549) do
     t.integer "cluster_id",                       :null => false
     t.integer "version",                          :null => false
     t.text    "yaml_repr",  :limit => 2147483647, :null => false
+    t.string  "rule_type",  :limit => 1,          :null => false
   end
 
   add_index "camera_boostexter_combined_rules", ["fieldname", "cluster_id", "version"], :name => "fieldname", :unique => true
@@ -1298,6 +1321,24 @@ ActiveRecord::Schema.define(:version => 20100420212549) do
     t.string   "price_ca_str"
   end
 
+  create_table "cat_specs", :force => true do |t|
+    t.integer  "product_id"
+    t.string   "name"
+    t.string   "value"
+    t.string   "product_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "cat_specs", ["product_id"], :name => "index_cat_specs_on_product_id"
+
+  create_table "clusters", :force => true do |t|
+    t.string  "product_type"
+    t.integer "version"
+    t.integer "layer"
+    t.integer "parent_id"
+  end
+
   create_table "compatibilities", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -1306,6 +1347,17 @@ ActiveRecord::Schema.define(:version => 20100420212549) do
     t.integer  "product_id"
     t.string   "product_type"
   end
+
+  create_table "cont_specs", :force => true do |t|
+    t.integer  "product_id"
+    t.string   "name"
+    t.float    "value"
+    t.string   "product_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "cont_specs", ["product_id"], :name => "index_cont_specs_on_product_id"
 
   create_table "db_features", :force => true do |t|
     t.string   "product_type"
@@ -1358,6 +1410,7 @@ ActiveRecord::Schema.define(:version => 20100420212549) do
     t.integer "cluster_id",                       :null => false
     t.integer "version",                          :null => false
     t.text    "yaml_repr",  :limit => 2147483647, :null => false
+    t.string  "rule_type",  :limit => 1,          :null => false
   end
 
   add_index "flooring_boostexter_combined_rules", ["fieldname", "cluster_id", "version"], :name => "fieldname", :unique => true
@@ -1490,6 +1543,7 @@ ActiveRecord::Schema.define(:version => 20100420212549) do
     t.text     "yaml_repr"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "rule_type",  :limit => 1, :null => false
   end
 
   add_index "laptop_boostexter_combined_rules", ["cluster_id"], :name => "index_laptop_boostexter_combined_rules_on_cluster_id"
@@ -1761,6 +1815,13 @@ ActiveRecord::Schema.define(:version => 20100420212549) do
     t.string   "mpn"
   end
 
+  create_table "nodes", :force => true do |t|
+    t.integer "cluster_id"
+    t.integer "product_id"
+    t.string  "product_type"
+    t.integer "version"
+  end
+
   create_table "one23_cartridges", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -1878,6 +1939,7 @@ ActiveRecord::Schema.define(:version => 20100420212549) do
     t.integer "cluster_id",                       :null => false
     t.integer "version",                          :null => false
     t.text    "yaml_repr",  :limit => 2147483647, :null => false
+    t.string  "rule_type",  :limit => 1,          :null => false
   end
 
   add_index "printer_boostexter_combined_rules", ["fieldname", "cluster_id", "version"], :name => "fieldname", :unique => true
@@ -2047,6 +2109,28 @@ ActiveRecord::Schema.define(:version => 20100420212549) do
     t.string   "price_ca_str"
     t.boolean  "instock_ca"
     t.integer  "bestoffer_ca"
+  end
+
+  create_table "products", :force => true do |t|
+    t.string   "product_type"
+    t.string   "title"
+    t.string   "model"
+    t.string   "mpn"
+    t.boolean  "instock"
+    t.string   "imgsurl"
+    t.integer  "imgsh"
+    t.integer  "imgsw"
+    t.string   "imgmurl"
+    t.integer  "imgmh"
+    t.integer  "imgmw"
+    t.string   "imglurl"
+    t.integer  "imglh"
+    t.integer  "imglw"
+    t.float    "avgreviewrating"
+    t.integer  "totalreviews"
+    t.string   "manufacturerurl"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "referrals", :force => true do |t|
@@ -2300,6 +2384,15 @@ ActiveRecord::Schema.define(:version => 20100420212549) do
     t.text     "suggestions"
   end
 
+  create_table "text_specs", :force => true do |t|
+    t.integer  "product_id"
+    t.string   "name"
+    t.text     "value"
+    t.string   "product_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "tiger_offerings", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -2429,6 +2522,31 @@ ActiveRecord::Schema.define(:version => 20100420212549) do
     t.string   "standardpaperoutput"
     t.string   "transferrate"
     t.string   "wireless"
+  end
+
+  create_table "userdatabins", :force => true do |t|
+    t.integer  "search_id"
+    t.string   "name"
+    t.boolean  "value"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "userdatacats", :force => true do |t|
+    t.integer  "search_id"
+    t.string   "name"
+    t.string   "value"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "userdataconts", :force => true do |t|
+    t.integer  "search_id"
+    t.string   "name"
+    t.float    "min"
+    t.float    "max"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "vieweds", :force => true do |t|

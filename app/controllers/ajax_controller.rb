@@ -1,22 +1,10 @@
 class AjaxController < ApplicationController
   def preference
     mypreferences = params[:mypreference]
-    $model::ContinuousFeatures.each do |f|
+    $Continuous["filter"].each do |f|
       Session.current.features.update_attribute(f+"_pref", mypreferences[f+"_pref"])
     end
     # To stay on the current page 
-    render :nothing => true
-  end
-   
-  #Used for selecting a use case
-  def select
-    Session.current.defaultFeatures(URI.encode(params[:id]))
-    render :nothing => true
-  end
-  
-  #Used for hiding some filters 
-  def set_expert
-    Session.current.update_attribute('expert',params[:id])
     render :nothing => true
   end
     

@@ -1,55 +1,44 @@
 	<% form_tag("",{:id => 'filter_form'}) do %>
-<% $model::CategoricalFeaturesF.each do |feat| %>
-	<div class='feature<%= " extra" if $model::ExtraFeature[feat] %>' <%= "style='display:none;'" if $model::ExtraFeature[feat] && !Session.current.expert %>>
+<% $Categorical["filter"].each do |feat| %>
+	<div class='feature'>
 		<!--div class='label'>
 			<%=t('products.' + feat)%>
 		</div-->
 		<div class='label'>
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
-			<%= link_to t('products.' + feat).tr(' ',''), "#" %>			
+			<%= link_to t('products.' + feat), "#" %>			
 		</div>
-
-		<% unless Session.current.features.send(feat).nil? || Session.current.features.send(feat).empty? %>
-			<% Session.current.features.brand.split('*').each do |b| %>
-				<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :class => "remove"+feat, :"data-id" => b} %> <%= b %>
+		<% unless chosencats(feat).nil? || chosencats(feat).empty? %>
+			<%# At least one item selected %>
+			<% chosencats(feat).each do |b| %>
+				<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :"data-cat" => feat, :class => "removefilter", :"data-id" => b} %> <%= b %>
 				</div>
 			<% end %>
-			<%= select('myfilter', feat+"1", [t('products.compare.add'+feat)] +catsforfeature(feat), options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>
+			<%= select('superfluous', feat, [t('products.compare.add'+feat)] +CatSpec.all(feat).reject {|b| chosencats(feat).index(b)}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>
 		<% else %>
-			<%= select('myfilter', feat+"1", [t('products.compare.all'+feat+'s')] + DbFeature.featurecache(feat).categories.split('*').map{|f| CGI::unescapeHTML(f) }.uniq, options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>		
+			<%# Nothing selected %>
+			<%= select('superfluous', feat, [t('products.compare.all'+feat+'s')] + CatSpec.all(feat).map{|f| CGI::unescapeHTML(f) }, options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>		
 		<% end %>
 
-		<%= hidden_field_tag "myfilter[#{feat}]", Session.current.features.brand %>
+		<%= hidden_field_tag "myfilter[#{feat}]", chosencats(feat).join("*") %>
 	</div>
 <% end %>
-<% $model::ContinuousFeaturesF.each do |feat| %>
+<% $Continuous["filter"].each do |feat| %>
 	<%= render :partial => 'slider', 
-		:locals => {:name => t('products.' + feat), 
-		:i2f => $model::ItoF.include?(feat),
-		:val => feat, 
-		:extra => $model::ExtraFeature[feat],
+		:locals => {:name => t('products.' + feat),
+		:val => feat,
 		:money_formatting => feat == 'price',
-		:min => DbFeature.featurecache(feat).min, 
-		:max => DbFeature.featurecache(feat).max} %>
+		:min => ContSpec.allMin(feat), 
+		:max => ContSpec.allMax(feat)} %>
 <% end %>
-<% $model::BinaryFeaturesF.each do |feat| %>
-	<div class='feature<%= " extra" if $model::ExtraFeature[feat] %>' <%= "style='display:none;'" if $model::ExtraFeature[feat] && !Session.current.expert %>>
+<% $Binary["filter"].each do |feat| %>
+	<div class='feature'>
 		<div class='label'>
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
-			<%= check_box('myfilter', feat, {:checked => Session.current.features.send(feat.intern) ? 'checked' : false, :class => 'autosubmitbool'})%>
-			<%= link_to t('products.' + feat).tr(' ',''), "#" %>
+			<% dobj = Userdatabin.find_by_search_id_and_name(Session.current.search.id,feat) %>
+			<%= check_box('myfilter', feat, {:checked => dobj.nil? || dobj.value == false ? false : 'checked', :class => 'autosubmitbool'})%>
+			<%= link_to t('products.' + feat), "#" %>
 		</div>
 	</div>
-<% end %>
-<% if $model::ExtraFeature.values.inject(false){|a,b|a||b} %>
-<div class='changefilters'>
-	<% if Session.current.expert %>
-	    <%= link_to t('products.compare.morefilters'), "#", :id => "morefilters", :style => "display: none;" %>
-	    <%= link_to t('products.compare.lessfilters'), "#", :id => "lessfilters" %>
-	<% else %>
-	    <%= link_to "More Filters", "#", :id => "morefilters" %>
-	    <%= link_to "Less Filters", "#", :id => "lessfilters", :style => "display: none;" %>
-	<% end %>
-</div>
 <% end %>
 <% end %>

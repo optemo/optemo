@@ -1,0 +1,100 @@
+# c = continuous
+# cat = categorical
+# b = boolean
+# boost = boostexter feature for labels
+
+####Spaces are required between elements in an array
+
+camera_us:
+    layout:
+        - gridview
+    maximumresolution: 
+        - Continuous
+        - [boost, cluster, filter]
+    displaysize:
+        - Continuous
+        - [boost, cluster, filter]
+    price:
+        - Continuous
+        - [boost, cluster, filter]
+        - prefdir: -1
+    opticalzoom:
+        - Continuous
+        - [boost, cluster, filter]
+    slr:
+        - Binary
+        - [boost, cluster, filter]
+    brand:
+        - Categorical
+        - [boost, cluster, filter]
+      
+printer_us:
+    layout:
+        - gridview
+    price:
+        - Continuous
+        - [boost, cluster, filter]
+        - prefdir: -1
+    ppm:
+        - Continuous
+        - [boost, cluster, filter]
+    resolutionmax:
+        - Continuous
+        - [boost, cluster, filter]
+    paperinput:
+        - Continuous
+        - [boost, cluster, filter]
+    itemwidth:
+        - Continuous
+        - [boost, cluster, filter]
+        - prefdir: -1
+    printserver:
+        - Binary
+        - [boost, cluster, filter]
+    scanner:
+        - Binary
+        - [boost, cluster, filter]
+    brand:
+        - Categorical
+        - [boost, cluster, filter]
+        
+flooring_builddirect:
+    layout:
+        - lineview
+    price:
+        - Continuous
+        - [boost, cluster, filter]
+        - prefdir: -1
+    width:
+        - Continuous
+        - [boost, cluster, filter]
+        - prefdir: 0
+    species_hardness:
+        - Continuous
+        - [boost, cluster, filter]
+    miniorder:
+        - Continuous
+        - [boost, cluster, filter]
+        - prefdir: -1
+    brand:
+        - Categorical
+        - [boost, cluster, filter]    
+    species:
+        - Categorical
+        - [boost, filter]
+    finish:
+        - Categorical
+        - [boost, filter]
+    feature:
+        - Categorical
+        - [boost, filter]
+    colorrange:
+        - Categorical
+        - [boost, filter]
+    warranty:
+        - Categorical
+        - [boost, filter]
+        
+laptop_walmart:
+    layout:
+        - lineview

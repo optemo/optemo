@@ -12,7 +12,6 @@ FILE(REMOVE_RECURSE
   "CMakeFiles/mysqlcppconn-static.dir/mysql_statement.o"
   "libmysqlcppconn-static.pdb"
   "libmysqlcppconn-static.a"
-  "libmysqlcppconn-static.dylib"
 )
 
 # Per-language clean rules from dependency scanning.

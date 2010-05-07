@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  fieldname: MyString
+  weight: 1.5
+  cluster_id: 1
+  version: 1
+  yaml_repr: MyText
+  rule_type: MyString
+
+two:
+  fieldname: MyString
+  weight: 1.5
+  cluster_id: 1
+  version: 1
+  yaml_repr: MyText
+  rule_type: MyString

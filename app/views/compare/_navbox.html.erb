@@ -9,7 +9,7 @@
 		<div class="navbody">
 			
 			<div class='sim rounded'>
-  	  <%= link_to(image_tag("#{'plus' + ($LineItemView ? ($model == Laptop ? '_line.png' : '_linea.png') : '.png')}")+t("products.compare.similar_line",:count => cluster.size - 1), 
+  	  <%= link_to(image_tag("#{'plus' + ($LineItemView ? ($product_type == "Laptop" ? '_line.png' : '_linea.png') : '.png')}")+t("products.compare.similar_line",:count => cluster.size - 1), 
   	  "/compare/sim/#{cluster.id}", :id => "sim#{i}", :class => 'simlinks rounded', 
 		  :"data-id" => "#{cluster.representative.id}", :"title" => "Browse through all " + cluster.size.to_s + " in this group") if group %>
   			</div>
@@ -22,8 +22,8 @@
 				<div class="image_boundingbox">
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
 		<% end %>
-		<%= image_tag(imgurl(cluster) , :"data-id" => cluster.representative.id, :class => "productimg", :alt => cluster.representative.smlTitle, :title => cluster.representative.smlTitle) %>				
-		<% if $DragAndDropEnabled %>		
+		<%= image_tag(imgurl(cluster) , :"data-id" => cluster.representative.id, :class => "productimg", :alt => cluster.representative.smlTitle, :title => cluster.representative.smlTitle) %>
+		<% if $DragAndDropEnabled %>
 			</div>
 		<% end %>
 		
@@ -35,7 +35,7 @@
 				<%= cluster.representative.smlTitle %></a>
 		
 				<div class="price">
-					<%= $region == "us" ? cluster.representative.pricestr : cluster.representative.price_ca_str %>
+					<%= cluster.representative.cont_specs.find_by_name("price").value %>
 				</div>
 				<% unless $LineItemView %>
 			</div>

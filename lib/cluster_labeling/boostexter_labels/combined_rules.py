@@ -165,7 +165,7 @@ def save_combined_sgram_rule_for_field(cluster, fieldname, rules):
     combined_rule.save()
 
 def save_combined_rule_for_field(cluster, fieldname, rules):
-    assert(all_rules_are_for_same_field(rules))
+    assert(all_rules_are_same_type(rules))
 
     rule_type = get_rule_type(rules[0])
 

@@ -53,12 +53,12 @@ def merge_interval_with_interval_set(int0, interval_set):
     if numintervals == 0:
         return [int0]
 
-    i = 0
-
-    if int0[0][1] < interval_set[i][0][0]:
+    if int0[0][1] < interval_set[0][0][0]:
         result.append(int0)
         result.extend(interval_set)
         return result
+
+    i = 0
 
     while i < numintervals:
         if not intervals_intersect(int0, interval_set[i]):
@@ -79,7 +79,7 @@ def merge_interval_with_interval_set(int0, interval_set):
         i += 1
 
     result.append(int0)
-    result.extend(interval_set[i:len(interval_set)])
+    result.extend(interval_set[i:numintervals])
 
     return result
 

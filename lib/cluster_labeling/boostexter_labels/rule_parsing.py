@@ -45,7 +45,7 @@ def parse_rule_header(line):
         if len(field) == 2 and 'text_to_btxtr_fn' in field[1]:
             rule_info['sgram'] = field[1]['btxtr_to_text_fn'](sgram)
         else:
-            rule_info['sgram'] = re.sub('[#\s]', ' ', match.group(5)).strip()
+            rule_info['sgram'] = sgram
 
     return rule_info
 

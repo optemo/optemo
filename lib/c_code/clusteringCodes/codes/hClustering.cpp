@@ -47,15 +47,15 @@ int main(int argc, char** argv){
 	}
 	string productName = argv[1];
 	//cout<<productName<<endl;
-	if (!(productName == "camera" || productName == "printer" || productName == "flooring")){
-		cout<<"Unrecognized product type. Please enter 'printer', 'camera', or 'flooring'." << endl << exampleUsage;
+	if (!(productName == "camera" || productName == "printer" || productName == "flooring" || productName == "laptop")){
+		cout<<"Unrecognized product type. Please enter 'printer', 'camera', laptop or 'flooring'." << endl << exampleUsage;
 		return EXIT_FAILURE;
 	}
 
 	string region = argv[2];
 	//cout<<region<<endl;
-	if ((region != "us") && (region != "ca")){
-		cout<<"Wrong Region. Please enter either 'us' or 'ca'." << endl << exampleUsage;
+	if ((region != "us") && (region != "ca") && (region!= "builddirect")){
+		cout<<"Wrong Region. Please enter either 'us' or 'ca' or 'builddirect'." << endl << exampleUsage;
 		return EXIT_FAILURE;
 	}
 
@@ -76,6 +76,7 @@ int main(int argc, char** argv){
 	productNames["camera"] = 1;
 	productNames["printer"] = 2;
     productNames["flooring"] = 3;
+	productNames["laptop"] = 4;
 	double* weights;
 	
 	switch(productNames[productName]){
@@ -104,14 +105,19 @@ int main(int argc, char** argv){
                 }
             break;
 		case 3:
-            conFeatureN = 3; // Thickness has been taken out for now
+            conFeatureN = 4; // Thickness has been taken out for now
             catFeatureN = 1; // This should be 4, but right now just set it up for brand only.
             boolFeatureN = 0;
             range = 2;
             break;
-
+		case 4:
+			conFeatureN = 4;
+			catFeatureN=1; 
+			boolFeatureN = 0;
+			range = 2;
+			break;
 		default:		
-    		conFeatureN= 4;
+    		conFeatureN= 3;
     		catFeatureN= 1;
     		boolFeatureN= 0;
     		range= 2;
@@ -160,23 +166,13 @@ int main(int argc, char** argv){
 
     string filteringCommand = preClustering(productNames, productName, conFeatureNames, catFeatureNames, boolFeatureNames, indicatorNames, region);
 
-	nullCheck = "Select * from ";
-	nullCheck += productName;
-	nullCheck += "s where (instock=1 AND ((price IS NULL) ";
-  for (int f=1; f<conFeatureN; f++){
-  	nullCheck += "OR (";
-  	nullCheck += conFeatureNames[f];
-	nullCheck += " IS NULL "; 
-	nullCheck += ") ";
-  }
-  nullCheck += "))";
   
-  cout << nullCheck << endl;
     sql::Statement	*stmt;
 	sql::Statement	*stmt2;
 	sql::ResultSet	*res;
 	sql::ResultSet	*res2;
 	sql::ResultSet	*res3;
+	sql::ResultSet *res4;
     sql::ResultSet	*resClus;
     sql::ResultSet	*resNodes;
 
@@ -222,30 +218,28 @@ int main(int argc, char** argv){
     #define USER usernameString 
     #define PASS passwordString 
 
+
 ///////////////////////////////////////////////
 		
 			try {
 		  
 
 				sql::Driver * driver = get_driver_instance();
-			    std::auto_ptr< sql::Connection > con(driver->connect(HOST, USER, PASS));        
+				
+			    std::auto_ptr< sql::Connection > con(driver->connect(HOST, USER, PASS));         
 				sql::Statement*  stmt(con->createStatement());
 			    sql::Statement*  stmt2(con->createStatement());
+			
 								
 				command = "USE ";
 				command += databaseName;
 			
 				stmt->execute(command);
 				
-				res = stmt->executeQuery(nullCheck);
-			
-			    if (res->rowsCount() >0){
-			      cout<<"There are some null values in "<<productName<<"s table"<<endl;
-			    }
 
-				command = "SELECT version from ";
-				command += productName;
-				command += "_clusters where (region='";
+				command = "SELECT version from clusters where (product_type='";
+				command+= productName;
+				command += "_";
 				command += region;
 				command += "') order by id DESC LIMIT 1";
 				
@@ -260,40 +254,65 @@ int main(int argc, char** argv){
 				}
 				cout<<"version is "<<version<<endl;
 	    
-	   if (version > keepStep){
-				///Archiving the old clusters and nodes & deleteing the old ones
-				command2 = "INSERT into ";
-				command2 += productName;
-				command2 += "_clusters_archive select * from ";
-				command2 += productName;
-				command2 += "_clusters where version=";
-				ostringstream vstr1; 
-				vstr1 << version-keepStep;
-				command2 += vstr1.str();
-				command2 += " and region=\'";
-				command2 += region;
-				command2 += "\';";	
-				stmt->execute(command2);
-			 
-				command2 = "INSERT into ";
-				command2 += productName;
-				command2 += "_nodes_archive select * from ";
-				command2 += productName;
-				command2 += "_nodes where version=";
-				ostringstream vstr2; 
-				vstr2 << version - keepStep;
-				command2 += vstr2.str();
-				command2 += " and region=\'";
-				command2 += region;
-				command2 += "\';";
-				
-				stmt->execute(command2); 
-			}
+//	   if (version > keepStep){
+//				///Archiving the old clusters and nodes & deleteing the old ones
+//				command2 = "INSERT into ";
+//				command2 += productName;
+//				command2 += "_clusters_archive select * from ";
+//				command2 += productName;
+//				command2 += "_clusters where version=";
+//				ostringstream vstr1; 
+//				vstr1 << version-keepStep;
+//				command2 += vstr1.str();
+//				command2 += " and region=\'";
+//				command2 += region;
+//				command2 += "\';";	
+//				stmt->execute(command2);
+//			 
+//				command2 = "INSERT into ";
+//				command2 += productName;
+//				command2 += "_nodes_archive select * from ";
+//				command2 += productName;
+//				command2 += "_nodes where version=";
+//				ostringstream vstr2; 
+//				vstr2 << version - keepStep;
+//				command2 += vstr2.str();
+//				command2 += " and region=\'";
+//				command2 += region;
+//				command2 += "\';";
+//				
+//				stmt->execute(command2); 
+//			}
 
-				bool clustered = 0;
-			    res = stmt->executeQuery(filteringCommand); 
-				int maxSize = res->rowsCount();
-		
+			  bool clustered = 0;
+			  res = stmt->executeQuery(filteringCommand);
+		 //     command = "SELECT * from cont_specs and bin_specs where cont_specs.product_id=bin_specs.product_id and (cont_specs.product_id=";
+		 //     ostringstream productIdStr;
+		 //     res->next();
+		 //     productIdStr << res->getInt("id");
+		 //     
+		 //     
+		 //     while (res->next())	{
+		 //     	command += " OR cont_specs.product_id=";
+		 //     	ostringstream productIdStr2;
+		 //     	productIdStr2 << res->getInt("id");
+		 //     	command += productIdStr2.str();			
+		 //     }
+		 //     
+		 //   command += "and (cont_specs.name=\'";
+		 //   command += conFeatureNames[0];
+		 //   for (int f=1; f<conFeatureN; f++){
+		 //   	command += "\' OR cont_specs.name=\'";
+		 //   	command += conFeatureNames[f];
+		 //   } 
+		 //   
+		 //     command += "\') and (bin_specs=')";
+		 //     
+		 //   res = stmt->execute(command);
+			
+	
+			  int maxSize = res->rowsCount();
+		      
 			  time_t rawtime;
 			  struct tm * timeinfo;
 
@@ -314,16 +333,15 @@ int main(int argc, char** argv){
 					for (int j=0; j<conFeatureN; j++){
 						average[j] = 0.0;
 					}
-                    cout << "going into hClustering" <<endl;
-					maxSize = hClustering(layer, clusterN,  conFeatureN,  boolFeatureN, average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
-							stmt, conFeatureNames, boolFeatureNames, productName, version, region, outlier_ids);	
+					maxSize = hClustering(layer, clusterN,  conFeatureN,  boolFeatureN, catFeatureN, average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
+							stmt, conFeatureNames, boolFeatureNames, catFeatureNames, productName, version, region, outlier_ids);	
 					myfile2<<"layer "<<layer<<endl;
 					cout<<"layer "<<layer<<endl;
 					layer++;
 					clustered = 1;
 				}
       		if (clustered){
-				insertOutliers(conFeatureN, boolFeatureN, clusterN, res, res2, stmt, stmt2, conFeatureNames, boolFeatureNames, productName, version, region, outlier_ids);	
+				insertOutliers(conFeatureN, boolFeatureN, clusterN, res, res2, res3, stmt, stmt2, conFeatureNames, boolFeatureNames, productName, version, region, outlier_ids);	
       			leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames,res, res2, res3, stmt, productName, version, region);	
       			myfile2<<"layer "<<layer<<endl;
         	}else{
@@ -333,29 +351,30 @@ int main(int argc, char** argv){
 
 
 //Clearing the old clusters and nodes
-command2 = "DELETE from ";
-command2 += productName;
-command2 += "_clusters where version=";
-ostringstream vstr3; 
-vstr3 << version-keepStep;
-command2 += vstr3.str();
-command2 += " and region=\'";
-command2 += region;
-command2 += "\';";
-stmt->execute(command2);
-
-command2 = "DELETE from ";
-command2 += productName;
-command2 += "_nodes where version=";
-ostringstream vstr4; 
-vstr4 << version-keepStep;
-command2 += vstr4.str();
-command2 += " and region=\'";
-command2 += region;
-command2 += "\';";
-stmt->execute(command2);
-
+//command2 = "DELETE from ";
+//command2 += productName;
+//command2 += "_clusters where version=";
+//ostringstream vstr3; 
+//vstr3 << version-keepStep;
+//command2 += vstr3.str();
+//command2 += " and region=\'";
+//command2 += region;
+//command2 += "\';";
+//stmt->execute(command2);
+//
+//command2 = "DELETE from ";
+//command2 += productName;
+//command2 += "_nodes where version=";
+//ostringstream vstr4; 
+//vstr4 << version-keepStep;
+//command2 += vstr4.str();
+//command2 += " and region=\'";
+//command2 += region;
+//command2 += "\';";
+//stmt->execute(command2);
+//
 	myfile2<<"The end."<<endl;
+	cout<<"The end."<<endl;
  myfile2.close();
 
         } catch (sql::SQLException &e) {
