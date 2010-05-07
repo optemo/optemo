@@ -198,7 +198,7 @@ function histogram(element, norange) {
 	length = 174,
 	shapelayer = Raphael(element,length,height),
 	h = height - 1;
-	if (MODEL_NAME == "Flooring") {
+	if (MODEL_NAME == "flooring_builddirect") {
 	    t = shapelayer.path({fill: "#ffca44", stroke: "#83571d", opacity: 0.75});
     }
     else {
