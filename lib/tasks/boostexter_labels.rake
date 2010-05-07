@@ -4,7 +4,7 @@ task :btxtr_labels_training => :environment do
      require 'train_boostexter.rb'
 
      Session.current=Session.new
-     $product_type = "printer_us"
+     load_defaults("printer_us")
      BtxtrLabels.train_boostexter_on_all_clusters()
 end
 
@@ -14,6 +14,6 @@ task :btxtr_labels_save_label_rules => :environment do
      require 'save_combined_boostexter_rules.rb'
 
      Session.current=Session.new
-     $product_type = "printer_us"
+     load_defaults("printer_us")
      BtxtrLabels.save_combined_rules_for_all_clusters()
 end

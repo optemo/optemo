@@ -12,7 +12,7 @@ public/system
 
 webrat.log
 deploy-to-staging.sh
-
+lib/cluster_labeling/cc_boostexter_files
 public/system
 
 lib/c_code/clusteringCodes/CMakeFiles

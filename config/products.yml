@@ -81,17 +81,20 @@ flooring_builddirect:
         - [boost, cluster, filter]    
     species:
         - Categorical
-        - [filter]
+        - [boost, filter]
     finish:
         - Categorical
-        - [filter]
+        - [boost, filter]
     feature:
         - Categorical
-        - [filter]
+        - [boost, filter]
     colorrange:
         - Categorical
-        - [filter]            
-            
+        - [boost, filter]
+    warranty:
+        - Categorical
+        - [boost, filter]
+        
 laptop_walmart:
     layout:
         - lineview
