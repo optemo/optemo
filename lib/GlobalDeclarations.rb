@@ -3,13 +3,6 @@ $DefaultProduct = 'printer_us'
 # Configuration: Application Key provided by Facebook
 $AppKey = "7aeec628ded26fb3b03829fb4142da01"
 
-# Define Global variable for storing direction for each preference
-$PrefDirection = Hash.new(1) # Set 1 i.e. Up as the default value for direction
-$PrefDirection["price"] = -1 # -1 for down direction for preferences
-$PrefDirection["itemwidth"] = -1
-$PrefDirection["width"] = -1
-$PrefDirection["miniorder"] = -1
-
 $ProdTypeList = ['Printer','Camera','Flooring','Laptop']
 
 # Define weights assigned to user navigation tasks that determine preferences
@@ -37,6 +30,8 @@ $NumGroups = 9
 def load_defaults(product_type)
   $product_type = product_type
   
+  $PrefDirection = Hash.new(1) # Set 1 i.e. Up as the default value for direction
+  
   $Continuous = Hash.new{|h,k| h[k] = []}
   $Binary = Hash.new{|h,k| h[k] = []}
   $Categorical = Hash.new{|h,k| h[k] = []}
@@ -48,6 +43,8 @@ def load_defaults(product_type)
       case type
       when "Continuous"
         flags.each{|flag| $Continuous[flag] << feature}
+        options = stuff.third
+        $PrefDirection[feature] = options["prefdir"] if options && options["prefdir"]
       when "Binary"
         flags.each{|flag| $Binary[flag] << feature}
       when "Categorical"

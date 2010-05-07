@@ -1,14 +1,7 @@
 <div class="thumbnailcell">
 		<div class="first">
-			<% if $product_type == "Flooring" %>
-				<%= image_tag("http://www.builddirect.com" + CGI.unescapeHTML(thumbnails.imagelink.to_s), :width => 100, :height => 100, :onClick => "fadeout('/compare/show/' + #{thumbnails.id}+'?plain=true');") %>
-			<% elsif $product_type == "Laptop" %>
-				<%= image_tag(thumbnails.imgurl, :width => 100, :height => 100) %>
-			<% else %>
-				<% if FileTest.exist?(RAILS_ROOT + "/public/images/"+ $product_type.downcase+"s/" + thumbnails.id.to_s + "_m.jpg") %>
-		 			<%= image_tag("/images/"+$product_type.downcase+"s/" + thumbnails.id.to_s + "_m.jpg", :width => 100, :onClick => "fadeout('/compare/show/' + #{thumbnails.id}+'?plain=true');", :style => "cursor: pointer;") %>
-				<% end %>
-			<% end %>
+			
+			<%= image_tag(imgurl(cluster) , :"data-id" => cluster.representative.id, :class => "productimg", :alt => cluster.representative.smlTitle, :title => cluster.representative.smlTitle) %>
  		</div>
 	<div class="thumbnaillabel">
    	<%= finalDisplay(thumbnails, "brand") %> <%= finalDisplay(thumbnails, "model") %>

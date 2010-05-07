@@ -17,6 +17,7 @@ camera_us:
     price:
         - Continuous
         - [boost, cluster, filter]
+        - prefdir: -1
     opticalzoom:
         - Continuous
         - [boost, cluster, filter]
@@ -33,6 +34,7 @@ printer_us:
     price:
         - Continuous
         - [boost, cluster, filter]
+        - prefdir: -1
     ppm:
         - Continuous
         - [boost, cluster, filter]
@@ -45,6 +47,7 @@ printer_us:
     itemwidth:
         - Continuous
         - [boost, cluster, filter]
+        - prefdir: -1
     printserver:
         - Binary
         - [boost, cluster, filter]
@@ -61,15 +64,18 @@ flooring_builddirect:
     price:
         - Continuous
         - [boost, cluster, filter]
+        - prefdir: -1
     width:
         - Continuous
         - [boost, cluster, filter]
+        - prefdir: 0
     species_hardness:
         - Continuous
         - [boost, cluster, filter]
     miniorder:
         - Continuous
         - [boost, cluster, filter]
+        - prefdir: -1
     brand:
         - Categorical
         - [boost, cluster, filter]    
