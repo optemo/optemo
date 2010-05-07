@@ -82,6 +82,8 @@ void insertOutliers(int conFeatureN, int boolFeatureN, int clusterN, sql::Result
 							clusterIds[r] = cluster_id;
 							r++;
 						}
+						for (int f=0; f<conFeatureN; f++) free(mean[f]);
+						free(mean);
 						
 						//finding the nearest 
 						double distance;

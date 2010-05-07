@@ -324,7 +324,7 @@ int main(int argc, char** argv){
 
 			  
 		     	myfile2 <<endl<<timeinfo->tm_year+1900<<"-"<< timeinfo->tm_mon+1<<"-"<<timeinfo->tm_mday<<" "<< timeinfo->tm_hour<<endl;
-			 
+				myfile2 <<" Product_type: "<<productName<<"_"<<region<<endl;
 				myfile2<<"Version: "<<version<<endl;
 				
 				vector<int> outlier_ids;
@@ -341,7 +341,7 @@ int main(int argc, char** argv){
 					clustered = 1;
 				}
       		if (clustered){
-				insertOutliers(conFeatureN, boolFeatureN, clusterN, res, res2, res3, stmt, stmt2, conFeatureNames, boolFeatureNames, productName, version, region, outlier_ids);	
+			//	insertOutliers(conFeatureN, boolFeatureN, clusterN, res, res2, res3, stmt, stmt2, conFeatureNames, boolFeatureNames, productName, version, region, outlier_ids);	
       			leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames,res, res2, res3, stmt, productName, version, region);	
       			myfile2<<"layer "<<layer<<endl;
         	}else{
@@ -385,5 +385,6 @@ int main(int argc, char** argv){
             cout << ", SQLState: " << e.getSQLState() << " )" << endl;
             return EXIT_FAILURE;
         }
+	//	free(res); free(res2); free(res3); free(res4); free(resClus); free(resNodes); free(stmt); free(stmt2);  
     return 1; //EXIT_SUCCESS;
 }

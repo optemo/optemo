@@ -324,7 +324,7 @@ if 	(layer == 1){
       for (int j = 0; j < size; j++) {
          free(tdata[j]); free(data[j]); free(dataN[j]); free(dist[j]);
      }
-     free(data); free(tdata); free(dataN);free(dist);
+	free(data); free(tdata); free(dataN);free(dist); 
 	  }	
   }	
 	return maxSize;
