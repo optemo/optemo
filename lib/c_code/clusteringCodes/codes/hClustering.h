@@ -7,9 +7,12 @@
 //map<string,int> brand2int;
 //vector<double> mean, var;
 
-int hClustering(int layer, int max_k, int conFeatureN, int boolFeatureN, double *average, double** conFeatureRange, double*** conFeatureRangeC,
+
+//		maxSize = hClustering(layer, clusterN,  conFeatureN,  boolFeatureN, averag conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
+//				stmt, conFeatureNames, boolFeatureNames, productName, version, region, outlier_ids);
+int hClustering(int layer, int max_k, int conFeatureN, int boolFeatureN, int catFeatureN, double *average, double** conFeatureRange, double*** conFeatureRangeC,
 	sql::ResultSet *res, sql::ResultSet *res2, sql::ResultSet *resClus, sql::ResultSet *resNodes, sql::Statement *stmt, 
-	string* conFeatureNames, string* boolFeatureNames, string productName, int version, string region, 
+	string* conFeatureNames, string* boolFeatureNames, string* catFeatureNames, string productName, int version, string region, 
 	vector<int> &outlier_ids){
 		
 			
@@ -33,32 +36,35 @@ InitMethods method = INIT_KMEANSPP;
 bool to_clip = true;
 static vector<int> disc_domains;
 ///////////////////////////////////////////////////////////////////////////////////
-
+int prodId = 0;
 
 if 	(layer == 1){	
-	
+
 	     	sized = res->rowsCount();
 				double **tdata = new double*[sized];			
 		    for(int j=0; j<sized; j++) tdata[j] = new double[conFeatureN+boolFeatureN];  				
 				brands = new string [sized];
 				idA = new int[sized];	
 				
-				int saleprice = 0;
-				int price = 0;
+				//int saleprice = 0;
+				//int price = 0;
+		
 				size = 0;
 				while (res->next()) { 
-						saleprice = res->getInt("price");
-						price = saleprice;
-						tdata[size][0] = price;
-						for (int f=0; f<conFeatureN; f++)	tdata[size][f] = res->getDouble(conFeatureNames[f]);	
-		 				for (int f=0; f<boolFeatureN; f++)	tdata[size][conFeatureN+f] = res->getDouble(boolFeatureNames[f]);
-		 				idA[size] = res->getInt("id"); 	
-		 	        	brands[size] = res->getString("brand");
+					//	saleprice = res->getInt("price");
+					//	price = saleprice;
+						prodId = res->getInt("id");	
+			
+						readData(tdata[size], brands, size, prodId, resNodes, stmt, conFeatureNames, conFeatureN, boolFeatureNames, boolFeatureN, catFeatureNames, catFeatureN);
+						
+		 				idA[size] = prodId; 	
+		 	        //	brands[size] = res->getString("brand");
 						iter = brand2int.find(brands[size]); 
 						if (iter == brand2int.end()) brand2int[brands[size]] = brand2int.size();
 		 				for (int f=0; f<conFeatureN; f++) average[f] += tdata[size][f];
 						size++;											
 				}
+				
 				///////////////
 				data = new double*[size];
 		    for(int j=0; j<size; j++){
@@ -72,6 +78,7 @@ if 	(layer == 1){
 						data[j][d] = 0;
 					data[j][conFeatureN+2*boolFeatureN + brand2int[brands[j]]] = 1;		 
 				}	
+				
 				///////////////  
 				dataN = new double* [size];	
 				for (int j=0; j<size; j++)
@@ -83,6 +90,7 @@ if 	(layer == 1){
 				standarize_data(data, size, conFeatureN, 2*boolFeatureN+brand2int.size(), mean, var, dataN); //reza
         /////////////////////////////////////////
        // computing the weights
+		
         weights = new double [conFeatureN+2*boolFeatureN+brand2int.size()];
         double z1 = 0;
         for (int ii = 0; ii < size; ii++)
@@ -135,11 +143,7 @@ if 	(layer == 1){
 	    	   temp_idA[k] = idA[i]; 
 	    	   temp_data[k++] = tdata[i];
 	        }
-			///
-		//	for (int i=0; i<size - non_out_index.size(); i++){
-		//		cout<<"outlier_ids[i] is "<<outlier_ids[i]<<endl;
-		//	}
-		
+
 	
         if (clusterN < 2) return maxSize; //it prevents going into infinite loop 
        ////////////////////////////////////////
@@ -171,8 +175,8 @@ if 	(layer == 1){
 			utilityOrder(temp_data, temp_idA, non_out_index.size(), clusteredData, clusteredDataOrder, clusteredDataOrderU, clusterN, conFeatureN, 
                   boolFeatureN, conFeatureNames, boolFeatureNames, stmt, productName); 
 
-	     getStatisticsClusteredData(temp_data, clusteredDataOrderU, average, temp_idA, non_out_index.size(), clusterN, conFeatureN, conFeatureRangeC);	
-	     saveClusteredData(temp_data, temp_idA, non_out_index.size(), temp_brands, parent_id, clusteredDataOrderU, conFeatureRangeC, layer, clusterN, conFeatureN, 
+	     getStatisticsClusteredData(temp_data, clusteredDataOrderU, average, temp_idA, non_out_index.size(), clusterN, conFeatureN, conFeatureRangeC);	    
+	saveClusteredData(temp_data, temp_idA, non_out_index.size(), temp_brands, parent_id, clusteredDataOrderU, conFeatureRangeC, layer, clusterN, conFeatureN, 
 				   							boolFeatureN, conFeatureNames, boolFeatureNames, stmt, productName, version, region);
 	
 		
@@ -190,30 +194,30 @@ if 	(layer == 1){
 			
   if (layer > 1) {
 	  // getting all cluster ids in this layer
-	  string command = "SELECT * FROM ";
+	  string command = "SELECT * FROM clusters WHERE (product_type=\'";
 	  command += productName;
-	  command += "_clusters WHERE (version=";
+	  command += "_";
+	  command += region; 	
+	  
+	  command += "\' AND version=";
 	  ostringstream vs;
 	  vs << version;
 	  command += vs.str();
-	  command += " AND region='";
-	  command += region;
-	  command += "' AND layer=";
+	  command += " AND layer=";
 	  ostringstream layerStream; 
 	  layerStream << layer - 1; 
 	  command += layerStream.str();
-	  command += " AND cluster_size>";
-	  ostringstream cluster_sizeStream;
-	  cluster_sizeStream<< 1; ////////////////////////////////
-	  command += cluster_sizeStream.str();
 	  command += ");";
 	  resClus = stmt->executeQuery(command); 
-	
+	  
 	  while(resClus->next()) {	    
 		  parent_id = resClus->getInt("id");
-		  command = "SELECT * FROM ";
+		  command = "SELECT product_id FROM nodes WHERE product_type=\'";
 		  command += productName;
-		  command += "_nodes WHERE version=";
+		  command += "_";
+		  command += region;
+		
+		  command += "\' AND version=";
 		  ostringstream vstream;
 		  vstream << version;
 		  command += vstream.str();
@@ -224,11 +228,10 @@ if 	(layer == 1){
 		  cluster_idStream<<cluster_id;
 		  command += cluster_idStream.str();
 		  command += ";";
-         
 		  resNodes = stmt->executeQuery(command); 
 		  size = resNodes->rowsCount();
 		  if (size <= 1) continue; 
-
+	
 			double **tdata = new double*[size];
 			idA = new int [size];
 			brands = new string [size];
@@ -236,16 +239,17 @@ if 	(layer == 1){
 				tdata[j] = new double[conFeatureN+boolFeatureN];
 			}
 			int s = 0;
+	
 			while(resNodes->next()) {
-				for (int f=0; f<conFeatureN; f++)
-						tdata[s][f] = resNodes->getDouble(conFeatureNames[f]);
-				for (int f=0; f<boolFeatureN; f++)
-						tdata[s][f+conFeatureN] = resNodes->getDouble(boolFeatureNames[f]);
+				prodId = resNodes->getInt("product_id");
+			//	void readData(double* dataPoint, int productId, sql::ResultSet res, sql::Statement stmt, string* conFeatureNames, int conFeatureN, string* boolFeatureNames, int boolFeatureN, 
+			//					string* catFeatureNames, int catFeatureN){
+				readData(tdata[s], brands, s, prodId, res, stmt, conFeatureNames, conFeatureN, boolFeatureNames, boolFeatureN, catFeatureNames, catFeatureN);
 				
-				idA[s] = resNodes->getInt("product_id"); 
-				brands[s] = resNodes->getString("brand");
-				for (int f=0; f<conFeatureN; f++) average[f] += tdata[s][f];    
-		    s++;		
+				idA[s] = prodId;
+			//	brands[s] = resNodes->getString("brand");
+			//	for (int f=0; f<conFeatureN; f++) average[f] += tdata[s][f];    
+		        s++;		
 				if (s == size) break;			
 	    }
 			data = new double*[size];
@@ -326,3 +330,6 @@ if 	(layer == 1){
 	return maxSize;
 
 }
+
+//	readData(tdata[size], prodId, resNodes, stmt, conFeatureNames, conFeatureN, boolFeatureNames, boolFeatureN, catFeatureNames, catFeatureN);
+

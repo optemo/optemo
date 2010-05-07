@@ -16,7 +16,6 @@ int hartigan_qmeasure(double **data, int N, int con_featsN, int bool_featsN, int
 		cout << "error in hartigan_qmeasure: it is called with zero points!" << endl;
 		exit(0);
     }
-    cout << "im here 2" << endl;
     if (N==1) {
 		best_labels[0] = 0;
 		return 1;
