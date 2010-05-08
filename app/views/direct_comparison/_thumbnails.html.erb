@@ -1,10 +1,9 @@
 <div class="thumbnailcell">
 		<div class="first">
-			
-			<%= image_tag(imgurl(cluster) , :"data-id" => cluster.representative.id, :class => "productimg", :alt => cluster.representative.smlTitle, :title => cluster.representative.smlTitle) %>
+			<%= image_tag(imgurl(thumbnails) , :"data-id" => thumbnails.id, :class => "productimg") %>
  		</div>
 	<div class="thumbnaillabel">
-   	<%= finalDisplay(thumbnails, "brand") %> <%= finalDisplay(thumbnails, "model") %>
-	<div class="thumbnaildetails">	<%= finalDisplay(thumbnails, "price") %> </div>
+   	<%= thumbnails.smlTitle %>
+	<div class="thumbnaildetails">	<%= ContSpec.cache(thumbnails.id, "price").value %> </div>
 	</div>
 </div>

@@ -113,10 +113,10 @@ module BtxtrLabels
         ]
 
     cmd_str = ([boostexter_prog] + boostexter_args).join(" ")
-    #IO.popen(cmd_str){|f| f.readlines()}
-
-    #if $?.exitstatus != 0
-    #    raise "boostexter did not run successfully"
-    #end
+    IO.popen(cmd_str){|f| f.readlines()}
+    
+    if $?.exitstatus != 0
+        raise "boostexter did not run successfully"
+    end
   end
 end
