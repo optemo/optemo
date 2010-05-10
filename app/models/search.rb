@@ -171,7 +171,7 @@ class Search < ActiveRecord::Base
   end
     
   def result_count
-    clusters.map{|c| c.size}.sum
+    @result_count ||= clusters.map{|c| c.size}.sum
   end
   
   def clusters= (clusters)
