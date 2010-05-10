@@ -110,7 +110,7 @@ int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string
 
 }	
 
-void readData(double* dataPoint, string* brands, int s, int prodId, sql::ResultSet *res, sql::Statement *stmt, string* conFeatureNames, int conFeatureN, string* boolFeatureNames, int boolFeatureN, 
+void readData(double* dataPoint, string* disData, string* brands, int s, int prodId, sql::ResultSet *res, sql::Statement *stmt, string* conFeatureNames, int conFeatureN, string* boolFeatureNames, int boolFeatureN, 
 				string* catFeatureNames, int catFeatureN){
 					
 						string command;
@@ -138,7 +138,7 @@ void readData(double* dataPoint, string* brands, int s, int prodId, sql::ResultS
 								res->next();
 								dataPoint[f+conFeatureN] = res->getDouble("value");
 						}
-					//	for (int f=0; f<catFeatureN; f++){
+						for (int f=0; f<catFeatureN; f++){
 								command = "SELECT * from cat_specs where product_id=";
 								command += pIdStream.str();
 								command += " AND name=\'";
@@ -146,6 +146,7 @@ void readData(double* dataPoint, string* brands, int s, int prodId, sql::ResultS
 								command += "\';";
 								res = stmt->executeQuery(command);
 								res->next();
-								brands[s] = res->getDouble("value");
-					//	}
+								disData[s] = res->getDouble("value");
+								if (catFeatureNames[f]=="brand") brands[s] = disData[s];
+						}
 		}				
