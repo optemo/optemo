@@ -181,10 +181,18 @@ module BtxtrLabels
       raise "Unknown rule type"
     end
   end
-    
-  def BtxtrLabels.save_combined_rules_for_cluster(cluster)
-    get_rules(cluster).group_by(&:fieldname).each_pair do |fieldname, rules_for_field|
-      save_combined_rule_for_field(cluster, fieldname, rules_for_field)
+  
+  def BtxtrLabels.save_combined_rules_for_all_clusters(version = nil)
+    if version.nil?
+      c = Cluster.find_last_by_product_type($product_type)
+      version = c.version unless c.nil?
+    end
+  
+    Cluster.find_all_by_version_and_product_type(version,$product_type).each do |cluster|
+      get_rules(cluster).group_by(&:fieldname).each_pair do |fieldname, rules_for_field|
+        save_combined_rule_for_field(cluster, fieldname, rules_for_field)
+      end
     end
   end
+  
 end
