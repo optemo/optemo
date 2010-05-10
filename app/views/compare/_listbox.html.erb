@@ -13,14 +13,14 @@
 	
 	<div class="productinfo rounded" onClick="javascript:location.href='<%= cluster.representative.descurl %>'">
 		<div class="productimg">
+			<%= image_tag(imgurl(cluster.representative) , :"data-id" => cluster.representative.id, :class => "productimg", :alt => cluster.representative.smlTitle, :title => cluster.representative.smlTitle) %>
 			<% if $DragAndDropEnabled %>
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
 			<% end %>
-			<%= image_tag(imgurl(cluster.representative) , :"data-id" => cluster.representative.id, :class => "productimg", :alt => cluster.representative.smlTitle, :title => cluster.representative.smlTitle) %>
 		</div>
 		<a href="<%=cluster.representative.descurl%>" data-id="<%=cluster.representative.id%>" class="easylink" title="Click for product specifications"><%= cluster.representative.smlTitle %></a>
 		<div class="price">
-			$<%= ContSpec.cache(cluster.representative.id, "price").value %>
+			<%= number_to_currency(ContSpec.cache(cluster.representative.id, "price").value) %>
 		</div>
 	</div>
 	<div style="clear:both;"></div>

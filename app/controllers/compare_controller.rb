@@ -94,12 +94,8 @@ class CompareController < ApplicationController
     params[:id] = params[:id][/^\d+/]
     @product = Product.cached(params[:id])
     if $product_type
-      if $product_type == "Flooring"
-        imagestring = CGI.unescapeHTML(@product.imagelink.to_s).split("&")
-        imagestring[0] = imagestring[0].split("?")[0] + "?" + imagestring[1]
-        imagestring.delete_at(1)
-        imagestring = imagestring.join("&")
-        @imglurl = "http://www.builddirect.com" + imagestring
+      if $product_type == "flooring_builddirect"
+        @imglurl = "http://www.builddirect.com" + CGI.unescapeHTML(@product.imglurl.to_s)
       elsif $product_type == "Laptop"
         @imglurl = @product.imgurl.to_s
       else

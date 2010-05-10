@@ -9,7 +9,7 @@ module BtxtrLabels
       'screensize' => ['continuous']
     },
     
-    "Flooring" => {
+    "flooring_builddirect" => {
       'species_hardness' => ['continuous'],
       'width' => ['continuous'],
       'price' => ['continuous']

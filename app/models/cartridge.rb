@@ -1,5 +1,4 @@
 class Cartridge < ActiveRecord::Base
-  include ProductProperties
   IDFeatures = %w(brand model)
   CategoricalFeatures = %w(color)
   ContinuousFeatures =  %w(yield)

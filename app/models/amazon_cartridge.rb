@@ -1,5 +1,4 @@
 class AmazonCartridge < ActiveRecord::Base
-  include ProductProperties
   IDFeatures = %w(brand model asin)
   CategoricalFeatures = %w(brand model color compatible)
   ContinuousFeatures =  %w(yield)
