@@ -20,7 +20,7 @@ module BtxtrLabels
     return (line =~ /^\s*$/) != nil
   end
 
-  Rule_header_re = /^\s*(\d+(\.\d+)?)\s+Text:([A-Z]+):([a-z_]+):([&A-Za-z0-9_#\(\)\n\.]+)?\s*$/
+  Rule_header_re = /^\s*(\d+(\.\d+)?)\s+Text:([A-Z]+):([a-z_]+):([&A-Za-z0-9_#\(\)\n\.*\/]+)?\s*$/
   def BtxtrLabels.parse_rule_header(line)
     match = line.scan(Rule_header_re)
 

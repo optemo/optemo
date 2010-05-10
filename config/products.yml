@@ -71,7 +71,7 @@ flooring_builddirect:
         - prefdir: 0
     species_hardness:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster]
     miniorder:
         - Continuous
         - [boost, cluster, filter]
@@ -95,3 +95,19 @@ flooring_builddirect:
 laptop_walmart:
     layout:
         - lineview
+    price:
+        - Continuous
+        - [boost, cluster, filter]
+        - prefdir: -1
+    brand:
+        - Categorical
+        - [boost, cluster, filter]
+    hd:
+        - Continuous
+        - [boost, cluster, filter]
+    ram:
+        - Continuous
+        - [boost, cluster, filter]
+    screensize:
+        - Continuous
+        - [boost, cluster, filter]
