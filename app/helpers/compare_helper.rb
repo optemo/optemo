@@ -103,11 +103,11 @@ module CompareHelper
 		out.join(" / ")
   end
 
-  def imgurl(cluster)
+  def imgurl(product)
     case $product_type
-      when "flooring_builddirect" then "http://www.builddirect.com" + CGI.unescapeHTML(cluster.representative.imgmurl.to_s)
-      when "laptop_walmart" then CGI.unescapeHTML(cluster.representative.imgmurl.to_s)
-      else $product_type.split("_").first + "s/" + cluster.representative.id.to_s + "_m.jpg"
+      when "flooring_builddirect" then "http://www.builddirect.com" + CGI.unescapeHTML(product.imgmurl.to_s)
+      when "laptop_walmart" then CGI.unescapeHTML(product.imgmurl.to_s)
+      else $product_type.split("_").first + "s/" + product.id.to_s + "_m.jpg"
     end
   end
 

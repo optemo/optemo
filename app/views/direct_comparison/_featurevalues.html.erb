@@ -10,14 +10,37 @@
 	<% end %>
 	<div style="margin-top: 3px"> 3 (6 ratings) </div>
 </div>-->
-
-<% featurelist.each_index do |column| %>
-<div class="cell <%= column%2==0 ? "graybg" : "whitebg" %>">
-	<% if numberofproducts > 1 && (@bestvalue[featurelist[column]] != nil && (@bestvalue[featurelist[column]] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[featurelist[column]]))) %>
+<% gray = true %>
+<% $Categorical["filter"].each do |feat| %>
+<div class="cell <%= gray ? "graybg" : "whitebg" %>">
+	<% gray = !gray %>
+	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
 		<!-- If the interesting feature should be displayed then display -->
-		<b><%= finalDisplay(product, featurelist[column]) %></b>		
+		<b><%= CatSpec.find_by_product_id_and_name(product.id, feat).value if CatSpec.find_by_product_id_and_name(product.id, feat) %></b>		
 	<% else %>
-		<%= finalDisplay(product, featurelist[column]) %>
+		<%= CatSpec.find_by_product_id_and_name(product.id, feat).value if CatSpec.find_by_product_id_and_name(product.id, feat) %>
+	<% end %>
+	</div>
+<% end %>
+<% $Continuous["filter"].each do |feat| %>
+<div class="cell <%= gray ? "graybg" : "whitebg" %>">
+	<% gray = !gray %>
+	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
+		<!-- If the interesting feature should be displayed then display -->
+		<b><%= ContSpec.cache(product.id, feat).value if ContSpec.cache(product.id, feat) %></b>		
+	<% else %>
+		<%= ContSpec.cache(product.id, feat).value if ContSpec.cache(product.id, feat) %>
+	<% end %>
+	</div>
+<% end %>
+<% $Binary["filter"].each do |feat| %>
+<div class="cell <%= gray ? "graybg" : "whitebg" %>">
+	<% gray = !gray %>
+	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
+		<!-- If the interesting feature should be displayed then display -->
+		<b><%= BinSpec.find_by_product_id_and_name(product.id, feat).value if BinSpec.find_by_product_id_and_name(product.id, feat) %></b>		
+	<% else %>
+		<%= BinSpec.find_by_product_id_and_name(product.id, feat).value if BinSpec.find_by_product_id_and_name(product.id, feat) %>
 	<% end %>
 	</div>
 <% end %>

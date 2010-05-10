@@ -8,28 +8,22 @@ module BtxtrLabels
 
   def BtxtrLabels.generate_names_file(cluster)
     filename = get_names_filename(cluster)
+    FileUtils.mkdir_p Output_subdir
     f = File.new(filename, "w")
 
     labels = get_labels(cluster)
     f.write(labels.map{|l| l.to_s()}.join(", "))
     f.write(".\n")
-
-    Boosting_fields_ordered[$product_type].map\
-    { |fieldname, field|
-      fielddesc = field[0]
-
-      f.write(fieldname + ": ")
-
-      if fielddesc.class == Array
-        f.write(fielddesc.map{|e| e.to_s()}.join(", "))
-      elsif fielddesc.class == String
-        f.write(fielddesc + '.')
-      else
-        raise "Invalid field desc type " + fielddesc.class.to_s()
-      end
-
-      f.write("\n")
-    }
+    
+    $Continuous["boost"].each do |feat|
+      f.write(feat+": continuous.\n")
+    end
+    $Binary["boost"].each do |feat|
+      f.write(feat+": True, False.\n")
+    end
+    $Categorical["boost"].each do |feat|
+      f.write(feat+": text.\n")
+    end
 
     f.close()
   end
@@ -80,30 +74,28 @@ module BtxtrLabels
     products = products_this + products_parent
 
     for product, cluster_id in products
-      Boosting_fields_ordered[$product_type].map\
-      { |fieldname, field|
-        fielddesc = field[0]
-        fieldval = product.send(fieldname.to_sym())
-
-        if fielddesc == ['True', 'False']
-          if fieldval == '1' or fieldval == 'True'
-            fieldval = 'True'
-          else
-            fieldval = 'False'
-          end
-        elsif fieldval == nil
-          fieldval = '?' # unknown value
-        elsif fielddesc == 'text'
-          if field.length() == 2 and field[1].has_key?('text_to_btxtr_fn')
-            text_to_btxtr_fn = field[1]['text_to_btxtr_fn']
-            fieldval = text_to_btxtr_fn(fieldval)
-          else
-            fieldval = default_text_to_btxtr_fn(fieldval)
-          end
+      $Continuous["boost"].each do |feat|
+        fieldval = ContSpec.cache(product.id, feat).value if ContSpec.cache(product.id, feat)
+        fieldval ||= "?" #Unknown value
+        f.write(fieldval.to_s+", ")
+      end
+      $Binary["boost"].each do |feat|
+        fieldval = BinSpec.find_by_product_id_and_name(product.id, feat).value if BinSpec.find_by_product_id_and_name(product.id, feat)
+        if fieldval == 1 || fieldval == true
+          fieldval = "True"
+        elsif fieldval.nil?
+          fieldval = "?"
+        else
+          fieldval = "False"
         end
-
-        f.write(fieldval.to_s() + ", ")
-      }
+        f.write(fieldval+", ")
+      end
+      $Categorical["boost"].each do |feat|
+        fieldval = CatSpec.find_by_product_id_and_name(product.id, feat).value if CatSpec.find_by_product_id_and_name(product.id, feat)
+        fieldval ||= "?" #Unknown value
+        fieldval = default_text_to_btxtr_fn(fieldval)
+        f.write(fieldval+", ")
+      end
       f.write(cluster_id.to_s() + ".\n")
     end
 
@@ -122,7 +114,7 @@ module BtxtrLabels
 
     cmd_str = ([boostexter_prog] + boostexter_args).join(" ")
     IO.popen(cmd_str){|f| f.readlines()}
-
+    
     if $?.exitstatus != 0
         raise "boostexter did not run successfully"
     end
