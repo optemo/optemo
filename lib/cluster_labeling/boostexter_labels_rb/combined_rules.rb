@@ -81,13 +81,13 @@ module BtxtrLabels
       weights[0] = rule.weights[1][0] - rule.weights[0][0]
       weights[1] = rule.weights[1][1] - rule.weights[0][1]
 
-      if abs(weights[0]) != abs(weights[1])
+      if weights[0].abs != weights[1].abs
         raise "These two values should be the same"
       end
 
       weight = weights[0]
 
-      if abs(weight) <= max_abs_weight
+      if weight.abs <= max_abs_weight
         next
       end
 
@@ -100,7 +100,7 @@ module BtxtrLabels
         raise "Rule weight should not be zero"
       end
 
-      max_abs_weight = abs(weight)
+      max_abs_weight = weight.abs
       max_abs_weight_sgram = {'sgram' => sgram, 'direction' => direction}
     end
 
@@ -134,7 +134,7 @@ module BtxtrLabels
     atts = {:fieldname => fieldname, :weight => max_abs_weight,
     :cluster_id => cluster.id, :version => cluster.version,
     :rule_type => "T", :yaml_repr => yaml_repr}
-    combined_rule = BoostexterRule.find_by_cluster_id_and_version(cluster.id,cluster.version)
+    combined_rule = BoostexterRule.find_by_cluster_id_and_version_and_fieldname(cluster.id,cluster.version,fieldname)
     if combined_rule.nil?
       combined_rule = BoostexterRule.new(atts).save 
     else
@@ -158,7 +158,7 @@ module BtxtrLabels
     atts = {:fieldname => fieldname, :weight => max_abs_weight,
     :cluster_id => cluster.id, :version => cluster.version,
     :rule_type => "S", :yaml_repr => yaml_repr}
-    combined_rule = BoostexterRule.find_by_cluster_id_and_version(cluster.id,cluster.version)
+    combined_rule = BoostexterRule.find_by_cluster_id_and_version_and_fieldname(cluster.id,cluster.version,fieldname)
     if combined_rule.nil?
       combined_rule = BoostexterRule.new(atts).save 
     else
@@ -181,19 +181,10 @@ module BtxtrLabels
       raise "Unknown rule type"
     end
   end
-  
-  def BtxtrLabels.save_combined_rules_from_rules(cluster, rules)
-    # Put all rules for a particular field together
-    rules_a = gather_rules(rules)
-
-    rules_a.each_pair{
-      |fieldname, rules_for_field|
-      save_combined_rule_for_field(cluster, fieldname, rules_for_field)
-    }
-  end
-  
+    
   def BtxtrLabels.save_combined_rules_for_cluster(cluster)
-    rules = get_rules(cluster)
-    save_combined_rules_from_rules(cluster, rules)
+    get_rules(cluster).group_by(&:fieldname).each_pair do |fieldname, rules_for_field|
+      save_combined_rule_for_field(cluster, fieldname, rules_for_field)
+    end
   end
 end

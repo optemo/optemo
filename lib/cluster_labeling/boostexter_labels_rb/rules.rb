@@ -27,26 +27,6 @@ module BtxtrLabels
       @sgram = sgram
     end
   end
-  
-  def BtxtrLabels.gather_rules(rules)
-    rules_a = {}
-    
-    for rule in rules
-      fieldname = rule.fieldname
-      rules_for_fieldname = nil
-
-      if rules_a.has_key?(fieldname)
-        rules_for_fieldname = rules_a[fieldname]
-      else
-        rules_for_fieldname = []
-      end
-      
-      rules_for_fieldname.push(rule)
-      rules_a[fieldname] = rules_for_fieldname
-    end
-
-    return rules_a
-  end
 
   def BtxtrLabels.get_abs_weight_from_threshold_rule(rule)
     weights = [0, 0]
