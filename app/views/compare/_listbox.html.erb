@@ -20,7 +20,7 @@
 		</div>
 		<a href="<%=cluster.representative.descurl%>" data-id="<%=cluster.representative.id%>" class="easylink" title="Click for product specifications"><%= cluster.representative.smlTitle %></a>
 		<div class="price">
-			$<%= ContSpec.cache(cluster.representative.id, "price").value %>
+			$<%= ContSpec.cache(cluster.representative.id, "price") %>
 		</div>
 	</div>
 	<div style="clear:both;"></div>

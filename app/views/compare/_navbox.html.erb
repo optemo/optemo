@@ -35,7 +35,7 @@
 				<%= cluster.representative.smlTitle %></a>
 		
 				<div class="price">
-					$<%= ContSpec.cache(cluster.representative.id, "price").value %>
+					$<%= ContSpec.cache(cluster.representative.id, "price") %>
 				</div>
 				<% unless $LineItemView %>
 			</div>
