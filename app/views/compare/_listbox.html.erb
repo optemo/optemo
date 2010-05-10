@@ -16,11 +16,11 @@
 			<% if $DragAndDropEnabled %>
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
 			<% end %>
-			<%= image_tag(imgurl(cluster) , :"data-id" => cluster.representative.id, :class => "productimg", :alt => cluster.representative.smlTitle, :title => cluster.representative.smlTitle) %>
+			<%= image_tag(imgurl(cluster.representative) , :"data-id" => cluster.representative.id, :class => "productimg", :alt => cluster.representative.smlTitle, :title => cluster.representative.smlTitle) %>
 		</div>
 		<a href="<%=cluster.representative.descurl%>" data-id="<%=cluster.representative.id%>" class="easylink" title="Click for product specifications"><%= cluster.representative.smlTitle %></a>
 		<div class="price">
-			$<%= cluster.representative.cont_specs.find_by_name("price").value %>
+			$<%= ContSpec.cache(cluster.representative.id, "price").value %>
 		</div>
 	</div>
 	<div style="clear:both;"></div>

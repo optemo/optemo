@@ -1,5 +1,5 @@
 desc "Run boostexter to generate strong hypothesis files for label generation"
-task :btxtr_labels_training => :environment do
+task :btxtr_training => :environment do
      $: << "#{RAILS_ROOT}/lib/cluster_labeling/boostexter_labels_rb"
      require 'train_boostexter.rb'
 
@@ -9,7 +9,7 @@ task :btxtr_labels_training => :environment do
 end
 
 desc "Parse boostexter strong hypothesis files and create boostexter label runs in the database"
-task :btxtr_labels_save_label_rules => :environment do
+task :btxtr_save => :environment do
      $: << "#{RAILS_ROOT}/lib/cluster_labeling/boostexter_labels_rb"
      require 'save_combined_boostexter_rules.rb'
 

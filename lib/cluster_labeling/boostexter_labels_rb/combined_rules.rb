@@ -81,13 +81,13 @@ module BtxtrLabels
       weights[0] = rule.weights[1][0] - rule.weights[0][0]
       weights[1] = rule.weights[1][1] - rule.weights[0][1]
 
-      if abs(weights[0]) != abs(weights[1])
+      if weights[0].abs != weights[1].abs
         raise "These two values should be the same"
       end
 
       weight = weights[0]
 
-      if abs(weight) <= max_abs_weight
+      if weight.abs <= max_abs_weight
         next
       end
 
@@ -100,7 +100,7 @@ module BtxtrLabels
         raise "Rule weight should not be zero"
       end
 
-      max_abs_weight = abs(weight)
+      max_abs_weight = weight.abs
       max_abs_weight_sgram = {'sgram' => sgram, 'direction' => direction}
     end
 

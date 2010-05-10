@@ -91,9 +91,6 @@ flooring_builddirect:
     colorrange:
         - Categorical
         - [boost, filter]
-    warranty:
-        - Categorical
-        - [boost, filter]
         
 laptop_walmart:
     layout:

@@ -74,7 +74,7 @@ module BtxtrLabels
       end
     end
 
-    return BtxtrSGramRule(fieldname, weights, sgram)
+    return BtxtrSGramRule.new(fieldname, weights, sgram)
   end
 
   Threshold_re = /^\s*(-?\d+(\.\d+)?)\s*$/
@@ -139,9 +139,9 @@ module BtxtrLabels
     rule = nil
 
     # Parse the rule!
-    if rule_info['type'] = 'THRESHOLD'
+    if rule_info['type'] == 'THRESHOLD'
       rule = parse_threshold_rule(rule_info['fieldname'], fh)
-    elsif rule_info['type'] = 'SGRAM'
+    elsif rule_info['type'] == 'SGRAM'
       rule = parse_sgram_rule(rule_info['fieldname'], rule_info['sgram'], fh)
     else
       raise ParseError.new(line)
