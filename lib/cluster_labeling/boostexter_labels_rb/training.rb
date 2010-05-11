@@ -1,5 +1,4 @@
 require 'filepaths'
-require 'fields'
 
 module BtxtrLabels
   def BtxtrLabels.get_labels(cluster)
@@ -75,7 +74,7 @@ module BtxtrLabels
 
     for product, cluster_id in products
       $Continuous["boost"].each do |feat|
-        fieldval = ContSpec.cache(product.id, feat).value if ContSpec.cache(product.id, feat)
+        fieldval = ContSpec.cache(product.id, feat)
         fieldval ||= "?" #Unknown value
         f.write(fieldval.to_s+", ")
       end

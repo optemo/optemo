@@ -21,7 +21,6 @@ namespace :builddirect do
   desc 'Parse builddirect XML file'
   task :parse, :fileparameter, :needs => [:flooring_init] do |t, args|
     # Open up the XML file
-    ActiveRecord::Base.connection.execute("TRUNCATE floorings")
     args.with_defaults(:fileparameter => "BuildDirect_Products.xml")
     doc = Nokogiri::XML(File.open(args.fileparameter)) do |config|
       config.strict.noblanks
@@ -111,13 +110,17 @@ namespace :builddirect do
       # Make miniorder the only place where data goes in the end
       record["miniorder"] = record["miniorder_sq_ft"]
       ["species","feature", "colorrange"].each {|f| record[f] = "None" unless record[f]}
-      if record["species"].match("\\*")
+      if record["species"] && record["species"].match("\\*")
         largest_name = ""
         record["species"].split("*").each {|r| largest_name = r if r.length > largest_name.length }
         record["species"] = largest_name
       end
       record["species_hardness"] = species_to_hardness_map[record["species"].to_s.chomp(" ")]
-       
+      
+      if record["finish"] && (record["finish"].match("-") || record["finish"].match(" "))
+        rec = record["finish"].split("-").map {|rp| rp.capitalize}.join(" ") # Join back with a space; this makes "Semi-gloss" into "Semi Gloss" for uniformity
+        record["finish"] = rec.split(" ").map {|rp| rp.capitalize}.join(" ") # This makes entries that started "Semi gloss" into "Semi Gloss"
+      end
       # Split out the record into our new DB format
       record["product_type"] = product_type
       record["mpn"] = record["product_id"]
@@ -131,7 +134,13 @@ namespace :builddirect do
       
       cat_specs = {}
       cont_specs = {}
-      ["brand", "feature", "colorrange", "species", "finish"].each {|n| cat_specs[n] = record[n]}      
+      ["brand", "feature", "colorrange", "species", "finish"].each do |n| 
+        if record[n] 
+          cat_specs[n] = record[n]
+        else
+          cat_specs[n] = "None"
+        end
+      end
       ["profit_margin", "miniorder", "overallrating", "species_hardness", "thickness"].each {|n| cont_specs[n] = record[n].to_f}
       
       # At the moment, price is stored as a float instead of an integer. Treat this one separately
@@ -160,14 +169,16 @@ namespace :builddirect do
         current_spec["value"] = value.to_f
         cont_spec_activerecords.push(ContSpec.new(current_spec))
       end
-      cat_specs.each do |name, value|
-        next if value.nil?
-        current_spec = {}
-        current_spec["product_id"] = product_activerecord.id
-        current_spec["product_type"] = product_type
-        current_spec["name"] = name
-        current_spec["value"] = value
-        cat_spec_activerecords.push(CatSpec.new(current_spec))
+      cat_specs.each do |name, values|
+        next if values.nil?
+        values.split("*").each do |val|
+          current_spec = {}
+          current_spec["product_id"] = product_activerecord.id
+          current_spec["product_type"] = product_type
+          current_spec["name"] = name
+          current_spec["value"] = val
+          cat_spec_activerecords.push(CatSpec.new(current_spec))
+        end
       end
     end
     puts 'Finished making and saving new product records'

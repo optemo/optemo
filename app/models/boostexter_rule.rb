@@ -2,13 +2,13 @@ class BoostexterRule < ActiveRecord::Base
   # This is a good idea, but right now the boostexter_combined_rules only works for cameras (March 23). Update this in future.
   def self.bycluster(cluster_id)
     CachingMemcached.cache_lookup("BoostexterRules#{cluster_id}") do
-      find(:all, :order => "weight DESC", :conditions => {"cluster_id" => cluster_id})
+      find(:all, :select => "fieldname, yaml_repr", :order => "weight DESC", :conditions => {"cluster_id" => cluster_id})
     end
   end
   
   def self.clusterLabels(clusters)
+    #return [["average"]]*clusters.size
     return if clusters.empty?
-    ActiveRecord::Base.include_root_in_json = false # json conversion is used below, and this makes it cleaner
     cluster_ids = clusters.map(&:id).join(",")
     selected_features = (Session.current.search.userdataconts.map{|c| c.name+c.min.to_s+c.max.to_s}+Session.current.search.userdatabins.map{|c| c.name+c.value.to_s}+Session.current.search.userdatacats.map{|c| c.name+c.value}).hash
     CachingMemcached.cache_lookup("#{$product_type}Taglines#{cluster_ids}#{selected_features}") do
@@ -21,31 +21,25 @@ class BoostexterRule < ActiveRecord::Base
         catlabel[c.id] = []
         product_ids = c.nodes.map {|n| n.product_id }
         all_product_ids += product_ids
-        product_query_string = "id IN (" + product_ids.join(" OR ") + ")"
-        
         rules = BoostexterRule.bycluster(c.id)
-        unless product_ids.empty?      
-          rules.each do |r|
-            # This check will not work in future, but will work for now. There will be a type field in the YAML representation instead.
-            brules = YAML.load(r.yaml_repr)
-            if r.rule_type == "S"
-              catlabel[c.id] << r.fieldname + ": " + brules["sgram"] if brules["direction"] == 1
-            else
-              unpacked_weighted_intervals = brules.map {|i| [i["interval"], i["weight"]] unless i.class == Array}
-              next if unpacked_weighted_intervals.compact.empty?
-              z = 0
-              weighted_average = 0
-              product_ids.each do |id|
-                feature_value = ContSpec.cache(id,r.fieldname).value
-                next unless feature_value
-                weight = BoostexterRule.find_weight_for_value(unpacked_weighted_intervals, feature_value)
-                weighted_average += weight * feature_value
-                z += weight
-              end
-              next if z == 0 # Loop back to the beginning; do not add this field name for this cluster.
-              weighted_average /= z
-              weighted_averages[c.id][r.fieldname] = weighted_average
+        rules.each do |r|
+          # This check will not work in future, but will work for now. There will be a type field in the YAML representation instead.
+          brules = YAML.load(r.yaml_repr)
+          if brules.class == Hash #S-gram
+            catlabel[c.id] << r.fieldname + ": " + brules["sgram"] if brules["direction"] == 1
+          else
+            #Threshold rule
+            next if brules.empty?
+            z = 0
+            weighted_average = 0
+            ContSpec.cachemany(product_ids,r.fieldname).each do |feature_value|
+              next unless feature_value
+              weight = BoostexterRule.find_weight_for_value(brules, feature_value)
+              weighted_average += weight * feature_value
+              z += weight
             end
+            next if z == 0 # Loop back to the beginning; do not add this field name for this cluster.
+            weighted_averages[c.id][r.fieldname] = weighted_average / z
           end
         end
       end
@@ -83,6 +77,8 @@ class BoostexterRule < ActiveRecord::Base
   def self.find_weight_for_value(unpacked_weighted_intervals, feature_value)
     weight = 0
     unpacked_weighted_intervals.each do |uwi| 
+      #uwi[0] = interval [min,max]
+      #uwi[1] = weight
       if (uwi[0][0] < feature_value && uwi[0][1] >= feature_value)
         weight = uwi[1]
         break

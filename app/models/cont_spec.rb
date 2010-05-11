@@ -7,7 +7,10 @@ class ContSpec < ActiveRecord::Base
   # from the pattern of using only memcached
 #  def self.cached(p_id, feat)
   def self.cache(p_id, feat)
-    CachingMemcached.cache_lookup("ContSpec#{feat}#{p_id}"){find_by_product_id_and_name(p_id, feat)}
+    CachingMemcached.cache_lookup("ContSpec#{feat}#{p_id}") do
+      r = find_by_product_id_and_name(p_id, feat)
+      r.value if r
+    end
   end
   def self.cachemany(p_ids, feat)
     CachingMemcached.cache_lookup("ContSpecs#{feat}#{p_ids.join.hash}") do

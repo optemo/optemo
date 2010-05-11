@@ -11,6 +11,17 @@
 	<div style="margin-top: 3px"> 3 (6 ratings) </div>
 </div>-->
 <% gray = true %>
+<% $Continuous["filter"].each do |feat| %>
+<div class="cell <%= gray ? "graybg" : "whitebg" %>">
+	<% gray = !gray %>
+	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
+		<!-- If the interesting feature should be displayed then display -->
+		<b><%= ContSpec.cache(product.id, feat) %>(<%= t("products.#{feat}unit") %>)</b>		
+	<% else %>
+		<%= ContSpec.cache(product.id, feat) %>(<%= t("products.#{feat}unit") %>)
+	<% end %>
+	</div>
+<% end %>
 <% $Categorical["filter"].each do |feat| %>
 <div class="cell <%= gray ? "graybg" : "whitebg" %>">
 	<% gray = !gray %>
@@ -19,17 +30,6 @@
 		<b><%= CatSpec.find_by_product_id_and_name(product.id, feat).value if CatSpec.find_by_product_id_and_name(product.id, feat) %></b>		
 	<% else %>
 		<%= CatSpec.find_by_product_id_and_name(product.id, feat).value if CatSpec.find_by_product_id_and_name(product.id, feat) %>
-	<% end %>
-	</div>
-<% end %>
-<% $Continuous["filter"].each do |feat| %>
-<div class="cell <%= gray ? "graybg" : "whitebg" %>">
-	<% gray = !gray %>
-	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
-		<!-- If the interesting feature should be displayed then display -->
-		<b><%= ContSpec.cache(product.id, feat).value if ContSpec.cache(product.id, feat) %></b>		
-	<% else %>
-		<%= ContSpec.cache(product.id, feat).value if ContSpec.cache(product.id, feat) %>
 	<% end %>
 	</div>
 <% end %>

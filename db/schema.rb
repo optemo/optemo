@@ -858,26 +858,6 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
 
   add_index "camera_chi_squared_scores", ["cluster_id", "version", "word"], :name => "cluster_id", :unique => true
 
-  create_table "camera_clusters", :force => true do |t|
-    t.integer "parent_id"
-    t.integer "layer"
-    t.integer "cluster_size"
-    t.string  "brand"
-    t.float   "maximumresolution_min"
-    t.float   "maximumresolution_max"
-    t.float   "displaysize_min"
-    t.float   "displaysize_max"
-    t.float   "opticalzoom_min"
-    t.float   "opticalzoom_max"
-    t.float   "price_min"
-    t.float   "price_max"
-    t.integer "version",               :default => 0
-    t.float   "cached_utility"
-    t.string  "region",                :default => "us"
-  end
-
-  add_index "camera_clusters", ["parent_id", "version", "cached_utility"], :name => "parent_id"
-
   create_table "camera_clusters2", :force => true do |t|
     t.integer "parent_id"
     t.integer "layer"
@@ -917,29 +897,6 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
     t.string  "region",                :default => "us"
   end
 
-  create_table "camera_features", :force => true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "session_id"
-    t.string   "brand"
-    t.float    "maximumresolution_min"
-    t.float    "maximumresolution_max"
-    t.float    "maximumresolution_pref", :default => 0.25
-    t.float    "displaysize_min"
-    t.float    "displaysize_max"
-    t.float    "displaysize_pref",       :default => 0.25
-    t.float    "opticalzoom_min"
-    t.float    "opticalzoom_max"
-    t.float    "opticalzoom_pref",       :default => 0.25
-    t.float    "price_min"
-    t.float    "price_max"
-    t.float    "price_pref",             :default => 0.25
-    t.integer  "search_id"
-  end
-
-  add_index "camera_features", ["search_id"], :name => "search_id"
-  add_index "camera_features", ["session_id"], :name => "session_id"
-
   create_table "camera_mi_scores", :force => true do |t|
     t.integer "cluster_id",        :limit => 8, :null => false
     t.integer "parent_cluster_id", :limit => 8, :null => false
@@ -950,22 +907,6 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
   end
 
   add_index "camera_mi_scores", ["cluster_id", "version", "word"], :name => "cluster_id", :unique => true
-
-  create_table "camera_nodes", :force => true do |t|
-    t.integer "cluster_id"
-    t.integer "product_id"
-    t.float   "maximumresolution"
-    t.float   "displaysize"
-    t.float   "opticalzoom"
-    t.float   "price"
-    t.string  "brand"
-    t.integer "version",           :default => 0
-    t.float   "utility"
-    t.string  "region",            :default => "us"
-  end
-
-  add_index "camera_nodes", ["cluster_id", "product_id"], :name => "cluster_id_2"
-  add_index "camera_nodes", ["cluster_id"], :name => "cluster_id"
 
   create_table "camera_nodes2", :force => true do |t|
     t.integer "cluster_id"
@@ -1330,7 +1271,10 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
     t.datetime "updated_at"
   end
 
+  add_index "cat_specs", ["name", "product_type"], :name => "name_2"
+  add_index "cat_specs", ["name"], :name => "name"
   add_index "cat_specs", ["product_id"], :name => "index_cat_specs_on_product_id"
+  add_index "cat_specs", ["product_type"], :name => "product_type"
 
   create_table "clusters", :force => true do |t|
     t.string  "product_type"
@@ -1358,20 +1302,6 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
   end
 
   add_index "cont_specs", ["product_id"], :name => "index_cont_specs_on_product_id"
-
-  create_table "db_features", :force => true do |t|
-    t.string   "product_type"
-    t.string   "feature_type"
-    t.string   "name"
-    t.float    "min"
-    t.float    "max"
-    t.float    "high"
-    t.float    "low"
-    t.text     "categories"
-    t.string   "region"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "factors", :force => true do |t|
     t.datetime "created_at"
@@ -1415,103 +1345,6 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
 
   add_index "flooring_boostexter_combined_rules", ["fieldname", "cluster_id", "version"], :name => "fieldname", :unique => true
 
-  create_table "flooring_clusters", :force => true do |t|
-    t.integer "parent_id"
-    t.integer "layer"
-    t.integer "cluster_size"
-    t.float   "cached_utility"
-    t.integer "version"
-    t.string  "region"
-    t.string  "brand"
-    t.string  "species"
-    t.string  "feature"
-    t.float   "price_min"
-    t.float   "price_max"
-    t.float   "width_min"
-    t.float   "width_max"
-    t.float   "species_hardness_min"
-    t.float   "species_hardness_max"
-    t.float   "miniorder_min"
-    t.float   "miniorder_max"
-  end
-
-  add_index "flooring_clusters", ["cached_utility"], :name => "index_flooring_clusters_on_cached_utility"
-  add_index "flooring_clusters", ["parent_id"], :name => "index_flooring_clusters_on_parent_id"
-  add_index "flooring_clusters", ["version"], :name => "index_flooring_clusters_on_version"
-
-  create_table "flooring_features", :force => true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "session_id"
-    t.integer  "search_id"
-    t.float    "price_min"
-    t.float    "price_max"
-    t.float    "price_pref",            :default => 0.25
-    t.float    "width_min"
-    t.float    "width_max"
-    t.float    "width_pref",            :default => 0.25
-    t.float    "species_hardness_min"
-    t.float    "species_hardness_max"
-    t.float    "species_hardness_pref", :default => 0.25
-    t.float    "miniorder_min"
-    t.float    "miniorder_max"
-    t.float    "miniorder_pref",        :default => 0.25
-    t.string   "brand"
-    t.string   "species"
-    t.string   "feature"
-  end
-
-  add_index "flooring_features", ["search_id"], :name => "index_flooring_features_on_search_id"
-  add_index "flooring_features", ["session_id"], :name => "index_flooring_features_on_session_id"
-
-  create_table "flooring_nodes", :force => true do |t|
-    t.integer "cluster_id"
-    t.integer "product_id"
-    t.float   "price"
-    t.float   "width"
-    t.float   "species_hardness"
-    t.float   "miniorder"
-    t.string  "brand"
-    t.string  "species"
-    t.string  "feature"
-    t.float   "utility"
-    t.string  "region"
-    t.integer "version"
-  end
-
-  add_index "flooring_nodes", ["cluster_id"], :name => "index_flooring_nodes_on_cluster_id"
-  add_index "flooring_nodes", ["product_id"], :name => "index_flooring_nodes_on_product_id"
-
-  create_table "floorings", :force => true do |t|
-    t.integer  "category_id",      :null => false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text     "title"
-    t.text     "brand"
-    t.string   "model",            :null => false
-    t.string   "imagelink",        :null => false
-    t.text     "species"
-    t.integer  "species_hardness"
-    t.text     "feature"
-    t.text     "colorrange"
-    t.float    "colorrange_f"
-    t.float    "width"
-    t.float    "price"
-    t.string   "pricestr",         :null => false
-    t.float    "regularprice"
-    t.integer  "miniorder_sq_ft"
-    t.integer  "miniorder"
-    t.text     "price_unit"
-    t.string   "warranty"
-    t.float    "thickness"
-    t.text     "size",             :null => false
-    t.string   "finish"
-    t.float    "profit_margin"
-    t.float    "overallrating",    :null => false
-    t.string   "aggregate_desc",   :null => false
-    t.boolean  "instock",          :null => false
-  end
-
   create_table "grabber_cartridges", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -1533,96 +1366,6 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
     t.integer  "product_id"
     t.integer  "offering_id"
     t.string   "item_number"
-  end
-
-  create_table "laptop_boostexter_combined_rules", :force => true do |t|
-    t.string   "fieldname"
-    t.float    "weight"
-    t.integer  "cluster_id"
-    t.integer  "version"
-    t.text     "yaml_repr"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "rule_type",  :limit => 1, :null => false
-  end
-
-  add_index "laptop_boostexter_combined_rules", ["cluster_id"], :name => "index_laptop_boostexter_combined_rules_on_cluster_id"
-  add_index "laptop_boostexter_combined_rules", ["fieldname"], :name => "index_laptop_boostexter_combined_rules_on_fieldname"
-  add_index "laptop_boostexter_combined_rules", ["version"], :name => "index_laptop_boostexter_combined_rules_on_version"
-
-  create_table "laptop_clusters", :force => true do |t|
-    t.integer "parent_id"
-    t.integer "layer"
-    t.integer "cluster_size"
-    t.float   "cached_utility"
-    t.integer "version"
-    t.string  "region"
-    t.string  "brand"
-    t.float   "price_min"
-    t.float   "price_max"
-    t.float   "hd_min"
-    t.float   "hd_max"
-    t.float   "ram_min"
-    t.float   "ram_max"
-    t.float   "screensize_min"
-    t.float   "screensize_max"
-  end
-
-  add_index "laptop_clusters", ["cached_utility"], :name => "index_laptop_clusters_on_cached_utility"
-  add_index "laptop_clusters", ["parent_id"], :name => "index_laptop_clusters_on_parent_id"
-  add_index "laptop_clusters", ["version"], :name => "index_laptop_clusters_on_version"
-
-  create_table "laptop_features", :force => true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "session_id"
-    t.integer  "search_id"
-    t.float    "price_min"
-    t.float    "price_max"
-    t.float    "price_pref",      :default => 0.25
-    t.float    "hd_min"
-    t.float    "hd_max"
-    t.float    "hd_pref",         :default => 0.25
-    t.float    "ram_min"
-    t.float    "ram_max"
-    t.float    "ram_pref",        :default => 0.25
-    t.float    "screensize_min"
-    t.float    "screensize_max"
-    t.float    "screensize_pref", :default => 0.25
-    t.string   "brand"
-  end
-
-  add_index "laptop_features", ["search_id"], :name => "index_laptop_features_on_search_id"
-  add_index "laptop_features", ["session_id"], :name => "index_laptop_features_on_session_id"
-
-  create_table "laptop_nodes", :force => true do |t|
-    t.integer "cluster_id"
-    t.integer "product_id"
-    t.float   "price"
-    t.float   "hd"
-    t.float   "ram"
-    t.float   "screensize"
-    t.string  "brand"
-    t.float   "utility"
-    t.string  "region"
-    t.integer "version"
-  end
-
-  add_index "laptop_nodes", ["cluster_id"], :name => "index_laptop_nodes_on_cluster_id"
-  add_index "laptop_nodes", ["product_id"], :name => "index_laptop_nodes_on_product_id"
-
-  create_table "laptops", :force => true do |t|
-    t.text     "title"
-    t.integer  "price"
-    t.string   "pricestr"
-    t.string   "brand"
-    t.integer  "hd"
-    t.integer  "ram"
-    t.float    "screensize"
-    t.boolean  "instock"
-    t.text     "imgurl"
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "newegg_offerings", :force => true do |t|
@@ -1944,28 +1687,6 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
 
   add_index "printer_boostexter_combined_rules", ["fieldname", "cluster_id", "version"], :name => "fieldname", :unique => true
 
-  create_table "printer_clusters", :force => true do |t|
-    t.integer "parent_id"
-    t.integer "layer"
-    t.integer "cluster_size"
-    t.float   "ppm_min"
-    t.float   "ppm_max"
-    t.float   "itemwidth_min"
-    t.float   "itemwidth_max"
-    t.float   "paperinput_min"
-    t.float   "paperinput_max"
-    t.integer "resolutionmax_min"
-    t.integer "resolutionmax_max"
-    t.float   "price_max"
-    t.float   "price_min"
-    t.string  "brand"
-    t.boolean "scanner"
-    t.boolean "printserver"
-    t.integer "version",           :default => 0
-    t.float   "cached_utility"
-    t.string  "region",            :default => "us"
-  end
-
   create_table "printer_clusters_archive", :id => false, :force => true do |t|
     t.integer "id",                :default => 0,    :null => false
     t.integer "parent_id"
@@ -1987,47 +1708,6 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
     t.integer "version",           :default => 0
     t.float   "cached_utility"
     t.string  "region",            :default => "us"
-  end
-
-  create_table "printer_features", :force => true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "session_id"
-    t.integer  "search_id"
-    t.float    "ppm_min"
-    t.float    "ppm_max"
-    t.float    "ppm_pref",           :default => 0.2
-    t.float    "itemwidth_min"
-    t.float    "itemwidth_max"
-    t.float    "itemwidth_pref",     :default => 0.2
-    t.float    "paperinput_min"
-    t.float    "paperinput_max"
-    t.float    "paperinput_pref",    :default => 0.2
-    t.float    "resolutionmax_min"
-    t.float    "resolutionmax_max"
-    t.float    "resolutionmax_pref", :default => 0.2
-    t.float    "price_min"
-    t.float    "price_max"
-    t.float    "price_pref",         :default => 0.2
-    t.string   "brand"
-    t.boolean  "scanner"
-    t.boolean  "printserver"
-  end
-
-  create_table "printer_nodes", :force => true do |t|
-    t.integer "cluster_id"
-    t.integer "product_id"
-    t.float   "ppm"
-    t.float   "itemwidth"
-    t.float   "paperinput"
-    t.integer "resolutionmax"
-    t.boolean "scanner"
-    t.boolean "printserver"
-    t.float   "price"
-    t.string  "brand"
-    t.integer "version",       :default => 0
-    t.float   "utility"
-    t.string  "region",        :default => "us"
   end
 
   create_table "printer_nodes_archive", :id => false, :force => true do |t|
@@ -2206,15 +1886,6 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
 
   add_index "reviews", ["product_type", "product_id"], :name => "product_type"
 
-  create_table "saveds", :force => true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "session_id"
-    t.integer  "product_id"
-    t.integer  "search_id"
-    t.string   "product_type"
-  end
-
   create_table "scraped_cameras", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -2355,6 +2026,7 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
   end
 
   add_index "searches", ["session_id"], :name => "session_id"
+  add_index "searches", ["session_id"], :name => "session_id_2"
 
   create_table "sessions", :force => true do |t|
     t.datetime "created_at"
@@ -2549,13 +2221,7 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
     t.datetime "updated_at"
   end
 
-  create_table "vieweds", :force => true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "session_id"
-    t.integer  "product_id"
-    t.integer  "search_id"
-  end
+  add_index "userdataconts", ["search_id"], :name => "search_id"
 
   create_table "welcomes", :force => true do |t|
     t.string   "email"

@@ -7,7 +7,7 @@
 <% end %>
 	<h1><%= URI.decode(@product.title) %></h1>
 	<div id="image">
-		<% if $product_type == "Flooring" %>
+		<% if $product_type == "flooring_builddirect" %>
 			<%= link_to image_tag(@imglurl), @imglurl, :popup => true %>
 		<% elsif $product_type == "Laptop" %>
 			<%= link_to image_tag(@imglurl), @imglurl, :popup => true %>
@@ -34,9 +34,9 @@
 		<% end %>
 	</ul>
 	</div>
-	<div style="clear: left"></div>
+	<div style="clear: left; height:5px;"></div>
 	<div class="showtable">
-	<% if $product_type == "Flooring" %>
+	<% if $product_type == "flooring_builddirect" %>
 		<h3>Available from <a href="http://www.builddirect.com">Build Direct</a></h3>
 	<% elsif $product_type == "Laptop" %>
 		<h3>Available from <a href="http://www.walmart.com">Walmart</a></h3>
