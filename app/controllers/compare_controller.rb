@@ -129,7 +129,7 @@ class CompareController < ApplicationController
       Search.createInitialClusters
       render 'ajax', :layout => false
     else
-      product_ids = Product.search_for_ids(params[:search].downcase, :per_page => 10000, :star => true)
+      product_ids = Product.search_for_ids(params[:search].downcase, :per_page => 10000, :star => true, :with => {:product_type => $product_type})
       current_version = Session.current.version
       nodes = product_ids.map{|p| Node.byproduct(p) }.compact
       
@@ -149,7 +149,7 @@ class CompareController < ApplicationController
         Search.createInitialClusters
         Session.current.update_attribute('filter', true)
         Session.current.keyword = params[:search]
-        Session.current.keywordpids = nodes.map{|p| "product_id = #{p.product_id}"}.join(' OR ')
+        Session.current.keywordpids = product_ids.map{|p| "product_id = #{p}"}.join(' OR ')
         
         if params[:ajax]
           classVariables(Search.createFromKeywordSearch(nodes))
