@@ -135,7 +135,13 @@ namespace :builddirect do
       
       cat_specs = {}
       cont_specs = {}
-      ["brand", "feature", "colorrange", "species", "finish"].each {|n| cat_specs[n] = record[n]}
+      ["brand", "feature", "colorrange", "species", "finish"].each do |n| 
+        if record[n] 
+          cat_specs[n] = record[n]
+        else
+          cat_specs[n] = "None"
+        end
+      end
       ["profit_margin", "miniorder", "overallrating", "species_hardness", "thickness"].each {|n| cont_specs[n] = record[n].to_f}
       
       # At the moment, price is stored as a float instead of an integer. Treat this one separately

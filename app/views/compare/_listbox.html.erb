@@ -11,7 +11,7 @@
 		<%= groupDesc(group,i) %>
 	</div>
 	
-	<div class="productinfo rounded" onClick="javascript:location.href='<%= cluster.representative.descurl %>'">
+	<div class="productinfo rounded" data-id="<%= cluster.representative.id %>">
 		<div class="productimg">
 			<%= image_tag(imgurl(cluster.representative) , :"data-id" => cluster.representative.id, :class => "productimg", :alt => cluster.representative.smlTitle, :title => cluster.representative.smlTitle) %>
 			<% if $DragAndDropEnabled %>

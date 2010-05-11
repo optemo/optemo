@@ -526,7 +526,7 @@ function ErrorInit() {
 }
 
 function DBinit() {
-	$(".productimg, .easylink, .productinfo .rounded").unbind("click").click(function (){
+	$(".productimg, .easylink, .lv .productinfo").unbind("click").click(function (){
 		ShowInit();
 		fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
 		trackPage('products/show/'+$(this).attr('data-id')); 
