@@ -57,13 +57,13 @@ desc "Sync the public/assets directory."
   end
 end
 
-#task :restartmemcached
-# Need this before next deploy
-#end
+task :restartmemcached do
+  run "ps ux | awk '/memcached/ && !/awk/ {print $2}' | xargs kill ; memcached -d"
+end
 
 after :deploy, "serversetup"
 after :serversetup, "deploy:after_update_code"
 after :after_update_code, "compilec"
 after :compilec, "deploy:restart"
-#after deploy:restart, "restartmemcached"
+after deploy:restart, "restartmemcached"
 
