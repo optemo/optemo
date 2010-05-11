@@ -273,7 +273,7 @@ function trackCategorical(name, val, type){
 
 function FilterAndSearchInit() {
 	//Show and Hide Descriptions
-	$('.feature .label a, .feature .deleteX').unbind('click').click(function(){
+	$('.feature .label a, .description, .desc .deleteX').unbind('click').click(function(){
 		if($(this).parent().attr('class') == "desc")
 			{var obj = $(this).parent();}
 		else

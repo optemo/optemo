@@ -49,4 +49,27 @@ en:
         
         priceunit:                  "$"
         widthunit:                  "in."
-        miniorderunit:              "sq. ft."            
+        miniorderunit:              "sq. ft."      
+        
+        show:
+            nodesc:                 "No description available"   
+        
+        #Boostexter bug
+        Canadian:                   "Canadian Hard Maple"   
+        Hard:                       "Canadian Hard Maple"
+        Maple:                      "Canadian Hard Maple"
+        Alton:                      "Alton Bay"
+        Bay:                        "Alton Bay"
+        Asian:                      "Asian Mahogany"
+        Mahogany:                   "Asian Mahogany"
+        Mongolian:                  "Mongolian Teak"
+        Teak:                       "Mongolian Teak"
+        High:                       "High Gloss"
+        Semi:                       "Semi Gloss"
+        Wide:                       "Wide Plank"
+        Plank:                      "Wide Plank"
+        French:                     "French Bleed"
+        Bleed:                      "French Bleed"
+        Hand:                       "Hand Scraped"
+        Scraped:                    "Hand Scraped"
+        

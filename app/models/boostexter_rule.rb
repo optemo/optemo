@@ -26,7 +26,8 @@ class BoostexterRule < ActiveRecord::Base
           # This check will not work in future, but will work for now. There will be a type field in the YAML representation instead.
           brules = YAML.load(r.yaml_repr)
           if brules.class == Hash #S-gram
-            catlabel[c.id] << r.fieldname + ": " + brules["sgram"] if brules["direction"] == 1
+            #catlabel[c.id] << r.fieldname + ": " + brules["sgram"] if brules["direction"] == 1
+            catlabel[c.id] << I18n.t($product_type+"."+brules["sgram"], :default => brules["sgram"]) if brules["direction"] == 1 && brules["sgram"] != "None"
           else
             #Threshold rule
             next if brules.empty?
