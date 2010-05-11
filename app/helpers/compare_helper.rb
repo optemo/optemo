@@ -16,13 +16,11 @@ module CompareHelper
   end
   
   def overallmin(feat)
-    min = ContSpec.allMin(feat) || 0
-    (min*10).to_i.to_f/10
+    ((ContSpec.allMin(feat) || 0)*10).to_i.to_f/10
   end
   
   def overallmax(feat)
-    max = ContSpec.allMax(feat) || 0
-    (max*10).ceil.to_f/10
+    ((ContSpec.allMax(feat) || 0)*10).ceil.to_f/10
   end
   
   def isnil(a)
