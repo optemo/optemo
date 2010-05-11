@@ -7,7 +7,7 @@ class Node < ActiveRecord::Base
 
   def self.byproduct(id)
     current_version = Session.current.version
-    CachingMemcached.cache_lookup("NodesP#{current_version}#{id}"){find_all_by_product_id_and_version_and_product_type(id, current_version, $product_type)}
+    CachingMemcached.cache_lookup("NodeP#{current_version}#{id}"){find_by_product_id_and_version(id, current_version)}
   end
   
   def self.bycluster(id)
