@@ -136,7 +136,8 @@ a:hover {
 }
 .rounded {
 	-webkit-border-radius: 8px;    /* for Safari */
-    -moz-border-radius: 8px;       /* for Firefox */
+  -moz-border-radius: 8px;       /* for Firefox */
+  border-radius: 8px;            /* Opera, KHTML, others */
 }
 .rounded_bd {
     background-color: white;          /* if needed */
