@@ -74,16 +74,13 @@ task :fetchAutocomplete do
   run "rake -f #{current_path}/Rakefile autocomplete:fetch"
 end
 
-#task :restartmemcached
-# Need this before next deploy
-#end
+task :restartmemcached do
+  run "ps ux | awk '/memcached/ && !/awk/ {print $2}' | xargs kill ; memcached -d"
+end
 
 after :deploy, "serversetup"
 after :serversetup, "reindex"
 after :reindex, "fetchAutocomplete"
 after :fetchAutocomplete, "redopermissions"
 after :redopermissions, "compilec"
-
-
-#after :compilec, "restartmemcached"
-
+after :compilec, "restartmemcached"

@@ -4,6 +4,15 @@ class Product < ActiveRecord::Base
   has_many :bin_specs
   has_many :cont_specs
   
+  define_index do
+    #fields
+    indexes "LOWER(title)", :as => :title
+    set_property :enable_star => true
+    set_property :min_prefix_len => 2
+    #attributes
+    has product_type
+  end
+  
   def self.cached(id)
     CachingMemcached.cache_lookup("Products#{id}"){find(id)}
   end
