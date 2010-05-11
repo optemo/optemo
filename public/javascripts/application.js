@@ -172,12 +172,12 @@ function removeBrand(str)
 function submitCategorical(){
     var arguments_to_send = [];
     arguments = $("#filter_form").serialize().split("&");
-    for (i=0; i < arguments.length; i++)
+    for (i=0; i<arguments.length; i++)
     {
-        if (!(arguments[i].match(/^superfluous/))) arguments_to_send.push(arguments[i]);
+        if (!(arguments[i].match(/^superfluous/))) 
+            arguments_to_send.push(arguments[i]);
     }
-//    console.log(arguments_to_send);
-	ajaxcall("/compare/filter", arguments_to_send);
+	ajaxcall("/compare/filter", arguments_to_send.join("&"));
 	trackPage('goals/filter/autosubmit');
 }
 
@@ -526,7 +526,7 @@ function ErrorInit() {
 }
 
 function DBinit() {
-	$(".productimg, .easylink").unbind("click").click(function (){
+	$(".productimg, .easylink, .productinfo .rounded").unbind("click").click(function (){
 		ShowInit();
 		fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
 		trackPage('products/show/'+$(this).attr('data-id')); 
