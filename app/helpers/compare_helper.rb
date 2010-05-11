@@ -16,13 +16,11 @@ module CompareHelper
   end
   
   def overallmin(feat)
-    min = ContSpec.allMin(feat) || 0
-    (min*10).to_i.to_f/10
+    ((ContSpec.allMin(feat) || 0)*10).to_i.to_f/10
   end
   
   def overallmax(feat)
-    max = ContSpec.allMax(feat) || 0
-    (max*10).ceil.to_f/10
+    ((ContSpec.allMax(feat) || 0)*10).ceil.to_f/10
   end
   
   def isnil(a)
@@ -52,7 +50,7 @@ module CompareHelper
   def groupDesc(group, i)
     if $RelativeDescriptions
       #Session.current.search.relativeDescriptions[i].map{|d|t("products."+d)}.join(", ")
-      Session.current.search.boostexterClusterDescriptions[i].map{|d|t("products."+d, :default => d)}.join(", ")
+      Session.current.search.boostexterClusterDescriptions[i].map{|d|t("products."+d, :default => d)}.map{|d|"<div style='position: relative;'>" + link_to(d, "#", :class => "description") + render(:partial => 'desc', :locals => {:feat => d}) + "</div>"}.join(" ")
     else
       disptranslation = []
       dispString = ""
