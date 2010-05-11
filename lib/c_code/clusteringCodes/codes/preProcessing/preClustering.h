@@ -67,9 +67,14 @@ string preClustering(map<const string, int>productNames, string productName, str
 		case 3:
 				conFeatureN = 4;
 				boolFeatureN = 0;
+				catFeatureN = 5;
 				conFeatureNames[1] = "width"; 
 			    conFeatureNames[2] = "miniorder";
                 conFeatureNames[3] = "species_hardness";
+				catFeatureNames[1] = "colorrange";
+				catFeatureNames[2] = "feature";
+				catFeatureNames[3] = "finish";
+				catFeatureNames[4] = "species";
 
 				indicatorNames[1] = "Item Width";
 				indicatorNames[2] = "Minimum Order";
@@ -128,6 +133,12 @@ string preClustering(map<const string, int>productNames, string productName, str
 	   	 filteringCommand += " and id IN (select product_id from bin_specs where bin_specs.name = \'";
 	   	 filteringCommand += boolFeatureNames[f];
 	   	 filteringCommand += "\' and (bin_specs.value =0 OR bin_specs.value=1))" ;
+	   }
+	  for (int f=0; f<catFeatureN; f++){
+	   	 filteringCommand += " and id IN (select product_id from cat_specs where cat_specs.name = \'";
+	   	 filteringCommand += catFeatureNames[f];
+//	   	 filteringCommand += "\' and (cat_specs.value IS ))" ;
+		 filteringCommand += "\')";
 	   }
        
 	   filteringCommand += ";";

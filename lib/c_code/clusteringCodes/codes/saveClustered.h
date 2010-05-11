@@ -124,7 +124,7 @@ void readData(double* dataPoint, string* disData, string* brands, int s, int pro
 							command += conFeatureNames[f];
 							command += "\';";
 							res = stmt->executeQuery(command);
-							res->next();
+							res->next();			
 							dataPoint[f] = res->getDouble("value");
 						}
 
@@ -138,15 +138,17 @@ void readData(double* dataPoint, string* disData, string* brands, int s, int pro
 								res->next();
 								dataPoint[f+conFeatureN] = res->getDouble("value");
 						}
+						
 						for (int f=0; f<catFeatureN; f++){
 								command = "SELECT * from cat_specs where product_id=";
 								command += pIdStream.str();
 								command += " AND name=\'";
-								command += catFeatureNames[0];
+								command += catFeatureNames[f];
 								command += "\';";
 								res = stmt->executeQuery(command);
 								res->next();
-								disData[s] = res->getDouble("value");
-								if (catFeatureNames[f]=="brand") brands[s] = disData[s];
+								disData[f] = res->getString("value");
+								if (catFeatureNames[f]=="brand") brands[s] = disData[f];
 						}
+						
 		}				

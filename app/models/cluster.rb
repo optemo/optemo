@@ -114,7 +114,16 @@ class Cluster < ActiveRecord::Base
     @children = nil
   end
   
-  def utility
-    nodes.map{|n|n.utility}.sum/size
-  end
+ # def utility
+ #   nodes.map{|n|n.utility}.sum/size
+ # end
+ def utility()
+
+     prefetched_factors = {}
+     Factor.find_all_by_product_type("Flooring").compact.each {|f| prefetched_factors[f.product_id] = f}
+     debugger
+     utility = Factor.find_all_by_product_type("Flooring").compact.each {|p|prefetched_factors[p]["price"]+ prefetched_factors[p]["width"]+ prefetched_factors[p]["minorder"]+prefetched_factors[p]["species_hardness"]}
+     
+ end
+  
 end

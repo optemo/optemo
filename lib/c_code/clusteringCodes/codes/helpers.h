@@ -558,8 +558,11 @@ void repOrder(double** dataCluster, int size, string mode, int conFeatureN, int 
 
 }
 
+//	utilityOrder(temp_data, temp_idA, non_out_index.size(), clusteredData, clusteredDataOrder, clusteredDataOrderU, clusterN, conFeatureN, 
+//          boolFeatureN, conFeatureNames, boolFeatureNames, stmt, productName);
+
 void utilityOrder(double** data, int* idA, int size, int** clusteredData, int** clusteredDataOrder, int** clusteredDataOrderU, int clusterN, int conFeatureN, 
-				int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, string productName){
+				int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, sql::ResultSet *res2, string productName){
 	//	// clusteredData, clusteredDataOrder, clusteredDataOrderU
 
 	string capProductName = productName;
@@ -585,23 +588,35 @@ void utilityOrder(double** data, int* idA, int size, int** clusteredData, int** 
 				idStream << clusteredData[c][i+1];
 				command += idStream.str();
 				command += ");";
-				std::auto_ptr<sql::ResultSet> res2(stmt->executeQuery(command));
+			//	cout<<"command is "<<command<<endl;
+				res2 = stmt->executeQuery(command);
 				if (res2->rowsCount()>0){
+					cout<<"it has rows"<<endl;
 					res2->next();
 					for (int f=0; f<conFeatureN; f++){
 						utility += res2->getDouble(conFeatureNames[f]);
 					}	
 				}
 		}
+		cout<<"utility is "<<utility<<endl;
 		avgUtilities[c] = utility/clusteredData[c][0];
+		cout<<"avgUtilities[c] is "<<avgUtilities[c]<<endl;
 	}
 	insertion_sort(avgUtilities, orderRec, clusterN);
 	for (int c=0; c<clusterN; c++){
 		clusteredDataOrderU[clusterN-c-1][0] = clusteredData[orderRec[c]][0];
 		for (int i=0; i<clusteredData[orderRec[c]][0]; i++){
-			clusteredDataOrderU[clusterN-c-1][i+1] = clusteredDataOrder[orderRec[c]][i];
+		//	clusteredDataOrderU[clusterN-c-1][i+1] = clusteredDataOrder[orderRec[c]][i];
+			clusteredDataOrderU[c][i+1] = clusteredDataOrder[orderRec[c]][i];
+		//	cout<<"avgUtilities[orderRec[c]] is:"<<avgUtilities[orderRec[c]]<<endl;
 		}	
 	}
+  //for (int c=0; c<clusterN; c++){
+  //	cout<<"clusteredData[orderRec["<<c<<"]][0] :"<<clusteredData[orderRec[c]][0]<<endl;
+  //	for (int i=0; i<clusteredData[c][0]; i++){
+  //		cout<<" clusteredDataOrderU["<<c<<"]["<<i<<"] :"<<clusteredData[c][i]<<endl;
+  //	}	
+  //}
 		
 }		    
 	

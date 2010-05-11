@@ -106,7 +106,7 @@ int main(int argc, char** argv){
             break;
 		case 3:
             conFeatureN = 4; // Thickness has been taken out for now
-            catFeatureN = 1; // This should be 4, but right now just set it up for brand only.
+            catFeatureN = 5; // This should be 4, but right now just set it up for brand only.
             boolFeatureN = 0;
             range = 2;
             break;
@@ -123,6 +123,7 @@ int main(int argc, char** argv){
     		range= 2;
     		break;
 	}
+
 	ostringstream session_idStream;
 	ostringstream layerStream;
 	layerStream<<layer;
@@ -143,7 +144,8 @@ int main(int argc, char** argv){
   	bool *conFilteredFeatures = new bool[conFeatureN];   
 	bool *catFilteredFeatures = new bool[catFeatureN];
 	bool *boolFilteredFeatures = new bool[boolFeatureN];
-    cout << "Constructing ranges ... ";
+	
+    cout << "Constructing ranges ... "<<endl;
    	for(int f=0; f<conFeatureN; f++){
 		conFilteredFeatures[f] = 0;
 		conFeatureRange[f] = new double [range];
@@ -164,9 +166,9 @@ int main(int argc, char** argv){
 		boolFilteredFeatures[f] = 0;
 	}
 
+  	cout<<"HERE"<<endl;
     string filteringCommand = preClustering(productNames, productName, conFeatureNames, catFeatureNames, boolFeatureNames, indicatorNames, region);
 
-  
     sql::Statement	*stmt;
 	sql::Statement	*stmt2;
 	sql::ResultSet	*res;
@@ -328,26 +330,28 @@ int main(int argc, char** argv){
 				myfile2<<"Version: "<<version<<endl;
 				
 				vector<int> outlier_ids;
-			   while (maxSize>clusterN){
+			  // while (maxSize>clusterN){
 							
 					for (int j=0; j<conFeatureN; j++){
 						average[j] = 0.0;
 					}
+		
 					maxSize = hClustering(layer, clusterN,  conFeatureN,  boolFeatureN, catFeatureN, average, conFeatureRange, conFeatureRangeC, res, res2, resClus, resNodes, 
 							stmt, conFeatureNames, boolFeatureNames, catFeatureNames, productName, version, region, outlier_ids);	
 					myfile2<<"layer "<<layer<<endl;
 					cout<<"layer "<<layer<<endl;
 					layer++;
 					clustered = 1;
-				}
-      		if (clustered){
-			//	insertOutliers(conFeatureN, boolFeatureN, clusterN, res, res2, res3, stmt, stmt2, conFeatureNames, boolFeatureNames, productName, version, region, outlier_ids);	
-      			leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames,res, res2, res3, stmt, productName, version, region);	
-      			myfile2<<"layer "<<layer<<endl;
-        	}else{
-      			smallNumberClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, stmt, productName, version, region);	
-      			myfile2<<"layer "<<layer<<endl;
-     		}
+					
+		//		}
+      	//	if (clustered){
+		//	//	insertOutliers(conFeatureN, boolFeatureN, clusterN, res, res2, res3, stmt, stmt2, conFeatureNames, boolFeatureNames, productName, version, region, outlier_ids);	
+      	//		leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames,res, res2, res3, stmt, productName, version, region);	
+      	//		myfile2<<"layer "<<layer<<endl;
+        //	}else{
+      	//		smallNumberClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, stmt, productName, version, region);	
+      	//		myfile2<<"layer "<<layer<<endl;
+     	//	}
 
 
 //Clearing the old clusters and nodes
