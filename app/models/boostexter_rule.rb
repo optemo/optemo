@@ -28,20 +28,18 @@ class BoostexterRule < ActiveRecord::Base
           if brules.class == Hash #S-gram
             catlabel[c.id] << r.fieldname + ": " + brules["sgram"] if brules["direction"] == 1
           else
-            #This should be refactored so that the yaml data class is exactly what is needed
-            unpacked_weighted_intervals = brules.map {|i| [i["interval"], i["weight"]] unless i.class == Array}
-            next if unpacked_weighted_intervals.compact.empty?
+            #Threshold rule
+            next if brules.empty?
             z = 0
             weighted_average = 0
             ContSpec.cachemany(product_ids,r.fieldname).each do |feature_value|
               next unless feature_value
-              weight = BoostexterRule.find_weight_for_value(unpacked_weighted_intervals, feature_value)
+              weight = BoostexterRule.find_weight_for_value(brules, feature_value)
               weighted_average += weight * feature_value
               z += weight
             end
             next if z == 0 # Loop back to the beginning; do not add this field name for this cluster.
-            weighted_average /= z
-            weighted_averages[c.id][r.fieldname] = weighted_average
+            weighted_averages[c.id][r.fieldname] = weighted_average / z
           end
         end
       end
@@ -79,6 +77,8 @@ class BoostexterRule < ActiveRecord::Base
   def self.find_weight_for_value(unpacked_weighted_intervals, feature_value)
     weight = 0
     unpacked_weighted_intervals.each do |uwi| 
+      #uwi[0] = interval [min,max]
+      #uwi[1] = weight
       if (uwi[0][0] < feature_value && uwi[0][1] >= feature_value)
         weight = uwi[1]
         break
