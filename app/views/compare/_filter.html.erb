@@ -29,7 +29,9 @@
 		:val => feat,
 		:money_formatting => feat == 'price',
 		:min => ContSpec.allMin(feat), 
-		:max => ContSpec.allMax(feat)} %>
+		:max => ContSpec.allMax(feat),
+		:overall_min => overallmin(feat),
+		:overall_max => overallmax(feat)} %>
 <% end %>
 <% $Binary["filter"].each do |feat| %>
 	<div class='feature'>

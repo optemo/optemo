@@ -60,7 +60,7 @@ class ContSpec < ActiveRecord::Base
   def self.allspecs(feat)
     #ContSpec.find_all_by_name_and_product_type(feat,$product_type).map(&:value)
 #    id_array = Product.valid.instock.map{|p| p.id }
-    id_array = Session.current.search.clusters.map(&:nodes).flatten.map(&:product_id)
+    id_array = Session.current.search.acceptedProductIDs
     ContSpec.cachemany(id_array, feat)
   end
 end
