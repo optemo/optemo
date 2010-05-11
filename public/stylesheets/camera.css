@@ -128,9 +128,12 @@ div.rowdiv {
 	cursor: move;
 	height:100px;
 	float: left;
-	padding-right: 20px;
 	margin-top: -5px;
 }
+.productimg {
+  float: left;
+}
+
 .productinfocont {
 	width: 224px;
 	position: absolute;
@@ -267,15 +270,15 @@ div.drop-box-hover {
     opacity:0.35;
 }
 .lv .dragHand {
-	position: relative;
-	left: -50px;
+	margin-left: -25px;
+	margin-right: 25px;
 	z-index:1;
-    opacity:0.35;
+  opacity:0.35;
 }
 [ if IE ] .dragHand {
-    filter:alpha(opacity=35);
-	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=35)"; /* IE8 */
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=35);  /* IE7 */
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=35);  /* IE7 */
+  filter: alpha(opacity=35);
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=35)"; /* IE8 */  
 }
 
 .saveditem {
@@ -550,6 +553,12 @@ display:block;
 	border: 2px solid red;
 	background: #fffcd3;
 	margin:2px;
+}
+
+.navigator_box .tourDrawAttention
+{
+	border: 2px solid red;
+	background: #fffcd3;
 }
 
 #tourButton{

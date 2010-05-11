@@ -1,9 +1,9 @@
 <div class="thumbnailcell">
 		<div class="first">
-			<%= image_tag(imgurl(thumbnails) , :"data-id" => thumbnails.id, :class => "productimg") %>
+			<%= image_tag(imgurl(thumbnails) , :"data-id" => thumbnails.id, :class => "compareimg") %>
  		</div>
 	<div class="thumbnaillabel">
    	<%= thumbnails.smlTitle %>
-	<div class="thumbnaildetails">	<%= ContSpec.cache(thumbnails.id, "price") %> </div>
+	<div class="thumbnaildetails">	<%= number_to_currency(ContSpec.cache(thumbnails.id, "price")) %> </div>
 	</div>
 </div>

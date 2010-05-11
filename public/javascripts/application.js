@@ -170,7 +170,14 @@ function removeBrand(str)
 }
 
 function submitCategorical(){
-	ajaxcall("/compare/filter", $("#filter_form").serialize());
+    var arguments_to_send = [];
+    arguments = $("#filter_form").serialize().split("&");
+    for (i=0; i < arguments.length; i++)
+    {
+        if (!(arguments[i].match(/^superfluous/))) arguments_to_send.push(arguments[i]);
+    }
+//    console.log(arguments_to_send);
+	ajaxcall("/compare/filter", arguments_to_send);
 	trackPage('goals/filter/autosubmit');
 }
 
@@ -675,7 +682,10 @@ $(document).ready(function() {
 				productIDs = productIDs + $(this).attr('id').substring(1) + ',';
 			}
 		});
-		fadeout('/direct_comparison/index/' + productIDs, null, 940, 530);/*star-h:580*/
+		// The following line could be useful later. Rather than hard-coding, we could use the 'overflow:scroll' CSS property to limit
+		// the display window height. But, right now this breaks the layout, so let's fix it later with less time pressure.
+		//var viewportHeight = $(window).height();
+		fadeout('/direct_comparison/index/' + productIDs, null, 940, 580);/*star-h:580*/
 		trackPage('goals/compare/');
 		return false;
 	});
@@ -726,6 +736,7 @@ $(document).ready(function() {
 		$(this).find('.deleteX').click(function(){
 			$(this).parent().fadeOut("slow");
 			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
+			$("#sim0").removeClass('tourDrawAttention');
 			return false;
 		});
 	});
@@ -736,6 +747,7 @@ $(document).ready(function() {
 		$("#popupTour1").fadeOut("slow");
 		$("#filterbar").addClass('tourDrawAttention');
 		$("#sim0").removeClass('tourDrawAttention');
+		$("#sim0").parent().removeClass('tourDrawAttention');
 	});
 
 	$('#popupTour2').find('a.popupnextbutton').click(function(){
@@ -762,7 +774,10 @@ $(document).ready(function() {
 
 	launchtour = (function () {
 		var browseposition = $("#sim0").offset();
-		$("#sim0").addClass('tourDrawAttention');
+		if (MODEL_NAME == 'flooring_builddirect') // This is a bit of a hack. Probably, the javascript should be aware of "line item view" vs. "box view"
+		    $("#sim0").parent().addClass('tourDrawAttention');
+		else
+    		$("#sim0").addClass('tourDrawAttention');
 		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
 		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
 		return false;
