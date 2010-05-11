@@ -47,7 +47,7 @@
    </div>
    <div class="watermark">Powered by <%= link_to 'Optemo', 'http://optemo.com', :popup => true %></div>
 	
-   <div class="bd rounded_bd rounded">
+   <div class="bd <%= 'rounded_bd ' unless $LineItemView %>rounded">
 	<div class="tl"></div><div class="tr"></div>
     <%= yield  %>
 	<div class="bl"></div><div class="br"></div>
