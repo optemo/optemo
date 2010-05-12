@@ -74,7 +74,7 @@ task :redopermissions do
 end
 
 task :restartmemcached do
-  run "ps ux | awk '/memcached/ && !/awk/ {print $2}' | xargs kill ; memcached -d"
+  run "ps ax | awk '/memcached/ && !/awk/ {print $1}' | xargs kill ; memcached -d"
 end
 
 after :deploy, "serversetup"
