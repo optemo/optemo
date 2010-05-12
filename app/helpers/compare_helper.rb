@@ -89,10 +89,6 @@ module CompareHelper
     Session.current.search.userdatacats.select{|d|d.name == feat}.map(&:value)
   end
   
-  def cleanupCats(feat_array)
-    feat_array.map{|f| CGI::unescapeHTML(f).split("*") }.flatten.uniq
-  end
-  
   def featuretext(search,cluster)
     out = []
     $Categorical["desc"].each do |feat|
