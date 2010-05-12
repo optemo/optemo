@@ -284,6 +284,18 @@ function FilterAndSearchInit() {
 		obj.attr('name-flip',flip);
 		return false;
 	});
+	
+	//Search submit
+	$('#submit_button').click(function(){
+		return submitsearch();
+	});
+	
+	//Search submit
+	$('#search').keypress(function (e) {
+		if (e.which==13)
+			return submitsearch();
+	});
+	
 	// Initialize Sliders
 	$('.slider').each(function() {
 		threshold = 20;							// The parameter that identifies that 2 sliders are too close to each other
@@ -694,17 +706,6 @@ $(document).ready(function() {
 	$('#staticajax_reset').click(function(){
 		ajaxcall($(this).attr('href')+'?ajax=true');
 		return false;
-	});
-    
-	//Search submit
-	$('#submit_button').click(function(){
-		return submitsearch();
-	});
-	
-	//Search submit
-	$('#search').keypress(function (e) {
-		if (e.which==13)
-			return submitsearch();
 	});
 
 	//Static feedback box

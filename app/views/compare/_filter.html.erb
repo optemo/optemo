@@ -1,4 +1,13 @@
-	<% form_tag("",{:id => 'filter_form'}) do %>
+<% form_tag("/compare/find",{:id => 'search_form'}) do %>
+  <%= Session.current.keyword.blank? ? text_field_tag('search') : text_field_tag('search', Session.current.keyword) %>
+  <%= submit_tag 'Search', {:id => 'submit_button'} %>
+  <% if Session.current.keyword %>
+	<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :class => "removesearch"} %> Search: <%= Session.current.keyword %>
+	</div>
+  <% end %>
+<% end %>
+
+<% form_tag("",{:id => 'filter_form'}) do %>
 <% $Categorical["filter"].each do |feat| %>
 	<div class='feature'>
 		<!--div class='label'>
