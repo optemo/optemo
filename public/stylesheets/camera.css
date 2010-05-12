@@ -173,7 +173,8 @@ div.rowdiv {
 	height: 100px;
 	border: 1px solid #ccc;
   -moz-border-radius: 8px 0 0 8px;       /* for Firefox */
-	-webkit-border-radius: 8px 0 0 8px;    /* for Safari */
+	-webkit-border-top-left-radius: 8px;    /* for Safari */
+	-webkit-border-bottom-left-radius: 8px;    /* for Safari */
   border-radius: 8px 0 0 8px;            /* Opera, KHTML, others */
 	margin: -1px 0 0 -1px;
 }
