@@ -287,8 +287,8 @@ function FilterAndSearchInit() {
 	// Initialize Sliders
 	$('.slider').each(function() {
 		threshold = 20;							// The parameter that identifies that 2 sliders are too close to each other
-		itof = $(this).attr('data-itof');
-		if(itof == 'false')
+		force_int = $(this).attr('force-int');
+		if(force_int == 'false')
 		{
 			curmin = parseFloat($(this).attr('data-startmin'));
 			curmax = parseFloat($(this).attr('data-startmax'));
@@ -310,8 +310,8 @@ function FilterAndSearchInit() {
 	        values: [((curmin-rangemin)/(rangemax-rangemin))*100,((curmax-rangemin)/(rangemax-rangemin))*100],
 			start: function(event, ui) {
 				// At the start of sliding, if the two sliders are very close by, then push the value on other slider to the bottom
-				itof = $(this).attr('data-itof');
-				if(itof == 'false')
+				force_int = $(this).attr('force-int');
+				if(force_int == 'false')
 				{
 					curmin = parseFloat($(this).attr('data-startmin'));
 					curmax = parseFloat($(this).attr('data-startmax'));
@@ -337,8 +337,8 @@ function FilterAndSearchInit() {
 				}
 			},
 			slide: function(event, ui) {
-				itof = $(this).attr('data-itof');
-				if(itof == 'false')
+				force_int = $(this).attr('force-int');
+				if(force_int == 'false')
 				{
 					curmin = parseFloat($(this).attr('data-startmin'));
 					curmax = parseFloat($(this).attr('data-startmax'));
