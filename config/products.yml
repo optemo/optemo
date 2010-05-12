@@ -67,14 +67,14 @@ flooring_builddirect:
         - prefdir: -1
     width:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
         - prefdir: 0
     species_hardness:
         - Continuous
         - [boost, cluster]
     miniorder:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
         - prefdir: -1
     brand:
         - Categorical
@@ -84,10 +84,10 @@ flooring_builddirect:
         - [boost, filter]
     finish:
         - Categorical
-        - [boost, filter]
+        - [boost, filter, show]
     feature:
         - Categorical
-        - [boost, filter]
+        - [boost, filter, show]
     colorrange:
         - Categorical
         - [boost, filter]

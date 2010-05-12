@@ -203,6 +203,13 @@ div.rowdiv {
 	margin-top: 18px;
 }
 
+.itemfeatures {
+	font-size: 0.8em;
+	float: right;
+	width: 270px;
+	margin-top: 5px;
+}
+
 /*--------------------------------------//
 //    Main Nav Controls (Left Side)     //
 //--------------------------------------*/
