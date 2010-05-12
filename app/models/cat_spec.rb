@@ -9,9 +9,8 @@ class CatSpec < ActiveRecord::Base
   end
   
   def self.all(feat)
-#    id_array = Product.valid.instock.map(&:id)
-    id_array = Session.current.search.acceptedProductIDs
-    CachingMemcached.cache_lookup("#{$product_type}Cats-#{feat}#{id_array.join('-').hash}") do
+    CachingMemcached.cache_lookup("#{$product_type}Cats-#{feat}") do
+      id_array = Product.valid.instock.map(&:id)
       find(:all, :select => 'value', :conditions => ["product_id IN (?) and name = ?", id_array, feat]).map(&:value).uniq
     end
   end

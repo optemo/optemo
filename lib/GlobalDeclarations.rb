@@ -3,7 +3,7 @@ $DefaultProduct = 'printer_us'
 # Configuration: Application Key provided by Facebook
 $AppKey = "7aeec628ded26fb3b03829fb4142da01"
 
-$ProdTypeList = ['Printer','Camera','Flooring','Laptop']
+$ProdTypeList = ['printer_us','flooring_builddirect']
 
 # Define weights assigned to user navigation tasks that determine preferences
 $Weight = Hash.new(0) # Set 0 as the default value for direction
@@ -23,6 +23,7 @@ $SignificantFeatureThreshold = 0.2
 $DragAndDropEnabled = true
 $RelativeDescriptions = true
 $NumGroups = 9
+$BoostexterLabels = true
 
 # This parameter controls whether to go with the traditional box-layout or a line-item layout (from the hierarchy branch)
 #$LineItemView = true

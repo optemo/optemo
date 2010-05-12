@@ -49,8 +49,11 @@ module CompareHelper
   
   def groupDesc(group, i)
     if $RelativeDescriptions
-      #Session.current.search.relativeDescriptions[i].map{|d|t("products."+d)}.join(", ")
-      Session.current.search.boostexterClusterDescriptions[i].map{|d|t("products."+d, :default => d)}.join(", ")
+      if $LineItemView
+        Session.current.search.boostexterClusterDescriptions[i].map{|d|t("products."+d, :default => d)}.map{|d|"<div style='position: relative;'>" + link_to(d, "#", :class => "description") + render(:partial => 'desc', :locals => {:feat => d}) + "</div>"}.join(" ")
+      else
+        Session.current.search.relativeDescriptions[i].map{|d|t("products."+d)}.join(", ")
+      end
     else
       disptranslation = []
       dispString = ""
@@ -84,10 +87,6 @@ module CompareHelper
  
   def chosencats(feat)
     Session.current.search.userdatacats.select{|d|d.name == feat}.map(&:value)
-  end
-  
-  def cleanupCats(feat_array)
-    feat_array.map{|f| CGI::unescapeHTML(f).split("*") }.flatten.uniq
   end
   
   def featuretext(search,cluster)

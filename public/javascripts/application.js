@@ -273,7 +273,7 @@ function trackCategorical(name, val, type){
 
 function FilterAndSearchInit() {
 	//Show and Hide Descriptions
-	$('.feature .label a, .feature .deleteX').unbind('click').click(function(){
+	$('.feature .label a, .description, .desc .deleteX').unbind('click').click(function(){
 		if($(this).parent().attr('class') == "desc")
 			{var obj = $(this).parent();}
 		else
@@ -526,12 +526,12 @@ function ErrorInit() {
 }
 
 function DBinit() {
-	$(".productimg, .easylink, .lv .productinfo").unbind("click").click(function (){
-		ShowInit();
-		fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
-		trackPage('products/show/'+$(this).attr('data-id')); 
-		return false;
-	});
+	//$(".productimg, .easylink").unbind("click").click(function (){
+	//	ShowInit();
+	//	fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
+	//	trackPage('products/show/'+$(this).attr('data-id')); 
+	//	return false;
+	//});
 	
 	if (IS_DRAG_DROP_ENABLED)
 	{

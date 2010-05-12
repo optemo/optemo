@@ -99,8 +99,9 @@ div.rowdiv {
 .lv .title {
     float: left;  
 	height: 90px;
-	width: 100px;
+	width: 140px;
 	padding: 5px;
+	text-align: center;
 }
 /* Navigator box */
 .product_box {

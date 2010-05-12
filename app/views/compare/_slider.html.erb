@@ -4,7 +4,7 @@
 		<%= link_to t('products.'+val), "#" %>
 		<span class="unitdisp">(<%= t('products.' + val+"unit") %>)</span>
 	</div>
-	<% start = isnil(Session.current.search.userdataconts.select{|m|m.name == val}.first){Userdatacont.new("min" => overall_min, "max" => overall_max)} %>'
+	<% start = isnil(Session.current.search.userdataconts.select{|m|m.name == val}.first){Userdatacont.new("min" => overall_min, "max" => overall_max)} %>
 	<div class="hist" data-data="<%= Session.current.search.distribution(val).join(',') %>"></div>
 	<% current_min = start.min; current_max = start.max %>
 	<%= hidden_field_tag "myfilter[#{val}_min]", start.name.nil? ? nil : current_min,{:class => 'min'}%>
