@@ -29,8 +29,8 @@
 		:locals => {:name => t('products.' + feat),
 		:val => feat,
 		:money_formatting => feat == 'price',
-		:overall_min => overallmin(feat),
-		:overall_max => overallmax(feat)} %>
+		:overall_min => ContSpec.allMin(feat),
+		:overall_max => ContSpec.allMax(feat)} %>
 <% end %>
 <% $Binary["filter"].each do |feat| %>
 	<div class='feature'>

@@ -11,10 +11,10 @@
 	<%= hidden_field_tag "myfilter[#{val}_max]", start.name.nil? ? nil : current_max,{:class => 'max'}%>
 	<div class='slider'
 	data-label= '<%= val %>'
-	data-min='<%= overall_min %>'
-	data-max='<%= overall_max %>'
-	data-startmin='<%= current_min %>'
-	data-startmax='<%= current_max %>'
+	data-min='<%= current_min %>'
+	data-max='<%= current_max %>'
+	data-startmin='<%= overall_min %>'
+	data-startmax='<%= overall_max %>'
 	<%= money_formatting ? 'data-formatting="$"' : ""  %>>
 		<div class="centerofslider">&nbsp;</div>
 	</div>
