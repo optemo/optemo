@@ -17,8 +17,8 @@ class Search < ActiveRecord::Base
   ## Computes distributions (arrays of normalized product counts) for all continuous features 
   def distribution(feat)
        dist = Array.new(21,0)
-       min = ContSpec.allMin(feat)
-       max = ContSpec.allMax(feat)
+       min = ContSpec.allMinMax(feat)[0]
+       max = ContSpec.allMinMax(feat)[1]
        return [] if max.nil? || min.nil?
        stepsize = (max-min) / dist.length + 0.000001 #Offset prevents overflow of 10 into dist array
        specs = ContSpec.cachemany(acceptedProductIDs, feat)
@@ -59,7 +59,7 @@ class Search < ActiveRecord::Base
     if @reldescs.empty?
       feats = {}
       $Continuous["filter"].each do |f|
-        norm = ContSpec.allMax(f) - ContSpec.allMin(f)
+        norm = ContSpec.allMinMax(f)[1] - ContSpec.allMinMax(f)[0]
         norm = 1 if norm == 0
         feats[f] = clusters.map{ |c| c.representative}.compact.map {|c| c[f].to_f/norm } 
       end
