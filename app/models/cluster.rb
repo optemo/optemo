@@ -20,7 +20,7 @@ class Cluster < ActiveRecord::Base
       @children = Cluster.byparent(id)
       #Check that children are not empty
       if !Cluster.filterquery.blank?
-        @children.delete_if{|c| c.isEmpty}
+        @children = @children.reject{|c| c.isEmpty}
       end
     end
     @children
