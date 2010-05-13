@@ -1,5 +1,4 @@
 class One23Cartridge < ActiveRecord::Base
-  include ProductProperties
   IDFeatures = %w(brand model)
   CategoricalFeatures = %w(brand model color)
   ContinuousFeatures =  %w(yield)

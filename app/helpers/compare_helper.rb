@@ -16,13 +16,11 @@ module CompareHelper
   end
   
   def overallmin(feat)
-    min = ContSpec.allMin(feat) || 0
-    (min*10).to_i.to_f/10
+    ((ContSpec.allMinMax(feat)[0] || 0)*10).to_i.to_f/10
   end
   
   def overallmax(feat)
-    max = ContSpec.allMax(feat) || 0
-    (max*10).ceil.to_f/10
+    ((ContSpec.allMinMax(feat)[1] || 0)*10).ceil.to_f/10
   end
   
   def isnil(a)
@@ -42,17 +40,16 @@ module CompareHelper
   end
   
   def navtitle
-    if Session.current.keyword.nil?
-		  ["Browsing", Session.current.search.result_count, (Session.current.search.result_count > 1) ? t("#{$product_type}.title-plural") : t("#{$product_type}.title-plural")].join(" ")
-		else
-      "#{t("products.compare.search")}: '#{Session.current.keyword}', #{(Session.current.search.result_count > 1) ? t("products.compare.browsings",:count => Session.current.search.result_count) : t("products.compare.browsing")}" 
-    end
+		["Browsing", Session.current.search.result_count, (Session.current.search.result_count > 1) ? t("#{$product_type}.title-plural") : t("#{$product_type}.title-plural")].join(" ")
   end
   
   def groupDesc(group, i)
     if $RelativeDescriptions
-      #Session.current.search.relativeDescriptions[i].map{|d|t("products."+d)}.join(", ")
-      Session.current.search.boostexterClusterDescriptions[i].map{|d|t("products."+d, :default => d)}.join(", ")
+      if $LineItemView
+        Session.current.search.boostexterClusterDescriptions[i].map{|d|t("products."+d, :default => d)}.map{|d|"<div style='position: relative;'>" + link_to(d, "#", :class => "description") + render(:partial => 'desc', :locals => {:feat => d}) + "</div>"}.join(" ")
+      else
+        Session.current.search.relativeDescriptions[i].map{|d|t("products."+d)}.join(", ")
+      end
     else
       disptranslation = []
       dispString = ""

@@ -59,13 +59,15 @@ div.rowdiv {
 	height:231px;
 }
 .lv .navigator_box {
-    margin:4px auto;
-    width:715px;  
+  margin:4px auto;
+  width:715px;  
 	height:100px;
 	text-align: left;
 	background-color: white;
 	border: 1px solid #e1e1e1;
-	-moz-border-radius: 8px;
+  -moz-border-radius: 8px;       /* for Firefox */
+	-webkit-border-radius: 8px;    /* for Safari */
+  border-radius: 8px;            /* Opera, KHTML, others */
 }
 .gv .nbgroup {
 	padding: 3px 9px 3px 3px;
@@ -97,8 +99,9 @@ div.rowdiv {
 .lv .title {
     float: left;  
 	height: 90px;
-	width: 100px;
+	width: 140px;
 	padding: 5px;
+	text-align: center;
 }
 /* Navigator box */
 .product_box {
@@ -128,9 +131,12 @@ div.rowdiv {
 	cursor: move;
 	height:100px;
 	float: left;
-	padding-right: 20px;
 	margin-top: -5px;
 }
+.productimg {
+  float: left;
+}
+
 .productinfocont {
 	width: 224px;
 	position: absolute;
@@ -161,12 +167,15 @@ div.rowdiv {
 	margin: 6px 3px;
 }
 .lv .sim {   
-    float:left;
-    text-align:center;
-    width:50px;
+  float:left;
+  text-align:center;
+  width:50px;
 	height: 100px;
 	border: 1px solid #ccc;
-	-moz-border-radius: 8px 0 0 8px;
+  -moz-border-radius: 8px 0 0 8px;       /* for Firefox */
+	-webkit-border-top-left-radius: 8px;    /* for Safari */
+	-webkit-border-bottom-left-radius: 8px;    /* for Safari */
+  border-radius: 8px 0 0 8px;            /* Opera, KHTML, others */
 	margin: -1px 0 0 -1px;
 }
 .lv .nbsingle .sim {
@@ -192,6 +201,13 @@ div.rowdiv {
 }
 .lv .sim a img {
 	margin-top: 18px;
+}
+
+.itemfeatures {
+	font-size: 0.8em;
+	float: right;
+	width: 270px;
+	margin-top: 5px;
 }
 
 /*--------------------------------------//
@@ -267,15 +283,15 @@ div.drop-box-hover {
     opacity:0.35;
 }
 .lv .dragHand {
-	position: relative;
-	left: -50px;
+	margin-left: -25px;
+	margin-right: 25px;
 	z-index:1;
-    opacity:0.35;
+  opacity:0.35;
 }
 [ if IE ] .dragHand {
-    filter:alpha(opacity=35);
-	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=35)"; /* IE8 */
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=35);  /* IE7 */
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=35);  /* IE7 */
+  filter: alpha(opacity=35);
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=35)"; /* IE8 */  
 }
 
 .saveditem {
@@ -550,6 +566,12 @@ display:block;
 	border: 2px solid red;
 	background: #fffcd3;
 	margin:2px;
+}
+
+.navigator_box .tourDrawAttention
+{
+	border: 2px solid red;
+	background: #fffcd3;
 }
 
 #tourButton{

@@ -1,24 +1,10 @@
-<div id="box<%= i %>" class="navigator_box<%= $LineItemView ? (((i % 2) != 0) ? ' greybg' : '' ) :(group ? " nbgroup" : " nbsingle") %>" <%= $LineItemView ? '' :("style='margin-right:0px'" if i%(Float($NumGroups)/3).ceil == (Float($NumGroups)/3).ceil - 1) %>>
-	<% unless $LineItemView %>
+<div id="box<%= i %>" class="navigator_box<%= group ? " nbgroup" : " nbsingle" %>" <%= ("style='margin-right:0px'" if i%(Float($NumGroups)/3).ceil == (Float($NumGroups)/3).ceil - 1) %>>
 	<div class="topbar">
-	<% end %>
 		<div class="title">
 			<%= groupDesc(group,i) %>
 		</div>
-		<% if $LineItemView %>
-		<div class="navbody">
-			
-			<div class='sim rounded'>
-  	  <%= link_to(image_tag("#{'plus' + ($LineItemView ? ($product_type == "Laptop" ? '_line.png' : '_linea.png') : '.png')}")+t("products.compare.similar_line",:count => cluster.size - 1), 
-  	  "/compare/sim/#{cluster.id}", :id => "sim#{i}", :class => 'simlinks rounded', 
-		  :"data-id" => "#{cluster.representative.id}", :"title" => "Browse through all " + cluster.size.to_s + " in this group") if group %>
-  			</div>
-		<% end %>
 		
 		<% if $DragAndDropEnabled %>
-			<% if $LineItemView %>
-				<div class="productinfo">
-			<% end %>
 				<div class="image_boundingbox">
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
 		<% end %>
@@ -26,11 +12,8 @@
 		<% if $DragAndDropEnabled %>
 			</div>
 		<% end %>
-		
-		<% unless $LineItemView %>
 		<div class="productinfocont">
 			<div class="productinfo">
-				<% end %>
 				<a href="<%=cluster.representative.descurl%>" data-id="<%=cluster.representative.id%>" class="easylink" title="Click for product specifications">
 				<%= cluster.representative.smlTitle %></a>
 		
@@ -38,11 +21,8 @@
 					$<%= ContSpec.cache(cluster.representative.id, "price").value %>
 				</div>	
 				<% unless $LineItemView %>
-			</div>
-		<% end %>
 		</div>
 	</div>
-	<% unless $LineItemView %>
 
 	<div class='bottombar'>
 		<% if group %>
@@ -57,5 +37,4 @@
 		</div>
 		<% end %>
 	</div>
-	<% end %>
 </div>

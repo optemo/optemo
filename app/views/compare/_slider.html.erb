@@ -4,16 +4,18 @@
 		<%= link_to t('products.'+val), "#" %>
 		<span class="unitdisp">(<%= t('products.' + val+"unit") %>)</span>
 	</div>
-	<% start = isnil(Session.current.search.userdataconts.select{|m|m.name == val}.first){Userdatacont.new("min" => overallmin(val), "max" => overallmax(val))} %>
+	<% start = isnil(Session.current.search.userdataconts.select{|m|m.name == val}.first){Userdatacont.new("min" => overall_min, "max" => overall_max)} %>
 	<div class="hist" data-data="<%= Session.current.search.distribution(val).join(',') %>"></div>
-	<%= hidden_field_tag "myfilter[#{val}_min]", start.name.nil? ? nil : start.min,{:class => 'min'}%>
-	<%= hidden_field_tag "myfilter[#{val}_max]", start.name.nil? ? nil : start.max,{:class => 'max'}%>
+	<% current_min = start.min; current_max = start.max %>
+	<%= hidden_field_tag "myfilter[#{val}_min]", start.name.nil? ? nil : current_min,{:class => 'min'}%>
+	<%= hidden_field_tag "myfilter[#{val}_max]", start.name.nil? ? nil : current_max,{:class => 'max'}%>
 	<div class='slider'
 	data-label= '<%= val %>'
-	data-min='<%= overallmin(val) %>'
-	data-max='<%= overallmax(val) %>'
-	data-startmin='<%= start.min %>'
-	data-startmax='<%= start.max %>'
+	data-min='<%= overall_min %>'
+	data-max='<%= overall_max %>'
+	data-startmin='<%= current_min %>'
+	data-startmax='<%= current_max %>'
+	force-int='false'
 	<%= money_formatting ? 'data-formatting="$"' : ""  %>>
 		<div class="centerofslider">&nbsp;</div>
 	</div>

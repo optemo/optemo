@@ -117,10 +117,6 @@ module BtxtrLabels
     return nil
   end
   
-  def BtxtrLabels.convert_interval_set_to_yaml_style(interval_set)
-    return interval_set.map{|x| {'interval' => x[0], 'weight' => x[1]}}
-  end
-  
   def BtxtrLabels.save_combined_threshold_rule_for_field(cluster, fieldname, rules)
     max_abs_weight = get_max_abs_weight_from_threshold_rules(rules)
     interval_set = get_weighted_interval_set_from_threshold_rules(rules)
@@ -128,12 +124,10 @@ module BtxtrLabels
     if is_interval_set_disjoint(interval_set)
       return nil, nil
     end
-
-    yaml_repr = YAML::dump(convert_interval_set_to_yaml_style(interval_set))
     
     atts = {:fieldname => fieldname, :weight => max_abs_weight,
     :cluster_id => cluster.id, :version => cluster.version,
-    :rule_type => "T", :yaml_repr => yaml_repr}
+    :rule_type => "T", :yaml_repr => YAML::dump(interval_set)}
     combined_rule = BoostexterRule.find_by_cluster_id_and_version_and_fieldname(cluster.id,cluster.version,fieldname)
     if combined_rule.nil?
       combined_rule = BoostexterRule.new(atts).save 
@@ -181,10 +175,18 @@ module BtxtrLabels
       raise "Unknown rule type"
     end
   end
-    
-  def BtxtrLabels.save_combined_rules_for_cluster(cluster)
-    get_rules(cluster).group_by(&:fieldname).each_pair do |fieldname, rules_for_field|
-      save_combined_rule_for_field(cluster, fieldname, rules_for_field)
+  
+  def BtxtrLabels.save_combined_rules_for_all_clusters(version = nil)
+    if version.nil?
+      c = Cluster.find_last_by_product_type($product_type)
+      version = c.version unless c.nil?
+    end
+  
+    Cluster.find_all_by_version_and_product_type(version,$product_type).each do |cluster|
+      get_rules(cluster).group_by(&:fieldname).each_pair do |fieldname, rules_for_field|
+        save_combined_rule_for_field(cluster, fieldname, rules_for_field)
+      end
     end
   end
+  
 end

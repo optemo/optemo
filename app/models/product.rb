@@ -4,6 +4,15 @@ class Product < ActiveRecord::Base
   has_many :bin_specs
   has_many :cont_specs
   
+  define_index do
+    #fields
+    indexes "LOWER(title)", :as => :title
+    set_property :enable_star => true
+    set_property :min_prefix_len => 2
+    #attributes
+    has product_type
+  end
+  
   def self.cached(id)
     CachingMemcached.cache_lookup("Products#{id}"){find(id)}
   end
@@ -92,20 +101,24 @@ class Product < ActiveRecord::Base
     opts[:dir]=='Width' ? @imageW[opts[:size]] : @imageH[opts[:size]]
   end
 
+  def brand
+    @brand ||= cat_specs.cache(id, "brand")
+  end
+
   def smlTitle
     #if self.class.name == "Laptop" || self.class.name == "Flooring"
     #  title
     #else
-    [cat_specs.find_by_name("brand").value,model].join(' ')
+    @smlTitle ||= [brand,model].join(' ')
     #end
   end
   
   def tinyTitle
-    [cat_specs.find_by_name("brand").value.gsub("Hewlett-Packard","HP"),model.split(' ')[0]].join(' ')
+    @tinyTitle ||= [brand.gsub("Hewlett-Packard", "HP"),model.split(' ')[0]].join(' ')
   end
   
   def descurl
-    "/compare/show/"+[id,cat_specs.find_by_name("brand").value,model].join('-').tr(' /','_-')
+    @descurl ||= "/compare/show/"+[id,brand,model].join('-').tr(' /','_-')
   end
   
   def display(attr)

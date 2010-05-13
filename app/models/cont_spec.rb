@@ -7,7 +7,10 @@ class ContSpec < ActiveRecord::Base
   # from the pattern of using only memcached
 #  def self.cached(p_id, feat)
   def self.cache(p_id, feat)
-    CachingMemcached.cache_lookup("ContSpec#{feat}#{p_id}"){find_by_product_id_and_name(p_id, feat)}
+    CachingMemcached.cache_lookup("ContSpec#{feat}#{p_id}") do
+      r = find_by_product_id_and_name(p_id, feat)
+      r.value if r
+    end
   end
   def self.cachemany(p_ids, feat)
     CachingMemcached.cache_lookup("ContSpecs#{feat}#{p_ids.join.hash}") do
@@ -28,15 +31,10 @@ class ContSpec < ActiveRecord::Base
     @@cs[($product_type + p_id + feat)]
   end
   
-  def self.allMin(feat)
-    CachingMemcached.cache_lookup("#{$product_type}Min-#{feat}") do
-      ContSpec.allspecs(feat).min
-    end
-  end
-
-  def self.allMax(feat)
-    CachingMemcached.cache_lookup("#{$product_type}Max-#{feat}") do
-      ContSpec.allspecs(feat).max
+  def self.allMinMax(feat)
+    CachingMemcached.cache_lookup("#{$product_type}MinMax-#{feat}") do
+      all = ContSpec.allspecs(feat)
+      [all.min,all.max]
     end
   end
 
@@ -57,6 +55,7 @@ class ContSpec < ActiveRecord::Base
   def self.allspecs(feat)
     #ContSpec.find_all_by_name_and_product_type(feat,$product_type).map(&:value)
     id_array = Product.valid.instock.map{|p| p.id }
+    #id_array = Session.current.search.acceptedProductIDs
     ContSpec.cachemany(id_array, feat)
   end
 end

@@ -73,12 +73,12 @@ task :redopermissions do
   run "cd #{current_path}/../ && sudo chmod g+w -R current shared"
 end
 
-#task :restartmemcached
-# Need this before next deploy
-#end
+task :restartmemcached do
+  run "ps ax | awk '/memcached/ && !/awk/ {print $1}' | xargs kill ; memcached -d"
+end
 
 after :deploy, "serversetup"
 after :serversetup, "reindex"
 after :reindex, "redopermissions"
 after :redopermissions, "fetchAutocomplete"
-#after :redopermissions, "restartmemcached"
+after :fetchAutocomplete, "restartmemcached"

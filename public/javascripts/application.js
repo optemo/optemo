@@ -170,7 +170,14 @@ function removeBrand(str)
 }
 
 function submitCategorical(){
-	ajaxcall("/compare/filter", $("#filter_form").serialize());
+    var arguments_to_send = [];
+    arguments = $("#filter_form").serialize().split("&");
+    for (i=0; i<arguments.length; i++)
+    {
+        if (!(arguments[i].match(/^superfluous/))) 
+            arguments_to_send.push(arguments[i]);
+    }
+	ajaxcall("/compare/filter", arguments_to_send.join("&"));
 	trackPage('goals/filter/autosubmit');
 }
 
@@ -266,7 +273,7 @@ function trackCategorical(name, val, type){
 
 function FilterAndSearchInit() {
 	//Show and Hide Descriptions
-	$('.feature .label a, .feature .deleteX').unbind('click').click(function(){
+	$('.feature .label a, .description, .desc .deleteX').unbind('click').click(function(){
 		if($(this).parent().attr('class') == "desc")
 			{var obj = $(this).parent();}
 		else
@@ -277,11 +284,23 @@ function FilterAndSearchInit() {
 		obj.attr('name-flip',flip);
 		return false;
 	});
+	
+	//Search submit
+	$('#submit_button').click(function(){
+		return submitsearch();
+	});
+	
+	//Search submit
+	$('#search').keypress(function (e) {
+		if (e.which==13)
+			return submitsearch();
+	});
+	
 	// Initialize Sliders
 	$('.slider').each(function() {
 		threshold = 20;							// The parameter that identifies that 2 sliders are too close to each other
-		itof = $(this).attr('data-itof');
-		if(itof == 'false')
+		force_int = $(this).attr('force-int');
+		if(force_int == 'false')
 		{
 			curmin = parseFloat($(this).attr('data-startmin'));
 			curmax = parseFloat($(this).attr('data-startmax'));
@@ -303,8 +322,8 @@ function FilterAndSearchInit() {
 	        values: [((curmin-rangemin)/(rangemax-rangemin))*100,((curmax-rangemin)/(rangemax-rangemin))*100],
 			start: function(event, ui) {
 				// At the start of sliding, if the two sliders are very close by, then push the value on other slider to the bottom
-				itof = $(this).attr('data-itof');
-				if(itof == 'false')
+				force_int = $(this).attr('force-int');
+				if(force_int == 'false')
 				{
 					curmin = parseFloat($(this).attr('data-startmin'));
 					curmax = parseFloat($(this).attr('data-startmax'));
@@ -330,8 +349,8 @@ function FilterAndSearchInit() {
 				}
 			},
 			slide: function(event, ui) {
-				itof = $(this).attr('data-itof');
-				if(itof == 'false')
+				force_int = $(this).attr('force-int');
+				if(force_int == 'false')
 				{
 					curmin = parseFloat($(this).attr('data-startmin'));
 					curmax = parseFloat($(this).attr('data-startmax'));
@@ -519,12 +538,12 @@ function ErrorInit() {
 }
 
 function DBinit() {
-	$(".productimg, .easylink").unbind("click").click(function (){
-		ShowInit();
-		fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
-		trackPage('products/show/'+$(this).attr('data-id')); 
-		return false;
-	});
+	//$(".productimg, .easylink").unbind("click").click(function (){
+	//	ShowInit();
+	//	fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
+	//	trackPage('products/show/'+$(this).attr('data-id')); 
+	//	return false;
+	//});
 	
 	if (IS_DRAG_DROP_ENABLED)
 	{
@@ -675,7 +694,10 @@ $(document).ready(function() {
 				productIDs = productIDs + $(this).attr('id').substring(1) + ',';
 			}
 		});
-		fadeout('/direct_comparison/index/' + productIDs, null, 940, 530);/*star-h:580*/
+		// The following line could be useful later. Rather than hard-coding, we could use the 'overflow:scroll' CSS property to limit
+		// the display window height. But, right now this breaks the layout, so let's fix it later with less time pressure.
+		//var viewportHeight = $(window).height();
+		fadeout('/direct_comparison/index/' + productIDs, null, 940, 580);/*star-h:580*/
 		trackPage('goals/compare/');
 		return false;
 	});
@@ -684,17 +706,6 @@ $(document).ready(function() {
 	$('#staticajax_reset').click(function(){
 		ajaxcall($(this).attr('href')+'?ajax=true');
 		return false;
-	});
-    
-	//Search submit
-	$('#submit_button').click(function(){
-		return submitsearch();
-	});
-	
-	//Search submit
-	$('#search').keypress(function (e) {
-		if (e.which==13)
-			return submitsearch();
 	});
 
 	//Static feedback box
@@ -726,6 +737,7 @@ $(document).ready(function() {
 		$(this).find('.deleteX').click(function(){
 			$(this).parent().fadeOut("slow");
 			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
+			$("#sim0").removeClass('tourDrawAttention');
 			return false;
 		});
 	});
@@ -736,6 +748,7 @@ $(document).ready(function() {
 		$("#popupTour1").fadeOut("slow");
 		$("#filterbar").addClass('tourDrawAttention');
 		$("#sim0").removeClass('tourDrawAttention');
+		$("#sim0").parent().removeClass('tourDrawAttention');
 	});
 
 	$('#popupTour2').find('a.popupnextbutton').click(function(){
@@ -762,7 +775,10 @@ $(document).ready(function() {
 
 	launchtour = (function () {
 		var browseposition = $("#sim0").offset();
-		$("#sim0").addClass('tourDrawAttention');
+		if (MODEL_NAME == 'flooring_builddirect') // This is a bit of a hack. Probably, the javascript should be aware of "line item view" vs. "box view"
+		    $("#sim0").parent().addClass('tourDrawAttention');
+		else
+    		$("#sim0").addClass('tourDrawAttention');
 		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
 		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
 		return false;

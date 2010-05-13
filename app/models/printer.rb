@@ -1,5 +1,4 @@
 class Printer < ActiveRecord::Base
-  include ProductProperties
   def self.productcache(id) 
     # Caching is better using class variable; do not change to memcached.
     # Hash key must be based on model name (camera/printer), region, and feature name together to guarantee uniqueness.

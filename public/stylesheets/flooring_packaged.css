@@ -26,7 +26,7 @@ img.productimg {cursor: move; height:100px; float: left; padding-right: 20px; ma
 .price {color: #F5000B; font-size: 1.2em; margin-top: 5px}
 .bottombar {height: 18px}
 .gv .sim {height: 35px; text-align: left; margin-left:10px; margin: 6px 3px}
-.lv .sim {float:left; text-align:center; width:50px; height: 100px; border: 1px solid #ccc; -moz-border-radius: 8px 0 0 8px; margin: -1px 0 0 -1px; background-color:#8192ac}
+.lv .sim {float:left; text-align:center; width:50px; height: 100px; border: 1px solid #ccc; -moz-border-radius: 8px 0 0 8px; -webkit-border-radius: 8px 0 0 8px; border-radius: 8px 0 0 8px; margin: -1px 0 0 -1px; background-color:#8192ac}
 .gv .sim a {font-size: 1.1em; padding: 4px; color: black}
 .lv .sim a {color: black}
 .lv .sim a:hover {text-decoration: none}

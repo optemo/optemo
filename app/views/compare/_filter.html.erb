@@ -1,4 +1,13 @@
-	<% form_tag("",{:id => 'filter_form'}) do %>
+<% form_tag("/compare/find",{:id => 'search_form'}) do %>
+  <%= Session.current.keyword.blank? ? text_field_tag('search') : text_field_tag('search', Session.current.keyword) %>
+  <%= submit_tag 'Search', {:id => 'submit_button'} %>
+  <% if Session.current.keyword %>
+	<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :class => "removesearch"} %> Search: <%= Session.current.keyword %>
+	</div>
+  <% end %>
+<% end %>
+
+<% form_tag("",{:id => 'filter_form'}) do %>
 <% $Categorical["filter"].each do |feat| %>
 	<div class='feature'>
 		<!--div class='label'>
@@ -8,19 +17,20 @@
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
 			<%= link_to t('products.' + feat), "#" %>			
 		</div>
-		<% unless chosencats(feat).nil? || chosencats(feat).empty? %>
+		<% chosen_cats = chosencats(feat) %>
+		<% unless chosen_cats.nil? || chosen_cats.empty? %>
 			<%# At least one item selected %>
-			<% chosencats(feat).each do |b| %>
+			<% chosen_cats.each do |b| %>
 				<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :"data-cat" => feat, :class => "removefilter", :"data-id" => b} %> <%= b %>
 				</div>
 			<% end %>
-			<%= select('superfluous', feat, [t('products.compare.add'+feat)] +CatSpec.all(feat).reject {|b| chosencats(feat).index(b)}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>
+			<%= select('superfluous', feat, [t('products.compare.add'+feat)] + CatSpec.all(feat).reject {|b| chosen_cats.index(b)}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>
 		<% else %>
 			<%# Nothing selected %>
-			<%= select('superfluous', feat, [t('products.compare.all'+feat+'s')] + CatSpec.all(feat).map{|f| CGI::unescapeHTML(f) }, options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>		
+			<%= select('superfluous', feat, [t('products.compare.all'+feat+'s')] + CatSpec.all(feat), options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>		
 		<% end %>
 
-		<%= hidden_field_tag "myfilter[#{feat}]", chosencats(feat).join("*") %>
+		<%= hidden_field_tag "myfilter[#{feat}]", chosen_cats.join("*") %>
 	</div>
 <% end %>
 <% $Continuous["filter"].each do |feat| %>
@@ -28,8 +38,8 @@
 		:locals => {:name => t('products.' + feat),
 		:val => feat,
 		:money_formatting => feat == 'price',
-		:min => ContSpec.allMin(feat), 
-		:max => ContSpec.allMax(feat)} %>
+		:overall_min => ContSpec.allMinMax(feat)[0],
+		:overall_max => ContSpec.allMinMax(feat)[1]} %>
 <% end %>
 <% $Binary["filter"].each do |feat| %>
 	<div class='feature'>

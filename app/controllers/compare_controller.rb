@@ -94,12 +94,8 @@ class CompareController < ApplicationController
     params[:id] = params[:id][/^\d+/]
     @product = Product.cached(params[:id])
     if $product_type
-      if $product_type == "Flooring"
-        imagestring = CGI.unescapeHTML(@product.imagelink.to_s).split("&")
-        imagestring[0] = imagestring[0].split("?")[0] + "?" + imagestring[1]
-        imagestring.delete_at(1)
-        imagestring = imagestring.join("&")
-        @imglurl = "http://www.builddirect.com" + imagestring
+      if $product_type == "flooring_builddirect"
+        @imglurl = "http://www.builddirect.com" + CGI.unescapeHTML(@product.imglurl.to_s)
       elsif $product_type == "Laptop"
         @imglurl = @product.imgurl.to_s
       else
@@ -133,7 +129,7 @@ class CompareController < ApplicationController
       Search.createInitialClusters
       render 'ajax', :layout => false
     else
-      product_ids = Product.search_for_ids(params[:search].downcase, :per_page => 10000, :star => true)
+      product_ids = Product.search_for_ids(params[:search].downcase, :per_page => 10000, :star => true, :with => {:product_type => $product_type})
       current_version = Session.current.version
       nodes = product_ids.map{|p| Node.byproduct(p) }.compact
       
@@ -153,7 +149,7 @@ class CompareController < ApplicationController
         Search.createInitialClusters
         Session.current.update_attribute('filter', true)
         Session.current.keyword = params[:search]
-        Session.current.keywordpids = nodes.map{|p| "product_id = #{p.product_id}"}.join(' OR ')
+        Session.current.keywordpids = product_ids.map{|p| "product_id = #{p}"}.join(' OR ')
         
         if params[:ajax]
           classVariables(Search.createFromKeywordSearch(nodes))

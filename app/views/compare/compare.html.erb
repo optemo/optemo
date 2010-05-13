@@ -1,15 +1,18 @@
 <% self.title = "#{Session.current.search.desc} #{$product_type.capitalize}" unless @indexload%>
 <div id="leftbar">
-	<!-- The Search box -->
-	<div id='searchbox' class='leftboxes rounded_leftboxes rounded'>
-	<div class="tl"></div><div class="tr"></div>
-	<h2><%=t "products.compare.search" %></h2>
-	<% form_tag("/compare/find",{:id => 'search_form'}) do %>
-	  <%= Session.current.keyword.blank? ? text_field_tag('search') : text_field_tag('search', Session.current.keyword) %>
-	  <%= submit_tag 'Search', {:id => 'submit_button'} %>
-	<% end %>
-	<div class="bl"></div><div class="br"></div>
+	<!-- The Filters section -->
+	<div id="filterbar" class="leftboxes rounded_leftboxes rounded">
+		<div class="tl"></div><div class="tr"></div>
+		<h2><%=t 'products.compare.search' %> <%= link_to "(reset)", "/compare/", :id => "staticajax_reset", :class => "reset" %></h2>
+			<div class="filtersdesc"><%=t 'products.compare.filtersdesc' %></div>
+		<div id="ajaxfilter">
+			<% unless @indexload %>
+				<%= render :partial => 'filter' %>
+			<% end  %>
+		</div>
+		<div class="bl"></div><div class="br"></div>
 	</div>
+	
 	<!-- The Saved Items box -->
 	<div id="savebar" class='leftboxes gainlayout rounded_leftboxes rounded'>
 		<div class="tl"><!-- --></div><div class="tr"><!-- --></div>
@@ -25,20 +28,7 @@
 		<%= link_to image_tag("compare#{fr?}.gif"), "", :id => "compare_button", :style => "display:none;" %>
 		<div class="bl"><!-- --></div><div class="br"><!-- --></div>
 	</div>
-
-	<!-- The Filters section -->
-	<div id="filterbar" class="leftboxes rounded_leftboxes rounded">
-		<div class="tl"></div><div class="tr"></div>
-		<h2><%=t 'products.compare.filters' %> <%= link_to "(reset)", "/compare/", :id => "staticajax_reset", :class => "reset" %></h2>
-			<div class="filtersdesc"><%=t 'products.compare.filtersdesc' %></div>
-		<div id="ajaxfilter">
-			<% unless @indexload %>
-				<%= render :partial => 'filter' %>
-			<% end  %>
-		</div>
-		<div class="bl"></div><div class="br"></div>
-	</div>
-	</div>
+</div>
 
 <div id="main">
 	<% if @indexload %>
