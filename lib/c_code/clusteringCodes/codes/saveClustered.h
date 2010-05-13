@@ -1,4 +1,4 @@
-void saveClusteredData(double ** data, int* idA, int size, string* brands, int parent_id, int** clusteredDataOrderU, double*** conFeatureRange, 
+void saveClusteredData(double ** data, int* idA, int size, string* brands, int parent_id, int** clusteredDataOrderU, 
 int layer, 
 int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string* boolFeatureNames,  sql::Statement *stmt, string productName, int version, string region){
 

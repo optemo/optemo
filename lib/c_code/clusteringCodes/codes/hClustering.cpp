@@ -330,7 +330,8 @@ int main(int argc, char** argv){
 				myfile2<<"Version: "<<version<<endl;
 				
 				vector<int> outlier_ids;
-			  // while (maxSize>clusterN){
+			
+			   while (maxSize>clusterN){
 							
 					for (int j=0; j<conFeatureN; j++){
 						average[j] = 0.0;
@@ -343,15 +344,15 @@ int main(int argc, char** argv){
 					layer++;
 					clustered = 1;
 					
-		//		}
-      	//	if (clustered){
-		//	//	insertOutliers(conFeatureN, boolFeatureN, clusterN, res, res2, res3, stmt, stmt2, conFeatureNames, boolFeatureNames, productName, version, region, outlier_ids);	
-      	//		leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames,res, res2, res3, stmt, productName, version, region);	
-      	//		myfile2<<"layer "<<layer<<endl;
-        //	}else{
-      	//		smallNumberClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, stmt, productName, version, region);	
-      	//		myfile2<<"layer "<<layer<<endl;
-     	//	}
+				}
+      		if (clustered){
+			//	insertOutliers(conFeatureN, boolFeatureN, clusterN, res, res2, res3, stmt, stmt2, conFeatureNames, boolFeatureNames, productName, version, region, outlier_ids);	
+      			leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames,res, res2, res3, stmt, productName, version, region);	
+      			myfile2<<"layer "<<layer<<endl;
+        	}else{
+      			smallNumberClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames, res, res2, stmt, productName, version, region);	
+      			myfile2<<"layer "<<layer<<endl;
+     		}
 
 
 //Clearing the old clusters and nodes

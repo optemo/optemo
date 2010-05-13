@@ -96,13 +96,13 @@ if 	(layer == 1){
 			
 				//	for (int d = conFeatureN+2*boolFeatureN; d < conFeatureN+2*boolFeatureN+brand2int.size(); d++)
 					int dim= 0;
-					for (int f = 0; f < catFeatureN; f++){
-						 
+					for (int f = 0; f < catFeatureN; f++){	 
 						for (int d=0; d<discrete2int[catFeatureNames[f]].size(); d++){
 							data[j][conFeatureN+2*boolFeatureN+dim] = 0;
 							dim++;
-							data[j][conFeatureN+2*boolFeatureN + discrete2int[catFeatureNames[f]][disData[j][f]]] = 1;
 						}
+						data[j][conFeatureN+2*boolFeatureN + discrete2int[catFeatureNames[f]][disData[j][f]]] = 1;
+						
 					}	
 				}	
 		
@@ -205,16 +205,15 @@ if 	(layer == 1){
 		repOrder(dataCluster, clusteredData[c][0], "median", conFeatureN, boolFeatureN, clusteredDataOrder[c],  weights);
         for (int j = 0; j < clusteredData[c][0]; j++) free(dataCluster[j]);
 	  }
-			cout<<"clusteredData[0][0] is "<<clusteredData[0][0]<<endl;
-			for (int j=0; j<clusteredData[0][0]; j++){ 
-				cout<<"clusteredData[0]["<<j<<"] is "<<clusteredData[0][j]<<endl;
-			}	
+		
 	
-			utilityOrder(temp_data, temp_idA, non_out_index.size(), clusteredData, clusteredDataOrder, clusteredDataOrderU, clusterN, conFeatureN, 
-                  boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res, productName); 
+//			utilityOrder(temp_data, temp_idA, non_out_index.size(), clusteredData, clusteredDataOrder, clusteredDataOrderU, clusterN, conFeatureN, 
+//                  boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res, productName); 
 
-	     getStatisticsClusteredData(temp_data, clusteredDataOrderU, average, temp_idA, non_out_index.size(), clusterN, conFeatureN, conFeatureRangeC);	    
-	saveClusteredData(temp_data, temp_idA, non_out_index.size(), temp_brands, parent_id, clusteredDataOrderU, conFeatureRangeC, layer, clusterN, conFeatureN, 
+	cout<<"before get stat"<<endl;
+	//     getStatisticsClusteredData(temp_data, clusteredDataOrder, average, temp_idA, non_out_index.size(), clusterN, conFeatureN, conFeatureRangeC);
+		cout<<"before save "<<endl;	    
+	saveClusteredData(temp_data, temp_idA, non_out_index.size(), temp_brands, parent_id, clusteredDataOrder, layer, clusterN, conFeatureN, 
 				   							boolFeatureN, conFeatureNames, boolFeatureNames, stmt, productName, version, region);
 	
 		
@@ -292,6 +291,7 @@ if 	(layer == 1){
 		        s++;		
 				if (s == size) break;			
 	    }
+		cout<<"after data load"<<endl;
 			data = new double*[size];
 			for (int j=0; j<size; j++) {
 			//	data[j] = new double[conFeatureN+2*boolFeatureN+brand2int.size()];
@@ -303,18 +303,24 @@ if 	(layer == 1){
 				}						
 			//	for (int d = conFeatureN+2*boolFeatureN; d < conFeatureN+2*boolFeatureN+brand2int.size(); d++)
 			////////////////////////////////////////////////////////////////////////
-				for (int d = conFeatureN+2*boolFeatureN; d < catFeatureN; d++)
-					data[j][d] = 0;
-				data[j][conFeatureN+2*boolFeatureN + brand2int[brands[j]]] = 1;	
-			}	 
-      dataN = new double*[size];
+				int dim= 0;
+				for (int f = 0; f < catFeatureN; f++){	 
+					for (int d=0; d<discrete2int[catFeatureNames[f]].size(); d++){
+						data[j][conFeatureN+2*boolFeatureN+dim] = 0;
+						dim++;
+					}		
+						data[j][conFeatureN+2*boolFeatureN + discrete2int[catFeatureNames[f]][disData[j][f]]] = 1;
+					
+				}
+			}
+        dataN = new double*[size];
  	   	for(int j=0; j<size; j++)
- 	   				dataN[j] = new double[conFeatureN+2*boolFeatureN+brand2int.size()]; 	
+ 	   				dataN[j] = new double[conFeatureN+2*boolFeatureN+disDim]; //brand2int.size()]; 	
 			
-      standarize_data(data, size, conFeatureN, 2*boolFeatureN+brand2int.size(), mean, var, dataN); 
+      standarize_data(data, size, conFeatureN, 2*boolFeatureN+disDim, mean, var, dataN); //2*boolFeatureN+brand2int.size(), mean, var, dataN); 
 
 			int	centersA[size];	
-			clusterN = hartigan_qmeasure(dataN, size, conFeatureN, 2*boolFeatureN+brand2int.size(), max_k, method, 
+			clusterN = hartigan_qmeasure(dataN, size, conFeatureN, 2*boolFeatureN+disDim, max_k, method,//brand2int.size(), max_k, method, 
                                    restart_num, weights, to_clip, &disc_domains,centersA); //reza
   
 			if (clusterN < 2) continue; //it prevents going into infinite loop
@@ -350,12 +356,13 @@ if 	(layer == 1){
 	
 	   	int **indicators = new int* [conFeatureN]; 
  	   	for (int j=0; j<conFeatureN; j++) indicators[j] = new int[size+1]; //re
-			utilityOrder(tdata, idA, size, clusteredData, clusteredDataOrder, clusteredDataOrderU, 
-                    clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res, productName); 
-		  getStatisticsData(tdata, clusteredDataOrderU, indicators, idA, s, clusterN, conFeatureN, conFeatureRangeC);
-		  saveClusteredData(tdata, idA, size, brands, parent_id,clusteredDataOrderU, conFeatureRangeC, layer, clusterN, conFeatureN, 
+	//		utilityOrder(tdata, idA, size, clusteredData, clusteredDataOrder, clusteredDataOrderU, 
+    //               clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res, productName); 
+	//	  getStatisticsData(tdata, clusteredDataOrderU, indicators, idA, s, clusterN, conFeatureN, conFeatureRangeC);
+		cout<<"before save"<<endl;
+		  saveClusteredData(tdata, idA, size, brands, parent_id,clusteredDataOrder, layer, clusterN, conFeatureN, 
 			       				boolFeatureN, conFeatureNames, boolFeatureNames, stmt, productName, version, region);
-	
+							cout<<"after save"<<endl;
 			for (int c=0; c<clusterN; c++)
 					if (clusteredData[c][0]>maxSize) maxSize = clusteredData[c][0];
       for (int j = 0; j < clusterN; j++) {

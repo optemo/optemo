@@ -323,7 +323,7 @@ void getStatisticsData1(double** data, int** indicators, int size, int conFeatur
 	              conFeatureRange[c][f][0] = data[ind][f]; 
 				}
 	        } 
-
+			cout<<"in get stat"<<endl;
 			for (int c=0; c<clusterN; c++){
 				for (int f=0; f<conFeatureN; f++){
 		      		for(int j = 0; j<clusteredData[c][0]; j++){
