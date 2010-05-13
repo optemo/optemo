@@ -20,6 +20,17 @@
 		</div>
 		<!--<a href="<%= representative.descurl %>" data-id="<%= representative.id %>" class="easylink" title="Click for product specifications"><%= representative.smlTitle %></a>-->
 		<%= representative.smlTitle %>
+		<div class="itemfeatures">
+			<% $Categorical["show"].each do |f|%>
+			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => CatSpec.cache(representative.id, f)} %>
+			<% end %>
+			<% $Continuous["show"].each do |f|%>
+			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => ContSpec.cache(representative.id, f)} %>
+			<% end %>
+			<% $Binary["show"].each do |f|%>
+			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => BinSpec.cache(representative.id, f)} %>
+			<% end %>
+		</div>
 		<div class="price">
 			<%= number_to_currency(ContSpec.cache(representative.id, "price")) %>
 		</div>

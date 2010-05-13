@@ -40,11 +40,7 @@ module CompareHelper
   end
   
   def navtitle
-    if Session.current.keyword.nil?
-		  ["Browsing", Session.current.search.result_count, (Session.current.search.result_count > 1) ? t("#{$product_type}.title-plural") : t("#{$product_type}.title-plural")].join(" ")
-		else
-      "#{t("products.compare.search")}: '#{Session.current.keyword}', #{(Session.current.search.result_count > 1) ? t("products.compare.browsings",:count => Session.current.search.result_count) : t("products.compare.browsing")}" 
-    end
+		["Browsing", Session.current.search.result_count, (Session.current.search.result_count > 1) ? t("#{$product_type}.title-plural") : t("#{$product_type}.title-plural")].join(" ")
   end
   
   def groupDesc(group, i)
