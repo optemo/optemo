@@ -5,6 +5,19 @@
 	<div id="navigator_bar" class="rounded_nav rounded">
 		<div class="tl"></div><div class="tr"></div>
 	    <%= navtitle %>
+	<% if $LineItemView %>
+	<div id="columnheader">
+		<div id="firstcolumn">
+			Browse Similar
+		</div>
+		<div id="secondcolumn">
+			Group Differences
+		</div>
+		<div id="thirdcolumn">
+			Our pick for this group
+		</div>
+	</div>
+	<% end %>
 		<div class="bl"></div><div class="br"></div>
 	<%= '</div>' if !$LineItemView %>
 	<div class='<%= $LineItemView ? "lv" : "gv" %>'>

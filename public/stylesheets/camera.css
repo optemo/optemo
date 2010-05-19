@@ -38,6 +38,24 @@ div#main {
 	margin-left: 3px;
 }
 
+#columnheader {
+	font-size: 0.8em;
+}
+
+#firstcolumn {
+	width: 62px;
+	float: left;
+}
+#secondcolumn {
+	width: 100px;
+	float: left;
+	margin-left: 18px;
+}
+#thirdcolumn {
+	width: 100%;
+	height: 20px;
+	padding-top: 10px;
+}
 /*--------------------------------------//
 //      Main Content (Right Side)       //
 //--------------------------------------*/
@@ -59,15 +77,15 @@ div.rowdiv {
 	height:231px;
 }
 .lv .navigator_box {
-  margin:4px auto;
-  width:715px;  
+  	margin:4px auto;
+  	width:715px;  
 	height:100px;
 	text-align: left;
 	background-color: white;
 	border: 1px solid #e1e1e1;
-  -moz-border-radius: 8px;       /* for Firefox */
+  	-moz-border-radius: 8px;       /* for Firefox */
 	-webkit-border-radius: 8px;    /* for Safari */
-  border-radius: 8px;            /* Opera, KHTML, others */
+  	border-radius: 8px;            /* Opera, KHTML, others */
 }
 .gv .nbgroup {
 	padding: 3px 9px 3px 3px;
