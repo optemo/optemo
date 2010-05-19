@@ -1,10 +1,15 @@
 desc 'Download laptop data'
 task :scrape_walmart => :environment do 
   require 'nokogiri'
-  doc = Nokogiri::HTML(File.open("/Users/janulrich/Desktop/walmart.html")) do |config|
+  doc = Nokogiri::HTML(File.open("/Users/maryam/walmart.html")) do |config|
   end
   all_records = doc.css(".item")
-  i_records = []
+  puts all_records.size
+  debugger
+  c_records = []
+  t_records = []
+  b_records = []
+  
   all_records.each do |item|
     imgurl = item.css(".prodImg").attribute("src").content
     title = item.css(".prodLink").first.content
@@ -14,46 +19,74 @@ task :scrape_walmart => :environment do
     pricefield = item.css(".PriceXLBold").first.content
     
     #Extract data
-    i = Laptop.new
-    
-    price = pricefield[/\d+\.\d\d/].to_f
-    i.pricestr = "$#{"%.2f" % price}"
-    i.price = price * 100
-    #RAM
-    m = features[/(\d) ?GB\s?(DDR|Memory|memory|of memory|shared)/]
-    i.ram = $~[1] if m
-    unless i.ram
-      m = features[/(\d+) MB DDR/]
-      i.ram = $~[1].to_i/1000 if m
-    end
-    
-    #HD
-    m = features[/(\d+)\s?GB\s?(hard drive|SATA|7200|5400)/i]
-    i.hd = $~[1] if m
-    unless i.hd
-      m = features[/Hard Drive Capacity: (\d+)\s?GB/i] 
-      i.hd = $~[1] if m
-    end
-    
-    #Brand
-    i.brand = title.split.first
-    
-    #Screen size
-    m = title[/([0-9.]+)"/]
-    i.screensize = $~[1] if m
-    unless i.screensize
-      m = features[/([0-9.]+)"/]
-      i.screensize = $~[1] if m
-    end
-    
+    i = Product.new
     i.title = title
     i.instock = true
     i.imgurl = imgurl
-    i_records << i
+    #i_records << i
+    i.save 
+    
+    #PRICE
+    c = ContSpec.new
+    price = pricefield[/\d+\.\d\d/].to_f
+    #c.pricestr = "$#{"%.2f" % price}"
+    c.name = "price"
+    c.value = price
+    c.product_id = i.id
+    c_records << c
+    
+    #RAM
+    c= ContSpec.new 
+    m = features[/(\d) ?GB\s?(DDR|Memory|memory|of memory|shared)/]
+    c.name = "ram"
+    c.value = $~[1] if m
+    unless i.ram
+      m = features[/(\d+) MB DDR/]
+      c.value = $~[1].to_i/1000 if m
+    end
+    c.producr_id = i.id 
+    c_records << c
+    
+    #HD
+    c = ContSpec.new
+    m = features[/(\d+)\s?GB\s?(hard drive|SATA|7200|5400)/i]
+    c.name = "hd"
+    c.value = $~[1] if m
+    unless c.value
+      m = features[/Hard Drive Capacity: (\d+)\s?GB/i] 
+      c.value = $~[1] if m
+    end
+    c.product_id = i.id 
+    c_records << c
+    
+    #Screen size
+    c = ContSpec.new
+    m = title[/([0-9.]+)"/]
+    c.name = "screensize"
+    c.value = $~[1] if m
+    unless c.value
+      m = features[/([0-9.]+)"/]
+      c.value = $~[1] if m
+    end
+    c.product_id = i.id
+    c_records << c
+    
+    #Brand
+    t = CatSpec.new 
+    t.name = "brand"
+    t.value = title.split.first
+    t.product_id = i.id
+    t_records << t
+    
   end
+
   puts "Items found: #{all_records.count}"
-  Laptop.transaction do
-    i_records.each(&:save)
+  ContSpec.transaction do
+    c_records.each(&:save)
   end
   
+  CatSpec.transaction do
+     t_records.each(&:save)
+   end
+   
 end
