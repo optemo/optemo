@@ -240,6 +240,19 @@ class Search < ActiveRecord::Base
     s
   end
   
+  def self.createGroupBy(feat)
+    myproducts = Session.current.search.products
+    specs = CatSpec.cachemany(myproducts.map(&:id),feat)
+    grouping = specs.zip(myproducts).group_by{|s,p|s}
+    grouping = Hash[grouping.each_pair{|k,v| grouping[k] = v.map(&:second)}.sort{|a,b| b.second.length <=> a.second.length}]
+    grouping.each_pair do |feat,products| 
+      prices = ContSpec.cachemany(products.map(&:id),"price")
+      cheapest = prices.zip(products).sort{|a,b|a.first <=> b.first}.first.second
+      products.delete(cheapest)
+      grouping[feat] = [cheapest,cheapest]+products
+    end
+  end
+  
   def self.createFromFilters(myfilter)
     #Delete blank values
     myfilter.delete_if{|k,v|v.blank?}

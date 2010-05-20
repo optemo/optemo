@@ -21,7 +21,7 @@ en:
         brand:                      "Brand"
         finish:                     "Finish"
         species:                    "Species"    
-        colorrange:                 "Color Range"    
+        colorrange:                 "Color"    
         overallrating:              "Overall Rating"
         profit_margin:              "Profit Margin"    
 

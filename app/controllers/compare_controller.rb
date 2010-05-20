@@ -18,6 +18,11 @@ class CompareController < ApplicationController
   end
   
   def groupby
+    feat = params[:feat]
+    Session.current.search = Session.current.searches.last
+    @groupings = Search.createGroupBy(feat)
+    classVariables(Session.current.search)
+    render 'ajax', :layout => false
   end
   
   def compare(hist = nil)

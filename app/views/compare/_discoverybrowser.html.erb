@@ -22,8 +22,14 @@
 	<%= '</div>' if !$LineItemView %>
 	<div class='<%= $LineItemView ? "lv" : "gv" %>'>
 	<% if $SimpleLayout %>
-		<% @products.each do |product| %>
-			<%= render :partial => 'listbox', :locals => {:i => 0, :cluster => nil, :group => false, :representative => product} %>
+		<% if @groupings.nil? %>
+			<% @products.each do |product| %>
+				<%= render :partial => 'listbox', :locals => {:i => 0, :cluster => nil, :group => false, :representative => product} %>
+			<% end %>
+		<% else %>
+			<% @groupings.each_pair do |feature, products| %>
+				<%= render :partial => 'grouping', :locals => {:feat => feature, :cheapest => products.first, :best => products.second, :group => true}%>
+			<% end %>
 		<% end %>
 	<% else %>
 		<% for i in 0..[Session.current.search.cluster_count,$NumGroups].min-1 %>
@@ -41,6 +47,6 @@
 	<% end %>
 	<%= '</div>' if open && !$LineItemView %>
 	</div>
-	<%= will_paginate @products if $SimpleLayout%>
+	<%= will_paginate @products if $SimpleLayout && @groupings.nil?%>
 	<%= '</div>' if $LineItemView %>
 	<div style="clear:both;"><span id="actioncount" style="display:none"><%= Session.current.searches.count %></span><%= '<span id="tourautostart">&nbsp;</span>' if (Session.current && (Time.now - Session.current.created_at < 3)) %></div>
