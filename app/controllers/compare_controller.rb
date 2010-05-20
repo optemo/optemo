@@ -5,7 +5,8 @@ class CompareController < ApplicationController
   
   def index
     if Session.isCrawler?(request.user_agent) || params[:ajax]
-      Search.createInitialClusters
+      s = Search.createInitialClusters
+      classVariables(s)
     else
       @indexload = true
     end
@@ -16,28 +17,35 @@ class CompareController < ApplicationController
     end
   end
   
-  def compare
+  def groupby
+  end
+  
+  def compare(hist = nil)
     hist = params[:hist].gsub(/\D/,'').to_i if params[:hist]
     #Going back to a previous search
     if hist
       search_history = Session.current.searches
-      if hist < search_history.length && hist > 0
+      if hist <= search_history.length && hist > 0
         mysearch = search_history[hist-1]
         Session.current.keywordpids = mysearch.searchpids 
         Session.current.keyword = mysearch.searchterm
         classVariables(mysearch)
       else
-        Search.createInitialClusters
+        s = Search.createInitialClusters
+        classVariables(s)
       end
     else
       classVariables(Search.createFromClustersAndCommit(params[:id].split('-')))
     end
-    
     render 'ajax', :layout => false
   end
   
   def classVariables(search)
     Session.current.search = search
+    if $SimpleLayout
+      page = params[:page]
+      @products = search.products.paginate :page => page, :per_page => 9
+    end
   end
   
   def sim
@@ -66,8 +74,7 @@ class CompareController < ApplicationController
 
   def filter
     if params[:myfilter].nil?
-      #No post info passed
-      render :text =>  "[ERR]Search could not be completed."
+      compare(Session.current.searches.count + 1)
     else
       oldsearch = Session.current.searches.last
       Session.current.search = oldsearch
@@ -126,7 +133,8 @@ class CompareController < ApplicationController
   
   def find
     if params[:search].blank? && params[:ajax]
-      Search.createInitialClusters
+      s = Search.createInitialClusters
+      classVariables(s)
       render 'ajax', :layout => false
     else
       product_ids = Product.search_for_ids(params[:search].downcase, :per_page => 10000, :star => true, :with => {:product_type => $product_type})

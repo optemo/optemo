@@ -56,6 +56,10 @@ Rails::Initializer.run do |config|
    :lib => 'thinking_sphinx'
  )
  
+ config.gem 'mislav-will_paginate', 
+   :lib => 'will_paginate', 
+   :source => 'http://gems.github.com'
+ 
  #config.gem "newrelic_rpm"
  
 end

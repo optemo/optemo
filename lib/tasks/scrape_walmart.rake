@@ -4,6 +4,7 @@ task :scrape_walmart => :environment do
   doc = Nokogiri::HTML(File.open("/Users/janulrich/Desktop/walmart.html")) do |config|
   end
   all_records = doc.css(".item")
+  debugger
   i_records = []
   all_records.each do |item|
     imgurl = item.css(".prodImg").attribute("src").content

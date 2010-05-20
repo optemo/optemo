@@ -152,4 +152,8 @@ class Product < ActiveRecord::Base
     end
     data.to_s+ending
   end
+  
+  def self.per_page
+    9
+  end
 end

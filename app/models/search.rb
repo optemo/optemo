@@ -201,6 +201,17 @@ class Search < ActiveRecord::Base
     @clusters
   end
   
+  def products
+    selected_features = (userdataconts.map{|c| c.name+c.min.to_s+c.max.to_s}+userdatabins.map{|c| c.name+c.value.to_s}+userdatacats.map{|c| c.name+c.value}).hash
+    CachingMemcached.cache_lookup("#{$product_type}Products#{selected_features}") do
+      #Temporary fix for backward compatibility
+      fq = Cluster.filterquery(self)
+      fq = fq.gsub("product_id in", "id in") if fq
+      kq = Session.current.keywordpids.gsub('product_id','id') if Session.current.keywordpids
+      Product.find(:all, :conditions => "product_type = '#{$product_type}'#{' and '+fq unless fq.blank?}#{' and ('+kq+')' unless kq.blank?}")
+    end
+  end
+  
   #The clusters argument can either be an array of cluster ids or an array of cluster objects if they have already been initialized
   def self.createFromClusters(clusters)
     ns = {}
@@ -312,7 +323,7 @@ class Search < ActiveRecord::Base
     #Remove search terms
     Session.current.keywordpids = nil
     Session.current.keyword = nil
-    Session.current.search = self.createFromClustersAndCommit(Cluster.byparent(0))
+    self.createFromClustersAndCommit(Cluster.byparent(0))
   end
   
   def commitfilters

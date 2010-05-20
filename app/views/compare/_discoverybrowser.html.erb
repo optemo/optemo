@@ -21,19 +21,26 @@
 		<div class="bl"></div><div class="br"></div>
 	<%= '</div>' if !$LineItemView %>
 	<div class='<%= $LineItemView ? "lv" : "gv" %>'>
-	<% for i in 0..[Session.current.search.cluster_count,$NumGroups].min-1 %>
-	  <% if i%(Float($NumGroups)/3).ceil == 0 && !$LineItemView %>
-		<div class="rowdiv">
-		<% open = true %>
-	  <% end %>
-	  <!-- Navbox partial to draw boxes -->
-	  <%= render :partial => ($LineItemView ? 'listbox' : 'navbox'), :locals => {:i => i, :cluster => Session.current.search.clusters[i] , :group => Session.current.search.clusters[i].size>1, :representative => Session.current.search.clusters[i].representative} %>
-	  <% if i%(Float($NumGroups)/3).ceil == (Float($NumGroups)/3).ceil - 1 && !$LineItemView %>
-		</div>
-		<% open = false %>
-	  <% end %>
+	<% if $SimpleLayout %>
+		<% @products.each do |product| %>
+			<%= render :partial => 'listbox', :locals => {:i => 0, :cluster => nil, :group => false, :representative => product} %>
+		<% end %>
+	<% else %>
+		<% for i in 0..[Session.current.search.cluster_count,$NumGroups].min-1 %>
+		  <% if i%(Float($NumGroups)/3).ceil == 0 && !$LineItemView %>
+			<div class="rowdiv">
+			<% open = true %>
+		  <% end %>
+		  <!-- Navbox partial to draw boxes -->
+		  <%= render :partial => ($LineItemView ? 'listbox' : 'navbox'), :locals => {:i => i, :cluster => Session.current.search.clusters[i] , :group => Session.current.search.clusters[i].size>1, :representative => Session.current.search.clusters[i].representative} %>
+		  <% if i%(Float($NumGroups)/3).ceil == (Float($NumGroups)/3).ceil - 1 && !$LineItemView %>
+			</div>
+			<% open = false %>
+		  <% end %>
+		<% end %>
 	<% end %>
 	<%= '</div>' if open && !$LineItemView %>
 	</div>
+	<%= will_paginate @products if $SimpleLayout%>
 	<%= '</div>' if $LineItemView %>
 	<div style="clear:both;"><span id="actioncount" style="display:none"><%= Session.current.searches.count %></span><%= '<span id="tourautostart">&nbsp;</span>' if (Session.current && (Time.now - Session.current.created_at < 3)) %></div>

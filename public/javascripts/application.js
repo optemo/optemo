@@ -31,7 +31,7 @@
 
 */
 //Load start page via ajax
-if ($('#ajaxload'))
+if ($('#ajaxload').length)
 {
 	if (location.hash)
 		ajaxsend(location.hash.replace(/^#/, ''),null,null,true);
@@ -586,6 +586,16 @@ function DBinit() {
 		piwikTracker2.setCustomData({});
 		return false;
 	});
+	//Pagination links
+	$('.pagination a').unbind("click").click(function(){
+		url = $(this).attr('href')
+		if (url.match(/\?/))
+			url +='&ajax=true'
+		else
+			url +='?ajax=true'
+		ajaxcall(url);
+		return false;
+	});
 	//Autocomplete for searchterms
 	model = MODEL_NAME.toLowerCase();
     if (model.match(/printer/) || model.match(/camera/)) 
@@ -643,7 +653,7 @@ $(document).ready(function() {
 	$.historyInit(ajaxsend);
 	
 	// Only load DBinit if it will not be loaded by the upcoming ajax call
-	if (!$('#ajaxload')) {
+	if ($('#ajaxload').length == 0) {
 		// Other init routines get run when they are needed.
 		FilterAndSearchInit(); DBinit();
 	}
