@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100430230011) do
+ActiveRecord::Schema.define(:version => 20100520211707) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -836,17 +836,6 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
     t.boolean  "bodyonly"
   end
 
-  create_table "camera_boostexter_combined_rules", :force => true do |t|
-    t.string  "fieldname",                        :null => false
-    t.float   "weight",                           :null => false
-    t.integer "cluster_id",                       :null => false
-    t.integer "version",                          :null => false
-    t.text    "yaml_repr",  :limit => 2147483647, :null => false
-    t.string  "rule_type",  :limit => 1,          :null => false
-  end
-
-  add_index "camera_boostexter_combined_rules", ["fieldname", "cluster_id", "version"], :name => "fieldname", :unique => true
-
   create_table "camera_chi_squared_scores", :force => true do |t|
     t.integer "cluster_id",        :limit => 8, :null => false
     t.integer "parent_cluster_id", :limit => 8, :null => false
@@ -1272,9 +1261,11 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
   end
 
   add_index "cat_specs", ["name", "product_type"], :name => "name_2"
+  add_index "cat_specs", ["name", "value", "product_type"], :name => "name_3"
   add_index "cat_specs", ["name"], :name => "name"
   add_index "cat_specs", ["product_id"], :name => "index_cat_specs_on_product_id"
   add_index "cat_specs", ["product_type"], :name => "product_type"
+  add_index "cat_specs", ["value"], :name => "value"
 
   create_table "clusters", :force => true do |t|
     t.string  "product_type"
@@ -1301,7 +1292,11 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
     t.datetime "updated_at"
   end
 
+  add_index "cont_specs", ["name", "value", "product_type"], :name => "name_3"
+  add_index "cont_specs", ["name", "value"], :name => "name_2"
+  add_index "cont_specs", ["name"], :name => "name"
   add_index "cont_specs", ["product_id"], :name => "index_cont_specs_on_product_id"
+  add_index "cont_specs", ["value"], :name => "value"
 
   create_table "factors", :force => true do |t|
     t.datetime "created_at"
@@ -1333,17 +1328,6 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
-
-  create_table "flooring_boostexter_combined_rules", :force => true do |t|
-    t.string  "fieldname",                        :null => false
-    t.float   "weight",                           :null => false
-    t.integer "cluster_id",                       :null => false
-    t.integer "version",                          :null => false
-    t.text    "yaml_repr",  :limit => 2147483647, :null => false
-    t.string  "rule_type",  :limit => 1,          :null => false
-  end
-
-  add_index "flooring_boostexter_combined_rules", ["fieldname", "cluster_id", "version"], :name => "fieldname", :unique => true
 
   create_table "grabber_cartridges", :force => true do |t|
     t.datetime "created_at"
@@ -1565,6 +1549,11 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
     t.integer "version"
   end
 
+  add_index "nodes", ["cluster_id"], :name => "cluster_id"
+  add_index "nodes", ["product_id"], :name => "product_id"
+  add_index "nodes", ["product_type"], :name => "product_type"
+  add_index "nodes", ["version"], :name => "version"
+
   create_table "one23_cartridges", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -1676,57 +1665,6 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
     t.integer  "idsite"
   end
 
-  create_table "printer_boostexter_combined_rules", :force => true do |t|
-    t.string  "fieldname",                        :null => false
-    t.float   "weight",                           :null => false
-    t.integer "cluster_id",                       :null => false
-    t.integer "version",                          :null => false
-    t.text    "yaml_repr",  :limit => 2147483647, :null => false
-    t.string  "rule_type",  :limit => 1,          :null => false
-  end
-
-  add_index "printer_boostexter_combined_rules", ["fieldname", "cluster_id", "version"], :name => "fieldname", :unique => true
-
-  create_table "printer_clusters_archive", :id => false, :force => true do |t|
-    t.integer "id",                :default => 0,    :null => false
-    t.integer "parent_id"
-    t.integer "layer"
-    t.integer "cluster_size"
-    t.float   "ppm_min"
-    t.float   "ppm_max"
-    t.float   "itemwidth_min"
-    t.float   "itemwidth_max"
-    t.float   "paperinput_min"
-    t.float   "paperinput_max"
-    t.integer "resolutionmax_min"
-    t.integer "resolutionmax_max"
-    t.float   "price_max"
-    t.float   "price_min"
-    t.string  "brand"
-    t.boolean "scanner"
-    t.boolean "printserver"
-    t.integer "version",           :default => 0
-    t.float   "cached_utility"
-    t.string  "region",            :default => "us"
-  end
-
-  create_table "printer_nodes_archive", :id => false, :force => true do |t|
-    t.integer "id",            :default => 0,    :null => false
-    t.integer "cluster_id"
-    t.integer "product_id"
-    t.float   "ppm"
-    t.float   "itemwidth"
-    t.float   "paperinput"
-    t.integer "resolutionmax"
-    t.boolean "scanner"
-    t.boolean "printserver"
-    t.float   "price"
-    t.string  "brand"
-    t.integer "version",       :default => 0
-    t.float   "utility"
-    t.string  "region",        :default => "us"
-  end
-
   create_table "printers", :force => true do |t|
     t.string   "brand"
     t.float    "displaysize"
@@ -1811,7 +1749,11 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
     t.string   "manufacturerurl"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "url"
   end
+
+  add_index "products", ["instock"], :name => "instock"
+  add_index "products", ["product_type"], :name => "product_type"
 
   create_table "referrals", :force => true do |t|
     t.integer  "product_id"
@@ -2026,7 +1968,6 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
   end
 
   add_index "searches", ["session_id"], :name => "session_id"
-  add_index "searches", ["session_id"], :name => "session_id_2"
 
   create_table "sessions", :force => true do |t|
     t.datetime "created_at"
@@ -2223,11 +2164,15 @@ ActiveRecord::Schema.define(:version => 20100430230011) do
 
   add_index "userdataconts", ["search_id"], :name => "search_id"
 
-  create_table "welcomes", :force => true do |t|
-    t.string   "email"
+  create_table "userdatasearches", :force => true do |t|
+    t.integer  "search_id"
+    t.string   "keyword"
+    t.text     "keywordpids"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "userdatasearches", ["search_id"], :name => "index_userdatasearches_on_search_id"
 
   create_table "word_senses", :force => true do |t|
     t.integer "word_id",                          :null => false

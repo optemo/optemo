@@ -6,7 +6,7 @@ en:
         defaultdesc:                ""
         title:                      "Printer"
         title-plural:               "Printers"
-        tagline:                    "Find the right <%= $product_type.downcase %> that fits your needs! Use this product finder to browse products by similarity and attribute filters."
+        tagline:                    "Find the right laptop that fits your needs! Use this product finder to browse products by similarity and attribute filters."
         price:                      "Price"
         ppm:                        "Printing Speed"
         itemwidth:                  "Width"

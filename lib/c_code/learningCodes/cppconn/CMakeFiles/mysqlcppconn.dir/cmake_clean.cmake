@@ -11,6 +11,7 @@ FILE(REMOVE_RECURSE
   "CMakeFiles/mysqlcppconn.dir/mysql_res_wrapper.o"
   "CMakeFiles/mysqlcppconn.dir/mysql_statement.o"
   "libmysqlcppconn.pdb"
+  "libmysqlcppconn.a"
   "libmysqlcppconn.dylib"
 )
 

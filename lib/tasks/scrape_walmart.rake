@@ -24,6 +24,7 @@ task :scrape_walmart => :environment do
     i.imgsurl = imgurl
     i.imgmurl = imgurl
     i.product_type = "laptop_walmart"
+    i.url = 
     #i_records << i
     i.save 
     
