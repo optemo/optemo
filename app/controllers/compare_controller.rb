@@ -23,14 +23,12 @@ class CompareController < ApplicationController
       search_history = Session.current.searches
       if hist < search_history.length && hist > 0
         mysearch = search_history[hist-1]
-        Session.current.keywordpids = mysearch.searchpids 
-        Session.current.keyword = mysearch.searchterm
         classVariables(mysearch)
       else
         Search.createInitialClusters
       end
     else
-      classVariables(Search.createFromClustersAndCommit(params[:id].split('-')))
+      classVariables(Search.createFromClustersAndCommit(params[:id].split('-')), Session.current.searches.last)
     end
     
     render 'ajax', :layout => false
@@ -53,7 +51,7 @@ class CompareController < ApplicationController
     end
     unless cluster.nil?
       if params[:ajax]
-        s = Search.createFromClustersAndCommit(cluster.children)
+        s = Search.createFromClustersAndCommit(cluster.children, Session.current.searches.last)
         classVariables(s)
         render 'ajax', :layout => false
       else
@@ -65,20 +63,26 @@ class CompareController < ApplicationController
   end
 
   def filter
-    if params[:myfilter].nil?
+    session = Session.current
+    if params[:myfilter].nil? && params[:search].nil?
       #No post info passed
       render :text =>  "[ERR]Search could not be completed."
     else
-      oldsearch = Session.current.searches.last
-      Session.current.search = oldsearch
-      s = Search.createFromFilters(params[:myfilter])
+      # We need to propagate the previous search term if the new search term is blank
+      if (!params[:previous_search_word].blank? && params[:search].blank?)
+         current_search_term = params[:previous_search_word]
+      else
+        current_search_term = params[:search]
+      end
+      oldsearch = session.searches.last
+      session.search = oldsearch
+      s = Search.createFromFilters(params[:myfilter], current_search_term)
       unless s.clusters.empty?
-        s.commitfilters
         classVariables(s)
         render 'ajax', :layout => false
       else
         #Rollback
-        Session.current.search = oldsearch
+        session.search = oldsearch
         @errortype = "filter"
         render 'error', :layout=>true
       end
@@ -123,45 +127,6 @@ class CompareController < ApplicationController
       format.xml  { render :xml => @product }
     end
   end
-  
-  def find
-    if params[:search].blank? && params[:ajax]
-      Search.createInitialClusters
-      render 'ajax', :layout => false
-    else
-      product_ids = Product.search_for_ids(params[:search].downcase, :per_page => 10000, :star => true, :with => {:product_type => $product_type})
-      current_version = Session.current.version
-      nodes = product_ids.map{|p| Node.byproduct(p) }.compact
-      
-      if nodes.length == 0
-        if params[:ajax]
-          @errortype = "search"
-          render 'error', :layout=>true
-        else
-          flash[:error] = "No products were found."
-          if request.referer.nil?
-            redirect_to "/compare"
-          else
-            redirect_to request.referer
-          end
-        end
-      else
-        Search.createInitialClusters
-        Session.current.update_attribute('filter', true)
-        Session.current.keyword = params[:search]
-        Session.current.keywordpids = product_ids.map{|p| "product_id = #{p}"}.join(' OR ')
-        
-        if params[:ajax]
-          classVariables(Search.createFromKeywordSearch(nodes))
-          render 'ajax', :layout => false
-        else
-          #This is broken without AJAX because searchterm is not updated in Search object
-          redirect_to "/compare/compare/"+nodes.map{|n|n.cluster_id}.join('-')
-        end
-      end
-    end
-  end
-
   
   def searchterms
 #    # There is a strange beauty in the illegibility of the following line.

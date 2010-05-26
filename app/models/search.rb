@@ -1,6 +1,6 @@
 class Search < ActiveRecord::Base
   belongs_to :session
-  attr_writer :userdataconts, :userdatacats, :userdatabins
+  attr_writer :userdataconts, :userdatacats, :userdatabins, :userdatasearches
   
   def userdataconts
       @userdataconts ||= Userdatacont.find_all_by_search_id(id)
@@ -13,7 +13,11 @@ class Search < ActiveRecord::Base
   def userdatabins
       @userdatabins ||= Userdatabin.find_all_by_search_id(id)
   end
-  
+
+  def userdatasearches
+    @userdatasearches ||= Userdatasearch.find_all_by_search_id(id)
+  end
+
   ## Computes distributions (arrays of normalized product counts) for all continuous features 
   def distribution(feat)
        dist = Array.new(21,0)
@@ -202,7 +206,7 @@ class Search < ActiveRecord::Base
   end
   
   #The clusters argument can either be an array of cluster ids or an array of cluster objects if they have already been initialized
-  def self.createFromClusters(clusters)
+  def self.createFromClusters(clusters, os)
     ns = {}
     mycluster = "c0"
     ns['cluster_count'] = clusters.length
@@ -215,8 +219,6 @@ class Search < ActiveRecord::Base
       mycluster.next!
     end
     ns['session_id'] = Session.current.id
-    ns['searchpids'] = Session.current.keywordpids
-    ns['searchterm'] = Session.current.keyword
     s = new(ns)
     s.session = Session.current
     unless clusters.nil? || clusters.empty? || clusters.first.class == String || clusters.first.class == Fixnum
@@ -229,25 +231,35 @@ class Search < ActiveRecord::Base
     s
   end
   
-  def self.createFromFilters(myfilter)
+  def self.createFromFilters(myfilter, current_search_term)
+    current_session = Session.current
     #Delete blank values
-    myfilter.delete_if{|k,v|v.blank?}
-    #Fix price, because it's stored as int in db
-    myfilter[:session_id] = Session.current.id
+    myfilter.delete_if{|k,v|v.blank?} if myfilter
+    s = new({:session_id => current_session.id})
+
+    unless current_search_term.blank?
+      product_ids = Product.search_for_ids(:per_page => 10000, :star => true, :conditions => {:product_type => $product_type, :title => current_search_term.downcase})
+      unless product_ids.empty?
+        s.userdatasearches = [Userdatasearch.new({:keyword => current_search_term, :keywordpids => "product_id IN (" + product_ids.join(',') + ")"})]
+      else
+        s.clusters = []
+        return s
+      end
+    end
+
+    myfilter["session_id"] = current_session.id
     #Handle false booleans
     $Binary["filter"].each do |f|
-      dobj = Session.current.search.userdatabins.select{|d|d.name == f}.first
+      dobj = current_session.search.userdatabins.select{|d|d.name == f}.first
       myfilter.delete(f.intern) if myfilter[f.intern] == '0' && (dobj.nil? || dobj.value != true)
-    end
-    
-    s = new({:session_id => Session.current.id, :searchpids => Session.current.keywordpids, :searchterm => Session.current.keyword})
+    end    
     
     #seperate myfilter into various parts
     s.userdataconts = []
     s.userdatabins = []
     s.userdatacats = []
-    
-    myfilter.each_pair {|k,v|
+
+    myfilter.each_pair do |k,v|
       if k.index(/(.+)_min/)
         fname = Regexp.last_match[1]
         max = fname+'_max'
@@ -259,60 +271,46 @@ class Search < ActiveRecord::Base
           s.userdatacats << Userdatacat.new({:name => k, :value => cat})
         end
       end
-    }
+    end
     #Find clusters that match filtering query
-    if !s.expandedFiltering? && Session.current.searches.last
+    if !s.expandedFiltering? && current_session.searches.last
       #Search is narrowed, so use current products to begin with
-      s.clusters = Session.current.searches.last.clusters(s)
+      s.clusters = current_session.searches.last.clusters(s)
     else
       #Search is expanded, so use all products to begin with
       s.clusters = Cluster.byparent(0).delete_if{|c| c.isEmpty(s)} #This is broken for test profile in Rails 2.3.5
       #clusters = clusters.map{|c| c unless c.isEmpty}.compact
     end
+    current_session.update_attribute('filter', true)
     s.cluster_count = s.clusters.length
+    s.commitfilters
     s
   end
   
-  def self.createFromClustersAndCommit(clusters)
-    s = createFromClusters(clusters)
-    s.save
-    #Duplicate the features
-    os = Session.current.search
+  # Duplicate the features of search (s) and the last search (os)
+  def self.duplicateFeatures(s, os)
     if os
-      (os.userdataconts+os.userdatacats+os.userdatabins).each do |d|
+      (os.userdataconts+os.userdatacats+os.userdatabins+os.userdatasearches).each do |d|
         nd = d.class.new(d.attributes)
         nd.search_id = s.id
         nd.save
       end
     end
+  end
+
+
+  def self.createFromClustersAndCommit(clusters, os)
+    s = createFromClusters(clusters, os)
+    s.save
+    self.duplicateFeatures(s, os)
+    s.commitfilters
     s
   end
   
-  def self.createFromKeywordSearch(nodes)
-    if !(nodes.nil?) && nodes.length < 50 # Guess; this should be profiled later.
-      clusters = nodes.map { |node| Cluster.cached(node.cluster_id) }.uniq
-
-      while clusters.length > $NumGroups
-        clusters = clusters.map do |cluster|
-          if cluster.parent_id != 0 # It's possible to have clusters at different layers, so we need to check for this.
-            Cluster.cached(cluster.parent_id)
-          else
-            cluster
-          end
-        end
-        clusters = clusters.uniq
-      end
-    else
-      clusters = nodes.map{|n|n.cluster_id}.uniq
-    end
-    createFromClustersAndCommit(clusters)
-  end
-  
   def self.createInitialClusters
-    #Remove search terms
-    Session.current.keywordpids = nil
-    Session.current.keyword = nil
-    Session.current.search = self.createFromClustersAndCommit(Cluster.byparent(0))
+    # Remove search terms - should no longer be necessary. 
+    # A new search will by default not be linked to any userdatasearch records
+    Session.current.search = self.createFromClustersAndCommit(Cluster.byparent(0), nil) # nil search
   end
   
   def commitfilters
@@ -324,7 +322,7 @@ class Search < ActiveRecord::Base
     save
     
     #Save user filters
-    (userdataconts+userdatabins+userdatacats).each do |d|
+    (userdataconts+userdatabins+userdatacats+userdatasearches).each do |d|
       d.search_id = id
       d.save
     end
@@ -349,10 +347,15 @@ class Search < ActiveRecord::Base
     updateClusters(myclusters)
   end
   
+  # The intent of this function is to see if filtering is being done on a previously filtered set of clusters.
+  # The reason for its existence is that filtering across, say, 50% of the total clusters is faster
+  # than starting from the beginning every time.
+  # Returns 'true' if the filtering is "expanded", ie., if the new filtering needs to examine clusters that weren't in the previous search.
   def expandedFiltering?
+    mysearch = Session.current.search
     #Continuous feature
     userdataconts.each do |f|
-      old = Userdatacont.find_by_search_id_and_name(Session.current.search.id,f.name)
+      old = Userdatacont.find_by_search_id_and_name(mysearch.id,f.name)
       if old # If the oldsession max value is not nil then calculate newrange
         oldrange = old.max - old.min
         newrange = f.max - f.min
@@ -371,16 +374,19 @@ class Search < ActiveRecord::Base
     end
     #Categorical Feature
     if userdatacats.empty?
-      return true if Userdatacat.find_by_search_id(Session.current.search.id)
+      return true if Userdatacat.find_by_search_id(mysearch.id)
     else
       userdatacats.each do |f|
-        old = Userdatacat.find_all_by_search_id_and_name(Session.current.search.id,f.name)
+        old = Userdatacat.find_all_by_search_id_and_name(mysearch.id,f.name)
         unless old.empty?
           newf = userdatacats.select{|c|c.name == f.name}
           return true if newf.length == 0 && old.length > 0
           return true if old.length > 0 && newf.length > old.length
         end
       end
+    end
+    if userdatasearches.empty?
+      return true if Userdatasearch.find_all_by_search_id(mysearch.id)
     end
     false
   end
@@ -422,6 +428,6 @@ class Search < ActiveRecord::Base
   
   def round2Decim(a)
     a.map{|n| (n*1000).round.to_f/1000}
-  end  
+  end
+  
 end
-
