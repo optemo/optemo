@@ -121,6 +121,9 @@ div.rowdiv {
 	padding: 5px;
 	text-align: center;
 }
+.sv .title {
+	width: 100px;
+}
 /* Navigator box */
 .product_box {
 	position: relative;
@@ -169,6 +172,9 @@ div.rowdiv {
 	float: left;
 	width: 500px;
 	height: 100px;
+}
+.sv .productinfo {
+	width: 270px;
 }
 .price {
 	color: #F5000B;
@@ -424,6 +430,23 @@ div.smalldesc {
 }
 .selectboxfilter {
 	width:100%;
+}
+
+.sv .selectboxfilter {
+	width:130px;
+}
+
+.groupby {
+	font-size: 0.8em;
+	background-color: #ffb62f;
+	border: 1px solid #ccc;
+	float: right;
+	padding: 3px;
+	-moz-border-radius: 6px;	   /* for Firefox */
+	-webkit-border-radius: 6px;    /* for Safari */
+  	border-radius: 6px;            /* Opera, KHTML, others */
+	text-align: center;
+	cursor: pointer;
 }
 
 .label {

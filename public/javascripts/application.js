@@ -477,6 +477,13 @@ function FilterAndSearchInit() {
 			return false;
 		});
 	});
+	
+	$('.groupby').each(function(){
+		$(this).unbind('click').click(function(){
+			feat = $(this).attr('data-feat');
+			ajaxcall("/compare/groupby/?feat="+feat);
+		});
+	});
 	//Show Additional Features
 	$('#morefilters').unbind('click').click(function(){
 		$('.extra').show("slide",{direction: "up"},100);

@@ -163,7 +163,9 @@ end
 desc "Make clusters for simple view"
 task :create_flat_clustering => :environment do
   load_defaults("flooring_builddirect")
-  version = Cluster.find_last_by_product_type($product_type).version
+  lastcluster = Cluster.find_last_by_product_type($product_type)
+  version = lastcluster.version if lastcluster
+  version ||= 0
   newversion = version + 1
   c = Cluster.new :product_type => $product_type, :version => newversion, :layer => 1, :parent_id => 0
   c.save

@@ -1,13 +1,7 @@
 <div class="navigator_box <%= group ? "nbgroup" : 'nbsingle' %>">
-	<div class='sim'>
-		<% if group %>
-			<%= link_to(image_tag("plus_line.png")+"<br>#{@groupings[feat].size}", 
-		  "/compare/setgroup/#{feat}", :class => 'simlinks rounded', :"title" => "Browse through all items in this group") %>
-		<% end %>
-	</div>
-
 	<div class="title">
-		<%= feat %>
+		<%= feat %> (<%= @groupings[feat].size %>)
+		<div>Choose this <%= @groupedfeature %></div>
 	</div>
 	<% [best,cheapest].each do |p| %>
 	<div class="productinfo rounded" data-id="<%= p.id %>">

@@ -20,7 +20,7 @@
 	<% end %>
 		<div class="bl"></div><div class="br"></div>
 	<%= '</div>' if !$LineItemView %>
-	<div class='<%= $LineItemView ? "lv" : "gv" %>'>
+	<div class='<%= $LineItemView ? "lv" : "gv" %><%= " sv" if $SimpleLayout%>'>
 	<% if $SimpleLayout %>
 		<% if @groupings.nil? %>
 			<% @products.each do |product| %>
