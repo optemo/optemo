@@ -63,18 +63,18 @@ flooring_builddirect:
         - lineview
     price:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
         - prefdir: -1
     width:
         - Continuous
-        - [boost, cluster, filter, show]
+        - [boost, cluster, filter]
         - prefdir: 0
     species_hardness:
         - Continuous
         - [boost, cluster]
     miniorder:
         - Continuous
-        - [boost, cluster, filter, show]
+        - [boost, cluster, filter]
         - prefdir: -1
     brand:
         - Categorical
