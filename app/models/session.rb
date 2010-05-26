@@ -3,8 +3,6 @@ class Session < ActiveRecord::Base
   has_many :searches
   has_many :preference_relations
   
-  attr :keyword, true
-  attr :keywordpids, true
   attr :version, true
   attr :search, true
   def self.current

@@ -174,11 +174,12 @@ function submitCategorical(){
     arguments = $("#filter_form").serialize().split("&");
     for (i=0; i<arguments.length; i++)
     {
-        if (!(arguments[i].match(/^superfluous/))) 
+        if (!(arguments[i].match(/^superfluous/) || arguments[i].match(/authenticity_token/)))
             arguments_to_send.push(arguments[i]);
     }
-	ajaxcall("/compare/filter", arguments_to_send.join("&"));
+	ajaxcall("/compare/filter?ajax=true", $("#search_form").serialize() + "&" + arguments_to_send.join("&"));
 	trackPage('goals/filter/autosubmit');
+	return false;
 }
 
 function submitsearch() {
@@ -186,7 +187,14 @@ function submitsearch() {
 	piwikTracker2.setCustomData(searchinfo);
 	trackPage('goals/search');
 	piwikTracker2.setCustomData({});
-	ajaxcall("/compare/find?ajax=true", $("#search_form").serialize());
+	var arguments_to_send = [];
+    arguments = $("#filter_form").serialize().split("&");
+    for (i=0; i<arguments.length; i++)
+    {
+        if (!(arguments[i].match(/^superfluous/) || arguments[i].match(/authenticity_token/))) 
+            arguments_to_send.push(arguments[i]);
+    }
+	ajaxcall("/compare/filter?ajax=true", $("#search_form").serialize() + "&" + arguments_to_send.join("&"));
 	return false;
 }
 
@@ -286,7 +294,7 @@ function FilterAndSearchInit() {
 	});
 	
 	//Search submit
-	$('#submit_button').click(function(){
+	$('#submit_button').unbind('click').click(function(){
 		return submitsearch();
 	});
 	
@@ -433,7 +441,14 @@ function FilterAndSearchInit() {
 				piwikTracker2.setCustomData(sliderinfo);
 				trackPage('goals/filter/sliders');
 				piwikTracker2.setCustomData({});
-				ajaxcall("/compare/filter", $("#filter_form").serialize());
+				var arguments_to_send = [];
+                arguments = $("#filter_form").serialize().split("&");
+                for (i=0; i<arguments.length; i++)
+                {
+                    if (!(arguments[i].match(/^superfluous/) || arguments[i].match(/authenticity_token/)))
+                        arguments_to_send.push(arguments[i]);
+                }
+            	ajaxcall("/compare/filter?ajax=true", $("#search_form").serialize() + "&" + arguments_to_send.join("&"));
 			}
 		});
 		$(this).slider('values', 0, ((curmin-rangemin)/(rangemax-rangemin))*100);
@@ -484,6 +499,12 @@ function FilterAndSearchInit() {
 		$('#lessfilters').css('display','block');
 		return false;
 	});
+
+	$('#removeSearch').unbind('click').click(function(){
+		$('#previous_search_word').val('');
+		$('#previous_search_container').remove();
+    	return false;
+ 	});
 	
 	//Hide Additional Features
 	$('#lessfilters').unbind('click').click(function(){

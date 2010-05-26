@@ -68,15 +68,6 @@ class ApplicationController < ActionController::Base
       mysession.save
       session[:user_id] = mysession.id
     end
-    
-    #Check for keyword search
-    if mysession.filter && mysession.searches.last
-      mysession.keywordpids = mysession.searches.last.searchpids 
-      mysession.keyword = mysession.searches.last.searchterm
-    else
-      mysession.keywordpids = nil
-      mysession.keyword = nil
-    end
 
     mysession.version = Cluster.find_last_by_product_type($product_type).version
     Session.current = mysession
