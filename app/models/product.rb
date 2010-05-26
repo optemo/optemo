@@ -7,10 +7,9 @@ class Product < ActiveRecord::Base
   define_index do
     #fields
     indexes "LOWER(title)", :as => :title
+    indexes "product_type", :as => :product_type
     set_property :enable_star => true
     set_property :min_prefix_len => 2
-    #attributes
-    has product_type
   end
   
   def self.cached(id)

@@ -238,10 +238,13 @@ class Search < ActiveRecord::Base
     s = new({:session_id => current_session.id})
 
     unless current_search_term.blank?
-      product_ids = Product.search_for_ids(current_search_term.downcase, :per_page => 10000, :star => true, :with => {:product_type => $product_type})
-      # For no search results, put an empty where clause for now so it won't die with an error
-      product_ids = [0] if product_ids.empty?
-      s.userdatasearches = [Userdatasearch.new({:keyword => current_search_term, :keywordpids => "product_id IN (" + product_ids.join(',') + ")"})]
+      product_ids = Product.search_for_ids(:per_page => 10000, :star => true, :conditions => {:product_type => $product_type, :title => current_search_term.downcase})
+      unless product_ids.empty?
+        s.userdatasearches = [Userdatasearch.new({:keyword => current_search_term, :keywordpids => "product_id IN (" + product_ids.join(',') + ")"})]
+      else
+        s.clusters = []
+        return s
+      end
     end
 
     myfilter["session_id"] = current_session.id
