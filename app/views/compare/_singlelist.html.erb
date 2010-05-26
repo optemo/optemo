@@ -1,0 +1,26 @@
+<div id="box" class="navigator_box nbsingle">
+	<div class="productinfo rounded" data-id="<%= product.id %>">
+		<div class="productimg">
+			<%= image_tag(imgurl(product) , :"data-id" => product.id, :class => "productimg", :alt => product.smlTitle, :title => product.smlTitle) %>
+			<% if $DragAndDropEnabled %>
+				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
+			<% end %>
+		</div>
+		<%= product.smlTitle %>
+		<div class="itemfeatures">
+			<% $Categorical["show"].each do |f|%>
+			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => CatSpec.cache(product.id, f)} %>
+			<% end %>
+			<% $Continuous["show"].each do |f|%>
+			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => ContSpec.cache(product.id, f)} %>
+			<% end %>
+			<% $Binary["show"].each do |f|%>
+			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => BinSpec.cache(product.id, f)} %>
+			<% end %>
+		</div>
+		<div class="price">
+			<%= number_to_currency(ContSpec.cache(product.id, "price")) %>
+		</div>
+	</div>
+	<div style="clear:both;"></div>
+</div>

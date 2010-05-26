@@ -23,6 +23,10 @@ div#main {
 	margin-left: 218px;
 	text-align: left;
 }
+
+.sv #main {
+	width: 586px;	
+}
 #navigator_bar {
 	/*height: 22px;*/
 	text-align: center;
@@ -87,6 +91,13 @@ div.rowdiv {
 	-webkit-border-radius: 8px;    /* for Safari */
   	border-radius: 8px;            /* Opera, KHTML, others */
 }
+.singlelist {
+	width: 617px;
+}
+.singlelist .navigator_box {
+	height: 72px;
+	width: 576px;
+}
 .gv .nbgroup {
 	padding: 3px 9px 3px 3px;
 	background: url(../images/nb-group.png) no-repeat;
@@ -125,6 +136,21 @@ div.rowdiv {
 	width: 100px;
 	position: relative;
 }
+
+.fv {
+	float: left;
+	width: 152px;
+}
+
+.fv {
+	float: left;
+	width: 152px;
+}
+
+.fv {
+	float: left;
+	width: 152px;
+}
 /* Navigator box */
 .product_box {
 	position: relative;
@@ -155,6 +181,12 @@ div.rowdiv {
 	float: left;
 	margin-top: -5px;
 }
+
+.sv .nbsingle img.productimg {
+	height: 64px;
+	margin-top: -1px;
+	margin-left: 20px;
+}
 .productimg {
   float: left;
 }
@@ -174,9 +206,21 @@ div.rowdiv {
 	width: 500px;
 	height: 100px;
 }
-.sv .productinfo {
+.sv .nbgroup .productinfo {
 	width: 270px;
 	font-size: 0.9em;
+}
+.sv .nbsingle .productinfo {
+	width: 670px;
+	height: 72px;
+}
+.sv .nbsingle .productinfo {
+	width: 670px;
+	height: 72px;
+}
+.sv .nbsingle .productinfo {
+	width: 670px;
+	height: 72px;
 }
 .price {
 	color: #F5000B;
@@ -253,6 +297,10 @@ div.rowdiv {
 	float: right;
 	width: 270px;
 	margin-top: 5px;
+}
+
+.nbsingle .itemfeatures {
+	width: 440px;
 }
 
 /*--------------------------------------//
