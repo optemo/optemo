@@ -8,14 +8,14 @@
 		</div>
 		<%= product.smlTitle %>
 		<div class="itemfeatures">
-			<% $Categorical["show"].each do |f|%>
-			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => CatSpec.cache(product.id, f)} %>
+			<% $Categorical["showList"].each do |f|%>
+			  <%= render :partial => 'featurevaluesg', :locals => {:f => f, :val => CatSpec.cache(product.id, f)} %>
 			<% end %>
-			<% $Continuous["show"].each do |f|%>
-			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => ContSpec.cache(product.id, f)} %>
+			<% $Continuous["showList"].each do |f|%>
+			  <%= render :partial => 'featurevaluesg', :locals => {:f => f, :val => ContSpec.cache(product.id, f)} %>
 			<% end %>
-			<% $Binary["show"].each do |f|%>
-			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => BinSpec.cache(product.id, f)} %>
+			<% $Binary["showList"].each do |f|%>
+			  <%= render :partial => 'featurevaluesg', :locals => {:f => f, :val => BinSpec.cache(product.id, f)} %>
 			<% end %>
 		</div>
 		<div class="price">

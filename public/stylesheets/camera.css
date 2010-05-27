@@ -142,15 +142,6 @@ div.rowdiv {
 	width: 152px;
 }
 
-.fv {
-	float: left;
-	width: 152px;
-}
-
-.fv {
-	float: left;
-	width: 152px;
-}
 /* Navigator box */
 .product_box {
 	position: relative;
@@ -222,12 +213,16 @@ div.rowdiv {
 	width: 670px;
 	height: 72px;
 }
+.sv .nbsingle .productinfo {
+	width: 670px;
+	height: 72px;
+}
 .price {
 	color: #F5000B;
 	font-size: 1.2em;
 	margin-top: 5px;
 }
-.sv .price {
+.sv .nbgroup .price {
   display: inline;
   font-size: 0.8em;
   margin-top: 0;
