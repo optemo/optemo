@@ -208,7 +208,7 @@ div.rowdiv {
 }
 .sv .nbgroup .productinfo {
 	width: 270px;
-	font-size: 0.9em;
+	font-size: 0.8em;
 }
 .sv .nbsingle .productinfo {
 	width: 670px;
@@ -231,6 +231,11 @@ div.rowdiv {
   display: inline;
   font-size: 0.8em;
   margin-top: 0;
+}
+.sv .nbsingle .price {
+  display: inline;
+  margin: 0 0 10px 5px;
+  float: left;
 }
 .bottombar {
 	height: 18px;
@@ -265,6 +270,7 @@ div.rowdiv {
 	background: #BBB;
 	position: absolute;
 	bottom: 10px;
+	left: 5px;
 	margin-left:5px;
 	width:90px;
 	-moz-border-radius: 8px 0 0 8px;       /* for Firefox */
@@ -293,14 +299,16 @@ div.rowdiv {
 }
 
 .itemfeatures {
-	font-size: 0.8em;
-	float: right;
-	width: 270px;
+/*	font-size: 0.8em; */
+  font-size: 12px;
+	display: inline; /* Fix for IE */
+  float: left;
+/*	width: 160px; */
 	margin-top: 5px;
 }
 
 .nbsingle .itemfeatures {
-	width: 440px;
+	width: 400px;
 }
 
 /*--------------------------------------//
@@ -323,10 +331,11 @@ div #leftbar {
 }
 
 #search {
-	width: 129px;
+	width: 125px;
 }
 #submit_button {
 	margin-top: 2px;
+	width: 55px;
 }
 
 #savebar {
@@ -381,9 +390,10 @@ div.drop-box-hover {
 	z-index:1;
   opacity:0.35;
 }
-.lv .sv .dragHand {
+.sv .productimg .dragHand {
 	margin-right: 5px;
 }
+
 [ if IE ] .dragHand {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=35);  /* IE7 */
   filter: alpha(opacity=35);
@@ -525,7 +535,7 @@ div.smalldesc {
 	font-weight: bold;
 	text-align: left;
 	font-size: 0.8em;
-	width: 130px;
+	width: 134px;
 	margin-top: 0.6em;
 	position: relative;
 }

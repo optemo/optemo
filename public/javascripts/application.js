@@ -492,7 +492,6 @@ function FilterAndSearchInit() {
         	var whichThingSelected = $(this).attr('data-feat');
         	var cat = $(this).attr('data-grouping');
         	$('#myfilter_'+cat).val(appendStringWithToken($('#myfilter_'+cat).val(), whichThingSelected, '*'));
-        	console.log("In the correct function");
         	submitCategorical();
         	trackCategorical(whichThingSelected,100,2);
 		});

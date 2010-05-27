@@ -67,7 +67,7 @@ flooring_builddirect:
         - prefdir: -1
     width:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, showList]
         - prefdir: 0
     species_hardness:
         - Continuous
