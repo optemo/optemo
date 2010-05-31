@@ -45,10 +45,11 @@ module CompareHelper
   
   def groupDesc(group, i)
     if $RelativeDescriptions
+      descs = Session.current.search.boostexterClusterDescriptions[i].map{|d|t("products."+d, :default => d)}
       if $LineItemView
-        Session.current.search.boostexterClusterDescriptions[i].map{|d|t("products."+d, :default => d)}.map{|d|"<div style='position: relative;'>" + link_to(d, "#", :class => "description") + render(:partial => 'desc', :locals => {:feat => d}) + "</div>"}.join(" ")
+        descs.map{|d|"<div style='position: relative;'>" + link_to(d, "#", :class => "description") + render(:partial => 'desc', :locals => {:feat => d}) + "</div>"}.join(" ")
       else
-        Session.current.search.relativeDescriptions[i].map{|d|t("products."+d)}.join(", ")
+        descs.join(", ")
       end
     else
       disptranslation = []
