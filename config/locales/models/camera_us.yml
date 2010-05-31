@@ -1,12 +1,12 @@
 en:
-    printer_us:
+    camera_us:
         # All language-dependent definitions in models
         url:                        "browsethenbuy.com"
         sitetitle:                  "Browse Then Buy"
         defaultdesc:                ""
-        title:                      "Printer"
-        title-plural:               "Printers"
-        tagline:                    "Find, compare, and buy the right printer for you! We have found the best deals from various online retailers for you."
+        title:                      "Camera"
+        title-plural:               "Cameras"
+        tagline:                    "Find, compare, and buy the right camera for you! We have found the best deals from various online retailers for you."
         price:                      "Price"
         ppm:                        "Printing Speed"
         itemwidth:                  "Width"

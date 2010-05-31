@@ -23,7 +23,7 @@ camera_us:
         - [boost, cluster, filter]
     slr:
         - Binary
-        - [boost, cluster, filter]
+        - [boost, cluster]
     brand:
         - Categorical
         - [boost, cluster, filter]
