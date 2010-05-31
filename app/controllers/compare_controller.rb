@@ -103,10 +103,10 @@ class CompareController < ApplicationController
       elsif $product_type == "Laptop"
         @imglurl = @product.imgurl.to_s
       else
-        @imglurl = "/images/" + $product_type.downcase + "s/" + @product.id.to_s + "_l.jpg"
+        @imglurl = @product.imglurl
       end
     else
-      @imglurl = "/images/printers/" + @product.id.to_s + "_l.jpg"
+      @imglurl = @product.imglurl
     end
 
     @offerings = RetailerOffering.find_all_by_product_id_and_product_type(params[:id],$product_type,:order => 'priceint ASC')

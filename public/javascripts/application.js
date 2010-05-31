@@ -123,7 +123,6 @@ function renderComparisonProducts(id, imgurl, name)
 	// For the uncommon case of page reload, it's fine to load a larger image.
 	//	imgurl.replace(/_m/g, "_s")
 	smallProductImageAndDetail = "<img class=\"productimg\" src=" + // used to have width=\"45\" height=\"50\" in there, but I think it just works for printers...
-	//"/images/printers/"+id+"_s.jpg?1260303451" + 
 	imgurl + 
 	" data-id=\""+id+"\" alt=\""+id+"_s\"/ width=\"50\">" + 
 	"<div class=\"smalldesc\"";
@@ -134,7 +133,7 @@ function renderComparisonProducts(id, imgurl, name)
 	((name) ? getShortProductName(name) : 0) +
 	"</a></div>" + 
 	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\" onClick=\"javascript:removeFromComparison("+id+");return false;\">" + 
-	"<img src=\"/images/close.png\" alt=\"Close\"/></a>"; // do we need '?1258398853' ? I doubt it.
+	"<img src=\"/images/close.png\" alt=\"Close\"/></a>";
 	$(smallProductImageAndDetail).appendTo('#c'+id);
 	DBinit();
 

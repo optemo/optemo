@@ -104,7 +104,7 @@ module CompareHelper
     case $product_type
       when "flooring_builddirect" then "http://www.builddirect.com" + CGI.unescapeHTML(product.imgmurl.to_s)
       when "laptop_walmart" then CGI.unescapeHTML(product.imgmurl.to_s)
-      else $product_type.split("_").first + "s/" + product.id.to_s + "_m.jpg"
+      else CGI.unescapeHTML(product.imgmurl.to_s) # No need for constructing image URLs manually, they are all in the database now
     end
   end
 

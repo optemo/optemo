@@ -75,7 +75,8 @@ task :fetchAutocomplete do
 end
 
 task :restartmemcached do
-  sudo "ps ax | awk '/memcached/ && !/awk/ {print $1}' | xargs kill ; memcached -d"
+  # The extra 'sudo' there is required so that 'kill' executes
+  sudo "ps ax | awk '/memcached/ && !/awk/ {print $1}' | sudo xargs kill ; memcached -d"
 end
 
 after :deploy, "serversetup"

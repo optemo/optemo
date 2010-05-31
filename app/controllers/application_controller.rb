@@ -46,7 +46,7 @@ class ApplicationController < ActionController::Base
     else
       product_type = case request.domain(2).split(".").first
       when "cameras"
-        "camera"
+        "camera_us"
       when "printers"
         "printer_us"
       when "flooring", "builddirect"

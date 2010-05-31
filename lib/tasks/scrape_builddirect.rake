@@ -34,13 +34,17 @@ namespace :builddirect do
     colorrange_to_float_map = { "Brown" => "0", "Natural" => "0", "None" => "0", "Red" => "0", "Beige/Tan" => "0", "Orange/Amber" => "0", "Gray" => "0", "Black" => "0", "Natural/Gold" => "0", "Green" => "0", "Yellow/Gold" => "0", "White" => "0"}
     species_to_hardness_map = {"Oak" => "1300", "Canadian Hard Maple" => "1450", "Red Oak" => "1290", "White Oak" => "1360", "Brazilian Cherry" => "2350", "None" => "", "Santos Mahogany" => "2200", "Tigerwood" => "1850", "Brazilian Walnut" => "3684", "White Ash" => "1320", "Maple" => "1450", "Taun" => "1900", "Alder" => "590", "Jatoba" => "2350", "Asian Mahogany" => "1520", "Hickory" => "1820", "Mongolian Teak" => "1155", "Teak" => "1155", "Manchuria Cherry" => "2350", "Cherry" => "2350", "Acacia" => "1750", "Australian Cypress" => "1375", "Hevea" => "960", "Merbau" => "1925", "Birch" => "1100", "Beech" => "1300", "Apple" => "1730", "Walnut" => "1010"}
     product_type = "flooring_builddirect"
-    
     all_records.each do |record|
+      # Need a state machine because the import is two levels deep
+      keep_this_record = false
       # File through and get out all the properties that we want. Rather than using xpath, we are using the .children call since it's (way) faster. 
       current_record = {}
       record.children.each do |attribute|
         xml_attr_name = attribute["NAME"]
         xml_data = attribute.children.children.to_s
+        if xml_attr_name == "ORDERTYPEID"
+          keep_this_record = true if xml_data == "1"
+        end
         if relevant_fields.include?(xml_attr_name)
           case xml_attr_name
             when"PRODUCT_NAME"
@@ -73,9 +77,8 @@ namespace :builddirect do
 #     hash_key = current_record["colorrange"] if current_record["colorrange"]
 
       # Should define a hash key set of fields, and make it so that everything else is checked for. That is, right now colors and features are checked for, but it should be everything that isn't in the hash key.
-      
       # Here we reject everything that isn't in one of the categories.
-      next unless relevant_categories.include?(current_record["category_id"])
+      next unless relevant_categories.include?(current_record["category_id"]) && keep_this_record
       
 #      hash_key = current_record["brand"] + " " + current_record["model"] 
 #      if current_record["feature"]
