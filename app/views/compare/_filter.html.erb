@@ -1,9 +1,13 @@
-<% form_tag("/compare/find",{:id => 'search_form'}) do %>
-  <%= Session.current.keyword.blank? ? text_field_tag('search') : text_field_tag('search', Session.current.keyword) %>
+<% current_search = Session.current.search %>
+<% form_tag("/compare/filter",{:id => 'search_form'}) do %>
+  <%= current_search.userdatasearches.empty? ? text_field_tag('search') : text_field_tag('search', current_search.userdatasearches[0].keyword) %>
   <%= submit_tag 'Search', {:id => 'submit_button'} %>
-  <% if Session.current.keyword %>
-	<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :class => "removesearch"} %> Search: <%= Session.current.keyword %>
+  <% if current_search.userdatasearches[0] && current_search.userdatasearches[0].keyword %>
+	<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :class => "removesearch"} %> Search: <%= current_search.userdatasearches[0].keyword %>
 	</div>
+	<%= hidden_field_tag "previous_search_word", current_search.userdatasearches[0].keyword %>
+  <% else %>
+    <%= hidden_field_tag "previous_search_word", '' %>
   <% end %>
 <% end %>
 
@@ -45,7 +49,7 @@
 	<div class='feature'>
 		<div class='label'>
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
-			<% dobj = Userdatabin.find_by_search_id_and_name(Session.current.search.id,feat) %>
+			<% dobj = Userdatabin.find_by_search_id_and_name(current_search.id,feat) %>
 			<%= check_box('myfilter', feat, {:checked => dobj.nil? || dobj.value == false ? false : 'checked', :class => 'autosubmitbool'})%>
 			<%= link_to t('products.' + feat), "#" %>
 		</div>

@@ -78,7 +78,7 @@ class MergedCluster
       if clustersquery.blank?
         @nodes = []
       else
-        @nodes = Node.find(:all, :conditions => "(#{clustersquery}) #{!Cluster.filterquery.blank? ? ' and '+Cluster.filterquery : ''}#{Session.current.keywordpids.blank? ? '' : ' and ('+Session.current.keywordpids+')'}")
+        @nodes = Node.find(:all, :conditions => "(#{clustersquery}) #{!Cluster.filterquery.blank? ? ' and '+Cluster.filterquery : ''}")
       end
     end
     @nodes

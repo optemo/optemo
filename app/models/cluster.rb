@@ -64,8 +64,8 @@ class Cluster < ActiveRecord::Base
   def nodes(search = nil)
     unless @nodes
       fq = Cluster.filterquery(search)
-      unless (fq.blank? && Session.current.keywordpids.blank?)
-        @nodes = Node.find(:all, :conditions => "cluster_id = #{id}#{' and '+fq unless fq.blank?}#{' and ('+Session.current.keywordpids+')' unless Session.current.keywordpids.blank?}")
+      unless (fq.blank?)
+        @nodes = Node.find(:all, :conditions => "cluster_id = #{id}#{' and '+fq unless fq.blank?}")
       else 
         @nodes = Node.bycluster(id)
       end
@@ -92,6 +92,9 @@ class Cluster < ActiveRecord::Base
     end
     s.userdatabins.each do |d|
       fqarray << "#{tablename}product_id in (select product_id from bin_specs where value = #{d.value} and name = '#{d.name}')"
+    end
+    s.userdatasearches.each do |d|
+      fqarray << d.keywordpids
     end
     fqarray.join(" AND ")
   end
