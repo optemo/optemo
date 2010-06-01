@@ -13,15 +13,15 @@
 
 <% form_tag("",{:id => 'filter_form'}) do %>
 <% $Categorical["filter"].each do |feat| %>
-	<div class='feature'>
-		<!--div class='label'>
-			<%=t('products.' + feat)%>
-		</div-->
+	<div class='feature <%= "sv" if $SimpleLayout %>'>
+		<% chosen_cats = chosencats(feat) %>
+		<% if chosen_cats.nil? || chosen_cats.empty? %>
+			<div class="groupby" data-feat="<%= feat %>">Group by<br><%=t $product_type+'.'+feat %></div>
+		<% end %>
 		<div class='label'>
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
-			<%= link_to t('products.' + feat), "#" %>			
+			<%= link_to t('products.' + feat), "#" %>
 		</div>
-		<% chosen_cats = chosencats(feat) %>
 		<% unless chosen_cats.nil? || chosen_cats.empty? %>
 			<%# At least one item selected %>
 			<% chosen_cats.each do |b| %>
@@ -33,7 +33,7 @@
 			<%# Nothing selected %>
 			<%= select('superfluous', feat, [t('products.compare.all'+feat+'s')] + CatSpec.all(feat), options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>		
 		<% end %>
-
+		
 		<%= hidden_field_tag "myfilter[#{feat}]", chosen_cats.join("*") %>
 	</div>
 <% end %>

@@ -24,6 +24,7 @@ $DragAndDropEnabled = true
 $RelativeDescriptions = true
 $NumGroups = 9
 $BoostexterLabels = true
+$SimpleLayout = true
 
 # This parameter controls whether to go with the traditional box-layout or a line-item layout (from the hierarchy branch)
 #$LineItemView = true

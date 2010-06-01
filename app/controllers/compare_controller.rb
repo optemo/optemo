@@ -5,7 +5,8 @@ class CompareController < ApplicationController
   
   def index
     if Session.isCrawler?(request.user_agent) || params[:ajax]
-      Search.createInitialClusters
+      s = Search.createInitialClusters
+      classVariables(s)
     else
       @indexload = true
     end
@@ -16,26 +17,39 @@ class CompareController < ApplicationController
     end
   end
   
-  def compare
+  def groupby
+    feat = params[:feat]
+    Session.current.search = Session.current.searches.last
+    @groupings = Search.createGroupBy(feat)
+    @groupedfeature = feat
+    classVariables(Session.current.search)
+    render 'ajax', :layout => false
+  end
+  
+  def compare(hist = nil)
     hist = params[:hist].gsub(/\D/,'').to_i if params[:hist]
     #Going back to a previous search
     if hist
       search_history = Session.current.searches
-      if hist < search_history.length && hist > 0
+      if hist <= search_history.length && hist > 0
         mysearch = search_history[hist-1]
         classVariables(mysearch)
       else
-        Search.createInitialClusters
+        s = Search.createInitialClusters
+        classVariables(s)
       end
     else
       classVariables(Search.createFromClustersAndCommit(params[:id].split('-')), Session.current.searches.last)
     end
-    
     render 'ajax', :layout => false
   end
   
   def classVariables(search)
     Session.current.search = search
+    if $SimpleLayout
+      page = params[:page]
+      @products = search.products.paginate :page => page, :per_page => 9
+    end
   end
   
   def sim
@@ -127,7 +141,7 @@ class CompareController < ApplicationController
       format.xml  { render :xml => @product }
     end
   end
-  
+
   def searchterms
 #    # There is a strange beauty in the illegibility of the following line.
 #    # Must do a join followed by a split since the initial mapping of titles is like this: ["keywords are here", "and also here", ...]

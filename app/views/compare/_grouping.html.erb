@@ -1,0 +1,29 @@
+<div class="navigator_box <%= group ? "nbgroup" : 'nbsingle' %>">
+	<div class="title">
+		<%= feat %> (<%= @groupings[feat].size %>)
+		<div class='choose_group' data-feat="<%=feat%>" data-grouping="<%=@groupedfeature%>">Choose this <%= @groupedfeature %></div>
+	</div>
+	<% [best,cheapest].each do |p| %>
+	<div class="productinfo rounded" data-id="<%= p.id %>">
+		<div class="productimg">
+			<%= image_tag(imgurl(p) , :"data-id" => p.id, :class => "productimg", :alt => p.smlTitle, :title => p.smlTitle) %>
+			<% if $DragAndDropEnabled %>
+				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
+			<% end %>
+		</div>
+		<%= p.smlTitle %>
+		<div class="itemfeatures">
+			<% $Continuous["show"].each do |f|%>
+			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => ContSpec.cache(p.id, f)} %>
+			<% end %>
+			<% $Categorical["show"].each do |f|%>
+			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => CatSpec.cache(p.id, f)} %>
+			<% end %>
+			<% $Binary["show"].each do |f|%>
+			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => BinSpec.cache(p.id, f)} %>
+			<% end %>
+		</div>
+	</div>
+	<% end %>
+	<div style="clear:both;"></div>
+</div>

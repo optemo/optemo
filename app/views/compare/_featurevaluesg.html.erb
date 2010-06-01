@@ -1,0 +1,3 @@
+<% if val %>
+<div class="fv"><%=t $product_type+"."+f, :default => f.capitalize %>: <%= val == val.to_i ? val.to_i : val %> <%=t $product_type+"."+f+"unit", :default => '' %></div>
+<% end %>

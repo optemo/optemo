@@ -205,6 +205,17 @@ class Search < ActiveRecord::Base
     @clusters
   end
   
+  def products
+    selected_features = (userdataconts.map{|c| c.name+c.min.to_s+c.max.to_s}+userdatabins.map{|c| c.name+c.value.to_s}+userdatacats.map{|c| c.name+c.value}).hash
+    CachingMemcached.cache_lookup("#{$product_type}Products#{selected_features}") do
+      #Temporary fix for backward compatibility
+      fq = Cluster.filterquery(self)
+      fq = fq.gsub("product_id in", "id in") if fq
+      kq = Session.current.keywordpids.gsub('product_id','id') if Session.current.keywordpids
+      Product.find(:all, :conditions => "product_type = '#{$product_type}'#{' and '+fq unless fq.blank?}#{' and ('+kq+')' unless kq.blank?}")
+    end
+  end
+  
   #The clusters argument can either be an array of cluster ids or an array of cluster objects if they have already been initialized
   def self.createFromClusters(clusters, os)
     ns = {}
@@ -229,6 +240,19 @@ class Search < ActiveRecord::Base
     #s.parent_id = s.clusters.map{|c| c.parent_id}.sort[0]
     #s.layer = s.clusters.map{|c| c.layer}.sort[0]
     s
+  end
+  
+  def self.createGroupBy(feat)
+    myproducts = Session.current.search.products
+    specs = CatSpec.cachemany(myproducts.map(&:id),feat)
+    grouping = specs.zip(myproducts).group_by{|s,p|s}
+    grouping = Hash[grouping.each_pair{|k,v| grouping[k] = v.map(&:second)}.sort{|a,b| b.second.length <=> a.second.length}]
+    grouping.each_pair do |feat,products| 
+      prices = ContSpec.cachemany(products.map(&:id),"price")
+      cheapest = prices.zip(products).sort{|a,b|a.first <=> b.first}.first.second
+      products.delete(cheapest)
+      grouping[feat] = [cheapest,cheapest]+products
+    end
   end
   
   def self.createFromFilters(myfilter, current_search_term)
