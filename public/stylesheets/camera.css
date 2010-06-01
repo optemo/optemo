@@ -23,6 +23,10 @@ div#main {
 	margin-left: 218px;
 	text-align: left;
 }
+
+.sv #main {
+	width: 586px;	
+}
 #navigator_bar {
 	/*height: 22px;*/
 	text-align: center;
@@ -87,6 +91,13 @@ div.rowdiv {
 	-webkit-border-radius: 8px;    /* for Safari */
   	border-radius: 8px;            /* Opera, KHTML, others */
 }
+.singlelist {
+	width: 617px;
+}
+.singlelist .navigator_box {
+	height: 72px;
+	width: 576px;
+}
 .gv .nbgroup {
 	padding: 3px 9px 3px 3px;
 	background: url(../images/nb-group.png) no-repeat;
@@ -121,6 +132,16 @@ div.rowdiv {
 	padding: 5px;
 	text-align: center;
 }
+.sv .title {
+	width: 100px;
+	position: relative;
+}
+
+.fv {
+	float: left;
+	width: 152px;
+}
+
 /* Navigator box */
 .product_box {
 	position: relative;
@@ -151,6 +172,12 @@ div.rowdiv {
 	float: left;
 	margin-top: -5px;
 }
+
+.sv .nbsingle img.productimg {
+	height: 64px;
+	margin-top: -1px;
+	margin-left: 20px;
+}
 .productimg {
   float: left;
 }
@@ -170,10 +197,28 @@ div.rowdiv {
 	width: 500px;
 	height: 100px;
 }
+.sv .nbgroup .productinfo {
+	width: 270px;
+	font-size: 0.8em;
+}
+.sv .nbsingle .productinfo {
+	width: 576px;
+	height: 72px;
+}
 .price {
 	color: #F5000B;
 	font-size: 1.2em;
 	margin-top: 5px;
+}
+.sv .nbgroup .price {
+  display: inline;
+  font-size: 0.8em;
+  margin-top: 0;
+}
+.sv .nbsingle .price {
+  display: inline;
+  margin: 0 0 10px 5px;
+  float: left;
 }
 .bottombar {
 	height: 18px;
@@ -202,6 +247,21 @@ div.rowdiv {
 .lv .nbgroup .sim {
 	background-color: #8192ac;
 }
+
+.sv .choose_group {
+	font-size: 0.9em;
+	background: #BBB;
+	position: absolute;
+	bottom: 10px;
+	left: 5px;
+	margin-left:5px;
+	width:90px;
+	-moz-border-radius: 8px 0 0 8px;       /* for Firefox */
+	-webkit-border-top-left-radius: 8px;    /* for Safari */
+	-webkit-border-bottom-left-radius: 8px;    /* for Safari */
+  border-radius: 8px 0 0 8px;            /* Opera, KHTML, others */
+}
+
 .gv .sim a {
 	font-size: 1.1em;
 	padding: 4px;
@@ -222,10 +282,16 @@ div.rowdiv {
 }
 
 .itemfeatures {
-	font-size: 0.8em;
-	float: right;
-	width: 270px;
+/*	font-size: 0.8em; */
+  font-size: 12px;
+	display: inline; /* Fix for IE */
+  float: left;
+/*	width: 160px; */
 	margin-top: 5px;
+}
+
+.nbsingle .itemfeatures {
+	width: 400px;
 }
 
 /*--------------------------------------//
@@ -248,10 +314,11 @@ div #leftbar {
 }
 
 #search {
-	width: 129px;
+	width: 125px;
 }
 #submit_button {
 	margin-top: 2px;
+	width: 55px;
 }
 
 #savebar {
@@ -306,6 +373,10 @@ div.drop-box-hover {
 	z-index:1;
   opacity:0.35;
 }
+.sv .productimg .dragHand {
+	margin-right: 5px;
+}
+
 [ if IE ] .dragHand {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=35);  /* IE7 */
   filter: alpha(opacity=35);
@@ -426,11 +497,28 @@ div.smalldesc {
 	width:100%;
 }
 
+.sv .selectboxfilter {
+	width:130px;
+}
+
+.groupby {
+	font-size: 0.8em;
+	background-color: #ffb62f;
+	border: 1px solid #ccc;
+	float: right;
+	padding: 3px;
+	-moz-border-radius: 6px;	   /* for Firefox */
+	-webkit-border-radius: 6px;    /* for Safari */
+  	border-radius: 6px;            /* Opera, KHTML, others */
+	text-align: center;
+	cursor: pointer;
+}
+
 .label {
 	font-weight: bold;
 	text-align: left;
 	font-size: 0.8em;
-	width: 187px;
+	width: 134px;
 	margin-top: 0.6em;
 	position: relative;
 }
@@ -454,7 +542,10 @@ div.smalldesc {
 }
 .feature {
 	position: relative;
+  clear: both;
+  padding-bottom:2px;
 }
+
 .desc {
 	display: none;
 	position: absolute;
