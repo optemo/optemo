@@ -206,13 +206,12 @@ class Search < ActiveRecord::Base
   end
   
   def products
-    selected_features = (userdataconts.map{|c| c.name+c.min.to_s+c.max.to_s}+userdatabins.map{|c| c.name+c.value.to_s}+userdatacats.map{|c| c.name+c.value}).hash
+    selected_features = (userdataconts.map{|c| c.name+c.min.to_s+c.max.to_s}+userdatabins.map{|c| c.name+c.value.to_s}+userdatacats.map{|c| c.name+c.value}+userdatasearches.map{|c| c.keyword}).hash
     CachingMemcached.cache_lookup("#{$product_type}Products#{selected_features}") do
       #Temporary fix for backward compatibility
       fq = Cluster.filterquery(self)
       fq = fq.gsub("product_id in", "id in") if fq
-      kq = Session.current.keywordpids.gsub('product_id','id') if Session.current.keywordpids
-      Product.find(:all, :conditions => "product_type = '#{$product_type}'#{' and '+fq unless fq.blank?}#{' and ('+kq+')' unless kq.blank?}")
+      Product.find(:all, :conditions => "product_type = '#{$product_type}'#{' and '+fq unless fq.blank?}")
     end
   end
   

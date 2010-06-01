@@ -15,7 +15,7 @@
 <% $Categorical["filter"].each do |feat| %>
 	<div class='feature <%= "sv" if $SimpleLayout %>'>
 		<% chosen_cats = chosencats(feat) %>
-		<% if chosen_cats.nil? || chosen_cats.empty? %>
+		<% if $SimpleLayout && (chosen_cats.nil? || chosen_cats.empty?) %>
 			<div class="groupby" data-feat="<%= feat %>">Group by<br><%=t $product_type+'.'+feat %></div>
 		<% end %>
 		<div class='label'>

@@ -61,6 +61,7 @@ printer_us:
 flooring_builddirect:
     layout:
         - lineview
+        - simple
     price:
         - Continuous
         - [boost, cluster, filter, show]

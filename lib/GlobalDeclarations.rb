@@ -24,7 +24,6 @@ $DragAndDropEnabled = true
 $RelativeDescriptions = true
 $NumGroups = 9
 $BoostexterLabels = true
-$SimpleLayout = true
 
 # This parameter controls whether to go with the traditional box-layout or a line-item layout (from the hierarchy branch)
 #$LineItemView = true
@@ -39,7 +38,8 @@ def load_defaults(product_type)
   $Categorical = Hash.new{|h,k| h[k] = []}
   file = YAML::load(File.open("#{RAILS_ROOT}/config/products.yml"))
   unless (file.nil? || file.empty? || file[$product_type].nil?)
-    file[$product_type].each do |feature,stuff| 
+    product_yml = file[$product_type]
+    product_yml.each do |feature,stuff| 
       type = stuff.first
       flags = stuff.second
       case type
@@ -56,11 +56,17 @@ def load_defaults(product_type)
     $Continuous["all"] = []
     $Binary["all"] = []
     $Categorical["all"] = []
-    file[$product_type].each{|feature,stuff| $Continuous["all"] << feature if stuff.first == "Continuous"}
-    file[$product_type].each{|feature,stuff| $Binary["all"] << feature if stuff.first == "Binary"}
-    file[$product_type].each{|feature,stuff| $Categorical["all"] << feature if stuff.first == "Categorical"}
+    product_yml.each{|feature,stuff| $Continuous["all"] << feature if stuff.first == "Continuous"}
+    product_yml.each{|feature,stuff| $Binary["all"] << feature if stuff.first == "Binary"}
+    product_yml.each{|feature,stuff| $Categorical["all"] << feature if stuff.first == "Categorical"}
+
+    # $LineItemView forces the use of the .lv CSS classes and renders the _listbox.html.erb partial instead of the _navbox.html.erb partial.
+    # $SimpleLayout needs special clustering, or more precisely, no clustering, showing all products in browseable pages and offering "group by" buttons.
+    $LineItemView = product_yml["layout"].first == "lineview" unless product_yml.nil? || product_yml["layout"].nil?
+    $SimpleLayout = product_yml["layout"].second == "simple" unless product_yml.nil? || product_yml["layout"].nil?
   end
   
-  $LineItemView = file[$product_type]["layout"].first == "lineview" unless file[$product_type].nil? || file[$product_type]["layout"].nil?
-  $LineItemView ||= false #Default is false
+  $LineItemView ||= false #Default is grid view 
+  $SimpleLayout ||= false #Default is normal clustering
+  
 end
