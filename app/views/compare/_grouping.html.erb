@@ -12,6 +12,7 @@
 			<% end %>
 		</div>
 		<%= p.smlTitle %>
+		<br>
 		<div class="itemfeatures">
 			<% $Continuous["show"].each do |f|%>
 			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => ContSpec.cache(p.id, f)} %>

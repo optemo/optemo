@@ -2,20 +2,21 @@
 	<% if flash[:notice] %>
 	<span class="notice"><%= flash[:notice] %></span>
 	<% end %>
-	<div class='<%= $LineItemView ? "lv" : "gv" %><%= " sv" if $SimpleLayout%><%= " singlelist" if @groupings.nil? && $SimpleLayout %>'>
+	<div class='<%= $LineItemView ? "lv" : "gv" %><%= " sv" if $SimpleLayout%><%= " sv_ungrouped" if @groupings.nil? && $SimpleLayout %>'>
 	<div id="navigator_bar" class="rounded_nav rounded">
 		<div class="tl"></div><div class="tr"></div>
 	    <%= navtitle %>
 	<% if $LineItemView %>
+		<% columntext = columntext(@groupings) %>
 	<div id="columnheader">
 		<div id="firstcolumn">
-			Browse Similar
+			<%= columntext[0] %>
 		</div>
 		<div id="secondcolumn">
-			Group Differences
+			<%= columntext[1] %>
 		</div>
 		<div id="thirdcolumn">
-			Our pick for this group
+			<%= columntext[2] %>
 		</div>
 	</div>
 	<% end %>
@@ -49,4 +50,4 @@
 	<%= will_paginate @products if $SimpleLayout && @groupings.nil?%>
 	</div>
 	<%= '</div>' if $LineItemView %>
-	<div style="clear:both;"><span id="actioncount" style="display:none"><%= Session.current.searches.count %></span><%= '<span id="tourautostart">&nbsp;</span>' if (Session.current && (Time.now - Session.current.created_at < 3)) %></div>
+	<div style="clear:both;"><span id="actioncount" style="display:none"><%= Session.current.searches.count %></span><%= '<span id="tourautostart">&nbsp;</span>' if (Session.current.searches.count <= 1) %></div>

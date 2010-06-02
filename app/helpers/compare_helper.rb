@@ -101,10 +101,21 @@ module CompareHelper
 		out.join(" / ")
   end
 
+  def columntext(groupings)
+    if $SimpleLayout
+      if groupings.nil?
+        ['', 'Product', 'Price']
+      else
+        ['Choose Group', 'Best Pick', 'Cheapest Pick']
+      end
+    else
+      ['Browse Similar', 'Group Differences', 'Our pick for this group']
+    end
+  end
+
   def imgurl(product)
     case $product_type
       when "flooring_builddirect" then "http://www.builddirect.com" + CGI.unescapeHTML(product.imgmurl.to_s)
-      when "laptop_walmart" then CGI.unescapeHTML(product.imgmurl.to_s)
       else CGI.unescapeHTML(product.imgmurl.to_s) # No need for constructing image URLs manually, they are all in the database now
     end
   end

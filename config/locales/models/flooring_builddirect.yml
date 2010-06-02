@@ -48,7 +48,7 @@ en:
         avgthichness:               "Average Thickness"
         higherthickness:            "Thicker"
         
-        priceunit:                  "$"
+        priceunit:                  "per sq. ft."
         widthunit:                  "in."
         miniorderunit:              "sq. ft."      
         

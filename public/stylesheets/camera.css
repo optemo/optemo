@@ -44,22 +44,53 @@ div#main {
 
 #columnheader {
 	font-size: 0.8em;
+	padding-top: 4px;
+	height: 27px;
 }
-
-#firstcolumn {
+.lv.sv #columnheader {
+  height: 20px;
+}
+/* This decision tree supports list view vs. simple layout, and simple layout's "group by" view. Tested in IE */
+.lv #firstcolumn {
 	width: 62px;
 	float: left;
 }
-#secondcolumn {
-	width: 100px;
-	float: left;
-	margin-left: 18px;
-}
-#thirdcolumn {
-	width: 100%;
+.sv_ungrouped #firstcolumn {
 	height: 20px;
-	padding-top: 10px;
 }
+.lv.sv #firstcolumn {
+	padding-left: 5px;
+	width:100px;
+}
+.lv #secondcolumn {
+	width: 118px;
+	float: left;
+	padding-top:5px;
+	margin-left:18px;
+}
+.lv.sv #secondcolumn {
+  padding-top:0;
+}
+.sv_ungrouped #secondcolumn {
+	height:20px;
+}
+.lv #thirdcolumn {
+	width: 430px;
+	height: 20px;
+	padding-top: 5px;
+}
+.lv.sv #thirdcolumn {
+	width: 265px;
+	float: left;
+	padding-top: 0;
+	text-align: right;
+}
+.sv_ungrouped.lv.sv #thirdcolumn {
+  float: right;
+	width: 100px;	
+	padding-right:55px;
+}
+
 /*--------------------------------------//
 //      Main Content (Right Side)       //
 //--------------------------------------*/
@@ -91,10 +122,10 @@ div.rowdiv {
 	-webkit-border-radius: 8px;    /* for Safari */
   	border-radius: 8px;            /* Opera, KHTML, others */
 }
-.singlelist {
+.sv_ungrouped {
 	width: 617px;
 }
-.singlelist .navigator_box {
+.sv_ungrouped .navigator_box {
 	height: 72px;
 	width: 576px;
 }
@@ -168,9 +199,15 @@ div.rowdiv {
 }
 .lv img.productimg {
 	cursor: move;
-	height:100px;
 	float: left;
+	height: 100px;
 	margin-top: -5px;
+}
+.lv.sv img.productimg {
+	cursor: move;
+	float: left;
+	height: 80px;
+	margin-top: 5px;
 }
 
 .sv .nbsingle img.productimg {
@@ -217,7 +254,7 @@ div.rowdiv {
 }
 .sv .nbsingle .price {
   display: inline;
-  margin: 0 0 10px 5px;
+  margin: 0 20px 0 5px;
   float: left;
 }
 .bottombar {
@@ -256,10 +293,10 @@ div.rowdiv {
 	left: 5px;
 	margin-left:5px;
 	width:90px;
-	-moz-border-radius: 8px 0 0 8px;       /* for Firefox */
-	-webkit-border-top-left-radius: 8px;    /* for Safari */
-	-webkit-border-bottom-left-radius: 8px;    /* for Safari */
-  border-radius: 8px 0 0 8px;            /* Opera, KHTML, others */
+	-moz-border-radius: 8px;       /* for Firefox */
+	-webkit-border-radius: 8px;    /* for Safari */
+  border-radius: 8px;            /* Opera, KHTML, others */
+  cursor: pointer;
 }
 
 .gv .sim a {
@@ -288,6 +325,13 @@ div.rowdiv {
   float: left;
 /*	width: 160px; */
 	margin-top: 5px;
+}
+
+.priceunit {
+  font-size: 0.8em;
+  display:inline;
+  float:left;
+  margin-left: 5px;
 }
 
 .nbsingle .itemfeatures {

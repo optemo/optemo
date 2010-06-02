@@ -1,5 +1,4 @@
 class Search < ActiveRecord::Base
-  belongs_to :session
   attr_writer :userdataconts, :userdatacats, :userdatabins, :userdatasearches
   
   def userdataconts
@@ -230,7 +229,6 @@ class Search < ActiveRecord::Base
     end
     ns['session_id'] = Session.current.id
     s = new(ns)
-    s.session = Session.current
     unless clusters.nil? || clusters.empty? || clusters.first.class == String || clusters.first.class == Fixnum
         s.clusters = clusters.sort{|a,b| (a.size>1 ? -1 : 1) <=> (b.size>1 ? -1 : 1)}
     end
@@ -304,7 +302,6 @@ class Search < ActiveRecord::Base
       s.clusters = Cluster.byparent(0).delete_if{|c| c.isEmpty(s)} #This is broken for test profile in Rails 2.3.5
       #clusters = clusters.map{|c| c unless c.isEmpty}.compact
     end
-    current_session.update_attribute('filter', true)
     s.cluster_count = s.clusters.length
     s.commitfilters
     s
