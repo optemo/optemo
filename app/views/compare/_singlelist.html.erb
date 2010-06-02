@@ -21,6 +21,9 @@
 		<div class="price">
 			<%= number_to_currency(ContSpec.cache(product.id, "price")) %>
 		</div>
+		<div class='priceunit'>
+			<%= t("#{$product_type}.priceunit") %>
+		</div>
 	</div>
 	<div style="clear:both;"></div>
 </div>
