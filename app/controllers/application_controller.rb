@@ -61,16 +61,14 @@ class ApplicationController < ActionController::Base
   end
   
   def update_user
-    mysession = Session.find_by_id(session[:user_id])
-    if mysession.nil?
-      mysession = Session.new
-      mysession.ip = request.remote_ip
-      mysession.save
-      session[:user_id] = mysession.id
+    mysession_id = session[:user_id]
+    if mysession_id.nil?
+      mysession_id = Search.maximum(:session_id).to_i + 2
+      session[:user_id] = mysession_id
     end
 
-    mysession.version = Cluster.find_last_by_product_type($product_type).version
-    Session.current = mysession
+    myversion = Cluster.maximum(:version, :conditions => ['product_type = ?', $product_type])
+    Session.current = Session.new(mysession_id, myversion)
   end
   
   def title=(title)

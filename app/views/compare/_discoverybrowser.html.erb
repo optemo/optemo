@@ -50,4 +50,4 @@
 	<%= will_paginate @products if $SimpleLayout && @groupings.nil?%>
 	</div>
 	<%= '</div>' if $LineItemView %>
-	<div style="clear:both;"><span id="actioncount" style="display:none"><%= Session.current.searches.count %></span><%= '<span id="tourautostart">&nbsp;</span>' if (Session.current && (Time.now - Session.current.created_at < 3)) %></div>
+	<div style="clear:both;"><span id="actioncount" style="display:none"><%= Session.current.searches.count %></span><%= '<span id="tourautostart">&nbsp;</span>' if (Session.current.searches.count <= 1) %></div>
