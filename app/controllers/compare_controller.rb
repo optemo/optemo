@@ -47,7 +47,14 @@ class CompareController < ApplicationController
   def classVariables(search)
     Session.current.search = search
     if $SimpleLayout
-      page = params[:page]
+      unless params[:page].nil?
+        page = params[:page]
+        Session.current.search.page = page
+        Session.current.search.save
+      else
+        page = search.page
+      end
+      # This needs to be cleaned up later (two commits per request at the moment).
       @products = search.products.paginate :page => page, :per_page => 9
     end
   end
@@ -78,7 +85,7 @@ class CompareController < ApplicationController
 
   def filter
     session = Session.current
-    if params[:myfilter].nil? && params[:search].nil?
+    if params[:myfilter].nil? && params[:search].nil? && params[:page].nil?
       #No post info passed
       render :text =>  "[ERR]Search could not be completed."
     else

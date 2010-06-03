@@ -164,7 +164,7 @@ div.rowdiv {
 	text-align: center;
 }
 .sv .title {
-	width: 100px;
+	width: 110px;
 	position: relative;
 }
 
@@ -207,6 +207,7 @@ div.rowdiv {
 	cursor: move;
 	float: left;
 	height: 80px;
+	width: 80px;
 	margin-top: 5px;
 }
 
@@ -235,7 +236,7 @@ div.rowdiv {
 	height: 100px;
 }
 .sv .nbgroup .productinfo {
-	width: 270px;
+	width: 285px;
 	font-size: 0.8em;
 }
 .sv .nbsingle .productinfo {
@@ -244,7 +245,7 @@ div.rowdiv {
 }
 .price {
 	color: #F5000B;
-	font-size: 1.2em;
+	font-size: 1em;
 	margin-top: 5px;
 }
 .sv .nbgroup .price {
@@ -254,7 +255,7 @@ div.rowdiv {
 }
 .sv .nbsingle .price {
   display: inline;
-  margin: 0 20px 0 5px;
+  margin: 0 20px 0 10px;
   float: left;
 }
 .bottombar {
@@ -297,6 +298,7 @@ div.rowdiv {
 	-webkit-border-radius: 8px;    /* for Safari */
   border-radius: 8px;            /* Opera, KHTML, others */
   cursor: pointer;
+  text-decoration: underline;
 }
 
 .gv .sim a {
@@ -335,7 +337,7 @@ div.rowdiv {
 }
 
 .nbsingle .itemfeatures {
-	width: 400px;
+	width: 380px;
 }
 
 /*--------------------------------------//
@@ -556,6 +558,7 @@ div.smalldesc {
   	border-radius: 6px;            /* Opera, KHTML, others */
 	text-align: center;
 	cursor: pointer;
+	text-decoration: underline;
 }
 
 .label {
@@ -571,6 +574,7 @@ div.smalldesc {
 }
 .reset {
 	font-size: 0.8em;
+	text-decoration: underline;
 }
 .valbelow {
 	padding-top: 18px;
@@ -731,6 +735,7 @@ display:block;
 	font-size: 0.8em;
 	text-align: center;
 	margin-top: 20px;
+	text-decoration: underline;
 }
 
 /*--------------------------------------//
