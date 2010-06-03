@@ -209,7 +209,7 @@ class Search < ActiveRecord::Base
     CachingMemcached.cache_lookup("#{$product_type}Products#{selected_features}") do
       #Temporary fix for backward compatibility
       fq = Cluster.filterquery(self)
-      fq = fq.gsub("product_id in", "id in") if fq
+      fq = fq.gsub(/product_id in/i, "id in") if fq
       Product.find(:all, :conditions => "product_type = '#{$product_type}'#{' and '+fq unless fq.blank?}")
     end
   end
@@ -241,66 +241,75 @@ class Search < ActiveRecord::Base
   
   def self.createGroupBy(feat)
     myproducts = Session.current.search.products
-    specs = CatSpec.cachemany(myproducts.map(&:id),feat)
-    grouping = specs.zip(myproducts).group_by{|s,p|s}
-    grouping = Hash[grouping.each_pair{|k,v| grouping[k] = v.map(&:second)}.sort{|a,b| b.second.length <=> a.second.length}]
+    specs = CatSpec.cachemany_with_ids(myproducts.map(&:id),feat)
+    grouping = specs.group_by{|spec|spec.value}
+    grouping = Hash[grouping.each_pair{|k,v| grouping[k] = v.map(&:product_id)}.sort{|a,b| b.second.length <=> a.second.length}]
     grouping.each_pair do |feat,products| 
-      prices = ContSpec.cachemany(products.map(&:id),"price")
+      prices = ContSpec.cachemany(products,"price")
       cheapest = prices.zip(products).sort{|a,b|a.first <=> b.first}.first.second
       products.delete(cheapest)
-      grouping[feat] = [cheapest,cheapest]+products
+      # Just the first two products are searched for; the rest are left as just product_ids.
+      grouping[feat] = [Product.cached(cheapest),Product.cached(cheapest)]+products
     end
   end
   
   def self.createFromFilters(myfilter, current_search_term)
     current_session = Session.current
-    #Delete blank values
-    myfilter.delete_if{|k,v|v.blank?} if myfilter
+    # If we are doing a "page forward" action, just return the current search with no updates
     s = new({:session_id => current_session.id})
+    if myfilter.nil?
+      # Just copy over all the old values. New search needed because of the new page number.
+      s.clusters = current_session.searches.last.clusters
+      s.save
+      Search.duplicateFeatures(s, current_session.search)
+    else
+      #Delete blank values
+      myfilter.delete_if{|k,v|v.blank?}
 
-    unless current_search_term.blank?
-      product_ids = Product.search_for_ids(:per_page => 10000, :star => true, :conditions => {:product_type => $product_type, :title => current_search_term.downcase})
-      unless product_ids.empty?
-        s.userdatasearches = [Userdatasearch.new({:keyword => current_search_term, :keywordpids => "product_id IN (" + product_ids.join(',') + ")"})]
-      else
-        s.clusters = []
-        return s
-      end
-    end
-
-    myfilter["session_id"] = current_session.id
-    #Handle false booleans
-    $Binary["filter"].each do |f|
-      dobj = current_session.search.userdatabins.select{|d|d.name == f}.first
-      myfilter.delete(f.intern) if myfilter[f.intern] == '0' && (dobj.nil? || dobj.value != true)
-    end    
-    
-    #seperate myfilter into various parts
-    s.userdataconts = []
-    s.userdatabins = []
-    s.userdatacats = []
-
-    myfilter.each_pair do |k,v|
-      if k.index(/(.+)_min/)
-        fname = Regexp.last_match[1]
-        max = fname+'_max'
-        s.userdataconts << Userdatacont.new({:name => fname, :min => v, :max => myfilter[max]})
-      elsif $Binary["filter"].index(k)
-        s.userdatabins << Userdatabin.new({:name => k, :value => v})
-      elsif $Categorical["filter"].index(k)
-        v.split("*").each do |cat|
-          s.userdatacats << Userdatacat.new({:name => k, :value => cat})
+      unless current_search_term.blank?
+        product_ids = Product.search_for_ids(:per_page => 10000, :star => true, :conditions => {:product_type => $product_type, :title => current_search_term.downcase})
+        unless product_ids.empty?
+          s.userdatasearches = [Userdatasearch.new({:keyword => current_search_term, :keywordpids => "product_id IN (" + product_ids.join(',') + ")"})]
+        else
+          s.clusters = []
+          return s
         end
       end
-    end
-    #Find clusters that match filtering query
-    if !s.expandedFiltering? && current_session.searches.last
-      #Search is narrowed, so use current products to begin with
-      s.clusters = current_session.searches.last.clusters(s)
-    else
-      #Search is expanded, so use all products to begin with
-      s.clusters = Cluster.byparent(0).delete_if{|c| c.isEmpty(s)} #This is broken for test profile in Rails 2.3.5
-      #clusters = clusters.map{|c| c unless c.isEmpty}.compact
+
+      myfilter["session_id"] = current_session.id
+      #Handle false booleans
+      $Binary["filter"].each do |f|
+        dobj = current_session.search.userdatabins.select{|d|d.name == f}.first
+        myfilter.delete(f.intern) if myfilter[f.intern] == '0' && (dobj.nil? || dobj.value != true)
+      end    
+    
+      #seperate myfilter into various parts
+      s.userdataconts = []
+      s.userdatabins = []
+      s.userdatacats = []
+
+      myfilter.each_pair do |k,v|
+        if k.index(/(.+)_min/)
+          fname = Regexp.last_match[1]
+          max = fname+'_max'
+          s.userdataconts << Userdatacont.new({:name => fname, :min => v, :max => myfilter[max]})
+        elsif $Binary["filter"].index(k)
+          s.userdatabins << Userdatabin.new({:name => k, :value => v})
+        elsif $Categorical["filter"].index(k)
+          v.split("*").each do |cat|
+            s.userdatacats << Userdatacat.new({:name => k, :value => cat})
+          end
+        end
+      end
+      #Find clusters that match filtering query
+      if !s.expandedFiltering? && current_session.searches.last
+        #Search is narrowed, so use current products to begin with
+        s.clusters = current_session.searches.last.clusters(s)
+      else
+        #Search is expanded, so use all products to begin with
+        s.clusters = Cluster.byparent(0).delete_if{|c| c.isEmpty(s)} #This is broken for test profile in Rails 2.3.5
+        #clusters = clusters.map{|c| c unless c.isEmpty}.compact
+      end
     end
     s.cluster_count = s.clusters.length
     s.commitfilters
