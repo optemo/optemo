@@ -14,6 +14,12 @@ class CatSpec < ActiveRecord::Base
     end
   end
   
+  def self.cachemany_with_ids(p_ids, feat)
+    CachingMemcached.cache_lookup("CatSpecs_with_ids#{feat}#{p_ids.join.hash}") do
+      find(:all, :select => 'product_id, value', :conditions => ["product_id IN (?) and name = ?", p_ids, feat])
+    end
+  end
+  
   def self.all(feat)
     CachingMemcached.cache_lookup("#{$product_type}Cats-#{feat}") do
       id_array = Product.valid.instock.map(&:id)
