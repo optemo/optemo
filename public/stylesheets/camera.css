@@ -164,7 +164,7 @@ div.rowdiv {
 	text-align: center;
 }
 .sv .title {
-	width: 110px;
+	width: 115px;
 	position: relative;
 }
 
@@ -286,12 +286,23 @@ div.rowdiv {
 	background-color: #8192ac;
 }
 
+.sv .group_title {
+  font-weight: bold;
+  padding-top: 5px;
+/*  padding-bottom: 2px;
+  -moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+  border-radius: 8px;
+  display: table;
+  height: 44px; */
+  width: 115px;
+}
+
 .sv .choose_group {
 	font-size: 0.9em;
-	background: #BBB;
 	position: absolute;
 	bottom: 10px;
-	left: 5px;
+	left: 9px;
 	margin-left:5px;
 	width:90px;
 	-moz-border-radius: 8px;       /* for Firefox */

@@ -1,7 +1,9 @@
 <div class="navigator_box <%= group ? "nbgroup" : 'nbsingle' %>">
 	<div class="title">
-		<%= feat %> (<%= @groupings[feat].size %>)
-		<div class='choose_group' data-feat="<%=feat%>" data-grouping="<%=@groupedfeature%>">Choose This <%= t('products.' + @groupedfeature).singularize %></div>
+		<div class="group_title">
+			<%= feat %> (<%= @groupings[feat].size %>)
+		</div>
+		<div class='choose_group' data-feat="<%=feat%>" data-grouping="<%=@groupedfeature%>">Show Only This <%= t('products.' + @groupedfeature).singularize %></div>
 	</div>
 	<% [best,cheapest].each do |p| %>
 	<div class="productinfo rounded" data-id="<%= p.id %>">
