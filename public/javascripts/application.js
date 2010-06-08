@@ -501,10 +501,11 @@ function FilterAndSearchInit() {
 	});
 
     // Choose a grouping via group button rather than drop-down (effect is the same as the select boxes)
-	$('.choose_group').each(function(){
+	$('.title').each(function(){
 		$(this).unbind('click').click(function(){
-        	var whichThingSelected = $(this).attr('data-feat');
-        	var cat = $(this).attr('data-grouping');
+		    group_element = $(this).find('.choose_group');
+        	var whichThingSelected = group_element.attr('data-feat');
+        	var cat = group_element.attr('data-grouping');
         	$('#myfilter_'+cat).val(appendStringWithToken($('#myfilter_'+cat).val(), whichThingSelected, '*'));
         	submitCategorical();
         	trackCategorical(whichThingSelected,100,2);

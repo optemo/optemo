@@ -209,7 +209,7 @@ class Search < ActiveRecord::Base
     CachingMemcached.cache_lookup("#{$product_type}Products#{selected_features}") do
       #Temporary fix for backward compatibility
       fq = Cluster.filterquery(self)
-      fq = fq.gsub("product_id in", "id in") if fq
+      fq = fq.gsub(/product_id in/i, "id in") if fq
       Product.find(:all, :conditions => "product_type = '#{$product_type}'#{' and '+fq unless fq.blank?}")
     end
   end
