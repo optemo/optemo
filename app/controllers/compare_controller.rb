@@ -33,13 +33,17 @@ class CompareController < ApplicationController
       search_history = Session.current.searches
       if hist <= search_history.length && hist > 0
         mysearch = search_history[hist-1]
+        mysearch.page = params[:page] if params[:page] # For this case: back button followed by clicking a pagination link
         classVariables(mysearch)
       else
         s = Search.createInitialClusters
         classVariables(s)
       end
     else
-      classVariables(Search.createFromClustersAndCommit(params[:id].split('-')), Session.current.searches.last)
+      # No need to send in the previous search term since it will be copied automatically. Same with filters.
+      # The exception is the 'page' parameter, which might be modified and need writing.
+      # Since the myfilter hash is always empty, we just send a hash with only the page number, if any.
+      classVariables(Search.createSearchAndCommit(Session.current.searches.last), params[:id].split('-'), { "page" => params[:page] }) 
     end
     render 'ajax', :layout => false
   end
@@ -47,14 +51,7 @@ class CompareController < ApplicationController
   def classVariables(search)
     Session.current.search = search
     if $SimpleLayout
-      unless params[:page].nil?
-        page = params[:page]
-        Session.current.search.page = page
-        Session.current.search.save
-      else
-        page = search.page
-      end
-      # This needs to be cleaned up later (two commits per request at the moment).
+      page = search.page
       @products = search.products.paginate :page => page, :per_page => 9
     end
   end
@@ -72,7 +69,7 @@ class CompareController < ApplicationController
     end
     unless cluster.nil?
       if params[:ajax]
-        s = Search.createFromClustersAndCommit(cluster.children, Session.current.searches.last)
+        s = Search.createSearchAndCommit(Session.current.searches.last, cluster.children)
         classVariables(s)
         render 'ajax', :layout => false
       else
@@ -97,7 +94,10 @@ class CompareController < ApplicationController
       end
       oldsearch = session.searches.last
       session.search = oldsearch
-      s = Search.createFromFilters(params[:myfilter], current_search_term)
+      # Put the 'page' parameter in paginated output into the :myfilter hash for ease in processing
+      params[:myfilter] = {} unless params[:myfilter] # the hash will be empty on page number clicks
+      params[:myfilter]["page"] = params[:page]
+      s = Search.createSearchAndCommit(oldsearch, nil, params[:myfilter], current_search_term)
       unless s.clusters.empty?
         classVariables(s)
         render 'ajax', :layout => false
