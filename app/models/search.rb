@@ -33,7 +33,7 @@ class Search < ActiveRecord::Base
   end
   
   def acceptedProductIDs
-    @acceptedProductIDs ||= clusters.map{|c| c.nodes}.flatten.map(&:product_id)
+    @acceptedProductIDs ||= ($SimpleLayout ? products.map(&:id) : clusters.map{|c| c.nodes}.flatten.map(&:product_id))
   end
   
   #Range of product offerings
@@ -152,7 +152,6 @@ class Search < ActiveRecord::Base
     end  
     des[0..3]
   end
-
     
   def minimum(feature)
     feature = feature + "_min"
@@ -173,7 +172,7 @@ class Search < ActiveRecord::Base
   end
     
   def result_count
-    @result_count ||= clusters.map{|c| c.size}.sum
+    @result_count ||= ($SimpleLayout ? products.length : clusters.map{|c| c.size}.sum)
   end
   
   def clusters= (clusters)
@@ -258,7 +257,7 @@ class Search < ActiveRecord::Base
     else # If no clusters, there should be a filter and / or search term, or a page term.
       if myfilter.nil? || myfilter.empty? # If myfilter only contained the "page" key, it's now empty, not nil
         # It was a new page.
-        s.clusters = os.clusters
+        s.clusters = (os ? os.clusters : [])
         s.save
         self.duplicateFeatures(s, current_session.search)
       else
@@ -308,7 +307,7 @@ class Search < ActiveRecord::Base
           s.clusters = os.clusters(s)
         else
           #Search is expanded, so use all products to begin with
-          s.clusters = Cluster.byparent(0).delete_if{|c| c.isEmpty(s)} #This is broken for test profile in Rails 2.3.5
+          s.clusters = ($SimpleLayout ? [] : Cluster.byparent(0).delete_if{|c| c.isEmpty(s)}) #This is broken for test profile in Rails 2.3.5
           #clusters = clusters.map{|c| c unless c.isEmpty}.compact
         end
       end

@@ -98,7 +98,7 @@ class CompareController < ApplicationController
       params[:myfilter] = {} unless params[:myfilter] # the hash will be empty on page number clicks
       params[:myfilter]["page"] = params[:page]
       s = Search.createSearchAndCommit(oldsearch, nil, params[:myfilter], current_search_term)
-      unless s.clusters.empty?
+      unless ($SimpleLayout ? s.products.empty? : s.clusters.empty?)
         classVariables(s)
         render 'ajax', :layout => false
       else
