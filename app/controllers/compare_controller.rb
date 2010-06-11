@@ -5,7 +5,10 @@ class CompareController < ApplicationController
   
   def index
     if Session.isCrawler?(request.user_agent) || params[:ajax]
-      s = Search.createInitialClusters
+      # The page numbers have to go in for pagination
+      page_number = {} # This has to be a hash for compatibility with Search.createSearchAndCommit()
+      page_number["page"] = params[:page]
+      s = Search.createInitialClusters(page_number)
       classVariables(s)
     else
       @indexload = true

@@ -209,7 +209,7 @@ class Search < ActiveRecord::Base
       #Temporary fix for backward compatibility
       fq = Cluster.filterquery(self)
       fq = fq.gsub(/product_id in/i, "id in") if fq
-      Product.find(:all, :conditions => "product_type = '#{$product_type}'#{' and '+fq unless fq.blank?}")
+      Product.instock.valid.find(:all, :conditions => "product_type = '#{$product_type}'#{' and '+fq unless fq.blank?}")
     end
   end
   
@@ -328,8 +328,8 @@ class Search < ActiveRecord::Base
     end
   end
 
-  def self.createInitialClusters
-    Session.current.search = self.createSearchAndCommit(nil, Cluster.byparent(0)) # nil search
+  def self.createInitialClusters(myfilter) # myfilter could contain page number
+    Session.current.search = self.createSearchAndCommit(nil, Cluster.byparent(0), myfilter) # nil search
   end
   
   def commitfilters

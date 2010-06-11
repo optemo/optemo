@@ -42,22 +42,11 @@ class ApplicationController < ActionController::Base
 
   def set_model_type
     if request.domain.nil?
-      product_type = $DefaultProduct
+      url = $DefaultProduct
     else
-      product_type = case request.domain(2).split(".").first
-      when "cameras"
-        "camera_us"
-      when "printers"
-        "printer_us"
-      when "flooring", "builddirect"
-        "flooring_builddirect"
-      when "laptops", "walmart"
-        "laptop_walmart"
-      else
-        $DefaultProduct
-      end  
+      url = request.domain(4) # This gets anything up to www.printers.browsethenbuy.co.uk (n + 1 elements in the domain name)
     end
-    load_defaults(product_type)
+    load_defaults(url)
   end
   
   def update_user
