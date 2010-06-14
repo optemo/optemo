@@ -6,8 +6,8 @@
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
 			<% end %>
 		</div>
-		<%= product.smlTitle %>
 		<div class="itemfeatures">
+			<div class="itemtitle"><%= product.smlTitle %></div>
 			<% $Categorical["showList"].each do |f|%>
 			  <%= render :partial => 'featurevaluesg', :locals => {:f => f, :val => CatSpec.cache(product.id, f)} %>
 			<% end %>

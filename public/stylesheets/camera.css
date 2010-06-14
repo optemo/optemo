@@ -216,6 +216,14 @@ div.rowdiv {
 	margin-top: -1px;
 	margin-left: 20px;
 }
+.sv .productimg {
+    width: 114px;
+}
+
+.lv .productimg {
+    width: 134px;
+}
+
 .productimg {
   float: left;
 }
@@ -254,8 +262,10 @@ div.rowdiv {
   margin-top: 0;
 }
 .sv .nbsingle .price {
-  display: block;
-  margin: 0 10px 0 10px;
+/*  margin: 0 10px 0 10px; */
+  position: relative;
+  left: 50px;
+  top: 10px;
 }
 .bottombar {
 	height: 18px;
@@ -330,24 +340,36 @@ div.rowdiv {
 	margin-top: 18px;
 }
 
+.sv .itemfeatures {
+    margin-top: 0;
+}
+
 .itemfeatures {
 /*	font-size: 0.8em; */
   font-size: 12px;
-	display: inline; /* Fix for IE */
-  float: left;
+/* 	display: inline; /* Fix for IE */
+/*  float: left; */
 /*	width: 160px; */
 	margin-top: 5px;
 }
 
+.itemtitle {
+    font-size: 1.2em;
+    padding-bottom:5px;
+}
+
 .priceunit {
   font-size: 0.8em;
-  display:inline;
-  float:left;
+/*  display:inline; */
+  position:relative;
+  left: 50px;
   margin-left: 5px;
+  top: 10px;
 }
 
 .nbsingle .itemfeatures {
-	width: 380px;
+	width: 330px;
+	float:left
 }
 
 /*--------------------------------------//
@@ -571,15 +593,20 @@ div.smalldesc {
 	text-decoration: underline;
 }
 
-.sv .label {
-    width: 145px;
-}
-
 .label {
 	font-weight: bold;
 	text-align: left;
 	font-size: 0.8em;
-	width: 134px;
+	width: 145px;
+	margin-top: 0.6em;
+	position: relative;
+}
+/* The category labels need to be less than 134 for IE, and the slider labels have to be greater for Safari. */
+.catlabel {
+	font-weight: bold;
+	text-align: left;
+	font-size: 0.8em;
+	width: 110px;
 	margin-top: 0.6em;
 	position: relative;
 }
@@ -624,6 +651,7 @@ div.smalldesc {
 	left: 7px;
 	top: 16px;
 }
+
 
 /*--------------------------------------//
 //                Survey                //
