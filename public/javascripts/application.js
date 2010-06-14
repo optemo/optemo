@@ -466,7 +466,6 @@ function FilterAndSearchInit() {
 			$(this).removeClass('ui-state-default').removeClass('ui-corner-all');
 			$(this).unbind('mouseenter mouseleave');
 		});
-		
 	});
 	// Add a brand -- submit
 	$('.selectboxfilter').each(function(){
@@ -548,6 +547,17 @@ function FilterAndSearchInit() {
 		submitCategorical();
 		trackCategorical(whichbox, box_value, 3);
 	});
+	if ($.browser.msie) 
+	{
+	    // If it's any version of IE, the transparency for the hands doesn't get done properly on page load - redo it here.
+		$('.dragHand').each(function() {
+			$(this).fadeTo("fast", 0.35);
+		});
+        // Fix the slider position
+    	$('.hist').each(function() {
+           $(this).css('left', '7px');
+        });
+	}
 }
 
 function CompareInit() {
@@ -841,12 +851,5 @@ $(document).ready(function() {
 	$("#tourButton a").click(launchtour); //Launch tour when this is clicked
 
 	myspinner = new spinner("myspinner", 11, 20, 9, 5, "#000");
-	
-	if ($.browser.msie) // If it's any version of IE, the transparency for the hands doesn't get done properly on page load.
-	{
-		$('.dragHand').each(function() {
-			$(this).fadeTo("fast", 0.35);
-		});
-	}
 });
 
