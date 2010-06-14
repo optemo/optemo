@@ -1,3 +1,0 @@
-Hewlett Packard |LaserJet 9040DN|/models/HP_LaserJet_9040DN.html
-Hewlett Packard |LaserJet 4350|/models/HP_LaserJet_4350.html
-Xerox|Phaser 560|/models/XEROX_Phaser_560.html
