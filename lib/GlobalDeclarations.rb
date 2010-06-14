@@ -1,9 +1,11 @@
 $DefaultProduct = 'printer_us'
+$DefaultSite = 'laserprinterhub.com'
 
 # Configuration: Application Key provided by Facebook
 $AppKey = "7aeec628ded26fb3b03829fb4142da01"
 
-$ProdTypeList = ['printer_us','flooring_builddirect']
+# This is deprecated, but still referred to in upkeep.rake - clean this up some day
+# $ProdTypeList = ['printer_us','flooring_builddirect']
 
 # Define weights assigned to user navigation tasks that determine preferences
 $Weight = Hash.new(0) # Set 0 as the default value for direction
@@ -28,17 +30,18 @@ $BoostexterLabels = true
 # This parameter controls whether to go with the traditional box-layout or a line-item layout (from the hierarchy branch)
 #$LineItemView = true
 
-def load_defaults(product_type)
-  $product_type = product_type
-  
+def load_defaults(url)
   $PrefDirection = Hash.new(1) # Set 1 i.e. Up as the default value for direction
   
   $Continuous = Hash.new{|h,k| h[k] = []}
   $Binary = Hash.new{|h,k| h[k] = []}
   $Categorical = Hash.new{|h,k| h[k] = []}
   file = YAML::load(File.open("#{RAILS_ROOT}/config/products.yml"))
-  unless (file.nil? || file.empty? || file[$product_type].nil?)
-    product_yml = file[$product_type]
+  url = $DefaultSite if file[url].nil?
+  unless (file.nil? || file.empty? || file[url].nil?)
+    product_yml = file[url]
+    $product_type = product_yml["product_type"].first
+    # This block gets out the continuous, binary, and categorical features
     product_yml.each do |feature,stuff| 
       type = stuff.first
       flags = stuff.second
@@ -68,5 +71,4 @@ def load_defaults(product_type)
   
   $LineItemView ||= false #Default is grid view 
   $SimpleLayout ||= false #Default is normal clustering
-  
 end

@@ -471,6 +471,7 @@ function FilterAndSearchInit() {
 	// Add a brand -- submit
 	$('.selectboxfilter').each(function(){
 	    $(this).unbind('change').change(function(){
+	        $(this).unbind();
 		    var whichThingSelected = $(this).val();
 			var whichSelector = $(this).attr('name');
 		    var cat = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]"));
@@ -503,6 +504,7 @@ function FilterAndSearchInit() {
     // Choose a grouping via group button rather than drop-down (effect is the same as the select boxes)
 	$('.title').each(function(){
 		$(this).unbind('click').click(function(){
+		    $(this).unbind();
 		    group_element = $(this).find('.choose_group');
         	var whichThingSelected = group_element.attr('data-feat');
         	var cat = group_element.attr('data-grouping');

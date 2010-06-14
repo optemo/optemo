@@ -170,7 +170,7 @@ div.rowdiv {
 
 .fv {
 	float: left;
-	width: 152px;
+	width: 162px;
 }
 
 /* Navigator box */
@@ -254,9 +254,8 @@ div.rowdiv {
   margin-top: 0;
 }
 .sv .nbsingle .price {
-  display: inline;
-  margin: 0 20px 0 10px;
-  float: left;
+  display: block;
+  margin: 0 10px 0 10px;
 }
 .bottombar {
 	height: 18px;

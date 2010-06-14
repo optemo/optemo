@@ -2,10 +2,18 @@
 # cat = categorical
 # b = boolean
 # boost = boostexter feature for labels
+# show = this causes display in CompareController#show
+# showList = for listview, this causes display in .itemfeatures
 
 ####Spaces are required between elements in an array
 
-camera_us:
+#######################################
+#   Cameras.BrowseThenBuy - Cameras   #
+#######################################
+
+cameras:
+    product_type:
+        - camera_us
     layout:
         - gridview
     maximumresolution: 
@@ -27,8 +35,97 @@ camera_us:
     brand:
         - Categorical
         - [boost, cluster, filter]
-      
-printer_us:
+
+cameras.browsethenbuy.com:
+    product_type:
+        - camera_us
+    layout:
+        - gridview
+    maximumresolution: 
+        - Continuous
+        - [boost, cluster, filter]
+    displaysize:
+        - Continuous
+        - [boost, cluster, filter]
+    price:
+        - Continuous
+        - [boost, cluster, filter]
+        - prefdir: -1
+    opticalzoom:
+        - Continuous
+        - [boost, cluster, filter]
+    slr:
+        - Binary
+        - [boost, cluster]
+    brand:
+        - Categorical
+        - [boost, cluster, filter]
+
+m.browsethenbuy.com:
+    product_type:
+        - camera_us
+    layout:
+        - gridview
+    maximumresolution: 
+        - Continuous
+        - [boost, cluster, filter]
+    displaysize:
+        - Continuous
+        - [boost, cluster, filter]
+    price:
+        - Continuous
+        - [boost, cluster, filter]
+        - prefdir: -1
+    opticalzoom:
+        - Continuous
+        - [boost, cluster, filter]
+    slr:
+        - Binary
+        - [boost, cluster]
+    brand:
+        - Categorical
+        - [boost, cluster, filter]
+
+################################
+#  LaserPrinterHub - Printers  #
+################################
+
+printers.browsethenbuy.com:
+    product_type:
+        - printer_us
+    layout:
+        - lineview
+        - simple
+    price:
+        - Continuous
+        - [boost, cluster, filter, show]
+        - prefdir: -1
+    ppm:
+        - Continuous
+        - [boost, cluster, filter, showList]
+    resolutionmax:
+        - Continuous
+        - [boost, cluster, filter, showList]
+    paperinput:
+        - Continuous
+        - [boost, cluster, filter, showList]
+    itemwidth:
+        - Continuous
+        - [boost, cluster, filter, showList]
+        - prefdir: -1
+    printserver:
+        - Binary
+        - [boost, cluster, filter]
+    scanner:
+        - Binary
+        - [boost, cluster, filter]
+    brand:
+        - Categorical
+        - [boost, cluster, filter]
+            
+laserprinterhub.com:
+    product_type:
+        - printer_us
     layout:
         - gridview
     price:
@@ -57,8 +154,14 @@ printer_us:
     brand:
         - Categorical
         - [boost, cluster, filter]
-        
-flooring_builddirect:
+
+#############################
+#  Build Direct - Flooring  #
+#############################
+
+builddirect.optemo.com:
+    product_type: 
+        - flooring_builddirect
     layout:
         - lineview
         - simple
@@ -93,7 +196,72 @@ flooring_builddirect:
         - Categorical
         - [boost, filter]
         
-laptop_walmart:
+flooring:
+    product_type: 
+        - flooring_builddirect
+    layout:
+        - lineview
+        - simple
+    price:
+        - Continuous
+        - [boost, cluster, filter, show]
+        - prefdir: -1
+    width:
+        - Continuous
+        - [boost, cluster, filter, showList]
+        - prefdir: 0
+    species_hardness:
+        - Continuous
+        - [boost, cluster]
+    miniorder:
+        - Continuous
+        - [boost, cluster, filter, showList]
+        - prefdir: -1
+    brand:
+        - Categorical
+        - [boost, cluster, filter]    
+    species:
+        - Categorical
+        - [boost, filter]
+    finish:
+        - Categorical
+        - [boost, filter, show, showList]
+    feature:
+        - Categorical
+        - [boost, filter, show, showList]
+    colorrange:
+        - Categorical
+        - [boost, filter]
+                
+#############################
+#     Laptops - Walmart     #
+#############################
+                
+walmart.optemo.com:
+    product_type: 
+        - laptop_walmart
+    layout:
+        - lineview
+    price:
+        - Continuous
+        - [boost, cluster, filter]
+        - prefdir: -1
+    brand:
+        - Categorical
+        - [boost, cluster, filter]
+    hd:
+        - Continuous
+        - [boost, cluster, filter]
+    ram:
+        - Continuous
+        - [boost, cluster, filter]
+    screensize:
+        - Continuous
+        - [boost, cluster, filter]
+        
+laptops:
+    product_type: 
+        - laptop_walmart
     layout:
         - lineview
     price:
