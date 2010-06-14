@@ -254,9 +254,8 @@ div.rowdiv {
   margin-top: 0;
 }
 .sv .nbsingle .price {
-  display: inline;
+  display: block;
   margin: 0 10px 0 10px;
-  float: left;
 }
 .bottombar {
 	height: 18px;
