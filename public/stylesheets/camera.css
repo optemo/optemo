@@ -571,6 +571,10 @@ div.smalldesc {
 	text-decoration: underline;
 }
 
+.sv .label {
+    width: 145px;
+}
+
 .label {
 	font-weight: bold;
 	text-align: left;
