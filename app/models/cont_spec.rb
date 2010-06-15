@@ -2,10 +2,7 @@ class ContSpec < ActiveRecord::Base
   belongs_to :product
   attr_writer :cs
   
-  # These are both included because testing needs to be done in comparing featurecache to cached
-  # Due to the high number of hits per request, having this cache in memory might be the one place to break
-  # from the pattern of using only memcached
-#  def self.cached(p_id, feat)
+  # Get specs for a single item
   def self.cache(p_id, feat)
     CachingMemcached.cache_lookup("ContSpec#{feat}#{p_id}") do
       r = find_by_product_id_and_name(p_id, feat)
@@ -18,11 +15,8 @@ class ContSpec < ActiveRecord::Base
     end
   end
   
-  # This probably isn't needed anymore.
+  # This probably isn't needed anymore, but is a good example of how to do class caching if we want to do it in future.
   def self.featurecache(p_id, feat) 
-    # Caching is better using class variable due to thousands of hits per request? Test this. Memcache for now; ie., this is dead code
-    # Hash key must be based on model type, id, and feature name together to guarantee uniqueness.
-    
     @@cs = {} unless defined? @@cs
     p_id = p_id.to_s
     unless @@cs.has_key?($product_type + p_id + feat)
@@ -57,5 +51,10 @@ class ContSpec < ActiveRecord::Base
     id_array = Product.valid.instock.map{|p| p.id }
     #id_array = Session.current.search.acceptedProductIDs
     ContSpec.cachemany(id_array, feat)
+  end
+  
+  # This is used for sorting an array of ContSpec objects.
+  def <=>(other)
+     return value <=> other.value
   end
 end
