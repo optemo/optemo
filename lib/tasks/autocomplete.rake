@@ -5,19 +5,24 @@ namespace :autocomplete do
     
     if (js_file)
       js_file.syswrite("/* Machine-generated javascript. Run \"rake autocomplete:fetch\" to regenerate. */\n")
-    
-      file.each do |p_yml_entry|
-        product_types[p_yml_entry.second["product_type"].first] = (p_yml_entry.first)
+      yml_file = YAML::load(File.open("#{RAILS_ROOT}/config/products.yml"))
+      unless (yml_file.nil? || yml_file.empty?)
+        product_types = {}
+        yml_file.each do |p_yml_entry|
+          product_types[p_yml_entry.second["product_type"].first] = (p_yml_entry.first)
+        end
+        product_types.each do |pType_url_pair| # This is a pair like this: "camera_us"=>"m.browsethenbuy.com" - seems backwards, but makes the hash unique on product_type
+          load_defaults(pType_url_pair[1]) # The URL
+          terms = fetch_terms(pType_url_pair[0]) # The product type
+          js_file.syswrite(terms)
+          js_file.syswrite("\n")
+        end
+        js_file.close
+      else
+        puts "Unable to open products.yml"
       end
-      product_types.each do |pType_url_pair| # This is a pair like this: "camera_us"=>"m.browsethenbuy.com" - seems backwards, but makes the hash unique on product_type
-        load_defaults(pType_url_pair[1]) # The URL
-        terms = fetch_terms(pType_url_pair[0]) # The product type
-        js_file.syswrite(terms)
-        js_file.syswrite("\n")
-      end
-      js_file.close
     else
-      desc "Unable to open javascript file. Permissions issue?"
+      puts "Unable to open javascript file. Permissions issue?"
     end
   end
 end
@@ -32,6 +37,6 @@ def fetch_terms(product_type)
   # Delete all the 1200x1200dpi, the "/" or "&" strings, all two-letter strings, and things that don't start with a letter or number.
   searchterms.delete_if {|t| t == '' || t.match('[0-9]+.[0-9]+') || t.match('^..?$') || t.match('^[^A-Za-z0-9]') || t.downcase.match('^print') || t.match('<.+>')}
   # The regular expression replacement to \\\\\' is intentional, believe it or not.
-  return itemtype.downcase + '_searchterms = [\'' + searchterms.map{|t|(t.match(/[^A-Za-z0-9]$/)? t.chop.downcase : t.downcase).gsub("'","\\\\\'") }.uniq.join('\',\'') + '\'];'
+  return product_type.downcase + '_searchterms = [\'' + searchterms.map{|t|(t.match(/[^A-Za-z0-9]$/)? t.chop.downcase : t.downcase).gsub("'","\\\\\'") }.uniq.join('\',\'') + '\'];'
   # Particular to this data
 end
