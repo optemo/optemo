@@ -102,16 +102,16 @@ printers.browsethenbuy.com:
         - prefdir: -1
     ppm:
         - Continuous
-        - [boost, cluster, filter, showList]
+        - [boost, cluster, filter, show, showList]
     resolutionmax:
         - Continuous
-        - [boost, cluster, filter, showList]
+        - [boost, cluster, filter, show, showList]
     paperinput:
         - Continuous
-        - [boost, cluster, filter, showList]
+        - [boost, cluster, filter, show, showList]
     itemwidth:
         - Continuous
-        - [boost, cluster, filter, showList]
+        - [boost, cluster, filter, show, showList]
         - prefdir: -1
     printserver:
         - Binary
@@ -134,16 +134,16 @@ laserprinterhub.com:
         - prefdir: -1
     ppm:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, showList]
     resolutionmax:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, showList]
     paperinput:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, showList]
     itemwidth:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, showList]
         - prefdir: -1
     printserver:
         - Binary
@@ -166,16 +166,16 @@ localhost:
         - prefdir: -1
     ppm:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, showList]
     resolutionmax:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, showList]
     paperinput:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, showList]
     itemwidth:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, showList]
         - prefdir: -1
     printserver:
         - Binary

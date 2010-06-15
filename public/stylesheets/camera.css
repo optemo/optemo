@@ -80,7 +80,7 @@ div#main {
 	padding-top: 5px;
 }
 .lv.sv #thirdcolumn {
-	width: 265px;
+	width: 278px;
 	float: left;
 	padding-top: 0;
 	text-align: right;
@@ -213,15 +213,18 @@ div.rowdiv {
 
 .sv .nbsingle img.productimg {
 	height: 64px;
+	width: 64px;
 	margin-top: -1px;
 	margin-left: 20px;
-}
-.sv .productimg {
-    width: 114px;
 }
 
 .lv .productimg {
     width: 134px;
+}
+
+.sv.lv .productimg_container {
+    width: 104px;
+    height: 10px;
 }
 
 .productimg {
@@ -246,6 +249,7 @@ div.rowdiv {
 .sv .nbgroup .productinfo {
 	width: 285px;
 	font-size: 0.8em;
+	margin-left: 10px;
 }
 .sv .nbsingle .productinfo {
 	width: 576px;
@@ -342,6 +346,16 @@ div.rowdiv {
 
 .sv .itemfeatures {
     margin-top: 0;
+}
+
+.lv.sv .nbgroup .itemfeatures {
+    margin-left:90px;
+    width:200px;
+}
+
+.groupby_title {
+    margin-left:90px;
+    width:200px;    
 }
 
 .itemfeatures {
@@ -449,7 +463,8 @@ div.drop-box-hover {
 	margin-left: -25px;
 	margin-right: 25px;
 	z-index:1;
-  opacity:0.35;
+    opacity:0.35;
+    position:absolute;
 }
 .sv .productimg .dragHand {
 	margin-right: 5px;

@@ -39,7 +39,9 @@ class CompareController < ApplicationController
         mysearch.page = params[:page] if params[:page] # For this case: back button followed by clicking a pagination link
         classVariables(mysearch)
       else
-        s = Search.createInitialClusters
+        page_number = {} # This has to be a hash for compatibility with Search.createSearchAndCommit()
+        page_number["page"] = params[:page]
+        s = Search.createInitialClusters(page_number)
         classVariables(s)
       end
     else

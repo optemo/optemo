@@ -12,7 +12,7 @@
 	</div>
 	
 	<div class="productinfo rounded" data-id="<%= representative.id %>">
-		<div class="productimg">
+		<div class="productimg_container">
 			<%= image_tag(imgurl(representative) , :"data-id" => representative.id, :class => "productimg", :alt => representative.smlTitle, :title => representative.smlTitle) %>
 			<% if $DragAndDropEnabled %>
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>

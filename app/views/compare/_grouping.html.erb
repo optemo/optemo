@@ -7,14 +7,13 @@
 	</div>
 	<% [best,cheapest].each do |p| %>
 	<div class="productinfo rounded" data-id="<%= p.id %>">
-		<div class="productimg">
+		<div class="productimg_container">
 			<%= image_tag(imgurl(p) , :"data-id" => p.id, :class => "productimg", :alt => p.smlTitle, :title => p.smlTitle) %>
 			<% if $DragAndDropEnabled %>
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
 			<% end %>
 		</div>
-		<%= p.smlTitle %>
-		<br>
+		<div class='groupby_title'><%= p.smlTitle %></div>
 		<div class="itemfeatures">
 			<% $Continuous["show"].each do |f|%>
 			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => ContSpec.cache(p.id, f)} %>

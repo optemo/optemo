@@ -237,7 +237,7 @@ class Search < ActiveRecord::Base
         products.delete(best)
       end
       # Just the first two products are searched for; the rest are left as just product_ids.
-      grouping[feat] = [Product.cached(best),Product.cached(cheapest)]+products
+      grouping[feat] = [Product.cached(cheapest),Product.cached(best)]+products
     end
   end
 
