@@ -13,9 +13,9 @@ task :calculate_factors => :environment do
       product_types[p_yml_entry.second["product_type"].first] = (p_yml_entry.first)
     end
     factor_activerecords = []
-    product_types.each do |url_pType_pair| # This is a pair like this: "camera_us"=>"m.browsethenbuy.com" - seems backwards, but makes the hash unique on product_type
+    product_types.each do |pType_url_pair| # This is a pair like this: "camera_us"=>"m.browsethenbuy.com" - seems backwards, but makes the hash unique on product_type
       cont_spec_hash = {}
-      load_defaults(url_pType_pair[1]) # Need to set up $Continuous and other arrays before use
+      load_defaults(pType_url_pair[1]) # Need to set up $Continuous and other arrays before use
       all_products = Product.valid.instock
       all_products.each do |product|
         $Continuous["filter"].each do |f|
@@ -29,7 +29,7 @@ task :calculate_factors => :environment do
           end
           newFactorRow = Factor.new
           newFactorRow.product_id = product.id 
-          newFactorRow.product_type = url_pType_pair[0]
+          newFactorRow.product_type = pType_url_pair[0]
           fVal = cont_spec_hash[f][product.id]
           debugger unless fVal # The alternative here is to crash. This should never happen if Product.valid.instock is doing its job.
           newFactorRow.cont_var = f
