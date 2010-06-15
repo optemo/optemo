@@ -224,7 +224,7 @@ div.rowdiv {
 
 .sv.lv .productimg_container {
     width: 104px;
-    height: 10px;
+    height: 2px;
 }
 
 .productimg {
@@ -349,12 +349,12 @@ div.rowdiv {
 }
 
 .lv.sv .nbgroup .itemfeatures {
-    margin-left:90px;
+    margin-left:95px;
     width:200px;
 }
 
 .groupby_title {
-    margin-left:90px;
+    margin-left:95px;
     width:200px;    
 }
 
