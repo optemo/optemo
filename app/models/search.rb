@@ -209,7 +209,7 @@ class Search < ActiveRecord::Base
       #Temporary fix for backward compatibility
       fq = Cluster.filterquery(self)
       fq = fq.gsub(/product_id in/i, "id in") if fq
-      Product.instock.valid.find(:all, :conditions => "product_type = '#{$product_type}'#{' and '+fq unless fq.blank?}")
+      Product.valid.instock.find(:all, :conditions => "product_type = '#{$product_type}'#{' and '+fq unless fq.blank?}")
     end
   end
   
@@ -224,8 +224,20 @@ class Search < ActiveRecord::Base
       prices = ContSpec.cachemany(products,"price")
       cheapest = prices.zip(products).sort{|a,b|a.first <=> b.first}.first.second
       products.delete(cheapest)
+      product_utility_hash = {}
+      $Continuous["filter"].each do |spec|
+        Factor.cachemany_with_ids(products, spec).each do |f|
+          product_utility_hash[f.product_id] = product_utility_hash[f.product_id].to_f + f.value
+        end
+      end
+      if products.empty?
+        best = cheapest # This means there was only one in the group, and "products.delete(cheapest)" took it out.
+      else
+        best = product_utility_hash.sort{|a,b| b.second <=> a.second}.first.first
+        products.delete(best)
+      end
       # Just the first two products are searched for; the rest are left as just product_ids.
-      grouping[feat] = [Product.cached(cheapest),Product.cached(cheapest)]+products
+      grouping[feat] = [Product.cached(best),Product.cached(cheapest)]+products
     end
   end
 

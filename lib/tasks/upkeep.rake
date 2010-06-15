@@ -1,24 +1,48 @@
 require 'GlobalDeclarations'
 #Here is where general upkeep scripts are
-
 desc "Calculate factors for all features of all products"
 task :calculate_factors => :environment do
-    # Truncate the existing factors table
-    ActiveRecord::Base.connection.execute('TRUNCATE factors')
-    $ProdTypeList.each do |pType|
-      products = pType.constantize.valid.instock
-      products.each do |product|
-        newFactorRow = Factor.new
-        newFactorRow.product_id = product.id 
-        newFactorRow.product_type = pType
-        pType.constantize::ContinuousFeatures.each do |f|
-          fVal = product.send(f.intern) 
-          result = calculateFactor(products, fVal, f)
-          newFactorRow.send((f+'=').intern, result)
+  # Truncate the existing factors table
+  ActiveRecord::Base.connection.execute('TRUNCATE factors')
+  file = YAML::load(File.open("#{RAILS_ROOT}/config/products.yml"))
+  unless (file.nil? || file.empty?)
+    product_types = {}
+    # The reason for setting up this hash is that we want only the base product types, 
+    # but need the associated URL in order to access the filter features via products.yml
+    file.each do |p_yml_entry|
+      product_types[p_yml_entry.second["product_type"].first] = (p_yml_entry.first)
+    end
+    factor_activerecords = []
+    product_types.each do |url_pType_pair| # This is a pair like this: "camera_us"=>"m.browsethenbuy.com" - seems backwards, but makes the hash unique on product_type
+      cont_spec_hash = {}
+      load_defaults(url_pType_pair[1]) # Need to set up $Continuous and other arrays before use
+      all_products = Product.valid.instock
+      all_products.each do |product|
+        $Continuous["filter"].each do |f|
+          unless cont_spec_hash[f]
+            records = ContSpec.find(:all, :select => 'product_id, value', :conditions => ["product_id IN (?) and name = ?", all_products, f])
+            temp_hash = {}
+            records.each do |r| # Strip the records down to {id => value} pairs
+              temp_hash[r.product_id] = r.value
+            end
+            cont_spec_hash[f] = temp_hash
+          end
+          newFactorRow = Factor.new
+          newFactorRow.product_id = product.id 
+          newFactorRow.product_type = url_pType_pair[0]
+          fVal = cont_spec_hash[f][product.id]
+          debugger unless fVal # The alternative here is to crash. This should never happen if Product.valid.instock is doing its job.
+          newFactorRow.cont_var = f
+          newFactorRow.value = calculateFactor(fVal, f, cont_spec_hash[f])
+          factor_activerecords.push(newFactorRow)
         end
-        newFactorRow.save
       end
+    end
+    # Do all record saving at the end for efficiency
+    Factor.transaction do
+      factor_activerecords.each(&:save)
     end   
+  end
 end
 
 desc "Run boostexter to generate strong hypothesis files or Parse boostexter strong hypothesis files and save in database"
@@ -63,9 +87,9 @@ task :assign_lowest_price => :environment do
   end
 end
 
-def calculateFactor(products, fVal, f)
-  #Order the feature values, reversed to give the highest value to duplicates
-  ordered = products.map{|p|p.send(f.intern)}.sort
+def calculateFactor(fVal, f, contspecs)
+  # Order the feature values, reversed to give the highest value to duplicates
+  ordered = contspecs.values.sort
   ordered = ordered.reverse if $PrefDirection[f] == 1
   pos = ordered.index(fVal)
   len = ordered.length

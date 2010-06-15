@@ -5,9 +5,8 @@ class CreateFactors < ActiveRecord::Migration
       t.primary_key :id
       t.string :product_type      
       t.integer :product_id
-      (Camera::ContinuousFeatures | Printer::ContinuousFeatures | Laptop::ContinuousFeatures | Flooring::ContinuousFeatures).each do |f|
-        t.float f
-      end
+      t.string :cont_var
+      t.float :value      
     end
   end
 

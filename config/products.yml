@@ -155,6 +155,38 @@ laserprinterhub.com:
         - Categorical
         - [boost, cluster, filter]
 
+localhost:
+    product_type:
+        - printer_us
+    layout:
+        - gridview
+    price:
+        - Continuous
+        - [boost, cluster, filter]
+        - prefdir: -1
+    ppm:
+        - Continuous
+        - [boost, cluster, filter]
+    resolutionmax:
+        - Continuous
+        - [boost, cluster, filter]
+    paperinput:
+        - Continuous
+        - [boost, cluster, filter]
+    itemwidth:
+        - Continuous
+        - [boost, cluster, filter]
+        - prefdir: -1
+    printserver:
+        - Binary
+        - [boost, cluster, filter]
+    scanner:
+        - Binary
+        - [boost, cluster, filter]
+    brand:
+        - Categorical
+        - [boost, cluster, filter]
+
 #############################
 #  Build Direct - Flooring  #
 #############################
