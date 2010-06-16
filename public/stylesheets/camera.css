@@ -216,6 +216,8 @@ div.rowdiv {
 	width: 64px;
 	margin-top: -1px;
 	margin-left: 20px;
+	z-index: 1;
+	position: relative;
 }
 
 .lv .productimg {
@@ -462,7 +464,7 @@ div.drop-box-hover {
 .lv .dragHand {
 	margin-left: -25px;
 	margin-right: 25px;
-	z-index:1;
+	z-index:2;
     opacity:0.35;
     position:absolute;
 }
