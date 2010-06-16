@@ -611,7 +611,7 @@ function DBinit() {
 				zIndex: 1000,
 				start: function(e, ui) { 
 					if ($.browser.msie) // Internet Explorer sucks and cannot do transparency
-					$(this).css({'opacity':'0.4'});
+					    (this).css({'opacity':'0.4'});
 				},
 				stop: function (e, ui) {
 					if ($.browser.msie)
@@ -624,6 +624,15 @@ function DBinit() {
 		        function() {
 	            	$(this).find('.dragHand').stop().animate({ opacity: 0.35 }, 450);
            });
+	    });
+	    $(".dragHand").each(function() {
+	        $(this).draggable({
+	            revert : 'invalid',
+	            cursor: 'move',
+	            distance: 2,
+	            helper: 'clone',
+	            zIndex: 1000,
+	        });
 	    });
 	}
 	
@@ -731,10 +740,16 @@ $(document).ready(function() {
 			$(this).droppable({ 
 				hoverClass: 'drop-box-hover',
 				activeClass: 'ui-state-dragging', 
-				accept: ".ui-draggable",
+				accept: ".ui-draggable, .dragHand",
 				drop: function (e, ui) {
 					imgObj = $(ui.helper);
-					saveProductForComparison(imgObj.attr('data-id'), imgObj.attr('src'), imgObj.attr('alt'));
+					if (imgObj.hasClass('dragHand')) { // This is a drag hand object
+					    realImgObj = imgObj.prev().prev(); // Due to the creation of the cloned image, the image we want is actually two elements back, not just one.
+    					saveProductForComparison(realImgObj.attr('data-id'), realImgObj.attr('src'), realImgObj.attr('alt'));
+				    }
+				    else { // This is an image object; behave as normal
+    					saveProductForComparison(imgObj.attr('data-id'), imgObj.attr('src'), imgObj.attr('alt'));
+					}
 				}
 			 });
 		});
