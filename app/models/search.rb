@@ -203,20 +203,32 @@ class Search < ActiveRecord::Base
     @clusters
   end
   
-  def products
+  def products(sort_by_utility=true)
     selected_features = (userdataconts.map{|c| c.name+c.min.to_s+c.max.to_s}+userdatabins.map{|c| c.name+c.value.to_s}+userdatacats.map{|c| c.name+c.value}+userdatasearches.map{|c| c.keyword}).hash
     CachingMemcached.cache_lookup("#{$product_type}Products#{selected_features}") do
       #Temporary fix for backward compatibility
       fq = Cluster.filterquery(self)
       fq = fq.gsub(/product_id in/i, "id in") if fq
-      Product.valid.instock.find(:all, :conditions => "product_type = '#{$product_type}'#{' and '+fq unless fq.blank?}")
+      product_list = Product.valid.instock.find(:all, :conditions => "product_type = '#{$product_type}'#{' and '+fq unless fq.blank?}")
+      product_list_ids = product_list.map(&:id)
+      if sort_by_utility
+        utility_list = {}
+        $Continuous["filter"].each do |feat|
+          Factor.cachemany_with_ids(product_list_ids, feat).each do |factor|
+            utility_list[factor.product_id] = utility_list[factor.product_id].to_f + factor.value # nil.to_f is 0.0, so this works.
+          end
+        end
+        product_list.sort{|a, b| utility_list[a.id] <=> utility_list[b.id]}
+      else # This must be explicit
+        product_list
+      end
     end
   end
-  
+
   #The clusters argument can either be an array of cluster ids or an array of cluster objects if they have already been initialized
   
   def self.createGroupBy(feat)
-    myproducts = Session.current.search.products
+    myproducts = Session.current.search.products(false) # This disables utility sorting, since it's not needed, and is more efficient.
     specs = CatSpec.cachemany_with_ids(myproducts.map(&:id),feat)
     grouping = specs.group_by{|spec|spec.value}
     grouping = Hash[grouping.each_pair{|k,v| grouping[k] = v.map(&:product_id)}.sort{|a,b| b.second.length <=> a.second.length}]

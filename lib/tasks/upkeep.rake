@@ -9,6 +9,10 @@ task :calculate_factors => :environment do
     product_types = {}
     # The reason for setting up this hash is that we want only the base product types, 
     # but need the associated URL in order to access the filter features via products.yml
+    # ** warning: if there are multiple url entries with the same product_type but different filter specs, it will take the filter specs that were defined last.
+    # ** This is a limitation that should be taken care of some day.
+    # ** Example: 'builddirect.optemo.com' and 'flooring' both have entries in products.yml, so if 'flooring' did not have "species_hardness: [filter]" defined
+    # ** As a result, this overrides the entry for builddirect.optemo.com, and is probably undesirable.
     file.each do |p_yml_entry|
       product_types[p_yml_entry.second["product_type"].first] = (p_yml_entry.first)
     end
@@ -91,6 +95,7 @@ def calculateFactor(fVal, f, contspecs)
   # Order the feature values, reversed to give the highest value to duplicates
   ordered = contspecs.values.sort
   ordered = ordered.reverse if $PrefDirection[f] == 1
+  return 0 if $PrefDirection[f] == 0
   pos = ordered.index(fVal)
   len = ordered.length
   (len - pos)/len.to_f
