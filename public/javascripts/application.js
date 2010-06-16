@@ -631,7 +631,7 @@ function DBinit() {
 	            cursor: 'move',
 	            distance: 2,
 	            helper: 'clone',
-	            zIndex: 1000,
+	            zIndex: 1000
 	        });
 	    });
 	}
