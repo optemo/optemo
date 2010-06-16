@@ -221,7 +221,7 @@ div.rowdiv {
 }
 
 .lv .productimg {
-    width: 134px;
+    width: 110px;
 }
 
 .sv.lv .productimg_container {
@@ -270,7 +270,6 @@ div.rowdiv {
 .sv .nbsingle .price {
 /*  margin: 0 10px 0 10px; */
   position: relative;
-  left: 50px;
   top: 10px;
 }
 .bottombar {
@@ -378,13 +377,12 @@ div.rowdiv {
   font-size: 0.8em;
 /*  display:inline; */
   position:relative;
-  left: 50px;
   margin-left: 5px;
   top: 10px;
 }
 
 .nbsingle .itemfeatures {
-	width: 330px;
+	width: 390px;
 	float:left
 }
 
