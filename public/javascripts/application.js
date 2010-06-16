@@ -611,7 +611,7 @@ function DBinit() {
 				zIndex: 1000,
 				start: function(e, ui) { 
 					if ($.browser.msie) // Internet Explorer sucks and cannot do transparency
-					    (this).css({'opacity':'0.4'});
+					    $(this).css({'opacity':'0.4'});
 				},
 				stop: function (e, ui) {
 					if ($.browser.msie)
