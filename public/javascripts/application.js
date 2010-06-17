@@ -127,7 +127,7 @@ function renderComparisonProducts(id, imgurl, name)
 	" data-id=\""+id+"\" alt=\""+id+"_s\"/ width=\"50\">" + 
 	"<div class=\"smalldesc\"";
 	// It looks so much better in Firefox et al, so if there's no MSIE, go ahead with special styling.
-	if ($.browser.msie) smallProductImageAndDetail = smallProductImageAndDetail + " style=\"position:absolute; bottom:5px;\"";
+	//if ($.browser.msie) smallProductImageAndDetail = smallProductImageAndDetail + " style=\"position:absolute; bottom:5px;\"";
 	smallProductImageAndDetail = smallProductImageAndDetail + ">" +
 	"<a class=\"easylink\" data-id=\""+id+"\" href=\"#\">" + 
 	((name) ? getShortProductName(name) : 0) +
