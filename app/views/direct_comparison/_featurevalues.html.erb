@@ -1,15 +1,6 @@
 <div class="outertitle"><div class="columntitle">
 </div></div>
-<!--<div class="cell whitebg" style="height: 42px;">
-	<% num = numberOfStars(3/3) %>
-	<% for j in 0..num-1 %>
-		<%= image_tag("fullstar.gif", :width => 14, :height => 14, :onClick => "") %>
-	<% end %>
-	<% if num%1 != 0 %>
-		<%= image_tag("halfstar.gif", :width => 14, :height => 14, :onClick => "") %>
-	<% end %>
-	<div style="margin-top: 3px"> 3 (6 ratings) </div>
-</div>-->
+
 <% gray = true %>
 <% $Continuous["filter"].each do |feat| %>
 <div class="cell <%= gray ? "graybg" : "whitebg" %>">

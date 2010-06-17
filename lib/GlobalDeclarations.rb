@@ -1,4 +1,3 @@
-$DefaultProduct = 'printer_us'
 $DefaultSite = 'laserprinterhub.com'
 
 # Configuration: Application Key provided by Facebook
