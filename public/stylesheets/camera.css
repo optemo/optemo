@@ -195,7 +195,6 @@ div.rowdiv {
 .gv img.productimg {
 	cursor: move;
 	height:100px;
-	padding-right: 20px;
 }
 .lv img.productimg {
 	cursor: move;
@@ -229,7 +228,7 @@ div.rowdiv {
     height: 2px;
 }
 
-.productimg {
+.sv .productimg {
   float: left;
 }
 
@@ -237,6 +236,7 @@ div.rowdiv {
 	width: 224px;
 	position: absolute;
 	bottom: 51px;
+	left: 0;
 }
 .gv .productinfo {
 	margin:0 auto;
@@ -487,13 +487,9 @@ div.drop-box-hover {
 	background: url(../images/savebg.png) no-repeat;
 }
 div.smalldesc {
-/*	position:absolute;
-	bottom:5px; */
 	font-size: 0.7em;
-	line-height: 1em;
 	padding: 3px 0;
-	width:70px;
-	text-align: center;
+	width:75px;
 }
 .savedmsg {
 	color: #F5000B;

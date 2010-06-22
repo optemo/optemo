@@ -14,6 +14,11 @@ class ContSpec < ActiveRecord::Base
       find(:all, :select => 'value', :conditions => ["product_id IN (?) and name = ?", p_ids, feat]).map(&:value)
     end
   end
+  def self.cachemany_with_ids(p_ids, feat)
+    CachingMemcached.cache_lookup("ContSpecsWithIds#{feat}#{p_ids.join.hash}") do
+      find(:all, :select => 'product_id, value', :conditions => ["product_id IN (?) and name = ?", p_ids, feat]).each_with_object({}){|r, h| h[r.product_id] = r.value}
+    end    
+  end
   
   # This probably isn't needed anymore, but is a good example of how to do class caching if we want to do it in future.
   def self.featurecache(p_id, feat) 

@@ -22,13 +22,20 @@ class CompareController < ApplicationController
   
   def groupby
     feat = params[:feat]
-    Session.current.search = Session.current.searches.last
+    # We need to make a new search so that history works properly (back button can take to "groupby" view)
+    os = Session.current.searches.last
+    s = os.clone # copy over session ID, etc.
+    s.save
+    Session.current.search = s
+    Search.duplicateFeatures(s, os) # copy over filters
     @groupings = Search.createGroupBy(feat)
     @groupedfeature = feat
     render 'ajax', :layout => false
   end
   
   def compare(hist = nil)
+    # As of right now, the history function from javascript always points here.
+    # What will need to happen is that the view will be in there as part of the search. I think.
     hist = params[:hist].gsub(/\D/,'').to_i if params[:hist]
     #Going back to a previous search
     if hist

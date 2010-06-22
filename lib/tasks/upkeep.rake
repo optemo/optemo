@@ -1,6 +1,6 @@
 require 'GlobalDeclarations'
 #Here is where general upkeep scripts are
-desc "Calculate factors for all features of all products"
+desc "Calculate factors for all features of all products, and pre-calculate utility scores"
 task :calculate_factors => :environment do
   # Truncate the existing factors table
   ActiveRecord::Base.connection.execute('TRUNCATE factors')
@@ -17,11 +17,13 @@ task :calculate_factors => :environment do
       product_types[p_yml_entry.second["product_type"].first] = (p_yml_entry.first)
     end
     factor_activerecords = []
+    utility_activerecords = []
     product_types.each do |pType_url_pair| # This is a pair like this: "camera_us"=>"m.browsethenbuy.com" - seems backwards, but makes the hash unique on product_type
       cont_spec_hash = {}
       load_defaults(pType_url_pair[1]) # Need to set up $Continuous and other arrays before use
       all_products = Product.valid.instock
       all_products.each do |product|
+        newUtilityRow = ContSpec.new({:product_type => pType_url_pair[0], :name => "utility", :product_id => product.id, :value => 0})
         $Continuous["filter"].each do |f|
           unless cont_spec_hash[f]
             records = ContSpec.find(:all, :select => 'product_id, value', :conditions => ["product_id IN (?) and name = ?", all_products, f])
@@ -31,21 +33,25 @@ task :calculate_factors => :environment do
             end
             cont_spec_hash[f] = temp_hash
           end
-          newFactorRow = Factor.new
-          newFactorRow.product_id = product.id 
-          newFactorRow.product_type = pType_url_pair[0]
+          newFactorRow = Factor.new({:product_id => product.id, :product_type => pType_url_pair[0], :cont_var => f})
           fVal = cont_spec_hash[f][product.id]
           debugger unless fVal # The alternative here is to crash. This should never happen if Product.valid.instock is doing its job.
-          newFactorRow.cont_var = f
           newFactorRow.value = calculateFactor(fVal, f, cont_spec_hash[f])
           factor_activerecords.push(newFactorRow)
+          # Now that we have the factor value for that row, add it to the utility
+          newUtilityRow.value += newFactorRow.value
         end
+        utility_activerecords.push(newUtilityRow)
       end
     end
     # Do all record saving at the end for efficiency
     Factor.transaction do
       factor_activerecords.each(&:save)
-    end   
+    end
+    ContSpec.delete_all(["name = ?", "utility"])
+    ContSpec.transaction do
+      utility_activerecords.each(&:save)
+    end    
   end
 end
 
@@ -53,12 +59,13 @@ desc "Run boostexter to generate strong hypothesis files or Parse boostexter str
 task :btxtr => :environment do
      $: << "#{RAILS_ROOT}/lib/cluster_labeling/boostexter_labels_rb"
      
-     unless ENV.include?("type") && ENV.include?("action") && (ENV['action']=='save' || ENV['action']=='train')
-          raise "usage: rake btxtr type=? action=? # type is on of the current product types and action is 'save' or 'train'" 
+     unless ENV.include?("url") && ENV.include?("action") && (ENV['action']=='save' || ENV['action']=='train')
+          raise "usage: rake btxtr url=? action=? # url is a valid url from products.yml and action is 'save' or 'train'" 
      end
      
-     Session.current=Session.new
-     load_defaults(ENV['type'])
+     load_defaults(ENV['url'])
+     # Not 100% sure this next line is needed. It replaced "Session.current = Session.new"
+     Session.current = Session.new(0, Cluster.maximum(:version, :conditions => ['product_type = ?', $product_type]))
      case ENV['action']
      when 'train'
        require 'train_boostexter.rb'

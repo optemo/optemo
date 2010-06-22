@@ -127,7 +127,7 @@ function renderComparisonProducts(id, imgurl, name)
 	" data-id=\""+id+"\" alt=\""+id+"_s\"/ width=\"50\">" + 
 	"<div class=\"smalldesc\"";
 	// It looks so much better in Firefox et al, so if there's no MSIE, go ahead with special styling.
-	if ($.browser.msie) smallProductImageAndDetail = smallProductImageAndDetail + " style=\"position:absolute; bottom:5px;\"";
+	//if ($.browser.msie) smallProductImageAndDetail = smallProductImageAndDetail + " style=\"position:absolute; bottom:5px;\"";
 	smallProductImageAndDetail = smallProductImageAndDetail + ">" +
 	"<a class=\"easylink\" data-id=\""+id+"\" href=\"#\">" + 
 	((name) ? getShortProductName(name) : 0) +
@@ -744,7 +744,11 @@ $(document).ready(function() {
 				drop: function (e, ui) {
 					imgObj = $(ui.helper);
 					if (imgObj.hasClass('dragHand')) { // This is a drag hand object
-					    realImgObj = imgObj.prev().prev(); // Due to the creation of the cloned image, the image we want is actually two elements back, not just one.
+					    if (imgObj.prev().prev().hasClass('dragHand')) {
+					        realImgObj = imgObj.prev();
+					    } else {
+        				    realImgObj = imgObj.prev().prev(); // Due to the creation of the cloned image, the image we want is actually two elements back, not just one.
+    				    }
     					saveProductForComparison(realImgObj.attr('data-id'), realImgObj.attr('src'), realImgObj.attr('alt'));
 				    }
 				    else { // This is an image object; behave as normal

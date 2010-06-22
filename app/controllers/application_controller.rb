@@ -22,31 +22,16 @@ class ApplicationController < ActionController::Base
   
   private
   
-  def set_locale
-    I18n.locale = extract_locale
-  end
-  
   # Get locale code from request subdomain (like http://it.application.local:3000)
   # You have to put something like:
   #   127.0.0.1 gr.application.local
   # in your /etc/hosts file to try this out locally
-  def extract_locale
-    request.subdomains.first == 'fr' ? 'fr' : 'en'
-  end
-  
-  def call_rake(task, options = {})
-    options[:rails_env] ||= Rails.env
-    args = options.map { |n, v| "#{n.to_s.upcase}='#{v}'" }
-    system "/usr/local/bin/rake #{task} #{args.join(' ')} --trace 2>&1 >> #{Rails.root}/log/rake.log &"
+  def set_locale
+    I18n.locale = request.subdomains.first == 'fr' ? 'fr' : 'en'
   end
 
   def set_model_type
-    if request.domain.nil?
-      url = $DefaultProduct
-    else
-      url = request.domain(4) # This gets anything up to www.printers.browsethenbuy.co.uk (n + 1 elements in the domain name)
-    end
-    load_defaults(url)
+    load_defaults(request.domain(4)) # This gets anything up to www.printers.browsethenbuy.co.uk (n + 1 elements in the domain name)
   end
   
   def update_user
