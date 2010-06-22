@@ -105,7 +105,10 @@ printers.browsethenbuy.com:
         - [boost, cluster, filter, show, showList]
     resolutionmax:
         - Continuous
-        - [boost, cluster, filter, show, showList]
+        - [boost, cluster, filter, show]
+    resolution:
+        - Categorical
+        - [showList]
     paperinput:
         - Continuous
         - [boost, cluster, filter, show, showList]
