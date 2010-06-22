@@ -5,6 +5,7 @@
 		</div>
 		<div class='choose_group' data-feat="<%=feat%>" data-grouping="<%=@groupedfeature%>">Show Only This <%= t('products.' + @groupedfeature).singularize %></div>
 	</div>
+	<% best = cheapest if best.nil? # This happens if the group just has one member in it. %>
 	<% [best,cheapest].each do |p| %>
 	<div class="productinfo rounded" data-id="<%= p.id %>">
 		<div class="productimg_container">

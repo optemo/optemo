@@ -179,6 +179,7 @@ class Search < ActiveRecord::Base
     @clusters = clusters
   end
   
+  #The clusters argument can either be an array of cluster ids or an array of cluster objects if they have already been initialized
   def clusters(s = nil)
     if @clusters.nil?
       @clusters = []
@@ -203,7 +204,7 @@ class Search < ActiveRecord::Base
     @clusters
   end
   
-  def products(sort_by_utility=true)
+  def products
     selected_features = (userdataconts.map{|c| c.name+c.min.to_s+c.max.to_s}+userdatabins.map{|c| c.name+c.value.to_s}+userdatacats.map{|c| c.name+c.value}+userdatasearches.map{|c| c.keyword}).hash
     CachingMemcached.cache_lookup("#{$product_type}Products#{selected_features}") do
       #Temporary fix for backward compatibility
@@ -211,45 +212,30 @@ class Search < ActiveRecord::Base
       fq = fq.gsub(/product_id in/i, "id in") if fq
       product_list = Product.valid.instock.find(:all, :conditions => "product_type = '#{$product_type}'#{' and '+fq unless fq.blank?}")
       product_list_ids = product_list.map(&:id)
-      if sort_by_utility
-        utility_list = {}
-        $Continuous["filter"].each do |feat|
-          Factor.cachemany_with_ids(product_list_ids, feat).each do |factor|
-            utility_list[factor.product_id] = utility_list[factor.product_id].to_f + factor.value # nil.to_f is 0.0, so this works.
-          end
-        end
-        product_list.sort{|a, b| utility_list[a.id] <=> utility_list[b.id]}
-      else # This must be explicit
-        product_list
-      end
+      utility_list = ContSpec.cachemany_with_ids(product_list_ids, "utility")
+      # Cannot avoid sorting, since this result is cached.
+      product_list.sort{|a, b| utility_list[a.id] <=> utility_list[b.id]}
     end
   end
 
-  #The clusters argument can either be an array of cluster ids or an array of cluster objects if they have already been initialized
-  
   def self.createGroupBy(feat)
-    myproducts = Session.current.search.products(false) # This disables utility sorting, since it's not needed, and is more efficient.
+    myproducts = Session.current.search.products
     specs = CatSpec.cachemany_with_ids(myproducts.map(&:id),feat)
     grouping = specs.group_by{|spec|spec.value}
     grouping = Hash[grouping.each_pair{|k,v| grouping[k] = v.map(&:product_id)}.sort{|a,b| b.second.length <=> a.second.length}]
-    grouping.each_pair do |feat,products| 
-      prices = ContSpec.cachemany(products,"price")
-      cheapest = prices.zip(products).sort{|a,b|a.first <=> b.first}.first.second
-      products.delete(cheapest)
-      product_utility_hash = {}
-      $Continuous["filter"].each do |spec|
-        Factor.cachemany_with_ids(products, spec).each do |f|
-          product_utility_hash[f.product_id] = product_utility_hash[f.product_id].to_f + f.value
-        end
-      end
-      if products.empty?
-        best = cheapest # This means there was only one in the group, and "products.delete(cheapest)" took it out.
+    grouping.each_pair do |feat,product_ids| 
+      prices = ContSpec.cachemany(product_ids,"price")
+      cheapest = prices.zip(product_ids).sort{|a,b|a.first <=> b.first}.first.second
+      product_ids.delete(cheapest)
+      product_utility_hash = ContSpec.cachemany_with_ids(product_ids, "utility")
+
+      if product_ids.empty? # This means there was only one in the group, and "product_ids.delete(cheapest)" took it out.
+        grouping[feat] = [Product.cached(cheapest)]
       else
         best = product_utility_hash.sort{|a,b| b.second <=> a.second}.first.first
-        products.delete(best)
+        product_ids.delete(best)
+        grouping[feat] = [Product.cached(cheapest),Product.cached(best)] + product_ids # Just the first two products are searched for; the rest are left as just product_ids.
       end
-      # Just the first two products are searched for; the rest are left as just product_ids.
-      grouping[feat] = [Product.cached(cheapest),Product.cached(best)]+products
     end
   end
 

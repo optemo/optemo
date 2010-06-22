@@ -29,7 +29,7 @@
 			<% end %>
 		<% else %>
 			<% @groupings.each_pair do |feature, products| %>
-				<%= render :partial => 'grouping', :locals => {:feat => feature, :cheapest => products.first, :best => products.second, :group => true}%>
+				<%= render :partial => 'grouping', :locals => {:feat => feature, :cheapest => products[0], :best => products[1], :group => true}%>
 			<% end %>
 		<% end %>
 	<% else %>
