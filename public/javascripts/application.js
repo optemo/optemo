@@ -599,7 +599,7 @@ function DBinit() {
  		ShowInit();
  		trackPage('products/show/'+$(this).attr('data-id')); 
  		return false;
-	}
+	});
 	
 	if (IS_DRAG_DROP_ENABLED)
 	{

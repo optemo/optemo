@@ -25,6 +25,7 @@ class CompareController < ApplicationController
     # We need to make a new search so that history works properly (back button can take to "groupby" view)
     os = Session.current.searches.last
     s = os.clone # copy over session ID, etc.
+    s.view = feat # save feature for later. Any feature in "view" means we're in groupby view
     s.save
     Session.current.search = s
     Search.duplicateFeatures(s, os) # copy over filters
@@ -44,6 +45,10 @@ class CompareController < ApplicationController
         mysearch = search_history[hist-1]
         mysearch.page = params[:page] if params[:page] # For this case: back button followed by clicking a pagination link
         classVariables(mysearch)
+        if mysearch.view
+          @groupings = Search.createGroupBy(mysearch.view)
+          @groupedfeature = mysearch.view
+        end        
       else
         page_number = {} # This has to be a hash for compatibility with Search.createSearchAndCommit()
         page_number["page"] = params[:page]
