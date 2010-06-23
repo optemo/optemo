@@ -101,7 +101,7 @@ class Product < ActiveRecord::Base
   end
 
   def brand
-    @brand ||= cat_specs.cache(id, "brand")
+    @brand ||= cat_specs.cache_all(id)["brand"]
   end
 
   def smlTitle
@@ -120,8 +120,7 @@ class Product < ActiveRecord::Base
     @descurl ||= "/compare/show/"+[id,brand,model].join('-').tr(' /','_-')
   end
   
-  def display(attr)
-    data = send(attr)
+  def display(attr, data)
     if data.nil?
       return 'Unknown'
     elsif data == false

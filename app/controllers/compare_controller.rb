@@ -134,6 +134,7 @@ class CompareController < ApplicationController
     #Cleanse id to be only numbers
     params[:id] = params[:id][/^\d+/]
     @product = Product.cached(params[:id])
+    @allspecs = ContSpec.cache_all(params[:id]).merge(CatSpec.cache_all(params[:id])).merge(BinSpec.cache_all(params[:id]))
     if $product_type
       if $product_type == "flooring_builddirect"
         @imglurl = "http://www.builddirect.com" + CGI.unescapeHTML(@product.imglurl.to_s)

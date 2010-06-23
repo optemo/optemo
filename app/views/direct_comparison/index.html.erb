@@ -15,8 +15,9 @@
 			<div class="outertitle"><div class="columntitle">
 					<%= link_to image_tag('remove.png', :style => "vertical-align: text-top;")+" "+t('compare.index.remove'), "", :"data-name" => @products[i].id, :class => 'remove' %>
 			</div></div>
-			<%= render :partial => 'thumbnails', :object => @products[i], :locals => {:navBack => :back, :i => i, :total => @products.count} %>
-			<%= render :partial => 'featurevalues', :locals => {:product => @products[i], :numberofproducts => @products.count} %>
+			<% contspecs = ContSpec.cache_all(@products[i].id) %>
+			<%= render :partial => 'thumbnails', :object => @products[i], :locals => {:navBack => :back, :i => i, :total => @products.count, :contspecs => contspecs} %>
+			<%= render :partial => 'featurevalues', :locals => {:product => @products[i], :numberofproducts => @products.count, :contspecs => contspecs} %>
 		</div>
 	<% end %>
 	<div class="bgrow"></div>
