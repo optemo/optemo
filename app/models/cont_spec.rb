@@ -1,12 +1,19 @@
 class ContSpec < ActiveRecord::Base
   belongs_to :product
   attr_writer :cs
-  
+
+  # Get specs for a single item and single feature -- this is deprecated
+  #  def self.cache(p_id, feat)
+  #    CachingMemcached.cache_lookup("ContSpec#{feat}#{p_id}") do
+  #      r = find_by_product_id_and_name(p_id, feat)
+  #      r.value if r
+  #    end
+  #  end  
+
   # Get specs for a single item
-  def self.cache(p_id, feat)
-    CachingMemcached.cache_lookup("ContSpec#{feat}#{p_id}") do
-      r = find_by_product_id_and_name(p_id, feat)
-      r.value if r
+  def self.cache_all(p_id)
+    CachingMemcached.cache_lookup("ContSpecs#{p_id}") do
+      r = find(:all, :select => 'name, value', :conditions => ["product_id = ?", p_id]).each_with_object({}){|r, h| h[r.name] = r.value}
     end
   end
   def self.cachemany(p_ids, feat)
@@ -53,7 +60,7 @@ class ContSpec < ActiveRecord::Base
 
   def self.allspecs(feat)
     #ContSpec.find_all_by_name_and_product_type(feat,$product_type).map(&:value)
-    id_array = Product.valid.instock.map{|p| p.id }
+    id_array = Product.valid.instock.map(&:id)
     #id_array = Session.current.search.acceptedProductIDs
     ContSpec.cachemany(id_array, feat)
   end

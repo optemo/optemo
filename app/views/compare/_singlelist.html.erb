@@ -8,18 +8,19 @@
 		</div>
 		<div class="itemfeatures">
 			<div class="itemtitle"><%= product.smlTitle %></div>
+			<% contspecs = ContSpec.cache_all(product.id); catspecs = CatSpec.cache_all(product.id); binspecs = BinSpec.cache_all(product.id) %>
 			<% $Categorical["showList"].each do |f|%>
-			  <%= render :partial => 'featurevaluesg', :locals => {:f => f, :val => CatSpec.cache(product.id, f)} %>
+			  <%= render :partial => 'featurevaluesg', :locals => {:f => f, :val => catspecs[f]} %>
 			<% end %>
 			<% $Continuous["showList"].each do |f|%>
-			  <%= render :partial => 'featurevaluesg', :locals => {:f => f, :val => ContSpec.cache(product.id, f)} %>
+			  <%= render :partial => 'featurevaluesg', :locals => {:f => f, :val => contspecs[f]} %>
 			<% end %>
 			<% $Binary["showList"].each do |f|%>
-			  <%= render :partial => 'featurevaluesg', :locals => {:f => f, :val => BinSpec.cache(product.id, f)} %>
+			  <%= render :partial => 'featurevaluesg', :locals => {:f => f, :val => binspecs[f]} %>
 			<% end %>
 		</div>
 		<div class="price">
-			<%= number_to_currency(ContSpec.cache(product.id, "price")) %>
+			<%= number_to_currency(contspecs["price"]) %>
 		</div>
 		<div class='priceunit'>
 			<%= t("#{$product_type}.priceunit") unless t("#{$product_type}.priceunit") == '$' %>

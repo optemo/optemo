@@ -6,24 +6,25 @@
 		<div class='choose_group' data-feat="<%=feat%>" data-grouping="<%=@groupedfeature%>">Show Only This <%= t('products.' + @groupedfeature).singularize %></div>
 	</div>
 	<% best = cheapest if best.nil? # This happens if the group just has one member in it. %>
-	<% [best,cheapest].each do |p| %>
-	<div class="productinfo rounded" data-id="<%= p.id %>">
+	<% [best,cheapest].each do |product| %>
+	<div class="productinfo rounded" data-id="<%= product.id %>">
 		<div class="productimg_container">
-			<%= image_tag(imgurl(p) , :"data-id" => p.id, :class => "productimg", :alt => p.smlTitle, :title => p.smlTitle) %>
+			<%= image_tag(imgurl(product) , :"data-id" => product.id, :class => "productimg", :alt => product.smlTitle, :title => product.smlTitle) %>
 			<% if $DragAndDropEnabled %>
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
 			<% end %>
 		</div>
-		<div class='groupby_title'><%= p.smlTitle %></div>
+		<div class='groupby_title'><%= product.smlTitle %></div>
 		<div class="itemfeatures">
-			<% $Continuous["show"].each do |f|%>
-			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => ContSpec.cache(p.id, f)} %>
+			<% contspecs = ContSpec.cache_all(product.id); catspecs = CatSpec.cache_all(product.id); binspecs = BinSpec.cache_all(product.id) %>
+			<% $Continuous["showList"].each do |f|%>
+			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => contspecs[f]} %>
 			<% end %>
-			<% $Categorical["show"].each do |f|%>
-			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => CatSpec.cache(p.id, f)} %>
+			<% $Categorical["showList"].each do |f|%>
+			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => catspecs[f]} %>
 			<% end %>
-			<% $Binary["show"].each do |f|%>
-			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => BinSpec.cache(p.id, f)} %>
+			<% $Binary["showList"].each do |f|%>
+			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => binspecs[f]} %>
 			<% end %>
 		</div>
 	</div>

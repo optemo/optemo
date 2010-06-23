@@ -73,8 +73,9 @@ module BtxtrLabels
     products = products_this + products_parent
 
     for product, cluster_id in products
+      contspecs = ContSpec.cache_all(product.id)
       $Continuous["boost"].each do |feat|
-        fieldval = ContSpec.cache(product.id, feat)
+        fieldval = contspecs[feat]
         fieldval ||= "?" #Unknown value
         f.write(fieldval.to_s+", ")
       end

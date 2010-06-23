@@ -8,17 +8,17 @@
 				<div class="image_boundingbox">
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
 		<% end %>
-		<%= image_tag(imgurl(cluster.representative) , :"data-id" => cluster.representative.id, :class => "productimg", :alt => cluster.representative.smlTitle, :title => cluster.representative.smlTitle) %>
+		<%= image_tag(imgurl(product) , :"data-id" => product.id, :class => "productimg", :alt => product.smlTitle, :title => product.smlTitle) %>
 		<% if $DragAndDropEnabled %>
 			</div>
 		<% end %>
 		<div class="productinfocont">
 			<div class="productinfo">
-				<a href="<%=cluster.representative.descurl%>" data-id="<%=cluster.representative.id%>" class="easylink" title="Click for product specifications">
-				<%= cluster.representative.smlTitle %></a>
+				<a href="<%=product.descurl%>" data-id="<%=product.id%>" class="easylink" title="Click for product specifications">
+				<%= product.smlTitle %></a>
 		
 				<div class="price">
-					$<%= ContSpec.cache(cluster.representative.id, "price") %>
+					$<%= ContSpec.cache_all(product.id)["price"] %>
 				</div>	
 			</div>
 		</div>
@@ -29,7 +29,7 @@
     		<div class='sim rounded'>
     	  <%= link_to(image_tag('plus.png')+t("products.compare.similar",:count => cluster.size - 1), 
     	  "/compare/sim/#{cluster.id}", :id => "sim#{i}", :class => 'simlinks rounded', 
-		  :"data-id" => "#{cluster.representative.id}", :"title" => "Browse through all " + cluster.size.to_s + " in this group") %>
+		  :"data-id" => "#{product.id}", :"title" => "Browse through all " + cluster.size.to_s + " in this group") %>
     		</div>
 		<% else %>
 		<div style="margin-top: 6px; font-size: 0.8em">

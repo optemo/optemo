@@ -592,11 +592,14 @@ function ErrorInit() {
 
 function DBinit() {
 	//$(".productimg, .easylink").unbind("click").click(function (){
-	//	ShowInit();
-	//	fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
-	//	trackPage('products/show/'+$(this).attr('data-id')); 
-	//	return false;
-	//});
+    $('.nbsingle').unbind("click").click(function(){ 
+		box = $(this);
+ 		currentelementid = box.find('.productinfo').attr('data-id');
+        fadeout('/compare/show/'+currentelementid+'?plain=true',null, 800, 800);
+ 		ShowInit();
+ 		trackPage('products/show/'+$(this).attr('data-id')); 
+ 		return false;
+	});
 	
 	if (IS_DRAG_DROP_ENABLED)
 	{

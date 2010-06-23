@@ -18,23 +18,23 @@ cameras:
         - gridview
     maximumresolution: 
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     displaysize:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     price:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
         - prefdir: -1
     opticalzoom:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     slr:
         - Binary
-        - [boost, cluster]
+        - [boost, cluster, show]
     brand:
         - Categorical
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
 
 cameras.browsethenbuy.com:
     product_type:
@@ -43,23 +43,23 @@ cameras.browsethenbuy.com:
         - gridview
     maximumresolution: 
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     displaysize:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     price:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
         - prefdir: -1
     opticalzoom:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     slr:
         - Binary
-        - [boost, cluster]
+        - [boost, cluster, show]
     brand:
         - Categorical
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
 
 m.browsethenbuy.com:
     product_type:
@@ -68,23 +68,23 @@ m.browsethenbuy.com:
         - gridview
     maximumresolution: 
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     displaysize:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     price:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
         - prefdir: -1
     opticalzoom:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     slr:
         - Binary
-        - [boost, cluster]
+        - [boost, cluster, show]
     brand:
         - Categorical
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
 
 ################################
 #  LaserPrinterHub - Printers  #
@@ -105,7 +105,10 @@ printers.browsethenbuy.com:
         - [boost, cluster, filter, show, showList]
     resolutionmax:
         - Continuous
-        - [boost, cluster, filter, show, showList]
+        - [boost, cluster, filter, show]
+    resolution:
+        - Categorical
+        - [showList]
     paperinput:
         - Continuous
         - [boost, cluster, filter, show, showList]
@@ -115,13 +118,13 @@ printers.browsethenbuy.com:
         - prefdir: -1
     printserver:
         - Binary
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     scanner:
         - Binary
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     brand:
         - Categorical
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
             
 laserprinterhub.com:
     product_type:
@@ -130,30 +133,33 @@ laserprinterhub.com:
         - gridview
     price:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
         - prefdir: -1
     ppm:
         - Continuous
-        - [boost, cluster, filter, showList]
+        - [boost, cluster, filter, show, showList]
     resolutionmax:
         - Continuous
-        - [boost, cluster, filter, showList]
+        - [boost, cluster, filter, show]
+    resolution:
+        - Categorical
+        - [showList]
     paperinput:
         - Continuous
-        - [boost, cluster, filter, showList]
+        - [boost, cluster, filter, show, showList]
     itemwidth:
         - Continuous
-        - [boost, cluster, filter, showList]
+        - [boost, cluster, filter, show, showList]
         - prefdir: -1
     printserver:
         - Binary
-        - [boost, cluster, filter]
+        - [boost, cluster, show, filter]
     scanner:
         - Binary
-        - [boost, cluster, filter]
+        - [boost, cluster, show, filter]
     brand:
         - Categorical
-        - [boost, cluster, filter]
+        - [boost, cluster, show, filter]
 
 localhost:
     product_type:
@@ -162,30 +168,33 @@ localhost:
         - gridview
     price:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
         - prefdir: -1
     ppm:
         - Continuous
-        - [boost, cluster, filter, showList]
+        - [boost, cluster, filter, show, showList]
     resolutionmax:
         - Continuous
-        - [boost, cluster, filter, showList]
+        - [boost, cluster, filter, show]
+    resolution:
+        - Categorical
+        - [showList]
     paperinput:
         - Continuous
-        - [boost, cluster, filter, showList]
+        - [boost, cluster, filter, show, showList]
     itemwidth:
         - Continuous
-        - [boost, cluster, filter, showList]
+        - [boost, cluster, filter, show, showList]
         - prefdir: -1
     printserver:
         - Binary
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     scanner:
         - Binary
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     brand:
         - Categorical
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
 
 #############################
 #  Build Direct - Flooring  #
@@ -207,17 +216,17 @@ builddirect.optemo.com:
         - prefdir: 0
     species_hardness:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     miniorder:
         - Continuous
-        - [boost, cluster, filter, showList]
+        - [boost, cluster, filter, show, showList]
         - prefdir: -1
     brand:
         - Categorical
-        - [boost, cluster, filter]    
+        - [boost, cluster, filter, show]    
     species:
         - Categorical
-        - [boost, filter]
+        - [boost, filter, show]
     finish:
         - Categorical
         - [boost, filter, show, showList]
@@ -226,7 +235,7 @@ builddirect.optemo.com:
         - [boost, filter, show, showList]
     colorrange:
         - Categorical
-        - [boost, filter]
+        - [boost, filter, show]
         
 flooring:
     product_type: 
@@ -240,21 +249,21 @@ flooring:
         - prefdir: -1
     width:
         - Continuous
-        - [boost, cluster, filter, showList]
+        - [boost, cluster, filter, show, showList]
         - prefdir: 0
     species_hardness:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     miniorder:
         - Continuous
-        - [boost, cluster, filter, showList]
+        - [boost, cluster, filter, show, showList]
         - prefdir: -1
     brand:
         - Categorical
-        - [boost, cluster, filter]    
+        - [boost, cluster, filter, show]    
     species:
         - Categorical
-        - [boost, filter]
+        - [boost, filter, show]
     finish:
         - Categorical
         - [boost, filter, show, showList]
@@ -263,7 +272,7 @@ flooring:
         - [boost, filter, show, showList]
     colorrange:
         - Categorical
-        - [boost, filter]
+        - [boost, filter, show]
                 
 #############################
 #     Laptops - Walmart     #
@@ -276,20 +285,20 @@ walmart.optemo.com:
         - lineview
     price:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
         - prefdir: -1
     brand:
         - Categorical
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     hd:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     ram:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     screensize:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
         
 laptops:
     product_type: 
@@ -298,17 +307,17 @@ laptops:
         - lineview
     price:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
         - prefdir: -1
     brand:
         - Categorical
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     hd:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     ram:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     screensize:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]

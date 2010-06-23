@@ -12,6 +12,10 @@ class CreateSearches < ActiveRecord::Migration
       t.string :brand, :default => "All Brands"
       t.float :price_min, :default => 0
       t.float :price_max, :default => 10000000
+      t.text :searchpids
+      t.string :searchterm
+      t.integer :page
+      t.string :view
       t.timestamps
     end
   end
