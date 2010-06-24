@@ -493,23 +493,48 @@ function FilterAndSearchInit() {
 	});
 	
 	// In simple view, select an aspect to create viewable groups
-	$('.groupby').each(function(){
+	$('.groupby, .contgroupby').each(function(){
 		$(this).unbind('click').click(function(){
 			feat = $(this).attr('data-feat');
 			ajaxcall("/compare/groupby/?feat="+feat);
 		});
 	});
-
+	
     // Choose a grouping via group button rather than drop-down (effect is the same as the select boxes)
 	$('.title').each(function(){
 		$(this).unbind('click').click(function(){
 		    $(this).unbind();
-		    group_element = $(this).find('.choose_group');
-        	var whichThingSelected = group_element.attr('data-feat');
-        	var cat = group_element.attr('data-grouping');
-        	$('#myfilter_'+cat).val(appendStringWithToken($('#myfilter_'+cat).val(), whichThingSelected, '*'));
-        	submitCategorical();
-        	trackCategorical(whichThingSelected,100,2);
+		    if ($(this).find('.choose_group').length) { // This is a categorical feature
+    		    group_element = $(this).find('.choose_group');
+            	var whichThingSelected = group_element.attr('data-feat');
+            	var cat = group_element.attr('data-grouping');
+            	$('#myfilter_'+cat).val(appendStringWithToken($('#myfilter_'+cat).val(), whichThingSelected, '*'));
+            	submitCategorical();
+            	trackCategorical(whichThingSelected,100,2);
+        	}
+        	else { // This is a continuous feature
+        	    group_element = $(this).find('.choose_cont_range');
+        	    feat = group_element.attr('data-grouping');
+        	    bounds = group_element.attr('data-feat').split("-");
+    	        lowerbound = parseFloat(bounds[0]);
+    	        upperbound = parseFloat(bounds[1]);
+    	        var arguments_to_send = [];
+    	        arguments = $("#filter_form").serialize().split("&");
+    	        for (i=0; i<arguments.length; i++)
+                {
+                    if (arguments[i].match(feat)) {
+                        split_arguments = arguments[i].split("=")
+                        if (arguments[i].match(/min/))
+                            split_arguments[1] = lowerbound;
+                        else
+                            split_arguments[1] = upperbound;
+                        arguments[i] = split_arguments.join("=");
+                    }
+                    if (!(arguments[i].match(/^superfluous/)))
+                        arguments_to_send.push(arguments[i]);
+                }
+                ajaxcall("/compare/filter/?ajax=true&" + arguments_to_send.join("&"));
+    	    }
 		});
 	});
 

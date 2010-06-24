@@ -1,16 +1,17 @@
 <div class='feature'>
 	<div class='label space'>
-		<%= render :partial => 'desc', :locals => {:feat => val} %>
-		<%= link_to t('products.'+val), "#" %>
-		<span class="unitdisp">(<%= t('products.' + val+"unit") %>)</span>
+		<%= render :partial => 'desc', :locals => {:feat => feat} %>
+		<%= link_to t('products.'+feat), "#" %>
+		<span class="unitdisp">(<%= t('products.' + feat+"unit") %>)</span>
+		<div class="contgroupby" data-feat="<%= feat %>">Show Groups</div>
 	</div>
-	<% start = isnil(Session.current.search.userdataconts.select{|m|m.name == val}.first){Userdatacont.new("min" => overall_min, "max" => overall_max)} %>
-	<div class="hist" data-data="<%= Session.current.search.distribution(val).join(',') %>"></div>
+	<% start = isnil(Session.current.search.userdataconts.select{|m|m.name == feat}.first){Userdatacont.new("min" => overall_min, "max" => overall_max)} %>
+	<div class="hist" data-data="<%= Session.current.search.distribution(feat).join(',') %>"></div>
 	<% current_min = start.min; current_max = start.max %>
-	<%= hidden_field_tag "myfilter[#{val}_min]", start.name.nil? ? nil : current_min,{:class => 'min'}%>
-	<%= hidden_field_tag "myfilter[#{val}_max]", start.name.nil? ? nil : current_max,{:class => 'max'}%>
+	<%= hidden_field_tag "myfilter[#{feat}_min]", start.name.nil? ? nil : current_min,{:class => 'min'}%>
+	<%= hidden_field_tag "myfilter[#{feat}_max]", start.name.nil? ? nil : current_max,{:class => 'max'}%>
 	<div class='slider'
-	data-label= '<%= val %>'
+	data-label= '<%= feat %>'
 	data-min='<%= overall_min %>'
 	data-max='<%= overall_max %>'
 	data-startmin='<%= current_min %>'

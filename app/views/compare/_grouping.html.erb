@@ -3,7 +3,11 @@
 		<div class="group_title">
 			<%= feat %> (<%= @groupings[feat].size %>)
 		</div>
-		<div class='choose_group' data-feat="<%=feat%>" data-grouping="<%=@groupedfeature%>">Show Only This <%= t('products.' + @groupedfeature).singularize %></div>
+		<% if $Categorical.values.flatten.index(@groupedfeature) %>
+			<div class='choose_group' data-feat="<%=feat%>" data-grouping="<%=@groupedfeature%>">Show Only This <%= t('products.' + @groupedfeature).singularize %></div>
+		<% else %>
+			<div class='choose_cont_range' data-feat="<%=feat%>" data-grouping="<%=@groupedfeature%>">Show Only This <%#= t('products.' + @groupedfeature).singularize %> Range</div>
+		<% end %>
 	</div>
 	<% best = cheapest if best.nil? # This happens if the group just has one member in it. %>
 	<% [best,cheapest].each do |product| %>

@@ -312,7 +312,7 @@ div.rowdiv {
   width: 115px;
 }
 
-.sv .choose_group {
+.sv .choose_group, .sv .choose_cont_range {
 	font-size: 0.9em;
 	position: absolute;
 	bottom: 10px;
@@ -604,11 +604,18 @@ div.smalldesc {
 	text-decoration: underline;
 }
 
+.contgroupby {
+    font-size: 0.6em;
+    text-decoration: underline;
+    cursor: pointer;
+    float: right;
+}
+
 .label {
 	font-weight: bold;
 	text-align: left;
 	font-size: 0.8em;
-	width: 145px;
+	width: 185px;
 	margin-top: 0.6em;
 	position: relative;
 }

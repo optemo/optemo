@@ -40,7 +40,7 @@
 <% $Continuous["filter"].each do |feat| %>
 	<%= render :partial => 'slider', 
 		:locals => {:name => t('products.' + feat),
-		:val => feat,
+		:feat => feat,
 		:money_formatting => feat == 'price',
 		:overall_min => ContSpec.allMinMax(feat)[0],
 		:overall_max => ContSpec.allMinMax(feat)[1]} %>

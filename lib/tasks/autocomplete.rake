@@ -30,12 +30,15 @@ end
 def fetch_terms(product_type)
   # Must do a join followed by a split since the initial mapping of titles is like this: ["keywords are here", "and also here", ...]
   # The gsub lines are to take out the parentheses on both sides, take out commas, and take out trailing slashes.
-  searchterms = Product.find(:all, :select => "title", :conditions => ["product_type = ?", product_type]).map{|c|c.title}.join(" ").split(" ").map{|t| t.gsub("()", '').gsub(/,/,' ').gsub(/\/$/,'').chomp}.uniq
+  searchterms = Product.valid.instock.map{|c|c.title}.join(" ").split(" ").map{|t| t.gsub("()", '').gsub(/,/,' ').gsub(/\/$/,'').chomp}.uniq
   # Sanitize RSS-fed UTF-8 character input.
   ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
   searchterms = searchterms.map {|t| ic.iconv(t << ' ')[0..-2]}
   # Delete all the 1200x1200dpi, the "/" or "&" strings, all two-letter strings, and things that don't start with a letter or number.
   searchterms.delete_if {|t| t == '' || t.match('[0-9]+.[0-9]+') || t.match('^..?$') || t.match('^[^A-Za-z0-9]') || t.downcase.match('^print') || t.match('<.+>')}
+  useless_search_terms = ["a", "has", "such", "accordance", "have", "suitable", "according", "having", "than", "all", "herein", "that", "also", "however", "the", "an", "if", "their", "and", "in", "then", "another", "into", "there", "are", "invention", "thereby", "as", "is", "therefore", "at", "it", "thereof", "be", "its", "thereto", "because", "means", "these", "been", "not", "they", "being", "now", "this", "by", "of", "those", "claim", "on", "thus", "comprises", "onto", "to", "corresponding", "or", "use", "could", "other", "various", "described", "particularly", "was", "desired", "preferably", "were", "do", "preferred", "what", "does", "present", "when", "each", "provide", "where", "embodiment", "provided", "whereby", "fig", "provides", "wherein", "figs", "relatively", "which", "for", "respectively", "while", "from", "said", "who", "further", "should", "will", "generally", "since", "with", "had", "some", "would"]
+  searchterms.delete_if {|t| useless_search_terms.index(t)}
+  searchterms.delete_if {|t| Product.search_for_ids(:per_page => 10000, :star => true, :conditions => {:product_type => product_type, :title => t.downcase}).empty? }
   # The regular expression replacement to \\\\\' is intentional, believe it or not.
   return product_type.downcase + '_searchterms = [\'' + searchterms.map{|t|(t.match(/[^A-Za-z0-9]$/)? t.chop.downcase : t.downcase).gsub("'","\\\\\'") }.uniq.join('\',\'') + '\'];'
   # Particular to this data
