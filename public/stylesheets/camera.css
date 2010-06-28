@@ -609,7 +609,10 @@ div.smalldesc {
     font-size: 0.8em;
     text-decoration: underline;
     cursor: pointer;
-    float: right;
+    display: inline;
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
 .label {
@@ -620,6 +623,7 @@ div.smalldesc {
 	margin-top: 0.6em;
 	position: relative;
 }
+
 /* The category labels need to be less than 134 for IE, and the slider labels have to be greater for Safari. */
 .catlabel {
 	font-weight: bold;
@@ -768,22 +772,27 @@ margin-top:0;
 	height: 2px;
 }
 
-.popupTourClose{
-font-size:14px;
-line-height:14px;
-right:6px;
-top:4px;
-position:absolute;
-color:#6fa5fd;
-font-weight:700;
-display:block;
+.popupTourClose {
+    font-size:14px;
+    line-height:14px;
+    right:6px;
+    top:4px;
+    position:absolute;
+    color:#6fa5fd;
+    font-weight:700;
+    display:block;
 }
 
 .tourDrawAttention
 {
 	border: 2px solid red;
 	background: #fffcd3;
-	margin:2px;
+	margin:auto;
+}
+.lv .tourDrawAttention /* this is for CSS precedence */
+{
+	border: 2px solid red;
+	background: #fffcd3;
 }
 
 .navigator_box .tourDrawAttention

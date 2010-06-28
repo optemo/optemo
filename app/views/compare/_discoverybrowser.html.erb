@@ -24,8 +24,8 @@
 	<%= '</div>' if !$LineItemView %>
 	<% if $SimpleLayout %>
 		<% if @groupings.nil? %>
-			<% @products.each do |product| %>
-				<%= render :partial => 'singlelist', :locals => {:product => product} %>
+			<% @products.each_index do |i| %>
+				<%= render :partial => 'singlelist', :locals => {:product => @products[i], :i => i} %>
 			<% end %>
 		<% else %>
 			<% @groupings.each_pair do |feature, products| %>

@@ -44,6 +44,7 @@ if ($('#ajaxload').length)
 // The following is pulled from optemo.html.erb, which in turn checks GlobalDeclarations.rb
 var IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
 var MODEL_NAME = $("#modelname").html();
+var LINE_ITEM_VIEW = ($('#lineitemview').html() === 'true');
 
 //--------------------------------------//
 //           UI Manipulation            //
@@ -832,38 +833,78 @@ $(document).ready(function() {
 		fadeout('/survey/submit?' + $("#surveyform").serialize(), null, 300, 70);
 		return false;
 	});
+	if (LINE_ITEM_VIEW) {
+	    //Tour section
+    	$('#popupTour1, #popupTour2, #popupTour3, #popupTour4').each(function(){
+    		$(this).find('.deleteX').click(function(){
+    			$(this).parent().fadeOut("slow");
+    			clearStyles(["box0", "filterbar", "savebar", "groupby0"], 'tourDrawAttention');
+    			$("#box0").removeClass('tourDrawAttention');
+    			return false;
+    		});
+    	});
 	
-	//Tour section
-	$('#popupTour1, #popupTour2, #popupTour3').each(function(){
-		$(this).find('.deleteX').click(function(){
-			$(this).parent().fadeOut("slow");
-			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
-			$("#sim0").removeClass('tourDrawAttention');
-			return false;
-		});
-	});
-	
-	$('#popupTour1').find('a.popupnextbutton').click(function(){
-		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
-		$("#popupTour2").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
-		$("#popupTour1").fadeOut("slow");
-		$("#filterbar").addClass('tourDrawAttention');
-		$("#sim0").removeClass('tourDrawAttention');
-		$("#sim0").parent().removeClass('tourDrawAttention');
-	});
+    	$('#popupTour1').find('a.popupnextbutton').click(function(){
+    		var groupbyoffset = $("#groupby0").offset();
+    		$("#popupTour2").css({"position":"absolute", "top" : parseInt(groupbyoffset.top) - 120, "left" : parseInt(groupbyoffset.left) + 220}).fadeIn("slow");
+    		$("#popupTour1").fadeOut("slow");
+    		$("#groupby0").addClass('tourDrawAttention');
+    		$("#box0").removeClass('tourDrawAttention');
+    	});
 
-	$('#popupTour2').find('a.popupnextbutton').click(function(){
-		var comparisonposition = $("#savebar").offset();
-		$("#popupTour3").css({"position":"absolute", "top" : parseInt(comparisonposition.top) + 160, "left" : parseInt(comparisonposition.left) + 70}).fadeIn("slow");
-		$("#popupTour2").fadeOut("slow");
-		$("#savebar").addClass('tourDrawAttention');
-		$("#filterbar").removeClass('tourDrawAttention');
-	});
+    	$('#popupTour2').find('a.popupnextbutton').click(function(){
+    		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
+    		$("#popupTour3").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
+    		$("#popupTour2").fadeOut("slow");
+    		$("#filterbar").addClass('tourDrawAttention');
+    		$("#groupby0").removeClass('tourDrawAttention');
+    	});
+
+    	$('#popupTour3').find('a.popupnextbutton').click(function(){
+    		var comparisonposition = $("#savebar").offset();
+    		$("#popupTour4").css({"position":"absolute", "top" : parseInt(comparisonposition.top) - 260, "left" : parseInt(comparisonposition.left) + 70}).fadeIn("slow");
+    		$("#popupTour3").fadeOut("slow");
+    		$("#savebar").addClass('tourDrawAttention');
+    		$("#filterbar").removeClass('tourDrawAttention');
+    	});
 	
-	$('#popupTour3').find('a.popupnextbutton').click(function(){
-		$("#popupTour3").fadeOut("slow");
-		$("#savebar").removeClass('tourDrawAttention');
-	});
+    	$('#popupTour4').find('a.popupnextbutton').click(function(){
+    		$("#popupTour4").fadeOut("slow");
+    		$("#savebar").removeClass('tourDrawAttention');
+    	});
+    } else {
+    	//Tour section
+    	$('#popupTour1, #popupTour2, #popupTour3').each(function(){
+    		$(this).find('.deleteX').click(function(){
+    			$(this).parent().fadeOut("slow");
+    			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
+    			$("#sim0").removeClass('tourDrawAttention');
+    			return false;
+    		});
+    	});
+	
+    	$('#popupTour1').find('a.popupnextbutton').click(function(){
+    		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
+    		$("#popupTour2").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
+    		$("#popupTour1").fadeOut("slow");
+    		$("#filterbar").addClass('tourDrawAttention');
+    		$("#sim0").removeClass('tourDrawAttention');
+    		$("#sim0").parent().removeClass('tourDrawAttention');
+    	});
+
+    	$('#popupTour2').find('a.popupnextbutton').click(function(){
+    		var comparisonposition = $("#savebar").offset();
+    		$("#popupTour3").css({"position":"absolute", "top" : parseInt(comparisonposition.top) - 260, "left" : parseInt(comparisonposition.left) + 70}).fadeIn("slow");
+    		$("#popupTour2").fadeOut("slow");
+    		$("#savebar").addClass('tourDrawAttention');
+    		$("#filterbar").removeClass('tourDrawAttention');
+    	});
+	
+    	$('#popupTour3').find('a.popupnextbutton').click(function(){
+    		$("#popupTour3").fadeOut("slow");
+    		$("#savebar").removeClass('tourDrawAttention');
+    	});
+	}
 	
 	// On escape press. Probably not needed anymore.
 	$(document).keypress(function(e){
@@ -875,13 +916,16 @@ $(document).ready(function() {
 	});
 
 	launchtour = (function () {
-		var browseposition = $("#sim0").offset();
-		if (MODEL_NAME == 'flooring_builddirect') // This is a bit of a hack. Probably, the javascript should be aware of "line item view" vs. "box view"
-		    $("#sim0").parent().addClass('tourDrawAttention');
-		else
+	    if (LINE_ITEM_VIEW) {
+		    var browseposition = $("#box0").offset();
+    		$("#box0").addClass('tourDrawAttention');		    
+    		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
+		} else {
+    		var browseposition = $("#sim0").offset();
+    		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
     		$("#sim0").addClass('tourDrawAttention');
-		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
-		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
+    		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
+    	}
 		return false;
 	});
 

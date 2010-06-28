@@ -130,6 +130,19 @@ module CompareHelper
     end
   end
 
+  def popuptext(number, text, nexttext="Next &gt;&gt;")
+    "<div id='popupTour#{number}' class='popupTour'>
+    	<a class='deleteX' href='#'><img src='/images/close.png' alt='Close'/></a>
+    	<h1>Discovery Browser Tour</h1>
+    	<p>#{text}
+    		<br/><br/>
+    		<a href='#' class='popupnextbutton'>#{nexttext}</a>
+    		<br/><hr width='90%'/>
+    		<span class='popupcloseinstructions'>Click X to close at any time</span>
+    	</p>
+    </div>"
+  end
+
   def imgurl(product)
     case $product_type
       when "flooring_builddirect" then "http://www.builddirect.com" + CGI.unescapeHTML(product.imgmurl.to_s)

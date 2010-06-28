@@ -3,7 +3,9 @@
 		<%= render :partial => 'desc', :locals => {:feat => feat} %>
 		<%= link_to t('products.'+feat), "#" %>
 		<span class="unitdisp">(<%= t('products.' + feat+"unit") %>)</span>
-		<div class="contgroupby" data-feat="<%= feat %>">Show Groups</div>
+		<% if $LineItemView %>
+			<div class="contgroupby" data-feat="<%= feat %>">Show Groups</div>
+		<% end %>		
 	</div>
 	<% start = isnil(Session.current.search.userdataconts.select{|m|m.name == feat}.first){Userdatacont.new("min" => overall_min, "max" => overall_max)} %>
 	<div class="hist" data-data="<%= Session.current.search.distribution(feat).join(',') %>"></div>
