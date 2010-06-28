@@ -170,7 +170,8 @@ div.rowdiv {
 
 .fv {
 	float: left;
-	width: 162px;
+	width: 150px;
+	margin-left: 15px;
 }
 
 /* Navigator box */
@@ -369,7 +370,7 @@ div.rowdiv {
 }
 
 .itemtitle {
-    font-size: 1.2em;
+    font-size: 1.4em;
     padding-bottom:5px;
 }
 
@@ -605,7 +606,7 @@ div.smalldesc {
 }
 
 .contgroupby {
-    font-size: 0.6em;
+    font-size: 0.8em;
     text-decoration: underline;
     cursor: pointer;
     float: right;
@@ -615,7 +616,7 @@ div.smalldesc {
 	font-weight: bold;
 	text-align: left;
 	font-size: 0.8em;
-	width: 185px;
+	width: 197px;
 	margin-top: 0.6em;
 	position: relative;
 }

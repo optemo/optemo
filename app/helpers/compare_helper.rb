@@ -23,6 +23,23 @@ module CompareHelper
     ((ContSpec.allMinMax(feat)[1] || 0)*10).ceil.to_f/10
   end
   
+  # This function formats a number's display precision in a way that humans find more reasonable.
+  # Specifically, it takes numbers like 8177.99 and turns them into 8200, or numbers like 4.974 into 4.97.
+  # This code is ported from application.js (in setting up slider increments).
+  def format_acceptable_increments(number, round_direction='down')
+    # These acceptable increments can be tweaked as necessary. Multiples of 5 and 10 look cleanest; 20 looks OK but 2 and 0.2 look weird.
+		acceptableincrements = [1000, 500, 100, 50, 10, 5, 1, 0.5, 0.1, 0.05, 0.01]
+		comparator = number / 100.0 # so that's 81.7799
+    increment = acceptableincrements.delete_if{|i| (i * 1.1) < comparator}.last
+    
+    realvalue = (number / increment)
+    if round_direction == 'up'
+      realvalue = realvalue.ceil * increment
+    else
+      realvalue = realvalue.round * increment
+    end		
+  end
+  
   def isnil(a)
     if a.nil?
       yield

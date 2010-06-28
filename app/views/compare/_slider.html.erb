@@ -12,10 +12,10 @@
 	<%= hidden_field_tag "myfilter[#{feat}_max]", start.name.nil? ? nil : current_max,{:class => 'max'}%>
 	<div class='slider'
 	data-label= '<%= feat %>'
-	data-min='<%= overall_min %>'
-	data-max='<%= overall_max %>'
-	data-startmin='<%= current_min %>'
-	data-startmax='<%= current_max %>'
+	data-min='<%= format_acceptable_increments(overall_min, "down") %>'
+	data-max='<%= format_acceptable_increments(overall_max, "up") %>'
+	data-startmin='<%= format_acceptable_increments(current_min, "down") %>'
+	data-startmax='<%= format_acceptable_increments(current_max, "up") %>'
 	force-int='false'
 	<%= money_formatting ? 'data-formatting="$"' : ""  %>>
 		<div class="centerofslider">&nbsp;</div>
