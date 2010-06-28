@@ -103,7 +103,7 @@ en:
         ppmunit:                    "ppm"
         itemwidthunit:              "in."
         widthunit:                  "in."
-        paperinputunit:             "pages"
+        paperinputunit:             "pgs"
         resolutionmaxunit:          "dpi"
         hdunit:                     "GB"
         ramunit:                    "GB"

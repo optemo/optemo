@@ -220,18 +220,32 @@ class Search < ActiveRecord::Base
 
   def self.createGroupBy(feat)
     myproducts = Session.current.search.products
-    specs = CatSpec.cachemany_with_ids(myproducts.map(&:id),feat)
-    grouping = specs.group_by{|spec|spec.value}
-    grouping = Hash[grouping.each_pair{|k,v| grouping[k] = v.map(&:product_id)}.sort{|a,b| b.second.length <=> a.second.length}]
+    if $Categorical.values.flatten.index(feat) # It's in the categorical array
+      specs = CatSpec.cachemany_with_ids(myproducts.map(&:id),feat)
+      grouping = specs.group_by{|spec|spec.value}
+      grouping = Hash[grouping.each_pair{|k,v| grouping[k] = v.map(&:product_id)}.sort{|a,b| b.second.length <=> a.second.length}]
+    elsif $Continuous.values.flatten.index(feat)
+      specs = ContSpec.cachemany_with_ids(myproducts.map(&:id), feat).sort{|a,b| a[1] <=> b[1]}
+      # [[id, low], [id, higher], ... [id, highest]]
+      all_product_ids = specs.map{|s| s.first}
+      quartile_length = (specs.length / 4.0).ceil
+      grouping = {}
+      ["Low", "Mid-low", "Mid-high", "High"].each do |label|
+        # This convoluted next line sets the names of the quartiles, using the specs' values at the beginning and end of each quartile.
+        grouping[specs[0][1].to_s + " - " + specs[((quartile_length >= specs.length) ? (specs.length-1) : quartile_length)][1].to_s] = all_product_ids.slice!(0,quartile_length)
+        specs.slice!(0, quartile_length)
+      end
+    else # Binary feature. Do nothing for now.
+    end
     grouping.each_pair do |feat,product_ids| 
       prices = ContSpec.cachemany(product_ids,"price")
       cheapest = prices.zip(product_ids).sort{|a,b|a.first <=> b.first}.first.second
       product_ids.delete(cheapest)
-      product_utility_hash = ContSpec.cachemany_with_ids(product_ids, "utility")
 
       if product_ids.empty? # This means there was only one in the group, and "product_ids.delete(cheapest)" took it out.
         grouping[feat] = [Product.cached(cheapest)]
       else
+        product_utility_hash = ContSpec.cachemany_with_ids(product_ids, "utility")
         best = product_utility_hash.sort{|a,b| b.second <=> a.second}.first.first
         product_ids.delete(best)
         grouping[feat] = [Product.cached(cheapest),Product.cached(best)] + product_ids # Just the first two products are searched for; the rest are left as just product_ids.

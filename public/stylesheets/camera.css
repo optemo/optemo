@@ -170,7 +170,8 @@ div.rowdiv {
 
 .fv {
 	float: left;
-	width: 162px;
+	width: 150px;
+	margin-left: 15px;
 }
 
 /* Navigator box */
@@ -312,7 +313,7 @@ div.rowdiv {
   width: 115px;
 }
 
-.sv .choose_group {
+.sv .choose_group, .sv .choose_cont_range {
 	font-size: 0.9em;
 	position: absolute;
 	bottom: 10px;
@@ -369,7 +370,7 @@ div.rowdiv {
 }
 
 .itemtitle {
-    font-size: 1.2em;
+    font-size: 1.4em;
     padding-bottom:5px;
 }
 
@@ -604,14 +605,25 @@ div.smalldesc {
 	text-decoration: underline;
 }
 
+.contgroupby {
+    font-size: 0.8em;
+    text-decoration: underline;
+    cursor: pointer;
+    display: inline;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
 .label {
 	font-weight: bold;
 	text-align: left;
 	font-size: 0.8em;
-	width: 145px;
+	width: 197px;
 	margin-top: 0.6em;
 	position: relative;
 }
+
 /* The category labels need to be less than 134 for IE, and the slider labels have to be greater for Safari. */
 .catlabel {
 	font-weight: bold;
@@ -760,22 +772,27 @@ margin-top:0;
 	height: 2px;
 }
 
-.popupTourClose{
-font-size:14px;
-line-height:14px;
-right:6px;
-top:4px;
-position:absolute;
-color:#6fa5fd;
-font-weight:700;
-display:block;
+.popupTourClose {
+    font-size:14px;
+    line-height:14px;
+    right:6px;
+    top:4px;
+    position:absolute;
+    color:#6fa5fd;
+    font-weight:700;
+    display:block;
 }
 
 .tourDrawAttention
 {
 	border: 2px solid red;
 	background: #fffcd3;
-	margin:2px;
+	margin:auto;
+}
+.lv .tourDrawAttention /* this is for CSS precedence */
+{
+	border: 2px solid red;
+	background: #fffcd3;
 }
 
 .navigator_box .tourDrawAttention

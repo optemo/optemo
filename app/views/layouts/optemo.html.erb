@@ -43,7 +43,7 @@
 			<fb:login-button size="small" length="short" onlogin="window.location.href='/login/do_login?currpage=' + window.location;" autologoutlink="false"> </fb:login-button>
 		<% end %>
      </div-->
-	 <div id="tourButton"><%= link_to "Launch Tour" %></div>
+	 <div id="tourButton"><%= link_to "Launch Tour", '#' %></div>
    </div>
    <div class="watermark">Powered by <%= link_to 'Optemo', 'http://optemo.com', :popup => true %></div>
 	
@@ -69,6 +69,7 @@
 <span id="dragDropEnabled"><%= $DragAndDropEnabled %></span>
 <span id="seshid" session-id="<%= Session.current.id unless Session.current.nil? %>"><%= Session.current.id unless Session.current.nil? %></span>
 <span id="modelname"><%= $product_type %></span>
+<span id="lineitemview"><%= $LineItemView %></span>
 </div>
 
 <!--[if lt IE 7]><style>
@@ -133,39 +134,16 @@ piwikTracker2.enableLinkTracking();
 -->
 <!-- End no-piwik tracking -->
 
-<div id="popupTour1" class="popupTour">
-	<a class="deleteX" href="#"><img src="/images/close.png" alt="Close"/></a>
-	<h1>Discovery Browser Tour</h1>
-	<p>Each product shown is a representative of a dynamically created group of similar products. To browse within that group, click &quot;more like this.&quot;
-		<br/><br/>
-		<a href="#" class="popupnextbutton">Next &gt;&gt;</a>
-		<br/><hr width="90%"/>
-		<span class='popupcloseinstructions'>Click X to close at any time</span>
-	</p>
-</div>
-
-<div id="popupTour2" class="popupTour">
-	<a class="deleteX" href="#"><img src="/images/close.png" alt="Close"/></a>
-	<h1>Discovery Browser Tour</h1>
-	<p>Slide the filters to constrain your search terms based on a variety of specific criteria.
-		<br/><br/>
-		<a href="#" class="popupnextbutton">Next &gt;&gt;</a>
-		<br/><hr width="90%"/>
-		<span class='popupcloseinstructions'>Click X to close at any time</span>
-	</p>
-</div>
-
-<div id="popupTour3" class="popupTour">
-	<a class="deleteX" href="#"><img src="/images/close.png" alt="Close"/></a>
-	<h1>Discovery Browser Tour</h1>
-	<p>Drag and drop products in here to compare their specs directly.
-		<br/><br/>
-		<a href="#" class="popupnextbutton">Start Browsing</a>
-		<br/><hr width="90%"/>
-		<span class='popupcloseinstructions'>Click X to close at any time</span>
-	</p>
-</div>
-
+<% if $LineItemView %>
+	<%= popuptext(1, "Products are sorted by their utility. Click on one to see its specs.") %>
+	<%= popuptext(2, "Group by features to limit the number of products shown.") %>
+	<%= popuptext(3, "Slide the filters to constrain your search terms based on a variety of specific criteria.") %>
+	<%= popuptext(4, "Drag and drop products in here to compare their specs directly.", "Start Browsing") %>
+<% else %>
+	<%= popuptext(1, "Each product shown is a representative of a dynamically created group of similar products. To browse within that group, click &quot;more like this.&quot;") %>
+	<%= popuptext(2, "Slide the filters to constrain your search terms based on a variety of specific criteria.") %>
+	<%= popuptext(3, "Drag and drop products in here to compare their specs directly.", "Start Browsing") %>
+<% end %>
 <div id="backgroundPopup"></div>
 <noscript><div id="noJavascript" style="position:absolute; top: 40px; left:30px; width:250px; background: #FFFFFF; opacity:0.8"><b>Javascript is disabled.</b>For full functionality of the discovery browser, please enable javascript.</div></noscript>
 </body>

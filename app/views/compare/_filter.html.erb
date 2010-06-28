@@ -12,11 +12,11 @@
 <% end %>
 
 <% form_tag("",{:id => 'filter_form'}) do %>
-<% $Categorical["filter"].each do |feat| %>
+<% $Categorical["filter"].each_with_index do |feat, index| %>
 	<div class='feature <%= "sv" if $SimpleLayout %>'>
 		<% chosen_cats = chosencats(feat) %>
-		<% if $SimpleLayout && (chosen_cats.nil? || chosen_cats.empty?) %>
-			<div class="groupby" data-feat="<%= feat %>">Group by<br><%=t $product_type+'.'+feat %></div>
+		<% if $SimpleLayout %>
+			<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat %>">Group by<br><%=t $product_type+'.'+feat %></div>
 		<% end %>
 		<div class='catlabel'>
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
@@ -40,7 +40,7 @@
 <% $Continuous["filter"].each do |feat| %>
 	<%= render :partial => 'slider', 
 		:locals => {:name => t('products.' + feat),
-		:val => feat,
+		:feat => feat,
 		:money_formatting => feat == 'price',
 		:overall_min => ContSpec.allMinMax(feat)[0],
 		:overall_max => ContSpec.allMinMax(feat)[1]} %>
