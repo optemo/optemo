@@ -1,6 +1,6 @@
-set :application, "laserprinterhub"
+set :application, "production"
 set :repository,  "git@jaguar:site.git"
-set :domain, "linode"
+set :domain, "jaguar"
 set :branch, "staging"
 set :user, "#{ `whoami`.chomp }"
 
@@ -16,7 +16,7 @@ default_run_options[:pty] = true
 # The above command allows for interactive commands like entering ssh passwords, but
 # the problem is that "umask = 002" is getting ignored, since .profile isn't being sourced.
 # :pty => true enables for a given command if we set the above to false eventually
-ssh_options[:port] = 5151
+# ssh_options[:port] = 5151   # Re-enable if we are deploying remotely again
 set :use_sudo, false
 # There is also this method, might be better in some cases:
 # { Capistrano::CLI.ui.ask("User name: ") }
@@ -52,10 +52,12 @@ task :reindex do
   sudo "rake -f #{current_path}/Rakefile ts:rebuild RAILS_ENV=production"
 end
 
+
 desc "Compile C-Code"
 task :compilec do
-  run "cp -rf #{current_path}/lib/c_code/clusteringCodeLinux/* #{current_path}/lib/c_code/clusteringCode"
-  run "cd #{current_path}/lib/c_code/clusteringCode/ && make clean && make connect"
+  sudo "cmake #{current_path}/lib/c_code/clusteringCodes/"
+  sudo "make hCluster"
+  sudo "cp codes/hCluster #{current_path}/lib/c_code/clusteringCodes/codes/hCluster"
 end
 
 desc "Configure the server files"
@@ -65,20 +67,20 @@ task :serversetup do
   #run "cd #{current_path}/config/ultrasphinx   && cp -f development.conf.deploy development.conf && cp -f production.conf.deploy production.conf"
 end
 
-task :fetchAutocomplete do
-  run "RAILS_ENV=production rake -f #{current_path}/Rakefile autocomplete:fetch"
-end
-
 task :redopermissions do
   run "cd #{current_path}/../ && sudo chmod g+w -R current shared"
 end
 
+task :fetchAutocomplete do
+  run "RAILS_ENV=production rake -f #{current_path}/Rakefile autocomplete:fetch"
+end
+
 task :restartmemcached do
-  run "ps ax | awk '/memcached/ && !/awk/ {print $1}' | xargs kill ; memcached -d"
+  run "ps ax | awk '/memcached/ && !/awk/ {print $1}' | sudo xargs kill ; memcached -d"
 end
 
 after :deploy, "serversetup"
 after :serversetup, "reindex"
-after :reindex, "redopermissions"
-after :redopermissions, "fetchAutocomplete"
-after :fetchAutocomplete, "restartmemcached"
+after :reindex, "fetchAutocomplete"
+after :fetchAutocomplete, "redopermissions"
+after :redopermissions, "restartmemcached"
