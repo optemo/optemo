@@ -618,16 +618,24 @@ function ErrorInit() {
 }
 
 function DBinit() {
-	//$(".productimg, .easylink").unbind("click").click(function (){
-    $('.nbsingle').unbind("click").click(function(){ 
-		box = $(this);
- 		currentelementid = box.find('.productinfo').attr('data-id');
+	showpage = (function(currentelementid) {
         fadeout('/compare/show/'+currentelementid+'?plain=true',null, 800, 800);
  		ShowInit();
- 		trackPage('products/show/'+$(this).attr('data-id')); 
- 		return false;
-	});
-	
+ 		trackPage('products/show/'+currentelementid); 
+    });
+    if (LINE_ITEM_VIEW) { // in Optemo Direct, a click anywhere on the product box goes to the show page
+        $('.nbsingle').unbind("click").click(function(){ 
+     		currentelementid = $(this).find('.productinfo').attr('data-id');
+     		showpage(currentelementid);
+     		return false;
+    	});
+    } else { // in Optemo Assist, a click only on the picture or .easylink product name will trigger the show page
+        $(".productimg, .easylink").unbind("click").click(function (){
+            currentelementid = $(this).attr('data-id');
+     		showpage(currentelementid);
+     		return false;            
+        });  
+    }
 	if (IS_DRAG_DROP_ENABLED)
 	{
 		// Make item boxes draggable. This is a jquery UI builtin.		
