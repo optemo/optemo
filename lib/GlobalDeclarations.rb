@@ -1,4 +1,4 @@
-$DefaultSite = 'laserprinterhub.com'
+$DefaultSite = 'printers.browsethenbuy.com'
 
 # Configuration: Application Key provided by Facebook
 $AppKey = "7aeec628ded26fb3b03829fb4142da01"
@@ -36,24 +36,22 @@ def load_defaults(url)
   $Binary = Hash.new{|h,k| h[k] = []}
   $Categorical = Hash.new{|h,k| h[k] = []}
   file = YAML::load(File.open("#{RAILS_ROOT}/config/products.yml"))
-  url = $DefaultSite if file[url].nil?
-  unless (file.nil? || file.empty? || file[url].nil?)
-    product_yml = file[url]
-    $product_type = product_yml["product_type"].first
-    # This block gets out the continuous, binary, and categorical features
-    product_yml.each do |feature,stuff| 
-      type = stuff.first
-      flags = stuff.second
-      case type
-      when "Continuous"
-        flags.each{|flag| $Continuous[flag] << feature}
-        options = stuff.third
-        $PrefDirection[feature] = options["prefdir"] if options && options["prefdir"]
-      when "Binary"
-        flags.each{|flag| $Binary[flag] << feature}
-      when "Categorical"
-        flags.each{|flag| $Categorical[flag] << feature}
-      end
+  url = $DefaultSite if file[url].blank?
+  product_yml = file[url]
+  $product_type = product_yml["product_type"].first
+  # This block gets out the continuous, binary, and categorical features
+  product_yml.each do |feature,stuff| 
+    type = stuff.first
+    flags = stuff.second
+    case type
+    when "Continuous"
+      flags.each{|flag| $Continuous[flag] << feature}
+      options = stuff.third
+      $PrefDirection[feature] = options["prefdir"] if options && options["prefdir"]
+    when "Binary"
+      flags.each{|flag| $Binary[flag] << feature}
+    when "Categorical"
+      flags.each{|flag| $Categorical[flag] << feature}
     end
     $Continuous["all"] = []
     $Binary["all"] = []
