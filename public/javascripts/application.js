@@ -509,7 +509,8 @@ function FilterAndSearchInit() {
     		    group_element = $(this).find('.choose_group');
             	var whichThingSelected = group_element.attr('data-feat');
             	var cat = group_element.attr('data-grouping');
-            	$('#myfilter_'+cat).val(appendStringWithToken($('#myfilter_'+cat).val(), whichThingSelected, '*'));
+            	if($('#myfilter_'+cat).val().match(whichThingSelected) === null)
+                	$('#myfilter_'+cat).val(appendStringWithToken($('#myfilter_'+cat).val(), whichThingSelected, '*'));
             	submitCategorical();
             	trackCategorical(whichThingSelected,100,2);
         	}
