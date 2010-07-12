@@ -2,89 +2,50 @@ module ImageHelper
   
   include GC
   
-  # -- Vars to set --#
-  # $model : eg Cartridge, Printer, Camera (the object not the string)
-  # $id_field : the db field which is unique for every object that has (default is id)
-  # the same picture (can just be ID)
-  # $imgfolder : the subfolder where your pictures for the given product
-  # type will go.
-  
   require 'RMagick'
   
   @@size_names = ['s','m','l']
   @@sizes = [[70,50],[140,100],[400,300]]
-
-  def id_field
-    return $id_field || 'id'
-  end
-    
-  def imgfolder
-    return $imgfolder || ($model.name.downcase+'s')
-  end
   
   # Is there a file for a product with this id and this size?
   def file_exists_for id, sz=''
-     begin
-        image = Magick::ImageList.new(filename_from_id(id,sz))
-        image = image.first if image.class == Magick::ImageList
-     rescue Magick::ImageMagickError => ime
-        error_string = "#{$0} #{$!} #{ime}"
+    begin
+      image = Magick::ImageList.new(filename_from_id(id,sz))
+      image = image.first if image.class == Magick::ImageList
+    rescue Magick::ImageMagickError => ime
+      error_string = "#{$0} #{$!} #{ime}"
         if(error_string || '').match(/No such file or directory/).nil?
           puts "ImageMagick Error"
           puts error_string
         #else
           #puts "ImageMagick says: File not found for #{id}"
         end
-     rescue Exception => e
-        puts "#{e.class.name} #{e.message}"
-     else
-        if image and image.rows != 0
-          GC.start
-          return true 
-        end
-     end
-     return false
+    rescue Exception => e
+      puts "#{e.class.name} #{e.message}"
+    else
+      if image and image.rows != 0
+        GC.start
+        return true 
+      end
+    end
+    return nil
   end
   
   # Returns a relative URL for the file that should
   # theoretically be in place for this product
   def url_from_item_and_sz id, sz
-    return nil if id.nil? or id==''
-    return "/images/#{imgfolder}/#{id}_#{sz}.jpg"
+    return nil if id.blank?
+    return "/images/#{$product_type}/#{id}_#{sz}.jpg"
   end
-  
-  # Returns a set of db records where the pic hasn't been resized
-  def unresized_recs model=$model
-    not_resized = []
-    model.all.each do |rec|
-      image = nil
-      @@size_names.each do |sz|        
-        image = file_exists_for(rec[id_field], sz)
-        not_resized << rec.id unless image
-      end
-    end
-    return not_resized.uniq
-  end
-  
+
   # Returns a set of db records where the picture hasn't been downloaded
-  def picless_recs model=$model
+  def picless_recs
     no_pic = []
-    model.all.each do |rec|
-      image = nil
-      image = file_exists_for(rec[id_field])
+    Product.all(:select => "id", :conditions => ["product_type=?", $product_type]).each do |rec|
+      image = file_exists_for(rec.id)
       no_pic << rec.id unless image
     end
     return no_pic.uniq
-  end
-  
-  # Returns a set of db records which have no pic length/width/url
-  def statless_recs model=$model
-    no_stats = []
-    @@size_names.each do |sz|
-      no_stats = no_stats | $model.find( :all, \
-        :conditions => ["image#{sz}height IS NULL OR image#{sz}width IS NULL OR image#{sz}url IS NOT NULL"])
-    end
-    return no_stats
   end
   
   # Downloads a pic from the given url into the given folder with an
@@ -123,7 +84,7 @@ module ImageHelper
     else
      connect = "_" if sz!=''
     end
-    return "public/system/#{imgfolder}/#{id}#{connect}#{sz}.jpg"
+    return "public/system/#{$product_type}/#{id}#{connect}#{sz}.jpg"
   end
   
   # Resizes an image to the 3 pre-set sizes
@@ -147,7 +108,7 @@ module ImageHelper
   def record_missing_pic_stats 
     no_img_sizes = []
     @@size_names.each do |sz|
-      no_img_sizes = no_img_sizes | $model.find( :all, \
+      no_img_sizes = no_img_sizes | $product_type.find( :all, \
         :conditions => ["(image#{sz}height IS NULL OR image#{sz}width IS NULL) AND image#{sz}url IS NOT NULL"])
     end  
     
@@ -157,37 +118,36 @@ module ImageHelper
   def record_pic_urls recordset
     recordset.each do |rec|
       @@size_names.each do |sz|    
-        puts "#{ url_from_item_and_sz(rec[id_field], sz)}"
-        fill_in("image#{sz}url", url_from_item_and_sz(rec[id_field], sz), rec)
+        puts "#{ url_from_item_and_sz(rec.id, sz)}"
+        fill_in("image#{sz}url", url_from_item_and_sz(rec.id, sz), rec)
       end
     end
   end
   
   def record_pic_stats recset
     recset.each do |record|
-      image = nil
-      rec = record
-      rec = $model.find(record) if rec.class != $model
+      # rec = record
+      # rec = Product.find(record, :conditions => ["product_type=#{$product_type}"])
       @@size_names.each do |sz|
-        if file_exists_for(rec[id_field], sz)
+        if file_exists_for(record.id, sz)
           begin
-            image = Magick::ImageList.new(filename_from_id(rec[id_field], sz))
+            image = Magick::ImageList.new(filename_from_id(record.id, sz))
             image = image.first if image and image.class.to_s == 'Magick::ImageList'
           rescue Exception => e
-            puts "WARNING: Can't get dimensions for #{sz} size pic of product #{rec[id_field]}"
+            puts "WARNING: Can't get dimensions for #{sz} size pic of product #{record.id}"
             puts "#{e.class.name} #{e.message}"
             image = nil
           end
           if image
-            fill_in "image#{sz}url", url_from_item_and_sz(rec[id_field], sz), rec
-            fill_in "image#{sz}height", image.rows, rec if image.rows
-            fill_in "image#{sz}width", image.columns, rec if image.columns
+            fill_in("img#{sz}url", url_from_item_and_sz(record.id, sz), record)
+            fill_in("img#{sz}height", image.rows, record) if image.rows
+            fill_in("img#{sz}width", image.columns, record) if image.columns
           end
         else
           #debugger
-          fill_in_forced "image#{sz}url", nil, rec
-          fill_in_forced "image#{sz}height", nil, rec
-          fill_in_forced "image#{sz}width", nil, rec
+          fill_in_forced("img#{sz}url", nil, record)
+          fill_in_forced("img#{sz}height", nil, record)
+          fill_in_forced("img#{sz}width", nil, record)
         end
       end
     end
@@ -200,14 +160,14 @@ module ImageHelper
       begin
         unless url.nil? or url.empty? or file_exists_for(id)
           oldurl = url
-          newurl = download_img(oldurl, "system/#{imgfolder}", "#{id}.jpg")
+          newurl = download_img(oldurl, "system/#{$product_type}", "#{id}.jpg")
           if(newurl.nil?)
             failed << id 
             puts "Failed to download picture for #{id} from #{oldurl}"
           else
             puts "Downloaded #{oldurl} into #{newurl}."
           end
-          sleep(30)
+          sleep(1) # This is probably not necessary
         end
       rescue Magick::ImageMagickError => ime
         error_string = "#{$0} #{$!} #{ime}"
@@ -218,7 +178,7 @@ module ImageHelper
           #puts "ImageMagick says: File not found for #{id}"
         end
         failed << id
-      rescue Exception => e
+      rescue Exception => e # We do not want this. Should be a specific rescue, otherwise you cannot break the task with Ctrl-C ZAT 
         puts "#{e.class.name} #{e.message}"
         puts "Downloading #{id} failed"
         failed << id
@@ -257,5 +217,4 @@ module ImageHelper
     end
     return failed
   end
-  
 end

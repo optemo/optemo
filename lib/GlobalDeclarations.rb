@@ -64,6 +64,11 @@ def load_defaults(url)
     # $SimpleLayout needs special clustering, or more precisely, no clustering, showing all products in browseable pages and offering "group by" buttons.
     $LineItemView = product_yml["layout"].first == "lineview" unless product_yml.nil? || product_yml["layout"].nil?
     $SimpleLayout = product_yml["layout"].second == "simple" unless product_yml.nil? || product_yml["layout"].nil?
+    # At the moment, these are used in product scraping only.
+    if feature == "price"
+      $MaximumPrice = stuff.fourth.values.first
+      $MinimumPrice = stuff.fifth.values.first
+    end
   end
   
   $LineItemView ||= false #Default is grid view 

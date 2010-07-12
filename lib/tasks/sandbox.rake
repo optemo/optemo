@@ -22,7 +22,7 @@ namespace :sandbox do
   end
   
   task :idfields_rm_junk do
-    $model.all.each do |product|
+    Product.all.each do |product|
       
       ids = {'model' => product.model, 'mpn' => product.mpn}
       
@@ -42,7 +42,7 @@ namespace :sandbox do
     # Get weirdo weight cams
     #weirdos =# Camera.all.reject{|x| x['itemweight'].nil? or x['itemweight'] <= Camera::ValidRanges['itemweight'][1]}
     dims = ['itemheight', 'itemlength', 'itemwidth']
-    weirdos = $model.all.reject{|x| 
+    weirdos = Product.all.reject{|x| 
       dims.inject(false){|d| !x[d].nil? and x[d] == 0}
     }
     debugger
@@ -61,7 +61,7 @@ namespace :sandbox do
   end
   
   task :clean_dims =>  ['data:cam_init']  do 
-    bad = $model.all.reject{|x| 
+    bad = Product.all.reject{|x| 
       dims.inject(false){|d| !x[d].nil? and x[d] == 0}
     }
     debugger
@@ -72,7 +72,7 @@ namespace :sandbox do
   
   task :test_remove_dups => :environment do
     include GenericScraper
-    $model = Printer
+    $product_type = Printer
     $scrapedmodel = ScrapedPrinter
     require 'rubygems'
     require 'nokogiri'
@@ -86,8 +86,8 @@ namespace :sandbox do
     include DatabaseLib
     include ScrapingLib
     
-    keep = $model.find(2)
-    ditch = $model.find(4228)
+    keep = $product_type.find(2)
+    ditch = $product_type.find(4228)
     
     puts "#{ditch.title} to be merged with #{keep.title}."
     
@@ -95,12 +95,12 @@ namespace :sandbox do
     sps_ditch = $scrapedmodel.find_all_by_product_id(ditch.id)
     puts "These #{$scrapedmodel.name}s will be re-routed: #{sps_ditch.collect{|x| x.id} *', '}"
     
-    ros_keep = RetailerOffering.find_all_by_product_id_and_product_type(keep.id, $model.name)
-    ros_ditch = RetailerOffering.find_all_by_product_id_and_product_type(ditch.id, $model.name)
+    ros_keep = RetailerOffering.find_all_by_product_id_and_product_type(keep.id, $product_type)
+    ros_ditch = RetailerOffering.find_all_by_product_id_and_product_type(ditch.id, $product_type)
     puts "These ROs will be re-routed: #{ros_ditch.collect{|x| x.id} *', '}"
     
-    revus_keep = Review.find_all_by_product_id_and_product_type(keep.id, $model.name)
-    revus_ditch = Review.find_all_by_product_id_and_product_type(ditch.id, $model.name)
+    revus_keep = Review.find_all_by_product_id_and_product_type(keep.id, $product_type)
+    revus_ditch = Review.find_all_by_product_id_and_product_type(ditch.id, $product_type)
     puts "These Reviews will be re-routed: #{revus_ditch.collect{|x| x.id} *', '}"
     
     bestoffer_id = (ros_keep+ros_ditch).sort{|a,b| (a.priceint || 1000000) <=> (b.priceint  || 1000000)}.first.id 
@@ -113,11 +113,11 @@ namespace :sandbox do
     sps_keep_2 = $scrapedmodel.find_all_by_product_id(keep.id)
     sps_ditch_2 = $scrapedmodel.find_all_by_product_id(ditch.id)
     
-    ros_keep_2 = RetailerOffering.find_all_by_product_id_and_product_type(keep.id, $model.name)
-    ros_ditch_2 = RetailerOffering.find_all_by_product_id_and_product_type(ditch.id, $model.name)
+    ros_keep_2 = RetailerOffering.find_all_by_product_id_and_product_type(keep.id, $product_type)
+    ros_ditch_2 = RetailerOffering.find_all_by_product_id_and_product_type(ditch.id, $product_type)
     
-    revus_keep_2 = Review.find_all_by_product_id_and_product_type(keep.id, $model.name)
-    revus_ditch_2 = Review.find_all_by_product_id_and_product_type(ditch.id, $model.name)
+    revus_keep_2 = Review.find_all_by_product_id_and_product_type(keep.id, $product_type)
+    revus_ditch_2 = Review.find_all_by_product_id_and_product_type(ditch.id, $product_type)
     
     puts "#{sps_ditch_2.count} (SPs) should be 0"
     puts "#{ros_ditch_2.count} (ROs) should be 0"
@@ -127,12 +127,12 @@ namespace :sandbox do
     puts "#{ros_keep_2.count} (ROs) should be #{ros_keep.count+ros_ditch.count}"
     puts "#{revus_keep_2.count} (Reviews) should be #{revus_keep.count+revus_ditch.count}"
     
-    puts "#{$model.exists?(ditch.id)} should be false"
+    puts "#{$product_type.exists?(ditch.id)} should be false"
     
     # Lets see what they are again
     puts "#{keep.id} had bestoffer #{keep.bestoffer}"
     #update_bestoffer(keep)
-    puts "#{keep.id} now has bestoffer #{$model.find(keep.id).bestoffer} (should be #{bestoffer_id})"
+    puts "#{keep.id} now has bestoffer #{$product_type.find(keep.id).bestoffer} (should be #{bestoffer_id})"
     
   end
   
@@ -145,7 +145,7 @@ namespace :sandbox do
     include IdFieldsHelper
     include StringCleaner
     
-    $model = @@model
+    $product_type = @@model
     $series = @@series
     $brands = @@brands
     
@@ -164,14 +164,14 @@ namespace :sandbox do
   
   task :remove_dups do
     timed_announce "Starting to look for matching sets"
-    matchings = get_matching_sets_efficient($model.all)
+    matchings = get_matching_sets_efficient
     timed_announce "Done looking for matching sets"
     puts "#{matchings.count} sets of duplicates"
     puts "#{matchings.flatten.count - matchings.count} duplicates will be removed"
     matchings.each_with_index do |set,i|
-      keep = $model.find(set[0])
+      keep = $product_type.find(set[0])
       set[1..-1].each do |ditch_id|
-        ditch = $model.find(ditch_id)
+        ditch = $product_type.find(ditch_id)
         unlink_duplicate(keep, ditch)
       end
       timed_announce "Done #{i+1}/#{matchings.count}"
@@ -181,7 +181,7 @@ namespace :sandbox do
   
   task :test_remove_all_dups => ['data:printer_init'] do
     timed_announce "Starting to look for matching sets"
-    matchings = get_matching_sets_efficient($model.all)
+    matchings = get_matching_sets_efficient
     timed_announce "Done looking for matching sets"
     puts "#{matchings.count} sets of duplicates"
     puts "#{matchings.flatten.count - matchings.count} duplicates will be removed"
@@ -192,22 +192,22 @@ namespace :sandbox do
       debugger
       next if skipthis
       
-      keep = $model.find(set[0])
+      keep = $product_type.find(set[0])
       set[1..-1].each do |ditch_id|
-        next unless $model.exists?(ditch_id)
-        ditch = $model.find(ditch_id)
+        next unless $product_type.exists?(ditch_id)
+        ditch = $product_type.find(ditch_id)
         puts "#{ditch.title} to be merged with #{keep.title}."
         
         sps_keep = $scrapedmodel.find_all_by_product_id(keep.id)
         sps_ditch = $scrapedmodel.find_all_by_product_id(ditch.id)
         puts "These #{$scrapedmodel.name}s will be re-routed: #{sps_ditch.collect{|x| x.id} *', '}"
       
-        ros_keep = RetailerOffering.find_all_by_product_id_and_product_type(keep.id, $model.name)
-        ros_ditch = RetailerOffering.find_all_by_product_id_and_product_type(ditch.id, $model.name)
+        ros_keep = RetailerOffering.find_all_by_product_id_and_product_type(keep.id, $product_type)
+        ros_ditch = RetailerOffering.find_all_by_product_id_and_product_type(ditch.id, $product_type)
         puts "These ROs will be re-routed: #{ros_ditch.collect{|x| x.id} *', '}"
       
-        revus_keep = Review.find_all_by_product_id_and_product_type(keep.id, $model.name)
-        revus_ditch = Review.find_all_by_product_id_and_product_type(ditch.id, $model.name)
+        revus_keep = Review.find_all_by_product_id_and_product_type(keep.id, $product_type)
+        revus_ditch = Review.find_all_by_product_id_and_product_type(ditch.id, $product_type)
         puts "These Reviews will be re-routed: #{revus_ditch.collect{|x| x.id} *', '}"
         bestoffer_id = (ros_keep+ros_ditch).sort{|a,b| (a.priceint || 1000000) <=> (b.priceint  || 1000000)}.first.id 
       
@@ -216,11 +216,11 @@ namespace :sandbox do
         sps_keep_2 = $scrapedmodel.find_all_by_product_id(keep.id)
         sps_ditch_2 = $scrapedmodel.find_all_by_product_id(ditch.id)
       
-        ros_keep_2 = RetailerOffering.find_all_by_product_id_and_product_type(keep.id, $model.name)
-        ros_ditch_2 = RetailerOffering.find_all_by_product_id_and_product_type(ditch.id, $model.name)
+        ros_keep_2 = RetailerOffering.find_all_by_product_id_and_product_type(keep.id, $product_type)
+        ros_ditch_2 = RetailerOffering.find_all_by_product_id_and_product_type(ditch.id, $product_type)
       
-        revus_keep_2 = Review.find_all_by_product_id_and_product_type(keep.id, $model.name)
-        revus_ditch_2 = Review.find_all_by_product_id_and_product_type(ditch.id, $model.name)
+        revus_keep_2 = Review.find_all_by_product_id_and_product_type(keep.id, $product_type)
+        revus_ditch_2 = Review.find_all_by_product_id_and_product_type(ditch.id, $product_type)
       
         puts "#{sps_ditch_2.count} (SPs) should be 0"
         puts "#{ros_ditch_2.count} (ROs) should be 0"
@@ -230,13 +230,13 @@ namespace :sandbox do
         puts "#{ros_keep_2.count} (ROs) should be #{ros_keep.count+ros_ditch.count}"
         puts "#{revus_keep_2.count} (Reviews) should be #{revus_keep.count+revus_ditch.count}"
       
-        puts "#{$model.exists?(ditch.id)} should be false"
+        puts "#{$product_type.exists?(ditch.id)} should be false"
       
       end
       
       puts "#{keep.id} had bestoffer #{keep.bestoffer}"
       update_bestoffer(keep)
-      puts "#{keep.id} now has bestoffer #{$model.find(keep.id).bestoffer} (should be #{bestoffer_id})"
+      puts "#{keep.id} now has bestoffer #{$product_type.find(keep.id).bestoffer} (should be #{bestoffer_id})"
     end
       
   end
@@ -247,14 +247,14 @@ namespace :sandbox do
       start = Time.now
       mycache = open_cache(ret)
       time = Time.now - start
-      puts "Took #{time} seconds to get #{ret.name} #{$model.name} cache"
+      puts "Took #{time} seconds to get #{ret.name} #{$product_type} cache"
       nokocache = Nokogiri::HTML(mycache)
       # Test num available items
       num_items = nokocache.css('item').count
       puts "#{num_items} items in #{ret.name} cache"
       debugger
-      my_offerings = RetailerOffering.find_all_by_retailer_id_and_product_type(ret.id, $model.name).reject{|x| x.local_id.nil?}[2..5]
-     #my_offerings = ['B001XUQP9G', 'B0006UGKUI', 'B000XZ1LJG', 'B0027ISA1Y'].collect{|x| RetailerOffering.find_by_local_id_and_product_type(x, $model.name)}.reject{|x| x.nil?}
+      my_offerings = RetailerOffering.find_all_by_retailer_id_and_product_type(ret.id, $product_type).reject{|x| x.local_id.nil?}[2..5]
+     #my_offerings = ['B001XUQP9G', 'B0006UGKUI', 'B000XZ1LJG', 'B0027ISA1Y'].collect{|x| RetailerOffering.find_by_local_id_and_product_type(x, $product_type)}.reject{|x| x.nil?}
       my_offerings.each do |offering|
           next if offering.local_id.nil?
           newatts = rescrape_prices(offering.local_id, ret.region)
@@ -280,7 +280,7 @@ namespace :sandbox do
       start = Time.now
       mycache = refresh_cache(ret)
       time = Time.now - start
-      puts "Took #{time} seconds to get #{ret.name} #{$model.name} cache"
+      puts "Took #{time} seconds to get #{ret.name} #{$product_type} cache"
       nokocache = Nokogiri::HTML(mycache)
     end
     #puts "Done"
@@ -290,7 +290,7 @@ namespace :sandbox do
   
   task :update_timer do
     num_to_update = 50
-    my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id_and_product_type(x.id, $model.name)}[1..num_to_update]
+    my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id_and_product_type(x.id, $product_type)}[1..num_to_update]
     #num_to_update = my_offerings.count
     
     time = Time.now
@@ -300,8 +300,8 @@ namespace :sandbox do
         newatts = rescrape_prices(offering.local_id, offering.region)
         
         update_offering(newatts, offering) if offering
-        #if(offering.product_id and $model.exists?(offering.product_id))
-        #  update_bestoffer($model.find(offering.product_id))
+        #if(offering.product_id and $product_type.exists?(offering.product_id))
+        #  update_bestoffer($product_type.find(offering.product_id))
         #end  
       rescue Exception => e
         report_error "with RetailerOffering #{offering.id}: #{e.class.name} #{e.message}"

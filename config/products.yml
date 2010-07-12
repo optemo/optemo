@@ -26,6 +26,8 @@ cameras:
         - Continuous
         - [boost, cluster, filter, show]
         - prefdir: -1
+        - minimum: 1
+        - maximum: 10000
     opticalzoom:
         - Continuous
         - [boost, cluster, filter, show]
@@ -51,6 +53,8 @@ cameras.browsethenbuy.com:
         - Continuous
         - [boost, cluster, filter, show]
         - prefdir: -1
+        - minimum: 1
+        - maximum: 10000
     opticalzoom:
         - Continuous
         - [boost, cluster, filter, show]
@@ -76,6 +80,8 @@ m.browsethenbuy.com:
         - Continuous
         - [boost, cluster, filter, show]
         - prefdir: -1
+        - minimum: 1
+        - maximum: 10000
     opticalzoom:
         - Continuous
         - [boost, cluster, filter, show]
@@ -100,6 +106,8 @@ printers.browsethenbuy.com:
         - Continuous
         - [boost, cluster, filter, show]
         - prefdir: -1
+        - minimum: 1
+        - maximum: 10000
     ppm:
         - Continuous
         - [boost, cluster, filter, show, showList]
@@ -135,6 +143,8 @@ laserprinterhub.com:
         - Continuous
         - [boost, cluster, filter, show]
         - prefdir: -1
+        - minimum: 1
+        - maximum: 10000
     ppm:
         - Continuous
         - [boost, cluster, filter, show, showList]
@@ -170,6 +180,45 @@ localhost:
         - Continuous
         - [boost, cluster, filter, show]
         - prefdir: -1
+        - minimum: 1
+        - maximum: 10000
+    ppm:
+        - Continuous
+        - [boost, cluster, filter, show, showList]
+    resolutionmax:
+        - Continuous
+        - [boost, cluster, filter, show]
+    resolution:
+        - Categorical
+        - [showList]
+    paperinput:
+        - Continuous
+        - [boost, cluster, filter, show, showList]
+    itemwidth:
+        - Continuous
+        - [boost, cluster, filter, show, showList]
+        - prefdir: -1
+    printserver:
+        - Binary
+        - [boost, cluster, filter, show]
+    scanner:
+        - Binary
+        - [boost, cluster, filter, show]
+    brand:
+        - Categorical
+        - [boost, cluster, filter, show]
+
+printers:
+    product_type:
+        - printer_us
+    layout:
+        - gridview
+    price:
+        - Continuous
+        - [boost, cluster, filter, show]
+        - prefdir: -1
+        - minimum: 1
+        - maximum: 10000
     ppm:
         - Continuous
         - [boost, cluster, filter, show, showList]
@@ -210,6 +259,8 @@ builddirect.optemo.com:
         - Continuous
         - [boost, cluster, filter, show]
         - prefdir: -1
+        - minimum: 1
+        - maximum: 10
     width:
         - Continuous
         - [boost, cluster, filter, showList]
@@ -247,6 +298,8 @@ flooring:
         - Continuous
         - [boost, cluster, filter, show]
         - prefdir: -1
+        - minimum: 1
+        - maximum: 10
     width:
         - Continuous
         - [boost, cluster, filter, show, showList]
@@ -287,6 +340,8 @@ walmart.optemo.com:
         - Continuous
         - [boost, cluster, filter, show]
         - prefdir: -1
+        - minimum: 10
+        - maximum: 2000
     brand:
         - Categorical
         - [boost, cluster, filter, show]
@@ -309,6 +364,8 @@ laptops:
         - Continuous
         - [boost, cluster, filter, show]
         - prefdir: -1
+        - minimum: 10
+        - maximum: 2000
     brand:
         - Categorical
         - [boost, cluster, filter, show]

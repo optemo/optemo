@@ -68,17 +68,17 @@ module ScrapeExtra
     return table
   end
   
-  def file_exists_for itemnum, sz=''
-     begin
-        image = Magick::ImageList.new(filename_from_itemnum(itemnum,sz))
-        image = image.first if image.class == Magick::ImageList
-        return false if image.nil?
-      rescue
-        return false
-      else
-        return image.rows
-      end
-      return false
+  def file_exists_for_other itemnum, sz='' # There were two functions defined with the same name. 
+    begin
+      image = Magick::ImageList.new(filename_from_itemnum(itemnum,sz))
+      image = image.first if image.class == Magick::ImageList
+      return image
+    rescue
+      return nil
+    else
+      return image
+    end
+    nil
   end
   
   def url_from_item_and_sz itemnum, sz
@@ -120,10 +120,10 @@ namespace :scrape_extra do
     require 'cartridge_helper'
     include CartridgeHelper
   
-    $model = Cartridge
+    $product_type = Cartridge
     
     matching_sets = []
-    $model.all.each do |rec|
+    Product.all.each do |rec|
       matching_ids = (compatibility_matches rec).collect{|x| x.id} 
       matching_sets << matching_ids.sort if matching_ids and matching_ids.length > 1
     end
@@ -132,13 +132,13 @@ namespace :scrape_extra do
     matching_sets.reject{|x| x.size < 2}.each do |set|
       addme = []
       set.each do |id|
-        compats = Compatibility.valid.find_all_by_accessory_id_and_accessory_type(id, $model.name)
+        compats = Compatibility.valid.find_all_by_accessory_id_and_accessory_type(id, $product_type)
         addme += compats.collect{|x| [x.product_id,x.product_type]}
         addme.reject!{|x| x.nil? or x[0].nil? or x[1].nil?}
       end
       addme.each do |compat|
         set.each do |id|
-          create_uniq_compatibility(id, $model.name, compat[0], compat[1])
+          create_uniq_compatibility(id, $product_type, compat[0], compat[1])
         end
       end
     end
@@ -146,7 +146,7 @@ namespace :scrape_extra do
   
   desc 'add data from xerox site'
   task :moredata_xerox => :data_init do
-    $model = Printer
+    $product_type = Printer
     links = []
     
     interesting_fields = ['ppm', 'paperinput', 'resolution', 'resolutionmax'].inject({}){|r, x| 
@@ -196,7 +196,7 @@ namespace :scrape_extra do
   desc 'add data from brother'
   task :moredata_bro => :data_init do
     
-    $model = Printer
+    $product_type = Printer
     
     interesting_fields = ['scanner', 'printserver', 'colorprinter', 'ttp'].inject({}){|r, x| r[x]=[]
       r}
@@ -229,7 +229,7 @@ namespace :scrape_extra do
   desc 'add data from amazon'
   task :moredata_amazon => [:data_init, :web_init] do
     
-    $model = Printer
+    $product_type = Printer
     
     interesting_fields = ['paperinput','scanner', 'duplex', 'printserver'].inject({}){|r, x| r[x]=[]
       r}
@@ -280,7 +280,7 @@ namespace :scrape_extra do
   desc 'Add data from elsewhere'
   task :moredata_lex  => :data_init do
     
-    $model = Printer
+    $product_type = Printer
     
     ok_fields = ['ppm', 'resolution', 'resolutionmax', 'paperinput','scanner', 'printserver']
     
@@ -314,7 +314,7 @@ namespace :scrape_extra do
       clean_specs = generic_printer_cleaning_code mapped_specs
             
       # TODO more effective find?
-      ps = find_matching_product [clean_specs['mpn']], [clean_specs['model']], $model,[]
+      ps = find_matching_product [clean_specs['mpn']], [clean_specs['model']], $product_type,[]
       if ps.length == 1
         validanyway += 1 if (validids.include?ps.first.id)
         ok_fields.each do |field|
@@ -531,7 +531,7 @@ namespace :scrape_extra do
   task :download_pix => :pic_init do
     
     failed = []
-    todo = $model.find_all_by_imagesurl(nil)
+    todo = $product_type.find_all_by_imagesurl(nil)
     
     todo.each do |product|
       pic_urls = $scraped_model.find_all_by_product_id(product.id).collect{|x| x.imageurl}.reject{|x| x.nil?}
@@ -554,7 +554,7 @@ namespace :scrape_extra do
   
   
   task :printer_init do
-      $model = Printer
+      $product_type = Printer
       $scraped_model = ScrapedPrinter
   end
   

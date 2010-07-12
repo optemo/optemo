@@ -1,6 +1,14 @@
 # encoding: utf-8
 module AmazonScraper
   
+  require 'amazon/aws'
+  require 'amazon/aws/search'
+
+  # We don't want to have to fully qualify identifiers.
+
+  include Amazon::AWS
+  include Amazon::AWS::Search
+  
   @nokocaches
   
   # Detail page url from local_id and region
@@ -21,7 +29,7 @@ module AmazonScraper
   
   # All local ids from region
   def scrape_all_local_ids region
-    announce "[#{Time.now}] Getting a list of all Amazon IDs associated with #{$model}s. This may take a while"
+    announce "[#{Time.now}] Getting a list of all Amazon IDs associated with #{$product_type}. This may take a while"
     
     #cachefile = open_cache(curr_retailer(region))
     #nokocache = Nokogiri::HTML(cachefile)
@@ -36,26 +44,38 @@ module AmazonScraper
   def clean atts
     atts['listprice'] = (atts['listprice'] || '').match(/\$\d+\.(\d\d)?/).to_s
     
-    atts = clean_printer(atts) if $model == Printer
-    atts = clean_cartridge(atts) if $model == Cartridge
-    atts = clean_camera(atts) if $model == Camera
-    
+    case $product_type
+    when /printer_us/
+      clean_printer(atts)
+    when /camera_us/
+      clean_camera(atts)
+    when /cartridge/
+      clean_camera(atts)
+    else
+      # do nothing
+    end
+        
     unless atts['itemwidth'] and atts['itemheight'] and atts['itemlength']
-      temp = no_blanks([atts['dimensions']]) #, "#{atts['itemwidth']} x #{atts['itemheight']} x #{atts['itemlength']}" ])  
+      temp = [atts['dimensions']].compact.reject(&:blank?) #, "#{atts['itemwidth']} x #{atts['itemheight']} x #{atts['itemlength']}" ])  
       mergeme = clean_dimensions(temp,1) # Dimensions are in 100ths of inches already
       mergeme.each{ |key, val| atts[key] = val}
     end
-    if (atts['toolow'] || '').to_s  == 'true' and atts['listprice'] and atts['listprice'] != ""
+    if (atts['toolow']).to_s  == 'true' and (not atts['listprice'].blank?)
       atts['stock']    = true
       atts['pricestr'] = "Less than #{atts['pricestr']}"
       atts['salepricestr'] = "Less than #{atts['salepricestr']}"
     end
     
-    if (atts['stock'] || '').to_s == 'false'
+    if (atts['stock']).to_s == 'false'
       # Check on site if actually out of stock
       ['price', 'priceint', 'pricestr', 'saleprice', 'salepriceint', 'salepricestr'].each{|x| atts['x'] = nil}
     elsif (atts['priceint'].nil? or atts['pricestr'].nil?)
-      announce "WARNING: Nil price after cleaning atts for #{atts['local_id']}"
+      if atts['listprice']
+        atts['pricestr'] = atts['listprice']
+        atts['price'] = atts['listprice'].gsub(/\$/i,'').to_f
+      else
+        announce "WARNING: Nil price after cleaning atts for #{atts['local_id']}"
+      end
     end
     
     return atts
@@ -79,7 +99,11 @@ module AmazonScraper
   # Scrape product specs from feed
    def scrape_specs local_id
      begin
-       res = Amazon::Ecs.item_lookup(local_id, :response_group => 'ItemAttributes,Images', :review_page => 1)
+       # res = Amazon::AWS.item_lookup(local_id, :response_group => 'ItemAttributes,Images', :review_page => 1)
+       il = ItemLookup.new( 'ASIN', { 'ItemId' => local_id, 'MerchantId' => 'Amazon'} )
+       il.response_group = ResponseGroup.new( 'Large', 'Offers', 'ItemAttributes', 'Images', 'Reviews' )
+       req = Request.new
+       resp = req.search( il, 1, true ) # first page, make Amazon::AWS.search return raw data with third argument
        be_nice_to_amazon
      rescue Exception => exc
        report_error "Could not scrape #{local_id} data"
@@ -87,7 +111,8 @@ module AmazonScraper
        log_snore(120) 
        return {}
      else
-       nokodoc = Nokogiri::HTML(res.doc.to_html)
+       nokodoc = Nokogiri::HTML(resp[1])
+       #nokodoc = Nokogiri::HTML(resp.doc.to_html)
        item = nokodoc.css('item').first
        if item
          detailurl = item.css('detailpageurl').first.content
@@ -243,7 +268,7 @@ module AmazonScraper
   def scrape_review asin
     reviews = {}
     begin
-        res = Amazon::Ecs.item_lookup(asin, :response_group => 'Reviews', :review_page => 1)
+        res = Amazon::AWS.item_lookup(asin, :response_group => 'Reviews', :review_page => 1)
         be_nice_to_amazon
     rescue Exception => exc
         report_error " --  #{exc.message}. Couldn't download reviews for product #{asin}"
@@ -267,7 +292,7 @@ module AmazonScraper
     current_page = 1
     loop do
       begin
-        res = Amazon::Ecs.item_lookup(asin, :response_group => 'Reviews', :review_page => current_page)
+        res = Amazon::AWS.item_lookup(asin, :response_group => 'Reviews', :review_page => current_page)
         be_nice_to_amazon
       rescue Exception => exc
         report_error "Couldn't download reviews for product #{asin}"
@@ -281,10 +306,10 @@ module AmazonScraper
           totalreviews ||= result.css('totalreviews').text.to_i
           totalreviewpages ||= result.css('totalreviewpages').text.to_i
           if totalreviews == 0
-            log "#{$model.name} #{asin} has no reviews -- 0 min remaining"
+            log "#{$product_type} #{asin} has no reviews -- 0 min remaining"
             return [{'totalreviews' => totalreviews}]
           end
-          log "#{$model.name} #{asin} review download: less than #{(totalreviewpages-current_page)/6 + 1} min remaining..." if current_page % 10 == 1
+          log "#{$product_type} #{asin} review download: less than #{(totalreviewpages-current_page)/6 + 1} min remaining..." if current_page % 10 == 1
           temp = result.css('review')
           temp = Array(temp) unless reviews.class == Array # Fix single and no review possibility
           array_of_hashes = temp.collect{|x| x.css('*').inject({}){|r,y| r.merge({y.name => y.text})}}
@@ -385,17 +410,17 @@ module AmazonScraper
   # a String which will match a retailer name
   def decipher_retailer merchantid, region
     case merchantid 
-      when AmazonID 
-        return "Amazon"
-      when AmazonCAID
-        return "Amazon.ca"
-      else
-        case region
-        when "us"
-          return "Amazon Marketplace"
-        when "ca"
-          return "Amazon.ca Marketplace"
-        end
+    when $ASSOCIATES_ID 
+      "Amazon"
+    when $ASSOCIATES_CA_ID
+      "Amazon.ca"
+    else
+      case region
+      when "us"
+        "Amazon Marketplace"
+      when "ca"
+        "Amazon.ca Marketplace"
+      end
     end
   end
   
@@ -407,26 +432,25 @@ module AmazonScraper
   # CACHING
   
   def get_merchant_str retailer_name
-    merchant_searchstring = nil
-    merchant_searchstring = AmazonID if retailer_name == 'Amazon'
-    merchant_searchstring = AmazonCAID if retailer_name == 'Amazon.ca'
-    return merchant_searchstring
+    merchant_searchstring = $ASSOCIATES_ID if retailer_name == 'Amazon'
+    merchant_searchstring = $ASSOCIATES_CA_ID if retailer_name == 'Amazon.ca'
+    merchant_searchstring
   end
   
   def cachefile_name(retailer)
-    return "./cache/#{retailer.name.gsub(/(\s|\.)/,'_').downcase}_#{$model.name.downcase}.html"
+    "./cache/#{retailer.name.gsub(/(\s|\.)/,'_').downcase}_#{$product_type}.html"
   end
   
   def open_cache(retailer)
     cfname = cachefile_name(retailer)
-    if(!File.exists?(cfname) or ((Time.now-File.mtime(cfname)).to_i/3600 > 12) )
+    # Feel free to put this back in later. For now we are fixing the script.
+    if(!File.exists?(cfname) or ((Time.now-File.mtime(cfname)).to_i/3600 > 12) ) # If it's current to within 12 hours
       refresh_cache(retailer)
     end
-    return File.open(cfname, 'r') if File.exists?(cfname)
-    return nil
+    File.exists?(cfname) ? File.open(cfname, 'r') : nil
   end
   
-  # Cache the cache. Aha so clever.
+  # Cache the cache. This is a big memory user, but it works out OK if the machine has 4GB of ram
   def open_nokocache(retailer)
     unless @nokocaches
       @nokocaches = {}
@@ -441,54 +465,51 @@ module AmazonScraper
   def refresh_cache(retailer)
     Dir.mkdir('cache') unless File.directory?('cache')
     cachefile = File.open(cachefile_name(retailer), 'w')
-    # params for the request...
-      merch = get_merchant_str(retailer.name) || 'All'
-      bnode = browse_node_id(retailer.region, $model)
-      place = retailer.region.intern
+    # Set up the parameters for the request.
+    merch = get_merchant_str(retailer.name) || 'All'
+    bnode = browse_node_id
+    place = retailer.region.intern
     current_page = 1
-    loop do
-      begin
-        res = Amazon::Ecs.item_search('',:browse_node => bnode, :search_index => $search_index, \
-          :merchant_id => merch, :country => place, :response_group => 'Offers',\
-          :item_page => current_page, :service => 'AWSECommerceService')
-        be_nice_to_amazon
+    begin
+      begin 
+        is = ItemSearch.new( $search_index, {'BrowseNode' => bnode, :merchant_id => merch, :item_page => current_page, :service => 'AWSECommerceService' } ) # :country => place, :response_group => 'Offers',
+
+        request = Request.new 
+        request.locale = place.to_s
+        response = request.search( is, current_page, "true" ) # The third parameter says "return raw XML"
+        # be_nice_to_amazon
       rescue Exception => exc
         report_error "Couldn't download Offers for page #{current_page}"
         report_error "#{exc.class.name} #{exc.message}"
       else
-        if(res)
-          totalpages ||= res.total_pages
-          nokodoc = res.doc.to_html
+        if(response)
+          totalpages ||= response[0] #response.item_search_response[0].items[0].total_pages[0].to_s.to_i
+          # items = response.item_search_response[0].items[0].item
+          totalpages = 1 if totalpages.nil?
+          nokodoc = response[1]
           cachefile.puts("#{nokodoc}")
         end      
       end
+      totalpages = 1 if totalpages.nil?
       timed_announce "Done #{current_page} of #{totalpages} pages"
       current_page += 1
-      break if totalpages and current_page > totalpages # In case there is a bad request, break loop
-    end
+    end while not (current_page > totalpages)
     cachefile.close
   end
   
-  def browse_node_id region, model=$model
-    case model.name
-      when 'Printer'
-        if region.downcase == 'ca'
-          return '677265011'
-        else 
-          return '172648'
-        end
-      when 'Camera'
-        if region.downcase == 'ca'
-          return '677235011'
-        else 
-          return '330405011'
-        end
-      when 'Cartridge'
+  def browse_node_id
+    case $product_type
+      when 'printer_us'
+        return '172648'
+      when 'printer_ca'
+        return '677265011'
+      when 'camera_us'
+        return '330405011'
+      when 'camera_ca'
+        return '677235011'
+      when 'Cartridge' # This never happens at the moment
         return '172641'
     end
   end
   
 end  
- #  res = Amazon::Ecs.item_search('',:browse_node => bn, :search_index => $search_index,\
- # :merchant_id => merchant_searchstring, :country => reg, \ #:availability => 'Available', #  :condition => 'New', 
- #  :response_group => 'Offers', :item_page => current_page, :service=> 'AWSECommerceService')

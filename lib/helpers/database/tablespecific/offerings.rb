@@ -70,36 +70,25 @@ module OfferingsHelper
   end
   
   # Updates best offer for all regions
-  def update_bestoffer p
-    $region_suffixes.keys.each do |region|
-      update_bestoffer_regional p, region
-    end
+  def update_bestoffer product
+    # Region suffixes, used internally in the database format.
+    {'CA' => '_ca', 'US' => ''}.each_pair do |region, regioncode|  
+      # Finds the best offer by region and records the new
+      # bestoffer price and product id.
+      matching_ro = RetailerOffering.find(:all, :conditions => "product_id LIKE #{product.id} and product_type LIKE '#{$product_type}'").reject{ |x| !x.stock or x.priceint.nil? }
+      if matching_ro.empty?
+        fill_in "instock#{regioncode}", false, product
+        return
+      end
     
-  end
-  
-  # Finds the best offer by region and records the new
-  # bestoffer price and product id.
-  def update_bestoffer_regional p, region
-    matching_ro = RetailerOffering.find(:all, :conditions => \
-      "product_id LIKE #{p.id} and product_type LIKE '#{$model.name}' and region LIKE '#{region}'").\
-      reject{ |x| !x.stock or x.priceint.nil? }
-    if matching_ro.empty?
-      fill_in "instock#{$region_suffixes[region]}", false, p
-      return
+      lowest = matching_ro.sort{|x,y| x.priceint <=> y.priceint }.first
+
+      # Should probably just set it once and then add '_ca', the region suffix, to the end of each.
+      regional = {'price'=>'price', 'pricestr' => 'pricestr', 'bestoffer' => 'bestoffer', 'prefix' => '', 'instock'=> 'instock'}
+      fill_in regional['bestoffer'], lowest.id, p
+      fill_in regional['price'], lowest.priceint, p
+      fill_in regional['pricestr'], lowest.pricestr, p
+      fill_in regional['instock'], true, p
     end
-    
-    lowest = matching_ro.sort{ |x,y|
-      x.priceint <=> y.priceint
-    }.first
-    
-    regional = case region 
-      when 'CA' then $ca
-      when 'US' then $us
-      else []
-    end
-    fill_in regional['bestoffer'], lowest.id, p
-    fill_in regional['price'], lowest.priceint, p
-    fill_in regional['pricestr'], "#{regional['prefix']}#{lowest.pricestr}", p
-    fill_in regional['instock'], true, p
   end
 end

@@ -79,7 +79,7 @@ class JavaTestSession < Webrat::SeleniumSession
   
    # Gets the homepage and makes sure nothing crashed.
    def get_homepage product_type='printer'
-      visit "http://#{product_type.downcase}s.localhost:#{$port}/"
+      visit "http://#{product_type}s.localhost:#{$port}/"
       wait_for_load
       if error_page?
         report_error "Error loading homepage" 

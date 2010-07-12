@@ -29,9 +29,9 @@ module IntegrationHelper
   end
   
   # Finds all RetailerOfferings linked to ScrapedProduct
-  def find_ros_from_scraped sp, model=$model
-    ros = RetailerOffering.find_all_by_local_id_and_retailer_id(sp.local_id, sp.retailer_id)
-    return ros.reject{|x| x.product_type != $model.name}
+  def find_ros_from_scraped local_id, retailer_id
+    ros = RetailerOffering.find_all_by_local_id_and_retailer_id(local_id, retailer_id)
+    return ros.reject{|x| x.product_type != $product_type}
   end
   
 end
