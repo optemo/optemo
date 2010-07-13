@@ -4,7 +4,7 @@ module FillInHelper
   
   # Creates a record and fills in any fitting attributes
   # from the given attribute hash
-  def create_record_from_atts atts
+  def create_record_from_attributes(atts)
     atts.reject! { |k,v| v.nil? or $general_ignore_list.include?(k) } # Get rid of nil values, and make sure nothing in the ignore list survives (id especially)
     attributes_for_spec_tables = atts.reject{|k,v| not ($AllSpecs.include?(k))} # These attributes are applicable to the current $product_type
     attributes_for_product_activerecord = atts.reject{|k,v| not (Product.column_names.include?(k))} # These attributes are universal (brand, etc.)
@@ -39,21 +39,21 @@ module FillInHelper
 
   # Does fill_in_missing on all name => value 
   # pairs in the hash
-  def fill_in_all_missing hash, rec, ignorelist=[]
+  def fill_in_all_missing(hash, rec, ignorelist=[])
     hash.each{ |name,val| fill_in_missing(name, val, rec, ignorelist) }
   end
   
   # Does fill_in on all attribute name => value 
   # pairs in the hash
-  def fill_in_all hash, rec, ignorelist=[]
-    hash.each{ |name,val| fill_in name, val, rec, ignorelist }
+  def fill_in_all(hash, rec, ignorelist=[])
+    hash.each{ |name,val| fill_in(name, val, rec, ignorelist) }
   end
   
   # When the element exists, fills in the 
   # specified attribute of the specified record
   # with the text inside the element.
-  def fill_in_optional name, el, record
-    fill_in( name , el.text, record )if el
+  def fill_in_optional(name, el, record)
+    fill_in(name, el.text, record) if el
   end
   
   # Fills in value only if there is not yet a 
@@ -63,17 +63,17 @@ module FillInHelper
   end
   
   # Default is to fill in unless the value is nil
-  def fill_in name, desc, record, ignorelist=[]
-    return if desc.nil?
-    fill_in_forced name, desc, record, ignorelist
+  def fill_in(name, desc, record, ignorelist=[])
+    return nil if desc.nil?
+    fill_in_forced(name, desc, record, ignorelist)
   end
   
   # Fills in value for attribute in record even if
   # value is nil
-  def fill_in_forced name, desc, record, ignorelist=[]
+  def fill_in_forced(name, desc, record, ignorelist=[])
     ignore = ignorelist + $general_ignore_list     
 
-    return unless record.has_attribute? name
+    return unless record.has_attribute?(name)
     return if ignore.include?(name)
     if !desc.nil?
       case (record.class.columns_hash[name].type)
@@ -94,6 +94,7 @@ module FillInHelper
     else
       val = nil
     end
-    record.update_attribute(name, val)
+    record[name] = val
+    record
   end
 end

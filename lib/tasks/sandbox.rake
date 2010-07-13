@@ -22,19 +22,22 @@ namespace :sandbox do
   end
   
   task :idfields_rm_junk do
+    activerecords_to_save = []
     Product.all.each do |product|
-      
       ids = {'model' => product.model, 'mpn' => product.mpn}
-      
       $descriptors.each do |d|
         ids.each do |idname,idval|
           next if idval.nil?
           if idval.match(d)
             puts "#{idval} has #{d}" 
             fill_in_forced(idname,nil,product)
+            activerecords_to_save.push(product)
           end
         end
       end
+    end
+    Product.transaction do
+      activerecords_to_save.each(&:save)
     end
   end
   
@@ -46,6 +49,7 @@ namespace :sandbox do
       dims.inject(false){|d| !x[d].nil? and x[d] == 0}
     }
     debugger
+    activerecords_to_save = []
     weirdos.each do |cam|
       temp = vote_on_values(cam)
       temp2 = {}
@@ -56,8 +60,11 @@ namespace :sandbox do
         fill_in_forced(k,v,cam)
       end
       puts "Done!"
+      activerecords_to_save.push(cam)
     end
-    
+    Product.transaction do
+      activerecords_to_save.each(&:save)
+    end
   end
   
   task :clean_dims =>  ['data:cam_init']  do 
@@ -66,7 +73,7 @@ namespace :sandbox do
     }
     debugger
     bad.each do |b|
-      fill_in_forced(b,'')
+      fill_in_forced(b,'') # This doesn't work and I'm not sure what was intended. The arguments to fill_in_forced are (key,value,record)
     end
   end
   
@@ -236,6 +243,7 @@ namespace :sandbox do
       
       puts "#{keep.id} had bestoffer #{keep.bestoffer}"
       update_bestoffer(keep)
+      keep.save
       puts "#{keep.id} now has bestoffer #{$product_type.find(keep.id).bestoffer} (should be #{bestoffer_id})"
     end
       
@@ -294,12 +302,14 @@ namespace :sandbox do
     #num_to_update = my_offerings.count
     
     time = Time.now
+    activerecords_to_save = []
     my_offerings.each_with_index do |offering, i|
       begin
         next if offering.local_id.nil?
         newatts = rescrape_prices(offering.local_id, offering.region)
         
         update_offering(newatts, offering) if offering
+        activerecords_to_save.push(offering)
         #if(offering.product_id and $product_type.exists?(offering.product_id))
         #  update_bestoffer($product_type.find(offering.product_id))
         #end  
@@ -309,7 +319,9 @@ namespace :sandbox do
       end
       log "[#{Time.now}] Done updating #{i+1} of #{my_offerings.count} offerings"
     end
-    
+    RetailerOffering.transaction do
+      activerecords_to_save.each(&:save)
+    end
     time = Time.now - time
     puts "Took #{time} seconds to get #{num_to_update} offerings"
   end

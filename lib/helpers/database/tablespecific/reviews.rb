@@ -28,7 +28,7 @@ module ReviewsHelper
     revu = recognize_review(atthash)
     if revu.nil?
       #debugger
-      revu = create_record_from_atts atthash, Review
+      revu = Review.new(atthash)
     end
     return revu
   end

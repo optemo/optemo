@@ -5,9 +5,10 @@ module GenericScraper
     return if $product_type.blank? # This should never happen, but keep it just in case.
     sps = $scrapedmodel.find_all_by_product_id(deleteme.id)
     ros = RetailerOffering.find_all_by_product_id_and_product_type(deleteme.id, $product_type)
-    revus = Review.find_all_by_product_id_and_product_type(deleteme.id, $product_type)
-    (sps+ros+revus).each do |x|
-      fill_in 'product_id', keepme.id, x
+    reviews = Review.find_all_by_product_id_and_product_type(deleteme.id, $product_type)
+    (sps+ros+reviews).each do |x|
+      fill_in('product_id', keepme.id, x)
+      x.save
     end
     temp = deleteme.id
     Product.delete(temp)
@@ -99,7 +100,8 @@ module GenericScraper
         fill_in_all(clean_atts, ro, ['pricehistory'])
         fill_in_forced('priceint', clean_atts['priceint'], ro) # Also validation
         
-        timestamp_offering(ro)     
+        timestamp_offering(ro)
+        ro.save # Don't bother with the transaction for just the one record.  
       else
         report_error "Couldn't create #{$scrapedmodel} with local_id #{local_id || 'nil'} and retailer #{retailer_id || 'nil'}."
       end
@@ -115,9 +117,10 @@ namespace :data do
   task :amazon_reviews => [:cam_init, :amazon_init, :reviews]
   
   task :match_reviews do    
-    allrevus = Review.find_all_by_product_id_and_product_type(nil, $product_type)
-    allrevus.each do |revu|    
-      lid =  revu['local_id']
+    allreviews = Review.find_all_by_product_id_and_product_type(nil, $product_type)
+    activerecords_to_save = []
+    allreviews.each do |review|    
+      lid =  review['local_id']
       sms = $scrapedmodel.find_all_by_local_id(lid)
       sms_pids = sms.collect{|x| x.product_id}.uniq.compact.reject(&:blank?)
       if sms_pids.length != 1 and sms_pids.length > 1
@@ -127,8 +130,12 @@ namespace :data do
           unlink_duplicate(keep, deleteme)
         end
       else
-        fill_in 'product_id', sms_pids.first, revu
+        fill_in('product_id', sms_pids.first, review)
       end
+      activerecords_to_save.push(review)
+    end
+    Review.transaction do
+      activerecords_to_save.each(&:save)
     end
   end
     
@@ -149,18 +156,20 @@ namespace :data do
         next if exclusion.include?(local_id)
         baseline = Review.count
 
-        revues = scrape_reviews(local_id, ret.id)
-        revues.each do |rvu|
+        reviews = scrape_reviews(local_id, ret.id)
+        reviews.each do |rvu|
           rvu['product_type'] = $product_type
           r = find_or_create_review(rvu)
           fill_in_all(rvu,r) if r
           pid = r.product_id if r
           $scrapedmodel.find_all_by_local_id_and_retailer_id(local_id, ret.id).each do |sp|
-            fill_in 'averagereviewrating',rvu["averagereviewrating"], sp if rvu["averagereviewrating"]
-            fill_in 'totalreviews', rvu['totalreviews'], sp if rvu["totalreviews"]
+            fill_in('averagereviewrating',rvu["averagereviewrating"], sp) if rvu["averagereviewrating"]
+            fill_in('totalreviews', rvu['totalreviews'], sp) if rvu["totalreviews"]
             pid ||= sp.product_id
+            sp.save
           end
-          fill_in 'product_id', pid, r if pid and r
+          fill_in('product_id', pid, r) if pid and r
+          r.save
           report_error "Review #{r.id} has nil product_id" if r and r.product_id.nil?
         end
       end
@@ -208,11 +217,11 @@ namespace :data do
         end
       end
       
-      p = $product_type.find(pid)
+      p = Product.find(pid)
       puts "Dims for #{pid} were: #{p.itemlength} x #{p.itemheight} x #{p.itemwidth}"
       avgs = vote_on_values(p)
-      fill_in_all avgs, p
-      p = $product_type.find(pid)
+      fill_in_all(avgs, p)
+      p.save
       puts "Done #{pid}. New dims #{p.itemlength} x #{p.itemheight} x #{p.itemwidth}"
       #if newval and newval > 0 and newval < 7000
         #p = $product_type.find(pid)
@@ -273,13 +282,18 @@ namespace :data do
    # The subtasks...
   task :vote do 
     products = Product.all
+    activerecords_to_save = []
     products.each do |p|
       avgs = vote_on_values p
       $bools_assume_no.each{|x| avgs[x] = false if avgs[x].nil?}
       #avgs.each do |k,v|
       #  puts "#{k} -- #{v} (now #{p.[](k)}) for #{p.id}" #if [v, p.[](k)].uniq.reject{|x| x.nil?}.length > 1
       #end
-      fill_in_all avgs, p
+      fill_in_all(avgs, p)
+      activerecords_to_save.push(p)
+    end
+    Product.transaction do
+      activerecords_to_save.each(&:save)
     end
   end
   
@@ -300,15 +314,22 @@ namespace :data do
       matches = match_product_to_product scraped, $product_type, $series
       
       real = matches.first
-      real = create_record_from_atts(scraped.attributes) if real.nil? 
+      real = create_record_from_attributes(scraped.attributes) if real.nil? 
       
-      fill_in 'product_id',real.id, scraped
+      fill_in('product_id',real.id, scraped)
+      scraped.save
+      ros = find_ros_from_scraped (scraped)
+      ros.each{ |ro| fill_in('product_id', real.id, ro); ro.save }     
       
-      ros = find_ros_from_scraped scraped
-      ros.each{ |ro| fill_in 'product_id', real.id, ro }     
-      
-      revues = Review.find_all_by_local_id_and_product_type(scraped.local_id, $product_type)
-      revues.each{|revu| fill_in 'product_id', real.id, revu }
+      reviews = Review.find_all_by_local_id_and_product_type(scraped.local_id, $product_type)
+      activerecords_to_save = []
+      reviews.each do |review| 
+        fill_in('product_id', real.id, review)
+        activerecords_to_save.push(review)
+      end
+      Review.transaction do
+        activerecords_to_save.each(&:save)
+      end
     end
     timed_announce "[#{Time.now}] Done matching products"
     @logfile.close unless @logfile.closed?
@@ -319,6 +340,7 @@ namespace :data do
     filename = "./log/scrape/#{just_alphanumeric($retailers.first.name)}_#{$product_type}.log"
     @logfile = File.new(filename, 'w+') unless File.exist?(filename)
     @logfile = File.open(filename, 'w+') unless @logfile
+    activerecords_to_save = []
     my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id_and_product_type(x.id, $product_type)}
     my_offerings.each_with_index do |offering, i|
       next if offering.local_id.nil?
@@ -333,10 +355,14 @@ namespace :data do
       update_offering(newatts, offering) if offering
       #if(offering.product_id and $product_type.exists?(offering.product_id))
       #  update_bestoffer($product_type.find(offering.product_id))
-      #end  
+      #end
+      activerecords_to_save.push(offering)
       log "[#{Time.now}] Done updating #{i+1} of #{my_offerings.count} offerings"
     end
-    
+    RetailerOffering.transaction do
+      activerecords_to_save.each(&:save)
+    end
+
     timed_announce "Done updating prices"
     @logfile.close unless @logfile.closed?
   end
@@ -419,10 +445,15 @@ namespace :data do
   end
   
   task :update_bestoffers do 
+    activerecords_to_save = []
     Product.all.each do |p|
       update_bestoffer p
+      activerecords_to_save.push(p)
     end
-    timed_announce "Done updating bestoffers"
+    timed_announce "Done updating bestoffers; saving to database"
+    Product.transaction do
+      activerecords_to_save.each(&:save)
+    end
   end
 
   task :cam_init => :init do

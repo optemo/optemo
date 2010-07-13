@@ -71,7 +71,8 @@ namespace :fix_data do
         p.update_attribute(fld, nil)
       end
       avgs = vote_on_values(p)
-      fill_in_all avgs, p
+      fill_in_all(avgs, p)
+      p.save
       puts "Done #{pid}. New #{which_fields[0]} #{Product.find(pid, :conditions => ["product_type=?",$product_type])[which_fields[0]]}"
     end
     puts "Done"
@@ -199,6 +200,7 @@ namespace :fix_data do
     $series = @@series
     $descriptors = @@descriptors
     
+    activerecords_to_save = []
     Product.all.each do |ptr|
       atts = ptr.attributes
       modelsb4 = separate(atts['model']) + separate(atts['mpn'])
@@ -225,10 +227,12 @@ namespace :fix_data do
       ['model', 'mpn'].each do |x| 
         fill_in_forced(x,atts[x], ptr)
       end
-      
+      activerecords_to_save.push(ptr)
       #puts "#{ptr['model']} #{ptr['mpn']}"
     end
-    
+    Product.transaction do
+      activerecords_to_save.each(&:save)
+    end
   end
   
   task :dims => :environment do 
@@ -269,6 +273,7 @@ namespace :fix_data do
   task :pricehist => 'data:cam_init' do
     require 'yaml'
     ros = RetailerOffering.all.reject{|x| x.pricehistory.nil?}
+    activerecords_to_save = []
     ros.each_with_index do |ro|
       hist = ro.pricehistory
       if hist and hist.match(/\n$/).nil?
@@ -294,7 +299,11 @@ namespace :fix_data do
         debugger if newhist_yaml.match(/\n$/).nil?
         fill_in_forced('pricehistory', newhist_yaml, ro)
       end
-    end    
+      activerecords_to_save.push(ro)
+    end   
+    RetailerOffering.transaction do
+      activerecords_to_save.each(&:save)
+    end 
   end
   
   task :match_ros => :environment do 
@@ -322,7 +331,7 @@ namespace :fix_data do
     count = 0
     
     puts "#{allros.count} total IDable ROs"
-    
+    activerecords_to_save = []
     allros.reverse.each do |roid|
       ro = RetailerOffering.find(roid)
       sps = $scrapedmodel.find_all_by_retailer_id_and_local_id(ro.retailer_id,ro.local_id)
@@ -332,6 +341,10 @@ namespace :fix_data do
         count += 1
       end
       fill_in_forced('product_id', pid, ro)
+      activerecords_to_save.push(ro)
+    end
+    RetailerOffering.transaction do
+      activerecords_to_save.each(&:save)
     end
     puts "#{count} have been matched"
   end
@@ -388,7 +401,7 @@ namespace :fix_data do
         
         debugger if product.retailer_id
         fill_in('retailer_id', 1, product)
-              
+        product.save
       end  
   end
   
@@ -396,6 +409,7 @@ namespace :fix_data do
   
   task :revote_forced do
     stuff = ['itemlength', 'itemwidth', 'itemheight', 'dimensions']
+    activerecords_to_save = []
     Product.all.each do |cam|
       newdims = vote_on_values(cam)
       stuff.each do |a|
@@ -403,6 +417,10 @@ namespace :fix_data do
           fill_in_forced(a,newdims[a],cam)
         end
       end
+      activerecords_to_save.push(cam)
+    end
+    Product.transaction do
+      activerecords_to_save.each(&:save)
     end
   end
   
@@ -425,16 +443,21 @@ namespace :fix_data do
     #which_product_ids.each do |pid| 
     #  sps = ScrapedCamera.find_all_by_product_id(pid)
     sps = ScrapedCamera.all
-      if sps.length != 0
-        sps.each do |sp|
-          atts = sp.attributes.reject{|a,b| !dimlabels.include?(a.to_s)}
-          all_vals_to_s!(atts)
-          rearrange_dims!(atts, ['D', 'H', 'W'], true)
-          dimlabels.each do |dim|
-            fill_in_forced(dim,atts[dim], sp)
-          end
+    if sps.length != 0
+      activerecords_to_save = []
+      sps.each do |sp|
+        atts = sp.attributes.reject{|a,b| !dimlabels.include?(a.to_s)}
+        all_vals_to_s!(atts)
+        rearrange_dims!(atts, ['D', 'H', 'W'], true)
+        dimlabels.each do |dim|
+          fill_in_forced(dim,atts[dim], sp)
         end
+        activerecords_to_save.push(sp)
       end
+      ScrapedCamera.transaction do
+        activerecords_to_save.each(&:save)
+      end
+    end
       #p = Camera.find(pid)
       #avgs = vote_on_values(p)
       #fill_in_all(avgs, p)
@@ -452,13 +475,16 @@ namespace :fix_data do
     ros.each do |ro|
       stupid << ro.id if ro.priceint and (ro['priceint'] > $MaximumPrice)
     end
-   
+    activerecords_to_save = []
     stupid.each do |x|
       xobj = RetailerOffering.find(x)
       fill_in('stock', false, xobj)
       fill_in_forced('priceint', nil, xobj)
+      activerecords_to_save.push(xobj)
     end
-    
+    RetailerOffering.transaction do
+      activerecords_to_save.each(&:save)
+    end
     puts "Done removing #{stupid.count} stupid prices"
   
   end
@@ -480,6 +506,7 @@ namespace :fix_data do
   
   task :fix_brands do
     [Product,$scrapedmodel].each do |model|
+      activerecords_to_save = []
       announce "Fixing #{model.name}"
       fixme = model.all
       changes = []
@@ -492,8 +519,12 @@ namespace :fix_data do
           changes << ["#{p.brand}", "#{clean_atts['brand']}"]
           unless $dry_run
             fill_in_forced('brand', clean_atts['brand'], p)
+            activerecords_to_save.push(p)
           end
         end
+      end
+      model.transaction do
+        activerecords_to_save.each(&:save)
       end
       changes_text = changes.uniq.collect{|a,b| "#{a} --> #{b}"}
       puts changes_text * "\n"
@@ -501,9 +532,9 @@ namespace :fix_data do
   end
   
   task :fix_models  do
-    model = Product
     announce "Fixing #{model.name}"
-    fixme = model.all
+    fixme = Product.all
+    activerecords_to_save = []
     fixme.each do |p|
       scraped_atts = p.attributes
       clean_atts = clean(scraped_atts)
@@ -513,8 +544,12 @@ namespace :fix_data do
         unless $dry_run
           fill_in_forced('model', clean_atts['model'], p)
           fill_in_forced('mpn', clean_atts['mpn'], p)
+          activerecords_to_save.push(p)
         end
       end
+    end
+    Product.transaction do
+      activerecords_to_save.each(&:save)
     end
   end
 end

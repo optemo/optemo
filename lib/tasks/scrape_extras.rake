@@ -3,14 +3,14 @@
 
 module ScrapeExtra  
   
-  def do_it p, ok_fields, interesting_fields, clean_specs
+  def do_it (p, ok_fields, interesting_fields, clean_specs)
     ok_fields.each do |field|
-      fill_in_missing field, clean_specs[field], p
+      fill_in_missing(field, clean_specs[field], p)
     end
     interesting_fields.keys.each do |f|
       interesting_fields[f] << clean_specs[f]
     end
-    
+    p.save
     return interesting_fields
   end
   
@@ -215,10 +215,11 @@ namespace :scrape_extra do
         puts features['printtechnology']
         puts clean_specs['colorprinter']
         debugger 
-        fill_in 'colorprinter', clean_specs['colorprinter'], bp
+        fill_in('colorprinter', clean_specs['colorprinter'], bp)
+        bp.save
       end
       
-      interesting_fields = do_it bp, ok_fields, interesting_fields, clean_specs
+      interesting_fields = do_it(bp, ok_fields, interesting_fields, clean_specs)
       
     end
 
@@ -231,8 +232,7 @@ namespace :scrape_extra do
     
     $product_type = Printer
     
-    interesting_fields = ['paperinput','scanner', 'duplex', 'printserver'].inject({}){|r, x| r[x]=[]
-      r}
+    interesting_fields = ['paperinput','scanner', 'duplex', 'printserver'].inject({}){|r, x| r[x]=[]; r}
     ok_fields = ['ppm', 'paperinput','resolution', 'resolutionmax']
     
     printerids = Printer.all.collect{|x| x.id}
@@ -240,7 +240,7 @@ namespace :scrape_extra do
     #validids = Printer.valid.collect{|x| x.id}
     validanyway = 0
     
-    watever = false
+    seemingly_useless_flag = false# The meaning of this is not obvious.
     
     sesh = Webrat.session_class.new
     problems = 0
@@ -260,16 +260,17 @@ namespace :scrape_extra do
       puts "#{p.id} rescraped"
       
       puts "No data" if clean_specs['paperinput'].nil?
-      debugger unless watever()
+      debugger unless seemingly_useless_flag
       
       ok_fields.each do |field|
-        fill_in_missing field, clean_specs[field], p
+        fill_in_missing(field, clean_specs[field], p)
       end
+      p.save
       interesting_fields.keys.each do |f|
         interesting_fields[f] << clean_specs[f]
       end
       
-      sleep(15) if watever
+      sleep(15) if seemingly_useless_flag
     end
       puts "Done with #{problems} problems"
       debugger
@@ -318,7 +319,8 @@ namespace :scrape_extra do
       if ps.length == 1
         validanyway += 1 if (validids.include?ps.first.id)
         ok_fields.each do |field|
-          fill_in_missing field, clean_specs[field], ps.first
+          fill_in_missing(field, clean_specs[field], ps.first)
+          ps.first.save
         end
       elsif ps.length == 0
         nomatch += 1 
@@ -423,9 +425,10 @@ namespace :scrape_extra do
           printer = Printer.find(NeweggPrinter.find_by_item_number(itemnum).product_id)
          # if(printer.[]("image#{sz}url").nil?)
             url = url_from_item_and_sz(itemnum, sz)  
-            fill_in "image#{sz}url", url, printer
-            fill_in "image#{sz}height", image.rows, printer
-            fill_in "image#{sz}width", image.columns, printer
+            fill_in("image#{sz}url", url, printer)
+            fill_in("image#{sz}height", image.rows, printer)
+            fill_in("image#{sz}width", image.columns, printer)
+            printer.save
           #end
         end
       end
@@ -436,8 +439,7 @@ namespace :scrape_extra do
   task :fill_in_pic_stats => :pic_init do
     no_img_sizes = []
     $size_names.each do |sz|
-      no_img_sizes = no_img_sizes | Printer.find( :all, \
-        :conditions => ["(image#{sz}height IS NULL OR image#{sz}width IS NULL) AND image#{sz}url IS NOT NULL"])
+      no_img_sizes = no_img_sizes | Product.find( :all, :conditions => ["(img#{sz}h IS NULL OR img#{sz}w IS NULL) AND img#{sz}url IS NOT NULL"])
     end  
     
     no_img_sizes.each do |printer|
@@ -452,12 +454,15 @@ namespace :scrape_extra do
           image = nil
         end
         if image
-          fill_in "image#{sz}height", image.rows, printer if image.rows
-          fill_in "image#{sz}width", image.columns, printer if image.columns
+          fill_in("image#{sz}height", image.rows, printer) if image.rows
+          fill_in("image#{sz}width", image.columns, printer) if image.columns
+          activerecords_to_save.push(printer)
         end
       end
     end
-    
+    Product.transaction do
+      activerecords_to_save.each(&:save)
+    end
   end
   
   desc 'sandbox'
@@ -509,10 +514,10 @@ namespace :scrape_extra do
       unless x.imageurl.nil? or x.imageurl.empty? or file_exists_for(x.item_number)
         
         oldurl = "http://c1.neweggimages.com/NeweggImage/productimage/" + x.imageurl.split('/').pop
-        newurl = download_img oldurl, 'images/newegg', "#{x.item_number}.jpg"
+        newurl = download_image oldurl, 'images/newegg', "#{x.item_number}.jpg"
         if(newurl.nil?) # TODO hacky
           oldurl = "http://images17.newegg.com/is/image/newegg/" + x.imageurl.split('/').pop
-          newurl = download_img oldurl, 'images/newegg', "#{x.item_number}.jpg"
+          newurl = download_image oldurl, 'images/newegg', "#{x.item_number}.jpg"
         end
         
         if(newurl.nil?)
@@ -540,7 +545,7 @@ namespace :scrape_extra do
         failed << product.id
       else
         # download it
-        download_img pic_urls.first, 'images/printers', "#{product.id}.jpg"
+        download_image pic_urls.first, 'images/printers', "#{product.id}.jpg"
         # resize it
         
       end

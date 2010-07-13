@@ -4,16 +4,16 @@ namespace :pictures do
   task :update_cam_stats => [:camera_init, :update_pic_stats]
   
   desc 'Get all the missing pictures for Cameras'
-  task :update_cameras => [:camera_init, :dl_missing_pix, :resize_missing, :update_pic_stats, :close_log]
+  task :update_cameras => [:camera_init, :download_missing_pictures, :resize_missing, :update_pic_stats, :close_log]
   
   desc 'Re-download all pictures for Cameras'
-  task :scrape_cameras => [:camera_init, :dl_pix, :resize_all, :close_log] # This fails, because resize_all isn't a function
+  task :scrape_cameras => [:camera_init, :download_pictures, :resize_all, :close_log] # This fails, because resize_all isn't a function
   
   desc 'Get all the missing pictures for Printers'
-  task :update_printers => [:printer_init, :dl_missing_pix, :resize_missing, :update_pic_stats, :close_log]
+  task :update_printers => [:printer_init, :download_missing_pictures, :resize_missing, :update_pic_stats, :close_log]
   
   desc 'Re-download all pictures for Printers'
-  task :scrape_printers => [:printer_init, :dl_pix, :resize_all, :close_log]
+  task :scrape_printers => [:printer_init, :download_pictures, :resize_all, :close_log]
   
   task :temp => :printer_init do
     puts "Recording pic stats"
@@ -50,17 +50,16 @@ namespace :pictures do
   end
   
   task :update_pic_stats do
-    updateme = Product.all(:conditions => ["product_type=?", $product_type])
-    record_pic_stats(updateme)
+    record_pic_stats(Product.all(:conditions => ["product_type=?", $product_type]))
   end
   
-  task :dl_pix do
+  task :download_pictures do
     puts "Downloading all pictures"
     failed = []
     urls = {}
     Product.all(:conditions => ["product_type=?", $product_type]).each do |product|
       sps = $scrapedmodel.find(:all, :conditions => ["product_id=?",product.id])
-      temp_url = sps.collect{|x| x.imageurl}.reject{|x| x.nil?}.first
+      temp_url = sps.collect{|x| x.imageurl}.reject{|x| x.blank?}
       if temp_url
         urls[product.id] = temp_url
       else
@@ -68,7 +67,7 @@ namespace :pictures do
       end 
     end  
     
-    failed << download_all_pix(urls)
+    failed << download_all_pictures(urls)
     log " Num Failed: #{failed.size}"
   
   end
@@ -84,16 +83,17 @@ namespace :pictures do
     
     log "Recording pic stats"
     # We need to pass a list of products, not just a list of product_ids
-    pid_string = "id IN (" + unresized.inject(""){|pid_string,pid|pid_string + pid.to_s + ","}.chop + ")"    
-    record_pic_stats(Product.find(:all, :conditions => [pid_string]))
-    
+    unless unresized.empty?
+      pid_string = "id IN (" + unresized.inject(""){|pid_string,pid|pid_string + pid.to_s + ","}.chop + ")"
+      record_pic_stats(Product.find(:all, :conditions => [pid_string]))
+    end
     puts "Done"
   end
   
   
-  task :dl_missing_pix do
+  task :download_missing_pictures do
     puts "Downloading missing pictures"
-    picless = picless_recs
+    picless = picless_records
     puts "#{picless.count} #{$product_type} pictures are missing!"
     #really_picless = picless.reject{|x| (!x.imagesurl.nil? and !x.imagemurl.nil? and !x.imagelurl.nil?) or (!x.instock and !x.instock_ca)}
     really_picless = picless
@@ -103,10 +103,10 @@ namespace :pictures do
     urls = {}
     really_picless.each do |product_id| 
       sps = $scrapedmodel.find(:all, :conditions => ["product_id=?",product_id])
-      if sps.empty? # Try another method of finding the imageURL
+      if sps.empty? # Try another method of finding the image URL: the model name
         sps = $scrapedmodel.find_all_by_model(Product.find(product_id).model)
       end
-      temp_urls = sps.collect{|x| x.imageurl}.reject{|x| x.nil?}.first
+      temp_urls = sps.collect{|x| x.imageurl}.reject{|x| x.blank?}
       unless temp_urls.nil? || temp_urls.empty?
         urls[product_id] = temp_urls
       else
@@ -115,7 +115,7 @@ namespace :pictures do
     end
     
     log "Downloading #{urls.length} missing picture files"
-    failed << download_all_pix(urls)
+    failed << download_all_pictures(urls)
     log " Num Failed: #{failed.size}"
   end
 end
