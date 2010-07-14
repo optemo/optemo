@@ -118,7 +118,7 @@ module ImageHelper
     recordset.each do |rec|
       @@size_names.each do |sz|    
         puts "#{ url_from_item_and_sz(rec.id, sz)}"
-        fill_in("image#{sz}url", url_from_item_and_sz(rec.id, sz), rec)
+        parse_and_set_attribute("image#{sz}url", url_from_item_and_sz(rec.id, sz), rec)
       end
       activerecords_to_save.push(rec)
     end
@@ -145,17 +145,17 @@ module ImageHelper
             image = nil
           end
           if image
-            fill_in("img#{sz}url", url_from_item_and_sz(record.id, sz), record)
-            fill_in("img#{sz}height", image.rows, record) if image.rows
-            fill_in("img#{sz}width", image.columns, record) if image.columns
+            parse_and_set_attribute("img#{sz}url", url_from_item_and_sz(record.id, sz), record)
+            parse_and_set_attribute("img#{sz}height", image.rows, record) if image.rows
+            parse_and_set_attribute("img#{sz}width", image.columns, record) if image.columns
             activerecords_to_save.push(record)
           end
         else
           #debugger
           # What is the point of doing any of this? NULL is the default in the database anyhow, yes?
-          # fill_in_forced("img#{sz}url", nil, record)
-          # fill_in_forced("img#{sz}height", nil, record)
-          # fill_in_forced("img#{sz}width", nil, record)
+          # parse_and_set_attribute("img#{sz}url", nil, record)
+          # parse_and_set_attribute("img#{sz}height", nil, record)
+          # parse_and_set_attribute("img#{sz}width", nil, record)
         end
       end
     end

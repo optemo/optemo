@@ -1,41 +1,15 @@
 module Scrape123
-  # As of July, 2010, this method seems to be deprecated.
-  # TODO use a different method
-#  def make_offering_from_atts cart 
-#    atts = cart.attributes
-#    web_id = cart.web_id
-#    url = get_special_url web_id
-#    if cart.offering_id.nil?
-#      offer = RetailerOffering.new(atts)
-#    else
-#      offer = RetailerOffering.find(cart.offering_id)
-#    end
-#    fill_in_all(atts, offer)
-#    fill_in('product_type', 'Cartridge', offer)
-#    fill_in('toolow', false, offer)
-#    fill_in('priceUpdate', Time.now, offer)
-#    fill_in('availabilityUpdate', Time.now, offer)
-#    fill_in('retailer_id', 16, offer)
-#    fill_in('offering_id', offer.id, cart)
-#    fill_in('url', url, offer)
-#    return offer
-#  end
-  
   def get_special_url web_id
     #TODO For now this is just a regular url.
     base_url = "http://www.123inkjets.com/"
     url = "#{base_url}#{web_id},product.html"
     return url
   end
-  
 end
 
 namespace :scrape_123 do
-  
   task :clean => :init do 
-    
     clean_cartridges
-    
   end
   
   task :sandbox => :init do
@@ -73,9 +47,9 @@ namespace :scrape_123 do
         puts "Duplicate found"
       end
       
-      fill_in_all(cart.attributes, matching_c, ignoreme)
-      fill_in('product_id', matching_c.id, cart)
-      fill_in('compatiblebrand', compatbrand, matching_c)
+      cart.attributes.each{|name,val| parse_and_set_attribute(name, val, matching_c, ignoreme)}
+      parse_and_set_attribute('product_id', matching_c.id, cart)
+      parse_and_set_attribute('compatiblebrand', compatbrand, matching_c)
       
       make_offering_from_atts(cart) # This doesn't work
     end
@@ -170,8 +144,8 @@ namespace :scrape_123 do
       clean_specs = cartridge_cleaning_code(specs)
       
       cart = $product_type.find_or_create_by_web_id(num)
-      fill_in_all clean_specs, cart 
-      fill_in 'scrapedat', Time.now, cart
+      clean_specs.each{|name,val| parse_and_set_attribute(name, val, cart)}
+      parse_and_set_attribute 'scrapedat', Time.now, cart
       counter += 1
       puts " Done #{counter} #{$product_type}s "        
       

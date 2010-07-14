@@ -4,7 +4,7 @@ require 'open-uri'
 
 require 'helpers/atthash'
 
-require 'helpers/database/fill_in'
+require 'helpers/database/parse_attributes'
 require 'helpers/database/integration'
 
 require 'helpers/database/tablespecific/offerings'
@@ -42,7 +42,7 @@ module ScrapingLib
 end
 
 module DatabaseLib
-  include FillInHelper
+  include ParseAttributeHelper
   include IntegrationHelper
   
   include OfferingsHelper
@@ -67,7 +67,7 @@ module ParsingLib
   include BooleanHelper
   include DimensionsHelper
   include EnumParser
-  include FillInHelper
+  include ParseAttributeHelper
   include IdFieldsHelper
   include NumbersCleaner
   include PricesCleaner
@@ -80,7 +80,7 @@ module LoggingLib
 end
 
 module FillInLib
-  include FillInHelper
+  include ParseAttributeHelper
   include NumbersCleaner
   include StringCleaner
 end

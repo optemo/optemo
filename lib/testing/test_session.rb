@@ -26,9 +26,9 @@ class TestSession < Webrat::MechanizeSession
      submit_form 'filter_form'
    end
    
-   # Erroneous use of fill_in() with two arguments
+   # Erroneous use of parse_and_set_attribute() with two arguments
    def search_for query 
-     fill_in "search", :with => query
+     parse_and_set_attribute "search", :with => query
      click_button "submit_button"
    end
    

@@ -7,7 +7,7 @@ module GenericScraper
     ros = RetailerOffering.find_all_by_product_id_and_product_type(deleteme.id, $product_type)
     reviews = Review.find_all_by_product_id_and_product_type(deleteme.id, $product_type)
     (sps+ros+reviews).each do |x|
-      fill_in('product_id', keepme.id, x)
+      parse_and_set_attribute('product_id', keepme.id, x)
       x.save
     end
     temp = deleteme.id
@@ -97,8 +97,8 @@ module GenericScraper
           clean_atts['priceint'] = nil
         end
         
-        fill_in_all(clean_atts, ro, ['pricehistory'])
-        fill_in_forced('priceint', clean_atts['priceint'], ro) # Also validation
+        clean_atts.each{|name,val| parse_and_set_attribute(name, val, ro, ['pricehistory'])}
+        parse_and_set_attribute('priceint', clean_atts['priceint'], ro) # Also validation
         
         timestamp_offering(ro)
         ro.save # Don't bother with the transaction for just the one record.  
@@ -130,7 +130,7 @@ namespace :data do
           unlink_duplicate(keep, deleteme)
         end
       else
-        fill_in('product_id', sms_pids.first, review)
+        parse_and_set_attribute('product_id', sms_pids.first, review)
       end
       activerecords_to_save.push(review)
     end
@@ -160,15 +160,15 @@ namespace :data do
         reviews.each do |rvu|
           rvu['product_type'] = $product_type
           r = find_or_create_review(rvu)
-          fill_in_all(rvu,r) if r
+          rvu.each{|name,val| parse_and_set_attribute(name, val, r, ignorelist)} if r
           pid = r.product_id if r
           $scrapedmodel.find_all_by_local_id_and_retailer_id(local_id, ret.id).each do |sp|
-            fill_in('averagereviewrating',rvu["averagereviewrating"], sp) if rvu["averagereviewrating"]
-            fill_in('totalreviews', rvu['totalreviews'], sp) if rvu["totalreviews"]
+            parse_and_set_attribute('averagereviewrating',rvu["averagereviewrating"], sp) if rvu["averagereviewrating"]
+            parse_and_set_attribute('totalreviews', rvu['totalreviews'], sp) if rvu["totalreviews"]
             pid ||= sp.product_id
             sp.save
           end
-          fill_in('product_id', pid, r) if pid and r
+          parse_and_set_attribute('product_id', pid, r) if pid and r
           r.save
           report_error "Review #{r.id} has nil product_id" if r and r.product_id.nil?
         end
@@ -220,12 +220,12 @@ namespace :data do
       p = Product.find(pid)
       puts "Dims for #{pid} were: #{p.itemlength} x #{p.itemheight} x #{p.itemwidth}"
       avgs = vote_on_values(p)
-      fill_in_all(avgs, p)
+      avgs.each{|name,val| parse_and_set_attribute(name, val, p)}
       p.save
       puts "Done #{pid}. New dims #{p.itemlength} x #{p.itemheight} x #{p.itemwidth}"
       #if newval and newval > 0 and newval < 7000
         #p = $product_type.find(pid)
-        #atts.each{ |att| fill_in(att,newvals[att],p) } if newvals
+        #atts.each{ |att| parse_and_set_attribute(att,newvals[att],p) } if newvals
       #end
       
     end
@@ -289,7 +289,7 @@ namespace :data do
       #avgs.each do |k,v|
       #  puts "#{k} -- #{v} (now #{p.[](k)}) for #{p.id}" #if [v, p.[](k)].uniq.reject{|x| x.nil?}.length > 1
       #end
-      fill_in_all(avgs, p)
+      avgs.each{|name,val| parse_and_set_attribute(name, val, p)}
       activerecords_to_save.push(p)
     end
     Product.transaction do
@@ -316,15 +316,15 @@ namespace :data do
       real = matches.first
       real = create_record_from_attributes(scraped.attributes) if real.nil? 
       
-      fill_in('product_id',real.id, scraped)
+      parse_and_set_attribute('product_id',real.id, scraped)
       scraped.save
       ros = find_ros_from_scraped (scraped)
-      ros.each{ |ro| fill_in('product_id', real.id, ro); ro.save }     
+      ros.each{ |ro| parse_and_set_attribute('product_id', real.id, ro); ro.save }     
       
       reviews = Review.find_all_by_local_id_and_product_type(scraped.local_id, $product_type)
       activerecords_to_save = []
       reviews.each do |review| 
-        fill_in('product_id', real.id, review)
+        parse_and_set_attribute('product_id', real.id, review)
         activerecords_to_save.push(review)
       end
       Review.transaction do

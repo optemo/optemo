@@ -22,8 +22,8 @@ module IntegrationHelper
       return false 
     end
     [ro,sp].each do |x| 
-      fill_in('local_id', local_id, x)
-      fill_in('retailer_id', retailer_id, x)
+      parse_and_set_attribute('local_id', local_id, x)
+      parse_and_set_attribute('retailer_id', retailer_id, x)
       x.save
     end
     return true
