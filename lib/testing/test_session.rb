@@ -26,6 +26,7 @@ class TestSession < Webrat::MechanizeSession
      submit_form 'filter_form'
    end
    
+   # Erroneous use of fill_in() with two arguments
    def search_for query 
      fill_in "search", :with => query
      click_button "submit_button"
@@ -38,7 +39,7 @@ class TestSession < Webrat::MechanizeSession
    # Gets the homepage and makes sure nothing crashed.
    def get_homepage product_type='printer'
      begin
-      visit "http://#{product_type.downcase}s.localhost:#{$port}/"
+      visit "http://#{product_type}s.localhost:#{$port}/"
      rescue Timeout::Error => e
        report_error "#{e.class.name} #{e.message}"
      end

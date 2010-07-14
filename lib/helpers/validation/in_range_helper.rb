@@ -1,22 +1,23 @@
 module InRangeHelper
     
-    def in_range_ify! atthash, model=$model
+    def in_range_ify! atthash
       atthash.each do |k,v|
-        atthash[k] = nil if !in_range?(k,v,model)
+        atthash[k] = nil if !in_range?(k,v)
       end
     end
     
-    def all_in_range? atthash, model=$model
+    def all_in_range? atthash
       atthash.each do |k,v|
-        return false unless in_range?(k,v,model)
+        return false unless in_range?(k,v)
       end
       return true
     end
     
-    def in_range? key, val, model=$model
-      return true if model::ValidRanges[key].nil? or val.nil?
-      return false unless val >= model::ValidRanges[key][0] # should be above min
-      return false unless val <= model::ValidRanges[key][1] # should be below max
+    # This function doesn't work at the moment.
+    def in_range? key, val
+      return true if $product_type::ValidRanges[key].nil? or val.nil?
+      return false unless val >= $product_type::ValidRanges[key][0] # should be above min
+      return false unless val <= $product_type::ValidRanges[key][1] # should be below max
       return true
     end
 end

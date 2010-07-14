@@ -21,9 +21,10 @@ module ScrapedProductsHelper
       return nil if rid.nil? or lid.nil?
       sp = $scrapedmodel.find_by_retailer_id_and_local_id(rid,lid)
       if sp.nil?
-        sp = create_record_from_atts atts, $scrapedmodel
+        sp = create_record_from_attributes(atts)
       else
         fill_in_all(atts, sp)
+        sp.save
       end
       return sp
   end

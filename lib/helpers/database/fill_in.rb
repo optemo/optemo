@@ -4,11 +4,31 @@ module FillInHelper
   
   # Creates a record and fills in any fitting attributes
   # from the given attribute hash
-  def create_record_from_atts atts, recclass=$model
-    atts_to_copy = only_overlapping_atts atts, recclass
-    p = recclass.new(atts_to_copy)
+  def create_record_from_attributes(atts)
+    atts.reject! { |k,v| v.nil? or $general_ignore_list.include?(k) } # Get rid of nil values, and make sure nothing in the ignore list survives (id especially)
+    attributes_for_spec_tables = atts.reject{|k,v| not ($AllSpecs.include?(k))} # These attributes are applicable to the current $product_type
+    attributes_for_product_activerecord = atts.reject{|k,v| not (Product.column_names.include?(k))} # These attributes are universal (brand, etc.)
+    
+    # attributes for product_activerecord should probably come from Product.column_names
+
+    p = Product.new(attributes_for_product_activerecord)
     p.save
-    return p
+    activerecords_to_save = []
+    # Need to check what is cont, cat, or bin, and create accordingly
+    attributes_for_spec_tables.each do |k,v| 
+      case
+      when $Continuous["all"].include?(k)
+        class_type = "ContSpec"
+      when $Categorical["all"].include?(k)
+        class_type = "CatSpec"
+      when $Binary["all"].include?(k)
+        class_type = "BinSpec"
+      end
+      s = class_type.constantize.new({:product_id => p.id, :name => k, :value => v, :product_type => $product_type})
+      activerecords_to_save.push(s)
+    end
+    activerecords_to_save.each(&:save)
+    p
   end
 
   # Returns a hash of only those attributes which :
@@ -16,55 +36,44 @@ module FillInHelper
   # 2. are 'applicable to' (exist for) the given model 
   # (eg displaysize doesn't exist for Cartridge)
   # 3. are not in the given ignore list or the usual ignore list
-  def only_overlapping_atts atts, other_recs_class, ignore_list=[]
-    big_ignore_list = ignore_list + $general_ignore_list
-    overlapping_atts = atts.reject{ |x,y| 
-      y.nil? or not other_recs_class.column_names.include? x \
-      or big_ignore_list.include? x }
-    return overlapping_atts
-  end
 
   # Does fill_in_missing on all name => value 
   # pairs in the hash
-  def fill_in_all_missing hsh, rec, ignorelist=[]
-    hsh.each{ |name,val| 
-      fill_in_missing(name, val, rec, ignorelist) 
-    }
+  def fill_in_all_missing(hash, rec, ignorelist=[])
+    hash.each{ |name,val| fill_in_missing(name, val, rec, ignorelist) }
   end
   
   # Does fill_in on all attribute name => value 
   # pairs in the hash
-  def fill_in_all hsh, rec, ignorelist=[]
-    hsh.each{ |name,val| fill_in name, val, rec, ignorelist }
+  def fill_in_all(hash, rec, ignorelist=[])
+    hash.each{ |name,val| fill_in(name, val, rec, ignorelist) }
   end
   
   # When the element exists, fills in the 
   # specified attribute of the specified record
   # with the text inside the element.
-  def fill_in_optional name, el, record
-    fill_in( name , el.text, record )if el
+  def fill_in_optional(name, el, record)
+    fill_in(name, el.text, record) if el
   end
   
   # Fills in value only if there is not yet a 
   # value for this attribute
   def fill_in_missing(name, val, rec, ignorelist=[])
-    if !rec.attribute_present? name or rec.[](name).to_s.strip==''
-      fill_in(name, val, rec, ignorelist)
-    end
+    fill_in(name, val, rec, ignorelist) if !rec.attribute_present? name or rec.[](name).to_s.strip==''
   end
   
   # Default is to fill in unless the value is nil
-  def fill_in name, desc, record, ignorelist=[]
-    return if desc.nil?
-    fill_in_forced name, desc, record, ignorelist
+  def fill_in(name, desc, record, ignorelist=[])
+    return nil if desc.nil?
+    fill_in_forced(name, desc, record, ignorelist)
   end
   
   # Fills in value for attribute in record even if
   # value is nil
-  def fill_in_forced name, desc, record, ignorelist=[]
+  def fill_in_forced(name, desc, record, ignorelist=[])
     ignore = ignorelist + $general_ignore_list     
-    
-    return unless record.has_attribute? name
+
+    return unless record.has_attribute?(name)
     return if ignore.include?(name)
     if !desc.nil?
       case (record.class.columns_hash[name].type)
@@ -85,6 +94,7 @@ module FillInHelper
     else
       val = nil
     end
-    record.update_attribute(name, val)
+    record[name] = val
+    record
   end
 end

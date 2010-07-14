@@ -30,26 +30,22 @@ module AtthashHelper
   def clean_sep_fields!(atts)
      atts.each do |x,y| 
        if y.class.name==String
-         temp = y.split("#{@@sep}")
-         temp2 = no_blanks(temp.uniq)
-         atts[x] = combine_for_storage(temp2)
+         temp = y.split("#{@@sep}").uniq.compact.reject(&:blank?)
+         atts[x] = combine_for_storage(temp)
        end
      end 
   end
   
   def separate string
-    array = (string || '').split("#{@@sep}")
-    return no_blanks(array)
+    (string || '').split("#{@@sep}").compact.reject(&:blank?)
   end
   
   def combine_for_storage array
-    string = array.reject{|x| x.nil? or x == ''}.join("#{@@sep}")
-    return string
+    array.reject{|x| x.nil? or x == ''}.join("#{@@sep}")
   end
   
   def combine_for_reading array
-    string = array.reject{|x| x.nil? or x == ''}.collect{|x| x.strip}.uniq.join(", ")
-    return string
+    array.reject{|x| x.nil? or x == ''}.collect{|x| x.strip}.uniq.join(", ")
   end
   
   def remove_sep! atts
@@ -69,21 +65,20 @@ module AtthashHelper
   def clean_property_names atts
     clean_atts = {}.merge(atts)
     atts.each do |x,y| 
-      props = get_property_names(x, $model)
+      props = get_property_names(x, $product_type)
       props.uniq.each do |property|
         clean_atts[property]= y.to_s.strip  + @@sep + "#{clean_atts[property] || ''}" if y
       end 
     end
-    return clean_atts
+    clean_atts
   end
   
   # Returns the first matching property or
   # nil if none found.
-  def get_property_name str_dirty, model=$model, ignorelist=[]
+  def get_property_name str_dirty, model=$product_type, ignorelist=[]
     paramnames = get_property_names(str_dirty, model)
     goodparamnames = paramnames.reject{|x| ignorelist.include?(x)}
-    return nil if goodparamnames.length == 0
-    return goodparamnames[0] # TODO get most/least specific?
+    goodparamnames.length ? goodparamnames[0] : nil # TODO get most/least specific?
   end
   
   # Returns a list of possible properties
@@ -91,14 +86,14 @@ module AtthashHelper
   # Example: 
   # %> get_property_names('colour ppm', Printer)
   # =>['ppm', 'colorprinter']
-  def get_property_names str_dirty, model=$model
+  def get_property_names str_dirty, model=$product_type
     str = just_alphanumeric(str_dirty)
     
     param_names= []
     # B&W:
     # black; b(lack)?\s?(\/|and|&)\s?w(hite)?; mono(chrome)? 
     
-    model.column_names.each do |param|
+    $Continuous["all"] + $Binary["all"] + $Categorical["all"].each do |param|
       param_names << param if str.match(/#{param}/) or str.match(/#{param.gsub(/(str$|int$)/,'')}/)
     end
     
@@ -148,7 +143,6 @@ module AtthashHelper
     end
     
     param_names << 'rating' if str.match(/average.*(review|rating)/) or str.match(/stars/)
-     
-    return param_names
+    param_names
   end
 end

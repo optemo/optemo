@@ -62,7 +62,7 @@ module NeweggScraper
     (atts['mediasizessupported'] or "").gsub!('~','to')
     
     # Dimensions
-    temp = no_blanks([atts['dimensions'], "#{atts['itemwidth']} x #{atts['itemheight']} x #{atts['itemlength']}" ])  
+    temp = [atts['dimensions'], "#{atts['itemwidth']} x #{atts['itemheight']} x #{atts['itemlength']}" ].compact.reject(&:blank?)
     mergeme = clean_dimensions(temp,100)
     mergeme.each{ |key, val| atts[key] = val}
     

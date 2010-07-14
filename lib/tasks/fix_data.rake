@@ -46,7 +46,7 @@ namespace :fix_data do
       if sps.length != 0
         retailer_ok_sps = sps.reject{|x| !retailerids.include?(x.retailer_id)}
         if retailer_ok_sps.length == 0
-          puts "Oops -- no scraped #{$model.name} from #{$retailers.first.name} for #{pid}"
+          puts "Oops -- no scraped #{$product_type} from #{$retailers.first.name} for #{pid}"
         end
         
         retailer_ok_sps.each do |retailer_ok_sp|
@@ -66,13 +66,14 @@ namespace :fix_data do
           puts "#{local_id} has #{which_fields[0]} #{debug[which_fields[0]] || 'nil'}"    
         end
       end
-      p = $model.find(pid)
+      p = Product.find(pid, :conditions => ["product_type=?",$product_type])
       which_fields.each do |fld|
         p.update_attribute(fld, nil)
       end
       avgs = vote_on_values(p)
-      fill_in_all avgs, p
-      puts "Done #{pid}. New #{which_fields[0]} #{$model.find(pid)[which_fields[0]]}"
+      fill_in_all(avgs, p)
+      p.save
+      puts "Done #{pid}. New #{which_fields[0]} #{Product.find(pid, :conditions => ["product_type=?",$product_type])[which_fields[0]]}"
     end
     puts "Done"
   end
@@ -84,8 +85,8 @@ namespace :fix_data do
     require 'helper_libs'
     
     what = Review
-    what.find_all_by_product_type($model.name).each do |ro|
-      unless $model.exists?(ro.product_id) or ro.product_id.nil?
+    what.find_all_by_product_type($product_type).each do |ro|
+      unless Product.exists?(ro.product_id) or ro.product_id.nil?
         ro.update_attribute('product_id', nil)
       end
     end
@@ -94,10 +95,10 @@ namespace :fix_data do
   
   task :links_2 => ['data:cam_init'] do 
     
-    ptype = $model.to_s
+    ptype = $product_type.to_s
     
     what = Review
-    #what.find_all_by_product_type($model.name).each do |ro|
+    #what.find_all_by_product_type($product_type).each do |ro|
     #  ro.update_attribute('product_id', nil)
     #end
     msgs = []
@@ -105,19 +106,19 @@ namespace :fix_data do
       lid = sc.local_id
       rid = sc.retailer_id
       pid = sc.product_id
-      #unless pid.nil? or $model.exists?(pid)
+      #unless pid.nil? or $product_type.exists?(pid)
       #  debugger
       #  0
       ##  sc.update_attribute('product_id', nil)
       #end
       
-      if lid and rid and pid and $model.exists?(pid)
+      if lid and rid and pid and Product.exists?(pid)
         ro_ids = what.find_all_by_product_type_and_local_id_and_retailer_id(ptype,lid,rid).collect{|x| x.id}
         ro_ids.each do |ro_id|
           ro = Review.find(ro_id)
-          if( ro.product_id and ro.product_id != pid and $model.exists?(ro.product_id))
-            keep = $model.find(pid)
-            other = $model.find(ro.product_id)
+          if( ro.product_id and ro.product_id != pid and Product.exists?(ro.product_id))
+            keep = Product.find(pid, :conditions => ["product_type=?",$product_type])
+            other = Product.find(ro.product_id, :conditions => ["product_type=?",$product_type])
             if other
               if(keep.title == other.title)# or keep.model.include?(other.model) or other.model.include?(keep.model))
                 puts keep.title
@@ -139,13 +140,12 @@ namespace :fix_data do
     include CameraHelper
     include CameraConstants
     
-    $model = @@model
     $scrapedmodel = @@scrapedmodel
     
-    ptype = $model.to_s
+    ptype = $product_type.to_s
     
     what = Review
-    #what.find_all_by_product_type($model.name).each do |ro|
+    #what.find_all_by_product_type($product_type).each do |ro|
     #  ro.update_attribute('product_id', nil)
     #end
     msgs = []
@@ -153,7 +153,7 @@ namespace :fix_data do
       lid = sc.local_id
       rid = sc.retailer_id
       pid = sc.product_id
-      unless pid.nil? or $model.exists?(pid)
+      unless pid.nil? or Product.exists?(pid)
         debugger
         0
       #  sc.update_attribute('product_id', nil)
@@ -163,11 +163,12 @@ namespace :fix_data do
         ros = what.find_all_by_product_type_and_local_id_and_retailer_id(ptype,lid,rid)
         ros.each do |ro|
           if ro.product_id != pid
-            
-            if($model.find(pid).title == $model.find(ro.product_id).title or $model.find(ro.product_id).model.include?($model.find(pid).model))
+            product = Product.find(pid, :conditions => ["product_type=?",$product_type])
+            retail_offering_product = Product.find(ro.product_id, :conditions => ["product_type=?",$product_type])
+            if (product.title == retail_offering_product.title or retail_offering_product.model.include?(product.model))
               msgs << "Duplicate: #{pid} and #{ro.product_id}"
             else
-              msgs << "#{ro.class.name} matched to #{ro.product_id}, which #{$model.exists?(ro.product_id) ? "exists" : "doesn't exist"}"
+              msgs << "#{ro.class.name} matched to #{ro.product_id}, which #{$product_type.exists?(ro.product_id) ? "exists" : "doesn't exist"}"
               msgs << "Want to change to #{pid}"
               #debugger
               #ro.update_attribute('product_id', pid)
@@ -194,13 +195,13 @@ namespace :fix_data do
     include PrinterHelper
     include PrinterConstants
     
-    $model = @@model
     $scrapedmodel = @@scrapedmodel
     $brands= @@brands
     $series = @@series
     $descriptors = @@descriptors
     
-    $model.all.each do |ptr|
+    activerecords_to_save = []
+    Product.all.each do |ptr|
       atts = ptr.attributes
       modelsb4 = separate(atts['model']) + separate(atts['mpn'])
       moremodels = $scrapedmodel.find_all_by_product_id(ptr.id).collect{|x| [x.model, x.mpn]}.flatten.uniq
@@ -208,8 +209,8 @@ namespace :fix_data do
       modelsb4 = modelsb4.sort{|a,b| likely_model_name(b) <=> likely_model_name(a) }.reject{|x| likely_model_name(x) < 2 }
       
       
-      modelsafter = no_blanks( clean_models( $model.name, atts['brand'], \
-            modelsb4, atts['title'],$brands, $series, $descriptors )).uniq.reject{|x| 
+      modelsafter = clean_models( $product_type, atts['brand'], \
+            modelsb4, atts['title'],$brands, $series, $descriptors ).uniq.compact.reject(&:blank?).reject{|x| 
               likely_model_name(x) < 2 }.sort{|a,b| 
               likely_model_name(b) <=> likely_model_name(a)
       }
@@ -226,10 +227,12 @@ namespace :fix_data do
       ['model', 'mpn'].each do |x| 
         fill_in_forced(x,atts[x], ptr)
       end
-      
+      activerecords_to_save.push(ptr)
       #puts "#{ptr['model']} #{ptr['mpn']}"
     end
-    
+    Product.transaction do
+      activerecords_to_save.each(&:save)
+    end
   end
   
   task :dims => :environment do 
@@ -245,7 +248,6 @@ namespace :fix_data do
     include PrinterHelper
     include PrinterConstants
     
-    $model = @@model
     $scrapedmodel = @@scrapedmodel
     $brands= @@brands
     $series = @@series
@@ -253,7 +255,7 @@ namespace :fix_data do
     
     dimlabels = ['itemlength', 'itemwidth', 'itemheight']
     
-    $model.all.each do |cam|
+    Product.all.each do |cam|
       avg_atts = {}
       best_dimset = dimlabels.collect{|x| cam[x]}
       #debugger
@@ -271,6 +273,7 @@ namespace :fix_data do
   task :pricehist => 'data:cam_init' do
     require 'yaml'
     ros = RetailerOffering.all.reject{|x| x.pricehistory.nil?}
+    activerecords_to_save = []
     ros.each_with_index do |ro|
       hist = ro.pricehistory
       if hist and hist.match(/\n$/).nil?
@@ -296,7 +299,11 @@ namespace :fix_data do
         debugger if newhist_yaml.match(/\n$/).nil?
         fill_in_forced('pricehistory', newhist_yaml, ro)
       end
-    end    
+      activerecords_to_save.push(ro)
+    end   
+    RetailerOffering.transaction do
+      activerecords_to_save.each(&:save)
+    end 
   end
   
   task :match_ros => :environment do 
@@ -312,20 +319,19 @@ namespace :fix_data do
     include CameraHelper
     include CameraConstants
     
-    $model = @@model
     $scrapedmodel = @@scrapedmodel
     $brands= @@brands
     $series = @@series
     $descriptors = @@descriptors
     
-    allros = RetailerOffering.find_all_by_product_type($model.name).reject{ |y|
+    allros = RetailerOffering.find_all_by_product_type($product_type).reject{ |y|
       y.local_id.nil?
     }.collect{|x| x.id}
     
     count = 0
     
     puts "#{allros.count} total IDable ROs"
-    
+    activerecords_to_save = []
     allros.reverse.each do |roid|
       ro = RetailerOffering.find(roid)
       sps = $scrapedmodel.find_all_by_retailer_id_and_local_id(ro.retailer_id,ro.local_id)
@@ -335,12 +341,17 @@ namespace :fix_data do
         count += 1
       end
       fill_in_forced('product_id', pid, ro)
+      activerecords_to_save.push(ro)
+    end
+    RetailerOffering.transaction do
+      activerecords_to_save.each(&:save)
     end
     puts "#{count} have been matched"
   end
   
+  # This function does not work at present (July 2010). Fix reviews as a block.
   task :unmatch_reviews => :environment do 
-    $model = Camera
+    $product_type = Camera # This construct needs to be taken out for reviews. First, review data needs to be separately processed.
     $scrapedmodel = ScrapedCamera
     
     matchme = Review.find_all_by_product_type('Camera').reject{|revu_id| !Review.exists?(revu_id)}
@@ -351,7 +362,7 @@ namespace :fix_data do
       revu = Review.find(revu_id)
       
       next if revu.product_id.nil?
-      next if revu.product_type != $model.name
+      next if revu.product_type != $product_type
       
       unless Camera.exists?(revu.product_id)
         #debugger if revu.product_type != 'Camera'
@@ -368,7 +379,7 @@ namespace :fix_data do
       #lid =  revu['local_id']
       #sms = $scrapedmodel.find_all_by_local_id(lid)
       #sms.each do |sm|
-        #puts "#{revu.id} matches #{$model.name} #{sm.product_id}, #{$model.find(sm.product_id).title}"
+        #puts "#{revu.id} matches #{$product_type} #{sm.product_id}, #{$product_type.find(sm.product_id).title}"
         
       #end
     end
@@ -390,7 +401,7 @@ namespace :fix_data do
         
         debugger if product.retailer_id
         fill_in('retailer_id', 1, product)
-              
+        product.save
       end  
   end
   
@@ -398,13 +409,18 @@ namespace :fix_data do
   
   task :revote_forced do
     stuff = ['itemlength', 'itemwidth', 'itemheight', 'dimensions']
-    $model.all.each do |cam|
+    activerecords_to_save = []
+    Product.all.each do |cam|
       newdims = vote_on_values(cam)
       stuff.each do |a|
         if cam[a] != newdims[a]
           fill_in_forced(a,newdims[a],cam)
         end
       end
+      activerecords_to_save.push(cam)
+    end
+    Product.transaction do
+      activerecords_to_save.each(&:save)
     end
   end
   
@@ -418,7 +434,6 @@ namespace :fix_data do
     include LoggingLib
     include DatabaseLib
     
-    $model = Camera
     $scrapedmodel = ScrapedCamera
     
     #which_product_ids = Camera.all.collect{|x| x.id}
@@ -428,16 +443,21 @@ namespace :fix_data do
     #which_product_ids.each do |pid| 
     #  sps = ScrapedCamera.find_all_by_product_id(pid)
     sps = ScrapedCamera.all
-      if sps.length != 0
-        sps.each do |sp|
-          atts = sp.attributes.reject{|a,b| !dimlabels.include?(a.to_s)}
-          all_vals_to_s!(atts)
-          rearrange_dims!(atts, ['D', 'H', 'W'], true)
-          dimlabels.each do |dim|
-            fill_in_forced(dim,atts[dim], sp)
-          end
+    if sps.length != 0
+      activerecords_to_save = []
+      sps.each do |sp|
+        atts = sp.attributes.reject{|a,b| !dimlabels.include?(a.to_s)}
+        all_vals_to_s!(atts)
+        rearrange_dims!(atts, ['D', 'H', 'W'], true)
+        dimlabels.each do |dim|
+          fill_in_forced(dim,atts[dim], sp)
         end
+        activerecords_to_save.push(sp)
       end
+      ScrapedCamera.transaction do
+        activerecords_to_save.each(&:save)
+      end
+    end
       #p = Camera.find(pid)
       #avgs = vote_on_values(p)
       #fill_in_all(avgs, p)
@@ -450,18 +470,21 @@ namespace :fix_data do
   
   task :rm_stupid_prices do
     stupid = []
-    ros  = RetailerOffering.find_all_by_product_type($model.name)
+    ros  = RetailerOffering.find_all_by_product_type($product_type)
   
     ros.each do |ro|
-      stupid << ro.id if ro.priceint and (ro['priceint'] > $model::MaxPrice)
+      stupid << ro.id if ro.priceint and (ro['priceint'] > $MaximumPrice)
     end
-   
+    activerecords_to_save = []
     stupid.each do |x|
       xobj = RetailerOffering.find(x)
       fill_in('stock', false, xobj)
       fill_in_forced('priceint', nil, xobj)
+      activerecords_to_save.push(xobj)
     end
-    
+    RetailerOffering.transaction do
+      activerecords_to_save.each(&:save)
+    end
     puts "Done removing #{stupid.count} stupid prices"
   
   end
@@ -482,7 +505,8 @@ namespace :fix_data do
   end
   
   task :fix_brands do
-    [$model,$scrapedmodel].each do |model|
+    [Product,$scrapedmodel].each do |model|
+      activerecords_to_save = []
       announce "Fixing #{model.name}"
       fixme = model.all
       changes = []
@@ -495,8 +519,12 @@ namespace :fix_data do
           changes << ["#{p.brand}", "#{clean_atts['brand']}"]
           unless $dry_run
             fill_in_forced('brand', clean_atts['brand'], p)
+            activerecords_to_save.push(p)
           end
         end
+      end
+      model.transaction do
+        activerecords_to_save.each(&:save)
       end
       changes_text = changes.uniq.collect{|a,b| "#{a} --> #{b}"}
       puts changes_text * "\n"
@@ -504,22 +532,24 @@ namespace :fix_data do
   end
   
   task :fix_models  do
-    [$model].each do |model| # [$model,$scrapedmodel].each do |model|
-      announce "Fixing #{model.name}"
-      fixme = model.all
-      fixme.each do |p|
-        scraped_atts = p.attributes
-        clean_atts = clean(scraped_atts)
-        if "#{clean_atts['model']} and #{clean_atts['mpn']}" !="#{p.model} and #{p.mpn}"
-          puts "was: #{p.model} and #{p.mpn}"
-          puts "should be: #{clean_atts['model']} and #{clean_atts['mpn']}" if clean_atts
-          unless $dry_run
-            fill_in_forced('model', clean_atts['model'], p)
-            fill_in_forced('mpn', clean_atts['mpn'], p)
-          end
+    announce "Fixing #{model.name}"
+    fixme = Product.all
+    activerecords_to_save = []
+    fixme.each do |p|
+      scraped_atts = p.attributes
+      clean_atts = clean(scraped_atts)
+      if "#{clean_atts['model']} and #{clean_atts['mpn']}" !="#{p.model} and #{p.mpn}"
+        puts "was: #{p.model} and #{p.mpn}"
+        puts "should be: #{clean_atts['model']} and #{clean_atts['mpn']}" if clean_atts
+        unless $dry_run
+          fill_in_forced('model', clean_atts['model'], p)
+          fill_in_forced('mpn', clean_atts['mpn'], p)
+          activerecords_to_save.push(p)
         end
       end
     end
+    Product.transaction do
+      activerecords_to_save.each(&:save)
+    end
   end
-    
 end

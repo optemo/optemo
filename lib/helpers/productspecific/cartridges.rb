@@ -29,7 +29,7 @@ module CartridgeHelper
         'product_type' => prd_type, 'accessory_type' => acc_type}
     compat = Compatibility.find_by_accessory_id_and_accessory_type_and_product_id_and_product_type(\
       acc_id, acc_type, prd_id, prd_type)
-    compat = create_record_from_atts  atts, Compatibility if compat.nil?
+    compat = Compatibility.new(atts) if compat.nil?
     return compat
   end
   
@@ -92,32 +92,35 @@ module CartridgeHelper
 
   # Gets a better value for brand for the given record 
   # based on the model and title attributes
-  def clean_brand_rec rec, field='brand'
+  def clean_brand_rec(rec, field='brand')
     brand = clean_brand(rec.model, rec.title)
-    fill_in field, brand, rec if brand
+    fill_in(field, brand, rec) if brand
+    rec
   end
-  
   
   # TODO use a different method  
   # Creates a RetailerOffering from a Cartridge object
   # with the given 'special' ca$h-producing URL
-  def make_offering cart, url 
-    atts = cart.attributes
-    if cart.offering_id.nil?
-      offer = create_record_from_atts  atts, RetailerOffering
-    else
-      offer = RetailerOffering.find(cart.offering_id)
-    end
-    fill_in_all atts, offer
-    fill_in 'product_type', 'Cartridge', offer
-    fill_in 'toolow', false, offer
-    fill_in 'priceUpdate', Time.now, offer
-    fill_in 'availabilityUpdate', Time.now, offer
-    fill_in 'retailer_id', 16, offer
-    fill_in 'offering_id', offer.id, cart
-    fill_in 'url', url, offer
-    return offer
-  end
+  
+  # As of July, 2010, this seems to be deprecated.
+  
+#  def make_offering(cart, url)
+#    atts = cart.attributes
+#    if cart.offering_id.nil?
+#      offer = RetailerOffering.new(atts)
+#    else
+#      offer = RetailerOffering.find(cart.offering_id)
+#    end
+#    fill_in_all(atts, offer)
+#    fill_in('product_type', 'Cartridge', offer)
+#    fill_in('toolow', false, offer)
+#    fill_in('priceUpdate', Time.now, offer)
+#    fill_in('availabilityUpdate', Time.now, offer)
+#    fill_in('retailer_id', 16, offer)
+#    fill_in('offering_id', offer.id, cart)
+#    fill_in('url', url, offer)
+#    return offer
+#  end
   
   # Tries to find the Cartridge db record
   # with the given real & compatible brands and if it
@@ -136,7 +139,7 @@ module CartridgeHelper
     
     if matches.length == 0
       atts = {'brand' => brand_str, 'model' => cart.model}
-      matching_c = create_record_from_atts  atts, Cartridge
+      matching_c = Cartridge.new(atts) 
     elsif matches.length == 1
       matching_c = matches[0]
     else
@@ -151,28 +154,34 @@ module CartridgeHelper
   def clean_cartridges recset, default_real=nil
   
     # New must be last as the default
-    
+    activerecords_to_save = []
     # fill in Ink and Real
-    recset.each{|x| 
+    recset.each do |x| 
       init
       # TODO Do I really want to modify the brand like that?
       clean_brand_rec(x)
       
-      fill_in 'toner', false, x if (x.title || '').match(/ink/i)
-      fill_in 'toner', true, x if (x.title || '').match(/toner/i) 
+      fill_in('toner', false, x) if (x.title || '').match(/ink/i)
+      fill_in('toner', true, x) if (x.title || '').match(/toner/i) 
  
       if (x.title || '').match(/(alternative|compatible|remanufactured|refurbished)/i)
-        fill_in 'real', false, x 
+        fill_in('real', false, x) 
       elsif (x.title || '').match(/genuine|oem/i)
-        fill_in 'real', true, x
+        fill_in('real', true, x)
       elsif !default_real.nil? and x.real.nil? and !x.title.nil?
-        fill_in 'real', default_real, x
+        fill_in('real', default_real, x)
       end
       
-      $cartridge_conditions.each{|c| 
+      $cartridge_conditions.each do |c| 
         fill_in('condition', c, x) and break if (x.title || '').match(/#{c}/i)
-      }
-    }
+      end
+      activerecords_to_save.push(x)
+    end
+    if recset.first
+      recset.first.class.transaction do
+        activerecords_to_save.each(&:save)
+      end
+    end
   end
   
   # Generic cleaning code for cartridges.
