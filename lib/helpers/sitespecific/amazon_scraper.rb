@@ -50,9 +50,9 @@ module AmazonScraper
     when /camera_us/
       clean_camera(atts)
     when /cartridge/
-      clean_camera(atts)
+      clean_camera(atts) # This seems a bit odd.
     else
-      # do nothing
+      # Do nothing.
     end
         
     unless atts['itemwidth'] and atts['itemheight'] and atts['itemlength']
@@ -83,10 +83,10 @@ module AmazonScraper
   
   # Scrape product specs and offering info (prices,
   # availability) by local_id and region
-  def scrape local_id, region
+  def scrape(local_id, region)
     log ("Scraping ASIN #{local_id} from #{region}" )
     specs = scrape_specs local_id
-    prices = rescrape_prices local_id, region
+    prices = rescrape_prices(local_id, region)
     atts = specs.merge(prices)
     atts['local_id'] = local_id
     atts['region'] = region
@@ -194,7 +194,7 @@ module AmazonScraper
   # Gets a hash of attributes for the
   # best-priced offer for a given
   # asin in the given region
-  def rescrape_prices asin, region
+  def rescrape_prices(asin, region)
     offer_atts = {}
     best = scrape_best_offer(asin, region)
     
@@ -391,7 +391,7 @@ module AmazonScraper
     return cleaned_atts
   end
   
-  def clean_camera atts
+  def clean_camera(atts)
     semi_cleaned_atts = clean_property_names(atts) 
     cleaned_atts = product_cleaner(semi_cleaned_atts)
     res_array = separate(cleaned_atts['resolution'] || '')
@@ -401,14 +401,14 @@ module AmazonScraper
     cleaned_atts['maximumresolution'] = mpix if mpix
     remove_sep!(cleaned_atts)
     rearrange_dims!(cleaned_atts, ['D', 'H', 'W'], true)
-    # TODO the following is hacky.
+    # TODO the following is a hack.
     cleaned_atts['displaysize'] = nil if ['0', '669.2913385827'].include?(cleaned_atts['displaysize'] || '').to_s
     return cleaned_atts
   end
   
   # Converts Amazon's cryptic merchant ID to
   # a String which will match a retailer name
-  def decipher_retailer merchantid, region
+  def decipher_retailer(merchantid, region)
     case merchantid 
     when $ASSOCIATES_ID 
       "Amazon"

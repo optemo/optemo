@@ -81,7 +81,7 @@ module NeweggScraper
     return cleanatts
   end
   
-  def rescrape_prices local_id, region
+  def rescrape_prices(local_id, region)
     infopage = Nokogiri::HTML(open(id_to_details_url(local_id, region)))
     log_snore(15)
     atts = scrape_prices infopage, local_id, region
@@ -93,7 +93,7 @@ module NeweggScraper
     return clean_atts
   end
   
-  def scrape local_id, region
+  def scrape(local_id, region)
       return nil if local_id.nil? or region.nil?
       infopage = Nokogiri::HTML(open(id_to_details_url(local_id, region)))
       log_snore(15)

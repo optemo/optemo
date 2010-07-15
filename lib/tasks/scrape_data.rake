@@ -1,6 +1,6 @@
 module GenericScraper
   
-  def unlink_duplicate keepme, deleteme
+  def unlink_duplicate(keepme, deleteme)
     [keepme, deleteme].each{|arg| return if arg.blank || arg.id.blank?}
     return if $product_type.blank? # This should never happen, but keep it just in case.
     sps = $scrapedmodel.find_all_by_product_id(deleteme.id)
@@ -14,7 +14,7 @@ module GenericScraper
     Product.delete(temp)
   end
   
-  def vote_on_values product
+  def vote_on_values(product)
     sps = $scrapedmodel.find_all_by_product_id(product.id)
     dimlabels = ['itemlength', 'itemheight', 'itemwidth']
     dontvote = ['price', 'price_ca'] | dimlabels
@@ -69,8 +69,8 @@ module GenericScraper
   end
   
   # A generic scraping algorithm for 1 offering
-  def generic_scrape local_id, retailer
-    scraped_atts = scrape local_id, retailer.region
+  def generic_scrape(local_id, retailer)
+    scraped_atts = scrape(local_id, retailer.region)
     if(scraped_atts)
       scraped_atts['local_id'] = local_id
       scraped_atts['product_type'] = $product_type
@@ -284,7 +284,7 @@ namespace :data do
     products = Product.all
     activerecords_to_save = []
     products.each do |p|
-      avgs = vote_on_values p
+      avgs = vote_on_values(p)
       $bools_assume_no.each{|x| avgs[x] = false if avgs[x].nil?}
       #avgs.each do |k,v|
       #  puts "#{k} -- #{v} (now #{p.[](k)}) for #{p.id}" #if [v, p.[](k)].uniq.reject{|x| x.nil?}.length > 1
