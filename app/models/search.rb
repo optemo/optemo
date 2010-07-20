@@ -230,7 +230,16 @@ class Search < ActiveRecord::Base
       all_product_ids = specs.map{|s| s.first}
       quartile_length = (specs.length / 4.0).ceil
       grouping = {}
-      ["Low", "Mid-low", "Mid-high", "High"].each do |label|
+      if specs.length >= 4
+        labels = ["Low", "Mid-low", "Mid-high", "High"]
+      elsif specs.length == 3 
+        labels = ["Low", "Medium", "High"]
+      elsif specs.length == 2 
+        labels = ["Low", "High"]
+      else 
+        labels = ["Medium"]
+      end
+      labels.each do |label|
         # This convoluted next line sets the names of the quartiles, using the specs' values at the beginning and end of each quartile.
         grouping[specs[0][1].to_s + " - " + specs[((quartile_length >= specs.length) ? (specs.length-1) : quartile_length)][1].to_s] = all_product_ids.slice!(0,quartile_length)
         specs.slice!(0, quartile_length)
