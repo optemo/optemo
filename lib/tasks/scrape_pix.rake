@@ -75,16 +75,17 @@ namespace :pictures do
   task :resize_missing do
     have_urls = $scrapedmodel.all.reject{|x| x.imageurl.nil?}.collect{|x| x.product_id}.uniq
     no_resized_urls = Product.all(:conditions => ["product_type=?", $product_type]).reject{|x| !x.imgsurl.nil? and !x.imgmurl.nil? and !x.imglurl.nil?}
-    unresized = no_resized_urls.collect{|x| x.id}.reject{|y| !have_urls.include?(y)}
-    
-    log "Resizing #{unresized.length} pictures"
-    failed = resize_all(unresized)
+    unresized = no_resized_urls.reject{|y| !have_urls.include?(y)}
+    unresized += no_resized_urls.reject{|product| not (filename_from_id(product.id,""))}
+    unresized_ids = unresized.map{|x|x.id}
+    log "Resizing #{unresized_ids.length} pictures"
+    failed = resize_all(unresized_ids)
     log " Num Failed: #{failed.size}"
     
     log "Recording pic stats"
     # We need to pass a list of products, not just a list of product_ids
-    unless unresized.empty?
-      pid_string = "id IN (" + unresized.inject(""){|pid_string,pid|pid_string + pid.to_s + ","}.chop + ")"
+    unless unresized_ids.empty?
+      pid_string = "id IN (" + unresized_ids.inject(""){|pid_string,pid|pid_string + pid.to_s + ","}.chop + ")"
       record_pic_stats(Product.find(:all, :conditions => [pid_string]))
     end
     puts "Done"

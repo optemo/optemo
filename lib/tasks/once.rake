@@ -1,5 +1,5 @@
 desc "Calculate Printer Resolution for an area"
-task :fill_in_resolution => :environment do
+task :parse_and_set_attribute_resolution => :environment do
   AmazonPrinter.find(:all, :conditions => 'resolution is not null').each do |p|
     if !p.resolution.blank?
       #p.resolutionarea = p.resolution.split(' x ').inject(1) {|a,b| a.to_i*b.to_i}
@@ -90,7 +90,7 @@ end
 end
 
 desc "Copy itemwidth from AmazonPrinter to Printer"
-task :fill_in_itemwidth => :environment do
+task :parse_and_set_attribute_itemwidth => :environment do
   AmazonPrinter.find(:all, :conditions => ['created_at > ?', 4.days.ago]).each do |p|
     Printer.find(p.product_id).update_attribute('itemwidth', p.itemwidth)
   end

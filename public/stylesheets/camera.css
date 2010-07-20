@@ -588,19 +588,14 @@ div.smalldesc {
 }
 
 .sv .selectboxfilter {
-	width:130px;
+	width:115px;
 }
 
 .groupby {
-	font-size: 0.8em;
-	background-color: #ffb62f;
-	border: 1px solid #ccc;
-	float: right;
-	padding: 3px;
-	-moz-border-radius: 6px;	   /* for Firefox */
-	-webkit-border-radius: 6px;    /* for Safari */
-  	border-radius: 6px;            /* Opera, KHTML, others */
-	text-align: center;
+	font-size: 0.65em;
+	font-weight: bold;
+	position: absolute;
+	right: 0;
 	cursor: pointer;
 	text-decoration: underline;
 }

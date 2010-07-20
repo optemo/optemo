@@ -30,7 +30,7 @@ namespace :sandbox do
           next if idval.nil?
           if idval.match(d)
             puts "#{idval} has #{d}" 
-            fill_in_forced(idname,nil,product)
+            parse_and_set_attribute(idname,nil,product)
             activerecords_to_save.push(product)
           end
         end
@@ -57,7 +57,7 @@ namespace :sandbox do
         temp2[k] = cam[k]
       end
       temp.each do |k,v|
-        fill_in_forced(k,v,cam)
+        parse_and_set_attribute(k,v,cam)
       end
       puts "Done!"
       activerecords_to_save.push(cam)
@@ -73,7 +73,7 @@ namespace :sandbox do
     }
     debugger
     bad.each do |b|
-      fill_in_forced(b,'') # This doesn't work and I'm not sure what was intended. The arguments to fill_in_forced are (key,value,record)
+      parse_and_set_attribute(b,'') # This doesn't work and I'm not sure what was intended. The arguments to parse_and_set_attribute are (key,value,record)
     end
   end
   

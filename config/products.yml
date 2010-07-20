@@ -212,7 +212,8 @@ printers:
     product_type:
         - printer_us
     layout:
-        - gridview
+        - lineview
+        - simple
     price:
         - Continuous
         - [boost, cluster, filter, show]

@@ -72,7 +72,7 @@ module TigerScraper
     return clean_atts
   end
   
-  def rescrape_prices local_id, region
+  def rescrape_prices(local_id, region)
     url = id_to_details_url(local_id, region)
     props = {}
     begin
@@ -90,7 +90,7 @@ module TigerScraper
     return props
   end
   
-  def scrape local_id, region
+  def scrape(local_id, region)
     url = id_to_details_url local_id, region
     props = {}
     begin

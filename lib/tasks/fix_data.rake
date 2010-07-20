@@ -71,7 +71,8 @@ namespace :fix_data do
         p.update_attribute(fld, nil)
       end
       avgs = vote_on_values(p)
-      fill_in_all(avgs, p)
+      avgs.each{|name,val| parse_and_set_attribute(name, val, p) }
+      # This could be made more efficient with a Product.transaction, but the loop is based around pid rather than full Product activerecords at the moment.
       p.save
       puts "Done #{pid}. New #{which_fields[0]} #{Product.find(pid, :conditions => ["product_type=?",$product_type])[which_fields[0]]}"
     end
@@ -225,7 +226,7 @@ namespace :fix_data do
       debugger unless atts['model']
       #puts "#{atts['model']} #{atts['mpn']}"
       ['model', 'mpn'].each do |x| 
-        fill_in_forced(x,atts[x], ptr)
+        parse_and_set_attribute(x,atts[x], ptr)
       end
       activerecords_to_save.push(ptr)
       #puts "#{ptr['model']} #{ptr['mpn']}"
@@ -279,7 +280,7 @@ namespace :fix_data do
       if hist and hist.match(/\n$/).nil?
         puts "#{ro.id} doesn't have newline at end of pricehist" 
         hist += "\n"
-        fill_in('pricehistory', hist,ro)
+        parse_and_set_attribute('pricehistory', hist,ro)
         newhist = RetailerOffering.find(ro.id).pricehistory
         puts "#{ro.id} still doesn't have newline at end of pricehist" unless newhist and newhist.match(/\n$/).nil?
       end
@@ -297,7 +298,7 @@ namespace :fix_data do
         end
         newhist_yaml = YAML::dump(hist_hash)
         debugger if newhist_yaml.match(/\n$/).nil?
-        fill_in_forced('pricehistory', newhist_yaml, ro)
+        parse_and_set_attribute('pricehistory', newhist_yaml, ro)
       end
       activerecords_to_save.push(ro)
     end   
@@ -340,7 +341,7 @@ namespace :fix_data do
         pid = sp.product_id
         count += 1
       end
-      fill_in_forced('product_id', pid, ro)
+      parse_and_set_attribute('product_id', pid, ro)
       activerecords_to_save.push(ro)
     end
     RetailerOffering.transaction do
@@ -400,7 +401,7 @@ namespace :fix_data do
       Review.all.each do |product|
         
         debugger if product.retailer_id
-        fill_in('retailer_id', 1, product)
+        parse_and_set_attribute('retailer_id', 1, product)
         product.save
       end  
   end
@@ -414,7 +415,7 @@ namespace :fix_data do
       newdims = vote_on_values(cam)
       stuff.each do |a|
         if cam[a] != newdims[a]
-          fill_in_forced(a,newdims[a],cam)
+          parse_and_set_attribute(a,newdims[a],cam)
         end
       end
       activerecords_to_save.push(cam)
@@ -450,7 +451,7 @@ namespace :fix_data do
         all_vals_to_s!(atts)
         rearrange_dims!(atts, ['D', 'H', 'W'], true)
         dimlabels.each do |dim|
-          fill_in_forced(dim,atts[dim], sp)
+          parse_and_set_attribute(dim,atts[dim], sp)
         end
         activerecords_to_save.push(sp)
       end
@@ -460,7 +461,7 @@ namespace :fix_data do
     end
       #p = Camera.find(pid)
       #avgs = vote_on_values(p)
-      #fill_in_all(avgs, p)
+      #avgs.each{|name,val| parse_and_set_attribute(name, val, p)}
    # end
   end
 
@@ -478,8 +479,8 @@ namespace :fix_data do
     activerecords_to_save = []
     stupid.each do |x|
       xobj = RetailerOffering.find(x)
-      fill_in('stock', false, xobj)
-      fill_in_forced('priceint', nil, xobj)
+      parse_and_set_attribute('stock', false, xobj)
+      parse_and_set_attribute('priceint', nil, xobj)
       activerecords_to_save.push(xobj)
     end
     RetailerOffering.transaction do
@@ -518,7 +519,7 @@ namespace :fix_data do
           puts "will be: #{clean_atts['brand']}" if clean_atts
           changes << ["#{p.brand}", "#{clean_atts['brand']}"]
           unless $dry_run
-            fill_in_forced('brand', clean_atts['brand'], p)
+            parse_and_set_attribute('brand', clean_atts['brand'], p)
             activerecords_to_save.push(p)
           end
         end
@@ -542,8 +543,8 @@ namespace :fix_data do
         puts "was: #{p.model} and #{p.mpn}"
         puts "should be: #{clean_atts['model']} and #{clean_atts['mpn']}" if clean_atts
         unless $dry_run
-          fill_in_forced('model', clean_atts['model'], p)
-          fill_in_forced('mpn', clean_atts['mpn'], p)
+          parse_and_set_attribute('model', clean_atts['model'], p)
+          parse_and_set_attribute('mpn', clean_atts['mpn'], p)
           activerecords_to_save.push(p)
         end
       end

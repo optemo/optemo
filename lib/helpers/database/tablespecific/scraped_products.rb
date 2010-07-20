@@ -23,7 +23,7 @@ module ScrapedProductsHelper
       if sp.nil?
         sp = create_record_from_attributes(atts)
       else
-        fill_in_all(atts, sp)
+        atts.each{|name,val| parse_and_set_attribute(name, val, sp)}
         sp.save
       end
       return sp

@@ -94,33 +94,9 @@ module CartridgeHelper
   # based on the model and title attributes
   def clean_brand_rec(rec, field='brand')
     brand = clean_brand(rec.model, rec.title)
-    fill_in(field, brand, rec) if brand
+    parse_and_set_attribute(field, brand, rec) if brand
     rec
   end
-  
-  # TODO use a different method  
-  # Creates a RetailerOffering from a Cartridge object
-  # with the given 'special' ca$h-producing URL
-  
-  # As of July, 2010, this seems to be deprecated.
-  
-#  def make_offering(cart, url)
-#    atts = cart.attributes
-#    if cart.offering_id.nil?
-#      offer = RetailerOffering.new(atts)
-#    else
-#      offer = RetailerOffering.find(cart.offering_id)
-#    end
-#    fill_in_all(atts, offer)
-#    fill_in('product_type', 'Cartridge', offer)
-#    fill_in('toolow', false, offer)
-#    fill_in('priceUpdate', Time.now, offer)
-#    fill_in('availabilityUpdate', Time.now, offer)
-#    fill_in('retailer_id', 16, offer)
-#    fill_in('offering_id', offer.id, cart)
-#    fill_in('url', url, offer)
-#    return offer
-#  end
   
   # Tries to find the Cartridge db record
   # with the given real & compatible brands and if it
@@ -161,19 +137,19 @@ module CartridgeHelper
       # TODO Do I really want to modify the brand like that?
       clean_brand_rec(x)
       
-      fill_in('toner', false, x) if (x.title || '').match(/ink/i)
-      fill_in('toner', true, x) if (x.title || '').match(/toner/i) 
+      parse_and_set_attribute('toner', false, x) if (x.title || '').match(/ink/i)
+      parse_and_set_attribute('toner', true, x) if (x.title || '').match(/toner/i) 
  
       if (x.title || '').match(/(alternative|compatible|remanufactured|refurbished)/i)
-        fill_in('real', false, x) 
+        parse_and_set_attribute('real', false, x) 
       elsif (x.title || '').match(/genuine|oem/i)
-        fill_in('real', true, x)
+        parse_and_set_attribute('real', true, x)
       elsif !default_real.nil? and x.real.nil? and !x.title.nil?
-        fill_in('real', default_real, x)
+        parse_and_set_attribute('real', default_real, x)
       end
       
       $cartridge_conditions.each do |c| 
-        fill_in('condition', c, x) and break if (x.title || '').match(/#{c}/i)
+        parse_and_set_attribute('condition', c, x) and break if (x.title || '').match(/#{c}/i)
       end
       activerecords_to_save.push(x)
     end

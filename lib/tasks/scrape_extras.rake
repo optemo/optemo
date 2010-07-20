@@ -5,7 +5,7 @@ module ScrapeExtra
   
   def do_it (p, ok_fields, interesting_fields, clean_specs)
     ok_fields.each do |field|
-      fill_in_missing(field, clean_specs[field], p)
+      parse_and_set_attribute(field, clean_specs[field], p) if p[field].blank?
     end
     interesting_fields.keys.each do |f|
       interesting_fields[f] << clean_specs[f]
@@ -215,7 +215,7 @@ namespace :scrape_extra do
         puts features['printtechnology']
         puts clean_specs['colorprinter']
         debugger 
-        fill_in('colorprinter', clean_specs['colorprinter'], bp)
+        parse_and_set_attribute('colorprinter', clean_specs['colorprinter'], bp)
         bp.save
       end
       
@@ -263,7 +263,7 @@ namespace :scrape_extra do
       debugger unless seemingly_useless_flag
       
       ok_fields.each do |field|
-        fill_in_missing(field, clean_specs[field], p)
+        parse_and_set_attribute(field, clean_specs[field], p) if p[field].blank?
       end
       p.save
       interesting_fields.keys.each do |f|
@@ -319,7 +319,7 @@ namespace :scrape_extra do
       if ps.length == 1
         validanyway += 1 if (validids.include?ps.first.id)
         ok_fields.each do |field|
-          fill_in_missing(field, clean_specs[field], ps.first)
+          parse_and_set_attribute(field, clean_specs[field], ps.first) if ps.first[field].blank?
           ps.first.save
         end
       elsif ps.length == 0
@@ -425,9 +425,9 @@ namespace :scrape_extra do
           printer = Printer.find(NeweggPrinter.find_by_item_number(itemnum).product_id)
          # if(printer.[]("image#{sz}url").nil?)
             url = url_from_item_and_sz(itemnum, sz)  
-            fill_in("image#{sz}url", url, printer)
-            fill_in("image#{sz}height", image.rows, printer)
-            fill_in("image#{sz}width", image.columns, printer)
+            parse_and_set_attribute("image#{sz}url", url, printer)
+            parse_and_set_attribute("image#{sz}height", image.rows, printer)
+            parse_and_set_attribute("image#{sz}width", image.columns, printer)
             printer.save
           #end
         end
@@ -436,7 +436,7 @@ namespace :scrape_extra do
   end
   
   desc 'Fills in '
-  task :fill_in_pic_stats => :pic_init do
+  task :parse_and_set_attribute_pic_stats => :pic_init do
     no_img_sizes = []
     $size_names.each do |sz|
       no_img_sizes = no_img_sizes | Product.find( :all, :conditions => ["(img#{sz}h IS NULL OR img#{sz}w IS NULL) AND img#{sz}url IS NOT NULL"])
@@ -454,8 +454,8 @@ namespace :scrape_extra do
           image = nil
         end
         if image
-          fill_in("image#{sz}height", image.rows, printer) if image.rows
-          fill_in("image#{sz}width", image.columns, printer) if image.columns
+          parse_and_set_attribute("image#{sz}height", image.rows, printer) if image.rows
+          parse_and_set_attribute("image#{sz}width", image.columns, printer) if image.columns
           activerecords_to_save.push(printer)
         end
       end
@@ -601,9 +601,6 @@ namespace :scrape_extra do
   
   desc 'init'
   task :init => :environment do
-    require 'scraping_helper'
-    include ScrapingHelper
-    
     include ScrapeExtra
     
     $folder= 'public'

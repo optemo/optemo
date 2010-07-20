@@ -2,8 +2,8 @@ module OfferingsHelper
   require 'yaml'
 
   def timestamp_offering ro
-    fill_in('availabilityUpdate', Time.now, ro)
-    fill_in('priceUpdate', Time.now, ro)
+    parse_and_set_attribute('availabilityUpdate', Time.now, ro)
+    parse_and_set_attribute('priceUpdate', Time.now, ro)
     ro
   end
   
@@ -12,7 +12,7 @@ module OfferingsHelper
   def update_offering newparams, offering
     newprice = newparams['priceint']
     record_updated_price(newprice, offering) if newprice
-    fill_in_all(newparams, offering)
+    newparams.each{|name,val| parse_and_set_attribute(name, val, offering)}
     offering
   end
   
@@ -46,11 +46,11 @@ module OfferingsHelper
         pricehistory = nil
       end
       #debugger if pricehistory.match(/\n$/).nil?
-      fill_in('pricehistory', pricehistory, offering)
+      parse_and_set_attribute('pricehistory', pricehistory, offering)
       
       # Update price & timestamp
-      fill_in_forced( 'priceint', newprice, offering)
-      fill_in( 'priceUpdate', Time.now, offering)
+      parse_and_set_attribute('priceint', newprice, offering)
+      parse_and_set_attribute('priceUpdate', Time.now, offering)
     end
     offering
   end
@@ -63,7 +63,7 @@ module OfferingsHelper
       # bestoffer price and product id.
       matching_ro = RetailerOffering.find(:all, :conditions => "product_id=#{product.id} and product_type='#{$product_type}'").reject{ |x| !x.stock or x.priceint.nil? }
       if matching_ro.empty?
-        fill_in "instock#{regioncode}", false, product
+        parse_and_set_attribute("instock#{regioncode}", false, product)
         return product
       end
     
@@ -71,10 +71,12 @@ module OfferingsHelper
 
       # Should probably just set it once and then add '_ca', the region suffix, to the end of each.
       regional = {'price'=>'price', 'pricestr' => 'pricestr', 'bestoffer' => 'bestoffer', 'prefix' => '', 'instock'=> 'instock'}
-      fill_in(regional['bestoffer'], lowest.id, product)
-      fill_in(regional['price'], lowest.priceint, product)
-      fill_in(regional['pricestr'], lowest.pricestr, product)
-      fill_in(regional['instock'], true, product)
+      # The new database format does not contain most of these fields.
+#      parse_and_set_attribute(regional['bestoffer'], lowest.id, product)
+#      parse_and_set_attribute(regional['price'], lowest.priceint, product)
+#      parse_and_set_attribute(regional['pricestr'], lowest.pricestr, product)
+      # We need to update the price ContSpec record here
+      parse_and_set_attribute('instock', true, product)
     end
     product
   end
