@@ -159,14 +159,23 @@ module AmazonScraper
      return {}
    end
   
-  # Find the offering with the lowest price
-  # for a given asin and region. 
-  # precondition -- $retailers should only
-  # contain one retailer per region
+  # Find the offering with the lowest price for a given asin and region. 
+  # precondition -- $retailers should only contain one retailer per region
   def scrape_best_offer asin, region, nokocache=nil
     ret = curr_retailer(region)
-    nokocache = open_nokocache(ret) #Nokogiri::HTML(open_cache(ret)) unless nokocache
-    item = nokocache.css("item").reject{|x| get_text(x.css('asin')) != asin}.first
+    #nokocache = open_nokocache(ret) #Nokogiri::HTML(open_cache(ret)) unless nokocache
+    # This next line is a bit opaque. I think that in future it would be better to see all the records, not just the first.
+    # In addition, using SAX-style parsing, such as in the following example, would yield a significant performance boost.
+    # NB: If implementing this, nstead of using activerecord objects in the handler, it would make sense for our purposes to just create a local in-memory hash
+    # with the relevant data in it, and do batch creation of activerecords later.
+    
+    debugger
+    parser = Nokogiri::XML::SAX::Parser.new(Amazonhandler.new)
+    #file_data = ""
+    #open_cache(ret).each_line {|line| file_data += line }
+    parser.parse_file(cachefile_name(retailer))
+    
+    #item = nokocache.css("item").reject{|x| get_text(x.css('asin')) != asin}.first
     if item
       offers = item.css('offers/offer')
       unless ret.name.match(/marketplace/i)
@@ -190,20 +199,20 @@ module AmazonScraper
   def curr_retailer(region)
     return $retailers.reject{|x| x.region != region}.first
   end
-  
+
   # Gets a hash of attributes for the
   # best-priced offer for a given
   # asin in the given region
   def rescrape_prices(asin, region)
     offer_atts = {}
     best = scrape_best_offer(asin, region)
-    
+
     if best.nil?
       offer_atts['stock'] = false
     else
       offer_atts = offer_to_atthash( best, asin, region)
-    end   
-    
+    end
+
     clean_prices!(offer_atts)
     return offer_atts
   end
@@ -450,7 +459,9 @@ module AmazonScraper
     File.exists?(cfname) ? File.open(cfname, 'r') : nil
   end
   
-  # Cache the cache. This is a big memory user, but it works out OK if the machine has 4GB of ram
+  # Cache the cache. This is a big memory user, but it works out OK if the machine has 4GB of ram.
+  # However, this is quite slow, and for larger XML feeds (Amazon's camera feed is 334 pages) a SAX parser is probably better. 
+  # See around line 169 of this file.
   def open_nokocache(retailer)
     unless @nokocaches
       @nokocaches = {}

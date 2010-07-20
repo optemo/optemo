@@ -234,7 +234,7 @@ namespace :data do
   
   desc 'Get new prices and products from Amazon cameras'
   task :scrape_amazon_cams => [:cam_init, :amazon_init, :scrape_new, :update_prices, :update_bestoffers]
-    
+
   task :validate_amazon => [:printer_init,:amazon_init, :validate_printers]
   
   task :camvote => [:cam_init,:vote]
@@ -345,7 +345,6 @@ namespace :data do
     my_offerings.each_with_index do |offering, i|
       next if offering.local_id.nil?
       newatts = rescrape_prices(offering.local_id, offering.region)
-      
       # Validation!
       if newatts['priceint'] and (newatts['priceint'].to_i > $MaximumPrice)# or newatts['priceint'] < $MinimumPrice)
         newatts['stock'] = false
@@ -359,6 +358,7 @@ namespace :data do
       activerecords_to_save.push(offering)
       log "[#{Time.now}] Done updating #{i+1} of #{my_offerings.count} offerings"
     end
+    debugger
     RetailerOffering.transaction do
       activerecords_to_save.each(&:save)
     end
@@ -515,7 +515,8 @@ namespace :data do
   
     require 'helpers/sitespecific/amazon_scraper'
     include AmazonScraper
-
+    require 'helpers/amazonhandler.rb'
+    
     # This is from web documentation. This is supposed to go with a Request.new
     # These parameters are in .amazonrc now.
     $ASSOCIATES_ID = 'ATVPDKIKX0DER'

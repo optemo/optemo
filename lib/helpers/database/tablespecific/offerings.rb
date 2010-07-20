@@ -71,10 +71,12 @@ module OfferingsHelper
 
       # Should probably just set it once and then add '_ca', the region suffix, to the end of each.
       regional = {'price'=>'price', 'pricestr' => 'pricestr', 'bestoffer' => 'bestoffer', 'prefix' => '', 'instock'=> 'instock'}
-      parse_and_set_attribute(regional['bestoffer'], lowest.id, product)
-      parse_and_set_attribute(regional['price'], lowest.priceint, product)
-      parse_and_set_attribute(regional['pricestr'], lowest.pricestr, product)
-      parse_and_set_attribute(regional['instock'], true, product)
+      # The new database format does not contain most of these fields.
+#      parse_and_set_attribute(regional['bestoffer'], lowest.id, product)
+#      parse_and_set_attribute(regional['price'], lowest.priceint, product)
+#      parse_and_set_attribute(regional['pricestr'], lowest.pricestr, product)
+      # We need to update the price ContSpec record here
+      parse_and_set_attribute('instock', true, product)
     end
     product
   end

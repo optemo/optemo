@@ -601,9 +601,6 @@ namespace :scrape_extra do
   
   desc 'init'
   task :init => :environment do
-    require 'scraping_helper'
-    include ScrapingHelper
-    
     include ScrapeExtra
     
     $folder= 'public'

@@ -172,8 +172,7 @@ namespace :scrape_123 do
       
       require 'nokogiri'
   
-      require 'scraping_helper'
-      include ScrapingHelper
+      include ScrapingLib
       
       require 'database_helper'
       include DatabaseHelper      
