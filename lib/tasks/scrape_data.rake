@@ -516,6 +516,7 @@ namespace :data do
     require 'helpers/sitespecific/amazon_scraper'
     include AmazonScraper
     require 'helpers/amazonhandler.rb'
+    include Amazonhandler
     
     # This is from web documentation. This is supposed to go with a Request.new
     # These parameters are in .amazonrc now.

@@ -34,7 +34,7 @@ module AmazonScraper
     #cachefile = open_cache(curr_retailer(region))
     #nokocache = Nokogiri::HTML(cachefile)
     nokocache = open_nokocache(curr_retailer(region))
-    added = nokocache.css('item/asin').collect{|x| x.content}
+    added = nokocache.css('itemsearchresponse/items/item/asin').collect{|x| x.content}
     announce "[#{Time.now}] Done getting Amazon IDs!"
     
     return added.reject{|x| x.nil? or x == ''}
@@ -163,19 +163,9 @@ module AmazonScraper
   # precondition -- $retailers should only contain one retailer per region
   def scrape_best_offer asin, region, nokocache=nil
     ret = curr_retailer(region)
-    #nokocache = open_nokocache(ret) #Nokogiri::HTML(open_cache(ret)) unless nokocache
-    # This next line is a bit opaque. I think that in future it would be better to see all the records, not just the first.
-    # In addition, using SAX-style parsing, such as in the following example, would yield a significant performance boost.
-    # NB: If implementing this, nstead of using activerecord objects in the handler, it would make sense for our purposes to just create a local in-memory hash
-    # with the relevant data in it, and do batch creation of activerecords later.
-    
+    nokocache = open_nokocache(ret) #Nokogiri::HTML(open_cache(ret)) unless nokocache
     debugger
-    parser = Nokogiri::XML::SAX::Parser.new(Amazonhandler.new)
-    #file_data = ""
-    #open_cache(ret).each_line {|line| file_data += line }
-    parser.parse_file(cachefile_name(retailer))
-    
-    #item = nokocache.css("item").reject{|x| get_text(x.css('asin')) != asin}.first
+    item = nodecache(nokocache, asin).first
     if item
       offers = item.css('offers/offer')
       unless ret.name.match(/marketplace/i)
@@ -192,7 +182,6 @@ module AmazonScraper
     end
     return nil
   end
-
   # Returns retailer name by region.
   # precondition -- $retailers should only
   # contain one retailer per region
@@ -471,6 +460,18 @@ module AmazonScraper
       @nokocaches[cfname] = Nokogiri::HTML(open_cache(retailer))
     end
     return @nokocaches[cfname]
+  end
+  
+  def nodecache(nokocache, asin)
+    unless @nodecache
+      @nodecache = {}
+      nokocache.css("itemsearchresponse/items/item").each do |n|
+        asin = get_text(n.css('asin'))
+        @nodecache[asin] = [] unless @nodecache[asin]
+        @nodecache[asin].push(n)
+      end
+    end
+    @nodecache[asin]
   end
   
   def refresh_cache(retailer)
