@@ -50,7 +50,7 @@
         callback: undefined,
         init:  function(callback) {},
         check: function() {},
-        load:  function(hash) {}
+        load:  function(hash,myurl,mydata) {}
     };
     $.history = _;
 
@@ -73,7 +73,7 @@
             if(hash != _.appState) {
                 locationWrapper.put(hash);
                 _.appState = hash;
-                _.callback(hash);
+                _.callback(hash, myurl, mydata);
             }
         }
     };
@@ -100,7 +100,7 @@
                 locationWrapper.put(hash);
                 iframeWrapper.put(hash);
                 _.appState = hash;
-                _.callback(hash);
+                _.callback(hash, myurl, mydata);
             }
         }
     };
