@@ -10,6 +10,10 @@
  *
  * Modified by Lincoln Cooper to add Safari support and only call the callback once during initialization
  * for msie when no initial hash supplied.
+ *
+ * Modified by Zev Thompson of Optemo to ignore the app state when doing load() (ie., take out "if  ... != appstate"), and to
+ * take parameters myurl and mydata that get passed through to the call-back.
+ * 
  */
 
 (function($) {
@@ -70,11 +74,9 @@
             }
         },
         load: function(hash,myurl,mydata) {
-            if(hash != _.appState) {
-                locationWrapper.put(hash);
-                _.appState = hash;
-                _.callback(hash, myurl, mydata);
-            }
+            locationWrapper.put(hash);
+            _.appState = hash;
+            _.callback(hash, myurl, mydata);
         }
     };
 
@@ -96,12 +98,10 @@
             }
         },
         load: function(hash,myurl,mydata) {
-            if(hash != _.appState) {
-                locationWrapper.put(hash);
-                iframeWrapper.put(hash);
-                _.appState = hash;
-                _.callback(hash, myurl, mydata);
-            }
+            locationWrapper.put(hash);
+            iframeWrapper.put(hash);
+            _.appState = hash;
+            _.callback(hash, myurl, mydata);
         }
     };
 
