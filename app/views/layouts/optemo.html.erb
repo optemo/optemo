@@ -26,23 +26,6 @@
 	 <div id="tagline">
 		<%=t "#{$product_type}.tagline" %>
 	</div>
-     <!-- div id="logindisplay">                                                                                               
-   		<% if !cookies[$AppKey +"_user"].nil? %>
-		<div style="float:left;height:16px;width:16px;overflow:hidden;">
-			<fb:profile-pic uid='loggedinuser' height="16" width="16" size="square" facebook-logo='true'></fb:profile-pic>
-		</div>
-		<div style="float:left;">
-			&nbsp;
-		</div>
-		<div style="float:left;">
-			<fb:name uid='loggedinuser' useyou='false' firstnameonly='true'></fb:name>
-			<br>
-			<a href="#" id="linkUserLogout" onClick="user_logout();return false;"> logout </a>
-		</div>
-		<% else %>
-			<fb:login-button size="small" length="short" onlogin="window.location.href='/login/do_login?currpage=' + window.location;" autologoutlink="false"> </fb:login-button>
-		<% end %>
-     </div-->
 	 <div id="tourButton"><%= link_to "Launch Tour", '#' %></div>
    </div>
    <div class="watermark">Powered by <%= link_to 'Optemo', 'http://optemo.com', :popup => true %></div>

@@ -340,7 +340,7 @@ class Search < ActiveRecord::Base
           s.clusters = os.clusters(s)
         else
           #Search is expanded, so use all products to begin with
-          s.clusters = ($SimpleLayout ? [] : Cluster.byparent(0).delete_if{|c| c.isEmpty(s)}) #This is broken for test profile in Rails 2.3.5
+          s.clusters = ($SimpleLayout ? [] : Cluster.byparent(0).select{|c| not c.isEmpty(s)})
           #clusters = clusters.map{|c| c unless c.isEmpty}.compact
         end
       end
