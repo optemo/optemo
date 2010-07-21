@@ -163,6 +163,7 @@ module AmazonScraper
   # precondition -- $retailers should only contain one retailer per region
   def scrape_best_offer asin, region, nokocache=nil
     ret = curr_retailer(region)
+    # The problem here is that the cache MUST be cleared between scrape_new and rescrape_prices... I think? Check tomorrow for whether the ASINs in question even exist.
     nokocache = open_nokocache(ret) #Nokogiri::HTML(open_cache(ret)) unless nokocache
     debugger
     item = nodecache(nokocache, asin)
