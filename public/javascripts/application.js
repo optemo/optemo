@@ -56,7 +56,6 @@ function fadein()
   $('#fade').css('display', 'none');
   $('#outsidecontainer').css('display', 'none');
   $('#outsidecontainer').unbind('click');
-  FilterAndSearchInit(); DBInit();
 }
 
 function fadeout(url,data,width,height)
