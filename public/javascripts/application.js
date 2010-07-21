@@ -52,11 +52,11 @@ var LINE_ITEM_VIEW = ($('#lineitemview').html() === 'true');
 
 function fadein()
 {
-  FilterAndSearchInit();
   $('.selectboxfilter').css('visibility', 'visible');
   $('#fade').css('display', 'none');
   $('#outsidecontainer').css('display', 'none');
-  $('#outsidecontainer').unbind('click')
+  $('#outsidecontainer').unbind('click');
+  FilterAndSearchInit(); DBInit();
 }
 
 function fadeout(url,data,width,height)

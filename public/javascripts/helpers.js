@@ -75,9 +75,9 @@ function ajaxhandler(data)
 		if (parts[1] != null)
 		{
 			$('#ajaxfilter').html(parts[1]);
-			DBinit('#ajaxfilter');
 		}
 		flashError(parts[0].substr(5,parts[0].length));
+		FilterAndSearchInit(); DBinit();
 		return -1;
 	}
 	else

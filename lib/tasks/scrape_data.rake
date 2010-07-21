@@ -358,7 +358,6 @@ namespace :data do
       activerecords_to_save.push(offering)
       log "[#{Time.now}] Done updating #{i+1} of #{my_offerings.count} offerings"
     end
-    debugger
     RetailerOffering.transaction do
       activerecords_to_save.each(&:save)
     end
@@ -398,7 +397,7 @@ namespace :data do
       
       ids.each_with_index do |local_id, i|
         generic_scrape(local_id, retailer)
-        log "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$product_type}s..."
+        log "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$product_type}..."
       end
     end
     timed_announce "Done scraping"
@@ -446,7 +445,7 @@ namespace :data do
   
   task :update_bestoffers do 
     activerecords_to_save = []
-    Product.all.each do |p|
+    Product.find(:all, :conditions => ["product_type=?", $product_type]).each do |p|
       update_bestoffer p
       activerecords_to_save.push(p)
     end

@@ -85,7 +85,8 @@ module AmazonScraper
   # availability) by local_id and region
   def scrape(local_id, region)
     log ("Scraping ASIN #{local_id} from #{region}" )
-    specs = scrape_specs local_id
+    specs = scrape_specs(local_id)
+    specs = scrape_specs(local_id) if specs.empty? # In case of one-off errors, just try once more.
     prices = rescrape_prices(local_id, region)
     atts = specs.merge(prices)
     atts['local_id'] = local_id
@@ -104,7 +105,7 @@ module AmazonScraper
        il.response_group = ResponseGroup.new( 'Large', 'Offers', 'ItemAttributes', 'Images', 'Reviews' )
        req = Request.new
        resp = req.search( il, 1, true ) # first page, make Amazon::AWS.search return raw data with third argument
-       be_nice_to_amazon
+       #be_nice_to_amazon
      rescue Exception => exc
        report_error "Could not scrape #{local_id} data"
        report_error "#{exc.class.name} #{exc.message}"
@@ -165,9 +166,9 @@ module AmazonScraper
     ret = curr_retailer(region)
     # The problem here is that the cache MUST be cleared between scrape_new and rescrape_prices... I think? Check tomorrow for whether the ASINs in question even exist.
     nokocache = open_nokocache(ret) #Nokogiri::HTML(open_cache(ret)) unless nokocache
-    debugger
+    #item = nokocache.css("itemsearchresponse/items/item").select {|n| get_text(n.css('asin')) == asin}
     item = nodecache(nokocache, asin)
-    if item
+    if (item && !(item.empty?))
       offers = item.first.css('offers/offer')
       unless ret.name.match(/marketplace/i)
          debugger if offers.length > 1
@@ -485,7 +486,7 @@ module AmazonScraper
     current_page = 1
     begin
       begin 
-        is = ItemSearch.new( $search_index, {'BrowseNode' => bnode, :merchant_id => merch, :item_page => current_page, :service => 'AWSECommerceService' } ) # :country => place, :response_group => 'Offers',
+        is = ItemSearch.new( $search_index, {'BrowseNode' => bnode, 'MerchantID' => merch, 'ItemPage' => current_page, :service => 'AWSECommerceService' } ) # :country => place, :response_group => 'Offers',
 
         request = Request.new 
         request.locale = place.to_s
