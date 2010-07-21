@@ -102,7 +102,7 @@ function ajaxerror(){
 function ajaxcall(myurl,mydata)
 {
 	numactions = parseInt($("#actioncount").html()) + 1;
-	$.historyLoad(numactions.toString(),myurl,mydata);
+	$.history.load(numactions.toString(),myurl,mydata);
 }
 
 /* Puts an ajax-related error message in a specific part of the screen */

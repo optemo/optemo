@@ -745,7 +745,7 @@ $(document).ready(function() {
 		$("#deleteme").css("display", "none");
 	}
 	
-	$.historyInit(ajaxsend);
+	$.history.init(ajaxsend);
 	
 	// Only load DBinit if it will not be loaded by the upcoming ajax call
 	if ($('#ajaxload').length == 0) {
