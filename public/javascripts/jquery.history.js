@@ -69,7 +69,7 @@
                 _.callback(current_hash);
             }
         },
-        load: function(hash) {
+        load: function(hash,myurl,mydata) {
             if(hash != _.appState) {
                 locationWrapper.put(hash);
                 _.appState = hash;
@@ -95,7 +95,7 @@
                 _.callback(current_hash);
             }
         },
-        load: function(hash) {
+        load: function(hash,myurl,mydata) {
             if(hash != _.appState) {
                 locationWrapper.put(hash);
                 iframeWrapper.put(hash);
