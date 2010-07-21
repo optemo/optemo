@@ -165,9 +165,9 @@ module AmazonScraper
     ret = curr_retailer(region)
     nokocache = open_nokocache(ret) #Nokogiri::HTML(open_cache(ret)) unless nokocache
     debugger
-    item = nodecache(nokocache, asin).first
+    item = nodecache(nokocache, asin)
     if item
-      offers = item.css('offers/offer')
+      offers = item.first.css('offers/offer')
       unless ret.name.match(/marketplace/i)
          debugger if offers.length > 1
          return offers.first if offers.length > 0
