@@ -15,17 +15,17 @@ module ScrapedProductsHelper
      return sps
   end
   
-  def find_or_create_scraped_product atts 
+  def find_or_create_scraped_product(atts) 
       rid = atts['retailer_id']
       lid = atts['local_id']
       return nil if rid.nil? or lid.nil?
       sp = $scrapedmodel.find_by_retailer_id_and_local_id(rid,lid)
       if sp.nil?
-        sp = create_record_from_attributes(atts)
+        sp = $scrapedmodel.new(atts.reject{|k,v| not ($scrapedmodel.column_names.include?(k))})
       else
         atts.each{|name,val| parse_and_set_attribute(name, val, sp)}
-        sp.save
       end
+      sp.save
       return sp
   end
   
