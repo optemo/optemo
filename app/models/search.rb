@@ -22,14 +22,18 @@ class Search < ActiveRecord::Base
        dist = Array.new(21,0)
        min = ContSpec.allMinMax(feat)[0]
        max = ContSpec.allMinMax(feat)[1]
-       return [] if max.nil? || min.nil?
+       return [[],[]] if max.nil? || min.nil?
+       current_dataset_minimum = max
+       current_dataset_maximum = min
        stepsize = (max-min) / dist.length + 0.000001 #Offset prevents overflow of 10 into dist array
        specs = ContSpec.cachemany(acceptedProductIDs, feat)
        specs.each do |s|
+         current_dataset_minimum = s if s < current_dataset_minimum
+         current_dataset_maximum = s if s > current_dataset_maximum
          i = ((s - min) / stepsize).to_i
          dist[i] += 1 if i < dist.length
        end  
-       round2Decim(normalize(dist))
+       [[current_dataset_minimum, current_dataset_maximum], round2Decim(normalize(dist))]
   end
   
   def acceptedProductIDs

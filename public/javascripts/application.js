@@ -323,7 +323,7 @@ function FilterAndSearchInit() {
 		}
 		$(this).slider({
 			orientation: 'horizontal',
-	        range: true,
+	        range: false,
 	        min: 0,
 	        max: 100,
 	        values: [((curmin-rangemin)/(rangemax-rangemin))*100,((curmax-rangemin)/(rangemax-rangemin))*100],
@@ -363,6 +363,8 @@ function FilterAndSearchInit() {
 					curmax = parseFloat($(this).attr('data-startmax'));
 					rangemin = parseFloat($(this).attr('data-min'));
 					rangemax = parseFloat($(this).attr('data-max'));
+					datasetmin = parseFloat($(this).attr('current-data-min'));
+        			datasetmax = parseFloat($(this).attr('current-data-max'));
 				}
 				else
 				{
@@ -370,6 +372,8 @@ function FilterAndSearchInit() {
 					curmax = parseInt($(this).attr('data-startmax'));
 					rangemin = parseInt($(this).attr('data-min'));
 					rangemax = parseInt($(this).attr('data-max'));
+					datasetmin = parseInt($(this).attr('current-data-min'));
+        			datasetmax = parseInt($(this).attr('current-data-max'));
 				}
 				var min = 0;
 				var max = 100;
@@ -389,13 +393,23 @@ function FilterAndSearchInit() {
 				var realselectmin, realselectmax;
 				var value = ui.value;
 				var sliderno = -1;
+				leftsliderknob = $('a:first', this);
+				rightsliderknob = $('a:last', this);
 				if(ui.value == ui.values[0])
 					sliderno = 0;
 				else
 					sliderno = 1;
 				$(this).slider('values', sliderno, value);
 				realvalue = (parseFloat((ui.values[sliderno]/100))*(rangemax-rangemin))+rangemin;
-
+				if (realvalue > datasetmax && sliderno == 0) {
+				    realvalue = datasetmax;
+				    leftsliderknob.css('left', (datasetmax * 99.9 / rangemax) + "%");
+			    }
+				    
+			    if (realvalue < datasetmin && sliderno == 1) {
+			        realvalue = datasetmin;
+				    rightsliderknob.css('left', (datasetmin * 100.1 / rangemax) + "%");
+			    }
 				if (increment < 1) { 
 					// floating point division has problems; avoid it 
 					tempinc = parseInt(1.0 / increment);
@@ -407,13 +421,13 @@ function FilterAndSearchInit() {
 				// This makes sure that when sliding to the extremes, you get back to the real starting points
 				if (sliderno == 1 && ui.values[1] == 100)
 					realvalue = rangemax;
-				if (sliderno == 0 && ui.values[0] == 0)
+				else if (sliderno == 0 && ui.values[0] == 0)
 					realvalue = rangemin;
 					
 				if (sliderno == 0 && ui.values[0] != ui.values[1])						// First slider is not identified correctly by sliderno for the case
-					$('a:first', this).html(realvalue).addClass("valabove");			// when rightslider = left slider, hence the second condition
+					leftsliderknob.html(realvalue).addClass("valabove");			// when rightslider = left slider, hence the second condition
 				else if (ui.values[0] != ui.values[1])
-					$('a:last', this).html(realvalue).addClass("valabove");
+					rightsliderknob.html(realvalue).addClass("valabove");
 					
 				if(sliderno == 0)
 				{
