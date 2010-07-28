@@ -311,14 +311,16 @@ namespace :data do
     match_me.delete_if{|x| (x.model.nil? and x.mpn.nil?) or x.brand.nil?}
     announce "#{match_me.count} #{$scrapedmodel.name}s are identifiable -- will match these."
     match_me.each_with_index do |scraped, i|
-      matches = match_product_to_product scraped, $product_type, $series
+      matches = match_product_to_product(scraped, $product_type, $series)
       
       real = matches.first
+      # If there is no product match, create a new product (and all the attributes).
       real = create_record_from_attributes(scraped.attributes) if real.nil? 
       
       parse_and_set_attribute('product_id',real.id, scraped)
       scraped.save
-      ros = find_ros_from_scraped (scraped)
+      debugger
+      ros = find_ros_from_scraped(scraped, scraped.retailer_id)
       ros.each{ |ro| parse_and_set_attribute('product_id', real.id, ro); ro.save }     
       
       reviews = Review.find_all_by_local_id_and_product_type(scraped.local_id, $product_type)

@@ -41,7 +41,8 @@ class ApplicationController < ActionController::Base
       session[:user_id] = mysession_id
     end
 
-    myversion = Cluster.maximum(:version, :conditions => ['product_type = ?', $product_type])
+    # For Optemo Direct, there is no clustering, so just set the version to zero.
+    myversion = $DirectLayout ? 0 : Cluster.maximum(:version, :conditions => ['product_type = ?', $product_type])
     Session.current = Session.new(mysession_id, myversion)
   end
   
