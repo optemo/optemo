@@ -5,7 +5,7 @@ class Cluster < ActiveRecord::Base
   has_many :bin_specs, :through => :products
   
   def self.byparent(id)
-    return nil if $SimpleLayout
+    return nil if $DirectLayout
     current_version = Session.current.version
     #Need to check by version and type because of the root clusters with parent id 0
     CachingMemcached.cache_lookup("Clusters#{current_version}#{id}#{$product_type}"){find_all_by_parent_id_and_version_and_product_type(id, current_version, $product_type)}

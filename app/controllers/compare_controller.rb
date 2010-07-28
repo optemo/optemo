@@ -66,7 +66,7 @@ class CompareController < ApplicationController
   
   def classVariables(search)
     Session.current.search = search
-    if $SimpleLayout
+    if $DirectLayout
       page = search.page
       @products = search.products.paginate :page => page, :per_page => 9
     end
@@ -114,7 +114,7 @@ class CompareController < ApplicationController
       params[:myfilter] = {} unless params[:myfilter] # the hash will be empty on page number clicks
       params[:myfilter]["page"] = params[:page]
       s = Search.createSearchAndCommit(oldsearch, nil, params[:myfilter], current_search_term)
-      unless ($SimpleLayout ? s.products.empty? : s.clusters.empty?)
+      unless ($DirectLayout ? s.products.empty? : s.clusters.empty?)
         classVariables(s)
         render 'ajax', :layout => false
       else

@@ -13,9 +13,9 @@
 
 <% form_tag("",{:id => 'filter_form'}) do %>
 <% $Categorical["filter"].each_with_index do |feat, index| %>
-	<div class='feature <%= "sv" if $SimpleLayout %>'>
+	<div class='feature <%= "sv" if $DirectLayout %>'>
 		<% chosen_cats = chosencats(feat) %>
-		<% if $SimpleLayout %>
+		<% if $DirectLayout %>
 			<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat %>">Show Groups</div>
 		<% end %>
 		<div class='catlabel'>

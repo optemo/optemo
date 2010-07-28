@@ -37,7 +37,7 @@ class Search < ActiveRecord::Base
   end
   
   def acceptedProductIDs
-    @acceptedProductIDs ||= ($SimpleLayout ? products.map(&:id) : clusters.map{|c| c.nodes}.flatten.map(&:product_id))
+    @acceptedProductIDs ||= ($DirectLayout ? products.map(&:id) : clusters.map{|c| c.nodes}.flatten.map(&:product_id))
   end
   
   #Range of product offerings
@@ -176,7 +176,7 @@ class Search < ActiveRecord::Base
   end
     
   def result_count
-    @result_count ||= ($SimpleLayout ? products.length : clusters.map{|c| c.size}.sum)
+    @result_count ||= ($DirectLayout ? products.length : clusters.map{|c| c.size}.sum)
   end
   
   def clusters= (clusters)
@@ -344,7 +344,7 @@ class Search < ActiveRecord::Base
           s.clusters = os.clusters(s)
         else
           #Search is expanded, so use all products to begin with
-          s.clusters = ($SimpleLayout ? [] : Cluster.byparent(0).select{|c| not c.isEmpty(s)})
+          s.clusters = ($DirectLayout ? [] : Cluster.byparent(0).select{|c| not c.isEmpty(s)})
           #clusters = clusters.map{|c| c unless c.isEmpty}.compact
         end
       end

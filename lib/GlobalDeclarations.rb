@@ -61,9 +61,9 @@ def load_defaults(url)
     product_yml.each{|feature,stuff| $Categorical["all"] << feature if stuff.first == "Categorical"}
 
     # $LineItemView forces the use of the .lv CSS classes and renders the _listbox.html.erb partial instead of the _navbox.html.erb partial.
-    # $SimpleLayout needs special clustering, or more precisely, no clustering, showing all products in browseable pages and offering "group by" buttons.
+    # $DirectLayout needs special clustering, or more precisely, no clustering, showing all products in browseable pages and offering "group by" buttons.
     $LineItemView = product_yml["layout"].first == "lineview" unless product_yml.nil? || product_yml["layout"].nil?
-    $SimpleLayout = product_yml["layout"].second == "simple" unless product_yml.nil? || product_yml["layout"].nil?
+    $DirectLayout = product_yml["layout"].second == "simple" unless product_yml.nil? || product_yml["layout"].nil?
     # At the moment, these are used in product scraping only.
     if feature == "price"
       $MaximumPrice = stuff.fourth.values.first
@@ -72,5 +72,5 @@ def load_defaults(url)
   end
   
   $LineItemView ||= false #Default is grid view 
-  $SimpleLayout ||= false #Default is normal clustering
+  $DirectLayout ||= false #Default is normal clustering
 end

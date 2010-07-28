@@ -79,7 +79,7 @@ module ProductsHelper
     }
     modelnames.reject{|x| x.nil? or x == ''}.each{|x| makes.each{|y| x.gsub!(/#{y}/,'')}}.uniq!
     
-    Product.all.each do |ptr| # No idea what recclass was. Assume it was an array of the models?
+    Product.all.each do |ptr|
       p_makes = [just_alphanumeric(ptr.brand)].reject{ |x| x.nil? or x == ""}
       p_modelnames = [just_alphanumeric(ptr.model),just_alphanumeric(ptr.mpn)].reject{ |x| x.nil? or x == ""}
   

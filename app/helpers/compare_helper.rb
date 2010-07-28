@@ -119,7 +119,7 @@ module CompareHelper
   end
 
   def columntext(groupings)
-    if $SimpleLayout
+    if $DirectLayout
       if groupings.nil?
         ['', 'Product', 'Price']
       else
