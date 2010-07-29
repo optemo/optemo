@@ -74,9 +74,16 @@ namespace :pictures do
   
   task :resize_missing do
     have_urls = $scrapedmodel.all.reject{|x| x.imageurl.nil?}.collect{|x| x.product_id}.uniq
-    no_resized_urls = Product.all(:conditions => ["product_type=?", $product_type]).reject{|x| !x.imgsurl.nil? and !x.imgmurl.nil? and !x.imglurl.nil?}
+    products = Product.all(:conditions => ["product_type=?", $product_type])
+    no_resized_urls = products.reject{|x| !x.imgsurl.nil? and !x.imgmurl.nil? and !x.imglurl.nil?}
     unresized = no_resized_urls.reject{|y| !have_urls.include?(y)}
     unresized += no_resized_urls.reject{|product| not (filename_from_id(product.id,""))}
+    
+    products_with_unresized_images = products.select{|product| File.exist?(filename_from_id(product.id,""))}
+    products_without_resized_images = products.reject{|product| ["s","m","l"].inject(true){|result,sz| result & File.exist?(filename_from_id(product.id,sz))}}
+    # Take the intersection of those products with unresized images, like 1094.jpg, but without resized images, like 1094_l.jpg
+    unresized += (products_with_unresized_images & products_without_resized_images)
+    debugger
     unresized_ids = unresized.map{|x|x.id}
     log "Resizing #{unresized_ids.length} pictures"
     failed = resize_all(unresized_ids)
@@ -94,7 +101,7 @@ namespace :pictures do
   
   task :download_missing_pictures do
     puts "Downloading missing pictures"
-    picless = picless_records
+    picless = picless_records()
     puts "#{picless.count} #{$product_type} pictures are missing!"
     #really_picless = picless.reject{|x| (!x.imagesurl.nil? and !x.imagemurl.nil? and !x.imagelurl.nil?) or (!x.instock and !x.instock_ca)}
     really_picless = picless
@@ -102,16 +109,18 @@ namespace :pictures do
     
     failed = []
     urls = {}
-    really_picless.each do |product_id| 
-      sps = $scrapedmodel.find(:all, :conditions => ["product_id=?",product_id])
-      if sps.empty? # Try another method of finding the image URL: the model name
-        sps = $scrapedmodel.find_all_by_model(Product.find(product_id).model)
-      end
-      temp_urls = sps.collect{|x| x.imageurl}.reject{|x| x.blank?}
+    really_picless.each do |current_product| 
+      sps = $scrapedmodel.find(:all, :conditions => ["product_id=?",current_product.id])
+      
+      #if sps.empty? # Try another method of finding the image URL: the model name
+        sps += $scrapedmodel.find_all_by_model(current_product.model) unless current_product.model.nil?
+        sps += $scrapedmodel.find_all_by_mpn(current_product.mpn) unless current_product.mpn.nil?
+      #end
+      temp_urls = sps.collect{|x| x.imageurl}.reject(&:blank?)
       unless temp_urls.nil? || temp_urls.empty?
-        urls[product_id] = temp_urls
+        urls[current_product.id] = temp_urls
       else
-        failed << product_id
+        failed << current_product.id
       end 
     end
     

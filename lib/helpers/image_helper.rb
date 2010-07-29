@@ -41,8 +41,8 @@ module ImageHelper
   # Returns a set of db records where the picture hasn't been downloaded
   def picless_records
     no_pic = []
-    Product.all(:select => "id", :conditions => ["product_type=?", $product_type]).map(&:id).each do |rec_id|
-      no_pic << rec_id unless File.exist?(filename_from_id(rec_id,""))
+    Product.all(:conditions => ["product_type=?", $product_type]).each do |rec|
+      no_pic << rec unless File.exist?(filename_from_id(rec.id,""))
     end
     return no_pic.uniq
   end

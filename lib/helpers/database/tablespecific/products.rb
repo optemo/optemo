@@ -48,16 +48,16 @@ module ProductsHelper
     makes = [just_alphanumeric(ptr.brand)].reject{ |x| x.nil? or x == ""}
     modelnames = [just_alphanumeric(ptr.model),just_alphanumeric(ptr.mpn)].reject{ |x| x.nil? or x == ""}
     
-    return find_matching_product makes, modelnames, series
+    return find_matching_product(makes, modelnames, series)
   end
   # Finds a record of the given db model by 
   # possible make(aka brand) and model lists. 
   # Example: find_matching_product( ['HP','hewlett-packard'],  ['Q123xd',nil])
   # The series is used to clean the model name, in case you had "Phaser 100abc"
   # Then if you list "Phaser" in the series, it'll try to match "100abc" as the model name too.
-  def find_matching_product rec_makes, rec_modelnames, series=[]
+  def find_matching_product(rec_makes, rec_modelnames, series=[])
     matching = []
-    makes = rec_makes.collect{ |x| just_alphanumeric(x) }.reject{|x| x.nil? or x == ''}
+    makes = rec_makes.collect{ |x| just_alphanumeric(x) }.reject(&:blank?)
     return nil if makes.size == 0
     makes.each do |make|
       $brand_alternatives.each do |altmakes|
@@ -79,12 +79,10 @@ module ProductsHelper
     }
     modelnames.reject{|x| x.nil? or x == ''}.each{|x| makes.each{|y| x.gsub!(/#{y}/,'')}}.uniq!
     
-    Product.all.each do |ptr|
-      p_makes = [just_alphanumeric(ptr.brand)].reject{ |x| x.nil? or x == ""}
-      p_modelnames = [just_alphanumeric(ptr.model),just_alphanumeric(ptr.mpn)].reject{ |x| x.nil? or x == ""}
-  
+    Product.find(:all, :conditions => ["product_type=?",$product_type]).each do |ptr|
+      p_makes = [just_alphanumeric(ptr.brand)].reject(&:blank?)
+      p_modelnames = [just_alphanumeric(ptr.model), just_alphanumeric(ptr.mpn)].reject(&:blank?)
       series.each { |ser| p_modelnames.each {|pmn| pmn.gsub!(/#{ser}/,'') } }
-  
       matching << ptr unless ( (p_makes & makes).empty? or (p_modelnames & modelnames).empty? )
     end
     return matching
