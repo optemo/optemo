@@ -27,17 +27,17 @@ namespace :refills do
   # Scrape all data for new products only
   task :scrape_new do
     puts "Implement Me"
-    #@logfile = File.open("./log/scrape/refills/#{just_alphanumeric($retailers.first.name)}_#{$model.name}.log", 'w+')
+    #@logfile = File.open("./log/scrape/refills/#{just_alphanumeric($retailers.first.name)}_#{$product_type}.log", 'w+')
     #$retailers.each do |retailer|
     #  ids = scrape_all_local_ids retailer.region
     #  scraped_ids = ($scrapedmodel.find_all_by_retailer_id(retailer.id)).collect{|x| x.local_id}.uniq
     #  ids = (ids - scraped_ids).uniq.reject{|x| x.nil?}
-    #  announce "Will scrape #{ids.count} #{$model.name}s from #{retailer.name}, #{scraped_ids.count} already exist"
+    #  announce "Will scrape #{ids.count} #{$product_type}s from #{retailer.name}, #{scraped_ids.count} already exist"
     #  
     #  ids.each_with_index do |local_id, i|
     #    generic_scrape(local_id, retailer)
     # TODO compatibilities  
-    #    log "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
+    #    log "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$product_type}s..."
     #  end
     #end
     #timed_announce "Done scraping"
@@ -67,7 +67,7 @@ namespace :refills do
     #  include PrinterConstants
     #  
     #  # TODO get rid of this construct:
-    #  $model = @@model
+    #  $product_type = @@model
     #  $scrapedmodel = @@scrapedmodel
     #  $brands= @@brands
     #  $series = @@series
@@ -80,6 +80,6 @@ namespace :refills do
     #  $reqd_offering_fields = ['priceint', 'pricestr', 'stock', 'condition', 'priceUpdate', 'toolow', \
     #     'local_id', "product_type", "region", "retailer_id"]
     
-    $model = Cartridge
+    $product_type = Cartridge
   end
 end

@@ -3,14 +3,14 @@
 
 module ScrapeExtra  
   
-  def do_it p, ok_fields, interesting_fields, clean_specs
+  def do_it (p, ok_fields, interesting_fields, clean_specs)
     ok_fields.each do |field|
-      fill_in_missing field, clean_specs[field], p
+      parse_and_set_attribute(field, clean_specs[field], p) if p[field].blank?
     end
     interesting_fields.keys.each do |f|
       interesting_fields[f] << clean_specs[f]
     end
-    
+    p.save
     return interesting_fields
   end
   
@@ -68,17 +68,17 @@ module ScrapeExtra
     return table
   end
   
-  def file_exists_for itemnum, sz=''
-     begin
-        image = Magick::ImageList.new(filename_from_itemnum(itemnum,sz))
-        image = image.first if image.class == Magick::ImageList
-        return false if image.nil?
-      rescue
-        return false
-      else
-        return image.rows
-      end
-      return false
+  def file_exists_for_other itemnum, sz='' # There were two functions defined with the same name. 
+    begin
+      image = Magick::ImageList.new(filename_from_itemnum(itemnum,sz))
+      image = image.first if image.class == Magick::ImageList
+      return image
+    rescue
+      return nil
+    else
+      return image
+    end
+    nil
   end
   
   def url_from_item_and_sz itemnum, sz
@@ -120,10 +120,10 @@ namespace :scrape_extra do
     require 'cartridge_helper'
     include CartridgeHelper
   
-    $model = Cartridge
+    $product_type = Cartridge
     
     matching_sets = []
-    $model.all.each do |rec|
+    Product.all.each do |rec|
       matching_ids = (compatibility_matches rec).collect{|x| x.id} 
       matching_sets << matching_ids.sort if matching_ids and matching_ids.length > 1
     end
@@ -132,13 +132,13 @@ namespace :scrape_extra do
     matching_sets.reject{|x| x.size < 2}.each do |set|
       addme = []
       set.each do |id|
-        compats = Compatibility.valid.find_all_by_accessory_id_and_accessory_type(id, $model.name)
+        compats = Compatibility.valid.find_all_by_accessory_id_and_accessory_type(id, $product_type)
         addme += compats.collect{|x| [x.product_id,x.product_type]}
         addme.reject!{|x| x.nil? or x[0].nil? or x[1].nil?}
       end
       addme.each do |compat|
         set.each do |id|
-          create_uniq_compatibility(id, $model.name, compat[0], compat[1])
+          create_uniq_compatibility(id, $product_type, compat[0], compat[1])
         end
       end
     end
@@ -146,7 +146,7 @@ namespace :scrape_extra do
   
   desc 'add data from xerox site'
   task :moredata_xerox => :data_init do
-    $model = Printer
+    $product_type = Printer
     links = []
     
     interesting_fields = ['ppm', 'paperinput', 'resolution', 'resolutionmax'].inject({}){|r, x| 
@@ -196,7 +196,7 @@ namespace :scrape_extra do
   desc 'add data from brother'
   task :moredata_bro => :data_init do
     
-    $model = Printer
+    $product_type = Printer
     
     interesting_fields = ['scanner', 'printserver', 'colorprinter', 'ttp'].inject({}){|r, x| r[x]=[]
       r}
@@ -215,10 +215,11 @@ namespace :scrape_extra do
         puts features['printtechnology']
         puts clean_specs['colorprinter']
         debugger 
-        fill_in 'colorprinter', clean_specs['colorprinter'], bp
+        parse_and_set_attribute('colorprinter', clean_specs['colorprinter'], bp)
+        bp.save
       end
       
-      interesting_fields = do_it bp, ok_fields, interesting_fields, clean_specs
+      interesting_fields = do_it(bp, ok_fields, interesting_fields, clean_specs)
       
     end
 
@@ -229,10 +230,9 @@ namespace :scrape_extra do
   desc 'add data from amazon'
   task :moredata_amazon => [:data_init, :web_init] do
     
-    $model = Printer
+    $product_type = Printer
     
-    interesting_fields = ['paperinput','scanner', 'duplex', 'printserver'].inject({}){|r, x| r[x]=[]
-      r}
+    interesting_fields = ['paperinput','scanner', 'duplex', 'printserver'].inject({}){|r, x| r[x]=[]; r}
     ok_fields = ['ppm', 'paperinput','resolution', 'resolutionmax']
     
     printerids = Printer.all.collect{|x| x.id}
@@ -240,7 +240,7 @@ namespace :scrape_extra do
     #validids = Printer.valid.collect{|x| x.id}
     validanyway = 0
     
-    watever = false
+    seemingly_useless_flag = false# The meaning of this is not obvious.
     
     sesh = Webrat.session_class.new
     problems = 0
@@ -260,16 +260,17 @@ namespace :scrape_extra do
       puts "#{p.id} rescraped"
       
       puts "No data" if clean_specs['paperinput'].nil?
-      debugger unless watever()
+      debugger unless seemingly_useless_flag
       
       ok_fields.each do |field|
-        fill_in_missing field, clean_specs[field], p
+        parse_and_set_attribute(field, clean_specs[field], p) if p[field].blank?
       end
+      p.save
       interesting_fields.keys.each do |f|
         interesting_fields[f] << clean_specs[f]
       end
       
-      sleep(15) if watever
+      sleep(15) if seemingly_useless_flag
     end
       puts "Done with #{problems} problems"
       debugger
@@ -280,7 +281,7 @@ namespace :scrape_extra do
   desc 'Add data from elsewhere'
   task :moredata_lex  => :data_init do
     
-    $model = Printer
+    $product_type = Printer
     
     ok_fields = ['ppm', 'resolution', 'resolutionmax', 'paperinput','scanner', 'printserver']
     
@@ -314,11 +315,12 @@ namespace :scrape_extra do
       clean_specs = generic_printer_cleaning_code mapped_specs
             
       # TODO more effective find?
-      ps = find_matching_product [clean_specs['mpn']], [clean_specs['model']], $model,[]
+      ps = find_matching_product [clean_specs['mpn']], [clean_specs['model']], $product_type,[]
       if ps.length == 1
         validanyway += 1 if (validids.include?ps.first.id)
         ok_fields.each do |field|
-          fill_in_missing field, clean_specs[field], ps.first
+          parse_and_set_attribute(field, clean_specs[field], ps.first) if ps.first[field].blank?
+          ps.first.save
         end
       elsif ps.length == 0
         nomatch += 1 
@@ -423,9 +425,10 @@ namespace :scrape_extra do
           printer = Printer.find(NeweggPrinter.find_by_item_number(itemnum).product_id)
          # if(printer.[]("image#{sz}url").nil?)
             url = url_from_item_and_sz(itemnum, sz)  
-            fill_in "image#{sz}url", url, printer
-            fill_in "image#{sz}height", image.rows, printer
-            fill_in "image#{sz}width", image.columns, printer
+            parse_and_set_attribute("image#{sz}url", url, printer)
+            parse_and_set_attribute("image#{sz}height", image.rows, printer)
+            parse_and_set_attribute("image#{sz}width", image.columns, printer)
+            printer.save
           #end
         end
       end
@@ -433,11 +436,10 @@ namespace :scrape_extra do
   end
   
   desc 'Fills in '
-  task :fill_in_pic_stats => :pic_init do
+  task :parse_and_set_attribute_pic_stats => :pic_init do
     no_img_sizes = []
     $size_names.each do |sz|
-      no_img_sizes = no_img_sizes | Printer.find( :all, \
-        :conditions => ["(image#{sz}height IS NULL OR image#{sz}width IS NULL) AND image#{sz}url IS NOT NULL"])
+      no_img_sizes = no_img_sizes | Product.find( :all, :conditions => ["(img#{sz}h IS NULL OR img#{sz}w IS NULL) AND img#{sz}url IS NOT NULL"])
     end  
     
     no_img_sizes.each do |printer|
@@ -452,12 +454,15 @@ namespace :scrape_extra do
           image = nil
         end
         if image
-          fill_in "image#{sz}height", image.rows, printer if image.rows
-          fill_in "image#{sz}width", image.columns, printer if image.columns
+          parse_and_set_attribute("image#{sz}height", image.rows, printer) if image.rows
+          parse_and_set_attribute("image#{sz}width", image.columns, printer) if image.columns
+          activerecords_to_save.push(printer)
         end
       end
     end
-    
+    Product.transaction do
+      activerecords_to_save.each(&:save)
+    end
   end
   
   desc 'sandbox'
@@ -509,10 +514,10 @@ namespace :scrape_extra do
       unless x.imageurl.nil? or x.imageurl.empty? or file_exists_for(x.item_number)
         
         oldurl = "http://c1.neweggimages.com/NeweggImage/productimage/" + x.imageurl.split('/').pop
-        newurl = download_img oldurl, 'images/newegg', "#{x.item_number}.jpg"
+        newurl = download_image oldurl, 'images/newegg', "#{x.item_number}.jpg"
         if(newurl.nil?) # TODO hacky
           oldurl = "http://images17.newegg.com/is/image/newegg/" + x.imageurl.split('/').pop
-          newurl = download_img oldurl, 'images/newegg', "#{x.item_number}.jpg"
+          newurl = download_image oldurl, 'images/newegg', "#{x.item_number}.jpg"
         end
         
         if(newurl.nil?)
@@ -531,7 +536,7 @@ namespace :scrape_extra do
   task :download_pix => :pic_init do
     
     failed = []
-    todo = $model.find_all_by_imagesurl(nil)
+    todo = $product_type.find_all_by_imagesurl(nil)
     
     todo.each do |product|
       pic_urls = $scraped_model.find_all_by_product_id(product.id).collect{|x| x.imageurl}.reject{|x| x.nil?}
@@ -540,7 +545,7 @@ namespace :scrape_extra do
         failed << product.id
       else
         # download it
-        download_img pic_urls.first, 'images/printers', "#{product.id}.jpg"
+        download_image pic_urls.first, 'images/printers', "#{product.id}.jpg"
         # resize it
         
       end
@@ -554,7 +559,7 @@ namespace :scrape_extra do
   
   
   task :printer_init do
-      $model = Printer
+      $product_type = Printer
       $scraped_model = ScrapedPrinter
   end
   
@@ -596,9 +601,6 @@ namespace :scrape_extra do
   
   desc 'init'
   task :init => :environment do
-    require 'scraping_helper'
-    include ScrapingHelper
-    
     include ScrapeExtra
     
     $folder= 'public'

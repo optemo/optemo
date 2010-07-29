@@ -28,13 +28,14 @@ class JavaTestSession < Webrat::SeleniumSession
     wait_for_ajax
   end   
      
-   def move_slider which_slider, min, max
-     fill_in @slider_max_names[which_slider], :with => max
-     fill_in @slider_min_names[which_slider], :with => min
-     browser.run_script('submitCategorical()')
-     #browser.run_script('ajaxcall("/products/filter", $("#filter_form").serialize())')
-     wait_for_ajax
-   end
+  # This function uses parse_and_set_attribute() erroneously. It's probably severely deprecated, July 2010
+  def move_slider which_slider, min, max
+    parse_and_set_attribute(@slider_max_names[which_slider], :with => max)
+    parse_and_set_attribute(@slider_min_names[which_slider], :with => min)
+    browser.run_script('submitCategorical()')
+    #browser.run_script('ajaxcall("/products/filter", $("#filter_form").serialize())')
+    wait_for_ajax
+  end
    
    def select_brand which_brand
      self.selenium.select( 'selector', 'value='+ brand_name(which_brand).to_s) 
@@ -79,7 +80,7 @@ class JavaTestSession < Webrat::SeleniumSession
   
    # Gets the homepage and makes sure nothing crashed.
    def get_homepage product_type='printer'
-      visit "http://#{product_type.downcase}s.localhost:#{$port}/"
+      visit "http://#{product_type}s.localhost:#{$port}/"
       wait_for_load
       if error_page?
         report_error "Error loading homepage" 

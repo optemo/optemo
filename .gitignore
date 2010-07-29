@@ -42,3 +42,5 @@ lib/c_code/clusteringCodes/cppconn/libmysqlcppconn.dylib
 TAGS
 
 lib/helpers/fixClusters.sql
+merge_staging.sh
+

@@ -2,38 +2,53 @@
 	<% if flash[:notice] %>
 	<span class="notice"><%= flash[:notice] %></span>
 	<% end %>
+	<div class='<%= $LineItemView ? "lv" : "gv" %><%= " sv" if $DirectLayout%><%= " sv_ungrouped" if @groupings.nil? && $DirectLayout %>'>
 	<div id="navigator_bar" class="rounded_nav rounded">
 		<div class="tl"></div><div class="tr"></div>
 	    <%= navtitle %>
 	<% if $LineItemView %>
+		<% columntext = columntext(@groupings) %>
 	<div id="columnheader">
 		<div id="firstcolumn">
-			Browse Similar
+			<%= columntext[0] %>
 		</div>
 		<div id="secondcolumn">
-			Group Differences
+			<%= columntext[1] %>
 		</div>
 		<div id="thirdcolumn">
-			Our pick for this group
+			<%= columntext[2] %>
 		</div>
 	</div>
 	<% end %>
 		<div class="bl"></div><div class="br"></div>
 	<%= '</div>' if !$LineItemView %>
-	<div class='<%= $LineItemView ? "lv" : "gv" %>'>
-	<% for i in 0..[Session.current.search.cluster_count,$NumGroups].min-1 %>
-	  <% if i%(Float($NumGroups)/3).ceil == 0 && !$LineItemView %>
-		<div class="rowdiv">
-		<% open = true %>
-	  <% end %>
-	  <!-- Navbox partial to draw boxes -->
-	  <%= render :partial => ($LineItemView ? 'listbox' : 'navbox'), :locals => {:i => i, :cluster => Session.current.search.clusters[i] , :group => Session.current.search.clusters[i].size>1, :representative => Session.current.search.clusters[i].representative} %>
-	  <% if i%(Float($NumGroups)/3).ceil == (Float($NumGroups)/3).ceil - 1 && !$LineItemView %>
-		</div>
-		<% open = false %>
-	  <% end %>
+	<% if $DirectLayout %>
+		<% if @groupings.nil? %>
+			<% @products.each_index do |i| %>
+				<%= render :partial => 'singlelist', :locals => {:product => @products[i], :i => i} %>
+			<% end %>
+		<% else %>
+			<% @groupings.each_pair do |feature, products| %>
+				<%= render :partial => 'grouping', :locals => {:feat => feature, :cheapest => products[0], :best => products[1], :group => true}%>
+			<% end %>
+		<% end %>
+	<% else %>
+		<% for i in 0..[Session.current.search.cluster_count,$NumGroups].min-1 %>
+		  <% if i%(Float($NumGroups)/3).ceil == 0 && !$LineItemView %>
+			<div class="rowdiv">
+			<% open = true %>
+		  <% end %>
+		  <!-- Navbox partial to draw boxes -->
+		  <%= render :partial => ($LineItemView ? 'listbox' : 'navbox'), :locals => {:i => i, :cluster => Session.current.search.clusters[i] , :group => Session.current.search.clusters[i].size>1, :product => Session.current.search.clusters[i].representative} %>
+		  <% if i%(Float($NumGroups)/3).ceil == (Float($NumGroups)/3).ceil - 1 && !$LineItemView %>
+			</div>
+			<% open = false %>
+		  <% end %>
+		<% end %>
 	<% end %>
 	<%= '</div>' if open && !$LineItemView %>
+	<%= will_paginate @products if $DirectLayout && @groupings.nil?%>
 	</div>
 	<%= '</div>' if $LineItemView %>
-	<div style="clear:both;"><span id="actioncount" style="display:none"><%= Session.current.searches.count %></span><%= '<span id="tourautostart">&nbsp;</span>' if (Session.current && (Time.now - Session.current.created_at < 3)) %></div>
+	<% current_count = Search.count(:conditions => "session_id = #{Session.current.id}") %>
+	<div style="clear:both;"><span id="actioncount" style="display:none"><%= current_count %></span><%= '<span id="tourautostart">&nbsp;</span>' if (current_count <= 1) %></div>

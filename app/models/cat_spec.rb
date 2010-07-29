@@ -1,10 +1,24 @@
 class CatSpec < ActiveRecord::Base
   belongs_to :product
   
-  def self.cache(p_id, feat)
-    CachingMemcached.cache_lookup("ContSpec#{feat}#{p_id}") do
-      r = find_by_product_id_and_name(p_id, feat)
-      r.value if r
+  # Get specs for a single item and single feature -- this is deprecated
+  #  def self.cache(p_id, feat)
+  #    CachingMemcached.cache_lookup("CatSpec#{feat}#{p_id}") do
+  #      r = find_by_product_id_and_name(p_id, feat)
+  #      r.value if r
+  #    end
+  #  end
+
+  # Get specs for a single item
+  def self.cache_all(p_id)
+    CachingMemcached.cache_lookup("CatSpecs#{p_id}") do
+      r = find(:all, :select => 'name, value', :conditions => ["product_id = ?", p_id]).each_with_object({}){|r, h| h[r.name] = r.value}
+    end  
+  end
+
+  def self.cachemany_with_ids(p_ids, feat)
+    CachingMemcached.cache_lookup("CatSpecs_with_ids#{feat}#{p_ids.join.hash}") do
+      find(:all, :select => 'product_id, value', :conditions => ["product_id IN (?) and name = ?", p_ids, feat])
     end
   end
   

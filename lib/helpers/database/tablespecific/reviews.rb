@@ -5,11 +5,11 @@ module ReviewsHelper
     revu = nil
     # Try finding review by review ID (and retailer ID?)
     if atthash['local_review_id'] #and atthash['retailer_id']
-      revu = Review.find_all_by_local_review_idand_product_type(atthash['local_review_id'], $model.name).first
+      revu = Review.find_all_by_local_review_idand_product_type(atthash['local_review_id'], $product_type).first
     end
     if revu.nil? and atthash['local_id'] and atthash['customerid']
       revu = Review.find_all_by_local_id_and_customerid_and_product_type(atthash['local_id'],\
-          atthash['customerid'], $model.name).first
+          atthash['customerid'], $product_type).first
     end 
     # TODO Check that matching by content is ok...
     if revu.nil? and atthash['content']
@@ -28,7 +28,7 @@ module ReviewsHelper
     revu = recognize_review(atthash)
     if revu.nil?
       #debugger
-      revu = create_record_from_atts atthash, Review
+      revu = Review.new(atthash)
     end
     return revu
   end

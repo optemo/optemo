@@ -2,8 +2,7 @@ module StringCleaner
   
   # Takes out any characters that are not alphanumeric. Spaces too.
   def just_alphanumeric label
-   return nil if label.nil?
-    return label.downcase.gsub(/ /,'').gsub(/[^a-zA-Z 0-9]/, "")
+    label.nil? ? nil : label.downcase.gsub(/ /,'').gsub(/[^a-zA-Z 0-9]/, "")
   end
   
   # Takes out stuff inside html-style tags.
@@ -23,9 +22,4 @@ module StringCleaner
     return "_#{str}" if str.match(/^[0-9]/) 
     return str
   end
-  
-  def no_blanks array
-    return array.reject{|x| x.nil? or x.to_s.strip == ''}
-  end
-  
 end

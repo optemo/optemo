@@ -23,6 +23,10 @@ div#main {
 	margin-left: 218px;
 	text-align: left;
 }
+
+.sv #main {
+	width: 586px;	
+}
 #navigator_bar {
 	/*height: 22px;*/
 	text-align: center;
@@ -40,22 +44,53 @@ div#main {
 
 #columnheader {
 	font-size: 0.8em;
+	padding-top: 4px;
+	height: 27px;
 }
-
-#firstcolumn {
+.lv.sv #columnheader {
+  height: 20px;
+}
+/* This decision tree supports list view vs. simple layout, and simple layout's "group by" view. Tested in IE */
+.lv #firstcolumn {
 	width: 62px;
 	float: left;
 }
-#secondcolumn {
-	width: 100px;
-	float: left;
-	margin-left: 18px;
-}
-#thirdcolumn {
-	width: 100%;
+.sv_ungrouped #firstcolumn {
 	height: 20px;
-	padding-top: 10px;
 }
+.lv.sv #firstcolumn {
+	padding-left: 5px;
+	width:100px;
+}
+.lv #secondcolumn {
+	width: 118px;
+	float: left;
+	padding-top:5px;
+	margin-left:18px;
+}
+.lv.sv #secondcolumn {
+  padding-top:0;
+}
+.sv_ungrouped #secondcolumn {
+	height:20px;
+}
+.lv #thirdcolumn {
+	width: 430px;
+	height: 20px;
+	padding-top: 5px;
+}
+.lv.sv #thirdcolumn {
+	width: 278px;
+	float: left;
+	padding-top: 0;
+	text-align: right;
+}
+.sv_ungrouped.lv.sv #thirdcolumn {
+  float: right;
+	width: 100px;	
+	padding-right:55px;
+}
+
 /*--------------------------------------//
 //      Main Content (Right Side)       //
 //--------------------------------------*/
@@ -87,6 +122,13 @@ div.rowdiv {
 	-webkit-border-radius: 8px;    /* for Safari */
   	border-radius: 8px;            /* Opera, KHTML, others */
 }
+.sv_ungrouped {
+	width: 617px;
+}
+.sv_ungrouped .navigator_box {
+	height: 72px;
+	width: 576px;
+}
 .gv .nbgroup {
 	padding: 3px 9px 3px 3px;
 	background: url(../images/nb-group.png) no-repeat;
@@ -96,7 +138,6 @@ div.rowdiv {
 	padding: 3px 9px 3px 3px;
 	background: url(../images/nb-single.png) no-repeat;
 	width:224px;
-	margin-right:-1px;
 }
 .greybg {
     background:none repeat scroll 0 0 #EFEFEF;
@@ -121,6 +162,17 @@ div.rowdiv {
 	padding: 5px;
 	text-align: center;
 }
+.sv .title {
+	width: 115px;
+	position: relative;
+}
+
+.fv {
+	float: left;
+	width: 150px;
+	margin-left: 15px;
+}
+
 /* Navigator box */
 .product_box {
 	position: relative;
@@ -143,15 +195,40 @@ div.rowdiv {
 .gv img.productimg {
 	cursor: move;
 	height:100px;
-	padding-right: 20px;
 }
 .lv img.productimg {
 	cursor: move;
-	height:100px;
 	float: left;
+	height: 100px;
 	margin-top: -5px;
 }
-.productimg {
+.lv.sv img.productimg {
+	cursor: move;
+	float: left;
+	height: 80px;
+	width: 80px;
+	margin-top: 5px;
+}
+
+.sv .nbsingle img.productimg {
+	height: 64px;
+	width: 64px;
+	margin-top: -1px;
+	margin-left: 20px;
+	z-index: 1;
+	position: relative;
+}
+
+.lv .productimg {
+    width: 110px;
+}
+
+.sv.lv .productimg_container {
+    width: 104px;
+    height: 2px;
+}
+
+.sv .productimg {
   float: left;
 }
 
@@ -159,6 +236,7 @@ div.rowdiv {
 	width: 224px;
 	position: absolute;
 	bottom: 51px;
+	left: 0;
 }
 .gv .productinfo {
 	margin:0 auto;
@@ -170,10 +248,29 @@ div.rowdiv {
 	width: 500px;
 	height: 100px;
 }
+.sv .nbgroup .productinfo {
+	width: 285px;
+	font-size: 0.8em;
+	margin-left: 10px;
+}
+.sv .nbsingle .productinfo {
+	width: 576px;
+	height: 72px;
+}
 .price {
 	color: #F5000B;
-	font-size: 1.2em;
+	font-size: 1em;
 	margin-top: 5px;
+}
+.sv .nbgroup .price {
+  display: inline;
+/*  font-size: 0.8em; */
+  margin-top: 0;
+}
+.sv .nbsingle .price {
+/*  margin: 0 10px 0 10px; */
+  position: relative;
+  top: 10px;
 }
 .bottombar {
 	height: 18px;
@@ -202,6 +299,33 @@ div.rowdiv {
 .lv .nbgroup .sim {
 	background-color: #8192ac;
 }
+
+.sv .group_title {
+  font-weight: bold;
+  padding-top: 5px;
+/*  padding-bottom: 2px;
+  -moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+  border-radius: 8px;
+  display: table;
+  height: 44px; */
+  width: 115px;
+}
+
+.sv .choose_group, .sv .choose_cont_range {
+	font-size: 0.9em;
+	position: absolute;
+	bottom: 10px;
+	left: 9px;
+	margin-left:5px;
+	width:90px;
+	-moz-border-radius: 8px;       /* for Firefox */
+	-webkit-border-radius: 8px;    /* for Safari */
+  border-radius: 8px;            /* Opera, KHTML, others */
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 .gv .sim a {
 	font-size: 1.1em;
 	padding: 4px;
@@ -221,11 +345,45 @@ div.rowdiv {
 	margin-top: 18px;
 }
 
+.sv .itemfeatures {
+    margin-top: 0;
+}
+
+.lv.sv .nbgroup .itemfeatures {
+    margin-left:95px;
+    width:200px;
+}
+
+.groupby_title {
+    margin-left:95px;
+    width:200px;    
+}
+
 .itemfeatures {
-	font-size: 0.8em;
-	float: right;
-	width: 270px;
+/*	font-size: 0.8em; */
+  font-size: 12px;
+/* 	display: inline; /* Fix for IE */
+/*  float: left; */
+/*	width: 160px; */
 	margin-top: 5px;
+}
+
+.itemtitle {
+    font-size: 1.4em;
+    padding-bottom:5px;
+}
+
+.priceunit {
+  font-size: 0.8em;
+/*  display:inline; */
+  position:relative;
+  margin-left: 5px;
+  top: 10px;
+}
+
+.nbsingle .itemfeatures {
+	width: 390px;
+	float:left
 }
 
 /*--------------------------------------//
@@ -248,10 +406,11 @@ div #leftbar {
 }
 
 #search {
-	width: 129px;
+	width: 125px;
 }
 #submit_button {
 	margin-top: 2px;
+	width: 55px;
 }
 
 #savebar {
@@ -303,9 +462,14 @@ div.drop-box-hover {
 .lv .dragHand {
 	margin-left: -25px;
 	margin-right: 25px;
-	z-index:1;
-  opacity:0.35;
+	z-index:2;
+    opacity:0.35;
+    position:absolute;
 }
+.sv .productimg .dragHand {
+	margin-right: 5px;
+}
+
 [ if IE ] .dragHand {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=35);  /* IE7 */
   filter: alpha(opacity=35);
@@ -323,13 +487,9 @@ div.drop-box-hover {
 	background: url(../images/savebg.png) no-repeat;
 }
 div.smalldesc {
-/*	position:absolute;
-	bottom:5px; */
 	font-size: 0.7em;
-	line-height: 1em;
 	padding: 3px 0;
-	width:70px;
-	text-align: center;
+	width:75px;
 }
 .savedmsg {
 	color: #F5000B;
@@ -426,11 +586,44 @@ div.smalldesc {
 	width:100%;
 }
 
+.sv .selectboxfilter {
+	width:115px;
+}
+
+.groupby {
+	font-size: 0.65em;
+	font-weight: bold;
+	position: absolute;
+	right: 0;
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.contgroupby {
+    font-size: 0.8em;
+    text-decoration: underline;
+    cursor: pointer;
+    display: inline;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
 .label {
 	font-weight: bold;
 	text-align: left;
 	font-size: 0.8em;
-	width: 187px;
+	width: 197px;
+	margin-top: 0.6em;
+	position: relative;
+}
+
+/* The category labels need to be less than 134 for IE, and the slider labels have to be greater for Safari. */
+.catlabel {
+	font-weight: bold;
+	text-align: left;
+	font-size: 0.8em;
+	width: 110px;
 	margin-top: 0.6em;
 	position: relative;
 }
@@ -439,13 +632,14 @@ div.smalldesc {
 }
 .reset {
 	font-size: 0.8em;
+	text-decoration: underline;
 }
 .valbelow {
 	padding-top: 18px;
 }
 .valabove {
 	margin-top: -34px;
-	height: 33px !important;
+	height: 29px !important;
 	background-position: 0 100% !important;
 }
 .unitdisp {      /* Display units of features in filters */
@@ -454,7 +648,10 @@ div.smalldesc {
 }
 .feature {
 	position: relative;
+  clear: both;
+  padding-bottom:2px;
 }
+
 .desc {
 	display: none;
 	position: absolute;
@@ -471,6 +668,7 @@ div.smalldesc {
 	left: 7px;
 	top: 16px;
 }
+
 
 /*--------------------------------------//
 //                Survey                //
@@ -568,22 +766,27 @@ margin-top:0;
 	height: 2px;
 }
 
-.popupTourClose{
-font-size:14px;
-line-height:14px;
-right:6px;
-top:4px;
-position:absolute;
-color:#6fa5fd;
-font-weight:700;
-display:block;
+.popupTourClose {
+    font-size:14px;
+    line-height:14px;
+    right:6px;
+    top:4px;
+    position:absolute;
+    color:#6fa5fd;
+    font-weight:700;
+    display:block;
 }
 
 .tourDrawAttention
 {
 	border: 2px solid red;
 	background: #fffcd3;
-	margin:2px;
+	margin:auto;
+}
+.lv .tourDrawAttention /* this is for CSS precedence */
+{
+	border: 2px solid red;
+	background: #fffcd3;
 }
 
 .navigator_box .tourDrawAttention
@@ -596,6 +799,7 @@ display:block;
 	font-size: 0.8em;
 	text-align: center;
 	margin-top: 20px;
+	text-decoration: underline;
 }
 
 /*--------------------------------------//

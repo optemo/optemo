@@ -1,5 +1,4 @@
 class Search < ActiveRecord::Base
-  belongs_to :session
   attr_writer :userdataconts, :userdatacats, :userdatabins, :userdatasearches
   
   def userdataconts
@@ -23,18 +22,22 @@ class Search < ActiveRecord::Base
        dist = Array.new(21,0)
        min = ContSpec.allMinMax(feat)[0]
        max = ContSpec.allMinMax(feat)[1]
-       return [] if max.nil? || min.nil?
+       return [[],[]] if max.nil? || min.nil?
+       current_dataset_minimum = max
+       current_dataset_maximum = min
        stepsize = (max-min) / dist.length + 0.000001 #Offset prevents overflow of 10 into dist array
        specs = ContSpec.cachemany(acceptedProductIDs, feat)
        specs.each do |s|
+         current_dataset_minimum = s if s < current_dataset_minimum
+         current_dataset_maximum = s if s > current_dataset_maximum
          i = ((s - min) / stepsize).to_i
          dist[i] += 1 if i < dist.length
        end  
-       round2Decim(normalize(dist))
+       [[current_dataset_minimum, current_dataset_maximum], round2Decim(normalize(dist))]
   end
   
   def acceptedProductIDs
-    @acceptedProductIDs ||= clusters.map{|c| c.nodes}.flatten.map(&:product_id)
+    @acceptedProductIDs ||= ($DirectLayout ? products.map(&:id) : clusters.map{|c| c.nodes}.flatten.map(&:product_id))
   end
   
   #Range of product offerings
@@ -153,7 +156,6 @@ class Search < ActiveRecord::Base
     end  
     des[0..3]
   end
-
     
   def minimum(feature)
     feature = feature + "_min"
@@ -174,13 +176,14 @@ class Search < ActiveRecord::Base
   end
     
   def result_count
-    @result_count ||= clusters.map{|c| c.size}.sum
+    @result_count ||= ($DirectLayout ? products.length : clusters.map{|c| c.size}.sum)
   end
   
   def clusters= (clusters)
     @clusters = clusters
   end
   
+  #The clusters argument can either be an array of cluster ids or an array of cluster objects if they have already been initialized
   def clusters(s = nil)
     if @clusters.nil?
       @clusters = []
@@ -205,88 +208,153 @@ class Search < ActiveRecord::Base
     @clusters
   end
   
-  #The clusters argument can either be an array of cluster ids or an array of cluster objects if they have already been initialized
-  def self.createFromClusters(clusters, os)
-    ns = {}
-    mycluster = "c0"
-    ns['cluster_count'] = clusters.length
-    clusters.each do |p|
-      ns[mycluster] = case p.class.name
-        when "String" then p
-        when "Fixnum" then p.to_s
-        when "Cluster" then p.id.to_s
-      end
-      mycluster.next!
+  def products
+    selected_features = (userdataconts.map{|c| c.name+c.min.to_s+c.max.to_s}+userdatabins.map{|c| c.name+c.value.to_s}+userdatacats.map{|c| c.name+c.value}+userdatasearches.map{|c| c.keyword}).hash
+    CachingMemcached.cache_lookup("#{$product_type}Products#{selected_features}") do
+      #Temporary fix for backward compatibility
+      fq = Cluster.filterquery(self)
+      fq = fq.gsub(/product_id in/i, "id in") if fq
+      product_list = Product.valid.instock.find(:all, :conditions => "#{fq unless fq.blank?}") # product_type is taken care of by Product.valid
+      product_list_ids = product_list.map(&:id)
+      utility_list = ContSpec.cachemany_with_ids(product_list_ids, "utility")
+      # Cannot avoid sorting, since this result is cached.
+      # If there is an error here, you might need to run rake calculate_factors. (utility_list.length should match product_list.length)
+      product_list.sort{|a, b| utility_list[a.id] <=> utility_list[b.id]}
     end
-    ns['session_id'] = Session.current.id
-    s = new(ns)
-    s.session = Session.current
-    unless clusters.nil? || clusters.empty? || clusters.first.class == String || clusters.first.class == Fixnum
-        s.clusters = clusters.sort{|a,b| (a.size>1 ? -1 : 1) <=> (b.size>1 ? -1 : 1)}
-    end
-#    s.fillDisplay
-    #I think these are deprecated
-    #s.parent_id = s.clusters.map{|c| c.parent_id}.sort[0]
-    #s.layer = s.clusters.map{|c| c.layer}.sort[0]
-    s
   end
-  
-  def self.createFromFilters(myfilter, current_search_term)
-    current_session = Session.current
-    #Delete blank values
-    myfilter.delete_if{|k,v|v.blank?} if myfilter
-    s = new({:session_id => current_session.id})
 
-    unless current_search_term.blank?
-      product_ids = Product.search_for_ids(:per_page => 10000, :star => true, :conditions => {:product_type => $product_type, :title => current_search_term.downcase})
-      unless product_ids.empty?
-        s.userdatasearches = [Userdatasearch.new({:keyword => current_search_term, :keywordpids => "product_id IN (" + product_ids.join(',') + ")"})]
+  def self.createGroupBy(feat)
+    myproducts = Session.current.search.products
+    if $Categorical.values.flatten.index(feat) # It's in the categorical array
+      specs = CatSpec.cachemany_with_ids(myproducts.map(&:id),feat)
+      grouping = specs.group_by{|spec|spec.value}
+      grouping = Hash[grouping.each_pair{|k,v| grouping[k] = v.map(&:product_id)}.sort{|a,b| b.second.length <=> a.second.length}]
+    elsif $Continuous.values.flatten.index(feat)
+      specs = ContSpec.cachemany_with_ids(myproducts.map(&:id), feat).sort{|a,b| a[1] <=> b[1]}
+      # [[id, low], [id, higher], ... [id, highest]]
+      all_product_ids = specs.map{|s| s.first}
+      quartile_length = (specs.length / 4.0).ceil
+      grouping = {}
+      if specs.length >= 4
+        labels = ["Low", "Mid-low", "Mid-high", "High"]
+      elsif specs.length == 3 
+        labels = ["Low", "Medium", "High"]
+      elsif specs.length == 2 
+        labels = ["Low", "High"]
+      else 
+        labels = ["Medium"]
+      end
+      labels.each do |label|
+        # This convoluted next line sets the names of the quartiles, using the specs' values at the beginning and end of each quartile.
+        grouping[specs[0][1].to_s + " - " + specs[((quartile_length >= specs.length) ? (specs.length-1) : quartile_length)][1].to_s] = all_product_ids.slice!(0,quartile_length)
+        specs.slice!(0, quartile_length)
+      end
+    else # Binary feature. Do nothing for now.
+    end
+    grouping.each_pair do |feat,product_ids| 
+      prices = ContSpec.cachemany(product_ids,"price")
+      cheapest = prices.zip(product_ids).sort{|a,b|a.first <=> b.first}.first.second
+      product_ids.delete(cheapest)
+
+      if product_ids.empty? # This means there was only one in the group, and "product_ids.delete(cheapest)" took it out.
+        grouping[feat] = [Product.cached(cheapest)]
       else
-        s.clusters = []
-        return s
+        product_utility_hash = ContSpec.cachemany_with_ids(product_ids, "utility")
+        best = product_utility_hash.sort{|a,b| b.second <=> a.second}.first.first
+        product_ids.delete(best)
+        grouping[feat] = [Product.cached(cheapest),Product.cached(best)] + product_ids # Just the first two products are searched for; the rest are left as just product_ids.
       end
     end
+  end
 
-    myfilter["session_id"] = current_session.id
-    #Handle false booleans
-    $Binary["filter"].each do |f|
-      dobj = current_session.search.userdatabins.select{|d|d.name == f}.first
-      myfilter.delete(f.intern) if myfilter[f.intern] == '0' && (dobj.nil? || dobj.value != true)
-    end    
-    
-    #seperate myfilter into various parts
-    s.userdataconts = []
-    s.userdatabins = []
-    s.userdatacats = []
+  def self.createSearchAndCommit(os, clusters=nil, myfilter =nil, current_search_term=nil)
+    # Deal with the page term first. This can come from a call to either #filter or #compare.
+    current_session = Session.current
+    s = new({:session_id => current_session.id})
+    unless myfilter.nil?
+      s.page = myfilter['page'] # This will sometimes be nil, but that's fine.
+      myfilter.delete("page")
+    end
 
-    myfilter.each_pair do |k,v|
-      if k.index(/(.+)_min/)
-        fname = Regexp.last_match[1]
-        max = fname+'_max'
-        s.userdataconts << Userdatacont.new({:name => fname, :min => v, :max => myfilter[max]})
-      elsif $Binary["filter"].index(k)
-        s.userdatabins << Userdatabin.new({:name => k, :value => v})
-      elsif $Categorical["filter"].index(k)
-        v.split("*").each do |cat|
-          s.userdatacats << Userdatacat.new({:name => k, :value => cat})
+    if clusters
+      mycluster = "c0="
+      clusters.each do |p|
+        s.send(mycluster.intern, case p.class.name
+          when "String" then p
+          when "Fixnum" then p.to_s
+          when "Cluster" then p.id.to_s
+        end )
+        mycluster.next! # automatically advances from 'c0=' to 'c1=' etc.
+      end
+      unless clusters.nil? || clusters.empty? || clusters.first.class == String || clusters.first.class == Fixnum
+          s.clusters = clusters.sort{|a,b| (a.size>1 ? -1 : 1) <=> (b.size>1 ? -1 : 1)}
+      end
+      # For a 'browse simliar' or a page change, we need to copy the old features over.
+      s.save
+      self.duplicateFeatures(s, os)
+    else # If no clusters, there should be a filter and / or search term, or a page term.
+      if myfilter.nil? || myfilter.empty? # If myfilter only contained the "page" key, it's now empty, not nil
+        # It was a new page.
+        s.clusters = (os ? os.clusters : [])
+        s.save
+        self.duplicateFeatures(s, current_session.search)
+      else
+        #Delete blank values
+        myfilter.delete_if{|k,v|v.blank?}
+
+        unless current_search_term.blank?
+          product_ids = Product.search_for_ids(:per_page => 10000, :star => true, :conditions => {:product_type => $product_type, :title => current_search_term.downcase})
+          unless product_ids.empty?
+            s.userdatasearches = [Userdatasearch.new({:keyword => current_search_term, :keywordpids => "product_id IN (" + product_ids.join(',') + ")"})]
+          else
+            s.userdatasearches = []
+            s.clusters = []
+            return s
+          end
+        end
+
+        myfilter["session_id"] = current_session.id
+        #Handle false booleans
+        $Binary["filter"].each do |f|
+          dobj = current_session.search.userdatabins.select{|d|d.name == f}.first
+          myfilter.delete(f.intern) if myfilter[f.intern] == '0' && (dobj.nil? || dobj.value != true)
+        end    
+
+        #seperate myfilter into various parts
+        s.userdataconts = []
+        s.userdatabins = []
+        s.userdatacats = []
+
+        myfilter.each_pair do |k,v|
+          if k.index(/(.+)_min/)
+            fname = Regexp.last_match[1]
+            max = fname+'_max'
+            s.userdataconts << Userdatacont.new({:name => fname, :min => v, :max => myfilter[max]})
+          elsif $Binary["filter"].index(k)
+            s.userdatabins << Userdatabin.new({:name => k, :value => v})
+          elsif $Categorical["filter"].index(k)
+            v.split("*").each do |cat|
+              s.userdatacats << Userdatacat.new({:name => k, :value => cat})
+            end
+          end
+        end
+        #Find clusters that match filtering query
+        if !s.expandedFiltering? && os
+          #Search is narrowed, so use current products to begin with
+          # Why is this passing in (s)?
+          s.clusters = os.clusters(s)
+        else
+          #Search is expanded, so use all products to begin with
+          s.clusters = ($DirectLayout ? [] : Cluster.byparent(0).select{|c| not c.isEmpty(s)})
+          #clusters = clusters.map{|c| c unless c.isEmpty}.compact
         end
       end
     end
-    #Find clusters that match filtering query
-    if !s.expandedFiltering? && current_session.searches.last
-      #Search is narrowed, so use current products to begin with
-      s.clusters = current_session.searches.last.clusters(s)
-    else
-      #Search is expanded, so use all products to begin with
-      s.clusters = Cluster.byparent(0).delete_if{|c| c.isEmpty(s)} #This is broken for test profile in Rails 2.3.5
-      #clusters = clusters.map{|c| c unless c.isEmpty}.compact
-    end
-    current_session.update_attribute('filter', true)
     s.cluster_count = s.clusters.length
     s.commitfilters
     s
   end
-  
+      
   # Duplicate the features of search (s) and the last search (os)
   def self.duplicateFeatures(s, os)
     if os
@@ -298,19 +366,8 @@ class Search < ActiveRecord::Base
     end
   end
 
-
-  def self.createFromClustersAndCommit(clusters, os)
-    s = createFromClusters(clusters, os)
-    s.save
-    self.duplicateFeatures(s, os)
-    s.commitfilters
-    s
-  end
-  
-  def self.createInitialClusters
-    # Remove search terms - should no longer be necessary. 
-    # A new search will by default not be linked to any userdatasearch records
-    Session.current.search = self.createFromClustersAndCommit(Cluster.byparent(0), nil) # nil search
+  def self.createInitialClusters(myfilter) # myfilter could contain page number
+    Session.current.search = self.createSearchAndCommit(nil, Cluster.byparent(0), myfilter) # nil search
   end
   
   def commitfilters

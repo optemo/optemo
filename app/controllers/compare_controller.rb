@@ -5,7 +5,11 @@ class CompareController < ApplicationController
   
   def index
     if Session.isCrawler?(request.user_agent) || params[:ajax]
-      Search.createInitialClusters
+      # The page numbers have to go in for pagination
+      page_number = {} # This has to be a hash for compatibility with Search.createSearchAndCommit()
+      page_number["page"] = params[:page]
+      s = Search.createInitialClusters(page_number)
+      classVariables(s)
     else
       @indexload = true
     end
@@ -16,26 +20,56 @@ class CompareController < ApplicationController
     end
   end
   
-  def compare
+  def groupby
+    feat = params[:feat]
+    # We need to make a new search so that history works properly (back button can take to "groupby" view)
+    os = Session.current.searches.last
+    s = os.clone # copy over session ID, etc.
+    s.view = feat # save feature for later. Any feature in "view" means we're in groupby view
+    s.save
+    Session.current.search = s
+    Search.duplicateFeatures(s, os) # copy over filters
+    @groupings = Search.createGroupBy(feat)
+    @groupedfeature = feat
+    render 'ajax', :layout => false
+  end
+  
+  def compare(hist = nil)
+    # As of right now, the history function from javascript always points here.
+    # What will need to happen is that the view will be in there as part of the search. I think.
     hist = params[:hist].gsub(/\D/,'').to_i if params[:hist]
     #Going back to a previous search
     if hist
       search_history = Session.current.searches
-      if hist < search_history.length && hist > 0
+      if hist <= search_history.length && hist > 0
         mysearch = search_history[hist-1]
+        mysearch.page = params[:page] if params[:page] # For this case: back button followed by clicking a pagination link
         classVariables(mysearch)
+        if mysearch.view
+          @groupings = Search.createGroupBy(mysearch.view)
+          @groupedfeature = mysearch.view
+        end        
       else
-        Search.createInitialClusters
+        page_number = {} # This has to be a hash for compatibility with Search.createSearchAndCommit()
+        page_number["page"] = params[:page]
+        s = Search.createInitialClusters(page_number)
+        classVariables(s)
       end
     else
-      classVariables(Search.createFromClustersAndCommit(params[:id].split('-')), Session.current.searches.last)
+      # No need to send in the previous search term since it will be copied automatically. Same with filters.
+      # The exception is the 'page' parameter, which might be modified and need writing.
+      # Since the myfilter hash is always empty, we just send a hash with only the page number, if any.
+      classVariables(Search.createSearchAndCommit(Session.current.searches.last), params[:id].split('-'), { "page" => params[:page] }) 
     end
-    
     render 'ajax', :layout => false
   end
   
   def classVariables(search)
     Session.current.search = search
+    if $DirectLayout
+      page = search.page
+      @products = search.products.paginate :page => page, :per_page => 9
+    end
   end
   
   def sim
@@ -51,7 +85,7 @@ class CompareController < ApplicationController
     end
     unless cluster.nil?
       if params[:ajax]
-        s = Search.createFromClustersAndCommit(cluster.children, Session.current.searches.last)
+        s = Search.createSearchAndCommit(Session.current.searches.last, cluster.children)
         classVariables(s)
         render 'ajax', :layout => false
       else
@@ -64,7 +98,7 @@ class CompareController < ApplicationController
 
   def filter
     session = Session.current
-    if params[:myfilter].nil? && params[:search].nil?
+    if params[:myfilter].nil? && params[:search].nil? && params[:page].nil?
       #No post info passed
       render :text =>  "[ERR]Search could not be completed."
     else
@@ -76,8 +110,11 @@ class CompareController < ApplicationController
       end
       oldsearch = session.searches.last
       session.search = oldsearch
-      s = Search.createFromFilters(params[:myfilter], current_search_term)
-      unless s.clusters.empty?
+      # Put the 'page' parameter in paginated output into the :myfilter hash for ease in processing
+      params[:myfilter] = {} unless params[:myfilter] # the hash will be empty on page number clicks
+      params[:myfilter]["page"] = params[:page]
+      s = Search.createSearchAndCommit(oldsearch, nil, params[:myfilter], current_search_term)
+      unless ($DirectLayout ? s.products.empty? : s.clusters.empty?)
         classVariables(s)
         render 'ajax', :layout => false
       else
@@ -97,6 +134,7 @@ class CompareController < ApplicationController
     #Cleanse id to be only numbers
     params[:id] = params[:id][/^\d+/]
     @product = Product.cached(params[:id])
+    @allspecs = ContSpec.cache_all(params[:id]).merge(CatSpec.cache_all(params[:id])).merge(BinSpec.cache_all(params[:id]))
     if $product_type
       if $product_type == "flooring_builddirect"
         @imglurl = "http://www.builddirect.com" + CGI.unescapeHTML(@product.imglurl.to_s)
@@ -127,7 +165,7 @@ class CompareController < ApplicationController
       format.xml  { render :xml => @product }
     end
   end
-  
+
   def searchterms
 #    # There is a strange beauty in the illegibility of the following line.
 #    # Must do a join followed by a split since the initial mapping of titles is like this: ["keywords are here", "and also here", ...]

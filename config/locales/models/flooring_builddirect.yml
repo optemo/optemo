@@ -21,7 +21,8 @@ en:
         brand:                      "Brand"
         finish:                     "Finish"
         species:                    "Species"    
-        colorrange:                 "Color Range"    
+        colorrange:                 "Color"    
+        feature:                    "Features"
         overallrating:              "Overall Rating"
         profit_margin:              "Profit Margin"    
 
@@ -47,7 +48,7 @@ en:
         avgthichness:               "Average Thickness"
         higherthickness:            "Thicker"
         
-        priceunit:                  "$"
+        priceunit:                  "per sq. ft."
         widthunit:                  "in."
         miniorderunit:              "sq. ft."      
         

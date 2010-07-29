@@ -1,5 +1,5 @@
 desc "Calculate Printer Resolution for an area"
-task :fill_in_resolution => :environment do
+task :parse_and_set_attribute_resolution => :environment do
   AmazonPrinter.find(:all, :conditions => 'resolution is not null').each do |p|
     if !p.resolution.blank?
       #p.resolutionarea = p.resolution.split(' x ').inject(1) {|a,b| a.to_i*b.to_i}
@@ -90,7 +90,7 @@ end
 end
 
 desc "Copy itemwidth from AmazonPrinter to Printer"
-task :fill_in_itemwidth => :environment do
+task :parse_and_set_attribute_itemwidth => :environment do
   AmazonPrinter.find(:all, :conditions => ['created_at > ?', 4.days.ago]).each do |p|
     Printer.find(p.product_id).update_attribute('itemwidth', p.itemwidth)
   end
@@ -158,4 +158,20 @@ task :remove_duplicates => :environment do
   #Remove model entry
   puts "Removing Printer #{del}"
   Printer.find(del).destroy
+end
+
+desc "Make clusters for simple view"
+task :create_flat_clustering => :environment do
+  load_defaults("flooring_builddirect")
+  lastcluster = Cluster.find_last_by_product_type($product_type)
+  version = lastcluster.version if lastcluster
+  version ||= 0
+  newversion = version + 1
+  c = Cluster.new :product_type => $product_type, :version => newversion, :layer => 1, :parent_id => 0
+  c.save
+  Product.valid.instock.each do |product|
+    Node.new({:cluster_id => c.id, :product_id => product.id, :product_type => $product_type, :version => newversion}).save
+  end
+  
+  puts "Clusters for #{$product_type} created, version #{newversion}"
 end

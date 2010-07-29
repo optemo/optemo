@@ -26,24 +26,7 @@
 	 <div id="tagline">
 		<%=t "#{$product_type}.tagline" %>
 	</div>
-     <!-- div id="logindisplay">                                                                                               
-   		<% if !cookies[$AppKey +"_user"].nil? %>
-		<div style="float:left;height:16px;width:16px;overflow:hidden;">
-			<fb:profile-pic uid='loggedinuser' height="16" width="16" size="square" facebook-logo='true'></fb:profile-pic>
-		</div>
-		<div style="float:left;">
-			&nbsp;
-		</div>
-		<div style="float:left;">
-			<fb:name uid='loggedinuser' useyou='false' firstnameonly='true'></fb:name>
-			<br>
-			<a href="#" id="linkUserLogout" onClick="user_logout();return false;"> logout </a>
-		</div>
-		<% else %>
-			<fb:login-button size="small" length="short" onlogin="window.location.href='/login/do_login?currpage=' + window.location;" autologoutlink="false"> </fb:login-button>
-		<% end %>
-     </div-->
-	 <div id="tourButton"><%= link_to "Launch Tour" %></div>
+	 <div id="tourButton"><%= link_to "Launch Tour", '#' %></div>
    </div>
    <div class="watermark">Powered by <%= link_to 'Optemo', 'http://optemo.com', :popup => true %></div>
 	
@@ -69,6 +52,7 @@
 <span id="dragDropEnabled"><%= $DragAndDropEnabled %></span>
 <span id="seshid" session-id="<%= Session.current.id unless Session.current.nil? %>"><%= Session.current.id unless Session.current.nil? %></span>
 <span id="modelname"><%= $product_type %></span>
+<span id="lineitemview"><%= $LineItemView %></span>
 </div>
 
 <!--[if lt IE 7]><style>
@@ -90,9 +74,6 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <!-- The jquery-ui script is being included locally due to the custom jquery-ui being about 45k instead of 200kb from Google's CDN -->
 <%= javascript_include_merged :base %>
-
-<script type="text/javascript" src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
-<script type="text/javascript"> FB.init('<%= $AppKey %>',"/xd_receiver.html");</script>
 
 <!-- Piwik (original) -->
 <script type="text/javascript">
@@ -133,39 +114,16 @@ piwikTracker2.enableLinkTracking();
 -->
 <!-- End no-piwik tracking -->
 
-<div id="popupTour1" class="popupTour">
-	<a class="deleteX" href="#"><img src="/images/close.png" alt="Close"/></a>
-	<h1>Discovery Browser Tour</h1>
-	<p>Each product shown is a representative of a dynamically created group of similar products. To browse within that group, click &quot;more like this.&quot;
-		<br/><br/>
-		<a href="#" class="popupnextbutton">Next &gt;&gt;</a>
-		<br/><hr width="90%"/>
-		<span class='popupcloseinstructions'>Click X to close at any time</span>
-	</p>
-</div>
-
-<div id="popupTour2" class="popupTour">
-	<a class="deleteX" href="#"><img src="/images/close.png" alt="Close"/></a>
-	<h1>Discovery Browser Tour</h1>
-	<p>Slide the filters to constrain your search terms based on a variety of specific criteria.
-		<br/><br/>
-		<a href="#" class="popupnextbutton">Next &gt;&gt;</a>
-		<br/><hr width="90%"/>
-		<span class='popupcloseinstructions'>Click X to close at any time</span>
-	</p>
-</div>
-
-<div id="popupTour3" class="popupTour">
-	<a class="deleteX" href="#"><img src="/images/close.png" alt="Close"/></a>
-	<h1>Discovery Browser Tour</h1>
-	<p>Drag and drop products in here to compare their specs directly.
-		<br/><br/>
-		<a href="#" class="popupnextbutton">Start Browsing</a>
-		<br/><hr width="90%"/>
-		<span class='popupcloseinstructions'>Click X to close at any time</span>
-	</p>
-</div>
-
+<% if $LineItemView %>
+	<%= popuptext(1, "Products are sorted by their utility. Click on one to see its specs.") %>
+	<%= popuptext(2, "Group by features to limit the number of products shown.") %>
+	<%= popuptext(3, "Slide the filters to constrain your search terms based on a variety of specific criteria.") %>
+	<%= popuptext(4, "Drag and drop products in here to compare their specs directly.", "Start Browsing") %>
+<% else %>
+	<%= popuptext(1, "Each product shown is a representative of a dynamically created group of similar products. To browse within that group, click &quot;more like this.&quot;") %>
+	<%= popuptext(2, "Slide the filters to constrain your search terms based on a variety of specific criteria.") %>
+	<%= popuptext(3, "Drag and drop products in here to compare their specs directly.", "Start Browsing") %>
+<% end %>
 <div id="backgroundPopup"></div>
 <noscript><div id="noJavascript" style="position:absolute; top: 40px; left:30px; width:250px; background: #FFFFFF; opacity:0.8"><b>Javascript is disabled.</b>For full functionality of the discovery browser, please enable javascript.</div></noscript>
 </body>

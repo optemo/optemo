@@ -14,7 +14,7 @@ module PrinterHelper
       temp = get_max_f(atts[maxfield])
       atts[maxfield] = temp
     end
-    atts['ppm'] = no_blanks([atts['ppm'], atts['ppmcolor']]).max
+    atts['ppm'] = [atts['ppm'], atts['ppmcolor']].compact.reject(&:blank?).max
     
     ['ttp'].each do |minfield|
       temp = get_min_f(atts[minfield])

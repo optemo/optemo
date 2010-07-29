@@ -31,7 +31,7 @@
 
 */
 //Load start page via ajax
-if ($('#ajaxload'))
+if ($('#ajaxload').length)
 {
 	if (location.hash)
 		ajaxsend(location.hash.replace(/^#/, ''),null,null,true);
@@ -44,6 +44,7 @@ if ($('#ajaxload'))
 // The following is pulled from optemo.html.erb, which in turn checks GlobalDeclarations.rb
 var IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
 var MODEL_NAME = $("#modelname").html();
+var LINE_ITEM_VIEW = ($('#lineitemview').html() === 'true');
 
 //--------------------------------------//
 //           UI Manipulation            //
@@ -51,11 +52,10 @@ var MODEL_NAME = $("#modelname").html();
 
 function fadein()
 {
-  FilterAndSearchInit();
   $('.selectboxfilter').css('visibility', 'visible');
   $('#fade').css('display', 'none');
   $('#outsidecontainer').css('display', 'none');
-  $('#outsidecontainer').unbind('click')
+  $('#outsidecontainer').unbind('click');
 }
 
 function fadeout(url,data,width,height)
@@ -127,7 +127,7 @@ function renderComparisonProducts(id, imgurl, name)
 	" data-id=\""+id+"\" alt=\""+id+"_s\"/ width=\"50\">" + 
 	"<div class=\"smalldesc\"";
 	// It looks so much better in Firefox et al, so if there's no MSIE, go ahead with special styling.
-	if ($.browser.msie) smallProductImageAndDetail = smallProductImageAndDetail + " style=\"position:absolute; bottom:5px;\"";
+	//if ($.browser.msie) smallProductImageAndDetail = smallProductImageAndDetail + " style=\"position:absolute; bottom:5px;\"";
 	smallProductImageAndDetail = smallProductImageAndDetail + ">" +
 	"<a class=\"easylink\" data-id=\""+id+"\" href=\"#\">" + 
 	((name) ? getShortProductName(name) : 0) +
@@ -323,7 +323,7 @@ function FilterAndSearchInit() {
 		}
 		$(this).slider({
 			orientation: 'horizontal',
-	        range: true,
+	        range: false,
 	        min: 0,
 	        max: 100,
 	        values: [((curmin-rangemin)/(rangemax-rangemin))*100,((curmax-rangemin)/(rangemax-rangemin))*100],
@@ -363,6 +363,8 @@ function FilterAndSearchInit() {
 					curmax = parseFloat($(this).attr('data-startmax'));
 					rangemin = parseFloat($(this).attr('data-min'));
 					rangemax = parseFloat($(this).attr('data-max'));
+					datasetmin = parseFloat($(this).attr('current-data-min'));
+        			datasetmax = parseFloat($(this).attr('current-data-max'));
 				}
 				else
 				{
@@ -370,6 +372,8 @@ function FilterAndSearchInit() {
 					curmax = parseInt($(this).attr('data-startmax'));
 					rangemin = parseInt($(this).attr('data-min'));
 					rangemax = parseInt($(this).attr('data-max'));
+					datasetmin = parseInt($(this).attr('current-data-min'));
+        			datasetmax = parseInt($(this).attr('current-data-max'));
 				}
 				var min = 0;
 				var max = 100;
@@ -389,13 +393,23 @@ function FilterAndSearchInit() {
 				var realselectmin, realselectmax;
 				var value = ui.value;
 				var sliderno = -1;
+				leftsliderknob = $('a:first', this);
+				rightsliderknob = $('a:last', this);
 				if(ui.value == ui.values[0])
 					sliderno = 0;
 				else
 					sliderno = 1;
 				$(this).slider('values', sliderno, value);
 				realvalue = (parseFloat((ui.values[sliderno]/100))*(rangemax-rangemin))+rangemin;
-
+				if (realvalue > datasetmax && sliderno == 0) {
+				    realvalue = datasetmax;
+				    leftsliderknob.css('left', (datasetmax * 99.9 / rangemax) + "%");
+			    }
+				    
+			    if (realvalue < datasetmin && sliderno == 1) {
+			        realvalue = datasetmin;
+				    rightsliderknob.css('left', (datasetmin * 100.1 / rangemax) + "%");
+			    }
 				if (increment < 1) { 
 					// floating point division has problems; avoid it 
 					tempinc = parseInt(1.0 / increment);
@@ -407,13 +421,13 @@ function FilterAndSearchInit() {
 				// This makes sure that when sliding to the extremes, you get back to the real starting points
 				if (sliderno == 1 && ui.values[1] == 100)
 					realvalue = rangemax;
-				if (sliderno == 0 && ui.values[0] == 0)
+				else if (sliderno == 0 && ui.values[0] == 0)
 					realvalue = rangemin;
 					
 				if (sliderno == 0 && ui.values[0] != ui.values[1])						// First slider is not identified correctly by sliderno for the case
-					$('a:first', this).html(realvalue).addClass("valabove");			// when rightslider = left slider, hence the second condition
+					leftsliderknob.html(realvalue).addClass("valabove");			// when rightslider = left slider, hence the second condition
 				else if (ui.values[0] != ui.values[1])
-					$('a:last', this).html(realvalue).addClass("valabove");
+					rightsliderknob.html(realvalue).addClass("valabove");
 					
 				if(sliderno == 0)
 				{
@@ -466,11 +480,11 @@ function FilterAndSearchInit() {
 			$(this).removeClass('ui-state-default').removeClass('ui-corner-all');
 			$(this).unbind('mouseenter mouseleave');
 		});
-		
 	});
 	// Add a brand -- submit
 	$('.selectboxfilter').each(function(){
 	    $(this).unbind('change').change(function(){
+	        $(this).unbind();
 		    var whichThingSelected = $(this).val();
 			var whichSelector = $(this).attr('name');
 		    var cat = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]"));
@@ -491,6 +505,54 @@ function FilterAndSearchInit() {
 			return false;
 		});
 	});
+	
+	// In simple view, select an aspect to create viewable groups
+	$('.groupby, .contgroupby').each(function(){
+		$(this).unbind('click').click(function(){
+			feat = $(this).attr('data-feat');
+			ajaxcall("/compare/groupby/?feat="+feat);
+		});
+	});
+	
+    // Choose a grouping via group button rather than drop-down (effect is the same as the select boxes)
+	$('.title').each(function(){
+		$(this).unbind('click').click(function(){
+		    $(this).unbind();
+		    if ($(this).find('.choose_group').length) { // This is a categorical feature
+    		    group_element = $(this).find('.choose_group');
+            	var whichThingSelected = group_element.attr('data-feat');
+            	var cat = group_element.attr('data-grouping');
+            	if($('#myfilter_'+cat).val().match(whichThingSelected) === null)
+                	$('#myfilter_'+cat).val(appendStringWithToken($('#myfilter_'+cat).val(), whichThingSelected, '*'));
+            	submitCategorical();
+            	trackCategorical(whichThingSelected,100,2);
+        	}
+        	else { // This is a continuous feature
+        	    group_element = $(this).find('.choose_cont_range');
+        	    feat = group_element.attr('data-grouping');
+        	    bounds = group_element.attr('data-feat').split("-");
+    	        lowerbound = parseFloat(bounds[0]);
+    	        upperbound = parseFloat(bounds[1]);
+    	        var arguments_to_send = [];
+    	        arguments = $("#filter_form").serialize().split("&");
+    	        for (i=0; i<arguments.length; i++)
+                {
+                    if (arguments[i].match(feat)) {
+                        split_arguments = arguments[i].split("=")
+                        if (arguments[i].match(/min/))
+                            split_arguments[1] = lowerbound;
+                        else
+                            split_arguments[1] = upperbound;
+                        arguments[i] = split_arguments.join("=");
+                    }
+                    if (!(arguments[i].match(/^superfluous/)))
+                        arguments_to_send.push(arguments[i]);
+                }
+                ajaxcall("/compare/filter/?ajax=true&" + arguments_to_send.join("&"));
+    	    }
+		});
+	});
+
 	//Show Additional Features
 	$('#morefilters').unbind('click').click(function(){
 		$('.extra').show("slide",{direction: "up"},100);
@@ -525,6 +587,17 @@ function FilterAndSearchInit() {
 		submitCategorical();
 		trackCategorical(whichbox, box_value, 3);
 	});
+	if ($.browser.msie) 
+	{
+	    // If it's any version of IE, the transparency for the hands doesn't get done properly on page load - redo it here.
+		$('.dragHand').each(function() {
+			$(this).fadeTo("fast", 0.35);
+		});
+        // Fix the slider position
+    	$('.hist').each(function() {
+           $(this).css('left', '7px');
+        });
+	}
 }
 
 function CompareInit() {
@@ -558,13 +631,24 @@ function ErrorInit() {
 }
 
 function DBinit() {
-	//$(".productimg, .easylink").unbind("click").click(function (){
-	//	ShowInit();
-	//	fadeout('/compare/show/'+$(this).attr('data-id')+'?plain=true',null, 800, 800);/*Star-h:700*/
-	//	trackPage('products/show/'+$(this).attr('data-id')); 
-	//	return false;
-	//});
-	
+	showpage = (function(currentelementid) {
+        fadeout('/compare/show/'+currentelementid+'?plain=true',null, 800, 800);
+ 		ShowInit();
+ 		trackPage('products/show/'+currentelementid); 
+    });
+    if (LINE_ITEM_VIEW) { // in Optemo Direct, a click anywhere on the product box goes to the show page
+        $('.nbsingle').unbind("click").click(function(){ 
+     		currentelementid = $(this).find('.productinfo').attr('data-id');
+     		showpage(currentelementid);
+     		return false;
+    	});
+    } else { // in Optemo Assist, a click only on the picture or .easylink product name will trigger the show page
+        $(".productimg, .easylink").unbind("click").click(function (){
+            currentelementid = $(this).attr('data-id');
+     		showpage(currentelementid);
+     		return false;            
+        });  
+    }
 	if (IS_DRAG_DROP_ENABLED)
 	{
 		// Make item boxes draggable. This is a jquery UI builtin.		
@@ -578,7 +662,7 @@ function DBinit() {
 				zIndex: 1000,
 				start: function(e, ui) { 
 					if ($.browser.msie) // Internet Explorer sucks and cannot do transparency
-					$(this).css({'opacity':'0.4'});
+					    $(this).css({'opacity':'0.4'});
 				},
 				stop: function (e, ui) {
 					if ($.browser.msie)
@@ -591,6 +675,15 @@ function DBinit() {
 		        function() {
 	            	$(this).find('.dragHand').stop().animate({ opacity: 0.35 }, 450);
            });
+	    });
+	    $(".dragHand").each(function() {
+	        $(this).draggable({
+	            revert : 'invalid',
+	            cursor: 'move',
+	            distance: 2,
+	            helper: 'clone',
+	            zIndex: 1000
+	        });
 	    });
 	}
 	
@@ -606,23 +699,28 @@ function DBinit() {
 		piwikTracker2.setCustomData({});
 		return false;
 	});
+	//Pagination links
+	$('.pagination a').unbind("click").click(function(){
+		url = $(this).attr('href')
+		if (url.match(/\?/))
+			url +='&ajax=true'
+		else
+			url +='?ajax=true'
+		ajaxcall(url);
+		return false;
+	});
 	//Autocomplete for searchterms
 	model = MODEL_NAME.toLowerCase();
-    if (model.match(/printer/) || model.match(/camera/)) 
-    {
-        model = model.split('_');
-        model = model[0]; // Get rid of "_us", if it exists.
-    	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
-    	terms = eval(model + "_searchterms"); // terms now = ["waterproof", "digital", ... ]
-    	$("#search").autocomplete(terms, {
-    		minChars: 1,
-    		max: 10,
-    		autoFill: false,
-    		mustMatch: false,
-    		matchContains: true,
-    		scrollHeight: 220
-    	});
-    }
+	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
+	terms = eval(model + "_searchterms"); // terms now = ["waterproof", "digital", ... ]
+	$("#search").autocomplete(terms, {
+		minChars: 1,
+		max: 10,
+		autoFill: false,
+		mustMatch: false,
+		matchContains: true,
+		scrollHeight: 220
+	});
 }
 
 function ShowInit() {
@@ -660,10 +758,10 @@ $(document).ready(function() {
 		$("#deleteme").css("display", "none");
 	}
 	
-	$.historyInit(ajaxsend);
+	$.history.init(ajaxsend);
 	
 	// Only load DBinit if it will not be loaded by the upcoming ajax call
-	if (!$('#ajaxload')) {
+	if ($('#ajaxload').length == 0) {
 		// Other init routines get run when they are needed.
 		FilterAndSearchInit(); DBinit();
 	}
@@ -693,10 +791,16 @@ $(document).ready(function() {
 			$(this).droppable({ 
 				hoverClass: 'drop-box-hover',
 				activeClass: 'ui-state-dragging', 
-				accept: ".ui-draggable",
+				accept: ".ui-draggable, .dragHand",
 				drop: function (e, ui) {
 					imgObj = $(ui.helper);
-					saveProductForComparison(imgObj.attr('data-id'), imgObj.attr('src'), imgObj.attr('alt'));
+					if (imgObj.hasClass('dragHand')) { // This is a drag hand object
+				        realImgObj = imgObj.parent().find('.productimg');
+    					saveProductForComparison(realImgObj.attr('data-id'), realImgObj.attr('src'), realImgObj.attr('alt'));
+				    }
+				    else { // This is an image object; behave as normal
+    					saveProductForComparison(imgObj.attr('data-id'), imgObj.attr('src'), imgObj.attr('alt'));
+					}
 				}
 			 });
 		});
@@ -751,38 +855,78 @@ $(document).ready(function() {
 		fadeout('/survey/submit?' + $("#surveyform").serialize(), null, 300, 70);
 		return false;
 	});
+	if (LINE_ITEM_VIEW) {
+	    //Tour section
+    	$('#popupTour1, #popupTour2, #popupTour3, #popupTour4').each(function(){
+    		$(this).find('.deleteX').click(function(){
+    			$(this).parent().fadeOut("slow");
+    			clearStyles(["box0", "filterbar", "savebar", "groupby0"], 'tourDrawAttention');
+    			$("#box0").removeClass('tourDrawAttention');
+    			return false;
+    		});
+    	});
 	
-	//Tour section
-	$('#popupTour1, #popupTour2, #popupTour3').each(function(){
-		$(this).find('.deleteX').click(function(){
-			$(this).parent().fadeOut("slow");
-			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
-			$("#sim0").removeClass('tourDrawAttention');
-			return false;
-		});
-	});
-	
-	$('#popupTour1').find('a.popupnextbutton').click(function(){
-		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
-		$("#popupTour2").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
-		$("#popupTour1").fadeOut("slow");
-		$("#filterbar").addClass('tourDrawAttention');
-		$("#sim0").removeClass('tourDrawAttention');
-		$("#sim0").parent().removeClass('tourDrawAttention');
-	});
+    	$('#popupTour1').find('a.popupnextbutton').click(function(){
+    		var groupbyoffset = $("#groupby0").offset();
+    		$("#popupTour2").css({"position":"absolute", "top" : parseInt(groupbyoffset.top) - 120, "left" : parseInt(groupbyoffset.left) + 220}).fadeIn("slow");
+    		$("#popupTour1").fadeOut("slow");
+    		$("#groupby0").addClass('tourDrawAttention');
+    		$("#box0").removeClass('tourDrawAttention');
+    	});
 
-	$('#popupTour2').find('a.popupnextbutton').click(function(){
-		var comparisonposition = $("#savebar").offset();
-		$("#popupTour3").css({"position":"absolute", "top" : parseInt(comparisonposition.top) + 160, "left" : parseInt(comparisonposition.left) + 70}).fadeIn("slow");
-		$("#popupTour2").fadeOut("slow");
-		$("#savebar").addClass('tourDrawAttention');
-		$("#filterbar").removeClass('tourDrawAttention');
-	});
+    	$('#popupTour2').find('a.popupnextbutton').click(function(){
+    		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
+    		$("#popupTour3").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
+    		$("#popupTour2").fadeOut("slow");
+    		$("#filterbar").addClass('tourDrawAttention');
+    		$("#groupby0").removeClass('tourDrawAttention');
+    	});
+
+    	$('#popupTour3').find('a.popupnextbutton').click(function(){
+    		var comparisonposition = $("#savebar").offset();
+    		$("#popupTour4").css({"position":"absolute", "top" : parseInt(comparisonposition.top) - 260, "left" : parseInt(comparisonposition.left) + 70}).fadeIn("slow");
+    		$("#popupTour3").fadeOut("slow");
+    		$("#savebar").addClass('tourDrawAttention');
+    		$("#filterbar").removeClass('tourDrawAttention');
+    	});
 	
-	$('#popupTour3').find('a.popupnextbutton').click(function(){
-		$("#popupTour3").fadeOut("slow");
-		$("#savebar").removeClass('tourDrawAttention');
-	});
+    	$('#popupTour4').find('a.popupnextbutton').click(function(){
+    		$("#popupTour4").fadeOut("slow");
+    		$("#savebar").removeClass('tourDrawAttention');
+    	});
+    } else {
+    	//Tour section
+    	$('#popupTour1, #popupTour2, #popupTour3').each(function(){
+    		$(this).find('.deleteX').click(function(){
+    			$(this).parent().fadeOut("slow");
+    			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
+    			$("#sim0").removeClass('tourDrawAttention');
+    			return false;
+    		});
+    	});
+	
+    	$('#popupTour1').find('a.popupnextbutton').click(function(){
+    		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
+    		$("#popupTour2").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
+    		$("#popupTour1").fadeOut("slow");
+    		$("#filterbar").addClass('tourDrawAttention');
+    		$("#sim0").removeClass('tourDrawAttention');
+    		$("#sim0").parent().removeClass('tourDrawAttention');
+    	});
+
+    	$('#popupTour2').find('a.popupnextbutton').click(function(){
+    		var comparisonposition = $("#savebar").offset();
+    		$("#popupTour3").css({"position":"absolute", "top" : parseInt(comparisonposition.top) - 260, "left" : parseInt(comparisonposition.left) + 70}).fadeIn("slow");
+    		$("#popupTour2").fadeOut("slow");
+    		$("#savebar").addClass('tourDrawAttention');
+    		$("#filterbar").removeClass('tourDrawAttention');
+    	});
+	
+    	$('#popupTour3').find('a.popupnextbutton').click(function(){
+    		$("#popupTour3").fadeOut("slow");
+    		$("#savebar").removeClass('tourDrawAttention');
+    	});
+	}
 	
 	// On escape press. Probably not needed anymore.
 	$(document).keypress(function(e){
@@ -794,13 +938,16 @@ $(document).ready(function() {
 	});
 
 	launchtour = (function () {
-		var browseposition = $("#sim0").offset();
-		if (MODEL_NAME == 'flooring_builddirect') // This is a bit of a hack. Probably, the javascript should be aware of "line item view" vs. "box view"
-		    $("#sim0").parent().addClass('tourDrawAttention');
-		else
+	    if (LINE_ITEM_VIEW) {
+		    var browseposition = $("#box0").offset();
+    		$("#box0").addClass('tourDrawAttention');		    
+    		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
+		} else {
+    		var browseposition = $("#sim0").offset();
+    		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
     		$("#sim0").addClass('tourDrawAttention');
-		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
-		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
+    		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
+    	}
 		return false;
 	});
 
@@ -808,12 +955,5 @@ $(document).ready(function() {
 	$("#tourButton a").click(launchtour); //Launch tour when this is clicked
 
 	myspinner = new spinner("myspinner", 11, 20, 9, 5, "#000");
-	
-	if ($.browser.msie) // If it's any version of IE, the transparency for the hands doesn't get done properly on page load.
-	{
-		$('.dragHand').each(function() {
-			$(this).fadeTo("fast", 0.35);
-		});
-	}
 });
 

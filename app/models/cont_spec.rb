@@ -1,15 +1,19 @@
 class ContSpec < ActiveRecord::Base
   belongs_to :product
   attr_writer :cs
-  
-  # These are both included because testing needs to be done in comparing featurecache to cached
-  # Due to the high number of hits per request, having this cache in memory might be the one place to break
-  # from the pattern of using only memcached
-#  def self.cached(p_id, feat)
-  def self.cache(p_id, feat)
-    CachingMemcached.cache_lookup("ContSpec#{feat}#{p_id}") do
-      r = find_by_product_id_and_name(p_id, feat)
-      r.value if r
+
+  # Get specs for a single item and single feature -- this is deprecated
+  #  def self.cache(p_id, feat)
+  #    CachingMemcached.cache_lookup("ContSpec#{feat}#{p_id}") do
+  #      r = find_by_product_id_and_name(p_id, feat)
+  #      r.value if r
+  #    end
+  #  end  
+
+  # Get specs for a single item
+  def self.cache_all(p_id)
+    CachingMemcached.cache_lookup("ContSpecs#{p_id}") do
+      r = find(:all, :select => 'name, value', :conditions => ["product_id = ?", p_id]).each_with_object({}){|r, h| h[r.name] = r.value}
     end
   end
   def self.cachemany(p_ids, feat)
@@ -17,12 +21,14 @@ class ContSpec < ActiveRecord::Base
       find(:all, :select => 'value', :conditions => ["product_id IN (?) and name = ?", p_ids, feat]).map(&:value)
     end
   end
+  def self.cachemany_with_ids(p_ids, feat)
+    CachingMemcached.cache_lookup("ContSpecsWithIds#{feat}#{p_ids.join.hash}") do
+      find(:all, :select => 'product_id, value', :conditions => ["product_id IN (?) and name = ?", p_ids, feat]).each_with_object({}){|r, h| h[r.product_id] = r.value}
+    end    
+  end
   
-  # This probably isn't needed anymore.
+  # This probably isn't needed anymore, but is a good example of how to do class caching if we want to do it in future.
   def self.featurecache(p_id, feat) 
-    # Caching is better using class variable due to thousands of hits per request? Test this. Memcache for now; ie., this is dead code
-    # Hash key must be based on model type, id, and feature name together to guarantee uniqueness.
-    
     @@cs = {} unless defined? @@cs
     p_id = p_id.to_s
     unless @@cs.has_key?($product_type + p_id + feat)
@@ -54,8 +60,13 @@ class ContSpec < ActiveRecord::Base
 
   def self.allspecs(feat)
     #ContSpec.find_all_by_name_and_product_type(feat,$product_type).map(&:value)
-    id_array = Product.valid.instock.map{|p| p.id }
+    id_array = Product.valid.instock.map(&:id)
     #id_array = Session.current.search.acceptedProductIDs
     ContSpec.cachemany(id_array, feat)
+  end
+  
+  # This is used for sorting an array of ContSpec objects.
+  def <=>(other)
+     return value <=> other.value
   end
 end

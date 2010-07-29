@@ -9,7 +9,7 @@ module NumbersCleaner
   # Returns the first integer in the string, or null
   def get_i str
     return nil unless has_num(str)
-    return str.strip.match(/(\d+,)?\d+/).to_s.gsub(/,/,'').to_i
+    return str.to_s.strip.match(/(\d+,)?\d+/).to_s.gsub(/,/,'').to_i
   end
   
   # Returns the first float in the string, or null
@@ -65,5 +65,4 @@ module NumbersCleaner
     return true if (str || '').to_s.match(/\d/)
     return false
   end
-  
 end

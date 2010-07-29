@@ -1,24 +1,16 @@
 <div class="outertitle"><div class="columntitle">
 </div></div>
-<!--<div class="cell whitebg" style="height: 42px;">
-	<% num = numberOfStars(3/3) %>
-	<% for j in 0..num-1 %>
-		<%= image_tag("fullstar.gif", :width => 14, :height => 14, :onClick => "") %>
-	<% end %>
-	<% if num%1 != 0 %>
-		<%= image_tag("halfstar.gif", :width => 14, :height => 14, :onClick => "") %>
-	<% end %>
-	<div style="margin-top: 3px"> 3 (6 ratings) </div>
-</div>-->
+
 <% gray = true %>
+<% contspecs = ContSpec.cache_all(product.id); catspecs = CatSpec.cache_all(product.id); binspecs = BinSpec.cache_all(product.id) %>
 <% $Continuous["filter"].each do |feat| %>
 <div class="cell <%= gray ? "graybg" : "whitebg" %>">
 	<% gray = !gray %>
 	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
 		<!-- If the interesting feature should be displayed then display -->
-		<b><%= ContSpec.cache(product.id, feat).to_s + " (" + t("products.#{feat}unit") %>)</b>		
+		<b><%= contspecs[feat].to_s + " (" + t("products.#{feat}unit") %>)</b>		
 	<% else %>
-		<%= ContSpec.cache(product.id, feat).to_s + " (" + t("products.#{feat}unit") %>)
+		<%= contspecs[feat].to_s + " (" + t("products.#{feat}unit") %>)
 	<% end %>
 	</div>
 <% end %>
@@ -27,9 +19,9 @@
 	<% gray = !gray %>
 	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
 		<!-- If the interesting feature should be displayed then display -->
-		<b><%= CatSpec.find_by_product_id_and_name(product.id, feat).value if CatSpec.find_by_product_id_and_name(product.id, feat) %></b>		
+		<b><%= catspecs[feat].to_s if catspecs[feat] %></b>		
 	<% else %>
-		<%= CatSpec.find_by_product_id_and_name(product.id, feat).value if CatSpec.find_by_product_id_and_name(product.id, feat) %>
+		<%= catspecs[feat].to_s if catspecs[feat] %>
 	<% end %>
 	</div>
 <% end %>
@@ -38,9 +30,9 @@
 	<% gray = !gray %>
 	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
 		<!-- If the interesting feature should be displayed then display -->
-		<b><%= BinSpec.find_by_product_id_and_name(product.id, feat).value if BinSpec.find_by_product_id_and_name(product.id, feat) %></b>		
+		<b><%= binspecs[feat].to_s if binspecs[feat] %></b>		
 	<% else %>
-		<%= BinSpec.find_by_product_id_and_name(product.id, feat).value if BinSpec.find_by_product_id_and_name(product.id, feat) %>
+		<%= binspecs[feat].to_s if binspecs[feat] %>
 	<% end %>
 	</div>
 <% end %>

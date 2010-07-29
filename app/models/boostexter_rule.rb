@@ -25,23 +25,18 @@ class BoostexterRule < ActiveRecord::Base
         rules.each do |r|
           # This check will not work in future, but will work for now. There will be a type field in the YAML representation instead.
           brules = YAML.load(r.yaml_repr)
-          if brules.class == Hash #S-gram
-            #catlabel[c.id] << r.fieldname + ": " + brules["sgram"] if brules["direction"] == 1
-            catlabel[c.id] << I18n.t($product_type+"."+brules["sgram"], :default => brules["sgram"]) if brules["direction"] == 1 && brules["sgram"] != "None"
-          else
-            #Threshold rule
-            next if brules.empty?
-            z = 0
-            weighted_average = 0
-            ContSpec.cachemany(product_ids,r.fieldname).each do |feature_value|
-              next unless feature_value
-              weight = BoostexterRule.find_weight_for_value(brules, feature_value)
-              weighted_average += weight * feature_value
-              z += weight
-            end
-            next if z == 0 # Loop back to the beginning; do not add this field name for this cluster.
-            weighted_averages[c.id][r.fieldname] = weighted_average / z
+          #Threshold rule
+          next if brules.empty?
+          z = 0
+          weighted_average = 0
+          ContSpec.cachemany(product_ids,r.fieldname).each do |feature_value|
+            next unless feature_value
+            weight = BoostexterRule.find_weight_for_value(brules, feature_value)
+            weighted_average += weight * feature_value
+            z += weight
           end
+          next if z == 0 # Loop back to the beginning; do not add this field name for this cluster.
+          weighted_averages[c.id][r.fieldname] = weighted_average / z
         end
       end
       results = []

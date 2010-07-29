@@ -9,6 +9,7 @@ task :scrape_walmart => :environment do
   c_records = []
   t_records = []
   b_records = []
+  i_records = []
   all_records.each do |item|
     imgurl = item.css(".prodImg").attribute("src").content
     title = item.css(".prodLink").first.content

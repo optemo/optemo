@@ -13,7 +13,7 @@ module IdFieldsHelper
   def no_junk_in_title title, brand, prodtype, junklist
     # Clean junk out of title
     nojunk_title = (title || '').gsub(/\s(with|&|and|w\/)\s.*/i,'')
-    list = no_blanks([prodtype, brand])
+    list = [prodtype, brand].compact.reject(&:blank?)
     regexlist = list.collect{|x| /(\s|^)(#{x})(\s|$)/i}
     (junklist+regexlist).each do |subme|
       nojunk_title.gsub!(subme,' ')
@@ -32,7 +32,7 @@ module IdFieldsHelper
   
   def models_from_title title, brand, prodtype, junklist=[], series=[]
     clean_title = no_junk_in_title(title, brand, prodtype, junklist) + ' '
-    temp = no_blanks(clean_title.split(/\s/))
+    temp = clean_title.split(/\s/).compact.reject(&:blank?)
     temp2 = []
     # Take advantage of two-part model names or really short names w/ series:
     ja_title = just_alphanumeric(title)
@@ -61,7 +61,7 @@ module IdFieldsHelper
     models.each do |mdl|
         next if all.include?(mdl)
         match = get_same_model(mdl, all, series) 
-        addme = no_blanks([match, mdl]).uniq.sort{|a,b| likely_model_name(b) <=>  likely_model_name(a) }
+        addme = [match, mdl].uniq.compact.reject(&:blank?).sort{|a,b| likely_model_name(b) <=>  likely_model_name(a) }
         next if all.include?(addme[0])
         all << addme[0] if addme[0]
     end
@@ -114,7 +114,7 @@ module IdFieldsHelper
     ja_title = just_alphanumeric(title)
 
     brandlist.each do |b|
-    	alts = no_blanks(brand_alts(b))
+    	alts = brand_alts(b).compact.reject(&:blank?)
     	alts.each do |alt|
     		if alt.length < 4 # Consider whitespace
     			return b if title.match(/(\s|^)#{alt}(\s|$|-|,)/i)
@@ -184,7 +184,7 @@ module IdFieldsHelper
     end
     
     # Don't allow series...
-    ([$model.name]+($brands||[])+($series||[])).each do |nonmodel|
+    ([$product_type]+($brands||[])+($series||[])).each do |nonmodel|
       score -= 3 if str.match(/(\s|^)(#{nonmodel})(\s|,|$)/i)
     end
     # ... except if it's before a very short model name

@@ -1,50 +1,32 @@
 module GenericScraper
   
-  def no_blanks array
-    return array.reject{|x| x.nil? or x.to_s.strip == ''}
-  end
-  
-  def unlink_duplicate keepme, deleteme
-    return if keepme.nil? or deleteme.nil?
-    return if keepme.id.nil? or deleteme.id.nil?
-    return if keepme.id == '' or keepme.id == 0 or deleteme.id == '' or deleteme.id == 0
-    return if $model.name.nil? or $model.name == ''
+  def unlink_duplicate(keepme, deleteme)
+    [keepme, deleteme].each{|arg| return if arg.blank || arg.id.blank?}
+    return if $product_type.blank? # This should never happen, but keep it just in case.
     sps = $scrapedmodel.find_all_by_product_id(deleteme.id)
-    ros = RetailerOffering.find_all_by_product_id_and_product_type(deleteme.id, $model.name)
-    revus = Review.find_all_by_product_id_and_product_type(deleteme.id, $model.name)
-    (sps+ros+revus).each do |x|
-      fill_in 'product_id', keepme.id, x
+    ros = RetailerOffering.find_all_by_product_id_and_product_type(deleteme.id, $product_type)
+    reviews = Review.find_all_by_product_id_and_product_type(deleteme.id, $product_type)
+    (sps+ros+reviews).each do |x|
+      parse_and_set_attribute('product_id', keepme.id, x)
+      x.save
     end
     temp = deleteme.id
-    $model.delete(temp)
+    Product.delete(temp)
   end
   
-  def vote_on_id_fields sps, avg_atts={}
-    # vote on models & mpns
-    # TODO: this shouldn't be here
-    vals =  no_blanks(sps.collect{|x| [x.model,x.mpn]}.flatten)
-    uniq_vals = remove_duplicate_models(vals, $series)
-    sorted_vals = uniq_vals.sort{|a,b| likely_model_name(b) <=> likely_model_name(a)}
-    #puts "MODELS VOTING: before #{vals * ', '}, after : #{sorted_vals[0..1] * ', '}"
-    #debugger
-    avg_atts['model'] = sorted_vals[0]
-    avg_atts['mpn'] = sorted_vals[1]      
-    return avg_atts
-  end
-  
-  def vote_on_values product
+  def vote_on_values(product)
     sps = $scrapedmodel.find_all_by_product_id(product.id)
     dimlabels = ['itemlength', 'itemheight', 'itemwidth']
     dontvote = ['price', 'price_ca'] | dimlabels
-    atts = $model::ContinuousFeatures + ['ttp', 'itemweight'] - dontvote
+    atts = $Continuous + ['ttp', 'itemweight'] - dontvote
     
     all_atts = {}
     atts.each{|x| all_atts[x] = [product.[](x)]} # Current value counts for something too...
     
     #... if valid! TODO: this should not, in theory, be necessary
     atts.each do |k|
-      unless in_range?( k,all_atts[k][0],$model)
-        puts "WARNING #{k}=#{all_atts[k][0]} not in range for #{$model.name}"
+      unless in_range?( k,all_atts[k][0])
+        puts "WARNING #{k}=#{all_atts[k][0]} not in range for #{$product_type}"
         all_atts[k] = []
       end
     end
@@ -56,7 +38,7 @@ module GenericScraper
     
     atts.each do |att|
       sps.each do |sp|
-        all_atts[att] << sp[att] if( sp[att] and in_range?(att,sp[att],$model) ) # and valid 
+        all_atts[att] << sp[att] if( sp[att] and in_range?(att,sp[att]) ) # and valid 
       end
     end
     
@@ -72,7 +54,7 @@ module GenericScraper
         r
       }
       next if dimhash.keys.include?(nil)
-      validity = dimhash.collect{|k,v| in_range?(k,(v || 0),$model)}
+      validity = dimhash.collect{|k,v| in_range?(k,(v || 0))}
       if validity.uniq == [true]
         dimsets << dimhash.values
       end
@@ -87,11 +69,11 @@ module GenericScraper
   end
   
   # A generic scraping algorithm for 1 offering
-  def generic_scrape local_id, retailer
-    scraped_atts = scrape local_id, retailer.region
+  def generic_scrape(local_id, retailer)
+    scraped_atts = scrape(local_id, retailer.region)
     if(scraped_atts)
       scraped_atts['local_id'] = local_id
-      scraped_atts['product_type'] = $model.name
+      scraped_atts['product_type'] = $product_type
       scraped_atts['retailer_id'] = retailer.id
       scraped_atts['region'] = retailer.region
       
@@ -100,22 +82,26 @@ module GenericScraper
             
       if sp
         clean_atts['url'] = id_to_sponsored_link(local_id, retailer.region, clean_atts['merchant'])
-        ros = find_ros_from_scraped(sp)
+        ros = find_ros_from_scraped(clean_atts["local_id"], clean_atts["retailer_id"])
         ro = ros.first
         if ro.nil?
-          ro = create_record_from_atts(clean_atts, RetailerOffering)
+          column_names = RetailerOffering.column_names
+          retail_offering_atts = clean_atts.reject{|r| not column_names.index(r)}
+          ro = RetailerOffering.new(retail_offering_atts)
+          ro.save
         end
-        
+
         # Validation!
-        if clean_atts['priceint'] and (clean_atts['priceint'].to_i > $model::MaxPrice)# or newatts['priceint'] < $model::MinPrice)
+        if clean_atts['priceint'] and (clean_atts['priceint'].to_i > $MaximumPrice)# or newatts['priceint'] < $MinimumPrice)
           clean_atts['stock'] = false
           clean_atts['priceint'] = nil
         end
         
-        fill_in_all(clean_atts, ro, ['pricehistory'])
-        fill_in_forced('priceint', clean_atts['priceint'], ro) # Also validation
+        clean_atts.each{|name,val| parse_and_set_attribute(name, val, ro, ['pricehistory'])}
+        parse_and_set_attribute('priceint', clean_atts['priceint'], ro) # Also validation
         
-        timestamp_offering(ro)     
+        timestamp_offering(ro)
+        ro.save # Don't bother with the transaction for just the one record.  
       else
         report_error "Couldn't create #{$scrapedmodel} with local_id #{local_id || 'nil'} and retailer #{retailer_id || 'nil'}."
       end
@@ -131,52 +117,59 @@ namespace :data do
   task :amazon_reviews => [:cam_init, :amazon_init, :reviews]
   
   task :match_reviews do    
-    allrevus = Review.find_all_by_product_id_and_product_type(nil, $model.name)
-    allrevus.each do |revu|    
-      lid =  revu['local_id']
+    allreviews = Review.find_all_by_product_id_and_product_type(nil, $product_type)
+    activerecords_to_save = []
+    allreviews.each do |review|    
+      lid =  review['local_id']
       sms = $scrapedmodel.find_all_by_local_id(lid)
-      sms_pids = no_blanks(sms.collect{|x| x.product_id}.uniq)
+      sms_pids = sms.collect{|x| x.product_id}.uniq.compact.reject(&:blank?)
       if sms_pids.length != 1 and sms_pids.length > 1
-        keep = $model.find(sms_pids.first)
-        lose = sms_pids[1..-1].collect{|x| $model.find(x)}
+        keep = $product_type.find(sms_pids.first)
+        lose = sms_pids[1..-1].collect{|x| $product_type.find(x)}
         lose.each do |deleteme|
           unlink_duplicate(keep, deleteme)
         end
       else
-        fill_in 'product_id', sms_pids.first, revu
+        parse_and_set_attribute('product_id', sms_pids.first, review)
       end
+      activerecords_to_save.push(review)
+    end
+    Review.transaction do
+      activerecords_to_save.each(&:save)
     end
   end
     
   task :reviews do    
     total_before_script = Review.count
-    @logfile =  File.open("./log/scrape/reviews/#{$model.name}.log", 'w+')
+    @logfile =  File.open("./log/scrape/reviews/#{$product_type}.log", 'w+')
     $retailers.each do |ret|
       baseline = Review.count
       
-      exclusion = Review.find_all_by_product_type($model.name).collect{|x| x.local_id}
+      exclusion = Review.find_all_by_product_type($product_type).collect{|x| x.local_id}
       exclusion += $scrapedmodel.find_all_by_totalreviews(0).collect{|x| x.local_id}.uniq
       exclusion.uniq!
       getmyreviews = $scrapedmodel.find_all_by_retailer_id(ret.id).collect{|x| x.local_id}.uniq
       
-      log "Getting reviews for #{(getmyreviews-exclusion).count} #{$model.name}s from #{ret.name}"
+      log "Getting reviews for #{(getmyreviews-exclusion).count} #{$product_type}s from #{ret.name}"
       
       getmyreviews.each do |local_id|
         next if exclusion.include?(local_id)
         baseline = Review.count
 
-        revues = scrape_reviews(local_id, ret.id)
-        revues.each do |rvu|
-          rvu['product_type'] = $model.name
+        reviews = scrape_reviews(local_id, ret.id)
+        reviews.each do |rvu|
+          rvu['product_type'] = $product_type
           r = find_or_create_review(rvu)
-          fill_in_all(rvu,r) if r
+          rvu.each{|name,val| parse_and_set_attribute(name, val, r, ignorelist)} if r
           pid = r.product_id if r
           $scrapedmodel.find_all_by_local_id_and_retailer_id(local_id, ret.id).each do |sp|
-            fill_in 'averagereviewrating',rvu["averagereviewrating"], sp if rvu["averagereviewrating"]
-            fill_in 'totalreviews', rvu['totalreviews'], sp if rvu["totalreviews"]
+            parse_and_set_attribute('averagereviewrating',rvu["averagereviewrating"], sp) if rvu["averagereviewrating"]
+            parse_and_set_attribute('totalreviews', rvu['totalreviews'], sp) if rvu["totalreviews"]
             pid ||= sp.product_id
+            sp.save
           end
-          fill_in 'product_id', pid, r if pid and r
+          parse_and_set_attribute('product_id', pid, r) if pid and r
+          r.save
           report_error "Review #{r.id} has nil product_id" if r and r.product_id.nil?
         end
       end
@@ -189,7 +182,7 @@ namespace :data do
   task :rescrape_stats do 
     #att = 'itemwidth' # This will be re-scraped.
     atts = ['itemlength', 'itemwidth', 'itemheight']
-    allproducts = $model.instock | $model.instock_ca # $model.all
+    allproducts = Product.instock | Product.instock_ca # Product.all
     #no_stats = allproducts.reject{|y| # These are the products for which we need to re-scrape.
     #  !y[att].nil? and y[att] > 100 and y[att] < 7000 # What is OK for this att
     #}.reject{|x| 
@@ -207,7 +200,7 @@ namespace :data do
       if sps.length != 0
         retailer_ok_sps = sps.reject{|x| !retailerids.include?(x.retailer_id)}
         if retailer_ok_sps.length == 0
-          puts "Oops -- no scraped #{$model.name} from #{$retailers.first.name} for #{pid}"
+          puts "Oops -- no scraped #{$product_type} from #{$retailers.first.name} for #{pid}"
         end
         
         retailer_ok_sps.each do |retailer_ok_sp|
@@ -224,15 +217,15 @@ namespace :data do
         end
       end
       
-      p = $model.find(pid)
+      p = Product.find(pid)
       puts "Dims for #{pid} were: #{p.itemlength} x #{p.itemheight} x #{p.itemwidth}"
       avgs = vote_on_values(p)
-      fill_in_all avgs, p
-      p = $model.find(pid)
+      avgs.each{|name,val| parse_and_set_attribute(name, val, p)}
+      p.save
       puts "Done #{pid}. New dims #{p.itemlength} x #{p.itemheight} x #{p.itemwidth}"
       #if newval and newval > 0 and newval < 7000
-        #p = $model.find(pid)
-        #atts.each{ |att| fill_in(att,newvals[att],p) } if newvals
+        #p = $product_type.find(pid)
+        #atts.each{ |att| parse_and_set_attribute(att,newvals[att],p) } if newvals
       #end
       
     end
@@ -241,7 +234,7 @@ namespace :data do
   
   desc 'Get new prices and products from Amazon cameras'
   task :scrape_amazon_cams => [:cam_init, :amazon_init, :scrape_new, :update_prices, :update_bestoffers]
-    
+
   task :validate_amazon => [:printer_init,:amazon_init, :validate_printers]
   
   task :camvote => [:cam_init,:vote]
@@ -280,28 +273,33 @@ namespace :data do
   # ... for cams
   
   
-  desc 'Get new prices and products from Amazon (printers)'
+  desc 'Get new prices and products from Amazon (cameras)'
   task :update_amazon_cameras => [:cam_init, :amazon_init, :update]
   
-  desc 'Get new prices and products from Amazon Marketplace (printers)'
+  desc 'Get new prices and products from Amazon Marketplace (cameras)'
   task :update_amazon_mkt_cameras => [:cam_init, :amazon_mkt_init, :update]
   
    # The subtasks...
   task :vote do 
-    products = $model.all
+    products = Product.all
+    activerecords_to_save = []
     products.each do |p|
-      avgs = vote_on_values p
+      avgs = vote_on_values(p)
       $bools_assume_no.each{|x| avgs[x] = false if avgs[x].nil?}
       #avgs.each do |k,v|
       #  puts "#{k} -- #{v} (now #{p.[](k)}) for #{p.id}" #if [v, p.[](k)].uniq.reject{|x| x.nil?}.length > 1
       #end
-      fill_in_all avgs, p
+      avgs.each{|name,val| parse_and_set_attribute(name, val, p)}
+      activerecords_to_save.push(p)
+    end
+    Product.transaction do
+      activerecords_to_save.each(&:save)
     end
   end
   
   desc 'Match ScrapedPrinter to Printer!'
   task :match_to_products do 
-    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{$model.name}_matcher.log", 'w+')
+    @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{$product_type}_matcher.log", 'w+')
   puts "[#{Time.now}] Starting to match products"
     match_me = scraped_by_retailers($retailers, $scrapedmodel) if $retailers
     match_me = $scrapedmodel.all if match_me.nil?
@@ -313,18 +311,26 @@ namespace :data do
     match_me.delete_if{|x| (x.model.nil? and x.mpn.nil?) or x.brand.nil?}
     announce "#{match_me.count} #{$scrapedmodel.name}s are identifiable -- will match these."
     match_me.each_with_index do |scraped, i|
-      matches = match_product_to_product scraped, $model, $series
+      matches = match_product_to_product(scraped, $product_type, $series)
       
       real = matches.first
-      real = create_record_from_atts  scraped.attributes, $model if real.nil? 
+      # If there is no product match, create a new product (and all the attributes).
+      real = create_record_from_attributes(scraped.attributes) if real.nil? 
       
-      fill_in 'product_id',real.id, scraped
+      parse_and_set_attribute('product_id',real.id, scraped)
+      scraped.save
+      ros = find_ros_from_scraped(scraped, scraped.retailer_id)
+      ros.each{ |ro| parse_and_set_attribute('product_id', real.id, ro); ro.save }     
       
-      ros = find_ros_from_scraped scraped, $model
-      ros.each{ |ro| fill_in 'product_id', real.id, ro }     
-      
-      revues = Review.find_all_by_local_id_and_product_type(scraped.local_id, $model.name)
-      revues.each{|revu| fill_in 'product_id', real.id, revu }
+      reviews = Review.find_all_by_local_id_and_product_type(scraped.local_id, $product_type)
+      activerecords_to_save = []
+      reviews.each do |review| 
+        parse_and_set_attribute('product_id', real.id, review)
+        activerecords_to_save.push(review)
+      end
+      Review.transaction do
+        activerecords_to_save.each(&:save)
+      end
     end
     timed_announce "[#{Time.now}] Done matching products"
     @logfile.close unless @logfile.closed?
@@ -332,43 +338,49 @@ namespace :data do
   
   # Update prices
   task :update_prices do
-    @logfile = File.open("./log/scrape/#{just_alphanumeric($retailers.first.name)}_#{$model.name}.log", 'w+')
-    my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id_and_product_type(x.id, $model.name)}
+    filename = "./log/scrape/#{just_alphanumeric($retailers.first.name)}_#{$product_type}.log"
+    @logfile = File.new(filename, 'w+') unless File.exist?(filename)
+    @logfile = File.open(filename, 'w+') unless @logfile
+    activerecords_to_save = []
+    my_offerings = $retailers.inject([]){|r,x| r+RetailerOffering.find_all_by_retailer_id_and_product_type(x.id, $product_type)}
     my_offerings.each_with_index do |offering, i|
       next if offering.local_id.nil?
       newatts = rescrape_prices(offering.local_id, offering.region)
-      
       # Validation!
-      if newatts['priceint'] and (newatts['priceint'].to_i > $model::MaxPrice)# or newatts['priceint'] < $model::MinPrice)
+      if newatts['priceint'] and (newatts['priceint'].to_i > $MaximumPrice)# or newatts['priceint'] < $MinimumPrice)
         newatts['stock'] = false
         newatts['priceint'] = nil
       end
       
       update_offering(newatts, offering) if offering
-      #if(offering.product_id and $model.exists?(offering.product_id))
-      #  update_bestoffer($model.find(offering.product_id))
-      #end  
+      #if(offering.product_id and $product_type.exists?(offering.product_id))
+      #  update_bestoffer($product_type.find(offering.product_id))
+      #end
+      activerecords_to_save.push(offering)
       log "[#{Time.now}] Done updating #{i+1} of #{my_offerings.count} offerings"
     end
-    
+    RetailerOffering.transaction do
+      activerecords_to_save.each(&:save)
+    end
+
     timed_announce "Done updating prices"
     @logfile.close unless @logfile.closed?
   end
 
   # Scrape all data for all current products
   task :scrape_all do
-    @logfile = File.open("./log/scrape/#{just_alphanumeric($retailers.first.name)}_#{$model.name}.log", 'w+')
+    @logfile = File.open("./log/scrape/#{just_alphanumeric($retailers.first.name)}_#{$product_type}.log", 'w+')
     $retailers.each do |retailer|
       
       ids = scrape_all_local_ids retailer.region
       old_ids = (RetailerOffering.find_all_by_retailer_id(retailer.id)).collect{|x| x.local_id}
       ids = (ids + old_ids).uniq.reject{|x| x.nil?}
       
-      announce "Will scrape #{ids.count} #{$model.name}s from #{retailer.name}"
+      announce "Will scrape #{ids.count} #{$product_type} from #{retailer.name}"
             
       ids.each_with_index do |local_id, i|
         generic_scrape(local_id, retailer)
-        log "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
+        log "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$product_type}s..."
       end
     end
     timed_announce "Done scraping"
@@ -377,16 +389,16 @@ namespace :data do
   
   # Scrape all data for new products only
   task :scrape_new do
-    @logfile = File.open("./log/scrape/#{just_alphanumeric($retailers.first.name)}_#{$model.name}.log", 'w+')
+    @logfile = File.open("./log/scrape/#{just_alphanumeric($retailers.first.name)}_#{$product_type}.log", 'w+')
     $retailers.each do |retailer|
       ids = scrape_all_local_ids retailer.region
       scraped_ids = ($scrapedmodel.find_all_by_retailer_id(retailer.id)).collect{|x| x.local_id}.uniq
       ids = (ids - scraped_ids).uniq.reject{|x| x.nil?}
-      announce "Will scrape #{ids.count} #{$model.name}s from #{retailer.name}, #{scraped_ids.count} already exist"
+      announce "Will scrape #{ids.count} #{$product_type} from #{retailer.name}, #{scraped_ids.count} already exist"
       
       ids.each_with_index do |local_id, i|
         generic_scrape(local_id, retailer)
-        log "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$model.name}s..."
+        log "[#{Time.now}] Progress: done #{i+1} of #{ids.count} #{$product_type}..."
       end
     end
     timed_announce "Done scraping"
@@ -398,7 +410,7 @@ namespace :data do
     require 'helpers/validation/data_validator'
     include DataValidator
     
-    @logfile = File.open("./log/validate/#{just_alphanumeric($retailers.first.name)}_#{$model.name}.log", 'w+')
+    @logfile = File.open("./log/validate/#{just_alphanumeric($retailers.first.name)}_#{$product_type}.log", 'w+')
     
     my_products = scraped_by_retailers($retailers, $scrapedmodel,false)
     
@@ -433,18 +445,28 @@ namespace :data do
   end
   
   task :update_bestoffers do 
-    $model.all.each do |p|
+    activerecords_to_save = []
+    Product.find(:all, :conditions => ["product_type=?", $product_type]).each do |p|
       update_bestoffer p
+      activerecords_to_save.push(p)
     end
-    timed_announce "Done updating bestoffers"
+    timed_announce "Done updating bestoffers; saving to database"
+    Product.transaction do
+      activerecords_to_save.each(&:save)
+    end
   end
 
   task :cam_init => :init do
       include CameraHelper
       include CameraConstants
       
+      load_defaults("cameras")
+      $AllSpecs = $Continuous["all"] + $Binary["all"] + $Categorical["all"]
+      
       # TODO get rid of this construct:
-      $model = @@model
+      # It seems like there are some class variables being set ... instead of global variables?
+      # Confusion. Try to take all of these out.
+      
       $scrapedmodel = @@scrapedmodel
       $brands= @@brands
       $series = @@series
@@ -461,8 +483,10 @@ namespace :data do
       include PrinterHelper
       include PrinterConstants
       
+      load_defaults("printers")
+      $AllSpecs = $Continuous["all"] + $Binary["all"] + $Categorical["all"]
+      
       # TODO get rid of this construct:
-      $model = @@model
       $scrapedmodel = @@scrapedmodel
       $brands= @@brands
       $series = @@series
@@ -482,7 +506,8 @@ namespace :data do
   end
   
   task :amazon_init do
-    require 'amazon/ecs'
+    require 'amazon/aws'
+    require 'amazon/aws/search'
     include Amazon
   
     require 'nokogiri'
@@ -490,12 +515,13 @@ namespace :data do
   
     require 'helpers/sitespecific/amazon_scraper'
     include AmazonScraper
-  
-    Amazon::Ecs.options = { :aWS_access_key_id => '0NHTZ9NMZF742TQM4EG2', \
-                            :aWS_secret_key => 'WOYtAuy2gvRPwhGgj0Nz/fthh+/oxCu2Ya4lkMxO'}
-  
-    AmazonID =   'ATVPDKIKX0DER'
-    AmazonCAID = 'A3DWYIK6Y9EEQB'
+    
+    # This is from web documentation. This is supposed to go with a Request.new
+    # These parameters are in .amazonrc now.
+    $ASSOCIATES_ID = 'ATVPDKIKX0DER'
+    $ASSOCIATES_CA_ID = 'A3DWYIK6Y9EEQB'
+    $KEY_ID = '0NHTZ9NMZF742TQM4EG2'
+    $SECRET_KEY = 'WOYtAuy2gvRPwhGgj0Nz/fthh+/oxCu2Ya4lkMxO'
   
     $search_index = 'Electronics'
     $retailers = [Retailer.find(1),Retailer.find(8)]

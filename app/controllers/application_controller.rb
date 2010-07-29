@@ -22,55 +22,28 @@ class ApplicationController < ActionController::Base
   
   private
   
-  def set_locale
-    I18n.locale = extract_locale
-  end
-  
   # Get locale code from request subdomain (like http://it.application.local:3000)
   # You have to put something like:
   #   127.0.0.1 gr.application.local
   # in your /etc/hosts file to try this out locally
-  def extract_locale
-    request.subdomains.first == 'fr' ? 'fr' : 'en'
-  end
-  
-  def call_rake(task, options = {})
-    options[:rails_env] ||= Rails.env
-    args = options.map { |n, v| "#{n.to_s.upcase}='#{v}'" }
-    system "/usr/local/bin/rake #{task} #{args.join(' ')} --trace 2>&1 >> #{Rails.root}/log/rake.log &"
+  def set_locale
+    I18n.locale = request.subdomains.first == 'fr' ? 'fr' : 'en'
   end
 
   def set_model_type
-    if request.domain.nil?
-      product_type = $DefaultProduct
-    else
-      product_type = case request.domain(2).split(".").first
-      when "cameras"
-        "camera_us"
-      when "printers"
-        "printer_us"
-      when "flooring", "builddirect"
-        "flooring_builddirect"
-      when "laptops", "walmart"
-        "laptop_walmart"
-      else
-        $DefaultProduct
-      end  
-    end
-    load_defaults(product_type)
+    load_defaults(request.domain(4)) # This gets anything up to www.printers.browsethenbuy.co.uk (n + 1 elements in the domain name)
   end
   
   def update_user
-    mysession = Session.find_by_id(session[:user_id])
-    if mysession.nil?
-      mysession = Session.new
-      mysession.ip = request.remote_ip
-      mysession.save
-      session[:user_id] = mysession.id
+    mysession_id = session[:user_id]
+    if mysession_id.nil?
+      mysession_id = Search.maximum(:session_id).to_i + 2
+      session[:user_id] = mysession_id
     end
 
-    mysession.version = Cluster.find_last_by_product_type($product_type).version
-    Session.current = mysession
+    # For Optemo Direct, there is no clustering, so just set the version to zero.
+    myversion = $DirectLayout ? 0 : Cluster.maximum(:version, :conditions => ['product_type = ?', $product_type])
+    Session.current = Session.new(mysession_id, myversion)
   end
   
   def title=(title)

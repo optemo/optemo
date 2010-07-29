@@ -48,7 +48,7 @@ module TigerScraper
       or (atts['title']||'').match(/refurbished/i) )
     atts['condition'] = "OEM" if (atts['title']||'').match(/oem/i) 
 
-    atts['product_type'] = $model.name
+    atts['product_type'] = $product_type
     
     # No other info available for weight...
     atts['itemweight'] = to_pounds(parse_weight(atts['shippingweight']))
@@ -56,7 +56,7 @@ module TigerScraper
     atts = clean_property_names atts
     
     # Dimensions
-    temp = no_blanks([atts['dimensions'], "#{atts['itemwidth']} x #{atts['itemheight']} x #{atts['itemlength']}" ])  
+    temp = [atts['dimensions'], "#{atts['itemwidth']} x #{atts['itemheight']} x #{atts['itemlength']}" ].compact.reject(&:blank?)
     mergeme = clean_dimensions(temp,100)
     mergeme.each{ |key, val| atts[key] = val}
     clean_atts = generic_printer_cleaning_code(atts)
@@ -72,7 +72,7 @@ module TigerScraper
     return clean_atts
   end
   
-  def rescrape_prices local_id, region
+  def rescrape_prices(local_id, region)
     url = id_to_details_url(local_id, region)
     props = {}
     begin
@@ -90,7 +90,7 @@ module TigerScraper
     return props
   end
   
-  def scrape local_id, region
+  def scrape(local_id, region)
     url = id_to_details_url local_id, region
     props = {}
     begin

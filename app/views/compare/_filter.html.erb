@@ -12,16 +12,16 @@
 <% end %>
 
 <% form_tag("",{:id => 'filter_form'}) do %>
-<% $Categorical["filter"].each do |feat| %>
-	<div class='feature'>
-		<!--div class='label'>
-			<%=t('products.' + feat)%>
-		</div-->
-		<div class='label'>
-			<%= render :partial => 'desc', :locals => {:feat => feat} %>
-			<%= link_to t('products.' + feat), "#" %>			
-		</div>
+<% $Categorical["filter"].each_with_index do |feat, index| %>
+	<div class='feature <%= "sv" if $DirectLayout %>'>
 		<% chosen_cats = chosencats(feat) %>
+		<% if $DirectLayout %>
+			<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat %>">Show Groups</div>
+		<% end %>
+		<div class='catlabel'>
+			<%= render :partial => 'desc', :locals => {:feat => feat} %>
+			<%= link_to t('products.' + feat), "#" %>
+		</div>
 		<% unless chosen_cats.nil? || chosen_cats.empty? %>
 			<%# At least one item selected %>
 			<% chosen_cats.each do |b| %>
@@ -33,14 +33,14 @@
 			<%# Nothing selected %>
 			<%= select('superfluous', feat, [t('products.compare.all'+feat+'s')] + CatSpec.all(feat), options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>		
 		<% end %>
-
+		
 		<%= hidden_field_tag "myfilter[#{feat}]", chosen_cats.join("*") %>
 	</div>
 <% end %>
 <% $Continuous["filter"].each do |feat| %>
 	<%= render :partial => 'slider', 
 		:locals => {:name => t('products.' + feat),
-		:val => feat,
+		:feat => feat,
 		:money_formatting => feat == 'price',
 		:overall_min => ContSpec.allMinMax(feat)[0],
 		:overall_max => ContSpec.allMinMax(feat)[1]} %>

@@ -3,7 +3,7 @@
 		<% if group %>
 			<%= link_to(image_tag("plus_line.png")+"<br>#{cluster.size}", 
 		  "/compare/sim/#{cluster.id}", :id => "sim#{i}", :class => 'simlinks rounded', 
-			  :"data-id" => "#{representative.id}", :"title" => "Browse through all " + cluster.size.to_s + " in this group") %>
+			  :"data-id" => "#{product.id}", :"title" => "Browse through all " + cluster.size.to_s + " in this group") %>
 		<% end %>
 	</div>
 
@@ -11,28 +11,29 @@
 		<%= groupDesc(group,i) %>
 	</div>
 	
-	<div class="productinfo rounded" data-id="<%= representative.id %>">
-		<div class="productimg">
-			<%= image_tag(imgurl(representative) , :"data-id" => representative.id, :class => "productimg", :alt => representative.smlTitle, :title => representative.smlTitle) %>
+	<div class="productinfo rounded" data-id="<%= product.id %>">
+		<div class="productimg_container">
+			<%= image_tag(imgurl(product) , :"data-id" => product.id, :class => "productimg", :alt => product.smlTitle, :title => product.smlTitle) %>
 			<% if $DragAndDropEnabled %>
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
 			<% end %>
 		</div>
-		<!--<a href="<%= representative.descurl %>" rel="nofollow" data-id="<%= representative.id %>" class="easylink" title="Click for product specifications"><%= representative.smlTitle %></a>-->
-		<%= representative.smlTitle %>
+		<!--<a href="<%= product.descurl %>" rel="nofollow" data-id="<%= product.id %>" class="easylink" title="Click for product specifications"><%= product.smlTitle %></a>-->
+		<%= product.smlTitle %>
 		<div class="itemfeatures">
+			<% contspecs = ContSpec.cache_all(product.id); catspecs = CatSpec.cache_all(product.id); binspecs = BinSpec.cache_all(product.id) %>
 			<% $Categorical["show"].each do |f|%>
-			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => CatSpec.cache(representative.id, f)} %>
+			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => catspecs[f]} %>
 			<% end %>
 			<% $Continuous["show"].each do |f|%>
-			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => ContSpec.cache(representative.id, f)} %>
+			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => contspecs[f]} %>
 			<% end %>
 			<% $Binary["show"].each do |f|%>
-			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => BinSpec.cache(representative.id, f)} %>
+			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => binspecs[f]} %>
 			<% end %>
 		</div>
 		<div class="price">
-			<%= number_to_currency(ContSpec.cache(representative.id, "price")) %>
+			<%= number_to_currency(contspecs["price"]) %>
 		</div>
 	</div>
 	<div style="clear:both;"></div>

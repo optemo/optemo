@@ -5,12 +5,6 @@ module Constants
   # or because we don't want to. The ones which are auto-generated
   # are listed in the general ignore list:  
   $general_ignore_list = ['id','created_at','updated_at']
-  
-  # For internal use.
-  $region_suffixes = {'CA' => '_ca', 'US' => ''}
-  
-  $ca = {'price'=>'price_ca', 'pricestr' => 'price_ca_str', 'bestoffer' => 'bestoffer_ca', 'instock'=> 'instock_ca','prefix' => 'CAD'}
-  $us = {'price'=>'price', 'pricestr' => 'pricestr', 'bestoffer' => 'bestoffer', 'prefix' => '', 'instock'=> 'instock'}
     
   # The definitive list of brands...
   $printer_brands = ["Advantus", "Apple", "ASUS", "Belkin", "Brother", "Buddy", "Canon", \
@@ -68,7 +62,6 @@ module CartridgeConstants
 end
 
 module CameraConstants
-  @@model = Camera
   @@scrapedmodel = ScrapedCamera
   @@brands = ["Agfa", "Akai", "Argus", "Bell & Howell", "Benq", "Bushnell", "Canon", "Casio", "Cobra", \
   "Concord Keystone", "Contax", "Digital Concepts", 'Digital Blue', "DXG", "Electrolux", "Elyssa", \
@@ -97,7 +90,6 @@ module CameraConstants
 end
 
 module PrinterConstants
-  @@model = Printer
   @@scrapedmodel = ScrapedPrinter
   @@brands = $printer_brands
   @@series = $printer_series

@@ -50,10 +50,11 @@ namespace :scrape_grabber do
     relevant_cart_ids = GrabberOffering.all.collect{|goff| goff.product_id}.uniq
     relevant_cart_ids.each do |cart_id|
       cart = Cartridge.find(cart_id)
-      update_bestoffer_regional(cart, 'US')
+      update_bestoffer_regional(cart, 'US') # This function does not exist.
     end
   end
 
+  # This whole function needs rewriting, it's probably not a priority.
   task :to_cartridge => :init do
     GrabberCartridge.all.each do |gc|
       clean_atts = inkgrabber_clean gc.attributes
@@ -61,14 +62,14 @@ namespace :scrape_grabber do
         matching_cartridges = find_matching_product [clean_atts['brand']], [clean_atts['model'], clean_atts['mpn']], Cartridge
         puts "#{matching_cartridges.length} matching cartridges found"
         cart = matching_cartridges[0] 
-        cart = create_record_from_atts(clean_atts, Cartridge) if cart.nil? 
+        cart = Cartridge.new(clean_atts) if cart.nil? 
         comp = create_uniq_compatibility cart.id, 'Cartridge', gc.printerid , 'Printer'
         goff = GrabberOffering.find_or_create_by_item_number(gc.item_number)
-        fill_in 'product_id', cart.id, goff
-        offr = find_or_create_offering goff, clean_atts
-        fill_in 'product_id', cart.id, offr
-        fill_in 'product_type', 'Cartridge', offr
-        fill_in 'url', special_url(gc.detailpageurl.strip), offr if gc.detailpageurl
+        parse_and_set_attribute 'product_id', cart.id, goff
+        offr = find_or_create_offering goff, clean_atts # This doesn't work.
+        parse_and_set_attribute 'product_id', cart.id, offr
+        parse_and_set_attribute 'product_type', 'Cartridge', offr
+        parse_and_set_attribute 'url', special_url(gc.detailpageurl.strip), offr if gc.detailpageurl
       else
         puts "#{clean_atts['brand']} #{clean_atts['model']} #{clean_atts['mpn']} not a valid entry"
       end
@@ -112,15 +113,15 @@ namespace :scrape_grabber do
           itemno = get_el(form.css('input[name="Item_No"]')).[]('value')
           gc = GrabberCartridge.find_or_create_by_item_number_and_printerid(itemno, matching[0].id)
           atts = {}
-            atts['detailpageurl'] = printer_page_url
-            atts['imageurl' ] = baseurl+pix[index+1]
-            atts['availability'] = avails[index+1]
-            atts['pricestr' ] = get_el(form.css('input[name="Item_Price"]')).[]('value')
-            atts['title' ] = get_el(form.css('input[name="Item_Name"]')).[]('value')
-            atts['printermodel' ] = stuff[0]
-            atts['printerbrand' ] = stuff[1]
-            atts['printerids' ] = matching.collect{|x| x.id} * ', '
-          fill_in_all atts, gc
+          atts['detailpageurl'] = printer_page_url
+          atts['imageurl' ] = baseurl+pix[index+1]
+          atts['availability'] = avails[index+1]
+          atts['pricestr'] = get_el(form.css('input[name="Item_Price"]')).[]('value')
+          atts['title'] = get_el(form.css('input[name="Item_Name"]')).[]('value')
+          atts['printermodel'] = stuff[0]
+          atts['printerbrand'] = stuff[1]
+          atts['printerids'] = matching.collect{|x| x.id} * ', '
+          atts.each{|name,val| parse_and_set_attribute(name, val, gc)}
         end
         puts "#{matching[0]} works"
       end
@@ -155,6 +156,6 @@ namespace :scrape_grabber do
     include CartridgeLib
     include Inkgrabber
     
-    $model = Cartridge
+    $product_type = Cartridge
   end
 end

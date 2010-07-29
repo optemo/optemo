@@ -67,19 +67,19 @@ class Product < ActiveRecord::Base
   
   def resize(opts = {})
     case opts[:size]
-      when 'S' then return unless imagesheight && imageswidth
-      when 'M' then return unless imagemheight && imagemwidth
-      when 'L' then return unless imagelheight && imagelwidth
+      when 'S' then return unless imgsh && imgsw
+      when 'M' then return unless imgmh && imgmw
+      when 'L' then return unless imglh && imglw
     end
     dbH = case opts[:size] 
-      when 'S' then Float(imagesheight)
-      when 'M' then Float(imagemheight) 
-      when 'L' then Float(imagelheight)
+      when 'S' then Float(imgsh)
+      when 'M' then Float(imgmh) 
+      when 'L' then Float(imglh)
     end
     dbW = case opts[:size]
-      when 'S' then Float(imageswidth)
-      when 'M' then Float(imagemwidth) 
-      when 'L' then Float(imagelwidth)
+      when 'S' then Float(imgsw)
+      when 'M' then Float(imgmw) 
+      when 'L' then Float(imglw)
     end
     maxHeight = Max[opts[:size]+'Height']
     maxWidth = Max[opts[:size]+'Width']
@@ -101,7 +101,7 @@ class Product < ActiveRecord::Base
   end
 
   def brand
-    @brand ||= cat_specs.cache(id, "brand")
+    @brand ||= cat_specs.cache_all(id)["brand"]
   end
 
   def smlTitle
@@ -120,8 +120,7 @@ class Product < ActiveRecord::Base
     @descurl ||= "/compare/show/"+[id,brand,model].join('-').tr(' /','_-')
   end
   
-  def display(attr)
-    data = send(attr)
+  def display(attr, data)
     if data.nil?
       return 'Unknown'
     elsif data == false
@@ -150,5 +149,9 @@ class Product < ActiveRecord::Base
       end
     end
     data.to_s+ending
+  end
+  
+  def self.per_page
+    9
   end
 end

@@ -2,112 +2,380 @@
 # cat = categorical
 # b = boolean
 # boost = boostexter feature for labels
+# show = this causes display in CompareController#show
+# showList = for listview, this causes display in .itemfeatures
 
 ####Spaces are required between elements in an array
 
-camera_us:
+#######################################
+#   Cameras.BrowseThenBuy - Cameras   #
+#######################################
+
+cameras:
+    product_type:
+        - camera_us
     layout:
         - gridview
     maximumresolution: 
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     displaysize:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     price:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
         - prefdir: -1
+        - minimum: 1
+        - maximum: 10000
     opticalzoom:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     slr:
         - Binary
-        - [boost, cluster]
+        - [boost, cluster, show]
     brand:
         - Categorical
-        - [boost, cluster, filter]
-      
-printer_us:
+        - [boost, cluster, filter, show]
+
+cameras.browsethenbuy.com:
+    product_type:
+        - camera_us
+    layout:
+        - gridview
+    maximumresolution: 
+        - Continuous
+        - [boost, cluster, filter, show]
+    displaysize:
+        - Continuous
+        - [boost, cluster, filter, show]
+    price:
+        - Continuous
+        - [boost, cluster, filter, show]
+        - prefdir: -1
+        - minimum: 1
+        - maximum: 10000
+    opticalzoom:
+        - Continuous
+        - [boost, cluster, filter, show]
+    slr:
+        - Binary
+        - [boost, cluster, show]
+    brand:
+        - Categorical
+        - [boost, cluster, filter, show]
+
+m.browsethenbuy.com:
+    product_type:
+        - camera_us
+    layout:
+        - gridview
+    maximumresolution: 
+        - Continuous
+        - [boost, cluster, filter, show]
+    displaysize:
+        - Continuous
+        - [boost, cluster, filter, show]
+    price:
+        - Continuous
+        - [boost, cluster, filter, show]
+        - prefdir: -1
+        - minimum: 1
+        - maximum: 10000
+    opticalzoom:
+        - Continuous
+        - [boost, cluster, filter, show]
+    slr:
+        - Binary
+        - [boost, cluster, show]
+    brand:
+        - Categorical
+        - [boost, cluster, filter, show]
+
+################################
+#  LaserPrinterHub - Printers  #
+################################
+
+printers.browsethenbuy.com:
+    product_type:
+        - printer_us
+    layout:
+        - lineview
+        - simple
+    price:
+        - Continuous
+        - [boost, cluster, filter, show]
+        - prefdir: -1
+        - minimum: 1
+        - maximum: 10000
+    ppm:
+        - Continuous
+        - [boost, cluster, filter, show, showList]
+    resolutionmax:
+        - Continuous
+        - [boost, cluster, filter, show]
+    resolution:
+        - Categorical
+        - [showList]
+    paperinput:
+        - Continuous
+        - [boost, cluster, filter, show, showList]
+    itemwidth:
+        - Continuous
+        - [boost, cluster, filter, show, showList]
+        - prefdir: -1
+    printserver:
+        - Binary
+        - [boost, cluster, filter, show]
+    scanner:
+        - Binary
+        - [boost, cluster, filter, show]
+    brand:
+        - Categorical
+        - [boost, cluster, filter, show]
+            
+laserprinterhub.com:
+    product_type:
+        - printer_us
     layout:
         - gridview
     price:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
         - prefdir: -1
+        - minimum: 1
+        - maximum: 10000
     ppm:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show, showList]
     resolutionmax:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
+    resolution:
+        - Categorical
+        - [showList]
     paperinput:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show, showList]
     itemwidth:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show, showList]
         - prefdir: -1
     printserver:
         - Binary
-        - [boost, cluster, filter]
+        - [boost, cluster, show, filter]
     scanner:
         - Binary
-        - [boost, cluster, filter]
+        - [boost, cluster, show, filter]
     brand:
         - Categorical
-        - [boost, cluster, filter]
-        
-flooring_builddirect:
+        - [boost, cluster, show, filter]
+
+localhost:
+    product_type:
+        - printer_us
     layout:
-        - lineview
+        - gridview
     price:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
         - prefdir: -1
-    width:
+        - minimum: 1
+        - maximum: 10000
+    ppm:
+        - Continuous
+        - [boost, cluster, filter, show, showList]
+    resolutionmax:
         - Continuous
         - [boost, cluster, filter, show]
+    resolution:
+        - Categorical
+        - [showList]
+    paperinput:
+        - Continuous
+        - [boost, cluster, filter, show, showList]
+    itemwidth:
+        - Continuous
+        - [boost, cluster, filter, show, showList]
+        - prefdir: -1
+    printserver:
+        - Binary
+        - [boost, cluster, filter, show]
+    scanner:
+        - Binary
+        - [boost, cluster, filter, show]
+    brand:
+        - Categorical
+        - [boost, cluster, filter, show]
+
+printers:
+    product_type:
+        - printer_us
+    layout:
+        - lineview
+        - simple
+    price:
+        - Continuous
+        - [boost, cluster, filter, show]
+        - prefdir: -1
+        - minimum: 1
+        - maximum: 10000
+    ppm:
+        - Continuous
+        - [boost, cluster, filter, show, showList]
+    resolutionmax:
+        - Continuous
+        - [boost, cluster, filter, show]
+    resolution:
+        - Categorical
+        - [showList]
+    paperinput:
+        - Continuous
+        - [boost, cluster, filter, show, showList]
+    itemwidth:
+        - Continuous
+        - [boost, cluster, filter, show, showList]
+        - prefdir: -1
+    printserver:
+        - Binary
+        - [boost, cluster, filter, show]
+    scanner:
+        - Binary
+        - [boost, cluster, filter, show]
+    brand:
+        - Categorical
+        - [boost, cluster, filter, show]
+
+#############################
+#  Build Direct - Flooring  #
+#############################
+
+builddirect.optemo.com:
+    product_type: 
+        - flooring_builddirect
+    layout:
+        - lineview
+        - simple
+    price:
+        - Continuous
+        - [boost, cluster, filter, show]
+        - prefdir: -1
+        - minimum: 1
+        - maximum: 10
+    width:
+        - Continuous
+        - [boost, cluster, filter, showList]
         - prefdir: 0
     species_hardness:
         - Continuous
-        - [boost, cluster]
+        - [boost, cluster, filter, show]
     miniorder:
         - Continuous
-        - [boost, cluster, filter, show]
+        - [boost, cluster, filter, show, showList]
         - prefdir: -1
     brand:
         - Categorical
-        - [boost, cluster, filter]    
+        - [boost, cluster, filter, show]    
     species:
         - Categorical
-        - [boost, filter]
+        - [boost, filter, show]
     finish:
         - Categorical
-        - [boost, filter, show]
+        - [boost, filter, show, showList]
     feature:
         - Categorical
-        - [boost, filter, show]
+        - [boost, filter, show, showList]
     colorrange:
         - Categorical
-        - [boost, filter]
+        - [boost, filter, show]
         
-laptop_walmart:
+flooring:
+    product_type: 
+        - flooring_builddirect
+    layout:
+        - lineview
+        - simple
+    price:
+        - Continuous
+        - [boost, cluster, filter, show]
+        - prefdir: -1
+        - minimum: 1
+        - maximum: 10
+    width:
+        - Continuous
+        - [boost, cluster, filter, show, showList]
+        - prefdir: 0
+    species_hardness:
+        - Continuous
+        - [boost, cluster, filter, show]
+    miniorder:
+        - Continuous
+        - [boost, cluster, filter, show, showList]
+        - prefdir: -1
+    brand:
+        - Categorical
+        - [boost, cluster, filter, show]    
+    species:
+        - Categorical
+        - [boost, filter, show]
+    finish:
+        - Categorical
+        - [boost, filter, show, showList]
+    feature:
+        - Categorical
+        - [boost, filter, show, showList]
+    colorrange:
+        - Categorical
+        - [boost, filter, show]
+                
+#############################
+#     Laptops - Walmart     #
+#############################
+                
+walmart.optemo.com:
+    product_type: 
+        - laptop_walmart
     layout:
         - lineview
     price:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
         - prefdir: -1
+        - minimum: 10
+        - maximum: 2000
     brand:
         - Categorical
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     hd:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     ram:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
     screensize:
         - Continuous
-        - [boost, cluster, filter]
+        - [boost, cluster, filter, show]
+        
+laptops:
+    product_type: 
+        - laptop_walmart
+    layout:
+        - lineview
+    price:
+        - Continuous
+        - [boost, cluster, filter, show]
+        - prefdir: -1
+        - minimum: 10
+        - maximum: 2000
+    brand:
+        - Categorical
+        - [boost, cluster, filter, show]
+    hd:
+        - Continuous
+        - [boost, cluster, filter, show]
+    ram:
+        - Continuous
+        - [boost, cluster, filter, show]
+    screensize:
+        - Continuous
+        - [boost, cluster, filter, show]
