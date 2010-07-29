@@ -319,7 +319,6 @@ namespace :data do
       
       parse_and_set_attribute('product_id',real.id, scraped)
       scraped.save
-      debugger
       ros = find_ros_from_scraped(scraped, scraped.retailer_id)
       ros.each{ |ro| parse_and_set_attribute('product_id', real.id, ro); ro.save }     
       
