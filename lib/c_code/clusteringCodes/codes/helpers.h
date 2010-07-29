@@ -562,54 +562,43 @@ void repOrder(double** dataCluster, int size, string mode, int conFeatureN, int 
 //          boolFeatureN, conFeatureNames, boolFeatureNames, stmt, productName);
 
 void utilityOrder(double** data, int* idA, int size, int** clusteredData, int** clusteredDataOrder, int** clusteredDataOrderU, int clusterN, int conFeatureN, 
-				int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, sql::ResultSet *res2, string productName){
+				int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, sql::ResultSet *res2, string productName, string region){
 	//	// clusteredData, clusteredDataOrder, clusteredDataOrderU
 
 	string capProductName = productName;
 	double utility;
 	double *avgUtilities = new double [clusterN];
-	capProductName[0] = productName[0] - 32;
 	string command;
 	int* orderRec = new int [clusterN];
 	for (int c=0; c<clusterN; c++){	
 		utility = 0.0;
 		orderRec[c] = c;
 		for (int i=0; i<clusteredData[c][0]; i++){
-				command = "SELECT ";
-				command += conFeatureNames[0];
-				for (int f=1; f<conFeatureN; f++){
-					command += ", ";
-					command += conFeatureNames[f]; 
-				}	
-				command += " from factors where (product_type= \'";
-				command += capProductName;
-				command += "\' and product_id=";
 				ostringstream idStream; 
 				idStream << clusteredData[c][i+1];
-				command += idStream.str();
-				command += ");";
-			//	cout<<"command is "<<command<<endl;
-				res2 = stmt->executeQuery(command);
-				if (res2->rowsCount()>0){
-					cout<<"it has rows"<<endl;
+					command = " select value from cont_specs where product_type=\'";
+					command += productName + "_" + region + "\' and name =\'utility\' and product_id=" + idStream.str() + ";";
+				//	cout<<"command is "<<command<<endl;
+					res2 = stmt->executeQuery(command);
 					res2->next();
-					for (int f=0; f<conFeatureN; f++){
-						utility += res2->getDouble(conFeatureNames[f]);
-					}	
-				}
+					utility += res2->getDouble("value");
+				
 		}
-		cout<<"utility is "<<utility<<endl;
+
 		avgUtilities[c] = utility/clusteredData[c][0];
-		cout<<"avgUtilities[c] is "<<avgUtilities[c]<<endl;
+
 	}
+
 	insertion_sort(avgUtilities, orderRec, clusterN);
+	
 	for (int c=0; c<clusterN; c++){
 		clusteredDataOrderU[clusterN-c-1][0] = clusteredData[orderRec[c]][0];
 		for (int i=0; i<clusteredData[orderRec[c]][0]; i++){
 		//	clusteredDataOrderU[clusterN-c-1][i+1] = clusteredDataOrder[orderRec[c]][i];
 			clusteredDataOrderU[c][i+1] = clusteredDataOrder[orderRec[c]][i];
 		//	cout<<"avgUtilities[orderRec[c]] is:"<<avgUtilities[orderRec[c]]<<endl;
-		}	
+		}
+			
 	}
   //for (int c=0; c<clusterN; c++){
   //	cout<<"clusteredData[orderRec["<<c<<"]][0] :"<<clusteredData[orderRec[c]][0]<<endl;
