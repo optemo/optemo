@@ -576,7 +576,7 @@ void utilityOrder(double** data, int* idA, int size, int** clusteredData, int** 
 		for (int i=0; i<clusteredData[c][0]; i++){
 				ostringstream idStream; 
 				idStream << clusteredData[c][i+1];
-					command = " select value from cont_specs where product_type=\'";
+					//command = " select value from cont_specs where product_type=\'";
 					command += productName + "_" + region + "\' and name =\'utility\' and product_id=" + idStream.str() + ";";
 				//	cout<<"command is "<<command<<endl;
 					res2 = stmt->executeQuery(command);

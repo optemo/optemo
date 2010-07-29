@@ -10,23 +10,15 @@ void insertOutliers(int conFeatureN, int boolFeatureN, int clusterN, sql::Result
 						int c, r;
 						
 						string command, pCommand;
-						command ="select * from clusters where product_type=\'";
-						command += productName;
-						command += "_";
-						command += region;
-						command += "\' and version=";
-						command += verStr.str();
+						command ="select * from clusters where product_type=\'" + productName + "_" + region + "\' and version=" + verStr.str();
 					//	command += " and cluster_size<";
 					//	command += clusterNStr.str();
 						
-						command +=" and parent_id NOT IN (select id from clusters where version=";
-						command += verStr.str();
+						command +=" and parent_id NOT IN (select id from clusters where version=" + verStr.str();
 					//	command += " and cluster_size<";
 					//	command += clusterNStr.str();
-						command += " and layer>(select max(layer) from "; //") and layer>(select max(layer) from ";
-						command += "clusters where version=";
-						command += verStr.str();
-						command += ")-2);";
+						command += " and layer>(select max(layer) from clusters where version=" + verStr.str() + ")-2);";
+					//	cout<<"outl command 1 is "<<command<<endl;
 						res = stmt->executeQuery(command);
 						
 						//inserting the ourliers to the closest cluster mean based on continuous features
@@ -43,34 +35,21 @@ void insertOutliers(int conFeatureN, int boolFeatureN, int clusterN, sql::Result
 							ostringstream vStr;
 							vStr << version;
 							cidStr<< cluster_id;
-							command = "select * from nodes where product_type=\'";
-							command += productName; 
-							command += "_";
-							command += region; 
-							command += "\' and version=";
-							command += vStr.str();
-							command += " and cluster_id=";
-							command += cidStr.str();
-							command += ";";
+							command = "select * from nodes where product_type=\'"+ productName + "_" + region + "\' and version=" + vStr.str() + " and cluster_id=" + cidStr.str() + ";";
 						//	cout<<"commadn is :::"<<command<<endl;
+						//	cout<<"outl command 2 is "<<command<<endl;
 							res2 = stmt->executeQuery(command);
 							c = 0;
 							while (res2->next()){
 																
 								
 								for (int f=0; f<conFeatureN; f++){
-									command = "select value from cont_specs where product_type=\'";
-									command += productName; 
-									command += "_";
-									command += region;
-									command +="\' and name=\'";
-									command += conFeatureNames[f];
-									command += "\' and product_id=";
-									ostringstream pIDS; 
+									ostringstream pIDS;
 									pIDS << res2->getInt("product_id");
-									command += pIDS.str();
-									command += ";";
+									command = "select value from cont_specs where product_type=\'"+ productName+"_"+region+"\' and name=\'"+conFeatureNames[f]+ "\' and product_id="; 
+									command += pIDS.str() +  ";";
 									res3 = stmt->executeQuery(command);
+								
 									res3->next();
 									mean[f][r] = mean[f][r] + res3->getDouble("value");
 								}
@@ -83,12 +62,13 @@ void insertOutliers(int conFeatureN, int boolFeatureN, int clusterN, sql::Result
 							r++;
 						}
 						for (int f=0; f<conFeatureN; f++) free(mean[f]);
-						free(mean);
+					//	free(mean);
 						
 						//finding the nearest 
 						double distance;
 						int clusterPick;
 						double minDistance;
+						cout<<"after mean"<<endl;
 						for (int i=0; i<outlier_ids.size(); i++){
 						
 							minDistance = DBL_MAX;
@@ -100,27 +80,21 @@ void insertOutliers(int conFeatureN, int boolFeatureN, int clusterN, sql::Result
 							for (int j=0; j<r; j++){
 							    distance = 0;	
 								for (int f=0; f<conFeatureN; f++){
-									command = "select * from cont_specs where product_type=\'";
-									command += productName;
-									command += "_";
-									command += region;
-									command += "\' and product_id = ";
-								
-									command += pIdStr.str();
-									command += " and (name=\'";
-									command += conFeatureNames[f];
-									command += "\');";
+									command = "select * from cont_specs where product_type=\'" + productName+ "_" + region + "\' and product_id = " + pIdStr.str()
+											+" and (name=\'"+ conFeatureNames[f] + "\');";
 									res = stmt->executeQuery(command);
 									res->next();
 									fval = res->getDouble("value");
+									cout<<"before dist"<<endl;
 									distance = distance + sqrt(((fval - mean[f][j]) * (fval - mean[f][j])));
+										cout<<"after dist"<<endl;
 								}
 								if (distance < minDistance){
 									minDistance = distance; 
 									clusterPick = clusterIds[j];
 								}
 							}
-							
+							cout<<"HERE ins"<<endl;
 							//inserting it 
 							command = "INSERT into nodes (product_type, product_id, cluster_id, version) values(\'";
 							command += productName; 
@@ -157,15 +131,8 @@ void insertOutliers(int conFeatureN, int boolFeatureN, int clusterN, sql::Result
 								parStr << parentId;
 								
 								//inserting it 
-								command = "INSERT into nodes (product_type, product_id, cluster_id, version) values(\'";
-								command += productName;
-								command += "_";
-								command += region;
-								command += "\', ";
-								command += pIdStr.str();
-								command += ", ";
-								command += parStr.str();
-								command += ", ";
+								command = "INSERT into nodes (product_type, product_id, cluster_id, version) values(\'" +  productName +  "_" + region + 
+											"\', " + pIdStr.str() +  ", " + parStr.str() + ", ";
 								ostringstream vStr;
 								vStr << version;
 								command += vStr.str();

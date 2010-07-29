@@ -169,15 +169,15 @@ if 	(layer == 1){
 				 		   dataCluster[j][f] = temp_data[find(temp_idA, clusteredData[c][j+1], non_out_index.size())][f]; 
 						clusteredDataOrder[c][j] = clusteredData[c][j+1];
 				}  
-		repOrder(dataCluster, clusteredData[c][0], "median", conFeatureN, boolFeatureN, clusteredDataOrder[c],  weights);
+	//	repOrder(dataCluster, clusteredData[c][0], "median", conFeatureN, boolFeatureN, clusteredDataOrder[c],  weights);
         for (int j = 0; j < clusteredData[c][0]; j++) free(dataCluster[j]);
 	  }
-	cout<<"HERE"<<endl;
-			utilityOrder(temp_data, temp_idA, non_out_index.size(), clusteredData, clusteredDataOrder, clusteredDataOrderU, clusterN, conFeatureN, 
-                  boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName, region); 
-			cout<<"HERE2"<<endl;
+//	cout<<"HERE"<<endl;
+		//	utilityOrder(temp_data, temp_idA, non_out_index.size(), clusteredData, clusteredDataOrder, clusteredDataOrderU, clusterN, conFeatureN, 
+        //          boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName, region); 
+//			cout<<"HERE2"<<endl;
 	    // getStatisticsClusteredData(temp_data, clusteredDataOrderU, average, temp_idA, non_out_index.size(), clusterN, conFeatureN, conFeatureRangeC);	    
-	cout<<"HERE3"<<endl;
+//	cout<<"HERE3"<<endl;
 
 //	void utilityOrder(double** data, int* idA, int size, int** clusteredData, int** clusteredDataOrder, int** clusteredDataOrderU, int clusterN, int conFeatureN, 
 //					int boolFeatureN, string* conFeatureNames, string* boolFeatureNames, sql::Statement *stmt, sql::ResultSet *res2, string productName, string region)
@@ -250,10 +250,10 @@ if 	(layer == 1){
 				prodId = resNodes->getInt("product_id");
 			//	void readData(double* dataPoint, int productId, sql::ResultSet res, sql::Statement stmt, string* conFeatureNames, int conFeatureN, string* boolFeatureNames, int boolFeatureN, 
 			//					string* catFeatureNames, int catFeatureN){
-				cout<<"before read, prodId is "<<prodId<<endl;
+			//	cout<<"before read, prodId is "<<prodId<<endl;
 				
 				readData(tdata[s], brands, s, prodId, res, stmt, conFeatureNames, conFeatureN, boolFeatureNames, boolFeatureN, catFeatureNames, catFeatureN);
-				cout<<"after read"<<endl;
+			//	cout<<"after read"<<endl;
 				idA[s] = prodId;
 			//	brands[s] = resNodes->getString("brand");
 			//	for (int f=0; f<conFeatureN; f++) average[f] += tdata[s][f];    
@@ -318,9 +318,9 @@ cout<<"THERE 2"<<endl;
 	   	int **indicators = new int* [conFeatureN]; 
  	   	for (int j=0; j<conFeatureN; j++) indicators[j] = new int[size+1]; //re
 
-			utilityOrder(tdata, idA, size, clusteredData, clusteredDataOrder, clusteredDataOrderU, 
-                    clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName, region); 
-				cout<<"after uo"<<endl; 
+	//		utilityOrder(tdata, idA, size, clusteredData, clusteredDataOrder, clusteredDataOrderU, 
+      //              clusterN, conFeatureN, boolFeatureN, conFeatureNames, boolFeatureNames, stmt, res2, productName, region); 
+	//			cout<<"after uo"<<endl; 
 	//	 getStatisticsData(tdata, clusteredDataOrderU, indicators, idA, s, clusterN, conFeatureN, conFeatureRangeC);
 		cout<<"THERE 3"<<endl;
 		  saveClusteredData(tdata, idA, size, brands, parent_id,clusteredData, layer, clusterN, conFeatureN, 

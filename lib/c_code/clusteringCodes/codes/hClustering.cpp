@@ -341,7 +341,7 @@ int main(int argc, char** argv){
 					clustered = 1;
 				}
       		if (clustered){
-			//	insertOutliers(conFeatureN, boolFeatureN, clusterN, res, res2, res3, stmt, stmt2, conFeatureNames, boolFeatureNames, productName, version, region, outlier_ids);	
+				insertOutliers(conFeatureN, boolFeatureN, clusterN, res, res2, res3, stmt, stmt2, conFeatureNames, boolFeatureNames, productName, version, region, outlier_ids);	
       			leafClustering(conFeatureN, boolFeatureN, clusterN, conFeatureNames, boolFeatureNames,res, res2, res3, stmt, productName, version, region);	
       			myfile2<<"layer "<<layer<<endl;
         	}else{
