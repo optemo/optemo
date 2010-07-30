@@ -88,7 +88,6 @@ module GenericScraper
           column_names = RetailerOffering.column_names
           retail_offering_atts = clean_atts.reject{|r| not column_names.index(r)}
           ro = RetailerOffering.new(retail_offering_atts)
-          ro.save
         end
 
         # Validation!
@@ -310,9 +309,10 @@ namespace :data do
     
     match_me.delete_if{|x| (x.model.nil? and x.mpn.nil?) or x.brand.nil?}
     announce "#{match_me.count} #{$scrapedmodel.name}s are identifiable -- will match these."
+    products = Product.find(:all, :conditions => ["product_type=?",$product_type])
     match_me.each_with_index do |scraped, i|
-      matches = match_product_to_product(scraped, $product_type, $series)
-      
+      matches = match_product_to_product(scraped, products, $series)
+      announce "On Item " + i.to_s if i%10 == 0
       real = matches.first
       # If there is no product match, create a new product (and all the attributes).
       real = create_record_from_attributes(scraped.attributes) if real.nil? 
@@ -447,7 +447,7 @@ namespace :data do
   task :update_bestoffers do 
     activerecords_to_save = []
     Product.find(:all, :conditions => ["product_type=?", $product_type]).each do |p|
-      update_bestoffer p
+      update_bestoffer(p)
       activerecords_to_save.push(p)
     end
     timed_announce "Done updating bestoffers; saving to database"

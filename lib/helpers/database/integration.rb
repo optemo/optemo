@@ -14,7 +14,7 @@ module IntegrationHelper
   end
   
   # Links RetailerOffering to ScrapedProduct
-  def link_ro_and_sp ro, sp
+  def link_ro_and_sp(ro, sp)
     local_id = ro.local_id || sp.local_id
     retailer_id = ro.retailer_id || sp.retailer_id
     if local_id.nil? or retailer_id.nil?
@@ -30,9 +30,8 @@ module IntegrationHelper
   end
   
   # Finds all RetailerOfferings linked to ScrapedProduct
-  def find_ros_from_scraped local_id, retailer_id
-    ros = RetailerOffering.find_all_by_local_id_and_retailer_id(local_id, retailer_id)
-    return ros.reject{|x| x.product_type != $product_type}
+  def find_ros_from_scraped(local_id, retailer_id)
+    RetailerOffering.find_all_by_local_id_and_retailer_id_and_product_type(local_id, retailer_id, $product_type)
   end
   
 end

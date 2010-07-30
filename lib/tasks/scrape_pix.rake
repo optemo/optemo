@@ -83,7 +83,6 @@ namespace :pictures do
     products_without_resized_images = products.reject{|product| ["s","m","l"].inject(true){|result,sz| result & File.exist?(filename_from_id(product.id,sz))}}
     # Take the intersection of those products with unresized images, like 1094.jpg, but without resized images, like 1094_l.jpg
     unresized += (products_with_unresized_images & products_without_resized_images)
-    debugger
     unresized_ids = unresized.map{|x|x.id}
     log "Resizing #{unresized_ids.length} pictures"
     failed = resize_all(unresized_ids)
@@ -112,9 +111,9 @@ namespace :pictures do
     really_picless.each do |current_product| 
       sps = $scrapedmodel.find(:all, :conditions => ["product_id=?",current_product.id])
       
-      #if sps.empty? # Try another method of finding the image URL: the model name
-        sps += $scrapedmodel.find_all_by_model(current_product.model) unless current_product.model.nil?
-        sps += $scrapedmodel.find_all_by_mpn(current_product.mpn) unless current_product.mpn.nil?
+      #if sps.empty? # Try another method of finding the image URL: the model name (either alone or in the title)
+      sps += $scrapedmodel.find_all_by_model(current_product.model) + $scrapedmodel.find(:all, :conditions => ["title regexp ?", current_product.model]) unless current_product.model.nil?
+      sps += $scrapedmodel.find_all_by_mpn(current_product.mpn) + $scrapedmodel.find(:all, :conditions => ["title regexp ?", current_product.mpn]) unless current_product.mpn.nil?
       #end
       temp_urls = sps.collect{|x| x.imageurl}.reject(&:blank?)
       unless temp_urls.nil? || temp_urls.empty?
@@ -127,5 +126,13 @@ namespace :pictures do
     log "Downloading #{urls.length} missing picture files"
     failed << download_all_pictures(urls)
     log " Num Failed: #{failed.size}"
+  end
+  
+  task :disable_products_with_missing_pictures do
+    puts "Product.valid.instock has length: " + Product.valid.instock.length
+    picless = picless_records()
+    puts "#{picless.count} #{$product_type} pictures are missing!"
+    picless.each{|pid| (Product.find(pid).instock = false).save }
+    puts "Now Product.valid.instock has length: " + Product.valid.instock.length
   end
 end
