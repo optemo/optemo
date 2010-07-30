@@ -2,7 +2,7 @@
 #include "kmeans_reza.h"
 #include "qmeasures_reza.h"
 #include "saveClustered.h"
-#include "querries.h"
+#include "queries.h"
 
 
 //map<string,int> brand2int;
