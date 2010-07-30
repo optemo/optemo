@@ -131,7 +131,6 @@ string preClustering(map<const string, int>productNames, string productName, str
 	   }
        
 	   filteringCommand += ";";
-	cout<<"filtering Command is :"<<filteringCommand<<endl;
 	return filteringCommand;
 	
 }
