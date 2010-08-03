@@ -721,6 +721,13 @@ function DBinit() {
 		matchContains: true,
 		scrollHeight: 220
 	});
+	
+	$('#surveysubmit').click(function(){
+		trackPage('survey/submit');
+		$('#feedback').css('display','none');
+		fadeout('/survey/submit?' + $("#surveyform").serialize(), null, 300, 70);
+		return false;
+	});
 }
 
 function ShowInit() {
@@ -835,7 +842,7 @@ $(document).ready(function() {
 	//Static feedback box
 	$('#feedback').click(function(){
 		trackPage('survey/feedback');
-		fadeout('/survey/index', null, 600, 300);
+		fadeout('/survey/index', null, 600, 480);
 		return false;
 	});
 	
@@ -849,12 +856,7 @@ $(document).ready(function() {
 		trackPage('survey/no');
 		return false;
 	});
-	$('#surveysubmit').click(function(){
-		trackPage('survey/submit');
-		$('#feedback').css('display','none');
-		fadeout('/survey/submit?' + $("#surveyform").serialize(), null, 300, 70);
-		return false;
-	});
+	
 	if (LINE_ITEM_VIEW) {
 	    //Tour section
     	$('#popupTour1, #popupTour2, #popupTour3, #popupTour4').each(function(){
