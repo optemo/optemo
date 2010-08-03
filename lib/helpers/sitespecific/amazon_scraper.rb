@@ -489,7 +489,7 @@ module AmazonScraper
     place = retailer.region.intern
     current_page = 1
     (2..caller.length).each do |idx|  
-      p "[#{idx}]: #{caller[idx]}#{html}"
+      p "[#{idx}]: #{caller[idx]}"
     end
     begin
       begin 

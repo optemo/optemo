@@ -50,7 +50,7 @@ namespace :pictures do
   end
   
   task :update_pic_stats do
-    record_pic_stats(Product.all(:conditions => ["product_type=?", $product_type]))
+    record_pic_stats(Product.find(:all, :conditions => ["product_type=?", $product_type]))
   end
   
   task :download_pictures do
@@ -74,7 +74,7 @@ namespace :pictures do
   
   task :resize_missing do
     have_urls = $scrapedmodel.all.reject{|x| x.imageurl.nil?}.collect{|x| x.product_id}.uniq
-    products = Product.all(:conditions => ["product_type=?", $product_type])
+    products = Product.find(:all, :conditions => ["product_type=?", $product_type])
     no_resized_urls = products.reject{|x| !x.imgsurl.nil? and !x.imgmurl.nil? and !x.imglurl.nil?}
     unresized = no_resized_urls.reject{|y| !have_urls.include?(y)}
     unresized += no_resized_urls.reject{|product| not (filename_from_id(product.id,""))}
@@ -92,7 +92,8 @@ namespace :pictures do
     # We need to pass a list of products, not just a list of product_ids
     unless unresized_ids.empty?
       pid_string = "id IN (" + unresized_ids.inject(""){|pid_string,pid|pid_string + pid.to_s + ","}.chop + ")"
-      record_pic_stats(Product.find(:all, :conditions => [pid_string]))
+      # The line below is not needed anymore for the main rake tasks, BUT, if you run resize_missing on its own you will miss the pic stats part.
+      #record_pic_stats(Product.find(:all, :conditions => [pid_string]))
     end
     puts "Done"
   end

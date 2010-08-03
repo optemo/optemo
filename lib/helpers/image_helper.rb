@@ -129,26 +129,20 @@ module ImageHelper
     end
   end
   
-  def record_pic_stats recset
+  def record_pic_stats(recset)
     activerecords_to_save = []
     recset.each do |record|
       # rec = record
       # rec = Product.find(record, :conditions => ["product_type=#{$product_type}"])
       @@size_names.each do |sz|
         if File.exist?(filename_from_id(record.id,sz))
-          begin
-            image = Magick::ImageList.new(filename_from_id(record.id, sz))
-            image = image.first if image and image.class.to_s == 'Magick::ImageList'
-          rescue Exception => e
-            puts "WARNING: Can't get dimensions for #{sz} size pic of product #{record.id}"
-            puts "#{e.class.name} #{e.message}"
-            image = nil
-          end
+          # There is no error checking at the moment. Catching an exception here seems like a big mistake for some reason.
+          image = Magick::ImageList.new(filename_from_id(record.id, sz))
+          image = image.first if image and image.class.to_s == 'Magick::ImageList'
           if image
             parse_and_set_attribute("img#{sz}url", url_from_item_and_sz(record.id, sz), record)
             parse_and_set_attribute("img#{sz}height", image.rows, record) if image.rows
             parse_and_set_attribute("img#{sz}width", image.columns, record) if image.columns
-            activerecords_to_save.push(record)
           end
         else
           #debugger
@@ -158,11 +152,8 @@ module ImageHelper
           # parse_and_set_attribute("img#{sz}width", nil, record)
         end
       end
-    end
-    if activerecords_to_save.first
-      activerecords_to_save.first.class.transaction do
-        activerecords_to_save.each(&:save)
-      end
+      image = nil
+      record.save
     end
   end
   
