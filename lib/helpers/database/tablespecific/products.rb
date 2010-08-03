@@ -31,31 +31,29 @@ module ProductsHelper
   # just itself; and 4,5,and 6 are also the same product.
   # OK to used for any db model that can be compared 
   # by the brand, model, and mpn attributes.
-  def get_matching_sets recs=Product.all, series=[]
+  def get_matching_sets recs=Product.find(:all, :conditions => ["product_type=?",$product_type]), series=[]
      matchingsets = []
-     # Should this not be Product.all(:conditions => ... ) ?
      # Check other get_matching_sets
-     recclass = recs.first.class
      recs.each do |rec|
-       matchingsets << (match_product_to_product rec, recclass, series).collect{|x| x.id}
+       matchingsets << (match_product_to_product(rec, recs, series)).collect{|x| x.id}
      end
      return matchingsets.collect{|x| x.sort}.uniq
      # return matchingsets # This can't possibly be intentional, it seems like the array is modified and then the modification not used.
   end
-  
+
   # Returns itself and any other matching products(or other specified model)
-  def match_product_to_product ptr, recclass=$product_type, series=[]
+  def match_product_to_product(ptr, products, series = [])
     makes = [just_alphanumeric(ptr.brand)].reject{ |x| x.nil? or x == ""}
     modelnames = [just_alphanumeric(ptr.model),just_alphanumeric(ptr.mpn)].reject{ |x| x.nil? or x == ""}
-    
-    return find_matching_product(makes, modelnames, series)
+    return find_matching_product(makes, modelnames, products, series)
   end
+
   # Finds a record of the given db model by 
   # possible make(aka brand) and model lists. 
   # Example: find_matching_product( ['HP','hewlett-packard'],  ['Q123xd',nil])
   # The series is used to clean the model name, in case you had "Phaser 100abc"
   # Then if you list "Phaser" in the series, it'll try to match "100abc" as the model name too.
-  def find_matching_product(rec_makes, rec_modelnames, series=[])
+  def find_matching_product(rec_makes, rec_modelnames, products, series=[])
     matching = []
     makes = rec_makes.collect{ |x| just_alphanumeric(x) }.reject(&:blank?)
     return nil if makes.size == 0
@@ -78,8 +76,9 @@ module ProductsHelper
       }
     }
     modelnames.reject{|x| x.nil? or x == ''}.each{|x| makes.each{|y| x.gsub!(/#{y}/,'')}}.uniq!
-    
-    Product.find(:all, :conditions => ["product_type=?",$product_type]).each do |ptr|
+    debugger
+    # This is not efficient.
+    products.each do |ptr|
       p_makes = [just_alphanumeric(ptr.brand)].reject(&:blank?)
       p_modelnames = [just_alphanumeric(ptr.model), just_alphanumeric(ptr.mpn)].reject(&:blank?)
       series.each { |ser| p_modelnames.each {|pmn| pmn.gsub!(/#{ser}/,'') } }

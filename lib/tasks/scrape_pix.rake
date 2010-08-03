@@ -50,7 +50,7 @@ namespace :pictures do
   end
   
   task :update_pic_stats do
-    record_pic_stats(Product.all(:conditions => ["product_type=?", $product_type]))
+    record_pic_stats(Product.find(:all, :conditions => ["product_type=?", $product_type]))
   end
   
   task :download_pictures do
@@ -74,7 +74,7 @@ namespace :pictures do
   
   task :resize_missing do
     have_urls = $scrapedmodel.all.reject{|x| x.imageurl.nil?}.collect{|x| x.product_id}.uniq
-    products = Product.all(:conditions => ["product_type=?", $product_type])
+    products = Product.find(:all, :conditions => ["product_type=?", $product_type])
     no_resized_urls = products.reject{|x| !x.imgsurl.nil? and !x.imgmurl.nil? and !x.imglurl.nil?}
     unresized = no_resized_urls.reject{|y| !have_urls.include?(y)}
     unresized += no_resized_urls.reject{|product| not (filename_from_id(product.id,""))}
@@ -83,7 +83,6 @@ namespace :pictures do
     products_without_resized_images = products.reject{|product| ["s","m","l"].inject(true){|result,sz| result & File.exist?(filename_from_id(product.id,sz))}}
     # Take the intersection of those products with unresized images, like 1094.jpg, but without resized images, like 1094_l.jpg
     unresized += (products_with_unresized_images & products_without_resized_images)
-    debugger
     unresized_ids = unresized.map{|x|x.id}
     log "Resizing #{unresized_ids.length} pictures"
     failed = resize_all(unresized_ids)
@@ -93,7 +92,8 @@ namespace :pictures do
     # We need to pass a list of products, not just a list of product_ids
     unless unresized_ids.empty?
       pid_string = "id IN (" + unresized_ids.inject(""){|pid_string,pid|pid_string + pid.to_s + ","}.chop + ")"
-      record_pic_stats(Product.find(:all, :conditions => [pid_string]))
+      # The line below is not needed anymore for the main rake tasks, BUT, if you run resize_missing on its own you will miss the pic stats part.
+      #record_pic_stats(Product.find(:all, :conditions => [pid_string]))
     end
     puts "Done"
   end
@@ -112,9 +112,9 @@ namespace :pictures do
     really_picless.each do |current_product| 
       sps = $scrapedmodel.find(:all, :conditions => ["product_id=?",current_product.id])
       
-      #if sps.empty? # Try another method of finding the image URL: the model name
-        sps += $scrapedmodel.find_all_by_model(current_product.model) unless current_product.model.nil?
-        sps += $scrapedmodel.find_all_by_mpn(current_product.mpn) unless current_product.mpn.nil?
+      #if sps.empty? # Try another method of finding the image URL: the model name (either alone or in the title)
+      sps += $scrapedmodel.find_all_by_model(current_product.model) + $scrapedmodel.find(:all, :conditions => ["title regexp ?", current_product.model]) unless current_product.model.nil?
+      sps += $scrapedmodel.find_all_by_mpn(current_product.mpn) + $scrapedmodel.find(:all, :conditions => ["title regexp ?", current_product.mpn]) unless current_product.mpn.nil?
       #end
       temp_urls = sps.collect{|x| x.imageurl}.reject(&:blank?)
       unless temp_urls.nil? || temp_urls.empty?
@@ -127,5 +127,13 @@ namespace :pictures do
     log "Downloading #{urls.length} missing picture files"
     failed << download_all_pictures(urls)
     log " Num Failed: #{failed.size}"
+  end
+  
+  task :disable_products_with_missing_pictures do
+    puts "Product.valid.instock has length: " + Product.valid.instock.length
+    picless = picless_records()
+    puts "#{picless.count} #{$product_type} pictures are missing!"
+    picless.each{|pid| (Product.find(pid).instock = false).save }
+    puts "Now Product.valid.instock has length: " + Product.valid.instock.length
   end
 end

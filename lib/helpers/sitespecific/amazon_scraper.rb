@@ -66,6 +66,10 @@ module AmazonScraper
       atts['salepricestr'] = "Less than #{atts['salepricestr']}"
     end
     
+    if (atts['priceint'].nil? && (!atts['pricestr'].nil?))
+      atts['priceint'] = (atts['pricestr'].gsub(/\$/i,'').to_f * 100).to_i
+    end
+    
     if (atts['stock']).to_s == 'false'
       # Check on site if actually out of stock
       ['price', 'priceint', 'pricestr', 'saleprice', 'salepriceint', 'salepricestr'].each{|x| atts['x'] = nil}
@@ -365,6 +369,7 @@ module AmazonScraper
     cleaned_atts['brand'] = temp1 || temp2
     #cleaned_atts['condition'] ||= 'New'
     atts['resolutionmax'] = get_max_f(atts['resolution']) if atts['resolution']
+    atts['product_type'] = $product_type
     return cleaned_atts
   end
   
@@ -403,6 +408,7 @@ module AmazonScraper
     rearrange_dims!(cleaned_atts, ['D', 'H', 'W'], true)
     # TODO the following is a hack.
     cleaned_atts['displaysize'] = nil if ['0', '669.2913385827'].include?(cleaned_atts['displaysize'] || '').to_s
+    cleaned_atts['product_type'] = $product_type
     return cleaned_atts
   end
   
@@ -451,8 +457,6 @@ module AmazonScraper
   end
   
   # Cache the cache. This is a big memory user, but it works out OK if the machine has 4GB of ram.
-  # However, this is quite slow, and for larger XML feeds (Amazon's camera feed is 334 pages) a SAX parser is probably better. 
-  # See around line 169 of this file.
   def open_nokocache(retailer)
     unless @nokocaches
       @nokocaches = {}
@@ -484,6 +488,9 @@ module AmazonScraper
     bnode = browse_node_id
     place = retailer.region.intern
     current_page = 1
+    (2..caller.length).each do |idx|  
+      p "[#{idx}]: #{caller[idx]}"
+    end
     begin
       begin 
         is = ItemSearch.new( $search_index, {'BrowseNode' => bnode, 'MerchantID' => merch, 'ItemPage' => current_page, :service => 'AWSECommerceService' } ) # :country => place, :response_group => 'Offers',

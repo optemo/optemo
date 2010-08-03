@@ -68,7 +68,9 @@ int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string
 			
 			
 			ostringstream idStream;
-			
+//   		if (clusteredDataOrderU[c][j+1]==0){
+//   			cout<<" c is                         "<<c<<"j is          "<<j<<endl;
+//   		}
 			idStream<<clusteredDataOrderU[c][j+1];
 			command +=  idStream.str();
 			
@@ -110,7 +112,7 @@ int clusterN, int conFeatureN, int boolFeatureN, string* conFeatureNames, string
 
 }	
 
-void readData(double* dataPoint, string* disData, string* brands, int s, int prodId, sql::ResultSet *res, sql::Statement *stmt, string* conFeatureNames, int conFeatureN, string* boolFeatureNames, int boolFeatureN, 
+void readData(double* dataPoint, string* brands, int s, int prodId, sql::ResultSet *res, sql::Statement *stmt, string* conFeatureNames, int conFeatureN, string* boolFeatureNames, int boolFeatureN, 
 				string* catFeatureNames, int catFeatureN){
 					
 						string command;
@@ -123,11 +125,12 @@ void readData(double* dataPoint, string* disData, string* brands, int s, int pro
 							command += " AND name=\'";
 							command += conFeatureNames[f];
 							command += "\';";
+						//	cout<<"command c is "<<command<<endl;
 							res = stmt->executeQuery(command);
-							res->next();			
+							res->next();
 							dataPoint[f] = res->getDouble("value");
 						}
-
+				//		cout<<"after cont "<<endl;
 						for (int f=0; f<boolFeatureN; f++){
 								command = "SELECT * from bin_specs where product_id=";
 								command += pIdStream.str();
@@ -138,17 +141,17 @@ void readData(double* dataPoint, string* disData, string* brands, int s, int pro
 								res->next();
 								dataPoint[f+conFeatureN] = res->getDouble("value");
 						}
-						
-						for (int f=0; f<catFeatureN; f++){
+				//		cout<<"after bool"<<endl;
+					//	for (int f=0; f<catFeatureN; f++){
 								command = "SELECT * from cat_specs where product_id=";
 								command += pIdStream.str();
 								command += " AND name=\'";
-								command += catFeatureNames[f];
+								command += catFeatureNames[0];
 								command += "\';";
+					//			cout<<"command is "<<command<<endl;
 								res = stmt->executeQuery(command);
 								res->next();
-								disData[f] = res->getString("value");
-								if (catFeatureNames[f]=="brand") brands[s] = disData[f];
-						}
-						
+								brands[s] = res->getString("value");
+					//	}
+				//				cout<<"after brad"<<endl;
 		}				

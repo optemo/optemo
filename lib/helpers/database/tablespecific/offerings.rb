@@ -9,7 +9,7 @@ module OfferingsHelper
   
   # Does record_updated_price and copies 
   # over other offering attributes as well.
-  def update_offering newparams, offering
+  def update_offering(newparams, offering)
     newprice = newparams['priceint']
     record_updated_price(newprice, offering) if newprice
     newparams.each{|name,val| parse_and_set_attribute(name, val, offering)}
@@ -20,7 +20,7 @@ module OfferingsHelper
   # if the price has changed. Also puts a time
   # stamp (priceUpdate) and puts the latest thing
   # in the price history.
-  def record_updated_price newprice, offering
+  def record_updated_price(newprice, offering)
     if offering.priceint.to_s != newprice.to_s # Save old prices only if price has changed
       
       # Write the old price down in the history
@@ -56,7 +56,7 @@ module OfferingsHelper
   end
   
   # Updates best offer for all regions
-  def update_bestoffer product
+  def update_bestoffer(product)
     # Region suffixes, used internally in the database format.
     {'CA' => '_ca', 'US' => ''}.each_pair do |region, regioncode|  
       # Finds the best offer by region and records the new
@@ -66,7 +66,9 @@ module OfferingsHelper
         parse_and_set_attribute("instock#{regioncode}", false, product)
         return product
       end
-    
+
+      # This is a problem: null prices. The product should not have a null price when it gets here maybe?
+      debugger
       lowest = matching_ro.sort{|x,y| x.priceint <=> y.priceint }.first
 
       # Should probably just set it once and then add '_ca', the region suffix, to the end of each.

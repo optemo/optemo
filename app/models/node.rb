@@ -11,7 +11,7 @@ class Node < ActiveRecord::Base
   end
   
   def self.bycluster(id)
-    CachingMemcached.cache_lookup("Nodes#{id}"){find_all_by_cluster_id(id)}
+    CachingMemcached.cache_lookup("Nodes#{$product_type}#{id}"){find_all_by_cluster_id(id)}
   end
   
   #Not used, but here for completeness
