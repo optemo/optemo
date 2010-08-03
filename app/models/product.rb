@@ -10,15 +10,17 @@ class Product < ActiveRecord::Base
     indexes "product_type", :as => :product_type
     set_property :enable_star => true
     set_property :min_prefix_len => 2
+    ThinkingSphinx.updates_enabled = false
+    ThinkingSphinx.deltas_enabled = false
   end
   
   def self.cached(id)
-    CachingMemcached.cache_lookup("Products#{id}"){find(id)}
+    CachingMemcached.cache_lookup("Product#{id}"){find(id)}
   end
   
   #Returns an array of results
   def self.manycached(ids)
-    res = CachingMemcached.cache_lookup("Products#{ids.join('-').hash}"){find(ids)}
+    res = CachingMemcached.cache_lookup("Products#{ids.join(',').hash}"){find(ids)}
     if res.class == Array
       res
     else

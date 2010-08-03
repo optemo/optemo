@@ -17,12 +17,12 @@ class ContSpec < ActiveRecord::Base
     end
   end
   def self.cachemany(p_ids, feat)
-    CachingMemcached.cache_lookup("ContSpecs#{feat}#{p_ids.join.hash}") do
+    CachingMemcached.cache_lookup("ContSpecs#{feat}#{p_ids.join(',').hash}") do
       find(:all, :select => 'value', :conditions => ["product_id IN (?) and name = ?", p_ids, feat]).map(&:value)
     end
   end
   def self.cachemany_with_ids(p_ids, feat)
-    CachingMemcached.cache_lookup("ContSpecsWithIds#{feat}#{p_ids.join.hash}") do
+    CachingMemcached.cache_lookup("ContSpecsWithIds#{feat}#{p_ids.join(',').hash}") do
       find(:all, :select => 'product_id, value', :conditions => ["product_id IN (?) and name = ?", p_ids, feat]).each_with_object({}){|r, h| h[r.product_id] = r.value}
     end    
   end
