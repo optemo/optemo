@@ -3,7 +3,7 @@
 		<%= render :partial => 'desc', :locals => {:feat => feat} %>
 		<%= link_to t('products.'+feat), "#" %>
 		<span class="unitdisp">(<%= t('products.' + feat+"unit") %>)</span>
-		<% if $LineItemView %>
+		<% if Session.current.lineItemView %>
 			<div class="contgroupby" data-feat="<%= feat %>">Show Groups</div>
 		<% end %>		
 	</div>

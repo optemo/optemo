@@ -31,7 +31,7 @@ module IntegrationHelper
   
   # Finds all RetailerOfferings linked to ScrapedProduct
   def find_ros_from_scraped(local_id, retailer_id)
-    RetailerOffering.find_all_by_local_id_and_retailer_id_and_product_type(local_id, retailer_id, $product_type)
+    RetailerOffering.find_all_by_local_id_and_retailer_id_and_product_type(local_id, retailer_id, Session.current.product_type)
   end
   
 end

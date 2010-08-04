@@ -1,3 +1,4 @@
+<% s = Session.current %>
 <% if @plain %>
 <div class="poptitle"><%=t 'products.show.title'%></div>
 <% else %>
@@ -7,9 +8,9 @@
 <% end %>
 	<h1><%= URI.decode(@product.title) %></h1>
 	<div id="image">
-		<% if $product_type == "flooring_builddirect" %>
+		<% if s.product_type == "flooring_builddirect" %>
 			<%= link_to image_tag(@imglurl), @imglurl, :popup => true %>
-		<% elsif $product_type == "Laptop" %>
+		<% elsif s.product_type == "Laptop" %>
 			<%= link_to image_tag(@imglurl), @imglurl, :popup => true %>
 		<% elsif FileTest.exist?(RAILS_ROOT + "/public" + @imglurl) %>
 			<%= link_to image_tag(@imglurl, :width => @product.imagelw, :height => @product.imagelh), @imglurl, :popup => true %>
@@ -19,7 +20,7 @@
 	</div>
 	<div id="features">
 	<ul>
-		<% ($Continuous["show"]+$Categorical["show"]+$Binary["show"]).each do |f_name| %>
+		<% (s.continuous["show"]+s.categorical["show"]+s.binary["show"]).each do |f_name| %>
 			<% f = @allspecs[f_name] %>
 			<% if !f.nil? %>
 				<li>
@@ -36,9 +37,9 @@
 	</div>
 	<div style="clear: left; height:5px;"></div>
 	<div class="showtable">
-	<% if $product_type == "flooring_builddirect" %>
+	<% if s.product_type == "flooring_builddirect" %>
 		<h3>Available from <a href="http://www.builddirect.com">Build Direct</a></h3>
-	<% elsif $product_type == "Laptop" %>
+	<% elsif s.product_type == "Laptop" %>
 		<h3>Available from <a href="http://www.walmart.com">Walmart</a></h3>
 	<% else %>
 		<h3>Available At The Following Retailers</h3>

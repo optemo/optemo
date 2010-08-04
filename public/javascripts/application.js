@@ -41,7 +41,7 @@ if ($('#ajaxload').length)
 
 // Language support disabled for now
 //var language;
-// The following is pulled from optemo.html.erb, which in turn checks GlobalDeclarations.rb
+// The following is pulled from optemo.html.erb
 var IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
 var MODEL_NAME = $("#modelname").html();
 var LINE_ITEM_VIEW = ($('#lineitemview').html() === 'true');
@@ -721,6 +721,23 @@ function DBinit() {
 		matchContains: true,
 		scrollHeight: 220
 	});
+	
+	$('#surveysubmit').click(function(){
+		trackPage('survey/submit');
+		$('#feedback').css('display','none');
+		fadeout('/survey/submit?' + $("#surveyform").serialize(), null, 300, 70);
+		return false;
+	});
+	$('#yesdecisionsubmit').click(function(){
+		trackPage('survey/yes');
+		fadeout('/survey/index', null, 600, 835);
+		return false;
+	});
+	$('#nodecisionsubmit').click(function(){
+		fadein();
+		trackPage('survey/no');
+		return false;
+	});
 }
 
 function ShowInit() {
@@ -835,26 +852,10 @@ $(document).ready(function() {
 	//Static feedback box
 	$('#feedback').click(function(){
 		trackPage('survey/feedback');
-		fadeout('/survey/index', null, 600, 300);
+		fadeout('/survey/index', null, 600, 480);
 		return false;
 	});
 	
-	$('#yesdecisionsubmit').click(function(){
-		trackPage('survey/yes');
-		fadeout('/survey/index', null, 600, 835);
-		return false;
-	});
-	$('#nodecisionsubmit').click(function(){
-		fadein();
-		trackPage('survey/no');
-		return false;
-	});
-	$('#surveysubmit').click(function(){
-		trackPage('survey/submit');
-		$('#feedback').css('display','none');
-		fadeout('/survey/submit?' + $("#surveyform").serialize(), null, 300, 70);
-		return false;
-	});
 	if (LINE_ITEM_VIEW) {
 	    //Tour section
     	$('#popupTour1, #popupTour2, #popupTour3, #popupTour4').each(function(){

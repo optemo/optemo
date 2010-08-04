@@ -162,16 +162,16 @@ end
 
 desc "Make clusters for simple view"
 task :create_flat_clustering => :environment do
-  load_defaults("flooring_builddirect")
-  lastcluster = Cluster.find_last_by_product_type($product_type)
+  Session.load_defaults("flooring_builddirect")
+  lastcluster = Cluster.find_last_by_product_type(Session.current.product_type)
   version = lastcluster.version if lastcluster
   version ||= 0
   newversion = version + 1
-  c = Cluster.new :product_type => $product_type, :version => newversion, :layer => 1, :parent_id => 0
+  c = Cluster.new :product_type => Session.current.product_type, :version => newversion, :layer => 1, :parent_id => 0
   c.save
   Product.valid.instock.each do |product|
-    Node.new({:cluster_id => c.id, :product_id => product.id, :product_type => $product_type, :version => newversion}).save
+    Node.new({:cluster_id => c.id, :product_id => product.id, :product_type => Session.current.product_type, :version => newversion}).save
   end
   
-  puts "Clusters for #{$product_type} created, version #{newversion}"
+  puts "Clusters for #{Session.current.product_type} created, version #{newversion}"
 end

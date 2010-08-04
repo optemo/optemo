@@ -3,7 +3,7 @@
 
 <% gray = true %>
 <% contspecs = ContSpec.cache_all(product.id); catspecs = CatSpec.cache_all(product.id); binspecs = BinSpec.cache_all(product.id) %>
-<% $Continuous["filter"].each do |feat| %>
+<% s.continuous["filter"].each do |feat| %>
 <div class="cell <%= gray ? "graybg" : "whitebg" %>">
 	<% gray = !gray %>
 	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
@@ -14,7 +14,7 @@
 	<% end %>
 	</div>
 <% end %>
-<% $Categorical["filter"].each do |feat| %>
+<% s.categorical["filter"].each do |feat| %>
 <div class="cell <%= gray ? "graybg" : "whitebg" %>">
 	<% gray = !gray %>
 	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
@@ -25,7 +25,7 @@
 	<% end %>
 	</div>
 <% end %>
-<% $Binary["filter"].each do |feat| %>
+<% s.binary["filter"].each do |feat| %>
 <div class="cell <%= gray ? "graybg" : "whitebg" %>">
 	<% gray = !gray %>
 	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>

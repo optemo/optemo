@@ -1,5 +1,4 @@
-$PRODUCT_TYPE = 'Printer'
-$RETAILER = 'BestBuy'
+# None of this works - not changed over due to new DB model (Product instead of Printer/Camera/Flooring/etc.), due to likely complete deprecation
 desc "Download BestBuy data with Remix"
 task :remix_BestBuy => :environment do
   require 'bestbuy_ecs'
@@ -30,12 +29,13 @@ def downloadResults(r)
 end
 
 def productOffering(product_id,h)
-  retailer_id = Retailer.find_by_name($RETAILER).id
-  o = RetailerOffering.find_by_product_id_and_product_type_and_retailer_id(product_id,$PRODUCT_TYPE,retailer_id)
+  product_type = 'Printer'
+  retailer_id = Retailer.find_by_name('BestBuy').id
+  o = RetailerOffering.find_by_product_id_and_product_type_and_retailer_id(product_id, product_type, retailer_id)
   if o.nil?
     o = RetailerOffering.new
     o.product_id = product_id
-    o.product_type = $PRODUCT_TYPE
+    o.product_type = product_type
     o.retailer_id = retailer_id
   elsif o.priceint != (h[:salePrice].to_f*100).to_i
     #Save old prices only if price has changed

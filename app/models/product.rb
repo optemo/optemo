@@ -20,7 +20,7 @@ class Product < ActiveRecord::Base
   
   #Returns an array of results
   def self.manycached(ids)
-    res = CachingMemcached.cache_lookup("Products#{ids.join(',').hash}"){find(ids)}
+    res = CachingMemcached.cache_lookup("ManyProducts#{ids.join(',').hash}"){find(ids)}
     if res.class == Array
       res
     else
@@ -30,9 +30,9 @@ class Product < ActiveRecord::Base
   
   named_scope :instock, :conditions => {:instock => true}
   named_scope :valid, lambda {
-    {:conditions => ($Continuous["filter"].map{|f|"id in (select product_id from cont_specs where value > 0 and name = '#{f}' and product_type = '#{$product_type}')"}+\
-    $Binary["filter"].map{|f|"id in (select product_id from bin_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{$product_type}')"}+\
-    $Categorical["filter"].map{|f|"id in (select product_id from cat_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{$product_type}')"}).join(" and ")}
+    {:conditions => (Session.current.continuous["filter"].map{|f|"id in (select product_id from cont_specs where value > 0 and name = '#{f}' and product_type = '#{Session.current.product_type}')"}+\
+    Session.current.binary["filter"].map{|f|"id in (select product_id from bin_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{Session.current.product_type}')"}+\
+    Session.current.categorical["filter"].map{|f|"id in (select product_id from cat_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{Session.current.product_type}')"}).join(" and ")}
   }
   Max = {'SWidth' => 70, 'SHeight' => 50,'MWidth' => 140, 'MHeight' => 100, 'LWidth' => 400, 'LHeight' => 300} unless defined?(Max)
     

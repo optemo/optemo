@@ -1,5 +1,3 @@
-require 'GlobalDeclarations'
-
 # Filters added to this controller apply to all controllers in the application.
 # Likewise, all the methods added will be available for all controllers.
 
@@ -18,7 +16,7 @@ class ApplicationController < ActionController::Base
   # from your application log (in this case, all fields with names like "password"). 
   # filter_parameter_logging :password
   
-  before_filter :set_model_type, :update_user, :set_locale
+  before_filter :update_user, :set_locale
   
   private
   
@@ -30,10 +28,6 @@ class ApplicationController < ActionController::Base
     I18n.locale = request.subdomains.first == 'fr' ? 'fr' : 'en'
   end
 
-  def set_model_type
-    load_defaults(request.domain(4)) # This gets anything up to www.printers.browsethenbuy.co.uk (n + 1 elements in the domain name)
-  end
-  
   def update_user
     mysession_id = session[:user_id]
     if mysession_id.nil?
@@ -41,9 +35,11 @@ class ApplicationController < ActionController::Base
       session[:user_id] = mysession_id
     end
 
-    # For Optemo Direct, there is no clustering, so just set the version to zero.
-    myversion = $DirectLayout ? 0 : Cluster.maximum(:version, :conditions => ['product_type = ?', $product_type])
-    Session.current = Session.new(mysession_id, myversion)
+    # A new session is created in load_defaults now.
+    s = Session.load_defaults(request.domain(4)) # This gets anything up to www.printers.browsethenbuy.co.uk (n + 1 elements in the domain name)
+    s.id = mysession_id
+    # For Optemo Direct, there is no clustering, so ignore the next line.
+    s.version = Cluster.maximum(:version, :conditions => ['product_type = ?', s.product_type]) unless s.directLayout
   end
   
   def title=(title)

@@ -31,27 +31,27 @@ class ContSpec < ActiveRecord::Base
   def self.featurecache(p_id, feat) 
     @@cs = {} unless defined? @@cs
     p_id = p_id.to_s
-    unless @@cs.has_key?($product_type + p_id + feat)
-      find_all_by_product_type($product_type).each {|f| @@cs[($product_type + f.product_id.to_s + f.name)] = f}
+    unless @@cs.has_key?(Session.current.product_type + p_id + feat)
+      find_all_by_product_type(Session.current.product_type).each {|f| @@cs[(Session.current.product_type + f.product_id.to_s + f.name)] = f}
     end
-    @@cs[($product_type + p_id + feat)]
+    @@cs[(Session.current.product_type + p_id + feat)]
   end
   
   def self.allMinMax(feat)
-    CachingMemcached.cache_lookup("#{$product_type}MinMax-#{feat}") do
+    CachingMemcached.cache_lookup("#{Session.current.product_type}MinMax-#{feat}") do
       all = ContSpec.allspecs(feat)
       [all.min,all.max]
     end
   end
 
   def self.allLow(feat)
-    CachingMemcached.cache_lookup("#{$product_type}Low-#{feat}") do
+    CachingMemcached.cache_lookup("#{Session.current.product_type}Low-#{feat}") do
       ContSpec.allspecs(feat).sort[products.count*0.4]
     end
   end
 
   def self.allHigh(feat)
-    CachingMemcached.cache_lookup("#{$product_type}High-#{feat}") do
+    CachingMemcached.cache_lookup("#{Session.current.product_type}High-#{feat}") do
       ContSpec.allspecs(feat).sort[products.count*0.6]
     end
   end
@@ -59,7 +59,7 @@ class ContSpec < ActiveRecord::Base
   private
 
   def self.allspecs(feat)
-    #ContSpec.find_all_by_name_and_product_type(feat,$product_type).map(&:value)
+    #ContSpec.find_all_by_name_and_product_type(feat, Session.current.product_type).map(&:value)
     id_array = Product.valid.instock.map(&:id)
     #id_array = Session.current.search.acceptedProductIDs
     ContSpec.cachemany(id_array, feat)

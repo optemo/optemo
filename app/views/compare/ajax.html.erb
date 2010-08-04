@@ -1,1 +1,1 @@
-<%= render :partial => 'filter' %>[BRK]<%= render :partial => 'discoverybrowser' %>[BRK]<%= Session.current.search.userdatasearches[0] ? Session.current.search.userdatasearches[0].keyword : '' %>
+<%= render :partial => 'filter', :locals => {:s => Session.current, :current_search => Session.current.search} %>[BRK]<%= render :partial => 'discoverybrowser', :locals => {:s => Session.current}%>[BRK]<%= Session.current.search.userdatasearches[0] ? Session.current.search.userdatasearches[0].keyword : '' %>

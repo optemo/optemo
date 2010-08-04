@@ -1,4 +1,3 @@
-require 'GlobalDeclarations'
 #Here is where general upkeep scripts are
 desc "Calculate factors for all features of all products, and pre-calculate utility scores"
 task :calculate_factors => :environment do
@@ -20,11 +19,11 @@ task :calculate_factors => :environment do
     utility_activerecords = []
     product_types.each do |pType_url_pair| # This is a pair like this: "camera_us"=>"m.browsethenbuy.com" - seems backwards, but makes the hash unique on product_type
       cont_spec_hash = {}
-      load_defaults(pType_url_pair[1]) # Need to set up $Continuous and other arrays before use
+      Session.load_defaults(pType_url_pair[1]) # Need to set up continuous and other arrays before use
       all_products = Product.valid.instock
       all_products.each do |product|
         newUtilityRow = ContSpec.new({:product_type => pType_url_pair[0], :name => "utility", :product_id => product.id, :value => 0})
-        $Continuous["filter"].each do |f|
+        Session.current.continuous["filter"].each do |f|
           unless cont_spec_hash[f]
             records = ContSpec.find(:all, :select => 'product_id, value', :conditions => ["product_id IN (?) and name = ?", all_products, f])
             temp_hash = {}
@@ -63,9 +62,8 @@ task :btxtr => :environment do
           raise "usage: rake btxtr url=? action=? # url is a valid url from products.yml and action is 'save' or 'train'" 
      end
      
-     load_defaults(ENV['url'])
-     # Not 100% sure this next line is needed. It replaced "Session.current = Session.new"
-     Session.current = Session.new(0, Cluster.maximum(:version, :conditions => ['product_type = ?', $product_type]))
+     Session.load_defaults(ENV['url'])
+     Session.current.version = Cluster.maximum(:version, :conditions => ['product_type = ?', Session.current.product_type]) if Session.directLayout
      case ENV['action']
      when 'train'
        require 'train_boostexter.rb'
@@ -101,8 +99,8 @@ end
 def calculateFactor(fVal, f, contspecs)
   # Order the feature values, reversed to give the highest value to duplicates
   ordered = contspecs.values.sort
-  ordered = ordered.reverse if $PrefDirection[f] == 1
-  return 0 if $PrefDirection[f] == 0
+  ordered = ordered.reverse if Session.current.prefDirection[f] == 1
+  return 0 if session.current.prefDirection[f] == 0
   pos = ordered.index(fVal)
   len = ordered.length
   (len - pos)/len.to_f
@@ -115,7 +113,7 @@ task :c_clustering do
   env = ENV['RAILS_ENV'] || 'development'
   ['printer', 'camera'].each do |prodtype|
     ['us','ca'].each do |region|
-      `#{RAILS_ROOT}/lib/c_code/clusteringCodes/codes/hCluster #{prodtype} #{region} #{env} #{$NumGroups}`
+      `#{RAILS_ROOT}/lib/c_code/clusteringCodes/codes/hCluster #{prodtype} #{region} #{env} #{Session.current.numGroups}`
       cleanupInvalidDatabase(prodtype)
     end
   end
@@ -124,4 +122,23 @@ end
 desc "Recluster printers"
 task :recluster => [:calculate_factors,:c_clustering] do
   Rake::Task['db:properties'].invoke
+end
+
+desc 'Create YAML test fixtures from data in an existing database.  
+Defaults to development database.  Set RAILS_ENV to override.'
+
+task :extract_fixtures => :environment do
+  sql  = "SELECT * FROM %s"
+  skip_tables = ["schema_info"]
+  ActiveRecord::Base.establish_connection
+  (ActiveRecord::Base.connection.tables - skip_tables).each do |table_name|
+    i = "000"
+    File.open("#{RAILS_ROOT}/test/fixtures/#{table_name}.yml", 'w') do |file|
+      data = ActiveRecord::Base.connection.select_all(sql % table_name)
+      file.write data.inject({}) { |hash, record|
+        hash["#{table_name}_#{i.succ!}"] = record
+        hash
+      }.to_yaml
+    end
+  end
 end

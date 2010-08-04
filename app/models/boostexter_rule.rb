@@ -1,7 +1,7 @@
 class BoostexterRule < ActiveRecord::Base
   # This is a good idea, but right now the boostexter_combined_rules only works for cameras (March 23). Update this in future.
   def self.bycluster(cluster_id)
-    CachingMemcached.cache_lookup("BoostexterRules#{$product_type}#{cluster_id}") do
+    CachingMemcached.cache_lookup("BoostexterRules#{Session.current.product_type}#{cluster_id}") do
       find(:all, :select => "fieldname, yaml_repr", :order => "weight DESC", :conditions => {"cluster_id" => cluster_id})
     end
   end
@@ -9,9 +9,10 @@ class BoostexterRule < ActiveRecord::Base
   def self.clusterLabels(clusters)
     #return [["average"]]*clusters.size
     return if clusters.empty?
+    s = Session.current
     cluster_ids = clusters.map(&:id).join(",")
-    selected_features = (Session.current.search.userdataconts.map{|c| c.name+c.min.to_s+c.max.to_s}+Session.current.search.userdatabins.map{|c| c.name+c.value.to_s}+Session.current.search.userdatacats.map{|c| c.name+c.value}).hash
-    CachingMemcached.cache_lookup("#{$product_type}Taglines#{cluster_ids}#{selected_features}") do
+    selected_features = (s.search.userdataconts.map{|c| c.name+c.min.to_s+c.max.to_s}+s.search.userdatabins.map{|c| c.name+c.value.to_s}+s.search.userdatacats.map{|c| c.name+c.value}).hash
+    CachingMemcached.cache_lookup("#{s.product_type}Taglines#{cluster_ids}#{selected_features}") do
       #Cache miss, so let's calculate it
       weighted_averages = {}
       catlabel = {}

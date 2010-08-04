@@ -12,7 +12,7 @@ namespace :autocomplete do
           product_types[p_yml_entry.second["product_type"].first] = (p_yml_entry.first)
         end
         product_types.each do |pType_url_pair| # This is a pair like this: "camera_us"=>"m.browsethenbuy.com" - seems backwards, but makes the hash unique on product_type
-          load_defaults(pType_url_pair[1]) # The URL
+          Session.load_defaults(pType_url_pair[1]) # The URL
           terms = fetch_terms(pType_url_pair[0]) # The product type
           js_file.syswrite(terms)
           js_file.syswrite("\n")

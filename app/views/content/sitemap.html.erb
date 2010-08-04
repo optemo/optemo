@@ -1,7 +1,7 @@
 <% self.title = "Site Map" %>
 <% self.describe = "Full listing with links of all the products available." %>
 <div class ="content">
-	<h1><%= $product_type %> Selection</h1>
+	<h1><%= Session.current.product_type %> Selection</h1>
 	<% @products.each do |p| %>
 		<p class='listing'><%= link_to p.title, p.descurl %></p>
 	<% end %>

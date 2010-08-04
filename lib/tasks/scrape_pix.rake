@@ -17,16 +17,16 @@ namespace :pictures do
   
   task :temp => :printer_init do
     puts "Recording pic stats"
-    record_pic_stats(Product.all(:conditions => ["product_type=?",$product_type]))
+    record_pic_stats(Product.all(:conditions => ["product_type=?",Session.current.product_type]))
     puts "Done!"
   end
   
   task :camera_init => :environment do 
 
-    load_defaults("cameras")
+    Session.load_defaults("cameras")
     $scrapedmodel = ScrapedCamera
     
-    $logfile = File.open("./log/#{$product_type}_pics.log", 'w+')
+    $logfile = File.open("./log/#{Session.current.product_type}_pics.log", 'w+')
     
     require 'helper_libs'
     require 'RMagick'
@@ -34,10 +34,10 @@ namespace :pictures do
   end
   
   task :printer_init => :environment do 
-    load_defaults("printers")
+    Session.load_defaults("printers")
     $scrapedmodel = ScrapedPrinter
     
-    $logfile = File.open("./log/#{$product_type}_pics.log", 'w+')
+    $logfile = File.open("./log/#{Session.current.product_type}_pics.log", 'w+')
     
     require 'helper_libs'
     require 'RMagick'
@@ -50,14 +50,14 @@ namespace :pictures do
   end
   
   task :update_pic_stats do
-    record_pic_stats(Product.find(:all, :conditions => ["product_type=?", $product_type]))
+    record_pic_stats(Product.find(:all, :conditions => ["product_type=?", Session.current.product_type]))
   end
   
   task :download_pictures do
     puts "Downloading all pictures"
     failed = []
     urls = {}
-    Product.all(:conditions => ["product_type=?", $product_type]).each do |product|
+    Product.all(:conditions => ["product_type=?", Session.current.product_type]).each do |product|
       sps = $scrapedmodel.find(:all, :conditions => ["product_id=?",product.id])
       temp_url = sps.collect{|x| x.imageurl}.reject{|x| x.blank?}
       if temp_url
@@ -74,7 +74,7 @@ namespace :pictures do
   
   task :resize_missing do
     have_urls = $scrapedmodel.all.reject{|x| x.imageurl.nil?}.collect{|x| x.product_id}.uniq
-    products = Product.find(:all, :conditions => ["product_type=?", $product_type])
+    products = Product.find(:all, :conditions => ["product_type=?", Session.current.product_type])
     no_resized_urls = products.reject{|x| !x.imgsurl.nil? and !x.imgmurl.nil? and !x.imglurl.nil?}
     unresized = no_resized_urls.reject{|y| !have_urls.include?(y)}
     unresized += no_resized_urls.reject{|product| not (filename_from_id(product.id,""))}
@@ -102,7 +102,7 @@ namespace :pictures do
   task :download_missing_pictures do
     puts "Downloading missing pictures"
     picless = picless_records()
-    puts "#{picless.count} #{$product_type} pictures are missing!"
+    puts "#{picless.count} #{Session.current.product_type} pictures are missing!"
     #really_picless = picless.reject{|x| (!x.imagesurl.nil? and !x.imagemurl.nil? and !x.imagelurl.nil?) or (!x.instock and !x.instock_ca)}
     really_picless = picless
     puts "Will download #{really_picless.count} pictures."
@@ -132,7 +132,7 @@ namespace :pictures do
   task :disable_products_with_missing_pictures do
     puts "Product.valid.instock has length: " + Product.valid.instock.length
     picless = picless_records()
-    puts "#{picless.count} #{$product_type} pictures are missing!"
+    puts "#{picless.count} #{Session.current.product_type} pictures are missing!"
     picless.each{|pid| (Product.find(pid).instock = false).save }
     puts "Now Product.valid.instock has length: " + Product.valid.instock.length
   end

@@ -3,7 +3,9 @@ class LoginController < ApplicationController
     # Retrieve the user's facebook user id
     # If a row for this fbid already exists in the sessions table, then set the session-id to point to this row and ignore/delete the current row  (for now)
     # If no such row exists, append the user's fbid to the session row that is currently being used
-    fbid = cookies[$AppKey +"_user"]   
+    # Configuration: Application Key provided by Facebook
+    appKey = "7aeec628ded26fb3b03829fb4142da01"
+    fbid = cookies[appKey +"_user"]   
     findSession = Session.find(:first, :conditions => ['user = ?', fbid]);
     if findSession.nil?
       # User logged in for first time
