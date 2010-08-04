@@ -1,4 +1,5 @@
-<% self.title = "#{Session.current.search.desc} #{$product_type.capitalize}" unless @indexload%>
+<% s = Session.current %>
+<% self.title = "#{s.search.desc} #{s.product_type.capitalize}" unless @indexload%>
 <div id="leftbar">
 	<!-- The Filters section -->
 	<div id="filterbar" class="leftboxes rounded_leftboxes rounded">
@@ -17,7 +18,7 @@
 	<div id="savebar" class='leftboxes gainlayout rounded_leftboxes rounded'>
 		<div class="tl"><!-- --></div><div class="tr"><!-- --></div>
 		<h2> <%=t 'products.compare.saved' %> </h2>
-		<div class="savesome"> <% if $DragAndDropEnabled == true %> <%=t 'products.compare.savesomedrag'%> <% else %> <%=t 'products.compare.savesome'%> <% end %></div>
+		<div class="savesome"> <% if s.dragAndDropEnabled == true %> <%=t 'products.compare.savesomedrag'%> <% else %> <%=t 'products.compare.savesome'%> <% end %></div>
 		<div id="savebar_content">
 		<div id="already_added_msg" class="savedmsg"> <%=t 'products.compare.alreadyadded' %> </div>
 		<div id="too_many_saved" class="savedmsg"> <%=t 'products.compare.toomanysaved' %> </div>
@@ -34,7 +35,7 @@
 	<% if @indexload %>
 		<div id="ajaxload"></div>
 	<% else %>
-		<%= render :partial => 'discoverybrowser' %>
+		<%= render :partial => 'discoverybrowser', :locals => {:s => s} %>
 	<% end %>
 </div>
 <div id="loading"><div id="myspinner" style="float: left;"></div><div style="margin: 7px 0px 0px 60px;">Loading</div></div>

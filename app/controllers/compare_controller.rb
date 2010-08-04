@@ -8,8 +8,8 @@ class CompareController < ApplicationController
       # The page numbers have to go in for pagination
       page_number = {} # This has to be a hash for compatibility with Search.createSearchAndCommit()
       page_number["page"] = params[:page]
-      s = Search.createInitialClusters(page_number)
-      classVariables(s)
+      current_search = Search.createInitialClusters(page_number)
+      classVariables(current_search)
     else
       @indexload = true
     end
@@ -23,12 +23,12 @@ class CompareController < ApplicationController
   def groupby
     feat = params[:feat]
     # We need to make a new search so that history works properly (back button can take to "groupby" view)
-    os = Session.current.searches.last
-    s = os.clone # copy over session ID, etc.
-    s.view = feat # save feature for later. Any feature in "view" means we're in groupby view
-    s.save
-    Session.current.search = s
-    Search.duplicateFeatures(s, os) # copy over filters
+    old_search = Session.current.searches.last
+    current_search = old_search.clone # copy over session ID, etc.
+    current_search.view = feat # save feature for later. Any feature in "view" means we're in groupby view
+    current_search.save
+    Session.current.search = current_search
+    Search.duplicateFeatures(current_search, old_search) # copy over filters
     @groupings = Search.createGroupBy(feat)
     @groupedfeature = feat
     render 'ajax', :layout => false
@@ -52,8 +52,8 @@ class CompareController < ApplicationController
       else
         page_number = {} # This has to be a hash for compatibility with Search.createSearchAndCommit()
         page_number["page"] = params[:page]
-        s = Search.createInitialClusters(page_number)
-        classVariables(s)
+        current_search = Search.createInitialClusters(page_number)
+        classVariables(current_search)
       end
     else
       # No need to send in the previous search term since it will be copied automatically. Same with filters.
@@ -66,7 +66,7 @@ class CompareController < ApplicationController
   
   def classVariables(search)
     Session.current.search = search
-    if $DirectLayout
+    if Session.current.directLayout
       page = search.page
       @products = search.products.paginate :page => page, :per_page => 9
     end
@@ -85,8 +85,8 @@ class CompareController < ApplicationController
     end
     unless cluster.nil?
       if params[:ajax]
-        s = Search.createSearchAndCommit(Session.current.searches.last, cluster.children)
-        classVariables(s)
+        current_search = Search.createSearchAndCommit(Session.current.searches.last, cluster.children)
+        classVariables(current_search)
         render 'ajax', :layout => false
       else
         redirect_to "/compare/compare/"+cluster.children.map{|c|c.id}.join('-')
@@ -97,7 +97,7 @@ class CompareController < ApplicationController
   end
 
   def filter
-    session = Session.current
+    s = Session.current
     if params[:myfilter].nil? && params[:search].nil? && params[:page].nil?
       #No post info passed
       render :text =>  "[ERR]Search could not be completed."
@@ -108,18 +108,18 @@ class CompareController < ApplicationController
       else
         current_search_term = params[:search]
       end
-      oldsearch = session.searches.last
-      session.search = oldsearch
+      old_search = s.searches.last
+      s.search = old_search
       # Put the 'page' parameter in paginated output into the :myfilter hash for ease in processing
       params[:myfilter] = {} unless params[:myfilter] # the hash will be empty on page number clicks
       params[:myfilter]["page"] = params[:page]
-      s = Search.createSearchAndCommit(oldsearch, nil, params[:myfilter], current_search_term)
-      unless ($DirectLayout ? s.products.empty? : s.clusters.empty?)
-        classVariables(s)
+      current_search = Search.createSearchAndCommit(old_search, nil, params[:myfilter], current_search_term)
+      unless (s.directLayout ? current_search.products.empty? : current_search.clusters.empty?)
+        classVariables(current_search)
         render 'ajax', :layout => false
       else
         #Rollback
-        session.search = oldsearch
+        s.search = old_search
         @errortype = "filter"
         render 'error', :layout=>true
       end
@@ -135,10 +135,11 @@ class CompareController < ApplicationController
     params[:id] = params[:id][/^\d+/]
     @product = Product.cached(params[:id])
     @allspecs = ContSpec.cache_all(params[:id]).merge(CatSpec.cache_all(params[:id])).merge(BinSpec.cache_all(params[:id]))
-    if $product_type
-      if $product_type == "flooring_builddirect"
+    product_type = Session.current.product_type
+    if product_type
+      if product_type == "flooring_builddirect"
         @imglurl = "http://www.builddirect.com" + CGI.unescapeHTML(@product.imglurl.to_s)
-      elsif $product_type == "Laptop"
+      elsif product_type == "Laptop"
         @imglurl = @product.imgurl.to_s
       else
         @imglurl = @product.imglurl
@@ -147,13 +148,13 @@ class CompareController < ApplicationController
       @imglurl = @product.imglurl
     end
 
-    @offerings = RetailerOffering.find_all_by_product_id_and_product_type(params[:id],$product_type,:order => 'priceint ASC')
-    @review = Review.find_by_product_id_and_product_type(params[:id],$product_type, :order => 'helpfulvotes DESC')
+    @offerings = RetailerOffering.find_all_by_product_id_and_product_type(params[:id], product_type, :order => 'priceint ASC')
+    @review = Review.find_by_product_id_and_product_type(params[:id], product_type, :order => 'helpfulvotes DESC')
     # Take out offending <br />
     if @review && @review.content
       @review.content = @review.content.gsub(/\r\&lt\;br \/\&gt\;/, '').gsub(/\t/,' ').strip
     end
-    @cartridges = Compatibility.find_all_by_product_id_and_product_type(@product.id,$product_type).map{|c|Cartridge.find_by_id(c.accessory_id)}.reject{|c|!c.instock}
+    @cartridges = Compatibility.find_all_by_product_id_and_product_type(@product.id, product_type).map{|c|Cartridge.find_by_id(c.accessory_id)}.reject{|c|!c.instock}
     @cartridgeprices = @cartridges.map{|c| RetailerOffering.find_by_product_type_and_product_id("Cartridge",c.id)}
 
     respond_to do |format|

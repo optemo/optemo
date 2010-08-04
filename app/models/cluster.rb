@@ -5,10 +5,10 @@ class Cluster < ActiveRecord::Base
   has_many :bin_specs, :through => :products
   
   def self.byparent(id)
-    return nil if $DirectLayout
+    return nil if Session.current.directLayout
     current_version = Session.current.version
     #Need to check by version and type because of the root clusters with parent id 0
-    CachingMemcached.cache_lookup("Clusters#{current_version}#{id}#{$product_type}"){find_all_by_parent_id_and_version_and_product_type(id, current_version, $product_type)}
+    CachingMemcached.cache_lookup("Clusters#{current_version}#{id}#{Session.current.product_type}"){find_all_by_parent_id_and_version_and_product_type(id, current_version, Session.current.product_type)}
   end
   
   def self.cached(id)
@@ -81,20 +81,20 @@ class Cluster < ActiveRecord::Base
   
   def self.filterquery(search=nil, tablename="")
     fqarray = []
-    s = search.nil? ? Session.current.search : search
-    return nil if s.nil?
-    s.userdataconts.each do |d|
+    current_search = search.nil? ? Session.current.search : search
+    return nil if current_search.nil?
+    current_search.userdataconts.each do |d|
       fqarray << "#{tablename}product_id in (select product_id from cont_specs where value <= #{d.max+0.00001} and name = '#{d.name}')"
       fqarray << "#{tablename}product_id in (select product_id from cont_specs where value >= #{d.min-0.00001} and name = '#{d.name}')"
     end
-    s.userdatacats.group_by(&:name).each do |name, ds|
+    current_search.userdatacats.group_by(&:name).each do |name, ds|
       cats = ds.map{|d| "#{tablename}product_id in (select product_id from cat_specs where value = '#{d.value}' and name = '#{name}')"}
       fqarray << "(#{cats.join(' OR ')})"
     end
-    s.userdatabins.each do |d|
+    current_search.userdatabins.each do |d|
       fqarray << "#{tablename}product_id in (select product_id from bin_specs where value = #{d.value} and name = '#{d.name}')"
     end
-    s.userdatasearches.each do |d|
+    current_search.userdatasearches.each do |d|
       fqarray << d.keywordpids
     end
     fqarray.join(" AND ")

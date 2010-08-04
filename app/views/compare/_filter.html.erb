@@ -1,4 +1,3 @@
-<% current_search = Session.current.search %>
 <% form_tag("/compare/filter",{:id => 'search_form'}) do %>
   <%= current_search.userdatasearches.empty? ? text_field_tag('search') : text_field_tag('search', current_search.userdatasearches[0].keyword) %>
   <%= submit_tag 'Search', {:id => 'submit_button'} %>
@@ -12,10 +11,10 @@
 <% end %>
 
 <% form_tag("",{:id => 'filter_form'}) do %>
-<% $Categorical["filter"].each_with_index do |feat, index| %>
-	<div class='feature <%= "sv" if $DirectLayout %>'>
+<% s.categorical["filter"].each_with_index do |feat, index| %>
+	<div class='feature <%= "sv" if s.directLayout %>'>
 		<% chosen_cats = chosencats(feat) %>
-		<% if $DirectLayout %>
+		<% if s.directLayout %>
 			<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat %>">Show Groups</div>
 		<% end %>
 		<div class='catlabel'>
@@ -37,7 +36,7 @@
 		<%= hidden_field_tag "myfilter[#{feat}]", chosen_cats.join("*") %>
 	</div>
 <% end %>
-<% $Continuous["filter"].each do |feat| %>
+<% s.continuous["filter"].each do |feat| %>
 	<%= render :partial => 'slider', 
 		:locals => {:name => t('products.' + feat),
 		:feat => feat,
@@ -45,7 +44,7 @@
 		:overall_min => ContSpec.allMinMax(feat)[0],
 		:overall_max => ContSpec.allMinMax(feat)[1]} %>
 <% end %>
-<% $Binary["filter"].each do |feat| %>
+<% s.binary["filter"].each do |feat| %>
 	<div class='feature'>
 		<div class='label'>
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>

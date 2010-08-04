@@ -3,5 +3,5 @@
 <div class="poptitle">&nbsp;</div>
 <p><%=t("products.ErrorPart1") + " " + t("products.here") + " " + t("products.ErrorPart2")%></p>
 <% if @errortype == "filter" %>
-[BRK]<%= render :partial => 'filter' %>
+[BRK]<%= render :partial => 'filter', :locals => {:s => Session.current, :current_search => Session.current.search} %>
 <% end %>

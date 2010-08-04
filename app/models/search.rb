@@ -37,7 +37,7 @@ class Search < ActiveRecord::Base
   end
   
   def acceptedProductIDs
-    @acceptedProductIDs ||= ($DirectLayout ? products.map(&:id) : clusters.map{|c| c.nodes}.flatten.map(&:product_id))
+    @acceptedProductIDs ||= (Session.current.directLayout ? products.map(&:id) : clusters.map{|c| c.nodes}.flatten.map(&:product_id))
   end
   
   #Range of product offerings
@@ -61,18 +61,19 @@ class Search < ActiveRecord::Base
   end
   
   def relativeDescriptions
+    s = Session.current
     return if clusters.empty?
     @reldescs ||= []
     if @reldescs.empty?
       feats = {}
-      $Continuous["filter"].each do |f|
+      s.continuous["filter"].each do |f|
         norm = ContSpec.allMinMax(f)[1] - ContSpec.allMinMax(f)[0]
         norm = 1 if norm == 0
         feats[f] = clusters.map{ |c| c.representative}.compact.map {|c| c[f].to_f/norm } 
       end
       cluster_count.times do |i|
         dist = {}
-        $Continuous["filter"].each do |f|
+        s.continuous["filter"].each do |f|
           if feats[f].min == feats[f][i]
             #This is the lowest feature
             distance = feats[f].sort[1] - feats[f][i]
@@ -117,14 +118,14 @@ class Search < ActiveRecord::Base
     clusterDs = Array.new 
     des = []
     slr=0
-      $Binary["filter"].each do |f|
+      Session.current.binary["filter"].each do |f|
         if clusters[clusterNumber].indicator(f)
           (f=='slr' && indicator("slr"))? slr = 1 : slr =0
           des<< f if $config["DescFeatures"].include?(f) 
         end
       end
       
-      $Continuous["desc"].each do |f|
+      Session.current.continuous["desc"].each do |f|
         if !(f == "opticalzoom" && slr == 1)
               cRanges = clusters[clusterNumber].ranges(f)
               if (cRanges[1] < ContSpec.allLow(f))
@@ -145,7 +146,7 @@ class Search < ActiveRecord::Base
   
   def searchDescription
     des = []
-    $Continuous["desc"].each do |f|
+    Session.current.continuous["desc"].each do |f|
       searchR = ranges(f)
       return ['Empty'] if searchR[0].nil? || searchR[1].nil?
       if (searchR[1] <= ContSpec.allLow(f))
@@ -176,7 +177,7 @@ class Search < ActiveRecord::Base
   end
     
   def result_count
-    @result_count ||= ($DirectLayout ? products.length : clusters.map{|c| c.size}.sum)
+    @result_count ||= (Session.current.directLayout ? products.length : clusters.map{|c| c.size}.sum)
   end
   
   def clusters= (clusters)
@@ -210,7 +211,7 @@ class Search < ActiveRecord::Base
   
   def products
     selected_features = (userdataconts.map{|c| c.name+c.min.to_s+c.max.to_s}+userdatabins.map{|c| c.name+c.value.to_s}+userdatacats.map{|c| c.name+c.value}+userdatasearches.map{|c| c.keyword}).hash
-    CachingMemcached.cache_lookup("#{$product_type}Products#{selected_features}") do
+    CachingMemcached.cache_lookup("#{Session.current.product_type}Products#{selected_features}") do
       #Temporary fix for backward compatibility
       fq = Cluster.filterquery(self)
       fq = fq.gsub(/product_id in/i, "id in") if fq
@@ -224,12 +225,13 @@ class Search < ActiveRecord::Base
   end
 
   def self.createGroupBy(feat)
-    myproducts = Session.current.search.products
-    if $Categorical.values.flatten.index(feat) # It's in the categorical array
+    s = Session.current
+    myproducts = s.search.products
+    if s.categorical.values.flatten.index(feat) # It's in the categorical array
       specs = CatSpec.cachemany_with_ids(myproducts.map(&:id),feat)
       grouping = specs.group_by{|spec|spec.value}
       grouping = Hash[grouping.each_pair{|k,v| grouping[k] = v.map(&:product_id)}.sort{|a,b| b.second.length <=> a.second.length}]
-    elsif $Continuous.values.flatten.index(feat)
+    elsif s.continuous.values.flatten.index(feat)
       specs = ContSpec.cachemany_with_ids(myproducts.map(&:id), feat).sort{|a,b| a[1] <=> b[1]}
       # [[id, low], [id, higher], ... [id, highest]]
       all_product_ids = specs.map{|s| s.first}
@@ -268,6 +270,11 @@ class Search < ActiveRecord::Base
   end
 
   def self.createSearchAndCommit(os, clusters=nil, myfilter =nil, current_search_term=nil)
+    # --- Warning ---
+    # The term 's' throughout the code base almost always refers to the current session. 
+    # In this function is refers to search, since that term is used much more frequently.
+    # ---------------
+    
     # Deal with the page term first. This can come from a call to either #filter or #compare.
     current_session = Session.current
     s = new({:session_id => current_session.id})
@@ -303,7 +310,7 @@ class Search < ActiveRecord::Base
         myfilter.delete_if{|k,v|v.blank?}
 
         unless current_search_term.blank?
-          product_ids = Product.search_for_ids(:per_page => 10000, :star => true, :conditions => {:product_type => $product_type, :title => current_search_term.downcase})
+          product_ids = Product.search_for_ids(:per_page => 10000, :star => true, :conditions => {:product_type => current_session.product_type, :title => current_search_term.downcase})
           unless product_ids.empty?
             s.userdatasearches = [Userdatasearch.new({:keyword => current_search_term, :keywordpids => "product_id IN (" + product_ids.join(',') + ")"})]
           else
@@ -315,7 +322,7 @@ class Search < ActiveRecord::Base
 
         myfilter["session_id"] = current_session.id
         #Handle false booleans
-        $Binary["filter"].each do |f|
+        current_session.binary["filter"].each do |f|
           dobj = current_session.search.userdatabins.select{|d|d.name == f}.first
           myfilter.delete(f.intern) if myfilter[f.intern] == '0' && (dobj.nil? || dobj.value != true)
         end    
@@ -330,9 +337,9 @@ class Search < ActiveRecord::Base
             fname = Regexp.last_match[1]
             max = fname+'_max'
             s.userdataconts << Userdatacont.new({:name => fname, :min => v, :max => myfilter[max]})
-          elsif $Binary["filter"].index(k)
+          elsif current_session.binary["filter"].index(k)
             s.userdatabins << Userdatabin.new({:name => k, :value => v})
-          elsif $Categorical["filter"].index(k)
+          elsif current_session.categorical["filter"].index(k)
             v.split("*").each do |cat|
               s.userdatacats << Userdatacat.new({:name => k, :value => cat})
             end
@@ -345,7 +352,7 @@ class Search < ActiveRecord::Base
           s.clusters = os.clusters(s)
         else
           #Search is expanded, so use all products to begin with
-          s.clusters = ($DirectLayout ? [] : Cluster.byparent(0).select{|c| not c.isEmpty(s)})
+          s.clusters = (current_session.directLayout ? [] : Cluster.byparent(0).select{|c| not c.isEmpty(s)})
           #clusters = clusters.map{|c| c unless c.isEmpty}.compact
         end
       end
@@ -391,7 +398,7 @@ class Search < ActiveRecord::Base
   
   def fillDisplay
     clusters #instantiate clusters to update cluster_count
-    if false #cluster_count < $NumGroups && cluster_count > 0
+    if false #cluster_count < Session.current.numGroups && cluster_count > 0
       if clusters.map{|c| c.size}.sum >= 9
         myclusters = splitClusters(clusters)
       else
@@ -461,7 +468,7 @@ class Search < ActiveRecord::Base
   end
   
   def splitClusters(myclusters)
-    while myclusters.length != $NumGroups
+    while myclusters.length != Session.current.numGroups
       myclusters.sort! {|a,b| b.size <=> a.size}
       myclusters = split(myclusters.shift.children) + myclusters
     end

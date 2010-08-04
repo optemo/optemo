@@ -13,14 +13,15 @@ module BtxtrLabels
     labels = get_labels(cluster)
     f.write(labels.map{|l| l.to_s()}.join(", "))
     f.write(".\n")
+    s = Session.current
     
-    $Continuous["boost"].each do |feat|
+    s.continuous["boost"].each do |feat|
       f.write(feat+": continuous.\n")
     end
-    $Binary["boost"].each do |feat|
+    s.binary["boost"].each do |feat|
       f.write(feat+": True, False.\n")
     end
-    $Categorical["boost"].each do |feat|
+    s.categorical["boost"].each do |feat|
       f.write(feat+": text.\n")
     end
 
@@ -34,6 +35,7 @@ module BtxtrLabels
   end
 
   def BtxtrLabels.generate_data_file(cluster)
+    s = Session.current
     filename = get_data_filename(cluster)
     f = File.new(filename, "w")
 
@@ -45,7 +47,7 @@ module BtxtrLabels
     parent_cluster_nodes = nil
 
     if cluster.parent_id == 0
-      clusters = Cluster.find(:all, :conditions => {:parent_id => 0, :version => version, :product_type => $product_type})
+      clusters = Cluster.find(:all, :conditions => {:parent_id => 0, :version => version, :product_type => s.product_type})
       parent_cluster_nodes = clusters.map{|c| c.nodes}.flatten()
     else
       parent_cluster = Cluster.find(:first, :conditions => {:id => cluster.parent_id})
@@ -74,12 +76,12 @@ module BtxtrLabels
 
     for product, cluster_id in products
       contspecs = ContSpec.cache_all(product.id)
-      $Continuous["boost"].each do |feat|
+      s.continuous["boost"].each do |feat|
         fieldval = contspecs[feat]
         fieldval ||= "?" #Unknown value
         f.write(fieldval.to_s+", ")
       end
-      $Binary["boost"].each do |feat|
+      s.binary["boost"].each do |feat|
         fieldval = BinSpec.find_by_product_id_and_name(product.id, feat).value if BinSpec.find_by_product_id_and_name(product.id, feat)
         if fieldval == 1 || fieldval == true
           fieldval = "True"
@@ -90,7 +92,7 @@ module BtxtrLabels
         end
         f.write(fieldval+", ")
       end
-      $Categorical["boost"].each do |feat|
+      s.categorical["boost"].each do |feat|
         fieldval = CatSpec.find_by_product_id_and_name(product.id, feat).value if CatSpec.find_by_product_id_and_name(product.id, feat)
         fieldval ||= "?" #Unknown value
         fieldval = default_text_to_btxtr_fn(fieldval)

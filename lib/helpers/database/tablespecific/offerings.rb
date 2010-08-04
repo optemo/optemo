@@ -61,7 +61,7 @@ module OfferingsHelper
     {'CA' => '_ca', 'US' => ''}.each_pair do |region, regioncode|  
       # Finds the best offer by region and records the new
       # bestoffer price and product id.
-      matching_ro = RetailerOffering.find(:all, :conditions => "product_id=#{product.id} and product_type='#{$product_type}'").reject{ |x| !x.stock or x.priceint.nil? }
+      matching_ro = RetailerOffering.find(:all, :conditions => "product_id=#{product.id} and product_type='#{Session.current.product_type}'").reject{ |x| !x.stock or x.priceint.nil? }
       if matching_ro.empty?
         parse_and_set_attribute("instock#{regioncode}", false, product)
         return product

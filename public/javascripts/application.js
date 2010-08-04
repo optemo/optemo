@@ -41,7 +41,7 @@ if ($('#ajaxload').length)
 
 // Language support disabled for now
 //var language;
-// The following is pulled from optemo.html.erb, which in turn checks GlobalDeclarations.rb
+// The following is pulled from optemo.html.erb
 var IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
 var MODEL_NAME = $("#modelname").html();
 var LINE_ITEM_VIEW = ($('#lineitemview').html() === 'true');
@@ -728,6 +728,16 @@ function DBinit() {
 		fadeout('/survey/submit?' + $("#surveyform").serialize(), null, 300, 70);
 		return false;
 	});
+	$('#yesdecisionsubmit').click(function(){
+		trackPage('survey/yes');
+		fadeout('/survey/index', null, 600, 835);
+		return false;
+	});
+	$('#nodecisionsubmit').click(function(){
+		fadein();
+		trackPage('survey/no');
+		return false;
+	});
 }
 
 function ShowInit() {
@@ -843,17 +853,6 @@ $(document).ready(function() {
 	$('#feedback').click(function(){
 		trackPage('survey/feedback');
 		fadeout('/survey/index', null, 600, 480);
-		return false;
-	});
-	
-	$('#yesdecisionsubmit').click(function(){
-		trackPage('survey/yes');
-		fadeout('/survey/index', null, 600, 835);
-		return false;
-	});
-	$('#nodecisionsubmit').click(function(){
-		fadein();
-		trackPage('survey/no');
 		return false;
 	});
 	

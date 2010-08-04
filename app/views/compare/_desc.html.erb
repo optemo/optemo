@@ -1,4 +1,4 @@
 <div class="desc">
 	<%= link_to image_tag('close.png'), "#", :class => 'deleteX'%>
-	<%= t($product_type + ".Info_" + feat, :default => t("#{$product_type}.show.nodesc")) %>
+	<%= t(Session.current.product_type + ".Info_" + feat, :default => t("#{Session.current.product_type}.show.nodesc")) %>
 </div>

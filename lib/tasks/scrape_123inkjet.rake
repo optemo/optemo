@@ -13,7 +13,7 @@ namespace :scrape_123 do
   end
   
   task :sandbox => :init do
-    matchingsets = get_matching_sets $product_type.toner
+    matchingsets = get_matching_sets Session.current.product_type.toner
     msets = matchingsets.reject{|x| x.length < 2}
     yields = msets.each {|x| puts (x.collect{|z| z.yield} * ", ")}
     debugger
@@ -109,7 +109,7 @@ namespace :scrape_123 do
         
         tables.each{|table|
           table.each{|x,y| 
-              props = get_property_names(x, $product_type)
+              props = get_property_names(x, Session.current.product_type)
               props.uniq.each do |property|
                 specs[property]= y.strip  + " #{specs[property] || ''}" if y
               end 
@@ -143,11 +143,11 @@ namespace :scrape_123 do
       
       clean_specs = cartridge_cleaning_code(specs)
       
-      cart = $product_type.find_or_create_by_web_id(num)
+      cart = Session.current.product_type.find_or_create_by_web_id(num)
       clean_specs.each{|name,val| parse_and_set_attribute(name, val, cart)}
       parse_and_set_attribute 'scrapedat', Time.now, cart
       counter += 1
-      puts " Done #{counter} #{$product_type}s "        
+      puts " Done #{counter} #{Session.current.product_type}s "        
       
       sleep(30)
     end
@@ -166,7 +166,7 @@ namespace :scrape_123 do
   
   task :init => :environment do 
   
-      $product_type = One23Cartridge
+      Session.current.product_type = One23Cartridge
       require 'rubygems'
       require 'open-uri'
       

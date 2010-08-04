@@ -48,7 +48,7 @@ module TigerScraper
       or (atts['title']||'').match(/refurbished/i) )
     atts['condition'] = "OEM" if (atts['title']||'').match(/oem/i) 
 
-    atts['product_type'] = $product_type
+    atts['product_type'] = Session.current.product_type
     
     # No other info available for weight...
     atts['itemweight'] = to_pounds(parse_weight(atts['shippingweight']))

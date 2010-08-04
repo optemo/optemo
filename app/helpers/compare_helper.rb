@@ -57,13 +57,15 @@ module CompareHelper
   end
   
   def navtitle
-		["Browsing", Session.current.search.result_count, (Session.current.search.result_count > 1) ? t("#{$product_type}.title-plural") : t("#{$product_type}.title-plural")].join(" ")
+    s = Session.current
+		["Browsing", s.search.result_count, (s.search.result_count > 1) ? t("#{s.product_type}.title-plural") : t("#{s.product_type}.title-plural")].join(" ")
   end
   
   def groupDesc(group, i)
-    if $RelativeDescriptions
-      descs = Session.current.search.boostexterClusterDescriptions[i].map{|d|t("products."+d, :default => d)}
-      if $LineItemView
+    s = Session.current
+    if s.relativeDescriptions
+      descs = s.search.boostexterClusterDescriptions[i].map{|d|t("products."+d, :default => d)}
+      if s.lineItemView
         descs.map{|d|"<div style='position: relative;'>" + link_to(d, "#", :class => "description") + render(:partial => 'desc', :locals => {:feat => d}) + "</div>"}.join(" ")
       else
         descs.join(", ")
@@ -71,7 +73,7 @@ module CompareHelper
     else
       disptranslation = []
       dispString = ""
-	    Session.current.search.boostexterClusterDescription(i).compact.flatten.uniq.each do |property|
+	    s.search.boostexterClusterDescription(i).compact.flatten.uniq.each do |property|
 	      disptranslation << t('products.' + property)
 	    end
 	    if group
@@ -104,22 +106,23 @@ module CompareHelper
   end
   
   def featuretext(search,cluster)
+    s = Session.current
     out = []
-    $Categorical["desc"].each do |feat|
+    s.categorical["desc"].each do |feat|
       out << t("products.#{feat}") if cluster.representative.send(feat.intern)
     end
-    $Continuous["desc"].each do |feat|
+    s.continuous["desc"].each do |feat|
       feature = cluster.representative.send(feat.intern).to_i
 		  out << "#{feature} #{t("products.#{feat}text")}"
 	  end
-	  $Binary["desc"].each do |feat|
+	  s.binary["desc"].each do |feat|
       out << t("products.#{feat}") if cluster.representative.send(feat.intern)
     end
 		out.join(" / ")
   end
 
   def columntext(groupings)
-    if $DirectLayout
+    if Session.current.directLayout
       if groupings.nil?
         ['', 'Product', 'Price']
       else
@@ -144,7 +147,7 @@ module CompareHelper
   end
 
   def imgurl(product)
-    case $product_type
+    case Session.current.product_type
       when "flooring_builddirect" then "http://www.builddirect.com" + CGI.unescapeHTML(product.imgmurl.to_s)
       else CGI.unescapeHTML(product.imgmurl.to_s) # No need for constructing image URLs manually, they are all in the database now
     end

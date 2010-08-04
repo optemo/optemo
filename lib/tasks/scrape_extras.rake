@@ -120,7 +120,7 @@ namespace :scrape_extra do
     require 'cartridge_helper'
     include CartridgeHelper
   
-    $product_type = Cartridge
+    Session.current.product_type = Cartridge
     
     matching_sets = []
     Product.all.each do |rec|
@@ -132,13 +132,13 @@ namespace :scrape_extra do
     matching_sets.reject{|x| x.size < 2}.each do |set|
       addme = []
       set.each do |id|
-        compats = Compatibility.valid.find_all_by_accessory_id_and_accessory_type(id, $product_type)
+        compats = Compatibility.valid.find_all_by_accessory_id_and_accessory_type(id, Session.current.product_type)
         addme += compats.collect{|x| [x.product_id,x.product_type]}
         addme.reject!{|x| x.nil? or x[0].nil? or x[1].nil?}
       end
       addme.each do |compat|
         set.each do |id|
-          create_uniq_compatibility(id, $product_type, compat[0], compat[1])
+          create_uniq_compatibility(id, Session.current.product_type, compat[0], compat[1])
         end
       end
     end
@@ -146,7 +146,7 @@ namespace :scrape_extra do
   
   desc 'add data from xerox site'
   task :moredata_xerox => :data_init do
-    $product_type = Printer
+    Session.current.product_type = Printer
     links = []
     
     interesting_fields = ['ppm', 'paperinput', 'resolution', 'resolutionmax'].inject({}){|r, x| 
@@ -196,7 +196,7 @@ namespace :scrape_extra do
   desc 'add data from brother'
   task :moredata_bro => :data_init do
     
-    $product_type = Printer
+    Session.current.product_type = Printer
     
     interesting_fields = ['scanner', 'printserver', 'colorprinter', 'ttp'].inject({}){|r, x| r[x]=[]
       r}
@@ -230,7 +230,7 @@ namespace :scrape_extra do
   desc 'add data from amazon'
   task :moredata_amazon => [:data_init, :web_init] do
     
-    $product_type = Printer
+    Session.current.product_type = Printer
     
     interesting_fields = ['paperinput','scanner', 'duplex', 'printserver'].inject({}){|r, x| r[x]=[]; r}
     ok_fields = ['ppm', 'paperinput','resolution', 'resolutionmax']
@@ -281,7 +281,7 @@ namespace :scrape_extra do
   desc 'Add data from elsewhere'
   task :moredata_lex  => :data_init do
     
-    $product_type = Printer
+    Session.current.product_type = Printer
     
     ok_fields = ['ppm', 'resolution', 'resolutionmax', 'paperinput','scanner', 'printserver']
     
@@ -315,7 +315,7 @@ namespace :scrape_extra do
       clean_specs = generic_printer_cleaning_code mapped_specs
             
       # TODO more effective find?
-      ps = find_matching_product [clean_specs['mpn']], [clean_specs['model']], $product_type,[] # This is broken, check find_matching_product signature
+      ps = find_matching_product [clean_specs['mpn']], [clean_specs['model']], Session.current.product_type,[] # This is broken, check find_matching_product signature
       if ps.length == 1
         validanyway += 1 if (validids.include?ps.first.id)
         ok_fields.each do |field|
@@ -536,7 +536,7 @@ namespace :scrape_extra do
   task :download_pix => :pic_init do
     
     failed = []
-    todo = $product_type.find_all_by_imagesurl(nil)
+    todo = Session.current.product_type.find_all_by_imagesurl(nil)
     
     todo.each do |product|
       pic_urls = $scraped_model.find_all_by_product_id(product.id).collect{|x| x.imageurl}.reject{|x| x.nil?}
@@ -559,7 +559,7 @@ namespace :scrape_extra do
   
   
   task :printer_init do
-      $product_type = Printer
+      Session.current.product_type = Printer
       $scraped_model = ScrapedPrinter
   end
   
