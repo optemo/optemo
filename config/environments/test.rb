@@ -23,12 +23,12 @@ config.action_mailer.delivery_method = :test
 
 # Use Webrat.
 
-config.gem "webrat", :lib => false, :version => ">=0.4.4" unless File.directory?(File.join(Rails.root, 'vendor/plugins/webrat'))
-
-require 'webrat'
-
-class Webrat::Field
-  def escaped_value
-    @value.to_s
-  end
-end
+#config.gem "webrat", :lib => false, :version => ">=0.4.4" unless File.directory?(File.join(Rails.root, 'vendor/plugins/webrat'))
+#
+#require 'webrat'
+#
+#class Webrat::Field
+#  def escaped_value
+#    @value.to_s
+#  end
+#end
