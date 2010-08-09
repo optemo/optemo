@@ -4,15 +4,14 @@ class CompareController < ApplicationController
   require 'iconv'
   
   def index
-    if Session.isCrawler?(request.user_agent) || params[:ajax]
-      # The page numbers have to go in for pagination
-      page_number = {} # This has to be a hash for compatibility with Search.createSearchAndCommit()
-      page_number["page"] = params[:page]
-      current_search = Search.createInitialClusters(page_number)
-      classVariables(current_search)
-    else
+    unless Session.isCrawler?(request.user_agent) || params[:ajax]
       @indexload = true
     end
+    # The page numbers have to go in for pagination
+    page_number = {} # This has to be a hash for compatibility with Search.createSearchAndCommit()
+    page_number["page"] = params[:page]
+    current_search = Search.createInitialClusters(page_number)
+    classVariables(current_search)
     if params[:ajax]
       render 'ajax', :layout => false
     else
@@ -65,10 +64,11 @@ class CompareController < ApplicationController
   end
   
   def classVariables(search)
-    Session.current.search = search
-    if Session.current.directLayout
+    @s = Session.current
+    @s.search = search
+    if @s.directLayout
       page = search.page
-      @products = search.products.paginate :page => page, :per_page => 9
+      @products = search.products.paginate :page => page, :per_page => 10
     end
   end
   
@@ -135,7 +135,8 @@ class CompareController < ApplicationController
     params[:id] = params[:id][/^\d+/]
     @product = Product.cached(params[:id])
     @allspecs = ContSpec.cache_all(params[:id]).merge(CatSpec.cache_all(params[:id])).merge(BinSpec.cache_all(params[:id]))
-    product_type = Session.current.product_type
+    @s = Session.current
+    product_type = @s.product_type
     if product_type
       if product_type == "flooring_builddirect"
         @imglurl = "http://www.builddirect.com" + CGI.unescapeHTML(@product.imglurl.to_s)

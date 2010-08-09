@@ -1,15 +1,15 @@
-<div id="box<%= i %>" class="navigator_box<%= group ? " nbgroup" : " nbsingle" %>" <%= ("style='margin-right:0px'" if i % (Float(s.numGroups)/3).ceil == (Float(s.numGroups)/3).ceil - 1) %>>
+<div id="box<%= i %>" class="navigator_box<%= group ? " nbgroup" : " nbsingle" %>" <%= ("style='margin-right:0px'" if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1) %>>
 	<div class="topbar">
 		<div class="title">
 			<%= groupDesc(group,i) %>
 		</div>
 		
-		<% if s.dragAndDropEnabled %>
+		<% if @s.dragAndDropEnabled %>
 				<div class="image_boundingbox">
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
 		<% end %>
 		<%= image_tag(imgurl(product) , :"data-id" => product.id, :class => "productimg", :alt => product.smlTitle, :title => product.smlTitle) %>
-		<% if s.dragAndDropEnabled %>
+		<% if @s.dragAndDropEnabled %>
 			</div>
 		<% end %>
 		<div class="productinfocont">
@@ -33,7 +33,7 @@
     		</div>
 		<% else %>
 		<div style="margin-top: 6px; font-size: 0.8em">
-			<%= featuretext(s.search,cluster) %>
+			<%= featuretext(@s.search,cluster) %>
 		</div>
 		<% end %>
 	</div>

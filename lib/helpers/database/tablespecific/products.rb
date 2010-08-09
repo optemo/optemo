@@ -76,8 +76,6 @@ module ProductsHelper
       }
     }
     modelnames.reject{|x| x.nil? or x == ''}.each{|x| makes.each{|y| x.gsub!(/#{y}/,'')}}.uniq!
-    debugger
-    # This is not efficient.
     products.each do |ptr|
       p_makes = [just_alphanumeric(ptr.brand)].reject(&:blank?)
       p_modelnames = [just_alphanumeric(ptr.model), just_alphanumeric(ptr.mpn)].reject(&:blank?)
@@ -87,6 +85,7 @@ module ProductsHelper
     return matching
   end  
 
+  # The above method isn't too inefficient anymore, maybe making the below method no longer needed?
   # TODO
   def find_matching_product_efficient rec_makes, rec_modelnames, recset, series=[], brands=$brands
     matching = []
@@ -99,8 +98,6 @@ module ProductsHelper
       matching << row[0] unless ( p_make != make or (p_modelnames & modelnames).empty? )
     end
     return matching
-  end  
-  
-
+  end
 end
 

@@ -269,24 +269,19 @@ class Search < ActiveRecord::Base
     end
   end
 
-  def self.createSearchAndCommit(os, clusters=nil, myfilter =nil, current_search_term=nil)
-    # --- Warning ---
-    # The term 's' throughout the code base almost always refers to the current session. 
-    # In this function is refers to search, since that term is used much more frequently.
-    # ---------------
-    
+  def self.createSearchAndCommit(old_search, clusters=nil, myfilter =nil, current_search_term=nil)
     # Deal with the page term first. This can come from a call to either #filter or #compare.
-    current_session = Session.current
-    s = new({:session_id => current_session.id})
+    s = Session.current
+    current_search = new({:session_id => s.id})
     unless myfilter.nil?
-      s.page = myfilter['page'] # This will sometimes be nil, but that's fine.
+      current_search.page = myfilter['page'] # This will sometimes be nil, but that's fine.
       myfilter.delete("page")
     end
 
     if clusters
       mycluster = "c0="
       clusters.each do |p|
-        s.send(mycluster.intern, case p.class.name
+        current_search.send(mycluster.intern, case p.class.name
           when "String" then p
           when "Fixnum" then p.to_s
           when "Cluster" then p.id.to_s
@@ -294,72 +289,72 @@ class Search < ActiveRecord::Base
         mycluster.next! # automatically advances from 'c0=' to 'c1=' etc.
       end
       unless clusters.nil? || clusters.empty? || clusters.first.class == String || clusters.first.class == Fixnum
-          s.clusters = clusters.sort{|a,b| (a.size>1 ? -1 : 1) <=> (b.size>1 ? -1 : 1)}
+          current_search.clusters = clusters.sort{|a,b| (a.size>1 ? -1 : 1) <=> (b.size>1 ? -1 : 1)}
       end
       # For a 'browse simliar' or a page change, we need to copy the old features over.
-      s.save
-      self.duplicateFeatures(s, os)
+      current_search.save
+      self.duplicateFeatures(current_search, old_search)
     else # If no clusters, there should be a filter and / or search term, or a page term.
       if myfilter.nil? || myfilter.empty? # If myfilter only contained the "page" key, it's now empty, not nil
         # It was a new page.
-        s.clusters = (os ? os.clusters : [])
-        s.save
-        self.duplicateFeatures(s, current_session.search)
+        current_search.clusters = (old_search ? old_search.clusters : [])
+        current_search.save
+        self.duplicateFeatures(current_search, s.search)
       else
         #Delete blank values
         myfilter.delete_if{|k,v|v.blank?}
 
         unless current_search_term.blank?
-          product_ids = Product.search_for_ids(:per_page => 10000, :star => true, :conditions => {:product_type => current_session.product_type, :title => current_search_term.downcase})
+          product_ids = Product.search_for_ids(:per_page => 10000, :star => true, :conditions => {:product_type => s.product_type, :title => current_search_term.downcase})
           unless product_ids.empty?
-            s.userdatasearches = [Userdatasearch.new({:keyword => current_search_term, :keywordpids => "product_id IN (" + product_ids.join(',') + ")"})]
+            current_search.userdatasearches = [Userdatasearch.new({:keyword => current_search_term, :keywordpids => "product_id IN (" + product_ids.join(',') + ")"})]
           else
-            s.userdatasearches = []
-            s.clusters = []
-            return s
+            current_search.userdatasearches = []
+            current_search.clusters = []
+            return current_search
           end
         end
 
-        myfilter["session_id"] = current_session.id
+        myfilter["session_id"] = s.id
         #Handle false booleans
-        current_session.binary["filter"].each do |f|
-          dobj = current_session.search.userdatabins.select{|d|d.name == f}.first
+        s.binary["filter"].each do |f|
+          dobj = s.search.userdatabins.select{|d|d.name == f}.first
           myfilter.delete(f.intern) if myfilter[f.intern] == '0' && (dobj.nil? || dobj.value != true)
         end    
 
         #seperate myfilter into various parts
-        s.userdataconts = []
-        s.userdatabins = []
-        s.userdatacats = []
+        current_search.userdataconts = []
+        current_search.userdatabins = []
+        current_search.userdatacats = []
 
         myfilter.each_pair do |k,v|
           if k.index(/(.+)_min/)
             fname = Regexp.last_match[1]
             max = fname+'_max'
-            s.userdataconts << Userdatacont.new({:name => fname, :min => v, :max => myfilter[max]})
-          elsif current_session.binary["filter"].index(k)
-            s.userdatabins << Userdatabin.new({:name => k, :value => v})
-          elsif current_session.categorical["filter"].index(k)
+            current_search.userdataconts << Userdatacont.new({:name => fname, :min => v, :max => myfilter[max]})
+          elsif s.binary["filter"].index(k)
+            current_search.userdatabins << Userdatabin.new({:name => k, :value => v})
+          elsif s.categorical["filter"].index(k)
             v.split("*").each do |cat|
-              s.userdatacats << Userdatacat.new({:name => k, :value => cat})
+              current_search.userdatacats << Userdatacat.new({:name => k, :value => cat})
             end
           end
         end
         #Find clusters that match filtering query
-        if !s.expandedFiltering? && os
+        if !current_search.expandedFiltering? && old_search
           #Search is narrowed, so use current products to begin with
           # Why is this passing in (s)?
-          s.clusters = os.clusters(s)
+          current_search.clusters = old_search.clusters(current_search)
         else
           #Search is expanded, so use all products to begin with
-          s.clusters = (current_session.directLayout ? [] : Cluster.byparent(0).select{|c| not c.isEmpty(s)})
+          current_search.clusters = (s.directLayout ? [] : Cluster.byparent(0).select{|c| not c.isEmpty(current_search)})
           #clusters = clusters.map{|c| c unless c.isEmpty}.compact
         end
       end
     end
-    s.cluster_count = s.clusters.length
-    s.commitfilters
-    s
+    current_search.cluster_count = current_search.clusters.length
+    current_search.commitfilters
+    current_search
   end
       
   # Duplicate the features of search (s) and the last search (os)

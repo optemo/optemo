@@ -19,7 +19,7 @@ task :calculate_factors => :environment do
     utility_activerecords = []
     product_types.each do |pType_url_pair| # This is a pair like this: "camera_us"=>"m.browsethenbuy.com" - seems backwards, but makes the hash unique on product_type
       cont_spec_hash = {}
-      Session.load_defaults(pType_url_pair[1]) # Need to set up continuous and other arrays before use
+      Session.new(pType_url_pair[1]) # Need to set up continuous and other arrays before use
       all_products = Product.valid.instock
       all_products.each do |product|
         newUtilityRow = ContSpec.new({:product_type => pType_url_pair[0], :name => "utility", :product_id => product.id, :value => 0})
@@ -62,8 +62,8 @@ task :btxtr => :environment do
           raise "usage: rake btxtr url=? action=? # url is a valid url from products.yml and action is 'save' or 'train'" 
      end
      
-     Session.load_defaults(ENV['url'])
-     Session.current.version = Cluster.maximum(:version, :conditions => ['product_type = ?', Session.current.product_type]) if Session.directLayout
+     Session.new(ENV['url'])
+     Session.current.version = Cluster.maximum(:version, :conditions => ['product_type = ?', Session.current.product_type]) if Session.current.directLayout
      case ENV['action']
      when 'train'
        require 'train_boostexter.rb'
@@ -100,7 +100,7 @@ def calculateFactor(fVal, f, contspecs)
   # Order the feature values, reversed to give the highest value to duplicates
   ordered = contspecs.values.sort
   ordered = ordered.reverse if Session.current.prefDirection[f] == 1
-  return 0 if session.current.prefDirection[f] == 0
+  return 0 if Session.current.prefDirection[f] == 0
   pos = ordered.index(fVal)
   len = ordered.length
   (len - pos)/len.to_f

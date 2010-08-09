@@ -58,26 +58,28 @@ module OfferingsHelper
   # Updates best offer for all regions
   def update_bestoffer(product)
     # Region suffixes, used internally in the database format.
-    {'CA' => '_ca', 'US' => ''}.each_pair do |region, regioncode|  
+    {'US' => ''}.each_pair do |region, regioncode|  # This used to have the pair: 'CA' => '_ca' in it. No Canadian pricing for now
       # Finds the best offer by region and records the new
       # bestoffer price and product id.
-      matching_ro = RetailerOffering.find(:all, :conditions => "product_id=#{product.id} and product_type='#{Session.current.product_type}'").reject{ |x| !x.stock or x.priceint.nil? }
+      matching_ro = RetailerOffering.find(:all, :conditions => ["product_id=? and product_type=?", product.id, Session.current.product_type]).reject{ |x| !x.stock or x.priceint.nil? }
       if matching_ro.empty?
         parse_and_set_attribute("instock#{regioncode}", false, product)
         return product
       end
 
       # This is a problem: null prices. The product should not have a null price when it gets here maybe?
-      debugger
       lowest = matching_ro.sort{|x,y| x.priceint <=> y.priceint }.first
 
       # Should probably just set it once and then add '_ca', the region suffix, to the end of each.
       regional = {'price'=>'price', 'pricestr' => 'pricestr', 'bestoffer' => 'bestoffer', 'prefix' => '', 'instock'=> 'instock'}
       # The new database format does not contain most of these fields.
 #      parse_and_set_attribute(regional['bestoffer'], lowest.id, product)
-#      parse_and_set_attribute(regional['price'], lowest.priceint, product)
 #      parse_and_set_attribute(regional['pricestr'], lowest.pricestr, product)
       # We need to update the price ContSpec record here
+      price_record = ContSpec.find_by_name_and_product_id("price", product.id)
+      price_record = ContSpec.new({:product_id => product.id, :name => "price", :product_type => Session.current.product_type}) if price_record.nil?
+      parse_and_set_attribute('value', (lowest.priceint.to_f / 100.0), price_record)
+      price_record.save
       parse_and_set_attribute('instock', true, product)
     end
     product

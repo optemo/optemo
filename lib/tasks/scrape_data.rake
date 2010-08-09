@@ -70,7 +70,7 @@ module GenericScraper
   
   # A generic scraping algorithm for 1 offering
   def generic_scrape(local_id, retailer)
-    scraped_atts = scrape(local_id, retailer.region)
+    scraped_atts = scrape_specs_and_offering_info(local_id, retailer.region)
     if(scraped_atts)
       scraped_atts['local_id'] = local_id
       scraped_atts['product_type'] = Session.current.product_type
@@ -91,7 +91,7 @@ module GenericScraper
         end
 
         # Validation!
-        if clean_atts['priceint'] and (clean_atts['priceint'].to_i > session.current.maximumPrice)# or newatts['priceint'] < Session.current.minimumPrice)
+        if clean_atts['priceint'] and (clean_atts['priceint'].to_i > Session.current.maximumPrice)# or newatts['priceint'] < Session.current.minimumPrice)
           clean_atts['stock'] = false
           clean_atts['priceint'] = nil
         end
@@ -231,15 +231,12 @@ namespace :data do
     puts "There were #{no_stats.count} printers w/o stats of which #{no_stats_fixed.count} were fixed"
   end
   
-  desc 'Get new prices and products from Amazon cameras'
-  task :scrape_amazon_cams => [:cam_init, :amazon_init, :scrape_new, :update_prices, :update_bestoffers]
-
   task :validate_amazon => [:printer_init,:amazon_init, :validate_printers]
   
   task :camvote => [:cam_init,:vote]
   
   # The 2 things you can do, in terms of subtasks: scrape and update
-  task :scrape => [:scrape_new, :match_to_products, :update_bestoffers]
+  # task :scrape => [:scrape_new, :match_to_products, :update_bestoffers]
   task :update => [:update_prices, :scrape_new, :match_to_products, :update_bestoffers]
   
   task :endstuff => [:vote, :update_bestoffers]
@@ -251,32 +248,31 @@ namespace :data do
   desc 'Get new prices and products from TigerDirect printers'
   task :update_tiger_printers => [:tiger_init, :update]
   
-  desc 'Get new prices and products from Amazon (printers)'
+  desc 'Get new prices and printers from Amazon'
   task :update_amazon_printers => [:printer_init, :amazon_init, :update]
+  desc 'Get new prices and cameras from Amazon'
+  task :update_amazon_cameras => [:cam_init, :amazon_init, :update]
   
   desc 'Get new prices and products from Amazon Marketplace (printers)'
   task :update_amazon_mkt_printers => [:printer_init, :amazon_mkt_init, :update]
    
   desc 'Get new products from Amazon (warning:extra long!)'
-  task :scrape_amazon_printers => [:printer_init, :amazon_init, :scrape]
-  
+  task :scrape_amazon_printers => [:printer_init, :amazon_init, :update_prices]
+  desc 'Get new prices and products from Amazon cameras'
+  task :scrape_amazon_cams => [:cam_init, :amazon_init, :scrape_new, :update_prices, :update_bestoffers]
+  task :scrape_amazon_camera_retailer_offerings => [:cam_init, :amazon_init, :scrape_all]
+
   desc 'Get new products from Newegg'
-  task :scrape_newegg_printers => [:newegg_init, :scrape]
-  
+  task :scrape_newegg_printers => [:newegg_init, :update]
   desc 'Get new products from TigerDirect'
-  task :scrape_tiger_printers => [:tiger_init, :scrape]
+  task :scrape_tiger_printers => [:tiger_init, :update]
     
-  desc 'Get new products from Amazon Marketplace (warning: extra long!)'
-  task :scrape_amazon_mkt_printers => [:printer_init, :amazon_mkt_init, :scrape]
-  
-  # ... for cams
-  
-  
-  desc 'Get new prices and products from Amazon (cameras)'
-  task :update_amazon_cameras => [:cam_init, :amazon_init, :update]
+  desc 'Get new printers from Amazon Marketplace (warning: extra long!)'
+  task :scrape_amazon_mkt_printers => [:printer_init, :amazon_mkt_init, :update]
+  desc 'Get new cameras from Amazon Marketplace (warning: extra long!)'
+  task :update_amazon_mkt_cameras => [:cam_init, :amazon_mkt_init, :update]
   
   desc 'Get new prices and products from Amazon Marketplace (cameras)'
-  task :update_amazon_mkt_cameras => [:cam_init, :amazon_mkt_init, :update]
   
    # The subtasks...
   task :vote do 
@@ -297,15 +293,14 @@ namespace :data do
   end
   
   desc 'Match ScrapedPrinter to Printer!'
-  task :match_to_products do 
+  task :match_to_products do
     @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{Session.current.product_type}_matcher.log", 'w+')
-  puts "[#{Time.now}] Starting to match products"
-    match_me = scraped_by_retailers($retailers, $scrapedmodel) if $retailers
+    puts "[#{Time.now}] Starting to match products"
+    match_me = scraped_by_retailers($retailers, $scrapedmodel, false) if $retailers
     match_me = $scrapedmodel.all if match_me.nil?
-    
-    match_me.delete_if{|x| x.product_id}
-    
-    puts "We have #{match_me.count} #{$scrapedmodel.name}s unmatched products."
+        
+    #puts "We have #{match_me.count} #{$scrapedmodel.name}s unmatched products."
+    puts "We have #{match_me.count} products to match"
     
     match_me.delete_if{|x| (x.model.nil? and x.mpn.nil?) or x.brand.nil?}
     announce "#{match_me.count} #{$scrapedmodel.name}s are identifiable -- will match these."
@@ -320,6 +315,15 @@ namespace :data do
       parse_and_set_attribute('product_id',real.id, scraped)
       scraped.save
       ros = find_ros_from_scraped(scraped, scraped.retailer_id)
+      if ros.blank?
+        column_names = RetailerOffering.column_names
+        retail_offering_atts = scraped.attributes.reject{|r| not column_names.index(r)}
+        ro = RetailerOffering.new(retail_offering_atts)
+        ro.product_id = real.id
+        ro.product_type = Session.current.product_type
+        ro.priceint = ro.price if (ro.priceint.nil? && !(ro.price.nil?))
+        ro.save
+      end
       ros.each{ |ro| parse_and_set_attribute('product_id', real.id, ro); ro.save }     
       
       reviews = Review.find_all_by_local_id_and_product_type(scraped.local_id, Session.current.product_type)
@@ -347,11 +351,12 @@ namespace :data do
       next if offering.local_id.nil?
       newatts = rescrape_prices(offering.local_id, offering.region)
       # Validation!
-      if newatts['priceint'] and (newatts['priceint'].to_i > Session.current.maximumPrice)# or newatts['priceint'] < Session.current.minimumPrice)
+      # There is a weird dollars/cents issue on the next line, hence multiplying by 100.
+      if newatts['priceint'] and (newatts['priceint'].to_i > (100 * Session.current.maximumPrice))# or newatts['priceint'] < Session.current.minimumPrice)
         newatts['stock'] = false
         newatts['priceint'] = nil
       end
-      
+
       update_offering(newatts, offering) if offering
       #if(offering.product_id and Session.current.product_type.exists?(offering.product_id))
       #  update_bestoffer(Session.current.product_type.find(offering.product_id))
@@ -363,7 +368,7 @@ namespace :data do
       activerecords_to_save.each(&:save)
     end
 
-    timed_announce "Done updating prices"
+    timed_announce "Done updating retailer offerings"
     @logfile.close unless @logfile.closed?
   end
 
@@ -404,7 +409,7 @@ namespace :data do
     timed_announce "Done scraping"
     @logfile.close unless @logfile.closed?
   end
-  
+
   desc "Check that scraped data isn't wonky"
   task :validate_printers do
     require 'helpers/validation/data_validator'
@@ -444,7 +449,7 @@ namespace :data do
     @logfile.close unless @logfile.closed?
   end
   
-  task :update_bestoffers do 
+  task :update_bestoffers do
     activerecords_to_save = []
     Product.find(:all, :conditions => ["product_type=?", Session.current.product_type]).each do |p|
       update_bestoffer(p)
@@ -460,8 +465,7 @@ namespace :data do
       include CameraHelper
       include CameraConstants
       
-      Session.load_defaults("cameras")
-      s = Session.current
+      s = Session.new("cameras")
       $AllSpecs = s.continuous["all"] + s.binary["all"] + s.categorical["all"]
       
       # TODO get rid of this construct:
@@ -484,8 +488,7 @@ namespace :data do
       include PrinterHelper
       include PrinterConstants
       
-      Session.load_defaults("printers")
-      s = Session.current
+      s = Session.new("printers")
       $AllSpecs = s.continuous["all"] + s.binary["all"] + s.categorical["all"]
       
       # TODO get rid of this construct:

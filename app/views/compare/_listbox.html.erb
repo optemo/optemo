@@ -14,7 +14,7 @@
 	<div class="productinfo rounded" data-id="<%= product.id %>">
 		<div class="productimg_container">
 			<%= image_tag(imgurl(product) , :"data-id" => product.id, :class => "productimg", :alt => product.smlTitle, :title => product.smlTitle) %>
-			<% if s.dragAndDropEnabled %>
+			<% if @s.dragAndDropEnabled %>
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
 			<% end %>
 		</div>
@@ -22,14 +22,14 @@
 		<%= product.smlTitle %>
 		<div class="itemfeatures">
 			<% contspecs = ContSpec.cache_all(product.id); catspecs = CatSpec.cache_all(product.id); binspecs = BinSpec.cache_all(product.id) %>
-			<% s.categorical["show"].each do |f|%>
-			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => catspecs[f], :s => s} %>
+			<% @s.categorical["show"].each do |f|%>
+			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => catspecs[f]} %>
 			<% end %>
-			<% s.continuous["show"].each do |f|%>
-			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => contspecs[f], :s => s} %>
+			<% @s.continuous["show"].each do |f|%>
+			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => contspecs[f]} %>
 			<% end %>
-			<% s.binary["show"].each do |f|%>
-			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => binspecs[f], :s => s} %>
+			<% @s.binary["show"].each do |f|%>
+			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => binspecs[f]} %>
 			<% end %>
 		</div>
 		<div class="price">
