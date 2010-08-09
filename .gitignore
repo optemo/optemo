@@ -9,6 +9,7 @@ db/sphinx
 *.o
 config/*.sphinx.conf
 public/system
+test/fixtures/*.yml
 
 webrat.log
 deploy-to-staging.sh

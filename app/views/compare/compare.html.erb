@@ -7,7 +7,7 @@
 			<div class="filtersdesc"><%=t 'products.compare.filtersdesc' %></div>
 		<div id="ajaxfilter">
 			<% unless @indexload %>
-				<%= render :partial => 'filter' %>
+				<%= render :partial => 'filter', :locals => {:s => Session.current, :current_search => Session.current.search} %>
 			<% end  %>
 		</div>
 		<div class="bl"></div><div class="br"></div>
