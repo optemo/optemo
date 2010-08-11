@@ -220,7 +220,7 @@ class Search < ActiveRecord::Base
       utility_list = ContSpec.cachemany_with_ids(product_list_ids, "utility")
       # Cannot avoid sorting, since this result is cached.
       # If there is an error here, you might need to run rake calculate_factors. (utility_list.length should match product_list.length)
-      product_list.sort{|a, b| utility_list[a.id] <=> utility_list[b.id]}
+      product_list.sort{|a, b| utility_list[b.id] <=> utility_list[a.id]}
     end
   end
 

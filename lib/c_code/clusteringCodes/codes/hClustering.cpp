@@ -54,7 +54,7 @@ int main(int argc, char** argv){
 
 	string region = argv[2];
 	//cout<<region<<endl;
-	if ((region != "us") && (region != "ca") && (region!= "builddirect")){
+	if ((region != "us") && (region != "ca") && (region != "lph") && (region!= "builddirect")){
 		cout<<"Wrong Region. Please enter either 'us' or 'ca' or 'builddirect'." << endl << exampleUsage;
 		return EXIT_FAILURE;
 	}
@@ -286,6 +286,7 @@ int main(int argc, char** argv){
 
 			  bool clustered = 0;
 			  res = stmt->executeQuery(filteringCommand);
+			  
 		 //     command = "SELECT * from cont_specs and bin_specs where cont_specs.product_id=bin_specs.product_id and (cont_specs.product_id=";
 		 //     ostringstream productIdStr;
 		 //     res->next();
@@ -312,6 +313,11 @@ int main(int argc, char** argv){
 			
 	
 			  int maxSize = res->rowsCount();
+		      
+		      if (maxSize == 0) {
+                  cout << "No valid products."<<endl;
+                  return 0;
+              }
 		      
 			  time_t rawtime;
 			  struct tm * timeinfo;

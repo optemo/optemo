@@ -11,6 +11,7 @@ namespace :pictures do
   
   desc 'Get all the missing pictures for Printers'
   task :update_printers => [:printer_init, :download_missing_pictures, :resize_missing, :update_pic_stats, :close_log]
+  task :update_lph_printers => [:printer_lph_init, :download_missing_pictures, :resize_missing, :update_pic_stats, :close_log]
   
   desc 'Re-download all pictures for Printers'
   task :scrape_printers => [:printer_init, :download_pictures, :resize_all, :close_log]
@@ -35,6 +36,18 @@ namespace :pictures do
   
   task :printer_init => :environment do 
     Session.new("printers")
+    $scrapedmodel = ScrapedPrinter
+    
+    $logfile = File.open("./log/#{Session.current.product_type}_pics.log", 'w+')
+    
+    require 'helper_libs'
+    require 'RMagick'
+    include ImageLib
+    
+  end
+
+  task :printer_lph_init => :environment do 
+    Session.new("laserprinterhub.com")
     $scrapedmodel = ScrapedPrinter
     
     $logfile = File.open("./log/#{Session.current.product_type}_pics.log", 'w+')
