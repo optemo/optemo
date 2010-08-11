@@ -287,7 +287,7 @@ class Search < ActiveRecord::Base
       updateClusters(Cluster.byparent(0))
     elsif myclusters
       unless myclusters.first.class == String || myclusters.first.class == Fixnum
-        myclusters.sort!{|a,b| (a.size>1 ? -1 : 1) <=> (b.size>1 ? -1 : 1)}
+        myclusters = myclusters.sort{|a,b| (a.size>1 ? -1 : 1) <=> (b.size>1 ? -1 : 1)}
       end
       # For a 'browse simliar' or a page change, we need to copy the old features over.
       duplicateFeatures(self, old_search)
