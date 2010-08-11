@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100803213327) do
+ActiveRecord::Schema.define(:version => 20100809230118) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -1057,9 +1057,12 @@ ActiveRecord::Schema.define(:version => 20100803213327) do
     t.string   "region",                          :default => "us"
     t.string   "condition",                       :default => "New"
     t.string   "local_id"
+    t.float    "price"
   end
 
+  add_index "retailer_offerings", ["local_id"], :name => "local_id"
   add_index "retailer_offerings", ["product_id", "product_type", "region"], :name => "product_id"
+  add_index "retailer_offerings", ["retailer_id"], :name => "retailer_id"
 
   create_table "retailers", :force => true do |t|
     t.string   "url"
@@ -1151,6 +1154,75 @@ ActiveRecord::Schema.define(:version => 20100803213327) do
   create_table "scraped_cartridges", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "scraped_lph_printers", :force => true do |t|
+    t.text     "title"
+    t.string   "imagesurl"
+    t.integer  "imagesheight"
+    t.integer  "imageswidth"
+    t.string   "imagemurl"
+    t.integer  "imagemheight"
+    t.integer  "imagemwidth"
+    t.string   "imagelurl"
+    t.integer  "imagelheight"
+    t.integer  "imagelwidth"
+    t.integer  "price"
+    t.string   "pricestr"
+    t.boolean  "instock"
+    t.integer  "bestoffer",                       :limit => 1
+    t.string   "pricehistory"
+    t.integer  "price_ca"
+    t.string   "price_ca_str"
+    t.boolean  "instock_ca"
+    t.boolean  "bestoffer_ca"
+    t.boolean  "iseligibleforsupersavershipping"
+    t.float    "averagereviewrating"
+    t.integer  "totalreviews"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "dimensions"
+    t.integer  "itemwidth"
+    t.integer  "itemlength"
+    t.integer  "itemheight"
+    t.integer  "itemweight"
+    t.integer  "packageheight"
+    t.integer  "packagelength"
+    t.integer  "packagewidth"
+    t.integer  "packageweight"
+    t.string   "brand"
+    t.string   "model"
+    t.string   "mpn"
+    t.float    "ppm"
+    t.string   "resolution"
+    t.integer  "resolutionmax"
+    t.integer  "paperinput"
+    t.boolean  "scanner"
+    t.boolean  "printserver"
+    t.float    "displaysize"
+    t.float    "ttp"
+    t.string   "duplex"
+    t.boolean  "colorprinter"
+    t.boolean  "fax"
+    t.string   "papersize"
+    t.integer  "paperoutput"
+    t.string   "connectivity"
+    t.integer  "dutycycle"
+    t.string   "special"
+    t.float    "ppmcolor"
+    t.string   "platform"
+    t.string   "ean"
+    t.text     "feature"
+    t.integer  "listpriceint"
+    t.string   "warranty"
+    t.datetime "scrapedat"
+    t.boolean  "nodetails"
+    t.boolean  "bw"
+    t.string   "manufacturerproducturl"
+    t.integer  "product_id"
+    t.integer  "retailer_id"
+    t.string   "local_id"
+    t.text     "imageurl"
   end
 
   create_table "scraped_printers", :force => true do |t|

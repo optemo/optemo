@@ -122,3 +122,37 @@ module PrinterConstants
    #  , , 
     # /\d(\s|-)in(\s|-)1/i,
 end
+
+module LPHPrinterConstants
+  @@scrapedmodel = ScrapedLPHPrinter
+  @@brands = $printer_brands
+  @@series = $printer_series
+  @@descriptors = [/\sMFP\s/, /\sdupl(ex)?(\s|,|$)/i, /\sfaxcent(er|re)\s/i, /\sink\s/i,\
+   /(\s|\(|^)colou?r(\s|\)|4|\/)/i, /b(lack)?\s?(&(amp;)?|and)\s?w(hite)?/i, /\d+\s?MHz(\s|$|,)/i, \
+   /\sall\s?-?\s?in\s?-?\s?one\s/i, /\saio\s(int\s)?\d+?/i, /(\s|^|,)le?ga?l(\s|,|$)/i, \
+   /(\s|^|-|\/|,)\d*,?\d+\s?x\s?\d*,?\d+(dpi)?(\s|$|-|\/|,)/i, \
+   /,?up to/i, /pcl\s?[56ec\/]*/i, \
+   /(\s|^|,)\d*,?\d+(\.\d+)?\s?(to|--|\s-\s)\s?\d*,?\d+(\.\d+)?(\s|,|$|)/i, /(\s|^)to(\s|$)/,\
+   /\d+\s?(M|G)B(\s|,|$)/, \
+    /\d*,?\d+(\s|-)?(page|sheet)s?/i, /(\s|^|,)\d*(\s|-)?in(\s|-)?\d*(\s|$|,)/, /\d*,?\d*(\s|-)?dpi(\s|,|$)/i,\
+    /\sfast\s/i, /\se(ther)?net\s/i, /\sled\s/i, /\sRS232\s/, /\d*((\/|-)?\d+)?\s?[pc]pm(\s|,|$|\/)/i, \
+    /10\/100(B(ase)?-?TX?)?/i, /(\s|^|\/|\()(110|120|220|240)V(olt)?(\s|-|,|\/|$|\))/i, /\d+\s? fine\s?point/i,
+    /\d+ image quality/i, /(\s|^|\/)A(3|4)(\s|,|$|\/)/,/(\s|^)USBPS3($|\s)/, /(\s|^|,)USB\s?(2(\.0?)|256)?(\s|,|$)/i,\
+    /to \d+/, /pipe/, /(\s|^)par(\s|$)/i, /[01]*\/?[01]*base-tx?/i, /ieee1394/i, /series/i, \
+    /(32|64|128|256|512)(\s|-)?(k|m)b/i, /(\s|^)CPU(\s|$|,)/, /(serial|parallel)/i, /shipping/i, /\d*(\s|-)?tray/i, \
+    /\slaser\s/i, /black/i, /rolls?/i, /\d+(-|\s)?pin/i, /duplex/i, /\smono(chrome)?\s/i, /\d+\s?rpm/i, /sas \d+/i, \
+    /letter/i,  /(\s|^|,)LCD(\s|,|$)/,  /(\s|^|,)drive(\s|,|$)/i, /(\s|^|,)type(\s|,|$)/i, /DDR[23]/,\
+    /(\s|^|,)3G(\s|,|$)/, /console/, /as 1/, /\d+\s(sq\.\s?)?f(ee)?t(\s|,|$)/i, /(\s|^)2nd(\s|$)/i]
+    # 10/100
+    # 10/100Base-TX
+    #  /\stabloid\s/i,
+    #   /\sdig(ital)?\s/i,
+   # /\smultifunct?ion\s/i, 
+   # /legal/i, 
+   # /printer/i, 
+    # /\schrome\s/i,env: ruby: No such file or directory
+    # /\snetwork\s/i,
+   # /\sworkcent(re|er)\s/i, 
+   #  , , 
+    # /\d(\s|-)in(\s|-)1/i,
+end
