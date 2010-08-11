@@ -71,6 +71,10 @@ class Session
     Search.find_all_by_session_id(@id)
   end
 
+  def lastsearch
+    Search.find_last_by_session_id(@id)
+  end
+
   def self.current
     @@current
   end
