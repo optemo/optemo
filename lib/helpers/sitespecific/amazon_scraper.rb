@@ -76,7 +76,7 @@ module AmazonScraper
     elsif (atts['priceint'].nil? or atts['pricestr'].nil?)
       if atts['listprice']
         atts['pricestr'] = atts['listprice']
-        atts['price'] = atts['listprice'].gsub(/\$/i,'').to_f
+        atts['price'] = atts['priceint'] = atts['listprice'].gsub(/\$/i,'').to_f
       else
         announce "WARNING: Nil price after cleaning atts for #{atts['local_id']}"
       end
@@ -85,9 +85,8 @@ module AmazonScraper
     return atts
   end
   
-  # Scrape product specs and offering info (prices,
-  # availability) by local_id and region
-  def scrape(local_id, region)
+  # Scrape product specs and offering info (prices, availability) by local_id and region
+  def scrape_specs_and_offering_info(local_id, region)
     log ("Scraping ASIN #{local_id} from #{region}" )
     specs = scrape_specs(local_id)
     specs = scrape_specs(local_id) if specs.empty? # In case of one-off errors, just try once more.
@@ -102,11 +101,11 @@ module AmazonScraper
   
   #DO NOT CACHE THIS STUFF
   # Scrape product specs from feed
-   def scrape_specs local_id
+   def scrape_specs(local_id)
      begin
        # res = Amazon::AWS.item_lookup(local_id, :response_group => 'ItemAttributes,Images', :review_page => 1)
        il = ItemLookup.new( 'ASIN', { 'ItemId' => local_id, 'MerchantId' => 'Amazon'} )
-       il.response_group = ResponseGroup.new( 'Large', 'Offers', 'ItemAttributes', 'Images', 'Reviews' )
+       il.response_group = ResponseGroup.new( 'Large' ) # OfferSummary maybe?
        req = Request.new
        resp = req.search( il, 1, true ) # first page, make Amazon::AWS.search return raw data with third argument
        #be_nice_to_amazon
@@ -124,7 +123,7 @@ module AmazonScraper
          atts = {}
 
          temphash = {}
-         item.xpath('itemattributes/*').each do |x| 
+         item.xpath('itemattributes/*').each do |x|
            temphash[x.name] = (temphash[x.name] || []) + [x.content]
          end
          temphash.each do |k, v|
@@ -195,9 +194,7 @@ module AmazonScraper
     return $retailers.reject{|x| x.region != region}.first
   end
 
-  # Gets a hash of attributes for the
-  # best-priced offer for a given
-  # asin in the given region
+  # Gets a hash of attributes for the best-priced offer for a given ASIN in the given region
   def rescrape_prices(asin, region)
     offer_atts = {}
     best = scrape_best_offer(asin, region)
@@ -488,9 +485,6 @@ module AmazonScraper
     bnode = browse_node_id
     place = retailer.region.intern
     current_page = 1
-    (2..caller.length).each do |idx|  
-      p "[#{idx}]: #{caller[idx]}"
-    end
     begin
       begin 
         is = ItemSearch.new( $search_index, {'BrowseNode' => bnode, 'MerchantID' => merch, 'ItemPage' => current_page, :service => 'AWSECommerceService' } ) # :country => place, :response_group => 'Offers',

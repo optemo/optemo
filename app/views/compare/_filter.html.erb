@@ -1,20 +1,20 @@
 <% form_tag("/compare/filter",{:id => 'search_form'}) do %>
-  <%= current_search.userdatasearches.empty? ? text_field_tag('search') : text_field_tag('search', current_search.userdatasearches[0].keyword) %>
+  <%= @s.search.userdatasearches.empty? ? text_field_tag('search') : text_field_tag('search', @s.search.userdatasearches[0].keyword) %>
   <%= submit_tag 'Search', {:id => 'submit_button'} %>
-  <% if current_search.userdatasearches[0] && current_search.userdatasearches[0].keyword %>
-	<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :class => "removesearch"} %> Search: <%= current_search.userdatasearches[0].keyword %>
+  <% if @s.search.userdatasearches[0] && @s.search.userdatasearches[0].keyword %>
+	<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :class => "removesearch"} %> Search: <%= @s.search.userdatasearches[0].keyword %>
 	</div>
-	<%= hidden_field_tag "previous_search_word", current_search.userdatasearches[0].keyword %>
+	<%= hidden_field_tag "previous_search_word", @s.search.userdatasearches[0].keyword %>
   <% else %>
     <%= hidden_field_tag "previous_search_word", '' %>
   <% end %>
 <% end %>
 
 <% form_tag("",{:id => 'filter_form'}) do %>
-<% s.categorical["filter"].each_with_index do |feat, index| %>
-	<div class='feature <%= "sv" if s.directLayout %>'>
+<% @s.categorical["filter"].each_with_index do |feat, index| %>
+	<div class='feature <%= "sv" if @s.directLayout %>'>
 		<% chosen_cats = chosencats(feat) %>
-		<% if s.directLayout %>
+		<% if @s.directLayout %>
 			<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat %>">Show Groups</div>
 		<% end %>
 		<div class='catlabel'>
@@ -36,7 +36,7 @@
 		<%= hidden_field_tag "myfilter[#{feat}]", chosen_cats.join("*") %>
 	</div>
 <% end %>
-<% s.continuous["filter"].each do |feat| %>
+<% @s.continuous["filter"].each do |feat| %>
 	<%= render :partial => 'slider', 
 		:locals => {:name => t('products.' + feat),
 		:feat => feat,
@@ -44,11 +44,11 @@
 		:overall_min => ContSpec.allMinMax(feat)[0],
 		:overall_max => ContSpec.allMinMax(feat)[1]} %>
 <% end %>
-<% s.binary["filter"].each do |feat| %>
+<% @s.binary["filter"].each do |feat| %>
 	<div class='feature'>
 		<div class='label'>
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
-			<% dobj = Userdatabin.find_by_search_id_and_name(current_search.id,feat) %>
+			<% dobj = Userdatabin.find_by_search_id_and_name(@s.search.id,feat) %>
 			<%= check_box('myfilter', feat, {:checked => dobj.nil? || dobj.value == false ? false : 'checked', :class => 'autosubmitbool'})%>
 			<%= link_to t('products.' + feat), "#" %>
 		</div>

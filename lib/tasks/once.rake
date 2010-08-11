@@ -162,7 +162,7 @@ end
 
 desc "Make clusters for simple view"
 task :create_flat_clustering => :environment do
-  Session.load_defaults("flooring_builddirect")
+  Session.new("flooring_builddirect")
   lastcluster = Cluster.find_last_by_product_type(Session.current.product_type)
   version = lastcluster.version if lastcluster
   version ||= 0

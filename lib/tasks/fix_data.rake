@@ -1,7 +1,5 @@
 namespace :fix_data do
-  
   task :ptr_redo_endstuff  => ['data:printer_init', 'data:update_bestoffers']
-  
   
   task :cam_rescrape  => ['data:cam_init', 'data:amazon_init', :rescrape_selected_2]
   
@@ -352,7 +350,7 @@ namespace :fix_data do
   
   # This function does not work at present (July 2010). Fix reviews as a block.
   task :unmatch_reviews => :environment do 
-    Session.current.product_type = Camera # This construct needs to be taken out for reviews. First, review data needs to be separately processed.
+    Session.new("cameras")
     $scrapedmodel = ScrapedCamera
     
     matchme = Review.find_all_by_product_type('Camera').reject{|revu_id| !Review.exists?(revu_id)}

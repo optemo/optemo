@@ -23,8 +23,8 @@ module ParseAttributeHelper
       when s.binary["all"].include?(k)
         class_type = "BinSpec"
       end
-      s = class_type.constantize.new({:product_id => p.id, :name => k, :value => v, :product_type => Session.current.product_type})
-      activerecords_to_save.push(s)
+      spec = class_type.constantize.new({:product_id => p.id, :name => k, :value => v, :product_type => s.product_type})
+      activerecords_to_save.push(spec)
     end
     activerecords_to_save.each(&:save)
     p

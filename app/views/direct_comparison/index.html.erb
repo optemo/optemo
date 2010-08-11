@@ -1,4 +1,3 @@
-<% s = Session.current %>
 <div class="poptitle"><%=t "compare.index.title"%></div>
 
 <div id="comparisonmatrix">
@@ -7,7 +6,7 @@
 		<div class="thumbnailcell leftmostcolumn">								
 			<div class="tabletitle leftcolumntext"> <%= t('compare.index.tabletitle') %> </div>
 		</div>
-		<%= render :partial => 'featurenames', :locals => {:featurelist => (s.continuous["filter"]+s.categorical["filter"]+s.binary["filter"])} %>
+		<%= render :partial => 'featurenames', :locals => {:featurelist => (@s.continuous["filter"]+@s.categorical["filter"]+@s.binary["filter"])} %>
 		<div class="cell leftmostcolumn"> </div>
 	</div>
 
@@ -18,7 +17,7 @@
 			</div></div>
 			<% contspecs = ContSpec.cache_all(@products[i].id) %>
 			<%= render :partial => 'thumbnails', :object => @products[i], :locals => {:navBack => :back, :i => i, :total => @products.count, :contspecs => contspecs} %>
-			<%= render :partial => 'featurevalues', :locals => {:product => @products[i], :numberofproducts => @products.count, :contspecs => contspecs, :s => s} %>
+			<%= render :partial => 'featurevalues', :locals => {:product => @products[i], :numberofproducts => @products.count, :contspecs => contspecs} %>
 		</div>
 	<% end %>
 	<div class="bgrow"></div>

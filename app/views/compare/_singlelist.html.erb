@@ -2,28 +2,28 @@
 	<div class="productinfo rounded" data-id="<%= product.id %>">
 		<div class="productimg">
 			<%= image_tag(imgurl(product) , :"data-id" => product.id, :class => "productimg", :alt => product.smlTitle, :title => product.smlTitle) %>
-			<% if s.dragAndDropEnabled %>
+			<% if @s.dragAndDropEnabled %>
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
 			<% end %>
 		</div>
 		<div class="itemfeatures">
 			<div class="itemtitle"><%= product.smlTitle %></div>
 			<% contspecs = ContSpec.cache_all(product.id); catspecs = CatSpec.cache_all(product.id); binspecs = BinSpec.cache_all(product.id) %>
-			<% s.categorical["showList"].each do |f|%>
-			  <%= render :partial => 'featurevaluesg', :locals => {:f => f, :val => catspecs[f], :s => s} %>
+			<% @s.categorical["showList"].each do |f|%>
+			  <%= render :partial => 'featurevaluesg', :locals => {:f => f, :val => catspecs[f]} %>
 			<% end %>
-			<% s.continuous["showList"].each do |f|%>
-			  <%= render :partial => 'featurevaluesg', :locals => {:f => f, :val => contspecs[f], :s => s} %>
+			<% @s.continuous["showList"].each do |f|%>
+			  <%= render :partial => 'featurevaluesg', :locals => {:f => f, :val => contspecs[f]} %>
 			<% end %>
-			<% s.binary["showList"].each do |f|%>
-			  <%= render :partial => 'featurevaluesg', :locals => {:f => f, :val => binspecs[f], :s => s} %>
+			<% @s.binary["showList"].each do |f|%>
+			  <%= render :partial => 'featurevaluesg', :locals => {:f => f, :val => binspecs[f]} %>
 			<% end %>
 		</div>
 		<div class="price">
 			<%= number_to_currency(contspecs["price"]) %>
 		</div>
 		<div class='priceunit'>
-			<%= t("#{s.product_type}.priceunit") unless t("#{s.product_type}.priceunit") == '$' %>
+			<%= t("#{@s.product_type}.priceunit") unless t("#{@s.product_type}.priceunit") == '$' %>
 		</div>
 	</div>
 	<div style="clear:both;"></div>

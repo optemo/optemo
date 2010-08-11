@@ -23,7 +23,7 @@ namespace :pictures do
   
   task :camera_init => :environment do 
 
-    Session.load_defaults("cameras")
+    Session.new("cameras")
     $scrapedmodel = ScrapedCamera
     
     $logfile = File.open("./log/#{Session.current.product_type}_pics.log", 'w+')
@@ -34,7 +34,7 @@ namespace :pictures do
   end
   
   task :printer_init => :environment do 
-    Session.load_defaults("printers")
+    Session.new("printers")
     $scrapedmodel = ScrapedPrinter
     
     $logfile = File.open("./log/#{Session.current.product_type}_pics.log", 'w+')
