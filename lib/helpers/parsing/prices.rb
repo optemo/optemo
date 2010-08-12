@@ -15,7 +15,7 @@ module PricesCleaner
   # Figures out all the price attributes
   def clean_prices! atts
     ['salepricestr', 'saleprice', 'listpricestr', 'listprice'].each do |a|
-      atts[a] = atts[a].gsub("Less than ",'') # Returns a string stripped of the "less than" part of the price. There is some code somewhere dealing with "too low".  
+      atts[a] = atts[a].gsub("Less than ",'') if atts[a] # Returns a string stripped of the "less than" part of the price. There is some code somewhere dealing with "too low".  
     end
     s_price_f = get_f((atts['salepricestr'] || atts['saleprice'] || '').strip.gsub(/\*/,'')) 
     l_price_f = get_f((atts['listpricestr'] || atts['listprice'] || '').strip.gsub(/\*/,'')) 

@@ -66,7 +66,6 @@ module OfferingsHelper
         parse_and_set_attribute("instock#{regioncode}", false, product)
         return product
       end
-
       # This is a problem: null prices. The product should not have a null price when it gets here maybe?
       lowest = matching_ro.sort{|x,y| x.priceint <=> y.priceint }.first
 

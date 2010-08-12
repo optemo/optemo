@@ -562,6 +562,12 @@ double repOrder(sql::Statement *stmt, sql::ResultSet *res, string productName, s
 			command = "select value from cont_specs where product_type=\'"+productName+"_"+region+
 				"\' and name=\'utility\' and product_id="+pidS.str()+";";
 			res= stmt->executeQuery(command);
+			if (res->rowsCount() == 0) {
+                cout << "No utility found for: " << pidS.str() <<endl;
+                cout << "(You might want to run 'rake calculate_factors')"<<endl;
+                exit(0);
+            }
+			    
 			res->next();
 			utils[i] = res->getDouble("value");
 			avgUtil += utils[i];

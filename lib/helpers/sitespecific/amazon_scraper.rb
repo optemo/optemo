@@ -41,18 +41,14 @@ module AmazonScraper
   end
   
   # Amazon-specific cleaning code
-  def clean atts
+  def clean(atts)
     atts['listprice'] = (atts['listprice'] || '').match(/\$\d+\.(\d\d)?/).to_s
     
     case Session.current.product_type
-    when /printer_us/
-      clean_printer(atts)
-    when /camera_us/
-      clean_camera(atts)
-    when /cartridge/
-      clean_camera(atts) # This seems a bit odd.
-    else
-      # Do nothing.
+    when /printer_us/, /printer_lph/ then clean_printer(atts)
+    when /camera_us/ then clean_camera(atts)
+    when /cartridge/ then clean_camera(atts) # This seems a bit odd.
+    else # Do nothing.
     end
         
     unless atts['itemwidth'] and atts['itemheight'] and atts['itemlength']
@@ -105,14 +101,14 @@ module AmazonScraper
      begin
        # res = Amazon::AWS.item_lookup(local_id, :response_group => 'ItemAttributes,Images', :review_page => 1)
        il = ItemLookup.new( 'ASIN', { 'ItemId' => local_id, 'MerchantId' => 'Amazon'} )
-       il.response_group = ResponseGroup.new( 'Large' ) # OfferSummary maybe?
+       il.response_group = ResponseGroup.new( 'Medium', 'Images', 'ItemAttributes') # OfferSummary maybe?
        req = Request.new
        resp = req.search( il, 1, true ) # first page, make Amazon::AWS.search return raw data with third argument
        #be_nice_to_amazon
      rescue Exception => exc
        report_error "Could not scrape #{local_id} data"
        report_error "#{exc.class.name} #{exc.message}"
-       log_snore(120) 
+       log_snore(60) 
        return {}
      else
        nokodoc = Nokogiri::HTML(resp[1])
@@ -126,9 +122,14 @@ module AmazonScraper
          item.xpath('itemattributes/*').each do |x|
            temphash[x.name] = (temphash[x.name] || []) + [x.content]
          end
+         
          temphash.each do |k, v|
            atts[k] = combine_for_storage(v)
          end
+
+         # Often, specs will be hidden in here and we can get them there.
+         # Use it as a last resort though.
+         amazon_review_content = item.css('editorialreview/content')
 
          item.css('itemattributes/itemdimensions/*').each do |dim|
            temp = (dim.attributes['units'] || '').to_s.strip
@@ -156,6 +157,37 @@ module AmazonScraper
            	vals = val
            end
            atts.merge!(name => vals)
+         end
+         # All the to_s calls prevent nil values.
+         if atts['ppm'].nil?
+           ppm = atts['title'].to_s[/\d+.?ppm/i].to_s[/\d+/]
+           ppm = atts['feature'].to_s[/\d+.?ppm/i].to_s[/\d+/] if ppm.blank?
+           ppm = amazon_review_content.to_s[/\d+.?ppm/i].to_s[/\d+/] if ppm.blank?
+           debugger if ppm.blank?
+           atts['ppm'] = ppm
+         end
+         if atts['resolutionmax'].nil?
+           dpipart = atts['title'].to_s[/\d+.?(dpi)?.?.?.?\d+.?dpi/i]
+           dpipart = atts['feature'].to_s[/\d+.?(dpi)?.?.?.?\d+.?dpi/i] if dpipart.blank?
+           dpipart = atts['resolution'].to_s[/\d+.?(dpi)?.?.?.?\d+.?dpi/i] if dpipart.blank?
+           dpipart = amazon_review_content.to_s[/\d+.?(dpi)?.?.?.?\d+.?dpi/i] if dpipart.blank?
+           dpipart = amazon_review_content.to_s[/\d+.?.?dpi/i] if dpipart.blank?
+           debugger if dpipart.blank?
+
+           dpi_one = dpipart.to_s[/^\d+/]
+           dpi_two = dpipart.to_s.gsub(/^\d+/,'').to_s[/\d+/]
+           atts['resolutionmax'] = [dpi_one.to_i, dpi_two.to_i].max
+         end
+         if atts['paperinput'].nil?
+           input = atts['title'].to_s[/\d+.?sheet/i]
+           input = atts['title'].to_s[/\d+.?pages/i] if input.blank?
+           input = atts['title'].to_s[/\d+.?pgs/i] if input.blank?
+           input = atts['feature'].to_s[/\d+.?sheet/i] if input.blank?
+           input = atts['feature'].to_s[/\d+.?pages/i] if input.blank?
+           input = atts['feature'].to_s[/\d+.?pgs/i] if input.blank?
+           input = amazon_review_content.to_s[/\d+.?sheet/i] if input.blank?
+           debugger if input.blank?
+           atts['paperinput'] = input.to_s[/\d+/].to_i
          end
          return atts
        end
@@ -340,7 +372,7 @@ module AmazonScraper
 
   # Cleans attributes if they belong
   # to an Amazon printer
-  def clean_printer atts
+  def clean_printer(atts)
     atts['cpumanufacturer'] = nil # TODO hacky
     temp1 = ((atts['feature'] || '') +'|'+ (atts['specialfeatures'] || '')).force_encoding('UTF-8')
     temp2 = temp1.split(/¦|\|/)
@@ -482,10 +514,10 @@ module AmazonScraper
     cachefile = File.open(cachefile_name(retailer), 'w')
     # Set up the parameters for the request.
     merch = get_merchant_str(retailer.name) || 'All'
-    bnode = browse_node_id
+    bnode = browse_node_id()
     place = retailer.region.intern
-    current_page = 1
-    begin
+    current_page = totalpages = 1
+    while not (current_page > totalpages)
       begin 
         is = ItemSearch.new( $search_index, {'BrowseNode' => bnode, 'MerchantID' => merch, 'ItemPage' => current_page, :service => 'AWSECommerceService' } ) # :country => place, :response_group => 'Offers',
 
@@ -493,12 +525,15 @@ module AmazonScraper
         request.locale = place.to_s
         response = request.search( is, current_page, "true" ) # The third parameter says "return raw XML"
         # be_nice_to_amazon
+      rescue Amazon::AWS::Error => exc
+        report_error "Amazon Error. Couldn't download Offers for page #{current_page}"
+        report_error "#{exc.class.name} #{exc.message}"        
       rescue Exception => exc
         report_error "Couldn't download Offers for page #{current_page}"
         report_error "#{exc.class.name} #{exc.message}"
       else
         if(response)
-          totalpages ||= response[0] #response.item_search_response[0].items[0].total_pages[0].to_s.to_i
+          totalpages = response[0] if totalpages == 1 #response.item_search_response[0].items[0].total_pages[0].to_s.to_i
           # items = response.item_search_response[0].items[0].item
           totalpages = 1 if totalpages.nil?
           nokodoc = response[1]
@@ -508,22 +543,17 @@ module AmazonScraper
       totalpages = 1 if totalpages.nil?
       timed_announce "Done #{current_page} of #{totalpages} pages"
       current_page += 1
-    end while not (current_page > totalpages)
+    end
     cachefile.close
   end
   
   def browse_node_id
     case Session.current.product_type
-      when 'printer_us'
-        return '172648'
-      when 'printer_ca'
-        return '677265011'
-      when 'camera_us'
-        return '330405011'
-      when 'camera_ca'
-        return '677235011'
-      when 'Cartridge' # This never happens at the moment
-        return '172641'
+      when 'printer_us', 'printer_lph' then '172648'
+      when 'printer_ca' then '677265011'
+      when 'camera_us' then '330405011'
+      when 'camera_ca' then '677235011'
+      when 'Cartridge' then '172641' # This never happens at the moment
     end
   end
   

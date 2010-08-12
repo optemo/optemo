@@ -136,7 +136,7 @@ printers.browsethenbuy.com:
             
 laserprinterhub.com:
     product_type:
-        - printer_us
+        - printer_lph
     layout:
         - gridview
     price:
@@ -173,7 +173,7 @@ laserprinterhub.com:
 
 localhost:
     product_type:
-        - printer_us
+        - printer_lph
     layout:
         - gridview
     price:

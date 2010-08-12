@@ -237,7 +237,7 @@ namespace :data do
   
   # The 2 things you can do, in terms of subtasks: scrape and update
   # task :scrape => [:scrape_new, :match_to_products, :update_bestoffers]
-  task :update => [:update_prices, :scrape_new, :match_to_products, :update_bestoffers]
+  task :update => [:update_prices, :scrape_new, :match_to_products, :update_specs, :update_bestoffers]
   
   task :endstuff => [:vote, :update_bestoffers]
   
@@ -250,6 +250,8 @@ namespace :data do
   
   desc 'Get new prices and printers from Amazon'
   task :update_amazon_printers => [:printer_init, :amazon_init, :update]
+  desc 'Get new products from Amazon (warning:extra long!)'
+  task :update_amazon_printers_lph => [:laserprinterhub_init, :amazon_init, :update]
   desc 'Get new prices and cameras from Amazon'
   task :update_amazon_cameras => [:cam_init, :amazon_init, :update]
   
@@ -258,6 +260,7 @@ namespace :data do
    
   desc 'Get new products from Amazon (warning:extra long!)'
   task :scrape_amazon_printers => [:printer_init, :amazon_init, :update_prices]
+  
   desc 'Get new prices and products from Amazon cameras'
   task :scrape_amazon_cams => [:cam_init, :amazon_init, :scrape_new, :update_prices, :update_bestoffers]
   task :scrape_amazon_camera_retailer_offerings => [:cam_init, :amazon_init, :scrape_all]
@@ -296,7 +299,7 @@ namespace :data do
   task :match_to_products do
     @logfile = File.open("./log/#{just_alphanumeric($retailers.first.name)}_#{Session.current.product_type}_matcher.log", 'w+')
     puts "[#{Time.now}] Starting to match products"
-    match_me = scraped_by_retailers($retailers, $scrapedmodel, false) if $retailers
+    match_me = scraped_by_retailers($retailers, $scrapedmodel) if $retailers
     match_me = $scrapedmodel.all if match_me.nil?
         
     #puts "We have #{match_me.count} #{$scrapedmodel.name}s unmatched products."
@@ -310,8 +313,11 @@ namespace :data do
       announce "On Item " + i.to_s if i%10 == 0
       real = matches.first
       # If there is no product match, create a new product (and all the attributes).
-      real = create_record_from_attributes(scraped.attributes) if real.nil? 
-      
+      if real.nil?
+        real = create_record_from_attributes(scraped.attributes)
+        real.product_type = Session.current.product_type
+        real.save # Because we need the ID below immediately
+      end
       parse_and_set_attribute('product_id',real.id, scraped)
       scraped.save
       ros = find_ros_from_scraped(scraped, scraped.retailer_id)
@@ -338,6 +344,68 @@ namespace :data do
     end
     timed_announce "[#{Time.now}] Done matching products"
     @logfile.close unless @logfile.closed?
+  end
+  
+  task :update_specs do
+    # Sometimes, there aren't enough continuous specs for some reason.
+    # The symptom of this is that Product.valid is much lower than Product.instock.
+    
+    # For each product in the database, based on the product_type:
+      # See what its specs are
+      # If there are specs missing, attempt to add them. Do this by looking at the Scraped Model as appropriate.
+    s = Session.current
+    cont_spec_activerecords_to_save = []
+    cat_spec_activerecords_to_save = []
+    bin_spec_activerecords_to_save = []
+    Product.find_all_by_product_type(s.product_type).each do |p|
+      scraped_product = $scrapedmodel.find_by_product_id(p.id)
+      next if scraped_product.nil?
+      s.continuous["all"].each do |f|
+        spec = ContSpec.find_by_name_and_product_id(f, p.id)
+        if spec.nil?
+          # there is a spec missing
+          spec_value_dirty = scraped_product[f].to_f
+          # clean it up
+          # then store it
+          spec_record = ContSpec.new({:product_type => s.product_type, :product_id => p.id, :name => f, :value => spec_value_dirty})
+          cont_spec_activerecords_to_save.push(spec_record)
+        end
+      end
+
+      s.categorical["all"].each do |f|
+        spec = CatSpec.find_by_name_and_product_id(f, p.id)
+        if spec.nil?
+          # there is a spec missing
+          spec_value_dirty = scraped_product[f].to_s
+          # clean it up
+          # then store it
+          spec_record = CatSpec.new({:product_type => s.product_type, :product_id => p.id, :name => f, :value => spec_value_dirty})
+          cat_spec_activerecords_to_save.push(spec_record)
+        end
+      end
+
+      s.binary["all"].each do |f|
+        spec = BinSpec.find_by_name_and_product_id(f, p.id)
+        if spec.nil?
+          # there is a spec missing
+          spec_value_dirty = scraped_product[f].to_i
+          # clean it up
+          # then store it
+          spec_record = BinSpec.new({:product_type => s.product_type, :product_id => p.id, :name => f, :value => spec_value_dirty})
+          bin_spec_activerecords_to_save.push(spec_record)
+        end
+      end
+
+    end
+    ContSpec.transaction do
+      cont_spec_activerecords_to_save.each(&:save)
+    end
+    CatSpec.transaction do
+      cat_spec_activerecords_to_save.each(&:save)
+    end
+    BinSpec.transaction do
+      bin_spec_activerecords_to_save.each(&:save)
+    end
   end
   
   # Update prices
@@ -396,7 +464,7 @@ namespace :data do
   task :scrape_new do
     @logfile = File.open("./log/scrape/#{just_alphanumeric($retailers.first.name)}_#{Session.current.product_type}.log", 'w+')
     $retailers.each do |retailer|
-      ids = scrape_all_local_ids retailer.region
+      ids = scrape_all_local_ids(retailer.region)
       scraped_ids = ($scrapedmodel.find_all_by_retailer_id(retailer.id)).collect{|x| x.local_id}.uniq
       ids = (ids - scraped_ids).uniq.reject{|x| x.nil?}
       announce "Will scrape #{ids.count} #{Session.current.product_type} from #{retailer.name}, #{scraped_ids.count} already exist"
@@ -484,6 +552,28 @@ namespace :data do
       $bools_assume_no = []
   end
 
+  task :laserprinterhub_init => :init do
+    include PrinterHelper
+    include LPHPrinterConstants
+
+    s = Session.new("laserprinterhub.com")
+    $AllSpecs = s.continuous["all"] + s.binary["all"] + s.categorical["all"]
+
+    # TODO get rid of this construct:
+    $scrapedmodel = @@scrapedmodel
+    $brands= @@brands
+    $series = @@series
+    $descriptors = @@descriptors + $conditions.collect{|cond| /(\s|^|;|,)#{cond}(\s|,|$)/i}
+    # \
+    #  + $units.reject{|x| x=='in'}.collect{|y| /#{Regexp.escape(y)}/i}
+
+    $reqd_fields = ['itemheight', 'itemwidth', 'itemlength', 'ppm', 'resolutionmax',\
+       'paperinput','scanner', 'printserver', 'brand', 'model']
+    $reqd_offering_fields = ['priceint', 'pricestr', 'stock', 'condition', 'priceUpdate', 'toolow', \
+       'local_id', "product_type", "region", "retailer_id"]
+    $bools_assume_no = ['printserver', 'scanner']
+  end
+
   task :printer_init => :init do
       include PrinterHelper
       include PrinterConstants
@@ -529,7 +619,7 @@ namespace :data do
     $SECRET_KEY = 'WOYtAuy2gvRPwhGgj0Nz/fthh+/oxCu2Ya4lkMxO'
   
     $search_index = 'Electronics'
-    $retailers = [Retailer.find(1),Retailer.find(8)]
+    $retailers = [Retailer.find(1)] # Retailer.find(8) -- this is amazon.ca
   end
   
   task :newegg_init => :printer_init do
