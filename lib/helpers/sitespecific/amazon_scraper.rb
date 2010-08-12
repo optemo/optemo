@@ -163,7 +163,7 @@ module AmazonScraper
            ppm = atts['title'].to_s[/\d+.?ppm/i].to_s[/\d+/]
            ppm = atts['feature'].to_s[/\d+.?ppm/i].to_s[/\d+/] if ppm.blank?
            ppm = amazon_review_content.to_s[/\d+.?ppm/i].to_s[/\d+/] if ppm.blank?
-           debugger if ppm.blank?
+           # debugger if ppm.blank?
            atts['ppm'] = ppm
          end
          if atts['resolutionmax'].nil?
@@ -172,7 +172,7 @@ module AmazonScraper
            dpipart = atts['resolution'].to_s[/\d+.?(dpi)?.?.?.?\d+.?dpi/i] if dpipart.blank?
            dpipart = amazon_review_content.to_s[/\d+.?(dpi)?.?.?.?\d+.?dpi/i] if dpipart.blank?
            dpipart = amazon_review_content.to_s[/\d+.?.?dpi/i] if dpipart.blank?
-           debugger if dpipart.blank?
+           # debugger if dpipart.blank?
 
            dpi_one = dpipart.to_s[/^\d+/]
            dpi_two = dpipart.to_s.gsub(/^\d+/,'').to_s[/\d+/]
@@ -186,7 +186,7 @@ module AmazonScraper
            input = atts['feature'].to_s[/\d+.?pages/i] if input.blank?
            input = atts['feature'].to_s[/\d+.?pgs/i] if input.blank?
            input = amazon_review_content.to_s[/\d+.?sheet/i] if input.blank?
-           debugger if input.blank?
+           # debugger if input.blank?
            atts['paperinput'] = input.to_s[/\d+/].to_i
          end
          return atts
