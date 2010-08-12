@@ -34,7 +34,7 @@
 if ($('#ajaxload').length)
 {
 	if (location.hash)
-		ajaxsend(location.hash.replace(/^#/, ''),null,null,true);
+		ajaxsend(location.hash.replace(/^#/, ''),'/?ajax=true',null,true);
 	else
 		ajaxsend(null,'/?ajax=true',null,true);
 }
