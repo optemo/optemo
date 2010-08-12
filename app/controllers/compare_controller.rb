@@ -23,8 +23,7 @@ class CompareController < ApplicationController
     current_search = old_search.clone # copy over session ID, etc.
     current_search.view = feat # save feature for later. Any feature in "view" means we're in groupby view
     current_search.save
-    Session.current.search = current_search
-    Search.duplicateFeatures(current_search, old_search) # copy over filters
+    classVariables(current_search)
     @groupings = Search.createGroupBy(feat)
     @groupedfeature = feat
     render 'ajax', :layout => false
