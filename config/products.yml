@@ -171,6 +171,44 @@ laserprinterhub.com:
         - Categorical
         - [boost, cluster, show, filter]
 
+laserprinterhub.ca:
+    product_type:
+        - printer_lph
+    layout:
+        - gridview
+    price:
+        - Continuous
+        - [boost, cluster, filter, show]
+        - prefdir: -1
+        - minimum: 1
+        - maximum: 10000
+    ppm:
+        - Continuous
+        - [boost, cluster, filter, show, showList]
+    resolutionmax:
+        - Continuous
+        - [boost, cluster, filter, show]
+    resolution:
+        - Categorical
+        - [showList]
+    paperinput:
+        - Continuous
+        - [boost, cluster, filter, show, showList]
+    itemwidth:
+        - Continuous
+        - [boost, cluster, filter, show, showList]
+        - prefdir: -1
+    printserver:
+        - Binary
+        - [boost, cluster, show, filter]
+    scanner:
+        - Binary
+        - [boost, cluster, show, filter]
+    brand:
+        - Categorical
+        - [boost, cluster, show, filter]
+
+
 localhost:
     product_type:
         - printer_lph
