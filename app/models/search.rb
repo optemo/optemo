@@ -272,10 +272,12 @@ class Search < ActiveRecord::Base
     super()
     s = Session.current
     self.session_id = s.id
-    if myfilter.has_key? "clusters"
-      myclusters = myfilter.delete("clusters")
-    else
-      initialclusters = true
+    if myfilter 
+      if myfilter.has_key?("clusters")
+        myclusters = myfilter.delete("clusters")
+      else
+        initialclusters = true
+      end
     end
     # Deal with the page term first. This can come from a call to either #filter or #compare.
     unless myfilter.nil?
@@ -293,7 +295,7 @@ class Search < ActiveRecord::Base
       duplicateFeatures(self, old_search)
       updateClusters(myclusters)
     elsif myfilter.nil? || myfilter.empty? # If myfilter only contained the "page" key, it's now empty, not nil
-      # It was a new page.
+      # It was a group by page
       updateClusters(old_search ? old_search.clusters : [])
       duplicateFeatures(self, old_search)
     else #there is a filter/search term
