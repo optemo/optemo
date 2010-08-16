@@ -236,12 +236,11 @@ int main(int argc, char** argv){
 			
 				stmt->execute(command);
 				
-
-				command = "SELECT version from clusters where (product_type='";
+				command = "SELECT max(version) from factors where (product_type='";
 				command+= productName;
 				command += "_";
 				command += region;
-				command += "') order by id DESC LIMIT 1";
+				command += "')";
 				
 				res = stmt->executeQuery(command);
          
