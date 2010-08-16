@@ -25,7 +25,10 @@ class Session
     @binary = Hash.new{|h,k| h[k] = []}
     @categorical = Hash.new{|h,k| h[k] = []}
     file = YAML::load(File.open("#{RAILS_ROOT}/config/products.yml"))
-    url = url.split(".")[-2..-1].join(".") if file[url].blank? # If no www.laserprinterhub.com, try laserprinterhub.com
+    if file[url].blank? # If no www.laserprinterhub.com, try laserprinterhub.com
+      split_url = url.split(".")[-2..-1]
+      url = split_url.join(".") if split_url
+    end
     url = defaultSite if file[url].blank?
     product_yml = file[url]
     @product_type = product_yml["product_type"].first

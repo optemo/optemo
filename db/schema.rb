@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100809230118) do
+ActiveRecord::Schema.define(:version => 20100816202120) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -559,6 +559,7 @@ ActiveRecord::Schema.define(:version => 20100809230118) do
     t.integer  "product_id"
     t.string   "cont_var"
     t.float    "value"
+    t.integer  "version",      :default => 0, :null => false
   end
 
   create_table "feature_requests", :force => true do |t|
