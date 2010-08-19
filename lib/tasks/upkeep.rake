@@ -10,7 +10,9 @@ task :calculate_factors => :environment do
   if ENV.include?("version")
     version = ENV["version"].to_i # We did error checking above already. If this exists, it's an integer.
   else
-    version = Factor.maximum(:version, :conditions => ['product_type = ?', s.product_type]).to_i + 1 # Automatically increment the version number from existing factors.
+    factor_version = Factor.maximum(:version, :conditions => ['product_type = ?', s.product_type]).to_i + 1 # Automatically increment the version number from existing factors.
+    cluster_version = Cluster.maximum(:version. :conditions => ['product_type=?', s.product_type]).to_i + 1
+    version = [cluster_version, factor_version].max
   end
   factor_activerecords = []
   utility_activerecords = []

@@ -58,7 +58,7 @@ function ajaxsend(hash,myurl,mydata,hidespinner) {
 	{
 		$.ajax({
 			type: "GET",
-			url: "/compare/compare/?hist="+hash,
+			url: "/compare/compare/?ajax=true&hist="+hash,
 			success: ajaxhandler,
 			error: ajaxerror
 		});
