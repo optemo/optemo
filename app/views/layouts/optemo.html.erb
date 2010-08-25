@@ -52,6 +52,7 @@
 <span id="dragDropEnabled"><%= s.dragAndDropEnabled %></span>
 <span id="seshid" session-id="<%= s.id unless s.nil? %>"><%= s.id if s %></span>
 <span id="modelname"><%= s.product_type %></span>
+<span id="version"><%= s.version %></span>
 <span id="lineitemview"><%= s.lineItemView if s %></span>
 </div>
 
@@ -75,44 +76,18 @@
 <!-- The jquery-ui script is being included locally due to the custom jquery-ui being about 45k instead of 200kb from Google's CDN -->
 <%= javascript_include_merged :base %>
 
-<!-- Piwik (original) -->
+<!-- Piwik -->
 <script type="text/javascript">
-var siteid = (document.title).search(/camera/i)==-1 ? 3 : 5;
-var pkBaseURL = (("https:" == document.location.protocol) ? "https://pj.laserprinterhub.com/" : "http://pj.laserprinterhub.com/");
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://analytics/" : "http://analytics/");
 document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
 </script><script type="text/javascript">
 try {
-var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", siteid);
+var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", <%= s.piwikSiteId %>); // idsite is here
 piwikTracker.trackPageView();
 piwikTracker.enableLinkTracking();
 } catch( err ) {}
-</script><noscript><p><img src="http://pj.laserprinterhub.com/piwik.php?idsite=1" style="border:0" alt=""/></p></noscript>
+</script><noscript><p><img src="http://analytics/piwik.php?idsite=<%= s.piwikSiteId %>" style="border:0" alt="" /></p></noscript>
 <!-- End Piwik Tag -->
-
-<!-- Piwik (preferences)-->
-<script type="text/javascript">
-var pkBaseURL = (("https:" == document.location.protocol) ? "https://p.laserprinterhub.com/" : "http://p.laserprinterhub.com/");
-document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-</script><script type="text/javascript">
-try {
-var piwikTracker2 = Piwik.getTracker(pkBaseURL + "piwik.php", siteid);
-piwikTracker2.trackPageView();
-piwikTracker2.enableLinkTracking();
-} catch( err ) {}
-</script><noscript><p><img src="http://p.laserprinterhub.com/piwik.php?idsite=3" style="border:0" alt=""/></p></noscript>
-<!-- End Piwik Tag -->
-
-<!--Uncomment for no Piwik Tracking -->
-<!-- <script type="text/javascript">
-	var piwikTracker2 = {
-		trackPageView: function() {},
-		setDocumentTitle: function(str) {},
-		setCustomData: function(data) {}
-	};
-	var piwikTracker = piwikTracker2;
-</script>
--->
-<!-- End no-piwik tracking -->
 
 <% if (s && s.lineItemView) #check for existence first, just in case %>
 	<%= popuptext(1, "Products are sorted by their utility. Click on one to see its specs.") %>

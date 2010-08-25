@@ -6,6 +6,7 @@ class Session
   attr_accessor :prefDirection, :maximumPrice, :minimumPrice  # Stores which preferences are 'lower is better' vs. normal; used in sorting, plus some price globals
   attr_accessor :dragAndDropEnabled, :relativeDescriptions, :numGroups  # These flags should probably be stripped back out of the code eventually
   attr_accessor :product_type # Product type (camera_us, etc.), used everywhere
+  attr_accessor :piwikSiteId # Piwik Site ID, as configured in the currently-running Piwik install.
 
   def initialize (url)
     defaultSite = 'printers.browsethenbuy.com'
@@ -30,6 +31,16 @@ class Session
       url = split_url.join(".") if split_url
     end
     url = defaultSite if file[url].blank?
+    
+    # Check for what Piwik site ID to put down in the optemo.html.erb layout
+    case url
+    when 'cameras.browsethenbuy.com' then @piwikSiteId = 3
+    when 'printers.browsethenbuy.com' then @piwikSiteId = 4
+    when 'laserprinterhub.com', 'www.laserprinterhub.com' then @piwikSiteId = 5
+    when 'm.browsethenbuy.com' then @piwikSiteId = 6
+    else @piwikSiteId = 1 # This is a catch-all for testing sites. All other sites must be explicitly declared.
+    end
+    
     product_yml = file[url]
     @product_type = product_yml["product_type"].first
     # This block gets out the continuous, binary, and categorical features

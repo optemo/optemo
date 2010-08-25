@@ -97,6 +97,7 @@ function ajaxerror(){
 	//	flashError('<div class="poptitle">&nbsp;</div><p class="error">Désolé! Une erreur s’est produite sur le serveur.</p><p>Vous pouvez <a href="" class="popuplink">réinitialiser</a> l’outil et constater si le problème persiste.</p>');
 	//else
 	flashError('<div class="poptitle">&nbsp;</div><p class="error">Sorry! An error has occured on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
+	trackPage('goals/error');
 }
 
 function ajaxcall(myurl,mydata)
@@ -120,7 +121,7 @@ function flashError(str)
 	 	{
 	  		errtype = "filters";
 	  	}
-	trackPage('error/'+errtype);
+	trackPage('goals/error', {'filter_type' : 'error - ' + errtype});
 	hidespinner();
 	fadeout(null,str,600,100);
 	ErrorInit();
@@ -194,11 +195,16 @@ function clearStyles(nameArray, styleclassname)
 
 /* This gets the currently displayed product ids client-side from the text beneath the product images. */
 function getAllShownProductIds(){
-	var currentIds = "";
-	$('#main .easylink').each(function(i){
-		currentIds += $(this).attr('data-id') + ',';
+	var currentIds = [];
+	$('#main .easylink').each(function(){
+		currentIds.push($(this).attr('data-id'));
 	});
-	return currentIds;
+	if (currentIds == '') { // This is for Direct view
+        $('#main .productinfo').each(function(){
+            currentIds.push($(this).attr('data-id'));
+        });
+    }
+	return currentIds.join(",");
 }
 
 function getShortProductName(name) 

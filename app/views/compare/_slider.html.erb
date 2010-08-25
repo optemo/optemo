@@ -1,10 +1,10 @@
 <div class='feature'>
-	<div class='label space'>
+	<div class='label space' data-position="<%= i %>">
 		<%= render :partial => 'desc', :locals => {:feat => feat} %>
 		<%= link_to t('products.'+feat), "#" %>
 		<span class="unitdisp">(<%= t('products.' + feat+"unit") %>)</span>
 		<% if Session.current.lineItemView %>
-			<div class="contgroupby" data-feat="<%= feat %>">Show Groups</div>
+			<div class="contgroupby" data-feat="<%= feat %>" data-position="<%= i %>">Show Groups</div>
 		<% end %>		
 	</div>
 	<% start = isnil(Session.current.search.userdataconts.select{|m|m.name == feat}.first){Userdatacont.new("min" => overall_min, "max" => overall_max)} %>
