@@ -388,7 +388,7 @@ namespace :data do
         spec = BinSpec.find_by_name_and_product_id(f, p.id)
         if spec.nil?
           # there is a spec missing
-          spec_value_dirty = scraped_product[f].to_i
+          spec_value_dirty = !(scraped_product[f].nil?)
           # clean it up
           # then store it
           spec_record = BinSpec.new({:product_type => s.product_type, :product_id => p.id, :name => f, :value => spec_value_dirty})

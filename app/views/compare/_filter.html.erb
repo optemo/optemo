@@ -11,13 +11,14 @@
 <% end %>
 
 <% form_tag("",{:id => 'filter_form'}) do %>
+<% i = 0 # Yes, I know, this isn't Rails-y, but we need to assign a different UI position to each feature of all kinds, in order. %> 
 <% @s.categorical["filter"].each_with_index do |feat, index| %>
 	<div class='feature <%= "sv" if @s.directLayout %>'>
 		<% chosen_cats = chosencats(feat) %>
 		<% if @s.directLayout %>
-			<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat %>">Show Groups</div>
+			<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat %>" data-position="<%= i %>">Show Groups</div>
 		<% end %>
-		<div class='catlabel'>
+		<div class='catlabel' data-position="<%= i %>">
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
 			<%= link_to t('products.' + feat), "#" %>
 		</div>
@@ -35,23 +36,27 @@
 		
 		<%= hidden_field_tag "myfilter[#{feat}]", chosen_cats.join("*") %>
 	</div>
+	<% i = i + 1 %>
 <% end %>
 <% @s.continuous["filter"].each do |feat| %>
 	<%= render :partial => 'slider', 
 		:locals => {:name => t('products.' + feat),
+		:i => i,
 		:feat => feat,
 		:money_formatting => feat == 'price',
 		:overall_min => ContSpec.allMinMax(feat)[0],
 		:overall_max => ContSpec.allMinMax(feat)[1]} %>
+	<% i = i + 1 %>
 <% end %>
 <% @s.binary["filter"].each do |feat| %>
 	<div class='feature'>
-		<div class='label'>
+		<div class='label' data-position="<%= i %>">
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
 			<% dobj = Userdatabin.find_by_search_id_and_name(@s.search.id,feat) %>
 			<%= check_box('myfilter', feat, {:checked => dobj.nil? || dobj.value == false ? false : 'checked', :class => 'autosubmitbool'})%>
 			<%= link_to t('products.' + feat), "#" %>
 		</div>
 	</div>
+	<% i = i + 1 %>	
 <% end %>
 <% end %>

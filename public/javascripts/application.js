@@ -2,32 +2,35 @@
    If you add a function and don't add it to the table of contents, prepare to be punished by your god of choice.
  
    ---- UI Manipulation ----
-   fadein()
-   fadeout(url, data, width, height)  -  Puts up fading boxes
-   saveProductForComparison(id, imgurl, name)  -  Puts comparison items in #savebar_content and stores them in a cookie
-   renderComparisonProducts(id, imgurl, name)  -  Does actual insertion of UI elements
-   removeFromComparison(id)  -  Removes comparison items from #savebar_content
-   removeBrand(str)  
-   submitCategorical()
-   submitsearch()
-   histogram(element, norange)  -  draws histogram
+    fadein()
+    fadeout(url, data, width, height)  -  Puts up fading boxes
+    saveProductForComparison(id, imgurl, name)  -  Puts comparison items in #savebar_content and stores them in a cookie
+    renderComparisonProducts(id, imgurl, name)  -  Does actual insertion of UI elements
+    removeFromComparison(id)  -  Removes comparison items from #savebar_content
+    removeBrand(str)   -  Removes brand filter (or other categorical filter)
+    submitCategorical()  -  Submits a categorical filter (no longer does tracking)
+    submitsearch()  -  Submits a search via the main search field in the filter bar
+    histogram(element, norange)  -  draws histogram
 
    ---- Data Manipulation ----
-   findBetter(id, feat) - Checks if a better product exists for that feature. PROBABLY DEPRECATED
+    findBetter(id, feat) - Checks if a better product exists for that feature. PROBABLY DEPRECATED
   
    ---- Piwik Tracking Functions ----
-   trackPage(str)  -  Piwik tracking per page
-   trackCategorical(name, val, type)  -  Piwik tracking per category
+    trackPage(page_title, extra_data)  -  Piwik tracking per page. Extra data is in JSON format, with keys for ready parsing by Piwik into piwik_log_preferences. 
+                                       -  For more on this, see the Preferences plugin in the Piwik code base.
+                -- these next two functions are probably deprecated --
+    trackCategorical(name, val, type)  -  Piwik tracking per category (old function for sliders also)
+    trackSlider(slider_name, current_min, current_max, data_min, data_max, ui_position)  -  Track slider usage
  
    ---- JQuery Initialization Routines ----
-	FilterAndSearchInit()  -  Search and filter areas.
+    FilterAndSearchInit()  -  Search and filter areas.
  	CompareInit()  -   Compare Products screen
 	ErrorInit()  -  Error pages
-   DBinit()  -   UI elements from the _discoverybrowser partial, also known as <div id="main">.
+    DBinit()  -   UI elements from the _discoverybrowser partial, also known as <div id="main">.
 	ShowInit()  -  Single product page (the compare#show action)
 	
    ---- document.ready() ----
-   document.ready()  -  The jquery call that gets everything started.
+    document.ready()  -  The jquery call that gets everything started.
 
 */
 //Load start page via ajax
@@ -44,7 +47,9 @@ if ($('#ajaxload').length)
 // The following is pulled from optemo.html.erb
 var IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
 var MODEL_NAME = $("#modelname").html();
+var VERSION = $("#version").html();
 var LINE_ITEM_VIEW = ($('#lineitemview').html() === 'true');
+var SESSION_ID = parseInt($('#seshid').attr('session-id'))
 
 //--------------------------------------//
 //           UI Manipulation            //
@@ -101,7 +106,9 @@ function saveProductForComparison(id, imgurl, name)
 	if(null != document.getElementById('c'+id)){
 		$("#already_added_msg").css("display", "block");
 	} else {
-		trackPage('goals/save/'+id);
+	    ignored_ids = getAllShownProductIds();
+        trackPage('goals/save', {'filter_type' : 'save', 'product_picked' : id, 'product_ignored' : ignored_ids});
+        
 		renderComparisonProducts(id, imgurl, name);
 		addValueToCookie('savedProductIDs', [id, imgurlToSave, name, productType]);
 	}
@@ -150,7 +157,8 @@ function renderComparisonProducts(id, imgurl, name)
 function removeFromComparison(id)
 {
 	$('#c'+id).remove();
-	
+	trackPage('goals/remove', {'filter_type' : 'remove_from_comparison', 'product_picked' : id});
+
 	$("#already_added_msg").css("display", "none");
 	$("#too_many_saved").css("display", "none");
 	
@@ -177,15 +185,13 @@ function submitCategorical(){
             arguments_to_send.push(arguments[i]);
     }
 	ajaxcall("/compare/filter?ajax=true", $("#search_form").serialize() + "&" + arguments_to_send.join("&"));
-	trackPage('goals/filter/autosubmit');
+	// Everything that calls submitCategorical() should have already called trackPage uniquely
+	// trackPage('goals/filter/autosubmit');
 	return false;
 }
 
 function submitsearch() {
-	var searchinfo = { 'search_text' : $("#search_form input#search").attr('value'), 'optemo_session': parseInt($('#seshid').attr('session-id')) };
-	piwikTracker2.setCustomData(searchinfo);
-	trackPage('goals/search');
-	piwikTracker2.setCustomData({});
+	trackPage('goals/search', {'filter_type' : 'search', 'search_text' : $("#search_form input#search").attr('value'), 'previous_search_text' : $("#previous_search_word").attr('value')});
 	var arguments_to_send = [];
     arguments = $("#filter_form").serialize().split("&");
     for (i=0; i<arguments.length; i++)
@@ -257,22 +263,36 @@ function findBetter(id, feat)
 //       Piwik Tracking Functions       //
 //--------------------------------------//
 
-function trackPage(str){
-	try { 
-		piwikTracker.setDocumentTitle(str);
+function trackPage(page_title, extra_data){
+	try {
+	    if (!extra_data) extra_data = {}; // If this argument didn't get sent, set an empty hash
+		extra_data['optemo_session'] = SESSION_ID;
+		extra_data['version'] = VERSION;
+		extra_data['interface_view'] = (LINE_ITEM_VIEW ? 'direct' : 'assist');
+		piwikTracker.setDocumentTitle(page_title);
+		piwikTracker.setCustomData(extra_data);
 		piwikTracker.trackPageView();
-		piwikTracker2.setDocumentTitle(str);
-		piwikTracker2.trackPageView();
-		piwikTracker2.setDocumentTitle('');
-	} catch( err ) {}
+		// I'm not sure what emptying the title and data do, but it seems like a standard pattern.
+		piwikTracker.setDocumentTitle('');
+		piwikTracker.setCustomData({});
+	} catch( err ) {  } // Do nothing, in order to not stop execution of the script. In testing, though, use this line: console.log("Something happened: " + err);
 }
 
-function trackCategorical(name, val, type){
-	var info = {'slider_min' : val, 'slider_max' : val, 'slider_name' : name, 'optemo_session': parseInt($('#seshid').attr('session-id')), 'filter_type' : type };
-	piwikTracker2.setCustomData(info);
-	piwikTracker2.trackPageView();
-	piwikTracker2.setCustomData({});
-}
+// Pretty sure these two can be deprecated now.
+/* function trackCategorical(name, val, type){
+	piwikTracker.setCustomData(info);
+	piwikTracker.trackPageView();
+	piwikTracker.setCustomData({});
+} 
+
+function trackSlider(slider_name, current_min, current_max, data_min, data_max, ui_position){
+	var info = {'slider_min' : current_min, 'slider_max' : current_max, 
+	            'slider_name' : slider_name, 'optemo_session' : SESSION_ID, 'version' : VERSION, 'filter_type' : 'slider', 'ui_position' : ui_position};
+	piwikTracker.setCustomData(info);
+	piwikTracker.trackPageView();
+	piwikTracker.setCustomData({});
+} */
+
 
 //--------------------------------------//
 //       Initialization Routines        //
@@ -280,15 +300,20 @@ function trackCategorical(name, val, type){
 
 function FilterAndSearchInit() {
 	//Show and Hide Descriptions
-	$('.feature .label a, .description, .desc .deleteX').unbind('click').click(function(){
+	$('.feature .label a, .catlabel a, .desc .deleteX').unbind('click').click(function(){
 		if($(this).parent().attr('class') == "desc")
 			{var obj = $(this).parent();}
 		else
 			{var obj = $(this).siblings('.desc');}
-		var flip=parseInt(obj.attr('name-flip'));
-		if (isNaN(flip)){flip = 0;}
-		obj.toggle(flip++ % 2 == 0);
-		obj.attr('name-flip',flip);
+        // I think this is just toggling. Just on the off chance that something weird is happening here, I'll leave this code for now. ZAT 2010-08
+        obj.toggle();
+//		var flip=parseInt(obj.attr('name-flip'));
+//		if (isNaN(flip)){flip = 0;}
+//		obj.toggle(flip++ % 2 == 0);
+//		obj.attr('name-flip',flip);
+        if( obj.is(':visible') ) {
+    		trackPage('goals/label', {'filter_type' : 'description', 'ui_position' : obj.parent().attr('data-position')});
+		}
 		return false;
 	});
 	
@@ -401,14 +426,18 @@ function FilterAndSearchInit() {
 					sliderno = 1;
 				$(this).slider('values', sliderno, value);
 				realvalue = (parseFloat((ui.values[sliderno]/100))*(rangemax-rangemin))+rangemin;
+				// Prevent the left slider knob from going too far to the right (past all the current data)
 				if (realvalue > datasetmax && sliderno == 0) {
 				    realvalue = datasetmax;
 				    leftsliderknob.css('left', (datasetmax * 99.9 / rangemax) + "%");
+				    // Store the fact that it went too far using data()
+				    leftsliderknob.data('toofar', true);
 			    }
-				    
+				// Prevent the right slider knob from going too far to the left (past all the current data)
 			    if (realvalue < datasetmin && sliderno == 1) {
 			        realvalue = datasetmin;
 				    rightsliderknob.css('left', (datasetmin * 100.1 / rangemax) + "%");
+				    rightsliderknob.data('toofar', true);
 			    }
 				if (increment < 1) { 
 					// floating point division has problems; avoid it 
@@ -444,22 +473,44 @@ function FilterAndSearchInit() {
 	        },
 			stop: function(e,ui)
 			{
+			    force_int = $(this).attr('force-int');
+			    leftsliderknob = $('a:first', this);
+				rightsliderknob = $('a:last', this);
+				if(force_int == 'false')
+			    {
+					rangemin = parseFloat($(this).attr('data-min'));
+					rangemax = parseFloat($(this).attr('data-max'));
+					datasetmin = parseFloat($(this).attr('current-data-min'));
+        			datasetmax = parseFloat($(this).attr('current-data-max'));
+				}
+				else
+				{
+					rangemin = parseInt($(this).attr('data-min'));
+					rangemax = parseInt($(this).attr('data-max'));
+					datasetmin = parseInt($(this).attr('current-data-min'));
+        			datasetmax = parseInt($(this).attr('current-data-max'));
+				}
 				var diff = ui.values[1] - ui.values[0];
 				if (diff > threshold)
 				{
-					$('a:first', this).removeClass("valabove").addClass("valbelow");
-					$('a:last', this).removeClass("valabove").addClass("valbelow");
+					leftsliderknob.removeClass("valabove").addClass("valbelow");
+					rightsliderknob.removeClass("valabove").addClass("valbelow");
 				}
-				var sliderinfo = {'slider_min' : parseFloat(ui.values[0]), 'slider_max' : parseFloat(ui.values[1]), 'slider_name' : $(this).attr('data-label'), 'optemo_session': parseInt($('#seshid').attr('session-id')), 'filter_type' : 1 };
-				piwikTracker2.setCustomData(sliderinfo);
-				trackPage('goals/filter/sliders');
-				piwikTracker2.setCustomData({});
+				var sliderinfo = {'slider_min' : parseFloat(ui.values[0]) * rangemin / 100.0, 'slider_max' : parseFloat(ui.values[1]) * rangemax / 100.0, 
+            	            'slider_name' : $(this).attr('data-label'), 'filter_type' : 'slider', 'data_min' : datasetmin, 'data_max' : datasetmax, 'ui_position' : $(this).parent().find('.label').attr('data-position')};
+				trackPage('goals/filter/slider', sliderinfo);
 				var arguments_to_send = [];
                 arguments = $("#filter_form").serialize().split("&");
                 for (i=0; i<arguments.length; i++)
                 {
                     if (!(arguments[i].match(/^superfluous/) || arguments[i].match(/authenticity_token/)))
                         arguments_to_send.push(arguments[i]);
+                }
+                if (leftsliderknob.data('toofar') || rightsliderknob.data('toofar')) {
+                    sliderinfo['filter_type'] = 'forced_stop';
+    				trackPage('goals/filter/forcedstop', sliderinfo);
+				    leftsliderknob.removeData('toofar');
+				    rightsliderknob.removeData('toofar');
                 }
             	ajaxcall("/compare/filter?ajax=true", $("#search_form").serialize() + "&" + arguments_to_send.join("&"));
 			}
@@ -487,10 +538,12 @@ function FilterAndSearchInit() {
 	        $(this).unbind();
 		    var whichThingSelected = $(this).val();
 			var whichSelector = $(this).attr('name');
-		    var cat = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]"));
-    		$('#myfilter_'+cat).val(appendStringWithToken($('#myfilter_'+cat).val(), whichThingSelected, '*'));
+		    var categorical_filter_name = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]"));
+    		$('#myfilter_'+categorical_filter_name).val(appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
+    		var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : categorical_filter_name, 'filter_type' : 'categorical'};
+        	trackPage('goals/filter/categorical', info);
     		submitCategorical();
-    		trackCategorical(whichThingSelected,100,2);
+    		return false;
     	});
 	});
 	
@@ -500,8 +553,9 @@ function FilterAndSearchInit() {
 			var whichRemoved = $(this).attr('data-id');
 			var whichCat = $(this).attr('data-cat');
 			$('#myfilter_'+whichCat).val(removeStringWithToken($('#myfilter_'+whichCat).val(), whichRemoved, '*'));
+    		var info = {'chosen_categorical' : whichRemoved, 'slider_name' : whichCat, 'filter_type' : 'categorical_removed'};
+        	trackPage('goals/filter/categorical_removed', info);
 			submitCategorical();
-			trackCategorical(whichRemoved,0,2);
 			return false;
 		});
 	});
@@ -510,6 +564,7 @@ function FilterAndSearchInit() {
 	$('.groupby, .contgroupby').each(function(){
 		$(this).unbind('click').click(function(){
 			feat = $(this).attr('data-feat');
+    		trackPage('goals/showgroups', {'filter_type' : 'groupby', 'feature_name': feat, 'ui_position': $(this).attr('data-position')});
 			ajaxcall("/compare/groupby/?feat="+feat);
 		});
 	});
@@ -521,11 +576,13 @@ function FilterAndSearchInit() {
 		    if ($(this).find('.choose_group').length) { // This is a categorical feature
     		    group_element = $(this).find('.choose_group');
             	var whichThingSelected = group_element.attr('data-feat');
-            	var cat = group_element.attr('data-grouping');
-            	if($('#myfilter_'+cat).val().match(whichThingSelected) === null)
-                	$('#myfilter_'+cat).val(appendStringWithToken($('#myfilter_'+cat).val(), whichThingSelected, '*'));
+            	var categorical_filter_name = group_element.attr('data-grouping');
+            	if($('#myfilter_'+categorical_filter_name).val().match(whichThingSelected) === null)
+                	$('#myfilter_'+categorical_filter_name).val(appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
+            	var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : categorical_filter_name, 'filter_type' : 'categorical_from_groups'};
+            	trackPage('goals/filter/categorical_from_groups', info);
             	submitCategorical();
-            	trackCategorical(whichThingSelected,100,2);
+                return false;
         	}
         	else { // This is a continuous feature
         	    group_element = $(this).find('.choose_cont_range');
@@ -548,6 +605,8 @@ function FilterAndSearchInit() {
                     if (!(arguments[i].match(/^superfluous/)))
                         arguments_to_send.push(arguments[i]);
                 }
+                chosen_range = group_element.attr('data-feat').split("-");
+        		trackPage('goals/filter/continuous_from_groups', {'filter_type' : 'continuous_from_groups', 'feature_name': group_element.attr('data-grouping'), 'selected_continuous_min' : parseFloat(chosen_range[0]), 'selected_continuous_max' : parseFloat(chosen_range[1])});
                 ajaxcall("/compare/filter/?ajax=true&" + arguments_to_send.join("&"));
     	    }
 		});
@@ -577,6 +636,7 @@ function FilterAndSearchInit() {
 	
 	// Sliders -- submit
 	$('.autosubmit').unbind('change').change(function() {
+	    trackPage('goals/filter/autosubmit', {'filter_type' : 'autosubmit'});
 		submitCategorical();
 	});
 	
@@ -584,8 +644,8 @@ function FilterAndSearchInit() {
 	$('.autosubmitbool').unbind('click').click(function() {
 		var whichbox = $(this).attr('id');
 		var box_value = $(this).attr('checked') ? 100 : 0;
+		trackPage('goals/filter/checkbox', {'feature_name' : whichbox});
 		submitCategorical();
-		trackCategorical(whichbox, box_value, 3);
 	});
 	if ($.browser.msie) 
 	{
@@ -603,12 +663,12 @@ function FilterAndSearchInit() {
 function CompareInit() {
 	//-------Info Popup--------//
 	// This isn't being used at the moment in any layout, as far as I can tell. ZAT 2010-03
-//	$("#comparisonTable").tableDnD({
-//		onDragClass: "rowBeingDragged",
-//		onDrop: function(table, row) {		
-//			newPreferencesString = $.tableDnD.serialize();
-//		}
-//	});
+    //	$("#comparisonTable").tableDnD({
+    //		onDragClass: "rowBeingDragged",
+    //		onDrop: function(table, row) {		
+    //			newPreferencesString = $.tableDnD.serialize();
+    //		}
+    //	});
 	//Remove buttons on compare
 	$('.remove').unbind('click').click(function(){
 		removeFromComparison($(this).attr('data-name'));
@@ -634,17 +694,22 @@ function DBinit() {
 	showpage = (function(currentelementid) {
         fadeout('/compare/show/'+currentelementid+'?plain=true',null, 800, 800);
  		ShowInit();
- 		trackPage('products/show/'+currentelementid); 
+ 		// There is tracking being done below, so take this out probably
+// 		trackPage('products/show/'+currentelementid); 
     });
     if (LINE_ITEM_VIEW) { // in Optemo Direct, a click anywhere on the product box goes to the show page
         $('.nbsingle').unbind("click").click(function(){ 
      		currentelementid = $(this).find('.productinfo').attr('data-id');
+     		ignored_ids = getAllShownProductIds();
+    		trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_ignored' : ignored_ids});
      		showpage(currentelementid);
      		return false;
     	});
     } else { // in Optemo Assist, a click only on the picture or .easylink product name will trigger the show page
         $(".productimg, .easylink").unbind("click").click(function (){
             currentelementid = $(this).attr('data-id');
+    		ignored_ids = getAllShownProductIds();
+    		trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_ignored' : ignored_ids});
      		showpage(currentelementid);
      		return false;            
         });  
@@ -690,22 +755,24 @@ function DBinit() {
 	//Ajax call for simlinks
 	$('.simlinks').unbind("click").click(function(){ 
 		ajaxcall($(this).attr('href')+'?ajax=true');
-		
-		linkinfo = {'product_picked' : $(this).attr('data-id') , 'optemo_session': parseInt($('#seshid').attr('session-id'))};
-		morestuff = getAllShownProductIds(); 
-		linkinfo['product_ignored'] = morestuff;
-		piwikTracker2.setCustomData(linkinfo);
-		trackPage('goals/browse');
-		piwikTracker2.setCustomData({});
+		ignored_ids = getAllShownProductIds(); 
+		trackPage('goals/browse', {'filter_type' : 'browse_similar', 'product_picked' : $(this).attr('data-id') , 'product_ignored' : ignored_ids, 'picked_cluster_layer' : $(this).attr('data-layer'), 'picked_cluster_size' : $(this).attr('data-size')});
 		return false;
 	});
+
 	//Pagination links
+    // This convoluted line takes the second-last element in the list: "<< prev 1 2 3 4 next >>" and takes its numerical page value. 
+	total_pages = parseInt($('.pagination').children().last().prev().html());
 	$('.pagination a').unbind("click").click(function(){
 		url = $(this).attr('href')
 		if (url.match(/\?/))
 			url +='&ajax=true'
 		else
 			url +='?ajax=true'
+		if ($(this).hasClass('next_page'))
+    		trackPage('goals/next', {'filter_type' : 'next' , 'page_number' : parseInt($('.pagination .current').html()), 'total_number_of_pages' : total_pages});
+		else
+		    trackPage('goals/next', {'filter_type' : 'next_number' , 'page_number' : parseInt($(this).html()), 'total_number_of_pages' : total_pages});		
 		ajaxcall(url);
 		return false;
 	});
@@ -743,7 +810,7 @@ function DBinit() {
 function ShowInit() {
 	$('.buylink, .buyimg').unbind("click").click(function(){
 		var buyme_id = $(this).attr('product');
-		trackPage('goals/addtocart/'+buyme_id);
+		trackPage('goals/addtocart', {'picked_product' : buyme_id});
 	});
 }
 
@@ -839,12 +906,13 @@ $(document).ready(function() {
 		// the display window height. But, right now this breaks the layout, so let's fix it later with less time pressure.
 		//var viewportHeight = $(window).height();
 		fadeout('/direct_comparison/index/' + productIDs, null, 940, 580);/*star-h:580*/
-		trackPage('goals/compare/');
+		trackPage('goals/compare', {'filter_type' : 'direct_comparison'});
 		return false;
 	});
     
 	//Static Ajax call
 	$('#staticajax_reset').click(function(){
+		trackPage('goals/reset', {'filter_type' : 'reset'});
 		ajaxcall($(this).attr('href')+'?ajax=true');
 		return false;
 	});
@@ -863,6 +931,7 @@ $(document).ready(function() {
     			$(this).parent().fadeOut("slow");
     			clearStyles(["box0", "filterbar", "savebar", "groupby0"], 'tourDrawAttention');
     			$("#box0").removeClass('tourDrawAttention');
+        		trackPage('goals/tourclose');
     			return false;
     		});
     	});
@@ -873,6 +942,7 @@ $(document).ready(function() {
     		$("#popupTour1").fadeOut("slow");
     		$("#groupby0").addClass('tourDrawAttention');
     		$("#box0").removeClass('tourDrawAttention');
+    		trackPage('goals/tournext', {'tour_page_number' : 2});
     	});
 
     	$('#popupTour2').find('a.popupnextbutton').click(function(){
@@ -881,6 +951,7 @@ $(document).ready(function() {
     		$("#popupTour2").fadeOut("slow");
     		$("#filterbar").addClass('tourDrawAttention');
     		$("#groupby0").removeClass('tourDrawAttention');
+    		trackPage('goals/tournext', {'tour_page_number' : 3});
     	});
 
     	$('#popupTour3').find('a.popupnextbutton').click(function(){
@@ -889,11 +960,13 @@ $(document).ready(function() {
     		$("#popupTour3").fadeOut("slow");
     		$("#savebar").addClass('tourDrawAttention');
     		$("#filterbar").removeClass('tourDrawAttention');
+    		trackPage('goals/tournext', {'tour_page_number' : 4});
     	});
 	
     	$('#popupTour4').find('a.popupnextbutton').click(function(){
     		$("#popupTour4").fadeOut("slow");
     		$("#savebar").removeClass('tourDrawAttention');
+    		trackPage('goals/tourclose');
     	});
     } else {
     	//Tour section
@@ -902,6 +975,7 @@ $(document).ready(function() {
     			$(this).parent().fadeOut("slow");
     			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
     			$("#sim0").removeClass('tourDrawAttention');
+        		trackPage('goals/tourclose');
     			return false;
     		});
     	});
@@ -913,6 +987,7 @@ $(document).ready(function() {
     		$("#filterbar").addClass('tourDrawAttention');
     		$("#sim0").removeClass('tourDrawAttention');
     		$("#sim0").parent().removeClass('tourDrawAttention');
+    		trackPage('goals/tournext', {'tour_page_number' : 2});
     	});
 
     	$('#popupTour2').find('a.popupnextbutton').click(function(){
@@ -921,11 +996,13 @@ $(document).ready(function() {
     		$("#popupTour2").fadeOut("slow");
     		$("#savebar").addClass('tourDrawAttention');
     		$("#filterbar").removeClass('tourDrawAttention');
+    		trackPage('goals/tournext', {'tour_page_number' : 3});
     	});
 	
     	$('#popupTour3').find('a.popupnextbutton').click(function(){
     		$("#popupTour3").fadeOut("slow");
     		$("#savebar").removeClass('tourDrawAttention');
+    		trackPage('goals/tourclose');
     	});
 	}
 	
@@ -935,6 +1012,7 @@ $(document).ready(function() {
 			$(".popupTour").fadeOut("slow");
 			clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
 			if ($.browser.msie && $.browser.version == "7.0") $("#sim0").parent().removeClass('tourDrawAttention');
+    		trackPage('goals/tourclose');
 		}
 	});
 
@@ -943,11 +1021,13 @@ $(document).ready(function() {
 		    var browseposition = $("#box0").offset();
     		$("#box0").addClass('tourDrawAttention');		    
     		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
+    		trackPage('goals/tournext', {'tour_page_number' : 1});
 		} else {
     		var browseposition = $("#sim0").offset();
     		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
     		$("#sim0").addClass('tourDrawAttention');
     		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
+    		trackPage('goals/tournext', {'tour_page_number' : 1});
     	}
 		return false;
 	});
