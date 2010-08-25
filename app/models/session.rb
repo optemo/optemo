@@ -33,12 +33,13 @@ class Session
     url = defaultSite if file[url].blank?
     
     # Check for what Piwik site ID to put down in the optemo.html.erb layout
+    # These site ids MUST match what's in the piwik database.
     case url
-    when 'cameras.browsethenbuy.com' then @piwikSiteId = 3
+    when 'cameras.browsethenbuy.com' then @piwikSiteId = 2
     when 'printers.browsethenbuy.com' then @piwikSiteId = 4
-    when 'laserprinterhub.com', 'www.laserprinterhub.com' then @piwikSiteId = 5
-    when 'm.browsethenbuy.com' then @piwikSiteId = 6
-    else @piwikSiteId = 1 # This is a catch-all for testing sites. All other sites must be explicitly declared.
+    when 'laserprinterhub.com', 'www.laserprinterhub.com' then @piwikSiteId = 6
+    when 'm.browsethenbuy.com' then @piwikSiteId = 8
+    else @piwikSiteId = 10 # This is a catch-all for testing sites. All other sites must be explicitly declared.
     end
     
     product_yml = file[url]
