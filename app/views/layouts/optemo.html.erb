@@ -78,7 +78,7 @@
 
 <!-- Piwik -->
 <script type="text/javascript">
-var pkBaseURL = (("https:" == document.location.protocol) ? "https://analytics/" : "http://analytics/");
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://analytics.optemo.com/" : "http://analytics.optemo.com/");
 document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
 </script><script type="text/javascript">
 try {
@@ -86,7 +86,7 @@ var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", <%= s.piwikSiteId %
 piwikTracker.trackPageView();
 piwikTracker.enableLinkTracking();
 } catch( err ) {}
-</script><noscript><p><img src="http://analytics/piwik.php?idsite=<%= s.piwikSiteId %>" style="border:0" alt="" /></p></noscript>
+</script><noscript><p><img src="http://analytics.optemo.com/piwik.php?idsite=<%= s.piwikSiteId %>" style="border:0" alt="" /></p></noscript>
 <!-- End Piwik Tag -->
 
 <% if (s && s.lineItemView) #check for existence first, just in case %>
