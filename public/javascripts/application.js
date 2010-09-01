@@ -1,4 +1,6 @@
 /* Application-specific Javascript. 
+   This is for the grid & list views (Optemo Assist & Optemo Direct) only.
+   
    If you add a function and don't add it to the table of contents, prepare to be punished by your god of choice.
  
    ---- UI Manipulation ----

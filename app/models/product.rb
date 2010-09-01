@@ -121,7 +121,11 @@ class Product < ActiveRecord::Base
   def descurl
     @descurl ||= "/compare/show/"+[id,brand,model].join('-').tr(' /','_-')
   end
-  
+
+  def mobile_descurl
+    @descurl ||= "/compare/show/"+[id,brand,model].join('-').tr(' /','_-')
+    "/show/"+[id,brand,model].join('-').tr(' /','_-')
+  end
   def display(attr, data)
     if data.nil?
       return 'Unknown'

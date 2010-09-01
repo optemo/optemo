@@ -1,0 +1,8 @@
+/* CSS declarations specific to list view (Optemo Assist) go here */
+.lv .easylink {
+    font-size: 0.9em;
+}
+
+.sv #main {
+	width: 586px;	
+}

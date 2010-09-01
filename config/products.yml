@@ -69,7 +69,7 @@ m.browsethenbuy.com:
     product_type:
         - camera_us
     layout:
-        - gridview
+        - mobileview
     maximumresolution: 
         - Continuous
         - [boost, cluster, filter, show]
@@ -96,7 +96,7 @@ mobile:
     product_type:
         - camera_us
     layout:
-        - gridview
+        - mobileview
     maximumresolution: 
         - Continuous
         - [boost, cluster, filter, show]

@@ -1,7 +1,7 @@
 class Session
   # products.yml gets parsed below, initializing these variables.
   attr_accessor :version, :id, :search  # Basic individual data. These are not set in initialization.
-  attr_accessor :directLayout, :lineItemView  # View choice (Assist vs. Direct)
+  attr_accessor :directLayout, :lineItemView, :mobileView  # View choice (Assist vs. Direct, mobile view vs. computer view)
   attr_accessor :continuous, :binary, :categorical  # Caching of features' names
   attr_accessor :prefDirection, :maximumPrice, :minimumPrice  # Stores which preferences are 'lower is better' vs. normal; used in sorting, plus some price globals
   attr_accessor :dragAndDropEnabled, :relativeDescriptions, :numGroups  # These flags should probably be stripped back out of the code eventually
@@ -68,8 +68,11 @@ class Session
       # lineItemView forces the use of the .lv CSS classes and renders the _listbox.html.erb partial instead of the _navbox.html.erb partial.
       # directLayout controls the presented view: Optemo Assist vs. Optemo Direct. 
       # Direct needs no clustering, showing all products in browseable pages and offering "group by" buttons.
-      @lineItemView = product_yml["layout"].first == "lineview" unless product_yml.nil? || product_yml["layout"].nil?
-      @directLayout = product_yml["layout"].second == "simple" unless product_yml.nil? || product_yml["layout"].nil?
+      unless product_yml.nil? || product_yml["layout"].nil?
+        @lineItemView = product_yml["layout"].first == "lineview"
+        @mobileView = product_yml["layout"].first == "mobileview"
+        @directLayout = product_yml["layout"].second == "simple" 
+      end
       # At the moment, these are used in product scraping only.
       if feature == "price"
         @minimumPrice = stuff.fourth.values.first
@@ -79,6 +82,7 @@ class Session
 
     @lineItemView ||= false #Default is grid view 
     @directLayout ||= false #Default is Optemo Assist
+    @mobileView ||= false # Default is screen view
     Session.current = self
 	end
 

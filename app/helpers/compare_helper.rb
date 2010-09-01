@@ -48,6 +48,22 @@ module CompareHelper
     end
   end
   
+  def acceptableincrements(min, max)
+    fudgefactor = 5.0 # Fudge factor; this determines how many increments are created.
+    current = min
+    increments = []
+    while (current < max) do
+      increments.push(current)
+      increment = current / fudgefactor
+      # Round based on some vague notion of "divide 250 by 10, but divide 500 by 100"
+      base = Math.log10((current/fudgefactor).to_f).floor 
+      current += increment
+      current = (((current / (10**base).to_f).ceil) * (10**base).to_f)
+    end
+    increments.push(max)
+    increments.map{|i|(i.round == i) ? i.to_i : i }
+  end
+  
   def nav_link
     if request.env['HTTP_REFERER'] && request.env['HTTP_REFERER'].match('laserprinterhub|localhost')
       link_to 'Go back<br> to navigation', 'javascript:history.back()'
@@ -58,7 +74,7 @@ module CompareHelper
   
   def navtitle
     s = Session.current
-		["Browsing", s.search.result_count, (s.search.result_count > 1) ? t("#{s.product_type}.title-plural") : t("#{s.product_type}.title-plural")].join(" ")
+		[s.search.result_count, (s.search.result_count > 1) ? t("#{s.product_type}.title-plural") : t("#{s.product_type}.title-plural")].join(" ")
   end
   
   def groupDesc(group, i)
@@ -150,6 +166,13 @@ module CompareHelper
     case Session.current.product_type
       when "flooring_builddirect" then "http://www.builddirect.com" + CGI.unescapeHTML(product.imgmurl.to_s)
       else CGI.unescapeHTML(product.imgmurl.to_s) # No need for constructing image URLs manually, they are all in the database now
+    end
+  end
+
+  def imgsurl(product)
+    case Session.current.product_type
+      when "flooring_builddirect" then "http://www.builddirect.com" + CGI.unescapeHTML(product.imgsurl.to_s)
+      else CGI.unescapeHTML(product.imgsurl.to_s)
     end
   end
 

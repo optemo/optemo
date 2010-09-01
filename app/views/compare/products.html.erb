@@ -1,0 +1,60 @@
+<% # This is for the mobile layout only. %>
+<% self.title = "#{@s.search.desc}" unless @indexload %>
+<div id="main">
+	<% if flash[:error] %>
+	<span style="color:red;" id="error"><%= flash[:error] %></span>
+	<% end %>
+	<% if flash[:notice] %>
+	<span class="notice"><%= flash[:notice] %></span>
+	<% end %>
+	<div id="navigator_bar">
+		<div id="filter_bar" class="rounded_nav rounded">
+			<div id="filtercheck"><%= image_tag 'check_mobile.png' unless Cluster.filterquery.empty? %></div>	Search &amp; Filter
+		</div>
+		<div id="startover" class="rounded_nav rounded">
+			Start<br>Over
+		</div>
+		<div id="navtitle"><%= navtitle %></div>
+	</div>
+
+		<% if @indexload || @s.search.result_count != 0 %>
+			<% for i in 0..[@s.search.cluster_count,@s.numGroups].min-1 %>
+				<% cluster = @s.search.clusters[i]; group = @s.search.clusters[i].size>1; representative = @s.search.clusters[i].representative %>
+				<div id="box<%= i %>" class="navigator_box<%= ' bordered-product' if (i != 0) %>">
+					<div class="navbody">
+							<% if group %>
+								<div class='sim'>
+									<div class="number_in_group <%= ' largegroup' if cluster.size >= 100 %>"><%= cluster.size.to_s %></div>
+									<%= image_tag('plus_mobile.png', :"data-id" => "/compare/sim/#{cluster.id}") %>
+								</div>
+							<% end %>
+
+						<div class="simtext">
+							<div class='groupDescription'>
+								<%= groupDesc(group,i) %>
+							</div>
+						</div>
+
+					<div class="productinfo rounded" onClick="javascript:location.href='<%= cluster.representative.descurl %>'">
+						<div class="productimg">
+							<%= image_tag(imgsurl(representative) , :"data-id" => representative.id, :class => "productimg", :alt => representative.smlTitle, :title => representative.smlTitle) %>
+						</div>
+						<a href="<%=representative.descurl%>" data-id="<%=representative.id%>" class="easylink" title="Click for product specifications"><%= representative.smlTitle %></a>
+						<div class="price">
+							<%= number_to_currency(ContSpec.cache_all(representative.id)["price"]) %>
+						</div>
+					</div>
+					<% if cluster.size > 1 %>
+					<div class="groupinfo">
+						<%= featuretext(@s.search,cluster) %>
+					</div>
+					<% end %>
+					<div style="clear:both;"></div>
+					</div>
+				</div>
+			<% end %>
+		<% else %>
+			<div style="padding:10px;">No search results. Please search again or <%= link_to "start over", "/" %>.</div>
+		<% end %>
+</div>
+<div id="loading" class="rounded">Loading</div>

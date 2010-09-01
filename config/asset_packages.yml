@@ -2,7 +2,9 @@
 javascripts: 
 - base: 
   - raphael
+  - helpers_shared
   - helpers
+  - application_shared
   - application
   - jquery-ui-1.8.custom.min
   - jquery.tablednd_0_5
@@ -10,10 +12,21 @@ javascripts:
   - facebooksessionops
   - jquery.autocomplete.min
   - autocomplete_terms
+  
+- mobile:
+    - helpers_shared
+    - application_mobile
+    - jquery-ui-1.8.custom.min
+    
 stylesheets: 
-- base: 
-  - camera
-  - compare
-  - show
-  - welcome
-
+- gridview: 
+    - shared
+    - gridview_and_listview
+    - gridview
+- listview: 
+    - shared
+    - gridview_and_listview
+    - listview
+- mobileview: 
+    - shared
+    - mobile
