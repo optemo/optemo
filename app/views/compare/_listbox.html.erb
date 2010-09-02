@@ -18,7 +18,6 @@
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
 			<% end %>
 		</div>
-		<!--<a href="<%= product.descurl %>" rel="nofollow" data-id="<%= product.id %>" class="easylink" title="Click for product specifications"><%= product.smlTitle %></a>-->
 		<%= product.smlTitle %>
 		<div class="itemfeatures">
 			<% contspecs = ContSpec.cache_all(product.id); catspecs = CatSpec.cache_all(product.id); binspecs = BinSpec.cache_all(product.id) %>

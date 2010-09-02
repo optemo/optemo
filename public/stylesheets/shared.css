@@ -1,5 +1,12 @@
 /* CSS declarations shared between all views (Assist / Direct / Mobile) go here. */
 
+/* Table of Contents
+ * -----------------
+ *  Global Declarations
+ *  Navigator Bar
+ *  Main Content (Right Side)
+ */
+
 /*--------------------------------------//
 //         Global Declarations          //
 //--------------------------------------*/
@@ -21,7 +28,6 @@ div#main {
 	padding: 0;
 	text-align: left;
 }
-
 
 #logo {
 	float:left;

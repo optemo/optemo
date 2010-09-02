@@ -42,7 +42,7 @@ function trackPage(page_title, extra_data){
 
 function FilterAndSearchInit() {
 	//Show and Hide Descriptions
-	$('.feature .label a, .feature .deleteX, .desc, .catlabel a').unbind('click').click(function(){
+	$('.feature .label a, .feature .deleteX, .desc').unbind('click').click(function(){
 		if($(this).parent().attr('class') == "desc")
 			var obj = $(this).parent();
 		else if ($(this).siblings('.desc').length)

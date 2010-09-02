@@ -13,14 +13,14 @@
 <% form_tag("",{:id => 'filter_form'}) do %>
 <% i = 0 # Yes, I know, this isn't Rails-y, but we need to assign a different UI position to each feature of all kinds, in order. %> 
 <% @s.categorical["filter"].each_with_index do |feat, index| %>
-	<div class='feature <%= "sv" if @s.directLayout %>'>
+	<div class='feature'>
 		<% chosen_cats = chosencats(feat) %>
-		<% if @s.directLayout %>
-			<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat %>" data-position="<%= i %>">Show Groups</div>
-		<% end %>
 		<div class='catlabel' data-position="<%= i %>">
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
 			<%= link_to t('products.' + feat), "#" %>
+			<% if @s.directLayout %>
+				<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat %>" data-position="<%= i %>">Show Groups</div>
+			<% end %>
 		</div>
 		<% unless chosen_cats.nil? || chosen_cats.empty? %>
 			<%# At least one item selected %>

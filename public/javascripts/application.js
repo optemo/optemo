@@ -50,7 +50,7 @@ if ($('#ajaxload').length)
 var IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
 var MODEL_NAME = $("#modelname").html();
 var VERSION = $("#version").html();
-var LINE_ITEM_VIEW = ($('#lineitemview').html() === 'true');
+var DIRECT_LAYOUT = ($('#directLayout').html() === 'true');
 var SESSION_ID = parseInt($('#seshid').attr('session-id'))
 
 //--------------------------------------//
@@ -270,7 +270,7 @@ function trackPage(page_title, extra_data){
 	    if (!extra_data) extra_data = {}; // If this argument didn't get sent, set an empty hash
 		extra_data['optemo_session'] = SESSION_ID;
 		extra_data['version'] = VERSION;
-		extra_data['interface_view'] = (LINE_ITEM_VIEW ? 'direct' : 'assist');
+		extra_data['interface_view'] = (DIRECT_LAYOUT ? 'direct' : 'assist');
 		piwikTracker.setDocumentTitle(page_title);
 		piwikTracker.setCustomData(extra_data);
 		piwikTracker.trackPageView();
@@ -563,7 +563,7 @@ function FilterAndSearchInit() {
 	});
 	
 	// In simple view, select an aspect to create viewable groups
-	$('.groupby, .contgroupby').each(function(){
+	$('.groupby').each(function(){
 		$(this).unbind('click').click(function(){
 			feat = $(this).attr('data-feat');
     		trackPage('goals/showgroups', {'filter_type' : 'groupby', 'feature_name': feat, 'ui_position': $(this).attr('data-position')});
@@ -699,7 +699,7 @@ function DBinit() {
  		// There is tracking being done below, so take this out probably
 // 		trackPage('products/show/'+currentelementid); 
     });
-    if (LINE_ITEM_VIEW) { // in Optemo Direct, a click anywhere on the product box goes to the show page
+    if (DIRECT_LAYOUT) { // in Optemo Direct, a click anywhere on the product box goes to the show page
         $('.nbsingle').unbind("click").click(function(){ 
      		currentelementid = $(this).find('.productinfo').attr('data-id');
      		ignored_ids = getAllShownProductIds();
@@ -926,7 +926,7 @@ $(document).ready(function() {
 		return false;
 	});
 	
-	if (LINE_ITEM_VIEW) {
+	if (DIRECT_LAYOUT) {
 	    //Tour section
     	$('#popupTour1, #popupTour2, #popupTour3, #popupTour4').each(function(){
     		$(this).find('.deleteX').click(function(){
@@ -1019,7 +1019,7 @@ $(document).ready(function() {
 	});
 
 	launchtour = (function () {
-	    if (LINE_ITEM_VIEW) {
+	    if (DIRECT_LAYOUT) {
 		    var browseposition = $("#box0").offset();
     		$("#box0").addClass('tourDrawAttention');		    
     		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");

@@ -30,7 +30,7 @@
 	 <div id="tourButton"><%= link_to "Launch Tour", '#' %></div>
    </div>
    <div class="watermark">Powered by <%= link_to 'Optemo', 'http://optemo.com', :popup => true %></div>
-   <div class="bd <%= 'rounded_bd ' unless s.lineItemView %>rounded">
+   <div class="bd <%= 'rounded_bd ' unless s.directLayout %>rounded">
 	<div class="tl"></div><div class="tr"></div>
     <%= yield  %>
 	<div class="bl"></div><div class="br"></div>
@@ -49,11 +49,13 @@
 <%= image_tag "feedback#{fr?}.png" %>
 </div>
 <div style="display:none;">
-<span id="dragDropEnabled"><%= s.dragAndDropEnabled %></span>
-<span id="seshid" session-id="<%= s.id unless s.nil? %>"><%= s.id if s %></span>
-<span id="modelname"><%= s.product_type %></span>
-<span id="version"><%= s.version %></span>
-<span id="lineitemview"><%= s.lineItemView if s %></span>
+	<% if s %>
+	<span id="dragDropEnabled"><%= s.dragAndDropEnabled %></span>
+	<span id="seshid" session-id="<%= s.id unless s.nil? %>"><%= s.id %></span>
+	<span id="modelname"><%= s.product_type %></span>
+	<span id="version"><%= s.version %></span>
+	<span id="directLayout"><%= s.directLayout %></span>
+	<% end %>
 </div>
 
 <!--[if lt IE 7]><style>
@@ -89,7 +91,7 @@ piwikTracker.enableLinkTracking();
 </script><noscript><p><img src="http://analytics.optemo.com/piwik.php?idsite=<%= s.piwikSiteId %>" style="border:0" alt="" /></p></noscript>
 <!-- End Piwik Tag -->
 
-<% if (s && s.lineItemView) #check for existence first, just in case %>
+<% if (s && s.directLayout) #check for existence first, just in case %>
 	<%= popuptext(1, "Products are sorted by their utility. Click on one to see its specs.") %>
 	<%= popuptext(2, "Group by features to limit the number of products shown.") %>
 	<%= popuptext(3, "Slide the filters to constrain your search terms based on a variety of specific criteria.") %>

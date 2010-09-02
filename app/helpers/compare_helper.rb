@@ -81,7 +81,7 @@ module CompareHelper
     s = Session.current
     if s.relativeDescriptions
       descs = s.search.boostexterClusterDescriptions[i].map{|d|t("products."+d, :default => d)}
-      if s.lineItemView
+      if s.directLayout
         descs.map{|d|"<div style='position: relative;'>" + link_to(d, "#", :class => "description") + render(:partial => 'desc', :locals => {:feat => d}) + "</div>"}.join(" ")
       else
         descs.join(", ")

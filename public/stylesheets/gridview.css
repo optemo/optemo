@@ -1,1 +1,115 @@
 /* CSS declarations specific to grid view (Optemo Assist) go here. */
+
+/* Table of Contents
+ * -----------------
+ *  Navigator Bar
+ *  Main Content (Right Side)
+ *  Drag And Drop Compare
+ *  Sliders
+ */
+ 
+ /*--------------------------------------//
+ //            Navigator Bar             //
+ //--------------------------------------*/
+ 
+ #columnheader {
+ 	font-size: 0.8em;
+ 	padding-top: 4px;
+ 	height: 27px;
+ }
+
+/*--------------------------------------//
+//      Main Content (Right Side)       //
+//--------------------------------------*/
+
+.navigator_box {
+	text-align: center;
+	font-size: 0.85em;
+	float: left;
+	position: relative;
+	height: 100%;
+	margin-right: 7px; 
+	margin-bottom: 3px;
+	height:231px;
+}
+
+.nbgroup {
+	padding: 3px 9px 3px 3px;
+	background: url(../images/nb-group.png) no-repeat;
+	width:224px;
+}
+.nbsingle {
+	padding: 3px 9px 3px 3px;
+	background: url(../images/nb-single.png) no-repeat;
+	width:224px;
+}
+.title {
+	text-align: left;
+	margin: 0 8px;
+	padding-bottom: 4px;
+	border-bottom:1px solid #CCCCCC;
+	height: 28px;
+	font-weight: bold;
+	position:relative;
+}
+.image_boundingbox {
+	width: 140px;
+	margin-left: auto;
+	margin-right:auto;
+	position:relative;
+	text-align:center;
+}
+
+img.productimg {
+	cursor: move;
+	height:100px;
+}
+.productinfo {
+	margin:0 auto;
+}
+
+.itemfeatures {
+/*	font-size: 0.8em; */
+  font-size: 12px;
+/* 	display: inline; /* Fix for IE */
+/*  float: left; */
+/*	width: 160px; */
+	margin-top: 5px;
+}
+.sim {
+	height: 35px;
+	text-align: left;
+	margin-left:10px;
+	margin: 6px 3px;
+}
+
+.sim a {
+	font-size: 1.1em;
+	padding: 4px;
+	color: black;
+}
+
+.sim a img {
+	vertical-align: middle;
+	padding-right: 5px;
+}
+
+/*--------------------------------------//
+//         Drag And Drop Compare        //
+//--------------------------------------*/
+
+.dragHand {
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index:1;
+    opacity:0.35;
+}
+
+/*--------------------------------------//
+//                Sliders               //
+//--------------------------------------*/
+
+.selectboxfilter {
+	width:100%;
+}

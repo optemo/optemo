@@ -128,7 +128,6 @@ printers.browsethenbuy.com:
         - printer_us
     layout:
         - lineview
-        - simple
     price:
         - Continuous
         - [boost, cluster, filter, show]
@@ -278,7 +277,6 @@ printers:
         - printer_us
     layout:
         - lineview
-        - simple
     price:
         - Continuous
         - [boost, cluster, filter, show]
@@ -320,7 +318,6 @@ builddirect.optemo.com:
         - flooring_builddirect
     layout:
         - lineview
-        - simple
     price:
         - Continuous
         - [boost, cluster, filter, show]
@@ -359,7 +356,6 @@ flooring:
         - flooring_builddirect
     layout:
         - lineview
-        - simple
     price:
         - Continuous
         - [boost, cluster, filter, show]
