@@ -1,7 +1,7 @@
 class Session
   # products.yml gets parsed below, initializing these variables.
   attr_accessor :version, :id, :search  # Basic individual data. These are not set in initialization.
-  attr_accessor :directLayout, :lineItemView  # View choice (Assist vs. Direct)
+  attr_accessor :directLayout, :mobileView  # View choice (Assist vs. Direct, mobile view vs. computer view)
   attr_accessor :continuous, :binary, :categorical  # Caching of features' names
   attr_accessor :prefDirection, :maximumPrice, :minimumPrice  # Stores which preferences are 'lower is better' vs. normal; used in sorting, plus some price globals
   attr_accessor :dragAndDropEnabled, :relativeDescriptions, :numGroups  # These flags should probably be stripped back out of the code eventually
@@ -65,11 +65,6 @@ class Session
       product_yml.each{|feature,stuff| @binary["all"] << feature if stuff.first == "Binary"}
       product_yml.each{|feature,stuff| @categorical["all"] << feature if stuff.first == "Categorical"}
 
-      # lineItemView forces the use of the .lv CSS classes and renders the _listbox.html.erb partial instead of the _navbox.html.erb partial.
-      # directLayout controls the presented view: Optemo Assist vs. Optemo Direct. 
-      # Direct needs no clustering, showing all products in browseable pages and offering "group by" buttons.
-      @lineItemView = product_yml["layout"].first == "lineview" unless product_yml.nil? || product_yml["layout"].nil?
-      @directLayout = product_yml["layout"].second == "simple" unless product_yml.nil? || product_yml["layout"].nil?
       # At the moment, these are used in product scraping only.
       if feature == "price"
         @minimumPrice = stuff.fourth.values.first
@@ -77,8 +72,17 @@ class Session
       end
     end
 
-    @lineItemView ||= false #Default is grid view 
-    @directLayout ||= false #Default is Optemo Assist
+    # directLayout controls the presented view: Optemo Assist vs. Optemo Direct. 
+    # Direct needs no clustering, showing all products in browseable pages and offering "group by" buttons.
+    # mobileView controls screen vs. mobile view (Optemo Mobile)
+    unless product_yml.nil? || product_yml["layout"].nil?
+      # There is no lineItemView (simple view) anymore. This breaks the Walmart layout but simplifies CSS, etc.
+      @directLayout = product_yml["layout"].first == "lineview"
+      @mobileView = product_yml["layout"].first == "mobileview"
+    end
+
+    @directLayout ||= false # Default is Optemo Assist
+    @mobileView ||= false # Default is screen view (Assist or Direct)
     Session.current = self
 	end
 

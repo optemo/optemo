@@ -1,3 +1,5 @@
+/* These rounded border fixes for Internet Explorer 7 are referenced in the optemo.html.erb layout in a conditional comment (an IE-specific construct). They have been here since time immemorial. It's probably not a priority to move them. */
+
 .rounded {
 	position: relative;
 }

@@ -12,8 +12,6 @@ getDocHeight()  -  Returns an array of scroll, offset, and client heights
 -------- Data -------
 getAllShownProductIds()  -  Returns currently displayed product IDs.
 getShortProductName(name)  -  Returns the shorter product name for printers. This should be extended in future.
-appendStringWithToken(items, newitem, token)  -  For lists like this: "318*124*19"
-removeStringWithToken(items, rem, token)  -  As above, for removal
 
 ------- Spinner -------
 spinner(holderid, R1, R2, count, stroke_width, colour)  -  returns a spinner object
@@ -218,26 +216,6 @@ function getShortProductName(name)
 		return shortname + "...";
 	else
 		return shortname;
-}
-
-// Add an item to a list with a supplied token
-function appendStringWithToken(items, newitem, token)
-{
-	return ((items == "") ? newitem : items+token+newitem);
-}
-
-// Remove an item from a list with a supplied token
-function removeStringWithToken(items, rem, token)
-{
-	i = items.split(token);
-	var newArray = [];
-	for (j in i)
-	{
-		if (i[j].match(new RegExp("^" + rem )))
-			continue;
-		newArray.push(i[j]);
-	}
-	return newArray.join(token);
 }
 
 //--------------------------------------//

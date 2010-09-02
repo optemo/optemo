@@ -1,5 +1,5 @@
 class CompareController < ApplicationController
-  layout "optemo"
+  layout :choose_layout
   require 'open-uri'
   
   def index
@@ -12,7 +12,7 @@ class CompareController < ApplicationController
     if params[:ajax]
       render 'ajax', :layout => false
     else
-      render 'compare'
+      render (Session.current.mobileView ? 'products' : 'compare')
     end
   end
   
@@ -57,8 +57,13 @@ class CompareController < ApplicationController
     if params[:ajax]
       render 'ajax', :layout => false
     else
-      render 'compare'
+      render (Session.current.mobileView ? 'products' : 'compare')
     end
+  end
+  
+  def showfilters
+    classVariables(Session.current.searches.last)
+    render 'filters', :layout=>'filters'
   end
   
   def classVariables(search)
@@ -106,6 +111,10 @@ class CompareController < ApplicationController
       else
         params[:myfilter]["keywordsearch"] = params[:search]
       end
+    # NB: params[:myfilter] is never nil; at the minimum it contains the maximum and minimum possible price values 
+    # since there is always at least that one continuous feature
+    # This is particular to the select boxes of the mobile branch.
+
       # Put the 'page' parameter in paginated output into the :myfilter hash for ease in processing
       params[:myfilter]["page"] = params[:page]
       params[:myfilter]["clusters"] = nil #Not initial clusters, just no cluster information
@@ -113,7 +122,11 @@ class CompareController < ApplicationController
       unless (s.directLayout ? current_search.products.empty? : current_search.clusters.empty?)
         current_search.save
         classVariables(current_search)
-        render 'ajax', :layout => false
+        if Session.current.mobileView
+          render 'products' 
+        else 
+          render 'ajax', :layout => false
+        end
       else
         #Rollback
         classVariables(s.lastsearch)
@@ -154,12 +167,14 @@ class CompareController < ApplicationController
     end
     @cartridges = Compatibility.find_all_by_product_id_and_product_type(@product.id, product_type).map{|c|Cartridge.find_by_id(c.accessory_id)}.reject{|c|!c.instock}
     @cartridgeprices = @cartridges.map{|c| RetailerOffering.find_by_product_type_and_product_id("Cartridge",c.id)}
-
     respond_to do |format|
-      format.html { if @plain
+      format.html { 
+                    if @plain 
                       render :layout => false
-                    else
-                      render :http => 'show' , :layout => 'optemo'
+                    elsif Session.current.mobileView
+                      render 'showsimple'
+                    else # Default is with layout as particular to either mobile view or screen view in choose_layout
+                      render 'show' # What did "render :http => ..." used to do? confusion
                     end }
       format.xml  { render :xml => @product }
     end
@@ -179,4 +194,10 @@ class CompareController < ApplicationController
   render :text => "word"
   end
 
+  private
+  # Depending on the session, either use the traditional layout or the "optemo" layout.
+  # The CSS files are loaded automatically though, so the usual "sv / gv / lv / mv" CSS classes are needed.
+  def choose_layout 
+    Session.current.mobileView ? 'mobile' : 'optemo'
+  end
 end

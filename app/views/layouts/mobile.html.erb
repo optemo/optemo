@@ -1,0 +1,60 @@
+<% s = Session.current %>	
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> <!-- xmlns:fb="http://www.facebook.com/2008/fbml" -->
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+<!-- meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0"-->
+	<meta name="viewport" content="width=device-width, user-scalable=no" />
+  <title><%= title %></title>
+  <meta name="description" content="<%= describe %>" />
+<meta name="keywords" content="laser, printer, printers, buy, prices, price comparison, reviews, recommendation, HP, Canon, Xerox" />
+<meta name="robots" content="index,all,follow" />
+<meta name="classification" content="Laser Printers" />
+<meta name="rating" content="General" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/images/O.png" />
+<%= stylesheet_link_merged(:mobileview) %>
+</head>
+<body style="background-color: #545454;">
+<div id="mycenter">
+   <div id="header">
+	<%= image_tag 'browsethenbuy_mobile.png', :style => "margin: 0px 0px 5px 2px;" %>
+
+    <%= yield  %>
+
+<div id="bottomlinks">
+   <%= link_to 'Terms of Use', '/termsofuse', {:title => 'Legal'}  %> |
+	Powered by <%= link_to 'Optemo', 'http://optemo.com', :popup => true %>
+</div>
+</div>
+
+<div id="outsidecontainer"><%= link_to image_tag("closepopup#{fr?}.gif"), "close", :class => "close"%><div id="info">&nbsp;</div></div>
+
+<div style="display:none;">
+<span id="seshid" session-id="<%= s.id unless s.nil? %>"><%= s.id if s %></span>
+<span id="modelname"><%= s.product_type %></span>
+<span id="version"><%= s.version %></span>
+</div>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<!-- The jquery-ui script is being included locally due to the custom jquery-ui being about 45k instead of 200kb from Google's CDN -->
+<%= javascript_include_merged(:mobile) %>
+
+<!-- Piwik -->
+<script type="text/javascript">
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://analytics.optemo.com/" : "http://analytics.optemo.com/");
+document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script type="text/javascript">
+try {
+var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", <%= s.piwikSiteId %>); // idsite is here
+piwikTracker.trackPageView();
+piwikTracker.enableLinkTracking();
+} catch( err ) {}
+</script><noscript><p><img src="http://analytics.optemo.com/piwik.php?idsite=<%= s.piwikSiteId %>" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tag -->
+
+<noscript><div id="noJavascript" style="position:absolute; top: 40px; left:30px; width:250px; background: #FFFFFF; opacity:0.8"><b>Javascript is disabled.</b>For full functionality of the discovery browser, please enable javascript.</div></noscript>
+</body>
+</html>

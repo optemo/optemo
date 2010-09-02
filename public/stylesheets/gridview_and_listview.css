@@ -1,32 +1,101 @@
-/*--------------------------------------//
-//         Global Declarations          //
-//--------------------------------------*/
-a img {	border: none; }
-a { color: #0000EE; }
-a:visited { color: #0000AB;}
-/* Delete button */
-.deleteX {
-	position: absolute;
-	right: -7px;
-	top: -5px;
-	z-index: 1;
+/* CSS declarations shared between grid view and list view (Optemo Direct and Optemo Assist) go here */
+
+/* Table of Contents
+ * -----------------
+ *  Global Declarations
+ *  Navigator Bar
+ *  Main Content (Right Side)
+ *  Main Nav Controls (Left Side)
+ *  Drag And Drop Compare
+ *  Sliders
+ *  Survey
+ *  Footer
+ *  Tour popup
+ *  Autocomplete
+ *  Direct Comparison
+ *  Show page and related
+ */
+
+ /*--------------------------------------//
+ //         Global Declarations          //
+ //--------------------------------------*/
+
+body {
+    height: 100%;
+    padding: 0;
+    
 }
-.lv .easylink {
-    font-size: 0.9em;
+html {
+    height: 100%;
 }
+#mycenter {
+    width: 948px;
+}
+
 /*--------------------------------------//
 //            Navigator Bar             //
 //--------------------------------------*/
+
 div#main {
-	padding: 0;
 	width: 727px;
 	margin-left: 218px;
-	text-align: left;
 }
 
-.sv #main {
-	width: 586px;	
+.watermark {
+	right: 0px;
 }
+#title {
+	position: absolute;
+	left: 291px;
+	top: 22px;
+	display: none;
+}
+#intro {
+	display: none;
+	font-family: 'arial narrow';
+	font-size: 1.05em;
+	position: absolute;
+	left: 291px;
+	top: 93px;
+	width: 416px;
+}
+#flags {
+	float: right;
+}
+#header {
+   padding-top: 8px;
+   margin-left: 20px;
+   position: relative;
+   width: 920px;
+   height: 70px;
+}
+#header_buttons {
+	position: absolute;
+	height: 40px;
+	bottom: -8px;
+	right: 0;
+}
+#header_buttons img{
+	margin-top: 0px;
+	vertical-align: middle;
+}
+#tagline {
+	display:inline;
+	padding-top:18px;
+	width:420px;
+	float:left;
+}
+#filterbar {
+	padding-bottom: 12px;
+}
+.bd {
+	padding-top: 5px;
+	width: 100%;
+	height: 100%;
+	position: relative;
+	min-height: 600px;
+}
+
 #navigator_bar {
 	/*height: 22px;*/
 	text-align: center;
@@ -42,55 +111,6 @@ div#main {
 	margin-left: 3px;
 }
 
-#columnheader {
-	font-size: 0.8em;
-	padding-top: 4px;
-	height: 27px;
-}
-.lv.sv #columnheader {
-  height: 20px;
-}
-/* This decision tree supports list view vs. simple layout, and simple layout's "group by" view. Tested in IE */
-.lv #firstcolumn {
-	width: 62px;
-	float: left;
-}
-.sv_ungrouped #firstcolumn {
-	height: 20px;
-}
-.lv.sv #firstcolumn {
-	padding-left: 5px;
-	width:100px;
-}
-.lv #secondcolumn {
-	width: 118px;
-	float: left;
-	padding-top:5px;
-	margin-left:18px;
-}
-.lv.sv #secondcolumn {
-  padding-top:0;
-}
-.sv_ungrouped #secondcolumn {
-	height:20px;
-}
-.lv #thirdcolumn {
-	width: 430px;
-	height: 20px;
-	padding-top: 5px;
-}
-.lv.sv #thirdcolumn {
-	width: 278px;
-	float: left;
-	padding-top: 0;
-	text-align: right;
-}
-.sv_ungrouped.lv.sv #thirdcolumn {
-  float: right;
-	width: 100px;	
-	padding-right:55px;
-}
-
 /*--------------------------------------//
 //      Main Content (Right Side)       //
 //--------------------------------------*/
@@ -101,70 +121,12 @@ div.rowdiv {
 	margin-left: 5px;
 	margin-top:5px;
 }
-.gv .navigator_box {
-	text-align: center;
-	font-size: 0.85em;
-	float: left;
-	position: relative;
-	height: 100%;
-	margin-right: 7px; 
-	margin-bottom: 3px;
-	height:231px;
-}
-.lv .navigator_box {
-  	margin:4px auto;
-  	width:715px;  
-	height:100px;
-	text-align: left;
-	background-color: white;
-	border: 1px solid #e1e1e1;
-  	-moz-border-radius: 8px;       /* for Firefox */
-	-webkit-border-radius: 8px;    /* for Safari */
-  	border-radius: 8px;            /* Opera, KHTML, others */
-}
-.sv_ungrouped {
-	width: 617px;
-}
-.sv_ungrouped .navigator_box {
-	height: 72px;
-	width: 576px;
-}
-.gv .nbgroup {
-	padding: 3px 9px 3px 3px;
-	background: url(../images/nb-group.png) no-repeat;
-	width:224px;
-}
-.gv .nbsingle {
-	padding: 3px 9px 3px 3px;
-	background: url(../images/nb-single.png) no-repeat;
-	width:224px;
-}
+
 .greybg {
     background:none repeat scroll 0 0 #EFEFEF;
 }
 .topbar {
 	height: 180px;
-}
-
-.gv .title {
-	text-align: left;
-	margin: 0 8px;
-	padding-bottom: 4px;
-	border-bottom:1px solid #CCCCCC;
-	height: 28px;
-	font-weight: bold;
-	position:relative;
-}
-.lv .title {
-    float: left;  
-	height: 90px;
-	width: 140px;
-	padding: 5px;
-	text-align: center;
-}
-.sv .title {
-	width: 115px;
-	position: relative;
 }
 
 .fv {
@@ -181,56 +143,6 @@ div.rowdiv {
 	margin: auto;
 	margin-bottom:2px;
 }
-.gv .image_boundingbox {
-	width: 140px;
-	margin-left: auto;
-	margin-right:auto;
-	position:relative;
-	text-align:center;
-}
-.lv .image_boundingbox {
-    float:left;
-    padding-right:10px;
-}
-.gv img.productimg {
-	cursor: move;
-	height:100px;
-}
-.lv img.productimg {
-	cursor: move;
-	float: left;
-	height: 100px;
-	margin-top: -5px;
-}
-.lv.sv img.productimg {
-	cursor: move;
-	float: left;
-	height: 80px;
-	width: 80px;
-	margin-top: 5px;
-}
-
-.sv .nbsingle img.productimg {
-	height: 64px;
-	width: 64px;
-	margin-top: -1px;
-	margin-left: 20px;
-	z-index: 1;
-	position: relative;
-}
-
-.lv .productimg {
-    width: 110px;
-}
-
-.sv.lv .productimg_container {
-    width: 104px;
-    height: 2px;
-}
-
-.sv .productimg {
-  float: left;
-}
 
 .productinfocont {
 	width: 224px;
@@ -238,134 +150,20 @@ div.rowdiv {
 	bottom: 51px;
 	left: 0;
 }
-.gv .productinfo {
-	margin:0 auto;
-}
-.lv .productinfo {
-	padding-top: 5px;
-	margin:0 auto;
-	float: left;
-	width: 500px;
-	height: 100px;
-}
-.sv .nbgroup .productinfo {
-	width: 285px;
-	font-size: 0.8em;
-	margin-left: 10px;
-}
-.sv .nbsingle .productinfo {
-	width: 576px;
-	height: 72px;
-}
+
 .price {
 	color: #F5000B;
 	font-size: 1em;
 	margin-top: 5px;
 }
-.sv .nbgroup .price {
-  display: inline;
-/*  font-size: 0.8em; */
-  margin-top: 0;
-}
-.sv .nbsingle .price {
-/*  margin: 0 10px 0 10px; */
-  position: relative;
-  top: 10px;
-}
+
 .bottombar {
 	height: 18px;
-}
-.gv .sim {
-	height: 35px;
-	text-align: left;
-	margin-left:10px;
-	margin: 6px 3px;
-}
-.lv .sim {   
-  float:left;
-  text-align:center;
-  width:50px;
-	height: 100px;
-	border: 1px solid #ccc;
-  -moz-border-radius: 8px 0 0 8px;       /* for Firefox */
-	-webkit-border-top-left-radius: 8px;    /* for Safari */
-	-webkit-border-bottom-left-radius: 8px;    /* for Safari */
-  border-radius: 8px 0 0 8px;            /* Opera, KHTML, others */
-	margin: -1px 0 0 -1px;
-}
-.lv .nbsingle .sim {
-	background-color: #BAC5D4;
-}
-.lv .nbgroup .sim {
-	background-color: #8192ac;
-}
-
-.sv .group_title {
-  font-weight: bold;
-  padding-top: 5px;
-/*  padding-bottom: 2px;
-  -moz-border-radius: 8px;
-	-webkit-border-radius: 8px;
-  border-radius: 8px;
-  display: table;
-  height: 44px; */
-  width: 115px;
-}
-
-.sv .choose_group, .sv .choose_cont_range {
-	font-size: 0.9em;
-	position: absolute;
-	bottom: 10px;
-	left: 9px;
-	margin-left:5px;
-	width:90px;
-	-moz-border-radius: 8px;       /* for Firefox */
-	-webkit-border-radius: 8px;    /* for Safari */
-  border-radius: 8px;            /* Opera, KHTML, others */
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-.gv .sim a {
-	font-size: 1.1em;
-	padding: 4px;
-	color: black;
-}
-.lv .sim a {
-	color: black;
-}
-.lv .sim a:hover {
-	text-decoration: none;
-}
-.gv .sim a img {
-	vertical-align: middle;
-	padding-right: 5px;
-}
-.lv .sim a img {
-	margin-top: 18px;
-}
-
-.sv .itemfeatures {
-    margin-top: 0;
-}
-
-.lv.sv .nbgroup .itemfeatures {
-    margin-left:95px;
-    width:200px;
 }
 
 .groupby_title {
     margin-left:95px;
     width:200px;    
-}
-
-.itemfeatures {
-/*	font-size: 0.8em; */
-  font-size: 12px;
-/* 	display: inline; /* Fix for IE */
-/*  float: left; */
-/*	width: 160px; */
-	margin-top: 5px;
 }
 
 .itemtitle {
@@ -452,23 +250,6 @@ div.drop-box-hover {
 .productimgwhiteborder {
  	border: 1px #e7e7e7 dashed; 
 } */
-.gv .dragHand {
-	position: absolute;
-	left: 0;
-	top: 0;
-	z-index:1;
-    opacity:0.35;
-}
-.lv .dragHand {
-	margin-left: -25px;
-	margin-right: 25px;
-	z-index:2;
-    opacity:0.35;
-    position:absolute;
-}
-.sv .productimg .dragHand {
-	margin-right: 5px;
-}
 
 [ if IE ] .dragHand {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=35);  /* IE7 */
@@ -518,7 +299,7 @@ div.smalldesc {
 }
 
 /*--------------------------------------//
-//                Silders               //
+//                Sliders               //
 //--------------------------------------*/
 
 .ui-slider { 
@@ -582,32 +363,6 @@ div.smalldesc {
 	margin-bottom: 3px;
 	font-weight: lighter;
 }
-.selectboxfilter {
-	width:100%;
-}
-
-.sv .selectboxfilter {
-	width:115px;
-}
-
-.groupby {
-	font-size: 0.65em;
-	font-weight: bold;
-	position: absolute;
-	right: 0;
-	cursor: pointer;
-	text-decoration: underline;
-}
-
-.contgroupby {
-    font-size: 0.8em;
-    text-decoration: underline;
-    cursor: pointer;
-    display: inline;
-    position: absolute;
-    top: 0;
-    right: 0;
-}
 
 .label {
 	font-weight: bold;
@@ -623,7 +378,7 @@ div.smalldesc {
 	font-weight: bold;
 	text-align: left;
 	font-size: 0.8em;
-	width: 110px;
+	width: 197px;
 	margin-top: 0.6em;
 	position: relative;
 }
@@ -634,6 +389,7 @@ div.smalldesc {
 	font-size: 0.8em;
 	text-decoration: underline;
 }
+
 .valbelow {
 	padding-top: 18px;
 }
@@ -647,9 +403,9 @@ div.smalldesc {
 	font-weight: normal;
 }
 .feature {
-	position: relative;
-  clear: both;
-  padding-bottom:2px;
+    position: relative;
+    clear: both;
+    padding-bottom:2px;
 }
 
 .desc {
@@ -783,11 +539,6 @@ margin-top:0;
 	background: #fffcd3;
 	margin:auto;
 }
-.lv .tourDrawAttention /* this is for CSS precedence */
-{
-	border: 2px solid red;
-	background: #fffcd3;
-}
 
 .navigator_box .tourDrawAttention
 {
@@ -851,3 +602,198 @@ margin-top:0;
 	color: white;
 }
 
+
+/*--------------------------------------//
+//          Direct Comparison           //
+//--------------------------------------*/
+
+.column {
+	float: left;
+}
+#comparisonmatrix {
+	position: relative;
+	width:100%;
+}
+.cell {
+	border-right: gray 1px dashed;
+	width: 180px;
+	height: 23px;
+	font-size: 0.9em;
+	padding: 7px 0px 0px 10px;
+}
+.longcolumn .cell {
+	border-right: none;
+	width: 400px;
+}
+.thumbnailcell {
+	padding-top: 15px;
+	border-right: gray 1px dashed;
+	width: 190px;
+	height: 180px;
+}
+.columntitle {
+	background: url(../images/columntitlebg.gif);
+	width: 189px;
+	height: 23px;
+	font-size: 0.9em;
+	padding-top: 7px;
+	border-right: solid 1px #ccc;
+	z-index: 4;
+	position: relative;
+}
+.longcolumn .columntitle {
+	width: 420px;
+}
+.bgrow {
+	height: 30px;
+	background: url(../images/columntitlebg.gif) repeat;
+	width: 750px;
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 0;
+	border-right: solid 1px #ccc;
+}
+.outertitle {
+	width: 189px;
+	border-right: solid 2px white;
+	z-index: 4;
+	position: relative;
+}
+.longcolumn .outertitle {
+	width: 419px;
+}
+.graybg {
+	background: #DADADA;
+}
+
+.greenbg {
+	background: #CCEDBB;
+}
+
+.whitebg {
+	background: white;
+}
+.leftmostcolumn {
+	width: 130px;
+	padding-left: 0px;
+}
+.leftcolumntext {
+	font-weight: bold;
+	padding-right: 10px;
+	text-align: right;
+}
+.leftmostoutertitle {
+	width: 129px;
+}
+.leftmostcolumntitle {
+	width: 128px;
+	border-left: solid 1px #ccc;
+}
+.tabletitle {
+	font-size:0.85em;
+	font-weight: normal;
+}
+.remove {
+	font-size: 0.8em;
+	padding-left: 10px;
+}
+.first {
+	height: 100px;
+	text-align: center;
+}
+.thumbnaillabel {
+	text-align:center;
+	padding-top: 25px;
+	color:#0A2088;
+}
+.thumbnaildetails {
+	color: #F5000B;
+}
+.lowlightfeature {
+	color: #777;
+}
+.regularfeature {
+	color: #000;
+}
+
+/*--------------------------------------//
+//        Show page and related         //
+//--------------------------------------*/
+
+div#fade {
+	background-color: black;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 5000px;
+	z-index: 3;
+	opacity: 0.50;
+	filter: alpha(opacity = 50);
+	display: none;
+}
+
+#outsidecontainer {
+	position: absolute;
+	top: 20px;
+	left: 20px;
+	width: 940px;
+	height: 800px;
+	border-top: solid 33px #80C35A;
+	background: white;
+	z-index: 4;
+	display: none;
+}
+
+div#info {
+	margin-top: -33px;
+	font-size: 0.9em;
+	z-index: 5;
+	padding: 0px 23px 0px 22px;
+}
+
+div#loading {
+	top: 345px;
+	left: 447px;
+	position: absolute;
+	display: none;
+	z-index: 2;
+	width: 200px;
+	font-size: 2em;
+	background-color: #eee;
+	border: solid black 3px;
+	padding: 20px;
+}
+
+#image {
+	text-align: center;
+	width: 390px;
+	float: left;
+}
+#features {
+	width: 360px;
+	float: left;
+}
+div#textfeatures, div#reviews {
+	clear:both;
+}
+
+#features ul {
+	list-style-type: none;
+}
+
+div .showtable{
+	float: left;
+	text-align: center;
+	width: 400px;
+	margin-right:10px;
+	border: 1px dotted black;
+}
+div .left{
+	float: left;
+	text-align: right;
+	margin-top: 5px;
+	margin-bottom: 10px;
+	width: 193px;
+}

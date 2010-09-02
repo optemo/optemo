@@ -121,8 +121,13 @@ class Product < ActiveRecord::Base
   def descurl
     @descurl ||= "/compare/show/"+[id,brand,model].join('-').tr(' /','_-')
   end
+
+  def mobile_descurl
+    @descurl ||= "/compare/show/"+[id,brand,model].join('-').tr(' /','_-')
+    "/show/"+[id,brand,model].join('-').tr(' /','_-')
+  end
   
-  def display(attr, data)
+  def display(attr, data) # This function is probably superceded by resolutionmaxunit, etc., defined in the appropriate YAML file (e.g. printer_us.yml)
     if data.nil?
       return 'Unknown'
     elsif data == false
@@ -135,14 +140,9 @@ class Product < ActiveRecord::Base
           ' X'
         when /[^p][^a][^p][^e][^r]size/
           ' in.' 
-        when /(item|package)(width|length|height)/
-          data = data.to_f/100
-          '"'
         when /(item|package)(weight)/
           data = data.to_f/100
           ' lbs'
-        when /resolution/
-          ' dpi'
         when /focal/
           ' mm.'
         when /ttp/

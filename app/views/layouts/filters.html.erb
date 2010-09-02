@@ -1,0 +1,31 @@
+<% s = Session.current %>	
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+	<!-- meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0"-->
+	<meta name="viewport" content="width=device-width, user-scalable=no" />
+  <title>Search &amp; Filtering</title>
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/images/O.png" />
+<%= stylesheet_link_merged :mobileview %>
+</head>
+<body>
+<div id="mycenter">
+    <%= yield  %>
+</div>
+<div style="display:none;">
+<span id="seshid" session-id="<%= s.id unless s.nil? %>"><%= s.id if s %></span>
+<span id="modelname"><%= s.product_type %></span>
+<span id="version"><%= s.version %></span>
+</div>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<!-- This script is being included locally until the release of jquery-ui 1.8. -->
+<!--script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script -->
+<%= javascript_include_merged :mobile %>
+
+</body>
+</html>

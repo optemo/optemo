@@ -69,7 +69,34 @@ m.browsethenbuy.com:
     product_type:
         - camera_us
     layout:
-        - gridview
+        - mobileview
+    maximumresolution: 
+        - Continuous
+        - [boost, cluster, filter, show]
+    displaysize:
+        - Continuous
+        - [boost, cluster, filter, show]
+    price:
+        - Continuous
+        - [boost, cluster, filter, show]
+        - prefdir: -1
+        - minimum: 1
+        - maximum: 10000
+    opticalzoom:
+        - Continuous
+        - [boost, cluster, filter, show]
+    slr:
+        - Binary
+        - [boost, cluster, show]
+    brand:
+        - Categorical
+        - [boost, cluster, filter, show]
+
+mobile:
+    product_type:
+        - camera_us
+    layout:
+        - mobileview
     maximumresolution: 
         - Continuous
         - [boost, cluster, filter, show]
@@ -101,7 +128,6 @@ printers.browsethenbuy.com:
         - printer_us
     layout:
         - lineview
-        - simple
     price:
         - Continuous
         - [boost, cluster, filter, show]
@@ -251,7 +277,6 @@ printers:
         - printer_us
     layout:
         - lineview
-        - simple
     price:
         - Continuous
         - [boost, cluster, filter, show]
@@ -293,7 +318,6 @@ builddirect.optemo.com:
         - flooring_builddirect
     layout:
         - lineview
-        - simple
     price:
         - Continuous
         - [boost, cluster, filter, show]
@@ -332,7 +356,6 @@ flooring:
         - flooring_builddirect
     layout:
         - lineview
-        - simple
     price:
         - Continuous
         - [boost, cluster, filter, show]

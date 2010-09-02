@@ -28,7 +28,7 @@
 						<%= link_to "better", "javascript:findBetter('#{@product.id}', '#{f_name}')", :"data-id" => f_name, :class => 'betterlink' %>
 					</div>
 					<% end %>
-				 	<span class="detail_label"><%=t 'products.'+ f_name %>: </span><%= (@product.display(f_name, f)).split('*').join(" ") %><%=' ' + t('products.'+ f_name+'unit', :default => '')%>
+				 	<span class="detail_label"><%=t 'products.'+ f_name %>: </span> <%= "$" if f_name == 'price' %><%= (@product.display(f_name, f)).split('*').each(&:strip).uniq.join(" ") %><%=' ' + t('products.'+ f_name+'unit', :default => '') unless f_name == 'price' %>
 				</li>
 			<% end %>
 		<% end %>
