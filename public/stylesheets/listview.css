@@ -21,17 +21,17 @@
 
 #firstcolumn {
 	padding-left: 5px;
-	width:100px;
+	width:140px;
 	float: left;
 }
 .listview_ungrouped #firstcolumn {
 	height: 20px;
 }
 #secondcolumn {
-	width: 118px;
+	width: 100px;
 	float: left;
     padding-top:0;
-	margin-left:18px;
+	margin-left:1px;
 }
 .listview_ungrouped #secondcolumn {
 	height:20px;
@@ -46,7 +46,7 @@
 .listview_ungrouped #thirdcolumn {
     float: right;
     width: 100px;	
-    padding-right:55px;
+    padding-right:90px;
 }
 
 /*--------------------------------------//
@@ -65,11 +65,11 @@
   	border-radius: 8px;            /* Opera, KHTML, others */
 }
 .listview_ungrouped {
-	width: 617px;
+	width: 727px;
 }
 .listview_ungrouped .navigator_box {
 	height: 72px;
-	width: 576px;
+	width: 680px;
 }
 .title {
     float: left;  
@@ -111,7 +111,7 @@ img.productimg {
 	padding-top: 5px;
 	margin:0 auto;
 	float: left;
-	width: 576px;
+	width: 657px;
 	height: 72px;
 }
 .nbgroup .productinfo {

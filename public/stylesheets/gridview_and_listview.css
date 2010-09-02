@@ -131,8 +131,8 @@ div.rowdiv {
 
 .fv {
 	float: left;
-	width: 150px;
-	margin-left: 15px;
+	width: 190px;
+	margin-left: 25px;
 }
 
 /* Navigator box */
@@ -169,6 +169,7 @@ div.rowdiv {
 .itemtitle {
     font-size: 1.4em;
     padding-bottom:5px;
+    margin-left: 25px;
 }
 
 .priceunit {
@@ -180,7 +181,7 @@ div.rowdiv {
 }
 
 .nbsingle .itemfeatures {
-	width: 390px;
+	width: 470px;
 	float:left
 }
 

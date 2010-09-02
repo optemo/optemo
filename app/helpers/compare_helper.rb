@@ -140,7 +140,7 @@ module CompareHelper
   def columntext(groupings)
     if Session.current.directLayout
       if groupings.nil?
-        ['', 'Product', 'Price']
+        ['', 'Product Details', 'Price']
       else
         ['Choose Group', 'Best Pick', 'Cheapest Pick']
       end
