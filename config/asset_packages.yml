@@ -4,7 +4,6 @@ javascripts:
   - raphael
   - helpers_shared
   - helpers
-  - application_shared
   - application
   - jquery-ui-1.8.custom.min
   - jquery.tablednd_0_5
