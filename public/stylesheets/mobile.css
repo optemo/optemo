@@ -382,5 +382,6 @@ h3 {
 
 .showtable_mobile {
     background-color: #FFF;
-    margin:2px;
+    margin:4px;
+    padding: 4px;
 }
