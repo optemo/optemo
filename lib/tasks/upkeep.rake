@@ -2,7 +2,7 @@
 desc "Calculate factors for all features of all products, and pre-calculate utility scores"
 task :calculate_factors => :environment do
   # Do not truncate Factor table anymore. Instead, add more factors for the given URL.
-  file = YAML::load(File.open("#{RAILS_ROOT}/config/products.yml"))
+  file = YAML::load(File.open("#{Rails.root}/config/products.yml"))
   unless ENV.include?("url") && (s = Session.new(ENV["url"])) && file[ENV["url"]] && (!ENV.include?("version") || (ENV.include?("version") && ENV["version"].to_i.to_s == ENV["version"] && ENV["version"].to_i >= 0))
     raise "usage: rake calculate_factors url=? (version=?) # url is a valid url from products.yml; sets product_type. `version` is optional; if not supplied, the version number will be incremented based on the maximum existing factor version for that product_type."
   end
@@ -51,7 +51,7 @@ end
 
 desc "Run boostexter to generate strong hypothesis files or Parse boostexter strong hypothesis files and save in database"
 task :btxtr => :environment do
-     $: << "#{RAILS_ROOT}/lib/cluster_labeling/boostexter_labels_rb"
+     $: << "#{Rails.root}/lib/cluster_labeling/boostexter_labels_rb"
      
      unless ENV.include?("url") && ENV.include?("action") && (ENV['action']=='save' || ENV['action']=='train')
           raise "usage: rake btxtr url=? action=? # url is a valid url from products.yml and action is 'save' or 'train'" 
@@ -108,7 +108,7 @@ task :c_clustering do
   env = ENV['RAILS_ENV'] || 'development'
   ['printer', 'camera'].each do |prodtype|
     ['us','ca'].each do |region|
-      `#{RAILS_ROOT}/lib/c_code/clusteringCodes/codes/hCluster #{prodtype} #{region} #{env} #{Session.current.numGroups}`
+      `#{Rails.root}/lib/c_code/clusteringCodes/codes/hCluster #{prodtype} #{region} #{env} #{Session.current.numGroups}`
       cleanupInvalidDatabase(prodtype)
     end
   end
@@ -128,7 +128,7 @@ task :extract_fixtures => :environment do
   ActiveRecord::Base.establish_connection
   table_name = ENV["T"]
     i = "000"
-    File.open("#{RAILS_ROOT}/test/fixtures/#{table_name}.yml", 'w') do |file|
+    File.open("#{Rails.root}/test/fixtures/#{table_name}.yml", 'w') do |file|
       data = ActiveRecord::Base.connection.select_all(sql % table_name)
       myhash = {}
       file.write data[0..20000].inject(myhash) { |hash, record|

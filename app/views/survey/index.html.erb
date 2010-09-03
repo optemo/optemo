@@ -1,7 +1,7 @@
 <div class="poptitle"> Feedback Form </div>
 <div class="surveyquestions">
-<% form_tag({:controller => "survey", :action => "submit"},:id => "surveyform") do %>
- <% fields_for "survey" do |form| %>
+<%= form_tag({:controller => "survey", :action => "submit"},:id => "surveyform") do %>
+ <%= fields_for "survey" do |form| %>
 	<p>Your feedback will be used to make our products better and as testimonials on our website.</p>
 	
 	First Name <%= form.text_field "firstname" %><br>

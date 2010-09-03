@@ -1,7 +1,7 @@
 <% # The Filters section - For Mobile Layout Only %>
 
 <div id="filter_content" class="leftboxes rounded_leftboxes rounded">
-	<% form_tag("/compare/filter",{:id => 'all_filters_form', :method => 'post'}) do %>
+	<%= form_tag("/compare/filter",{:id => 'all_filters_form', :method => 'post'}) do %>
 		<div class='feature'>
 			<div class='label'>
 				<%= render :partial => 'desc', :locals => {:feat => "search"} %>
@@ -22,7 +22,7 @@
 			<%= hidden_field_tag "previous_search_word", '' %>
 			<% end %>
 		</div>
-		<% form_tag("",{:id => 'filter_form'}) do %>
+		<%= form_tag("",{:id => 'filter_form'}) do %>
 		<% @s.categorical["filter"].each do |feat| %>
 			<div class='feature'>
 				<!--div class='label'>

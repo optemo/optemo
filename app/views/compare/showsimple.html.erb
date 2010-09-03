@@ -5,7 +5,7 @@
 			<%= image_tag(@imglurl) %>
 		<% elsif @s.product_type == "Laptop" %>
 			<%= image_tag(@imglurl) %>
-		<% elsif FileTest.exist?(RAILS_ROOT + "/public" + @imglurl) %>
+		<% elsif FileTest.exist?("#{Rails.root}/public" + @imglurl) %>
 			<%= image_tag(@imglurl) %>
 		<% else %>
 			<br><br>No Image Available

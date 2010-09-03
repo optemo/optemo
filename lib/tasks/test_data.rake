@@ -340,7 +340,7 @@ namespace :check do
     include ValidationLib
     
     config   = Rails::Configuration.new
-    database = config.database_configuration[RAILS_ENV]["database"]
+    database = config.database_configuration[Rails.env]["database"]
     
     @logfile = File.open("./log/check/#{database}_#{Session.current.product_type}.csv", 'w')
     @logfile.puts(csv_names_row*", ")

@@ -11,7 +11,7 @@
 			<%= link_to image_tag(@imglurl), @imglurl, :popup => true %>
 		<% elsif @s.product_type == "Laptop" %>
 			<%= link_to image_tag(@imglurl), @imglurl, :popup => true %>
-		<% elsif FileTest.exist?(RAILS_ROOT + "/public" + @imglurl) %>
+		<% elsif FileTest.exist?("#{Rails.root}/public" + @imglurl) %>
 			<%= link_to image_tag(@imglurl, :width => @product.imagelw, :height => @product.imagelh), @imglurl, :popup => true %>
 		<% else %>
 			<br><br>No Image Available

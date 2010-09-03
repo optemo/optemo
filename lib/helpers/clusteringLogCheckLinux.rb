@@ -1,8 +1,8 @@
 module Clusteringlogchecklinux
   def cleanupInvalidDatabase product
     begin
-     logName = "#{RAILS_ROOT}/log/clustering.log"
-     sqlFileName = "#{RAILS_ROOT}/lib/helpers/fixClusters.sql"
+     logName = "#{Rails.root}/log/clustering.log"
+     sqlFileName = "#{Rails.root}/lib/helpers/fixClusters.sql"
      return unless File.exists?(logName)
      file = File.open(logName, 'r')
      while (line = file.gets)
@@ -19,9 +19,9 @@ module Clusteringlogchecklinux
       return unless verLine
       ver = verLine.gsub(/Version: /, '').chomp
       config   = Rails::Configuration.new
-      db = config.database_configuration[RAILS_ENV]["database"]
-      usr = config.database_configuration[RAILS_ENV]['username']
-      pswd = config.database_configuration[RAILS_ENV]['password']
+      db = config.database_configuration[Rails.env]["database"]
+      usr = config.database_configuration[Rails.env]['username']
+      pswd = config.database_configuration[Rails.env]['password']
       delQ = "DELETE FROM #{product}_clusters WHERE version= #{ver}; DELETE FROM #{product}_nodes WHERE version= #{ver};" 
       file2 = File.open(sqlFileName, 'w') 
       file2.puts delQ 

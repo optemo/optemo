@@ -212,7 +212,7 @@ class Search < ActiveRecord::Base
       #Temporary fix for backward compatibility
       fq = Cluster.filterquery(self)
       fq = fq.gsub(/product_id in/i, "id in") if fq
-      product_list = Product.valid.instock.find(:all, :conditions => "#{fq unless fq.blank?}") # product_type is taken care of by Product.valid
+      product_list = Product.valid.instock.where("#{fq unless fq.blank?}").all # product_type is taken care of by Product.valid
       product_list_ids = product_list.map(&:id)
       utility_list = ContSpec.cachemany_with_ids(product_list_ids, "utility")
       # Cannot avoid sorting, since this result is cached.

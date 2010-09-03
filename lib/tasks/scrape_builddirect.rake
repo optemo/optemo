@@ -2,7 +2,7 @@ namespace :builddirect do
   desc 'Initializing environment'
   task :init => :environment do 
     config   = Rails::Configuration.new
-    database = config.database_configuration[RAILS_ENV]["database"]
+    database = config.database_configuration[Rails.env]["database"]
     desc "Using database #{database}"
   
     require 'rubygems'

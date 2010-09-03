@@ -5,8 +5,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> <!-- xmlns:fb="http://www.facebook.com/2008/fbml" -->
 <head>
   <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-<!-- meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0"-->
-	<meta name="viewport" content="width=device-width, user-scalable=no" />
+	<meta name="viewport" content="width=device-width, user-scalable=no, target-densitydpi=device-dpi" />
+	<meta name="HandheldFriendly" content="True" />
   <title><%= title %></title>
   <meta name="description" content="<%= describe %>" />
 <meta name="keywords" content="laser, printer, printers, buy, prices, price comparison, reviews, recommendation, HP, Canon, Xerox" />
@@ -15,12 +15,12 @@
 <meta name="rating" content="General" />
 <link rel="shortcut icon" href="/favicon.ico" />
 <link rel="apple-touch-icon" href="/images/O.png" />
-<%= stylesheet_link_merged(:mobileview) %>
+<%= raw stylesheet_link_merged(:mobileview) %>
 </head>
 <body style="background-color: #545454;">
 <div id="mycenter">
    <div id="header">
-	<%= image_tag 'browsethenbuy_mobile.png', :style => "margin: 0px 0px 5px 2px;" %>
+	<div class="logo_container"><%= image_tag 'browsethenbuy_mobile.png', :style => "margin: 0px 0px 5px 2px;" %></div>
 
     <%= yield  %>
 
@@ -40,7 +40,7 @@
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <!-- The jquery-ui script is being included locally due to the custom jquery-ui being about 45k instead of 200kb from Google's CDN -->
-<%= javascript_include_merged(:mobile) %>
+<%= raw javascript_include_merged(:mobile) %>
 
 <!-- Piwik -->
 <script type="text/javascript">

@@ -1,0 +1,7 @@
+LOGGER      [2010-06-30 14:09:46 -0700] Getting a list of all Amazon IDs associated with Products. This may take a while
+LOGGER      [2010-06-30 14:09:46 -0700] Done getting Amazon IDs!
+LOGGER      Will scrape 0 Products from Amazon Marketplace, 3493 already exist
+LOGGER      [2010-06-30 14:09:46 -0700] Getting a list of all Amazon IDs associated with Products. This may take a while
+LOGGER      [2010-06-30 14:09:46 -0700] Done getting Amazon IDs!
+LOGGER      Will scrape 0 Products from Amazon.ca Marketplace, 3274 already exist
+LOGGER      [2010-06-30 14:09:46 -0700] Done scraping

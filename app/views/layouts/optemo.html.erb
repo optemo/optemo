@@ -12,7 +12,7 @@
 <meta name="classification" content="Laser Printers" />
 <meta name="rating" content="General" />
 <link rel="shortcut icon" href="/favicon.ico" />
-<%= stylesheet_link_merged(s.directLayout ? :listview : :gridview) %>
+<%= raw stylesheet_link_merged(s.directLayout ? :listview : :gridview) %>
 </head>
 <body>
 <div id="mycenter">
@@ -76,7 +76,7 @@
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <!-- The jquery-ui script is being included locally due to the custom jquery-ui being about 45k instead of 200kb from Google's CDN -->
-<%= javascript_include_merged :base %>
+<%= raw javascript_include_merged :base %>
 
 <!-- Piwik -->
 <script type="text/javascript">
@@ -92,14 +92,14 @@ piwikTracker.enableLinkTracking();
 <!-- End Piwik Tag -->
 
 <% if (s && s.directLayout) #check for existence first, just in case %>
-	<%= popuptext(1, "Products are sorted by their utility. Click on one to see its specs.") %>
-	<%= popuptext(2, "Group by features to limit the number of products shown.") %>
-	<%= popuptext(3, "Slide the filters to constrain your search terms based on a variety of specific criteria.") %>
-	<%= popuptext(4, "Drag and drop products in here to compare their specs directly.", "Start Browsing") %>
+	<%= raw popuptext(1, "Products are sorted by their utility. Click on one to see its specs.") %>
+	<%= raw popuptext(2, "Group by features to limit the number of products shown.") %>
+	<%= raw popuptext(3, "Slide the filters to constrain your search terms based on a variety of specific criteria.") %>
+	<%= raw popuptext(4, "Drag and drop products in here to compare their specs directly.", "Start Browsing") %>
 <% else %>
-	<%= popuptext(1, "Each product shown is a representative of a dynamically created group of similar products. To browse within that group, click &quot;more like this.&quot;") %>
-	<%= popuptext(2, "Slide the filters to constrain your search terms based on a variety of specific criteria.") %>
-	<%= popuptext(3, "Drag and drop products in here to compare their specs directly.", "Start Browsing") %>
+	<%= raw popuptext(1, "Each product shown is a representative of a dynamically created group of similar products. To browse within that group, click &quot;more like this.&quot;") %>
+	<%= raw popuptext(2, "Slide the filters to constrain your search terms based on a variety of specific criteria.") %>
+	<%= raw popuptext(3, "Drag and drop products in here to compare their specs directly.", "Start Browsing") %>
 <% end %>
 <div id="backgroundPopup"></div>
 <noscript><div id="noJavascript" style="position:absolute; top: 40px; left:30px; width:250px; background: #FFFFFF; opacity:0.8"><b>Javascript is disabled.</b>For full functionality of the discovery browser, please enable javascript.</div></noscript>

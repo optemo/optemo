@@ -1,6 +1,6 @@
 module BtxtrLabels
-  Output_subdir = "#{RAILS_ROOT}/lib/cluster_labeling/cc_boostexter_files"
-  Boostexter_subdir = "#{RAILS_ROOT}/lib/cluster_labeling/BoosTexter2_1"
+  Output_subdir = "#{Rails.root}/lib/cluster_labeling/cc_boostexter_files"
+  Boostexter_subdir = "#{Rails.root}/lib/cluster_labeling/BoosTexter2_1"
 
   def BtxtrLabels.get_filename_stem(cluster)
     return Output_subdir + "/" + Session.current.product_type + "_" + cluster.id.to_s()

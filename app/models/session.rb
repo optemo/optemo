@@ -25,7 +25,7 @@ class Session
     @continuous = Hash.new{|h,k| h[k] = []}
     @binary = Hash.new{|h,k| h[k] = []}
     @categorical = Hash.new{|h,k| h[k] = []}
-    file = YAML::load(File.open("#{RAILS_ROOT}/config/products.yml"))
+    file = YAML::load(File.open("#{Rails.root}/config/products.yml"))
     if file[url].blank? # If no www.laserprinterhub.com, try laserprinterhub.com
       split_url = url.split(".")[-2..-1]
       url = split_url.join(".") if split_url

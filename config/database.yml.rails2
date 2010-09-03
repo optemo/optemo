@@ -1,0 +1,32 @@
+<% if `git branch` =~ /^\* bestbuy/
+db = 'bestbuy'
+elsif `git branch` =~ /^\* colors/
+db = 'dev'
+else
+db = 'development'
+end %>
+
+development:
+   adapter: mysql
+   database: optemo_development
+   username: root
+   password: zev
+   host: localhost
+   socket: /tmp/mysql.sock
+#   socket: /var/run/mysqld/mysqld.sock
+production:
+   adapter: mysql
+   database: optemo_production
+   username: root
+   password: zev
+   host: localhost
+   socket: /tmp/mysql.sock
+#   socket: /var/run/mysqld/mysqld.sock
+
+profile:
+   adapter: mysql
+   database: optemo_development
+   username: zev
+   password: opent3xt
+   host: jaguar
+   socket: /var/run/mysqld/mysqld.sock

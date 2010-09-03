@@ -15,8 +15,6 @@ stylesheets:
 - secondary:
   - foo
   - bar
-  - subdir/foo
-  - subdir/bar
 - subdir/styles:
   - foo
   - bar

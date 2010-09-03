@@ -66,7 +66,7 @@ class Cluster < ActiveRecord::Base
     unless @nodes
       fq = Cluster.filterquery(search)
       unless (fq.blank?)
-        @nodes = Node.find(:all, :conditions => "cluster_id = #{id}#{' and '+fq unless fq.blank?}")
+        @nodes = Node.where(["cluster_id = ?#{' and '+fq unless fq.blank?}", id]).all
       else 
         @nodes = Node.bycluster(id)
       end

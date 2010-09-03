@@ -28,8 +28,8 @@ class Product < ActiveRecord::Base
     end
   end
   
-  named_scope :instock, :conditions => {:instock => true}
-  named_scope :valid, lambda {
+  scope :instock, :conditions => {:instock => true}
+  scope :valid, lambda {
     {:conditions => (Session.current.continuous["filter"].map{|f|"id in (select product_id from cont_specs where value > 0 and name = '#{f}' and product_type = '#{Session.current.product_type}')"}+\
     Session.current.binary["filter"].map{|f|"id in (select product_id from bin_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{Session.current.product_type}')"}+\
     Session.current.categorical["filter"].map{|f|"id in (select product_id from cat_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{Session.current.product_type}')"}).join(" and ")}
