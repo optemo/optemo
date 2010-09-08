@@ -37,7 +37,9 @@ module CompareHelper
       realvalue = realvalue.ceil * increment
     else
       realvalue = realvalue.round * increment
-    end		
+    end
+    # Weird floating point bug here
+    (realvalue * 100).to_i.to_f / 100.0
   end
   
   def isnil(a)
@@ -152,7 +154,7 @@ module CompareHelper
   def popuptext(number, text, nexttext="Next &gt;&gt;")
     "<div id='popupTour#{number}' class='popupTour'>
     	<a class='deleteX' href='#'><img src='/images/close.png' alt='Close'/></a>
-    	<h1>Discovery Browser Tour</h1>
+    	<h1>Optemo " + (Session.current.directLayout ? 'Direct' : 'Assist').html_safe + " Tour</h1>
     	<p>#{text}
     		<br/><br/>
     		<a href='#' class='popupnextbutton'>#{nexttext}</a>

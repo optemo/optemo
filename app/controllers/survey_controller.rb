@@ -1,6 +1,7 @@
 class SurveyController < ApplicationController
   def index
     @RandomQuestions = (1..Survey::TotalQuestions).sort_by{rand}
+    render :layout => false
   end
 
   def submit

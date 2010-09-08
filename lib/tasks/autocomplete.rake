@@ -1,11 +1,11 @@
 namespace :autocomplete do
   desc "Fetch search terms for javascript-based autocomplete..."
   task :fetch => :environment do
-    js_file = File.open("#{RAILS_ROOT}/public/javascripts/autocomplete_terms.js", File::WRONLY|File::TRUNC|File::CREAT)
+    js_file = File.open("#{Rails.root}/public/javascripts/autocomplete_terms.js", File::WRONLY|File::TRUNC|File::CREAT)
     
     if (js_file)
       js_file.syswrite("/* Machine-generated javascript. Run \"rake autocomplete:fetch\" to regenerate. */\n")
-      yml_file = YAML::load(File.open("#{RAILS_ROOT}/config/products.yml"))
+      yml_file = YAML::load(File.open("#{Rails.root}/config/products.yml"))
       unless (yml_file.nil? || yml_file.empty?)
         product_types = {}
         yml_file.each do |p_yml_entry|

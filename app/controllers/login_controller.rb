@@ -6,7 +6,7 @@ class LoginController < ApplicationController
     # Configuration: Application Key provided by Facebook
     appKey = "7aeec628ded26fb3b03829fb4142da01"
     fbid = cookies[appKey +"_user"]   
-    findSession = Session.find(:first, :conditions => ['user = ?', fbid]);
+    findSession = Session.where(:user => fbid).first;
     if findSession.nil?
       # User logged in for first time
       if session[:user_id].nil?

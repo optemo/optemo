@@ -28,7 +28,7 @@ class CompareController < ApplicationController
     @groupedfeature = feat
     render 'ajax', :layout => false
   end
-  
+
   def compare(hist = nil)
     # As of right now, the history function from javascript always points here.
     # What will need to happen is that the view will be in there as part of the search. I think.

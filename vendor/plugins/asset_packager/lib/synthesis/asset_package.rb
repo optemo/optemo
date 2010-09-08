@@ -1,37 +1,36 @@
 module Synthesis
   class AssetPackage
 
-    # class variables
-    @@asset_packages_yml = $asset_packages_yml ||
-      (File.exists?("#{RAILS_ROOT}/config/asset_packages.yml") ? YAML.load_file("#{RAILS_ROOT}/config/asset_packages.yml") : nil)
-
+    @asset_base_path    = "#{Rails.root}/public"
+    @asset_packages_yml = File.exists?("#{Rails.root}/config/asset_packages.yml") ? YAML.load_file("#{Rails.root}/config/asset_packages.yml") : nil
+  
     # singleton methods
     class << self
+      attr_accessor :asset_base_path,
+                    :asset_packages_yml
 
-      def merge_environments=(environments)
-        @@merge_environments = environments
-      end
-
+      attr_writer   :merge_environments
+      
       def merge_environments
-        @@merge_environments ||= ["production"]
+        @merge_environments ||= ["production"]
       end
-
+      
       def parse_path(path)
         /^(?:(.*)\/)?([^\/]+)$/.match(path).to_a
       end
 
       def find_by_type(asset_type)
-        @@asset_packages_yml[asset_type].map { |p| self.new(asset_type, p) }
+        asset_packages_yml[asset_type].map { |p| self.new(asset_type, p) }
       end
 
       def find_by_target(asset_type, target)
-        package_hash = @@asset_packages_yml[asset_type].find {|p| p.keys.first == target }
+        package_hash = asset_packages_yml[asset_type].find {|p| p.keys.first == target }
         package_hash ? self.new(asset_type, package_hash) : nil
       end
 
       def find_by_source(asset_type, source)
         path_parts = parse_path(source)
-        package_hash = @@asset_packages_yml[asset_type].find do |p|
+        package_hash = asset_packages_yml[asset_type].find do |p|
           key = p.keys.first
           p[key].include?(path_parts[2]) && (parse_path(key)[1] == path_parts[1])
         end
@@ -59,25 +58,25 @@ module Synthesis
       end
 
       def build_all
-        @@asset_packages_yml.keys.each do |asset_type|
-          @@asset_packages_yml[asset_type].each { |p| self.new(asset_type, p).build }
+        asset_packages_yml.keys.each do |asset_type|
+          asset_packages_yml[asset_type].each { |p| self.new(asset_type, p).build }
         end
       end
 
       def delete_all
-        @@asset_packages_yml.keys.each do |asset_type|
-          @@asset_packages_yml[asset_type].each { |p| self.new(asset_type, p).delete_previous_build }
+        asset_packages_yml.keys.each do |asset_type|
+          asset_packages_yml[asset_type].each { |p| self.new(asset_type, p).delete_previous_build }
         end
       end
 
       def create_yml
-        unless File.exists?("#{RAILS_ROOT}/config/asset_packages.yml")
+        unless File.exists?("#{Rails.root}/config/asset_packages.yml")
           asset_yml = Hash.new
 
-          asset_yml['javascripts'] = [{"base" => build_file_list("#{RAILS_ROOT}/public/javascripts", "js")}]
-          asset_yml['stylesheets'] = [{"base" => build_file_list("#{RAILS_ROOT}/public/stylesheets", "css")}]
+          asset_yml['javascripts'] = [{"base" => build_file_list("#{Rails.root}/public/javascripts", "js")}]
+          asset_yml['stylesheets'] = [{"base" => build_file_list("#{Rails.root}/public/stylesheets", "css")}]
 
-          File.open("#{RAILS_ROOT}/config/asset_packages.yml", "w") do |out|
+          File.open("#{Rails.root}/config/asset_packages.yml", "w") do |out|
             YAML.dump(asset_yml, out)
           end
 
@@ -89,23 +88,22 @@ module Synthesis
       end
 
     end
-
+    
     # instance methods
     attr_accessor :asset_type, :target, :target_dir, :sources
-
+  
     def initialize(asset_type, package_hash)
       target_parts = self.class.parse_path(package_hash.keys.first)
       @target_dir = target_parts[1].to_s
       @target = target_parts[2].to_s
       @sources = package_hash[package_hash.keys.first]
       @asset_type = asset_type
-      @asset_path = ($asset_base_path ? "#{$asset_base_path}/" : "#{RAILS_ROOT}/public/") +
-          "#{@asset_type}#{@target_dir.gsub(/^(.+)$/, '/\1')}"
+      @asset_path = "#{self.class.asset_base_path}/#{@asset_type}#{@target_dir.gsub(/^(.+)$/, '/\1')}"
       @extension = get_extension
       @file_name = "#{@target}_packaged.#{@extension}"
       @full_path = File.join(@asset_path, @file_name)
     end
-
+  
     def package_exists?
       File.exists?(@full_path)
     end
@@ -139,14 +137,14 @@ module Synthesis
 
       def merged_file
         merged_file = ""
-        @sources.each {|s|
-          File.open("#{@asset_path}/#{s}.#{@extension}", "r") { |f|
-            merged_file << fix_relative_urls(f.read, s) << "\n"
+        @sources.each {|s| 
+          File.open("#{@asset_path}/#{s}.#{@extension}", "r") { |f| 
+            merged_file += f.read + "\n" 
           }
         }
         merged_file
       end
-
+    
       def compressed_file
         case @asset_type
           when "javascripts" then compress_js(merged_file)
@@ -155,26 +153,26 @@ module Synthesis
       end
 
       def compress_js(source)
-        jsmin_path = "#{RAILS_ROOT}/vendor/plugins/asset_packager/lib"
-        tmp_path = "#{RAILS_ROOT}/tmp/#{@target}_packaged"
-
+        jsmin_path = "#{Rails.root}/vendor/plugins/asset_packager/lib"
+        tmp_path = "#{Rails.root}/tmp/#{@target}_packaged"
+      
         # write out to a temp file
         File.open("#{tmp_path}_uncompressed.js", "w") {|f| f.write(source) }
-
+      
         # compress file with JSMin library
         `ruby #{jsmin_path}/jsmin.rb <#{tmp_path}_uncompressed.js >#{tmp_path}_compressed.js \n`
 
         # read it back in and trim it
         result = ""
         File.open("#{tmp_path}_compressed.js", "r") { |f| result += f.read.strip }
-
+  
         # delete temp files if they exist
         File.delete("#{tmp_path}_uncompressed.js") if File.exists?("#{tmp_path}_uncompressed.js")
         File.delete("#{tmp_path}_compressed.js") if File.exists?("#{tmp_path}_compressed.js")
 
         result
       end
-
+  
       def compress_css(source)
         source.gsub!(/\s+/, " ")           # collapse space
         source.gsub!(/\/\*(.*?)\*\//, "")  # remove comments - caution, might want to remove this if using css hacks
@@ -185,34 +183,17 @@ module Synthesis
         source
       end
 
-      def fix_relative_urls(asset_content, asset_relative_path)
-        case @asset_type
-        when 'stylesheets'
-          asset_content.gsub!(%r{
-            \b
-            (url[(]\s*)           # Emulate look behind assertion, match "url("
-            (?=                   # Look ahead assertion to match relative path
-              [^/:\s](?!://)        # Not start with /:, and make sure it isn't
-              (?:[^)](?!://))+\)    # a absolute path with protocol prefix
-            )
-            }x,
-            "\\1#{File.dirname(asset_relative_path)}/"
-          )
-        end
-        asset_content
-      end
-
       def get_extension
         case @asset_type
           when "javascripts" then "js"
           when "stylesheets" then "css"
         end
       end
-
+      
       def log(message)
         self.class.log(message)
       end
-
+      
       def self.log(message)
         puts message
       end
@@ -224,6 +205,6 @@ module Synthesis
         file_list.reverse! if extension == "js"
         file_list
       end
-
+   
   end
 end

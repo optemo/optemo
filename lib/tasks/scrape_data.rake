@@ -640,7 +640,7 @@ namespace :data do
 
   task :init => :environment do 
     config   = Rails::Configuration.new
-    database = config.database_configuration[RAILS_ENV]["database"]
+    database = config.database_configuration[Rails.env]["database"]
     puts "Using database #{database}"
     
     return if database == 'optemo_bestbuy'

@@ -1,15 +1,15 @@
 .DS_Store
+log/*.log
 tmp/**/*
-log
-tmp
+tmp/*
 config/database.yml
+.bundle
 db/*.sqlite3
 db/sphinx
 .~lock*
 *.o
 config/*.sphinx.conf
 public/system
-test/fixtures/*.yml
 
 webrat.log
 deploy-to-staging.sh
@@ -44,4 +44,5 @@ TAGS
 
 lib/helpers/fixClusters.sql
 merge_staging.sh
+
 

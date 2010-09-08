@@ -2,9 +2,6 @@
 
 JavaScript and CSS Asset Compression for Production Rails Apps
 
-cloned a forked version from here:
-http://github.com/rainux/asset_packager
-
 == Description
 
 When it comes time to deploy your new web application, instead of 

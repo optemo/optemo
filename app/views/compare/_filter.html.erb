@@ -1,4 +1,4 @@
-<% form_tag("/compare/filter",{:id => 'search_form'}) do %>
+<%= form_tag("/compare/filter",{:id => 'search_form'}) do %>
   <%= @s.search.userdatasearches.empty? ? text_field_tag('search') : text_field_tag('search', @s.search.userdatasearches[0].keyword) %>
   <%= submit_tag 'Search', {:id => 'submit_button'} %>
   <% if @s.search.userdatasearches[0] && @s.search.userdatasearches[0].keyword %>
@@ -10,7 +10,7 @@
   <% end %>
 <% end %>
 
-<% form_tag("",{:id => 'filter_form'}) do %>
+<%= form_tag("",{:id => 'filter_form'}) do %>
 <% i = 0 # Yes, I know, this isn't Rails-y, but we need to assign a different UI position to each feature of all kinds, in order. %> 
 <% @s.categorical["filter"].each_with_index do |feat, index| %>
 	<div class='feature'>
