@@ -15,7 +15,7 @@ gem 'mysql', '2.8.1'
 gem 'capistrano'
 
 # To use debugger
-# gem 'ruby-debug'
+gem 'ruby-debug19'
 
 # Bundle the extra gems:
 # gem 'bj'

@@ -245,7 +245,7 @@ class Search < ActiveRecord::Base
       end
       labels.each do |label|
         # This convoluted next line sets the names of the quartiles, using the specs' values at the beginning and end of each quartile.
-        grouping[specs[0][1].to_s + " - " + specs[((quartile_length >= specs.length) ? (specs.length-1) : quartile_length)][1].to_s] = all_product_ids.slice!(0,quartile_length)
+        grouping[specs[0][1].to_i.to_s + " - " + specs[((quartile_length >= specs.length) ? (specs.length-1) : quartile_length)][1].to_f.ceil.to_s] = all_product_ids.slice!(0,quartile_length)
         specs.slice!(0, quartile_length)
       end
     else # Binary feature. Do nothing for now.
