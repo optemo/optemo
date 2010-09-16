@@ -758,7 +758,7 @@ function DBinit() {
 	$('.simlinks').unbind("click").click(function(){ 
 		ajaxcall($(this).attr('href')+'?ajax=true');
 		ignored_ids = getAllShownProductIds(); 
-		trackPage('goals/browse', {'filter_type' : 'browse_similar', 'product_picked' : $(this).attr('data-id') , 'product_ignored' : ignored_ids, 'picked_cluster_layer' : $(this).attr('data-layer'), 'picked_cluster_size' : $(this).attr('data-size')});
+		trackPage('goals/browse_similar', {'filter_type' : 'browse_similar', 'product_picked' : $(this).attr('data-id') , 'product_ignored' : ignored_ids, 'picked_cluster_layer' : $(this).attr('data-layer'), 'picked_cluster_size' : $(this).attr('data-size')});
 		return false;
 	});
 
