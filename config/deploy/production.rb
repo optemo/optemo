@@ -68,7 +68,7 @@ task :serversetup do
 end
 
 task :redopermissions do
-  run "cd #{current_path}/../ && sudo chmod g+w -R current shared"
+  run "find #{current_path} #{current_path}/../../shared ! -perm /g+w -execdir chmod g+w {} +"
 end
 
 task :fetchAutocomplete do
