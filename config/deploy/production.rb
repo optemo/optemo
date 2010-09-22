@@ -1,6 +1,6 @@
 set :application, "production"
-set :repository,  "git@jaguar:site.git"
-set :domain, "jaguar"
+set :repository,  "git@fiji:site.git"
+set :domain, "fiji"
 set :branch, "staging"
 set :user, "#{ `whoami`.chomp }"
 
