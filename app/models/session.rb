@@ -8,7 +8,7 @@ class Session
   attr_accessor :product_type # Product type (camera_us, etc.), used everywhere
   attr_accessor :piwikSiteId # Piwik Site ID, as configured in the currently-running Piwik install.
 
-  def initialize (url)
+  def initialize (url = nil)
     defaultSite = 'printers.browsethenbuy.com'
     # This parameter controls whether the interface features drag-and-drop comparison or not.
     @dragAndDropEnabled = true
@@ -26,7 +26,7 @@ class Session
     @binary = Hash.new{|h,k| h[k] = []}
     @categorical = Hash.new{|h,k| h[k] = []}
     file = YAML::load(File.open("#{Rails.root}/config/products.yml"))
-    if file[url].blank? # If no www.laserprinterhub.com, try laserprinterhub.com
+    if url && file[url].blank? # If no www.laserprinterhub.com, try laserprinterhub.com
       split_url = url.split(".")[-2..-1]
       url = split_url.join(".") if split_url
     end

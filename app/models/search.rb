@@ -349,7 +349,7 @@ class Search < ActiveRecord::Base
     end
   end
 
-  def after_save
+  after_save do
     #Save user filters as well
     (userdataconts+userdatabins+userdatacats+userdatasearches).each do |d|
       d.search_id = id
