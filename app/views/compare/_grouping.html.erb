@@ -6,7 +6,7 @@
 		<% if @s.categorical.values.flatten.index(@groupedfeature) %>
 			<div class='choose_group' data-feat="<%=feat%>" data-grouping="<%=@groupedfeature%>">Show Only This <%= t('products.' + @groupedfeature).singularize %></div>
 		<% else %>
-			<div class='choose_cont_range' data-feat="<%=feat%>" data-grouping="<%=@groupedfeature%>">Show Only This <%#= t('products.' + @groupedfeature).singularize %> Range</div>
+			<div class='choose_cont_range' data-feat="<%=feat%>" data-grouping="<%=@groupedfeature%>">Show This <%#= t('products.' + @groupedfeature).singularize %> Range</div>
 		<% end %>
 	</div>
 	<% best = cheapest if best.nil? # This happens if the group just has one member in it. %>
@@ -15,7 +15,7 @@
 		<div class="productimg_container">
 			<%= image_tag(imgurl(product) , :"data-id" => product.id, :class => "productimg", :alt => product.smlTitle, :title => product.smlTitle) %>
 			<% if @s.dragAndDropEnabled %>
-				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
+				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.', :"data-id" => product.id) %>
 			<% end %>
 		</div>
 		<div class='groupby_title'><%= product.smlTitle %></div>

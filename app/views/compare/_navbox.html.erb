@@ -6,7 +6,7 @@
 		
 		<% if @s.dragAndDropEnabled %>
 				<div class="image_boundingbox">
-				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
+				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.', :"data-id" => product.id) %>
 		<% end %>
 		<%= image_tag(imgurl(product) , :"data-id" => product.id, :class => "productimg", :alt => product.smlTitle, :title => product.smlTitle) %>
 		<% if @s.dragAndDropEnabled %>

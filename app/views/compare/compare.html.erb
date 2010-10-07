@@ -21,7 +21,7 @@
 		<div id="savebar_content">
 		<div id="already_added_msg" class="savedmsg"> <%=t 'products.compare.alreadyadded' %> </div>
 		<div id="too_many_saved" class="savedmsg"> <%=t 'products.compare.toomanysaved' %> </div>
-		<div id="savedproducts">
+		<div id="opt_savedproducts">
 		</div>
 		</div>
 		<!-- Hide if 0 products, show if 1/more. -->
@@ -32,7 +32,7 @@
 
 <div id="main">
 	<% if @indexload %>
-		<div id="ajaxload"></div>
+		<div id="opt_discovery"></div>
 	<% else %>
 		<%= render :partial => 'discoverybrowser' %>
 	<% end %>
