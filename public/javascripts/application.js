@@ -703,7 +703,8 @@ function DBinit() {
         $('.nbsingle').unbind("click").click(function(){ 
      		currentelementid = $(this).find('.productinfo').attr('data-id');
      		ignored_ids = getAllShownProductIds();
-    		trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_ignored' : ignored_ids});
+     		product_title = $(this).find('img.productimg').attr('title');
+    		trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids});
      		showpage(currentelementid);
      		return false;
     	});
@@ -711,7 +712,8 @@ function DBinit() {
         $(".productimg, .easylink").unbind("click").click(function (){
             currentelementid = $(this).attr('data-id');
     		ignored_ids = getAllShownProductIds();
-    		trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_ignored' : ignored_ids});
+     		product_title = $(this).find('img.productimg').attr('title');
+    		trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids});
      		showpage(currentelementid);
      		return false;            
         });  
