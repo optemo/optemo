@@ -234,20 +234,56 @@ class Search < ActiveRecord::Base
       all_product_ids = specs.map{|s| s.first}
       quartile_length = (specs.length / 4.0).ceil
       grouping = {}
-      if specs.length >= 4
-        labels = ["Low", "Mid-low", "Mid-high", "High"]
-      elsif specs.length == 3 
-        labels = ["Low", "Medium", "High"]
-      elsif specs.length == 2 
-        labels = ["Low", "High"]
-      else 
-        labels = ["Medium"]
+      quartiles = []
+
+      limit = [3, (specs.length - 1)].min # if there aren't enough specs
+      for i in 0..limit do
+        if i == limit
+          quartiles[i] = specs.slice!(0, ((quartile_length >= specs.length) ? (specs.length) : quartile_length)) # The extra one has to go somewhere
+        else
+          quartiles[i] = specs.slice!(0, ((quartile_length >= specs.length) ? (specs.length-1) : quartile_length))
+        end
       end
-      labels.each do |label|
-        # This convoluted next line sets the names of the quartiles, using the specs' values at the beginning and end of each quartile.
-        grouping[specs[0][1].to_i.to_s + " - " + specs[((quartile_length >= specs.length) ? (specs.length-1) : quartile_length)][1].to_f.ceil.to_s] = all_product_ids.slice!(0,quartile_length)
-        specs.slice!(0, quartile_length)
+      quartiles.reject!(&:blank?) # For cases like 9 items, where the quartile length ends up being 3.
+
+      quartiles_need_reducing = true
+      while quartiles.length >= 3 && quartiles_need_reducing 
+        # For the first quartile, bump stuff up to the second one if necessary.
+        transfer_array = quartiles[0].select {|item| item[1] >= quartiles[1].first[1]}
+        quartiles[1] = transfer_array | quartiles[1]
+        quartiles[0].delete_if { |item| transfer_array.include?(item) }
+
+        # From the last quartile, bump stuff down to the second-last one if necessary.
+        transfer_array = quartiles[-1].select {|item| item[1] <= quartiles[-2].last[1]}
+        quartiles[-2] += transfer_array
+        quartiles[-1].delete_if {|item| transfer_array.include?(item)}
+        
+        # If there are four quartiles, also do the middle ones.
+        if quartiles.length >= 4 && quartiles[1].first[1] >= quartiles[2].first[1]
+          # This is a rare case. For example, quartile 2 has 1200 dpi printers entirely, as does quratile 3
+          transfer_array = quartiles[2].select{|item| item[1] >= quartiles[1].last[1]}
+          quartiles[1] += transfer_array
+          quartiles[2].delete_if{|item| transfer_array.include?(item)}
+        end
+        
+        quartiles.reject!(&:blank?) # If any quartiles are now empty
+        
+        quartiles_need_reducing = false
+        previous_high = 0
+
+        # We need to use a state machine here because it could be a multi-stage process
+        quartiles.each_with_index{|v, i| quartiles_need_reducing = true if (quartiles[i+1] && v.last[1] >= quartiles[i+1].first[1])}
       end
+      
+      quartiles.each do |q|
+        group_title = q.first[1].to_s + " - " + q.last[1].to_s
+        if grouping[group_title]
+          grouping[group_title] += q.map(&:first) # Move all appropriate product ids in
+        else
+          grouping[group_title] = q.map(&:first)
+        end
+      end
+      
     else # Binary feature. Do nothing for now.
     end
     grouping.each_pair do |feat,product_ids| 

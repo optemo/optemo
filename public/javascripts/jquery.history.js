@@ -64,7 +64,7 @@
             var current_hash = locationWrapper.get();
             _.appState = current_hash;
             // This is a modification of the original jquery history plugin. 
-            // Don't call the function when initializing the callback. We do this manually already with #ajaxload
+            // Don't call the function when initializing the callback. We do this manually already with #opt_discovery
             //_.callback(current_hash);
             setInterval(_.check, 100);
         },
@@ -89,7 +89,7 @@
             _.appState = current_hash;
             iframeWrapper.init().put(current_hash);
             // This is a modification of the original jquery history plugin. 
-            // Don't call the function when initializing the callback. We do this manually already with #ajaxload
+            // Don't call the function when initializing the callback. We do this manually already with #opt_discovery
             //_.callback(current_hash);
             setInterval(_.check, 100);
         },

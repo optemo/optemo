@@ -15,13 +15,14 @@ class CompareController < ApplicationController
       render (Session.current.mobileView ? 'products' : 'compare')
     end
   end
-  
+
   def groupby
     feat = params[:feat]
     # We need to make a new search so that history works properly (back button can take to "groupby" view)
     old_search = Session.current.lastsearch
     current_search = old_search.clone # copy over session ID, etc.
     current_search.view = feat # save feature for later. Any feature in "view" means we're in groupby view
+    current_search.duplicateFeatures(current_search, old_search) # Copy over userdata from last search for groupings
     current_search.save
     classVariables(current_search)
     @groupings = Search.createGroupBy(feat)
