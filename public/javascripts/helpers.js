@@ -30,7 +30,8 @@ if statement  -  This gets evaluated as soon as the ajaxsend function is ready (
 
 */
 
-var optemo_module; // declare the global explicitly for proper scope
+var optemo_module; // declare the globals explicitly for proper scope
+var myspinner;
 
 (function ($) { // For jQuery noconflict
 optemo_module = (function (my) {
@@ -40,12 +41,13 @@ optemo_module = (function (my) {
     //--------------------------------------//
 
     myspinner = new spinner("myspinner", 11, 20, 9, 5, "#000");
-    my.loading_indicator_state = {sidebar : false, main : false};
+    my.loading_indicator_state = {sidebar : false, sidebar_timer : null, main : false, main_timer : null};
     
     /* Does a relatively generic ajax call and returns data to the handler below */
     my.ajaxsend = function (hash,myurl,mydata,hidespinner) {
-        if (my.loading_indicator_state.main) myspinner.begin();
-        if (my.loading_indicator_state.sidebar) my.disableFiltersAndGroups();
+        var lis = my.loading_indicator_state;
+        if (lis.main) lis.main_timer = setTimeout("myspinner.begin()", 250);
+        if (lis.sidebar) lis.sidebar_timer = setTimeout("optemo_module.disableFiltersAndGroups()", 250);
         
     	if (myurl != null) {
         	$.ajax({
@@ -67,7 +69,12 @@ optemo_module = (function (my) {
 
     /* The ajax handler takes data from the ajax call and processes it according to some (unknown) rules. */
     function ajaxhandler(data) {
-        my.loading_indicator_state.main = my.loading_indicator_state.sidebar = false;
+        var lis = my.loading_indicator_state;
+        lis.main = lis.sidebar = false;
+        clearTimeout(lis.sidebar_timer); // clearTimeout can run on "null" without error
+        clearTimeout(lis.main_timer);
+        lis.sidebar_timer = lis.main_timer = null;
+            
     	if (data.indexOf('[ERR]') != -1) {	
     		var parts = data.split('[BRK]');
     		if (parts[1] != null) {

@@ -39,7 +39,9 @@
 
 */
 
+// These global variables must be declared explicitly for proper scope (see setTimeout)
 var optemo_module;
+var myspinner;
 
 (function ($) { // See bottom, this is for jquery noconflict
 optemo_module = (function (my){
@@ -209,6 +211,7 @@ optemo_module = (function (my){
             if (!(arguments[i].match(/^superfluous/) || arguments[i].match(/authenticity_token/))) 
                 arguments_to_send.push(arguments[i]);
         }
+        my.loading_indicator_state.sidebar = true;
     	my.ajaxcall("/compare/filter?ajax=true", $("#search_form").serialize() + "&" + arguments_to_send.join("&"));
     	return false;
     }
@@ -322,7 +325,7 @@ optemo_module = (function (my){
         my.removeSilkScreen();
     
     	//Show and Hide Descriptions
-    	$('.feature .label a, .catlabel a, .desc .deleteX').unbind('click').click(function(){
+    	$('.feature .label a, .catlabel a, .desc .deleteX').live('click', function(){
     		if($(this).parent().attr('class') == "desc")
     			{var obj = $(this).parent();}
     		else
@@ -340,7 +343,7 @@ optemo_module = (function (my){
     	});
 	
     	//Search submit
-    	$('#submit_button').unbind('click').click(function(){
+    	$('#submit_button').live('click', function(){
     		return submitsearch();
     	});
 	
@@ -534,7 +537,7 @@ optemo_module = (function (my){
     				    leftsliderknob.removeData('toofar');
     				    rightsliderknob.removeData('toofar');
                     }
-                    my.loading_indicator_state.main = true;
+                    my.loading_indicator_state.sidebar = true;
                 	my.ajaxcall("/compare/filter?ajax=true", $("#search_form").serialize() + "&" + arguments_to_send.join("&"));
     			}
     		});
@@ -556,101 +559,95 @@ optemo_module = (function (my){
     		});
     	});
     	// Add a brand -- submit
-    	$('.selectboxfilter').each(function(){
-    	    $(this).unbind('change').change(function(){
-    	        $(this).unbind();
-    		    var whichThingSelected = $(this).val();
-    			var whichSelector = $(this).attr('name');
-    		    var categorical_filter_name = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]"));
-        		$('#myfilter_'+categorical_filter_name).val(appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
-        		var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : categorical_filter_name, 'filter_type' : 'categorical'};
-            	my.trackPage('goals/filter/categorical', info);
-        		submitCategorical();
-        		return false;
-        	});
+    	$('.selectboxfilter').live('change', function(){
+		    var whichThingSelected = $(this).val();
+			var whichSelector = $(this).attr('name');
+		    var categorical_filter_name = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]"));
+    		$('#myfilter_'+categorical_filter_name).val(appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
+    		var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : categorical_filter_name, 'filter_type' : 'categorical'};
+    		my.loading_indicator_state.sidebar = true;
+        	my.trackPage('goals/filter/categorical', info);
+    		submitCategorical();
+    		return false;
     	});
 	
     	// Remove a brand -- submit
-    	$('.removefilter').each(function(){
-    		$(this).unbind('click').click(function(){
-    			var whichRemoved = $(this).attr('data-id');
-    			var whichCat = $(this).attr('data-cat');
-    			$('#myfilter_'+whichCat).val(removeStringWithToken($('#myfilter_'+whichCat).val(), whichRemoved, '*'));
-        		var info = {'chosen_categorical' : whichRemoved, 'slider_name' : whichCat, 'filter_type' : 'categorical_removed'};
-            	my.trackPage('goals/filter/categorical_removed', info);
-    			submitCategorical();
-    			return false;
-    		});
+    	$('.removefilter').live('click', function(){
+			var whichRemoved = $(this).attr('data-id');
+			var whichCat = $(this).attr('data-cat');
+			$('#myfilter_'+whichCat).val(removeStringWithToken($('#myfilter_'+whichCat).val(), whichRemoved, '*'));
+    		var info = {'chosen_categorical' : whichRemoved, 'slider_name' : whichCat, 'filter_type' : 'categorical_removed'};
+    		my.loading_indicator_state.sidebar = true;
+        	my.trackPage('goals/filter/categorical_removed', info);
+			submitCategorical();
+			return false;
     	});
 	
     	// In simple view, select an aspect to create viewable groups
-    	$('.groupby').each(function(){
-    		$(this).unbind('click').click(function(){
-    			feat = $(this).attr('data-feat');
-        		my.trackPage('goals/showgroups', {'filter_type' : 'groupby', 'feature_name': feat, 'ui_position': $(this).attr('data-position')});
-    			my.ajaxcall("/compare/groupby/?feat="+feat);
-    		});
+    	$('.groupby').live('click', function(){
+			feat = $(this).attr('data-feat');
+			my.loading_indicator_state.sidebar = true;
+    		my.trackPage('goals/showgroups', {'filter_type' : 'groupby', 'feature_name': feat, 'ui_position': $(this).attr('data-position')});
+			my.ajaxcall("/compare/groupby/?feat="+feat);
     	});
 	
         // Choose a grouping via group button rather than drop-down (effect is the same as the select boxes)
-    	$('.title').each(function(){
-    		$(this).unbind('click').click(function(){
-    		    $(this).unbind();
-    		    if ($(this).find('.choose_group').length) { // This is a categorical feature
-        		    group_element = $(this).find('.choose_group');
-                	var whichThingSelected = group_element.attr('data-feat');
-                	var categorical_filter_name = group_element.attr('data-grouping');
-                	if($('#myfilter_'+categorical_filter_name).val().match(whichThingSelected) === null)
-                    	$('#myfilter_'+categorical_filter_name).val(appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
-                	var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : categorical_filter_name, 'filter_type' : 'categorical_from_groups'};
-                	my.trackPage('goals/filter/categorical_from_groups', info);
-                	submitCategorical();
-                    return false;
-            	}
-            	else { // This is a continuous feature
-            	    group_element = $(this).find('.choose_cont_range');
-            	    feat = group_element.attr('data-grouping');
-            	    bounds = group_element.attr('data-feat').split("-");
-        	        lowerbound = parseFloat(bounds[0]);
-        	        upperbound = parseFloat(bounds[1]);
-        	        var arguments_to_send = [];
-        	        arguments = $("#filter_form").serialize().split("&");
-        	        for (i=0; i<arguments.length; i++)
-                    {
-                        if (arguments[i].match(feat)) {
-                            split_arguments = arguments[i].split("=")
-                            if (arguments[i].match(/min/))
-                                split_arguments[1] = lowerbound;
-                            else
-                                split_arguments[1] = upperbound;
-                            arguments[i] = split_arguments.join("=");
-                        }
-                        if (!(arguments[i].match(/^superfluous/)))
-                            arguments_to_send.push(arguments[i]);
+    	$('.title').live('click', function(){
+		    if ($(this).find('.choose_group').length) { // This is a categorical feature
+    		    group_element = $(this).find('.choose_group');
+            	var whichThingSelected = group_element.attr('data-feat');
+            	var categorical_filter_name = group_element.attr('data-grouping');
+            	if($('#myfilter_'+categorical_filter_name).val().match(whichThingSelected) === null)
+                	$('#myfilter_'+categorical_filter_name).val(appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
+            	var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : categorical_filter_name, 'filter_type' : 'categorical_from_groups'};
+            	my.loading_indicator_state.sidebar = my.loading_indicator_state.main = true;
+            	my.trackPage('goals/filter/categorical_from_groups', info);
+            	submitCategorical();
+                return false;
+        	}
+        	else { // This is a continuous feature
+        	    group_element = $(this).find('.choose_cont_range');
+        	    feat = group_element.attr('data-grouping');
+        	    bounds = group_element.attr('data-feat').split("-");
+    	        lowerbound = parseFloat(bounds[0]);
+    	        upperbound = parseFloat(bounds[1]);
+    	        var arguments_to_send = [];
+    	        arguments = $("#filter_form").serialize().split("&");
+    	        for (i=0; i<arguments.length; i++)
+                {
+                    if (arguments[i].match(feat)) {
+                        split_arguments = arguments[i].split("=")
+                        if (arguments[i].match(/min/))
+                            split_arguments[1] = lowerbound;
+                        else
+                            split_arguments[1] = upperbound;
+                        arguments[i] = split_arguments.join("=");
                     }
-                    chosen_range = group_element.attr('data-feat').split("-");
-            		my.trackPage('goals/filter/continuous_from_groups', {'filter_type' : 'continuous_from_groups', 'feature_name': group_element.attr('data-grouping'), 'selected_continuous_min' : parseFloat(chosen_range[0]), 'selected_continuous_max' : parseFloat(chosen_range[1])});
-                    my.ajaxcall("/compare/filter/?ajax=true&" + arguments_to_send.join("&"));
-        	    }
-    		});
+                    if (!(arguments[i].match(/^superfluous/)))
+                        arguments_to_send.push(arguments[i]);
+                }
+                chosen_range = group_element.attr('data-feat').split("-");
+        		my.trackPage('goals/filter/continuous_from_groups', {'filter_type' : 'continuous_from_groups', 'feature_name': group_element.attr('data-grouping'), 'selected_continuous_min' : parseFloat(chosen_range[0]), 'selected_continuous_max' : parseFloat(chosen_range[1])});
+                my.ajaxcall("/compare/filter/?ajax=true&" + arguments_to_send.join("&"));
+    	    }
     	});
 
     	//Show Additional Features
-    	$('#morefilters').unbind('click').click(function(){
+    	$('#morefilters').live('click', function(){
     		$('.extra').show("slide",{direction: "up"},100);
     		$(this).css('display','none');
     		$('#lessfilters').css('display','block');
     		return false;
     	});
 
-    	$('#removeSearch').unbind('click').click(function(){
+    	$('#removeSearch').live('click', function(){
     		$('#previous_search_word').val('');
     		$('#previous_search_container').remove();
         	return false;
      	});
 	
     	//Hide Additional Features
-    	$('#lessfilters').unbind('click').click(function(){
+    	$('#lessfilters').live('click', function(){
     		$('.extra').hide("slide",{direction: "up"},100);
     		$(this).css('display','none');
     		$('#morefilters').css('display','block');
@@ -658,15 +655,16 @@ optemo_module = (function (my){
     	});
 	
     	// Sliders -- submit
-    	$('.autosubmit').unbind('change').change(function() {
+    	$('.autosubmit').live('change', function() {
     	    my.trackPage('goals/filter/autosubmit', {'filter_type' : 'autosubmit'});
     		submitCategorical();
     	});
 	
     	// Checkboxes -- submit
-    	$('.autosubmitbool').unbind('click').click(function() {
+    	$('.autosubmitbool').live('click', function() {
     		var whichbox = $(this).attr('id');
     		var box_value = $(this).attr('checked') ? 100 : 0;
+    		my.loading_indicator_state.sidebar = true;
     		my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox});
     		submitCategorical();
     	});
@@ -693,7 +691,7 @@ optemo_module = (function (my){
         //		}
         //	});
     	//Remove buttons on compare
-    	$('.remove').unbind('click').click(function(){
+    	$('.remove').live('click', function(){
     		removeFromComparison($(this).attr('data-name'));
     		$(this).parents('.column').remove();
 		
@@ -721,7 +719,7 @@ optemo_module = (function (my){
     // 		trackPage('products/show/'+currentelementid); 
         });
         if (DIRECT_LAYOUT) { // in Optemo Direct, a click anywhere on the product box goes to the show page
-            $('.nbsingle').unbind("click").click(function(){ 
+            $('.nbsingle').live("click", function(){ 
          		currentelementid = $(this).find('.productinfo').attr('data-id');
          		ignored_ids = my.getAllShownProductIds();
          		product_title = $(this).find('img.productimg').attr('title');
@@ -730,7 +728,7 @@ optemo_module = (function (my){
          		return false;
         	});
         	// In addition, set up the images on the "show groups" page to be clickable.
-        	$(".productimg").unbind("click").click(function (){
+        	$(".productimg").live("click", function (){
                 currentelementid = $(this).attr('data-id');
                 if(currentelementid === undefined) { currentelementid = $(this).find('.productimg').attr('data-id'); }
         		ignored_ids = my.getAllShownProductIds();
@@ -740,7 +738,7 @@ optemo_module = (function (my){
          		return false;            
             });
         } else { // in Optemo Assist, a click only on the picture or .easylink product name will trigger the show page
-            $(".productimg, .easylink").unbind("click").click(function (){
+            $(".productimg, .easylink").live("click", function (){
                 currentelementid = $(this).attr('data-id');
         		ignored_ids = my.getAllShownProductIds();
          		product_title = $(this).find('img.productimg').attr('title');
@@ -788,7 +786,7 @@ optemo_module = (function (my){
     	}
 	
     	//Ajax call for simlinks
-    	$('.simlinks').unbind("click").click(function(){ 
+    	$('.simlinks').live("click", function(){ 
     		my.ajaxcall($(this).attr('href')+'?ajax=true');
     		ignored_ids = my.getAllShownProductIds(); 
     		my.trackPage('goals/browse_similar', {'filter_type' : 'browse_similar', 'product_picked' : $(this).attr('data-id') , 'product_ignored' : ignored_ids, 'picked_cluster_layer' : $(this).attr('data-layer'), 'picked_cluster_size' : $(this).attr('data-size')});
@@ -798,7 +796,7 @@ optemo_module = (function (my){
     	//Pagination links
         // This convoluted line takes the second-last element in the list: "<< prev 1 2 3 4 next >>" and takes its numerical page value. 
     	total_pages = parseInt($('.pagination').children().last().prev().html());
-    	$('.pagination a').unbind("click").click(function(){
+    	$('.pagination a').live("click", function(){
     		url = $(this).attr('href')
     		if (url.match(/\?/))
     			url +='&ajax=true'
@@ -808,6 +806,7 @@ optemo_module = (function (my){
         		my.trackPage('goals/next', {'filter_type' : 'next' , 'page_number' : parseInt($('.pagination .current').html()), 'total_number_of_pages' : total_pages});
     		else
     		    my.trackPage('goals/next', {'filter_type' : 'next_number' , 'page_number' : parseInt($(this).html()), 'total_number_of_pages' : total_pages});		
+		    my.loading_indicator_state.main = true;
     		my.ajaxcall(url);
     		return false;
     	});
@@ -843,7 +842,7 @@ optemo_module = (function (my){
     };
 
     function ShowInit() {
-    	$('.buylink, .buyimg').unbind("click").click(function(){
+    	$('.buylink, .buyimg').live("click", function(){
     		var buyme_id = $(this).attr('product');
     		my.trackPage('goals/addtocart', {'picked_product' : buyme_id});
     	});
@@ -953,6 +952,7 @@ jQuery(document).ready(function($) {
 	//Static Ajax call
 	$('#staticajax_reset').click(function(){
 		trackPage('goals/reset', {'filter_type' : 'reset'});
+		optemo_module.loading_indicator_state.sidebar = true;
 		optemo_module.ajaxcall($(this).attr('href')+'?ajax=true');
 		return false;
 	});
