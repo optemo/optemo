@@ -31,7 +31,6 @@ module CompareHelper
 		acceptableincrements = [1000, 500, 100, 50, 10, 5, 1, 0.5, 0.1, 0.05, 0.01]
 		comparator = number / 100.0 # so that's 81.7799
     increment = acceptableincrements.delete_if{|i| (i * 1.1) < comparator}.last
-    
     realvalue = (number / increment)
     if round_direction == 'up'
       realvalue = realvalue.ceil * increment

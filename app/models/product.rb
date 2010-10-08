@@ -30,7 +30,7 @@ class Product < ActiveRecord::Base
   
   scope :instock, :conditions => {:instock => true}
   scope :valid, lambda {
-    {:conditions => (Session.current.continuous["filter"].map{|f|"id in (select product_id from cont_specs where value > 0 and name = '#{f}' and product_type = '#{Session.current.product_type}')"}+\
+    {:conditions => (Session.current.continuous["filter"].map{|f|"id in (select product_id from cont_specs where #{Session.current.minimum[f] ? "value > " + Session.current.minimum[f].to_s : "value > 0"}#{" and value < " + Session.current.maximum[f].to_s if Session.current.maximum[f]} and name = '#{f}' and product_type = '#{Session.current.product_type}')"}+\
     Session.current.binary["filter"].map{|f|"id in (select product_id from bin_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{Session.current.product_type}')"}+\
     Session.current.categorical["filter"].map{|f|"id in (select product_id from cat_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{Session.current.product_type}')"}).join(" and ")}
   }
