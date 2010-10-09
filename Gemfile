@@ -27,6 +27,10 @@ gem 'ruby-debug19'
 gem 'thinking-sphinx', '2.0.0.rc2', :require => 'thinking_sphinx'
 gem 'will_paginate', '>=3.0.pre'
 
+group :production, :profile do
+  gem "memcache-client"
+end
+
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
 # and rake tasks are available in development mode:

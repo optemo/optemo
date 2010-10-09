@@ -9,15 +9,15 @@
 		<div class="itemfeatures">
 			<div class="itemtitle"><%= product.smlTitle %></div>
 			<% contspecs = ContSpec.cache_all(product.id); catspecs = CatSpec.cache_all(product.id); binspecs = BinSpec.cache_all(product.id) %>
-			<% @s.categorical["showList"].each do |f|%>
-			  <%= render :partial => 'featurevaluesg', :locals => {:f => f, :val => catspecs[f]} %>
+			<% all_specs = {:continuous => contspecs, :categorical => catspecs, :binary => binspecs } %>
+			<% all_specs.each do |k,v| %>
+				<% @s.send(k)["showList"].each do |f| %>
+					<% if v[f] %>
+					<div class="fv"><%=t @s.product_type+"."+f, :default => f.capitalize %>: <%= v[f] == v[f].to_i ? v[f].to_i : v[f] %> <%=t @s.product_type+"."+f+"unit", :default => '' %></div>
+					<% end %>
+				<% end %>
 			<% end %>
-			<% @s.continuous["showList"].each do |f|%>
-			  <%= render :partial => 'featurevaluesg', :locals => {:f => f, :val => contspecs[f]} %>
-			<% end %>
-			<% @s.binary["showList"].each do |f|%>
-			  <%= render :partial => 'featurevaluesg', :locals => {:f => f, :val => binspecs[f]} %>
-			<% end %>
+			
 		</div>
 		<div class="price">
 			<%= number_to_currency(contspecs["price"]) %>

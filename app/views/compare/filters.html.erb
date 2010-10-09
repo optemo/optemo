@@ -61,7 +61,7 @@
 
 					<% acceptableincrements = acceptableincrements(overall_min, overall_max) %>
 					<div class='feature_selectors' data-label='<%= feat %>'>
-					<%= select( "featurerangeone", feat, acceptableincrements, {:selected => current_min.nil? ? '' : current_min.to_f}, {:class => 'featurerangeselect', :name => "myfilter[#{feat}_min]"}) %>&nbsp;&ndash;&nbsp;<%= select( "featurerangetwo", feat, acceptableincrements, {:selected => current_max.nil? ? acceptableincrements[acceptableincrements.length-1] : current_max.to_f}, {:class => 'featurerangeselect', :name => "myfilter[#{feat}_max]"}) %>
+					<%= select( "featurerangeone", feat, acceptableincrements, {:selected => current_min.nil? ? '' : current_min.to_f}, {:class => 'featurerangeselect', :name => "myfilter[#{feat}_min]"}) %>&nbsp;&ndash;&nbsp;<%= select( "featurerangetwo", feat, acceptableincrements, {:selected => current_max.nil? ? acceptableincrements[-1] : (acceptableincrements[-1].class == Fixnum ? current_max.to_i : current_max.to_f)}, {:class => 'featurerangeselect', :name => "myfilter[#{feat}_max]"}) %>
 					</div>
 				</div>
 				

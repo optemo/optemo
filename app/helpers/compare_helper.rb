@@ -62,7 +62,7 @@ module CompareHelper
       current = (((current / (10**base).to_f).ceil) * (10**base).to_f)
     end
     increments.push(max)
-    increments.map{|i|(i.round == i) ? i.to_i : i }
+    increments.map{|i|(i.round == i) ? i.to_i : (i * 100.0).to_i.to_f / 100.0 }
   end
   
   def nav_link
