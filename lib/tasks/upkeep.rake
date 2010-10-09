@@ -43,7 +43,7 @@ task :calculate_factors => :environment do
   Factor.transaction do
     factor_activerecords.each(&:save)
   end
-  ContSpec.delete_all(["name = ?", "utility"]) # ContSpec records do not have a version number, so we have to wipe out the old ones.
+  ContSpec.delete_all(["name = ? and product_type = ?", "utility", s.product_type]) # ContSpec records do not have a version number, so we have to wipe out the old ones.  
   ContSpec.transaction do
     utility_activerecords.each(&:save)
   end    

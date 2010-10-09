@@ -598,7 +598,7 @@ optemo_module = (function (my){
     		    $(this).unbind();
     		    if ($(this).find('.choose_group').length) { // This is a categorical feature
         		    group_element = $(this).find('.choose_group');
-                	var whichThingSelected = group_element.attr('data-feat');
+                	var whichThingSelected = group_element.attr('data-min');
                 	var categorical_filter_name = group_element.attr('data-grouping');
                 	if($('#myfilter_'+categorical_filter_name).val().match(whichThingSelected) === null)
                     	$('#myfilter_'+categorical_filter_name).val(appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
@@ -610,9 +610,8 @@ optemo_module = (function (my){
             	else { // This is a continuous feature
             	    group_element = $(this).find('.choose_cont_range');
             	    feat = group_element.attr('data-grouping');
-            	    bounds = group_element.attr('data-feat').split("-");
-        	        lowerbound = parseFloat(bounds[0]);
-        	        upperbound = parseFloat(bounds[1]);
+        	        lowerbound = group_element.attr('data-min');
+        	        upperbound = group_element.attr('data-max');
         	        var arguments_to_send = [];
         	        arguments = $("#filter_form").serialize().split("&");
         	        for (i=0; i<arguments.length; i++)
@@ -628,8 +627,7 @@ optemo_module = (function (my){
                         if (!(arguments[i].match(/^superfluous/)))
                             arguments_to_send.push(arguments[i]);
                     }
-                    chosen_range = group_element.attr('data-feat').split("-");
-            		my.trackPage('goals/filter/continuous_from_groups', {'filter_type' : 'continuous_from_groups', 'feature_name': group_element.attr('data-grouping'), 'selected_continuous_min' : parseFloat(chosen_range[0]), 'selected_continuous_max' : parseFloat(chosen_range[1])});
+            		my.trackPage('goals/filter/continuous_from_groups', {'filter_type' : 'continuous_from_groups', 'feature_name': group_element.attr('data-grouping'), 'selected_continuous_min' : lowerbound, 'selected_continuous_max' : upperbound});
                     my.ajaxcall("/compare/filter/?ajax=true&" + arguments_to_send.join("&"));
         	    }
     		});

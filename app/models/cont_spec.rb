@@ -13,18 +13,23 @@ class ContSpec < ActiveRecord::Base
   # Get specs for a single item, returns a hash of this format: {"price" => 1.75, "width" => ... }
   def self.cache_all(p_id)
     CachingMemcached.cache_lookup("ContSpecs#{p_id}") do
-      select(:name, :value).where(["product_id = ?", p_id]).all.each_with_object({}){|r, h| h[r.name] = r.value}
+      select(:name, :value).where(["product_id = ?", p_id]).each_with_object({}){|r, h| h[r.name] = r.value}
     end
   end
   def self.cachemany(p_ids, feat) # Returns numerical (floating point) values only
     CachingMemcached.cache_lookup("ContSpecs#{feat}#{p_ids.join(',').hash}") do
-      select(:value).where(["product_id IN (?) and name = ?", p_ids, feat]).all.map(&:value)
+      select(:value).where(["product_id IN (?) and name = ?", p_ids, feat]).map(&:value)
     end
   end
   def self.cachemany_with_ids(p_ids, feat)
     CachingMemcached.cache_lookup("ContSpecsWithIds#{feat}#{p_ids.join(',').hash}") do
-      select(:product_id, :value).where(["product_id IN (?) and name = ?", p_ids, feat]).all.each_with_object({}){|r, h| h[r.product_id] = r.value}
+      select(:product_id, :value).where(["product_id IN (?) and name = ?", p_ids, feat])
     end
+  end
+  def self.cachemany_with_ids_hash(p_ids, feat)
+    CachingMemcached.cache_lookup("ContSpecsWithIds#{feat}#{p_ids.join(',').hash}") do
+      select(:product_id, :value).where(["product_id IN (?) and name = ?", p_ids, feat])
+    end.each_with_object({}){|r, h| h[r.product_id] = r.value}
   end
   
   # This probably isn't needed anymore, but is a good example of how to do class caching if we want to do it in future.
@@ -56,6 +61,11 @@ class ContSpec < ActiveRecord::Base
     end
   end
   
+  def == (other)
+     return false if other.nil?
+     return value == other.value && product_id == other.product_id #&& name == other.name Not included due to partial db instatiations ie .select(:product_ids, :values)
+  end
+  
   private
 
   def self.allspecs(feat)
@@ -69,4 +79,5 @@ class ContSpec < ActiveRecord::Base
   def <=>(other)
      return value <=> other.value
   end
+  
 end
