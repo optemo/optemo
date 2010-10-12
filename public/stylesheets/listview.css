@@ -146,6 +146,18 @@ img.productimg {
 	background-color: #8192ac;
 }
 
+.choose_cont_range {
+	/*margin-top: 4px;*/
+	position: absolute;
+	bottom: 7px;
+	left: 24px;
+}
+.choose_group {
+	position: absolute;
+	bottom: 12px;
+	left: 10px;
+}
+
 .group_title {
   width: 115px;
 }
@@ -216,10 +228,10 @@ div.tourDrawAttention /* this is for CSS precedence */
 //--------------------------------------*/
 /* Zurb http://www.zurb.com/article/266/super-awesome-buttons-with-css3-and-rgba */
 .awesome, .awesome:visited {
-	background: #222 url(/images/alert-overlay.png) repeat-x; 
-	display: inline-block; 
-	padding: 5px 10px 6px; 
-	color: #FFF; 
+	background: #797979 url(/images/alert-overlay.png) repeat-x; 
+	/*display: inline-block; */
+	padding: 5px 10px 4px; 
+	color: #eee; 
 	text-decoration: none;
 	-moz-border-radius: 10px; 
 	-webkit-border-radius: 10px;
@@ -227,12 +239,12 @@ div.tourDrawAttention /* this is for CSS precedence */
 	-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
 	text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
 	border-bottom: 1px solid rgba(0,0,0,0.25);
-	position: relative;
+	/*position: relative;*/
 	cursor: pointer;
 }
 
-.awesome:hover							{ background-color: #222; color: #FFF; }
-.awesome:active							{ top: 1px; }
+.awesome:hover							{ background-color: #676767; color: #e6e6e6; }
+/*.awesome:active							{ top: 1px; }*/
 .small.awesome, .small.awesome:visited 			{ font-size: 11px; padding: ; }
 .awesome, .awesome:visited,
 .medium.awesome, .medium.awesome:visited 		{ font-size: 13px; font-weight: bold; line-height: 1; text-shadow: 0 -1px 1px rgba(0,0,0,0.25); }
