@@ -35,7 +35,7 @@
 							</div>
 						</div>
 
-					<div class="productinfo rounded" onClick="javascript:location.href='<%= cluster.representative.descurl %>'">
+					<div class="productinfo rounded" data-url='<%= cluster.representative.descurl %>'>
 						<div class="productimg">
 							<%= image_tag(imgsurl(representative) , :"data-id" => representative.id, :class => "productimg", :alt => representative.smlTitle, :title => representative.smlTitle) %>
 						</div>

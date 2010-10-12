@@ -45,7 +45,7 @@ optemo_module = (function (my){
 
     my.FilterAndSearchInit = function() {
     	//Show and Hide Descriptions
-    	$('.feature .label a, .feature .deleteX, .desc').unbind('click').click(function(){
+    	$('.feature .label a, .feature .deleteX, .desc').click(function(){
     		if($(this).parent().attr('class') == "desc")
     			var obj = $(this).parent();
     		else if ($(this).siblings('.desc').length)
@@ -60,23 +60,23 @@ optemo_module = (function (my){
     	});
 
     	// Checkboxes -- submit
-    	$('.autosubmitbool').unbind('click').click(function() {
+    	$('.autosubmitbool').click(function() {
     		var whichbox = $(this).attr('id');
     		trackPage('goals/filter/checkbox', {'feature_name' : whichbox});
     	});
 	
-    	$("#filter_bar").unbind('click').click(function() {
+    	$("#filter_bar").click(function() {
     	    trackPage('goals/showfilters', {'filter_type' : 'showfilters'});
     		window.location = ("/compare/showfilters");
     		return false;
     	});
-    	$("#startover").unbind('click').click(function() {
+    	$("#startover").click(function() {
     		trackPage('goals/reset', {'filter_type' : 'reset'});
     		window.location = ("/");
     		return false;
     	});
     	// Add a brand
-    	$('.selectboxfilter').unbind('change').change(function(){
+    	$('.selectboxfilter').change(function(){
     		var whichThingSelected = $(this).val();
     		var whichSelector = $(this).attr('name');
     		var selectedOption = $(this).find(":selected");
@@ -101,7 +101,7 @@ optemo_module = (function (my){
     	});
 	
     	// Remove a brand -- submit
-    	$('.removefilter').unbind('click').click(function(){
+    	$('.removefilter').click(function(){
             var selector = $(this).parent().next();
     		var whichfeature = selector.attr('data-id');
     		$('#myfilter_'+whichfeature).val(removeStringWithToken($('#myfilter_'+whichfeature).val(), $(this).attr('data-id'), '*'));
@@ -111,14 +111,14 @@ optemo_module = (function (my){
     		return false;
     	});
 	
-    	$('#removeSearch').unbind('click').click(function(){
+    	$('#removeSearch').click(function(){
     		$('#previous_search_word').val('');
     		$('#previous_search_container').remove();
     		return false;
     	});
 	
     	//Clear form
-    	$('#staticajax_reset').unbind('click').click(function(){
+    	$('#staticajax_reset').click(function(){
     		//Reset min sliders
     		$('*[id^=featurerangeone]').each(function() {
     			this.selectedIndex = 0;
@@ -132,7 +132,7 @@ optemo_module = (function (my){
     			$(this).click();
     		});
     		//Clear search term
-    		$('#removeSearch').click();
+//    		$('#removeSearch').click(); // ?
     		//Clear check boxes
     		$('.autosubmitbool').each(function() {
     			this.checked = false;
@@ -140,6 +140,10 @@ optemo_module = (function (my){
     		trackPage('goals/reset', {'filter_type' : 'reset'});
     		return false;
     	});
+    	
+    	$('.productinfo').click(function(){
+    	    window.location = ($(this).attr('data-url'));
+	    });
     }
 
     my.DBinit = function() {

@@ -722,7 +722,7 @@ margin-top:0;
 //        Show page and related         //
 //--------------------------------------*/
 
-div#fade {
+div#silkscreen {
 	background-color: black;
 	position: absolute;
 	top: 0;

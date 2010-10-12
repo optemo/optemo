@@ -7,7 +7,7 @@ en:
             search:         "Search"
             saved:          "Save And Compare"
             alreadyadded:   "You already added that product!"
-            toomanysaved:   "You can save only up to 4 products at a time"
+            toomanysaved:   "You can only save up to 4 products at a time."
             savesome:       "Select two or more items to compare specs"
             savesomedrag:   "Drag and drop to save or compare products"
             filters:        "Filters"
