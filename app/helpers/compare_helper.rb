@@ -140,12 +140,12 @@ module CompareHelper
 		out.join(" / ")
   end
 
-  def columntext(groupings)
+  def columntext(showgroups)
     if Session.current.directLayout
-      if groupings.nil?
-        ['', 'Product Details', 'Price']
-      else
+      if showgroups
         ['Choose Group', 'Best Pick', 'Cheapest Pick']
+      else
+        ['', 'Product Details', 'Price']
       end
     else
       ['Browse Similar', 'Group Differences', 'Our pick for this group']
@@ -178,5 +178,12 @@ module CompareHelper
       else CGI.unescapeHTML(product.imgsurl.to_s)
     end
   end
-
+  
+  def withunit(number,feature)
+    if feature == "price"
+      t('products.' + feature+"unit")+number.to_s
+    else
+      [number,t('products.' + feature+"unit", :default => "")].reject(&:blank?).join(" ")
+    end
+  end
 end

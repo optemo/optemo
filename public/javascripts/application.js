@@ -719,27 +719,25 @@ optemo_module = (function (my){
 	
         // Choose a grouping via group button rather than drop-down (effect is the same as the select boxes)
     	$('.title').live('click', function(){
-		    if ($(this).find('.choose_group').length) { // This is a categorical feature
-    		    group_element = $(this).find('.choose_group');
-            	var whichThingSelected = group_element.attr('data-feat');
+    		if ($(this).find('.choose_group').length) { // This is a categorical feature
+        	    group_element = $(this).find('.choose_group');
+            	var whichThingSelected = group_element.attr('data-min');
             	var categorical_filter_name = group_element.attr('data-grouping');
             	if($('#myfilter_'+categorical_filter_name).val().match(whichThingSelected) === null)
                 	$('#myfilter_'+categorical_filter_name).val(opt_appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
             	var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : categorical_filter_name, 'filter_type' : 'categorical_from_groups'};
-            	my.loading_indicator_state.sidebar = my.loading_indicator_state.main = true;
             	my.trackPage('goals/filter/categorical_from_groups', info);
             	submitCategorical();
                 return false;
-        	}
-        	else { // This is a continuous feature
-        	    group_element = $(this).find('.choose_cont_range');
-        	    feat = group_element.attr('data-grouping');
-        	    bounds = group_element.attr('data-feat').split("-");
-    	        lowerbound = parseFloat(bounds[0]);
-    	        upperbound = parseFloat(bounds[1]);
-    	        var arguments_to_send = [];
-    	        arguments = $("#filter_form").serialize().split("&");
-    	        for (i=0; i<arguments.length; i++)
+            }
+            else { // This is a continuous feature
+                group_element = $(this).find('.choose_cont_range');
+                feat = group_element.attr('data-grouping');
+        	    lowerbound = group_element.attr('data-min');
+        	    upperbound = group_element.attr('data-max');
+        	    var arguments_to_send = [];
+        	    arguments = $("#filter_form").serialize().split("&");
+        	    for (i=0; i<arguments.length; i++)
                 {
                     if (arguments[i].match(feat)) {
                         split_arguments = arguments[i].split("=")
@@ -752,10 +750,9 @@ optemo_module = (function (my){
                     if (!(arguments[i].match(/^superfluous/)))
                         arguments_to_send.push(arguments[i]);
                 }
-                chosen_range = group_element.attr('data-feat').split("-");
-        		my.trackPage('goals/filter/continuous_from_groups', {'filter_type' : 'continuous_from_groups', 'feature_name': group_element.attr('data-grouping'), 'selected_continuous_min' : parseFloat(chosen_range[0]), 'selected_continuous_max' : parseFloat(chosen_range[1])});
+            	my.trackPage('goals/filter/continuous_from_groups', {'filter_type' : 'continuous_from_groups', 'feature_name': group_element.attr('data-grouping'), 'selected_continuous_min' : lowerbound, 'selected_continuous_max' : upperbound});
                 my.ajaxcall("/compare/filter/?ajax=true&" + arguments_to_send.join("&"));
-    	    }
+        	}
     	});
 
     	//Show Additional Features
