@@ -277,7 +277,7 @@ optemo_module = (function (my){
 
     my.disableFiltersAndGroups = function() {
         // This will turn on the fade for the left area
-        elementToShadow = $('#leftbar');
+        elementToShadow = $('#filterbar');
         var pos = elementToShadow.offset();  
         var width = elementToShadow.width();
         var height = elementToShadow.height();
@@ -689,7 +689,7 @@ optemo_module = (function (my){
 		    var whichThingSelected = $(this).val();
 			var whichSelector = $(this).attr('name');
 		    var categorical_filter_name = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]"));
-    		$('#myfilter_'+categorical_filter_name).val(appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
+    		$('#myfilter_'+categorical_filter_name).val(opt_appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
     		var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : categorical_filter_name, 'filter_type' : 'categorical'};
     		my.loading_indicator_state.sidebar = true;
         	my.trackPage('goals/filter/categorical', info);
@@ -701,7 +701,7 @@ optemo_module = (function (my){
     	$('.removefilter').live('click', function(){
 			var whichRemoved = $(this).attr('data-id');
 			var whichCat = $(this).attr('data-cat');
-			$('#myfilter_'+whichCat).val(removeStringWithToken($('#myfilter_'+whichCat).val(), whichRemoved, '*'));
+			$('#myfilter_'+whichCat).val(opt_removeStringWithToken($('#myfilter_'+whichCat).val(), whichRemoved, '*'));
     		var info = {'chosen_categorical' : whichRemoved, 'slider_name' : whichCat, 'filter_type' : 'categorical_removed'};
     		my.loading_indicator_state.sidebar = true;
         	my.trackPage('goals/filter/categorical_removed', info);
@@ -724,7 +724,7 @@ optemo_module = (function (my){
             	var whichThingSelected = group_element.attr('data-feat');
             	var categorical_filter_name = group_element.attr('data-grouping');
             	if($('#myfilter_'+categorical_filter_name).val().match(whichThingSelected) === null)
-                	$('#myfilter_'+categorical_filter_name).val(appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
+                	$('#myfilter_'+categorical_filter_name).val(opt_appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
             	var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : categorical_filter_name, 'filter_type' : 'categorical_from_groups'};
             	my.loading_indicator_state.sidebar = my.loading_indicator_state.main = true;
             	my.trackPage('goals/filter/categorical_from_groups', info);
@@ -1083,7 +1083,7 @@ optemo_module = (function (my){
     	var savedData = readCookie(name), numDays = 30;
     	if (savedData) {
     		// Cookie exists, add additional values with * as the token.
-    		savedData = appendStringWithToken(savedData, value, '*');
+    		savedData = opt_appendStringWithToken(savedData, value, '*');
     		createCookie(name, savedData, numDays);
     	} else {
     		// Cookie does not exist, so just create with the bare value
@@ -1094,7 +1094,7 @@ optemo_module = (function (my){
     function removeValueFromCookie(name, value) {
     	var savedData = readCookie(name), numDays = 30;
     	if (savedData) {
-    		savedData = removeStringWithToken(savedData, value, '*')
+    		savedData = opt_removeStringWithToken(savedData, value, '*')
     		if (savedData == "") { // No values left to store 
     			eraseCookie(name);
     		} else {

@@ -82,7 +82,7 @@ optemo_module = (function (my){
     		var selectedOption = $(this).find(":selected");
     		var cat = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]"));
     		var capitalizedCat = cat.replace( /(^|\s)([a-z])/g , function(m,p1,p2){ return p1+p2.toUpperCase(); } );
-    		$('#myfilter_'+cat).val(appendStringWithToken($('#myfilter_'+cat).val(), whichThingSelected, '*'));
+    		$('#myfilter_'+cat).val(opt_appendStringWithToken($('#myfilter_'+cat).val(), whichThingSelected, '*'));
     		// submitCategorical();
     		var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : categorical_filter_name, 'filter_type' : 'categorical'};
         	trackPage('goals/filter/categorical', info);
@@ -104,7 +104,7 @@ optemo_module = (function (my){
     	$('.removefilter').click(function(){
             var selector = $(this).parent().next();
     		var whichfeature = selector.attr('data-id');
-    		$('#myfilter_'+whichfeature).val(removeStringWithToken($('#myfilter_'+whichfeature).val(), $(this).attr('data-id'), '*'));
+    		$('#myfilter_'+whichfeature).val(opt_removeStringWithToken($('#myfilter_'+whichfeature).val(), $(this).attr('data-id'), '*'));
     		var info = {'chosen_categorical' : 'brand', 'slider_name' : whichfeature, 'filter_type' : 'categorical_removed'};
         	trackPage('goals/filter/categorical_removed', info);
     		$(this).parent().remove();
