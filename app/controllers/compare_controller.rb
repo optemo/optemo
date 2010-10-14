@@ -16,6 +16,16 @@ class CompareController < ApplicationController
     end
   end
 
+  def embeddedindex
+    unless Session.isCrawler?(request.user_agent) || params[:ajax]
+      @indexload = true
+    end
+    # The page numbers have to go in for pagination
+    # Page number has to be a hash for compatibility with Search.new()
+    classVariables(Search.create({"page" => params[:page]}))
+    render 'compare', :layout => embedded
+  end
+
   def groupby
     feat = params[:feat]
     # We need to make a new search so that history works properly (back button can take to "groupby" view)

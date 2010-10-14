@@ -279,10 +279,10 @@ optemo_module = (function (my){
         // This will turn on the fade for the left area
         elementToShadow = $('#filterbar');
         var pos = elementToShadow.offset();  
-        var width = elementToShadow.width();
-        var height = elementToShadow.height();
-        $('#silkscreen').css({'display' : 'inline', 'left' : pos.left + "px", 'top' : pos.top + "px", 'height' : height, 'width' : width}).fadeTo(0,0.2);
-        $("#silkscreen").unbind('click'); // We need this.
+        var width = elementToShadow.innerWidth() + 2; // Extra pixels are for the border.
+        var height = elementToShadow.innerHeight() + 2;
+        $('#silkscreen').css({'display' : 'inline', 'left' : pos.left + "px", 'top' : pos.top + 27 + "px", 'height' : height - 27 + "px", 'width' : width + "px"}).fadeTo(0,0.2); // The 27 is arbitrary - equal to the top of the filter bar (title, reset button)
+        $("#silkscreen").unbind('click'); // We need this so that the user can't clear the silkscreen by clicking on it.
         $('#filter_bar_loading').css({'display' : 'inline', 'left' : (pos.left + (width-100)/2.0) + "px"});
     };
 
@@ -291,20 +291,20 @@ optemo_module = (function (my){
     //--------------------------------------//
 
     my.findBetter = function(id, feat) {
-           // Check if better product exists for that feature using /compare/better Rails me
-           // Query.get( url, [data], [callback], [type] )
-           $.get("/direct_comparison/better?original=" + id + "&feature=" + feat, 
-                   function(data){
-                           if (data == "-1")
-                           {
-                                   $('#betternotfoundmsg').css('visibility', 'visible');
-                           }
-                           else
-                           {
-                                   // found better printer (with id stored in data)
-                                   window.location = "/direct_comparison/index/" + id + "-" + data;
-                           }
-                   }, "text");
+       // Check if better product exists for that feature using /compare/better Rails me
+       // Query.get( url, [data], [callback], [type] )
+       $.get("/direct_comparison/better?original=" + id + "&feature=" + feat, 
+           function(data){
+               if (data == "-1")
+               {
+                   $('#betternotfoundmsg').css('visibility', 'visible');
+               }
+               else
+               {
+                   // found better printer (with id stored in data)
+                   window.location = "/direct_comparison/index/" + id + "-" + data;
+               }
+           }, "text");
     };
 
     //--------------------------------------//
@@ -353,18 +353,18 @@ optemo_module = (function (my){
     		}
     		return false;
     	});
-	
+
     	//Search submit
-    	$('#submit_button').live('click', function(){
+    	$('#submit_button').unbind('click').click(function(){
     		return submitsearch();
     	});
-	
+
     	//Search submit
-    	$('#search').keypress(function (e) {
+    	$('#search').unbind('keydown').keydown(function (e) {
     		if (e.which==13)
     			return submitsearch();
     	});
-	
+
     	// Initialize Sliders
     	$('.slider').each(function() {
     		threshold = 20;							// The parameter that identifies that 2 sliders are too close to each other
@@ -571,6 +571,19 @@ optemo_module = (function (my){
     		});
     	});
 
+
+    	// Remove a brand -- submit
+    	$('.removefilter').unbind('click').click(function(){
+    		var whichRemoved = $(this).attr('data-id');
+    		var whichCat = $(this).attr('data-cat');
+    		$('#myfilter_'+whichCat).val(opt_removeStringWithToken($('#myfilter_'+whichCat).val(), whichRemoved, '*'));
+    		var info = {'chosen_categorical' : whichRemoved, 'slider_name' : whichCat, 'filter_type' : 'categorical_removed'};
+    		my.loading_indicator_state.sidebar = true;
+        	my.trackPage('goals/filter/categorical_removed', info);
+    		submitCategorical();
+    		return false;
+    	});
+
     	if ($.browser.msie) 
     	{
     	    // If it's any version of IE, the transparency for the hands doesn't get done properly on page load - redo it here.
@@ -697,26 +710,6 @@ optemo_module = (function (my){
     		return false;
     	});
 	
-    	// Remove a brand -- submit
-    	$('.removefilter').live('click', function(){
-			var whichRemoved = $(this).attr('data-id');
-			var whichCat = $(this).attr('data-cat');
-			$('#myfilter_'+whichCat).val(opt_removeStringWithToken($('#myfilter_'+whichCat).val(), whichRemoved, '*'));
-    		var info = {'chosen_categorical' : whichRemoved, 'slider_name' : whichCat, 'filter_type' : 'categorical_removed'};
-    		my.loading_indicator_state.sidebar = true;
-        	my.trackPage('goals/filter/categorical_removed', info);
-			submitCategorical();
-			return false;
-    	});
-	
-    	// In simple view, select an aspect to create viewable groups
-    	$('.groupby').live('click', function(){
-			feat = $(this).attr('data-feat');
-			my.loading_indicator_state.sidebar = true;
-    		my.trackPage('goals/showgroups', {'filter_type' : 'groupby', 'feature_name': feat, 'ui_position': $(this).attr('data-position')});
-			my.ajaxcall("/compare/groupby/?feat="+feat);
-    	});
-	
         // Choose a grouping via group button rather than drop-down (effect is the same as the select boxes)
     	$('.title').live('click', function(){
     		if ($(this).find('.choose_group').length) { // This is a categorical feature
@@ -784,7 +777,7 @@ optemo_module = (function (my){
     	});
 	
     	// Checkboxes -- submit
-    	$('.autosubmitbool').live('click', function() {
+    	$('.binary_filter').live('click', function() {
     		var whichbox = $(this).attr('id');
     		var box_value = $(this).attr('checked') ? 100 : 0;
     		my.loading_indicator_state.sidebar = true;
@@ -853,14 +846,21 @@ optemo_module = (function (my){
     	//Autocomplete for searchterms
     	model = MODEL_NAME.toLowerCase();
     	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
-    	terms = eval(model + "_searchterms"); // terms now = ["waterproof", "digital", ... ]
-    	$("#search").autocomplete(terms, {
-    		minChars: 1,
-    		max: 10,
-    		autoFill: false,
-    		mustMatch: false,
-    		matchContains: true,
-    		scrollHeight: 220
+    	if (typeof(model + "_searchterms") != undefined) { // It could happen for one reason or another. This way, it doesn't break the rest of the script
+    	    terms = eval(model + "_searchterms"); // terms now = ["waterproof", "digital", ... ]
+        	$("#search").autocomplete({
+        	    source: terms
+        	});
+    	}
+    	$('.selectboxfilter').removeAttr("disabled");
+    	$('.binary_filter').removeAttr('disabled');
+        
+    	// In simple view, select an aspect to create viewable groups
+    	$('.groupby').unbind('click').click(function(){
+			feat = $(this).attr('data-feat');
+			my.loading_indicator_state.sidebar = true;
+    		my.trackPage('goals/showgroups', {'filter_type' : 'groupby', 'feature_name': feat, 'ui_position': $(this).attr('data-position')});
+			my.ajaxcall("/compare/groupby/?feat="+feat);
     	});
     };
 
@@ -874,8 +874,8 @@ optemo_module = (function (my){
     /* Does a relatively generic ajax call and returns data to the handler below */
     my.ajaxsend = function (hash,myurl,mydata,hidespinner) {
         var lis = my.loading_indicator_state;
-        if (lis.main) lis.main_timer = setTimeout("myspinner.begin()", 250);
-        if (lis.sidebar) lis.sidebar_timer = setTimeout("optemo_module.disableFiltersAndGroups()", 250);
+        if (lis.main) lis.main_timer = setTimeout("myspinner.begin()", 1000);
+        if (lis.sidebar) lis.sidebar_timer = setTimeout("optemo_module.disableFiltersAndGroups()", 1000);
         
     	if (myurl != null) {
         	$.ajax({
@@ -931,9 +931,18 @@ optemo_module = (function (my){
     }
 
     my.ajaxcall = function(myurl,mydata) {
-        // Put timeout here like this: t=setTimeout("timedCount()",1000);
-        // then, on ajaxhandler, along with myspinner.end(), make sure to: clearTimeout(t);
-        // and put the "hidespinner" argument to ajaxsend as a state condition into the optemo module instead.
+        // Disable interface elements.
+        $('.slider').each(function() {
+            $(this).slider("option", "disabled", true);
+        });
+        
+        $('.selectboxfilter').attr("disabled", true);
+        $('.groupby').unbind('click');
+        $('.removefilter').unbind('click').click(function() {return false;}); // There is a default link there that shouldn't be followed.
+        $('.binary_filter').attr('disabled', true);
+        $('#search').unbind('keydown');
+        $('#submit_button').unbind('click');
+        
     	numactions = parseInt($("#actioncount").html()) + 1;
     	$.history.load(numactions.toString(),myurl,mydata);
     };
@@ -1323,7 +1332,7 @@ jQuery(document).ready(function($){
 	}
 	
 	// On escape press. Probably not needed anymore.
-	$(document).keypress(function(e){
+	$(document).keydown(function(e){
 		if(e.keyCode==27){
 			$(".popupTour").fadeOut("slow");
 			optemo_module.clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');

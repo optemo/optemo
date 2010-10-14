@@ -60,7 +60,7 @@ optemo_module = (function (my){
     	});
 
     	// Checkboxes -- submit
-    	$('.autosubmitbool').click(function() {
+    	$('.binary_filter').click(function() {
     		var whichbox = $(this).attr('id');
     		trackPage('goals/filter/checkbox', {'feature_name' : whichbox});
     	});
@@ -134,7 +134,7 @@ optemo_module = (function (my){
     		//Clear search term
 //    		$('#removeSearch').click(); // ?
     		//Clear check boxes
-    		$('.autosubmitbool').each(function() {
+    		$('.binary_filter').each(function() {
     			this.checked = false;
     		});
     		trackPage('goals/reset', {'filter_type' : 'reset'});
