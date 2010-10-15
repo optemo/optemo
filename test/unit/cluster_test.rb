@@ -52,4 +52,28 @@ class ClusterTest < ActiveSupport::TestCase
     #debugger
     assert_equal correct_product_ids, product_ids, "Nodes did not return the correct second cluster nodes"
   end
+  
+  #-------
+  
+  #test "Simple K-means assignment" do
+  #  specs = [[0,0,1],[0,1,0],[1,0,0]]
+  #  cluster_count = 3
+  #  clusters = Cluster.kmeans(cluster_count,specs)
+  #  assert_equal 3, clusters.uniq.size, "Generated clusters: #{clusters}"
+  #end
+  #
+  #test "Simple K-means clustering" do
+  #  specs = [[0,0,1],[0,1,0],[1,0,0],[0.5,0,0]]
+  #  cluster_count = 3
+  #  clusters = Cluster.kmeans(cluster_count,specs)
+  #  assert_equal 3, clusters.uniq.size, "Generated clusters: #{clusters}"
+  #  assert_equal clusters[2], clusters[3], "The last two products should be in the same cluster"
+  #end
+  
+  test "Group according to clusteres"
+    product_ids = (1..7).to_a
+    clusters_ids = [0,2,1,0,1,2,2]
+    clusters = Cluster.group_by_clusterids(product_ids,cluster_ids)
+    assert_equal [[2,6,7],[1,4],[3,5]], clusters, "Grouping should be ordered by size or groups"
+  end
 end
