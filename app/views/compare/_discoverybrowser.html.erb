@@ -7,7 +7,7 @@
 		<div class="tl"></div><div class="tr"></div>
 	    <%= navtitle %>
 	<% if @s.directLayout %>
-		<% columntext = columntext(@groupings) %>
+		<% columntext = columntext(!@groupings.nil?) %>
 	<div id="columnheader">
 		<div id="firstcolumn">
 			<%= columntext[0] %>
@@ -28,8 +28,8 @@
 				<%= render :partial => 'singlelist', :locals => {:product => @products[i], :i => i} %>
 			<% end %>
 		<% else %>
-			<% @groupings.each_pair do |feature, products| %>
-				<%= render :partial => 'grouping', :locals => {:feat => feature, :cheapest => products[0], :best => products[1], :group => true}%>
+			<% @groupings.each do |grouping| %>
+				<%= render :partial => 'grouping', :locals => {:grouping => grouping, :group => true}%>
 			<% end %>
 		<% end %>
 	<% else %>

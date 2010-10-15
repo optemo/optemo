@@ -212,9 +212,9 @@ class Search < ActiveRecord::Base
       #Temporary fix for backward compatibility
       fq = Cluster.filterquery(self)
       fq = fq.gsub(/product_id in/i, "id in") if fq
-      product_list = Product.valid.instock.where("#{fq unless fq.blank?}").all # product_type is taken care of by Product.valid
+      product_list = Product.valid.instock.where("#{fq unless fq.blank?}") # product_type is taken care of by Product.valid
       product_list_ids = product_list.map(&:id)
-      utility_list = ContSpec.cachemany_with_ids(product_list_ids, "utility")
+      utility_list = ContSpec.cachemany_with_ids_hash(product_list_ids, "utility")
       # Cannot avoid sorting, since this result is cached.
       # If there is an error here, you might need to run rake calculate_factors. (utility_list.length should match product_list.length)
       product_list.sort{|a, b| utility_list[b.id] <=> utility_list[a.id]}
@@ -226,79 +226,61 @@ class Search < ActiveRecord::Base
     myproducts = s.search.products
     if s.categorical.values.flatten.index(feat) # It's in the categorical array
       specs = CatSpec.cachemany_with_ids(myproducts.map(&:id),feat)
-      grouping = specs.group_by{|spec|spec.value}
-      grouping = Hash[grouping.each_pair{|k,v| grouping[k] = v.map(&:product_id)}.sort{|a,b| b.second.length <=> a.second.length}]
+      grouping = specs.group_by{|spec|spec.value}.values.sort{|a,b| b.length <=> a.length}
+      #grouping = Hash[grouping.each_pair{|k,v| grouping[k] = v.map(&:product_id)}.sort{|a,b| b.second.length <=> a.second.length}]
     elsif s.continuous.values.flatten.index(feat)
-      specs = ContSpec.cachemany_with_ids(myproducts.map(&:id), feat).sort{|a,b| a[1] <=> b[1]}
+      specs = ContSpec.cachemany_with_ids(myproducts.map(&:id), feat).sort
       # [[id, low], [id, higher], ... [id, highest]]
-      all_product_ids = specs.map{|s| s.first}
       quartile_length = (specs.length / 4.0).ceil
-      grouping = {}
       quartiles = []
-
-      limit = [3, (specs.length - 1)].min # if there aren't enough specs
-      for i in 0..limit do
-        if i == limit
-          quartiles[i] = specs.slice!(0, ((quartile_length >= specs.length) ? (specs.length) : quartile_length)) # The extra one has to go somewhere
-        else
-          quartiles[i] = specs.slice!(0, ((quartile_length >= specs.length) ? (specs.length-1) : quartile_length))
-        end
+      3.times do
+        quartiles << specs.slice!(0,[quartile_length,specs.length].min)
       end
-      quartiles.reject!(&:blank?) # For cases like 9 items, where the quartile length ends up being 3.
+      quartiles << specs #The last quartile contains any extra products
+      
+      #Break boundry cases in quartiles where the same item is in two quartiles according to the following pattern
+      # 1 ↓
+      # 2
+      # 3 ↑
+      # 4 ↑
 
-      quartiles_need_reducing = true
-      while quartiles.length >= 3 && quartiles_need_reducing 
-        # For the first quartile, bump stuff up to the second one if necessary.
-        transfer_array = quartiles[0].select {|item| item[1] >= quartiles[1].first[1]}
-        quartiles[1] = transfer_array | quartiles[1]
-        quartiles[0].delete_if { |item| transfer_array.include?(item) }
-
-        # From the last quartile, bump stuff down to the second-last one if necessary.
-        transfer_array = quartiles[-1].select {|item| item[1] <= quartiles[-2].last[1]}
-        quartiles[-2] += transfer_array
-        quartiles[-1].delete_if {|item| transfer_array.include?(item)}
-        
-        # If there are four quartiles, also do the middle ones.
-        if quartiles.length >= 4 && quartiles[1].first[1] >= quartiles[2].first[1]
-          # This is a rare case. For example, quartile 2 has 1200 dpi printers entirely, as does quratile 3
-          transfer_array = quartiles[2].select{|item| item[1] >= quartiles[1].last[1]}
-          quartiles[1] += transfer_array
-          quartiles[2].delete_if{|item| transfer_array.include?(item)}
-        end
-        
-        quartiles.reject!(&:blank?) # If any quartiles are now empty
-        
-        quartiles_need_reducing = false
-        previous_high = 0
-
-        # We need to use a state machine here because it could be a multi-stage process
-        quartiles.each_with_index{|v, i| quartiles_need_reducing = true if (quartiles[i+1] && v.last[1] >= quartiles[i+1].first[1])}
+      #Move ties from Q1 to Q2
+      unless quartiles[0].blank? || quartiles[1].blank?
+        threshold_value = quartiles[1].first.value
+        splitpoint = quartiles[0].index(quartiles[0].find {|spec| spec.value == threshold_value})
+        quartiles[1] = quartiles[0].slice!(splitpoint..-1) + quartiles[1] unless splitpoint.nil?
       end
       
-      quartiles.each do |q|
-        group_title = q.first[1].to_s + " - " + q.last[1].to_s
-        if grouping[group_title]
-          grouping[group_title] += q.map(&:first) # Move all appropriate product ids in
-        else
-          grouping[group_title] = q.map(&:first)
-        end
+      #Move ties from Q4 to Q3
+      unless quartiles[2].blank? || quartiles[3].blank?
+        threshold_value = quartiles[2].last.value
+        splitpoint = quartiles[3].index(quartiles[3].reverse.find {|spec| spec.value == threshold_value})
+        quartiles[2] = quartiles[2] + quartiles[3].slice!(0..splitpoint) unless splitpoint.nil?
       end
       
+      #Move ties from Q3 to Q2
+      unless quartiles[1].blank? || quartiles[2].blank?
+        threshold_value = quartiles[1].last.value
+        splitpoint = quartiles[2].index(quartiles[2].reverse.find {|spec| spec.value == threshold_value})
+        quartiles[1] = quartiles[1] + quartiles[2].slice!(0..splitpoint) unless splitpoint.nil?
+      end
+      
+      grouping = quartiles.reject(&:blank?) # For cases like 9 items, where the quartile length ends up being 3.
+
     else # Binary feature. Do nothing for now.
     end
-    grouping.each_pair do |feat,product_ids| 
-      prices = ContSpec.cachemany(product_ids,"price")
-      cheapest = prices.zip(product_ids).sort{|a,b|a.first <=> b.first}.first.second
-      product_ids.delete(cheapest)
-
-      if product_ids.empty? # This means there was only one in the group, and "product_ids.delete(cheapest)" took it out.
-        grouping[feat] = [Product.cached(cheapest)]
-      else
-        product_utility_hash = ContSpec.cachemany_with_ids(product_ids, "utility")
-        best = product_utility_hash.sort{|a,b| b.second <=> a.second}.first.first
-        product_ids.delete(best)
-        grouping[feat] = [Product.cached(cheapest),Product.cached(best)] + product_ids # Just the first two products are searched for; the rest are left as just product_ids.
-      end
+    grouping.map do |q|
+      product_ids = q.map(&:product_id)
+      prices_hash = ContSpec.cachemany_with_ids(product_ids,"price")
+      product_utility_hash = ContSpec.cachemany_with_ids(product_ids, "utility")
+      debugger if prices_hash.blank? || product_utility_hash.blank?
+      {
+        :min => q.first.value.to_s,
+        :max => q.last.value.to_s,
+        :size => q.count,
+        :cheapest => Product.cached(prices_hash.max.product_id),
+        :best => Product.cached(product_utility_hash.max.product_id)
+      }
     end
   end
 

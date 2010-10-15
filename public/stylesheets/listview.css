@@ -146,24 +146,20 @@ img.productimg {
 	background-color: #8192ac;
 }
 
-.group_title {
-  font-weight: bold;
-  padding-top: 5px;
-  width: 115px;
+.choose_cont_range {
+	/*margin-top: 4px;*/
+	position: absolute;
+	bottom: 7px;
+	left: 24px;
+}
+.choose_group {
+	position: absolute;
+	bottom: 12px;
+	left: 10px;
 }
 
-.choose_group, .choose_cont_range {
-	font-size: 0.9em;
-	position: absolute;
-	bottom: 10px;
-	left: 9px;
-	margin-left:5px;
-	width:90px;
-	-moz-border-radius: 8px;       /* for Firefox */
-	-webkit-border-radius: 8px;    /* for Safari */
-  border-radius: 8px;            /* Opera, KHTML, others */
-  cursor: pointer;
-  text-decoration: underline;
+.group_title {
+  width: 115px;
 }
 
 .sim a {
@@ -226,3 +222,31 @@ div.tourDrawAttention /* this is for CSS precedence */
 	border: 2px solid red;
 	background: #fffcd3;
 }
+
+/*--------------------------------------//
+//              Awesome Buttons         //
+//--------------------------------------*/
+/* Zurb http://www.zurb.com/article/266/super-awesome-buttons-with-css3-and-rgba */
+.awesome, .awesome:visited {
+	background: #797979 url(/images/alert-overlay.png) repeat-x; 
+	/*display: inline-block; */
+	padding: 5px 10px 4px; 
+	color: #eee; 
+	text-decoration: none;
+	-moz-border-radius: 10px; 
+	-webkit-border-radius: 10px;
+	-moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+	-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+	text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+	border-bottom: 1px solid rgba(0,0,0,0.25);
+	/*position: relative;*/
+	cursor: pointer;
+}
+
+.awesome:hover							{ background-color: #676767; color: #e6e6e6; }
+/*.awesome:active							{ top: 1px; }*/
+.small.awesome, .small.awesome:visited 			{ font-size: 11px; padding: ; }
+.awesome, .awesome:visited,
+.medium.awesome, .medium.awesome:visited 		{ font-size: 13px; font-weight: bold; line-height: 1; text-shadow: 0 -1px 1px rgba(0,0,0,0.25); }
+.large.awesome, .large.awesome:visited 			{ font-size: 14px; padding: 8px 14px 9px; }
+.xlarge.awesome, .xlarge.awesome:visited 			{ font-size: 16px; padding: 12px 21px 13px; }
