@@ -108,6 +108,28 @@ class Cluster < ActiveRecord::Base
     session.features.attributes.reject {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at' || key=='search_id'}
   end
   
+  
+  
+  
+  def self.standarize_data(specs)
+    dim = specs[0].length
+    
+  
+  end
+  
+  def self.get_mean_var()
+    
+  end
+  
+    
+  def self.kmeans(number_clusters, specs)
+  
+  
+  end
+  
+  
+  
+  
   def isEmpty(search = nil)
     nodes(search).empty?
   end
