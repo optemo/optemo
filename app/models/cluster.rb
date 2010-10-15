@@ -152,7 +152,7 @@ class Cluster < ActiveRecord::Base
   #Euclidian distance function
   def self.distance(point1, point2)
     dist = 0
-    for i in 0...point2.size
+    point1.each_index do |i|
       diff = point1[i]-point2[i]
       dist += diff*diff
     end
