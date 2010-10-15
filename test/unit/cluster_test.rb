@@ -70,10 +70,17 @@ class ClusterTest < ActiveSupport::TestCase
   #  assert_equal clusters[2], clusters[3], "The last two products should be in the same cluster"
   #end
   
-  test "Group according to clusteres"
+  test "Group according to clusteres" do
     product_ids = (1..7).to_a
-    clusters_ids = [0,2,1,0,1,2,2]
+    cluster_ids = [0,2,1,0,1,2,2]
     clusters = Cluster.group_by_clusterids(product_ids,cluster_ids)
     assert_equal [[2,6,7],[1,4],[3,5]], clusters, "Grouping should be ordered by size or groups"
+  end
+  
+  test "Euclidian distance function" do
+    point1 = [0.8,0.9,0.1]
+    point2 = [0.7,0.2,0.3]
+    assert_in_delta 0.54, Cluster.distance(point1, point2), 0.00001, "Euclidian distance calculation"
+    assert_equal Cluster.distance(point1, point2), Cluster.distance(point2, point1), "Distance should be transitive"
   end
 end
