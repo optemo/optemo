@@ -122,4 +122,18 @@ class Cluster < ActiveRecord::Base
     nodes.map{|n|n.utility}.sum/size
   end
   
+  #Grouping products by cluster_ids
+  def self.group_by_clusterids(product_ids, cluster_ids)
+    product_ids.group_by{|i|cluster_ids[product_ids.index(i)]}.values.sort{|a,b| b.length <=> a.length}
+  end
+  
+  #Euclidian distance function
+  def self.distance(point1, point2)
+    dist = 0
+    for i in 0...point2.size
+      diff = point1[i]-point2[i]
+      dist += diff*diff
+    end
+    dist
+  end
 end
