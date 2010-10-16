@@ -81,6 +81,6 @@ class ClusterTest < ActiveSupport::TestCase
     point1 = [0.8,0.9,0.1]
     point2 = [0.7,0.2,0.3]
     assert_in_delta 0.54, Cluster.distance(point1, point2), 0.00001, "Euclidian distance calculation"
-    assert_equal Cluster.distance(point1, point2), Cluster.distance(point2, point1), "Distance should be transitive"
+    assert_equal Cluster.distance(point1, point2), Cluster.distance(point2, point1), "Distance should be symmetric"
   end
 end
