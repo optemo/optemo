@@ -1,14 +1,13 @@
-class Cluster < ActiveRecord::Base
-  has_many :nodes
-  has_many :products, :through => :nodes
-  has_many :cont_specs, :through => :products
-  has_many :bin_specs, :through => :products
+class Cluster
+  attr :products
   
-  def self.byparent(id)
-    return nil if Session.current.directLayout
-    current_version = Session.current.version
-    #Need to check by version and type because of the root clusters with parent id 0
-    CachingMemcached.cache_lookup("Clusters#{current_version}#{id}#{Session.current.product_type}"){find_all_by_parent_id_and_version_and_product_type(id, current_version, Session.current.product_type)}
+  def initialize(products)
+    @products = products
+  end
+  
+  #Unique key for memcache lookup using BER-compressed integer
+  def key
+    @products.pack("w*")
   end
   
   def self.cached(id)
@@ -18,48 +17,22 @@ class Cluster < ActiveRecord::Base
   #The subclusters
   def children
     unless @children
-      @children = Cluster.byparent(id)
-      #Check that children are not empty
-      if !Cluster.filterquery.blank?
-        @children = @children.reject{|c| c.isEmpty}
-      end
+      specs = ContSpec.cachemany(@products)
+      #need to prepare specs
+      cluster_ids = Cluster.kmeans(9,specs)
+      @children = Cluster.group_by_clusterids(products,cluster_ids)
+      representative #Calculate representative at the same time
     end
     @children
   end
   
-  # finding the deepChildren(clusters with size 1) in clusters
-  def deepChildren(dC = [])
-    #store the cluster id if the cluster_size is 1 and the cluster accepts the filtering conditions 
-    if (self.cluster_size == 1) && (self.size>0)
-      dC << self
-    else
-      mychildren = Cluster.byparent(id)
-      mychildren.each do |mc|
-          dC = mc.deepChildren(dC)
-      end  
-    end 
-    dC
-  end
-  
-  #Maybe we can cache this ***We need a join here
-  def ranges(featureName)
-    @range ||= {}
-    if @range[featureName].nil?
-      nodes_min = cont_specs.select{|s|s.name == featurename}.map(&:min).sort[0]
-      nodes_max = cont_specs.select{|s|s.name == featurename}.map(&:max).sort[-1]
-      @range[featureName] = [nodes_min, nodes_max]    
+  #The represetative product for this cluster, assumes nodes ordered by utility
+  def representative
+    unless @rep
+      utility_list = ContSpec.cachemany_with_ids_hash(@products, "utility")
+      @rep = Product.cached(utility_list.max.product_id)
     end
-    @range[featureName]
-  end
-
-# this could be integrated with ranges later
-  def indicator(featureName)
-    indic = false
-      values = bin_specs.select{|s|s.name == featurename}
-      if values.index(false).nil? # they are all the same
-          indic = true
-      end 
-    indic
+    @rep
   end
   
   def nodes(search = nil)
@@ -72,11 +45,6 @@ class Cluster < ActiveRecord::Base
       end
     end
     @nodes
-  end
-  
-  #The represetative product for this cluster, assumes nodes ordered by utility
-  def representative
-    Product.cached(nodes.first.product_id) if nodes.first
   end
   
   def self.filterquery(search=nil, tablename="")
