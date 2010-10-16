@@ -110,25 +110,45 @@ class Cluster < ActiveRecord::Base
   
   
   
-  
-  def self.standarize_data(specs)
+  def self.standarize_data(specs_cont, specs_bool, mean, var)
     dim = specs[0].length
-    
-  
+    specs_cont.each do |point|
+        point_index do |s|
+          point[s] = (point[s] - mean[s])/var[s]
+        end
+    end    
+  # somehow we should append specs_cont and specs_bool
   end
+  
   
   def self.get_mean_var()
     
   end
   
     
-  def self.kmeans(number_clusters, specs)
+  def self.kmeans(number_clusters, specs, weights)
   
+    means 
+     
+    specs.each_index do |i| 
+      means.each_index do |c|
+        dif[c] = self.distance(specs[i], means[c])
+      end
+      labels[i] = dif.min.index
+    end
+    means[c] = self.cluster_mean(points.transpose
+
+  end
+  
+  def self.seed(specs)  
   
   end
   
   
-  
+  # points is a nxd dimension array where n is the number of products and d is number of features
+  def self.mean(points)
+    points.transpose.map{|p| p.sum/p.size}
+  end
   
   def isEmpty(search = nil)
     nodes(search).empty?
