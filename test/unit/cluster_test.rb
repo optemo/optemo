@@ -55,21 +55,45 @@ class ClusterTest < ActiveSupport::TestCase
   
   #-------
   
-  #test "Simple K-means assignment" do
-  #  specs = [[0,0,1],[0,1,0],[1,0,0]]
-  #  cluster_count = 3
-  #  clusters = Cluster.kmeans(cluster_count,specs)
-  #  assert_equal 3, clusters.uniq.size, "Generated clusters: #{clusters}"
-  #end
+  test "Simple K-means assignment" do
+    specs = [[0,0,1],[0,1,0],[1,0,0]]
+    cluster_count = 3
+    clusters = Cluster.kmeans(cluster_count,specs, [])
+    assert_equal 3, clusters.uniq.size, "Generated clusters: #{clusters}"
+  end
   #
-  #test "Simple K-means clustering" do
-  #  specs = [[0,0,1],[0,1,0],[1,0,0],[0.5,0,0]]
-  #  cluster_count = 3
-  #  clusters = Cluster.kmeans(cluster_count,specs)
-  #  assert_equal 3, clusters.uniq.size, "Generated clusters: #{clusters}"
-  #  assert_equal clusters[2], clusters[3], "The last two products should be in the same cluster"
-  #end
+  test "Simple K-means clustering" do
+    specs = [[0,0,1],[0,1,0],[1,0,0],[0.5,0,0]]
+    cluster_count = 3
+    clusters = Cluster.kmeans(cluster_count,specs, [])
+    assert_equal 3, clusters.uniq.size, "Generated clusters: #{clusters}"
+    assert_equal clusters[2], clusters[3], "The last two products should be in the same cluster"
+  end
+ 
   
+  test "Indices function for finding indexes" do
+    array = [0,1,0,2,1]
+    ind = Cluster.indices(array, 1)
+    assert_equal [1,4], ind, "indices is not coded right"    
+ 
+  end
+ 
+ 
+  test "Euclidian mean function" do 
+   c0 =[[1.2, 2.4, 3], [2, 1, 0]]
+   c1 = [[0.5, 1, 2], [1,0.8,0]]
+   points = [c0[0], c0[1], c1[0], c1[1]]
+   m = Cluster.mean(c0)
+   number_clusters = 2
+   labels = [0,1,1,0]
+   ms = Cluster.means(number_clusters, points, labels)
+   assert_equal [1.6, 1.7, 1.5], m, "mean function is buggy"
+   assert_equal 2, ms.size, "means should be cxd arrary where c is the number of clusters and d is dimension"
+   assert_equal [[1.1, 1.6, 1.5],[1.25, 1.0, 1.0]], ms, "mean should be calculated within each cluster"  
+  end   
+ 
+ 
+ 
   test "Group according to clusteres" do
     product_ids = (1..7).to_a
     cluster_ids = [0,2,1,0,1,2,2]
