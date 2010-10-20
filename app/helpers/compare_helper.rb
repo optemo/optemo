@@ -75,7 +75,7 @@ module CompareHelper
   
   def navtitle
     s = Session.current
-		[s.search.result_count, (s.search.result_count > 1) ? t("#{s.product_type}.title-plural") : t("#{s.product_type}.title-plural")].join(" ")
+		[s.search.products.size, (s.search.products.size > 1) ? t("#{s.product_type}.title-plural") : t("#{s.product_type}.title-plural")].join(" ")
   end
   
   def groupDesc(group, i)
