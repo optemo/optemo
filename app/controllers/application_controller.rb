@@ -31,7 +31,7 @@ class ApplicationController < ActionController::Base
   def update_user
     mysession_id = session[:user_id]
     if mysession_id.nil?
-      mysession_id = Search.maximum(:session_id).to_i + 2
+      mysession_id = User.create.id
       session[:user_id] = mysession_id
     end
 

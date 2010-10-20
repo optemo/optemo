@@ -75,8 +75,8 @@ module CompareHelper
   
   def navtitle
     s = Session.current
-		title = [s.search.result_count, (s.search.result_count > 1) ? t("#{s.product_type}.title-plural") : t("#{s.product_type}.title-plural")].join(" ")
-    title += " Grouped by " + t('products.' + s.search.view) if s.search.view
+		[s.search.products.size, (s.search.products.size > 1) ? t("#{s.product_type}.title-plural") : t("#{s.product_type}.title-plural")].join(" ")
+		title += " Grouped by " + t('products.' + s.search.groupby) if s.search.view
     title
   end
   

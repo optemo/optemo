@@ -64,8 +64,8 @@ class BoostexterRule < ActiveRecord::Base
   end
   
   def self.compute_quartile(feat,product_ids)
-    q25offset = (Session.current.search.result_count / 4.0).floor
-    q75offset = ((Session.current.search.result_count * 3) / 4.0).floor
+    q25offset = (Session.current.search.products.size / 4.0).floor
+    q75offset = ((Session.current.search.products.size * 3) / 4.0).floor
     q25 = ContSpec.select(:value).offset(q25offset).order(:value).where(["product_id IN (?) and name = ?", product_ids, feat]).first.value
     q75 = ContSpec.select(:value).offset(q75offset).order(:value).where(["product_id IN (?) and name = ?", product_ids, feat]).first.value
     [q25,q75]

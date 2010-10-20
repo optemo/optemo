@@ -33,14 +33,14 @@
 			<% end %>
 		<% end %>
 	<% else %>
-		<% for i in 0..[@s.search.cluster_count, @s.numGroups].min-1 %>
-		  <% if i % (Float(@s.numGroups)/3).ceil == 0 && !@s.directLayout %>
+		<% for i in 0...[@s.search.cluster.numclusters, @s.numGroups].min %>
+		  <% if i % (Float(@s.numGroups)/3).ceil == 0 %>
 			<div class="rowdiv">
 			<% open = true %>
 		  <% end %>
 		  <!-- Navbox partial to draw boxes -->
-		  <%= render :partial => (@s.directLayout ? 'listbox' : 'navbox'), :locals => {:i => i, :cluster => @s.search.clusters[i] , :group => @s.search.clusters[i].size>1, :product => @s.search.clusters[i].representative} %>
-		  <% if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1 && !@s.directLayout %>
+		  <%= render :partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative} %>
+		  <% if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1 %>
 			</div>
 			<% open = false %>
 		  <% end %>

@@ -1,12 +1,12 @@
 <%= form_tag("/compare/filter",{:id => 'search_form'}) do %>
-  <%= @s.search.userdatasearches.empty? ? text_field_tag('search') : text_field_tag('search', @s.search.userdatasearches[0].keyword) %>
+  <%= @s.search.keyword_search.blank? ? text_field_tag('search') : text_field_tag('search', @s.search.keyword_search) %>
 	<div class="ui-widget" style="display:inline;">
 		<%= submit_tag 'Search', {:id => 'submit_button'} %>
 	</div>
-  <% if @s.search.userdatasearches[0] && @s.search.userdatasearches[0].keyword %>
-	<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :class => "removesearch"} %> Search: <%= @s.search.userdatasearches[0].keyword %>
+  <% if @s.search.keyword_search %>
+	<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :class => "removesearch"} %> Search: <%= @s.search.keyword_search %>
 	</div>
-	<%= hidden_field_tag "previous_search_word", @s.search.userdatasearches[0].keyword %>
+	<%= hidden_field_tag "previous_search_word", @s.search.keyword_search %>
   <% else %>
     <%= hidden_field_tag "previous_search_word", '' %>
   <% end %>
