@@ -22,7 +22,7 @@ class Search < ActiveRecord::Base
        current_dataset_minimum = max
        current_dataset_maximum = min
        stepsize = (max-min) / dist.length + 0.000001 #Offset prevents overflow of 10 into dist array
-       specs = ContSpec.cachemany(acceptedProductIDs, feat)
+       specs = ContSpec.cachemany(products.map(&:id), feat)
        specs.each do |s|
          current_dataset_minimum = s if s < current_dataset_minimum
          current_dataset_maximum = s if s > current_dataset_maximum
@@ -30,10 +30,6 @@ class Search < ActiveRecord::Base
          dist[i] += 1 if i < dist.length
        end  
        [[current_dataset_minimum, current_dataset_maximum], round2Decim(normalize(dist))]
-  end
-  
-  def acceptedProductIDs
-    @acceptedProductIDs ||= (Session.current.directLayout ? products.map(&:id) : clusters.map{|c| c.nodes}.flatten.map(&:product_id))
   end
   
   #Range of product offerings

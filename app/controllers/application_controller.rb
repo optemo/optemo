@@ -38,8 +38,6 @@ class ApplicationController < ActionController::Base
     # A new session is created in load_defaults now.
     s = Session.new(request.domain(4)) # This gets anything up to www.printers.browsethenbuy.co.uk (n + 1 elements in the domain name)
     s.id = mysession_id
-    # For Optemo Direct, there is no clustering, so ignore the next line.
-    s.version = Cluster.maximum(:version, :conditions => ['product_type = ?', s.product_type]) unless s.directLayout
   end
   
   def title=(title)
