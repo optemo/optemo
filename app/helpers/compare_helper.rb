@@ -79,6 +79,7 @@ module CompareHelper
   end
   
   def groupDesc(group, i)
+    return "Description"
     s = Session.current
     if s.relativeDescriptions
       descs = s.search.boostexterClusterDescriptions[i].map{|d|t("products."+d, :default => d)}

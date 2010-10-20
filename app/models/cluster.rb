@@ -7,7 +7,11 @@ class Cluster
   
   #Unique key for memcache lookup using BER-compressed integer
   def key
-    @products.pack("w*")
+    products.pack("w*")
+  end
+  
+  def id
+    products.hash
   end
   
   def self.cached(id)
@@ -17,8 +21,9 @@ class Cluster
   #The subclusters
   def children
     unless @children
-      specs = Cluster.product_specs(@products.map(&:id))
+      specs = Cluster.product_specs(products.map(&:id))
       #need to prepare specs
+      debugger if specs != specs.compact
       cluster_ids = Cluster.kmeans(9,specs)
       @children = Cluster.group_by_clusterids(products,cluster_ids).map{|product_ids|Cluster.new(product_ids)}
     end
@@ -28,14 +33,14 @@ class Cluster
   #The represetative product for this cluster, assumes nodes ordered by utility
   def representative
     unless @rep
-      utility_list = ContSpec.cachemany_with_ids_hash(@products, "utility")
-      @rep = Product.cached(utility_list.max.product_id)
+      utility_list = ContSpec.cachemany(products.map(&:id), "utility")
+      @rep = products[utility_list.index(utility_list.max)]
     end
     @rep
   end
   
   def size
-    @products.size
+    products.size
   end
   
   def numclusters
@@ -45,18 +50,24 @@ class Cluster
   def self.product_specs(p_ids)
     st = []
     Session.current.continuous["filter"].each{|f| st << ContSpec.cachemany(p_ids, f)}
+<<<<<<< HEAD:app/models/cluster.rb
     Session.current.categorical["filter"].each{|f|  st<<CatSpec.cachemany(p_ids, f)} 
     Session.current.binary["filter"].each{|f|  st << BinSpec.cachemany(p_ids, f)} 
+=======
+    Session.current.categorical["filter"].each{|f| st << CatSpec.cachemany(p_ids, f)}
+    Session.current.binary["filter"].each{|f| st << BinSpec.cachemany(p_ids, f)}
+>>>>>>> a6ce8007d39468e873bf12a3ec1a3530473a777f:app/models/cluster.rb
     st.transpose 
   end 
 
 
+<<<<<<< HEAD:app/models/cluster.rb
   def self.standardize_data(specs)
     specs = specs.transpose
     cont_size = Session.current.continuous["filter"].size
     Session.current.categorical["filter"].each_index do |i|
       vals = specs[i+cont_size].uniq
-      cat = Array.new(vals.size, 0) 
+      cat = [0]*vals.size
       cat[vals.index(specs[i+cont_size][p])] = 1
       specs[i+cont_size][p].replace(cat)  
     end
@@ -71,11 +82,16 @@ class Cluster
   #      end
   #  end    
   ## somehow we should append specs_cont and specs_bool
-  #  specs=[]  
-  #  specs_cont_each_index{|i| specs[i] = specs_cont[i]+specs_cats[i]+specs_bin[i]}
-  #  specs   
-  #end
-  
+
+  #def self.standarize_data(specs, specs, mean, var)
+  ##  dim = specs[0].length
+  ##  specs_cont.each do |point|
+  ##      point_index do |s|
+  ##        point[s] = (point[s] - mean[s])/var[s]
+  ##      end
+  ##  end    
+  ### somehow we should append specs_cont and specs_bool
+
   
  #def self.get_mean_var()
  #  
@@ -83,13 +99,14 @@ class Cluster
   
   
   # regular kmeans function   
-  def self.kmeans(number_clusters, specs, weights)
-    tresh = 0.000001 
+ def self.kmeans(number_clusters, specs, weights = nil)
+    debugger if specs.first.nil?
+    weights = [1]*specs.first.size if weights.nil?
+    tresh = 0.000001
     mean_1 = self.seed(number_clusters, specs)
     mean_2 =[]
     labels = []
     dif = []
-    #debugger
     begin
       mean_2 = mean_1 
       specs.each_index do |i| 
