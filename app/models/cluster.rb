@@ -40,17 +40,29 @@ class Cluster
   
   def numclusters
     children.size
-  end
+  end  
+  
+  def self.product_specs(p_ids, cont_feats, cat_feats, bin_feats)
+    st=[]
+    cont_feats.each_index{|i| st[i]= ContSpec.cachemany(p_ids, con_feats[i])}
+    cat_feats.each{|i|  st[i+cont_feats.size] = CatSpec.cachemany(p_ids, cat_feats[[i]])}
+    bin_feats.each{|i|  st[i+cont_feats.size+cat_feats.size]=BinSpec.cachemany(p_ids, bin_feats[i])}
+    st.transpose 
+  end 
 
- #def self.standarize_data(specs_cont, specs_bool, mean, var)
- #  dim = specs[0].length
- #  specs_cont.each do |point|
- #      point_index do |s|
- #        point[s] = (point[s] - mean[s])/var[s]
- #      end
- #  end    
- ## somehow we should append specs_cont and specs_bool
- #end
+
+  #def self.standarize_data(specs, specs, mean, var)
+  ##  dim = specs[0].length
+  ##  specs_cont.each do |point|
+  ##      point_index do |s|
+  ##        point[s] = (point[s] - mean[s])/var[s]
+  ##      end
+  ##  end    
+  ### somehow we should append specs_cont and specs_bool
+  #  specs=[]  
+  #  specs_cont_each_index{|i| specs[i] = specs_cont[i]+specs_cats[i]+specs_bin[i]}
+  #  specs   
+  #end
   
   
  #def self.get_mean_var()
