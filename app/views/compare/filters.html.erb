@@ -10,14 +10,14 @@
 			<div class='feature_selectors'>
 				<%= text_field_tag('search') %>
 			</div>
-			<% unless @s.search.userdatasearches.empty? %>
+			<% unless @s.search.keyword_search.blank? %>
 			<div id="previous_search_container" class='selected_options'>
 				<a title="Remove search filter" id="removeSearch" href="">
 					<img width="13" src="/images/close.png" alt="Close">
 				</a>
-				Search term: '<%= @s.search.userdatasearches[0].keyword %>'
+				Search term: '<%= @s.search.keyword_search %>'
 			</div>
-			<%= hidden_field_tag "previous_search_word", @s.search.userdatasearches[0].keyword %>
+			<%= hidden_field_tag "previous_search_word", @s.search.keyword_search %>
 			<% else %>
 			<%= hidden_field_tag "previous_search_word", '' %>
 			<% end %>

@@ -1,15 +1,16 @@
-# This file is auto-generated from the current state of the database. Instead of editing this file, 
-# please use the migrations feature of Active Record to incrementally modify your database, and
-# then regenerate this schema definition.
+# This file is auto-generated from the current state of the database. Instead
+# of editing this file, please use the migrations feature of Active Record to
+# incrementally modify your database, and then regenerate this schema definition.
 #
-# Note that this schema.rb definition is the authoritative source for your database schema. If you need
-# to create the application database on another system, you should be using db:schema:load, not running
-# all the migrations from scratch. The latter is a flawed and unsustainable approach (the more migrations
+# Note that this schema.rb definition is the authoritative source for your
+# database schema. If you need to create the application database on another
+# system, you should be using db:schema:load, not running all the migrations
+# from scratch. The latter is a flawed and unsustainable approach (the more migrations
 # you'll amass, the slower it'll run and the greater likelihood for issues).
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100816202120) do
+ActiveRecord::Schema.define(:version => 20101019233312) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -620,6 +621,13 @@ ActiveRecord::Schema.define(:version => 20100816202120) do
     t.string   "item_number"
   end
 
+  create_table "keyword_searches", :force => true do |t|
+    t.string  "keyword"
+    t.integer "product_id"
+  end
+
+  add_index "keyword_searches", ["keyword"], :name => "index_keyword_searches_on_keyword"
+
   create_table "newegg_offerings", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -1061,9 +1069,7 @@ ActiveRecord::Schema.define(:version => 20100816202120) do
     t.float    "price"
   end
 
-  add_index "retailer_offerings", ["local_id"], :name => "local_id"
   add_index "retailer_offerings", ["product_id", "product_type", "region"], :name => "product_id"
-  add_index "retailer_offerings", ["retailer_id"], :name => "retailer_id"
 
   create_table "retailers", :force => true do |t|
     t.string   "url"
@@ -1291,34 +1297,21 @@ ActiveRecord::Schema.define(:version => 20100816202120) do
     t.text     "imageurl"
   end
 
-  create_table "searches", :force => true do |t|
-    t.integer  "session_id"
-    t.integer  "parent_id"
-    t.integer  "layer"
-    t.string   "c0"
-    t.string   "c1"
-    t.string   "c2"
-    t.string   "c3"
-    t.string   "c4"
-    t.string   "c5"
-    t.string   "c6"
-    t.string   "c7"
-    t.string   "c8"
-    t.integer  "cluster_count"
-    t.integer  "result_count"
-    t.string   "brand",         :default => "All Brands"
-    t.float    "price_min",     :default => 0.0
-    t.float    "price_max",     :default => 10000000.0
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "desc"
-    t.text     "searchpids"
-    t.string   "searchterm"
-    t.integer  "page"
-    t.string   "view"
+  create_table "search_products", :force => true do |t|
+    t.integer "search_id"
+    t.integer "product_id"
   end
 
-  add_index "searches", ["session_id"], :name => "session_id"
+  add_index "search_products", ["search_id"], :name => "index_search_products_on_search_id"
+
+  create_table "searches", :force => true do |t|
+    t.integer  "session_id"
+    t.string   "keyword_search"
+    t.integer  "page"
+    t.string   "groupby"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "sessions", :force => true do |t|
     t.datetime "created_at"
@@ -1527,6 +1520,10 @@ ActiveRecord::Schema.define(:version => 20100816202120) do
   end
 
   add_index "userdatasearches", ["search_id"], :name => "index_userdatasearches_on_search_id"
+
+  create_table "users", :force => true do |t|
+    t.datetime "created_at"
+  end
 
   create_table "vieweds", :force => true do |t|
     t.datetime "created_at"

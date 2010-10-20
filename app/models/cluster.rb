@@ -20,8 +20,7 @@ class Cluster
       specs = ContSpec.cachemany(@products)
       #need to prepare specs
       cluster_ids = Cluster.kmeans(9,specs)
-      @children = Cluster.group_by_clusterids(products,cluster_ids)
-      representative #Calculate representative at the same time
+      @children = Cluster.group_by_clusterids(products,cluster_ids).map{|product_ids|Cluster.new(product_ids)}
     end
     @children
   end
@@ -35,69 +34,35 @@ class Cluster
     @rep
   end
   
-  def nodes(search = nil)
-    unless @nodes
-      fq = Cluster.filterquery(search)
-      unless (fq.blank?)
-        @nodes = Node.where(["cluster_id = ?#{' and '+fq unless fq.blank?}", id]).all
-      else 
-        @nodes = Node.bycluster(id)
-      end
-    end
-    @nodes
-  end
-  
-  def self.filterquery(search=nil, tablename="")
-    fqarray = []
-    current_search = search.nil? ? Session.current.search : search
-    return nil if current_search.nil?
-    current_search.userdataconts.each do |d|
-      fqarray << "#{tablename}product_id in (select product_id from cont_specs where value <= #{d.max+0.00001} and name = '#{d.name}')"
-      fqarray << "#{tablename}product_id in (select product_id from cont_specs where value >= #{d.min-0.00001} and name = '#{d.name}')"
-    end
-    current_search.userdatacats.group_by(&:name).each do |name, ds|
-      cats = ds.map{|d| "#{tablename}product_id in (select product_id from cat_specs where value = '#{d.value}' and name = '#{name}')"}
-      fqarray << "(#{cats.join(' OR ')})"
-    end
-    current_search.userdatabins.each do |d|
-      fqarray << "#{tablename}product_id in (select product_id from bin_specs where value = #{d.value} and name = '#{d.name}')"
-    end
-    current_search.userdatasearches.each do |d|
-      fqarray << d.keywordpids
-    end
-    fqarray.join(" AND ")
-  end
-  
   def size
-    nodes.length
+    @products.size
   end
   
-  def self.findFilteringConditions(session)
-    session.features.attributes.reject {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at' || key=='search_id'}
-  end
-  
+  def numclusters
+    children.size
+  end  
   
   def self.product_specs(p_ids, cont_feats, cat_feats, bin_feats)
-    s=[]
-    cont_feats.each_index{|i| s[i]= ContSpec.cachemany(p_ids, con_feats[i])}
-    cat_feats.each{|i|  s[i+cont_feats.size] = CatSpec.cachemany(p_ids, cat_feats[[i]])}
-    bin_feats.each{|i|  s[i+cont_feats.size+cat_feats.size]=BinSpec.cachemany(p_ids, bin_feats[i])}
-    s.transpose  
+    st=[]
+    cont_feats.each_index{|i| st[i]= ContSpec.cachemany(p_ids, con_feats[i])}
+    cat_feats.each{|i|  st[i+cont_feats.size] = CatSpec.cachemany(p_ids, cat_feats[[i]])}
+    bin_feats.each{|i|  st[i+cont_feats.size+cat_feats.size]=BinSpec.cachemany(p_ids, bin_feats[i])}
+    st.transpose 
   end 
-   
 
-  def self.standarize_data(specs_cont, specs, mean, var)
-  #  dim = specs[0].length
-  #  specs_cont.each do |point|
-  #      point_index do |s|
-  #        point[s] = (point[s] - mean[s])/var[s]
-  #      end
-  #  end    
-  ## somehow we should append specs_cont and specs_bool
-     specs=[]  
-     specs_cont_each_index{|i| specs[i] = specs_cont[i]+specs_cats[i]+specs_bin[i]}
-     specs   
-  end
+
+  #def self.standarize_data(specs, specs, mean, var)
+  ##  dim = specs[0].length
+  ##  specs_cont.each do |point|
+  ##      point_index do |s|
+  ##        point[s] = (point[s] - mean[s])/var[s]
+  ##      end
+  ##  end    
+  ### somehow we should append specs_cont and specs_bool
+  #  specs=[]  
+  #  specs_cont_each_index{|i| specs[i] = specs_cont[i]+specs_cats[i]+specs_bin[i]}
+  #  specs   
+  #end
   
   
  #def self.get_mean_var()
@@ -157,31 +122,16 @@ class Cluster
       m
   end
   
-  
-  def isEmpty(search = nil)
-    nodes(search).empty?
-  end
-  
-  def clearCache
-    @nodes = nil
-    @range = nil
-    @children = nil
-  end
-  
   # Finds the indices in an array that match the given value
   def self.indices(array, value) 
     c=[]
     array.each_index{|i| c.push(i) if array[i]==value}
     c
   end  
-  
-  def utility
-    nodes.map{|n|n.utility}.sum/size
-  end
  
   #Grouping products by cluster_ids
   def self.group_by_clusterids(product_ids, cluster_ids)
-    product_ids.group_by{|i|cluster_ids[product_ids.index(i)]}.values.sort{|a,b| b.length <=> a.length}
+   product_ids.group_by{|i|cluster_ids[product_ids.index(i)]}.values.sort{|a,b| b.length <=> a.length}
   end
   
   #Euclidian distance function
