@@ -45,8 +45,8 @@ class Cluster
   def self.product_specs(p_ids)
     st = []
     Session.current.continuous["cluster"].each{|f| st << ContSpec.cachemany(p_ids, f)}
-    Session.current.categorical["cluster"].each{|f|  st << CatSpec.cachemany(p_ids, f)}
-    Session.current.binary["cluster"].each{|f|  st << BinSpec.cachemany(p_ids, f)}
+    Session.current.categorical["cluster"].each{|f| st << CatSpec.cachemany(p_ids, f)}
+    Session.current.binary["cluster"].each{|f| st << BinSpec.cachemany(p_ids, f)}
     st.transpose 
   end 
 
@@ -71,7 +71,8 @@ class Cluster
   
   
   # regular kmeans function   
-  def self.kmeans(number_clusters, specs, weights)
+  def self.kmeans(number_clusters, specs, weights = nil)
+    weights = [1]*specs.first.size if weights.nil?
     tresh = 0.000001
     mean_1 = self.seed(number_clusters, specs)
     mean_2 =[]

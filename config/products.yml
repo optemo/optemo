@@ -16,100 +16,88 @@ cameras:
     layout: gridview
     maximumresolution: 
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     displaysize:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     price:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
         prefdir: -1
         min: 1
         max: 10000
     opticalzoom:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
-    slr:
-        feature_type: Binary
-        used_for: [boost, cluster, show]
+        used_for: [boost, filter, show]
     brand:
         feature_type: Categorical
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
 
 cameras.browsethenbuy.com:
     product_type: camera_us
     layout: gridview
     maximumresolution: 
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     displaysize:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     price:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
         prefdir: -1
         min: 1
         max: 10000
     opticalzoom:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
-    slr:
-        feature_type: Binary
-        used_for: [boost, cluster, show]
+        used_for: [boost, filter, show]
     brand:
         feature_type: Categorical
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
         
 m.browsethenbuy.com:
     product_type: camera_us
     layout: mobileview
     maximumresolution: 
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     displaysize:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     price:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
         prefdir: -1
         min: 1
         max: 10000
     opticalzoom:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
-    slr:
-        feature_type: Binary
-        used_for: [boost, cluster, show]
+        used_for: [boost, filter, show]
     brand:
         feature_type: Categorical
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
 
 mobile:
     product_type: camera_us
     layout: mobileview
     maximumresolution: 
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     displaysize:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     price:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
         prefdir: -1
         min: 1
         max: 10000
     opticalzoom:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
-    slr:
-        feature_type: Binary
-        used_for: [boost, cluster, show]
+        used_for: [boost, filter, show]
     brand:
         feature_type: Categorical
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
 
 ################################
 #  LaserPrinterHub - Printers  #
@@ -120,35 +108,35 @@ printers.browsethenbuy.com:
     layout: lineview
     price:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
         prefdir: -1
         min: 1
         max: 10000
     ppm:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show, showList]
+        used_for: [boost, filter, show, showList]
     resolutionmax:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     resolution:
         feature_type: Categorical
         used_for: [showList]
     paperinput:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show, showList]
+        used_for: [boost, filter, show, showList]
     itemwidth:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show, showList]
+        used_for: [boost, filter, show, showList]
         prefdir: -1
     printserver:
         feature_type: Binary
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     scanner:
         feature_type: Binary
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     brand:
         feature_type: Categorical
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     
             
 laserprinterhub.com:
@@ -156,35 +144,35 @@ laserprinterhub.com:
     layout: gridview
     price:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
         prefdir: -1
         min: 1
         max: 10000
     ppm:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show, showList]
+        used_for: [boost, filter, show, showList]
     resolutionmax:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     resolution:
         feature_type: Categorical
         used_for: [showList]
     paperinput:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show, showList]
+        used_for: [boost, filter, show, showList]
     itemwidth:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show, showList]
+        used_for: [boost, filter, show, showList]
         prefdir: -1
     printserver:
         feature_type: Binary
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     scanner:
         feature_type: Binary
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     brand:
         feature_type: Categorical
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     
 
 laserprinterhub.ca:
@@ -192,35 +180,35 @@ laserprinterhub.ca:
     layout: gridview
     price:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
         prefdir: -1
         min: 1
         max: 10000
     ppm:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show, showList]
+        used_for: [boost, filter, show, showList]
     resolutionmax:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     resolution:
         feature_type: Categorical
         used_for: [showList]
     paperinput:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show, showList]
+        used_for: [boost, filter, show, showList]
     itemwidth:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show, showList]
+        used_for: [boost, filter, show, showList]
         prefdir: -1
     printserver:
         feature_type: Binary
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     scanner:
         feature_type: Binary
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     brand:
         feature_type: Categorical
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     
 
 localhost:
@@ -228,35 +216,35 @@ localhost:
     layout: gridview
     price:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
         prefdir: -1
         min: 1
         max: 10000
     ppm:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show, showList]
+        used_for: [boost, filter, show, showList]
     resolutionmax:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     resolution:
         feature_type: Categorical
         used_for: [showList]
     paperinput:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show, showList]
+        used_for: [boost, filter, show, showList]
     itemwidth:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show, showList]
+        used_for: [boost, filter, show, showList]
         prefdir: -1
     printserver:
         feature_type: Binary
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     scanner:
         feature_type: Binary
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     brand:
         feature_type: Categorical
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
    
 
 printers:
@@ -264,35 +252,35 @@ printers:
     layout: lineview
     price:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
         prefdir: -1
         min: 1
         max: 10000
     ppm:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show, showList]
+        used_for: [boost, filter, show, showList]
     resolutionmax:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     resolution:
         feature_type: Categorical
         used_for: [showList]
     paperinput:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show, showList]
+        used_for: [boost, filter, show, showList]
     itemwidth:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show, showList]
+        used_for: [boost, filter, show, showList]
         prefdir: -1
     printserver:
         feature_type: Binary
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     scanner:
         feature_type: Binary
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     brand:
         feature_type: Categorical
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
 
 #############################
 #  Build Direct - Flooring  #
@@ -303,24 +291,24 @@ builddirect.optemo.com:
     layout: lineview
     price:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
         prefdir: -1
         min: 1
         max: 10
     width:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, showList]
+        used_for: [boost, filter, showList]
         prefdir: 0
     species_hardness:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     miniorder:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show, showList]
+        used_for: [boost, filter, show, showList]
         prefdir: -1
     brand:
         feature_type: Categorical
-        used_for: [boost, cluster, filter, show]    
+        used_for: [boost, filter, show]    
     species:
         feature_type: Categorical
         used_for: [boost, filter, show]
@@ -339,24 +327,24 @@ flooring:
     layout: lineview
     price:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
         prefdir: -1
         min: 1
         max: 10
     width:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, showList]
+        used_for: [boost, filter, showList]
         prefdir: 0
     species_hardness:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     miniorder:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show, showList]
+        used_for: [boost, filter, show, showList]
         prefdir: -1
     brand:
         feature_type: Categorical
-        used_for: [boost, cluster, filter, show]    
+        used_for: [boost, filter, show]    
     species:
         feature_type: Categorical
         used_for: [boost, filter, show]
@@ -378,41 +366,41 @@ walmart.optemo.com:
     layout: lineview
     price:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
         prefdir: -1
         min: 10
         max: 2000
     brand:
         feature_type: Categorical
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     hd:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     ram:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     screensize:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
         
 laptops:
     product_type: laptop_walmart
     layout: lineview
     price:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
         prefdir: -1
         min: 10
         max: 2000
     brand:
         feature_type: Categorical
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     hd:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     ram:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
     screensize:
         feature_type: Continuous
-        used_for: [boost, cluster, filter, show]
+        used_for: [boost, filter, show]
