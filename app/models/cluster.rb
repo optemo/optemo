@@ -44,25 +44,25 @@ class Cluster
   
   def self.product_specs(p_ids)
     st = []
-    Session.current.continuous["cluster"].each{|f| st << ContSpec.cachemany(p_ids, f)}
-    Session.current.categorical["cluster"].each{|f|  st << CatSpec.cachemany(p_ids, f)}
-    Session.current.binary["cluster"].each{|f|  st << BinSpec.cachemany(p_ids, f)}
+    Session.current.continuous["filter"].each{|f| st << ContSpec.cachemany(p_ids, f)}
+    Session.current.categorical["filter"].each{|f|  st << CatSpec.cachemany(p_ids, f)}
+    Session.current.binary["filter"].each{|f|  st << BinSpec.cachemany(p_ids, f)} 
     st.transpose 
   end 
 
 
-  #def self.standarize_data(specs, specs, mean, var)
-  ##  dim = specs[0].length
-  ##  specs_cont.each do |point|
-  ##      point_index do |s|
-  ##        point[s] = (point[s] - mean[s])/var[s]
-  ##      end
-  ##  end    
-  ### somehow we should append specs_cont and specs_bool
-  #  specs=[]  
-  #  specs_cont_each_index{|i| specs[i] = specs_cont[i]+specs_cats[i]+specs_bin[i]}
-  #  specs   
-  #end
+  def self.standarize_data(specs, specs, mean, var)
+  #  dim = specs[0].length
+  #  specs_cont.each do |point|
+  #      point_index do |s|
+  #        point[s] = (point[s] - mean[s])/var[s]
+  #      end
+  #  end    
+  ## somehow we should append specs_cont and specs_bool
+    specs=[]  
+    specs_cont_each_index{|i| specs[i] = specs_cont[i]+specs_cats[i]+specs_bin[i]}
+    specs   
+  end
   
   
  #def self.get_mean_var()
