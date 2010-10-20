@@ -17,7 +17,7 @@ class Cluster
   #The subclusters
   def children
     unless @children
-      specs = ContSpec.cachemany(@products)
+      specs = Cluster.product_specs(@products.map(&:id))
       #need to prepare specs
       cluster_ids = Cluster.kmeans(9,specs)
       @children = Cluster.group_by_clusterids(products,cluster_ids).map{|product_ids|Cluster.new(product_ids)}
@@ -42,11 +42,11 @@ class Cluster
     children.size
   end  
   
-  def self.product_specs(p_ids, cont_feats, cat_feats, bin_feats)
-    st=[]
-    cont_feats.each_index{|i| st[i]= ContSpec.cachemany(p_ids, con_feats[i])}
-    cat_feats.each{|i|  st[i+cont_feats.size] = CatSpec.cachemany(p_ids, cat_feats[[i]])}
-    bin_feats.each{|i|  st[i+cont_feats.size+cat_feats.size]=BinSpec.cachemany(p_ids, bin_feats[i])}
+  def self.product_specs(p_ids)
+    st = []
+    Session.current.continuous["cluster"].each{|f| st << ContSpec.cachemany(p_ids, f)}
+    Session.current.categorical["cluster"].each{|f|  st << CatSpec.cachemany(p_ids, f)}
+    Session.current.binary["cluster"].each{|f|  st << BinSpec.cachemany(p_ids, f)}
     st.transpose 
   end 
 
