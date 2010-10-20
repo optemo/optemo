@@ -86,6 +86,7 @@ class Cluster
   #selecting the initial cluster centers
   def self.seed(number_clusters, specs)
     m=[]  
+    # The first points as cluster centers
     (0...number_clusters).each{|i| m[i] = specs[i]}
     m
   end
