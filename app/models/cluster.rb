@@ -7,7 +7,7 @@ class Cluster
   
   #Unique key for memcache lookup using BER-compressed integer
   def key
-    @products.pack("w*")
+    products.pack("w*")
   end
   
   def self.cached(id)
@@ -17,7 +17,7 @@ class Cluster
   #The subclusters
   def children
     unless @children
-      specs = Cluster.product_specs(@products.map(&:id))
+      specs = Cluster.product_specs(products.map(&:id))
       #need to prepare specs
       cluster_ids = Cluster.kmeans(9,specs)
       @children = Cluster.group_by_clusterids(products,cluster_ids).map{|product_ids|Cluster.new(product_ids)}
@@ -28,14 +28,14 @@ class Cluster
   #The represetative product for this cluster, assumes nodes ordered by utility
   def representative
     unless @rep
-      utility_list = ContSpec.cachemany_with_ids_hash(@products, "utility")
-      @rep = Product.cached(utility_list.max.product_id)
+      utility_list = ContSpec.cachemany_with_ids_hash(products, "utility")
+      @rep = Product.cached(utility_list.max)
     end
     @rep
   end
   
   def size
-    @products.size
+    products.size
   end
   
   def numclusters
@@ -51,18 +51,18 @@ class Cluster
   end 
 
 
-  def self.standarize_data(specs, specs, mean, var)
-  #  dim = specs[0].length
-  #  specs_cont.each do |point|
-  #      point_index do |s|
-  #        point[s] = (point[s] - mean[s])/var[s]
-  #      end
-  #  end    
-  ## somehow we should append specs_cont and specs_bool
-    specs=[]  
-    specs_cont_each_index{|i| specs[i] = specs_cont[i]+specs_cats[i]+specs_bin[i]}
-    specs   
-  end
+  #def self.standarize_data(specs, specs, mean, var)
+  ##  dim = specs[0].length
+  ##  specs_cont.each do |point|
+  ##      point_index do |s|
+  ##        point[s] = (point[s] - mean[s])/var[s]
+  ##      end
+  ##  end    
+  ### somehow we should append specs_cont and specs_bool
+  #  specs=[]  
+  #  specs_cont_each_index{|i| specs[i] = specs_cont[i]+specs_cats[i]+specs_bin[i]}
+  #  specs   
+  #end
   
   
  #def self.get_mean_var()
@@ -78,7 +78,6 @@ class Cluster
     mean_2 =[]
     labels = []
     dif = []
-    #debugger
     begin
       mean_2 = mean_1 
       specs.each_index do |i| 
