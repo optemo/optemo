@@ -107,4 +107,10 @@ class ClusterTest < ActiveSupport::TestCase
     assert_in_delta 0.54, Cluster.distance(point1, point2), 0.00001, "Euclidian distance calculation"
     assert_equal Cluster.distance(point1, point2), Cluster.distance(point2, point1), "Distance should be symmetric"
   end
+  
+  test "Data standardization" do 
+    specs=[[2,3,1,"Canon"], [0, 1, 2, "Sony"]]
+    assert_equal Cluster_standardize_data(specs).first.size, 5, "categorical features should be mapped to a an array"
+    assert_equal [[2,3,1,1,0], [0,1,2,0,1]], Cluster_standardize_data(specs), "standardization is not done properly"
+  end  
 end

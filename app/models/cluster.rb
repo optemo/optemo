@@ -45,13 +45,25 @@ class Cluster
   def self.product_specs(p_ids)
     st = []
     Session.current.continuous["filter"].each{|f| st << ContSpec.cachemany(p_ids, f)}
-    Session.current.categorical["filter"].each{|f|  st << CatSpec.cachemany(p_ids, f)}
+    Session.current.categorical["filter"].each{|f|  st<<CatSpec.cachemany(p_ids, f)} 
     Session.current.binary["filter"].each{|f|  st << BinSpec.cachemany(p_ids, f)} 
     st.transpose 
   end 
 
 
-  def self.standarize_data(specs, specs, mean, var)
+  def self.standardize_data(specs)
+    specs = specs.transpose
+    cont_size = Session.current.continuous["filter"].size
+    Session.current.categorical["filter"].each_index do |i|
+      vals = specs[i+cont_size].uniq
+      cat = Array.new(vals.size, 0) 
+      cat[vals.index(specs[i+cont_size][p])] = 1
+      specs[i+cont_size][p].replace(cat)  
+    end
+    specs = specs.transpose
+    specs.map{|p| p.flatten}  
+  end  
+    
   #  dim = specs[0].length
   #  specs_cont.each do |point|
   #      point_index do |s|
@@ -59,10 +71,10 @@ class Cluster
   #      end
   #  end    
   ## somehow we should append specs_cont and specs_bool
-    specs=[]  
-    specs_cont_each_index{|i| specs[i] = specs_cont[i]+specs_cats[i]+specs_bin[i]}
-    specs   
-  end
+  #  specs=[]  
+  #  specs_cont_each_index{|i| specs[i] = specs_cont[i]+specs_cats[i]+specs_bin[i]}
+  #  specs   
+  #end
   
   
  #def self.get_mean_var()
@@ -72,7 +84,7 @@ class Cluster
   
   # regular kmeans function   
   def self.kmeans(number_clusters, specs, weights)
-    tresh = 0.000001
+    tresh = 0.000001 
     mean_1 = self.seed(number_clusters, specs)
     mean_2 =[]
     labels = []
@@ -90,7 +102,6 @@ class Cluster
       z=0.0;
       mean_1.each_index{|c| z+=self.distance(mean_1[c], mean_2[c])}
     end while z > tresh
-
     labels  
   end
   
@@ -144,5 +155,6 @@ class Cluster
     end
     dist
   end
+  
   
 end
