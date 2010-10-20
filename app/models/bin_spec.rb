@@ -15,5 +15,9 @@ class BinSpec < ActiveRecord::Base
       r = select('name', 'value').where(:product_id => p_id).each_with_object({}){|r, h| h[r.name] = r.value}
     end
   end
-  
+  def self.cachemany(p_ids, feat) # Returns numerical (floating point) values only
+    CachingMemcached.cache_lookup("BinSpecs#{feat}#{p_ids.join(',').hash}") do
+      select(:value).where(["product_id IN (?) and name = ?", p_ids, feat]).map(&:value)
+    end
+  end
 end

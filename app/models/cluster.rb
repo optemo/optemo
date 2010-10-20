@@ -42,17 +42,28 @@ class Cluster
     session.features.attributes.reject {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at' || key=='search_id'}
   end
   
- 
+  
+  def self.product_specs(p_ids, cont_feats, cat_feats, bin_feats)
+    s=[]
+    cont_feats.each_index{|i| s[i]= ContSpec.cachemany(p_ids, con_feats[i])}
+    cat_feats.each{|i|  s[i+cont_feats.size] = CatSpec.cachemany(p_ids, cat_feats[[i]])}
+    bin_feats.each{|i|  s[i+cont_feats.size+cat_feats.size]=BinSpec.cachemany(p_ids, bin_feats[i])}
+    s.transpose  
+  end 
+   
 
- #def self.standarize_data(specs_cont, specs_bool, mean, var)
- #  dim = specs[0].length
- #  specs_cont.each do |point|
- #      point_index do |s|
- #        point[s] = (point[s] - mean[s])/var[s]
- #      end
- #  end    
- ## somehow we should append specs_cont and specs_bool
- #end
+  def self.standarize_data(specs_cont, specs, mean, var)
+  #  dim = specs[0].length
+  #  specs_cont.each do |point|
+  #      point_index do |s|
+  #        point[s] = (point[s] - mean[s])/var[s]
+  #      end
+  #  end    
+  ## somehow we should append specs_cont and specs_bool
+     specs=[]  
+     specs_cont_each_index{|i| specs[i] = specs_cont[i]+specs_cats[i]+specs_bin[i]}
+     specs   
+  end
   
   
  #def self.get_mean_var()
