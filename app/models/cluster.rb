@@ -72,7 +72,8 @@ class Cluster
   
   
   # regular kmeans function   
-  def self.kmeans(number_clusters, specs, weights)
+  def self.kmeans(number_clusters, specs, weights = nil)
+    weights = [1]*specs.first.size if weights.nil?
     tresh = 0.000001
     mean_1 = self.seed(number_clusters, specs)
     mean_2 =[]
