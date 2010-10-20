@@ -68,6 +68,7 @@ class ClusterTest < ActiveSupport::TestCase
     clusters = Cluster.kmeans(cluster_count,specs, [])
     assert_equal 3, clusters.uniq.size, "Generated clusters: #{clusters}"
     assert_equal clusters[2], clusters[3], "The last two products should be in the same cluster"
+    assert_equal specs.size, clusters.size, "Kmeans should only return assignments for each of the points"
   end
  
   
@@ -75,7 +76,6 @@ class ClusterTest < ActiveSupport::TestCase
     array = [0,1,0,2,1]
     ind = Cluster.indices(array, 1)
     assert_equal [1,4], ind, "indices is not coded right"    
- 
   end
  
  

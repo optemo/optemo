@@ -10,6 +10,10 @@ class Cluster
     products.pack("w*")
   end
   
+  def id
+    products.hash
+  end
+  
   def self.cached(id)
     CachingMemcached.cache_lookup("Cluster#{id}"){find(id)}
   end
@@ -19,6 +23,7 @@ class Cluster
     unless @children
       specs = Cluster.product_specs(products.map(&:id))
       #need to prepare specs
+      debugger if specs != specs.compact
       cluster_ids = Cluster.kmeans(9,specs)
       @children = Cluster.group_by_clusterids(products,cluster_ids).map{|product_ids|Cluster.new(product_ids)}
     end
@@ -28,8 +33,8 @@ class Cluster
   #The represetative product for this cluster, assumes nodes ordered by utility
   def representative
     unless @rep
-      utility_list = ContSpec.cachemany_with_ids_hash(products, "utility")
-      @rep = Product.cached(utility_list.max)
+      utility_list = ContSpec.cachemany(products.map(&:id), "utility")
+      @rep = products[utility_list.index(utility_list.max)]
     end
     @rep
   end
@@ -72,6 +77,7 @@ class Cluster
   
   # regular kmeans function   
   def self.kmeans(number_clusters, specs, weights = nil)
+    debugger if specs.first.nil?
     weights = [1]*specs.first.size if weights.nil?
     tresh = 0.000001
     mean_1 = self.seed(number_clusters, specs)
