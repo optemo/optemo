@@ -21,11 +21,11 @@ class Cluster
   #The subclusters
   def children
     unless @children
-      specs = Cluster.product_specs(products.map(&:id))
-      #need to prepare specs
-      debugger if specs != specs.compact
+      puts("*****######!!!!!!"+Time.now.to_s)
+      specs = Cluster.product_specs(products)
       cluster_ids = Cluster.kmeans(9,specs)
       @children = Cluster.group_by_clusterids(products,cluster_ids).map{|product_ids|Cluster.new(product_ids)}
+      puts("*****######!!!!!!"+Time.now.to_s)
     end
     @children
   end
@@ -33,8 +33,8 @@ class Cluster
   #The represetative product for this cluster, assumes nodes ordered by utility
   def representative
     unless @rep
-      utility_list = ContSpec.cachemany(products.map(&:id), "utility")
-      @rep = products[utility_list.index(utility_list.max)]
+      utility_list = ContSpec.cachemany(products, "utility")
+      @rep = Product.cached(products[utility_list.index(utility_list.max)])
     end
     @rep
   end

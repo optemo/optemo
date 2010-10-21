@@ -22,7 +22,7 @@ class Search < ActiveRecord::Base
        current_dataset_minimum = max
        current_dataset_maximum = min
        stepsize = (max-min) / dist.length + 0.000001 #Offset prevents overflow of 10 into dist array
-       specs = ContSpec.cachemany(products.map(&:id), feat)
+       specs = ContSpec.cachemany(products, feat)
        specs.each do |s|
          current_dataset_minimum = s if s < current_dataset_minimum
          current_dataset_maximum = s if s > current_dataset_maximum
@@ -189,12 +189,12 @@ class Search < ActiveRecord::Base
   def products
     selected_features = (userdataconts.map{|c| c.name+c.min.to_s+c.max.to_s}+userdatabins.map{|c| c.name+c.value.to_s}+userdatacats.map{|c| c.name+c.value}<<keyword_search).hash
     CachingMemcached.cache_lookup("#{Session.current.product_type}Products#{selected_features}") do
-      product_list = Product.where(filterquery)
-      product_list_ids = product_list.map(&:id)
-      utility_list = ContSpec.cachemany_with_ids_hash(product_list_ids, "utility")
+      product_list = SearchProduct.where(filterquery).select(:product_id)
+      product_list_ids = product_list.map(&:product_id)
+      utility_list = ContSpec.cachemany(product_list_ids, "utility")
       # Cannot avoid sorting, since this result is cached.
       # If there is an error here, you might need to run rake calculate_factors. (utility_list.length should match product_list.length)
-      product_list.sort{|a, b| utility_list[b.id] <=> utility_list[a.id]}
+       utility_list.zip(product_list_ids).sort{|a,b|b[0]<=>a[0]}.map{|a,b|b}
     end
   end
   
@@ -221,7 +221,7 @@ class Search < ActiveRecord::Base
     end
     #Initial products is the default
     my_search = initial_products(id) unless my_search
-    fqarray << "id in (select product_id from search_products where search_id = #{my_search})"
+    fqarray << "search_id = #{my_search}"
     #case @prefiltered_products
     #when 0 #Current products
     #  fqarray << "id in (select product_id from search_products where search_id = #{id})"
@@ -231,28 +231,29 @@ class Search < ActiveRecord::Base
     #  fqarray << "id in (select product_id from search_products where search_id = #{@prefiltered_products})"
     #end
     userdataconts.each do |d|
-      fqarray << "id in (select product_id from cont_specs where value <= #{d.max+0.00001} and value >= #{d.min-0.00001} and name = '#{d.name}')"
+      fqarray << "product_id in (select product_id from cont_specs where value <= #{d.max+0.00001} and value >= #{d.min-0.00001} and name = '#{d.name}')"
     end
     userdatacats.group_by(&:name).each do |name, ds|
-      fqarray << "id in (select product_id from cat_specs where value in ('#{ds.map(&:value).join("','")}') and name = '#{name}')"
+      fqarray << "product_id in (select product_id from cat_specs where value in ('#{ds.map(&:value).join("','")}') and name = '#{name}')"
     end
     userdatabins.each do |d|
-      fqarray << "id in (select product_id from bin_specs where value = #{d.value} and name = '#{d.name}')"
+      fqarray << "product_id in (select product_id from bin_specs where value = #{d.value} and name = '#{d.name}')"
     end
     #Check for keyword search
-    fqarray << "id in (select product_id from keyword_searches where searchterm = '#{keyword_search}')" if keyword_search
+    fqarray << "product_id in (select product_id from keyword_searches where searchterm = '#{keyword_search}')" if keyword_search
     fqarray.join(" AND ")
   end
 
   def self.createGroupBy(feat)
     s = Session.current
     myproducts = s.search.products
+    product_ids = myproducts.map(&:product_id)
     if s.categorical.values.flatten.index(feat) # It's in the categorical array
-      specs = CatSpec.cachemany_with_ids(myproducts.map(&:id),feat)
+      specs = product_ids.zip CatSpec.cachemany(product_ids,feat)
       grouping = specs.group_by{|spec|spec.value}.values.sort{|a,b| b.length <=> a.length}
       #grouping = Hash[grouping.each_pair{|k,v| grouping[k] = v.map(&:product_id)}.sort{|a,b| b.second.length <=> a.second.length}]
     elsif s.continuous.values.flatten.index(feat)
-      specs = ContSpec.cachemany_with_ids(myproducts.map(&:id), feat).sort
+      specs = product_ids.zip ContSpec.cachemany(product_ids, feat).sort{|a,b|b[1] <=> a[1]}
       # [[id, low], [id, higher], ... [id, highest]]
       quartile_length = (specs.length / 4.0).ceil
       quartiles = []
@@ -269,22 +270,22 @@ class Search < ActiveRecord::Base
 
       #Move ties from Q1 to Q2
       unless quartiles[0].blank? || quartiles[1].blank?
-        threshold_value = quartiles[1].first.value
-        splitpoint = quartiles[0].index(quartiles[0].find {|spec| spec.value == threshold_value})
+        threshold_value = quartiles[1].first[1]
+        splitpoint = quartiles[0].index(quartiles[0].find {|spec| spec[1] == threshold_value})
         quartiles[1] = quartiles[0].slice!(splitpoint..-1) + quartiles[1] unless splitpoint.nil?
       end
       
       #Move ties from Q4 to Q3
       unless quartiles[2].blank? || quartiles[3].blank?
-        threshold_value = quartiles[2].last.value
-        splitpoint = quartiles[3].index(quartiles[3].reverse.find {|spec| spec.value == threshold_value})
+        threshold_value = quartiles[2].last[1]
+        splitpoint = quartiles[3].index(quartiles[3].reverse.find {|spec| spec[1] == threshold_value})
         quartiles[2] = quartiles[2] + quartiles[3].slice!(0..splitpoint) unless splitpoint.nil?
       end
       
       #Move ties from Q3 to Q2
       unless quartiles[1].blank? || quartiles[2].blank?
-        threshold_value = quartiles[1].last.value
-        splitpoint = quartiles[2].index(quartiles[2].reverse.find {|spec| spec.value == threshold_value})
+        threshold_value = quartiles[1].last[1]
+        splitpoint = quartiles[2].index(quartiles[2].reverse.find {|spec| spec[1] == threshold_value})
         quartiles[1] = quartiles[1] + quartiles[2].slice!(0..splitpoint) unless splitpoint.nil?
       end
       
@@ -294,15 +295,14 @@ class Search < ActiveRecord::Base
     end
     grouping.map do |q|
       product_ids = q.map(&:product_id)
-      prices_hash = ContSpec.cachemany_with_ids(product_ids,"price")
-      product_utility_hash = ContSpec.cachemany_with_ids(product_ids, "utility")
-      debugger if prices_hash.blank? || product_utility_hash.blank?
+      prices_list = ContSpec.cachemanys(product_ids,"price")
+      utility_list = ContSpec.cachemany(product_ids, "utility")
       {
         :min => q.first.value.to_s,
         :max => q.last.value.to_s,
         :size => q.count,
-        :cheapest => Product.cached(prices_hash.max.product_id),
-        :best => Product.cached(product_utility_hash.max.product_id)
+        :cheapest =>  Product.cached(product_ids[prices_list.index(prices_list.max)]),
+        :best => Product.cached(product_ids[utility_list.index(utility_list.max)])
       }
     end
   end
