@@ -81,7 +81,6 @@ optemo_module = (function (my){
     var VERSION = $("#version").html();
     var DIRECT_LAYOUT = ($('#directLayout').html() === 'true');
     var SESSION_ID = parseInt($('#seshid').attr('session-id'));
-    my.embeddedString = ''; // Or should we make it the string? yeah, that.
 
     //--------------------------------------//
     //           UI Manipulation            //
@@ -877,46 +876,25 @@ optemo_module = (function (my){
     
     /* Does a relatively generic ajax call and returns data to the handler below */
     my.ajaxsend = function (hash,myurl,mydata,hidespinner) {
-        // If embedded, make the URL absolute? and add format=json?
         var lis = my.loading_indicator_state;
         if (lis.main) lis.main_timer = setTimeout("myspinner.begin()", 1000);
         if (lis.sidebar) lis.sidebar_timer = setTimeout("optemo_module.disableFiltersAndGroups()", 1000);
-        if (my.embeddedString != '') { // We are embedded somewhere else and need to do JSONP instead.
-        	if (myurl != null) {
-                myurl = my.embeddedString + myurl; 
-            	$.ajax({
-            		type: (mydata==null)?"GET":"POST",
-            		data: (mydata==null)?"":mydata,
-            		url: myurl,
-            		success: ajaxhandler,
-            		error: ajaxerror
-            	});
-        	} else if (typeof(hash) != "undefined" && hash != null) {
-        		$.ajax({
-        			type: "GET",
-        			url: my.embeddedString + "/compare/embeddedIndex/?ajax=true&hist="+hash,
-        			success: ajaxhandler,
-        			error: ajaxerror
-        		});
-        	}
-        } else { // Non-embedded, so do same-domain AJAX calls
-        	if (myurl != null) {
-            	$.ajax({
-            		type: (mydata==null)?"GET":"POST",
-            		data: (mydata==null)?"":mydata,
-            		url: myurl,
-            		success: ajaxhandler,
-            		error: ajaxerror
-            	});
-        	} else if (typeof(hash) != "undefined" && hash != null) {
-        		$.ajax({
-        			type: "GET",
-        			url: "/compare/compare/?ajax=true&hist="+hash,
-        			success: ajaxhandler,
-        			error: ajaxerror
-        		});
-        	}
-	    }
+    	if (myurl != null) {
+        	$.ajax({
+        		type: (mydata==null)?"GET":"POST",
+        		data: (mydata==null)?"":mydata,
+        		url: myurl,
+        		success: ajaxhandler,
+        		error: ajaxerror
+        	});
+    	} else if (typeof(hash) != "undefined" && hash != null) {
+    		$.ajax({
+    			type: "GET",
+    			url: "/compare/compare/?ajax=true&hist="+hash,
+    			success: ajaxhandler,
+    			error: ajaxerror
+    		});
+    	}
     };
 
     /* The ajax handler takes data from the ajax call and processes it according to some (unknown) rules. */
