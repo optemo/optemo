@@ -25,7 +25,7 @@
 	<% if @s.directLayout %>
 		<% if @groupings.nil? %>
 			<% @products.each_index do |i| %>
-				<%= render :partial => 'singlelist', :locals => {:product => @products[i], :i => i} %>
+				<%= render :partial => 'singlelist', :locals => {:product => Product.cached(@products[i]), :i => i} %>
 			<% end %>
 		<% else %>
 			<% @groupings.each do |grouping| %>
