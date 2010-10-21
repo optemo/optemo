@@ -17,13 +17,22 @@ class CompareController < ApplicationController
   end
 
   def embeddedindex
-    unless Session.isCrawler?(request.user_agent) || params[:ajax]
-      @indexload = true
-    end
+#    unless Session.isCrawler?(request.user_agent) || params[:ajax]
+#      @indexload = true
+#    end
     # The page numbers have to go in for pagination
     # Page number has to be a hash for compatibility with Search.new()
     classVariables(Search.create({"page" => params[:page]}))
-    render 'compare', :layout => embedded
+
+
+    respond_to do |format|
+      format.html { render 'compare', :layout => 'embedded' }
+      format.json  { 
+        render 'embedded', :layout => false #:partial => "compare/embedded" 
+      }
+    end
+
+
   end
 
   def groupby
@@ -142,7 +151,7 @@ class CompareController < ApplicationController
         #Rollback
         classVariables(s.lastsearch)
         @errortype = "filter"
-        render 'error', :layout=>true
+        render 'ajax', :layout => false
       end
     end
   end

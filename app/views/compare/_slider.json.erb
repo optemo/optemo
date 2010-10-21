@@ -1,0 +1,27 @@
+<div class='feature'>
+	<div class='label space' data-position="<%= i %>">
+		<%= render :partial => 'desc', :locals => {:feat => feat} %>
+		<%= link_to t('products.'+feat), "#" %>
+		<span class="unitdisp">(<%= t('products.' + feat+"unit") %>)</span>
+		<% if Session.current.directLayout %>
+			<div class="groupby" data-feat="<%= feat %>" data-position="<%= i %>">Show Groups</div>
+		<% end %>		
+	</div>
+	<% current = isnil(Session.current.search.userdataconts.select{|m|m.name == feat}.first){Userdatacont.new("min" => overall_min, "max" => overall_max)} %>
+	<% distribution_data = Session.current.search.distribution(feat) %>
+	<div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
+	<%= hidden_field_tag "myfilter[#{feat}_min]", current.name.nil? ? nil : current.min,{:class => 'min'}%>
+	<%= hidden_field_tag "myfilter[#{feat}_max]", current.name.nil? ? nil : current.max,{:class => 'max'}%>
+	<div class='slider'
+	data-label= '<%= feat %>'
+	data-min='<%= format_acceptable_increments(overall_min, "down") %>'
+	data-max='<%= format_acceptable_increments(overall_max, "up") %>'
+	data-startmin='<%= format_acceptable_increments(current.min, "down") %>'
+	data-startmax='<%= format_acceptable_increments(current.max, "up") %>'
+	current-data-min='<%= distribution_data.first.first %>'
+	current-data-max='<%= distribution_data.first.second %>'
+	force-int='false'
+	<%= money_formatting ? 'data-formatting="$"' : ""  %>>
+		<div class="centerofslider">&nbsp;</div>
+	</div>
+</div>

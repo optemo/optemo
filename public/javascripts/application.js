@@ -63,12 +63,15 @@
     if statement  -  This gets evaluated as soon as the ajaxsend function is ready (slight savings over document.ready()).
 */
 
+/* LazyLoad courtesy of http://github.com/rgrove/lazyload/ already minified */
+LazyLoad=function(){var f=document,g,b={},e={css:[],js:[]},a;function j(l,k){var m=f.createElement(l),d;for(d in k){if(k.hasOwnProperty(d)){m.setAttribute(d,k[d])}}return m}function h(d){var l=b[d];if(!l){return}var m=l.callback,k=l.urls;k.shift();if(!k.length){if(m){m.call(l.scope||window,l.obj)}b[d]=null;if(e[d].length){i(d)}}}function c(){if(a){return}var k=navigator.userAgent,l=parseFloat,d;a={gecko:0,ie:0,opera:0,webkit:0};d=k.match(/AppleWebKit\/(\S*)/);if(d&&d[1]){a.webkit=l(d[1])}else{d=k.match(/MSIE\s([^;]*)/);if(d&&d[1]){a.ie=l(d[1])}else{if((/Gecko\/(\S*)/).test(k)){a.gecko=1;d=k.match(/rv:([^\s\)]*)/);if(d&&d[1]){a.gecko=l(d[1])}}else{if(d=k.match(/Opera\/(\S*)/)){a.opera=l(d[1])}}}}}function i(r,q,s,m,t){var n,o,l,k,d;c();if(q){q=q.constructor===Array?q:[q];if(r==="css"||a.gecko||a.opera){e[r].push({urls:[].concat(q),callback:s,obj:m,scope:t})}else{for(n=0,o=q.length;n<o;++n){e[r].push({urls:[q[n]],callback:n===o-1?s:null,obj:m,scope:t})}}}if(b[r]||!(k=b[r]=e[r].shift())){return}g=g||f.getElementsByTagName("head")[0];q=k.urls;for(n=0,o=q.length;n<o;++n){d=q[n];if(r==="css"){l=j("link",{href:d,rel:"stylesheet",type:"text/css"})}else{l=j("script",{src:d})}if(a.ie){l.onreadystatechange=function(){var p=this.readyState;if(p==="loaded"||p==="complete"){this.onreadystatechange=null;h(r)}}}else{if(r==="css"&&(a.gecko||a.webkit)){setTimeout(function(){h(r)},50*o)}else{l.onload=l.onerror=function(){h(r)}}}g.appendChild(l)}}return{css:function(l,m,k,d){i("css",l,m,k,d)},js:function(l,m,k,d){i("js",l,m,k,d)}}}();
 
 // These global variables must be declared explicitly for proper scope (see setTimeout)
 var optemo_module;
 var myspinner;
+var optemo_module_activator;
 
-(function($) { // See bottom, this is for jquery noconflict
+optemo_module_activator = (function($) { // See bottom, this is for jquery noconflict
 optemo_module = (function (my){
     // Language support disabled for now
     //var language;
@@ -78,6 +81,7 @@ optemo_module = (function (my){
     var VERSION = $("#version").html();
     var DIRECT_LAYOUT = ($('#directLayout').html() === 'true');
     var SESSION_ID = parseInt($('#seshid').attr('session-id'));
+    my.embeddedString = ''; // Or should we make it the string? yeah, that.
 
     //--------------------------------------//
     //           UI Manipulation            //
@@ -873,26 +877,46 @@ optemo_module = (function (my){
     
     /* Does a relatively generic ajax call and returns data to the handler below */
     my.ajaxsend = function (hash,myurl,mydata,hidespinner) {
+        // If embedded, make the URL absolute? and add format=json?
         var lis = my.loading_indicator_state;
         if (lis.main) lis.main_timer = setTimeout("myspinner.begin()", 1000);
         if (lis.sidebar) lis.sidebar_timer = setTimeout("optemo_module.disableFiltersAndGroups()", 1000);
-        
-    	if (myurl != null) {
-        	$.ajax({
-        		type: (mydata==null)?"GET":"POST",
-        		data: (mydata==null)?"":mydata,
-        		url: myurl,
-        		success: ajaxhandler,
-        		error: ajaxerror
-        	});
-    	} else if (typeof(hash) != "undefined" && hash != null) {
-    		$.ajax({
-    			type: "GET",
-    			url: "/compare/compare/?ajax=true&hist="+hash,
-    			success: ajaxhandler,
-    			error: ajaxerror
-    		});
-    	}
+        if (my.embeddedString != '') { // We are embedded somewhere else and need to do JSONP instead.
+        	if (myurl != null) {
+                myurl = my.embeddedString + myurl; 
+            	$.ajax({
+            		type: (mydata==null)?"GET":"POST",
+            		data: (mydata==null)?"":mydata,
+            		url: myurl,
+            		success: ajaxhandler,
+            		error: ajaxerror
+            	});
+        	} else if (typeof(hash) != "undefined" && hash != null) {
+        		$.ajax({
+        			type: "GET",
+        			url: my.embeddedString + "/compare/embeddedIndex/?ajax=true&hist="+hash,
+        			success: ajaxhandler,
+        			error: ajaxerror
+        		});
+        	}
+        } else { // Non-embedded, so do same-domain AJAX calls
+        	if (myurl != null) {
+            	$.ajax({
+            		type: (mydata==null)?"GET":"POST",
+            		data: (mydata==null)?"":mydata,
+            		url: myurl,
+            		success: ajaxhandler,
+            		error: ajaxerror
+            	});
+        	} else if (typeof(hash) != "undefined" && hash != null) {
+        		$.ajax({
+        			type: "GET",
+        			url: "/compare/compare/?ajax=true&hist="+hash,
+        			success: ajaxhandler,
+        			error: ajaxerror
+        		});
+        	}
+	    }
     };
 
     /* The ajax handler takes data from the ajax call and processes it according to some (unknown) rules. */
@@ -1143,7 +1167,7 @@ optemo_module = (function (my){
 
     return my;
 })({});
-})(jQuery);
+
 
 //--------------------------------------//
 //          document.ready()            //
@@ -1331,7 +1355,7 @@ jQuery(document).ready(function($){
     	});
 	}
 	
-	// On escape press. Probably not needed anymore.
+/*	// On escape press. Probably not needed anymore.
 	$(document).keydown(function(e){
 		if(e.keyCode==27){
 			$(".popupTour").fadeOut("slow");
@@ -1340,7 +1364,7 @@ jQuery(document).ready(function($){
     		trackPage('goals/tourclose');
 		}
 	});
-
+*/
 	launchtour = (function () {
 	    if (optemo_module.DIRECT_LAYOUT) {
 		    var browseposition = $("#box0").offset();
@@ -1367,4 +1391,21 @@ if (jQuery('#opt_discovery').length) {
 	} else {
 		optemo_module.ajaxsend(null,'/?ajax=true',null);
 	}
+}
+});
+
+// Load jQuery if it's not already loaded.
+// The purpose of using a try/catch loop is to avoid Internet Explorer 8 from crashing when assigning an undefined variable.
+try {
+    var jqueryIsLoaded = jQuery;
+    jQueryIsLoaded = true;
+}
+catch(err) {
+    var jQueryIsLoaded = false;
+}
+
+if(jQueryIsLoaded) {
+    optemo_module_activator(jQuery);
+} else { // Load jquery first
+    LazyLoad.js('http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js', (function(){ optemo_module_activator(jQuery) }));
 }

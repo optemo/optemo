@@ -4,16 +4,16 @@ javascripts:
   - raphael
   - helpers_shared
   - autocomplete_terms
-  - application
   - jquery-ui-1.8.5.custom.min
   - jquery.tablednd_0_5
   - jquery.history
   - facebooksessionops
+  - application
   
 - mobile:
     - helpers_shared
-    - application_mobile
     - jquery-ui-1.8.5.custom.min
+    - application_mobile
     
 stylesheets: 
 - gridview: 

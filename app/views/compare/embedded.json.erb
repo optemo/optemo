@@ -1,0 +1,101 @@
+<% s = Session.current %>	
+
+<div id="mycenter">
+   <div class="bd <%= 'rounded_bd ' unless s.directLayout %>rounded">
+	<div class="tl"></div><div class="tr"></div>
+	<% self.title = "#{@s.search.desc} #{@s.product_type.capitalize}" unless @indexload %>
+	<div id="leftbar">
+		<!-- The Filters section -->
+		<div id="filterbar" class="leftboxes rounded_bd rounded">
+			<div class="tl"></div><div class="tr"></div>
+			<h2><%=t 'products.compare.search' %> <%= link_to "(reset)", "/compare/", :id => "staticajax_reset", :class => "reset" %></h2>
+				<div class="filtersdesc"><%=t 'products.compare.filtersdesc' %></div>
+			<div id="ajaxfilter">
+				<% unless @indexload %>
+					<%= render :partial => 'filter', :locals => {:s => Session.current, :current_search => Session.current.search} %>
+				<% end  %>
+			</div>
+			<div class="bl"></div><div class="br"></div>
+		</div>
+
+		<!-- The Saved Items box -->
+		<div id="savebar" class='leftboxes gainlayout rounded_bd rounded'>
+			<div class="tl"><!-- --></div><div class="tr"><!-- --></div>
+			<h2> <%=t 'products.compare.saved' %> </h2>
+			<div class="savesome"> <% if @s.dragAndDropEnabled == true %> <%=t 'products.compare.savesomedrag'%> <% else %> <%=t 'products.compare.savesome'%> <% end %></div>
+			<div id="savebar_content">
+			<div id="already_added_msg" class="savedmsg"> <%=t 'products.compare.alreadyadded' %> </div>
+			<div id="too_many_saved" class="savedmsg"> <%=t 'products.compare.toomanysaved' %> </div>
+			<div id="opt_savedproducts">
+			</div>
+			</div>
+			<!-- Hide if 0 products, show if 1/more. -->
+			<%= link_to image_tag("compare#{fr?}.gif"), "", :id => "compare_button", :style => "display:none;" %>
+			<div class="bl"><!-- --></div><div class="br"><!-- --></div>
+		</div>
+	</div>
+
+	<div id="main">
+		<% if @indexload %>
+			<div id="opt_discovery"></div>
+		<% else %>
+			<%= render :partial => 'discoverybrowser' %>
+		<% end %>
+	</div>
+	<div id="loading"><div id="myspinner" style="float: left;"></div><div style="margin: 7px 0px 0px 60px;">Loading</div></div>
+	<div class="bl"></div><div class="br"></div>
+   </div>
+</div>
+<div id="silkscreen">&nbsp;</div>
+<div id="filter_bar_loading">Loading</div>
+<div id="outsidecontainer"><%= link_to image_tag("closepopup#{fr?}.gif"), "close", :class => "close"%><div id="info">&nbsp;</div></div>
+<div style="display:none;">
+	<% if s %>
+	<span id="dragDropEnabled"><%= s.dragAndDropEnabled %></span>
+	<span id="seshid" session-id="<%= s.id unless s.nil? %>"><%= s.id %></span>
+	<span id="modelname"><%= s.product_type %></span>
+	<span id="version"><%= s.version %></span>
+	<span id="directLayout"><%= s.directLayout %></span>
+	<% end %>
+</div>
+
+<!--[if lt IE 7]><style>
+/* style for IE6 + IE5.5 + IE5.0 */
+.gainlayout { height: 0; }
+#info{padding: 0px 20px 0px 20px !important;}
+#feedback{position: absolute;}
+</style><![endif]-->
+ 
+<!--[if IE 7]><style>
+.gainlayout { zoom: 1; }
+.hist {left: 15px; }
+</style><![endif]-->
+
+<!--[if gte IE 7]><style>
+@import url("/stylesheets/welcomeIE.css");
+</style><![endif]-->
+
+<!-- The jquery-ui script is being included locally due to the custom jquery-ui being about 45k instead of 200kb from Google's CDN -->
+<%= raw javascript_include_merged :base %>
+<%= raw stylesheet_link_merged(s.directLayout ? :listview : :gridview) %>
+
+<!-- Piwik -->
+<script type="text/javascript">
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://analytics.optemo.com/" : "http://analytics.optemo.com/");
+var tag = document.createElement("script");
+tag.setAttribute("src", pkBaseURL + "piwik.js");
+tag.setAttribute("type", "text/javascript");
+var headID = document.getElementsByTagName("head")[0];
+headID.appendChild(tag);
+</script><script type="text/javascript">
+try {
+var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", <%= s.piwikSiteId %>); // idsite is here
+piwikTracker.trackPageView();
+piwikTracker.enableLinkTracking();
+} catch( err ) {}
+</script><noscript><p><img src="http://analytics.optemo.com/piwik.php?idsite=<%= s.piwikSiteId %>" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tag -->
+
+<div id="backgroundPopup"></div>
+
+<%#= raw "return_data = \"<p>This is a test paragraph</p>\"; $('#optemo_embedder').append(return_data);" %>
