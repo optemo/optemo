@@ -50,18 +50,12 @@ class Cluster
   def self.product_specs(p_ids)
     st = []
     Session.current.continuous["filter"].each{|f| st << ContSpec.cachemany(p_ids, f)}
-<<<<<<< HEAD:app/models/cluster.rb
     Session.current.categorical["filter"].each{|f|  st<<CatSpec.cachemany(p_ids, f)} 
     Session.current.binary["filter"].each{|f|  st << BinSpec.cachemany(p_ids, f)} 
-=======
-    Session.current.categorical["filter"].each{|f| st << CatSpec.cachemany(p_ids, f)}
-    Session.current.binary["filter"].each{|f| st << BinSpec.cachemany(p_ids, f)}
->>>>>>> a6ce8007d39468e873bf12a3ec1a3530473a777f:app/models/cluster.rb
     st.transpose 
   end 
 
 
-<<<<<<< HEAD:app/models/cluster.rb
   def self.standardize_data(specs)
     specs = specs.transpose
     cont_size = Session.current.continuous["filter"].size
