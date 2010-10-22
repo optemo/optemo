@@ -21,11 +21,14 @@ class Cluster
   #The subclusters
   def children
     unless @children
-      puts("*****######!!!!!!"+Time.now.to_s)
+      
       specs = Cluster.product_specs(products)
+      start = Time.now
       cluster_ids = Cluster.kmeans(9,specs)
+      finish = Time.now
       @children = Cluster.group_by_clusterids(products,cluster_ids).map{|product_ids|Cluster.new(product_ids)}
-      puts("*****######!!!!!!"+Time.now.to_s)
+      
+      puts("*****######!!!!!!"+(finish-start).to_s)
     end
     @children
   end
@@ -75,7 +78,6 @@ class Cluster
   
   # regular kmeans function   
   def self.kmeans(number_clusters, specs, weights = nil)
-    debugger if specs.first.nil?
     weights = [1]*specs.first.size if weights.nil?
     tresh = 0.000001
     mean_1 = self.seed(number_clusters, specs)
@@ -111,20 +113,50 @@ class Cluster
 #  # Finding the mean of several points
 #  # points is a nxd dimension array where n is the number of products and d is number of features
   def self.mean(points)
-    points.transpose.map{|p| p.map{|x| x.to_f}.inject(:+)/p.size}
+    #2.8s
+    #points.transpose.map{|p| p.map{|x| x.to_f}.inject(:+)/p.size}
+    #
+    #2.69, 2.71
+    s = points.size.to_f
+    points.transpose.map{|p| p.inject(:+)/s}
+    #
+    #FAIL - modifies points
+    #p = points.dup
+    #s = points.size.to_f
+    #p.inject{|result, element| result.each_index{|i|result[i]+=element[i]}}.map{|i|i/s}
+    #
+    #FAIL - modifies points
+    #s = points.size.to_f
+    #res = points.pop
+    #while (c = points.pop)
+    #  res.each_index{|i|res[i] += c[i]}
+    #end
+    #res.map{|i|i/s}
+    #
+    #2.86, 2.93
+    #s = points.size.to_f
+    #res = [0]*points.first.size
+    #points.each do |p|
+    #  p.each_index{|i|res[i] += p[i]}
+    #end
+    #res.map{|i|i/s}
   end
   
-  
   # Finding the means of all clusters
+  # Group the specs based on their labels and within each group, find their mean
   def self.means(number_clusters, specs, labels)
-      m=[]
-      (0...number_clusters).each do |c| 
-        inds = self.indices(labels, c) 
-        specs_c =[] 
-        inds.each{|i| specs_c.push(specs[i])} 
-        m[c] = self.mean(specs_c)
-      end  
-      m
+    #2.48, 2.58, 2.42 (2.52,2.44,2.55) ((2.41, 2.48, 2.41))
+    specs.mygroup_by{|e,i|labels[i]}.map{|s|self.mean(s)}
+    
+    #2.76,2.7
+    #m=[]
+    #(0...number_clusters).each do |c| 
+    #  inds = self.indices(labels, c) 
+    #  specs_c =[] 
+    #  inds.each{|i| specs_c.push(specs[i])} 
+    #  m[c] = self.mean(specs_c)
+    #end  
+    #m
   end
   
   
@@ -151,11 +183,20 @@ class Cluster
  
   #Grouping products by cluster_ids
   def self.group_by_clusterids(product_ids, cluster_ids)
-   product_ids.group_by{|i|cluster_ids[product_ids.index(i)]}.values.sort{|a,b| b.length <=> a.length}
+   #product_ids.group_by{|i|cluster_ids[product_ids.index(i)]}.values.sort{|a,b| b.length <=> a.length}
+   #2.51,2.45
+   product_ids.mygroup_by{|e,i|cluster_ids[i]}.sort{|a,b| b.length <=> a.length}
   end
   
   #Euclidian distance function
   def self.distance(point1, point2)
+    #4.11
+    #[point1,point2].transpose.map do |p|
+    #  t=(p[1]-p[0])
+    #  t*t
+    #end.sum
+    
+    #2.43
     dist = 0
     point1.each_index do |i|
       diff = point1[i]-point2[i]
@@ -164,4 +205,38 @@ class Cluster
     dist
   end
   
+end
+
+#Just like group_by, except that results is just a grouped array
+module Enumerable
+  #def mygroup_by
+  #  assoc = Hash.new
+  #  res = []
+  #  each do |element|
+  #    key = yield(element)
+  #    if assoc.has_key?(key)
+  #      res[assoc[key]] << element
+  #    else
+  #      assoc[key] = res.size
+  #      res << [element]
+  #    end
+  #  end
+  #  res
+  #end
+  
+  def mygroup_by
+    assoc = Hash.new
+    res = []
+    each_index do |index|
+      element = self[index]
+      key = yield(element,index)
+      if assoc.has_key?(key)
+        res[assoc[key]] << element
+      else
+        assoc[key] = res.size
+        res << [element]
+      end
+    end
+    res
+  end
 end
