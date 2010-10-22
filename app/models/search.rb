@@ -186,11 +186,16 @@ class Search < ActiveRecord::Base
     search_id
   end
   
+  def products_size
+    @products_size ||= products.size
+  end
+  
   def products
     selected_features = (userdataconts.map{|c| c.name+c.min.to_s+c.max.to_s}+userdatabins.map{|c| c.name+c.value.to_s}+userdatacats.map{|c| c.name+c.value}<<keyword_search).hash
     CachingMemcached.cache_lookup("#{Session.current.product_type}Products#{selected_features}") do
       product_list = SearchProduct.where(filterquery).select(:product_id)
       product_list_ids = product_list.map(&:product_id)
+      @products_size = product_list_ids.size
       utility_list = ContSpec.cachemany(product_list_ids, "utility")
       # Cannot avoid sorting, since this result is cached.
       # If there is an error here, you might need to run rake calculate_factors. (utility_list.length should match product_list.length)

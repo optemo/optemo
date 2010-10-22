@@ -80,8 +80,9 @@ class Cluster
   
   # regular kmeans function   
   def self.kmeans(number_clusters, specs, weights = nil)
+    #2.44
     weights = [1]*specs.first.size if weights.nil?
-    tresh = 0.000001
+    thresh = 0.000001
     mean_1 = self.seed(number_clusters, specs)
     mean_2 =[]
     labels = []
@@ -97,11 +98,42 @@ class Cluster
       mean_1= self.means(number_clusters, specs, labels)
       z=0.0;
       mean_1.each_index{|c| z+=self.distance(mean_1[c], mean_2[c])}
-    end while z > tresh
-
+    end while z > thresh
+  
     labels  
   end
   
+  #Inloop calculation
+  #def self.kmeans(number_clusters, specs, weights = nil)
+  #  #2.48
+  #  weights = [1]*specs.first.size if weights.nil?
+  #  thresh = 0.000001
+  #  mean_1 = self.seed(number_clusters, specs)
+  #  mean_2 =[]
+  #  labels = []
+  #  dif = []
+  #  spec_length = specs.first.size
+  #  begin
+  #    mean_2 = mean_1 
+  #    mean_1_count = Array.new(number_clusters,0)
+  #    mean_1 = Array.new(number_clusters){|a|[0.0]*spec_length}
+  #    
+  #    specs.each_index do |i| 
+  #      mean_2.each_index do |c|
+  #        dif[c] = self.distance(specs[i], mean_2[c])
+  #      end
+  #      labels[i] = dif.index(dif.min)
+  #      mean_1[labels[i]].each_index {|f|mean_1[labels[i]][f] += specs[i][f]}
+  #      mean_1_count[labels[i]] += 1
+  #    end 
+  #    mean_1.each_with_index{|cluster_sum,i|mean_1[i] = cluster_sum.map{|f|f/mean_1_count[i]}}
+  #    #mean_1= self.means(number_clusters, specs, labels)
+  #    z=0.0;
+  #    mean_1.each_index{|c| z+=self.distance(mean_1[c], mean_2[c])}
+  #  end while z > thresh
+  #
+  #  labels  
+  #end
   
   #selecting the initial cluster centers
   def self.seed(number_clusters, specs)
@@ -171,7 +203,7 @@ class Cluster
   #Grouping products by cluster_ids
   def self.group_by_clusterids(product_ids, cluster_ids)
    #product_ids.group_by{|i|cluster_ids[product_ids.index(i)]}.values.sort{|a,b| b.length <=> a.length}
-   #2.51,2.45
+   #2.51,2.45, 2.4
    product_ids.mygroup_by{|e,i|cluster_ids[i]}.sort{|a,b| b.length <=> a.length}
   end
   
