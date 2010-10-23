@@ -39,7 +39,7 @@
 			<% open = true %>
 		  <% end %>
 		  <!-- Navbox partial to draw boxes -->
-		  <%= render :partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative} %>
+		  <%= render :partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative, :cluster_id => @s.search.cluster.id} %>
 		  <% if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1 %>
 			</div>
 			<% open = false %>

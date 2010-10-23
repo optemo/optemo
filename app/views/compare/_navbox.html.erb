@@ -28,7 +28,7 @@
 		<% if group %>
     		<div class='sim rounded'>
     	  <%= link_to(image_tag('plus.png')+t("products.compare.similar",:count => cluster.size - 1), 
-    	  "/compare/sim/#{cluster.id}", :id => "sim#{i}", :class => 'simlinks rounded', 
+    	  "/compare/sim/#{cluster_id}-#{i}", :id => "sim#{i}", :class => 'simlinks rounded', 
 		  :"data-id" => "#{product.id}", :"data-size" => cluster.size, :"title" => "Browse through all " + cluster.size.to_s + " in this group") %>
     		</div>
 		<% else %>

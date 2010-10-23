@@ -78,25 +78,17 @@ class CompareController < ApplicationController
   end
   
   def sim
-    cluster_id = params[:id]
-    cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
+    args = params[:id].gsub(/[^(\d|\-)]/,'').split('-')
+    cluster_hash = args[0]
+    child_id = args[1].to_i if args[1]
+    #cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
     Session.current.search = Session.current.lastsearch
-    if cluster_id.index('+')
-      #Merged Cluster
-      cluster = MergedCluster.fromIDs(cluster_id.split('+'))
+    if params[:ajax]
+      classVariables(Search.create({"cluster_hash" => cluster_hash, "child_id" => child_id, "action_type" => "similar"}))
+      render 'ajax', :layout => false
     else
-      #Single, normal Cluster
-      cluster = Cluster.cached(cluster_id)
-    end
-    unless cluster.nil?
-      if params[:ajax]
-        classVariables(Search.create({"clusters" => cluster.children, "action_type" => "similar"}))
-        render 'ajax', :layout => false
-      else
-        redirect_to "/compare/compare/"+cluster.children.map{|c|c.id}.join('-')
-      end
-    else
-      redirect_to "/compare/compare/"
+      render :text => "Not handeled yet."
+      #redirect_to "/compare/compare/"+cluster.children.map{|c|c.id}.join('-')
     end
   end
 

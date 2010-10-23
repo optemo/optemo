@@ -175,7 +175,10 @@ class Search < ActiveRecord::Base
   
   def initial_products(set_search_id=nil)
     s = Session.current
-    search_id = s.product_type.hash.abs%1000000000*-1
+    #We probably need a better algorithm to check for collisions
+    chars = []
+    s.product_type.each_char{|c|chars<<c.getbyte(0)*chars.size}
+    search_id = chars.sum*-1
     #This can be optimized not to check every time
     if SearchProduct.where(["search_id = ?", search_id]).limit(1).empty?
       SearchProduct.transaction do
@@ -191,26 +194,34 @@ class Search < ActiveRecord::Base
   end
   
   def products
-    selected_features = (userdataconts.map{|c| c.name+c.min.to_s+c.max.to_s}+userdatabins.map{|c| c.name+c.value.to_s}+userdatacats.map{|c| c.name+c.value}<<keyword_search).hash
-    CachingMemcached.cache_lookup("#{Session.current.product_type}Products#{selected_features}") do
-      product_list = SearchProduct.where(filterquery).select(:product_id)
-      product_list_ids = product_list.map(&:product_id)
-      @products_size = product_list_ids.size
-      utility_list = ContSpec.cachemany(product_list_ids, "utility")
-      # Cannot avoid sorting, since this result is cached.
-      # If there is an error here, you might need to run rake calculate_factors. (utility_list.length should match product_list.length)
-       utility_list.zip(product_list_ids).sort{|a,b|b[0]<=>a[0]}.map{|a,b|b}
+    unless @products
+      #selected_features = (userdataconts.map{|c| c.name+c.min.to_s+c.max.to_s}+userdatabins.map{|c| c.name+c.value.to_s}+userdatacats.map{|c| c.name+c.value}<<keyword_search).hash
+      #@products =   CachingMemcached.cache_lookup("#{Session.current.product_type}Products#{selected_features}") do
+        product_list = SearchProduct.where(filterquery).select(:product_id)
+        product_list_ids = product_list.map(&:product_id)
+        @products_size = product_list_ids.size
+        utility_list = ContSpec.cachemany(product_list_ids, "utility")
+        # Cannot avoid sorting, since this result is cached.
+        # If there is an error here, you might need to run rake calculate_factors. (utility_list.length should match product_list.length)
+         @products = utility_list.zip(product_list_ids).sort{|a,b|b[0]<=>a[0]}.map{|a,b|b}
     end
+    @products
   end
   
   def filterquery
     s = Session.current
     fqarray = []
-    
     #This might be able to be refactored into a single MySQL query
-    unless @prefiltered_products == 0
+    if @myproducts
+      if @myproducts == -1
+        my_search = initial_products(id)
+      else
+        my_search = id
+      end
+    else
       s.searches.map(&:id).reverse.each do |s_id|
-        c = SearchProduct.where(["id = ?",s_id])
+        next if s_id > id
+        c = SearchProduct.where(["search_id = ?",s_id])
         unless c.empty? 
           #Check for initial products' token
           if c.first.product_id == -1
@@ -348,10 +359,11 @@ class Search < ActiveRecord::Base
       # Current products: 0
       # Previous products: id of previous search
       @prefiltered_products = -1 #initial products
+      @myproducts = -1
     when "similar"
       #Browse similar button
       @prefiltered_products = 0 # current products
-      @myproducts = Cluster.findbychild(p["p_hash"],p["child_id"])
+      @myproducts = Cluster.findbychild(p["cluster_hash"],p["child_id"])
       duplicateFeatures(old_search)
     when "nextpage"
       #the next page button has been clicked
@@ -367,6 +379,7 @@ class Search < ActiveRecord::Base
       else
         #Search is expanded, so use all products to begin with
         @prefiltered_products = -1 #Initial products
+        @myproducts = -1
       end
     else
       #Error
@@ -380,7 +393,7 @@ class Search < ActiveRecord::Base
       d.save
     end
     #Record new prefiltered products
-    if @prefiltered_products == "current"
+    if @myproducts && @myproducts.kind_of?(Array)
       SearchProduct.transaction do
         @myproducts.map{|product_id| SearchProduct.new({:product_id => product_id, :search_id => id})}.each(&:save)
       end
