@@ -3,6 +3,12 @@ class Cluster
   
   def initialize(products)
     @products = products
+    
+    if Rails.env.development?
+      Site::Application::CLUSTER_CACHE[products.hash.abs]=products
+    else
+      Rails.cache.write("Cluster#{products.hash.abs}", products)
+    end
   end
   
   #Unique key for memcache lookup using BER-compressed integer
@@ -11,11 +17,21 @@ class Cluster
   end
   
   def id
-    products.hash
+    products.hash.abs
   end
   
   def self.cached(id)
-    CachingMemcached.cache_lookup("Cluster#{id}"){find(id)}
+    if Rails.env.development?
+      Cluster.new(Site::Application::CLUSTER_CACHE[id.to_i])
+    else
+      Cluster.new(CachingMemcached.cache_lookup("Cluster#{id}"))
+    end
+  end
+  
+  def self.findbychild(id,child_id = 0)
+    cluster = self.cached(id)
+    child = cluster.children[child_id] || cluster.children[0]
+    child.products
   end
   
   #The subclusters
@@ -24,7 +40,7 @@ class Cluster
       
       specs = Cluster.product_specs(products)
       start = Time.now
-      cluster_ids = Cluster.kmeans(9,specs)
+      cluster_ids = Cluster.kmeans([9,products.length].min,specs)
       finish = Time.now
       @children = Cluster.group_by_clusterids(products,cluster_ids).map{|product_ids|Cluster.new(product_ids)}
       
