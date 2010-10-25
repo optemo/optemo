@@ -55,41 +55,42 @@ class Cluster
     st.transpose 
   end 
 
-
-  def self.standardize_data(specs)
+# converts categorical spec values to binary arrays
+  def self.standardize_cat_data(specs)
     specs = specs.transpose
-    cont_size = Session.current.continuous["filter"].size
+    #cont_size=3
+    #cats = ["brand"]
+    cont_size = Session.current.continous["filter"].size
     Session.current.categorical["filter"].each_index do |i|
       vals = specs[i+cont_size].uniq
-      cat = [0]*vals.size
-      cat[vals.index(specs[i+cont_size][p])] = 1
-      specs[i+cont_size][p].replace(cat)  
+      t=0
+      specs[i+cont_size].each do |v| 
+            cat = [0]*vals.size
+            cat[vals.index(v)] = 1
+            specs[i+cont_size][t]=cat
+            t+=1  
+      end      
     end
     specs = specs.transpose
     specs.map{|p| p.flatten}  
   end  
     
-  #  dim = specs[0].length
-  #  specs_cont.each do |point|
-  #      point_index do |s|
-  #        point[s] = (point[s] - mean[s])/var[s]
-  #      end
-  #  end    
-  ## somehow we should append specs_cont and specs_bool
-
-  #def self.standarize_data(specs, specs, mean, var)
-  ##  dim = specs[0].length
-  ##  specs_cont.each do |point|
-  ##      point_index do |s|
-  ##        point[s] = (point[s] - mean[s])/var[s]
-  ##      end
-  ##  end    
-  ### somehow we should append specs_cont and specs_bool
-
+  #   
+  def self.standardize_cont_data(specs)
+    mean_all = means(specs)
+    var_all = self.get_mean_var(specs, mean_all)
+    specs.each{|p| p.each_with_index{|v, i| p[i]=(v-mean_all[i])/var[i]}}
+  end
   
- #def self.get_mean_var()
- #  
- #end
+  # finds the standard deviation for every dimension(feature)
+  def self.get_var(specs, mean_all)
+    count = specs.size
+    var = []
+    specs.each{|p| var << p.each_index{|i| i*i}.inject(:+)}
+    debugger
+    var.each_index{|i| var[i]=Math.sqrt((var[i]/count) - (mean_all[i]**2))}
+    var_all
+  end
   
   
   # regular kmeans function   

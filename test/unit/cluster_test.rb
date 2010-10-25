@@ -108,9 +108,17 @@ class ClusterTest < ActiveSupport::TestCase
     assert_equal Cluster.distance(point1, point2), Cluster.distance(point2, point1), "Distance should be symmetric"
   end
   
-  test "Data standardization" do 
-    specs=[[2,3,1,"Canon"], [0, 1, 2, "Sony"]]
-    assert_equal Cluster_standardize_data(specs).first.size, 5, "categorical features should be mapped to a an array"
-    assert_equal [[2,3,1,1,0], [0,1,2,0,1]], Cluster_standardize_data(specs), "standardization is not done properly"
-  end  
+# test "Standardization of continuous data" do 
+#   points = [[0.1,2000], [0.5, 100], [0.3, 500]]
+#   mean_all= Cluster.mean(points)
+#   var_all = Cluster.get_var(points, mean_all)
+#   assert_in_delta [0.3, 866.67], mean_all, 0.0001, "mean of points"
+#   assert_in_delta [0.1643,817.8527], var_all, 0.0001, "variance of points" 
+# end   
+ 
+ #test "Data standardization" do 
+ #  specs=[[2,3,1,"Canon"], [0, 1, 2, "Sony"]]
+ #  assert_equal Cluster.standardize_data(specs).first.size, 5, "categorical features should be mapped to a an array"
+ #  assert_equal [[2,3,1,1,0], [0,1,2,0,1]], Cluster.standardize_data(specs), "standardization is not done properly"
+ #end  
 end
