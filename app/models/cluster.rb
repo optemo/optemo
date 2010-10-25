@@ -64,16 +64,15 @@ class Cluster
   
   def numclusters
     children.size
-  end
+  end  
   
   def self.product_specs(p_ids)
     st = []
     Session.current.continuous["filter"].each{|f| st << ContSpec.cachemany(p_ids, f)}
-    Session.current.categorical["filter"].each{|f|  st << CatSpec.cachemany(p_ids, f)}
-    Session.current.binary["filter"].each{|f|  st << BinSpec.cachemany(p_ids, f)} 
+    Session.current.categorical["filter"].each{|f| st << CatSpec.cachemany(p_ids, f)}
+    Session.current.binary["filter"].each{|f| st << BinSpec.cachemany(p_ids, f)}
     st.transpose 
   end 
-   
 
 
   #def self.standarize_data(specs, specs, mean, var)
@@ -160,7 +159,6 @@ class Cluster
     m
   end
   
-  
 #  # Finding the mean of several points
 #  # points is a nxd dimension array where n is the number of products and d is number of features
   def self.mean(points)
@@ -210,26 +208,35 @@ class Cluster
     #m
   end
   
-  
-  def isEmpty(search = nil)
-    nodes(search).empty?
-  end
-  
-  def clearCache
-    @nodes = nil
-    @range = nil
-    @children = nil
-  end
-  
   # Finds the indices in an array that match the given value
   def self.indices(array, value) 
     c=[]
     array.each_index{|i| c.push(i) if array[i]==value}
     c
   end  
+ 
+  #Grouping products by cluster_ids
+  def self.group_by_clusterids(product_ids, cluster_ids)
+   #product_ids.group_by{|i|cluster_ids[product_ids.index(i)]}.values.sort{|a,b| b.length <=> a.length}
+   #2.51,2.45, 2.4
+   product_ids.mygroup_by{|e,i|cluster_ids[i]}.sort{|a,b| b.length <=> a.length}
+  end
   
-  def utility
-    nodes.map{|n|n.utility}.sum/size
+  #Euclidian distance function
+  def self.distance(point1, point2)
+    #4.11
+    #[point1,point2].transpose.map do |p|
+    #  t=(p[1]-p[0])
+    #  t*t
+    #end.sum
+    
+    #2.43
+    dist = 0
+    point1.each_index do |i|
+      diff = point1[i]-point2[i]
+      dist += diff*diff
+    end
+    dist
   end
  
   #Grouping products by cluster_ids
