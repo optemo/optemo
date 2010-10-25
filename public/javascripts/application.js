@@ -884,11 +884,12 @@ optemo_module = (function (my){
         	$.ajax({
         		type: (mydata==null)?"GET":"POST",
         		data: (mydata==null)?"":mydata,
-        		url: myurl,
+        		url: (hash==null)?myurl:myurl+"&hist="+hash,
         		success: ajaxhandler,
         		error: ajaxerror
         	});
     	} else if (typeof(hash) != "undefined" && hash != null) {
+			/* Used by back button */
     		$.ajax({
     			type: "GET",
     			url: "/compare/compare/?ajax=true&hist="+hash,
