@@ -3,6 +3,7 @@ class CreateSearches < ActiveRecord::Migration
     create_table :searches do |t|
       t.primary_key :id
       t.integer :session_id
+      t.integer :parent_id
       t.string :keyword_search
       t.integer :page
       t.string :groupby

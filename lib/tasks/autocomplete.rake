@@ -1,15 +1,14 @@
 namespace :autocomplete do
   desc "Fetch search terms for javascript-based autocomplete..."
   task :fetch => :environment do
-    js_file = File.open("#{Rails.root}/public/javascripts/autocomplete_terms.js", File::WRONLY|File::TRUNC|File::CREAT)
-    
+    js_file = File.open("#{Rails.root}/public/javascripts/autocomplete_terms.js", File::WRONLY|File::TRUNC|File::CREAT)    
     if (js_file)
       js_file.syswrite("/* Machine-generated javascript. Run \"rake autocomplete:fetch\" to regenerate. */\n")
       yml_file = YAML::load(File.open("#{Rails.root}/config/products.yml"))
       unless (yml_file.nil? || yml_file.empty?)
         product_types = {}
         yml_file.each do |p_yml_entry|
-          product_types[p_yml_entry.second["product_type"].first] = (p_yml_entry.first)
+          product_types[p_yml_entry.second["product_type"]] = (p_yml_entry.first)
         end
         product_types.each do |pType_url_pair| # This is a pair like this: "camera_us"=>"m.browsethenbuy.com" - seems backwards, but makes the hash unique on product_type
           Session.new(pType_url_pair[1]) # The URL

@@ -1306,6 +1306,7 @@ ActiveRecord::Schema.define(:version => 20101019233312) do
 
   create_table "searches", :force => true do |t|
     t.integer  "session_id"
+    t.integer  "parent_id"
     t.string   "keyword_search"
     t.integer  "page"
     t.string   "groupby"

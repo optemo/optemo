@@ -29,13 +29,13 @@ module CompareHelper
   def format_acceptable_increments(number, round_direction='down')
     # These acceptable increments can be tweaked as necessary. Multiples of 5 and 10 look cleanest; 20 looks OK but 2 and 0.2 look weird.
 		acceptableincrements = [1000, 500, 100, 50, 10, 5, 1, 0.5, 0.1, 0.05, 0.01]
-		comparator = number / 100.0 # so that's 81.7799
-    increment = acceptableincrements.delete_if{|i| (i * 1.1) < comparator}.last
-    realvalue = (number / increment)
+		comparator = number / 100.0 # so that's 81.7799 or 1.1999
+    increment = acceptableincrements.delete_if{|i| i < comparator}.last
+    realvalue = (number / increment) 
     if round_direction == 'up'
       realvalue = realvalue.ceil * increment
     else
-      realvalue = realvalue.round * increment
+      realvalue = realvalue.floor * increment
     end
     # Weird floating point bug here
     (realvalue * 100).to_i.to_f / 100.0
@@ -75,7 +75,9 @@ module CompareHelper
   
   def navtitle
     s = Session.current
-		[s.search.products_size, (s.search.products_size > 1) ? t("#{s.product_type}.title-plural") : t("#{s.product_type}.title-plural")].join(" ")
+		title = [s.search.products.size, (s.search.products.size > 1) ? t("#{s.product_type}.title-plural") : t("#{s.product_type}.title-plural")].join(" ")
+		title += " Grouped by " + t('products.' + s.search.groupby) if s.search.groupby
+    title
   end
   
   def groupDesc(group, i)

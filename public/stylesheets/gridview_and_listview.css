@@ -210,6 +210,7 @@ div #leftbar {
 #submit_button {
 	margin-top: 2px;
 	width: 55px;
+	font-size:11px;
 }
 
 #savebar {
@@ -722,7 +723,7 @@ margin-top:0;
 //        Show page and related         //
 //--------------------------------------*/
 
-div#fade {
+div#silkscreen {
 	background-color: black;
 	position: absolute;
 	top: 0;
@@ -733,9 +734,9 @@ div#fade {
 	opacity: 0.50;
 	filter: alpha(opacity = 50);
 	display: none;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	border-radius: 0 0 5px 5px;
+	-moz-border-radius: 0 0 5px 5px;
+	-webkit-border-radius: 0 0 5px 5px;
 }
 
 #outsidecontainer {

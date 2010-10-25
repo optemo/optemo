@@ -1,6 +1,6 @@
 <% # The Filters section - For Mobile Layout Only %>
 
-<div id="filter_content" class="leftboxes rounded_leftboxes rounded">
+<div id="filter_content" class="leftboxes rounded_bd rounded">
 	<%= form_tag("/compare/filter",{:id => 'all_filters_form', :method => 'post'}) do %>
 		<div class='feature'>
 			<div class='label'>
@@ -71,7 +71,7 @@
 				<div class='label'>
 					<%= render :partial => 'desc', :locals => {:feat => feat} %>
 					<% dobj = Userdatabin.find_by_search_id_and_name(@s.search.id,feat) %>
-					<%= check_box('myfilter', feat, {:checked => dobj.nil? || dobj.value == false ? false : 'checked', :class => 'autosubmitbool'})%>
+					<%= check_box('myfilter', feat, {:checked => dobj.nil? || dobj.value == false ? false : 'checked', :class => 'binary_filter'})%>
 					<%= link_to t('products.' + feat), "#" %>
 				</div>
 			</div>

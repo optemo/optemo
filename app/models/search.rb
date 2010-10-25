@@ -219,18 +219,25 @@ class Search < ActiveRecord::Base
         my_search = id
       end
     else
-      s.searches.map(&:id).reverse.each do |s_id|
-        next if s_id > id
-        c = SearchProduct.where(["search_id = ?",s_id])
-        unless c.empty? 
+      current_s = self
+      while(my_search.nil?)
+        c = SearchProduct.where(["search_id = ?",current_s.id])
+        if c.empty?
+          begin
+            current_s = Search.find(current_s.parent_id)
+          rescue (ActiveRecord::RecordNotFound)
+            #There's an error let's just go back to the initial products
+            debugger
+            my_search = initial_products(id)
+          end
+        else
           #Check for initial products' token
           if c.first.product_id == -1
             #Initial products should be used
             my_search = initial_products
           else
             #Previous selected products have been found
-            my_search = s_id
-            break
+            my_search = current_s.id
           end
         end
       end
@@ -350,7 +357,11 @@ class Search < ActiveRecord::Base
     #Set session id
     s = Session.current
     self.session_id = s.id
-    old_search = s.lastsearch unless p["action_type"] == "initial" #Exception for initial clusters
+    unless p["action_type"] == "initial" #Exception for initial clusters
+      old_search = Search.find_by_id_and_session_id(p["search_hist"],s.id)
+      old_search = s.lastsearch if old_search.nil?
+      self.parent_id = old_search.id
+    end
     case p["action_type"]
     when "initial"
       #Initial load of the homepage

@@ -1,7 +1,7 @@
-<% self.title = "#{@s.search.desc} #{@s.product_type.capitalize}" unless @indexload%>
+<% self.title = "#{@s.search.desc} #{@s.product_type.capitalize}" unless @indexload %>
 <div id="leftbar">
 	<!-- The Filters section -->
-	<div id="filterbar" class="leftboxes rounded_leftboxes rounded">
+	<div id="filterbar" class="leftboxes rounded_bd rounded">
 		<div class="tl"></div><div class="tr"></div>
 		<h2><%=t 'products.compare.search' %> <%= link_to "(reset)", "/compare/", :id => "staticajax_reset", :class => "reset" %></h2>
 			<div class="filtersdesc"><%=t 'products.compare.filtersdesc' %></div>
@@ -14,10 +14,10 @@
 	</div>
 	
 	<!-- The Saved Items box -->
-	<div id="savebar" class='leftboxes gainlayout rounded_leftboxes rounded'>
+	<div id="savebar" class='leftboxes gainlayout rounded_bd rounded'>
 		<div class="tl"><!-- --></div><div class="tr"><!-- --></div>
 		<h2> <%=t 'products.compare.saved' %> </h2>
-		<div class="savesome"> <% if @s.dragAndDropEnabled == true %> <%=t 'products.compare.savesomedrag'%> <% else %> <%=t 'products.compare.savesome'%> <% end %></div>
+		<div class="savesome"> <% if Session.current.dragAndDropEnabled == true %> <%=t 'products.compare.savesomedrag'%> <% else %> <%=t 'products.compare.savesome'%> <% end %></div>
 		<div id="savebar_content">
 		<div id="already_added_msg" class="savedmsg"> <%=t 'products.compare.alreadyadded' %> </div>
 		<div id="too_many_saved" class="savedmsg"> <%=t 'products.compare.toomanysaved' %> </div>

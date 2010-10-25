@@ -3,29 +3,29 @@ javascripts:
 - base: 
   - raphael
   - helpers_shared
-  - helpers
-  - application
-  - jquery-ui-1.8.custom.min
+  - autocomplete_terms
+  - jquery-ui-1.8.5.custom.min
   - jquery.tablednd_0_5
   - jquery.history
   - facebooksessionops
-  - jquery.autocomplete.min
-  - autocomplete_terms
+  - application
   
 - mobile:
     - helpers_shared
+    - jquery-ui-1.8.5.custom.min
     - application_mobile
-    - jquery-ui-1.8.custom.min
     
 stylesheets: 
 - gridview: 
     - shared
     - gridview_and_listview
     - gridview
+    - jquery-ui-1.8.5.custom
 - listview: 
     - shared
     - gridview_and_listview
     - listview
+    - jquery-ui-1.8.5.custom
 - mobileview: 
     - shared
     - mobile

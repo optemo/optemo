@@ -1,6 +1,8 @@
 <%= form_tag("/compare/filter",{:id => 'search_form'}) do %>
   <%= @s.search.keyword_search.blank? ? text_field_tag('search') : text_field_tag('search', @s.search.keyword_search) %>
-  <%= submit_tag 'Search', {:id => 'submit_button'} %>
+	<div class="ui-widget" style="display:inline;">
+		<%= submit_tag 'Search', {:id => 'submit_button'} %>
+	</div>
   <% if @s.search.keyword_search %>
 	<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :class => "removesearch"} %> Search: <%= @s.search.keyword_search %>
 	</div>
@@ -53,10 +55,11 @@
 		<div class='label' data-position="<%= i %>">
 			<%= render :partial => 'desc', :locals => {:feat => feat} %>
 			<% dobj = Userdatabin.find_by_search_id_and_name(@s.search.id,feat) %>
-			<%= check_box('myfilter', feat, {:checked => dobj.nil? || dobj.value == false ? false : 'checked', :class => 'autosubmitbool'})%>
+			<%= check_box('myfilter', feat, {:checked => dobj.nil? || dobj.value == false ? false : 'checked', :class => 'binary_filter'})%>
 			<%= link_to t('products.' + feat), "#" %>
 		</div>
 	</div>
 	<% i = i + 1 %>	
 <% end %>
+<%= hidden_field_tag 'myfilter[search_hist]', @s.search.id %>
 <% end %>
