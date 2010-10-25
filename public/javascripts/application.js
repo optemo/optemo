@@ -809,37 +809,7 @@ optemo_module = (function (my){
     // 		trackPage('products/show/'+currentelementid); 
         });
 
-        if (DIRECT_LAYOUT) { // in Optemo Direct, a click anywhere on the product box goes to the show page
-            $('.nbsingle').live("click", function(){ 
-         		currentelementid = $(this).find('.productinfo').attr('data-id');
-         		ignored_ids = my.getAllShownProductIds();
-         		product_title = $(this).find('img.productimg').attr('title');
-        		my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids});
-         		showpage(currentelementid);
-         		return false;
-        	});
-        	// In addition, set up the images on the "show groups" page to be clickable.
-        	$(".productimg").live("click", function (){
-                currentelementid = $(this).attr('data-id');
-                if(currentelementid === undefined) { currentelementid = $(this).find('.productimg').attr('data-id'); }
-        		ignored_ids = my.getAllShownProductIds();
-         		product_title = $(this).find('img.productimg').attr('title');
-        		my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids});
-         		showpage(currentelementid);
-         		return false;            
-            });
-        } else { // in Optemo Assist, a click only on the picture or .easylink product name will trigger the show page
-            $(".productimg, .easylink").live("click", function (){
-                currentelementid = $(this).attr('data-id');
-        		ignored_ids = my.getAllShownProductIds();
-         		product_title = $(this).find('img.productimg').attr('title');
-        		my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids});
-         		showpage(currentelementid);
-         		return false;            
-            });  
-        }
-
-    	if (optemo_module.IS_DRAG_DROP_ENABLED)
+    	if (my.IS_DRAG_DROP_ENABLED)
     	{
     		// Make item boxes draggable. This is a jquery UI builtin.		
     		$(".image_boundingbox img, .image_boundingbox_line img, img.productimg").each(function() {
