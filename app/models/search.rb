@@ -198,6 +198,7 @@ class Search < ActiveRecord::Base
       #selected_features = (userdataconts.map{|c| c.name+c.min.to_s+c.max.to_s}+userdatabins.map{|c| c.name+c.value.to_s}+userdatacats.map{|c| c.name+c.value}<<keyword_search).hash
       #@products =   CachingMemcached.cache_lookup("#{Session.current.product_type}Products#{selected_features}") do
         product_list = SearchProduct.where(filterquery).select(:product_id)
+        debugger
         product_list_ids = product_list.map(&:product_id)
         @products_size = product_list_ids.size
         utility_list = ContSpec.cachemany(product_list_ids, "utility")
@@ -230,8 +231,8 @@ class Search < ActiveRecord::Base
           else
             #Previous selected products have been found
             my_search = s_id
-            break
           end
+          break
         end
       end
     end
