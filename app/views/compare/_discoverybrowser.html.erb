@@ -25,7 +25,7 @@
 	<% if @s.directLayout %>
 		<% if @groupings.nil? %>
 			<% @products.each_index do |i| %>
-				<%= render :partial => 'singlelist', :locals => {:product => @products[i], :i => i} %>
+				<%= render :partial => 'singlelist', :locals => {:product => Product.cached(@products[i]), :i => i} %>
 			<% end %>
 		<% else %>
 			<% @groupings.each do |grouping| %>
@@ -39,7 +39,7 @@
 			<% open = true %>
 		  <% end %>
 		  <!-- Navbox partial to draw boxes -->
-		  <%= render :partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative} %>
+		  <%= render :partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative, :cluster_id => @s.search.cluster.id} %>
 		  <% if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1 %>
 			</div>
 			<% open = false %>
