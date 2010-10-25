@@ -62,6 +62,9 @@ class Cluster
     products.size
   end
   
+  def numclusters
+    children.size
+  end
   
   def self.product_specs(p_ids)
     st = []

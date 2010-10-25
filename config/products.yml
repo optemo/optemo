@@ -31,7 +31,7 @@ cameras:
         used_for: [boost, filter, show]
     brand:
         feature_type: Categorical
-        used_for: [boost, filter, show]
+        used_for: [boost, show]
 
 cameras.browsethenbuy.com:
     product_type: camera_us
