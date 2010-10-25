@@ -8,7 +8,7 @@ class CompareController < ApplicationController
     end
     # The page numbers have to go in for pagination
     # Page number has to be a hash for compatibility with Search.new()
-    classVariables(Search.create({"page" => params[:page], "action_type" => "initial"}))
+    classVariables(Search.create({"page" => params[:page], "action_type" => "initial"})) unless @indexload
     if params[:ajax]
       render 'ajax', :layout => false
     else
