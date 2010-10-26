@@ -17,11 +17,8 @@ class CompareController < ApplicationController
   end
 
   def groupby
-    feat = params[:feat]
     # We need to make a new search so that history works properly (back button can take to "groupby" view)
     classVariables(Search.create(:feat => params[:feat], "action_type" => "groupby"))
-    @groupings = Search.createGroupBy(feat)
-    @groupedfeature = feat
     render 'ajax', :layout => false
   end
 
@@ -35,11 +32,7 @@ class CompareController < ApplicationController
       if hist <= search_history.length && hist > 0
         mysearch = search_history[hist-1]
         mysearch.page = params[:page] if params[:page] # For this case: back button followed by clicking a pagination link
-        classVariables(mysearch)
-        if mysearch.groupby
-          @groupings = Search.createGroupBy(mysearch.groupby)
-          @groupedfeature = mysearch.groupby
-        end        
+        classVariables(mysearch)    
       else
         #Initial clusters
         classVariables(Search.create({"page" => params[:page], "action_type" => "initial"}))

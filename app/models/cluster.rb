@@ -46,7 +46,8 @@ class Cluster
       @children = Cluster.group_by_clusterids(products,cluster_ids).map{|product_ids|Cluster.new(product_ids)}
       
       puts("*****######!!!!!!"+(finish-start).to_s)
-      puts(@children[0].factorial_c(10))
+      $c = Cluster.new([]) unless $c
+      puts($c.factorial_c(9))
     end
     @children
   end
@@ -369,7 +370,7 @@ class Cluster
     dist
   end
   
-  inline :C do |builder|
+  inline do |builder|
     builder.c "
     long factorial_c(int max) {
       int i=max, result=1;
