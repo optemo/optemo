@@ -105,7 +105,7 @@ module Inline
   # and if so, use it. only try this on Windows.
 
   def self.rootdir
-    env = ENV['INLINEDIR'] || ENV['HOME']
+    env = "#{Rails.root}/lib" || ENV['INLINEDIR'] || ENV['HOME']
 
     if env.nil? and WINDOZE then
       # try HOMEDRIVE + HOMEPATH combination
