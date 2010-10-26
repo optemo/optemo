@@ -1,8 +1,6 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    RubyInline (3.8.6)
-      ZenTest (~> 4.3)
     ZenTest (4.4.0)
     abstract (1.0.0)
     actionmailer (3.0.0)
@@ -109,7 +107,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  RubyInline
+  ZenTest
   capistrano
   capistrano-ext
   factory_girl

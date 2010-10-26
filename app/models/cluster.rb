@@ -1,4 +1,5 @@
 class Cluster
+  require 'inline'
   attr :products
   
   def initialize(products)
