@@ -19,12 +19,7 @@ class CompareController < ApplicationController
   def groupby
     feat = params[:feat]
     # We need to make a new search so that history works properly (back button can take to "groupby" view)
-    old_search = Session.current.lastsearch
-    current_search = old_search.clone # copy over session ID, etc.
-    current_search.groupby = feat # save feature for later. Any feature in "groupby" means we're in groupby view
-    current_search.duplicateFeatures(current_search, old_search) # Copy over userdata from last search for groupings
-    current_search.save
-    classVariables(current_search)
+    classVariables(Search.create(:feat => params[:feat], "action_type" => "groupby"))
     @groupings = Search.createGroupBy(feat)
     @groupedfeature = feat
     render 'ajax', :layout => false

@@ -267,15 +267,15 @@ class Search < ActiveRecord::Base
     fqarray.join(" AND ")
   end
 
-  def self.createGroupBy(feat)
+  def groupings
+    return [] if groupby.nil? 
     s = Session.current
-    myproducts = s.search.products
-    product_ids = myproducts.map(&:product_id)
-    if s.categorical.values.flatten.index(feat) # It's in the categorical array
-      specs = product_ids.zip CatSpec.cachemany(product_ids,feat)
+    product_ids = products.map(&:product_id)
+    if s.categorical.values.flatten.index(groupby) # It's in the categorical array
+      specs = product_ids.zip CatSpec.cachemany(product_ids,groupby)
       grouping = specs.group_by{|spec|spec.value}.values.sort{|a,b| b.length <=> a.length}
       #grouping = Hash[grouping.each_pair{|k,v| grouping[k] = v.map(&:product_id)}.sort{|a,b| b.second.length <=> a.second.length}]
-    elsif s.continuous.values.flatten.index(feat)
+    elsif s.continuous.values.flatten.index(groupby)
       specs = product_ids.zip ContSpec.cachemany(product_ids, feat).sort{|a,b|b[1] <=> a[1]}
       # [[id, low], [id, higher], ... [id, highest]]
       quartile_length = (specs.length / 4.0).ceil
@@ -358,7 +358,7 @@ class Search < ActiveRecord::Base
     s = Session.current
     self.session_id = s.id
     unless p["action_type"] == "initial" #Exception for initial clusters
-      old_search = Search.find_by_id_and_session_id(p["search_hist"],s.id)
+      old_search = Search.find_by_id_and_session_id(p["search_hist"],s.id) if p["search_hist"]
       old_search = s.lastsearch if old_search.nil?
       self.parent_id = old_search.id
     end
@@ -379,6 +379,9 @@ class Search < ActiveRecord::Base
     when "nextpage"
       #the next page button has been clicked
       @prefiltered_products = old_search.id
+      duplicateFeatures(old_search)
+    when "groupby"
+      self.groupby = p[:feat]
       duplicateFeatures(old_search)
     when "filter"
       #product filtering has been done through keyword search of attribute filters

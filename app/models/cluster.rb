@@ -263,6 +263,9 @@ class Cluster
     dist
   end
   
+  inline :C do |builder|
+    
+  end
 end
 
 #Just like group_by, except that results is just a grouped array
