@@ -47,6 +47,7 @@
 # See hoe for more details.
 #
 
+#Already included in Rails
 #require "rbconfig"
 #require "digest/md5"
 #require 'fileutils'
@@ -510,7 +511,7 @@ VALUE #{method}_equals(VALUE value) {
     # Loads the generated code back into ruby
 
     def load
-      require "#{so_name}" or raise LoadError, "require on #{so_name} failed"
+      require "#{so_name}"#Require doesn't return anything in Rails | or raise LoadError, "require on #{so_name} failed"
     end
 
     ##
