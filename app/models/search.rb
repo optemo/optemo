@@ -270,13 +270,12 @@ class Search < ActiveRecord::Base
   def groupings
     return [] if groupby.nil? 
     s = Session.current
-    product_ids = products.map(&:product_id)
-    if s.categorical.values.flatten.index(groupby) # It's in the categorical array
-      specs = product_ids.zip CatSpec.cachemany(product_ids,groupby)
+    if s.categorical["all"].index(groupby) # It's in the categorical array
+      specs = products.zip CatSpec.cachemany(products, groupby)
       grouping = specs.group_by{|spec|spec.value}.values.sort{|a,b| b.length <=> a.length}
       #grouping = Hash[grouping.each_pair{|k,v| grouping[k] = v.map(&:product_id)}.sort{|a,b| b.second.length <=> a.second.length}]
-    elsif s.continuous.values.flatten.index(groupby)
-      specs = product_ids.zip ContSpec.cachemany(product_ids, feat).sort{|a,b|b[1] <=> a[1]}
+    elsif s.continuous["all"].index(groupby)
+      specs = products.zip ContSpec.cachemany(products, groupby).sort
       # [[id, low], [id, higher], ... [id, highest]]
       quartile_length = (specs.length / 4.0).ceil
       quartiles = []
@@ -317,12 +316,12 @@ class Search < ActiveRecord::Base
     else # Binary feature. Do nothing for now.
     end
     grouping.map do |q|
-      product_ids = q.map(&:product_id)
-      prices_list = ContSpec.cachemanys(product_ids,"price")
+      product_ids = q.map(&:first)
+      prices_list = ContSpec.cachemany(product_ids,"price")
       utility_list = ContSpec.cachemany(product_ids, "utility")
       {
-        :min => q.first.value.to_s,
-        :max => q.last.value.to_s,
+        :min => q.first.last.to_s,
+        :max => q.last.last.to_s,
         :size => q.count,
         :cheapest =>  Product.cached(product_ids[prices_list.index(prices_list.max)]),
         :best => Product.cached(product_ids[utility_list.index(utility_list.max)])

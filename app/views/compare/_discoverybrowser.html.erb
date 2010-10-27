@@ -2,12 +2,12 @@
 	<% if flash[:notice] %>
 	<span class="notice"><%= flash[:notice] %></span>
 	<% end %>
-	<div <%= 'class=listview_ungrouped' if @groupings.nil? && @s.directLayout %> >
+	<div <%= 'class=listview_ungrouped' if @s.search.groupby.nil? && @s.directLayout %> >
 	<div id="navigator_bar" class="rounded_nav rounded">
 		<div class="tl"></div><div class="tr"></div>
 	    <%= navtitle %>
 	<% if @s.directLayout %>
-		<% columntext = columntext(!@groupings.nil?) %>
+		<% columntext = columntext(!@s.search.groupby.nil?) %>
 	<div id="columnheader">
 		<div id="firstcolumn">
 			<%= columntext[0] %>
@@ -23,12 +23,12 @@
 		<div class="bl"></div><div class="br"></div>
 	<%= raw '</div>' if !@s.directLayout %>
 	<% if @s.directLayout %>
-		<% if @groupings.nil? %>
+		<% if @s.search.groupby.nil? %>
 			<% @products.each_index do |i| %>
 				<%= render :partial => 'singlelist', :locals => {:product => Product.cached(@products[i]), :i => i} %>
 			<% end %>
 		<% else %>
-			<% @groupings.each do |grouping| %>
+			<% @s.search.groupings.each do |grouping| %>
 				<%= render :partial => 'grouping', :locals => {:grouping => grouping, :group => true}%>
 			<% end %>
 		<% end %>
@@ -47,7 +47,7 @@
 		<% end %>
 	<% end %>
 	<%= raw '</div>' if open && !@s.directLayout %>
-	<%= will_paginate @products if @s.directLayout && @groupings.nil?%>
+	<%= will_paginate @products if @s.directLayout && @s.search.groupby.nil?%>
 	</div>
 	<%= raw '</div>' if @s.directLayout %>
 	<% current_count = Search.count(:conditions => "session_id = #{@s.id}") %>

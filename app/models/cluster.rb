@@ -288,7 +288,6 @@ class Cluster
     dist
   end
   
-
 end
 
 #Just like group_by, except that results is just a grouped array
