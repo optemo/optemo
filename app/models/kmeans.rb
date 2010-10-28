@@ -15,9 +15,7 @@ inline :C do |builder|
     VALUE labels_r = rb_ary_new2(nn);
     int i, j, h;
     double** data = malloc(sizeof(double*)*nn);
-    double* means = malloc(sizeof(double)*dd);
 
-    for (j=0; j<dd; j++) means[j]=0.0;
     for (i=0; i<nn; i++) data[i] = malloc(sizeof(double)*dd);    
     for (i=0; i<nn; i++){
       for (j=0; j<dd; j++) {   
@@ -40,17 +38,16 @@ inline :C do |builder|
 	   }   
 	  for (j = 0; j < dd; j++) {
 	  	dataMean[j] = dataMean[j] / nn;
-	  	dataVar[j] = dataVar[j]/nn - dataMean[j] * dataMean[j];
-  //       //sqrt(dataVar[j]/size - mean[j] * mean[j]);
+	  	dataVar[j] = sqrt(dataVar[j]/nn - dataMean[j] * dataMean[j]);
 	  }
   
- ///////data standardization 
-  for (h = 0; h < nn; h++) {
-  	for (j = 0; j < dd; j++)
-  		data[h][j] = (data[h][j] - dataMean[j]) / dataVar[j];
-  	//for (int j = 0; j < bool_feats; j++)
-  	//	dataN[h][dd + j] = data[h][con_feats + j];	
-  }
+  ///////data standardization 
+    for (h = 0; h < nn; h++) {
+    	for (j = 0; j < dd; j++)
+    		data[h][j] = (data[h][j] - dataMean[j]) / dataVar[j];
+    	//for (int j = 0; j < bool_feats; j++)
+    	//	dataN[h][dd + j] = data[h][con_feats + j];	
+    }
   
   
   ///////Kmeans data      
