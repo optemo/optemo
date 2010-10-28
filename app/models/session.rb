@@ -74,7 +74,7 @@ class Session
 
   def searches
     # Return searches with this session id
-    Search.find_all_by_session_id(@id)
+    Search.where(["session_id = ?",@id])
   end
 
   def lastsearch

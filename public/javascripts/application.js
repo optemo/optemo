@@ -792,6 +792,11 @@ optemo_module = (function (my){
     		my.removeSilkScreen();
     		return false;
     	});
+
+		$(".popup").live('click', function(){
+			window.open($(this).attr('href'));
+			return false;
+		});
     }
 
     function ErrorInit() {

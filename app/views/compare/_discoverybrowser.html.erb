@@ -50,5 +50,5 @@
 	<%= will_paginate @products if @s.directLayout && @s.search.groupby.nil?%>
 	</div>
 	<%= raw '</div>' if @s.directLayout %>
-	<% current_count = Search.count(:conditions => "session_id = #{@s.id}") %>
+	<% current_count = @s.searches.size %>
 	<div style="clear:both;"><span id="actioncount" style="display:none"><%= current_count %></span><%= '<span id="tourautostart">&nbsp;</span>' if (current_count <= 1) %></div>
