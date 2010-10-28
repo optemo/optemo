@@ -81,16 +81,16 @@ class CompareController < ApplicationController
   end
 
   def filter
-    if params[:myfilter].nil? && params[:search].nil? && params[:page].nil?
+    if params[:myfilter].nil? && params[:page].nil?
       #No post info passed
       render :text =>  "[ERR]Search could not be completed."
     else
       # We need to propagate the previous search term if the new search term is blank (this should be done is JS)
-      if (!params[:previous_search_word].blank? && params[:search].blank?)
-        params[:search] = params[:previous_search_word]
+      if (!params[:previous_search_word].blank? && params[:myfilter][:search].blank?)
+        params[:myfilter][:search] = params[:previous_search_word]
       end
       #The search should only be able to fail from bad keywords, as empty searches can't be selected
-      if !params[:search].blank? && !Search.keyword(params[:search])
+      if !params[:myfilter][:search].blank? && !Search.keyword(params[:myfilter][:search])
         #Rollback
         classVariables(Session.current.lastsearch)
         @errortype = "filter"

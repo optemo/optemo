@@ -195,15 +195,16 @@ class Search < ActiveRecord::Base
   
   def products
     unless @products
-      #selected_features = (userdataconts.map{|c| c.name+c.min.to_s+c.max.to_s}+userdatabins.map{|c| c.name+c.value.to_s}+userdatacats.map{|c| c.name+c.value}<<keyword_search).hash
-      #@products =   CachingMemcached.cache_lookup("#{Session.current.product_type}Products#{selected_features}") do
-        product_list = SearchProduct.where(filterquery).select(:product_id)
+      selected_features = filterquery
+      @products = CachingMemcached.cache_lookup("#{Session.current.product_type}Products#{selected_features.hash}") do
+        product_list = SearchProduct.where(selected_features).select(:product_id)
         product_list_ids = product_list.map(&:product_id)
         @products_size = product_list_ids.size
         utility_list = ContSpec.cachemany(product_list_ids, "utility")
         # Cannot avoid sorting, since this result is cached.
         # If there is an error here, you might need to run rake calculate_factors. (utility_list.length should match product_list.length)
-         @products = utility_list.zip(product_list_ids).sort{|a,b|b[0]<=>a[0]}.map{|a,b|b}
+        utility_list.zip(product_list_ids).sort{|a,b|b[0]<=>a[0]}.map{|a,b|b}
+      end
     end
     @products
   end
@@ -263,7 +264,7 @@ class Search < ActiveRecord::Base
       fqarray << "product_id in (select product_id from bin_specs where value = #{d.value} and name = '#{d.name}')"
     end
     #Check for keyword search
-    fqarray << "product_id in (select product_id from keyword_searches where searchterm = '#{keyword_search}')" if keyword_search
+    fqarray << "product_id in (select product_id from keyword_searches where keyword = '#{keyword_search}')" if keyword_search
     fqarray.join(" AND ")
   end
 
@@ -364,16 +365,13 @@ class Search < ActiveRecord::Base
     case p["action_type"]
     when "initial"
       #Initial load of the homepage
-      #Prefiltered_products has three options:
-      # Initial products: -1
-      # Current products: 0
-      # Previous products: id of previous search
-      @prefiltered_products = -1 #initial products
-      @myproducts = -1
+      @myproducts = -1 #initial products
+      @userdataconts = []
+      @userdatabins = []
+      @userdatacats = []
     when "similar"
       #Browse similar button
-      @prefiltered_products = 0 # current products
-      @myproducts = Cluster.findbychild(p["cluster_hash"],p["child_id"])
+      @myproducts = Cluster.findbychild(p["cluster_hash"],p["child_id"]) # current products
       duplicateFeatures(old_search)
     when "nextpage"
       #the next page button has been clicked
@@ -388,11 +386,9 @@ class Search < ActiveRecord::Base
       #Find clusters that match filtering query
       if old_search && !expandedFiltering?(old_search)
         #Search is narrowed, so use old products to begin with
-        @prefiltered_products = old_search.id
       else
         #Search is expanded, so use all products to begin with
-        @prefiltered_products = -1 #Initial products
-        @myproducts = -1
+        @myproducts = -1 #Initial products
       end
     else
       #Error
@@ -406,7 +402,7 @@ class Search < ActiveRecord::Base
       d.save
     end
     #Record new prefiltered products
-    if @myproducts && @myproducts.kind_of?(Array)
+    if @myproducts.kind_of?(Array)
       SearchProduct.transaction do
         @myproducts.map{|product_id| SearchProduct.new({:product_id => product_id, :search_id => id})}.each(&:save)
       end
@@ -457,7 +453,7 @@ class Search < ActiveRecord::Base
         v.split("*").each do |cat|
           @userdatacats << Userdatacat.new({:name => k, :value => cat})
         end
-      elsif k == "keywordsearch"
+      elsif k == "search"
         #Keyword Search
         self.keyword_search = v
       end

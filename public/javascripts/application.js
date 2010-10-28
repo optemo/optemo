@@ -224,14 +224,14 @@ optemo_module = (function (my){
             if (!(arguments[i].match(/^superfluous/) || arguments[i].match(/authenticity_token/)))
                 arguments_to_send.push(arguments[i]);
         }
-    	my.ajaxcall("/compare/filter?ajax=true", $("#search_form").serialize() + "&" + arguments_to_send.join("&"));
+    	my.ajaxcall("/compare/filter?ajax=true", arguments_to_send.join("&"));
     	// Everything that calls submitCategorical() should have already called trackPage uniquely
     	// my.trackPage('goals/filter/autosubmit');
     	return false;
     }
 
     function submitsearch() {
-    	my.trackPage('goals/search', {'filter_type' : 'search', 'search_text' : $("#search_form input#search").attr('value'), 'previous_search_text' : $("#previous_search_word").attr('value')});
+    	my.trackPage('goals/search', {'filter_type' : 'search', 'search_text' : $("#myfilter_search").attr('value'), 'previous_search_text' : $("#previous_search_word").attr('value')});
     	var arguments_to_send = [];
         arguments = $("#filter_form").serialize().split("&");
         for (i=0; i<arguments.length; i++)
@@ -240,7 +240,7 @@ optemo_module = (function (my){
                 arguments_to_send.push(arguments[i]);
         }
         my.loading_indicator_state.sidebar = true;
-    	my.ajaxcall("/compare/filter?ajax=true", $("#search_form").serialize() + "&" + arguments_to_send.join("&"));
+    	my.ajaxcall("/compare/filter?ajax=true", arguments_to_send.join("&"));
     	return false;
     }
 
@@ -363,7 +363,7 @@ optemo_module = (function (my){
     	});
 
     	//Search submit
-    	$('#search').unbind('keydown').keydown(function (e) {
+    	$('#myfilter_search').unbind('keydown').keydown(function (e) {
     		if (e.which==13)
     			return submitsearch();
     	});
@@ -553,7 +553,7 @@ optemo_module = (function (my){
     				    rightsliderknob.removeData('toofar');
                     }
                     my.loading_indicator_state.sidebar = true;
-                	my.ajaxcall("/compare/filter?ajax=true", $("#search_form").serialize() + "&" + arguments_to_send.join("&"));
+                	my.ajaxcall("/compare/filter?ajax=true", arguments_to_send.join("&"));
     			}
     		});
     		$(this).slider('values', 0, ((curmin-rangemin)/(rangemax-rangemin))*100);
@@ -792,6 +792,11 @@ optemo_module = (function (my){
     		my.removeSilkScreen();
     		return false;
     	});
+
+		$(".popup").live('click', function(){
+			window.open($(this).attr('href'));
+			return false;
+		});
     }
 
     function ErrorInit() {
@@ -852,7 +857,7 @@ optemo_module = (function (my){
     	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
     	if (typeof(model + "_searchterms") != undefined) { // It could happen for one reason or another. This way, it doesn't break the rest of the script
     	    terms = eval(model + "_searchterms"); // terms now = ["waterproof", "digital", ... ]
-        	$("#search").autocomplete({
+        	$("#myfilter_search").autocomplete({
         	    source: terms
         	});
     	}
@@ -919,7 +924,7 @@ optemo_module = (function (my){
     		var parts = data.split('[BRK]');
     		$('#ajaxfilter').html(parts[0]);
     		$('#main').html(parts[1]);
-    		$('#search').attr('value',parts[2]);
+    		$('#myfilter_search').attr('value',parts[2]);
     		myspinner.end();
     		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
     		return 0;
@@ -944,7 +949,7 @@ optemo_module = (function (my){
         $('.groupby').unbind('click');
         $('.removefilter').unbind('click').click(function() {return false;}); // There is a default link there that shouldn't be followed.
         $('.binary_filter').attr('disabled', true);
-        $('#search').unbind('keydown');
+        $('#myfilter_search').unbind('keydown');
         $('#submit_button').unbind('click');
         
     	numactions = parseInt($("#actioncount").html()) + 1;
@@ -957,7 +962,7 @@ optemo_module = (function (my){
 	
     	if (/search/.test(str)==true) {
     	  errtype = "search";
-    	  $('#search').attr('value',"");
+    	  $('#myfilter_search').attr('value',"");
     	}
     	else { 
     	    if (/filter/.test(str)==true) errtype = "filters";
