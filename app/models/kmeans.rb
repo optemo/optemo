@@ -3,7 +3,7 @@ require 'inline'
 
 inline :C do |builder|
   builder.c "
-      
+  #include <math.h> 
   static VALUE kmeans_c(VALUE _points, VALUE n, VALUE d, VALUE cluster_n){
     VALUE* points_a = RARRAY_PTR(_points);
     int nn = NUM2INT(n);
@@ -24,7 +24,36 @@ inline :C do |builder|
          data[i][j]= NUM2DBL(points_a[i*dd+j]);
       }
     }
-        
+  
+  ////////getting mean and var of the data
+    double* dataMean = malloc(sizeof(double)*dd);
+    double* dataVar = malloc(sizeof(double)*dd); 
+	  for (j = 0; j < dd; j++) {
+	 	 dataMean[j]=0; 
+	 	 dataVar[j]= 0;
+	  }
+	  for (h = 0; h < nn; h++){ 
+	  	for (j = 0; j < dd; j++) {
+	 	  	dataMean[j] += data[h][j]; 
+	 		 dataVar[j] += data[h][j] * data[h][j];
+	      }
+	   }   
+	  for (j = 0; j < dd; j++) {
+	  	dataMean[j] = dataMean[j] / nn;
+	  	dataVar[j] = dataVar[j]/nn - dataMean[j] * dataMean[j];
+  //       //sqrt(dataVar[j]/size - mean[j] * mean[j]);
+	  }
+  
+ ///////data standardization 
+  for (h = 0; h < nn; h++) {
+  	for (j = 0; j < dd; j++)
+  		data[h][j] = (data[h][j] - dataMean[j]) / dataVar[j];
+  	//for (int j = 0; j < bool_feats; j++)
+  	//	dataN[h][dd + j] = data[h][con_feats + j];	
+  }
+  
+  
+  ///////Kmeans data      
     int *counts = (int*)calloc(k, sizeof(int)); //(int*)calloc(k, sizeof(int)); /* size of each cluster */
     double old_error, error = DBL_MAX; /* sum of squared euclidean distance */
     double** centroids = malloc(sizeof(double*)*k);
@@ -32,6 +61,7 @@ inline :C do |builder|
     double **c = (double**)calloc(k, sizeof(double*));
     double **c1 = (double**)calloc(k, sizeof(double*)); /* temp centroids */
     int *labels = (int*)calloc(nn, sizeof(int)); 
+    
         
   for (h = i = 0; i < k; h += nn / k, i++) {
      c1[i] = (double*)calloc(dd, sizeof(double));
