@@ -263,7 +263,7 @@ class Search < ActiveRecord::Base
       fqarray << "product_id in (select product_id from bin_specs where value = #{d.value} and name = '#{d.name}')"
     end
     #Check for keyword search
-    fqarray << "product_id in (select product_id from keyword_searches where searchterm = '#{keyword_search}')" if keyword_search
+    fqarray << "product_id in (select product_id from keyword_searches where keyword = '#{keyword_search}')" if keyword_search
     fqarray.join(" AND ")
   end
 
@@ -457,7 +457,7 @@ class Search < ActiveRecord::Base
         v.split("*").each do |cat|
           @userdatacats << Userdatacat.new({:name => k, :value => cat})
         end
-      elsif k == "keywordsearch"
+      elsif k == "search"
         #Keyword Search
         self.keyword_search = v
       end
