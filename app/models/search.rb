@@ -174,19 +174,15 @@ class Search < ActiveRecord::Base
   end
   
   def initial_products(set_search_id=nil)
-    s = Session.current
-    #We probably need a better algorithm to check for collisions
-    chars = []
-    s.product_type.each_char{|c|chars<<c.getbyte(0)*chars.size}
-    search_id = chars.sum*-1
+    products_id = Product.initial
     #This can be optimized not to check every time
-    if SearchProduct.where(["search_id = ?", search_id]).limit(1).empty?
+    if SearchProduct.where(["search_id = ?", products_id]).limit(1).empty?
       SearchProduct.transaction do
-        Product.valid.instock.map{|product| SearchProduct.new(:product_id => product.id, :search_id => search_id)}.each(&:save)
+        Product.valid.instock.map{|product| SearchProduct.new(:product_id => product.id, :search_id => products_id)}.each(&:save)
       end
     end
     SearchProduct.create(:product_id => -1, :search_id => set_search_id) if set_search_id
-    search_id
+    products_id
   end
   
   def products_size
@@ -196,6 +192,7 @@ class Search < ActiveRecord::Base
   def products
     unless @products
       selected_features = filterquery
+      debugger
       @products = CachingMemcached.cache_lookup("#{Session.current.product_type}Products#{selected_features.hash}") do
         product_list = SearchProduct.where(selected_features).select(:product_id)
         product_list_ids = product_list.map(&:product_id)

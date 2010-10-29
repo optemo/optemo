@@ -28,6 +28,14 @@ class Product < ActiveRecord::Base
     end
   end
   
+  def self.initial
+    #Algorithm for calculating id of initial products in product_searches table
+    #We probably need a better algorithm to check for collisions
+    chars = []
+    Session.current.product_type.each_char{|c|chars<<c.getbyte(0)*chars.size}
+    chars.sum*-1
+  end
+  
   scope :instock, :conditions => {:instock => true}
   scope :valid, lambda {
     {:conditions => (Session.current.continuous["filter"].map{|f|"id in (select product_id from cont_specs where #{Session.current.minimum[f] ? "value > " + Session.current.minimum[f].to_s : "value > 0"}#{" and value < " + Session.current.maximum[f].to_s if Session.current.maximum[f]} and name = '#{f}' and product_type = '#{Session.current.product_type}')"}+\
