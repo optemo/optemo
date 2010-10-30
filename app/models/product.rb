@@ -2,7 +2,7 @@ class Product < ActiveRecord::Base
   has_many :cat_specs
   has_many :bin_specs
   has_many :cont_specs
-  has_and_belongs_to_many :searches
+  has_many :search_products
   
   define_index do
     #fields

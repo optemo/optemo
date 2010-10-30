@@ -5,6 +5,7 @@ class CreateKeywordSearches < ActiveRecord::Migration
       t.integer :product_id
     end
     add_index :keyword_searches, :keyword
+    add_index :keyword_searches, :product_id
   end
 
   def self.down
