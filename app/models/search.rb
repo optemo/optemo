@@ -192,19 +192,24 @@ class Search < ActiveRecord::Base
     @products_size ||= products.size
   end
   
+  #def products
+  #  unless @products
+  #    selected_products = SearchProduct.filterquery
+  #    @products = CachingMemcached.cache_lookup("#{Session.current.product_type}Products#{selected_products.to_sql.hash}") do
+  #      debugger
+  #      product_list_ids = selected_products.select("search_products.product_id").map(&:product_id)
+  #      @products_size = product_list_ids.size
+  #      utility_list = ContSpec.cachemany(product_list_ids, "utility")
+  #      # Cannot avoid sorting, since this result is cached.
+  #      # If there is an error here, you might need to run rake calculate_factors. (utility_list.length should match product_list.length)
+  #      utility_list.zip(product_list_ids).sort{|a,b|b[0]<=>a[0]}.map{|a,b|b}
+  #    end
+  #  end
+  #  @products
+  #end
+  
   def products
-    unless @products
-      selected_products = SearchProduct.filterquery
-      @products = CachingMemcached.cache_lookup("#{Session.current.product_type}Products#{selected_products.to_sql.hash}") do
-        product_list_ids = selected_products.select("search_products.product_id").map(&:product_id)
-        @products_size = product_list_ids.size
-        utility_list = ContSpec.cachemany(product_list_ids, "utility")
-        # Cannot avoid sorting, since this result is cached.
-        # If there is an error here, you might need to run rake calculate_factors. (utility_list.length should match product_list.length)
-        utility_list.zip(product_list_ids).sort{|a,b|b[0]<=>a[0]}.map{|a,b|b}
-      end
-    end
-    @products
+    SearchProduct.fq2
   end
   
   def products_search_id

@@ -1,14 +1,5 @@
 class ContSpec < ActiveRecord::Base
   belongs_to :product
-  attr_writer :cs
-
-  # Get specs for a single item and single feature -- this is deprecated
-  #  def self.cache(p_id, feat)
-  #    CachingMemcached.cache_lookup("ContSpec#{feat}#{p_id}") do
-  #      r = find_by_product_id_and_name(p_id, feat)
-  #      r.value if r
-  #    end
-  #  end  
 
   # Get specs for a single item, returns a hash of this format: {"price" => 1.75, "width" => ... }
   def self.cache_all(p_id)
@@ -56,6 +47,15 @@ class ContSpec < ActiveRecord::Base
      return value == other.value && product_id == other.product_id #&& name == other.name Not included due to partial db instatiations ie .select(:product_ids, :values)
   end
   
+  def self.by_feat(feat)
+    SearchProduct.filterquery unless defined? @@by_feat
+    @@by_feat[feat]
+  end
+  
+  def self.by_feat=(specs)
+    @@by_feat = specs
+  end
+  
   private
 
   def self.allspecs(feat)
@@ -64,10 +64,5 @@ class ContSpec < ActiveRecord::Base
     #id_array = Session.current.search.acceptedProductIDs
     ContSpec.cachemany(id_array, feat)
   end
-  
-  # This is used for sorting an array of ContSpec objects.
-  def <=>(other)
-     return value <=> other.value
-  end
-  
+
 end

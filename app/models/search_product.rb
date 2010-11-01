@@ -6,6 +6,27 @@ class SearchProduct < ActiveRecord::Base
       search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins)
     end
     
+    def fq2
+      mycats = Session.current.search.userdatacats.group_by(&:name).values
+      mybins = Session.current.search.userdatabins
+      myconts = Session.current.search.userdataconts
+      if Session.current.directLayout
+        #We order by utility here
+        res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = 'utility'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value DESC")
+      else
+        res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[]]).conts_keywords.cats(mycats).bins(mybins).group("search_products.product_id")
+      end
+      #res.map{|rec|Hashrec.names.split(",").zip(rec.vals.split(","))}
+      specs = Hash.new{|h,k| h[k] = []}
+      res.each do |rec|
+        names = rec.names.split(",")
+        vals = rec.vals.split(",")
+        names.each_with_index{|name,i|specs[name] << vals[i]}
+      end
+      ContSpec.by_feat = specs
+      res.map(&:product_id)
+    end
+    
     def cat_counts(feat)
       feat = [feat] unless feat.kind_of? Array
       mycats = Session.current.search.userdatacats.group_by(&:name).reject{|id|feat.index(id)}.values
@@ -26,13 +47,12 @@ class SearchProduct < ActiveRecord::Base
       where(:search_id => Session.current.search.products_search_id)
     end
       
-    def create_join(mycats,mybins)
+    def create_join(mycats,mybins,myconts = Session.current.search.userdataconts)
       tables = []
-      s = Session.current.search
-      tables << ["cont_specs"] * s.userdataconts.size
+      tables << ["cont_specs"] * myconts.size
       tables << ["cat_specs"] * mycats.size
       tables << ["bin_specs"] * mybins.size
-      tables << ["keyword_searches"] if s.keyword_search
+      tables << ["keyword_searches"] if Session.current.search.keyword_search
       myjoins = []
       tables.map{|type|type.each_with_index{|table,i| myjoins << "INNER JOIN #{table} #{table+i.to_s} ON search_products.product_id = #{table+i.to_s}.product_id"}}
       joins(myjoins.join(" "))
