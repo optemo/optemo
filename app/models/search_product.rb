@@ -7,10 +7,11 @@ class SearchProduct < ActiveRecord::Base
     end
     
     def cat_counts(feat)
-      mycats = Session.current.search.userdatacats.group_by(&:name).reject{|id|id == feat}.values
+      feat = [feat] unless feat.kind_of? Array
+      mycats = Session.current.search.userdatacats.group_by(&:name).reject{|id|feat.index(id)}.values
       mybins = Session.current.search.userdatabins
       table_id = mycats.size
-      search_id_q.create_join(mycats+[[feat]],mybins).conts_keywords.bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").count
+      search_id_q.create_join(mycats+[[feat]],mybins).conts_keywords.bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC").count
     end
     
     def bin_count(feat)

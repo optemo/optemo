@@ -1,4 +1,4 @@
-class distribution 
+class Distribution 
 require 'inline'
 
 inline :C do |builder|
@@ -62,7 +62,7 @@ inline :C do |builder|
        }        
        return result_arr;
      }"
-     
+    end 
     def self.distribution
        num_buckets = 21;
        st = []

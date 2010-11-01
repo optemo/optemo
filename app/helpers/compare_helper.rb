@@ -188,13 +188,8 @@ module CompareHelper
     end
   end
   
-  def current_cats(feat,chosen = [])
-    if chosen.empty?
-      #No options selected
-     CatSpec.cachemany(Session.current.search.products,feat).group_by{|e|e}.values.map{|array|[array.first,array.size]}.sort{|a,b|b[1]<=>a[1]}.map{|e,size|"#{e} (#{size})"}
-    else
-     CatSpec.all(feat).group_by{|e|e}.values.map{|array|[array.first,array.size]}.sort{|a,b|b[1]<=>a[1]}.reject{|e,size|chosen.index(e)}.map{|e,size|"#{e} (#{size})"}
-    end
+  def category_select(title,feat)
+    select('superfluous', feat, [title] + SearchProduct.cat_counts(feat).map{|k,v|"#{k} (#{v})"}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
   end
   
 end
