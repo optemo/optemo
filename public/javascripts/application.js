@@ -702,7 +702,7 @@ optemo_module = (function (my){
     	// From FilterAndSearchInit
     	// Add a brand -- submit
     	$('.selectboxfilter').live('change', function(){
-		    var whichThingSelected = $(this).val();
+		    var whichThingSelected = $(this).val().replace(/ \(.*\)$/,'');
 			var whichSelector = $(this).attr('name');
 		    var categorical_filter_name = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]"));
     		$('#myfilter_'+categorical_filter_name).val(opt_appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));

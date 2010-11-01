@@ -41,13 +41,13 @@ class ContSpec < ActiveRecord::Base
 
   def self.allLow(feat)
     CachingMemcached.cache_lookup("#{Session.current.product_type}Low-#{feat}") do
-      ContSpec.allspecs(feat).sort[products.count*0.4]
+      ContSpec.allspecs(feat).sort[Session.current.search.product_size*0.4]
     end
   end
 
   def self.allHigh(feat)
     CachingMemcached.cache_lookup("#{Session.current.product_type}High-#{feat}") do
-      ContSpec.allspecs(feat).sort[products.count*0.6]
+      ContSpec.allspecs(feat).sort[Session.current.search.product_size*0.6]
     end
   end
   

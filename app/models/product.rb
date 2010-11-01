@@ -2,7 +2,7 @@ class Product < ActiveRecord::Base
   has_many :cat_specs
   has_many :bin_specs
   has_many :cont_specs
-  has_and_belongs_to_many :searches
+  has_many :search_products
   
   define_index do
     #fields
@@ -26,6 +26,14 @@ class Product < ActiveRecord::Base
     else
       [res]
     end
+  end
+  
+  def self.initial
+    #Algorithm for calculating id of initial products in product_searches table
+    #We probably need a better algorithm to check for collisions
+    chars = []
+    Session.current.product_type.each_char{|c|chars<<c.getbyte(0)*chars.size}
+    chars.sum*-1
   end
   
   scope :instock, :conditions => {:instock => true}

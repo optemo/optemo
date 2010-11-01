@@ -177,19 +177,15 @@ class Search < ActiveRecord::Base
   end
   
   def initial_products(set_search_id=nil)
-    s = Session.current
-    #We probably need a better algorithm to check for collisions
-    chars = []
-    s.product_type.each_char{|c|chars<<c.getbyte(0)*chars.size}
-    search_id = chars.sum*-1
+    products_id = Product.initial
     #This can be optimized not to check every time
-    if SearchProduct.where(["search_id = ?", search_id]).limit(1).empty?
+    if SearchProduct.where(["search_id = ?", products_id]).limit(1).empty?
       SearchProduct.transaction do
-        Product.valid.instock.map{|product| SearchProduct.new(:product_id => product.id, :search_id => search_id)}.each(&:save)
+        Product.valid.instock.map{|product| SearchProduct.new(:product_id => product.id, :search_id => products_id)}.each(&:save)
       end
     end
     SearchProduct.create(:product_id => -1, :search_id => set_search_id) if set_search_id
-    search_id
+    products_id
   end
   
   def products_size
@@ -198,10 +194,9 @@ class Search < ActiveRecord::Base
   
   def products
     unless @products
-      selected_features = filterquery
-      @products = CachingMemcached.cache_lookup("#{Session.current.product_type}Products#{selected_features.hash}") do
-        product_list = SearchProduct.where(selected_features).select(:product_id)
-        product_list_ids = product_list.map(&:product_id)
+      selected_products = SearchProduct.filterquery
+      @products = CachingMemcached.cache_lookup("#{Session.current.product_type}Products#{selected_products.to_sql.hash}") do
+        product_list_ids = selected_products.select("search_products.product_id").map(&:product_id)
         @products_size = product_list_ids.size
         utility_list = ContSpec.cachemany(product_list_ids, "utility")
         # Cannot avoid sorting, since this result is cached.
@@ -212,9 +207,7 @@ class Search < ActiveRecord::Base
     @products
   end
   
-  def filterquery
-    s = Session.current
-    fqarray = []
+  def products_search_id
     #This might be able to be refactored into a single MySQL query
     if @myproducts
       if @myproducts == -1
@@ -248,27 +241,7 @@ class Search < ActiveRecord::Base
     end
     #Initial products is the default
     my_search = initial_products(id) unless my_search
-    fqarray << "search_id = #{my_search}"
-    #case @prefiltered_products
-    #when 0 #Current products
-    #  fqarray << "id in (select product_id from search_products where search_id = #{id})"
-    #when -1 #Initial products
-    #  fqarray << "id in (select product_id from search_products where search_id = #{initial_products})"
-    #else #Old products = old search id
-    #  fqarray << "id in (select product_id from search_products where search_id = #{@prefiltered_products})"
-    #end
-    userdataconts.each do |d|
-      fqarray << "product_id in (select product_id from cont_specs where value <= #{d.max+0.00001} and value >= #{d.min-0.00001} and name = '#{d.name}')"
-    end
-    userdatacats.group_by(&:name).each do |name, ds|
-      fqarray << "product_id in (select product_id from cat_specs where value in ('#{ds.map(&:value).join("','")}') and name = '#{name}')"
-    end
-    userdatabins.each do |d|
-      fqarray << "product_id in (select product_id from bin_specs where value = #{d.value} and name = '#{d.name}')"
-    end
-    #Check for keyword search
-    fqarray << "product_id in (select product_id from keyword_searches where keyword = '#{keyword_search}')" if keyword_search
-    fqarray.join(" AND ")
+    my_search
   end
 
   def groupings
