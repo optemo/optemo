@@ -15,6 +15,8 @@ class Search < ActiveRecord::Base
 
   ## Computes distributions (arrays of normalized product counts) for all continuous features 
   def distribution(feat)
+     # debugger
+       #Distribution.distribution_r(Session.current.continuous["filter"].index(feat))  
        dist = Array.new(21,0)
        min = ContSpec.allMinMax(feat)[0]
        max = ContSpec.allMinMax(feat)[1]
@@ -30,6 +32,7 @@ class Search < ActiveRecord::Base
          dist[i] += 1 if i < dist.length
        end  
        [[current_dataset_minimum, current_dataset_maximum], round2Decim(normalize(dist))]
+       
   end
   
   #Range of product offerings
