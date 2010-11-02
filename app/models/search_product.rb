@@ -21,9 +21,10 @@ class SearchProduct < ActiveRecord::Base
       res.each do |rec|
         names = rec.names.split(",")
         vals = rec.vals.split(",")
-        names.each_with_index{|name,i|specs[name] << vals[i]}
+        names.each_with_index{|name,i|specs[name] << vals[i].to_f}
       end
       ContSpec.by_feat = specs
+      Session.current.search.products_size = res.length
       res.map(&:product_id)
     end
     

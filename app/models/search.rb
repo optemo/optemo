@@ -1,5 +1,5 @@
 class Search < ActiveRecord::Base
-  attr_writer :userdataconts, :userdatacats, :userdatabins
+  attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
   
   def userdataconts
       @userdataconts ||= Userdatacont.find_all_by_search_id(id)
@@ -24,7 +24,7 @@ class Search < ActiveRecord::Base
        current_dataset_minimum = max
        current_dataset_maximum = min
        stepsize = (max-min) / dist.length + 0.000001 #Offset prevents overflow of 10 into dist array
-       specs = ContSpec.cachemany(products, feat)
+       specs = ContSpec.by_feat(feat)#ContSpec.cachemany(products, feat)
        specs.each do |s|
          current_dataset_minimum = s if s < current_dataset_minimum
          current_dataset_maximum = s if s > current_dataset_maximum
@@ -252,12 +252,13 @@ class Search < ActiveRecord::Base
   def groupings
     return [] if groupby.nil? 
     s = Session.current
-    if s.categorical["all"].index(groupby) # It's in the categorical array
+    if s.categorical["all"].index(groupby) 
+      # It's in the categorical array
       specs = products.zip CatSpec.cachemany(products, groupby)
       grouping = specs.group_by{|spec|spec.value}.values.sort{|a,b| b.length <=> a.length}
-      #grouping = Hash[grouping.each_pair{|k,v| grouping[k] = v.map(&:product_id)}.sort{|a,b| b.second.length <=> a.second.length}]
     elsif s.continuous["all"].index(groupby)
-      specs = products.zip ContSpec.cachemany(products, groupby).sort
+      #The chosen feature is continuous
+      specs = products.zip ContSpec.by_feat(groupby).sort
       # [[id, low], [id, higher], ... [id, highest]]
       quartile_length = (specs.length / 4.0).ceil
       quartiles = []

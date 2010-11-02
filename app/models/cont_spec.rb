@@ -25,20 +25,21 @@ class ContSpec < ActiveRecord::Base
   
   def self.allMinMax(feat)
     CachingMemcached.cache_lookup("#{Session.current.product_type}MinMax-#{feat}") do
-      all = ContSpec.allspecs(feat)
+      #all = ContSpec.allspecs(feat)
+      all = ContSpec.initial_specs(feat)
       [all.min,all.max]
     end
   end
 
   def self.allLow(feat)
     CachingMemcached.cache_lookup("#{Session.current.product_type}Low-#{feat}") do
-      ContSpec.allspecs(feat).sort[Session.current.search.product_size*0.4]
+      ContSpec.initial_specs(feat).sort[Session.current.search.product_size*0.4]
     end
   end
 
   def self.allHigh(feat)
     CachingMemcached.cache_lookup("#{Session.current.product_type}High-#{feat}") do
-      ContSpec.allspecs(feat).sort[Session.current.search.product_size*0.6]
+      ContSpec.initial_specs(feat).sort[Session.current.search.product_size*0.6]
     end
   end
   
@@ -48,7 +49,7 @@ class ContSpec < ActiveRecord::Base
   end
   
   def self.by_feat(feat)
-    SearchProduct.filterquery unless defined? @@by_feat
+    SearchProduct.fq2 unless defined? @@by_feat
     @@by_feat[feat]
   end
   
@@ -57,12 +58,8 @@ class ContSpec < ActiveRecord::Base
   end
   
   private
-
-  def self.allspecs(feat)
-    #ContSpec.find_all_by_name_and_product_type(feat, Session.current.product_type).map(&:value)
-    id_array = Product.valid.instock.map(&:id)
-    #id_array = Session.current.search.acceptedProductIDs
-    ContSpec.cachemany(id_array, feat)
+  
+  def self.initial_specs(feat)
+    joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").where(:cont_specs => {:name => feat}, :search_products => {:search_id => Product.initial}).select(:value).map(&:value)
   end
-
 end
