@@ -15,12 +15,11 @@ require 'inline'
        st = []
        mins = []
        maxes = []
-       Session.current.continuous["filter"].each{|f| st << ContSpec.cachemany(Session.current.search.products, f)}
+       Session.current.continuous["filter"].each{|f| st << ContSpec.by_feat(f)}
        specs = st.transpose
        Session.current.continuous["filter"].each{|f| mins << ContSpec.allMinMax(f)[0]}
-       Session.current.continuous["filter"].each{|f| maxes << ContSpec.allMinMax(f)[1]} 
-       sf = specs.flatten 
-       res = self.distribution_c(sf, specs.size, specs.first.size, num_buckets, mins, maxes) #unless $res
+       Session.current.continuous["filter"].each{|f| maxes << ContSpec.allMinMax(f)[1]}
+       res = self.distribution_c(specs.flatten, specs.size, specs.first.size, num_buckets, mins, maxes) #unless $res
        Session.current.continuous["filter"].each_with_index do |f, i|   
          t = i*(2+num_buckets) 
          @dist[f] = [[res[t], res[t+1]], res[(t+2)...(i+1)*(2+num_buckets)]]
