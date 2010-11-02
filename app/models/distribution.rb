@@ -1,22 +1,21 @@
 class Distribution 
+attr :dist
 require 'inline'
 
-@@dist = {}
-  
- def initialize(products)
-   distribution_r(products)
- end     
- 
- def getDist(feat)
-   @@dist[feat] unless @@dist.empty?
- end     
+  def self.getDist(feat)
+    unless defined? $d
+      $d = Distribution.new
+    end
+    $d.dist[feat] 
+  end     
 
- def distribution_r(products)
+  def initialize
+       @dist = {}
        num_buckets = 21;
        st = []
        mins = []
        maxes = []
-       Session.current.continuous["filter"].each{|f| st << ContSpec.cachemany(products, f)}
+       Session.current.continuous["filter"].each{|f| st << ContSpec.cachemany(Session.current.search.products, f)}
        specs = st.transpose
        Session.current.continuous["filter"].each{|f| mins << ContSpec.allMinMax(f)[0]}
        Session.current.continuous["filter"].each{|f| maxes << ContSpec.allMinMax(f)[1]} 
@@ -24,10 +23,9 @@ require 'inline'
        res = self.distribution_c(sf, specs.size, specs.first.size, num_buckets, mins, maxes) #unless $res
        Session.current.continuous["filter"].each_with_index do |f, i|   
          t = i*(2+num_buckets) 
-         @@dist[f] = [[res[t], res[t+1]], res[(t+2)...(i+1)*(2+num_buckets)]]
-       end   
-  end
-  
+         @dist[f] = [[res[t], res[t+1]], res[(t+2)...(i+1)*(2+num_buckets)]]
+       end
+ end
 
   inline :C do |builder|
     builder.c "
@@ -117,17 +115,4 @@ require 'inline'
          return result_ary;
        }"
     end
-    def normalize(a)
-       total = a.max
-       if total==0 
-         a  
-       else    
-         a.map{|i| i.to_f/total}
-       end  
-     end
-
-     def round2Decim(a)
-       a.map{|n| (n*1000).round.to_f/1000}
-     end
-   
 end 
