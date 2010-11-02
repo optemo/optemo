@@ -1,14 +1,17 @@
 class Distribution 
 require 'inline'
 
-@@dist = []
+@@dist = {}
   
+ def initialize(products)
+   distribution_r(products)
+ end     
+ 
  def getDist(feat)
-   @@dist[feat] unless dist.empty?
+   @@dist[feat] unless @@dist.empty?
  end     
 
- def self.distribution_r(products)
-     ind = Session.current.continuous["filter"].index(feat)
+ def distribution_r(products)
        num_buckets = 21;
        st = []
        mins = []
@@ -17,34 +20,14 @@ require 'inline'
        specs = st.transpose
        Session.current.continuous["filter"].each{|f| mins << ContSpec.allMinMax(f)[0]}
        Session.current.continuous["filter"].each{|f| maxes << ContSpec.allMinMax(f)[1]} 
-       return [[],[]] if maxes[ind].nil? || mins[ind].nil?
-       $d = Distribution.new unless $d
        sf = specs.flatten 
-       res = $d.distribution_c(sf, specs.size, specs.first.size, num_buckets, mins, maxes) #unless $res
-       Session.current.continuous["filter"].each_with_index{|f, i|  t = ind*(2+num_buckets); @@dist[f] = [[res[t], res[t+1]], round2Decim(normalize(res[(t+2)...(i+1)*(2+num_buckets)]))]}
+       res = self.distribution_c(sf, specs.size, specs.first.size, num_buckets, mins, maxes) #unless $res
+       Session.current.continuous["filter"].each_with_index do |f, i|   
+         t = i*(2+num_buckets) 
+         @@dist[f] = [[res[t], res[t+1]], res[(t+2)...(i+1)*(2+num_buckets)]]
+       end   
   end
   
-  
-  
-  
- def distribution_r(products)
-    num_buckets = 21;
-    st = []
-    mins = []
-    maxes = []
-    Session.current.continuous["filter"].each{|f| st << ContSpec.cachemany(products, f)}
-    specs = st.transpose
-    Session.current.continuous["filter"].each{|f| mins << ContSpec.allMinMax(f)[0]}
-    Session.current.continuous["filter"].each{|f| maxes << ContSpec.allMinMax(f)[1]} 
-    if maxes[ind].nil? || mins[ind].nil?
-      @@dist = [] 
-    else  
-      $d = Distribution.new unless $d
-      sf = specs.flatten 
-      @@dist = $d.distribution_c(sf, specs.size, specs.first.size, num_buckets, mins, maxes)
-    end  
- end  
-
 
   inline :C do |builder|
     builder.c "
@@ -64,7 +47,7 @@ require 'inline'
          int i,j, ind;
          double curr_min, curr_max, stepsize;
          double offset = 0.000001;
-         int** dist = malloc(sizeof(int*)*d);
+         double** dist = malloc(sizeof(double*)*d);
          double* dataMins = malloc(sizeof(double)*d);
          double* dataMaxes = malloc(sizeof(double)*d);
          double* mins = malloc(sizeof(double)*d);
@@ -72,8 +55,8 @@ require 'inline'
          double** data = malloc(sizeof(double*)*n);
          for (i=0; i<n; i++) data[i] = malloc(sizeof(double)*d);    
          for (j=0; j<d; j++) {
-           dist[j] = malloc(sizeof(int)*k);
-           for (i=0; i<k; i++) dist[j][i] = 0;  
+           dist[j] = malloc(sizeof(double)*k);
+           for (i=0; i<k; i++) dist[j][i] = 0.0;  
          }  
          for (i=0; i<n; i++){
            for (j=0; j<d; j++) {   
@@ -97,16 +80,26 @@ require 'inline'
                  curr_max = data[i][j];
                }
               ind = (data[i][j] - dataMins[j])/stepsize;
-               if (ind < k) dist[j][ind] ++;    
+               if (ind < k) dist[j][ind]= dist[j][ind]+1.0;    
              }
            mins[j] = curr_min;
            maxes[j] = curr_max;       
          }
-         ////normalizing & round 2 decimal  
-          for (j=0; j<d; j++) {
-             for (i=0; i<k; i++) dist[j][i]=round(dist[j][i]*1000)/(maxes[j]*1000); 
-         }
          
+         double *distMaxes = (double*)calloc(d, sizeof(double));
+         for (j=0; j<d; j++) {
+             for (i=0; i<k; i++) {
+                if (dist[j][i]>distMaxes[j]) distMaxes[j]=dist[j][i];
+             }
+           }      
+        ////normalizing & round 2 decimal  
+         for (j=0; j<d; j++) {
+            for (i=0; i<k; i++) {
+              if (distMaxes!=0) dist[j][i]=dist[j][i]/distMaxes[j];
+              dist[j][i]=(round(dist[j][i]*1000))/1000;
+             }  
+          }
+       
          
          ///storing in result_ary
          ind = 0;
@@ -116,7 +109,7 @@ require 'inline'
            rb_ary_store(result_ary, ind,  DBL2NUM(maxes[j]));
            ind++;
            for (i=0; i<k; i++){
-              rb_ary_store(result_ary, ind, INT2NUM(dist[j][i]));
+              rb_ary_store(result_ary, ind, DBL2NUM(dist[j][i]));
               ind++;
            }   
          }        
@@ -124,5 +117,17 @@ require 'inline'
          return result_ary;
        }"
     end
+    def normalize(a)
+       total = a.max
+       if total==0 
+         a  
+       else    
+         a.map{|i| i.to_f/total}
+       end  
+     end
+
+     def round2Decim(a)
+       a.map{|n| (n*1000).round.to_f/1000}
+     end
    
 end 
