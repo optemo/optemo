@@ -922,8 +922,8 @@ optemo_module = (function (my){
     		return -1;
     	} else {
     		var parts = data.split('[BRK]');
-    		$('#ajaxfilter').html(parts[0]);
-    		$('#main').html(parts[1]);
+    		$('#ajaxfilter').html(parts[1]);
+    		$('#main').html(parts[0]);
     		$('#myfilter_search').attr('value',parts[2]);
     		myspinner.end();
     		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();

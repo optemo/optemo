@@ -1,4 +1,5 @@
 <% self.title = "#{@s.search.desc} #{@s.product_type.capitalize}" unless @indexload %>
+<% main_window = render :partial => 'discoverybrowser' unless @indexload %>
 <div id="leftbar">
 	<!-- The Filters section -->
 	<div id="filterbar" class="leftboxes rounded_bd rounded">
@@ -34,7 +35,7 @@
 	<% if @indexload %>
 		<div id="opt_discovery"></div>
 	<% else %>
-		<%= render :partial => 'discoverybrowser' %>
+		<%= main_window %>
 	<% end %>
 </div>
 <div id="loading"><div id="myspinner" style="float: left;"></div><div style="margin: 7px 0px 0px 60px;">Loading</div></div>
