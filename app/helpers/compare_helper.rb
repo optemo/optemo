@@ -222,4 +222,15 @@ module CompareHelper
   	res << will_paginate(@products) if @s.directLayout && @s.search.groupby.nil?
   	res
 	end
+	
+	def getDist(feat)
+    unless defined? @dist  
+      unless defined? $d
+       $d = Distribution.new
+      end
+	    @dist = $d.computeDist
+	  end  
+	  @dist[feat]
+	end  
+	
 end

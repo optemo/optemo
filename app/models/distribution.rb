@@ -1,16 +1,8 @@
 class Distribution 
-attr :dist
 require 'inline'
 
-  def self.getDist(feat)
-    unless defined? $d
-      $d = Distribution.new
-    end
-    $d.dist[feat] 
-  end     
-
-  def initialize
-       @dist = {}
+  def computeDist
+       dist = {}
        num_buckets = 21;
        st = []
        mins = []
@@ -20,12 +12,13 @@ require 'inline'
        Session.current.continuous["filter"].each{|f| mins << ContSpec.allMinMax(f)[0]}
        Session.current.continuous["filter"].each{|f| maxes << ContSpec.allMinMax(f)[1]} 
        sf = specs.flatten 
-       res = self.distribution_c(sf, specs.size, specs.first.size, num_buckets, mins, maxes) #unless $res
+       res = distribution_c(sf, specs.size, specs.first.size, num_buckets, mins, maxes) #unless $res
        Session.current.continuous["filter"].each_with_index do |f, i|   
          t = i*(2+num_buckets) 
-         @dist[f] = [[res[t], res[t+1]], res[(t+2)...(i+1)*(2+num_buckets)]]
+         dist[f] = [[res[t], res[t+1]], res[(t+2)...(i+1)*(2+num_buckets)]]
        end
- end
+       dist
+  end
 
   inline :C do |builder|
     builder.c "
@@ -78,7 +71,7 @@ require 'inline'
                  curr_max = data[i][j];
                }
               ind = (data[i][j] - dataMins[j])/stepsize;
-               if (ind < k) dist[j][ind]= dist[j][ind]+1.0;    
+               if (ind < k) dist[j][ind]++;    
              }
            mins[j] = curr_min;
            maxes[j] = curr_max;       
