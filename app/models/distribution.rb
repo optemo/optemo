@@ -100,36 +100,49 @@ require 'inline'
          return result_ary;
        }"
     end
-end 
-         
-         //initializeing the 
-         
-         //initializeing the 
-         
-         //initializeing the 
-         
-         //initializeing the 
-         
-         //initializeing the 
-         
-         //initializeing the 
-         
-         //initializeing the 
-         
-         //initializeing the 
-         
-         //initializeing the 
-         
-         //initializeing the 
-         
-         //initializeing the 
-         
-         //initializeing the 
-         
-         //initializeing the 
-         
-         //initializeing the 
-         
-         //initializeing the 
-         
-         //initializeing the 
+  
+  def normalize(a)
+    total = a.max
+    if total==0 
+      a  
+    else    
+      a.map{|i| i.to_f/total}
+    end  
+  end
+
+  def round2Decim(a)
+    a.map{|n| (n*1000).round.to_f/1000}
+  end  
+    
+  def distribution_r(feat) 
+       dist = Array.new(21,0)
+       min = ContSpec.allMinMax(feat)[0]
+       max = ContSpec.allMinMax(feat)[1]
+       return [[],[]] if max.nil? || min.nil?
+       current_dataset_minimum = max
+       current_dataset_maximum = min
+       stepsize = (max-min) / dist.length + 0.000001 #Offset prevents overflow of 10 into dist array
+       specs = ContSpec.cachemany(products, feat)
+       specs.each do |s|
+         current_dataset_minimum = s if s < current_dataset_minimum
+         current_dataset_maximum = s if s > current_dataset_maximum
+         i = ((s - min) / stepsize).to_i
+         dist[i] += 1 if i < dist.length
+       end  
+       [[current_dataset_minimum, current_dataset_maximum], round2Decim(normalize(dist))] 
+  end  
+
+end    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
