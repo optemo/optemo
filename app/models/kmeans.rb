@@ -113,31 +113,122 @@ inline :C do |builder|
   "
 end
 
+# C kmeans function   
+def self.compute(number_clusters, specs, weights = nil)
+  #$k = Kmeans.new unless $k
+  #$k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters)
+  Kmeans.ruby(number_clusters, specs, weights = nil)
+end
 
-inline do |builder|
-  builder.c "
-  static VALUE mean_c(VALUE _points, VALUE n, VALUE d){
-    VALUE* points_a = RARRAY_PTR(_points);
-    int nn = NUM2INT(n);
-    int dd = NUM2INT(d);
-    VALUE means_r = rb_ary_new2(dd);
-    int i, j;
-    double** points = malloc(sizeof(double)*(nn));
-    double* means = malloc(sizeof(double)*(dd));
-    for (j=0; j<dd; j++) means[j]=0.0;
-    for (i=0; i<nn; i++) points[i] = malloc(sizeof(double)*(dd));    
-    for (i=0; i<nn; i++){
-      for (j=0; j<dd; j++) {   
-         //points[i*nn+j] 
-         points[i][j]= NUM2DBL(points_a[i*dd+j]);
-         means[j] += points[i][j];
-      }
-    }
-    for (j=0; j<dd; j++){
-        means[j] = means[j]/nn;
-        rb_ary_store(means_r, j, DBL2NUM(means[j]));
-    }
-  return means_r;  
-  }"
+# regular kmeans function   
+def self.ruby(number_clusters, specs, weights = nil)
+  weights = [1]*specs.first.size if weights.nil?
+  thresh = 0.000001
+  mean_1 = self.seed(number_clusters, specs)
+  mean_2 =[]
+  labels = []
+  dif = []
+  begin
+   mean_2 = mean_1 
+   specs.each_index do |i| 
+     mean_1.each_index do |c|
+       dif[c] = self.distance(specs[i], mean_1[c])
+     end
+     labels[i] = dif.index(dif.min)
+   end 
+   mean_1= self.means(number_clusters, specs, labels)
+   z=0.0;
+   mean_1.each_index{|c| z+=self.distance(mean_1[c], mean_2[c])}
+  end while z > thresh
+  labels  
+end
+
+#selecting the initial cluster centers
+def self.seed(number_clusters, specs)
+  m=[]  
+  # The first points as cluster centers
+  (0...number_clusters).each{|i| m[i] = specs[i]}
+  m
+end
+
+#  # Finding the mean of several points
+#  # points is a nxd dimension array where n is the number of products and d is number of features
+def self.mean(points)
+  s = points.size.to_f
+  points.transpose.map{|p| p.inject(:+)/s}
+end
+
+# Finding the means of all clusters
+# Group the specs based on their labels and within each group, find their mean
+def self.means(number_clusters, specs, labels)
+  specs.mygroup_by{|e,i|labels[i]}.map{|s|self.mean(s)}
+end
+
+#Euclidian distance function
+def self.distance(point1, point2)
+  dist = 0
+  point1.each_index do |i|
+    diff = point1[i]-point2[i]
+    dist += diff*diff
+  end
+  dist
+end
+
+#### New functions
+# converts categorical spec values to binary arrays
+  def self.standardize_cat_data(specs)
+    specs = specs.transpose
+    #cont_size=3
+    #cats = ["brand"]
+    cont_size = Session.current.continous["filter"].size
+    Session.current.categorical["filter"].each_index do |i|
+      vals = specs[i+cont_size].uniq
+      t=0
+      specs[i+cont_size].each do |v| 
+            cat = [0]*vals.size
+            cat[vals.index(v)] = 1
+            specs[i+cont_size][t]=cat
+            t+=1  
+      end      
+    end
+    specs = specs.transpose
+    specs.map{|p| p.flatten}  
+  end  
+    
+  #   
+  def self.standardize_cont_data(specs)
+    mean_all = means(specs)
+    var_all = self.get_mean_var(specs, mean_all)
+    specs.each{|p| p.each_with_index{|v, i| p[i]=(v-mean_all[i])/var[i]}}
+  end
+  
+  # finds the standard deviation for every dimension(feature)
+  def self.get_var(specs, mean_all)
+    count = specs.size
+    var = []
+    specs.each{|p| var << p.each_index{|i| i*i}.inject(:+)}
+    debugger
+    var.each_index{|i| var[i]=Math.sqrt((var[i]/count) - (mean_all[i]**2))}
+    var_all
+  end
+
+end
+
+#Just like group_by, except that results is just a grouped array
+module Enumerable
+def mygroup_by
+  assoc = Hash.new
+  res = []
+  each_index do |index|
+    element = self[index]
+    key = yield(element,index)
+    if assoc.has_key?(key)
+      res[assoc[key]] << element
+    else
+      assoc[key] = res.size
+      res << [element]
+    end
+  end
+  res
 end
 end
