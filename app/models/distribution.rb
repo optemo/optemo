@@ -2,22 +2,22 @@ class Distribution
 require 'inline'
 
   def computeDist
-      #dist = {}
-      #num_buckets = 21;
-      #st = []
-      #mins = []
-      #maxes = []
-      #Session.current.continuous["filter"].each{|f| st << ContSpec.by_feat(f)}
-      #specs = st.transpose
-      #Session.current.continuous["filter"].each{|f| mins << ContSpec.allMinMax(f)[0]}
-      #Session.current.continuous["filter"].each{|f| maxes << ContSpec.allMinMax(f)[1]}
-      #res = distribution_c(specs.flatten, specs.size, specs.first.size, num_buckets, mins, maxes) #unless $res
-      #Session.current.continuous["filter"].each_with_index do |f, i|   
-      #  t = i*(2+num_buckets) 
-      #  dist[f] = [[res[t], res[t+1]], res[(t+2)...(i+1)*(2+num_buckets)]]
-      #end
-      #dist
-      ruby
+      dist = {}
+      num_buckets = 21;
+      st = []
+      mins = []
+      maxes = []
+      Session.current.continuous["filter"].each{|f| st << ContSpec.by_feat(f)}
+      specs = st.transpose
+      Session.current.continuous["filter"].each{|f| mins << ContSpec.allMinMax(f)[0]}
+      Session.current.continuous["filter"].each{|f| maxes << ContSpec.allMinMax(f)[1]}
+      res = distribution_c(specs.flatten, specs.size, specs.first.size, num_buckets, mins, maxes) #unless $res
+      Session.current.continuous["filter"].each_with_index do |f, i|   
+        t = i*(2+num_buckets) 
+        dist[f] = [[res[t], res[t+1]], res[(t+2)...(i+1)*(2+num_buckets)]]
+      end
+      dist
+      #ruby
   end
 
   inline :C do |builder|
@@ -123,7 +123,7 @@ require 'inline'
        current_dataset_minimum = max
        current_dataset_maximum = min
        stepsize = (max-min) / dist.length + 0.000001 #Offset prevents overflow of 10 into dist array
-       specs = ContSpec.cachemany(Session.current.search.products, feat)
+       specs = ContSpec.by_feat(feat)
        specs.each do |s|
          current_dataset_minimum = s if s < current_dataset_minimum
          current_dataset_maximum = s if s > current_dataset_maximum
@@ -137,16 +137,4 @@ require 'inline'
     Session.current.continuous["filter"].each{|f| dist[f] = dist_each(f)}
     dist
   end
-end    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+end

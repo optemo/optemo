@@ -17,12 +17,13 @@ class SearchProduct < ActiveRecord::Base
         res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[]]).conts_keywords.cats(mycats).bins(mybins).group("search_products.product_id")
       end
       cached = CachingMemcached.cache_lookup("#{Session.current.product_type}Products-#{res.to_sql}") do
-        specs = Hash.new([])
+        specs = Hash.new{|h,k| h[k] = []}
         res.each do |rec|
           names = rec.names.split(",")
           vals = rec.vals.split(",")
           names.each_with_index{|name,i|specs[name] << vals[i].to_f}
         end
+        specs.default = nil
         p_ids = res.map(&:product_id)
         [specs,p_ids]
       end

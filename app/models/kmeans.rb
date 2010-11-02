@@ -115,9 +115,9 @@ end
 
 # C kmeans function   
 def self.compute(number_clusters, specs, weights = nil)
-  #$k = Kmeans.new unless $k
-  #$k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters)
-  Kmeans.ruby(number_clusters, specs, weights = nil)
+  $k = Kmeans.new unless $k
+  $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters)
+  #Kmeans.ruby(number_clusters, specs, weights = nil)
 end
 
 # regular kmeans function   
