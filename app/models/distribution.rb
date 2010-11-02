@@ -24,6 +24,8 @@ require 'inline'
     #include <math.h> 
     
        static VALUE distribution_c(VALUE _data, VALUE num_products, VALUE num_features, VALUE num_buckets, VALUE _dataMins, VALUE _dataMaxes){
+         
+         //initializing the 
          VALUE* data_a = RARRAY_PTR(_data);
          VALUE* dataMins_a = RARRAY_PTR(_dataMins);
          VALUE* dataMaxes_a = RARRAY_PTR(_dataMaxes);
@@ -35,14 +37,15 @@ require 'inline'
          VALUE result_ary = rb_ary_new2((2*d)+(k*d));
 
          int i,j, ind;
-         double curr_min, curr_max, stepsize;
-         double offset = 0.000001;
+         double curr_min, curr_max, stepsize, offset;
+         offset = 0.000001;
          double** dist = malloc(sizeof(double*)*d);
          double* dataMins = malloc(sizeof(double)*d);
          double* dataMaxes = malloc(sizeof(double)*d);
          double* mins = malloc(sizeof(double)*d);
          double* maxes = malloc(sizeof(double)*d);
          double** data = malloc(sizeof(double*)*n);
+         double *distMaxes = (double*)calloc(d, sizeof(double));
          for (i=0; i<n; i++) data[i] = malloc(sizeof(double)*d);    
          for (j=0; j<d; j++) {
            dist[j] = malloc(sizeof(double)*k);
@@ -57,39 +60,29 @@ require 'inline'
              dataMaxes[j] = NUM2DBL(dataMaxes_a[j]);
           } 
                
-         
          for (j=0; j<d; j++){
            curr_min = dataMaxes[j];
            curr_max = dataMins[j];
            stepsize =  (dataMaxes[j] - dataMins[j])/k + offset;
            for (i=0; i<n; i++){ 
-               if (curr_min > data[i][j]){
-                 curr_min = data[i][j];
-               }
-               if (curr_max < data[i][j]){
-                 curr_max = data[i][j];
-               }
-              ind = (data[i][j] - dataMins[j])/stepsize;
+               if (curr_min > data[i][j])curr_min = data[i][j];
+               if (curr_max < data[i][j])curr_max = data[i][j];
+               ind = (data[i][j] - dataMins[j])/stepsize;
                if (ind < k) dist[j][ind]++;    
-             }
+           }
            mins[j] = curr_min;
            maxes[j] = curr_max;       
          }
          
-         double *distMaxes = (double*)calloc(d, sizeof(double));
-         for (j=0; j<d; j++) {
-             for (i=0; i<k; i++) {
-                if (dist[j][i]>distMaxes[j]) distMaxes[j]=dist[j][i];
-             }
-           }      
+         
+         for (j=0; j<d; j++) 
+             for (i=0; i<k; i++) 
+                if (dist[j][i]>distMaxes[j]) distMaxes[j]=dist[j][i];     
+                  
         ////normalizing & round 2 decimal  
-         for (j=0; j<d; j++) {
-            for (i=0; i<k; i++) {
-              if (distMaxes!=0) dist[j][i]=dist[j][i]/distMaxes[j];
-              dist[j][i]=(round(dist[j][i]*1000))/1000;
-             }  
-          }
-       
+         for (j=0; j<d; j++) 
+            for (i=0; i<k; i++) 
+              if (distMaxes!=0) dist[j][i]=round(dist[j][i]*1000/distMaxes[j])/1000;       
          
          ///storing in result_ary
          ind = 0;
@@ -108,3 +101,35 @@ require 'inline'
        }"
     end
 end 
+         
+         //initializeing the 
+         
+         //initializeing the 
+         
+         //initializeing the 
+         
+         //initializeing the 
+         
+         //initializeing the 
+         
+         //initializeing the 
+         
+         //initializeing the 
+         
+         //initializeing the 
+         
+         //initializeing the 
+         
+         //initializeing the 
+         
+         //initializeing the 
+         
+         //initializeing the 
+         
+         //initializeing the 
+         
+         //initializeing the 
+         
+         //initializeing the 
+         
+         //initializeing the 
