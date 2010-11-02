@@ -12,25 +12,6 @@ class Search < ActiveRecord::Base
   def userdatabins
       @userdatabins ||= Userdatabin.find_all_by_search_id(id)
   end
-
-  ## Computes distributions (arrays of normalized product counts) for all continuous features 
-  #def distribution(feat) 
-  #     dist = Array.new(21,0)
-  #     min = ContSpec.allMinMax(feat)[0]
-  #     max = ContSpec.allMinMax(feat)[1]
-  #     return [[],[]] if max.nil? || min.nil?
-  #     current_dataset_minimum = max
-  #     current_dataset_maximum = min
-  #     stepsize = (max-min) / dist.length + 0.000001 #Offset prevents overflow of 10 into dist array
-  #     specs = ContSpec.cachemany(products, feat)
-  #     specs.each do |s|
-  #       current_dataset_minimum = s if s < current_dataset_minimum
-  #       current_dataset_maximum = s if s > current_dataset_maximum
-  #       i = ((s - min) / stepsize).to_i
-  #       dist[i] += 1 if i < dist.length
-  #     end  
-  #     [[current_dataset_minimum, current_dataset_maximum], round2Decim(normalize(dist))] 
-  #end
   
   #Range of product offerings
   def ranges(featureName)
@@ -188,22 +169,6 @@ class Search < ActiveRecord::Base
   def products_size
     @products_size ||= products.size
   end
-  
-  #def products
-  #  unless @products
-  #    selected_products = SearchProduct.filterquery
-  #    @products = CachingMemcached.cache_lookup("#{Session.current.product_type}Products#{selected_products.to_sql.hash}") do
-  #      debugger
-  #      product_list_ids = selected_products.select("search_products.product_id").map(&:product_id)
-  #      @products_size = product_list_ids.size
-  #      utility_list = ContSpec.cachemany(product_list_ids, "utility")
-  #      # Cannot avoid sorting, since this result is cached.
-  #      # If there is an error here, you might need to run rake calculate_factors. (utility_list.length should match product_list.length)
-  #      utility_list.zip(product_list_ids).sort{|a,b|b[0]<=>a[0]}.map{|a,b|b}
-  #    end
-  #  end
-  #  @products
-  #end
   
   def products
     SearchProduct.fq2
@@ -439,21 +404,6 @@ class Search < ActiveRecord::Base
     end
   end
   
-  def fillDisplay
-    clusters #instantiate clusters to update cluster_count
-    if false #cluster_count < Session.current.numGroups && cluster_count > 0
-      if clusters.map{|c| c.size}.sum >= 9
-        myclusters = splitClusters(clusters)
-      else
-        #Display only the deep children
-        myclusters = clusters.map{|c| c.deepChildren}.flatten
-      end
-    else
-      myclusters = clusters
-    end
-    updateClusters(myclusters)
-  end
-  
   # The intent of this function is to see if filtering is being done on a previously filtered set of clusters.
   # The reason for its existence is that filtering across, say, 50% of the total clusters is faster
   # than starting from the beginning every time.
@@ -498,50 +448,4 @@ class Search < ActiveRecord::Base
     end
     false
   end
-  
-  private
-  
-  def updateClusters(myclusters)
-    return if myclusters.nil?
-    mycluster = :c0=
-    stringpresent = false #Don't set clusters if any of them are ids
-    myclusters.each do |p|
-      send(mycluster, case p.class.name
-        when "String" then (stringpresent = true) && p
-        when "Fixnum" then (stringpresent = true) && p.to_s
-        when "Cluster" then p.id.to_s
-      end )
-      mycluster = mycluster.next # automatically advances from :c0= to :c1= etc.
-    end
-    self.cluster_count = myclusters.length
-    self.clusters = myclusters unless stringpresent
-  end
-  
-  def splitClusters(myclusters)
-    while myclusters.length != Session.current.numGroups
-      myclusters.sort! {|a,b| b.size <=> a.size}
-      myclusters = split(myclusters.shift.children) + myclusters
-    end
-    myclusters.sort! {|a,b| b.size <=> a.size}
-  end  
-  
-  def split(children)
-    return children if children.length == 1
-    children.sort! {|a,b| b.size <=> a.size}
-    [children.shift, MergedCluster.new(children)]
-  end
-  
-  def normalize(a)
-    total = a.max
-    if total==0 
-      a  
-    else    
-      a.map{|i| i.to_f/total}
-    end  
-  end
-  
-  def round2Decim(a)
-    a.map{|n| (n*1000).round.to_f/1000}
-  end
-  
 end

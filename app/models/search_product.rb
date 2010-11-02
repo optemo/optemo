@@ -16,16 +16,20 @@ class SearchProduct < ActiveRecord::Base
       else
         res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[]]).conts_keywords.cats(mycats).bins(mybins).group("search_products.product_id")
       end
-      #res.map{|rec|Hashrec.names.split(",").zip(rec.vals.split(","))}
-      specs = Hash.new{|h,k| h[k] = []}
-      res.each do |rec|
-        names = rec.names.split(",")
-        vals = rec.vals.split(",")
-        names.each_with_index{|name,i|specs[name] << vals[i].to_f}
+      cached = CachingMemcached.cache_lookup("#{Session.current.product_type}Products-#{res.to_sql}") do
+        specs = Hash.new([])
+        res.each do |rec|
+          names = rec.names.split(",")
+          vals = rec.vals.split(",")
+          names.each_with_index{|name,i|specs[name] << vals[i].to_f}
+        end
+        p_ids = res.map(&:product_id)
+        [specs,p_ids]
       end
-      ContSpec.by_feat = specs
-      Session.current.search.products_size = res.length
-      res.map(&:product_id)
+      
+      ContSpec.by_feat = cached.first
+      Session.current.search.products_size = cached[1].length
+      cached[1]
     end
     
     def cat_counts(feat)
