@@ -7,8 +7,10 @@
 			<div class="groupby" data-feat="<%= feat %>" data-position="<%= i %>">Show Groups</div>
 		<% end %>		
 	</div>
-	<% current = isnil(Session.current.search.userdataconts.select{|m|m.name == feat}.first){Userdatacont.new("min" => overall_min, "max" => overall_max)} %>
-	<% distribution_data = Session.current.search.distribution(feat) %>
+	<%$d = Distribution.new(Session.current.search.products) unless $d %>
+	<% current = isnil(Session.current.search.userdataconts.select{|m|m.name == feat}.first){Userdatacont.new("min" => overall_min, "max" => overall_max)} %>  
+	
+	<% distribution_data = $d.getDist(feat) %>
 	<div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
 	<%= hidden_field_tag "myfilter[#{feat}_min]", current.name.nil? ? nil : current.min,{:class => 'min'}%>
 	<%= hidden_field_tag "myfilter[#{feat}_max]", current.name.nil? ? nil : current.max,{:class => 'max'}%>
