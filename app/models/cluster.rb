@@ -41,9 +41,9 @@ class Cluster
   #The subclusters
   def children
     unless @children
-      specs = Cluster.product_specs(products)
+      #specs = Cluster.product_specs(products)
       start = Time.now
-      cluster_ids = Kmeans.compute([9,products.length].min,specs)
+      cluster_ids = Kmeans.compute([9,products.length].min)
       finish = Time.now
       @children = Cluster.group_by_clusterids(products,cluster_ids).map{|product_ids|Cluster.new(product_ids)}
       puts("*****######!!!!!!"+(finish-start).to_s)
