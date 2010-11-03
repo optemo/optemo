@@ -162,7 +162,7 @@ class Search < ActiveRecord::Base
         Product.valid.instock.map{|product| SearchProduct.new(:product_id => product.id, :search_id => products_id)}.each(&:save)
       end
     end
-    SearchProduct.create(:product_id => -1, :search_id => set_search_id) if set_search_id
+    #SearchProduct.create(:product_id => -1, :search_id => set_search_id) if set_search_id
     products_id
   end
   
@@ -175,30 +175,24 @@ class Search < ActiveRecord::Base
   end
   
   def products_search_id
-    #This might be able to be refactored into a single MySQL query
     if @myproducts
-      if @myproducts == -1
-        my_search = initial_products(id)
-      else
-        my_search = id
-      end
+      #A cluster was chosen
+      my_search = id
     else
       current_s = self
       while(my_search.nil?)
-        c = SearchProduct.where(["search_id = ?",current_s.id])
-        if c.empty?
-          begin
-            current_s = Search.find(current_s.parent_id)
-          rescue (ActiveRecord::RecordNotFound)
-            #There's an error let's just go back to the initial products
-            debugger
-            my_search = initial_products(id)
-          end
+        if current_s.initial
+          my_search = initial_products
         else
-          #Check for initial products' token
-          if c.first.product_id == -1
-            #Initial products should be used
-            my_search = initial_products
+          c = SearchProduct.where(["search_id = ?",current_s.id])
+          if c.empty?
+            begin
+              current_s = Search.find(current_s.parent_id)
+            rescue (ActiveRecord::RecordNotFound)
+              #There's an error let's just go back to the initial products
+              debugger
+              my_search = initial_products
+            end
           else
             #Previous selected products have been found
             my_search = current_s.id
@@ -206,10 +200,45 @@ class Search < ActiveRecord::Base
         end
       end
     end
-    #Initial products is the default
-    my_search = initial_products(id) unless my_search
     my_search
   end
+  
+  #def products_search_id
+  #  #This might be able to be refactored into a single MySQL query
+  #  if @myproducts
+  #    if @myproducts == -1
+  #      my_search = initial_products(id)
+  #    else
+  #      my_search = id
+  #    end
+  #  else
+  #    current_s = self
+  #    while(my_search.nil?)
+  #      c = SearchProduct.where(["search_id = ?",current_s.id])
+  #      if c.empty?
+  #        begin
+  #          current_s = Search.find(current_s.parent_id)
+  #        rescue (ActiveRecord::RecordNotFound)
+  #          #There's an error let's just go back to the initial products
+  #          debugger
+  #          my_search = initial_products(id)
+  #        end
+  #      else
+  #        #Check for initial products' token
+  #        if c.first.product_id == -1
+  #          #Initial products should be used
+  #          my_search = initial_products
+  #        else
+  #          #Previous selected products have been found
+  #          my_search = current_s.id
+  #        end
+  #      end
+  #    end
+  #  end
+  #  #Initial products is the default
+  #  my_search = initial_products(id) unless my_search
+  #  my_search
+  #end
 
   def groupings
     return [] if groupby.nil? 
@@ -309,7 +338,7 @@ class Search < ActiveRecord::Base
     case p["action_type"]
     when "initial"
       #Initial load of the homepage
-      @myproducts = -1 #initial products
+      self.initial = true
       @userdataconts = []
       @userdatabins = []
       @userdatacats = []
@@ -332,7 +361,7 @@ class Search < ActiveRecord::Base
         #Search is narrowed, so use old products to begin with
       else
         #Search is expanded, so use all products to begin with
-        @myproducts = -1 #Initial products
+        self.initial = true
       end
     else
       #Error
@@ -346,7 +375,7 @@ class Search < ActiveRecord::Base
       d.save
     end
     #Record new prefiltered products
-    if @myproducts.kind_of?(Array)
+    if @myproducts
       SearchProduct.transaction do
         @myproducts.map{|product_id| SearchProduct.new({:product_id => product_id, :search_id => id})}.each(&:save)
       end
