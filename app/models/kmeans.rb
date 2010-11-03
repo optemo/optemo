@@ -130,10 +130,16 @@ end
 
 
 # C kmeans function   
-def self.compute(number_clusters, specs, weights = nil)
-  $k = Kmeans.new unless $k
-  $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters)
-  #Kmeans.ruby(number_clusters, specs, weights = nil)
+def self.compute(number_clusters, weights = nil)
+  begin
+    specs = Product.specs
+    $k = Kmeans.new unless $k
+    $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters)
+  rescue
+    puts "Falling back to ruby kmeans"
+    debugger
+    Kmeans.ruby(number_clusters, specs)
+  end
 end
 
 # regular kmeans function   

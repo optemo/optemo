@@ -1310,6 +1310,7 @@ ActiveRecord::Schema.define(:version => 20101019233312) do
     t.string   "keyword_search"
     t.integer  "page"
     t.string   "groupby"
+    t.binary   "initial"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

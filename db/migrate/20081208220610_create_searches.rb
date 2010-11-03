@@ -7,6 +7,7 @@ class CreateSearches < ActiveRecord::Migration
       t.string :keyword_search
       t.integer :page
       t.string :groupby
+      t.binary :initial
       t.timestamps
     end
   end

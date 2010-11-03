@@ -12,11 +12,6 @@ class Cluster
     end
   end
   
-  #Unique key for memcache lookup using BER-compressed integer
-  def key
-    products.pack("w*")
-  end
-  
   def id
     products.hash.abs
   end
@@ -25,25 +20,20 @@ class Cluster
     if Rails.env.development?
       p_ids = Site::Application::CLUSTER_CACHE[id.to_i]
     else
-      p_ids = CachingMemcached.cache_lookup("Cluster#{id}")
+      p_ids = Rails.cache.read("Cluster#{id}")
     end
     #Cache miss
-    #p_ids = Product
-    Cluster.new(p_ids)
-  end
-  
-  def self.findbychild(id,child_id = 0)
-    cluster = self.cached(id)
-    child = cluster.children[child_id] || cluster.children[0]
-    child.products
+    p_ids = SearchProduct.find_all_by_search_id(Product.initial).map(&:product_id) unless p_ids
+
+    p_ids
   end
   
   #The subclusters
   def children
     unless @children
-      specs = Cluster.product_specs(products)
+      #specs = Cluster.product_specs(products)
       start = Time.now
-      cluster_ids = Kmeans.compute([9,products.length].min,specs)
+      cluster_ids = Kmeans.compute([9,products.length].min)
       finish = Time.now
       @children = Cluster.group_by_clusterids(products,cluster_ids).map{|product_ids|Cluster.new(product_ids)}
       puts("*****######!!!!!!"+(finish-start).to_s)

@@ -36,6 +36,22 @@ class Product < ActiveRecord::Base
     chars.sum*-1
   end
   
+  #Currently only does continuous but others should be added
+  def self.specs
+    st = []
+    Session.current.continuous["filter"].each{|f| st << ContSpec.by_feat(f)}
+    #Check for 1 spec per product
+    raise unless Session.current.search.products_size == st.first.length
+    #Check for no nil values
+    raise unless st.first.size == st.first.compact.size
+    raise unless st.first.size > 0
+    #Check that every spec has the same number of features
+    first_size = st.first.compact.size
+    raise unless st.inject{|res,el|el.compact.size == first_size}
+    
+    st.transpose
+  end
+  
   scope :instock, :conditions => {:instock => true}
   scope :valid, lambda {
     {:conditions => (Session.current.continuous["filter"].map{|f|"id in (select product_id from cont_specs where #{Session.current.minimum[f] ? "value > " + Session.current.minimum[f].to_s : "value > 0"}#{" and value < " + Session.current.maximum[f].to_s if Session.current.maximum[f]} and name = '#{f}' and product_type = '#{Session.current.product_type}')"}+\
