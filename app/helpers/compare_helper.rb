@@ -211,7 +211,7 @@ module CompareHelper
   			  open = true
   		  end
   		  #Navbox partial to draw boxes
-  		  res << render(:partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative, :cluster_id => @s.search.cluster.id})
+  		  res << render(:partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative})
   		  if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
   			  res << '</div>'
   			  open = false

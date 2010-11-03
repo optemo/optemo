@@ -154,15 +154,14 @@ class Search < ActiveRecord::Base
     @cluster ||= Cluster.new(products)
   end
   
-  def initial_products(set_search_id=nil)
+  #Sets to use the initial products and checks whether they're in the database
+  def initial_products
     products_id = Product.initial
-    #This can be optimized not to check every time
     if SearchProduct.where(["search_id = ?", products_id]).limit(1).empty?
       SearchProduct.transaction do
         Product.valid.instock.map{|product| SearchProduct.new(:product_id => product.id, :search_id => products_id)}.each(&:save)
       end
     end
-    #SearchProduct.create(:product_id => -1, :search_id => set_search_id) if set_search_id
     products_id
   end
   
@@ -202,43 +201,6 @@ class Search < ActiveRecord::Base
     end
     my_search
   end
-  
-  #def products_search_id
-  #  #This might be able to be refactored into a single MySQL query
-  #  if @myproducts
-  #    if @myproducts == -1
-  #      my_search = initial_products(id)
-  #    else
-  #      my_search = id
-  #    end
-  #  else
-  #    current_s = self
-  #    while(my_search.nil?)
-  #      c = SearchProduct.where(["search_id = ?",current_s.id])
-  #      if c.empty?
-  #        begin
-  #          current_s = Search.find(current_s.parent_id)
-  #        rescue (ActiveRecord::RecordNotFound)
-  #          #There's an error let's just go back to the initial products
-  #          debugger
-  #          my_search = initial_products(id)
-  #        end
-  #      else
-  #        #Check for initial products' token
-  #        if c.first.product_id == -1
-  #          #Initial products should be used
-  #          my_search = initial_products
-  #        else
-  #          #Previous selected products have been found
-  #          my_search = current_s.id
-  #        end
-  #      end
-  #    end
-  #  end
-  #  #Initial products is the default
-  #  my_search = initial_products(id) unless my_search
-  #  my_search
-  #end
 
   def groupings
     return [] if groupby.nil? 
@@ -344,7 +306,7 @@ class Search < ActiveRecord::Base
       @userdatacats = []
     when "similar"
       #Browse similar button
-      @myproducts = Cluster.findbychild(p["cluster_hash"],p["child_id"]) # current products
+      @myproducts = Cluster.cached(p["cluster_hash"]) # current products
       duplicateFeatures(old_search)
     when "nextpage"
       #the next page button has been clicked

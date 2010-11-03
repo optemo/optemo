@@ -52,6 +52,7 @@ class CompareController < ApplicationController
     end
   end
   
+  #For mobile layout
   def showfilters
     classVariables(Session.current.searches.last)
     render 'filters', :layout=>'filters'
@@ -66,13 +67,8 @@ class CompareController < ApplicationController
   end
   
   def sim
-    args = params[:id].gsub(/[^(\d|\-)]/,'').split('-')
-    cluster_hash = args[0]
-    child_id = args[1].to_i if args[1]
-    #cluster_id.gsub(/[^(\d|+)]/,'') #Clean URL input
-    Session.current.search = Session.current.lastsearch
     if params[:ajax]
-      classVariables(Search.create({"cluster_hash" => cluster_hash, "child_id" => child_id, "action_type" => "similar"}))
+      classVariables(Search.create({"cluster_hash" => params[:id].gsub(/[^(\d)]/,''), "action_type" => "similar"}))
       render 'ajax', :layout => false
     else
       render :text => "Not handeled yet."
