@@ -50,8 +50,8 @@ class Product < ActiveRecord::Base
     raise unless st.inject{|res,el|el.compact.size == first_size}
     
     if p_ids
-      Session.current.categorical["filter"].each{|f|  st<<CatSpec.cachemany(p_ids, f)} 
-      Session.current.binary["filter"].each{|f|  st << BinSpec.cachemany(p_ids, f)}
+      Session.current.categorical["cluster"].each{|f|  st<<CatSpec.cachemany(p_ids, f)} 
+      Session.current.binary["cluster"].each{|f|  st << BinSpec.cachemany(p_ids, f)}
     end
     st.transpose
   end

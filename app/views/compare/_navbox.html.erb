@@ -18,7 +18,7 @@
 				<%= product.smlTitle %></a>
 		
 				<div class="price">
-					$<%= ContSpec.cache_all(product.id)["price"] %>
+					$<%= "%.2f" % ContSpec.cache_all(product.id)["price"] %>
 				</div>	
 			</div>
 		</div>
