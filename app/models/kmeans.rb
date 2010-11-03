@@ -23,95 +23,111 @@ inline :C do |builder|
       }
     }
   
-  ////////getting mean and var of the data
-    double* dataMean = malloc(sizeof(double)*dd);
-    double* dataVar = malloc(sizeof(double)*dd); 
-	  for (j = 0; j < dd; j++) {
-	 	 dataMean[j]=0; 
-	 	 dataVar[j]= 0;
-	  }
-	  for (h = 0; h < nn; h++){ 
-	  	for (j = 0; j < dd; j++) {
-	 	  	dataMean[j] += data[h][j]; 
-	 		 dataVar[j] += data[h][j] * data[h][j];
-	      }
-	   }   
-	  for (j = 0; j < dd; j++) {
-	  	dataMean[j] = dataMean[j] / nn;
-	  	dataVar[j] = sqrt(dataVar[j]/nn - dataMean[j] * dataMean[j]);
-	  }
-  
-  ///////data standardization 
-    for (h = 0; h < nn; h++) {
-    	for (j = 0; j < dd; j++)
-    		data[h][j] = (data[h][j] - dataMean[j]) / dataVar[j];
-    	//for (int j = 0; j < bool_feats; j++)
-    	//	dataN[h][dd + j] = data[h][con_feats + j];	
-    }
-  
-  
-  ///////Kmeans data      
-    int *counts = (int*)calloc(k, sizeof(int)); //(int*)calloc(k, sizeof(int)); /* size of each cluster */
+  //kmeans initializations
+    int *counts = (int*)calloc(k, sizeof(int)); /* size of each cluster */
+    double *dif = (double*)calloc(k, sizeof(double)); 
     double old_error, error = DBL_MAX; /* sum of squared euclidean distance */
-    double** centroids = malloc(sizeof(double*)*k);
-    for (i=0; i<k; i++) centroids[i]= malloc(sizeof(double)*dd);
-    double **c = (double**)calloc(k, sizeof(double*));
-    double **c1 = (double**)calloc(k, sizeof(double*)); /* temp centroids */
-    int *labels = (int*)calloc(nn, sizeof(int)); 
+    double** means_1 = malloc(sizeof(double*)*k);
+    double** means_2 = malloc(sizeof(double*)*k);
+    for (i=0; i<k; i++) means_1[i]= malloc(sizeof(double)*dd);
+    for (i=0; i<k; i++) means_2[i]= malloc(sizeof(double)*dd);
+    int *labels = (int*)calloc(nn, sizeof(int));
+  
+   // If the number of points is less than the number of clusters, there is no need to cluster!
+    if (nn <= k) {
+      for (i=0; i<nn; i++) labels[i] = i;
+    }
+  else{
+  
+    ////////getting mean and var of the data
+      double* dataMean = malloc(sizeof(double)*dd);
+      double* dataVar = malloc(sizeof(double)*dd); 
+  	  for (j = 0; j < dd; j++) {
+  	 	 dataMean[j]=0; 
+  	 	 dataVar[j]= 0;
+  	  }
+  	  for (h = 0; h < nn; h++){ 
+  	  	for (j = 0; j < dd; j++) {
+  	 	  	dataMean[j] += data[h][j]; 
+  	 	  	 dataVar[j] += data[h][j] * data[h][j];
+  	    }
+  	   }   
+  	  for (j = 0; j < dd; j++) {
+  	  	dataMean[j] = dataMean[j] / nn;
+  	  	dataVar[j] = sqrt(dataVar[j]/nn - dataMean[j] * dataMean[j]);
+  	  }
     
-        
-  for (h = i = 0; i < k; h += nn / k, i++) {
-     c1[i] = (double*)calloc(dd, sizeof(double));
-     c[i] = (double*)calloc(dd, sizeof(double));
-     /* pick k points as initial centroids */
-     for (j = dd; j-- > 0; c[i][j] = data[h][j]);
-  }
-  
-  /****
-  ** main loop */
-  
-  do {
-     /* save error from last step */
-     old_error = error, error = 0;
-  
-     /* clear old counts and temp centroids */
-     for (i = 0; i < k; counts[i++] = 0) {
-        for (j = 0; j < dd; c1[i][j++] = 0);
-     }
-  
-     for (h = 0; h < nn; h++) {
-        /* identify the closest cluster */
-        double min_distance = DBL_MAX;
-        for (i = 0; i < k; i++) {
-           double distance = 0;
-           for (j = dd; j-- > 0; distance += (data[h][j] - c[i][j]) * (data[h][j] - c[i][j])) ;
-           if (distance < min_distance) {
-              labels[h] = i;
-              min_distance = distance;
-           }
+    ///////data standardization 
+      for (h = 0; h < nn; h++) {
+      	for (j = 0; j < dd; j++){
+      		data[h][j] = (data[h][j] - dataMean[j]) / dataVar[j];
+      	//for (int j = 0; j < bool_feats; j++)
+      	//	dataN[h][dd + j] = data[h][con_feats + j];	
+    	  }
+      }
+    
+    ///initializing the first means
+     for(h=0; h<k;h++)
+        for(j=0; j<dd; j++) means_1[h][j] = data[h][j];
+    
+    double z=0.0;
+    double tmp_min = DBL_MAX;
+    int tmp_ind=0;
+    ///////performing kmeans 
+    
+    do{
+     
+      //means_2= means_1
+      for(h=0; h<k;h++)
+        for(j=0; j<dd; j++) means_2[h][j] = means_1[h][j];
+    
+      
+      //finding the closes mean to assign the labels
+      for (i=0; i<nn; i++){
+         tmp_min = DBL_MAX;
+        for (h=0; h<k; h++){
+          dif[h] = 0.0;     
+          for (j=0; j<dd; j++) dif[h] += (data[i][j]-means_1[h][j])*(data[i][j]-means_1[h][j]);
+          if (tmp_min>dif[h]){
+            tmp_min = dif[h];
+            tmp_ind = h;
+          } 
         }
-        /* update size and temp centroid of the destination cluster */
-        for (j = dd; j-- > 0; c1[labels[h]][j] += data[h][j]);
-        counts[labels[h]]++;
-        /* update standard error */
-        error += min_distance;
-     }
-  
-     for (i = 0; i < k; i++) { /* update all centroids */
-        for (j = 0; j < dd; j++) {
-           c[i][j] = counts[i] ? c1[i][j] / counts[i] : c1[i][j];
-        }
-     }
-  
-  } while (((error - old_error)*(error - old_error)) > t);
-  
-  for (j=0; j<nn; j++){
-      rb_ary_store(labels_r, j, INT2NUM(labels[j]));
+        labels[i] = tmp_ind;
+      }
+      
+      
+      //computing the new means
+      for (h=0; h<k; h++)
+        for (j=0; j<dd; j++) {
+          means_1[h][j] = 0.0;
+          counts[h] = 0;
+        }  
+       
+      for (i=0; i<nn; i++){
+          h = labels[i];
+          counts[h]++;
+          for (j=0; j<dd;j++) means_1[h][j] += data[i][j];
+      }     
+      for (h=0; h<k; h++)
+        for (j=0; j<dd; j++) means_1[h][j]=means_1[h][j]/counts[h]; 
+       
+       
+      //calculatig the difference between the old and the new means 
+      z=0.0;
+      for(h=0; h<k;h++)
+        for(j=0; j<dd; j++) z += (means_1[h][j]- means_2[h][j])*(means_1[h][j]- means_2[h][j]);  
+    }while (z>t);
   }
+
+ //storing the labels in the ruby array
+  for (j=0; j<nn; j++) rb_ary_store(labels_r, j, INT2NUM(labels[j]));
+  
   return labels_r;
   }
   "
 end
+
 
 # C kmeans function   
 def self.compute(number_clusters,p_ids, weights = nil)
