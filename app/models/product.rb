@@ -37,7 +37,7 @@ class Product < ActiveRecord::Base
   end
   
   #Currently only does continuous but others should be added
-  def self.specs
+  def self.specs(p_ids = nil)
     st = []
     Session.current.continuous["filter"].each{|f| st << ContSpec.by_feat(f)}
     #Check for 1 spec per product
@@ -49,6 +49,10 @@ class Product < ActiveRecord::Base
     first_size = st.first.compact.size
     raise unless st.inject{|res,el|el.compact.size == first_size}
     
+    if p_ids
+      Session.current.categorical["filter"].each{|f|  st<<CatSpec.cachemany(p_ids, f)} 
+      Session.current.binary["filter"].each{|f|  st << BinSpec.cachemany(p_ids, f)}
+    end
     st.transpose
   end
   

@@ -114,9 +114,9 @@ inline :C do |builder|
 end
 
 # C kmeans function   
-def self.compute(number_clusters, weights = nil)
+def self.compute(number_clusters,p_ids, weights = nil)
   begin
-    specs = Product.specs
+    specs = Product.specs(p_ids)
     $k = Kmeans.new unless $k
     $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters)
   rescue
