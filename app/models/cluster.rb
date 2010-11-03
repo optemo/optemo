@@ -60,6 +60,6 @@ class Cluster
  
   #Grouping products by cluster_ids
   def self.group_by_clusterids(product_ids, cluster_ids)
-   product_ids.mygroup_by{|e,i|cluster_ids[i]}.sort{|a,b| b.length <=> a.length}
+    product_ids.mygroup_by{|e,i|cluster_ids[i]}.sort{|a,b| ((b.length > 1) ? 1:0) <=> ((a.length > 1) ? 1:0)}
   end
 end

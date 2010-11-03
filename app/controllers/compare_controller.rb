@@ -67,11 +67,11 @@ class CompareController < ApplicationController
   end
   
   def sim
+    classVariables(Search.create({"cluster_hash" => params[:id].gsub(/[^(\d)]/,''), "action_type" => "similar"}))
     if params[:ajax]
-      classVariables(Search.create({"cluster_hash" => params[:id].gsub(/[^(\d)]/,''), "action_type" => "similar"}))
       render 'ajax', :layout => false
     else
-      render :text => "Not handeled yet."
+      render (Session.current.mobileView ? 'products' : 'compare')
       #redirect_to "/compare/compare/"+cluster.children.map{|c|c.id}.join('-')
     end
   end
