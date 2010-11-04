@@ -2,7 +2,7 @@ fr:
     products:
         compare:
             # All translations for /compare/compare.erb.html and its partials
-            browsings:      "Parcourir {{count}} appareils photo"   # e.g. Browsing 146 Cameras
+            browsings:      "Parcourir %{count} appareils photo"   # e.g. Browsing 146 Cameras
             browsing:       "Parcourir 1 appareil photo"   # e.g. Browsing 146 Cameras
             search:         "Recherche"
             saved:          "Comparez les articles"
@@ -14,7 +14,7 @@ fr:
             loading:        "Loading"
             back:           "Retour"
             all:            "Voir tous les appareils photo"                   # e.g. All Cameras
-            similar:        "{{count}} plutôt comme ceci" # e.g. 1 More like this
+            similar:        "%{count} plutôt comme ceci" # e.g. 1 More like this
             addbrand:       "Ajoutez une autre marque"
             allbrands:      "Toutes les marques"
             rembrandfilter: "Retirez le filtre de marque"    

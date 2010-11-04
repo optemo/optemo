@@ -16,16 +16,14 @@ class CatSpec < ActiveRecord::Base
     end  
   end
 
-  def self.cachemany_with_ids(p_ids, feat)
-    CachingMemcached.cache_lookup("CatSpecs_with_ids#{feat}#{p_ids.join(',').hash}") do
-      select(:product_id, :value).where("product_id IN (?) and name = ?", p_ids, feat)
+  def self.cachemany(p_ids, feat) # Returns numerical (floating point) values only
+    CachingMemcached.cache_lookup("CatSpecs#{feat}#{p_ids.join(',').hash}") do
+      select(:value).where(["product_id IN (?) and name = ?", p_ids, feat]).map(&:value)
     end
   end
-  
   def self.all(feat)
     CachingMemcached.cache_lookup("#{Session.current.product_type}Cats-#{feat}") do
-      id_array = Product.valid.instock.map(&:id)
-      select(:value).where("product_id IN (?) and name = ?", id_array, feat).map(&:value).uniq
+      select(:value).where("product_id IN (select product_id from search_products where search_id = ?) and name = ?", Product.initial, feat).map(&:value)
     end
   end
 

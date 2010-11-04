@@ -1,0 +1,14 @@
+<div id="logo">
+	<a href="<%= url_for '/' %>" id ="logo" title="Optemo Technologies"><%= image_tag "logo.png", :width => "250px" %></a>
+</div>
+<div class="demo_selector">
+	<h3>Layout</h3>
+	<%= select "superfluous", "tech_type", [["DiscoveryAssist","assist"], ["DiscoveryDirect","direct"]], {:selected => Session.current.directLayout ? "direct" : "assist"}, {:index => nil} %>
+	<p>Compare our different product offerings.</p>
+</div>
+<div class="demo_selector">
+	<h3>Product Category</h3>
+	<%= select "superfluous", "product_type", [["Cameras","cameras"], ["Printers","printers"]], {:selected => Session.current.product_type == "camera_us" ? "cameras" : "printers"}, {:index => nil} %>
+	<p>Our technology works with any product type.</p>
+</div>
+<div id="tourButton"><%= link_to "Launch Tour", '#', :class => "awesome" %></div>

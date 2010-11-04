@@ -1,14 +1,5 @@
 class ContSpec < ActiveRecord::Base
   belongs_to :product
-  attr_writer :cs
-
-  # Get specs for a single item and single feature -- this is deprecated
-  #  def self.cache(p_id, feat)
-  #    CachingMemcached.cache_lookup("ContSpec#{feat}#{p_id}") do
-  #      r = find_by_product_id_and_name(p_id, feat)
-  #      r.value if r
-  #    end
-  #  end  
 
   # Get specs for a single item, returns a hash of this format: {"price" => 1.75, "width" => ... }
   def self.cache_all(p_id)
@@ -20,16 +11,6 @@ class ContSpec < ActiveRecord::Base
     CachingMemcached.cache_lookup("ContSpecs#{feat}#{p_ids.join(',').hash}") do
       select(:value).where(["product_id IN (?) and name = ?", p_ids, feat]).map(&:value)
     end
-  end
-  def self.cachemany_with_ids(p_ids, feat)
-    CachingMemcached.cache_lookup("ContSpecsWithIds#{feat}#{p_ids.join(',').hash}") do
-      select(:product_id, :value).where(["product_id IN (?) and name = ?", p_ids, feat])
-    end
-  end
-  def self.cachemany_with_ids_hash(p_ids, feat)
-    CachingMemcached.cache_lookup("ContSpecsWithIds#{feat}#{p_ids.join(',').hash}") do
-      select(:product_id, :value).where(["product_id IN (?) and name = ?", p_ids, feat])
-    end.each_with_object({}){|r, h| h[r.product_id] = r.value}
   end
   
   # This probably isn't needed anymore, but is a good example of how to do class caching if we want to do it in future.
@@ -44,20 +25,21 @@ class ContSpec < ActiveRecord::Base
   
   def self.allMinMax(feat)
     CachingMemcached.cache_lookup("#{Session.current.product_type}MinMax-#{feat}") do
-      all = ContSpec.allspecs(feat)
+      #all = ContSpec.allspecs(feat)
+      all = ContSpec.initial_specs(feat)
       [all.min,all.max]
     end
   end
 
   def self.allLow(feat)
     CachingMemcached.cache_lookup("#{Session.current.product_type}Low-#{feat}") do
-      ContSpec.allspecs(feat).sort[products.count*0.4]
+      ContSpec.initial_specs(feat).sort[Session.current.search.product_size*0.4]
     end
   end
 
   def self.allHigh(feat)
     CachingMemcached.cache_lookup("#{Session.current.product_type}High-#{feat}") do
-      ContSpec.allspecs(feat).sort[products.count*0.6]
+      ContSpec.initial_specs(feat).sort[Session.current.search.product_size*0.6]
     end
   end
   
@@ -66,18 +48,18 @@ class ContSpec < ActiveRecord::Base
      return value == other.value && product_id == other.product_id #&& name == other.name Not included due to partial db instatiations ie .select(:product_ids, :values)
   end
   
+  def self.by_feat(feat)
+    SearchProduct.fq2 unless defined? @@by_feat
+    @@by_feat[feat]
+  end
+  
+  def self.by_feat=(specs)
+    @@by_feat = specs
+  end
+  
   private
-
-  def self.allspecs(feat)
-    #ContSpec.find_all_by_name_and_product_type(feat, Session.current.product_type).map(&:value)
-    id_array = Product.valid.instock.map(&:id)
-    #id_array = Session.current.search.acceptedProductIDs
-    ContSpec.cachemany(id_array, feat)
-  end
   
-  # This is used for sorting an array of ContSpec objects.
-  def <=>(other)
-     return value <=> other.value
+  def self.initial_specs(feat)
+    joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").where(:cont_specs => {:name => feat}, :search_products => {:search_id => Product.initial}).select(:value).map(&:value)
   end
-  
 end

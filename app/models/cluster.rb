@@ -1,125 +1,65 @@
-class Cluster < ActiveRecord::Base
-  has_many :nodes
-  has_many :products, :through => :nodes
-  has_many :cont_specs, :through => :products
-  has_many :bin_specs, :through => :products
+class Cluster
+  require 'inline'
+  attr :products
   
-  def self.byparent(id)
-    return nil if Session.current.directLayout
-    current_version = Session.current.version
-    #Need to check by version and type because of the root clusters with parent id 0
-    CachingMemcached.cache_lookup("Clusters#{current_version}#{id}#{Session.current.product_type}"){find_all_by_parent_id_and_version_and_product_type(id, current_version, Session.current.product_type)}
+  def initialize(products)
+    @products = products
+    
+    if Rails.env.development?
+      Site::Application::CLUSTER_CACHE[products.hash.abs]=products
+    else
+      Rails.cache.write("Cluster#{products.hash.abs}", products)
+    end
+  end
+  
+  def id
+    products.hash.abs
   end
   
   def self.cached(id)
-    CachingMemcached.cache_lookup("Cluster#{id}"){find(id)}
+    if Rails.env.development?
+      p_ids = Site::Application::CLUSTER_CACHE[id.to_i]
+    else
+      p_ids = Rails.cache.read("Cluster#{id}")
+    end
+    #Cache miss
+    p_ids = SearchProduct.find_all_by_search_id(Product.initial).map(&:product_id) unless p_ids
+
+    p_ids
   end
   
   #The subclusters
   def children
     unless @children
-      @children = Cluster.byparent(id)
-      #Check that children are not empty
-      if !Cluster.filterquery.blank?
-        @children = @children.reject{|c| c.isEmpty}
-      end
+      start = Time.now
+      cluster_ids = Kmeans.compute([9,products.length].min,products)
+      finish = Time.now
+      @children = Cluster.group_by_clusterids(products,cluster_ids).map{|product_ids|Cluster.new(product_ids)}
+      puts("*****######!!!!!!"+(finish-start).to_s)
     end
     @children
   end
   
-  # finding the deepChildren(clusters with size 1) in clusters
-  def deepChildren(dC = [])
-    #store the cluster id if the cluster_size is 1 and the cluster accepts the filtering conditions 
-    if (self.cluster_size == 1) && (self.size>0)
-      dC << self
-    else
-      mychildren = Cluster.byparent(id)
-      mychildren.each do |mc|
-          dC = mc.deepChildren(dC)
-      end  
-    end 
-    dC
-  end
-  
-  #Maybe we can cache this ***We need a join here
-  def ranges(featureName)
-    @range ||= {}
-    if @range[featureName].nil?
-      nodes_min = cont_specs.select{|s|s.name == featurename}.map(&:min).sort[0]
-      nodes_max = cont_specs.select{|s|s.name == featurename}.map(&:max).sort[-1]
-      @range[featureName] = [nodes_min, nodes_max]    
-    end
-    @range[featureName]
-  end
-
-# this could be integrated with ranges later
-  def indicator(featureName)
-    indic = false
-      values = bin_specs.select{|s|s.name == featurename}
-      if values.index(false).nil? # they are all the same
-          indic = true
-      end 
-    indic
-  end
-  
-  def nodes(search = nil)
-    unless @nodes
-      fq = Cluster.filterquery(search)
-      unless (fq.blank?)
-        @nodes = Node.where(["cluster_id = ?#{' and '+fq unless fq.blank?}", id]).all
-      else 
-        @nodes = Node.bycluster(id)
-      end
-    end
-    @nodes
-  end
-  
+ 
   #The represetative product for this cluster, assumes nodes ordered by utility
   def representative
-    Product.cached(nodes.first.product_id) if nodes.first
-  end
-  
-  def self.filterquery(search=nil, tablename="")
-    fqarray = []
-    current_search = search.nil? ? Session.current.search : search
-    return nil if current_search.nil?
-    current_search.userdataconts.each do |d|
-      fqarray << "#{tablename}product_id in (select product_id from cont_specs where value <= #{d.max+0.00001} and name = '#{d.name}')"
-      fqarray << "#{tablename}product_id in (select product_id from cont_specs where value >= #{d.min-0.00001} and name = '#{d.name}')"
+    unless @rep
+      utility_list = ContSpec.cachemany(products, "utility")
+      @rep = Product.cached(products[utility_list.index(utility_list.max)])
     end
-    current_search.userdatacats.group_by(&:name).each do |name, ds|
-      cats = ds.map{|d| "#{tablename}product_id in (select product_id from cat_specs where value = '#{d.value}' and name = '#{name}')"}
-      fqarray << "(#{cats.join(' OR ')})"
-    end
-    current_search.userdatabins.each do |d|
-      fqarray << "#{tablename}product_id in (select product_id from bin_specs where value = #{d.value} and name = '#{d.name}')"
-    end
-    current_search.userdatasearches.each do |d|
-      fqarray << d.keywordpids
-    end
-    fqarray.join(" AND ")
+    @rep
   end
   
   def size
-    nodes.length
+    products.size
   end
   
-  def self.findFilteringConditions(session)
-    session.features.attributes.reject {|key, val| key=='id' || key=='session_id' || key.index('_pref') || key=='created_at' || key=='updated_at' || key=='search_id'}
+  def numclusters
+    children.size
+  end  
+ 
+  #Grouping products by cluster_ids
+  def self.group_by_clusterids(product_ids, cluster_ids)
+    product_ids.mygroup_by{|e,i|cluster_ids[i]}
   end
-  
-  def isEmpty(search = nil)
-    nodes(search).empty?
-  end
-  
-  def clearCache
-    @nodes = nil
-    @range = nil
-    @children = nil
-  end
-  
-  def utility
-    nodes.map{|n|n.utility}.sum/size
-  end
-  
 end
