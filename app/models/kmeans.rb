@@ -1,26 +1,30 @@
 class Kmeans
+require 'rubygems'
 require 'inline'
 
 inline :C do |builder|
   builder.c "
   #include <math.h> 
-  static VALUE kmeans_c(VALUE _points, VALUE n, VALUE d, VALUE cluster_n){
+  static VALUE kmeans_c(VALUE _points, VALUE n, VALUE d, VALUE cluster_n, VALUE _utilities){
     VALUE* points_a = RARRAY_PTR(_points);
+    VALUE* utilities_a = RARRAY_PTR(_utilities);
     int nn = NUM2INT(n);
     int dd = NUM2INT(d);
     int k = NUM2INT(cluster_n);
     double DBL_MAX = 10000000.0;
-    double t = 0.0001;
+    double t = 0.000000001;
     
     VALUE labels_r = rb_ary_new2(nn);
     int i, j, h;
     double** data = malloc(sizeof(double*)*nn);
-
+    double* utilities = malloc(sizeof(double)*nn); 
+    double* avgUtilities = (double*)calloc(k, sizeof(double)); 
     for (i=0; i<nn; i++) data[i] = malloc(sizeof(double)*dd);    
     for (i=0; i<nn; i++){
       for (j=0; j<dd; j++) {   
          data[i][j]= NUM2DBL(points_a[i*dd+j]);
       }
+    utilities[i] = NUM2DBL(utilities_a[i]);  
     }
   
   //kmeans initializations
@@ -35,7 +39,10 @@ inline :C do |builder|
   
    // If the number of points is less than the number of clusters, there is no need to cluster!
     if (nn <= k) {
-      for (i=0; i<nn; i++) labels[i] = i;
+      for (i=0; i<nn; i++) {
+         labels[i] = i;
+         avgUtilities[i] = utilities[i];
+        } 
     }
   else{
   
@@ -82,7 +89,7 @@ inline :C do |builder|
         for(j=0; j<dd; j++) means_2[h][j] = means_1[h][j];
     
       
-      //finding the closes mean to assign the labels
+      //finding the closest mean to assign the labels
       for (i=0; i<nn; i++){
          tmp_min = DBL_MAX;
         for (h=0; h<k; h++){
@@ -118,7 +125,50 @@ inline :C do |builder|
       for(h=0; h<k;h++)
         for(j=0; j<dd; j++) z += (means_1[h][j]- means_2[h][j])*(means_1[h][j]- means_2[h][j]);  
     }while (z>t);
-  }
+  
+  //If it's all in one cluster, split them
+  int all_one_flag=1;
+  for(i=0; i<nn; i++) 
+    if (labels[i]>0) all_one_flag = 0;
+
+  if (all_one_flag==1){ 
+    for(i=0; i<k; i++) labels[i] = i;
+  }  
+  
+  
+    for (i=0; i<nn; i++){
+      h = labels[i];
+      avgUtilities[h] += utilities[i]; 
+    }
+}  
+    double minU = DBL_MAX;
+    for (h=0; h<k; h++) avgUtilities[h] = avgUtilities[h]/counts[h];
+      
+      
+   //sort based on utilties   
+     int idKey;
+     double key;	 
+     int* ids = malloc(sizeof(int)*k);
+     double* x = (double*)calloc(k, sizeof(double));
+     for (j=0; j<k; j++) x[j] = avgUtilities[j];
+     
+  for (h=0; h<k; h++) ids[h]=h;
+  for(j=1;j<k;j++){
+     key=x[j];
+  	   idKey = ids[j];	
+        i=j-1;
+
+        while(x[i]<=key && i>=0)
+        {
+            x[i+1]=x[i];
+   		     ids[i+1] = ids[i];	
+            i--;
+        }
+        x[i+1] = key;
+     	ids[i+1] = idKey;
+    }
+  //changing the label assignement based on the utilitites.    
+    for (i=1; i<nn; i++) labels[i] = ids[labels[i]];  
 
  //storing the labels in the ruby array
   for (j=0; j<nn; j++) rb_ary_store(labels_r, j, INT2NUM(labels[j]));
@@ -129,15 +179,18 @@ inline :C do |builder|
 end
 
 
+
 # C kmeans function   
 def self.compute(number_clusters, weights = nil)
   begin
     specs = Product.specs
+    utility_list = ContSpec.by_feat("utility")
     $k = Kmeans.new unless $k
-    $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters)
+    debugger
+    $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, utility_list)
   rescue
     puts "Falling back to ruby kmeans"
-    debugger
+    #debugger
     Kmeans.ruby(number_clusters, specs)
   end
 end
