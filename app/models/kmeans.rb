@@ -186,11 +186,10 @@ def self.compute(number_clusters,p_ids, weights = nil)
     specs = Product.specs(p_ids)
     utility_list = ContSpec.by_feat("utility")
     $k = Kmeans.new unless $k
-    debugger
     $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, utility_list)
-  rescue
+  rescue ValidationError
     puts "Falling back to ruby kmeans"
-    #debugger
+    debugger
     Kmeans.ruby(number_clusters, specs)
   end
 end
@@ -288,22 +287,31 @@ end
   end
 
 end
-
+class ValidationError < ArgumentError; end
 #Just like group_by, except that results is just a grouped array
 module Enumerable
+#def mygroup_by
+#  assoc = Hash.new
+#  res = []
+#  each_index do |index|
+#    element = self[index]
+#    key = yield(element,index)
+#    if assoc.has_key?(key)
+#      res[assoc[key]] << element
+#    else
+#      assoc[key] = res.size
+#      res << [element]
+#    end
+#  end
+#  res
+#end
+
 def mygroup_by
-  assoc = Hash.new
-  res = []
+  res = Hash.new{|h,k|h[k]=[]}
   each_index do |index|
     element = self[index]
-    key = yield(element,index)
-    if assoc.has_key?(key)
-      res[assoc[key]] << element
-    else
-      assoc[key] = res.size
-      res << [element]
-    end
+    res[yield(element,index)] << element
   end
-  res
+  res.values
 end
 end

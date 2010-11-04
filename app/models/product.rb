@@ -41,13 +41,13 @@ class Product < ActiveRecord::Base
     st = []
     Session.current.continuous["filter"].each{|f| st << ContSpec.by_feat(f)}
     #Check for 1 spec per product
-    raise unless Session.current.search.products_size == st.first.length
+    raise ValidationError unless Session.current.search.products_size == st.first.length
     #Check for no nil values
-    raise unless st.first.size == st.first.compact.size
-    raise unless st.first.size > 0
+    raise ValidationError unless st.first.size == st.first.compact.size
+    raise ValidationError unless st.first.size > 0
     #Check that every spec has the same number of features
     first_size = st.first.compact.size
-    raise unless st.inject{|res,el|el.compact.size == first_size}
+    raise ValidationError unless st.inject{|res,el|el.compact.size == first_size}
     
     if p_ids
       Session.current.categorical["cluster"].each{|f|  st<<CatSpec.cachemany(p_ids, f)} 
@@ -185,3 +185,4 @@ class Product < ActiveRecord::Base
     9
   end
 end
+class ValidationError < ArgumentError; end

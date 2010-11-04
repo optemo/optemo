@@ -4,37 +4,25 @@ require 'inline'
   def computeDist
     dist = {}
     num_buckets = 21; #Must be greater than 0
-    st = []
     mins = []
     maxes = []
     
     begin
-      Session.current.continuous["filter"].each{|f| st << ContSpec.by_feat(f)}
-      #Check for 1 spec per product
-      raise unless Session.current.search.products_size == st.first.length
-      #Check for no nil values
-      raise unless st.first.size == st.first.compact.size
-      raise unless st.first.size > 0
-      #Check that every spec has the same number of features
-      first_size = st.first.compact.size
-      raise unless st.inject{|res,el|el.compact.size == first_size}
-      
-      specs = st.transpose
       Session.current.continuous["filter"].each do |f| 
         min,max = ContSpec.allMinMax(f)
         #Max must be larger or equal to min
-        raise unless max >= min
+        raise ValidationError unless max >= min
         mins << min
         maxes << max
       end
-      
+      specs = Product.specs
       res = distribution_c(specs.flatten, specs.size, specs.first.size, num_buckets, mins, maxes) #unless $res
       Session.current.continuous["filter"].each_with_index do |f, i|   
         t = i*(2+num_buckets) 
         dist[f] = [[res[t], res[t+1]], res[(t+2)...(i+1)*(2+num_buckets)]]
       end
       dist
-    rescue
+    rescue ValidationError
       puts "Falling back to ruby distribution"
       debugger
       ruby
@@ -159,3 +147,4 @@ require 'inline'
     dist
   end
 end
+class ValidationError < ArgumentError; end

@@ -17,17 +17,7 @@
 <body>
 <div id="mycenter">
    <div id="header">
-	  <!-- div id="flags">
-		<%= link_to image_tag('us.gif'), url_for_intl('com') %>
-		<%= link_to image_tag('ca.gif'), url_for_intl('ca') %>
-	  </div-->
-	  <div id="logo">
-		<a href="<%= url_for '/' %>" id ="logo" title="<%=t s.product_type+".url" %>"><%= image_tag("#{s.product_type}.jpg")%><span>Home</span></a>
-	  </div>
-	 <div id="tagline">
-		<%=t "#{s.product_type}.tagline" %>
-	</div>
-	 <div id="tourButton"><%= link_to "Launch Tour", '#' %></div>
+	  <%= render :partial => Session.current.product_type == "printer_lph" ? "lph_header" : "demo_header" %>
    </div>
    <div class="watermark">Powered by <%= link_to 'Optemo', 'http://optemo.com', :class => "popup" %></div>
    <div class="bd <%= 'rounded_bd ' unless s.directLayout %>rounded">
@@ -36,6 +26,7 @@
 	<div class="bl"></div><div class="br"></div>
    </div>
 </div>
+<% if Session.current.product_type == "printer_lph" %>
 <div id="bottomlinks">
    <%= link_to 'Home', '/' %> |
    <%= link_to 'Terms of Use', '/termsofuse', {:title => 'Legal'}  %> |
@@ -43,6 +34,7 @@
    <%= link_to 'About Us', '/about', {:title => 'LaserPrinterHub'} %> |
    <%= link_to 'Contact Us', "znvygb:grnz\100ynfrecevagreuho\056pbz", {:class => 'decrypt', :title => 'Email Us'}%>
 </div>
+<% end %>
 <div id="silkscreen">&nbsp;</div>
 <div id="filter_bar_loading">Loading</div>
 <div id="outsidecontainer"><%= link_to image_tag("closepopup#{fr?}.gif"), "close", :class => "close"%><div id="info">&nbsp;</div></div>

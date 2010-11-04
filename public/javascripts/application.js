@@ -797,6 +797,11 @@ optemo_module = (function (my){
 			window.open($(this).attr('href'));
 			return false;
 		});
+		
+		$(".demo_selector select").live('change', function(){
+			url = $(".demo_selector select:last").val()+"-"+$(".demo_selector select:first").val();
+			alert(url);
+		});
     }
 
     function ErrorInit() {
