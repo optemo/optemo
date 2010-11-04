@@ -113,3 +113,17 @@ img.productimg {
 .selectboxfilter {
 	width:100%;
 }
+
+/* Removing titles */
+.title {
+	display:none;
+}
+.image_boundingbox {
+	margin-top: 24px;
+}
+.productinfocont {
+	bottom: 58px;
+}
+.topbar {
+	height: 159px;
+}

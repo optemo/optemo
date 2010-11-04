@@ -181,9 +181,9 @@ end
 
 
 # C kmeans function   
-def self.compute(number_clusters, weights = nil)
+def self.compute(number_clusters,p_ids, weights = nil)
   begin
-    specs = Product.specs
+    specs = Product.specs(p_ids)
     utility_list = ContSpec.by_feat("utility")
     $k = Kmeans.new unless $k
     debugger

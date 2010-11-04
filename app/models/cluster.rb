@@ -31,9 +31,8 @@ class Cluster
   #The subclusters
   def children
     unless @children
-      #specs = Cluster.product_specs(products)
       start = Time.now
-      cluster_ids = Kmeans.compute([9,products.length].min)
+      cluster_ids = Kmeans.compute([9,products.length].min,products)
       finish = Time.now
       @children = Cluster.group_by_clusterids(products,cluster_ids).map{|product_ids|Cluster.new(product_ids)}
       puts("*****######!!!!!!"+(finish-start).to_s)
@@ -58,17 +57,9 @@ class Cluster
   def numclusters
     children.size
   end  
-  
-  def self.product_specs(p_ids)
-    st = []
-    Session.current.continuous["filter"].each{|f| st << ContSpec.cachemany(p_ids, f)}
-    Session.current.categorical["filter"].each{|f|  st<<CatSpec.cachemany(p_ids, f)} 
-    Session.current.binary["filter"].each{|f|  st << BinSpec.cachemany(p_ids, f)} 
-    st.transpose 
-  end 
  
   #Grouping products by cluster_ids
   def self.group_by_clusterids(product_ids, cluster_ids)
-   product_ids.mygroup_by{|e,i|cluster_ids[i]}.sort{|a,b| b.length <=> a.length}
+    product_ids.mygroup_by{|e,i|cluster_ids[i]}.sort{|a,b| ((b.length > 1) ? 1:0) <=> ((a.length > 1) ? 1:0)}
   end
 end

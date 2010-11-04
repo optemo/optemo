@@ -1,4 +1,4 @@
-<% self.title = "#{@s.search.desc} #{@s.product_type.capitalize}" unless @indexload %>
+<% self.title = "#{@s.product_type.capitalize}" unless @indexload %>
 <% main_window = render :partial => 'discoverybrowser' unless @indexload %>
 <div id="leftbar">
 	<!-- The Filters section -->
