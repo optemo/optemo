@@ -42,7 +42,8 @@ div#main {
 }
 
 .watermark {
-	right: 0px;
+	right: 10px;
+	top: 938px; /* This is 3 px more than the "bottomlinks" absolute positioning (search .bottomlinks) */
 }
 #title {
 	position: absolute;
@@ -466,7 +467,10 @@ div.smalldesc {
 //--------------------------------------*/
 
 #bottomlinks {
-	margin: 3px;
+	margin: 3px auto;
+	position: absolute;
+	top: 935px;
+	width: 948px;
 	text-align: center;
 	font-size: 0.8em;
 }

@@ -13,7 +13,8 @@
     submitCategorical()  -  Submits a categorical filter (no longer does tracking)
     submitsearch()  -  Submits a search via the main search field in the filter bar
     histogram(element, norange)  -  draws histogram
-    ** disableFiltersAndGroups()  -  Disables filters, so that the UI is only fielding one request at a time.
+    ** disableInterfaceElements()  -  Disables filters, so that the UI is only fielding one request at a time.
+    ** loadFilterBarSilkScreen()  -  Puts fade over filter bar (for longer loading times).
 
    ---- Data Manipulation ----
     ** findBetter(id, feat) - Checks if a better product exists for that feature. PROBABLY DEPRECATED
@@ -32,9 +33,9 @@
    
    -------- AJAX ---------
     ** ajaxsend(hash,myurl,mydata)  -  Does AJAX call through jquery, returns through ajaxhandler(data)
-    ajaxhandler(data)  -  Splits up data from the ajax call according to [BRK] tokens. See app/views/compare/ajax.html.erb
-    ajaxerror() - Displays error message if the ajax send call fails
-    **ajaxcall(myurl,mydata) - adds a hash with the number of searches to the history path
+    ** ajaxhandler(data)  -  Splits up data from the ajax call according to [BRK] tokens. See app/views/compare/ajax.html.erb
+    ** ajaxerror() - Displays error message if the ajax send call fails
+    ** ajaxcall(myurl,mydata) - adds a hash with the number of searches to the history path
     flashError(str)  -  Puts an error message on a specific part of the screen
 
    -------- Layout -------
@@ -79,7 +80,7 @@ optemo_module = (function (my){
     my.IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
     var MODEL_NAME = $("#modelname").html();
     var VERSION = $("#version").html();
-    var DIRECT_LAYOUT = ($('#directLayout').html() === 'true');
+    my.DIRECT_LAYOUT = ($('#directLayout').html() == "true");
     var SESSION_ID = parseInt($('#seshid').attr('session-id'));
 
     //--------------------------------------//
@@ -121,7 +122,7 @@ optemo_module = (function (my){
     	if (data)
     		$('#info').html(data);
     	else
-    		$('#info').load(url,function(){my.DBinit();});	
+    	    my.quickajaxcall('#info', url, function(){my.DBinit();});
     };
 
     // When you click the Save button:
@@ -151,7 +152,7 @@ optemo_module = (function (my){
             my.trackPage('goals/save', {'filter_type' : 'save', 'product_picked' : id, 'product_ignored' : ignored_ids});
         
     		my.renderComparisonProducts(id, imgurl, name);
-    		addValueToCookie('savedProductIDs', [id, imgurlToSave, name, productType]);
+    		addValueToCookie('optemo_SavedProductIDs', [id, imgurlToSave, name, productType]);
     	}
 
     	// There should be at least 1 saved item, so...
@@ -180,7 +181,9 @@ optemo_module = (function (my){
     	((name) ? optemo_module.getShortProductName(name) : 0) +
     	"</a></div>" + 
     	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\">" + 
-    	"<img src=\"/images/close.png\" alt=\"Close\"/></a>";
+    	"<img src=\"" +
+    	(REMOTE ? REMOTE : "") + 
+    	"/images/close.png\" alt=\"Close\"/></a>";
     	$(smallProductImageAndDetail).appendTo('#c'+id);
     	my.DBinit();
 
@@ -202,7 +205,7 @@ optemo_module = (function (my){
     	$("#already_added_msg").css("display", "none");
     	$("#too_many_saved").css("display", "none");
 	
-    	removeValueFromCookie('savedProductIDs', id);
+    	removeValueFromCookie('optemo_SavedProductIDs', id);
     	if($('.saveditem').length == 0){
     		$("#compare_button").css("display", "none");
     		$("#deleteme").css("display", "block");
@@ -278,8 +281,22 @@ optemo_module = (function (my){
     	t.andClose();
     }
 
-    my.disableFiltersAndGroups = function() {
-        // This will turn on the fade for the left area
+    my.disableInterfaceElements = function() {
+        // Disable interface elements.
+        $('.slider').each(function() {
+            $(this).slider("option", "disabled", true);
+        });
+    
+        $('.selectboxfilter').attr("disabled", true);
+        $('.groupby').unbind('click');
+        $('.removefilter').unbind('click').click(function() {return false;}); // There is a default link there that shouldn't be followed.
+        $('.binary_filter').attr('disabled', true);
+        $('#search').unbind('keydown');
+        $('#submit_button').unbind('click');
+    }
+
+    my.loadFilterBarSilkScreen = function() {
+        // This will turn on the fade for the left area        
         elementToShadow = $('#filterbar');
         var pos = elementToShadow.offset();  
         var width = elementToShadow.innerWidth() + 2; // Extra pixels are for the border.
@@ -319,7 +336,7 @@ optemo_module = (function (my){
     	    if (!extra_data) extra_data = {}; // If this argument didn't get sent, set an empty hash
     		extra_data['optemo_session'] = SESSION_ID;
     		extra_data['version'] = VERSION;
-    		extra_data['interface_view'] = (DIRECT_LAYOUT ? 'direct' : 'assist');
+    		extra_data['interface_view'] = (my.DIRECT_LAYOUT ? 'direct' : 'assist');
     		piwikTracker.setDocumentTitle(page_title);
     		piwikTracker.setCustomData(extra_data);
     		piwikTracker.trackPageView();
@@ -574,6 +591,18 @@ optemo_module = (function (my){
     		});
     	});
 
+    	// Add a brand -- submit
+    	$('.selectboxfilter').unbind('change').change(function(){
+		    var whichThingSelected = $(this).val();
+			var whichSelector = $(this).attr('name');
+		    var categorical_filter_name = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]"));
+    		$('#myfilter_'+categorical_filter_name).val(opt_appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
+    		var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : categorical_filter_name, 'filter_type' : 'categorical'};
+    		my.loading_indicator_state.sidebar = true;
+        	my.trackPage('goals/filter/categorical', info);
+    		submitCategorical();
+    		return false;
+    	});
 
     	// Remove a brand -- submit
     	$('.removefilter').unbind('click').click(function(){
@@ -620,7 +649,7 @@ optemo_module = (function (my){
 	     });
     	
     	// from DBInit
-    	if (DIRECT_LAYOUT) { // in Optemo Direct, a click anywhere on the product box goes to the show page
+    	if (my.DIRECT_LAYOUT) { // in Optemo Direct, a click anywhere on the product box goes to the show page
             $('.nbsingle').live("click", function(){ 
          		currentelementid = $(this).find('.productinfo').attr('data-id');
          		ignored_ids = getAllShownProductIds();
@@ -697,20 +726,6 @@ optemo_module = (function (my){
     	$('.buylink, .buyimg').live("click", function(){
     		var buyme_id = $(this).attr('product');
     		my.trackPage('goals/addtocart', {'picked_product' : buyme_id});
-    	});
-    	
-    	// From FilterAndSearchInit
-    	// Add a brand -- submit
-    	$('.selectboxfilter').live('change', function(){
-		    var whichThingSelected = $(this).val();
-			var whichSelector = $(this).attr('name');
-		    var categorical_filter_name = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]"));
-    		$('#myfilter_'+categorical_filter_name).val(opt_appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
-    		var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : categorical_filter_name, 'filter_type' : 'categorical'};
-    		my.loading_indicator_state.sidebar = true;
-        	my.trackPage('goals/filter/categorical', info);
-    		submitCategorical();
-    		return false;
     	});
 	
         // Choose a grouping via group button rather than drop-down (effect is the same as the select boxes)
@@ -803,7 +818,7 @@ optemo_module = (function (my){
     };
 
     my.DBinit = function() {
-    	showpage = (function(currentelementid) {
+    	showpage =  (function(currentelementid) {
             my.applySilkScreen('/compare/show/'+currentelementid+'?plain=true',null, 800, 800);
      		// There is tracking being done below, so take this out probably
     // 		trackPage('products/show/'+currentelementid); 
@@ -878,27 +893,28 @@ optemo_module = (function (my){
     my.ajaxsend = function (hash,myurl,mydata,hidespinner) {
         var lis = my.loading_indicator_state;
         if (lis.main) lis.main_timer = setTimeout("myspinner.begin()", 1000);
-        if (lis.sidebar) lis.sidebar_timer = setTimeout("optemo_module.disableFiltersAndGroups()", 1000);
+        if (lis.sidebar) lis.sidebar_timer = setTimeout("optemo_module.loadFilterBarSilkScreen()", 1000);
     	if (myurl != null) {
         	$.ajax({
         		type: (mydata==null)?"GET":"POST",
         		data: (mydata==null)?"":mydata,
         		url: myurl,
-        		success: ajaxhandler,
-        		error: ajaxerror
+        		success: my.ajaxhandler,
+        		error: my.ajaxerror
         	});
     	} else if (typeof(hash) != "undefined" && hash != null) {
     		$.ajax({
     			type: "GET",
     			url: "/compare/compare/?ajax=true&hist="+hash,
-    			success: ajaxhandler,
-    			error: ajaxerror
+    			success: my.ajaxhandler,
+    			error: my.ajaxerror
     		});
     	}
     };
 
     /* The ajax handler takes data from the ajax call and processes it according to some (unknown) rules. */
-    function ajaxhandler(data) {
+    // This needs to be a public function now
+    my.ajaxhandler = function(data) {
         var lis = my.loading_indicator_state;
         lis.main = lis.sidebar = false;
         clearTimeout(lis.sidebar_timer); // clearTimeout can run on "null" without error
@@ -924,7 +940,7 @@ optemo_module = (function (my){
     	}
     }
 
-    function ajaxerror() {
+    my.ajaxerror = function() {
     	//if (language=="fr")
     	//	flashError('<div class="poptitle">&nbsp;</div><p class="error">Désolé! Une erreur s’est produite sur le serveur.</p><p>Vous pouvez <a href="" class="popuplink">réinitialiser</a> l’outil et constater si le problème persiste.</p>');
     	//else
@@ -933,21 +949,14 @@ optemo_module = (function (my){
     }
 
     my.ajaxcall = function(myurl,mydata) {
-        // Disable interface elements.
-        $('.slider').each(function() {
-            $(this).slider("option", "disabled", true);
-        });
-        
-        $('.selectboxfilter').attr("disabled", true);
-        $('.groupby').unbind('click');
-        $('.removefilter').unbind('click').click(function() {return false;}); // There is a default link there that shouldn't be followed.
-        $('.binary_filter').attr('disabled', true);
-        $('#search').unbind('keydown');
-        $('#submit_button').unbind('click');
-        
+        my.disableInterfaceElements();
     	numactions = parseInt($("#actioncount").html()) + 1;
     	$.history.load(numactions.toString(),myurl,mydata);
     };
+    
+    my.quickajaxcall = function(element, myurl, fn) { // The purpose of this is to do an ajax load without having to go through the relatively heavy ajaxcall().
+        element.load(myurl, fn);
+    }
 
     /* Puts an ajax-related error message in a specific part of the screen */
     function flashError(str) {
@@ -1144,7 +1153,7 @@ optemo_module = (function (my){
     }
 
     return my;
-})({});
+})(optemo_module || {});
 
 
 //--------------------------------------//
@@ -1156,7 +1165,7 @@ jQuery(document).ready(function($){
     $.history.init(optemo_module.ajaxsend);
     trackPage = optemo_module.trackPage;
     var tokenizedArrayID = 0, savedproducts = null; /* Must initialize savedproducts here for IE */
-    savedproducts = optemo_module.readAllCookieValues('savedProductIDs');
+    savedproducts = optemo_module.readAllCookieValues('optemo_SavedProductIDs');
 	if (savedproducts)
 	{
 		// There are saved products to display
@@ -1362,7 +1371,35 @@ jQuery(document).ready(function($){
 	$("#tourButton a").click(launchtour); //Launch tour when this is clicked
 });
 
-// This should be able to go ahead before document.ready for a slight time savings. NB: Cannot use "$" because of jQuery.noConflict()
+if (window.embedding_flag) {
+    // On embed, we need to redefine the ajaxcall / ajaxsend duo so that they point at the remote server as appropriate.
+    // The data will come back through the same ajaxhandler function as before, getting pushed there by the
+    // remote socket when it's ready.
+    optemo_module.ajaxcall = function (myurl, mydata) {
+        optemo_module.disableInterfaceElements();
+    	numactions = parseInt($("#actioncount").html()) + 1;
+    	$.history.load(numactions.toString(),myurl,mydata);
+	};
+	
+	optemo_module.ajaxsend = function(hash,myurl,mydata,hidespinner) {
+        optemo_module.disableInterfaceElements();
+        var lis = optemo_module.loading_indicator_state;
+        if (lis.main) lis.main_timer = setTimeout("myspinner.begin()", 1000);
+        if (lis.sidebar) lis.sidebar_timer = setTimeout("optemo_module.loadFilterBarSilkScreen()", 1000);
+        // Hopefully we can just send the arguments as-is. It's probably bad style not to sanity-check them though.
+        remote.iframecall(hash, myurl, mydata);
+    };
+    $.history.init(optemo_module.ajaxsend); // re-init with the new ajaxsend module here, after it's been redefined
+    
+    optemo_module.quickajaxcall = function (element_name, mydata, fn) { // for the show page
+        remote.quickiframecall(element_name, mydata, fn);
+    }
+    
+} 
+
+// This should be able to go ahead before document.ready for a slight time savings. 
+// NB: Cannot use "$" because of jQuery.noConflict()
+// This works for embedded also, because by now the ajaxsend function has been redefined, and the history init has been called.
 if (jQuery('#opt_discovery').length) {
     if (location.hash) {
     	optemo_module.ajaxsend(location.hash.replace(/^#/, ''),'/?ajax=true',null);

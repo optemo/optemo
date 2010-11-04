@@ -245,8 +245,8 @@ div.tourDrawAttention /* this is for CSS precedence */
 
 .awesome:hover							{ background-color: #676767; color: #e6e6e6; }
 /*.awesome:active							{ top: 1px; }*/
-.small.awesome, .small.awesome:visited 			{ font-size: 11px; padding: ; }
+.small_awesome, .small_awesome:visited 			{ font-size: 11px; padding: ; }
 .awesome, .awesome:visited,
-.medium.awesome, .medium.awesome:visited 		{ font-size: 13px; font-weight: bold; line-height: 1; text-shadow: 0 -1px 1px rgba(0,0,0,0.25); }
-.large.awesome, .large.awesome:visited 			{ font-size: 14px; padding: 8px 14px 9px; }
-.xlarge.awesome, .xlarge.awesome:visited 			{ font-size: 16px; padding: 12px 21px 13px; }
+.medium_awesome, .medium_awesome:visited 		{ font-size: 13px; font-weight: bold; line-height: 1; text-shadow: 0 -1px 1px rgba(0,0,0,0.25); }
+.large_awesome, .large_awesome:visited 			{ font-size: 14px; padding: 8px 14px 9px; }
+.xlarge_awesome, .xlarge_awesome:visited 			{ font-size: 16px; padding: 12px 21px 13px; }
