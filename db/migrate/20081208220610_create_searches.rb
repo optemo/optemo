@@ -4,10 +4,10 @@ class CreateSearches < ActiveRecord::Migration
       t.primary_key :id
       t.integer :session_id
       t.integer :parent_id
+      t.boolean :initial
       t.string :keyword_search
       t.integer :page
       t.string :groupby
-      t.binary :initial
       t.timestamps
     end
   end

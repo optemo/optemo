@@ -1307,10 +1307,10 @@ ActiveRecord::Schema.define(:version => 20101019233312) do
   create_table "searches", :force => true do |t|
     t.integer  "session_id"
     t.integer  "parent_id"
+    t.boolean  "initial"
     t.string   "keyword_search"
     t.integer  "page"
     t.string   "groupby"
-    t.binary   "initial"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
