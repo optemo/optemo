@@ -11,4 +11,4 @@
 	<%= select "superfluous", "product_type", [["Cameras","cameras"], ["Printers","printers"]], {:selected => Session.current.product_type == "camera_us" ? "cameras" : "printers"}, {:index => nil} %>
 	<p>Our technology works with any product type.</p>
 </div>
-<div id="tourButton"><%= link_to "Launch Tour", '#', :class => "awesome" %></div>
+<div id="tourButton"><%= link_to "Launch Tour", '#', :class => "awesome_tour" %></div>

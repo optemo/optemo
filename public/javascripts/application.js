@@ -971,8 +971,8 @@ optemo_module = (function (my){
     	$.history.load(numactions.toString(),myurl,mydata);
     };
     
-    my.quickajaxcall = function(element, myurl, fn) { // The purpose of this is to do an ajax load without having to go through the relatively heavy ajaxcall().
-        element.load(myurl, fn);
+    my.quickajaxcall = function(element_name, myurl, fn) { // The purpose of this is to do an ajax load without having to go through the relatively heavy ajaxcall().
+        $(element_name).load(myurl, fn);
     }
 
     /* Puts an ajax-related error message in a specific part of the screen */
