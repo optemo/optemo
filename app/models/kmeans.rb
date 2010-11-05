@@ -185,6 +185,7 @@ def self.compute(number_clusters,p_ids, weights = nil)
   begin
     specs = Product.specs(p_ids)
     utility_list = ContSpec.by_feat("utility")
+    raise ValidationError if utility_list.nil?
     $k = Kmeans.new unless $k
     $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, utility_list)
   rescue ValidationError
