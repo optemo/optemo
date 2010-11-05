@@ -2,12 +2,13 @@
 	<% if flash[:notice] %>
 	<span class="notice"><%= flash[:notice] %></span>
 	<% end %>
-	<div <%= 'class=listview_ungrouped' if @groupings.nil? && @s.directLayout %> >
+	<div <%= 'class=listview_ungrouped' if @s.search.groupby.nil? && @s.directLayout %> >
 	<div id="navigator_bar" class="rounded_nav rounded">
 		<div class="tl"></div><div class="tr"></div>
+		<% mb = main_boxes #Calculate mb before navtitle %>
 	    <%= navtitle %>
 	<% if @s.directLayout %>
-		<% columntext = columntext(!@groupings.nil?) %>
+		<% columntext = columntext(!@s.search.groupby.nil?) %>
 	<div id="columnheader">
 		<div id="firstcolumn">
 			<%= columntext[0] %>
@@ -22,33 +23,8 @@
 	<% end %>
 		<div class="bl"></div><div class="br"></div>
 	<%= raw '</div>' if !@s.directLayout %>
-	<% if @s.directLayout %>
-		<% if @groupings.nil? %>
-			<% @products.each_index do |i| %>
-				<%= render :partial => 'singlelist', :locals => {:product => @products[i], :i => i} %>
-			<% end %>
-		<% else %>
-			<% @groupings.each do |grouping| %>
-				<%= render :partial => 'grouping', :locals => {:grouping => grouping, :group => true}%>
-			<% end %>
-		<% end %>
-	<% else %>
-		<% for i in 0..[@s.search.cluster_count, @s.numGroups].min-1 %>
-		  <% if i % (Float(@s.numGroups)/3).ceil == 0 && !@s.directLayout %>
-			<div class="rowdiv">
-			<% open = true %>
-		  <% end %>
-		  <!-- Navbox partial to draw boxes -->
-		  <%= render :partial => (@s.directLayout ? 'listbox' : 'navbox'), :locals => {:i => i, :cluster => @s.search.clusters[i] , :group => @s.search.clusters[i].size>1, :product => @s.search.clusters[i].representative} %>
-		  <% if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1 && !@s.directLayout %>
-			</div>
-			<% open = false %>
-		  <% end %>
-		<% end %>
-	<% end %>
-	<%= raw '</div>' if open && !@s.directLayout %>
-	<%= will_paginate @products if @s.directLayout && @groupings.nil?%>
+	<%= raw mb %>
 	</div>
 	<%= raw '</div>' if @s.directLayout %>
-	<% current_count = Search.count(:conditions => "session_id = #{@s.id}") %>
-	<div style="clear:both;"><span id="actioncount" style="display:none"><%= current_count %></span><%= '<span id="tourautostart">&nbsp;</span>' if (current_count <= 1) %></div>
+	<% search_count = @s.searches.size %>
+	<div style="clear:both;"><span id="actioncount" style="display:none"><%= search_count %></span></div>

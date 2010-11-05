@@ -1,8 +1,8 @@
 class Product < ActiveRecord::Base
-  has_many :nodes
   has_many :cat_specs
   has_many :bin_specs
   has_many :cont_specs
+  has_many :search_products
   
   define_index do
     #fields
@@ -26,6 +26,34 @@ class Product < ActiveRecord::Base
     else
       [res]
     end
+  end
+  
+  def self.initial
+    #Algorithm for calculating id of initial products in product_searches table
+    #We probably need a better algorithm to check for collisions
+    chars = []
+    Session.current.product_type.each_char{|c|chars<<c.getbyte(0)*chars.size}
+    chars.sum*-1
+  end
+  
+  #Currently only does continuous but others should be added
+  def self.specs(p_ids = nil)
+    st = []
+    Session.current.continuous["filter"].each{|f| st << ContSpec.by_feat(f)}
+    #Check for 1 spec per product
+    raise ValidationError unless Session.current.search.products_size == st.first.length
+    #Check for no nil values
+    raise ValidationError unless st.first.size == st.first.compact.size
+    raise ValidationError unless st.first.size > 0
+    #Check that every spec has the same number of features
+    first_size = st.first.compact.size
+    raise ValidationError unless st.inject{|res,el|el.compact.size == first_size}
+    
+    if p_ids
+      Session.current.categorical["cluster"].each{|f|  st<<CatSpec.cachemany(p_ids, f)} 
+      Session.current.binary["cluster"].each{|f|  st << BinSpec.cachemany(p_ids, f)}
+    end
+    st.transpose
   end
   
   scope :instock, :conditions => {:instock => true}
@@ -157,3 +185,4 @@ class Product < ActiveRecord::Base
     9
   end
 end
+class ValidationError < ArgumentError; end

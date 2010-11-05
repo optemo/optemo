@@ -1,7 +1,0 @@
-LOGGER      [2010-08-05 16:11:30 -0700] Getting a list of all Amazon IDs associated with camera_us. This may take a while
-LOGGER      [2010-08-05 16:11:30 -0700] Done getting Amazon IDs!
-LOGGER      Will scrape 0 camera_us from Amazon, 4478 already exist
-LOGGER      [2010-08-05 16:11:31 -0700] Getting a list of all Amazon IDs associated with camera_us. This may take a while
-LOGGER      [2010-08-05 16:11:31 -0700] Done getting Amazon IDs!
-LOGGER      Will scrape 0 camera_us from Amazon.ca, 2931 already exist
-LOGGER      [2010-08-05 16:11:31 -0700] Done scraping

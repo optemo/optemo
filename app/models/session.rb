@@ -1,6 +1,6 @@
 class Session
   # products.yml gets parsed below, initializing these variables.
-  attr_accessor :version, :id, :search  # Basic individual data. These are not set in initialization.
+  attr_accessor :id, :search  # Basic individual data. These are not set in initialization.
   attr_accessor :directLayout, :mobileView  # View choice (Assist vs. Direct, mobile view vs. computer view)
   attr_accessor :continuous, :binary, :categorical  # Caching of features' names
   attr_accessor :prefDirection, :maximum, :minimum  # Stores which preferences are 'lower is better' vs. normal; used in sorting, plus some attribute globals
@@ -74,7 +74,7 @@ class Session
 
   def searches
     # Return searches with this session id
-    Search.find_all_by_session_id(@id)
+    Search.where(["session_id = ?",@id])
   end
 
   def lastsearch

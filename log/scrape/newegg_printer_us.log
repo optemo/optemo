@@ -1,7 +1,0 @@
-LOGGER      Sleeping for 30 seconds..
-LOGGER      Scraping Page #1:  (1-100 of 260 Results)
-LOGGER      Will scrape 0 printer_us from Newegg, 332 already exist
-LOGGER      Sleeping for 30 seconds..
-LOGGER      Scraping Page #1:  (1-62 of 62 Results)
-LOGGER      Will scrape 0 printer_us from Newegg Canada, 114 already exist
-LOGGER      [2010-07-14 11:22:55 -0700] Done scraping

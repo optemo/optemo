@@ -75,12 +75,13 @@ module CompareHelper
   
   def navtitle
     s = Session.current
-		title = [s.search.result_count, (s.search.result_count > 1) ? t("#{s.product_type}.title-plural") : t("#{s.product_type}.title-plural")].join(" ")
-    title += " Grouped by " + t('products.' + s.search.view) if s.search.view
+		title = [s.search.products_size, (s.search.products_size > 1) ? t("#{s.product_type}.title-plural") : t("#{s.product_type}.title-plural")].join(" ")
+		title += " Grouped by " + t('products.' + s.search.groupby) if s.search.groupby
     title
   end
   
   def groupDesc(group, i)
+    return "Description"
     s = Session.current
     if s.relativeDescriptions
       descs = s.search.boostexterClusterDescriptions[i].map{|d|t("products."+d, :default => d)}
@@ -186,4 +187,50 @@ module CompareHelper
       [number,t('products.' + feature+"unit", :default => "")].reject(&:blank?).join(" ")
     end
   end
+  
+  def category_select(title,feat)
+    select('superfluous', feat, [title] + SearchProduct.cat_counts(feat).map{|k,v|"#{k} (#{v})"}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
+  end
+  
+  def main_boxes
+    res = ""
+    if @s.directLayout
+  		if @s.search.groupby.nil?
+  			@products.each_index do |i|
+  				res << render(:partial => 'singlelist', :locals => {:product => Product.cached(@products[i]), :i => i})
+  			end
+  		else
+  			@s.search.groupings.each do |grouping|
+  				res << render(:partial => 'grouping', :locals => {:grouping => grouping, :group => true})
+  			end
+  		end
+  	else
+  		for i in 0...[@s.search.cluster.numclusters, @s.numGroups].min
+  		  if i % (Float(@s.numGroups)/3).ceil == 0
+  			  res << '<div class="rowdiv">'
+  			  open = true
+  		  end
+  		  #Navbox partial to draw boxes
+  		  res << render(:partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative})
+  		  if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
+  			  res << '</div>'
+  			  open = false
+  		  end
+  		end
+  	end
+  	res << '</div>' if open && !@s.directLayout
+  	res << will_paginate(@products) if @s.directLayout && @s.search.groupby.nil?
+  	res
+	end
+	
+	def getDist(feat)
+    unless defined? @dist  
+      unless defined? $d
+       $d = Distribution.new
+      end
+	    @dist = $d.computeDist
+	  end  
+	  @dist[feat]
+	end  
+	
 end

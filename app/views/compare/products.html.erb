@@ -17,9 +17,9 @@
 		<div id="navtitle"><%= navtitle %></div>
 	</div>
 
-		<% if @indexload || @s.search.result_count != 0 %>
-			<% for i in 0..[@s.search.cluster_count,@s.numGroups].min-1 %>
-				<% cluster = @s.search.clusters[i]; group = @s.search.clusters[i].size>1; representative = @s.search.clusters[i].representative %>
+		<% if @indexload || @s.search.products_size != 0 %>
+			<% for i in 0..[@s.search.cluster.numclusters,@s.numGroups].min-1 %>
+				<% cluster = @s.search.cluster.children[i]; group = @s.search.cluster.children[i].size>1; representative = @s.search.cluster.children[i].representative %>
 				<div id="box<%= i %>" class="navigator_box<%= ' bordered-product' if (i != 0) %>">
 					<div class="navbody">
 							<% if group %>
