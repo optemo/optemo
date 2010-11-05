@@ -66,10 +66,8 @@ var optemo_socket_activator = (function () {
 				embed_tag = jQuery('#optemo_embedder');
 				if (embed_tag.children().length > 0) 
 				{
-					first_inject = false;
 					embed_tag.children().each(function(){ jQuery(this).remove();});
 				}
-				var first_inject = true; // On the first injection, move the scripts. Afterward, delete all scripts.
 
 	            var d = result, regexp_pattern, data_to_add, data_to_append, scripts, headID = document.getElementsByTagName("head")[0], scripts_to_load, i, images;
 	            regexp_pattern = (/<script[^>]+>/g);
@@ -81,7 +79,7 @@ var optemo_socket_activator = (function () {
 	                srcs = scripts[i].match(/javascripts[^?]+/); // We might want to make a check for src instead.
 	                if (srcs == null) {
 	                    scripts[i] = '<script type="text/javascript">';
-	                } else if (first_inject && (typeof(srcs) == "object" && srcs[0] && srcs[0].match(/easyXDM/))){
+	                } else if (typeof(srcs) == "object" && srcs[0] && srcs[0].match(/easyXDM/)){
 						 scripts[i] = ''; // so it will get taken out completely later
 					} else {
 	                    script_nodes_to_append.push(REMOTE + "/" + srcs);
@@ -127,7 +125,7 @@ var optemo_socket_activator = (function () {
 		            data_to_add = data_to_append.split(regexp_pattern);
 		            for (i = 0; i < styles.length; i++) {
 		                srcs = styles[i].match(/stylesheets[^?]+/)
-		                if (!first_inject || srcs == null) { // If we have already loaded once, the javascript and styles are already in place.
+		                if (srcs == null) { // no stylesheets
 		                    // Do nothing
 		                } else {
 		                    var tag = document.createElement("link");
@@ -157,7 +155,8 @@ var optemo_socket_activator = (function () {
 				for (i = 0; i < regexp_patterns.length; i++) {
 					data_to_append = data_to_append.replace(new RegExp(regexp_patterns[i], "gi"), '');
 				}
-				embed_tag.append(data_to_append);
+				if (data_to_append.match(/filterbar/i)) // Just make sure that it's a normal return value
+    				embed_tag.append(data_to_append);
 		    },
 			parseData: function (data) {
 				regexp_pattern = (/<img[^>]+>/g);
