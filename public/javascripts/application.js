@@ -36,7 +36,7 @@
     ** ajaxhandler(data)  -  Splits up data from the ajax call according to [BRK] tokens. See app/views/compare/ajax.html.erb
     ** ajaxerror() - Displays error message if the ajax send call fails
     ** ajaxcall(myurl,mydata) - adds a hash with the number of searches to the history path
-    flashError(str)  -  Puts an error message on a specific part of the screen
+    ** flashError(str)  -  Puts an error message on a specific part of the screen
 
    -------- Layout -------
     ** clearStyles()  -  Removes inline styles and named styles from a group of IDs.
@@ -93,6 +93,7 @@ optemo_module = (function (my){
         $('#outsidecontainer').css({'display' : 'none'});
         $('#outsidecontainer').unbind('click');
         $('#filter_bar_loading').css({'display' : 'none'});
+        
     };
 
     my.applySilkScreen = function(url,data,width,height) {
@@ -573,6 +574,9 @@ optemo_module = (function (my){
                 	my.ajaxcall("/compare/filter?ajax=true", $("#search_form").serialize() + "&" + arguments_to_send.join("&"));
     			}
     		});
+    		if ($(this).slider("option", "disabled") == true) {
+                $(this).slider("option", "disabled", false);
+            }
     		$(this).slider('values', 0, ((curmin-rangemin)/(rangemax-rangemin))*100);
     		$('a:first', this).html(curmin).addClass("valbelow");
     		$(this).slider('values', 1, ((curmax-rangemin)/(rangemax-rangemin))*100);
@@ -812,7 +816,7 @@ optemo_module = (function (my){
     function ErrorInit() {
         //Link from popup (used for error messages)
         $('#outsidecontainer').unbind('click').click(function(){
-        	my.removeSilkScreen();
+        	my.FilterAndSearchInit(); my.DBInit();
         	return false;
         });
     };
@@ -887,7 +891,7 @@ optemo_module = (function (my){
     //--------------------------------------//
 
     myspinner = new spinner("myspinner", 11, 20, 9, 5, "#000");
-    my.loading_indicator_state = {sidebar : false, sidebar_timer : null, main : false, main_timer : null};
+    my.loading_indicator_state = {sidebar : false, sidebar_timer : null, main : false, main_timer : null, socket_error_timer : null};
     
     /* Does a relatively generic ajax call and returns data to the handler below */
     my.ajaxsend = function (hash,myurl,mydata,hidespinner) {
@@ -919,15 +923,16 @@ optemo_module = (function (my){
         lis.main = lis.sidebar = false;
         clearTimeout(lis.sidebar_timer); // clearTimeout can run on "null" without error
         clearTimeout(lis.main_timer);
-        lis.sidebar_timer = lis.main_timer = null;
+        clearTimeout(lis.socket_error_timer); // We need to clear the timeout error here
+        lis.sidebar_timer = lis.main_timer = lis.socket_error_timer = null;
             
     	if (data.indexOf('[ERR]') != -1) {	
     		var parts = data.split('[BRK]');
     		if (parts[1] != null) {
     			$('#ajaxfilter').html(parts[1]);
     		}
-    		flashError(parts[0].substr(5,parts[0].length));
     		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
+    		my.flashError(parts[0].substr(5,parts[0].length));
     		return -1;
     	} else {
     		var parts = data.split('[BRK]');
@@ -942,9 +947,9 @@ optemo_module = (function (my){
 
     my.ajaxerror = function() {
     	//if (language=="fr")
-    	//	flashError('<div class="poptitle">&nbsp;</div><p class="error">Désolé! Une erreur s’est produite sur le serveur.</p><p>Vous pouvez <a href="" class="popuplink">réinitialiser</a> l’outil et constater si le problème persiste.</p>');
+    	//	my.flashError('<div class="poptitle">&nbsp;</div><p class="error">Désolé! Une erreur s’est produite sur le serveur.</p><p>Vous pouvez <a href="" class="popuplink">réinitialiser</a> l’outil et constater si le problème persiste.</p>');
     	//else
-    	flashError('<div class="poptitle">&nbsp;</div><p class="error">Sorry! An error has occured on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
+    	my.flashError('<div class="poptitle">&nbsp;</div><p class="error">Sorry! An error has occured on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
     	my.trackPage('goals/error');
     }
 
@@ -959,7 +964,7 @@ optemo_module = (function (my){
     }
 
     /* Puts an ajax-related error message in a specific part of the screen */
-    function flashError(str) {
+    my.flashError = function(str) {
     	var errtype = 'other';
 	
     	if (/search/.test(str)==true) {
@@ -1386,10 +1391,17 @@ if (window.embedding_flag) {
         var lis = optemo_module.loading_indicator_state;
         if (lis.main) lis.main_timer = setTimeout("myspinner.begin()", 1000);
         if (lis.sidebar) lis.sidebar_timer = setTimeout("optemo_module.loadFilterBarSilkScreen()", 1000);
+        lis.socket_error_timer = setTimeout("optemo_module.clearSocketError()", 15000);
         // Hopefully we can just send the arguments as-is. It's probably bad style not to sanity-check them though.
         remote.iframecall(hash, myurl, mydata);
     };
     $.history.init(optemo_module.ajaxsend); // re-init with the new ajaxsend module here, after it's been redefined
+    
+    optemo_module.clearSocketError = function() {
+        // if ajaxhandler never gets called, here we are.
+		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
+    	optemo_module.flashError('<div class="poptitle">&nbsp;</div><p class="error">Sorry! An error has occured on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
+    }
     
     optemo_module.quickajaxcall = function (element_name, mydata, fn) { // for the show page
         remote.quickiframecall(element_name, mydata, fn);
