@@ -55,6 +55,50 @@ cameras.browsethenbuy.com:
         feature_type: Categorical
         used_for: [boost, filter, show]
         
+cameras.direct.demo.optemo.com:
+    product_type: camera_us
+    layout: listview
+    maximumresolution: 
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    displaysize:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    price:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+        prefdir: -1
+        min: 1
+        max: 10000
+    opticalzoom:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    brand:
+        feature_type: Categorical
+        used_for: [boost, filter, show]
+                
+cameras.assist.demo.optemo.com:
+    product_type: camera_us
+    layout: gridview
+    maximumresolution: 
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    displaysize:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    price:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+        prefdir: -1
+        min: 1
+        max: 10000
+    opticalzoom:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    brand:
+        feature_type: Categorical
+        used_for: [boost, filter, show]
+        
 m.browsethenbuy.com:
     product_type: camera_us
     layout: mobileview
@@ -138,7 +182,7 @@ printers.browsethenbuy.com:
         feature_type: Categorical
         used_for: [boost, filter, show]
 
-printers.direct.demo.optemo:
+printers.direct.demo.optemo.com:
     product_type: printer_us
     layout: lineview
     price:
@@ -173,7 +217,7 @@ printers.direct.demo.optemo:
         feature_type: Categorical
         used_for: [boost, filter, show]
         
-printers.assist.demo.optemo:
+printers.assist.demo.optemo.com:
     product_type: printer_us
     layout: gridview
     price:
