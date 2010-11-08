@@ -1,62 +1,62 @@
-<%= form_tag("/compare/filter",{:id => 'search_form'}) do %>
-  <%= @s.search.userdatasearches.empty? ? text_field_tag('search') : text_field_tag('search', @s.search.userdatasearches[0].keyword) %>
-  <%= submit_tag 'Search', {:id => 'submit_button'} %>
-  <% if @s.search.userdatasearches[0] && @s.search.userdatasearches[0].keyword %>
-	<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :class => "removesearch"} %> Search: <%= @s.search.userdatasearches[0].keyword %>
+<%= form_tag("/compare/filter",{:id => 'filter_form'}) do %>
+  <%= @s.search.keyword_search.blank? ? text_field_tag('myfilter[search]') : text_field_tag('myfilter[search]', @s.search.keyword_search) %>
+	<div class="ui-widget" style="display:inline;">
+		<%= submit_tag 'Search', {:id => 'submit_button'} %>
 	</div>
-	<%= hidden_field_tag "previous_search_word", @s.search.userdatasearches[0].keyword %>
-  <% else %>
-    <%= hidden_field_tag "previous_search_word", '' %>
+  <% if @s.search.keyword_search %>
+	<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :class => "removesearch"} %> Search: <%= @s.search.keyword_search %>
+	</div>
+	<%= hidden_field_tag "previous_search_word", @s.search.keyword_search %>
   <% end %>
-<% end %>
 
-<%= form_tag("",{:id => 'filter_form'}) do %>
-<% i = 0 # Yes, I know, this isn't Rails-y, but we need to assign a different UI position to each feature of all kinds, in order. %> 
-<% @s.categorical["filter"].each_with_index do |feat, index| %>
-	<div class='feature'>
+  <% i = 0 # Yes, I know, this isn't Rails-y, but we need to assign a different UI position to each feature of all kinds, in order. %> 
+  <% @s.categorical["filter"].each_with_index do |feat, index| %>
+  	<div class='feature'>
+  		<div class='catlabel' data-position="<%= i %>">
+  			<%= render :partial => 'desc', :locals => {:feat => feat} %>
+  			<%= link_to t('products.' + feat), "#" %>
+  			<% if @s.directLayout %>
+  				<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat %>" data-position="<%= i %>">Show Groups</div>
+  			<% end %>
+  		</div>
 		<% chosen_cats = chosencats(feat) %>
-		<div class='catlabel' data-position="<%= i %>">
-			<%= render :partial => 'desc', :locals => {:feat => feat} %>
-			<%= link_to t('products.' + feat), "#" %>
-			<% if @s.directLayout %>
-				<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat %>" data-position="<%= i %>">Show Groups</div>
-			<% end %>
-		</div>
-		<% unless chosen_cats.nil? || chosen_cats.empty? %>
-			<%# At least one item selected %>
-			<% chosen_cats.each do |b| %>
-				<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :"data-cat" => feat, :class => "removefilter", :"data-id" => b} %> <%= b %>
-				</div>
-			<% end %>
-			<%= select('superfluous', feat, [t('products.compare.add'+feat)] + CatSpec.all(feat).reject {|b| chosen_cats.index(b)}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>
-		<% else %>
-			<%# Nothing selected %>
-			<%= select('superfluous', feat, [t('products.compare.all'+feat+'s')] + CatSpec.all(feat), options={}, {:id => feat+"selector", :class => "selectboxfilter"})%>		
-		<% end %>
-		
-		<%= hidden_field_tag "myfilter[#{feat}]", chosen_cats.join("*") %>
-	</div>
-	<% i = i + 1 %>
-<% end %>
-<% @s.continuous["filter"].each do |feat| %>
-	<%= render :partial => 'slider', 
-		:locals => {:name => t('products.' + feat),
-		:i => i,
-		:feat => feat,
-		:money_formatting => feat == 'price',
-		:overall_min => ContSpec.allMinMax(feat)[0],
-		:overall_max => ContSpec.allMinMax(feat)[1]} %>
-	<% i = i + 1 %>
-<% end %>
-<% @s.binary["filter"].each do |feat| %>
-	<div class='feature'>
-		<div class='label' data-position="<%= i %>">
-			<%= render :partial => 'desc', :locals => {:feat => feat} %>
-			<% dobj = Userdatabin.find_by_search_id_and_name(@s.search.id,feat) %>
-			<%= check_box('myfilter', feat, {:checked => dobj.nil? || dobj.value == false ? false : 'checked', :class => 'autosubmitbool'})%>
-			<%= link_to t('products.' + feat), "#" %>
-		</div>
-	</div>
-	<% i = i + 1 %>	
-<% end %>
+  		<% unless chosen_cats.nil? || chosen_cats.empty? %>
+  			<%# At least one item selected %>
+  			<% chosen_cats.each do |b| %>
+  				<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :"data-cat" => feat, :class => "removefilter", :"data-id" => b} %> <%= b %>
+  				</div>
+  			<% end %>
+			<%= category_select(t('products.compare.add'+feat),feat) %>
+  		<% else %>
+  			<%# Nothing selected %>
+			<%= category_select(t('products.compare.all'+feat+'s'),feat) %>
+  		<% end %>
+  		
+  		<%= hidden_field_tag "myfilter[#{feat}]", chosen_cats.join("*") %>
+  	</div>
+  	<% i = i + 1 %>
+  <% end %>
+  <% @s.continuous["filter"].each do |feat| %>
+  	<%= render :partial => 'slider', 
+  		:locals => {:name => t('products.' + feat),
+  		:i => i,
+  		:feat => feat,
+  		:money_formatting => feat == 'price',
+  		:overall_min => ContSpec.allMinMax(feat)[0],
+  		:overall_max => ContSpec.allMinMax(feat)[1]} %>
+  	<% i = i + 1 %>
+  <% end %>
+  <% @s.binary["filter"].each do |feat| %>
+  	<div class='feature'>
+  		<div class='label' data-position="<%= i %>">
+  			<%= render :partial => 'desc', :locals => {:feat => feat} %>
+  			<% dobj = Userdatabin.find_by_search_id_and_name(@s.search.id,feat) %>
+  			<%= check_box('myfilter', feat, {:checked => dobj.nil? || dobj.value == false ? false : 'checked', :class => 'binary_filter'})%>
+  			<%= link_to t('products.' + feat), "#" %>
+			<%= " ("+SearchProduct.bin_count(feat).to_s+")" %>
+  		</div>
+  	</div>
+  	<% i = i + 1 %>	
+  <% end %>
+  <%= hidden_field_tag 'myfilter[search_hist]', @s.search.id %>
 <% end %>

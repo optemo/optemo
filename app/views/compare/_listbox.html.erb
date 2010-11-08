@@ -15,7 +15,7 @@
 		<div class="productimg_container">
 			<%= image_tag(imgurl(product) , :"data-id" => product.id, :class => "productimg", :alt => product.smlTitle, :title => product.smlTitle) %>
 			<% if @s.dragAndDropEnabled %>
-				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
+				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.', :"data-id" => product.id) %>
 			<% end %>
 		</div>
 		<%= product.smlTitle %>
@@ -35,5 +35,4 @@
 			<%= number_to_currency(contspecs["price"]) %>
 		</div>
 	</div>
-	<div style="clear:both;"></div>
 </div>

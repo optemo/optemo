@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<script type="text/javascript" src="/javascripts/json2.js"></script>
+<script type="text/javascript" src="/javascripts/easyXDM.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript">
+
+/* LazyLoad courtesy of http://github.com/rgrove/lazyload/ already minified */
+LazyLoad=function(){var f=document,g,b={},e={css:[],js:[]},a;function j(l,k){var m=f.createElement(l),d;for(d in k){if(k.hasOwnProperty(d)){m.setAttribute(d,k[d])}}return m}function h(d){var l=b[d];if(!l){return}var m=l.callback,k=l.urls;k.shift();if(!k.length){if(m){m.call(l.scope||window,l.obj)}b[d]=null;if(e[d].length){i(d)}}}function c(){if(a){return}var k=navigator.userAgent,l=parseFloat,d;a={gecko:0,ie:0,opera:0,webkit:0};d=k.match(/AppleWebKit\/(\S*)/);if(d&&d[1]){a.webkit=l(d[1])}else{d=k.match(/MSIE\s([^;]*)/);if(d&&d[1]){a.ie=l(d[1])}else{if((/Gecko\/(\S*)/).test(k)){a.gecko=1;d=k.match(/rv:([^\s\)]*)/);if(d&&d[1]){a.gecko=l(d[1])}}else{if(d=k.match(/Opera\/(\S*)/)){a.opera=l(d[1])}}}}}function i(r,q,s,m,t){var n,o,l,k,d;c();if(q){q=q.constructor===Array?q:[q];if(r==="css"||a.gecko||a.opera){e[r].push({urls:[].concat(q),callback:s,obj:m,scope:t})}else{for(n=0,o=q.length;n<o;++n){e[r].push({urls:[q[n]],callback:n===o-1?s:null,obj:m,scope:t})}}}if(b[r]||!(k=b[r]=e[r].shift())){return}g=g||f.getElementsByTagName("head")[0];q=k.urls;for(n=0,o=q.length;n<o;++n){d=q[n];if(r==="css"){l=j("link",{href:d,rel:"stylesheet",type:"text/css"})}else{l=j("script",{src:d})}if(a.ie){l.onreadystatechange=function(){var p=this.readyState;if(p==="loaded"||p==="complete"){this.onreadystatechange=null;h(r)}}}else{if(r==="css"&&(a.gecko||a.webkit)){setTimeout(function(){h(r)},50*o)}else{l.onload=l.onerror=function(){h(r)}}}g.appendChild(l)}}return{css:function(l,m,k,d){i("css",l,m,k,d)},js:function(l,m,k,d){i("js",l,m,k,d)}}}();
+
+// Set up socket here
+var local_socket;
+
+local_socket = new easyXDM.Rpc(/** The channel configuration*/{
+    local: "name.html"
+}, /** The configuration */ {
+    remote: {
+		// These three parsing functions get declared on the other side of the socket, in /public/optemo_embedder.js
+        initialPageDelivery: {},
+		parseData: {},
+		parseDataThin: {}
+    },
+    local: {
+		initialLoad: function() {
+			// This gets the optemo.html.erb layout, passing the scripts, stylesheets, etc., back to set the stage for later ajax calls.
+			$.ajax({type: "GET",
+				data: "",
+				url: "http://assets.optemo.com:3000/",
+				success: function(data) {
+					local_socket.initialPageDelivery(data);
+				},
+				error: function(data) {
+					local_socket.initialPageDelivery(data);
+				}
+			});
+		},
+		quickiframecall: function(element_name, myurl, fn) {
+			// This is for simple $('#element').load functionality. Useful for "show" page at the moment, maybe other things in future.
+			$.ajax({type: "GET", 
+				url: myurl, 
+				success: function(data) {local_socket.parseDataThin(element_name, data, fn);}, 
+				error: function(data) {local_socket.parseDataThin(element_name, data, fn);}
+			});
+		},
+        iframecall: function(hash, myurl, mydata, fn, fnError){
+			// This is a standard ajax call, with the same code as optemo_module.ajaxsend, located in application.js.
+	    	if (myurl != null) {
+	        	$.ajax({
+	        		type: (mydata==null)?"GET":"POST",
+	        		data: (mydata==null)?"":mydata,
+	        		url: myurl,
+		    		success: function(data) {local_socket.parseData(data);},
+					error: function(data) {local_socket.parseData(data);}
+	        	});
+	    	} else if (typeof(hash) != "undefined" && hash != null) {
+	    		$.ajax({
+	    			type: "GET",
+	    			url: "/compare/compare/?ajax=true&hist="+hash,
+		    		success: function(data) {local_socket.parseData(data);},
+					error: function(data) {local_socket.parseData(data);}
+	    		});
+	    	}
+            return; // The ajax thread will call the other side of the socket when the ajax call is done, so we return nothing here.
+        }
+    }
+});
+
+</script>
+</head>
+<body>
+<div id="ajaxreturnvalue"><!-- There should never be anything in here. --></div>
+</body>
+</html>

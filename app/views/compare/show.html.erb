@@ -8,11 +8,11 @@
 	<h1><%= URI.decode(@product.title) %></h1>
 	<div id="image">
 		<% if @s.product_type == "flooring_builddirect" %>
-			<%= link_to image_tag(@imglurl), @imglurl, :popup => true %>
+			<%= link_to image_tag(@imglurl), @imglurl, :class => "popup" %>
 		<% elsif @s.product_type == "Laptop" %>
-			<%= link_to image_tag(@imglurl), @imglurl, :popup => true %>
+			<%= link_to image_tag(@imglurl), @imglurl, :class => "popup" %>
 		<% elsif FileTest.exist?("#{Rails.root}/public" + @imglurl) %>
-			<%= link_to image_tag(@imglurl, :width => @product.imagelw, :height => @product.imagelh), @imglurl, :popup => true %>
+			<%= link_to image_tag(@imglurl, :width => @product.imagelw, :height => @product.imagelh), @imglurl, :class => "popup" %>
 		<% else %>
 			<br><br>No Image Available
 		<% end %>
@@ -25,7 +25,7 @@
 				<li>
 					<% if false && @plain && (request.referer.nil? || request.referer.index("compare").nil?) %> <!-- that is, if popup was not called from main navigation page, then show "better" links -->
 					<div class="betterlinkdiv">
-						<%= link_to "better", "javascript:findBetter('#{@product.id}', '#{f_name}')", :"data-id" => f_name, :class => 'betterlink' %>
+						<%= link_to "better", "javascript:optemo_module.findBetter('#{@product.id}', '#{f_name}')", :"data-id" => f_name, :class => 'betterlink' %>
 					</div>
 					<% end %>
 				 	<span class="detail_label"><%=t 'products.'+ f_name %>: </span> <%= "$" if f_name == 'price' %><%= (@product.display(f_name, f)).split('*').each(&:strip).uniq.join(" ") %><%=' ' + t('products.'+ f_name+'unit', :default => '') unless f_name == 'price' %>
@@ -68,10 +68,10 @@
 		<span class="cartridgespecifics">(Yield: <%= c.yield %> pgs, Shelf Life: <%= c.shelflife %> months, Color: <%= c.color %>)</span>
 		<div style="clear:both;"></div>
 		<div class="left" style="width:112px">	
-			<%= link_to p.pricestr, p.url, :popup => true, :rel => 'nofollow' %>
+			<%= link_to p.pricestr, p.url, :class => "popup", :rel => 'nofollow' %>
 		</div>
 		<div class="right" style="width:154px;">
-			 <%=  link_to image_tag(p.retailer.image, :alt => p.retailer.name), p.url, :popup => true, :rel => 'nofollow' %>
+			 <%=  link_to image_tag(p.retailer.image, :alt => p.retailer.name), p.url, :class => "popup", :rel => 'nofollow' %>
 		</div>
 		<div class="spacer" style="clear:right;"></div>
 		</div>

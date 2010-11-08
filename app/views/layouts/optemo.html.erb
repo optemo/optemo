@@ -17,33 +17,26 @@
 <body>
 <div id="mycenter">
    <div id="header">
-	  <!-- div id="flags">
-		<%= link_to image_tag('us.gif'), url_for_intl('com') %>
-		<%= link_to image_tag('ca.gif'), url_for_intl('ca') %>
-	  </div-->
-	  <div id="logo">
-		<a href="<%= url_for '/' %>" id ="logo" title="<%=t s.product_type+".url" %>"><%= image_tag("#{s.product_type}.jpg")%><span>Home</span></a>
-	  </div>
-	 <div id="tagline">
-		<%=t "#{s.product_type}.tagline" %>
-	</div>
-	 <div id="tourButton"><%= link_to "Launch Tour", '#' %></div>
+	  <%= render :partial => Session.current.product_type == "printer_lph" ? "lph_header" : "demo_header" %>
    </div>
-   <div class="watermark">Powered by <%= link_to 'Optemo', 'http://optemo.com', :popup => true %></div>
+<% if Session.current.product_type == "printer_lph" %>
+	<div class="watermark">Powered by <%= link_to 'Optemo', 'http://optemo.com', :class => "popup" %></div>
+	<div id="bottomlinks">
+	   <%= link_to 'Home', '/' %> |
+	   <%= link_to 'Terms of Use', '/termsofuse', {:title => 'Legal'}  %> |
+	   <%= link_to 'Site Map', '/sitemap', {:title => 'Link to all products'} %> |
+	   <%= link_to 'About Us', '/about', {:title => 'LaserPrinterHub'} %> |
+	   <%= link_to 'Contact Us', "znvygb:grnz\100ynfrecevagreuho\056pbz", {:class => 'decrypt', :title => 'Email Us'}%>
+	</div>
+<% end %>
    <div class="bd <%= 'rounded_bd ' unless s.directLayout %>rounded">
 	<div class="tl"></div><div class="tr"></div>
-    <%= yield  %>
+    <%= yield %>
 	<div class="bl"></div><div class="br"></div>
    </div>
 </div>
-<div id="bottomlinks">
-   <%= link_to 'Home', '/' %> |
-   <%= link_to 'Terms of Use', '/termsofuse', {:title => 'Legal'}  %> |
-   <%= link_to 'Site Map', '/sitemap', {:title => 'Link to all products'} %> |
-   <%= link_to 'About Us', '/about', {:title => 'LaserPrinterHub'} %> |
-   <%= link_to 'Contact Us', "znvygb:grnz\100ynfrecevagreuho\056pbz", {:class => 'decrypt', :title => 'Email Us'}%>
-</div>
-<div id="fade" onClick="fadein();">&nbsp;</div>
+<div id="silkscreen">&nbsp;</div>
+<div id="filter_bar_loading">Loading</div>
 <div id="outsidecontainer"><%= link_to image_tag("closepopup#{fr?}.gif"), "close", :class => "close"%><div id="info">&nbsp;</div></div>
 <div id="feedback">
 <%= image_tag "feedback#{fr?}.png" %>
@@ -53,7 +46,6 @@
 	<span id="dragDropEnabled"><%= s.dragAndDropEnabled %></span>
 	<span id="seshid" session-id="<%= s.id unless s.nil? %>"><%= s.id %></span>
 	<span id="modelname"><%= s.product_type %></span>
-	<span id="version"><%= s.version %></span>
 	<span id="directLayout"><%= s.directLayout %></span>
 	<% end %>
 </div>
@@ -68,9 +60,11 @@
 <!--[if IE 7]><style>
 .gainlayout { zoom: 1; }
 .hist {left: 15px; }
+
 </style><![endif]-->
 
 <!--[if gte IE 7]><style>
+.selectboxfilter { width:185px;}
 @import url("/stylesheets/welcomeIE.css");
 </style><![endif]-->
 
@@ -81,8 +75,12 @@
 <!-- Piwik -->
 <script type="text/javascript">
 var pkBaseURL = (("https:" == document.location.protocol) ? "https://analytics.optemo.com/" : "http://analytics.optemo.com/");
-document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-</script><script type="text/javascript">
+var tag = document.createElement("script");
+tag.setAttribute("src", pkBaseURL + 'piwik.js');
+tag.setAttribute("type", "text/javascript");
+document.getElementsByTagName("head")[0].appendChild(tag);
+</script>
+<script type="text/javascript">
 try {
 var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", <%= s.piwikSiteId %>); // idsite is here
 piwikTracker.trackPageView();
@@ -95,11 +93,11 @@ piwikTracker.enableLinkTracking();
 	<%= raw popuptext(1, "Products are sorted by their utility. Click on one to see its specs.") %>
 	<%= raw popuptext(2, "Group by features to limit the number of products shown.") %>
 	<%= raw popuptext(3, "Slide the filters to constrain your search terms based on a variety of specific criteria.") %>
-	<%= raw popuptext(4, "Drag and drop products in here to compare their specs directly.", "Start Browsing") %>
+	<%= raw popuptext(4, "Drag and drop products in the area below to compare their specs directly.", "Start Browsing") %>
 <% else %>
 	<%= raw popuptext(1, "Each product shown is a representative of a dynamically created group of similar products. To browse within that group, click &quot;more like this.&quot;") %>
 	<%= raw popuptext(2, "Slide the filters to constrain your search terms based on a variety of specific criteria.") %>
-	<%= raw popuptext(3, "Drag and drop products in here to compare their specs directly.", "Start Browsing") %>
+	<%= raw popuptext(3, "Drag and drop products in the area below to compare their specs directly.", "Start Browsing") %>
 <% end %>
 <div id="backgroundPopup"></div>
 <noscript><div id="noJavascript" style="position:absolute; top: 40px; left:30px; width:250px; background: #FFFFFF; opacity:0.8"><b>Javascript is disabled.</b>For full functionality, please enable javascript.</div></noscript>

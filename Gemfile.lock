@@ -1,6 +1,7 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    ZenTest (4.4.0)
     abstract (1.0.0)
     actionmailer (3.0.0)
       actionpack (= 3.0.0)
@@ -52,6 +53,7 @@ GEM
       activesupport (>= 2.3.6)
       mime-types
       treetop (>= 1.4.5)
+    memcache-client (1.8.5)
     mime-types (1.16)
     mysql (2.8.1)
     net-scp (1.0.3)
@@ -105,9 +107,11 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  ZenTest
   capistrano
   capistrano-ext
   factory_girl
+  memcache-client
   mysql (= 2.8.1)
   rails (= 3.0.0)
   ruby-debug19

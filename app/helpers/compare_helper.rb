@@ -29,14 +29,13 @@ module CompareHelper
   def format_acceptable_increments(number, round_direction='down')
     # These acceptable increments can be tweaked as necessary. Multiples of 5 and 10 look cleanest; 20 looks OK but 2 and 0.2 look weird.
 		acceptableincrements = [1000, 500, 100, 50, 10, 5, 1, 0.5, 0.1, 0.05, 0.01]
-		comparator = number / 100.0 # so that's 81.7799
-    increment = acceptableincrements.delete_if{|i| (i * 1.1) < comparator}.last
-    
-    realvalue = (number / increment)
+		comparator = number / 100.0 # so that's 81.7799 or 1.1999
+    increment = acceptableincrements.delete_if{|i| i < comparator}.last
+    realvalue = (number / increment) 
     if round_direction == 'up'
       realvalue = realvalue.ceil * increment
     else
-      realvalue = realvalue.round * increment
+      realvalue = realvalue.floor * increment
     end
     # Weird floating point bug here
     (realvalue * 100).to_i.to_f / 100.0
@@ -63,7 +62,7 @@ module CompareHelper
       current = (((current / (10**base).to_f).ceil) * (10**base).to_f)
     end
     increments.push(max)
-    increments.map{|i|(i.round == i) ? i.to_i : i }
+    increments.map{|i|(i.round == i) ? i.to_i : (i * 100.0).to_i.to_f / 100.0 }
   end
   
   def nav_link
@@ -76,10 +75,13 @@ module CompareHelper
   
   def navtitle
     s = Session.current
-		[s.search.result_count, (s.search.result_count > 1) ? t("#{s.product_type}.title-plural") : t("#{s.product_type}.title-plural")].join(" ")
+		title = [s.search.products_size, (s.search.products_size > 1) ? t("#{s.product_type}.title-plural") : t("#{s.product_type}.title-plural")].join(" ")
+		title += " Grouped by " + t('products.' + s.search.groupby) if s.search.groupby
+    title
   end
   
   def groupDesc(group, i)
+    return "Description"
     s = Session.current
     if s.relativeDescriptions
       descs = s.search.boostexterClusterDescriptions[i].map{|d|t("products."+d, :default => d)}
@@ -139,12 +141,12 @@ module CompareHelper
 		out.join(" / ")
   end
 
-  def columntext(groupings)
+  def columntext(showgroups)
     if Session.current.directLayout
-      if groupings.nil?
-        ['', 'Product Details', 'Price']
-      else
+      if showgroups
         ['Choose Group', 'Best Pick', 'Cheapest Pick']
+      else
+        ['', 'Product Details', 'Price']
       end
     else
       ['Browse Similar', 'Group Differences', 'Our pick for this group']
@@ -177,5 +179,58 @@ module CompareHelper
       else CGI.unescapeHTML(product.imgsurl.to_s)
     end
   end
-
+  
+  def withunit(number,feature)
+    if feature == "price"
+      t('products.' + feature+"unit")+number.to_s
+    else
+      [number,t('products.' + feature+"unit", :default => "")].reject(&:blank?).join(" ")
+    end
+  end
+  
+  def category_select(title,feat)
+    select('superfluous', feat, [title] + SearchProduct.cat_counts(feat).map{|k,v|"#{k} (#{v})"}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
+  end
+  
+  def main_boxes
+    res = ""
+    if @s.directLayout
+  		if @s.search.groupby.nil?
+  			@products.each_index do |i|
+  				res << render(:partial => 'singlelist', :locals => {:product => Product.cached(@products[i]), :i => i})
+  			end
+  		else
+  			@s.search.groupings.each do |grouping|
+  				res << render(:partial => 'grouping', :locals => {:grouping => grouping, :group => true})
+  			end
+  		end
+  	else
+  		for i in 0...[@s.search.cluster.numclusters, @s.numGroups].min
+  		  if i % (Float(@s.numGroups)/3).ceil == 0
+  			  res << '<div class="rowdiv">'
+  			  open = true
+  		  end
+  		  #Navbox partial to draw boxes
+  		  res << render(:partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative})
+  		  if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
+  			  res << '</div>'
+  			  open = false
+  		  end
+  		end
+  	end
+  	res << '</div>' if open && !@s.directLayout
+  	res << will_paginate(@products) if @s.directLayout && @s.search.groupby.nil?
+  	res
+	end
+	
+	def getDist(feat)
+    unless defined? @dist  
+      unless defined? $d
+       $d = Distribution.new
+      end
+	    @dist = $d.computeDist
+	  end  
+	  @dist[feat]
+	end  
+	
 end

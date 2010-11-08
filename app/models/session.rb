@@ -1,9 +1,9 @@
 class Session
   # products.yml gets parsed below, initializing these variables.
-  attr_accessor :version, :id, :search  # Basic individual data. These are not set in initialization.
+  attr_accessor :id, :search  # Basic individual data. These are not set in initialization.
   attr_accessor :directLayout, :mobileView  # View choice (Assist vs. Direct, mobile view vs. computer view)
   attr_accessor :continuous, :binary, :categorical  # Caching of features' names
-  attr_accessor :prefDirection, :maximumPrice, :minimumPrice  # Stores which preferences are 'lower is better' vs. normal; used in sorting, plus some price globals
+  attr_accessor :prefDirection, :maximum, :minimum  # Stores which preferences are 'lower is better' vs. normal; used in sorting, plus some attribute globals
   attr_accessor :dragAndDropEnabled, :relativeDescriptions, :numGroups  # These flags should probably be stripped back out of the code eventually
   attr_accessor :product_type # Product type (camera_us, etc.), used everywhere
   attr_accessor :piwikSiteId # Piwik Site ID, as configured in the currently-running Piwik install.
@@ -21,7 +21,8 @@ class Session
     # s.boostexterLabels = true
     
     @prefDirection = Hash.new(1) # Set 1 i.e. Up as the default value for direction
-
+    @maximum = Hash.new
+    @minimum = Hash.new
     @continuous = Hash.new{|h,k| h[k] = []}
     @binary = Hash.new{|h,k| h[k] = []}
     @categorical = Hash.new{|h,k| h[k] = []}
@@ -43,52 +44,37 @@ class Session
     end
     
     product_yml = file[url]
-    @product_type = product_yml["product_type"].first
-    # This block gets out the continuous, binary, and categorical features
-    product_yml.each do |feature,stuff| 
-      type = stuff.first
-      flags = stuff.second
-      case type
-      when "Continuous"
-        flags.each{|flag| @continuous[flag] << feature}
-        options = stuff.third
-        @prefDirection[feature] = options["prefdir"] if options && options["prefdir"]
-      when "Binary"
-        flags.each{|flag| @binary[flag] << feature}
-      when "Categorical"
-        flags.each{|flag| @categorical[flag] << feature}
-      end
-      @continuous["all"] = []
-      @binary["all"] = []
-      @categorical["all"] = []
-      product_yml.each{|feature,stuff| @continuous["all"] << feature if stuff.first == "Continuous"}
-      product_yml.each{|feature,stuff| @binary["all"] << feature if stuff.first == "Binary"}
-      product_yml.each{|feature,stuff| @categorical["all"] << feature if stuff.first == "Categorical"}
-
-      # At the moment, these are used in product scraping only.
-      if feature == "price"
-        @minimumPrice = stuff.fourth.values.first
-        @maximumPrice = stuff.fifth.values.first
-      end
-    end
-
+    @product_type = product_yml["product_type"]
     # directLayout controls the presented view: Optemo Assist vs. Optemo Direct. 
     # Direct needs no clustering, showing all products in browseable pages and offering "group by" buttons.
     # mobileView controls screen vs. mobile view (Optemo Mobile)
-    unless product_yml.nil? || product_yml["layout"].nil?
-      # There is no lineItemView (simple view) anymore. This breaks the Walmart layout but simplifies CSS, etc.
-      @directLayout = product_yml["layout"].first == "lineview"
-      @mobileView = product_yml["layout"].first == "mobileview"
+    # Default is false
+    @directLayout = product_yml["layout"] == "lineview"
+    @mobileView = product_yml["layout"] == "mobileview"
+    # This block gets out the continuous, binary, and categorical features
+    product_yml.each do |feature,atts|
+      case atts["feature_type"]
+      when "Continuous"
+        atts["used_for"].each{|flag| @continuous[flag] << feature}
+        @continuous["all"] << feature #Keep track of all features
+        @prefDirection[feature] = atts["prefdir"] if atts["prefdir"]
+        @maximum[feature] = atts["max"] if atts["max"]
+        @minimum[feature] = atts["min"] if atts["min"]
+      when "Binary"
+        atts["used_for"].each{|flag| @binary[flag] << feature}
+        @binary["all"] << feature #Keep track of all features
+      when "Categorical"
+        atts["used_for"].each{|flag| @categorical[flag] << feature}
+        @categorical["all"] << feature #Keep track of all features
+      end
     end
 
-    @directLayout ||= false # Default is Optemo Assist
-    @mobileView ||= false # Default is screen view (Assist or Direct)
     Session.current = self
 	end
 
   def searches
     # Return searches with this session id
-    Search.find_all_by_session_id(@id)
+    Search.where(["session_id = ?",@id])
   end
 
   def lastsearch

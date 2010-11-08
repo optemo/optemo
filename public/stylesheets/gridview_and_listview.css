@@ -14,6 +14,7 @@
  *  Autocomplete
  *  Direct Comparison
  *  Show page and related
+ *  Awesome Buttons
  */
 
  /*--------------------------------------//
@@ -31,6 +32,9 @@ html {
 #mycenter {
     width: 948px;
 }
+h3 {
+	margin: 0 0 3px;
+}
 
 /*--------------------------------------//
 //            Navigator Bar             //
@@ -42,7 +46,8 @@ div#main {
 }
 
 .watermark {
-	right: 0px;
+	right: 10px;
+	top: 938px; /* This is 3 px more than the "bottomlinks" absolute positioning (search .bottomlinks) */
 }
 #title {
 	position: absolute;
@@ -105,10 +110,19 @@ div#main {
     background-color: #e1e1e1;
 	border: 1px solid #d0d0d0;
 }
-
 #navigator_bar .smalllink{
 	font-size: 0.75em;
 	margin-left: 3px;
+}
+
+.demo_selector {
+	float: left;
+	width: 260px;
+	font-size: 80%;
+}
+.demo_selector p {
+	margin: 0;
+	color: gray;
 }
 
 /*--------------------------------------//
@@ -126,7 +140,7 @@ div.rowdiv {
     background:none repeat scroll 0 0 #EFEFEF;
 }
 .topbar {
-	height: 180px;
+	height: 159px;
 }
 
 .fv {
@@ -144,13 +158,14 @@ div.rowdiv {
 	margin-bottom:2px;
 }
 
+/* CSS Cleanup? ZAT
 .productinfocont {
 	width: 224px;
 	position: absolute;
 	bottom: 51px;
 	left: 0;
 }
-
+*/
 .price {
 	color: #F5000B;
 	font-size: 1em;
@@ -204,12 +219,13 @@ div #leftbar {
 	border: 1px solid #ccc;        
 }
 
-#search {
+#myfilter_search {
 	width: 125px;
 }
 #submit_button {
 	margin-top: 2px;
 	width: 55px;
+	font-size:11px;
 }
 
 #savebar {
@@ -465,7 +481,10 @@ div.smalldesc {
 //--------------------------------------*/
 
 #bottomlinks {
-	margin: 3px;
+	margin: 3px auto;
+	position: absolute;
+	top: 935px;
+	width: 948px;
 	text-align: center;
 	font-size: 0.8em;
 }
@@ -722,7 +741,7 @@ margin-top:0;
 //        Show page and related         //
 //--------------------------------------*/
 
-div#fade {
+div#silkscreen {
 	background-color: black;
 	position: absolute;
 	top: 0;
@@ -733,6 +752,9 @@ div#fade {
 	opacity: 0.50;
 	filter: alpha(opacity = 50);
 	display: none;
+	border-radius: 0 0 5px 5px;
+	-moz-border-radius: 0 0 5px 5px;
+	-webkit-border-radius: 0 0 5px 5px;
 }
 
 #outsidecontainer {
@@ -766,6 +788,21 @@ div#loading {
 	border: solid black 3px;
 	padding: 20px;
 }
+div#filter_bar_loading{
+    display: none;
+    position:absolute;
+    z-index: 3;
+    background-color: #eee;
+    border: solid black 3px;
+    padding: 10px;
+    width: 100px;
+    top: 300px;
+    left: 250px;
+    -moz-border-radius:5px;
+    -webkit-border-radius: 5px;
+    -border-radius: 5px;
+    text-align:center;
+}
 
 #image {
 	text-align: center;
@@ -798,3 +835,54 @@ div .left{
 	margin-bottom: 10px;
 	width: 193px;
 }
+
+/*--------------------------------------//
+//            Awesome Buttons           //
+//--------------------------------------*/
+/* Zurb http://www.zurb.com/article/266/super-awesome-buttons-with-css3-and-rgba */
+.awesome, .awesome:visited {
+	background: #797979 url(/images/alert-overlay.png) repeat-x; 
+	/*display: inline-block; */
+	padding: 5px 10px 4px; 
+	color: #eee; 
+	text-decoration: none;
+	-moz-border-radius: 10px; 
+	-webkit-border-radius: 10px;
+	-moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+	-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+	text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+	border-bottom: 1px solid rgba(0,0,0,0.25);
+	/*position: relative;*/
+	cursor: pointer;
+}
+
+.awesome:hover							{ background-color: #676767; color: #e6e6e6; }
+/*.awesome:active							{ top: 1px; }*/
+.small_awesome, .small_awesome:visited 			{ font-size: 11px; padding: ; }
+.awesome, .awesome:visited,
+.medium_awesome, .medium_awesome:visited 		{ font-size: 13px; font-weight: bold; line-height: 1; text-shadow: 0 -1px 1px rgba(0,0,0,0.25); }
+.large_awesome, .large_awesome:visited 			{ font-size: 14px; padding: 8px 14px 9px; }
+.xlarge_awesome, .xlarge_awesome:visited 			{ font-size: 16px; padding: 12px 21px 13px; }
+
+/* Zurb http://www.zurb.com/article/266/super-awesome-buttons-with-css3-and-rgba */
+.awesome_tour, .awesome_tour:visited {
+	background: #222 url(/images/alert-overlay.png) repeat-x; 
+	display: inline-block; 
+	padding: 5px 10px 6px; 
+	color: #fff; 
+	text-decoration: none;
+	-moz-border-radius: 10px; 
+	-webkit-border-radius: 10px;
+	-moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+	-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+	text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+	border-bottom: 1px solid rgba(0,0,0,0.25);
+	position: relative;
+	cursor: pointer;
+}
+
+.awesome_tour:hover							{ background-color: #111; color: #fff; }
+.awesome_tour:active							{ top: 1px; }
+.small_awesome_tour, .small_awesome_tour:visited 			{ font-size: 11px; padding: ; }
+.awesome_tour, .awesome_tour:visited,
+.medium_awesome_tour, .medium_awesome_tour:visited 		{ font-size: 13px; font-weight: bold; line-height: 1; text-shadow: 0 -1px 1px rgba(0,0,0,0.25); }

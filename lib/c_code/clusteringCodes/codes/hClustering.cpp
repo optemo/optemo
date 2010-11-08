@@ -12,7 +12,7 @@
 #include <algorithm>
 using namespace std;
 
-#include </usr/local/include/mysql-connector-c++/driver/mysql_public_iface.h>
+#include </usr/local/mysql-connector-c++/driver/mysql_public_iface.h>
 #include <time.h>
 
 #include "hClustering.h"
@@ -163,7 +163,7 @@ int main(int argc, char** argv){
     for (int f=0; f<boolFeatureN; f++){
 		boolFilteredFeatures[f] = 0;
 	}
-
+	
     string filteringCommand = preClustering(productNames, productName, conFeatureNames, catFeatureNames, boolFeatureNames, indicatorNames, region);
 
   
@@ -241,17 +241,17 @@ int main(int argc, char** argv){
 				command += "_";
 				command += region;
 				command += "')";
-				
+
 				res = stmt->executeQuery(command);
-         
+
 				if (res->next()){
-					version = res->getInt("version");
+					
+					version = res->getInt("max(version)");
 					version++;
 				}
 				else{
 					version = 0;
 				}
-				cout<<"version is "<<version<<endl;
 	    
 //	   if (version > keepStep){
 //				///Archiving the old clusters and nodes & deleteing the old ones

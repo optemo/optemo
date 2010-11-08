@@ -26,7 +26,7 @@
 
 <div id="bottomlinks">
    <%= link_to 'Terms of Use', '/termsofuse', {:title => 'Legal'}  %> |
-	Powered by <%= link_to 'Optemo', 'http://optemo.com', :popup => true %>
+	Powered by <%= link_to 'Optemo', 'http://optemo.com', :class => "popup" %>
 </div>
 </div>
 
@@ -35,7 +35,6 @@
 <div style="display:none;">
 <span id="seshid" session-id="<%= s.id unless s.nil? %>"><%= s.id if s %></span>
 <span id="modelname"><%= s.product_type %></span>
-<span id="version"><%= s.version %></span>
 </div>
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
@@ -45,8 +44,12 @@
 <!-- Piwik -->
 <script type="text/javascript">
 var pkBaseURL = (("https:" == document.location.protocol) ? "https://analytics.optemo.com/" : "http://analytics.optemo.com/");
-document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-</script><script type="text/javascript">
+var tag = document.createElement("script");
+tag.setAttribute("src", pkBaseURL + 'piwik.js');
+tag.setAttribute("type", "text/javascript");
+document.getElementsByTagName("head")[0].appendChild(tag);
+</script>
+<script type="text/javascript">
 try {
 var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", <%= s.piwikSiteId %>); // idsite is here
 piwikTracker.trackPageView();

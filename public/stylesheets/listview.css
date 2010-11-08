@@ -146,24 +146,20 @@ img.productimg {
 	background-color: #8192ac;
 }
 
-.group_title {
-  font-weight: bold;
-  padding-top: 5px;
-  width: 115px;
+.choose_cont_range {
+	/*margin-top: 4px;*/
+	position: absolute;
+	bottom: 7px;
+	left: 24px;
+}
+.choose_group {
+	position: absolute;
+	bottom: 12px;
+	left: 10px;
 }
 
-.choose_group, .choose_cont_range {
-	font-size: 0.9em;
-	position: absolute;
-	bottom: 10px;
-	left: 9px;
-	margin-left:5px;
-	width:90px;
-	-moz-border-radius: 8px;       /* for Firefox */
-	-webkit-border-radius: 8px;    /* for Safari */
-  border-radius: 8px;            /* Opera, KHTML, others */
-  cursor: pointer;
-  text-decoration: underline;
+.group_title {
+  width: 115px;
 }
 
 .sim a {
