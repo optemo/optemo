@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101019233312) do
+ActiveRecord::Schema.define(:version => 20101105202429) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -1026,6 +1026,7 @@ ActiveRecord::Schema.define(:version => 20101019233312) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "url"
+    t.string   "small_title"
   end
 
   add_index "products", ["instock"], :name => "instock"
@@ -1307,10 +1308,10 @@ ActiveRecord::Schema.define(:version => 20101019233312) do
   create_table "searches", :force => true do |t|
     t.integer  "session_id"
     t.integer  "parent_id"
+    t.boolean  "initial"
     t.string   "keyword_search"
     t.integer  "page"
     t.string   "groupby"
-    t.binary   "initial"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
