@@ -308,11 +308,11 @@ module Enumerable
 #end
 
 def mygroup_by
-  res = Hash.new{|h,k|h[k]=[]}
+  res = Array.new(9){|a|[]}
   each_index do |index|
     element = self[index]
     res[yield(element,index)] << element
   end
-  res.values
+  res
 end
 end
