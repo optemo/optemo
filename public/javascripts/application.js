@@ -501,12 +501,8 @@ optemo_module = (function (my){
     					// floating point division has problems; avoid it 
     					tempinc = parseInt(1.0 / increment);
     					realvalue = parseInt(realvalue * tempinc) / tempinc;
-    					if (sliderno == 1 || ui.values[1] == 0)
-    					    realvalue = realvalue + tempinc; // If the minimum price is 134.95, say, we need to be at 140
     				} else {
 					    realvalue = parseInt(realvalue / increment) * increment;
-    				    if (sliderno == 1 || ui.values[1] == 0)
-    				        realvalue = realvalue + increment;
 					}
 				
     				// This makes sure that when sliding to the extremes, you get back to the real starting points
@@ -552,13 +548,20 @@ optemo_module = (function (my){
     					datasetmin = parseInt($(this).attr('current-data-min'));
             			datasetmax = parseInt($(this).attr('current-data-max'));
     				}
-    				var diff = ui.values[1] - ui.values[0];
+    				var rightslidervalue;
+    				if (((ui.values[1] - rangemin) * rangemax) / 100 < datasetmin) {
+    				    rightslidervalue = datasetmin;
+    				    $(this).siblings('.max').attr('value', rightslidervalue);
+				    }
+				    else
+                        rightslidervalue = ui.values[1];
+    				var diff = rightslidervalue - ui.values[0];
     				if (diff > threshold)
     				{
     					leftsliderknob.removeClass("valabove").addClass("valbelow");
     					rightsliderknob.removeClass("valabove").addClass("valbelow");
     				}
-    				var sliderinfo = {'slider_min' : parseFloat(ui.values[0]) * rangemin / 100.0, 'slider_max' : parseFloat(ui.values[1]) * rangemax / 100.0, 
+    				var sliderinfo = {'slider_min' : parseFloat(ui.values[0]) * rangemin / 100.0, 'slider_max' : parseFloat(rightslidervalue) * rangemax / 100.0, 
                 	            'slider_name' : $(this).attr('data-label'), 'filter_type' : 'slider', 'data_min' : datasetmin, 'data_max' : datasetmax, 'ui_position' : $(this).parent().find('.label').attr('data-position')};
     				my.trackPage('goals/filter/slider', sliderinfo);
     				var arguments_to_send = [];
