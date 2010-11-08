@@ -54,8 +54,6 @@
 #require 'rubygems'
 #
 #require 'zentest_mapping'
-$TESTING = true
-$TESTING = false unless defined? $TESTING
 
 class CompilationError < RuntimeError; end
 
@@ -286,17 +284,15 @@ module Inline
       delta = if result =~ /\A(static.*?\{)/m then
                 $1.split(/\n/).size
               else
-                warn "WAR\NING: Can't find signature in #{result.inspect}\n" unless $TESTING
                 0
               end
 
       file, line = caller[1].split(/:/)
-      result = "# line #{line.to_i + delta} \"#{file}\"\n" + result unless $DEBUG and not $TESTING
 
       @src << result
       @sig[function_name] = [arity,singleton,method_name]
 
-      return result if $TESTING
+      return result
     end # def generate
 
     ##
@@ -580,11 +576,9 @@ VALUE #{method}_equals(VALUE value) {
           # TODO: remove after osx 10.5.2
           cmd += ' -flat_namespace -undefined suppress' if
             RUBY_PLATFORM =~ /darwin9\.[01]/
-          cmd += " 2> #{DEV_NULL}" if $TESTING and not $DEBUG
+          cmd += " 2> #{DEV_NULL}"
 
-          warn "Building #{so_name} with '#{cmd}'" if $DEBUG
           result = `#{cmd}`
-          warn "Output:\n#{result}" if $DEBUG
           if $? != 0 then
             bad_src_name = src_name + ".bad"
             File.rename src_name, bad_src_name
@@ -867,11 +861,7 @@ class Dir
   def self.assert_secure(path)
     mode = File.stat(path).mode
     unless ((mode % 01000) & 0022) == 0 then
-      if $TESTING then
-        raise SecurityError, "Directory #{path} is insecure"
-      else
-        abort "#{path} is insecure (#{'%o' % mode}). It may not be group or world writable. Exiting."
-      end
+      raise SecurityError, "Directory #{path} is insecure"
     end
   rescue Errno::ENOENT
     # If it ain't there, it's certainly secure
