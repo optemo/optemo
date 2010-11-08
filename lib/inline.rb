@@ -54,7 +54,7 @@
 #require 'rubygems'
 #
 #require 'zentest_mapping'
-
+$TESTING = true
 $TESTING = false unless defined? $TESTING
 
 class CompilationError < RuntimeError; end
@@ -152,7 +152,7 @@ module Inline
 
   class C
 
-    include ZenTestMapping
+    #include ZenTestMapping
 
     MAGIC_ARITY_THRESHOLD = 15
     MAGIC_ARITY = -1
@@ -246,7 +246,7 @@ module Inline
       signature = parse_signature(src, !expand_types)
       function_name = signature['name']
       method_name = options[:method_name]
-      method_name ||= test_to_normal function_name
+      method_name ||= function_name#test_to_normal function_name
       return_type = signature['return']
       arity = signature['arity']
 
