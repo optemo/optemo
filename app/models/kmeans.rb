@@ -317,7 +317,7 @@ module Enumerable
 #end
 
 def mygroup_by
-  res = Array.new{[]}
+  res = Array.new(9){|a|[]}
   each_index do |index|
     element = self[index]
     res[yield(element,index)] << element
