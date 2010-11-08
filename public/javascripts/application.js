@@ -465,7 +465,7 @@ optemo_module = (function (my){
     				var increment = (rangemax - rangemin) / 100.0;
     				for (var i = 0; i < acceptableincrements.length; i++) // Just so that it doesn't go off the scale for weird error case (increment == 0)
     				{
-    					if ((increment * 1.1) < acceptableincrements[i])  // The fudge factor here is required.
+    					if ((increment * 1.01) < acceptableincrements[i])  // The fudge factor here is required.
     						continue;
     					else // so, for example, increment is 51 and increment is 100
     						increment = acceptableincrements[i];
@@ -485,25 +485,29 @@ optemo_module = (function (my){
     				$(this).slider('values', sliderno, value);
     				realvalue = (parseFloat((ui.values[sliderno]/100))*(rangemax-rangemin))+rangemin;
     				// Prevent the left slider knob from going too far to the right (past all the current data)
-    				if (realvalue > datasetmax && sliderno == 0) {
+    				if ((realvalue > datasetmax && sliderno == 0) || ui.values[0] == 100) {
     				    realvalue = datasetmax;
-    				    leftsliderknob.css('left', (datasetmax * 99.9 / rangemax) + "%");
+    				    leftsliderknob.css('left', ((datasetmax - rangemin) * 99.9 / (rangemax - rangemin)) + "%");
     				    // Store the fact that it went too far using data()
     				    leftsliderknob.data('toofar', true);
     			    }
     				// Prevent the right slider knob from going too far to the left (past all the current data)
-    			    if (realvalue < datasetmin && sliderno == 1) {
+    			    if ((realvalue < datasetmin && sliderno == 1) || ui.values[1] == 0) {
     			        realvalue = datasetmin;
-    				    rightsliderknob.css('left', (datasetmin * 100.1 / rangemax) + "%");
+    				    rightsliderknob.css('left', ((datasetmin - rangemin) * 100.1 / (rangemax - rangemin)) + "%"); // was 100.1
     				    rightsliderknob.data('toofar', true);
-    			    }
+                    }
     				if (increment < 1) { 
     					// floating point division has problems; avoid it 
     					tempinc = parseInt(1.0 / increment);
     					realvalue = parseInt(realvalue * tempinc) / tempinc;
-    				}
-    				else
-    					realvalue = parseInt(realvalue / increment) * increment;
+    					if (sliderno == 1 || ui.values[1] == 0)
+    					    realvalue = realvalue + tempinc; // If the minimum price is 134.95, say, we need to be at 140
+    				} else {
+					    realvalue = parseInt(realvalue / increment) * increment;
+    				    if (sliderno == 1 || ui.values[1] == 0)
+    				        realvalue = realvalue + increment;
+					}
 				
     				// This makes sure that when sliding to the extremes, you get back to the real starting points
     				if (sliderno == 1 && ui.values[1] == 100)

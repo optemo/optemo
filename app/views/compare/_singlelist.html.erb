@@ -1,13 +1,13 @@
 <div id="box<%= i %>" class="navigator_box nbsingle">
 	<div class="productinfo rounded" data-id="<%= product.id %>">
 		<div class="productimg">
-			<%= image_tag(imgurl(product) , :"data-id" => product.id, :class => "productimg", :alt => product.smlTitle, :title => product.smlTitle) %>
+			<%= image_tag(imgurl(product) , :"data-id" => product.id, :class => "productimg", :alt => product.small_title, :title => product.small_title) %>
 			<% if @s.dragAndDropEnabled %>
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.', :"data-id" => product.id) %>
 			<% end %>
 		</div>
 		<div class="itemfeatures">
-			<div class="itemtitle"><%= product.smlTitle %></div>
+			<div class="itemtitle"><%= product.small_title %></div>
 			<% contspecs = ContSpec.cache_all(product.id); catspecs = CatSpec.cache_all(product.id); binspecs = BinSpec.cache_all(product.id) %>
 			<% all_specs = {:continuous => contspecs, :categorical => catspecs, :binary => binspecs } %>
 			<% all_specs.each do |k,v| %>

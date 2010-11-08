@@ -129,7 +129,10 @@ inline :C do |builder|
   //If it's all in one cluster, split them
   int all_one_flag=1;
   for(i=0; i<nn; i++) 
-    if (labels[i]>0) all_one_flag = 0;
+    if (labels[i]>0) {
+      all_one_flag = 0;
+      break;
+    }  
 
   if (all_one_flag==1){ 
     for(i=0; i<k; i++) labels[i] = i;
@@ -142,8 +145,10 @@ inline :C do |builder|
     }
 }  
     double minU = DBL_MAX;
-    for (h=0; h<k; h++) avgUtilities[h] = avgUtilities[h]/counts[h];
-      
+    for (h=0; h<k; h++) {
+      if (counts[h]==0) avgUtilities[h] = avgUtilities[h];
+      else  avgUtilities[h] = avgUtilities[h]/counts[h];
+    }  
       
    //sort based on utilties   
      int idKey;
@@ -158,7 +163,7 @@ inline :C do |builder|
   	   idKey = ids[j];	
         i=j-1;
 
-        while(x[i]<=key && i>=0)
+        while(x[i]<key && i>=0)
         {
             x[i+1]=x[i];
    		     ids[i+1] = ids[i];	
@@ -168,7 +173,10 @@ inline :C do |builder|
      	ids[i+1] = idKey;
     }
   //changing the label assignement based on the utilitites.    
-    for (i=1; i<nn; i++) labels[i] = ids[labels[i]];  
+    for (i=0; i<nn; i++) {
+      h =  labels[i];
+      labels[i] = ids[h];  
+    }
 
  //storing the labels in the ruby array
   for (j=0; j<nn; j++) rb_ary_store(labels_r, j, INT2NUM(labels[j]));
@@ -190,7 +198,6 @@ def self.compute(number_clusters,p_ids, weights = nil)
     $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, utility_list)
   rescue ValidationError
     puts "Falling back to ruby kmeans"
-    debugger
     Kmeans.ruby(number_clusters, specs)
   end
 end
@@ -282,7 +289,7 @@ end
     count = specs.size
     var = []
     specs.each{|p| var << p.each_index{|i| i*i}.inject(:+)}
-    debugger
+    #debugger
     var.each_index{|i| var[i]=Math.sqrt((var[i]/count) - (mean_all[i]**2))}
     var_all
   end
@@ -308,11 +315,16 @@ module Enumerable
 #end
 
 def mygroup_by
-  res = Hash.new{|h,k|h[k]=[]}
+  res = Array.new(9)
   each_index do |index|
     element = self[index]
-    res[yield(element,index)] << element
+    key = yield(element,index)
+    if res[key].nil? 
+      res[key] =[element] 
+    else  
+      res[key]<< element
+    end  
   end
-  res.values
+  res.compact
 end
 end
