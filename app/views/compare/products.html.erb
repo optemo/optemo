@@ -37,9 +37,9 @@
 
 					<div class="productinfo rounded" data-url='<%= cluster.representative.descurl %>'>
 						<div class="productimg">
-							<%= image_tag(imgsurl(representative) , :"data-id" => representative.id, :class => "productimg", :alt => representative.smlTitle, :title => representative.smlTitle) %>
+							<%= image_tag(imgsurl(representative) , :"data-id" => representative.id, :class => "productimg", :alt => representative.small_title, :title => representative.small_title) %>
 						</div>
-						<a href="<%=representative.descurl%>" data-id="<%=representative.id%>" class="easylink" title="Click for product specifications"><%= representative.smlTitle %></a>
+						<a href="<%=representative.descurl%>" data-id="<%=representative.id%>" class="easylink" title="Click for product specifications"><%= representative.small_title %></a>
 						<div class="price">
 							<%= number_to_currency(ContSpec.cache_all(representative.id)["price"]) %>
 						</div>
