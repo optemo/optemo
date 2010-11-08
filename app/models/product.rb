@@ -133,14 +133,6 @@ class Product < ActiveRecord::Base
   def brand
     @brand ||= cat_specs.cache_all(id)["brand"]
   end
-
-  def smlTitle
-    #if self.class.name == "Laptop" || self.class.name == "Flooring"
-    #  title
-    #else
-    @smlTitle ||= [brand,model].join(' ')
-    #end
-  end
   
   def tinyTitle
     @tinyTitle ||= [brand.gsub("Hewlett-Packard", "HP"),model.split(' ')[0]].join(' ')
