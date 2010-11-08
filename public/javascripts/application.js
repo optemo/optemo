@@ -822,8 +822,8 @@ optemo_module = (function (my){
 		});
 		
 		$(".demo_selector select").live('change', function(){
-			url = $(".demo_selector select:last").val()+"-"+$(".demo_selector select:first").val();
-			alert(url);
+			url = "http://"+$(".demo_selector select:last").val()+"."+$(".demo_selector select:first").val()+".demo.optemo.com";
+			window.location = url;
 		});
     }
 
