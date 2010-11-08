@@ -195,11 +195,9 @@ def self.compute(number_clusters,p_ids, weights = nil)
     utility_list = ContSpec.by_feat("utility")
     raise ValidationError if utility_list.nil?
     $k = Kmeans.new unless $k
-   # debugger
     $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, utility_list)
   rescue ValidationError
     puts "Falling back to ruby kmeans"
-    #debugger
     Kmeans.ruby(number_clusters, specs)
   end
 end
@@ -317,11 +315,16 @@ module Enumerable
 #end
 
 def mygroup_by
-  res = Array.new(9){|a|[]}
+  res = Array.new(9)
   each_index do |index|
     element = self[index]
-    res[yield(element,index)] << element
+    key = yield(element,index)
+    if res[key].nil? 
+      res[key] =[element] 
+    else  
+      res[key]<< element
+    end  
   end
-  res
+  res.compact
 end
 end
