@@ -219,7 +219,10 @@ module CompareHelper
   		end
   	end
   	res << '</div>' if open && !@s.directLayout
-  	res << will_paginate(@products) if @s.directLayout && @s.search.groupby.nil?
+  	if @s.directLayout && @s.search.groupby.nil?
+  	  pagination_line = will_paginate(@products)
+    	res << pagination_line unless pagination_line.nil?
+  	end
   	res
 	end
 	
