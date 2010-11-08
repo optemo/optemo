@@ -137,6 +137,7 @@ module Inline
     unless defined? @@directory and directory == @@directory
       @@directory = File.join(self.rootdir, ".ruby_inline")
     end
+    Dir.mkdir directory, 0700 unless test ?d, directory
     Dir.assert_secure directory
     @@directory
   end
