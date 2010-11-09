@@ -124,7 +124,7 @@ module Inline
 
     unless defined? @@rootdir and env == @@rootdir and test ?d, @@rootdir then
       rootdir = env
-      Dir.mkdir rootdir, 0700 unless test ?d, rootdir
+      Dir.mkdir rootdir, 0770 unless test ?d, rootdir
       Dir.assert_secure rootdir
       @@rootdir = rootdir
     end
@@ -137,7 +137,7 @@ module Inline
     unless defined? @@directory and directory == @@directory
       @@directory = File.join(self.rootdir, ".ruby_inline")
     end
-    Dir.mkdir directory, 0700 unless test ?d, directory
+    Dir.mkdir directory, 0770 unless test ?d, directory
     Dir.assert_secure directory
     @@directory
   end
@@ -861,7 +861,7 @@ class Dir
 
   def self.assert_secure(path)
     mode = File.stat(path).mode
-    unless ((mode % 01000) & 0022) == 0 then
+    unless ((mode % 01000) & 0002) == 0 then
       raise SecurityError, "Directory #{path} is insecure"
     end
   rescue Errno::ENOENT
