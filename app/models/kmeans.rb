@@ -36,15 +36,7 @@ inline :C do |builder|
     for (i=0; i<k; i++) means_1[i]= malloc(sizeof(double)*dd);
     for (i=0; i<k; i++) means_2[i]= malloc(sizeof(double)*dd);
     int *labels = (int*)calloc(nn, sizeof(int));
-  
-   // If the number of points is less than the number of clusters, there is no need to cluster!
-    if (nn <= k) {
-      for (i=0; i<nn; i++) {
-         labels[i] = i;
-         avgUtilities[i] = utilities[i];
-        } 
-    }
-  else{
+
   
     ////////getting mean and var of the data
       double* dataMean = malloc(sizeof(double)*dd);
@@ -143,7 +135,7 @@ inline :C do |builder|
       h = labels[i];
       avgUtilities[h] += utilities[i]; 
     }
-}  
+ 
     double minU = DBL_MAX;
     for (h=0; h<k; h++) {
       if (counts[h]==0) avgUtilities[h] = avgUtilities[h];
@@ -190,6 +182,11 @@ end
 
 # C kmeans function   
 def self.compute(number_clusters,p_ids, weights = nil)
+
+  s = p_ids.size 
+  # don't need to cluster if number of products is less than clusters
+  return (0...s).collect{|x| x} if (s<number_clusters)
+
   begin
     specs = Product.specs(p_ids)
     utility_list = ContSpec.by_feat("utility")
