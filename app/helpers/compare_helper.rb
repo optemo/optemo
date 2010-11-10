@@ -188,8 +188,8 @@ module CompareHelper
     end
   end
   
-  def category_select(title,feat)
-    select('superfluous', feat, [title] + SearchProduct.cat_counts(feat).map{|k,v|"#{k} (#{v})"}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
+  def category_select(feat,expanded)
+    select('superfluous', feat, [expanded ? t('products.compare.add'+feat) : t('products.compare.all'+feat+'s')] + SearchProduct.cat_counts(feat,expanded).map{|k,v|"#{k} (#{v})"}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
   end
   
   def main_boxes
