@@ -16,7 +16,7 @@ class SearchProduct < ActiveRecord::Base
       else
         res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[]]).conts_keywords.cats(mycats).bins(mybins).group("search_products.product_id")
       end
-      cached = CachingMemcached.cache_lookup("#{Session.current.product_type}Products-#{res.to_sql}") do
+      cached = CachingMemcached.cache_lookup("Products-#{res.to_sql}") do
         specs = Hash.new{|h,k| h[k] = []}
         res.each do |rec|
           names = rec.names.split(",")
@@ -33,12 +33,21 @@ class SearchProduct < ActiveRecord::Base
       cached[1]
     end
     
-    def cat_counts(feat)
+    def cat_counts(feat,expanded)
       feat = [feat] unless feat.kind_of? Array
       mycats = Session.current.search.userdatacats.group_by(&:name).reject{|id|feat.index(id)}.values
       mybins = Session.current.search.userdatabins
       table_id = mycats.size
-      search_id_q.create_join(mycats+[[feat]],mybins).conts_keywords.bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC").count
+      if expanded
+        q = where(:search_id => Product.initial).create_join(mycats+[[feat]],mybins).conts_keywords.bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
+      else
+        q = search_id_q.create_join(mycats+[[feat]],mybins).conts_keywords.bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
+      end
+      CachingMemcached.cache_lookup("Cats-#{q.to_sql}") do
+        res = q.count
+        res.delete(feat)
+        res
+      end
     end
     
     def bin_count(feat)

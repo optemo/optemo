@@ -929,7 +929,7 @@ optemo_module = (function (my){
 			/* Used by back button */
     		$.ajax({
     			type: "GET",
-    			url: "/compare/compare/?ajax=true&hist="+hash,
+    			url: "/compare/?ajax=true&hist="+hash,
     			success: my.ajaxhandler,
     			error: my.ajaxerror
     		});
