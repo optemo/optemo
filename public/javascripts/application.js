@@ -89,11 +89,11 @@ optemo_module = (function (my){
 
     my.removeSilkScreen = function() {
         $('.selectboxfilter').css('visibility', 'visible');
+        $('.selectboxfilter').removeAttr('disabled');
         $('#silkscreen').css({'display' : 'none', 'top' : '', 'left' : '', 'width' : ''}).fadeTo(0, 0).hide();
         $('#outsidecontainer').css({'display' : 'none'});
         $('#outsidecontainer').unbind('click');
         $('#filter_bar_loading').css({'display' : 'none'});
-        
     };
 
     my.applySilkScreen = function(url,data,width,height) {
@@ -832,6 +832,7 @@ optemo_module = (function (my){
 
     function ErrorInit() {
         //Link from popup (used for error messages)
+        $('#silkscreen').css({'display' : 'none', 'top' : '', 'left' : '', 'width' : ''})
         $('#outsidecontainer').unbind('click').click(function(){
         	my.FilterAndSearchInit(); my.DBInit();
         	return false;
@@ -995,8 +996,8 @@ optemo_module = (function (my){
 	  	}
     	my.trackPage('goals/error', {'filter_type' : 'error - ' + errtype});
     	myspinner.end();
-    	my.applySilkScreen(null,str,600,100);
     	ErrorInit();
+    	my.applySilkScreen(null,str,600,100);
     }
 
     //--------------------------------------//
