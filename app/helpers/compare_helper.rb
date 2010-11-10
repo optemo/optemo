@@ -3,18 +3,6 @@ module CompareHelper
     ! (request.referer && request.referer.match(/http:\/\/(laserprinterhub|localhost)/))
   end
   
-  def sim_link(cluster,i, itemId)
-    unless cluster.children.nil? || cluster.children.empty? || (cluster.size==1)
-      "<div class='sim rounded'>" +
-        link_to("#{cluster.size-1} More Product#{"s" if cluster.size > 2} In This Group", 
-        "/compare/compare/"+cluster.children.map{|c|c.id}.join('-'), 
-        :id => "sim#{i}", :class => 'simlinks', :name => itemId) +
-      "</div>"
-    else
-      ""
-    end
-  end
-  
   def overallmin(feat)
     ((ContSpec.allMinMax(feat)[0] || 0)*10).to_i.to_f/10
   end
