@@ -139,9 +139,6 @@ div.rowdiv {
 .greybg {
     background:none repeat scroll 0 0 #EFEFEF;
 }
-.topbar {
-	height: 159px;
-}
 
 .fv {
 	float: left;
@@ -170,10 +167,6 @@ div.rowdiv {
 	color: #F5000B;
 	font-size: 1em;
 	margin-top: 5px;
-}
-
-.bottombar {
-	height: 18px;
 }
 
 .groupby_title {
