@@ -57,7 +57,7 @@ local_socket = new easyXDM.Rpc(/** The channel configuration*/{
 	    	} else if (typeof(hash) != "undefined" && hash != null) {
 	    		$.ajax({
 	    			type: "GET",
-	    			url: "/compare/compare/?ajax=true&hist="+hash,
+	    			url: "/compare/?ajax=true&hist="+hash,
 		    		success: function(data) {local_socket.parseData(data);},
 					error: function(data) {local_socket.parseData(data);}
 	    		});

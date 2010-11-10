@@ -3,18 +3,6 @@ module CompareHelper
     ! (request.referer && request.referer.match(/http:\/\/(laserprinterhub|localhost)/))
   end
   
-  def sim_link(cluster,i, itemId)
-    unless cluster.children.nil? || cluster.children.empty? || (cluster.size==1)
-      "<div class='sim rounded'>" +
-        link_to("#{cluster.size-1} More Product#{"s" if cluster.size > 2} In This Group", 
-        "/compare/compare/"+cluster.children.map{|c|c.id}.join('-'), 
-        :id => "sim#{i}", :class => 'simlinks', :name => itemId) +
-      "</div>"
-    else
-      ""
-    end
-  end
-  
   def overallmin(feat)
     ((ContSpec.allMinMax(feat)[0] || 0)*10).to_i.to_f/10
   end
@@ -188,8 +176,8 @@ module CompareHelper
     end
   end
   
-  def category_select(title,feat)
-    select('superfluous', feat, [title] + SearchProduct.cat_counts(feat).map{|k,v|"#{k} (#{v})"}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
+  def category_select(feat,expanded)
+    select('superfluous', feat, [expanded ? t('products.compare.add'+feat) : t('products.compare.all'+feat+'s')] + SearchProduct.cat_counts(feat,expanded).map{|k,v|"#{k} (#{v})"}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
   end
   
   def main_boxes

@@ -81,6 +81,16 @@ img.productimg {
 /*	width: 160px; */
 	margin-top: 5px;
 }
+.topbar {
+    height: 159px;
+    display: inline;
+}
+.bottombar {
+	height: 18px;
+	bottom: 33px;
+	left: 3px;
+	position: absolute;
+}
 .sim {
 	height: 35px;
 	text-align: left;
