@@ -57,7 +57,7 @@ cameras.browsethenbuy.com:
         
 cameras.direct.demo.optemo.com:
     product_type: camera_us
-    layout: listview
+    layout: lineview
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]

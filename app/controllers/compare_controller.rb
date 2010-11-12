@@ -3,12 +3,22 @@ class CompareController < ApplicationController
   require 'open-uri'
   
   def index
-    unless Session.isCrawler?(request.user_agent) || params[:ajax]
+    if Session.isCrawler?(request.user_agent) || params[:ajax]
+      hist = params[:hist].gsub(/\D/,'').to_i if params[:hist]
+      search_history = Session.current.searches if hist
+      if search_history && hist <= search_history.length && hist > 0
+        #Going back to a previous search
+        mysearch = search_history[hist-1]
+        mysearch.page = params[:page] if params[:page] # For this case: back button followed by clicking a pagination link
+        classVariables(mysearch)
+      else
+        #Initial clusters
+        classVariables(Search.create({"page" => params[:page], "action_type" => "initial"}))
+      end
+    else
       @indexload = true
     end
-    # The page numbers have to go in for pagination
-    # Page number has to be a hash for compatibility with Search.new()
-    classVariables(Search.create({"page" => params[:page], "action_type" => "initial"})) unless @indexload
+
     if params[:ajax]
       render 'ajax', :layout => false
     else
@@ -20,36 +30,6 @@ class CompareController < ApplicationController
     # We need to make a new search so that history works properly (back button can take to "groupby" view)
     classVariables(Search.create(:feat => params[:feat], "action_type" => "groupby"))
     render 'ajax', :layout => false
-  end
-
-  def compare(hist = nil)
-    # As of right now, the history function from javascript always points here.
-    # What will need to happen is that the view will be in there as part of the search. I think.
-    hist = params[:hist].gsub(/\D/,'').to_i if params[:hist]
-    #Going back to a previous search
-    if hist
-      search_history = Session.current.searches
-      if hist <= search_history.length && hist > 0
-        mysearch = search_history[hist-1]
-        mysearch.page = params[:page] if params[:page] # For this case: back button followed by clicking a pagination link
-        classVariables(mysearch)    
-      else
-        #Initial clusters
-        classVariables(Search.create({"page" => params[:page], "action_type" => "initial"}))
-      end
-    else
-      # No need to send in the previous search term since it will be copied automatically. Same with filters.
-      # The exception is the 'page' parameter, which might be modified and need writing.
-      # Since the myfilter hash is always empty, we just send a hash with only the page number, if any.
-      debugger
-      #Find out what type this should be
-      classVariables(Search.create({"clusters" => params[:id].split('-'), "page" => params[:page], "action_type" => "nextpage"}))
-    end
-    if params[:ajax]
-      render 'ajax', :layout => false
-    else
-      render (Session.current.mobileView ? 'products' : 'compare')
-    end
   end
   
   #For mobile layout
@@ -72,7 +52,6 @@ class CompareController < ApplicationController
       render 'ajax', :layout => false
     else
       render (Session.current.mobileView ? 'products' : 'compare')
-      #redirect_to "/compare/compare/"+cluster.children.map{|c|c.id}.join('-')
     end
   end
 

@@ -127,6 +127,12 @@ img.productimg {
   position: relative;
   top: 10px;
 }
+.topbar {
+	height: 159px;
+}
+.bottombar {
+	height: 18px;
+}
 .sim {   
     float:left;
     text-align:center;

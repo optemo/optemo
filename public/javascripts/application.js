@@ -183,7 +183,7 @@ optemo_module = (function (my){
     	"</a></div>" + 
     	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\">" + 
     	"<img src=\"" +
-    	(REMOTE ? REMOTE : "") + 
+    	(typeof(REMOTE) != 'undefined' ? REMOTE : "") + 
     	"/images/close.png\" alt=\"Close\"/></a>";
     	$(smallProductImageAndDetail).appendTo('#c'+id);
     	my.DBinit();
@@ -928,7 +928,7 @@ optemo_module = (function (my){
 			/* Used by back button */
     		$.ajax({
     			type: "GET",
-    			url: "/compare/compare/?ajax=true&hist="+hash,
+    			url: "/compare/?ajax=true&hist="+hash,
     			success: my.ajaxhandler,
     			error: my.ajaxerror
     		});
