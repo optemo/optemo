@@ -13,7 +13,7 @@ class CompareController < ApplicationController
         classVariables(mysearch)
       else
         #Initial clusters
-        classVariables(Search.create({"page" => params[:page], "action_type" => "initial"}))
+        classVariables(Search.create({"page" => params[:page], "action_type" => "initial"})) ### why initial??
       end
     else
       @indexload = true
