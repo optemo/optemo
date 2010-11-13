@@ -23,11 +23,6 @@
 			<% f = @allspecs[f_name] %>
 			<% if !f.nil? %>
 				<li>
-					<% if false && @plain && (request.referer.nil? || request.referer.index("compare").nil?) %> <!-- that is, if popup was not called from main navigation page, then show "better" links -->
-					<div class="betterlinkdiv">
-						<%= link_to "better", "javascript:optemo_module.findBetter('#{@product.id}', '#{f_name}')", :"data-id" => f_name, :class => 'betterlink' %>
-					</div>
-					<% end %>
 				 	<span class="detail_label"><%=t 'products.'+ f_name %>: </span> <%= "$" if f_name == 'price' %><%= (@product.display(f_name, f)).split('*').each(&:strip).uniq.join(" ") %><%=' ' + t('products.'+ f_name+'unit', :default => '') unless f_name == 'price' %>
 				</li>
 			<% end %>

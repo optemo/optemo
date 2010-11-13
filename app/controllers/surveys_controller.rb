@@ -1,10 +1,12 @@
-class SurveyController < ApplicationController
-  def index
+class SurveysController < ApplicationController
+  layout false
+  
+  def new
     @RandomQuestions = (1..Survey::TotalQuestions).sort_by{rand}
-    render :layout => false
+    @survey = Survey.new
   end
 
-  def submit
+  def create
     values = params[:survey]
     return if values.nil?
     oSurvey = Survey.new(values)
