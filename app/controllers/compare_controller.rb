@@ -5,20 +5,19 @@ class CompareController < ApplicationController
   def index
     if Session.isCrawler?(request.user_agent) || params[:ajax]
       hist = params[:hist].gsub(/\D/,'').to_i if params[:hist]
-      search_history = Session.current.searches if hist
-      if search_history && hist <= search_history.length && hist > 0
+      search_history = Session.current.searches if hist && params[:page].nil?
+      if params[:page]
+        classVariables(Search.create({:page => params[:page], "action_type" => "nextpage"}))
+      elsif search_history && hist <= search_history.length && hist > 0
         #Going back to a previous search
-        mysearch = search_history[hist-1]
-        mysearch.page = params[:page] if params[:page] # For this case: back button followed by clicking a pagination link
-        classVariables(mysearch)
+        classVariables(search_history[hist-1])
       else
         #Initial clusters
-        classVariables(Search.create({"page" => params[:page], "action_type" => "initial"})) ### why initial??
+        classVariables(Search.create({"action_type" => "initial"}))
       end
     else
       @indexload = true
     end
-
     correct_render
   end
 
@@ -43,7 +42,7 @@ class CompareController < ApplicationController
 
   def create
     #Narrow the product search through filters
-    if params[:myfilter].nil? && params[:page].nil?
+    if params[:myfilter].nil?
       #No post info passed
       render :text =>  "[ERR]Search could not be completed."
     else
@@ -62,8 +61,6 @@ class CompareController < ApplicationController
           render 'error', :layout => false
         end
       else
-        params[:myfilter] = {} unless params[:myfilter] # the hash will be empty on page number clicks
-        params[:myfilter]["page"] = params[:page]
         params[:myfilter]["action_type"] = "filter"
         classVariables(Search.create(params[:myfilter]))
         correct_render

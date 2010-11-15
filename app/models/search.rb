@@ -310,7 +310,7 @@ class Search < ActiveRecord::Base
       duplicateFeatures(old_search)
     when "nextpage"
       #the next page button has been clicked
-      @prefiltered_products = old_search.id
+      self.page = p[:page]
       duplicateFeatures(old_search)
     when "groupby"
       self.groupby = p[:feat]
