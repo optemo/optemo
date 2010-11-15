@@ -120,11 +120,12 @@ img.productimg {
 	margin-left: 10px;
 }
 .nbgroup .price {
-  display: inline;
+  display: inline;	
   margin-top: 0;
 }
 .nbsingle .price {
   position: relative;
+  margin-left: 600px;
   top: 10px;
 }
 .topbar {
