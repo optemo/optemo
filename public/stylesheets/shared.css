@@ -43,19 +43,6 @@ div#main {
 	font-family: monaco, arial;
 	font-weight: bold;
 }
-#logindisplay
-{
-	float: right;
-	margin-right: 5px;
-}
-
-#linkUserLogout {
-	text-decoration: none;
-	color: #2882DF;
-}
-#linkUserLogout:hover {
-	text-decoration: underline;
-}
 
 html {
  margin: 0;

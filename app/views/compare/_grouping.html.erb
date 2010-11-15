@@ -22,7 +22,7 @@
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.', :"data-id" => product.id) %>
 			<% end %>
 		</div>
-		<div class='groupby_title'><%= product.small_title %></div>
+		<div class='groupby_title'><%= link_to product.small_title, product_path(:name => product.descurl, :id => product.id), :class => "easylink", :title => "Click for product specifications" %></div>
 		<div class="itemfeatures">
 			<% contspecs = ContSpec.cache_all(product.id); catspecs = CatSpec.cache_all(product.id); binspecs = BinSpec.cache_all(product.id) %>
 			<% @s.continuous["showList"].each do |f|%>

@@ -66,8 +66,8 @@ optemo_module = (function (my){
     	});
 	
     	$("#filter_bar").click(function() {
-    	    trackPage('goals/showfilters', {'filter_type' : 'showfilters'});
-    		window.location = ("/compare/showfilters");
+    	    trackPage('goals/mobile-filters', {'filter_type' : 'mobile-filters'});
+    		window.location = ("/compare/filter");
     		return false;
     	});
     	$("#startover").click(function() {

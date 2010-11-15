@@ -164,7 +164,7 @@ inline :C do |builder|
         x[i+1] = key;
      	ids[i+1] = idKey;
     }
-  //changing the label assignement based on the utilitites.    
+  //changing the label assignment based on the utilities.    
     for (i=0; i<nn; i++) {
       h =  labels[i];
       labels[i] = ids[h];  

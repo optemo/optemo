@@ -66,21 +66,9 @@ img.productimg {
 	height:100px;
 }
 .productinfo {
-	margin:0 auto;
+	margin: 10px auto;
 }
 
-.productinfocont {
-	bottom: 58px;
-}
-
-.itemfeatures {
-/*	font-size: 0.8em; */
-  font-size: 12px;
-/* 	display: inline; /* Fix for IE */
-/*  float: left; */
-/*	width: 160px; */
-	margin-top: 5px;
-}
 .topbar {
     height: 159px;
     display: inline;
