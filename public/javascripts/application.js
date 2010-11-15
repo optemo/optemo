@@ -17,7 +17,6 @@
     ** loadFilterBarSilkScreen()  -  Puts fade over filter bar (for longer loading times).
 
    ---- Data Manipulation ----
-    ** findBetter(id, feat) - Checks if a better product exists for that feature. PROBABLY DEPRECATED
   
    ---- Piwik Tracking Functions ----
     ** trackPage(page_title, extra_data)  -  Piwik tracking per page. Extra data is in JSON format, with keys for ready parsing by Piwik into piwik_log_preferences. 
@@ -178,7 +177,7 @@ optemo_module = (function (my){
     	// It looks so much better in Firefox et al, so if there's no MSIE, go ahead with special styling.
     	//if ($.browser.msie) smallProductImageAndDetail = smallProductImageAndDetail + " style=\"position:absolute; bottom:5px;\"";
     	smallProductImageAndDetail = smallProductImageAndDetail + ">" +
-    	"<a class=\"easylink\" data-id=\""+id+"\" href=\"#\">" + 
+    	"<a class=\"easylink\" data-id=\""+id+"\" href=\"\">" + 
     	((name) ? optemo_module.getShortProductName(name) : 0) +
     	"</a></div>" + 
     	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\">" + 
@@ -196,6 +195,14 @@ optemo_module = (function (my){
     	    $(this).removeClass("productimg");
         });
     };
+
+	my.getidfromproductimg = function(img) {
+	if (my.DIRECT_LAYOUT)
+		var res = img.parent().siblings('.itemfeatures').find('.easylink').attr('href').match(/\d+$/);
+	else
+		var res = img.parent().siblings('.productinfo').children('.easylink').attr('href').match(/\d+$/);
+	return res;
+	}
 
     // When you click the X on a saved product:
     function removeFromComparison(id)
@@ -217,7 +224,7 @@ optemo_module = (function (my){
     function removeBrand(str)
     {
     	$('#myfilter_Xbrand').attr('value', str);
-    	my.ajaxcall("/compare/filter", $("#filter_form").serialize());
+    	my.ajaxcall("/compare", $("#filter_form").serialize());
     }
 
     function submitCategorical(){
@@ -228,7 +235,7 @@ optemo_module = (function (my){
             if (!(arguments[i].match(/^superfluous/) || arguments[i].match(/authenticity_token/)))
                 arguments_to_send.push(arguments[i]);
         }
-    	my.ajaxcall("/compare/filter?ajax=true", arguments_to_send.join("&"));
+    	my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
     	// Everything that calls submitCategorical() should have already called trackPage uniquely
     	// my.trackPage('goals/filter/autosubmit');
     	return false;
@@ -244,7 +251,7 @@ optemo_module = (function (my){
                 arguments_to_send.push(arguments[i]);
         }
         my.loading_indicator_state.sidebar = true;
-    	my.ajaxcall("/compare/filter?ajax=true", arguments_to_send.join("&"));
+    	my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
     	return false;
     }
 
@@ -310,23 +317,6 @@ optemo_module = (function (my){
     //--------------------------------------//
     //          Data Manipulation           //
     //--------------------------------------//
-
-    my.findBetter = function(id, feat) {
-       // Check if better product exists for that feature using /compare/better Rails me
-       // Query.get( url, [data], [callback], [type] )
-       $.get("/direct_comparison/better?original=" + id + "&feature=" + feat, 
-           function(data){
-               if (data == "-1")
-               {
-                   $('#betternotfoundmsg').css('visibility', 'visible');
-               }
-               else
-               {
-                   // found better printer (with id stored in data)
-                   window.location = "/direct_comparison/index/" + id + "-" + data;
-               }
-           }, "text");
-    };
 
     //--------------------------------------//
     //       Piwik Tracking Functions       //
@@ -578,7 +568,7 @@ optemo_module = (function (my){
     				    rightsliderknob.removeData('toofar');
                     }
                     my.loading_indicator_state.sidebar = true;
-                	my.ajaxcall("/compare/filter?ajax=true", arguments_to_send.join("&"));
+                	my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
     			}
     		});
     		if ($(this).slider("option", "disabled") == true) {
@@ -660,35 +650,16 @@ optemo_module = (function (my){
 	     });
     	
     	// from DBInit
-    	if (my.DIRECT_LAYOUT) { // in Optemo Direct, a click anywhere on the product box goes to the show page
-            $('.nbsingle').live("click", function(){ 
-         		currentelementid = $(this).find('.productinfo').attr('data-id');
-         		ignored_ids = getAllShownProductIds();
-         		product_title = $(this).find('img.productimg').attr('title');
-        		my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids});
-         		showpage(currentelementid);
-         		return false;
-        	});
-        	// In addition, set up the images on the "show groups" page to be clickable.
-        	$(".productimg").live("click", function (){
-                currentelementid = $(this).attr('data-id');
-                if(currentelementid === undefined) { currentelementid = $(this).find('.productimg').attr('data-id'); }
-        		ignored_ids = getAllShownProductIds();
-         		product_title = $(this).find('img.productimg').attr('title');
-        		my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids});
-         		showpage(currentelementid);
-         		return false;            
-            });
-        } else { // in Optemo Assist, a click only on the picture or .easylink product name will trigger the show page
-            $(".productimg, .easylink").live("click", function (){
-                currentelementid = $(this).attr('data-id');
-        		ignored_ids = getAllShownProductIds();
-         		product_title = $(this).find('img.productimg').attr('title');
-        		my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids});
-         		showpage(currentelementid);
-         		return false;            
-            });  
-        }
+    	
+        $(".productimg, .easylink").live("click", function (){
+			href = $(this).attr('href') || $(this).parent().siblings('.productinfo').children('.easylink').attr('href');
+        	ignored_ids = getAllShownProductIds();
+			currentelementid = $(this).attr('data-id') || href.match(/\d+$/);
+        	product_title = $(this).find('img.productimg').attr('title');
+        	my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids});
+			my.applySilkScreen((href || '/product/_/' + currentelementid) +'?plain=true',null, 800, 800);
+        	return false;            
+        });
         
         //Ajax call for simlinks
     	$('.simlinks').live("click", function() {
@@ -717,15 +688,15 @@ optemo_module = (function (my){
     		return false;
     	});
     	// Survey
-    	$('#surveysubmit').live('click', function(){
+    	$('#survey_submit').live('click', function(){
     		my.trackPage('survey/submit');
     		$('#feedback').css('display','none');
-    		my.applySilkScreen('/survey/submit?' + $("#surveyform").serialize(), null, 300, 70);
+    		my.applySilkScreen('/surveys/create?' + $("#new_survey").serialize(), null, 300, 70);
     		return false;
     	});
     	$('#yesdecisionsubmit').live('click', function(){
     		my.trackPage('survey/yes');
-    		my.applySilkScreen('/survey/index', null, 600, 835);
+    		my.applySilkScreen('/surveys/new', null, 600, 835);
     		return false;
     	});
     	$('#nodecisionsubmit').live('click', function(){
@@ -773,7 +744,7 @@ optemo_module = (function (my){
                         arguments_to_send.push(arguments[i]);
                 }
             	my.trackPage('goals/filter/continuous_from_groups', {'filter_type' : 'continuous_from_groups', 'feature_name': group_element.attr('data-grouping'), 'selected_continuous_min' : lowerbound, 'selected_continuous_max' : upperbound});
-                my.ajaxcall("/compare/filter/?ajax=true&" + arguments_to_send.join("&"));
+                my.ajaxcall("/compare?ajax=true&" + arguments_to_send.join("&"));
         	}
     	});
 
@@ -839,12 +810,6 @@ optemo_module = (function (my){
     };
 
     my.DBinit = function() {
-    	showpage =  (function(currentelementid) {
-            my.applySilkScreen('/compare/show/'+currentelementid+'?plain=true',null, 800, 800);
-     		// There is tracking being done below, so take this out probably
-    // 		trackPage('products/show/'+currentelementid); 
-        });
-
     	if (my.IS_DRAG_DROP_ENABLED)
     	{
     		// Make item boxes draggable. This is a jquery UI builtin.		
@@ -900,7 +865,7 @@ optemo_module = (function (my){
 			feat = $(this).attr('data-feat');
 			my.loading_indicator_state.sidebar = true;
     		my.trackPage('goals/showgroups', {'filter_type' : 'groupby', 'feature_name': feat, 'ui_position': $(this).attr('data-position')});
-			my.ajaxcall("/compare/groupby/?feat="+feat);
+			my.ajaxcall("/groupby/"+feat+"?ajax=true");
     	});
     };
 
@@ -1239,10 +1204,10 @@ jQuery(document).ready(function($){
 					imgObj = $(ui.helper);
 					if (imgObj.hasClass('dragHand')) { // This is a drag hand object
 				        realImgObj = imgObj.parent().find('.productimg');
-    					optemo_module.saveProductForComparison(realImgObj.attr('data-id'), realImgObj.attr('src'), realImgObj.attr('alt'));
+    					optemo_module.saveProductForComparison(optemo_module.getidfromproductimg(realImgObj), realImgObj.attr('src'), realImgObj.attr('alt'));
 				    }
 				    else { // This is an image object; behave as normal
-    					optemo_module.saveProductForComparison(imgObj.attr('data-id'), imgObj.attr('src'), imgObj.attr('alt'));
+    					optemo_module.saveProductForComparison(optemo_module.getidfromproductimg(imgObj), imgObj.attr('src'), imgObj.attr('alt'));
 					}
 				}
 			 });
@@ -1264,7 +1229,7 @@ jQuery(document).ready(function($){
 		// The following line could be useful later. Rather than hard-coding, we could use the 'overflow:scroll' CSS property to limit
 		// the display window height. But, right now this breaks the layout, so let's fix it later with less time pressure.
 		//var viewportHeight = $(window).height();
-		optemo_module.applySilkScreen('/direct_comparison/index/' + productIDs, null, 940, 580);/*star-h:580*/
+		optemo_module.applySilkScreen('/comparison/' + productIDs, null, 940, 580);
 		trackPage('goals/compare', {'filter_type' : 'direct_comparison'});
 		return false;
 	});
@@ -1280,7 +1245,7 @@ jQuery(document).ready(function($){
 	//Static feedback box
 	$('#feedback').click(function(){
 		trackPage('survey/feedback');
-		optemo_module.applySilkScreen('/survey/index', null, 600, 480);
+		optemo_module.applySilkScreen('/surveys/new', null, 600, 480);
 		return false;
 	});
 	
