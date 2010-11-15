@@ -7,7 +7,6 @@ javascripts:
   - jquery-ui-1.8.5.custom.min
   - jquery.tablednd_0_5
   - jquery.history
-  - facebooksessionops
   - application
   
 - mobile:

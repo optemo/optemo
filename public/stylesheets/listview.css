@@ -28,7 +28,7 @@
 	height: 20px;
 }
 #secondcolumn {
-	width: 100px;
+	width: 150px;
 	float: left;
     padding-top:0;
 	margin-left:1px;
@@ -37,7 +37,7 @@
 	height:20px;
 }
 #thirdcolumn {
-	width: 278px;
+	width:  278px;
 	height: 20px;
 	float: left;
 	padding-top: 0;
@@ -90,8 +90,8 @@ img.productimg {
 }
 
 .nbsingle img.productimg {
-	height: 64px;
-	width: 64px;
+	height: 10%;
+	width: 10%;
 	margin-top: -1px;
 	margin-left: 20px;
 	z-index: 1;
@@ -120,11 +120,12 @@ img.productimg {
 	margin-left: 10px;
 }
 .nbgroup .price {
-  display: inline;
+  display: inline;	
   margin-top: 0;
 }
 .nbsingle .price {
   position: relative;
+  margin-left: 600px;
   top: 10px;
 }
 .topbar {

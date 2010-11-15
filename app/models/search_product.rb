@@ -1,5 +1,10 @@
 class SearchProduct < ActiveRecord::Base
   class << self
+    def queryPresent?
+      s = Session.current.search
+      return !(s.userdatacats.empty? && s.userdataconts.empty? && s.userdatabins.empty? && s.keyword_search.blank?)
+    end
+    
     def filterquery
       mycats = Session.current.search.userdatacats.group_by(&:name).values
       mybins = Session.current.search.userdatabins
@@ -34,8 +39,8 @@ class SearchProduct < ActiveRecord::Base
     end
     
     def cat_counts(feat,expanded)
-      feat = [feat] unless feat.kind_of? Array
-      mycats = Session.current.search.userdatacats.group_by(&:name).reject{|id|feat.index(id)}.values
+      allcats = Session.current.search.userdatacats.group_by(&:name)
+      mycats = allcats.reject{|id|feat == id}.values
       mybins = Session.current.search.userdatabins
       table_id = mycats.size
       if expanded
@@ -45,7 +50,7 @@ class SearchProduct < ActiveRecord::Base
       end
       CachingMemcached.cache_lookup("Cats-#{q.to_sql}") do
         res = q.count
-        res.delete(feat)
+        allcats.each{|k,v| v.each{|id|res.delete(id.value)} if k==feat}
         res
       end
     end

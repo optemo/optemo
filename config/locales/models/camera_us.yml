@@ -45,6 +45,10 @@ en:
         Info_finish:                "Finish - Any extra finish that the manufacturer might have applied."
         Info_features:              "Features - Extra treatment, hand scraping, or other distinguishing characteristics"
         Info_colorrange:            "Color Range - Range of colors that the flooring goes through"
+        Info_maximumresolution:    "Resolution - Measured in megapixels (millions of pixels), the number of light-sensitive cells that are actually exposed to light and used to capture the image, while the remainder may be shielded or just unused."
+        Info_displaysize:          "Screen Size - The size of the LCD (Liquid Crystal Display) screen on the camera, measured diagonally. You may find it easier to view your subject on the screen than through a standard viewfinder. This feature is also useful for reviewing and deleting photos."
+        Info_opticalzoom:          'Optical Zoom - Magnifies the photo by physical lens movement to bring you closer to the subject, thereby keeping the original photo quality. The magnification level is expressed in factors, such as "3x", "6x", or "10x".'
+        Info_search:                "Search for products by name."
         avg:                        "Average"
         loweritemweight:            "Lighter"
         avgitemweight:              "Average Weight"

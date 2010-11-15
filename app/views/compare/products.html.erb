@@ -1,5 +1,5 @@
 <% # This is for the mobile layout only. %>
-<% self.title = "#{@s.search.desc}" unless @indexload %>
+<% self.title = "#{@s.product_type.capitalize}" unless @indexload %>
 <div id="main">
 	<% if flash[:error] %>
 	<span style="color:red;" id="error"><%= flash[:error] %></span>
@@ -9,12 +9,12 @@
 	<% end %>
 	<div id="navigator_bar">
 		<div id="filter_bar" class="rounded_nav rounded">
-			<div id="filtercheck"><%= image_tag 'check_mobile.png' unless Cluster.filterquery.empty? %></div>	Search &amp; Filter
+			<div id="filtercheck"><%= image_tag 'check_mobile.png' if SearchProduct.queryPresent? %></div>	Search &amp; Filter
 		</div>
 		<div id="startover" class="rounded_nav rounded">
 			Start<br>Over
 		</div>
-		<div id="navtitle"><%= navtitle %></div>
+		<div id="navtitle"><!-- %= navtitle %--></div>
 	</div>
 
 		<% if @indexload || @s.search.products_size != 0 %>

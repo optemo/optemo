@@ -1,11 +1,9 @@
 module ImageHelper
-  
   include GC
-  
   require 'RMagick'
   
-  @@size_names = ['s','m','l']
-  @@sizes = [[70,50],[140,100],[400,300]]
+  @@size_names = ['s','ms','m','l'] # The second size, medium-small, is used extensively in the direct layout.
+  @@sizes = [[70,50],[64,64],[140,100],[400,300]]
   
   # Is there a file for a product with this id and this size?
   def file_exists_for id, sz=''
