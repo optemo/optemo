@@ -805,7 +805,7 @@ optemo_module = (function (my){
         //Link from popup (used for error messages)
         $('#silkscreen').css({'display' : 'none', 'top' : '', 'left' : '', 'width' : ''})
         $('#outsidecontainer').unbind('click').click(function(){
-        	my.FilterAndSearchInit(); my.DBInit();
+        	my.FilterAndSearchInit(); my.DBinit();
         	return false;
         });
     };
