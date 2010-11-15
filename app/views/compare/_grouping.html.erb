@@ -23,7 +23,7 @@
 			<% end %>
 		</div>
 		<div class='groupby_title'><%= product.small_title %></div>
-		<div class="productinfo">
+		<div class="itemfeatures">
 			<% contspecs = ContSpec.cache_all(product.id); catspecs = CatSpec.cache_all(product.id); binspecs = BinSpec.cache_all(product.id) %>
 			<% @s.continuous["showList"].each do |f|%>
 			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => contspecs[f]} %>

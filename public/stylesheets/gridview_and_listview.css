@@ -168,7 +168,7 @@ div.rowdiv {
 
 .itemtitle {
     font-size: 1.4em;
-    padding-bottom:5px;
+    line-height: 1.7em;
     margin-left: 25px;
 }
 
@@ -178,11 +178,6 @@ div.rowdiv {
   position:relative;
   margin-left: 5px;
   top: 10px;
-}
-
-.nbsingle .itemfeatures {
-	width: 470px;
-	float:left
 }
 
 /*--------------------------------------//

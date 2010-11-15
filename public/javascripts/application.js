@@ -177,7 +177,7 @@ optemo_module = (function (my){
     	// It looks so much better in Firefox et al, so if there's no MSIE, go ahead with special styling.
     	//if ($.browser.msie) smallProductImageAndDetail = smallProductImageAndDetail + " style=\"position:absolute; bottom:5px;\"";
     	smallProductImageAndDetail = smallProductImageAndDetail + ">" +
-    	"<a class=\"easylink\" data-id=\""+id+"\" href=\"#\">" + 
+    	"<a class=\"easylink\" data-id=\""+id+"\" href=\"\">" + 
     	((name) ? optemo_module.getShortProductName(name) : 0) +
     	"</a></div>" + 
     	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\">" + 
@@ -197,7 +197,11 @@ optemo_module = (function (my){
     };
 
 	my.getidfromproductimg = function(img) {
-		img.parent().siblings('.productinfo').children('.easylink').attr('href').match(/\d+$/);
+	if (my.DIRECT_LAYOUT)
+		var res = img.parent().siblings('.itemfeatures').find('.easylink').attr('href').match(/\d+$/);
+	else
+		var res = img.parent().siblings('.productinfo').children('.easylink').attr('href').match(/\d+$/);
+	return res;
 	}
 
     // When you click the X on a saved product:
@@ -650,10 +654,10 @@ optemo_module = (function (my){
         $(".productimg, .easylink").live("click", function (){
 			href = $(this).attr('href') || $(this).parent().siblings('.productinfo').children('.easylink').attr('href');
         	ignored_ids = getAllShownProductIds();
-			currentelementid = href.match(/\d+$/);
+			currentelementid = $(this).attr('data-id') || href.match(/\d+$/);
         	product_title = $(this).find('img.productimg').attr('title');
         	my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids});
-			my.applySilkScreen(href+'?plain=true',null, 800, 800);
+			my.applySilkScreen((href || '/product/_/' + currentelementid) +'?plain=true',null, 800, 800);
         	return false;            
         });
         
@@ -1203,7 +1207,6 @@ jQuery(document).ready(function($){
     					optemo_module.saveProductForComparison(optemo_module.getidfromproductimg(realImgObj), realImgObj.attr('src'), realImgObj.attr('alt'));
 				    }
 				    else { // This is an image object; behave as normal
-					debugger;
     					optemo_module.saveProductForComparison(optemo_module.getidfromproductimg(imgObj), imgObj.attr('src'), imgObj.attr('alt'));
 					}
 				}
