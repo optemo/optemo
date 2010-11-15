@@ -97,6 +97,15 @@ img.productimg {
 	z-index: 1;
 	position: relative;
 }
+.nbgroup img.productimg {
+    width: 80px;
+    height: 80px;
+}
+
+.productimg_container {
+    width: 104px;
+    height: 2px;
+}
 
 .productinfo {
 	padding-top: 5px;
@@ -173,8 +182,11 @@ img.productimg {
     font-size: 12px;
     margin-top: 0;
     margin-left: 15px;
-	width: 470px;
-	float:left
+}
+
+.nbgroup .itemfeatures {
+    margin-left:95px;
+    width:200px;
 }
 
 /*--------------------------------------//
