@@ -90,8 +90,8 @@ img.productimg {
 }
 
 .nbsingle img.productimg {
-	height: 50px;
-	width: 75px;
+	height: 10%;
+	width: 10%;
 	margin-top: -1px;
 	margin-left: 20px;
 	z-index: 1;

@@ -76,7 +76,27 @@ cameras.direct.demo.optemo.com:
     brand:
         feature_type: Categorical
         used_for: [boost, filter, show]
-                
+cameras.direct:
+    product_type: camera_us
+    layout: lineview
+    maximumresolution: 
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    displaysize:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    price:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+        prefdir: -1
+        min: 1
+        max: 10000
+    opticalzoom:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    brand:
+        feature_type: Categorical
+        used_for: [boost, filter, show]                
 cameras.assist.demo.optemo.com:
     product_type: camera_us
     layout: gridview
@@ -98,7 +118,27 @@ cameras.assist.demo.optemo.com:
     brand:
         feature_type: Categorical
         used_for: [boost, filter, show]
-        
+cameras.assist:
+    product_type: camera_us
+    layout: gridview
+    maximumresolution: 
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    displaysize:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    price:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+        prefdir: -1
+        min: 1
+        max: 10000
+    opticalzoom:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    brand:
+        feature_type: Categorical
+        used_for: [boost, filter, show]        
 m.browsethenbuy.com:
     product_type: camera_us
     layout: mobileview
@@ -217,6 +257,40 @@ printers.direct.demo.optemo.com:
         feature_type: Categorical
         used_for: [boost, filter, show]
         
+printers.direct:
+    product_type: printer_us
+    layout: lineview
+    price:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+        prefdir: -1
+        min: 1
+        max: 10000
+    ppm:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show, showList]
+    resolutionmax:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    resolution:
+        feature_type: Categorical
+        used_for: [showList]
+    paperinput:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show, showList]
+    itemwidth:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show, showList]
+        prefdir: -1
+    printserver:
+        feature_type: Binary
+        used_for: [boost, filter, show]
+    scanner:
+        feature_type: Binary
+        used_for: [boost, filter, show]
+    brand:
+        feature_type: Categorical
+        used_for: [boost, filter, show]        
 printers.assist.demo.optemo.com:
     product_type: printer_us
     layout: gridview
@@ -288,7 +362,76 @@ laserprinterhub.com:
         feature_type: Categorical
         used_for: [boost, filter, show]
     
+printers.assist:
+    product_type: printer_us
+    layout: gridview
+    price:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+        prefdir: -1
+        min: 1
+        max: 10000
+    ppm:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show, showList]
+    resolutionmax:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    resolution:
+        feature_type: Categorical
+        used_for: [showList]
+    paperinput:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show, showList]
+    itemwidth:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show, showList]
+        prefdir: -1
+    printserver:
+        feature_type: Binary
+        used_for: [boost, filter, show]
+    scanner:
+        feature_type: Binary
+        used_for: [boost, filter, show]
+    brand:
+        feature_type: Categorical
+        used_for: [boost, filter, show]
 
+
+laserprinterhub.com:
+    product_type: printer_lph
+    layout: gridview
+    price:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+        prefdir: -1
+        min: 1
+        max: 10000
+    ppm:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show, showList]
+    resolutionmax:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    resolution:
+        feature_type: Categorical
+        used_for: [showList]
+    paperinput:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show, showList]
+    itemwidth:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show, showList]
+        prefdir: -1
+    printserver:
+        feature_type: Binary
+        used_for: [boost, filter, show]
+    scanner:
+        feature_type: Binary
+        used_for: [boost, filter, show]
+    brand:
+        feature_type: Categorical
+        used_for: [boost, filter, show]
 laserprinterhub.ca:
     product_type: printer_lph
     layout: gridview
