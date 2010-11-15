@@ -1,5 +1,10 @@
 class SearchProduct < ActiveRecord::Base
   class << self
+    def queryPresent?
+      s = Session.current.search
+      return !(s.userdatacats.empty? && s.userdataconts.empty? && s.userdatabins.empty? && s.keyword_search.blank?)
+    end
+    
     def filterquery
       mycats = Session.current.search.userdatacats.group_by(&:name).values
       mybins = Session.current.search.userdatabins

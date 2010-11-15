@@ -56,7 +56,11 @@ class CompareController < ApplicationController
         #Rollback
         classVariables(Session.current.lastsearch)
         @errortype = "filter"
-        render 'error', :layout=>true
+        if Session.current.mobileView
+          render 'error'
+        else 
+          render 'error', :layout => false
+        end
       else
         params[:myfilter] = {} unless params[:myfilter] # the hash will be empty on page number clicks
         params[:myfilter]["page"] = params[:page]
@@ -130,7 +134,12 @@ class CompareController < ApplicationController
     if params[:ajax]
       render 'ajax', :layout => false
     else
-      render (Session.current.mobileView ? 'products' : 'compare')
+      if Session.current.mobileView
+        classVariables(Search.create({"page" => params[:page], "action_type" => "initial"}))
+        render 'products'
+      else
+        render 'compare'
+      end
     end
   end
 end
