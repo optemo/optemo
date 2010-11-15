@@ -208,7 +208,7 @@ class Search < ActiveRecord::Base
     if s.categorical["all"].index(groupby) 
       # It's in the categorical array
       specs = products.zip CatSpec.cachemany(products, groupby)
-      grouping = specs.group_by{|spec|spec.value}.values.sort{|a,b| b.length <=> a.length}
+      grouping = specs.group_by{|spec|spec[1]}.values.sort{|a,b| b.length <=> a.length}
     elsif s.continuous["all"].index(groupby)
       #The chosen feature is continuous
       specs = products.zip ContSpec.by_feat(groupby).sort
