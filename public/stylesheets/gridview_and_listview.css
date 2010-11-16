@@ -161,11 +161,6 @@ div.rowdiv {
 	margin-top: 5px;
 }
 
-.groupby_title {
-    margin-left:95px;
-    width:200px;    
-}
-
 .itemtitle {
     font-size: 1.4em;
     line-height: 1.7em;
@@ -821,10 +816,10 @@ div .left{
 //--------------------------------------*/
 /* Zurb http://www.zurb.com/article/266/super-awesome-buttons-with-css3-and-rgba */
 .awesome, .awesome:visited {
-	background: #797979 url(/images/alert-overlay.png) repeat-x; 
+	background: #AAA;/* url(/images/alert-overlay.png) repeat-x; */
 	/*display: inline-block; */
 	padding: 5px 10px 4px; 
-	color: #eee; 
+	color: #F5F5F5; 
 	text-decoration: none;
 	-moz-border-radius: 10px; 
 	-webkit-border-radius: 10px;
@@ -846,7 +841,7 @@ div .left{
 
 /* Zurb http://www.zurb.com/article/266/super-awesome-buttons-with-css3-and-rgba */
 .awesome_tour, .awesome_tour:visited {
-	background: #222 url(/images/alert-overlay.png) repeat-x; 
+	background: #222; /*url(/images/alert-overlay.png) repeat-x; */
 	display: inline-block; 
 	padding: 5px 10px 6px; 
 	color: #fff; 
