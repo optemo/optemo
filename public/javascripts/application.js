@@ -757,10 +757,10 @@ optemo_module = (function (my){
     		return false;
     	});
 
-    	$('#removeSearch').live('click', function(){
+    	$('.removesearch').live('click', function(){
     		$('#previous_search_word').val('');
     		$('#previous_search_container').remove();
-        	return false;
+        	return true;
      	});
 	
     	//Hide Additional Features
