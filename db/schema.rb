@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101105202429) do
+ActiveRecord::Schema.define(:version => 20101115234228) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -1027,6 +1027,9 @@ ActiveRecord::Schema.define(:version => 20101105202429) do
     t.datetime "updated_at"
     t.string   "url"
     t.string   "small_title"
+    t.string   "imgmsurl"
+    t.integer  "imgmsh"
+    t.integer  "imgmsw"
   end
 
   add_index "products", ["instock"], :name => "instock"
