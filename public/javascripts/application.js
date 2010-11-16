@@ -766,8 +766,10 @@ optemo_module = (function (my){
 
     	$('.removesearch').live('click', function(){
     		$('#previous_search_word').val('');
-    		$('#previous_search_container').remove();
-        	return true;
+			$("#myfilter_search").val("");
+    		$(this).parent().remove();
+			submitCategorical();
+        	return false;
      	});
 	
     	//Hide Additional Features
