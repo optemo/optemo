@@ -197,11 +197,18 @@ optemo_module = (function (my){
     };
 
 	my.getidfromproductimg = function(img) {
-	if (my.DIRECT_LAYOUT)
-		var res = img.parent().siblings('.itemfeatures').find('.easylink').attr('href').match(/\d+$/);
-	else
-		var res = img.parent().siblings('.productinfo').children('.easylink').attr('href').match(/\d+$/);
-	return res;
+        var res;
+    	if (my.DIRECT_LAYOUT) {
+    		res = img.parent().siblings('.itemfeatures').find('.easylink')
+    		if (res.length > 0) {
+    		    res = res.attr('href').match(/\d+$/);
+    	    } else {
+    	        res = img.parent().siblings('.groupby_title').find('.easylink').attr('href').match(/\d+$/);
+            }
+    	} else {
+    		res = img.parent().siblings('.productinfo').children('.easylink').attr('href').match(/\d+$/);
+    	}
+    	return res;
 	}
 
     // When you click the X on a saved product:
@@ -759,8 +766,10 @@ optemo_module = (function (my){
 
     	$('.removesearch').live('click', function(){
     		$('#previous_search_word').val('');
-    		$('#previous_search_container').remove();
-        	return true;
+			$("#myfilter_search").val("");
+    		$(this).parent().remove();
+			submitCategorical();
+        	return false;
      	});
 	
     	//Hide Additional Features

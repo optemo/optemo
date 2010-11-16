@@ -26,6 +26,7 @@ gem 'ruby-debug19'
 
 gem 'thinking-sphinx', '2.0.0.rc2', :require => 'thinking_sphinx'
 gem 'will_paginate', '>=3.0.pre'
+gem 'rmagick'
 
 group :production, :profile do
   gem "memcache-client"

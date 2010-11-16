@@ -160,6 +160,10 @@ module CompareHelper
       else CGI.unescapeHTML(product.imgmurl.to_s) # No need for constructing image URLs manually, they are all in the database now
     end
   end
+  
+  def imgmsurl(product)
+    CGI.unescapeHTML(product.imgmsurl.to_s)
+  end
 
   def imgsurl(product)
     case Session.current.product_type

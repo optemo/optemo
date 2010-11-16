@@ -88,12 +88,12 @@ namespace :pictures do
   task :resize_missing do
     have_urls = $scrapedmodel.all.reject{|x| x.imageurl.nil?}.collect{|x| x.product_id}.uniq
     products = Product.find(:all, :conditions => ["product_type=?", Session.current.product_type])
-    no_resized_urls = products.reject{|x| !x.imgsurl.nil? and !x.imgmurl.nil? and !x.imglurl.nil?}
+    no_resized_urls = products.reject{|x| !x.imgsurl.nil? && !x.imgmurl.nil? && !x.imgmsurl.nil? && !x.imglurl.nil?}
     unresized = no_resized_urls.reject{|y| !have_urls.include?(y)}
     unresized += no_resized_urls.reject{|product| not (filename_from_id(product.id,""))}
     
     products_with_unresized_images = products.select{|product| File.exist?(filename_from_id(product.id,""))}
-    products_without_resized_images = products.reject{|product| ["s","m","l"].inject(true){|result,sz| result & File.exist?(filename_from_id(product.id,sz))}}
+    products_without_resized_images = products.reject{|product| ["s","ms","m","l"].inject(true){|result,sz| result & File.exist?(filename_from_id(product.id,sz))}}
     # Take the intersection of those products with unresized images, like 1094.jpg, but without resized images, like 1094_l.jpg
     unresized += (products_with_unresized_images & products_without_resized_images)
     unresized_ids = unresized.map{|x|x.id}
