@@ -539,7 +539,8 @@ optemo_module = (function (my){
             			datasetmax = parseInt($(this).attr('current-data-max'));
     				}
     				var rightslidervalue;
-    				if (((ui.values[1] - rangemin) * rangemax) / 100 < datasetmin) {
+    				
+    				if ((ui.values[1] * (rangemax - rangemin) / 100.0) + rangemin < datasetmin) { 
     				    rightslidervalue = datasetmin;
     				    $(this).siblings('.max').attr('value', rightslidervalue);
 				    }
