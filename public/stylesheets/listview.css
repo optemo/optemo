@@ -71,12 +71,12 @@
 	height: 72px;
 	width: 680px;
 }
-.title {
-    float: left;  
+.title {  
 	height: 90px;
 	width: 115px;
 	padding: 5px;
 	text-align: center;
+	float: left;
 	position: relative;
 }
 
@@ -86,14 +86,15 @@
 }
 img.productimg {
 	cursor: move;
-	float: left;
+	position: absolute;
 }
 
 .nbsingle img.productimg {
+	height: 64px;
+	width: 64px;
 	margin-top: -1px;
 	margin-left: 20px;
 	z-index: 1;
-	position: relative;
 }
 .nbgroup img.productimg {
     width: 80px;
@@ -115,16 +116,14 @@ img.productimg {
 .nbgroup .productinfo {
 	width: 285px;
 	font-size: 0.8em;
-	margin-left: 10px;
 }
 .nbgroup .price {
-  display: inline;	
-  margin-top: 0;
+	display: inline;
+	margin-top: 0;
 }
 .nbsingle .price {
-  position: relative;
-  margin-left: 600px;
-  top: 10px;
+	margin-left: 570px;
+	margin-top: -6px;
 }
 .topbar {
 	height: 159px;
@@ -152,19 +151,13 @@ img.productimg {
 }
 
 .choose_cont_range {
-	/*margin-top: 4px;*/
-	position: absolute;
-	bottom: 7px;
-	left: 24px;
-}
-.choose_group {
-	position: absolute;
-	bottom: 12px;
-	left: 10px;
+	width: 80px;
+	margin: auto;
 }
 
 .group_title {
-  width: 115px;
+	width: 115px;
+	height: 52px;
 }
 
 .sim a {
@@ -180,12 +173,17 @@ img.productimg {
 .itemfeatures {
     font-size: 12px;
     margin-top: 0;
-    margin-left: 15px;
+    margin-left: 90px;
 }
 
 .nbgroup .itemfeatures {
-    margin-left:95px;
-    width:200px;
+    margin-left:105px;
+    width:190px;
+}
+
+.groupby_title {
+    margin-left:105px;
+    width:190px;    
 }
 
 /*--------------------------------------//
@@ -193,8 +191,7 @@ img.productimg {
 //--------------------------------------*/
 
 .dragHand {
-	margin-left: -25px;
-	margin-right: 25px;
+	margin-left: 70px;
 	z-index:2;
     opacity:0.35;
     position:absolute;

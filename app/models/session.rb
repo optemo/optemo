@@ -9,7 +9,7 @@ class Session
   attr_accessor :piwikSiteId # Piwik Site ID, as configured in the currently-running Piwik install.
 
   def initialize (url = nil)
-    defaultSite = 'cameras.assist.demo.optemo.com'
+    defaultSite = 'printers.direct.demo.optemo.com'
     # This parameter controls whether the interface features drag-and-drop comparison or not.
     @dragAndDropEnabled = true
     # Relative descriptions, in comparison to absolute descriptions, have been the standard since late 2009, and now we use Boostexter labels also.
