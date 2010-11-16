@@ -604,8 +604,8 @@ namespace :scrape_extra do
     include ScrapeExtra
     
     $folder= 'public'
-    $size_names = ['s','m','l']
-    $sizes = [[70,50],[140,100],[400,300]]
+    $size_names = ['s','ms','m','l']
+    $sizes = [[70,50],[64,64],[140,100],[400,300]]
   end
   
 end 

@@ -57,7 +57,7 @@ module ImageHelper
     filename = fname || url.split('/').pop
     ret = "/#{folder}/#{filename}"
     begin
-      readme = open(url)
+      readme = open(url.force_encoding('UTF-8'))
       writehere = open("public/#{folder}/#{filename}","w")
       writehere.write(readme.read)
       writehere.close
