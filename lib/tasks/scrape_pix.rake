@@ -105,7 +105,7 @@ namespace :pictures do
     # We need to pass a list of products, not just a list of product_ids
     unless unresized_ids.empty?
       pid_string = "id IN (" + unresized_ids.inject(""){|pid_string,pid|pid_string + pid.to_s + ","}.chop + ")"
-      # The line below is not needed anymore for the main rake tasks, BUT, if you run resize_missing on its own you will miss the pic stats part.
+      # The line below is not needed anymore for the main rake tasks, but if you run resize_missing on its own you will miss the pic stats part.
       #record_pic_stats(Product.find(:all, :conditions => [pid_string]))
     end
     puts "Done"

@@ -64,6 +64,8 @@ module ImageHelper
     rescue OpenURI::HTTPError => e
       puts "ERROR Problem downloading from #{url} into #{filename}"
       puts "#{e.class.name} #{e.message}"
+      writehere.close
+      File.delete(writehere)
       return nil
     rescue Exception => e # This should not be here. Exceptions are definitely to be caught by the rake framework, not us. ZAT
       puts "ERROR Bug in code downloading from #{url} into #{filename}"
@@ -95,6 +97,14 @@ module ImageHelper
     end
     @@sizes.each_with_index do |size, index|
       pic = trimmed.resize_to_fit(size[0],size[1])
+      offset_x = offset_y = 0
+      if pic.columns < size[0] # This means that the width of the resized pic is now too small, so we need an x offset for the "extent" call
+        offset_x = (size[0] - pic.columns).to_f / 2
+      elsif pic.rows < size[1] # Here, the height is too small for the given dimensions, so we need a y offset for the "extent" call
+        offset_y = (size[1] - pic.rows).to_f / 2
+      else # "trimmed" version of the pic matched exactly. Do nothing.
+      end
+      pic = pic.extent(size[0], size[1], offset_x, offset_y)
       pic.write "#{filename}_#{@@size_names[index]}.jpg"
       scaled << "#{filename}_#{@@size_names[index]}.jpg" if pic
     end
@@ -215,6 +225,8 @@ module ImageHelper
         end
         failed << id
         puts "Resizing #{id} failed"
+      rescue OpenURI::HTTPError => e
+        puts "404 ERROR: #{e.class.name} #{e.message}"
       rescue Exception => e
         puts "ERROR: #{e.class.name} #{e.message}"
         puts "Resizing #{id} failed"
