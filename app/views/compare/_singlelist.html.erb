@@ -1,7 +1,7 @@
 <div id="box<%= i %>" class="navigator_box nbsingle">
 	<div class="productinfo rounded" data-id="<%= product.id %>">
 		<div>
-			<%= image_tag(imgurl(product) , :class => "productimg", :alt => product.small_title, :title => product.small_title) %>
+			<%= image_tag(imgmsurl(product) , :class => "productimg", :alt => product.small_title, :title => product.small_title) %>
 			<% if @s.dragAndDropEnabled %>
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
 			<% end %>
