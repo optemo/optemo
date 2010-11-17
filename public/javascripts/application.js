@@ -125,7 +125,7 @@ optemo_module = (function (my){
     	    my.quickajaxcall('#info', url, function(){my.DBinit();});
     };
 
-    // When you click the Save button:
+    // When products get dropped into the save box
     my.saveProductForComparison = function(id, imgurl, name) {
     	/* We need to store the entire thing for Flooring. Eventually this will probably not be an issue 
     	since we won't be pulling images directly from another website. Keep original code below 
@@ -136,8 +136,6 @@ optemo_module = (function (my){
     	productType = productType.substring(0, productType.length-1);
     	imgurlToSave = imgurlToSaveArray.join("/");
     */
-    	productType = MODEL_NAME;
-    	imgurlToSave = imgurl;
     	if($(".saveditem").length == 4)
     	{
     		$("#too_many_saved").css("display", "block");
@@ -152,7 +150,7 @@ optemo_module = (function (my){
             my.trackPage('goals/save', {'filter_type' : 'save', 'product_picked' : id, 'product_ignored' : ignored_ids});
         
     		my.renderComparisonProducts(id, imgurl, name);
-    		addValueToCookie('optemo_SavedProductIDs', [id, imgurlToSave, name, productType]);
+    		addValueToCookie('optemo_SavedProductIDs', [id, imgurl, name, MODEL_NAME]);
     	}
 
     	// There should be at least 1 saved item, so...
@@ -169,11 +167,9 @@ optemo_module = (function (my){
 
     	// The best is to just leave the medium URL in place, because that image is already loaded in case of comparison, the common case.
     	// For the uncommon case of page reload, it's fine to load a larger image.
-    	//	imgurl.replace(/_m/g, "_s")
-    	smallProductImageAndDetail = "<img class=\"productimg\" src=" + // used to have width=\"45\" height=\"50\" in there, but I think it just works for printers...
-    	imgurl + 
-    	" data-id=\""+id+"\" alt=\""+id+"_s\"/ width=\"50\">" + 
-    	"<div class=\"smalldesc\"";
+    	//	imgurl.replace(/_m.jpg/g, "_ms.jpg")  // change to medium-small?
+    	smallProductImageAndDetail = "<img class=\"draganddropimage\" src=" + // used to have width=\"45\" height=\"50\" in there, but I think it just works for printers...
+    	imgurl + " data-id=\""+id+"\" alt=\""+id+"_s\"><div class=\"smalldesc\"";
     	// It looks so much better in Firefox et al, so if there's no MSIE, go ahead with special styling.
     	//if ($.browser.msie) smallProductImageAndDetail = smallProductImageAndDetail + " style=\"position:absolute; bottom:5px;\"";
     	smallProductImageAndDetail = smallProductImageAndDetail + ">" +
@@ -184,7 +180,14 @@ optemo_module = (function (my){
     	"<img src=\"" +
     	(typeof(REMOTE) != 'undefined' ? REMOTE : "") + 
     	"/images/close.png\" alt=\"Close\"/></a>";
-    	$(smallProductImageAndDetail).appendTo('#c'+id);
+    	var element = $('#c'+id);
+    	element.append($(smallProductImageAndDetail));
+    	var image = element.find('.draganddropimage');
+    	image.hide();
+    	image.load(function() { // This function runs after the DOM has loaded the image, to avoid race conditions
+	        image.css(((image.width() > image.height()) ? 'width' : 'height'), '50px'); // Set either the width or the height, as necessary. Image scales appropriately
+            $(this).show();
+	    });
     	my.DBinit();
 
     	$("#already_added_msg").css("display", "none");
@@ -1429,5 +1432,5 @@ catch(err) {
 if(jQueryIsLoaded) {
     optemo_module_activator(jQuery);
 } else { // Load jquery first
-    LazyLoad.js('http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js', (function(){ optemo_module_activator(jQuery) }));
+    LazyLoad.js('http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js', (function(){ optemo_module_activator(jQuery) }));
 }
