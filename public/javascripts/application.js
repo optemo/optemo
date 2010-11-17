@@ -185,7 +185,11 @@ optemo_module = (function (my){
     	var image = element.find('.draganddropimage');
     	image.hide();
     	image.load(function() { // This function runs after the DOM has loaded the image, to avoid race conditions
-	        image.css(((image.width() > image.height()) ? 'width' : 'height'), '50px'); // Set either the width or the height, as necessary. Image scales appropriately
+    	    if (image.height() * 1.12 > image.width()) { // This is because we want 45 height and 50 width, plus a 0.01 fudge factor
+    	        image.css('height', '45px');
+	        } else { // Limit by width
+	            image.css('width', '50px');
+            }
             $(this).show();
 	    });
     	my.DBinit();
