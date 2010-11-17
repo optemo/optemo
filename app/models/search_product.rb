@@ -1,5 +1,10 @@
 class SearchProduct < ActiveRecord::Base
   class << self
+    def queryPresent?
+      s = Session.current.search
+      return !(s.userdatacats.empty? && s.userdataconts.empty? && s.userdatabins.empty? && s.keyword_search.blank?)
+    end
+    
     def filterquery
       mycats = Session.current.search.userdatacats.group_by(&:name).values
       mybins = Session.current.search.userdatabins
@@ -16,7 +21,7 @@ class SearchProduct < ActiveRecord::Base
       else
         res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[]]).conts_keywords.cats(mycats).bins(mybins).group("search_products.product_id")
       end
-      cached = CachingMemcached.cache_lookup("#{Session.current.product_type}Products-#{res.to_sql}") do
+      cached = CachingMemcached.cache_lookup("Products-#{res.to_sql}") do
         specs = Hash.new{|h,k| h[k] = []}
         res.each do |rec|
           names = rec.names.split(",")
@@ -33,12 +38,21 @@ class SearchProduct < ActiveRecord::Base
       cached[1]
     end
     
-    def cat_counts(feat)
-      feat = [feat] unless feat.kind_of? Array
-      mycats = Session.current.search.userdatacats.group_by(&:name).reject{|id|feat.index(id)}.values
+    def cat_counts(feat,expanded)
+      allcats = Session.current.search.userdatacats.group_by(&:name)
+      mycats = allcats.reject{|id|feat == id}.values
       mybins = Session.current.search.userdatabins
       table_id = mycats.size
-      search_id_q.create_join(mycats+[[feat]],mybins).conts_keywords.bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC").count
+      if expanded
+        q = where(:search_id => Product.initial).create_join(mycats+[[feat]],mybins).conts_keywords.bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
+      else
+        q = search_id_q.create_join(mycats+[[feat]],mybins).conts_keywords.bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
+      end
+      res = CachingMemcached.cache_lookup("Cats-#{q.to_sql}") do
+        q.count
+      end
+      allcats.each{|k,v| v.each{|id|res.delete(id.value)} if k==feat}
+      res
     end
     
     def bin_count(feat)

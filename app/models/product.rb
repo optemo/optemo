@@ -139,11 +139,10 @@ class Product < ActiveRecord::Base
   end
   
   def descurl
-    @descurl ||= "/compare/show/"+[id,brand,model].join('-').tr(' /','_-')
+    small_title.tr(' /','_-')
   end
 
   def mobile_descurl
-    @descurl ||= "/compare/show/"+[id,brand,model].join('-').tr(' /','_-')
     "/show/"+[id,brand,model].join('-').tr(' /','_-')
   end
   

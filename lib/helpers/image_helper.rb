@@ -1,11 +1,9 @@
 module ImageHelper
-  
   include GC
-  
   require 'RMagick'
   
-  @@size_names = ['s','m','l']
-  @@sizes = [[70,50],[140,100],[400,300]]
+  @@size_names = ['s','ms','m','l'] # The second size, medium-small, is used extensively in the direct layout.
+  @@sizes = [[70,50],[64,64],[140,100],[400,300]]
   
   # Is there a file for a product with this id and this size?
   def file_exists_for id, sz=''
@@ -59,7 +57,7 @@ module ImageHelper
     filename = fname || url.split('/').pop
     ret = "/#{folder}/#{filename}"
     begin
-      readme = open(url)
+      readme = open(url.force_encoding('UTF-8'))
       writehere = open("public/#{folder}/#{filename}","w")
       writehere.write(readme.read)
       writehere.close

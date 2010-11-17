@@ -208,7 +208,7 @@ class Search < ActiveRecord::Base
     if s.categorical["all"].index(groupby) 
       # It's in the categorical array
       specs = products.zip CatSpec.cachemany(products, groupby)
-      grouping = specs.group_by{|spec|spec.value}.values.sort{|a,b| b.length <=> a.length}
+      grouping = specs.group_by{|spec|spec[1]}.values.sort{|a,b| b.length <=> a.length}
     elsif s.continuous["all"].index(groupby)
       #The chosen feature is continuous
       specs = products.zip ContSpec.by_feat(groupby).sort
@@ -273,12 +273,13 @@ class Search < ActiveRecord::Base
       return !previous_search.product_id.nil?
     else
       product_ids = Product.search_for_ids(:per_page => 10000, :star => true, :conditions => {:product_type => Session.current.product_type, :title => keyword})
-      if product_ids.empty?
+      #Check that the results are valid and instock
+      new_entries = SearchProduct.where(:search_id => Product.initial).where("product_id IN (#{product_ids.join(',')})").map{|sp| KeywordSearch.new({:keyword => keyword, :product_id => sp.product_id})} unless product_ids.empty?
+      if product_ids.empty? || new_entries.empty?
         #Save a nil entry for failed searches
         KeywordSearch.create({:keyword => keyword})
         return false
       else
-        new_entries = product_ids.map{|product_id| KeywordSearch.new({:keyword => keyword, :product_id => product_id})}
         KeywordSearch.transaction do
           new_entries.each(&:save)
         end
@@ -310,7 +311,7 @@ class Search < ActiveRecord::Base
       duplicateFeatures(old_search)
     when "nextpage"
       #the next page button has been clicked
-      @prefiltered_products = old_search.id
+      self.page = p[:page]
       duplicateFeatures(old_search)
     when "groupby"
       self.groupby = p[:feat]

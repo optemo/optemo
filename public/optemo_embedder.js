@@ -215,7 +215,7 @@ if(jQueryIsLoaded) {
         optemo_socket_activator(); 
     }));
 } else {
-    LazyLoad.js(['http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js', REMOTE + '/javascripts/easyXDM.min.js'], (function (){
+    LazyLoad.js(['http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js', REMOTE + '/javascripts/easyXDM.min.js'], (function (){
         optemo_socket_activator();
     }));
 }

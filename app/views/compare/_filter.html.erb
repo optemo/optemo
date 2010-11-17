@@ -1,4 +1,4 @@
-<%= form_tag("/compare/filter",{:id => 'filter_form'}) do %>
+<%= form_for(Search.new, :html => {:id => 'filter_form'}) do %>
   <%= @s.search.keyword_search.blank? ? text_field_tag('myfilter[search]') : text_field_tag('myfilter[search]', @s.search.keyword_search) %>
 	<div class="ui-widget" style="display:inline;">
 		<%= submit_tag 'Search', {:id => 'submit_button'} %>
@@ -22,14 +22,14 @@
 		<% chosen_cats = chosencats(feat) %>
   		<% unless chosen_cats.nil? || chosen_cats.empty? %>
   			<%# At least one item selected %>
+			<%= category_select(feat,true) %>
   			<% chosen_cats.each do |b| %>
   				<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :"data-cat" => feat, :class => "removefilter", :"data-id" => b} %> <%= b %>
   				</div>
   			<% end %>
-			<%= category_select(t('products.compare.add'+feat),feat) %>
   		<% else %>
   			<%# Nothing selected %>
-			<%= category_select(t('products.compare.all'+feat+'s'),feat) %>
+			<%= category_select(feat,false) %>
   		<% end %>
   		
   		<%= hidden_field_tag "myfilter[#{feat}]", chosen_cats.join("*") %>

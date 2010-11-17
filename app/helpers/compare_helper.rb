@@ -3,18 +3,6 @@ module CompareHelper
     ! (request.referer && request.referer.match(/http:\/\/(laserprinterhub|localhost)/))
   end
   
-  def sim_link(cluster,i, itemId)
-    unless cluster.children.nil? || cluster.children.empty? || (cluster.size==1)
-      "<div class='sim rounded'>" +
-        link_to("#{cluster.size-1} More Product#{"s" if cluster.size > 2} In This Group", 
-        "/compare/compare/"+cluster.children.map{|c|c.id}.join('-'), 
-        :id => "sim#{i}", :class => 'simlinks', :name => itemId) +
-      "</div>"
-    else
-      ""
-    end
-  end
-  
   def overallmin(feat)
     ((ContSpec.allMinMax(feat)[0] || 0)*10).to_i.to_f/10
   end
@@ -172,6 +160,10 @@ module CompareHelper
       else CGI.unescapeHTML(product.imgmurl.to_s) # No need for constructing image URLs manually, they are all in the database now
     end
   end
+  
+  def imgmsurl(product)
+    CGI.unescapeHTML(product.imgmsurl.to_s)
+  end
 
   def imgsurl(product)
     case Session.current.product_type
@@ -188,13 +180,13 @@ module CompareHelper
     end
   end
   
-  def category_select(title,feat)
-    select('superfluous', feat, [title] + SearchProduct.cat_counts(feat).map{|k,v|"#{k} (#{v})"}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
+  def category_select(feat,expanded)
+    select('superfluous', feat, [expanded ? t('products.compare.add'+feat) : t('products.compare.all'+feat+'s')] + SearchProduct.cat_counts(feat,expanded).map{|k,v| ["#{k} (#{v})", k]}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
   end
   
   def main_boxes
     res = ""
-    if @s.directLayout
+    if @s.directLayout # List View (Optemo Direct)
   		if @s.search.groupby.nil?
   			@products.each_index do |i|
   				res << render(:partial => 'singlelist', :locals => {:product => Product.cached(@products[i]), :i => i})
@@ -205,17 +197,27 @@ module CompareHelper
   			end
   		end
   	else
-  		for i in 0...[@s.search.cluster.numclusters, @s.numGroups].min
-  		  if i % (Float(@s.numGroups)/3).ceil == 0
-  			  res << '<div class="rowdiv">'
-  			  open = true
-  		  end
-  		  #Navbox partial to draw boxes
-  		  res << render(:partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative})
-  		  if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
-  			  res << '</div>'
-  			  open = false
-  		  end
+  	  if @s.mobileView
+  	    if @s.search.products_size != 0
+          for i in 0..[@s.search.cluster.numclusters,@s.numGroups].min-1
+            res << render(:partial => 'mobilebox', :locals => {:cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size>1, :representative => @s.search.cluster.children[i].representative})
+          end
+        else
+	        res << "<div style=\"padding:10px;\">No search results. Please search again or " + link_to("start over", "/") + ".</div>"
+        end
+	    else # Grid View (Optemo Assist)
+    		for i in 0...[@s.search.cluster.numclusters, @s.numGroups].min
+    		  if i % (Float(@s.numGroups)/3).ceil == 0
+    			  res << '<div class="rowdiv">'
+    			  open = true
+    		  end
+    		  #Navbox partial to draw boxes
+    		  res << render(:partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative})
+          if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
+            res << '</div>'
+            open = false
+          end
+    		end
   		end
   	end
   	res << '</div>' if open && !@s.directLayout
@@ -227,7 +229,7 @@ module CompareHelper
 	end
 	
 	def getDist(feat)
-    unless defined? @dist  
+    unless defined? @dist
       unless defined? $d
        $d = Distribution.new
       end

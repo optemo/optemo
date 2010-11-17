@@ -3,81 +3,46 @@ class CompareController < ApplicationController
   require 'open-uri'
   
   def index
-    unless Session.isCrawler?(request.user_agent) || params[:ajax]
+    if Session.isCrawler?(request.user_agent) || params[:ajax]
+      hist = params[:hist].gsub(/\D/,'').to_i if params[:hist]
+      search_history = Session.current.searches if hist && params[:page].nil?
+      if params[:page]
+        classVariables(Search.create({:page => params[:page], "action_type" => "nextpage"}))
+      elsif search_history && hist <= search_history.length && hist > 0
+        #Going back to a previous search
+        classVariables(search_history[hist-1])
+      else
+        #Initial clusters
+        classVariables(Search.create({"action_type" => "initial"}))
+      end
+    else
       @indexload = true
     end
-    # The page numbers have to go in for pagination
-    # Page number has to be a hash for compatibility with Search.new()
-    classVariables(Search.create({"page" => params[:page], "action_type" => "initial"})) unless @indexload
-    if params[:ajax]
-      render 'ajax', :layout => false
-    else
-      render (Session.current.mobileView ? 'products' : 'compare')
-    end
+    correct_render
   end
 
   def groupby
-    # We need to make a new search so that history works properly (back button can take to "groupby" view)
+    # Group products by specified feature
     classVariables(Search.create(:feat => params[:feat], "action_type" => "groupby"))
-    render 'ajax', :layout => false
-  end
-
-  def compare(hist = nil)
-    # As of right now, the history function from javascript always points here.
-    # What will need to happen is that the view will be in there as part of the search. I think.
-    hist = params[:hist].gsub(/\D/,'').to_i if params[:hist]
-    #Going back to a previous search
-    if hist
-      search_history = Session.current.searches
-      if hist <= search_history.length && hist > 0
-        mysearch = search_history[hist-1]
-        mysearch.page = params[:page] if params[:page] # For this case: back button followed by clicking a pagination link
-        classVariables(mysearch)    
-      else
-        #Initial clusters
-        classVariables(Search.create({"page" => params[:page], "action_type" => "initial"}))
-      end
-    else
-      # No need to send in the previous search term since it will be copied automatically. Same with filters.
-      # The exception is the 'page' parameter, which might be modified and need writing.
-      # Since the myfilter hash is always empty, we just send a hash with only the page number, if any.
-      debugger
-      #Find out what type this should be
-      classVariables(Search.create({"clusters" => params[:id].split('-'), "page" => params[:page], "action_type" => "nextpage"}))
-    end
-    if params[:ajax]
-      render 'ajax', :layout => false
-    else
-      render (Session.current.mobileView ? 'products' : 'compare')
-    end
+    correct_render
   end
   
   #For mobile layout
-  def showfilters
+  def filtering
+    #Choose filter options
     classVariables(Session.current.searches.last)
-    render 'filters', :layout=>'filters'
-  end
-  
-  def classVariables(search)
-    @s = Session.current
-    @s.search = search
-    if @s.directLayout
-      @products = search.products.paginate :page => search.page, :per_page => 10
-    end
+    render 'mobile-filters', :layout=>'filters'
   end
   
   def sim
-    classVariables(Search.create({"cluster_hash" => params[:id].gsub(/[^(\d)]/,''), "action_type" => "similar"}))
-    if params[:ajax]
-      render 'ajax', :layout => false
-    else
-      render (Session.current.mobileView ? 'products' : 'compare')
-      #redirect_to "/compare/compare/"+cluster.children.map{|c|c.id}.join('-')
-    end
+    # Explore products through clusters
+    classVariables(Search.create({"cluster_hash" => params[:id], "action_type" => "similar"}))
+    correct_render
   end
 
-  def filter
-    if params[:myfilter].nil? && params[:page].nil?
+  def create
+    #Narrow the product search through filters
+    if params[:myfilter].nil?
       #No post info passed
       render :text =>  "[ERR]Search could not be completed."
     else
@@ -90,17 +55,15 @@ class CompareController < ApplicationController
         #Rollback
         classVariables(Session.current.lastsearch)
         @errortype = "filter"
-        render 'error', :layout=>true
+        if Session.current.mobileView
+          render 'error'
+        else 
+          render 'error', :layout => false
+        end
       else
-        params[:myfilter] = {} unless params[:myfilter] # the hash will be empty on page number clicks
-        params[:myfilter]["page"] = params[:page]
         params[:myfilter]["action_type"] = "filter"
         classVariables(Search.create(params[:myfilter]))
-        if Session.current.mobileView
-          render 'products' 
-        else 
-          render 'ajax', :layout => false
-        end
+        correct_render
       end
     end
   end
@@ -148,25 +111,32 @@ class CompareController < ApplicationController
       format.xml  { render :xml => @product }
     end
   end
-
-  def searchterms
-#    # There is a strange beauty in the illegibility of the following line.
-#    # Must do a join followed by a split since the initial mapping of titles is like this: ["keywords are here", "and also here", ...]
-#    # The gsub lines are to take out the parentheses on both sides, take out commas, and take out trailing slashes.
-#    searchterms = findCachedTitles.join(" ").split(" ").map{|t| t.tr("()", '').gsub(/,/,' ').gsub(/\/$/,'').chomp}.uniq
-#    # Delete all the 1200x1200dpi, the "/" or "&" strings, all two-letter strings, and things that don't start with a letter or number.
-#    searchterms.delete_if {|t| t == '' || t.match('[0-9]+.[0-9]+') || t.match('^..?$') || t.match('^[^A-Za-z0-9]') || t.downcase.match('^print')}
-##    duplicates = searchterms.inject({}) {|h,v| h[v]=h[v].to_i+1; h}.reject{|k,v| v==1}.keys
-#    @searchterms = searchterms.map{|t|t.match(/[^A-Za-z0-9]$/)? t.chop.downcase : t.downcase }.uniq.join('[BRK]')
-#    # Particular to this data
-#    render 'searchterms', :layout => false
-  render :text => "word"
-  end
-
+  
   private
   # Depending on the session, either use the traditional layout or the "optemo" layout.
   # The CSS files are loaded automatically though, so the usual "sv / gv / lv / mv" CSS classes are needed.
   def choose_layout 
     Session.current.mobileView ? 'mobile' : 'optemo'
+  end
+  
+  def classVariables(search)
+    @s = Session.current
+    @s.search = search
+    if @s.directLayout
+      @products = search.products.paginate :page => search.page, :per_page => 10
+    end
+  end
+  
+  def correct_render
+    if params[:ajax]
+      render 'ajax', :layout => false
+    else
+      if Session.current.mobileView
+        classVariables(Search.create({"page" => params[:page], "action_type" => "initial"}))
+        render 'products'
+      else
+        render 'compare'
+      end
+    end
   end
 end

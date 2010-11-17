@@ -38,6 +38,8 @@ class ApplicationController < ActionController::Base
     # A new session is created in load_defaults now.
     s = Session.new(request.domain(4)) # This gets anything up to www.printers.browsethenbuy.co.uk (n + 1 elements in the domain name)
     s.id = mysession_id
+    $d = Distribution.new unless defined? $d
+    $k = Kmeans.new unless defined? $k    
   end
   
   def title=(title)

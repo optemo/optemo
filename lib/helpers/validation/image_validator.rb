@@ -4,7 +4,7 @@ module ImageValidator
   include ImageHelper
   
   def resized_pics_exist record
-    ['s','m','l'].each do |sz|
+    ['s','ms','m','l'].each do |sz|
       unless file_exists_for(record[id], sz)
         url = record["image#{sz}url"]
         file = url.gsub(/images/, 'public/system') if url
@@ -15,7 +15,7 @@ module ImageValidator
   end
   
   def pic_dimensions_exist record
-    ['s','m','l'].each do |sz|
+    ['s','ms','m','l'].each do |sz|
       ['width', 'height'].each do |dim|
         att = "image#{sz}#{dim}"
         return false unless record[att]
@@ -25,7 +25,7 @@ module ImageValidator
   end
   
   def pic_urls_not_broken record
-    ['s','m','l'].each do |sz|
+    ['s','ms','m','l'].each do |sz|
       attrname = "image#{sz}url"
       url = record[attrname]
       if url
