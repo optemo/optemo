@@ -60,10 +60,10 @@ cameras.direct.demo.optemo.com:
     layout: lineview
     maximumresolution: 
         feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [boost, filter, cluster, show, showList]
     displaysize:
         feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [boost, filter, cluster, show, showList]
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -72,19 +72,19 @@ cameras.direct.demo.optemo.com:
         max: 10000
     opticalzoom:
         feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [boost, filter, cluster, show, showList]
     brand:
         feature_type: Categorical
-        used_for: [boost, filter, show]
+        used_for: [boost, filter, show]        
 cameras.direct:
     product_type: camera_us
     layout: lineview
     maximumresolution: 
         feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [boost, filter, cluster, show, showList]
     displaysize:
         feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [boost, filter, cluster, show, showList]
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -93,7 +93,7 @@ cameras.direct:
         max: 10000
     opticalzoom:
         feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [boost, filter, cluster, show, showList]
     brand:
         feature_type: Categorical
         used_for: [boost, filter, show]                
