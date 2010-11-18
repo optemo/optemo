@@ -147,7 +147,7 @@ en:
         maximumresolutionunit:      "MP"
         itemweightunit:             "g"
         opticalzoomunit:            "X"
-        displaysizeunit:            "in"  
+        displaysizeunit:            "in."  
         ppmunit:                    "ppm"
         itemwidthunit:              "in."
         widthunit:                  "in."

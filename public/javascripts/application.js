@@ -167,7 +167,6 @@ optemo_module = (function (my){
 
     	// The best is to just leave the medium URL in place, because that image is already loaded in case of comparison, the common case.
     	// For the uncommon case of page reload, it's fine to load a larger image.
-    	//	imgurl.replace(/_m.jpg/g, "_ms.jpg")  // change to medium-small?
     	smallProductImageAndDetail = "<img class=\"draganddropimage\" src=" + // used to have width=\"45\" height=\"50\" in there, but I think it just works for printers...
     	imgurl + " data-id=\""+id+"\" alt=\""+id+"_s\"><div class=\"smalldesc\"";
     	// It looks so much better in Firefox et al, so if there's no MSIE, go ahead with special styling.
@@ -667,7 +666,7 @@ optemo_module = (function (my){
     	// from DBInit
     	
         $(".productimg, .easylink").live("click", function (){
-			href = $(this).attr('href') || $(this).parent().siblings('.productinfo').children('.easylink').attr('href');
+			href = $(this).attr('href') || $(this).parent().siblings('.productinfo').children('.easylink').attr('href') || $(this).parent().parent().find('.easylink').attr('href');
         	ignored_ids = getAllShownProductIds();
 			currentelementid = $(this).attr('data-id') || href.match(/\d+$/);
         	product_title = $(this).find('img.productimg').attr('title');

@@ -154,22 +154,14 @@ module CompareHelper
     </div>"
   end
 
-  def imgurl(product)
-    case Session.current.product_type
-      when "flooring_builddirect" then "http://www.builddirect.com" + CGI.unescapeHTML(product.imgmurl.to_s)
-      else CGI.unescapeHTML(product.imgmurl.to_s) # No need for constructing image URLs manually, they are all in the database now
+  def imgurl(product, size)
+    case size
+    when 'm'
+      return "http://www.builddirect.com" + CGI.unescapeHTML(product.imgmurl.to_s) if Session.current.product_type == "flooring_builddirect"
+    when 's'
+      return "http://www.builddirect.com" + CGI.unescapeHTML(product.imgsurl.to_s) if Session.current.product_type == "flooring_builddirect"
     end
-  end
-  
-  def imgmsurl(product)
-    CGI.unescapeHTML(product.imgmsurl.to_s)
-  end
-
-  def imgsurl(product)
-    case Session.current.product_type
-      when "flooring_builddirect" then "http://www.builddirect.com" + CGI.unescapeHTML(product.imgsurl.to_s)
-      else CGI.unescapeHTML(product.imgsurl.to_s)
-    end
+    CGI.unescapeHTML(product.send("img" + size + "url").to_s) # No need for constructing image URLs manually, they are all in the database now
   end
   
   def withunit(number,feature)
