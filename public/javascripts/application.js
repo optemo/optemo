@@ -237,7 +237,7 @@ optemo_module = (function (my){
     function removeBrand(str)
     {
     	$('#myfilter_Xbrand').attr('value', str);
-    	my.ajaxcall("/compare", $("#filter_form").serialize());
+    	my.ajaxcall("/compare?ajax=true", $("#filter_form").serialize());
     }
 
     function submitCategorical(){
@@ -758,7 +758,7 @@ optemo_module = (function (my){
                         arguments_to_send.push(arguments[i]);
                 }
             	my.trackPage('goals/filter/continuous_from_groups', {'filter_type' : 'continuous_from_groups', 'feature_name': group_element.attr('data-grouping'), 'selected_continuous_min' : lowerbound, 'selected_continuous_max' : upperbound});
-                my.ajaxcall("/compare?ajax=true&" + arguments_to_send.join("&"));
+                my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
         	}
     	});
 
