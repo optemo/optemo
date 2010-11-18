@@ -51,8 +51,9 @@ class SearchProduct < ActiveRecord::Base
       res = CachingMemcached.cache_lookup("Cats-#{q.to_sql}") do
         q.count
       end
-      allcats.each{|k,v| v.each{|id|res.delete(id.value)} if k==feat}
-      res
+      return_res = res.dup
+      allcats[feat].each{|id|return_res.delete(id.value)} if allcats[feat]
+      return_res
     end
     
     def bin_count(feat)
