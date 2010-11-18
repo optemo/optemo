@@ -15,7 +15,7 @@
 
 		<div class="productinfo rounded" data-url='<%= cluster.representative.descurl %>'>
 			<div class="productimg">
-				<%= image_tag(imgsurl(representative) , :"data-id" => representative.id, :class => "productimg", :alt => representative.small_title, :title => representative.small_title) %>
+				<%= image_tag(imgurl(representative, 's') , :"data-id" => representative.id, :class => "productimg", :alt => representative.small_title, :title => representative.small_title) %>
 			</div>
 			<a href="<%=representative.descurl%>" data-id="<%=representative.id%>" class="easylink" title="Click for product specifications"><%= representative.small_title %></a>
 			<div class="price">

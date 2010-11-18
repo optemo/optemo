@@ -1,9 +1,12 @@
 module ImageHelper
   include GC
   require 'RMagick'
+  # The first size, small, is only used in the mobile layout.
+  # The second size, medium-small, is used in the list (Direct) layout. 
+  # The third size, group-by, is used in the list (Direct) layout.
   
-  @@size_names = ['s','ms','m','l'] # The second size, medium-small, is used extensively in the direct layout.
-  @@sizes = [[70,50],[64,64],[140,100],[400,300]]
+  @@size_names = ['s','ms','gb','m','l'] 
+  @@sizes = [[70,50],[64,64],[80,80],[140,100],[400,300]]
   
   # Is there a file for a product with this id and this size?
   def file_exists_for id, sz=''
@@ -104,6 +107,7 @@ module ImageHelper
         offset_y = (size[1] - pic.rows).to_f / 2
       else # "trimmed" version of the pic matched exactly. Do nothing.
       end
+      pic.background_color = "#FFF"
       pic = pic.extent(size[0], size[1], offset_x, offset_y)
       pic.write "#{filename}_#{@@size_names[index]}.jpg"
       scaled << "#{filename}_#{@@size_names[index]}.jpg" if pic

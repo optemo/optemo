@@ -17,7 +17,7 @@
 	<% [grouping[:best],grouping[:cheapest]].each do |product| %>
 	<div class="productinfo rounded" data-id="<%= product.id %>">
 		<div class="productimg_container">
-			<%= image_tag(imgurl(product) , :"data-id" => product.id, :class => "productimg", :alt => product.small_title, :title => product.small_title) %>
+			<%= image_tag(imgurl(product, 'gb') , :"data-id" => product.id, :class => "productimg", :alt => product.small_title, :title => product.small_title) %>
 			<% if @s.dragAndDropEnabled %>
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.', :"data-id" => product.id) %>
 			<% end %>

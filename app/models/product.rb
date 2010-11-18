@@ -155,10 +155,11 @@ class Product < ActiveRecord::Base
       return "Yes"
     else
       ending = case attr
-        when /zoom/
-          ' X'
-        when /[^p][^a][^p][^e][^r]size/
-          ' in.' 
+        # The following lines are definitely superceded, as noted above
+#        when /zoom/
+#          ' X'
+#        when /[^p][^a][^p][^e][^r]size/
+#          ' in.' 
         when /(item|package)(weight)/
           data = data.to_f/100
           ' lbs'
