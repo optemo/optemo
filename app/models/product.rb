@@ -62,74 +62,7 @@ class Product < ActiveRecord::Base
     Session.current.binary["filter"].map{|f|"id in (select product_id from bin_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{Session.current.product_type}')"}+\
     Session.current.categorical["filter"].map{|f|"id in (select product_id from cat_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{Session.current.product_type}')"}).join(" and ")}
   }
-  Max = {'SWidth' => 70, 'SHeight' => 50,'MWidth' => 140, 'MHeight' => 100, 'LWidth' => 400, 'LHeight' => 300} unless defined?(Max)
     
-  def imagesw
-    @imageW ||= {}
-    @imageH ||= {}
-    @imageW['S'] ||= resize :dir => 'Width', :size => 'S'
-  end
-  def imagesh
-    @imageH ||= {}
-    @imageW ||= {}
-    @imageH['S'] ||= resize :dir => 'Height', :size => 'S'
-  end
-  def imagemw
-    @imageW ||= {}
-    @imageH ||= {}
-    @imageW['M'] ||= resize :dir => 'Width', :size => 'M'
-  end
-  def imagemh
-    @imageH ||= {}
-    @imageW ||= {}
-    @imageH['M'] ||= resize :dir => 'Height', :size => 'M'
-  end
-  def imagelw
-    @imageH ||= {}
-    @imageW ||= {}
-    @imageW['L'] ||= resize :dir => 'Width', :size => 'L'
-  end
-  def imagelh
-    @imageH ||= {}
-    @imageW ||= {}
-    @imageH['L'] ||= resize :dir => 'Height', :size => 'L'
-  end
-  
-  def resize(opts = {})
-    case opts[:size]
-      when 'S' then return unless imgsh && imgsw
-      when 'M' then return unless imgmh && imgmw
-      when 'L' then return unless imglh && imglw
-    end
-    dbH = case opts[:size] 
-      when 'S' then Float(imgsh)
-      when 'M' then Float(imgmh) 
-      when 'L' then Float(imglh)
-    end
-    dbW = case opts[:size]
-      when 'S' then Float(imgsw)
-      when 'M' then Float(imgmw) 
-      when 'L' then Float(imglw)
-    end
-    maxHeight = Max[opts[:size]+'Height']
-    maxWidth = Max[opts[:size]+'Width']
-    if (dbH > maxHeight || dbW > maxWidth)
-      relh = dbH / maxHeight
-      relw = dbW / maxWidth
-      if relh > relw
-        @imageH[opts[:size]] = maxHeight.to_s
-        @imageW[opts[:size]] = (dbW/dbH*maxHeight).to_s
-      else
-        @imageW[opts[:size]] = maxWidth.to_s
-        @imageH[opts[:size]] = (dbH/dbW*maxWidth).to_s
-      end
-    else
-      @imageW[opts[:size]] = dbW.to_s
-      @imageH[opts[:size]] = dbH.to_s
-    end
-    opts[:dir]=='Width' ? @imageW[opts[:size]] : @imageH[opts[:size]]
-  end
-
   def brand
     @brand ||= cat_specs.cache_all(id)["brand"]
   end
