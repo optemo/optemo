@@ -248,6 +248,11 @@ namespace :data do
   desc 'Get new prices and products from TigerDirect printers'
   task :update_tiger_printers => [:tiger_init, :update]
   
+  # As of right now (Nov 2010), the update scripts need to be changed: The search_products table contains
+  # caching of filter queries with specific product IDs. If products are removed from active display for any reason,
+  # this table needs to be truncated on all development and production databases, or else there will be errors like
+  # "Can't find ID=3178" etc.
+  
   desc 'Get new prices and printers from Amazon'
   task :update_amazon_printers => [:printer_init, :amazon_init, :update]
   desc 'Get new products from Amazon (warning:extra long!)'
