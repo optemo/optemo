@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101115234228) do
+ActiveRecord::Schema.define(:version => 20101119000539) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -303,6 +303,77 @@ ActiveRecord::Schema.define(:version => 20101115234228) do
     t.datetime "updated_at"
   end
 
+  create_table "camera_reviewcounts", :force => true do |t|
+    t.integer "cluster_id",        :limit => 8, :null => false
+    t.integer "parent_cluster_id", :limit => 8, :null => false
+    t.string  "word",                           :null => false
+    t.integer "numchildren",                    :null => false
+    t.integer "version",                        :null => false
+    t.integer "count",             :limit => 8, :null => false
+  end
+
+  add_index "camera_reviewcounts", ["cluster_id", "version", "word"], :name => "cluster_id", :unique => true
+
+  create_table "camera_reviewtotalcounts", :force => true do |t|
+    t.integer "cluster_id",        :limit => 8, :null => false
+    t.integer "parent_cluster_id", :limit => 8, :null => false
+    t.integer "totalcount",        :limit => 8, :null => false
+    t.integer "numchildren",                    :null => false
+    t.integer "version",                        :null => false
+  end
+
+  add_index "camera_reviewtotalcounts", ["cluster_id", "version"], :name => "cluster_id", :unique => true
+
+  create_table "camera_usecase_cluster_scores", :force => true do |t|
+    t.integer "usecase_id",              :null => false
+    t.float   "score",                   :null => false
+    t.integer "cluster_id", :limit => 8, :null => false
+    t.integer "version",                 :null => false
+  end
+
+  create_table "camera_usecases", :force => true do |t|
+    t.string "label", :null => false
+  end
+
+  add_index "camera_usecases", ["label"], :name => "label", :unique => true
+
+  create_table "camera_usecases_direct_indicator_words", :force => true do |t|
+    t.integer "usecase_id", :null => false
+    t.integer "word_id",    :null => false
+  end
+
+  add_index "camera_usecases_direct_indicator_words", ["usecase_id", "word_id"], :name => "usecase_id", :unique => true
+  add_index "camera_usecases_direct_indicator_words", ["word_id"], :name => "word_id_refs_id_fed99dad"
+
+  create_table "camera_usecases_indicator_words", :force => true do |t|
+    t.integer "usecase_id", :null => false
+    t.integer "word_id",    :null => false
+  end
+
+  add_index "camera_usecases_indicator_words", ["usecase_id", "word_id"], :name => "usecase_id", :unique => true
+  add_index "camera_usecases_indicator_words", ["word_id"], :name => "word_id_refs_id_68ebca26"
+
+  create_table "camera_wordcounts", :force => true do |t|
+    t.integer "cluster_id",        :limit => 8, :null => false
+    t.integer "parent_cluster_id", :limit => 8, :null => false
+    t.string  "word",                           :null => false
+    t.integer "numchildren",                    :null => false
+    t.integer "version",                        :null => false
+    t.integer "count",             :limit => 8, :null => false
+  end
+
+  add_index "camera_wordcounts", ["cluster_id", "version", "word"], :name => "cluster_id", :unique => true
+
+  create_table "camera_wordtotalcounts", :force => true do |t|
+    t.integer "cluster_id",        :limit => 8, :null => false
+    t.integer "parent_cluster_id", :limit => 8, :null => false
+    t.integer "totalcount",        :limit => 8, :null => false
+    t.integer "numchildren",                    :null => false
+    t.integer "version",                        :null => false
+  end
+
+  add_index "camera_wordtotalcounts", ["cluster_id", "version"], :name => "cluster_id", :unique => true
+
   create_table "cameras", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -426,6 +497,13 @@ ActiveRecord::Schema.define(:version => 20101115234228) do
   add_index "cat_specs", ["product_type"], :name => "product_type"
   add_index "cat_specs", ["value"], :name => "value"
 
+  create_table "clusters", :force => true do |t|
+    t.string  "product_type"
+    t.integer "version"
+    t.integer "layer"
+    t.integer "parent_id"
+  end
+
   create_table "compatibilities", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -449,6 +527,31 @@ ActiveRecord::Schema.define(:version => 20101115234228) do
   add_index "cont_specs", ["name"], :name => "name"
   add_index "cont_specs", ["product_id"], :name => "index_cont_specs_on_product_id"
   add_index "cont_specs", ["value"], :name => "value"
+
+  create_table "db_features", :force => true do |t|
+    t.string   "product_type"
+    t.string   "feature_type"
+    t.string   "name"
+    t.float    "min"
+    t.float    "max"
+    t.float    "high"
+    t.float    "low"
+    t.text     "categories"
+    t.string   "region"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "db_properties", :force => true do |t|
+    t.string   "name"
+    t.text     "brands"
+    t.float    "price_min"
+    t.float    "price_max"
+    t.float    "price_low"
+    t.float    "price_high"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "factors", :force => true do |t|
     t.datetime "created_at"
@@ -524,7 +627,6 @@ ActiveRecord::Schema.define(:version => 20101115234228) do
   end
 
   add_index "keyword_searches", ["keyword"], :name => "index_keyword_searches_on_keyword"
-  add_index "keyword_searches", ["product_id"], :name => "product_id"
 
   create_table "newegg_offerings", :force => true do |t|
     t.datetime "created_at"
@@ -716,6 +818,18 @@ ActiveRecord::Schema.define(:version => 20101115234228) do
     t.string   "mpn"
   end
 
+  create_table "nodes", :force => true do |t|
+    t.integer "cluster_id"
+    t.integer "product_id"
+    t.string  "product_type"
+    t.integer "version"
+  end
+
+  add_index "nodes", ["cluster_id"], :name => "cluster_id"
+  add_index "nodes", ["product_id"], :name => "product_id"
+  add_index "nodes", ["product_type"], :name => "product_type"
+  add_index "nodes", ["version"], :name => "version"
+
   create_table "one23_cartridges", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -809,6 +923,24 @@ ActiveRecord::Schema.define(:version => 20101115234228) do
     t.string   "producttype"
   end
 
+  create_table "prefs", :id => false, :force => true do |t|
+    t.integer  "id",                            :default => 0, :null => false
+    t.integer  "idvisit"
+    t.string   "idcookie",        :limit => 32
+    t.integer  "product_picked"
+    t.integer  "product_ignored"
+    t.float    "weight"
+    t.float    "slider_min"
+    t.float    "slider_max"
+    t.string   "slider_name",     :limit => 40
+    t.string   "search_text"
+    t.integer  "search_numtimes", :limit => 2
+    t.datetime "servertime"
+    t.integer  "optemo_session"
+    t.integer  "filter_type",     :limit => 2
+    t.integer  "idsite"
+  end
+
   create_table "printers", :force => true do |t|
     t.string   "brand"
     t.float    "displaysize"
@@ -880,14 +1012,8 @@ ActiveRecord::Schema.define(:version => 20101115234228) do
     t.string   "mpn"
     t.boolean  "instock"
     t.string   "imgsurl"
-    t.integer  "imgsh"
-    t.integer  "imgsw"
     t.string   "imgmurl"
-    t.integer  "imgmh"
-    t.integer  "imgmw"
     t.string   "imglurl"
-    t.integer  "imglh"
-    t.integer  "imglw"
     t.float    "avgreviewrating"
     t.integer  "totalreviews"
     t.string   "manufacturerurl"
@@ -896,11 +1022,7 @@ ActiveRecord::Schema.define(:version => 20101115234228) do
     t.string   "url"
     t.string   "small_title"
     t.string   "imgmsurl"
-    t.integer  "imgmsh"
-    t.integer  "imgmsw"
-    t.integer  "imggburl"
-    t.integer  "imggbh"
-    t.integer  "imggbw"
+    t.string   "imggburl"
   end
 
   add_index "products", ["instock"], :name => "instock"
@@ -979,6 +1101,15 @@ ActiveRecord::Schema.define(:version => 20101115234228) do
   end
 
   add_index "reviews", ["product_type", "product_id"], :name => "product_type"
+
+  create_table "saveds", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "session_id"
+    t.integer  "product_id"
+    t.integer  "search_id"
+    t.string   "product_type"
+  end
 
   create_table "scraped_cameras", :force => true do |t|
     t.datetime "created_at"
@@ -1181,6 +1312,24 @@ ActiveRecord::Schema.define(:version => 20101115234228) do
     t.datetime "updated_at"
   end
 
+  create_table "sessions", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "ip"
+    t.integer  "parent_id"
+    t.string   "product_type"
+    t.boolean  "filter"
+    t.string   "region",       :default => "us"
+  end
+
+  create_table "stem_labels", :force => true do |t|
+    t.string "label", :null => false
+    t.string "stem",  :null => false
+  end
+
+  add_index "stem_labels", ["label"], :name => "label", :unique => true
+  add_index "stem_labels", ["stem"], :name => "stem", :unique => true
+
   create_table "surveys", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -1361,8 +1510,32 @@ ActiveRecord::Schema.define(:version => 20101115234228) do
 
   add_index "userdataconts", ["search_id"], :name => "search_id"
 
+  create_table "userdatasearches", :force => true do |t|
+    t.integer  "search_id"
+    t.string   "keyword"
+    t.text     "keywordpids"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "userdatasearches", ["search_id"], :name => "index_userdatasearches_on_search_id"
+
   create_table "users", :force => true do |t|
     t.datetime "created_at"
+  end
+
+  create_table "vieweds", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "session_id"
+    t.integer  "product_id"
+    t.integer  "search_id"
+  end
+
+  create_table "welcomes", :force => true do |t|
+    t.string   "email"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
 end
