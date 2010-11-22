@@ -35,7 +35,6 @@ class ApplicationController < ActionController::Base
       session[:user_id] = mysession_id
     end
 
-    # A new session is created in load_defaults now.
     s = Session.new(request.domain(4)) # This gets anything up to www.printers.browsethenbuy.co.uk (n + 1 elements in the domain name)
     s.id = mysession_id
     $d = Distribution.new unless defined? $d
