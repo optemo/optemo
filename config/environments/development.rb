@@ -1,3 +1,4 @@
+require 'absolute_url_enabler'
 Site::Application.configure do
   # Settings specified here will take precedence over those in config/environment.rb
 
@@ -13,6 +14,13 @@ Site::Application.configure do
   config.consider_all_requests_local       = true
   config.action_view.debug_rjs             = true
   config.action_controller.perform_caching = false
+  
+  # In production, Apache or nginx will already do this
+  config.serve_static_assets = true # false by default; true for asset_packager
+
+  # Enable serving of images, stylesheets, and javascripts from an asset server
+  # This used to be "assets.optemo.com" but that requires an entry in /etc/hosts
+  config.action_controller.asset_host = "http://localhost:3000"
 
   # Don't care if the mailer can't send
   config.action_mailer.raise_delivery_errors = false
@@ -25,4 +33,3 @@ Site::Application.configure do
   
   config.action_controller.default_url_options = {:only_path => false}
 end
-

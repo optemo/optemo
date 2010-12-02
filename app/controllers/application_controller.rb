@@ -34,8 +34,9 @@ class ApplicationController < ActionController::Base
       mysession_id = User.create.id
       session[:user_id] = mysession_id
     end
-
-    s = Session.new(request.domain(4)) # This gets anything up to www.printers.browsethenbuy.co.uk (n + 1 elements in the domain name)
+    # request.domain gets anything up to www.printers.browsethenbuy.co.uk (n + 1 elements in the domain name)
+    # request.env["REMOTE_HOST"] is necessary when doing embedding
+    s = Session.new(request.domain(4) || request.env["REMOTE_HOST"]) 
     s.id = mysession_id
     $d = Distribution.new unless defined? $d
     $k = Kmeans.new unless defined? $k    

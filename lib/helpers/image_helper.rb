@@ -61,7 +61,7 @@ module ImageHelper
     ret = "/#{folder}/#{filename}"
     begin
       readme = open(url.force_encoding('UTF-8'))
-      writehere = open("public/#{folder}/#{filename}","w")
+      writehere = open("public/#{folder}/#{filename}","wb+")
       writehere.write(readme.read)
       writehere.close
     rescue OpenURI::HTTPError => e

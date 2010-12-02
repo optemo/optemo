@@ -3,7 +3,8 @@ class CompareController < ApplicationController
   require 'open-uri'
   
   def index
-    if Session.isCrawler?(request.user_agent) || params[:ajax]
+    # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
+    if Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
       hist = params[:hist].gsub(/\D/,'').to_i if params[:hist]
       search_history = Session.current.searches if hist && params[:page].nil?
       if params[:page]
@@ -19,7 +20,7 @@ class CompareController < ApplicationController
       @indexload = true
     end
     correct_render
-  end
+  end 
 
   def groupby
     # Group products by specified feature
@@ -115,8 +116,12 @@ class CompareController < ApplicationController
   private
   # Depending on the session, either use the traditional layout or the "optemo" layout.
   # The CSS files are loaded automatically though, so the usual "sv / gv / lv / mv" CSS classes are needed.
-  def choose_layout 
-    Session.current.mobileView ? 'mobile' : 'optemo'
+  def choose_layout
+    if params[:embedding]
+      'embedding'
+    else
+      Session.current.mobileView ? 'mobile' : 'optemo'
+    end
   end
   
   def classVariables(search)

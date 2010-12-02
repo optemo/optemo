@@ -1,0 +1,26 @@
+<% s = Session.current %>	
+<%= raw stylesheet_link_merged(s.directLayout ? :listview : :gridview) %>
+<%# The border and other aspects of the top bar are supposed to be in the retailer's frame now. This just puts the "compare" layout in. %>
+<%= yield %>
+
+<div id="silkscreen">&nbsp;</div>
+<div id="filter_bar_loading">Loading</div>
+<div id="outsidecontainer"><%= link_to image_tag("closepopup#{fr?}.gif"), "close", :class => "close"%><div id="info">&nbsp;</div></div>
+<div id="feedback">
+<%= image_tag "feedback#{fr?}.png" %>
+</div>
+<div style="display:none;">
+	<% if s %>
+	<span id="dragDropEnabled"><%= s.dragAndDropEnabled %></span>
+	<span id="seshid" session-id="<%= s.id unless s.nil? %>"><%= s.id %></span>
+	<span id="modelname"><%= s.product_type %></span>
+	<span id="directLayout"><%= s.directLayout %></span>
+	<% end %>
+</div>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+<!-- The jquery-ui script is being included locally due to the custom jquery-ui being about 45k instead of 200kb from Google's CDN -->
+<%= raw javascript_include_merged :base %>
+
+<%= render :partial => "piwik_stub", :locals => {:s => s} %>
+<%= render :partial => "tour_stub", :locals => {:s => s} %>

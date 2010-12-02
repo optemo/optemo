@@ -45,6 +45,7 @@ class Cluster
   def representative
     unless @rep
       utility_list = ContSpec.cachemany(products, "utility")
+      # If you see an error here due to utility_list being nil, consider running "rake calculate_factors"
       @rep = Product.cached(products[utility_list.index(utility_list.max)])
     end
     @rep
