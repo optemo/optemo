@@ -33,7 +33,7 @@ var local_socket = new easyXDM.Rpc(/** The channel configuration*/{
             })();
 			$.ajax({type: "GET",
 				data: "",
-				url: (urlVars["serverName"] !== undefined ? ("http://" + unescape(urlVars["serverName"])) : "http://assets.optemo.com:3000/") + "?embedding=true",
+				url: (urlVars["serverName"] !== undefined ? ("http://" + unescape(urlVars["serverName"])) : "http://ast0.optemo.com/") + "?embedding=true",
 				success: function(data) {
 					local_socket.initialPageDelivery(data);
 				},
