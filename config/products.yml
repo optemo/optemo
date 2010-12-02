@@ -361,7 +361,6 @@ printers.assist:
         feature_type: Categorical
         used_for: [boost, filter, show]
 
-
 laserprinterhub.com:
     product_type: printer_lph
     layout: gridview
@@ -397,6 +396,41 @@ laserprinterhub.com:
         feature_type: Categorical
         used_for: [boost, filter, show]
 laserprinterhub.ca:
+    product_type: printer_lph
+    layout: gridview
+    price:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+        prefdir: -1
+        min: 1
+        max: 10000
+    ppm:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show, showList]
+    resolutionmax:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    resolution:
+        feature_type: Categorical
+        used_for: [showList]
+    paperinput:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show, showList]
+    itemwidth:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show, showList]
+        prefdir: -1
+    printserver:
+        feature_type: Binary
+        used_for: [boost, filter, show]
+    scanner:
+        feature_type: Binary
+        used_for: [boost, filter, show]
+    brand:
+        feature_type: Categorical
+        used_for: [boost, filter, show]
+        
+ast0.optemo.com:
     product_type: printer_lph
     layout: gridview
     price:
