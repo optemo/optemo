@@ -2,7 +2,7 @@ class BoostexterRule < ActiveRecord::Base
   # This is a good idea, but right now the boostexter_combined_rules only works for cameras (March 23). Update this in future.
   def self.bycluster(cluster_id)
     CachingMemcached.cache_lookup("BoostexterRules#{Session.current.product_type}#{cluster_id}") do
-      select("fieldname", "yaml_repr").order("weight DESC").where(:cluster_id => cluster_id)
+      select("fieldname, yaml_repr").order("weight DESC").where(:cluster_id => cluster_id)
     end
   end
   
@@ -66,8 +66,8 @@ class BoostexterRule < ActiveRecord::Base
   def self.compute_quartile(feat,product_ids)
     q25offset = (Session.current.search.products_size / 4.0).floor
     q75offset = ((Session.current.search.products_size * 3) / 4.0).floor
-    q25 = ContSpec.select(:value).offset(q25offset).order(:value).where(["product_id IN (?) and name = ?", product_ids, feat]).first.value
-    q75 = ContSpec.select(:value).offset(q75offset).order(:value).where(["product_id IN (?) and name = ?", product_ids, feat]).first.value
+    q25 = ContSpec.select("value").offset(q25offset).order("value").where(["product_id IN (?) and name = ?", product_ids, feat]).first.value
+    q75 = ContSpec.select("value").offset(q75offset).order("value").where(["product_id IN (?) and name = ?", product_ids, feat]).first.value
     [q25,q75]
   end
   

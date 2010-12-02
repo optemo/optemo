@@ -4,12 +4,12 @@ class ContSpec < ActiveRecord::Base
   # Get specs for a single item, returns a hash of this format: {"price" => 1.75, "width" => ... }
   def self.cache_all(p_id)
     CachingMemcached.cache_lookup("ContSpecs#{p_id}") do
-      select(:name, :value).where(["product_id = ?", p_id]).each_with_object({}){|r, h| h[r.name] = r.value}
+      select("name, value").where(["product_id = ?", p_id]).each_with_object({}){|r, h| h[r.name] = r.value}
     end
   end
   def self.cachemany(p_ids, feat) # Returns numerical (floating point) values only
     CachingMemcached.cache_lookup("ContSpecs#{feat}#{p_ids.join(',').hash}") do
-      select(:value).where(["product_id IN (?) and name = ?", p_ids, feat]).map(&:value)
+      select("value").where(["product_id IN (?) and name = ?", p_ids, feat]).map(&:value)
     end
   end
   
@@ -45,7 +45,7 @@ class ContSpec < ActiveRecord::Base
   
   def == (other)
      return false if other.nil?
-     return value == other.value && product_id == other.product_id #&& name == other.name Not included due to partial db instatiations ie .select(:product_ids, :values)
+     return value == other.value && product_id == other.product_id #&& name == other.name Not included due to partial db instatiations ie .select("product_ids, values")
   end
   
   def self.by_feat(feat)
@@ -60,6 +60,6 @@ class ContSpec < ActiveRecord::Base
   private
   
   def self.initial_specs(feat)
-    joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").where(:cont_specs => {:name => feat}, :search_products => {:search_id => Product.initial}).select(:value).map(&:value)
+    joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").where(:cont_specs => {:name => feat}, :search_products => {:search_id => Product.initial}).select("value").map(&:value)
   end
 end

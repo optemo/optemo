@@ -47,7 +47,7 @@ div#main {
 
 .watermark {
 	right: 10px;
-	top: 938px; /* This is 3 px more than the "bottomlinks" absolute positioning (search .bottomlinks) */
+	top: 835px;
 }
 #title {
 	position: absolute;
@@ -97,8 +97,8 @@ div#main {
 	padding-top: 5px;
 	width: 100%;
 	height: 100%;
-	position: relative;
-	min-height: 600px;
+    margin-top: 4px;
+	min-height: 744px; /* Empirically determined; used for embedded LPH layout */
 }
 
 #navigator_bar {
@@ -458,7 +458,7 @@ div.smalldesc {
 #bottomlinks {
 	margin: 3px auto;
 	position: absolute;
-	top: 935px;
+	top: 835px;
 	width: 948px;
 	text-align: center;
 	font-size: 0.8em;

@@ -1,22 +1,5 @@
 <% s = Session.current %>	
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> <!-- xmlns:fb="http://www.facebook.com/2008/fbml" -->
-<head>
-  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-	<meta name="viewport" content="width=device-width, user-scalable=no, target-densitydpi=device-dpi" />
-	<meta name="HandheldFriendly" content="True" />
-  <title><%= title %></title>
-  <meta name="description" content="<%= describe %>" />
-<meta name="keywords" content="laser, printer, printers, buy, prices, price comparison, reviews, recommendation, HP, Canon, Xerox" />
-<meta name="robots" content="index,all,follow" />
-<meta name="classification" content="Laser Printers" />
-<meta name="rating" content="General" />
-<link rel="shortcut icon" href="/favicon.ico" />
-<link rel="apple-touch-icon" href="/images/O.png" />
-<%= raw stylesheet_link_merged(:mobileview) %>
-</head>
+<%= render :partial => "html_and_head", :locals => {:s => s} %>
 <body style="background-color: #545454;">
 <div id="mycenter">
    <div id="header">
@@ -41,22 +24,7 @@
 <!-- The jquery-ui script is being included locally due to the custom jquery-ui being about 45k instead of 200kb from Google's CDN -->
 <%= raw javascript_include_merged(:mobile) %>
 
-<!-- Piwik -->
-<script type="text/javascript">
-var pkBaseURL = (("https:" == document.location.protocol) ? "https://analytics.optemo.com/" : "http://analytics.optemo.com/");
-var tag = document.createElement("script");
-tag.setAttribute("src", pkBaseURL + 'piwik.js');
-tag.setAttribute("type", "text/javascript");
-document.getElementsByTagName("head")[0].appendChild(tag);
-</script>
-<script type="text/javascript">
-try {
-var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", <%= s.piwikSiteId %>); // idsite is here
-piwikTracker.trackPageView();
-piwikTracker.enableLinkTracking();
-} catch( err ) {}
-</script><noscript><p><img src="http://analytics.optemo.com/piwik.php?idsite=<%= s.piwikSiteId %>" style="border:0" alt="" /></p></noscript>
-<!-- End Piwik Tag -->
+<%= render :partial => "piwik_stub", :locals => {:s => s} %>
 
 <noscript><div id="noJavascript" style="position:absolute; top: 40px; left:30px; width:250px; background: #FFFFFF; opacity:0.8"><b>Javascript is disabled.</b>For full functionality of Optemo Mobile, please enable javascript.</div></noscript>
 </body>

@@ -142,9 +142,9 @@ module CompareHelper
   end
 
   def popuptext(number, text, nexttext="Next &gt;&gt;")
-    "<div id='popupTour#{number}' class='popupTour'>
-    	<a class='deleteX' href='#'><img src='/images/close.png' alt='Close'/></a>
-    	<h1>Optemo " + (Session.current.directLayout ? 'Direct' : 'Assist').html_safe + " Tour</h1>
+    "<div id='popupTour#{number}' class='popupTour'>" + \
+    link_to(image_tag('close.png'), "#", :class => 'deleteX') + \
+    	"<h1>Optemo " + (Session.current.directLayout ? 'Direct' : 'Assist').html_safe + " Tour</h1>
     	<p>#{text}
     		<br/><br/>
     		<a href='#' class='popupnextbutton'>#{nexttext}</a>
@@ -228,6 +228,5 @@ module CompareHelper
 	    @dist = $d.computeDist
 	  end  
 	  @dist[feat]
-	end  
-	
+  end
 end
