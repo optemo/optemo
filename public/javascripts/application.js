@@ -863,10 +863,11 @@ optemo_module = (function (my){
     	}
 
     	//Autocomplete for searchterms
-    	model = MODEL_NAME.toLowerCase();
+    	if (typeof(MODEL_NAME) != undefined) // This check is needed for embedding
+    	    model = MODEL_NAME.toLowerCase();
     	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
     	if (typeof(model + "_searchterms") != undefined) { // It could happen for one reason or another. This way, it doesn't break the rest of the script
-    	    terms = eval(model + "_searchterms"); // terms now = ["waterproof", "digital", ... ]
+    	    terms = window[model + "_searchterms"]; // terms now = ["waterproof", "digital", ... ] using square bracket notation
         	$("#myfilter_search").autocomplete({
         	    source: terms
         	});
@@ -1404,7 +1405,6 @@ if (window.embedding_flag) {
     optemo_module.quickajaxcall = function (element_name, mydata, fn) { // for the show page
         remote.quickiframecall(element_name, mydata, fn);
     }
-    
 } 
 
 // This should be able to go ahead before document.ready for a slight time savings. 

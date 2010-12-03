@@ -1,14 +1,15 @@
 /* To create a website that embeds the Optemo Assist or Direct interface, create an HTML file on any server and insert the following:
 
 In the <head>: 
-<script src="http://assets.optemo.com:3000/optemo_embedder.js" type="text/javascript"></script>
+<script src="http://ast0.optemo.com/optemo_embedder.js" type="text/javascript"></script>
 
 In the <body>:
 <div id="optemo_embedder"></div>
 
 This script will auto-load various javascript files from the server, embed an iframe into the website, and load the interface via AJAX (not usually possible due to cross-site restrictions, but implemented using easyXDM, http://easyxdm.net/)
 
-This script could be minified for better performance. */
+This script could be minified for better performance. The asset packager combines and compresses the application javascript, but this file
+does not get minified by the capistrano deployment at the moment. */
 
 /*! LAB.js (LABjs :: Loading And Blocking JavaScript)
     v1.0.4 (c) Kyle Simpson
