@@ -135,21 +135,7 @@ var optemo_socket_activator = (function () {
 		            data_to_append = data_to_add.join("\n");
 				}
 	            // Process images next. To do this, just find all the images, split the data as before, and change the src tag.
-	            regexp_pattern = (/<img[^>]+>/g);
-	            images = data_to_append.match(regexp_pattern);
-	            data_to_add = data_to_append.split(regexp_pattern);
-	            data_to_append = new Array();
-	            data_to_append.push(data_to_add[0]);
-	            for (i = 0; i < images.length; i++) {
-	                // Need "regexp" to avoid the // bug in some browsers. As for the "if", it's a check against images that already have absolute URLs.
-	                if (images[i].match(new RegExp("http:\/\/"))) 
-                        data_to_append.push(images[i]);
-                    else
-	                    data_to_append.push(images[i].replace(/(\/images\/[^?]+)/, REMOTE + "$1"));
-	                data_to_append.push(data_to_add[i+1]);
-	            }
-
-	            data_to_append = data_to_append.join("\n");
+	            data_to_append = parse_data_by_pattern(data, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
 
 				// Now strip out any erroneous tags.
 				regexp_patterns = ["<\/?html[^>]*>", "<!doctype[^>]+>", "<meta[^>]*>", "<\/?body[^>]*>", "<\/?head>", "<title>[^<]*<\/title>"];
@@ -172,16 +158,7 @@ var optemo_socket_activator = (function () {
                 // }
 		    },
 			parseData: function (data) {
-				regexp_pattern = (/<img[^>]+>/g);
-	            images = data.match(regexp_pattern);
-	            data_to_add = data.split(regexp_pattern);
-	            data_to_append = new Array();
-	            data_to_append.push(data_to_add[0]);
-	            for (i = 0; i < images.length; i++) {
-	                data_to_append.push(images[i].replace(/(\/images\/[^?]+)/, REMOTE + "$1"));
-	                data_to_append.push(data_to_add[i+1]);
-	            }
-	            data_to_append = data_to_append.join("\n");
+	            data_to_append = parse_data_by_pattern(data, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
 				optemo_module.ajaxhandler(data_to_append);
 			},
 			parseDataThin: function (element_name, data, fn) {
@@ -199,7 +176,10 @@ var optemo_socket_activator = (function () {
         data_to_append = new Array();
         data_to_append.push(data_to_add[0]);
         for (i = 0; i < images.length; i++) {
-            data_to_append.push(replacement_function(images[i]));
+            if (images[i].match(new RegExp("http:\/\/"))) 
+                data_to_append.push(images[i]);
+            else
+                data_to_append.push(replacement_function(images[i]));
             data_to_append.push(data_to_add[i+1]);
         }
         return data_to_append.join("\n");
