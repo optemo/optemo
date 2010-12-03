@@ -66,17 +66,17 @@ var optemo_socket_activator = (function () {
 			quickiframecall: {}
 		},
 		local: {
-		    initialPageDelivery: function(result){ // This is the parser for the initial load. It's only used when an entire request comes back, <html> and all, probably from the optemo.html.erb layout.
+		    initialPageDelivery: function(data){ // This is the parser for the initial load. It's only used when an entire request comes back, <html> and all, probably from the optemo.html.erb layout.
 				embed_tag = jQuery('#optemo_embedder');
 				if (embed_tag.children().length > 0) 
 				{
 					embed_tag.children().each(function(){ jQuery(this).remove();});
 				}
 
-	            var d = result, regexp_pattern, data_to_add, data_to_append, scripts, headID = document.getElementsByTagName("head")[0], scripts_to_load, i, images;
+	            var regexp_pattern, data_to_add, data_to_append, scripts, headID = document.getElementsByTagName("head")[0], scripts_to_load, i, images;
 	            regexp_pattern = (/<script[^>]+>/g);
-	            scripts = d.match(regexp_pattern);
-	            data_to_add = d.split(regexp_pattern);
+	            scripts = data.match(regexp_pattern);
+	            data_to_add = data.split(regexp_pattern);
 	            script_nodes_to_append = Array();
 	            for (i = 0; i < scripts.length; i++)
 	            {
@@ -136,7 +136,7 @@ var optemo_socket_activator = (function () {
 		            data_to_append = data_to_add.join("\n");
 				}
 	            // Process images next. To do this, just find all the images, split the data as before, and change the src tag.
-	            data_to_append = parse_data_by_pattern(data, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
+	            data_to_append = parse_data_by_pattern(data_to_append, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
 
 				// Now strip out any erroneous tags.
 				regexp_patterns = ["<\/?html[^>]*>", "<!doctype[^>]+>", "<meta[^>]*>", "<\/?body[^>]*>", "<\/?head>", "<title>[^<]*<\/title>"];
