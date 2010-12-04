@@ -4,14 +4,14 @@ javascripts:
   - raphael
   - helpers_shared
   - autocomplete_terms
-  - jquery-ui-1.8.5.custom.min
+  - jquery-ui-1.8.6.custom.min
   - jquery.tablednd_0_5
   - jquery.history
   - application
   
 - mobile:
     - helpers_shared
-    - jquery-ui-1.8.5.custom.min
+    - jquery-ui-1.8.6.custom.min
     - application_mobile
     
 stylesheets: 
@@ -19,12 +19,12 @@ stylesheets:
     - shared
     - gridview_and_listview
     - gridview
-    - jquery-ui-1.8.5.custom
+    - jquery-ui-1.8.6.custom
 - listview: 
     - shared
     - gridview_and_listview
     - listview
-    - jquery-ui-1.8.5.custom
+    - jquery-ui-1.8.6.custom
 - mobileview: 
     - shared
     - mobile

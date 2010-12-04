@@ -67,20 +67,21 @@ task :serversetup do
   #run "cd #{current_path}/config/ultrasphinx   && cp -f development.conf.deploy development.conf && cp -f production.conf.deploy production.conf"
 end
 
-task :redopermissions do
-  run "find #{current_path} #{current_path}/../../shared ! -perm /g+w -execdir chmod g+w {} +"
+task :restartmemcached do
+  run "ps ax | awk '/memcached/ && !/awk/ {print $1}' | sudo xargs kill ; memcached -d"
 end
 
 task :fetchAutocomplete do
   run "RAILS_ENV=production rake -f #{current_path}/Rakefile autocomplete:fetch"
 end
 
-task :restartmemcached do
-  run "ps ax | awk '/memcached/ && !/awk/ {print $1}' | sudo xargs kill ; memcached -d"
+task :redopermissions do
+  run "find #{current_path} #{current_path}/../../shared ! -perm /g+w -execdir chmod g+w {} +"
 end
 
+# redopermissions is last, so that if it fails due to the searchd pid, no other tasks get blocked
 after :deploy, "serversetup"
 after :serversetup, "reindex"
-after :reindex, "fetchAutocomplete"
+after :reindex, "restartmemcached"
+after :restartmemcached, "fetchAutocomplete"
 after :fetchAutocomplete, "redopermissions"
-after :redopermissions, "restartmemcached"
