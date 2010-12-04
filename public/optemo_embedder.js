@@ -24,7 +24,7 @@ var optemo_socket_activator = (function () {
     /**
      * Request the use of the JSON object
      */
-     if (jQuery && jQuery('#optemo_embedder_socket').length != 0) { // Sometimes the script will try to open the socket twice.
+     if (jQuery && jQuery('#optemo_embedder_socket').length == 0) { // Sometimes the script will try to open the socket twice.
         jQuery('body').append('<div style="display:none" id="optemo_embedder_socket"></div>');
     	remote = new easyXDM.Rpc(/** The channel configuration */{
     		/**
@@ -212,7 +212,9 @@ if(jQueryIsLoaded) {
         optemo_socket_activator(); 
     });
 } else {
-    $LAB.script('http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js').script(REMOTE + '/javascripts/easyXDM.min.js').wait(function () {
+    $LAB.script('http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js')
+    .script(REMOTE + '/javascripts/easyXDM.min.js')
+    .wait(function () {
         optemo_socket_activator();
     });
 }
