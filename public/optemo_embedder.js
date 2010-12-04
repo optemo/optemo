@@ -24,167 +24,170 @@ var optemo_socket_activator = (function () {
     /**
      * Request the use of the JSON object
      */
-    jQuery('body').append('<div style="display:none" id="optemo_embedder_socket"></div>');
-	remote = new easyXDM.Rpc(/** The channel configuration */{
-		/**
-		 * Register the url to hash.html, this must be an absolute path
-		 * or a path relative to the root.
-		 * @field
-		 */
-		local: "/name.html",
-		/**
-		 * Register the url to the remote interface
-		 * @field
-		 */
-		remote: REMOTE + "/socket.html?serverName="+ escape(REMOTE.replace(/http:\/\//,'')),
-		remoteHelper: REMOTE + "/name.html",
-		/**
-		 * Register the DOMElement that the generated IFrame should be inserted into
-		 */
-		container: "optemo_embedder_socket",
-		props: {
-		    style: {
-		        border: "2px dotted red",
-		        height: "200px",
-				display: "none"
-		    }
-		},
-		onReady: function(){
-		   /**
-		    * Call a method on the other side
-		    */
-			remote.initialLoad(function(result){ 
-			    // Seems to be designed to take a function as a return. 
-			    // The socket on the other side will automatically call the appropriate local parsing function when appopriate, so do nothing.
+     if (jQuery && jQuery('#optemo_embedder_socket').length != 0) { // Sometimes the script will try to open the socket twice.
+        jQuery('body').append('<div style="display:none" id="optemo_embedder_socket"></div>');
+    	remote = new easyXDM.Rpc(/** The channel configuration */{
+    		/**
+    		 * Register the url to hash.html, this must be an absolute path
+    		 * or a path relative to the root.
+    		 * @field
+    		 */
+    		local: "/name.html",
+    		/**
+    		 * Register the url to the remote interface
+    		 * @field
+    		 */
+    		remote: REMOTE + "/socket.html?serverName="+ escape(REMOTE.replace(/http:\/\//,'')),
+    		remoteHelper: REMOTE + "/name.html",
+    		/**
+    		 * Register the DOMElement that the generated IFrame should be inserted into
+    		 */
+    		container: "optemo_embedder_socket",
+    		props: {
+    		    style: {
+    		        border: "2px dotted red",
+    		        height: "200px",
+    				display: "none"
+    		    }
+    		},
+    		onReady: function(){
+    		   /**
+    		    * Call a method on the other side
+    		    */
+    			remote.initialLoad(function(result){ 
+    			    // Seems to be designed to take a function as a return. 
+    			    // The socket on the other side will automatically call the appropriate local parsing function when appopriate, so do nothing.
 
-			});
-		}
-	}, /** The interface configuration */ {
-		remote: {
-			initialLoad: {},
-		    iframecall: {},
-			quickiframecall: {}
-		},
-		local: {
-		    initialPageDelivery: function(data){ // This is the parser for the initial load. It's only used when an entire request comes back, <html> and all, probably from the optemo.html.erb layout.
-				embed_tag = jQuery('#optemo_embedder');
-				if (embed_tag.children().length > 0) 
-				{
-					embed_tag.children().each(function(){ jQuery(this).remove();});
-				}
+    			});
+    		}
+    	}, /** The interface configuration */ {
+    		remote: {
+    			initialLoad: {},
+    		    iframecall: {},
+    			quickiframecall: {}
+    		},
+    		local: {
+    		    initialPageDelivery: function(data){ // This is the parser for the initial load. It's only used when an entire request comes back, <html> and all, probably from the optemo.html.erb layout.
+    				embed_tag = jQuery('#optemo_embedder');
+    				if (embed_tag.children().length > 0) 
+    				{
+    					embed_tag.children().each(function(){ jQuery(this).remove();});
+    				}
 
-	            var regexp_pattern, data_to_add, data_to_append, scripts, headID = document.getElementsByTagName("head")[0], scripts_to_load, i, images;
-	            regexp_pattern = (/<script[^>]+>/g);
-	            scripts = data.match(regexp_pattern);
-	            data_to_add = data.split(regexp_pattern);
-	            script_nodes_to_append = Array();
-	            for (i = 0; i < scripts.length; i++)
-	            {
-	                srcs = scripts[i].match(/javascripts[^?]+/); // We might want to make a check for src instead.
-	                if (srcs == null) {
-	                    scripts[i] = '<script type="text/javascript">';
-	                } else if (typeof(srcs) == "object" && srcs[0] && srcs[0].match(/easyXDM/)){
-						 scripts[i] = ''; // so it will get taken out completely later
-					} else {
-	                    script_nodes_to_append.push(REMOTE + "/" + srcs);
-	                    scripts[i] = '';
-	                }
-	            // When zipping stuff back up, we want to take out the /script tag *unless* there was a null response.
-	            }
+    	            var regexp_pattern, data_to_add, data_to_append, scripts, headID = document.getElementsByTagName("head")[0], scripts_to_load, i, images;
+    	            regexp_pattern = (/<script[^>]+>/g);
+    	            scripts = data.match(regexp_pattern);
+    	            data_to_add = data.split(regexp_pattern);
+    	            script_nodes_to_append = Array();
+    	            for (i = 0; i < scripts.length; i++)
+    	            {
+    	                srcs = scripts[i].match(/javascripts[^?]+/); // We might want to make a check for src instead.
+    	                if (srcs == null) {
+    	                    scripts[i] = '<script type="text/javascript">';
+    	                } else if (typeof(srcs) == "object" && srcs[0] && srcs[0].match(/easyXDM/)){
+    						 scripts[i] = ''; // so it will get taken out completely later
+    					} else {
+    	                    script_nodes_to_append.push(REMOTE + "/" + srcs);
+    	                    scripts[i] = '';
+    	                }
+    	            // When zipping stuff back up, we want to take out the /script tag *unless* there was a null response.
+    	            }
 
-				// We have to load all scripts in order, hence the call to labJS wait() function
-                $LAB.script(script_nodes_to_append).wait(function () {
-    				optemo_module.embeddedString = REMOTE;
-    				optemo_module.FilterAndSearchInit();
-    				optemo_module.DBinit();                    
-                });
+    				// We have to load all scripts in order, hence the call to labJS wait() function
+                    $LAB.script(script_nodes_to_append).wait(function () {
+        				optemo_module.embeddedString = REMOTE;
+        				optemo_module.FilterAndSearchInit();
+        				optemo_module.DBinit();                    
+                    });
 
 
-				// By this point we can guarantee that everything loaded serially.
-	            data_to_append = new Array();
-	            data_to_append.push(data_to_add[0])
-	            for (i = 0; i < scripts.length; i++) {
-	                // Either put back the <script> tag that is required for inline scripts, or else take out the < /script> part from the start of data_to_add[i+1].
-	                // Each time, look at scripts[i]. If empty, we need to take out the /script part that starts the next block.
-	                if (scripts[i] == '') { // If empty, take out the "/script" part and push the next piece. Also, if it's the XDM script itself
-	                    data_to_append.push(data_to_add[i+1].replace(/<\/script>/,''));
-	                } else { // If not empty, we need to put the <script> back in
-						data_to_append.push(scripts[i]);
-	                    data_to_append.push(data_to_add[i+1]);
-	                }
-	            }
-	            // Now, we want to join all the data 
-	            data_to_append = data_to_append.join("\n");
+    				// By this point we can guarantee that everything loaded serially.
+    	            data_to_append = new Array();
+    	            data_to_append.push(data_to_add[0])
+    	            for (i = 0; i < scripts.length; i++) {
+    	                // Either put back the <script> tag that is required for inline scripts, or else take out the < /script> part from the start of data_to_add[i+1].
+    	                // Each time, look at scripts[i]. If empty, we need to take out the /script part that starts the next block.
+    	                if (scripts[i] == '') { // If empty, take out the "/script" part and push the next piece. Also, if it's the XDM script itself
+    	                    data_to_append.push(data_to_add[i+1].replace(/<\/script>/,''));
+    	                } else { // If not empty, we need to put the <script> back in
+    						data_to_append.push(scripts[i]);
+    	                    data_to_append.push(data_to_add[i+1]);
+    	                }
+    	            }
+    	            // Now, we want to join all the data 
+    	            data_to_append = data_to_append.join("\n");
 
-	            // Process the stylesheets next:
-	            regexp_pattern = (/<link[^>]+>/g);
-	            styles = data_to_append.match(regexp_pattern);
-				if (styles) {
-		            data_to_add = data_to_append.split(regexp_pattern);
-		            for (i = 0; i < styles.length; i++) {
-		                srcs = styles[i].match(/stylesheets[^?]+/)
-		                if (srcs == null) { // no stylesheets
-		                    // Do nothing
-		                } else {
-		                    var tag = document.createElement("link");
-		                    tag.setAttribute("href", REMOTE + "/" + srcs);
-		                    tag.setAttribute("type", "text/css");
-		                    tag.setAttribute("rel", "stylesheet");
-		                    headID.appendChild(tag);
-		                }
-		            }
-		            data_to_append = data_to_add.join("\n");
-				}
-	            // Process images next. To do this, just find all the images, split the data as before, and change the src tag.
-	            data_to_append = parse_data_by_pattern(data_to_append, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
+    	            // Process the stylesheets next:
+    	            regexp_pattern = (/<link[^>]+>/g);
+    	            styles = data_to_append.match(regexp_pattern);
+    				if (styles) {
+    		            data_to_add = data_to_append.split(regexp_pattern);
+    		            for (i = 0; i < styles.length; i++) {
+    		                srcs = styles[i].match(/stylesheets[^?]+/)
+    		                if (srcs == null) { // no stylesheets
+    		                    // Do nothing
+    		                } else {
+    		                    var tag = document.createElement("link");
+    		                    tag.setAttribute("href", REMOTE + "/" + srcs);
+    		                    tag.setAttribute("type", "text/css");
+    		                    tag.setAttribute("rel", "stylesheet");
+    		                    headID.appendChild(tag);
+    		                }
+    		            }
+    		            data_to_append = data_to_add.join("\n");
+    				}
+    	            // Process images next. To do this, just find all the images, split the data as before, and change the src tag.
+    	            data_to_append = parse_data_by_pattern(data_to_append, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
 
-				// Now strip out any erroneous tags.
-				regexp_patterns = ["<\/?html[^>]*>", "<!doctype[^>]+>", "<meta[^>]*>", "<\/?body[^>]*>", "<\/?head>", "<title>[^<]*<\/title>"];
-				for (i = 0; i < regexp_patterns.length; i++) {
-					data_to_append = data_to_append.replace(new RegExp(regexp_patterns[i], "gi"), '');
-				}
-				// Make that it's a normal return value the easy way, by looking for the word "filterbar," 
-				// which is supposed to come back with each rendering of ajax.html.erb
-				if (data_to_append.match(/filterbar/i)) 
-    				embed_tag.append(data_to_append);
+    				// Now strip out any erroneous tags.
+    				regexp_patterns = ["<\/?html[^>]*>", "<!doctype[^>]+>", "<meta[^>]*>", "<\/?body[^>]*>", "<\/?head>", "<title>[^<]*<\/title>"];
+    				for (i = 0; i < regexp_patterns.length; i++) {
+    					data_to_append = data_to_append.replace(new RegExp(regexp_patterns[i], "gi"), '');
+    				}
+    				// Make that it's a normal return value the easy way, by looking for the word "filterbar," 
+    				// which is supposed to come back with each rendering of ajax.html.erb
+    				if (data_to_append.match(/filterbar/i)) 
+        				embed_tag.append(data_to_append);
     			
-    			// Take the silkscreen and filter_bar_loading divs and move them to the main body tag.
-    			// This is important for positioning if there are relative divs, because otherwise the absolute
-    			// positioning is done relative to that div instead of the whole window. This deprecated code is kept here just in case it's an issue later.
+        			// Take the silkscreen and filter_bar_loading divs and move them to the main body tag.
+        			// This is important for positioning if there are relative divs, because otherwise the absolute
+        			// positioning is done relative to that div instead of the whole window. This deprecated code is kept here just in case it's an issue later.
     			
-                // detaching_array = ['#silkscreen', '#filter_bar_loading', '#outsidecontainer', '#popupTour1', '#popupTour2', '#popupTour3', '#popupTour4'];
-                // for (var i = 0; i < detaching_array.length; i++) {
-                //     var element = jQuery(detaching_array[i]);
-                //     if (element.length > 0) element.detach().appendTo('body');
-                // }
-		    },
-			parseData: function (data) {
-	            data_to_append = parse_data_by_pattern(data, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
-				optemo_module.ajaxhandler(data_to_append);
-			},
-			parseDataThin: function (element_name, data, fn) {
-				data = parse_data_by_pattern(data, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
-				jQuery(element_name).html(data); // This seems unsafe. Fix this?
-				fn(); // This is probably DBInit(), but could be anything;
-			}
-		}
-	});
-	// Private function for the register_remote socket. Takes data, splits according to rules, does replace() according to rules.
-	function parse_data_by_pattern(mydata, split_pattern_string, replacement_function) {
-		var data_to_add, data_to_append, split_regexp = new RegExp(split_pattern_string, "gi");
-        images = mydata.match(split_regexp);
-        data_to_add = mydata.split(split_regexp);
-        data_to_append = new Array();
-        data_to_append.push(data_to_add[0]);
-        for (i = 0; i < images.length; i++) {
-            if (images[i].match(new RegExp("http:\/\/"))) 
-                data_to_append.push(images[i]);
-            else
-                data_to_append.push(replacement_function(images[i]));
-            data_to_append.push(data_to_add[i+1]);
-        }
-        return data_to_append.join("\n");
-	}			
+                    // detaching_array = ['#silkscreen', '#filter_bar_loading', '#outsidecontainer', '#popupTour1', '#popupTour2', '#popupTour3', '#popupTour4'];
+                    // for (var i = 0; i < detaching_array.length; i++) {
+                    //     var element = jQuery(detaching_array[i]);
+                    //     if (element.length > 0) element.detach().appendTo('body');
+                    // }
+    		    },
+    			parseData: function (data) {
+    	            data_to_append = parse_data_by_pattern(data, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
+    				optemo_module.ajaxhandler(data_to_append);
+    			},
+    			parseDataThin: function (element_name, data, fn) {
+    				data = parse_data_by_pattern(data, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
+    				jQuery(element_name).html(data); // This seems unsafe. Fix this?
+    				fn(); // This is probably DBInit(), but could be anything;
+    			}
+    		}
+    	});
+    	// Private function for the register_remote socket. Takes data, splits according to rules, does replace() according to rules.
+    	function parse_data_by_pattern(mydata, split_pattern_string, replacement_function) {
+    		var data_to_add, data_to_append, split_regexp = new RegExp(split_pattern_string, "gi");
+            images = mydata.match(split_regexp);
+            data_to_add = mydata.split(split_regexp);
+            data_to_append = new Array();
+            data_to_append.push(data_to_add[0]);
+            for (i = 0; i < images.length; i++) {
+                if (images[i].match(new RegExp("http:\/\/"))) 
+                    data_to_append.push(images[i]);
+                else
+                    data_to_append.push(replacement_function(images[i]));
+                data_to_append.push(data_to_add[i+1]);
+            }
+            return data_to_append.join("\n");
+    	}
+	
+	}		
 });
 
 // This must be loaded first in IE and Opera 10.1
