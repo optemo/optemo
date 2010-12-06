@@ -149,12 +149,11 @@ var optemo_socket_activator = (function () {
                         //     if (element.length > 0) element.detach().appendTo('body');
                         // }
                         
-                        optemo_module.IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
-                        optemo_module.MODEL_NAME = $("#modelname").html();
-                        optemo_module.DIRECT_LAYOUT = ($('#directLayout').html() == "true");
+                        optemo_module.IS_DRAG_DROP_ENABLED = (jQuery("#dragDropEnabled").html() === 'true');
+                        optemo_module.MODEL_NAME = jQuery("#modelname").html();
+                        optemo_module.DIRECT_LAYOUT = (jQuery('#directLayout').html() == "true");
                         
-                        optemo_module.FilterAndSearchInit();
-        				optemo_module.DBinit();
+                        optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
                     });
                     
     		    },
