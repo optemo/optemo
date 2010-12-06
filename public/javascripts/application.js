@@ -863,7 +863,7 @@ optemo_module = (function (my){
     	}
 
     	//Autocomplete for searchterms
-    	if (typeof(my.MODEL_NAME) != undefined) // This check is needed for embedding
+    	if (typeof(my.MODEL_NAME) != undefined && my.MODEL_NAME != null) // This check is needed for embedding; different checks for different browsers
     	    model = my.MODEL_NAME.toLowerCase();
     	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
     	if (typeof(model + "_searchterms") != undefined) { // It could happen for one reason or another. This way, it doesn't break the rest of the script
