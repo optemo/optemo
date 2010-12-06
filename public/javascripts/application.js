@@ -824,6 +824,7 @@ optemo_module = (function (my){
     };
 
     my.DBinit = function() {
+        var model = "";
     	if (my.IS_DRAG_DROP_ENABLED)
     	{
     		// Make item boxes draggable. This is a jquery UI builtin.		
