@@ -78,7 +78,7 @@ optemo_module = (function (my){
     //var language;
     // The following is pulled from optemo.html.erb
     my.IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
-    var MODEL_NAME = $("#modelname").html();
+    my.MODEL_NAME = $("#modelname").html();
     var VERSION = $("#version").html();
     my.DIRECT_LAYOUT = ($('#directLayout').html() == "true");
     var SESSION_ID = parseInt($('#seshid').attr('session-id'));
@@ -151,7 +151,7 @@ optemo_module = (function (my){
             my.trackPage('goals/save', {'filter_type' : 'save', 'product_picked' : id, 'product_ignored' : ignored_ids});
         
     		my.renderComparisonProducts(id, imgurl, name);
-    		addValueToCookie('optemo_SavedProductIDs', [id, imgurl, name, MODEL_NAME]);
+    		addValueToCookie('optemo_SavedProductIDs', [id, imgurl, name, my.MODEL_NAME]);
     	}
 
     	// There should be at least 1 saved item, so...
@@ -284,7 +284,7 @@ optemo_module = (function (my){
     	length = 174,
     	shapelayer = Raphael(element,length,height),
     	h = height - 1;
-    	if (MODEL_NAME == "flooring_builddirect") {
+    	if (my.MODEL_NAME == "flooring_builddirect") {
     	    t = shapelayer.path({fill: "#ffca44", stroke: "#83571d", opacity: 0.75});
         }
         else {
@@ -863,8 +863,8 @@ optemo_module = (function (my){
     	}
 
     	//Autocomplete for searchterms
-    	if (typeof(MODEL_NAME) != undefined) // This check is needed for embedding
-    	    model = MODEL_NAME.toLowerCase();
+    	if (typeof(my.MODEL_NAME) != undefined) // This check is needed for embedding
+    	    model = my.MODEL_NAME.toLowerCase();
     	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
     	if (typeof(model + "_searchterms") != undefined) { // It could happen for one reason or another. This way, it doesn't break the rest of the script
     	    terms = window[model + "_searchterms"]; // terms now = ["waterproof", "digital", ... ] using square bracket notation
