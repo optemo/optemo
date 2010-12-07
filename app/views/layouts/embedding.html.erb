@@ -1,6 +1,6 @@
 <% s = Session.current %>	
 <%= raw stylesheet_link_merged(s.directLayout ? :listview : :gridview) %>
-<%# The border and other aspects of the top bar are supposed to be in the retailer's frame now. This just puts the "compare" layout in. %>
+<%# The border and other aspects of the top bar are in the retailer's frame. This just puts the "compare" layout in. %>
 <%= yield %>
 
 <div id="silkscreen">&nbsp;</div>
