@@ -6,6 +6,7 @@
  *  Main Content (Right Side)
  *  Drag And Drop Compare
  *  Sliders
+ *  Footer
  */
  
  /*--------------------------------------//
@@ -122,3 +123,10 @@ img.productimg {
 	display:none;
 }
 
+/*--------------------------------------//
+//                Footer                //
+//--------------------------------------*/
+
+#bottomlinks {
+	top: 753px;
+}
