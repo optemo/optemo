@@ -2,10 +2,104 @@
        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<script type="text/javascript" src="/javascripts/json2.js"></script>
-<script type="text/javascript" src="/javascripts/easyXDM.min.js"></script>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
 <script type="text/javascript">
+
+/* AJS, the tool we use in this socket to do extremely lightweight AJAX */
+
+AJS={BASE_URL:"",drag_obj:null,drag_elm:null,_drop_zones:[],_cur_pos:null,ready_bound:false,is_ready:false,ready_list:[],_f_guid:0,_wipe_guid:0,map:function(list,fn,start_index,end_index){var i=0,l=list.length;if(start_index)
+i=start_index;if(end_index)
+l=end_index;for(i;i<l;i++){var val=fn(list[i],i);if(val!=undefined)
+return val;}},addCallback:function(fn){this.callbacks.unshift(fn);},log:function(o){try{if(window._firebug)
+window._firebug.log(o);else if(window.console)
+console.log(o);}
+catch(e){}},addEventListener:function(elms,types,handler,listen_once){elms=AJS.$A(elms);types=AJS.$A(types);AJS.map(elms,function(elm){if(listen_once)
+handler.listen_once=true;if(!handler.$f_guid)
+handler.$f_guid=AJS._f_guid++;if(!elm.events)
+elm.events={};AJS.map(types,function(type){var handlers=elm.events[type];if(elm==window&&type=='load'){AJS.ready_list.push(handler);}
+else{if(type=='lazy_load'){type='load';}
+if(!handlers){handlers=elm.events[type]={};if(elm["on"+type])
+handlers[0]=elm["on"+type];}
+if(!elm._wipe_guid){elm._wipe_guid=AJS._wipe_guid++;}
+handlers[handler.$f_guid]=handler;elm["on"+type]=AJS.handleEvent;}});elm=null;});},_createDomShortcuts:function(){var elms=["ul","li","td","tr","th","tbody","table","input","span","b","a","div","img","button","h1","h2","h3","h4","h5","h6","br","textarea","form","p","select","option","optgroup","iframe","script","center","dl","dt","dd","small","pre",'i','label','thead'];var extends_ajs=function(elm){AJS[elm.toUpperCase()]=function(){return AJS.createDOM.apply(null,[elm,arguments]);};}
+AJS.map(elms,extends_ajs);AJS.TN=function(text){return document.createTextNode(text)};},preloadImages:function(){AJS.AEV(window,'load',AJS.$p(function(args){AJS.map(args,function(src){var pic=new Image();pic.src=src;});},arguments));},join:function(delim,list){try{return list.join(delim);}
+catch(e){var r=list[0]||'';AJS.map(list,function(elm){r+=delim+elm;},1);return r+'';}},isString:function(obj){return(typeof obj=='string');},HTML2DOM:function(html,first_child){var d=AJS.DIV();d.innerHTML=html;if(first_child)
+return d.childNodes[0];else
+return d;},getRequest:function(url,method){var req=AJS.getXMLHttpRequest();if(url.match(/^https?:\/\//)==null){if(AJS.BASE_URL!=''){if(AJS.BASE_URL.lastIndexOf('/')!=AJS.BASE_URL.length-1)
+AJS.BASE_URL+='/';url=AJS.BASE_URL+url;}}
+if(!method)
+method="POST";return new AJSDeferred(req,method,url);},partial:function(fn){var args=AJS.$FA(arguments);args.shift();return function(){args=args.concat(AJS.$FA(arguments));return fn.apply(window,args);}},isObject:function(obj){return(typeof obj=='object');},createDOM:function(name,attrs){var i=0,attr;var elm=document.createElement(name);var first_attr=attrs[0];if(AJS.isDict(attrs[i])){for(k in first_attr){attr=first_attr[k];if(k=='style'||k=='s')
+elm.style.cssText=attr;else if(k=='c'||k=='class'||k=='className')
+elm.className=attr;else{elm.setAttribute(k,attr);}}
+i++;}
+if(first_attr==null)
+i=1;for(var j=i;j<attrs.length;j++){var attr=attrs[j];if(attr){var type=typeof(attr);if(type=='string'||type=='number')
+attr=AJS.TN(attr);elm.appendChild(attr);}}
+return elm;},addErrback:function(fn){this.errbacks.unshift(fn);},isArray:function(obj){try{return obj instanceof Array;}
+catch(e){return false;}},forceArray:function(args){var r=[];for(var i=0;i<args.length;i++)
+r.push(args[i]);return r;},createArray:function(v){if(AJS.isArray(v)&&!AJS.isString(v))
+return v;else if(!v)
+return[];else
+return[v];},isDict:function(o){var str_repr=String(o);return str_repr.indexOf(" Object")!=-1;}}
+AJS.$=AJS.getElement;AJS.$$=AJS.getElements;AJS.$f=AJS.getFormElement;AJS.$p=AJS.partial;AJS.$b=AJS.bind;AJS.$A=AJS.createArray;AJS.DI=AJS.documentInsert;AJS.ACN=AJS.appendChildNodes;AJS.RCN=AJS.replaceChildNodes;AJS.AEV=AJS.addEventListener;AJS.REV=AJS.removeEventListener;AJS.$bytc=AJS.getElementsByTagAndClassName;AJS.$AP=AJS.absolutePosition;AJS.$FA=AJS.forceArray;AJS._createDomShortcuts();AJS.Class=function(members){var fn=function(){if(arguments[0]!='no_init'){return this.init.apply(this,arguments);}}
+fn.prototype=members;AJS.update(fn,AJS.Class.prototype);return fn;}
+AJS.Class.prototype={extend:function(members){var parent=new this('no_init');for(k in members){var prev=parent[k];var cur=members[k];if(prev&&prev!=cur&&typeof cur=='function'){cur=this._parentize(cur,prev);}
+parent[k]=cur;}
+return new AJS.Class(parent);},implement:function(members){AJS.update(this.prototype,members);},_parentize:function(cur,prev){return function(){this.parent=prev;return cur.apply(this,arguments);}}};AJSDeferred=function(req,method,url){this.callbacks=[];this.errbacks=[];this.req=req;this.http_method=method;this.http_url=url;}
+AJSDeferred.prototype={excCallbackSeq:function(req,list){var data=req.responseText;if(AJS.generalCallback){data=AJS.generalCallback(req,list);if(!data)
+return;}
+while(list.length>0){var fn=list.pop();var new_data=fn(data,req);if(new_data)
+data=new_data;else if(new_data==false)
+break;}},callback:function(){this.excCallbackSeq(this.req,this.callbacks);},errback:function(){if(this.errbacks.length==0){if(AJS.ajaxErrorHandler)
+AJS.ajaxErrorHandler(req.responseText,req);else{var txt=this.req.responseText.substring(0,200);if(AJS.strip(txt)&&txt.indexOf("<html")==-1){alert("Error encountered:\n"+txt);}}}
+if(AJS.generalErrorback){var result=AJS.generalErrorback(this.req);if(!result)
+return;}
+this.excCallbackSeq(this.req,this.errbacks);},addErrback:function(fn){this.errbacks.unshift(fn);},addCallback:function(fn){this.callbacks.unshift(fn);},abort:function(){this.req.abort();},addCallbacks:function(fn1,fn2){this.addCallback(fn1);this.addErrback(fn2);},_onreadystatechange:function(){var req=this.req;var d=this;if(req.readyState==4){var status='';try{status=req.status;}
+catch(e){};if(status==200||status==304||req.responseText==null){this.callback();}
+else{this.errback();}}},sendReq:function(data){var req=this.req;var http_method=this.http_method;var http_url=this.http_url;if(http_method=='POST'){req.open(http_method,http_url,true);req.onreadystatechange=AJS.$b(this._onreadystatechange,this);req.setRequestHeader("Content-type","application/x-www-form-urlencoded");if(AJS.isObject(data)){req.send(AJS.encodeArguments(data));}
+else if(AJS.isDefined(data))
+req.send(data);else{req.send('');}}
+else{req.open("GET",http_url,true)
+req.onreadystatechange=AJS.$b(this._onreadystatechange,this);req.send(null);}}};script_loaded=true;
+
+/* JSON2 packer functions */
+if(!this.JSON){this.JSON={};}
+(function(){function f(n){return n<10?'0'+n:n;}
+if(typeof Date.prototype.toJSON!=='function'){Date.prototype.toJSON=function(key){return isFinite(this.valueOf())?this.getUTCFullYear()+'-'+
+f(this.getUTCMonth()+1)+'-'+
+f(this.getUTCDate())+'T'+
+f(this.getUTCHours())+':'+
+f(this.getUTCMinutes())+':'+
+f(this.getUTCSeconds())+'Z':null;};String.prototype.toJSON=Number.prototype.toJSON=Boolean.prototype.toJSON=function(key){return this.valueOf();};}
+var cx=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,escapable=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,gap,indent,meta={'\b':'\\b','\t':'\\t','\n':'\\n','\f':'\\f','\r':'\\r','"':'\\"','\\':'\\\\'},rep;function quote(string){escapable.lastIndex=0;return escapable.test(string)?'"'+string.replace(escapable,function(a){var c=meta[a];return typeof c==='string'?c:'\\u'+('0000'+a.charCodeAt(0).toString(16)).slice(-4);})+'"':'"'+string+'"';}
+function str(key,holder){var i,k,v,length,mind=gap,partial,value=holder[key];if(value&&typeof value==='object'&&typeof value.toJSON==='function'){value=value.toJSON(key);}
+if(typeof rep==='function'){value=rep.call(holder,key,value);}
+switch(typeof value){case'string':return quote(value);case'number':return isFinite(value)?String(value):'null';case'boolean':case'null':return String(value);case'object':if(!value){return'null';}
+gap+=indent;partial=[];if(Object.prototype.toString.apply(value)==='[object Array]'){length=value.length;for(i=0;i<length;i+=1){partial[i]=str(i,value)||'null';}
+v=partial.length===0?'[]':gap?'[\n'+gap+
+partial.join(',\n'+gap)+'\n'+
+mind+']':'['+partial.join(',')+']';gap=mind;return v;}
+if(rep&&typeof rep==='object'){length=rep.length;for(i=0;i<length;i+=1){k=rep[i];if(typeof k==='string'){v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}else{for(k in value){if(Object.hasOwnProperty.call(value,k)){v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}
+v=partial.length===0?'{}':gap?'{\n'+gap+partial.join(',\n'+gap)+'\n'+
+mind+'}':'{'+partial.join(',')+'}';gap=mind;return v;}}
+if(typeof JSON.stringify!=='function'){JSON.stringify=function(value,replacer,space){var i;gap='';indent='';if(typeof space==='number'){for(i=0;i<space;i+=1){indent+=' ';}}else if(typeof space==='string'){indent=space;}
+rep=replacer;if(replacer&&typeof replacer!=='function'&&(typeof replacer!=='object'||typeof replacer.length!=='number')){throw new Error('JSON.stringify');}
+return str('',{'':value});};}
+if(typeof JSON.parse!=='function'){JSON.parse=function(text,reviver){var j;function walk(holder,key){var k,v,value=holder[key];if(value&&typeof value==='object'){for(k in value){if(Object.hasOwnProperty.call(value,k)){v=walk(value,k);if(v!==undefined){value[k]=v;}else{delete value[k];}}}}
+return reviver.call(holder,key,value);}
+text=String(text);cx.lastIndex=0;if(cx.test(text)){text=text.replace(cx,function(a){return'\\u'+
+('0000'+a.charCodeAt(0).toString(16)).slice(-4);});}
+if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,'@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,']').replace(/(?:^|:|,)(?:\s*\[)+/g,''))){j=eval('('+text+')');return typeof reviver==='function'?walk({'':j},''):j;}
+throw new SyntaxError('JSON.parse');};}}());
+
+/*
+ * easyXDM 
+ * http://easyxdm.net/
+ * Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+ * 
+ * MIT Licensed - http://easyxdm.net/license/mit.txt
+ * 
+ */
+ (function(E,c,i,D,f,B){var b=this;var h=0;var k=Function.prototype;var H=/^(http.?:\/\/([^\/\s]+))/;var I=/[\-\w]+\/\.\.\//;var z=/([^:])\/\//g;var L="easyXDM_";var y;function w(N,P){var O=typeof N[P];return O=="function"||(!!(O=="object"&&N[P]))||O=="unknown"}function p(N,O){return !!(typeof(N[O])=="object"&&N[O])}function n(N){return Object.prototype.toString.call(N)==="[object Array]"}var q,s;if(w(E,"addEventListener")){q=function(P,N,O){P.addEventListener(N,O,false)};s=function(Q,O,P,N){Q.removeEventListener(O,P,N)}}else{if(w(E,"attachEvent")){q=function(N,P,O){N.attachEvent("on"+P,O)};s=function(N,P,O){N.detachEvent("on"+P,O)}}else{throw new Error("Browser not supported")}}var m=false,C=[];if(c.body){m=true}function l(){if(m){return}m=true;for(var N=0;N<C.length;N++){C[N]()}C.length=0;s(E,"DOMContentLoaded",l);s(c,"DOMContentLoaded",l);if(w(E,"ActiveXObject")){s(E,"load",l)}}function j(){if(c.readyState=="complete"){l();s(c,"readystatechange",j)}}if(!m){q(E,"DOMContentLoaded",l);q(c,"DOMContentLoaded",l);if(w(E,"ActiveXObject")){q(c,"readystatechange",j);q(E,"load",l);if(E===top){(function d(){if(m){return}try{c.documentElement.doScroll("left")}catch(N){D(d,1);return}l()}())}}}function A(O,N){if(m){O.call(N);return}C.push(function(){O.call(N)})}function t(N){return N.match(H)[2]}function e(N){return N.match(H)[1]}function v(N){N=N.replace(z,"$1/");if(!N.match(/^(http||https):\/\//)){var O=(N.substring(0,1)==="/")?"":i.pathname;if(O.substring(O.length-1)!=="/"){O=O.substring(0,O.lastIndexOf("/")+1)}N=i.protocol+"//"+i.host+O+N}while(I.test(N)){N=N.replace(I,"")}return N}function G(N,Q){var S="",P=N.indexOf("#");if(P!==-1){S=N.substring(P);N=N.substring(0,P)}var R=[];for(var O in Q){if(Q.hasOwnProperty(O)){R.push(O+"="+B(Q[O]))}}return N+((N.indexOf("?")===-1)?"?":"&")+R.join("&")+S}var J=(function(){var P={},Q,O=i.search.substring(1).split("&"),N=O.length;while(N--){Q=O[N].split("=");P[Q[0]]=f(Q[1])}return P}());function o(N){return typeof N==="undefined"}function F(){var O={};var P={a:[1,2,3]},N='{"a":[1,2,3]}';if(JSON&&typeof JSON.stringify==="function"&&JSON.stringify(P).replace((/\s/g),"")===N){return JSON}if(Object.toJSON){if(Object.toJSON(P).replace((/\s/g),"")===N){O.stringify=Object.toJSON}}if(typeof String.prototype.evalJSON==="function"){P=N.evalJSON();if(P.a&&P.a.length===3&&P.a[2]===3){O.parse=function(Q){return Q.evalJSON()}}}if(O.stringify&&O.parse){F=function(){return O};return O}return null}function K(N,O,P){var R;for(var Q in O){if(O.hasOwnProperty(Q)){if(Q in N){R=O[Q];if(typeof R==="object"){K(N[Q],R,P)}else{if(!P){N[Q]=O[Q]}}}else{N[Q]=O[Q]}}}return N}function a(){var N=c.createElement("iframe");N.name="easyXDM_TEST";K(N.style,{position:"absolute",left:"-2000px",top:"0px"});c.body.appendChild(N);y=!(N.contentWindow===E.frames[N.name]);c.body.removeChild(N)}function u(N){if(o(y)){a()}var O;if(y){O=c.createElement('<iframe name="'+N.props.name+'"/>')}else{O=c.createElement("IFRAME");O.name=N.props.name}O.id=O.name=N.props.name;delete N.props.name;if(N.onLoad){q(O,"load",N.onLoad)}if(typeof N.container=="string"){N.container=c.getElementById(N.container)}if(!N.container){O.style.position="absolute";O.style.left="-2000px";O.style.top="0px";N.container=c.body}O.border=O.frameBorder=0;N.container.insertBefore(O,N.container.firstChild);K(O,N.props);return O}function M(Q,P){if(typeof Q=="string"){Q=[Q]}var O,N=Q.length;while(N--){O=Q[N];O=new RegExp(O.substr(0,1)=="^"?O:("^"+O.replace(/(\*)/g,".$1").replace(/\?/g,".")+"$"));if(O.test(P)){return true}}return false}function g(P){var U=P.protocol,O;P.isHost=P.isHost||o(J.xdm_p);if(!P.props){P.props={}}if(!P.isHost){P.channel=J.xdm_c;P.secret=J.xdm_s;P.remote=J.xdm_e;U=J.xdm_p;if(P.acl&&!M(P.acl,P.remote)){throw new Error("Access denied for "+P.remote)}}else{P.remote=v(P.remote);P.channel=P.channel||"default"+h++;P.secret=Math.random().toString(16).substring(2);if(o(U)){if(e(i.href)==e(P.remote)){U="4"}else{if(w(E,"postMessage")||w(c,"postMessage")){U="1"}else{if(w(E,"ActiveXObject")&&w(E,"execScript")){U="3"}else{if(navigator.product==="Gecko"&&"frameElement" in E&&navigator.userAgent.indexOf("WebKit")==-1){U="5"}else{if(P.remoteHelper){P.remoteHelper=v(P.remoteHelper);U="2"}else{U="0"}}}}}}}switch(U){case"0":K(P,{interval:100,delay:2000,useResize:true,useParent:false,usePolling:false},true);if(P.isHost){if(!P.local){var S=i.protocol+"//"+i.host,N=c.body.getElementsByTagName("img"),T;var Q=N.length;while(Q--){T=N[Q];if(T.src.substring(0,S.length)===S){P.local=T.src;break}}if(!P.local){P.local=E}}var R={xdm_c:P.channel,xdm_p:0};if(P.local===E){P.usePolling=true;P.useParent=true;P.local=i.protocol+"//"+i.host+i.pathname+i.search;R.xdm_e=P.local;R.xdm_pa=1}else{R.xdm_e=v(P.local)}if(P.container){P.useResize=false;R.xdm_po=1}P.remote=G(P.remote,R)}else{K(P,{channel:J.xdm_c,remote:J.xdm_e,useParent:!o(J.xdm_pa),usePolling:!o(J.xdm_po),useResize:P.useParent?false:P.useResize})}O=[new easyXDM.stack.HashTransport(P),new easyXDM.stack.ReliableBehavior({}),new easyXDM.stack.QueueBehavior({encode:true,maxLength:4000-P.remote.length}),new easyXDM.stack.VerifyBehavior({initiate:P.isHost})];break;case"1":O=[new easyXDM.stack.PostMessageTransport(P)];break;case"2":O=[new easyXDM.stack.NameTransport(P),new easyXDM.stack.QueueBehavior(),new easyXDM.stack.VerifyBehavior({initiate:P.isHost})];break;case"3":O=[new easyXDM.stack.NixTransport(P)];break;case"4":O=[new easyXDM.stack.SameOriginTransport(P)];break;case"5":O=[new easyXDM.stack.FrameElementTransport(P)];break}O.push(new easyXDM.stack.QueueBehavior({lazy:P.lazy,remove:true}));return O}function x(Q){var R,P={incoming:function(T,S){this.up.incoming(T,S)},outgoing:function(S,T){this.down.outgoing(S,T)},callback:function(S){this.up.callback(S)},init:function(){this.down.init()},destroy:function(){this.down.destroy()}};for(var O=0,N=Q.length;O<N;O++){R=Q[O];K(R,P,true);if(O!==0){R.down=Q[O-1]}if(O!==N-1){R.up=Q[O+1]}}return R}function r(N){N.up.down=N.down;N.down.up=N.up;N.up=N.down=null}b.easyXDM={version:"2.4.8.101",query:J,stack:{},apply:K,getJSONObject:F,whenReady:A};easyXDM.DomHelper={on:q,un:s,requiresJSON:function(N){if(!p(E,"JSON")){c.write('<script type="text/javascript" src="'+N+'"><\/script>')}}};(function(){var N={};easyXDM.Fn={set:function(O,P){N[O]=P},get:function(P,O){var Q=N[P];if(O){delete N[P]}return Q}}}());easyXDM.Socket=function(O){var N=x(g(O).concat([{incoming:function(R,Q){O.onMessage(R,Q)},callback:function(Q){if(O.onReady){O.onReady(Q)}}}])),P=e(O.remote);this.destroy=function(){N.destroy()};this.postMessage=function(Q){N.outgoing(Q,P)};N.init()};easyXDM.Rpc=function(P,O){if(O.local){for(var R in O.local){if(O.local.hasOwnProperty(R)){var Q=O.local[R];if(typeof Q==="function"){O.local[R]={method:Q}}}}}var N=x(g(P).concat([new easyXDM.stack.RpcBehavior(this,O),{callback:function(S){if(P.onReady){P.onReady(S)}}}]));this.destroy=function(){N.destroy()};N.init()};easyXDM.stack.SameOriginTransport=function(O){var P,R,Q,N;return(P={outgoing:function(T,U,S){Q(T);if(S){S()}},destroy:function(){if(R){R.parentNode.removeChild(R);R=null}},onDOMReady:function(){N=e(O.remote);if(O.isHost){K(O.props,{src:G(O.remote,{xdm_e:i.protocol+"//"+i.host+i.pathname,xdm_c:O.channel,xdm_p:4}),name:L+O.channel+"_provider"});R=u(O);easyXDM.Fn.set(O.channel,function(S){Q=S;D(function(){P.up.callback(true)},0);return function(T){P.up.incoming(T,N)}})}else{Q=parent.easyXDM.Fn.get(O.channel,true)(function(S){P.up.incoming(S,N)});D(function(){P.up.callback(true)},0)}},init:function(){A(P.onDOMReady,P)}})};easyXDM.stack.PostMessageTransport=function(Q){var S,T,O,P;function N(U){if(U.origin){return U.origin}if(U.uri){return e(U.uri)}if(U.domain){return i.protocol+"//"+U.domain}throw"Unable to retrieve the origin of the event"}function R(V){var U=N(V);if(U==P&&V.data.substring(0,Q.channel.length+1)==Q.channel+" "){S.up.incoming(V.data.substring(Q.channel.length+1),U)}}return(S={outgoing:function(V,W,U){O.postMessage(Q.channel+" "+V,W||P);if(U){U()}},destroy:function(){s(E,"message",R);if(T){O=null;T.parentNode.removeChild(T);T=null}},onDOMReady:function(){P=e(Q.remote);if(Q.isHost){q(E,"message",function U(V){if(V.data==Q.channel+"-ready"){O=("postMessage" in T.contentWindow)?T.contentWindow:T.contentWindow.document;s(E,"message",U);q(E,"message",R);D(function(){S.up.callback(true)},0)}});K(Q.props,{src:G(Q.remote,{xdm_e:i.protocol+"//"+i.host,xdm_c:Q.channel,xdm_p:1}),name:L+Q.channel+"_provider"});T=u(Q)}else{q(E,"message",R);O=("postMessage" in E.parent)?E.parent:E.parent.document;O.postMessage(Q.channel+"-ready",P);D(function(){S.up.callback(true)},0)}},init:function(){A(S.onDOMReady,S)}})};easyXDM.stack.FrameElementTransport=function(O){var P,R,Q,N;return(P={outgoing:function(T,U,S){Q.call(this,T);if(S){S()}},destroy:function(){if(R){R.parentNode.removeChild(R);R=null}},onDOMReady:function(){N=e(O.remote);if(O.isHost){K(O.props,{src:G(O.remote,{xdm_e:i.protocol+"//"+i.host+i.pathname+i.search,xdm_c:O.channel,xdm_p:5}),name:L+O.channel+"_provider"});R=u(O);R.fn=function(S){delete R.fn;Q=S;D(function(){P.up.callback(true)},0);return function(T){P.up.incoming(T,N)}}}else{if(c.referrer&&c.referrer!=J.xdm_e){E.parent.location=J.xdm_e}else{if(c.referrer!=J.xdm_e){E.parent.location=J.xdm_e}Q=E.frameElement.fn(function(S){P.up.incoming(S,N)});P.up.callback(true)}}},init:function(){A(P.onDOMReady,P)}})};easyXDM.stack.NixTransport=function(O){var Q,S,R,N,P;return(Q={outgoing:function(U,V,T){R(U);if(T){T()}},destroy:function(){P=null;if(S){S.parentNode.removeChild(S);S=null}},onDOMReady:function(){N=e(O.remote);if(O.isHost){try{if(!w(E,"getNixProxy")){E.execScript("Class NixProxy\n    Private m_parent, m_child, m_Auth\n\n    Public Sub SetParent(obj, auth)\n        If isEmpty(m_Auth) Then m_Auth = auth\n        SET m_parent = obj\n    End Sub\n    Public Sub SetChild(obj)\n        SET m_child = obj\n        m_parent.ready()\n    End Sub\n\n    Public Sub SendToParent(data, auth)\n        If m_Auth = auth Then m_parent.send(CStr(data))\n    End Sub\n    Public Sub SendToChild(data, auth)\n        If m_Auth = auth Then m_child.send(CStr(data))\n    End Sub\nEnd Class\nFunction getNixProxy()\n    Set GetNixProxy = New NixProxy\nEnd Function\n","vbscript")}P=getNixProxy();P.SetParent({send:function(V){Q.up.incoming(V,N)},ready:function(){D(function(){Q.up.callback(true)},0)}},O.secret);R=function(V){P.SendToChild(V,O.secret)}}catch(U){throw new Error("Could not set up VBScript NixProxy:"+U.message)}K(O.props,{src:G(O.remote,{xdm_e:i.protocol+"//"+i.host+i.pathname+i.search,xdm_c:O.channel,xdm_s:O.secret,xdm_p:3}),name:L+O.channel+"_provider"});S=u(O);S.contentWindow.opener=P}else{if(c.referrer&&c.referrer!=J.xdm_e){E.parent.location=J.xdm_e}else{if(c.referrer!=J.xdm_e){E.parent.location=J.xdm_e}try{P=E.opener}catch(T){throw new Error("Cannot access window.opener")}P.SetChild({send:function(V){b.setTimeout(function(){Q.up.incoming(V,N)},0)}});R=function(V){P.SendToParent(V,O.secret)};D(function(){Q.up.callback(true)},0)}}},init:function(){A(Q.onDOMReady,Q)}})};easyXDM.stack.NameTransport=function(R){var S;var U,Y,Q,W,X,O,N;function V(ab){var aa=R.remoteHelper+(U?"#_3":"#_2")+R.channel;Y.contentWindow.sendMessage(ab,aa)}function T(){if(U){if(++W===2||!U){S.up.callback(true)}}else{V("ready");S.up.callback(true)}}function Z(aa){S.up.incoming(aa,O)}function P(){if(X){D(function(){X(true)},0)}}return(S={outgoing:function(ab,ac,aa){X=aa;V(ab)},destroy:function(){Y.parentNode.removeChild(Y);Y=null;if(U){Q.parentNode.removeChild(Q);Q=null}},onDOMReady:function(){U=R.isHost;W=0;O=e(R.remote);R.local=v(R.local);if(U){easyXDM.Fn.set(R.channel,function(ab){if(U&&ab==="ready"){easyXDM.Fn.set(R.channel,Z);T()}});N=G(R.remote,{xdm_e:R.local,xdm_c:R.channel,xdm_p:2});K(R.props,{src:N+"#"+R.channel,name:L+R.channel+"_provider"});Q=u(R)}else{R.remoteHelper=R.remote;easyXDM.Fn.set(R.channel,Z)}Y=u({props:{src:R.local+"#_4"+R.channel},onLoad:function aa(){s(Y,"load",aa);easyXDM.Fn.set(R.channel+"_load",P);(function ab(){if(typeof Y.contentWindow.sendMessage=="function"){T()}else{D(ab,50)}}())}})},init:function(){A(S.onDOMReady,S)}})};easyXDM.stack.HashTransport=function(P){var S;var X=this,V,Q,N,T,ac,R,ab;var W,O;function aa(ae){if(!ab){return}var ad=P.remote+"#"+(ac++)+"_"+ae;((V||!W)?ab.contentWindow:ab).location=ad}function U(ad){T=ad;S.up.incoming(T.substring(T.indexOf("_")+1),O)}function Z(){if(!R){return}var ad=R.location.href,af="",ae=ad.indexOf("#");if(ae!=-1){af=ad.substring(ae)}if(af&&af!=T){U(af)}}function Y(){Q=setInterval(Z,N)}return(S={outgoing:function(ad,ae){aa(ad)},destroy:function(){E.clearInterval(Q);if(V||!W){ab.parentNode.removeChild(ab)}ab=null},onDOMReady:function(){V=P.isHost;N=P.interval;T="#"+P.channel;ac=0;W=P.useParent;O=e(P.remote);if(V){P.props={src:P.remote,name:L+P.channel+"_provider"};if(W){P.onLoad=function(){R=E;Y();S.up.callback(true)}}else{var af=0,ad=P.delay/50;(function ae(){if(++af>ad){throw new Error("Unable to reference listenerwindow")}try{R=ab.contentWindow.frames[L+P.channel+"_consumer"]}catch(ag){}if(R){Y();S.up.callback(true)}else{D(ae,50)}}())}ab=u(P)}else{R=E;Y();if(W){ab=parent;S.up.callback(true)}else{K(P,{props:{src:P.remote+"#"+P.channel+new Date(),name:L+P.channel+"_consumer"},onLoad:function(){S.up.callback(true)}});ab=u(P)}}},init:function(){A(S.onDOMReady,S)}})};easyXDM.stack.ReliableBehavior=function(O){var Q,S;var R=0,N=0,P="";return(Q={incoming:function(V,T){var U=V.indexOf("_"),W=V.substring(0,U).split(",");V=V.substring(U+1);if(W[0]==R){P="";if(S){S(true)}}if(V.length>0){Q.down.outgoing(W[1]+","+R+"_"+P,T);if(N!=W[1]){N=W[1];Q.up.incoming(V,T)}}},outgoing:function(V,T,U){P=V;S=U;Q.down.outgoing(N+","+(++R)+"_"+V,T)}})};easyXDM.stack.QueueBehavior=function(P){var S,T=[],W=true,Q="",V,N=0,O=false,R=false;function U(){if(P.remove&&T.length===0){r(S);return}if(W||T.length===0||V){return}W=true;var X=T.shift();S.down.outgoing(X.data,X.origin,function(Y){W=false;if(X.callback){D(function(){X.callback(Y)},0)}U()})}return(S={init:function(){if(o(P)){P={}}if(P.maxLength){N=P.maxLength;R=true}if(P.lazy){O=true}else{S.down.init()}},callback:function(Y){W=false;var X=S.up;U();X.callback(Y)},incoming:function(aa,Y){if(R){var Z=aa.indexOf("_"),X=parseInt(aa.substring(0,Z),10);Q+=aa.substring(Z+1);if(X===0){if(P.encode){Q=f(Q)}S.up.incoming(Q,Y);Q=""}}else{S.up.incoming(aa,Y)}},outgoing:function(ab,Y,aa){if(P.encode){ab=B(ab)}var X=[],Z;if(R){while(ab.length!==0){Z=ab.substring(0,N);ab=ab.substring(Z.length);X.push(Z)}while((Z=X.shift())){T.push({data:X.length+"_"+Z,origin:Y,callback:X.length===0?aa:null})}}else{T.push({data:ab,origin:Y,callback:aa})}if(O){S.down.init()}else{U()}},destroy:function(){V=true;S.down.destroy()}})};easyXDM.stack.VerifyBehavior=function(R){var S,Q,O,P=false;function N(){Q=Math.random().toString(16).substring(2);S.down.outgoing(Q)}return(S={incoming:function(V,T){var U=V.indexOf("_");if(U===-1){if(V===Q){S.up.callback(true)}else{if(!O){O=V;if(!R.initiate){N()}S.down.outgoing(V)}}}else{if(V.substring(0,U)===O){S.up.incoming(V.substring(U+1),T)}}},outgoing:function(V,T,U){S.down.outgoing(Q+"_"+V,T,U)},callback:function(T){if(R.initiate){N()}}})};easyXDM.stack.RpcBehavior=function(T,O){var Q,V=O.serializer||F();var U=0,S={};function N(W){W.jsonrpc="2.0";Q.down.outgoing(V.stringify(W))}function R(W,Y){var X=Array.prototype.slice;return function(){var Z=arguments.length,ab,aa={method:Y};if(Z>0&&typeof arguments[Z-1]==="function"){if(Z>1&&typeof arguments[Z-2]==="function"){ab={success:arguments[Z-2],error:arguments[Z-1]};aa.params=X.call(arguments,0,Z-2)}else{ab={success:arguments[Z-1]};aa.params=X.call(arguments,0,Z-1)}S[""+(++U)]=ab;aa.id=U}else{aa.params=X.call(arguments,0)}if(W.namedParams&&aa.params.length===1){aa.params=aa.params[0]}N(aa)}}function P(W,Y,ab,Z){if(!ab){if(Y){N({id:Y,error:{code:-32601,message:"Procedure not found."}})}return}var ad=false,ac,aa;if(Y){ac=function(af){if(ad){return}ad=true;N({id:Y,result:af})};aa=function(af){if(ad){return}ad=true;var ag={id:Y,error:{code:-32099,message:"Application error: "+af}};if(typeof af=="object"&&"data" in af){ag.error.data=af.data}N(ag)}}else{ac=aa=k}if(!n(Z)){Z=[Z]}try{var ae=ab.method.apply(ab.scope,Z.concat([ac,aa]));if(!o(ae)){ac(ae)}}catch(X){aa(X.message)}}return(Q={incoming:function(X,W){var Y=V.parse(X);if(Y.method){if(O.handle){O.handle(Y,N)}else{P(Y.method,Y.id,O.local[Y.method],Y.params)}}else{var Z=S[Y.id];if(Y.error){if(Z.error){Z.error(Y.error)}}else{if(Z.success){Z.success(Y.result)}}delete S[Y.id]}},init:function(){if(O.remote){for(var W in O.remote){if(O.remote.hasOwnProperty(W)){T[W]=R(O.remote[W],W)}}}Q.down.init()},destroy:function(){for(var W in O.remote){if(O.remote.hasOwnProperty(W)&&T.hasOwnProperty(W)){delete T[W]}}Q.down.destroy()}})}})(window,document,location,window.setTimeout,decodeURIComponent,encodeURIComponent);
 
 // Set up socket here
 var local_socket = new easyXDM.Rpc(/** The channel configuration*/{
@@ -18,59 +112,44 @@ var local_socket = new easyXDM.Rpc(/** The channel configuration*/{
 		parseDataThin: {}
     },
     local: {
-		initialLoad: function() {
-			// This gets the optemo.html.erb layout, passing the scripts, stylesheets, etc., back to set the stage for later ajax calls.
+            initialLoad: function() {
+        	// This gets the optemo.html.erb layout, passing the scripts, stylesheets, etc., back to set the stage for later ajax calls.
             var urlVars = (function() {
-                var vars = [], hash;
-                var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-                for(var i = 0; i < hashes.length; i++)
-                {
+                var v = [], hash, hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+                for(var i = 0; i < hashes.length; i++) {
                     hash = hashes[i].split('=');
-                    vars.push(hash[0]);
-                    vars[hash[0]] = hash[1];
+                    v.push(hash[0]);
+                    v[hash[0]] = hash[1];
                 }
-                return vars;
+                return v;
             })();
-			$.ajax({type: "GET",
-				data: "",
-				url: (urlVars["serverName"] !== undefined ? ("http://" + unescape(urlVars["serverName"])) : "http://ast0.optemo.com/") + "?embedding=true",
-				success: function(data) {
-					local_socket.initialPageDelivery(data);
-				},
-				error: function(xhr, status, error) {
-//				    console.log(xhr.responseText);
-//				    console.log(status);
-//				    console.log(error);
-					local_socket.initialPageDelivery();// passed data before, but not sure this does anything.
-				}
-			});
-		},
-		quickiframecall: function(element_name, myurl, fn) {
-			// This is for simple $('#element').load functionality. Useful for "show" page at the moment, maybe other things in future.
-			$.ajax({type: "GET", 
-				url: myurl, 
-				success: function(data) {local_socket.parseDataThin(element_name, data, fn);}, 
-				error: function(data) {local_socket.parseDataThin(element_name, data, fn);}
-			});
-		},
+
+        	var d = AJS.getRequest((urlVars["serverName"] !== undefined ? ("http://" + unescape(urlVars["serverName"])) : "http://ast0.optemo.com/"), {embedding :true}, "GET");
+            d.addCallback( function(data, req) { local_socket.initialPageDelivery(data) } );
+        //    d.addErrback(function(res_txt, req) { console.log("Error encountered." + res_txt) });
+            d.sendReq();
+        },
+        // Need to take out element_name and function, no? At least function?
+        quickiframecall: function(element_name, myurl, fn) {
+        	// This is for simple jquery-like "load" functionality. Useful for "show" page at the moment, maybe other things in future.
+            d = AJS.getRequest(myurl, null, "GET");
+            d.addCallback( function(data, req) { local_socket.parseDataThin(element_name, data, fn) } );
+            d.addErrback(function(data, req) { local_socket.parseDataThin(element_name, data, fn) });
+            d.sendReq();
+        },
         iframecall: function(hash, myurl, mydata, fn, fnError){
-			// This is a standard ajax call, with the same code as optemo_module.ajaxsend, located in application.js.
-	    	if (myurl != null) {
-	        	$.ajax({
-	        		type: (mydata==null)?"GET":"POST",
-	        		data: (mydata==null)?"":mydata,
-	        		url: myurl,
-		    		success: function(data) {local_socket.parseData(data);},
-					error: function(data) {local_socket.parseData(data);}
-	        	});
-	    	} else if (typeof(hash) != "undefined" && hash != null) {
-	    		$.ajax({
-	    			type: "GET",
-	    			url: "/compare/?ajax=true&hist="+hash,
-		    		success: function(data) {local_socket.parseData(data);},
-					error: function(data) {local_socket.parseData(data);}
-	    		});
-	    	}
+        	// This is a standard ajax call, with the same code as optemo_module.ajaxsend, located in application.js.
+        	if (myurl != null) {
+        	    var d = AJS.getRequest(myurl, mydata, ((mydata==null)?"GET":null)); // POST is the default, and mydata can be null
+                d.addCallback(function(data, req) { local_socket.parseData(data) });
+                d.addErrback(function(data, req) { local_socket.parseData(data) });
+                d.sendReq();
+        	} else if (typeof(hash) != "undefined" && hash != null) {
+        	    var d = AJS.getRequest("/", {ajax: true, hist: hash}, "GET");
+                d.addCallback(function(data, req) { local_socket.parseData(data) });
+                d.addErrback(function(data, req) { local_socket.parseData(data) });
+                d.sendReq();
+        	}
             return; // The ajax thread will call the other side of the socket when the ajax call is done, so we return nothing here.
         }
     }
@@ -79,6 +158,5 @@ var local_socket = new easyXDM.Rpc(/** The channel configuration*/{
 </script>
 </head>
 <body>
-<div id="ajaxreturnvalue"><!-- There should never be anything in here. --></div>
 </body>
 </html>
