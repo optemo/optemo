@@ -1,4 +1,27 @@
 <% s = Session.current %>	
+<style type="text/css">
+.nbgroup {
+	padding: 3px 9px 3px 3px;
+	background: url(../images/nb-group.png) no-repeat;
+	width:224px;
+}
+.nbsingle {
+	padding: 3px 9px 3px 3px;
+	background: url(../images/nb-single.png) no-repeat;
+	width:224px;
+}
+.centerofslider {
+	background:url(/images/slider.gif) no-repeat; /* ../../.. */
+	height:13px; 
+	overflow:hidden;
+}
+.ui-slider .ui-slider-handle { 
+	background:url(/images/diamond.gif) no-repeat; /* ../../.. */
+	font-size: 0.6em;
+	color: black;
+	height:13px; width:16px;text-decoration:none;outline:none;position:absolute;z-index:2;
+}
+</style>
 <%= raw stylesheet_link_merged(s.directLayout ? :listview : :gridview) %>
 <%# The border and other aspects of the top bar are in the retailer's frame. This just puts the "compare" layout in. %>
 <%= yield %>
