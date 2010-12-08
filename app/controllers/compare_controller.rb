@@ -1,5 +1,5 @@
 class CompareController < ApplicationController
-  layout :choose_layout
+  layout :choose_layout, :except => "sitemap"
   require 'open-uri'
   
   def index
