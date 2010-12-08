@@ -4,7 +4,7 @@
 	<!-- The Filters section -->
 	<div id="filterbar" class="leftboxes rounded_bd rounded">
 		<div class="tl"></div><div class="tr"></div>
-		<h2><%=t 'products.compare.search' %> <%= link_to "(reset)", "/", :id => "staticajax_reset", :class => "reset" %></h2>
+		<h2><%=t 'products.compare.search' %> <%= link_to "(reset)", "/", :id => "staticajax_reset", :class => "reset", :rel => "nofollow" %></h2>
 			<div class="filtersdesc"><%=t 'products.compare.filtersdesc' %></div>
 		<div id="ajaxfilter">
 			<% unless @indexload %>
