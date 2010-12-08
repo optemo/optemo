@@ -157,7 +157,8 @@ var optemo_socket_activator = (function () {
         		                    tag.setAttribute("href", REMOTE + "/" + srcs);
         		                    tag.setAttribute("type", "text/css");
         		                    tag.setAttribute("rel", "stylesheet");
-        		                    headID.appendChild(tag);
+        		                    // For now, take the CSS file out totally for laserprinterhub.com deployment.
+//        		                    headID.appendChild(tag);
         		                }
         		            }
         		            data_to_append = data_to_add.join("\n");
