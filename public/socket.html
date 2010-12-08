@@ -33,7 +33,7 @@ if(first_attr==null)
 i=1;for(var j=i;j<attrs.length;j++){var attr=attrs[j];if(attr){var type=typeof(attr);if(type=='string'||type=='number')
 attr=AJS.TN(attr);elm.appendChild(attr);}}
 return elm;},addErrback:function(fn){this.errbacks.unshift(fn);},isArray:function(obj){try{return obj instanceof Array;}
-catch(e){return false;}},forceArray:function(args){var r=[];for(var i=0;i<args.length;i++)
+catch(e){return false;}},isDefined:function(o){return(o!="undefined"&&o!=null)},forceArray:function(args){var r=[];for(var i=0;i<args.length;i++)
 r.push(args[i]);return r;},bind:function(fn,scope,extra_args){fn._cscope=scope;return AJS._getRealScope(fn,extra_args);},_getRealScope:function(fn,extra_args){extra_args=AJS.$A(extra_args);var scope=fn._cscope||window;return function(){try{var args=AJS.$FA(arguments).concat(extra_args);return fn.apply(scope,args);}
 catch(e){}};},createArray:function(v){if(AJS.isArray(v)&&!AJS.isString(v))
 return v;else if(!v)
@@ -123,23 +123,23 @@ var local_socket = new easyXDM.Rpc(/** The channel configuration*/{
                 return v;
             })();
 
-        	var d = AJS.getRequest((urlVars["serverName"] !== undefined ? ("http://" + unescape(urlVars["serverName"])) : "http://ast0.optemo.com/") + "?embedding=true", null, "GET");
+        	var d = AJS.getRequest((urlVars["serverName"] !== undefined ? ("http://" + unescape(urlVars["serverName"])) : "http://ast0.optemo.com/"), {embedding:true}, "GET");
             d.addCallback( function(data, req) { local_socket.initialPageDelivery(data) } );
-            d.addErrback(function(res_txt, req) { console.log("Error encountered." + res_txt) });
+            d.addErrback(function(data, req) { console.log("Error encountered." + data) });
             d.sendReq();
         },
         // Need to take out element_name and function, no? At least function?
         quickiframecall: function(element_name, myurl, fn) {
         	// This is for simple jquery-like "load" functionality. Useful for "show" page at the moment, maybe other things in future.
-            d = AJS.getRequest(myurl, null, "GET");
-            d.addCallback( function(data, req) { local_socket.parseDataThin(element_name, data, fn) } );
+            d = AJS.getRequest(myurl, {}, "GET");
+            d.addCallback(function(data, req) { local_socket.parseDataThin(element_name, data, fn) });
             d.addErrback(function(data, req) { local_socket.parseDataThin(element_name, data, fn) });
             d.sendReq();
         },
         iframecall: function(hash, myurl, mydata, fn, fnError){
         	// This is a standard ajax call, with the same code as optemo_module.ajaxsend, located in application.js.
         	if (myurl != null) {
-        	    var d = AJS.getRequest(myurl, mydata, ((mydata==null)?"GET":null)); // POST is the default, and mydata can be null
+        	    var d = AJS.getRequest(myurl, ((mydata==null)?{}:mydata), ((mydata==null)?"GET":null)); // POST is the default, and mydata can be null
                 d.addCallback(function(data, req) { local_socket.parseData(data) });
                 d.addErrback(function(data, req) { local_socket.parseData(data) });
                 d.sendReq();
@@ -154,6 +154,7 @@ var local_socket = new easyXDM.Rpc(/** The channel configuration*/{
     }
 });
 </script>
+
 </head>
 <body>
 </body>
