@@ -123,7 +123,7 @@ var local_socket = new easyXDM.Rpc(/** The channel configuration*/{
                 return v;
             })();
 
-        	var d = AJS.getRequest((urlVars["serverName"] !== undefined ? ("http://" + unescape(urlVars["serverName"])) : "http://ast0.optemo.com/"), {embedding :true}, "GET");
+        	var d = AJS.getRequest((urlVars["serverName"] !== undefined ? ("http://" + unescape(urlVars["serverName"])) : "http://ast0.optemo.com/") + "?embedding=true", null, "GET");
             d.addCallback( function(data, req) { local_socket.initialPageDelivery(data) } );
         //    d.addErrback(function(res_txt, req) { console.log("Error encountered." + res_txt) });
             d.sendReq();
