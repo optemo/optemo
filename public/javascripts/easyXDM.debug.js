@@ -1,14 +1,55 @@
-/*
- * easyXDM 
+/**
+ * easyXDM
  * http://easyxdm.net/
  * Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
- * 
- * MIT Licensed - http://easyxdm.net/license/mit.txt
- * 
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
- (function (window, document, location, setTimeout, decodeURIComponent, encodeURIComponent) {
-/*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
+(function (window, document, location, setTimeout, decodeURIComponent, encodeURIComponent) {
+	// double inclusion safeguard
+	if ("easyXDM" in window) {
+		return;
+	}/*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
 /*global easyXDM, JSON, XMLHttpRequest, window, escape, unescape, ActiveXObject */
+//
+// easyXDM
+// http://easyxdm.net/
+// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
 
 var global = this;
 var channelId = 0;
@@ -51,9 +92,9 @@ if (isHostMethod(window, "addEventListener")) {
         _trace("adding listener " + type);
         target.addEventListener(type, listener, false);
     };
-    un = function(target, type, listener, useCapture){
+    un = function(target, type, listener){
         _trace("removing listener " + type);
-        target.removeEventListener(type, listener, useCapture);
+        target.removeEventListener(type, listener, false);
     };
 }
 else if (isHostMethod(window, "attachEvent")) {
@@ -74,10 +115,10 @@ else {
  * Cross Browser implementation of DOMContentLoaded.
  */
 var isReady = false, domReadyQueue = [];
-//if ("readyState" in document) {
-//    isReady = true; // (document.readyState == "complete" || document.readyState == "loaded"); // ZAT change here
-//}
-//else {
+if ("readyState" in document) {
+    isReady = document.readyState == "complete";
+}
+else {
     // If readyState is not supported in the browser, then in order to be able to fire whenReady functions apropriately
     // when added dynamically _after_ DOM load, we have to deduce wether the DOM is ready or not.
     if (document.body) {
@@ -85,41 +126,30 @@ var isReady = false, domReadyQueue = [];
         // This does mean that we might fire it prematurely, but we only need the body element to be available for appending.
         isReady = true;
     }
-//}
+}
 
-function dom_onLoaded(){
-    if (isReady) {
-        return;
-    }
-    _trace("firing dom_onLoaded");
+function dom_onReady(){
+    dom_onReady = emptyFn;
+    _trace("firing dom_onReady");
     isReady = true;
     for (var i = 0; i < domReadyQueue.length; i++) {
         domReadyQueue[i]();
     }
     domReadyQueue.length = 0;
-    un(window, "DOMContentLoaded", dom_onLoaded);
-    un(document, "DOMContentLoaded", dom_onLoaded);
-    if (isHostMethod(window, "ActiveXObject")) {
-        un(window, "load", dom_onLoaded);
-    }
 }
 
-function document_onReadyStateChange(){
-    if (document.readyState == "complete") {
-        dom_onLoaded();
-        un(document, "readystatechange", document_onReadyStateChange);
-    }
-}
 
 if (!isReady) {
-    on(window, "DOMContentLoaded", dom_onLoaded);
-    on(document, "DOMContentLoaded", dom_onLoaded);
-    
-    if (isHostMethod(window, "ActiveXObject")) {
-        on(document, "readystatechange", document_onReadyStateChange);
-        on(window, "load", dom_onLoaded);
-        
-        if (window === top) {
+    if (isHostMethod(window, "addEventListener")) {
+        on(document, "DOMContentLoaded", dom_onReady);
+    }
+    else {
+        on(document, "readystatechange", function(){
+            if (document.readyState == "complete") {
+                dom_onReady();
+            }
+        });
+        if (document.documentElement.doScroll && window === top) {
             (function doScrollCheck(){
                 if (isReady) {
                     return;
@@ -132,10 +162,13 @@ if (!isReady) {
                     setTimeout(doScrollCheck, 1);
                     return;
                 }
-                dom_onLoaded();
+                dom_onReady();
             }());
         }
     }
+    
+    // A fallback to window.onload, that will always work
+    on(window, "load", dom_onReady);
 }
 /**
  * This will add a function to the queue of functions to be run once the DOM reaches a ready state.
@@ -650,7 +683,7 @@ function removeFromStack(element){
 /** 
  * @class easyXDM
  * A javascript library providing cross-browser, cross-domain messaging/RPC.
- * @version 2.4.8.101
+ * @version 2.4.9.102
  * @singleton
  */
 global.easyXDM = {
@@ -658,7 +691,7 @@ global.easyXDM = {
      * The version of the library
      * @type {string}
      */
-    version: "2.4.8.101",
+    version: "2.4.9.102",
     /**
      * This is a map containing all the query parameters passed to the document.
      * All the values has been decoded using decodeURIComponent.
@@ -692,7 +725,29 @@ global.easyXDM = {
 };
 /*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
 /*global console, _FirebugCommandLine,  easyXDM, window, escape, unescape, isHostObject, undef, _trace, isReady, emptyFn */
-
+//
+// easyXDM
+// http://easyxdm.net/
+// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
 
 var debug = {
     _deferred: [],
@@ -828,6 +883,29 @@ easyXDM.Debug = debug;
 _trace = debug.getTracer("{Private}");
 /*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
 /*global easyXDM, window, escape, unescape, isHostObject, isHostMethod, un, on, createFrame, debug */
+//
+// easyXDM
+// http://easyxdm.net/
+// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
 
 /** 
  * @class easyXDM.DomHelper
@@ -868,7 +946,29 @@ easyXDM.DomHelper = {
 };
 /*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
 /*global easyXDM, window, escape, unescape, debug */
-
+//
+// easyXDM
+// http://easyxdm.net/
+// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
 
 (function(){
     // The map containing the stored functions
@@ -916,6 +1016,29 @@ easyXDM.DomHelper = {
 }());
 /*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
 /*global easyXDM, window, escape, unescape, chainStack, prepareTransportStack, getLocation, debug */
+//
+// easyXDM
+// http://easyxdm.net/
+// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
 
 /**
  * @class easyXDM.Socket
@@ -974,6 +1097,7 @@ easyXDM.Socket = function(config){
     var trace = debug.getTracer("easyXDM.Socket");
     trace("constructor");
     
+    // create the stack
     var stack = chainStack(prepareTransportStack(config).concat([{
         incoming: function(message, origin){
             config.onMessage(message, origin);
@@ -985,6 +1109,9 @@ easyXDM.Socket = function(config){
         }
     }])), recipient = getLocation(config.remote);
     
+    // set the origin
+    this.origin = getLocation(config.remote);
+	
     /**
      * Initiates the destruction of the stack.
      */
@@ -1003,7 +1130,30 @@ easyXDM.Socket = function(config){
     stack.init();
 };
 /*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
-/*global easyXDM, window, escape, unescape, undef,, chainStack, prepareTransportStack, debug */
+/*global easyXDM, window, escape, unescape, undef,, chainStack, prepareTransportStack, debug, getLocation */
+//
+// easyXDM
+// http://easyxdm.net/
+// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
 
 /** 
  * @class easyXDM.Rpc
@@ -1125,6 +1275,8 @@ easyXDM.Rpc = function(config, jsonRpcConfig){
             }
         }
     }
+	
+    // create the stack
     var stack = chainStack(prepareTransportStack(config).concat([new easyXDM.stack.RpcBehavior(this, jsonRpcConfig), {
         callback: function(success){
             if (config.onReady) {
@@ -1132,6 +1284,10 @@ easyXDM.Rpc = function(config, jsonRpcConfig){
             }
         }
     }]));
+	
+    // set the origin 
+    this.origin = getLocation(config.remote);
+	
     
     /**
      * Initiates the destruction of the stack.
@@ -1144,6 +1300,29 @@ easyXDM.Rpc = function(config, jsonRpcConfig){
 };
 /*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
 /*global easyXDM, window, escape, unescape, getLocation, appendQueryParameters, createFrame, debug, un, on, apply, whenReady, IFRAME_PREFIX*/
+//
+// easyXDM
+// http://easyxdm.net/
+// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
 
 /**
  * @class easyXDM.stack.SameOriginTransport
@@ -1214,6 +1393,29 @@ easyXDM.stack.SameOriginTransport = function(config){
 };
 /*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
 /*global easyXDM, window, escape, unescape, getLocation, appendQueryParameters, createFrame, debug, un, on, apply, whenReady, IFRAME_PREFIX*/
+//
+// easyXDM
+// http://easyxdm.net/
+// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
 
 /**
  * @class easyXDM.stack.PostMessageTransport
@@ -1332,6 +1534,29 @@ easyXDM.stack.PostMessageTransport = function(config){
 };
 /*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
 /*global easyXDM, window, escape, unescape, getLocation, appendQueryParameters, createFrame, debug, apply, query, whenReady, IFRAME_PREFIX*/
+//
+// easyXDM
+// http://easyxdm.net/
+// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
 
 /**
  * @class easyXDM.stack.FrameElementTransport
@@ -1411,6 +1636,29 @@ easyXDM.stack.FrameElementTransport = function(config){
 };
 /*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
 /*global global, getNixProxy, easyXDM, window, escape, unescape, getLocation, appendQueryParameters, createFrame, debug, un, on, isHostMethod, apply, query, whenReady, IFRAME_PREFIX*/
+//
+// easyXDM
+// http://easyxdm.net/
+// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
 
 /**
  * @class easyXDM.stack.NixTransport
@@ -1556,6 +1804,29 @@ easyXDM.stack.NixTransport = function(config){
 };
 /*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
 /*global easyXDM, window, escape, unescape, undef, getLocation, appendQueryParameters, resolveUrl, createFrame, debug, un, apply, whenReady, IFRAME_PREFIX*/
+//
+// easyXDM
+// http://easyxdm.net/
+// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
 
 /**
  * @class easyXDM.stack.NameTransport
@@ -1687,6 +1958,29 @@ easyXDM.stack.NameTransport = function(config){
 };
 /*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
 /*global easyXDM, window, escape, unescape, getLocation, createFrame, debug, un, on, apply, whenReady, IFRAME_PREFIX*/
+//
+// easyXDM
+// http://easyxdm.net/
+// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
 
 /**
  * @class easyXDM.stack.HashTransport
@@ -1827,6 +2121,29 @@ easyXDM.stack.HashTransport = function(config){
 };
 /*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
 /*global easyXDM, window, escape, unescape, debug */
+//
+// easyXDM
+// http://easyxdm.net/
+// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
 
 /**
  * @class easyXDM.stack.ReliableBehavior
@@ -1874,6 +2191,29 @@ easyXDM.stack.ReliableBehavior = function(config){
 };
 /*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
 /*global easyXDM, window, escape, unescape, debug, undef, removeFromStack*/
+//
+// easyXDM
+// http://easyxdm.net/
+// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
 
 /**
  * @class easyXDM.stack.QueueBehavior
@@ -2001,6 +2341,29 @@ easyXDM.stack.QueueBehavior = function(config){
 };
 /*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
 /*global easyXDM, window, escape, unescape, undef, debug */
+//
+// easyXDM
+// http://easyxdm.net/
+// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
 
 /**
  * @class easyXDM.stack.VerifyBehavior
@@ -2060,6 +2423,29 @@ easyXDM.stack.VerifyBehavior = function(config){
 };
 /*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
 /*global easyXDM, window, escape, unescape, undef, getJSON, debug, emptyFn, isArray */
+//
+// easyXDM
+// http://easyxdm.net/
+// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
 
 /**
  * @class easyXDM.stack.RpcBehavior
@@ -2161,32 +2547,26 @@ easyXDM.stack.RpcBehavior = function(proxy, config){
         }
         
         trace("requested to execute procedure " + method);
-        var used = false, success, error;
+        var success, error;
         if (id) {
             success = function(result){
-                if (used) {
-                    return;
-                }
-                used = true;
+                success = emptyFn;
                 _send({
                     id: id,
                     result: result
                 });
             };
-            error = function(message){
-                if (used) {
-                    return;
-                }
-                used = true;
+            error = function(message, data){
+                error = emptyFn;
                 var msg = {
                     id: id,
                     error: {
                         code: -32099,
-                        message: "Application error: " + message
+                        message: message
                     }
                 };
-                if (typeof message == "object" && "data" in message) {
-                    msg.error.data = message.data;
+                if (data) {
+                    msg.error.data = data;
                 }
                 _send(msg);
             };
