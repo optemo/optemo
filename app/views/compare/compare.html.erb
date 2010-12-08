@@ -1,29 +1,5 @@
 <% self.title = "#{@s.product_type.capitalize}" unless @indexload %>
 <% main_window = render :partial => 'discoverybrowser' unless @indexload %>
-
-<style type="text/css">
-.nbgroup { /* These declarations are here for the embedded view, for speed testing */
-	padding: 3px 9px 3px 3px;
-    background: url(<%= image_tag("nb-group.png") %>) no-repeat;
-	width:224px;
-}
-.nbsingle {
-	padding: 3px 9px 3px 3px;
-    background: url(<%= image_tag("nb-single.png") %>) no-repeat;
-	width:224px;
-}
-.centerofslider {
-    background: url(<%= image_tag("slider.gif") %>) no-repeat;
-	height:13px; 
-	overflow:hidden;
-}
-.ui-slider .ui-slider-handle { 
-    background: url(<%= image_tag("diamond.gif") %>) no-repeat;
-	font-size: 0.6em;
-	color: black;
-	height:13px; width:16px;text-decoration:none;outline:none;position:absolute;z-index:2;
-}
-</style>
 <div id="leftbar">
 	<!-- The Filters section -->
 	<div id="filterbar" class="leftboxes rounded_bd rounded">
