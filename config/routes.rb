@@ -64,10 +64,6 @@ Site::Application.routes.draw do
   match "similar/:id" => "compare#sim", :id => /\d+/, :as => "cluster"
   match "filtering" => "compare#filtering"
   match "groupby/:feat" => "compare#groupby"
+  match "sitemap" => "compare#sitemap"
   root :to => "compare#index"
-  #match '/' => 'compare#index'
-  #match 'products/show/:id' => 'compare#show'
-  #match '/:controller(/:action(/:id))'
-  #match ':action' => 'content#index'
-  #match '*' => 'content#error'
 end
