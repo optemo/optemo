@@ -246,7 +246,7 @@ optemo_module = (function (my){
         arguments = $("#filter_form").serialize().split("&");
         for (i=0; i<arguments.length; i++)
         {
-            if (!(arguments[i].match(/^superfluous/) || arguments[i].match(/authenticity_token/)))
+            if (!(arguments[i].match(/^superfluous/)))
                 arguments_to_send.push(arguments[i]);
         }
     	my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
@@ -261,7 +261,7 @@ optemo_module = (function (my){
         arguments = $("#filter_form").serialize().split("&");
         for (i=0; i<arguments.length; i++)
         {
-            if (!(arguments[i].match(/^superfluous/) || arguments[i].match(/authenticity_token/))) 
+            if (!(arguments[i].match(/^superfluous/))) 
                 arguments_to_send.push(arguments[i]);
         }
         my.loading_indicator_state.sidebar = true;
@@ -569,7 +569,7 @@ optemo_module = (function (my){
                     arguments = $("#filter_form").serialize().split("&");
                     for (i=0; i<arguments.length; i++)
                     {
-                        if (!(arguments[i].match(/^superfluous/) || arguments[i].match(/authenticity_token/)))
+                        if (!(arguments[i].match(/^superfluous/)))
                             arguments_to_send.push(arguments[i]);
                     }
                     if (leftsliderknob.data('toofar') || rightsliderknob.data('toofar')) {

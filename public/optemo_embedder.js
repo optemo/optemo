@@ -69,7 +69,7 @@ var optemo_socket_activator = (function () {
     	            scripts = data.match(regexp_pattern);
     	            data_to_add = data.split(regexp_pattern);
     	            script_nodes_to_append = Array();
-    	            for (i = 0; i < scripts.length; i++)
+    	            for (var i = 0; i < scripts.length; i++)
     	            {
     	                srcs = scripts[i].match(/javascripts[^?]+/); // We might want to make a check for src instead.
     	                if (srcs == null) {
@@ -86,7 +86,7 @@ var optemo_socket_activator = (function () {
     				// We have to load all scripts in order, but using labJS is too heavy. So, we do a recursive serial loader function.
     				// Although serial should == slow, the javascript we're loading should only be one file in production.
     				// The purpose of having this multiple-script functionality is for development mode.    				
-    				function lazyloader(i) {
+    				(function lazyloader(i) {
     				    // attach current script, using closure-scoped variable
         				var script = document.createElement("script");
                         script.setAttribute("type", "text/javascript");
@@ -105,74 +105,92 @@ var optemo_socket_activator = (function () {
                                     lazyloader(i + 1);
                                 };
                             }    
-                        }    				    
+                        } else {
+                       		if (script.readyState){  //IE
+                                script.onreadystatechange = function(){
+                                    if (script.readyState == "loaded" ||
+                                            script.readyState == "complete"){
+                                        script.onreadystatechange = null;
+                                        finish_loading();
+                                    }
+                                };
+                            } else {  //Others
+                                script.onload = function(){
+                                    finish_loading();
+                                };
+                            }
+                        }		    
                         script.setAttribute("src", script_nodes_to_append[i]);
                         document.getElementsByTagName("head")[0].appendChild(script);
-				    }(0);
+				    })(0);
     				
-    				optemo_module.embeddedString = REMOTE;
+    				function finish_loading() {
+        				optemo_module.embeddedString = REMOTE;
 
-    				// By this point we can guarantee that everything loaded serially.
-    	            data_to_append = new Array();
-    	            data_to_append.push(data_to_add[0])
-    	            for (i = 0; i < scripts.length; i++) {
-    	                // Either put back the <script> tag that is required for inline scripts, or else take out the < /script> part from the start of data_to_add[i+1].
-    	                // Each time, look at scripts[i]. If empty, we need to take out the /script part that starts the next block.
-    	                if (scripts[i] == '') { // If empty, take out the "/script" part and push the next piece. Also, if it's the XDM script itself
-    	                    data_to_append.push(data_to_add[i+1].replace(/<\/script>/,''));
-    	                } else { // If not empty, we need to put the <script> back in
-    						data_to_append.push(scripts[i]);
-    	                    data_to_append.push(data_to_add[i+1]);
-    	                }
-    	            }
-    	            // Now, we want to join all the data 
-    	            data_to_append = data_to_append.join("\n");
+        				// By this point we can guarantee that everything loaded serially.
+        	            data_to_append = new Array();
+        	            data_to_append.push(data_to_add[0])
+        	            for (i = 0; i < scripts.length; i++) {
+        	                // Either put back the <script> tag that is required for inline scripts, or else take out the < /script> part from the start of data_to_add[i+1].
+        	                // Each time, look at scripts[i]. If empty, we need to take out the /script part that starts the next block.
+        	                if (scripts[i] == '') { // If empty, take out the "/script" part and push the next piece. Also, if it's the XDM script itself
+        	                    data_to_append.push(data_to_add[i+1].replace(/<\/script>/,''));
+        	                } else { // If not empty, we need to put the <script> back in
+        						data_to_append.push(scripts[i]);
+        	                    data_to_append.push(data_to_add[i+1]);
+        	                }
+        	            }
+        	            // Now, we want to join all the data 
+        	            data_to_append = data_to_append.join("\n");
 
-    	            // Process the stylesheets next:
-    	            regexp_pattern = (/<link[^>]+>/g);
-    	            styles = data_to_append.match(regexp_pattern);
-    				if (styles) {
-    		            data_to_add = data_to_append.split(regexp_pattern);
-    		            for (i = 0; i < styles.length; i++) {
-    		                srcs = styles[i].match(/stylesheets[^?]+/)
-    		                if (srcs == null) { // no stylesheets
-    		                    // Do nothing
-    		                } else {
-    		                    var tag = document.createElement("link");
-    		                    tag.setAttribute("href", REMOTE + "/" + srcs);
-    		                    tag.setAttribute("type", "text/css");
-    		                    tag.setAttribute("rel", "stylesheet");
-    		                    headID.appendChild(tag);
-    		                }
-    		            }
-    		            data_to_append = data_to_add.join("\n");
-    				}
-    	            // Process images next. To do this, just find all the images, split the data as before, and change the src tag.
-    	            data_to_append = parse_data_by_pattern(data_to_append, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
+        	            // Process the stylesheets next:
+        	            regexp_pattern = (/<link[^>]+>/g);
+        	            styles = data_to_append.match(regexp_pattern);
+        				if (styles) {
+        		            data_to_add = data_to_append.split(regexp_pattern);
+        		            for (i = 0; i < styles.length; i++) {
+        		                srcs = styles[i].match(/stylesheets[^?]+/)
+        		                if (srcs == null) { // no stylesheets
+        		                    // Do nothing
+        		                } else {
+        		                    var tag = document.createElement("link");
+        		                    tag.setAttribute("href", REMOTE + "/" + srcs);
+        		                    tag.setAttribute("type", "text/css");
+        		                    tag.setAttribute("rel", "stylesheet");
+        		                    headID.appendChild(tag);
+        		                }
+        		            }
+        		            data_to_append = data_to_add.join("\n");
+        				}
+        	            // Process images next. To do this, just find all the images, split the data as before, and change the src tag.
+        	            data_to_append = parse_data_by_pattern(data_to_append, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
 
-    				// Now strip out any erroneous tags.
-    				regexp_patterns = ["<\/?html[^>]*>", "<!doctype[^>]+>", "<meta[^>]*>", "<\/?body[^>]*>", "<\/?head>", "<title>[^<]*<\/title>"];
-    				for (i = 0; i < regexp_patterns.length; i++) {
-    					data_to_append = data_to_append.replace(new RegExp(regexp_patterns[i], "gi"), '');
-    				}
-    				// Make that it's a normal return value the easy way, by looking for the word "filterbar," 
-    				// which is supposed to come back with each rendering of ajax.html.erb
-    				if (data_to_append.match(/filterbar/i)) 
-        				embed_tag.append(data_to_append);
+        				// Now strip out any erroneous tags.
+        				regexp_patterns = ["<\/?html[^>]*>", "<!doctype[^>]+>", "<meta[^>]*>", "<\/?body[^>]*>", "<\/?head>", "<title>[^<]*<\/title>"];
+        				for (i = 0; i < regexp_patterns.length; i++) {
+        					data_to_append = data_to_append.replace(new RegExp(regexp_patterns[i], "gi"), '');
+        				}
+        				// Make that it's a normal return value the easy way, by looking for the word "filterbar," 
+        				// which is supposed to come back with each rendering of ajax.html.erb
+        				if (data_to_append.match(/filterbar/i)) 
+            				embed_tag.append(data_to_append);
 			
-        			// Take the silkscreen and filter_bar_loading divs and move them to the main body tag.
-        			// This is important for positioning if there are relative divs, because otherwise the absolute
-        			// positioning is done relative to that div instead of the whole window. This deprecated code is kept here just in case it's an issue later.
-                    // detaching_array = ['#silkscreen', '#filter_bar_loading', '#outsidecontainer', '#popupTour1', '#popupTour2', '#popupTour3', '#popupTour4'];
-                    // for (var i = 0; i < detaching_array.length; i++) {
-                    //     var element = jQuery(detaching_array[i]);
-                    //     if (element.length > 0) element.detach().appendTo('body');
-                    // }
+            			// Take the silkscreen and filter_bar_loading divs and move them to the main body tag.
+            			// This is important for positioning if there are relative divs, because otherwise the absolute
+            			// positioning is done relative to that div instead of the whole window. This deprecated code is kept here just in case it's an issue later.
+                        // detaching_array = ['#silkscreen', '#filter_bar_loading', '#outsidecontainer', '#popupTour1', '#popupTour2', '#popupTour3', '#popupTour4'];
+                        // for (var i = 0; i < detaching_array.length; i++) {
+                        //     var element = jQuery(detaching_array[i]);
+                        //     if (element.length > 0) element.detach().appendTo('body');
+                        // }
                     
-                    optemo_module.IS_DRAG_DROP_ENABLED = (jQuery("#dragDropEnabled").html() === 'true');
-                    optemo_module.MODEL_NAME = jQuery("#modelname").html();
-                    optemo_module.DIRECT_LAYOUT = (jQuery('#directLayout').html() == "true");                    
-                    optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
+                        optemo_module.IS_DRAG_DROP_ENABLED = (jQuery("#dragDropEnabled").html() === 'true');
+                        optemo_module.MODEL_NAME = jQuery("#modelname").html();
+                        optemo_module.DIRECT_LAYOUT = (jQuery('#directLayout').html() == "true");                    
+                        optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
+                    
+                    
+                    }
     		    },
     			parseData: function (data) {
     	            data_to_append = parse_data_by_pattern(data, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
