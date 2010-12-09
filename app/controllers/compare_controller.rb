@@ -20,11 +20,6 @@ class CompareController < ApplicationController
       @indexload = true
     end
     correct_render
-  end 
-  
-  def bot
-    classVariables(Search.create({"action_type" => "initial"}))
-    render 'compare'
   end
 
   def groupby
