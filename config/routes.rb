@@ -65,5 +65,6 @@ Site::Application.routes.draw do
   match "filtering" => "compare#filtering"
   match "groupby/:feat" => "compare#groupby"
   match "sitemap" => "compare#sitemap"
+  match "bot" => "compare#bot"
   root :to => "compare#index"
 end

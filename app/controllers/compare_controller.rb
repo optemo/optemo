@@ -21,6 +21,11 @@ class CompareController < ApplicationController
     end
     correct_render
   end 
+  
+  def bot
+    classVariables(Search.create({"action_type" => "initial"}))
+    render 'compare'
+  end
 
   def groupby
     # Group products by specified feature
