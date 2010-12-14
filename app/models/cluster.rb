@@ -44,9 +44,15 @@ class Cluster
   #The represetative product for this cluster, assumes nodes ordered by utility
   def representative
     unless @rep
-      utility_list = ContSpec.cachemany(products, "utility")
-      # If you see an error here due to utility_list being nil, consider running "rake calculate_factors"
-      @rep = Product.cached(products[utility_list.index(utility_list.max)])
+      unless Session.current.search.sortby == "Price"
+        # The default is to sort by utility. At the moment, the alternative is price sorting.
+        utility_list = ContSpec.cachemany(products, "utility")
+        # If you see an error here due to utility_list being nil, consider running "rake calculate_factors"
+        @rep = Product.cached(products[utility_list.index(utility_list.max)])
+      else
+        price_list = ContSpec.cachemany(products, "price")
+        @rep = Product.cached(products[price_list.index(price_list.min)])
+      end
     end
     @rep
   end

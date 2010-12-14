@@ -615,6 +615,14 @@ optemo_module = (function (my){
     		submitCategorical();
     		return false;
     	});
+    	
+    	// Change sort method
+    	$('#sorting_method').unbind('change').change(function() {
+    	    var whichSortingMethodSelected = $(this).val();
+    	    var info = {'chosen_sorting_method' : whichSortingMethodSelected, 'filter_type' : 'sorting_method'};
+    	    my.loading_indicator_state.sidebar = true;
+            my.ajaxcall("/compare?ajax=true&sortby=" + whichSortingMethodSelected);
+	    });
 
     	// Remove a brand -- submit
     	$('.removefilter').unbind('click').click(function(){
