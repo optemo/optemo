@@ -62,6 +62,8 @@
 <%= render :partial => "tour_stub", :locals => {:s => s} %>
 
 <div id="backgroundPopup"></div>
+<% if @indexload %>
 <noscript><div id="noJavascript" style="position:absolute; top: 40px; left:30px; width:250px; background: #FFFFFF; opacity:0.8"><b>Javascript is disabled.</b>For full functionality, please enable javascript.</div></noscript>
+<% end %>
 </body>
 </html>

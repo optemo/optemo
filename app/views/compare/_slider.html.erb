@@ -1,7 +1,7 @@
 <div class='feature'>
 	<div class='label space' data-position="<%= i %>">
 		<%= render :partial => 'desc', :locals => {:feat => feat} %>
-		<%= link_to t('products.'+feat), "#" %>
+		<%= link_to t('products.'+feat), "#", :rel => "nofollow" %>
 		<span class="unitdisp">(<%= t('products.' + feat+"unit") %>)</span>
 		<% if Session.current.directLayout %>
 			<div class="groupby" data-feat="<%= feat %>" data-position="<%= i %>">Show Groups</div>

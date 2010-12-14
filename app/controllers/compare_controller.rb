@@ -1,5 +1,5 @@
 class CompareController < ApplicationController
-  layout :choose_layout
+  layout :choose_layout, :except => "sitemap"
   require 'open-uri'
   
   def index
@@ -8,19 +8,21 @@ class CompareController < ApplicationController
       hist = params[:hist].gsub(/\D/,'').to_i if params[:hist]
       search_history = Session.current.searches if hist && params[:page].nil?
       if params[:page]
-        classVariables(Search.create({:page => params[:page], "action_type" => "nextpage"}))
+        classVariables(Search.create({:page => params[:page], :sortby => params[:sortby], "action_type" => "nextpage"}))
       elsif search_history && hist <= search_history.length && hist > 0
         #Going back to a previous search
         classVariables(search_history[hist-1])
+      elsif params[:sortby] # Change sorting method via navigator_bar select box
+        classVariables(Search.create({:sortby => params[:sortby], "action_type" => "sortby"}))
       else
         #Initial clusters
-        classVariables(Search.create({"action_type" => "initial"}))
+        classVariables(Search.create({:sortby => params[:sortby], "action_type" => "initial"}))
       end
     else
       @indexload = true
     end
     correct_render
-  end 
+  end
 
   def groupby
     # Group products by specified feature

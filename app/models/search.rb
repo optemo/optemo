@@ -298,6 +298,8 @@ class Search < ActiveRecord::Base
       old_search = s.lastsearch if old_search.nil?
       self.parent_id = old_search.id
     end
+    # If there is a sort method to keep from last time, move it across
+    self.sortby = old_search[:sortby] if old_search && old_search[:sortby]
     case p["action_type"]
     when "initial"
       #Initial load of the homepage
@@ -313,6 +315,9 @@ class Search < ActiveRecord::Base
       #the next page button has been clicked
       self.page = p[:page]
       duplicateFeatures(old_search)
+    when "sortby"
+      self.sortby = p[:sortby]
+      duplicateFeatures(old_search)      
     when "groupby"
       self.groupby = p[:feat]
       duplicateFeatures(old_search)
