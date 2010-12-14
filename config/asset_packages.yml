@@ -5,7 +5,6 @@ javascripts:
   - helpers_shared
   - autocomplete_terms
   - jquery-ui-1.8.6.custom.min
-  - jquery.tablednd_0_5
   - jquery.history
   - application
   
