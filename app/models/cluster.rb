@@ -32,7 +32,8 @@ class Cluster
   def children
     unless @children
       start = Time.now
-      cluster_ids = Kmeans.compute([9,products.length].min,products)
+      weights = nil
+      cluster_ids = Kmeans.compute(9,products, weights)
       finish = Time.now
       @children = Cluster.group_by_clusterids(products,cluster_ids).map{|product_ids|Cluster.new(product_ids)}
       puts("*****######!!!!!!"+(finish-start).to_s)

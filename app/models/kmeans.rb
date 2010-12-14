@@ -8,6 +8,8 @@ inline :C do |builder|
   static VALUE kmeans_c(VALUE _points, VALUE n, VALUE d, VALUE cluster_n, VALUE _utilities){
     VALUE* points_a = RARRAY_PTR(_points);
     VALUE* utilities_a = RARRAY_PTR(_utilities);
+    //VALUE* weights_a = RARRAY_PTR(_weights);
+    
     int nn = NUM2INT(n);
     int dd = NUM2INT(d);
     int k = NUM2INT(cluster_n);
@@ -18,6 +20,8 @@ inline :C do |builder|
     int i, j, h;
     double** data = malloc(sizeof(double*)*nn);
     double* utilities = malloc(sizeof(double)*nn); 
+//    double* weights = malloc(sizeof(double)*);
+    
     double* avgUtilities = (double*)calloc(k, sizeof(double)); 
     for (i=0; i<nn; i++) data[i] = malloc(sizeof(double)*dd);    
     for (i=0; i<nn; i++){
@@ -27,6 +31,8 @@ inline :C do |builder|
     utilities[i] = NUM2DBL(utilities_a[i]);  
     }
   
+  // for (j=0; j<dd; j++) weights[j] = NUM2DBL(weights_a[j]);
+       
   //kmeans initializations
     int *counts = (int*)calloc(k, sizeof(int)); /* size of each cluster */
     double *dif = (double*)calloc(k, sizeof(double)); 
@@ -60,8 +66,8 @@ inline :C do |builder|
       for (h = 0; h < nn; h++) {
       	for (j = 0; j < dd; j++){
       		data[h][j] = (data[h][j] - dataMean[j]) / dataVar[j];
-      	//for (int j = 0; j < bool_feats; j++)
-      	//	dataN[h][dd + j] = data[h][con_feats + j];	
+         // for (int j = 0; j < bool_feats; j++)
+      	//    dataN[h][dd + j] = data[h][con_feats + j];	
     	  }
       }
     
@@ -86,7 +92,7 @@ inline :C do |builder|
          tmp_min = DBL_MAX;
         for (h=0; h<k; h++){
           dif[h] = 0.0;     
-          for (j=0; j<dd; j++) dif[h] += (data[i][j]-means_1[h][j])*(data[i][j]-means_1[h][j]);
+          for (j=0; j<dd; j++) dif[h] += ((data[i][j]-means_1[h][j])*(data[i][j]-means_1[h][j]));
           if (tmp_min>dif[h]){
             tmp_min = dif[h];
             tmp_ind = h;
@@ -179,19 +185,22 @@ inline :C do |builder|
 end
 
 
-
 # C kmeans function   
 def self.compute(number_clusters,p_ids, weights = nil)
 
   s = p_ids.size 
+  utility_list = ContSpec.by_feat("utility")
   # don't need to cluster if number of products is less than clusters
-  return (0...s).collect{|x| x} if (s<number_clusters)
-
+  if (s<number_clusters)
+    util_tmp = utility_list.sort{|x,y| y <=> x } 
+    return utility_list.map{|u| util_tmp.index(u)}
+  end   
+  
   begin
     specs = Product.specs(p_ids)
-    utility_list = ContSpec.by_feat("utility")
     raise ValidationError if utility_list.nil?
     $k = Kmeans.new unless $k
+    #$k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, utility_list, weights)
     $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, utility_list)
   rescue ValidationError
     puts "Falling back to ruby kmeans"
