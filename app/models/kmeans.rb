@@ -144,8 +144,7 @@ inline :C do |builder|
  
     double minU = DBL_MAX;
     for (h=0; h<k; h++) {
-      if (counts[h]==0) avgUtilities[h] = avgUtilities[h];
-      else  avgUtilities[h] = avgUtilities[h]/counts[h];
+      if (counts[h]>0) avgUtilities[h] = avgUtilities[h]/counts[h];
     }  
       
    //sort based on utilties   
@@ -170,10 +169,15 @@ inline :C do |builder|
         x[i+1] = key;
      	ids[i+1] = idKey;
     }
+    int it;
   //changing the label assignment based on the utilities.    
     for (i=0; i<nn; i++) {
       h =  labels[i];
-      labels[i] = ids[h];  
+      it=0;
+      while (it<k && ids[it]!=h){
+        it++;
+      }
+      labels[i] = it;  
     }
 
  //storing the labels in the ruby array
@@ -202,6 +206,7 @@ def self.compute(number_clusters,p_ids, weights = nil)
     $k = Kmeans.new unless $k
     #$k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, utility_list, weights)
     $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, utility_list)
+  
   rescue ValidationError
     puts "Falling back to ruby kmeans"
     Kmeans.ruby(number_clusters, specs)

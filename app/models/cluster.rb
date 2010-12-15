@@ -36,6 +36,7 @@ class Cluster
       cluster_ids = Kmeans.compute(9,products, weights)
       finish = Time.now
       @children = Cluster.group_by_clusterids(products,cluster_ids).map{|product_ids|Cluster.new(product_ids)}
+      debugger
       puts("*****######!!!!!!"+(finish-start).to_s)
     end
     @children
