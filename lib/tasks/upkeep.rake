@@ -7,11 +7,6 @@ task :calculate_factors => :environment do
     raise "usage: rake calculate_factors url=? (version=?) # url is a valid url from products.yml; sets product_type. `version` is optional; if not supplied, the version number will be incremented based on the maximum existing factor version for that product_type."
   end
   
-#  if ENV.include?("version")
-#    version = ENV["version"].to_i # We did error checking above already. If this exists, it's an integer.
-#  else
-#    version = Factor.maximum(:version, :conditions => ['product_type = ?', s.product_type]).to_i + 1 # Automatically increment the version number from existing factors.
-#  end
   cont_activerecords = []
   #cat_activerecords =[]
   #bin_activerecords = []
@@ -34,10 +29,12 @@ task :calculate_factors => :environment do
       cont_activerecords.push(newFactorRow)
     end
   end
+  
+  s.continuous["filter"].each{|f| ContSpec.delete_all(["name = ? and product_type = ?", f+"_factor", s.product_type])} # ContSpec records do not have a version number, so we have to wipe out the old ones.  
   # Do all record saving at the end for efficiency
   ContSpec.transaction do
     cont_activerecords.each(&:save)
-  end 
+  end   
 end
 
 desc "Run boostexter to generate strong hypothesis files or Parse boostexter strong hypothesis files and save in database"
