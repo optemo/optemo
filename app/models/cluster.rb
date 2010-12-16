@@ -32,7 +32,7 @@ class Cluster
   def children
     unless @children
       start = Time.now
-      weights = nil
+      weights = set_weights
       cluster_ids = Kmeans.compute(9,products, weights)
       finish = Time.now
       @children = Cluster.group_by_clusterids(products,cluster_ids).map{|product_ids|Cluster.new(product_ids)}
@@ -40,7 +40,6 @@ class Cluster
     end
     @children
   end
-  
  
   #The represetative product for this cluster, assumes nodes ordered by utility
   def representative
@@ -65,9 +64,20 @@ class Cluster
   def numclusters
     children.size
   end  
- 
+  
+  def set_weights
+    dim = products.first.size 
+    weights = [1.0/9]*dim
+    if Session.current.search.sortby=='Price' # price is selected as prefered order
+      weights = [0.2/8]*dim 
+      weights[Session.current.continuous["cluster"].index('price')] = 0.8    
+    end
+    weights                         
+  end
+  
   #Grouping products by cluster_ids
   def self.group_by_clusterids(product_ids, cluster_ids)
     product_ids.mygroup_by{|e,i|cluster_ids[i]}
   end
+  
 end

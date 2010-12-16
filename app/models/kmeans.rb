@@ -5,10 +5,10 @@ require 'inline'
 inline :C do |builder|
   builder.c "
   #include <math.h> 
-  static VALUE kmeans_c(VALUE _points, VALUE n, VALUE d, VALUE cluster_n, VALUE _utilities){
+  static VALUE kmeans_c(VALUE _points, VALUE n, VALUE d, VALUE cluster_n, VALUE _utilities, VALUE _weights){
     VALUE* points_a = RARRAY_PTR(_points);
     VALUE* utilities_a = RARRAY_PTR(_utilities);
-    //VALUE* weights_a = RARRAY_PTR(_weights);
+    VALUE* weights_a = RARRAY_PTR(_weights);
     
     int nn = NUM2INT(n);
     int dd = NUM2INT(d);
@@ -20,7 +20,7 @@ inline :C do |builder|
     int i, j, h;
     double** data = malloc(sizeof(double*)*nn);
     double* utilities = malloc(sizeof(double)*nn); 
-//    double* weights = malloc(sizeof(double)*);
+    double* weights = malloc(sizeof(double)*dd);
     
     double* avgUtilities = (double*)calloc(k, sizeof(double)); 
     for (i=0; i<nn; i++) data[i] = malloc(sizeof(double)*dd);    
@@ -31,7 +31,7 @@ inline :C do |builder|
     utilities[i] = NUM2DBL(utilities_a[i]);  
     }
   
-  // for (j=0; j<dd; j++) weights[j] = NUM2DBL(weights_a[j]);
+   for (j=0; j<dd; j++) weights[j] = NUM2DBL(weights_a[j]);
        
   //kmeans initializations
     int *counts = (int*)calloc(k, sizeof(int)); /* size of each cluster */
@@ -92,7 +92,7 @@ inline :C do |builder|
          tmp_min = DBL_MAX;
         for (h=0; h<k; h++){
           dif[h] = 0.0;     
-          for (j=0; j<dd; j++) dif[h] += ((data[i][j]-means_1[h][j])*(data[i][j]-means_1[h][j]));
+          for (j=0; j<dd; j++) dif[h] += weights[j]*((data[i][j]-means_1[h][j])*(data[i][j]-means_1[h][j]));
           if (tmp_min>dif[h]){
             tmp_min = dif[h];
             tmp_ind = h;
@@ -190,7 +190,7 @@ end
 
 
 # C kmeans function   
-def self.compute(number_clusters,p_ids, weights = nil)
+def self.compute(number_clusters,p_ids, weights)
 
   s = p_ids.size 
   utility_list = ContSpec.by_feat("utility")
@@ -204,8 +204,8 @@ def self.compute(number_clusters,p_ids, weights = nil)
     specs = Product.specs(p_ids)
     raise ValidationError if utility_list.nil?
     $k = Kmeans.new unless $k
-    #$k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, utility_list, weights)
-    $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, utility_list)
+    $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, utility_list, weights)
+    #$k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, utility_list)
   
   rescue ValidationError
     puts "Falling back to ruby kmeans"
