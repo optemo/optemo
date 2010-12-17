@@ -5,10 +5,10 @@ require 'inline'
 inline :C do |builder|
   builder.c "
   #include <math.h> 
-  static VALUE kmeans_c(VALUE _points, VALUE n, VALUE d, VALUE cluster_n, VALUE _utilities, VALUE _weights){
+  static VALUE kmeans_c(VALUE _points, VALUE n, VALUE d, VALUE cluster_n,VALUE _factors, VALUE _weights){
     VALUE* points_a = RARRAY_PTR(_points);
-    VALUE* utilities_a = RARRAY_PTR(_utilities);
     VALUE* weights_a = RARRAY_PTR(_weights);
+    VALUE* factors_a = RARRAY_PTR(_factors);
     
     int nn = NUM2INT(n);
     int dd = NUM2INT(d);
@@ -16,22 +16,23 @@ inline :C do |builder|
     double DBL_MAX = 10000000.0;
     double t = 0.000000001;
     
-    VALUE labels_r = rb_ary_new2(nn);
+    VALUE labels_r = rb_ary_new2(nn+k);
     int i, j, h;
     double** data = malloc(sizeof(double*)*nn);
     double* utilities = malloc(sizeof(double)*nn); 
     double* weights = malloc(sizeof(double)*dd);
     
+    for (j=0; j<dd; j++) weights[j] = NUM2DBL(weights_a[j]);
     double* avgUtilities = (double*)calloc(k, sizeof(double)); 
     for (i=0; i<nn; i++) data[i] = malloc(sizeof(double)*dd);    
     for (i=0; i<nn; i++){
       for (j=0; j<dd; j++) {   
          data[i][j]= NUM2DBL(points_a[i*dd+j]);
+         utilities[i] += weights[j]*NUM2DBL(factors_a[i*dd+j]);  
       }
-    utilities[i] = NUM2DBL(utilities_a[i]);  
     }
   
-   for (j=0; j<dd; j++) weights[j] = NUM2DBL(weights_a[j]);
+  
        
   //kmeans initializations
     int *counts = (int*)calloc(k, sizeof(int)); /* size of each cluster */
@@ -182,6 +183,7 @@ inline :C do |builder|
 
  //storing the labels in the ruby array
   for (j=0; j<nn; j++) rb_ary_store(labels_r, j, INT2NUM(labels[j]));
+  for (j=0; j<k; j++) rb_ary_store(labels_r, j, DBL2NUM(avgUtilities[j]));
   
   return labels_r;
   }
@@ -194,6 +196,11 @@ def self.compute(number_clusters,p_ids, weights)
 
   s = p_ids.size 
   utility_list = ContSpec.by_feat("utility")
+
+  factors =[]
+  Session.current.continuous["filter"].each{|f| factors << ContSpec.by_feat(f+"_factor")}
+ 
+  
   # don't need to cluster if number of products is less than clusters
   if (s<number_clusters)
     util_tmp = utility_list.sort{|x,y| y <=> x } 
@@ -204,7 +211,7 @@ def self.compute(number_clusters,p_ids, weights)
     specs = Product.specs(p_ids)
     raise ValidationError if utility_list.nil?
     $k = Kmeans.new unless $k
-    $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, utility_list, weights)
+    $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, factors.flatten, weights)
     #$k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, utility_list)
   
   rescue ValidationError

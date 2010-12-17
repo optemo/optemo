@@ -35,6 +35,7 @@ class Cluster
       weights = set_weights
       cluster_ids = Kmeans.compute(9,products, weights)
       finish = Time.now
+      debugger
       @children = Cluster.group_by_clusterids(products,cluster_ids).map{|product_ids|Cluster.new(product_ids)}
       puts("*****######!!!!!!"+(finish-start).to_s)
     end
@@ -69,8 +70,8 @@ class Cluster
     dim = products.first.size 
     weights = [1.0/9]*dim
     if Session.current.search.sortby=='Price' # price is selected as prefered order
-      weights = [0.2/8]*dim 
-      weights[Session.current.continuous["cluster"].index('price')] = 0.8    
+      weights = [0]*dim #[0.2/8]*dim 
+      weights[Session.current.continuous["cluster"].index('price')] = 1 # 0.8    
     end
     weights                         
   end
