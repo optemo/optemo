@@ -9,6 +9,7 @@ inline :C do |builder|
     VALUE* points_a = RARRAY_PTR(_points);
     VALUE* weights_a = RARRAY_PTR(_weights);
     VALUE* factors_a = RARRAY_PTR(_factors);
+//    VALUE* utilities_a = RARRAY_PTR(_utilitits)
     
     int nn = NUM2INT(n);
     int dd = NUM2INT(d);
@@ -16,10 +17,10 @@ inline :C do |builder|
     double DBL_MAX = 10000000.0;
     double t = 0.000000001;
     
-    VALUE labels_r = rb_ary_new2(nn+k);
+    VALUE labels_r = rb_ary_new2(nn);
     int i, j, h;
     double** data = malloc(sizeof(double*)*nn);
-    double* utilities = malloc(sizeof(double)*nn); 
+    double* utilities = (double*)calloc(nn, sizeof(double)); 
     double* weights = malloc(sizeof(double)*dd);
     
     for (j=0; j<dd; j++) weights[j] = NUM2DBL(weights_a[j]);
@@ -30,6 +31,7 @@ inline :C do |builder|
          data[i][j]= NUM2DBL(points_a[i*dd+j]);
          utilities[i] += weights[j]*NUM2DBL(factors_a[i*dd+j]);  
       }
+      
     }
   
   
@@ -183,7 +185,7 @@ inline :C do |builder|
 
  //storing the labels in the ruby array
   for (j=0; j<nn; j++) rb_ary_store(labels_r, j, INT2NUM(labels[j]));
-  for (j=0; j<k; j++) rb_ary_store(labels_r, j, DBL2NUM(avgUtilities[j]));
+  //for (j=0; j<k; j++) rb_ary_store(labels_r, j, DBL2NUM(avgUtilities[j]));
   
   return labels_r;
   }
@@ -211,7 +213,7 @@ def self.compute(number_clusters,p_ids, weights)
     specs = Product.specs(p_ids)
     raise ValidationError if utility_list.nil?
     $k = Kmeans.new unless $k
-    $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, factors.flatten, weights)
+    $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, factors.transpose.flatten, weights)
     #$k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, utility_list)
   
   rescue ValidationError

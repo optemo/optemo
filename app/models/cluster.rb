@@ -70,8 +70,8 @@ class Cluster
     dim = products.first.size 
     weights = [1.0/9]*dim
     if Session.current.search.sortby=='Price' # price is selected as prefered order
-      weights = [0]*dim #[0.2/8]*dim 
-      weights[Session.current.continuous["cluster"].index('price')] = 1 # 0.8    
+      weights = [0.1/8]*dim  
+      weights[Session.current.continuous["cluster"].index('price')] = 0.9    
     end
     weights                         
   end
