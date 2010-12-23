@@ -78,6 +78,10 @@ class Product < ActiveRecord::Base
   def descurl
     small_title.tr(' /','_-')
   end
+  
+  def small_title
+    [brand,model].join(" ")
+  end
 
   def mobile_descurl
     "/show/"+[id,brand,model].join('-').tr(' /','_-')

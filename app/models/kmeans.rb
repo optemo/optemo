@@ -197,21 +197,21 @@ end
 def self.compute(number_clusters,p_ids, weights)
 
   s = p_ids.size 
-  utility_list = ContSpec.by_feat("utility")
+  #utility_list = ContSpec.by_feat("utility")
 
   factors =[]
   Session.current.continuous["filter"].each{|f| factors << ContSpec.by_feat(f+"_factor")}
- 
   
   # don't need to cluster if number of products is less than clusters
   if (s<number_clusters)
-    util_tmp = utility_list.sort{|x,y| y <=> x } 
-    return utility_list.map{|u| util_tmp.index(u)}
+    #util_tmp = utility_list.sort{|x,y| y <=> x } 
+    #return utility_list.map{|u| util_tmp.index(u)}
+    return (0...s).to_a
   end   
   
   begin
     specs = Product.specs(p_ids)
-    raise ValidationError if utility_list.nil?
+    #raise ValidationError if utility_list.nil?
     $k = Kmeans.new unless $k
     $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, factors.transpose.flatten, weights)
     #$k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, utility_list)

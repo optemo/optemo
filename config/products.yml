@@ -35,7 +35,7 @@ cameras:
 
 bestbuy:
     product_type: camera_bestbuy
-    layout: lineview
+    layout: gridview
     maxresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]

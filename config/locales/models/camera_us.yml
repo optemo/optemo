@@ -1,5 +1,5 @@
 en:
-    camera_us:
+    camera_bestbuy:
         # All language-dependent definitions in models
         url:                        "browsethenbuy.com"
         sitetitle:                  "Browse Then Buy"
@@ -13,6 +13,7 @@ en:
         paperinput:                 "Paper Tray Size"
         resolutionmax:              "Resolution"
         maximumresolution:          "Resolution"
+        maxresolution:              "Resolution"
         displaysize:                "Screen Size"
         opticalzoom:                "Optical Zoom"
         scanner:                    "Scanner"
