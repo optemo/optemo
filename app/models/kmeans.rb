@@ -9,7 +9,6 @@ inline :C do |builder|
     VALUE* points_a = RARRAY_PTR(_points);
     VALUE* weights_a = RARRAY_PTR(_weights);
     VALUE* factors_a = RARRAY_PTR(_factors);
-//    VALUE* utilities_a = RARRAY_PTR(_utilitits)
     
     int nn = NUM2INT(n);
     int dd = NUM2INT(d);
@@ -17,11 +16,14 @@ inline :C do |builder|
     double DBL_MAX = 10000000.0;
     double t = 0.000000001;
     
-    VALUE labels_r = rb_ary_new2(nn);
+    VALUE labels_and_reps = rb_ary_new2(nn+k);
     int i, j, h;
     double** data = malloc(sizeof(double*)*nn);
     double* utilities = (double*)calloc(nn, sizeof(double)); 
+    int* newlabels = (int*)calloc(k, sizeof(int)); 
+    int* newreps = (int*)calloc(k, sizeof(int)); 
     double* weights = malloc(sizeof(double)*dd);
+    int* reps = malloc(sizeof(int)*k);
     
     for (j=0; j<dd; j++) weights[j] = NUM2DBL(weights_a[j]);
     double* avgUtilities = (double*)calloc(k, sizeof(double)); 
@@ -33,8 +35,6 @@ inline :C do |builder|
       }
       
     }
-  
-  
        
   //kmeans initializations
     int *counts = (int*)calloc(k, sizeof(int)); /* size of each cluster */
@@ -139,9 +139,10 @@ inline :C do |builder|
     for(i=0; i<k; i++) labels[i] = i;
   }  
   
-  
+    for (i=0; i<k; i++) reps[i] = i;
     for (i=0; i<nn; i++){
       h = labels[i];
+      if (utilities[reps[h]]<utilities[i]) reps[h]=i;
       avgUtilities[h] += utilities[i]; 
     }
  
@@ -173,21 +174,33 @@ inline :C do |builder|
      	ids[i+1] = idKey;
     }
     int it;
-  //changing the label assignment based on the utilities.    
+    int* id_map = malloc(sizeof(int)*k);
+    int* temp_reps = malloc(sizeof(int)*k);
+    int* temp_labels = malloc(sizeof(int)*nn);
+    for (i=0; i<nn; i++)temp_labels[i] = labels[i];
+  //changing the label assignment based on avg utilities.    
     for (i=0; i<nn; i++) {
       h =  labels[i];
+      labels[i] = newlabels[h];
       it=0;
       while (it<k && ids[it]!=h){
         it++;
       }
-      labels[i] = it;  
+      labels[i] = it;
+      id_map[temp_labels[i]] = it;  
+      //id_map[labels[i]] = it;
     }
 
+  for (j=0; j<k; j++) temp_reps[j] = reps[j];
+  for (j=0;j<k; j++){
+    reps[id_map[j]] = temp_reps[j];
+  }
+
  //storing the labels in the ruby array
-  for (j=0; j<nn; j++) rb_ary_store(labels_r, j, INT2NUM(labels[j]));
-  //for (j=0; j<k; j++) rb_ary_store(labels_r, j, DBL2NUM(avgUtilities[j]));
+  for (j=0; j<nn; j++) rb_ary_store(labels_and_reps, j, INT2NUM(labels[j]));
+  for (j=0; j<k; j++) rb_ary_store(labels_and_reps, nn+j, INT2NUM(reps[j]));
   
-  return labels_r;
+  return labels_and_reps;
   }
   "
 end
@@ -197,33 +210,39 @@ end
 def self.compute(number_clusters,p_ids, weights)
 
   s = p_ids.size 
-  utility_list = ContSpec.by_feat("utility")
-
   factors =[]
   Session.current.continuous["filter"].each{|f| factors << ContSpec.by_feat(f+"_factor")}
- 
+  ft = factors.transpose
   
   # don't need to cluster if number of products is less than clusters
   if (s<number_clusters)
+   
+    utility_list = weighted_ft(ft, weights).map{|f| f. inject(:+)}
     util_tmp = utility_list.sort{|x,y| y <=> x } 
-    return utility_list.map{|u| util_tmp.index(u)}
-  end   
-  
+    ordered_list = util_tmp.map{|u| utility_list.index(u)}
+    debugger
+    return ordered_list + ordered_list
+  end  
+     
   begin
     specs = Product.specs(p_ids)
-    raise ValidationError if utility_list.nil?
+    raise ValidationError if specs.nil?
+    raise ValidationError unless ft.size == specs.size
+    raise ValidationError unless ft.first.size == specs.first.size 
+    raise ValidationError unless weights.size == specs.first.size
     $k = Kmeans.new unless $k
-    $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, factors.transpose.flatten, weights)
-    #$k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, utility_list)
+    #kmeans_c(VALUE _points, VALUE n, VALUE d, VALUE cluster_n,VALUE _factors, VALUE _weights)
+    $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, ft.flatten, weights)  
   
   rescue ValidationError
     puts "Falling back to ruby kmeans"
+    debugger
     Kmeans.ruby(number_clusters, specs)
   end
 end
 
-# regular kmeans function   
-def self.ruby(number_clusters, specs, weights = nil)
+# regular kmeans function     ## ruby function does not sort by utility ad don't pick the highest utility as the rep
+def self.ruby(number_clusters, specs, weights)
   weights = [1]*specs.first.size if weights.nil?
   thresh = 0.000001
   mean_1 = self.seed(number_clusters, specs)
@@ -234,15 +253,17 @@ def self.ruby(number_clusters, specs, weights = nil)
    mean_2 = mean_1 
    specs.each_index do |i| 
      mean_1.each_index do |c|
-       dif[c] = self.distance(specs[i], mean_1[c])
+       dif[c] = self.distance(specs[i], mean_1[c], weights)
      end
      labels[i] = dif.index(dif.min)
    end 
    mean_1= self.means(number_clusters, specs, labels)
    z=0.0;
-   mean_1.each_index{|c| z+=self.distance(mean_1[c], mean_2[c])}
+   mean_1.each_index{|c| z+=self.distance(mean_1[c], mean_2[c], weights)}
   end while z > thresh
-  labels  
+  reps = [];
+  (0...s).to_a.each{|i| reps<< labels.index(i)}
+  labels + reps   
 end
 
 #selecting the initial cluster centers
@@ -267,10 +288,10 @@ def self.means(number_clusters, specs, labels)
 end
 
 #Euclidian distance function
-def self.distance(point1, point2)
+def self.distance(point1, point2, distance)
   dist = 0
   point1.each_index do |i|
-    diff = point1[i]-point2[i]
+    diff = weights[i]*(point1[i]-point2[i])
     dist += diff*diff
   end
   dist
@@ -314,6 +335,16 @@ end
     var_all
   end
 
+  def self.weighted_ft(ft, weights)
+    weighted_ft=[]
+    for i in (0...ft.size)
+      weighted_ft_i = []
+      ft[i].each_with_index{|f,j| weighted_ft_i << weights[j]*f}
+      weighted_ft << weighted_ft_i
+    end
+    return weighted_ft
+  end  
+  
 end
 class ValidationError < ArgumentError; end
 #Just like group_by, except that results is just a grouped array
