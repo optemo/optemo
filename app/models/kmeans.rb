@@ -213,6 +213,7 @@ def self.compute(number_clusters,p_ids, weights)
   s = p_ids.size 
   factors =[]
   Session.current.continuous["filter"].each{|f| factors << ContSpec.by_feat(f+"_factor")}
+  raise ValidationError, "There are no factors" if factors.empty?
   ft = factors.transpose
   
   # don't need to cluster if number of products is less than clusters
