@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101119000539) do
+ActiveRecord::Schema.define(:version => 20101213230000) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -1169,6 +1169,7 @@ ActiveRecord::Schema.define(:version => 20101119000539) do
     t.string   "groupby"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "sortby"
   end
 
   create_table "surveys", :force => true do |t|

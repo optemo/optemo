@@ -16,7 +16,7 @@ class CatSpec < ActiveRecord::Base
     end  
   end
 
-  def self.cachemany(p_ids, feat) # Returns numerical (floating point) values only
+  def self.cachemany(p_ids, feat) # Returns different values 
     CachingMemcached.cache_lookup("CatSpecs#{feat}#{p_ids.join(',').hash}") do
       select("value").where(["product_id IN (?) and name = ?", p_ids, feat]).map(&:value)
     end

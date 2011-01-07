@@ -7,17 +7,12 @@ task :calculate_factors => :environment do
     raise "usage: rake calculate_factors url=? (version=?) # url is a valid url from products.yml; sets product_type. `version` is optional; if not supplied, the version number will be incremented based on the maximum existing factor version for that product_type."
   end
   
-  if ENV.include?("version")
-    version = ENV["version"].to_i # We did error checking above already. If this exists, it's an integer.
-  else
-    version = Factor.maximum(:version, :conditions => ['product_type = ?', s.product_type]).to_i + 1 # Automatically increment the version number from existing factors.
-  end
-  factor_activerecords = []
-  utility_activerecords = []
+  cont_activerecords = []
+  #cat_activerecords =[]
+  #bin_activerecords = []
   cont_spec_local_cache = {} # This saves doing many ContSpec lookups. It's a hash with {id => value} pairs
   all_products = Product.valid.instock
   all_products.each do |product|
-    newUtilityRow = ContSpec.new({:product_type => s.product_type, :name => "utility", :product_id => product.id, :value => 0})
     s.continuous["filter"].each do |f|
       unless cont_spec_local_cache[f]
         records = ContSpec.find(:all, :select => 'product_id, value', :conditions => ["product_id IN (?) and name = ?", all_products, f])
@@ -27,24 +22,19 @@ task :calculate_factors => :environment do
         end
         cont_spec_local_cache[f] = temp_hash
       end
-      newFactorRow = Factor.new({:product_id => product.id, :product_type => s.product_type, :cont_var => f, :version => version})
+      newFactorRow = ContSpec.new({:product_id => product.id, :product_type => s.product_type, :name => f+"_factor"})
       fVal = cont_spec_local_cache[f][product.id]
       debugger unless fVal # The alternative here is to crash. This should never happen if Product.valid.instock is doing its job.
       newFactorRow.value = calculateFactor(fVal, f, cont_spec_local_cache[f])
-      factor_activerecords.push(newFactorRow)
-      # Now that we have the factor value for that row, add it to the utility
-      newUtilityRow.value += newFactorRow.value
+      cont_activerecords.push(newFactorRow)
     end
-    utility_activerecords.push(newUtilityRow)
   end
+  
+  s.continuous["filter"].each{|f| ContSpec.delete_all(["name = ? and product_type = ?", f+"_factor", s.product_type])} # ContSpec records do not have a version number, so we have to wipe out the old ones.  
   # Do all record saving at the end for efficiency
-  Factor.transaction do
-    factor_activerecords.each(&:save)
-  end
-  ContSpec.delete_all(["name = ? and product_type = ?", "utility", s.product_type]) # ContSpec records do not have a version number, so we have to wipe out the old ones.  
   ContSpec.transaction do
-    utility_activerecords.each(&:save)
-  end    
+    cont_activerecords.each(&:save)
+  end   
 end
 
 desc "Run boostexter to generate strong hypothesis files or Parse boostexter strong hypothesis files and save in database"

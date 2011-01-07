@@ -40,6 +40,9 @@ class Product < ActiveRecord::Base
   def self.specs(p_ids = nil)
     st = []
     Session.current.continuous["filter"].each{|f| st << ContSpec.by_feat(f)}
+    #Session.current.binary["filter"].each{|f| BinSpec.by_feat(f)==1 ? st<<[1,0] : st<<[0,1]}
+    #Session.current.categorical["filter"].each{|f| st<< self.to_array(CatSpec.by_feat(f))} 
+      
     #Check for 1 spec per product
     raise ValidationError unless Session.current.search.products_size == st.first.length
     #Check for no nil values
@@ -53,6 +56,7 @@ class Product < ActiveRecord::Base
       Session.current.categorical["cluster"].each{|f|  st<<CatSpec.cachemany(p_ids, f)} 
       Session.current.binary["cluster"].each{|f|  st << BinSpec.cachemany(p_ids, f)}
     end
+    #st.flatten.transpose
     st.transpose
   end
   
@@ -73,6 +77,10 @@ class Product < ActiveRecord::Base
   
   def descurl
     small_title.tr(' /','_-')
+  end
+  
+  def small_title
+    [brand,model].join(" ")
   end
 
   def mobile_descurl
@@ -109,5 +117,10 @@ class Product < ActiveRecord::Base
   def self.per_page
     9
   end
+  def self.to_array(a) # converting categorical values to numbers
+    uniqVals = a.uniq
+    r = uniqVals.size
+    a.map{|i| s=[0]*r; s[uniqVals.index(i)]=1;s}
+  end  
 end
 class ValidationError < ArgumentError; end

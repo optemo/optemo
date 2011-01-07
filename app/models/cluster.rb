@@ -1,14 +1,17 @@
 class Cluster
   require 'inline'
   attr :products
+  attr :rep_id
   
-  def initialize(products)
-    @products = products
-    
+  def initialize(products, rep_id)
+    @products = products # necessary?
+    @rep_id = rep_id
     if Rails.env.development?
       Site::Application::CLUSTER_CACHE[products.hash.abs]=products
+      Site::Application::CLUSTER_CACHE[rep_id.hash.abs]=rep_id
     else
       Rails.cache.write("Cluster#{products.hash.abs}", products)
+      Rails.cache.write("Cluster#{rep_id.hash.abs}", rep_id)
     end
   end
   
@@ -32,21 +35,24 @@ class Cluster
   def children
     unless @children
       start = Time.now
-      cluster_ids = Kmeans.compute([9,products.length].min,products)
+      weights = set_weights
+      cluster_ids_and_reps = Kmeans.compute(9,products, weights)
+      cluster_ids = cluster_ids_and_reps[0...products.size] 
+      rep_ids = cluster_ids_and_reps[products.size...cluster_ids_and_reps.size]
       finish = Time.now
-      @children = Cluster.group_by_clusterids(products,cluster_ids).map{|product_ids|Cluster.new(product_ids)}
+      @children = []
+      grouped_ids = Cluster.group_by_clusterids(products,cluster_ids)
+      grouped_ids.each_with_index{|product_ids, i| @children << Cluster.new(product_ids,products[rep_ids[i]])}
       puts("*****######!!!!!!"+(finish-start).to_s)
+      
     end
     @children
   end
-  
  
   #The represetative product for this cluster, assumes nodes ordered by utility
   def representative
     unless @rep
-      utility_list = ContSpec.cachemany(products, "utility")
-      # If you see an error here due to utility_list being nil, consider running "rake calculate_factors"
-      @rep = Product.cached(products[utility_list.index(utility_list.max)])
+      @rep = Product.cached(rep_id)
     end
     @rep
   end
@@ -58,9 +64,20 @@ class Cluster
   def numclusters
     children.size
   end  
- 
+  
+  def set_weights
+    dim = 4 #products.first.size 
+    weights = [1.0/9]*dim
+    if Session.current.search.sortby=='Price' # price is selected as prefered order
+      weights = [0.05/8]*dim  
+      weights[Session.current.continuous["cluster"].index('price')] = 0.95    
+    end
+    weights                         
+  end
+  
   #Grouping products by cluster_ids
   def self.group_by_clusterids(product_ids, cluster_ids)
     product_ids.mygroup_by{|e,i|cluster_ids[i]}
   end
+  
 end
