@@ -3,8 +3,6 @@ set :repository,  "git@jaguar:site.git"
 set :domain, "jaguar"
 set :branch, "staging"
 set :user, "#{ `whoami`.chomp }"
-# There is also this method, might be better in some cases:
-# { Capistrano::CLI.ui.ask("User name: ") }
 
 # If you aren't deploying to /u/apps/#{application} on the target
 # servers (which is the default), you can specify the actual location
@@ -18,7 +16,10 @@ default_run_options[:pty] = true
 # The above command allows for interactive commands like entering ssh passwords, but
 # the problem is that "umask = 002" is getting ignored, since .profile isn't being sourced.
 # :pty => true enables for a given command if we set the above to false eventually
+# ssh_options[:port] = 5151   # Re-enable if we are deploying remotely again
 set :use_sudo, false
+# There is also this method, might be better in some cases:
+# { Capistrano::CLI.ui.ask("User name: ") }
 
 role :app, domain
 role :web, domain
@@ -61,27 +62,26 @@ end
 
 desc "Configure the server files"
 task :serversetup do
-  hc_path = "#{current_path}/lib/c_code/clusteringCodes/codes"
   # Instantiate the database.yml file
   run "cd #{current_path}/config              && cp -f database.yml.deploy database.yml"
+  #run "cd #{current_path}/config/ultrasphinx   && cp -f development.conf.deploy development.conf && cp -f production.conf.deploy production.conf"
+end
+
+task :restartmemcached do
+  run "ps ax | awk '/memcached/ && !/awk/ {print $1}' | sudo xargs kill ; memcached -d"
+end
+
+task :fetchAutocomplete do
+  run "RAILS_ENV=production rake -f #{current_path}/Rakefile autocomplete:fetch"
 end
 
 task :redopermissions do
   run "find #{current_path} #{current_path}/../../shared ! -perm /g+w -execdir chmod g+w {} +"
 end
 
-task :fetchAutocomplete do
-  run "rake -f #{current_path}/Rakefile autocomplete:fetch"
-end
-
-task :restartmemcached do
-  # The extra 'sudo' there is required so that 'kill' executes
-  sudo "ps ax | awk '/memcached/ && !/awk/ {print $1}' | sudo xargs kill ; memcached -d"
-end
-
+# redopermissions is last, so that if it fails due to the searchd pid, no other tasks get blocked
 after :deploy, "serversetup"
 after :serversetup, "reindex"
-after :reindex, "fetchAutocomplete"
+after :reindex, "restartmemcached"
+after :restartmemcached, "fetchAutocomplete"
 after :fetchAutocomplete, "redopermissions"
-after :redopermissions, "compilec"
-after :compilec, "restartmemcached"
