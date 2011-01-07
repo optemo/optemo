@@ -216,7 +216,7 @@ def self.compute(number_clusters,p_ids, weights)
   ft = factors.transpose
   
   # don't need to cluster if number of products is less than clusters
-  debugger
+
   if (s<number_clusters)
     utilitylist = weighted_ft(ft, weights).map{|f| f. inject(:+)}
     #if utilities are the same
