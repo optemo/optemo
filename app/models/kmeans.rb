@@ -70,13 +70,13 @@ inline :C do |builder|
      	for (j = 0; j < dd; j++){
      		data[h][j] = (data[h][j] - dataMean[j]) / dataVar[j];
         // for (int j = 0; j < bool_feats; j++)
-     	//    dataN[h][dd + j] = data[h][con_feats + j];	
+      	//    dataN[h][dd + j] = data[h][con_feats + j];	
    	  }
      }
    
    ///initializing the first means
     for(h=0; h<k;h++)
-       for(j=0; j<dd; j++) means_1[h][j] = data[h][j];
+       for(j=0; j<dd; j++) means_1[h][j] = data[h+20][j];
    
    double z=0.0;
    double tmp_min = DBL_MAX;
