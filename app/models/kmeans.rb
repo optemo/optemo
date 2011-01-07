@@ -76,7 +76,7 @@ inline :C do |builder|
    
    ///initializing the first means
     for(h=0; h<k;h++)
-       for(j=0; j<dd; j++) means_1[h][j] = data[h+20][j];
+       for(j=0; j<dd; j++) means_1[h][j] = data[h][j];
    
    double z=0.0;
    double tmp_min = DBL_MAX;
