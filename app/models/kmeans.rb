@@ -75,7 +75,7 @@ inline :C do |builder|
      }
    
    ///initializing the first means
-    for(h=(nn-1); h<(nn-k);h--)
+    for(h=0; h<k;h++)
        for(j=0; j<dd; j++) means_1[h][j] = data[h][j];
    
    double z=0.0;
@@ -189,6 +189,7 @@ inline :C do |builder|
      
      labels[i] = it;
      id_map[temp_labels[i]] = it;  
+     //id_map[labels[i]] = it;
    }
 
  for (j=0; j<k; j++) temp_reps[j] = reps[j];
@@ -199,7 +200,7 @@ inline :C do |builder|
 ////storing the labels in the ruby array
   for (j=0; j<nn; j++) rb_ary_store(labels_and_reps, j, INT2NUM(labels[j]));
  for (j=0; j<k; j++) rb_ary_store(labels_and_reps, nn+j, INT2NUM(reps[j]));
-
+//  for (j=0; j<k+nn; j++) rb_ary_store(labels_and_reps,j , INT2NUM(j));
   return labels_and_reps;
   }
   "
