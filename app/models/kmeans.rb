@@ -251,10 +251,11 @@ def self.compute(number_clusters,p_ids)
 end
 
 def self.set_weights(dim)
-  weights = [1.0/dim]*dim
   if Session.current.search.sortby=='Price' # price is selected as prefered order
     weights = [0.05/(dim-1)]*dim  
     weights[Session.current.continuous["cluster"].index('price')] = 0.95    
+  else
+    weights = [1.0/dim]*dim
   end
   weights                         
 end
