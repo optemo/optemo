@@ -214,7 +214,7 @@ def self.compute(number_clusters,p_ids, weights)
   factors =[]
   Session.current.continuous["filter"].each do |f| 
     f_specs = ContSpec.by_feat(f+"_factor")
-    raise ValidationError, "There are no factors" unless f_specs
+    raise ValidationError, "There are no #{f}_factors for #{Session.current.product_type}" unless f_specs
     factors << f_specs
   end
   ft = factors.transpose
@@ -232,17 +232,17 @@ def self.compute(number_clusters,p_ids, weights)
   
   begin
     specs = Product.specs(p_ids)
-    raise ValidationError if specs.nil?
-    raise ValidationError unless ft.size == specs.size
-    raise ValidationError unless ft.first.size == specs.first.size 
-    raise ValidationError unless weights.size == specs.first.size
+    raise ValidationError, "No specs available" if specs.nil?
+    raise ValidationError, "Factors not available for the same number of features as specs" unless ft.size == specs.size
+    raise ValidationError, "Number of factors is not equal to number of specs" unless ft.first.size == specs.first.size 
+    raise ValidationError, "Number of weights is not equal to the number of specs" unless weights.size == specs.first.size
     
     $k = Kmeans.new unless $k
     #kmeans_c(VALUE _points, VALUE n, VALUE d, VALUE cluster_n,VALUE _factors, VALUE _weights)
     $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, ft.flatten, weights)  
      
-  rescue ValidationError
-    puts "Falling back to ruby kmeans"
+  rescue ValidationError => e
+    puts "Falling back to ruby kmeans: #{e.message}"
     debugger
     Kmeans.ruby(number_clusters, specs)
   end

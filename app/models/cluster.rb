@@ -66,7 +66,7 @@ class Cluster
   end  
   
   def set_weights
-    dim = 4 #products.first.size 
+    dim = products.first.size 
     weights = [1.0/9]*dim
     if Session.current.search.sortby=='Price' # price is selected as prefered order
       weights = [0.05/8]*dim  
