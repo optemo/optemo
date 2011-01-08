@@ -213,12 +213,18 @@ end
 
 
 # C kmeans function   
-def self.compute(number_clusters,p_ids, weights)
+def self.compute(number_clusters,p_ids)
 
   s = p_ids.size 
   factors =[]
-  Session.current.continuous["filter"].each{|f| factors << ContSpec.by_feat(f+"_factor")}
+  Session.current.continuous["filter"].each do |f| 
+    f_specs = ContSpec.by_feat(f+"_factor")
+    raise ValidationError, "There are no #{f}_factors for #{Session.current.product_type}" unless f_specs
+    factors << f_specs
+  end
   ft = factors.transpose
+  
+  weights = self.set_weights(ft.first.size)
   
   # don't need to cluster if number of products is less than clusters
 
@@ -244,12 +250,13 @@ def self.compute(number_clusters,p_ids, weights)
     #kmeans_c(VALUE _points, VALUE n, VALUE d, VALUE cluster_n,VALUE _factors, VALUE _weights)
     $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, ft.flatten, weights, inits.flatten)  
      
-  rescue ValidationError
-    puts "Falling back to ruby kmeans"
+  rescue ValidationError => e
+    puts "Falling back to ruby kmeans: #{e.message}"
     debugger
     Kmeans.ruby(number_clusters, specs)
   end
 end
+
 
 def self.init(number_clusters, specs, weights)
   centers = [specs[(specs.size-1)/2]]
@@ -259,6 +266,18 @@ def self.init(number_clusters, specs, weights)
   end  
   centers.map{|c| specs.index(c)} 
 end
+
+def self.set_weights(dim)
+  if Session.current.search.sortby=='Price' # price is selected as prefered order
+    weights = [0.05/(dim-1)]*dim  
+    weights[Session.current.continuous["cluster"].index('price')] = 0.95    
+  else
+    weights = [1.0/dim]*dim
+  end
+  weights                         
+end
+
+
 # regular kmeans function     ## ruby function does not sort by utility ad don't pick the highest utility as the rep
 def self.ruby(number_clusters, specs, weights)
   weights = [1]*specs.first.size if weights.nil?
