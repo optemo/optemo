@@ -5,10 +5,11 @@ require 'inline'
 inline :C do |builder|
   builder.c "
   #include <math.h> 
-  static VALUE kmeans_c(VALUE _points, VALUE n, VALUE d, VALUE cluster_n,VALUE _factors, VALUE _weights){
+  static VALUE kmeans_c(VALUE _points, VALUE n, VALUE d, VALUE cluster_n,VALUE _factors, VALUE _weights, VALUE _inits){
     VALUE* points_a = RARRAY_PTR(_points);
     VALUE* weights_a = RARRAY_PTR(_weights);
     VALUE* factors_a = RARRAY_PTR(_factors);
+    VALUE* inits_a = RARRAY_PTR(_inits);
     
     int nn = NUM2INT(n);
     int dd = NUM2INT(d);
@@ -19,6 +20,7 @@ inline :C do |builder|
     VALUE labels_and_reps = rb_ary_new2(nn+k);
     int i, j, h;
     double** data = malloc(sizeof(double*)*nn);
+    int* inits = malloc(sizeof(int)*k);
     double* utilities = (double*)calloc(nn, sizeof(double)); 
     int* newlabels = (int*)calloc(k, sizeof(int)); 
     int* newreps = (int*)calloc(k, sizeof(int)); 
@@ -26,6 +28,9 @@ inline :C do |builder|
     int* reps = malloc(sizeof(int)*k);
     
     for (j=0; j<dd; j++) weights[j] = NUM2DBL(weights_a[j]);
+    for (i=0; i<k; i++) inits[i] = NUM2INT(inits_a[i]);  
+    
+        
     double* avgUtilities = (double*)calloc(k, sizeof(double)); 
     for (i=0; i<nn; i++) data[i] = malloc(sizeof(double)*dd);    
     for (i=0; i<nn; i++){
@@ -76,7 +81,7 @@ inline :C do |builder|
    
    ///initializing the first means
     for(h=0; h<k;h++)
-       for(j=0; j<dd; j++) means_1[h][j] = data[h][j];
+       for(j=0; j<dd; j++) means_1[h][j] = data[inits[h]][j];
    
    double z=0.0;
    double tmp_min = DBL_MAX;
@@ -232,10 +237,12 @@ def self.compute(number_clusters,p_ids, weights)
     raise ValidationError unless ft.size == specs.size
     raise ValidationError unless ft.first.size == specs.first.size 
     raise ValidationError unless weights.size == specs.first.size
-    
+    inits = []
+    inits = self.init(number_clusters, specs, weights) 
+
     $k = Kmeans.new unless $k
     #kmeans_c(VALUE _points, VALUE n, VALUE d, VALUE cluster_n,VALUE _factors, VALUE _weights)
-    $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, ft.flatten, weights)  
+    $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, ft.flatten, weights, inits.flatten)  
      
   rescue ValidationError
     puts "Falling back to ruby kmeans"
@@ -244,6 +251,14 @@ def self.compute(number_clusters,p_ids, weights)
   end
 end
 
+def self.init(number_clusters, specs, weights)
+  centers = [specs[(specs.size-1)/2]]
+  for j in (0...number_clusters-1)
+      actual_dists = centers.map{|c| specs.map{|s| self.distance(c,s, weights)}}.transpose.map{|j| j.min}
+      centers << specs[actual_dists.index(actual_dists.max)]
+  end  
+  centers.map{|c| specs.index(c)} 
+end
 # regular kmeans function     ## ruby function does not sort by utility ad don't pick the highest utility as the rep
 def self.ruby(number_clusters, specs, weights)
   weights = [1]*specs.first.size if weights.nil?
@@ -291,7 +306,7 @@ def self.means(number_clusters, specs, labels)
 end
 
 #Euclidian distance function
-def self.distance(point1, point2, distance)
+def self.distance(point1, point2, weights)
   dist = 0
   point1.each_index do |i|
     diff = weights[i]*(point1[i]-point2[i])
