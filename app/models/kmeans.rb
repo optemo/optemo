@@ -208,7 +208,7 @@ end
 
 
 # C kmeans function   
-def self.compute(number_clusters,p_ids, weights)
+def self.compute(number_clusters,p_ids)
 
   s = p_ids.size 
   factors =[]
@@ -218,6 +218,8 @@ def self.compute(number_clusters,p_ids, weights)
     factors << f_specs
   end
   ft = factors.transpose
+  
+  weights = self.set_weights(ft.first.size)
   
   # don't need to cluster if number of products is less than clusters
 
@@ -246,6 +248,15 @@ def self.compute(number_clusters,p_ids, weights)
     debugger
     Kmeans.ruby(number_clusters, specs)
   end
+end
+
+def self.set_weights(dim)
+  weights = [1.0/dim]*dim
+  if Session.current.search.sortby=='Price' # price is selected as prefered order
+    weights = [0.05/(dim-1)]*dim  
+    weights[Session.current.continuous["cluster"].index('price')] = 0.95    
+  end
+  weights                         
 end
 
 # regular kmeans function     ## ruby function does not sort by utility ad don't pick the highest utility as the rep
