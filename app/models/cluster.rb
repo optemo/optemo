@@ -35,8 +35,7 @@ class Cluster
   def children
     unless @children
       start = Time.now
-      weights = set_weights
-      cluster_ids_and_reps = Kmeans.compute(9,products, weights)
+      cluster_ids_and_reps = Kmeans.compute(9,products)
       cluster_ids = cluster_ids_and_reps[0...products.size] 
       rep_ids = cluster_ids_and_reps[products.size...cluster_ids_and_reps.size]
       finish = Time.now
@@ -63,16 +62,6 @@ class Cluster
   
   def numclusters
     children.size
-  end  
-  
-  def set_weights
-    dim = products.first.size 
-    weights = [1.0/9]*dim
-    if Session.current.search.sortby=='Price' # price is selected as prefered order
-      weights = [0.05/8]*dim  
-      weights[Session.current.continuous["cluster"].index('price')] = 0.95    
-    end
-    weights                         
   end
   
   #Grouping products by cluster_ids
