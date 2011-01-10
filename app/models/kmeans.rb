@@ -239,10 +239,10 @@ def self.compute(number_clusters,p_ids)
   
   begin
     specs = Product.specs(p_ids)
-    raise ValidationError if specs.nil?
-    raise ValidationError unless ft.size == specs.size
-    raise ValidationError unless ft.first.size == specs.first.size 
-    raise ValidationError unless weights.size == specs.first.size
+    raise ValidationError, "No specs available" if specs.nil?
+    raise ValidationError, "Factors not available for the same number of features as specs" unless ft.size == specs.size
+    raise ValidationError, "Number of factors is not equal to number of specs" unless ft.first.size == specs.first.size 
+    raise ValidationError, "Number of weights is not equal to the number of specs" unless weights.size == specs.first.size
     inits = []
     inits = self.init(number_clusters, specs, weights) 
 

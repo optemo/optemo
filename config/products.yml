@@ -36,18 +36,18 @@ cameras:
 bestbuy:
     product_type: camera_bestbuy
     layout: gridview
-    maxresolution: 
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-    screensize:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
         prefdir: -1
         min: 1
         max: 10000
+    maxresolution: 
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    screensize:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
     opticalzoom:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
