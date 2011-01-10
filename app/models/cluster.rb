@@ -43,7 +43,6 @@ class Cluster
       grouped_ids = Cluster.group_by_clusterids(products,cluster_ids)
       grouped_ids.each_with_index{|product_ids, i| @children << Cluster.new(product_ids,products[rep_ids[i]])}
       puts("*****######!!!!!!"+(finish-start).to_s)
-      
     end
     @children
   end

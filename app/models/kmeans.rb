@@ -132,19 +132,19 @@ inline :C do |builder|
        for(j=0; j<dd; j++) z += (means_1[h][j]- means_2[h][j])*(means_1[h][j]- means_2[h][j]);  
    }while (z>t);
  
- //If it's all in one cluster, split them
- int all_one_flag=1;
- for(i=0; i<nn; i++) 
-   if (labels[i]>0) {
-     all_one_flag = 0;
-     break;
-   }  
+// //If it's all in one cluster, split them
+// int all_one_flag=1;
+// for(i=0; i<nn; i++) 
+//   if (labels[i]>0) {
+//     all_one_flag = 0;
+//     break;
+//   }  
 
- if (all_one_flag==1){ 
-   for(i=0; i<k; i++) labels[i] = i;
- }  
- 
-   for (i=0; i<k; i++) reps[i] = i;
+// if (all_one_flag==1){ 
+//   for(i=0; i<k; i++) labels[i] = i;
+// }  
+// 
+   for (i=0; i<k; i++) reps[i] = -1;
    for (i=0; i<nn; i++){
      h = labels[i];
      if (utilities[reps[h]]<utilities[i]) reps[h]=i;
@@ -204,8 +204,7 @@ inline :C do |builder|
 
 ////storing the labels in the ruby array
   for (j=0; j<nn; j++) rb_ary_store(labels_and_reps, j, INT2NUM(labels[j]));
- for (j=0; j<k; j++) rb_ary_store(labels_and_reps, nn+j, INT2NUM(reps[j]));
-//  for (j=0; j<k+nn; j++) rb_ary_store(labels_and_reps,j , INT2NUM(j));
+  for (j=0; j<k; j++) rb_ary_store(labels_and_reps, nn+j, INT2NUM(reps[j]));
   return labels_and_reps;
   }
   "
