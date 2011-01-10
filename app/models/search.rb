@@ -151,7 +151,7 @@ class Search < ActiveRecord::Base
   
   #The clusters argument can either be an array of cluster ids or an array of cluster objects if they have already been initialized
   def cluster
-    @cluster ||= Cluster.new(products)
+    @cluster ||= Cluster.new(products, products[0])
   end
   
   #Sets to use the initial products and checks whether they're in the database

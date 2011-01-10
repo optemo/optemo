@@ -33,7 +33,7 @@ class SearchProduct < ActiveRecord::Base
           vals = rec.vals.split(",")
           names.each_with_index{|name,i|specs[name] << vals[i].to_f}
         end
-        specs.default = nil
+        specs.default = nil #Clear the array default so that it can be stored in the cache
         p_ids = res.map(&:product_id)
         [specs,p_ids]
       end

@@ -3,8 +3,6 @@ set :repository,  "git@jaguar:site.git"
 set :domain, "jaguar"
 set :branch, "staging"
 set :user, "#{ `whoami`.chomp }"
-# There is also this method, might be better in some cases:
-# { Capistrano::CLI.ui.ask("User name: ") }
 
 # If you aren't deploying to /u/apps/#{application} on the target
 # servers (which is the default), you can specify the actual location
@@ -18,7 +16,10 @@ default_run_options[:pty] = true
 # The above command allows for interactive commands like entering ssh passwords, but
 # the problem is that "umask = 002" is getting ignored, since .profile isn't being sourced.
 # :pty => true enables for a given command if we set the above to false eventually
+# ssh_options[:port] = 5151   # Re-enable if we are deploying remotely again
 set :use_sudo, false
+# There is also this method, might be better in some cases:
+# { Capistrano::CLI.ui.ask("User name: ") }
 
 role :app, domain
 role :web, domain
@@ -27,19 +28,7 @@ role :db,  domain, :primary => true
 ############################################################
 #	Passenger
 #############################################################
-desc "Compile C-Code"
-task :compilec do
-  sudo "cmake #{current_path}/lib/c_code/clusteringCodes/"
-  sudo "make hCluster"
-  sudo "cp codes/hCluster #{current_path}/lib/c_code/clusteringCodes/codes/hCluster"
-end
 
-desc "Configure the server files"
-task :serversetup do
-  # Instantiate the database.yml file
-  run "cd #{current_path}/config              && cp -f database.yml.deploy database.yml"
-#  run "cd #{current_path}/config/ultrasphinx   && cp -f development.conf.deploy development.conf && cp -f production.conf.deploy production.conf"
-end
 namespace :deploy do
 desc "Sync the public/assets directory."
   task :assets do
@@ -57,13 +46,42 @@ desc "Sync the public/assets directory."
   end
 end
 
-task :restartmemcached do
-  run "ps ax | awk '/memcached/ && !/awk/ {print $1}' | xargs kill ; memcached -d"
+desc "Reindex search index"
+task :reindex do
+  run "rake -f #{current_path}/Rakefile ts:conf RAILS_ENV=production"
+  sudo "rake -f #{current_path}/Rakefile ts:rebuild RAILS_ENV=production"
 end
 
-after :deploy, "serversetup"
-after :serversetup, "deploy:after_update_code"
-after :after_update_code, "compilec"
-after :compilec, "deploy:restart"
-after deploy:restart, "restartmemcached"
 
+desc "Compile C-Code"
+task :compilec do
+  sudo "cmake #{current_path}/lib/c_code/clusteringCodes/"
+  sudo "make hCluster"
+  sudo "cp codes/hCluster #{current_path}/lib/c_code/clusteringCodes/codes/hCluster"
+end
+
+desc "Configure the server files"
+task :serversetup do
+  # Instantiate the database.yml file
+  run "cd #{current_path}/config              && cp -f database.yml.deploy database.yml"
+  #run "cd #{current_path}/config/ultrasphinx   && cp -f development.conf.deploy development.conf && cp -f production.conf.deploy production.conf"
+end
+
+task :restartmemcached do
+  run "ps ax | awk '/memcached/ && !/awk/ {print $1}' | sudo xargs kill ; memcached -d"
+end
+
+task :fetchAutocomplete do
+  run "RAILS_ENV=production rake -f #{current_path}/Rakefile autocomplete:fetch"
+end
+
+task :redopermissions do
+  run "find #{current_path} #{current_path}/../../shared ! -perm /g+w -execdir chmod g+w {} +"
+end
+
+# redopermissions is last, so that if it fails due to the searchd pid, no other tasks get blocked
+after :deploy, "serversetup"
+after :serversetup, "reindex"
+after :reindex, "restartmemcached"
+after :restartmemcached, "fetchAutocomplete"
+after :fetchAutocomplete, "redopermissions"
