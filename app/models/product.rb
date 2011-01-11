@@ -44,10 +44,10 @@ class Product < ActiveRecord::Base
     #Session.current.categorical["filter"].each{|f| st<< self.to_array(CatSpec.by_feat(f))} 
       
     #Check for 1 spec per product
+    raise ValidationError unless st.first.size > 0
     raise ValidationError unless Session.current.search.products_size == st.first.length
     #Check for no nil values
     raise ValidationError unless st.first.size == st.first.compact.size
-    raise ValidationError unless st.first.size > 0
     #Check that every spec has the same number of features
     first_size = st.first.compact.size
     raise ValidationError unless st.inject{|res,el|el.compact.size == first_size}
@@ -80,7 +80,7 @@ class Product < ActiveRecord::Base
   end
   
   def small_title
-    [brand,model].join(" ")
+    [model].join(" ")
   end
 
   def mobile_descurl

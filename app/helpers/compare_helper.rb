@@ -113,20 +113,20 @@ module CompareHelper
     Session.current.search.userdatacats.select{|d|d.name == feat}.map(&:value)
   end
   
-  def featuretext(search,cluster)
+  def featuretext(product_id)
     s = Session.current
     out = []
     s.categorical["desc"].each do |feat|
-      out << t("products.#{feat}") if cluster.representative.send(feat.intern)
+      out << CatSpec.cache_all(product_id)[feat]
     end
     s.continuous["desc"].each do |feat|
-      feature = cluster.representative.send(feat.intern).to_i
-		  out << "#{feature} #{t("products.#{feat}text")}"
+      num = ContSpec.cache_all(product_id)[feat]
+		  out << t('features.'+feat, :num => num, :default => num)
 	  end
 	  s.binary["desc"].each do |feat|
-      out << t("products.#{feat}") if cluster.representative.send(feat.intern)
+      out << BinSpec.cache_all(product_id)[feat]
     end
-		out.join(" / ")
+		out.join(", ")
   end
 
   def columntext(showgroups)
@@ -229,4 +229,5 @@ module CompareHelper
 	  end  
 	  @dist[feat]
   end
+  
 end

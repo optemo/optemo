@@ -49,7 +49,7 @@ class Session
     # Direct needs no clustering, showing all products in browseable pages and offering "group by" buttons.
     # mobileView controls screen vs. mobile view (Optemo Mobile)
     # Default is false
-    @directLayout = product_yml["layout"] == "lineview"
+    @directLayout = product_yml["layout"] == "direct"
     @mobileView = product_yml["layout"] == "mobileview"
     # This block gets out the continuous, binary, and categorical features
     product_yml.each do |feature,atts|

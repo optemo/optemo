@@ -27,6 +27,6 @@
 <% if s.mobileView %>
     <%= raw stylesheet_link_merged(:mobileview) %>
 <% else %>
-    <%= raw stylesheet_link_merged(s.directLayout ? :listview : :gridview) %>
+    <%= raw stylesheet_link_merged(s.directLayout ? :direct : :assist) %>
 <% end %>
 </head>
