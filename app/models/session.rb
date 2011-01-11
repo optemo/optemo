@@ -7,6 +7,7 @@ class Session
   attr_accessor :dragAndDropEnabled, :relativeDescriptions, :numGroups  # These flags should probably be stripped back out of the code eventually
   attr_accessor :product_type # Product type (camera_us, etc.), used everywhere
   attr_accessor :piwikSiteId # Piwik Site ID, as configured in the currently-running Piwik install.
+  attr_accessor :onlyfiltering
 
   def initialize (url = nil)
     defaultSite = 'printers.assist.demo.optemo.com'

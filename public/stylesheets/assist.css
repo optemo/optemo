@@ -35,7 +35,7 @@ div#main {
 	position: relative;
 	margin-right: 4px; 
 	margin-bottom: 3px;
-	height:217px;
+	height:233px;
 	width: 182px; /*+2 for the border*/
 	/*background: url(../images/nbsingle-180.png) no-repeat;*/
 }
@@ -64,7 +64,6 @@ img.productimg {
 	width: 100%;
 }
 .productinfo {
-	margin-top: -3px;
 }
 .productspecs {
 	font-size:0.8em;

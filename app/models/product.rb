@@ -80,7 +80,7 @@ class Product < ActiveRecord::Base
   end
   
   def small_title
-    [model].join(" ")
+    [brand,model].join(" ")
   end
 
   def mobile_descurl
