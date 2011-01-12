@@ -15,8 +15,9 @@ require 'inline'
         mins << min
         maxes << max
       end
-      specs = Product.specs
-      res = distribution_c(specs.flatten, specs.size, specs.first.size, num_buckets, mins, maxes) #unless $res
+      st = Product.specs
+      cont_specs = st[0...Session.current.continuous["filter"].length].transpose
+      res = distribution_c(cont_specs.flatten, cont_specs.size, cont_specs.first.size, num_buckets, mins, maxes) #unless $res
       Session.current.continuous["filter"].each_with_index do |f, i|   
         t = i*(2+num_buckets) 
         dist[f] = [[res[t], res[t+1]], res[(t+2)...(i+1)*(2+num_buckets)]]

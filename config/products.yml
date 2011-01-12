@@ -53,7 +53,7 @@ bestbuy:
         used_for: [boost, filter, cluster, show]
     brand:
         feature_type: Categorical
-        used_for: [boost, show, filter]
+        used_for: [boost, show, filter, cluster]
 
 
 cameras.browsethenbuy.com:
