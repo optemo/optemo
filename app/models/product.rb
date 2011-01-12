@@ -43,10 +43,10 @@ class Product < ActiveRecord::Base
     Session.current.binary["filter"].each{|f| BinSpec.by_feat(f)==1 ? st<<[1,0] : st<<[0,1]}
     Session.current.categorical["filter"].each{|f| st<< self.to_array(CatSpec.all(f))}  
     #Check for 1 spec per product
+    raise ValidationError unless st.first.size > 0
     raise ValidationError unless Session.current.search.products_size == st.first.length
     #Check for no nil values
     raise ValidationError unless st.first.size == st.first.compact.size
-    raise ValidationError unless st.first.size > 0
     #Check that every spec has the same number of features
     first_size = st.first.compact.size
     

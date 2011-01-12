@@ -4,7 +4,7 @@
 		<%= link_to t('products.'+feat), "#", :rel => "nofollow" %>
 		<span class="unitdisp">(<%= t('products.' + feat+"unit") %>)</span>
 		<% if Session.current.directLayout %>
-			<div class="groupby" data-feat="<%= feat %>" data-position="<%= i %>">Show Groups</div>
+			<div class="groupby" data-feat="<%= feat %>" data-position="<%= i %>">See Groups</div>
 		<% end %>		
 	</div>
 	<% current = isnil(Session.current.search.userdataconts.select{|m|m.name == feat}.first){Userdatacont.new("min" => overall_min, "max" => overall_max)} %>  

@@ -40,11 +40,6 @@ h3 {
 //            Navigator Bar             //
 //--------------------------------------*/
 
-div#main {
-	width: 727px;
-	margin-left: 218px;
-}
-
 .watermark {
 	right: 10px;
 	top: 835px;
@@ -133,10 +128,6 @@ div#main {
 //--------------------------------------*/
 
 div.rowdiv {
-/*	height: 224px; 
-	margin-bottom: 7px; */
-	margin-left: 5px;
-	margin-top:5px;
 }
 
 .greybg {
@@ -185,7 +176,7 @@ div.rowdiv {
 div #leftbar {
 	padding: 0;
 	margin: 0;
-	width: 213px;
+	width: 180px;
 	float: left;
 	position: relative;
 }
@@ -198,11 +189,11 @@ div #leftbar {
 }
 
 #myfilter_search {
-	width: 125px;
+	width: 119px;
 }
 #submit_button {
 	margin-top: 2px;
-	width: 55px;
+	width: 32px;
 	font-size:11px;
 }
 
@@ -254,12 +245,12 @@ div.drop-box-hover {
 
 .saveditem {
 	position: relative;
-	width: 77px;
+	width: 71px;
 	height: 80px;
 	float: left;
 	text-align: center;
-	padding: 5px 1px 1px 5px;
-	margin: 5px 0 0 8px;
+	padding: 5px 1px 1px 3px;
+	margin: 5px 6px 0 0;
 	background: url(../images/savebg.png) no-repeat;
 }
 div.smalldesc {
@@ -281,7 +272,7 @@ div.smalldesc {
 }
 #compare_button {
 	clear: both; 
-	padding-left: 120px; 
+	padding-left: 83px; 
 	padding-top: 5px;
 }
 .selected_cat_features img {
@@ -343,7 +334,7 @@ div.smalldesc {
 }
 .slider {
 	margin: 0 0 0 7px;
-	width: 178px;
+	width: 155px;
 	padding-bottom: 6px;
 	position: relative;
 }
@@ -363,22 +354,12 @@ div.smalldesc {
 	font-weight: bold;
 	text-align: left;
 	font-size: 0.8em;
-	width: 197px;
-	margin-top: 0.6em;
-	position: relative;
-}
-
-/* The category labels need to be less than 134 for IE, and the slider labels have to be greater for Safari. */
-.catlabel {
-	font-weight: bold;
-	text-align: left;
-	font-size: 0.8em;
-	width: 197px;
+	width: 163px;
 	margin-top: 0.6em;
 	position: relative;
 }
 .space {
-	margin-bottom: 20px; /*Spacing for histogram*/
+	margin-bottom: 15px; /*Spacing for histogram*/
 }
 .reset {
 	font-size: 0.8em;

@@ -182,6 +182,7 @@ class Search < ActiveRecord::Base
       while(my_search.nil?)
         if current_s.initial
           my_search = initial_products
+          Session.current.onlyfiltering = true
         else
           c = SearchProduct.where(["search_id = ?",current_s.id])
           if c.empty?
