@@ -40,9 +40,8 @@ class Product < ActiveRecord::Base
   def self.specs(p_ids = nil)
     st = []
     Session.current.continuous["filter"].each{|f| st << ContSpec.by_feat(f)}
-    #Session.current.binary["filter"].each{|f| BinSpec.by_feat(f)==1 ? st<<[1,0] : st<<[0,1]}
-    #Session.current.categorical["filter"].each{|f| st<< self.to_array(CatSpec.by_feat(f))} 
-      
+    Session.current.binary["filter"].each{|f| BinSpec.by_feat(f)==1 ? st<<[1,0] : st<<[0,1]}
+    Session.current.categorical["filter"].each{|f| st<< self.to_array(CatSpec.all(f))}  
     #Check for 1 spec per product
     raise ValidationError unless st.first.size > 0
     raise ValidationError unless Session.current.search.products_size == st.first.length
@@ -50,15 +49,15 @@ class Product < ActiveRecord::Base
     raise ValidationError unless st.first.size == st.first.compact.size
     #Check that every spec has the same number of features
     first_size = st.first.compact.size
-    raise ValidationError unless st.inject{|res,el|el.compact.size == first_size}
     
-    if p_ids
-      Session.current.categorical["cluster"].each{|f|  st<<CatSpec.cachemany(p_ids, f)} 
-      Session.current.binary["cluster"].each{|f|  st << BinSpec.cachemany(p_ids, f)}
-    end
-    #st.flatten.transpose
-    st.transpose
+   # if p_ids
+   #   Session.current.categorical["cluster"].each{|f|  st<<CatSpec.cachemany(p_ids, f)} 
+   #   Session.current.binary["cluster"].each{|f|  st << BinSpec.cachemany(p_ids, f)}
+   # end
+    st 
   end
+  
+  
   
   scope :instock, :conditions => {:instock => true}
   scope :valid, lambda {

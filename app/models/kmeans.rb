@@ -5,40 +5,48 @@ require 'inline'
 inline :C do |builder|
   builder.c "
   #include <math.h> 
-  static VALUE kmeans_c(VALUE _points, VALUE n, VALUE d, VALUE cluster_n,VALUE _factors, VALUE _weights, VALUE _inits){
-    VALUE* points_a = RARRAY_PTR(_points);
+  static VALUE kmeans_c(VALUE _points_cont, VALUE _points_bin, VALUE _points_cat, _VALUE n, VALUE d_cont, VALUE d_bin, VALUE d_cat, VALUE dim_per_cat,...
+   VALUE cluster_n,VALUE _factors, VALUE _weights, VALUE _inits){
+    VALUE* points_cont_a = RARRAY_PTR(_points_cont);
+    VALUE* points_bin_a = RARRAY_PTR(_points_bin);
+    VALUE* points_cat_a = RARRAY_PTR(_points_cat);
     VALUE* weights_a = RARRAY_PTR(_weights);
     VALUE* factors_a = RARRAY_PTR(_factors);
     VALUE* inits_a = RARRAY_PTR(_inits);
     
     int nn = NUM2INT(n);
-    int dd = NUM2INT(d);
+    int dd_cont = NUM2INT(d_cont);
+    int dd_bin = NUM2INT(d_bin);
+    int dd_cat = NUM2INT(d_cat);
+    
     int k = NUM2INT(cluster_n);
     double DBL_MAX = 10000000.0;
     double t = 0.000000001;
     
     VALUE labels_and_reps = rb_ary_new2(nn+k);
     int i, j, h;
-    double** data = malloc(sizeof(double*)*nn);
+    double** data_cont = malloc(sizeof(double*)*nn);
+    double** data_bin = malloc(sizeof(int**)*nn);
+    double** data_cat = malloc(sizeof(int**)*nn);
+    
     int* inits = malloc(sizeof(int)*k);
     double* utilities = (double*)calloc(nn, sizeof(double)); 
     int* newlabels = (int*)calloc(k, sizeof(int)); 
     int* newreps = (int*)calloc(k, sizeof(int)); 
-    double* weights = malloc(sizeof(double)*dd);
+    double* weights = malloc(sizeof(double)*dd_cont);
     int* reps = malloc(sizeof(int)*k);
     
-    for (j=0; j<dd; j++) weights[j] = NUM2DBL(weights_a[j]);
+    for (j=0; j<dd_cont; j++) weights[j] = NUM2DBL(weights_a[j]);
     for (i=0; i<k; i++) inits[i] = NUM2INT(inits_a[i]);  
     
         
     double* avgUtilities = (double*)calloc(k, sizeof(double)); 
-    for (i=0; i<nn; i++) data[i] = malloc(sizeof(double)*dd);    
+    for (i=0; i<nn; i++) data_cont[i] = malloc(sizeof(double)*dd_cont);    
     for (i=0; i<nn; i++){
-      for (j=0; j<dd; j++) {   
-         data[i][j]= NUM2DBL(points_a[i*dd+j]);
-         utilities[i] += weights[j]*NUM2DBL(factors_a[i*dd+j]);  
+      for (j=0; j<dd_cont; j++) {   
+         data_cont[i][j]= NUM2DBL(points_cont_a[i*dd_cont+j]);
+         utilities[i] += weights[j]*NUM2DBL(factors_a[i*dd_cont+j]);  
       }
-      
     }
        
  //kmeans initializations
@@ -47,52 +55,49 @@ inline :C do |builder|
    double old_error, error = DBL_MAX; /* sum of squared euclidean distance */
    double** means_1 = malloc(sizeof(double*)*k);
    double** means_2 = malloc(sizeof(double*)*k);
-   for (i=0; i<k; i++) means_1[i]= malloc(sizeof(double)*dd);
-   for (i=0; i<k; i++) means_2[i]= malloc(sizeof(double)*dd);
+   for (i=0; i<k; i++) means_1[i]= malloc(sizeof(double)*(dd_cont+ dd_bin + dd_cat));
+   for (i=0; i<k; i++) means_2[i]= malloc(sizeof(double)*(dd_cont+ dd_bin + dd_cat));
    int *labels = (int*)calloc(nn, sizeof(int));
 
- 
+   //////////////////////////////////////////////////////////////////////data standardization 
    ////////getting mean and var of the data
-     double* dataMean = malloc(sizeof(double)*dd);
-     double* dataVar = malloc(sizeof(double)*dd); 
- 	  for (j = 0; j < dd; j++) {
- 	 	 dataMean[j]=0; 
- 	 	 dataVar[j]= 0;
- 	  }
+    double* dataMean = (double*)calloc(dd_cont, sizeof(double));
+    double* dataVar = (double*)calloc(dd_cont, sizeof(double));
+ 	
  	  for (h = 0; h < nn; h++){ 
- 	  	for (j = 0; j < dd; j++) {
- 	 	  	dataMean[j] += data[h][j]; 
- 	 	  	 dataVar[j] += data[h][j] * data[h][j];
+ 	  	for (j = 0; j < dd_cont; j++) {
+ 	 	  	 dataMean[j] += data_cont[h][j]; 
+ 	 	  	 dataVar[j] += data_cont[h][j] * data_cont[h][j];
  	    }
  	   }   
- 	  for (j = 0; j < dd; j++) {
- 	  	dataMean[j] = dataMean[j] / nn;
- 	  	dataVar[j] = sqrt(dataVar[j]/nn - dataMean[j] * dataMean[j]);
+ 	  for (j = 0; j < dd_cont; j++) {
+ 	  	if (nn>0) {
+ 	  	  dataMean[j] = dataMean[j] / nn;
+ 	  	  dataVar[j] = sqrt(dataVar[j]/nn - (dataMean[j] * dataMean[j]));
+ 	  	}  
  	  }
    
-   ///////data standardization 
+     
      for (h = 0; h < nn; h++) {
-     	for (j = 0; j < dd; j++){
-     		data[h][j] = (data[h][j] - dataMean[j]) / dataVar[j];
-        // for (int j = 0; j < bool_feats; j++)
-      	//    dataN[h][dd + j] = data[h][con_feats + j];	
+     	for (j = 0; j < dd_cont; j++){
+     	  if (dataVar[j] >0) data_cont[h][j] = (data_cont[h][j] - dataMean[j]) / dataVar[j];  	
    	  }
      }
    
    ///initializing the first means
     for(h=0; h<k;h++)
-       for(j=0; j<dd; j++) means_1[h][j] = data[inits[h]][j];
+       for(j=0; j<dd_cont; j++) means_1[h][j] = data_cont[inits[h]][j];
    
    double z=0.0;
    double tmp_min = DBL_MAX;
    int tmp_ind=0;
-   ///////performing kmeans 
+    //////////////////////////////////////////////////////////////////////performing kmeans 
    
    do{
     
      //means_2= means_1
      for(h=0; h<k;h++)
-       for(j=0; j<dd; j++) means_2[h][j] = means_1[h][j];
+       for(j=0; j<dd_cont; j++) means_2[h][j] = means_1[h][j];
    
      
      //finding the closest mean to assign the labels
@@ -100,7 +105,7 @@ inline :C do |builder|
         tmp_min = DBL_MAX;
        for (h=0; h<k; h++){
          dif[h] = 0.0;     
-         for (j=0; j<dd; j++) dif[h] += weights[j]*((data[i][j]-means_1[h][j])*(data[i][j]-means_1[h][j]));
+         for (j=0; j<dd_cont; j++) dif[h] += weights[j]*((data_cont[i][j]-means_1[h][j])*(data_cont[i][j]-means_1[h][j]));
          if (tmp_min>dif[h]){
            tmp_min = dif[h];
            tmp_ind = h;
@@ -112,7 +117,7 @@ inline :C do |builder|
       
      //computing the new means
      for (h=0; h<k; h++)
-       for (j=0; j<dd; j++) {
+       for (j=0; j<dd_cont; j++) {
          means_1[h][j] = 0.0;
          counts[h] = 0;
        }  
@@ -120,16 +125,16 @@ inline :C do |builder|
      for (i=0; i<nn; i++){
          h = labels[i];
          counts[h]++;
-         for (j=0; j<dd;j++) means_1[h][j] += data[i][j];
+         for (j=0; j<dd_cont;j++) means_1[h][j] += data_cont[i][j];
      }     
      for (h=0; h<k; h++)
-       for (j=0; j<dd; j++) means_1[h][j]=means_1[h][j]/counts[h]; 
+       for (j=0; j<dd_cont; j++) means_1[h][j]=means_1[h][j]/counts[h]; 
        
        
      //calculatig the difference between the old and the new means 
      z=0.0;
      for(h=0; h<k;h++)
-       for(j=0; j<dd; j++) z += (means_1[h][j]- means_2[h][j])*(means_1[h][j]- means_2[h][j]);  
+       for(j=0; j<dd_cont; j++) z += (means_1[h][j]- means_2[h][j])*(means_1[h][j]- means_2[h][j]);  
    }while (z>t);
  
 // //If it's all in one cluster, split them
@@ -156,7 +161,7 @@ inline :C do |builder|
      if (counts[h]>0) avgUtilities[h] = avgUtilities[h]/counts[h];
    }  
      
-  //sort based on utilties   
+  //////////////////////////////////////////////////////////////////////sort based on utilties   
     int idKey;
     double key;	 
     int* ids = malloc(sizeof(int)*k);
@@ -183,7 +188,7 @@ inline :C do |builder|
    int* temp_reps = calloc(k,sizeof(int));
    int* temp_labels = calloc(nn,sizeof(int));
    for (i=0; i<nn; i++)temp_labels[i] = labels[i];
- //changing the label assignment based on avg utilities.    
+ /////////////////////////////////////////////////////////////////////////changing the label assignment based on avg utilities.    
    for (i=0; i<nn; i++) {
      h =  labels[i];
      labels[i] = newlabels[h];
@@ -211,19 +216,22 @@ inline :C do |builder|
 end
 
 
+
 # C kmeans function   
 def self.compute(number_clusters,p_ids)
 
   s = p_ids.size 
   factors =[]
-  Session.current.continuous["filter"].each do |f| 
+  Session.current.continuous["cluster"].each do |f| 
     f_specs = ContSpec.by_feat(f+"_factor")
     raise ValidationError, "There are no #{f}_factors for #{Session.current.product_type}" unless f_specs
     factors << f_specs
   end
   ft = factors.transpose
-  
-  weights = self.set_weights(ft.first.size)
+  dim_cont = Session.current.continuous["cluster"].size
+  dim_bin = Session.current.binary["cluster"].size
+  dim_cat = Session.current.categorical["cluster"].size
+  weights = self.set_weights(dim_cont, dim_bin, dim_cat)
   
   # don't need to cluster if number of products is less than clusters
 
@@ -237,17 +245,25 @@ def self.compute(number_clusters,p_ids)
   end  
   
   begin
-    specs = Product.specs(p_ids)
-    raise ValidationError, "No specs available" if specs.nil?
-    raise ValidationError, "Factors not available for the same number of features as specs" unless ft.size == specs.size
-    raise ValidationError, "Number of factors is not equal to number of specs" unless ft.first.size == specs.first.size 
-    raise ValidationError, "Number of weights is not equal to the number of specs" unless weights.size == specs.first.size
-    inits = []
-    inits = self.init(number_clusters, specs, weights) 
+    st = Product.specs(p_ids)
+    cont_specs = st[0...dim_cont].transpose
+    bin_specs = st[dim_cont...dim_cont+dim_bin].transpose
+    cat_specs = st[dim_cont+dim_bin...st.size].transpose
+    debugger
+    dim_per_cat = cat_specs.first.map{|f| f.size}
+    
+    raise ValidationError, "No specs available" if cont_specs.nil?
+    raise ValidationError, "Factors not available for the same number of features as specs" unless ft.size == cont_specs.size
+    raise ValidationError, "Number of factors is not equal to the dimension of continuous specs" unless ft.first.size == cont_specs.first.size 
+    raise ValidationError, "Number of weights is not equal to the total dimension of specs" unless weights.size == dim_cont+dim_bin+ dim_cat
+    
+    # inistial seeds for clustering  ### just based on contiuous features
+    inits = self.init(number_clusters, cont_specs, weights[0...dim_cont]) 
 
     $k = Kmeans.new unless $k
-    #kmeans_c(VALUE _points, VALUE n, VALUE d, VALUE cluster_n,VALUE _factors, VALUE _weights)
-    $k.kmeans_c(specs.flatten, specs.size, specs.first.size, number_clusters, ft.flatten, weights, inits.flatten)  
+    #static VALUE kmeans_c(VALUE _points_cont, VALUE _points_bin, VALUE _points_cat, _VALUE n, VALUE d_cont, VALUE d_bin, VALUE d_cat, VALUE dim_per_cat,...
+    #  VALUE cluster_n,VALUE _factors, VALUE _weights, VALUE _inits){
+    $k.kmeans_c(cont_specs.flatten, bin_specs.flatten, cat_specs.flatten, cont_specs.size, dim_cont,  dim_bin.size, dim_cat.size, dim_per_cat,number_clusters, ft.flatten, weights, inits.flatten)  
      
   rescue ValidationError => e
     puts "Falling back to ruby kmeans: #{e.message}"
@@ -266,7 +282,8 @@ def self.init(number_clusters, specs, weights)
   centers.map{|c| specs.index(c)} 
 end
 
-def self.set_weights(dim)
+def self.set_weights(dim_cont, dim_bin, dim_cat)
+  dim = dim_cont+dim_bin+dim_cat
   if Session.current.search.sortby=='Price' # price is selected as prefered order
     weights = [0.05/(dim-1)]*dim  
     weights[Session.current.continuous["cluster"].index('price')] = 0.95    
@@ -277,11 +294,12 @@ def self.set_weights(dim)
 end
 
 
-# regular kmeans function     ## ruby function does not sort by utility ad don't pick the highest utility as the rep
-def self.ruby(number_clusters, specs, weights)
+# regular kmeans function     ## ruby function does not sort by utility and don't pick the highest utility as the rep
+def self.ruby(number_clusters, specs, weights, inits)
   weights = [1]*specs.first.size if weights.nil?
   thresh = 0.000001
-  mean_1 = self.seed(number_clusters, specs)
+  #mean_1 = self.seed(number_clusters, specs)
+  mean_1 = inits.each{|i| specs[i]}
   mean_2 =[]
   labels = []
   dif = []
@@ -327,7 +345,12 @@ end
 def self.distance(point1, point2, weights)
   dist = 0
   point1.each_index do |i|
-    diff = weights[i]*(point1[i]-point2[i])
+    diff = 0
+    if point1[i].kind_of?(Array)
+       diff = weights[i] unless points[1].eql?(points[2])
+    else
+       diff = weights[i]*(point1[i]-point2[i])
+    end  
     dist += diff*diff
   end
   dist

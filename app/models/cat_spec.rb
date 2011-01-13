@@ -26,5 +26,4 @@ class CatSpec < ActiveRecord::Base
       select("value").where("product_id IN (select product_id from search_products where search_id = ?) and name = ?", Product.initial, feat).map(&:value)
     end
   end
-
 end
