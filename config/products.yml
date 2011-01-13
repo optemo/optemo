@@ -3,7 +3,7 @@
 # b = boolean
 # boost = boostexter feature for labels
 # show = this causes display in CompareController#show
-# showList = for listview, this causes display in .itemfeatures
+# showList = for direct view, this causes display in .itemfeatures
 
 ####Spaces are required between elements in an array
 
@@ -13,7 +13,7 @@
 
 cameras:
     product_type: camera_us
-    layout: gridview
+    layout: assist
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -35,30 +35,30 @@ cameras:
 
 bestbuy:
     product_type: camera_bestbuy
-    layout: gridview
+    layout: assist
     price:
         feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [filter, cluster, show]
         prefdir: -1
         min: 1
         max: 10000
     maxresolution: 
         feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [desc, filter, cluster, show]
     screensize:
         feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [desc, filter, cluster, show]
     opticalzoom:
         feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [desc, filter, cluster, show]
     brand:
         feature_type: Categorical
-        used_for: [boost, show, filter]
 
+        used_for: [show, filter, cluster]
 
 cameras.browsethenbuy.com:
     product_type: camera_us
-    layout: gridview
+    layout: assist
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -80,7 +80,7 @@ cameras.browsethenbuy.com:
         
 cameras.direct.demo.optemo.com:
     product_type: camera_us
-    layout: lineview
+    layout: direct
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show, showList]
@@ -101,7 +101,7 @@ cameras.direct.demo.optemo.com:
         used_for: [boost, filter, show]        
 cameras.direct:
     product_type: camera_us
-    layout: lineview
+    layout: direct
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show, showList]
@@ -122,7 +122,7 @@ cameras.direct:
         used_for: [boost, filter, show]                
 cameras.assist.demo.optemo.com:
     product_type: camera_us
-    layout: gridview
+    layout: assist
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -143,7 +143,7 @@ cameras.assist.demo.optemo.com:
         used_for: [boost, filter, show]
 cameras.assist:
     product_type: camera_us
-    layout: gridview
+    layout: assist
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -212,7 +212,7 @@ mobile:
 
 printers.browsethenbuy.com:
     product_type: printer_us
-    layout: lineview
+    layout: direct
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -247,7 +247,7 @@ printers.browsethenbuy.com:
 
 printers.direct.demo.optemo.com:
     product_type: printer_us
-    layout: lineview
+    layout: direct
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -282,7 +282,7 @@ printers.direct.demo.optemo.com:
         
 printers.direct:
     product_type: printer_us
-    layout: lineview
+    layout: direct
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -316,7 +316,7 @@ printers.direct:
         used_for: [boost, filter, show]        
 printers.assist.demo.optemo.com:
     product_type: printer_us
-    layout: gridview
+    layout: assist
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -351,7 +351,7 @@ printers.assist.demo.optemo.com:
 
 printers.assist:
     product_type: printer_us
-    layout: gridview
+    layout: assist
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -386,7 +386,7 @@ printers.assist:
 
 laserprinterhub.com:
     product_type: printer_lph
-    layout: gridview
+    layout: assist
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -420,7 +420,7 @@ laserprinterhub.com:
         used_for: [boost, filter, show]
 laserprinterhub.ca:
     product_type: printer_lph
-    layout: gridview
+    layout: assist
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -455,7 +455,7 @@ laserprinterhub.ca:
         
 ast0.optemo.com:
     product_type: printer_lph
-    layout: gridview
+    layout: assist
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -491,7 +491,7 @@ ast0.optemo.com:
 
 localhost:
     product_type: printer_lph
-    layout: gridview
+    layout: assist
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -527,7 +527,7 @@ localhost:
 
 printers:
     product_type: printer_us
-    layout: lineview
+    layout: direct
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -566,7 +566,7 @@ printers:
 
 builddirect.optemo.com:
     product_type: flooring_builddirect
-    layout: lineview
+    layout: direct
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -602,7 +602,7 @@ builddirect.optemo.com:
         
 flooring:
     product_type: flooring_builddirect
-    layout: lineview
+    layout: direct
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -641,7 +641,7 @@ flooring:
                 
 walmart.optemo.com:
     product_type: laptop_walmart
-    layout: lineview
+    layout: direct
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -663,7 +663,7 @@ walmart.optemo.com:
         
 laptops:
     product_type: laptop_walmart
-    layout: lineview
+    layout: direct
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]

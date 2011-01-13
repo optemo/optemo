@@ -7,6 +7,7 @@ class Session
   attr_accessor :dragAndDropEnabled, :relativeDescriptions, :numGroups  # These flags should probably be stripped back out of the code eventually
   attr_accessor :product_type # Product type (camera_us, etc.), used everywhere
   attr_accessor :piwikSiteId # Piwik Site ID, as configured in the currently-running Piwik install.
+  attr_accessor :onlyfiltering
 
   def initialize (url = nil)
     defaultSite = 'printers.assist.demo.optemo.com'
@@ -49,7 +50,7 @@ class Session
     # Direct needs no clustering, showing all products in browseable pages and offering "group by" buttons.
     # mobileView controls screen vs. mobile view (Optemo Mobile)
     # Default is false
-    @directLayout = product_yml["layout"] == "lineview"
+    @directLayout = product_yml["layout"] == "direct"
     @mobileView = product_yml["layout"] == "mobileview"
     # This block gets out the continuous, binary, and categorical features
     product_yml.each do |feature,atts|

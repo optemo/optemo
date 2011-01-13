@@ -81,27 +81,8 @@ class CompareController < ApplicationController
     @product = Product.cached(params[:id])
     @allspecs = ContSpec.cache_all(params[:id]).merge(CatSpec.cache_all(params[:id])).merge(BinSpec.cache_all(params[:id]))
     @s = Session.current
-    product_type = @s.product_type
-    if product_type
-      if product_type == "flooring_builddirect"
-        @imglurl = "http://www.builddirect.com" + CGI.unescapeHTML(@product.imglurl.to_s)
-      elsif product_type == "Laptop"
-        @imglurl = @product.imgurl.to_s
-      else
-        @imglurl = @product.imglurl
-      end
-    else
-      @imglurl = @product.imglurl
-    end
+    @imglurl = @product.imglurl
 
-    @offerings = RetailerOffering.find_all_by_product_id_and_product_type(params[:id], product_type, :order => 'priceint ASC')
-    @review = Review.find_by_product_id_and_product_type(params[:id], product_type, :order => 'helpfulvotes DESC')
-    # Take out offending <br />
-    if @review && @review.content
-      @review.content = @review.content.gsub(/\r\&lt\;br \/\&gt\;/, '').gsub(/\t/,' ').strip
-    end
-    @cartridges = Compatibility.find_all_by_product_id_and_product_type(@product.id, product_type).map{|c|Cartridge.find_by_id(c.accessory_id)}.reject{|c|!c.instock}
-    @cartridgeprices = @cartridges.map{|c| RetailerOffering.find_by_product_type_and_product_id("Cartridge",c.id)}
     respond_to do |format|
       format.html { 
                     if @plain 

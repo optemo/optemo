@@ -272,10 +272,10 @@ optemo_module = (function (my){
     		var data = [0.5,0.7,0.1,0,0.3,0.8,0.6,0.4,0.3,0.3];
     	//Data is assumed to be 10 normalized elements in an array
     	var peak = 0,
-    	trans = 4,
+    	trans = 3,
     	step = peak + 2*trans,
-    	height = 20,
-    	length = 174,
+    	height = 15,
+    	length = 170,
     	shapelayer = Raphael(element,length,height),
     	h = height - 1;
     	if (my.MODEL_NAME == "flooring_builddirect") {
@@ -352,7 +352,7 @@ optemo_module = (function (my){
 	    });
     
     	//Show and Hide Descriptions
-    	$('.feature .label a, .catlabel a, .desc .deleteX').live('click', function(){
+    	$('.feature .label a, .desc .deleteX').live('click', function(){
     		if($(this).parent().attr('class') == "desc")
     			{var obj = $(this).parent();}
     		else
