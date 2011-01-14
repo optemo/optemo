@@ -6,16 +6,32 @@
 <a href="/" id="browseother">Browse Other Printers</a>
 <% end %>
 	<h1><%= @product.title %></h1>
-	<div id="image">
-		<% if @s.product_type == "flooring_builddirect" || @s.product_type == "Laptop" || FileTest.exist?("#{Rails.root}/public" + @imglurl) %>
-			<%= link_to image_tag(@imglurl), @imglurl, :class => "popup" %>
-		<% else %>
-			<br><br>No Image Available
-		<% end %>
-	</div>
+	<div id="tab_header">
+    <ul>
+    	<li id="tab_selected"><a href="#">Product Info</a></li>
+    	<li><a href="#">Specs</a></li>
+    	<li><a href="#">Reviews</a></li>
+    </ul>
+    </div>
+    <div id="tabbed_content">
+    	<div id="image">
+    		<% if @s.product_type == "flooring_builddirect" || @s.product_type == "Laptop" || @s.product_type == "camera_bestbuy" || FileTest.exist?("#{Rails.root}/public" + @imglurl) %>
+    			<%= link_to image_tag(@imglurl), @imglurl, :class => "popup" %>
+    		<% else %>
+    			<br><br>No Image Available
+    		<% end %>
+    	</div>
+	    <h3><%= @product.small_title %></h3>
+	    <h5>Webcode, Model #</h5>
+	    <h5>Description Goes Here</h5>
+    </div>
+    
 	<div id="features">
 	<ul>
+	    <h2>Our Price: <%= @allspecs["price"] %><br/>
+	    <span style="font-size: 0.65em;">Lowest Price Guarantee<br><br></span></h2>
 		<% (@s.continuous["show"]+@s.categorical["show"]+@s.binary["show"]).each do |f_name| %>
+		    <% next if f_name == "price" %>
 			<% f = @allspecs[f_name] %>
 			<% if !f.nil? %>
 				<li>
@@ -27,7 +43,7 @@
 	</div>
 	<div style="clear: left; height:5px;"></div>
 	<div class="showtable">
-	
+
 	</div>
 	
 

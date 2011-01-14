@@ -682,3 +682,28 @@ laptops:
     screensize:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
+        
+besttv:
+    product_type: tv_bestbuy
+    layout: assist
+    price:
+        feature_type: Continuous
+        used_for: [filter, cluster, show]
+        prefdir: -1
+        min: 1
+        max: 10000
+    maxresolution: 
+        feature_type: Continuous
+        used_for: [desc, filter, cluster, show]
+    screensize:
+        feature_type: Continuous
+        used_for: [desc, filter, cluster, show]
+    power:
+        feature_type: Continuous
+        used_for: [desc, filter, cluster, show]
+    brand:
+        feature_type: Categorical
+        used_for: [filter, show]
+    displaytech:
+        feature_type: Categorical
+        used_for: [filter, show]
