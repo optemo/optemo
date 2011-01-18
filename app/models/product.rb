@@ -39,22 +39,17 @@ class Product < ActiveRecord::Base
   #Currently only does continuous but others should be added
   def self.specs(p_ids = nil)
     st = []
-    Session.current.continuous["filter"].each{|f| st << ContSpec.by_feat(f)}
-    Session.current.binary["filter"].each{|f| BinSpec.by_feat(f)==1 ? st<<[1,0] : st<<[0,1]}
-    Session.current.categorical["filter"].each{|f| st<< self.to_array(CatSpec.all(f))}  
+    Session.current.continuous["cluster"].each{|f| st << ContSpec.by_feat(f)}
+    Session.current.binary["cluster"].each{|f| st<< self.to_bin_array(CatSpec.all(f))}
+    Session.current.categorical["cluster"].each{|f| st<< self.to_cat_array(CatSpec.all(f))}  
     #Check for 1 spec per product
-    raise ValidationError unless st.first.size > 0
     raise ValidationError unless Session.current.search.products_size == st.first.length
     #Check for no nil values
     raise ValidationError unless st.first.size == st.first.compact.size
+    raise ValidationError unless st.first.size > 0
     #Check that every spec has the same number of features
     first_size = st.first.compact.size
-    
-   # if p_ids
-   #   Session.current.categorical["cluster"].each{|f|  st<<CatSpec.cachemany(p_ids, f)} 
-   #   Session.current.binary["cluster"].each{|f|  st << BinSpec.cachemany(p_ids, f)}
-   # end
-    st 
+    st
   end
   
   
@@ -116,7 +111,10 @@ class Product < ActiveRecord::Base
   def self.per_page
     9
   end
-  def self.to_array(a) # converting categorical values to numbers
+  def self.to_bin_array(a)
+    a.map{|i| i==1 ? [1,0] : [0,1]}
+  end  
+  def self.to_cat_array(a) # converting categorical values to numbers
     uniqVals = a.uniq
     r = uniqVals.size
     a.map{|i| s=[0]*r; s[uniqVals.index(i)]=1;s}

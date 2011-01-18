@@ -36,7 +36,9 @@ class Cluster
     unless @children
       start = Time.now
       cluster_ids_and_reps = Kmeans.compute(9,products)
+      debugger
       cluster_ids = cluster_ids_and_reps[0...products.size] 
+      
       rep_ids = cluster_ids_and_reps[products.size...cluster_ids_and_reps.size]
       finish = Time.now
       @children = []
