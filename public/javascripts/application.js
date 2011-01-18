@@ -657,10 +657,49 @@ optemo_module = (function (my){
     		return false;
     	});
     	
-    	 $('.saveditem .deleteX').live('click', function() {
-    	     removeFromComparison($(this).attr('data-name'));
-    	     return false;
-	     });
+    	
+    	$('.fetch_bestbuy_specs').live('click', function () {
+    	    var t = $(this);
+    	    sku = t.parent().parent().attr('data-sku');
+    	    
+    	    $.ajax({
+    	        type: "GET",
+                url: "/product_json/" + sku,
+                success: function (data) {
+                    specs = (new Function ("return " + data))();
+                    console.log(specs);
+                },
+                error: function(x, xhr) {
+                    console.log("Error in json ajax");
+                    console.log(x);
+                    console.log(xhr);
+                }
+            });
+	    });
+	    
+	    $('.fetch_bestbuy_reviews').live('click', function () {
+    	    var t = $(this);
+    	    sku = t.parent().parent().attr('data-sku');
+    	    $.ajax({
+    	        type: "GET",
+                url: "/product_review/" + sku,
+                success: function (data) {
+                    specs = (new Function ("return " + data))();
+                    console.log(specs);
+                },
+                error: function(x, xhr) {
+                    console.log("Error in json ajax");
+                    console.log(x);
+                    console.log(xhr);
+                }
+            });
+	        
+        });
+    	    
+        $('.saveditem .deleteX').live('click', function() {
+         removeFromComparison($(this).attr('data-name'));
+         return false;
+        });
     	
     	// from DBInit
     	

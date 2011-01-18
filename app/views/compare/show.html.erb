@@ -5,12 +5,12 @@
 <div class="content">
 <a href="/" id="browseother">Browse Other Printers</a>
 <% end %>
-	<h1><%= @product.title %></h1>
+	<h1><%= @product.small_title %></h1>
 	<div id="tab_header">
-    <ul>
+    <ul data-sku='<%= @product.sku %>'>
     	<li id="tab_selected"><a href="#">Product Info</a></li>
-    	<li><a href="#">Specs</a></li>
-    	<li><a href="#">Reviews</a></li>
+    	<li><a href="#" class="fetch_bestbuy_specs">Specs</a></li>
+    	<li><a href="#" class="fetch_bestbuy_reviews">Reviews</a></li>
     </ul>
     </div>
     <div id="tabbed_content">
@@ -21,7 +21,14 @@
     			<br><br>No Image Available
     		<% end %>
     	</div>
-	    <h3><%= @product.small_title %></h3>
+		<% (@s.continuous["show"]+@s.categorical["show"]+@s.binary["show"]).each do |f_name| %>
+		    <% next if f_name == "price" %>
+			<% f = @allspecs[f_name] %>
+			<% if !f.nil? %>
+				 	<span class="detail_label"><%=t 'products.'+ f_name %>: </span> <%= "$" if f_name == 'price' %><%= (@product.display(f_name, f)).split('*').each(&:strip).uniq.join(" ") %><%=' ' + t('products.'+ f_name+'unit', :default => '') unless f_name == 'price' %>&nbsp;
+			<% end %>
+		<% end %>
+
 	    <h5>Webcode, Model #</h5>
 	    <h5>Description Goes Here</h5>
     </div>
@@ -30,15 +37,6 @@
 	<ul>
 	    <h2>Our Price: <%= @allspecs["price"] %><br/>
 	    <span style="font-size: 0.65em;">Lowest Price Guarantee<br><br></span></h2>
-		<% (@s.continuous["show"]+@s.categorical["show"]+@s.binary["show"]).each do |f_name| %>
-		    <% next if f_name == "price" %>
-			<% f = @allspecs[f_name] %>
-			<% if !f.nil? %>
-				<li>
-				 	<span class="detail_label"><%=t 'products.'+ f_name %>: </span> <%= "$" if f_name == 'price' %><%= (@product.display(f_name, f)).split('*').each(&:strip).uniq.join(" ") %><%=' ' + t('products.'+ f_name+'unit', :default => '') unless f_name == 'price' %>
-				</li>
-			<% end %>
-		<% end %>
 	</ul>
 	</div>
 	<div style="clear: left; height:5px;"></div>

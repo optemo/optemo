@@ -768,7 +768,7 @@ div#filter_bar_loading{
 /* 	float: left; */
 }
 #features {
-	width: 310px;
+	width: 230px;
 	float: right;
 }
 div#textfeatures, div#reviews {
@@ -813,7 +813,7 @@ div .left{
 	background: #eee;
 	padding: 0.24em 1em;
 	color: #00c;
-	width: 8em;
+	width: 144px;
 	text-align: center;
 }
 
@@ -837,7 +837,7 @@ div .left{
 	border: 1px solid black;
 	clear: both;
 	padding: 0 1em;
-	width: 407px;
+	width: 493px;
 	float: left;
 }
 
