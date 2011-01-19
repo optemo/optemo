@@ -257,7 +257,10 @@ inline :C do |builder|
   }while (z>tresh);
 
  
-  for (i=0; i<k; i++) reps[i] = -1; //just initialize to something small
+  for (i=0; i<nn; i++){
+    h=labels[i];
+    reps[h]=i;
+  }
   for (i=0; i<nn; i++){
     h = labels[i];
     if (utilities[reps[h]]<utilities[i]) reps[h]=i;

@@ -3,7 +3,7 @@ require 'inline'
 
   def computeDist
     dist = {}
-    num_buckets = 24; #Must be greater than 0
+    num_buckets = 20; #Must be greater than 0
     mins = []
     maxes = []
     
