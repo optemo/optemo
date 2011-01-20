@@ -5,23 +5,33 @@
 <div class="content">
 <a href="/" id="browseother">Browse Other Printers</a>
 <% end %>
-	<h1><%= @product.title %></h1>
+	<h1><%= @product.small_title %></h1>
 	<div id="tab_header">
-    <ul>
+    <ul data-sku='<%= @product.sku %>'>
     	<li id="tab_selected"><a href="#">Product Info</a></li>
-    	<li><a href="#">Specs</a></li>
-    	<li><a href="#">Reviews</a></li>
+    	<li><a href="#" class="fetch_bestbuy_specs">Specs</a></li>
+    	<li><a href="#" class="fetch_bestbuy_reviews">Reviews</a></li>
     </ul>
     </div>
     <div id="tabbed_content">
-    	<div id="image">
+    	<div id="galleria" style="width: 500px; height: 300px;">
     		<% if @s.product_type == "flooring_builddirect" || @s.product_type == "Laptop" || @s.product_type == "camera_bestbuy" || FileTest.exist?("#{Rails.root}/public" + @imglurl) %>
-    			<%= link_to image_tag(@imglurl), @imglurl, :class => "popup" %>
+    			<%= image_tag(@imglurl, :size => "300x300", :alt => "") %>
+    			<%= image_tag(@imglurl, :size => "300x300", :alt => "") %>
     		<% else %>
     			<br><br>No Image Available
     		<% end %>
     	</div>
-	    <h3><%= @product.small_title %></h3>
+    	<% save = [] %>
+		<% (@s.continuous["show"]+@s.categorical["show"]+@s.binary["show"]).each_with_index do |f_name, i| %>
+		    <% next if f_name == "price" %>
+			<% f = @allspecs[f_name] %>
+			<% if !f.nil? %>
+				 	<% save[i] = '<span class="detail_label">' + (t 'products.'+ f_name) + ': </span>' + (f_name == 'price' ? "$" : "" ) + ((@product.display(f_name, f)).split('*').each(&:strip).uniq.join(" ")) + ' ' + (f_name == "price" ? "" : t('products.'+ f_name+'unit', :default => '')) %>
+			<% end %>
+		<% end %>
+		<%= raw save.compact.join(", ") %>
+
 	    <h5>Webcode, Model #</h5>
 	    <h5>Description Goes Here</h5>
     </div>
@@ -29,18 +39,18 @@
 	<div id="features">
 	<ul>
 	    <h2>Our Price: <%= @allspecs["price"] %><br/>
-	    <span style="font-size: 0.65em;">Lowest Price Guarantee<br><br></span></h2>
-		<% (@s.continuous["show"]+@s.categorical["show"]+@s.binary["show"]).each do |f_name| %>
-		    <% next if f_name == "price" %>
-			<% f = @allspecs[f_name] %>
-			<% if !f.nil? %>
-				<li>
-				 	<span class="detail_label"><%=t 'products.'+ f_name %>: </span> <%= "$" if f_name == 'price' %><%= (@product.display(f_name, f)).split('*').each(&:strip).uniq.join(" ") %><%=' ' + t('products.'+ f_name+'unit', :default => '') unless f_name == 'price' %>
-				</li>
-			<% end %>
-		<% end %>
+	    <span style="font-size: 0.65em;">Lowest Price Guarantee<br><br></span>
+	    Sale Price: $1.99<br/>
+	    Sale Ends: 01/01/2012</h2>
+	    <div><%= image_tag "best_buy_free_shipping.gif" %>Free shipping on orders over <b>$20</b>.</div>
+	    <div><%= image_tag "best_buy_instore_pickup.gif" %>Order online and pick up in-store.</div>
+	    <div><%= image_tag "best_buy_rewards_card.gif" %>It's free to get into the rewards program.</div>
 	</ul>
 	</div>
+	
+	<div id="compare_field">
+	    <% link_to "#", "Compare this product against others" %>
+    </div>
 	<div style="clear: left; height:5px;"></div>
 	<div class="showtable">
 
@@ -48,3 +58,10 @@
 	
 
 <% if !@plain %><div style="clear: both;"></div></div><% end %>
+
+<script>
+// Load the classic theme
+Galleria.loadTheme('/javascripts/galleria.classic.js');
+// Initialize Galleria
+jQuery('#galleria').galleria();
+</script>

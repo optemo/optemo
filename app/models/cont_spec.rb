@@ -27,6 +27,7 @@ class ContSpec < ActiveRecord::Base
     CachingMemcached.cache_lookup("#{Session.current.product_type}MinMax-#{feat}") do
       #all = ContSpec.allspecs(feat)
       all = ContSpec.initial_specs(feat)
+      raise ValidationError, "There are null specs for feature #{feat} of #{Session.current.product_type}" unless all.compact == all
       [all.min,all.max]
     end
   end
