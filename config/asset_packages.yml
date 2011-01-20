@@ -6,6 +6,7 @@ javascripts:
   - autocomplete_terms
   - jquery-ui-1.8.6.custom.min
   - jquery.history
+  - jquery_galleria
   - application
   
 - mobile:
