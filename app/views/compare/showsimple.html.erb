@@ -1,12 +1,10 @@
 <div class="showtable_mobile rounded">
 	<h3><%= URI.decode(@product.title) %></h3>
 	<div id="image">
-		<% if @s.product_type == "flooring_builddirect" %>
-			<%= image_tag(@imglurl) %>
-		<% elsif @s.product_type == "Laptop" %>
-			<%= image_tag(@imglurl) %>
-		<% elsif FileTest.exist?("#{Rails.root}/public" + @imglurl) %>
-			<%= image_tag(@imglurl) %>
+		<% if @s.product_type == "flooring_builddirect" || @s.product_type == "Laptop" %>
+			<%= image_tag(@allspecs["imglurl"]) %>
+		<% elsif FileTest.exist?("#{Rails.root}/public" + @allspecs["imglurl"]) %>
+			<%= image_tag(@allspecs["imglurl"]) %>
 		<% else %>
 			<br><br>No Image Available
 		<% end %>

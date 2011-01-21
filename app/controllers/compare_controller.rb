@@ -81,7 +81,6 @@ class CompareController < ApplicationController
     @product = Product.cached(params[:id])
     @allspecs = ContSpec.cache_all(params[:id]).merge(CatSpec.cache_all(params[:id])).merge(BinSpec.cache_all(params[:id]))
     @s = Session.current
-    @imglurl = @product.imglurl
 
     respond_to do |format|
       format.html { 
