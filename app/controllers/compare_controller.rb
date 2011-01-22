@@ -77,9 +77,9 @@ class CompareController < ApplicationController
     @plain = params[:plain].nil? ? false : true
     
     #Cleanse id to be only numbers
-    params[:id] = params[:id][/^\d+/]
-    @product = Product.cached(params[:id])
-    @allspecs = ContSpec.cache_all(params[:id]).merge(CatSpec.cache_all(params[:id])).merge(BinSpec.cache_all(params[:id]))
+    id = params[:id] = params[:id][/^\d+/]
+    @product = Product.cached(id)
+    @allspecs = ContSpec.cache_all(id).merge(CatSpec.cache_all(id)).merge(BinSpec.cache_all(id)).merge(TextSpec.cache_all(id))
     @s = Session.current
 
     respond_to do |format|

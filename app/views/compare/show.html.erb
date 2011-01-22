@@ -15,7 +15,15 @@
     </div>
     <div id="tabbed_content">
     	<div id="galleria" style="width: 500px; height: 300px;">
-    		<% if @s.product_type == "flooring_builddirect" || @s.product_type == "Laptop" || @s.product_type == "camera_bestbuy" || FileTest.exist?("#{Rails.root}/public" + @allspecs["imglurl"]) %>
+    		<!-- What follows is a Best Buy-specific hack, put in to get "additional media" out prior to a consultation meeting with them
+
+    	    on whether or not we should invest the time to significantly complicate Firehose -->
+    	    <% if @s.product_type == "camera_bestbuy" %>
+    	        <% additional_media = ActiveSupport::JSON.decode(@allspecs["additionalMedia"].gsub("=>",":")) %>
+    	        <% additional_media.each do |a| %>
+    	            <%= image_tag("http://www.bestbuy.ca" + a["large"].gsub("500x500", "300x300"), :size => "300x300", :alt => "")  if a["large"] %>
+    	        <% end %>
+    		<% elsif @s.product_type == "flooring_builddirect" || @s.product_type == "Laptop" || @s.product_type == "camera_bestbuy" || FileTest.exist?("#{Rails.root}/public" + @allspecs["imglurl"]) %>
     			<%= image_tag(@allspecs["imglurl"], :size => "300x300", :alt => "") %>
     			<%= image_tag(@allspecs["imglurl"], :size => "300x300", :alt => "") %>
     		<% else %>
@@ -32,8 +40,8 @@
 		<% end %>
 		<%= raw save.compact.join(", ") %>
 
-	    <h5><%= "Webcode: #{@product.sku}, Model #" %></h5>
-	    <h5>Description Goes Here</h5>
+	    <h5><%= "Webcode: #{@product.sku}, Model: #{@product.mpn}" %></h5>
+	    <h5><%= raw @allspecs["longDescription"] %></h5>
     </div>
     
 	<div id="features">
