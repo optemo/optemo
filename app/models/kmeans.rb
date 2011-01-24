@@ -31,7 +31,7 @@ inline :C do |builder|
    int tmp_ind=0;
    int not_eq_flag = 0;
    
-   VALUE labels_and_reps = rb_ary_new2(nn+k);
+  
    int i, j, h,t;
    double** data_cont = malloc(sizeof(double*)*nn);
    int*** data_bin = malloc(sizeof(int**)*nn);
@@ -43,15 +43,14 @@ inline :C do |builder|
    int* inits = malloc(sizeof(int)*k);
    double* utilities = (double*)calloc(nn, sizeof(double)); 
    int* newlabels = (int*)calloc(k, sizeof(int)); 
-   int* newreps = (int*)calloc(k, sizeof(int)); 
    double* weights = malloc(sizeof(double)*(dd_cont+dd_bin+dd_cat));
-   int* reps = malloc(sizeof(int)*k);
+
    
    for (j=0; j<(dd_cont+dd_bin+dd_cat); j++) weights[j] = NUM2DBL(weights_a[j]);
    for (i=0; i<k; i++) inits[i] = NUM2INT(inits_a[i]);  
    
        
-   double* avgUtilities = (double*)calloc(k, sizeof(double)); 
+
    for (i=0; i<nn; i++) data_cont[i] = malloc(sizeof(double)*dd_cont);    
    for (i=0; i<nn; i++){
       data_bin[i] = malloc(sizeof(int*)*dd_bin);
@@ -222,8 +221,6 @@ inline :C do |builder|
            means_bin_1[h][j][max_ind]=1;
          }        
      }
-          
-       
        for (j=0; j<dd_cat; j++){ 
           max_ind=0;
           for (t=0; t<dim_per_cat[j]; t++)
@@ -256,6 +253,17 @@ inline :C do |builder|
      }   
   }while (z>tresh);
 
+ ///////////////////////////////////////////////////Adjusting k based on the final number of clusters
+  int maxLabel = labels[0];
+  for (i=1; i<nn; i++){
+    if (maxLabel<labels[i]) maxLabel = labels[i];
+  }
+      
+  k = maxLabel + 1;
+  int* reps = malloc(sizeof(int)*k);
+  int* newreps = (int*)calloc(k, sizeof(int)); 
+  VALUE labels_and_reps = rb_ary_new2(nn+k);  
+  double* avgUtilities = (double*)calloc(k, sizeof(double)); 
  
   for (i=0; i<nn; i++){
     h=labels[i];
@@ -362,7 +370,6 @@ def self.compute(number_clusters,p_ids)
     cat_specs = st[dim_cont+dim_bin...st.size].transpose
     # dimension of each category - for example how many different brands 
     dim_per_cat = cat_specs.first.map{|f| f.size}
-    
     raise ValidationError, "No specs available" if cont_specs.nil?
     raise ValidationError, "Factors not available for the same number of features as specs" unless ft.size == cont_specs.size
     raise ValidationError, "Number of factors is not equal to the dimension of continuous specs" unless ft.first.size == cont_specs.first.size 
@@ -374,6 +381,7 @@ def self.compute(number_clusters,p_ids)
     #static VALUE kmeans_c(VALUE _points_cont, VALUE _points_bin, VALUE _points_cat, _VALUE n, VALUE d_cont, VALUE d_bin, VALUE d_cat, VALUE dim_per_cat,...
     #  VALUE cluster_n,VALUE _factors, VALUE _weights, VALUE _inits)
     $k.kmeans_c(cont_specs.flatten, bin_specs.flatten, cat_specs.flatten, cont_specs.size, dim_cont,  dim_bin, dim_cat, dim_per_cat,number_clusters, ft.flatten, weights, inits)
+ 
   rescue ValidationError => e
     puts "Falling back to ruby kmeans: #{e.message}"
     debugger
