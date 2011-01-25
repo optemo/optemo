@@ -53,8 +53,10 @@ bestbuy:
         used_for: [desc, filter, cluster, show]
     brand:
         feature_type: Categorical
-
         used_for: [show, filter, cluster]
+    color:
+        feature_type: Categorical
+        used_for: [show, filter]
 
 cameras.browsethenbuy.com:
     product_type: camera_us

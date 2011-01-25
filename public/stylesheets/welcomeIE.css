@@ -79,3 +79,11 @@
 {
   background: url(../images/rounded/leftboxes-br.png) bottom right no-repeat;
 }
+/*--------------------------------------//
+//            Color Picker              //
+//--------------------------------------*/
+.white_swatch {
+	width: 11px;
+	height: 11px;
+	border: 1px solid #ccc;
+}

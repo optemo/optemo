@@ -20,18 +20,26 @@
   			<% end %>
   		</div>
 		<% chosen_cats = chosencats(feat) %>
-  		<% unless chosen_cats.nil? || chosen_cats.empty? %>
-  			<%# At least one item selected %>
-			<%= category_select(feat,true) %>
-  			<% chosen_cats.each do |b| %>
-  				<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :"data-cat" => feat, :class => "removefilter", :"data-id" => b} %> <%= b %>
-  				</div>
+		<% if feat == "color" %>
+			<div style="margin-right: -3px">
+				<% %w(red orange yellow green blue purple pink white silver brown black).each do |color| %>
+				<div class="swatch<%= " white_swatch" if color == "white" %><%= " selected_swatch" if chosen_cats.include?(color) %>" style="background-color: <%= color %>"></div>
+				<% end %>
+				<div style="clear: left;"></div>
+			</div>
+		<% else %>
+  			<% unless chosen_cats.nil? || chosen_cats.empty? %>
+  				<%# At least one item selected %>
+				<%= category_select(feat,true) %>
+  				<% chosen_cats.each do |b| %>
+  					<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :"data-cat" => feat, :class => "removefilter", :"data-id" => b} %> <%= b %>
+  					</div>
+  				<% end %>
+  			<% else %>
+  				<%# Nothing selected %>
+				<%= category_select(feat,false) %>
   			<% end %>
-  		<% else %>
-  			<%# Nothing selected %>
-			<%= category_select(feat,false) %>
   		<% end %>
-  		
   		<%= hidden_field_tag "myfilter[#{feat}]", chosen_cats.join("*") %>
   	</div>
   	<% i = i + 1 %>
