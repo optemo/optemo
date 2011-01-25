@@ -316,6 +316,7 @@ body {
 //        Show page and related         //
 //--------------------------------------*/
 
+/* deprecated for mobile layout? */
 #outsidecontainer {
 	position: absolute;
 	top: 0px;

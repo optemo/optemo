@@ -1,18 +1,21 @@
 <% if @plain %>
-<div class="poptitle"><%=t 'products.show.title'%></div>
+<div class="poptitle"><div id="tab_header">
+<ul data-sku='<%= @product.sku %>'>
+	<li id="tab_selected"><a href="#" class="fetch_bestbuy_info">Product Info</a></li>
+	<li><a href="#" class="fetch_bestbuy_specs">Specs</a></li>
+	<li><a href="#" class="fetch_bestbuy_reviews">Reviews</a></li>
+	<li><a href="#" class="fetch_bestbuy_accessories">Accessories</a></li>
+</ul>
+</div>
+<%= link_to image_tag("closepopup#{fr?}_white.gif"), "close", :class => "close"%>
+</div>
 <% else %>
 <% self.title = "#{@product.title}" %>
 <div class="content">
 <a href="/" id="browseother">Browse Other Printers</a>
 <% end %>
-	<h1><%= @product.small_title %></h1>
-	<div id="tab_header">
-    <ul data-sku='<%= @product.sku %>'>
-    	<li id="tab_selected"><a href="#">Product Info</a></li>
-    	<li><a href="#" class="fetch_bestbuy_specs">Specs</a></li>
-    	<li><a href="#" class="fetch_bestbuy_reviews">Reviews</a></li>
-    </ul>
-    </div>
+	<h1><%= @product.title %></h1>
+	<h5 style="margin: 0"><%= "Webcode: #{@product.sku}, Model: #{@product.mpn}" %></h5>
     <div id="tabbed_content">
     	<div id="galleria" style="width: 500px; height: 300px;">
     		<!-- What follows is a Best Buy-specific hack, put in to get "additional media" out prior to a consultation meeting with them
@@ -40,7 +43,6 @@
 		<% end %>
 		<%= raw save.compact.join(", ") %>
 
-	    <h5><%= "Webcode: #{@product.sku}, Model: #{@product.mpn}" %></h5>
 	    <h5><%= raw @allspecs["longDescription"] %></h5>
     </div>
     
