@@ -612,6 +612,7 @@ optemo_module = (function (my){
 
 		// Add a color selection -- submit
     	$('.swatch').unbind('click').click(function(){
+			my.loading_indicator_state.sidebar = true;
 		    var whichThingSelected = $(this).attr("style").replace(/background-color: (\w+);/,'$1');
 			if ($(this).hasClass("selected_swatch"))
 			{ //Removed selected color
@@ -625,7 +626,6 @@ optemo_module = (function (my){
     			var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : 'color', 'filter_type' : 'categorical'};
 				my.trackPage('goals/filter/categorical', info);
 			}
-			my.loading_indicator_state.sidebar = true;
     		submitCategorical();
     		return false;
     	});
