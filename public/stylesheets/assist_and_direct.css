@@ -134,6 +134,12 @@ div.rowdiv {
     background:none repeat scroll 0 0 #EFEFEF;
 }
 
+.poptitle {
+	font-weight: bold;
+	color: #FFF;
+	height: 25px;
+}
+
 .fv {
 	float: left;
 	width: 190px;
@@ -721,14 +727,14 @@ div#silkscreen {
 	left: 20px;
 	width: 940px;
 	height: 800px;
-	border-top: solid 33px #80C35A;
+	border-top: solid 30px #003399;
 	background: white;
 	z-index: 4;
 	display: none;
 }
 
 div#info {
-	margin-top: -33px;
+	margin-top: -26px;
 	font-size: 0.9em;
 	z-index: 5;
 	padding: 0px 23px 0px 22px;
@@ -802,6 +808,11 @@ div .left{
 	width: 193px;
 }
 
+#tab_header {
+    position: absolute;
+    left: 5px;
+}
+
 #tab_header ul {
 	list-style: none;
 	padding: 0;
@@ -810,7 +821,8 @@ div .left{
 
 #tab_header li {
 	float: left;
-	border: 1px solid #bbb;
+	border-top: 1px solid #666;
+    border-left: 1px solid #666;
 	border-bottom-width: 0;
 	margin: 0;
 }
@@ -818,10 +830,10 @@ div .left{
 #tab_header a {
 	text-decoration: none;
 	display: block;
-	background: #eee;
+	background: #ddd;
 	padding: 0.24em 1em;
 	color: #00c;
-	width: 144px;
+	width: 100px;
 	text-align: center;
 }
 
@@ -829,20 +841,14 @@ div .left{
 	background: #ddf;
 }
 
-#tab_header #tab_selected {
-	border-color: black;
-}
-
 #tab_header #tab_selected a {
 	position: relative;
-	top: 1px;
 	background: white;
 	color: black;
 	font-weight: bold;
 }
 
 #tabbed_content {
-	border: 1px solid black;
 	clear: both;
 	padding: 0 1em;
 	width: 493px;

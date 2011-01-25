@@ -666,8 +666,22 @@ optemo_module = (function (my){
     	        type: "GET",
                 url: "/product_json/" + sku,
                 success: function (data) {
-                    specs = (new Function ("return " + data))();
-                    console.log(specs);
+                    var specs = (new Function ("return " + data))();
+                    specs = (new Function ("return " + specs[0]))();
+                    var product = specs["product"]["specs"];
+                    var prop_list = (function spec_recurse(p) {
+                        var props = "";
+                        for (var i in p) {
+                            if (p[i] == "") continue;
+                            props += "<li>" + i + ": " + p[i] + "\n";
+                            if (typeof(p[i]) == "object") props += "<ul>" + spec_recurse(p[i]) + "</ul>";
+                        }
+                        return props;
+                    })(product);
+                    $('body').data('product_info', $('#tabbed_content').html());
+                    $('#tab_selected').removeAttr('id');
+                    t.parent().attr('id', 'tab_selected');                    
+                    $('#tabbed_content').html($('<ul>' + prop_list + '</ul>'))
                 },
                 error: function(x, xhr) {
                     console.log("Error in json ajax");
@@ -676,7 +690,8 @@ optemo_module = (function (my){
                 }
             });
 	    });
-	    
+
+	    // Reviews
 	    $('.fetch_bestbuy_reviews').live('click', function () {
     	    var t = $(this);
     	    sku = t.parent().parent().attr('data-sku');
@@ -684,7 +699,9 @@ optemo_module = (function (my){
     	        type: "GET",
                 url: "/product_review/" + sku,
                 success: function (data) {
-                    specs = (new Function ("return " + data))();
+                    var specs = (new Function ("return " + data))();
+                    // specs is now an array.
+                    specs = (new Function ("return " + specs[0]))();
                     console.log(specs);
                 },
                 error: function(x, xhr) {
