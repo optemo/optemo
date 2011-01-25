@@ -1112,3 +1112,32 @@ div .left{
     background-image: url(../images/classic-map.png);
     background-repeat: no-repeat;
 }
+
+/*--------------------------------------//
+//            Color Picker              //
+//--------------------------------------*/
+.swatch {
+	width: 13px;
+	height: 13px;
+	background-color: red;
+	-moz-border-radius: 4px; 
+	-webkit-border-radius: 4px;
+	-moz-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
+	-webkit-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
+	/*border: 1px solid #ccc;*/
+	float: left;
+	margin: 0 2px 2px 0;
+	cursor: pointer;
+}
+/*.swatch:hover {
+	-moz-box-shadow: 0 1px 3px rgba(50,50,50,0.5), inset 0px 0px 10px white;
+	-webkit-box-shadow: 0 1px 3px rgba(50,50,50,0.5), inset 0px 0px 10px white;
+}*/
+.selected_swatch {
+	border: 1px solid black;
+	width: 13px;
+	height: 13px;
+	margin: -1px 1px 1px -1px;
+	-moz-border-radius: 0px; 
+	-webkit-border-radius: 0px;
+}

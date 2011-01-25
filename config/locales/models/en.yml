@@ -45,6 +45,7 @@ en:
         here:                       "anywhere"
                 
         brand:                      "Brand"
+        color:                      "Color"
         model:                      "Model"
         digitalzoom:                "Digital Zoom"
         itemdimensions:             "Dimensions"

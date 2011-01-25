@@ -597,7 +597,7 @@ optemo_module = (function (my){
     		});
     	});
 
-    	// Add a brand -- submit
+    	// Add a dropdownbox selection -- submit
     	$('.selectboxfilter').unbind('change').change(function(){
 		    var whichThingSelected = $(this).val().replace(/ \(.*\)$/,'');
 			var whichSelector = $(this).attr('name');
@@ -606,6 +606,26 @@ optemo_module = (function (my){
     		var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : categorical_filter_name, 'filter_type' : 'categorical'};
     		my.loading_indicator_state.sidebar = true;
         	my.trackPage('goals/filter/categorical', info);
+    		submitCategorical();
+    		return false;
+    	});
+
+		// Add a color selection -- submit
+    	$('.swatch').unbind('click').click(function(){
+		    var whichThingSelected = $(this).attr("style").replace(/background-color: (\w+);/,'$1');
+			if ($(this).hasClass("selected_swatch"))
+			{ //Removed selected color
+				$('#myfilter_color').val(opt_removeStringWithToken($('#myfilter_color').val(), whichThingSelected, '*'));
+	    		var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : 'color', 'filter_type' : 'categorical_removed'};
+				my.trackPage('goals/filter/categorical_removed', info);
+			}
+			else
+			{ //Added selected color
+    			$('#myfilter_color').val(opt_appendStringWithToken($('#myfilter_color').val(), whichThingSelected, '*'));
+    			var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : 'color', 'filter_type' : 'categorical'};
+				my.trackPage('goals/filter/categorical', info);
+			}
+			my.loading_indicator_state.sidebar = true;
     		submitCategorical();
     		return false;
     	});
@@ -852,6 +872,10 @@ optemo_module = (function (my){
 		$(".demo_selector select").live('change', function(){
 			url = "http://"+$(".demo_selector select:last").val()+"."+$(".demo_selector select:first").val()+".demo.optemo.com";
 			window.location = url;
+		});
+		
+		$(".swatch").live('click', function(){
+			$(this).toggleClass('selected_swatch');
 		});
     }
 
