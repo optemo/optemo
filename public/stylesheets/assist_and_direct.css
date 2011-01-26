@@ -214,6 +214,9 @@ div #leftbar {
 	display:inline;
 }
 
+.selectboxfilter {
+	width:100%;
+}
 /*--------------------------------------//
 //         Drag And Drop Compare        //
 //--------------------------------------*/
