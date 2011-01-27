@@ -433,6 +433,7 @@ class Search < ActiveRecord::Base
       return true unless olduserdatacats.empty?
     else
       @userdatacats.each do |f|
+        return true if f.name == "color" #Color is always an expanded filtering
         old = olduserdatacats.select{|c|c.name == f.name}
         unless old.empty?
           newf = @userdatacats.select{|c|c.name == f.name}
