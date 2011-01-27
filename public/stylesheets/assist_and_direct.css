@@ -136,6 +136,7 @@ div.rowdiv {
 
 .poptitle {
 	font-weight: bold;
+	font-size: 1.13em;
 	color: #FFF;
 	height: 25px;
 }
@@ -735,7 +736,7 @@ div#silkscreen {
 
 div#info {
 	margin-top: -26px;
-	font-size: 0.9em;
+	font-size: 0.8em;
 	z-index: 5;
 	padding: 0px 23px 0px 22px;
 }
@@ -778,13 +779,61 @@ div#filter_bar_loading{
 	float: right;
 	font-size: 11px;
 }
+#features h2 {
+    font-size: 1.5em;
+    margin: 0 0 10px;
+}
+#features div.buttons {
+    height: 32px;
+}
 #features div {
-    height: 38px;
+    height: 40px;
 }
 #features img {
     float: left;
     padding-right: 5px;
 }
+.bestbuy_rating_bar {
+    width: 100px;
+    height: 35px;
+    position: relative;
+    background-color: #eff097;
+    color: #000;
+    line-height: 35px;
+    text-align:center;
+    font-weight: bold;
+}
+
+.bestbuy_rating_bar_inside {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 203px; 
+    height: 38px;
+    z-index:5;
+    background: url(../images/bestbuy_empty_rating_bar.png) no-repeat 0 0;
+}
+.bestbuy_rating_bar_small {
+    width: 100px;
+    height: 18px;
+    position: relative;
+    background-color: #eff097;
+    color: #000;
+    line-height: 20px;
+    text-align:center;
+    font-weight: bold;
+}
+
+.bestbuy_rating_bar_inside_small {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 102px; 
+    height: 20px;
+    z-index:5;
+    background: url(../images/bestbuy_empty_rating_bar_small.png) no-repeat 0 0;
+}
+
 div#textfeatures, div#reviews {
 	clear:both;
 }
@@ -860,9 +909,6 @@ div .left{
     width: 180px;
 }
 
-#features h2 {
-    font-size: 1.5em;
-}
 
 /*--------------------------------------//
 //            Awesome Buttons           //

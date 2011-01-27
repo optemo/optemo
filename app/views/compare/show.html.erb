@@ -50,8 +50,12 @@
 	<ul>
 	    <h2>Our Price: <%= @allspecs["price"] %><br/>
 	    <span style="font-size: 0.65em;">Lowest Price Guarantee<br><br></span>
-	    Sale Price: $1.99<br/>
+	    <span style="color: #f00">Sale Price: $1.99</span><br/>
 	    Sale Ends: 01/01/2012</h2>
+	    <div class="buttons"><%= image_tag "bestbuy_addtocart.gif" %></div>
+	    <div class="buttons"><%= image_tag "bestbuy_add_wishlist.gif" %></div>
+	    <div class="buttons" style="margin-bottom: 8px;"><%= image_tag "bestbuy_add_to_pricewatch.gif" %></div>
+	    
 	    <div><%= image_tag "best_buy_free_shipping.gif" %>Free shipping on orders over <b>$20</b>.</div>
 	    <div><%= image_tag "best_buy_instore_pickup.gif" %>Order online and pick up in-store.</div>
 	    <div><%= image_tag "best_buy_rewards_card.gif" %>It's free to get into the rewards program.</div>
@@ -61,11 +65,10 @@
 	<div id="compare_field">
 	    <% link_to "#", "Compare this product against others" %>
     </div>
-	<div style="clear: left; height:5px;"></div>
+	<!-- div style="clear: left; height:5px;"></div>
 	<div class="showtable">
 
-	</div>
-	
+	</div-- >
 
 <% if !@plain %><div style="clear: both;"></div></div><% end %>
 

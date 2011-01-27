@@ -1,8 +1,8 @@
-/* Application-specific Javascript. 
+/* Application-specific Javascript.
    This is for the grid & list views (Optemo Assist & Optemo Direct) only.
    If you add a function and don't add it to the table of contents, prepare to be punished by your god of choice.
    Functions marked ** are public functions that can be called from outside the optemo_module declaration.
- 
+
    ---- UI Manipulation ----
     ** removeSilkScreen()
     ** applySilkScreen(url, data, width, height)  -  Puts up fading boxes
@@ -17,17 +17,17 @@
     ** loadFilterBarSilkScreen()  -  Puts fade over filter bar (for longer loading times).
 
    ---- Piwik Tracking Functions ----
-    ** trackPage(page_title, extra_data)  -  Piwik tracking per page. Extra data is in JSON format, with keys for ready parsing by Piwik into piwik_log_preferences. 
+    ** trackPage(page_title, extra_data)  -  Piwik tracking per page. Extra data is in JSON format, with keys for ready parsing by Piwik into piwik_log_preferences.
                                        -  For more on this, see the Preferences plugin in the Piwik code base.
- 
+
    ---- JQuery Initialization Routines ----
     ** FilterAndSearchInit()  -  Search and filter areas.
  	** LiveInit()  -   All the events that can be handled appropriately with jquery live
 	ErrorInit()  -  Error pages
     ** DBinit()  -   UI elements from the _discoverybrowser partial, also known as <div id="main">.
-	
+
    ######  Formerly from helpers.js ######
-   
+
    -------- AJAX ---------
     ** ajaxsend(hash,myurl,mydata)  -  Does AJAX call through jquery, returns through ajaxhandler(data)
     ** ajaxhandler(data)  -  Splits up data from the ajax call according to [BRK] tokens. See app/views/compare/ajax.html.erb
@@ -56,7 +56,7 @@
 
    ---- document.ready() ----
     document.ready()  -  The jquery call that gets everything started.
-   
+
    ----- Page Loader -----
     if statement  -  This gets evaluated as soon as the ajaxsend function is ready (slight savings over document.ready()).
 */
@@ -100,7 +100,7 @@ optemo_module = (function (my){
     								'width' : width||800,
     								'height' : height||770,
     								'display' : 'inline' });
-    	
+
         /* This is used to get the document height for doing layout properly. */
         /*http://james.padolsey.com/javascript/get-document-height-cross-browser/*/
         current_height = (function() {
@@ -111,7 +111,7 @@ optemo_module = (function (my){
                 Math.max(D.body.clientHeight, D.documentElement.clientHeight)
             );
         })();
-            	
+
     	$('#silkscreen').css({'height' : current_height+'px', 'display' : 'inline'}).fadeTo(0, 0.5);
     	$('.selectboxfilter').css('visibility', 'hidden');
     	if (data)
@@ -122,10 +122,10 @@ optemo_module = (function (my){
 
     // When products get dropped into the save box
     my.saveProductForComparison = function(id, imgurl, name) {
-    	/* We need to store the entire thing for Flooring. Eventually this will probably not be an issue 
-    	since we won't be pulling images directly from another website. Keep original code below 
+    	/* We need to store the entire thing for Flooring. Eventually this will probably not be an issue
+    	since we won't be pulling images directly from another website. Keep original code below
     	imgurlToSaveArray = imgurl.split('/');
-	
+
     	imgurlToSaveArray[imgurlToSaveArray.length - 1] = id + "_s.jpg";
     	productType = imgurlToSaveArray[(imgurlToSaveArray.length - 2)];
     	productType = productType.substring(0, productType.length-1);
@@ -143,13 +143,13 @@ optemo_module = (function (my){
     	} else {
     	    ignored_ids = getAllShownProductIds();
             my.trackPage('goals/save', {'filter_type' : 'save', 'product_picked' : id, 'product_ignored' : ignored_ids});
-        
+
     		my.renderComparisonProducts(id, imgurl, name);
     		addValueToCookie('optemo_SavedProductIDs', [id, imgurl, name, my.MODEL_NAME]);
     	}
 
     	// There should be at least 1 saved item, so...
-    	// 1. show compare button	
+    	// 1. show compare button
     	$("#compare_button").css("display", "block");
     	// 2. hide 'add stuff here' message
     	$("#deleteme").css("display", "none");
@@ -167,12 +167,12 @@ optemo_module = (function (my){
     	// It looks so much better in Firefox et al, so if there's no MSIE, go ahead with special styling.
     	//if ($.browser.msie) smallProductImageAndDetail = smallProductImageAndDetail + " style=\"position:absolute; bottom:5px;\"";
     	smallProductImageAndDetail = smallProductImageAndDetail + ">" +
-    	"<a class=\"easylink\" data-id=\""+id+"\" href=\"\">" + 
+    	"<a class=\"easylink\" data-id=\""+id+"\" href=\"\">" +
     	((name) ? optemo_module.getShortProductName(name) : 0) +
-    	"</a></div>" + 
-    	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\">" + 
+    	"</a></div>" +
+    	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\">" +
     	"<img src=\"" +
-    	(typeof(REMOTE) != 'undefined' ? REMOTE : "") + 
+    	(typeof(REMOTE) != 'undefined' ? REMOTE : "") +
     	"/images/close.png\" alt=\"Close\"/></a>";
     	var element = $('#c'+id);
     	element.append($(smallProductImageAndDetail));
@@ -220,7 +220,7 @@ optemo_module = (function (my){
 
     	$("#already_added_msg").css("display", "none");
     	$("#too_many_saved").css("display", "none");
-	
+
     	removeValueFromCookie('optemo_SavedProductIDs', id);
     	if($('.saveditem').length == 0){
     		$("#compare_button").css("display", "none");
@@ -255,7 +255,7 @@ optemo_module = (function (my){
         arguments = $("#filter_form").serialize().split("&");
         for (i=0; i<arguments.length; i++)
         {
-            if (!(arguments[i].match(/^superfluous/))) 
+            if (!(arguments[i].match(/^superfluous/)))
                 arguments_to_send.push(arguments[i]);
         }
         my.loading_indicator_state.sidebar = true;
@@ -290,7 +290,7 @@ optemo_module = (function (my){
     	for (var i = 0; i < data.length; i++)
     	{
     	t.cplineTo(init+i*step+trans,h*(1-data[i])+1,5);
-    	t.lineTo(init+i*step+trans+peak,h*(1-data[i])+1);	
+    	t.lineTo(init+i*step+trans+peak,h*(1-data[i])+1);
     	//shapelayer.text(i*step+trans+5, height*0.5, i);
     	}
     	t.cplineTo(init+(data.length)*step+4,height,5);
@@ -302,7 +302,7 @@ optemo_module = (function (my){
         $('.slider').each(function() {
             $(this).slider("option", "disabled", true);
         });
-    
+
         $('.selectboxfilter').attr("disabled", true);
         $('.groupby').unbind('click');
         $('.removefilter').unbind('click').click(function() {return false;}); // There is a default link there that shouldn't be followed.
@@ -314,7 +314,7 @@ optemo_module = (function (my){
     my.loadFilterBarSilkScreen = function() {
         // This will turn on the fade for the left area
         elementToShadow = $('#filterbar');
-        var pos = elementToShadow.offset();  
+        var pos = elementToShadow.offset();
         var width = elementToShadow.innerWidth() + 2; // Extra pixels are for the border.
         var height = elementToShadow.innerHeight() + 2;
         $('#silkscreen').css({'position' : 'absolute', 'display' : 'inline', 'left' : pos.left + "px", 'top' : pos.top + 27 + "px", 'height' : height - 27 + "px", 'width' : width + "px"}).fadeTo(0,0.2); // The 27 is arbitrary - equal to the top of the filter bar (title, reset button)
@@ -326,7 +326,7 @@ optemo_module = (function (my){
     //       Piwik Tracking Functions       //
     //--------------------------------------//
 
-    my.trackPage = function(page_title, extra_data){ 
+    my.trackPage = function(page_title, extra_data){
     	try {
     	    if (!extra_data) extra_data = {}; // If this argument didn't get sent, set an empty hash
     		extra_data['optemo_session'] = SESSION_ID;
@@ -348,9 +348,9 @@ optemo_module = (function (my){
     my.FilterAndSearchInit = function() {
         my.removeSilkScreen();
         $("#silkscreen").unbind('click').click(function() { // reenabled because slikscreen clicking is disabled when doing the filter "loading" panel
-    	   my.removeSilkScreen(); 
+    	   my.removeSilkScreen();
 	    });
-    
+
     	//Show and Hide Descriptions
     	$('.feature .label a, .desc .deleteX').live('click', function(){
     		if($(this).parent().attr('class') == "desc")
@@ -423,12 +423,12 @@ optemo_module = (function (my){
     					if(ui.value == ui.values[0])	// Left slider
     					{
     						$('a:last', this).html(curmax).removeClass("valabove").addClass("valbelow");
-    						$('a:first', this).html(curmin).addClass("valabove");						
+    						$('a:first', this).html(curmin).addClass("valabove");
     					}
     					else
     					{
     						$('a:first', this).html(curmin).removeClass("valabove").addClass("valbelow");
-    						$('a:last', this).html(curmax).addClass("valabove");												
+    						$('a:last', this).html(curmax).addClass("valabove");
     					}
     				}
     			},
@@ -466,7 +466,7 @@ optemo_module = (function (my){
     					// could do this with a state machine a bit cleaner but this works fine. After the first time that the increment is in range, stop the loop immediately
     					break;
     				}
-				
+
     				var realselectmin, realselectmax;
     				var value = ui.value;
     				var sliderno = -1;
@@ -491,25 +491,25 @@ optemo_module = (function (my){
     				    rightsliderknob.css('left', ((datasetmin - rangemin) * 100.1 / (rangemax - rangemin)) + "%"); // was 100.1
     				    rightsliderknob.data('toofar', true);
                     }
-    				if (increment < 1) { 
-    					// floating point division has problems; avoid it 
+    				if (increment < 1) {
+    					// floating point division has problems; avoid it
     					tempinc = parseInt(1.0 / increment);
     					realvalue = parseInt(realvalue * tempinc) / tempinc;
     				} else {
 					    realvalue = parseInt(realvalue / increment) * increment;
 					}
-				
+
     				// This makes sure that when sliding to the extremes, you get back to the real starting points
     				if (sliderno == 1 && ui.values[1] == 100)
     					realvalue = rangemax;
     				else if (sliderno == 0 && ui.values[0] == 0)
     					realvalue = rangemin;
-					
+
     				if (sliderno == 0 && ui.values[0] != ui.values[1])						// First slider is not identified correctly by sliderno for the case
     					leftsliderknob.html(realvalue).addClass("valabove");			// when rightslider = left slider, hence the second condition
     				else if (ui.values[0] != ui.values[1])
     					rightsliderknob.html(realvalue).addClass("valabove");
-					
+
     				if(sliderno == 0)
     				{
     					$(this).siblings('.min').attr('value',realvalue);
@@ -520,7 +520,7 @@ optemo_module = (function (my){
     					$(this).siblings('.min').attr('value',curmin);
     					$(this).siblings('.max').attr('value',realvalue);
     				}
-					
+
     			   	return false;
     	        },
     			stop: function(e,ui)
@@ -543,8 +543,8 @@ optemo_module = (function (my){
             			datasetmax = parseInt($(this).attr('current-data-max'));
     				}
     				var rightslidervalue;
-    				
-    				if ((ui.values[1] * (rangemax - rangemin) / 100.0) + rangemin < datasetmin) { 
+
+    				if ((ui.values[1] * (rangemax - rangemin) / 100.0) + rangemin < datasetmin) {
     				    rightslidervalue = datasetmin;
     				    $(this).siblings('.max').attr('value', rightslidervalue);
 				    }
@@ -556,7 +556,7 @@ optemo_module = (function (my){
     					leftsliderknob.removeClass("valabove").addClass("valbelow");
     					rightsliderknob.removeClass("valabove").addClass("valbelow");
     				}
-    				var sliderinfo = {'slider_min' : parseFloat(ui.values[0]) * rangemin / 100.0, 'slider_max' : parseFloat(rightslidervalue) * rangemax / 100.0, 
+    				var sliderinfo = {'slider_min' : parseFloat(ui.values[0]) * rangemin / 100.0, 'slider_max' : parseFloat(rightslidervalue) * rangemax / 100.0,
                 	            'slider_name' : $(this).attr('data-label'), 'filter_type' : 'slider', 'data_min' : datasetmin, 'data_max' : datasetmax, 'ui_position' : $(this).parent().find('.label').attr('data-position')};
     				my.trackPage('goals/filter/slider', sliderinfo);
     				var arguments_to_send = [];
@@ -629,7 +629,7 @@ optemo_module = (function (my){
     		submitCategorical();
     		return false;
     	});
-    	
+
     	// Change sort method
     	$('#sorting_method').unbind('change').change(function() {
     	    var whichSortingMethodSelected = $(this).val();
@@ -650,7 +650,7 @@ optemo_module = (function (my){
     		return false;
     	});
 
-    	if ($.browser.msie) 
+    	if ($.browser.msie)
     	{
     	    // If it's any version of IE, the transparency for the hands doesn't get done properly on page load - redo it here.
     		$('.dragHand').each(function() {
@@ -663,25 +663,44 @@ optemo_module = (function (my){
     	}
     };
 
-    my.LiveInit = function() { // This stuff only needs to be called once per full page load. 
+    my.LiveInit = function() { // This stuff only needs to be called once per full page load.
     	// From Compare
     	//Remove buttons on compare
     	$('.remove').live('click', function(){
     		removeFromComparison($(this).attr('data-name'));
     		$(this).parents('.column').remove();
-		
+
     		// If this is the last one, take the comparison screen down too
     		if ($('#comparisonmatrix .column').length == 1) {
     			my.removeSilkScreen();
     		}
     		return false;
     	});
-    	
-    	
+
+    	$('.fetch_bestbuy_info').live('click', function() {
+    	    var t = $(this);
+    	    if (!(t.parent().attr('id') == "tab_selected"))
+    	    {
+        	    $('#tabbed_content').html($('body').data('product_info'));
+        	    $('#tab_selected').removeAttr('id');
+        	    t.parent().attr('id', 'tab_selected');
+	        }
+	    });
+
+    	var parse_bb_json = (function spec_recurse(p) {
+            var props = "";
+            for (var i in p) {
+                if (p[i] == "") continue;
+                if (typeof(p[i]) == "object") props += "<li>" + i + ": <ul>" + spec_recurse(p[i]) + "</ul>";
+                else props += "<li>" + i + ": " + p[i] + "\n";
+            }
+            return props;
+        });
+
     	$('.fetch_bestbuy_specs').live('click', function () {
     	    var t = $(this);
     	    sku = t.parent().parent().attr('data-sku');
-    	    
+
     	    $.ajax({
     	        type: "GET",
                 url: "/product_json/" + sku,
@@ -689,19 +708,15 @@ optemo_module = (function (my){
                     var specs = (new Function ("return " + data))();
                     specs = (new Function ("return " + specs[0]))();
                     var product = specs["product"]["specs"];
-                    var prop_list = (function spec_recurse(p) {
-                        var props = "";
-                        for (var i in p) {
-                            if (p[i] == "") continue;
-                            props += "<li>" + i + ": " + p[i] + "\n";
-                            if (typeof(p[i]) == "object") props += "<ul>" + spec_recurse(p[i]) + "</ul>";
-                        }
-                        return props;
-                    })(product);
-                    $('body').data('product_info', $('#tabbed_content').html());
+                    var prop_list = parse_bb_json(product);
+                    if (!($('body').data('product_info')))
+                        $('body').data('product_info', $('#tabbed_content').html());
                     $('#tab_selected').removeAttr('id');
-                    t.parent().attr('id', 'tab_selected');                    
+                    t.parent().attr('id', 'tab_selected');
                     $('#tabbed_content').html($('<ul>' + prop_list + '</ul>'))
+                    $('#tabbed_content').css('height', $('#tabbed_content').find('ul').height() + 15);
+                    $('#silkscreen').css('height', $('#tabbed_content').height() + $('#tabbed_content').offset().top + 10);
+                    $('#outsidecontainer').css('height', $('#silkscreen').height() - 45); // Probably the same thickness of the top border?
                 },
                 error: function(x, xhr) {
                     console.log("Error in json ajax");
@@ -711,7 +726,6 @@ optemo_module = (function (my){
             });
 	    });
 
-	    // Reviews
 	    $('.fetch_bestbuy_reviews').live('click', function () {
     	    var t = $(this);
     	    sku = t.parent().parent().attr('data-sku');
@@ -719,10 +733,32 @@ optemo_module = (function (my){
     	        type: "GET",
                 url: "/product_review/" + sku,
                 success: function (data) {
-                    var specs = (new Function ("return " + data))();
-                    // specs is now an array.
-                    specs = (new Function ("return " + specs[0]))();
-                    console.log(specs);
+                    var reviews = (new Function ("return " + data))();
+                    reviews = (new Function ("return " + reviews[0]))();
+                    var prop_list = parse_bb_json(reviews["reviews"]);
+                    if (!($('body').data('product_info')))
+                        $('body').data('product_info', $('#tabbed_content').html());
+                    $('#tab_selected').removeAttr('id');
+                    t.parent().attr('id', 'tab_selected');
+                    var to_tabbed_content = "";
+                    to_tabbed_content = "";
+                    var attributes = reviews["customerRatingAttributes"];
+                    var width = parseInt(18 + 41 * reviews["customerRating"]);
+                    if (width < 29) width = 29;
+                    if (width >= 182) width = 198;
+                    to_tabbed_content += "<span style=\"font-weight: bold; font-size: 1.1em;\">Overall Rating:</span> " + "<div class=\"bestbuy_rating_bar\" style=\"width: "+ width +"px;\">" + reviews["customerRating"] + "<div class=\"bestbuy_rating_bar_inside\"></div></div><br>";
+                    for (var i in attributes) {
+                        // This math is based on the width of the box, see bestbuy_rating_bar_small in CSS declarations
+                        var width = parseInt(9 + 20 * (attributes[i] - 0.8));
+                        if (width < 14) width = 14;
+                        if (width >= 91) width = 99;
+                        to_tabbed_content += i + "<div class=\"bestbuy_rating_bar_small\" style=\"width: "+ width +"px;\"><div class=\"bestbuy_rating_bar_inside_small\">" + attributes[i] + "</div></div>"
+                    }
+                    to_tabbed_content += 'Review Count: '+ reviews['customerRatingCount'] + "<br><ul>" + prop_list + '</ul>';
+                    $('#tabbed_content').html(to_tabbed_content);
+                    $('#tabbed_content').css('height', $('#tabbed_content').height() + 15);
+                    $('#silkscreen').css('height', $('#tabbed_content').height() + $('#tabbed_content').offset().top + 10);
+                    $('#outsidecontainer').css('height', $('#silkscreen').height() - 45); // Probably the same thickness of the top border?
                 },
                 error: function(x, xhr) {
                     console.log("Error in json ajax");
@@ -730,16 +766,16 @@ optemo_module = (function (my){
                     console.log(xhr);
                 }
             });
-	        
+
         });
-    	    
+
         $('.saveditem .deleteX').live('click', function() {
          removeFromComparison($(this).attr('data-name'));
          return false;
         });
-    	
+
     	// from DBInit
-    	
+
         $(".productimg, .easylink").live("click", function (){
 			href = $(this).attr('href') || $(this).parent().siblings('.productinfo').children('.easylink').attr('href') || $(this).parent().parent().find('.easylink').attr('href');
         	ignored_ids = getAllShownProductIds();
@@ -747,20 +783,20 @@ optemo_module = (function (my){
         	product_title = $(this).find('img.productimg').attr('title');
         	my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids});
 			my.applySilkScreen((href || '/product/_/' + currentelementid) +'?plain=true',null, 800, 800);
-        	return false;            
+        	return false;
         });
-        
+
         //Ajax call for simlinks
     	$('.simlinks').live("click", function() {
     	    my.loading_indicator_state.main = true;
     		my.ajaxcall($(this).attr('href')+'?ajax=true');
-    		ignored_ids = getAllShownProductIds(); 
+    		ignored_ids = getAllShownProductIds();
     		my.trackPage('goals/browse_similar', {'filter_type' : 'browse_similar', 'product_picked' : $(this).attr('data-id') , 'product_ignored' : ignored_ids, 'picked_cluster_layer' : $(this).attr('data-layer'), 'picked_cluster_size' : $(this).attr('data-size')});
     		return false;
     	});
 
     	//Pagination links
-        // This convoluted line takes the second-last element in the list: "<< prev 1 2 3 4 next >>" and takes its numerical page value. 
+        // This convoluted line takes the second-last element in the list: "<< prev 1 2 3 4 next >>" and takes its numerical page value.
     	total_pages = parseInt($('.pagination').children().last().prev().html());
     	$('.pagination a').live("click", function(){
     		url = $(this).attr('href')
@@ -771,7 +807,7 @@ optemo_module = (function (my){
     		if ($(this).hasClass('next_page'))
         		my.trackPage('goals/next', {'filter_type' : 'next' , 'page_number' : parseInt($('.pagination .current').html()), 'total_number_of_pages' : total_pages});
     		else
-    		    my.trackPage('goals/next', {'filter_type' : 'next_number' , 'page_number' : parseInt($(this).html()), 'total_number_of_pages' : total_pages});		
+    		    my.trackPage('goals/next', {'filter_type' : 'next_number' , 'page_number' : parseInt($(this).html()), 'total_number_of_pages' : total_pages});
 		    my.loading_indicator_state.main = true;
     		my.ajaxcall(url);
     		return false;
@@ -798,7 +834,7 @@ optemo_module = (function (my){
     		var buyme_id = $(this).attr('product');
     		my.trackPage('goals/addtocart', {'picked_product' : buyme_id});
     	});
-	
+
         // Choose a grouping via group button rather than drop-down (effect is the same as the select boxes)
     	$('.title').live('click', function(){
     		if ($(this).find('.choose_group').length) { // This is a categorical feature
@@ -852,7 +888,7 @@ optemo_module = (function (my){
 			submitCategorical();
         	return false;
      	});
-	
+
     	//Hide Additional Features
     	$('#lessfilters').live('click', function(){
     		$('.extra').hide("slide",{direction: "up"},100);
@@ -860,13 +896,13 @@ optemo_module = (function (my){
     		$('#morefilters').css('display','block');
     		return false;
     	});
-	
+
     	// Sliders -- submit
     	$('.autosubmit').live('change', function() {
     	    my.trackPage('goals/filter/autosubmit', {'filter_type' : 'autosubmit'});
     		submitCategorical();
     	});
-	
+
     	// Checkboxes -- submit
     	$('.binary_filter').live('click', function() {
     		var whichbox = $(this).attr('id');
@@ -875,7 +911,7 @@ optemo_module = (function (my){
     		my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox});
     		submitCategorical();
     	});
-    	
+
     	$(".close").live('click', function(){
     		my.removeSilkScreen();
     		return false;
@@ -885,12 +921,12 @@ optemo_module = (function (my){
 			window.open($(this).attr('href'));
 			return false;
 		});
-		
+
 		$(".demo_selector select").live('change', function(){
 			url = "http://"+$(".demo_selector select:last").val()+"."+$(".demo_selector select:first").val()+".demo.optemo.com";
 			window.location = url;
 		});
-		
+
 		$(".swatch").live('click', function(){
 			$(this).toggleClass('selected_swatch');
 		});
@@ -909,16 +945,16 @@ optemo_module = (function (my){
         var model = "";
     	if (my.IS_DRAG_DROP_ENABLED)
     	{
-    		// Make item boxes draggable. This is a jquery UI builtin.		
+    		// Make item boxes draggable. This is a jquery UI builtin.
     		$(".image_boundingbox img, .image_boundingbox_line img, img.productimg").each(function() {
-    			$(this).draggable({ 
-    				revert: 'invalid', 
-    				cursor: "move", 
+    			$(this).draggable({
+    				revert: 'invalid',
+    				cursor: "move",
     				// The following defines the drag distance before a "drag" event is actually initiated. Helps for people who click while the mouse is slightly moving.
     				distance:2,
     				helper: 'clone',
     				zIndex: 1000,
-    				start: function(e, ui) { 
+    				start: function(e, ui) {
     					if ($.browser.msie) // Internet Explorer sucks and cannot do transparency
     					    $(this).css({'opacity':'0.4'});
     				},
@@ -957,7 +993,7 @@ optemo_module = (function (my){
     	}
     	$('.selectboxfilter').removeAttr("disabled");
     	$('.binary_filter').removeAttr('disabled');
-        
+
     	// In simple view, select an aspect to create viewable groups
     	$('.groupby').unbind('click').click(function(){
 			feat = $(this).attr('data-feat');
@@ -973,7 +1009,7 @@ optemo_module = (function (my){
 
     myspinner = new spinner("myspinner", 11, 20, 9, 5, "#000");
     my.loading_indicator_state = {sidebar : false, sidebar_timer : null, main : false, main_timer : null, socket_error_timer : null};
-    
+
     /* Does a relatively generic ajax call and returns data to the handler below */
     my.ajaxsend = function (hash,myurl,mydata,hidespinner) {
         var lis = my.loading_indicator_state;
@@ -1007,8 +1043,8 @@ optemo_module = (function (my){
         clearTimeout(lis.main_timer);
         clearTimeout(lis.socket_error_timer); // We need to clear the timeout error here
         lis.sidebar_timer = lis.main_timer = lis.socket_error_timer = null;
-            
-    	if (data.indexOf('[ERR]') != -1) {	
+
+    	if (data.indexOf('[ERR]') != -1) {
     		var parts = data.split('[BRK]');
     		if (parts[1] != null) {
     			$('#ajaxfilter').html(parts[1]);
@@ -1040,7 +1076,7 @@ optemo_module = (function (my){
     	numactions = parseInt($("#actioncount").html()) + 1;
     	$.history.load(numactions.toString(),myurl,mydata);
     };
-    
+
     my.quickajaxcall = function(element_name, myurl, fn) { // The purpose of this is to do an ajax load without having to go through the relatively heavy ajaxcall().
         $(element_name).load(myurl, fn);
     }
@@ -1048,12 +1084,12 @@ optemo_module = (function (my){
     /* Puts an ajax-related error message in a specific part of the screen */
     my.flashError = function(str) {
     	var errtype = 'other';
-	
+
     	if (/search/.test(str)==true) {
     	  errtype = "search";
     	  $('#myfilter_search').attr('value',"");
     	}
-    	else { 
+    	else {
     	    if (/filter/.test(str)==true) errtype = "filters";
 	  	}
     	my.trackPage('goals/error', {'filter_type' : 'error - ' + errtype});
@@ -1124,7 +1160,7 @@ optemo_module = (function (my){
     	else
     		return shortname;
     };
-    
+
     //--------------------------------------//
     //              Spinner                 //
     //--------------------------------------//
@@ -1139,7 +1175,7 @@ optemo_module = (function (my){
     	    cx = r2 + width,
     	    cy = r2 + width,
     	    r = Raphael(holderid, r2 * 2 + width * 2, r2 * 2 + width * 2),
-    
+
     	    sectors = [],
     	    opacity = [],
     	    beta = 2 * Math.PI / sectorsCount,
@@ -1199,44 +1235,44 @@ optemo_module = (function (my){
     	var savedData = readCookie(name), numDays = 30;
     	if (savedData) {
     		savedData = opt_removeStringWithToken(savedData, value, '*')
-    		if (savedData == "") { // No values left to store 
+    		if (savedData == "") { // No values left to store
     			eraseCookie(name);
     		} else {
-    			createCookie(name, savedData, numDays);	
+    			createCookie(name, savedData, numDays);
     		}
     	}
     	// else do nothing
     }
-    
+
     // This should return all cookie values in an array.
     my.readAllCookieValues = function(name) {
     	// Must error check for empty cookie
     	return (readCookie(name) ? readCookie(name).split('*') : 0);
     };
 
-    function createCookie(name,value,days) {  
-        if (days) {  
-            var date = new Date();  
-            date.setTime(date.getTime()+(days*24*60*60*1000));  
-            var expires = "; expires="+date.toGMTString();  
-        }  
-        else var expires = "";  
-        document.cookie = name+"="+value+expires+"; path=/";  
-    }  
-  
-    function readCookie(name) {  
-        var nameEQ = name + "=";  
-        var ca = document.cookie.split(';');  
-        for(var i=0;i < ca.length;i++) {  
-            var c = ca[i];  
-            while (c.charAt(0)==' ') c = c.substring(1,c.length);  
-            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);  
-        }  
-        return null;  
-    }  
-  
-    function eraseCookie(name) {  
-        createCookie(name,"",-1);  
+    function createCookie(name,value,days) {
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime()+(days*24*60*60*1000));
+            var expires = "; expires="+date.toGMTString();
+        }
+        else var expires = "";
+        document.cookie = name+"="+value+expires+"; path=/";
+    }
+
+    function readCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
+    }
+
+    function eraseCookie(name) {
+        createCookie(name,"",-1);
     }
 
     return my;
@@ -1261,18 +1297,18 @@ jQuery(document).ready(function($){
 			$("#opt_savedproducts").css({"height" : fixedheight});
 		}
 		for (tokenizedArrayID = 0; tokenizedArrayID < savedproducts.length; tokenizedArrayID++)
-		{	
+		{
 			tokenizedArray = savedproducts[tokenizedArrayID].split(',');
 			// In future, tokenizedArray[3] contains the product type. As of Feb 2010, each website has separate cookies, so it's not necessary to read this data.
 			optemo_module.renderComparisonProducts(tokenizedArray[0], tokenizedArray[1], tokenizedArray[2]);
 		}
 		// There should be at least 1 saved item, so...
-		// 1. show compare button	
+		// 1. show compare button
 		$("#compare_button").css("display", "block");
 		// 2. hide 'add stuff here' message
 		$("#deleteme").css("display", "none");
 	}
-	
+
 	// Only load DBinit if it will not be loaded by the upcoming ajax call
 	// Do LiveInit anyway, since timing is not important
 	optemo_module.LiveInit();
@@ -1294,9 +1330,9 @@ jQuery(document).ready(function($){
 	{
 		// Make savebar area droppable. jquery UI builtin.
 		$("#savebar").each(function() {
-			$(this).droppable({ 
+			$(this).droppable({
 				hoverClass: 'drop-box-hover',
-				activeClass: 'ui-state-dragging', 
+				activeClass: 'ui-state-dragging',
 				accept: ".ui-draggable, .dragHand",
 				drop: function (e, ui) {
 					imgObj = $(ui.helper);
@@ -1311,14 +1347,14 @@ jQuery(document).ready(function($){
 			 });
 		});
 	}
-	
+
 	//Call overlay for product comparison
 	$("#compare_button").click(function(){
 		var productIDs = '';
 		// For each saved product, get the ID out of the id=#opt_savedproducts children.
 		$('#opt_savedproducts').children().each(function() {
 			// it's a saved item if the CSS class is set as such. This allows for other children later if we feel like it.
-			if ($(this).attr('class').indexOf('saveditem') != -1) 
+			if ($(this).attr('class').indexOf('saveditem') != -1)
 			{
 				// Build a list of product IDs to send to the AJAX call
 				productIDs = productIDs + $(this).attr('id').substring(1) + ',';
@@ -1331,7 +1367,7 @@ jQuery(document).ready(function($){
 		trackPage('goals/compare', {'filter_type' : 'direct_comparison'});
 		return false;
 	});
-    
+
 	//Static Ajax call
 	$('#staticajax_reset').click(function(){
 		trackPage('goals/reset', {'filter_type' : 'reset'});
@@ -1346,7 +1382,7 @@ jQuery(document).ready(function($){
 		optemo_module.applySilkScreen('/surveys/new', null, 600, 480);
 		return false;
 	});
-	
+
 	if (optemo_module.DIRECT_LAYOUT) {
 	    //Tour section
     	$('#popupTour1, #popupTour2, #popupTour3, #popupTour4').each(function(){
@@ -1358,7 +1394,7 @@ jQuery(document).ready(function($){
     			return false;
     		});
     	});
-	
+
     	$('#popupTour1').find('a.popupnextbutton').click(function(){
     		var groupbyoffset = $("#groupby0").offset();
     		$("#popupTour2").css({"position":"absolute", "top" : parseInt(groupbyoffset.top) - 120, "left" : parseInt(groupbyoffset.left) + 220}).fadeIn("slow");
@@ -1385,7 +1421,7 @@ jQuery(document).ready(function($){
     		$("#filterbar").removeClass('tourDrawAttention');
     		trackPage('goals/tournext', {'tour_page_number' : 4});
     	});
-	
+
     	$('#popupTour4').find('a.popupnextbutton').click(function(){
     		$("#popupTour4").fadeOut("slow");
     		$("#savebar").removeClass('tourDrawAttention');
@@ -1402,7 +1438,7 @@ jQuery(document).ready(function($){
     			return false;
     		});
     	});
-	
+
     	$('#popupTour1').find('a.popupnextbutton').click(function(){
     		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
     		$("#popupTour2").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
@@ -1421,14 +1457,14 @@ jQuery(document).ready(function($){
     		$("#filterbar").removeClass('tourDrawAttention');
     		trackPage('goals/tournext', {'tour_page_number' : 3});
     	});
-	
+
     	$('#popupTour3').find('a.popupnextbutton').click(function(){
     		$("#popupTour3").fadeOut("slow");
     		$("#savebar").removeClass('tourDrawAttention');
     		trackPage('goals/tourclose');
     	});
 	}
-	
+
 /*	// On escape press. Probably not needed anymore.
 	$(document).keydown(function(e){
 		if(e.keyCode==27){
@@ -1442,7 +1478,7 @@ jQuery(document).ready(function($){
 	launchtour = (function () {
 	    if (optemo_module.DIRECT_LAYOUT) {
 		    var browseposition = $("#box0").offset();
-    		$("#box0").addClass('tourDrawAttention');		    
+    		$("#box0").addClass('tourDrawAttention');
     		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
     		trackPage('goals/tournext', {'tour_page_number' : 1});
 		} else {
@@ -1467,7 +1503,7 @@ if (window.embedding_flag) {
     	numactions = parseInt($("#actioncount").html()) + 1;
     	$.history.load(numactions.toString(),myurl,mydata);
 	};
-	
+
 	optemo_module.ajaxsend = function(hash,myurl,mydata,hidespinner) {
         optemo_module.disableInterfaceElements();
         var lis = optemo_module.loading_indicator_state;
@@ -1478,19 +1514,19 @@ if (window.embedding_flag) {
         remote.iframecall(hash, myurl, mydata);
     };
     $.history.init(optemo_module.ajaxsend); // re-init with the new ajaxsend module here, after it's been redefined
-    
+
     optemo_module.clearSocketError = function() {
         // if ajaxhandler never gets called, here we are.
 		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
     	optemo_module.flashError('<div class="poptitle">&nbsp;</div><p class="error">Sorry! An error has occured on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
     }
-    
+
     optemo_module.quickajaxcall = function (element_name, mydata, fn) { // for the show page
         remote.quickiframecall(element_name, mydata, fn);
     }
-} 
+}
 
-// This should be able to go ahead before document.ready for a slight time savings. 
+// This should be able to go ahead before document.ready for a slight time savings.
 // NB: Cannot use "$" because of jQuery.noConflict()
 // This works for embedded also, because by now the ajaxsend function has been redefined, and the history init has been called.
 if (jQuery('#opt_discovery').length) {
@@ -1529,7 +1565,7 @@ if(jQueryIsLoaded) {
         script.onload = function(){
             optemo_socket_activator(window["jQuery"]);
         };
-    }    
+    }
     script.setAttribute("src", 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js');
     document.getElementsByTagName("head")[0].appendChild(script);
 }
