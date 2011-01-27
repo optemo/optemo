@@ -778,16 +778,13 @@ div#filter_bar_loading{
 #features {
 	width: 230px;
 	float: right;
-	font-size: 11px;
-}
-#features h2 {
-    font-size: 1.5em;
-    margin: 0 0 10px;
 }
 #features div.buttons {
     height: 32px;
+	width: 135px;
+	margin: auto;
 }
-#features div {
+#features div.bbfeatures {
     height: 40px;
 }
 #features img {
@@ -850,13 +847,6 @@ div .showtable{
 	margin-right:10px;
 	border: 1px dotted black;
 }
-div .left{
-	float: left;
-	text-align: right;
-	margin-top: 5px;
-	margin-bottom: 10px;
-	width: 193px;
-}
 
 #tab_header {
     position: absolute;
@@ -908,6 +898,12 @@ div .left{
 #compare_field {
     float: right;
     width: 180px;
+}
+.left {
+	float: left;
+}
+.right {
+	float: right;
 }
 
 

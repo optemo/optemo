@@ -41,24 +41,26 @@
 				 	<% save[i] = '<span class="detail_label">' + (t 'products.'+ f_name) + ': </span>' + (f_name == 'price' ? "$" : "" ) + ((@product.display(f_name, f)).split('*').each(&:strip).uniq.join(" ")) + ' ' + (f_name == "price" ? "" : t('products.'+ f_name+'unit', :default => '')) %>
 			<% end %>
 		<% end %>
-		<%= raw save.compact.join(", ") %>
+		<%# raw save.compact.join(", ") %>
 
-	    <h5><%= raw @allspecs["longDescription"] %></h5>
+	    <div style="font-size: 1em;"><%= raw @allspecs["longDescription"] %></div>
     </div>
     
 	<div id="features">
 	<ul>
-	    <h2>Our Price: <%= @allspecs["price"] %><br/>
-	    <span style="font-size: 0.65em;">Lowest Price Guarantee<br><br></span>
-	    <span style="color: #f00">Sale Price: $1.99</span><br/>
-	    Sale Ends: 01/01/2012</h2>
+		<div style="font-size: 1.2em; height: 20px;"><span class="left">Our Price:</span><span class="right"><%= @allspecs["price"] %></span></div>
+	    <div style="color: #f00; font-size: 1.5em; font-weight: bold;height: 20px;"><span class="left">Sale Price:</span><span class="right">$1.99</span></div>
+	    <div style = "clear: both;height: 18px;"><span class="left">Sale Ends:</span><span class="right">01/01/2012</span></div>
+		<div class="left" style="height: 18px;"><a href="http://www.bestbuy.ca/en-CA/help/what-is-your-lowest-price-guarantee/hc1001.aspx?path=27eeec1b59d42df5dfc298ab6993d9dfen15&HelpTitleId=HC1001" class="popup-link">Lowest Price Guarantee</a></div>
+		<div class="spacer" style="border-bottom: 1px solid #ccc; clear: both; margin-bottom: 15px;"></div>
+	
 	    <div class="buttons"><%= image_tag "bestbuy_addtocart.gif" %></div>
 	    <div class="buttons"><%= image_tag "bestbuy_add_wishlist.gif" %></div>
 	    <div class="buttons" style="margin-bottom: 8px;"><%= image_tag "bestbuy_add_to_pricewatch.gif" %></div>
 	    
-	    <div><%= image_tag "best_buy_free_shipping.gif" %>Free shipping on orders over <b>$20</b>.</div>
-	    <div><%= image_tag "best_buy_instore_pickup.gif" %>Order online and pick up in-store.</div>
-	    <div><%= image_tag "best_buy_rewards_card.gif" %>It's free to get into the rewards program.</div>
+	    <div class="bbfeatures"><%= image_tag "best_buy_free_shipping.gif" %>Free shipping on orders over <b>$20</b>.</div>
+	    <div class="bbfeatures"><%= image_tag "best_buy_instore_pickup.gif" %>Order online and pick up in-store.</div>
+	    <div class="bbfeatures"><%= image_tag "best_buy_rewards_card.gif" %>It's free to get into the rewards program.</div>
 	</ul>
 	</div>
 	
