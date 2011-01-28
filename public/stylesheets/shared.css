@@ -102,13 +102,14 @@ a:hover {
     border: 1px solid #ccc;           /* if needed */
 }
 #sorting_method_box {
-    margin-left: 20px;
     font-size: 0.8em;
-    display:inline;
-    margin-top: 1px;
-    position: absolute;
-    color: gray;
+	color: gray;
+	float: right;
+	margin-right: 5px;
+    /*position: absolute;
+    
     right: 10px;
+	top: 3px;*/
 }
 #navtitle {
     display:inline;
@@ -146,13 +147,6 @@ div .accessories{
 	margin-left: 2px;
 }
 
-div .right{
-	float: right;
-	text-align: left;
-	margin-bottom: 10px;
-	width: 193px;
-	
-}
 div .spacer {
 	clear: both;
 }

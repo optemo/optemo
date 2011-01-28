@@ -20,7 +20,7 @@ Site::Application.configure do
 
   # Enable serving of images, stylesheets, and javascripts from an asset server
   # This used to be "assets.optemo.com" but that requires an entry in /etc/hosts
-  config.action_controller.asset_host = "http://localhost:3000"
+  # config.action_controller.asset_host = "http://localhost:3000"
 
   # Don't care if the mailer can't send
   config.action_mailer.raise_delivery_errors = false

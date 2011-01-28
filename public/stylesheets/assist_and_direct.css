@@ -23,8 +23,7 @@
 
 body {
     height: 100%;
-    padding: 0;
-    
+    padding: 4px 0 0 0;
 }
 html {
     height: 100%;
@@ -92,7 +91,6 @@ h3 {
 	padding-top: 5px;
 	width: 100%;
 	height: 100%;
-    margin-top: 4px;
 	min-height: 744px; /* Empirically determined; used for embedded LPH layout */
 }
 
@@ -136,6 +134,7 @@ div.rowdiv {
 
 .poptitle {
 	font-weight: bold;
+	font-size: 1.13em;
 	color: #FFF;
 	height: 25px;
 }
@@ -214,6 +213,9 @@ div #leftbar {
 	display:inline;
 }
 
+.selectboxfilter {
+	width:100%;
+}
 /*--------------------------------------//
 //         Drag And Drop Compare        //
 //--------------------------------------*/
@@ -735,7 +737,7 @@ div#silkscreen {
 
 div#info {
 	margin-top: -26px;
-	font-size: 0.9em;
+	font-size: 0.8em;
 	z-index: 5;
 	padding: 0px 23px 0px 22px;
 }
@@ -776,15 +778,60 @@ div#filter_bar_loading{
 #features {
 	width: 230px;
 	float: right;
-	font-size: 11px;
 }
-#features div {
-    height: 38px;
+#features div.buttons {
+    height: 32px;
+	width: 135px;
+	margin: auto;
+}
+#features div.bbfeatures {
+    height: 40px;
 }
 #features img {
     float: left;
     padding-right: 5px;
 }
+.bestbuy_rating_bar {
+    width: 100px;
+    height: 35px;
+    position: relative;
+    background-color: #eff097;
+    color: #000;
+    line-height: 35px;
+    text-align:center;
+    font-weight: bold;
+}
+
+.bestbuy_rating_bar_inside {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 203px; 
+    height: 38px;
+    z-index:5;
+    background: url(../images/bestbuy_empty_rating_bar.png) no-repeat 0 0;
+}
+.bestbuy_rating_bar_small {
+    width: 100px;
+    height: 18px;
+    position: relative;
+    background-color: #eff097;
+    color: #000;
+    line-height: 20px;
+    text-align:center;
+    font-weight: bold;
+}
+
+.bestbuy_rating_bar_inside_small {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 102px; 
+    height: 20px;
+    z-index:5;
+    background: url(../images/bestbuy_empty_rating_bar_small.png) no-repeat 0 0;
+}
+
 div#textfeatures, div#reviews {
 	clear:both;
 }
@@ -799,13 +846,6 @@ div .showtable{
 	width: 400px;
 	margin-right:10px;
 	border: 1px dotted black;
-}
-div .left{
-	float: left;
-	text-align: right;
-	margin-top: 5px;
-	margin-bottom: 10px;
-	width: 193px;
 }
 
 #tab_header {
@@ -859,10 +899,13 @@ div .left{
     float: right;
     width: 180px;
 }
-
-#features h2 {
-    font-size: 1.5em;
+.left {
+	float: left;
 }
+.right {
+	float: right;
+}
+
 
 /*--------------------------------------//
 //            Awesome Buttons           //
