@@ -677,6 +677,12 @@ optemo_module = (function (my){
     		return false;
     	});
 
+        var resize_silkscreen = (function () {
+            $('#tabbed_content').css('height', $('#tabbed_content').height() + 15);
+            $('#silkscreen').css('height', $('#tabbed_content').height() + $('#tabbed_content').offset().top + 10);
+            $('#outsidecontainer').css('height', $('#silkscreen').height() - 45); // Probably the same thickness of the top border?
+        });
+
     	$('.fetch_bestbuy_info').live('click', function() {
     	    var t = $(this);
     	    if (!(t.parent().attr('id') == "tab_selected"))
@@ -684,6 +690,7 @@ optemo_module = (function (my){
         	    $('#tabbed_content').html($('body').data('product_info'));
         	    $('#tab_selected').removeAttr('id');
         	    t.parent().attr('id', 'tab_selected');
+        	    resize_silkscreen();
 	        }
 	    });
 
@@ -714,9 +721,7 @@ optemo_module = (function (my){
                     $('#tab_selected').removeAttr('id');
                     t.parent().attr('id', 'tab_selected');
                     $('#tabbed_content').html($('<ul>' + prop_list + '</ul>'))
-                    $('#tabbed_content').css('height', $('#tabbed_content').find('ul').height() + 15);
-                    $('#silkscreen').css('height', $('#tabbed_content').height() + $('#tabbed_content').offset().top + 10);
-                    $('#outsidecontainer').css('height', $('#silkscreen').height() - 45); // Probably the same thickness of the top border?
+                    resize_silkscreen();
                 },
                 error: function(x, xhr) {
                     console.log("Error in json ajax");
@@ -756,9 +761,7 @@ optemo_module = (function (my){
                     }
                     to_tabbed_content += 'Review Count: '+ reviews['customerRatingCount'] + "<br><ul>" + prop_list + '</ul>';
                     $('#tabbed_content').html(to_tabbed_content);
-                    $('#tabbed_content').css('height', $('#tabbed_content').height() + 15);
-                    $('#silkscreen').css('height', $('#tabbed_content').height() + $('#tabbed_content').offset().top + 10);
-                    $('#outsidecontainer').css('height', $('#silkscreen').height() - 45); // Probably the same thickness of the top border?
+                    resize_silkscreen();
                 },
                 error: function(x, xhr) {
                     console.log("Error in json ajax");

@@ -8,34 +8,39 @@
 ####Spaces are required between elements in an array
 
 #######################################
-#   Cameras.BrowseThenBuy - Cameras   #
+#    Best Buy Demo - Cameras & TVs    #
 #######################################
 
-cameras:
-    product_type: camera_us
+besttv:
+    product_type: tv_bestbuy
     layout: assist
-    maximumresolution: 
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-    displaysize:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
+    site_id: 12 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [filter, cluster, show]
         prefdir: -1
         min: 1
         max: 10000
-    opticalzoom:
+    maxresolution: 
         feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [desc, filter, cluster, show]
+    screensize:
+        feature_type: Continuous
+        used_for: [desc, filter, cluster, show]
+    power:
+        feature_type: Continuous
+        used_for: [desc, filter, cluster, show]
     brand:
         feature_type: Categorical
-        used_for: [boost, show, filter]
+        used_for: [filter, show]
+    displaytech:
+        feature_type: Categorical
+        used_for: [filter, show]
 
 bestbuy:
     product_type: camera_bestbuy
     layout: assist
+    site_id: 12 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [filter, cluster, show]
@@ -58,9 +63,37 @@ bestbuy:
         feature_type: Categorical
         used_for: [show, filter]
 
+#######################################
+#    Cameras.BrowseThenBuy, Mobile    #
+#######################################
+
+cameras:
+    product_type: camera_us
+    layout: assist
+    site_id: 10 # See Piwik at analytics.optemo.com for details
+    maximumresolution: 
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    displaysize:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    price:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+        prefdir: -1
+        min: 1
+        max: 10000
+    opticalzoom:
+        feature_type: Continuous
+        used_for: [boost, filter, cluster, show]
+    brand:
+        feature_type: Categorical
+        used_for: [boost, show, filter]
+
 cameras.browsethenbuy.com:
     product_type: camera_us
     layout: assist
+    site_id: 4 # See Piwik at analytics.optemo.com for details
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -83,6 +116,7 @@ cameras.browsethenbuy.com:
 cameras.direct.demo.optemo.com:
     product_type: camera_us
     layout: direct
+    site_id: 14 # See Piwik at analytics.optemo.com for details
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show, showList]
@@ -104,6 +138,7 @@ cameras.direct.demo.optemo.com:
 cameras.direct:
     product_type: camera_us
     layout: direct
+    site_id: 10 # See Piwik at analytics.optemo.com for details
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show, showList]
@@ -125,6 +160,7 @@ cameras.direct:
 cameras.assist.demo.optemo.com:
     product_type: camera_us
     layout: assist
+    site_id: 14 # See Piwik at analytics.optemo.com for details
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -146,6 +182,7 @@ cameras.assist.demo.optemo.com:
 cameras.assist:
     product_type: camera_us
     layout: assist
+    site_id: 10 # See Piwik at analytics.optemo.com for details
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -167,6 +204,7 @@ cameras.assist:
 m.browsethenbuy.com:
     product_type: camera_us
     layout: mobileview
+    site_id: 8 # See Piwik at analytics.optemo.com for details
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -189,6 +227,7 @@ m.browsethenbuy.com:
 mobile:
     product_type: camera_us
     layout: mobileview
+    site_id: 10 # See Piwik at analytics.optemo.com for details
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -209,12 +248,13 @@ mobile:
         used_for: [boost, filter, show]
 
 ################################
-#  LaserPrinterHub - Printers  #
+#  LaserPrinterHub, Printers   #
 ################################
 
 printers.browsethenbuy.com:
     product_type: printer_us
     layout: direct
+    site_id: 2 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -250,6 +290,7 @@ printers.browsethenbuy.com:
 printers.direct.demo.optemo.com:
     product_type: printer_us
     layout: direct
+    site_id: 16 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -285,6 +326,7 @@ printers.direct.demo.optemo.com:
 printers.direct:
     product_type: printer_us
     layout: direct
+    site_id: 10 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -319,6 +361,7 @@ printers.direct:
 printers.assist.demo.optemo.com:
     product_type: printer_us
     layout: assist
+    site_id: 16 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -354,6 +397,7 @@ printers.assist.demo.optemo.com:
 printers.assist:
     product_type: printer_us
     layout: assist
+    site_id: 10 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -389,6 +433,7 @@ printers.assist:
 laserprinterhub.com:
     product_type: printer_lph
     layout: assist
+    site_id: 6 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -423,6 +468,7 @@ laserprinterhub.com:
 laserprinterhub.ca:
     product_type: printer_lph
     layout: assist
+    site_id: 6 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -458,6 +504,7 @@ laserprinterhub.ca:
 ast0.optemo.com:
     product_type: printer_lph
     layout: assist
+    site_id: 6 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -490,10 +537,10 @@ ast0.optemo.com:
         feature_type: Categorical
         used_for: [boost, filter, show]
     
-
 localhost:
     product_type: printer_lph
     layout: assist
+    site_id: 10 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -525,11 +572,11 @@ localhost:
     brand:
         feature_type: Categorical
         used_for: [boost, filter, show]
-   
 
 printers:
     product_type: printer_us
     layout: direct
+    site_id: 10 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -561,151 +608,3 @@ printers:
     brand:
         feature_type: Categorical
         used_for: [boost, filter, show]
-
-#############################
-#  Build Direct - Flooring  #
-#############################
-
-builddirect.optemo.com:
-    product_type: flooring_builddirect
-    layout: direct
-    price:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-        prefdir: -1
-        min: 1
-        max: 10
-    width:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, showList]
-        prefdir: 0
-    species_hardness:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-    miniorder:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
-        prefdir: -1
-    brand:
-        feature_type: Categorical
-        used_for: [boost, filter, show]    
-    species:
-        feature_type: Categorical
-        used_for: [boost, filter, show]
-    finish:
-        feature_type: Categorical
-        used_for: [boost, filter, show, showList]
-    feature:
-        feature_type: Categorical
-        used_for: [boost, filter, show, showList]
-    colorrange:
-        feature_type: Categorical
-        used_for: [boost, filter, show]
-        
-flooring:
-    product_type: flooring_builddirect
-    layout: direct
-    price:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-        prefdir: -1
-        min: 1
-        max: 10
-    width:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, showList]
-        prefdir: 0
-    species_hardness:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-    miniorder:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
-        prefdir: -1
-    brand:
-        feature_type: Categorical
-        used_for: [boost, filter, show]    
-    species:
-        feature_type: Categorical
-        used_for: [boost, filter, show]
-    finish:
-        feature_type: Categorical
-        used_for: [boost, filter, show, showList]
-    feature:
-        feature_type: Categorical
-        used_for: [boost, filter, show, showList]
-    colorrange:
-        feature_type: Categorical
-        used_for: [boost, filter, show]
-#############################
-#     Laptops - Walmart     #
-#############################
-                
-walmart.optemo.com:
-    product_type: laptop_walmart
-    layout: direct
-    price:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-        prefdir: -1
-        min: 10
-        max: 2000
-    brand:
-        feature_type: Categorical
-        used_for: [boost, filter, show]
-    hd:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-    ram:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-    screensize:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-        
-laptops:
-    product_type: laptop_walmart
-    layout: direct
-    price:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-        prefdir: -1
-        min: 10
-        max: 2000
-    brand:
-        feature_type: Categorical
-        used_for: [boost, filter, show]
-    hd:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-    ram:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-    screensize:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-        
-besttv:
-    product_type: tv_bestbuy
-    layout: assist
-    price:
-        feature_type: Continuous
-        used_for: [filter, cluster, show]
-        prefdir: -1
-        min: 1
-        max: 10000
-    maxresolution: 
-        feature_type: Continuous
-        used_for: [desc, filter, cluster, show]
-    screensize:
-        feature_type: Continuous
-        used_for: [desc, filter, cluster, show]
-    power:
-        feature_type: Continuous
-        used_for: [desc, filter, cluster, show]
-    brand:
-        feature_type: Categorical
-        used_for: [filter, show]
-    displaytech:
-        feature_type: Categorical
-        used_for: [filter, show]

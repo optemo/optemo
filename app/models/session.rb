@@ -34,16 +34,6 @@ class Session
     end
     url = defaultSite if file[url].blank?
     
-    # Check for what Piwik site ID to put down in the optemo.html.erb layout
-    # These site ids MUST match what's in the piwik database.
-    case url
-    when 'printers.browsethenbuy.com' then @piwikSiteId = 2
-    when 'cameras.browsethenbuy.com' then @piwikSiteId = 4
-    when 'laserprinterhub.com', 'www.laserprinterhub.com' then @piwikSiteId = 6
-    when 'm.browsethenbuy.com' then @piwikSiteId = 8
-    else @piwikSiteId = 10 # This is a catch-all for testing sites. All other sites must be explicitly declared.
-    end
-    
     product_yml = file[url]
     @product_type = product_yml["product_type"]
     # directLayout controls the presented view: Optemo Assist vs. Optemo Direct. 
@@ -52,8 +42,14 @@ class Session
     # Default is false
     @directLayout = product_yml["layout"] == "direct"
     @mobileView = product_yml["layout"] == "mobileview"
+
+    # Check for what Piwik site ID to put down in the optemo.html.erb layout
+    # These site ids MUST match what's in the piwik database.
+    @piwikSiteId = product_yml["site_id"]
+    @piwikSiteId = 10 unless @piwikSiteId # This is a catch-all for testing sites.
     # This block gets out the continuous, binary, and categorical features
     product_yml.each do |feature,atts|
+      next if atts.class == Fixnum # This is for the site_id entry
       case atts["feature_type"]
       when "Continuous"
         atts["used_for"].each{|flag| @continuous[flag] << feature}
