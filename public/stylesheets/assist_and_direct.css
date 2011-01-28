@@ -1147,3 +1147,35 @@ div .left{
 	-moz-border-radius: 0px; 
 	-webkit-border-radius: 0px;
 }
+
+
+/*.swatch:hover {
+	-moz-box-shadow: 0 1px 3px rgba(50,50,50,0.5), inset 0px 0px 10px white;
+	-webkit-box-shadow: 0 1px 3px rgba(50,50,50,0.5), inset 0px 0px 10px white;
+}*/
+
+.swatch2 {
+	width: 13px;
+	height: 13px;
+	background-color: red;
+	-moz-border-radius: 4px; 
+	-webkit-border-radius: 4px;
+	-moz-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
+	-webkit-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
+	/*border: 1px solid #ccc;*/
+	float: left;
+	margin: 0 2px 2px 0;
+	cursor: pointer;
+}
+.swatch3 {
+	width: 15px;
+	height: 15px;
+	background-color: red;
+	-moz-border-radius: 4px; 
+	-webkit-border-radius: 4px;
+	-moz-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
+	-webkit-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
+	/*border: 1px solid #ccc;*/
+	float: left;
+	margin: 0 2px 2px 0;
+}

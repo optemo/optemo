@@ -80,6 +80,7 @@ class CompareController < ApplicationController
     id = params[:id] = params[:id][/^\d+/]
     @product = Product.cached(id)
     @allspecs = ContSpec.cache_all(id).merge(CatSpec.cache_all(id)).merge(BinSpec.cache_all(id)).merge(TextSpec.cache_all(id))
+    @sibling_ids_and_colors = ProductSiblings.cache_ids_and_color(id, "color").uniq{|p| p.product_id}
     @s = Session.current
 
     respond_to do |format|
