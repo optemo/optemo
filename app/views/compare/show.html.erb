@@ -40,22 +40,17 @@
     	</div>
 	
 	 <% if @s.product_type == "camera_bestbuy" %>
-		<div style="margin-right: -3px; height: 30px">
-			<%appeared = 0%>
-			<% @sibling_ids_and_colors.sort{|p| p.product_id}.each do |sib_id_and_color| %>  
-			  <%if @product.id>sib_id_and_color.product_id && appeared==0%>
-				 <div class="swatch3" style="background-color: <%= @allspecs["color"]%>"</div>
-				 <%appeared = 1%>
-			  <%end%> 
-			  <%sib_product = Product.cached(sib_id_and_color.product_id)%> 
-			  <%= link_to product_path(:name => sib_product.descurl, :id => sib_product.id), :'data-id' => sib_product.id, :class => "easylink", :title => "Click for product specifications" do%>
-				<div class="swatch2" style="background-color: <%= sib_id_and_color.value%>"></div>
-			   <%end%>	
-			<%end%>
-			<%if (appeared==0)%>
-			   <div class="swatch3" style="background-color: <%= @allspecs["color"]%>"</div>
-			   <%appeared = 1%>
-			<%end%>
+		<div style="margin-right: -3px; height: 54px">
+			<% @sibling_ids_and_imgsurls.sort{|p| p.sibling_id}.each do |sib_id_and_imgsurl| %>  
+    			<% unless sib_id_and_imgsurl.sibling_id == @product.id %>
+    			    <% sib_product = Product.cached(sib_id_and_imgsurl.sibling_id)%> 
+    			    <%= link_to product_path(:name => sib_product.descurl, :id => sib_product.id), :'data-id' => sib_product.id, :class => "easylink", :title => "Click for product specifications" do %>
+    				    <%= image_tag(sib_id_and_imgsurl.value) %>
+				    <% end %>
+    			<% else %>
+    			   <%= image_tag(@allspecs["imgsurl"])%>
+    			<% end %>
+			<% end %>
 		</div>
 	 <%end%>	
 		

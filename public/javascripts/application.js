@@ -678,9 +678,10 @@ optemo_module = (function (my){
     	});
 
         var resize_silkscreen = (function () {
-            $('#tabbed_content').css('height', $('#tabbed_content').height() + 15);
-            $('#silkscreen').css('height', $('#tabbed_content').height() + $('#tabbed_content').offset().top + 10);
-            $('#outsidecontainer').css('height', $('#silkscreen').height() - 45); // Probably the same thickness of the top border?
+            var height = $('#tabbed_content').height() + $('#tabbed_content').offset().top + 10;
+            if (height < 760) height = 760;
+            $('#silkscreen').css('height', height);
+            $('#outsidecontainer').css('height', '');
         });
 
     	$('.fetch_bestbuy_info').live('click', function() {
@@ -692,6 +693,7 @@ optemo_module = (function (my){
         	    t.parent().attr('id', 'tab_selected');
         	    resize_silkscreen();
 	        }
+	        return false;
 	    });
 
     	var parse_bb_json = (function spec_recurse(p) {
@@ -729,6 +731,7 @@ optemo_module = (function (my){
                     console.log(xhr);
                 }
             });
+            return false;
 	    });
 
 	    $('.fetch_bestbuy_reviews').live('click', function () {
@@ -769,7 +772,7 @@ optemo_module = (function (my){
                     console.log(xhr);
                 }
             });
-
+            return false;
         });
 
         $('.saveditem .deleteX').live('click', function() {
@@ -1070,7 +1073,12 @@ optemo_module = (function (my){
     	//if (language=="fr")
     	//	my.flashError('<div class="poptitle">&nbsp;</div><p class="error">Désolé! Une erreur s’est produite sur le serveur.</p><p>Vous pouvez <a href="" class="popuplink">réinitialiser</a> l’outil et constater si le problème persiste.</p>');
     	//else
-    	my.flashError('<div class="poptitle">&nbsp;</div><p class="error">Sorry! An error has occured on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
+        var lis = my.loading_indicator_state;
+        lis.main = lis.sidebar = false;
+        clearTimeout(lis.sidebar_timer); // clearTimeout can run on "null" without error
+        clearTimeout(lis.main_timer);
+        clearTimeout(lis.socket_error_timer); // We need to clear the timeout error here
+    	my.flashError('<div class="poptitle">&nbsp;<a class="close" href="close"><img src="/images/closepopup_white.gif"></a></div><p class="error">Sorry! An error has occured on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
     	my.trackPage('goals/error');
     }
 
