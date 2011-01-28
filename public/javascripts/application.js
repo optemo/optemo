@@ -84,7 +84,7 @@ optemo_module = (function (my){
     my.removeSilkScreen = function() {
         $('.selectboxfilter').css('visibility', 'visible');
         $('.selectboxfilter').removeAttr('disabled');
-        $('#silkscreen').css({'display' : 'none', 'top' : '', 'left' : '', 'width' : ''}).fadeTo(0, 0).hide();
+        $('#silkscreen').css({'display' : 'none', 'top' : '', 'left' : '', 'width' : ''}).hide();
         $('#outsidecontainer').css({'display' : 'none'});
         $('#outsidecontainer').unbind('click');
         $('#filter_bar_loading').css({'display' : 'none'});
@@ -112,7 +112,7 @@ optemo_module = (function (my){
             );
         })();
 
-    	$('#silkscreen').css({'height' : current_height+'px', 'display' : 'inline'}).fadeTo(0, 0.5);
+    	$('#silkscreen').css({'height' : current_height+'px', 'display' : 'inline'});
     	$('.selectboxfilter').css('visibility', 'hidden');
     	if (data)
     		$('#info').html(data);

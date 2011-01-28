@@ -23,8 +23,7 @@
 
 body {
     height: 100%;
-    padding: 0;
-    
+    padding: 4px 0 0 0;
 }
 html {
     height: 100%;
@@ -92,7 +91,6 @@ h3 {
 	padding-top: 5px;
 	width: 100%;
 	height: 100%;
-    margin-top: 4px;
 	min-height: 744px; /* Empirically determined; used for embedded LPH layout */
 }
 
@@ -780,16 +778,13 @@ div#filter_bar_loading{
 #features {
 	width: 230px;
 	float: right;
-	font-size: 11px;
-}
-#features h2 {
-    font-size: 1.5em;
-    margin: 0 0 10px;
 }
 #features div.buttons {
     height: 32px;
+	width: 135px;
+	margin: auto;
 }
-#features div {
+#features div.bbfeatures {
     height: 40px;
 }
 #features img {
@@ -852,13 +847,6 @@ div .showtable{
 	margin-right:10px;
 	border: 1px dotted black;
 }
-div .left{
-	float: left;
-	text-align: right;
-	margin-top: 5px;
-	margin-bottom: 10px;
-	width: 193px;
-}
 
 #tab_header {
     position: absolute;
@@ -910,6 +898,12 @@ div .left{
 #compare_field {
     float: right;
     width: 180px;
+}
+.left {
+	float: left;
+}
+.right {
+	float: right;
 }
 
 
@@ -1195,4 +1189,36 @@ div .left{
 	margin: -1px 1px 1px -1px;
 	-moz-border-radius: 0px; 
 	-webkit-border-radius: 0px;
+}
+
+
+/*.swatch:hover {
+	-moz-box-shadow: 0 1px 3px rgba(50,50,50,0.5), inset 0px 0px 10px white;
+	-webkit-box-shadow: 0 1px 3px rgba(50,50,50,0.5), inset 0px 0px 10px white;
+}*/
+
+.swatch2 {
+	width: 13px;
+	height: 13px;
+	background-color: red;
+	-moz-border-radius: 4px; 
+	-webkit-border-radius: 4px;
+	-moz-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
+	-webkit-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
+	/*border: 1px solid #ccc;*/
+	float: left;
+	margin: 0 2px 2px 0;
+	cursor: pointer;
+}
+.swatch3 {
+	width: 15px;
+	height: 15px;
+	background-color: red;
+	-moz-border-radius: 4px; 
+	-webkit-border-radius: 4px;
+	-moz-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
+	-webkit-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
+	/*border: 1px solid #ccc;*/
+	float: left;
+	margin: 0 2px 2px 0;
 }
