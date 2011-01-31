@@ -2,7 +2,7 @@ en:
     camera_bestbuy:
         # All language-dependent definitions in models
         url:                        "browsethenbuy.com"
-        sitetitle:                  "Browse Then Buy"
+        sitetitle:                  "Best Buy Cameras"
         defaultdesc:                ""
         title:                      "Camera"
         title-plural:               "Cameras"
