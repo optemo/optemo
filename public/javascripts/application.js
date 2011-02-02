@@ -29,7 +29,7 @@
    ######  Formerly from helpers.js ######
 
    -------- AJAX ---------
-    ** ajaxsend(hash,myurl,mydata)  -  Does AJAX call through jquery, returns through ajaxhandler(data)
+    ** ajaxsend(hash,myurl,mydata,timeoutlength)  -  Does AJAX call through jquery, returns through ajaxhandler(data)
     ** ajaxhandler(data)  -  Splits up data from the ajax call according to [BRK] tokens. See app/views/compare/ajax.html.erb
     ** ajaxerror() - Displays error message if the ajax send call fails
     ** ajaxcall(myurl,mydata) - adds a hash with the number of searches to the history path
@@ -117,7 +117,19 @@ optemo_module = (function (my){
     	if (data)
     		$('#info').html(data);
     	else
-    	    my.quickajaxcall('#info', url, function(){my.DBinit();});
+    	    my.quickajaxcall('#info', url, function(){
+    	        // Load the classic theme
+                Galleria.loadTheme('/javascripts/galleria.classic.js');
+                // Initialize Galleria
+                jQuery('#galleria').galleria();
+                // The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
+                $('.galleria-thumbnails-list').livequery(function() {
+                    var g = $('#galleria').find('.galleria-thumbnails-list');
+                    g.children().css('float', 'left');
+                    g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
+                });
+    	        my.DBinit();
+    	    });
     };
 
     // When products get dropped into the save box
@@ -1017,10 +1029,10 @@ optemo_module = (function (my){
     my.loading_indicator_state = {sidebar : false, sidebar_timer : null, main : false, main_timer : null, socket_error_timer : null};
 
     /* Does a relatively generic ajax call and returns data to the handler below */
-    my.ajaxsend = function (hash,myurl,mydata,hidespinner) {
+    my.ajaxsend = function (hash,myurl,mydata,timeoutlength) {
         var lis = my.loading_indicator_state;
-        if (lis.main) lis.main_timer = setTimeout("myspinner.begin()", 1000);
-        if (lis.sidebar) lis.sidebar_timer = setTimeout("optemo_module.loadFilterBarSilkScreen()", 1000);
+        if (lis.main && !(lis.main_timer)) lis.main_timer = setTimeout("myspinner.begin()", timeoutlength || 1000);
+        if (lis.sidebar) lis.sidebar_timer = setTimeout("optemo_module.loadFilterBarSilkScreen()", timeoutlength || 1000);
     	if (myurl != null) {
         	$.ajax({
         		type: (mydata==null)?"GET":"POST",
@@ -1515,11 +1527,11 @@ if (window.embedding_flag) {
     	$.history.load(numactions.toString(),myurl,mydata);
 	};
 
-	optemo_module.ajaxsend = function(hash,myurl,mydata,hidespinner) {
+	optemo_module.ajaxsend = function(hash,myurl,mydata,timeoutlength) {
         optemo_module.disableInterfaceElements();
         var lis = optemo_module.loading_indicator_state;
-        if (lis.main) lis.main_timer = setTimeout("myspinner.begin()", 1000);
-        if (lis.sidebar) lis.sidebar_timer = setTimeout("optemo_module.loadFilterBarSilkScreen()", 1000);
+        if (lis.main) lis.main_timer = setTimeout("myspinner.begin()", timeoutlength || 1000);
+        if (lis.sidebar) lis.sidebar_timer = setTimeout("optemo_module.loadFilterBarSilkScreen()", timeoutlength || 1000);
         lis.socket_error_timer = setTimeout("optemo_module.clearSocketError()", 15000);
         // Hopefully we can just send the arguments as-is. It's probably bad style not to sanity-check them though.
         remote.iframecall(hash, myurl, mydata);

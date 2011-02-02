@@ -852,6 +852,7 @@ div .showtable{
 #tab_header {
     position: absolute;
     left: 5px;
+    top: -23px;
 }
 
 #tab_header ul {
@@ -1005,6 +1006,13 @@ div .showtable{
     float: left;
     cursor: pointer;
 }
+
+#bestbuy_sibling_images {
+    height: 40px;
+    float: right;
+    position: relative;
+}
+
 .galleria-counter {
     position: absolute;
     bottom: 10px;

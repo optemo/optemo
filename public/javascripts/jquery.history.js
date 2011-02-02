@@ -72,7 +72,8 @@
             var current_hash = locationWrapper.get();
             if(current_hash != _.appState) {
                 _.appState = current_hash;
-                _.callback(current_hash);
+                optemo_module.loading_indicator_state.main = true;
+                _.callback(current_hash, null, null, 100);
             }
         },
         load: function(hash,myurl,mydata) {
@@ -98,7 +99,8 @@
             if(current_hash != _.appState) {
                 locationWrapper.put(current_hash);
                 _.appState = current_hash;
-                _.callback(current_hash);
+                optemo_module.loading_indicator_state.main = true;
+                _.callback(current_hash, null, null, 100);
             }
         },
         load: function(hash,myurl,mydata) {

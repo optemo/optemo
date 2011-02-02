@@ -33,19 +33,18 @@
 									
     		<% elsif FileTest.exist?("#{Rails.root}/public" + @allspecs["imglurl"]) %>
     			<%= image_tag(@allspecs["imglurl"], :size => "300x300", :alt => "") %>
-    			<%= image_tag(@allspecs["imglurl"], :size => "300x300", :alt => "") %>
     		<% else %>
     			<br><br>No Image Available
     		<% end %>
     	</div>
 	
 	 <% if @s.product_type == "camera_bestbuy" %>
-		<div style="margin-right: -3px; height: 54px">
+		<div style="display:none;" id="bestbuy_sibling_images"><span style="line-height:47px; float:left">Other Colors: &nbsp;</span>
 			<% @sibling_ids_and_imgsurls.sort{|p| p.sibling_id}.each do |sib_id_and_imgsurl| %>  
     			<% unless sib_id_and_imgsurl.sibling_id == @product.id %>
     			    <% sib_product = Product.cached(sib_id_and_imgsurl.sibling_id)%> 
     			    <%= link_to product_path(:name => sib_product.descurl, :id => sib_product.id), :'data-id' => sib_product.id, :class => "easylink", :title => "Click for product specifications" do %>
-    				    <%= image_tag(sib_id_and_imgsurl.value) %>
+    				    <%= image_tag(sib_id_and_imgsurl.value, {:width => "40px", :height => "40px"}) %>
 				    <% end %>
     			<% else %>
     			   <%= image_tag(@allspecs["imgsurl"])%>
@@ -96,8 +95,5 @@
 <% if !@plain %><div style="clear: both;"></div></div><% end %>
 
 <script>
-// Load the classic theme
-Galleria.loadTheme('/javascripts/galleria.classic.js');
-// Initialize Galleria
-jQuery('#galleria').galleria();
+
 </script>
