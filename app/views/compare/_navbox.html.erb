@@ -16,7 +16,11 @@
 			<%= link_to product.small_title, product_path(:name => product.descurl, :id => product.id), :'data-id' => product.id, :class => "easylink", :title => "Click for product specifications" %>
 		
 			<div class="price">
-				<%= "On Sale: " if rand > 0.7 %>$<%= "%.2f" % ContSpec.cache_all(product.id)["price"] %>
+				<% if CatSpec.cache_all(product.id)["saleEndDate"] %>
+					On Sale: $<%= "%.2f" % ContSpec.cache_all(product.id)["saleprice"] %>
+				<% else %>
+					$<%= "%.2f" % ContSpec.cache_all(product.id)["price"] %>
+				<% end %>
 			</div>	
 			<div class="productspecs"><%= featuretext(product.id) %></div>
 		</div>

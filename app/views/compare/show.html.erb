@@ -68,9 +68,13 @@
     
 	<div id="features">
 	<ul>
+		<% if @allspecs["saleEndDate"] %>
 		<div style="font-size: 1.2em; height: 20px;"><span class="left">Our Price:</span><span class="right"><%= @allspecs["price"] %></span></div>
-	    <div style="color: #f00; font-size: 1.5em; font-weight: bold;height: 20px;"><span class="left">Sale Price:</span><span class="right">$1.99</span></div>
-	    <div style = "clear: both;height: 18px;"><span class="left">Sale Ends:</span><span class="right">01/01/2012</span></div>
+	    <div style="color: #f00; font-size: 1.5em; font-weight: bold;height: 20px;"><span class="left">Sale Price:</span><span class="right"><%= @allspecs["saleprice"] %></span></div>
+	    <div style = "clear: both;font-weight: bold;height: 18px;"><span class="left">Sale Ends:</span><span class="right"><%= @allspecs["saleEndDate"][/^(\w|\/)+/] %></span></div>
+		<% else %>
+		<div style="font-size: 1.5em; height: 20px;"><span class="left">Our Price:</span><span class="right"><%= @allspecs["price"] %></span></div>
+		<% end %>
 		<div class="left" style="height: 18px;"><a href="http://www.bestbuy.ca/en-CA/help/what-is-your-lowest-price-guarantee/hc1001.aspx?path=27eeec1b59d42df5dfc298ab6993d9dfen15&HelpTitleId=HC1001" class="popup-link">Lowest Price Guarantee</a></div>
 		<div class="spacer" style="border-bottom: 1px solid #ccc; clear: both; margin-bottom: 15px;"></div>
 	
