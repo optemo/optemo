@@ -3,11 +3,18 @@
    If you add a function and don't add it to the table of contents, prepare to be punished by your god of choice.
    Functions marked ** are public functions that can be called from outside the optemo_module declaration.
 
+   ---- Temporary global functions ----
+    misc.
+    
+   ---- Show Page Pre-loader ----
+    ** preloadSpecsAndReviews(sku)  -  Does 2 AJAX requests for data relating to sku and puts the results in $('body').data() for instant retrieval later
+
    ---- UI Manipulation ----
     ** removeSilkScreen()
     ** applySilkScreen(url, data, width, height)  -  Puts up fading boxes
     ** saveProductForComparison(id, imgurl, name)  -  Puts comparison items in #savebar_content and stores them in a cookie
     ** renderComparisonProducts(id, imgurl, name)  -  Does actual insertion of UI elements
+    ** getidfromproductimg(img)  -  Returns the ID from the image. Only used for drag-and-drop at the moment.
     removeFromComparison(id)  -  Removes comparison items from #savebar_content
     removeBrand(str)   -  Removes brand filter (or other categorical filter)
     submitCategorical()  -  Submits a categorical filter (no longer does tracking)
@@ -33,6 +40,7 @@
     ** ajaxhandler(data)  -  Splits up data from the ajax call according to [BRK] tokens. See app/views/compare/ajax.html.erb
     ** ajaxerror() - Displays error message if the ajax send call fails
     ** ajaxcall(myurl,mydata) - adds a hash with the number of searches to the history path
+    ** quickajaxcall(element_name, myurl, fn)  -  This ajax request is slim compared to ajaxcall; just load some plain data into an element.
     ** flashError(str)  -  Puts an error message on a specific part of the screen
 
    -------- Layout -------
@@ -49,7 +57,6 @@
     addValueToCookie(name, value)  -  Add a value to the cookie "name" or create a cookie if none exists.
     removeValueFromCookie(name, value)  -  Remove a value from the cookie, and delete the cookie if it's empty.
     ** readAllCookieValues(name)  -  Returns an array of cookie values.
-
     createCookie(name,value,days)  -  Try not to use this or the two below directly if possible, they are like private methods.
     readCookie(name)  -  Gets raw cookie 'value' data.
     eraseCookie(name)
@@ -58,7 +65,9 @@
     document.ready()  -  The jquery call that gets everything started.
 
    ----- Page Loader -----
-    if statement  -  This gets evaluated as soon as the ajaxsend function is ready (slight savings over document.ready()).
+    if (embedded)  -  If we are in embedded view, some functions have to be changed. For more on this see the document in the Optemo wiki.
+    if ($('#opt_discovery')) statement  -  This gets evaluated as soon as the ajaxsend function is ready (slight savings over document.ready()).
+    if (jQuery)  -  Bootstrap jquery if it's not available. In embedded view, we might or might not have jquery loaded already.
 */
 
 // These global variables must be declared explicitly for proper scope (see setTimeout)
@@ -92,12 +101,7 @@ var resize_silkscreen = (function () {
 function bbresponse(data) {
     var product = data["product"]["specs"];
     var prop_list = parse_bb_json(product);
-    if (!(jQuery('body').data('product_info')))
-        jQuery('body').data('product_info', jQuery('#tabbed_content').html());
-    jQuery('#tab_selected').removeAttr('id');
-    jQuery('body').data('fetch_bestbuy_specs_t').parent().attr('id', 'tab_selected');
-    jQuery('#tabbed_content').html(jQuery('<ul>' + prop_list + '</ul>'))
-    resize_silkscreen();
+    jQuery('body').data('bestbuy_specs', jQuery('<ul>' + prop_list + '</ul>'));
 }
 
 //////////////////////////////////////////////
@@ -116,6 +120,60 @@ optemo_module = (function (my){
     var SESSION_ID = parseInt($('#seshid').attr('session-id'));
 
     //--------------------------------------//
+    //         Show Page Pre-loader         //
+    //--------------------------------------//
+
+    // The preloader works to do a couple AJAX calls when the show page initially loads.
+    // The results are stored in $('body').data for instant retrieval when the 
+    // specs, reviews, or accessories (not yet functional) buttons are clicked
+    my.preloadSpecsAndReviews = function(sku) {
+        // Right now the jsonp callback function is hard-coded. In future, the Best Buy API should take
+        // callback=whatever as a parameter so that jquery's JSONP support works normally.
+        // At that time, take the "jsoncallback" out and make the callback internal to optemo_module.
+        var baseurl = "http://www.bestbuy.ca/en-CA/api/product/" + sku + ".aspx?jsoncallback=bbresponse";
+        $.ajax({
+            url: baseurl,
+            type: "GET",
+            dataType: "jsonp",
+            jsonpCallbackString: "bbresponse"
+        });
+        
+        // This unwieldy function should be condensed once Best Buy's JSONP is working on reviews also (API v2)
+        $.ajax({
+	        type: "GET",
+            url: "/product_review/" + sku,
+            success: function (data) {
+                var reviews = (new Function ("return " + data))();
+                reviews = (new Function ("return " + reviews[0]))();
+                var prop_list = parse_bb_json(reviews["reviews"]);
+
+                var to_tabbed_content = "";
+                var attributes = reviews["customerRatingAttributes"];
+                var width = parseInt(18 + 41 * reviews["customerRating"]);
+                if (width < 29) width = 29;
+                if (width >= 182) width = 198;
+                to_tabbed_content += "<span style=\"font-weight: bold; font-size: 1.1em;\">Overall Rating:</span> " + "<div class=\"bestbuy_rating_bar\" style=\"width: "+ width +"px;\">" + reviews["customerRating"] + "<div class=\"bestbuy_rating_bar_inside\"></div></div><br>";
+                for (var i in attributes) {
+                    // This math is based on the width of the box, see bestbuy_rating_bar_small in CSS declarations
+                    var width = parseInt(9 + 20 * (attributes[i] - 0.8));
+                    if (width < 14) width = 14;
+                    if (width >= 91) width = 99;
+                    to_tabbed_content += i + "<div class=\"bestbuy_rating_bar_small\" style=\"width: "+ width +"px;\"><div class=\"bestbuy_rating_bar_inside_small\">" + attributes[i] + "</div></div>"
+                }
+                to_tabbed_content += 'Review Count: '+ reviews['customerRatingCount'] + "<br><ul>" + prop_list + '</ul>';
+
+                $('body').data('bestbuy_reviews', to_tabbed_content);
+            },
+            error: function(x, xhr) {
+                console.log("Error in json ajax");
+                console.log(x);
+                console.log(xhr);
+            }
+        });
+	    
+    }
+
+    //--------------------------------------//
     //           UI Manipulation            //
     //--------------------------------------//
 
@@ -130,8 +188,8 @@ optemo_module = (function (my){
 
     my.applySilkScreen = function(url,data,width,height) {
     	//IE Compatibility
-    	var iebody=(document.compatMode && document.compatMode != "BackCompat")? document.documentElement : document.body
-    	var dsoctop=document.all? iebody.scrollTop : pageYOffset
+    	var iebody=(document.compatMode && document.compatMode != "BackCompat")? document.documentElement : document.body, 
+    	dsoctop=document.all? iebody.scrollTop : pageYOffset;
     	$('#info').html("");
     	$('#outsidecontainer').css({'left' : ((document.body.clientWidth-(width||800))/2)+'px',
     								'top' : (dsoctop+5)+'px',
@@ -141,7 +199,7 @@ optemo_module = (function (my){
 
         /* This is used to get the document height for doing layout properly. */
         /*http://james.padolsey.com/javascript/get-document-height-cross-browser/*/
-        current_height = (function() {
+        var current_height = (function() {
             var D = document;
             return Math.max(
                 Math.max(D.body.scrollHeight, D.documentElement.scrollHeight),
@@ -167,7 +225,7 @@ optemo_module = (function (my){
                     g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
                 });
     	        my.DBinit();
-    	        my.preload_specs_and_reviews();
+    	        my.preloadSpecsAndReviews(jQuery('#tab_header').find('ul').attr('data-sku'));
     	    });
     };
 
@@ -322,27 +380,14 @@ optemo_module = (function (my){
     	else
     		var data = [0.5,0.7,0.1,0,0.3,0.8,0.6,0.4,0.3,0.3];
     	//Data is assumed to be 10 normalized elements in an array
-    	var peak = 0,
-    	trans = 3,
-    	step = peak + 2*trans,
-    	height = 15,
-    	length = 170,
-    	shapelayer = Raphael(element,length,height),
-    	h = height - 1;
-    	if (my.MODEL_NAME == "flooring_builddirect") {
-    	    t = shapelayer.path({fill: "#ffca44", stroke: "#83571d", opacity: 0.75});
-        }
-        else {
-    	    t = shapelayer.path({fill: "#bad0f2", stroke: "#039", opacity: 0.75});
-        }
+    	var peak = 0, trans = 3, length = 170, height = 15, init = 4;
+    	var step = peak + 2*trans, shapelayer = Raphael(element,length,height), h = height - 1,
+	    t = shapelayer.path({fill: "#bad0f2", stroke: "#039", opacity: 0.75});
     	t.moveTo(0,height);
-
-    	init = 4;
-    	for (var i = 0; i < data.length; i++)
-    	{
-    	t.cplineTo(init+i*step+trans,h*(1-data[i])+1,5);
-    	t.lineTo(init+i*step+trans+peak,h*(1-data[i])+1);
-    	//shapelayer.text(i*step+trans+5, height*0.5, i);
+    	for (var i = 0; i < data.length; i++) {
+        	t.cplineTo(init+i*step+trans,h*(1-data[i])+1,5);
+        	t.lineTo(init+i*step+trans+peak,h*(1-data[i])+1);
+        	//shapelayer.text(i*step+trans+5, height*0.5, i);
     	}
     	t.cplineTo(init+(data.length)*step+4,height,5);
     	t.andClose();
@@ -433,8 +478,8 @@ optemo_module = (function (my){
 
     	// Initialize Sliders
     	$('.slider').each(function() {
-    		threshold = 20;							// The parameter that identifies that 2 sliders are too close to each other
-    		force_int = $(this).attr('force-int');
+    	    // threshold identifies that 2 sliders are too close to each other
+    	    var curmax, curmin, rangemax, rangemin, threshold = 20, force_int = $(this).attr('force-int');
     		if(force_int == 'false')
     		{
     			curmin = parseFloat($(this).attr('data-startmin'));
@@ -728,11 +773,14 @@ optemo_module = (function (my){
     		return false;
     	});
 
+        // The next few functions were written to be Best Buy-specific, but they can be extended
+        // for any tabbed quickview page. The content is loaded ahead of time in 
+
     	$('.fetch_bestbuy_info').live('click', function() {
     	    var t = $(this);
     	    if (!(t.parent().attr('id') == "tab_selected"))
     	    {
-        	    $('#tabbed_content').html($('body').data('product_info'));
+        	    $('#tabbed_content').html($('body').data('bestbuy_product_info'));
         	    $('#tab_selected').removeAttr('id');
         	    t.parent().attr('id', 'tab_selected');
         	    resize_silkscreen();
@@ -742,78 +790,26 @@ optemo_module = (function (my){
 
     	$('.fetch_bestbuy_specs').live('click', function () {
     	    var t = $(this), sku = t.parent().parent().attr('data-sku');
-            var baseurl = "http://www.bestbuy.ca/en-CA/api/product/" + sku + ".aspx?jsoncallback=bbresponse";
-            $('body').data('fetch_bestbuy_specs_t', t);
-            $.ajax({
-                url: baseurl,
-                type: "GET",
-                dataType: "jsonp",
-                jsonpCallbackString: "bbresponse"
-            });
-
-// The following function should be deprecated; it's been superceded by the "temporary global functions" section at the top
-/*    	    $.ajax({
-    	        type: "GET",
-                url: "/product_json/" + sku,
-                success: function (data) {
-                    var specs = (new Function ("return " + data))();
-                    specs = (new Function ("return " + specs[0]))();
-                    var product = specs["product"]["specs"];
-                    var prop_list = parse_bb_json(product);
-                    if (!($('body').data('product_info')))
-                        $('body').data('product_info', $('#tabbed_content').html());
-                    $('#tab_selected').removeAttr('id');
-                    t.parent().attr('id', 'tab_selected');
-                    $('#tabbed_content').html($('<ul>' + prop_list + '</ul>'))
-                    resize_silkscreen();
-                },
-                error: function(x, xhr) {
-                    console.log("Error in json ajax");
-                    console.log(x);
-                    console.log(xhr);
-                }
-            }); */
+    	    if (!($('body').data('bestbuy_product_info')))
+    	        $('body').data('bestbuy_product_info', $('#tabbed_content').html());
+            $('#tab_selected').removeAttr('id');
+            t.parent().attr('id', 'tab_selected');
+            $('#tabbed_content').html($('body').data('bestbuy_specs'));
+            resize_silkscreen();
             return false;
 	    });
 
 	    $('.fetch_bestbuy_reviews').live('click', function () {
     	    var t = $(this);
-    	    sku = t.parent().parent().attr('data-sku');
-    	    $.ajax({
-    	        type: "GET",
-                url: "/product_review/" + sku,
-                success: function (data) {
-                    var reviews = (new Function ("return " + data))();
-                    reviews = (new Function ("return " + reviews[0]))();
-                    var prop_list = parse_bb_json(reviews["reviews"]);
-                    if (!($('body').data('product_info')))
-                        $('body').data('product_info', $('#tabbed_content').html());
-                    $('#tab_selected').removeAttr('id');
-                    t.parent().attr('id', 'tab_selected');
-                    var to_tabbed_content = "";
-                    to_tabbed_content = "";
-                    var attributes = reviews["customerRatingAttributes"];
-                    var width = parseInt(18 + 41 * reviews["customerRating"]);
-                    if (width < 29) width = 29;
-                    if (width >= 182) width = 198;
-                    to_tabbed_content += "<span style=\"font-weight: bold; font-size: 1.1em;\">Overall Rating:</span> " + "<div class=\"bestbuy_rating_bar\" style=\"width: "+ width +"px;\">" + reviews["customerRating"] + "<div class=\"bestbuy_rating_bar_inside\"></div></div><br>";
-                    for (var i in attributes) {
-                        // This math is based on the width of the box, see bestbuy_rating_bar_small in CSS declarations
-                        var width = parseInt(9 + 20 * (attributes[i] - 0.8));
-                        if (width < 14) width = 14;
-                        if (width >= 91) width = 99;
-                        to_tabbed_content += i + "<div class=\"bestbuy_rating_bar_small\" style=\"width: "+ width +"px;\"><div class=\"bestbuy_rating_bar_inside_small\">" + attributes[i] + "</div></div>"
-                    }
-                    to_tabbed_content += 'Review Count: '+ reviews['customerRatingCount'] + "<br><ul>" + prop_list + '</ul>';
-                    $('#tabbed_content').html(to_tabbed_content);
-                    resize_silkscreen();
-                },
-                error: function(x, xhr) {
-                    console.log("Error in json ajax");
-                    console.log(x);
-                    console.log(xhr);
-                }
-            });
+            $('#tab_selected').removeAttr('id');
+            t.parent().attr('id', 'tab_selected');
+
+            if (!($('body').data('bestbuy_product_info')))
+                $('body').data('bestbuy_product_info', $('#tabbed_content').html());
+
+            $('#tabbed_content').html($('body').data('bestbuy_reviews'));
+            resize_silkscreen();
+
             return false;
         });
 
@@ -825,9 +821,9 @@ optemo_module = (function (my){
     	// from DBInit
 
         $(".productimg, .easylink").live("click", function (){
-			href = $(this).attr('href') || $(this).parent().siblings('.productinfo').children('.easylink').attr('href') || $(this).parent().parent().find('.easylink').attr('href');
-        	ignored_ids = getAllShownProductIds();
-			currentelementid = $(this).attr('data-id') || href.match(/\d+$/);
+			var href = $(this).attr('href') || $(this).parent().siblings('.productinfo').children('.easylink').attr('href') || $(this).parent().parent().find('.easylink').attr('href'),
+        	ignored_ids = getAllShownProductIds(),
+			currentelementid = $(this).attr('data-id') || href.match(/\d+$/),
         	product_title = $(this).find('img.productimg').attr('title');
         	my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids});
 			my.applySilkScreen((href || '/product/_/' + currentelementid) +'?plain=true',null, 800, 800);
@@ -836,18 +832,18 @@ optemo_module = (function (my){
 
         //Ajax call for simlinks
     	$('.simlinks').live("click", function() {
+    		var ignored_ids = getAllShownProductIds();
     	    my.loading_indicator_state.main = true;
     		my.ajaxcall($(this).attr('href')+'?ajax=true');
-    		ignored_ids = getAllShownProductIds();
     		my.trackPage('goals/browse_similar', {'filter_type' : 'browse_similar', 'product_picked' : $(this).attr('data-id') , 'product_ignored' : ignored_ids, 'picked_cluster_layer' : $(this).attr('data-layer'), 'picked_cluster_size' : $(this).attr('data-size')});
     		return false;
     	});
 
     	//Pagination links
         // This convoluted line takes the second-last element in the list: "<< prev 1 2 3 4 next >>" and takes its numerical page value.
-    	total_pages = parseInt($('.pagination').children().last().prev().html());
+    	var total_pages = parseInt($('.pagination').children().last().prev().html());
     	$('.pagination a').live("click", function(){
-    		url = $(this).attr('href')
+    		var url = $(this).attr('href')
     		if (url.match(/\?/))
     			url +='&ajax=true'
     		else
@@ -971,7 +967,7 @@ optemo_module = (function (my){
 		});
 
 		$(".demo_selector select").live('change', function(){
-			url = "http://"+$(".demo_selector select:last").val()+"."+$(".demo_selector select:first").val()+".demo.optemo.com";
+			var url = "http://"+$(".demo_selector select:last").val()+"."+$(".demo_selector select:first").val()+".demo.optemo.com";
 			window.location = url;
 		});
 
@@ -1034,7 +1030,7 @@ optemo_module = (function (my){
     	    model = my.MODEL_NAME.toLowerCase();
     	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
     	if (typeof(model + "_searchterms") != undefined) { // It could happen for one reason or another. This way, it doesn't break the rest of the script
-    	    terms = window[model + "_searchterms"]; // terms now = ["waterproof", "digital", ... ] using square bracket notation
+    	    var terms = window[model + "_searchterms"]; // terms now = ["waterproof", "digital", ... ] using square bracket notation
         	$("#myfilter_search").autocomplete({
         	    source: terms
         	});
@@ -1604,21 +1600,21 @@ catch(err) {
 if(jQueryIsLoaded) {
     optemo_module_activator(jQuery);
 } else {
-    var script = document.createElement("script");
-    script.setAttribute("type", "text/javascript");
-    if (script.readyState){  //IE
-        script.onreadystatechange = function(){
-            if (script.readyState == "loaded" ||
-                    script.readyState == "complete"){
-                script.onreadystatechange = null;
+    var script_element = document.createElement("script");
+    script_element.setAttribute("type", "text/javascript");
+    if (script_element.readyState){  //IE
+        script_element.onreadystatechange = function(){
+            if (script_element.readyState == "loaded" ||
+                    script_element.readyState == "complete"){
+                script_element.onreadystatechange = null;
                 optemo_socket_activator(window["jQuery"]); // Using square bracket notation because the jquery object won't be initialized until later
             }
         };
     } else {  //Others
-        script.onload = function(){
+        script_element.onload = function(){
             optemo_socket_activator(window["jQuery"]);
         };
     }
-    script.setAttribute("src", 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js');
-    document.getElementsByTagName("head")[0].appendChild(script);
+    script_element.setAttribute("src", 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js');
+    document.getElementsByTagName("head")[0].appendChild(script_element);
 }
