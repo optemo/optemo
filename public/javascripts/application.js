@@ -66,6 +66,44 @@ var optemo_module;
 var myspinner;
 var optemo_module_activator;
 
+//////////////////////////////////////////////
+// Temporary global functions
+// These will be moved back into optemo_module 
+// once Best Buy's version 2 API is online
+//////////////////////////////////////////////
+
+var parse_bb_json = (function spec_recurse(p) {
+    var props = "";
+    for (var i in p) {
+        if (p[i] == "") continue;
+        if (typeof(p[i]) == "object") props += "<li>" + i + ": <ul>" + spec_recurse(p[i]) + "</ul>";
+        else props += "<li>" + i + ": " + p[i] + "\n";
+    }
+    return props;
+});
+
+var resize_silkscreen = (function () {
+    var height = jQuery('#tabbed_content').height() + jQuery('#tabbed_content').offset().top + 10;
+    if (height < 760) height = 760;
+    jQuery('#silkscreen').css('height', height);
+    jQuery('#outsidecontainer').css('height', '');
+});
+
+function bbresponse(data) {
+    var product = data["product"]["specs"];
+    var prop_list = parse_bb_json(product);
+    if (!(jQuery('body').data('product_info')))
+        jQuery('body').data('product_info', jQuery('#tabbed_content').html());
+    jQuery('#tab_selected').removeAttr('id');
+    jQuery('body').data('fetch_bestbuy_specs_t').parent().attr('id', 'tab_selected');
+    jQuery('#tabbed_content').html(jQuery('<ul>' + prop_list + '</ul>'))
+    resize_silkscreen();
+}
+
+//////////////////////////////////////////////
+//  End temporary global functions
+//////////////////////////////////////////////
+
 optemo_module_activator = (function($) { // See bottom, this is for jquery noconflict
 optemo_module = (function (my){
     // Language support disabled for now
@@ -129,6 +167,7 @@ optemo_module = (function (my){
                     g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
                 });
     	        my.DBinit();
+    	        my.preload_specs_and_reviews();
     	    });
     };
 
@@ -689,13 +728,6 @@ optemo_module = (function (my){
     		return false;
     	});
 
-        var resize_silkscreen = (function () {
-            var height = $('#tabbed_content').height() + $('#tabbed_content').offset().top + 10;
-            if (height < 760) height = 760;
-            $('#silkscreen').css('height', height);
-            $('#outsidecontainer').css('height', '');
-        });
-
     	$('.fetch_bestbuy_info').live('click', function() {
     	    var t = $(this);
     	    if (!(t.parent().attr('id') == "tab_selected"))
@@ -708,21 +740,19 @@ optemo_module = (function (my){
 	        return false;
 	    });
 
-    	var parse_bb_json = (function spec_recurse(p) {
-            var props = "";
-            for (var i in p) {
-                if (p[i] == "") continue;
-                if (typeof(p[i]) == "object") props += "<li>" + i + ": <ul>" + spec_recurse(p[i]) + "</ul>";
-                else props += "<li>" + i + ": " + p[i] + "\n";
-            }
-            return props;
-        });
-
     	$('.fetch_bestbuy_specs').live('click', function () {
-    	    var t = $(this);
-    	    sku = t.parent().parent().attr('data-sku');
+    	    var t = $(this), sku = t.parent().parent().attr('data-sku');
+            var baseurl = "http://www.bestbuy.ca/en-CA/api/product/" + sku + ".aspx?jsoncallback=bbresponse";
+            $('body').data('fetch_bestbuy_specs_t', t);
+            $.ajax({
+                url: baseurl,
+                type: "GET",
+                dataType: "jsonp",
+                jsonpCallbackString: "bbresponse"
+            });
 
-    	    $.ajax({
+// The following function should be deprecated; it's been superceded by the "temporary global functions" section at the top
+/*    	    $.ajax({
     	        type: "GET",
                 url: "/product_json/" + sku,
                 success: function (data) {
@@ -742,7 +772,7 @@ optemo_module = (function (my){
                     console.log(x);
                     console.log(xhr);
                 }
-            });
+            }); */
             return false;
 	    });
 
