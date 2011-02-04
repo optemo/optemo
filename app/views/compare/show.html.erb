@@ -33,19 +33,18 @@
 									
     		<% elsif FileTest.exist?("#{Rails.root}/public" + @allspecs["imglurl"]) %>
     			<%= image_tag(@allspecs["imglurl"], :size => "300x300", :alt => "") %>
-    			<%= image_tag(@allspecs["imglurl"], :size => "300x300", :alt => "") %>
     		<% else %>
     			<br><br>No Image Available
     		<% end %>
     	</div>
 	
-	 <% if @s.product_type == "camera_bestbuy" %>
-		<div style="margin-right: -3px; height: 54px">
+	 <% if @s.product_type == "camera_bestbuy" && !(@sibling_ids_and_imgsurls.blank?) %>
+		<div style="display:none;" id="bestbuy_sibling_images"><span style="line-height:47px; float:left">Other Colors: &nbsp;</span>
 			<% @sibling_ids_and_imgsurls.sort{|p| p.sibling_id}.each do |sib_id_and_imgsurl| %>  
     			<% unless sib_id_and_imgsurl.sibling_id == @product.id %>
     			    <% sib_product = Product.cached(sib_id_and_imgsurl.sibling_id)%> 
     			    <%= link_to product_path(:name => sib_product.descurl, :id => sib_product.id), :'data-id' => sib_product.id, :class => "easylink", :title => "Click for product specifications" do %>
-    				    <%= image_tag(sib_id_and_imgsurl.value) %>
+    				    <%= image_tag(sib_id_and_imgsurl.value, {:width => "40px", :height => "40px"}) %>
 				    <% end %>
     			<% else %>
     			   <%= image_tag(@allspecs["imgsurl"])%>
@@ -69,9 +68,13 @@
     
 	<div id="features">
 	<ul>
+		<% if @allspecs["saleEndDate"] %>
 		<div style="font-size: 1.2em; height: 20px;"><span class="left">Our Price:</span><span class="right"><%= @allspecs["price"] %></span></div>
-	    <div style="color: #f00; font-size: 1.5em; font-weight: bold;height: 20px;"><span class="left">Sale Price:</span><span class="right">$1.99</span></div>
-	    <div style = "clear: both;height: 18px;"><span class="left">Sale Ends:</span><span class="right">01/01/2012</span></div>
+	    <div style="color: #f00; font-size: 1.5em; font-weight: bold;height: 20px;"><span class="left">Sale Price:</span><span class="right"><%= @allspecs["saleprice"] %></span></div>
+	    <div style = "clear: both;font-weight: bold;height: 18px;"><span class="left">Sale Ends:</span><span class="right"><%= @allspecs["saleEndDate"][/^(\w|\/)+/] %></span></div>
+		<% else %>
+		<div style="font-size: 1.5em; height: 20px;"><span class="left">Our Price:</span><span class="right"><%= @allspecs["price"] %></span></div>
+		<% end %>
 		<div class="left" style="height: 18px;"><a href="http://www.bestbuy.ca/en-CA/help/what-is-your-lowest-price-guarantee/hc1001.aspx?path=27eeec1b59d42df5dfc298ab6993d9dfen15&HelpTitleId=HC1001" class="popup-link">Lowest Price Guarantee</a></div>
 		<div class="spacer" style="border-bottom: 1px solid #ccc; clear: both; margin-bottom: 15px;"></div>
 	
@@ -96,8 +99,5 @@
 <% if !@plain %><div style="clear: both;"></div></div><% end %>
 
 <script>
-// Load the classic theme
-Galleria.loadTheme('/javascripts/galleria.classic.js');
-// Initialize Galleria
-jQuery('#galleria').galleria();
+
 </script>

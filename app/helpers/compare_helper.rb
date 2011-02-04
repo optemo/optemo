@@ -159,12 +159,6 @@ module CompareHelper
 
   # This function should be deprecated with img urls coming from the cat_specs table now.
   def imgurl(product, size)
-    case size
-    when 'm'
-      return "http://www.builddirect.com" + CGI.unescapeHTML(product.imgmurl.to_s) if Session.current.product_type == "flooring_builddirect"
-    when 's'
-      return "http://www.builddirect.com" + CGI.unescapeHTML(product.imgsurl.to_s) if Session.current.product_type == "flooring_builddirect"
-    end
     CGI.unescapeHTML(CatSpec.cache_all(product.id)["img" + size + "url"].to_s) # No need for constructing image URLs manually, they are all in the database now
   end
   
