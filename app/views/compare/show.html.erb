@@ -38,7 +38,7 @@
     		<% end %>
     	</div>
 	
-	 <% if @s.product_type == "camera_bestbuy" %>
+	 <% if @s.product_type == "camera_bestbuy" && !(@sibling_ids_and_imgsurls.blank?) %>
 		<div style="display:none;" id="bestbuy_sibling_images"><span style="line-height:47px; float:left">Other Colors: &nbsp;</span>
 			<% @sibling_ids_and_imgsurls.sort{|p| p.sibling_id}.each do |sib_id_and_imgsurl| %>  
     			<% unless sib_id_and_imgsurl.sibling_id == @product.id %>

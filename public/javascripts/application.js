@@ -353,8 +353,6 @@ optemo_module = (function (my){
                 arguments_to_send.push(arguments[i]);
         }
     	my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
-    	// Everything that calls submitCategorical() should have already called trackPage uniquely
-    	// my.trackPage('goals/filter/autosubmit');
     	return false;
     }
 
@@ -730,6 +728,7 @@ optemo_module = (function (my){
     	$('#sorting_method').unbind('change').change(function() {
     	    var whichSortingMethodSelected = $(this).val();
     	    var info = {'chosen_sorting_method' : whichSortingMethodSelected, 'filter_type' : 'sorting_method'};
+			my.trackPage('goals/filter/sorting_method', info);
     	    my.loading_indicator_state.sidebar = true;
             my.ajaxcall("/compare?ajax=true&sortby=" + whichSortingMethodSelected);
 	    });
@@ -810,6 +809,11 @@ optemo_module = (function (my){
             $('#tabbed_content').html($('body').data('bestbuy_reviews'));
             resize_silkscreen();
 
+            return false;
+        });
+
+        $('.fetch_bestbuy_accessories').live('click', function () {
+            // No fetching of accessories for now.
             return false;
         });
 
@@ -939,12 +943,6 @@ optemo_module = (function (my){
     		$(this).css('display','none');
     		$('#morefilters').css('display','block');
     		return false;
-    	});
-
-    	// Sliders -- submit
-    	$('.autosubmit').live('change', function() {
-    	    my.trackPage('goals/filter/autosubmit', {'filter_type' : 'autosubmit'});
-    		submitCategorical();
     	});
 
     	// Checkboxes -- submit

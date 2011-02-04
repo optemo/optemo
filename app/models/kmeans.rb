@@ -5,7 +5,7 @@ require 'inline'
 inline :C do |builder|
   builder.c "
   #include <math.h> 
-  static VALUE kmeans_c(VALUE _points_cont, VALUE _points_bin, VALUE _points_cat, _VALUE n, VALUE d_cont, VALUE d_bin, VALUE d_cat, VALUE _dim_per_cat, VALUE cluster_n,VALUE _factors, VALUE _weights, VALUE _inits){
+  static VALUE kmeans_c(VALUE _points_cont, VALUE _points_bin, VALUE _points_cat, _VALUE n, VALUE d_cont, VALUE d_bin, VALUE d_cat, VALUE _dim_per_cat, VALUE cluster_n,VALUE _factors, VALUE _weights, VALUE _weight_dim, VALUE _inits){
   
    VALUE* points_cont_a = RARRAY_PTR(_points_cont);
    VALUE* points_bin_a = RARRAY_PTR(_points_bin);
@@ -19,6 +19,7 @@ inline :C do |builder|
    int dd_cont = NUM2INT(d_cont);
    int dd_bin = NUM2INT(d_bin);
    int dd_cat = NUM2INT(d_cat);
+   int weight_dim = NUM2INT(_weight_dim);
    
    int k = NUM2INT(cluster_n);
    double DBL_MAX = 10000000.0;
@@ -43,7 +44,7 @@ inline :C do |builder|
    int* inits = malloc(sizeof(int)*k);
    double* utilities = (double*)calloc(nn, sizeof(double)); 
    int* newlabels = (int*)calloc(k, sizeof(int)); 
-   double* weights = malloc(sizeof(double)*(dd_cont+dd_bin+dd_cat));
+   double* weights = malloc(sizeof(double)*(weight_dim));
 
    
    for (j=0; j<(dd_cont+dd_bin+dd_cat); j++) weights[j] = NUM2DBL(weights_a[j]);
@@ -64,7 +65,7 @@ inline :C do |builder|
    for (i=0; i<nn; i++){
      for (j=0; j<dd_cont; j++) {   
         data_cont[i][j]= NUM2DBL(points_cont_a[i*dd_cont+j]);
-        utilities[i] += weights[j]*NUM2DBL(factors_a[i*dd_cont+j]);  
+        utilities[i] += weights[j]*NUM2DBL(factors_a[i*(dd_cont+weight_dim-(dd_cont+dd_bin+dd_cat))+j]);  
      }
      for (j=0; j<dd_bin;j++){
        data_bin[i][j][0] = NUM2INT(points_bin_a[(i*dd_cont+j)*2]);
@@ -72,7 +73,9 @@ inline :C do |builder|
      }
      for (j=0; j<dd_cat;j++){
        for (t=0; t<dim_per_cat[j];t++) data_cat[i][j][0] = NUM2INT(points_cat_a[(i*dd_cont+j)*2+t]);
-      }
+     }
+     for (j=0; j<weight_dim-(dd_cont+dd_bin+dd_cat);j++)
+        utilities[i] += weights[j]*NUM2DBL(factors_a[i*(dd_cont+1)+j]);  
    }
       
 //kmeans initializations
@@ -346,6 +349,11 @@ def self.compute(number_clusters,p_ids)
     raise ValidationError, "There are no #{f}_factors for #{Session.current.product_type}" unless f_specs
     factors << f_specs
   end
+  
+  performance_factors = ContSpec.by_feat("performance_factor")
+  raise ValidationError, "the number of performance scores is different from the number of products" unless performance_factors.size == factors.first.size
+  factors << performance_factors
+  
   ft = factors.transpose
   dim_cont = Session.current.continuous["cluster"].size
   dim_bin = Session.current.binary["cluster"].size
@@ -368,24 +376,29 @@ def self.compute(number_clusters,p_ids)
     cont_specs = st[0...dim_cont].transpose
     bin_specs = st[dim_cont...dim_cont+dim_bin].transpose
     cat_specs = st[dim_cont+dim_bin...st.size].transpose
+    performance_weight = 10
+    weights = weights << performance_weight
+    weight_dim = dim_cont+dim_bin+dim_cat+1
     # dimension of each category - for example how many different brands 
     dim_per_cat = cat_specs.first.map{|f| f.size}
     raise ValidationError, "No specs available" if cont_specs.nil?
-    raise ValidationError, "Factors not available for the same number of features as specs" unless ft.size == cont_specs.size
-    raise ValidationError, "Number of factors is not equal to the dimension of continuous specs" unless ft.first.size == cont_specs.first.size 
-    raise ValidationError, "Number of weights is not equal to the total dimension of specs" unless weights.size == dim_cont+dim_bin+ dim_cat
+    raise ValidationError, "Factors not available for the same number of features as specs" unless ft.size == cont_specs.size 
+    raise ValidationError, "Number of factors is not equal to the dimension of continuous specs" unless ft.first.size == (cont_specs.first.size) +1
+    raise ValidationError, "Number of weights is not equal to the total dimension of specs" unless weights.size == dim_cont+dim_bin+ dim_cat+1
     
     # inistial seeds for clustering  ### just based on contiuous features
     inits = self.init(number_clusters, cont_specs, weights[0...dim_cont]) 
     $k = Kmeans.new unless $k
+    
+   
     #static VALUE kmeans_c(VALUE _points_cont, VALUE _points_bin, VALUE _points_cat, _VALUE n, VALUE d_cont, VALUE d_bin, VALUE d_cat, VALUE dim_per_cat,...
     #  VALUE cluster_n,VALUE _factors, VALUE _weights, VALUE _inits)
-    $k.kmeans_c(cont_specs.flatten, bin_specs.flatten, cat_specs.flatten, cont_specs.size, dim_cont,  dim_bin, dim_cat, dim_per_cat,number_clusters, ft.flatten, weights, inits)
+    $k.kmeans_c(cont_specs.flatten, bin_specs.flatten, cat_specs.flatten, cont_specs.size, dim_cont,  dim_bin, dim_cat, dim_per_cat,number_clusters, ft.flatten, weights, weight_dim, inits)
  
   rescue ValidationError => e
     puts "Falling back to ruby kmeans: #{e.message}"
     debugger
-    Kmeans.ruby(number_clusters, specs)
+    Kmeans.ruby(number_clusters, cont_specs)
   end
 end
 
