@@ -812,6 +812,11 @@ optemo_module = (function (my){
             return false;
         });
 
+        $('.fetch_bestbuy_accessories').live('click', function () {
+            // No fetching of accessories for now.
+            return false;
+        });
+
         $('.saveditem .deleteX').live('click', function() {
          removeFromComparison($(this).attr('data-name'));
          return false;
