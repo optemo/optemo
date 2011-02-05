@@ -21,7 +21,7 @@
 #
 #def init_facts
 #  Session.new("laserprinterhub.com")
-#  Session.current.version = 0
+#  Session.version = 0
 #  products = [nil] #Index numbering should start with 1
 #  16.times do
 #    products << Factory(:product)

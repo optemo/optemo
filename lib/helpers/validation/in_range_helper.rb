@@ -15,9 +15,9 @@ module InRangeHelper
     
     # This function doesn't work at the moment.
     def in_range? key, val
-      return true if Session.current.product_type::ValidRanges[key].nil? or val.nil?
-      return false unless val >= Session.current.product_type::ValidRanges[key][0] # should be above min
-      return false unless val <= Session.current.product_type::ValidRanges[key][1] # should be below max
+      return true if Session.product_type::ValidRanges[key].nil? or val.nil?
+      return false unless val >= Session.product_type::ValidRanges[key][0] # should be above min
+      return false unless val <= Session.product_type::ValidRanges[key][1] # should be below max
       return true
     end
 end

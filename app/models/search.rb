@@ -34,19 +34,18 @@ class Search < ActiveRecord::Base
   end
   
   def relativeDescriptions
-    s = Session.current
     return if clusters.empty?
     @reldescs ||= []
     if @reldescs.empty?
       feats = {}
-      s.continuous["filter"].each do |f|
+      Session.continuous["filter"].each do |f|
         norm = ContSpec.allMinMax(f)[1] - ContSpec.allMinMax(f)[0]
         norm = 1 if norm == 0
         feats[f] = clusters.map{ |c| c.representative}.compact.map {|c| c[f].to_f/norm } 
       end
       cluster_count.times do |i|
         dist = {}
-        s.continuous["filter"].each do |f|
+        Session.continuous["filter"].each do |f|
           if feats[f].min == feats[f][i]
             #This is the lowest feature
             distance = feats[f].sort[1] - feats[f][i]
@@ -91,14 +90,14 @@ class Search < ActiveRecord::Base
     clusterDs = Array.new 
     des = []
     slr=0
-      Session.current.binary["filter"].each do |f|
+      Session.binary["filter"].each do |f|
         if clusters[clusterNumber].indicator(f)
           (f=='slr' && indicator("slr"))? slr = 1 : slr =0
           des<< f if $config["DescFeatures"].include?(f) 
         end
       end
       
-      Session.current.continuous["desc"].each do |f|
+      Session.continuous["desc"].each do |f|
         if !(f == "opticalzoom" && slr == 1)
               cRanges = clusters[clusterNumber].ranges(f)
               if (cRanges[1] < ContSpec.allLow(f))
@@ -119,7 +118,7 @@ class Search < ActiveRecord::Base
   
   def searchDescription
     des = []
-    Session.current.continuous["desc"].each do |f|
+    Session.continuous["desc"].each do |f|
       searchR = ranges(f)
       return ['Empty'] if searchR[0].nil? || searchR[1].nil?
       if (searchR[1] <= ContSpec.allLow(f))
@@ -182,7 +181,7 @@ class Search < ActiveRecord::Base
       while(my_search.nil?)
         if current_s.initial
           my_search = initial_products
-          Session.current.onlyfiltering = true
+          Session.onlyfiltering = true
         else
           c = SearchProduct.where(["search_id = ?",current_s.id])
           if c.empty?
@@ -205,12 +204,11 @@ class Search < ActiveRecord::Base
 
   def groupings
     return [] if groupby.nil? 
-    s = Session.current
-    if s.categorical["all"].index(groupby) 
+    if Session.categorical["all"].index(groupby) 
       # It's in the categorical array
       specs = products.zip CatSpec.cachemany(products, groupby)
       grouping = specs.group_by{|spec|spec[1]}.values.sort{|a,b| b.length <=> a.length}
-    elsif s.continuous["all"].index(groupby)
+    elsif Session.continuous["all"].index(groupby)
       #The chosen feature is continuous
       specs = products.zip ContSpec.by_feat(groupby).sort
       # [[id, low], [id, higher], ... [id, highest]]
@@ -273,7 +271,7 @@ class Search < ActiveRecord::Base
     if previous_search
       return !previous_search.product_id.nil?
     else
-      product_ids = Product.search_for_ids(:per_page => 10000, :star => true, :conditions => {:product_type => Session.current.product_type, :title => keyword})
+      product_ids = Product.search_for_ids(:per_page => 10000, :star => true, :conditions => {:product_type => Session.product_type, :title => keyword})
       #Check that the results are valid and instock
       new_entries = SearchProduct.where(:search_id => Product.initial).where("product_id IN (#{product_ids.join(',')})").map{|sp| KeywordSearch.new({:keyword => keyword, :product_id => sp.product_id})} unless product_ids.empty?
       if product_ids.empty? || new_entries.empty?
@@ -292,11 +290,10 @@ class Search < ActiveRecord::Base
   def initialize(p={})
     super({})
     #Set session id
-    s = Session.current
-    self.session_id = s.id
+    self.session_id = Session.id
     unless p["action_type"] == "initial" #Exception for initial clusters
       old_search = Search.find_by_id_and_session_id(p["search_hist"],s.id) if p["search_hist"]
-      old_search = s.lastsearch if old_search.nil?
+      old_search = Session.lastsearch if old_search.nil?
       self.parent_id = old_search.id
     end
     # If there is a sort method to keep from last time, move it across
@@ -370,7 +367,6 @@ class Search < ActiveRecord::Base
   end
   
   def createFeatures(p,old_search)
-    s = Session.current
     #seperate myfilter into various parts
     @userdataconts = []
     @userdatabins = []
@@ -383,14 +379,14 @@ class Search < ActiveRecord::Base
         fname = Regexp.last_match[1]
         max = fname+'_max'
         @userdataconts << Userdatacont.new({:name => fname, :min => v, :max => p[max]})
-      elsif s.binary["filter"].index(k)
+      elsif Session.binary["filter"].index(k)
         #Binary Features
         #Handle false booleans
         dobj = old_search.userdatabins.select{|d|d.name == k}.first
         if v != '0' || (!dobj.nil? && dobj.value == true)
           @userdatabins << Userdatabin.new({:name => k, :value => v})
         end
-      elsif s.categorical["filter"].index(k)
+      elsif Session.categorical["filter"].index(k)
         #Categorical Features
         v.split("*").each do |cat|
           @userdatacats << Userdatacat.new({:name => k, :value => cat})

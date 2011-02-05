@@ -1,4 +1,4 @@
-<% s = Session.current %>
+<% s = Session %>
 <%= raw stylesheet_link_merged(s.directLayout ? :direct : :assist) %>
 <%# The border and other aspects of the top bar are in the retailer's frame. This just puts the "compare" layout in. %>
 <%= yield %>

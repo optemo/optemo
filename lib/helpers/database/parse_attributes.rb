@@ -5,7 +5,7 @@ module ParseAttributeHelper
   # Creates a record and fills in any fitting attributes
   # from the given attribute hash
   def create_record_from_attributes(atts)
-    s = Session.current
+    s = Session
     atts.reject! { |k,v| v.nil? or $general_ignore_list.include?(k) } # Get rid of nil values, and make sure nothing in the ignore list survives (id especially)
     attributes_for_spec_tables = atts.reject{|k,v| not ($AllSpecs.include?(k))} # These attributes are applicable to the current product_type
     attributes_for_product_activerecord = atts.reject{|k,v| not (Product.column_names.include?(k))} # These attributes are universal (brand, etc.)

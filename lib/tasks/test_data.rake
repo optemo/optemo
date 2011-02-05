@@ -2,9 +2,9 @@ module Check
   
   #def csv_names_row
   #  first =  ['data set', 'total', 'brand', 'model/mpn']
-  #  #second = Session.current.product_type::Features.collect{|x| x[0]}
+  #  #second = Session.product_type::Features.collect{|x| x[0]}
   #  #third = ['itemheight', 'itemwidth', 'itemlength']
-  #  validitable = Session.current.product_type::ValidRanges.keys
+  #  validitable = Session.product_type::ValidRanges.keys
   #  retme = first + validitable + ['priceint']
   #  return retme
   #end
@@ -12,7 +12,7 @@ module Check
   
   def csv_names_row
     first =  ['data set', 'total', 'wacky brand', 'nil brand', 'nil model']
-    validitable = Session.current.product_type::ValidRanges.keys
+    validitable = Session.product_type::ValidRanges.keys
     retme = (first + validitable.collect{|x| ["nils in #{x}", "0s in #{x}", "#{x} out of range"]}).flatten
     return retme
   end
@@ -24,7 +24,7 @@ module Check
     array << count_nils(my_products, 'brand')
     array << count_nils(my_products, 'model')
     
-    Session.current.product_type::ValidRanges.each do |k,v|
+    Session.product_type::ValidRanges.each do |k,v|
       array << count_nils( my_products, k)
       array << count_0_values( my_products, k)
       array << count_not_in_range( my_products, k, v[0], v[1])
@@ -34,7 +34,7 @@ module Check
   end
   
   def check_linkage check_me
-    announce "Checking offering-#{Session.current.product_type} links"
+    announce "Checking offering-#{Session.product_type} links"
     
     unlinked = []
     bad_linked = []
@@ -49,7 +49,7 @@ module Check
           bad_linked << product.id if offering.nil?
           bad_linked << product.id if offering.priceint != product["price#{prefix}"]
           bad_linked << product.id if offering["stock"] != product["instock#{prefix}"]
-          bad_linked << product.id if offering.product_type != Session.current.product_type
+          bad_linked << product.id if offering.product_type != Session.product_type
           bad_linked << product.id if offering.product_id != product.id
         end
       end
@@ -59,11 +59,11 @@ module Check
     bad_linked.uniq!
     
     if unlinked.length > 0
-      log_v "#{unlinked.count} #{Session.current.product_type}s are not linked"
+      log_v "#{unlinked.count} #{Session.product_type}s are not linked"
       announce "First few: #{unlinked[0..5] * ', '} \n --- "
     end
     if bad_linked.length > 0
-      log_v "#{bad_linked.count} #{Session.current.product_type}s are linked incorrectly."
+      log_v "#{bad_linked.count} #{Session.product_type}s are linked incorrectly."
       announce "First few: #{bad_linked[0..5] * ', '} \n --- "
     end
     
@@ -71,7 +71,7 @@ module Check
   end
   
   def check_products my_products
-    announce "Testing #{my_products.count} #{Session.current.product_type}s for validity..."
+    announce "Testing #{my_products.count} #{Session.product_type}s for validity..."
     
     ($reqd_fields || []).each do |rf|
       assert_no_nils my_products, rf
@@ -82,7 +82,7 @@ module Check
     assert_no_nils(my_products, 'brand')
     assert_no_nils(my_products, 'model')
     
-    Session.current.product_type::ValidRanges.each do |k,v|
+    Session.product_type::ValidRanges.each do |k,v|
       assert_within_range( my_products, k, v[0], v[1])
     end
     
@@ -98,22 +98,22 @@ module Check
         end
       end
     end
-    announce "#{bad_mdls.size} #{Session.current.product_type}s have bad id fields"
+    announce "#{bad_mdls.size} #{Session.product_type}s have bad id fields"
     if bad_mdls.size > 0
       announce "Poor models are: #{bad_mdls.keys * ', '}."
     end
     
-    announce "Out of #{Session.current.product_type.count} #{Session.current.product_type}s... "
-    announce " ... #{Session.current.product_type.valid.count} are valid"
-    announce " ... #{(Session.current.product_type.instock | Session.current.product_type.instock_ca).count} are in stock (in CA or US)"
-    announce " ... #{(Session.current.product_type.valid.instock | Session.current.product_type.valid.instock_ca).count} are valid and in stock"
-    announce "Testing #{my_products.count} #{Session.current.product_type}s for wonky data..."
+    announce "Out of #{Session.product_type.count} #{Session.product_type}s... "
+    announce " ... #{Session.product_type.valid.count} are valid"
+    announce " ... #{(Session.product_type.instock | Session.product_type.instock_ca).count} are in stock (in CA or US)"
+    announce " ... #{(Session.product_type.valid.instock | Session.product_type.valid.instock_ca).count} are valid and in stock"
+    announce "Testing #{my_products.count} #{Session.product_type}s for wonky data..."
     
-    announce "Done checking #{Session.current.product_type}s "
+    announce "Done checking #{Session.product_type}s "
   end
   
   def check_pictures checkme
-    announce "Checking pictures for #{Session.current.product_type}s"
+    announce "Checking pictures for #{Session.product_type}s"
     nopix = 0
     noresized = 0
     brokenurls = 0
@@ -132,15 +132,15 @@ module Check
         brokenurls += 1
       end
     end
-    announce "#{nopix} of #{checkme.count} #{Session.current.product_type}s do not have a picture"
-    announce "#{noresized} of #{checkme.count} #{Session.current.product_type}s do not have resized pix"
-    announce "#{nodims} of #{checkme.count} #{Session.current.product_type}s do not have picture dimensions"
-    announce "#{brokenurls} of #{checkme.count} #{Session.current.product_type}s have broken urls"
+    announce "#{nopix} of #{checkme.count} #{Session.product_type}s do not have a picture"
+    announce "#{noresized} of #{checkme.count} #{Session.product_type}s do not have resized pix"
+    announce "#{nodims} of #{checkme.count} #{Session.product_type}s do not have picture dimensions"
+    announce "#{brokenurls} of #{checkme.count} #{Session.product_type}s have broken urls"
     announce "Done checking pictures"
   end
   
   def check_offerings my_offerings
-    timed_log "Start retailer offerings validation for #{Session.current.product_type}"
+    timed_log "Start retailer offerings validation for #{Session.product_type}"
     announce "Testing #{my_offerings.count} RetailerOfferings for validity..."
     
     $reqd_offering_fields.each do |rf|
@@ -169,7 +169,7 @@ module Check
       end
     end
    
-    assert_within_range my_offerings, 'priceint', Session.current.minimumPrice, Session.current.maximumPrice
+    assert_within_range my_offerings, 'priceint', Session.minimumPrice, Session.maximumPrice
     
     announce "Done checking offerings"
   end
@@ -193,8 +193,8 @@ namespace :check do
     #count1=0
     #count2=0
     #Product.all.each do |c|
-    #  ros = RetailerOffering.find_all_by_product_type_and_product_id(Session.current.product_type, c.id)
-    #  rs = [] # Review.find_all_by_product_type_and_product_id(Session.current.product_type, c.id)
+    #  ros = RetailerOffering.find_all_by_product_type_and_product_id(Session.product_type, c.id)
+    #  rs = [] # Review.find_all_by_product_type_and_product_id(Session.product_type, c.id)
     #  
     #  [ros, rs].flatten.each do |ro|
     #    lid = ro.local_id
@@ -215,10 +215,10 @@ namespace :check do
     
     # Check link consistency 2
     count=0
-    RetailerOffering.find_all_by_product_type(Session.current.product_type).each do |ro|
+    RetailerOffering.find_all_by_product_type(Session.product_type).each do |ro|
       rid = ro.retailer_id
       lid = ro.local_id
-      rs = Review.find_all_by_product_type_and_local_id(Session.current.product_type, lid)
+      rs = Review.find_all_by_product_type_and_local_id(Session.product_type, lid)
       pids_rside = rs.collect{|x| x.product_id}.uniq
       pids_roside = [ro.product_id]
       if pids_rside != pids_roside
@@ -229,19 +229,19 @@ namespace :check do
     puts "#{count} inconsistent links..."
     
     count = 0
-    RetailerOffering.find_all_by_product_type(Session.current.product_type).each do |ro|
-      unless Session.current.product_type.exists?(ro.product_id) or ro.product_id.nil?
+    RetailerOffering.find_all_by_product_type(Session.product_type).each do |ro|
+      unless Session.product_type.exists?(ro.product_id) or ro.product_id.nil?
         count += 1
-        puts "#{ro.id} is a dangler -- #{Session.current.product_type} #{ro.product_id} doesnt exist"
+        puts "#{ro.id} is a dangler -- #{Session.product_type} #{ro.product_id} doesnt exist"
       end
     end
     puts "#{count} offerings are danglers"
     
     count = 0
-    Review.find_all_by_product_type(Session.current.product_type).each do |ro|
-      unless Session.current.product_type.exists?(ro.product_id) or ro.product_id.nil?
+    Review.find_all_by_product_type(Session.product_type).each do |ro|
+      unless Session.product_type.exists?(ro.product_id) or ro.product_id.nil?
         count += 1
-        puts "#{ro.id} is a dangler -- #{Session.current.product_type} #{ro.product_id} doesnt exist"
+        puts "#{ro.id} is a dangler -- #{Session.product_type} #{ro.product_id} doesnt exist"
       end
     end
     puts "#{count} reviews are danglers"
@@ -342,7 +342,7 @@ namespace :check do
     config   = Rails::Configuration.new
     database = config.database_configuration[Rails.env]["database"]
     
-    @logfile = File.open("./log/check/#{database}_#{Session.current.product_type}.csv", 'w')
+    @logfile = File.open("./log/check/#{database}_#{Session.product_type}.csv", 'w')
     @logfile.puts(csv_names_row*", ")
     
     x = csv_row Product.all, 'all'
@@ -365,11 +365,11 @@ namespace :check do
     include ImageHelper
     include ImageValidator
     
-    @logfile = File.open("./log/check/#{Session.current.product_type}.log", 'a+')
+    @logfile = File.open("./log/check/#{Session.product_type}.log", 'a+')
     timed_log 'Start camera-specific validation'
     my_products = Product.all
-    my_valid_products = Session.current.product_type.valid.instock  | Session.current.product_type.valid.instock_ca
-    my_offerings = RetailerOffering.find_all_by_product_type_and_stock(Session.current.product_type, true)
+    my_valid_products = Session.product_type.valid.instock  | Session.product_type.valid.instock_ca
+    my_offerings = RetailerOffering.find_all_by_product_type_and_stock(Session.product_type, true)
     
     check_linkage(my_products)
     
@@ -385,7 +385,7 @@ namespace :check do
     include ImageHelper
     include ImageValidator
     
-    checkme = Session.current.product_type.instock | Session.current.product_type.instock_ca
+    checkme = Session.product_type.instock | Session.product_type.instock_ca
     check_pictures checkme
   end
   

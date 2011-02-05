@@ -1,7 +1,7 @@
 class BoostexterRule < ActiveRecord::Base
   # This is a good idea, but right now the boostexter_combined_rules only works for cameras (March 23). Update this in future.
   def self.bycluster(cluster_id)
-    CachingMemcached.cache_lookup("BoostexterRules#{Session.current.product_type}#{cluster_id}") do
+    CachingMemcached.cache_lookup("BoostexterRules#{Session.product_type}#{cluster_id}") do
       select("fieldname, yaml_repr").order("weight DESC").where(:cluster_id => cluster_id)
     end
   end
@@ -9,7 +9,7 @@ class BoostexterRule < ActiveRecord::Base
   def self.clusterLabels(clusters)
     #return [["average"]]*clusters.size
     return if clusters.empty?
-    s = Session.current
+    s = Session
     cluster_ids = clusters.map(&:id).join(",")
     selected_features = (s.search.userdataconts.map{|c| c.name+c.min.to_s+c.max.to_s}+s.search.userdatabins.map{|c| c.name+c.value.to_s}+s.search.userdatacats.map{|c| c.name+c.value}).hash
     CachingMemcached.cache_lookup("#{s.product_type}Taglines#{cluster_ids}#{selected_features}") do
@@ -64,8 +64,8 @@ class BoostexterRule < ActiveRecord::Base
   end
   
   def self.compute_quartile(feat,product_ids)
-    q25offset = (Session.current.search.products_size / 4.0).floor
-    q75offset = ((Session.current.search.products_size * 3) / 4.0).floor
+    q25offset = (Session.search.products_size / 4.0).floor
+    q75offset = ((Session.search.products_size * 3) / 4.0).floor
     q25 = ContSpec.select("value").offset(q25offset).order("value").where(["product_id IN (?) and name = ?", product_ids, feat]).first.value
     q75 = ContSpec.select("value").offset(q75offset).order("value").where(["product_id IN (?) and name = ?", product_ids, feat]).first.value
     [q25,q75]

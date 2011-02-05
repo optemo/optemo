@@ -156,6 +156,6 @@ namespace :scrape_grabber do
     include CartridgeLib
     include Inkgrabber
     
-    Session.current.product_type = Cartridge
+    Session.product_type = Cartridge
   end
 end

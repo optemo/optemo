@@ -4,7 +4,7 @@ class DirectComparisonController < ApplicationController
   layout false
     
   def index
-    @s = Session.current
+    @s = Session
     # These IDs come straight from id=#opt_savedproducts on the client side (comma-separated)
     @products = params[:id].split(",").map{|id| Product.cached(id)}
     # Calculate best value for each feature, to display as bold

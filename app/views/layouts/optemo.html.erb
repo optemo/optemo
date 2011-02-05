@@ -1,13 +1,13 @@
-<% s = Session.current %>	
+<% s = Session %>	
 <%= render :partial => "html_and_head", :locals => {:s => s} %>
 <body>
 <div id="mycenter">
-	<%= case Session.current.product_type 
+	<%= case Session.product_type 
 	  when "printer_lph" then render :partial => "lph_header" 
 	  when /demo|_us$/ then render :partial => "demo_header"
 	  end
 	%>
-<% if Session.current.product_type == "printer_lph" %>
+<% if Session.product_type == "printer_lph" %>
 	<div class="watermark">Powered by <%= link_to 'Optemo', 'http://optemo.com', :class => "popup" %></div>
 	<div id="bottomlinks">
 	   <%= link_to 'Home', '/' %> |
