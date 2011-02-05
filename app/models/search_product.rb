@@ -97,7 +97,7 @@ class SearchProduct < ActiveRecord::Base
     def cats(mycats)
       res = []
       mycats.each_with_index do |group, i|
-        res << "(" + group.map{|cs| "(cat_specs#{i}.value = '#{cs.value}' and cat_specs#{i}.name = '#{cs.name}')"}.join(" OR ") + ")"
+        res << ("(" + group.map{|cs| "(cat_specs#{i}.value = '#{cs.value}' and cat_specs#{i}.name = '#{cs.name}')"}.join(" OR ") + ")")
       end
       where(res.join(" and "))
     end
