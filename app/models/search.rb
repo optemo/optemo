@@ -292,7 +292,7 @@ class Search < ActiveRecord::Base
     #Set session id
     self.session_id = Session.id
     unless p["action_type"] == "initial" #Exception for initial clusters
-      old_search = Search.find_by_id_and_session_id(p["search_hist"],s.id) if p["search_hist"]
+      old_search = Search.find_by_id_and_session_id(p["search_hist"],Session.id) if p["search_hist"]
       old_search = Session.lastsearch if old_search.nil?
       self.parent_id = old_search.id
     end

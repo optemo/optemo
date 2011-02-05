@@ -371,7 +371,6 @@ def self.compute(number_clusters,p_ids)
     utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
     util_tmp = utilitylist.sort{|x,y| y <=> x }    
     ordered_list = util_tmp.map{|u| utilitylist.index(u)}
-    debugger
     return ordered_list + ordered_list
   end  
 
