@@ -15,7 +15,7 @@ require 'inline'
         mins << min
         maxes << max
       end
-      specs = Product.specs
+      specs = Product.filterspecs
       res = distribution_c(specs.flatten, specs.size, specs.first.size, num_buckets, mins, maxes) #unless $res
       Session.continuous["filter"].each_with_index do |f, i|   
         t = i*(2+num_buckets) 

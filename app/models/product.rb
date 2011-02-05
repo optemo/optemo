@@ -36,7 +36,12 @@ class Product < ActiveRecord::Base
     chars.sum*-1
   end
   
-  #Currently only does continuous but others should be added
+  def self.filterspecs
+    st = []
+    Session.continuous["filter"].each{|f| st << ContSpec.by_feat(f)}
+    st
+  end
+  
   def self.specs(p_ids = nil)
     st = []
     Session.continuous["cluster"].each{|f| st << ContSpec.by_feat(f)}
