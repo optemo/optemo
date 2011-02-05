@@ -1,22 +1,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-  <title><%= title %></title>
-	<% if s.mobileView %>
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+<title><%= title %></title>
+<% if s.mobileView %>
 	<meta name="viewport" content="width=device-width, user-scalable=no, target-densitydpi=device-dpi" />
 	<meta name="HandheldFriendly" content="True" />
-    <% end %>
-  <meta name="description" content="<%= describe %>" />
-<% if s.product_type["printer"] %>
-<meta name="keywords" content="laser, printer, printers, buy, prices, price comparison, reviews, recommendation, HP, Canon, Xerox" />
-<meta name="classification" content="Laser Printers" />
-<% else # cameras, or whatever other products are needed %>
-<meta name="keywords" content="camera" /> <!-- get this from the BB branch -->
-<meta name="classification" content="Digital Cameras" />
 <% end %>
+<meta name="description" content="<%= describe %>" />
+<meta name="keywords" content="<%=t "#{Session.current.product_type}.keywords" %>" />
+<meta name="classification" content="<%=t "#{Session.current.product_type}.classification" %>" />
 <meta name="robots" content="index,all,follow" />
 <meta name="rating" content="General" />
 <meta name="fragment" content="!">
