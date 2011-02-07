@@ -62,7 +62,7 @@ module CompareHelper
   end
   
   def navtitle
-    s = Session.current
+    s = Session
 		[
 		  s.search.products_size, 
 		  (s.search.products_size > 1) ? t("#{s.product_type}.title-plural") : t("#{s.product_type}.title"),
@@ -73,7 +73,7 @@ module CompareHelper
   
   def groupDesc(group, i)
     return "Description"
-    s = Session.current
+    s = Session
     if s.relativeDescriptions
       descs = s.search.boostexterClusterDescriptions[i].map{|d|t("products."+d, :default => d)}
       if s.directLayout
@@ -113,11 +113,11 @@ module CompareHelper
  end
  
   def chosencats(feat)
-    Session.current.search.userdatacats.select{|d|d.name == feat}.map(&:value)
+    Session.search.userdatacats.select{|d|d.name == feat}.map(&:value)
   end
   
   def featuretext(product_id)
-    s = Session.current
+    s = Session
     out = []
     s.categorical["desc"].each do |feat|
       out << CatSpec.cache_all(product_id)[feat]
@@ -133,7 +133,7 @@ module CompareHelper
   end
 
   def columntext(showgroups)
-    if Session.current.directLayout
+    if Session.directLayout
       if showgroups
         ['Choose Group', 'Best Pick', 'Cheapest Pick']
       else
@@ -147,7 +147,7 @@ module CompareHelper
   def popuptext(number, text, nexttext="Next &gt;&gt;")
     "<div id='popupTour#{number}' class='popupTour'>" + \
     link_to(image_tag('close.png'), "#", :class => 'deleteX') + \
-    	"<h1>Optemo " + (Session.current.directLayout ? 'Direct' : 'Assist').html_safe + " Tour</h1>
+    	"<h1>Optemo " + (Session.directLayout ? 'Direct' : 'Assist').html_safe + " Tour</h1>
     	<p>#{text}
     		<br/><br/>
     		<a href='#' class='popupnextbutton'>#{nexttext}</a>
@@ -159,6 +159,12 @@ module CompareHelper
 
   # This function should be deprecated with img urls coming from the cat_specs table now.
   def imgurl(product, size)
+    case size
+    when 'm'
+      return "http://www.builddirect.com" + CGI.unescapeHTML(product.imgmurl.to_s) if Session.product_type == "flooring_builddirect"
+    when 's'
+      return "http://www.builddirect.com" + CGI.unescapeHTML(product.imgsurl.to_s) if Session.product_type == "flooring_builddirect"
+    end
     CGI.unescapeHTML(CatSpec.cache_all(product.id)["img" + size + "url"].to_s) # No need for constructing image URLs manually, they are all in the database now
   end
   

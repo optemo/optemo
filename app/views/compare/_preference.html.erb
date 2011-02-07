@@ -1,4 +1,4 @@
-<% Session.current.continuous["filter"].each_index do |i| %>
+<% Session.continuous["filter"].each_index do |i| %>
 	<%= render :partial => 'preferenceSlider', 
-	:locals => {:val => Session.current.continuous["filter"][i]} %>
+	:locals => {:val => Session.continuous["filter"][i]} %>
 <% end %>

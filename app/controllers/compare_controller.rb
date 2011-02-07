@@ -6,7 +6,7 @@ class CompareController < ApplicationController
     # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
     if Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
       hist = params[:hist].gsub(/\D/,'').to_i if params[:hist]
-      search_history = Session.current.searches if hist && params[:page].nil?
+      search_history = Session.searches if hist && params[:page].nil?
       if params[:page]
         classVariables(Search.create({:page => params[:page], :sortby => params[:sortby], "action_type" => "nextpage"}))
       elsif search_history && hist <= search_history.length && hist > 0
@@ -33,7 +33,7 @@ class CompareController < ApplicationController
   #For mobile layout
   def filtering
     #Choose filter options
-    classVariables(Session.current.searches.last)
+    classVariables(Session.searches.last)
     render 'mobile-filters', :layout=>'filters'
   end
   
@@ -56,9 +56,9 @@ class CompareController < ApplicationController
       #The search should only be able to fail from bad keywords, as empty searches can't be selected
       if !params[:myfilter][:search].blank? && !Search.keyword(params[:myfilter][:search])
         #Rollback
-        classVariables(Session.current.lastsearch)
+        classVariables(Session.lastsearch)
         @errortype = "filter"
-        if Session.current.mobileView
+        if Session.mobileView
           render 'error'
         else 
           render 'error', :layout => false
@@ -81,13 +81,13 @@ class CompareController < ApplicationController
     @product = Product.cached(id)
     @allspecs = ContSpec.cache_all(id).merge(CatSpec.cache_all(id)).merge(BinSpec.cache_all(id)).merge(TextSpec.cache_all(id))
     @sibling_ids_and_imgsurls = ProductSiblings.cache_ids_and_imgsurl(id, "imgsurl")
-    @s = Session.current
+    @s = Session
 
     respond_to do |format|
       format.html { 
                     if @plain 
                       render :layout => false
-                    elsif Session.current.mobileView
+                    elsif Session.mobileView
                       render 'showsimple'
                     else # Default is with layout as particular to either mobile view or screen view in choose_layout
                       render 'show' # What did "render :http => ..." used to do? confusion
@@ -103,12 +103,12 @@ class CompareController < ApplicationController
     if params[:embedding]
       'embedding'
     else
-      Session.current.mobileView ? 'mobile' : 'optemo'
+      Session.mobileView ? 'mobile' : 'optemo'
     end
   end
   
   def classVariables(search)
-    @s = Session.current
+    @s = Session
     @s.search = search
     if @s.directLayout
       @products = search.products.paginate :page => search.page, :per_page => 10
@@ -119,7 +119,7 @@ class CompareController < ApplicationController
     if params[:ajax]
       render 'ajax', :layout => false
     else
-      if Session.current.mobileView
+      if Session.mobileView
         classVariables(Search.create({"page" => params[:page], "action_type" => "initial"}))
         render 'products'
       else

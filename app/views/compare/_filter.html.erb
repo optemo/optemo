@@ -14,7 +14,7 @@
   	<div class='feature'>
   		<div class='label' data-position="<%= i %>">
   			<%= render :partial => 'desc', :locals => {:feat => feat} %>
-  			<%= link_to t('products.' + feat), "#", :rel => "nofollow" %>
+  			<%= link_to t("#{Session.product_type}.specs.#{feat}.name"), "#", :rel => "nofollow" %>
   			<% if @s.directLayout %>
   				<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat %>" data-position="<%= i %>">See Groups</div>
   			<% end %>
@@ -62,7 +62,7 @@
   			<%= render :partial => 'desc', :locals => {:feat => feat} %>
   			<% dobj = Userdatabin.find_by_search_id_and_name(@s.search.id,feat) %>
   			<%= check_box('myfilter', feat, {:checked => dobj.nil? || dobj.value == false ? false : 'checked', :class => 'binary_filter'})%>
-  			<%= link_to t('products.' + feat), "#", :rel => "nofollow" %>
+  			<%= link_to t("#{Session.product_type}.specs.#{feat}.name"), "#", :rel => "nofollow" %>
 			<%= " ("+SearchProduct.bin_count(feat).to_s+")" %>
   		</div>
   	</div>

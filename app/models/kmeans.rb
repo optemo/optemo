@@ -341,28 +341,31 @@ end
 
 # C kmeans function   
 def self.compute(number_clusters,p_ids)
-
+ 
+ begin   
   s = p_ids.size 
   factors =[]
-  Session.current.continuous["cluster"].each do |f| 
+  Session.continuous["cluster"].each do |f| 
     f_specs = ContSpec.by_feat(f+"_factor")
-    raise ValidationError, "There are no #{f}_factors for #{Session.current.product_type}" unless f_specs
+    raise ValidationError, "There are no #{f}_factors for #{Session.product_type}" unless f_specs
     factors << f_specs
   end
   
-  performance_factors = ContSpec.by_feat("performance_factor")
-  raise ValidationError, "the number of performance scores is different from the number of products" unless performance_factors.size == factors.first.size
-  factors << performance_factors
+  #performance_factors = ContSpec.by_feat("performance_factor")
+  #raise ValidationError, "the number of performance scores is different from the number of products" unless performance_factors.size == factors.first.size
+  #factors << performance_factors
+  factors << [1]*factors.first.size
   
   ft = factors.transpose
-  dim_cont = Session.current.continuous["cluster"].size
-  dim_bin = Session.current.binary["cluster"].size
-  dim_cat = Session.current.categorical["cluster"].size
+  dim_cont = Session.continuous["cluster"].size
+  dim_bin = Session.binary["cluster"].size
+  dim_cat = Session.categorical["cluster"].size
   weights = self.set_weights(dim_cont, dim_bin, dim_cat)
   
   # don't need to cluster if number of products is less than clusters
 
   if (s<number_clusters)
+    
     utilitylist = weighted_ft(ft, weights).map{|f| f. inject(:+)}
     #if utilities are the same
     utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
@@ -370,13 +373,12 @@ def self.compute(number_clusters,p_ids)
     ordered_list = util_tmp.map{|u| utilitylist.index(u)}
     return ordered_list + ordered_list
   end  
-  
-  begin
+
     st = Product.specs(p_ids)
     cont_specs = st[0...dim_cont].transpose
     bin_specs = st[dim_cont...dim_cont+dim_bin].transpose
     cat_specs = st[dim_cont+dim_bin...st.size].transpose
-    performance_weight = 10
+    performance_weight = 0.1
     weights = weights << performance_weight
     weight_dim = dim_cont+dim_bin+dim_cat+1
     # dimension of each category - for example how many different brands 
@@ -414,9 +416,9 @@ end
 
 def self.set_weights(dim_cont, dim_bin, dim_cat)
   dim = dim_cont+dim_bin+dim_cat
-  if Session.current.search.sortby=='Price' # price is selected as prefered order
+  if Session.search.sortby=='Price' # price is selected as prefered order
     weights = [0.05/(dim-1)]*dim  
-    weights[Session.current.continuous["cluster"].index('price')] = 0.95    
+    weights[Session.continuous["cluster"].index('price')] = 0.95    
   else
     weights = [1.0/dim]*dim
   end
@@ -494,8 +496,8 @@ end
     specs = specs.transpose
     #cont_size=3
     #cats = ["brand"]
-    cont_size = Session.current.continous["filter"].size
-    Session.current.categorical["filter"].each_index do |i|
+    cont_size = Session.continous["filter"].size
+    Session.categorical["filter"].each_index do |i|
       vals = specs[i+cont_size].uniq
       t=0
       specs[i+cont_size].each do |v| 
