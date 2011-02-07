@@ -880,7 +880,7 @@ optemo_module = (function (my){
     	// Add to cart buy link
     	$('.buylink, .buyimg').live("click", function(){
     		var buyme_id = $(this).attr('product');
-    		my.trackPage('goals/addtocart', {'picked_product' : buyme_id});
+    		my.trackPage('goals/addtocart', {'picked_product' : buyme_id, 'filter_type' : 'addtocart'});
     	});
 
         // Choose a grouping via group button rather than drop-down (effect is the same as the select boxes)
