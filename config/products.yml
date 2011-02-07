@@ -538,40 +538,33 @@ ast0.optemo.com:
         used_for: [boost, filter, show]
     
 localhost:
-    product_type: printer_lph
+    product_type: camera_bestbuy
     layout: assist
-    site_id: 10 # See Piwik at analytics.optemo.com for details
+    site_id: 12 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [filter, cluster, show]
         prefdir: -1
         min: 1
         max: 10000
-    ppm:
+    maxresolution: 
         feature_type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
-    resolutionmax:
+        used_for: [desc, filter, cluster, show]
+    screensize:
         feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-    resolution:
-        feature_type: Categorical
-        used_for: [showList]
-    paperinput:
+        used_for: [desc, filter, cluster, show]
+    opticalzoom:
         feature_type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
-    itemwidth:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
-        prefdir: -1
-    printserver:
-        feature_type: Binary
-        used_for: [boost, filter, show]
-    scanner:
-        feature_type: Binary
-        used_for: [boost, filter, show]
+        used_for: [desc, filter, cluster, show]
     brand:
         feature_type: Categorical
-        used_for: [boost, filter, show]
+        used_for: [show, filter, cluster]
+    color:
+        feature_type: Categorical
+        used_for: [show, filter]
+    waterproof:
+        feature_type: Binary
+        used_for: [show, filter]
 
 printers:
     product_type: printer_us
