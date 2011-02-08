@@ -44,7 +44,7 @@ namespace :fix_data do
       if sps.length != 0
         retailer_ok_sps = sps.reject{|x| !retailerids.include?(x.retailer_id)}
         if retailer_ok_sps.length == 0
-          puts "Oops -- no scraped #{Session.current.product_type} from #{$retailers.first.name} for #{pid}"
+          puts "Oops -- no scraped #{Session.product_type} from #{$retailers.first.name} for #{pid}"
         end
         
         retailer_ok_sps.each do |retailer_ok_sp|
@@ -64,7 +64,7 @@ namespace :fix_data do
           puts "#{local_id} has #{which_fields[0]} #{debug[which_fields[0]] || 'nil'}"    
         end
       end
-      p = Product.find(pid, :conditions => ["product_type=?",Session.current.product_type])
+      p = Product.find(pid, :conditions => ["product_type=?",Session.product_type])
       which_fields.each do |fld|
         p.update_attribute(fld, nil)
       end
@@ -72,7 +72,7 @@ namespace :fix_data do
       avgs.each{|name,val| parse_and_set_attribute(name, val, p) }
       # This could be made more efficient with a Product.transaction, but the loop is based around pid rather than full Product activerecords at the moment.
       p.save
-      puts "Done #{pid}. New #{which_fields[0]} #{Product.find(pid, :conditions => ["product_type=?",Session.current.product_type])[which_fields[0]]}"
+      puts "Done #{pid}. New #{which_fields[0]} #{Product.find(pid, :conditions => ["product_type=?",Session.product_type])[which_fields[0]]}"
     end
     puts "Done"
   end
@@ -84,7 +84,7 @@ namespace :fix_data do
     require 'helper_libs'
     
     what = Review
-    what.find_all_by_product_type(Session.current.product_type).each do |ro|
+    what.find_all_by_product_type(Session.product_type).each do |ro|
       unless Product.exists?(ro.product_id) or ro.product_id.nil?
         ro.update_attribute('product_id', nil)
       end
@@ -94,10 +94,10 @@ namespace :fix_data do
   
   task :links_2 => ['data:cam_init'] do 
     
-    ptype = Session.current.product_type.to_s
+    ptype = Session.product_type.to_s
     
     what = Review
-    #what.find_all_by_product_type(Session.current.product_type).each do |ro|
+    #what.find_all_by_product_type(Session.product_type).each do |ro|
     #  ro.update_attribute('product_id', nil)
     #end
     msgs = []
@@ -105,7 +105,7 @@ namespace :fix_data do
       lid = sc.local_id
       rid = sc.retailer_id
       pid = sc.product_id
-      #unless pid.nil? or Session.current.product_type.exists?(pid)
+      #unless pid.nil? or Session.product_type.exists?(pid)
       #  debugger
       #  0
       ##  sc.update_attribute('product_id', nil)
@@ -116,8 +116,8 @@ namespace :fix_data do
         ro_ids.each do |ro_id|
           ro = Review.find(ro_id)
           if( ro.product_id and ro.product_id != pid and Product.exists?(ro.product_id))
-            keep = Product.find(pid, :conditions => ["product_type=?",Session.current.product_type])
-            other = Product.find(ro.product_id, :conditions => ["product_type=?",Session.current.product_type])
+            keep = Product.find(pid, :conditions => ["product_type=?",Session.product_type])
+            other = Product.find(ro.product_id, :conditions => ["product_type=?",Session.product_type])
             if other
               if(keep.title == other.title)# or keep.model.include?(other.model) or other.model.include?(keep.model))
                 puts keep.title
@@ -141,10 +141,10 @@ namespace :fix_data do
     
     $scrapedmodel = @@scrapedmodel
     
-    ptype = Session.current.product_type.to_s
+    ptype = Session.product_type.to_s
     
     what = Review
-    #what.find_all_by_product_type(Session.current.product_type).each do |ro|
+    #what.find_all_by_product_type(Session.product_type).each do |ro|
     #  ro.update_attribute('product_id', nil)
     #end
     msgs = []
@@ -162,12 +162,12 @@ namespace :fix_data do
         ros = what.find_all_by_product_type_and_local_id_and_retailer_id(ptype,lid,rid)
         ros.each do |ro|
           if ro.product_id != pid
-            product = Product.find(pid, :conditions => ["product_type=?",Session.current.product_type])
-            retail_offering_product = Product.find(ro.product_id, :conditions => ["product_type=?",Session.current.product_type])
+            product = Product.find(pid, :conditions => ["product_type=?",Session.product_type])
+            retail_offering_product = Product.find(ro.product_id, :conditions => ["product_type=?",Session.product_type])
             if (product.title == retail_offering_product.title or retail_offering_product.model.include?(product.model))
               msgs << "Duplicate: #{pid} and #{ro.product_id}"
             else
-              msgs << "#{ro.class.name} matched to #{ro.product_id}, which #{Session.current.product_type.exists?(ro.product_id) ? "exists" : "doesn't exist"}"
+              msgs << "#{ro.class.name} matched to #{ro.product_id}, which #{Session.product_type.exists?(ro.product_id) ? "exists" : "doesn't exist"}"
               msgs << "Want to change to #{pid}"
               #debugger
               #ro.update_attribute('product_id', pid)
@@ -208,7 +208,7 @@ namespace :fix_data do
       modelsb4 = modelsb4.sort{|a,b| likely_model_name(b) <=> likely_model_name(a) }.reject{|x| likely_model_name(x) < 2 }
       
       
-      modelsafter = clean_models( Session.current.product_type, atts['brand'], \
+      modelsafter = clean_models( Session.product_type, atts['brand'], \
             modelsb4, atts['title'],$brands, $series, $descriptors ).uniq.compact.reject(&:blank?).reject{|x| 
               likely_model_name(x) < 2 }.sort{|a,b| 
               likely_model_name(b) <=> likely_model_name(a)
@@ -323,7 +323,7 @@ namespace :fix_data do
     $series = @@series
     $descriptors = @@descriptors
     
-    allros = RetailerOffering.find_all_by_product_type(Session.current.product_type).reject{ |y|
+    allros = RetailerOffering.find_all_by_product_type(Session.product_type).reject{ |y|
       y.local_id.nil?
     }.collect{|x| x.id}
     
@@ -361,7 +361,7 @@ namespace :fix_data do
       revu = Review.find(revu_id)
       
       next if revu.product_id.nil?
-      next if revu.product_type != Session.current.product_type
+      next if revu.product_type != Session.product_type
       
       unless Camera.exists?(revu.product_id)
         #debugger if revu.product_type != 'Camera'
@@ -378,7 +378,7 @@ namespace :fix_data do
       #lid =  revu['local_id']
       #sms = $scrapedmodel.find_all_by_local_id(lid)
       #sms.each do |sm|
-        #puts "#{revu.id} matches #{Session.current.product_type} #{sm.product_id}, #{Session.current.product_type.find(sm.product_id).title}"
+        #puts "#{revu.id} matches #{Session.product_type} #{sm.product_id}, #{Session.product_type.find(sm.product_id).title}"
         
       #end
     end
@@ -469,10 +469,10 @@ namespace :fix_data do
   
   task :rm_stupid_prices do
     stupid = []
-    ros  = RetailerOffering.find_all_by_product_type(Session.current.product_type)
+    ros  = RetailerOffering.find_all_by_product_type(Session.product_type)
   
     ros.each do |ro|
-      stupid << ro.id if ro.priceint and (ro['priceint'] > Session.current.maximumPrice)
+      stupid << ro.id if ro.priceint and (ro['priceint'] > Session.maximumPrice)
     end
     activerecords_to_save = []
     stupid.each do |x|

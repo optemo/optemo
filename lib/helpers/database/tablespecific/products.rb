@@ -31,7 +31,7 @@ module ProductsHelper
   # just itself; and 4,5,and 6 are also the same product.
   # OK to used for any db model that can be compared 
   # by the brand, model, and mpn attributes.
-  def get_matching_sets recs=Product.find(:all, :conditions => ["product_type=?",Session.current.product_type]), series=[]
+  def get_matching_sets recs=Product.find(:all, :conditions => ["product_type=?",Session.product_type]), series=[]
      matchingsets = []
      # Check other get_matching_sets
      recs.each do |rec|

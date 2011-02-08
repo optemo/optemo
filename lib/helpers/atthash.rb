@@ -65,7 +65,7 @@ module AtthashHelper
   def clean_property_names atts
     clean_atts = {}.merge(atts)
     atts.each do |x,y| 
-      props = get_property_names(x, Session.current.product_type)
+      props = get_property_names(x, Session.product_type)
       props.uniq.each do |property|
         clean_atts[property]= y.to_s.strip  + @@sep + "#{clean_atts[property] || ''}" if y
       end 
@@ -75,7 +75,7 @@ module AtthashHelper
   
   # Returns the first matching property or
   # nil if none found.
-  def get_property_name str_dirty, model=Session.current.product_type, ignorelist=[]
+  def get_property_name str_dirty, model=Session.product_type, ignorelist=[]
     paramnames = get_property_names(str_dirty, model)
     goodparamnames = paramnames.reject{|x| ignorelist.include?(x)}
     goodparamnames.length ? goodparamnames[0] : nil # TODO get most/least specific?
@@ -86,8 +86,8 @@ module AtthashHelper
   # Example: 
   # %> get_property_names('colour ppm', Printer)
   # =>['ppm', 'colorprinter']
-  def get_property_names str_dirty, model=Session.current.product_type
-    s = Session.current
+  def get_property_names str_dirty, model=Session.product_type
+    s = Session
     str = just_alphanumeric(str_dirty)
     
     param_names= []

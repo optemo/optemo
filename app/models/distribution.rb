@@ -3,21 +3,21 @@ require 'inline'
 
   def computeDist
     dist = {}
-    num_buckets = 21; #Must be greater than 0
+    num_buckets = 24; #Must be greater than 0
     mins = []
     maxes = []
     
     begin
-      Session.current.continuous["filter"].each do |f| 
+      Session.continuous["filter"].each do |f| 
         min,max = ContSpec.allMinMax(f)
         #Max must be larger or equal to min
         raise ValidationError unless max >= min
         mins << min
         maxes << max
       end
-      specs = Product.specs
+      specs = Product.filterspecs.transpose
       res = distribution_c(specs.flatten, specs.size, specs.first.size, num_buckets, mins, maxes) #unless $res
-      Session.current.continuous["filter"].each_with_index do |f, i|   
+      Session.continuous["filter"].each_with_index do |f, i|   
         t = i*(2+num_buckets) 
         dist[f] = [[res[t], res[t+1]], res[(t+2)...(i+1)*(2+num_buckets)]]
       end
@@ -143,7 +143,7 @@ require 'inline'
   end  
   def ruby
     dist = {}
-    Session.current.continuous["filter"].each{|f| dist[f] = dist_each(f)}
+    Session.continuous["filter"].each{|f| dist[f] = dist_each(f)}
     dist
   end
 end

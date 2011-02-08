@@ -13,6 +13,11 @@
 //            Navigator Bar             //
 //--------------------------------------*/
 
+div#main {
+	width: 727px;
+	margin-left: 190px;
+}
+
 #columnheader {
     font-size: 0.8em;
     padding-top: 4px;
@@ -209,10 +214,6 @@ img.productimg {
     position: absolute;
     top: 0;
     right: 0;
-}
-
-.selectboxfilter {
-	width:100%;
 }
 
 /*--------------------------------------//

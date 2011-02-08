@@ -1,86 +1,103 @@
 <% if @plain %>
-<div class="poptitle"><%=t 'products.show.title'%></div>
+<div class="poptitle"><div id="tab_header">
+<ul data-sku='<%= @product.sku %>'>
+	<li id="tab_selected"><a href="#" class="fetch_bestbuy_info">Product Info</a></li>
+	<li><a href="#" class="fetch_bestbuy_specs">Specs</a></li>
+	<li><a href="#" class="fetch_bestbuy_reviews">Reviews</a></li>
+	<li><a href="#" class="fetch_bestbuy_accessories">Accessories</a></li>
+</ul>
+</div>
+<%= link_to image_tag("closepopup#{fr?}_white.gif"), "close", :class => "close"%>
+</div>
 <% else %>
 <% self.title = "#{@product.title}" %>
 <div class="content">
 <a href="/" id="browseother">Browse Other Printers</a>
 <% end %>
-	<h1><%= URI.decode(@product.title) %></h1>
-	<div id="image">
-		<% if @s.product_type == "flooring_builddirect" || @s.product_type == "Laptop" || FileTest.exist?("#{Rails.root}/public" + @imglurl) %>
-			<%= link_to image_tag(@imglurl), @imglurl, :class => "popup" %>
-		<% else %>
-			<br><br>No Image Available
-		<% end %>
-	</div>
-	<div id="features">
-	<ul>
-		<% (@s.continuous["show"]+@s.categorical["show"]+@s.binary["show"]).each do |f_name| %>
+	<h1><%= @product.title %></h1>
+	
+	       
+	<h5 style="margin: 0"><%= "Webcode: #{@product.sku}, Model: #{@product.mpn}" %></h5>
+    <div id="tabbed_content">
+    	<div id="galleria" style="width: 500px; height: 300px;">
+    		<!-- What follows is a Best Buy-specific hack, put in to get "additional media" out prior to a consultation meeting with them
+
+    	    on whether or not we should invest the time to significantly complicate Firehose -->
+    	    <% if @s.product_type == "camera_bestbuy" %>
+				
+    	        <% additional_media = ActiveSupport::JSON.decode(@allspecs["additionalMedia"].gsub("=>",":")) %>
+    	        <% additional_media.each do |a| %>
+    	            <%= image_tag("http://www.bestbuy.ca" + a["large"].gsub("500x500", "300x300"), :size => "300x300", :alt => "")  if a["large"] %>
+    	        <% end %>
+             
+									
+    		<% elsif FileTest.exist?("#{Rails.root}/public" + @allspecs["imglurl"]) %>
+    			<%= image_tag(@allspecs["imglurl"], :size => "300x300", :alt => "") %>
+    		<% else %>
+    			<br><br>No Image Available
+    		<% end %>
+    	</div>
+	
+	 <% if @s.product_type == "camera_bestbuy" && !(@sibling_ids_and_imgsurls.blank?) %>
+		<div style="display:none;" id="bestbuy_sibling_images"><span style="line-height:47px; float:left">Other Colors: &nbsp;</span>
+			<% @sibling_ids_and_imgsurls.sort{|p| p.sibling_id}.each do |sib_id_and_imgsurl| %>  
+    			<% unless sib_id_and_imgsurl.sibling_id == @product.id %>
+    			    <% sib_product = Product.cached(sib_id_and_imgsurl.sibling_id)%> 
+    			    <%= link_to product_path(:name => sib_product.descurl, :id => sib_product.id), :'data-id' => sib_product.id, :class => "easylink", :title => "Click for product specifications" do %>
+    				    <%= image_tag(sib_id_and_imgsurl.value, {:width => "40px", :height => "40px"}) %>
+				    <% end %>
+    			<% else %>
+    			   <%= image_tag(@allspecs["imgsurl"])%>
+    			<% end %>
+			<% end %>
+		</div>
+	 <%end%>	
+		
+    	<% save = [] %>
+		<% (@s.continuous["show"]+@s.categorical["show"]+@s.binary["show"]).each_with_index do |f_name, i| %>
+		    <% next if f_name == "price" %>
 			<% f = @allspecs[f_name] %>
 			<% if !f.nil? %>
-				<li>
-				 	<span class="detail_label"><%=t 'products.'+ f_name %>: </span> <%= "$" if f_name == 'price' %><%= (@product.display(f_name, f)).split('*').each(&:strip).uniq.join(" ") %><%=' ' + t('products.'+ f_name+'unit', :default => '') unless f_name == 'price' %>
-				</li>
+				 	<% save[i] = '<span class="detail_label">' + (t 'products.'+ f_name) + ': </span>' + (f_name == 'price' ? "$" : "" ) + ((@product.display(f_name, f)).split('*').each(&:strip).uniq.join(" ")) + ' ' + (f_name == "price" ? "" : t('products.'+ f_name+'unit', :default => '')) %>
 			<% end %>
 		<% end %>
+		<%# raw save.compact.join(", ") %>
+
+	    <div style="font-size: 1em;"><%= raw @allspecs["longDescription"] %></div>
+    </div>
+    
+	<div id="features">
+	<ul>
+		<% if @allspecs["saleEndDate"] %>
+		<div style="font-size: 1.2em; height: 20px;"><span class="left">Our Price:</span><span class="right"><%= @allspecs["price"] %></span></div>
+	    <div style="color: #f00; font-size: 1.5em; font-weight: bold;height: 20px;"><span class="left">Sale Price:</span><span class="right"><%= @allspecs["saleprice"] %></span></div>
+	    <div style = "clear: both;font-weight: bold;height: 18px;"><span class="left">Sale Ends:</span><span class="right"><%= @allspecs["saleEndDate"][/^(\w|\/)+/] %></span></div>
+		<% else %>
+		<div style="font-size: 1.5em; height: 20px;"><span class="left">Our Price:</span><span class="right"><%= @allspecs["price"] %></span></div>
+		<% end %>
+		<div class="left" style="height: 18px;"><a href="http://www.bestbuy.ca/en-CA/help/what-is-your-lowest-price-guarantee/hc1001.aspx?path=27eeec1b59d42df5dfc298ab6993d9dfen15&HelpTitleId=HC1001" class="popup-link">Lowest Price Guarantee</a></div>
+		<div class="spacer" style="border-bottom: 1px solid #ccc; clear: both; margin-bottom: 15px;"></div>
+	
+	    <div class="buttons"><%= image_tag "bestbuy_addtocart.gif" %></div>
+	    <div class="buttons"><%= image_tag "bestbuy_add_wishlist.gif" %></div>
+	    <div class="buttons" style="margin-bottom: 8px;"><%= image_tag "bestbuy_add_to_pricewatch.gif" %></div>
+	    
+	    <div class="bbfeatures"><%= image_tag "best_buy_free_shipping.gif" %>Free shipping on orders over <b>$20</b>.</div>
+	    <div class="bbfeatures"><%= image_tag "best_buy_instore_pickup.gif" %>Order online and pick up in-store.</div>
+	    <div class="bbfeatures"><%= image_tag "best_buy_rewards_card.gif" %>It's free to get into the rewards program.</div>
 	</ul>
 	</div>
-	<div style="clear: left; height:5px;"></div>
+	
+	<div id="compare_field">
+	    <% link_to "#", "Compare this product against others" %>
+    </div>
+	<!-- div style="clear: left; height:5px;"></div>
 	<div class="showtable">
-	<% if @s.product_type == "flooring_builddirect" %>
-		<h3>Available from <a href="http://www.builddirect.com">Build Direct</a></h3>
-	<% elsif @s.product_type == "Laptop" %>
-		<h3>Available from <a href="http://www.walmart.com">Walmart</a></h3>
-	<% else %>
-		<h3>Available At The Following Retailers</h3>
-	<% end %>
-	<% @offerings.each do |offer| %>
-		<% next if !offer.stock || offer.priceint.blank? %>
-		<div class="left">	
-			<%= link_to "#{offer.pricestr}", offer.url, {:itemId => offer.id , :product => offer.product_id, :class => 'buylink', :target => '_blank', :rel => "nofollow"} %>
-		</div>
-		<div class="right">
-			 <%=  link_to image_tag(offer.retailer.image, :alt => offer.retailer.name, :class => 'buyimg'), offer.url, {:itemId => offer.id , :product => offer.product_id, :class => 'buylink', :target => "_blank", :rel => "nofollow"} %>
-		</div>
-		<div class="spacer">
-		</div>
-	<% end %>
-	</div>
-	<% unless @cartridges.empty? %>
-	<div class="accessories">
-		<h3>Toner Cartridges</h3>
-		<% @cartridges.each_index do |c_i| %>
-		<% c = @cartridges[c_i] %>
-		<% p = @cartridgeprices[c_i] %>
-		<%# Not showing images until they are downloaded %>
-		<% if false %><div style="float: left;"><%= image_tag c.imageurl, :width => "50px" %></div><% end %>
-		<div class="cartridgeinfo">
-		<%= [c.brand,c.model].join(' ') %><br>
-		<span class="cartridgespecifics">(Yield: <%= c.yield %> pgs, Shelf Life: <%= c.shelflife %> months, Color: <%= c.color %>)</span>
-		<div style="clear:both;"></div>
-		<div class="left" style="width:112px">	
-			<%= link_to p.pricestr, p.url, :class => "popup", :rel => 'nofollow' %>
-		</div>
-		<div class="right" style="width:154px;">
-			 <%=  link_to image_tag(p.retailer.image, :alt => p.retailer.name), p.url, :class => "popup", :rel => 'nofollow' %>
-		</div>
-		<div class="spacer" style="clear:right;"></div>
-		</div>
-		<% end %>
-	</div>
-	<% end %>
-	<div id="reviews" style="display:inline; position:relative;">
-		<h3 style="display:inline">Reviews</h3>
-		<% if @review.nil? %>
-			<p>There are no reviews for this item yet.</p>
-		<% else %>
-			<p display="inline"><b><%= @review.summary %></b> <em>from Amazon</em></p>
-			<p class="review"><%= @review.content.length > 680 ? @review.content[0..680]+'...' : @review.content %></p>
-		<% end %>
-	</div>
-	<%= flash[:notice] %>
-	<div id="betternotfoundmsg" style="padding-left:10px;padding-top:10px;color:green;visibility:hidden;"> There is no better product available for a better price </div>
+
+	</div-- >
 
 <% if !@plain %><div style="clear: both;"></div></div><% end %>
 
-<!-- End Piwik Tag -->	
+<script>
+
+</script>

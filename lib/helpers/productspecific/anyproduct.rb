@@ -19,7 +19,7 @@ module CleaningHelper
     # Then clean the model/mpn
     models_before = separate(atts['model']) + separate(atts['mpn'])
     models_before = models_before.sort{|a,b| likely_model_name(b) <=> likely_model_name(a) }.reject{|x| likely_model_name(x) < 2 }
-    models_after = clean_models( Session.current.product_type, atts['brand'], models_before, atts['title'],$brands, $series, $descriptors ).uniq.compact.reject(&:blank?).reject{|x| 
+    models_after = clean_models( Session.product_type, atts['brand'], models_before, atts['title'],$brands, $series, $descriptors ).uniq.compact.reject(&:blank?).reject{|x| 
       likely_model_name(x) < 2 }.sort{|a,b| 
       likely_model_name(b) <=> likely_model_name(a)
     }

@@ -12,17 +12,16 @@
 </style><![endif]-->
 
 <!--[if gte IE 7]><style>
-.selectboxfilter { width:185px;}
 @import url("/stylesheets/welcomeIE.css");
 </style><![endif]-->
 
 <!-- Piwik -->
 <script type="text/javascript">
 var pkBaseURL = (("https:" == document.location.protocol) ? "https://analytics.optemo.com/" : "http://analytics.optemo.com/");
-var tag = document.createElement("script");
-tag.setAttribute("src", pkBaseURL + 'piwik.js');
-tag.setAttribute("type", "text/javascript");
-document.getElementsByTagName("head")[0].appendChild(tag);
+var piwik_script_tag = document.createElement("script");
+piwik_script_tag.setAttribute("src", pkBaseURL + 'piwik.js');
+piwik_script_tag.setAttribute("type", "text/javascript");
+document.getElementsByTagName("head")[0].appendChild(piwik_script_tag);
 </script>
 <script type="text/javascript">
 try {

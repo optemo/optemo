@@ -1,1 +1,1 @@
-<%= render :partial => 'discoverybrowser' %>[BRK]<%= render :partial => 'filter' %>[BRK]<%= Session.current.search.keyword_search.blank? ? '' : Session.current.search.keyword_search %>
+<%= render :partial => 'discoverybrowser' %>[BRK]<%= render :partial => 'filter' %>[BRK]<%= Session.search.keyword_search.blank? ? '' : Session.search.keyword_search %>

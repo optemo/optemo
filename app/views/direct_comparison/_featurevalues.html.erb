@@ -2,15 +2,14 @@
 </div></div>
 
 <% gray = true %>
-<% contspecs = ContSpec.cache_all(product.id); catspecs = CatSpec.cache_all(product.id); binspecs = BinSpec.cache_all(product.id) %>
 <% @s.continuous["filter"].each do |feat| %>
 <div class="cell <%= gray ? "graybg" : "whitebg" %>">
 	<% gray = !gray %>
 	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
 		<!-- If the interesting feature should be displayed then display -->
-		<b><%= contspecs[feat].to_s + " (" + t("products.#{feat}unit") %>)</b>		
+		<b><%= contspecs[feat].to_s + " (" + t("#{Session.product_type}.specs.#{feat}.unit") %>)</b>		
 	<% else %>
-		<%= contspecs[feat].to_s + " (" + t("products.#{feat}unit") %>)
+		<%= contspecs[feat].to_s + " (" + t("#{Session.product_type}.specs.#{feat}.unit") %>)
 	<% end %>
 	</div>
 <% end %>

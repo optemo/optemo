@@ -42,6 +42,11 @@ en:
             moredetails:    "More details"
             ratings:        "ratings"
             
+    features:
+        maxresolution:      "%{num}MP"
+        screensize:         "%{num} in. screen"
+        opticalzoom:        "%{num}X zoom"
+        
     compare:
         index:
             title:          "Compare Results"

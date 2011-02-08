@@ -34,7 +34,8 @@ Site::Application.configure do
   config.serve_static_assets = true # false by default; true for asset_packager
 
   # Enable serving of images, stylesheets, and javascripts from an asset server
-  config.action_controller.asset_host = "http://ast0.optemo.com"
+  #config.action_controller.asset_host = "http://ast0.optemo.com"
+  config.action_controller.asset_host = "http://localhost:3000"
 
   # Disable delivery errors, bad email addresses will be ignored
   # config.action_mailer.raise_delivery_errors = false

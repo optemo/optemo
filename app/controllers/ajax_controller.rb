@@ -10,7 +10,7 @@ class AjaxController < ApplicationController
   
   def preference
     mypreferences = params[:mypreference]
-    s = Session.current
+    s = Session
     s.continuous["filter"].each do |f|
       s.features.update_attribute(f+"_pref", mypreferences[f+"_pref"])
     end
@@ -30,9 +30,9 @@ class AjaxController < ApplicationController
       # If the source is unsave i.e. a saved product has been dropped, then
       # create relations with lower as the dropped item and higher as all other saved items 
       if source == "unsave" || source == "unsaveComp"
-        PreferenceRelation.createBinaryRelation(otherItems[otherItem], itemId, Session.current.id, weight[source])
+        PreferenceRelation.createBinaryRelation(otherItems[otherItem], itemId, Session.id, weight[source])
       else
-        PreferenceRelation.createBinaryRelation(itemId, otherItems[otherItem], Session.current.id, weight[source])
+        PreferenceRelation.createBinaryRelation(itemId, otherItems[otherItem], Session.id, weight[source])
       end
     end    
     render :nothing => true

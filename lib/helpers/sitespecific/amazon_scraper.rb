@@ -29,7 +29,7 @@ module AmazonScraper
   
   # All local ids from region
   def scrape_all_local_ids region
-    announce "[#{Time.now}] Getting a list of all Amazon IDs associated with #{Session.current.product_type}. This may take a while"
+    announce "[#{Time.now}] Getting a list of all Amazon IDs associated with #{Session.product_type}. This may take a while"
     
     #cachefile = open_cache(curr_retailer(region))
     #nokocache = Nokogiri::HTML(cachefile)
@@ -44,7 +44,7 @@ module AmazonScraper
   def clean(atts)
     atts['listprice'] = (atts['listprice'] || '').match(/\$\d+\.(\d\d)?/).to_s
     
-    case Session.current.product_type
+    case Session.product_type
     when /printer_us/, /printer_lph/ then clean_printer(atts)
     when /camera_us/ then clean_camera(atts)
     when /cartridge/ then clean_camera(atts) # This seems a bit odd.
@@ -339,10 +339,10 @@ module AmazonScraper
           totalreviews ||= result.css('totalreviews').text.to_i
           totalreviewpages ||= result.css('totalreviewpages').text.to_i
           if totalreviews == 0
-            log "#{Session.current.product_type} #{asin} has no reviews -- 0 min remaining"
+            log "#{Session.product_type} #{asin} has no reviews -- 0 min remaining"
             return [{'totalreviews' => totalreviews}]
           end
-          log "#{Session.current.product_type} #{asin} review download: less than #{(totalreviewpages-current_page)/6 + 1} min remaining..." if current_page % 10 == 1
+          log "#{Session.product_type} #{asin} review download: less than #{(totalreviewpages-current_page)/6 + 1} min remaining..." if current_page % 10 == 1
           temp = result.css('review')
           temp = Array(temp) unless reviews.class == Array # Fix single and no review possibility
           array_of_hashes = temp.collect{|x| x.css('*').inject({}){|r,y| r.merge({y.name => y.text})}}
@@ -398,7 +398,7 @@ module AmazonScraper
     cleaned_atts['brand'] = temp1 || temp2
     #cleaned_atts['condition'] ||= 'New'
     atts['resolutionmax'] = get_max_f(atts['resolution']) if atts['resolution']
-    atts['product_type'] = Session.current.product_type
+    atts['product_type'] = Session.product_type
     return cleaned_atts
   end
   
@@ -437,7 +437,7 @@ module AmazonScraper
     rearrange_dims!(cleaned_atts, ['D', 'H', 'W'], true)
     # TODO the following is a hack.
     cleaned_atts['displaysize'] = nil if ['0', '669.2913385827'].include?(cleaned_atts['displaysize'] || '').to_s
-    cleaned_atts['product_type'] = Session.current.product_type
+    cleaned_atts['product_type'] = Session.product_type
     return cleaned_atts
   end
   
@@ -473,7 +473,7 @@ module AmazonScraper
   end
   
   def cachefile_name(retailer)
-    "./cache/#{retailer.name.gsub(/(\s|\.)/,'_').downcase}_#{Session.current.product_type}.html"
+    "./cache/#{retailer.name.gsub(/(\s|\.)/,'_').downcase}_#{Session.product_type}.html"
   end
   
   def open_cache(retailer)
@@ -548,7 +548,7 @@ module AmazonScraper
   end
   
   def browse_node_id
-    case Session.current.product_type
+    case Session.product_type
       when 'printer_us', 'printer_lph' then '172648'
       when 'printer_ca' then '677265011'
       when 'camera_us' then '330405011'

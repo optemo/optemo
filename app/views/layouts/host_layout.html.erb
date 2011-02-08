@@ -1,8 +1,8 @@
-<% s = Session.current %>	
+<% s = Session %>	
 <html>
     <head>
         <title>My Amazing Store</title>
-		<%= raw stylesheet_link_merged(s.directLayout ? :listview : :gridview) %>
+		<%= raw stylesheet_link_merged(s.directLayout ? :direct : :assist) %>
     </head>
     <body>
         <div style="border:1px solid black;padding:3px; margin:3px;">

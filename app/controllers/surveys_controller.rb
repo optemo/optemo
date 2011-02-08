@@ -10,7 +10,7 @@ class SurveysController < ApplicationController
     values = params[:survey]
     return if values.nil?
     oSurvey = Survey.new(values)
-    oSurvey.session_id = Session.current.id
+    oSurvey.session_id = Session.id
     # Save the Survey answers
     oSurvey.save
   end

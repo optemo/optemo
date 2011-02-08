@@ -316,6 +316,7 @@ body {
 //        Show page and related         //
 //--------------------------------------*/
 
+/* deprecated for mobile layout? */
 #outsidecontainer {
 	position: absolute;
 	top: 0px;
@@ -385,6 +386,13 @@ div .left{
 	margin-bottom: 10px;
 /*	width: 193px; */
 	padding:5px;
+}
+div .right{
+	float: right;
+	text-align: left;
+	margin-bottom: 10px;
+	width: 193px;
+	
 }
 
 h3 {

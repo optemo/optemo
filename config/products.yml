@@ -3,17 +3,74 @@
 # b = boolean
 # boost = boostexter feature for labels
 # show = this causes display in CompareController#show
-# showList = for listview, this causes display in .itemfeatures
+# showList = for direct view, this causes display in .itemfeatures
 
 ####Spaces are required between elements in an array
 
 #######################################
-#   Cameras.BrowseThenBuy - Cameras   #
+#    Best Buy Demo - Cameras & TVs    #
+#######################################
+
+besttv:
+    product_type: tv_bestbuy
+    layout: assist
+    site_id: 12 # See Piwik at analytics.optemo.com for details
+    price:
+        feature_type: Continuous
+        used_for: [filter, cluster, show]
+        prefdir: -1
+        min: 1
+        max: 10000
+    maxresolution: 
+        feature_type: Continuous
+        used_for: [desc, filter, cluster, show]
+    screensize:
+        feature_type: Continuous
+        used_for: [desc, filter, cluster, show]
+    power:
+        feature_type: Continuous
+        used_for: [desc, filter, cluster, show]
+    brand:
+        feature_type: Categorical
+        used_for: [filter, show]
+    displaytech:
+        feature_type: Categorical
+        used_for: [filter, show]
+
+bestbuy:
+    product_type: camera_bestbuy
+    layout: assist
+    site_id: 12 # See Piwik at analytics.optemo.com for details
+    price:
+        feature_type: Continuous
+        used_for: [filter, cluster, show]
+        prefdir: -1
+        min: 1
+        max: 10000
+    maxresolution: 
+        feature_type: Continuous
+        used_for: [desc, filter, cluster, show]
+    screensize:
+        feature_type: Continuous
+        used_for: [desc, filter, cluster, show]
+    opticalzoom:
+        feature_type: Continuous
+        used_for: [desc, filter, cluster, show]
+    brand:
+        feature_type: Categorical
+        used_for: [show, filter, cluster]
+    color:
+        feature_type: Categorical
+        used_for: [show, filter]
+
+#######################################
+#    Cameras.BrowseThenBuy, Mobile    #
 #######################################
 
 cameras:
     product_type: camera_us
-    layout: gridview
+    layout: assist
+    site_id: 10 # See Piwik at analytics.optemo.com for details
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -33,32 +90,10 @@ cameras:
         feature_type: Categorical
         used_for: [boost, show, filter]
 
-bestbuy:
-    product_type: camera_bestbuy
-    layout: gridview
-    maxresolution: 
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-    screensize:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-    price:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-        prefdir: -1
-        min: 1
-        max: 10000
-    opticalzoom:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-    brand:
-        feature_type: Categorical
-        used_for: [boost, show, filter]
-
-
 cameras.browsethenbuy.com:
     product_type: camera_us
-    layout: gridview
+    layout: assist
+    site_id: 4 # See Piwik at analytics.optemo.com for details
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -80,7 +115,8 @@ cameras.browsethenbuy.com:
         
 cameras.direct.demo.optemo.com:
     product_type: camera_us
-    layout: lineview
+    layout: direct
+    site_id: 14 # See Piwik at analytics.optemo.com for details
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show, showList]
@@ -101,7 +137,8 @@ cameras.direct.demo.optemo.com:
         used_for: [boost, filter, show]        
 cameras.direct:
     product_type: camera_us
-    layout: lineview
+    layout: direct
+    site_id: 10 # See Piwik at analytics.optemo.com for details
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show, showList]
@@ -122,7 +159,8 @@ cameras.direct:
         used_for: [boost, filter, show]                
 cameras.assist.demo.optemo.com:
     product_type: camera_us
-    layout: gridview
+    layout: assist
+    site_id: 14 # See Piwik at analytics.optemo.com for details
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -143,7 +181,8 @@ cameras.assist.demo.optemo.com:
         used_for: [boost, filter, show]
 cameras.assist:
     product_type: camera_us
-    layout: gridview
+    layout: assist
+    site_id: 10 # See Piwik at analytics.optemo.com for details
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -165,6 +204,7 @@ cameras.assist:
 m.browsethenbuy.com:
     product_type: camera_us
     layout: mobileview
+    site_id: 8 # See Piwik at analytics.optemo.com for details
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -187,6 +227,7 @@ m.browsethenbuy.com:
 mobile:
     product_type: camera_us
     layout: mobileview
+    site_id: 10 # See Piwik at analytics.optemo.com for details
     maximumresolution: 
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -205,14 +246,73 @@ mobile:
     brand:
         feature_type: Categorical
         used_for: [boost, filter, show]
+        
+localhost:
+    product_type: camera_bestbuy
+    layout: assist
+    site_id: 12 # See Piwik at analytics.optemo.com for details
+    price:
+        feature_type: Continuous
+        used_for: [filter, cluster, show]
+        prefdir: -1
+        min: 1
+        max: 10000
+    maxresolution: 
+        feature_type: Continuous
+        used_for: [desc, filter, cluster, show]
+    screensize:
+        feature_type: Continuous
+        used_for: [desc, filter, cluster, show]
+    opticalzoom:
+        feature_type: Continuous
+        used_for: [desc, filter, cluster, show]
+    brand:
+        feature_type: Categorical
+        used_for: [show, filter, cluster]
+    color:
+        feature_type: Categorical
+        used_for: [show, filter]
+    waterproof:
+        feature_type: Binary
+        used_for: [show, filter]
+
+ilovecameras:
+    product_type: camera_bestbuy
+    layout: assist
+    site_id: 12 # See Piwik at analytics.optemo.com for details
+    price:
+        feature_type: Continuous
+        used_for: [filter, cluster, show]
+        prefdir: -1
+        min: 1
+        max: 10000
+    maxresolution: 
+        feature_type: Continuous
+        used_for: [desc, filter, cluster, show]
+    screensize:
+        feature_type: Continuous
+        used_for: [desc, filter, cluster, show]
+    opticalzoom:
+        feature_type: Continuous
+        used_for: [desc, filter, cluster, show]
+    brand:
+        feature_type: Categorical
+        used_for: [show, filter, cluster]
+    color:
+        feature_type: Categorical
+        used_for: [show, filter]
+    waterproof:
+        feature_type: Binary
+        used_for: [show, filter]
 
 ################################
-#  LaserPrinterHub - Printers  #
+#  LaserPrinterHub, Printers   #
 ################################
 
 printers.browsethenbuy.com:
     product_type: printer_us
-    layout: lineview
+    layout: direct
+    site_id: 2 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -247,7 +347,8 @@ printers.browsethenbuy.com:
 
 printers.direct.demo.optemo.com:
     product_type: printer_us
-    layout: lineview
+    layout: direct
+    site_id: 16 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -282,7 +383,8 @@ printers.direct.demo.optemo.com:
         
 printers.direct:
     product_type: printer_us
-    layout: lineview
+    layout: direct
+    site_id: 10 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -316,7 +418,8 @@ printers.direct:
         used_for: [boost, filter, show]        
 printers.assist.demo.optemo.com:
     product_type: printer_us
-    layout: gridview
+    layout: assist
+    site_id: 16 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -351,7 +454,8 @@ printers.assist.demo.optemo.com:
 
 printers.assist:
     product_type: printer_us
-    layout: gridview
+    layout: assist
+    site_id: 10 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -386,7 +490,8 @@ printers.assist:
 
 laserprinterhub.com:
     product_type: printer_lph
-    layout: gridview
+    layout: assist
+    site_id: 6 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -420,7 +525,8 @@ laserprinterhub.com:
         used_for: [boost, filter, show]
 laserprinterhub.ca:
     product_type: printer_lph
-    layout: gridview
+    layout: assist
+    site_id: 6 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -455,7 +561,8 @@ laserprinterhub.ca:
         
 ast0.optemo.com:
     product_type: printer_lph
-    layout: gridview
+    layout: assist
+    site_id: 6 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -487,47 +594,11 @@ ast0.optemo.com:
     brand:
         feature_type: Categorical
         used_for: [boost, filter, show]
-    
-
-localhost:
-    product_type: printer_lph
-    layout: gridview
-    price:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-        prefdir: -1
-        min: 1
-        max: 10000
-    ppm:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
-    resolutionmax:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-    resolution:
-        feature_type: Categorical
-        used_for: [showList]
-    paperinput:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
-    itemwidth:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
-        prefdir: -1
-    printserver:
-        feature_type: Binary
-        used_for: [boost, filter, show]
-    scanner:
-        feature_type: Binary
-        used_for: [boost, filter, show]
-    brand:
-        feature_type: Categorical
-        used_for: [boost, filter, show]
-   
 
 printers:
     product_type: printer_us
-    layout: lineview
+    layout: direct
+    site_id: 10 # See Piwik at analytics.optemo.com for details
     price:
         feature_type: Continuous
         used_for: [boost, filter, cluster, show]
@@ -559,126 +630,3 @@ printers:
     brand:
         feature_type: Categorical
         used_for: [boost, filter, show]
-
-#############################
-#  Build Direct - Flooring  #
-#############################
-
-builddirect.optemo.com:
-    product_type: flooring_builddirect
-    layout: lineview
-    price:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-        prefdir: -1
-        min: 1
-        max: 10
-    width:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, showList]
-        prefdir: 0
-    species_hardness:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-    miniorder:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
-        prefdir: -1
-    brand:
-        feature_type: Categorical
-        used_for: [boost, filter, show]    
-    species:
-        feature_type: Categorical
-        used_for: [boost, filter, show]
-    finish:
-        feature_type: Categorical
-        used_for: [boost, filter, show, showList]
-    feature:
-        feature_type: Categorical
-        used_for: [boost, filter, show, showList]
-    colorrange:
-        feature_type: Categorical
-        used_for: [boost, filter, show]
-        
-flooring:
-    product_type: flooring_builddirect
-    layout: lineview
-    price:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-        prefdir: -1
-        min: 1
-        max: 10
-    width:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, showList]
-        prefdir: 0
-    species_hardness:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-    miniorder:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
-        prefdir: -1
-    brand:
-        feature_type: Categorical
-        used_for: [boost, filter, show]    
-    species:
-        feature_type: Categorical
-        used_for: [boost, filter, show]
-    finish:
-        feature_type: Categorical
-        used_for: [boost, filter, show, showList]
-    feature:
-        feature_type: Categorical
-        used_for: [boost, filter, show, showList]
-    colorrange:
-        feature_type: Categorical
-        used_for: [boost, filter, show]
-#############################
-#     Laptops - Walmart     #
-#############################
-                
-walmart.optemo.com:
-    product_type: laptop_walmart
-    layout: lineview
-    price:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-        prefdir: -1
-        min: 10
-        max: 2000
-    brand:
-        feature_type: Categorical
-        used_for: [boost, filter, show]
-    hd:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-    ram:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-    screensize:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-        
-laptops:
-    product_type: laptop_walmart
-    layout: lineview
-    price:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-        prefdir: -1
-        min: 10
-        max: 2000
-    brand:
-        feature_type: Categorical
-        used_for: [boost, filter, show]
-    hd:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-    ram:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]
-    screensize:
-        feature_type: Continuous
-        used_for: [boost, filter, cluster, show]

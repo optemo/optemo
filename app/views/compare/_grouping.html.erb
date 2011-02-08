@@ -15,16 +15,16 @@
 		 
 	</div>
 	<% [grouping[:best],grouping[:cheapest]].each do |product| %>
+	<% contspecs = ContSpec.cache_all(product.id); catspecs = CatSpec.cache_all(product.id); binspecs = BinSpec.cache_all(product.id) %>
 	<div class="productinfo rounded" data-id="<%= product.id %>">
 		<div class="productimg_container">
-			<%= image_tag(imgurl(product, 'gb') , :"data-id" => product.id, :class => "productimg", :alt => product.small_title, :title => product.small_title) %>
+			<%= image_tag(catspecs["imggburl"], :"data-id" => product.id, :class => "productimg", :alt => product.small_title, :title => product.small_title) %>
 			<% if @s.dragAndDropEnabled %>
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.', :"data-id" => product.id) %>
 			<% end %>
 		</div>
 		<div class='groupby_title'><%= link_to product.small_title, product_path(:name => product.descurl, :id => product.id), :class => "easylink", :title => "Click for product specifications" %></div>
 		<div class="itemfeatures">
-			<% contspecs = ContSpec.cache_all(product.id); catspecs = CatSpec.cache_all(product.id); binspecs = BinSpec.cache_all(product.id) %>
 			<% @s.continuous["showList"].each do |f|%>
 			  <%= render :partial => 'featurevalues', :locals => {:f => f, :val => contspecs[f]} %>
 			<% end %>
