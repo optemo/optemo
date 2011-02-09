@@ -390,7 +390,6 @@ def self.compute(number_clusters,p_ids)
     raise ValidationError, "Number of factors is not equal to the dimension of continuous specs" unless ft.first.size == (cont_specs.first.size) +1
     raise ValidationError, "Number of weights is not equal to the total dimension of specs" unless weights.size == dim_cont+dim_bin+ dim_cat+1
     raise ValidationError, "dim_per_cat is not right" unless dim_per_cat.size == dim_cat
-    debugger
 
     $k = Kmeans.new unless $k
     
