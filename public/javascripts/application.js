@@ -207,26 +207,35 @@ optemo_module = (function (my){
                 Math.max(D.body.clientHeight, D.documentElement.clientHeight)
             );
         })();
-
-    	$('#silkscreen').css({'height' : current_height+'px', 'display' : 'inline'});
+        
+        // reenabled because slikscreen clicking is disabled when doing the filter "loading" panel
+    	$("#silkscreen").unbind('click').click(function() { 
+    	   my.removeSilkScreen();
+	    });
+    	$('#silkscreen').css({'height' : current_height+'px', 'display' : 'inline'});    	
     	$('.selectboxfilter').css('visibility', 'hidden');
-    	if (data)
+    	if (data) {
     		$('#info').html(data);
-    	else
+    	} else {
     	    my.quickajaxcall('#info', url, function(){
-    	        // Load the classic theme
-                Galleria.loadTheme('/javascripts/galleria.classic.js');
-                // Initialize Galleria
-                jQuery('#galleria').galleria();
-                // The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
-                $('.galleria-thumbnails-list').livequery(function() {
-                    var g = $('#galleria').find('.galleria-thumbnails-list');
-                    g.children().css('float', 'left');
-                    g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
-                });
-    	        my.DBinit();
-    	        my.preloadSpecsAndReviews(jQuery('#tab_header').find('ul').attr('data-sku'));
-    	    });
+    	        if (url.match(/show/)) {
+    	            // Load the classic theme
+                    Galleria.loadTheme('/javascripts/galleria.classic.js');
+                    // Initialize Galleria
+                    jQuery('#galleria').galleria();
+                    // The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
+                    $('.galleria-thumbnails-list').livequery(function() {
+                        var g = $('#galleria').find('.galleria-thumbnails-list');
+                        g.children().css('float', 'left');
+                        g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
+                    });
+        	        my.DBinit();
+        	        my.preloadSpecsAndReviews(jQuery('#tab_header').find('ul').attr('data-sku'));
+    	        } else {
+    	            my.DBinit();
+                }
+            });
+        }
     };
 
     // When products get dropped into the save box
@@ -441,9 +450,6 @@ optemo_module = (function (my){
 
     my.FilterAndSearchInit = function() {
         my.removeSilkScreen();
-        $("#silkscreen").unbind('click').click(function() { // reenabled because slikscreen clicking is disabled when doing the filter "loading" panel
-    	   my.removeSilkScreen();
-	    });
 
     	//Show and Hide Descriptions
     	$('.feature .label a, .desc .deleteX').live('click', function(){
@@ -707,7 +713,7 @@ optemo_module = (function (my){
 		// Add a color selection -- submit
     	$('.swatch').unbind('click').click(function(){
 			my.loading_indicator_state.sidebar = true;
-		    var whichThingSelected = $(this).attr("style").replace(/background-color: (\w+);/,'$1');
+		    var whichThingSelected = $(this).attr("style").replace(/background-color: (\w+);?/,'$1');
 			if ($(this).hasClass("selected_swatch"))
 			{ //Removed selected color
 				$('#myfilter_color').val(opt_removeStringWithToken($('#myfilter_color').val(), whichThingSelected, '*'));
@@ -880,7 +886,7 @@ optemo_module = (function (my){
     	// Add to cart buy link
     	$('.buylink, .buyimg').live("click", function(){
     		var buyme_id = $(this).attr('product');
-    		my.trackPage('goals/addtocart', {'picked_product' : buyme_id});
+    		my.trackPage('goals/addtocart', {'product_picked' : buyme_id, 'filter_type' : 'addtocart'});
     	});
 
         // Choose a grouping via group button rather than drop-down (effect is the same as the select boxes)
@@ -1114,7 +1120,7 @@ optemo_module = (function (my){
         clearTimeout(lis.sidebar_timer); // clearTimeout can run on "null" without error
         clearTimeout(lis.main_timer);
         clearTimeout(lis.socket_error_timer); // We need to clear the timeout error here
-    	my.flashError('<div class="poptitle">&nbsp;<a class="close" href="close"><img src="/images/closepopup_white.gif"></a></div><p class="error">Sorry! An error has occured on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
+    	my.flashError('<div class="poptitle">&nbsp;<a class="close" href="close"><img src="/images/closepopup_white.gif"></a></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
     	my.trackPage('goals/error');
     }
 
@@ -1565,7 +1571,7 @@ if (window.embedding_flag) {
     optemo_module.clearSocketError = function() {
         // if ajaxhandler never gets called, here we are.
 		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
-    	optemo_module.flashError('<div class="poptitle">&nbsp;</div><p class="error">Sorry! An error has occured on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
+    	optemo_module.flashError('<div class="poptitle">&nbsp;<a class="close" href="close"><img src="/images/closepopup_white.gif"></a></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
     }
 
     optemo_module.quickajaxcall = function (element_name, mydata, fn) { // for the show page

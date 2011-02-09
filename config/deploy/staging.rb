@@ -52,14 +52,6 @@ task :reindex do
   sudo "rake -f #{current_path}/Rakefile ts:rebuild RAILS_ENV=production"
 end
 
-
-desc "Compile C-Code"
-task :compilec do
-  sudo "cmake #{current_path}/lib/c_code/clusteringCodes/"
-  sudo "make hCluster"
-  sudo "cp codes/hCluster #{current_path}/lib/c_code/clusteringCodes/codes/hCluster"
-end
-
 desc "Configure the server files"
 task :serversetup do
   # Instantiate the database.yml file
@@ -81,7 +73,6 @@ end
 
 # redopermissions is last, so that if it fails due to the searchd pid, no other tasks get blocked
 after :deploy, "serversetup"
-after :serversetup, "reindex"
-after :reindex, "restartmemcached"
+after :serversetup, "restartmemcached"
 after :restartmemcached, "fetchAutocomplete"
 after :fetchAutocomplete, "redopermissions"

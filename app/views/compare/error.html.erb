@@ -1,6 +1,7 @@
 [ERR]
 <!--<%= @errortype %>-->
-<div class="poptitle">&nbsp;</div>
+<div class="poptitle"><%= link_to image_tag("closepopup#{fr?}_white.gif"), "close", :class => "close"%>
+&nbsp;</div>
 <p><%=t("products.ErrorPart1") + " " + t("products.here") + " " + t("products.ErrorPart2")%></p>
 <% if @errortype == "filter" %>
 [BRK]<%= render :partial => 'filter' %>

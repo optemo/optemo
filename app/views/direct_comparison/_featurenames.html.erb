@@ -6,6 +6,6 @@
 </div>-->
 <% featurelist.each_index do |column| %>
 		<div class="cell <%= column%2==0 ? "graybg" : "whitebg" %> leftmostcolumn">
-			<div class="leftcolumntext"><%= t('products.' + featurelist[column]) %>:</div>
+			<div class="leftcolumntext"><%= t("#{Session.product_type}.specs.#{featurelist[column]}.name") %>:</div>
 		</div>
 <% end %>

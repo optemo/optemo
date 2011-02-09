@@ -1,5 +1,5 @@
 <%= form_for(Search.new, :html => {:id => 'filter_form'}) do %>
-  <%= @s.search.keyword_search.blank? ? text_field_tag('myfilter[search]') : text_field_tag('myfilter[search]', @s.search.keyword_search) %>
+  <!--<%= @s.search.keyword_search.blank? ? text_field_tag('myfilter[search]') : text_field_tag('myfilter[search]', @s.search.keyword_search) %>
 	<div class="ui-widget" style="display:inline;">
 		<%= submit_tag 'Go', {:id => 'submit_button'} %>
 	</div>
@@ -7,7 +7,7 @@
 	<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :class => "removesearch"} %> Search: <%= @s.search.keyword_search %>
 	</div>
 	<%= hidden_field_tag "previous_search_word", @s.search.keyword_search %>
-  <% end %>
+  <% end %>-->
 
   <% i = 0 # Yes, I know, this isn't Rails-y, but we need to assign a different UI position to each feature of all kinds, in order. %> 
   <% @s.categorical["filter"].each_with_index do |feat, index| %>

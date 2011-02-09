@@ -599,6 +599,7 @@ margin-top:0;
 #comparisonmatrix {
 	position: relative;
 	width:100%;
+	margin-top: 1px;
 }
 .cell {
 	border-right: gray 1px dashed;
