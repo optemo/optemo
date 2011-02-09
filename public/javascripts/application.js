@@ -207,8 +207,12 @@ optemo_module = (function (my){
                 Math.max(D.body.clientHeight, D.documentElement.clientHeight)
             );
         })();
-
-    	$('#silkscreen').css({'height' : current_height+'px', 'display' : 'inline'});
+        
+        // reenabled because slikscreen clicking is disabled when doing the filter "loading" panel
+    	$("#silkscreen").unbind('click').click(function() { 
+    	   my.removeSilkScreen();
+	    });
+    	$('#silkscreen').css({'height' : current_height+'px', 'display' : 'inline'});    	
     	$('.selectboxfilter').css('visibility', 'hidden');
     	if (data) {
     		$('#info').html(data);
@@ -446,9 +450,6 @@ optemo_module = (function (my){
 
     my.FilterAndSearchInit = function() {
         my.removeSilkScreen();
-        $("#silkscreen").unbind('click').click(function() { // reenabled because slikscreen clicking is disabled when doing the filter "loading" panel
-    	   my.removeSilkScreen();
-	    });
 
     	//Show and Hide Descriptions
     	$('.feature .label a, .desc .deleteX').live('click', function(){

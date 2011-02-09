@@ -75,11 +75,11 @@ inline :C do |builder|
        for (t=0; t<dim_per_cat[j];t++) data_cat[i][j][0] = NUM2INT(points_cat_a[(i*dd_cont+j)*2+t]);
      }
      for (j=0; j<weight_dim-(dd_cont+dd_bin+dd_cat);j++)
-        utilities[i] += weights[j]*NUM2DBL(factors_a[i*(dd_cont+1)+j]);  
+        utilities[i] += weights[j]*NUM2DBL(factors_a[i*(dd_cont+weight_dim-(dd_cont+dd_bin+dd_cat))+dd_cont+j]);      
    }
       
 //kmeans initializations
-  int *counts = (int*)calloc(k, sizeof(int)); /* size of each cluster */
+  double *counts = (int*)calloc(k, sizeof(int)); /* size of each cluster */
   double *dif = (double*)calloc(k, sizeof(double)); 
   double old_error, error = DBL_MAX; /* sum of squared euclidean distance */
   double** means_cont_1 = malloc(sizeof(double*)*k);
@@ -313,7 +313,7 @@ for(j=1;j<k;j++){
 /////////////////////////////////////////////////////////////////////////changing the label assignment based on avg utilities.    
   for (i=0; i<nn; i++) {
     h =  labels[i];
-    labels[i] = newlabels[h];
+    labels[i] = temp_labels[h];
     it=0;
     while (it<k-1 && ids[it]!=h){
       it++;
@@ -329,7 +329,7 @@ for (j=0; j<k; j++) {
 for (j=0;j<k; j++){
    reps[id_map[j]] = temp_reps[j];
 }
-
+//
 ///storing the labels in the ruby array
  for (j=0; j<nn; j++) rb_ary_store(labels_and_reps, j, INT2NUM(labels[j]));
  for (j=0; j<k; j++) rb_ary_store(labels_and_reps, nn+j, INT2NUM(reps[j]));
@@ -351,10 +351,10 @@ def self.compute(number_clusters,p_ids)
     factors << f_specs
   end
   
-  #performance_factors = ContSpec.by_feat("performance_factor")
-  #raise ValidationError, "the number of performance scores is different from the number of products" unless performance_factors.size == factors.first.size
-  #factors << performance_factors
-  factors << [1]*factors.first.size
+  performance_factors = ContSpec.by_feat("performance_factor")
+  raise ValidationError, "the number of performance scores is different from the number of products" unless performance_factors.size == factors.first.size
+  factors << performance_factors
+  #factors << [1]*factors.first.size
   
   ft = factors.transpose
   dim_cont = Session.continuous["cluster"].size
@@ -378,18 +378,19 @@ def self.compute(number_clusters,p_ids)
     cont_specs = st[0...dim_cont].transpose
     bin_specs = st[dim_cont...dim_cont+dim_bin].transpose
     cat_specs = st[dim_cont+dim_bin...st.size].transpose
-    performance_weight = 0.1
+    performance_weight = 2
     weights = weights << performance_weight
     weight_dim = dim_cont+dim_bin+dim_cat+1
     # dimension of each category - for example how many different brands 
     dim_per_cat = cat_specs.first.map{|f| f.size}
+    # inistial seeds for clustering  ### just based on contiuous features
+    inits = self.init(number_clusters, cont_specs, weights[0...dim_cont])
     raise ValidationError, "No specs available" if cont_specs.nil?
     raise ValidationError, "Factors not available for the same number of features as specs" unless ft.size == cont_specs.size 
     raise ValidationError, "Number of factors is not equal to the dimension of continuous specs" unless ft.first.size == (cont_specs.first.size) +1
     raise ValidationError, "Number of weights is not equal to the total dimension of specs" unless weights.size == dim_cont+dim_bin+ dim_cat+1
-    
-    # inistial seeds for clustering  ### just based on contiuous features
-    inits = self.init(number_clusters, cont_specs, weights[0...dim_cont]) 
+    raise ValidationError, "dim_per_cat is not right" unless dim_per_cat.size == dim_cat
+
     $k = Kmeans.new unless $k
     
    
@@ -400,7 +401,7 @@ def self.compute(number_clusters,p_ids)
   rescue ValidationError => e
     puts "Falling back to ruby kmeans: #{e.message}"
     debugger
-    Kmeans.ruby(number_clusters, cont_specs)
+    Kmeans.ruby(number_clusters, cont_specs, weights[0...dim_cont], inits)
   end
 end
 
@@ -447,7 +448,9 @@ def self.ruby(number_clusters, specs, weights, inits)
    end 
    mean_1= self.means(number_clusters, specs, labels)
    z=0.0;
+   debugger
    mean_1.each_index{|c| z+=self.distance(mean_1[c], mean_2[c], weights)}
+   debugger
   end while z > thresh
   reps = [];
   (0...s).to_a.each{|i| reps<< labels.index(i)}

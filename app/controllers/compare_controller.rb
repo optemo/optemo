@@ -3,25 +3,29 @@ class CompareController < ApplicationController
   require 'open-uri'
   
   def index
-    # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
-    if Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
-      hist = params[:hist].gsub(/\D/,'').to_i if params[:hist]
-      search_history = Session.searches if hist && params[:page].nil?
-      if params[:page]
-        classVariables(Search.create({:page => params[:page], :sortby => params[:sortby], "action_type" => "nextpage"}))
-      elsif search_history && hist <= search_history.length && hist > 0
-        #Going back to a previous search
-        classVariables(search_history[hist-1])
-      elsif params[:sortby] # Change sorting method via navigator_bar select box
-        classVariables(Search.create({:sortby => params[:sortby], "action_type" => "sortby"}))
-      else
-        #Initial clusters
-        classVariables(Search.create({:sortby => params[:sortby], "action_type" => "initial"}))
-      end
+    if request.subdomains == "ilovecameras" && !params[:ajax] && (!params[:checked] || params[:checked][:password] != "camerasloveme")
+      render 'password', :layout => false
     else
-      @indexload = true
+      # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
+      if Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
+        hist = params[:hist].gsub(/\D/,'').to_i if params[:hist]
+        search_history = Session.searches if hist && params[:page].nil?
+        if params[:page]
+          classVariables(Search.create({:page => params[:page], :sortby => params[:sortby], "action_type" => "nextpage"}))
+        elsif search_history && hist <= search_history.length && hist > 0
+          #Going back to a previous search
+          classVariables(search_history[hist-1])
+        elsif params[:sortby] # Change sorting method via navigator_bar select box
+          classVariables(Search.create({:sortby => params[:sortby], "action_type" => "sortby"}))
+        else
+          #Initial clusters
+          classVariables(Search.create({:sortby => params[:sortby], "action_type" => "initial"}))
+        end
+      else
+        @indexload = true
+      end
+      correct_render
     end
-    correct_render
   end
 
   def groupby
