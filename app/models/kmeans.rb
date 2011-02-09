@@ -313,7 +313,7 @@ for(j=1;j<k;j++){
 /////////////////////////////////////////////////////////////////////////changing the label assignment based on avg utilities.    
   for (i=0; i<nn; i++) {
     h =  labels[i];
-    labels[i] = temp_labels[h];
+    temp_labels[h] = labels[i]; 
     it=0;
     while (it<k-1 && ids[it]!=h){
       it++;
@@ -434,11 +434,11 @@ def self.ruby(number_clusters, specs, weights, inits)
   weights = [1]*specs.first.size if weights.nil?
   thresh = 0.000001
   #mean_1 = self.seed(number_clusters, specs)
-  mean_1 = inits.each{|i| specs[i]}
+  mean_1 = inits.map{|i| specs[i]}
   mean_2 =[]
   labels = []
   dif = []
-  begin
+  begin 
    mean_2 = mean_1 
    specs.each_index do |i| 
      mean_1.each_index do |c|
@@ -448,12 +448,10 @@ def self.ruby(number_clusters, specs, weights, inits)
    end 
    mean_1= self.means(number_clusters, specs, labels)
    z=0.0;
-   debugger
    mean_1.each_index{|c| z+=self.distance(mean_1[c], mean_2[c], weights)}
-   debugger
   end while z > thresh
   reps = [];
-  (0...s).to_a.each{|i| reps<< labels.index(i)}
+  (0...number_clusters).to_a.each{|i| reps<< labels.index(i)}
   labels + reps   
 end
 
