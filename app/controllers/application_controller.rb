@@ -30,14 +30,21 @@ class ApplicationController < ActionController::Base
 
   def update_user
     mysession_id = session[:user_id]
+    ab_testing_type = session[:ab_testing_type]
     if mysession_id.nil?
-      mysession_id = User.create.id
+      new_user = User.create
+      # Put AB testing logic here. Set to 0 for now.
+
+      ab_testing_type = new_user.ab_testing_type = 0
+      mysession_id = new_user.id
       session[:user_id] = mysession_id
+      session[:ab_testing_type] = ab_testing_type
     end
     # request.domain gets anything up to www.printers.browsethenbuy.co.uk (n + 1 elements in the domain name)
     # request.env["REMOTE_HOST"] is necessary when doing embedding
     s = Session.new(request.domain(4) || request.env["REMOTE_HOST"]) 
     s.id = mysession_id
+    s.ab_testing_type = ab_testing_type
     $d = Distribution.new unless defined? $d
     $k = Kmeans.new unless defined? $k    
   end

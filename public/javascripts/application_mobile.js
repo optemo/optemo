@@ -18,7 +18,8 @@ var optemo_module;
 optemo_module = (function (my){
     // The following is pulled from optemo.html.erb
     var VERSION = $("#version").html();
-    var SESSION_ID = parseInt($('#seshid').attr('session-id'))
+    var SESSION_ID = parseInt($('#seshid').attr('session-id'));
+    var AB_TESTING_TYPE = parseInt($('#ab_testing_type').html());
 
     //--------------------------------------//
     //       Piwik Tracking Functions       //

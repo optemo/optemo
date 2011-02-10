@@ -33,7 +33,7 @@ class SearchProduct < ActiveRecord::Base
           vals = rec.vals.split(",")
           names.each_with_index{|name,i|specs[name] << vals[i].to_f}
         end
-        raise SearchError, "No products match that search criteria" if res.empty?
+        raise SearchError, "No products match that search criteria for #{Session.product_type}" if res.empty?
         specs.default = nil #Clear the array default so that it can be stored in the cache
         p_ids = res.map(&:product_id)
         [specs,p_ids]
