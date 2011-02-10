@@ -1,3 +1,9 @@
+desc "Restarts passenger if in debug mode"
+task :restart do
+  system("touch tmp/restart.txt")
+  system("touch tmp/debug.txt") if ENV["DEBUG"] == 'true'
+end
+
 desc "Run boostexter to generate strong hypothesis files or Parse boostexter strong hypothesis files and save in database"
 task :btxtr => :environment do
      $: << "#{Rails.root}/lib/cluster_labeling/boostexter_labels_rb"
