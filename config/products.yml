@@ -61,7 +61,7 @@ bestbuy:
         used_for: [show, filter, cluster]
     color:
         feature_type: Categorical
-        used_for: [show, filter]
+        used_for: [show, filter, cluster]
 
 #######################################
 #    Cameras.BrowseThenBuy, Mobile    #
