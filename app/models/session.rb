@@ -8,6 +8,7 @@ class Session
   cattr_accessor :product_type # Product type (camera_us, etc.), used everywhere
   cattr_accessor :piwikSiteId # Piwik Site ID, as configured in the currently-running Piwik install.
   cattr_accessor :onlyfiltering
+  cattr_accessor :ab_testing_type # Categorizes new users for AB testing
 
   def initialize (url = nil)
     defaultSite = 'cameras.assist.demo.optemo.com'
