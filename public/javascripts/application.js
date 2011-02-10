@@ -117,7 +117,8 @@ optemo_module = (function (my){
     my.MODEL_NAME = $("#modelname").html();
     var VERSION = $("#version").html();
     my.DIRECT_LAYOUT = ($('#directLayout').html() == "true");
-    var SESSION_ID = parseInt($('#seshid').attr('session-id'));
+    var SESSION_ID = parseInt($('#seshid').html());
+    var AB_TESTING_TYPE = parseInt($('#ab_testing_type').html());
 
     //--------------------------------------//
     //         Show Page Pre-loader         //
@@ -435,6 +436,7 @@ optemo_module = (function (my){
     		extra_data['optemo_session'] = SESSION_ID;
     		extra_data['version'] = VERSION;
     		extra_data['interface_view'] = (my.DIRECT_LAYOUT ? 'direct' : 'assist');
+    		extra_data['ab_testing_type'] = AB_TESTING_TYPE;
     		piwikTracker.setDocumentTitle(page_title);
     		piwikTracker.setCustomData(extra_data);
     		piwikTracker.trackPageView();

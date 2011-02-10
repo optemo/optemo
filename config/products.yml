@@ -201,7 +201,7 @@ cameras.assist:
     brand:
         feature_type: Categorical
         used_for: [boost, filter, show]        
-m.browsethenbuy.com:
+m.demo.optemo.com:
     product_type: camera_us
     layout: mobileview
     site_id: 8 # See Piwik at analytics.optemo.com for details
