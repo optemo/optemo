@@ -23,7 +23,7 @@ inline :C do |builder|
    
    int k = NUM2INT(cluster_n);
    double DBL_MAX = 10000000.0;
-   double tresh = 0.000001;
+   double tresh = 0.0001;
    
    double z=0.0;
    double z_temp = 0.0;
@@ -313,7 +313,6 @@ for(j=1;j<k;j++){
 /////////////////////////////////////////////////////////////////////////changing the label assignment based on avg utilities.    
   for (i=0; i<nn; i++) {
     h =  labels[i];
-    temp_labels[h] = labels[i]; 
     it=0;
     while (it<k-1 && ids[it]!=h){
       it++;
@@ -329,7 +328,27 @@ for (j=0; j<k; j++) {
 for (j=0;j<k; j++){
    reps[id_map[j]] = temp_reps[j];
 }
-//
+//Cleanup
+
+
+for (i=0; i<nn; i++) free(data_cont[i]);
+for (i=0; i<nn; i++) 
+  for (j=0; j<dd_cat; j++) free(data_cat[i][j]);
+  
+for (i=0; i<nn; i++) 
+  for (j=0; j<dd_bin; j++) free(data_bin[i][j]);
+
+for (i=0; i<k; i++) free(means_cont_1[i]);
+for (i=0; i<k; i++) free(means_cont_2[i]);
+  
+free(dim_per_cat);
+free(inits);
+free(utilities);
+free(newlabels);
+free(weights);
+free(temp_labels);
+free(ids);
+
 ///storing the labels in the ruby array
  for (j=0; j<nn; j++) rb_ary_store(labels_and_reps, j, INT2NUM(labels[j]));
  for (j=0; j<k; j++) rb_ary_store(labels_and_reps, nn+j, INT2NUM(reps[j]));
@@ -347,18 +366,22 @@ def self.compute(number_clusters,p_ids)
   dim_bin = Session.binary["cluster"].size
   dim_cat = Session.categorical["cluster"].size
   weights = self.set_weights(dim_cont, dim_bin, dim_cat)
-  s = p_ids.size 
+  s = p_ids.size
+  ft = [] 
   # don't need to cluster if number of products is less than clusters
 
   if (s<number_clusters)
-    
-    utilitylist = weighted_ft(ft, weights).map{|f| f. inject(:+)}
+    if ft.empty?
+      utilitylist = [1]*s
+    else  
+      utilitylist = weighted_ft(ft, weights).map{|f| f. inject(:+)}
+    end  
     #if utilities are the same
     utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
     util_tmp = utilitylist.sort{|x,y| y <=> x }    
     ordered_list = util_tmp.map{|u| utilitylist.index(u)}
     return ordered_list + ordered_list
-  end  
+  end
  
   st = Product.specs(p_ids)
   cont_specs = st[0...dim_cont].transpose
