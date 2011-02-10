@@ -6,16 +6,21 @@ require 'inline'
     num_buckets = 24; #Must be greater than 0
     mins = []
     maxes = []
+    specs = Product.filterspecs.transpose
     
     begin
       Session.continuous["filter"].each do |f| 
         min,max = ContSpec.allMinMax(f)
         #Max must be larger or equal to min
-        raise ValidationError unless max >= min
+        raise ValidationError, "min is larger than max" unless max >= min        
         mins << min
         maxes << max
       end
-      specs = Product.filterspecs.transpose
+      
+      raise ValidationError, "num_buckets is less than 2" unless num_buckets>1
+      raise ValidationError, "size of mins is not right" unless mins.size == specs.first.size
+      raise ValidationError, "size of maxes is not right" unless maxes.size == specs.first.size
+      
       res = distribution_c(specs.flatten, specs.size, specs.first.size, num_buckets, mins, maxes) #unless $res
       Session.continuous["filter"].each_with_index do |f, i|   
         t = i*(2+num_buckets) 
@@ -24,6 +29,7 @@ require 'inline'
       dist
     rescue ValidationError
       puts "Falling back to ruby distribution"
+      num_buckets = 24
       debugger
       ruby
     end
