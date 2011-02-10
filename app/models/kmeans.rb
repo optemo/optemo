@@ -284,70 +284,70 @@ inline :C do |builder|
   }  
     
  //////////////////////////////////////////////////////////////////////sort based on utilties   
-   int idKey;
-   double key;	 
-   int* ids = malloc(sizeof(int)*k);
-   double* x = (double*)calloc(k, sizeof(double));
-   for (j=0; j<k; j++) x[j] = avgUtilities[j];
-   
-for (h=0; h<k; h++) ids[h]=h;
-for(j=1;j<k;j++){
-   key=x[j];
-	   idKey = ids[j];	
-      i=j-1;
-
-      while(x[i]<key && i>=0)
-      {
-          x[i+1]=x[i];
- 		     ids[i+1] = ids[i];	
-          i--;
-      }
-      x[i+1] = key;
-   	ids[i+1] = idKey;
-  }
-  int it;
-  int* id_map = calloc(k,sizeof(int));
-  int* temp_reps = calloc(k,sizeof(int));
-  int* temp_labels = calloc(nn,sizeof(int));
-  for (i=0; i<nn; i++)temp_labels[i] = labels[i];
+//   int idKey;
+//   double key;	 
+//   int* ids = malloc(sizeof(int)*k);
+//   double* x = (double*)calloc(k, sizeof(double));
+//   for (j=0; j<k; j++) x[j] = avgUtilities[j];
+//   
+//for (h=0; h<k; h++) ids[h]=h;
+//for(j=1;j<k;j++){
+//   key=x[j];
+//	   idKey = ids[j];	
+//      i=j-1;
+//
+//      while(x[i]<key && i>=0)
+//      {
+//          x[i+1]=x[i];
+// 		     ids[i+1] = ids[i];	
+//          i--;
+//      }
+//      x[i+1] = key;
+//   	ids[i+1] = idKey;
+//  }
+//  int it;
+//  int* id_map = calloc(k,sizeof(int));
+//  int* temp_reps = calloc(k,sizeof(int));
+//  int* temp_labels = calloc(nn,sizeof(int));
+//  for (i=0; i<nn; i++)temp_labels[i] = labels[i];
 /////////////////////////////////////////////////////////////////////////changing the label assignment based on avg utilities.    
-  for (i=0; i<nn; i++) {
-    h =  labels[i];
-    it=0;
-    while (it<k-1 && ids[it]!=h){
-      it++;
-    }
-    
-    labels[i] = it;
-    id_map[temp_labels[i]] = it;  
-  }
-
-for (j=0; j<k; j++) {
-  temp_reps[j] = reps[j];
-}  
-for (j=0;j<k; j++){
-   reps[id_map[j]] = temp_reps[j];
-}
+//  for (i=0; i<nn; i++) {
+//    h =  labels[i];
+//    it=0;
+//    while (it<k-1 && ids[it]!=h){
+//      it++;
+//    }
+//    
+//    labels[i] = it;
+//    id_map[temp_labels[i]] = it;  
+//  }
+//
+//for (j=0; j<k; j++) {
+//  temp_reps[j] = reps[j];
+//}  
+//for (j=0;j<k; j++){
+//   reps[id_map[j]] = temp_reps[j];
+//}
 //Cleanup
 
 
-for (i=0; i<nn; i++) free(data_cont[i]);
-for (i=0; i<nn; i++) 
-  for (j=0; j<dd_cat; j++) free(data_cat[i][j]);
-  
-for (i=0; i<nn; i++) 
-  for (j=0; j<dd_bin; j++) free(data_bin[i][j]);
-
-for (i=0; i<k; i++) free(means_cont_1[i]);
-for (i=0; i<k; i++) free(means_cont_2[i]);
-  
-free(dim_per_cat);
-free(inits);
-free(utilities);
-free(newlabels);
-free(weights);
-free(temp_labels);
-free(ids);
+//for (i=0; i<nn; i++) free(data_cont[i]);
+//for (i=0; i<nn; i++) 
+//  for (j=0; j<dd_cat; j++) free(data_cat[i][j]);
+//  
+//for (i=0; i<nn; i++) 
+//  for (j=0; j<dd_bin; j++) free(data_bin[i][j]);
+//
+//for (i=0; i<k; i++) free(means_cont_1[i]);
+//for (i=0; i<k; i++) free(means_cont_2[i]);
+//  
+//free(dim_per_cat);
+//free(inits);
+//free(utilities);
+//free(newlabels);
+//free(weights);
+//free(temp_labels);
+//free(ids);
 
 ///storing the labels in the ruby array
  for (j=0; j<nn; j++) rb_ary_store(labels_and_reps, j, INT2NUM(labels[j]));
