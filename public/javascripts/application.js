@@ -715,7 +715,7 @@ optemo_module = (function (my){
 		// Add a color selection -- submit
     	$('.swatch').unbind('click').click(function(){
 			my.loading_indicator_state.sidebar = true;
-		    var whichThingSelected = $(this).attr("style").replace(/background-color: (\w+);?/,'$1');
+		    var whichThingSelected = $(this).attr("style").replace(/background-color: (\w+);?/i,'$1');
 			if ($(this).hasClass("selected_swatch"))
 			{ //Removed selected color
 				$('#myfilter_color').val(opt_removeStringWithToken($('#myfilter_color').val(), whichThingSelected, '*'));
@@ -1122,7 +1122,7 @@ optemo_module = (function (my){
         clearTimeout(lis.sidebar_timer); // clearTimeout can run on "null" without error
         clearTimeout(lis.main_timer);
         clearTimeout(lis.socket_error_timer); // We need to clear the timeout error here
-    	my.flashError('<div class="poptitle">&nbsp;<a class="close" href="close"><img src="/images/closepopup_white.gif"></a></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
+    	my.flashError('<div class="poptitle">&nbsp;<a class="close" href="close">Close Window</a></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
     	my.trackPage('goals/error');
     }
 

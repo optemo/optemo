@@ -11,7 +11,7 @@ class Session
   cattr_accessor :ab_testing_type # Categorizes new users for AB testing
 
   def initialize (url = nil)
-    defaultSite = 'cameras.assist.demo.optemo.com'
+    defaultSite = 'ilovecameras.optemo.com'
     # This parameter controls whether the interface features drag-and-drop comparison or not.
     self.dragAndDropEnabled = true
     # Relative descriptions, in comparison to absolute descriptions, have been the standard since late 2009, and now we use Boostexter labels also.

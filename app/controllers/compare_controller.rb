@@ -3,7 +3,7 @@ class CompareController < ApplicationController
   require 'open-uri'
   
   def index
-    if request.subdomains == "ilovecameras" && !params[:ajax] && (!params[:checked] || params[:checked][:password] != "camerasloveme")
+    if request.subdomains.first == "ilovecameras" && !params[:ajax] && (!params[:checked] || params[:checked][:password] != "camerasloveme")
       render 'password', :layout => false
     else
       # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
