@@ -23,7 +23,7 @@ inline :C do |builder|
    
    int k = NUM2INT(cluster_n);
    double DBL_MAX = 10000000.0;
-   double tresh = 0.000001;
+   double tresh = 0.0001;
    
    double z=0.0;
    double z_temp = 0.0;
