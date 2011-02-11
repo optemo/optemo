@@ -423,7 +423,7 @@ optemo_module = (function (my){
         var height = elementToShadow.innerHeight() + 2;
         $('#silkscreen').css({'position' : 'absolute', 'display' : 'inline', 'left' : pos.left + "px", 'top' : pos.top + 27 + "px", 'height' : height - 27 + "px", 'width' : width + "px"}).fadeTo(0,0.2); // The 27 is arbitrary - equal to the top of the filter bar (title, reset button)
         $("#silkscreen").unbind('click'); // We need this so that the user can't clear the silkscreen by clicking on it.
-        $('#filter_bar_loading').css({'display' : 'inline', 'left' : (pos.left + (width-100)/2.0) + "px"});
+        $('#filter_bar_loading').css({'display' : 'inline', 'left' : (pos.left + (width-126)/2) + "px", 'top' : pos.top + (height - 46)/2 + "px"});
     };
 
     //--------------------------------------//
