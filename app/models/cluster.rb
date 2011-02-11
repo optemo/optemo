@@ -5,7 +5,7 @@ class Cluster
   
   def initialize(products, rep_id)
     @products = products # necessary?
-    @rep_id = rep_id
+    #@rep_id = rep_id
     if Rails.env.development?
       Site::Application::CLUSTER_CACHE[products.hash.abs]=products
       Site::Application::CLUSTER_CACHE[rep_id.hash.abs]=rep_id
@@ -51,8 +51,13 @@ class Cluster
   def representative
     unless @rep
       #@rep = Product.cached(rep_id)
-      utilities = products.map{|p_id| ContSpec.featurecache(p_id, "utility")}.map(&:value)
-      @rep = Product.cached(products[utilities.index(utilities.max)])
+      if Session.search.sortby=='Price'
+         prices = products.map{|p_id| ContSpec.featurecache(p_id, "price")}.map(&:value)
+         @rep = Product.cached(products[prices.index(prices.min)])
+      else    
+        utilities = products.map{|p_id| ContSpec.featurecache(p_id, "utility")}.map(&:value)
+        @rep = Product.cached(products[utilities.index(utilities.max)])
+      end  
     end
     @rep
   end
