@@ -84,7 +84,7 @@ class CompareController < ApplicationController
     id = params[:id] = params[:id][/^\d+/]
     @product = Product.cached(id)
     @allspecs = ContSpec.cache_all(id).merge(CatSpec.cache_all(id)).merge(BinSpec.cache_all(id)).merge(TextSpec.cache_all(id))
-    @sibling_ids_and_imgsurls = ProductSiblings.cache_ids_and_imgsurl(id, "imgsurl")
+    @siblings = ProductSiblings.find_all_by_product_id_and_name(id,"imgsurl")
     @s = Session
 
     respond_to do |format|
