@@ -64,8 +64,8 @@ end
 def self.set_weights(dim_cont, dim_bin, dim_cat)
   dim = dim_cont+dim_bin+dim_cat
   if Session.search.sortby=='Price' # price is selected as prefered order
-    weights = [0.05/(dim-1)]*dim  
-    weights[Session.continuous["cluster"].index('price')] = 0.95    
+    weights = [0.01/(dim-1)]*dim  
+    weights[Session.continuous["cluster"].index('price')] = 0.99    
   else
     weights = [1.0/dim]*dim
   end
@@ -100,12 +100,14 @@ def self.ruby(number_clusters, specs, ft, weights, inits)
   reps = [];
 
   #utility ordering
-  utilitylist = weighted_ft(ft, weights).map{|f| f. inject(:+)}
+  #if Session.search.sortby=='Price'
+    
+  
+  utilitylist = weighted_ft(ft, weights).map{|f| f. inject(:+)}  
   grouped_utilities = group_by_labels(utilitylist, labels).map{|g| g.inject(:+)}
   sorted_group_utilities = grouped_utilities.sort{|x,y| y<=>x}
   sorted_labels = []
   labels.each_index{|i| sorted_labels << sorted_group_utilities.index(grouped_utilities[labels[i]])}
-
   (0...number_clusters).to_a.each{|i| reps<< sorted_labels.index(i)}
   sorted_labels + reps   
 end
