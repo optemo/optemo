@@ -2,12 +2,13 @@
 <% if flash[:notice] %>
 <span class="notice"><%= flash[:notice] %></span>
 <% end %>
-<div <%= 'class=listview_ungrouped' if @s.search.groupby.nil? && @s.directLayout %> >
+<div <%= 'class="listview_ungrouped"' if @s.search.groupby.nil? && @s.directLayout %> >
 <div id="navigator_bar" class="rounded_nav rounded">
 	<div class="tl"></div><div class="tr"></div>
 	<% mb = main_boxes #Calculate mb before navtitle %>
+	<div id="sorting_method_box"><%= select('sorting_method', @s.search.sortby, [["Sort by: Relevance","Relevance"], ["Sort by: Price","Price"]], {:selected => @s.search.sortby}, {:id => "sorting_method"}) %></div>
     <div id="navtitle"><%=raw navtitle %></div>
-    <div id="sorting_method_box">Sort by: <%= select('sorting_method', @s.search.sortby, ["Relevance", "Price"], {:selected => @s.search.sortby}, {:id => "sorting_method"}) %></div>
+    
 <% if @s.directLayout %>
 	<% columntext = columntext(!@s.search.groupby.nil?) %>
 <div id="columnheader">
