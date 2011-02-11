@@ -68,7 +68,10 @@ task :serversetup do
 end
 
 task :restartmemcached do
-  sudo "ps ax | awk '/memcached/ && !/awk/ {print $1}' | xargs kill ; memcached -d"
+  run "ps ax | awk '/memcached/ && !/awk/ {print $1}' > tempfile"
+  sudo "xargs kill < tempfile"
+  run "rm tempfile"
+  run "memcached -d"
 end
 
 task :fetchAutocomplete do
