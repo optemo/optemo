@@ -31,11 +31,11 @@ Site::Application.configure do
   # Only use best-standards-support built into browsers
   config.action_dispatch.best_standards_support = :builtin
   
-  if File.exists?(File.join(RAILS_ROOT,'tmp', 'debug.txt'))
+  if File.exists?(File.join(Rails.root.to_s,'tmp', 'debug.txt'))
      require 'ruby-debug'
      Debugger.wait_connection = true
      Debugger.start_remote
-     File.delete(File.join(RAILS_ROOT,'tmp', 'debug.txt'))
+     File.delete(File.join(Rails.root.to_s,'tmp', 'debug.txt'))
   end
   
 end

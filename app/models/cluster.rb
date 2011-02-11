@@ -50,7 +50,9 @@ class Cluster
   #The represetative product for this cluster, assumes nodes ordered by utility
   def representative
     unless @rep
-      @rep = Product.cached(rep_id)
+      #@rep = Product.cached(rep_id)
+      utilities = products.map{|p_id| ContSpec.featurecache(p_id, "utility")}.map(&:value)
+      @rep = Product.cached(products[utilities.index(utilities.max)])
     end
     @rep
   end
