@@ -219,7 +219,7 @@ optemo_module = (function (my){
     		$('#info').html(data);
     	} else {
     	    my.quickajaxcall('#info', url, function(){
-    	        if (url.match(/show/)) {
+    	        if (url.match(/\/product/)) {
     	            // Load the classic theme
                     Galleria.loadTheme('/javascripts/galleria.classic.js');
                     // Initialize Galleria
@@ -715,7 +715,10 @@ optemo_module = (function (my){
 		// Add a color selection -- submit
     	$('.swatch').unbind('click').click(function(){
 			my.loading_indicator_state.sidebar = true;
-		    var whichThingSelected = $(this).attr("style").replace(/background-color: (\w+);?/,'$1');
+		    var whichThingSelected = $(this).attr("style").replace(/background-color: (\w+);?/i,'$1');
+		    // Fix up the case issues for Internet Explorer (always pass in color value as "Red")
+		    whichThingSelected = whichThingSelected.toLowerCase();
+		    whichThingSelected = whichThingSelected.charAt(0).toUpperCase() + whichThingSelected.slice(1);
 			if ($(this).hasClass("selected_swatch"))
 			{ //Removed selected color
 				$('#myfilter_color').val(opt_removeStringWithToken($('#myfilter_color').val(), whichThingSelected, '*'));
