@@ -120,7 +120,7 @@ optemo_module = (function (my){
     	});
 	
     	//Clear form
-    	$('#staticajax_reset').click(function(){
+    	$('.reset').click(function(){
     		//Reset min sliders
     		$('*[id^=featurerangeone]').each(function() {
     			this.selectedIndex = 0;

@@ -983,6 +983,14 @@ optemo_module = (function (my){
 		$(".swatch").live('click', function(){
 			$(this).toggleClass('selected_swatch');
 		});
+		
+		//Reset filters
+		$('.reset').live('click', function(){
+			trackPage('goals/reset', {'filter_type' : 'reset'});
+			optemo_module.loading_indicator_state.sidebar = true;
+			optemo_module.ajaxcall($(this).attr('href')+'?ajax=true');
+			return false;
+		});
     }
 
     function ErrorInit() {
@@ -1423,14 +1431,6 @@ jQuery(document).ready(function($){
 		//var viewportHeight = $(window).height();
 		optemo_module.applySilkScreen('/comparison/' + productIDs, null, 940, 580);
 		trackPage('goals/compare', {'filter_type' : 'direct_comparison'});
-		return false;
-	});
-
-	//Static Ajax call
-	$('#staticajax_reset').click(function(){
-		trackPage('goals/reset', {'filter_type' : 'reset'});
-		optemo_module.loading_indicator_state.sidebar = true;
-		optemo_module.ajaxcall($(this).attr('href')+'?ajax=true');
 		return false;
 	});
 
