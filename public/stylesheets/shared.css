@@ -124,8 +124,12 @@ a:hover {
 
 .close {
 	position: absolute;
-	top: -22px;
+	top: -25px;
 	right: 13px;
+	color: white;
+}
+.close:visited {
+	color:white;
 }
 
 #info h1 {

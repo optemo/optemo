@@ -24,8 +24,8 @@
 			<div style="margin-right: -3px">
 				<% color_counts = SearchProduct.cat_counts("color",true) %>
 				<% %w(Red Orange Yellow Green Blue Purple Pink White Silver Brown Black).each do |color| %>
-				<% next if color_counts[color].nil? && !chosen_cats.include?(color) %>
-				<div class="swatch<%= " white_swatch" if color == "White" %><%= " selected_swatch" if chosen_cats.include?(color) %>" style="background-color: <%= color %>"></div>
+    				<% next if color_counts[color].nil? && !chosen_cats.include?(color) %>
+    				<div class="swatch<%= " white_swatch" if color == "White" %><%= " selected_swatch" if chosen_cats.include?(color) %>" style="background-color: <%= color %>"></div>
 				<% end %>
 				<div style="clear: left;"></div>
 			</div>
