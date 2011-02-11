@@ -1053,7 +1053,11 @@ optemo_module = (function (my){
         	});
     	}
     	$('.selectboxfilter').removeAttr("disabled");
-    	$('.binary_filter').removeAttr('disabled');
+    	$('.binary_filter').each(function(){
+			if($(this).attr('data-disabled') != 'true') {
+				$(this).removeAttr('disabled');
+			}
+		});
 
     	// In simple view, select an aspect to create viewable groups
     	$('.groupby').unbind('click').click(function(){
