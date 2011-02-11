@@ -5,7 +5,7 @@ class Cluster
   
   def initialize(products, rep_id)
     @products = products # necessary?
-    @rep_id = rep_id
+    #@rep_id = rep_id
     if Rails.env.development?
       Site::Application::CLUSTER_CACHE[products.hash.abs]=products
       Site::Application::CLUSTER_CACHE[rep_id.hash.abs]=rep_id
