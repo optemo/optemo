@@ -983,6 +983,14 @@ optemo_module = (function (my){
 		$(".swatch").live('click', function(){
 			$(this).toggleClass('selected_swatch');
 		});
+		
+		//Reset filters
+		$('.reset').live('click', function(){
+			trackPage('goals/reset', {'filter_type' : 'reset'});
+			optemo_module.loading_indicator_state.sidebar = true;
+			optemo_module.ajaxcall($(this).attr('href')+'?ajax=true');
+			return false;
+		});
     }
 
     function ErrorInit() {
@@ -1045,7 +1053,11 @@ optemo_module = (function (my){
         	});
     	}
     	$('.selectboxfilter').removeAttr("disabled");
-    	$('.binary_filter').removeAttr('disabled');
+    	$('.binary_filter').each(function(){
+			if($(this).attr('data-disabled') != 'true') {
+				$(this).removeAttr('disabled');
+			}
+		});
 
     	// In simple view, select an aspect to create viewable groups
     	$('.groupby').unbind('click').click(function(){
@@ -1423,14 +1435,6 @@ jQuery(document).ready(function($){
 		//var viewportHeight = $(window).height();
 		optemo_module.applySilkScreen('/comparison/' + productIDs, null, 940, 580);
 		trackPage('goals/compare', {'filter_type' : 'direct_comparison'});
-		return false;
-	});
-
-	//Static Ajax call
-	$('#staticajax_reset').click(function(){
-		trackPage('goals/reset', {'filter_type' : 'reset'});
-		optemo_module.loading_indicator_state.sidebar = true;
-		optemo_module.ajaxcall($(this).attr('href')+'?ajax=true');
 		return false;
 	});
 
