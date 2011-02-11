@@ -2,7 +2,7 @@
 module CachingMemcached
   def self.cache_lookup(key)
     # unless Rails.env.development? || Rails.env.test?
-    if Rails.cache.class == ActiveSupport::Cache::MemCacheStore # We have memcache loaded
+    if Rails.cache.class != ActiveSupport::Cache::FileStore # We have memcache loaded
       Rails.cache.fetch(key) { yield }
     else
       yield
