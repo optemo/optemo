@@ -220,16 +220,8 @@ optemo_module = (function (my){
     	} else {
     	    my.quickajaxcall('#info', url, function(){
     	        if (url.match(/\/product/)) {
-    	            // Load the classic theme
-                    Galleria.loadTheme('/javascripts/galleria.classic.js');
-                    // Initialize Galleria
-                    jQuery('#galleria').galleria();
-                    // The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
-                    $('.galleria-thumbnails-list').livequery(function() {
-                        var g = $('#galleria').find('.galleria-thumbnails-list');
-                        g.children().css('float', 'left');
-                        g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
-                    });
+    	            // Initialize Galleria
+                    $('#galleria').galleria();
         	        my.DBinit();
         	        my.preloadSpecsAndReviews(jQuery('#tab_header').find('ul').attr('data-sku'));
     	        } else {
@@ -770,6 +762,13 @@ optemo_module = (function (my){
     };
 
     my.LiveInit = function() { // This stuff only needs to be called once per full page load.
+		// The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
+        $('.galleria-thumbnails-list').livequery(function() {
+            var g = $('#galleria').find('.galleria-thumbnails-list');
+            g.children().css('float', 'left');
+            g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
+        });
+
     	// From Compare
     	//Remove buttons on compare
     	$('.remove').live('click', function(){
@@ -1554,6 +1553,9 @@ jQuery(document).ready(function($){
 	});
 	if ($('#tourautostart').length) { launchtour; } //Automatically launch tour if appropriate
 	$("#tourButton a").click(launchtour); //Launch tour when this is clicked
+	
+	// Load the classic theme
+    Galleria.loadTheme('/javascripts/galleria.classic.js');
 });
 
 if (window.embedding_flag) {
