@@ -7,7 +7,7 @@
 	<li><a href="#" class="fetch_bestbuy_accessories">Accessories</a></li>
 </ul>
 </div>
-<%= link_to image_tag("closepopup#{fr?}_white.gif"), "close", :class => "close"%>
+<%= link_to "Close Window", "close", :class => "close"%>
 </div>
 <% else %>
 <% self.title = "#{@product.title}" %>
@@ -38,9 +38,9 @@
     		<% end %>
     	</div>
 	
-	 <% if @s.product_type == "camera_bestbuy" && !(@sibling_ids_and_imgsurls.blank?) %>
+	 <% if @s.product_type == "camera_bestbuy" && !(@siblings.blank?) %>
 		<div style="display:none;" id="bestbuy_sibling_images"><span style="line-height:47px; float:left">Other Colors: &nbsp;</span>
-			<% @sibling_ids_and_imgsurls.sort{|p| p.sibling_id}.each do |sib_id_and_imgsurl| %>  
+			<% @siblings.sort{|p| p.sibling_id}.each do |sib_id_and_imgsurl| %>  
     			<% unless sib_id_and_imgsurl.sibling_id == @product.id %>
     			    <% sib_product = Product.cached(sib_id_and_imgsurl.sibling_id)%> 
     			    <%= link_to product_path(:name => sib_product.descurl, :id => sib_product.id), :'data-id' => sib_product.id, :class => "easylink", :title => "Click for product specifications" do %>

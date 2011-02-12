@@ -220,8 +220,6 @@ optemo_module = (function (my){
     	} else {
     	    my.quickajaxcall('#info', url, function(){
     	        if (url.match(/\/product/)) {
-    	            // Load the classic theme
-                    Galleria.loadTheme('/javascripts/galleria.classic.js');
                     // Initialize Galleria
                     jQuery('#galleria').galleria();
                     // The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
@@ -436,7 +434,7 @@ optemo_module = (function (my){
         var height = elementToShadow.innerHeight() + 2;
         $('#silkscreen').css({'position' : 'absolute', 'display' : 'inline', 'left' : pos.left + "px", 'top' : pos.top + 27 + "px", 'height' : height - 27 + "px", 'width' : width + "px"}).fadeTo(0,0.2); // The 27 is arbitrary - equal to the top of the filter bar (title, reset button)
         $("#silkscreen").unbind('click'); // We need this so that the user can't clear the silkscreen by clicking on it.
-        $('#filter_bar_loading').css({'display' : 'inline', 'left' : (pos.left + (width-100)/2.0) + "px"});
+        $('#filter_bar_loading').css({'display' : 'inline', 'left' : (pos.left + (width-126)/2) + "px", 'top' : pos.top + (height - 46)/2 + "px"});
     };
 
     //--------------------------------------//
@@ -783,6 +781,13 @@ optemo_module = (function (my){
     };
 
     my.LiveInit = function() { // This stuff only needs to be called once per full page load.
+		// The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
+        $('.galleria-thumbnails-list').livequery(function() {
+            var g = $('#galleria').find('.galleria-thumbnails-list');
+            g.children().css('float', 'left');
+            g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
+        });
+
     	// From Compare
     	//Remove buttons on compare
     	$('.remove').live('click', function(){
@@ -1570,6 +1575,9 @@ jQuery(document).ready(function($){
 	});
 	if ($('#tourautostart').length) { launchtour; } //Automatically launch tour if appropriate
 	$("#tourButton a").click(launchtour); //Launch tour when this is clicked
+	
+	// Load the classic theme
+    Galleria.loadTheme('/javascripts/galleria.classic.js');
 });
 
 if (window.embedding_flag) {

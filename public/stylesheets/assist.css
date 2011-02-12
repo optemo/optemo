@@ -35,7 +35,7 @@ div#main {
 	position: relative;
 	margin-right: 4px; 
 	margin-bottom: 3px;
-	height:233px;
+	height:243px;
 	width: 182px; /*+2 for the border*/
 	/*background: url(../images/nbsingle-180.png) no-repeat;*/
 }
@@ -50,13 +50,11 @@ div#main {
 	position:relative;
 }
 .image_boundingbox {
-	margin-top: 1px;
-	margin-left: auto;
-	margin-right:auto;
+	margin: 1px auto;
 	position:relative;
 	text-align:center;
-	height:140px;
-	width: 140px;
+	height:150px;
+	width: 150px;
 }
 
 img.productimg {
