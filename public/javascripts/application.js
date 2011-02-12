@@ -464,35 +464,6 @@ optemo_module = (function (my){
     my.FilterAndSearchInit = function() {
         my.removeSilkScreen();
 
-    	//Show and Hide Descriptions
-    	$('.feature .label a, .desc .deleteX').live('click', function(){
-    		if($(this).parent().attr('class') == "desc")
-    			{var obj = $(this).parent();}
-    		else
-    			{var obj = $(this).siblings('.desc');}
-            // I think this is just toggling. Just on the off chance that something weird is happening here, I'll leave this code for now. ZAT 2010-08
-            obj.toggle();
-    //		var flip=parseInt(obj.attr('name-flip'));
-    //		if (isNaN(flip)){flip = 0;}
-    //		obj.toggle(flip++ % 2 == 0);
-    //		obj.attr('name-flip',flip);
-            if( obj.is(':visible') ) {
-        		my.trackPage('goals/label', {'filter_type' : 'description', 'ui_position' : obj.parent().attr('data-position')});
-    		}
-    		return false;
-    	});
-
-    	//Search submit
-    	$('#submit_button').unbind('click').click(function(){
-    		return submitsearch();
-    	});
-
-    	//Search submit
-    	$('#myfilter_search').unbind('keydown').keydown(function (e) {
-    		if (e.which==13)
-    			return submitsearch();
-    	});
-
     	// Initialize Sliders
     	$('.slider').each(function() {
     	    // threshold identifies that 2 sliders are too close to each other
@@ -710,8 +681,40 @@ optemo_module = (function (my){
     		});
     	});
 
+    	if ($.browser.msie)
+    	{
+    	    // If it's any version of IE, the transparency for the hands doesn't get done properly on page load - redo it here.
+    		$('.dragHand').each(function() {
+    			$(this).fadeTo("fast", 0.35);
+    		});
+            // Fix the slider position
+        	$('.hist').each(function() {
+               $(this).css('left', '7px');
+            });
+    	}
+    };
+
+    my.LiveInit = function() { // This stuff only needs to be called once per full page load.
+		// The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
+        $('.galleria-thumbnails-list').livequery(function() {
+            var g = $('#galleria').find('.galleria-thumbnails-list');
+            g.children().css('float', 'left');
+            g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
+        });
+
+    	//Search submit
+    	$('#submit_button').live('click', function(){
+    		return submitsearch();
+    	});
+
+    	//Search submit
+    	$('#myfilter_search').live('keydown', function (e) {
+    		if (e.which==13)
+    			return submitsearch();
+    	});
+
     	// Add a dropdownbox selection -- submit
-    	$('.selectboxfilter').unbind('change').change(function(){
+    	$('.selectboxfilter').live('change', function(){
 		    var whichThingSelected = $(this).val().replace(/ \(.*\)$/,'');
 			var whichSelector = $(this).attr('name');
 		    var categorical_filter_name = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]"));
@@ -723,8 +726,31 @@ optemo_module = (function (my){
     		return false;
     	});
 
+    	// Change sort method
+    	$('#sorting_method').live('change', function() {
+    	    var whichSortingMethodSelected = $(this).val();
+    	    var info = {'chosen_sorting_method' : whichSortingMethodSelected, 'filter_type' : 'sorting_method'};
+			my.trackPage('goals/filter/sorting_method', info);
+    	    my.loading_indicator_state.sidebar = true;
+            my.ajaxcall("/compare?ajax=true&sortby=" + whichSortingMethodSelected);
+	    });
+
+    	//Show and Hide Descriptions
+    	$('.feature .label a, .desc .deleteX').live('click', function(){
+    		if($(this).parent().attr('class') == "desc")
+    			{var obj = $(this).parent();}
+    		else
+    			{var obj = $(this).siblings('.desc');}
+            // I think this is just toggling. Just on the off chance that something weird is happening here, I'll leave this code for now. ZAT 2010-08
+            obj.toggle();
+            if( obj.is(':visible') ) {
+        		my.trackPage('goals/label', {'filter_type' : 'description', 'ui_position' : obj.parent().attr('data-position')});
+    		}
+    		return false;
+    	});
+
 		// Add a color selection -- submit
-    	$('.swatch').unbind('click').click(function(){
+    	$('.swatch').live('click', function(){
 			my.loading_indicator_state.sidebar = true;
 		    var whichThingSelected = $(this).attr("style").replace(/background-color: (\w+);?/i,'$1');
 		    // Fix up the case issues for Internet Explorer (always pass in color value as "Red")
@@ -746,17 +772,8 @@ optemo_module = (function (my){
     		return false;
     	});
 
-    	// Change sort method
-    	$('#sorting_method').unbind('change').change(function() {
-    	    var whichSortingMethodSelected = $(this).val();
-    	    var info = {'chosen_sorting_method' : whichSortingMethodSelected, 'filter_type' : 'sorting_method'};
-			my.trackPage('goals/filter/sorting_method', info);
-    	    my.loading_indicator_state.sidebar = true;
-            my.ajaxcall("/compare?ajax=true&sortby=" + whichSortingMethodSelected);
-	    });
-
     	// Remove a brand -- submit
-    	$('.removefilter').unbind('click').click(function(){
+    	$('.removefilter').live('click', function(){
     		var whichRemoved = $(this).attr('data-id');
     		var whichCat = $(this).attr('data-cat');
     		$('#myfilter_'+whichCat).val(opt_removeStringWithToken($('#myfilter_'+whichCat).val(), whichRemoved, '*'));
@@ -766,27 +783,6 @@ optemo_module = (function (my){
     		submitCategorical();
     		return false;
     	});
-
-    	if ($.browser.msie)
-    	{
-    	    // If it's any version of IE, the transparency for the hands doesn't get done properly on page load - redo it here.
-    		$('.dragHand').each(function() {
-    			$(this).fadeTo("fast", 0.35);
-    		});
-            // Fix the slider position
-        	$('.hist').each(function() {
-               $(this).css('left', '7px');
-            });
-    	}
-    };
-
-    my.LiveInit = function() { // This stuff only needs to be called once per full page load.
-		// The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
-        $('.galleria-thumbnails-list').livequery(function() {
-            var g = $('#galleria').find('.galleria-thumbnails-list');
-            g.children().css('float', 'left');
-            g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
-        });
 
     	// From Compare
     	//Remove buttons on compare
