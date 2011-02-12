@@ -230,6 +230,19 @@ optemo_module = (function (my){
                         g.children().css('float', 'left');
                         g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
                     });
+                    
+                    if (!($.browser.msie && $.browser.version == "7.0")) {
+                        // This is an unsightly hack, and unfortunately seems to be the only easy way to make it work.
+                        $('#tab_header li a').hover(function() {
+                            if (!($(this).parent().attr('id') == 'tab_selected')) {
+                                $(this).css('background', '#ddf');
+                            }
+                        }, function() {
+                            if (!($(this).parent().attr('id') == 'tab_selected')) {
+                                $(this).css('background', '#ddd');
+                            }
+                        });
+                    }
         	        my.DBinit();
         	        my.preloadSpecsAndReviews(jQuery('#tab_header').find('ul').attr('data-sku'));
     	        } else {
@@ -788,6 +801,7 @@ optemo_module = (function (my){
 
     	$('.fetch_bestbuy_info').live('click', function() {
     	    var t = $(this);
+    	    if (!($.browser.msie && $.browser.version == "7.0")) t.css('background','');
     	    if (!(t.parent().attr('id') == "tab_selected"))
     	    {
         	    $('#tabbed_content').html($('body').data('bestbuy_product_info'));
@@ -800,6 +814,7 @@ optemo_module = (function (my){
 
     	$('.fetch_bestbuy_specs').live('click', function () {
     	    var t = $(this), sku = t.parent().parent().attr('data-sku');
+    	    if (!($.browser.msie && $.browser.version == "7.0")) t.css('background','');
     	    if (!($('body').data('bestbuy_product_info')))
     	        $('body').data('bestbuy_product_info', $('#tabbed_content').html());
             $('#tab_selected').removeAttr('id');
@@ -811,6 +826,7 @@ optemo_module = (function (my){
 
 	    $('.fetch_bestbuy_reviews').live('click', function () {
     	    var t = $(this);
+    	    if (!($.browser.msie && $.browser.version == "7.0")) t.css('background','');
             $('#tab_selected').removeAttr('id');
             t.parent().attr('id', 'tab_selected');
 

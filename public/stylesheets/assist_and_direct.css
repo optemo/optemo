@@ -873,15 +873,11 @@ div .showtable{
 #tab_header a {
 	text-decoration: none;
 	display: block;
-	background: #ddd;
+	background: #dddddd;
 	padding: 0.24em 1em;
 	color: #00c;
 	width: 100px;
 	text-align: center;
-}
-
-#tab_header a:hover {
-	background: #ddf;
 }
 
 #tab_header #tab_selected a {
