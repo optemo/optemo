@@ -16,7 +16,7 @@ check filters:
 4) Click on "reset" link on the top left corner
 
 check sort by:
-1) click on the sort by drop down menu on top of the page and select sort by "price
+1) click on the sort by drop down menu on top of the page and select sort by "price"
 2) check if all displayed products are sorted based on price (cheapest first)
 
 drag and drop - compare
