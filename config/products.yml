@@ -275,6 +275,9 @@ localhost:
     waterproof:
         feature_type: Binary
         used_for: [show, filter]
+    customerRating:
+        feature_type: Continuous
+        used_for: [filter]
 
 ilovecameras:
     product_type: camera_bestbuy
@@ -333,6 +336,9 @@ ilovecameras.optemo.com:
     waterproof:
         feature_type: Binary
         used_for: [show, filter]
+    customerReviews:
+        feature_type: Continuous
+        used_for: [filter]
 
 ################################
 #  LaserPrinterHub, Printers   #

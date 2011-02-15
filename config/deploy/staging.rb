@@ -76,4 +76,5 @@ end
 
 # redopermissions is last, so that if it fails due to the searchd pid, no other tasks get blocked
 after :deploy, "serversetup"
-after :serversetup, "redopermissions"
+after :serversetup, "restartmemcached"
+after :restartmemcached, "redopermissions"
