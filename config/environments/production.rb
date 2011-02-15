@@ -54,7 +54,7 @@ Site::Application.configure do
   
 end
 
-#Reset memcached
+#create a new connection to memcached for forked processes, as a forked process will by default share file descriptors with its parent
 if defined?(PhusionPassenger)
   PhusionPassenger.on_event(:starting_worker_process) do |forked|
     # Only works with DalliStore
