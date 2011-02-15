@@ -336,7 +336,7 @@ ilovecameras.optemo.com:
     waterproof:
         feature_type: Binary
         used_for: [show, filter]
-    customerReviews:
+    customerRatings:
         feature_type: Continuous
         used_for: [filter]
 
