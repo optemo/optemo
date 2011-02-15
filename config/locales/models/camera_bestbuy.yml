@@ -22,7 +22,7 @@ en:
                 info:               'Magnifies the photo by physical lens movement to bring you closer to the subject, thereby keeping the original photo quality. The magnification level is expressed in factors, such as "3x", "6x", or "10x".'
                 unit:               "X"
             screensize:
-                name:               "Screen Size"
+                name:               "LCD Size"
                 info:               "The size of the LCD (Liquid Crystal Display) screen on the camera, measured diagonally. You may find it easier to view your subject on the screen than through a standard viewfinder. This feature is also useful for reviewing and deleting photos."
                 unit:               "in."
             slr:
@@ -40,4 +40,15 @@ en:
                 name:               "Customer Rating"
                 info:               "On a scale of 1 to 5, five being the best, this is the average of our customer ratings. Items are rated 0 if they have not been reviewed."
                 unit:               "1-5"
-        
+            cmos:
+                name:               "CMOS Sensor"
+            videoresolution:
+                name:               "Video Resolution"
+            touchscreen:
+                name:               "Touchscreen"
+            oled:
+                name:               "OLED Screen"
+            hdmi:
+                name:               "HDMI Output"
+            imagestabilization:
+                name:               "Image Stabilization"

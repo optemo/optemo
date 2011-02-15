@@ -11,7 +11,6 @@ class Session
   cattr_accessor :ab_testing_type # Categorizes new users for AB testing
 
   def initialize (url = nil)
-    defaultSite = 'ilovecameras.optemo.com'
     # This parameter controls whether the interface features drag-and-drop comparison or not.
     self.dragAndDropEnabled = true
     # Relative descriptions, in comparison to absolute descriptions, have been the standard since late 2009, and now we use Boostexter labels also.
@@ -26,14 +25,15 @@ class Session
     self.binary = Hash.new{|h,k| h[k] = []}
     self.categorical = Hash.new{|h,k| h[k] = []}
     file = YAML::load(File.open("#{Rails.root}/config/products.yml"))
-    if url && file[url].blank? # If no www.laserprinterhub.com, try laserprinterhub.com
-      split_url = url.split(".")[-2..-1]
-      url = split_url.join(".") if split_url
+    file.each_pair do |product_type,d|
+      if d["url"].keys.include? url
+        self.product_type = product_type
+        break
+      end
     end
-    url = defaultSite if file[url].blank?
+    self.product_type ||= 'cameras_bestbuy' #Default product type
     
-    product_yml = file[url]
-    self.product_type = product_yml["product_type"]
+    product_yml = file[self.product_type]
     # directLayout controls the presented view: Optemo Assist vs. Optemo Direct. 
     # Direct needs no clustering, showing all products in browseable pages and offering "group by" buttons.
     # mobileView controls screen vs. mobile view (Optemo Mobile)
@@ -43,12 +43,12 @@ class Session
 
     # Check for what Piwik site ID to put down in the optemo.html.erb layout
     # These site ids MUST match what's in the piwik database.
-    self.piwikSiteId = product_yml["site_id"] || 10 # This is a catch-all for testing sites.
+    self.piwikSiteId = product_yml["url"][self.product_type] || 10 # This is a catch-all for testing sites.
 
     # This block gets out the continuous, binary, and categorical features
     product_yml.each do |feature,atts|
       next if atts.class == Fixnum # This is for the site_id entry
-      case atts["feature_type"]
+      case atts["type"]
       when "Continuous"
         atts["used_for"].each{|flag| self.continuous[flag] << feature}
         self.continuous["all"] << feature #Keep track of all features
