@@ -31,8 +31,8 @@ class Session
         break
       end
     end
-    self.product_type ||= 'cameras_bestbuy' #Default product type
-    
+    self.product_type ||= 'camera_bestbuy' #Default product type
+  
     product_yml = file[self.product_type]
     # directLayout controls the presented view: Optemo Assist vs. Optemo Direct. 
     # Direct needs no clustering, showing all products in browseable pages and offering "group by" buttons.
