@@ -363,8 +363,10 @@ div.smalldesc {
 	text-align: left;
 	font-size: 0.8em;
 	width: 163px;
-	margin-top: 0.6em;
 	position: relative;
+}
+.feature .label {
+	margin-top: 0.6em;
 }
 .space {
 	margin-bottom: 15px; /*Spacing for histogram*/
