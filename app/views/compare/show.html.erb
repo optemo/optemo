@@ -4,10 +4,9 @@
 	<li id="tab_selected"><a href="#" class="fetch_bestbuy_info">Product Info</a></li>
 	<li><a href="#" class="fetch_bestbuy_specs">Specs</a></li>
 	<li><a href="#" class="fetch_bestbuy_reviews">Reviews</a></li>
-	<li><a href="#" class="fetch_bestbuy_accessories">Accessories</a></li>
 </ul>
 </div>
-<%= link_to "Close Window", "close", :class => "close"%>
+<%= link_to "Close Window", "close", :class => "bb_quickview_close"%>
 </div>
 <% else %>
 <% self.title = "#{@product.title}" %>
@@ -15,8 +14,7 @@
 <a href="/" id="browseother">Browse Other Printers</a>
 <% end %>
 	<h1><%= @product.title %></h1>
-	
-	       
+
 	<h5 style="margin: 0"><%= "Webcode: #{@product.sku}, Model: #{@product.mpn}" %></h5>
     <div id="tabbed_content">
     	<div id="galleria" style="width: 500px; height: 300px;">
@@ -37,7 +35,7 @@
     			<br><br>No Image Available
     		<% end %>
     	</div>
-	
+
 	 <% if @s.product_type == "camera_bestbuy" && !(@siblings.blank?) %>
 		<div style="display:none;" id="bestbuy_sibling_images"><span style="line-height:47px; float:left">Other Colors: &nbsp;</span>
 			<% @siblings.sort{|p| p.sibling_id}.each do |sib_id_and_imgsurl| %>  
@@ -63,28 +61,31 @@
 		<% end %>
 		<%# raw save.compact.join(", ") %>
 
-	    <div style="font-size: 1em;"><%= raw @allspecs["longDescription"] %></div>
+	    <div style="font-size: 1em;"><%= raw @allspecs["shortDescription"] %></div>
     </div>
     
 	<div id="features">
 	<ul>
-		<% if @allspecs["saleEndDate"] %>
-		<div style="font-size: 1.2em; height: 20px;"><span class="left">Our Price:</span><span class="right"><%= @allspecs["price"] %></span></div>
-	    <div style="color: #f00; font-size: 1.5em; font-weight: bold;height: 20px;"><span class="left">Sale Price:</span><span class="right"><%= @allspecs["saleprice"] %></span></div>
-	    <div style = "clear: both;font-weight: bold;height: 18px;"><span class="left">Sale Ends:</span><span class="right"><%= @allspecs["saleEndDate"][/^(\w|\/)+/] %></span></div>
-		<% else %>
-		<div style="font-size: 1.5em; height: 20px;"><span class="left">Our Price:</span><span class="right"><%= @allspecs["price"] %></span></div>
-		<% end %>
-		<div class="left" style="height: 18px;"><a href="http://www.bestbuy.ca/en-CA/help/what-is-your-lowest-price-guarantee/hc1001.aspx?path=27eeec1b59d42df5dfc298ab6993d9dfen15&HelpTitleId=HC1001" class="popup-link">Lowest Price Guarantee</a></div>
-		<div class="spacer" style="border-bottom: 1px solid #ccc; clear: both; margin-bottom: 15px;"></div>
-	
-	    <div class="buttons"><%= image_tag "bestbuy_addtocart.gif" %></div>
-	    <div class="buttons"><%= image_tag "bestbuy_add_wishlist.gif" %></div>
-	    <div class="buttons" style="margin-bottom: 8px;"><%= image_tag "bestbuy_add_to_pricewatch.gif" %></div>
-	    
-	    <div class="bbfeatures"><%= image_tag "best_buy_free_shipping.gif" %>Free shipping on orders over <b>$20</b>.</div>
-	    <div class="bbfeatures"><%= image_tag "best_buy_instore_pickup.gif" %>Order online and pick up in-store.</div>
-	    <div class="bbfeatures"><%= image_tag "best_buy_rewards_card.gif" %>It's free to get into the rewards program.</div>
+		<div style="float:left; margin-top:20px;">
+    	    <div class="bbfeatures"><%= image_tag "best_buy_free_shipping.gif" %>Free shipping on orders over <b>$20</b>.</div>
+    	    <div class="bbfeatures"><%= image_tag "best_buy_instore_pickup.gif" %>Order online and pick up in-store.</div>
+    	    <div class="bbfeatures"><%= image_tag "best_buy_rewards_card.gif" %>It's free to get into the rewards program.</div>
+        </div>
+        <div style="float:right;">
+    		<% if @allspecs["saleEndDate"] %>
+    		<div style="font-size: 1.2em; height: 20px;"><span class="left">Our Price:</span><span class="right"><%= @allspecs["price"] %></span></div>
+    	    <div style="color: #f00; font-size: 1.5em; font-weight: bold;height: 20px;"><span class="left">Sale Price:</span><span class="right"><%= @allspecs["saleprice"] %></span></div>
+    	    <div style = "clear: both;font-weight: bold;height: 18px;"><span class="left">Sale Ends:</span><span class="right"><%= @allspecs["saleEndDate"][/^(\w|\/)+/] %></span></div>
+    		<% else %>
+    		<div style="font-size: 1.5em; height: 20px;"><span class="left">Our Price:</span><span class="right"><%= @allspecs["price"] %></span></div>
+    		<% end %>
+    		<div class="left" style="height: 18px;"><a href="http://www.bestbuy.ca/en-CA/help/what-is-your-lowest-price-guarantee/hc1001.aspx?path=27eeec1b59d42df5dfc298ab6993d9dfen15&HelpTitleId=HC1001" class="popup-link">Lowest Price Guarantee</a></div>
+    		<div class="spacer" style="border-bottom: 1px solid #ccc; clear: both; margin-bottom: 15px;"></div>
+
+    	    <div class="buttons"><%= image_tag "bestbuy_addtocart.gif" %></div>
+    	    <div class="buttons"><%= image_tag "bestbuy_add_wishlist.gif" %></div>
+    	    <div class="buttons" style="margin-bottom: 8px;"><%= image_tag "bestbuy_add_to_pricewatch.gif" %></div>	    
+        </div>
 	</ul>
 	</div>
 	

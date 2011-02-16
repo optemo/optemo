@@ -192,9 +192,9 @@ optemo_module = (function (my){
     	var iebody=(document.compatMode && document.compatMode != "BackCompat")? document.documentElement : document.body, 
     	dsoctop=document.all? iebody.scrollTop : pageYOffset;
     	$('#info').html("");
-    	$('#outsidecontainer').css({'left' : ((document.body.clientWidth-(width||800))/2)+'px',
+    	$('#outsidecontainer').css({'left' : ((document.body.clientWidth-(width||560))/2)+'px',
     								'top' : (dsoctop+5)+'px',
-    								'width' : width||800,
+    								'width' : width||560,
     								'height' : height||770,
     								'display' : 'inline' });
 
@@ -243,6 +243,7 @@ optemo_module = (function (my){
                     }
         	        my.DBinit();
         	        my.preloadSpecsAndReviews(jQuery('#tab_header').find('ul').attr('data-sku'));
+        	        $('#outsidecontainer').css('height', ''); // Take height off - it was useful for loading so that we'd see a box, but now the element can auto-size
     	        } else {
     	            my.DBinit();
                 }
@@ -858,7 +859,7 @@ optemo_module = (function (my){
 			currentelementid = $(this).attr('data-id') || href.match(/\d+$/),
         	product_title = $(this).find('img.productimg').attr('title');
         	my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids});
-			my.applySilkScreen((href || '/product/_/' + currentelementid) +'?plain=true',null, 800, 800);
+			my.applySilkScreen((href || '/product/_/' + currentelementid) +'?plain=true',null, 560, 600);
         	return false;
         });
 
