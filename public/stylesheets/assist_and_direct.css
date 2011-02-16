@@ -40,8 +40,9 @@ h3 {
 //--------------------------------------*/
 
 .watermark {
-	right: 10px;
-	top: 835px;
+    float:right;
+    font-size: 0.8em;
+    padding-top: 4px;
 }
 #title {
 	position: absolute;
@@ -437,13 +438,6 @@ div.smalldesc {
 .surveyimage {
 	text-align: center; 
 }
-#feedback {
-	position:fixed; 
-	right: 0; 
-	top: 250px;
-	z-index:2;
-	cursor: pointer;
-}
 
 /*--------------------------------------//
 //                Footer                //
@@ -741,7 +735,6 @@ div#silkscreen {
 #inside_of_outsidecontainer {
     background: url("/images/quickview_horizontal_background.png") repeat-y scroll 0 0 transparent;
     width: 560px;
-    height: 560px;
 }
 
 div#info {
@@ -904,8 +897,7 @@ div .showtable{
 }
 
 #compare_field {
-    float: right;
-    width: 180px;
+    clear: both;
 }
 .left {
 	float: left;

@@ -88,10 +88,6 @@ a:hover {
 	text-decoration: underline;
 }
 
-.watermark{
-	position: absolute;
-	font-size: 0.8em;
-}
 .rounded {
 	-webkit-border-radius: 8px;    /* for Safari */
   -moz-border-radius: 8px;       /* for Firefox */
