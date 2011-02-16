@@ -57,7 +57,7 @@
   	<% i = i + 1 %>
   <% end %>
   <% @s.binary["filter"].each do |feat| %>
-  	<div class='feature'>
+  	<div>
   		<div class='label' data-position="<%= i %>">
   			<%= render :partial => 'desc', :locals => {:feat => feat} %>
   			<% dobj = Userdatabin.find_by_search_id_and_name(@s.search.id,feat) %>

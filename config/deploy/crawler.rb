@@ -84,7 +84,7 @@ end
 
 # redopermissions is last, so that if it fails due to the searchd pid, no other tasks get blocked
 after :deploy, "serversetup"
-after :serversetup, "reindex"
-after :reindex, "restartmemcached"
-after :restartmemcached, "fetchAutocomplete"
+after :serversetup, "restartmemcached"
+after :restartmemcached, "reindex"
+after :reindex, "fetchAutocomplete"
 after :fetchAutocomplete, "redopermissions"

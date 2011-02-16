@@ -737,7 +737,7 @@ optemo_module = (function (my){
 	    });
 
     	//Show and Hide Descriptions
-    	$('.feature .label a, .desc .deleteX').live('click', function(){
+    	$('.label a, .desc .deleteX').live('click', function(){
     		if($(this).parent().attr('class') == "desc")
     			{var obj = $(this).parent();}
     		else

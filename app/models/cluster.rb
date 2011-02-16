@@ -40,8 +40,14 @@ class Cluster
       rep_ids = cluster_ids_and_reps[products.size...cluster_ids_and_reps.size]
       finish = Time.now
       @children = []
-      grouped_ids = Cluster.group_by_clusterids(products,cluster_ids)
-      grouped_ids.each_with_index{|product_ids, i| @children << Cluster.new(product_ids,products[rep_ids[i]])}
+      grouped_ids = Array.new(9){Array.new}
+      products.each do |product|
+        grouped_ids[cluster_ids.shift] << product
+      end
+      grouped_ids.each_with_index do |product_ids, i| 
+        next if product_ids.empty? #In case a cluster is eliminated by the clustering algorithm
+        @children << Cluster.new(product_ids,products[rep_ids[i]])
+      end
       puts("*****######!!!!!!"+(finish-start).to_s)
     end
     @children
@@ -69,11 +75,5 @@ class Cluster
   def numclusters
     children.size
   end  
-  
-  
-  #Grouping products by cluster_ids
-  def self.group_by_clusterids(product_ids, cluster_ids)
-    product_ids.mygroup_by{|e,i|cluster_ids[i]}
-  end
   
 end

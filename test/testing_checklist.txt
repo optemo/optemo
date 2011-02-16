@@ -3,6 +3,7 @@ testing check list:
 general checks:
 1) There are (9) product images on the first page
 2) click on a product image - check if the info displays in the small window
+3) Check the specs and reviews tabs to make sure the display content
 3) click on a "more like this link" and see if a new page with less cameras come up - also check to see if the distribution graphs change
 4) click on the back button and check if you get the first page 
 5) check if there are distribution graphs on top of sliders on the left panel
@@ -15,7 +16,7 @@ check filters:
 4) Click on "reset" link on the top left corner
 
 check sort by:
-1) click on the sort by drop down menu on top of the page and select sort by "price
+1) click on the sort by drop down menu on top of the page and select sort by "price"
 2) check if all displayed products are sorted based on price (cheapest first)
 
 drag and drop - compare
