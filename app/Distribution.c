@@ -3,10 +3,10 @@
 #include <math.h> 
 
 //// Defining a space for information and references about the module to be stored internally
-VALUE MyNewTest = Qnil;
+VALUE Distribution= Qnil;
 //
 //// Prototype for the initialization method - Ruby calls this, not you
-void Init_mynewtest();
+void Init_distribution();
 //
 //// Prototype for our method 'test1' - methods are prefixed by 'method_' here
 VALUE method_test(VALUE self);
