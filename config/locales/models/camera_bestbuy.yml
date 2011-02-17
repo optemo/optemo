@@ -29,7 +29,7 @@ en:
                 name:               "DSLR"
                 info:               "Features manual and automatic controls, and is compatible with interchangeable lenses for professional-quality shots."
             waterproof:
-                name:               "Waterproof"
+                name:               "Waterproof/Shockproof"
                 info:               "Waterproof - lets you snap photos under water down to a certain depth."
             brand:
                 name:               "Brand"
@@ -40,6 +40,12 @@ en:
                 name:               "Customer Rating"
                 info:               "On a scale of 1 to 5, five being the best, this is the average of our customer ratings. Items are rated 0 if they have not been reviewed."
                 unit:               "1-5"
+            isAdvertised:
+                name:               "On Sale"
+            isClearance:
+                name:               "Clearance"
+            isOnlineOnly:
+                name:               "Online Only"
             cmos:
                 name:               "CMOS Sensor"
             videoresolution:

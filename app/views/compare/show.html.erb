@@ -25,7 +25,7 @@
 				
     	        <% additional_media = ActiveSupport::JSON.decode(@allspecs["additionalMedia"].gsub("=>",":")) %>
     	        <% additional_media.each do |a| %>
-    	            <%= image_tag("http://www.bestbuy.ca" + a["large"].gsub("500x500", "300x300"), :size => "300x300", :alt => "")  if a["large"] %>
+    	            <%= image_tag("http://www.bestbuy.ca" + a["url"].gsub("500x500", "300x300"), :size => "300x300", :alt => "")  if a["url"] %>
     	        <% end %>
              
 									
@@ -72,10 +72,10 @@
     	    <div class="bbfeatures"><%= image_tag "best_buy_rewards_card.gif" %>It's free to get into the rewards program.</div>
         </div>
         <div style="float:right;">
-    		<% if @allspecs["saleEndDate"] %>
+    		<% if @allspecs["isAdvertised"] %>
     		<div style="font-size: 1.2em; height: 20px;"><span class="left">Our Price:</span><span class="right"><%= @allspecs["price"] %></span></div>
     	    <div style="color: #f00; font-size: 1.5em; font-weight: bold;height: 20px;"><span class="left">Sale Price:</span><span class="right"><%= @allspecs["saleprice"] %></span></div>
-    	    <div style = "clear: both;font-weight: bold;height: 18px;"><span class="left">Sale Ends:</span><span class="right"><%= @allspecs["saleEndDate"][/^(\w|\/)+/] %></span></div>
+    	    <div style = "clear: both;font-weight: bold;height: 18px;"><span class="left">Sale Ends:</span><span class="right"><%# @allspecs["saleEndDate"][/^(\w|\/)+/] %></span></div>
     		<% else %>
     		<div style="font-size: 1.5em; height: 20px;"><span class="left">Our Price:</span><span class="right"><%= @allspecs["price"] %></span></div>
     		<% end %>
