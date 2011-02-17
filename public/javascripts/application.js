@@ -119,7 +119,18 @@ optemo_module = (function (my){
             dataType: "jsonp",
             success: function (data) {
                 var specs = data["specs"];
-                var prop_list = parse_bb_json(specs);
+                // rebuild prop_list so that we can get the specs back out.
+                // We might need to do this regardless, due to the fact that
+                // the property list doesn't have to be sent in order.
+                var prop_list = function (my) {
+                    for (var i = 0; i < specs.length; i++) {
+                        var spec = specs[i];
+                        if (typeof(my[spec.group]) == "undefined") my[spec.group] = {};
+                        my[spec.group][spec.name] = spec.value;
+                    }
+                    return my;
+                }({});
+                prop_list = parse_bb_json(prop_list);
                 jQuery('body').data('bestbuy_specs', jQuery('<ul>' + prop_list + '</ul>'));
             }
         });
@@ -174,8 +185,8 @@ optemo_module = (function (my){
     	//IE Compatibility
     	var iebody=(document.compatMode && document.compatMode != "BackCompat")? document.documentElement : document.body, 
     	dsoctop=document.all? iebody.scrollTop : pageYOffset;
-    	$('#info').html("");
-    	$('#inside_of_outsidecontainer').css('height', '560px');
+    	$('#info').html("").css('height', '566px');
+    	$('#inside_of_outsidecontainer').css('height', '566px');
     	$('#outsidecontainer').css({'left' : ((document.body.clientWidth-(width||560))/2)+'px',
     								'top' : (dsoctop+5)+'px',
     								'width' : width||560,
@@ -200,7 +211,8 @@ optemo_module = (function (my){
     	$('#silkscreen').css({'height' : current_height+'px', 'display' : 'inline'});    	
     	$('.selectboxfilter').css('visibility', 'hidden');
     	if (data) {
-    		$('#info').html(data);
+    		$('#info').html(data)
+    		$('#info').css('height','');
     	} else {
     	    my.quickajaxcall('#info', url, function(){
     	        if (url.match(/\/product/)) {
@@ -227,11 +239,13 @@ optemo_module = (function (my){
                     }
         	        my.DBinit();
         	        my.preloadSpecsAndReviews(jQuery('#tab_header').find('ul').attr('data-sku'));
-        	        $('#outsidecontainer').css('height', ''); // Take height off - it was useful for loading so that we'd see a box, but now the element can auto-size
-        	        $('#inside_of_outsidecontainer').css('height', '');
     	        } else {
     	            my.DBinit();
+    	            $('#outsidecontainer').css('width','');
                 }
+    	        $('#outsidecontainer').css('height', ''); // Take height off - it was useful for loading so that we'd see a box, but now the element can auto-size
+    	        $('#inside_of_outsidecontainer').css('height', '');
+                $('#info').css('height', '');
             });
         }
     };
@@ -826,7 +840,7 @@ optemo_module = (function (my){
 			currentelementid = $(this).attr('data-id') || href.match(/\d+$/),
         	product_title = $(this).find('img.productimg').attr('title');
         	my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids});
-			my.applySilkScreen((href || '/product/_/' + currentelementid) +'?plain=true',null, 560, 600);
+			my.applySilkScreen((href || '/product/_/' + currentelementid) +'?plain=true',null, 560, 580);
         	return false;
         });
 
@@ -1402,7 +1416,7 @@ jQuery(document).ready(function($){
 		// The following line could be useful later. Rather than hard-coding, we could use the 'overflow:scroll' CSS property to limit
 		// the display window height. But, right now this breaks the layout, so let's fix it later with less time pressure.
 		//var viewportHeight = $(window).height();
-		optemo_module.applySilkScreen('/comparison/' + productIDs, null, 940, 580);
+		optemo_module.applySilkScreen('/comparison/' + productIDs, null, 560, 580);
 		trackPage('goals/compare', {'filter_type' : 'direct_comparison'});
 		return false;
 	});

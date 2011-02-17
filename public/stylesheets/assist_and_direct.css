@@ -140,6 +140,15 @@ div.rowdiv {
 	height: 25px;
 }
 
+.bb_poptitle {
+	font-weight: bold;
+	font-size: 1.13em;
+	color: #000;
+    height: 22px;
+    margin-left: -2px;
+    margin-top: 5px;
+}
+
 .fv {
 	float: left;
 	width: 190px;
@@ -630,7 +639,6 @@ margin-top:0;
 .bgrow {
 	height: 30px;
 	background: url(../images/columntitlebg.gif) repeat;
-	width: 750px;
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -706,8 +714,8 @@ margin-top:0;
 
 .bb_quickview_close {
     position: absolute;
-    right: 33px;
-    top: 35px;
+    right: 20px;
+    top: 18px;
     color: black;
 }
 
@@ -726,11 +734,13 @@ div#silkscreen {
 	position: absolute;
 	top: 20px;
 	left: 20px;
-	width: 560px;
 	height: auto;
-	padding-bottom:10px;
 	z-index: 4;
 	display: none;
+	background: white;
+	-moz-box-shadow: 0 -2px 16px 3px #888;
+    -webkit-box-shadow: 0 -2px 16px 3px #888;
+    box-shadow: 0 -2px 16px 3px #888;
 }
 #inside_of_outsidecontainer {
     background: url("/images/quickview_horizontal_background.png") repeat-y scroll 0 0 transparent;
@@ -740,7 +750,9 @@ div#silkscreen {
 div#info {
 	font-size: 0.8em;
 	z-index: 5;
-	padding: 0px 23px 0px 22px;
+	padding: 12px 23px 0px 22px;
+	border: 1px solid #666;
+	min-width: 513px;
 }
 
 div#loading {
@@ -896,9 +908,6 @@ div .showtable{
 	float: left;
 }
 
-#compare_field {
-    clear: both;
-}
 .left {
 	float: left;
 }

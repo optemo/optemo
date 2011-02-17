@@ -27,8 +27,7 @@
     	        <% additional_media.each do |a| %>
     	            <%= image_tag("http://www.bestbuy.ca" + a["url"].gsub("500x500", "300x300"), :size => "300x300", :alt => "")  if a["url"] %>
     	        <% end %>
-             
-									
+
     		<% elsif FileTest.exist?("#{Rails.root}/public" + @allspecs["imglurl"]) %>
     			<%= image_tag(@allspecs["imglurl"], :size => "300x300", :alt => "") %>
     		<% else %>
@@ -89,9 +88,7 @@
 	</ul>
 	</div>
 	
-	<div id="compare_field">
-	    <% link_to "#", "Compare this product against others" %>
-    </div>
+	<div class="spacer">&nbsp;</div>
 	<!-- div style="clear: left; height:5px;"></div>
 	<div class="showtable">
 
