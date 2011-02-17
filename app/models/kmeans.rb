@@ -362,24 +362,10 @@
   dim_cont = Session.continuous["cluster"].size
   dim_bin = Session.binary["cluster"].size
   dim_cat = Session.categorical["cluster"].size
-  weights = self.set_weights(dim_cont, dim_bin, dim_cat)
+  weights = self.set_weights(dim_cont, 0, 0)
   s = p_ids.size
   ft = [] 
   # don't need to cluster if number of products is less than clusters
-
-  if (s<number_clusters)
-    if ft.empty?
-      utilitylist = [1]*s
-    else  
-      utilitylist = weighted_ft(ft, weights).map{|f| f. inject(:+)}
-    end  
-    #if utilities are the same
-    utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
-    util_tmp = utilitylist.sort{|x,y| y <=> x }    
-    ordered_list = util_tmp.map{|u| utilitylist.index(u)}
-    return ordered_list + ordered_list
-  end
- 
   st = Product.specs(p_ids)
   cont_specs = st[0...dim_cont].transpose
   bin_specs = st[dim_cont...dim_cont+dim_bin].transpose
@@ -390,11 +376,26 @@
       f_specs = ContSpec.by_feat(f+"_factor")
       factors << f_specs
     end
-     
     performance_factors = ContSpec.by_feat("performance_factor")
-    #factors << performance_factors
-    ft = factors.transpose
-    #factors << [1]*factors.first.size
+     #factors << performance_factors
+     ft = factors.transpose
+     #factors << [1]*factors.first.size
+  if (s<number_clusters)
+    if ft.empty?
+      utilitylist = [1]*s
+    else  
+      utilitylist = weighted_ft(ft, weights).map{|f| f. inject(:+)}
+    end  
+    #if utilities are the same
+    utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
+    util_tmp = utilitylist.sort{|x,y| y <=> x }    
+    ordered_list = utilitylist.map{|u| util_tmp.index(u)}
+    return ordered_list + ordered_list
+  end
+ 
+
+     
+ 
   
     performance_weight = 2
     #weights = weights << performance_weight
