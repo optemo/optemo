@@ -140,7 +140,7 @@ camera_bestbuy:
     customerRating:
         type: Continuous
         used_for: [filter]
-    isAdvertised:
+    onsale:
         type: Binary
         used_for: [filter]
     isClearance:
