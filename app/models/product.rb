@@ -38,7 +38,11 @@ class Product < ActiveRecord::Base
   
   def self.filterspecs
     st = []
-    Session.continuous["filter"].each{|f| st << ContSpec.by_feat(f)}
+    Session.continuous["filter"].each do |f| 
+      data = ContSpec.by_feat(f)
+      raise ValidationError, "Can't find data for feature: #{f}" if data.nil?
+      st << data
+    end
     st
   end
   

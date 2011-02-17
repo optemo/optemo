@@ -67,7 +67,7 @@ module CompareHelper
 		  s.search.products_size, 
 		  (s.search.products_size > 1) ? t("#{s.product_type}.title-plural") : t("#{s.product_type}.title"),
 		  ("Grouped by #{t('products.' + s.search.groupby)}" if s.search.groupby),
-		  (link_to("(All #{t(s.product_type+'.title-plural')})", "/", :id => "staticajax_reset", :class => "reset", :rel => "nofollow") unless s.onlyfiltering)
+		  (link_to("(All #{t(s.product_type+'.title-plural')})", "/", :class => "reset", :rel => "nofollow") unless s.onlyfiltering)
 		].join(" ")
   end
   

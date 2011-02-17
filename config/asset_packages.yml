@@ -8,6 +8,7 @@ javascripts:
   - jquery.history
   - jquery_galleria
   - jquery.livequery
+  - css_browser_selector
   - application
   
 - mobile:

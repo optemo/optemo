@@ -3,10 +3,9 @@
    If you add a function and don't add it to the table of contents, prepare to be punished by your god of choice.
    Functions marked ** are public functions that can be called from outside the optemo_module declaration.
 
-   ---- Temporary global functions ----
-    misc.
-    
-   ---- Show Page Pre-loader ----
+   ---- Show Page Pre-loader & Helpers ----
+    parse_bb_json(fn)  -  recursive function to parse the returned JSON into a reasonable object
+    resize_silkscreen  -  called internally to put a silkscreen where appropriate
     ** preloadSpecsAndReviews(sku)  -  Does 2 AJAX requests for data relating to sku and puts the results in $('body').data() for instant retrieval later
 
    ---- UI Manipulation ----
@@ -75,39 +74,6 @@ var optemo_module;
 var myspinner;
 var optemo_module_activator;
 
-//////////////////////////////////////////////
-// Temporary global functions
-// These will be moved back into optemo_module 
-// once Best Buy's version 2 API is online
-//////////////////////////////////////////////
-
-var parse_bb_json = (function spec_recurse(p) {
-    var props = "";
-    for (var i in p) {
-        if (p[i] == "") continue;
-        if (typeof(p[i]) == "object") props += "<li>" + i + ": <ul>" + spec_recurse(p[i]) + "</ul>";
-        else props += "<li>" + i + ": " + p[i] + "\n";
-    }
-    return props;
-});
-
-var resize_silkscreen = (function () {
-    var height = jQuery('#tabbed_content').height() + jQuery('#tabbed_content').offset().top + 10;
-    if (height < 760) height = 760;
-    jQuery('#silkscreen').css('height', height);
-    jQuery('#outsidecontainer').css('height', '');
-});
-
-function bbresponse(data) {
-    var product = data["product"]["specs"];
-    var prop_list = parse_bb_json(product);
-    jQuery('body').data('bestbuy_specs', jQuery('<ul>' + prop_list + '</ul>'));
-}
-
-//////////////////////////////////////////////
-//  End temporary global functions
-//////////////////////////////////////////////
-
 optemo_module_activator = (function($) { // See bottom, this is for jquery noconflict
 optemo_module = (function (my){
     // Language support disabled for now
@@ -121,31 +87,49 @@ optemo_module = (function (my){
     var AB_TESTING_TYPE = parseInt($('#ab_testing_type').html());
 
     //--------------------------------------//
-    //         Show Page Pre-loader         //
+    //    Show Page Pre-loader & Helpers    //
     //--------------------------------------//
+
+    var parse_bb_json = (function spec_recurse(p) {
+        var props = "";
+        for (var i in p) {
+            if (p[i] == "") continue;
+            if (typeof(p[i]) == "object") props += "<li>" + i + ": <ul>" + spec_recurse(p[i]) + "</ul>";
+            else props += "<li>" + i + ": " + p[i] + "\n";
+        }
+        return props;
+    });
+
+    var resize_silkscreen = (function () {
+        var height = jQuery('#tabbed_content').height() + jQuery('#tabbed_content').offset().top + 10;
+        if (height < 760) height = 760;
+        jQuery('#silkscreen').css('height', height);
+        jQuery('#outsidecontainer').css('height', '');
+    });
 
     // The preloader works to do a couple AJAX calls when the show page initially loads.
     // The results are stored in $('body').data for instant retrieval when the 
-    // specs, reviews, or accessories (not yet functional) buttons are clicked
+    // specs, reviews, or product info buttons are clicked.
     my.preloadSpecsAndReviews = function(sku) {
-        // Right now the jsonp callback function is hard-coded. In future, the Best Buy API should take
-        // callback=whatever as a parameter so that jquery's JSONP support works normally.
-        // At that time, take the "jsoncallback" out and make the callback internal to optemo_module.
-        var baseurl = "http://www.bestbuy.ca/en-CA/api/product/" + sku + ".aspx?jsoncallback=bbresponse";
+        // The jQuery AJAX request will add ?callback=? as appropriate. Best Buy API v.2 supports this.
+        var baseurl = "http://www.bestbuy.ca/api/v2/json/product/" + sku;
         $.ajax({
             url: baseurl,
             type: "GET",
             dataType: "jsonp",
-            jsonpCallbackString: "bbresponse"
+            success: function (data) {
+                var specs = data["specs"];
+                var prop_list = parse_bb_json(specs);
+                jQuery('body').data('bestbuy_specs', jQuery('<ul>' + prop_list + '</ul>'));
+            }
         });
         
-        // This unwieldy function should be condensed once Best Buy's JSONP is working on reviews also (API v2)
+        baseurl = "http://www.bestbuy.ca/api/v2/json/reviews/" + sku;
         $.ajax({
+            url: baseurl,
 	        type: "GET",
-            url: "/product_review/" + sku,
-            success: function (data) {
-                var reviews = (new Function ("return " + data))();
-                reviews = (new Function ("return " + reviews[0]))();
+	        dataType: "jsonp",
+            success: function (reviews) {
                 var prop_list = parse_bb_json(reviews["reviews"]);
 
                 var to_tabbed_content = "";
@@ -159,10 +143,9 @@ optemo_module = (function (my){
                     var width = parseInt(9 + 20 * (attributes[i] - 0.8));
                     if (width < 14) width = 14;
                     if (width >= 91) width = 99;
-                    to_tabbed_content += i + "<div class=\"bestbuy_rating_bar_small\" style=\"width: "+ width +"px;\"><div class=\"bestbuy_rating_bar_inside_small\">" + attributes[i] + "</div></div>"
+                    to_tabbed_content += i.replace(/_x0020_/g, " ") + "<div class=\"bestbuy_rating_bar_small\" style=\"width: "+ width +"px;\"><div class=\"bestbuy_rating_bar_inside_small\">" + attributes[i] + "</div></div>"
                 }
                 to_tabbed_content += 'Review Count: '+ reviews['customerRatingCount'] + "<br><ul>" + prop_list + '</ul>';
-
                 $('body').data('bestbuy_reviews', to_tabbed_content);
             },
             error: function(x, xhr) {
@@ -192,9 +175,10 @@ optemo_module = (function (my){
     	var iebody=(document.compatMode && document.compatMode != "BackCompat")? document.documentElement : document.body, 
     	dsoctop=document.all? iebody.scrollTop : pageYOffset;
     	$('#info').html("");
-    	$('#outsidecontainer').css({'left' : ((document.body.clientWidth-(width||800))/2)+'px',
+    	$('#inside_of_outsidecontainer').css('height', '560px');
+    	$('#outsidecontainer').css({'left' : ((document.body.clientWidth-(width||560))/2)+'px',
     								'top' : (dsoctop+5)+'px',
-    								'width' : width||800,
+    								'width' : width||560,
     								'height' : height||770,
     								'display' : 'inline' });
 
@@ -220,8 +204,6 @@ optemo_module = (function (my){
     	} else {
     	    my.quickajaxcall('#info', url, function(){
     	        if (url.match(/\/product/)) {
-    	            // Load the classic theme
-                    Galleria.loadTheme('/javascripts/galleria.classic.js');
                     // Initialize Galleria
                     jQuery('#galleria').galleria();
                     // The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
@@ -230,8 +212,23 @@ optemo_module = (function (my){
                         g.children().css('float', 'left');
                         g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
                     });
+                    
+                    if (!($.browser.msie && $.browser.version == "7.0")) {
+                        // This is an unsightly hack, and unfortunately seems to be the only easy way to make it work.
+                        $('#tab_header li a').hover(function() {
+                            if (!($(this).parent().attr('id') == 'tab_selected')) {
+                                $(this).css('background', '#ddf');
+                            }
+                        }, function() {
+                            if (!($(this).parent().attr('id') == 'tab_selected')) {
+                                $(this).css('background', '#ddd');
+                            }
+                        });
+                    }
         	        my.DBinit();
         	        my.preloadSpecsAndReviews(jQuery('#tab_header').find('ul').attr('data-sku'));
+        	        $('#outsidecontainer').css('height', ''); // Take height off - it was useful for loading so that we'd see a box, but now the element can auto-size
+        	        $('#inside_of_outsidecontainer').css('height', '');
     	        } else {
     	            my.DBinit();
                 }
@@ -423,7 +420,7 @@ optemo_module = (function (my){
         var height = elementToShadow.innerHeight() + 2;
         $('#silkscreen').css({'position' : 'absolute', 'display' : 'inline', 'left' : pos.left + "px", 'top' : pos.top + 27 + "px", 'height' : height - 27 + "px", 'width' : width + "px"}).fadeTo(0,0.2); // The 27 is arbitrary - equal to the top of the filter bar (title, reset button)
         $("#silkscreen").unbind('click'); // We need this so that the user can't clear the silkscreen by clicking on it.
-        $('#filter_bar_loading').css({'display' : 'inline', 'left' : (pos.left + (width-100)/2.0) + "px"});
+        $('#filter_bar_loading').css({'display' : 'inline', 'left' : (pos.left + (width-126)/2) + "px", 'top' : pos.top + (height - 46)/2 + "px"});
     };
 
     //--------------------------------------//
@@ -452,35 +449,6 @@ optemo_module = (function (my){
 
     my.FilterAndSearchInit = function() {
         my.removeSilkScreen();
-
-    	//Show and Hide Descriptions
-    	$('.feature .label a, .desc .deleteX').live('click', function(){
-    		if($(this).parent().attr('class') == "desc")
-    			{var obj = $(this).parent();}
-    		else
-    			{var obj = $(this).siblings('.desc');}
-            // I think this is just toggling. Just on the off chance that something weird is happening here, I'll leave this code for now. ZAT 2010-08
-            obj.toggle();
-    //		var flip=parseInt(obj.attr('name-flip'));
-    //		if (isNaN(flip)){flip = 0;}
-    //		obj.toggle(flip++ % 2 == 0);
-    //		obj.attr('name-flip',flip);
-            if( obj.is(':visible') ) {
-        		my.trackPage('goals/label', {'filter_type' : 'description', 'ui_position' : obj.parent().attr('data-position')});
-    		}
-    		return false;
-    	});
-
-    	//Search submit
-    	$('#submit_button').unbind('click').click(function(){
-    		return submitsearch();
-    	});
-
-    	//Search submit
-    	$('#myfilter_search').unbind('keydown').keydown(function (e) {
-    		if (e.which==13)
-    			return submitsearch();
-    	});
 
     	// Initialize Sliders
     	$('.slider').each(function() {
@@ -699,8 +667,40 @@ optemo_module = (function (my){
     		});
     	});
 
+    	if ($.browser.msie)
+    	{
+    	    // If it's any version of IE, the transparency for the hands doesn't get done properly on page load - redo it here.
+    		$('.dragHand').each(function() {
+    			$(this).fadeTo("fast", 0.35);
+    		});
+            // Fix the slider position
+        	$('.hist').each(function() {
+               $(this).css('left', '7px');
+            });
+    	}
+    };
+
+    my.LiveInit = function() { // This stuff only needs to be called once per full page load.
+		// The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
+        $('.galleria-thumbnails-list').livequery(function() {
+            var g = $('#galleria').find('.galleria-thumbnails-list');
+            g.children().css('float', 'left');
+            g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
+        });
+
+    	//Search submit
+    	$('#submit_button').live('click', function(){
+    		return submitsearch();
+    	});
+
+    	//Search submit
+    	$('#myfilter_search').live('keydown', function (e) {
+    		if (e.which==13)
+    			return submitsearch();
+    	});
+
     	// Add a dropdownbox selection -- submit
-    	$('.selectboxfilter').unbind('change').change(function(){
+    	$('.selectboxfilter').live('change', function(){
 		    var whichThingSelected = $(this).val().replace(/ \(.*\)$/,'');
 			var whichSelector = $(this).attr('name');
 		    var categorical_filter_name = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]"));
@@ -712,8 +712,31 @@ optemo_module = (function (my){
     		return false;
     	});
 
+    	// Change sort method
+    	$('#sorting_method').live('change', function() {
+    	    var whichSortingMethodSelected = $(this).val();
+    	    var info = {'chosen_sorting_method' : whichSortingMethodSelected, 'filter_type' : 'sorting_method'};
+			my.trackPage('goals/filter/sorting_method', info);
+    	    my.loading_indicator_state.sidebar = true;
+            my.ajaxcall("/compare?ajax=true&sortby=" + whichSortingMethodSelected);
+	    });
+
+    	//Show and Hide Descriptions
+    	$('.label a, .desc .deleteX').live('click', function(){
+    		if($(this).parent().attr('class') == "desc")
+    			{var obj = $(this).parent();}
+    		else
+    			{var obj = $(this).siblings('.desc');}
+            // I think this is just toggling. Just on the off chance that something weird is happening here, I'll leave this code for now. ZAT 2010-08
+            obj.toggle();
+            if( obj.is(':visible') ) {
+        		my.trackPage('goals/label', {'filter_type' : 'description', 'ui_position' : obj.parent().attr('data-position')});
+    		}
+    		return false;
+    	});
+
 		// Add a color selection -- submit
-    	$('.swatch').unbind('click').click(function(){
+    	$('.swatch').live('click', function(){
 			my.loading_indicator_state.sidebar = true;
 		    var whichThingSelected = $(this).attr("style").replace(/background-color: (\w+);?/i,'$1');
 		    // Fix up the case issues for Internet Explorer (always pass in color value as "Red")
@@ -735,17 +758,8 @@ optemo_module = (function (my){
     		return false;
     	});
 
-    	// Change sort method
-    	$('#sorting_method').unbind('change').change(function() {
-    	    var whichSortingMethodSelected = $(this).val();
-    	    var info = {'chosen_sorting_method' : whichSortingMethodSelected, 'filter_type' : 'sorting_method'};
-			my.trackPage('goals/filter/sorting_method', info);
-    	    my.loading_indicator_state.sidebar = true;
-            my.ajaxcall("/compare?ajax=true&sortby=" + whichSortingMethodSelected);
-	    });
-
     	// Remove a brand -- submit
-    	$('.removefilter').unbind('click').click(function(){
+    	$('.removefilter').live('click', function(){
     		var whichRemoved = $(this).attr('data-id');
     		var whichCat = $(this).attr('data-cat');
     		$('#myfilter_'+whichCat).val(opt_removeStringWithToken($('#myfilter_'+whichCat).val(), whichRemoved, '*'));
@@ -756,20 +770,6 @@ optemo_module = (function (my){
     		return false;
     	});
 
-    	if ($.browser.msie)
-    	{
-    	    // If it's any version of IE, the transparency for the hands doesn't get done properly on page load - redo it here.
-    		$('.dragHand').each(function() {
-    			$(this).fadeTo("fast", 0.35);
-    		});
-            // Fix the slider position
-        	$('.hist').each(function() {
-               $(this).css('left', '7px');
-            });
-    	}
-    };
-
-    my.LiveInit = function() { // This stuff only needs to be called once per full page load.
     	// From Compare
     	//Remove buttons on compare
     	$('.remove').live('click', function(){
@@ -784,47 +784,32 @@ optemo_module = (function (my){
     	});
 
         // The next few functions were written to be Best Buy-specific, but they can be extended
-        // for any tabbed quickview page. The content is loaded ahead of time in 
+        // for any tabbed quickview page. The content is loaded ahead of time by preloadSpecsAndReviews() on popup load.
+        function quickview_tasks(el, content) {
+            // NB: This is locally scoped to LiveInit only
+    	    if (!($.browser.msie && $.browser.version == "7.0")) el.css('background','');
+    	    if (!($('body').data('bestbuy_product_info')))
+    	        $('body').data('bestbuy_product_info', $('#tabbed_content').html());
+            $('#tabbed_content').html(content);
+            $('#tab_selected').removeAttr('id');
+    	    el.parent().attr('id', 'tab_selected');
+            resize_silkscreen();
+        }
 
     	$('.fetch_bestbuy_info').live('click', function() {
     	    var t = $(this);
     	    if (!(t.parent().attr('id') == "tab_selected"))
-    	    {
-        	    $('#tabbed_content').html($('body').data('bestbuy_product_info'));
-        	    $('#tab_selected').removeAttr('id');
-        	    t.parent().attr('id', 'tab_selected');
-        	    resize_silkscreen();
-	        }
+        	    quickview_tasks(t,$('body').data('bestbuy_product_info'));
 	        return false;
 	    });
 
     	$('.fetch_bestbuy_specs').live('click', function () {
-    	    var t = $(this), sku = t.parent().parent().attr('data-sku');
-    	    if (!($('body').data('bestbuy_product_info')))
-    	        $('body').data('bestbuy_product_info', $('#tabbed_content').html());
-            $('#tab_selected').removeAttr('id');
-            t.parent().attr('id', 'tab_selected');
-            $('#tabbed_content').html($('body').data('bestbuy_specs'));
-            resize_silkscreen();
+            quickview_tasks($(this), $('body').data('bestbuy_specs'));
             return false;
 	    });
-
+    
 	    $('.fetch_bestbuy_reviews').live('click', function () {
-    	    var t = $(this);
-            $('#tab_selected').removeAttr('id');
-            t.parent().attr('id', 'tab_selected');
-
-            if (!($('body').data('bestbuy_product_info')))
-                $('body').data('bestbuy_product_info', $('#tabbed_content').html());
-
-            $('#tabbed_content').html($('body').data('bestbuy_reviews'));
-            resize_silkscreen();
-
-            return false;
-        });
-
-        $('.fetch_bestbuy_accessories').live('click', function () {
-            // No fetching of accessories for now.
+            quickview_tasks($(this), $('body').data('bestbuy_reviews'));
             return false;
         });
 
@@ -841,7 +826,7 @@ optemo_module = (function (my){
 			currentelementid = $(this).attr('data-id') || href.match(/\d+$/),
         	product_title = $(this).find('img.productimg').attr('title');
         	my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids});
-			my.applySilkScreen((href || '/product/_/' + currentelementid) +'?plain=true',null, 800, 800);
+			my.applySilkScreen((href || '/product/_/' + currentelementid) +'?plain=true',null, 560, 600);
         	return false;
         });
 
@@ -871,23 +856,7 @@ optemo_module = (function (my){
     		my.ajaxcall(url);
     		return false;
     	});
-    	// Survey
-    	$('#survey_submit').live('click', function(){
-    		my.trackPage('survey/submit');
-    		$('#feedback').css('display','none');
-    		my.applySilkScreen('/surveys/create?' + $("#new_survey").serialize(), null, 300, 70);
-    		return false;
-    	});
-    	$('#yesdecisionsubmit').live('click', function(){
-    		my.trackPage('survey/yes');
-    		my.applySilkScreen('/surveys/new', null, 600, 835);
-    		return false;
-    	});
-    	$('#nodecisionsubmit').live('click', function(){
-    		my.removeSilkScreen();
-    		my.trackPage('survey/no');
-    		return false;
-    	});
+
     	// Add to cart buy link
     	$('.buylink, .buyimg').live("click", function(){
     		var buyme_id = $(this).attr('product');
@@ -965,7 +934,7 @@ optemo_module = (function (my){
     		submitCategorical();
     	});
 
-    	$(".close").live('click', function(){
+    	$(".close, .bb_quickview_close").live('click', function(){
     		my.removeSilkScreen();
     		return false;
     	});
@@ -982,6 +951,14 @@ optemo_module = (function (my){
 
 		$(".swatch").live('click', function(){
 			$(this).toggleClass('selected_swatch');
+		});
+		
+		//Reset filters
+		$('.reset').live('click', function(){
+			trackPage('goals/reset', {'filter_type' : 'reset'});
+			optemo_module.loading_indicator_state.sidebar = true;
+			optemo_module.ajaxcall($(this).attr('href')+'?ajax=true');
+			return false;
 		});
     }
 
@@ -1045,7 +1022,11 @@ optemo_module = (function (my){
         	});
     	}
     	$('.selectboxfilter').removeAttr("disabled");
-    	$('.binary_filter').removeAttr('disabled');
+    	$('.binary_filter').each(function(){
+			if($(this).attr('data-disabled') != 'true') {
+				$(this).removeAttr('disabled');
+			}
+		});
 
     	// In simple view, select an aspect to create viewable groups
     	$('.groupby').unbind('click').click(function(){
@@ -1426,21 +1407,6 @@ jQuery(document).ready(function($){
 		return false;
 	});
 
-	//Static Ajax call
-	$('#staticajax_reset').click(function(){
-		trackPage('goals/reset', {'filter_type' : 'reset'});
-		optemo_module.loading_indicator_state.sidebar = true;
-		optemo_module.ajaxcall($(this).attr('href')+'?ajax=true');
-		return false;
-	});
-
-	//Static feedback box
-	$('#feedback').click(function(){
-		trackPage('survey/feedback');
-		optemo_module.applySilkScreen('/surveys/new', null, 600, 480);
-		return false;
-	});
-
 	if (optemo_module.DIRECT_LAYOUT) {
 	    //Tour section
     	$('#popupTour1, #popupTour2, #popupTour3, #popupTour4').each(function(){
@@ -1550,6 +1516,9 @@ jQuery(document).ready(function($){
 	});
 	if ($('#tourautostart').length) { launchtour; } //Automatically launch tour if appropriate
 	$("#tourButton a").click(launchtour); //Launch tour when this is clicked
+	
+	// Load the classic theme
+    Galleria.loadTheme('/javascripts/galleria.classic.js');
 });
 
 if (window.embedding_flag) {

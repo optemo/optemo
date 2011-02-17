@@ -46,7 +46,7 @@ optemo_module = (function (my){
 
     my.FilterAndSearchInit = function() {
     	//Show and Hide Descriptions
-    	$('.feature .label a, .feature .deleteX, .desc').click(function(){
+    	$('.label a, .deleteX, .desc').click(function(){
     		if($(this).parent().attr('class') == "desc")
     			var obj = $(this).parent();
     		else if ($(this).siblings('.desc').length)
@@ -120,7 +120,7 @@ optemo_module = (function (my){
     	});
 	
     	//Clear form
-    	$('#staticajax_reset').click(function(){
+    	$('.reset').click(function(){
     		//Reset min sliders
     		$('*[id^=featurerangeone]').each(function() {
     			this.selectedIndex = 0;

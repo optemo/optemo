@@ -11,30 +11,50 @@ en:
         specs:
             price:
                 name:               "Price"
-                info:               "Price - The lowest price for the item."
+                info:               "The lowest price for the item."
                 unit:               "$"
             maxresolution:
                 name:               "Resolution"
-                info:               "Resolution - Measured in megapixels (millions of pixels), the number of light-sensitive cells that are actually exposed to light and used to capture the image, while the remainder may be shielded or just unused."
+                info:               "Measured in megapixels (millions of pixels), the number of light-sensitive cells that are actually exposed to light and used to capture the image, while the remainder may be shielded or just unused."
                 unit:               "MP"
             opticalzoom:
                 name:               "Optical Zoom"
-                info:               'Optical Zoom - Magnifies the photo by physical lens movement to bring you closer to the subject, thereby keeping the original photo quality. The magnification level is expressed in factors, such as "3x", "6x", or "10x".'
+                info:               'Magnifies the photo by physical lens movement to bring you closer to the subject, thereby keeping the original photo quality. The magnification level is expressed in factors, such as "3x", "6x", or "10x".'
                 unit:               "X"
             screensize:
-                name:               "Screen Size"
-                info:               "Screen Size - The size of the LCD (Liquid Crystal Display) screen on the camera, measured diagonally. You may find it easier to view your subject on the screen than through a standard viewfinder. This feature is also useful for reviewing and deleting photos."
+                name:               "LCD Size"
+                info:               "The size of the LCD (Liquid Crystal Display) screen on the camera, measured diagonally. You may find it easier to view your subject on the screen than through a standard viewfinder. This feature is also useful for reviewing and deleting photos."
                 unit:               "in."
             slr:
                 name:               "DSLR"
-                info:               "DSLR - Features manual and automatic controls, and is compatible with interchangeable lenses for professional-quality shots."
+                info:               "Features manual and automatic controls, and is compatible with interchangeable lenses for professional-quality shots."
             waterproof:
-                name:               "Waterproof"
+                name:               "Waterproof/Shockproof"
                 info:               "Waterproof - lets you snap photos under water down to a certain depth."
             brand:
                 name:               "Brand"
-                info:               "Brand - The manufacturer of the product. You can choose more than just one brand."
+                info:               "The manufacturer of the product. You can choose more than just one brand."
             color:
                 name:               "Color"
-            
-        
+            customerRating:
+                name:               "Customer Rating"
+                info:               "On a scale of 1 to 5, five being the best, this is the average of our customer ratings. Items are rated 0 if they have not been reviewed."
+                unit:               "1-5"
+            isAdvertised:
+                name:               "On Sale"
+            isClearance:
+                name:               "Clearance"
+            isOnlineOnly:
+                name:               "Online Only"
+            cmos:
+                name:               "CMOS Sensor"
+            videoresolution:
+                name:               "Video Resolution"
+            touchscreen:
+                name:               "Touchscreen"
+            oled:
+                name:               "OLED Screen"
+            hdmi:
+                name:               "HDMI Output"
+            imagestabilization:
+                name:               "Image Stabilization"

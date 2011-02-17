@@ -27,7 +27,9 @@ Site::Application.configure do
 
   # Use a different cache store in production
   # config.cache_store = :mem_cache_store
-  config.cache_store = :mem_cache_store, '127.0.0.1:11211'
+  # 86400 = 1.day
+  config.cache_store = :dalli_store, '127.0.0.1:11211',
+      { :namespace => "OPTEMO_DISCOVERY", :expires_in => 86400, :compress => true, :compress_threshold => 64*1024 }
   
   # Disable Rails's static asset server
   # In production, Apache or nginx will already do this
@@ -49,4 +51,13 @@ Site::Application.configure do
 
   # Send deprecation notices to registered listeners
   config.active_support.deprecation = :notify
+  
+end
+
+#create a new connection to memcached for forked processes, as a forked process will by default share file descriptors with its parent
+if defined?(PhusionPassenger)
+  PhusionPassenger.on_event(:starting_worker_process) do |forked|
+    # Only works with DalliStore
+    Rails.cache.reset if forked
+  end
 end

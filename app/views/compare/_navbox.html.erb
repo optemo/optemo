@@ -8,7 +8,7 @@
 				<div class="image_boundingbox">
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
 		<% end %>
-		<%= image_tag(CatSpec.cache_all(product.id)["imglurl"], :class => "productimg", :alt => product.small_title, :title => product.small_title) %>
+		<%= image_tag(CatSpec.cache_all(product.id)["img150url"], :class => "productimg", :alt => product.small_title, :title => product.small_title) %>
 		<% if @s.dragAndDropEnabled %>
 			</div>
 		<% end %>
@@ -16,7 +16,7 @@
 			<%= link_to product.small_title, product_path(:name => product.descurl, :id => product.id), :'data-id' => product.id, :class => "easylink", :title => "Click for product specifications" %>
 		
 			<div class="price">
-				<% if CatSpec.cache_all(product.id)["saleEndDate"] %>
+				<% if CatSpec.cache_all(product.id)["isAdvertised"] %>
 					On Sale: $<%= "%.2f" % ContSpec.cache_all(product.id)["saleprice"] %>
 				<% else %>
 					$<%= "%.2f" % ContSpec.cache_all(product.id)["price"] %>

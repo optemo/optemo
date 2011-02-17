@@ -57,13 +57,14 @@
   	<% i = i + 1 %>
   <% end %>
   <% @s.binary["filter"].each do |feat| %>
-  	<div class='feature'>
+  	<div>
   		<div class='label' data-position="<%= i %>">
   			<%= render :partial => 'desc', :locals => {:feat => feat} %>
   			<% dobj = Userdatabin.find_by_search_id_and_name(@s.search.id,feat) %>
-  			<%= check_box('myfilter', feat, {:checked => dobj.nil? || dobj.value == false ? false : 'checked', :class => 'binary_filter'})%>
+			<% available_count = SearchProduct.bin_count(feat) %>
+  			<%= check_box('myfilter', feat, :disabled => (available_count == 0) ? true : false, :checked => (dobj.nil? || dobj.value == false) ? false : 'checked', :class => 'binary_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false')%>
   			<%= link_to t("#{Session.product_type}.specs.#{feat}.name"), "#", :rel => "nofollow" %>
-			<%= " ("+SearchProduct.bin_count(feat).to_s+")" %>
+			(<%= available_count %>)
   		</div>
   	</div>
   	<% i = i + 1 %>	

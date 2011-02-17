@@ -78,25 +78,29 @@ class CompareController < ApplicationController
   # GET /products/1
   # GET /products/1.xml
   def show
-    @plain = params[:plain].nil? ? false : true
-    
-    #Cleanse id to be only numbers
-    id = params[:id] = params[:id][/^\d+/]
-    @product = Product.cached(id)
-    @allspecs = ContSpec.cache_all(id).merge(CatSpec.cache_all(id)).merge(BinSpec.cache_all(id)).merge(TextSpec.cache_all(id))
-    @sibling_ids_and_imgsurls = ProductSiblings.cache_ids_and_imgsurl(id, "imgsurl")
-    @s = Session
-
-    respond_to do |format|
-      format.html { 
-                    if @plain 
-                      render :layout => false
-                    elsif Session.mobileView
-                      render 'showsimple'
-                    else # Default is with layout as particular to either mobile view or screen view in choose_layout
-                      render 'show' # What did "render :http => ..." used to do? confusion
-                    end }
-      format.xml  { render :xml => @product }
+    if Session.product_type == "camera_bestbuy" && Session.isCrawler?(request.user_agent,nil)
+      redirect_to '/compare#index'
+    else
+      @plain = params[:plain].nil? ? false : true
+      
+      #Cleanse id to be only numbers
+      id = params[:id] = params[:id][/^\d+/]
+      @product = Product.cached(id)
+      @allspecs = ContSpec.cache_all(id).merge(CatSpec.cache_all(id)).merge(BinSpec.cache_all(id)).merge(TextSpec.cache_all(id))
+      @siblings = ProductSiblings.find_all_by_product_id_and_name(id,"imgsurl")
+      @s = Session
+      
+      respond_to do |format|
+        format.html { 
+                      if @plain 
+                        render :layout => false
+                      elsif Session.mobileView
+                        render 'showsimple'
+                      else # Default is with layout as particular to either mobile view or screen view in choose_layout
+                        render 'show' # What did "render :http => ..." used to do? confusion
+                      end }
+        format.xml  { render :xml => @product }
+      end
     end
   end
   
