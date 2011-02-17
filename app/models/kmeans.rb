@@ -355,6 +355,7 @@
    }
    "
  end
+
  
  def self.compute(number_clusters,p_ids)
  
@@ -403,8 +404,12 @@
    
     # inistial seeds for clustering  ### just based on contiuous features
     inits = self.init(number_clusters, cont_specs, weights[0...dim_cont])
-   #  $k = Kmeans.new unless $k
-   # $k.kmeans_c(cont_specs.flatten, bin_specs.flatten, cat_specs.flatten, specs.size, dim_cont, dim_bin, dim_cat, dim_per_cat, number_clusters, ft.flatten, weights, weight_dim, inits)
+    #$k = Kmeans.new unless $k
+    #static VALUE kmeans_c(VALUE _points, VALUE n, VALUE d, VALUE cluster_n,VALUE _factors, VALUE _weights, VALUE _inits)
+    #$k.kmeans_c(cont_specs.flatten, cont_specs.size, cont_specs.first.size, number_clusters, ft.flatten, weights, inits)
+    #static VALUE kmeans_c(VALUE _points_cont, VALUE _points_bin, VALUE _points_cat, _VALUE n, VALUE d_cont, VALUE d_bin, VALUE d_cat, VALUE _dim_per_cat, VALUE cluster_n,VALUE _factors, VALUE _weights, VALUE _weight_dim, VALUE _inits){
+    #$k.kmeans_c(cont_specs.flatten, bin_specs.flatten, cat_specs.flatten, cont_specs.size, dim_cont, dim_bin, dim_cat, dim_per_cat, number_clusters, ft.flatten, weights, weight_dim, inits)
+    #$k.kmeans_c(cont_specs.flatten, bin_specs.flatten, cat_specs.flatten, specs.size, dim_cont, dim_bin, dim_cat, dim_per_cat, number_clusters, ft.flatten, weights, weight_dim, inits)
     Kmeans.ruby(number_clusters, cont_specs, ft, weights[0...dim_cont], inits)
     
 end
