@@ -29,7 +29,7 @@ html {
     height: 100%;
 }
 #mycenter {
-    width: 948px;
+    width: 754px;
 }
 h3 {
 	margin: 0 0 3px;
@@ -40,8 +40,9 @@ h3 {
 //--------------------------------------*/
 
 .watermark {
-	right: 10px;
-	top: 835px;
+    float:right;
+    font-size: 0.8em;
+    padding-top: 4px;
 }
 #title {
 	position: absolute;
@@ -437,13 +438,6 @@ div.smalldesc {
 .surveyimage {
 	text-align: center; 
 }
-#feedback {
-	position:fixed; 
-	right: 0; 
-	top: 250px;
-	z-index:2;
-	cursor: pointer;
-}
 
 /*--------------------------------------//
 //                Footer                //
@@ -710,37 +704,40 @@ margin-top:0;
 //        Show page and related         //
 //--------------------------------------*/
 
+.bb_quickview_close {
+    position: absolute;
+    right: 33px;
+    top: 35px;
+    color: black;
+}
+
 div#silkscreen {
-	background-color: black;
+	background-color: transparent;
 	position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;
 	height: 5000px;
 	z-index: 3;
-	opacity: 0.50;
-	filter: alpha(opacity = 50);
 	display: none;
-	border-radius: 0 0 5px 5px;
-	-moz-border-radius: 0 0 5px 5px;
-	-webkit-border-radius: 0 0 5px 5px;
 }
 
 #outsidecontainer {
 	position: absolute;
 	top: 20px;
 	left: 20px;
-	width: 940px;
+	width: 560px;
 	height: auto;
 	padding-bottom:10px;
-	border-top: solid 30px #003399;
-	background: white;
 	z-index: 4;
 	display: none;
 }
+#inside_of_outsidecontainer {
+    background: url("/images/quickview_horizontal_background.png") repeat-y scroll 0 0 transparent;
+    width: 560px;
+}
 
 div#info {
-	margin-top: -26px;
 	font-size: 0.8em;
 	z-index: 5;
 	padding: 0px 23px 0px 22px;
@@ -780,7 +777,7 @@ div#filter_bar_loading{
 /* 	float: left; */
 }
 #features {
-	width: 230px;
+	width: 510px;
 	float: right;
 }
 #features div.buttons {
@@ -790,6 +787,7 @@ div#filter_bar_loading{
 }
 #features div.bbfeatures {
     height: 40px;
+    line-height: 40px;
 }
 #features img {
     float: left;
@@ -854,8 +852,10 @@ div .showtable{
 
 #tab_header {
     position: absolute;
-    left: 5px;
-    top: -26px;
+    left: 28px;
+}
+.webkit #tab_header {
+    top: -23px;
 }
 
 #tab_header ul {
@@ -891,14 +891,13 @@ div .showtable{
 
 #tabbed_content {
 	clear: both;
-	padding: 0 1em;
+	padding: 0;
 	width: 493px;
 	float: left;
 }
 
 #compare_field {
-    float: right;
-    width: 180px;
+    clear: both;
 }
 .left {
 	float: left;

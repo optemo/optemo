@@ -137,11 +137,17 @@ camera_bestbuy:
     color:
         type: Categorical
         used_for: [show, filter]
-    waterproof:
-        type: Binary
-        used_for: [show, filter]
     customerRating:
         type: Continuous
+        used_for: [filter]
+    isAdvertised:
+        type: Binary
+        used_for: [filter]
+    isClearance:
+        type: Binary
+        used_for: [filter]
+    isOnlineOnly:
+        type: Binary
         used_for: [filter]
     cmos:
         type: Binary
@@ -161,6 +167,9 @@ camera_bestbuy:
     imagestabilization:
         type: Binary
         used_for: [filter]
+    waterproof:
+        type: Binary
+        used_for: [show, filter]
 
 ################################
 #  LaserPrinterHub, Printers   #

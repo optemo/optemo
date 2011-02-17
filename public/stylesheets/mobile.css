@@ -5,8 +5,10 @@ body {
 }
 
 .watermark {
+    position: absolute;
 	right: 2px;
 	bottom: -18px;
+	font-size: 0.8em;
 }
 
 .simlinks {
