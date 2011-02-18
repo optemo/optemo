@@ -1120,7 +1120,7 @@ optemo_module = (function (my){
         clearTimeout(lis.sidebar_timer); // clearTimeout can run on "null" without error
         clearTimeout(lis.main_timer);
         clearTimeout(lis.socket_error_timer); // We need to clear the timeout error here
-    	my.flashError('<div class="poptitle">&nbsp;<a class="close" href="close">Close Window</a></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
+    	my.flashError('<div class="bb_poptitle">Error<a class="bb_quickview_close" href="close">Close Window</a></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
     	my.trackPage('goals/error');
     }
 
@@ -1148,7 +1148,7 @@ optemo_module = (function (my){
     	my.trackPage('goals/error', {'filter_type' : 'error - ' + errtype});
     	myspinner.end();
     	ErrorInit();
-    	my.applySilkScreen(null,str,600,100);
+    	my.applySilkScreen(null,str,600,107);
     }
 
     //--------------------------------------//
@@ -1559,7 +1559,7 @@ if (window.embedding_flag) {
     optemo_module.clearSocketError = function() {
         // if ajaxhandler never gets called, here we are.
 		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
-    	optemo_module.flashError('<div class="poptitle">&nbsp;<a class="close" href="close"><img src="/images/closepopup_white.gif"></a></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
+    	optemo_module.flashError('<div class="bb_poptitle">Error<a class="bb_quickview_close" href="close"><img src="/images/closepopup_white.gif"></a></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
     }
 
     optemo_module.quickajaxcall = function (element_name, mydata, fn) { // for the show page
