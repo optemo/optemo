@@ -1,5 +1,6 @@
 class Search < ActiveRecord::Base
   attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
+  attr_accessor :onlyfiltering
   
   def userdataconts
       @userdataconts ||= Userdatacont.find_all_by_search_id(id)
@@ -181,7 +182,7 @@ class Search < ActiveRecord::Base
       while(my_search.nil?)
         if current_s.initial
           my_search = initial_products
-          Session.onlyfiltering = true
+          self.onlyfiltering = true
         else
           c = SearchProduct.where(["search_id = ?",current_s.id])
           if c.empty?
