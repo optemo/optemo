@@ -13,7 +13,7 @@ module BtxtrLabels
     labels = get_labels(cluster)
     f.write(labels.map{|l| l.to_s()}.join(", "))
     f.write(".\n")
-    s = Session.current
+    s = Session
     
     s.continuous["boost"].each do |feat|
       f.write(feat+": continuous.\n")
@@ -35,7 +35,7 @@ module BtxtrLabels
   end
 
   def BtxtrLabels.generate_data_file(cluster)
-    s = Session.current
+    s = Session
     filename = get_data_filename(cluster)
     f = File.new(filename, "w")
 

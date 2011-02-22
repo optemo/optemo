@@ -1,6 +1,7 @@
 [ERR]
 <!--<%= @errortype %>-->
-<div class="poptitle">&nbsp;</div>
+Error<%= link_to "Close Window", "close", :class => "bb_quickview_close"%>
+&nbsp;</div>
 <p><%=t("products.ErrorPart1") + " " + t("products.here") + " " + t("products.ErrorPart2")%></p>
 <% if @errortype == "filter" %>
 [BRK]<%= render :partial => 'filter' %>

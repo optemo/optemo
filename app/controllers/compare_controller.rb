@@ -3,24 +3,30 @@ class CompareController < ApplicationController
   require 'open-uri'
   
   def index
-    # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
-    if Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
-      hist = params[:hist].gsub(/\D/,'').to_i if params[:hist]
-      search_history = Session.current.searches if hist && params[:page].nil?
-      if params[:page]
-        classVariables(Search.create({:page => params[:page], "action_type" => "nextpage"}))
-      elsif search_history && hist <= search_history.length && hist > 0
-        #Going back to a previous search
-        classVariables(search_history[hist-1])
-      else
-        #Initial clusters
-        classVariables(Search.create({"action_type" => "initial"}))
-      end
+    if request.subdomains.first == "ilovecameras" && !params[:ajax] && (!params[:checked] || params[:checked][:password] != "camerasloveme")
+      render 'password', :layout => false
     else
-      @indexload = true
+      # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
+      if Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
+        hist = params[:hist].gsub(/\D/,'').to_i if params[:hist]
+        search_history = Session.searches if hist && params[:page].nil?
+        if params[:page]
+          classVariables(Search.create({:page => params[:page], :sortby => params[:sortby], "action_type" => "nextpage"}))
+        elsif search_history && hist <= search_history.length && hist > 0
+          #Going back to a previous search
+          classVariables(search_history[hist-1])
+        elsif params[:sortby] # Change sorting method via navigator_bar select box
+          classVariables(Search.create({:sortby => params[:sortby], "action_type" => "sortby"}))
+        else
+          #Initial clusters
+          classVariables(Search.create({:sortby => params[:sortby], "action_type" => "initial"}))
+        end
+      else
+        @indexload = true
+      end
+      correct_render
     end
-    correct_render
-  end 
+  end
 
   def groupby
     # Group products by specified feature
@@ -31,7 +37,7 @@ class CompareController < ApplicationController
   #For mobile layout
   def filtering
     #Choose filter options
-    classVariables(Session.current.searches.last)
+    classVariables(Session.searches.last)
     render 'mobile-filters', :layout=>'filters'
   end
   
@@ -54,9 +60,9 @@ class CompareController < ApplicationController
       #The search should only be able to fail from bad keywords, as empty searches can't be selected
       if !params[:myfilter][:search].blank? && !Search.keyword(params[:myfilter][:search])
         #Rollback
-        classVariables(Session.current.lastsearch)
+        classVariables(Session.lastsearch)
         @errortype = "filter"
-        if Session.current.mobileView
+        if Session.mobileView
           render 'error'
         else 
           render 'error', :layout => false
@@ -72,44 +78,29 @@ class CompareController < ApplicationController
   # GET /products/1
   # GET /products/1.xml
   def show
-    @plain = params[:plain].nil? ? false : true
-    
-    #Cleanse id to be only numbers
-    params[:id] = params[:id][/^\d+/]
-    @product = Product.cached(params[:id])
-    @allspecs = ContSpec.cache_all(params[:id]).merge(CatSpec.cache_all(params[:id])).merge(BinSpec.cache_all(params[:id]))
-    @s = Session.current
-    product_type = @s.product_type
-    if product_type
-      if product_type == "flooring_builddirect"
-        @imglurl = "http://www.builddirect.com" + CGI.unescapeHTML(@product.imglurl.to_s)
-      elsif product_type == "Laptop"
-        @imglurl = @product.imgurl.to_s
-      else
-        @imglurl = @product.imglurl
-      end
+    if Session.product_type == "camera_bestbuy" && Session.isCrawler?(request.user_agent,nil)
+      redirect_to '/compare#index'
     else
-      @imglurl = @product.imglurl
-    end
-
-    @offerings = RetailerOffering.find_all_by_product_id_and_product_type(params[:id], product_type, :order => 'priceint ASC')
-    @review = Review.find_by_product_id_and_product_type(params[:id], product_type, :order => 'helpfulvotes DESC')
-    # Take out offending <br />
-    if @review && @review.content
-      @review.content = @review.content.gsub(/\r\&lt\;br \/\&gt\;/, '').gsub(/\t/,' ').strip
-    end
-    @cartridges = Compatibility.find_all_by_product_id_and_product_type(@product.id, product_type).map{|c|Cartridge.find_by_id(c.accessory_id)}.reject{|c|!c.instock}
-    @cartridgeprices = @cartridges.map{|c| RetailerOffering.find_by_product_type_and_product_id("Cartridge",c.id)}
-    respond_to do |format|
-      format.html { 
-                    if @plain 
-                      render :layout => false
-                    elsif Session.current.mobileView
-                      render 'showsimple'
-                    else # Default is with layout as particular to either mobile view or screen view in choose_layout
-                      render 'show' # What did "render :http => ..." used to do? confusion
-                    end }
-      format.xml  { render :xml => @product }
+      @plain = params[:plain].nil? ? false : true
+      
+      #Cleanse id to be only numbers
+      id = params[:id] = params[:id][/^\d+/]
+      @product = Product.cached(id)
+      @allspecs = ContSpec.cache_all(id).merge(CatSpec.cache_all(id)).merge(BinSpec.cache_all(id)).merge(TextSpec.cache_all(id))
+      @siblings = ProductSiblings.find_all_by_product_id_and_name(id,"imgsurl")
+      @s = Session
+      
+      respond_to do |format|
+        format.html { 
+                      if @plain 
+                        render :layout => false
+                      elsif Session.mobileView
+                        render 'showsimple'
+                      else # Default is with layout as particular to either mobile view or screen view in choose_layout
+                        render 'show' # What did "render :http => ..." used to do? confusion
+                      end }
+        format.xml  { render :xml => @product }
+      end
     end
   end
   
@@ -120,12 +111,12 @@ class CompareController < ApplicationController
     if params[:embedding]
       'embedding'
     else
-      Session.current.mobileView ? 'mobile' : 'optemo'
+      Session.mobileView ? 'mobile' : 'optemo'
     end
   end
   
   def classVariables(search)
-    @s = Session.current
+    @s = Session
     @s.search = search
     if @s.directLayout
       @products = search.products.paginate :page => search.page, :per_page => 10
@@ -136,7 +127,7 @@ class CompareController < ApplicationController
     if params[:ajax]
       render 'ajax', :layout => false
     else
-      if Session.current.mobileView
+      if Session.mobileView
         classVariables(Search.create({"page" => params[:page], "action_type" => "initial"}))
         render 'products'
       else

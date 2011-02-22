@@ -1,20 +1,18 @@
-<% s = Session.current %>
-<%= raw stylesheet_link_merged(s.directLayout ? :listview : :gridview) %>
+<% s = Session %>
+<%= raw stylesheet_link_merged(s.directLayout ? :direct : :assist) %>
 <%# The border and other aspects of the top bar are in the retailer's frame. This just puts the "compare" layout in. %>
 <%= yield %>
 
 <div id="silkscreen">&nbsp;</div>
 <div id="filter_bar_loading">Loading</div>
 <div id="outsidecontainer"><%= link_to image_tag("closepopup#{fr?}.gif"), "close", :class => "close"%><div id="info">&nbsp;</div></div>
-<div id="feedback">
-<%= image_tag "feedback#{fr?}.png" %>
-</div>
 <div style="display:none;">
 	<% if s %>
 	<span id="dragDropEnabled"><%= s.dragAndDropEnabled %></span>
 	<span id="seshid" session-id="<%= s.id unless s.nil? %>"><%= s.id %></span>
 	<span id="modelname"><%= s.product_type %></span>
 	<span id="directLayout"><%= s.directLayout %></span>
+	<span id="ab_testing_type"><%= s.ab_testing_type %></span>	
 	<% end %>
 </div>
 

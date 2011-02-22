@@ -1,12 +1,8 @@
 <div class="showtable_mobile rounded">
 	<h3><%= URI.decode(@product.title) %></h3>
 	<div id="image">
-		<% if @s.product_type == "flooring_builddirect" %>
-			<%= image_tag(@imglurl) %>
-		<% elsif @s.product_type == "Laptop" %>
-			<%= image_tag(@imglurl) %>
-		<% elsif FileTest.exist?("#{Rails.root}/public" + @imglurl) %>
-			<%= image_tag(@imglurl) %>
+		<% if FileTest.exist?("#{Rails.root}/public" + @allspecs["imglurl"]) %>
+			<%= image_tag(@allspecs["imglurl"]) %>
 		<% else %>
 			<br><br>No Image Available
 		<% end %>
@@ -25,13 +21,7 @@
 	</div>
 	<div style="clear: left; height:5px;"></div>
 	<div class="showtable">
-	<% if @s.product_type == "flooring_builddirect" %>
-		<h3>Available from <a href="http://www.builddirect.com">Build Direct</a></h3>
-	<% elsif @s.product_type == "Laptop" %>
-		<h3>Available from <a href="http://www.walmart.com">Walmart</a></h3>
-	<% else %>
-		<h3>Available At The Following Retailers</h3>
-	<% end %>
+	<h3>Available At The Following Retailers</h3>
 	<% @offerings.each do |offer| %>
 		<% next if !offer.stock || offer.priceint.blank? %>
 		<div class="left">	

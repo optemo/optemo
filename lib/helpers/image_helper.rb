@@ -36,13 +36,13 @@ module ImageHelper
   # theoretically be in place for this product
   def url_from_item_and_sz id, sz
     return nil if id.blank?
-    return "/images/#{Session.current.product_type}/#{id}_#{sz}.jpg"
+    return "/images/#{Session.product_type}/#{id}_#{sz}.jpg"
   end
 
   # Returns a set of db records where the picture hasn't been downloaded
   def picless_records
     no_pic = []
-    Product.find_all_by_product_type(Session.current.product_type).each do |rec|
+    Product.find_all_by_product_type(Session.product_type).each do |rec|
       no_pic << rec unless File.exist?(filename_from_id(rec.id,""))
     end
     return no_pic.uniq
@@ -86,7 +86,7 @@ module ImageHelper
     else
      connect = "_" if sz!=''
     end
-    return "public/system/#{Session.current.product_type}/#{id}#{connect}#{sz}.jpg"
+    return "public/system/#{Session.product_type}/#{id}#{connect}#{sz}.jpg"
   end
   
   # Resizes an image to the 3 pre-set sizes
@@ -145,7 +145,7 @@ module ImageHelper
     activerecords_to_save = []
     recset.each do |record|
       # rec = record
-      # rec = Product.find_by_id_and_product_type(record, Session.current.product_type)
+      # rec = Product.find_by_id_and_product_type(record, Session.product_type)
       @@size_names.each do |sz|
         if File.exist?(filename_from_id(record.id,sz))
           # There is no error checking at the moment. Catching an exception here seems like a big mistake for some reason.
@@ -178,7 +178,7 @@ module ImageHelper
         unless url.blank? or file_exists_for(id)
           while not url.empty?
             oldurl = url.shift
-            newurl = download_image(oldurl, "system/#{Session.current.product_type}", "#{id}.jpg")
+            newurl = download_image(oldurl, "system/#{Session.product_type}", "#{id}.jpg")
             if(newurl.nil?)
               failed << id 
               puts "Failed to download picture for #{id} from #{oldurl}"

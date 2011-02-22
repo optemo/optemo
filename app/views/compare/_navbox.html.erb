@@ -1,4 +1,4 @@
-<div id="box<%= i %>" class="navigator_box<%= group ? " nbgroup" : " nbsingle" %>" <%= ("style='margin-right:0px'" if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1) %>>
+<div id="box<%= i %>" class="navigator_box rounded rounded_bd" <%= ("style='margin-right:0px'" if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1) %>>
 	<div class="topbar">
 		<div class="title">
 			<%= groupDesc(group,i) %>
@@ -8,29 +8,30 @@
 				<div class="image_boundingbox">
 				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
 		<% end %>
-		<%= image_tag(imgurl(product,'m'), :class => "productimg", :alt => product.small_title, :title => product.small_title) %>
+		<%= image_tag(CatSpec.cache_all(product.id)["img150url"], :class => "productimg", :alt => product.small_title, :title => product.small_title) %>
 		<% if @s.dragAndDropEnabled %>
 			</div>
 		<% end %>
 		<div class="productinfo">
-			<%= link_to product.small_title, product_path(:name => product.descurl, :id => product.id), :'data-id' => product.id, :class => "easylink", :title => "Click for product specifications" %>
+			<%= link_to product.small_title, product_path(:name => product.descurl, :id => product.id), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => "Click for product specifications" %>
 		
 			<div class="price">
-				$<%= "%.2f" % ContSpec.cache_all(product.id)["price"] %>
+				<% if BinSpec.cache_all(product.id)["onsale"] %>
+					On Sale: $<%= "%.2f" % ContSpec.cache_all(product.id)["saleprice"] %>
+				<% else %>
+					$<%= "%.2f" % ContSpec.cache_all(product.id)["price"] %>
+				<% end %>
 			</div>	
+			<div class="productspecs"><%= featuretext(product.id) %></div>
 		</div>
 	</div>
 
 	<div class='bottombar'>
 		<% if group %>
     		<div class='sim rounded'>
-    	  <%= link_to(image_tag('plus.png')+t("products.compare.similar",:count => cluster.size - 1), cluster_path(cluster.id), {:id => "sim#{i}", :class => 'simlinks rounded', 
+    	  <%= link_to(t("products.compare.similar",:count => cluster.size - 1), cluster_path(cluster.id), {:id => "sim#{i}", :class => 'simlinks rounded', 
 		  :"data-id" => "#{product.id}", :"data-size" => cluster.size, :"title" => "Browse through all " + cluster.size.to_s + " in this group", :rel => "nofollow"}) %>
     		</div>
-		<% else %>
-		<div style="margin-top: 6px; font-size: 0.8em">
-			<%= featuretext(@s.search,cluster) %>
-		</div>
 		<% end %>
 	</div>
 </div>

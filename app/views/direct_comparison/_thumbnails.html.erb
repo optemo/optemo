@@ -1,9 +1,11 @@
 <div class="thumbnailcell">
 		<div class="first">
-			<%= image_tag(imgurl(thumbnails,'m') , :"data-id" => thumbnails.id, :class => "compareimg") %>
+			<%= image_tag(catspecs["imgmurl"], :"data-id" => thumbnails.id, :class => "compareimg") %>
  		</div>
 	<div class="thumbnaillabel">
    	<%= thumbnails.small_title %>
 	<div class="thumbnaildetails">	<%= number_to_currency(contspecs["price"]) %> </div>
+	<%= link_to 'Show This Camera', product_path(:name => thumbnails.descurl, :id => thumbnails.id), :class => 'easylink', :'data-id' => thumbnails.id %><br>
+	<%= link_to 'Add To Cart', 'javascript:return false;' %>
 	</div>
 </div>

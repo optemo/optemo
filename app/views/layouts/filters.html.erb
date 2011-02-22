@@ -1,4 +1,4 @@
-<% s = Session.current %>	
+<% s = Session %>	
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -18,7 +18,8 @@
 </div>
 <div style="display:none;">
 <span id="seshid" session-id="<%= s.id unless s.nil? %>"><%= s.id if s %></span>
-<span id="modelname"><%= s.product_type %></span>
+<span id="ab_testing_type"><%= s.ab_testing_type if s %></span>	
+<span id="modelname"><%= s.product_type if s %></span>
 </div>
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>

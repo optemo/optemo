@@ -1,14 +1,17 @@
 class Cluster
   require 'inline'
   attr :products
+  attr :rep_id
   
-  def initialize(products)
-    @products = products
-    
+  def initialize(products, rep_id)
+    @products = products # necessary?
+    #@rep_id = rep_id
     if Rails.env.development?
       Site::Application::CLUSTER_CACHE[products.hash.abs]=products
+      Site::Application::CLUSTER_CACHE[rep_id.hash.abs]=rep_id
     else
       Rails.cache.write("Cluster#{products.hash.abs}", products)
+      Rails.cache.write("Cluster#{rep_id.hash.abs}", rep_id)
     end
   end
   
@@ -32,21 +35,35 @@ class Cluster
   def children
     unless @children
       start = Time.now
-      cluster_ids = Kmeans.compute([9,products.length].min,products)
+      cluster_ids_and_reps = Kmeans.compute(9,products)
+      cluster_ids = cluster_ids_and_reps[0...products.size] 
+      rep_ids = cluster_ids_and_reps[products.size...cluster_ids_and_reps.size]
       finish = Time.now
-      @children = Cluster.group_by_clusterids(products,cluster_ids).map{|product_ids|Cluster.new(product_ids)}
+      @children = []
+      grouped_ids = Array.new(9){Array.new}
+      products.each do |product|
+        grouped_ids[cluster_ids.shift] << product
+      end
+      grouped_ids.each_with_index do |product_ids, i| 
+        next if product_ids.empty? #In case a cluster is eliminated by the clustering algorithm
+        @children << Cluster.new(product_ids,products[rep_ids[i]])
+      end
       puts("*****######!!!!!!"+(finish-start).to_s)
     end
     @children
   end
-  
  
   #The represetative product for this cluster, assumes nodes ordered by utility
   def representative
     unless @rep
-      utility_list = ContSpec.cachemany(products, "utility")
-      # If you see an error here due to utility_list being nil, consider running "rake calculate_factors"
-      @rep = Product.cached(products[utility_list.index(utility_list.max)])
+      #@rep = Product.cached(rep_id)
+      if Session.search.sortby=='Price'
+         prices = products.map{|p_id| ContSpec.featurecache(p_id, "price")}.map(&:value)
+         @rep = Product.cached(products[prices.index(prices.min)])
+      else    
+        utilities = products.map{|p_id| ContSpec.featurecache(p_id, "utility")}.map(&:value)
+        @rep = Product.cached(products[utilities.index(utilities.max)])
+      end  
     end
     @rep
   end
@@ -58,9 +75,5 @@ class Cluster
   def numclusters
     children.size
   end  
- 
-  #Grouping products by cluster_ids
-  def self.group_by_clusterids(product_ids, cluster_ids)
-    product_ids.mygroup_by{|e,i|cluster_ids[i]}
-  end
+  
 end

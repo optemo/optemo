@@ -4,11 +4,11 @@
 	<!-- The Filters section -->
 	<div id="filterbar" class="leftboxes rounded_bd rounded">
 		<div class="tl"></div><div class="tr"></div>
-		<h2><%=t 'products.compare.search' %> <%= link_to "(reset)", "/", :id => "staticajax_reset", :class => "reset", :rel => "nofollow" %></h2>
+		<h2><%=t 'products.compare.search' %> <%= link_to "(reset)", "/", :class => "reset", :rel => "nofollow" %></h2>
 			<div class="filtersdesc"><%=t 'products.compare.filtersdesc' %></div>
 		<div id="ajaxfilter">
 			<% unless @indexload %>
-				<%= render :partial => 'filter', :locals => {:s => Session.current, :current_search => Session.current.search} %>
+				<%= render :partial => 'filter', :locals => {:s => Session, :current_search => Session.search} %>
 			<% end  %>
 		</div>
 		<div class="bl"></div><div class="br"></div>
@@ -18,7 +18,7 @@
 	<div id="savebar" class='leftboxes gainlayout rounded_bd rounded'>
 		<div class="tl"><!-- --></div><div class="tr"><!-- --></div>
 		<h2> <%=t 'products.compare.saved' %> </h2>
-		<div class="savesome"> <% if Session.current.dragAndDropEnabled == true %> <%=t 'products.compare.savesomedrag'%> <% else %> <%=t 'products.compare.savesome'%> <% end %></div>
+		<div class="savesome"> <% if Session.dragAndDropEnabled == true %> <%=t 'products.compare.savesomedrag'%> <% else %> <%=t 'products.compare.savesome'%> <% end %></div>
 		<div id="savebar_content">
 		<div id="already_added_msg" class="savedmsg"> <%=t 'products.compare.alreadyadded' %> </div>
 		<div id="too_many_saved" class="savedmsg"> <%=t 'products.compare.toomanysaved' %> </div>

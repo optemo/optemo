@@ -1,12 +1,13 @@
-<% s = Session.current %>	
+<% s = Session %>	
 <%= render :partial => "html_and_head", :locals => {:s => s} %>
 <body>
 <div id="mycenter">
-   <div id="header">
-	  <%= render :partial => Session.current.product_type == "printer_lph" ? "lph_header" : "demo_header" %>
-   </div>
-<% if Session.current.product_type == "printer_lph" %>
-	<div class="watermark">Powered by <%= link_to 'Optemo', 'http://optemo.com', :class => "popup" %></div>
+	<%= case Session.product_type 
+	  when "printer_lph" then render :partial => "lph_header" 
+	  when /demo|_us$/ then render :partial => "demo_header"
+	  end
+	%>
+<% if Session.product_type == "printer_lph" %>
 	<div id="bottomlinks">
 	   <%= link_to 'Home', '/' %> |
 	   <%= link_to 'Terms of Use', '/termsofuse', {:title => 'Legal'}  %> |
@@ -20,39 +21,20 @@
     <%= yield %>
 	<div class="bl"></div><div class="br"></div>
    </div>
+   <div class="watermark">Powered by <%= link_to 'Optemo', 'http://optemo.com', :class => "popup" %></div>
 </div>
 <div id="silkscreen">&nbsp;</div>
 <div id="filter_bar_loading">Loading</div>
-<div id="outsidecontainer"><%= link_to image_tag("closepopup#{fr?}.gif"), "close", :class => "close"%><div id="info">&nbsp;</div></div>
-<div id="feedback">
-<%= image_tag "feedback#{fr?}.png" %>
-</div>
+<div id="outsidecontainer"><div id="info">&nbsp;</div></div>
 <div style="display:none;">
 	<% if s %>
 	<span id="dragDropEnabled"><%= s.dragAndDropEnabled %></span>
-	<span id="seshid" session-id="<%= s.id unless s.nil? %>"><%= s.id %></span>
+	<span id="seshid"><%= s.id %></span>
 	<span id="modelname"><%= s.product_type %></span>
 	<span id="directLayout"><%= s.directLayout %></span>
+	<span id="ab_testing_type"><%= s.ab_testing_type %></span>
 	<% end %>
 </div>
-
-<!--[if lt IE 7]><style>
-/* style for IE6 + IE5.5 + IE5.0 */
-.gainlayout { height: 0; }
-#info{padding: 0px 20px 0px 20px !important;}
-#feedback{position: absolute;}
-</style><![endif]-->
- 
-<!--[if IE 7]><style>
-.gainlayout { zoom: 1; }
-.hist {left: 15px; }
-
-</style><![endif]-->
-
-<!--[if gte IE 7]><style>
-.selectboxfilter { width:185px;}
-@import url("/stylesheets/welcomeIE.css");
-</style><![endif]-->
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
 <!-- The jquery-ui script is being included locally due to the custom jquery-ui being about 45k instead of 200kb from Google's CDN -->
@@ -62,6 +44,8 @@
 <%= render :partial => "tour_stub", :locals => {:s => s} %>
 
 <div id="backgroundPopup"></div>
+<% if @indexload %>
 <noscript><div id="noJavascript" style="position:absolute; top: 40px; left:30px; width:250px; background: #FFFFFF; opacity:0.8"><b>Javascript is disabled.</b>For full functionality, please enable javascript.</div></noscript>
+<% end %>
 </body>
 </html>

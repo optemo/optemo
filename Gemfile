@@ -26,10 +26,10 @@ gem 'ruby-debug19'
 
 gem 'thinking-sphinx', '2.0.1', :require => 'thinking_sphinx'
 gem 'will_paginate', '>=3.0.pre'
-gem 'rmagick'
+#gem 'rmagick'
 
 group :production, :profile do
-  gem "memcache-client"
+  gem "dalli", "1.0.2"
 end
 
 # Bundle gems for the local environment. Make sure to

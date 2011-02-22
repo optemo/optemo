@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101119000539) do
+ActiveRecord::Schema.define(:version => 20110208003112) do
 
   create_table "amazon_alls", :force => true do |t|
     t.text     "title"
@@ -873,6 +873,16 @@ ActiveRecord::Schema.define(:version => 20101119000539) do
     t.integer  "bestoffer_ca"
   end
 
+  create_table "product_siblings", :force => true do |t|
+    t.integer  "product_id"
+    t.integer  "sibling_id"
+    t.string   "name"
+    t.float    "value"
+    t.string   "product_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "products", :force => true do |t|
     t.string   "product_type"
     t.string   "title"
@@ -1169,6 +1179,7 @@ ActiveRecord::Schema.define(:version => 20101119000539) do
     t.string   "groupby"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "sortby"
   end
 
   create_table "surveys", :force => true do |t|
@@ -1353,6 +1364,7 @@ ActiveRecord::Schema.define(:version => 20101119000539) do
 
   create_table "users", :force => true do |t|
     t.datetime "created_at"
+    t.integer  "ab_testing_type", :default => 0
   end
 
 end

@@ -88,10 +88,6 @@ a:hover {
 	text-decoration: underline;
 }
 
-.watermark{
-	position: absolute;
-	font-size: 0.8em;
-}
 .rounded {
 	-webkit-border-radius: 8px;    /* for Safari */
   -moz-border-radius: 8px;       /* for Firefox */
@@ -101,7 +97,21 @@ a:hover {
     background-color: white;          /* if needed */
     border: 1px solid #ccc;           /* if needed */
 }
-
+#sorting_method_box {
+    font-size: 0.8em;
+	color: gray;
+	float: right;
+	margin-right: 5px;
+    /*position: absolute;
+    
+    right: 10px;
+	top: 3px;*/
+}
+#navtitle {
+    display:inline;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 /*--------------------------------------//
 //      Main Content (Right Side)       //
@@ -110,13 +120,12 @@ a:hover {
 
 .close {
 	position: absolute;
-	top: -22px;
+	top: -25px;
 	right: 13px;
+	color: white;
 }
-
-.poptitle {
-	margin: 8px 15px 25px;
-	font-weight: bold;
+.close:visited {
+	color:white;
 }
 
 #info h1 {
@@ -138,13 +147,6 @@ div .accessories{
 	margin-left: 2px;
 }
 
-div .right{
-	float: right;
-	text-align: left;
-	margin-bottom: 10px;
-	width: 193px;
-	
-}
 div .spacer {
 	clear: both;
 }

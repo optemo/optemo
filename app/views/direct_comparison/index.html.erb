@@ -1,4 +1,6 @@
-<div class="poptitle"><%=t "compare.index.title"%></div>
+<div class="bb_poptitle"><%=t "compare.index.title"%>
+    <%= link_to "Close Window", "close", :class => "bb_quickview_close"%>
+</div>
 
 <div id="comparisonmatrix">
 	<div class="column">
@@ -10,16 +12,20 @@
 		<div class="cell leftmostcolumn"> </div>
 	</div>
 
-	<% for i in 0..@products.count-1%>
+	<% @products.each do |product| %>
 		<div class="column">
 			<div class="outertitle"><div class="columntitle">
-					<%= link_to image_tag('remove.png', :style => "vertical-align: text-top;")+" "+t('compare.index.remove'), "", :"data-name" => @products[i].id, :class => 'remove' %>
+					<%= link_to image_tag('remove.png', :style => "vertical-align: text-top;")+" "+t('compare.index.remove'), "", :"data-name" => product.id, :class => 'remove' %>
 			</div></div>
-			<% contspecs = ContSpec.cache_all(@products[i].id) %>
-			<%= render :partial => 'thumbnails', :object => @products[i], :locals => {:navBack => :back, :i => i, :total => @products.count, :contspecs => contspecs} %>
-			<%= render :partial => 'featurevalues', :locals => {:product => @products[i], :numberofproducts => @products.count, :contspecs => contspecs} %>
+			<% contspecs = ContSpec.cache_all(product.id) %>
+			<% catspecs = CatSpec.cache_all(product.id) %>
+			<% binspecs = BinSpec.cache_all(product.id) %>
+			<%= render :partial => 'thumbnails', :object => product, :locals => {:contspecs => contspecs, :catspecs => catspecs} %>
+			<%= render :partial => 'featurevalues', :locals => {:product => product, :numberofproducts => @products.count, :contspecs => contspecs, :catspecs => catspecs, :binspecs => binspecs} %>
 		</div>
 	<% end %>
-	<div class="bgrow"></div>
-	<div class="bgrow" style="top: 225px;"></div>
+	<!-- div class="bgrow"></div>
+	<div class="bgrow" style="top: 225px;"></div-->
 </div>
+
+<div class="spacer" style="text-align:center; padding-bottom:5px;"><%= link_to 'More Specs', '#', :class => 'fetch_compare_specs' %></div>

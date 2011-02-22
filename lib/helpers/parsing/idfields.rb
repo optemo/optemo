@@ -184,7 +184,7 @@ module IdFieldsHelper
     end
     
     # Don't allow series...
-    ([Session.current.product_type]+($brands||[])+($series||[])).each do |nonmodel|
+    ([Session.product_type]+($brands||[])+($series||[])).each do |nonmodel|
       score -= 3 if str.match(/(\s|^)(#{nonmodel})(\s|,|$)/i)
     end
     # ... except if it's before a very short model name

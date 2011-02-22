@@ -5,8 +5,10 @@ javascripts:
   - helpers_shared
   - autocomplete_terms
   - jquery-ui-1.8.6.custom.min
-  - jquery.tablednd_0_5
   - jquery.history
+  - jquery_galleria
+  - jquery.livequery
+  - css_browser_selector
   - application
   
 - mobile:
@@ -15,15 +17,15 @@ javascripts:
     - application_mobile
     
 stylesheets: 
-- gridview: 
+- assist: 
     - shared
-    - gridview_and_listview
-    - gridview
+    - assist_and_direct
+    - assist
     - jquery-ui-1.8.6.custom
-- listview: 
+- direct: 
     - shared
-    - gridview_and_listview
-    - listview
+    - assist_and_direct
+    - direct
     - jquery-ui-1.8.6.custom
 - mobileview: 
     - shared

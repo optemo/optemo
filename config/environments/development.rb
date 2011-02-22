@@ -20,7 +20,7 @@ Site::Application.configure do
 
   # Enable serving of images, stylesheets, and javascripts from an asset server
   # This used to be "assets.optemo.com" but that requires an entry in /etc/hosts
-  config.action_controller.asset_host = "http://localhost:3000"
+  # config.action_controller.asset_host = "http://localhost:3000"
 
   # Don't care if the mailer can't send
   config.action_mailer.raise_delivery_errors = false
@@ -30,5 +30,12 @@ Site::Application.configure do
 
   # Only use best-standards-support built into browsers
   config.action_dispatch.best_standards_support = :builtin
+  
+  if File.exists?(File.join(Rails.root.to_s,'tmp', 'debug.txt'))
+     require 'ruby-debug'
+     Debugger.wait_connection = true
+     Debugger.start_remote
+     File.delete(File.join(Rails.root.to_s,'tmp', 'debug.txt'))
+  end
   
 end
