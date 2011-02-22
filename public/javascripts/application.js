@@ -11,9 +11,9 @@
    ---- UI Manipulation ----
     ** removeSilkScreen()
     ** applySilkScreen(url, data, width, height)  -  Puts up fading boxes
-    ** saveProductForComparison(id, imgurl, name)  -  Puts comparison items in #savebar_content and stores them in a cookie
-    ** renderComparisonProducts(id, imgurl, name)  -  Does actual insertion of UI elements
-    ** getidfromproductimg(img)  -  Returns the ID from the image. Only used for drag-and-drop at the moment.
+    ** saveProductForComparison(id, sku, imgurl, name)  -  Puts comparison items in #savebar_content and stores them in a cookie. SKU is optional.
+    ** renderComparisonProducts(id, sku, imgurl, name)  -  Does actual insertion of UI elements
+    ** getIdAndSkuFromProductimg(img)  -  Returns the ID from the image. Only used for drag-and-drop at the moment.
     removeFromComparison(id)  -  Removes comparison items from #savebar_content
     removeBrand(str)   -  Removes brand filter (or other categorical filter)
     submitCategorical()  -  Submits a categorical filter (no longer does tracking)
@@ -101,71 +101,90 @@ optemo_module = (function (my){
     });
 
     var resize_silkscreen = (function () {
-        var height = jQuery('#tabbed_content').height() + jQuery('#tabbed_content').offset().top + 10;
+        var height = jQuery('#tabbed_content').height() + jQuery('#tabbed_content').offset().top + 40;
         if (height < 760) height = 760;
         jQuery('#silkscreen').css('height', height);
         jQuery('#outsidecontainer').css('height', '');
     });
+    
+    // This is temporary and should be refactored as soon as convenient. The hard-coded "25" is probably
+    // because we are measuring the wrong thing. There are floating elements which confuse proper measurement.
+    my.resize_silkscreen_for_compare = (function () {
+        var height = jQuery('#info').height() + jQuery('#info').offset().top + 25;
+        if (height < 760) height = 760;
+        jQuery('#silkscreen').css('height', height);
+        jQuery('#outsidecontainer').css('height', '');           
+    });
 
-    // The preloader works to do a couple AJAX calls when the show page initially loads.
+    // The spec loader works to do a couple AJAX calls when the show page initially loads.
     // The results are stored in $('body').data for instant retrieval when the 
     // specs, reviews, or product info buttons are clicked.
-    my.preloadSpecsAndReviews = function(sku) {
+    my.loadspecs = function (sku) {
         // The jQuery AJAX request will add ?callback=? as appropriate. Best Buy API v.2 supports this.
         var baseurl = "http://www.bestbuy.ca/api/v2/json/product/" + sku;
-        $.ajax({
-            url: baseurl,
-            type: "GET",
-            dataType: "jsonp",
-            success: function (data) {
-                var specs = data["specs"];
-                // rebuild prop_list so that we can get the specs back out.
-                // We might need to do this regardless, due to the fact that
-                // the property list doesn't have to be sent in order.
-                var prop_list = function (my) {
-                    for (var i = 0; i < specs.length; i++) {
-                        var spec = specs[i];
-                        if (typeof(my[spec.group]) == "undefined") my[spec.group] = {};
-                        my[spec.group][spec.name] = spec.value;
-                    }
-                    return my;
-                }({});
-                prop_list = parse_bb_json(prop_list);
-                jQuery('body').data('bestbuy_specs', jQuery('<ul>' + prop_list + '</ul>'));
-            }
-        });
-        
-        baseurl = "http://www.bestbuy.ca/api/v2/json/reviews/" + sku;
-        $.ajax({
-            url: baseurl,
-	        type: "GET",
-	        dataType: "jsonp",
-            success: function (reviews) {
-                var prop_list = parse_bb_json(reviews["reviews"]);
-
-                var to_tabbed_content = "";
-                var attributes = reviews["customerRatingAttributes"];
-                var width = parseInt(18 + 41 * reviews["customerRating"]);
-                if (width < 29) width = 29;
-                if (width >= 182) width = 198;
-                to_tabbed_content += "<span style=\"font-weight: bold; font-size: 1.1em;\">Overall Rating:</span> " + "<div class=\"bestbuy_rating_bar\" style=\"width: "+ width +"px;\">" + reviews["customerRating"] + "<div class=\"bestbuy_rating_bar_inside\"></div></div><br>";
-                for (var i in attributes) {
-                    // This math is based on the width of the box, see bestbuy_rating_bar_small in CSS declarations
-                    var width = parseInt(9 + 20 * (attributes[i] - 0.8));
-                    if (width < 14) width = 14;
-                    if (width >= 91) width = 99;
-                    to_tabbed_content += i.replace(/_x0020_/g, " ") + "<div class=\"bestbuy_rating_bar_small\" style=\"width: "+ width +"px;\"><div class=\"bestbuy_rating_bar_inside_small\">" + attributes[i] + "</div></div>"
+        if (!(jQuery('body').data('bestbuy_specs_' + sku))) {
+            $.ajax({
+                url: baseurl,
+                type: "GET",
+                dataType: "jsonp",
+                success: function (data) {
+                    var raw_specs = data["specs"];
+                    // rebuild prop_list so that we can get the specs back out.
+                    // We might need to do this regardless, due to the fact that
+                    // the property list doesn't have to be sent in order.
+                    var processed_specs = function (my) {
+                        for (var i = 0; i < raw_specs.length; i++) {
+                            var spec = raw_specs[i];
+                            if (typeof(my[spec.group]) == "undefined") my[spec.group] = {};
+                            my[spec.group][spec.name] = spec.value;
+                        }
+                        return my;
+                    }({});
+                    jQuery('body').data('bestbuy_specs_' + sku, processed_specs);
                 }
-                to_tabbed_content += 'Review Count: '+ reviews['customerRatingCount'] + "<br><ul>" + prop_list + '</ul>';
-                $('body').data('bestbuy_reviews', to_tabbed_content);
-            },
-            error: function(x, xhr) {
-                console.log("Error in json ajax");
-                console.log(x);
-                console.log(xhr);
-            }
-        });
-	    
+            });
+        }        
+    };
+
+    my.preloadSpecsAndReviews = function(sku) {
+        my.loadspecs(sku);
+        if (!(jQuery('body').data('bestbuy_reviews_' + sku))) {
+            baseurl = "http://www.bestbuy.ca/api/v2/json/reviews/" + sku;
+            $.ajax({
+                url: baseurl,
+    	        type: "GET",
+    	        dataType: "jsonp",
+                success: function (reviews) {
+                    var prop_list = parse_bb_json(reviews["reviews"]);
+
+                    var to_tabbed_content = "";
+                    var attributes = reviews["customerRatingAttributes"];
+                    // This next section deals specifically with the styling of the rating bars.
+                    // They are hard-coded because the inside yellow section grows pixel by pixel to match
+                    // the rating, so there needs to be a mathematical relationship between a rating 2.47 and
+                    // the number of pixels of yellow to draw. That relationship right now is:
+                    // 1
+                    var width = parseInt(18 + 41 * reviews["customerRating"]);
+                    if (width < 29) width = 29;
+                    if (width >= 182) width = 198;
+                    to_tabbed_content += "<span style=\"font-weight: bold; font-size: 1.1em;\">Overall Rating:</span> " + "<div class=\"bestbuy_rating_bar\" style=\"width: "+ width +"px;\">" + reviews["customerRating"] + "<div class=\"bestbuy_rating_bar_inside\"></div></div><br>";
+                    for (var i in attributes) {
+                        // This math is based on the width of the box, see bestbuy_rating_bar_small in CSS declarations
+                        var width = parseInt(9 + 20 * (attributes[i] - 0.8));
+                        if (width < 14) width = 14;
+                        if (width >= 91) width = 99;
+                        to_tabbed_content += i.replace(/_x0020_/g, " ") + "<div class=\"bestbuy_rating_bar_small\" style=\"width: "+ width +"px;\"><div class=\"bestbuy_rating_bar_inside_small\">" + attributes[i] + "</div></div>"
+                    }
+                    to_tabbed_content += 'Review Count: '+ reviews['customerRatingCount'] + "<br><ul>" + prop_list + '</ul>';
+                    $('body').data('bestbuy_reviews_' + sku, to_tabbed_content);
+                },
+                error: function(x, xhr) {
+                    console.log("Error in json ajax");
+                    console.log(x);
+                    console.log(xhr);
+                }
+            });
+	    }
     }
 
     //--------------------------------------//
@@ -251,7 +270,7 @@ optemo_module = (function (my){
     };
 
     // When products get dropped into the save box
-    my.saveProductForComparison = function(id, imgurl, name) {
+    my.saveProductForComparison = function(id, sku, imgurl, name) {
     	/* We need to store the entire thing for Flooring. Eventually this will probably not be an issue
     	since we won't be pulling images directly from another website. Keep original code below
     	imgurlToSaveArray = imgurl.split('/');
@@ -274,8 +293,8 @@ optemo_module = (function (my){
     	    ignored_ids = getAllShownProductIds();
             my.trackPage('goals/save', {'filter_type' : 'save', 'product_picked' : id, 'product_ignored' : ignored_ids});
 
-    		my.renderComparisonProducts(id, imgurl, name);
-    		addValueToCookie('optemo_SavedProductIDs', [id, imgurl, name, my.MODEL_NAME]);
+    		my.renderComparisonProducts(id, sku, imgurl, name);
+    		addValueToCookie('optemo_SavedProductIDs', [id, sku, imgurl, name, my.MODEL_NAME]);
     	}
 
     	// There should be at least 1 saved item, so...
@@ -286,18 +305,18 @@ optemo_module = (function (my){
     	}
     };
 
-    my.renderComparisonProducts = function(id, imgurl, name) {
+    my.renderComparisonProducts = function(id, sku, imgurl, name) {
     	// Create an empty slot for product
-    	$('#opt_savedproducts').append("<div class='saveditem' id='c" + id + "'> </div>");
+    	$('#opt_savedproducts').append("<div class='saveditem' id='c" + id + "' data-sku='"+sku+"'> </div>");
 
     	// The best is to just leave the medium URL in place, because that image is already loaded in case of comparison, the common case.
     	// For the uncommon case of page reload, it's fine to load a larger image.
     	smallProductImageAndDetail = "<img class=\"draganddropimage\" src=" + // used to have width=\"45\" height=\"50\" in there, but I think it just works for printers...
-    	imgurl + " data-id=\""+id+"\" alt=\""+id+"_s\"><div class=\"smalldesc\"";
+    	imgurl + " data-id=\""+id+"\" data-sku=\""+sku+"\" alt=\""+id+"_s\"><div class=\"smalldesc\"";
     	// It looks so much better in Firefox et al, so if there's no MSIE, go ahead with special styling.
     	//if ($.browser.msie) smallProductImageAndDetail = smallProductImageAndDetail + " style=\"position:absolute; bottom:5px;\"";
     	smallProductImageAndDetail = smallProductImageAndDetail + ">" +
-    	"<a class=\"easylink\" data-id=\""+id+"\" href=\"\">" +
+    	"<a class=\"easylink\" data-id=\""+id+"\" data-sku=\""+sku+"\" href=\"\">" +
     	((name) ? optemo_module.getShortProductName(name) : 0) +
     	"</a></div>" +
     	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\">" +
@@ -327,8 +346,8 @@ optemo_module = (function (my){
         });
     };
 
-	my.getidfromproductimg = function(img) {
-        var res;
+	my.getIdAndSkuFromProductimg = function(img) {
+        var res, sku=0;
     	if (my.DIRECT_LAYOUT) {
     		res = img.parent().siblings('.itemfeatures').find('.easylink')
     		if (res.length > 0) {
@@ -337,9 +356,11 @@ optemo_module = (function (my){
     	        res = img.parent().siblings('.groupby_title').find('.easylink').attr('href').match(/\d+$/);
             }
     	} else {
-    		res = img.parent().siblings('.productinfo').children('.easylink').attr('href').match(/\d+$/);
+    		var el = img.parent().siblings('.productinfo').children('.easylink');
+    		res = el.attr('href').match(/\d+$/);
+    		sku = el.attr('data-sku');
     	}
-    	return res;
+    	return Array(res, sku);
 	}
 
     // When you click the X on a saved product:
@@ -818,12 +839,32 @@ optemo_module = (function (my){
 	    });
 
     	$('.fetch_bestbuy_specs').live('click', function () {
-            quickview_tasks($(this), $('body').data('bestbuy_specs'));
+    	    // Must send sku in (bestbuy_specs_110742 for example)
+    	    var prop_list_node = jQuery('<ul>' + parse_bb_json($('body').data('bestbuy_specs_' + $(this).parent().parent().attr('data-sku'))) + "</ul>");
+            quickview_tasks($(this), prop_list_node);
             return false;
 	    });
     
 	    $('.fetch_bestbuy_reviews').live('click', function () {
-            quickview_tasks($(this), $('body').data('bestbuy_reviews'));
+    	    // Must send sku in (bestbuy_specs_110742 for example)
+            quickview_tasks($(this), $('body').data('bestbuy_reviews_' + $(this).parent().parent().attr('data-sku')));
+            return false;
+        });
+
+        $('.fetch_compare_specs').live('click', function () {
+            var t = $(this);
+            var content = [];
+            $('#opt_savedproducts').children().each(function() {
+    			// it's a saved item if the CSS class is set as such. This allows for other children later if we feel like it.
+    			if ($(this).attr('class').indexOf('saveditem') != -1)
+    			{
+    				var sku = $(this).attr('data-sku');
+    				optemo_module.loadspecs(sku);
+    				t.parent().before("<br><div class='column' style='width:189px;'>" + "<ul>" + parse_bb_json($('body').data('bestbuy_specs_' + sku)) + "</ul>" + "</div>");
+    				t.remove();
+    				my.resize_silkscreen_for_compare();
+    			}
+    		});
             return false;
         });
 
@@ -1352,8 +1393,9 @@ jQuery(document).ready(function($){
 		for (tokenizedArrayID = 0; tokenizedArrayID < savedproducts.length; tokenizedArrayID++)
 		{
 			tokenizedArray = savedproducts[tokenizedArrayID].split(',');
-			// In future, tokenizedArray[3] contains the product type. As of Feb 2010, each website has separate cookies, so it's not necessary to read this data.
-			optemo_module.renderComparisonProducts(tokenizedArray[0], tokenizedArray[1], tokenizedArray[2]);
+            // These arguments are (id, sku, imgurl, name, product_type). 
+            // We just ignore product type for now since the websites only have one product type each.
+			optemo_module.renderComparisonProducts(tokenizedArray[0], tokenizedArray[1], tokenizedArray[2], tokenizedArray[3]);
 		}
 		// There should be at least 1 saved item, so...
 		// 1. show compare button
@@ -1391,10 +1433,12 @@ jQuery(document).ready(function($){
 					imgObj = $(ui.helper);
 					if (imgObj.hasClass('dragHand')) { // This is a drag hand object
 				        realImgObj = imgObj.parent().find('.productimg');
-    					optemo_module.saveProductForComparison(optemo_module.getidfromproductimg(realImgObj), realImgObj.attr('src'), realImgObj.attr('alt'));
+				        var id_and_sku = optemo_module.getIdAndSkuFromProductimg(realImgObj);
+    					optemo_module.saveProductForComparison(id_and_sku[0], id_and_sku[1], realImgObj.attr('src'), realImgObj.attr('alt'));
 				    }
 				    else { // This is an image object; behave as normal
-    					optemo_module.saveProductForComparison(optemo_module.getidfromproductimg(imgObj), imgObj.attr('src'), imgObj.attr('alt'));
+				        var id_and_sku = optemo_module.getIdAndSkuFromProductimg(imgObj);
+    					optemo_module.saveProductForComparison(id_and_sku[0], id_and_sku[1], imgObj.attr('src'), imgObj.attr('alt'));
 					}
 				}
 			 });
@@ -1403,20 +1447,35 @@ jQuery(document).ready(function($){
 
 	//Call overlay for product comparison
 	$("#compare_button").click(function(){
-		var productIDs = '';
+		var productIDs = '', width = 560, number_of_saved_products = 0;
 		// For each saved product, get the ID out of the id=#opt_savedproducts children.
 		$('#opt_savedproducts').children().each(function() {
 			// it's a saved item if the CSS class is set as such. This allows for other children later if we feel like it.
 			if ($(this).attr('class').indexOf('saveditem') != -1)
 			{
 				// Build a list of product IDs to send to the AJAX call
-				productIDs = productIDs + $(this).attr('id').substring(1) + ',';
+				var p_id = $(this).attr('id').substring(1);
+				var sku = $(this).attr('data-sku');
+				productIDs = productIDs + p_id + ',';
+				number_of_saved_products++;
+				optemo_module.loadspecs(sku)
 			}
 		});
-		// The following line could be useful later. Rather than hard-coding, we could use the 'overflow:scroll' CSS property to limit
-		// the display window height. But, right now this breaks the layout, so let's fix it later with less time pressure.
-		//var viewportHeight = $(window).height();
-		optemo_module.applySilkScreen('/comparison/' + productIDs, null, 560, 580);
+
+        // To figure out the width that we need, start with $('#opt_savedproducts').length probably
+        // 560 minimum (width is the first of the two parameters)
+        // 2, 3, 4 ==>  513, 704, 895  (191 each)
+        switch(number_of_saved_products) {
+            case 3:
+                width = 751;
+                break;
+            case 4:
+                width = 942;
+                break;
+            default:
+                width = 560;
+        }
+		optemo_module.applySilkScreen('/comparison/' + productIDs, null, width, 580);
 		trackPage('goals/compare', {'filter_type' : 'direct_comparison'});
 		return false;
 	});

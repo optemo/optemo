@@ -24,8 +24,8 @@
 			<%= render :partial => 'featurevalues', :locals => {:product => product, :numberofproducts => @products.count, :contspecs => contspecs, :catspecs => catspecs, :binspecs => binspecs} %>
 		</div>
 	<% end %>
-	<div class="bgrow"></div>
-	<div class="bgrow" style="top: 225px;"></div>
+	<!-- div class="bgrow"></div>
+	<div class="bgrow" style="top: 225px;"></div-->
 </div>
 
-<div class="spacer">&nbsp;</div>
+<div class="spacer" style="text-align:center; padding-bottom:5px;"><%= link_to 'More Specs', '#', :class => 'fetch_compare_specs' %></div>
