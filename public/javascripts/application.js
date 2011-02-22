@@ -286,22 +286,22 @@ optemo_module = (function (my){
     	}
     	else
     	{
-    	//Check if this id has already been added.
-    	if(null != document.getElementById('c'+id)){
-    		$("#already_added_msg").css("display", "block");
-    	} else {
-    	    ignored_ids = getAllShownProductIds();
-            my.trackPage('goals/save', {'filter_type' : 'save', 'product_picked' : id, 'product_ignored' : ignored_ids});
+        	//Check if this id has already been added.
+        	if(null != document.getElementById('c'+id)){
+        		$("#already_added_msg").css("display", "block");
+        	} else {
+        	    ignored_ids = getAllShownProductIds();
+                my.trackPage('goals/save', {'filter_type' : 'save', 'product_picked' : id, 'product_ignored' : ignored_ids});
 
-    		my.renderComparisonProducts(id, sku, imgurl, name);
-    		addValueToCookie('optemo_SavedProductIDs', [id, sku, imgurl, name, my.MODEL_NAME]);
-    	}
+        		my.renderComparisonProducts(id, sku, imgurl, name);
+        		addValueToCookie('optemo_SavedProductIDs', [id, sku, imgurl, name, my.MODEL_NAME]);
+        		// Hide the drag-and-drop message
+        		$('#savesome').hide();
+        	}
 
-    	// There should be at least 1 saved item, so...
-    	// 1. show compare button
-    	$("#compare_button").css("display", "block");
-    	// 2. hide 'add stuff here' message
-    	$("#deleteme").css("display", "none");
+        	// There should be at least 1 saved item, so...
+        	// 1. show compare button
+        	$("#compare_button").css("display", "block");
     	}
     };
 
@@ -373,10 +373,11 @@ optemo_module = (function (my){
     	$("#too_many_saved").css("display", "none");
 
     	removeValueFromCookie('optemo_SavedProductIDs', id);
-    	if($('.saveditem').length == 0){
+    	if ($('#opt_savedproducts').children().length == 0)
+    	{
+    	    $('#savesome').show();
     		$("#compare_button").css("display", "none");
-    		$("#deleteme").css("display", "block");
-    	}
+	    }
     	return false;
     }
 
@@ -1400,8 +1401,6 @@ jQuery(document).ready(function($){
 		// There should be at least 1 saved item, so...
 		// 1. show compare button
 		$("#compare_button").css("display", "block");
-		// 2. hide 'add stuff here' message
-		$("#deleteme").css("display", "none");
 	}
 
 	// Only load DBinit if it will not be loaded by the upcoming ajax call
