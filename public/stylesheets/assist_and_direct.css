@@ -601,7 +601,7 @@ margin-top:0;
 .column {
 	float: left;
 }
-#comparisonmatrix {
+.comparisonmatrix {
 	position: relative;
 	width:100%;
 	margin-top: 1px;
@@ -903,6 +903,14 @@ div .showtable{
 }
 
 #tabbed_content {
+	clear: both;
+	padding: 0;
+	width: 493px;
+	float: left;
+}
+
+#other_tabbed_content {
+    display: none;
 	clear: both;
 	padding: 0;
 	width: 493px;

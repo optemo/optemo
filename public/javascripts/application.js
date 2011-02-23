@@ -4,8 +4,9 @@
    Functions marked ** are public functions that can be called from outside the optemo_module declaration.
 
    ---- Show Page Pre-loader & Helpers ----
-    parse_bb_json(fn)  -  recursive function to parse the returned JSON into a reasonable object
-    resize_silkscreen  -  called internally to put a silkscreen where appropriate
+    parse_bb_json(obj)  -  recursive function to parse the returned JSON into an html list
+    parse_bb_json_compare(obj, features_flag)  -  recursive function parses the returned JSON object into a table of similar style to the 'direct comparison' action
+    resize_silkscreen()  -  called internally to put a silkscreen where appropriate
     ** preloadSpecsAndReviews(sku)  -  Does 2 AJAX requests for data relating to sku and puts the results in $('body').data() for instant retrieval later
 
    ---- UI Manipulation ----
@@ -90,6 +91,7 @@ optemo_module = (function (my){
     //    Show Page Pre-loader & Helpers    //
     //--------------------------------------//
 
+    // Renders a recursive html list of the specs.
     var parse_bb_json = (function spec_recurse(p) {
         var props = "";
         for (var i in p) {
@@ -100,20 +102,34 @@ optemo_module = (function (my){
         return props;
     });
 
-    var resize_silkscreen = (function () {
-        var height = jQuery('#tabbed_content').height() + jQuery('#tabbed_content').offset().top + 40;
-        if (height < 760) height = 760;
-        jQuery('#silkscreen').css('height', height);
-        jQuery('#outsidecontainer').css('height', '');
+    // Having the state machine with internal variable scope is harder to figure out; putting it here to save development time
+    var color_state = 0;
+    // Renders the best buy specs in a comparison table of the same style as the direct comparison action (see views/direct_comparison/index.html.erb).
+    var parse_bb_json_compare = (function spec_recurse(p, feature_names_flag) {
+        var props = "";
+        for (var i in p) {
+            if (typeof(p[i]) == "object") {
+                color_state = 1 - color_state;
+                if (feature_names_flag) // We are enumerating the feature names
+                    props += "<div class='cell " + (color_state ? 'whitebg' : 'graybg') + " leftmostcolumn'><div class='leftcolumntext'>"+ i +"</div></div>" + spec_recurse(p[i], feature_names_flag);
+                else // These columns should contain the actual data
+                    props += "<div class='cell " + (color_state ? 'whitebg' : 'graybg') + "'>&nbsp;</div>" + spec_recurse(p[i], feature_names_flag);
+            } else {
+                color_state = 1 - color_state;
+                if (feature_names_flag) // We are enumerating the feature names
+                    props += "<div class='cell " + (color_state ? 'whitebg' : 'graybg') + " leftmostcolumn'><div class='leftcolumntext'>" + i + "</div></div>";
+                else // These columns should contain the actual data
+                    props += "<div class='cell " + (color_state ? 'whitebg' : 'graybg') + "'>" + p[i] + "</div>";
+            }
+        }
+        return props;
     });
-    
-    // This is temporary and should be refactored as soon as convenient. The hard-coded "25" is probably
-    // because we are measuring the wrong thing. There are floating elements which confuse proper measurement.
-    my.resize_silkscreen_for_compare = (function () {
-        var height = jQuery('#info').height() + jQuery('#info').offset().top + 25;
+
+    var resize_silkscreen = (function () {
+        jQuery('#outsidecontainer').css('height', '');
+        var height = jQuery('#outsidecontainer').height() + jQuery('#outsidecontainer').offset().top + 40;
         if (height < 760) height = 760;
         jQuery('#silkscreen').css('height', height);
-        jQuery('#outsidecontainer').css('height', '');           
     });
 
     // The spec loader works to do a couple AJAX calls when the show page initially loads.
@@ -261,6 +277,7 @@ optemo_module = (function (my){
     	        } else {
     	            my.DBinit();
     	            $('#outsidecontainer').css('width','');
+    	            resize_silkscreen();
                 }
     	        $('#outsidecontainer').css('height', ''); // Take height off - it was useful for loading so that we'd see a box, but now the element can auto-size
     	        $('#inside_of_outsidecontainer').css('height', '');
@@ -813,7 +830,7 @@ optemo_module = (function (my){
     		$(this).parents('.column').remove();
 
     		// If this is the last one, take the comparison screen down too
-    		if ($('#comparisonmatrix .column').length == 1) {
+    		if ($('.comparisonmatrix:first .column').length == 1) {
     			my.removeSilkScreen();
     		}
     		return false;
@@ -821,12 +838,9 @@ optemo_module = (function (my){
 
         // The next few functions were written to be Best Buy-specific, but they can be extended
         // for any tabbed quickview page. The content is loaded ahead of time by preloadSpecsAndReviews() on popup load.
-        function quickview_tasks(el, content) {
+        function quickview_tasks(el) {
             // NB: This is locally scoped to LiveInit only
-    	    if (!($.browser.msie && $.browser.version == "7.0")) el.css('background','');
-    	    if (!($('body').data('bestbuy_product_info')))
-    	        $('body').data('bestbuy_product_info', $('#tabbed_content').html());
-            $('#tabbed_content').html(content);
+    	    if (!($.browser.msie && $.browser.version == "7.0")) el.css('background','');            
             $('#tab_selected').removeAttr('id');
     	    el.parent().attr('id', 'tab_selected');
             resize_silkscreen();
@@ -834,47 +848,124 @@ optemo_module = (function (my){
 
     	$('.fetch_bestbuy_info').live('click', function() {
     	    var t = $(this);
-    	    if (!(t.parent().attr('id') == "tab_selected"))
-        	    quickview_tasks(t,$('body').data('bestbuy_product_info'));
+    	    if (!(t.parent().attr('id') == "tab_selected")) {
+    	        $('#tabbed_content').show();
+                $('#other_tabbed_content').hide();
+        	    quickview_tasks(t);
+    	    }
 	        return false;
 	    });
 
     	$('.fetch_bestbuy_specs').live('click', function () {
     	    // Must send sku in (bestbuy_specs_110742 for example)
     	    var prop_list_node = jQuery('<ul>' + parse_bb_json($('body').data('bestbuy_specs_' + $(this).parent().parent().attr('data-sku'))) + "</ul>");
-            quickview_tasks($(this), prop_list_node);
+    	    $('#tabbed_content').hide();
+    	    $('#other_tabbed_content').html(prop_list_node).show();
+            quickview_tasks($(this));
             return false;
 	    });
     
 	    $('.fetch_bestbuy_reviews').live('click', function () {
     	    // Must send sku in (bestbuy_specs_110742 for example)
-            quickview_tasks($(this), $('body').data('bestbuy_reviews_' + $(this).parent().parent().attr('data-sku')));
+    	    $('#tabbed_content').hide();
+    	    $('#other_tabbed_content').html($('body').data('bestbuy_reviews_' + $(this).parent().parent().attr('data-sku'))).show();
+            quickview_tasks($(this));
             return false;
         });
 
         $('.fetch_compare_specs').live('click', function () {
             var t = $(this);
             var content = [];
+            // Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
+            var textToAdd = '<br style="clear:both;"><div class="comparisonmatrix" id="hideable_matrix"><div class="column"><div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle"><div class="leftcolumntext">Specifications</div></div></div>';
+    		var savedProducts = $('#opt_savedproducts').children();
+            savedProducts.each(function () {
+    		    var sku = $(this).attr('data-sku');
+                optemo_module.loadspecs(sku)
+            });
+            
+            color_state = 0;
+            // Get the data for the first columns (the spec names)
+            textToAdd += parse_bb_json_compare($('body').data('bestbuy_specs_' + savedProducts.find(":first").attr('data-sku')), true) + "</div>";
             $('#opt_savedproducts').children().each(function() {
     			// it's a saved item if the CSS class is set as such. This allows for other children later if we feel like it.
     			if ($(this).attr('class').indexOf('saveditem') != -1)
     			{
-    				var sku = $(this).attr('data-sku');
-    				optemo_module.loadspecs(sku);
-    				t.parent().before("<br><div class='column' style='width:189px;'>" + "<ul>" + parse_bb_json($('body').data('bestbuy_specs_' + sku)) + "</ul>" + "</div>");
-    				t.remove();
-    				my.resize_silkscreen_for_compare();
+    			    color_state = 0;
+    			    // Get the data for each column
+    				var additionalText = "<div class='column'><div class='outertitle'><div class='columntitle'></div></div>" + parse_bb_json_compare($('body').data('bestbuy_specs_' + $(this).attr('data-sku')), false) + "</div>";
+    				textToAdd += additionalText;
     			}
     		});
+    		t.html("Less Specs");
+    		t.removeClass("fetch_compare_specs").addClass("hide_compare_specs");
+    		textToAdd += "</div><br style='clear:both;'>";
+    		t.parent().after(textToAdd);
+			resize_silkscreen();
+            return false;
+        });
+        
+        $('.hide_compare_specs').live('click', function () {
+            var t = $(this);
+            (t.html() == "Less Specs") ? t.html("More Specs") : t.html("Less Specs");
+            $('#hideable_matrix').toggle();
             return false;
         });
 
-        $('.saveditem .deleteX').live('click', function() {
-         removeFromComparison($(this).attr('data-name'));
-         return false;
+        // This bridge function adds the product currently shown in the Quickview screen and puts it in the comparison box.
+        // If there are at least two products, bring up the comparison pop-up immediately, otherwise go back to browsing.
+        $('.show_to_compare').live('click', function () {
+            var id = $('#tab_header ul').attr('data-id'), sku = $('#tab_header ul').attr('data-sku');
+            var image = $('#galleria').find('img:first');
+            // Test for the length of the saved products array here to avoid a race condition
+            var number_saved_already = $('#opt_savedproducts').children().length;
+            optemo_module.saveProductForComparison(id, sku, image.attr('src'), $('#info h1:first').html());
+            // This message will be displayed next to the droppable box if 
+            $("#already_added_msg").css("display", "none");
+            // Call click handler for the compare button if there are multiple saved products there. Otherwise, get out of show page
+            (number_saved_already > 0) ? $('#compare_button').click() : my.removeSilkScreen();            
+            return false;
         });
 
-    	// from DBInit
+    	//Call overlay for product comparison
+    	$("#compare_button").live('click', function(){
+    		var productIDs = '', width = 560, number_of_saved_products = 0;
+    		// For each saved product, get the ID out of the id=#opt_savedproducts children.
+    		$('#opt_savedproducts').children().each(function() {
+    			// it's a saved item if the CSS class is set as such. This allows for other children later if we feel like it.
+    			if ($(this).attr('class').indexOf('saveditem') != -1)
+    			{
+    				// Build a list of product IDs to send to the AJAX call
+    				var p_id = $(this).attr('id').substring(1);
+    				var sku = $(this).attr('data-sku');
+    				productIDs = productIDs + p_id + ',';
+    				number_of_saved_products++;
+    				my.loadspecs(sku)
+    			}
+    		});
+
+            // To figure out the width that we need, start with $('#opt_savedproducts').length probably
+            // 560 minimum (width is the first of the two parameters)
+            // 2, 3, 4 ==>  513, 704, 895  (191 each)
+            switch(number_of_saved_products) {
+                case 3:
+                    width = 751;
+                    break;
+                case 4:
+                    width = 942;
+                    break;
+                default:
+                    width = 560;
+            }
+    		my.applySilkScreen('/comparison/' + productIDs, null, width, 580);
+    		my.trackPage('goals/compare', {'filter_type' : 'direct_comparison'});
+    		return false;
+    	});
+
+        $('.saveditem .deleteX').live('click', function() {
+             removeFromComparison($(this).attr('data-name'));
+             return false;
+        });
 
         $(".productimg, .easylink").live("click", function (){
 			var href = $(this).attr('href') || $(this).parent().siblings('.productinfo').children('.easylink').attr('href') || $(this).parent().parent().find('.easylink').attr('href'),
@@ -1443,41 +1534,6 @@ jQuery(document).ready(function($){
 			 });
 		});
 	}
-
-	//Call overlay for product comparison
-	$("#compare_button").click(function(){
-		var productIDs = '', width = 560, number_of_saved_products = 0;
-		// For each saved product, get the ID out of the id=#opt_savedproducts children.
-		$('#opt_savedproducts').children().each(function() {
-			// it's a saved item if the CSS class is set as such. This allows for other children later if we feel like it.
-			if ($(this).attr('class').indexOf('saveditem') != -1)
-			{
-				// Build a list of product IDs to send to the AJAX call
-				var p_id = $(this).attr('id').substring(1);
-				var sku = $(this).attr('data-sku');
-				productIDs = productIDs + p_id + ',';
-				number_of_saved_products++;
-				optemo_module.loadspecs(sku)
-			}
-		});
-
-        // To figure out the width that we need, start with $('#opt_savedproducts').length probably
-        // 560 minimum (width is the first of the two parameters)
-        // 2, 3, 4 ==>  513, 704, 895  (191 each)
-        switch(number_of_saved_products) {
-            case 3:
-                width = 751;
-                break;
-            case 4:
-                width = 942;
-                break;
-            default:
-                width = 560;
-        }
-		optemo_module.applySilkScreen('/comparison/' + productIDs, null, width, 580);
-		trackPage('goals/compare', {'filter_type' : 'direct_comparison'});
-		return false;
-	});
 
 	if (optemo_module.DIRECT_LAYOUT) {
 	    //Tour section
