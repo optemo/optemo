@@ -877,7 +877,7 @@ optemo_module = (function (my){
             var t = $(this);
             var content = [];
             // Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
-            var textToAdd = '<br style="clear:both;"><div class="comparisonmatrix" id="hideable_matrix"><div class="column"><div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle"><div class="leftcolumntext">Specifications</div></div></div>';
+            var textToAdd = '<br style="clear:both;"><div class="comparisonmatrix" id="hideable_matrix"><div class="column"><div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle"><div class="leftcolumntext">All Specifications</div></div></div>';
     		var savedProducts = $('#opt_savedproducts').children();
             savedProducts.each(function () {
     		    var sku = $(this).attr('data-sku');
