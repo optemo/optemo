@@ -867,9 +867,6 @@ div .showtable{
     position: absolute;
     left: 28px;
 }
-.webkit #tab_header {
-    top: -23px;
-}
 
 #tab_header ul {
 	list-style: none;
