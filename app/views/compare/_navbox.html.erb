@@ -13,7 +13,7 @@
 			</div>
 		<% end %>
 		<div class="productinfo">
-			<%= link_to product.small_title, product_path(:name => product.descurl, :id => product.id), :'data-id' => product.id, :class => "easylink", :title => "Click for product specifications" %>
+			<%= link_to product.small_title, product_path(:name => product.descurl, :id => product.id), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => "Click for product specifications" %>
 		
 			<div class="price">
 				<% if BinSpec.cache_all(product.id)["onsale"] %>
@@ -21,7 +21,7 @@
 				<% else %>
 					$<%= "%.2f" % ContSpec.cache_all(product.id)["price"] %>
 				<% end %>
-			</div>	
+			</div>
 			<div class="productspecs"><%= featuretext(product.id) %></div>
 		</div>
 	</div>

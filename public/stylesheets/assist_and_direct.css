@@ -283,7 +283,7 @@ div.smalldesc {
 	font-size:0.9em;
 	display: none;
 }
-.savesome {
+#savesome {
 	font-size: 0.9em;
 	width:180px;
 	padding:7px;
@@ -601,7 +601,7 @@ margin-top:0;
 .column {
 	float: left;
 }
-#comparisonmatrix {
+.comparisonmatrix {
 	position: relative;
 	width:100%;
 	margin-top: 1px;
@@ -695,11 +695,12 @@ margin-top:0;
 }
 .thumbnaillabel {
 	text-align:center;
-	padding-top: 25px;
+	padding-top: 7px;
 	color:#0A2088;
 }
 .thumbnaildetails {
 	color: #F5000B;
+	padding-bottom:5px;
 }
 .lowlightfeature {
 	color: #777;
@@ -866,9 +867,6 @@ div .showtable{
     position: absolute;
     left: 28px;
 }
-.webkit #tab_header {
-    top: -23px;
-}
 
 #tab_header ul {
 	list-style: none;
@@ -902,6 +900,14 @@ div .showtable{
 }
 
 #tabbed_content {
+	clear: both;
+	padding: 0;
+	width: 493px;
+	float: left;
+}
+
+#other_tabbed_content {
+    display: none;
 	clear: both;
 	padding: 0;
 	width: 493px;
