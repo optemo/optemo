@@ -418,11 +418,11 @@ end
 
 def self.set_weights(dim_cont, dim_bin, dim_cat)
   dim = dim_cont+dim_bin+dim_cat
-  if Session.search.sortby=='Price' # price is selected as prefered order
-    weights = [0.1/(dim-1)]*dim  
-    weights[Session.continuous["cluster"].index('price')] = 0.90    
-  else
-    weights = [1.0/dim]*dim
+  if Session.search.sortby.nil? || Session.search.sortby == "Relevance"
+      weights = [1.0/dim]*dim
+  else #if Session.continuous["cluster"].include?(Session.search.sortby.downcase)  
+    weights = [0.05/dim]*dim 
+    weights[Session.continuous["cluster"].index(Session.search.sortby.gsub("Sort by: ", "").downcase)] = 0.95 
   end
   weights                         
 end

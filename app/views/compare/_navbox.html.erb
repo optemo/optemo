@@ -30,7 +30,7 @@
 		<% if group %>
     		<div class='sim rounded'>
     	  <%= link_to(t("products.compare.similar",:count => cluster.size - 1), cluster_path(cluster.id), {:id => "sim#{i}", :class => 'simlinks rounded', 
-		  :"data-id" => "#{product.id}", :"data-size" => cluster.size, :"title" => "Browse through all " + cluster.size.to_s + " in this group", :rel => "nofollow"}) %>
+		  :"data-id" => "#{product.id}", :"data-size" => cluster.size, :"title" => cluster.size.to_s + " popular products with similar specifications", :rel => "nofollow"}) %>
     		</div>
 		<% end %>
 	</div>
