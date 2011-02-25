@@ -3,26 +3,60 @@
 </div>
 
 <div class="comparisonmatrix">
-	<div class="column">
-		<div class="outertitle leftmostcolumn leftmostoutertitle"><div class="columntitle leftmostcolumn leftmostcolumntitle"></div></div>
-		<div class="thumbnailcell leftmostcolumn">								
+
+    <%# Rows are like this: %>
+    <%# remove buttons %>
+    <%# pictures (thumbnail partial) %>
+    <%# "product details" %>
+    <%# then featurename, data, data %>
+
+    <div class="compare_row">
+        <div class="outertitle leftmostcolumn leftmostoutertitle"><div class="columntitle leftmostcolumn leftmostcolumntitle"></div></div>
+
+    	<% @products.each_with_index do |product, i| %>
+            <div class="<%= 'outertitle spec_column_' + i.to_s %>"><div class="columntitle">
+    				<%= link_to image_tag('remove.png', :style => "vertical-align: text-top;")+" "+t('compare.index.remove'), "", :"data-name" => product.id, :class => 'remove spec_column_' + i.to_s %>
+    		</div></div>
+		<% end %>
+    </div>
+    <% spec_hash = {} %>
+    <div class="compare_row">
+        <div class="thumbnailcell leftmostcolumn" style="padding-right:3px;"> <%# the style information is here because IE can't handle .class.otherclass CSS declarations %>
 			<div class="tabletitle leftcolumntext"> <%= t('compare.index.tabletitle') %> </div>
 		</div>
-		<%= render :partial => 'featurenames', :locals => {:featurelist => (@s.continuous["filter"]+@s.categorical["filter"]+@s.binary["filter"])} %>
-	</div>
+		<% @products.each_with_index do |product,i| %>
+    		<% contspecs = ContSpec.cache_all(product.id) %>
+    		<% catspecs = CatSpec.cache_all(product.id) %>
+    		<% binspecs = BinSpec.cache_all(product.id) %>
+    		<% spec_hash[product.id] = contspecs.merge(catspecs).merge(binspecs) %>
+    		<%= render :partial => 'thumbnails', :object => product, :locals => {:contspecs => contspecs, :catspecs => catspecs, :binspecs => binspecs, :column_number => i} %>
+        <% end %>
+    </div>
 
-	<% @products.each do |product| %>
-		<div class="column">
-			<div class="outertitle"><div class="columntitle">
-					<%= link_to image_tag('remove.png', :style => "vertical-align: text-top;")+" "+t('compare.index.remove'), "", :"data-name" => product.id, :class => 'remove' %>
-			</div></div>
-			<% contspecs = ContSpec.cache_all(product.id) %>
-			<% catspecs = CatSpec.cache_all(product.id) %>
-			<% binspecs = BinSpec.cache_all(product.id) %>
-			<%= render :partial => 'thumbnails', :object => product, :locals => {:contspecs => contspecs, :catspecs => catspecs, :binspecs => binspecs} %>
-			<%= render :partial => 'featurevalues', :locals => {:product => product, :numberofproducts => @products.count, :contspecs => contspecs, :catspecs => catspecs, :binspecs => binspecs} %>
-		</div>
-	<% end %>
+    <div class="compare_row">
+        <div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle">
+        	<div class="leftcolumntext"><%=t 'compare.index.proddetails'%></div>
+        </div></div>
+
+		<% @products.each_with_index do |product, i| %>
+            <div class="<%= 'outertitle spec_column_' + i.to_s %>"><div class="columntitle">&nbsp;</div></div>
+        <% end %>
+    </div>
+	<% gray = false %>
+        <% {@s.continuous["filter"] => "cont", @s.categorical["filter"] => "cat", @s.binary["filter"] => "bin"}.each_pair do |feat_list, feat_type| %>
+            <% feat_list.each do |feat| %>
+            <div class="<%= t("#{Session.product_type}.specs.#{feat}.name").length < 20 ? "compare_row" : "double_height_compare_row" %>">
+        		<div class="cell <%= gray ? "graybg" : "whitebg" %> leftmostcolumn">
+        			<div class="leftcolumntext"><%= t("#{Session.product_type}.specs.#{feat}.name") %>:</div>
+        		</div>
+        		<% @products.each_with_index do |product, i| %>
+            		<% allspecs = spec_hash[product.id] %>
+            		<%= render :partial => 'featurevalues', :locals => {:product => product, :numberofproducts => @products.count, :spec => allspecs[feat], :gray => gray, :feat => feat, :type => feat_type, :column_number => i} %>
+                <% end %>
+        		<% gray = !gray %>
+            </div>
+            <% end %>
+        <% end %>
 </div>
 
 <div class="spacer" style="text-align:center; padding-bottom:5px;"><%= link_to 'More Specs', '#', :class => 'fetch_compare_specs' %></div>
