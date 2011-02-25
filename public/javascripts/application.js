@@ -930,6 +930,15 @@ optemo_module = (function (my){
             }
     		t.html("Less Specs");
     		t.removeClass("fetch_compare_specs").addClass("hide_compare_specs");
+    		
+    		// Put the thumbnails and such at the bottom of the compare area too (in the hideable matrix)
+    		
+    		var remove_row = $('#basic_matrix .compare_row:first');
+    		textToAdd += "<div class='compare_row'>" + remove_row.html() + "</div><div class='compare_row'>" + remove_row.next().html() + "</div>";
+            textToAdd += "<div class='outertitle leftmostcolumn leftmostoutertitle'><div class='columntitle leftmostcolumn leftmostcolumntitle'></div></div>";
+            for (var i = 0; i < savedProducts.length; i++) {
+                textToAdd += "<div class='outertitle'><div class='columntitle'>&nbsp;</div></div>";
+            }
     		textToAdd += "</div><br style='clear:both;'>";
     		t.parent().after(textToAdd);
 			resize_silkscreen();
