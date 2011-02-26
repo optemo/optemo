@@ -434,7 +434,7 @@ end
 def self.ruby(number_clusters, specs, ft, weights, inits)
   weights = [1]*specs.first.size if weights.nil?
   thresh = 0.000001
-  standard_specs = self.standardize_cont_data(specs)
+  standard_specs = self.factorize_cont_data(specs)#self.standardize_cont_data(specs)
   #mean_1 = self.seed(number_clusters, specs)
   mean_1 = inits.map{|i| standard_specs[i]}
   mean_2 =[]
@@ -450,7 +450,13 @@ def self.ruby(number_clusters, specs, ft, weights, inits)
    end 
    mean_1= self.means(number_clusters, standard_specs, labels)
    z=0.0;
-   mean_1.each_index{|c| z+=self.distance(mean_1[c], mean_2[c], weights)}
+   
+   mean_1.each_index do |c|
+      mean_1[c] = [0]*specs.first.size if mean_1[c].nil?
+      mean_2[c] = [0]*specs.first.size if mean_2[c].nil?
+      debugger if mean_2[c].nil?
+      z+=self.distance(mean_1[c], mean_2[c], weights)
+   end    
   end while z > thresh
   reps = [];
 
@@ -493,6 +499,7 @@ def self.distance(point1, point2, weights)
     if point1[i].kind_of?(Array)
        diff = weights[i] unless points[1].eql?(points[2])
     else
+       #debugger if weights.nil? || point1.nil? || point2.nil?
        diff = weights[i]*(point1[i]-point2[i])
     end  
     dist += diff*diff
@@ -520,7 +527,16 @@ end
     specs = specs.transpose
     specs.map{|p| p.flatten}  
   end  
-    
+  
+  def self.factorize_cont_data(specs)
+    fvals = specs.transpose
+    factors = []
+    fvals.each do |f|
+      Session.prefDirection[f] ==1 ? ordered = f.sort.reverse : ordered = f.sort
+      factors << f.map{|fval| (ordered.length - ordered.index(fval))/ordered.length.to_f}        
+    end  
+    factors.transpose
+  end  
   #   
   def self.standardize_cont_data(specs)
     mean_all = mean(specs)

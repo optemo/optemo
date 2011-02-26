@@ -1,6 +1,6 @@
 <% if @plain %>
 <div class="poptitle"><div id="tab_header">
-<ul data-id='<%= @product.id %>' data-sku='<%= @product.sku %>'> <%# These are used in the application javascript "show" and "compare" pages' logic. %>
+<ul data-sku='<%= @product.sku %>'>
 	<li id="tab_selected"><a href="#" class="fetch_bestbuy_info">Product Info</a></li>
 	<li><a href="#" class="fetch_bestbuy_specs">Specs</a></li>
 	<li><a href="#" class="fetch_bestbuy_reviews">Reviews</a></li>
@@ -62,7 +62,7 @@
 
 	    <div style="font-size: 1em; margin-bottom:10px;"><%= raw @allspecs["shortDescription"] %></div>
     </div>
-    <div id="other_tabbed_content"></div>
+    
 	<div id="features">
 	<ul>
 		<div style="float:left; margin-top:20px;">
@@ -83,8 +83,7 @@
 
     	    <div class="buttons"><%= image_tag "bestbuy_addtocart.gif" %></div>
     	    <div class="buttons"><%= image_tag "bestbuy_add_wishlist.gif" %></div>
-    	    <div class="buttons"><%= image_tag "bestbuy_add_to_pricewatch.gif" %></div>	    
-    	    <div class="buttons" style="margin-bottom: 8px;"><%= link_to image_tag("bestbuy_compare.gif"), '#', :class => 'show_to_compare' %></div>
+    	    <div class="buttons" style="margin-bottom: 8px;"><%= image_tag "bestbuy_add_to_pricewatch.gif" %></div>	    
         </div>
 	</ul>
 	</div>
@@ -96,3 +95,7 @@
 	</div-- >
 
 <% if !@plain %><div style="clear: both;"></div></div><% end %>
+
+<script>
+
+</script>
