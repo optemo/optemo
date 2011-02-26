@@ -70,16 +70,16 @@
     if (jQuery)  -  Bootstrap jquery if it's not available. In embedded view, we might or might not have jquery loaded already.
 */
 
-// These global variables must be declared explicitly for proper scope (see setTimeout)
+// These global variables must be declared explicitly for proper scope (the spinner is because setTimeout has its own scope and needs to set the spinner)
 var optemo_module;
 var myspinner;
 var optemo_module_activator;
 
 optemo_module_activator = (function($) { // See bottom, this is for jquery noconflict
 optemo_module = (function (my){
-    // Language support disabled for now
-    //var language;
-    // The following is pulled from optemo.html.erb
+    // Language support - disabled for now
+    // var language;
+    // The following variables are pulled from optemo.html.erb
     my.IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
     my.MODEL_NAME = $("#modelname").html();
     var VERSION = $("#version").html();
@@ -93,6 +93,10 @@ optemo_module = (function (my){
 
     // Renders a recursive html list of the specs.
     // This is still used for displaying reviews for the time being.
+    // (for/in) loop iterates over all properties of the object.
+    // This wouldn't work out if for any reason the Object prototype had changed.
+    // In that case, use the following (google "for in javascript hasownproperty" for more information):
+    // if (p.hasOwnProperty(i)
     var parse_bb_json = (function spec_recurse(p) {
         var props = "";
         for (var i in p) {
@@ -124,8 +128,9 @@ optemo_module = (function (my){
     });
 
     var resize_silkscreen = (function () {
+        // This allows the container to resize as appropriate, but for it to work, the last element in #outsidecontainer needs to have style="clear:both"
         jQuery('#outsidecontainer').css('height', '');
-        var height = jQuery('#outsidecontainer').height() + jQuery('#outsidecontainer').offset().top + 40;
+        var height = jQuery('#outsidecontainer').height() + jQuery('#outsidecontainer').offset().top + 40; // 40 is arbitrary
         if (height < 760) height = 760;
         jQuery('#silkscreen').css('height', height);
     });
@@ -133,6 +138,12 @@ optemo_module = (function (my){
     // The spec loader works to do a couple AJAX calls when the show page initially loads.
     // The results are stored in $('body').data for instant retrieval when the
     // specs, reviews, or product info buttons are clicked.
+    
+    // Consider refactoring this code to solve the race condition:
+    //   - get the loading code to chain back to the insertion code
+    //   - "specs" or "more specs" links just show/hide the table element rather than building it up; the ajax return below does that
+    // The disadvantage would be that the specs wouldn't be stored for later retrieval. This probably isn't a big deal.
+    
     my.loadspecs = function (sku) {
         // The jQuery AJAX request will add ?callback=? as appropriate. Best Buy API v.2 supports this.
         var baseurl = "http://www.bestbuy.ca/api/v2/json/product/" + sku;
@@ -160,6 +171,7 @@ optemo_module = (function (my){
         }
     };
 
+    // This function gets called when a show action gets called.
     my.preloadSpecsAndReviews = function(sku) {
         my.loadspecs(sku);
         if (!(jQuery('body').data('bestbuy_reviews_' + sku))) {
@@ -206,6 +218,7 @@ optemo_module = (function (my){
     //--------------------------------------//
 
     my.removeSilkScreen = function() {
+        // Re-enable the select boxes manually (IE bug; we have to disable them when applying the silkscreen)
         $('.selectboxfilter').css('visibility', 'visible');
         $('.selectboxfilter').removeAttr('disabled');
         $('#silkscreen').css({'display' : 'none', 'top' : '', 'left' : '', 'width' : ''}).hide();
@@ -228,6 +241,7 @@ optemo_module = (function (my){
 
         /* This is used to get the document height for doing layout properly. */
         /*http://james.padolsey.com/javascript/get-document-height-cross-browser/*/
+        // As of jQuery 1.5, there is probably a better way of doing this, maybe just calling $('body').height() even.
         var current_height = (function() {
             var D = document;
             return Math.max(
@@ -250,8 +264,10 @@ optemo_module = (function (my){
     	    my.quickajaxcall('#info', url, function(){
     	        if (url.match(/\/product/)) {
                     // Initialize Galleria
+                    // If you are debugging around this point, be aware that galleria likes to be initialized all in one shot.
                     jQuery('#galleria').galleria();
                     // The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
+                    // It's important to set this up as an event handler at all because there is a race condition with galleria updating the DOM otherwise.
                     $('.galleria-thumbnails-list').livequery(function() {
                         var g = $('#galleria').find('.galleria-thumbnails-list');
                         g.children().css('float', 'left');
@@ -260,6 +276,7 @@ optemo_module = (function (my){
 
                     if (!($.browser.msie && $.browser.version == "7.0")) {
                         // This is an unsightly hack, and unfortunately seems to be the only easy way to make it work.
+                        // Internet Explorer 7 has a problem with background color causing the disappearance of divs. Google "peekaboo bug" and others.
                         $('#tab_header li a').hover(function() {
                             if (!($(this).parent().attr('id') == 'tab_selected')) {
                                 $(this).css('background', '#ddf');
@@ -321,6 +338,10 @@ optemo_module = (function (my){
     };
 
     my.renderComparisonProducts = function(id, sku, imgurl, name) {
+        // The reason for writing out all the HTML in javascript like this is that we want the drop action to happen instantly, without
+        // a page load. As for why it's done explicitly rather than, e.g. el = document.createElement("img"); el.src = [...] that is
+        // more due to inexperience than anything else. This should probably be refactored to the above style for readability.
+
     	// Create an empty slot for product
     	$('#opt_savedproducts').append("<div class='saveditem' id='c" + id + "' data-sku='"+sku+"'> </div>");
 
@@ -328,14 +349,14 @@ optemo_module = (function (my){
     	// For the uncommon case of page reload, it's fine to load a larger image.
     	smallProductImageAndDetail = "<img class=\"draganddropimage\" src=" + // used to have width=\"45\" height=\"50\" in there, but I think it just works for printers...
     	imgurl + " data-id=\""+id+"\" data-sku=\""+sku+"\" alt=\""+id+"_s\"><div class=\"smalldesc\"";
-    	// It looks so much better in Firefox et al, so if there's no MSIE, go ahead with special styling.
-    	//if ($.browser.msie) smallProductImageAndDetail = smallProductImageAndDetail + " style=\"position:absolute; bottom:5px;\"";
+
     	smallProductImageAndDetail = smallProductImageAndDetail + ">" +
     	"<a class=\"easylink\" data-id=\""+id+"\" data-sku=\""+sku+"\" href=\"\">" +
     	((name) ? optemo_module.getShortProductName(name) : 0) +
     	"</a></div>" +
     	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\">" +
     	"<img src=\"" +
+        // This next line is used for embedding: check whether there is a remote server defined, and put the appropriate image url in.
     	(typeof(REMOTE) != 'undefined' ? REMOTE : "") +
     	"/images/close.png\" alt=\"Close\"/></a>";
     	var element = $('#c'+id);
@@ -390,7 +411,7 @@ optemo_module = (function (my){
     	removeValueFromCookie('optemo_SavedProductIDs', id);
     	if ($('#opt_savedproducts').children().length == 0)
     	{
-    	    $('#savesome').show();
+    	    $('#savesome').show(); // This is the "save products by dropping..." message
     		$("#compare_button").css("display", "none");
 	    }
     	return false;
@@ -402,6 +423,7 @@ optemo_module = (function (my){
     	my.ajaxcall("/compare?ajax=true", $("#filter_form").serialize());
     }
 
+    // Submit a categorical filter, e.g. brand.
     function submitCategorical(){
         var arguments_to_send = [];
         arguments = $("#filter_form").serialize().split("&");
@@ -481,6 +503,7 @@ optemo_module = (function (my){
     my.trackPage = function(page_title, extra_data){
     	try {
     	    if (!extra_data) extra_data = {}; // If this argument didn't get sent, set an empty hash
+    	    // All the following items get sent with every tracking request.
     		extra_data['optemo_session'] = SESSION_ID;
     		extra_data['version'] = VERSION;
     		extra_data['interface_view'] = (my.DIRECT_LAYOUT ? 'direct' : 'assist');
@@ -932,20 +955,23 @@ optemo_module = (function (my){
     		t.removeClass("fetch_compare_specs").addClass("hide_compare_specs");
     		
     		// Put the thumbnails and such at the bottom of the compare area too (in the hideable matrix)
-    		
     		var remove_row = $('#basic_matrix .compare_row:first');
     		textToAdd += "<div class='compare_row'>" + remove_row.html() + "</div><div class='compare_row'>" + remove_row.next().html() + "</div>";
+            column_number = 0;
+            textToAdd += "<div class='compare_row'>";
             textToAdd += "<div class='outertitle leftmostcolumn leftmostoutertitle'><div class='columntitle leftmostcolumn leftmostcolumntitle'></div></div>";
             for (var i = 0; i < savedProducts.length; i++) {
-                textToAdd += "<div class='outertitle'><div class='columntitle'>&nbsp;</div></div>";
+                textToAdd += "<div class='outertitle spec_column_"+column_number+"'><div class='columntitle'>&nbsp;</div></div>";
+                column_number++;
             }
-    		textToAdd += "</div><br style='clear:both;'>";
+    		textToAdd += "</div></div><br style='clear:both;'>";
     		t.parent().after(textToAdd);
 			resize_silkscreen();
             return false;
         });
 
         $('.hide_compare_specs').live('click', function () {
+            // Once we have the additional specs loaded and rendered, we can simply show and hide that table
             var t = $(this);
             (t.html() == "Less Specs") ? t.html("More Specs") : t.html("Less Specs");
             $('#hideable_matrix').toggle();
@@ -1008,6 +1034,7 @@ optemo_module = (function (my){
         });
 
         $(".productimg, .easylink").live("click", function (){
+            // This is the show page
 			var href = $(this).attr('href') || $(this).parent().siblings('.productinfo').children('.easylink').attr('href') || $(this).parent().parent().find('.easylink').attr('href'),
         	ignored_ids = getAllShownProductIds(),
 			currentelementid = $(this).attr('data-id') || href.match(/\d+$/),
@@ -1017,7 +1044,7 @@ optemo_module = (function (my){
         	return false;
         });
 
-        //Ajax call for simlinks
+        //Ajax call for simlinks ('browse similar')
     	$('.simlinks').live("click", function() {
     		var ignored_ids = getAllShownProductIds();
     	    my.loading_indicator_state.main = true;
@@ -1476,6 +1503,7 @@ optemo_module = (function (my){
     	return (readCookie(name) ? readCookie(name).split('*') : 0);
     };
 
+    // The functions below should not be used; treat them as private, to be called by the two cookie interface functions above
     function createCookie(name,value,days) {
         if (days) {
             var date = new Date();
@@ -1511,8 +1539,9 @@ optemo_module = (function (my){
 
 jQuery.noConflict();
 jQuery(document).ready(function($){
+    // This initializes the jquery history plugin. Note that the plugin was modified for use with our application javascript (details in jquery.history.js)
     $.history.init(optemo_module.ajaxsend);
-    trackPage = optemo_module.trackPage;
+    trackPage = optemo_module.trackPage; // locally scoped variable for brevity only
     var tokenizedArrayID = 0, savedproducts = null; /* Must initialize savedproducts here for IE */
     savedproducts = optemo_module.readAllCookieValues('optemo_SavedProductIDs');
 	if (savedproducts)
@@ -1577,6 +1606,9 @@ jQuery(document).ready(function($){
 
 	if (optemo_module.DIRECT_LAYOUT) {
 	    //Tour section
+	    // There is some code duplication going on here that would be good to condense.
+	    // The only real differences here are where the tour goes and what is drawn attention to, 
+	    // so this should be possible to condense into about half the amount of code or less
     	$('#popupTour1, #popupTour2, #popupTour3, #popupTour4').each(function(){
     		$(this).find('.deleteX').click(function(){
     			$(this).parent().fadeOut("slow");
@@ -1657,7 +1689,7 @@ jQuery(document).ready(function($){
     	});
 	}
 
-/*	// On escape press. Probably not needed anymore.
+/*	// On escape press. This is used for exiting the tour but would interfere with other uses of escape (canceling the autocomplete box for example)
 	$(document).keydown(function(e){
 		if(e.keyCode==27){
 			$(".popupTour").fadeOut("slow");
@@ -1669,6 +1701,7 @@ jQuery(document).ready(function($){
 */
 	launchtour = (function () {
 	    if (optemo_module.DIRECT_LAYOUT) {
+	        // Right now the position of the tour pop-up is hard-coded based on a particular element name.
 		    var browseposition = $("#box0").offset();
     		$("#box0").addClass('tourDrawAttention');
     		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
@@ -1685,7 +1718,7 @@ jQuery(document).ready(function($){
 	if ($('#tourautostart').length) { launchtour; } //Automatically launch tour if appropriate
 	$("#tourButton a").click(launchtour); //Launch tour when this is clicked
 
-	// Load the classic theme
+	// Load the classic theme for galleria, the jquery image slideshow plugin we're using (jquery.galleria.js)
     Galleria.loadTheme('/javascripts/galleria.classic.js');
 });
 
@@ -1705,7 +1738,7 @@ if (window.embedding_flag) {
         if (lis.main) lis.main_timer = setTimeout("myspinner.begin()", timeoutlength || 1000);
         if (lis.sidebar) lis.sidebar_timer = setTimeout("optemo_module.loadFilterBarSilkScreen()", timeoutlength || 1000);
         lis.socket_error_timer = setTimeout("optemo_module.clearSocketError()", 15000);
-        // Hopefully we can just send the arguments as-is. It's probably bad style not to sanity-check them though.
+        // Hopefully we can just send the arguments as-is. It' would certainly be wise to sanity-check them though.
         remote.iframecall(hash, myurl, mydata);
     };
     $.history.init(optemo_module.ajaxsend); // re-init with the new ajaxsend module here, after it's been redefined
@@ -1722,8 +1755,8 @@ if (window.embedding_flag) {
 }
 
 // This should be able to go ahead before document.ready for a slight time savings.
-// NB: Cannot use "$" because of jQuery.noConflict()
-// This works for embedded also, because by now the ajaxsend function has been redefined, and the history init has been called.
+// NB: Cannot use "$" because of jQuery.noConflict() -- $ might be scoped to prototype or some other framework, depending
+// This history discovery works for embedded also, because by now the ajaxsend function has been redefined, and the history init has been called.
 if (jQuery('#opt_discovery').length) {
     if (location.hash) {
     	optemo_module.ajaxsend(location.hash.replace(/^#/, ''),'/?ajax=true',null);
