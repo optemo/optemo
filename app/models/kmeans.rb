@@ -434,7 +434,7 @@ end
 def self.ruby(number_clusters, specs, ft, weights, inits)
   weights = [1]*specs.first.size if weights.nil?
   thresh = 0.000001
-  standard_specs = self.standardize_cont_data(specs)
+  standard_specs = self.factorize_cont_data(specs)#self.standardize_cont_data(specs)
   #mean_1 = self.seed(number_clusters, specs)
   mean_1 = inits.map{|i| standard_specs[i]}
   mean_2 =[]
@@ -520,7 +520,16 @@ end
     specs = specs.transpose
     specs.map{|p| p.flatten}  
   end  
-    
+  
+  def self.factorize_cont_data(specs)
+    fvals = specs.transpose
+    factors = []
+    fvals.each do |f|
+      Session.prefDirection[f] ==1 ? ordered = f.sort.reverse : ordered = f.sort
+      factors << f.map{|fval| (ordered.length - ordered.index(fval))/ordered.length.to_f}        
+    end  
+    factors.transpose
+  end  
   #   
   def self.standardize_cont_data(specs)
     mean_all = mean(specs)
