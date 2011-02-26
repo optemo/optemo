@@ -1,37 +1,29 @@
-<div class="outertitle"><div class="columntitle">
-</div></div>
-
-<% gray = true %>
-<% @s.continuous["filter"].each do |feat| %>
-<div class="cell <%= gray ? "graybg" : "whitebg" %>">
-	<% gray = !gray %>
+<% if type == "cont" %>
+<div class="cell <%= gray ? "graybg" : "whitebg" %><%=' spec_column_' + column_number.to_s %>">
 	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
 		<!-- If the interesting feature should be displayed then display -->
-		<b><%= contspecs[feat].to_s + " (" + t("#{Session.product_type}.specs.#{feat}.unit") %>)</b>		
+		<b><%= spec.to_s + " (" + t("#{Session.product_type}.specs.#{feat}.unit") %>)</b>		
 	<% else %>
-		<%= contspecs[feat].to_s + " (" + t("#{Session.product_type}.specs.#{feat}.unit") %>)
+		<%= spec.to_s + " (" + t("#{Session.product_type}.specs.#{feat}.unit") %>)
 	<% end %>
-	</div>
-<% end %>
-<% @s.categorical["filter"].each do |feat| %>
-<div class="cell <%= gray ? "graybg" : "whitebg" %>">
-	<% gray = !gray %>
+</div>
+<% elsif type == "cat" %>
+<div class="cell <%= gray ? "graybg" : "whitebg" %><%=' spec_column_' + column_number.to_s %>">
 	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
 		<!-- If the interesting feature should be displayed then display -->
-		<b><%= catspecs[feat].to_s if catspecs[feat] %></b>		
+		<b><%= spec.to_s if spec %></b>		
 	<% else %>
-		<%= catspecs[feat].to_s if catspecs[feat] %>
+		<%= spec.to_s if spec %>
 	<% end %>
-	</div>
-<% end %>
-<% @s.binary["filter"].each do |feat| %>
-<div class="cell <%= gray ? "graybg" : "whitebg" %>">
-	<% gray = !gray %>
+</div>
+<% else #Binary -- might need to add another elsif clause for text specs later %> 
+<div class="cell <%= gray ? "graybg" : "whitebg" %><%=' spec_column_' + column_number.to_s %>">
 	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
-		<!-- If the interesting feature should be displayed then display -->
-		<b><%= binspecs[feat] ? image_tag("checkmark.png", :height => "16px") : image_tag("x.png", :height => "16px")%></b>		
+		<%# If the interesting feature should be displayed then display... as of Feb 24, 2011, this just puts a bold tag on an image, doing nothing %>
+		<b><%= spec ? image_tag("checkmark.png", :height => "16px") : image_tag("x.png", :height => "16px")%></b>
 	<% else %>
-		<%= binspecs[feat] ? image_tag("checkmark.png", :height => "16px") : image_tag("x.png", :height => "16px")%>
+		<%= spec ? image_tag("checkmark.png", :height => "16px") : image_tag("x.png", :height => "16px")%>
 	<% end %>
-	</div>
+	&nbsp;
+</div>
 <% end %>
