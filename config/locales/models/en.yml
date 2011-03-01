@@ -6,3 +6,5 @@ en:
         ErrorPart2:                 "to go back to the previous page."
         here:                       "anywhere"
         nodesc:                     "No description available" #No description for info boxes
+        searchinst:                 "Filter %{count} %{product} by:"
+        searchoneproduct:           "Showing 1 %{product}:"

@@ -1297,6 +1297,9 @@ optemo_module = (function (my){
     		if (parts[1] != null) {
     			$('#ajaxfilter').html(parts[1]);
     		}
+			if (parts[2] != null) {
+    			$('#sortby').html(parts[2]);
+    		}
     		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
     		my.flashError(parts[0].substr(5,parts[0].length));
     		return -1;
@@ -1304,7 +1307,8 @@ optemo_module = (function (my){
     		var parts = data.split('[BRK]');
     		$('#ajaxfilter').html(parts[1]);
     		$('#main').html(parts[0]);
-    		$('#myfilter_search').attr('value',parts[2]);
+			$('#sortby').html(parts[2]);
+    		$('#myfilter_search').attr('value',parts[3]);
     		myspinner.end();
     		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
     		return 0;

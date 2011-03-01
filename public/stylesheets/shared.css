@@ -98,14 +98,6 @@ a:hover {
     border: 1px solid #ccc;           /* if needed */
 }
 #sorting_method_box {
-    font-size: 0.8em;
-	color: gray;
-	float: right;
-	margin-right: 5px;
-    /*position: absolute;
-    
-    right: 10px;
-	top: 3px;*/
 }
 #navtitle {
     display:inline;

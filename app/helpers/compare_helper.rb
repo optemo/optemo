@@ -61,6 +61,14 @@ module CompareHelper
     end
   end
   
+  def searchinst
+    if Session.search.products_size > 1
+      t("products.searchinst", :count => Session.search.products_size, :product => t("#{Session.product_type}.title-plural"))
+    else
+      t("products.searchoneproduct", :product => t("#{Session.product_type}.title"))
+    end
+  end
+  
   def navtitle
     s = Session
 		[
