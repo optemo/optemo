@@ -420,9 +420,9 @@ def self.set_weights(dim_cont, dim_bin, dim_cat)
   dim = dim_cont+dim_bin+dim_cat
   if Session.search.sortby.nil? || Session.search.sortby == "Relevance"
       weights = [1.0/dim]*dim
-  else #if Session.continuous["cluster"].include?(Session.search.sortby.downcase)  
+  else
     weights = [0.05/dim]*dim 
-    weights[Session.continuous["cluster"].index(Session.search.sortby.gsub("Sort by: ", "").downcase)] = 0.95 
+    weights[Session.continuous["cluster"].index(Session.search.sortby)] = 0.95 
   end
   weights                         
 end
