@@ -1,6 +1,12 @@
 <% self.title = "#{@s.product_type.capitalize}" unless @indexload %>
 <% main_window = render :partial => 'discoverybrowser' unless @indexload %>
 <div id="leftbar">
+	<!-- The sortby dropdown box -->
+	<div id="sortby" class="leftboxes">
+		<% unless @indexload %>
+			<%= render :partial => 'sortby' %>
+		<% end  %>
+	</div>
     <!-- The Saved Items box -->
 	<div id="savebar" class='leftboxes gainlayout rounded_bd rounded'>
 		<div class="tl"><!-- --></div><div class="tr"><!-- --></div>
