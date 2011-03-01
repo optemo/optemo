@@ -72,6 +72,18 @@ class Cluster
     @rep
   end
   
+  def min
+    if Session.continuous["cluster"].include?(Session.search.sortby.gsub("Sort by: ", "").downcase)
+      products.map{|p_id| ContSpec.featurecache(p_id, Session.search.sortby.gsub("Sort by: ", "").downcase)}.map(&:value).min
+    end  
+  end  
+  
+  def max
+    if Session.continuous["cluster"].include?(Session.search.sortby.gsub("Sort by: ", "").downcase)
+      products.map{|p_id| ContSpec.featurecache(p_id, Session.search.sortby.gsub("Sort by: ", "").downcase)}.map(&:value).max
+    end  
+  end
+  
   def size
     products.size
   end

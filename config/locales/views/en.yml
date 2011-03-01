@@ -44,9 +44,9 @@ en:
         
         sortby:    
             price:          "Price"
-            maxresolution:  "Maximum Resolution"
+            maxresolution:  "Mega Pixels"
             screensize:     "LCD Size" 
-            opticalzoom:    "Optical Zoom"
+            opticalzoom:    "Zoom"
                  
     features:
         maxresolution:      "%{num}MP"

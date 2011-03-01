@@ -6,8 +6,7 @@
 <div>
 	<div class="tl"></div><div class="tr"></div>
 	<% mb = main_boxes #Calculate mb before navtitle %>
-	<% sortbyList = [["Sort by: Relevance","Relevance"]]%>
-	<%@s.continuous["cluster"].map{|f| sortbyList << ["Sort by: "+f.capitalize]}%>
+
 <% if @s.directLayout %>
 	<% columntext = columntext(!@s.search.groupby.nil?) %>
 <div id="columnheader">

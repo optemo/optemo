@@ -28,10 +28,17 @@
 
 	<div class='bottombar'>
 		<% if group %>
+
+    	  <%if Session.continuous["cluster"].include?(@s.search.sortby)%>
+    	        <%link_text=(cluster.size-1).to_s + " more in "+ cluster.min.to_s + " to "+cluster.max.to_s%>
+    	        <%link_text = (cluster.size-1).to_s + " more "+ cluster.min.to_s if cluster.min==cluster.max %>    
+    	  <%else%>	
+    	        <% link_text = t("products.compare.similar",:count => cluster.size - 1)%>
+    	  <%end%>
     		<div class='sim rounded'>
-    	  <%= link_to(t("products.compare.similar",:count => cluster.size - 1), cluster_path(cluster.id), {:id => "sim#{i}", :class => 'simlinks rounded', 
-		  :"data-id" => "#{product.id}", :"data-size" => cluster.size, :"title" => cluster.size.to_s + " popular products with similar specifications", :rel => "nofollow"}) %>
-    		</div>
+    		<%= link_to(link_text, cluster_path(cluster.id), {:id => "sim#{i}", :class => 'simlinks rounded', 
+    		  :"data-id" => "#{product.id}", :"data-size" => cluster.size, :"title" => cluster.size.to_s + " products in ", :rel => "nofollow"}) %>
+    			</div>
 		<% end %>
 	</div>
 </div>
