@@ -30,8 +30,11 @@
 		<% if group %>
 
     	  <%if Session.continuous["cluster"].include?(@s.search.sortby)%>
-    	        <%link_text=(cluster.size-1).to_s + " more in "+ cluster.min.to_s + " to "+cluster.max.to_s%>
-    	        <%link_text = (cluster.size-1).to_s + " more "+ cluster.min.to_s if cluster.min==cluster.max %>    
+    	        <%if cluster.min==cluster.max%> 
+    	            <%link_text = cluster.min.to_s + " (" + cluster.size.to_s + ")" %>
+    	        <%else%>
+    	            <%link_text=cluster.min.to_s+"-"+cluster.max.to_s+" ("+cluster.size.to_s+")"%>   
+    	        <%end%>     
     	  <%else%>	
     	        <% link_text = t("products.compare.similar",:count => cluster.size - 1)%>
     	  <%end%>
