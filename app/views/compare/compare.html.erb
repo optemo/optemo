@@ -1,20 +1,7 @@
 <% self.title = "#{@s.product_type.capitalize}" unless @indexload %>
 <% main_window = render :partial => 'discoverybrowser' unless @indexload %>
 <div id="leftbar">
-	<!-- The Filters section -->
-	<div id="filterbar" class="leftboxes rounded_bd rounded">
-		<div class="tl"></div><div class="tr"></div>
-		<h2><%=t 'products.compare.search' %> <%= link_to "(reset)", "/", :class => "reset", :rel => "nofollow" %></h2>
-			<div class="filtersdesc"><%=t 'products.compare.filtersdesc' %></div>
-		<div id="ajaxfilter">
-			<% unless @indexload %>
-				<%= render :partial => 'filter', :locals => {:s => Session, :current_search => Session.search} %>
-			<% end  %>
-		</div>
-		<div class="bl"></div><div class="br"></div>
-	</div>
-	
-	<!-- The Saved Items box -->
+    <!-- The Saved Items box -->
 	<div id="savebar" class='leftboxes gainlayout rounded_bd rounded'>
 		<div class="tl"><!-- --></div><div class="tr"><!-- --></div>
 		<h2> <%=t 'products.compare.saved' %> </h2>
@@ -29,6 +16,18 @@
 		<%= link_to image_tag("compare#{fr?}.gif"), "", :id => "compare_button", :style => "display:none;" %>
 		<div class="bl"><!-- --></div><div class="br"><!-- --></div>
 	</div>
+	<!-- The Filters section -->
+	<div id="filterbar" class="leftboxes rounded_bd rounded">
+		<div class="tl"></div><div class="tr"></div>
+		<div id="ajaxfilter">
+			<% unless @indexload %>
+				<%= render :partial => 'filter', :locals => {:s => Session, :current_search => Session.search} %>
+			<% end  %>
+		</div>
+		<div class="bl"></div><div class="br"></div>
+	</div>
+	
+
 </div>
 
 <div id="main">
