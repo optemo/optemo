@@ -57,9 +57,9 @@ class Cluster
   def representative
     unless @rep
       #@rep = Product.cached(rep_id)
-      if !(Session.search.sortby.nil?) && Session.continuous["cluster"].include?(Session.search.sortby.gsub("Sort by: ", "").downcase)
-         fs = products.map{|p_id| ContSpec.featurecache(p_id, Session.search.sortby.gsub("Sort by: ", "").downcase)}.map(&:value)
-         if (Session.search.sortby.gsub("Sort by: ", "").downcase =='price') 
+      if !(Session.search.sortby.nil?) && Session.continuous["cluster"].include?(Session.search.sortby)
+         fs = products.map{|p_id| ContSpec.featurecache(p_id, Session.search.sortby)}.map(&:value)
+         if (Session.search.sortby =='price') 
            @rep = Product.cached(products[fs.index(fs.min)])
          else
            @rep = Product.cached(products[fs.index(fs.max)])  
@@ -73,14 +73,14 @@ class Cluster
   end
   
   def min
-    if Session.continuous["cluster"].include?(Session.search.sortby.gsub("Sort by: ", "").downcase)
-      products.map{|p_id| ContSpec.featurecache(p_id, Session.search.sortby.gsub("Sort by: ", "").downcase)}.map(&:value).min
+    if Session.continuous["cluster"].include?(Session.search.sortby)
+      products.map{|p_id| ContSpec.featurecache(p_id, Session.search.sortby)}.map(&:value).min
     end  
   end  
   
   def max
-    if Session.continuous["cluster"].include?(Session.search.sortby.gsub("Sort by: ", "").downcase)
-      products.map{|p_id| ContSpec.featurecache(p_id, Session.search.sortby.gsub("Sort by: ", "").downcase)}.map(&:value).max
+    if Session.continuous["cluster"].include?(Session.search.sortby)
+      products.map{|p_id| ContSpec.featurecache(p_id, Session.search.sortby)}.map(&:value).max
     end  
   end
   
