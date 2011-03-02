@@ -2,7 +2,7 @@
 	<div class='label space' data-position="<%= i %>">
 		<%= render :partial => 'desc', :locals => {:feat => feat} %>
 		<%= link_to t("#{Session.product_type}.specs.#{feat}.name"), "#", :rel => "nofollow" %>
-		<span class="unitdisp">(<%=t "#{Session.product_type}.specs.#{feat}.unit" %>)</span>
+		<span class="unitdisp">(<%=t("#{Session.product_type}.specs.#{feat}.unit", :default=>"") && t("#{Session.product_type}.specs.#{feat}.preunit", :default=>"") %>)</span>
 		<% if Session.directLayout %>
 			<div class="groupby" data-feat="<%= feat %>" data-position="<%= i %>">See Groups</div>
 		<% end %>		

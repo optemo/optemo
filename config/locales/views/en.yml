@@ -41,12 +41,6 @@ en:
             webcode:        "Web Code"
             moredetails:    "More details"
             ratings:        "ratings"
-        
-        sortby:    
-            price:          "Price"
-            maxresolution:  "Mega Pixels"
-            screensize:     "LCD Size" 
-            opticalzoom:    "Zoom"
                  
     features:
         maxresolution:      "%{num}MP"
