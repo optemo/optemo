@@ -131,7 +131,8 @@ module CompareHelper
       out << CatSpec.cache_all(product_id)[feat]
     end
     s.continuous["desc"].each do |feat|
-      num = "%.1f" % ContSpec.cache_all(product_id)[feat]
+      #num = "%.1f" % ContSpec.cache_all(product_id)[feat]
+      num = ContSpec.cache_all(product_id)[feat]
       num = "<1" if feat == "maxresolution" && num == "1.0"
 		  out << t('features.'+feat, :num => num, :default => num)
 	  end
