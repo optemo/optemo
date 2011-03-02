@@ -1,3 +1,5 @@
+<h2><%=t 'products.compare.search' %> <%= link_to "(reset)", "/", :class => "reset", :rel => "nofollow" %></h2>
+	<div class="filtersdesc"><%= searchinst %></div>
 <%= form_for(Search.new, :html => {:id => 'filter_form'}) do %>
   <!--<%= @s.search.keyword_search.blank? ? text_field_tag('myfilter[search]') : text_field_tag('myfilter[search]', @s.search.keyword_search) %>
 	<div class="ui-widget" style="display:inline;">

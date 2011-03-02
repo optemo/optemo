@@ -57,15 +57,31 @@ class Cluster
   def representative
     unless @rep
       #@rep = Product.cached(rep_id)
-      if Session.search.sortby=='Price'
-         prices = products.map{|p_id| ContSpec.featurecache(p_id, "price")}.map(&:value)
-         @rep = Product.cached(products[prices.index(prices.min)])
-      else    
+      if !(Session.search.sortby.nil?) && Session.continuous["cluster"].include?(Session.search.sortby)
+         fs = products.map{|p_id| ContSpec.featurecache(p_id, Session.search.sortby)}.map(&:value)
+         if (Session.search.sortby =='price') 
+           @rep = Product.cached(products[fs.index(fs.min)])
+         else
+           @rep = Product.cached(products[fs.index(fs.max)])  
+         end     
+      else
         utilities = products.map{|p_id| ContSpec.featurecache(p_id, "utility")}.map(&:value)
         @rep = Product.cached(products[utilities.index(utilities.max)])
       end  
     end
     @rep
+  end
+  
+  def min
+    if Session.continuous["cluster"].include?(Session.search.sortby)
+      products.map{|p_id| ContSpec.featurecache(p_id, Session.search.sortby)}.map(&:value).min
+    end  
+  end  
+  
+  def max
+    if Session.continuous["cluster"].include?(Session.search.sortby)
+      products.map{|p_id| ContSpec.featurecache(p_id, Session.search.sortby)}.map(&:value).max
+    end  
   end
   
   def size

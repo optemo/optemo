@@ -41,7 +41,7 @@ en:
             webcode:        "Web Code"
             moredetails:    "More details"
             ratings:        "ratings"
-            
+                 
     features:
         maxresolution:      "%{num}MP"
         screensize:         "%{num} in. screen"

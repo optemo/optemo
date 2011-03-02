@@ -61,6 +61,14 @@ module CompareHelper
     end
   end
   
+  def searchinst
+    if Session.search.products_size > 1
+      t("products.searchinst", :count => Session.search.products_size, :product => t("#{Session.product_type}.title-plural"))
+    else
+      t("products.searchoneproduct", :product => t("#{Session.product_type}.title"))
+    end
+  end
+  
   def navtitle
     s = Session
 		[
@@ -123,7 +131,9 @@ module CompareHelper
       out << CatSpec.cache_all(product_id)[feat]
     end
     s.continuous["desc"].each do |feat|
+      #num = "%.1f" % ContSpec.cache_all(product_id)[feat]
       num = ContSpec.cache_all(product_id)[feat]
+      num = "<1" if feat == "maxresolution" && num == "1.0"
 		  out << t('features.'+feat, :num => num, :default => num)
 	  end
 	  s.binary["desc"].each do |feat|

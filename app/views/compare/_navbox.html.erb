@@ -28,10 +28,20 @@
 
 	<div class='bottombar'>
 		<% if group %>
+
+    	  <%if Session.continuous["cluster"].include?(@s.search.sortby)%>
+    	        <%if cluster.min==cluster.max%>
+    	            <%link_text =  t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.min.to_s + t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "") + " (" + cluster.size.to_s + ")" %>
+    	        <%else%>
+    	            <%link_text=t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.min.to_s + t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "")+"-"+ t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.max.to_s+t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "") +" ("+cluster.size.to_s+")"%>   
+    	        <%end%>     
+    	  <%else%>	
+    	        <% link_text = t("products.compare.similar",:count => cluster.size - 1)%>
+    	  <%end%>
     		<div class='sim rounded'>
-    	  <%= link_to(t("products.compare.similar",:count => cluster.size - 1), cluster_path(cluster.id), {:id => "sim#{i}", :class => 'simlinks rounded', 
-		  :"data-id" => "#{product.id}", :"data-size" => cluster.size, :"title" => "Browse through all " + cluster.size.to_s + " in this group", :rel => "nofollow"}) %>
-    		</div>
+    		<%= link_to(link_text, cluster_path(cluster.id), {:id => "sim#{i}", :class => 'simlinks rounded', 
+    		  :"data-id" => "#{product.id}", :"data-size" => cluster.size, :"title" => cluster.size.to_s + " products in ", :rel => "nofollow"}) %>
+    			</div>
 		<% end %>
 	</div>
 </div>

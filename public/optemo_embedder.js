@@ -11,9 +11,11 @@ This script will auto-load various javascript files from the server, embed an if
 This script could be minified for better performance. The asset packager combines and compresses the application javascript, but this file
 does not get minified by the capistrano deployment at the moment. */
 
-window.embedding_flag = true;
-var optemo_module, remote, REMOTE = 'http://ast0.optemo.com'; // static globals
+window.embedding_flag = true; // This is used in application.js to decide whether to redefine the AJAX functions
+// These static globals are used in application.js and below. 'remote' is defined so that application.js can call it later
+var optemo_module, remote, REMOTE = 'http://ast0.optemo.com';
 
+// Wrapping this function and assigning it to a variable delays execution of evaluation
 var optemo_socket_activator = (function () {
     /**
      * Request the use of the JSON object
@@ -31,6 +33,8 @@ var optemo_socket_activator = (function () {
     		 * Register the url to the remote interface
     		 * @field
     		 */
+    		// To remove the hard-coded ast0.optemo.com in socket.html, you will need to pass
+    		// in the appropriate server name here
     		remote: REMOTE + "/socket.html?serverName="+ escape(REMOTE.replace(/http:\/\//,'')),
     		remoteHelper: REMOTE + "/name.html",
     		/**
@@ -65,6 +69,7 @@ var optemo_socket_activator = (function () {
     				}
 
     	            var regexp_pattern, data_to_add, data_to_append, scripts, headID = document.getElementsByTagName("head")[0], scripts_to_load, i, images;
+    	            // Take out all the scripts, load them on the client (consumer) page in the HEAD tag, and put the data back together
     	            regexp_pattern = (/<script[^>]+>/g);
     	            scripts = data.match(regexp_pattern);
     	            data_to_add = data.split(regexp_pattern);
@@ -129,6 +134,7 @@ var optemo_socket_activator = (function () {
 
         				// By this point we can guarantee that everything loaded serially.
         	            data_to_append = new Array();
+        	            // This is basically a do-while loop in disguise. Put the zeroth element on first, go from there.
         	            data_to_append.push(data_to_add[0])
         	            for (i = 0; i < scripts.length; i++) {
         	                // Either put back the <script> tag that is required for inline scripts, or else take out the < /script> part from the start of data_to_add[i+1].
@@ -173,7 +179,7 @@ var optemo_socket_activator = (function () {
         				}
         				// Make that it's a normal return value the easy way, by looking for the word "filterbar," 
         				// which is supposed to come back with each rendering of ajax.html.erb
-        				if (data_to_append.match(/filterbar/i)) 
+        				if (data_to_append.match(/filterbar/i))
             				embed_tag.append(data_to_append);
 			
             			// Take the silkscreen and filter_bar_loading divs and move them to the main body tag.
@@ -185,11 +191,15 @@ var optemo_socket_activator = (function () {
                         //     if (element.length > 0) element.detach().appendTo('body');
                         // }
                     
+                        // The javascript is getting appended first, so that means these variables won't be initialized properly.
+                        // To correct this, move variable initialization into DBinit() or else append HTML before loading scripts.
+                        // Latter is a good idea because the user would see something load earlier than now.
+                        // In that case, remove the following lines
                         optemo_module.IS_DRAG_DROP_ENABLED = (jQuery("#dragDropEnabled").html() === 'true');
                         optemo_module.MODEL_NAME = jQuery("#modelname").html();
                         optemo_module.DIRECT_LAYOUT = (jQuery('#directLayout').html() == "true");                    
                         optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
-                    
+                        // Do we need to copy over other variables? AB_TESTING_TYPE and a couple others are locally scoped to optemo_module
                     
                     }
     		    },
