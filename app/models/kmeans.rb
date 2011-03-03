@@ -418,7 +418,7 @@ end
 
 def self.set_weights(dim_cont, dim_bin, dim_cat)
   dim = dim_cont+dim_bin+dim_cat
-  if Session.search.sortby.nil? || Session.search.sortby == "Relevance"
+  if Session.search.sortby.nil? || Session.search.sortby == "relevance"
       weights = [1.0/dim]*dim
   else
     weights = [0.05/dim]*dim 

@@ -18,12 +18,14 @@ en:
             similar:        "%{count} more like this" # e.g. 1 More like this
             similar_line:   "%{count} More"
             addbrand:       "Add Another Brand"
+            addvideoresolution: "Add Another Resolution"
             addspecies:     "Add Another Species"
             addcolorrange:  "Add Another Color"
             addfinish:      "Add Another Finish"    
             addfeature:     "Add Another Feature"
             allbrands:      "All Brands"
             allspeciess:    "All Species" # This is not a typo, it's just for simplicity
+            allvideoresolutions: "Add Video Resolutions"
             allcolorranges: "All Colors"
             allfeatures:    "All Features"     
             allfinishs:     "All Finishes"       

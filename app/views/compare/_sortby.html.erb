@@ -1,3 +1,3 @@
-<% sortbyList = [["Sort by: Relevance","Relevance"]]%>
-<%@s.continuous["cluster"].map{|f| sortbyList << ["Sort by: "+ t(@s.product_type+".specs."+f+".name"), f]}%>
+<% sortbyList = [[t("products.sortby")+t("products.relevance"),"relevance"]]%>
+<%@s.continuous["cluster"].map{|f| sortbyList << [t("products.sortby")+ t(@s.product_type+".specs."+f+".name"), f]}%>
 <div id="sorting_method_box"><%= select('sorting_method', @s.search.sortby, sortbyList, {:selected => @s.search.sortby}, {:id => "sorting_method"}) %></div>

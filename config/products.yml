@@ -139,7 +139,7 @@ camera_bestbuy:
         used_for: [show, filter]
     customerRating:
         type: Continuous
-        used_for: [filter]
+        used_for: [show]
     onsale:
         type: Binary
         used_for: [filter]
@@ -153,7 +153,7 @@ camera_bestbuy:
         type: Binary
         used_for: [filter]
     videoresolution:
-        type: categorical
+        type: Categorical
         used_for: [filter]
     touchscreen:
         type: Binary
@@ -170,6 +170,27 @@ camera_bestbuy:
     waterproof:
         type: Binary
         used_for: [show, filter]
+    gps:
+        type: Binary
+        used_for: [show, filter]
+    projector:
+        type: Binary
+        used_for: [show, filter]
+    3d:
+        type: Binary
+        used_for: [show, filter]
+    sweeppanorama:
+        type: Binary
+        used_for: [show, filter]
+    frontlcd:
+        type: Binary
+        used_for: [show, filter]
+    apsc:
+        type: Binary
+        used_for: [show, filter]
+    toprated:
+        type: Binary
+        used_for: [filter]
 
 ################################
 #  LaserPrinterHub, Printers   #
