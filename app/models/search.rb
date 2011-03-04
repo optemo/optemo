@@ -316,7 +316,8 @@ class Search < ActiveRecord::Base
       duplicateFeatures(old_search)
     when "sortby"
       self.sortby = p[:sortby]
-      duplicateFeatures(old_search)      
+      duplicateFeatures(old_search)
+      self.initial = true;
     when "groupby"
       self.groupby = p[:feat]
       duplicateFeatures(old_search)
