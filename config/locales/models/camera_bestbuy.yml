@@ -9,6 +9,8 @@ en:
         classification:             "Digital Cameras"
         
         specs:
+            category:
+                name:               "Product Category"
             price:
                 name:               "Price"
                 info:               "The lowest price for the item."

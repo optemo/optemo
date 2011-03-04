@@ -10,3 +10,5 @@ en:
         searchoneproduct:           "Showing 1 %{product}:"
         sortby:                     "Group by: "
         relevance:                  "Relevance"
+        all:                        "All "
+        add:                        "Add Another "
