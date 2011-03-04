@@ -43,7 +43,7 @@
         <% end %>
     </div>
 	<% gray = false %>
-        <% {@s.continuous["filter"] => "cont", @s.categorical["filter"] => "cat", @s.binary["filter"] => "bin"}.each_pair do |feat_list, feat_type| %>
+        <% {@s.continuous["show"] => "cont", @s.categorical["show"] => "cat", @s.binary["show"] => "bin"}.each_pair do |feat_list, feat_type| %>
             <% feat_list.each do |feat| %>
             <div class="<%= t("#{Session.product_type}.specs.#{feat}.name").length < 20 ? "compare_row" : "double_height_compare_row" %>">
         		<div class="cell <%= gray ? "graybg" : "whitebg" %> leftmostcolumn">

@@ -832,6 +832,31 @@ optemo_module = (function (my){
     		return false;
     	});
 
+		// Add a binary filter selection -- submit
+    	$('.filterbutton').live('click', function(){
+			i = $(this);
+			if (i.hasClass("disabled")) return false;
+			my.loading_indicator_state.sidebar = true;
+		    if (i.hasClass("selected_button"))
+			{ //Removed selected color
+				i.find('input').val(0);
+				i.removeClass("selected_button");
+				//$('#myfilter_color').val(opt_removeStringWithToken($('#myfilter_color').val(), whichThingSelected, '*'));
+	    		//var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : 'color', 'filter_type' : 'categorical_removed'};
+				//my.trackPage('goals/filter/categorical_removed', info);
+			}
+			else
+			{ //Added selected color
+				i.find('input').val(1);
+				i.addClass("selected_button");
+    			//$('#myfilter_color').val(opt_appendStringWithToken($('#myfilter_color').val(), whichThingSelected, '*'));
+    			//var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : 'color', 'filter_type' : 'categorical'};
+				//my.trackPage('goals/filter/categorical', info);
+			}
+    		submitCategorical();
+    		return false;
+    	});
+
     	// Remove a brand -- submit
     	$('.removefilter').live('click', function(){
     		var whichRemoved = $(this).attr('data-id');

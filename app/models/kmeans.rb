@@ -418,11 +418,11 @@ end
 
 def self.set_weights(dim_cont, dim_bin, dim_cat)
   dim = dim_cont+dim_bin+dim_cat
-  if Session.search.sortby.nil? || Session.search.sortby == "Relevance"
+  if Session.search.sortby.nil? || Session.search.sortby == "relevance"
       weights = [1.0/dim]*dim
   else
-    weights = [0.05/dim]*dim 
-    weights[Session.continuous["cluster"].index(Session.search.sortby)] = 0.95 
+    weights = [0.0/dim]*dim 
+    weights[Session.continuous["cluster"].index(Session.search.sortby)] = 1
   end
   weights                         
 end
@@ -458,8 +458,11 @@ def self.ruby(number_clusters, specs, ft, weights, inits)
       z+=self.distance(mean_1[c], mean_2[c], weights)
    end    
   end while z > thresh
+   # postprocessing if one cluster is collapsed 
+   if labels.uniq.size <labels.max+1
+     labels = labels.map{|l| labels.uniq.index(l)}
+   end
   reps = [];
-
   #utility ordering
   utilitylist = weighted_ft(ft, weights).map{|f| f. inject(:+)}  
   grouped_utilities = group_by_labels(utilitylist, labels).map{|g| g.inject(:+)/g.length}

@@ -2,7 +2,7 @@ class Session
   # products.yml gets parsed below, initializing these variables.
   cattr_accessor :id, :search  # Basic individual data. These are not set in initialization.
   cattr_accessor :directLayout, :mobileView  # View choice (Assist vs. Direct, mobile view vs. computer view)
-  cattr_accessor :continuous, :binary, :categorical  # Caching of features' names
+  cattr_accessor :continuous, :binary, :categorical, :binarygroup  # Caching of features' names
   cattr_accessor :prefDirection, :maximum, :minimum  # Stores which preferences are 'lower is better' vs. normal; used in sorting, plus some attribute globals
   cattr_accessor :dragAndDropEnabled, :relativeDescriptions, :numGroups  # These flags should probably be stripped back out of the code eventually
   cattr_accessor :product_type # Product type (camera_us, etc.), used everywhere
@@ -23,6 +23,7 @@ class Session
     self.continuous = Hash.new{|h,k| h[k] = []}
     self.binary = Hash.new{|h,k| h[k] = []}
     self.categorical = Hash.new{|h,k| h[k] = []}
+    self.binarygroup = Hash.new{|h,k| h[k] = []}
     file = YAML::load(File.open("#{Rails.root}/config/products.yml"))
     file.each_pair do |product_type,d|
       if d["url"].keys.include? url
@@ -45,21 +46,22 @@ class Session
     self.piwikSiteId = product_yml["url"][self.product_type] || 10 # This is a catch-all for testing sites.
 
     # This block gets out the continuous, binary, and categorical features
-    product_yml.each do |feature,atts|
-      next if atts.class == Fixnum # This is for the site_id entry
-      case atts["type"]
-      when "Continuous"
-        atts["used_for"].each{|flag| self.continuous[flag] << feature}
-        self.continuous["all"] << feature #Keep track of all features
-        self.prefDirection[feature] = atts["prefdir"] if atts["prefdir"]
-        self.maximum[feature] = atts["max"] if atts["max"]
-        self.minimum[feature] = atts["min"] if atts["min"]
-      when "Binary"
-        atts["used_for"].each{|flag| self.binary[flag] << feature}
-        self.binary["all"] << feature #Keep track of all features
-      when "Categorical"
-        atts["used_for"].each{|flag| self.categorical[flag] << feature}
-        self.categorical["all"] << feature #Keep track of all features
+    product_yml["specs"].each_pair do |heading, specs|
+      specs.each_pair do |feature,atts|
+        case atts["type"]
+        when "Continuous"
+          atts["used_for"].each{|flag| self.continuous[flag] << feature}
+          self.continuous["all"] << feature #Keep track of all features
+          self.prefDirection[feature] = atts["prefdir"] if atts["prefdir"]
+          self.maximum[feature] = atts["max"] if atts["max"]
+          self.minimum[feature] = atts["min"] if atts["min"]
+        when "Binary"
+          atts["used_for"].each{|flag| self.binary[flag] << feature; self.binarygroup[heading] << feature if flag == "filter"}
+          self.binary["all"] << feature #Keep track of all features
+        when "Categorical"
+          atts["used_for"].each{|flag| self.categorical[flag] << feature}
+          self.categorical["all"] << feature #Keep track of all features
+        end
       end
     end
 	end

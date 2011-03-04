@@ -374,9 +374,8 @@ div.smalldesc {
 	font-size: 0.8em;
 	width: 163px;
 	position: relative;
-}
-.feature .label {
-	margin-top: 0.6em;
+	clear: left;
+	padding-top: 3px;
 }
 .space {
 	margin-bottom: 15px; /*Spacing for histogram*/
@@ -418,7 +417,7 @@ div.smalldesc {
 	position: absolute;
 	text-align: left;
 	left: 7px;
-	top: 16px;
+	top: 19px;
 }
 
 
@@ -1257,10 +1256,7 @@ div .showtable{
 	-webkit-box-shadow: 0 1px 3px rgba(50,50,50,0.5), inset 0px 0px 10px white;
 }*/
 
-.swatch2 {
-	width: 13px;
-	height: 13px;
-	background-color: red;
+.filterbutton {
 	-moz-border-radius: 4px; 
 	-webkit-border-radius: 4px;
 	-moz-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
@@ -1269,16 +1265,18 @@ div .showtable{
 	float: left;
 	margin: 0 2px 2px 0;
 	cursor: pointer;
+	padding: 0 3px;
+	font-weight: normal;
+	font-size: 0.7em;
+	background-color: #eee;
 }
-.swatch3 {
-	width: 15px;
-	height: 15px;
-	background-color: red;
-	-moz-border-radius: 4px; 
-	-webkit-border-radius: 4px;
-	-moz-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
-	-webkit-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
-	/*border: 1px solid #ccc;*/
-	float: left;
-	margin: 0 2px 2px 0;
+
+.selected_button {
+	border: 1px solid black;
+	margin: -1px 1px 1px -1px;
+	-moz-border-radius: 0px; 
+	-webkit-border-radius: 0px;
+}
+.disabled {
+	color: #aaa;
 }

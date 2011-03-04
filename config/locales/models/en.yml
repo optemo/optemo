@@ -8,3 +8,7 @@ en:
         nodesc:                     "No description available" #No description for info boxes
         searchinst:                 "Filter %{count} %{product} by:"
         searchoneproduct:           "Showing 1 %{product}:"
+        sortby:                     "Group by: "
+        relevance:                  "Relevance"
+        all:                        "All "
+        add:                        "Add Another "
