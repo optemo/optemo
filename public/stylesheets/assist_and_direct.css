@@ -374,6 +374,8 @@ div.smalldesc {
 	font-size: 0.8em;
 	width: 163px;
 	position: relative;
+	clear: left;
+	padding-top: 3px;
 }
 .space {
 	margin-bottom: 15px; /*Spacing for histogram*/
@@ -398,7 +400,7 @@ div.smalldesc {
 .feature {
     position: relative;
     clear: both;
-    padding-bottom:9px;
+    padding-bottom:2px;
 }
 
 .desc {
@@ -415,7 +417,7 @@ div.smalldesc {
 	position: absolute;
 	text-align: left;
 	left: 7px;
-	top: 16px;
+	top: 19px;
 }
 
 
@@ -1265,5 +1267,15 @@ div .showtable{
 	cursor: pointer;
 	padding: 0 3px;
 	font-weight: normal;
-	font-size: 0.9em;
+	font-size: 0.7em;
+}
+
+.selected_button {
+	border: 1px solid black;
+	margin: -1px 1px 1px -1px;
+	-moz-border-radius: 0px; 
+	-webkit-border-radius: 0px;
+}
+.disabled {
+	color: #aaa;
 }
