@@ -375,9 +375,6 @@ div.smalldesc {
 	width: 163px;
 	position: relative;
 }
-.feature .label {
-	margin-top: 0.6em;
-}
 .space {
 	margin-bottom: 15px; /*Spacing for histogram*/
 }
@@ -401,7 +398,7 @@ div.smalldesc {
 .feature {
     position: relative;
     clear: both;
-    padding-bottom:2px;
+    padding-bottom:9px;
 }
 
 .desc {
@@ -1257,10 +1254,7 @@ div .showtable{
 	-webkit-box-shadow: 0 1px 3px rgba(50,50,50,0.5), inset 0px 0px 10px white;
 }*/
 
-.swatch2 {
-	width: 13px;
-	height: 13px;
-	background-color: red;
+.filterbutton {
 	-moz-border-radius: 4px; 
 	-webkit-border-radius: 4px;
 	-moz-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
@@ -1269,16 +1263,7 @@ div .showtable{
 	float: left;
 	margin: 0 2px 2px 0;
 	cursor: pointer;
-}
-.swatch3 {
-	width: 15px;
-	height: 15px;
-	background-color: red;
-	-moz-border-radius: 4px; 
-	-webkit-border-radius: 4px;
-	-moz-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
-	-webkit-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
-	/*border: 1px solid #ccc;*/
-	float: left;
-	margin: 0 2px 2px 0;
+	padding: 0 3px;
+	font-weight: normal;
+	font-size: 0.9em;
 }
