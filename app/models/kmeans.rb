@@ -458,7 +458,7 @@ def self.ruby(number_clusters, specs, ft, weights, inits)
       z+=self.distance(mean_1[c], mean_2[c], weights)
    end    
   end while z > thresh
-   # postprocessing if one cluster is collapsed 
+   # postprocessing if one cluster is collapsed
    if labels.uniq.size <labels.max+1
      labels = labels.map{|l| labels.uniq.index(l)}
    end

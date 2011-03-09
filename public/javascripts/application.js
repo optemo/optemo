@@ -1005,16 +1005,16 @@ optemo_module = (function (my){
 
         // This bridge function adds the product currently shown in the Quickview screen and puts it in the comparison box.
         // If there are at least two products, bring up the comparison pop-up immediately, otherwise go back to browsing.
-        $('.show_to_compare').live('click', function () {
-            var id = $('#tab_header ul').attr('data-id'), sku = $('#tab_header ul').attr('data-sku');
-            var image = $('#galleria').find('img:first');
+        $('#add_compare').live('click', function () {
+			var t = $(this);
+            var sku = $('#tab_header ul').attr('data-sku');
+            var image = $('#galleria').find('img:first').attr('src');
             // Test for the length of the saved products array here to avoid a race condition
-            var number_saved_already = $('#opt_savedproducts').children().length;
-            optemo_module.saveProductForComparison(id, sku, image.attr('src'), $('#info h1:first').html());
+            optemo_module.saveProductForComparison(t.attr('data-id'), sku, image, t.attr('data-name'));
             // This message will be displayed next to the droppable box if
             $("#already_added_msg").css("display", "none");
             // Call click handler for the compare button if there are multiple saved products there. Otherwise, get out of show page
-            (number_saved_already > 0) ? $('#compare_button').click() : my.removeSilkScreen();
+            ($('#opt_savedproducts').children().length > 1) ? $('#compare_button').click() : my.removeSilkScreen();
             return false;
         });
 
@@ -1199,6 +1199,7 @@ optemo_module = (function (my){
 			optemo_module.ajaxcall($(this).attr('href')+'?ajax=true');
 			return false;
 		});
+		
     }
 
     function ErrorInit() {
@@ -1233,7 +1234,7 @@ optemo_module = (function (my){
     				}
     			});
                 $(this).hover(function() {
-    	                $(this).find('.dragHand').stop().animate({ opacity: 1.0 }, 150);
+    	                $(this).find('.	dragHand').stop().animate({ opacity: 1.0 }, 150);
     			    },
     		        function() {
     	            	$(this).find('.dragHand').stop().animate({ opacity: 0.35 }, 450);
@@ -1480,7 +1481,7 @@ optemo_module = (function (my){
     	this.begin = function() {
     		this.runspinner = true;
     		setTimeout(ticker, 1000 / sectorsCount);
-    		$('#loading').css('display', 'inline');
+    		$('#loading').css('display', 'block');
     	};
     	this.end = function() {
     		this.runspinner = false;

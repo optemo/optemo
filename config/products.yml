@@ -127,24 +127,35 @@ camera_bestbuy:
                 prefdir: -1
                 min: 1
                 max: 10000
+                utility: 10
+                cluster: 5
             maxresolution: 
                 type: Continuous
                 used_for: [desc, filter, cluster, show]
+                utility: 6 
+                cluster: 5 
             screensize:
                 type: Continuous
                 used_for: [desc, filter, cluster, show]
+                utility: 4
+                cluster: 5
             opticalzoom:
                 type: Continuous
                 used_for: [desc, filter, cluster, show]
+                utility: 5
+                cluster: 5    
             brand:
                 type: Categorical
                 used_for: [show, filter, cluster]
+                utility: 5
             color:
                 type: Categorical
                 used_for: [show, filter]
+                utility: 2
             customerRating:
                 type: Continuous
                 used_for: [show]
+                utility: 6
         Status:
             onsale:
                 type: Binary
