@@ -1200,13 +1200,6 @@ optemo_module = (function (my){
 			return false;
 		});
 		
-		//Add to compare button
-		//$('#add_compare').live('click', function(){
-		//	var t = $(this);
-		//	optemo_module.saveProductForComparison(t.attr('data-id'),t.attr('data-sku'),t.attr('data-imgurl'),t.attr('data-name'));
-		//	return false;
-		//});
-		
     }
 
     function ErrorInit() {
