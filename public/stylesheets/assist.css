@@ -5,7 +5,7 @@
  *  Navigator Bar
  *  Main Content (Right Side)
  *  Drag And Drop Compare
- *  Sliders
+ *  Filters
  *  Footer
  */
  
@@ -108,7 +108,11 @@ img.productimg {
 .title {
 	display:none;
 }
-
+#sorting_method {
+	width: 104px;
+}
+#sortby {
+}
 /*--------------------------------------//
 //                Footer                //
 //--------------------------------------*/
