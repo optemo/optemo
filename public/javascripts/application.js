@@ -1481,7 +1481,7 @@ optemo_module = (function (my){
     	this.begin = function() {
     		this.runspinner = true;
     		setTimeout(ticker, 1000 / sectorsCount);
-    		$('#loading').css('display', 'inline');
+    		$('#loading').css('display', 'block');
     	};
     	this.end = function() {
     		this.runspinner = false;
