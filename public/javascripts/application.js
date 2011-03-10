@@ -1017,14 +1017,11 @@ optemo_module = (function (my){
 
 			// Put the thumbnails and such at the bottom of the compare area too (in the hideable matrix)
 			var remove_row = $('#basic_matrix .compare_row:first');
-			textToAdd += "<div class='compare_row'>" + remove_row.html() + "</div><div class='compare_row'>" + remove_row.next().html() + "</div>";
-			column_number = 0;
-			textToAdd += "<div class='compare_row'>";
-			textToAdd += "<div class='outertitle leftmostcolumn leftmostoutertitle'><div class='columntitle leftmostcolumn leftmostcolumntitle'></div></div>";
-			for (var i = 0; i < savedProducts.length; i++) {
-			    textToAdd += "<div class='outertitle spec_column_"+column_number+"'><div class='columntitle'>&nbsp;</div></div>";
-			    column_number++;
-			}
+			var mydiv = $('<div>');
+			remove_row.clone().appendTo(mydiv);
+			remove_row.next().clone().appendTo(mydiv);
+			remove_row.next().next().clone().find('.leftcolumntext').html('').end().appendTo(mydiv);
+			textToAdd += mydiv.remove().html();
 			textToAdd += "</div>";
 			$('#hideable_matrix').html(textToAdd);
 		}
