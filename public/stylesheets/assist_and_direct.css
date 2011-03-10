@@ -937,15 +937,7 @@ div .showtable{
 	font-weight: bold;
 }
 
-#tabbed_content {
-	clear: both;
-	padding: 0;
-	width: 493px;
-	float: left;
-}
-
-#other_tabbed_content {
-    display: none;
+.tabbed_content {
 	clear: both;
 	padding: 0;
 	width: 493px;
