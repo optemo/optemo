@@ -49,10 +49,11 @@ class Product < ActiveRecord::Base
   def self.specs(p_ids = nil)
     st = []
     Session.continuous["cluster"].each{|f| st << ContSpec.by_feat(f)}
-    Session.binary["cluster"].each{|f| st<< self.to_bin_array(CatSpec.all(f))}
-    Session.categorical["cluster"].each{|f| st<< self.to_cat_array(CatSpec.all(f))}  
+   # Session.binary["cluster"].each{|f| st<< self.to_bin_array(CatSpec.all(f))}
+   #  Session.categorical["cluster"].each{|f| st<< self.to_cat_array(CatSpec.all(f))}  
     #Check for 1 spec per product
-    raise ValidationError unless Session.search.products_size == st.first.length
+    debugger unless Session.search.products_size == st.first.length
+   # raise ValidationError unless Session.search.products_size == st.first.length
     #Check for no nil values
     raise ValidationError unless st.first.size == st.first.compact.size
     raise ValidationError unless st.first.size > 0

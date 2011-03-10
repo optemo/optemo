@@ -53,6 +53,7 @@ class ContSpec < ActiveRecord::Base
     @@by_feat[feat]
   end
   
+  
   def self.by_feat=(specs)
     @@by_feat = specs
   end
