@@ -605,6 +605,9 @@ margin-top:0;
 	width:100%;
 	margin-top: 1px;
 }
+#hideable_matrix {
+	display: none;
+}
 .cell {
 	border-right: gray 1px dashed;
 	width: 177px;
