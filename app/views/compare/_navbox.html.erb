@@ -30,10 +30,10 @@
 		<% if group %>
 
     	  <%if Session.continuous["cluster"].include?(@s.search.sortby)%>
-    	        <%if cluster.min==cluster.max%>
-    	            <%link_text =  t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.min.to_s + t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "") + " (" + cluster.size.to_s + ")" %>
+    	        <%if cluster.min(@s.search.sortby)==cluster.max(@s.search.sortby)%>
+    	            <%link_text =  t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.min(@s.search.sortby).to_s + t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "") + " (" + cluster.size.to_s + ")" %>
     	        <%else%>
-    	            <%link_text=t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.min.to_s + t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "")+"-"+ t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.max.to_s+t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "") +" ("+cluster.size.to_s+")"%>   
+    	            <%link_text=t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.min(@s.search.sortby).to_s + t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "")+"-"+ t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.max(@s.search.sortby).to_s+t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "") +" ("+cluster.size.to_s+")"%>   
     	        <%end%>     
     	  <%else%>	
     	        <% link_text = t("products.compare.similar",:count => cluster.size - 1)%>

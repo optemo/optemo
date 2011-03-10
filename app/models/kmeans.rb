@@ -395,9 +395,9 @@
  
     performance_weight = 2
     #weights = weights << performance_weight
-    weight_dim = dim_cont+dim_bin+dim_cat+1
+    weight_dim = dim_cont #+dim_bin+dim_cat+1
     # dimension of each category - for example how many different brands 
-    dim_per_cat = cat_specs.first.map{|f| f.size}
+   # dim_per_cat = cat_specs.first.map{|f| f.size}
    
     # inistial seeds for clustering  ### just based on contiuous features
     inits = self.init(number_clusters, cont_specs, weights[0...dim_cont])
@@ -558,6 +558,31 @@ end
     var
   end
   
+  def self.extendedCluster(num)
+    all_ids = SearchProduct.find_all_by_search_id(Product.initial).map(&:product_id)
+    curr_ids = Session.search.products
+    other_ids = all_ids - curr_ids
+    curr_specs= Session.continuous["cluster"].map{|f| ContSpec.by_feat(f+"_factor")}.transpose
+    all_specs = all_ids.map{|id| Session.continuous["cluster"].map{|f| ContSpec.cache_all(id)[f+"_factor"]}}
+    other_specs =  all_specs - curr_specs
+    better_specs = []
+    better_ids = []
+    better_specs = []
+    min_utility = ContSpec.cachemany(curr_ids, "utility").min
+    other_specs.each_with_index do |s, i|
+      if ContSpec.cachemany([other_ids[i]], "utility").first>min_utility
+        better_ids << other_ids[i]
+        better_specs <<  s
+      end  
+    end  
+    dists = []
+    dim = all_specs.first.size
+    better_specs.each{|s2| dists<< curr_specs.map{|s1| self.distance(s1,s2, [1.0/dim]*dim)}.inject(:+)}           
+    better_products_hash = Hash[better_ids.zip(dists)]
+    
+    close_products = better_products_hash.sort{|a,b| a[1] <=> b[1]}[0...num].map{|k, v| k}
+  end
+
 
   def self.weighted_ft(ft, weights)
     weighted_ft=[]
