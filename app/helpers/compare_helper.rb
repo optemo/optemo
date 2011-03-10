@@ -244,4 +244,9 @@ module CompareHelper
 	  @dist[feat]
   end
   
+  def sortbyList
+    sortbyList = [[t("products.sortby")+t("products.relevance"),"relevance"]]
+    Session.continuous["cluster"].map{|f| sortbyList << [t("products.sortby")+ t(Session.product_type+".specs."+f+".name"), f]}
+    sortbyList
+  end
 end

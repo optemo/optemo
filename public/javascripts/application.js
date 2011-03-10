@@ -144,11 +144,11 @@ optemo_module = (function (my){
     //   - "specs" or "more specs" links just show/hide the table element rather than building it up; the ajax return below does that
     // The disadvantage would be that the specs wouldn't be stored for later retrieval. This probably isn't a big deal.
     
-    my.loadspecs = function (sku) {
+    my.loadspecs = function (sku, f) {
         // The jQuery AJAX request will add ?callback=? as appropriate. Best Buy API v.2 supports this.
         var baseurl = "http://www.bestbuy.ca/api/v2/json/product/" + sku;
         if (!(jQuery('body').data('bestbuy_specs_' + sku))) {
-            $.ajax({
+            var req = $.ajax({
                 url: baseurl,
                 type: "GET",
                 dataType: "jsonp",
@@ -169,14 +169,20 @@ optemo_module = (function (my){
                 }
             });
         }
+		else {
+			var req = $.Deferred().resolve().promise();
+		}
+		req.done(f);
     };
 
     // This function gets called when a show action gets called.
     my.preloadSpecsAndReviews = function(sku) {
-        my.loadspecs(sku);
+        my.loadspecs(sku,function() {
+			$('#specs_content').html($('<ul>' + parse_bb_json($('body').data('bestbuy_specs_' + sku)) + "</ul>"));
+		});
         if (!(jQuery('body').data('bestbuy_reviews_' + sku))) {
             baseurl = "http://www.bestbuy.ca/api/v2/json/reviews/" + sku;
-            $.ajax({
+            var req = $.ajax({
                 url: baseurl,
     	        type: "GET",
     	        dataType: "jsonp",
@@ -211,7 +217,13 @@ optemo_module = (function (my){
                 }
             });
 	    }
-    }
+		else {
+			var req = $.Deferred().resolve().promise();
+		}
+		req.done(function() {
+			$('#reviews_content').html($('body').data('bestbuy_reviews_' + sku));
+		});
+    };
 
     //--------------------------------------//
     //           UI Manipulation            //
@@ -265,7 +277,7 @@ optemo_module = (function (my){
     	        if (url.match(/\/product/)) {
                     // Initialize Galleria
                     // If you are debugging around this point, be aware that galleria likes to be initialized all in one shot.
-                    jQuery('#galleria').galleria();
+                    $('#galleria').galleria();
                     // The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
                     // It's important to set this up as an event handler at all because there is a race condition with galleria updating the DOM otherwise.
                     $('.galleria-thumbnails-list').livequery(function() {
@@ -288,7 +300,7 @@ optemo_module = (function (my){
                         });
                     }
         	        my.DBinit();
-        	        my.preloadSpecsAndReviews(jQuery('#tab_header').find('ul').attr('data-sku'));
+        	        my.preloadSpecsAndReviews($('#tab_header').find('ul').attr('data-sku'));
     	        } else {
     	            my.DBinit();
     	            $('#outsidecontainer').css('width','');
@@ -886,40 +898,16 @@ optemo_module = (function (my){
 
         // The next few functions were written to be Best Buy-specific, but they can be extended
         // for any tabbed quickview page. The content is loaded ahead of time by preloadSpecsAndReviews() on popup load.
-        function quickview_tasks(el) {
-            // NB: This is locally scoped to LiveInit only
-    	    if (!($.browser.msie && $.browser.version == "7.0")) el.css('background','');
+		$('.fetch').live('click', function() {
+			var el = $(this);
+			if (!($.browser.msie && $.browser.version == "7.0")) el.css('background','');
+			$('#'+$('#tab_selected').attr('data-tab')).hide();
             $('#tab_selected').removeAttr('id');
     	    el.parent().attr('id', 'tab_selected');
+			$('#'+$('#tab_selected').attr('data-tab')).show();
             resize_silkscreen();
-        }
-
-    	$('.fetch_bestbuy_info').live('click', function() {
-    	    var t = $(this);
-    	    if (!(t.parent().attr('id') == "tab_selected")) {
-    	        $('#tabbed_content').show();
-                $('#other_tabbed_content').hide();
-        	    quickview_tasks(t);
-    	    }
-	        return false;
-	    });
-
-    	$('.fetch_bestbuy_specs').live('click', function () {
-    	    // Must send sku in (bestbuy_specs_110742 for example)
-    	    var prop_list_node = jQuery('<ul>' + parse_bb_json($('body').data('bestbuy_specs_' + $(this).parent().parent().attr('data-sku'))) + "</ul>");
-    	    $('#tabbed_content').hide();
-    	    $('#other_tabbed_content').html(prop_list_node).show();
-            quickview_tasks($(this));
-            return false;
-	    });
-
-	    $('.fetch_bestbuy_reviews').live('click', function () {
-    	    // Must send sku in (bestbuy_specs_110742 for example)
-    	    $('#tabbed_content').hide();
-    	    $('#other_tabbed_content').html($('body').data('bestbuy_reviews_' + $(this).parent().parent().attr('data-sku'))).show();
-            quickview_tasks($(this));
-            return false;
-        });
+			return false;
+		});
 
         $('.fetch_compare_specs').live('click', function () {
             var t = $(this), column_number = 0, extendedProductSpecs = {}, savedProducts = $('#opt_savedproducts').children();
@@ -928,7 +916,6 @@ optemo_module = (function (my){
             var textToAdd = '<br style="clear:both;"><div class="comparisonmatrix" id="hideable_matrix"><div class="compare_row"><div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle" style="padding:right:3px;"><div class="leftcolumntext">All Specifications</div></div></div>';
             savedProducts.each(function () {
     		    var sku = $(this).attr('data-sku');
-                optemo_module.loadspecs(sku)
                 // The column numbers are important here for .remove functionality.
                 textToAdd += "<div class='outertitle spec_column_"+column_number+"'><div class='columntitle'>&nbsp;</div></div>";
                 // Cache the specs locally so that we don't do too many jquery .data() calls; they are relatively expensive.
@@ -1005,16 +992,16 @@ optemo_module = (function (my){
 
         // This bridge function adds the product currently shown in the Quickview screen and puts it in the comparison box.
         // If there are at least two products, bring up the comparison pop-up immediately, otherwise go back to browsing.
-        $('.show_to_compare').live('click', function () {
-            var id = $('#tab_header ul').attr('data-id'), sku = $('#tab_header ul').attr('data-sku');
-            var image = $('#galleria').find('img:first');
+        $('#add_compare').live('click', function () {
+			var t = $(this);
+            var sku = $('#tab_header ul').attr('data-sku');
+            var image = $('#galleria').find('img:first').attr('src');
             // Test for the length of the saved products array here to avoid a race condition
-            var number_saved_already = $('#opt_savedproducts').children().length;
-            optemo_module.saveProductForComparison(id, sku, image.attr('src'), $('#info h1:first').html());
+            optemo_module.saveProductForComparison(t.attr('data-id'), sku, image, t.attr('data-name'));
             // This message will be displayed next to the droppable box if
             $("#already_added_msg").css("display", "none");
             // Call click handler for the compare button if there are multiple saved products there. Otherwise, get out of show page
-            (number_saved_already > 0) ? $('#compare_button').click() : my.removeSilkScreen();
+            ($('#opt_savedproducts').children().length > 1) ? $('#compare_button').click() : my.removeSilkScreen();
             return false;
         });
 
@@ -1031,7 +1018,7 @@ optemo_module = (function (my){
     				var sku = $(this).attr('data-sku');
     				productIDs = productIDs + p_id + ',';
     				number_of_saved_products++;
-    				my.loadspecs(sku)
+    				my.loadspecs(sku);
     			}
     		});
 
@@ -1199,6 +1186,7 @@ optemo_module = (function (my){
 			optemo_module.ajaxcall($(this).attr('href')+'?ajax=true');
 			return false;
 		});
+		
     }
 
     function ErrorInit() {
@@ -1233,7 +1221,7 @@ optemo_module = (function (my){
     				}
     			});
                 $(this).hover(function() {
-    	                $(this).find('.dragHand').stop().animate({ opacity: 1.0 }, 150);
+    	                $(this).find('.	dragHand').stop().animate({ opacity: 1.0 }, 150);
     			    },
     		        function() {
     	            	$(this).find('.dragHand').stop().animate({ opacity: 0.35 }, 450);
@@ -1480,7 +1468,7 @@ optemo_module = (function (my){
     	this.begin = function() {
     		this.runspinner = true;
     		setTimeout(ticker, 1000 / sectorsCount);
-    		$('#loading').css('display', 'inline');
+    		$('#loading').css('display', 'block');
     	};
     	this.end = function() {
     		this.runspinner = false;
