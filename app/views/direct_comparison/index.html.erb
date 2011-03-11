@@ -21,8 +21,8 @@
     </div>
     <% spec_hash = {} %>
     <div class="compare_row">
-        <div class="thumbnailcell leftmostcolumn" style="padding-right:3px;"> <%# the style information is here because IE can't handle .class.otherclass CSS declarations %>
-			<div class="tabletitle leftcolumntext"> <%= t('compare.index.tabletitle') %> </div>
+        <div class="thumbnailcell leftmostcolumn tabletitle" style="padding-right:3px;"> <%# the style information is here because IE can't handle .class.otherclass CSS declarations %>
+			<%= t('compare.index.tabletitle') %>
 		</div>
 		<% @products.each_with_index do |product,i| %>
     		<% contspecs = ContSpec.cache_all(product.id) %>
@@ -35,7 +35,7 @@
 
     <div class="compare_row">
         <div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle">
-        	<div class="leftcolumntext"><%=t 'compare.index.proddetails'%></div>
+        	<%=t 'compare.index.proddetails'%>
         </div></div>
 
 		<% @products.each_with_index do |product, i| %>
@@ -46,8 +46,8 @@
         <% {@s.continuous["show"] => "cont", @s.categorical["show"] => "cat", @s.binary["show"] => "bin"}.each_pair do |feat_list, feat_type| %>
             <% feat_list.each do |feat| %>
             <div class="<%= t("#{Session.product_type}.specs.#{feat}.name").length < 20 ? "compare_row" : "double_height_compare_row" %>">
-        		<div class="cell <%= gray ? "graybg" : "whitebg" %> leftmostcolumn">
-        			<div class="leftcolumntext"><%= t("#{Session.product_type}.specs.#{feat}.name") %>:</div>
+        		<div class="cell <%= gray ? "graybg" : "whitebg" %> leftmostcolumn leftcolumntext">
+        			<%= t("#{Session.product_type}.specs.#{feat}.name") %>:
         		</div>
         		<% @products.each_with_index do |product, i| %>
             		<% allspecs = spec_hash[product.id] %>

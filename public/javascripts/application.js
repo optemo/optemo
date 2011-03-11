@@ -959,68 +959,62 @@ optemo_module = (function (my){
     		my.trackPage('goals/compare', {'filter_type' : 'direct_comparison'});
     		return false;
     	});
+		function row_height(length,isLabel)
+		{
+			var h;
+			if (isLabel) {
+				if (length >= 37) h = 3;
+			    else if (length >= 19) h = 2;
+			    else h = 1;
+			}
+			else {
+				if (length >= 57) h = 3;
+	            else if (length >= 29) h = 2;
+	            else h = 1;
+			}
+			return h;
+		}
 		//This should be a locally scoped function
 		function buildComparisonMatrix() {
-			var column_number = 0, extendedProductSpecs = {}, savedProducts = $('#opt_savedproducts').children(), anchor = $('#hideable_matrix');
+			var rows = [], row_class=[], savedProducts = $('#opt_savedproducts').children(), anchor = $('#hideable_matrix').empty(), heading;
 			// Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
-			var heading = $('<div class="compare_row">').append(
-				$('<div class="outertitle leftmostoutertitle">').append(
-					$('<div class="columntitle leftmostcolumntitle" style="padding-right:3px;">').append(
-						$('<div class="leftcolumntext">').html("All Specifications")
-					)
-				)
-			).appendTo(anchor);
-			for (var i = 0; i < savedProducts.length; i++) {
-			    var sku = $(savedProducts[i]).attr('data-sku');
-			    // The column numbers are important here for .remove functionality.
-				heading.append($('<div class="outertitle">').addClass("spec_column_"+i).append($('<div class="columntitle">').html("&nbsp;")));
-			    // Cache the specs locally so that we don't do too many jquery .data() calls; they are relatively expensive.
-			    extendedProductSpecs[sku] = parse_bb_json_into_array($('body').data('bestbuy_specs_' + sku), false);
-			}
-
-			// Get the data for the first column (the spec names)
-			var headers_array = parse_bb_json_into_array($('body').data('bestbuy_specs_' + savedProducts.find(":first").attr('data-sku')), true);
-			var color_state = false;
-			for (var i = 0; i < headers_array.length; i++) {
-			    // Row classes: 1, up to 18 chars; 2, up to 36 chars; 3, up to 54 chars
-			    var row_class;
-			    if (headers_array[i].length >= 37) row_class = 3;
-			    else if (headers_array[i].length >= 19) row_class = 2;
-			    else row_class = 1;
-			    column_number = 0;
-				var rowdata = $('<div>').append(
-					$('<div class="cell leftmostcolumn">').addClass(color_state ? 'whitebg' : 'graybg').append(
-						$('<div class="leftcolumntext">').html(headers_array[i])
-				));
-				for (var j = 0; j < savedProducts.length; j++) {
-					    // Get the data for each column
-					    var sku = $(savedProducts[j]).attr('data-sku');
-					    var per_sku_row_class; // Need a separate variable here so that we can take the Math.max of the header line height and these properties'.
-					    // We have a bit more room for these specs. 28 characters per line is fine here.
-			            if (extendedProductSpecs[sku][i].length >= 57) per_sku_row_class = 3;
-			            else if (extendedProductSpecs[sku][i].length >= 29) per_sku_row_class = 2;
-			            else per_sku_row_class = 1;
-					    row_class = Math.max(per_sku_row_class, row_class);
-						rowdata.append($('<div class="cell">').addClass(color_state ? 'whitebg' : 'graybg').addClass("spec_column_"+j).html(extendedProductSpecs[sku][i]));
+			//p == 0 means it's the labels
+			for (var p = 0; p <= savedProducts.length; p++) {
+			    var sku = $(savedProducts[(p == 0) ? p : p-1]).attr('data-sku');
+				// The column numbers are important here for .remove functionality.
+				if (p==0) {
+					heading = $('<div class="compare_row">').append(
+						$('<div class="outertitle leftmostoutertitle">').append(
+							$('<div class="columntitle leftmostcolumntitle" style="padding-right:3px;">').html("All Specifications")
+						)
+					).appendTo(anchor);
 				}
-				// Now that we've evaluated all the data in a given row, we can apply the right style.
-				// In future, one could theoretically text the actual width of a block of text this way:
-				// Create an element, using jquery, that is hidden from view. Make it inline and floating maybe?
-				// .width() still works on such elements, and then you could compare it against a known width, even loading that from a class,
-				// and act appropriately.
-				if (row_class == 3) row_class = 'triple_height_compare_row';
-				else if (row_class == 2) row_class = 'double_height_compare_row';
-				else row_class = 'compare_row'; // row_class was 1
-			    
-				rowdata.addClass(row_class).appendTo(anchor);
-				color_state = !color_state;
+			    else {
+					heading.append($('<div class="outertitle">').addClass("spec_column_"+p).append($('<div class="columntitle">').html("&nbsp;")));
+			    }
+			    spec_array = parse_bb_json_into_array($('body').data('bestbuy_specs_' + sku), (p == 0) ? true : false);
+				for (var s = 0; s < spec_array.length; s++) {
+					if (p==0) {
+						row_class[s] = 1;
+						rows[s] = $('<div>').appendTo(anchor);
+					}
+					row_class[s] = Math.max(row_height(spec_array[s].length,(p == 0) ? true : false), row_class[s]);
+					//Assign row_class on the last iteration
+					if (p == savedProducts.length) {
+						if (row_class[s] == 3) row_class[s] = 'triple_height_compare_row';
+						else if (row_class[s] == 2) row_class[s] = 'double_height_compare_row';
+						else row_class[s] = 'compare_row'; // row_class was 1
+						rows[s].addClass(row_class[s]);
+					}
+					$('<div class="cell">').addClass((s%2 == 0) ? 'whitebg' : 'graybg').addClass((p == 0) ? "leftcolumntext" : "").addClass("spec_column_"+p).html(spec_array[s]).append((p == 0) ? ":" : "").appendTo(rows[s]);
+				}
 			}
-
+			
 			// Put the thumbnails and such at the bottom of the compare area too (in the hideable matrix)
 			var remove_row = $('#basic_matrix .compare_row:first');
 			remove_row.clone().appendTo(anchor);
 			remove_row.next().clone().appendTo(anchor);
-			remove_row.next().next().clone().find('.leftcolumntext').empty().end().appendTo(anchor);
+			remove_row.next().next().clone().find('.leftmostcolumntitle').empty().end().appendTo(anchor);
 		}
 
         $('.saveditem .deleteX').live('click', function() {
