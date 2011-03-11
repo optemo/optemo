@@ -961,46 +961,48 @@ optemo_module = (function (my){
     	});
 		//This should be a locally scoped function
 		function buildComparisonMatrix() {
-			var column_number = 0, extendedProductSpecs = {}, savedProducts = $('#opt_savedproducts').children();
+			var column_number = 0, extendedProductSpecs = {}, savedProducts = $('#opt_savedproducts').children(), anchor = $('#hideable_matrix');
 			// Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
-			// Append all the text at the end of the function.
-			var textToAdd = '<div class="compare_row"><div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle" style="padding:right:3px;"><div class="leftcolumntext">All Specifications</div></div></div>';
-			savedProducts.each(function () {
-			    var sku = $(this).attr('data-sku');
+			var heading = $('<div class="compare_row">').append(
+				$('<div class="outertitle leftmostoutertitle">').append(
+					$('<div class="columntitle leftmostcolumntitle" style="padding-right:3px;">').append(
+						$('<div class="leftcolumntext">').html("All Specifications")
+					)
+				)
+			).appendTo(anchor);
+			for (var i = 0; i < savedProducts.length; i++) {
+			    var sku = $(savedProducts[i]).attr('data-sku');
 			    // The column numbers are important here for .remove functionality.
-			    textToAdd += "<div class='outertitle spec_column_"+column_number+"'><div class='columntitle'>&nbsp;</div></div>";
+				heading.append($('<div class="outertitle">').addClass("spec_column_"+i).append($('<div class="columntitle">').html("&nbsp;")));
 			    // Cache the specs locally so that we don't do too many jquery .data() calls; they are relatively expensive.
 			    extendedProductSpecs[sku] = parse_bb_json_into_array($('body').data('bestbuy_specs_' + sku), false);
-			    column_number++;
-			});
-			textToAdd += '</div>';
+			}
 
 			// Get the data for the first column (the spec names)
 			var headers_array = parse_bb_json_into_array($('body').data('bestbuy_specs_' + savedProducts.find(":first").attr('data-sku')), true);
 			var color_state = false;
 			for (var i = 0; i < headers_array.length; i++) {
 			    // Row classes: 1, up to 18 chars; 2, up to 36 chars; 3, up to 54 chars
-			    var row_class, additionalTextToAdd = "";
+			    var row_class;
 			    if (headers_array[i].length >= 37) row_class = 3;
 			    else if (headers_array[i].length >= 19) row_class = 2;
 			    else row_class = 1;
 			    column_number = 0;
-			    savedProducts.each(function() {
-					// it's a saved item if the CSS class is set as such. This allows for other children later if we feel like it.
-					if ($(this).attr('class').indexOf('saveditem') != -1)
-					{
+				var rowdata = $('<div>').append(
+					$('<div class="cell leftmostcolumn">').addClass(color_state ? 'whitebg' : 'graybg').append(
+						$('<div class="leftcolumntext">').html(headers_array[i])
+				));
+				for (var j = 0; j < savedProducts.length; j++) {
 					    // Get the data for each column
-					    var sku = $(this).attr('data-sku');
+					    var sku = $(savedProducts[j]).attr('data-sku');
 					    var per_sku_row_class; // Need a separate variable here so that we can take the Math.max of the header line height and these properties'.
 					    // We have a bit more room for these specs. 28 characters per line is fine here.
 			            if (extendedProductSpecs[sku][i].length >= 57) per_sku_row_class = 3;
 			            else if (extendedProductSpecs[sku][i].length >= 29) per_sku_row_class = 2;
 			            else per_sku_row_class = 1;
 					    row_class = Math.max(per_sku_row_class, row_class);
-						additionalTextToAdd += "<div class='cell " + (color_state ? 'whitebg' : 'graybg') + " spec_column_"+column_number+"'>" + extendedProductSpecs[sku][i] + "</div>";
-						column_number++;
-					}
-				});
+						rowdata.append($('<div class="cell">').addClass(color_state ? 'whitebg' : 'graybg').addClass("spec_column_"+j).html(extendedProductSpecs[sku][i]));
+				}
 				// Now that we've evaluated all the data in a given row, we can apply the right style.
 				// In future, one could theoretically text the actual width of a block of text this way:
 				// Create an element, using jquery, that is hidden from view. Make it inline and floating maybe?
@@ -1009,21 +1011,16 @@ optemo_module = (function (my){
 				if (row_class == 3) row_class = 'triple_height_compare_row';
 				else if (row_class == 2) row_class = 'double_height_compare_row';
 				else row_class = 'compare_row'; // row_class was 1
-			    textToAdd += "<div class='" + row_class + "'><div class='cell " + (color_state ? 'whitebg' : 'graybg') + " leftmostcolumn'><div class='leftcolumntext'>" + headers_array[i] + "</div></div>";
-			    textToAdd += additionalTextToAdd;
-				textToAdd += "</div>";
+			    
+				rowdata.addClass(row_class).appendTo(anchor);
 				color_state = !color_state;
 			}
 
 			// Put the thumbnails and such at the bottom of the compare area too (in the hideable matrix)
 			var remove_row = $('#basic_matrix .compare_row:first');
-			var mydiv = $('<div>');
-			remove_row.clone().appendTo(mydiv);
-			remove_row.next().clone().appendTo(mydiv);
-			remove_row.next().next().clone().find('.leftcolumntext').html('').end().appendTo(mydiv);
-			textToAdd += mydiv.remove().html();
-			textToAdd += "</div>";
-			$('#hideable_matrix').html(textToAdd);
+			remove_row.clone().appendTo(anchor);
+			remove_row.next().clone().appendTo(anchor);
+			remove_row.next().next().clone().find('.leftcolumntext').empty().end().appendTo(anchor);
 		}
 
         $('.saveditem .deleteX').live('click', function() {
