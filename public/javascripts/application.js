@@ -986,7 +986,7 @@ optemo_module = (function (my){
 					heading = $('<div class="compare_row"><div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle" style="padding-right:3px;">All Specifications</div></div></div>').appendTo(anchor);
 				}
 			    else {
-					heading.append($('<div class="outertitle">').addClass("spec_column_"+p).append($('<div class="columntitle">&nbsp;</div>')));
+					heading.append('<div class="outertitle spec_column_'+p+'"><div class="columntitle">&nbsp;</div></div>');
 			    }
 			    spec_array = parse_bb_json_into_array($('body').data('bestbuy_specs_' + sku), (p == -1) ? true : false);
 				for (var s = 0; s < spec_array.length; s++) {
@@ -1002,15 +1002,17 @@ optemo_module = (function (my){
 						else row_class[s] = 'compare_row'; // row_class was 1
 						rows[s].addClass(row_class[s]);
 					}
-					$('<div class="cell">').addClass(((s%2 == 0) ? 'whitebg' : 'graybg') + " " + ((p == -1) ? "leftcolumntext spec_column_"+p : "spec_column_"+p)).html(spec_array[s] + ((p == -1) ? ":" : "" )).appendTo(rows[s]);
+					rows[s].append('<div class="cell ' + ((s%2 == 0) ? 'whitebg' : 'graybg') + " " + ((p == -1) ? "leftcolumntext spec_column_"+p : "spec_column_"+p) + '">' + spec_array[s] + ((p == -1) ? ":" : "" ) + "</div>");
 				}
 			}
 			
 			// Put the thumbnails and such at the bottom of the compare area too (in the hideable matrix)
 			var remove_row = $('#basic_matrix .compare_row:first');
-			remove_row.clone().appendTo(anchor);
-			remove_row.next().clone().appendTo(anchor);
-			remove_row.next().next().clone().find('.leftmostcolumntitle').empty().end().appendTo(anchor);
+			anchor.append(
+				remove_row.clone(),
+				remove_row.next().clone(),
+				remove_row.next().next().clone().find('.leftmostcolumntitle').empty().end()
+			);
 		}
 
         $('.saveditem .deleteX').live('click', function() {
