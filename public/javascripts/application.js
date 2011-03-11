@@ -338,7 +338,8 @@ optemo_module = (function (my){
 
         	// There should be at least 1 saved item, so...
         	// 1. show compare button
-        	$("#compare_button").css("display", "block");
+        	$("#compare_button").show();
+			$("#savesome").hide();
     	}
     };
 
@@ -417,7 +418,7 @@ optemo_module = (function (my){
     	if ($('#opt_savedproducts').children().length == 0)
     	{
     	    $('#savesome').show(); // This is the "save products by dropping..." message
-    		$("#compare_button").css("display", "none");
+    		$("#compare_button").hide();
 	    }
     	return false;
     }
@@ -1552,7 +1553,8 @@ jQuery(document).ready(function($){
 		}
 		// There should be at least 1 saved item, so...
 		// 1. show compare button
-		$("#compare_button").css("display", "block");
+		$("#compare_button").show();
+		$("#savesome").hide();
 	}
 
 	// Only load DBinit if it will not be loaded by the upcoming ajax call
