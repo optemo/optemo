@@ -6,7 +6,6 @@
    ---- Show Page Pre-loader & Helpers ----
     parse_bb_json(obj)  -  recursive function to parse the returned JSON into an html list
     parse_bb_json_into_array(obj, features_flag)  -  recursive function parses the returned JSON object into a table of similar style to the 'direct comparison' action
-    resize_silkscreen()  -  called internally to put a silkscreen where appropriate
     ** preloadSpecsAndReviews(sku)  -  Does 2 AJAX requests for data relating to sku and puts the results in $('body').data() for instant retrieval later
 
    ---- UI Manipulation ----
@@ -127,14 +126,6 @@ optemo_module = (function (my){
         return props;
     });
 
-    var resize_silkscreen = (function () {
-        // This allows the container to resize as appropriate, but for it to work, the last element in #outsidecontainer needs to have style="clear:both"
-        jQuery('#outsidecontainer').css('height', '');
-        var height = jQuery('#outsidecontainer').height() + jQuery('#outsidecontainer').offset().top + 40; // 40 is arbitrary
-        if (height < 760) height = 760;
-        jQuery('#silkscreen').css('height', height);
-    });
-
     // The spec loader works to do a couple AJAX calls when the show page initially loads.
     // The results are stored in $('body').data for instant retrieval when the
     // specs, reviews, or product info buttons are clicked.
@@ -144,7 +135,7 @@ optemo_module = (function (my){
     //   - "specs" or "more specs" links just show/hide the table element rather than building it up; the ajax return below does that
     // The disadvantage would be that the specs wouldn't be stored for later retrieval. This probably isn't a big deal.
     
-    my.loadspecs = function (sku, f) {
+    my.loadspecs = function (sku) {
         // The jQuery AJAX request will add ?callback=? as appropriate. Best Buy API v.2 supports this.
         var baseurl = "http://www.bestbuy.ca/api/v2/json/product/" + sku;
         if (!(jQuery('body').data('bestbuy_specs_' + sku))) {
@@ -172,12 +163,12 @@ optemo_module = (function (my){
 		else {
 			var req = $.Deferred().resolve().promise();
 		}
-		req.done(f);
+		return req;
     };
 
     // This function gets called when a show action gets called.
     my.preloadSpecsAndReviews = function(sku) {
-        my.loadspecs(sku,function() {
+        my.loadspecs(sku).done(function() {
 			$('#specs_content').html($('<ul>' + parse_bb_json($('body').data('bestbuy_specs_' + sku)) + "</ul>"));
 		});
         if (!(jQuery('body').data('bestbuy_reviews_' + sku))) {
@@ -239,7 +230,7 @@ optemo_module = (function (my){
         $('#filter_bar_loading').css({'display' : 'none'});
     };
 
-    my.applySilkScreen = function(url,data,width,height) {
+    my.applySilkScreen = function(url,data,width,height,f) {
     	//IE Compatibility
     	var iebody=(document.compatMode && document.compatMode != "BackCompat")? document.documentElement : document.body,
     	dsoctop=document.all? iebody.scrollTop : pageYOffset;
@@ -304,11 +295,13 @@ optemo_module = (function (my){
     	        } else {
     	            my.DBinit();
     	            $('#outsidecontainer').css('width','');
-    	            resize_silkscreen();
                 }
     	        $('#outsidecontainer').css('height', ''); // Take height off - it was useful for loading so that we'd see a box, but now the element can auto-size
     	        $('#inside_of_outsidecontainer').css('height', '');
                 $('#info').css('height', '');
+				if (f) {
+					f();
+				}
             });
         }
     };
@@ -912,84 +905,10 @@ optemo_module = (function (my){
             $('#tab_selected').removeAttr('id');
     	    el.parent().attr('id', 'tab_selected');
 			$('#'+$('#tab_selected').attr('data-tab')).show();
-            resize_silkscreen();
 			return false;
 		});
 
-        $('.fetch_compare_specs').live('click', function () {
-            var t = $(this), column_number = 0, extendedProductSpecs = {}, savedProducts = $('#opt_savedproducts').children();
-            // Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
-            // Append all the text at the end of the function.
-            var textToAdd = '<br style="clear:both;"><div class="comparisonmatrix" id="hideable_matrix"><div class="compare_row"><div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle" style="padding:right:3px;"><div class="leftcolumntext">All Specifications</div></div></div>';
-            savedProducts.each(function () {
-    		    var sku = $(this).attr('data-sku');
-                // The column numbers are important here for .remove functionality.
-                textToAdd += "<div class='outertitle spec_column_"+column_number+"'><div class='columntitle'>&nbsp;</div></div>";
-                // Cache the specs locally so that we don't do too many jquery .data() calls; they are relatively expensive.
-                extendedProductSpecs[sku] = parse_bb_json_into_array($('body').data('bestbuy_specs_' + sku), false);
-                column_number++;
-            });
-            textToAdd += '</div>';
-
-            // Get the data for the first column (the spec names)
-            var headers_array = parse_bb_json_into_array($('body').data('bestbuy_specs_' + savedProducts.find(":first").attr('data-sku')), true);
-            var color_state = false;
-            for (var i = 0; i < headers_array.length; i++) {
-                // Row classes: 1, up to 18 chars; 2, up to 36 chars; 3, up to 54 chars
-                var row_class, additionalTextToAdd = "";
-                if (headers_array[i].length >= 37) row_class = 3;
-                else if (headers_array[i].length >= 19) row_class = 2;
-                else row_class = 1;
-                column_number = 0;
-                savedProducts.each(function() {
-        			// it's a saved item if the CSS class is set as such. This allows for other children later if we feel like it.
-        			if ($(this).attr('class').indexOf('saveditem') != -1)
-        			{
-        			    // Get the data for each column
-        			    var sku = $(this).attr('data-sku');
-        			    var per_sku_row_class; // Need a separate variable here so that we can take the Math.max of the header line height and these properties'.
-        			    // We have a bit more room for these specs. 28 characters per line is fine here.
-                        if (extendedProductSpecs[sku][i].length >= 57) per_sku_row_class = 3;
-                        else if (extendedProductSpecs[sku][i].length >= 29) per_sku_row_class = 2;
-                        else per_sku_row_class = 1;
-        			    row_class = Math.max(per_sku_row_class, row_class);
-        				additionalTextToAdd += "<div class='cell " + (color_state ? 'whitebg' : 'graybg') + " spec_column_"+column_number+"'>" + extendedProductSpecs[sku][i] + "</div>";
-        				column_number++;
-        			}
-        		});
-        		// Now that we've evaluated all the data in a given row, we can apply the right style.
-        		// In future, one could theoretically text the actual width of a block of text this way:
-        		// Create an element, using jquery, that is hidden from view. Make it inline and floating maybe?
-        		// .width() still works on such elements, and then you could compare it against a known width, even loading that from a class,
-        		// and act appropriately.
-        		if (row_class == 3) row_class = 'triple_height_compare_row';
-        		else if (row_class == 2) row_class = 'double_height_compare_row';
-        		else row_class = 'compare_row'; // row_class was 1
-                textToAdd += "<div class='" + row_class + "'><div class='cell " + (color_state ? 'whitebg' : 'graybg') + " leftmostcolumn'><div class='leftcolumntext'>" + headers_array[i] + "</div></div>";
-                textToAdd += additionalTextToAdd;
-        		textToAdd += "</div>";
-        		color_state = !color_state;
-            }
-    		t.html("Less Specs");
-    		t.removeClass("fetch_compare_specs").addClass("hide_compare_specs");
-    		
-    		// Put the thumbnails and such at the bottom of the compare area too (in the hideable matrix)
-    		var remove_row = $('#basic_matrix .compare_row:first');
-    		textToAdd += "<div class='compare_row'>" + remove_row.html() + "</div><div class='compare_row'>" + remove_row.next().html() + "</div>";
-            column_number = 0;
-            textToAdd += "<div class='compare_row'>";
-            textToAdd += "<div class='outertitle leftmostcolumn leftmostoutertitle'><div class='columntitle leftmostcolumn leftmostcolumntitle'></div></div>";
-            for (var i = 0; i < savedProducts.length; i++) {
-                textToAdd += "<div class='outertitle spec_column_"+column_number+"'><div class='columntitle'>&nbsp;</div></div>";
-                column_number++;
-            }
-    		textToAdd += "</div></div><br style='clear:both;'>";
-    		t.parent().after(textToAdd);
-			resize_silkscreen();
-            return false;
-        });
-
-        $('.hide_compare_specs').live('click', function () {
+        $('.toggle_specs').live('click', function () {
             // Once we have the additional specs loaded and rendered, we can simply show and hide that table
             var t = $(this);
             (t.html() == "Less Specs") ? t.html("More Specs") : t.html("Less Specs");
@@ -1014,7 +933,7 @@ optemo_module = (function (my){
 
     	//Call overlay for product comparison
     	$("#compare_button").live('click', function(){
-    		var productIDs = '', width = 560, number_of_saved_products = 0;
+    		var productIDs = '', width = 560, number_of_saved_products = 0, reqs = [];
     		// For each saved product, get the ID out of the id=#opt_savedproducts children.
     		$('#opt_savedproducts').children().each(function() {
     			// it's a saved item if the CSS class is set as such. This allows for other children later if we feel like it.
@@ -1025,10 +944,9 @@ optemo_module = (function (my){
     				var sku = $(this).attr('data-sku');
     				productIDs = productIDs + p_id + ',';
     				number_of_saved_products++;
-    				my.loadspecs(sku);
+    				reqs.push(my.loadspecs(sku));
     			}
     		});
-
             // To figure out the width that we need, start with $('#opt_savedproducts').length probably
             // 560 minimum (width is the first of the two parameters)
             // 2, 3, 4 ==>  513, 704, 895  (191 each)
@@ -1042,10 +960,69 @@ optemo_module = (function (my){
                 default:
                     width = 560;
             }
-    		my.applySilkScreen('/comparison/' + productIDs, null, width, 580);
+    		my.applySilkScreen('/comparison/' + productIDs, null, width, 580,function(){
+				$.when.apply(this,reqs).done(buildComparisonMatrix());
+});
     		my.trackPage('goals/compare', {'filter_type' : 'direct_comparison'});
     		return false;
     	});
+		function row_height(length,isLabel)
+		{
+			var h;
+			if (isLabel) {
+				if (length >= 37) h = 3;
+			    else if (length >= 19) h = 2;
+			    else h = 1;
+			}
+			else {
+				if (length >= 57) h = 3;
+	            else if (length >= 29) h = 2;
+	            else h = 1;
+			}
+			return h;
+		}
+		//This should be a locally scoped function
+		function buildComparisonMatrix() {
+			var rows = [], row_class=[], savedProducts = $('#opt_savedproducts').children(), anchor = $('#hideable_matrix').empty(), heading;
+			// Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
+			//p == 0 means it's the labels
+			for (var p = 0; p <= savedProducts.length; p++) {
+			    var sku = $(savedProducts[(p == 0) ? p : p-1]).attr('data-sku');
+				// The column numbers are important here for .remove functionality.
+				if (p==0) {
+					heading = $('<div class="compare_row">').append(
+						$('<div class="outertitle leftmostoutertitle">').append(
+							$('<div class="columntitle leftmostcolumntitle" style="padding-right:3px;">').html("All Specifications")
+						)
+					).appendTo(anchor);
+				}
+			    else {
+					heading.append($('<div class="outertitle">').addClass("spec_column_"+p).append($('<div class="columntitle">').html("&nbsp;")));
+			    }
+			    spec_array = parse_bb_json_into_array($('body').data('bestbuy_specs_' + sku), (p == 0) ? true : false);
+				for (var s = 0; s < spec_array.length; s++) {
+					if (p==0) {
+						row_class[s] = 1;
+						rows[s] = $('<div>').appendTo(anchor);
+					}
+					row_class[s] = Math.max(row_height(spec_array[s].length,(p == 0) ? true : false), row_class[s]);
+					//Assign row_class on the last iteration
+					if (p == savedProducts.length) {
+						if (row_class[s] == 3) row_class[s] = 'triple_height_compare_row';
+						else if (row_class[s] == 2) row_class[s] = 'double_height_compare_row';
+						else row_class[s] = 'compare_row'; // row_class was 1
+						rows[s].addClass(row_class[s]);
+					}
+					$('<div class="cell">').addClass((s%2 == 0) ? 'whitebg' : 'graybg').addClass((p == 0) ? "leftcolumntext" : "").addClass("spec_column_"+p).html(spec_array[s]).append((p == 0) ? ":" : "").appendTo(rows[s]);
+				}
+			}
+			
+			// Put the thumbnails and such at the bottom of the compare area too (in the hideable matrix)
+			var remove_row = $('#basic_matrix .compare_row:first');
+			remove_row.clone().appendTo(anchor);
+			remove_row.next().clone().appendTo(anchor);
+			remove_row.next().next().clone().find('.leftmostcolumntitle').empty().end().appendTo(anchor);
+		}
 
         $('.saveditem .deleteX').live('click', function() {
              removeFromComparison($(this).attr('data-name'));

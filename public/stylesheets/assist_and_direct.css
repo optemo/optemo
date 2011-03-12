@@ -605,6 +605,9 @@ margin-top:0;
 	width:100%;
 	margin-top: 1px;
 }
+#hideable_matrix {
+	display: none;
+}
 .cell {
 	border-right: gray 1px dashed;
 	width: 177px;
@@ -632,9 +635,9 @@ margin-top:0;
 .columntitle {
 	background: url(../images/columntitlebg.gif);
 	width: 189px;
-	height: 23px;
+	height: 27px;
 	font-size: 0.9em;
-	padding-top: 7px;
+	padding-top: 3px;
 	border-right: solid 1px #ccc;
 	z-index: 4;
 	position: relative;
@@ -677,6 +680,8 @@ margin-top:0;
 	padding-left: 0px;
 }
 .leftcolumntext {
+	width: 124px;
+	padding-left: 0px;
 	font-weight: bold;
 	padding-right: 7px;
 	text-align: right;
@@ -687,9 +692,10 @@ margin-top:0;
 .leftmostcolumntitle {
 	width: 128px;
 	border-left: solid 1px #ccc;
-}
-.leftmostcolumntitle .leftcolumntext {
-    line-height: 17px;
+	padding-left: 0px;
+	font-weight: bold;
+	padding-right: 7px;
+	text-align: right;
 }
 .tabletitle {
 	font-size:0.85em;
@@ -707,6 +713,7 @@ margin-top:0;
 	text-align:center;
 	padding-top: 7px;
 	color:#0A2088;
+	line-height: 20px;
 }
 .thumbnaildetails {
 	color: #F5000B;
