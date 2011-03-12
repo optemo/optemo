@@ -2,16 +2,20 @@ class Cluster
   require 'inline'
   attr :products
   attr :rep_id
+  attr  :extended
   
-  def initialize(products, rep_id)
+  def initialize(products, rep_id, extended=false)
     @products = products # necessary?
+    @extended = extended
     #@rep_id = rep_id
     if Rails.env.development?
       Site::Application::CLUSTER_CACHE[products.hash.abs]=products
       Site::Application::CLUSTER_CACHE[rep_id.hash.abs]=rep_id
+      Site::Application::CLUSTER_CACHE[extended.hash.abs]=extended
     else
       Rails.cache.write("Cluster#{products.hash.abs}", products)
       Rails.cache.write("Cluster#{rep_id.hash.abs}", rep_id)
+      Rails.cache.write("Cluster#{extended.hash.abs}", extended)
     end
   end
   
@@ -48,28 +52,22 @@ class Cluster
         next if product_ids.empty? #In case a cluster is eliminated by the clustering algorithm
         @children << Cluster.new(product_ids,products[rep_ids[i]])
       end
-      if false #products.size<12 && @children.size<9  # extendedCluster
+      if products.size<12 && @children.size<9  # extendedCluster
         extended_ids = Kmeans.extendedCluster(10)
         if extended_ids.size > 1
-          @children << Cluster.new(extended_ids, extended_ids[0])
+          @children << Cluster.new(extended_ids, extended_ids[0], true)
           products = [] if products.nil?
           products = products + extended_ids
-          debugger
-          unless Session.search.userdataconts.empty?
-             Session.search.userdataconts.each do |se| 
-               se.min = self.min(se.name) if self.min(se.name)<se.min
-               se.max = self.max(se.name) if self.max(se.name)>se.max
-            end
-          end  
-         # unless Session.search.userdatacats.empty?
-         #   Session.search.userdatacats.each do |se| 
-         #     self.cat_vals(se.name).each{|v| |se| 
         end  
       end   
       puts("*****######!!!!!!"+(finish-start).to_s)
     end
     @children
   end
+  
+  def extended?
+    @extended
+  end  
  
   #The represetative product for this cluster, assumes nodes ordered by utility
   def representative
@@ -92,7 +90,6 @@ class Cluster
   
   def min(feature)
     if Session.continuous["cluster"].include?(feature)
-      debugger
       products.map{|p_id| ContSpec.cachemany([p_id], feature)}.flatten.min
     end  
   end  
@@ -108,12 +105,6 @@ class Cluster
       products.map{|p_id| CatSpec.cachemany([p_id], feature)}.flatten.uniq
     end
   end  
-  
-  def cat_vals(feature)
-    if Session.binary["cluster"].include?(feature)
-      products.map{|p_id| BinSpec.cachemany([p_id], feature)}.flatten.uniq
-    end
-  end
   
   def size
     products.size

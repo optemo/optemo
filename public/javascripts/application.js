@@ -798,6 +798,13 @@ optemo_module = (function (my){
     		return false;
     	});
 
+		// extended navigation action
+		$('.extendednav').live('click', function(){
+	        arguments = $(this).attr('data-adjustedfilters');
+	    	my.ajaxcall("/extended?ajax=true", arguments);
+			return false;
+		})
+		
     	// Change sort method
     	$('#sorting_method').live('change', function() {
     	    var whichSortingMethodSelected = $(this).val();
