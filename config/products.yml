@@ -136,9 +136,7 @@ camera_bestbuy:
                 cluster: 5 
             screensize:
                 type: Continuous
-                used_for: [desc, filter, cluster, show]
-                utility: 4
-                cluster: 5
+                used_for: [desc, filter, show]
             opticalzoom:
                 type: Continuous
                 used_for: [desc, filter, cluster, show]
@@ -148,6 +146,7 @@ camera_bestbuy:
                 type: Categorical
                 used_for: [show, filter, cluster]
                 utility: 5
+                prefered: [Canon, Sony, Nikon] 
             color:
                 type: Categorical
                 used_for: [show, filter]
