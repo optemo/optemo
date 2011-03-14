@@ -8,6 +8,7 @@ class Session
   cattr_accessor :product_type # Product type (camera_us, etc.), used everywhere
   cattr_accessor :piwikSiteId # Piwik Site ID, as configured in the currently-running Piwik install.
   cattr_accessor :ab_testing_type # Categorizes new users for AB testing
+  cattr_accessor :category_id
 
   def initialize (url = nil)
     # This parameter controls whether the interface features drag-and-drop comparison or not.
@@ -37,6 +38,7 @@ class Session
     self.product_type ||= 'camera_bestbuy' #Default product type
   
     product_yml = file[self.product_type]
+    self.category_id = product_yml["category_id"]
     # directLayout controls the presented view: Optemo Assist vs. Optemo Direct. 
     # Direct needs no clustering, showing all products in browseable pages and offering "group by" buttons.
     # mobileView controls screen vs. mobile view (Optemo Mobile)
