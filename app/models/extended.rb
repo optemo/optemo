@@ -1,21 +1,14 @@
-class Cluster
+class Extended
   require 'inline'
   attr :products
   attr :rep_id
-  attr  :extended
   
-  def initialize(products, rep_id, extended=false)
+  def initialize(products)
     @products = products # necessary?
-    @extended = extended
-    #@rep_id = rep_id
     if Rails.env.development?
-      Site::Application::CLUSTER_CACHE[products.hash.abs]=products
-      Site::Application::CLUSTER_CACHE[rep_id.hash.abs]=rep_id
-      Site::Application::CLUSTER_CACHE[extended.hash.abs]=extended
+     Site::Application::EXTENDED_CACHE[products.hash.abs]=products
     else
-      Rails.cache.write("Cluster#{products.hash.abs}", products)
-      Rails.cache.write("Cluster#{rep_id.hash.abs}", rep_id)
-      Rails.cache.write("Cluster#{extended.hash.abs}", extended)
+      Rails.cache.write("Extended#{products.hash.abs}", products)
     end
   end
   
@@ -25,13 +18,12 @@ class Cluster
   
   def self.cached(id)
     if Rails.env.development?
-      p_ids = Site::Application::CLUSTER_CACHE[id.to_i]
+     p_ids = Site::Application::EXTENDED_CACHE[id.to_i]
     else
-      p_ids = Rails.cache.read("Cluster#{id}")
+      p_ids = Rails.cache.read("Extended#{id}")
     end
     #Cache miss
     p_ids = SearchProduct.find_all_by_search_id(Product.initial).map(&:product_id) unless p_ids
-
     p_ids
   end
   
@@ -50,13 +42,21 @@ class Cluster
       end
       grouped_ids.each_with_index do |product_ids, i| 
         next if product_ids.empty? #In case a cluster is eliminated by the clustering algorithm
-        @children << Cluster.new(product_ids,products[rep_ids[i]])
+        @children << Cluster.new(product_ids)
       end
+      #if products.size<12 && @children.size<9  # extendedCluster
+      #  extended_ids = Kmeans.extendedCluster(10)
+      #  if extended_ids.size > 1
+      #    @children << Cluster.new(extended_ids, extended_ids[0], true)
+      #    products = [] if products.nil?
+      #    products = products + extended_ids
+      #  end  
+      #end   
       puts("*****######!!!!!!"+(finish-start).to_s)
     end
     @children
   end
-  
+    
  
   #The represetative product for this cluster, assumes nodes ordered by utility
   def representative

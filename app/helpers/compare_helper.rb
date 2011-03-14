@@ -205,7 +205,7 @@ module CompareHelper
   	else
   	  if @s.mobileView
   	    if @s.search.products_size != 0
-          for i in 0..[@s.search.cluster.numclusters,@s.numGroups].min-1
+          for i in 0...[@s.search.cluster.numclusters,@s.numGroups].min
             res << render(:partial => 'mobilebox', :locals => {:cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size>1, :representative => @s.search.cluster.children[i].representative})
           end
         else
@@ -218,12 +218,27 @@ module CompareHelper
     			  open = true
     		  end
     		  #Navbox partial to draw boxes
-    		  res << render(:partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative, :extended => @s.search.cluster.children[i].extended?, :adjustedfilters => adjustingfilters(i)})
+    		  res << render(:partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative})
           if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
             res << '</div>'
             open = false
           end
     		end
+    		if (@s.search.cluster.size < 12 && @s.search.cluster.numclusters<8)
+    		  extended_ids = Kmeans.extendedCluster(10)
+          if extended_ids.size > 1
+              @s.search.extend_it(Extended.new(extended_ids))
+              #products = [] if products.nil?
+              #products = products + extended_ids
+              i = [@s.search.cluster.numclusters,@s.numGroups].min
+    		      res << render(:partial => 'navbox', :locals => {:i => i, :extended => @s.search.extended, :group => @s.search.extended.size > 1, :product => @s.search.extended.representative, :adjustedfilters => adjustingfilters})
+  		        @s.search.extend_it(nil)
+  		        if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
+                res << '</div>'
+                open = false
+              end
+  		    end
+  		  end 
   		end
   	end
   	res << '</div>' if open && !@s.directLayout
@@ -234,18 +249,17 @@ module CompareHelper
   	res
 	end
 	
-	def adjustingfilters(pos)
+	def adjustingfilters
 	  #@s.search.userdataconts
 	  new_filters = []
-	  if @s.search.cluster.children[pos].extended?
 	    unless Session.search.userdataconts.empty?
          Session.search.userdataconts.each do |se| 
-           if @s.search.cluster.children[pos].min(se.name)<se.min  
-             new_filters << se.name + "_min=" + @s.search.cluster.children[pos].min(se.name).to_s
+           if @s.search.extended.min(se.name)<se.min  
+             new_filters << se.name + "_min=" + @s.search.extended.min(se.name).to_s
              new_filters << se.name + "_max=" + se.max.to_s
            end
-           if @s.search.cluster.children[pos].max(se.name)>se.max 
-             new_filters<<se.name + "_max=" + @s.search.cluster.children[pos].max(se.name).to_s
+           if @s.search.extended.max(se.name)>se.max 
+             new_filters<<se.name + "_max=" + @s.search.extended.max(se.name).to_s
              new_filters<<se.name + "_min=" + se.min.to_s
            end   
          end
@@ -253,14 +267,13 @@ module CompareHelper
       unless Session.search.userdatacats.empty?
         curr_feats=Session.search.userdatacats.map{|se| se.name}.uniq
         curr_feats.each do |f|
-            unless @s.search.cluster.children[pos].cat_vals(f).nil?
-              new_vals = @s.search.cluster.children[pos].cat_vals(f) - Session.search.userdatacats.map{|se| se.value if se.name==f}.uniq
+            unless @s.search.extended.cat_vals(f).nil?
+              new_vals = @s.search.extended.cat_vals(f) - Session.search.userdatacats.map{|se| se.value if se.name==f}.uniq
               new_filters << f + "=" + new_vals.join("*")
             end  
         end    
       end
-    end  
-    new_filters << "cluster_hash=" + @s.search.cluster.children[pos].id.to_s
+    new_filters << "extended_hash=" + @s.search.extended.id.to_s
     new_filters.join("&")
 	end  
 	

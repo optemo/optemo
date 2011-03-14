@@ -28,9 +28,10 @@
 
 	<div class='bottombar'>
 		<% if group %>
-		  <%if extended%>
-			<% link_text = t("products.compare.extended", :count => cluster.size)%>
+		  <%if @s.search.isextended?%>
+			<% link_text = t("products.compare.extended", :count => extended.size)%>
 			<%= link_to(link_text, "#", {:class => "extendednav", :"data-adjustedfilters" => adjustedfilters})%>
+			<%@s.search.extend_it(nil)%>
 		  <%else%>	
     	  <%if Session.continuous["cluster"].include?(@s.search.sortby)%>
     	        <%if cluster.min(@s.search.sortby)==cluster.max(@s.search.sortby)%>
