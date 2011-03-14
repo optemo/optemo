@@ -385,7 +385,7 @@
     if ft.empty?
       utilitylist = [1]*s
     else  
-      utilitylist = weighted_ft(ft, weights).map{|f| f. inject(:+)}
+      utilitylist = weighted_ft(ft, utility_weights).map{|f| f. inject(:+)}
     end  
     #if utilities are the same
     utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
@@ -450,7 +450,6 @@ end
 ## ruby function only cluster based on continuous data 
 ## ruby function does not sort by utility and don't pick the highest utility as the rep
 def self.ruby(number_clusters, specs, ft, cluster_weights, utility_weights, inits)
-  weights = [1]*specs.first.size if weights.nil?
   thresh = 0.000001
   standard_specs = self.factorize_cont_data(specs)#self.standardize_cont_data(specs)
   brand_factors = self.factorize_brand
