@@ -401,7 +401,6 @@
    # dim_per_cat = cat_specs.first.map{|f| f.size}
    
     # inistial seeds for clustering  ### just based on contiuous features
-    debugger
     inits = self.init(number_clusters, cont_specs, cluster_weights[0...dim_cont])
     #$k = Kmeans.new unless $k
     Kmeans.ruby(number_clusters, cont_specs, ft, cluster_weights[0...dim_cont], utility_weights[0...dim_cont], inits)
@@ -428,7 +427,6 @@ def self.set_cluster_weights(dim_cont, dim_bin, dim_cat)
     weights = [0.0/dim_cont]*dim_cont 
     weights[Session.continuous["cluster"].index(Session.search.sortby)] = 1
   end
-  debugger
   weights
 end
 

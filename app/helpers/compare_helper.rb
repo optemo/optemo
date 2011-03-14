@@ -224,6 +224,7 @@ module CompareHelper
             open = false
           end
     		end
+    		res << render(:partial => "extendedbox", :locals => {:i => 9, :cluster => @s.search.cluster.children[0], :product => @s.search.cluster.children[0].representative, :adjustedfilters => adjustingfilters(i)})
   		end
   	end
   	res << '</div>' if open && !@s.directLayout
