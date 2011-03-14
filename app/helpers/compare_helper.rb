@@ -230,13 +230,8 @@ module CompareHelper
               @s.search.extend_it(Extended.new(extended_ids))
               #products = [] if products.nil?
               #products = products + extended_ids
-              i = [@s.search.cluster.numclusters,@s.numGroups].min
-    		      res << render(:partial => 'navbox', :locals => {:i => i, :extended => @s.search.extended, :group => @s.search.extended.size > 1, :product => @s.search.extended.representative, :adjustedfilters => adjustingfilters})
+    		      res << render(:partial => 'extendedbox', :locals => {:i => 9, :extended => @s.search.extended, :group => @s.search.extended.size > 1, :product => @s.search.extended.representative, :adjustedfilters => adjustingfilters})
   		        @s.search.extend_it(nil)
-  		        if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
-                res << '</div>'
-                open = false
-              end
   		    end
   		  end 
   		end

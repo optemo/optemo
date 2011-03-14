@@ -338,7 +338,8 @@ optemo_module = (function (my){
 
         	// There should be at least 1 saved item, so...
         	// 1. show compare button
-        	$("#compare_button").css("display", "block");
+        	$("#compare_button").show();
+			$("#savesome").hide();
     	}
     };
 
@@ -417,7 +418,7 @@ optemo_module = (function (my){
     	if ($('#opt_savedproducts').children().length == 0)
     	{
     	    $('#savesome').show(); // This is the "save products by dropping..." message
-    		$("#compare_button").css("display", "none");
+    		$("#compare_button").hide();
 	    }
     	return false;
     }
@@ -985,43 +986,41 @@ optemo_module = (function (my){
 		function buildComparisonMatrix() {
 			var rows = [], row_class=[], savedProducts = $('#opt_savedproducts').children(), anchor = $('#hideable_matrix').empty(), heading;
 			// Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
-			//p == 0 means it's the labels
-			for (var p = 0; p <= savedProducts.length; p++) {
-			    var sku = $(savedProducts[(p == 0) ? p : p-1]).attr('data-sku');
+			//p == -1 means it's the labels
+			for (var p = -1; p < savedProducts.length; p++) {
+			    var sku = $(savedProducts[(p == -1) ? p+1 : p]).attr('data-sku');
 				// The column numbers are important here for .remove functionality.
-				if (p==0) {
-					heading = $('<div class="compare_row">').append(
-						$('<div class="outertitle leftmostoutertitle">').append(
-							$('<div class="columntitle leftmostcolumntitle" style="padding-right:3px;">').html("All Specifications")
-						)
-					).appendTo(anchor);
+				if (p==-1) {
+					heading = $('<div class="compare_row"><div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle" style="padding-right:3px;">All Specifications</div></div></div>').appendTo(anchor);
 				}
 			    else {
-					heading.append($('<div class="outertitle">').addClass("spec_column_"+p).append($('<div class="columntitle">').html("&nbsp;")));
+					heading.append('<div class="outertitle spec_column_'+p+'"><div class="columntitle">&nbsp;</div></div>');
 			    }
-			    spec_array = parse_bb_json_into_array($('body').data('bestbuy_specs_' + sku), (p == 0) ? true : false);
+			    spec_array = parse_bb_json_into_array($('body').data('bestbuy_specs_' + sku), (p == -1) ? true : false);
 				for (var s = 0; s < spec_array.length; s++) {
-					if (p==0) {
+					if (p==-1) {
 						row_class[s] = 1;
 						rows[s] = $('<div>').appendTo(anchor);
 					}
-					row_class[s] = Math.max(row_height(spec_array[s].length,(p == 0) ? true : false), row_class[s]);
+					row_class[s] = Math.max(row_height(spec_array[s].length,(p == -1) ? true : false), row_class[s]);
 					//Assign row_class on the last iteration
-					if (p == savedProducts.length) {
+					if (p == savedProducts.length-1) {
 						if (row_class[s] == 3) row_class[s] = 'triple_height_compare_row';
 						else if (row_class[s] == 2) row_class[s] = 'double_height_compare_row';
 						else row_class[s] = 'compare_row'; // row_class was 1
 						rows[s].addClass(row_class[s]);
 					}
-					$('<div class="cell">').addClass((s%2 == 0) ? 'whitebg' : 'graybg').addClass((p == 0) ? "leftcolumntext" : "").addClass("spec_column_"+p).html(spec_array[s]).append((p == 0) ? ":" : "").appendTo(rows[s]);
+					rows[s].append('<div class="cell ' + ((s%2 == 0) ? 'whitebg' : 'graybg') + " " + ((p == -1) ? "leftcolumntext spec_column_"+p : "spec_column_"+p) + '">' + spec_array[s] + ((p == -1) ? ":" : "" ) + "</div>");
 				}
 			}
 			
 			// Put the thumbnails and such at the bottom of the compare area too (in the hideable matrix)
 			var remove_row = $('#basic_matrix .compare_row:first');
-			remove_row.clone().appendTo(anchor);
-			remove_row.next().clone().appendTo(anchor);
-			remove_row.next().next().clone().find('.leftmostcolumntitle').empty().end().appendTo(anchor);
+			anchor.append(
+				remove_row.clone(),
+				remove_row.next().clone(),
+				remove_row.next().next().clone().find('.leftmostcolumntitle').empty().end()
+			);
 		}
 
         $('.saveditem .deleteX').live('click', function() {
@@ -1561,7 +1560,8 @@ jQuery(document).ready(function($){
 		}
 		// There should be at least 1 saved item, so...
 		// 1. show compare button
-		$("#compare_button").css("display", "block");
+		$("#compare_button").show();
+		$("#savesome").hide();
 	}
 
 	// Only load DBinit if it will not be loaded by the upcoming ajax call

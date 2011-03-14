@@ -1,0 +1,38 @@
+<div id="extended_box" class="navigator_box rounded rounded_bd" <%= ("style='margin-right:0px'" if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1) %>>
+	<h2 style="text-align: center;">
+		Other Products To Consider
+	</h2>
+	<div class="topbar">
+		<% if @s.dragAndDropEnabled %>
+				<div class="image_boundingbox">
+				<%= image_tag('hand_and_arrow.gif', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
+		<% end %>
+		<%= image_tag(CatSpec.cache_all(product.id)["img150url"], :class => "productimg", :alt => product.small_title, :title => product.small_title) %>
+		<% if @s.dragAndDropEnabled %>
+			</div>
+		<% end %>
+		<div class="productinfo">
+			<%= link_to product.small_title, product_path(:name => product.descurl, :id => product.id), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => "Click for product specifications" %>
+		
+			<div class="price">
+				<% if BinSpec.cache_all(product.id)["onsale"] %>
+					On Sale: $<%= "%.2f" % ContSpec.cache_all(product.id)["saleprice"] %>
+				<% else %>
+					$<%= "%.2f" % ContSpec.cache_all(product.id)["price"] %>
+				<% end %>
+			</div>
+			<div class="productspecs"><%= featuretext(product.id) %></div>
+		</div>
+	</div>
+	<div class="filterchange">
+		<p>Adjustments to your search:</p>
+		<ul>
+			<li>Maximum Price: $210</li>
+			<li>Color: red</li>
+		</ul>
+	</div>
+	<div class='bottombar sim'>
+		<% link_text = cluster.size.to_s + " Other Choices"%>
+		<%= link_to(link_text, "#", {:class => "extendednav", :"data-adjustedfilters" => adjustedfilters})%>
+	</div>
+</div>

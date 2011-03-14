@@ -68,10 +68,18 @@ img.productimg {
 }
 
 .topbar {
-    height: 159px;
-    display: inline;
+    /*height: 159px;
+    display: inline;*/
+	float: left;
 }
 .bottombar {
+}
+.filterchange {
+	text-align: left;
+	padding-right: 4px;
+}
+.filterchange ul {
+	margin-left: 140px;
 }
 .sim {
 	height: 35px;
@@ -86,6 +94,14 @@ img.productimg {
 .sim a img {
 	vertical-align: middle;
 	padding-right: 5px;
+}
+
+#extended_box {
+	width: auto;
+	border: 3px solid #D99741;
+}
+#extended_box h2 {
+	background-color: #D99741;
 }
 
 /*--------------------------------------//
