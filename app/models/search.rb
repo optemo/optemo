@@ -310,6 +310,9 @@ class Search < ActiveRecord::Base
       #Browse similar button
       @myproducts = Cluster.cached(p["cluster_hash"]) # current products
       duplicateFeatures(old_search)
+    when "extended"
+      @myproducts = Cluster.cached(p["cluster_hash"]) # current products
+       createFeatures(p,old_search)
     when "nextpage"
       #the next page button has been clicked
       self.page = p[:page]
@@ -367,7 +370,7 @@ class Search < ActiveRecord::Base
       end
     end
   end
-  
+   
   def createFeatures(p,old_search)
     #seperate myfilter into various parts
     @userdataconts = []

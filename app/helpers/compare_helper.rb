@@ -218,7 +218,7 @@ module CompareHelper
     			  open = true
     		  end
     		  #Navbox partial to draw boxes
-    		  res << render(:partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative})
+    		  res << render(:partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative, :extended => @s.search.cluster.children[i].extended?, :adjustedfilters => adjustingfilters(i)})
           if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
             res << '</div>'
             open = false
@@ -233,6 +233,36 @@ module CompareHelper
   	end
   	res
 	end
+	
+	def adjustingfilters(pos)
+	  #@s.search.userdataconts
+	  new_filters = []
+	  if @s.search.cluster.children[pos].extended?
+	    unless Session.search.userdataconts.empty?
+         Session.search.userdataconts.each do |se| 
+           if @s.search.cluster.children[pos].min(se.name)<se.min  
+             new_filters << se.name + "_min=" + @s.search.cluster.children[pos].min(se.name).to_s
+             new_filters << se.name + "_max=" + se.max.to_s
+           end
+           if @s.search.cluster.children[pos].max(se.name)>se.max 
+             new_filters<<se.name + "_max=" + @s.search.cluster.children[pos].max(se.name).to_s
+             new_filters<<se.name + "_min=" + se.min.to_s
+           end   
+         end
+      end  
+      unless Session.search.userdatacats.empty?
+        curr_feats=Session.search.userdatacats.map{|se| se.name}.uniq
+        curr_feats.each do |f|
+            unless @s.search.cluster.children[pos].cat_vals(f).nil?
+              new_vals = @s.search.cluster.children[pos].cat_vals(f) - Session.search.userdatacats.map{|se| se.value if se.name==f}.uniq
+              new_filters << f + "=" + new_vals.join("*")
+            end  
+        end    
+      end
+    end  
+    new_filters << "cluster_hash=" + @s.search.cluster.children[pos].id.to_s
+    new_filters.join("&")
+	end  
 	
 	def getDist(feat)
     unless defined? @dist
