@@ -24,15 +24,19 @@
 			<div class="productspecs"><%= featuretext(product.id) %></div>
 		</div>
 	</div>
-	<div class="filterchange">
-		<p>Adjustments to your search:</p>
-		<ul>
-			<li>Maximum Price: $210</li>
-			<li>Color: red</li>
-		</ul>
-	</div>
-	<div class='bottombar sim'>
-		<% link_text = cluster.size.to_s + " Other Choices"%>
+	<%unless filter_hash.empty?%>
+		<div class="filterchange">
+			<p>Adjustments to your search:</p>
+			<ul>
+			<%filter_hash.each do |k,v|%>	
+				<li><%=k +" :" + v.to_s%></li>
+			<%end%>		
+			</ul>
+		</div>
+	<%end%>	
+	<div class='bottombar sim'>		
+		<% link_text = extended.size.to_s + " Other Choices"%>
 		<%= link_to(link_text, "#", {:class => "extendednav", :"data-adjustedfilters" => adjustedfilters})%>
+			<%@s.search.extend_it(nil)%>
 	</div>
 </div>

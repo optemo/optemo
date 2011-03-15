@@ -43,15 +43,7 @@ class Extended
       grouped_ids.each_with_index do |product_ids, i| 
         next if product_ids.empty? #In case a cluster is eliminated by the clustering algorithm
         @children << Cluster.new(product_ids)
-      end
-      #if products.size<12 && @children.size<9  # extendedCluster
-      #  extended_ids = Kmeans.extendedCluster(10)
-      #  if extended_ids.size > 1
-      #    @children << Cluster.new(extended_ids, extended_ids[0], true)
-      #    products = [] if products.nil?
-      #    products = products + extended_ids
-      #  end  
-      #end   
+      end  
       puts("*****######!!!!!!"+(finish-start).to_s)
     end
     @children
