@@ -73,6 +73,7 @@ img.productimg {
 	float: left;
 }
 .bottombar {
+	clear: left;
 }
 .filterchange {
 	text-align: left;

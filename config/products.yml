@@ -118,9 +118,6 @@ camera_bestbuy:
     layout: assist
     specs:
         General:
-            category:
-                type: Categorical
-                used_for: [show, filter]
             price:
                 type: Continuous
                 used_for: [filter, cluster, show]
