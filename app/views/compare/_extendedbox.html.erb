@@ -1,6 +1,6 @@
-<div id="extended_box" class="navigator_box rounded rounded_bd" <%= ("style='margin-right:0px'" if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1) %>>
+<div id="extended_box" class="navigator_box rounded rounded_bd" style="<%= ("margin-right:0px " if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1) %><%= filter_hash.empty? ? "width:177px;" : "width:364px;" %>">
 	<h2 style="text-align: center;">
-		Other Products To Consider
+		Other cameras to consider
 	</h2>
 	<div class="topbar">
 		<% if @s.dragAndDropEnabled %>
