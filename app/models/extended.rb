@@ -81,8 +81,14 @@ class Extended
     end  
   end
   
+  def cont_vals(feature)
+    if Session.Continuous["filter"].include?(feature) 
+      products.map{|p_id| ContSpec.cachemany([p_id], feature)}.flatten.uniq
+    end
+  end
+  
   def cat_vals(feature)
-    if Session.categorical["cluster"].include?(feature) 
+    if Session.categorical["filter"].include?(feature) 
       products.map{|p_id| CatSpec.cachemany([p_id], feature)}.flatten.uniq
     end
   end  

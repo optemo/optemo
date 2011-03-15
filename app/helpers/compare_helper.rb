@@ -263,7 +263,7 @@ module CompareHelper
         curr_feats=Session.search.userdatacats.map{|se| se.name}.uniq
         curr_feats.each do |f|
             unless @s.search.extended.cat_vals(f).nil?
-              new_vals = @s.search.extended.cat_vals(f) - Session.search.userdatacats.map{|se| se.value if se.name==f}.uniq
+              new_vals = @s.search.extended.cat_vals(f) 
               new_filters << f + "=" + new_vals.join("*")
             end  
         end    
@@ -278,12 +278,10 @@ module CompareHelper
 	    unless Session.search.userdataconts.empty?
          Session.search.userdataconts.each do |se| 
            if @s.search.extended.min(se.name)<se.min  
-             new_filters[se.name + "_min"] = @s.search.extended.min(se.name)
-             new_filters[se.name + "_max"] = se.max
+             new_filters["Minimum " + se.name] = @s.search.extended.min(se.name)
            end
            if @s.search.extended.max(se.name)>se.max 
-             new_filters[se.name + "_max"] =@s.search.extended.max(se.name)
-             new_filters[se.name + "_min"]= se.min
+             new_filters["Maximum " + se.name] =@s.search.extended.max(se.name)
            end   
          end
       end  
@@ -291,8 +289,8 @@ module CompareHelper
         curr_feats=Session.search.userdatacats.map{|se| se.name}.uniq
         curr_feats.each do |f|
             unless @s.search.extended.cat_vals(f).nil?
-              new_vals = @s.search.extended.cat_vals(f) - Session.search.userdatacats.map{|se| se.value if se.name==f}.uniq
-              new_filters[f]= new_vals.join("*")
+              new_vals = @s.search.extended.cat_vals(f) - Session.search.userdatacats.map{|se| se.value if se.name==f}.uniq  
+              new_filters[f]= "All "+f+"s" unless new_vals.empty?
             end  
         end    
       end
