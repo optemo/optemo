@@ -99,6 +99,7 @@ img.productimg {
 #extended_box {
 	width: auto;
 	border: 3px solid #D99741;
+	margin-right:0;
 }
 #extended_box h2 {
 	background-color: #D99741;
