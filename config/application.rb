@@ -40,5 +40,6 @@ module Site
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
     CLUSTER_CACHE = {}
+    EXTENDED_CACHE = {}
   end
 end

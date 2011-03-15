@@ -14,6 +14,7 @@ class Search < ActiveRecord::Base
       @userdatabins ||= Userdatabin.find_all_by_search_id(id)
   end
   
+  
   #Range of product offerings
   def ranges(featureName)
      @sRange ||= {}
@@ -154,6 +155,16 @@ class Search < ActiveRecord::Base
     @cluster ||= Cluster.new(products, products[0])
   end
   
+  def isextended?
+    !@extended.nil?
+  end  
+  
+  def extend_it(extended_obj=nil)
+    @extended = extended_obj unless extended_obj.nil?
+  end  
+  def extended
+      @extended ||= Extended.new(products)
+  end
   #Sets to use the initial products and checks whether they're in the database
   def initial_products
     products_id = Product.initial
@@ -310,6 +321,9 @@ class Search < ActiveRecord::Base
       #Browse similar button
       @myproducts = Cluster.cached(p["cluster_hash"]) # current products
       duplicateFeatures(old_search)
+    when "extended"
+      @myproducts = Extended.cached(p["extended_hash"]) # current products
+       createFeatures(p,old_search)
     when "nextpage"
       #the next page button has been clicked
       self.page = p[:page]
@@ -367,7 +381,7 @@ class Search < ActiveRecord::Base
       end
     end
   end
-  
+   
   def createFeatures(p,old_search)
     #seperate myfilter into various parts
     @userdataconts = []

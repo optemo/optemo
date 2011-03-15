@@ -205,7 +205,7 @@ module CompareHelper
   	else
   	  if @s.mobileView
   	    if @s.search.products_size != 0
-          for i in 0..[@s.search.cluster.numclusters,@s.numGroups].min-1
+          for i in 0...[@s.search.cluster.numclusters,@s.numGroups].min
             res << render(:partial => 'mobilebox', :locals => {:cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size>1, :representative => @s.search.cluster.children[i].representative})
           end
         else
@@ -224,6 +224,16 @@ module CompareHelper
             open = false
           end
     		end
+    		if (@s.search.cluster.size < 12 && @s.search.cluster.numclusters<8)
+    		  extended_ids = Kmeans.extendedCluster(10)
+          if extended_ids.size > 1
+              @s.search.extend_it(Extended.new(extended_ids))
+              @products = [] if @products.nil?
+              @products = @products + extended_ids
+    		      res << render(:partial => 'extendedbox', :locals => {:i => 9, :extended => @s.search.extended, :group => @s.search.extended.size > 1, :product => @s.search.extended.representative, :filter_hash => adjustingfilters_hash, :adjustedfilters => adjustingfilters})
+  		        @s.search.extend_it(nil)
+  		    end
+  		  end 
   		end
   	end
   	res << '</div>' if open && !@s.directLayout
@@ -232,6 +242,59 @@ module CompareHelper
     	res << pagination_line unless pagination_line.nil?
   	end
   	res
+	end
+	
+	def adjustingfilters
+	  #@s.search.userdataconts
+	  new_filters = []
+	    unless Session.search.userdataconts.empty?
+         Session.search.userdataconts.each do |se| 
+           if @s.search.extended.min(se.name)<se.min  
+             new_filters << se.name + "_min=" + @s.search.extended.min(se.name).to_s
+             new_filters << se.name + "_max=" + se.max.to_s
+           end
+           if @s.search.extended.max(se.name)>se.max 
+             new_filters<<se.name + "_max=" + @s.search.extended.max(se.name).to_s
+             new_filters<<se.name + "_min=" + se.min.to_s
+           end   
+         end
+      end  
+      unless Session.search.userdatacats.empty?
+        curr_feats=Session.search.userdatacats.map{|se| se.name}.uniq
+        curr_feats.each do |f|
+            unless @s.search.extended.cat_vals(f).nil?
+              new_vals = @s.search.extended.cat_vals(f) 
+              new_filters << f + "=" + new_vals.join("*")
+            end  
+        end    
+      end
+    new_filters << "extended_hash=" + @s.search.extended.id.to_s
+    new_filters.join("&")
+	end  
+	
+	def adjustingfilters_hash
+	  #@s.search.userdataconts
+	  new_filters = {}
+	    unless Session.search.userdataconts.empty?
+         Session.search.userdataconts.each do |se| 
+           if @s.search.extended.min(se.name)<se.min  
+             new_filters["Minimum " + se.name] = @s.search.extended.min(se.name)
+           end
+           if @s.search.extended.max(se.name)>se.max 
+             new_filters["Maximum " + se.name] =@s.search.extended.max(se.name)
+           end   
+         end
+      end  
+      unless Session.search.userdatacats.empty?
+        curr_feats=Session.search.userdatacats.map{|se| se.name}.uniq
+        curr_feats.each do |f|
+            unless @s.search.extended.cat_vals(f).nil?
+              new_vals = @s.search.extended.cat_vals(f) - Session.search.userdatacats.map{|se| se.value if se.name==f}.uniq  
+              new_filters[f]= "All "+f+"s" unless new_vals.empty?
+            end  
+        end    
+      end
+    new_filters 
 	end
 	
 	def getDist(feat)

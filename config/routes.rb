@@ -62,6 +62,7 @@ Site::Application.routes.draw do
   match "comparison/:id" => "direct_comparison#index" #This should be cleaned up to a POST instead of a GET in JS
   match "product/:name/:id" => "compare#show", :as => "product"
   match "similar/:id" => "compare#sim", :id => /\d+/, :as => "cluster"
+  match "extended" => "compare#extended"
   match "filtering" => "compare#filtering"
   match "groupby/:feat" => "compare#groupby"
   match "sitemap" => "compare#sitemap"

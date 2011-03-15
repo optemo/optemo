@@ -47,6 +47,12 @@ class CompareController < ApplicationController
     correct_render
   end
 
+  def extended
+    params["action_type"]= "extended"
+    classVariables(Search.create(params))
+    correct_render 
+  end  
+  
   def create
     #Narrow the product search through filters
     if params[:myfilter].nil?

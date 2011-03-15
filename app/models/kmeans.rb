@@ -362,7 +362,8 @@
   dim_cont = Session.continuous["cluster"].size
   dim_bin = Session.binary["cluster"].size
   dim_cat = Session.categorical["cluster"].size
-  weights = self.set_weights(dim_cont, 0, 0)
+  cluster_weights = self.set_cluster_weights(dim_cont, 0, 0)
+  utility_weights = self.set_utility_weights(dim_cont, 0, 0)
   s = p_ids.size
   ft = [] 
   # don't need to cluster if number of products is less than clusters
@@ -384,7 +385,7 @@
     if ft.empty?
       utilitylist = [1]*s
     else  
-      utilitylist = weighted_ft(ft, weights).map{|f| f. inject(:+)}
+      utilitylist = weighted_ft(ft, utility_weights).map{|f| f. inject(:+)}
     end  
     #if utilities are the same
     utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
@@ -395,14 +396,14 @@
  
     performance_weight = 2
     #weights = weights << performance_weight
-    weight_dim = dim_cont+dim_bin+dim_cat+1
+    weight_dim = dim_cont #+dim_bin+dim_cat+1
     # dimension of each category - for example how many different brands 
-    dim_per_cat = cat_specs.first.map{|f| f.size}
+   # dim_per_cat = cat_specs.first.map{|f| f.size}
    
     # inistial seeds for clustering  ### just based on contiuous features
-    inits = self.init(number_clusters, cont_specs, weights[0...dim_cont])
+    inits = self.init(number_clusters, cont_specs, cluster_weights[0...dim_cont])
     #$k = Kmeans.new unless $k
-    Kmeans.ruby(number_clusters, cont_specs, ft, weights[0...dim_cont], inits)
+    Kmeans.ruby(number_clusters, cont_specs, ft, cluster_weights[0...dim_cont], utility_weights[0...dim_cont], inits)
     
 end
 
@@ -416,25 +417,40 @@ def self.init(number_clusters, specs, weights)
   centers.map{|c| specs.index(c)} 
 end
 
-def self.set_weights(dim_cont, dim_bin, dim_cat)
-  dim = dim_cont+dim_bin+dim_cat
+def self.set_cluster_weights(dim_cont, dim_bin, dim_cat)
+  weights = []
   if Session.search.sortby.nil? || Session.search.sortby == "relevance"
-      weights = [1.0/dim]*dim
+    Session.continuous["cluster"].each{|f| weights << Session.cluster_weight[f]}
+    weights_sum = weights.sum
+    weights.map{|w| w/weights.sum.to_f}
   else
-    weights = [0.0/dim]*dim 
+    weights = [0.0/dim_cont]*dim_cont 
     weights[Session.continuous["cluster"].index(Session.search.sortby)] = 1
   end
-  weights                         
+  weights
 end
 
+
+def self.set_utility_weights(dim_cont, dim_bin, dim_cat)
+  weights = []
+  if Session.search.sortby.nil? || Session.search.sortby == "relevance"
+    Session.continuous["cluster"].each{|f| weights << Session.utility_weight[f] if Session.utility_weight[f]}
+    weights_sum = weights.sum
+    weights.map{|w| w/weights.sum.to_f}
+  else
+    weights = [0.0/dim_cont]*dim_cont 
+    weights[Session.continuous["cluster"].index(Session.search.sortby)] = 1
+  end
+  weights  
+end
 
 # regular kmeans function     
 ## ruby function only cluster based on continuous data 
 ## ruby function does not sort by utility and don't pick the highest utility as the rep
-def self.ruby(number_clusters, specs, ft, weights, inits)
-  weights = [1]*specs.first.size if weights.nil?
+def self.ruby(number_clusters, specs, ft, cluster_weights, utility_weights, inits)
   thresh = 0.000001
   standard_specs = self.factorize_cont_data(specs)#self.standardize_cont_data(specs)
+  brand_factors = self.factorize_brand
   #mean_1 = self.seed(number_clusters, specs)
   mean_1 = inits.map{|i| standard_specs[i]}
   mean_2 =[]
@@ -444,7 +460,7 @@ def self.ruby(number_clusters, specs, ft, weights, inits)
    mean_2 = mean_1 
    standard_specs.each_index do |i| 
      mean_1.each_index do |c|
-       dif[c] = self.distance(standard_specs[i], mean_1[c], weights)
+       dif[c] = self.distance(standard_specs[i], mean_1[c], cluster_weights)
      end
      labels[i] = dif.index(dif.min)
    end 
@@ -455,7 +471,7 @@ def self.ruby(number_clusters, specs, ft, weights, inits)
       mean_1[c] = [0]*specs.first.size if mean_1[c].nil?
       mean_2[c] = [0]*specs.first.size if mean_2[c].nil?
       debugger if mean_2[c].nil?
-      z+=self.distance(mean_1[c], mean_2[c], weights)
+      z+=self.distance(mean_1[c], mean_2[c], cluster_weights)
    end    
   end while z > thresh
    # postprocessing if one cluster is collapsed
@@ -464,7 +480,7 @@ def self.ruby(number_clusters, specs, ft, weights, inits)
    end
   reps = [];
   #utility ordering
-  utilitylist = weighted_ft(ft, weights).map{|f| f. inject(:+)}  
+  utilitylist = weighted_ft(ft.each_with_index{|f, i| f<<brand_factors[i]}, utility_weights+[0.1]).map{|f| f. inject(:+)}  
   grouped_utilities = group_by_labels(utilitylist, labels).map{|g| g.inject(:+)/g.length}
   sorted_group_utilities = grouped_utilities.sort{|x,y| y<=>x}
   sorted_labels = []
@@ -540,6 +556,9 @@ end
     end  
     factors.transpose
   end  
+  def self.factorize_brand #(specs)
+    ContSpec.by_feat("brand_factor")
+  end
   #   
   def self.standardize_cont_data(specs)
     mean_all = mean(specs)
@@ -558,6 +577,31 @@ end
     var
   end
   
+  def self.extendedCluster(num)
+    all_ids = SearchProduct.find_all_by_search_id(Product.initial).map(&:product_id)
+    curr_ids = Session.search.products
+    other_ids = all_ids - curr_ids
+    curr_specs= Session.continuous["cluster"].map{|f| ContSpec.by_feat(f+"_factor")}.transpose
+    all_specs = all_ids.map{|id| Session.continuous["cluster"].map{|f| ContSpec.cache_all(id)[f+"_factor"]}}
+    other_specs =  all_specs - curr_specs
+    better_specs = []
+    better_ids = []
+    better_specs = []
+    min_utility = ContSpec.cachemany(curr_ids, "utility").min
+    other_specs.each_with_index do |s, i|
+      if ContSpec.cachemany([other_ids[i]], "utility").first>min_utility
+        better_ids << other_ids[i]
+        better_specs <<  s
+      end  
+    end  
+    dists = []
+    dim = all_specs.first.size
+    better_specs.each{|s2| dists<< curr_specs.map{|s1| self.distance(s1,s2, [1.0/dim]*dim)}.inject(:+)}           
+    better_products_hash = Hash[better_ids.zip(dists)]
+    
+    close_products = better_products_hash.sort{|a,b| a[1] <=> b[1]}[0...num].map{|k, v| k}
+  end
+
 
   def self.weighted_ft(ft, weights)
     weighted_ft=[]

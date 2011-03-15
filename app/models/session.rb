@@ -2,12 +2,13 @@ class Session
   # products.yml gets parsed below, initializing these variables.
   cattr_accessor :id, :search  # Basic individual data. These are not set in initialization.
   cattr_accessor :directLayout, :mobileView  # View choice (Assist vs. Direct, mobile view vs. computer view)
-  cattr_accessor :continuous, :binary, :categorical, :binarygroup  # Caching of features' names
-  cattr_accessor :prefDirection, :maximum, :minimum  # Stores which preferences are 'lower is better' vs. normal; used in sorting, plus some attribute globals
+  cattr_accessor :continuous, :binary, :categorical, :binarygroup, :prefered  # Caching of features' names
+  cattr_accessor :prefDirection, :maximum, :minimum, :utility_weight, :cluster_weight  # Stores which preferences are 'lower is better' vs. normal; used in sorting, plus some attribute globals
   cattr_accessor :dragAndDropEnabled, :relativeDescriptions, :numGroups  # These flags should probably be stripped back out of the code eventually
   cattr_accessor :product_type # Product type (camera_us, etc.), used everywhere
   cattr_accessor :piwikSiteId # Piwik Site ID, as configured in the currently-running Piwik install.
   cattr_accessor :ab_testing_type # Categorizes new users for AB testing
+  cattr_accessor :category_id
 
   def initialize (url = nil)
     # This parameter controls whether the interface features drag-and-drop comparison or not.
@@ -24,6 +25,9 @@ class Session
     self.binary = Hash.new{|h,k| h[k] = []}
     self.categorical = Hash.new{|h,k| h[k] = []}
     self.binarygroup = Hash.new{|h,k| h[k] = []}
+    self.prefered = Hash.new{|h,k| h[k] = []}
+    self.utility_weight = Hash.new(1)
+    self.cluster_weight = Hash.new(1)
     file = YAML::load(File.open("#{Rails.root}/config/products.yml"))
     file.each_pair do |product_type,d|
       if d["url"].keys.include? url
@@ -34,6 +38,7 @@ class Session
     self.product_type ||= 'camera_bestbuy' #Default product type
   
     product_yml = file[self.product_type]
+    self.category_id = product_yml["category_id"]
     # directLayout controls the presented view: Optemo Assist vs. Optemo Direct. 
     # Direct needs no clustering, showing all products in browseable pages and offering "group by" buttons.
     # mobileView controls screen vs. mobile view (Optemo Mobile)
@@ -61,8 +66,12 @@ class Session
         when "Categorical"
           atts["used_for"].each{|flag| self.categorical[flag] << feature}
           self.categorical["all"] << feature #Keep track of all features
+          self.prefered[feature] = atts["prefered"] if atts["prefered"]
         end
+         self.utility_weight[feature] = atts["utility"] if atts["utility"]
+         self.cluster_weight[feature] = atts["cluster"] if atts["cluster"]
       end
+     
     end
 	end
 
