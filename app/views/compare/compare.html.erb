@@ -1,5 +1,6 @@
 <% self.title = "#{@s.product_type.capitalize}" unless @indexload %>
 <% main_window = render :partial => 'discoverybrowser' unless @indexload %>
+<div class="left-right-wrapper">
 <div id="leftbar">
 	<!-- The sortby dropdown box -->
 	<div id="sortby" class="leftboxes">
@@ -40,5 +41,6 @@
 	<% else %>
 		<%= main_window %>
 	<% end %>
+</div>
 </div>
 <div id="loading"><div id="myspinner" style="float: left;"></div><div style="margin: 7px 0px 0px 60px;">Loading</div></div>

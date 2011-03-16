@@ -15,7 +15,12 @@
  
 div#main {
 	width: 560px;
-	margin-left: 190px;
+	float: right;
+}
+
+.left-right-wrapper {
+	clear: both;
+	overflow: hidden;
 }
 
  #columnheader {
@@ -68,19 +73,20 @@ img.productimg {
 }
 
 .topbar {
-    /*height: 159px;
-    display: inline;*/
-	float: left;
 	width: 181px;
 }
 .bottombar {
 	clear: left;
 }
-.filterchange {
-	text-align: left;
-	padding-right: 4px;
+#extended_box .topbar {
 	float: left;
-	width: 179px;
+}
+#extended_box p {
+	margin:15px 0 10px 0;
+}
+.filterchange {
+	text-align: center;
+	padding-right: 4px;
 }
 .filterchange ul {
 	padding-left: 20px;
