@@ -71,6 +71,7 @@ img.productimg {
     /*height: 159px;
     display: inline;*/
 	float: left;
+	width: 181px;
 }
 .bottombar {
 	clear: left;
@@ -78,9 +79,11 @@ img.productimg {
 .filterchange {
 	text-align: left;
 	padding-right: 4px;
+	float: left;
+	width: 179px;
 }
 .filterchange ul {
-	margin-left: 140px;
+	padding-left: 20px;
 }
 .sim {
 	height: 35px;
