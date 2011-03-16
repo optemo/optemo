@@ -480,7 +480,7 @@ def self.ruby(number_clusters, specs, ft, cluster_weights, utility_weights, init
    end
   reps = [];
   #utility ordering
-  utilitylist = weighted_ft(ft.each_with_index{|f, i| f<<brand_factors[i]}, utility_weights+[0.1]).map{|f| f. inject(:+)}  
+  utilitylist = weighted_ft(ft.each_with_index{|f, i| f<<brand_factors[i]}, utility_weights+[1]).map{|f| f. inject(:+)}  
   grouped_utilities = group_by_labels(utilitylist, labels).map{|g| g.inject(:+)/g.length}
   sorted_group_utilities = grouped_utilities.sort{|x,y| y<=>x}
   sorted_labels = []
