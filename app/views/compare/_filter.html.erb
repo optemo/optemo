@@ -33,7 +33,9 @@
 			</div>
 		<% else %>
 			<% dobjs = Userdatacat.find_all_by_search_id_and_name(@s.search.id,feat) %>
-			<% SearchProduct.cat_counts(feat,true).each_pair do |k,available_count| %>
+			<%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
+			<% optionlist = SearchProduct.cat_counts(feat,true).to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? -a[1]-1000000 : -a[1]) <=> (chosen_cats.include?(b[0]) ? -b[1]-1000000 : -b[1])} %>
+			<% optionlist.each do |k,available_count| %>
   			<div class='label' data-position="<%= i %>">
 	  			<%= render :partial => 'desc', :locals => {:feat => feat} %>
 	  			<% dobj = dobjs.select{|ud|ud.value == k}.first %>
