@@ -64,14 +64,13 @@
   			<%= render :partial => 'desc', :locals => {:feat => feat} %>
   			<% dobj = Userdatabin.find_by_search_id_and_name(@s.search.id,feat) %>
 			<% available_count = SearchProduct.bin_count(feat) %>
-			<div class="filterbutton"><%= t("#{Session.product_type}.specs.#{feat}.name") %></div>
-  			<!--%= check_box('myfilter', feat, :disabled => (available_count == 0) ? true : false, :checked => (dobj.nil? || dobj.value == false) ? false : 'checked', :class => 'binary_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false')%>
+  			<%= check_box('myfilter', feat, :disabled => (available_count == 0) ? true : false, :checked => (dobj.nil? || dobj.value == false) ? false : 'checked', :class => 'binary_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false')%>
   			<%= link_to t("#{Session.product_type}.specs.#{feat}.name"), "#", :rel => "nofollow" %>
-			(<%= available_count %>)-->
+			(<%= available_count %>)
   		</div>
   	</div>
   	<% i = i + 1 %>	
-  <% end if false%>
+  <% end %>
   <% @s.binarygroup.each_pair do |heading,features| %>
 	<div class="label"><a href="#"><%= heading %></a></div>
 	<% features.each do |feat| %>
@@ -82,7 +81,7 @@
 		</div>
   	<% i = i + 1 %>
 	<% end %>
-  <% end %>
+  <% end if false%>
   <%= hidden_field_tag 'myfilter[search_hist]', @s.search.id %>
 <% end %>
 <div style="clear:both;"><!-- --></div>
