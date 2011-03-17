@@ -27,7 +27,7 @@ class ContSpec < ActiveRecord::Base
     CachingMemcached.cache_lookup("#{Session.product_type}MinMax-#{feat}") do
       #all = ContSpec.allspecs(feat)
       all = ContSpec.initial_specs(feat)
-      [all.min,all.max]
+      [all.compact.min,all.compact.max]
     end
   end
 
