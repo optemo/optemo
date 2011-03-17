@@ -432,10 +432,10 @@ optemo_module = (function (my){
     // Submit a categorical filter, e.g. brand.
     function submitCategorical(){
         var arguments_to_send = [];
-        arguments = $("#filter_form").serialize().split("&");
+        var arguments = $("#filter_form").serialize().split("&");
         for (i=0; i<arguments.length; i++)
         {
-            if (!(arguments[i].match(/^superfluous/)))
+            if (!(arguments[i].match(/(^superfluous|=$)/)))
                 arguments_to_send.push(arguments[i]);
         }
     	my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
@@ -1140,6 +1140,23 @@ optemo_module = (function (my){
     		var box_value = $(this).attr('checked') ? 100 : 0;
     		my.loading_indicator_state.sidebar = true;
     		my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox});
+    		submitCategorical();
+    	});
+
+		// Checkboxes -- submit
+    	$('.cat_filter').live('click', function() {
+    		var whichcat = $(this).attr('data-feat');
+			var feat_obj = $('#myfilter_'+whichcat);
+    		if ($(this).attr('checked'))
+			{	//Uncheck action
+				feat_obj.val(opt_appendStringWithToken(feat_obj.val(), $(this).attr('data-opt'), '*'));
+			}
+			else
+			{	//Check selection
+				feat_obj.val(opt_removeStringWithToken(feat_obj.val(), $(this).attr('data-opt'), '*'));
+			}
+    		my.loading_indicator_state.sidebar = true;
+    		my.trackPage('goals/filter/checkbox', {'feature_name' : whichcat});
     		submitCategorical();
     	});
 
