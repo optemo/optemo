@@ -234,14 +234,13 @@ optemo_module = (function (my){
     	//IE Compatibility
     	var iebody=(document.compatMode && document.compatMode != "BackCompat")? document.documentElement : document.body,
     	dsoctop=document.all? iebody.scrollTop : pageYOffset;
-    	$('#info').html("").css('height', '566px');
-    	$('#inside_of_outsidecontainer').css('height', '566px');
-    	$('#outsidecontainer').css({'left' : ((document.body.clientWidth-(width||560))/2)+'px',
+		var outsidecontainer = $('#outsidecontainer');
+		if (outsidecontainer.css('display') != 'block') 
+			$('#info').html("").css('height',"560px");
+    	outsidecontainer.css({'left' : ((document.body.clientWidth-(width||560))/2)+'px',
     								'top' : (dsoctop+5)+'px',
     								'width' : width||560,
-    								'height' : height||770,
     								'display' : 'inline' });
-
         /* This is used to get the document height for doing layout properly. */
         /*http://james.padolsey.com/javascript/get-document-height-cross-browser/*/
         // As of jQuery 1.5, there is probably a better way of doing this, maybe just calling $('body').height() even.
@@ -261,8 +260,7 @@ optemo_module = (function (my){
     	$('#silkscreen').css({'height' : current_height+'px', 'display' : 'inline'});
     	$('.selectboxfilter').css('visibility', 'hidden');
     	if (data) {
-    		$('#info').html(data)
-    		$('#info').css('height','');
+    		$('#info').html(data).css('height','');
     	} else {
     	    my.quickajaxcall('#info', url, function(){
     	        if (url.match(/\/product/)) {
@@ -296,9 +294,7 @@ optemo_module = (function (my){
     	            my.DBinit();
     	            $('#outsidecontainer').css('width','');
                 }
-    	        $('#outsidecontainer').css('height', ''); // Take height off - it was useful for loading so that we'd see a box, but now the element can auto-size
-    	        $('#inside_of_outsidecontainer').css('height', '');
-                $('#info').css('height', '');
+				$('#info').css("height",'');
 				if (f) {
 					f();
 				}
