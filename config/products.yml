@@ -165,7 +165,17 @@ camera_bestbuy:
             toprated:
                 type: Binary
                 used_for: [filter]
-        Ease of Use:
+        Video Resolution:
+            videoresolution720:
+                type: Binary
+                used_for: [filter]
+            videoresolution1080:
+                type: Binary
+                used_for: [filter]
+        New Technology:
+            hdmi:
+                type: Binary
+                used_for: [filter]
             touchscreen:
                 type: Binary
                 used_for: [filter]
@@ -175,20 +185,6 @@ camera_bestbuy:
             waterproof:
                 type: Binary
                 used_for: [show, filter]
-        Advanced Features:
-            videoresolution:
-                type: Categorical
-                used_for: [filter]
-            hdmi:
-                type: Binary
-                used_for: [filter]
-            cmos:
-                type: Binary
-                used_for: [filter]
-            apsc:
-                type: Binary
-                used_for: [show, filter]
-        New Technology:
             oled:
                 type: Binary
                 used_for: [filter]

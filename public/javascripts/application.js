@@ -796,12 +796,13 @@ optemo_module = (function (my){
 		})
 		
     	// Change sort method
-    	$('#sorting_method').live('change', function() {
-    	    var whichSortingMethodSelected = $(this).val();
+    	$('.sortby').live('click', function() {
+    	    var whichSortingMethodSelected = $(this).attr('data-feat');
     	    var info = {'chosen_sorting_method' : whichSortingMethodSelected, 'filter_type' : 'sorting_method'};
 			my.trackPage('goals/filter/sorting_method', info);
     	    my.loading_indicator_state.sidebar = true;
             my.ajaxcall("/compare?ajax=true&sortby=" + whichSortingMethodSelected);
+			return false;
 	    });
 
     	//Show and Hide Descriptions
@@ -1306,9 +1307,6 @@ optemo_module = (function (my){
     		if (parts[1] != null) {
     			$('#ajaxfilter').html(parts[1]);
     		}
-			if (parts[2] != null) {
-    			$('#sortby').html(parts[2]);
-    		}
     		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
     		my.flashError(parts[0].substr(5,parts[0].length));
     		return -1;
@@ -1316,8 +1314,7 @@ optemo_module = (function (my){
     		var parts = data.split('[BRK]');
     		$('#ajaxfilter').html(parts[1]);
     		$('#main').html(parts[0]);
-			$('#sortby').html(parts[2]);
-    		$('#myfilter_search').attr('value',parts[3]);
+    		$('#myfilter_search').attr('value',parts[2]);
     		myspinner.end();
     		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
     		return 0;
