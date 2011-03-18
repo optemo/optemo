@@ -2,20 +2,16 @@ class Cluster
   require 'inline'
   attr :products
   attr :rep_id
-  attr  :extended
   
-  def initialize(products, rep_id, extended=false)
+  def initialize(products, rep_id)
     @products = products # necessary?
-    @extended = extended
     #@rep_id = rep_id
     if Rails.env.development?
       Site::Application::CLUSTER_CACHE[products.hash.abs]=products
       Site::Application::CLUSTER_CACHE[rep_id.hash.abs]=rep_id
-      Site::Application::CLUSTER_CACHE[extended.hash.abs]=extended
     else
       Rails.cache.write("Cluster#{products.hash.abs}", products)
       Rails.cache.write("Cluster#{rep_id.hash.abs}", rep_id)
-      Rails.cache.write("Cluster#{extended.hash.abs}", extended)
     end
   end
   
@@ -64,19 +60,19 @@ class Cluster
       #@rep = Product.cached(rep_id)
       if !(Session.search.sortby.nil?) && Session.continuous["cluster"].include?(Session.search.sortby)
          fs = ContSpec.cachemany(products, Session.search.sortby)
+         fs = [0] if fs.empty?
          if (Session.search.sortby =='price') 
            @rep = Product.cached(products[fs.index(fs.min)])
-         else
+         else 
            @rep = Product.cached(products[fs.index(fs.max)])  
          end     
       else
-        utilities = ContSpec.cachemany(products, "utility")
-        @rep = Product.cached(products[utilities.index(utilities.max)])
+         utilities = ContSpec.cachemany(products, "utility")
+         @rep = Product.cached(products[utilities.index(utilities.max)])
       end  
     end
     @rep
   end
-  
   def min(feature)
     if Session.continuous["cluster"].include?(feature)
       products.map{|p_id| ContSpec.cachemany([p_id], feature)}.flatten.min

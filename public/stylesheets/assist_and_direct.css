@@ -787,10 +787,6 @@ div#silkscreen {
     -webkit-box-shadow: 0 -2px 16px 3px #888;
     box-shadow: 0 -2px 16px 3px #888;
 }
-#inside_of_outsidecontainer {
-    background: url("/images/quickview_horizontal_background.png") repeat-y scroll 0 0 transparent;
-    width: 560px;
-}
 
 div#info {
 	font-size: 0.8em;

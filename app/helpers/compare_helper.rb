@@ -261,14 +261,14 @@ module CompareHelper
       end  
       unless Session.search.userdatacats.empty?
         curr_feats=Session.search.userdatacats.map{|se| se.name}.uniq
-        curr_feats.each do |f|
-            unless @s.search.extended.cat_vals(f).nil?
-              new_vals = @s.search.extended.cat_vals(f) 
-              new_filters << f + "=" + new_vals.join("*")
-            end  
-        end    
+        curr_feats.each{|f| new_filters << (f + "") unless (@s.search.extended.cat_vals(f) - Session.search.userdatacats.map{|se| se.value if se.name==f}.compact).nil?}  
       end
+      #unless Session.search.userdatabins.empty?
+      #  curr_feats=Session.search.userdatabins.map{|se| se.name}.uniq
+      #  curr_feats.each{|f| new_filters << (f + "") unless (@s.search.extended.bin_val(f)-Session.search.userdatabins.map{|se| se.value if se.name==f}.compact).nil?}
+      #end   
     new_filters << "extended_hash=" + @s.search.extended.id.to_s
+    new_filters = new_filters.compact
     new_filters.join("&")
 	end  
 	
