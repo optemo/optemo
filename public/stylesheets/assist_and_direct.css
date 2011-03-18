@@ -97,11 +97,8 @@ h3 {
 }
 
 #navigator_bar {
-	/*height: 22px;*/
-	text-align: center;
 	margin-bottom: 5px;
-	padding-top: 2px;
-	padding-bottom: 2px;
+	padding: 5px;
 	position: relative;
 }
 .rounded_nav {
@@ -367,17 +364,12 @@ div.smalldesc {
 	overflow:hidden;
 }
 /* Filter Box */
-.filtersdesc {
+#filter_form {
 	font-size: 0.8em;
-	margin-bottom: 3px;
-	font-weight: lighter;
 }
-
 .label {
 	font-weight: bold;
 	text-align: left;
-	font-size: 0.8em;
-	/*width: 163px;*/
 	position: relative;
 	clear: left;
 	padding-top: 3px;

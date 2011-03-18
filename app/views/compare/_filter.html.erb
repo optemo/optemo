@@ -1,5 +1,4 @@
-<h2><%=t 'products.compare.search' %></h2>
-	<div class="filtersdesc"><%= searchinst %></div>
+<h2><%=t 'products.compare.search' %> <%= link_to "Reset", "/", :class => "reset awesome", :rel => "nofollow", :style => "float: right" %></h2>
 <%= form_for(Search.new, :html => {:id => 'filter_form'}) do %>
   <!--<%= @s.search.keyword_search.blank? ? text_field_tag('myfilter[search]') : text_field_tag('myfilter[search]', @s.search.keyword_search) %>
 	<div class="ui-widget" style="display:inline;">
@@ -37,7 +36,7 @@
 			<% optionlist = SearchProduct.cat_counts(feat,true).to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? -a[1]-1000000 : -a[1]) <=> (chosen_cats.include?(b[0]) ? -b[1]-1000000 : -b[1])} %>
 			<div class="categorical">
 			<% optionlist.each do |k,available_count| %>
-  			<div class='label' data-position="<%= i %>">
+  			<div data-position="<%= i %>">
 	  			<%= render :partial => 'desc', :locals => {:feat => feat} %>
 	  			<% dobj = dobjs.select{|ud|ud.value == k}.first %>
 	  			<%= check_box 'superfluous', feat, :disabled => (available_count == 0) ? true : false, :checked => (dobj.nil? || dobj.value == false) ? false : 'checked', :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :'data-feat' => feat, :'data-opt' => k %>
@@ -64,7 +63,7 @@
   <% @s.binarygroup.each_pair do |heading,features| %>
 	<div class="label"><a href="#"><%= heading %></a></div>
 	<% features.each do |feat| %>
-  		<div class='label' data-position="<%= i %>">
+  		<div data-position="<%= i %>">
   			<%= render :partial => 'desc', :locals => {:feat => feat} %>
   			<% dobj = Userdatabin.find_by_search_id_and_name(@s.search.id,feat) %>
 			<% available_count = SearchProduct.bin_count(feat) %>
