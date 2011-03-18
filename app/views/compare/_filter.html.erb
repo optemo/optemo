@@ -32,17 +32,18 @@
 				<div style="clear: left;"></div>
 			</div>
 		<% else %>
-  			<% unless chosen_cats.nil? || chosen_cats.empty? %>
-  				<%# At least one item selected %>
-				<%= category_select(feat,true) %>
-  				<% chosen_cats.each do |b| %>
-  					<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :"data-cat" => feat, :class => "removefilter", :"data-id" => b} %> <%= b %>
-  					</div>
-  				<% end %>
-  			<% else %>
-  				<%# Nothing selected %>
-				<%= category_select(feat,false) %>
-  			<% end %>
+			<% dobjs = Userdatacat.find_all_by_search_id_and_name(@s.search.id,feat) %>
+			<%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
+			<% optionlist = SearchProduct.cat_counts(feat,true).to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? -a[1]-1000000 : -a[1]) <=> (chosen_cats.include?(b[0]) ? -b[1]-1000000 : -b[1])} %>
+			<% optionlist.each do |k,available_count| %>
+  			<div class='label' data-position="<%= i %>">
+	  			<%= render :partial => 'desc', :locals => {:feat => feat} %>
+	  			<% dobj = dobjs.select{|ud|ud.value == k}.first %>
+	  			<%= check_box 'superfluous', feat, :disabled => (available_count == 0) ? true : false, :checked => (dobj.nil? || dobj.value == false) ? false : 'checked', :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :'data-feat' => feat, :'data-opt' => k %>
+	  			<%= link_to k, "#", :rel => "nofollow" %>
+				(<%= available_count %>)
+	  		</div>
+			<% end %>
   		<% end %>
   		<%= hidden_field_tag "myfilter[#{feat}]", chosen_cats.join("*") %>
   	</div>

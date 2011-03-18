@@ -54,12 +54,10 @@ class SearchProduct < ActiveRecord::Base
       else
         q = search_id_q.create_join(mycats+[[feat]],mybins).conts_keywords.bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
       end
-      res = CachingMemcached.cache_lookup("Cats-#{q.to_sql}") do
-        q.count
+      CachingMemcached.cache_lookup("Cats-#{q.to_sql}") do
+        q.count.merge(Hash[CatSpec.alloptions(feat).map {|x| [x, 0]}]){|k,oldv,newv|oldv}
+        
       end
-      return_res = res.dup
-      allcats[feat].each{|id|return_res.delete(id.value)} if allcats[feat]
-      return_res
     end
     
     def bin_count(feat)
