@@ -35,6 +35,7 @@
 			<% dobjs = Userdatacat.find_all_by_search_id_and_name(@s.search.id,feat) %>
 			<%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
 			<% optionlist = SearchProduct.cat_counts(feat,true).to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? -a[1]-1000000 : -a[1]) <=> (chosen_cats.include?(b[0]) ? -b[1]-1000000 : -b[1])} %>
+			<div class="categorical">
 			<% optionlist.each do |k,available_count| %>
   			<div class='label' data-position="<%= i %>">
 	  			<%= render :partial => 'desc', :locals => {:feat => feat} %>
@@ -44,6 +45,7 @@
 				(<%= available_count %>)
 	  		</div>
 			<% end %>
+			</div>
   		<% end %>
   		<%= hidden_field_tag "myfilter[#{feat}]", chosen_cats.join("*") %>
   	</div>
@@ -59,8 +61,9 @@
   		:overall_max => ContSpec.allMinMax(feat)[1]} %>
   	<% i = i + 1 %>
   <% end %>
-  <% @s.binary["filter"].each do |feat| %>
-  	<div>
+  <% @s.binarygroup.each_pair do |heading,features| %>
+	<div class="label"><a href="#"><%= heading %></a></div>
+	<% features.each do |feat| %>
   		<div class='label' data-position="<%= i %>">
   			<%= render :partial => 'desc', :locals => {:feat => feat} %>
   			<% dobj = Userdatabin.find_by_search_id_and_name(@s.search.id,feat) %>
@@ -69,8 +72,8 @@
   			<%= link_to t("#{Session.product_type}.specs.#{feat}.name"), "#", :rel => "nofollow" %>
 			(<%= available_count %>)
   		</div>
-  	</div>
   	<% i = i + 1 %>	
+	<% end %>
   <% end %>
   <% @s.binarygroup.each_pair do |heading,features| %>
 	<div class="label"><a href="#"><%= heading %></a></div>

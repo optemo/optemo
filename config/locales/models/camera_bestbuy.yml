@@ -48,10 +48,10 @@ en:
                 name:               "Clearance"
             isOnlineOnly:
                 name:               "Online Only"
-            cmos:
-                name:               "CMOS Sensor"
-            videoresolution:
-                name:               "Video Resolution"
+            videoresolution720:
+                name:               "720P"
+            videoresolution1080:
+                name:               "1080P"
             touchscreen:
                 name:               "Touchscreen"
             oled:
@@ -70,7 +70,5 @@ en:
                 name:               "Sweep Panorama"
             frontlcd:
                 name:               "Front and Back LCD"
-            apsc:
-                name:               "APS-C sensor"
             toprated:
                 name:               "Top-Rated"

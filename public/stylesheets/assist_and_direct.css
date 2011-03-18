@@ -227,6 +227,11 @@ div #leftbar {
 .selectboxfilter {
 	width:100%;
 }
+.categorical {
+	border: 1px solid #ccc;
+	overflow: auto;
+	max-height: 150px;
+}
 /*--------------------------------------//
 //         Drag And Drop Compare        //
 //--------------------------------------*/
@@ -372,7 +377,7 @@ div.smalldesc {
 	font-weight: bold;
 	text-align: left;
 	font-size: 0.8em;
-	width: 163px;
+	/*width: 163px;*/
 	position: relative;
 	clear: left;
 	padding-top: 3px;
