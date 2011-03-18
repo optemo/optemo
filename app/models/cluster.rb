@@ -60,9 +60,10 @@ class Cluster
       #@rep = Product.cached(rep_id)
       if !(Session.search.sortby.nil?) && Session.continuous["cluster"].include?(Session.search.sortby)
          fs = ContSpec.cachemany(products, Session.search.sortby)
+         fs = [0] if fs.empty?
          if (Session.search.sortby =='price') 
            @rep = Product.cached(products[fs.index(fs.min)])
-         else
+         else 
            @rep = Product.cached(products[fs.index(fs.max)])  
          end     
       else

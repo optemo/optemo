@@ -420,7 +420,7 @@ def self.set_cluster_weights(dim_cont, dim_bin, dim_cat)
     weights_sum = weights.sum
     weights.map{|w| w/weights.sum.to_f}
   else
-    weights = [0.0/dim_cont]*dim_cont 
+    weights = [0/dim_cont]*dim_cont 
     weights[Session.continuous["cluster"].index(Session.search.sortby)] = 1
   end
   weights
@@ -476,9 +476,15 @@ def self.ruby(number_clusters, cluster_weights, utility_weights, inits)
    if labels.uniq.size <labels.max+1
      labels = labels.map{|l| labels.uniq.index(l)}
    end
+   # split if there is only one cluster
+   if labels.uniq.size ==1
+     (0...number_clusters-1).to_a.each{|i| labels[i] = i}
+     (number_clusters-1...labels.size).to_a.each{|i| labels[i] = number_clusters -1}
+   end
   reps = [];
   #utility ordering
   utilitylist = weighted_ft(standard_specs.each_with_index{|f, i| f<<brand_factors[i]}, utility_weights).map{|f| f. inject(:+)}  
+  utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<number_clusters
   grouped_utilities = group_by_labels(utilitylist, labels).map{|g| g.inject(:+)/g.length}
   sorted_group_utilities = grouped_utilities.sort{|x,y| y<=>x}
   sorted_labels = []
@@ -550,12 +556,6 @@ end
   def self.factorize_cont_data
     factors = []
     Session.continuous["cluster"].map{|f| factors << ContSpec.by_feat(f+"_factor")} 
-    #fvals = specs.transpose
-    #factors = []
-    #fvals.each do |f|
-    #  Session.prefDirection[f] ==1 ? ordered = f.sort.reverse : ordered = f.sort
-    #  factors << f.map{|fval| (ordered.length - ordered.index(fval))/ordered.length.to_f}        
-    #end  
     factors.transpose
   end  
   def self.factorize_brand #(specs)
