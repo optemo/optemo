@@ -234,14 +234,13 @@ optemo_module = (function (my){
     	//IE Compatibility
     	var iebody=(document.compatMode && document.compatMode != "BackCompat")? document.documentElement : document.body,
     	dsoctop=document.all? iebody.scrollTop : pageYOffset;
-    	$('#info').html("").css('height', '566px');
-    	$('#inside_of_outsidecontainer').css('height', '566px');
-    	$('#outsidecontainer').css({'left' : ((document.body.clientWidth-(width||560))/2)+'px',
+		var outsidecontainer = $('#outsidecontainer');
+		if (outsidecontainer.css('display') != 'block') 
+			$('#info').html("").css('height',"560px");
+    	outsidecontainer.css({'left' : ((document.body.clientWidth-(width||560))/2)+'px',
     								'top' : (dsoctop+5)+'px',
     								'width' : width||560,
-    								'height' : height||770,
     								'display' : 'inline' });
-
         /* This is used to get the document height for doing layout properly. */
         /*http://james.padolsey.com/javascript/get-document-height-cross-browser/*/
         // As of jQuery 1.5, there is probably a better way of doing this, maybe just calling $('body').height() even.
@@ -261,8 +260,7 @@ optemo_module = (function (my){
     	$('#silkscreen').css({'height' : current_height+'px', 'display' : 'inline'});
     	$('.selectboxfilter').css('visibility', 'hidden');
     	if (data) {
-    		$('#info').html(data)
-    		$('#info').css('height','');
+    		$('#info').html(data).css('height','');
     	} else {
     	    my.quickajaxcall('#info', url, function(){
     	        if (url.match(/\/product/)) {
@@ -296,9 +294,7 @@ optemo_module = (function (my){
     	            my.DBinit();
     	            $('#outsidecontainer').css('width','');
                 }
-    	        $('#outsidecontainer').css('height', ''); // Take height off - it was useful for loading so that we'd see a box, but now the element can auto-size
-    	        $('#inside_of_outsidecontainer').css('height', '');
-                $('#info').css('height', '');
+				$('#info').css("height",'');
 				if (f) {
 					f();
 				}
@@ -800,12 +796,13 @@ optemo_module = (function (my){
 		})
 		
     	// Change sort method
-    	$('#sorting_method').live('change', function() {
-    	    var whichSortingMethodSelected = $(this).val();
+    	$('.sortby').live('click', function() {
+    	    var whichSortingMethodSelected = $(this).attr('data-feat');
     	    var info = {'chosen_sorting_method' : whichSortingMethodSelected, 'filter_type' : 'sorting_method'};
 			my.trackPage('goals/filter/sorting_method', info);
     	    my.loading_indicator_state.sidebar = true;
             my.ajaxcall("/compare?ajax=true&sortby=" + whichSortingMethodSelected);
+			return false;
 	    });
 
     	//Show and Hide Descriptions
@@ -1310,9 +1307,6 @@ optemo_module = (function (my){
     		if (parts[1] != null) {
     			$('#ajaxfilter').html(parts[1]);
     		}
-			if (parts[2] != null) {
-    			$('#sortby').html(parts[2]);
-    		}
     		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
     		my.flashError(parts[0].substr(5,parts[0].length));
     		return -1;
@@ -1320,8 +1314,7 @@ optemo_module = (function (my){
     		var parts = data.split('[BRK]');
     		$('#ajaxfilter').html(parts[1]);
     		$('#main').html(parts[0]);
-			$('#sortby').html(parts[2]);
-    		$('#myfilter_search').attr('value',parts[3]);
+    		$('#myfilter_search').attr('value',parts[2]);
     		myspinner.end();
     		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
     		return 0;

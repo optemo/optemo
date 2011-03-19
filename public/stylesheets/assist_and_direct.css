@@ -97,11 +97,8 @@ h3 {
 }
 
 #navigator_bar {
-	/*height: 22px;*/
-	text-align: center;
 	margin-bottom: 5px;
-	padding-top: 2px;
-	padding-bottom: 2px;
+	padding: 5px;
 	position: relative;
 }
 .rounded_nav {
@@ -226,6 +223,11 @@ div #leftbar {
 
 .selectboxfilter {
 	width:100%;
+}
+.categorical {
+	border: 1px solid #ccc;
+	overflow: auto;
+	height: 150px;
 }
 /*--------------------------------------//
 //         Drag And Drop Compare        //
@@ -362,17 +364,12 @@ div.smalldesc {
 	overflow:hidden;
 }
 /* Filter Box */
-.filtersdesc {
+#filter_form {
 	font-size: 0.8em;
-	margin-bottom: 3px;
-	font-weight: lighter;
 }
-
 .label {
 	font-weight: bold;
 	text-align: left;
-	font-size: 0.8em;
-	width: 163px;
 	position: relative;
 	clear: left;
 	padding-top: 3px;
@@ -786,10 +783,6 @@ div#silkscreen {
 	-moz-box-shadow: 0 -2px 16px 3px #888;
     -webkit-box-shadow: 0 -2px 16px 3px #888;
     box-shadow: 0 -2px 16px 3px #888;
-}
-#inside_of_outsidecontainer {
-    background: url("/images/quickview_horizontal_background.png") repeat-y scroll 0 0 transparent;
-    width: 560px;
 }
 
 div#info {

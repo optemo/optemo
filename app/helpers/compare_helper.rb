@@ -61,22 +61,13 @@ module CompareHelper
     end
   end
   
-  def searchinst
-    if Session.search.products_size > 1
-      t("products.searchinst", :count => Session.search.products_size, :product => t("#{Session.product_type}.title-plural"))
-    else
-      t("products.searchoneproduct", :product => t("#{Session.product_type}.title"))
-    end
-  end
-  
   def navtitle
-    s = Session
-		[
-		  s.search.products_size, 
-		  (s.search.products_size > 1) ? t("#{s.product_type}.title-plural") : t("#{s.product_type}.title"),
-		  ("Grouped by #{t('products.' + s.search.groupby)}" if s.search.groupby),
-		  (link_to("(All #{t(s.product_type+'.title-plural')})", "/", :class => "reset", :rel => "nofollow") unless s.search.onlyfiltering)
-		].join(" ")
+    res = t("#{Session.product_type}.navtitle", :count => Session.search.products_size)
+    if Session.search.products_size > 1
+      res.pluralize
+    else
+      res
+    end
   end
   
   def groupDesc(group, i)
@@ -308,8 +299,11 @@ module CompareHelper
   end
   
   def sortbyList
-    sortbyList = [[t("products.sortby")+t("products.relevance"),"relevance"]]
-    Session.continuous["cluster"].map{|f| sortbyList << [t("products.sortby")+ t(Session.product_type+".specs."+f+".name"), f]}
-    sortbyList
+    sortbyList = [Session.search.sortby == "relevance" || Session.search.sortby.blank? ? t("products.relevance") : link_to(t("products.relevance"), "#", :'data-feat' => "relevance", :class => 'sortby')]
+    Session.continuous["cluster"].each do |f| 
+      sortbyList << (Session.search.sortby == f ? t(Session.product_type+".specs."+f+".name") : link_to(t(Session.product_type+".specs."+f+".name"), "#", :'data-feat' => f, :class => 'sortby'))
+    end
+    t("products.sortby") + sortbyList.join(" | ")
+    # select('sorting_method', @s.search.sortby, sortbyList, {:selected => @s.search.sortby}, {:id => "sorting_method"})
   end
 end
