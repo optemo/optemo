@@ -585,7 +585,8 @@ end
     other_ids = all_ids - curr_ids
     curr_specs= Session.continuous["cluster"].map{|f| ContSpec.by_feat(f+"_factor")}.transpose
     all_specs = all_ids.map{|id| Session.continuous["cluster"].map{|f| ContSpec.cache_all(id)[f+"_factor"]}}
-    other_specs =  all_specs - curr_specs
+    other_specs =  []
+    all_specs.each_with_index{|s,i| other_specs << all_specs[i] if other_ids.include?(all_ids[i]) }
     better_specs = []
     better_ids = []
     better_specs = []
@@ -598,9 +599,10 @@ end
     end  
     dists = []
     dim = all_specs.first.size
-    better_specs.each{|s2| dists<< curr_specs.map{|s1| self.distance(s1,s2, [1.0/dim]*dim)}.inject(:+)}           
+    better_specs.each_with_index do |s2, ind| 
+      dists<< curr_specs.map{|s1| self.distance(s1,s2, [1.0/dim]*dim)}.inject(:+)
+    end             
     better_products_hash = Hash[better_ids.zip(dists)]
-    
     close_products = better_products_hash.sort{|a,b| a[1] <=> b[1]}[0...num].map{|k, v| k}
   end
 
