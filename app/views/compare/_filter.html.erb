@@ -40,8 +40,7 @@
 	  			<%= render :partial => 'desc', :locals => {:feat => feat} %>
 	  			<% dobj = dobjs.select{|ud|ud.value == k}.first %>
 	  			<%= check_box 'superfluous', feat, :disabled => (available_count == 0) ? true : false, :checked => (dobj.nil? || dobj.value == false) ? false : 'checked', :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :'data-feat' => feat, :'data-opt' => k %>
-	  			<%= link_to k, "#", :rel => "nofollow" %>
-				(<%= available_count %>)
+	  			<%= k %> (<%= available_count %>)
 	  		</div>
 			<% end %>
 			</div>

@@ -56,7 +56,6 @@ class SearchProduct < ActiveRecord::Base
       end
       CachingMemcached.cache_lookup("Cats-#{q.to_sql}") do
         q.count.merge(Hash[CatSpec.alloptions(feat).map {|x| [x, 0]}]){|k,oldv,newv|oldv}
-        
       end
     end
     
