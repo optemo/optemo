@@ -1,7 +1,7 @@
 class Distribution 
 require 'inline'
-#require 'mynewtest'
-#include MyNewTest
+#require 'computedistribution'
+#include ComputeDistribution
 
   def computeDist
     dist = {}
