@@ -73,9 +73,10 @@ h1 {
 }
 h2 {
 	margin: 0px 0px 3px;
-	text-align: left;
-	font-size: 1em;
+	font-size: 0.9em;
+	padding: 6px;
 	border-bottom: 1px solid #ccc;
+	background-color: yellow;
 }
 .languageoptions {
 	text-align: right;

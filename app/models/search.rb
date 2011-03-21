@@ -339,12 +339,12 @@ class Search < ActiveRecord::Base
       #product filtering has been done through keyword search of attribute filters
       createFeatures(p,old_search)
       #Find clusters that match filtering query
-      if old_search && !expandedFiltering?(old_search)
-        #Search is narrowed, so use old products to begin with
-      else
-        #Search is expanded, so use all products to begin with
+      #if old_search && !expandedFiltering?(old_search)
+      #  #Search is narrowed, so use old products to begin with
+      #else
+      #  #Search is expanded, so use all products to begin with
         self.initial = true
-      end
+      #end
     else
       #Error
     end
