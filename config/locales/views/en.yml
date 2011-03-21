@@ -9,7 +9,7 @@ en:
             alreadyadded:   "You already added that product!"
             toomanysaved:   "You can only save up to 4 products at a time."
             savesome:       "Select two or more items to compare specs"
-            savesomedrag:   "Drag and rop cameras over to this box to save them for later or compare them with other cameras."
+            savesomedrag:   "Drag and drop cameras over to this box to save them for later or compare them with other cameras."
             filters:        "Filters"
             powered:        "powered by"
             loading:        "Loading"
