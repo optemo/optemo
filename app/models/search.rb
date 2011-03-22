@@ -184,6 +184,14 @@ class Search < ActiveRecord::Base
     SearchProduct.fq2
   end
   
+  def sim_products
+    
+  end
+  
+  def sim_products_size
+    @sim_products_size ||= sim_products.size
+  end
+  
   def products_search_id
     if @myproducts
       #A cluster was chosen

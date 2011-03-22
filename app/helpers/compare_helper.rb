@@ -306,4 +306,9 @@ module CompareHelper
     t("products.sortby") + sortbyList.join(" | ")
     # select('sorting_method', @s.search.sortby, sortbyList, {:selected => @s.search.sortby}, {:id => "sorting_method"})
   end
+  
+  def unchecked_cat(feat,option)
+		dobj = Userdatacat.find_all_by_search_id_and_name(Session.search.id,feat).select{|ud|ud.value == option}.first
+		dobj.nil? || dobj.value == false
+  end
 end

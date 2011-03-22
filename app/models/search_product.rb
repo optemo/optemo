@@ -62,7 +62,7 @@ class SearchProduct < ActiveRecord::Base
     def bin_count(feat)
       mycats = Session.search.userdatacats.group_by(&:name).values
       mybins = Session.search.userdatabins.reject{|e|e.name == feat} << BinSpec.new(:name => feat, :value => true)
-      search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins).count
+      where(:search_id => Product.initial).create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins).count
     end
   end
   private
