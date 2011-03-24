@@ -39,10 +39,9 @@ class Product < ActiveRecord::Base
   def self.filterspecs
     st = []
     Session.continuous["filter"].each do |f| 
-      data = ContSpec.by_feat(f)
-      #raise ValidationError, "Can't find data for feature: #{f}" if data.nil?
-      data = [] if data.nil?
-      st << data
+      data = Session.search.products.map(&f.intern)
+      raise ValidationError, "Can't find data for feature: #{f}" if data.empty?
+      st << data.compact
     end
     st
   end
@@ -53,8 +52,7 @@ class Product < ActiveRecord::Base
    # Session.binary["cluster"].each{|f| st<< self.to_bin_array(CatSpec.all(f))}
    #  Session.categorical["cluster"].each{|f| st<< self.to_cat_array(CatSpec.all(f))}  
     #Check for 1 spec per product
-    debugger unless Session.search.products_size == st.first.length
-   # raise ValidationError unless Session.search.products_size == st.first.length
+    raise ValidationError unless Session.search.products_size == st.first.length
     #Check for no nil values
     raise ValidationError unless st.first.size == st.first.compact.size
     raise ValidationError unless st.first.size > 0

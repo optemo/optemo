@@ -27,21 +27,22 @@ class SearchProduct < ActiveRecord::Base
         res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[]]).conts_keywords.cats(mycats).bins(mybins).group("search_products.product_id")
       end
       cached = CachingMemcached.cache_lookup("Products-#{res.to_sql}") do
-        specs = Hash.new{|h,k| h[k] = []}
+        start = Time.now
+        set = Set.new
         res.each do |rec|
-          names = rec.names.split(",")
-          vals = rec.vals.split(",")
-          names.each_with_index{|name,i|specs[name] << vals[i].to_f}
+          prod = ProductAndSpec.new(:id => rec.product_id)
+          prod.set(rec.names, rec.vals)
+          set.add(prod)
         end
+        finish = Time.now
+        puts("!!!!!!*****######"+(finish-start).to_s)
         raise SearchError, "No products match that search criteria for #{Session.product_type}" if res.empty?
-        specs.default = nil #Clear the array default so that it can be stored in the cache
-        p_ids = res.map(&:product_id)
-        [specs,p_ids]
+        set.to_a
       end
       
-      ContSpec.by_feat = cached.first
-      Session.search.products_size = cached[1].length
-      cached[1]
+      #ContSpec.by_feat = cached.first
+      #Session.search.products_size = cached.size
+      cached
     end
     
     def cat_counts(feat,expanded)
@@ -68,7 +69,8 @@ class SearchProduct < ActiveRecord::Base
   private
   class << self
     def search_id_q
-      where(:search_id => Session.search.products_search_id)
+      #where(:search_id => Session.search.products_search_id)
+      where(:search_id => Product.initial)
     end
       
     def create_join(mycats,mybins,myconts = Session.search.userdataconts)

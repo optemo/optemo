@@ -371,7 +371,8 @@
   #bin_specs = st[dim_cont...dim_cont+dim_bin].transpose
   #cat_specs = st[dim_cont+dim_bin...st.size].transpose 
 
-    performance_factors = ContSpec.by_feat("performance_factor")
+    performance_factors = Session.search.products.map(&:performance_factor)
+
      #factors << performance_factors
      #factors << [1]*factors.first.size
   
@@ -381,7 +382,7 @@
       utilitylist = [1]*s
     else 
       brand_factors = self.factorize_brand
-      utilitylist = weighted_ft(ft.each_with_index{|f, i| f<<brand_factors[i]}, utility_weights).map{|f| f. inject(:+)}
+      utilitylist = Session.search.products.map(&:utility)
     end  
     #if utilities are the same
     utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
@@ -483,7 +484,7 @@ def self.ruby(number_clusters, cluster_weights, utility_weights, inits)
    end
   reps = [];
   #utility ordering
-  utilitylist = weighted_ft(standard_specs.each_with_index{|f, i| f<<brand_factors[i]}, utility_weights).map{|f| f. inject(:+)}  
+  utilitylist = Session.search.products.map(&:utility)
   utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<number_clusters
   grouped_utilities = group_by_labels(utilitylist, labels).map{|g| g.inject(:+)/g.length}
   sorted_group_utilities = grouped_utilities.sort{|x,y| y<=>x}
@@ -504,8 +505,10 @@ end
 #  # Finding the mean of several points
 #  # points is a nxd dimension array where n is the number of products and d is number of features
 def self.mean(points)
-  s = points.size.to_f
-  points.transpose.map{|p| p.inject(:+)/s}
+  points.transpose.map do |p| 
+    myp = p.compact
+    myp.inject(:+)/myp.size.to_f
+  end
 end
 
 # Finding the means of all clusters
@@ -516,22 +519,16 @@ end
 
 #Euclidian distance function
 def self.distance(point1, point2, weights)
-  dist = 0
+  dist = dim = 0.0
   point1.each_index do |i|
-    diff = 0
-    if point1[i].kind_of?(Array)
-       diff = weights[i] unless points[1].eql?(points[2])
-    else
-       #debugger if weights.nil? || point1.nil? || point2.nil?
-       dif = point1[i] || point2[i] if (point1[i].nil? || point2[i].nil?)
-       diff = 0 if (point1[i].nil? && point2[i].nil?)
-       diff = weights[i]*(point1[i]-point2[i]) unless (point1[i].nil? || point2[i].nil?)
-    end  
-    dist += diff*diff
+    unless (point1[i].nil? || point2[i].nil?)
+      diff = weights[i]*(point1[i]-point2[i]) 
+      dim = dim + 1
+      dist += diff*diff
+    end 
   end
-  dist
+  dist/dim
 end
-
 #### New functions
 # converts categorical spec values to binary arrays
   def self.standardize_cat_data(specs)
@@ -555,11 +552,11 @@ end
   
   def self.factorize_cont_data
     factors = []
-    Session.continuous["cluster"].map{|f| factors << ContSpec.by_feat(f+"_factor")} 
+    Session.continuous["cluster"].map{|f| factors << Session.search.products.map(&(f+"_factor").intern)} 
     factors.transpose
   end  
   def self.factorize_brand #(specs)
-    ContSpec.by_feat("brand_factor")
+    Session.search.products.map(&:brand_factor)
   end
   #   
   def self.standardize_cont_data(specs)
@@ -581,9 +578,9 @@ end
   
   def self.extendedCluster(num)
     all_ids = SearchProduct.find_all_by_search_id(Product.initial).map(&:product_id)
-    curr_ids = Session.search.products
+    curr_ids = Session.search.sim_products
     other_ids = all_ids - curr_ids
-    curr_specs= Session.continuous["cluster"].map{|f| ContSpec.by_feat(f+"_factor")}.transpose
+    curr_specs= Session.continuous["cluster"].map{|f| Session.search.products.map(&(f+"_factor").intern)}.transpose
     all_specs = all_ids.map{|id| Session.continuous["cluster"].map{|f| ContSpec.cache_all(id)[f+"_factor"]}}
     other_specs =  []
     all_specs.each_with_index{|s,i| other_specs << all_specs[i] if other_ids.include?(all_ids[i]) }

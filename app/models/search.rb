@@ -152,7 +152,7 @@ class Search < ActiveRecord::Base
   
   #The clusters argument can either be an array of cluster ids or an array of cluster objects if they have already been initialized
   def cluster
-    @cluster ||= Cluster.new(products, products[0])
+    @cluster ||= Cluster.new(products.map(&:id), products.to_a[0])
   end
   
   def isextended?
@@ -181,11 +181,11 @@ class Search < ActiveRecord::Base
   end
   
   def products
-    SearchProduct.fq2
+    @products ||= SearchProduct.fq2
   end
   
   def sim_products
-    
+    products
   end
   
   def sim_products_size
