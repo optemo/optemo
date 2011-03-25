@@ -57,7 +57,7 @@ class Cluster
   #The represetative product for this cluster, assumes nodes ordered by utility
   def representative
     unless @rep
-      #@rep = Product.cached(rep_id)
+    #  @rep = Product.cached(rep_id)
       if !(Session.search.sortby.nil?) && Session.continuous["cluster"].include?(Session.search.sortby)
          fs = ContSpec.cachemany(products, Session.search.sortby)
          fs = [0] if fs.empty?
