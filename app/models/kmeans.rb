@@ -385,6 +385,17 @@ end
     end  
     var
   end
+  def self.weighted_ft(ft, weights)
+    weights_sum = weights.sum
+    weights = weights.map{|w| w/weights_sum.to_f}
+    weighted_ft=[]
+    for i in (0...ft.size)
+      weighted_ft_i = []
+      ft[i].each_with_index{|f,j| weighted_ft_i << weights[j]*f}
+      weighted_ft << weighted_ft_i
+    end
+    return weighted_ft
+  end  
   
   def self.extendedCluster(num)
     all_ids = SearchProduct.find_all_by_search_id(Product.initial).map(&:product_id)
