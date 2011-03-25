@@ -1,7 +1,5 @@
 class Distribution 
 require 'inline'
-#require 'computedistribution'
-#include ComputeDistribution
 
   def computeDist
     dist = {}
