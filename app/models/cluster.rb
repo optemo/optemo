@@ -5,7 +5,7 @@ class Cluster
   
   def initialize(products, rep_id)
     @products = products # necessary?
-    @rep_id = rep_id
+    #@rep_id = rep_id
     if Rails.env.development?
       Site::Application::CLUSTER_CACHE[products.hash.abs]=products
       Site::Application::CLUSTER_CACHE[rep_id.hash.abs]=rep_id
@@ -57,19 +57,19 @@ class Cluster
   #The represetative product for this cluster, assumes nodes ordered by utility
   def representative
     unless @rep
-      @rep = Product.cached(rep_id)
-    #  if !(Session.search.sortby.nil?) && Session.continuous["cluster"].include?(Session.search.sortby)
-    #     fs = ContSpec.cachemany(products, Session.search.sortby)
-    #     fs = [0] if fs.empty?
-    #     if (Session.search.sortby =='price') 
-    #       @rep = Product.cached(products[fs.index(fs.min)])
-    #     else 
-    #       @rep = Product.cached(products[fs.index(fs.max)])  
-    #     end     
-    #  else
-    #     utilities = ContSpec.cachemany(products, "utility")
-    #     @rep = Product.cached(products[utilities.index(utilities.max)])
-    #  end  
+    #  @rep = Product.cached(rep_id)
+      if !(Session.search.sortby.nil?) && Session.continuous["cluster"].include?(Session.search.sortby)
+         fs = ContSpec.cachemany(products, Session.search.sortby)
+         fs = [0] if fs.empty?
+         if (Session.search.sortby =='price') 
+           @rep = Product.cached(products[fs.index(fs.min)])
+         else 
+           @rep = Product.cached(products[fs.index(fs.max)])  
+         end     
+      else
+         utilities = ContSpec.cachemany(products, "utility")
+         @rep = Product.cached(products[utilities.index(utilities.max)])
+      end  
     end
     @rep
   end
