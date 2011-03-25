@@ -43,22 +43,22 @@ camera_us:
     layout: assist
     maximumresolution: 
         type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [filter, cluster, show]
     displaysize:
         type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [filter, cluster, show]
     price:
         type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [filter, cluster, show]
         prefdir: -1
         min: 1
         max: 10000
     opticalzoom:
         type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [filter, cluster, show]
     brand:
         type: Categorical
-        used_for: [boost, show, filter]
+        used_for: [show, filter]
 
 
 camera_us:
@@ -68,22 +68,22 @@ camera_us:
     layout: direct
     maximumresolution: 
         type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
+        used_for:  [filter, cluster, show, showList]
     displaysize:
         type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
+        used_for: [filter, cluster, show, showList]
     price:
         type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [filter, cluster, show]
         prefdir: -1
         min: 1
         max: 10000
     opticalzoom:
         type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
+        used_for: [filter, cluster, show, showList]
     brand:
         type: Categorical
-        used_for: [boost, filter, show]        
+        used_for: [filter, show]        
 
 camera_us:
     url:
@@ -92,22 +92,22 @@ camera_us:
     layout: mobileview
     maximumresolution: 
         type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [filter, cluster, show]
     displaysize:
         type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [filter, cluster, show]
     price:
         type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [filter, cluster, show]
         prefdir: -1
         min: 1
         max: 10000
     opticalzoom:
         type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [filter, cluster, show]
     brand:
         type: Categorical
-        used_for: [boost, filter, show]
+        used_for: [filter, show]
         
 camera_bestbuy:
     url: 
@@ -124,12 +124,12 @@ camera_bestbuy:
                 prefdir: -1
                 min: 1
                 max: 10000
-                utility: 10
+                utility: 5
                 cluster: 5
             maxresolution: 
                 type: Continuous
                 used_for: [desc, filter, cluster, show]
-                utility: 6 
+                utility: 5 
                 cluster: 5 
             screensize:
                 type: Continuous
@@ -147,11 +147,9 @@ camera_bestbuy:
             color:
                 type: Categorical
                 used_for: [show, filter]
-                utility: 2
             customerRating:
                 type: Continuous
                 used_for: [show]
-                utility: 6
         Status:
             onsale:
                 type: Binary
@@ -217,35 +215,35 @@ printer_us:
     layout: direct
     price:
         type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [filter, cluster, show]
         prefdir: -1
         min: 1
         max: 10000
     ppm:
         type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
+        used_for: [filter, cluster, show, showList]
     resolutionmax:
         type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [filter, cluster, show]
     resolution:
         type: Categorical
         used_for: [showList]
     paperinput:
         type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
+        used_for: [filter, cluster, show, showList]
     itemwidth:
         type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
+        used_for: [filter, cluster, show, showList]
         prefdir: -1
     printserver:
         type: Binary
-        used_for: [boost, filter, show]
+        used_for: [filter, show]
     scanner:
         type: Binary
-        used_for: [boost, filter, show]
+        used_for: [filter, show]
     brand:
         type: Categorical
-        used_for: [boost, filter, show]
+        used_for: [filter, show]
            
 printer_us:
     url: 
@@ -254,35 +252,35 @@ printer_us:
     layout: assist
     price:
         type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [filter, cluster, show]
         prefdir: -1
         min: 1
         max: 10000
     ppm:
         type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
+        used_for: [filter, cluster, show, showList]
     resolutionmax:
         type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [filter, cluster, show]
     resolution:
         type: Categorical
         used_for: [showList]
     paperinput:
         type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
+        used_for: [filter, cluster, show, showList]
     itemwidth:
         type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
+        used_for: [filter, cluster, show, showList]
         prefdir: -1
     printserver:
         type: Binary
-        used_for: [boost, filter, show]
+        used_for: [filter, show]
     scanner:
         type: Binary
-        used_for: [boost, filter, show]
+        used_for: [filter, show]
     brand:
         type: Categorical
-        used_for: [boost, filter, show]
+        used_for: [filter, show]
 
 printer_lph:
     url: 
@@ -292,32 +290,32 @@ printer_lph:
     layout: assist
     price:
         type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [filter, cluster, show]
         prefdir: -1
         min: 1
         max: 10000
     ppm:
         type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
+        used_for: [filter, cluster, show, showList]
     resolutionmax:
         type: Continuous
-        used_for: [boost, filter, cluster, show]
+        used_for: [filter, cluster, show]
     resolution:
         type: Categorical
         used_for: [showList]
     paperinput:
         type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
+        used_for: [filter, cluster, show, showList]
     itemwidth:
         type: Continuous
-        used_for: [boost, filter, cluster, show, showList]
+        used_for: [filter, cluster, show, showList]
         prefdir: -1
     printserver:
         type: Binary
-        used_for: [boost, filter, show]
+        used_for: [filter, show]
     scanner:
         type: Binary
-        used_for: [boost, filter, show]
+        used_for: [filter, show]
     brand:
         type: Categorical
-        used_for: [boost, filter, show]
+        used_for: [filter, show]
