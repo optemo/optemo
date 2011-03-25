@@ -211,10 +211,10 @@ for (j=0;j<k; j++){
     
     #static VALUE kmeans_c(VALUE _points, _VALUE n, VALUE d, VALUE cluster_n,VALUE _weights, VALUE _utilities, VALUE _inits)
     utilities = ContSpec.by_feat("utility")
-    $k = Kmeans.new unless $k
-    labels = $k.kmeans_c(ft.flatten, ft.size, ft.first.size, number_clusters, [0.33,0.33,0.33], utilities, inits)
-    #Kmeans.ruby(number_clusters, cluster_weights[0...dim_cont], utility_weights, inits)
-    labels
+    #$k = Kmeans.new unless $k
+    #labels = $k.kmeans_c(ft.flatten, ft.size, ft.first.size, number_clusters, [0.33,0.33,0.33], utilities, inits)
+    Kmeans.ruby(number_clusters, cluster_weights[0...dim_cont], utility_weights, inits)
+    #labels
 end
 
 
