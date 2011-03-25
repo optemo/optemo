@@ -190,7 +190,7 @@ for (j=0;j<k; j++){
       utilitylist = [1]*s
     else 
       brand_factors = self.factorized_brand
-      utilitylist = ContSpec.by_feat("utility")#weighted_ft(ft.each_with_index{|f, i| f<<brand_factors[i]}, utility_weights).map{|f| f. inject(:+)}
+      utilitylist = weighted_ft(ft.each_with_index{|f, i| f<<brand_factors[i]}, utility_weights).map{|f| f. inject(:+)}
     end  
     #if utilities are the same
     utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
@@ -296,7 +296,7 @@ def self.ruby(number_clusters, cluster_weights, utility_weights, inits)
    end
   reps = [];
   #utility ordering
-  utilitylist = ContSpec.by_feat("utility")#weighted_ft(standard_specs.each_with_index{|f, i| f<<brand_factors[i]}, utility_weights).map{|f| f. inject(:+)}  
+  utilitylist = weighted_ft(standard_specs.each_with_index{|f, i| f<<brand_factors[i]}, utility_weights).map{|f| f. inject(:+)}  
   utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<number_clusters
   grouped_utilities = group_by_labels(utilitylist, labels).map{|g| g.inject(:+)/g.length}
   sorted_group_utilities = grouped_utilities.sort{|x,y| y<=>x}
