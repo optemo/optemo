@@ -1,4 +1,4 @@
-set :application, "prod"
+set :application, "production"
 set :repository,  "git@jaguar:site.git"
 set :domain, "jaguar"
 set :branch, "staging"
