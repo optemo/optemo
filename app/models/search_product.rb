@@ -28,7 +28,7 @@ class SearchProduct < ActiveRecord::Base
       end
       cached = CachingMemcached.cache_lookup("Products-#{res.to_sql}") do
         start = Time.now
-        set = Set.new
+        set = ComparableSet.new
         res.each do |rec|
           prod = ProductAndSpec.new(:id => rec.product_id)
           prod.set(rec.names, rec.vals)
@@ -37,7 +37,7 @@ class SearchProduct < ActiveRecord::Base
         finish = Time.now
         puts("!!!!!!*****######"+(finish-start).to_s)
         raise SearchError, "No products match that search criteria for #{Session.product_type}" if res.empty?
-        set.to_a
+        set
       end
       
       #ContSpec.by_feat = cached.first
@@ -69,7 +69,6 @@ class SearchProduct < ActiveRecord::Base
   private
   class << self
     def search_id_q
-      #where(:search_id => Session.search.products_search_id)
       where(:search_id => Product.initial)
     end
       

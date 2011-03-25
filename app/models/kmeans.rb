@@ -357,32 +357,32 @@
  end
 
  
- def self.compute(number_clusters,p_ids)
+ def self.compute(number_clusters,products)
  
   dim_cont = Session.continuous["cluster"].size
   dim_bin = Session.binary["cluster"].size
   dim_cat = Session.categorical["cluster"].size
   cluster_weights = self.set_cluster_weights(dim_cont, 0, 0)
   utility_weights = self.set_utility_weights(dim_cont, 0, 0)
-  s = p_ids.size
+  s = products.size
 
   # don't need to cluster if number of products is less than clusters  
   #cont_specs = st[0...dim_cont].transpose
   #bin_specs = st[dim_cont...dim_cont+dim_bin].transpose
   #cat_specs = st[dim_cont+dim_bin...st.size].transpose 
 
-    performance_factors = Session.search.products.map(&:performance_factor)
+    performance_factors = products.map(&:performance_factor)
 
      #factors << performance_factors
      #factors << [1]*factors.first.size
   
   if (s<number_clusters)
-    ft = self.factorize_cont_data
+    ft = self.factorize_cont_data(products)
     if ft.empty?
       utilitylist = [1]*s
     else 
       brand_factors = self.factorize_brand
-      utilitylist = Session.search.products.map(&:utility)
+      utilitylist = products.map(&:utility)
     end  
     #if utilities are the same
     utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
@@ -398,9 +398,9 @@
    # dim_per_cat = cat_specs.first.map{|f| f.size}
    
     # inistial seeds for clustering  ### just based on contiuous features
-    inits = self.init(number_clusters, self.factorize_cont_data, cluster_weights[0...dim_cont])
+    inits = self.init(number_clusters, self.factorize_cont_data(products), cluster_weights[0...dim_cont])
     #$k = Kmeans.new unless $k
-    Kmeans.ruby(number_clusters, cluster_weights[0...dim_cont], utility_weights, inits)
+    Kmeans.ruby(number_clusters, cluster_weights[0...dim_cont], utility_weights, inits,products)
     
 end
 
@@ -446,9 +446,9 @@ end
 # regular kmeans function     
 ## ruby function only cluster based on continuous data 
 ## ruby function does not sort by utility and don't pick the highest utility as the rep
-def self.ruby(number_clusters, cluster_weights, utility_weights, inits)
+def self.ruby(number_clusters, cluster_weights, utility_weights, inits, products)
   thresh = 0.000001
-  standard_specs = self.factorize_cont_data#self.standardize_cont_data(specs)
+  standard_specs = self.factorize_cont_data(products)
   brand_factors = self.factorize_brand
   #mean_1 = self.seed(number_clusters, specs)
   mean_1 = inits.map{|i| standard_specs[i]}
@@ -484,7 +484,7 @@ def self.ruby(number_clusters, cluster_weights, utility_weights, inits)
    end
   reps = [];
   #utility ordering
-  utilitylist = Session.search.products.map(&:utility)
+  utilitylist = products.map(&:utility)
   utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<number_clusters
   grouped_utilities = group_by_labels(utilitylist, labels).map{|g| g.inject(:+)/g.length}
   sorted_group_utilities = grouped_utilities.sort{|x,y| y<=>x}
@@ -550,13 +550,11 @@ end
     specs.map{|p| p.flatten}  
   end  
   
-  def self.factorize_cont_data
-    factors = []
-    Session.continuous["cluster"].map{|f| factors << Session.search.products.map(&(f+"_factor").intern)} 
-    factors.transpose
+  def self.factorize_cont_data(products)
+    Session.continuous["cluster"].map{|f| products.map(&(f+"_factor").intern)}.transpose
   end  
   def self.factorize_brand #(specs)
-    Session.search.products.map(&:brand_factor)
+    #Session.search.products.map(&:brand_factor)
   end
   #   
   def self.standardize_cont_data(specs)

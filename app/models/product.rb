@@ -38,8 +38,9 @@ class Product < ActiveRecord::Base
   
   def self.filterspecs
     st = []
+    myproducts = Session.search.products.to_a
     Session.continuous["filter"].each do |f| 
-      data = Session.search.products.map(&f.intern)
+      data = myproducts.map(&f.intern)
       raise ValidationError, "Can't find data for feature: #{f}" if data.empty?
       st << data.compact
     end
