@@ -175,23 +175,18 @@ for (j=0;j<k; j++){
   end
 
  
- def self.compute(number_clusters,p_ids)
+ def self.compute(number_clusters,products)
  
   dim_cont = Session.continuous["cluster"].size
   dim_bin = Session.binary["cluster"].size
   dim_cat = Session.categorical["cluster"].size
   cluster_weights = self.set_cluster_weights(dim_cont, 0, 0)
   utility_weights = self.set_utility_weights(dim_cont, 0, 0)
-  s = p_ids.size
+
+  s = products.size
   
   if (s<number_clusters)
-    ft = self.factorized_cont_data
-    if ft.empty?
-      utilitylist = [1]*s
-    else 
-      brand_factors = self.factorized_brand
-      utilitylist = weighted_ft(ft.each_with_index{|f, i| f<<brand_factors[i]}, utility_weights).map{|f| f. inject(:+)}
-    end  
+    utilitylist = Kmeans.utility(products)
     #if utilities are the same
     utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
     util_tmp = utilitylist.sort{|x,y| y <=> x }    
@@ -206,19 +201,23 @@ for (j=0;j<k; j++){
    # dim_per_cat = cat_specs.first.map{|f| f.size}
    
     # inistial seeds for clustering  ### just based on contiuous features
-    ft = self.factorized_cont_data
-    inits = self.init(number_clusters, ft, cluster_weights[0...dim_cont])
-    
-    #static VALUE kmeans_c(VALUE _points, _VALUE n, VALUE d, VALUE cluster_n,VALUE _weights, VALUE _utilities, VALUE _inits)
-    utilities = ContSpec.by_feat("utility")
+    inits = self.init(number_clusters, products, cluster_weights[0...dim_cont])
     #$k = Kmeans.new unless $k
-    #labels = $k.kmeans_c(ft.flatten, ft.size, ft.first.size, number_clusters, [0.33,0.33,0.33], utilities, inits)
-    Kmeans.ruby(number_clusters, cluster_weights[0...dim_cont], utility_weights, inits)
-    #labels
+    Kmeans.ruby(number_clusters, cluster_weights[0...dim_cont], utility_weights, inits,products)
+    
+end
+
+def self.utility(products)
+  if Session.search.sortby.nil? || Session.search.sortby == "relevance" 
+    products.map(&:utility)
+  else
+    products.map{|i| i.send((Session.search.sortby+"_factor").intern) || 0}
+  end
 end
 
 
-def self.init(number_clusters, specs, weights)
+def self.init(number_clusters, products, weights)
+  specs = self.factorize_cont_data(products)
   centers = [specs[(specs.size-1)/2]]
   for j in (0...number_clusters-1)
       actual_dists = centers.map{|c| specs.map{|s| self.distance(c,s, weights)}}.transpose.map{|j| j.min}
@@ -259,10 +258,9 @@ end
 # regular kmeans function     
 ## ruby function only cluster based on continuous data 
 ## ruby function does not sort by utility and don't pick the highest utility as the rep
-def self.ruby(number_clusters, cluster_weights, utility_weights, inits)
+def self.ruby(number_clusters, cluster_weights, utility_weights, inits, products)
   thresh = 0.000001
-  standard_specs = self.factorized_cont_data#self.standardize_cont_data(specs)
-  brand_factors = self.factorized_brand
+  standard_specs = self.factorize_cont_data(products)
   mean_1 = inits.map{|i| standard_specs[i]}
   mean_2 =[]
   labels = []
@@ -295,8 +293,9 @@ def self.ruby(number_clusters, cluster_weights, utility_weights, inits)
      (number_clusters-1...labels.size).to_a.each{|i| labels[i] = number_clusters -1}
    end
   reps = [];
+  
   #utility ordering
-  utilitylist = weighted_ft(standard_specs.each_with_index{|f, i| f<<brand_factors[i]}, utility_weights).map{|f| f. inject(:+)}  
+  utilitylist = Kmeans.utility(products)
   utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<number_clusters
   grouped_utilities = group_by_labels(utilitylist, labels).map{|g| g.inject(:+)/g.length}
   sorted_group_utilities = grouped_utilities.sort{|x,y| y<=>x}
@@ -305,6 +304,8 @@ def self.ruby(number_clusters, cluster_weights, utility_weights, inits)
   (0...number_clusters).to_a.each{|i| reps<< sorted_labels.index(i)}
   sorted_labels + reps   
 end
+
+
 
 #selecting the initial cluster centers
 def self.seed(number_clusters, specs)
@@ -317,9 +318,10 @@ end
 #  # Finding the mean of several points
 #  # points is a nxd dimension array where n is the number of products and d is number of features
 def self.mean(points)
-  s = points.size.to_f
-  #debugger if points.flatten.include
-  points.transpose.map{|p| p.inject(:+)/s}
+  points.transpose.map do |p| 
+    myp = p.compact
+    myp.inject(:+)/myp.size.to_f
+  end
 end
 
 # Finding the means of all clusters
@@ -332,15 +334,14 @@ end
 def self.distance(point1, point2, weights)
   dist = dim = 0.0
   point1.each_index do |i|
-      unless (point1[i].nil? || point2[i].nil?)
-        diff = weights[i]*(point1[i]-point2[i]) 
-        dim = dim + 1
-        dist += diff*diff
-      end 
+    unless (point1[i].nil? || point2[i].nil?)
+      diff = weights[i]*(point1[i]-point2[i]) 
+      dim = dim + 1
+      dist += diff*diff
+    end 
   end
-  dist/dim
+  dim == 0.0 ? 0 : dist/dim
 end
-
 #### New functions
 # converts categorical spec values to binary arrays
   def self.standardize_cat_data(specs)
@@ -362,11 +363,8 @@ end
     specs.map{|p| p.flatten}  
   end  
   
-  def self.factorized_cont_data
-   Session.continuous["cluster"].map{|f| ContSpec.by_feat(f+"_factor")}.transpose
-  end  
-  def self.factorized_brand #(specs)
-    ContSpec.by_feat("brand_factor")
+  def self.factorize_cont_data(products)
+    Session.continuous["cluster"].map{|f| products.map(&(f+"_factor").intern)}.transpose
   end
   #   
   def self.standardize_cont_data(specs)
@@ -397,11 +395,11 @@ end
     return weighted_ft
   end  
   
-  def self.extendedCluster(num)
+  def self.extendedCluster(num,products)
     all_ids = SearchProduct.find_all_by_search_id(Product.initial).map(&:product_id)
-    curr_ids = Session.search.products
+    curr_ids = Session.search.sim_products
     other_ids = all_ids - curr_ids
-    curr_specs= self.factorized_cont_data
+    curr_specs= self.factorized_cont_data(products)
     all_specs = all_ids.map{|id| Session.continuous["cluster"].map{|f| ContSpec.cache_all(id)[f+"_factor"]}}
     other_specs =  []
     all_specs.each_with_index{|s,i| other_specs << all_specs[i] if other_ids.include?(all_ids[i]) }

@@ -215,8 +215,8 @@ module CompareHelper
             open = false
           end
     		end
-    		if (@s.search.cluster.size < 12 && @s.search.cluster.numclusters<8)
-    		  extended_ids = Kmeans.extendedCluster(10)
+    		if (false && @s.search.cluster.size < 12 && @s.search.cluster.numclusters<8)
+    		  extended_ids = Kmeans.extendedCluster(10,@products)
           if extended_ids.size > 1
               @s.search.extend_it(Extended.new(extended_ids))
               @products = [] if @products.nil?

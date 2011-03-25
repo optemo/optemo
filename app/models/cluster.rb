@@ -8,10 +8,10 @@ class Cluster
     #@rep_id = rep_id
     if Rails.env.development?
       Site::Application::CLUSTER_CACHE[products.hash.abs]=products
-      Site::Application::CLUSTER_CACHE[rep_id.hash.abs]=rep_id
+      #Site::Application::CLUSTER_CACHE[rep_id.hash.abs]=rep_id
     else
       Rails.cache.write("Cluster#{products.hash.abs}", products)
-      Rails.cache.write("Cluster#{rep_id.hash.abs}", rep_id)
+      #Rails.cache.write("Cluster#{rep_id.hash.abs}", rep_id)
     end
   end
   
@@ -26,8 +26,8 @@ class Cluster
       p_ids = Rails.cache.read("Cluster#{id}")
     end
     #Cache miss
-    p_ids = SearchProduct.find_all_by_search_id(Product.initial).map(&:product_id) unless p_ids
-
+    #p_ids = SearchProduct.find_all_by_search_id(Product.initial).map(&:product_id) unless p_ids
+    debugger unless p_ids
     p_ids
   end
   
@@ -35,19 +35,25 @@ class Cluster
   def children
     unless @children
       start = Time.now
-      cluster_ids_and_reps = Kmeans.compute(9,products)
+      cluster_ids_and_reps = Kmeans.compute(9,products.to_a)
       cluster_ids = cluster_ids_and_reps[0...products.size] 
       rep_ids = cluster_ids_and_reps[products.size...cluster_ids_and_reps.size]
       finish = Time.now
       @children = []
-      grouped_ids = Array.new(9){Array.new}
-      products.each do |product|
-        grouped_ids[cluster_ids.shift] << product
-      end
-      grouped_ids.each_with_index do |product_ids, i| 
+      products.classify{|p| cluster_ids.shift}.each_pair do |i,product_ids|
         next if product_ids.empty? #In case a cluster is eliminated by the clustering algorithm
-        @children << Cluster.new(product_ids,products[rep_ids[i]])
+        @children << Cluster.new(product_ids,rep_ids[i])
       end
+      
+      #@children = []
+      #grouped_ids = Array.new(9){Array.new}
+      #products.each do |product|
+      #  grouped_ids[cluster_ids.shift] << product
+      #end
+      #grouped_ids.each_with_index do |product_ids, i| 
+      #  next if product_ids.empty? #In case a cluster is eliminated by the clustering algorithm
+      #  @children << Cluster.new(product_ids,products[rep_ids[i]])
+      #end
       puts("*****######!!!!!!"+(finish-start).to_s)
     end
     @children
@@ -57,31 +63,30 @@ class Cluster
   #The represetative product for this cluster, assumes nodes ordered by utility
   def representative
     unless @rep
-    #  @rep = Product.cached(rep_id)
       if !(Session.search.sortby.nil?) && Session.continuous["cluster"].include?(Session.search.sortby)
-         fs = ContSpec.cachemany(products, Session.search.sortby)
-         fs = [0] if fs.empty?
+         fs = products.to_a.map(&Session.search.sortby.intern).compact
          if (Session.search.sortby =='price') 
-           @rep = Product.cached(products[fs.index(fs.min)])
-         else 
-           @rep = Product.cached(products[fs.index(fs.max)])  
-         end     
+           target = fs.min
+         else
+           target = fs.max
+         end    
+         @rep = Product.cached(products.to_a.find{|p| p.send(Session.search.sortby.intern) == target}.id) 
       else
-         utilities = ContSpec.cachemany(products, "utility")
-         @rep = Product.cached(products[utilities.index(utilities.max)])
+         max_utility = products.map(&:utility).max
+         @rep = Product.cached(products.to_a.find{|p|p.utility == max_utility}.id)
       end  
     end
     @rep
   end
   def min(feature)
     if Session.continuous["cluster"].include?(feature)
-      products.map{|p_id| ContSpec.cachemany([p_id], feature)}.flatten.min
+      products.map(&feature.intern).compact.min
     end  
   end  
   
   def max(feature)
     if Session.continuous["cluster"].include?(feature)
-      products.map{|p_id| ContSpec.cachemany([p_id], feature)}.flatten.max
+      products.map(&feature.intern).compact.max
     end  
   end
   
