@@ -3,8 +3,7 @@
 <div class="left-right-wrapper">
 <div id="leftbar">
     <!-- The Saved Items box -->
-	<div id="savebar" class='leftboxes gainlayout rounded_bd rounded'>
-		<div class="tl"><!-- --></div><div class="tr"><!-- --></div>
+	<div id="savebar" class='leftboxes gainlayout'>
 		<h2> <%=t 'products.compare.saved' %> </h2>
 		<div id="savesome"> <% if Session.dragAndDropEnabled == true %> <%=t 'products.compare.savesomedrag'%> <% else %> <%=t 'products.compare.savesome'%> <% end %></div>
 		<div id="already_added_msg" class="savedmsg"> <%=t 'products.compare.alreadyadded' %> </div>
@@ -13,17 +12,14 @@
 		</div>
 		<!-- Hide if 0 products, show if 1/more. -->
 		<%= link_to image_tag("compare#{fr?}.gif"), "", :id => "compare_button", :style => "display:none;" %>
-		<div class="bl"><!-- --></div><div class="br"><!-- --></div>
 	</div>
 	<!-- The Filters section -->
-	<div id="filterbar" class="leftboxes rounded_bd rounded">
-		<div class="tl"></div><div class="tr"></div>
+	<div id="filterbar" class="leftboxes">
 		<div id="ajaxfilter">
 			<% unless @indexload %>
 				<%= render :partial => 'filter', :locals => {:s => Session, :current_search => Session.search} %>
 			<% end  %>
 		</div>
-		<div class="bl"></div><div class="br"></div>
 	</div>
 	
 

@@ -100,9 +100,6 @@ h3 {
 	margin-bottom: 5px;
 	padding: 5px;
 	position: relative;
-}
-.rounded_nav {
-    background-color: #e1e1e1;
 	border: 1px solid #d0d0d0;
 }
 #navigator_bar .smalllink{
@@ -195,7 +192,7 @@ div #leftbar {
 }
 .leftboxes {
 	margin: 0 0 5px 4px;
-	padding: 6px;
+	border: 1px solid #ccc;
 }
 .rounded_leftboxes {
 	border: 1px solid #ccc;        
@@ -397,7 +394,7 @@ div.smalldesc {
 .feature {
     position: relative;
     clear: both;
-    padding-bottom:2px;
+    padding: 0 6px 2px;
 }
 
 .desc {
