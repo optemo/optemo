@@ -289,7 +289,7 @@ end
 def self.mean(points)
   points.transpose.map do |p| 
     myp = p.compact
-    myp.inject(:+)/myp.size.to_f
+    myp.empty? nil : myp.sum/myp.size.to_f
   end
 end
 
