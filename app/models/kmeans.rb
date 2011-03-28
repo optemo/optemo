@@ -181,7 +181,7 @@ for (j=0;j<k; j++){
   dim_bin = Session.binary["cluster"].size
   dim_cat = Session.categorical["cluster"].size
   cluster_weights = self.set_cluster_weights(dim_cont, 0, 0)
-  utility_weights = self.set_utility_weights(dim_cont, 0, 0)
+
 
   s = products.size
   
@@ -203,7 +203,7 @@ for (j=0;j<k; j++){
     # inistial seeds for clustering  ### just based on contiuous features
     inits = self.init(number_clusters, products, cluster_weights[0...dim_cont])
     #$k = Kmeans.new unless $k
-    Kmeans.ruby(number_clusters, cluster_weights[0...dim_cont], utility_weights, inits,products)
+    Kmeans.ruby(number_clusters, cluster_weights[0...dim_cont], inits,products)
     
 end
 
@@ -240,25 +240,10 @@ def self.set_cluster_weights(dim_cont, dim_bin, dim_cat)
 end
 
 
-def self.set_utility_weights(dim_cont, dim_bin, dim_cat)
-  weights = []
-  if Session.search.sortby.nil? || Session.search.sortby == "relevance"
-    Session.continuous["cluster"].each{|f| weights << Session.utility_weight[f] if Session.utility_weight[f]}
-    weights_sum = weights.sum
-    weights.map{|w| w/weights.sum.to_f}
-    weights << 10
-  else
-    weights = [0.0/dim_cont]*dim_cont 
-    weights[Session.continuous["cluster"].index(Session.search.sortby)] = 0.99
-    weights << 0.01
-  end
-  weights  
-end
-
 # regular kmeans function     
 ## ruby function only cluster based on continuous data 
 ## ruby function does not sort by utility and don't pick the highest utility as the rep
-def self.ruby(number_clusters, cluster_weights, utility_weights, inits, products)
+def self.ruby(number_clusters, cluster_weights, inits, products)
   thresh = 0.000001
   standard_specs = self.factorize_cont_data(products)
   mean_1 = inits.map{|i| standard_specs[i]}
@@ -292,20 +277,20 @@ def self.ruby(number_clusters, cluster_weights, utility_weights, inits, products
      (0...number_clusters-1).to_a.each{|i| labels[i] = i}
      (number_clusters-1...labels.size).to_a.each{|i| labels[i] = number_clusters -1}
    end
-  reps = [];
-  
+   
   #utility ordering
+  self.utility_order(products, labels, number_clusters)
+end
+
+def self.utility_order(products, labels, number_clusters)
   utilitylist = Kmeans.utility(products)
   utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<number_clusters
   grouped_utilities = group_by_labels(utilitylist, labels).map{|g| g.inject(:+)/g.length}
   sorted_group_utilities = grouped_utilities.sort{|x,y| y<=>x}
-  sorted_labels = []
-  labels.each_index{|i| sorted_labels << sorted_group_utilities.index(grouped_utilities[labels[i]])}
-  (0...number_clusters).to_a.each{|i| reps<< sorted_labels.index(i)}
+  sorted_labels  = labels.map{|l| sorted_group_utilities.index(grouped_utilities[l])}
+  reps = (0...number_clusters).map{|i| sorted_labels.index(i)}
   sorted_labels + reps
 end
-
-
 
 #selecting the initial cluster centers
 def self.seed(number_clusters, specs)
