@@ -15,7 +15,7 @@ class ContSpec < ActiveRecord::Base
   
   def self.all
     CachingMemcached.cache_lookup("ContSpecsAll#{Product.initial}") do
-      joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").select("search_products.product_id, group_concat(cont_specs.name) AS names, group_concat(cont_specs.value) AS vals").where(:search_products => {:search_id => Product.initial})
+      joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").select("search_products.product_id, group_concat(cont_specs.name) AS names, group_concat(cont_specs.value) AS vals").where(:search_products => {:search_id => Product.initial}).group(:product_id)
     end
   end
   

@@ -20,9 +20,16 @@ class ComparableSet
   def size
     @hash.size
   end
-  
+  def include_id?(id)
+    @hash.include? id
+  end
   def include?(obj)
     @hash.include? obj.id
+  end
+  def reject!(&block)
+    @array = nil
+    @hash.delete_if { |k,v| yield(v) }
+    self
   end
   
   def empty?
@@ -35,7 +42,7 @@ class ComparableSet
     sets.reverse if other_set.size < self.size
     smaller, larger = sets
     n = self.class.new
-    @hash.each_pair { |k,v| n.add(v) if larger.include?(v) }
+    @hash.each_pair { |k,v| n.add(v) if larger.include_id?(k) }
     n
   end
   

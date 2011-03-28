@@ -366,7 +366,11 @@ end
   def self.factorize_cont_data(products)
     Session.continuous["cluster"].map{|f| products.map(&(f+"_factor").intern)}.transpose
   end
-  #   
+  
+  def self.factorize_cont(product)
+    Session.continuous["cluster"].map{|f| product.send((f+"_factor").intern)}
+  end
+   
   def self.standardize_cont_data(specs)
     mean_all = mean(specs)
     var_all = self.get_var(specs, mean_all)
@@ -395,40 +399,38 @@ end
     return weighted_ft
   end  
   
-  def self.allproducts
-    #set = ComparableSet.new
-    #ContSpec.all.each do |rec|
-    #  prod = ProductAndSpec.new(:id => rec.product_id)
-    #  prod.set(rec.names, rec.vals)
-    #  set.add()
-    #end
+  def self.betterproducts(curr_set)
+    set = ComparableSet.new
+    min_utility = curr_set.map(&:utility).min
+    ContSpec.all.each do |rec|
+      #only include new products
+      next if curr_set.include_id?(rec.product_id) 
+      prod = ProductAndSpec.new(:id => rec.product_id)
+      prod.set(rec.names, rec.vals)
+      #only include better products
+      set.add(prod) if prod.utility > min_utility
+    end
+    set
   end
   
-  def self.extendedCluster(num,products)
-    all_ids = SearchProduct.find_all_by_search_id(Product.initial).map(&:product_id)
-    curr_ids = Session.search.sim_products
-    other_ids = all_ids - curr_ids
-    curr_specs= self.factorized_cont_data(products)
-    all_specs = all_ids.map{|id| Session.continuous["cluster"].map{|f| ContSpec.cache_all(id)[f+"_factor"]}}
-    other_specs =  []
-    all_specs.each_with_index{|s,i| other_specs << all_specs[i] if other_ids.include?(all_ids[i]) }
-    better_specs = []
-    better_ids = []
-    better_specs = []
-    min_utility = ContSpec.cachemany(curr_ids, "utility").min
-    other_specs.each_with_index do |s, i|
-      if !ContSpec.cachemany([other_ids[i]], "utility").first.nil? && ContSpec.cachemany([other_ids[i]], "utility").first>min_utility
-        better_ids << other_ids[i]
-        better_specs <<  s
-      end  
-    end  
-    dists = []
-    dim = all_specs.first.size
-    better_specs.each_with_index do |s2, ind| 
-      dists<< curr_specs.map{|s1| self.distance(s1,s2, [1.0/dim]*dim)}.inject(:+)
-    end             
-    better_products_hash = Hash[better_ids.zip(dists)]
-    better_products_hash.sort{|a,b| a[1] <=> b[1]}[0...num].map{|k, v| k} # num close products
+  def self.extendedCluster(expected_num,products)
+    better_set = Kmeans.betterproducts(products)
+    
+    dim = Session.continuous["cluster"].size
+    weights = [1.0/dim]*dim
+    
+    dists = better_set.map do |better| 
+      s2 = Kmeans.factorize_cont(better)
+      better.dist = products.map do |curr| 
+        s1 = Kmeans.factorize_cont(curr)
+        self.distance(s1,s2,weights)
+      end.sum
+    end
+    
+    threshold = dists.sort[expected_num]
+    #Remove some products if there are more than expected
+    better_set.reject!{|p| p.dist >= threshold} unless threshold.nil?
+    better_set
   end
   
 end

@@ -215,12 +215,10 @@ module CompareHelper
             open = false
           end
     		end
-    		if (false && @s.search.cluster.size < 12 && @s.search.cluster.numclusters<8)
-    		  extended_ids = Kmeans.extendedCluster(10,@products)
+    		if (Session.extendednav && @s.search.cluster.size < 12 && @s.search.cluster.numclusters<8)
+    		  extended_ids = Kmeans.extendedCluster(10,@s.search.products)
           if extended_ids.size > 1
-              @s.search.extend_it(Extended.new(extended_ids))
-              @products = [] if @products.nil?
-              @products = @products + extended_ids
+              @s.search.extend_it(Cluster.new(extended_ids,nil))
     		      res << render(:partial => 'extendedbox', :locals => {:i => 9, :extended => @s.search.extended, :group => @s.search.extended.size > 1, :product => @s.search.extended.representative, :filter_hash => adjustingfilters_hash, :adjustedfilters => adjustingfilters})
   		        @s.search.extend_it(nil)
   		    end
