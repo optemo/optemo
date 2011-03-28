@@ -176,15 +176,9 @@ for (j=0;j<k; j++){
 
  
  def self.compute(number_clusters,products)
- 
-  dim_cont = Session.continuous["cluster"].size
-  dim_bin = Session.binary["cluster"].size
-  dim_cat = Session.categorical["cluster"].size
-  cluster_weights = self.set_cluster_weights(dim_cont, 0, 0)
-
-
+  dim_cont = Session.continuous["cluster"]
+  cluster_weights = self.set_cluster_weights(dim_cont)
   s = products.size
-  
   if (s<number_clusters)
     utilitylist = Kmeans.utility(products)
     #if utilities are the same
@@ -193,18 +187,9 @@ for (j=0;j<k; j++){
     ordered_list = utilitylist.map{|u| util_tmp.index(u)}
     return ordered_list + ordered_list
   end
- 
-    performance_weight = 2
-    #weights = weights << performance_weight
-    weight_dim = dim_cont #+dim_bin+dim_cat+1
-    # dimension of each category - for example how many different brands 
-   # dim_per_cat = cat_specs.first.map{|f| f.size}
-   
-    # inistial seeds for clustering  ### just based on contiuous features
-    inits = self.init(number_clusters, products, cluster_weights[0...dim_cont])
-    #$k = Kmeans.new unless $k
-    Kmeans.ruby(number_clusters, cluster_weights[0...dim_cont], inits,products)
-    
+    # initial seeds for clustering  ### just based on contiuous features
+    inits = self.init(number_clusters, products, cluster_weights)
+    Kmeans.ruby(number_clusters, cluster_weights, inits,products)
 end
 
 def self.utility(products)
@@ -226,14 +211,14 @@ def self.init(number_clusters, products, weights)
   centers.map{|c| specs.index(c)} 
 end
 
-def self.set_cluster_weights(dim_cont, dim_bin, dim_cat)
+def self.set_cluster_weights(dim)
   weights = []
   if Session.search.sortby.nil? || Session.search.sortby == "relevance"
     Session.continuous["cluster"].each{|f| weights << Session.cluster_weight[f]}
     weights_sum = weights.sum
     weights.map{|w| w/weights.sum.to_f}
   else
-    weights = [0/dim_cont]*dim_cont 
+    weights = [0/dim]*dim
     weights[Session.continuous["cluster"].index(Session.search.sortby)] = 1
   end
   weights
@@ -247,7 +232,6 @@ def self.ruby(number_clusters, cluster_weights, inits, products)
   thresh = 0.000001
   standard_specs = self.factorize_cont_data(products)
   mean_1 = inits.map{|i| standard_specs[i]}
-  mean_2 =[]
   labels = []
   dif = []
   begin 
@@ -269,18 +253,18 @@ def self.ruby(number_clusters, cluster_weights, inits, products)
    end    
   end while z > thresh
    # postprocessing if one cluster is collapsed
-   if labels.uniq.size <labels.max+1
-     labels = labels.map{|l| labels.uniq.index(l)}
-   end
+   labels = labels.map{|l| labels.uniq.index(l)} if labels.uniq.size <labels.max+1
+
    # split if there is only one cluster
    if labels.uniq.size ==1
      (0...number_clusters-1).to_a.each{|i| labels[i] = i}
      (number_clusters-1...labels.size).to_a.each{|i| labels[i] = number_clusters -1}
    end
    
-  #utility ordering
+  #ordering clusters based on group utility and picking the rep 
   self.utility_order(products, labels, number_clusters)
 end
+
 
 def self.utility_order(products, labels, number_clusters)
   utilitylist = Kmeans.utility(products)
@@ -327,26 +311,6 @@ def self.distance(point1, point2, weights)
   end
   dim == 0.0 ? 0 : dist/dim
 end
-#### New functions
-# converts categorical spec values to binary arrays
-  def self.standardize_cat_data(specs)
-    specs = specs.transpose
-    #cont_size=3
-    #cats = ["brand"]
-    cont_size = Session.continous["filter"].size
-    Session.categorical["filter"].each_index do |i|
-      vals = specs[i+cont_size].uniq
-      t=0
-      specs[i+cont_size].each do |v| 
-            cat = [0]*vals.size
-            cat[vals.index(v)] = 1
-            specs[i+cont_size][t]=cat
-            t+=1  
-      end      
-    end
-    specs = specs.transpose
-    specs.map{|p| p.flatten}  
-  end  
   
   def self.factorize_cont_data(products)
     Session.continuous["cluster"].map{|f| products.map(&(f+"_factor").intern)}.transpose
@@ -355,34 +319,6 @@ end
   def self.factorize_cont(product)
     Session.continuous["cluster"].map{|f| product.send((f+"_factor").intern)}
   end
-   
-  def self.standardize_cont_data(specs)
-    mean_all = mean(specs)
-    var_all = self.get_var(specs, mean_all)
-    specs.each{|p| p.each_with_index{|v, i| p[i]=(v-mean_all[i])/var_all[i]}}
-  end
-  
-  # finds the standard deviation for every dimension(feature)
-  def self.get_var(specs, mean_all)
-    count = specs.size
-    var = []
-    specs.transpose.each{|p| var << p.each_index{|i| i*i}.inject(:+)}
-    var.each_index.each do |i| 
-      var[i]=Math.sqrt(((var[i]/count) - (mean_all[i]**2)).abs)
-    end  
-    var
-  end
-  def self.weighted_ft(ft, weights)
-    weights_sum = weights.sum
-    weights = weights.map{|w| w/weights_sum.to_f}
-    weighted_ft=[]
-    for i in (0...ft.size)
-      weighted_ft_i = []
-      ft[i].each_with_index{|f,j| weighted_ft_i << weights[j]*f}
-      weighted_ft << weighted_ft_i
-    end
-    return weighted_ft
-  end  
   
   def self.betterproducts(curr_set)
     set = ComparableSet.new
