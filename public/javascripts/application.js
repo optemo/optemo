@@ -1184,6 +1184,13 @@ optemo_module = (function (my){
 			return false;
 		});
 		
+		//Zoomout filters
+		$('.zoomout').live('click', function(){
+			trackPage('goals/zoomout', {'filter_type' : 'zoomout'});
+			optemo_module.loading_indicator_state.sidebar = true;
+			optemo_module.ajaxcall($(this).attr('href')+'?ajax=true');
+			return false;
+		});
     }
 
     function ErrorInit() {

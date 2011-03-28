@@ -1,6 +1,5 @@
 class Search < ActiveRecord::Base
   attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
-  attr_accessor :onlyfiltering
   
   def userdataconts
       @userdataconts ||= Userdatacont.find_all_by_search_id(id)
@@ -163,7 +162,7 @@ class Search < ActiveRecord::Base
     @extended = extended_obj unless extended_obj.nil?
   end  
   def extended
-      @extended ||= Extended.new(products)
+      @extended ||= Cluster.new(products)
   end
   #Sets to use the initial products and checks whether they're in the database
   def initial_products
