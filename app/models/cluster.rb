@@ -40,7 +40,9 @@ class Cluster
       rep_ids = cluster_ids_and_reps[products.size...cluster_ids_and_reps.size]
       finish = Time.now
       @children = []
-      products.classify{|p| cluster_ids.shift}.each_pair do |i,product_ids|
+      grouped_ids = products.classify{|p| cluster_ids.shift}
+      (0..8).each do |i|
+        product_ids = grouped_ids[i]
         next if product_ids.empty? #In case a cluster is eliminated by the clustering algorithm
         @children << Cluster.new(product_ids,rep_ids[i])
       end
