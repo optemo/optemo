@@ -5,13 +5,13 @@ class Cluster
   
   def initialize(products, rep_id)
     @products = products # necessary?
-    #@rep_id = rep_id
+    @rep_id = rep_id
     if Rails.env.development?
       Site::Application::CLUSTER_CACHE[products.hash.abs]=products
-      #Site::Application::CLUSTER_CACHE[rep_id.hash.abs]=rep_id
+      Site::Application::CLUSTER_CACHE[rep_id.hash.abs]=rep_id
     else
       Rails.cache.write("Cluster#{products.hash.abs}", products)
-      #Rails.cache.write("Cluster#{rep_id.hash.abs}", rep_id)
+      Rails.cache.write("Cluster#{rep_id.hash.abs}", rep_id)
     end
   end
   
@@ -44,7 +44,7 @@ class Cluster
       (0..8).each do |i|
         product_ids = grouped_ids[i]
         next if product_ids.nil? || product_ids.empty? #In case a cluster is eliminated by the clustering algorithm
-        @children << Cluster.new(product_ids,rep_ids[i])
+        @children << Cluster.new(product_ids,products.map(&:id)[rep_ids[i]])
       end
       
       #@children = []
@@ -65,18 +65,19 @@ class Cluster
   #The represetative product for this cluster, assumes nodes ordered by utility
   def representative
     unless @rep
-      if !(Session.search.sortby.nil?) && Session.continuous["cluster"].include?(Session.search.sortby)
-         fs = products.to_a.map(&Session.search.sortby.intern).compact
-         if (Session.search.sortby =='price') 
-           target = fs.min
-         else
-           target = fs.max
-         end    
-         @rep = Product.cached(products.to_a.find{|p| p.send(Session.search.sortby.intern) == target}.id) 
-      else
-         max_utility = products.map(&:utility).max
-         @rep = Product.cached(products.to_a.find{|p|p.utility == max_utility}.id)
-      end  
+      #if !(Session.search.sortby.nil?) && Session.continuous["cluster"].include?(Session.search.sortby)
+      #   fs = products.to_a.map(&Session.search.sortby.intern).compact
+      #   if (Session.search.sortby =='price') 
+      #     target = fs.min
+      #   else
+      #     target = fs.max
+      #   end    
+      #   @rep = Product.cached(products.to_a.find{|p| p.send(Session.search.sortby.intern) == target}.id) 
+      #else
+      #   max_utility = products.map(&:utility).max
+      #   @rep = Product.cached(products.to_a.find{|p|p.utility == max_utility}.id)
+      #end  
+      @rep = Product.cached(@rep_id) 
     end
     @rep
   end
