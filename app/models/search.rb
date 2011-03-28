@@ -1,6 +1,5 @@
 class Search < ActiveRecord::Base
   attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
-  attr_accessor :onlyfiltering
   
   def userdataconts
       @userdataconts ||= Userdatacont.find_all_by_search_id(id)
@@ -152,7 +151,7 @@ class Search < ActiveRecord::Base
   
   #The clusters argument can either be an array of cluster ids or an array of cluster objects if they have already been initialized
   def cluster
-    @cluster ||= Cluster.new(products, products[0])
+    @cluster ||= Cluster.new(sim_products, nil)
   end
   
   def isextended?
@@ -163,7 +162,7 @@ class Search < ActiveRecord::Base
     @extended = extended_obj unless extended_obj.nil?
   end  
   def extended
-      @extended ||= Extended.new(products)
+      @extended ||= Cluster.new(products)
   end
   #Sets to use the initial products and checks whether they're in the database
   def initial_products
@@ -181,37 +180,19 @@ class Search < ActiveRecord::Base
   end
   
   def products
-    SearchProduct.fq2
+    @products ||= SearchProduct.fq2
   end
   
-  def products_search_id
-    if @myproducts
-      #A cluster was chosen
-      my_search = id
+  def sim_products
+    if seesim
+      @simproducts ||= products & Cluster.cached(seesim)
     else
-      current_s = self
-      while(my_search.nil?)
-        if current_s.initial
-          my_search = initial_products
-          self.onlyfiltering = true
-        else
-          c = SearchProduct.where(["search_id = ?",current_s.id])
-          if c.empty?
-            begin
-              current_s = Search.find(current_s.parent_id)
-            rescue (ActiveRecord::RecordNotFound)
-              #There's an error let's just go back to the initial products
-              debugger
-              my_search = initial_products
-            end
-          else
-            #Previous selected products have been found
-            my_search = current_s.id
-          end
-        end
-      end
+      products
     end
-    my_search
+  end
+  
+  def sim_products_size
+    @sim_products_size ||= sim_products.size
   end
 
   def groupings
@@ -319,11 +300,11 @@ class Search < ActiveRecord::Base
       @userdatacats = []
     when "similar"
       #Browse similar button
-      @myproducts = Cluster.cached(p["cluster_hash"]) # current products
+      self.seesim = p["cluster_hash"] # current products
       duplicateFeatures(old_search)
     when "extended"
-      @myproducts = Extended.cached(p["extended_hash"]) # current products
-       createFeatures(p,old_search)
+      self.seesim = p["extended_hash"] # current products
+      createFeatures(p,old_search)
     when "nextpage"
       #the next page button has been clicked
       self.page = p[:page]
@@ -355,12 +336,6 @@ class Search < ActiveRecord::Base
     (userdataconts+userdatabins+userdatacats).each do |d|
       d.search_id = id
       d.save
-    end
-    #Record new prefiltered products
-    if @myproducts
-      SearchProduct.transaction do
-        @myproducts.map{|product_id| SearchProduct.new({:product_id => product_id, :search_id => id})}.each(&:save)
-      end
     end
   end
   

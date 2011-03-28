@@ -27,6 +27,12 @@ class CompareController < ApplicationController
       correct_render
     end
   end
+  
+  def zoomout
+    # Zoom out of see similar
+    classVariables(Search.create("action_type" => "nextpage"))
+    correct_render
+  end
 
   def groupby
     # Group products by specified feature

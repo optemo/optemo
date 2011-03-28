@@ -4,7 +4,7 @@ class Session
   cattr_accessor :directLayout, :mobileView  # View choice (Assist vs. Direct, mobile view vs. computer view)
   cattr_accessor :continuous, :binary, :categorical, :binarygroup, :prefered  # Caching of features' names
   cattr_accessor :prefDirection, :maximum, :minimum, :utility_weight, :cluster_weight  # Stores which preferences are 'lower is better' vs. normal; used in sorting, plus some attribute globals
-  cattr_accessor :dragAndDropEnabled, :relativeDescriptions, :numGroups  # These flags should probably be stripped back out of the code eventually
+  cattr_accessor :dragAndDropEnabled, :relativeDescriptions, :numGroups, :extendednav  # These flags should probably be stripped back out of the code eventually
   cattr_accessor :product_type # Product type (camera_us, etc.), used everywhere
   cattr_accessor :piwikSiteId # Piwik Site ID, as configured in the currently-running Piwik install.
   cattr_accessor :ab_testing_type # Categorizes new users for AB testing
@@ -18,6 +18,7 @@ class Session
     self.relativeDescriptions = true
     # At one time, this parameter controlled how many clusters were shown.
     self.numGroups = 9
+    self.extendednav = true
     self.prefDirection = Hash.new(1) # Set 1 i.e. Up as the default value for direction
     self.maximum = Hash.new
     self.minimum = Hash.new
