@@ -1,5 +1,6 @@
 class ProductAndSpec
   attr_accessor :id
+  attr_accessor :dist if Session.extendednav
   def initialize(params = {})
     @id = params[:id]
   end
@@ -15,12 +16,6 @@ class ProductAndSpec
         end
         send (name+"=").intern, vals[i].to_f
       end
-    end
-  end
-  
-  def self.create_specs
-    Session.continuous["cluster"].each do |feat|
-      attr_accessor feat.intern
     end
   end
   
