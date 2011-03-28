@@ -71,6 +71,28 @@ img.productimg {
 .productspecs {
 	font-size:0.8em;
 }
+.clusterspecs {
+	background: -moz-linear-gradient(left,  #f00,  #ff0,#0f0);
+	width: 75px;
+	height: 10px;
+	border: 1px solid #ccc;
+	margin-bottom: 1px;
+}
+.clusterspecs div {
+	background: white;
+	height: 100%;
+}
+.clustertext {
+	font-size: 0.7em;
+	width: 100px;
+	float: right;
+}
+.clusterspecs .leftbox{
+	float: left;
+}
+.clusterspecs .rightbox {
+	float: right;
+}
 
 .topbar {
 	width: 181px;
