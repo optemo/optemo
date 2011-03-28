@@ -43,7 +43,7 @@ class Cluster
       grouped_ids = products.classify{|p| cluster_ids.shift}
       (0..8).each do |i|
         product_ids = grouped_ids[i]
-        next if product_ids.empty? #In case a cluster is eliminated by the clustering algorithm
+        next if product_ids.nil? || product_ids.empty? #In case a cluster is eliminated by the clustering algorithm
         @children << Cluster.new(product_ids,rep_ids[i])
       end
       

@@ -302,7 +302,7 @@ def self.ruby(number_clusters, cluster_weights, utility_weights, inits, products
   sorted_labels = []
   labels.each_index{|i| sorted_labels << sorted_group_utilities.index(grouped_utilities[labels[i]])}
   (0...number_clusters).to_a.each{|i| reps<< sorted_labels.index(i)}
-  sorted_labels + reps   
+  sorted_labels + reps
 end
 
 
@@ -394,6 +394,15 @@ end
     end
     return weighted_ft
   end  
+  
+  def self.allproducts
+    #set = ComparableSet.new
+    #ContSpec.all.each do |rec|
+    #  prod = ProductAndSpec.new(:id => rec.product_id)
+    #  prod.set(rec.names, rec.vals)
+    #  set.add()
+    #end
+  end
   
   def self.extendedCluster(num,products)
     all_ids = SearchProduct.find_all_by_search_id(Product.initial).map(&:product_id)
