@@ -18,7 +18,7 @@ class Session
     self.relativeDescriptions = true
     # At one time, this parameter controlled how many clusters were shown.
     self.numGroups = 9
-    self.extendednav = true
+    self.extendednav = false
     self.prefDirection = Hash.new(1) # Set 1 i.e. Up as the default value for direction
     self.maximum = Hash.new
     self.minimum = Hash.new
