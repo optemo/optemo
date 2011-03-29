@@ -42,7 +42,8 @@ class SearchProduct < ActiveRecord::Base
       
       #ContSpec.by_feat = cached.first
       #Session.search.products_size = cached.size
-      cached
+      #This object is duplicated to avoid frozen object problems
+      cached.dup
     end
     
     def cat_counts(feat,expanded)
