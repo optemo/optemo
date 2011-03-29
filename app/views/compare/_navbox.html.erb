@@ -26,27 +26,32 @@
 		</div>
 	</div>
 
+	
+	<% if group %>
 	<div class='bottombar'>
-		<% if group %>
-    	  <%if Session.continuous["cluster"].include?(@s.search.sortby)%>
-    	        <%if cluster.min(@s.search.sortby)==cluster.max(@s.search.sortby)%>
-    	            <%link_text =  t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.min(@s.search.sortby).to_s + t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "") + " (" + cluster.size.to_s + ")" %>
-    	        <%else%>
-    	            <%link_text=t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.min(@s.search.sortby).to_s + t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "")+"-"+ t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.max(@s.search.sortby).to_s+t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "") +" ("+cluster.size.to_s+")"%>   
-    	        <%end%>     
-    	  <%else%>	
-				<!--<%["opticalzoom", "maxresolution"].each do |f|%>
-					<%# min = overallmin(f)
-					   max = overallmax(f)%>
-					<div class="clustertext"><%#cluster.min(f).to_s + "-" + cluster.max(f).to_s%></div>
-					<div class="clusterspecs"><div class="leftbox" style="width:<%# ((cluster.min(f)-min)/(max-min))*75 %>px"></div> <div class="rightbox" style="width:<%# (0.98-((cluster.max(f)-min)/(max-min)))*75 %>px"></div></div>
-				<%end%>-->
-    	        <% link_text = t("products.compare.similar",:count => cluster.size - 1)%>
-    	  <%end%>	
-    		<div class='sim rounded'>
-    		<%= link_to(link_text, cluster_path(cluster.id), {:id => "sim#{i}", :class => 'simlinks rounded', 
-    		  :"data-id" => "#{product.id}", :"data-size" => cluster.size, :"title" => cluster.size.to_s + " products in ", :rel => "nofollow"}) %>
-    			</div>
-		 <%end%>	
+      <%if Session.continuous["cluster"].include?(@s.search.sortby)%>
+            <%if cluster.min(@s.search.sortby)==cluster.max(@s.search.sortby)%>
+                <%link_text =  t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.min(@s.search.sortby).to_s + t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "") + " (" + cluster.size.to_s + ")" %>
+            <%else%>
+                <%link_text=t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.min(@s.search.sortby).to_s + t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "")+"-"+ t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.max(@s.search.sortby).to_s+t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "") +" ("+cluster.size.to_s+")"%>   
+            <%end%> 
+      <% else %>
+		<% link_text = t("products.compare.similar",:count => cluster.size - 1)%>
+      <%end%>	
+      <div>
+      <%= link_to(link_text, cluster_path(cluster.id), {:id => "sim#{i}", :class => 'simlinks rounded', :"data-id" => "#{product.id}", :"data-size" => cluster.size, :"title" => cluster.size.to_s + " products in ", :rel => "nofollow"}) %>
+      </div>
+	  <% unless Session.continuous["cluster"].include?(@s.search.sortby)%>	
+		<%["opticalzoom", "maxresolution"].each_with_index do |f,i|%>
+			<% min = overallmin(f)
+			   max = overallmax(f)%>
+			<div class="clustertext" style="float:<%= i%2==0 ? "left" : "right"%>;">
+			<div class="clusterspecs"><div class="leftbox" style="width:<%= ((cluster.min(f)-min)/(max-min))*75 %>px"></div> <div class="rightbox" style="width:<%= (0.98-((cluster.max(f)-min)/(max-min)))*75 %>px"></div><div class="referencebar"> </div></div>
+			<%=t "#{Session.product_type}.specs.#{f}.name" %>
+			</div>
+		<%end%>
+		<div style="clear:both;"> </div>
+	  <%end%>
 	</div>
+	<%end%>
 </div>

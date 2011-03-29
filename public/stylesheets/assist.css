@@ -40,7 +40,7 @@ div#main {
 	position: relative;
 	margin-right: 4px; 
 	margin-bottom: 3px;
-	height:243px;
+	height:260px;
 	width: 181px; /*+2 for the border*/
 	/*background: url(../images/nbsingle-180.png) no-repeat;*/
 }
@@ -72,11 +72,10 @@ img.productimg {
 	font-size:0.8em;
 }
 .clusterspecs {
-	background: -moz-linear-gradient(left,  #f00,  #ff0,#0f0);
+	/*background: -moz-linear-gradient(left,  #f00,  #ff0,#0f0);*/
+	background: url(../images/gradient.png) no-repeat;
 	width: 75px;
-	height: 10px;
-	border: 1px solid #ccc;
-	margin-bottom: 1px;
+	height: 9px;
 }
 .clusterspecs div {
 	background: white;
@@ -84,8 +83,6 @@ img.productimg {
 }
 .clustertext {
 	font-size: 0.7em;
-	width: 100px;
-	float: right;
 }
 .clusterspecs .leftbox{
 	float: left;
@@ -93,12 +90,23 @@ img.productimg {
 .clusterspecs .rightbox {
 	float: right;
 }
+.clusterspecs .referencebar {
+	width: 75px;
+	height: 4px;
+	border-bottom: 1px solid black;
+	position: absolute;
+	background: none;
+}
 
 .topbar {
 	width: 181px;
+	height: 218px;
 }
 .bottombar {
 	clear: left;
+	margin-top: 3px;
+	padding: 0 4px;
+	border: 1px solid #ccc;
 }
 #extended_box .topbar {
 	float: left;
