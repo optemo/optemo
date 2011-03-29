@@ -176,8 +176,7 @@ for (j=0;j<k; j++){
 
  
  def self.compute(number_clusters,products)
-  dim_cont = Session.continuous["cluster"]
-  cluster_weights = self.set_cluster_weights(dim_cont)
+  cluster_weights = self.set_cluster_weights(Session.continuous["cluster"])
   s = products.size
   if (s<number_clusters)
     utilitylist = Kmeans.utility(products)
@@ -211,17 +210,16 @@ def self.init(number_clusters, products, weights)
   centers.map{|c| specs.index(c)} 
 end
 
-def self.set_cluster_weights(dim)
-  weights = []
+def self.set_cluster_weights(features)
   if Session.search.sortby.nil? || Session.search.sortby == "relevance"
-    Session.continuous["cluster"].each{|f| weights << Session.cluster_weight[f]}
-    weights_sum = weights.sum
-    weights.map{|w| w/weights.sum.to_f}
+    weights = features.map{|f| Session.cluster_weight[f]}
+    weights_sum = weights.sum.to_f
+    weights.map{|w| w/weights_sum}
   else
-    weights = [0/dim]*dim
+    weights = [0]*features.size
     weights[Session.continuous["cluster"].index(Session.search.sortby)] = 1
+    weights
   end
-  weights
 end
 
 
@@ -269,7 +267,10 @@ end
 def self.utility_order(products, labels, number_clusters)
   utilitylist = Kmeans.utility(products)
   utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<number_clusters
-  grouped_utilities = group_by_labels(utilitylist, labels).map{|g| g.inject(:+)/g.length}
+  grouped_utilities = group_by_labels(utilitylist, labels).map do |p| 
+    myp = p.compact
+    myp.empty? ? nil : myp.sum/myp.size.to_f
+  end
   sorted_group_utilities = grouped_utilities.sort{|x,y| y<=>x}
   sorted_labels  = labels.map{|l| sorted_group_utilities.index(grouped_utilities[l])}
   reps = (0...number_clusters).map{|i| sorted_labels.index(i)}
