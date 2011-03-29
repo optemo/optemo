@@ -176,7 +176,7 @@ for (j=0;j<k; j++){
 
  
  def self.compute(number_clusters,products)
-  dim_cont = Session.continuous["cluster"]
+  dim_cont = Session.continuous["cluster"].size
   cluster_weights = self.set_cluster_weights(dim_cont)
   s = products.size
   if (s<number_clusters)
@@ -218,7 +218,7 @@ def self.set_cluster_weights(dim)
     weights_sum = weights.sum
     weights.map{|w| w/weights.sum.to_f}
   else
-    weights = [0/dim]*dim
+    weights = [0]*dim
     weights[Session.continuous["cluster"].index(Session.search.sortby)] = 1
   end
   weights

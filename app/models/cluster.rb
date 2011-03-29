@@ -6,12 +6,13 @@ class Cluster
   def initialize(products, rep_id)
     @products = products # necessary?
     @rep_id = rep_id
+    debugger if @rep_id.nil?
     if Rails.env.development?
       Site::Application::CLUSTER_CACHE[products.hash.abs]=products
-      Site::Application::CLUSTER_CACHE[rep_id.hash.abs]=rep_id
+      #Site::Application::CLUSTER_CACHE[rep_id.hash.abs]=rep_id
     else
       Rails.cache.write("Cluster#{products.hash.abs}", products)
-      Rails.cache.write("Cluster#{rep_id.hash.abs}", rep_id)
+      #Rails.cache.write("Cluster#{rep_id.hash.abs}", rep_id)
     end
   end
   
@@ -37,16 +38,17 @@ class Cluster
       start = Time.now
       cluster_ids_and_reps = Kmeans.compute(9,products.to_a)
       cluster_ids = cluster_ids_and_reps[0...products.size] 
-      rep_ids = cluster_ids_and_reps[products.size...cluster_ids_and_reps.size]
+      rep_ids = cluster_ids_and_reps[products.size...cluster_ids_and_reps.size] 
       finish = Time.now
       @children = []
       grouped_ids = products.classify{|p| cluster_ids.shift}
       (0..8).each do |i|
         product_ids = grouped_ids[i]
         next if product_ids.nil? || product_ids.empty? #In case a cluster is eliminated by the clustering algorithm
+        debugger if products.map(&:id)[rep_ids[i].nil?
         @children << Cluster.new(product_ids,products.map(&:id)[rep_ids[i]])
       end
-      
+      debugger if @children.map{|c| c.representative}.include?(nil)
       #@children = []
       #grouped_ids = Array.new(9){Array.new}
       #products.each do |product|
@@ -77,6 +79,7 @@ class Cluster
       #   max_utility = products.map(&:utility).max
       #   @rep = Product.cached(products.to_a.find{|p|p.utility == max_utility}.id)
       #end  
+      debugger if @rep_id.nil?
       @rep = Product.cached(@rep_id) 
     end
     @rep
