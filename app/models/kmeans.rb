@@ -177,8 +177,7 @@ for (j=0;j<k; j++){
  
  def self.compute(number_clusters,products)
 
-  dim_cont = Session.continuous["cluster"].size
-  cluster_weights = self.set_cluster_weights(dim_cont)
+  cluster_weights = self.set_cluster_weights(Session.continuous["cluster"])
 
   s = products.size
   if (s<number_clusters)
@@ -219,9 +218,9 @@ def self.set_cluster_weights(features)
     weights_sum = weights.sum.to_f
     weights.map{|w| w/weights_sum}
   else
-    dim = features.size
-    weights = [0/dim]*dim
+    weights = [0]*features.size
     weights[Session.continuous["cluster"].index(Session.search.sortby)] = 1
+    weights
   end
 end
 
@@ -255,28 +254,27 @@ def self.ruby(number_clusters, cluster_weights, inits, products)
   end while z > thresh
    # postprocessing if one cluster is collapsed
    labels = labels.map{|l| labels.uniq.index(l)} if labels.uniq.size <labels.max+1
-
    # split if there is only one cluster
    if labels.uniq.size ==1
      (0...number_clusters-1).to_a.each{|i| labels[i] = i}
      (number_clusters-1...labels.size).to_a.each{|i| labels[i] = number_clusters -1}
    end
-   
   #ordering clusters based on group utility and picking the rep 
-  self.utility_order(products, labels, number_clusters)
+  self.utility_order(products, labels, labels.uniq.size)
 end
 
 
 def self.utility_order(products, labels, number_clusters)
   utilitylist = Kmeans.utility(products)
   utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<number_clusters
-  grouped_utilities = group_by_labels(utilitylist, labels).map do |p| 
-    myp = p.compact
-    myp.empty? ? nil : myp.sum/myp.size.to_f
-  end
-  sorted_group_utilities = grouped_utilities.sort{|x,y| y<=>x}
-  sorted_labels  = labels.map{|l| sorted_group_utilities.index(grouped_utilities[l])}
-  reps = (0...number_clusters).map{|i| sorted_labels.index(i)}
+  grouped_utilities = group_by_labels(utilitylist, labels)
+  avg_group_utilities = grouped_utilities.map do |g| 
+    g.sum/(g.size.to_f)
+  end  
+  sorted_group_utilities = avg_group_utilities.sort{|x,y| y<=>x}
+  sorted_grouped_utilities = sorted_group_utilities.map{|g| grouped_utilities[avg_group_utilities.index(g)]}
+  sorted_labels  = labels.map{|l| sorted_group_utilities.index(avg_group_utilities[l])} 
+  reps = (0...number_clusters).map{|i| utilitylist.index(sorted_grouped_utilities[i][sorted_grouped_utilities[i].index(sorted_grouped_utilities[i].max)])}
   sorted_labels + reps
 end
 
