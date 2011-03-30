@@ -1036,6 +1036,10 @@ optemo_module = (function (my){
         	return false;
         });
 
+		$('.navbox').live("hover", function() {
+			$(this).find(".dragHand").toggle();
+		});
+
         //Ajax call for simlinks ('browse similar')
     	$('.simlinks').live("click", function() {
     		var ignored_ids = getAllShownProductIds();

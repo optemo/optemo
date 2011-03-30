@@ -41,7 +41,8 @@
       <div style="padding:3px 17px;">
       <%= link_to(link_text, cluster_path(cluster.id), {:id => "sim#{i}", :class => 'simlinks awesome_reset', :"data-id" => "#{product.id}", :"data-size" => cluster.size, :"title" => cluster.size.to_s + " products in ", :rel => "nofollow"}) %>
       </div>
-	  <% unless Session.continuous["cluster"].include?(@s.search.sortby)%>	
+	  <%# Distribution ranges %>
+	  <% unless true || Session.continuous["cluster"].include?(@s.search.sortby)%>	
 		<%["opticalzoom", "maxresolution"].each_with_index do |f,i|%>
 			<% min = overallmin(f)
 			   max = overallmax(f)%>

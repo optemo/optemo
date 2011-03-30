@@ -263,12 +263,6 @@ div.drop-box-hover {
  	border: 1px #e7e7e7 dashed; 
 } */
 
-/*[ if IE ] .dragHand {
-  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=35);  /* IE7 */
-/*  filter: alpha(opacity=35);
-	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=35)"; /* IE8 */  
-/*}*/
-
 .saveditem {
 	position: relative;
 	width: 71px;
