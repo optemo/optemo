@@ -1,23 +1,23 @@
 <% if @plain %>
-<div class="poptitle"><div id="tab_header">
-<ul data-sku='<%= @product.sku %>'><%# These are used in the application javascript "show" and "compare" pages' logic. %>
-	<li id="tab_selected" data-tab="info_content"><a href="#" class="fetch">Product Info</a></li>
-	<li data-tab="specs_content"><a href="#" class="fetch">Specs</a></li>
-	<li data-tab="reviews_content"><a href="#" class="fetch">Reviews</a></li>
-</ul>
-</div>
-<%= link_to "Close Window", "close", :class => "bb_quickview_close"%>
+<div class="poptitle" data-sku='<%= @product.sku %>'>
+<%# These are used in the application javascript "show" and "compare" pages' logic. %>
+	<a href="#" id="tab_selected" class="fetch tab" data-tab="info_content">Product Info</a>
+	<a href="#" class="fetch tab" data-tab="specs_content">Specifications</a>
+	<a href="#" class="fetch tab" data-tab="reviews_content">Customer Reviews</a>
+	<% link_to "close", :class => "bb_quickview_close" do %>
+		Close Window <%= image_tag("closepopup.png") %>
+	<% end %>
 </div>
 <% else %>
 <% self.title = "#{@product.title}" %>
 <div class="content">
 <a href="/" id="browseother">Browse Other Printers</a>
 <% end %>
+<div id="info_container">
+<div id="info_content" class="tabbed_content">
 	<h1><%= @product.title %></h1>
-
 	<h5 style="margin: 0"><%= "Webcode: #{@product.sku}, Model: #{@product.mpn}" %></h5>
-    <div id="info_content" class="tabbed_content">
-    	<div id="galleria" style="width: 500px; height: 300px;">
+    	<div id="galleria" style="width: 500px; height: 300px;margin-left: -10px;">
     		<!-- What follows is a Best Buy-specific hack, put in to get "additional media" out prior to a consultation meeting with them
 
     	    on whether or not we should invest the time to significantly complicate Firehose -->
@@ -60,13 +60,12 @@
 		<% end %>
 		<%# raw save.compact.join(", ") %>
 
-	    <div style="font-size: 1em; margin-bottom:10px;"><%= raw @allspecs["shortDescription"] %></div>
+	    <div class="shortdesc"><%= raw @allspecs["shortDescription"] %></div>
     </div>
     <div id="specs_content" class="tabbed_content" style="display: none;">Loading...</div>
 	<div id="reviews_content" class="tabbed_content" style="display: none;">Loading...</div>
 	<div id="features">
-	<ul>
-		<div style="float:left; margin-top:20px;">
+		<div style="float:left;">
     	    <div class="bbfeatures"><%= image_tag "best_buy_free_shipping.gif" %>Free shipping on orders over <b>$20</b>.</div>
     	    <div class="bbfeatures"><%= image_tag "best_buy_instore_pickup.gif" %>Order online and pick up in-store.</div>
     	    <div class="bbfeatures"><%= image_tag "best_buy_rewards_card.gif" %>It's free to get into the rewards program.</div>
@@ -80,19 +79,15 @@
     		<div style="font-size: 1.5em; height: 20px;"><span class="left">Our Price:</span><span class="right"><%= @allspecs["price"] %></span></div>
     		<% end %>
     		<div class="left" style="height: 18px;"><a href="http://www.bestbuy.ca/en-CA/help/what-is-your-lowest-price-guarantee/hc1001.aspx?path=27eeec1b59d42df5dfc298ab6993d9dfen15&HelpTitleId=HC1001" class="popup-link">Lowest Price Guarantee</a></div>
-    		<div class="spacer" style="border-bottom: 1px solid #ccc; clear: both; margin-bottom: 15px;"></div>
-
+    		<div class="pricespacer"></div>
     	    <div class="buttons"><%= link_to image_tag("bestbuy_addtocart.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{@product.sku}" %></div>
     	    <div class="buttons"><%= link_to image_tag("bestbuy_compare.gif"), "#", {:id => 'add_compare', :'data-id' => @product.id, :'data-name' => @product.small_title} %></div>
         </div>
-	</ul>
+		<div class="spacer"> </div>
 	</div>
 	
 	<div class="spacer">&nbsp;</div>
-	<!-- div style="clear: left; height:5px;"></div>
-	<div class="showtable">
-
-	</div-- >
+</div>
 
 <% if !@plain %><div style="clear: both;"></div></div><% end %>
 

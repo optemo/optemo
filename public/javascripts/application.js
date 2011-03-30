@@ -275,21 +275,21 @@ optemo_module = (function (my){
                         g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
                     });
 
-                    if (!($.browser.msie && $.browser.version == "7.0")) {
-                        // This is an unsightly hack, and unfortunately seems to be the only easy way to make it work.
-                        // Internet Explorer 7 has a problem with background color causing the disappearance of divs. Google "peekaboo bug" and others.
-                        $('#tab_header li a').hover(function() {
-                            if (!($(this).parent().attr('id') == 'tab_selected')) {
-                                $(this).css('background', '#ddf');
-                            }
-                        }, function() {
-                            if (!($(this).parent().attr('id') == 'tab_selected')) {
-                                $(this).css('background', '#ddd');
-                            }
-                        });
-                    }
+                    //if (!($.browser.msie && $.browser.version == "7.0")) {
+                    //    // This is an unsightly hack, and unfortunately seems to be the only easy way to make it work.
+                    //    // Internet Explorer 7 has a problem with background color causing the disappearance of divs. Google "peekaboo bug" and others.
+                    //    $('.tab').hover(function() {
+                    //        if (!($(this).parent().attr('id') == 'tab_selected')) {
+                    //            $(this).css('background', '#ddf');
+                    //        }
+                    //    }, function() {
+                    //        if (!($(this).parent().attr('id') == 'tab_selected')) {
+                    //            $(this).css('background', '#ddd');
+                    //        }
+                    //    });
+                    //}
         	        my.DBinit();
-        	        my.preloadSpecsAndReviews($('#tab_header').find('ul').attr('data-sku'));
+        	        my.preloadSpecsAndReviews($('.poptitle').attr('data-sku'));
     	        } else {
     	            my.DBinit();
     	            $('#outsidecontainer').css('width','');
@@ -898,11 +898,11 @@ optemo_module = (function (my){
         // for any tabbed quickview page. The content is loaded ahead of time by preloadSpecsAndReviews() on popup load.
 		$('.fetch').live('click', function() {
 			var el = $(this);
-			if (!($.browser.msie && $.browser.version == "7.0")) el.css('background','');
+			//if (!($.browser.msie && $.browser.version == "7.0")) el.css('background','');
 			$('#'+$('#tab_selected').attr('data-tab')).hide();
             $('#tab_selected').removeAttr('id');
-    	    el.parent().attr('id', 'tab_selected');
-			$('#'+$('#tab_selected').attr('data-tab')).show();
+    	    el.attr('id', 'tab_selected');
+			$('#'+el.attr('data-tab')).show();
 			return false;
 		});
 
@@ -918,7 +918,7 @@ optemo_module = (function (my){
         // If there are at least two products, bring up the comparison pop-up immediately, otherwise go back to browsing.
         $('#add_compare').live('click', function () {
 			var t = $(this);
-            var sku = $('#tab_header ul').attr('data-sku');
+            var sku = $('.poptitle').attr('data-sku');
             var image = $('#galleria').find('img:first').attr('src');
             // Test for the length of the saved products array here to avoid a race condition
             optemo_module.saveProductForComparison(t.attr('data-id'), sku, image, t.attr('data-name'));
@@ -1035,6 +1035,10 @@ optemo_module = (function (my){
 			my.applySilkScreen((href || '/product/_/' + currentelementid) +'?plain=true',null, 560, 580);
         	return false;
         });
+
+		$('.navbox').live("hover", function() {
+			$(this).find(".dragHand").toggle();
+		});
 
         //Ajax call for simlinks ('browse similar')
     	$('.simlinks').live("click", function() {
