@@ -5,8 +5,7 @@
     <!-- The Saved Items box -->
 	<div id="savebar" class='leftboxes gainlayout'>
 		<h2> <%=t 'products.compare.saved' %> </h2>
-		<%= image_tag('hand_and_arrow.png', :id => "draghandexample") %>
-		<div id="savesome" class="rounded"> <% if Session.dragAndDropEnabled == true %> <%=t 'products.compare.savesomedrag'%> <% else %> <%=t 'products.compare.savesome'%> <% end %></div>
+		<div id="savesome" class="rounded"> <% if Session.dragAndDropEnabled == true %> <%= image_tag('hand_and_arrow.png', :id => "draghandexample") %> <%=t 'products.compare.savesomedrag'%> <% else %> <%=t 'products.compare.savesome'%> <% end %></div>
 		<div id="already_added_msg" class="savedmsg"> <%=t 'products.compare.alreadyadded' %> </div>
 		<div id="too_many_saved" class="savedmsg"> <%=t 'products.compare.toomanysaved' %> </div>
 		<div id="opt_savedproducts">
