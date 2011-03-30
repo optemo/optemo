@@ -211,7 +211,7 @@ module CompareHelper
     		  #Navbox partial to draw boxes
     		  res << render(:partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative})
           if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
-            res << '</div>'
+            res << '<div style="clear: both"></div></div>'
             open = false
           end
     		end
@@ -225,7 +225,7 @@ module CompareHelper
   		  end 
   		end
   	end
-  	res << '</div>' if open && !@s.directLayout
+  	res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
   	if @s.directLayout && @s.search.groupby.nil?
   	  pagination_line = will_paginate(@products)
     	res << pagination_line unless pagination_line.nil?
@@ -301,7 +301,7 @@ module CompareHelper
     Session.continuous["cluster"].each do |f| 
       sortbyList << (Session.search.sortby == f ? t(Session.product_type+".specs."+f+".name") : link_to(t(Session.product_type+".specs."+f+".name"), "#", :'data-feat' => f, :class => 'sortby'))
     end
-    t("products.sortby") + sortbyList.join(" | ")
+    t("products.sortby") + sortbyList.join("&nbsp;&nbsp;|&nbsp;&nbsp")
     # select('sorting_method', @s.search.sortby, sortbyList, {:selected => @s.search.sortby}, {:id => "sorting_method"})
   end
   

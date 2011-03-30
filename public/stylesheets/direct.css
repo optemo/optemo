@@ -58,7 +58,7 @@ div#main {
 //      Main Content (Right Side)       //
 //--------------------------------------*/
 
-.navigator_box {
+.navbox {
   	margin:4px auto;
   	width:715px;  
 	height:100px;
@@ -72,7 +72,7 @@ div#main {
 .listview_ungrouped {
 	width: 727px;
 }
-.listview_ungrouped .navigator_box {
+.listview_ungrouped .navbox {
 	height: 72px;
 	width: 680px;
 }

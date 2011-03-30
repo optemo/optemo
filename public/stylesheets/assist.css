@@ -33,16 +33,15 @@ div#main {
 //      Main Content (Right Side)       //
 //--------------------------------------*/
 
-.navigator_box {
-	text-align: center;
+.navbox {
 	font-size: 0.85em;
 	float: left;
 	position: relative;
 	margin-right: 4px; 
 	margin-bottom: 3px;
-	height:260px;
+	height:272px;
 	width: 181px; /*+2 for the border*/
-	/*background: url(../images/nbsingle-180.png) no-repeat;*/
+	background: right center url(../images/seperatorbar.png) no-repeat;*/
 }
 
 .title {
@@ -67,6 +66,7 @@ img.productimg {
 	width: 100%;
 }
 .productinfo {
+	padding-left: 20px;
 }
 .productspecs {
 	font-size:0.8em;
@@ -106,7 +106,6 @@ img.productimg {
 	clear: left;
 	margin-top: 3px;
 	padding: 0 4px;
-	border: 1px solid #ccc;
 }
 #extended_box .topbar {
 	float: left;
@@ -121,19 +120,9 @@ img.productimg {
 .filterchange ul {
 	padding-left: 20px;
 }
-.sim {
-	height: 35px;
-	margin-left:10px;
-	margin: 6px 3px;
-}
 
-.sim a {
-	text-decoration: underline;
-}
-
-.sim a img {
-	vertical-align: middle;
-	padding-right: 5px;
+.simlinks {
+	font-size: 0.8em;
 }
 
 #extended_box {
@@ -154,7 +143,13 @@ img.productimg {
 	left: 0;
 	top: 5px;
 	z-index:1;
-    opacity:0.35;
+}
+
+#draghandexample {
+	position: absolute;
+	left: 20px;
+	top: 40px;
+	z-index: 1;
 }
 
 /*--------------------------------------//

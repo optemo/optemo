@@ -149,7 +149,7 @@ module NavigationHelpers
    
    # Returns the number of borderboxes on the page.
    def num_boxes
-     num_elements(".navigator_box")
+     num_elements(".navbox")
    end
 
    # Reads the number of products being browsed from the page.
@@ -251,7 +251,7 @@ module NavigationHelpers
    end
    
    def pid_by_box which_box
-     boxes = doc.css(".navigator_box .easylink")
+     boxes = doc.css(".navbox .easylink")
      box = boxes[which_box]
      pid = (box.css("@data-id")||'').to_s
      return @box_hrefs.to_s.match('\d+').to_s.to_i
