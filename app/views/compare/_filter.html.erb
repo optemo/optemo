@@ -32,7 +32,7 @@
 		<% else %>
 			
 			<%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
-			<% optionlist = SearchProduct.cat_counts(feat,true).to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? -a[1]-1000000 : -a[1]) <=> (chosen_cats.include?(b[0]) ? -b[1]-1000000 : -b[1])} %>
+			<% optionlist = SearchProduct.cat_counts(feat,true,true).to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? -a[1]-1000000 : -a[1]) <=> (chosen_cats.include?(b[0]) ? -b[1]-1000000 : -b[1])} %>
 			<div class="categorical">
 			<% optionlist.each do |k,available_count| %>
 			<% unchecked = unchecked_cat(feat,k) %>
