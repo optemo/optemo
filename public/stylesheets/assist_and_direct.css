@@ -40,9 +40,8 @@ h3 {
 //--------------------------------------*/
 
 .watermark {
-    float:right;
     font-size: 0.8em;
-    padding-top: 4px;
+    padding: 4px 0 5px 37px;
 }
 #title {
 	position: absolute;
@@ -161,9 +160,11 @@ div.rowdiv {
 }
 
 .price {
-	color: #F5000B;
+	/*color: #F5000B;*/
+	font-weight: bold;
 	font-size: 1em;
-	margin-top: 5px;
+	margin-top: 1px;
+	margin-bottom: 2px;
 }
 
 .itemtitle {

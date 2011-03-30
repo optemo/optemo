@@ -35,7 +35,7 @@ en:
                  
     features:
         maxresolution:      "%{num}MP"
-        screensize:         "%{num} in. screen"
+        screensize:         "%{num} in. LCD"
         opticalzoom:        "%{num}X zoom"
         
     compare:
