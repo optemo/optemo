@@ -33,7 +33,7 @@ div#main {
 //      Main Content (Right Side)       //
 //--------------------------------------*/
 
-.navigator_box {
+.navbox {
 	text-align: center;
 	font-size: 0.85em;
 	float: left;
@@ -42,7 +42,7 @@ div#main {
 	margin-bottom: 3px;
 	height:260px;
 	width: 181px; /*+2 for the border*/
-	/*background: url(../images/nbsingle-180.png) no-repeat;*/
+	background: right center url(../images/seperatorbar.png) no-repeat;*/
 }
 
 .title {
