@@ -171,13 +171,7 @@ camera_bestbuy:
                 type: Binary
                 used_for: [filter]
         New Technology:
-            hdmi:
-                type: Binary
-                used_for: [filter]
             touchscreen:
-                type: Binary
-                used_for: [filter]
-            imagestabilization:
                 type: Binary
                 used_for: [filter]
             waterproof:
@@ -189,9 +183,6 @@ camera_bestbuy:
             gps:
                 type: Binary
                 used_for: [show, filter]
-            projector:
-                type: Binary
-                used_for: [show, filter]
             3d:
                 type: Binary
                 used_for: [show, filter]
@@ -201,6 +192,9 @@ camera_bestbuy:
             frontlcd:
                 type: Binary
                 used_for: [show, filter]
+            hdmi:
+                type: Binary
+                used_for: [filter]
 
 ################################
 #  LaserPrinterHub, Printers   #
