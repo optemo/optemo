@@ -1,4 +1,4 @@
-<h2><%= link_to "Reset", "/", :class => "reset awesome", :rel => "nofollow", :style => "float: right; margin-top:12px" %><%=t 'products.compare.search' %></h2>
+<h2><%= link_to "RESET", "/", :class => "reset awesome_reset", :rel => "nofollow", :style => "float: right; margin-top:12px" %><%=t 'products.compare.search' %></h2>
 <%= form_for(Search.new, :html => {:id => 'filter_form'}) do %>
   <!--<%= @s.search.keyword_search.blank? ? text_field_tag('myfilter[search]') : text_field_tag('myfilter[search]', @s.search.keyword_search) %>
 	<div class="ui-widget" style="display:inline;">
@@ -14,8 +14,7 @@
   <% @s.categorical["filter"].each_with_index do |feat, index| %>
   	<div class='feature'>
   		<div class='label' data-position="<%= i %>">
-  			<%= render :partial => 'desc', :locals => {:feat => feat} %>
-  			<%= link_to t("#{Session.product_type}.specs.#{feat}.name"), "#", :rel => "nofollow" %>
+			<%= t("#{Session.product_type}.specs.#{feat}.name") %>
   			<% if @s.directLayout %>
   				<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat %>" data-position="<%= i %>">See Groups</div>
   			<% end %>
@@ -59,15 +58,14 @@
   	<% i = i + 1 %>
   <% end %>
   <% @s.binarygroup.each_pair do |heading,features| %>
-	<div class="label feature"><a href="#"><%= heading %></a></div>
+	<div class="feature"><div class="label"><%= heading %></div></div>
 	<% features.each do |feat| %>
 		<% dobj = Userdatabin.find_by_search_id_and_name(@s.search.id,feat) %>
 		<% unchecked = dobj.nil? || dobj.value == false %>
   		<div class="feature" data-position="<%= i %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
-  			<%= render :partial => 'desc', :locals => {:feat => feat} %>
 			<% available_count = SearchProduct.bin_count(feat) %>
   			<%= check_box('myfilter', feat, :disabled => (available_count == 0) ? true : false, :checked => unchecked ? false : 'checked', :class => 'binary_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false')%>
-  			<%= link_to t("#{Session.product_type}.specs.#{feat}.name"), "#", :rel => "nofollow" %>
+  			<%= t("#{Session.product_type}.specs.#{feat}.name") %>
 			<%= "(#{available_count})" if unchecked %>
   		</div>
   	<% i = i + 1 %>	

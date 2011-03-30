@@ -193,6 +193,7 @@ div #leftbar {
 .leftboxes {
 	margin: 0 0 5px 4px;
 	border: 1px solid #ccc;
+	color: #4d4d4f;
 }
 .rounded_leftboxes {
 	border: 1px solid #ccc;        
@@ -255,11 +256,11 @@ div.drop-box-hover {
  	border: 1px #e7e7e7 dashed; 
 } */
 
-[ if IE ] .dragHand {
+/*[ if IE ] .dragHand {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=35);  /* IE7 */
-  filter: alpha(opacity=35);
+/*  filter: alpha(opacity=35);
 	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=35)"; /* IE8 */  
-}
+/*}*/
 
 .saveditem {
 	position: relative;
@@ -285,7 +286,14 @@ div.smalldesc {
 }
 #savesome {
 	font-size: 0.9em;
-	padding:7px;
+	padding:15px;
+	width: 117px;
+	border: 1px solid #c8c8c8;
+	margin: 20px auto 8px;
+	font-size: 0.65em;
+	/*-moz-box-shadow: 0px 2px 2px #888, inset 0 0 10px #000;
+	-webkit-box-shadow: 0px 2px 2px #888, inset 0 0 10px #000;*/
+	box-shadow: 0px 2px 2px #888, inset 0 -10px 40px #ebebeb;
 }
 #compare_button {
 	clear: both; 
@@ -314,7 +322,9 @@ div.smalldesc {
 	text-decoration: none;
 }
 .ui-slider .ui-slider-handle { 
-	background:url(../../../images/diamond.gif) no-repeat;
+	background:url(../../../images/sliderhandlebox.gif) no-repeat;
+	/*background-color:#c0c0c0;
+	border: 1px solid #4D4D4F;*/
 	font-size: 0.6em;
 	color: black;
 	height:13px; width:16px;text-decoration:none;outline:none;position:absolute;z-index:2;
@@ -328,8 +338,8 @@ div.smalldesc {
 }
 /*.ui-slider-horizontal { background:url(../../../images/slider.gif) no-repeat; height: 13px; }*/
 .ui-slider-horizontal .ui-slider-handle { 
-	top: -3px; 
-	margin-left: -8px; 
+	top: -6px; 
+	margin-left: -4px; 
 }
 .ui-slider-horizontal .ui-slider-range { 
 	top: 0; 
@@ -352,13 +362,13 @@ div.smalldesc {
 .slider {
 	margin: 0 0 0 7px;
 	width: 155px;
-	padding-bottom: 6px;
+	padding-bottom: 12px;
 	position: relative;
 }
 .centerofslider {
-	background:url(../../../images/slider.gif) no-repeat;
-	height:13px; 
-	overflow:hidden;
+	/*background:url(../../../images/slider.gif) no-repeat;*/
+	height:4px; 
+	background-color: #003b64;
 }
 /* Filter Box */
 #filter_form {
@@ -369,14 +379,13 @@ div.smalldesc {
 	text-align: left;
 	position: relative;
 	clear: left;
-	padding-top: 3px;
+	padding-top: 6px;
 }
 .space {
 	margin-bottom: 15px; /*Spacing for histogram*/
 }
 .reset {
-	font-size: 0.8em;
-	text-decoration: underline;
+	font-size: 0.7em;
 }
 
 .valbelow {
@@ -410,8 +419,8 @@ div.smalldesc {
 .hist {
 	position: absolute;
 	text-align: left;
-	left: 7px;
-	top: 19px;
+	left: 13px;
+	top: 22px;
 }
 
 
@@ -978,18 +987,18 @@ div .showtable{
 .xlarge_awesome, .xlarge_awesome:visited 			{ font-size: 16px; padding: 12px 21px 13px; }
 
 /* Zurb http://www.zurb.com/article/266/super-awesome-buttons-with-css3-and-rgba */
-.awesome_tour, .awesome_tour:visited {
-	background: #222; /*url(/images/alert-overlay.png) repeat-x; */
+.awesome_reset, .awesome_reset:visited {
+	background: #003b65; /*url(/images/alert-overlay.png) repeat-x; */
 	display: inline-block; 
-	padding: 5px 10px 6px; 
+	padding: 4px 7px 2px; 
 	color: #fff; 
 	text-decoration: none;
-	-moz-border-radius: 10px; 
-	-webkit-border-radius: 10px;
-	-moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-	-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+	-moz-border-radius: 4px; 
+	-webkit-border-radius: 4px;
+	-moz-box-shadow: inset 0 7px 8px #2680bf;
+	-webkit-box-shadow: inset 0 7px 8px #2680bf;
 	text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
-	border-bottom: 1px solid rgba(0,0,0,0.25);
+	border: 1px solid #c4c5c5;
 	position: relative;
 	cursor: pointer;
 }
