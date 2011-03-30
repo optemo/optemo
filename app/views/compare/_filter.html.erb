@@ -21,7 +21,7 @@
   		</div>
 		<% chosen_cats = chosencats(feat) %>
 		<% if feat == "color" %>
-			<div style="margin-right: -3px">
+			<div style="margin-right: -4px">
 				<% color_counts = SearchProduct.cat_counts("color",true) %>
 				<% %w(Red Orange Yellow Green Blue Purple Pink White Silver Brown Black).each do |color| %>
     				<% next if color_counts[color].nil? && !chosen_cats.include?(color) %>
