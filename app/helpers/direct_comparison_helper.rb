@@ -7,4 +7,15 @@ module DirectComparisonHelper
     return true if !values.index(item.to_s).nil?
     return false
   end
+  
+  def box_width
+    case @products.size
+    when 4
+      897
+    when 3
+      706
+    else
+      515
+    end
+  end
 end

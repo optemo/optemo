@@ -659,7 +659,7 @@ margin-top:0;
 	border-right: solid 1px #ccc;
 }
 .outertitle {
-	width: 189px;
+	width: 190px;
 	border-right: solid 2px white;
 	z-index: 4;
 	position: relative;
@@ -691,10 +691,10 @@ margin-top:0;
 	text-align: right;
 }
 .leftmostoutertitle {
-	width: 129px;
+	width: 130px;
 }
 .leftmostcolumntitle {
-	width: 128px;
+	width: 121px;
 	border-left: solid 1px #ccc;
 	padding-left: 0px;
 	font-weight: bold;
@@ -930,6 +930,11 @@ a.bb_quickview_close {
 .bb_quickview_close img {
 	vertical-align: middle;
 	height: 23px;
+}
+a.compare {
+	float: right;
+	border: none;
+	margin-top: -5px;
 }
 
 a.tab {
