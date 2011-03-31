@@ -7,14 +7,14 @@ class Cluster
     @products = products 
     @rep_id = rep_id
     if Rails.env.development?
-      Site::Application::CLUSTER_CACHE[products.hash.abs]=products
+      Site::Application::CLUSTER_CACHE[products.hash]=products
     else
-      Rails.cache.write("Cluster#{products.hash.abs}", products)
+      Rails.cache.write("Cluster#{products.hash}", products)
     end
   end
   
   def id
-    products.hash.abs
+    products.hash
   end
   
   def self.cached(id)

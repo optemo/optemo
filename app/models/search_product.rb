@@ -39,7 +39,6 @@ class SearchProduct < ActiveRecord::Base
         raise SearchError, "No products match that search criteria for #{Session.product_type}" if res.empty?
         set
       end
-      
       #ContSpec.by_feat = cached.first
       #Session.search.products_size = cached.size
       #This object is duplicated to avoid frozen object problems

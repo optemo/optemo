@@ -22,4 +22,7 @@ class ProductAndSpec
   def ==(other_product)
     @id == other_product.id
   end
+  def hash
+    @id.hash
+  end
 end
