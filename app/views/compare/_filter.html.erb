@@ -64,7 +64,7 @@
 		<% unchecked = dobj.nil? || dobj.value == false %>
   		<div class="feature" data-position="<%= i %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
 			<% available_count = SearchProduct.bin_count(feat) %>
-  			<%= check_box('myfilter', feat, :disabled => (available_count == 0) ? true : false, :checked => unchecked ? false : 'checked', :class => 'binary_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false')%>
+  			<%= check_box_tag("myfilter[#{feat}]", "1", !unchecked ,:disabled => (available_count == 0) ? true : false, :class => 'binary_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false')%>
   			<%= t("#{Session.product_type}.specs.#{feat}.name") %>
 			<%= "(#{available_count})" if unchecked %>
   		</div>
