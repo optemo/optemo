@@ -31,6 +31,9 @@ class ComparableSet
     @hash.delete_if { |k,v| yield(v) }
     self
   end
+  def hash
+    to_a.hash
+  end
   
   def empty?
     @hash.empty?
