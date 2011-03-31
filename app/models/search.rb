@@ -374,7 +374,7 @@ class Search < ActiveRecord::Base
         #Binary Features
         #Handle false booleans
         dobj = old_search.userdatabins.select{|d|d.name == k}.first
-        if v != '0' || (!dobj.nil? && dobj.value == true)
+        if v != '0' #|| (!dobj.nil? && dobj.value == true)
           @userdatabins << Userdatabin.new({:name => k, :value => v})
         end
       elsif Session.categorical["filter"].index(k)

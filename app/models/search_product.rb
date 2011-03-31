@@ -55,7 +55,7 @@ class SearchProduct < ActiveRecord::Base
       else
         q = search_id_q.create_join(mycats+[[feat]],mybins).conts_keywords.bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
       end
-      CachingMemcached.cache_lookup("Cats(#{includezeros.to_s})-#{q.to_sql}") do
+      CachingMemcached.cache_lookup("CatsCount(#{includezeros.to_s})-#{q.to_sql}") do
         if includezeros
           q.count.merge(Hash[CatSpec.alloptions(feat).map {|x| [x, 0]}]){|k,oldv,newv|oldv}
         else
