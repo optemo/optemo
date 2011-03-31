@@ -26,7 +26,7 @@ class SearchProduct < ActiveRecord::Base
       else
         res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[]]).conts_keywords.cats(mycats).bins(mybins).group("search_products.product_id")
       end
-      cached = CachingMemcached.cache_lookup("Products-#{res.to_sql}") do
+      cached = CachingMemcached.cache_lookup("Products-#{res.to_sql.hash}") do
         start = Time.now
         set = ComparableSet.new
         res.each do |rec|
@@ -55,7 +55,7 @@ class SearchProduct < ActiveRecord::Base
       else
         q = search_id_q.create_join(mycats+[[feat]],mybins).conts_keywords.bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
       end
-      CachingMemcached.cache_lookup("CatsCount(#{includezeros.to_s})-#{q.to_sql}") do
+      CachingMemcached.cache_lookup("CatsCount(#{includezeros.to_s})-#{q.to_sql.hash}") do
         if includezeros
           q.count.merge(Hash[CatSpec.alloptions(feat).map {|x| [x, 0]}]){|k,oldv,newv|oldv}
         else
