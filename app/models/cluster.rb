@@ -33,7 +33,7 @@ class Cluster
   def children
     unless @children
       start = Time.now
-      cluster_ids_and_reps = Kmeans.compute(9,products.to_a)
+      cluster_ids_and_reps = Kmeans.compute(9,products)
       cluster_ids = cluster_ids_and_reps[0...products.size] 
       rep_ids = cluster_ids_and_reps[products.size...cluster_ids_and_reps.size] 
       finish = Time.now

@@ -10,15 +10,12 @@ class ProductAndSpec
     p = new
     vals = vals_in.split(",")
     names_in.split(",").each_with_index do |name,i|
-      begin
-        debugger if vals[i].nil?
-        p.send (name+"=").intern, vals[i].to_f
-      rescue NoMethodError
-        ProductAndSpec.module_eval do
-          attr_accessor name.intern
-        end
-        p.send (name+"=").intern, vals[i].to_f
-      end
+      debugger if vals[i].nil?
+      p.instance_variable_set "@"+name, vals[i].to_f
+#      rescue NoMethodError
+#        ProductAndSpec.module_eval do
+#          attr_accessor name.intern
+#        end
     end
     p
   end
@@ -27,9 +24,6 @@ class ProductAndSpec
     [instance_values.keys.join(","),instance_values.values.join(",")]
   end
   
-  def ==(other_product)
-    @id == other_product.id
-  end
   def hash
     @id.hash
   end

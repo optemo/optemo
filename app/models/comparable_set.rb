@@ -17,6 +17,10 @@ class ComparableSet
     to_a.map(&block)
   end
   
+  def mapfeat(f)
+    to_a.map{|p|p.instance_variable_get("@#{f}")}
+  end
+  
   def size
     @hash.size
   end

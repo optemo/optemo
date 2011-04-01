@@ -190,14 +190,14 @@ for (j=0;j<k; j++){
   end
     # initial seeds for clustering  ### just based on contiuous features
     inits = self.init(number_clusters, products, cluster_weights)
-    Kmeans.ruby(number_clusters, cluster_weights, inits,products)
+    Kmeans.ruby(number_clusters, cluster_weights, inits, products)
 end
 
 def self.utility(products)
   if Session.search.sortby.nil? || Session.search.sortby == "relevance" 
-    products.map(&:utility)
+    products.mapfeat("utility")
   else
-    products.map{|i| i.send((Session.search.sortby+"_factor").intern) || 0}
+    products.map{|i| i.instance_variable_get("@#{Session.search.sortby}_factor") || 0}
   end
 end
 
@@ -315,16 +315,16 @@ def self.distance(point1, point2, weights)
 end
   
   def self.factorize_cont_data(products)
-    Session.continuous["cluster"].map{|f| products.map(&(f+"_factor").intern)}.transpose
+      Session.continuous["cluster"].map{|f| products.mapfeat("#{f}_factor")}.transpose
   end
   
   def self.factorize_cont(product)
-    Session.continuous["cluster"].map{|f| product.send((f+"_factor").intern)}
+    Session.continuous["cluster"].map{|f| product.instance_variable_get("@#{f}_factor")}
   end
   
   def self.betterproducts(curr_set)
     set = ComparableSet.new
-    min_utility = curr_set.map(&:utility).min
+    min_utility = curr_set.mapfeat("utility").min
     ContSpec.all.each do |rec|
       #only include new products
       next if curr_set.include_id?(rec.product_id) 

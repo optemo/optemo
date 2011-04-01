@@ -3,17 +3,18 @@ require 'inline'
 
   def computeDist
     dist = {}
-    num_buckets = 24; #Must be greater than 0
+    num_buckets = 24 #Must be greater than 0
     mins = []
     maxes = []
-    specs = Product.filterspecs
-    lengths = specs.map{|s| s.size}
-    max_l = lengths.max
-    specs = specs.map{|s| s.size < max_l ? s + ([0]*(max_l-s.size)) : s}
-    
-    
+    specs = []
+    feats = []
+
     begin
       Session.continuous["filter"].each do |f| 
+        data = Session.search.products.mapfeat(f).compact
+        next if data.empty? #There's no data available for this feature
+        specs << data
+        feats << f
         min,max = ContSpec.allMinMax(f)
         #Max must be larger or equal to min
         raise ValidationError, "min is larger than max" unless max >= min        
@@ -21,11 +22,14 @@ require 'inline'
         maxes << max
       end
       
+      #Features can have varying lengths
+      lengths = specs.map{|s| s.size}
+      
       raise ValidationError, "num_buckets is less than 2" unless num_buckets>1
       raise ValidationError, "size of mins is not right" unless mins.size == specs.size
       raise ValidationError, "size of maxes is not right" unless maxes.size == specs.size
       res = distribution_c(specs.flatten, specs.size, num_buckets, mins, maxes, lengths) #unless $res
-      Session.continuous["filter"].each_with_index do |f, i|   
+      feats.each_with_index do |f, i|   
         t = i*(num_buckets) 
         dist[f] = [[specs[i].min, specs[i].max], res[(t)...(i+1)*(num_buckets)]]
       end
