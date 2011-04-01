@@ -350,17 +350,15 @@ optemo_module = (function (my){
     	// The best is to just leave the medium URL in place, because that image is already loaded in case of comparison, the common case.
     	// For the uncommon case of page reload, it's fine to load a larger image.
     	smallProductImageAndDetail = "<img class=\"draganddropimage\" src=" + // used to have width=\"45\" height=\"50\" in there, but I think it just works for printers...
-    	imgurl + " data-id=\""+id+"\" data-sku=\""+sku+"\" alt=\""+id+"_s\"><div class=\"smalldesc\"";
-
-    	smallProductImageAndDetail = smallProductImageAndDetail + ">" +
+    	imgurl + " data-id=\""+id+"\" data-sku=\""+sku+"\" alt=\""+id+"_s\">" +
     	"<a class=\"easylink\" data-id=\""+id+"\" data-sku=\""+sku+"\" href=\"\">" +
     	((name) ? optemo_module.getShortProductName(name) : 0) +
-    	"</a></div>" +
+    	"</a>" +
     	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\">" +
     	"<img src=\"" +
         // This next line is used for embedding: check whether there is a remote server defined, and put the appropriate image url in.
     	(typeof(REMOTE) != 'undefined' ? REMOTE : "") +
-    	"/images/close.png\" alt=\"Close\"/></a>";
+    	"/images/closepopup.png\" alt=\"Close\"/></a>";
     	var element = $('#c'+id);
     	element.append($(smallProductImageAndDetail));
     	var image = element.find('.draganddropimage');
@@ -995,7 +993,7 @@ optemo_module = (function (my){
 			    var sku = $(savedProducts[(p == -1) ? p+1 : p]).attr('data-sku');
 				// The column numbers are important here for .remove functionality.
 				if (p==-1) {
-					heading = $('<div class="compare_row"><div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle" style="padding-right:3px;">All Specifications</div></div></div>').appendTo(anchor);
+					heading = $('<div class="compare_row"><div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle">All Specifications</div></div></div>').appendTo(anchor);
 				}
 			    else {
 					heading.append('<div class="outertitle spec_column_'+p+'"><div class="columntitle">&nbsp;</div></div>');
@@ -1435,11 +1433,10 @@ optemo_module = (function (my){
     	// I modified it slightly, since word breaks are a bit too arbitrary.
     	// [brand.gsub("Hewlett-Packard","HP"),model.split(' ')[0]].join(' ')
     	name = name.replace("Hewlett-Packard", "HP");
-    	var shortname = name.substring(0,16);
-    	if (name != shortname)
-    		return shortname + "...";
+		if (name.length > 21)
+    		return name.substring(0,20) + "...";
     	else
-    		return shortname;
+    		return name;
     };
 
     //--------------------------------------//
