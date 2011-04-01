@@ -760,6 +760,10 @@ margin-top:0;
 	vertical-align: top;
 	margin-top: 6px;
 }
+.togglespecs {
+	text-align:center; 
+	padding:10px;
+}
 .lessspecs img {
 	/*rotation: 180deg;*/
 	-moz-transform: rotate(180deg);
