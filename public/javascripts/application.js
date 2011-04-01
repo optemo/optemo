@@ -909,7 +909,14 @@ optemo_module = (function (my){
         $('.toggle_specs').live('click', function () {
             // Once we have the additional specs loaded and rendered, we can simply show and hide that table
             var t = $(this);
-            (t.html() == "Less Specs") ? t.html("More Specs") : t.html("Less Specs");
+            if (t.html().match("Less")) {
+				t.html(t.html().replace("Less","More"));
+				t.removeClass("lessspecs");
+			}
+			else {
+				t.html(t.html().replace("More","Less"));
+				t.addClass("lessspecs");
+			}
             $('#hideable_matrix').toggle();
             return false;
         });
@@ -1341,7 +1348,7 @@ optemo_module = (function (my){
         clearTimeout(lis.sidebar_timer); // clearTimeout can run on "null" without error
         clearTimeout(lis.main_timer);
         clearTimeout(lis.socket_error_timer); // We need to clear the timeout error here
-    	my.flashError('<div class="bb_poptitle">Error<a class="bb_quickview_close" href="close">Close Window</a></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
+    	my.flashError('<div class="bb_poptitle">Error<a class="bb_quickview_close" href="close" style="float:right;">Close Window</a></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
     	my.trackPage('goals/error');
     }
 

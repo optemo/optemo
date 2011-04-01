@@ -3,17 +3,18 @@ require 'inline'
 
   def computeDist
     dist = {}
-    num_buckets = 24; #Must be greater than 0
+    num_buckets = 24 #Must be greater than 0
     mins = []
     maxes = []
-    specs = Product.filterspecs
-    lengths = specs.map{|s| s.size}
-    max_l = lengths.max
-    specs = specs.map{|s| s.size < max_l ? s + ([0]*(max_l-s.size)) : s}
-    
-    
+    specs = []
+    feats = []
+
     begin
       Session.continuous["filter"].each do |f| 
+        data = Session.search.products.mapfeat(f).compact
+        next if data.empty? #There's no data available for this feature
+        specs << data
+        feats << f
         min,max = ContSpec.allMinMax(f)
         #Max must be larger or equal to min
         raise ValidationError, "min is larger than max" unless max >= min        
@@ -21,14 +22,16 @@ require 'inline'
         maxes << max
       end
       
+      #Features can have varying lengths
+      lengths = specs.map{|s| s.size}
+      
       raise ValidationError, "num_buckets is less than 2" unless num_buckets>1
       raise ValidationError, "size of mins is not right" unless mins.size == specs.size
       raise ValidationError, "size of maxes is not right" unless maxes.size == specs.size
-     
       res = distribution_c(specs.flatten, specs.size, num_buckets, mins, maxes, lengths) #unless $res
-      Session.continuous["filter"].each_with_index do |f, i|   
+      feats.each_with_index do |f, i|   
         t = i*(num_buckets) 
-        dist[f] = [[specs[i].min, specs[i].max], res[t...(i+1)*num_buckets]]
+        dist[f] = [[specs[i].min, specs[i].max], res[(t)...(i+1)*(num_buckets)]]
       end
       dist
     rescue ValidationError
@@ -77,13 +80,17 @@ require 'inline'
            dist[j] = malloc(sizeof(double)*k);
            for (i=0; i<k; i++) dist[j][i] = 0.0;  
          }  
-
+        int len, p; 
         double** data = malloc(sizeof(double*)*n);  
         for (i=0; i<n; i++) data[i] = malloc(sizeof(double)*d);     
 
            for (j=0; j<d; j++) {   
              for (i=0; i<dataLengths[j]; i++){
-               data[i][j]= NUM2DBL(data_a[dataLengths[j]*j+i]);}}
+               len = 0;
+               for (p=0; p<j; p++) {
+                 len += dataLengths[p];
+                }  
+               data[i][j]= NUM2DBL(data_a[len+i]);}}
 
           for (j=0; j<d; j++){
              dataMins[j] = NUM2DBL(dataMins_a[j]);
@@ -91,8 +98,8 @@ require 'inline'
           } 
 
          for (j=0; j<d; j++){
-           curr_min = dataMaxes[j];
-           curr_max = dataMins[j];
+           curr_min = 100000000; //dataMaxes[j];
+           curr_max = 0.0001; //dataMins[j];
            stepsize =  (dataMaxes[j] - dataMins[j])/k + offset;
            for (i=0; i<dataLengths[j]; i++){ 
                if (curr_min > data[i][j])curr_min = data[i][j];
@@ -103,8 +110,6 @@ require 'inline'
            mins[j] = curr_min;
            maxes[j] = curr_max;       
          }
-
-
          for (j=0; j<d; j++) 
              for (i=0; i<k; i++) 
                 if (dist[j][i]>distMaxes[j]) distMaxes[j]=dist[j][i];     
@@ -117,16 +122,15 @@ require 'inline'
          ///storing in result_ary
          ind = 0;
          for (j=0; j<d; j++) {
-         //  rb_ary_store(result_ary, ind,  DBL2NUM(mins[j]));
-         //  ind++;
-         // rb_ary_store(result_ary, ind,  DBL2NUM(maxes[j]));
-         // ind++;
+           //rb_ary_store(result_ary, ind,  DBL2NUM(mins[j]));
+           //ind++;
+           //rb_ary_store(result_ary, ind,  DBL2NUM(maxes[j]));
+           //ind++;
             for (i=0; i<k; i++){
               rb_ary_store(result_ary, ind, DBL2NUM(dist[j][i]));
               ind++;
            }   
          }        
-
          return result_ary;
        }"
     end

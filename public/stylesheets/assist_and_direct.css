@@ -756,6 +756,16 @@ margin-top:0;
 .triple_height_compare_row .cell img {
     top: 14px;
 }
+.toggle_specs img {
+	vertical-align: top;
+	margin-top: 6px;
+}
+.lessspecs img {
+	/*rotation: 180deg;*/
+	-moz-transform: rotate(180deg);
+	-webkit-transform: rotate(180deg);
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+}
 
 /*--------------------------------------//
 //        Show page and related         //

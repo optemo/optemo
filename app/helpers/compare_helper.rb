@@ -203,13 +203,15 @@ module CompareHelper
 	        res << "<div style=\"padding:10px;\">No search results. Please search again or " + link_to("start over", "/") + ".</div>"
         end
 	    else # Grid View (Optemo Assist)
+	      range = true
+	      range = !(@s.search.cluster.min(@s.search.sortby)== @s.search.cluster.max(@s.search.sortby)) if @s.continuous["cluster"].include?(@s.search.sortby)    
     		for i in 0...[@s.search.cluster.numclusters, @s.numGroups].min
     		  if i % (Float(@s.numGroups)/3).ceil == 0
     			  res << '<div class="rowdiv">'
     			  open = true
     		  end
     		  #Navbox partial to draw boxes
-    		  res << render(:partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative})
+    		  res << render(:partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative, :range =>range})
           if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
             res << '<div style="clear: both"></div></div>'
             open = false
