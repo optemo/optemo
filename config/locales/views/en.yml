@@ -16,6 +16,7 @@ en:
             back:           "Back"
             all:            "See all products"                  
             similar:        "Show %{count} like this" # e.g. 1 More like this
+            likethis:       "like this"
             extended:       "You might want to consider these %{count} other products."
             similar_line:   "%{count} More"     
             filtersdesc:    "Narrow your results by:"   
