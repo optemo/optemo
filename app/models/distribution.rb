@@ -27,8 +27,8 @@ require 'inline'
      
       res = distribution_c(specs.flatten, specs.size, num_buckets, mins, maxes, lengths) #unless $res
       Session.continuous["filter"].each_with_index do |f, i|   
-        t = i*(2+num_buckets) 
-        dist[f] = [[res[t], res[t+1]], res[(t+2)...(i+1)*(2+num_buckets)]]
+        t = i*(num_buckets) 
+        dist[f] = [[specs[i].min, specs[i].max], res[t...(i+1)*num_buckets]]
       end
       dist
     rescue ValidationError
@@ -117,11 +117,11 @@ require 'inline'
          ///storing in result_ary
          ind = 0;
          for (j=0; j<d; j++) {
-           rb_ary_store(result_ary, ind,  DBL2NUM(mins[j]));
-           ind++;
-           rb_ary_store(result_ary, ind,  DBL2NUM(maxes[j]));
-           ind++;
-           for (i=0; i<k; i++){
+         //  rb_ary_store(result_ary, ind,  DBL2NUM(mins[j]));
+         //  ind++;
+         // rb_ary_store(result_ary, ind,  DBL2NUM(maxes[j]));
+         // ind++;
+            for (i=0; i<k; i++){
               rb_ary_store(result_ary, ind, DBL2NUM(dist[j][i]));
               ind++;
            }   

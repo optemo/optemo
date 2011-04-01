@@ -315,11 +315,7 @@ def self.distance(point1, point2, weights)
 end
   
   def self.factorize_cont_data(products)
-    begin
-      Session.continuous["cluster"].map{|f| products.map(&(f+"_factor").intern)}.transpose
-    rescue Error
-      debugger
-    end
+    Session.continuous["cluster"].map{|f| products.map(&(f+"_factor").intern)}.transpose
   end
   
   def self.factorize_cont(product)

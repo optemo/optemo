@@ -27,22 +27,11 @@ class SearchProduct < ActiveRecord::Base
         res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[]]).conts_keywords.cats(mycats).bins(mybins).group("search_products.product_id")
       end
       cached = CachingMemcached.cache_lookup("Products-#{res.to_sql.hash}") do
-        start = Time.now
-        set = ComparableSet.new
-        res.each do |rec|
-          prod = ProductAndSpec.new(:id => rec.product_id)
-          prod.set(rec.names, rec.vals)
-          set.add(prod)
-        end
-        finish = Time.now
-        puts("!!!!!!*****######"+(finish-start).to_s)
-        raise SearchError, "No products match that search criteria for #{Session.product_type}" if res.empty?
-        set
+        result = res.map{|rel| [rel.names+",id",rel.vals+",#{rel.product_id}"]}
+        raise SearchError, "No products match that search criteria for #{Session.product_type}" if result.empty?
+        result
       end
-      #ContSpec.by_feat = cached.first
-      #Session.search.products_size = cached.size
-      #This object is duplicated to avoid frozen object problems
-      cached.dup
+      ComparableSet.from_storage(cached)
     end
     
     def cat_counts(feat,expanded,includezeros = false)

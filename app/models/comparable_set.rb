@@ -1,5 +1,5 @@
 class ComparableSet
-  def initialize
+  def initialize(array = nil)
     @hash = Hash.new
   end
   
@@ -56,5 +56,17 @@ class ComparableSet
       (h[x] ||= self.class.new).add(v)
     }
     h
+  end
+  
+  def to_storage
+    map(&:to_storage)
+  end
+  
+  def self.from_storage(storage)
+    set = new
+    storage.each do |item|
+      set.add(ProductAndSpec.from_storage(item))
+    end
+    set
   end
 end

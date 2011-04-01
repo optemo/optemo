@@ -7,9 +7,9 @@ class Cluster
     @products = products 
     @rep_id = rep_id
     if Rails.env.development?
-      Site::Application::CLUSTER_CACHE[products.hash]=products
+      Site::Application::CLUSTER_CACHE[products.hash] = products.to_storage
     else
-      Rails.cache.write("Cluster#{products.hash}", products)
+      Rails.cache.write("Cluster#{products.hash}", products.to_storage)
     end
   end
   
@@ -19,9 +19,9 @@ class Cluster
   
   def self.cached(id)
     if Rails.env.development?
-      p_ids = Site::Application::CLUSTER_CACHE[id.to_i]
+      p_ids = ComparableSet.from_storage Site::Application::CLUSTER_CACHE[id.to_i]
     else
-      p_ids = Rails.cache.read("Cluster#{id}")
+      p_ids = ComparableSet.from_storage Rails.cache.read("Cluster#{id}")
     end
     #Cache miss
     #p_ids = SearchProduct.find_all_by_search_id(Product.initial).map(&:product_id) unless p_ids
