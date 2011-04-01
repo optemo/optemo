@@ -909,7 +909,14 @@ optemo_module = (function (my){
         $('.toggle_specs').live('click', function () {
             // Once we have the additional specs loaded and rendered, we can simply show and hide that table
             var t = $(this);
-            (t.html() == "Less Specs") ? t.html("More Specs") : t.html("Less Specs");
+            if (t.html().match("Less")) {
+				t.html(t.html().replace("Less","More"));
+				t.removeClass("lessspecs");
+			}
+			else {
+				t.html(t.html().replace("More","Less"));
+				t.addClass("lessspecs");
+			}
             $('#hideable_matrix').toggle();
             return false;
         });
