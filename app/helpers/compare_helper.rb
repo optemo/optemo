@@ -301,7 +301,7 @@ module CompareHelper
     Session.continuous["cluster"].each do |f| 
       sortbyList << (Session.search.sortby == f ? t(Session.product_type+".specs."+f+".name") : link_to(t(Session.product_type+".specs."+f+".name"), "#", :'data-feat' => f, :class => 'sortby'))
     end
-    t("products.sortby") + sortbyList.join("&nbsp;&nbsp;|&nbsp;&nbsp")
+    t("products.sortby") + sortbyList.join("&nbsp;&nbsp;|&nbsp;&nbsp;")
     # select('sorting_method', @s.search.sortby, sortbyList, {:selected => @s.search.sortby}, {:id => "sorting_method"})
   end
   
