@@ -1,29 +1,41 @@
 testing check list:
 
-general checks:
+main navigation page:
 1) There are (9) product images on the first page
-2) click on a product image - check if the info displays in the small window
-3) Check the Galleria by cycling through pictures
-4) Check the specs and reviews tabs to make sure the display content
-5) click on a "more like this link" and see if a new page with less cameras come up - also check to see if the distribution graphs change
-6) click on the back button and check if you get the first page 
-7) check if there are distribution graphs on top of sliders on the left panel
-8) Filter for red cameras by clicking on red color swatch
+2) click on a "more like this link" and see if a new page with less cameras come up 
+3) Check if zoom out option appears on the status bar
+4) click on the back button and check if you get the first page 
+5) Click on group by "Price" option on the status bar. Groups should not have overlapping ranges. They should be sorted from low to high 
+6) Click on other group by options. Again they should not be overlapping. For features other than price they should be sorted high to low
+7) After clicking on a group-by options click on a group and go back to see if it goes to the same page   
 
-check filters:
-1) select a brand at the brand menu on the left panel
-2) move sliders so that there is some distribution in the middle of two pointers
-3) check if some products are displayed
-4) Click on "reset" link on the top left corner
+8) check if there are distribution graphs on top of sliders on the left panel
+9) Filter by price and check if the number of products in the status bar and the distribution on top of other sliders have been changed
+10) repeat the precious step for other sliders
+11) Filter for red cameras by clicking on red color swatch and check if only red cameras are displayed
+12) repeat the previous step for other colors
+13) filter brands by clicking on one and multiple brand check boxers and check if right products are displayed
+14) When filtering check if the numbers associated with checkboxes are adjusted 
+15) Check on sale and then undo it and see if it works fine
+16) CLick on reset 
+ 
 
-check sort by:
-1) click on the sort by drop down menu on top of the page and select sort by "price"
-2) check if all displayed products are sorted based on price (cheapest first)
+product info popover: 
+1) click on a product image on the main page- check if the info displays in the small window
+3) Check the Galleria by cycling through pictures (Galleria does not work for IE6 - For IE6 the the product image is displayed)
+4) Check the specs and review tabs to make sure the display content loads fine
+5) like the product
+6) Click on compare
+7) Go to PDP by clicking on the link and go back
+
+
 
 drag and drop - compare
 1) drag a product image and drop it in Save And Compare box in the left bottom corner
 2) check if the the drop is done properly and the small product image shows in the "Save and Compare" box
 3) drop 3 more products and press compare
 4) check if compare page with 4 products come up
-5) close window
+5) Add to cart in the compare page
+6) Click on the product link on the compare page to see if the product info loads fine
+7) close compare page
 

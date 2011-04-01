@@ -24,12 +24,14 @@ require 'inline'
       raise ValidationError, "num_buckets is less than 2" unless num_buckets>1
       raise ValidationError, "size of mins is not right" unless mins.size == specs.size
       raise ValidationError, "size of maxes is not right" unless maxes.size == specs.size
-     
-      res = distribution_c(specs.flatten, specs.size, num_buckets, mins, maxes, lengths) #unless $res
+      (0..3).each{|i| specs_[i] = specs[i][0...155]}
+      #lengths = [155]*4 
+      #res = distribution_c(specs.flatten, specs.size, num_buckets, mins, maxes, lengths) #unless $res
       Session.continuous["filter"].each_with_index do |f, i|   
-        t = i*(num_buckets) 
-        dist[f] = [[specs[i].min, specs[i].max], res[t...(i+1)*num_buckets]]
+        t = i*(2+num_buckets) 
+        dist[f] = [[specs[i].min, specs[i].max], res[(t+2)...(i+1)*(2+num_buckets)]]
       end
+      #debugger
       dist
     rescue ValidationError
       puts "Falling back to ruby distribution"
@@ -91,8 +93,8 @@ require 'inline'
           } 
 
          for (j=0; j<d; j++){
-           curr_min = dataMaxes[j];
-           curr_max = dataMins[j];
+           curr_min = 100000000; //dataMaxes[j];
+           curr_max = 0.0001; //dataMins[j];
            stepsize =  (dataMaxes[j] - dataMins[j])/k + offset;
            for (i=0; i<dataLengths[j]; i++){ 
                if (curr_min > data[i][j])curr_min = data[i][j];
@@ -103,8 +105,6 @@ require 'inline'
            mins[j] = curr_min;
            maxes[j] = curr_max;       
          }
-
-
          for (j=0; j<d; j++) 
              for (i=0; i<k; i++) 
                 if (dist[j][i]>distMaxes[j]) distMaxes[j]=dist[j][i];     
@@ -117,16 +117,15 @@ require 'inline'
          ///storing in result_ary
          ind = 0;
          for (j=0; j<d; j++) {
-         //  rb_ary_store(result_ary, ind,  DBL2NUM(mins[j]));
-         //  ind++;
-         // rb_ary_store(result_ary, ind,  DBL2NUM(maxes[j]));
-         // ind++;
+           rb_ary_store(result_ary, ind,  DBL2NUM(mins[j]));
+           ind++;
+           rb_ary_store(result_ary, ind,  DBL2NUM(maxes[j]));
+           ind++;
             for (i=0; i<k; i++){
               rb_ary_store(result_ary, ind, DBL2NUM(dist[j][i]));
               ind++;
            }   
          }        
-
          return result_ary;
        }"
     end
