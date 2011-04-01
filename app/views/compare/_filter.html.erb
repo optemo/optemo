@@ -62,10 +62,10 @@
 	<% features.each do |feat| %>
 		<% dobj = Userdatabin.find_by_search_id_and_name(@s.search.id,feat) %>
 		<% unchecked = dobj.nil? || dobj.value == false %>
-  		<div class="feature" data-position="<%= i %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
-			<% available_count = SearchProduct.bin_count(feat) %>
-  			<%= check_box_tag("myfilter[#{feat}]", "1", !unchecked ,:disabled => (available_count == 0) ? true : false, :class => 'binary_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false')%>
-  			<%= t("#{Session.product_type}.specs.#{feat}.name") %>
+		<% available_count = SearchProduct.bin_count(feat) %>
+  		<div class="feature<%= " disabled" if available_count == 0 %>" data-position="<%= i %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
+  			<%= check_box_tag "myfilter[#{feat}]", "1", !unchecked ,:disabled => (available_count == 0) ? true : false, :class => 'binary_filter' %>
+  			<%= link_to t("#{Session.product_type}.specs.#{feat}.name"), "#", :class => "binary_filter_text" %>
 			<%= "(#{available_count})" if unchecked %>
   		</div>
   	<% i = i + 1 %>	

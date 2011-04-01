@@ -226,13 +226,16 @@ div #leftbar {
 	display:inline;
 }
 
-.selectboxfilter {
-	width:100%;
-}
 .categorical {
 	border: 1px solid #ccc;
 	overflow: auto;
 	height: 150px;
+}
+a.binary_filter_text {
+	color: #4d4d4f;
+}
+.disabled a.binary_filter_text{
+	color: #ccc;
 }
 /*--------------------------------------//
 //         Drag And Drop Compare        //
@@ -800,7 +803,7 @@ div#silkscreen {
 }
 #info h1 {
 	font-size: 1.2em;
-	margin-top: 0;
+	margin: 0 0 4px;
 }
 div#info {
 	font-size: 0.8em;
