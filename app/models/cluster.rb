@@ -63,13 +63,13 @@ class Cluster
   
   def min(feature)
     if Session.continuous["cluster"].include?(feature)
-      products.map(&feature.intern).compact.min
+      products.mapfeat(feature).compact.min
     end  
   end  
   
   def max(feature)
     if Session.continuous["cluster"].include?(feature)
-      products.map(&feature.intern).compact.max
+      products.mapfeat(feature).compact.max
     end  
   end
   

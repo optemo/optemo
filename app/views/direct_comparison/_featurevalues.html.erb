@@ -20,9 +20,9 @@
 <div class="cell <%= gray ? "graybg" : "whitebg" %><%=' spec_column_' + column_number.to_s %>">
 	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
 		<%# If the interesting feature should be displayed then display... as of Feb 24, 2011, this just puts a bold tag on an image, doing nothing %>
-		<b><%= spec ? image_tag("checkmark.png", :height => "16px") : image_tag("x.png", :height => "16px")%></b>
+		<b><%= spec ? "Yes" : "No" %></b>
 	<% else %>
-		<%= spec ? image_tag("checkmark.png", :height => "16px") : image_tag("x.png", :height => "16px")%>
+		<%= spec ? "Yes" : "No" %>
 	<% end %>
 	&nbsp;
 </div>
