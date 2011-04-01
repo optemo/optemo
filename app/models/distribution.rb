@@ -80,13 +80,17 @@ require 'inline'
            dist[j] = malloc(sizeof(double)*k);
            for (i=0; i<k; i++) dist[j][i] = 0.0;  
          }  
-
+        int len, p; 
         double** data = malloc(sizeof(double*)*n);  
         for (i=0; i<n; i++) data[i] = malloc(sizeof(double)*d);     
 
            for (j=0; j<d; j++) {   
              for (i=0; i<dataLengths[j]; i++){
-               data[i][j]= NUM2DBL(data_a[dataLengths[j]*j+i]);}}
+               len = 0;
+               for (p=0; p<j; p++) {
+                 len += dataLengths[p];
+                }  
+               data[i][j]= NUM2DBL(data_a[len+i]);}}
 
           for (j=0; j<d; j++){
              dataMins[j] = NUM2DBL(dataMins_a[j]);
