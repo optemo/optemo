@@ -204,7 +204,7 @@ module CompareHelper
         end
 	    else # Grid View (Optemo Assist)
 	      range = true
-	      range = !(@s.cluster.min== @s.cluster.max) if @s.continuous["cluster"].include?(@s.search.sortby)    
+	      range = !(@s.search.cluster.min(@s.search.sortby)== @s.search.cluster.max(@s.search.sortby)) if @s.continuous["cluster"].include?(@s.search.sortby)    
     		for i in 0...[@s.search.cluster.numclusters, @s.numGroups].min
     		  if i % (Float(@s.numGroups)/3).ceil == 0
     			  res << '<div class="rowdiv">'

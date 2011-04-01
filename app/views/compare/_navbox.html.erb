@@ -30,14 +30,18 @@
 	<% if group %>
 	<div class='bottombar'>
       <%if Session.continuous["cluster"].include?(@s.search.sortby)%>
+		<%if range%>	
             <%if cluster.min(@s.search.sortby)==cluster.max(@s.search.sortby)%>
                 <%link_text =  t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.min(@s.search.sortby).to_s + t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "") + " (" + cluster.size.to_s + ")" %>
             <%else%>
                 <%link_text=t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.min(@s.search.sortby).to_s + t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "")+"-"+ t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.max(@s.search.sortby).to_s+t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "") +" ("+cluster.size.to_s+")"%>   
-            <%end%> 
-      <% else %>
+            <%end%>
+ 	     <%else%>
+			<%link_text =  t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.min(@s.search.sortby).to_s + t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "") + " "+ t("products.compare.likethis") +" (" + cluster.size.to_s + ")" %>
+       <%end%>
+     <%else%>   
 		<% link_text = t("products.compare.similar",:count => cluster.size)%>
-      <%end%>	
+     <%end%>	
       <div style="padding:3px 17px;">
       <%= link_to(link_text, cluster_path(cluster.id), {:id => "sim#{i}", :class => 'simlinks awesome_reset', :"data-id" => "#{product.id}", :"data-size" => cluster.size, :"title" => cluster.size.to_s + " products in ", :rel => "nofollow"}) %>
       </div>
