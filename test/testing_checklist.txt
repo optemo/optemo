@@ -30,7 +30,7 @@ product info popover:
 
 
 
-drag and drop - compare
+drag and drop - compare:
 1) drag a product image and drop it in Save And Compare box in the left bottom corner
 2) check if the the drop is done properly and the small product image shows in the "Save and Compare" box
 3) drop 3 more products and press compare
