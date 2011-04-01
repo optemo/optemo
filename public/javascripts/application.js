@@ -832,7 +832,7 @@ optemo_module = (function (my){
 			}
 			else
 			{ //Added selected color
-    			$('#myfilter_color').val(opt_appendStringWithToken($('#myfilter_color').val(), whichThingSelected, '*'));
+    			$('#myfilter_color').val(whichThingSelected);
     			var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : 'color', 'filter_type' : 'categorical'};
 				my.trackPage('goals/filter/categorical', info);
 			}
