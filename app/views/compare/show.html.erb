@@ -1,9 +1,9 @@
 <% if @plain %>
 <div class="poptitle" data-sku='<%= @product.sku %>'>
 <%# These are used in the application javascript "show" and "compare" pages' logic. %>
-	<a href="#" id="tab_selected" class="fetch tab" data-tab="info_content">Product Info</a>
-	<a href="#" class="fetch tab" data-tab="specs_content">Specifications</a>
-	<a href="#" class="fetch tab" data-tab="reviews_content">Customer Reviews</a>
+	<a href="#" id="tab_selected" class="fetch tab" data-tab="info_content"><%=t('products.show.productinfo')%></a>
+	<a href="#" class="fetch tab" data-tab="specs_content"><%=t('products.show.specifications')%></a>
+	<a href="#" class="fetch tab" data-tab="reviews_content"><%=t('products.show.reviews')%></a>
 	<% link_to "close", :class => "bb_quickview_close" do %>
 		Close Window <%= image_tag("closepopup.png") %>
 	<% end %>
@@ -11,7 +11,7 @@
 <% else %>
 <% self.title = "#{@product.title}" %>
 <div class="content">
-<a href="/" id="browseother">Browse Other Printers</a>
+<a href="/" id="browseother"></a>
 <% end %>
 <div id="info_container">
 <div id="info_content" class="tabbed_content">
@@ -31,12 +31,11 @@
     		<% elsif FileTest.exist?("#{Rails.root}/public" + @allspecs["imglurl"]) %>
     			<%= image_tag(@allspecs["imglurl"], :size => "300x300", :alt => "") %>
     		<% else %>
-    			<br><br>No Image Available
+    			<br><br><%=t('products.show.noimage')%>
     		<% end %>
     	</div>
-
 	 <% if @s.product_type == "camera_bestbuy" && !(@siblings.blank?) %>
-		<div style="display:none;" id="bestbuy_sibling_images"><span style="line-height:47px; float:left">Other Colors: &nbsp;</span>
+		<div style="display:none;" id="bestbuy_sibling_images"><span style="line-height:47px; float:left"><%=t('products.show.othercolors')%></span>
 			<% @siblings.sort{|p| p.sibling_id}.each do |sib_id_and_imgsurl| %>  
     			<% unless sib_id_and_imgsurl.sibling_id == @product.id %>
     			    <% sib_product = Product.cached(sib_id_and_imgsurl.sibling_id)%> 
@@ -62,21 +61,33 @@
 
 	    <div class="shortdesc"><%= raw @allspecs["shortDescription"] %></div>
     </div>
-    <div id="specs_content" class="tabbed_content" style="display: none;">Loading...</div>
-	<div id="reviews_content" class="tabbed_content" style="display: none;">Loading...</div>
+    <div id="specs_content" class="tabbed_content" style="display: none;"><%=t('products.show.loading')%></div>
+	<div id="reviews_content" class="tabbed_content" style="display: none;"><%=t('products.show.loading')%></div>
 	<div id="features">
 		<div style="float:left;">
-    	    <div class="bbfeatures"><%= image_tag "best_buy_free_shipping.gif" %>Free shipping on orders over <b>$20</b>.</div>
-    	    <div class="bbfeatures"><%= image_tag "best_buy_instore_pickup.gif" %>Order online and pick up in-store.</div>
-    	    <div class="bbfeatures"><%= image_tag "best_buy_rewards_card.gif" %>It's free to get into the rewards program.</div>
+    	    <div class="bbfeatures"><%= image_tag "best_buy_free_shipping.gif" %><%=t('products.show.freeshipping', :amount =>"$20")%></div>
+    	    <div class="bbfeatures"><%= image_tag "best_buy_instore_pickup.gif" %><%=t('products.show.instorepickup')%></div>
+    	    <div class="bbfeatures"><%= image_tag "best_buy_rewards_card.gif" %><%=t('products.show.rewardprog')%></div>
+			     <div id="fb-root"></div>
+				<script>
+				  window.fbAsyncInit = function() {
+				    FB.init({appId: '191247887553933', status: true, cookie: true,
+				             xfbml: true});
+				  };
+				  (function() {
+				    var e = document.createElement('script'); e.async = true;
+				    e.src = 'http://connect.facebook.net/hi_IN/all.js';
+				    document.getElementById('fb-root').appendChild(e);
+				  }());
+				</script>
         </div>
         <div style="float:right;">
     		<% if @allspecs["onsale"] %>
-    		<div style="font-size: 1.2em; height: 20px;"><span class="left">Our Price:</span><span class="right"><%= @allspecs["price"] %></span></div>
-    	    <div style="color: #f00; font-size: 1.5em; font-weight: bold;height: 20px;"><span class="left">Sale Price:</span><span class="right"><%= @allspecs["saleprice"] %></span></div>
-    	    <div style = "clear: both;font-weight: bold;height: 18px;"><span class="left">Sale Ends:</span><span class="right"><%# @allspecs["saleEndDate"][/^(\w|\/)+/] %></span></div>
+    		<div style="font-size: 1.2em; height: 20px;"><span class="left"><%=t('products.show.ourprice')%></span><span class="right"><%= @allspecs["price"] %></span></div>
+    	    <div style="color: #f00; font-size: 1.5em; font-weight: bold;height: 20px;"><span class="left"><%=t('products.show.saleprice')%></span><span class="right"><%= @allspecs["saleprice"] %></span></div>
+    	    <div style = "clear: both;font-weight: bold;height: 18px;"><span class="left"><%=t('products.show.saleends')%></span><span class="right"><%# @allspecs["saleEndDate"][/^(\w|\/)+/] %></span></div>
     		<% else %>
-    		<div style="font-size: 1.5em; height: 20px;"><span class="left">Our Price:</span><span class="right"><%= @allspecs["price"] %></span></div>
+    		<div style="font-size: 1.5em; height: 20px;"><span class="left"><%=t('products.show.ourprice')%></span><span class="right"><%= @allspecs["price"] %></span></div>
     		<% end %>
     		<div class="left" style="height: 18px;"><a href="http://www.bestbuy.ca/en-CA/help/what-is-your-lowest-price-guarantee/hc1001.aspx?path=27eeec1b59d42df5dfc298ab6993d9dfen15&HelpTitleId=HC1001" class="popup-link">Lowest Price Guarantee</a></div>
     		<div class="pricespacer"></div>
