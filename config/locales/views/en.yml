@@ -20,7 +20,11 @@ en:
             extended:       "You might want to consider these %{count} other products."
             similar_line:   "%{count} More"     
             filtersdesc:    "Narrow your results by:"   
-            rembrandfilter: "Remove brand filter"         
+            rembrandfilter: "Remove brand filter"  
+            onsale:         "On Sale"       
+            zoomout:        "Zoom out"
+            clickforspecs:  "Click for product specifications"
+            seegroup:       "Click here to see products in this group"    
             
         show:
             title:          "Product Details"
@@ -33,7 +37,19 @@ en:
             webcode:        "Web Code"
             moredetails:    "More details"
             ratings:        "ratings"
-                 
+            noimage:        "No Image Available"
+            productinfo:    "Product Info"
+            specifications: "Specifications"
+            reviews:        "Customer Reviews"
+            freeshipping:   "Free shipping on orders over %{amount}."
+            instorepickup:  "Order online and pick up in-store."
+            rewardprog:     "It's free to get into the rewards program."     
+            othercolors:    "Other Colors: "
+            loading:        "Loading..."
+            ourprice:       "Our Price:"
+            saleprice:      "Sale Price:"
+            saleends:       "Sale Ends"
+            
     features:
         maxresolution:      "%{num}MP"
         screensize:         "%{num} in. LCD"
