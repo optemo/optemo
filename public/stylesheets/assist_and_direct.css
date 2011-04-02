@@ -226,13 +226,16 @@ div #leftbar {
 	display:inline;
 }
 
-.selectboxfilter {
-	width:100%;
-}
 .categorical {
 	border: 1px solid #ccc;
 	overflow: auto;
 	height: 150px;
+}
+a.binary_filter_text {
+	color: #4d4d4f;
+}
+.disabled a.binary_filter_text{
+	color: #ccc;
 }
 /*--------------------------------------//
 //         Drag And Drop Compare        //
@@ -800,7 +803,7 @@ div#silkscreen {
 }
 #info h1 {
 	font-size: 1.2em;
-	margin-top: 0;
+	margin: 0 0 4px;
 }
 div#info {
 	font-size: 0.8em;
@@ -875,47 +878,57 @@ div#filter_bar_loading{
 	padding: 6px 0;
 	margin-top: 6px;
 }
-.bestbuy_rating_bar {
-    width: 100px;
-    height: 35px;
-    position: relative;
-    background-color: #eff097;
-    color: #000;
-    line-height: 35px;
-    text-align:center;
-    font-weight: bold;
+.fill {
+	background: url("http://bestbuy.ca/images/common/backgrounds/ratinglistfill.gif") no-repeat scroll right top transparent;
+	height: 9px;
 }
 
-.bestbuy_rating_bar_inside {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 203px; 
-    height: 38px;
-    z-index:5;
-    background: url(../images/bestbuy_empty_rating_bar.png) no-repeat 0 0;
+.empty {
+	background: url("http://bestbuy.ca/images/common/backgrounds/ratingattribback.gif") no-repeat scroll left top transparent;
+	float: left;
+	height: 9px;
+	margin-top: 3px;
+	padding: 1px;
+	width: 77px;
 }
-.bestbuy_rating_bar_small {
-    width: 100px;
-    height: 18px;
-    position: relative;
-    background-color: #eff097;
-    color: #000;
-    line-height: 20px;
-    text-align:center;
-    font-weight: bold;
+.review_feature span {
+	float: left;
+	padding-right: 5px;
+	width: 90px;
 }
-
-.bestbuy_rating_bar_inside_small {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 102px; 
-    height: 20px;
-    z-index:5;
-    background: url(../images/bestbuy_empty_rating_bar_small.png) no-repeat 0 0;
+.review_feature .nbr {
+	margin-left: 4px;
+	padding: 0;
+	width: auto;
 }
-
+.review_feature {
+	width: 216px;
+}
+.starrating {
+	clear: both;
+	padding: 6px 0 0;
+}
+.starrating img {
+	vertical-align: bottom;
+	margin-right: 1px;
+}
+.starrating span {
+	margin-right: 6px;
+}
+.starrating .nbr {
+	margin-left: 4px;
+	font-weight: bold;
+}
+.ratingnumbers {
+	color: #666;
+	font-size: 11px;
+	margin-top: 0;
+}
+.bbreview {
+	border-top: 1px dashed #ccc;
+	margin-top: 10px;
+	padding: 6px;
+}
 div#textfeatures, div#reviews {
 	clear:both;
 }

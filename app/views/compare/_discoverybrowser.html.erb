@@ -7,7 +7,7 @@
 	<% mb = main_boxes #Calculate mb before navtitle %>
 	<div id="navtitle"><%=raw navtitle %></div>
 	<div id="sorting_method_box"><%=raw sortbyList %></div>
-	<div><%= link_to("Zoom out", "/zoomout", :class => "zoomout", :rel => "nofollow") unless Session.search.sim_products_size == Session.search.products_size %></div>
+	<div><%= link_to(t("products.compare.zoomout"), "/zoomout", :class => "zoomout", :rel => "nofollow") unless Session.search.sim_products_size == Session.search.products_size %></div>
 
 <% if @s.directLayout %>
 	<% columntext = columntext(!@s.search.groupby.nil?) %>

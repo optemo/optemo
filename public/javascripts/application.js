@@ -165,7 +165,19 @@ optemo_module = (function (my){
 		}
 		return req;
     };
-
+	function numberofstars(stars) {
+		fullstars = parseInt(stars);
+		halfstar = (fullstars == stars) ? 0 : 1;
+		emptystars = 5 - fullstars - halfstar;
+		ret = "";
+		for(var i = 0; i < fullstars; i++)
+			ret += '<img src="http://bestbuy.ca/images/common/pictures/yellowStar.gif" />';
+		for(var i = 0; i < halfstar; i++)
+			ret += '<img src="http://bestbuy.ca/images/common/pictures/yellowhalfstar.gif" />';
+		for(var i = 0; i < emptystars; i++)
+			ret += '<img src="http://bestbuy.ca/images/common/pictures/emptystar.gif" />';
+		return ret;
+	}
     // This function gets called when a show action gets called.
     my.preloadSpecsAndReviews = function(sku) {
         my.loadspecs(sku).done(function() {
@@ -178,27 +190,45 @@ optemo_module = (function (my){
     	        type: "GET",
     	        dataType: "jsonp",
                 success: function (reviews) {
-                    var prop_list = parse_bb_json(reviews["reviews"]);
-
                     var to_tabbed_content = "";
                     var attributes = reviews["customerRatingAttributes"];
-                    // This next section deals specifically with the styling of the rating bars.
-                    // They are hard-coded because the inside yellow section grows pixel by pixel to match
-                    // the rating, so there needs to be a mathematical relationship between a rating 2.47 and
-                    // the number of pixels of yellow to draw. That relationship right now is:
-                    // 1
-                    var width = parseInt(18 + 41 * reviews["customerRating"]);
-                    if (width < 29) width = 29;
-                    if (width >= 182) width = 198;
-                    to_tabbed_content += "<span style=\"font-weight: bold; font-size: 1.1em;\">Overall Rating:</span> " + "<div class=\"bestbuy_rating_bar\" style=\"width: "+ width +"px;\">" + reviews["customerRating"] + "<div class=\"bestbuy_rating_bar_inside\"></div></div><br>";
-                    for (var i in attributes) {
-                        // This math is based on the width of the box, see bestbuy_rating_bar_small in CSS declarations
-                        var width = parseInt(9 + 20 * (attributes[i] - 0.8));
-                        if (width < 14) width = 14;
-                        if (width >= 91) width = 99;
-                        to_tabbed_content += i.replace(/_x0020_/g, " ") + "<div class=\"bestbuy_rating_bar_small\" style=\"width: "+ width +"px;\"><div class=\"bestbuy_rating_bar_inside_small\">" + attributes[i] + "</div></div>"
-                    }
-                    to_tabbed_content += 'Review Count: '+ reviews['customerRatingCount'] + "<br><ul>" + prop_list + '</ul>';
+
+					to_tabbed_content += "<br><h3>Customer Ratings</h3>";
+					// Featured Ratings
+					for (var i in attributes) {
+						to_tabbed_content += '<div class="review_feature">\
+							<span>'+i.replace(/_x0020_/g, " ")+'</span>\
+							<div class="empty"><div class="fill" style="width:'+(attributes[i]*20)+
+							'%"></div></div>\
+							<span class="nbr">'+attributes[i]+'</span>\
+						</div>';
+					}
+					// Overall Rating
+                    to_tabbed_content += '<div class="starrating">\
+						<span>Overall Rating</span>' + numberofstars(reviews["customerRating"]) +
+						'<span class="nbr">'+reviews["customerRating"]+'</span>\
+					</div>';
+					//Number of Ratings
+                    to_tabbed_content += '<p class="ratingnumbers">('+reviews['customerRatingCount']+' ratings)</p>';
+					to_tabbed_content += '<div style="margin-bottom: 5px">'+reviews["reviews"].length + ' Reviews | <a href="http://www.bestbuy.ca/Catalog/ReviewAndRateProduct.aspx?path=639f1c48d001d04869f91aebd7c9aa86en99&ProductId='+sku+'&pcname=MCCPCatalog">Rate and review this product</a></div>';
+					var m_names = new Array("January", "February", "March", 
+					"April", "May", "June", "July", "August", "September", 
+					"October", "November", "December");
+					
+					//Written Reviews
+					for (var review in reviews["reviews"]) {
+						review = reviews["reviews"][review];
+						date = new Date(review["submissionTime"]);
+						to_tabbed_content += '<div class="bbreview">\
+						<h3>'+review["title"]+'&nbsp;|&nbsp;'+m_names[date.getMonth()]+' '+date.getDate()+', ' +date.getFullYear()+'</h3>\
+						<div>'+review["reviewerName"]+'&nbsp;|&nbsp;'+review["reviewerLocation"]+ '</div>\
+							<div class="starrating">\
+								<span>Overall Rating</span>'+numberofstars(review["rating"])+
+								'<span class="nbr">'+review["rating"]+'</span>'+
+							'</div>\
+							<p>'+review["comment"]+'</p>\
+						</div>';
+					}
                     $('body').data('bestbuy_reviews_' + sku, to_tabbed_content);
                 },
                 error: function(x, xhr) {
@@ -222,8 +252,6 @@ optemo_module = (function (my){
 
     my.removeSilkScreen = function() {
         // Re-enable the select boxes manually (IE bug; we have to disable them when applying the silkscreen)
-        $('.selectboxfilter').css('visibility', 'visible');
-        $('.selectboxfilter').removeAttr('disabled');
         $('#silkscreen').css({'display' : 'none', 'top' : '', 'left' : '', 'width' : ''}).hide();
         $('#outsidecontainer').css({'display' : 'none'});
         $('#outsidecontainer').unbind('click');
@@ -258,7 +286,6 @@ optemo_module = (function (my){
     	   my.removeSilkScreen();
 	    });
     	$('#silkscreen').css({'height' : current_height+'px', 'display' : 'inline'});
-    	$('.selectboxfilter').css('visibility', 'hidden');
     	if (data) {
     		$('#info').html(data).css('height','');
     	} else {
@@ -350,10 +377,10 @@ optemo_module = (function (my){
     	// The best is to just leave the medium URL in place, because that image is already loaded in case of comparison, the common case.
     	// For the uncommon case of page reload, it's fine to load a larger image.
     	smallProductImageAndDetail = "<img class=\"draganddropimage\" src=" + // used to have width=\"45\" height=\"50\" in there, but I think it just works for printers...
-    	imgurl + " data-id=\""+id+"\" data-sku=\""+sku+"\" alt=\""+id+"_s\">" +
+    	imgurl + " data-id=\""+id+"\" data-sku=\""+sku+"\" alt=\""+id+"_s\"><div>" +
     	"<a class=\"easylink\" data-id=\""+id+"\" data-sku=\""+sku+"\" href=\"\">" +
     	((name) ? optemo_module.getShortProductName(name) : 0) +
-    	"</a>" +
+    	"</a></div>" +
     	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\">" +
     	"<img src=\"" +
         // This next line is used for embedding: check whether there is a remote server defined, and put the appropriate image url in.
@@ -477,7 +504,6 @@ optemo_module = (function (my){
             $(this).slider("option", "disabled", true);
         });
 
-        $('.selectboxfilter').attr("disabled", true);
         $('.groupby').unbind('click');
         $('.removefilter').unbind('click').click(function() {return false;}); // There is a default link there that shouldn't be followed.
         $('.binary_filter').attr('disabled', true);
@@ -743,10 +769,6 @@ optemo_module = (function (my){
 
     	if ($.browser.msie)
     	{
-    	    // If it's any version of IE, the transparency for the hands doesn't get done properly on page load - redo it here.
-    		$('.dragHand').each(function() {
-    			$(this).fadeTo("fast", 0.35);
-    		});
             // Fix the slider position
         	$('.hist').each(function() {
                $(this).css('left', '7px');
@@ -771,19 +793,6 @@ optemo_module = (function (my){
     	$('#myfilter_search').live('keydown', function (e) {
     		if (e.which==13)
     			return submitsearch();
-    	});
-
-    	// Add a dropdownbox selection -- submit
-    	$('.selectboxfilter').live('change', function(){
-		    var whichThingSelected = $(this).val().replace(/ \(.*\)$/,'');
-			var whichSelector = $(this).attr('name');
-		    var categorical_filter_name = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]"));
-    		$('#myfilter_'+categorical_filter_name).val(opt_appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
-    		var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : categorical_filter_name, 'filter_type' : 'categorical'};
-    		my.loading_indicator_state.sidebar = true;
-        	my.trackPage('goals/filter/categorical', info);
-    		submitCategorical();
-    		return false;
     	});
 
 		// extended navigation action
@@ -1041,10 +1050,6 @@ optemo_module = (function (my){
         	return false;
         });
 
-		$('.navbox').live("hover", function() {
-			$(this).find(".dragHand").toggle();
-		});
-
         //Ajax call for simlinks ('browse similar')
     	$('.simlinks').live("click", function() {
     		var ignored_ids = getAllShownProductIds();
@@ -1139,7 +1144,19 @@ optemo_module = (function (my){
     		$('#morefilters').css('display','block');
     		return false;
     	});
-
+		$('.binary_filter_text').live('click', function(){
+			var checkbox = $(this).siblings('input');
+			var whichbox = checkbox.attr('id');
+    		var box_value = checkbox.attr('checked') ? 100 : 0;
+			if (box_value == 100)
+				checkbox.removeAttr("checked");
+			else
+				checkbox.attr("checked", "checked");
+    		my.loading_indicator_state.sidebar = true;
+    		my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox});
+    		submitCategorical();
+			return false;
+		});
     	// Checkboxes -- submit
     	$('.binary_filter').live('click', function() {
     		var whichbox = $(this).attr('id');
@@ -1216,38 +1233,15 @@ optemo_module = (function (my){
     	if (my.IS_DRAG_DROP_ENABLED)
     	{
     		// Make item boxes draggable. This is a jquery UI builtin.
-    		$(".image_boundingbox img, .image_boundingbox_line img, img.productimg").each(function() {
+    		$("img.productimg").each(function() {
     			$(this).draggable({
     				revert: 'invalid',
     				cursor: "move",
     				// The following defines the drag distance before a "drag" event is actually initiated. Helps for people who click while the mouse is slightly moving.
     				distance:2,
     				helper: 'clone',
-    				zIndex: 1000,
-    				start: function(e, ui) {
-    					if ($.browser.msie) // Internet Explorer sucks and cannot do transparency
-    					    $(this).css({'opacity':'0.4'});
-    				},
-    				stop: function (e, ui) {
-    					if ($.browser.msie)
-    						$(this).css({'opacity':'1'});
-    				}
+    				zIndex: 1000
     			});
-                $(this).hover(function() {
-    	                $(this).find('.	dragHand').stop().animate({ opacity: 1.0 }, 150);
-    			    },
-    		        function() {
-    	            	$(this).find('.dragHand').stop().animate({ opacity: 0.35 }, 450);
-               });
-    	    });
-    	    $(".dragHand").each(function() {
-    	        $(this).draggable({
-    	            revert : 'invalid',
-    	            cursor: 'move',
-    	            distance: 2,
-    	            helper: 'clone',
-    	            zIndex: 1000
-    	        });
     	    });
     	}
 
@@ -1261,20 +1255,14 @@ optemo_module = (function (my){
         	    source: terms
         	});
     	}
-    	$('.selectboxfilter').removeAttr("disabled");
-    	$('.binary_filter').each(function(){
-			if($(this).attr('data-disabled') != 'true') {
-				$(this).removeAttr('disabled');
-			}
-		});
 
     	// In simple view, select an aspect to create viewable groups
-    	$('.groupby').unbind('click').click(function(){
-			feat = $(this).attr('data-feat');
-			my.loading_indicator_state.sidebar = true;
-    		my.trackPage('goals/showgroups', {'filter_type' : 'groupby', 'feature_name': feat, 'ui_position': $(this).attr('data-position')});
-			my.ajaxcall("/groupby/"+feat+"?ajax=true");
-    	});
+    	//$('.groupby').unbind('click').click(function(){
+		//	feat = $(this).attr('data-feat');
+		//	my.loading_indicator_state.sidebar = true;
+    	//	my.trackPage('goals/showgroups', {'filter_type' : 'groupby', 'feature_name': feat, 'ui_position': $(this).attr('data-position')});
+		//	my.ajaxcall("/groupby/"+feat+"?ajax=true");
+    	//});
     };
 
     //--------------------------------------//

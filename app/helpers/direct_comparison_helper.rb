@@ -11,11 +11,11 @@ module DirectComparisonHelper
   def box_width
     case @products.size
     when 4
-      899
+      900
     when 3
-      708
+      709
     else
-      517
+      518
     end
   end
 end
