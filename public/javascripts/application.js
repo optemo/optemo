@@ -222,8 +222,6 @@ optemo_module = (function (my){
 
     my.removeSilkScreen = function() {
         // Re-enable the select boxes manually (IE bug; we have to disable them when applying the silkscreen)
-        $('.selectboxfilter').css('visibility', 'visible');
-        $('.selectboxfilter').removeAttr('disabled');
         $('#silkscreen').css({'display' : 'none', 'top' : '', 'left' : '', 'width' : ''}).hide();
         $('#outsidecontainer').css({'display' : 'none'});
         $('#outsidecontainer').unbind('click');
@@ -258,7 +256,6 @@ optemo_module = (function (my){
     	   my.removeSilkScreen();
 	    });
     	$('#silkscreen').css({'height' : current_height+'px', 'display' : 'inline'});
-    	$('.selectboxfilter').css('visibility', 'hidden');
     	if (data) {
     		$('#info').html(data).css('height','');
     	} else {
@@ -350,9 +347,7 @@ optemo_module = (function (my){
     	// The best is to just leave the medium URL in place, because that image is already loaded in case of comparison, the common case.
     	// For the uncommon case of page reload, it's fine to load a larger image.
     	smallProductImageAndDetail = "<img class=\"draganddropimage\" src=" + // used to have width=\"45\" height=\"50\" in there, but I think it just works for printers...
-    	imgurl + " data-id=\""+id+"\" data-sku=\""+sku+"\" alt=\""+id+"_s\"><div class=\"smalldesc\"";
-
-    	smallProductImageAndDetail = smallProductImageAndDetail + ">" +
+    	imgurl + " data-id=\""+id+"\" data-sku=\""+sku+"\" alt=\""+id+"_s\"><div>" +
     	"<a class=\"easylink\" data-id=\""+id+"\" data-sku=\""+sku+"\" href=\"\">" +
     	((name) ? optemo_module.getShortProductName(name) : 0) +
     	"</a></div>" +
@@ -360,7 +355,7 @@ optemo_module = (function (my){
     	"<img src=\"" +
         // This next line is used for embedding: check whether there is a remote server defined, and put the appropriate image url in.
     	(typeof(REMOTE) != 'undefined' ? REMOTE : "") +
-    	"/images/close.png\" alt=\"Close\"/></a>";
+    	"/images/closepopup.png\" alt=\"Close\"/></a>";
     	var element = $('#c'+id);
     	element.append($(smallProductImageAndDetail));
     	var image = element.find('.draganddropimage');
@@ -479,7 +474,6 @@ optemo_module = (function (my){
             $(this).slider("option", "disabled", true);
         });
 
-        $('.selectboxfilter').attr("disabled", true);
         $('.groupby').unbind('click');
         $('.removefilter').unbind('click').click(function() {return false;}); // There is a default link there that shouldn't be followed.
         $('.binary_filter').attr('disabled', true);
@@ -745,10 +739,6 @@ optemo_module = (function (my){
 
     	if ($.browser.msie)
     	{
-    	    // If it's any version of IE, the transparency for the hands doesn't get done properly on page load - redo it here.
-    		$('.dragHand').each(function() {
-    			$(this).fadeTo("fast", 0.35);
-    		});
             // Fix the slider position
         	$('.hist').each(function() {
                $(this).css('left', '7px');
@@ -773,19 +763,6 @@ optemo_module = (function (my){
     	$('#myfilter_search').live('keydown', function (e) {
     		if (e.which==13)
     			return submitsearch();
-    	});
-
-    	// Add a dropdownbox selection -- submit
-    	$('.selectboxfilter').live('change', function(){
-		    var whichThingSelected = $(this).val().replace(/ \(.*\)$/,'');
-			var whichSelector = $(this).attr('name');
-		    var categorical_filter_name = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]"));
-    		$('#myfilter_'+categorical_filter_name).val(opt_appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
-    		var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : categorical_filter_name, 'filter_type' : 'categorical'};
-    		my.loading_indicator_state.sidebar = true;
-        	my.trackPage('goals/filter/categorical', info);
-    		submitCategorical();
-    		return false;
     	});
 
 		// extended navigation action
@@ -995,7 +972,7 @@ optemo_module = (function (my){
 			    var sku = $(savedProducts[(p == -1) ? p+1 : p]).attr('data-sku');
 				// The column numbers are important here for .remove functionality.
 				if (p==-1) {
-					heading = $('<div class="compare_row"><div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle" style="padding-right:3px;">All Specifications</div></div></div>').appendTo(anchor);
+					heading = $('<div class="compare_row"><div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle">All Specifications</div></div></div>').appendTo(anchor);
 				}
 			    else {
 					heading.append('<div class="outertitle spec_column_'+p+'"><div class="columntitle">&nbsp;</div></div>');
@@ -1042,10 +1019,6 @@ optemo_module = (function (my){
 			my.applySilkScreen((href || '/product/_/' + currentelementid) +'?plain=true',null, 560, 580);
         	return false;
         });
-
-		$('.navbox').live("hover", function() {
-			$(this).find(".dragHand").toggle();
-		});
 
         //Ajax call for simlinks ('browse similar')
     	$('.simlinks').live("click", function() {
@@ -1141,7 +1114,19 @@ optemo_module = (function (my){
     		$('#morefilters').css('display','block');
     		return false;
     	});
-
+		$('.binary_filter_text').live('click', function(){
+			var checkbox = $(this).siblings('input');
+			var whichbox = checkbox.attr('id');
+    		var box_value = checkbox.attr('checked') ? 100 : 0;
+			if (box_value == 100)
+				checkbox.removeAttr("checked");
+			else
+				checkbox.attr("checked", "checked");
+    		my.loading_indicator_state.sidebar = true;
+    		my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox});
+    		submitCategorical();
+			return false;
+		});
     	// Checkboxes -- submit
     	$('.binary_filter').live('click', function() {
     		var whichbox = $(this).attr('id');
@@ -1218,38 +1203,15 @@ optemo_module = (function (my){
     	if (my.IS_DRAG_DROP_ENABLED)
     	{
     		// Make item boxes draggable. This is a jquery UI builtin.
-    		$(".image_boundingbox img, .image_boundingbox_line img, img.productimg").each(function() {
+    		$("img.productimg").each(function() {
     			$(this).draggable({
     				revert: 'invalid',
     				cursor: "move",
     				// The following defines the drag distance before a "drag" event is actually initiated. Helps for people who click while the mouse is slightly moving.
     				distance:2,
     				helper: 'clone',
-    				zIndex: 1000,
-    				start: function(e, ui) {
-    					if ($.browser.msie) // Internet Explorer sucks and cannot do transparency
-    					    $(this).css({'opacity':'0.4'});
-    				},
-    				stop: function (e, ui) {
-    					if ($.browser.msie)
-    						$(this).css({'opacity':'1'});
-    				}
+    				zIndex: 1000
     			});
-                $(this).hover(function() {
-    	                $(this).find('.	dragHand').stop().animate({ opacity: 1.0 }, 150);
-    			    },
-    		        function() {
-    	            	$(this).find('.dragHand').stop().animate({ opacity: 0.35 }, 450);
-               });
-    	    });
-    	    $(".dragHand").each(function() {
-    	        $(this).draggable({
-    	            revert : 'invalid',
-    	            cursor: 'move',
-    	            distance: 2,
-    	            helper: 'clone',
-    	            zIndex: 1000
-    	        });
     	    });
     	}
 
@@ -1263,20 +1225,14 @@ optemo_module = (function (my){
         	    source: terms
         	});
     	}
-    	$('.selectboxfilter').removeAttr("disabled");
-    	$('.binary_filter').each(function(){
-			if($(this).attr('data-disabled') != 'true') {
-				$(this).removeAttr('disabled');
-			}
-		});
 
     	// In simple view, select an aspect to create viewable groups
-    	$('.groupby').unbind('click').click(function(){
-			feat = $(this).attr('data-feat');
-			my.loading_indicator_state.sidebar = true;
-    		my.trackPage('goals/showgroups', {'filter_type' : 'groupby', 'feature_name': feat, 'ui_position': $(this).attr('data-position')});
-			my.ajaxcall("/groupby/"+feat+"?ajax=true");
-    	});
+    	//$('.groupby').unbind('click').click(function(){
+		//	feat = $(this).attr('data-feat');
+		//	my.loading_indicator_state.sidebar = true;
+    	//	my.trackPage('goals/showgroups', {'filter_type' : 'groupby', 'feature_name': feat, 'ui_position': $(this).attr('data-position')});
+		//	my.ajaxcall("/groupby/"+feat+"?ajax=true");
+    	//});
     };
 
     //--------------------------------------//
@@ -1435,11 +1391,10 @@ optemo_module = (function (my){
     	// I modified it slightly, since word breaks are a bit too arbitrary.
     	// [brand.gsub("Hewlett-Packard","HP"),model.split(' ')[0]].join(' ')
     	name = name.replace("Hewlett-Packard", "HP");
-    	var shortname = name.substring(0,16);
-    	if (name != shortname)
-    		return shortname + "...";
+		if (name.length > 21)
+    		return name.substring(0,20) + "...";
     	else
-    		return shortname;
+    		return name;
     };
 
     //--------------------------------------//

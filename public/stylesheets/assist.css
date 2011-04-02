@@ -146,6 +146,10 @@ img.productimg {
 	z-index:1;
 }
 
+.navbox:hover .dragHand {
+	display: block;
+}
+
 #draghandexample {
 	position: absolute;
 	left: 20px;
