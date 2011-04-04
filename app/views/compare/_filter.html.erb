@@ -1,4 +1,4 @@
-<h2><%= link_to "RESET", "/", :class => "reset awesome_reset", :rel => "nofollow", :style => "float: right; margin-top:12px" %><%=t 'products.compare.search' %></h2>
+<h2><%= link_to t('products.compare.reset'), "/", :class => "reset awesome_reset", :rel => "nofollow", :style => "float: right; margin-top:12px", :title => t('products.compare.resetdesc')%><%=t 'products.compare.search' %></h2>
 <%= form_for(Search.new, :html => {:id => 'filter_form'}) do %>
   <!--<%= @s.search.keyword_search.blank? ? text_field_tag('myfilter[search]') : text_field_tag('myfilter[search]', @s.search.keyword_search) %>
 	<div class="ui-widget" style="display:inline;">

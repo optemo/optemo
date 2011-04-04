@@ -8,7 +8,7 @@ en:
             saved:          "Compare and Save"
             alreadyadded:   "You already added that product!"
             toomanysaved:   "You can only save up to 4 products at a time."
-            savesome:       "Select two or more items to compare specs"
+            savesome:       "Select two or more items to compare specs"  
             savesomedrag:   "Drag and drop cameras over to this box to save them for later or compare them with other cameras."
             filters:        "Filters"
             powered:        "powered by"
@@ -24,7 +24,10 @@ en:
             onsale:         "On Sale"       
             zoomout:        "Zoom out"
             clickforspecs:  "Click for product specifications"
-            seegroup:       "Click here to see products in this group"    
+            seegroup:       "Click here to see products in this group"   
+            reset:          "RESET"
+            resetdesc:      "Clear all filters" 
+            compare:        "COMPARE"  
             
         show:
             title:          "Product Details"
