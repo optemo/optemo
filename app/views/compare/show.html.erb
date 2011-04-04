@@ -68,18 +68,6 @@
     	    <div class="bbfeatures"><%= image_tag "best_buy_free_shipping.gif" %><%=t('products.show.freeshipping', :amount =>"$20")%></div>
     	    <div class="bbfeatures"><%= image_tag "best_buy_instore_pickup.gif" %><%=t('products.show.instorepickup')%></div>
     	    <div class="bbfeatures"><%= image_tag "best_buy_rewards_card.gif" %><%=t('products.show.rewardprog')%></div>
-			     <div id="fb-root"></div>
-				<script>
-				  window.fbAsyncInit = function() {
-				    FB.init({appId: '191247887553933', status: true, cookie: true,
-				             xfbml: true});
-				  };
-				  (function() {
-				    var e = document.createElement('script'); e.async = true;
-				    e.src = 'http://connect.facebook.net/hi_IN/all.js';
-				    document.getElementById('fb-root').appendChild(e);
-				  }());
-				</script>
         </div>
         <div style="float:right;">
     		<% if @allspecs["onsale"] %>
@@ -96,12 +84,23 @@
         </div>
 		<div class="spacer"> </div>
 	</div>
-	
+	<div>
+			<div id="fb-root"></div>
+			<script>
+			  window.fbAsyncInit = function() {
+			    FB.init({appId: '191247887553933', status: true, cookie: true,
+			             xfbml: true});
+			  };
+			  (function() {
+			    var e = document.createElement('script'); e.async = true;
+			    e.src = document.location.protocol +
+			      '//connect.facebook.net/en_US/all.js';
+			    document.getElementById('fb-root').appendChild(e);
+			  }());
+			</script>
+<script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script><fb:like href="" show_faces="false" width="450" font="arial"></fb:like>
+    </div>
 	<div class="spacer">&nbsp;</div>
 </div>
 
 <% if !@plain %><div style="clear: both;"></div></div><% end %>
-
-<script>
-
-</script>
