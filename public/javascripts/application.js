@@ -165,7 +165,19 @@ optemo_module = (function (my){
 		}
 		return req;
     };
-
+	function numberofstars(stars) {
+		fullstars = parseInt(stars);
+		halfstar = (fullstars == stars) ? 0 : 1;
+		emptystars = 5 - fullstars - halfstar;
+		ret = "";
+		for(var i = 0; i < fullstars; i++)
+			ret += '<img src="http://bestbuy.ca/images/common/pictures/yellowStar.gif" />';
+		for(var i = 0; i < halfstar; i++)
+			ret += '<img src="http://bestbuy.ca/images/common/pictures/yellowhalfstar.gif" />';
+		for(var i = 0; i < emptystars; i++)
+			ret += '<img src="http://bestbuy.ca/images/common/pictures/emptystar.gif" />';
+		return ret;
+	}
     // This function gets called when a show action gets called.
     my.preloadSpecsAndReviews = function(sku) {
         my.loadspecs(sku).done(function() {
@@ -178,27 +190,45 @@ optemo_module = (function (my){
     	        type: "GET",
     	        dataType: "jsonp",
                 success: function (reviews) {
-                    var prop_list = parse_bb_json(reviews["reviews"]);
-
                     var to_tabbed_content = "";
                     var attributes = reviews["customerRatingAttributes"];
-                    // This next section deals specifically with the styling of the rating bars.
-                    // They are hard-coded because the inside yellow section grows pixel by pixel to match
-                    // the rating, so there needs to be a mathematical relationship between a rating 2.47 and
-                    // the number of pixels of yellow to draw. That relationship right now is:
-                    // 1
-                    var width = parseInt(18 + 41 * reviews["customerRating"]);
-                    if (width < 29) width = 29;
-                    if (width >= 182) width = 198;
-                    to_tabbed_content += "<span style=\"font-weight: bold; font-size: 1.1em;\">Overall Rating:</span> " + "<div class=\"bestbuy_rating_bar\" style=\"width: "+ width +"px;\">" + reviews["customerRating"] + "<div class=\"bestbuy_rating_bar_inside\"></div></div><br>";
-                    for (var i in attributes) {
-                        // This math is based on the width of the box, see bestbuy_rating_bar_small in CSS declarations
-                        var width = parseInt(9 + 20 * (attributes[i] - 0.8));
-                        if (width < 14) width = 14;
-                        if (width >= 91) width = 99;
-                        to_tabbed_content += i.replace(/_x0020_/g, " ") + "<div class=\"bestbuy_rating_bar_small\" style=\"width: "+ width +"px;\"><div class=\"bestbuy_rating_bar_inside_small\">" + attributes[i] + "</div></div>"
-                    }
-                    to_tabbed_content += 'Review Count: '+ reviews['customerRatingCount'] + "<br><ul>" + prop_list + '</ul>';
+
+					to_tabbed_content += "<br><h3>Customer Ratings</h3>";
+					// Featured Ratings
+					for (var i in attributes) {
+						to_tabbed_content += '<div class="review_feature">\
+							<span>'+i.replace(/_x0020_/g, " ")+'</span>\
+							<div class="empty"><div class="fill" style="width:'+(attributes[i]*20)+
+							'%"></div></div>\
+							<span class="nbr">'+attributes[i]+'</span>\
+						</div>';
+					}
+					// Overall Rating
+                    to_tabbed_content += '<div class="starrating">\
+						<span>Overall Rating</span>' + numberofstars(reviews["customerRating"]) +
+						'<span class="nbr">'+reviews["customerRating"]+'</span>\
+					</div>';
+					//Number of Ratings
+                    to_tabbed_content += '<p class="ratingnumbers">('+reviews['customerRatingCount']+' ratings)</p>';
+					to_tabbed_content += '<div style="margin-bottom: 5px">'+reviews["reviews"].length + ' Reviews | <a href="http://www.bestbuy.ca/Catalog/ReviewAndRateProduct.aspx?path=639f1c48d001d04869f91aebd7c9aa86en99&ProductId='+sku+'&pcname=MCCPCatalog">Rate and review this product</a></div>';
+					var m_names = new Array("January", "February", "March", 
+					"April", "May", "June", "July", "August", "September", 
+					"October", "November", "December");
+					
+					//Written Reviews
+					for (var review in reviews["reviews"]) {
+						review = reviews["reviews"][review];
+						date = new Date(review["submissionTime"]);
+						to_tabbed_content += '<div class="bbreview">\
+						<h3>'+review["title"]+'&nbsp;|&nbsp;'+m_names[date.getMonth()]+' '+date.getDate()+', ' +date.getFullYear()+'</h3>\
+						<div>'+review["reviewerName"]+'&nbsp;|&nbsp;'+review["reviewerLocation"]+ '</div>\
+							<div class="starrating">\
+								<span>Overall Rating</span>'+numberofstars(review["rating"])+
+								'<span class="nbr">'+review["rating"]+'</span>'+
+							'</div>\
+							<p>'+review["comment"]+'</p>\
+						</div>';
+					}
                     $('body').data('bestbuy_reviews_' + sku, to_tabbed_content);
                 },
                 error: function(x, xhr) {
