@@ -929,6 +929,9 @@ div#filter_bar_loading{
 	margin-top: 10px;
 	padding: 6px;
 }
+.fb_edge_widget_with_comment {
+	padding-top: 5px;
+}
 div#textfeatures, div#reviews {
 	clear:both;
 }
