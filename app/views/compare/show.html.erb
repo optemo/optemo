@@ -80,12 +80,12 @@
 			  (function() {
 			    var e = document.createElement('script'); e.async = true;
 			    e.src = document.location.protocol +
-			      t('products.show.fbconnecturl');
+			      <%=raw t('products.show.fbconnecturl') %>;
 			    document.getElementById('fb-root').appendChild(e);
 			  }());
 			}
 			</script>
-			<script src=<%="http:"+t('products.show.fbconnecturl')+"#xfbml=1"%>></script><fb:like href=<%=@prod_url%> show_faces="false" width="300" font="arial"></fb:like>
+			<script src=<%=raw "http:"+t('products.show.fbconnecturl')+"#xfbml=1"%>></script><fb:like href=<%=@prod_url%> show_faces="false" width="300" font="arial"></fb:like>
         </div>
         <div class="right" style="width:160px">
     		<% if @allspecs["onsale"] %>
