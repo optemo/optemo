@@ -268,10 +268,10 @@ div.drop-box-hover {
 .saveditem {
 	position: relative;
 	width: 71px;
-	height: 75px;
+	height: 80px;
 	float: left;
 	text-align: center;
-	padding: 5px 1px 0;
+	padding: 0px 1px 0;
 	margin: 5px;
 	border: 1px solid #C6C6C6;
 	-moz-box-shadow: 0 2px 1px #888;
