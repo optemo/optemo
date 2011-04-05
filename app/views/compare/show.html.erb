@@ -86,24 +86,22 @@
         </div>
 		<div class="spacer"> </div>
 	</div>
-	<div>
-			<div id="fb-root"></div>
-			<script>
-			if (!(jQuery.browser.msie && jQuery.browser.version == "6.0")) {
-			  window.fbAsyncInit = function() {
-			    FB.init({appId: '191247887553933', status: true, cookie: true,
-			             xfbml: true});
-			  };
-			  (function() {
-			    var e = document.createElement('script'); e.async = true;
-			    e.src = document.location.protocol +
-			      '//connect.facebook.net/en_US/all.js';
-			    document.getElementById('fb-root').appendChild(e);
-			  }());
-			}
-			</script>
-<script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script><fb:like href=<%=@prod_url%> show_faces="false" width="#{400+50}" font="arial"></fb:like>
-    </div>
+	<div id="fb-root"></div>
+	<script>
+	if (!(jQuery.browser.msie && jQuery.browser.version == "6.0")) {
+	  window.fbAsyncInit = function() {
+	    FB.init({appId: '191247887553933', status: true, cookie: true,
+	             xfbml: true});
+	  };
+	  (function() {
+	    var e = document.createElement('script'); e.async = true;
+	    e.src = document.location.protocol +
+	      t('products.show.fbconnecturl');
+	    document.getElementById('fb-root').appendChild(e);
+	  }());
+	}
+	</script>
+	<script src=<%="http:"+t('products.show.fbconnecturl')+"#xfbml=1"%>></script><fb:like href=<%=@prod_url%> show_faces="false" width="300" font="arial"></fb:like>
 	<div class="spacer">&nbsp;</div>
 </div>
 

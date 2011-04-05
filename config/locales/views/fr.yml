@@ -18,8 +18,8 @@ fr:
             addbrand:       "Ajoutez une autre marque"
             allbrands:      "Toutes les marques"
             rembrandfilter: "Retirez le filtre de marque"    
-            filtersdesc:    "Limitez vos résultats par"            
-            
+            filtersdesc:    "Limitez vos résultats par"   
+                 
         show:
             title:          "Visualisation Rapide"
             noimage:        "Image non disponible"
@@ -31,6 +31,7 @@ fr:
             webcode:        "N° web"
             ratings:        "Classements"
             moredetails:    "Plus de détails"    
+            fbconnecturl:   "//connect.facebook.net/en_US/all.js"    
             
     compare:
         index:
