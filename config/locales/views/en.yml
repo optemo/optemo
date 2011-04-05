@@ -51,8 +51,8 @@ en:
             loading:        "Loading..."
             ourprice:       "Our Price:"
             saleprice:      "Sale Price:"
-            saleends:       "Sale Ends"
             fbconnecturl:   "//connect.facebook.net/en_US/all.js"
+            saleends:       "Sale Ends:"
             
     features:
         maxresolution:      "%{num}MP"

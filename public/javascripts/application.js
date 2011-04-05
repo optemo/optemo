@@ -210,7 +210,9 @@ optemo_module = (function (my){
 					</div>';
 					//Number of Ratings
                     to_tabbed_content += '<p class="ratingnumbers">('+reviews['customerRatingCount']+' ratings)</p>';
-					to_tabbed_content += '<div style="margin-bottom: 5px">'+reviews["reviews"].length + ' Reviews | <a href="http://www.bestbuy.ca/Catalog/ReviewAndRateProduct.aspx?path=639f1c48d001d04869f91aebd7c9aa86en99&ProductId='+sku+'&pcname=MCCPCatalog">Rate and review this product</a></div>';
+					to_tabbed_content += '<div style="margin-bottom: 5px">'+reviews["reviews"].length + ' Review';
+					if (reviews["reviews"].length != 1) to_tabbed_content += 's';
+					to_tabbed_content += ' | <a href="http://www.bestbuy.ca/Catalog/ReviewAndRateProduct.aspx?path=639f1c48d001d04869f91aebd7c9aa86en99&ProductId='+sku+'&pcname=MCCPCatalog">Rate and review this product</a></div>';
 					var m_names = new Array("January", "February", "March", 
 					"April", "May", "June", "July", "August", "September", 
 					"October", "November", "December");
@@ -1272,11 +1274,69 @@ optemo_module = (function (my){
     };
 
     //--------------------------------------//
+    //              Spinner                 //
+    //--------------------------------------//
+
+    /* This sets up a spinning wheel, typically used for sections of the webpage that are loading */
+    my.spinner = function(holderid, R1, R2, count, stroke_width, colour) {
+    	var sectorsCount = count || 12,
+    	    color = colour || "#fff",
+    	    width = stroke_width || 15,
+    	    r1 = Math.min(R1, R2) || 35,
+    	    r2 = Math.max(R1, R2) || 60,
+    	    cx = r2 + width,
+    	    cy = r2 + width,
+    	    r = Raphael(holderid, r2 * 2 + width * 2, r2 * 2 + width * 2),
+
+    	    sectors = [],
+    	    opacity = [],
+    	    beta = 2 * Math.PI / sectorsCount,
+
+    	    pathParams = {stroke: color, "stroke-width": width, "stroke-linecap": "round"};
+        Raphael.getColor.reset();
+    	for (var i = 0; i < sectorsCount; i++) {
+    	    var alpha = beta * i - Math.PI / 2,
+    	        cos = Math.cos(alpha),
+    	        sin = Math.sin(alpha);
+    	    opacity[i] = 1 / sectorsCount * i;
+    	    sectors[i] = r.path(pathParams)
+    	                    .moveTo(cx + r1 * cos, cy + r1 * sin)
+    	                    .lineTo(cx + r2 * cos, cy + r2 * sin);
+    	    if (color == "rainbow") {
+    	        sectors[i].attr("stroke", Raphael.getColor());
+    	    }
+    	}
+    	this.runspinner = false;
+    	this.begin = function() {
+    		this.runspinner = true;
+    		setTimeout(ticker, 1000 / sectorsCount);
+    		$('#loading').css('display', 'block');
+    	};
+    	this.end = function() {
+    		this.runspinner = false;
+    		$('#loading').css('display', 'none');
+    	};
+    	function ticker() {
+    	    opacity.unshift(opacity.pop());
+    	    for (var i = 0; i < sectorsCount; i++) {
+    	        sectors[i].attr("opacity", opacity[i]);
+    	    }
+    	    r.safari();
+    		if (myspinner.runspinner)
+    	    	setTimeout(ticker, 1000 / sectorsCount);
+    	};
+    	return this;
+    }
+
+    //--------------------------------------//
     //                AJAX                  //
     //--------------------------------------//
 
-    myspinner = new spinner("myspinner", 11, 20, 9, 5, "#000");
+    if (!window.embedding_flag) {
+        myspinner = my.spinner("myspinner", 11, 20, 9, 5, "#000");
+    }
     my.loading_indicator_state = {sidebar : false, sidebar_timer : null, main : false, main_timer : null, socket_error_timer : null};
+
 
     /* Does a relatively generic ajax call and returns data to the handler below */
     my.ajaxsend = function (hash,myurl,mydata,timeoutlength) {
@@ -1432,60 +1492,6 @@ optemo_module = (function (my){
     	else
     		return name;
     };
-
-    //--------------------------------------//
-    //              Spinner                 //
-    //--------------------------------------//
-
-    /* This sets up a spinning wheel, typically used for sections of the webpage that are loading */
-    function spinner(holderid, R1, R2, count, stroke_width, colour) {
-    	var sectorsCount = count || 12,
-    	    color = colour || "#fff",
-    	    width = stroke_width || 15,
-    	    r1 = Math.min(R1, R2) || 35,
-    	    r2 = Math.max(R1, R2) || 60,
-    	    cx = r2 + width,
-    	    cy = r2 + width,
-    	    r = Raphael(holderid, r2 * 2 + width * 2, r2 * 2 + width * 2),
-
-    	    sectors = [],
-    	    opacity = [],
-    	    beta = 2 * Math.PI / sectorsCount,
-
-    	    pathParams = {stroke: color, "stroke-width": width, "stroke-linecap": "round"};
-        Raphael.getColor.reset();
-    	for (var i = 0; i < sectorsCount; i++) {
-    	    var alpha = beta * i - Math.PI / 2,
-    	        cos = Math.cos(alpha),
-    	        sin = Math.sin(alpha);
-    	    opacity[i] = 1 / sectorsCount * i;
-    	    sectors[i] = r.path(pathParams)
-    	                    .moveTo(cx + r1 * cos, cy + r1 * sin)
-    	                    .lineTo(cx + r2 * cos, cy + r2 * sin);
-    	    if (color == "rainbow") {
-    	        sectors[i].attr("stroke", Raphael.getColor());
-    	    }
-    	}
-    	this.runspinner = false;
-    	this.begin = function() {
-    		this.runspinner = true;
-    		setTimeout(ticker, 1000 / sectorsCount);
-    		$('#loading').css('display', 'block');
-    	};
-    	this.end = function() {
-    		this.runspinner = false;
-    		$('#loading').css('display', 'none');
-    	};
-    	function ticker() {
-    	    opacity.unshift(opacity.pop());
-    	    for (var i = 0; i < sectorsCount; i++) {
-    	        sectors[i].attr("opacity", opacity[i]);
-    	    }
-    	    r.safari();
-    		if (myspinner.runspinner) // This might be my.runspinner?
-    	    	setTimeout(ticker, 1000 / sectorsCount);
-    	};
-    }
 
     //--------------------------------------//
     //              Cookies                 //
@@ -1739,7 +1745,7 @@ jQuery(document).ready(function($){
 	$("#tourButton a").click(launchtour); //Launch tour when this is clicked
 
 	// Load the classic theme for galleria, the jquery image slideshow plugin we're using (jquery.galleria.js)
-    Galleria.loadTheme('/javascripts/galleria.classic.js');
+//    Galleria.loadTheme('/javascripts/galleria.classic.js');
 });
 
 if (window.embedding_flag) {
@@ -1814,6 +1820,6 @@ if(jQueryIsLoaded) {
             optemo_socket_activator(window["jQuery"]);
         };
     }
-    script_element.setAttribute("src", 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js');
+    script_element.setAttribute("src", 'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js');
     document.getElementsByTagName("head")[0].appendChild(script_element);
 }

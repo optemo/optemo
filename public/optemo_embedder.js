@@ -13,7 +13,7 @@ does not get minified by the capistrano deployment at the moment. */
 
 window.embedding_flag = true; // This is used in application.js to decide whether to redefine the AJAX functions
 // These static globals are used in application.js and below. 'remote' is defined so that application.js can call it later
-var optemo_module, remote, REMOTE = 'http://ast0.optemo.com';
+var optemo_module, remote, REMOTE = 'http://bbembed.optemo.com';
 
 // Wrapping this function and assigning it to a variable delays execution of evaluation
 var optemo_socket_activator = (function () {
@@ -130,8 +130,6 @@ var optemo_socket_activator = (function () {
 				    })(0);
     				
     				function finish_loading() {
-        				optemo_module.embeddedString = REMOTE;
-
         				// By this point we can guarantee that everything loaded serially.
         	            data_to_append = new Array();
         	            // This is basically a do-while loop in disguise. Put the zeroth element on first, go from there.
@@ -164,7 +162,7 @@ var optemo_socket_activator = (function () {
         		                    tag.setAttribute("type", "text/css");
         		                    tag.setAttribute("rel", "stylesheet");
         		                    // For now, take the CSS file out totally for laserprinterhub.com deployment.
-//        		                    headID.appendChild(tag);
+        		                    headID.appendChild(tag);
         		                }
         		            }
         		            data_to_append = data_to_add.join("\n");
@@ -195,6 +193,7 @@ var optemo_socket_activator = (function () {
                         // To correct this, move variable initialization into DBinit() or else append HTML before loading scripts.
                         // Latter is a good idea because the user would see something load earlier than now.
                         // In that case, remove the following lines
+                        myspinner = new optemo_module.spinner("myspinner", 11, 20, 9, 5, "#000");
                         optemo_module.IS_DRAG_DROP_ENABLED = (jQuery("#dragDropEnabled").html() === 'true');
                         optemo_module.MODEL_NAME = jQuery("#modelname").html();
                         optemo_module.DIRECT_LAYOUT = (jQuery('#directLayout').html() == "true");                    
@@ -269,7 +268,7 @@ if(jQueryIsLoaded) {
             optemo_socket_activator();
         };
     }    
-    script.setAttribute("src", 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js');
+    script.setAttribute("src", 'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js');
     document.getElementsByTagName("head")[0].appendChild(script);
 }
 
