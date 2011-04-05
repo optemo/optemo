@@ -21,10 +21,8 @@ require 'inline'
         mins << min
         maxes << max
       end
-      
       #Features can have varying lengths
       lengths = specs.map{|s| s.size}
-      
       raise ValidationError, "num_buckets is less than 2" unless num_buckets>1
       raise ValidationError, "size of mins is not right" unless mins.size == specs.size
       raise ValidationError, "size of maxes is not right" unless maxes.size == specs.size
@@ -46,21 +44,17 @@ require 'inline'
   inline :C do |builder|
     builder.c "
     #include <math.h> 
-
        static VALUE distribution_c(VALUE _data, VALUE num_features, VALUE num_buckets, VALUE _dataMins, VALUE _dataMaxes, VALUE _data_lengths){
-
          //initializing the 
          VALUE* data_a = RARRAY_PTR(_data);
          VALUE* dataMins_a = RARRAY_PTR(_dataMins);
          VALUE* dataMaxes_a = RARRAY_PTR(_dataMaxes);
          VALUE* dataLengths_a = RARRAY_PTR(_data_lengths);
-
+         
          int n=0;  
          int d = NUM2INT(num_features);
          int k = NUM2INT(num_buckets);  
-
          VALUE result_ary = rb_ary_new2((2*d)+(k*d));
-
          int i,j, ind;
          double curr_min, curr_max, stepsize, offset;
          offset = 0.000001;
@@ -70,7 +64,6 @@ require 'inline'
          double* dataMaxes = malloc(sizeof(double)*d);
          double* mins = malloc(sizeof(double)*d);
          double* maxes = malloc(sizeof(double)*d);
-
          double *distMaxes = (double*)calloc(d, sizeof(double));
 
 
@@ -156,7 +149,7 @@ require 'inline'
        current_dataset_minimum = max
        current_dataset_maximum = min
        stepsize = (max-min) / dist.length + 0.000001 #Offset prevents overflow of 10 into dist array
-       specs = ContSpec.by_feat(feat)
+       specs = Session.search.products.mapfeat(feat).compact
        specs.each do |s|
          current_dataset_minimum = s if s < current_dataset_minimum
          current_dataset_maximum = s if s > current_dataset_maximum
