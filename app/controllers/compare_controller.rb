@@ -98,6 +98,7 @@ class CompareController < ApplicationController
       #Cleanse id to be only numbers
       id = params[:id] = params[:id][/^\d+/]
       @product = Product.cached(id)
+      @prod_url = TextSpec.cacheone(@product.id, "productUrl")
       @allspecs = ContSpec.cache_all(id).merge(CatSpec.cache_all(id)).merge(BinSpec.cache_all(id)).merge(TextSpec.cache_all(id))
       @siblings = ProductSiblings.find_all_by_product_id_and_name(id,"imgsurl")
       @s = Session
