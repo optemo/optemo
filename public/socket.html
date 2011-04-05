@@ -125,9 +125,8 @@ var local_socket = new easyXDM.Rpc(/** The channel configuration*/{
 
             // To remove the hard-coded server name, look for the parameter passed in by the URL
             // -- urlVars would have to be an object with the parameters from the URL; see above
-            // (urlVars["serverName"] !== undefined ? ("http://" + unescape(urlVars["serverName"])) : "http://ast0.optemo.com/")
 
-            var d = AJS.getRequest("http://ast0.optemo.com", "GET");
+            var d = AJS.getRequest((urlVars["serverName"] !== undefined ? ("http://" + unescape(urlVars["serverName"])) : "http://ast0.optemo.com/"), "GET");
             d.addCallback( function(res_txt, req) { local_socket.initialPageDelivery(res_txt) } );
             d.addErrback(function(res_txt, req) { local_socket.initialPageDelivery(res_txt) });
             d.sendReq({embedding: "true"});
