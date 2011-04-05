@@ -31,7 +31,7 @@ fr:
             webcode:        "N° web"
             ratings:        "Classements"
             moredetails:    "Plus de détails"    
-            fbconnecturl:   "//connect.facebook.net/en_US/all.js"    
+            fbconnecturl:   "//connect.facebook.net/fr_CA/all.js"    
             
     compare:
         index:
