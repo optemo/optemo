@@ -96,14 +96,14 @@ optemo_module = (function (my){
     // This wouldn't work out if for any reason the Object prototype had changed.
     // In that case, use the following (google "for in javascript hasownproperty" for more information):
     // if (p.hasOwnProperty(i)
-    var parse_bb_json = (function spec_recurse(p) {
-        var props = "";
-        for (var i in p) {
-            if (p[i] == "") continue;
-            if (typeof(p[i]) == "object") props += "<li>" + i + ": <ul>" + spec_recurse(p[i]) + "</ul>";
-            else props += "<li>" + i + ": " + p[i] + "\n";
-        }
-        return props;
+    var parse_bb_json = (function spec_recurse2(p) {
+		var props = "";
+		for (var i in p) {
+		    if (p[i] == "") continue;
+		    if (typeof(p[i]) == "object") props += "<li>" + i + ": <ul>" + spec_recurse2(p[i]) + "</ul></li>";
+		    else props += "<li>" + i + ": " + p[i] + "</li>";
+		}
+		return props;
     });
 
     // This flattens the JSON return object down as necessary for feature names or values.
@@ -181,7 +181,7 @@ optemo_module = (function (my){
     // This function gets called when a show action gets called.
     my.preloadSpecsAndReviews = function(sku) {
         my.loadspecs(sku).done(function() {
-			$('#specs_content').html($('<ul>' + parse_bb_json($('body').data('bestbuy_specs_' + sku)) + "</ul>"));
+			$('#specs_content').html('<ul>' + parse_bb_json($('body').data('bestbuy_specs_' + sku)) + "</ul>");
 		});
         if (!(jQuery('body').data('bestbuy_reviews_' + sku))) {
             baseurl = "http://www.bestbuy.ca/api/v2/json/reviews/" + sku;
@@ -218,10 +218,15 @@ optemo_module = (function (my){
 					//Written Reviews
 					for (var review in reviews["reviews"]) {
 						review = reviews["reviews"][review];
-						date = new Date(review["submissionTime"]);
+						
 						to_tabbed_content += '<div class="bbreview">\
-						<h3>'+review["title"]+'&nbsp;|&nbsp;'+m_names[date.getMonth()]+' '+date.getDate()+', ' +date.getFullYear()+'</h3>\
-						<div>'+review["reviewerName"]+'&nbsp;|&nbsp;'+review["reviewerLocation"]+ '</div>\
+						<h3>'+review["title"]+'&nbsp;|&nbsp;';
+						date = new Date(review["submissionTime"]);
+						if (date.getMonth().toString() == "NaN")
+							to_tabbed_content += review["submissionTime"].replace(/T.*$/,'') + '</h3>';
+						else
+							to_tabbed_content += m_names[date.getMonth()]+' '+date.getDate()+', ' +date.getFullYear()+'</h3>';
+						to_tabbed_content += '<div>'+review["reviewerName"]+'&nbsp;|&nbsp;'+review["reviewerLocation"]+ '</div>\
 							<div class="starrating">\
 								<span>Overall Rating</span>'+numberofstars(review["rating"])+
 								'<span class="nbr">'+review["rating"]+'</span>'+
@@ -291,17 +296,18 @@ optemo_module = (function (my){
     	} else {
     	    my.quickajaxcall('#info', url, function(){
     	        if (url.match(/\/product/)) {
-                    // Initialize Galleria
-                    // If you are debugging around this point, be aware that galleria likes to be initialized all in one shot.
-                    $('#galleria').galleria();
-                    // The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
-                    // It's important to set this up as an event handler at all because there is a race condition with galleria updating the DOM otherwise.
-                    $('.galleria-thumbnails-list').livequery(function() {
-                        var g = $('#galleria').find('.galleria-thumbnails-list');
-                        g.children().css('float', 'left');
-                        g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
-                    });
-
+					if (!($.browser.msie && $.browser.version == "6.0")) {
+                    	// Initialize Galleria
+                    	// If you are debugging around this point, be aware that galleria likes to be initialized all in one shot.
+                    	$('#galleria').galleria();
+                    	// The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
+                    	// It's important to set this up as an event handler at all because there is a race condition with galleria updating the DOM otherwise.
+                    	$('.galleria-thumbnails-list').livequery(function() {
+                    	    var g = $('#galleria').find('.galleria-thumbnails-list');
+                    	    g.children().css('float', 'left');
+                    	    g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
+                    	});
+					}
                     //if (!($.browser.msie && $.browser.version == "7.0")) {
                     //    // This is an unsightly hack, and unfortunately seems to be the only easy way to make it work.
                     //    // Internet Explorer 7 has a problem with background color causing the disappearance of divs. Google "peekaboo bug" and others.
