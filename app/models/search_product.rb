@@ -26,25 +26,15 @@ class SearchProduct < ActiveRecord::Base
       else
         res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[]]).conts_keywords.cats(mycats).bins(mybins).group("search_products.product_id")
       end
-      cached = CachingMemcached.cache_lookup("Products-#{res.to_sql}") do
-        specs = Hash.new{|h,k| h[k] = []}
-        res.each do |rec|
-          names = rec.names.split(",")
-          vals = rec.vals.split(",")
-          names.each_with_index{|name,i|specs[name] << vals[i].to_f}
-        end
-        raise SearchError, "No products match that search criteria for #{Session.product_type}" if res.empty?
-        specs.default = nil #Clear the array default so that it can be stored in the cache
-        p_ids = res.map(&:product_id)
-        [specs,p_ids]
+      cached = CachingMemcached.cache_lookup("Products-#{res.to_sql.hash}") do
+        result = res.map{|rel| [rel.names+",id",rel.vals+",#{rel.product_id}"]}
+        raise SearchError, "No products match that search criteria for #{Session.product_type}" if result.empty?
+        result
       end
-      
-      ContSpec.by_feat = cached.first
-      Session.search.products_size = cached[1].length
-      cached[1]
+      ComparableSet.from_storage(cached)
     end
     
-    def cat_counts(feat,expanded)
+    def cat_counts(feat,expanded,includezeros = false)
       allcats = Session.search.userdatacats.group_by(&:name)
       mycats = allcats.reject{|id|feat == id}.values
       mybins = Session.search.userdatabins
@@ -54,21 +44,25 @@ class SearchProduct < ActiveRecord::Base
       else
         q = search_id_q.create_join(mycats+[[feat]],mybins).conts_keywords.bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
       end
-      CachingMemcached.cache_lookup("Cats-#{q.to_sql}") do
-        q.count.merge(Hash[CatSpec.alloptions(feat).map {|x| [x, 0]}]){|k,oldv,newv|oldv}
+      CachingMemcached.cache_lookup("CatsCount(#{includezeros.to_s})-#{q.to_sql.hash}") do
+        if includezeros
+          q.count.merge(Hash[CatSpec.alloptions(feat).map {|x| [x, 0]}]){|k,oldv,newv|oldv}
+        else
+          q.count
+        end
       end
     end
     
     def bin_count(feat)
       mycats = Session.search.userdatacats.group_by(&:name).values
       mybins = Session.search.userdatabins.reject{|e|e.name == feat} << BinSpec.new(:name => feat, :value => true)
-      search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins).count
+      where(:search_id => Product.initial).create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins).count
     end
   end
   private
   class << self
     def search_id_q
-      where(:search_id => Session.search.products_search_id)
+      where(:search_id => Product.initial)
     end
       
     def create_join(mycats,mybins,myconts = Session.search.userdataconts)

@@ -175,50 +175,35 @@ for (j=0;j<k; j++){
   end
 
  
- def self.compute(number_clusters,p_ids)
- 
-  dim_cont = Session.continuous["cluster"].size
-  dim_bin = Session.binary["cluster"].size
-  dim_cat = Session.categorical["cluster"].size
-  cluster_weights = self.set_cluster_weights(dim_cont, 0, 0)
-  utility_weights = self.set_utility_weights(dim_cont, 0, 0)
-  s = p_ids.size
-  
+ def self.compute(number_clusters,products)
+
+  cluster_weights = self.set_cluster_weights(Session.continuous["cluster"])
+
+  s = products.size
   if (s<number_clusters)
-    ft = self.factorized_cont_data
-    if ft.empty?
-      utilitylist = [1]*s
-    else 
-      brand_factors = self.factorized_brand
-      utilitylist = weighted_ft(ft.each_with_index{|f, i| f<<brand_factors[i]}, utility_weights).map{|f| f. inject(:+)}
-    end  
+    utilitylist = Kmeans.utility(products)
     #if utilities are the same
     utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
     util_tmp = utilitylist.sort{|x,y| y <=> x }    
     ordered_list = utilitylist.map{|u| util_tmp.index(u)}
     return ordered_list + ordered_list
   end
- 
-    performance_weight = 2
-    #weights = weights << performance_weight
-    weight_dim = dim_cont #+dim_bin+dim_cat+1
-    # dimension of each category - for example how many different brands 
-   # dim_per_cat = cat_specs.first.map{|f| f.size}
-   
-    # inistial seeds for clustering  ### just based on contiuous features
-    ft = self.factorized_cont_data
-    inits = self.init(number_clusters, ft, cluster_weights[0...dim_cont])
-    
-    #static VALUE kmeans_c(VALUE _points, _VALUE n, VALUE d, VALUE cluster_n,VALUE _weights, VALUE _utilities, VALUE _inits)
-    utilities = ContSpec.by_feat("utility")
-    #$k = Kmeans.new unless $k
-    #labels = $k.kmeans_c(ft.flatten, ft.size, ft.first.size, number_clusters, [0.33,0.33,0.33], utilities, inits)
-    Kmeans.ruby(number_clusters, cluster_weights[0...dim_cont], utility_weights, inits)
-    #labels
+    # initial seeds for clustering  ### just based on contiuous features
+    inits = self.init(number_clusters, products, cluster_weights)
+    Kmeans.ruby(number_clusters, cluster_weights, inits, products)
+end
+
+def self.utility(products)
+  if Session.search.sortby.nil? || Session.search.sortby == "relevance" 
+    products.mapfeat("utility")
+  else
+    products.map{|i| i.instance_variable_get("@#{Session.search.sortby}_factor") || 0}
+  end
 end
 
 
-def self.init(number_clusters, specs, weights)
+def self.init(number_clusters, products, weights)
+  specs = self.factorize_cont_data(products)
   centers = [specs[(specs.size-1)/2]]
   for j in (0...number_clusters-1)
       actual_dists = centers.map{|c| specs.map{|s| self.distance(c,s, weights)}}.transpose.map{|j| j.min}
@@ -227,44 +212,26 @@ def self.init(number_clusters, specs, weights)
   centers.map{|c| specs.index(c)} 
 end
 
-def self.set_cluster_weights(dim_cont, dim_bin, dim_cat)
-  weights = []
+def self.set_cluster_weights(features)
   if Session.search.sortby.nil? || Session.search.sortby == "relevance"
-    Session.continuous["cluster"].each{|f| weights << Session.cluster_weight[f]}
-    weights_sum = weights.sum
-    weights.map{|w| w/weights.sum.to_f}
+    weights = features.map{|f| Session.cluster_weight[f]}
+    weights_sum = weights.sum.to_f
+    weights.map{|w| w/weights_sum}
   else
-    weights = [0/dim_cont]*dim_cont 
-    weights[Session.continuous["cluster"].index(Session.search.sortby)] = 1
+    weights = [0.001/features.size]*features.size
+    weights[Session.continuous["cluster"].index(Session.search.sortby)] = 0.999
+    weights
   end
-  weights
 end
 
-
-def self.set_utility_weights(dim_cont, dim_bin, dim_cat)
-  weights = []
-  if Session.search.sortby.nil? || Session.search.sortby == "relevance"
-    Session.continuous["cluster"].each{|f| weights << Session.utility_weight[f] if Session.utility_weight[f]}
-    weights_sum = weights.sum
-    weights.map{|w| w/weights.sum.to_f}
-    weights << 10
-  else
-    weights = [0.0/dim_cont]*dim_cont 
-    weights[Session.continuous["cluster"].index(Session.search.sortby)] = 0.99
-    weights << 0.01
-  end
-  weights  
-end
 
 # regular kmeans function     
 ## ruby function only cluster based on continuous data 
 ## ruby function does not sort by utility and don't pick the highest utility as the rep
-def self.ruby(number_clusters, cluster_weights, utility_weights, inits)
+def self.ruby(number_clusters, cluster_weights, inits, products)
   thresh = 0.000001
-  standard_specs = self.factorized_cont_data#self.standardize_cont_data(specs)
-  brand_factors = self.factorized_brand
+  standard_specs = self.factorize_cont_data(products)
   mean_1 = inits.map{|i| standard_specs[i]}
-  mean_2 =[]
   labels = []
   dif = []
   begin 
@@ -286,24 +253,29 @@ def self.ruby(number_clusters, cluster_weights, utility_weights, inits)
    end    
   end while z > thresh
    # postprocessing if one cluster is collapsed
-   if labels.uniq.size <labels.max+1
-     labels = labels.map{|l| labels.uniq.index(l)}
-   end
+   labels = labels.map{|l| labels.uniq.index(l)} if labels.uniq.size <labels.max+1
    # split if there is only one cluster
    if labels.uniq.size ==1
      (0...number_clusters-1).to_a.each{|i| labels[i] = i}
      (number_clusters-1...labels.size).to_a.each{|i| labels[i] = number_clusters -1}
    end
-  reps = [];
-  #utility ordering
-  utilitylist = weighted_ft(standard_specs.each_with_index{|f, i| f<<brand_factors[i]}, utility_weights).map{|f| f. inject(:+)}  
+  #ordering clusters based on group utility and picking the rep 
+  self.utility_order(products, labels, labels.uniq.size)
+end
+
+
+def self.utility_order(products, labels, number_clusters)
+  utilitylist = Kmeans.utility(products)
   utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<number_clusters
-  grouped_utilities = group_by_labels(utilitylist, labels).map{|g| g.inject(:+)/g.length}
-  sorted_group_utilities = grouped_utilities.sort{|x,y| y<=>x}
-  sorted_labels = []
-  labels.each_index{|i| sorted_labels << sorted_group_utilities.index(grouped_utilities[labels[i]])}
-  (0...number_clusters).to_a.each{|i| reps<< sorted_labels.index(i)}
-  sorted_labels + reps   
+  grouped_utilities = group_by_labels(utilitylist, labels)
+  avg_group_utilities = grouped_utilities.map do |g| 
+    g.sum/(g.size.to_f)
+  end  
+  sorted_group_utilities = avg_group_utilities.sort{|x,y| y<=>x}
+  sorted_grouped_utilities = sorted_group_utilities.map{|g| grouped_utilities[avg_group_utilities.index(g)]}
+  sorted_labels  = labels.map{|l| sorted_group_utilities.index(avg_group_utilities[l])} 
+  reps = (0...number_clusters).map{|i| utilitylist.index(sorted_grouped_utilities[i][sorted_grouped_utilities[i].index(sorted_grouped_utilities[i].max)])}
+  sorted_labels + reps
 end
 
 #selecting the initial cluster centers
@@ -317,9 +289,10 @@ end
 #  # Finding the mean of several points
 #  # points is a nxd dimension array where n is the number of products and d is number of features
 def self.mean(points)
-  s = points.size.to_f
-  #debugger if points.flatten.include
-  points.transpose.map{|p| p.inject(:+)/s}
+  points.transpose.map do |p| 
+    myp = p.compact
+    myp.empty? ? nil : myp.sum/myp.size.to_f
+  end
 end
 
 # Finding the means of all clusters
@@ -332,96 +305,55 @@ end
 def self.distance(point1, point2, weights)
   dist = dim = 0.0
   point1.each_index do |i|
-      unless (point1[i].nil? || point2[i].nil?)
-        diff = weights[i]*(point1[i]-point2[i]) 
-        dim = dim + 1
-        dist += diff*diff
-      end 
+    unless (point1[i].nil? || point2[i].nil?)
+      diff = weights[i]*(point1[i]-point2[i]) 
+      dim = dim + 1
+      dist += diff*diff
+    end 
   end
-  dist/dim
+  dim == 0.0 ? 0 : dist/dim
 end
-
-#### New functions
-# converts categorical spec values to binary arrays
-  def self.standardize_cat_data(specs)
-    specs = specs.transpose
-    #cont_size=3
-    #cats = ["brand"]
-    cont_size = Session.continous["filter"].size
-    Session.categorical["filter"].each_index do |i|
-      vals = specs[i+cont_size].uniq
-      t=0
-      specs[i+cont_size].each do |v| 
-            cat = [0]*vals.size
-            cat[vals.index(v)] = 1
-            specs[i+cont_size][t]=cat
-            t+=1  
-      end      
+  
+  def self.factorize_cont_data(products)
+      Session.continuous["cluster"].map{|f| products.mapfeat("#{f}_factor")}.transpose
+  end
+  
+  def self.factorize_cont(product)
+    Session.continuous["cluster"].map{|f| product.instance_variable_get("@#{f}_factor")}
+  end
+  
+  def self.betterproducts(curr_set)
+    set = ComparableSet.new
+    min_utility = curr_set.mapfeat("utility").min
+    ContSpec.all.each do |rec|
+      #only include new products
+      next if curr_set.include_id?(rec.product_id) 
+      prod = ProductAndSpec.new(:id => rec.product_id)
+      prod.set(rec.names, rec.vals)
+      #only include better products
+      set.add(prod) if prod.utility > min_utility
     end
-    specs = specs.transpose
-    specs.map{|p| p.flatten}  
-  end  
-  
-  def self.factorized_cont_data
-   Session.continuous["cluster"].map{|f| ContSpec.by_feat(f+"_factor")}.transpose
-  end  
-  def self.factorized_brand #(specs)
-    ContSpec.by_feat("brand_factor")
-  end
-  #   
-  def self.standardize_cont_data(specs)
-    mean_all = mean(specs)
-    var_all = self.get_var(specs, mean_all)
-    specs.each{|p| p.each_with_index{|v, i| p[i]=(v-mean_all[i])/var_all[i]}}
+    set
   end
   
-  # finds the standard deviation for every dimension(feature)
-  def self.get_var(specs, mean_all)
-    count = specs.size
-    var = []
-    specs.transpose.each{|p| var << p.each_index{|i| i*i}.inject(:+)}
-    var.each_index.each do |i| 
-      var[i]=Math.sqrt(((var[i]/count) - (mean_all[i]**2)).abs)
-    end  
-    var
-  end
-  def self.weighted_ft(ft, weights)
-    weights_sum = weights.sum
-    weights = weights.map{|w| w/weights_sum.to_f}
-    weighted_ft=[]
-    for i in (0...ft.size)
-      weighted_ft_i = []
-      ft[i].each_with_index{|f,j| weighted_ft_i << weights[j]*f}
-      weighted_ft << weighted_ft_i
+  def self.extendedCluster(expected_num,products)
+    better_set = Kmeans.betterproducts(products)
+    
+    dim = Session.continuous["cluster"].size
+    weights = [1.0/dim]*dim
+    
+    dists = better_set.map do |better| 
+      s2 = Kmeans.factorize_cont(better)
+      better.dist = products.map do |curr| 
+        s1 = Kmeans.factorize_cont(curr)
+        self.distance(s1,s2,weights)
+      end.sum
     end
-    return weighted_ft
-  end  
-  
-  def self.extendedCluster(num)
-    all_ids = SearchProduct.find_all_by_search_id(Product.initial).map(&:product_id)
-    curr_ids = Session.search.products
-    other_ids = all_ids - curr_ids
-    curr_specs= self.factorized_cont_data
-    all_specs = all_ids.map{|id| Session.continuous["cluster"].map{|f| ContSpec.cache_all(id)[f+"_factor"]}}
-    other_specs =  []
-    all_specs.each_with_index{|s,i| other_specs << all_specs[i] if other_ids.include?(all_ids[i]) }
-    better_specs = []
-    better_ids = []
-    better_specs = []
-    min_utility = ContSpec.cachemany(curr_ids, "utility").min
-    other_specs.each_with_index do |s, i|
-      if !ContSpec.cachemany([other_ids[i]], "utility").first.nil? && ContSpec.cachemany([other_ids[i]], "utility").first>min_utility
-        better_ids << other_ids[i]
-        better_specs <<  s
-      end  
-    end  
-    dists = []
-    dim = all_specs.first.size
-    better_specs.each_with_index do |s2, ind| 
-      dists<< curr_specs.map{|s1| self.distance(s1,s2, [1.0/dim]*dim)}.inject(:+)
-    end             
-    better_products_hash = Hash[better_ids.zip(dists)]
-    better_products_hash.sort{|a,b| a[1] <=> b[1]}[0...num].map{|k, v| k} # num close products
+    
+    threshold = dists.sort[expected_num]
+    #Remove some products if there are more than expected
+    better_set.reject!{|p| p.dist >= threshold} unless threshold.nil?
+    better_set
   end
   
 end

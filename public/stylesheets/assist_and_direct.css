@@ -22,8 +22,7 @@
  //--------------------------------------*/
 
 body {
-    height: 100%;
-    padding: 4px 0 0 0;
+    padding: 0;
 }
 html {
     height: 100%;
@@ -40,9 +39,8 @@ h3 {
 //--------------------------------------*/
 
 .watermark {
-    float:right;
     font-size: 0.8em;
-    padding-top: 4px;
+    padding: 4px 0 5px 37px;
 }
 #title {
 	position: absolute;
@@ -98,13 +96,15 @@ h3 {
 
 #navigator_bar {
 	margin-bottom: 5px;
-	padding: 5px;
+	padding: 13px 17px;
 	position: relative;
 	border: 1px solid #d0d0d0;
+	box-shadow: 0px -9px 30px -10px #ccc inset;
+	-moz-box-shadow: 0px -9px 30px -10px #ccc inset;
+	-webkit-box-shadow: 0px -9px 30px -10px #ccc inset;
 }
-#navigator_bar .smalllink{
-	font-size: 0.75em;
-	margin-left: 3px;
+#sorting_method_box {
+	font-size: 0.7em;
 }
 
 .demo_selector {
@@ -122,6 +122,7 @@ h3 {
 //--------------------------------------*/
 
 div.rowdiv {
+	border-bottom: 1px solid #ccc;
 }
 
 .greybg {
@@ -129,10 +130,13 @@ div.rowdiv {
 }
 
 .poptitle {
-	font-weight: bold;
 	font-size: 1.13em;
 	color: #FFF;
-	height: 25px;
+}
+.poptitle a {
+	height: 100%;
+	display: block;
+	padding: 6px 7px;
 }
 
 .bb_poptitle {
@@ -160,9 +164,11 @@ div.rowdiv {
 }
 
 .price {
-	color: #F5000B;
+	/*color: #F5000B;*/
+	font-weight: bold;
 	font-size: 1em;
-	margin-top: 5px;
+	margin-top: 1px;
+	margin-bottom: 2px;
 }
 
 .itemtitle {
@@ -193,6 +199,7 @@ div #leftbar {
 .leftboxes {
 	margin: 0 0 5px 4px;
 	border: 1px solid #ccc;
+	color: #4d4d4f;
 }
 .rounded_leftboxes {
 	border: 1px solid #ccc;        
@@ -218,13 +225,16 @@ div #leftbar {
 	display:inline;
 }
 
-.selectboxfilter {
-	width:100%;
-}
 .categorical {
 	border: 1px solid #ccc;
 	overflow: auto;
 	height: 150px;
+}
+a.binary_filter_text {
+	color: #4d4d4f;
+}
+.disabled a.binary_filter_text{
+	color: #ccc;
 }
 /*--------------------------------------//
 //         Drag And Drop Compare        //
@@ -255,26 +265,20 @@ div.drop-box-hover {
  	border: 1px #e7e7e7 dashed; 
 } */
 
-[ if IE ] .dragHand {
-  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=35);  /* IE7 */
-  filter: alpha(opacity=35);
-	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=35)"; /* IE8 */  
-}
-
 .saveditem {
 	position: relative;
 	width: 71px;
-	height: 80px;
+	height: 75px;
 	float: left;
 	text-align: center;
-	padding: 5px 1px 1px 3px;
-	margin: 5px 6px 0 0;
-	background: url(../images/savebg.png) no-repeat;
+	padding: 5px 1px 0;
+	margin: 5px;
+	border: 1px solid #C6C6C6;
+	-moz-box-shadow: 0 2px 1px #888;
+	-webkit-box-shadow: 0 2px 1px #888;
+	font-size: 0.6em;
 }
 div.smalldesc {
-	font-size: 0.7em;
-	padding: 3px 0;
-	width:75px;
 }
 .savedmsg {
 	color: #F5000B;
@@ -285,12 +289,19 @@ div.smalldesc {
 }
 #savesome {
 	font-size: 0.9em;
-	padding:7px;
+	padding:15px;
+	width: 117px;
+	border: 1px solid #c8c8c8;
+	margin: 20px auto 8px;
+	font-size: 0.65em;
+	-moz-box-shadow: 0px 2px 2px #888, inset 0 -10px 40px #ebebeb;
+	-webkit-box-shadow: 0px 2px 2px #888, inset 0 -10px 40px #ebebeb;
+	box-shadow: 0px 2px 2px #888, inset 0 -10px 40px #ebebeb;
 }
 #compare_button {
-	clear: both; 
-	padding-left: 83px; 
-	padding-top: 5px;
+	clear: both;
+	font-size: 0.7em;
+	margin: 5px;
 }
 .selected_cat_features img {
 	vertical-align: baseline;
@@ -314,7 +325,9 @@ div.smalldesc {
 	text-decoration: none;
 }
 .ui-slider .ui-slider-handle { 
-	background:url(../../../images/diamond.gif) no-repeat;
+	background:url(../../../images/sliderhandlebox.gif) no-repeat;
+	/*background-color:#c0c0c0;
+	border: 1px solid #4D4D4F;*/
 	font-size: 0.6em;
 	color: black;
 	height:13px; width:16px;text-decoration:none;outline:none;position:absolute;z-index:2;
@@ -328,8 +341,8 @@ div.smalldesc {
 }
 /*.ui-slider-horizontal { background:url(../../../images/slider.gif) no-repeat; height: 13px; }*/
 .ui-slider-horizontal .ui-slider-handle { 
-	top: -3px; 
-	margin-left: -8px; 
+	top: -6px; 
+	margin-left: -4px; 
 }
 .ui-slider-horizontal .ui-slider-range { 
 	top: 0; 
@@ -352,13 +365,13 @@ div.smalldesc {
 .slider {
 	margin: 0 0 0 7px;
 	width: 155px;
-	padding-bottom: 6px;
+	padding-bottom: 12px;
 	position: relative;
 }
 .centerofslider {
-	background:url(../../../images/slider.gif) no-repeat;
-	height:13px; 
-	overflow:hidden;
+	/*background:url(../../../images/slider.gif) no-repeat;*/
+	height:4px; 
+	background-color: #003b64;
 }
 /* Filter Box */
 #filter_form {
@@ -369,14 +382,13 @@ div.smalldesc {
 	text-align: left;
 	position: relative;
 	clear: left;
-	padding-top: 3px;
+	padding-top: 6px;
 }
 .space {
 	margin-bottom: 15px; /*Spacing for histogram*/
 }
 .reset {
-	font-size: 0.8em;
-	text-decoration: underline;
+	font-size: 0.7em;
 }
 
 .valbelow {
@@ -410,8 +422,8 @@ div.smalldesc {
 .hist {
 	position: absolute;
 	text-align: left;
-	left: 7px;
-	top: 19px;
+	left: 13px;
+	top: 22px;
 }
 
 
@@ -524,7 +536,7 @@ margin-top:0;
 	margin:auto;
 }
 
-.navigator_box .tourDrawAttention
+.navbox .tourDrawAttention
 {
 	border: 2px solid red;
 	background: #fffcd3;
@@ -649,7 +661,7 @@ margin-top:0;
 	border-right: solid 1px #ccc;
 }
 .outertitle {
-	width: 189px;
+	width: 190px;
 	border-right: solid 2px white;
 	z-index: 4;
 	position: relative;
@@ -681,10 +693,10 @@ margin-top:0;
 	text-align: right;
 }
 .leftmostoutertitle {
-	width: 129px;
+	width: 130px;
 }
 .leftmostcolumntitle {
-	width: 128px;
+	width: 121px;
 	border-left: solid 1px #ccc;
 	padding-left: 0px;
 	font-weight: bold;
@@ -746,17 +758,24 @@ margin-top:0;
 .triple_height_compare_row .cell img {
     top: 14px;
 }
+.toggle_specs img {
+	vertical-align: top;
+	margin-top: 6px;
+}
+.togglespecs {
+	text-align:center; 
+	padding:10px;
+}
+.lessspecs img {
+	/*rotation: 180deg;*/
+	-moz-transform: rotate(180deg);
+	-webkit-transform: rotate(180deg);
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+}
 
 /*--------------------------------------//
 //        Show page and related         //
 //--------------------------------------*/
-
-.bb_quickview_close {
-    position: absolute;
-    right: 20px;
-    top: 18px;
-    color: black;
-}
 
 div#silkscreen {
 	background-color: transparent;
@@ -781,13 +800,26 @@ div#silkscreen {
     -webkit-box-shadow: 0 -2px 16px 3px #888;
     box-shadow: 0 -2px 16px 3px #888;
 }
-
+#info h1 {
+	font-size: 1.2em;
+	margin: 0 0 4px;
+}
 div#info {
 	font-size: 0.8em;
 	z-index: 5;
-	padding: 12px 23px 0px 22px;
+	padding: 12px 23px 22px 22px;
 	border: 1px solid #666;
 	min-width: 513px;
+}
+.mainprodimg {
+	text-align: center;
+}
+#info_container {
+	border-right: 1px solid #CCC;
+	border-bottom: 1px solid #CCC;
+	border-left: 1px solid #CCC;
+	width: 475px;
+	padding: 10px 18px 0;
 }
 
 div#loading {
@@ -821,12 +853,12 @@ div#filter_bar_loading{
 
 #image {
 	text-align: center;
-	width: 390px;
-/* 	float: left; */
+	width: 390px;/
 }
 #features {
-	width: 510px;
-	float: right;
+	border-top: 1px dashed #999;
+	padding-top: 6px;
+	width: 475px;
 }
 #features div.buttons {
     height: 32px;
@@ -841,47 +873,66 @@ div#filter_bar_loading{
     float: left;
     padding-right: 5px;
 }
-.bestbuy_rating_bar {
-    width: 100px;
-    height: 35px;
-    position: relative;
-    background-color: #eff097;
-    color: #000;
-    line-height: 35px;
-    text-align:center;
-    font-weight: bold;
+.shortdesc {
+	border-top: 1px dashed #999;
+	width: 475px;
+	padding: 6px 0;
+	margin-top: 6px;
+}
+.fill {
+	background: url("http://bestbuy.ca/images/common/backgrounds/ratinglistfill.gif") no-repeat scroll right top transparent;
+	height: 9px;
 }
 
-.bestbuy_rating_bar_inside {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 203px; 
-    height: 38px;
-    z-index:5;
-    background: url(../images/bestbuy_empty_rating_bar.png) no-repeat 0 0;
+.empty {
+	background: url("http://bestbuy.ca/images/common/backgrounds/ratingattribback.gif") no-repeat scroll left top transparent;
+	float: left;
+	height: 9px;
+	margin-top: 3px;
+	padding: 1px;
+	width: 77px;
 }
-.bestbuy_rating_bar_small {
-    width: 100px;
-    height: 18px;
-    position: relative;
-    background-color: #eff097;
-    color: #000;
-    line-height: 20px;
-    text-align:center;
-    font-weight: bold;
+.review_feature span {
+	float: left;
+	padding-right: 5px;
+	width: 90px;
 }
-
-.bestbuy_rating_bar_inside_small {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 102px; 
-    height: 20px;
-    z-index:5;
-    background: url(../images/bestbuy_empty_rating_bar_small.png) no-repeat 0 0;
+.review_feature .nbr {
+	margin-left: 4px;
+	padding: 0;
+	width: auto;
 }
-
+.review_feature {
+	width: 216px;
+}
+.starrating {
+	clear: both;
+	padding: 6px 0 0;
+}
+.starrating img {
+	vertical-align: bottom;
+	margin-right: 1px;
+}
+.starrating span {
+	margin-right: 6px;
+}
+.starrating .nbr {
+	margin-left: 4px;
+	font-weight: bold;
+}
+.ratingnumbers {
+	color: #666;
+	font-size: 11px;
+	margin-top: 0;
+}
+.bbreview {
+	border-top: 1px dashed #ccc;
+	margin-top: 10px;
+	padding: 6px;
+}
+.fb_edge_widget_with_comment {
+	padding-top: 5px;
+}
 div#textfeatures, div#reviews {
 	clear:both;
 }
@@ -898,47 +949,52 @@ div .showtable{
 	border: 1px dotted black;
 }
 
-#tab_header {
-    position: absolute;
-    left: 28px;
-}
-
-#tab_header ul {
-	list-style: none;
-	padding: 0;
+a.bb_quickview_close {
+	text-align: right;
+	padding-top: 0;
+	padding-right: 0;
 	margin: 0;
+    color: black;
+	border-bottom: 1px solid #ccc;
+	border-top: 1px solid white;
+}
+.bb_quickview_close img {
+	vertical-align: middle;
+	height: 23px;
+}
+a.compare {
+	float: right;
+	border: none;
+	margin-top: -5px;
 }
 
-#tab_header li {
-	float: left;
-	border-top: 1px solid #666;
-    border-left: 1px solid #666;
-	border-bottom-width: 0;
-	margin: 0;
-}
-
-#tab_header a {
+a.tab {
 	text-decoration: none;
-	display: block;
-	background: #dddddd;
-	padding: 0.24em 1em;
-	color: #00c;
-	width: 100px;
+	color: #3E3E3E;
 	text-align: center;
+	float: left;
+	height:17px;
+	border: 1px solid #ccc;
+	background-image:-moz-linear-gradient(center bottom, white, #cdcdcd);
+	background-image:-webkit-gradient(linear, left bottom, left top, from(white), to(#cdcdcd));
+	margin: 0 4px 0 0;
 }
-
-#tab_header #tab_selected a {
-	position: relative;
-	background: white;
+.tab:hover {
+	text-decoration: none;
+}
+#tab_selected {
+	background-image:-moz-linear-gradient(center bottom, white, #FFEF00);
+	background-image:-webkit-gradient(linear, left bottom, left top, from(white), to(#ffef00));
+	border-bottom: 1px solid white;
 	color: black;
 	font-weight: bold;
 }
-
+.pricespacer {
+	border-bottom: 1px dashed #999; 
+	clear: both; 
+	margin-bottom: 15px;
+}
 .tabbed_content {
-	clear: both;
-	padding: 0;
-	width: 493px;
-	float: left;
 }
 
 .left {
@@ -978,18 +1034,18 @@ div .showtable{
 .xlarge_awesome, .xlarge_awesome:visited 			{ font-size: 16px; padding: 12px 21px 13px; }
 
 /* Zurb http://www.zurb.com/article/266/super-awesome-buttons-with-css3-and-rgba */
-.awesome_tour, .awesome_tour:visited {
-	background: #222; /*url(/images/alert-overlay.png) repeat-x; */
+.awesome_reset, .awesome_reset:visited {
+	background: #003b65; /*url(/images/alert-overlay.png) repeat-x; */
 	display: inline-block; 
-	padding: 5px 10px 6px; 
+	padding: 4px 7px 2px; 
 	color: #fff; 
 	text-decoration: none;
-	-moz-border-radius: 10px; 
-	-webkit-border-radius: 10px;
-	-moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-	-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+	-moz-border-radius: 4px; 
+	-webkit-border-radius: 4px;
+	-moz-box-shadow: inset 0 7px 8px #2680bf;
+	-webkit-box-shadow: inset 0 7px 8px #2680bf;
 	text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
-	border-bottom: 1px solid rgba(0,0,0,0.25);
+	border: 1px solid #c4c5c5;
 	position: relative;
 	cursor: pointer;
 }

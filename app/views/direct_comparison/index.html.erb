@@ -1,8 +1,10 @@
 <div class="bb_poptitle"><%=t "compare.index.title"%>
-    <%= link_to "Close Window", "close", :class => "bb_quickview_close"%>
+    <% link_to "close", :class => "compare bb_quickview_close" do %>
+		Close Window <%= image_tag("closepopup.png") %>
+	<% end %>
 </div>
 
-<div id="basic_matrix" class="comparisonmatrix">
+<div id="basic_matrix" class="comparisonmatrix" style="width: <%= box_width %>px">
 
     <%# Rows are like this: %>
     <%# remove buttons %>
@@ -59,8 +61,12 @@
         <% end %>
 </div>
 
-<div class="spacer" style="text-align:center; padding-bottom:5px;"><%= link_to 'More Specs', '#', :class => 'toggle_specs' %></div>
-<div class="comparisonmatrix" id="hideable_matrix">
+<div class="spacer togglespecs"><%= link_to '#', :class => 'toggle_specs' do %>
+	More Specs&nbsp;
+	<%= image_tag "downarrow.png" %>
+<% end %>
+</div>
+<div class="comparisonmatrix" id="hideable_matrix" style="width: <%= box_width %>px">
 	Loading...
 </div>
-<br style="clear: both;">
+<div class="spacer">

@@ -35,10 +35,10 @@ en:
                 name:               "Waterproof / Shockproof"
                 info:               "lets you snap photos under water down to a certain depth."
             brand:
-                name:               "Brand"
+                name:               "Brands"
                 info:               "The manufacturer of the product. You can choose more than just one brand."
             color:
-                name:               "Color"
+                name:               "Colors"
             customerRating:
                 name:               "Customer Rating"
                 info:               "On a scale of 1 to 5, five being the best, this is the average of our customer ratings. Items are rated 0 if they have not been reviewed."

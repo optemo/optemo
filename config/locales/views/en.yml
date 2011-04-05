@@ -8,18 +8,26 @@ en:
             saved:          "Compare and Save"
             alreadyadded:   "You already added that product!"
             toomanysaved:   "You can only save up to 4 products at a time."
-            savesome:       "Select two or more items to compare specs"
+            savesome:       "Select two or more items to compare specs"  
             savesomedrag:   "Drag and drop cameras over to this box to save them for later or compare them with other cameras."
             filters:        "Filters"
             powered:        "powered by"
             loading:        "Loading"
             back:           "Back"
             all:            "See all products"                  
-            similar:        "%{count} more like this" # e.g. 1 More like this
+            similar:        "Show %{count} like this" # e.g. 1 More like this
+            likethis:       "like this"
             extended:       "You might want to consider these %{count} other products."
             similar_line:   "%{count} More"     
             filtersdesc:    "Narrow your results by:"   
-            rembrandfilter: "Remove brand filter"         
+            rembrandfilter: "Remove brand filter"  
+            onsale:         "On Sale"       
+            zoomout:        "Zoom out"
+            clickforspecs:  "Click for product specifications"
+            seegroup:       "Click here to see products in this group"   
+            reset:          "RESET"
+            resetdesc:      "Clear all filters" 
+            compare:        "COMPARE"  
             
         show:
             title:          "Product Details"
@@ -32,10 +40,22 @@ en:
             webcode:        "Web Code"
             moredetails:    "More details"
             ratings:        "ratings"
-                 
+            noimage:        "No Image Available"
+            productinfo:    "Product Info"
+            specifications: "Specifications"
+            reviews:        "Customer Reviews"
+            freeshipping:   "Free shipping on orders over %{amount}."
+            instorepickup:  "Order online and pick up in-store."
+            rewardprog:     "It's free to get into the rewards program."     
+            othercolors:    "Other Colors: "
+            loading:        "Loading..."
+            ourprice:       "Our Price:"
+            saleprice:      "Sale Price:"
+            saleends:       "Sale Ends"
+            
     features:
         maxresolution:      "%{num}MP"
-        screensize:         "%{num} in. screen"
+        screensize:         "%{num} in. LCD"
         opticalzoom:        "%{num}X zoom"
         
     compare:

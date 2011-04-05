@@ -6,7 +6,7 @@ en:
         ErrorPart2:                 "to go back to the previous page."
         here:                       "anywhere"
         nodesc:                     "No description available" #No description for info boxes
-        sortby:                     "Group by: "
-        relevance:                  "Overall Value"
+        sortby:                     "Group by:&nbsp;&nbsp;"
+        relevance:                  "Top Picks"
         all:                        "All "
         add:                        "Add Another "

@@ -5,13 +5,13 @@
     <!-- The Saved Items box -->
 	<div id="savebar" class='leftboxes gainlayout'>
 		<h2> <%=t 'products.compare.saved' %> </h2>
-		<div id="savesome"> <% if Session.dragAndDropEnabled == true %> <%=t 'products.compare.savesomedrag'%> <% else %> <%=t 'products.compare.savesome'%> <% end %></div>
+		<div id="savesome" class="rounded"> <% if Session.dragAndDropEnabled == true %> <%= image_tag('hand_and_arrow.png', :id => "draghandexample") %> <%=t 'products.compare.savesomedrag'%> <% else %> <%=t 'products.compare.savesome'%> <% end %></div>
 		<div id="already_added_msg" class="savedmsg"> <%=t 'products.compare.alreadyadded' %> </div>
 		<div id="too_many_saved" class="savedmsg"> <%=t 'products.compare.toomanysaved' %> </div>
 		<div id="opt_savedproducts">
 		</div>
 		<!-- Hide if 0 products, show if 1/more. -->
-		<%= link_to image_tag("compare#{fr?}.gif"), "", :id => "compare_button", :style => "display:none;" %>
+		<div class="spacer"><%= link_to t('products.compare.compare'), "", :id => "compare_button", :class => "awesome_reset", :style => "display:none;" %></div>
 	</div>
 	<!-- The Filters section -->
 	<div id="filterbar" class="leftboxes">

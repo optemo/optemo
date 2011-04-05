@@ -4,4 +4,9 @@ class TextSpec < ActiveRecord::Base
       select("name, value").where(["product_id = ?", p_id]).each_with_object({}){|r, h| h[r.name] = r.value}
     end
   end
+  def self.cacheone(p_id, feat) 
+     CachingMemcached.cache_lookup("TextSpecs#{feat}#{p_id}") do
+       select("value").where(["product_id = ? and name = ?", p_id, feat]).map(&:value).first
+     end
+  end
 end

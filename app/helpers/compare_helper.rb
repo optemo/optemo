@@ -178,7 +178,7 @@ module CompareHelper
   end
   
   def category_select(feat,expanded)
-    select('superfluous', feat, [expanded ? t('products.add')+t(Session.product_type+'.specs.'+feat+'.name') : t('products.all')+t(Session.product_type+'.specs.'+feat+'.name').pluralize] + SearchProduct.cat_counts(feat,expanded).map{|k,v| ["#{k} (#{v})", k]}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
+    select('superfluous', feat, [expanded ? t('products.add')+t(Session.product_type+'.specs.'+feat+'.name') : t('products.all')+t(Session.product_type+'.specs.'+feat+'.name').pluralize] + SearchProduct.cat_counts(feat,expanded,true).map{|k,v| ["#{k} (#{v})", k]}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
   end
   
   def main_boxes
@@ -203,31 +203,31 @@ module CompareHelper
 	        res << "<div style=\"padding:10px;\">No search results. Please search again or " + link_to("start over", "/") + ".</div>"
         end
 	    else # Grid View (Optemo Assist)
+	      range = true
+	      range = !(@s.search.cluster.min(@s.search.sortby)== @s.search.cluster.max(@s.search.sortby)) if @s.continuous["cluster"].include?(@s.search.sortby)    
     		for i in 0...[@s.search.cluster.numclusters, @s.numGroups].min
     		  if i % (Float(@s.numGroups)/3).ceil == 0
     			  res << '<div class="rowdiv">'
     			  open = true
     		  end
     		  #Navbox partial to draw boxes
-    		  res << render(:partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative})
+    		  res << render(:partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative, :range =>range})
           if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
-            res << '</div>'
+            res << '<div style="clear: both"></div></div>'
             open = false
           end
     		end
-    		if (@s.search.cluster.size < 12 && @s.search.cluster.numclusters<8)
-    		  extended_ids = Kmeans.extendedCluster(10)
+    		if (Session.extendednav && @s.search.cluster.size < 12 && @s.search.cluster.numclusters<8)
+    		  extended_ids = Kmeans.extendedCluster(10,@s.search.products)
           if extended_ids.size > 1
-              @s.search.extend_it(Extended.new(extended_ids))
-              @products = [] if @products.nil?
-              @products = @products + extended_ids
+              @s.search.extend_it(Cluster.new(extended_ids,nil))
     		      res << render(:partial => 'extendedbox', :locals => {:i => 9, :extended => @s.search.extended, :group => @s.search.extended.size > 1, :product => @s.search.extended.representative, :filter_hash => adjustingfilters_hash, :adjustedfilters => adjustingfilters})
   		        @s.search.extend_it(nil)
   		    end
   		  end 
   		end
   	end
-  	res << '</div>' if open && !@s.directLayout
+  	res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
   	if @s.directLayout && @s.search.groupby.nil?
   	  pagination_line = will_paginate(@products)
     	res << pagination_line unless pagination_line.nil?
@@ -303,7 +303,12 @@ module CompareHelper
     Session.continuous["cluster"].each do |f| 
       sortbyList << (Session.search.sortby == f ? t(Session.product_type+".specs."+f+".name") : link_to(t(Session.product_type+".specs."+f+".name"), "#", :'data-feat' => f, :class => 'sortby'))
     end
-    t("products.sortby") + sortbyList.join(" | ")
+    t("products.sortby") + sortbyList.join("&nbsp;&nbsp;|&nbsp;&nbsp;")
     # select('sorting_method', @s.search.sortby, sortbyList, {:selected => @s.search.sortby}, {:id => "sorting_method"})
+  end
+  
+  def unchecked_cat(feat,option)
+		dobj = Userdatacat.find_all_by_search_id_and_name(Session.search.id,feat).select{|ud|ud.value == option}.first
+		dobj.nil? || dobj.value == false
   end
 end
