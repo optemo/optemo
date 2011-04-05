@@ -210,7 +210,9 @@ optemo_module = (function (my){
 					</div>';
 					//Number of Ratings
                     to_tabbed_content += '<p class="ratingnumbers">('+reviews['customerRatingCount']+' ratings)</p>';
-					to_tabbed_content += '<div style="margin-bottom: 5px">'+reviews["reviews"].length + ' Reviews | <a href="http://www.bestbuy.ca/Catalog/ReviewAndRateProduct.aspx?path=639f1c48d001d04869f91aebd7c9aa86en99&ProductId='+sku+'&pcname=MCCPCatalog">Rate and review this product</a></div>';
+					to_tabbed_content += '<div style="margin-bottom: 5px">'+reviews["reviews"].length + ' Review';
+					if (reviews["reviews"].length != 1) to_tabbed_content += 's';
+					to_tabbed_content += ' | <a href="http://www.bestbuy.ca/Catalog/ReviewAndRateProduct.aspx?path=639f1c48d001d04869f91aebd7c9aa86en99&ProductId='+sku+'&pcname=MCCPCatalog">Rate and review this product</a></div>';
 					var m_names = new Array("January", "February", "March", 
 					"April", "May", "June", "July", "August", "September", 
 					"October", "November", "December");

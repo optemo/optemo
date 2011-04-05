@@ -70,23 +70,6 @@
     	    <div class="bbfeatures"><%= image_tag "best_buy_free_shipping.gif" %><%=t('products.show.freeshipping', :amount =>"$20")%></div>
     	    <div class="bbfeatures"><%= image_tag "best_buy_instore_pickup.gif" %><%=t('products.show.instorepickup')%></div>
     	    <div class="bbfeatures"><%= image_tag "best_buy_rewards_card.gif" %><%=t('products.show.rewardprog')%></div>
-        </div>
-        <div class="right" style="width:160px">
-    		<% if @allspecs["onsale"] %>
-    		<div style="font-size: 1.2em; height: 20px;"><span class="left"><%=t('products.show.ourprice')%></span><span class="right"><%= @allspecs["price"] %></span></div>
-    	    <div style="color: #f00; font-size: 1.5em; font-weight: bold;height: 20px;"><span class="left"><%=t('products.show.saleprice')%></span><span class="right"><%= @allspecs["saleprice"] %></span></div>
-    	    <div style = "clear: both;font-weight: bold;height: 18px;"><span class="left"><%=t('products.show.saleends')%></span><span class="right"><%# @allspecs["saleEndDate"][/^(\w|\/)+/] %></span></div>
-    		<% else %>
-    		<div style="font-size: 1.5em; height: 20px;"><span class="left"><%=t('products.show.ourprice')%></span><span class="right"><%= @allspecs["price"] %></span></div>
-    		<% end %>
-    		<div class="left" style="height: 18px;"><a href="http://www.bestbuy.ca/en-CA/help/what-is-your-lowest-price-guarantee/hc1001.aspx?path=27eeec1b59d42df5dfc298ab6993d9dfen15&HelpTitleId=HC1001" class="popup-link">Lowest Price Guarantee</a></div>
-    		<div class="pricespacer"></div>
-    	    <div class="buttons"><%= link_to image_tag("bestbuy_addtocart.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{@product.sku}" %></div>
-    	    <div class="buttons"><%= link_to image_tag("bestbuy_compare.gif"), "#", {:id => 'add_compare', :'data-id' => @product.id, :'data-name' => @product.small_title} %></div>
-        </div>
-		<div class="spacer"> </div>
-	</div>
-	<div>
 			<div id="fb-root"></div>
 			<script>
 			if (!(jQuery.browser.msie && jQuery.browser.version == "6.0")) {
@@ -102,8 +85,24 @@
 			  }());
 			}
 			</script>
-<script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script><fb:like href=<%=@prod_url%> show_faces="false" width="#{400+50}" font="arial"></fb:like>
-    </div>
+			<script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script><fb:like href=<%=@prod_url%> show_faces="false" width="300" font="arial"></fb:like>
+        </div>
+        <div class="right" style="width:160px">
+    		<% if @allspecs["onsale"] %>
+    		<div style="font-size: 1.2em; height: 20px;"><span class="left"><%=t('products.show.ourprice')%></span><span class="right"><%= @allspecs["price"] %></span></div>
+    	    <div style="color: #f00; font-size: 1.5em; font-weight: bold;height: 20px;"><span class="left"><%=t('products.show.saleprice')%></span><span class="right"><%= @allspecs["saleprice"] %></span></div>
+    	    <div style = "clear: both;font-weight: bold;height: 18px;"><span class="left"><%=t('products.show.saleends')%></span><span class="right"><%= @allspecs["saleEndDate"][/^(\w|\/)+/] %></span></div>
+    		<% else %>
+    		<div style="font-size: 1.5em; height: 20px;"><span class="left"><%=t('products.show.ourprice')%></span><span class="right"><%= @allspecs["price"] %></span></div>
+    		<% end %>
+    		<div class="left" style="height: 18px;"><a href="http://www.bestbuy.ca/en-CA/help/what-is-your-lowest-price-guarantee/hc1001.aspx?path=27eeec1b59d42df5dfc298ab6993d9dfen15&HelpTitleId=HC1001" class="popup-link">Lowest Price Guarantee</a></div>
+    		<div class="pricespacer"></div>
+    	    <div class="buttons"><%= link_to image_tag("bestbuy_addtocart.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{@product.sku}" %></div>
+    	    <div class="buttons"><%= link_to image_tag("bestbuy_compare.gif"), "#", {:id => 'add_compare', :'data-id' => @product.id, :'data-name' => @product.small_title} %></div>
+			<div class="buttons"><%= link_to "Learn More", @prod_url, :title => "Go to the product compare page" %></div>
+        </div>
+		<div class="spacer"> </div>
+	</div>
 	<div class="spacer">&nbsp;</div>
 </div>
 

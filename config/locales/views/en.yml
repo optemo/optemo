@@ -51,7 +51,7 @@ en:
             loading:        "Loading..."
             ourprice:       "Our Price:"
             saleprice:      "Sale Price:"
-            saleends:       "Sale Ends"
+            saleends:       "Sale Ends:"
             
     features:
         maxresolution:      "%{num}MP"
