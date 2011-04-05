@@ -1606,30 +1606,6 @@ jQuery(document).ready(function($){
 			}));
 	});
 
-	if (optemo_module.IS_DRAG_DROP_ENABLED)
-	{
-		// Make savebar area droppable. jquery UI builtin.
-		$("#savebar").each(function() {
-			$(this).droppable({
-				hoverClass: 'drop-box-hover',
-				activeClass: 'ui-state-dragging',
-				accept: ".ui-draggable, .dragHand",
-				drop: function (e, ui) {
-					imgObj = $(ui.helper);
-					if (imgObj.hasClass('dragHand')) { // This is a drag hand object
-				        realImgObj = imgObj.parent().find('.productimg');
-				        var id_and_sku = optemo_module.getIdAndSkuFromProductimg(realImgObj);
-    					optemo_module.saveProductForComparison(id_and_sku[0], id_and_sku[1], realImgObj.attr('src'), realImgObj.attr('alt'));
-				    }
-				    else { // This is an image object; behave as normal
-				        var id_and_sku = optemo_module.getIdAndSkuFromProductimg(imgObj);
-    					optemo_module.saveProductForComparison(id_and_sku[0], id_and_sku[1], imgObj.attr('src'), imgObj.attr('alt'));
-					}
-				}
-			 });
-		});
-	}
-
 	if (optemo_module.DIRECT_LAYOUT) {
 	    //Tour section
 	    // There is some code duplication going on here that would be good to condense.
