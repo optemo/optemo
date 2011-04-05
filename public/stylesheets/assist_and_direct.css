@@ -22,8 +22,7 @@
  //--------------------------------------*/
 
 body {
-    height: 100%;
-    padding: 4px 0 0 0;
+    padding: 0;
 }
 html {
     height: 100%;
@@ -275,7 +274,7 @@ div.drop-box-hover {
 	padding: 5px 1px 0;
 	margin: 5px;
 	border: 1px solid #C6C6C6;
-	-mox-box-shadow: 0 2px 1px #888;
+	-moz-box-shadow: 0 2px 1px #888;
 	-webkit-box-shadow: 0 2px 1px #888;
 	font-size: 0.6em;
 }
@@ -812,7 +811,9 @@ div#info {
 	border: 1px solid #666;
 	min-width: 513px;
 }
-
+.mainprodimg {
+	text-align: center;
+}
 #info_container {
 	border-right: 1px solid #CCC;
 	border-bottom: 1px solid #CCC;
