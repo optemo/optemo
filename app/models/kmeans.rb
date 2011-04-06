@@ -1,181 +1,197 @@
-  class  Kmeans
-  require 'rubygems'
-  require 'inline'
+class  Kmeans
+require 'rubygems'
+require 'inline'
 
-  inline :C do |builder|
-    builder.c "
-    #include <math.h> 
-    static VALUE kmeans_c(VALUE _points, _VALUE n, VALUE d, VALUE cluster_n,VALUE _weights, VALUE _utilities, VALUE _inits){
+inline :C do |builder|
+  builder.c "
+  #include <math.h> 
+  static VALUE kmeans_c(VALUE _points, _VALUE n, VALUE d, VALUE cluster_n,VALUE _weights, VALUE _utilities, VALUE _inits){
 
-     VALUE* points_a = RARRAY_PTR(_points);
-     VALUE* weights_a = RARRAY_PTR(_weights);
-     VALUE* utilities_a = RARRAY_PTR(_utilities);
-     VALUE* inits_a = RARRAY_PTR(_inits);
-     int nn = NUM2INT(n);
-     int dd = NUM2INT(d);
-     int k = NUM2INT(cluster_n);
-     double DBL_MAX = 10000000.0;
-     double tresh = 0.0001;
-     double z=0.0;
-     double z_temp = 0.0;
-     int max_ind=0;
-     double tmp_min = DBL_MAX;
-     int tmp_ind=0;
-     int not_eq_flag = 0;
-     VALUE labels_and_reps = rb_ary_new2(nn);
-     int i, j, h,t;
+   VALUE* points_a = RARRAY_PTR(_points);
+   VALUE* weights_a = RARRAY_PTR(_weights);
+   VALUE* utilities_a = RARRAY_PTR(_utilities);
+   VALUE* inits_a = RARRAY_PTR(_inits);
+   int nn = NUM2INT(n);
+   int dd = NUM2INT(d);
+   int k = NUM2INT(cluster_n);
+   double DBL_MAX = 10000000.0;
+   double tresh = 0.000001;
+   double z=0.0;
+   double z_temp = 0.0;
+   int max_ind=0;
+   double tmp_min = DBL_MAX;
+   int tmp_ind=0;
+   int not_eq_flag = 0;
+   VALUE labels_and_reps = rb_ary_new2(nn+k);
+   int i, j, h,t;
 
-    int* inits = malloc(sizeof(int)*k);
-    for (i=0; i<k; i++) inits[i] = NUM2INT(inits_a[i]);
-    double** data = malloc(sizeof(double*)*nn);
-    double* utilities = malloc(sizeof(double)*nn);
-    double* avgUtilities = malloc(sizeof(double)*k);
+  int* inits = malloc(sizeof(int)*k);
+  for (i=0; i<k; i++) inits[i] = NUM2INT(inits_a[i]);
+  double** data = malloc(sizeof(double*)*nn);
+  double* weights = (double*)calloc(dd, sizeof(double));
+  double* utilities = malloc(sizeof(double)*nn);
+  double* avgUtilities = (double*)calloc(k, sizeof(double)); 
 
-    for (i=0; i<nn; i++){
-      data[i] = malloc(sizeof(double)*dd);
-      for (j=0; j<dd; j++) data[i][j] = NUM2DBL(points_a[dd*i+j]);
-      utilities[i] = NUM2DBL(utilities_a[i]);   
-    } 
+  for (j=0; j<dd; j++) weights[j] = NUM2DBL(weights_a[j]);
+  for (i=0; i<nn; i++){
+    data[i] = malloc(sizeof(double)*dd);
+    for (j=0; j<dd; j++) data[i][j] = NUM2DBL(points_a[dd*i+j]);
+    utilities[i] = NUM2DBL(utilities_a[i]);   
+  } 
 
 
- //kmeans initializations
-   double *counts = (int*)calloc(k, sizeof(int)); /* size of each cluster */
-   double *dif = (double*)calloc(k, sizeof(double)); 
-   double old_error, error = 1000000000.0; /* sum of squared euclidean distance */
-   double** means_1 = malloc(sizeof(double*)*k);
-   double** means_2 = malloc(sizeof(double*)*k);
+//kmeans initializations
+ int *counts = malloc(sizeof(int)*k); /* size of each cluster */
+ for (h=0; h<k;h++) counts[h] = 0;
+ double *dif = (double*)calloc(k, sizeof(double)); 
+ double old_error, error = 1000000000.0; /* sum of squared euclidean distance */
+ double** means_1 = malloc(sizeof(double*)*k);
+ double** means_2 = malloc(sizeof(double*)*k);
 
-   for (i=0; i<k; i++){
-     means_1[i]= malloc(sizeof(double)*(dd));
-     means_2[i]= malloc(sizeof(double)*(dd)); 
-   }    
+ for (i=0; i<k; i++){
+   means_1[i]= malloc(sizeof(double)*(dd));
+   means_2[i]= malloc(sizeof(double)*(dd)); 
+ }    
 
-    int* labels = malloc(sizeof(int)*nn);//(int*)calloc(nn, sizeof(int));
-    int *reps = (int*)calloc(k, sizeof(int));
-    ///initializing the first means
-   for(h=0; h<k;h++){
-      for(j=0; j<dd; j++) means_1[h][j] = data[inits[h]][j];
-    }        
+  int* labels = malloc(sizeof(int)*nn);//(int*)calloc(nn, sizeof(int));
+  int *reps = (int*)calloc(k, sizeof(int));
+  ///initializing the first means
+ for(h=0; h<k;h++){
+    for(j=0; j<dd; j++) means_1[h][j] = data[inits[h]][j];
+  }        
 
-     //////////////////////////////////////////////////////////////////////performing kmeans 
+   //////////////////////////////////////////////////////////////////////performing kmeans 
 
-    do{
-   //means_2= means_1
-   for(h=0; h<k;h++){
-     for(j=0; j<dd; j++) means_2[h][j] = means_1[h][j];
-   }
-   //finding the closest mean to assign the labels
-   for (i=0; i<nn; i++){
-      tmp_min = DBL_MAX;
-     for (h=0; h<k; h++){
-       dif[h] = 0.0;     
-       for (j=0; j<dd; j++) dif[h] += (data[i][j]-means_1[h][j])*(data[i][j]-means_1[h][j]);
-  
-       if (tmp_min>dif[h]){
-         tmp_min = dif[h];
-         tmp_ind = h;
-       } 
+  do{
+ //means_2= means_1
+ for(h=0; h<k;h++){
+   for(j=0; j<dd; j++) means_2[h][j] = means_1[h][j];
+ }
+ //finding the closest mean to assign the labels
+ for (i=0; i<nn; i++){
+    tmp_min = DBL_MAX;
+   for (h=0; h<k; h++){
+     dif[h] = 0.0;     
+     for (j=0; j<dd; j++) {
+       if (data[i][j]>0.0 && means_1[h][j]>0.0) dif[h] += weights[j]*(data[i][j]-means_1[h][j])*(data[i][j]-means_1[h][j]);
      }
-     labels[i] = tmp_ind;
+     if (tmp_min>dif[h]){
+       tmp_min = dif[h];
+       tmp_ind = h;
+     } 
    }
+   labels[i] = tmp_ind;
+ }
 
-      //computing the new means
-      for (h=0; h<k; h++){
-        counts[h] = 0;
-        for (j=0; j<dd; j++) means_1[h][j] = 0.0;
-       } 
-
-      for (i=0; i<nn; i++){
-          h = labels[i];
-          counts[h]++;
-          for (j=0; j<dd; j++) means_1[h][j] += data[i][j];
-      }     
-      for (h=0; h<k; h++) for (j=0; j<dd; j++) means_1[h][j]=means_1[h][j]/counts[h]; 
-
-      //calculatig the difference between the old and the new means 
-      z=0.0;
-      for(h=0; h<k;h++){
-        z_temp=0.0;
-        for(j=0; j<dd; j++) z_temp += (means_1[h][j]- means_2[h][j]);
-        z+=z_temp*z_temp; 
-       }   
-    }while (z>tresh);
-
-
-    for (h=0; h<k; h++) {
-      if (counts[h]>0) avgUtilities[h] = avgUtilities[h]/counts[h];  
-    } 
+    //computing the new means
     for (h=0; h<k; h++){
-        for (i=0; i<nn; i++){
-          if (labels[i]==h){
-            reps[h] = i;
-            break;
-          }
-        }
-    }
-    
+      counts[h] = 0;
+      for (j=0; j<dd; j++) means_1[h][j] = 0.0;
+     } 
+
     for (i=0; i<nn; i++){
-      h = labels[i];
-      if (utilities[i] > utilities[reps[h]]) reps[h] = i;
+        h = labels[i];
+        if (h>=0 && h<k){
+     	   counts[h]++;
+     	   for (j=0; j<dd; j++) means_1[h][j] += data[i][j];
+    	 }	
+}     
+    for (h=0; h<k; h++){ 
+for (j=0; j<dd; j++) {
+	if (counts[h] == 0){
+		means_1[h][j]=0.0;
+	}else{
+		means_1[h][j] = means_1[h][j]/counts[h]; 
+	}
+         }
     }
-//
+    //calculatig the difference between the old and the new means 
+    z=0.0;
+    for(h=0; h<k;h++){
+      z_temp=0.0;
+      for(j=0; j<dd; j++) z_temp += weights[j]*(means_1[h][j]- means_2[h][j]);
+      z+=z_temp*z_temp; 
+  }   
+  }while (z>tresh);
+
+  
+  
+  for (h=0; h<k; h++){
+      i=0;
+      while(labels[i] != h && i<nn){ i++;}
+      reps[h] = i;
+  }
+  
+  for (i=0; i<nn; i++){
+    h = labels[i];
+    if (utilities[i] > utilities[reps[h]]) reps[h] = i;
+    avgUtilities[h] += utilities[i];  
+ }
+  
+ for (h=0; h<k; h++) {
+   if (counts[h]>0) avgUtilities[h] = avgUtilities[h]/counts[h];  
+ }   
+
 //  //////////////////////////////////////////////////////////////////////sort based on utilities   
-//    int idKey;
-//    double key;	 
-//    int* ids = malloc(sizeof(int)*k);
-//    double* x = (double*)calloc(k, sizeof(double));
-//    for (j=0; j<k; j++) x[j] = avgUtilities[j];
-//
-// for (h=0; h<k; h++) ids[h]=h;
-// for(j=1;j<k;j++){
-//    key=x[j];
-// 	   idKey = ids[j];	
-//       i=j-1;
-//
-//       while(x[i]<key && i>=0)
-//       {
-//           x[i+1]=x[i];
-//  		     ids[i+1] = ids[i];	
-//           i--;
-//       }
-//       x[i+1] = key;
-//    	ids[i+1] = idKey;
-//   }
-//   int it;
-//   int* id_map = calloc(k,sizeof(int));
-//   int* temp_reps = calloc(k,sizeof(int));
-//   int* temp_labels = calloc(nn,sizeof(int));
-//   for (i=0; i<nn; i++)temp_labels[i] = labels[i];
-     
-  ///storing the labels in the ruby array
-   for (j=0; j<nn; j++) rb_ary_store(labels_and_reps, j, INT2NUM(labels[j]));
-   for (j=0; j<k; j++) rb_ary_store(labels_and_reps, nn+j, INT2NUM(reps[j]));
-   return labels_and_reps;
-    }
-    "
-  end
+  int idKey;
+  double key;	 
+  int* ids = malloc(sizeof(int)*k);
+  double* x = (double*)calloc(k, sizeof(double));
+  for (j=0; j<k; j++) x[j] = avgUtilities[j];
 
+for (h=0; h<k; h++) ids[h]=h;
+for(j=1;j<k;j++){
+  key=x[j];
+   idKey = ids[j];	
+     i=j-1;
+
+     while(x[i]<key && i>=0)
+     {
+         x[i+1]=x[i];
+		     ids[i+1] = ids[i];	
+         i--;
+     }
+     x[i+1] = key;
+  	ids[i+1] = idKey;
+ }
  
- def self.compute(number_clusters,products)
+int* sorted_labels = (int*)calloc(nn, sizeof(int));
+int* sorted_reps = (int*)calloc(k, sizeof(int));
+ 
+ for (j=0; j<k; j++){
+   for (i=0; i<nn; i++)
+     if (labels[i]==ids[j]) sorted_labels[i]=j;
+   sorted_reps[j] = reps[ids[j]];                   
+ }
 
-  cluster_weights = self.set_cluster_weights(Session.continuous["cluster"])
+///storing the labels in the ruby array
+ for (j=0; j<nn; j++) rb_ary_store(labels_and_reps, j, INT2NUM(sorted_labels[j]));
+ for (j=0; j<k; j++) rb_ary_store(labels_and_reps, nn+j, INT2NUM(sorted_reps[j]));
+ return labels_and_reps;
+  }
+  "
+end
 
-  s = products.size
-  if (s<number_clusters)
-    utilitylist = Kmeans.utility(products)
-    #if utilities are the same
-    utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
-    util_tmp = utilitylist.sort{|x,y| y <=> x }    
-    ordered_list = utilitylist.map{|u| util_tmp.index(u)}
-    return ordered_list + ordered_list
-  end
-    # initial seeds for clustering  ### just based on contiuous features
-    inits = self.init(number_clusters, products, cluster_weights)
-    #standard_specs = self.factorize_cont_data(products)
-    #utilities  = Kmeans.utility(products)
-    #$k = Kmeans.new unless $k
-    #labels_and_reps = $k.kmeans_c(standard_specs.flatten.map{|s| s.nil? ? 0.0 : s}, standard_specs.size , standard_specs.first.size, number_clusters, cluster_weights, utilities, inits)
-    Kmeans.ruby(number_clusters, cluster_weights, inits, products)
+
+def self.compute(number_clusters,products)
+
+cluster_weights = self.set_cluster_weights(Session.continuous["cluster"])
+
+s = products.size
+if (s<number_clusters)
+  utilitylist = Kmeans.utility(products)
+  #if utilities are the same
+  utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
+  util_tmp = utilitylist.sort{|x,y| y <=> x }    
+  ordered_list = utilitylist.map{|u| util_tmp.index(u)}
+  return ordered_list + ordered_list
+end
+  # initial seeds for clustering  ### just based on contiuous features
+  inits = self.init(number_clusters, products, cluster_weights)
+  standard_specs = self.factorize_cont_data(products)
+  utilities  = Kmeans.utility(products)#.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<number_clusters
+  $k = Kmeans.new unless $k
+  $k.kmeans_c(standard_specs.flatten.map{|s| s.nil? ? 0.0 : s}, standard_specs.size , standard_specs.first.size, number_clusters, cluster_weights, utilities, inits)
 end
 
 def self.utility(products)
