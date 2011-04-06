@@ -1126,6 +1126,16 @@ a.tab {
 	color:#fff200;
 }
 
+.narrow_text {
+	display:inline-block;
+	width:100px;
+	float:left;
+}
+.y_heading {
+	overflow:hidden;
+	_height:35px;
+}
+
 /*
  * Galleria Classic Theme
  * Copyright (c) 2010, Aino
