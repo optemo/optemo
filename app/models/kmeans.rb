@@ -61,8 +61,9 @@ inline :C do |builder|
   }        
 
    //////////////////////////////////////////////////////////////////////performing kmeans 
-
+  int tt = 0;
   do{
+  tt ++;  
  //means_2= means_1
  for(h=0; h<k;h++){
    for(j=0; j<dd; j++) means_2[h][j] = means_1[h][j];
@@ -73,9 +74,9 @@ inline :C do |builder|
    for (h=0; h<k; h++){
      dif[h] = 0.0;     
      for (j=0; j<dd; j++) {
-       if (data[i][j]>0.0 && means_1[h][j]>0.0) dif[h] += weights[j]*(data[i][j]-means_1[h][j])*(data[i][j]-means_1[h][j]);
+       if (data[i][j]>0.0) dif[h] += weights[j]*(data[i][j]-means_1[h][j])*(data[i][j]-means_1[h][j]);
      }
-     if (tmp_min>dif[h]){
+     if (tmp_min>=dif[h]){
        tmp_min = dif[h];
        tmp_ind = h;
      } 
@@ -112,9 +113,10 @@ for (j=0; j<dd; j++) {
       for(j=0; j<dd; j++) z_temp += weights[j]*(means_1[h][j]- means_2[h][j]);
       z+=z_temp*z_temp; 
   }   
-  }while (z>tresh);
-
-  
+  }while (z>tresh && tt<150);
+//Taking care of cases where a cluster collapse
+//labels = labels.map{|l| labels.uniq.index(l)} if labels.uniq.size <labels.max+1
+///???????????????
   
   for (h=0; h<k; h++){
       i=0;
@@ -189,7 +191,8 @@ end
   # initial seeds for clustering  ### just based on contiuous features
   inits = self.init(number_clusters, products, cluster_weights)
   standard_specs = self.factorize_cont_data(products)
-  utilities  = Kmeans.utility(products)#.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<number_clusters
+  utilities  = Kmeans.utility(products)
+  utilities.each_with_index{|u, i| utilities[i]=u+(0.0000001*i)} if utilities.uniq.size<number_clusters
   $k = Kmeans.new unless $k
   $k.kmeans_c(standard_specs.flatten.map{|s| s.nil? ? 0.0 : s}, standard_specs.size , standard_specs.first.size, number_clusters, cluster_weights, utilities, inits)
 end
@@ -219,8 +222,8 @@ def self.set_cluster_weights(features)
     weights_sum = weights.sum.to_f
     weights.map{|w| w/weights_sum}
   else
-    weights = [0.001/features.size]*features.size
-    weights[Session.continuous["cluster"].index(Session.search.sortby)] = 0.999
+    weights = [0.01/features.size]*features.size
+    weights[Session.continuous["cluster"].index(Session.search.sortby)] = 0.99
     weights
   end
 end
