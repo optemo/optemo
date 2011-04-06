@@ -2,7 +2,9 @@
 <div class="poptitle" data-sku='<%= @product.sku %>'>
 <%# These are used in the application javascript "show" and "compare" pages' logic. %>
 	<a href="#" id="tab_selected" class="fetch tab" data-tab="info_content"><%=t('products.show.productinfo')%></a>
+	<div class="tabspacer"></div>
 	<a href="#" class="fetch tab" data-tab="specs_content"><%=t('products.show.specifications')%></a>
+	<div class="tabspacer"></div>
 	<a href="#" class="fetch tab" data-tab="reviews_content"><%=t('products.show.reviews')%></a>
 	<% link_to "close", :class => "bb_quickview_close" do %>
 		Close Window <%= image_tag("closepopup.png") %>
@@ -89,9 +91,9 @@
         </div>
         <div class="right" style="width:160px">
     		<% if @allspecs["onsale"] %>
-    		<div style="font-size: 1.2em; height: 20px;"><span class="left"><%=t('products.show.ourprice')%></span><span class="right"><%= @allspecs["price"] %></span></div>
-    	    <div style="color: #f00; font-size: 1.5em; font-weight: bold;height: 20px;"><span class="left"><%=t('products.show.saleprice')%></span><span class="right"><%= @allspecs["saleprice"] %></span></div>
-    	    <div style = "clear: both;font-weight: bold;height: 18px;"><span class="left"><%=t('products.show.saleends')%></span><span class="right"><%= @allspecs["saleEndDate"][/^(\w|\/)+/] %></span></div>
+    		<div style="font-size: 1.2em; height: 20px;"><span class="left"><%=t('products.show.regularprice')%></span><span class="right"><%= @allspecs["price"] %></span></div>
+    	    <div style="color: #f00; font-size: 1.3em; font-weight: bold;height: 20px;"><span class="left"><%=t('products.show.saleprice')%></span><span class="right"><%= @allspecs["saleprice"] %></span></div>
+    	    <div style = "clear: both;margin-bottom: 5px;height: 18px;"><span class="left"><%=t('products.show.saleends')%></span><span class="right"><%= @allspecs["saleEndDate"][/^(\w|\/)+/] %></span></div>
     		<% else %>
     		<div style="font-size: 1.5em; height: 20px;"><span class="left"><%=t('products.show.ourprice')%></span><span class="right"><%= @allspecs["price"] %></span></div>
     		<% end %>

@@ -50,6 +50,7 @@ en:
             othercolors:    "Other Colors: "
             loading:        "Loading..."
             ourprice:       "Our Price:"
+            regularprice:   "Regular Price:"
             saleprice:      "Sale Price:"
             fbconnecturl:   "//connect.facebook.net/en_US/all.js"
             saleends:       "Sale Ends:"
