@@ -28,7 +28,7 @@ html {
     height: 100%;
 }
 #mycenter {
-    width: 754px;
+    width: 740px;
 }
 h3 {
 	margin: 0 0 3px;
@@ -399,7 +399,7 @@ div.smalldesc {
 	z-index:2;
 }
 .slider {
-	margin: 0 0 0 7px;
+	margin: 0 0 0 3px;
 	width: 155px;
 	padding-bottom: 12px;
 	position: relative;
@@ -458,7 +458,7 @@ div.smalldesc {
 .hist {
 	position: absolute;
 	text-align: left;
-	left: 13px;
+	left: 9px;
 	top: 22px;
 }
 
