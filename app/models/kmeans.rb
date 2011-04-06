@@ -101,8 +101,7 @@
        }   
     }while (z>tresh);
 
- 
-    double minU = DBL_MAX;
+
     for (h=0; h<k; h++) {
       if (counts[h]>0) avgUtilities[h] = avgUtilities[h]/counts[h];  
     } 
@@ -119,53 +118,35 @@
       h = labels[i];
       if (utilities[i] > utilities[reps[h]]) reps[h] = i;
     }
-
-  //////////////////////////////////////////////////////////////////////sort based on utilities   
-    int idKey;
-    double key;	 
-    int* ids = malloc(sizeof(int)*k);
-    double* x = (double*)calloc(k, sizeof(double));
-    for (j=0; j<k; j++) x[j] = avgUtilities[j];
-
- for (h=0; h<k; h++) ids[h]=h;
- for(j=1;j<k;j++){
-    key=x[j];
- 	   idKey = ids[j];	
-       i=j-1;
-
-       while(x[i]<key && i>=0)
-       {
-           x[i+1]=x[i];
-  		     ids[i+1] = ids[i];	
-           i--;
-       }
-       x[i+1] = key;
-    	ids[i+1] = idKey;
-   }
-   int it;
-   int* id_map = calloc(k,sizeof(int));
-   int* temp_reps = calloc(k,sizeof(int));
-   int* temp_labels = calloc(nn,sizeof(int));
-   for (i=0; i<nn; i++)temp_labels[i] = labels[i];
- /////////////////////////////////////////////////////////////////////////changing the label assignment based on avg utilities.    
-  for (i=0; i<nn; i++) {
-    h =  labels[i];
-    it=0;
-    while (it<k-1 && ids[it]!=h){
-      it++;
-    }
-
-    labels[i] = it;
-    id_map[temp_labels[i]] = it;  
-  }
-
-for (j=0; j<k; j++) {
-  temp_reps[j] = reps[j];
-}  
-for (j=0;j<k; j++){
-   reps[id_map[j]] = temp_reps[j];
-}
-
+//
+//  //////////////////////////////////////////////////////////////////////sort based on utilities   
+//    int idKey;
+//    double key;	 
+//    int* ids = malloc(sizeof(int)*k);
+//    double* x = (double*)calloc(k, sizeof(double));
+//    for (j=0; j<k; j++) x[j] = avgUtilities[j];
+//
+// for (h=0; h<k; h++) ids[h]=h;
+// for(j=1;j<k;j++){
+//    key=x[j];
+// 	   idKey = ids[j];	
+//       i=j-1;
+//
+//       while(x[i]<key && i>=0)
+//       {
+//           x[i+1]=x[i];
+//  		     ids[i+1] = ids[i];	
+//           i--;
+//       }
+//       x[i+1] = key;
+//    	ids[i+1] = idKey;
+//   }
+//   int it;
+//   int* id_map = calloc(k,sizeof(int));
+//   int* temp_reps = calloc(k,sizeof(int));
+//   int* temp_labels = calloc(nn,sizeof(int));
+//   for (i=0; i<nn; i++)temp_labels[i] = labels[i];
+     
   ///storing the labels in the ruby array
    for (j=0; j<nn; j++) rb_ary_store(labels_and_reps, j, INT2NUM(labels[j]));
    for (j=0; j<k; j++) rb_ary_store(labels_and_reps, nn+j, INT2NUM(reps[j]));
@@ -190,6 +171,11 @@ for (j=0;j<k; j++){
   end
     # initial seeds for clustering  ### just based on contiuous features
     inits = self.init(number_clusters, products, cluster_weights)
+    standard_specs = self.factorize_cont_data(products)
+    utilities  = Kmeans.utility(products)
+    $k = Kmeans.new unless $k
+    labels_and_reps = $k.kmeans_c(standard_specs.flatten.map{|s| s.nil? ? 0.0 : s}, standard_specs.size , standard_specs.first.size, number_clusters, cluster_weights, utilities, inits)
+    debugger
     Kmeans.ruby(number_clusters, cluster_weights, inits, products)
 end
 

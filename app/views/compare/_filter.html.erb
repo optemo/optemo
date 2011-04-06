@@ -58,7 +58,7 @@
   	<% i = i + 1 %>
   <% end %>
   <% @s.binarygroup.each_pair do |heading,features| %>
-	<div class="feature"><div class="label"><%= heading %></div></div>
+	<div class="feature"><div class="label"><%= t('products.compare.'+heading) %></div></div>
 	<% features.each do |feat| %>
 		<% dobj = Userdatabin.find_by_search_id_and_name(@s.search.id,feat) %>
 		<% unchecked = dobj.nil? || dobj.value == false %>
