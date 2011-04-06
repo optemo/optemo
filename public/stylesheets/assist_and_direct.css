@@ -28,7 +28,7 @@ html {
     height: 100%;
 }
 #mycenter {
-    width: 754px;
+    width: 740px;
 }
 h3 {
 	margin: 0 0 3px;
@@ -85,6 +85,9 @@ h3 {
 }
 #filterbar {
 	padding-bottom: 12px;
+}
+#IE #filterbar {
+	padding-bottom: 0px;
 }
 .bd {
 	position: relative;
@@ -271,7 +274,7 @@ div.drop-box-hover {
 	float: left;
 	text-align: center;
 	padding: 0px 1px 0;
-	margin: 5px;
+	margin: 5px 0 0 5px;
 	border: 1px solid #C6C6C6;
 	-moz-box-shadow: 0 2px 1px #888;
 	-webkit-box-shadow: 0 2px 1px #888;
@@ -396,7 +399,7 @@ div.smalldesc {
 	z-index:2;
 }
 .slider {
-	margin: 0 0 0 7px;
+	margin: 0 0 0 3px;
 	width: 155px;
 	padding-bottom: 12px;
 	position: relative;
@@ -455,7 +458,7 @@ div.smalldesc {
 .hist {
 	position: absolute;
 	text-align: left;
-	left: 13px;
+	left: 9px;
 	top: 22px;
 }
 
@@ -668,7 +671,7 @@ margin-top:0;
 	padding-top: 15px;
 	border-right: gray 1px dashed;
 	width: 190px;
-	height: 180px;
+	height: 205px;
 	float: left;
 }
 .columntitle {
@@ -752,6 +755,7 @@ margin-top:0;
 	text-align:center;
 	padding-top: 7px;
 	color:#0A2088;
+	height: 90px;
 	line-height: 20px;
 }
 .thumbnaildetails {
@@ -1124,6 +1128,16 @@ a.tab {
 }
 #IE .global_btn:hover span {
 	color:#fff200;
+}
+
+.narrow_text {
+	display:inline-block;
+	width:100px;
+	float:left;
+}
+.y_heading {
+	overflow:hidden;
+	_height:35px;
 }
 
 /*
