@@ -251,12 +251,6 @@ div.drop-box-hover {
 	opacity:0.4;
 }
 
-[if IE] .left_behind_box_ghost { 
-	filter:alpha(opacity=40);
-	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)"; /* IE8 */
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=40);  /* IE7 */    
-}
-
 /* These might be useful in future - helps with drag and drop obviousness
 .productimgblackborder {
  	border: 1px gray dashed; 
@@ -298,6 +292,15 @@ div.smalldesc {
 	-webkit-box-shadow: 0px 2px 2px #888, inset 0 -10px 40px #ebebeb;
 	box-shadow: 0px 2px 2px #888, inset 0 -10px 40px #ebebeb;
 }
+#IE #savesome {
+	font-size: 10px;
+	padding:0;
+	width: 147px;
+	border: 0px solid #c8c8c8;
+	margin: 20px auto 8px;
+	font-size: 10px;
+	box-shadow: none;
+}
 #compare_button {
 	clear: both;
 	font-size: 0.7em;
@@ -310,6 +313,27 @@ div.smalldesc {
 /* IE hack for save bar maybe? */
 .gainlayout div {
 	zoom: 1;
+}
+#IE .box-top-r {
+	height:32px;
+	line-height:0;
+	font-size:0;
+	overflow:hidden;
+	background: url(../images/box-top-round.gif) no-repeat;
+}
+#IE .box-bottom-r {
+	height:17px;
+	background: url(../images/box-bottom-round.gif) no-repeat;
+}
+#IE .text-place {
+	padding:3px 7px 3px 14px;
+	border-left:1px solid #c8c8c8;
+	border-right:2px solid #c8c8c8;
+	color:#4d4d4f;
+	font-size:10px;
+	line-height:11px;
+	width:123px;
+	background:url(../images/box-top-rptr.gif) repeat-x top #eeeeee;
 }
 
 /*--------------------------------------//
@@ -979,6 +1003,9 @@ a.tab {
 	background-image:-webkit-gradient(linear, left bottom, left top, from(white), to(#cdcdcd));
 	margin: 0 4px 0 0;
 }
+#IE a.tab {
+	background: url(../images/gray_gradient.png) repeat;
+}
 .tab:hover {
 	text-decoration: none;
 }
@@ -988,6 +1015,9 @@ a.tab {
 	border-bottom: 1px solid white;
 	color: black;
 	font-weight: bold;
+}
+#IE #tab_selected {
+	background: url(../images/yellow_gradient.png) repeat;
 }
 .pricespacer {
 	border-bottom: 1px dashed #999; 
@@ -1049,12 +1079,38 @@ a.tab {
 	position: relative;
 	cursor: pointer;
 }
-
+.awesome_reset:hover {color:#ffff00; text-decoration: none; }
 .awesome_tour:hover							{ background-color: #111; color: #fff; }
 .awesome_tour:active							{ top: 1px; }
 .small_awesome_tour, .small_awesome_tour:visited 			{ font-size: 11px; padding: ; }
 .awesome_tour, .awesome_tour:visited,
 .medium_awesome_tour, .medium_awesome_tour:visited 		{ font-size: 13px; font-weight: bold; line-height: 1; text-shadow: 0 -1px 1px rgba(0,0,0,0.25); }
+
+/* Global Button */
+#IE .awesome_reset, #IE .awesome_reset:visited {
+	border: none;
+}
+#IE .global_btn {
+	display:inline-block;
+	padding:0 0 0 6px;
+	background:url(../images/global-button-left.gif) no-repeat left;
+}
+#IE .global_btn span {
+	display:inline-block;
+	background:url(../images/global-button-right.gif) no-repeat right;
+	padding:0 10px 0 4px;
+	height:21px;
+	line-height:21px;
+	color:#ffffff;
+	font-size:10px;
+	cursor:pointer;
+}
+#IE .global_btn:hover {
+	text-decoration:none;
+}
+#IE .global_btn:hover span {
+	color:#fff200;
+}
 
 /*
  * Galleria Classic Theme

@@ -43,7 +43,9 @@
 		<% link_text = t("products.compare.similar",:count => cluster.size)%>
      <%end%>	
       <div style="padding:3px 17px;">
-      <%= link_to(link_text, cluster_path(cluster.id), {:id => "sim#{i}", :class => 'simlinks awesome_reset', :"data-id" => "#{product.id}", :"data-size" => cluster.size, :"title" =>  t('products.compare.seegroup'), :rel => "nofollow"}) %>
+      <%= link_to cluster_path(cluster.id), {:id => "sim#{i}", :class => 'simlinks awesome_reset global_btn', :"data-id" => "#{product.id}", :"data-size" => cluster.size, :"title" =>  t('products.compare.seegroup'), :rel => "nofollow"} do %>
+		<span><%= link_text %></span>
+	  <% end %>
       </div>
 	  <%# Distribution ranges %>
 	  <% unless true || Session.continuous["cluster"].include?(@s.search.sortby)%>	
