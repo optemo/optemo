@@ -298,6 +298,7 @@ optemo_module = (function (my){
     	} else {
     	    my.quickajaxcall('#info', url, function(){
     	        if (url.match(/\/product/)) {
+        	        my.preloadSpecsAndReviews($('.poptitle').attr('data-sku'));
 					if (!($.browser.msie && $.browser.version == "6.0")) {
                     	// Initialize Galleria
                     	// If you are debugging around this point, be aware that galleria likes to be initialized all in one shot.
@@ -324,7 +325,6 @@ optemo_module = (function (my){
                     //    });
                     //}
         	        my.DBinit();
-        	        my.preloadSpecsAndReviews($('.poptitle').attr('data-sku'));
     	        } else {
     	            my.DBinit();
     	            $('#outsidecontainer').css('width','');
@@ -982,7 +982,7 @@ optemo_module = (function (my){
             }
     		my.applySilkScreen('/comparison/' + productIDs, null, width, 580,function(){
 				$.when.apply(this,reqs).done(buildComparisonMatrix());
-});
+            });
     		my.trackPage('goals/compare', {'filter_type' : 'direct_comparison'});
     		return false;
     	});
@@ -1010,16 +1010,17 @@ optemo_module = (function (my){
 			    var sku = $(savedProducts[(p == -1) ? p+1 : p]).attr('data-sku');
 				// The column numbers are important here for .remove functionality.
 				if (p==-1) {
-					heading = $('<div class="compare_row"><div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle">All Specifications</div></div></div>').appendTo(anchor);
+					heading = '<div class="compare_row"><div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle">All Specifications</div></div>';
 				}
 			    else {
-					heading.append('<div class="outertitle spec_column_'+p+'"><div class="columntitle">&nbsp;</div></div>');
+					heading += '<div class="outertitle spec_column_'+p+'"><div class="columntitle">&nbsp;</div></div>';
 			    }
+			    if (p + 1 == savedProducts.length) $(heading + "</div>").appendTo(anchor); // Append when it's finished being built up for a time savings
 			    spec_array = parse_bb_json_into_array($('body').data('bestbuy_specs_' + sku), (p == -1) ? true : false);
 				for (var s = 0; s < spec_array.length; s++) {
 					if (p==-1) {
 						row_class[s] = 1;
-						rows[s] = $('<div>').appendTo(anchor);
+						rows[s] = $('<div>');
 					}
 					row_class[s] = Math.max(row_height(spec_array[s].length,(p == -1) ? true : false), row_class[s]);
 					//Assign row_class on the last iteration
@@ -1030,6 +1031,7 @@ optemo_module = (function (my){
 						rows[s].addClass(row_class[s]);
 					}
 					rows[s].append('<div class="cell ' + ((s%2 == 0) ? 'whitebg' : 'graybg') + " " + ((p == -1) ? "leftcolumntext spec_column_"+p : "spec_column_"+p) + '">' + spec_array[s] + ((p == -1) ? ":" : "" ) + "</div>");
+					rows[s].appendTo(anchor);
 				}
 			}
 			
@@ -1252,24 +1254,26 @@ optemo_module = (function (my){
     			});
     	    });
     	    // Make savebar area droppable. jquery UI builtin.
-    		$("#savebar").droppable({
-				hoverClass: 'drop-box-hover',
-				activeClass: 'ui-state-dragging',
-				accept: ".ui-draggable, .dragHand",
-				drop: function (e, ui) {
-					imgObj = $(ui.helper);
-					if (imgObj.hasClass('dragHand')) { // This is a drag hand object
-				        realImgObj = imgObj.parent().find('.productimg');
-				        var id_and_sku = optemo_module.getIdAndSkuFromProductimg(realImgObj);
-    					optemo_module.saveProductForComparison(id_and_sku[0], id_and_sku[1], realImgObj.attr('src'), realImgObj.attr('alt'));
-				    }
-				    else { // This is an image object; behave as normal
-				        var id_and_sku = optemo_module.getIdAndSkuFromProductimg(imgObj);
-    					optemo_module.saveProductForComparison(id_and_sku[0], id_and_sku[1], imgObj.attr('src'), imgObj.attr('alt'));
-					}
-				}
-			});
-    	    
+    	    if (!($("#savebar").hasClass('ui-droppable'))) {
+        		$("#savebar").droppable({
+    				hoverClass: 'drop-box-hover',
+    				activeClass: 'ui-state-dragging',
+    				accept: ".ui-draggable, .dragHand",
+    				drop: function (e, ui) {
+    				    var id_and_sku, imgObj = $(ui.helper);
+    					if (imgObj.hasClass('dragHand')) { // This is a drag hand object
+    				        realImgObj = imgObj.parent().find('.productimg');
+    				        id_and_sku = optemo_module.getIdAndSkuFromProductimg(realImgObj);
+        					optemo_module.saveProductForComparison(id_and_sku[0], id_and_sku[1], realImgObj.attr('src'), realImgObj.attr('alt'));
+    				    }
+    				    else { // This is an image object; behave as normal
+    				        id_and_sku = optemo_module.getIdAndSkuFromProductimg(imgObj);
+        					optemo_module.saveProductForComparison(id_and_sku[0], id_and_sku[1], imgObj.attr('src'), imgObj.attr('alt'));
+    					}
+        				my.loadspecs(id_and_sku[1]);
+    				}
+    			});
+            }    	    
     	}
 
     	//Autocomplete for searchterms
