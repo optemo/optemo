@@ -671,7 +671,7 @@ margin-top:0;
 	padding-top: 15px;
 	border-right: gray 1px dashed;
 	width: 190px;
-	height: 180px;
+	height: 205px;
 	float: left;
 }
 .columntitle {
@@ -755,6 +755,7 @@ margin-top:0;
 	text-align:center;
 	padding-top: 7px;
 	color:#0A2088;
+	height: 90px;
 	line-height: 20px;
 }
 .thumbnaildetails {
