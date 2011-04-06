@@ -28,6 +28,9 @@ en:
             reset:          "RESET"
             resetdesc:      "Clear all filters" 
             compare:        "COMPARE"  
+            newTechnology:  "New Technology"
+            videoResolution: "Video Resolution"
+            status:         "Status"    
             
         show:
             title:          "Product Details"

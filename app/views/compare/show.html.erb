@@ -82,9 +82,9 @@
 			  (function() {
 			    var e = document.createElement('script'); e.async = true;
 			    e.src = document.location.protocol +
-			      <%=raw t('products.show.fbconnecturl') %>;
+			     "<%=raw t('products.show.fbconnecturl')%>";
 			    document.getElementById('fb-root').appendChild(e);
-			  }());
+			  })();
 			}
 			</script>
 			<script src=<%=raw "http:"+t('products.show.fbconnecturl')+"#xfbml=1"%>></script><fb:like href=<%=@prod_url%> show_faces="false" width="300" font="arial"></fb:like>
