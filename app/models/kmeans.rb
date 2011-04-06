@@ -175,7 +175,6 @@
     utilities  = Kmeans.utility(products)
     $k = Kmeans.new unless $k
     labels_and_reps = $k.kmeans_c(standard_specs.flatten.map{|s| s.nil? ? 0.0 : s}, standard_specs.size , standard_specs.first.size, number_clusters, cluster_weights, utilities, inits)
-    debugger
     Kmeans.ruby(number_clusters, cluster_weights, inits, products)
 end
 

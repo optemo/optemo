@@ -1,7 +1,7 @@
 /* To create a website that embeds the Optemo Assist or Direct interface, create an HTML file on any server and insert the following:
 
 In the <head>: 
-<script src="http://ast0.optemo.com/optemo_embedder.js" type="text/javascript"></script>
+<script src="http://bbembed.optemo.com/optemo_embedder.js" type="text/javascript"></script>
 
 In the <body>:
 <div id="optemo_embedder"></div>
@@ -203,12 +203,12 @@ var optemo_socket_activator = (function () {
                     }
     		    },
     			parseData: function (data) {
-    	            data_to_append = parse_data_by_pattern(data, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
+    	            var data_to_append = parse_data_by_pattern(data, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
     				optemo_module.ajaxhandler(data_to_append);
     			},
     			parseDataThin: function (element_name, data, fn) {
-    				data = parse_data_by_pattern(data, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
-    				jQuery(element_name).html(data); // This seems unsafe. Fix this?
+    				var data = parse_data_by_pattern(data, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
+    				jQuery(element_name).html(data);
     				fn(); // This is probably DBInit(), but could be anything
     			}
     		}
