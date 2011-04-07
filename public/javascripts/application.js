@@ -1585,8 +1585,8 @@ optemo_module = (function (my){
 //          document.ready()            //
 //--------------------------------------//
 
-jQuery.noConflict();
-jQuery(document).ready(function($){
+$.noConflict();
+$(function(){
     // This initializes the jquery history plugin. Note that the plugin was modified for use with our application javascript (details in jquery.history.js)
     $.history.init(optemo_module.ajaxsend);
     trackPage = optemo_module.trackPage; // locally scoped variable for brevity only
@@ -1605,6 +1605,7 @@ jQuery(document).ready(function($){
             // These arguments are (id, sku, imgurl, name, product_type).
             // We just ignore product type for now since the websites only have one product type each.
 			optemo_module.renderComparisonProducts(tokenizedArray[0], tokenizedArray[1], tokenizedArray[2], tokenizedArray[3]);
+			optemo_module.loadspecs(tokenizedArray[1]);
 		}
 		// There should be at least 1 saved item, so...
 		// 1. show compare button
@@ -1780,9 +1781,8 @@ if (window.embedding_flag) {
 }
 
 // This should be able to go ahead before document.ready for a slight time savings.
-// NB: Cannot use "$" because of jQuery.noConflict() -- $ might be scoped to prototype or some other framework, depending
 // This history discovery works for embedded also, because by now the ajaxsend function has been redefined, and the history init has been called.
-if (jQuery('#opt_discovery').length) {
+if ($('#opt_discovery').length) {
     if (location.hash) {
     	optemo_module.ajaxsend(location.hash.replace(/^#/, ''),'/?ajax=true',null);
 	} else {
@@ -1793,6 +1793,7 @@ if (jQuery('#opt_discovery').length) {
 
 // Load jQuery if it's not already loaded.
 // The purpose of using a try/catch loop is to avoid Internet Explorer 8 from crashing when assigning an undefined variable.
+// NB: Cannot use "$" because of jQuery.noConflict() -- $ might be scoped to prototype or some other framework, depending
 try {
     var jqueryIsLoaded = jQuery;
     jQueryIsLoaded = true;
@@ -1811,14 +1812,14 @@ if(jQueryIsLoaded) {
             if (script_element.readyState == "loaded" ||
                     script_element.readyState == "complete"){
                 script_element.onreadystatechange = null;
-                optemo_socket_activator(window["jQuery"]); // Using square bracket notation because the jquery object won't be initialized until later
+                optemo_module_activator(window["jQuery"]); // Using square bracket notation because the jquery object won't be initialized until later
             }
         };
     } else {  //Others
         script_element.onload = function(){
-            optemo_socket_activator(window["jQuery"]);
+            optemo_module_activator(window["jQuery"]);
         };
     }
-    script_element.setAttribute("src", 'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js');
+    script_element.setAttribute("src", 'http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js');
     document.getElementsByTagName("head")[0].appendChild(script_element);
 }

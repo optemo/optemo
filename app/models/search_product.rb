@@ -56,7 +56,10 @@ class SearchProduct < ActiveRecord::Base
     def bin_count(feat)
       mycats = Session.search.userdatacats.group_by(&:name).values
       mybins = Session.search.userdatabins.reject{|e|e.name == feat} << BinSpec.new(:name => feat, :value => true)
-      where(:search_id => Product.initial).create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins).count
+      q = where(:search_id => Product.initial).create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins)
+      CachingMemcached.cache_lookup("BinsCount-#{q.to_sql.hash}") do
+        q.count
+      end
     end
   end
   private

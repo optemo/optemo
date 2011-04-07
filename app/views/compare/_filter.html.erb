@@ -65,7 +65,7 @@
   <% @s.binarygroup.each_pair do |heading,features| %>
 	<div class="feature"><div class="label"><%= t('products.compare.'+heading) %></div></div>
 	<% features.each do |feat| %>
-		<% dobj = Userdatabin.find_by_search_id_and_name(@s.search.id,feat) %>
+		<% dobj = @s.search.userdatabins.select{|udb| udb.name == feat}.first %>
 		<% unchecked = dobj.nil? || dobj.value == false %>
 		<% available_count = SearchProduct.bin_count(feat) %>
   		<div class="feature<%= " disabled" if available_count == 0 %>" data-position="<%= i %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
@@ -79,8 +79,8 @@
   <% @s.binarygroup.each_pair do |heading,features| %>
 	<div class="label"><a href="#"><%= heading %></a></div>
 	<% features.each do |feat| %>
-		<% dobj = Userdatabin.find_by_search_id_and_name(@s.search.id,feat) %>
-		<div class="filterbutton<%= " selected_button" unless (dobj.nil? || dobj.value == false) %><%= " disabled" if SearchProduct.bin_count(feat) == 0 %>">
+		<% dobj = @s.search.userdatabins.select{|udb| udb.name == feat}.first %>
+		<div class="filterbutton<%= " selected_button" unless (dobj.blank? || dobj.value == false) %><%= " disabled" if SearchProduct.bin_count(feat) == 0 %>">
 			<%= t("#{Session.product_type}.specs.#{feat}.name") %>
 			<%= hidden_field_tag "myfilter[#{feat}]", (dobj.nil? || dobj.value == false) ? 0 : 1 %>
 		</div>
