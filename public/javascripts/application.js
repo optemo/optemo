@@ -1776,7 +1776,7 @@ if (window.embedding_flag) {
         if (lis.sidebar) lis.sidebar_timer = setTimeout("optemo_module.loadFilterBarSilkScreen()", timeoutlength || 1000);
         lis.socket_error_timer = setTimeout("optemo_module.clearSocketError()", 15000);
         // Hopefully we can just send the arguments as-is. It' would certainly be wise to sanity-check them though.
-        remote.iframecall(hash, myurl, mydata);
+        remote.iframecall(hash, myurl, (mydata == "" ? null : mydata)); // emptiness check put in for AJS vs. jquery differences
     };
     $.history.init(optemo_module.ajaxsend); // re-init with the new ajaxsend module here, after it's been redefined
 
