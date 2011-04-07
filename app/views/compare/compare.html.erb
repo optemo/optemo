@@ -7,7 +7,7 @@
 		<h2> <%=t 'products.compare.saved' %> </h2>
 		<div id="savesome" class="rounded"> 
 			<div class="box-top-r"></div>
-            <div class="text-place"><% if Session.dragAndDropEnabled == true %> <%= image_tag('hand_and_arrow.png', :id => "draghandexample") %> <%=t 'products.compare.savesomedrag'%> <% else %> <%=t 'products.compare.savesome'%> <% end %></div>
+            <div class="text-place"><% if Session.dragAndDropEnabled == true %> <%= image_tag('hand_and_arrow.png', :id => "draghandexample") %> <%=t('products.compare.savesomedrag')%> <% else %> <%=t('products.compare.savesome')%> <% end %></div>
             <div class="box-top-r box-bottom-r"></div>
 		</div>
 		<div id="already_added_msg" class="savedmsg"> <%=t 'products.compare.alreadyadded' %> </div>
