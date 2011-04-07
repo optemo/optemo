@@ -76,7 +76,7 @@ var optemo_module_activator;
 
 // jquery noconflict taken out for jquery 1.4.2 Best Buy rollout 04-2011
 // optemo_module_activator = (function($) { // See bottom, this is for jquery noconflict
-optemo_module = (function (my){
+optemo_module_activator = (function (my){
     // Language support - disabled for now
     // var language;
     // The following variables are pulled from optemo.html.erb
@@ -1806,7 +1806,7 @@ catch(err) {
 
 if(jQueryIsLoaded) {
     // Used to pass in jQuery object to optemo_module_activator
-    optemo_module(optemo_module || {});
+    optemo_module = optemo_module_activator(optemo_module || {});
 } else {
     var script_element = document.createElement("script");
     script_element.setAttribute("type", "text/javascript");
@@ -1815,12 +1815,12 @@ if(jQueryIsLoaded) {
             if (script_element.readyState == "loaded" ||
                     script_element.readyState == "complete"){
                 script_element.onreadystatechange = null;
-                optemo_module(optemo_module || {}); // Using square bracket notation because the jquery object won't be initialized until later
+                optemo_module = optemo_module_activator(optemo_module || {}); // Using square bracket notation because the jquery object won't be initialized until later
             }
         };
     } else {  //Others
         script_element.onload = function(){
-            optemo_module(optemo_module || {});
+            optemo_module = optemo_module_activator(optemo_module || {});
         };
     }
     script_element.setAttribute("src", 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js');
