@@ -274,10 +274,10 @@ optemo_module = (function (my){
     	dsoctop=document.all? iebody.scrollTop : pageYOffset;
 		var outsidecontainer = $('#outsidecontainer');
 		if (outsidecontainer.css('display') != 'block') 
-			$('#info').html("").css('height',"560px");
+			$('#info').html("").css({'height' : "560px", 'width' : (width-42)+'px'});
     	outsidecontainer.css({'left' : Math.max(((document.body.clientWidth-(width||560))/2),0)+'px',
     								'top' : (dsoctop+5)+'px',
-    								'width' : width||560,
+    								'width' : width||560+'px',
     								'display' : 'inline' });
         /* This is used to get the document height for doing layout properly. */
         /*http://james.padolsey.com/javascript/get-document-height-cross-browser/*/
@@ -314,18 +314,6 @@ optemo_module = (function (my){
                     	    g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
                     	});
 					}
-                    //if (!($.browser.msie && $.browser.version == "7.0")) {
-                    //    // Internet Explorer 7 has a problem with background color causing the disappearance of divs. Google "peekaboo bug" and others.
-                    //    $('.tab').hover(function() {
-                    //        if (!($(this).parent().attr('id') == 'tab_selected')) {
-                    //            $(this).css('background', '#ddf');
-                    //        }
-                    //    }, function() {
-                    //        if (!($(this).parent().attr('id') == 'tab_selected')) {
-                    //            $(this).css('background', '#ddd');
-                    //        }
-                    //    });
-                    //}
         	        my.DBinit();
     	        } else {
     	            my.DBinit();

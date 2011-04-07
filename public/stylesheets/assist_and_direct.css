@@ -151,6 +151,12 @@ div.rowdiv {
     height: 22px;
     margin-left: -2px;
     margin-top: 5px;
+	line-height:22px;
+	margin-bottom:5px;
+}
+.comp-title {
+	display:block;
+	float:left;
 }
 
 .fv {
@@ -651,8 +657,8 @@ margin-top:0;
 	display: none;
 }
 .cell {
-	border-right: gray 1px dashed;
-	width: 177px;
+	border-right: 1px solid #cccccc;
+	width: 176px;
 	height: 100%;
 	font-size: 0.9em;
 	padding: 0 3px 0 10px;
@@ -669,10 +675,13 @@ margin-top:0;
 }
 .thumbnailcell {
 	padding-top: 15px;
-	border-right: gray 1px dashed;
+	border-right: 1px solid #cccccc;
 	width: 190px;
 	height: 205px;
 	float: left;
+}
+.reduce-one {
+	width:189px;
 }
 .columntitle {
 	background: url(../images/columntitlebg.gif);
@@ -698,7 +707,7 @@ margin-top:0;
 }
 .outertitle {
 	width: 190px;
-	border-right: solid 2px white;
+	border-right: 1px solid #ffffff;
 	z-index: 4;
 	position: relative;
 	float: left;
@@ -771,7 +780,7 @@ margin-top:0;
 .compare_row {
     clear: both;
     line-height: 23px;
-    height: 23px;
+    height:auto;
 }
 .double_height_compare_row {
     clear: both;
@@ -1002,7 +1011,18 @@ a.bb_quickview_close {
 a.compare {
 	float: right;
 	border: none;
-	margin-top: -5px;
+	margin:0;
+	display:block;
+}
+
+.clear {
+	clear:both;
+	height:0;
+	line-height:0;
+	font-size:0;
+	padding:0;
+	margin:0;
+	letter-spacing:0;
 }
 
 a.tab {
