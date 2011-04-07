@@ -3,6 +3,7 @@
 			<%= link_to image_tag(catspecs["imgmurl"], :"data-id" => thumbnails.id, :class => "compareimg"), product_path(:name => thumbnails.descurl, :id => thumbnails.id), {:class => 'easylink', :'data-id' => thumbnails.id} %>
  		</div>
 	<div class="thumbnaillabel">
+	<div style="height: 65px">
    	<%= link_to thumbnails.small_title, product_path(:name => thumbnails.descurl, :id => thumbnails.id), :class => 'easylink', :'data-id' => thumbnails.id %>
 	<div class="thumbnaildetails">
     	<% if binspecs["onsale"] %>
@@ -10,6 +11,7 @@
     	<% else %>
     		$<%= "%.2f" % contspecs["price"] %>
     	<% end %>
+	</div>
 	</div>
 	<%= link_to image_tag("bestbuy_addtocart.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{thumbnails.sku}" %>
 	</div>
