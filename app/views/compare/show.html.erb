@@ -7,7 +7,7 @@
 	<div class="tabspacer"></div>
 	<a href="#" class="fetch tab" data-tab="reviews_content"><%=t('products.show.reviews')%></a>
 	<% link_to "close", :class => "bb_quickview_close" do %>
-		Close Window <%= image_tag("closepopup.png") %>
+		<%=t('products.compare.closewindow')%> <%= image_tag("closepopup.png") %>
 	<% end %>
 </div>
 <% else %>
@@ -17,7 +17,7 @@
 <% end %>
 <div id="info_container">
 	<h1><%= @product.title %></h1>
-	<h5 style="margin: 0"><%= "Webcode: #{@product.sku}, Model: #{@product.mpn}" %></h5>
+	<h5 style="margin: 0"><%=t('products.show.webcode')+": #{@product.sku}, "+t('products.show.model')+": #{@product.mpn}"%></h5> 
 <div id="info_content" class="tabbed_content">
     	<div id="galleria" style="width: 500px; height: 300px;margin-left: -10px;">
     		<!-- What follows is a Best Buy-specific hack, put in to get "additional media" out prior to a consultation meeting with them
@@ -96,7 +96,7 @@
     		<% else %>
     		<div style="font-size: 1.5em; height: 20px;"><span class="left"><%=t('products.show.ourprice')%></span><span class="right"><%= @allspecs["price"] %></span></div>
     		<% end %>
-    		<div class="left" style="height: 18px;"><a href="http://www.bestbuy.ca/en-CA/help/what-is-your-lowest-price-guarantee/hc1001.aspx?path=27eeec1b59d42df5dfc298ab6993d9dfen15&HelpTitleId=HC1001" class="popup-link">Lowest Price Guarantee</a></div>
+    		<div class="left" style="height: 18px;"><a href="http://www.bestbuy.ca/en-CA/help/what-is-your-lowest-price-guarantee/hc1001.aspx?path=27eeec1b59d42df5dfc298ab6993d9dfen15&HelpTitleId=HC1001" class="popup-link"><%=t('products.show.lowestprice')%></a></div>
     		<div class="pricespacer"></div>
     	    <div class="buttons"><%= link_to image_tag("bestbuy_addtocart.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{@product.sku}" %></div>
     	    <div class="buttons"><%= link_to image_tag("bestbuy_compare.gif"), "#", {:id => 'add_compare', :'data-id' => @product.id, :'data-name' => @product.small_title} %></div>

@@ -1,12 +1,6 @@
 en:
     products:
-        # All language-dependent definitions in models
-        
-        ErrorPart1:                 "We're sorry! There are no matching results for your selection. Please click"
-        ErrorPart2:                 "to go back to the previous page."
-        here:                       "anywhere"
-        nodesc:                     "No description available" #No description for info boxes
-        sortby:                     "Group by:&nbsp;&nbsp;"
-        relevance:                  "Top Picks"
-        all:                        "All "
-        add:                        "Add Another "
+        # All language-dependent definitions in models  
+        ErrorPart1:         "Sorry! An error has occurred on the server.</p><p>You can reset the tool and see if the problem is resolved."
+        sortby:             "Group by:"
+        relevance:          "Our top Picks"

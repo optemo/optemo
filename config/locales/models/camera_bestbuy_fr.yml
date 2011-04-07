@@ -1,0 +1,62 @@
+fr:
+    camera_bestbuy:
+        # All language-dependent definitions in models
+        sitetitle:                  "Appareils photo Best Buy"
+        title:                      "Appareil photo"
+        title-plural:               "Appareils photo"
+        defaultdesc:                "Meilleure sélection dappareils photo numériques"
+        keywords:                   "appareils photo"
+        classification:             "Appareils photo numériques"
+        navtitle:                   "Vous survolez actuellement %{count} appareils photo"
+        
+        specs:
+            category:
+                name:               "Catégorie de produit"
+            price:
+                name:               "Prix"
+                preunit:            "$"
+            maxresolution:
+                name:               "Résolution"
+                unit:               "MP"
+            opticalzoom:
+                name:               "Zoom optique"
+                unit:               "X"
+            screensize:
+                name:               "Taille de l'écran ACL"
+                unit:               "po"
+            waterproof:
+                name:               "À l'épreuve de l'eau et des chocs"
+            brand:
+                name:               "Marques"
+            color:
+                name:               "Couleurs"
+            onsale:
+                name:               "En solde"
+            isClearance:
+                name:               "Liquidation"
+            isOnlineOnly:
+                name:               "En ligne seulement"
+            videoresolution720:
+                name:               "720p"
+            videoresolution1080:
+                name:               "1080p"
+            touchscreen:
+                name:               "Écran tactile"
+            oled:
+                name:               "Écran OLED"
+            hdmi:
+                name:               "Sortie HDMI"
+            imagestabilization:
+                name:               "Stabilisation de l'image"
+            gps:
+                name:               "GPS"
+            projector:
+                name:               "Appareil de projection"
+            3d:
+                name:               "Saisie d'images 3D"
+            sweeppanorama:
+                name:               "Balayage panoramique"
+            frontlcd:
+                name:               "ACL avant et arrière"
+            toprated:
+                name:               "Les mieux cotés"
