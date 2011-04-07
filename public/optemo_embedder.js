@@ -321,7 +321,7 @@ if(jQueryIsLoaded) {
             optemo_socket_activator();
         };
     }    
-    script.setAttribute("src", 'http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js');
+    script.setAttribute("src", 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js');
     document.getElementsByTagName("head")[0].appendChild(script);
 }
 
