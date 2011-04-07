@@ -64,8 +64,14 @@
 </div>
 
 <div class="spacer togglespecs"><%= link_to '#', :class => 'toggle_specs' do %>
+	<div class="moretext">
 	More Specs&nbsp;
 	<%= image_tag "downarrow.png" %>
+	</div>
+	<div class="lesstext" style="display:none;">
+	Less Specs&nbsp;
+	<%= image_tag "downarrow.png" %>
+	</div>
 <% end %>
 </div>
 <div class="comparisonmatrix" id="hideable_matrix" style="width: <%= box_width %>px">
