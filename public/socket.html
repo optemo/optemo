@@ -4,6 +4,11 @@
 <head>
 <script type="text/javascript">
 /* AJS, the tool we use in this socket to do extremely lightweight AJAX */
+// 
+//   IMPORTANT -- This is not stock AJS. There were two bug fixes made related to AJAX and how AJS does POST/GET requests.
+//   For get, this line is important: else{if(AJS.isObject(data)&&data!==null){http_url=http_url+"?"+AJS.encodeArguments(data);}
+//   changes: we now check whether 'data' is null. Also, we allow GET requests to have parameters by adding the '?' and the arguments as necessary.
+//
 AJS={BASE_URL:"",drag_obj:null,drag_elm:null,_drop_zones:[],_cur_pos:null,ready_bound:false,is_ready:false,ready_list:[],_f_guid:0,_wipe_guid:0,map:function(list,fn,start_index,end_index){var i=0,l=list.length;if(start_index)
 i=start_index;if(end_index)
 l=end_index;for(i;i<l;i++){var val=fn(list[i],i);if(val!=undefined)
@@ -56,7 +61,7 @@ return;}
 this.excCallbackSeq(this.req,this.errbacks);},addErrback:function(fn){this.errbacks.unshift(fn);},addCallback:function(fn){this.callbacks.unshift(fn);},abort:function(){this.req.abort();},addCallbacks:function(fn1,fn2){this.addCallback(fn1);this.addErrback(fn2);},_onreadystatechange:function(){var req=this.req;var d=this;if(req.readyState==4){var status='';try{status=req.status;}
 catch(e){};if(status==200||status==304||req.responseText==null){this.callback();}
 else{this.errback();}}},sendReq:function(data){var req=this.req;var http_method=this.http_method;var http_url=this.http_url;if(http_method=='POST'){req.open(http_method,http_url,true);req.onreadystatechange=AJS.$b(this._onreadystatechange,this);req.setRequestHeader("Content-type","application/x-www-form-urlencoded");if(AJS.isObject(data)){req.send(AJS.encodeArguments(data));}else{if(AJS.isDefined(data)){req.setRequestHeader("Content-length",data.length);req.send(data);}else{req.send('');}}}
-else{if(AJS.isObject(data)){http_url=http_url+"?"+AJS.encodeArguments(data);}
+else{if(AJS.isObject(data)&&data!==null){http_url=http_url+"?"+AJS.encodeArguments(data);}
 req.open("GET",http_url,true);req.onreadystatechange=AJS.$b(this._onreadystatechange,this);req.send(null);}}
 };script_loaded=true;
 
@@ -160,7 +165,7 @@ var local_socket = new easyXDM.Rpc(/** The channel configuration*/{
                 var d = AJS.getRequest(myurl, ((mydata==null)?"GET":"POST")); // POST is the default, and mydata can be null
                 d.addCallback(function(data, req) { local_socket.parseData(data) });
                 d.addErrback(function(data, req) { local_socket.parseData(data) });
-                d.sendReq((mydata==null)?{}:mydata);
+                d.sendReq(mydata);
             } else if (typeof(hash) != "undefined" && hash != null) {
                 var d = AJS.getRequest("/", "GET");
                 d.addCallback(function(data, req) { local_socket.parseData(data) });
