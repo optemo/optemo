@@ -301,7 +301,7 @@ optemo_module = (function (my){
         	        my.preloadSpecsAndReviews($('.poptitle').attr('data-sku'));
 					if (!($.browser.msie && $.browser.version == "6.0")) {
                     	// Initialize Galleria
-                    	// If you are debugging around this point, be aware that galleria likes to be initialized all in one shot.
+                    	// If you are debugging around this point, be aware that galleria likes to be initialized without debugging pauses.
                     	$('#galleria').galleria();
                     	// The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
                     	// It's important to set this up as an event handler at all because there is a race condition with galleria updating the DOM otherwise.
@@ -312,7 +312,6 @@ optemo_module = (function (my){
                     	});
 					}
                     //if (!($.browser.msie && $.browser.version == "7.0")) {
-                    //    // This is an unsightly hack, and unfortunately seems to be the only easy way to make it work.
                     //    // Internet Explorer 7 has a problem with background color causing the disappearance of divs. Google "peekaboo bug" and others.
                     //    $('.tab').hover(function() {
                     //        if (!($(this).parent().attr('id') == 'tab_selected')) {
@@ -1051,11 +1050,13 @@ optemo_module = (function (my){
 
         $(".productimg, .easylink").live("click", function (){
             // This is the show page
-			var href = $(this).attr('href') || $(this).parent().siblings('.productinfo').children('.easylink').attr('href') || $(this).parent().parent().find('.easylink').attr('href'),
+			var href = $(this).attr('href') || $(this).parent().siblings('.productinfo').children('.easylink').attr('href'),
         	ignored_ids = getAllShownProductIds(),
 			currentelementid = $(this).attr('data-id') || href.match(/\d+$/),
         	product_title = $(this).find('img.productimg').attr('title');
         	my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids});
+        	// Using /product/_/ because savedproducts do not have an href (otherwise it would need to be stored in the cookie)
+        	// _ is the brand name and model
 			my.applySilkScreen((href || '/product/_/' + currentelementid) +'?plain=true',null, 560, 580);
         	return false;
         });
@@ -1753,12 +1754,14 @@ if (window.embedding_flag) {
     // The data will come back through the same ajaxhandler function as before, getting pushed there by the
     // remote socket when it's ready.
     optemo_module.ajaxcall = function (myurl, mydata) {
+	    if (myurl) myurl = myurl.replace(/http:\/\/[^\/]+/,'');
         optemo_module.disableInterfaceElements();
     	numactions = parseInt($("#actioncount").html()) + 1;
     	$.history.load(numactions.toString(),myurl,mydata);
 	};
 
 	optemo_module.ajaxsend = function(hash,myurl,mydata,timeoutlength) {
+	    if (myurl) myurl = myurl.replace(/http:\/\/[^\/]+/,'');
         optemo_module.disableInterfaceElements();
         var lis = optemo_module.loading_indicator_state;
         if (lis.main) lis.main_timer = setTimeout("myspinner.begin()", timeoutlength || 1000);
@@ -1775,8 +1778,9 @@ if (window.embedding_flag) {
     	optemo_module.flashError('<div class="bb_poptitle">Error<a class="bb_quickview_close" href="close"><img src="/images/closepopup_white.gif"></a></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
     }
 
-    optemo_module.quickajaxcall = function (element_name, mydata, fn) { // for the show page
-        remote.quickiframecall(element_name, mydata, fn);
+    optemo_module.quickajaxcall = function (element_name, myurl, fn) { // for the show page
+	    if (myurl) myurl = myurl.replace(/http:\/\/[^\/]+/,'');        
+        remote.quickiframecall(element_name, myurl, fn);
     }
 }
 
