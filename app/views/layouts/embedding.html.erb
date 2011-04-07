@@ -1,11 +1,17 @@
 <% s = Session %>
 <%= raw stylesheet_link_merged(s.directLayout ? :direct : :assist) %>
+<!--[if IE]>
+<div id="IE">
+<![endif]-->
 <%# The border and other aspects of the top bar are in the retailer's frame. This just puts the "compare" layout in. %>
 <%= yield %>
 
 <div id="silkscreen">&nbsp;</div>
 <div id="filter_bar_loading">Loading</div>
 <div id="outsidecontainer"><%= link_to image_tag("closepopup#{fr?}.gif"), "close", :class => "close"%><div id="info">&nbsp;</div></div>
+<!--[if IE]>
+</div>
+<![endif]-->
 <div style="display:none;">
 	<% if s %>
 	<span id="dragDropEnabled"><%= s.dragAndDropEnabled %></span>
