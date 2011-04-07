@@ -70,6 +70,8 @@ fr:
             error:          "Vous ne pouvez sauvegarder que 4 produits à la fois"    
             proddetails:    "Renseignements sur le produit"
             remove:         "Retirer"
+            morespecs:      
+            lessspecs:      
             
     survey:
         decision:       "Would you like to take our survey?"

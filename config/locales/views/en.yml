@@ -70,6 +70,8 @@ en:
             error:          "You can save only up to 4 products at a time"  
             proddetails:    "Product Details"
             remove:         "Remove"
+            morespecs:      "More Specs"
+            lessspecs:      "Less Specs"
     survey:
         decision:       "Would you like to take our survey?"
         title:          "Survey Questions"
