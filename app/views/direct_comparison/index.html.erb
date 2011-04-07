@@ -1,7 +1,9 @@
-<div class="bb_poptitle"><%=t "compare.index.title"%>
+<div class="bb_poptitle">
+	<labeL class="comp-title"><%=t "compare.index.title"%></label>
     <% link_to "close", :class => "compare bb_quickview_close" do %>
-		Close Window <%= image_tag("closepopup.png") %>
+		<%=t('products.compare.closewindow')%> <%= image_tag("closepopup.png") %>
 	<% end %>
+	<div class="clear">&nbsp;</div>
 </div>
 
 <div id="basic_matrix" class="comparisonmatrix" style="width: <%= box_width %>px">
@@ -31,7 +33,7 @@
     		<% catspecs = CatSpec.cache_all(product.id) %>
     		<% binspecs = BinSpec.cache_all(product.id) %>
     		<% spec_hash[product.id] = contspecs.merge(catspecs).merge(binspecs) %>
-    		<%= render :partial => 'thumbnails', :object => product, :locals => {:contspecs => contspecs, :catspecs => catspecs, :binspecs => binspecs, :column_number => i} %>
+    		<%= render :partial => 'thumbnails', :object => product, :locals => {:contspecs => contspecs, :catspecs => catspecs, :binspecs => binspecs, :column_number => i, :last => i == @products.length-1} %>
         <% end %>
     </div>
 

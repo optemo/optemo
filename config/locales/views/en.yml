@@ -1,42 +1,43 @@
 en:
     products:
         compare:
-            # All translations for /compare/compare.erb.html and its partials
-            browsings:      "Browsing %{count} "    # e.g. Browsing 146 Cameras
-            browsing:       "Browsing 1 "   
+            browsings:      "Browsing %{count} "
+            browsing:       "Browsing 1 "
             search:         "Narrow your search"
             saved:          "Compare and Save"
             alreadyadded:   "You already added that product!"
             toomanysaved:   "You can only save up to 4 products at a time."
-            savesome:       "Select two or more items to compare specs"  
-            savesomedrag:   "Drag and drop cameras over to this box to save them for later or compare them with other cameras."
+            savesome:       "Select two or more items to compare specs"
+            savesomedrag:   "Drag and drop cameras here for comparison"
             filters:        "Filters"
-            powered:        "powered by"
+            powered:        "Powered by "
             loading:        "Loading"
             back:           "Back"
-            all:            "See all products"                  
-            similar:        "Show %{count} like this" # e.g. 1 More like this
+            all:            "See all products"   
+            similar:        "See %{count} like this" # e.g. See 25 like this
             likethis:       "like this"
             extended:       "You might want to consider these %{count} other products."
-            similar_line:   "%{count} More"     
-            filtersdesc:    "Narrow your results by:"   
-            rembrandfilter: "Remove brand filter"  
-            onsale:         "On Sale"       
+            similar_line:   "%{count} More"   
+            filtersdesc:    "Narrow your results by:"
+            rembrandfilter: "Remove brand filter"
+            onsale:         "On Sale"      
             zoomout:        "Zoom out"
             clickforspecs:  "Click for product specifications"
-            seegroup:       "Click here to see products in this group"   
+            seegroup:       "Click here to see products in this group"
             reset:          "RESET"
-            resetdesc:      "Clear all filters" 
-            compare:        "COMPARE"  
+            resetdesc:      "Clear all filters"
+            compare:        "COMPARE"
             newTechnology:  "New Technology"
             videoResolution: "Video Resolution"
-            status:         "Status"    
-            
+            status:         "Status"
+            closewindow:    "Close Window"
+
         show:
             title:          "Product Details"
             noimage:        "No Image Available"
             price:          "Our Price"
             sp:             "Sale Price"
+            regularprice:   "Regular Price"
             saving:         "You Save"
             saleends:       "Sale Ends"
             model:          "Model"
@@ -49,25 +50,24 @@ en:
             reviews:        "Customer Reviews"
             freeshipping:   "Free shipping on orders over %{amount}."
             instorepickup:  "Order online and pick up in-store."
-            rewardprog:     "It's free to get into the rewards program."     
+            rewardprog:     "It's free to get into the rewards program." 
             othercolors:    "Other Colors: "
             loading:        "Loading..."
             ourprice:       "Our Price:"
-            regularprice:   "Regular Price:"
             saleprice:      "Sale Price:"
-            fbconnecturl:   "//connect.facebook.net/en_US/all.js"
-            saleends:       "Sale Ends:"
-            
+            saleends:       "Sale Ends"
+            lowestprice:    "Lowest Price Guarantee"
+        
     features:
         maxresolution:      "%{num}MP"
         screensize:         "%{num} in. LCD"
         opticalzoom:        "%{num}X zoom"
-        
+    
     compare:
         index:
             title:          "Compare Results"
             tabletitle:     "You've selected these products to compare"
-            error:          "You can save only up to 4 products at a time"    
+            error:          "You can save only up to 4 products at a time"  
             proddetails:    "Product Details"
             remove:         "Remove"
     survey:

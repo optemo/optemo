@@ -1,5 +1,5 @@
 <% if @plain %>
-<div class="poptitle"><%=t 'products.show.title'%><%= link_to "Close Window", "close", :class => "close"%>
+<div class="poptitle"><%=t 'products.show.title'%><%= link_to t('products.compare.closewindow'), "close", :class => "close"%>
 </div>
 <% else %>
 <% self.title = "#{@product.title}" %>
