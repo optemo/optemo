@@ -74,8 +74,9 @@ var optemo_module;
 var myspinner;
 var optemo_module_activator;
 
-optemo_module_activator = (function($) { // See bottom, this is for jquery noconflict
-optemo_module = (function (my){
+// jquery noconflict taken out for jquery 1.4.2 Best Buy rollout 04-2011
+// optemo_module_activator = (function($) { // See bottom, this is for jquery noconflict
+optemo_module_activator = (function (my){
     // Language support - disabled for now
     // var language;
     // The following variables are pulled from optemo.html.erb
@@ -274,10 +275,10 @@ optemo_module = (function (my){
     	dsoctop=document.all? iebody.scrollTop : pageYOffset;
 		var outsidecontainer = $('#outsidecontainer');
 		if (outsidecontainer.css('display') != 'block') 
-			$('#info').html("").css('height',"560px");
+			$('#info').html("").css({'height' : "560px", 'width' : (width-42)+'px'});
     	outsidecontainer.css({'left' : Math.max(((document.body.clientWidth-(width||560))/2),0)+'px',
     								'top' : (dsoctop+5)+'px',
-    								'width' : width||560,
+    								'width' : width||560+'px',
     								'display' : 'inline' });
         /* This is used to get the document height for doing layout properly. */
         /*http://james.padolsey.com/javascript/get-document-height-cross-browser/*/
@@ -314,18 +315,6 @@ optemo_module = (function (my){
                     	    g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
                     	});
 					}
-                    //if (!($.browser.msie && $.browser.version == "7.0")) {
-                    //    // Internet Explorer 7 has a problem with background color causing the disappearance of divs. Google "peekaboo bug" and others.
-                    //    $('.tab').hover(function() {
-                    //        if (!($(this).parent().attr('id') == 'tab_selected')) {
-                    //            $(this).css('background', '#ddf');
-                    //        }
-                    //    }, function() {
-                    //        if (!($(this).parent().attr('id') == 'tab_selected')) {
-                    //            $(this).css('background', '#ddd');
-                    //        }
-                    //    });
-                    //}
         	        my.DBinit();
     	        } else {
     	            my.DBinit();
@@ -926,14 +915,9 @@ optemo_module = (function (my){
         $('.toggle_specs').live('click', function () {
             // Once we have the additional specs loaded and rendered, we can simply show and hide that table
             var t = $(this);
-            if (t.html().match("Less")) {
-				t.html(t.html().replace("Less","More"));
-				t.removeClass("lessspecs");
-			}
-			else {
-				t.html(t.html().replace("More","Less"));
-				t.addClass("lessspecs");
-			}
+			t.toggleClass("lessspecs");
+			t.find(".lesstext").toggle();
+			t.find(".moretext").toggle();
             $('#hideable_matrix').toggle();
             return false;
         });
@@ -1414,7 +1398,9 @@ optemo_module = (function (my){
     		return -1;
     	} else {
     		var parts = data.split('[BRK]');
+    		if (console) console.log($('#ajaxfilter').html());
     		$('#ajaxfilter').html(parts[1]);
+    		if (console && $('#ajaxfilter')) console.log($('#ajaxfilter').html());
     		$('#main').html(parts[0]);
     		$('#myfilter_search').attr('value',parts[2]);
     		myspinner.end();
@@ -1587,14 +1573,13 @@ optemo_module = (function (my){
     }
 
     return my;
-})(optemo_module || {});
+});
 
 
 //--------------------------------------//
 //          document.ready()            //
 //--------------------------------------//
 
-$.noConflict();
 $(function(){
     // This initializes the jquery history plugin. Note that the plugin was modified for use with our application javascript (details in jquery.history.js)
     $.history.init(optemo_module.ajaxsend);
@@ -1815,7 +1800,8 @@ catch(err) {
 }
 
 if(jQueryIsLoaded) {
-    optemo_module_activator(jQuery);
+    // Used to pass in jQuery object to optemo_module_activator
+    optemo_module = optemo_module_activator(optemo_module || {});
 } else {
     var script_element = document.createElement("script");
     script_element.setAttribute("type", "text/javascript");
@@ -1824,12 +1810,12 @@ if(jQueryIsLoaded) {
             if (script_element.readyState == "loaded" ||
                     script_element.readyState == "complete"){
                 script_element.onreadystatechange = null;
-                optemo_module_activator(window["jQuery"]); // Using square bracket notation because the jquery object won't be initialized until later
+                optemo_module = optemo_module_activator(optemo_module || {}); // Using square bracket notation because the jquery object won't be initialized until later
             }
         };
     } else {  //Others
         script_element.onload = function(){
-            optemo_module_activator(window["jQuery"]);
+            optemo_module = optemo_module_activator(optemo_module || {});
         };
     }
     script_element.setAttribute("src", 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js');
