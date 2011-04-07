@@ -1,11 +1,17 @@
 <% s = Session %>
 <%= raw stylesheet_link_merged(s.directLayout ? :direct : :assist) %>
+<!--[if IE]>
+<div id="IE">
+<![endif]-->
 <%# The border and other aspects of the top bar are in the retailer's frame. This just puts the "compare" layout in. %>
 <%= yield %>
 
 <div id="silkscreen">&nbsp;</div>
 <div id="filter_bar_loading">Loading</div>
 <div id="outsidecontainer"><%= link_to image_tag("closepopup#{fr?}.gif"), "close", :class => "close"%><div id="info">&nbsp;</div></div>
+<!--[if IE]>
+</div>
+<![endif]-->
 <div style="display:none;">
 	<% if s %>
 	<span id="dragDropEnabled"><%= s.dragAndDropEnabled %></span>
@@ -16,7 +22,7 @@
 	<% end %>
 </div>
 
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <!-- The jquery-ui script is being included locally due to the custom jquery-ui being about 45k instead of 200kb from Google's CDN -->
 <%= raw javascript_include_merged :base %>
 

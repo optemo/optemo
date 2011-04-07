@@ -135,11 +135,11 @@ optemo_module = (function (my){
     //   - "specs" or "more specs" links just show/hide the table element rather than building it up; the ajax return below does that
     // The disadvantage would be that the specs wouldn't be stored for later retrieval. This probably isn't a big deal.
     
-    my.loadspecs = function (sku) {
+    my.loadspecs = function (sku, f) {
         // The jQuery AJAX request will add ?callback=? as appropriate. Best Buy API v.2 supports this.
         var baseurl = "http://www.bestbuy.ca/api/v2/json/product/" + sku;
         if (!(jQuery('body').data('bestbuy_specs_' + sku))) {
-            var req = $.ajax({
+            $.ajax({
                 url: baseurl,
                 type: "GET",
                 dataType: "jsonp",
@@ -157,13 +157,16 @@ optemo_module = (function (my){
                         return my;
                     }({});
                     jQuery('body').data('bestbuy_specs_' + sku, processed_specs);
+                    if (f) f();
                 }
             });
         }
 		else {
-			var req = $.Deferred().resolve().promise();
+		    // specs are already loaded. In jQuery 1.5 this would warrant a promise() call
+		    // but we are in jQuery 1.4.2 at the moment. Keep this code for later.
+			// var req = $.Deferred().resolve().promise();
+			if (f) f();
 		}
-		return req;
     };
 	function numberofstars(stars) {
 		fullstars = parseInt(stars);
@@ -180,12 +183,12 @@ optemo_module = (function (my){
 	}
     // This function gets called when a show action gets called.
     my.preloadSpecsAndReviews = function(sku) {
-        my.loadspecs(sku).done(function() {
+        my.loadspecs(sku, (function() {
 			$('#specs_content').html('<ul>' + parse_bb_json($('body').data('bestbuy_specs_' + sku)) + "</ul>");
-		});
+		}));
         if (!(jQuery('body').data('bestbuy_reviews_' + sku))) {
             baseurl = "http://www.bestbuy.ca/api/v2/json/reviews/" + sku;
-            var req = $.ajax({
+            $.ajax({
                 url: baseurl,
     	        type: "GET",
     	        dataType: "jsonp",
@@ -237,6 +240,7 @@ optemo_module = (function (my){
 						</div>';
 					}
                     $('body').data('bestbuy_reviews_' + sku, to_tabbed_content);
+                    $('#reviews_content').html(to_tabbed_content);
                 },
                 error: function(x, xhr) {
                     console.log("Error in json ajax");
@@ -246,11 +250,10 @@ optemo_module = (function (my){
             });
 	    }
 		else {
-			var req = $.Deferred().resolve().promise();
+		    // specs and reviews are already loaded. In jQuery 1.5 this would warrant a promise() call
+		    // but we are in jQuery 1.4.2 at the moment. Keep this code for later.
+			// var req = $.Deferred().resolve().promise();
 		}
-		req.done(function() {
-			$('#reviews_content').html($('body').data('bestbuy_reviews_' + sku));
-		});
     };
 
     //--------------------------------------//
@@ -301,7 +304,7 @@ optemo_module = (function (my){
         	        my.preloadSpecsAndReviews($('.poptitle').attr('data-sku'));
 					if (!($.browser.msie && $.browser.version == "6.0")) {
                     	// Initialize Galleria
-                    	// If you are debugging around this point, be aware that galleria likes to be initialized all in one shot.
+                    	// If you are debugging around this point, be aware that galleria likes to be initialized without debugging pauses.
                     	$('#galleria').galleria();
                     	// The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
                     	// It's important to set this up as an event handler at all because there is a race condition with galleria updating the DOM otherwise.
@@ -312,7 +315,6 @@ optemo_module = (function (my){
                     	});
 					}
                     //if (!($.browser.msie && $.browser.version == "7.0")) {
-                    //    // This is an unsightly hack, and unfortunately seems to be the only easy way to make it work.
                     //    // Internet Explorer 7 has a problem with background color causing the disappearance of divs. Google "peekaboo bug" and others.
                     //    $('.tab').hover(function() {
                     //        if (!($(this).parent().attr('id') == 'tab_selected')) {
@@ -953,7 +955,7 @@ optemo_module = (function (my){
 
     	//Call overlay for product comparison
     	$("#compare_button").live('click', function(){
-    		var productIDs = '', width = 560, number_of_saved_products = 0, reqs = [];
+    		var productIDs = '', width = 560, number_of_saved_products = 0;
     		// For each saved product, get the ID out of the id=#opt_savedproducts children.
     		$('#opt_savedproducts').children().each(function() {
     			// it's a saved item if the CSS class is set as such. This allows for other children later if we feel like it.
@@ -964,7 +966,6 @@ optemo_module = (function (my){
     				var sku = $(this).attr('data-sku');
     				productIDs = productIDs + p_id + ',';
     				number_of_saved_products++;
-    				reqs.push(my.loadspecs(sku));
     			}
     		});
             // To figure out the width that we need, start with $('#opt_savedproducts').length probably
@@ -981,68 +982,14 @@ optemo_module = (function (my){
                     width = 560;
             }
     		my.applySilkScreen('/comparison/' + productIDs, null, width, 580,function(){
-				$.when.apply(this,reqs).done(buildComparisonMatrix());
+				// Jquery 1.5 would finish all the requests before building the comparison matrix once
+				// With 1.4.2 we can't do that. Keep code for later.
+				// $.when.apply(this,reqs).done();
+				my.buildComparisonMatrix();
             });
     		my.trackPage('goals/compare', {'filter_type' : 'direct_comparison'});
     		return false;
     	});
-		function row_height(length,isLabel)
-		{
-			var h;
-			if (isLabel) {
-				if (length >= 37) h = 3;
-			    else if (length >= 19) h = 2;
-			    else h = 1;
-			}
-			else {
-				if (length >= 57) h = 3;
-	            else if (length >= 29) h = 2;
-	            else h = 1;
-			}
-			return h;
-		}
-		//This should be a locally scoped function
-		function buildComparisonMatrix() {
-			var rows = [], row_class=[], savedProducts = $('#opt_savedproducts').children(), anchor = $('#hideable_matrix').empty(), heading;
-			// Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
-			//p == -1 means it's the labels
-			for (var p = -1; p < savedProducts.length; p++) {
-			    var sku = $(savedProducts[(p == -1) ? p+1 : p]).attr('data-sku');
-				// The column numbers are important here for .remove functionality.
-				if (p==-1) {
-					heading = '<div class="compare_row"><div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle">All Specifications</div></div>';
-				}
-			    else {
-					heading += '<div class="outertitle spec_column_'+p+'"><div class="columntitle">&nbsp;</div></div>';
-			    }
-			    if (p + 1 == savedProducts.length) $(heading + "</div>").appendTo(anchor); // Append when it's finished being built up for a time savings
-			    spec_array = parse_bb_json_into_array($('body').data('bestbuy_specs_' + sku), (p == -1) ? true : false);
-				for (var s = 0; s < spec_array.length; s++) {
-					if (p==-1) {
-						row_class[s] = 1;
-						rows[s] = $('<div>');
-					}
-					row_class[s] = Math.max(row_height(spec_array[s].length,(p == -1) ? true : false), row_class[s]);
-					//Assign row_class on the last iteration
-					if (p == savedProducts.length-1) {
-						if (row_class[s] == 3) row_class[s] = 'triple_height_compare_row';
-						else if (row_class[s] == 2) row_class[s] = 'double_height_compare_row';
-						else row_class[s] = 'compare_row'; // row_class was 1
-						rows[s].addClass(row_class[s]);
-					}
-					rows[s].append('<div class="cell ' + ((s%2 == 0) ? 'whitebg' : 'graybg') + " " + ((p == -1) ? "leftcolumntext spec_column_"+p : "spec_column_"+p) + '">' + spec_array[s] + ((p == -1) ? ":" : "" ) + "</div>");
-					rows[s].appendTo(anchor);
-				}
-			}
-			
-			// Put the thumbnails and such at the bottom of the compare area too (in the hideable matrix)
-			var remove_row = $('#basic_matrix .compare_row:first');
-			anchor.append(
-				remove_row.clone(),
-				remove_row.next().clone(),
-				remove_row.next().next().clone().find('.leftmostcolumntitle').empty().end()
-			);
-		}
 
         $('.saveditem .deleteX').live('click', function() {
              removeFromComparison($(this).attr('data-name'));
@@ -1051,11 +998,13 @@ optemo_module = (function (my){
 
         $(".productimg, .easylink").live("click", function (){
             // This is the show page
-			var href = $(this).attr('href') || $(this).parent().siblings('.productinfo').children('.easylink').attr('href') || $(this).parent().parent().find('.easylink').attr('href'),
+			var href = $(this).attr('href') || $(this).parent().siblings('.productinfo').children('.easylink').attr('href'),
         	ignored_ids = getAllShownProductIds(),
 			currentelementid = $(this).attr('data-id') || href.match(/\d+$/),
         	product_title = $(this).find('img.productimg').attr('title');
         	my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids});
+        	// Using /product/_/ because savedproducts do not have an href (otherwise it would need to be stored in the cookie)
+        	// _ is the brand name and model
 			my.applySilkScreen((href || '/product/_/' + currentelementid) +'?plain=true',null, 560, 580);
         	return false;
         });
@@ -1229,6 +1178,66 @@ optemo_module = (function (my){
 		});
     }
 
+	//Thess should be locally scoped functions, but for jquery 1.4.2 compatibility it is moved outside (specifically for the cookie-loading-to-savebar part)
+	
+	function row_height(length,isLabel)
+	{
+		var h;
+		if (isLabel) {
+			if (length >= 37) h = 3;
+		    else if (length >= 19) h = 2;
+		    else h = 1;
+		}
+		else {
+			if (length >= 57) h = 3;
+            else if (length >= 29) h = 2;
+            else h = 1;
+		}
+		return h;
+	}
+	
+	my.buildComparisonMatrix = function() {
+		var rows = [], row_class=[], savedProducts = $('#opt_savedproducts').children(), anchor = $('#hideable_matrix').empty(), heading;
+		// Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
+		//p == -1 means it's the labels
+		for (var p = -1; p < savedProducts.length; p++) {
+		    var sku = $(savedProducts[(p == -1) ? p+1 : p]).attr('data-sku');
+			// The column numbers are important here for .remove functionality.
+			if (p==-1) {
+				heading = '<div class="compare_row"><div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle">All Specifications</div></div>';
+			}
+		    else {
+				heading += '<div class="outertitle spec_column_'+p+'"><div class="columntitle">&nbsp;</div></div>';
+		    }
+		    if (p + 1 == savedProducts.length) $(heading + "</div>").appendTo(anchor); // Append when it's finished being built up for a time savings
+		    spec_array = parse_bb_json_into_array($('body').data('bestbuy_specs_' + sku), (p == -1) ? true : false);
+			for (var s = 0; s < spec_array.length; s++) {
+				if (p==-1) {
+					row_class[s] = 1;
+					rows[s] = $('<div>');
+				}
+				row_class[s] = Math.max(row_height(spec_array[s].length,(p == -1) ? true : false), row_class[s]);
+				//Assign row_class on the last iteration
+				if (p == savedProducts.length-1) {
+					if (row_class[s] == 3) row_class[s] = 'triple_height_compare_row';
+					else if (row_class[s] == 2) row_class[s] = 'double_height_compare_row';
+					else row_class[s] = 'compare_row'; // row_class was 1
+					rows[s].addClass(row_class[s]);
+				}
+				rows[s].append('<div class="cell ' + ((s%2 == 0) ? 'whitebg' : 'graybg') + " " + ((p == -1) ? "leftcolumntext spec_column_"+p : "spec_column_"+p) + '">' + spec_array[s] + ((p == -1) ? ":" : "" ) + "</div>");
+				rows[s].appendTo(anchor);
+			}
+		}
+		
+		// Put the thumbnails and such at the bottom of the compare area too (in the hideable matrix)
+		var remove_row = $('#basic_matrix .compare_row:first');
+		anchor.append(
+			remove_row.clone(),
+			remove_row.next().clone(),
+			remove_row.next().next().clone().find('.leftmostcolumntitle').empty().end()
+		);
+	};
+
     function ErrorInit() {
         //Link from popup (used for error messages)
         $('#silkscreen').css({'display' : 'none', 'top' : '', 'left' : '', 'width' : ''})
@@ -1263,12 +1272,12 @@ optemo_module = (function (my){
     				    var id_and_sku, imgObj = $(ui.helper);
     					if (imgObj.hasClass('dragHand')) { // This is a drag hand object
     				        realImgObj = imgObj.parent().find('.productimg');
-    				        id_and_sku = optemo_module.getIdAndSkuFromProductimg(realImgObj);
-        					optemo_module.saveProductForComparison(id_and_sku[0], id_and_sku[1], realImgObj.attr('src'), realImgObj.attr('alt'));
+    				        id_and_sku = my.getIdAndSkuFromProductimg(realImgObj);
+        					my.saveProductForComparison(id_and_sku[0], id_and_sku[1], realImgObj.attr('src'), realImgObj.attr('alt'));
     				    }
     				    else { // This is an image object; behave as normal
-    				        id_and_sku = optemo_module.getIdAndSkuFromProductimg(imgObj);
-        					optemo_module.saveProductForComparison(id_and_sku[0], id_and_sku[1], imgObj.attr('src'), imgObj.attr('alt'));
+    				        id_and_sku = my.getIdAndSkuFromProductimg(imgObj);
+        					my.saveProductForComparison(id_and_sku[0], id_and_sku[1], imgObj.attr('src'), imgObj.attr('alt'));
     					}
         				my.loadspecs(id_and_sku[1]);
     				}
@@ -1753,19 +1762,21 @@ if (window.embedding_flag) {
     // The data will come back through the same ajaxhandler function as before, getting pushed there by the
     // remote socket when it's ready.
     optemo_module.ajaxcall = function (myurl, mydata) {
+	    if (myurl) myurl = myurl.replace(/http:\/\/[^\/]+/,'');
         optemo_module.disableInterfaceElements();
     	numactions = parseInt($("#actioncount").html()) + 1;
     	$.history.load(numactions.toString(),myurl,mydata);
 	};
 
 	optemo_module.ajaxsend = function(hash,myurl,mydata,timeoutlength) {
+	    if (myurl) myurl = myurl.replace(/http:\/\/[^\/]+/,'');
         optemo_module.disableInterfaceElements();
         var lis = optemo_module.loading_indicator_state;
         if (lis.main) lis.main_timer = setTimeout("myspinner.begin()", timeoutlength || 1000);
         if (lis.sidebar) lis.sidebar_timer = setTimeout("optemo_module.loadFilterBarSilkScreen()", timeoutlength || 1000);
         lis.socket_error_timer = setTimeout("optemo_module.clearSocketError()", 15000);
         // Hopefully we can just send the arguments as-is. It' would certainly be wise to sanity-check them though.
-        remote.iframecall(hash, myurl, mydata);
+        remote.iframecall(hash, myurl, (mydata == "" ? null : mydata)); // emptiness check put in for AJS vs. jquery differences
     };
     $.history.init(optemo_module.ajaxsend); // re-init with the new ajaxsend module here, after it's been redefined
 
@@ -1775,8 +1786,9 @@ if (window.embedding_flag) {
     	optemo_module.flashError('<div class="bb_poptitle">Error<a class="bb_quickview_close" href="close"><img src="/images/closepopup_white.gif"></a></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
     }
 
-    optemo_module.quickajaxcall = function (element_name, mydata, fn) { // for the show page
-        remote.quickiframecall(element_name, mydata, fn);
+    optemo_module.quickajaxcall = function (element_name, myurl, fn) { // for the show page
+	    if (myurl) myurl = myurl.replace(/http:\/\/[^\/]+/,'');        
+        remote.quickiframecall(element_name, myurl, fn);
     }
 }
 
@@ -1820,6 +1832,6 @@ if(jQueryIsLoaded) {
             optemo_module_activator(window["jQuery"]);
         };
     }
-    script_element.setAttribute("src", 'http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js');
+    script_element.setAttribute("src", 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js');
     document.getElementsByTagName("head")[0].appendChild(script_element);
 }

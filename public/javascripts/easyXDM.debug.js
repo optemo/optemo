@@ -1,7 +1,7 @@
 /**
  * easyXDM
  * http://easyxdm.net/
- * Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+ * Copyright(c) 2009-2011, Øyvind Sean Kinsey, oyvind@kinsey.no.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,15 +22,12 @@
  * THE SOFTWARE.
  */
 (function (window, document, location, setTimeout, decodeURIComponent, encodeURIComponent) {
-	// double inclusion safeguard
-	if ("easyXDM" in window) {
-		return;
-	}/*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
+/*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
 /*global easyXDM, JSON, XMLHttpRequest, window, escape, unescape, ActiveXObject */
 //
 // easyXDM
 // http://easyxdm.net/
-// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+// Copyright(c) 2009-2011, Øyvind Sean Kinsey, oyvind@kinsey.no.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -52,13 +49,17 @@
 //
 
 var global = this;
-var channelId = 0;
+var channelId = Math.floor(Math.random() * 100) * 100; // randomize the initial id in case of multiple closures loaded 
 var emptyFn = Function.prototype;
-var reURI = /^(http.?:\/\/([^\/\s]+))/; // returns groups for origin (1) and domain (2)
+var reURI = /^((http.?:)\/\/([^:\/\s]+)(:\d+)*)/; // returns groups for protocol (2), domain (3) and port (4) 
 var reParent = /[\-\w]+\/\.\.\//; // matches a foo/../ expression 
 var reDoubleSlash = /([^:])\/\//g; // matches // anywhere but in the protocol
+var namespace = ""; // stores namespace under which easyXDM object is stored on the page (empty if object is global)
+var easyXDM = {};
+var _easyXDM = window.easyXDM; // map over global easyXDM in case of overwrite
 var IFRAME_PREFIX = "easyXDM_";
 var HAS_NAME_PROPERTY_BUG;
+var useHash = false; // whether to use the hash over the query
 var _trace = emptyFn;
 
 
@@ -114,24 +115,25 @@ else {
 /*
  * Cross Browser implementation of DOMContentLoaded.
  */
-var isReady = false, domReadyQueue = [];
+var domIsReady = false, domReadyQueue = [], readyState;
 if ("readyState" in document) {
-    isReady = document.readyState == "complete";
+    // If browser is WebKit-powered, check for both 'loaded' (legacy browsers) and
+    // 'interactive' (HTML5 specs, recent WebKit builds) states.
+    // https://bugs.webkit.org/show_bug.cgi?id=45119
+    readyState = document.readyState;
+    domIsReady = readyState == "complete" || (~ navigator.userAgent.indexOf('AppleWebKit/') && (readyState == "loaded" || readyState == "interactive"));
 }
 else {
     // If readyState is not supported in the browser, then in order to be able to fire whenReady functions apropriately
     // when added dynamically _after_ DOM load, we have to deduce wether the DOM is ready or not.
-    if (document.body) {
-        // document.body is not available prior to the body being built
-        // This does mean that we might fire it prematurely, but we only need the body element to be available for appending.
-        isReady = true;
-    }
+    // We only need a body to add elements to, so the existence of document.body is enough for us.
+    domIsReady = !!document.body;
 }
 
 function dom_onReady(){
     dom_onReady = emptyFn;
     _trace("firing dom_onReady");
-    isReady = true;
+    domIsReady = true;
     for (var i = 0; i < domReadyQueue.length; i++) {
         domReadyQueue[i]();
     }
@@ -139,7 +141,7 @@ function dom_onReady(){
 }
 
 
-if (!isReady) {
+if (!domIsReady) {
     if (isHostMethod(window, "addEventListener")) {
         on(document, "DOMContentLoaded", dom_onReady);
     }
@@ -151,7 +153,7 @@ if (!isReady) {
         });
         if (document.documentElement.doScroll && window === top) {
             (function doScrollCheck(){
-                if (isReady) {
+                if (domIsReady) {
                     return;
                 }
                 // http://javascript.nwbox.com/IEContentLoaded/
@@ -177,7 +179,7 @@ if (!isReady) {
  * @param {Object} scope An optional scope for the function to be called with.
  */
 function whenReady(fn, scope){
-    if (isReady) {
+    if (domIsReady) {
         fn.call(scope);
         return;
     }
@@ -186,20 +188,64 @@ function whenReady(fn, scope){
     });
 }
 
+/**
+ * Returns an instance of easyXDM from the parent window with
+ * respect to the namespace.
+ *
+ * @return An instance of easyXDM (in the parent window)
+ */
+function getParentObject(){
+    var obj = parent;
+    if (namespace !== "") {
+        for (var i = 0, ii = namespace.split("."); i < ii.length; i++) {
+            if (!obj) {
+                throw new Error(ii.slice(0, i + 1).join('.') + ' is not an object');
+            }
+            obj = obj[ii[i]];
+        }
+    }
+    if (!obj || !obj.easyXDM) {
+        throw new Error('Could not find easyXDM in parent.' + namespace);
+    }
+    return obj.easyXDM;
+}
+
+/**
+ * Removes easyXDM variable from the global scope. It also returns control
+ * of the easyXDM variable to whatever code used it before.
+ *
+ * @param {String} ns A string representation of an object that will hold
+ *                    an instance of easyXDM.
+ * @return An instance of easyXDM
+ */
+function noConflict(ns){
+    if (typeof ns != "string" || !ns) {
+        throw new Error('namespace must be a non-empty string');
+    }
+    _trace("Settings namespace to '" + ns + "'");
+    
+    window.easyXDM = _easyXDM;
+    namespace = ns;
+    if (namespace) {
+        IFRAME_PREFIX = "easyXDM_" + namespace.replace(".", "_") + "_";
+    }
+    return easyXDM;
+}
+
 /*
  * Methods for working with URLs
  */
 /**
  * Get the domain name from a url.
  * @param {String} url The url to extract the domain from.
- * @returns The domain part of the url.
+ * @return The domain part of the url.
  * @type {String}
  */
 function getDomainName(url){
     if (!url) {
         throw new Error("url is undefined or empty");
     }
-    return url.match(reURI)[2];
+    return url.match(reURI)[3];
 }
 
 /**
@@ -211,7 +257,12 @@ function getLocation(url){
     if (!url) {
         throw new Error("url is undefined or empty");
     }
-    return url.match(reURI)[1];
+    var m = url.match(reURI);
+    var proto = m[2], domain = m[3], port = m[4] || "";
+    if ((proto == "http:" && port == ":80") || (proto == "https:" && port == ":443")) {
+        port = "";
+    }
+    return proto + "//" + domain + port;
 }
 
 /**
@@ -270,17 +321,20 @@ function appendQueryParameters(url, parameters){
             q.push(key + "=" + encodeURIComponent(parameters[key]));
         }
     }
-    return url + ((url.indexOf("?") === -1) ? "?" : "&") + q.join("&") + hash;
+    return url + (useHash ? "#" : (url.indexOf("?") == -1 ? "?" : "&")) + q.join("&") + hash;
 }
 
-var query = (function(){
-    var query = {}, pair, search = location.search.substring(1).split("&"), i = search.length;
+
+// build the query object either from location.query, if it contains the xdm_e argument, or from location.hash
+var query = (function(input){
+    input = input.substring(1).split("&");
+    var data = {}, pair, i = input.length;
     while (i--) {
-        pair = search[i].split("=");
-        query[pair[0]] = decodeURIComponent(pair[1]);
+        pair = input[i].split("=");
+        data[pair[0]] = decodeURIComponent(pair[1]);
     }
-    return query;
-}());
+    return data;
+}(/xdm_e=/.test(location.search) ? location.search : location.hash));
 
 /*
  * Helper methods
@@ -365,7 +419,7 @@ function apply(destination, source, noOverwrite){
 // This tests for the bug in IE where setting the [name] property using javascript causes the value to be redirected into [submitName].
 function testForNamePropertyBug(){
     var el = document.createElement("iframe");
-    el.name = "easyXDM_TEST";
+    el.name = IFRAME_PREFIX + "TEST";
     apply(el.style, {
         position: "absolute",
         left: "-2000px",
@@ -420,16 +474,26 @@ function createFrame(config){
     if (!config.container) {
         // This needs to be hidden like this, simply setting display:none and the like will cause failures in some browsers.
         frame.style.position = "absolute";
-        frame.style.left = "-2000px";
-        frame.style.top = "0px";
+        frame.style.top = "-2000px";
         config.container = document.body;
     }
     
-    frame.border = frame.frameBorder = 0;
-    config.container.insertBefore(frame, config.container.firstChild);
+    // HACK for some reason, IE needs the source set
+    // after the frame has been appended into the DOM
+    // so remove the src, and set it afterwards
+    var src = config.props.src;
+    delete config.props.src;
     
     // transfer properties to the frame
     apply(frame, config.props);
+    
+    frame.border = frame.frameBorder = 0;
+    config.container.appendChild(frame);
+    
+    // HACK see above
+    frame.src = src;
+    config.props.src = src;
+    
     return frame;
 }
 
@@ -468,6 +532,7 @@ function checkAcl(acl, domain){
 function prepareTransportStack(config){
     var protocol = config.protocol, stackEls;
     config.isHost = config.isHost || undef(query.xdm_p);
+    useHash = config.hash || false;
     _trace("preparing transport stack");
     
     if (!config.props) {
@@ -683,15 +748,15 @@ function removeFromStack(element){
 /** 
  * @class easyXDM
  * A javascript library providing cross-browser, cross-domain messaging/RPC.
- * @version 2.4.9.102
+ * @version 2.4.11.104
  * @singleton
  */
-global.easyXDM = {
+apply(easyXDM, {
     /**
      * The version of the library
      * @type {string}
      */
-    version: "2.4.9.102",
+    version: "2.4.11.104",
     /**
      * This is a map containing all the query parameters passed to the document.
      * All the values has been decoded using decodeURIComponent.
@@ -721,14 +786,31 @@ global.easyXDM = {
      * @param {function} fn The function to add
      * @param {object} scope An optional scope for the function to be called with.
      */
-    whenReady: whenReady
-};
+    whenReady: whenReady,
+    /**
+     * Removes easyXDM variable from the global scope. It also returns control
+     * of the easyXDM variable to whatever code used it before.
+     *
+     * @param {String} ns A string representation of an object that will hold
+     *                    an instance of easyXDM.
+     * @return An instance of easyXDM
+     */
+    noConflict: noConflict
+});
+
+// Expose helper functions so we can test them
+apply(easyXDM, {
+    checkAcl: checkAcl,
+    getDomainName: getDomainName,
+    getLocation: getLocation,
+    appendQueryParameters: appendQueryParameters
+});
 /*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
-/*global console, _FirebugCommandLine,  easyXDM, window, escape, unescape, isHostObject, undef, _trace, isReady, emptyFn */
+/*global console, _FirebugCommandLine,  easyXDM, window, escape, unescape, isHostObject, undef, _trace, domIsReady, emptyFn, namespace */
 //
 // easyXDM
 // http://easyxdm.net/
-// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+// Copyright(c) 2009-2011, Øyvind Sean Kinsey, oyvind@kinsey.no.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -759,6 +841,20 @@ var debug = {
         this._deferred.length = 0;
         this.trace("... end of deferred messages ...");
     },
+    getTime: function(){
+        var d = new Date(), h = d.getHours() + "", m = d.getMinutes() + "", s = d.getSeconds() + "", ms = d.getMilliseconds() + "", zeros = "000";
+        if (h.length == 1) {
+            h = "0" + h;
+        }
+        if (m.length == 1) {
+            m = "0" + m;
+        }
+        if (s.length == 1) {
+            s = "0" + s;
+        }
+        ms = zeros.substring(ms.length) + ms;
+        return h + ":" + m + ":" + s + "." + ms;
+    },
     /**
      * Logs the message to console.log if available
      * @param {String} msg The message to log
@@ -779,7 +875,7 @@ var debug = {
              * @param {String} msg
              */
             this.log = function(msg){
-                console.log(location.host + "-" + new Date().valueOf() + ":" + msg);
+                console.log(location.host + (namespace ? ":" + namespace : "") + " - " + this.getTime() + ": " + msg);
             };
         }
         this.log(msg);
@@ -791,7 +887,7 @@ var debug = {
      */
     trace: function(msg){
         // Uses memoizing to cache the implementation
-        if (!isReady) {
+        if (!domIsReady) {
             if (this._deferred.length === 0) {
                 easyXDM.whenReady(debug.flush, debug);
             }
@@ -809,7 +905,7 @@ var debug = {
                  */
                 this.trace = function(msg){
                     try {
-                        el.appendChild(document.createElement("div")).appendChild(document.createTextNode(location.host + "-" + new Date().valueOf() + ":" + msg));
+                        el.appendChild(document.createElement("div")).appendChild(document.createTextNode(location.host + (namespace ? ":" + namespace : "") + " - " + this.getTime() + ":" + msg));
                         el.scrollTop = el.scrollHeight;
                     } 
                     catch (e) {
@@ -824,7 +920,7 @@ var debug = {
                  * @param {String} msg
                  */
                 this.trace = function(msg){
-                    console.info(location.host + "-" + new Date().valueOf() + ":" + msg);
+                    console.info(location.host + (namespace ? ":" + namespace : "") + " - " + this.getTime() + ":" + msg);
                 };
             }
             else {
@@ -849,7 +945,7 @@ var debug = {
                     }
                     this.trace = function(msg){
                         try {
-                            el.appendChild(doc.createElement("div")).appendChild(doc.createTextNode(location.host + "-" + new Date().valueOf() + ":" + msg));
+                            el.appendChild(doc.createElement("div")).appendChild(doc.createTextNode(location.host + (namespace ? ":" + namespace : "") + " - " + this.getTime() + ":" + msg));
                             el.scrollTop = el.scrollHeight;
                         } 
                         catch (e) {
@@ -886,7 +982,7 @@ _trace = debug.getTracer("{Private}");
 //
 // easyXDM
 // http://easyxdm.net/
-// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+// Copyright(c) 2009-2011, Øyvind Sean Kinsey, oyvind@kinsey.no.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -949,7 +1045,7 @@ easyXDM.DomHelper = {
 //
 // easyXDM
 // http://easyxdm.net/
-// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+// Copyright(c) 2009-2011, Øyvind Sean Kinsey, oyvind@kinsey.no.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -1019,7 +1115,7 @@ easyXDM.DomHelper = {
 //
 // easyXDM
 // http://easyxdm.net/
-// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+// Copyright(c) 2009-2011, Øyvind Sean Kinsey, oyvind@kinsey.no.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -1134,7 +1230,7 @@ easyXDM.Socket = function(config){
 //
 // easyXDM
 // http://easyxdm.net/
-// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+// Copyright(c) 2009-2011, Øyvind Sean Kinsey, oyvind@kinsey.no.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -1299,11 +1395,11 @@ easyXDM.Rpc = function(config, jsonRpcConfig){
     stack.init();
 };
 /*jslint evil: true, browser: true, immed: true, passfail: true, undef: true, newcap: true*/
-/*global easyXDM, window, escape, unescape, getLocation, appendQueryParameters, createFrame, debug, un, on, apply, whenReady, IFRAME_PREFIX*/
+/*global easyXDM, window, escape, unescape, getLocation, appendQueryParameters, createFrame, debug, un, on, apply, whenReady, getParentObject, IFRAME_PREFIX*/
 //
 // easyXDM
 // http://easyxdm.net/
-// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+// Copyright(c) 2009-2011, Øyvind Sean Kinsey, oyvind@kinsey.no.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -1378,7 +1474,7 @@ easyXDM.stack.SameOriginTransport = function(config){
                 });
             }
             else {
-                send = parent.easyXDM.Fn.get(config.channel, true)(function(msg){
+                send = getParentObject().Fn.get(config.channel, true)(function(msg){
                     pub.up.incoming(msg, targetOrigin);
                 });
                 setTimeout(function(){
@@ -1396,7 +1492,7 @@ easyXDM.stack.SameOriginTransport = function(config){
 //
 // easyXDM
 // http://easyxdm.net/
-// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+// Copyright(c) 2009-2011, Øyvind Sean Kinsey, oyvind@kinsey.no.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -1443,7 +1539,7 @@ easyXDM.stack.PostMessageTransport = function(config){
     function _getOrigin(event){
         if (event.origin) {
             // This is the HTML5 property
-            return event.origin;
+            return getLocation(event.origin);
         }
         if (event.uri) {
             // From earlier implementations 
@@ -1508,7 +1604,7 @@ easyXDM.stack.PostMessageTransport = function(config){
                 // set up the iframe
                 apply(config.props, {
                     src: appendQueryParameters(config.remote, {
-                        xdm_e: location.protocol + "//" + location.host,
+                        xdm_e: getLocation(location.href),
                         xdm_c: config.channel,
                         xdm_p: 1 // 1 = PostMessage
                     }),
@@ -1537,7 +1633,7 @@ easyXDM.stack.PostMessageTransport = function(config){
 //
 // easyXDM
 // http://easyxdm.net/
-// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+// Copyright(c) 2009-2011, Øyvind Sean Kinsey, oyvind@kinsey.no.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -1594,7 +1690,7 @@ easyXDM.stack.FrameElementTransport = function(config){
                 // set up the iframe
                 apply(config.props, {
                     src: appendQueryParameters(config.remote, {
-                        xdm_e: location.protocol + "//" + location.host + location.pathname + location.search,
+                        xdm_e: getLocation(location.href),
                         xdm_c: config.channel,
                         xdm_p: 5 // 5 = FrameElementTransport
                     }),
@@ -1614,19 +1710,14 @@ easyXDM.stack.FrameElementTransport = function(config){
                 };
             }
             else {
-                if (document.referrer && document.referrer != query.xdm_e) {
+                // This is to mitigate origin-spoofing
+                if (document.referrer && getLocation(document.referrer) != query.xdm_e) {
                     window.parent.location = query.xdm_e;
                 }
-                else {
-                    if (document.referrer != query.xdm_e) {
-                        // This is to mitigate origin-spoofing
-                        window.parent.location = query.xdm_e;
-                    }
-                    send = window.frameElement.fn(function(msg){
-                        pub.up.incoming(msg, targetOrigin);
-                    });
-                    pub.up.callback(true);
-                }
+                send = window.frameElement.fn(function(msg){
+                    pub.up.incoming(msg, targetOrigin);
+                });
+                pub.up.callback(true);
             }
         },
         init: function(){
@@ -1639,7 +1730,7 @@ easyXDM.stack.FrameElementTransport = function(config){
 //
 // easyXDM
 // http://easyxdm.net/
-// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+// Copyright(c) 2009-2011, Øyvind Sean Kinsey, oyvind@kinsey.no.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -1750,7 +1841,7 @@ easyXDM.stack.NixTransport = function(config){
                 // set up the iframe
                 apply(config.props, {
                     src: appendQueryParameters(config.remote, {
-                        xdm_e: location.protocol + "//" + location.host + location.pathname + location.search,
+                        xdm_e: getLocation(location.href),
                         xdm_c: config.channel,
                         xdm_s: config.secret,
                         xdm_p: 3 // 3 = NixTransport
@@ -1761,40 +1852,35 @@ easyXDM.stack.NixTransport = function(config){
                 frame.contentWindow.opener = proxy;
             }
             else {
-                if (document.referrer && document.referrer != query.xdm_e) {
+                // This is to mitigate origin-spoofing
+                if (document.referrer && getLocation(document.referrer) != query.xdm_e) {
                     window.parent.location = query.xdm_e;
                 }
-                else {
-                    if (document.referrer != query.xdm_e) {
-                        // This is to mitigate origin-spoofing
-                        window.parent.location = query.xdm_e;
-                    }
-                    try {
-                        // by storing this in a variable we negate replacement attacks
-                        proxy = window.opener;
-                    } 
-                    catch (e2) {
-                        throw new Error("Cannot access window.opener");
-                    }
-                    proxy.SetChild({
-                        send: function(msg){
-                            // the timeout is necessary to have execution continue in the correct context
-                            global.setTimeout(function(){
-                                trace("received message");
-                                pub.up.incoming(msg, targetOrigin);
-                            }, 0);
-                        }
-                    });
-                    
-                    send = function(msg){
-                        trace("sending");
-                        proxy.SendToParent(msg, config.secret);
-                    };
-                    setTimeout(function(){
-                        trace("firing onReady");
-                        pub.up.callback(true);
-                    }, 0);
+                try {
+                    // by storing this in a variable we negate replacement attacks
+                    proxy = window.opener;
+                } 
+                catch (e2) {
+                    throw new Error("Cannot access window.opener");
                 }
+                proxy.SetChild({
+                    send: function(msg){
+                        // the timeout is necessary to have execution continue in the correct context
+                        global.setTimeout(function(){
+                            trace("received message");
+                            pub.up.incoming(msg, targetOrigin);
+                        }, 0);
+                    }
+                });
+                
+                send = function(msg){
+                    trace("sending");
+                    proxy.SendToParent(msg, config.secret);
+                };
+                setTimeout(function(){
+                    trace("firing onReady");
+                    pub.up.callback(true);
+                }, 0);
             }
         },
         init: function(){
@@ -1807,7 +1893,7 @@ easyXDM.stack.NixTransport = function(config){
 //
 // easyXDM
 // http://easyxdm.net/
-// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+// Copyright(c) 2009-2011, Øyvind Sean Kinsey, oyvind@kinsey.no.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -1938,10 +2024,11 @@ easyXDM.stack.NameTransport = function(config){
                 },
                 onLoad: function onLoad(){
                     // Remove the handler
-                    un(callerWindow, "load", onLoad);
+                    var w = callerWindow || this;
+                    un(w, "load", onLoad);
                     easyXDM.Fn.set(config.channel + "_load", _onLoad);
                     (function test(){
-                        if (typeof callerWindow.contentWindow.sendMessage == "function") {
+                        if (typeof w.contentWindow.sendMessage == "function") {
                             _onReady();
                         }
                         else {
@@ -1961,7 +2048,7 @@ easyXDM.stack.NameTransport = function(config){
 //
 // easyXDM
 // http://easyxdm.net/
-// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+// Copyright(c) 2009-2011, Øyvind Sean Kinsey, oyvind@kinsey.no.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -2124,7 +2211,7 @@ easyXDM.stack.HashTransport = function(config){
 //
 // easyXDM
 // http://easyxdm.net/
-// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+// Copyright(c) 2009-2011, Øyvind Sean Kinsey, oyvind@kinsey.no.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -2194,7 +2281,7 @@ easyXDM.stack.ReliableBehavior = function(config){
 //
 // easyXDM
 // http://easyxdm.net/
-// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+// Copyright(c) 2009-2011, Øyvind Sean Kinsey, oyvind@kinsey.no.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -2344,7 +2431,7 @@ easyXDM.stack.QueueBehavior = function(config){
 //
 // easyXDM
 // http://easyxdm.net/
-// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+// Copyright(c) 2009-2011, Øyvind Sean Kinsey, oyvind@kinsey.no.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -2426,7 +2513,7 @@ easyXDM.stack.VerifyBehavior = function(config){
 //
 // easyXDM
 // http://easyxdm.net/
-// Copyright(c) 2009, Øyvind Sean Kinsey, oyvind@kinsey.no.
+// Copyright(c) 2009-2011, Øyvind Sean Kinsey, oyvind@kinsey.no.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -2644,4 +2731,5 @@ easyXDM.stack.RpcBehavior = function(proxy, config){
         }
     });
 };
+global.easyXDM = easyXDM;
 })(window, document, location, window.setTimeout, decodeURIComponent, encodeURIComponent);
