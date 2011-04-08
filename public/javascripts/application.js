@@ -1181,19 +1181,15 @@ optemo_module = (function (my){
 	}
 	
 	my.buildComparisonMatrix = function() {
-		var rows = [], row_class=[], savedProducts = $('#opt_savedproducts').children(), anchor = $('#hideable_matrix').empty(), heading;
+		var rows = [], row_class=[], savedProducts = $('#opt_savedproducts').children(), anchor = $('#hideable_matrix');
 		// Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
 		//p == -1 means it's the labels
 		for (var p = -1; p < savedProducts.length; p++) {
 		    var sku = $(savedProducts[(p == -1) ? p+1 : p]).attr('data-sku');
 			// The column numbers are important here for .remove functionality.
-			if (p==-1) {
-				heading = '<div class="compare_row"><div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle">All Specifications</div></div>';
-			}
-		    else {
-				heading += '<div class="outertitle spec_column_'+p+'"><div class="columntitle">&nbsp;</div></div>';
+		    if (p >= 0) {
+				anchor.append('<div class="outertitle spec_column_'+p+'"><div class="columntitle">&nbsp;</div></div>');
 		    }
-		    if (p + 1 == savedProducts.length) $(heading + "</div>").appendTo(anchor); // Append when it's finished being built up for a time savings
 		    spec_array = parse_bb_json_into_array($('body').data('bestbuy_specs_' + sku), (p == -1) ? true : false);
 			for (var s = 0; s < spec_array.length; s++) {
 				if (p==-1) {
