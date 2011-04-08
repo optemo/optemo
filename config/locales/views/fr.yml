@@ -42,7 +42,7 @@ fr:
             sp:             "Prix de vente"
             regularprice:   
             saving:         "Vous économisez"
-            saleends:       "Conclusion de la vente"
+            saleends:       "Fin de solde le:"
             model:          "Modèle"
             webcode:        "Code Web"
             moredetails:    "Plus de détails"
@@ -51,14 +51,13 @@ fr:
             productinfo:    "Détails"
             specifications: "Spécifications"
             reviews:        "Évaluations des clients"
-            freeshipping:   "Expédition gratuite pour les commandes de plus de %{amount}."
+            freeshipping:   "Obtenez la livraison gratuite sur les commandes de plus de %{amount}."
             instorepickup:  "Commandez vos articles en ligne et ramassez-les en magasin."
-            rewardprog:     "Abonnez-vous au programme de récompenses gratuitement."     
+            rewardprog:     "Adhésion gratuite pour profiter des récompenses."     
             othercolors:    "Autres couleurs: "
             loading:        "Chargement..."
             ourprice:       "Notre prix:"
             saleprice:      "Prix de vente:"
-            saleends:       "Conclusion de la vente"
             lowestprice:    "Garantie du plus bas prix"
         
     features:
