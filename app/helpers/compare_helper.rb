@@ -236,8 +236,8 @@ module CompareHelper
   	res
 	end
 	
-	def fr?
-     I18n.locale == 'fr'.intern
+	def fr
+     "_fr" if I18n.locale == :fr
    end
    
 	def adjustingfilters
