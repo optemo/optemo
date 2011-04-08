@@ -275,10 +275,10 @@ optemo_module_activator = (function (my){
     	dsoctop=document.all? iebody.scrollTop : pageYOffset;
 		var outsidecontainer = $('#outsidecontainer');
 		if (outsidecontainer.css('display') != 'block') 
-			$('#info').html("").css({'height' : "560px", 'width' : (width-42)+'px'});
+			$('#info').html("").css({'height' : "560px", 'width' : (width-38)+'px'});
     	outsidecontainer.css({'left' : Math.max(((document.body.clientWidth-(width||560))/2),0)+'px',
     								'top' : (dsoctop+5)+'px',
-    								'width' : width||560+'px',
+    								'width' : (width||560)+'px',
     								'display' : 'inline' });
         /* This is used to get the document height for doing layout properly. */
         /*http://james.padolsey.com/javascript/get-document-height-cross-browser/*/
@@ -957,13 +957,13 @@ optemo_module_activator = (function (my){
             // 2, 3, 4 ==>  513, 704, 895  (191 each)
             switch(number_of_saved_products) {
                 case 3:
-                    width = 751;
+                    width = 755;
                     break;
                 case 4:
-                    width = 942;
+                    width = 946;
                     break;
                 default:
-                    width = 560;
+                    width = 564;
             }
     		my.applySilkScreen('/comparison/' + productIDs, null, width, 580,function(){
 				// Jquery 1.5 would finish all the requests before building the comparison matrix once

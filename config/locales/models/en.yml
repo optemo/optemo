@@ -3,4 +3,4 @@ en:
         # All language-dependent definitions in models  
         ErrorPart1:         "Sorry! An error has occurred on the server.</p><p>You can reset the tool and see if the problem is resolved."
         sortby:             "Group by:"
-        relevance:          "Our top Picks"
+        relevance:          "&nbsp;&nbsp;Our top Picks"

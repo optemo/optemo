@@ -55,7 +55,9 @@ body {
  margin: 0;
  position: relative; /*IE6 Resize bug*/
 }
-
+#optemo_embedder {
+	font-size: 1.3em;
+}
 #mycenter { 
 	margin-left: auto; 
 	margin-right: auto; 
@@ -71,7 +73,7 @@ body {
 h1 {
 	font-size: 2.1em;
 }
-h2 {
+.leftbar h2 {
 	margin: 0px 0px 3px;
 	font-size: 0.9em;
 	padding: 6px;
