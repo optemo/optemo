@@ -235,10 +235,6 @@ module CompareHelper
   	end
   	res
 	end
-	
-	def fr?
-     I18n.locale == 'fr'.intern
-   end
    
 	def adjustingfilters
 	  #@s.search.userdataconts
