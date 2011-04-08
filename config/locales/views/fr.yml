@@ -27,10 +27,13 @@ fr:
             reset:          "RÉINITIALISER"
             resetdesc:      "Supprimer tous les filtres" 
             compare:        "COMPARER"
-            newTechnology:  
-            videoResolution: 
+            newTechnology:  "Nouvelle technologie"
+            videoResolution:    "Résolution vidéo"
             status:         "État"
-            closewindow:    
+            closewindow:    "Fermer fenêtre"
+            yes:            "Yes"
+            none:           "None"
+            unknown:        "Unknown"
 
         show:
             title:          "Renseignements sur le produit"
@@ -39,44 +42,47 @@ fr:
             sp:             "Prix de vente"
             regularprice:   
             saving:         "Vous économisez"
-            saleends:       "Conclusion de la vente"
+            saleends:       "Fin de solde le:"
             model:          "Modèle"
             webcode:        "Code Web"
             moredetails:    "Plus de détails"
             ratings:        "Notes"
             noimage:        "Image non disponible"
-            productinfo:    "Renseignements sur le produit"
-            specifications: "Caractéristiques"
-            reviews:        "Évaluations de la clientèle"
-            freeshipping:   "Expédition gratuite pour les commandes de plus de %{amount}."
+            productinfo:    "Détails"
+            specifications: "Spécifications"
+            reviews:        "Évaluations des clients"
+            freeshipping:   "Obtenez la livraison gratuite sur les commandes de plus de %{amount}."
             instorepickup:  "Commandez vos articles en ligne et ramassez-les en magasin."
-            rewardprog:     "Abonnez-vous au programme de récompenses gratuitement."     
+            rewardprog:     "Adhésion gratuite pour profiter des récompenses."     
             othercolors:    "Autres couleurs: "
             loading:        "Chargement..."
             ourprice:       "Notre prix:"
             saleprice:      "Prix de vente:"
-            saleends:       "Conclusion de la vente"
-            lowestprice:
+            lowestprice:    "Garantie du plus bas prix"
         
     features:
-        maxresolution:      "%{num} Mpx"
-        screensize:         "ACL %{num} po "
-        opticalzoom:        "Zoom %{num} X"
+        maxresolution:      "%{num}Mpx"
+        screensize:         "ACL %{num}po"
+        opticalzoom:        "Zoom %{num}X"
     
     compare:
         index:
             title:          "Résultats de la comparaison"
             tabletitle:     "Vous avez choisi de comparer ces produits"
             error:          "Vous ne pouvez sauvegarder que 4 produits à la fois"    
-            proddetails:    "Renseignements sur le produit"
+            proddetails:    "Renseignements"
             remove:         "Retirer"
+            morespecs:      "Plus de fonctions"
+            lessspecs:      "Moins de fonctions"
+            yesoption:      "Qui"
+            nooption:       "Non"
             
     survey:
         decision:       "Would you like to take our survey?"
         title:          "Survey Questions"
         decisiontext:   "Thank you for visiting the Best Buy Discovery Browser. You‚Äôve been selected to take part in our brief survey to let us know how we‚Äôre doing and where we can improve to serve you better in the future. Please take a moment to share your opinions. Your responses are anonymous."
-        yesoption:      "Yes"
-        nooption:       "No"
+        yesoption:      "Qui"
+        nooption:       "Non"
         submit:         "Submit"
         error_ansone:   "Please answer at least one question"
         thanks:         "Thank you for your feedback."

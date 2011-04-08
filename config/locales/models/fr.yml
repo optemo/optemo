@@ -1,6 +1,6 @@
 fr:
     products:
-        ErrorPart1:     "Désolé! Une erreur est survenue sur le serveur.</p><p>Vous pouvez réinitialiser loutil et voir si le problème est résolu."
+        ErrorPart1:     "Désolé! Une erreur est survenue sur le serveur. Vous pouvez réinitialiser loutil et voir si le problème est résolu."
         sortby:         "Grouper par :"
         relevance:      "Nos préférés"
         

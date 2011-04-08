@@ -18,6 +18,6 @@
 </div>
 <% else #Binary -- might need to add another elsif clause for text specs later %> 
 <div class="cell <%= gray ? "graybg" : "whitebg" %><%=' spec_column_' + column_number.to_s %>" <%= 'style="font-weight:bold;"' if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>>
-	<%= spec ? "Yes" : "No" %>
+	<%= spec ? t('compare.index.yesoption') : t('compare.index.nooption')  %>
 </div>
 <% end %>

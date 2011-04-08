@@ -65,16 +65,16 @@
 
 <div class="spacer togglespecs"><%= link_to '#', :class => 'toggle_specs' do %>
 	<div class="moretext">
-	More Specs&nbsp;
+	<%=t('compare.index.morespecs')%>&nbsp;
 	<%= image_tag "downarrow.png" %>
 	</div>
 	<div class="lesstext" style="display:none;">
-	Less Specs&nbsp;
+	<%=t('compare.index.lessspecs')%>&nbsp;
 	<%= image_tag "downarrow.png" %>
 	</div>
 <% end %>
 </div>
 <div class="comparisonmatrix" id="hideable_matrix" style="width: <%= box_width %>px">
-	Loading...
+	<%=t('compare.show.loading')%>
 </div>
 <div class="spacer">

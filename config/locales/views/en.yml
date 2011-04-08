@@ -31,6 +31,9 @@ en:
             videoResolution: "Video Resolution"
             status:         "Status"
             closewindow:    "Close Window"
+            yes:            "Yes"
+            none:           "None"
+            unknown:        "Unknown"
 
         show:
             title:          "Product Details"
@@ -60,7 +63,7 @@ en:
         
     features:
         maxresolution:      "%{num}MP"
-        screensize:         "%{num} in. LCD"
+        screensize:         "%{num}in. LCD"
         opticalzoom:        "%{num}X zoom"
     
     compare:
@@ -70,6 +73,10 @@ en:
             error:          "You can save only up to 4 products at a time"  
             proddetails:    "Product Details"
             remove:         "Remove"
+            morespecs:      "More Specs"
+            lessspecs:      "Less Specs"
+            yesoption:            "Yes"
+            nooption:             "No"
     survey:
         decision:       "Would you like to take our survey?"
         title:          "Survey Questions"
