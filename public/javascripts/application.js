@@ -75,8 +75,8 @@ var myspinner;
 var optemo_module_activator;
 
 // jquery noconflict taken out for jquery 1.4.2 Best Buy rollout 04-2011
-// optemo_module_activator = (function($) { // See bottom, this is for jquery noconflict
-optemo_module_activator = (function (my){
+optemo_module_activator = (function() { // See bottom, this is for jquery noconflict
+optemo_module = (function (my){
     // Language support - disabled for now
     // var language;
     // The following variables are pulled from optemo.html.erb
@@ -1398,9 +1398,7 @@ optemo_module_activator = (function (my){
     		return -1;
     	} else {
     		var parts = data.split('[BRK]');
-    		if (console) console.log($('#ajaxfilter').html());
     		$('#ajaxfilter').html(parts[1]);
-    		if (console && $('#ajaxfilter')) console.log($('#ajaxfilter').html());
     		$('#main').html(parts[0]);
     		$('#myfilter_search').attr('value',parts[2]);
     		myspinner.end();
@@ -1573,7 +1571,7 @@ optemo_module_activator = (function (my){
     }
 
     return my;
-});
+})(optemo_module || {});
 
 
 //--------------------------------------//
@@ -1786,6 +1784,7 @@ if ($('#opt_discovery').length) {
 		optemo_module.ajaxsend(null,'/?ajax=true',null);
 	}
 }
+
 });
 
 // Load jQuery if it's not already loaded.
@@ -1801,7 +1800,7 @@ catch(err) {
 
 if(jQueryIsLoaded) {
     // Used to pass in jQuery object to optemo_module_activator
-    optemo_module = optemo_module_activator(optemo_module || {});
+    optemo_module_activator();
 } else {
     var script_element = document.createElement("script");
     script_element.setAttribute("type", "text/javascript");
@@ -1810,12 +1809,12 @@ if(jQueryIsLoaded) {
             if (script_element.readyState == "loaded" ||
                     script_element.readyState == "complete"){
                 script_element.onreadystatechange = null;
-                optemo_module = optemo_module_activator(optemo_module || {}); // Using square bracket notation because the jquery object won't be initialized until later
+                optemo_module_activator(); // Using square bracket notation because the jquery object won't be initialized until later
             }
         };
     } else {  //Others
         script_element.onload = function(){
-            optemo_module = optemo_module_activator(optemo_module || {});
+            optemo_module_activator();
         };
     }
     script_element.setAttribute("src", 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js');
