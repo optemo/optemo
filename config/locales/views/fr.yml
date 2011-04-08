@@ -56,7 +56,7 @@ fr:
             ourprice:       "Notre prix:"
             saleprice:      "Prix de vente:"
             saleends:       "Conclusion de la vente"
-            lowestprice:
+            lowestprice:    "Garantie du plus bas prix"
         
     features:
         maxresolution:      "%{num} Mpx"
@@ -77,8 +77,8 @@ fr:
         decision:       "Would you like to take our survey?"
         title:          "Survey Questions"
         decisiontext:   "Thank you for visiting the Best Buy Discovery Browser. You‚Äôve been selected to take part in our brief survey to let us know how we‚Äôre doing and where we can improve to serve you better in the future. Please take a moment to share your opinions. Your responses are anonymous."
-        yesoption:      "Yes"
-        nooption:       "No"
+        yesoption:      "Qui"
+        nooption:       "Non"
         submit:         "Submit"
         error_ansone:   "Please answer at least one question"
         thanks:         "Thank you for your feedback."
