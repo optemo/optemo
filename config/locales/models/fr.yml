@@ -1,6 +1,6 @@
 fr:
     products:
         ErrorPart1:     "Désolé! Une erreur est survenue sur le serveur. Vous pouvez réinitialiser loutil et voir si le problème est résolu."
-        sortby:         "Grouper par :"
+        sortby:         "Grouper par: "
         relevance:      "Nos préférés"
         
