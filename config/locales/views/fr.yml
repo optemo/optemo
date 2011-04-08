@@ -27,10 +27,13 @@ fr:
             reset:          "RÉINITIALISER"
             resetdesc:      "Supprimer tous les filtres" 
             compare:        "COMPARER"
-            newTechnology:  
-            videoResolution: 
+            newTechnology:  "Nouvelle technologie"
+            videoResolution:    "Résolution vidéo"
             status:         "État"
-            closewindow:    
+            closewindow:    "Fermer fenêtre"
+            yes:            "Yes"
+            none:           "None"
+            unknown:        "Unknown"
 
         show:
             title:          "Renseignements sur le produit"
@@ -45,9 +48,9 @@ fr:
             moredetails:    "Plus de détails"
             ratings:        "Notes"
             noimage:        "Image non disponible"
-            productinfo:    "Renseignements sur le produit"
-            specifications: "Caractéristiques"
-            reviews:        "Évaluations de la clientèle"
+            productinfo:    "Détails"
+            specifications: "Spécifications"
+            reviews:        "Évaluations des clients"
             freeshipping:   "Expédition gratuite pour les commandes de plus de %{amount}."
             instorepickup:  "Commandez vos articles en ligne et ramassez-les en magasin."
             rewardprog:     "Abonnez-vous au programme de récompenses gratuitement."     
@@ -68,10 +71,12 @@ fr:
             title:          "Résultats de la comparaison"
             tabletitle:     "Vous avez choisi de comparer ces produits"
             error:          "Vous ne pouvez sauvegarder que 4 produits à la fois"    
-            proddetails:    "Renseignements sur le produit"
+            proddetails:    "Renseignements"
             remove:         "Retirer"
-            morespecs:      
-            lessspecs:      
+            morespecs:      "Plus de fonctions"
+            lessspecs:      "Moins de fonctions"
+            yes:            "Qui"
+            no:             "Non"
             
     survey:
         decision:       "Would you like to take our survey?"

@@ -31,6 +31,9 @@ en:
             videoResolution: "Video Resolution"
             status:         "Status"
             closewindow:    "Close Window"
+            yes:            "Yes"
+            none:           "None"
+            unknown:        "Unknown"
 
         show:
             title:          "Product Details"
@@ -72,6 +75,8 @@ en:
             remove:         "Remove"
             morespecs:      "More Specs"
             lessspecs:      "Less Specs"
+            yes:            "Yes"
+            no:             "No"
     survey:
         decision:       "Would you like to take our survey?"
         title:          "Survey Questions"
