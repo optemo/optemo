@@ -1398,6 +1398,7 @@ optemo_module = (function (my){
     		return -1;
     	} else {
     		var parts = data.split('[BRK]');
+    		$('#filter_form').remove(); // This line is supposed to clear up the case of the missing form in jquery 1.4.2 -- it inserts everything except the filter_form element.
     		$('#ajaxfilter').html(parts[1]);
     		$('#main').html(parts[0]);
     		$('#myfilter_search').attr('value',parts[2]);
