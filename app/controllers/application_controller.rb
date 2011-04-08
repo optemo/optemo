@@ -25,6 +25,7 @@ class ApplicationController < ActionController::Base
   #   127.0.0.1 gr.application.local
   # in your /etc/hosts file to try this out locally
   def set_locale
+    #debugger
     I18n.locale = 'fr' #request.subdomains.first == 'fr' ? 'fr' : 'en'
   end
 

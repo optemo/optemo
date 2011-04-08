@@ -912,8 +912,8 @@ div#filter_bar_loading{
 	margin: auto;
 }
 #features div.bbfeatures {
-    height: 40px;
-    line-height: 40px;
+    height: 50px;
+    line-height: 20px;
 }
 #features img {
     float: left;
