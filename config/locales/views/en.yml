@@ -63,7 +63,7 @@ en:
         
     features:
         maxresolution:      "%{num}MP"
-        screensize:         "%{num} in. LCD"
+        screensize:         "%{num}in. LCD"
         opticalzoom:        "%{num}X zoom"
     
     compare:
@@ -75,8 +75,8 @@ en:
             remove:         "Remove"
             morespecs:      "More Specs"
             lessspecs:      "Less Specs"
-            yes:            "Yes"
-            no:             "No"
+            yesoption:            "Yes"
+            nooption:             "No"
     survey:
         decision:       "Would you like to take our survey?"
         title:          "Survey Questions"

@@ -61,9 +61,9 @@ fr:
             lowestprice:    "Garantie du plus bas prix"
         
     features:
-        maxresolution:      "%{num} Mpx"
-        screensize:         "ACL %{num} po "
-        opticalzoom:        "Zoom %{num} X"
+        maxresolution:      "%{num}Mpx"
+        screensize:         "ACL %{num}po"
+        opticalzoom:        "Zoom %{num}X"
     
     compare:
         index:
@@ -74,8 +74,8 @@ fr:
             remove:         "Retirer"
             morespecs:      "Plus de fonctions"
             lessspecs:      "Moins de fonctions"
-            yes:            "Qui"
-            no:             "Non"
+            yesoption:      "Qui"
+            nooption:       "Non"
             
     survey:
         decision:       "Would you like to take our survey?"
