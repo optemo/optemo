@@ -138,8 +138,9 @@ optemo_module = (function (my){
     
     my.loadspecs = function (sku, f) {
         // The jQuery AJAX request will add ?callback=? as appropriate. Best Buy API v.2 supports this.
-        var baseurl = "http://www.bestbuy.ca/api/v2/json/product/" + sku;
-        if (!(jQuery('body').data('bestbuy_specs_' + sku))) {
+       	var baseurl = "http://www.bestbuy.ca/api/v2/json/product/" + sku;
+        if (1==1) baseurl = baseurl+"?lang=fr";
+		if (!(jQuery('body').data('bestbuy_specs_' + sku))) {
             $.ajax({
                 url: baseurl,
                 type: "GET",
@@ -189,6 +190,8 @@ optemo_module = (function (my){
 		}));
         if (!(jQuery('body').data('bestbuy_reviews_' + sku))) {
             baseurl = "http://www.bestbuy.ca/api/v2/json/reviews/" + sku;
+ 			if (1==1)
+ 				baseurl = baseurl+"?lang=fr";
             $.ajax({
                 url: baseurl,
     	        type: "GET",
