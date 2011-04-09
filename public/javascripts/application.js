@@ -135,11 +135,11 @@ optemo_module = (function (my){
     //   - get the loading code to chain back to the insertion code
     //   - "specs" or "more specs" links just show/hide the table element rather than building it up; the ajax return below does that
     // The disadvantage would be that the specs wouldn't be stored for later retrieval. This probably isn't a big deal.
-    
+    var optemo_fr = true;
     my.loadspecs = function (sku, f) {
         // The jQuery AJAX request will add ?callback=? as appropriate. Best Buy API v.2 supports this.
        	var baseurl = "http://www.bestbuy.ca/api/v2/json/product/" + sku;
-        if (1==1) baseurl = baseurl+"?lang=fr";
+		if (optemo_fr) baseurl = baseurl+"?lang=fr";
 		if (!(jQuery('body').data('bestbuy_specs_' + sku))) {
             $.ajax({
                 url: baseurl,
@@ -190,7 +190,7 @@ optemo_module = (function (my){
 		}));
         if (!(jQuery('body').data('bestbuy_reviews_' + sku))) {
             baseurl = "http://www.bestbuy.ca/api/v2/json/reviews/" + sku;
- 			if (1==1)
+ 			if (optemo_fr)
  				baseurl = baseurl+"?lang=fr";
             $.ajax({
                 url: baseurl,
@@ -1184,19 +1184,15 @@ optemo_module = (function (my){
 	}
 	
 	my.buildComparisonMatrix = function() {
-		var rows = [], row_class=[], savedProducts = $('#opt_savedproducts').children(), anchor = $('#hideable_matrix').empty(), heading;
+		var rows = [], row_class=[], savedProducts = $('#opt_savedproducts').children(), anchor = $('#hideable_matrix');
 		// Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
 		//p == -1 means it's the labels
 		for (var p = -1; p < savedProducts.length; p++) {
 		    var sku = $(savedProducts[(p == -1) ? p+1 : p]).attr('data-sku');
 			// The column numbers are important here for .remove functionality.
-			if (p==-1) {
-				heading = '<div class="compare_row"><div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle">All Specifications</div></div>';
-			}
-		    else {
-				heading += '<div class="outertitle spec_column_'+p+'"><div class="columntitle">&nbsp;</div></div>';
+		    if (p >= 0) {
+				anchor.append('<div class="outertitle spec_column_'+p+'"><div class="columntitle">&nbsp;</div></div>');
 		    }
-		    if (p + 1 == savedProducts.length) $(heading + "</div>").appendTo(anchor); // Append when it's finished being built up for a time savings
 		    spec_array = parse_bb_json_into_array($('body').data('bestbuy_specs_' + sku), (p == -1) ? true : false);
 			for (var s = 0; s < spec_array.length; s++) {
 				if (p==-1) {
@@ -1419,7 +1415,10 @@ optemo_module = (function (my){
         clearTimeout(lis.sidebar_timer); // clearTimeout can run on "null" without error
         clearTimeout(lis.main_timer);
         clearTimeout(lis.socket_error_timer); // We need to clear the timeout error here
-    	my.flashError('<div class="bb_poptitle">Error<a class="bb_quickview_close" href="close" style="float:right;">Close Window</a></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
+		if (!(typeof(optemo_french) == "undefined") && optemo_french)
+			my.flashError('<div class="bb_poptitle">Erreur<a class="bb_quickview_close" href="close" style="float:right;">Fermer fenêtre</a></div><p class="error">Désolé! Une erreur est survenue sur le serveur.</p><p>Vous pouvez réinitialiser l\'outil et voir si le problème est résolu.</p>');
+		else
+    		my.flashError('<div class="bb_poptitle">Error<a class="bb_quickview_close" href="close" style="float:right;">Close Window</a></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can reload the page and see if the problem is resolved.</p>');
     	my.trackPage('goals/error');
     }
 
@@ -1769,7 +1768,10 @@ if (window.embedding_flag) {
     optemo_module.clearSocketError = function() {
         // if ajaxhandler never gets called, here we are.
 		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
-    	optemo_module.flashError('<div class="bb_poptitle">Error<a class="bb_quickview_close" href="close"><img src="/images/closepopup_white.gif"></a></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can <a href="/compare/">reset</a> the tool and see if the problem is resolved.</p>');
+		if (!(typeof(optemo_french) == "undefined") && optemo_french)
+			optemo_module.flashError('<div class="bb_poptitle">Erreur<a class="bb_quickview_close" href="close" style="float:right;">Fermer fenêtre</a></div><p class="error">Désolé! Une erreur est survenue sur le serveur.</p><p>Vous pouvez réinitialiser l\'outil et voir si le problème est résolu.</p>');
+		else
+    		optemo_module.flashError('<div class="bb_poptitle">Error<a class="bb_quickview_close" href="close" style="float:right;">Close Window</a></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can reload the page and see if the problem is resolved.</p>');
     }
 
     optemo_module.quickajaxcall = function (element_name, myurl, fn) { // for the show page

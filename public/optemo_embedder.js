@@ -13,7 +13,7 @@ does not get minified by the capistrano deployment at the moment. */
 
 window.embedding_flag = true; // This is used in application.js to decide whether to redefine the AJAX functions
 // These static globals are used in application.js and below. 'remote' is defined so that application.js can call it later
-var optemo_module, remote, REMOTE = 'http://' + ((window.location.pathname.match(/^\/fr-CA/)) ? "fr." : "") + 'bbembed.optemo.com';
+var optemo_module, remote, optemo_french = (window.location.pathname.match(/^\/fr-CA/)), REMOTE = 'http://' + ((optemo_french) ? "fr." : "") + 'bbembed.optemo.com';
 
 // Wrapping this function and assigning it to a variable delays execution of evaluation
 var optemo_socket_activator = (function () {
