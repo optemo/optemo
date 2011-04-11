@@ -59,7 +59,7 @@ fr:
             ourprice:       "Notre prix:"
             saleprice:      "Prix de vente:"
             lowestprice:    "Garantie du plus bas prix"
-            fbconnecturl:   "//connect.facebook.net/en_US/all.js#xfbml=1"
+            fbconnecturl:   "//connect.facebook.net/fr_CA/all.js#xfbml=1"
         
     features:
         maxresolution:      "%{num}Mpx"
