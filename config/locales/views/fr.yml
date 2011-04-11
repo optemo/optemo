@@ -76,6 +76,7 @@ fr:
             lessspecs:      "Moins de fonctions"
             yesoption:      "Qui"
             nooption:       "Non"
+            allspecifications:  "Détails du produit"
             
     survey:
         decision:       "Would you like to take our survey?"
