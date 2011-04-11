@@ -941,6 +941,7 @@ div#filter_bar_loading{
 	float: left;
 	padding-right: 5px;
 	width: 90px;
+	height: 28px;
 }
 .review_feature .nbr {
 	margin-left: 4px;

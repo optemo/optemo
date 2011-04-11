@@ -73,7 +73,7 @@
 var optemo_module;
 var myspinner;
 var optemo_module_activator;
-
+//optemo_french = true;
 // jquery noconflict taken out for jquery 1.4.2 Best Buy rollout 04-2011
 optemo_module_activator = (function() { // See bottom, this is for jquery noconflict
 optemo_module = (function (my){
@@ -135,11 +135,11 @@ optemo_module = (function (my){
     //   - get the loading code to chain back to the insertion code
     //   - "specs" or "more specs" links just show/hide the table element rather than building it up; the ajax return below does that
     // The disadvantage would be that the specs wouldn't be stored for later retrieval. This probably isn't a big deal.
-    var optemo_fr = true;
+   
     my.loadspecs = function (sku, f) {
         // The jQuery AJAX request will add ?callback=? as appropriate. Best Buy API v.2 supports this.
        	var baseurl = "http://www.bestbuy.ca/api/v2/json/product/" + sku;
-		if (optemo_fr) baseurl = baseurl+"?lang=fr";
+		if (!(typeof(optemo_french) == "undefined") && optemo_french) baseurl = baseurl+"?lang=fr";
 		if (!(jQuery('body').data('bestbuy_specs_' + sku))) {
             $.ajax({
                 url: baseurl,
@@ -190,7 +190,7 @@ optemo_module = (function (my){
 		}));
         if (!(jQuery('body').data('bestbuy_reviews_' + sku))) {
             baseurl = "http://www.bestbuy.ca/api/v2/json/reviews/" + sku;
- 			if (optemo_fr)
+ 			if (!(typeof(optemo_french) == "undefined") && optemo_french)
  				baseurl = baseurl+"?lang=fr";
             $.ajax({
                 url: baseurl,
@@ -204,10 +204,15 @@ optemo_module = (function (my){
 					// Featured Ratings
 					for (var i in attributes) {
 						to_tabbed_content += '<div class="review_feature">\
-							<span>'+i.replace(/_x0020_/g, " ")+'</span>\
+							<span>'+i.replace(/_x2019_/g, "’").replace(/_x0020_/g, " ")+'</span>\
 							<div class="empty"><div class="fill" style="width:'+(attributes[i]*20)+
 							'%"></div></div>\
-							<span class="nbr">'+attributes[i]+'</span>\
+							<span class="nbr">'
+							if (!(typeof(optemo_french) == "undefined") && optemo_french)
+								to_tabbed_content += attributes[i].toString().replace(/\./g, ",");
+							else
+								to_tabbed_content += attributes[i].toString();
+							to_tabbed_content += '</span>\
 						</div>';
 					}
 					// Overall Rating
@@ -216,13 +221,24 @@ optemo_module = (function (my){
 						'<span class="nbr">'+reviews["customerRating"]+'</span>\
 					</div>';
 					//Number of Ratings
-                    to_tabbed_content += '<p class="ratingnumbers">('+reviews['customerRatingCount']+' ratings)</p>';
-					to_tabbed_content += '<div style="margin-bottom: 5px">'+reviews["reviews"].length + ' Review';
-					if (reviews["reviews"].length != 1) to_tabbed_content += 's';
-					to_tabbed_content += ' | <a href="http://www.bestbuy.ca/Catalog/ReviewAndRateProduct.aspx?path=639f1c48d001d04869f91aebd7c9aa86en99&ProductId='+sku+'&pcname=MCCPCatalog">Rate and review this product</a></div>';
+					if (!(typeof(optemo_french) == "undefined") && optemo_french){
+							to_tabbed_content += '<p class="ratingnumbers">('+reviews['customerRatingCount']+' ratings)</p>';
+							to_tabbed_content += '<div style="margin-bottom: 5px">'+reviews["reviews"].length + ' notes';
+					}
+					else{
+                    	to_tabbed_content += '<p class="ratingnumbers">('+reviews['customerRatingCount']+' ratings)</p>';
+						to_tabbed_content += '<div style="margin-bottom: 5px">'+reviews["reviews"].length + ' Review';
+						if (reviews["reviews"].length != 1) to_tabbed_content += 's';
+					}	
+					if (!(typeof(optemo_french) == "undefined") && optemo_french)
+						to_tabbed_content += ' | <a href="http://www.bestbuy.ca/Catalog/ReviewAndRateProduct.aspx?path=639f1c48d001d04869f91aebd7c9aa86fr99&ProductId='+sku+'&pcname=MCCPCatalog">Directives d\'évaluation de produit</a></div>';
+					else
+						to_tabbed_content += ' | <a href="http://www.bestbuy.ca/Catalog/ReviewAndRateProduct.aspx?path=639f1c48d001d04869f91aebd7c9aa86en99&ProductId='+sku+'&pcname=MCCPCatalog">Rate and review this product</a></div>';
 					var m_names = new Array("January", "February", "March", 
 					"April", "May", "June", "July", "August", "September", 
 					"October", "November", "December");
+					
+					var m_names_fr = new Array("janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre");
 					
 					//Written Reviews
 					for (var review in reviews["reviews"]) {
@@ -233,8 +249,12 @@ optemo_module = (function (my){
 						date = new Date(review["submissionTime"]);
 						if (date.getMonth().toString() == "NaN")
 							to_tabbed_content += review["submissionTime"].replace(/T.*$/,'') + '</h3>';
-						else
-							to_tabbed_content += m_names[date.getMonth()]+' '+date.getDate()+', ' +date.getFullYear()+'</h3>';
+						else{
+							if (!(typeof(optemo_french) == "undefined") && optemo_french)
+									to_tabbed_content += "le "+date.getDate()+' '+m_names_fr[date.getMonth()]+' '+date.getFullYear()+'</h3>';
+							else		
+									to_tabbed_content += m_names[date.getMonth()]+' '+date.getDate()+', ' +date.getFullYear()+'</h3>';
+						}			
 						to_tabbed_content += '<div>'+review["reviewerName"]+'&nbsp;|&nbsp;'+review["reviewerLocation"]+ '</div>\
 							<div class="starrating">\
 								<span>Overall Rating</span>'+numberofstars(review["rating"])+
@@ -242,6 +262,10 @@ optemo_module = (function (my){
 							'</div>\
 							<p>'+review["comment"]+'</p>\
 						</div>';
+					}
+					if (!(typeof(optemo_french) == "undefined") && optemo_french){
+						to_tabbed_content=to_tabbed_content.replace(/ratings/g, 'classements');
+						to_tabbed_content=to_tabbed_content.replace(/Overall Rating/g, 'Évaluation');
 					}
                     $('body').data('bestbuy_reviews_' + sku, to_tabbed_content);
                     $('#reviews_content').html(to_tabbed_content);

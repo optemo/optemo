@@ -77,6 +77,8 @@ en:
             lessspecs:      "Less Specs"
             yesoption:            "Yes"
             nooption:             "No"
+            allspecifications:  "All Specifications"    
+            
     survey:
         decision:       "Would you like to take our survey?"
         title:          "Survey Questions"
