@@ -839,7 +839,7 @@ div#silkscreen {
 	top: 20px;
 	left: 20px;
 	height: auto;
-	z-index: 4;
+	z-index: 1005;
 	display: none;
 	background: white;
 	-moz-box-shadow: 0 -2px 16px 3px #888;
@@ -852,7 +852,6 @@ div#silkscreen {
 }
 div#info {
 	font-size: 0.8em;
-	z-index: 5;
 	padding: 12px 23px 22px 22px;
 	border: 1px solid #666;
 	min-width: 513px;
@@ -912,8 +911,8 @@ div#filter_bar_loading{
 	margin: auto;
 }
 #features div.bbfeatures {
-    height: 40px;
-    line-height: 40px;
+    height: 50px;
+    line-height: 20px;
 }
 #features img {
     float: left;
