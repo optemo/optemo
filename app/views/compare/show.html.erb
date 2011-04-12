@@ -6,9 +6,6 @@
 	<a href="#" class="fetch tab" data-tab="specs_content"><%=t('products.show.specifications')%></a>
 	<div class="tabspacer"></div>
 	<a href="#" class="fetch tab" data-tab="reviews_content"><%=t('products.show.reviews')%></a>
-	<%= link_to "close", :class => "bb_quickview_close" do %>
-		<%=t('products.compare.closewindow')%> <%= image_tag("closepopup.png") %>
-	<% end %>
 </div>
 <% else %>
 <% self.title = "#{@allspecs["title#{fr?}"] || @product.title }" %>
