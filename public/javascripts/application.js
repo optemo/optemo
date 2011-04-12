@@ -199,7 +199,10 @@ optemo_module = (function (my){
                     var to_tabbed_content = "";
                     var attributes = reviews["customerRatingAttributes"];
 
-					to_tabbed_content += "<br><h3>Customer Ratings</h3>";
+					if (!(typeof(optemo_french) == "undefined") && optemo_french)
+						to_tabbed_content += "<br><h3>Classement en général</h3>";
+					else
+						to_tabbed_content += "<br><h3>Customer Ratings</h3>";
 					// Featured Ratings
 					for (var i in attributes) {
 						to_tabbed_content += '<div class="review_feature">\
