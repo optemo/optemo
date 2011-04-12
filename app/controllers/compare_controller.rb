@@ -98,7 +98,7 @@ class CompareController < ApplicationController
       #Cleanse id to be only numbers
       id = params[:id] = params[:id][/^\d+/]
       @product = Product.cached(id)
-      @prod_url = TextSpec.cacheone(@product.id, "productUrl")
+      @prod_url = TextSpec.cacheone(@product.id, "productUrl#{fr?}")
       @allspecs = ContSpec.cache_all(id).merge(CatSpec.cache_all(id)).merge(BinSpec.cache_all(id)).merge(TextSpec.cache_all(id))
       @siblings = ProductSiblings.find_all_by_product_id_and_name(id,"imgsurl")
       @s = Session
@@ -117,6 +117,9 @@ class CompareController < ApplicationController
     end
   end
   
+  def fr?
+    I18n.locale == :fr ? "_fr" : ""
+  end
   private
   # Depending on the session, either use the traditional layout or the "optemo" layout.
   # The CSS files are loaded automatically though, so the usual "sv / gv / lv / mv" CSS classes are needed.

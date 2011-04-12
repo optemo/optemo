@@ -73,7 +73,6 @@
 var optemo_module;
 var myspinner;
 var optemo_module_activator;
-//optemo_french = true;
 // jquery noconflict taken out for jquery 1.4.2 Best Buy rollout 04-2011
 optemo_module_activator = (function() { // See bottom, this is for jquery noconflict
 optemo_module = (function (my){
@@ -200,7 +199,10 @@ optemo_module = (function (my){
                     var to_tabbed_content = "";
                     var attributes = reviews["customerRatingAttributes"];
 
-					to_tabbed_content += "<br><h3>Customer Ratings</h3>";
+					if (!(typeof(optemo_french) == "undefined") && optemo_french)
+						to_tabbed_content += "<br><h3>Classement en général</h3>";
+					else
+						to_tabbed_content += "<br><h3>Customer Ratings</h3>";
 					// Featured Ratings
 					for (var i in attributes) {
 						to_tabbed_content += '<div class="review_feature">\

@@ -20,7 +20,7 @@ module ApplicationHelper
   end
   
   def fr?
-    I18n.locale == "fr" ? "_fr" : ""
+    I18n.locale == :fr ? "_fr" : ""
   end
   
   def utfstr(s)

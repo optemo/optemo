@@ -60,7 +60,6 @@ en:
             saleprice:      "Sale Price:"
             saleends:       "Sale Ends"
             lowestprice:    "Lowest Price Guarantee"
-            fbconnecturl:   "//connect.facebook.net/en_US/all.js#xfbml=1"
         
     features:
         maxresolution:      "%{num}MP"
@@ -79,6 +78,7 @@ en:
             yesoption:            "Yes"
             nooption:             "No"
             allspecifications:  "All Specifications"    
+            onsale:         "On Sale"  
             
     survey:
         decision:       "Would you like to take our survey?"

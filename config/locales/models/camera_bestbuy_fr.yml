@@ -17,7 +17,7 @@ fr:
                 preunit:            "$"
             maxresolution:
                 name:               "Résolution"
-                unit:               "MP"
+                unit:               "Mpx"
             opticalzoom:
                 name:               "Zoom optique"
                 unit:               "X"
@@ -30,6 +30,8 @@ fr:
                 name:               "Marques"
             color:
                 name:               "Couleurs"
+            customerRating:
+                name:               "Classement en général"
             onsale:
                 name:               "En solde"
             isClearance:
