@@ -113,8 +113,8 @@ camera_bestbuy:
     url: 
         localhost: 10 # Testing
         bestbuy: 10
-        ilovecameras: 12
-        ilovecameras.optemo.com: 12
+        ilovecameras: 10
+        ilovecameras.optemo.com: 10
         bbembed.optemo.com: 12
         fr.bbembed.optemo.com: 12
     layout: assist
