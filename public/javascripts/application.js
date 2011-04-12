@@ -1009,10 +1009,12 @@ optemo_module = (function (my){
         $(".productimg, .easylink").live("click", function (){
             // This is the show page
 			var href = $(this).attr('href') || $(this).parent().siblings('.productinfo').children('.easylink').attr('href'),
-        	ignored_ids = getAllShownProductIds(),
-			currentelementid = $(this).attr('data-id') || href.match(/\d+$/),
-        	product_title = $(this).find('img.productimg').attr('title');
-        	my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids});
+        	ignored_ids = getAllShownProductSkus(),
+			currentelementid = $(this).attr('data-sku') || href.match(/\d+$/);
+			var product_image = $(this);
+			if (!(product_image.hasClass('productimg'))) product_image = product_image.find('img.productimg');
+        	product_title = product_image.attr('title');
+        	my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids, 'imgurl' : product_image.attr('src')});
         	// Using /product/_/ because savedproducts do not have an href (otherwise it would need to be stored in the cookie)
         	// _ is the brand name and model
 			my.applySilkScreen((href || '/product/_/' + currentelementid) +'?plain=true',null, 560, 580);
@@ -1518,6 +1520,20 @@ optemo_module = (function (my){
     	if (currentIds == '') { // This is for Direct view
             $('#main .productinfo').each(function() {
                 currentIds.push($(this).attr('data-id'));
+            });
+        }
+    	return currentIds.join(",");
+    }
+
+    /* This gets the currently displayed product ids client-side from the text beneath the product images. */
+    function getAllShownProductSkus() {
+    	var currentIds = [];
+    	$('#main .easylink').each(function() {
+    		currentIds.push($(this).attr('data-sku'));
+    	});
+    	if (currentIds == '') { // This is for Direct view
+            $('#main .productinfo').each(function() {
+                currentIds.push($(this).attr('data-sku'));
             });
         }
     	return currentIds.join(",");
