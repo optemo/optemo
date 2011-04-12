@@ -7,8 +7,7 @@ class CompareController < ApplicationController
       render 'password', :layout => false
     else
       # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
-      #Disable the two step loading
-      if true || Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
+      if Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
         hist = params[:hist].gsub(/\D/,'').to_i if params[:hist]
         search_history = Session.searches if hist && params[:page].nil?
         if params[:page]

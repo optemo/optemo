@@ -5,10 +5,10 @@
 <![endif]-->
 <%# The border and other aspects of the top bar are in the retailer's frame. This just puts the "compare" layout in. %>
 <%= yield %>
-
+<div class="watermark"><%=t('products.compare.powered')%><%= link_to 'Optemo', 'http://optemo.com', :class => "popup" %></div>
 <div id="silkscreen">&nbsp;</div>
 <div id="filter_bar_loading"><%=t('products.show.loading') %></div>
-<div id="outsidecontainer"><div id="info">&nbsp;</div></div>
+
 <!--[if IE]>
 </div>
 <![endif]-->
