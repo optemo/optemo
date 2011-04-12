@@ -11,12 +11,12 @@
 	<% end %>
 </div>
 <% else %>
-<% self.title = "#{@product.title}" %>
+<% self.title = "#{@allspecs["title#{fr?}"] || @product.title }" %>
 <div class="content">
 <a href="/" id="browseother"></a>
 <% end %>
 <div id="info_container">
-	<h1><%= @product.title %></h1>
+	<h1><%= @allspecs["title#{fr?}"] || @product.title%></h1>
 	<h5 style="margin: 0"><%=t('products.show.webcode')+": #{@product.sku}, "+t('products.show.model')+": #{@product.mpn}"%></h5> 
 <div id="info_content" class="tabbed_content">
     	<div id="galleria" style="width: 500px; height: 300px;margin-left: -10px;">
@@ -62,8 +62,7 @@
 			<% end %>
 		<% end %>
 		<%# raw save.compact.join(", ") %>
-
-	    <div class="shortdesc"><%= raw @allspecs["shortDescription"] %></div>
+	    <div class="shortdesc"><%= raw @allspecs["shortDescription#{fr?}"] %></div>
     </div>
     <div id="specs_content" class="tabbed_content" style="display: none;"><%=t('products.show.loading')%></div>
 	<div id="reviews_content" class="tabbed_content" style="display: none;"><%=t('products.show.loading')%></div>

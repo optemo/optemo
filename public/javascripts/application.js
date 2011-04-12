@@ -73,7 +73,6 @@
 var optemo_module;
 var myspinner;
 var optemo_module_activator;
-//optemo_french = true;
 // jquery noconflict taken out for jquery 1.4.2 Best Buy rollout 04-2011
 optemo_module_activator = (function() { // See bottom, this is for jquery noconflict
 optemo_module = (function (my){

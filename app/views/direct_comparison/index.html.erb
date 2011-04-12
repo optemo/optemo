@@ -55,7 +55,7 @@
         		</div>
         		<% @products.each_with_index do |product, i| %>
             		<% allspecs = spec_hash[product.id] %>
-            		<%= render :partial => 'featurevalues', :locals => {:product => product, :numberofproducts => @products.count, :spec => allspecs[feat], :gray => gray, :feat => feat, :type => feat_type, :column_number => i} %>
+            		<%= render :partial => 'featurevalues', :locals => {:product => product, :numberofproducts => @products.count, :spec => allspecs[feat+fr?] || allspecs[feat], :gray => gray, :feat => feat, :type => feat_type, :column_number => i} %>
                 <% end %>
         		<% gray = !gray %>
             </div>

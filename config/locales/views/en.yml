@@ -78,6 +78,7 @@ en:
             yesoption:            "Yes"
             nooption:             "No"
             allspecifications:  "All Specifications"    
+            onsale:         "On Sale"  
             
     survey:
         decision:       "Would you like to take our survey?"

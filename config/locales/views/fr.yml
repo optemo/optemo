@@ -77,6 +77,7 @@ fr:
             yesoption:      "Qui"
             nooption:       "Non"
             allspecifications:  "Détails du produit"
+            onsale:         "En solde"    
             
     survey:
         decision:       "Would you like to take our survey?"
