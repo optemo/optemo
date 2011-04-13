@@ -38,12 +38,13 @@ desc "Sync the public/assets directory."
   task :restart do
     run "touch #{current_path}/tmp/restart.txt"
   end
-  desc "Create asset packages for production" 
-  task :after_update_code, :roles => [:web] do
-    run <<-EOF
-      cd #{release_path} && rake asset:packager:build_all
-    EOF
-  end
+end
+
+desc "Create asset packages for production" 
+task :update_code, :roles => [:web] do
+  run <<-EOF
+    cd #{release_path} && rake asset:packager:build_all
+  EOF
 end
 
 desc "Reindex search index"
@@ -82,9 +83,15 @@ task :redopermissions do
   run "find #{current_path} #{current_path}/../../shared ! -perm /g+w -execdir chmod g+w {} +"
 end
 
+task :warmupserver do
+  run "curl -A 'Java' localhost > /dev/null"
+end
+
 # redopermissions is last, so that if it fails due to the searchd pid, no other tasks get blocked
-after :deploy, "serversetup"
+after :deploy, "update_code"
+after :update_code, "serversetup"
 #after :serversetup, "reindex"
 #after :reindex, "restartmemcached"
 #after :restartmemcached, "fetchAutocomplete"
-after :fetchAutocomplete, "redopermissions"
+after :serversetup, "redopermissions"
+after :redopermissions, "warmupserver"
