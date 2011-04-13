@@ -27,7 +27,7 @@
 				
     	        <% additional_media = ActiveSupport::JSON.decode(@allspecs["additionalMedia"].gsub("=>",":")) %>
     	        <% additional_media.each do |a| %>
-    	            <%= image_tag("http://www.bestbuy.ca" + a["url"].gsub("500x500", "300x300"), :size => "300x300", :alt => "")  if a["url"] %>
+    	            <%= image_tag("http://www.bestbuy.ca" + a["url"].gsub("500x500", "300x300"), :size => "300x300", :alt => "", :style => "display: none;")  if a["url"] %>
     	        <% end %>
 			<% end %>
     	</div>
