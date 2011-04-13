@@ -524,13 +524,8 @@ optemo_module = (function (my){
         $('.slider').each(function() {
             $(this).slider("option", "disabled", true);
         });
-
-        //$('.groupby').unbind('click');
-        //$('.removefilter').unbind('click').click(function() {return false;}); // There is a default link there that shouldn't be followed.
-        $('.binary_filter').attr('disabled', true);
-		//For Keyword Search
-        //$('#myfilter_search').unbind('keydown');
-        //$('#submit_button').unbind('click');
+        $('.binary_filter, .cat_filter').attr('disabled', true);
+		my.loading_indicator_state.disable = true; //Disables any live click handlers
     }
 
     my.loadFilterBarSilkScreen = function() {
@@ -538,8 +533,8 @@ optemo_module = (function (my){
         elementToShadow = $('#filterbar');
         var pos = elementToShadow.offset();
         var width = elementToShadow.innerWidth() + 2; // Extra pixels are for the border.
-        var height = elementToShadow.innerHeight() + 2;
-        $('#silkscreen').css({'position' : 'absolute', 'display' : 'inline', 'left' : pos.left + "px", 'top' : pos.top + 27 + "px", 'height' : height - 27 + "px", 'width' : width + "px"}).fadeTo(0,0.2); // The 27 is arbitrary - equal to the top of the filter bar (title, reset button)
+        var height = elementToShadow.innerHeight() + 2; // and padding bottom
+        $('#silkscreen').css({'position' : 'absolute', 'display' : 'inline', 'left' : pos.left + "px", 'top' : pos.top + "px", 'height' : height + "px", 'width' : width + "px",'background-color' : 'black'}).fadeTo(0,0.2); // The 27 is arbitrary - equal to the top of the filter bar (title, reset button)
         $("#silkscreen").unbind('click'); // We need this so that the user can't clear the silkscreen by clicking on it.
         $('#filter_bar_loading').css({'display' : 'inline', 'left' : (pos.left + (width-126)/2) + "px", 'top' : pos.top + (height - 46)/2 + "px"});
     };
@@ -818,6 +813,7 @@ optemo_module = (function (my){
 		
     	// Change sort method
     	$('.sortby').live('click', function() {
+			if (my.loading_indicator_state.disable) return false;
     	    var whichSortingMethodSelected = $(this).attr('data-feat');
     	    var info = {'chosen_sorting_method' : whichSortingMethodSelected, 'filter_type' : 'sorting_method'};
 			my.trackPage('goals/filter/sorting_method', info);
@@ -842,12 +838,14 @@ optemo_module = (function (my){
 
 		// Add a color selection -- submit
     	$('.swatch').live('click', function(){
+			if (my.loading_indicator_state.disable) return false;
 			my.loading_indicator_state.sidebar = true;
-		    var whichThingSelected = $(this).attr("style").replace(/background-color: (\w+);?/i,'$1');
+			var t = $(this);
+		    var whichThingSelected = t.attr("style").replace(/background-color: (\w+);?/i,'$1');
 		    // Fix up the case issues for Internet Explorer (always pass in color value as "Red")
 		    whichThingSelected = whichThingSelected.toLowerCase();
 		    whichThingSelected = whichThingSelected.charAt(0).toUpperCase() + whichThingSelected.slice(1);
-			if ($(this).hasClass("selected_swatch"))
+			if (t.hasClass("selected_swatch"))
 			{ //Removed selected color
 				$('#myfilter_color').val(opt_removeStringWithToken($('#myfilter_color').val(), whichThingSelected, '*'));
 	    		var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : 'color', 'filter_type' : 'categorical_removed'};
@@ -859,8 +857,8 @@ optemo_module = (function (my){
     			var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : 'color', 'filter_type' : 'categorical'};
 				my.trackPage('goals/filter/categorical', info);
 			}
+			t.toggleClass('selected_swatch');
     		submitCategorical();
-    		return false;
     	});
 
     	// Remove a brand -- submit
@@ -988,6 +986,7 @@ optemo_module = (function (my){
 
         //Ajax call for simlinks ('browse similar')
     	$('.simlinks').live("click", function() {
+			if (my.loading_indicator_state.disable) return false;
     		var ignored_ids = getAllShownProductIds();
     	    my.loading_indicator_state.main = true;
     		my.ajaxcall($(this).attr('href')+'?ajax=true');
@@ -1065,7 +1064,8 @@ optemo_module = (function (my){
         	return false;
      	});
 
-		$('.binary_filter_text:not(.disabled)').live('click', function(){
+		$('.binary_filter_text').live('click', function(){
+			if (my.loading_indicator_state.disable) return false;
 			var checkbox = $(this).siblings('input');
 			var whichbox = checkbox.attr('id');
     		var box_value = checkbox.attr('checked') ? 100 : 0;
@@ -1119,12 +1119,9 @@ optemo_module = (function (my){
 		//	window.location = url;
 		//});
 
-		$(".swatch").live('click', function(){
-			$(this).toggleClass('selected_swatch');
-		});
-
 		//Reset filters
 		$('.reset').live('click', function(){
+			if (my.loading_indicator_state.disable) return false;
 			trackPage('goals/reset', {'filter_type' : 'reset'});
 			optemo_module.loading_indicator_state.sidebar = true;
 			optemo_module.ajaxcall($(this).attr('href')+'?ajax=true');
@@ -1325,7 +1322,7 @@ optemo_module = (function (my){
     if (!window.embedding_flag) {
         myspinner = my.spinner("myspinner", 11, 20, 9, 5, "#000");
     }
-    my.loading_indicator_state = {sidebar : false, sidebar_timer : null, main : false, main_timer : null, socket_error_timer : null};
+    my.loading_indicator_state = {sidebar : false, sidebar_timer : null, main : false, main_timer : null, socket_error_timer : null, disable : false};
 
 
     /* Does a relatively generic ajax call and returns data to the handler below */
@@ -1356,7 +1353,8 @@ optemo_module = (function (my){
     // This needs to be a public function now
     my.ajaxhandler = function(data) {
         var lis = my.loading_indicator_state;
-        lis.main = lis.sidebar = false;
+        lis.main = lis.sidebar = lis.disable = false;
+		$('#silkscreen').css('background-color', 'transparent');
         clearTimeout(lis.sidebar_timer); // clearTimeout can run on "null" without error
         clearTimeout(lis.main_timer);
         clearTimeout(lis.socket_error_timer); // We need to clear the timeout error here
@@ -1386,7 +1384,7 @@ optemo_module = (function (my){
     	//	my.flashError('<div class="poptitle">&nbsp;</div><p class="error">Désolé! Une erreur s’est produite sur le serveur.</p><p>Vous pouvez <a href="" class="popuplink">réinitialiser</a> l’outil et constater si le problème persiste.</p>');
     	//else
         var lis = my.loading_indicator_state;
-        lis.main = lis.sidebar = false;
+        lis.main = lis.sidebar = lis.disable = false;
         clearTimeout(lis.sidebar_timer); // clearTimeout can run on "null" without error
         clearTimeout(lis.main_timer);
         clearTimeout(lis.socket_error_timer); // We need to clear the timeout error here
