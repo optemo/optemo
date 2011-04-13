@@ -1,9 +1,5 @@
 <div id="box<%= i %>" class="navbox" <%= ("style='margin-right:0px;background:none;'" if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1) %>>
 	<div class="topbar">
-		<div class="title">
-			<%= groupDesc(group,i) %>
-		</div>
-		
 		<% if @s.dragAndDropEnabled %>
 				<div class="image_boundingbox">
 				<%= image_tag('hand_and_arrow.png', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>

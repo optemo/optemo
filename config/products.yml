@@ -6,7 +6,7 @@
 
 tv_bestbuy:
     url: 
-        besttv: 12
+        besttv: 10
     layout: assist
     price:
         type: Continuous

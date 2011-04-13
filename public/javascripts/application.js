@@ -15,7 +15,6 @@
     ** renderComparisonProducts(id, sku, imgurl, name)  -  Does actual insertion of UI elements
     ** getIdAndSkuFromProductimg(img)  -  Returns the ID from the image. Only used for drag-and-drop at the moment.
     removeFromComparison(id)  -  Removes comparison items from #savebar_content
-    removeBrand(str)   -  Removes brand filter (or other categorical filter)
     submitCategorical()  -  Submits a categorical filter (no longer does tracking)
     submitsearch()  -  Submits a search via the main search field in the filter bar
     histogram(element, norange)  -  draws histogram
@@ -472,12 +471,6 @@ optemo_module = (function (my){
     	return false;
     }
 
-    function removeBrand(str)
-    {
-    	$('#myfilter_Xbrand').attr('value', str);
-    	my.ajaxcall("/compare?ajax=true", $("#filter_form").serialize());
-    }
-
     // Submit a categorical filter, e.g. brand.
     function submitCategorical(){
         var arguments_to_send = [];
@@ -491,19 +484,19 @@ optemo_module = (function (my){
     	return false;
     }
 
-    function submitsearch() {
-    	my.trackPage('goals/search', {'filter_type' : 'search', 'search_text' : $("#myfilter_search").attr('value'), 'previous_search_text' : $("#previous_search_word").attr('value')});
-    	var arguments_to_send = [];
-        arguments = $("#filter_form").serialize().split("&");
-        for (i=0; i<arguments.length; i++)
-        {
-            if (!(arguments[i].match(/^superfluous/)))
-                arguments_to_send.push(arguments[i]);
-        }
-        my.loading_indicator_state.sidebar = true;
-    	my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
-    	return false;
-    }
+    //function submitsearch() {
+    //	my.trackPage('goals/search', {'filter_type' : 'search', 'search_text' : $("#myfilter_search").attr('value'), 'previous_search_text' : $("#previous_search_word").attr('value')});
+    //	var arguments_to_send = [];
+    //    arguments = $("#filter_form").serialize().split("&");
+    //    for (i=0; i<arguments.length; i++)
+    //    {
+    //        if (!(arguments[i].match(/^superfluous/)))
+    //            arguments_to_send.push(arguments[i]);
+    //    }
+    //    my.loading_indicator_state.sidebar = true;
+    //	my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
+    //	return false;
+    //}
 
     // Draw slider histogram, called for each slider above
     function histogram(element, norange) {
@@ -532,11 +525,12 @@ optemo_module = (function (my){
             $(this).slider("option", "disabled", true);
         });
 
-        $('.groupby').unbind('click');
-        $('.removefilter').unbind('click').click(function() {return false;}); // There is a default link there that shouldn't be followed.
+        //$('.groupby').unbind('click');
+        //$('.removefilter').unbind('click').click(function() {return false;}); // There is a default link there that shouldn't be followed.
         $('.binary_filter').attr('disabled', true);
-        $('#myfilter_search').unbind('keydown');
-        $('#submit_button').unbind('click');
+		//For Keyword Search
+        //$('#myfilter_search').unbind('keydown');
+        //$('#submit_button').unbind('click');
     }
 
     my.loadFilterBarSilkScreen = function() {
@@ -794,14 +788,6 @@ optemo_module = (function (my){
     			$(this).unbind('mouseenter mouseleave');
     		});
     	});
-
-    	if ($.browser.msie)
-    	{
-            // Fix the slider position
-        	$('.hist').each(function() {
-               $(this).css('left', '7px');
-            });
-    	}
     };
 
     my.LiveInit = function() { // This stuff only needs to be called once per full page load.
@@ -813,15 +799,15 @@ optemo_module = (function (my){
         });
 
     	//Search submit
-    	$('#submit_button').live('click', function(){
-    		return submitsearch();
-    	});
-
-    	//Search submit
-    	$('#myfilter_search').live('keydown', function (e) {
-    		if (e.which==13)
-    			return submitsearch();
-    	});
+    	//$('#submit_button').live('click', function(){
+    	//	return submitsearch();
+    	//});
+        //
+    	////Search submit
+    	//$('#myfilter_search').live('keydown', function (e) {
+    	//	if (e.which==13)
+    	//		return submitsearch();
+    	//});
 
 		// extended navigation action
 		$('.extendednav').live('click', function(){
@@ -841,18 +827,18 @@ optemo_module = (function (my){
 	    });
 
     	//Show and Hide Descriptions
-    	$('.label a, .desc .deleteX').live('click', function(){
-    		if($(this).parent().attr('class') == "desc")
-    			{var obj = $(this).parent();}
-    		else
-    			{var obj = $(this).siblings('.desc');}
-            // I think this is just toggling. Just on the off chance that something weird is happening here, I'll leave this code for now. ZAT 2010-08
-            obj.toggle();
-            if( obj.is(':visible') ) {
-        		my.trackPage('goals/label', {'filter_type' : 'description', 'ui_position' : obj.parent().attr('data-position')});
-    		}
-    		return false;
-    	});
+    	//$('.label a, .desc .deleteX').live('click', function(){
+    	//	if($(this).parent().attr('class') == "desc")
+    	//		{var obj = $(this).parent();}
+    	//	else
+    	//		{var obj = $(this).siblings('.desc');}
+        //    // I think this is just toggling. Just on the off chance that something weird is happening here, I'll leave this code for now. ZAT 2010-08
+        //    obj.toggle();
+        //    if( obj.is(':visible') ) {
+        //		my.trackPage('goals/label', {'filter_type' : 'description', 'ui_position' : obj.parent().attr('data-position')});
+    	//	}
+    	//	return false;
+    	//});
 
 		// Add a color selection -- submit
     	$('.swatch').live('click', function(){
@@ -877,42 +863,17 @@ optemo_module = (function (my){
     		return false;
     	});
 
-		// Add a binary filter selection -- submit
-    	$('.filterbutton').live('click', function(){
-			i = $(this);
-			if (i.hasClass("disabled")) return false;
-			my.loading_indicator_state.sidebar = true;
-		    if (i.hasClass("selected_button"))
-			{ //Removed selected color
-				i.find('input').val(0);
-				i.removeClass("selected_button");
-				//$('#myfilter_color').val(opt_removeStringWithToken($('#myfilter_color').val(), whichThingSelected, '*'));
-	    		//var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : 'color', 'filter_type' : 'categorical_removed'};
-				//my.trackPage('goals/filter/categorical_removed', info);
-			}
-			else
-			{ //Added selected color
-				i.find('input').val(1);
-				i.addClass("selected_button");
-    			//$('#myfilter_color').val(opt_appendStringWithToken($('#myfilter_color').val(), whichThingSelected, '*'));
-    			//var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : 'color', 'filter_type' : 'categorical'};
-				//my.trackPage('goals/filter/categorical', info);
-			}
-    		submitCategorical();
-    		return false;
-    	});
-
     	// Remove a brand -- submit
-    	$('.removefilter').live('click', function(){
-    		var whichRemoved = $(this).attr('data-id');
-    		var whichCat = $(this).attr('data-cat');
-    		$('#myfilter_'+whichCat).val(opt_removeStringWithToken($('#myfilter_'+whichCat).val(), whichRemoved, '*'));
-    		var info = {'chosen_categorical' : whichRemoved, 'slider_name' : whichCat, 'filter_type' : 'categorical_removed'};
-    		my.loading_indicator_state.sidebar = true;
-        	my.trackPage('goals/filter/categorical_removed', info);
-    		submitCategorical();
-    		return false;
-    	});
+    	//$('.removefilter').live('click', function(){
+    	//	var whichRemoved = $(this).attr('data-id');
+    	//	var whichCat = $(this).attr('data-cat');
+    	//	$('#myfilter_'+whichCat).val(opt_removeStringWithToken($('#myfilter_'+whichCat).val(), whichRemoved, '*'));
+    	//	var info = {'chosen_categorical' : whichRemoved, 'slider_name' : whichCat, 'filter_type' : 'categorical_removed'};
+    	//	my.loading_indicator_state.sidebar = true;
+        //	my.trackPage('goals/filter/categorical_removed', info);
+    	//	submitCategorical();
+    	//	return false;
+    	//});
 
     	// From Compare
     	//Remove buttons on compare
@@ -1035,73 +996,65 @@ optemo_module = (function (my){
 
     	//Pagination links
         // This convoluted line takes the second-last element in the list: "<< prev 1 2 3 4 next >>" and takes its numerical page value.
-    	var total_pages = parseInt($('.pagination').children().last().prev().html());
-    	$('.pagination a').live("click", function(){
-    		var url = $(this).attr('href')
-    		if (url.match(/\?/))
-    			url +='&ajax=true'
-    		else
-    			url +='?ajax=true'
-    		if ($(this).hasClass('next_page'))
-        		my.trackPage('goals/next', {'filter_type' : 'next' , 'page_number' : parseInt($('.pagination .current').html()), 'total_number_of_pages' : total_pages});
-    		else
-    		    my.trackPage('goals/next', {'filter_type' : 'next_number' , 'page_number' : parseInt($(this).html()), 'total_number_of_pages' : total_pages});
-		    my.loading_indicator_state.main = true;
-    		my.ajaxcall(url);
-    		return false;
-    	});
+    	//var total_pages = parseInt($('.pagination').children().last().prev().html());
+    	//$('.pagination a').live("click", function(){
+    	//	var url = $(this).attr('href')
+    	//	if (url.match(/\?/))
+    	//		url +='&ajax=true'
+    	//	else
+    	//		url +='?ajax=true'
+    	//	if ($(this).hasClass('next_page'))
+        //		my.trackPage('goals/next', {'filter_type' : 'next' , 'page_number' : parseInt($('.pagination .current').html()), 'total_number_of_pages' : total_pages});
+    	//	else
+    	//	    my.trackPage('goals/next', {'filter_type' : 'next_number' , 'page_number' : parseInt($(this).html()), 'total_number_of_pages' : total_pages});
+		//    my.loading_indicator_state.main = true;
+    	//	my.ajaxcall(url);
+    	//	return false;
+    	//});
 
     	// Add to cart buy link
-    	$('.buylink, .buyimg').live("click", function(){
-    		var buyme_id = $(this).attr('product');
-    		my.trackPage('goals/addtocart', {'product_picked' : buyme_id, 'filter_type' : 'addtocart'});
-    	});
+    	//$('.buylink, .buyimg').live("click", function(){
+    	//	var buyme_id = $(this).attr('product');
+    	//	my.trackPage('goals/addtocart', {'product_picked' : buyme_id, 'filter_type' : 'addtocart'});
+    	//});
 
         // Choose a grouping via group button rather than drop-down (effect is the same as the select boxes)
-    	$('.title').live('click', function(){
-    		if ($(this).find('.choose_group').length) { // This is a categorical feature
-        	    group_element = $(this).find('.choose_group');
-            	var whichThingSelected = group_element.attr('data-min');
-            	var categorical_filter_name = group_element.attr('data-grouping');
-            	if($('#myfilter_'+categorical_filter_name).val().match(whichThingSelected) === null)
-                	$('#myfilter_'+categorical_filter_name).val(opt_appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
-            	var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : categorical_filter_name, 'filter_type' : 'categorical_from_groups'};
-            	my.trackPage('goals/filter/categorical_from_groups', info);
-            	submitCategorical();
-                return false;
-            }
-            else { // This is a continuous feature
-                group_element = $(this).find('.choose_cont_range');
-                feat = group_element.attr('data-grouping');
-        	    lowerbound = group_element.attr('data-min');
-        	    upperbound = group_element.attr('data-max');
-        	    var arguments_to_send = [];
-        	    arguments = $("#filter_form").serialize().split("&");
-        	    for (i=0; i<arguments.length; i++)
-                {
-                    if (arguments[i].match(feat)) {
-                        split_arguments = arguments[i].split("=")
-                        if (arguments[i].match(/min/))
-                            split_arguments[1] = lowerbound;
-                        else
-                            split_arguments[1] = upperbound;
-                        arguments[i] = split_arguments.join("=");
-                    }
-                    if (!(arguments[i].match(/^superfluous/)))
-                        arguments_to_send.push(arguments[i]);
-                }
-            	my.trackPage('goals/filter/continuous_from_groups', {'filter_type' : 'continuous_from_groups', 'feature_name': group_element.attr('data-grouping'), 'selected_continuous_min' : lowerbound, 'selected_continuous_max' : upperbound});
-                my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
-        	}
-    	});
-
-    	//Show Additional Features
-    	$('#morefilters').live('click', function(){
-    		$('.extra').show("slide",{direction: "up"},100);
-    		$(this).css('display','none');
-    		$('#lessfilters').css('display','block');
-    		return false;
-    	});
+    	//$('.title').live('click', function(){
+    	//	if ($(this).find('.choose_group').length) { // This is a categorical feature
+        //	    group_element = $(this).find('.choose_group');
+        //    	var whichThingSelected = group_element.attr('data-min');
+        //    	var categorical_filter_name = group_element.attr('data-grouping');
+        //    	if($('#myfilter_'+categorical_filter_name).val().match(whichThingSelected) === null)
+        //        	$('#myfilter_'+categorical_filter_name).val(opt_appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
+        //    	var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : categorical_filter_name, 'filter_type' : 'categorical_from_groups'};
+        //    	my.trackPage('goals/filter/categorical_from_groups', info);
+        //    	submitCategorical();
+        //        return false;
+        //    }
+        //    else { // This is a continuous feature
+        //        group_element = $(this).find('.choose_cont_range');
+        //        feat = group_element.attr('data-grouping');
+        //	    lowerbound = group_element.attr('data-min');
+        //	    upperbound = group_element.attr('data-max');
+        //	    var arguments_to_send = [];
+        //	    arguments = $("#filter_form").serialize().split("&");
+        //	    for (i=0; i<arguments.length; i++)
+        //        {
+        //            if (arguments[i].match(feat)) {
+        //                split_arguments = arguments[i].split("=")
+        //                if (arguments[i].match(/min/))
+        //                    split_arguments[1] = lowerbound;
+        //                else
+        //                    split_arguments[1] = upperbound;
+        //                arguments[i] = split_arguments.join("=");
+        //            }
+        //            if (!(arguments[i].match(/^superfluous/)))
+        //                arguments_to_send.push(arguments[i]);
+        //        }
+        //    	my.trackPage('goals/filter/continuous_from_groups', {'filter_type' : 'continuous_from_groups', 'feature_name': group_element.attr('data-grouping'), 'selected_continuous_min' : lowerbound, 'selected_continuous_max' : upperbound});
+        //        my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
+        //	}
+    	//});
 
     	$('.removesearch').live('click', function(){
     		$('#previous_search_word').val('');
@@ -1111,14 +1064,7 @@ optemo_module = (function (my){
         	return false;
      	});
 
-    	//Hide Additional Features
-    	$('#lessfilters').live('click', function(){
-    		$('.extra').hide("slide",{direction: "up"},100);
-    		$(this).css('display','none');
-    		$('#morefilters').css('display','block');
-    		return false;
-    	});
-		$('.binary_filter_text').live('click', function(){
+		$('.binary_filter_text:not(.disabled)').live('click', function(){
 			var checkbox = $(this).siblings('input');
 			var whichbox = checkbox.attr('id');
     		var box_value = checkbox.attr('checked') ? 100 : 0;
@@ -1167,10 +1113,10 @@ optemo_module = (function (my){
 			return false;
 		});
 
-		$(".demo_selector select").live('change', function(){
-			var url = "http://"+$(".demo_selector select:last").val()+"."+$(".demo_selector select:first").val()+".demo.optemo.com";
-			window.location = url;
-		});
+		//$(".demo_selector select").live('change', function(){
+		//	var url = "http://"+$(".demo_selector select:last").val()+"."+$(".demo_selector select:first").val()+".demo.optemo.com";
+		//	window.location = url;
+		//});
 
 		$(".swatch").live('click', function(){
 			$(this).toggleClass('selected_swatch');
@@ -1259,7 +1205,6 @@ optemo_module = (function (my){
     };
 
     my.DBinit = function() {
-        var model = "";
     	if (my.IS_DRAG_DROP_ENABLED)
     	{
     		// Make item boxes draggable. This is a jquery UI builtin.
@@ -1296,16 +1241,17 @@ optemo_module = (function (my){
             }    	    
     	}
 
-    	//Autocomplete for searchterms
-    	if (typeof(my.MODEL_NAME) != undefined && my.MODEL_NAME != null) // This check is needed for embedding; different checks for different browsers
-    	    model = my.MODEL_NAME.toLowerCase();
-    	// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
-    	if (typeof(model + "_searchterms") != undefined) { // It could happen for one reason or another. This way, it doesn't break the rest of the script
-    	    var terms = window[model + "_searchterms"]; // terms now = ["waterproof", "digital", ... ] using square bracket notation
-        	$("#myfilter_search").autocomplete({
-        	    source: terms
-        	});
-    	}
+	    //var model = "";
+    	////Autocomplete for searchterms
+    	//if (typeof(my.MODEL_NAME) != undefined && my.MODEL_NAME != null) // This check is needed for embedding; different checks for different browsers
+    	//    model = my.MODEL_NAME.toLowerCase();
+    	//// Now, evaluate the string to get the actual array, defined in autocomplete_terms.js and auto-built by the rake task autocomplete:fetch
+    	//if (typeof(model + "_searchterms") != undefined) { // It could happen for one reason or another. This way, it doesn't break the rest of the script
+    	//    var terms = window[model + "_searchterms"]; // terms now = ["waterproof", "digital", ... ] using square bracket notation
+        //	$("#myfilter_search").autocomplete({
+        //	    source: terms
+        //	});
+    	//}
 
     	// In simple view, select an aspect to create viewable groups
     	//$('.groupby').unbind('click').click(function(){
@@ -1482,33 +1428,33 @@ optemo_module = (function (my){
     //--------------------------------------//
 
     // Takes an array of div IDs and removes either inline styles or a named class style from all of them.
-    my.clearStyles = function(nameArray, styleclassname) {
-    	if (nameArray.constructor == Array) {
-    		if (styleclassname != '') { // We have a style name, so remove it from each div id that was passed in
-    			for (i in nameArray) { // iterate over all elements of array
-    				if ($('#' + nameArray[i]).length) { // the element exists
-    					$("#" + nameArray[i]).removeClass(styleclassname);
-    				}
-    			}
-    		} else { // No style name. Take out inline styles.
-    			for (i in nameArray) { // iterate over all elements of array
-    				if ($('#' + nameArray[i]).length) { // the element exists
-    					$("#" + nameArray[i]).removeAttr('style');
-    				}
-    			}
-    		}
-    	} else if (nameArray != '') { // there could be a single string passed also
-    		if ($('#' + nameArray).length) { // the element exists
-    			if (styleclassname != '') { // There is a style name for a single element.
-    				$('#' + nameArray).removeClass(styleclassname);
-                } else {// Remove the inline styling by default
-    				$('#' + nameArray).removeAttr('style');
-    			}
-    		}
-    		// If the element doesn't exist, don't try to access it via jquery, just do nothing.
-    	}
-    	else { } // There is no array or string passed. Do nothing.
-    };
+    //my.clearStyles = function(nameArray, styleclassname) {
+    //	if (nameArray.constructor == Array) {
+    //		if (styleclassname != '') { // We have a style name, so remove it from each div id that was passed in
+    //			for (i in nameArray) { // iterate over all elements of array
+    //				if ($('#' + nameArray[i]).length) { // the element exists
+    //					$("#" + nameArray[i]).removeClass(styleclassname);
+    //				}
+    //			}
+    //		} else { // No style name. Take out inline styles.
+    //			for (i in nameArray) { // iterate over all elements of array
+    //				if ($('#' + nameArray[i]).length) { // the element exists
+    //					$("#" + nameArray[i]).removeAttr('style');
+    //				}
+    //			}
+    //		}
+    //	} else if (nameArray != '') { // there could be a single string passed also
+    //		if ($('#' + nameArray).length) { // the element exists
+    //			if (styleclassname != '') { // There is a style name for a single element.
+    //				$('#' + nameArray).removeClass(styleclassname);
+    //            } else {// Remove the inline styling by default
+    //				$('#' + nameArray).removeAttr('style');
+    //			}
+    //		}
+    //		// If the element doesn't exist, don't try to access it via jquery, just do nothing.
+    //	}
+    //	else { } // There is no array or string passed. Do nothing.
+    //};
 
     //--------------------------------------//
     //                Data                  //
@@ -1660,96 +1606,96 @@ $(function(){
 //	language = (/^\s*English/.test($(".languageoptions:first").html())==true)?'en':'fr';
 
 	//Decrypt encrypted links
-	$('a.decrypt').each(function () {
-		$(this).attr('href',$(this).attr('href').replace(/[a-zA-Z]/g, function(c){
-			return String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26);
-			}));
-	});
+	//$('a.decrypt').each(function () {
+	//	$(this).attr('href',$(this).attr('href').replace(/[a-zA-Z]/g, function(c){
+	//		return String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26);
+	//		}));
+	//});
 
-	if (optemo_module.DIRECT_LAYOUT) {
-	    //Tour section
-	    // There is some code duplication going on here that would be good to condense.
-	    // The only real differences here are where the tour goes and what is drawn attention to, 
-	    // so this should be possible to condense into about half the amount of code or less
-    	$('#popupTour1, #popupTour2, #popupTour3, #popupTour4').each(function(){
-    		$(this).find('.deleteX').click(function(){
-    			$(this).parent().fadeOut("slow");
-    			optemo_module.clearStyles(["box0", "filterbar", "savebar", "groupby0"], 'tourDrawAttention');
-    			$("#box0").removeClass('tourDrawAttention');
-        		trackPage('goals/tourclose');
-    			return false;
-    		});
-    	});
-
-    	$('#popupTour1').find('a.popupnextbutton').click(function(){
-    		var groupbyoffset = $("#groupby0").offset();
-    		$("#popupTour2").css({"position":"absolute", "top" : parseInt(groupbyoffset.top) - 120, "left" : parseInt(groupbyoffset.left) + 220}).fadeIn("slow");
-    		$("#popupTour1").fadeOut("slow");
-    		$("#groupby0").addClass('tourDrawAttention');
-    		$("#box0").removeClass('tourDrawAttention');
-    		trackPage('goals/tournext', {'tour_page_number' : 2});
-    	});
-
-    	$('#popupTour2').find('a.popupnextbutton').click(function(){
-    		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
-    		$("#popupTour3").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
-    		$("#popupTour2").fadeOut("slow");
-    		$("#filterbar").addClass('tourDrawAttention');
-    		$("#groupby0").removeClass('tourDrawAttention');
-    		trackPage('goals/tournext', {'tour_page_number' : 3});
-    	});
-
-    	$('#popupTour3').find('a.popupnextbutton').click(function(){
-    		var comparisonposition = $("#savebar").offset();
-    		$("#popupTour4").css({"position":"absolute", "top" : parseInt(comparisonposition.top) - 260, "left" : parseInt(comparisonposition.left) + 70}).fadeIn("slow");
-    		$("#popupTour3").fadeOut("slow");
-    		$("#savebar").addClass('tourDrawAttention');
-    		$("#filterbar").removeClass('tourDrawAttention');
-    		trackPage('goals/tournext', {'tour_page_number' : 4});
-    	});
-
-    	$('#popupTour4').find('a.popupnextbutton').click(function(){
-    		$("#popupTour4").fadeOut("slow");
-    		$("#savebar").removeClass('tourDrawAttention');
-    		trackPage('goals/tourclose');
-    	});
-    } else {
-    	//Tour section
-    	$('#popupTour1, #popupTour2, #popupTour3').each(function(){
-    		$(this).find('.deleteX').click(function(){
-    			$(this).parent().fadeOut("slow");
-    			optemo_module.clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
-    			$("#sim0").removeClass('tourDrawAttention');
-        		trackPage('goals/tourclose');
-    			return false;
-    		});
-    	});
-
-    	$('#popupTour1').find('a.popupnextbutton').click(function(){
-    		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
-    		$("#popupTour2").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
-    		$("#popupTour1").fadeOut("slow");
-    		$("#filterbar").addClass('tourDrawAttention');
-    		$("#sim0").removeClass('tourDrawAttention');
-    		$("#sim0").parent().removeClass('tourDrawAttention');
-    		trackPage('goals/tournext', {'tour_page_number' : 2});
-    	});
-
-    	$('#popupTour2').find('a.popupnextbutton').click(function(){
-    		var comparisonposition = $("#savebar").offset();
-    		$("#popupTour3").css({"position":"absolute", "top" : parseInt(comparisonposition.top) - 260, "left" : parseInt(comparisonposition.left) + 70}).fadeIn("slow");
-    		$("#popupTour2").fadeOut("slow");
-    		$("#savebar").addClass('tourDrawAttention');
-    		$("#filterbar").removeClass('tourDrawAttention');
-    		trackPage('goals/tournext', {'tour_page_number' : 3});
-    	});
-
-    	$('#popupTour3').find('a.popupnextbutton').click(function(){
-    		$("#popupTour3").fadeOut("slow");
-    		$("#savebar").removeClass('tourDrawAttention');
-    		trackPage('goals/tourclose');
-    	});
-	}
+	//if (optemo_module.DIRECT_LAYOUT) {
+	//    //Tour section
+	//    // There is some code duplication going on here that would be good to condense.
+	//    // The only real differences here are where the tour goes and what is drawn attention to, 
+	//    // so this should be possible to condense into about half the amount of code or less
+    //	$('#popupTour1, #popupTour2, #popupTour3, #popupTour4').each(function(){
+    //		$(this).find('.deleteX').click(function(){
+    //			$(this).parent().fadeOut("slow");
+    //			optemo_module.clearStyles(["box0", "filterbar", "savebar", "groupby0"], 'tourDrawAttention');
+    //			$("#box0").removeClass('tourDrawAttention');
+    //    		trackPage('goals/tourclose');
+    //			return false;
+    //		});
+    //	});
+    //
+    //	$('#popupTour1').find('a.popupnextbutton').click(function(){
+    //		var groupbyoffset = $("#groupby0").offset();
+    //		$("#popupTour2").css({"position":"absolute", "top" : parseInt(groupbyoffset.top) - 120, "left" : parseInt(groupbyoffset.left) + 220}).fadeIn("slow");
+    //		$("#popupTour1").fadeOut("slow");
+    //		$("#groupby0").addClass('tourDrawAttention');
+    //		$("#box0").removeClass('tourDrawAttention');
+    //		trackPage('goals/tournext', {'tour_page_number' : 2});
+    //	});
+    //
+    //	$('#popupTour2').find('a.popupnextbutton').click(function(){
+    //		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
+    //		$("#popupTour3").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
+    //		$("#popupTour2").fadeOut("slow");
+    //		$("#filterbar").addClass('tourDrawAttention');
+    //		$("#groupby0").removeClass('tourDrawAttention');
+    //		trackPage('goals/tournext', {'tour_page_number' : 3});
+    //	});
+    //
+    //	$('#popupTour3').find('a.popupnextbutton').click(function(){
+    //		var comparisonposition = $("#savebar").offset();
+    //		$("#popupTour4").css({"position":"absolute", "top" : parseInt(comparisonposition.top) - 260, "left" : parseInt(comparisonposition.left) + 70}).fadeIn("slow");
+    //		$("#popupTour3").fadeOut("slow");
+    //		$("#savebar").addClass('tourDrawAttention');
+    //		$("#filterbar").removeClass('tourDrawAttention');
+    //		trackPage('goals/tournext', {'tour_page_number' : 4});
+    //	});
+    //
+    //	$('#popupTour4').find('a.popupnextbutton').click(function(){
+    //		$("#popupTour4").fadeOut("slow");
+    //		$("#savebar").removeClass('tourDrawAttention');
+    //		trackPage('goals/tourclose');
+    //	});
+    //} else {
+    //	//Tour section
+    //	$('#popupTour1, #popupTour2, #popupTour3').each(function(){
+    //		$(this).find('.deleteX').click(function(){
+    //			$(this).parent().fadeOut("slow");
+    //			optemo_module.clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
+    //			$("#sim0").removeClass('tourDrawAttention');
+    //    		trackPage('goals/tourclose');
+    //			return false;
+    //		});
+    //	});
+    //
+    //	$('#popupTour1').find('a.popupnextbutton').click(function(){
+    //		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
+    //		$("#popupTour2").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
+    //		$("#popupTour1").fadeOut("slow");
+    //		$("#filterbar").addClass('tourDrawAttention');
+    //		$("#sim0").removeClass('tourDrawAttention');
+    //		$("#sim0").parent().removeClass('tourDrawAttention');
+    //		trackPage('goals/tournext', {'tour_page_number' : 2});
+    //	});
+    //
+    //	$('#popupTour2').find('a.popupnextbutton').click(function(){
+    //		var comparisonposition = $("#savebar").offset();
+    //		$("#popupTour3").css({"position":"absolute", "top" : parseInt(comparisonposition.top) - 260, "left" : parseInt(comparisonposition.left) + 70}).fadeIn("slow");
+    //		$("#popupTour2").fadeOut("slow");
+    //		$("#savebar").addClass('tourDrawAttention');
+    //		$("#filterbar").removeClass('tourDrawAttention');
+    //		trackPage('goals/tournext', {'tour_page_number' : 3});
+    //	});
+    //
+    //	$('#popupTour3').find('a.popupnextbutton').click(function(){
+    //		$("#popupTour3").fadeOut("slow");
+    //		$("#savebar").removeClass('tourDrawAttention');
+    //		trackPage('goals/tourclose');
+    //	});
+	//}
 
 /*	// On escape press. This is used for exiting the tour but would interfere with other uses of escape (canceling the autocomplete box for example)
 	$(document).keydown(function(e){
@@ -1761,24 +1707,24 @@ $(function(){
 		}
 	});
 */
-	launchtour = (function () {
-	    if (optemo_module.DIRECT_LAYOUT) {
-	        // Right now the position of the tour pop-up is hard-coded based on a particular element name.
-		    var browseposition = $("#box0").offset();
-    		$("#box0").addClass('tourDrawAttention');
-    		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
-    		trackPage('goals/tournext', {'tour_page_number' : 1});
-		} else {
-    		var browseposition = $("#sim0").offset();
-    		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
-    		$("#sim0").addClass('tourDrawAttention');
-    		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
-    		trackPage('goals/tournext', {'tour_page_number' : 1});
-    	}
-		return false;
-	});
-	if ($('#tourautostart').length) { launchtour; } //Automatically launch tour if appropriate
-	$("#tourButton a").click(launchtour); //Launch tour when this is clicked
+	//launchtour = (function () {
+	//    if (optemo_module.DIRECT_LAYOUT) {
+	//        // Right now the position of the tour pop-up is hard-coded based on a particular element name.
+	//	    var browseposition = $("#box0").offset();
+    //		$("#box0").addClass('tourDrawAttention');
+    //		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
+    //		trackPage('goals/tournext', {'tour_page_number' : 1});
+	//	} else {
+    //		var browseposition = $("#sim0").offset();
+    //		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
+    //		$("#sim0").addClass('tourDrawAttention');
+    //		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
+    //		trackPage('goals/tournext', {'tour_page_number' : 1});
+    //	}
+	//	return false;
+	//});
+	//if ($('#tourautostart').length) { launchtour; } //Automatically launch tour if appropriate
+	//$("#tourButton a").click(launchtour); //Launch tour when this is clicked
 
 	// Load the classic theme for galleria, the jquery image slideshow plugin we're using (jquery.galleria.js)
 //    Galleria.loadTheme('/javascripts/galleria.classic.js');
