@@ -58,7 +58,7 @@
 		    <% next if f_name == "price" %>
 			<% f = @allspecs[f_name] %>
 			<% if !f.nil? %>
-				 	<% save[i] = '<span class="detail_label">' + (t 'products.'+ f_name) + ': </span>' + (f_name == 'price' ? "$" : "" ) + ((@product.display(f_name, f)).split('*').each(&:strip).uniq.join(" ")) + ' ' + (f_name == "price" ? "" : t('products.'+ f_name+'unit', :default => '')) %>
+				 	<% save[i] = '<span class="detail_label">' + (t 'products.'+ f_name) + ': </span>' + (f_name == 'price' ? "$" : "" ) + number_with_delimiter(((@product.display(f_name, f)).split('*').each(&:strip).uniq.join(" "))) + ' ' + (f_name == "price" ? "" : t('products.'+ f_name+'unit', :default => '')) %>
 			<% end %>
 		<% end %>
 		<%# raw save.compact.join(", ") %>
@@ -89,11 +89,11 @@
         </div>
         <div class="right" style="width:160px">
     		<% if @allspecs["onsale"] %>
-    		<div style="font-size: 1.2em; height: 20px;"><span class="left"><%=t('products.show.regularprice')%></span><span class="right"><%= @allspecs["price"] %></span></div>
-    	    <div style="color: #f00; font-size: 1.3em; font-weight: bold;height: 20px;"><span class="left"><%=t('products.show.saleprice')%></span><span class="right"><%= @allspecs["saleprice"] %></span></div>
-    	    <div style = "clear: both;margin-bottom: 5px;height: 18px;"><span class="left"><%=t('products.show.saleends')%></span><span class="right"><%= @allspecs["saleEndDate"][/^(\w|\/)+/] %></span></div>
+    		<div style="font-size: 1.2em; height: 20px;"><span class="left"><%=t('products.show.regularprice')%></span><span class="right"><%= number_with_delimiter(@allspecs["price"]) %></span></div>
+    	    <div style="color: #f00; font-size: 1.3em; font-weight: bold;height: 20px;"><span class="left"><%=t('products.show.saleprice')%></span><span class="right"><%= number_with_delimiter(@allspecs["saleprice"]) %></span></div>
+    	    <div style = "clear: both;margin-bottom: 5px;height: 18px;"><span class="left"><%=t('products.show.saleends')%></span><span class="right"><%=  fr?.empty? ? @allspecs["saleEndDate"][/^(\w|\/)+/] : @allspecs["saleEndDate"][/^(\w|\/)+/].gsub("/", "-") %></span></div>
     		<% else %>
-    		<div style="font-size: 1.5em; height: 20px;"><span class="left"><%=t('products.show.ourprice')%></span><span class="right"><%= @allspecs["price"] %></span></div>
+    		<div style="font-size: 1.5em; height: 20px;"><span class="left"><%=t('products.show.ourprice')%></span><span class="right"><%= number_with_delimiter(@allspecs["price"]) %></span></div>
     		<% end %>
     		<div class="left" style="height: 18px;"><a href="http://www.bestbuy.ca/en-CA/help/what-is-your-lowest-price-guarantee/hc1001.aspx?path=27eeec1b59d42df5dfc298ab6993d9dfen15&HelpTitleId=HC1001" class="popup-link"><%=t('products.show.lowestprice')%></a></div>
     		<div class="pricespacer"></div>

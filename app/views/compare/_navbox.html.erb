@@ -17,12 +17,12 @@
 		
 			<div class="price">
 				<% if BinSpec.cache_all(product.id)["onsale"] %>
-					<%= t('products.compare.onsale')+": $" + "%.2f" % ContSpec.cache_all(product.id)["saleprice"] %>
+					<%= t('products.compare.onsale')+": $" +number_with_delimiter(ContSpec.cache_all(product.id)["saleprice"]) %>
 				<% else %>
-					$<%= "%.2f" % ContSpec.cache_all(product.id)["price"] %>
+					$<%= number_with_delimiter(ContSpec.cache_all(product.id)["price"]) %>
 				<% end %>
 			</div>
-			<div class="productspecs"><%= featuretext(product.id) %></div>
+			<div class="productspecs"><%=featuretext(product.id) %></div>
 		</div>
 	</div>
 
