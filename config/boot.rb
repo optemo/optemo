@@ -1,4 +1,7 @@
 require 'rubygems'
+#These next 2 lines for Bundler 1.0.10 using psych instead of syck
+require 'yaml'
+YAML::ENGINE.yamler= 'syck'
 
 # Set up gems listed in the Gemfile.
 gemfile = File.expand_path('../../Gemfile', __FILE__)

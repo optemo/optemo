@@ -185,7 +185,12 @@ class Search < ActiveRecord::Base
   
   def sim_products
     if seesim
-      @simproducts ||= products & Cluster.cached(seesim)
+      begin
+        @simproducts ||= products & Cluster.cached(seesim)
+      rescue IOError
+        #In case the similar products can't be found, just load the filtered products instead of throwing an error
+        products
+      end
     else
       products
     end

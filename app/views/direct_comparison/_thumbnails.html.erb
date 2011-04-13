@@ -7,9 +7,9 @@
    	<%= link_to thumbnails.small_title, product_path(:name => thumbnails.descurl, :id => thumbnails.id), :class => 'easylink', :'data-id' => thumbnails.id %>
 	<div class="thumbnaildetails">
     	<% if binspecs["onsale"] %>
-    		<%= t('compare.index.onsale')+": "+"$%.2f" % contspecs["saleprice"] %>
+    		<%= t('compare.index.onsale')+": "+number_with_delimiter(contspecs["saleprice"]) %>
     	<% else %>
-    		$<%= "%.2f" % contspecs["price"] %>
+    		$<%= number_with_delimiter(contspecs["price"]) %>
     	<% end %>
 	</div>
 	</div>

@@ -67,6 +67,7 @@ class ComparableSet
   end
   
   def self.from_storage(storage)
+    raise IOError if storage.nil?
     set = new
     storage.each do |item|
       set.add(ProductAndSpec.from_storage(item))
