@@ -6,7 +6,14 @@ class ProductAndSpec
   end
   
   def self.from_storage(storage)
-    names_in, vals_in = storage
+    #Handle straight sql query from search_products
+    if storage.length == 3
+      product_id, names_in, vals_in = storage
+      names_in += ",id"
+      vals_in += ",#{product_id}"
+    else
+      names_in, vals_in = storage
+    end
     p = new
     vals = vals_in.split(",")
     names_in.split(",").each_with_index do |name,i|

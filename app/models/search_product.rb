@@ -26,8 +26,10 @@ class SearchProduct < ActiveRecord::Base
       else
         res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[]]).conts_keywords.cats(mycats).bins(mybins).group("search_products.product_id")
       end
-      cached = CachingMemcached.cache_lookup("Products-#{res.to_sql.hash}") do
-        result = res.map{|rel| [rel.names+",id",rel.vals+",#{rel.product_id}"]}
+      q = res.to_sql
+      cached = CachingMemcached.cache_lookup("Products-#{q.hash}") do
+        #We don't want to store the activerecord here
+        result = self.connection.execute(q).to_a
         raise SearchError, "No products match that search criteria for #{Session.product_type}" if result.empty?
         result
       end
