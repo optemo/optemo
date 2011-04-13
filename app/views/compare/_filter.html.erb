@@ -6,7 +6,7 @@
 		<span><%= t('products.compare.reset') %></span>
 	<% end %>
 </h2>
-<%= form_for(Search.new, :html => {:id => 'filter_form'}) do %>
+<%= form_tag("/compare", :id => 'filter_form') do %>
 
   <% i = 0 # Yes, I know, this isn't Rails-y, but we need to assign a different UI position to each feature of all kinds, in order. %> 
   <% @s.categorical["filter"].each_with_index do |feat, index| %>

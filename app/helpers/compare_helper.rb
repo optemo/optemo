@@ -148,7 +148,7 @@ module CompareHelper
 
   def popuptext(number, text, nexttext="Next &gt;&gt;")
     "<div id='popupTour#{number}' class='popupTour'>" + \
-    link_to(image_tag('close.png'), "#", :class => 'deleteX') + \
+    link_to("X", "#", :class => 'deleteX') + \
     	"<h1>Optemo " + (Session.directLayout ? 'Direct' : 'Assist').html_safe + " Tour</h1>
     	<p>#{text}
     		<br/><br/>
@@ -309,7 +309,7 @@ module CompareHelper
   end
   
   def unchecked_cat(feat,option)
-		dobj = Userdatacat.find_all_by_search_id_and_name(Session.search.id,feat).select{|ud|ud.value == option}.first
+    dobj = Session.search.userdatacats.select{|ud|ud.name == feat && ud.value == option}.first
 		dobj.nil? || dobj.value == false
   end
 end
