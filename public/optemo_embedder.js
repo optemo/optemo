@@ -76,7 +76,7 @@ var optemo_socket_activator = (function () {
     	            script_nodes_to_append = Array();
     	            for (var i = 0; i < scripts.length; i++)
     	            {
-    	                srcs = scripts[i].match(/javascripts[^?]+/); // We might want to make a check for src instead.
+    	                srcs = scripts[i].match(/javascripts[^"]+/); // We might want to make a check for src instead.
     	                if (srcs == null) {
     	                    scripts[i] = '<script type="text/javascript">';
     	                } else if (typeof(srcs) == "object" && srcs[0] && srcs[0].match(/easyXDM/)){
