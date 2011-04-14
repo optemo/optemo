@@ -1055,13 +1055,13 @@ optemo_module = (function (my){
         //	}
     	//});
 
-    	$('.removesearch').live('click', function(){
-    		$('#previous_search_word').val('');
-			$("#myfilter_search").val("");
-    		$(this).parent().remove();
-			submitCategorical();
-        	return false;
-     	});
+    	//$('.removesearch').live('click', function(){
+    	//	$('#previous_search_word').val('');
+		//	$("#myfilter_search").val("");
+    	//	$(this).parent().remove();
+		//	submitCategorical();
+        //	return false;
+     	//});
 
 		$('.binary_filter_text').live('click', function(){
 			if (my.loading_indicator_state.disable) return false;
