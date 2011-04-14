@@ -976,7 +976,7 @@ optemo_module = (function (my){
 			if (!(t.hasClass('productimg'))) t = t.parent().parent().find('img.productimg');
         	var product_title = t.attr('title');
         	if (product_title == undefined) product_title = t.html(); // This is a text link
-        	my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids, 'imgurl' : product_image.attr('src')});
+        	my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids, 'imgurl' : t.attr('src')});
         	// Using /product/_/ because savedproducts do not have an href (otherwise it would need to be stored in the cookie)
         	// _ is the brand name and model
 			my.applySilkScreen((href || '/product/_/' + currentelementid) +'?plain=true',null, 560, 580);
