@@ -972,10 +972,10 @@ optemo_module = (function (my){
             // This is the show page
 			var href = $(this).attr('href') || $(this).parent().siblings('.productinfo').children('.easylink').attr('href'),
         	ignored_ids = getAllShownProductSkus(),
-			currentelementid = $(this).attr('data-sku') || href.match(/\d+$/);
-			var product_image = $(this);
-			if (!(product_image.hasClass('productimg'))) product_image = product_image.find('img.productimg');
-        	product_title = product_image.attr('title');
+			currentelementid = $(this).attr('data-sku') || href.match(/\d+$/), t = $(this);
+			if (!(t.hasClass('productimg'))) t = t.parent().parent().find('img.productimg');
+        	var product_title = t.attr('title');
+        	if (product_title == undefined) product_title = t.html(); // This is a text link
         	my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids, 'imgurl' : product_image.attr('src')});
         	// Using /product/_/ because savedproducts do not have an href (otherwise it would need to be stored in the cookie)
         	// _ is the brand name and model
