@@ -79,7 +79,7 @@ task :fetchAutocomplete do
 end
 
 task :redopermissions do
-  run "find #{current_path} #{current_path}/../../shared ! -perm /g+w -execdir chmod g+w {} +"
+  run "find #{current_path} #{current_path}/../../shared -user `whoami` ! -perm /g+w -execdir chmod g+w {} +"
 end
 
 # redopermissions is last, so that if it fails due to the searchd pid, no other tasks get blocked
