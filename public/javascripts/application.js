@@ -972,8 +972,7 @@ optemo_module = (function (my){
             // This is the show page
 			var href = $(this).attr('href') || $(this).parent().siblings('.productinfo').children('.easylink').attr('href'),
         	ignored_ids = getAllShownProductSkus(),
-			currentelementid = $(this).attr('data-sku') || href.match(/\d+$/),
-			var t = $(this);
+			currentelementid = $(this).attr('data-sku') || href.match(/\d+$/), t = $(this);
 			if (!(t.hasClass('productimg'))) t = t.parent().parent().find('img.productimg');
         	var product_title = t.attr('title');
         	if (product_title == undefined) product_title = t.html(); // This is a text link
