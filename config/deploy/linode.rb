@@ -41,7 +41,7 @@ desc "Sync the public/assets directory."
 end
 
 desc "Create asset packages for production" 
-task :update_code, :roles => [:web] do
+task :build_assets, :roles => [:web] do
   run <<-EOF
     cd #{release_path} && rake asset:packager:build_all
   EOF
@@ -88,10 +88,10 @@ task :warmupserver do
 end
 
 # redopermissions is last, so that if it fails due to the searchd pid, no other tasks get blocked
-after :deploy, "update_code"
-after :update_code, "serversetup"
+after "deploy:symlink", "build_assets"
+after :build_assets, "serversetup"
 #after :serversetup, "reindex"
 #after :reindex, "restartmemcached"
 #after :restartmemcached, "fetchAutocomplete"
 after :serversetup, "redopermissions"
-after :redopermissions, "warmupserver"
+after "deploy:restart", "warmupserver"
