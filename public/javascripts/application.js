@@ -78,12 +78,15 @@ optemo_module = (function (my){
     // Language support - disabled for now
     // var language;
     // The following variables are pulled from optemo.html.erb
-    my.IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
-    my.MODEL_NAME = $("#modelname").html();
-    var VERSION = $("#version").html();
-    my.DIRECT_LAYOUT = ($('#directLayout').html() == "true");
-    var SESSION_ID = parseInt($('#seshid').html());
-    var AB_TESTING_TYPE = parseInt($('#ab_testing_type').html());
+    // They are in a separate function like this so that the embedder can call them at the appropriate time.
+    my.initiateModuleVariables = function () {
+        my.IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
+        my.MODEL_NAME = $("#modelname").html();
+        var VERSION = $("#version").html();
+        my.DIRECT_LAYOUT = ($('#directLayout').html() == "true");
+        var SESSION_ID = parseInt($('#seshid').html());
+        var AB_TESTING_TYPE = parseInt($('#ab_testing_type').html());
+    }
 
     //--------------------------------------//
     //    Show Page Pre-loader & Helpers    //
@@ -897,6 +900,7 @@ optemo_module = (function (my){
             $('#tab_selected').removeAttr('id');
     	    el.attr('id', 'tab_selected');
 			$('#'+el.attr('data-tab')).show();
+			my.trackPage('goals/specs_and_reviews', {'filter_type' : 'specs_and_reviews', 'feature_name' : el.attr('data-tab')});
 			return false;
 		});
 
@@ -993,6 +997,15 @@ optemo_module = (function (my){
     		return false;
     	});
 
+    	// Add to cart buy link
+    	$('.addtocart').live("click", function(){
+    		my.trackPage('goals/addtocart', {'product_picked' : $(this).attr('data-sku'), 'filter_type' : 'addtocart', 'product_picked_name' : $(this).attr('data-name')});
+    	});
+
+    	$('.bestbuy_pdp').live("click", function(){
+    		my.trackPage('goals/bestbuy_pdp', {'product_picked' : $(this).attr('data-sku'), 'filter_type' : 'bestbuy_pdp', 'product_picked_name' : $(this).attr('data-name')});
+    	});
+
     	//Pagination links
         // This convoluted line takes the second-last element in the list: "<< prev 1 2 3 4 next >>" and takes its numerical page value.
     	//var total_pages = parseInt($('.pagination').children().last().prev().html());
@@ -1009,12 +1022,6 @@ optemo_module = (function (my){
 		//    my.loading_indicator_state.main = true;
     	//	my.ajaxcall(url);
     	//	return false;
-    	//});
-
-    	// Add to cart buy link
-    	//$('.buylink, .buyimg').live("click", function(){
-    	//	var buyme_id = $(this).attr('product');
-    	//	my.trackPage('goals/addtocart', {'product_picked' : buyme_id, 'filter_type' : 'addtocart'});
     	//});
 
         // Choose a grouping via group button rather than drop-down (effect is the same as the select boxes)
@@ -1073,7 +1080,7 @@ optemo_module = (function (my){
 			else
 				checkbox.attr("checked", "checked");
     		my.loading_indicator_state.sidebar = true;
-    		my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox});
+    		my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox, 'filter_type': 'checkbox'});
     		submitCategorical();
 			return false;
 		});
@@ -1082,7 +1089,7 @@ optemo_module = (function (my){
     		var whichbox = $(this).attr('id');
     		var box_value = $(this).attr('checked') ? 100 : 0;
     		my.loading_indicator_state.sidebar = true;
-    		my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox});
+    		my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox, 'filter_type': 'checkbox'});
     		submitCategorical();
     	});
 
@@ -1099,7 +1106,7 @@ optemo_module = (function (my){
 				feat_obj.val(opt_removeStringWithToken(feat_obj.val(), $(this).attr('data-opt'), '*'));
 			}
     		my.loading_indicator_state.sidebar = true;
-    		my.trackPage('goals/filter/checkbox', {'feature_name' : whichcat});
+    		my.trackPage('goals/filter/checkbox', {'feature_name' : whichcat, 'filter_type' : 'brand'});
     		submitCategorical();
     	});
 
@@ -1600,6 +1607,14 @@ $(function(){
 		// Other init routines get run when they are needed.
 		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
 	}
+	
+	if (!(window.embedding_flag)) {
+	    // If we're not embedded, initialize these here.
+	    // Otherwise, initialize them in optemo_embedder.js once the DOM is loaded.
+	    optemo_module.initiateModuleVariables();
+    }
+    
+	
 	//Find product language - Not used at the moment ZAT 2010-03
 //	language = (/^\s*English/.test($(".languageoptions:first").html())==true)?'en':'fr';
 
