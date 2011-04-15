@@ -4,6 +4,13 @@ task :restart do
   system("touch tmp/debug.txt") if ENV["DEBUG"] == 'true'
 end
 
+namespace :cache do
+  desc 'Clear memcache'
+  task :clear => :environment do
+    Rails.cache.clear
+  end
+end
+
 desc "Run boostexter to generate strong hypothesis files or Parse boostexter strong hypothesis files and save in database"
 task :btxtr => :environment do
      $: << "#{Rails.root}/lib/cluster_labeling/boostexter_labels_rb"
