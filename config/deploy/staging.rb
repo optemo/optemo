@@ -46,6 +46,13 @@ desc "Sync the public/assets directory."
   end
 end
 
+namespace :cache do
+  desc 'Clear memcache'
+  task :clear do
+    run "rake -f #{current_path}/Rakefile cache:clear RAILS_ENV=production"
+  end
+end
+
 desc "Reindex search index"
 task :reindex do
   run "rake -f #{current_path}/Rakefile ts:conf RAILS_ENV=production"
