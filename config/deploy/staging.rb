@@ -38,19 +38,20 @@ desc "Sync the public/assets directory."
   task :restart do
     run "touch #{current_path}/tmp/restart.txt"
   end
-  desc "Create asset packages for production" 
-  task :after_update_code, :roles => [:web] do
-    run <<-EOF
-      cd #{release_path} && rake asset:packager:build_all
-    EOF
-  end
 end
 
 namespace :cache do
   desc 'Clear memcache'
   task :clear do
-    run "rake -f #{current_path}/Rakefile cache:clear RAILS_ENV=production"
+    
   end
+end
+
+desc "Create asset packages for production" 
+task :build_assets, :roles => [:web] do
+  run <<-EOF
+    cd #{release_path} && rake asset:packager:build_all
+  EOF
 end
 
 desc "Reindex search index"
@@ -67,10 +68,7 @@ task :serversetup do
 end
 
 task :restartmemcached do
-  run "ps ax | awk '/memcached/ && !/awk/ {print $1}' > tempfile"
-  sudo "xargs kill < tempfile"
-  run "rm tempfile"
-  run "memcached -d"
+  run "rake -f #{current_path}/Rakefile cache:clear RAILS_ENV=production"
 end
 
 task :fetchAutocomplete do
@@ -82,6 +80,7 @@ task :redopermissions do
 end
 
 # redopermissions is last, so that if it fails due to the searchd pid, no other tasks get blocked
-after :deploy, "serversetup"
+after "deploy:symlink", "build_assets"
+after :build_assets, "serversetup"
 after :serversetup, "restartmemcached"
 after :restartmemcached, "redopermissions"
