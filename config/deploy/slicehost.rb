@@ -69,10 +69,7 @@ task :serversetup do
 end
 
 task :restartmemcached do
-  run "ps ax | awk '/memcached/ && !/awk/ {print $1}' > tempfile"
-  sudo "xargs kill < tempfile"
-  run "rm tempfile"
-  run "memcached -d"
+  run "rake -f #{current_path}/Rakefile cache:clear RAILS_ENV=production"
 end
 
 task :fetchAutocomplete do
@@ -90,8 +87,6 @@ end
 # redopermissions is last, so that if it fails due to the searchd pid, no other tasks get blocked
 after "deploy:symlink", "build_assets"
 after :build_assets, "serversetup"
-#after :serversetup, "reindex"
-#after :reindex, "restartmemcached"
-#after :restartmemcached, "fetchAutocomplete"
-after :serversetup, "redopermissions"
+after :serversetup, "restartmemcached"
+after :restartmemcached, "redopermissions"
 after "deploy:restart", "warmupserver"
