@@ -197,12 +197,8 @@ var optemo_socket_activator = (function () {
                         
                         // Using setTimeout to fix an IE race condition. Spinner code will be redone hopefully sooner rather than later anyway, right?
                         setTimeout("myspinner = new optemo_module.spinner(\"myspinner\", 11, 20, 9, 5, \"#000\")", 800);
-                        optemo_module.IS_DRAG_DROP_ENABLED = (jQuery("#dragDropEnabled").html() === 'true');
-                        optemo_module.MODEL_NAME = jQuery("#modelname").html();
-                        optemo_module.DIRECT_LAYOUT = (jQuery('#directLayout').html() == "true");                    
-                        optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
-                        // Do we need to copy over other variables? AB_TESTING_TYPE and a couple others are locally scoped to optemo_module
-                    
+                        optemo_module.initiateModuleVariables();
+                        optemo_module.FilterAndSearchInit(); optemo_module.DBinit();                    
                     }
     		    },
     			parseData: function (data) {
