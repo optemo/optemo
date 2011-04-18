@@ -203,7 +203,7 @@ var optemo_socket_activator = (function () {
                             setTimeout("myspinner = new optemo_module.spinner(\"myspinner\", 11, 20, 9, 5, \"#000\")", 800);
                             optemo_module.initiateModuleVariables();
                             optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
-                        }
+                        });
                     }
     		    },
     			parseData: function (data) {
