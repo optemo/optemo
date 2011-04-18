@@ -4,15 +4,15 @@ class Product < ActiveRecord::Base
   has_many :cont_specs
   has_many :search_products
   
-  define_index do
-    #fields
-    indexes "LOWER(title)", :as => :title
-    indexes "product_type", :as => :product_type
-    set_property :enable_star => true
-    set_property :min_prefix_len => 2
-    ThinkingSphinx.updates_enabled = false
-    ThinkingSphinx.deltas_enabled = false
-  end
+  #define_index do
+  #  #fields
+  #  indexes "LOWER(title)", :as => :title
+  #  indexes "product_type", :as => :product_type
+  #  set_property :enable_star => true
+  #  set_property :min_prefix_len => 2
+  #  ThinkingSphinx.updates_enabled = false
+  #  ThinkingSphinx.deltas_enabled = false
+  #end
   
   def self.cached(id)
     CachingMemcached.cache_lookup("Product#{id}"){find(id)}
