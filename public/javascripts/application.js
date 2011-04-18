@@ -79,13 +79,15 @@ optemo_module = (function (my){
     // var language;
     // The following variables are pulled from optemo.html.erb
     // They are in a separate function like this so that the embedder can call them at the appropriate time.
+    // Note that those that are locally scoped to the optemo_module must be defined before this function call.
+    var VERSION, SESSION_ID, AB_TESTING_TYPE;
     my.initiateModuleVariables = function () {
         my.IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
         my.MODEL_NAME = $("#modelname").html();
-        var VERSION = $("#version").html();
+        VERSION = $("#version").html();
         my.DIRECT_LAYOUT = ($('#directLayout').html() == "true");
-        var SESSION_ID = parseInt($('#seshid').html());
-        var AB_TESTING_TYPE = parseInt($('#ab_testing_type').html());
+        SESSION_ID = parseInt($('#seshid').html());
+        AB_TESTING_TYPE = parseInt($('#ab_testing_type').html());
     }
 
     //--------------------------------------//
@@ -1613,10 +1615,6 @@ $(function(){
 	    // Otherwise, initialize them in optemo_embedder.js once the DOM is loaded.
 	    optemo_module.initiateModuleVariables();
     }
-    
-	
-	//Find product language - Not used at the moment ZAT 2010-03
-//	language = (/^\s*English/.test($(".languageoptions:first").html())==true)?'en':'fr';
 
 	//Decrypt encrypted links
 	//$('a.decrypt').each(function () {
