@@ -1613,10 +1613,6 @@ $(function(){
 	    // Otherwise, initialize them in optemo_embedder.js once the DOM is loaded.
 	    optemo_module.initiateModuleVariables();
     }
-    
-	
-	//Find product language - Not used at the moment ZAT 2010-03
-//	language = (/^\s*English/.test($(".languageoptions:first").html())==true)?'en':'fr';
 
 	//Decrypt encrypted links
 	//$('a.decrypt').each(function () {

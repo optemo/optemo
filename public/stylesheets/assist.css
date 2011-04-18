@@ -13,27 +13,27 @@
  //            Navigator Bar             //
  //--------------------------------------*/
  
-div#main {
+#optemo_embedder div#main {
 	width: 555px;
 	float: right;
 }
 
-.left-right-wrapper {
+#optemo_embedder .left-right-wrapper {
 	clear: both;
 	overflow: hidden;
 }
 
- #columnheader {
- 	font-size: 0.8em;
- 	padding-top: 4px;
- 	height: 27px;
- }
+#optemo_embedder #columnheader {
+	font-size: 0.8em;
+	padding-top: 4px;
+	height: 27px;
+}
 
 /*--------------------------------------//
 //      Main Content (Right Side)       //
 //--------------------------------------*/
 
-.navbox {
+#optemo_embedder .navbox {
 	font-size: 0.85em;
 	float: left;
 	position: relative;
@@ -44,7 +44,7 @@ div#main {
 	background: right center url(../images/seperatorbar.png) no-repeat;*/
 }
 
-.title {
+#optemo_embedder .title {
 	text-align: left;
 	margin: 0 8px;
 	padding-bottom: 4px;
@@ -53,7 +53,7 @@ div#main {
 	font-weight: bold;
 	position:relative;
 }
-.image_boundingbox {
+#optemo_embedder .image_boundingbox {
 	margin: 1px auto;
 	position:relative;
 	text-align:center;
@@ -61,18 +61,17 @@ div#main {
 	width: 150px;
 }
 
-img.productimg {
+#optemo_embedder img.productimg {
 	cursor: move;
 	width: 100%;
 }
-.productinfo {
+#optemo_embedder .productinfo {
 	padding-left: 20px;
 }
-.productspecs {
+#optemo_embedder .productspecs {
 	font-size:0.8em;
 }
-.clusterspecs {
-	/*background: -moz-linear-gradient(left,  #f00,  #ff0,#0f0);*/
+/*.clusterspecs {
 	background: url(../images/gradient.png) no-repeat;
 	width: 75px;
 	height: 9px;
@@ -97,17 +96,17 @@ img.productimg {
 	position: absolute;
 	background: none;
 }
-
-.topbar {
+*/
+#optemo_embedder .topbar {
 	width: 181px;
 	height: 218px;
 }
-.bottombar {
+#optemo_embedder .bottombar {
 	clear: left;
 	margin-top: 3px;
 	padding: 0 4px;
 }
-#extended_box .topbar {
+/*#extended_box .topbar {
 	float: left;
 }
 #extended_box p {
@@ -120,25 +119,25 @@ img.productimg {
 .filterchange ul {
 	padding-left: 20px;
 }
-
-.simlinks {
+*/
+#optemo_embedder .simlinks {
 	font-size: 0.8em;
 }
 
-#extended_box {
+/*#extended_box {
 	width: auto;
 	border: 3px solid #D99741;
 	margin-right:0;
 }
 #extended_box h2 {
 	background-color: #D99741;
-}
+}*/
 
 /*--------------------------------------//
 //         Drag And Drop Compare        //
 //--------------------------------------*/
 
-.dragHand {
+#optemo_embedder .dragHand {
 	display: none;
 	position: absolute;
 	left: 0;
@@ -146,17 +145,17 @@ img.productimg {
 	z-index:1;
 }
 
-.navbox:hover .dragHand {
+#optemo_embedder .navbox:hover .dragHand {
 	display: block;
 }
 
-#draghandexample {
+#optemo_embedder #draghandexample {
 	position: absolute;
 	left: 20px;
 	top: 40px;
 	z-index: 1;
 }
-#IE .text-place #draghandexample {
+#optemo_embedder #IE .text-place #draghandexample {
 	display: none;
 }
 
@@ -164,19 +163,10 @@ img.productimg {
 //                Sliders               //
 //--------------------------------------*/
 
-/* Removing titles */
-.title {
-	display:none;
-}
-#sorting_method {
-	width: 104px;
-}
-#sortby {
-}
 /*--------------------------------------//
 //                Footer                //
 //--------------------------------------*/
 
-#bottomlinks {
+/*#bottomlinks {
 	top: 835px;
-}
+}*/
