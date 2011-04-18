@@ -24,7 +24,7 @@ gem 'ruby-debug19'
 # gem 'sqlite3-ruby', :require => 'sqlite3'
 # gem 'aws-s3', :require => 'aws/s3'
 
-gem 'thinking-sphinx', '2.0.1', :require => 'thinking_sphinx'
+#gem 'thinking-sphinx', '2.0.1', :require => 'thinking_sphinx'
 gem 'will_paginate', '>=3.0.pre'
 #gem 'rmagick'
 
