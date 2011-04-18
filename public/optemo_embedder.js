@@ -177,28 +177,33 @@ var optemo_socket_activator = (function () {
         				}
         				// Make that it's a normal return value the easy way, by looking for the word "filterbar," 
         				// which is supposed to come back with each rendering of ajax.html.erb
-        				if (data_to_append.match(/filterbar/i)) {
-            				embed_tag.append(data_to_append);
-        				}
+                        $('#optemo_embedder').livequery(function() {
+            				if (data_to_append.match(/filterbar/i)) {
+                				embed_tag.append(data_to_append);
+            				}
 			
-            			// Take the silkscreen and filter_bar_loading divs and move them to the main body tag.
-            			// This is important for positioning if there are relative divs, because otherwise the absolute
-            			// positioning is done relative to that div instead of the whole window. This deprecated code is kept here just in case it's an issue later.
-                        // detaching_array = ['#silkscreen', '#filter_bar_loading', '#outsidecontainer', '#popupTour1', '#popupTour2', '#popupTour3', '#popupTour4'];
-                        // for (var i = 0; i < detaching_array.length; i++) {
-                        //     var element = jQuery(detaching_array[i]);
-                        //     if (element.length > 0) element.detach().appendTo('body');
-                        // }
+                			// Take the silkscreen and filter_bar_loading divs and move them to the main body tag.
+                			// This is important for positioning if there are relative divs, because otherwise the absolute
+                			// positioning is done relative to that div instead of the whole window. This deprecated code is kept here just in case it's an issue later.
+                            // detaching_array = ['#silkscreen', '#filter_bar_loading', '#outsidecontainer', '#popupTour1', '#popupTour2', '#popupTour3', '#popupTour4'];
+                            // for (var i = 0; i < detaching_array.length; i++) {
+                            //     var element = jQuery(detaching_array[i]);
+                            //     if (element.length > 0) element.detach().appendTo('body');
+                            // }
                     
-                        // The javascript is getting appended first, so that means these variables won't be initialized properly.
-                        // To correct this, move variable initialization into DBinit() or else append HTML before loading scripts.
-                        // Latter is a good idea because the user would see something load earlier than now.
-                        // In that case, remove the following lines
+                            // The javascript is getting appended first, so that means these variables won't be initialized properly.
+                            // To correct this, move variable initialization into DBinit() or else append HTML before loading scripts.
+                            // Latter is a good idea because the user would see something load earlier than now.
+                            // In that case, remove the following lines
                         
-                        // Using setTimeout to fix an IE race condition. Spinner code will be redone hopefully sooner rather than later anyway, right?
-                        setTimeout("myspinner = new optemo_module.spinner(\"myspinner\", 11, 20, 9, 5, \"#000\")", 800);
-                        optemo_module.initiateModuleVariables();
-                        optemo_module.FilterAndSearchInit(); optemo_module.DBinit();                    
+                            // Using setTimeout to fix an IE race condition. Spinner code will be redone hopefully sooner rather than later anyway, right?
+                            // Using livequery instead of a setTimeout. This should be better.
+                    	    
+                    	    // Give IE 800 ms to get the spinner in the DOM. Probably should be another livequery trigger for IE...?
+                            setTimeout("myspinner = new optemo_module.spinner(\"myspinner\", 11, 20, 9, 5, \"#000\")", 800);
+                            optemo_module.initiateModuleVariables();
+                            optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
+                        }
                     }
     		    },
     			parseData: function (data) {
