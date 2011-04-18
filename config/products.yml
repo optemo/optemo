@@ -178,22 +178,22 @@ camera_bestbuy:
                 used_for: [filter]
             waterproof:
                 type: Binary
-                used_for: [show, filter]
+                used_for: [filter]
             oled:
                 type: Binary
                 used_for: [filter]
             gps:
                 type: Binary
-                used_for: [show, filter]
+                used_for: [filter]
             3d:
                 type: Binary
-                used_for: [show, filter]
+                used_for: [filter]
             sweeppanorama:
                 type: Binary
-                used_for: [show, filter]
+                used_for: [filter]
             frontlcd:
                 type: Binary
-                used_for: [show, filter]
+                used_for: [filter]
             hdmi:
                 type: Binary
                 used_for: [filter]
