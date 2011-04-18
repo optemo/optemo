@@ -49,15 +49,18 @@
 	<% gray = false %>
         <% {@s.continuous["show"] => "cont", @s.categorical["show"] => "cat", @s.binary["show"] => "bin"}.each_pair do |feat_list, feat_type| %>
             <% feat_list.each do |feat| %>
-            <div class="<%= t("#{Session.product_type}.specs.#{feat}.name").length < 20 ? "compare_row" : "double_height_compare_row" %>">
-        		<div class="cell <%= gray ? "graybg" : "whitebg" %> leftmostcolumn leftcolumntext">
-        			<%= t("#{Session.product_type}.specs.#{feat}.name") %>:
-        		</div>
-        		<% @products.each_with_index do |product, i| %>
-            		<% allspecs = spec_hash[product.id] %>
-            		<%= render :partial => 'featurevalues', :locals => {:product => product, :numberofproducts => @products.count, :spec => allspecs[feat+fr?] || allspecs[feat], :gray => gray, :feat => feat, :type => feat_type, :column_number => i} %>
-                <% end %>
-        		<% gray = !gray %>
+			<!--needs to be more efficient especially if we want to have unlimited number of products in the compare box-->	
+				<%if feat_type!="bin" || @products.map(&:id).map{|i| spec_hash[i]}.map{|p| p[feat]}.compact.size>0%>
+				  <div class="<%= t("#{Session.product_type}.specs.#{feat}.name").length < 20 ? "compare_row" : "double_height_compare_row" %>">
+		     			<div class="cell <%= gray ? "graybg" : "whitebg" %> leftmostcolumn leftcolumntext">
+		        			<%= t("#{Session.product_type}.specs.#{feat}.name") %>:
+		        		</div>
+        			<% @products.each_with_index do |product, i| %>
+            			<% allspecs = spec_hash[product.id] %>
+            			<%= render :partial => 'featurevalues', :locals => {:product => product, :numberofproducts => @products.count, :spec => allspecs[feat+fr?] || allspecs[feat], :gray => gray, :feat => feat, :type => feat_type, :column_number => i} %>
+                		<% end %>
+        				<% gray = !gray %>
+				<%end%>		
             </div>
             <% end %>
         <% end %>
