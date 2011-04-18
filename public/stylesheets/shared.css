@@ -10,26 +10,20 @@
 /*--------------------------------------//
 //         Global Declarations          //
 //--------------------------------------*/
-a img {	border: none; }
-a { color: #0000EE; }
-a:visited { color: #0000AB;}
-/* Delete button */
-.deleteX {
-	position: absolute;
-	right: -7px;
-	top: -5px;
-	z-index: 1;
-}
+#optemo_embedder a img {	border: none; }
+#optemo_embedder a { color: #0000EE; }
+#optemo_embedder a:visited { color: #0000AB;}
+
 
 /*--------------------------------------//
 //            Navigator Bar             //
 //--------------------------------------*/
-div#main {
+#optemo_embedder div#main {
 	padding: 0;
 	text-align: left;
 }
 
-#logo {
+/*#logo {
 	float:left;
 	margin-right: 5px;
 	text-decoration: none;
@@ -51,56 +45,44 @@ html {
 
 body {
  /*font: normal verdana,tahoma,arial; removed because Firefox doesn't like it*/
- font-family: arial;
+/* font-family: arial;
  margin: 0;
  position: relative; /*IE6 Resize bug*/
-}
+/*}*/
 #optemo_embedder {
 	font-size: 1.3em;
-}
-#mycenter { 
-	margin-left: auto; 
-	margin-right: auto; 
+	margin: 0 auto; 
+	width: 740px;
 }
 /* Header */
 
-.hd {
-	color: white;
-	margin-top: 2px;
-	margin-bottom: 4px;
-}
-
-h1 {
+#optemo_embedder h1 {
 	font-size: 2.1em;
 }
-#leftbar h2 {
+#optemo_embedder #leftbar h2 {
 	margin: 0px 0px 3px;
 	font-size: 0.9em;
 	padding: 6px;
 	border-bottom: 1px solid #ccc;
 	background-color: yellow;
 }
-.languageoptions {
-	text-align: right;
-	font-size:0.7em;
-}
-a {
+#optemo_embedder a {
 	text-decoration: none;
 }
-a:hover {
+#optemo_embedder a:hover {
 	text-decoration: underline;
 }
 
-.rounded {
+/*.rounded {
 	-webkit-border-radius: 8px;    /* for Safari */
-  -moz-border-radius: 8px;       /* for Firefox */
-  border-radius: 8px;            /* Opera, KHTML, others */
-}
+  /*-moz-border-radius: 8px;       /* for Firefox */
+  /*border-radius: 8px;            /* Opera, KHTML, others */
+/*}
 .rounded_bd {
-    background-color: white;          /* if needed */
-    border: 1px solid #ccc;           /* if needed */
-}
-#navtitle {
+    background-color: white;
+    border: 1px solid #ccc;
+}*/
+#optemo_embedder #navtitle {
     display:inline;
     margin-left: auto;
     margin-right: auto;
@@ -111,7 +93,7 @@ a:hover {
 //--------------------------------------*/
 
 
-.close {
+/*.close {
 	position: absolute;
 	top: -25px;
 	right: 13px;
@@ -119,42 +101,14 @@ a:hover {
 }
 .close:visited {
 	color:white;
-}
+}*/
 
-div .accessories{
-	width: 300px;
-	text-align: center;
-	border: 2px solid black;
-	background-color: #ffff99;
-	height: 300px;
-	overflow: auto;
-	float:right;
-	display:inline;
-}
-.accessories img{
-	border: 1px solid black;
-	margin-left: 2px;
-}
-
-div .spacer {
+#optemo_embedder div .spacer {
 	clear: both;
 }
-.review {
+/*.review {
 	font-size: 0.8em;
 	margin:10px;
 	padding:5px;
 	display:inline;
-}
-#browseother {
-	margin-top: 5px;
-	font-size: 0.85em;
-	text-decoration: underline;
-}
-.cartridgespecifics {
-	text-align:left;
-	margin:5px;
-	font-size:0.7em;
-}
-.cartridgeinfo {
-	margin: 0;
-}
+}*/
