@@ -300,7 +300,10 @@ try {
 }
 
 if(jQueryIsLoaded) {
-    optemo_socket_activator(); 
+	if ($.browser.msie)
+		setTimeout(function () { optemo_socket_activator(); }, 3000);
+	else
+    	optemo_socket_activator(); 
 } else {
     var script = document.createElement("script");
     script.setAttribute("type", "text/javascript");
