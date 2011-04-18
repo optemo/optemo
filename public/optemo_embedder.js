@@ -178,7 +178,7 @@ var optemo_socket_activator = (function () {
         				// Make that it's a normal return value the easy way, by looking for the word "filterbar," 
         				// which is supposed to come back with each rendering of ajax.html.erb
 
-                        function finish_loading() {
+                        function append_and_initialize() {
                         	if (data_to_append.match(/filterbar/i)) {
                 				embed_tag.append(data_to_append);
             				}
@@ -197,9 +197,9 @@ var optemo_socket_activator = (function () {
                         }
                         
                         if ($('#optemo_embedder').length != 0) {
-                            finish_loading();
+                            append_and_initialize();
                         } else {
-                            $('#optemo_embedder').livequery(finish_loading());
+                            $('#optemo_embedder').livequery(append_and_initialize());
                         }
                     }
     		    },
