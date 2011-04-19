@@ -50,9 +50,9 @@ var optemo_socket_activator = (function () {
     		},
     		onReady: function(){
     		   /**
-    		    * Call the initial loading method on the other side; this gets the frame
+    		    * Call the initial loading method on the other side; this gets the frame. Pass in the location hash in case we need to re-run a search
     		    */
-    			remote.initialLoad(); // try taking out empty function, maybe it's causing weirdness?
+    			remote.initialLoad(location.hash.replace(/^#/, ''));
     		}
     	}, /** The interface configuration */ {
     		remote: {
