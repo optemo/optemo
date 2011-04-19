@@ -73,12 +73,12 @@ body {
 	text-decoration: underline;
 }
 
-/*.rounded {
+.rounded {
 	-webkit-border-radius: 8px;    /* for Safari */
-  /*-moz-border-radius: 8px;       /* for Firefox */
-  /*border-radius: 8px;            /* Opera, KHTML, others */
-/*}
-.rounded_bd {
+  	-moz-border-radius: 8px;       /* for Firefox */
+  	border-radius: 8px;            /* Opera, KHTML, others */
+}
+/*.rounded_bd {
     background-color: white;
     border: 1px solid #ccc;
 }*/
