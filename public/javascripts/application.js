@@ -1075,7 +1075,7 @@ optemo_module = (function (my){
 		$('.binary_filter_text').live('click', function(){
 			if (my.loading_indicator_state.disable) return false;
 			var checkbox = $(this).siblings('input');
-			var whichbox = checkbox.attr('id');
+			var whichbox = checkbox.attr('data-opt');
     		var box_value = checkbox.attr('checked') ? 100 : 0;
 			if (box_value == 100)
 				checkbox.removeAttr("checked");
@@ -1088,7 +1088,7 @@ optemo_module = (function (my){
 		});
     	// Checkboxes -- submit
     	$('.binary_filter').live('click', function() {
-    		var whichbox = $(this).attr('id');
+    		var whichbox = $(this).attr('data-opt');
     		var box_value = $(this).attr('checked') ? 100 : 0;
     		my.loading_indicator_state.sidebar = true;
     		my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox, 'filter_type': 'checkbox'});
@@ -1097,7 +1097,7 @@ optemo_module = (function (my){
 
 		// Checkboxes -- submit
     	$('.cat_filter').live('click', function() {
-    		var whichcat = $(this).attr('data-feat');
+    		var whichcat = $(this).attr('data-opt');
 			var feat_obj = $('#myfilter_'+whichcat);
     		if ($(this).attr('checked'))
 			{	//Uncheck action
