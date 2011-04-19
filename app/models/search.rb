@@ -164,16 +164,6 @@ class Search < ActiveRecord::Base
   def extended
       @extended ||= Cluster.new(products)
   end
-  #Sets to use the initial products and checks whether they're in the database
-  def initial_products
-    products_id = Product.initial
-    if SearchProduct.where(["search_id = ?", products_id]).limit(1).empty?
-      SearchProduct.transaction do
-        Product.valid.instock.map{|product| SearchProduct.new(:product_id => product.id, :search_id => products_id)}.each(&:save)
-      end
-    end
-    products_id
-  end
   
   def products_size
     @products_size ||= products.size
