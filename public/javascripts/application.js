@@ -4,13 +4,16 @@
    Functions marked ** are public functions that can be called from outside the optemo_module declaration.
 
    ---- Show Page Pre-loader & Helpers ----
+    ** initiateModuleVariables  -  module variables are locally scoped to the optemo_module. They are initialized at different times for embedded and non-embedded.
     parse_bb_json(obj)  -  recursive function to parse the returned JSON into an html list
     parse_bb_json_into_array(obj, features_flag)  -  recursive function parses the returned JSON object into a table of similar style to the 'direct comparison' action
-    ** preloadSpecsAndReviews(sku)  -  Does 2 AJAX requests for data relating to sku and puts the results in $('body').data() for instant retrieval later
+    ** loadspecs(sku, f)  -  Does 2 AJAX requests for data relating to sku and puts the results in $('body').data() for later. Runs the callback function f if provided.
+    numberofstars(stars)  -  Helper function to turn a number of stars into images
+    ** preloadSpecsAndReviews  -  Called on show action, this gets the specs and reviews if necessary for instant tab switching on pop-over window
 
    ---- UI Manipulation ----
     ** removeSilkScreen()
-    ** applySilkScreen(url, data, width, height)  -  Puts up fading boxes
+    ** applySilkScreen(url, data, width, height, f)  -  Puts up fading boxes, calling the callback frunction f if provided.
     ** saveProductForComparison(id, sku, imgurl, name)  -  Puts comparison items in #savebar_content and stores them in a cookie. SKU is optional.
     ** renderComparisonProducts(id, sku, imgurl, name)  -  Does actual insertion of UI elements
     ** getIdAndSkuFromProductimg(img)  -  Returns the ID from the image. Only used for drag-and-drop at the moment.
@@ -77,6 +80,11 @@ optemo_module_activator = (function() { // See bottom, this is for jquery noconf
 optemo_module = (function (my){
     // Language support - disabled for now
     // var language;
+
+    //--------------------------------------//
+    //    Show Page Pre-loader & Helpers    //
+    //--------------------------------------//
+
     // The following variables are pulled from optemo.html.erb
     // They are in a separate function like this so that the embedder can call them at the appropriate time.
     // Note that those that are locally scoped to the optemo_module must be defined before this function call.
@@ -89,10 +97,6 @@ optemo_module = (function (my){
         SESSION_ID = parseInt($('#seshid').html());
         AB_TESTING_TYPE = parseInt($('#ab_testing_type').html());
     }
-
-    //--------------------------------------//
-    //    Show Page Pre-loader & Helpers    //
-    //--------------------------------------//
 
     // Renders a recursive html list of the specs.
     // This is still used for displaying reviews for the time being.
@@ -372,6 +376,7 @@ optemo_module = (function (my){
     	productType = productType.substring(0, productType.length-1);
     	imgurlToSave = imgurlToSaveArray.join("/");
     */
+        if (typeof(id) == "object") id = parseInt(id); // Fix some type errors
     	if($(".saveditem").length == 4)
     	{
     		$("#too_many_saved").css("display", "block");
@@ -1074,9 +1079,7 @@ optemo_module = (function (my){
 
 		$('.binary_filter_text').live('click', function(){
 			if (my.loading_indicator_state.disable) return false;
-			var checkbox = $(this).siblings('input');
-			var whichbox = checkbox.attr('data-opt');
-    		var box_value = checkbox.attr('checked') ? 100 : 0;
+			var checkbox = $(this).siblings('input'), whichbox = checkbox.attr('data-opt'), box_value = checkbox.attr('checked') ? 100 : 0;
 			if (box_value == 100)
 				checkbox.removeAttr("checked");
 			else
@@ -1088,8 +1091,7 @@ optemo_module = (function (my){
 		});
     	// Checkboxes -- submit
     	$('.binary_filter').live('click', function() {
-    		var whichbox = $(this).attr('data-opt');
-    		var box_value = $(this).attr('checked') ? 100 : 0;
+    		var whichbox = $(this).attr('data-opt'), box_value = $(this).attr('checked') ? 100 : 0;
     		my.loading_indicator_state.sidebar = true;
     		my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox, 'filter_type': 'checkbox'});
     		submitCategorical();
@@ -1097,18 +1099,18 @@ optemo_module = (function (my){
 
 		// Checkboxes -- submit
     	$('.cat_filter').live('click', function() {
-    		var whichcat = $(this).attr('data-opt');
-			var feat_obj = $('#myfilter_'+whichcat);
+    		var whichcat = $(this).attr('data-feat'), feature_selected = $(this).attr('data-opt');
+    		var feat_obj = $('#myfilter_'+whichcat);
     		if ($(this).attr('checked'))
 			{	//Uncheck action
-				feat_obj.val(opt_appendStringWithToken(feat_obj.val(), $(this).attr('data-opt'), '*'));
+				feat_obj.val(opt_appendStringWithToken(feat_obj.val(), feature_selected, '*'));
 			}
 			else
 			{	//Check selection
-				feat_obj.val(opt_removeStringWithToken(feat_obj.val(), $(this).attr('data-opt'), '*'));
+				feat_obj.val(opt_removeStringWithToken(feat_obj.val(), feature_selected, '*'));
+        		my.trackPage('goals/filter/checkbox', {'feature_name' : feature_selected, 'filter_type' : 'brand'});
 			}
     		my.loading_indicator_state.sidebar = true;
-    		my.trackPage('goals/filter/checkbox', {'feature_name' : whichcat, 'filter_type' : 'brand'});
     		submitCategorical();
     	});
 
