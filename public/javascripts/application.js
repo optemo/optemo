@@ -31,10 +31,13 @@
    ---- JQuery Initialization Routines ----
     ** FilterAndSearchInit()  -  Search and filter areas.
  	** LiveInit()  -   All the events that can be handled appropriately with jquery live
+ 	row_height(length,isLabel)  -  Helper function for calculating row height, used only in the next function
+ 	** buildComparisonMatrix()  -  Builds the HTML used in the product direct comparison screen
 	ErrorInit()  -  Error pages
     ** DBinit()  -   UI elements from the _discoverybrowser partial, also known as <div id="main">.
 
-   ######  Formerly from helpers.js ######
+    ------- Spinner -------
+     spinner(holderid, R1, R2, count, stroke_width, colour)  -  returns a spinner object
 
    -------- AJAX ---------
     ** ajaxsend(hash,myurl,mydata,timeoutlength)  -  Does AJAX call through jquery, returns through ajaxhandler(data)
@@ -49,10 +52,8 @@
 
    -------- Data -------
     getAllShownProductIds()  -  Returns currently displayed product IDs.
+    getAllShownProductSkus()  -  Returns currently disoplayed product SKUs.
     ** getShortProductName(name)  -  Returns the shorter product name for printers. This should be extended in future.
-
-   ------- Spinner -------
-    spinner(holderid, R1, R2, count, stroke_width, colour)  -  returns a spinner object
 
    -------- Cookies -------
     addValueToCookie(name, value)  -  Add a value to the cookie "name" or create a cookie if none exists.
@@ -60,13 +61,15 @@
     ** readAllCookieValues(name)  -  Returns an array of cookie values.
     createCookie(name,value,days)  -  Try not to use this or the two below directly if possible, they are like private methods.
     readCookie(name)  -  Gets raw cookie 'value' data.
-    eraseCookie(name)
+    eraseCookie(name)  -  Erases cookie.
 
    ---- document.ready() ----
-    document.ready()  -  The jquery call that gets everything started.
+    document.ready()  -  Loads saved products from cookie when DOM is complete, does jquery event handler initialization if the layout is not embedded
+    
+   ---- Embedding-specific code ----
+    if (window.embedded)  -  The AJAX functions need to be redefined to go through the socket. For more on this see the document in the Optemo wiki.
 
    ----- Page Loader -----
-    if (embedded)  -  If we are in embedded view, some functions have to be changed. For more on this see the document in the Optemo wiki.
     if ($('#opt_discovery')) statement  -  This gets evaluated as soon as the ajaxsend function is ready (slight savings over document.ready()).
     if (jQuery)  -  Bootstrap jquery if it's not available. In embedded view, we might or might not have jquery loaded already.
 */
@@ -1147,7 +1150,7 @@ optemo_module = (function (my){
 		});
     }
 
-	//Thess should be locally scoped functions, but for jquery 1.4.2 compatibility it is moved outside (specifically for the cookie-loading-to-savebar part)
+	//These should be locally scoped functions, but for jquery 1.4.2 compatibility it is moved outside (specifically for the cookie-loading-to-savebar part)
 	
 	function row_height(length,isLabel)
 	{
@@ -1743,6 +1746,10 @@ $(function(){
 //    Galleria.loadTheme('/javascripts/galleria.classic.js');
 });
 
+//--------------------------------------//
+//       Embedding-specific code        //
+//--------------------------------------//
+
 if (window.embedding_flag) {
     // On embed, we need to redefine the ajaxcall / ajaxsend duo so that they point at the remote server as appropriate.
     // The data will come back through the same ajaxhandler function as before, getting pushed there by the
@@ -1780,6 +1787,10 @@ if (window.embedding_flag) {
         remote.quickiframecall(element_name, myurl, fn);
     }
 }
+
+//--------------------------------------//
+//             Page Loader              //
+//--------------------------------------//
 
 // This should be able to go ahead before document.ready for a slight time savings.
 // This history discovery works for embedded also, because by now the ajaxsend function has been redefined, and the history init has been called.

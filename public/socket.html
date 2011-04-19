@@ -131,7 +131,7 @@ var local_socket = new easyXDM.Rpc(/** The channel configuration*/{
         parseDataThin: {}
     },
     local: {
-            initialLoad: function() {
+            initialLoad: function(history_hash_id) {
             // This gets the optemo.html.erb layout, passing the scripts, stylesheets, etc., back to set the stage for later ajax calls.
             var urlVars = (function() {
                 var v = [], hash, hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
@@ -145,11 +145,14 @@ var local_socket = new easyXDM.Rpc(/** The channel configuration*/{
 
             // To remove the hard-coded server name, look for the parameter passed in by the URL
             // -- urlVars would have to be an object with the parameters from the URL; see above
-
             var d = AJS.getRequest((urlVars["serverName"] !== undefined ? ("http://" + unescape(urlVars["serverName"])) : "http://ast0.optemo.com/"), "GET");
             d.addCallback( function(res_txt, req) { local_socket.initialPageDelivery(res_txt) } );
             d.addErrback(function(res_txt, req) { local_socket.initialPageDelivery(res_txt) });
-            d.sendReq({embedding: "true"});
+            var requestVars = {embedding: "true"};
+            // Add in the history as necessary. If an empty string is passed in this still works
+            history_hash_id = parseInt(history_hash_id);
+            if (history_hash_id > 0) { requestVars["hist"] = history_hash_id; }
+            d.sendReq(requestVars);
         },
         // Need to take out element_name and function, no? At least function?
         quickiframecall: function(element_name, myurl, fn) {
