@@ -29,8 +29,23 @@ class SearchProduct < ActiveRecord::Base
       q = res.to_sql
       cached = CachingMemcached.cache_lookup("Products-#{q.hash}") do
         #We don't want to store the activerecord here
-        result = self.connection.execute(q).to_a
-        raise SearchError, "No products match that search criteria for #{Session.product_type}" if result.empty?
+        tried_once = true
+        begin
+          result = self.connection.execute(q).to_a
+          raise SearchError, "No products match that search criteria for #{Session.product_type}" if result.empty?
+        rescue SearchError
+          #Check if the initial products are missing
+          if search_id_q.count == 0 && tried_once
+            initial_products_id = Product.initial
+            SearchProduct.transaction do
+              Product.instock.current_type.map{|product| SearchProduct.new(:product_id => product.id, :search_id => initial_products_id)}.each(&:save)
+            end
+            tried_once = false
+            retry
+          else
+            raise
+          end
+        end
         result
       end
       ComparableSet.from_storage(cached)
