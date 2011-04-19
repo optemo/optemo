@@ -85,7 +85,7 @@
 			  })();
 			}
 			</script>
-			<script src=<%=raw "http:"+t('products.show.fbconnecturl')+"#xfbml=1"%>></script><fb:like href=<%=@prod_url%> show_faces="false" width="300" font="arial"></fb:like>
+			<script src=<%=raw "http:"+t('products.show.fbconnecturl')+"#xfbml=1"%>></script><div class='facebook-like'><fb:like href=<%=@prod_url%> show_faces="false" width="300" font="arial"></fb:like></div>
         </div>
         <div class="right" style="width:160px">
     		<% if @allspecs["onsale"] %>
