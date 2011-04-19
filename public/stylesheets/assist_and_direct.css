@@ -389,6 +389,7 @@ html {
 	position: relative;
 	clear: left;
 	padding-top: 6px;
+	padding-bottom: 4px;
 }
 #optemo_embedder .space {
 	margin-bottom: 15px; /*Spacing for histogram*/
