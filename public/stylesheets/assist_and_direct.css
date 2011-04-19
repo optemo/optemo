@@ -780,6 +780,15 @@ margin-top:0;
 	display: none;
 }
 
+#optemo_embedder div#filter_silkscreen {
+	background-color: black;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 3;
+	display: none;
+}
+
 #optemo_embedder #outsidecontainer {
 	position: absolute;
 	top: 20px;
@@ -814,17 +823,21 @@ margin-top:0;
 }
 
 #optemo_embedder div#loading {
-	top: 345px;
+	top: 0;
 	left: 344px;
-	position: absolute;
+	position: fixed;
 	z-index: 2;
-	width: 200px;
-	height: 44px;
-	font-size: 2em;
-	background-color: #eee;
-	border: solid black 3px;
-	padding: 20px;
+	background-color: yellow;
+	border: 1px solid #444;
+	padding: 4px;
+	font-size: 9pt;
 	display: none;
+	-moz-box-shadow: 1px 1px 0 #444;
+	-webkit-box-shadow: 1px 1px 0 #444;
+}
+#optemo_embedder #loading img {
+	vertical-align: text-bottom;
+	margin-right: 4px;
 }
 #optemo_embedder div#filter_bar_loading{
     display: none;

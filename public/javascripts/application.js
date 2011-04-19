@@ -22,7 +22,6 @@
     submitsearch()  -  Submits a search via the main search field in the filter bar
     histogram(element, norange)  -  draws histogram
     ** disableInterfaceElements()  -  Disables filters, so that the UI is only fielding one request at a time.
-    ** loadFilterBarSilkScreen()  -  Puts fade over filter bar (for longer loading times).
 
    ---- Piwik Tracking Functions ----
     ** trackPage(page_title, extra_data)  -  Piwik tracking per page. Extra data is in JSON format, with keys for ready parsing by Piwik into piwik_log_preferences.
@@ -76,7 +75,6 @@
 
 // These global variables must be declared explicitly for proper scope (the spinner is because setTimeout has its own scope and needs to set the spinner)
 var optemo_module;
-var myspinner;
 var optemo_module_activator;
 // jquery noconflict taken out for jquery 1.4.2 Best Buy rollout 04-2011
 optemo_module_activator = (function() { // See bottom, this is for jquery noconflict
@@ -302,11 +300,8 @@ optemo_module = (function (my){
     //--------------------------------------//
 
     my.removeSilkScreen = function() {
-        // Re-enable the select boxes manually (IE bug; we have to disable them when applying the silkscreen)
-        $('#silkscreen').css({'display' : 'none', 'top' : '', 'left' : '', 'width' : ''}).hide();
-        $('#outsidecontainer').css({'display' : 'none'});
+        $('#silkscreen, #outsidecontainer').hide();
         $('#outsidecontainer').unbind('click');
-        $('#filter_bar_loading').css({'display' : 'none'});
     };
 
     my.applySilkScreen = function(url,data,width,height,f) {
@@ -541,17 +536,6 @@ optemo_module = (function (my){
 		my.loading_indicator_state.disable = true; //Disables any live click handlers
     }
 
-    my.loadFilterBarSilkScreen = function() {
-        // This will turn on the fade for the left area
-        elementToShadow = $('#filterbar');
-        var pos = elementToShadow.offset();
-        var width = elementToShadow.innerWidth() + 2; // Extra pixels are for the border.
-        var height = elementToShadow.innerHeight() + 2; // and padding bottom
-        $('#silkscreen').css({'position' : 'absolute', 'display' : 'inline', 'left' : pos.left + "px", 'top' : pos.top + "px", 'height' : height + "px", 'width' : width + "px",'background-color' : 'black'}).fadeTo(0,0.2); // The 27 is arbitrary - equal to the top of the filter bar (title, reset button)
-        $("#silkscreen").unbind('click'); // We need this so that the user can't clear the silkscreen by clicking on it.
-        $('#filter_bar_loading').css({'display' : 'inline', 'left' : (pos.left + (width-126)/2) + "px", 'top' : pos.top + (height - 46)/2 + "px"});
-    };
-
     //--------------------------------------//
     //       Piwik Tracking Functions       //
     //--------------------------------------//
@@ -772,7 +756,6 @@ optemo_module = (function (my){
     				    leftsliderknob.removeData('toofar');
     				    rightsliderknob.removeData('toofar');
                     }
-                    my.loading_indicator_state.sidebar = true;
                 	my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
     			}
     		});
@@ -830,7 +813,6 @@ optemo_module = (function (my){
     	    var whichSortingMethodSelected = $(this).attr('data-feat');
     	    var info = {'chosen_sorting_method' : whichSortingMethodSelected, 'filter_type' : 'sorting_method'};
 			my.trackPage('goals/filter/sorting_method', info);
-    	    my.loading_indicator_state.sidebar = true;
             my.ajaxcall("/compare?ajax=true&sortby=" + whichSortingMethodSelected);
 			return false;
 	    });
@@ -852,7 +834,6 @@ optemo_module = (function (my){
 		// Add a color selection -- submit
     	$('.swatch').live('click', function(){
 			if (my.loading_indicator_state.disable) return false;
-			my.loading_indicator_state.sidebar = true;
 			var t = $(this);
 		    var whichThingSelected = t.attr("style").replace(/background-color: (\w+);?/i,'$1');
 		    // Fix up the case issues for Internet Explorer (always pass in color value as "Red")
@@ -1001,7 +982,6 @@ optemo_module = (function (my){
     	$('.simlinks').live("click", function() {
 			if (my.loading_indicator_state.disable) return false;
     		var ignored_ids = getAllShownProductIds();
-    	    my.loading_indicator_state.main = true;
     		my.ajaxcall($(this).attr('href')+'?ajax=true');
     		my.trackPage('goals/browse_similar', {'filter_type' : 'browse_similar', 'product_picked' : $(this).attr('data-id') , 'product_ignored' : ignored_ids, 'picked_cluster_layer' : $(this).attr('data-layer'), 'picked_cluster_size' : $(this).attr('data-size')});
     		return false;
@@ -1087,7 +1067,6 @@ optemo_module = (function (my){
 				checkbox.removeAttr("checked");
 			else
 				checkbox.attr("checked", "checked");
-    		my.loading_indicator_state.sidebar = true;
     		my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox, 'filter_type': 'checkbox'});
     		submitCategorical();
 			return false;
@@ -1095,7 +1074,6 @@ optemo_module = (function (my){
     	// Checkboxes -- submit
     	$('.binary_filter').live('click', function() {
     		var whichbox = $(this).attr('data-opt'), box_value = $(this).attr('checked') ? 100 : 0;
-    		my.loading_indicator_state.sidebar = true;
     		my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox, 'filter_type': 'checkbox'});
     		submitCategorical();
     	});
@@ -1113,7 +1091,6 @@ optemo_module = (function (my){
 				feat_obj.val(opt_removeStringWithToken(feat_obj.val(), feature_selected, '*'));
         		my.trackPage('goals/filter/checkbox', {'feature_name' : feature_selected, 'filter_type' : 'brand'});
 			}
-    		my.loading_indicator_state.sidebar = true;
     		submitCategorical();
     	});
 
@@ -1136,16 +1113,14 @@ optemo_module = (function (my){
 		$('.reset').live('click', function(){
 			if (my.loading_indicator_state.disable) return false;
 			trackPage('goals/reset', {'filter_type' : 'reset'});
-			optemo_module.loading_indicator_state.sidebar = true;
-			optemo_module.ajaxcall($(this).attr('href')+'?ajax=true');
+			my.ajaxcall($(this).attr('href')+'?ajax=true');
 			return false;
 		});
 		
 		//Zoomout filters
 		$('.zoomout').live('click', function(){
 			trackPage('goals/zoomout', {'filter_type' : 'zoomout'});
-			optemo_module.loading_indicator_state.sidebar = true;
-			optemo_module.ajaxcall($(this).attr('href')+'?ajax=true');
+			my.ajaxcall($(this).attr('href')+'?ajax=true');
 			return false;
 		});
     }
@@ -1274,75 +1249,16 @@ optemo_module = (function (my){
     };
 
     //--------------------------------------//
-    //              Spinner                 //
-    //--------------------------------------//
-
-    /* This sets up a spinning wheel, typically used for sections of the webpage that are loading */
-    my.spinner = function(holderid, R1, R2, count, stroke_width, colour) {
-    	var sectorsCount = count || 12,
-    	    color = colour || "#fff",
-    	    width = stroke_width || 15,
-    	    r1 = Math.min(R1, R2) || 35,
-    	    r2 = Math.max(R1, R2) || 60,
-    	    cx = r2 + width,
-    	    cy = r2 + width,
-    	    r = Raphael(holderid, r2 * 2 + width * 2, r2 * 2 + width * 2),
-
-    	    sectors = [],
-    	    opacity = [],
-    	    beta = 2 * Math.PI / sectorsCount,
-
-    	    pathParams = {stroke: color, "stroke-width": width, "stroke-linecap": "round"};
-        Raphael.getColor.reset();
-    	for (var i = 0; i < sectorsCount; i++) {
-    	    var alpha = beta * i - Math.PI / 2,
-    	        cos = Math.cos(alpha),
-    	        sin = Math.sin(alpha);
-    	    opacity[i] = 1 / sectorsCount * i;
-    	    sectors[i] = r.path(pathParams)
-    	                    .moveTo(cx + r1 * cos, cy + r1 * sin)
-    	                    .lineTo(cx + r2 * cos, cy + r2 * sin);
-    	    if (color == "rainbow") {
-    	        sectors[i].attr("stroke", Raphael.getColor());
-    	    }
-    	}
-    	this.runspinner = false;
-    	this.begin = function() {
-    		this.runspinner = true;
-    		setTimeout(ticker, 1000 / sectorsCount);
-    		$('#loading').css('display', 'block');
-    	};
-    	this.end = function() {
-    		this.runspinner = false;
-    		$('#loading').css('display', 'none');
-    	};
-    	function ticker() {
-    	    opacity.unshift(opacity.pop());
-    	    for (var i = 0; i < sectorsCount; i++) {
-    	        sectors[i].attr("opacity", opacity[i]);
-    	    }
-    	    r.safari();
-    		if (myspinner.runspinner)
-    	    	setTimeout(ticker, 1000 / sectorsCount);
-    	};
-    	return this;
-    }
-
-    //--------------------------------------//
     //                AJAX                  //
     //--------------------------------------//
 
-    if (!window.embedding_flag) {
-        myspinner = my.spinner("myspinner", 11, 20, 9, 5, "#000");
-    }
-    my.loading_indicator_state = {sidebar : false, sidebar_timer : null, main : false, main_timer : null, socket_error_timer : null, disable : false};
+    my.loading_indicator_state = {spinner_timer : null, socket_error_timer : null, disable : false};
 
 
     /* Does a relatively generic ajax call and returns data to the handler below */
     my.ajaxsend = function (hash,myurl,mydata,timeoutlength) {
         var lis = my.loading_indicator_state;
-        if (lis.main && !(lis.main_timer)) lis.main_timer = setTimeout("myspinner.begin()", timeoutlength || 1000);
-        if (lis.sidebar) lis.sidebar_timer = setTimeout("optemo_module.loadFilterBarSilkScreen()", timeoutlength || 1000);
+        if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 1000);
     	if (myurl != null) {
         	$.ajax({
         		type: (mydata==null)?"GET":"POST",
@@ -1366,12 +1282,10 @@ optemo_module = (function (my){
     // This needs to be a public function now
     my.ajaxhandler = function(data) {
         var lis = my.loading_indicator_state;
-        lis.main = lis.sidebar = lis.disable = false;
-		$('#silkscreen').css('background-color', 'transparent');
-        clearTimeout(lis.sidebar_timer); // clearTimeout can run on "null" without error
-        clearTimeout(lis.main_timer);
+        lis.disable = false;
+        clearTimeout(lis.spinner_timer); // clearTimeout can run on "null" without error
         clearTimeout(lis.socket_error_timer); // We need to clear the timeout error here
-        lis.sidebar_timer = lis.main_timer = lis.socket_error_timer = null;
+        lis.spinner_timer = lis.socket_error_timer = null;
 
     	if (data.indexOf('[ERR]') != -1) {
     		var parts = data.split('[BRK]');
@@ -1386,7 +1300,7 @@ optemo_module = (function (my){
     		$('#ajaxfilter').empty().append(parts[1]);
     		$('#main').html(parts[0]);
     		$('#myfilter_search').attr('value',parts[2]);
-    		myspinner.end();
+    		optemo_module.stop_spinner();
     		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
     		return 0;
     	}
@@ -1397,9 +1311,8 @@ optemo_module = (function (my){
     	//	my.flashError('<div class="poptitle">&nbsp;</div><p class="error">Désolé! Une erreur s’est produite sur le serveur.</p><p>Vous pouvez <a href="" class="popuplink">réinitialiser</a> l’outil et constater si le problème persiste.</p>');
     	//else
         var lis = my.loading_indicator_state;
-        lis.main = lis.sidebar = lis.disable = false;
-        clearTimeout(lis.sidebar_timer); // clearTimeout can run on "null" without error
-        clearTimeout(lis.main_timer);
+        lis.disable = false;
+        clearTimeout(lis.spinner_timer); // clearTimeout can run on "null" without error
         clearTimeout(lis.socket_error_timer); // We need to clear the timeout error here
 		if (!(typeof(optemo_french) == "undefined") && optemo_french)
 			my.flashError('<div class="bb_poptitle">Erreur<a class="bb_quickview_close" href="close" style="float:right;">Fermer fenêtre</a></div><p class="error">Désolé! Une erreur est survenue sur le serveur.</p><p>Vous pouvez réinitialiser l\'outil et voir si le problème est résolu.</p>');
@@ -1430,7 +1343,7 @@ optemo_module = (function (my){
     	    if (/filter/.test(str)==true) errtype = "filters";
 	  	}
     	my.trackPage('goals/error', {'filter_type' : 'error - ' + errtype});
-    	myspinner.end();
+    	my.stop_spinner();
     	ErrorInit();
     	my.applySilkScreen(null,str,600,107);
     }
@@ -1510,6 +1423,27 @@ optemo_module = (function (my){
     	else
     		return name;
     };
+
+	//--------------------------------------//
+    //              Spinner                 //
+    //--------------------------------------//
+
+	my.start_spinner = function() {
+		// This will turn on the fade for the left area
+        elementToShadow = $('#filterbar');
+        var pos = elementToShadow.offset();
+        var width = elementToShadow.innerWidth() + 2; // Extra pixels are for the border.
+        var height = elementToShadow.innerHeight() + 2; // and padding bottom
+        $('#filter_silkscreen').css({'display' : 'inline', 'left' : pos.left + "px", 'top' : pos.top + "px", 'height' : height + "px", 'width' : width + "px"}).fadeTo(0,0.2);
+
+		//Show the spinner up top
+		t = $('#loading');
+		t.css("left",(document.body.clientWidth-t.width())/2+'px').show();
+	}
+	
+	my.stop_spinner = function() {
+		$('#loading, #filter_silkscreen').hide();
+	}
 
     //--------------------------------------//
     //              Cookies                 //
@@ -1765,8 +1699,7 @@ if (window.embedding_flag) {
 	    if (myurl) myurl = myurl.replace(/http:\/\/[^\/]+/,'');
         optemo_module.disableInterfaceElements();
         var lis = optemo_module.loading_indicator_state;
-        if (lis.main) lis.main_timer = setTimeout("myspinner.begin()", timeoutlength || 1000);
-        if (lis.sidebar) lis.sidebar_timer = setTimeout("optemo_module.loadFilterBarSilkScreen()", timeoutlength || 1000);
+        lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 1000);
         lis.socket_error_timer = setTimeout("optemo_module.clearSocketError()", 15000);
         // Hopefully we can just send the arguments as-is. It' would certainly be wise to sanity-check them though.
         remote.iframecall(hash, myurl, (mydata == "" ? null : mydata)); // emptiness check put in for AJS vs. jquery differences
