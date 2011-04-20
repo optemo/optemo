@@ -1246,7 +1246,7 @@ optemo_module = (function (my){
     				        id_href_and_sku = my.getIdHrefAndSkuFromProductimg(imgObj);
         					my.saveProductForComparison(id_href_and_sku[0], id_href_and_sku[1], id_href_and_sku[2], imgObj.attr('src'), imgObj.attr('alt'));
     					}
-        				my.loadspecs(id_href_and_sku[1]);
+        				my.loadspecs(id_href_and_sku[2]);
     				}
     			});
             }    	    
