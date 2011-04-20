@@ -6,7 +6,6 @@
    ---- Show Page Pre-loader & Helpers ----
     ** initiateModuleVariables  -  module variables are locally scoped to the optemo_module. They are initialized at different times for embedded and non-embedded.
     parse_bb_json(obj)  -  recursive function to parse the returned JSON into an html list
-    parse_bb_json_into_array(obj, features_flag)  -  recursive function parses the returned JSON object into a table of similar style to the 'direct comparison' action
     ** loadspecs(sku, f)  -  Does 2 AJAX requests for data relating to sku and puts the results in $('body').data() for later. Runs the callback function f if provided.
     numberofstars(stars)  -  Helper function to turn a number of stars into images
     ** preloadSpecsAndReviews  -  Called on show action, this gets the specs and reviews if necessary for instant tab switching on pop-over window
@@ -115,25 +114,23 @@ optemo_module = (function (my){
 		return props;
     });
 
-    // This flattens the JSON return object down as necessary for feature names or values.
-    var parse_bb_json_into_array = (function spec_recurse(p, feature_names_flag) {
-        var props = [];
-        for (var i in p) {
-            if (typeof(p[i]) == "object") {
-                if (feature_names_flag) // We are enumerating the feature names
-                    props.push(i);
-                else
-                    props.push("&nbsp;"); // Need to put in blanks to that the rows line up
-                props = props.concat(spec_recurse(p[i], feature_names_flag));
-            } else {
-                if (feature_names_flag) // We are enumerating the feature names
-                    props.push(i);
-                else // These columns should contain the actual data
-                    props.push(p[i]);
-            }
-        }
-        return props;
-    });
+	my.merge_bb_json = function () {
+		var merged = {}
+		var index = 0;
+		for (var p in arguments) {
+			for (var heading in arguments[p]) {
+				for (var spec in arguments[p][heading]) {
+					if (typeof(merged[heading]) == "undefined")
+						merged[heading] = {};
+					if (typeof(merged[heading][spec]) == "undefined")
+						merged[heading][spec] = [];
+					merged[heading][spec][index] = arguments[p][heading][spec];
+				}
+			}
+			index++;
+		}
+		return merged;
+	}
 
     // The spec loader works to do a couple AJAX calls when the show page initially loads.
     // The results are stored in $('body').data for instant retrieval when the
@@ -1131,12 +1128,14 @@ optemo_module = (function (my){
 	{
 		var h;
 		if (isLabel) {
-			if (length >= 37) h = 3;
+			if (length >= 55) h = 4;
+			else if (length >= 37) h = 3;
 		    else if (length >= 19) h = 2;
 		    else h = 1;
 		}
 		else {
-			if (length >= 57) h = 3;
+			if (length >= 85) h = 4;
+			else if (length >= 57) h = 3;
             else if (length >= 29) h = 2;
             else h = 1;
 		}
@@ -1144,33 +1143,53 @@ optemo_module = (function (my){
 	}
 	
 	my.buildComparisonMatrix = function() {
-		var rows = [], row_class=[], savedProducts = $('#opt_savedproducts').children(), anchor = $('#hideable_matrix');
+		var savedProducts = $('#opt_savedproducts').children(), anchor = $('#hideable_matrix');
 		// Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
-		//p == -1 means it's the labels
-		for (var p = -1; p < savedProducts.length; p++) {
-		    var sku = $(savedProducts[(p == -1) ? p+1 : p]).attr('data-sku');
-			// The column numbers are important here for .remove functionality.
-		    if (p >= 0) {
-				anchor.append('<div class="outertitle spec_column_'+p+'"><div class="columntitle">&nbsp;</div></div>');
-		    }
-		    spec_array = parse_bb_json_into_array($('body').data('bestbuy_specs_' + sku), (p == -1) ? true : false);
-			for (var s = 0; s < spec_array.length; s++) {
-				if (p==-1) {
-					row_class[s] = 1;
-					rows[s] = "";
-				}
-				row_class[s] = Math.max(row_height(spec_array[s].length,(p == -1) ? true : false), row_class[s]);
-				rows[s] += '<div class="cell ' + ((s%2 == 0) ? 'whitebg' : 'graybg') + " " + ((p == -1) ? "leftcolumntext spec_column_"+p : "spec_column_"+p) + '">' + spec_array[s] + ((p == -1) ? ":" : "" ) + "</div>";
+		var grouped_specs = optemo_module.merge_bb_json.apply(null,$.map(savedProducts,function(elem, index){
+			return $('body').data('bestbuy_specs_'+$(elem).attr('data-sku'));
+		}));
+		//Set up Headers
+		for (var i = 0; i < savedProducts.length; i++) {
+			anchor.append('<div class="outertitle spec_column_'+i+'"><div class="columntitle">&nbsp;</div></div>');
+		}
+		var result = "";
+		var nowGray = false;
+		for (var heading in grouped_specs) {
+			//Add Heading
+			result += '<div class="compare_row"><div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + ' leftcolumntext">' + heading + ":</div></div>";
+			nowGray = !nowGray;
+			for (var spec in grouped_specs[heading]) {
+				//Row Height calculation
+				var row_h = Math.max(row_height(Math.max.apply(null,$.map(grouped_specs[heading][spec],function(elem, i) {
+					if (elem)
+						return elem.length;
+					else
+						return 0;
+				}))),row_height(spec.length,true));
 				//Assign row_class and append on the last iteration
-				if (p == savedProducts.length-1) {
-					if (row_class[s] == 3) row_class[s] = 'triple_height_compare_row';
-					else if (row_class[s] == 2) row_class[s] = 'double_height_compare_row';
-					else row_class[s] = 'compare_row'; // row_class was 1
-					anchor.append('<div class="'+row_class[s]+'">'+rows[s]+'</div>');
+				var row_class;
+				if (row_h == 4) row_class = 'quadruple_height_compare_row';
+				else if (row_h == 3) row_class = 'triple_height_compare_row';
+				else if (row_h == 2) row_class = 'double_height_compare_row';
+				else row_class = 'compare_row'; // row_class was 1
+				result += '<div class="'+row_class+'">';
+				
+				//Row heading
+				result += '<div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + ' leftcolumntext">' + spec + ":</div>";
+				//Data
+				for (var i = 0; i < savedProducts.length; i++) {
+					if (grouped_specs[heading][spec][i])
+						result += '<div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + " " + "spec_column_"+ i + '">' + grouped_specs[heading][spec][i] + "</div>";
+					else
+						//Blank Cell
+						result += '<div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + " " + "spec_column_"+ i + '">&nbsp;</div>';
 				}
+				result += "</div>";
+				nowGray = !nowGray;
 			}
 		}
-		
+		anchor.append(result);
+
 		// Put the thumbnails and such at the bottom of the compare area too (in the hideable matrix)
 		var remove_row = $('#basic_matrix .compare_row:first');
 		anchor.append(

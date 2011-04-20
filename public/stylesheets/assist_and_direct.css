@@ -737,9 +737,6 @@ margin-top:0;
 #optemo_embedder .double_height_compare_row .cell {
     height: 32px;
 }
-#optemo_embedder .double_height_compare_row .cell img {
-    top: 8px;
-}
 #optemo_embedder .triple_height_compare_row {
     clear: both;
     line-height: 16px;
@@ -748,8 +745,13 @@ margin-top:0;
 #optemo_embedder .triple_height_compare_row .cell {
     height: 48px;
 }
-#optemo_embedder .triple_height_compare_row .cell img {
-    top: 14px;
+#optemo_embedder .quadruple_height_compare_row {
+    clear: both;
+    line-height: 16px;
+    height: 64px;
+}
+#optemo_embedder .quadruple_height_compare_row .cell {
+    height: 64px;
 }
 #optemo_embedder .toggle_specs img {
 	vertical-align: top;
