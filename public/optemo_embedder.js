@@ -187,11 +187,8 @@ var optemo_socket_activator = (function () {
                             // To correct this, move variable initialization into DBinit() or else append HTML before loading scripts.
                             // Latter is a good idea because the user would see something load earlier than now.
                             // In that case, remove the following lines
-                        
-                            // Using setTimeout to fix an IE race condition. Spinner code will be redone hopefully sooner rather than later anyway, right?
                             // Using livequery instead of a setTimeout. This should be better.
-                    	    // Give IE 800 ms to get the spinner in the DOM. Probably should be another livequery trigger for IE...?
-                            setTimeout("myspinner = new optemo_module.spinner(\"myspinner\", 11, 20, 9, 5, \"#000\")", 800);
+                            
                             optemo_module.initiateModuleVariables();
                             optemo_module.FilterAndSearchInit(); optemo_module.DBinit();    
                         }
