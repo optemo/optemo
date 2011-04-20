@@ -117,7 +117,7 @@ optemo_module = (function (my){
 	my.merge_bb_json = function () {
 		var merged = {}
 		var index = 0;
-		for (var p in arguments) {
+		for (var p = 0; p < arguments.length; p++) {
 			for (var heading in arguments[p]) {
 				for (var spec in arguments[p][heading]) {
 					if (typeof(merged[heading]) == "undefined")
@@ -1145,9 +1145,11 @@ optemo_module = (function (my){
 	my.buildComparisonMatrix = function() {
 		var savedProducts = $('#opt_savedproducts').children(), anchor = $('#hideable_matrix');
 		// Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
-		var grouped_specs = optemo_module.merge_bb_json.apply(null,$.map(savedProducts,function(elem, index){
-			return $('body').data('bestbuy_specs_'+$(elem).attr('data-sku'));
-		}));
+		var array = [];
+		for (var i = 0; i <= savedProducts.length; i++) {
+			array.push($('body').data('bestbuy_specs_'+$(savedProducts[i]).attr('data-sku')));
+		}
+		var grouped_specs = optemo_module.merge_bb_json.apply(null,array);
 		//Set up Headers
 		for (var i = 0; i < savedProducts.length; i++) {
 			anchor.append('<div class="outertitle spec_column_'+i+'"><div class="columntitle">&nbsp;</div></div>');
@@ -1156,16 +1158,17 @@ optemo_module = (function (my){
 		var nowGray = false;
 		for (var heading in grouped_specs) {
 			//Add Heading
-			result += '<div class="compare_row"><div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + ' leftcolumntext">' + heading + ":</div></div>";
+			result += '<div class="compare_row"><div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + ' leftcolumntext">' + heading.replace('&','&amp;') + ":</div></div>";
 			nowGray = !nowGray;
 			for (var spec in grouped_specs[heading]) {
 				//Row Height calculation
-				var row_h = Math.max(row_height(Math.max.apply(null,$.map(grouped_specs[heading][spec],function(elem, i) {
-					if (elem)
-						return elem.length;
-					else
-						return 0;
-				}))),row_height(spec.length,true));
+				array = [];
+				for(var i = 0; i < grouped_specs[heading][spec].length; i++) {
+					if (grouped_specs[heading][spec][i])
+						array.push(grouped_specs[heading][spec][i].length);	
+				}
+				var row_h = Math.max(row_height(Math.max.apply(null,array)),row_height(spec.length,true));
+				
 				//Assign row_class and append on the last iteration
 				var row_class;
 				if (row_h == 4) row_class = 'quadruple_height_compare_row';
@@ -1175,11 +1178,11 @@ optemo_module = (function (my){
 				result += '<div class="'+row_class+'">';
 				
 				//Row heading
-				result += '<div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + ' leftcolumntext">' + spec + ":</div>";
+				result += '<div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + ' leftcolumntext">' + spec.replace('&','&amp;') + ":</div>";
 				//Data
 				for (var i = 0; i < savedProducts.length; i++) {
 					if (grouped_specs[heading][spec][i])
-						result += '<div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + " " + "spec_column_"+ i + '">' + grouped_specs[heading][spec][i] + "</div>";
+						result += '<div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + " " + "spec_column_"+ i + '">' + grouped_specs[heading][spec][i].replace(/&/g,'&amp;') + "</div>";
 					else
 						//Blank Cell
 						result += '<div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + " " + "spec_column_"+ i + '">&nbsp;</div>';
