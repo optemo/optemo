@@ -940,13 +940,13 @@ optemo_module = (function (my){
             // 2, 3, 4 ==>  513, 704, 895  (191 each)
             switch(number_of_saved_products) {
                 case 3:
-                    width = 755;
+                    width = 757;
                     break;
                 case 4:
-                    width = 946;
+                    width = 948;
                     break;
                 default:
-                    width = 564;
+                    width = 566;
             }
     		my.applySilkScreen('/comparison/' + productIDs, null, width, 580,function(){
 				// Jquery 1.5 would finish all the requests before building the comparison matrix once
@@ -1157,18 +1157,17 @@ optemo_module = (function (my){
 			for (var s = 0; s < spec_array.length; s++) {
 				if (p==-1) {
 					row_class[s] = 1;
-					rows[s] = $('<div>');
+					rows[s] = "";
 				}
 				row_class[s] = Math.max(row_height(spec_array[s].length,(p == -1) ? true : false), row_class[s]);
-				//Assign row_class on the last iteration
+				rows[s] += '<div class="cell ' + ((s%2 == 0) ? 'whitebg' : 'graybg') + " " + ((p == -1) ? "leftcolumntext spec_column_"+p : "spec_column_"+p) + '">' + spec_array[s] + ((p == -1) ? ":" : "" ) + "</div>";
+				//Assign row_class and append on the last iteration
 				if (p == savedProducts.length-1) {
 					if (row_class[s] == 3) row_class[s] = 'triple_height_compare_row';
 					else if (row_class[s] == 2) row_class[s] = 'double_height_compare_row';
 					else row_class[s] = 'compare_row'; // row_class was 1
-					rows[s].addClass(row_class[s]);
+					anchor.append('<div class="'+row_class[s]+'">'+rows[s]+'</div>');
 				}
-				rows[s].append('<div class="cell ' + ((s%2 == 0) ? 'whitebg' : 'graybg') + " " + ((p == -1) ? "leftcolumntext spec_column_"+p : "spec_column_"+p) + '">' + spec_array[s] + ((p == -1) ? ":" : "" ) + "</div>");
-				rows[s].appendTo(anchor);
 			}
 		}
 		
