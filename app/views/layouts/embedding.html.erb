@@ -1,5 +1,5 @@
 <% s = Session %>
-<%= raw stylesheet_link_merged(s.directLayout ? :direct : :assist) %>
+<%# raw stylesheet_link_merged(s.directLayout ? :direct : :assist) %>
 <!--[if IE]>
 <div id="IE">
 <![endif]-->
@@ -7,7 +7,8 @@
 <%= yield %>
 <div class="watermark"><%=t('products.compare.powered')%><%= link_to 'Optemo', 'http://optemo.com', :class => "popup" %></div>
 <div id="silkscreen">&nbsp;</div>
-<div id="filter_bar_loading"><%=t('products.show.loading') %></div>
+<div id="filter_silkscreen"></div>
+<div id="loading"><img src="/images/classic-loader.gif" /><%=t('products.show.loading')%></div>
 <div id="outsidecontainer"><div id="info">&nbsp;</div></div>
 <!--[if IE]>
 </div>
