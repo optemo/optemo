@@ -6,7 +6,6 @@
    ---- Show Page Pre-loader & Helpers ----
     ** initiateModuleVariables  -  module variables are locally scoped to the optemo_module. They are initialized at different times for embedded and non-embedded.
     parse_bb_json(obj)  -  recursive function to parse the returned JSON into an html list
-    parse_bb_json_into_array(obj, features_flag)  -  recursive function parses the returned JSON object into a table of similar style to the 'direct comparison' action
     ** loadspecs(sku, f)  -  Does 2 AJAX requests for data relating to sku and puts the results in $('body').data() for later. Runs the callback function f if provided.
     numberofstars(stars)  -  Helper function to turn a number of stars into images
     ** preloadSpecsAndReviews  -  Called on show action, this gets the specs and reviews if necessary for instant tab switching on pop-over window
@@ -14,9 +13,9 @@
    ---- UI Manipulation ----
     ** removeSilkScreen()
     ** applySilkScreen(url, data, width, height, f)  -  Puts up fading boxes, calling the callback frunction f if provided.
-    ** saveProductForComparison(id, sku, imgurl, name)  -  Puts comparison items in #savebar_content and stores them in a cookie. SKU is optional.
-    ** renderComparisonProducts(id, sku, imgurl, name)  -  Does actual insertion of UI elements
-    ** getIdAndSkuFromProductimg(img)  -  Returns the ID from the image. Only used for drag-and-drop at the moment.
+    ** saveProductForComparison(id, href, sku, imgurl, name)  -  Puts comparison items in #savebar_content and stores them in a cookie. SKU is optional.
+    ** renderComparisonProducts(id, href, sku, imgurl, name)  -  Does actual insertion of UI elements
+    ** getIdHrefAndSkuFromProductimg(img)  -  Returns the ID from the image. Only used for drag-and-drop at the moment.
     removeFromComparison(id)  -  Removes comparison items from #savebar_content
     submitCategorical()  -  Submits a categorical filter (no longer does tracking)
     submitsearch()  -  Submits a search via the main search field in the filter bar
@@ -115,25 +114,23 @@ optemo_module = (function (my){
 		return props;
     });
 
-    // This flattens the JSON return object down as necessary for feature names or values.
-    var parse_bb_json_into_array = (function spec_recurse(p, feature_names_flag) {
-        var props = [];
-        for (var i in p) {
-            if (typeof(p[i]) == "object") {
-                if (feature_names_flag) // We are enumerating the feature names
-                    props.push(i);
-                else
-                    props.push("&nbsp;"); // Need to put in blanks to that the rows line up
-                props = props.concat(spec_recurse(p[i], feature_names_flag));
-            } else {
-                if (feature_names_flag) // We are enumerating the feature names
-                    props.push(i);
-                else // These columns should contain the actual data
-                    props.push(p[i]);
-            }
-        }
-        return props;
-    });
+	my.merge_bb_json = function () {
+		var merged = {}
+		var index = 0;
+		for (var p = 0; p < arguments.length; p++) {
+			for (var heading in arguments[p]) {
+				for (var spec in arguments[p][heading]) {
+					if (typeof(merged[heading]) == "undefined")
+						merged[heading] = {};
+					if (typeof(merged[heading][spec]) == "undefined")
+						merged[heading][spec] = [];
+					merged[heading][spec][index] = arguments[p][heading][spec];
+				}
+			}
+			index++;
+		}
+		return merged;
+	}
 
     // The spec loader works to do a couple AJAX calls when the show page initially loads.
     // The results are stored in $('body').data for instant retrieval when the
@@ -364,7 +361,7 @@ optemo_module = (function (my){
     };
 
     // When products get dropped into the save box
-    my.saveProductForComparison = function(id, sku, imgurl, name) {
+    my.saveProductForComparison = function(id, href, sku, imgurl, name) {
     	/* We need to store the entire thing for Flooring. Eventually this will probably not be an issue
     	since we won't be pulling images directly from another website. Keep original code below
     	imgurlToSaveArray = imgurl.split('/');
@@ -388,8 +385,8 @@ optemo_module = (function (my){
         	    ignored_ids = getAllShownProductIds();
                 my.trackPage('goals/save', {'filter_type' : 'save', 'product_picked' : id, 'product_ignored' : ignored_ids});
 
-        		my.renderComparisonProducts(id, sku, imgurl, name);
-        		addValueToCookie('optemo_SavedProductIDs', [id, sku, imgurl, name, my.MODEL_NAME]);
+        		my.renderComparisonProducts(id, href, sku, imgurl, name);
+        		addValueToCookie('optemo_SavedProductIDs', [id, href, sku, imgurl, name, my.MODEL_NAME]);
         		// Hide the drag-and-drop message
         		$('#savesome').hide();
         	}
@@ -401,7 +398,7 @@ optemo_module = (function (my){
     	}
     };
 
-    my.renderComparisonProducts = function(id, sku, imgurl, name) {
+    my.renderComparisonProducts = function(id, href, sku, imgurl, name) {
         // The reason for writing out all the HTML in javascript like this is that we want the drop action to happen instantly, without
         // a page load. As for why it's done explicitly rather than, e.g. el = document.createElement("img"); el.src = [...] that is
         // more due to inexperience than anything else. This should probably be refactored to the above style for readability.
@@ -413,7 +410,7 @@ optemo_module = (function (my){
     	// For the uncommon case of page reload, it's fine to load a larger image.
     	smallProductImageAndDetail = "<img class=\"draganddropimage\" src=" + // used to have width=\"45\" height=\"50\" in there, but I think it just works for printers...
     	imgurl + " data-id=\""+id+"\" data-sku=\""+sku+"\" alt=\""+id+"_s\"><div>" +
-    	"<a class=\"easylink\" data-id=\""+id+"\" data-sku=\""+sku+"\" href=\"\">" +
+    	"<a class=\"easylink\" data-id=\""+id+"\" data-sku=\""+sku+"\" href=\""+ href +"\">" +
     	((name) ? optemo_module.getShortProductName(name) : 0) +
     	"</a></div>" +
     	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\">" +
@@ -444,21 +441,24 @@ optemo_module = (function (my){
         });
     };
 
-	my.getIdAndSkuFromProductimg = function(img) {
-        var res, sku=0;
+	my.getIdHrefAndSkuFromProductimg = function(img) {
+        var res, sku=0, href;
     	if (my.DIRECT_LAYOUT) {
     		res = img.parent().siblings('.itemfeatures').find('.easylink')
     		if (res.length > 0) {
-    		    res = res.attr('href').match(/\d+$/);
+    		    href = res.attr('href');
+    		    res = href.match(/\d+$/);
     	    } else {
-    	        res = img.parent().siblings('.groupby_title').find('.easylink').attr('href').match(/\d+$/);
+    	        href = img.parent().siblings('.groupby_title').find('.easylink').attr('href');
+    	        res = href.match(/\d+$/);
             }
     	} else {
     		var el = img.parent().siblings('.productinfo').children('.easylink');
-    		res = el.attr('href').match(/\d+$/);
+    		href = el.attr('href');
+    		res = href.match(/\d+$/);
     		sku = el.attr('data-sku');
     	}
-    	return Array(res, sku);
+    	return Array(res, href, sku);
 	}
 
     // When you click the X on a saved product:
@@ -911,8 +911,9 @@ optemo_module = (function (my){
 			var t = $(this);
             var sku = $('.poptitle').attr('data-sku');
             var image = $('#galleria').find('img:first').attr('src');
+            var href = t.attr('data-href'); // ZAT
             // Test for the length of the saved products array here to avoid a race condition
-            optemo_module.saveProductForComparison(t.attr('data-id'), sku, image, t.attr('data-name'));
+            optemo_module.saveProductForComparison(t.attr('data-id'), href, sku, image, t.attr('data-name'));
             // This message will be displayed next to the droppable box if
             $("#already_added_msg").css("display", "none");
             // Call click handler for the compare button if there are multiple saved products there. Otherwise, get out of show page
@@ -940,13 +941,13 @@ optemo_module = (function (my){
             // 2, 3, 4 ==>  513, 704, 895  (191 each)
             switch(number_of_saved_products) {
                 case 3:
-                    width = 755;
+                    width = 757;
                     break;
                 case 4:
-                    width = 946;
+                    width = 948;
                     break;
                 default:
-                    width = 564;
+                    width = 566;
             }
     		my.applySilkScreen('/comparison/' + productIDs, null, width, 580,function(){
 				// Jquery 1.5 would finish all the requests before building the comparison matrix once
@@ -1131,12 +1132,14 @@ optemo_module = (function (my){
 	{
 		var h;
 		if (isLabel) {
-			if (length >= 37) h = 3;
+			if (length >= 55) h = 4;
+			else if (length >= 37) h = 3;
 		    else if (length >= 19) h = 2;
 		    else h = 1;
 		}
 		else {
-			if (length >= 57) h = 3;
+			if (length >= 85) h = 4;
+			else if (length >= 57) h = 3;
             else if (length >= 29) h = 2;
             else h = 1;
 		}
@@ -1144,34 +1147,56 @@ optemo_module = (function (my){
 	}
 	
 	my.buildComparisonMatrix = function() {
-		var rows = [], row_class=[], savedProducts = $('#opt_savedproducts').children(), anchor = $('#hideable_matrix');
+		var savedProducts = $('#opt_savedproducts').children(), anchor = $('#hideable_matrix');
 		// Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
-		//p == -1 means it's the labels
-		for (var p = -1; p < savedProducts.length; p++) {
-		    var sku = $(savedProducts[(p == -1) ? p+1 : p]).attr('data-sku');
-			// The column numbers are important here for .remove functionality.
-		    if (p >= 0) {
-				anchor.append('<div class="outertitle spec_column_'+p+'"><div class="columntitle">&nbsp;</div></div>');
-		    }
-		    spec_array = parse_bb_json_into_array($('body').data('bestbuy_specs_' + sku), (p == -1) ? true : false);
-			for (var s = 0; s < spec_array.length; s++) {
-				if (p==-1) {
-					row_class[s] = 1;
-					rows[s] = $('<div>');
+		var array = [];
+		for (var i = 0; i <= savedProducts.length; i++) {
+			array.push($('body').data('bestbuy_specs_'+$(savedProducts[i]).attr('data-sku')));
+		}
+		var grouped_specs = optemo_module.merge_bb_json.apply(null,array);
+		//Set up Headers
+		for (var i = 0; i < savedProducts.length; i++) {
+			anchor.append('<div class="outertitle spec_column_'+i+'"><div class="columntitle">&nbsp;</div></div>');
+		}
+		var result = "";
+		var nowGray = false;
+		for (var heading in grouped_specs) {
+			//Add Heading
+			result += '<div class="compare_row"><div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + ' leftcolumntext">' + heading.replace('&','&amp;') + ":</div></div>";
+			nowGray = !nowGray;
+			for (var spec in grouped_specs[heading]) {
+				//Row Height calculation
+				array = [];
+				for(var i = 0; i < grouped_specs[heading][spec].length; i++) {
+					if (grouped_specs[heading][spec][i])
+						array.push(grouped_specs[heading][spec][i].length);	
 				}
-				row_class[s] = Math.max(row_height(spec_array[s].length,(p == -1) ? true : false), row_class[s]);
-				//Assign row_class on the last iteration
-				if (p == savedProducts.length-1) {
-					if (row_class[s] == 3) row_class[s] = 'triple_height_compare_row';
-					else if (row_class[s] == 2) row_class[s] = 'double_height_compare_row';
-					else row_class[s] = 'compare_row'; // row_class was 1
-					rows[s].addClass(row_class[s]);
+				var row_h = Math.max(row_height(Math.max.apply(null,array)),row_height(spec.length,true));
+				
+				//Assign row_class and append on the last iteration
+				var row_class;
+				if (row_h == 4) row_class = 'quadruple_height_compare_row';
+				else if (row_h == 3) row_class = 'triple_height_compare_row';
+				else if (row_h == 2) row_class = 'double_height_compare_row';
+				else row_class = 'compare_row'; // row_class was 1
+				result += '<div class="'+row_class+'">';
+				
+				//Row heading
+				result += '<div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + ' leftcolumntext">' + spec.replace('&','&amp;') + ":</div>";
+				//Data
+				for (var i = 0; i < savedProducts.length; i++) {
+					if (grouped_specs[heading][spec][i])
+						result += '<div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + " " + "spec_column_"+ i + '">' + grouped_specs[heading][spec][i].replace(/&/g,'&amp;') + "</div>";
+					else
+						//Blank Cell
+						result += '<div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + " " + "spec_column_"+ i + '">&nbsp;</div>';
 				}
-				rows[s].append('<div class="cell ' + ((s%2 == 0) ? 'whitebg' : 'graybg') + " " + ((p == -1) ? "leftcolumntext spec_column_"+p : "spec_column_"+p) + '">' + spec_array[s] + ((p == -1) ? ":" : "" ) + "</div>");
-				rows[s].appendTo(anchor);
+				result += "</div>";
+				nowGray = !nowGray;
 			}
 		}
-		
+		anchor.append(result);
+
 		// Put the thumbnails and such at the bottom of the compare area too (in the hideable matrix)
 		var remove_row = $('#basic_matrix .compare_row:first');
 		anchor.append(
@@ -1213,15 +1238,15 @@ optemo_module = (function (my){
     				drop: function (e, ui) {
     				    var id_and_sku, imgObj = $(ui.helper);
     					if (imgObj.hasClass('dragHand')) { // This is a drag hand object
-    				        realImgObj = imgObj.parent().find('.productimg');
-    				        id_and_sku = my.getIdAndSkuFromProductimg(realImgObj);
-        					my.saveProductForComparison(id_and_sku[0], id_and_sku[1], realImgObj.attr('src'), realImgObj.attr('alt'));
+    				        var realImgObj = imgObj.parent().find('.productimg');
+    				        id_href_and_sku = my.getIdHrefAndSkuFromProductimg(realImgObj);
+        					my.saveProductForComparison(id_href_and_sku[0], id_href_and_sku[1], id_href_and_sku[2], realImgObj.attr('src'), realImgObj.attr('alt'));
     				    }
     				    else { // This is an image object; behave as normal
-    				        id_and_sku = my.getIdAndSkuFromProductimg(imgObj);
-        					my.saveProductForComparison(id_and_sku[0], id_and_sku[1], imgObj.attr('src'), imgObj.attr('alt'));
+    				        id_href_and_sku = my.getIdHrefAndSkuFromProductimg(imgObj);
+        					my.saveProductForComparison(id_href_and_sku[0], id_href_and_sku[1], id_href_and_sku[2], imgObj.attr('src'), imgObj.attr('alt'));
     					}
-        				my.loadspecs(id_and_sku[1]);
+        				my.loadspecs(id_href_and_sku[1]);
     				}
     			});
             }    	    
@@ -1532,8 +1557,8 @@ $(function(){
 			tokenizedArray = savedproducts[tokenizedArrayID].split(',');
             // These arguments are (id, sku, imgurl, name, product_type).
             // We just ignore product type for now since the websites only have one product type each.
-			optemo_module.renderComparisonProducts(tokenizedArray[0], tokenizedArray[1], tokenizedArray[2], tokenizedArray[3]);
-			optemo_module.loadspecs(tokenizedArray[1]);
+			optemo_module.renderComparisonProducts(tokenizedArray[0], tokenizedArray[1], tokenizedArray[2], tokenizedArray[3], tokenizedArray[4]);
+			optemo_module.loadspecs(tokenizedArray[2]);
 		}
 		// There should be at least 1 saved item, so...
 		// 1. show compare button
