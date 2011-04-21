@@ -282,7 +282,6 @@ class Search < ActiveRecord::Base
     unless p["action_type"] == "initial" #Exception for initial clusters
       old_search = Search.find_by_id_and_session_id(p["search_hist"],Session.id) if p["search_hist"]
       old_search = Session.lastsearch if old_search.nil?
-      self.parent_id = old_search.id
     end
     # If there is a sort method to keep from last time, move it across
     self.sortby = old_search[:sortby] if old_search && old_search[:sortby]
@@ -299,7 +298,7 @@ class Search < ActiveRecord::Base
       duplicateFeatures(old_search)
     when "extended"
       self.seesim = p["extended_hash"] # current products
-      createFeatures(p,old_search)
+      createFeatures(p)
     when "nextpage"
       #the next page button has been clicked
       self.page = p[:page]
@@ -313,7 +312,7 @@ class Search < ActiveRecord::Base
       duplicateFeatures(old_search)
     when "filter"
       #product filtering has been done through keyword search of attribute filters
-      createFeatures(p,old_search)
+      createFeatures(p)
       #Find clusters that match filtering query
       #if old_search && !expandedFiltering?(old_search)
       #  #Search is narrowed, so use old products to begin with
@@ -352,7 +351,7 @@ class Search < ActiveRecord::Base
     end
   end
    
-  def createFeatures(p,old_search)
+  def createFeatures(p)
     #seperate myfilter into various parts
     @userdataconts = []
     @userdatabins = []
@@ -368,8 +367,7 @@ class Search < ActiveRecord::Base
       elsif Session.binary["filter"].index(k)
         #Binary Features
         #Handle false booleans
-        dobj = old_search.userdatabins.select{|d|d.name == k}.first
-        if v != '0' #|| (!dobj.nil? && dobj.value == true)
+        if v != '0'
           @userdatabins << Userdatabin.new({:name => k, :value => v})
         end
       elsif Session.categorical["filter"].index(k)
