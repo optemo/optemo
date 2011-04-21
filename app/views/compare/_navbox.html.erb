@@ -38,7 +38,7 @@
      <%else%>   
 		<% link_text = t("products.compare.similar",:count => cluster.size)%>
      <%end%>	
-      <div style="padding:3px 17px;">
+      <div style="padding:3px 15px;">
       <%= link_to cluster_path(cluster.id), {:id => "sim#{i}", :class => 'simlinks awesome_reset global_btn', :"data-id" => "#{product.id}", :"data-size" => cluster.size, :"title" =>  t('products.compare.seegroup'), :rel => "nofollow"} do %>
 		<span><%= link_text %></span>
 	  <% end %>
