@@ -1162,7 +1162,11 @@ optemo_module = (function (my){
 		var nowGray = false;
 		for (var heading in grouped_specs) {
 			//Add Heading
-			result += '<div class="compare_row"><div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + ' leftcolumntext">' + heading.replace('&','&amp;') + ":</div></div>";
+			result += '<div class="compare_row"><div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + ' leftcolumntext" style="font-style: italic;">' + heading.replace('&','&amp;') + "</div>";
+			for (var i = 0; i < savedProducts.length; i++) {
+				result += '<div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + ' spec_column_'+i+'">&nbsp;</div>';
+			}
+			result += "</div>";
 			nowGray = !nowGray;
 			for (var spec in grouped_specs[heading]) {
 				//Row Height calculation

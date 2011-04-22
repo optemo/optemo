@@ -69,17 +69,5 @@
   	<% i = i + 1 %>	
 	<% end %>
   <% end %>
-  <% @s.binarygroup.each_pair do |heading,features| %>
-	<div class="label"><a href="#"><%= heading %></a></div>
-	<% features.each do |feat| %>
-		<% dobj = @s.search.userdatabins.select{|udb| udb.name == feat}.first %>
-		<div class="filterbutton<%= " selected_button" unless (dobj.blank? || dobj.value == false) %><%= " disabled" if SearchProduct.bin_count(feat) == 0 %>">
-			<%= t("#{Session.product_type}.specs.#{feat}.name") %>
-			<%= hidden_field_tag "myfilter[#{feat}]", (dobj.nil? || dobj.value == false) ? 0 : 1 %>
-		</div>
-  	<% i = i + 1 %>
-	<% end %>
-  <% end if false%>
-  <%= hidden_field_tag 'myfilter[search_hist]', @s.search.id %>
 <% end %>
 <div style="clear:both; height: 0"><!-- --></div>

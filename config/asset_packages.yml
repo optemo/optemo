@@ -3,13 +3,13 @@ javascripts:
 - base: 
   - raphael
   - helpers_shared
-  - autocomplete_terms
+#  - autocomplete_terms
   - jquery-ui-1.8.6.custom.min
   - jquery.history
   - jquery_galleria
   - galleria.classic
   - jquery.livequery
-  - css_browser_selector
+#  - css_browser_selector
   - application
   
 - mobile:
