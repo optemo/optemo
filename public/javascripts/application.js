@@ -1156,18 +1156,18 @@ optemo_module = (function (my){
 		var grouped_specs = optemo_module.merge_bb_json.apply(null,array);
 		//Set up Headers
 		for (var i = 0; i < savedProducts.length; i++) {
-			anchor.append('<div class="outertitle spec_column_'+i+'"><div class="columntitle">&nbsp;</div></div>');
+			anchor.append('<div class="columntitle spec_column_'+i+'">&nbsp;</div>');
 		}
 		var result = "";
-		var nowGray = false;
+		var whitebg = true;
 		for (var heading in grouped_specs) {
 			//Add Heading
-			result += '<div class="compare_row"><div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + ' leftcolumntext" style="font-style: italic;">' + heading.replace('&','&amp;') + "</div>";
+			result += '<div class="compare_row"><div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' leftcolumntext" style="font-style: italic;">' + heading.replace('&','&amp;') + "</div>";
 			for (var i = 0; i < savedProducts.length; i++) {
-				result += '<div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + ' spec_column_'+i+'">&nbsp;</div>';
+				result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' spec_column_'+i+'">&nbsp;</div>';
 			}
 			result += "</div>";
-			nowGray = !nowGray;
+			whitebg = !whitebg;
 			for (var spec in grouped_specs[heading]) {
 				//Row Height calculation
 				array = [];
@@ -1186,17 +1186,17 @@ optemo_module = (function (my){
 				result += '<div class="'+row_class+'">';
 				
 				//Row heading
-				result += '<div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + ' leftcolumntext">' + spec.replace('&','&amp;') + ":</div>";
+				result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' leftcolumntext">' + spec.replace('&','&amp;') + ":</div>";
 				//Data
 				for (var i = 0; i < savedProducts.length; i++) {
 					if (grouped_specs[heading][spec][i])
-						result += '<div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + " " + "spec_column_"+ i + '">' + grouped_specs[heading][spec][i].replace(/&/g,'&amp;') + "</div>";
+						result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + " " + "spec_column_"+ i + '">' + grouped_specs[heading][spec][i].replace(/&/g,'&amp;') + "</div>";
 					else
 						//Blank Cell
-						result += '<div class="cell ' + ((nowGray) ? 'whitebg' : 'graybg') + " " + "spec_column_"+ i + '">&nbsp;</div>';
+						result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + " " + "spec_column_"+ i + '">&nbsp;</div>';
 				}
 				result += "</div>";
-				nowGray = !nowGray;
+				whitebg = !whitebg;
 			}
 		}
 		anchor.append(result);

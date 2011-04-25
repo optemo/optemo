@@ -15,12 +15,12 @@
     <%# then featurename, data, data %>
 
     <div class="compare_row">
-        <div class="outertitle leftmostcolumn leftmostoutertitle"><div class="columntitle leftmostcolumn leftmostcolumntitle"></div></div>
+        <div class="columntitle leftmostcolumn leftmostcolumntitle"></div>
 
     	<% @products.each_with_index do |product, i| %>
-            <div class="<%= 'outertitle spec_column_' + i.to_s %>"><div class="columntitle">
+            <div class="columntitle spec_column_<%= i %>">
     				<%= link_to image_tag('remove.png', :style => "vertical-align: text-top;")+" "+t('compare.index.remove'), "", :"data-name" => product.id, :class => 'remove spec_column_' + i.to_s %>
-    		</div></div>
+    		</div>
 		<% end %>
     </div>
     <% spec_hash = {} %>
@@ -33,35 +33,36 @@
     		<% catspecs = CatSpec.cache_all(product.id) %>
     		<% binspecs = BinSpec.cache_all(product.id) %>
     		<% spec_hash[product.id] = contspecs.merge(catspecs).merge(binspecs) %>
-    		<%= render :partial => 'thumbnails', :object => product, :locals => {:contspecs => contspecs, :catspecs => catspecs, :binspecs => binspecs, :column_number => i, :last => i == @products.length-1} %>
+    		<%= render :partial => 'thumbnails', :object => product, :locals => {:contspecs => contspecs, :catspecs => catspecs, :binspecs => binspecs, :column_number => i} %>
         <% end %>
     </div>
 
     <div class="compare_row">
-        <div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle">
+        <div class="columntitle leftmostcolumntitle">
         	<%=t 'compare.index.proddetails'%>
-        </div></div>
+        </div>
 
 		<% @products.each_with_index do |product, i| %>
-            <div class="<%= 'outertitle spec_column_' + i.to_s %>"><div class="columntitle">&nbsp;</div></div>
+            <div class="columntitle spec_column_<%= i %>">&nbsp;</div>
         <% end %>
     </div>
 	<% gray = false %>
         <% {@s.continuous["show"] => "cont", @s.categorical["show"] => "cat", @s.binary["show"] => "bin"}.each_pair do |feat_list, feat_type| %>
             <% feat_list.each do |feat| %>
 			<!--needs to be more efficient especially if we want to have unlimited number of products in the compare box-->	
-				<%if feat_type!="bin" || @products.map(&:id).map{|i| spec_hash[i]}.map{|p| p[feat]}.compact.size>0%>
-				  <div class="<%= t("#{Session.product_type}.specs.#{feat}.name").length < 20 ? "compare_row" : "double_height_compare_row" %>">
+				<%if feat_type!="bin" || !@products.map{|product| spec_hash[product.id][feat]}.compact.empty? %> 
+					<div class="<%= t("#{Session.product_type}.specs.#{feat}.name").length < 20 ? "compare_row" : "double_height_compare_row" %>">
 		     			<div class="cell <%= gray ? "graybg" : "whitebg" %> leftmostcolumn leftcolumntext">
 		        			<%= t("#{Session.product_type}.specs.#{feat}.name") %>:
 		        		</div>
-        			<% @products.each_with_index do |product, i| %>
-            			<% allspecs = spec_hash[product.id] %>
-            			<%= render :partial => 'featurevalues', :locals => {:product => product, :numberofproducts => @products.count, :spec => allspecs[feat+fr?] || allspecs[feat], :gray => gray, :feat => feat, :type => feat_type, :column_number => i} %>
+        				<% @products.each_with_index do |product, i| %>
+            				<% allspecs = spec_hash[product.id] %>
+							<%# Some features have a french version and others don't %>
+            				<%= render :partial => 'featurevalues', :locals => {:product => product, :numberofproducts => @products.count, :spec => allspecs[feat+fr?] || allspecs[feat], :gray => gray, :feat => feat, :type => feat_type, :column_number => i} %>
                 		<% end %>
         				<% gray = !gray %>
+					</div>
 				<%end%>		
-            </div>
             <% end %>
         <% end %>
 </div>
@@ -78,6 +79,6 @@
 <% end %>
 </div>
 <div class="comparisonmatrix" id="hideable_matrix" style="width: <%= box_width %>px">
-	<div class="compare_row"><div class="outertitle leftmostoutertitle"><div class="columntitle leftmostcolumntitle"><%=t('compare.index.allspecifications')%></div></div></div>
+	<div class="compare_row"><div class="columntitle leftmostcolumntitle"><%=t('compare.index.allspecifications')%></div></div>
 </div>
 <div class="spacer">

@@ -626,19 +626,12 @@ margin-top:0;
     top: 3px;
     position: absolute;
 }
-#optemo_embedder .longcolumn .cell {
-	border-right: none;
-	width: 400px;
-}
 #optemo_embedder .thumbnailcell {
 	padding-top: 15px;
 	border-right: 1px solid #cccccc;
-	width: 190px;
+	width: 189px;
 	height: 205px;
 	float: left;
-}
-#optemo_embedder .reduce-one {
-	width:189px;
 }
 #optemo_embedder .columntitle {
 	background: url(../images/columntitlebg.gif);
@@ -649,9 +642,7 @@ margin-top:0;
 	border-right: solid 1px #ccc;
 	z-index: 4;
 	position: relative;
-}
-#optemo_embedder .longcolumn .columntitle {
-	width: 420px;
+	float: left;
 }
 #optemo_embedder .bgrow {
 	height: 30px;
@@ -662,16 +653,6 @@ margin-top:0;
 	z-index: 0;
 	border-right: solid 1px #ccc;
 }
-#optemo_embedder .outertitle {
-	width: 190px;
-	border-right: 1px solid #ffffff;
-	z-index: 4;
-	position: relative;
-	float: left;
-}
-#optemo_embedder .longcolumn .outertitle {
-	width: 419px;
-}
 #optemo_embedder .graybg {
 	background: #DADADA;
 }
@@ -680,7 +661,7 @@ margin-top:0;
 	background: white;
 }
 #optemo_embedder .leftmostcolumn {
-	width: 127px;
+	width: 128px;
 	padding-left: 0px;
 }
 #optemo_embedder .leftcolumntext {
@@ -690,11 +671,8 @@ margin-top:0;
 	padding-right: 7px;
 	text-align: right;
 }
-#optemo_embedder .leftmostoutertitle {
-	width: 130px;
-}
 #optemo_embedder .leftmostcolumntitle {
-	width: 121px;
+	width: 123px;
 	border-left: solid 1px #ccc;
 	padding-left: 0px;
 	font-weight: bold;
