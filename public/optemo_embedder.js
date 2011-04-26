@@ -190,6 +190,7 @@ var optemo_socket_activator = (function () {
                             // Using livequery instead of a setTimeout. This should be better.
                             
                             optemo_module.initiateModuleVariables();
+							optemo_module.loadSavedProductsFromCookie();
                             optemo_module.FilterAndSearchInit(); optemo_module.DBinit();    
                         }
                         

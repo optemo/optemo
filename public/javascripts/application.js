@@ -5,6 +5,7 @@
 
    ---- Show Page Pre-loader & Helpers ----
     ** initiateModuleVariables  -  module variables are locally scoped to the optemo_module. They are initialized at different times for embedded and non-embedded.
+	** loadSavedProductsFromCookie - Loads the saved products into the saved products box
     parse_bb_json(obj)  -  recursive function to parse the returned JSON into an html list
     ** loadspecs(sku, f)  -  Does 2 AJAX requests for data relating to sku and puts the results in $('body').data() for later. Runs the callback function f if provided.
     numberofstars(stars)  -  Helper function to turn a number of stars into images
@@ -97,6 +98,31 @@ optemo_module = (function (my){
         SESSION_ID = parseInt($('#seshid').html());
         AB_TESTING_TYPE = parseInt($('#ab_testing_type').html());
     }
+
+	my.loadSavedProductsFromCookie = function() {
+		var tokenizedArrayID = 0, savedproducts = null; /* Must initialize savedproducts here for IE */
+	    savedproducts = optemo_module.readAllCookieValues('optemo_SavedProductIDs');
+		if (savedproducts)
+		{
+			// There are saved products to display
+			if ($.browser.msie) {
+				fixedheight = ((savedproducts.length > 2) ? 80 : 160) + 'px';
+				$("#opt_savedproducts").css({"height" : fixedheight});
+			}
+			for (tokenizedArrayID = 0; tokenizedArrayID < savedproducts.length; tokenizedArrayID++)
+			{
+				tokenizedArray = savedproducts[tokenizedArrayID].split(',');
+	            // These arguments are (id, sku, imgurl, name, product_type).
+	            // We just ignore product type for now since the websites only have one product type each.
+				optemo_module.renderComparisonProducts(tokenizedArray[0], tokenizedArray[1], tokenizedArray[2], tokenizedArray[3]);
+				optemo_module.loadspecs(tokenizedArray[1]);
+			}
+			// There should be at least 1 saved item, so...
+			// 1. show compare button
+			$("#compare_button").show();
+			$("#savesome").hide();
+		}
+	}
 
     // Renders a recursive html list of the specs.
     // This is still used for displaying reviews for the time being.
@@ -1109,14 +1135,14 @@ optemo_module = (function (my){
 		//Reset filters
 		$('.reset').live('click', function(){
 			if (my.loading_indicator_state.disable) return false;
-			trackPage('goals/reset', {'filter_type' : 'reset'});
+			my.trackPage('goals/reset', {'filter_type' : 'reset'});
 			my.ajaxcall($(this).attr('href')+'?ajax=true');
 			return false;
 		});
 		
 		//Zoomout filters
 		$('.zoomout').live('click', function(){
-			trackPage('goals/zoomout', {'filter_type' : 'zoomout'});
+			my.trackPage('goals/zoomout', {'filter_type' : 'zoomout'});
 			my.ajaxcall($(this).attr('href')+'?ajax=true');
 			return false;
 		});
@@ -1542,29 +1568,6 @@ optemo_module = (function (my){
 $(function(){
     // This initializes the jquery history plugin. Note that the plugin was modified for use with our application javascript (details in jquery.history.js)
     $.history.init(optemo_module.ajaxsend);
-    trackPage = optemo_module.trackPage; // locally scoped variable for brevity only
-    var tokenizedArrayID = 0, savedproducts = null; /* Must initialize savedproducts here for IE */
-    savedproducts = optemo_module.readAllCookieValues('optemo_SavedProductIDs');
-	if (savedproducts)
-	{
-		// There are saved products to display
-		if ($.browser.msie) {
-			fixedheight = ((savedproducts.length > 2) ? 80 : 160) + 'px';
-			$("#opt_savedproducts").css({"height" : fixedheight});
-		}
-		for (tokenizedArrayID = 0; tokenizedArrayID < savedproducts.length; tokenizedArrayID++)
-		{
-			tokenizedArray = savedproducts[tokenizedArrayID].split(',');
-            // These arguments are (id, sku, imgurl, name, product_type).
-            // We just ignore product type for now since the websites only have one product type each.
-			optemo_module.renderComparisonProducts(tokenizedArray[0], tokenizedArray[1], tokenizedArray[2], tokenizedArray[3]);
-			optemo_module.loadspecs(tokenizedArray[1]);
-		}
-		// There should be at least 1 saved item, so...
-		// 1. show compare button
-		$("#compare_button").show();
-		$("#savesome").hide();
-	}
 
 	// Only load DBinit if it will not be loaded by the upcoming ajax call
 	// Do LiveInit anyway, since timing is not important
@@ -1578,6 +1581,7 @@ $(function(){
 	    // If we're not embedded, initialize these here.
 	    // Otherwise, initialize them in optemo_embedder.js once the DOM is loaded.
 	    optemo_module.initiateModuleVariables();
+		optemo_module.loadSavedProductsFromCookie();
     }
 
 	//Decrypt encrypted links
