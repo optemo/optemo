@@ -13,9 +13,9 @@
    ---- UI Manipulation ----
     ** removeSilkScreen()
     ** applySilkScreen(url, data, width, height, f)  -  Puts up fading boxes, calling the callback frunction f if provided.
-    ** saveProductForComparison(id, href, sku, imgurl, name)  -  Puts comparison items in #savebar_content and stores them in a cookie. SKU is optional.
-    ** renderComparisonProducts(id, href, sku, imgurl, name)  -  Does actual insertion of UI elements
-    ** getIdHrefAndSkuFromProductimg(img)  -  Returns the ID from the image. Only used for drag-and-drop at the moment.
+    ** saveProductForComparison(id, sku, imgurl, name)  -  Puts comparison items in #savebar_content and stores them in a cookie. SKU is optional.
+    ** renderComparisonProducts(id, sku, imgurl, name)  -  Does actual insertion of UI elements
+    ** getIdAndSkuFromProductimg(img)  -  Returns the ID from the image. Only used for drag-and-drop at the moment.
     removeFromComparison(id)  -  Removes comparison items from #savebar_content
     submitCategorical()  -  Submits a categorical filter (no longer does tracking)
     submitsearch()  -  Submits a search via the main search field in the filter bar
@@ -361,7 +361,7 @@ optemo_module = (function (my){
     };
 
     // When products get dropped into the save box
-    my.saveProductForComparison = function(id, href, sku, imgurl, name) {
+    my.saveProductForComparison = function(id, sku, imgurl, name) {
     	/* We need to store the entire thing for Flooring. Eventually this will probably not be an issue
     	since we won't be pulling images directly from another website. Keep original code below
     	imgurlToSaveArray = imgurl.split('/');
@@ -385,8 +385,8 @@ optemo_module = (function (my){
         	    ignored_ids = getAllShownProductIds();
                 my.trackPage('goals/save', {'filter_type' : 'save', 'product_picked' : id, 'product_ignored' : ignored_ids});
 
-        		my.renderComparisonProducts(id, href, sku, imgurl, name);
-        		addValueToCookie('optemo_SavedProductIDs', [id, href, sku, imgurl, name, my.MODEL_NAME]);
+        		my.renderComparisonProducts(id, sku, imgurl, name);
+        		addValueToCookie('optemo_SavedProductIDs', [id, sku, imgurl, name, my.MODEL_NAME]);
         		// Hide the drag-and-drop message
         		$('#savesome').hide();
         	}
@@ -398,7 +398,7 @@ optemo_module = (function (my){
     	}
     };
 
-    my.renderComparisonProducts = function(id, href, sku, imgurl, name) {
+    my.renderComparisonProducts = function(id, sku, imgurl, name) {
         // The reason for writing out all the HTML in javascript like this is that we want the drop action to happen instantly, without
         // a page load. As for why it's done explicitly rather than, e.g. el = document.createElement("img"); el.src = [...] that is
         // more due to inexperience than anything else. This should probably be refactored to the above style for readability.
@@ -410,7 +410,7 @@ optemo_module = (function (my){
     	// For the uncommon case of page reload, it's fine to load a larger image.
     	smallProductImageAndDetail = "<img class=\"draganddropimage\" src=" + // used to have width=\"45\" height=\"50\" in there, but I think it just works for printers...
     	imgurl + " data-id=\""+id+"\" data-sku=\""+sku+"\" alt=\""+id+"_s\"><div>" +
-    	"<a class=\"easylink\" data-id=\""+id+"\" data-sku=\""+sku+"\" href=\""+ href +"\">" +
+    	"<a class=\"easylink\" data-id=\""+id+"\" data-sku=\""+sku+"\" href=\"\">" +
     	((name) ? optemo_module.getShortProductName(name) : 0) +
     	"</a></div>" +
     	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\">" +
@@ -441,24 +441,21 @@ optemo_module = (function (my){
         });
     };
 
-	my.getIdHrefAndSkuFromProductimg = function(img) {
-        var res, sku=0, href;
+	my.getIdAndSkuFromProductimg = function(img) {
+        var res, sku=0;
     	if (my.DIRECT_LAYOUT) {
     		res = img.parent().siblings('.itemfeatures').find('.easylink')
     		if (res.length > 0) {
-    		    href = res.attr('href');
-    		    res = href.match(/\d+$/);
+    		    res = res.attr('href').match(/\d+$/);
     	    } else {
-    	        href = img.parent().siblings('.groupby_title').find('.easylink').attr('href');
-    	        res = href.match(/\d+$/);
+    	        res = img.parent().siblings('.groupby_title').find('.easylink').attr('href').match(/\d+$/);
             }
     	} else {
     		var el = img.parent().siblings('.productinfo').children('.easylink');
-    		href = el.attr('href');
-    		res = href.match(/\d+$/);
+    		res = el.attr('href').match(/\d+$/);
     		sku = el.attr('data-sku');
     	}
-    	return Array(res, href, sku);
+    	return Array(res, sku);
 	}
 
     // When you click the X on a saved product:
@@ -911,9 +908,8 @@ optemo_module = (function (my){
 			var t = $(this);
             var sku = $('.poptitle').attr('data-sku');
             var image = $('#galleria').find('img:first').attr('src');
-            var href = t.attr('data-href'); // ZAT
             // Test for the length of the saved products array here to avoid a race condition
-            optemo_module.saveProductForComparison(t.attr('data-id'), href, sku, image, t.attr('data-name'));
+            optemo_module.saveProductForComparison(t.attr('data-id'), sku, image, t.attr('data-name'));
             // This message will be displayed next to the droppable box if
             $("#already_added_msg").css("display", "none");
             // Call click handler for the compare button if there are multiple saved products there. Otherwise, get out of show page
@@ -1243,14 +1239,14 @@ optemo_module = (function (my){
     				    var id_and_sku, imgObj = $(ui.helper);
     					if (imgObj.hasClass('dragHand')) { // This is a drag hand object
     				        var realImgObj = imgObj.parent().find('.productimg');
-    				        id_href_and_sku = my.getIdHrefAndSkuFromProductimg(realImgObj);
-        					my.saveProductForComparison(id_href_and_sku[0], id_href_and_sku[1], id_href_and_sku[2], realImgObj.attr('src'), realImgObj.attr('alt'));
+    				        id_and_sku = my.getIdAndSkuFromProductimg(realImgObj);
+        					my.saveProductForComparison(id_and_sku[0], id_and_sku[1], realImgObj.attr('src'), realImgObj.attr('alt'));
     				    }
     				    else { // This is an image object; behave as normal
-    				        id_href_and_sku = my.getIdHrefAndSkuFromProductimg(imgObj);
-        					my.saveProductForComparison(id_href_and_sku[0], id_href_and_sku[1], id_href_and_sku[2], imgObj.attr('src'), imgObj.attr('alt'));
+    				        id_and_sku = my.getIdAndSkuFromProductimg(imgObj);
+        					my.saveProductForComparison(id_and_sku[0], id_and_sku[1], imgObj.attr('src'), imgObj.attr('alt'));
     					}
-        				my.loadspecs(id_href_and_sku[2]);
+        				my.loadspecs(id_and_sku[1]);
     				}
     			});
             }    	    
@@ -1561,8 +1557,8 @@ $(function(){
 			tokenizedArray = savedproducts[tokenizedArrayID].split(',');
             // These arguments are (id, sku, imgurl, name, product_type).
             // We just ignore product type for now since the websites only have one product type each.
-			optemo_module.renderComparisonProducts(tokenizedArray[0], tokenizedArray[1], tokenizedArray[2], tokenizedArray[3], tokenizedArray[4]);
-			optemo_module.loadspecs(tokenizedArray[2]);
+			optemo_module.renderComparisonProducts(tokenizedArray[0], tokenizedArray[1], tokenizedArray[2], tokenizedArray[3]);
+			optemo_module.loadspecs(tokenizedArray[1]);
 		}
 		// There should be at least 1 saved item, so...
 		// 1. show compare button
