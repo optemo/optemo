@@ -364,14 +364,16 @@ optemo_module = (function (my){
 					if (!($.browser.msie && $.browser.version == "6.0")) {
                     	// Initialize Galleria
                     	// If you are debugging around this point, be aware that galleria likes to be initialized without debugging pauses.
-                    	$('#galleria').galleria();
-                    	// The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
-                    	// It's important to set this up as an event handler at all because there is a race condition with galleria updating the DOM otherwise.
-                    	$('.galleria-thumbnails-list').livequery(function() {
-                    	    var g = $('#galleria').find('.galleria-thumbnails-list');
-                    	    g.children().css('float', 'left');
-                    	    g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
-                    	});
+                    	$('#galleria').galleria({
+						    extend: function(options) {
+						        // wait until gallaria is loaded
+						        this.bind(Galleria.LOADFINISH, function(e) {
+						            var g = $('#galleria').find('.galleria-thumbnails-list');
+							        g.children().css('float', 'left');
+							        g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
+						        });
+						    }
+						});
 					}
     	        } else {
     	            $('#outsidecontainer').css('width','');
@@ -797,12 +799,6 @@ optemo_module = (function (my){
     };
 
     my.LiveInit = function() { // This stuff only needs to be called once per full page load.
-		// The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
-        $('.galleria-thumbnails-list').livequery(function() {
-            var g = $('#galleria').find('.galleria-thumbnails-list');
-            g.children().css('float', 'left');
-            g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
-        });
 
     	//Search submit
     	//$('#submit_button').live('click', function(){
