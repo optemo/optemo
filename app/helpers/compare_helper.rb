@@ -111,8 +111,8 @@ module CompareHelper
 	  end
  end
  
-  def chosencats(feat)
-    Session.search.userdatacats.select{|d|d.name == feat}.map(&:value)
+  def chosencats(feat,countlist = {})
+    Session.search.userdatacats.select{|d|d.name == feat && countlist[d.value] != 0}.map(&:value)
   end
   
   def featuretext(product_id)
@@ -306,10 +306,5 @@ module CompareHelper
     end
     t("products.sortby") + sortbyList.join("&nbsp;&nbsp;|&nbsp;&nbsp;")
     # select('sorting_method', @s.search.sortby, sortbyList, {:selected => @s.search.sortby}, {:id => "sorting_method"})
-  end
-  
-  def unchecked_cat(feat,option)
-    dobj = Session.search.userdatacats.select{|ud|ud.name == feat && ud.value == option}.first
-		dobj.nil? || dobj.value == false
   end
 end
