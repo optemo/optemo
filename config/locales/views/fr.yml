@@ -31,9 +31,10 @@ fr:
             videoResolution:    "Résolution vidéo"
             status:         "État"
             closewindow:    "Fermer fenêtre"
-            yes:            "Yes"
+            yes:            "Qui"
             none:           "None"
             unknown:        "Unknown"
+            save:           "Épargnez"
 
         show:
             title:          "Renseignements sur le produit"
