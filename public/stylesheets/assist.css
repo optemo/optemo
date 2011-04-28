@@ -39,7 +39,7 @@
 	position: relative;
 	margin-right: 4px; 
 	margin-bottom: 3px;
-	height:272px;
+	height:300px;
 	width: 181px; /*+2 for the border*/
 	background: right center url(../images/seperatorbar.png) no-repeat;*/
 }
@@ -70,6 +70,7 @@
 }
 #optemo_embedder .productspecs {
 	font-size:0.8em;
+	padding-bottom:14px;
 }
 /*.clusterspecs {
 	background: url(../images/gradient.png) no-repeat;
@@ -100,6 +101,7 @@
 #optemo_embedder .topbar {
 	width: 181px;
 	height: 218px;
+	padding-bottom: 35px;
 }
 #optemo_embedder .bottombar {
 	clear: left;
@@ -121,7 +123,7 @@
 }
 */
 #optemo_embedder .simlinks {
-	font-size: 0.8em;
+	font-size: 0.7em;
 }
 
 /*#extended_box {

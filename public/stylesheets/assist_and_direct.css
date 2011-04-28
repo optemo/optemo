@@ -148,6 +148,21 @@ html {
 	margin-bottom: 2px;
 }
 
+#optemo_embedder .saleprice {
+	/*color: #F5000B;*/
+	color: #FF0000;
+	font-size: 1em;
+}
+#optemo_embedder .save {
+	/*color: #F5000B;*/
+	font-weight: bold;
+	font-size: 0.8em;
+	padding-bottom: 1px;
+}
+#optemo_embedder .saleends {
+	/*color: #F5000B;*/
+	font-size: 0.8em;
+}
 /*.itemtitle {
     font-size: 1.4em;
     line-height: 1.7em;
@@ -1058,7 +1073,7 @@ margin-top:0;
 #optemo_embedder .awesome_reset:visited {
 	background: #003b65; /*url(/images/alert-overlay.png) repeat-x; */
 	display: inline-block; 
-	padding: 4px 7px 2px; 
+	padding: 4px 4px 4px; 
 	color: #fff; 
 	text-decoration: none;
 	-moz-border-radius: 4px; 

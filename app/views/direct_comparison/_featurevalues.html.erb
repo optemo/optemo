@@ -2,10 +2,16 @@
 <div class="cell <%= gray ? "graybg" : "whitebg" %><%=' spec_column_' + column_number.to_s %>">
 	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
 		<!-- If the interesting feature should be displayed then display -->
-		<b><%= t("#{Session.product_type}.specs.#{feat}.preunit", :default => "") %><%= number_with_delimiter(spec).to_s + " " + t("#{Session.product_type}.specs.#{feat}.unit", :default => "") %></b>		
-	<% else %>
+		<b>		
+	<% end%>
+	<%if feat=="price" %>	
+		<%= number_to_currency(spec) %>
+	<%else%>
 		<%= t("#{Session.product_type}.specs.#{feat}.preunit", :default => "") %><%= number_with_delimiter(spec).to_s + " " + t("#{Session.product_type}.specs.#{feat}.unit", :default => "") %>
-	<% end %>
+	<%end%>		
+	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
+		</b>		
+	<% end%>
 </div>
 <% elsif type == "cat" %>
 <div class="cell <%= gray ? "graybg" : "whitebg" %><%=' spec_column_' + column_number.to_s %>">
