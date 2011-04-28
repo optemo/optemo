@@ -1095,7 +1095,6 @@ margin-top:0;
 /* Global Button */
 #optemo_embedder #IE .awesome_reset, #IE .awesome_reset:visited {
 	border: none;
-	padding: 6px 2px 2px; 
 }
 #optemo_embedder #IE .global_btn {
 	display:inline-block;
