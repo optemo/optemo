@@ -16,7 +16,7 @@
 					<div class="saleprice">
 					<%= t('products.compare.onsale')+": "+number_to_currency(ContSpec.cache_all(product.id)["saleprice"]) %></div>	
 					<div class="save"><%= t('products.compare.save')+": "+ number_to_currency(ContSpec.cache_all(product.id)["price"]-ContSpec.cache_all(product.id)["saleprice"]) %></div>
-				    <div class="saleends"><%= t('products.show.saleends')+": "%><%=  fr?.empty? ? CatSpec.cache_all(product.id)["saleEndDate"][/^(\w|\/)+/] : CatSpec.cache_all(product.id)["saleEndDate"][/^(\w|\/)+/].gsub("/", "-") %></div>
+				    <div class="saleends"><%= t('products.show.saleends')+": "%><%= l (Date.parse(CatSpec.cache_all(product.id)["saleEndDate"]) - 1.day), :format => :long %></div>
 				<% else %>
 				<div class="price">
 					$<%= number_with_delimiter(ContSpec.cache_all(product.id)["price"]) %>
