@@ -91,7 +91,7 @@
     		<% if @allspecs["onsale"] %>
     		<div style="font-size: 1.2em; height: 20px;"><span class="left"><%=t('products.show.regularprice')%>:</span><span class="right"><%= number_to_currency(@allspecs["price"]) %></span></div>
     	    <div style="color: #f00; font-size: 1.1em; font-weight: bold;height: 20px;"><span class="left"><%=t('products.show.saleprice')%>:</span><span class="right"><%= number_to_currency(@allspecs["saleprice"]) %></span></div>
-    	    <div style = "clear: both;margin-bottom: 5px;height: 18px;"><span class="left"><%=t('products.show.saleends')%>:</span><span class="right"><%= (Date.parse(@allspecs["saleEndDate"]) - 1.day).to_s(:long) %></span></div>
+    	    <div style = "clear: both;margin-bottom: 5px;height: 18px;"><span class="left"><%=t('products.show.saleends')%>:</span><span class="right"><%= l (Date.parse(@allspecs["saleEndDate"]) - 1.day), :format => :long %></span></div>
     		<% else %>
     		<div style="font-size: 1.5em; height: 20px;"><span class="left"><%=t('products.show.ourprice')%></span><span class="right"><%= number_with_delimiter(@allspecs["price"]) %></span></div>
     		<% end %>
