@@ -101,7 +101,7 @@
 #optemo_embedder .topbar {
 	width: 181px;
 	height: 218px;
-	padding-bottom: 30px;
+	padding-bottom: 35px;
 }
 #optemo_embedder .bottombar {
 	clear: left;
@@ -123,7 +123,7 @@
 }
 */
 #optemo_embedder .simlinks {
-	font-size: 0.8em;
+	font-size: 0.7em;
 }
 
 /*#extended_box {
