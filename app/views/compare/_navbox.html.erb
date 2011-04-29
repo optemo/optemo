@@ -1,5 +1,5 @@
 <div id="box<%= i %>" class="navbox" <%= ("style='margin-right:0px;background:none;'" if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1) %>>
-	<div class="topbar">
+	<div class="topbar" style="height:263px;padding-bottom:0px;">
 		<% if @s.dragAndDropEnabled %>
 				<div class="image_boundingbox">
 				<%= image_tag('hand_and_arrow.png', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
@@ -10,19 +10,21 @@
 		<% end %>
 		<div class="productinfo">
 			<%= link_to product.small_title, product_path(:name => product.descurl, :id => product.id), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
-		
-				<div class="productspecs"><%=featuretext(product.id) %></div>
-				<% if BinSpec.cache_all(product.id)["onsale"] %>
-					<div class="saleprice">
-					<%= t('products.compare.onsale')+": "+number_to_currency(ContSpec.cache_all(product.id)["saleprice"]) %></div>	
-					<div class="save"><%= t('products.compare.save')+": "+ number_to_currency(ContSpec.cache_all(product.id)["price"]-ContSpec.cache_all(product.id)["saleprice"]) %></div>
-				    <div class="saleends"><%= t('products.show.saleends')+": "%><%= l (Date.parse(CatSpec.cache_all(product.id)["saleEndDate"]) - 1.day), :format => :long %></div>
-				<% else %>
+		    
+			<div class="productspecs" style="padding-bottom:6px"><%=featuretext(product.id) %></div>
+			<% if BinSpec.cache_all(product.id)["onsale"] %>
+				<div class="saleprice" style="font-weight: bold;">
+				<%= t('products.compare.onsale')+": "+number_to_currency(ContSpec.cache_all(product.id)["saleprice"]) %></div>	
+				<div class="save"><%= t('products.compare.save')+": "+ number_to_currency(ContSpec.cache_all(product.id)["price"]-ContSpec.cache_all(product.id)["saleprice"]) %></div>
+			    <div class="saleends"><%= t('products.show.saleends')+": "%><%= l (Date.parse(CatSpec.cache_all(product.id)["saleEndDate"]) - 1.day), :format => :long %></div>
+			<% else %>
 				<div class="price">
 					$<%= number_with_delimiter(ContSpec.cache_all(product.id)["price"]) %>
 				</div>	
-				<% end %>
-		
+			<% end %>
+			<% if ContSpec.cache_all(product.id)["customerRating"] > 0 %>
+				<div class="stars" style="padding-top:3px" data-stars="<%= ContSpec.cache_all(product.id)["customerRating"] %>"></div>
+			<% end %>
 		</div>
 	</div>
 
@@ -42,7 +44,7 @@
      <%else%>   
 		<% link_text = t("products.compare.similar",:count => cluster.size)%>
      <%end%>	
-      <div style="padding:3px 17px;">
+      <div style="padding:3px 0 3px 16px;">
       <%= link_to cluster_path(cluster.id), {:id => "sim#{i}", :class => 'simlinks awesome_reset global_btn', :"data-id" => "#{product.id}", :"data-size" => cluster.size, :"title" =>  t('products.compare.seegroup'), :rel => "nofollow"} do %>
 		<span><%= link_text %></span>
 	  <% end %>
