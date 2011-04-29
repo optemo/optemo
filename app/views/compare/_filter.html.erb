@@ -6,7 +6,7 @@
 		<span><%= t('products.compare.reset') %></span>
 	<% end %>
 </h2>
-<%= form_tag("/compare", :id => 'filter_form') do %>
+<%= form_tag("/compare", :id => 'filter_form', :style => "font-size:0.9em;") do %>
 
   <% i = 0 # Yes, I know, this isn't Rails-y, but we need to assign a different UI position to each feature of all kinds, in order. %> 
   <% @s.categorical["filter"].each_with_index do |feat, index| %>
@@ -39,8 +39,9 @@
 			<% optionlist.each do |k,available_count| %>
 			<% checked = chosen_cats.include?(k) %>
   			<div data-position="<%= i %>" <%=raw 'style="font-weight:bold;"' if checked %>>
-	  			<%= check_box 'superfluous', feat, :disabled => (available_count == 0) ? true : false, :checked => (checked) ? 'checked' : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :'data-feat' => feat, :'data-opt' => k %>
-	  			<%= k %> <%= "(#{available_count})" unless checked %>
+	  			<%= check_box_tag "superfluous[#{k}]", "1", checked, :disabled => (available_count == 0) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :'data-feat' => feat, :'data-opt' => k %>
+				<%= link_to k, "#", :class => "binary_filter_text" %>
+	  			<span class="av_count"><%= "(#{available_count})" unless checked %></span>
 	  		</div>
 			<% end %>
 			</div>
@@ -68,7 +69,7 @@
   		<div class="feature<%= " disabled" if available_count == 0 %>" data-position="<%= i %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
   			<%= check_box_tag "myfilter[#{feat}]", "1", !unchecked ,:disabled => (available_count == 0) ? true : false, :class => 'binary_filter', :'data-opt' => feat %>
   			<%= link_to t("#{Session.product_type}.specs.#{feat}.name"), "#", :class => "binary_filter_text" %>
-			<%= "(#{available_count})" if unchecked %>
+			<span class="av_count" style="font-size:0.85em;"><%= "(#{available_count})" if unchecked %></span>
   		</div>
   	<% i = i + 1 %>	
 	<% end %>
