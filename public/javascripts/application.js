@@ -430,8 +430,10 @@ optemo_module = (function (my){
 		//Pass in the show page href when drag and dropping
 		if (typeof(arguments[4]) != "undefined")
 			href = arguments[4];
-		else
-			href = "#";
+		else {
+			// Using /product/_/ because savedproducts do not have an href (otherwise it would need to be stored in the cookie)
+			href = "/product/_/"+id;
+		}
     	// Create an empty slot for product
     	var saveditem = "<div class='saveditem' id='c" + id + "' data-sku='"+sku+"'>";
 
@@ -993,9 +995,7 @@ optemo_module = (function (my){
         	var product_title = t.attr('title');
         	if (product_title == undefined) product_title = t.html(); // This is a text link
         	my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids, 'imgurl' : t.attr('src')});
-        	// Using /product/_/ because savedproducts do not have an href (otherwise it would need to be stored in the cookie)
-        	// _ is the brand name and model
-			my.applySilkScreen(((href.match(/[^#]+/)) ? href : '/product/_/' + t.attr('data-id')) +'?plain=true',null, 560, 580);
+			my.applySilkScreen(href + '?plain=true',null, 560, 580);
         	return false;
         });
 
