@@ -431,7 +431,7 @@ optemo_module = (function (my){
 		if (typeof(arguments[4]) != "undefined")
 			href = arguments[4];
 		else
-			href = "";
+			href = "#";
     	// Create an empty slot for product
     	var saveditem = "<div class='saveditem' id='c" + id + "' data-sku='"+sku+"'>";
 
