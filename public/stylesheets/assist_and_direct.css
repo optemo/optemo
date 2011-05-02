@@ -152,6 +152,7 @@ html {
 	/*color: #F5000B;*/
 	color: #FF0000;
 	font-size: 1em;
+	font-weight: bold;
 }
 #optemo_embedder .save {
 	/*color: #F5000B;*/
@@ -162,6 +163,9 @@ html {
 #optemo_embedder .saleends {
 	/*color: #F5000B;*/
 	font-size: 0.8em;
+}
+#optemo_embedder .stars {
+	padding-top: 3px;
 }
 /*.itemtitle {
     font-size: 1.4em;
@@ -215,14 +219,17 @@ html {
 	overflow: auto;
 	height: 150px;
 }
-#optemo_embedder a.binary_filter_text {
+#optemo_embedder a.binary_filter_text{
 	color: #4d4d4f;
 }
-#optemo_embedder a.binary_filter_text:visited {
+#optemo_embedder a.binary_filter_text:visited{
 	color: #4d4d4f;
 }
 #optemo_embedder .disabled a.binary_filter_text{
 	color: #ccc;
+}
+#optemo_embedder .av_count{
+	font-size: 0.85em;
 }
 /*--------------------------------------//
 //         Drag And Drop Compare        //
@@ -349,7 +356,7 @@ html {
 	background:url(../../../images/sliderhandlebox.gif) no-repeat;
 	/*background-color:#c0c0c0;
 	border: 1px solid #4D4D4F;*/
-	font-size: 0.6em;
+	font-size: 0.7em;
 	color: black;
 	height:13px; width:16px;text-decoration:none;outline:none;position:absolute;z-index:2;
 }
@@ -396,7 +403,7 @@ html {
 }
 /* Filter Box */
 #optemo_embedder #filter_form {
-	font-size: 0.8em;
+	font-size: 0.85em;
 }
 #optemo_embedder .label {
 	font-weight: bold;
@@ -428,7 +435,7 @@ html {
 #optemo_embedder .feature {
     position: relative;
     clear: both;
-    padding: 0 6px 2px;
+    padding: 0 1px 2px 6px;
 }
 
 
@@ -446,7 +453,7 @@ html {
 	position: absolute;
 	text-align: left;
 	left: 9px;
-	top: 22px;
+	top: 24px;
 }
 
 

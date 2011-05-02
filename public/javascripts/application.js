@@ -373,9 +373,7 @@ optemo_module = (function (my){
                     	    g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
                     	});
 					}
-        	        my.DBinit();
     	        } else {
-    	            my.DBinit();
     	            $('#outsidecontainer').css('width','');
                 }
 				$('#info').css("height",'');
@@ -456,7 +454,6 @@ optemo_module = (function (my){
             }
             $(this).show();
 	    });
-    	my.DBinit();
 
     	$("#already_added_msg").css("display", "none");
     	$("#too_many_saved").css("display", "none");
@@ -935,7 +932,7 @@ optemo_module = (function (my){
             var sku = $('.poptitle').attr('data-sku');
             var image = $('#galleria').find('img:first').attr('src');
             // Test for the length of the saved products array here to avoid a race condition
-            optemo_module.saveProductForComparison(t.attr('data-id'), sku, image, t.attr('data-name'));
+            my.saveProductForComparison(t.attr('data-id'), sku, image, t.attr('data-name'));
             // This message will be displayed next to the droppable box if
             $("#already_added_msg").css("display", "none");
             // Call click handler for the compare button if there are multiple saved products there. Otherwise, get out of show page
@@ -1085,27 +1082,32 @@ optemo_module = (function (my){
 
 		$('.binary_filter_text').live('click', function(){
 			if (my.loading_indicator_state.disable) return false;
-			var checkbox = $(this).siblings('input'), whichbox = checkbox.attr('data-opt'), box_value = checkbox.attr('checked') ? 100 : 0;
-			if (box_value == 100)
+			var checkbox = $(this).siblings('input');
+			if (checkbox.attr('checked'))
 				checkbox.removeAttr("checked");
 			else
 				checkbox.attr("checked", "checked");
-    		my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox, 'filter_type': 'checkbox'});
-    		submitCategorical();
+			if (checkbox.hasClass("cat_filter"))
+				clickCat(checkbox);
+			else
+    			clickBinary(checkbox);
 			return false;
 		});
     	// Checkboxes -- submit
-    	$('.binary_filter').live('click', function() {
-    		var whichbox = $(this).attr('data-opt'), box_value = $(this).attr('checked') ? 100 : 0;
+    	$('.binary_filter').live('click', clickBinary);
+		function clickBinary() {
+			var t = (typeof(arguments[0]) != "undefined" && typeof(arguments[0].originalEvent) != "undefined") ? $(this) : arguments[0];
+    		var whichbox = t.attr('data-opt'), box_value = t.attr('checked') ? 100 : 0;
     		my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox, 'filter_type': 'checkbox'});
     		submitCategorical();
-    	});
-
+    	}
 		// Checkboxes -- submit
-    	$('.cat_filter').live('click', function() {
-    		var whichcat = $(this).attr('data-feat'), feature_selected = $(this).attr('data-opt');
+    	$('.cat_filter').live('click', clickCat);
+		function clickCat() {
+			var t = (typeof(arguments[0]) != "undefined" && typeof(arguments[0].originalEvent) != "undefined") ? $(this) : arguments[0];
+    		var whichcat = t.attr('data-feat'), feature_selected = t.attr('data-opt');
     		var feat_obj = $('#myfilter_'+whichcat);
-    		if ($(this).attr('checked'))
+    		if (t.attr('checked'))
 			{	//Uncheck action
 				feat_obj.val(opt_appendStringWithToken(feat_obj.val(), feature_selected, '*'));
 			}
@@ -1115,7 +1117,7 @@ optemo_module = (function (my){
         		my.trackPage('goals/filter/checkbox', {'feature_name' : feature_selected, 'filter_type' : 'brand'});
 			}
     		submitCategorical();
-    	});
+    	}
 
     	$(".close, .bb_quickview_close").live('click', function(){
     		my.removeSilkScreen();
@@ -1236,7 +1238,7 @@ optemo_module = (function (my){
         //Link from popup (used for error messages)
         $('#silkscreen').css({'display' : 'none', 'top' : '', 'left' : '', 'width' : ''})
         $('#outsidecontainer').unbind('click').click(function(){
-        	my.FilterAndSearchInit(); my.DBinit();
+        	my.FilterAndSearchInit();
         	return false;
         });
     };
@@ -1277,7 +1279,13 @@ optemo_module = (function (my){
     			});
             }    	    
     	}
-
+		
+		//Load star ratings
+		$(".stars").each(function(){
+			var t = $(this);
+			t.append(numberofstars(t.attr('data-stars')));
+		});
+		
 	    //var model = "";
     	////Autocomplete for searchterms
     	//if (typeof(my.MODEL_NAME) != undefined && my.MODEL_NAME != null) // This check is needed for embedding; different checks for different browsers
@@ -1343,7 +1351,7 @@ optemo_module = (function (my){
     		if (parts[1] != null) {
     			$('#ajaxfilter').empty().append(parts[1]);
     		}
-    		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
+    		optemo_module.FilterAndSearchInit();
     		my.flashError(parts[0].substr(5,parts[0].length));
     		return -1;
     	} else {
@@ -1352,7 +1360,8 @@ optemo_module = (function (my){
     		$('#main').html(parts[0]);
     		$('#myfilter_search').attr('value',parts[2]);
     		optemo_module.stop_spinner();
-    		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
+    		optemo_module.FilterAndSearchInit();
+			optemo_module.DBinit();
     		return 0;
     	}
     }
@@ -1737,7 +1746,7 @@ if (window.embedding_flag) {
 
     optemo_module.clearSocketError = function() {
         // if ajaxhandler never gets called, here we are.
-		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
+		optemo_module.FilterAndSearchInit();
 		if (!(typeof(optemo_french) == "undefined") && optemo_french)
 			optemo_module.flashError('<div class="bb_poptitle">Erreur<a class="bb_quickview_close" href="close" style="float:right;">Fermer fenêtre</a></div><p class="error">Désolé! Une erreur est survenue sur le serveur.</p><p>Vous pouvez réinitialiser l\'outil et voir si le problème est résolu.</p>');
 		else
