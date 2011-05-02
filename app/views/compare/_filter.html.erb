@@ -38,9 +38,9 @@
 			<div class="categorical">
 			<% optionlist.each do |k,available_count| %>
 			<% checked = chosen_cats.include?(k) %>
-  			<div data-position="<%= i %>" <%=raw 'style="font-weight:bold;"' if checked %>>
+  			<div data-position="<%= i %>" <%=raw 'style="font-weight:bold;"' if checked %><%=raw 'class=" disabled"' if available_count == 0 %>>
 	  			<%= check_box_tag "superfluous[#{k}]", "1", checked, :disabled => (available_count == 0) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :'data-feat' => feat, :'data-opt' => k %>
-				<%= link_to k, "#", :class => "binary_filter_text" %>
+				<%= (available_count == 0) ? k : link_to(k, "#", :class => "binary_filter_text") %>
 	  			<span class="av_count"><%= "(#{available_count})" unless checked %></span>
 	  		</div>
 			<% end %>
@@ -68,7 +68,7 @@
 		<% available_count = SearchProduct.bin_count(feat) %>
   		<div class="feature<%= " disabled" if available_count == 0 %>" data-position="<%= i %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
   			<%= check_box_tag "myfilter[#{feat}]", "1", !unchecked ,:disabled => (available_count == 0) ? true : false, :class => 'binary_filter', :'data-opt' => feat %>
-  			<%= link_to t("#{Session.product_type}.specs.#{feat}.name"), "#", :class => "binary_filter_text" %>
+  			<%= (available_count == 0) ? t("#{Session.product_type}.specs.#{feat}.name") : link_to( t("#{Session.product_type}.specs.#{feat}.name"), "#", :class => "binary_filter_text") %>
 			<span class="av_count" style="font-size:0.85em;"><%= "(#{available_count})" if unchecked %></span>
   		</div>
   	<% i = i + 1 %>	
