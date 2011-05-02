@@ -2,7 +2,7 @@ testing check list:
 
 main navigation page:
 1) There are (9) product images on the first page
-2) click on a "more like this link" and see if a new page with less cameras come up 
+2) click on a "see like this link" and see if a new page with less cameras come up 
 3) Check if zoom out option appears on the status bar
 4) click on the back button and check if you get the first page 
 5) Click on group by "Price" option on the status bar. Groups should not have overlapping ranges. They should be sorted from low to high 
@@ -17,7 +17,11 @@ main navigation page:
 13) filter brands by clicking on one and multiple brand check boxers and check if right products are displayed
 14) When filtering check if the numbers associated with checkboxes are adjusted 
 15) Check on sale and then undo it and see if it works fine
-16) CLick on reset 
+16) Click on reset 
+17) Click on a brand name link (say Canon link) and see if it filters and the box gets checked then click again to undo it 
+18) Check two brand boxes and undo them and see if it filter properly 
+19) Check a couple of binary filters and uncheck it (by both clicking on the link and checking the box) 
+20) Check two brands and then click on a binary filter that have a small number then undo one of the brands and see if it handles it properly
  
 
 product info popover: 
