@@ -55,7 +55,7 @@
   		:locals => {:name => t('products.' + feat),
   		:i => i,
   		:feat => feat,
-  		:money_formatting => feat == 'price',
+  		:money_formatting => feat == 'saleprice',
   		:overall_min => ContSpec.allMinMax(feat)[0],
   		:overall_max => ContSpec.allMinMax(feat)[1]} %>
   	<% i = i + 1 %>

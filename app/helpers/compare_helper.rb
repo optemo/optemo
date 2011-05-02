@@ -171,7 +171,7 @@ module CompareHelper
   end
   
   def withunit(number,feature)
-    if feature == "price"
+    if feature == "price" || feature=="saleprice"
       t('products.' + feature+"unit")+number.to_s
     else
       [number,t('products.' + feature+"unit", :default => "")].reject(&:blank?).join(" ")
