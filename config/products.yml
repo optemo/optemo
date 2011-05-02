@@ -120,7 +120,7 @@ camera_bestbuy:
     layout: assist
     specs:
         General:
-            saleprice:
+            price:
                 type: Continuous
                 used_for: [filter, cluster, show]
                 prefdir: -1

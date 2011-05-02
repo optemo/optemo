@@ -12,7 +12,7 @@ fr:
         specs:
             category:
                 name:               "Catégorie de produit"
-            saleprice:
+            price:
                 name:               "Prix"
                 preunit:            "$"
             maxresolution:
