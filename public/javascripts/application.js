@@ -988,7 +988,7 @@ optemo_module = (function (my){
 
         $(".productimg, .easylink").live("click", function (){
             // This is the show page
-			var t = $(this), href = t.attr('href') || t.parent().siblings('.productinfo').children('.easylink').attr('href'),
+			var t = $(this), href = t.attr('href') || t.parent().find('.easylink').attr('href'),
         	ignored_ids = getAllShownProductSkus(),
 			currentelementid = t.attr('data-sku') || href.match(/\d+$/);
 			if (!(t.hasClass('productimg'))) t = t.parent().parent().find('img.productimg');
