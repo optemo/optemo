@@ -246,14 +246,6 @@ html {
 	opacity:0.4;
 }
 
-/* These might be useful in future - helps with drag and drop obviousness
-.productimgblackborder {
- 	border: 1px gray dashed; 
-}
-.productimgwhiteborder {
- 	border: 1px #e7e7e7 dashed; 
-} */
-
 #optemo_embedder .saveditem {
 	position: relative;
 	width: 71px;

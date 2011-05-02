@@ -53,20 +53,16 @@
 	font-weight: bold;
 	position:relative;
 }
-#optemo_embedder .image_boundingbox {
-	margin: 1px auto;
-	position:relative;
-	text-align:center;
-	height:150px;
-	width: 150px;
-}
 
 #optemo_embedder img.productimg {
 	cursor: move;
-	width: 100%;
+}
+#optemo_embedder img.draganddropimage {
+	cursor: default;
 }
 #optemo_embedder .productinfo {
 	padding-left: 20px;
+	text-align: left;
 }
 #optemo_embedder .productspecs {
 	font-size:0.8em;
@@ -101,6 +97,7 @@
 #optemo_embedder .topbar {
 	width: 181px;
 	height: 263px;
+	text-align:center;
 }
 #optemo_embedder .bottombar {
 	clear: left;
