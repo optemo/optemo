@@ -240,7 +240,7 @@ class Search < ActiveRecord::Base
     end
     grouping.map do |q|
       product_ids = q.map(&:first)
-      prices_list = ContSpec.cachemany(product_ids,"saleprice")
+      prices_list = ContSpec.cachemany(product_ids,"price")
       utility_list = ContSpec.cachemany(product_ids, "utility")
       {
         :min => q.first.last.to_s,

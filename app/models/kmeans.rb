@@ -201,13 +201,7 @@ def self.utility(products)
   if Session.search.sortby.nil? || Session.search.sortby == "relevance" 
     products.mapfeat("utility")
   else
-    products.map do |i| 
-      if Session.search.sortby == "saleprice"
-        i.instance_variable_get("@price_factor") || 0
-      else  
-        i.instance_variable_get("@#{Session.search.sortby}_factor") || 0
-      end 
-    end   
+    products.map{|i| i.instance_variable_get("@#{Session.search.sortby}_factor") || 0}
   end
 end
 
@@ -324,20 +318,12 @@ def self.distance(point1, point2, weights)
   dim == 0.0 ? 0 : dist/dim
 end
   
-  def self.factorize_cont_data(products) 
-    if Session.search.sortby == "saleprice"
-      Session.continuous["cluster"].map{|f| products.mapfeat("price_factor")}.transpose
-    else   
+  def self.factorize_cont_data(products)
       Session.continuous["cluster"].map{|f| products.mapfeat("#{f}_factor")}.transpose
-    end  
   end
   
   def self.factorize_cont(product)
-    if Session.search.sortby == "saleprice"
-      Session.continuous["cluster"].map{|f| product.instance_variable_get("@price_factor")}
-    else  
-      Session.continuous["cluster"].map{|f| product.instance_variable_get("@#{f}_factor")}
-    end  
+    Session.continuous["cluster"].map{|f| product.instance_variable_get("@#{f}_factor")}
   end
   
   def self.betterproducts(curr_set)
