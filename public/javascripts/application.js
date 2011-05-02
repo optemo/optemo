@@ -1096,7 +1096,7 @@ optemo_module = (function (my){
     	// Checkboxes -- submit
     	$('.binary_filter').live('click', clickBinary);
 		function clickBinary() {
-			var t = (typeof(arguments[0]) != "undefined" && typeof(arguments[0].eventPhase) != "undefined") ? $(this) : arguments[0];
+			var t = (typeof(arguments[0]) != "undefined" && typeof(arguments[0].originalEvent) != "undefined") ? $(this) : arguments[0];
     		var whichbox = t.attr('data-opt'), box_value = t.attr('checked') ? 100 : 0;
     		my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox, 'filter_type': 'checkbox'});
     		submitCategorical();
@@ -1104,7 +1104,7 @@ optemo_module = (function (my){
 		// Checkboxes -- submit
     	$('.cat_filter').live('click', clickCat);
 		function clickCat() {
-			var t = (typeof(arguments[0]) != "undefined" && typeof(arguments[0].eventPhase) != "undefined") ? $(this) : arguments[0];
+			var t = (typeof(arguments[0]) != "undefined" && typeof(arguments[0].originalEvent) != "undefined") ? $(this) : arguments[0];
     		var whichcat = t.attr('data-feat'), feature_selected = t.attr('data-opt');
     		var feat_obj = $('#myfilter_'+whichcat);
     		if (t.attr('checked'))
