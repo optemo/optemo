@@ -477,7 +477,7 @@ optemo_module = (function (my){
     	        res = img.parent().siblings('.groupby_title').find('.easylink').attr('href').match(/\d+$/);
             }
     	} else {
-    		var el = img.parent().siblings('.productinfo').children('.easylink');
+    		var el = img.parent().find('.easylink');
     		res = el.attr('href').match(/\d+$/);
     		sku = el.attr('data-sku');
     	}
@@ -1274,7 +1274,7 @@ optemo_module = (function (my){
     				    else { // This is an image object; behave as normal
     				        id_and_sku = my.getIdAndSkuFromProductimg(imgObj);
 							//Get href
-							var href = imgObj.parent().parent().find(".easylink").attr('href');
+							var href = imgObj.parent().find(".easylink").attr('href');
         					my.saveProductForComparison(id_and_sku[0], id_and_sku[1], imgObj.attr('src'), imgObj.attr('alt'), href);
     					}
         				my.loadspecs(id_and_sku[1]);
