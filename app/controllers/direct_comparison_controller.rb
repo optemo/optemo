@@ -28,8 +28,19 @@ private
         # For every feature in ContinuousFeatures
         # For every product in @products
         # Find the min value and assign @bestvalue[feature]=product-id
-        bestval = @products.map{|p|contspecs[p.id][feature]*@s.prefDirection[feature]}.max
-        bestvalue[feature] = @products.select{|p|contspecs[p.id][feature]*@s.prefDirection[feature] == bestval}.map(&:id).join(",")
+        bestval = -1000000000
+        bestproducts = []
+        @products.each do |p|
+          next if contspecs[p.id][feature].nil?
+          featval = contspecs[p.id][feature]*@s.prefDirection[feature]
+          if featval > bestval
+            bestproducts = [p.id]
+            bestval = featval
+          elsif featval == bestval
+            bestproducts << p.id
+          end
+        end
+        bestvalue[feature] = bestproducts.join(",")
       end
     end
     bestvalue
