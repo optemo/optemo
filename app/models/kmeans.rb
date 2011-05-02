@@ -222,8 +222,8 @@ def self.set_cluster_weights(features)
     weights_sum = weights.sum.to_f
     weights.map{|w| w/weights_sum}
   else
-    weights = [0.01/features.size]*features.size
-    weights[Session.continuous["cluster"].index(Session.search.sortby)] = 0.99
+    weights = [0.001/(features.size-1)]*features.size
+    weights[Session.continuous["cluster"].index(Session.search.sortby)] = 0.999
     weights
   end
 end
