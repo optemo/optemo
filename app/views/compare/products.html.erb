@@ -41,7 +41,7 @@
 						</div>
 						<a href="<%=representative.descurl%>" data-id="<%=representative.id%>" class="easylink" title="Click for product specifications"><%= representative.small_title %></a>
 						<div class="price">
-							<%= number_to_currency(ContSpec.cache_all(representative.id)["price"]) %>
+							<%= number_to_currency(ContSpec.cache_all(representative.id)["saleprice"]) %>
 						</div>
 					</div>
 					<% if cluster.size > 1 %>
