@@ -4,7 +4,9 @@
 		<!-- If the interesting feature should be displayed then display -->
 		<b>		
 	<% end%>
-	<%if feat=="price" %>	
+	<% if spec.nil? %>
+		-
+	<%elsif feat=="saleprice" %>	
 		<%= number_to_currency(spec) %>
 	<%else%>
 		<%= t("#{Session.product_type}.specs.#{feat}.preunit", :default => "") %><%= number_with_delimiter(spec).to_s + " " + t("#{Session.product_type}.specs.#{feat}.unit", :default => "") %>

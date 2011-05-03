@@ -66,29 +66,25 @@ class CompareController < ApplicationController
   
   def create
     #Narrow the product search through filters
-    if params[:myfilter].nil?
-      #No post info passed
-      render :text =>  "[ERR]Search could not be completed."
-    else
+    params[:myfilter] = {} if params[:myfilter].nil?
       # We need to propagate the previous search term if the new search term is blank (this should be done is JS)
-      if (!params[:previous_search_word].blank? && params[:myfilter][:search].blank?)
-        params[:myfilter][:search] = params[:previous_search_word]
+    if (!params[:previous_search_word].blank? && params[:myfilter][:search].blank?)
+      params[:myfilter][:search] = params[:previous_search_word]
+    end
+    #The search should only be able to fail from bad keywords, as empty searches can't be selected
+    if !params[:myfilter][:search].blank? && !Search.keyword(params[:myfilter][:search])
+      #Rollback
+      classVariables(Session.lastsearch)
+      @errortype = "filter"
+      if Session.mobileView
+        render 'error'
+      else 
+        render 'error', :layout => false
       end
-      #The search should only be able to fail from bad keywords, as empty searches can't be selected
-      if !params[:myfilter][:search].blank? && !Search.keyword(params[:myfilter][:search])
-        #Rollback
-        classVariables(Session.lastsearch)
-        @errortype = "filter"
-        if Session.mobileView
-          render 'error'
-        else 
-          render 'error', :layout => false
-        end
-      else
-        params[:myfilter]["action_type"] = "filter"
-        classVariables(Search.create(params[:myfilter]))
-        correct_render
-      end
+    else
+      params[:myfilter]["action_type"] = "filter"
+      classVariables(Search.create(params[:myfilter]))
+      correct_render
     end
   end
 

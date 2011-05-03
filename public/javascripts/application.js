@@ -373,9 +373,7 @@ optemo_module = (function (my){
                     	    g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
                     	});
 					}
-        	        my.DBinit();
     	        } else {
-    	            my.DBinit();
     	            $('#outsidecontainer').css('width','');
                 }
 				$('#info').css("height",'');
@@ -387,7 +385,7 @@ optemo_module = (function (my){
     };
 
     // When products get dropped into the save box
-    my.saveProductForComparison = function(id, sku, imgurl, name) {
+    my.saveProductForComparison = function(id, sku, imgurl, name, href) {
     	/* We need to store the entire thing for Flooring. Eventually this will probably not be an issue
     	since we won't be pulling images directly from another website. Keep original code below
     	imgurlToSaveArray = imgurl.split('/');
@@ -411,7 +409,7 @@ optemo_module = (function (my){
         	    ignored_ids = getAllShownProductIds();
                 my.trackPage('goals/save', {'filter_type' : 'save', 'product_picked' : id, 'product_ignored' : ignored_ids});
 
-        		my.renderComparisonProducts(id, sku, imgurl, name);
+        		my.renderComparisonProducts(id, sku, imgurl, name, href);
         		addValueToCookie('optemo_SavedProductIDs', [id, sku, imgurl, name, my.MODEL_NAME]);
         		// Hide the drag-and-drop message
         		$('#savesome').hide();
@@ -424,19 +422,26 @@ optemo_module = (function (my){
     	}
     };
 
+	//(id, sku, imgurl, name, href) for drag and drop
     my.renderComparisonProducts = function(id, sku, imgurl, name) {
         // The reason for writing out all the HTML in javascript like this is that we want the drop action to happen instantly, without
         // a page load. As for why it's done explicitly rather than, e.g. el = document.createElement("img"); el.src = [...] that is
         // more due to inexperience than anything else. This should probably be refactored to the above style for readability.
-
+		//Pass in the show page href when drag and dropping
+		if (typeof(arguments[4]) != "undefined")
+			href = arguments[4];
+		else {
+			// Using /product/_/ because savedproducts do not have an href (otherwise it would need to be stored in the cookie)
+			href = "/product/_/"+id;
+		}
     	// Create an empty slot for product
-    	$('#opt_savedproducts').append("<div class='saveditem' id='c" + id + "' data-sku='"+sku+"'> </div>");
+    	var saveditem = "<div class='saveditem' id='c" + id + "' data-sku='"+sku+"'>";
 
     	// The best is to just leave the medium URL in place, because that image is already loaded in case of comparison, the common case.
     	// For the uncommon case of page reload, it's fine to load a larger image.
-    	smallProductImageAndDetail = "<img class=\"draganddropimage\" src=" + // used to have width=\"45\" height=\"50\" in there, but I think it just works for printers...
+    	saveditem += "<img class=\"draganddropimage productimg\" src=" + // used to have width=\"45\" height=\"50\" in there, but I think it just works for printers...
     	imgurl + " data-id=\""+id+"\" data-sku=\""+sku+"\" alt=\""+id+"_s\"><div>" +
-    	"<a class=\"easylink\" data-id=\""+id+"\" data-sku=\""+sku+"\" href=\"\">" +
+    	"<a class=\"easylink\" data-id=\""+id+"\" data-sku=\""+sku+"\" href=\"" + href + "\">" +
     	((name) ? optemo_module.getShortProductName(name) : 0) +
     	"</a></div>" +
     	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\">" +
@@ -444,9 +449,8 @@ optemo_module = (function (my){
         // This next line is used for embedding: check whether there is a remote server defined, and put the appropriate image url in.
     	(typeof(REMOTE) != 'undefined' ? REMOTE : "") +
     	"/images/closepopup.png\" alt=\"Close\"/></a>";
-    	var element = $('#c'+id);
-    	element.append($(smallProductImageAndDetail));
-    	var image = element.find('.draganddropimage');
+		saveditem += "</div>";
+    	var image = $('#opt_savedproducts').append(saveditem).find('.draganddropimage:last');
     	image.hide();
     	image.load(function() { // This function runs after the DOM has loaded the image, to avoid race conditions
     	    if (image.height() * 1.12 > image.width()) { // This is because we want 45 height and 50 width, plus a 0.01 fudge factor
@@ -456,15 +460,11 @@ optemo_module = (function (my){
             }
             $(this).show();
 	    });
-    	my.DBinit();
 
     	$("#already_added_msg").css("display", "none");
     	$("#too_many_saved").css("display", "none");
     	if ($.browser.msie) // If it's IE, clear the height element.
     		$("#opt_savedproducts").css({"height" : ''});
-    	$("#opt_savedproducts img").each(function() {
-    	    $(this).removeClass("productimg");
-        });
     };
 
 	my.getIdAndSkuFromProductimg = function(img) {
@@ -477,7 +477,7 @@ optemo_module = (function (my){
     	        res = img.parent().siblings('.groupby_title').find('.easylink').attr('href').match(/\d+$/);
             }
     	} else {
-    		var el = img.parent().siblings('.productinfo').children('.easylink');
+    		var el = img.parent().find('.easylink');
     		res = el.attr('href').match(/\d+$/);
     		sku = el.attr('data-sku');
     	}
@@ -935,7 +935,7 @@ optemo_module = (function (my){
             var sku = $('.poptitle').attr('data-sku');
             var image = $('#galleria').find('img:first').attr('src');
             // Test for the length of the saved products array here to avoid a race condition
-            optemo_module.saveProductForComparison(t.attr('data-id'), sku, image, t.attr('data-name'));
+            my.saveProductForComparison(t.attr('data-id'), sku, image, t.attr('data-name'));
             // This message will be displayed next to the droppable box if
             $("#already_added_msg").css("display", "none");
             // Call click handler for the compare button if there are multiple saved products there. Otherwise, get out of show page
@@ -988,16 +988,14 @@ optemo_module = (function (my){
 
         $(".productimg, .easylink").live("click", function (){
             // This is the show page
-			var href = $(this).attr('href') || $(this).parent().siblings('.productinfo').children('.easylink').attr('href'),
+			var t = $(this), href = t.attr('href') || t.parent().find('.easylink').attr('href'),
         	ignored_ids = getAllShownProductSkus(),
-			currentelementid = $(this).attr('data-sku') || href.match(/\d+$/), t = $(this);
+			currentelementid = t.attr('data-sku') || href.match(/\d+$/);
 			if (!(t.hasClass('productimg'))) t = t.parent().parent().find('img.productimg');
         	var product_title = t.attr('title');
         	if (product_title == undefined) product_title = t.html(); // This is a text link
         	my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids, 'imgurl' : t.attr('src')});
-        	// Using /product/_/ because savedproducts do not have an href (otherwise it would need to be stored in the cookie)
-        	// _ is the brand name and model
-			my.applySilkScreen((href || '/product/_/' + currentelementid) +'?plain=true',null, 560, 580);
+			my.applySilkScreen(href + '?plain=true',null, 560, 580);
         	return false;
         });
 
@@ -1085,27 +1083,32 @@ optemo_module = (function (my){
 
 		$('.binary_filter_text').live('click', function(){
 			if (my.loading_indicator_state.disable) return false;
-			var checkbox = $(this).siblings('input'), whichbox = checkbox.attr('data-opt'), box_value = checkbox.attr('checked') ? 100 : 0;
-			if (box_value == 100)
+			var checkbox = $(this).siblings('input');
+			if (checkbox.attr('checked'))
 				checkbox.removeAttr("checked");
 			else
 				checkbox.attr("checked", "checked");
-    		my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox, 'filter_type': 'checkbox'});
-    		submitCategorical();
+			if (checkbox.hasClass("cat_filter"))
+				clickCat(checkbox);
+			else
+    			clickBinary(checkbox);
 			return false;
 		});
     	// Checkboxes -- submit
-    	$('.binary_filter').live('click', function() {
-    		var whichbox = $(this).attr('data-opt'), box_value = $(this).attr('checked') ? 100 : 0;
+    	$('.binary_filter').live('click', clickBinary);
+		function clickBinary() {
+			var t = (typeof(arguments[0]) != "undefined" && typeof(arguments[0].originalEvent) != "undefined") ? $(this) : arguments[0];
+    		var whichbox = t.attr('data-opt'), box_value = t.attr('checked') ? 100 : 0;
     		my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox, 'filter_type': 'checkbox'});
     		submitCategorical();
-    	});
-
+    	}
 		// Checkboxes -- submit
-    	$('.cat_filter').live('click', function() {
-    		var whichcat = $(this).attr('data-feat'), feature_selected = $(this).attr('data-opt');
+    	$('.cat_filter').live('click', clickCat);
+		function clickCat() {
+			var t = (typeof(arguments[0]) != "undefined" && typeof(arguments[0].originalEvent) != "undefined") ? $(this) : arguments[0];
+    		var whichcat = t.attr('data-feat'), feature_selected = t.attr('data-opt');
     		var feat_obj = $('#myfilter_'+whichcat);
-    		if ($(this).attr('checked'))
+    		if (t.attr('checked'))
 			{	//Uncheck action
 				feat_obj.val(opt_appendStringWithToken(feat_obj.val(), feature_selected, '*'));
 			}
@@ -1115,7 +1118,7 @@ optemo_module = (function (my){
         		my.trackPage('goals/filter/checkbox', {'feature_name' : feature_selected, 'filter_type' : 'brand'});
 			}
     		submitCategorical();
-    	});
+    	}
 
     	$(".close, .bb_quickview_close").live('click', function(){
     		my.removeSilkScreen();
@@ -1257,7 +1260,7 @@ optemo_module = (function (my){
         //Link from popup (used for error messages)
         $('#silkscreen').css({'display' : 'none', 'top' : '', 'left' : '', 'width' : ''})
         $('#outsidecontainer').unbind('click').click(function(){
-        	my.FilterAndSearchInit(); my.DBinit();
+        	my.FilterAndSearchInit();
         	return false;
         });
     };
@@ -1291,14 +1294,22 @@ optemo_module = (function (my){
     				    }
     				    else { // This is an image object; behave as normal
     				        id_and_sku = my.getIdAndSkuFromProductimg(imgObj);
-        					my.saveProductForComparison(id_and_sku[0], id_and_sku[1], imgObj.attr('src'), imgObj.attr('alt'));
+							//Get href
+							var href = imgObj.parent().find(".easylink").attr('href');
+        					my.saveProductForComparison(id_and_sku[0], id_and_sku[1], imgObj.attr('src'), imgObj.attr('alt'), href);
     					}
         				my.loadspecs(id_and_sku[1]);
     				}
     			});
             }    	    
     	}
-
+		
+		//Load star ratings
+		$(".stars").each(function(){
+			var t = $(this);
+			t.append(numberofstars(t.attr('data-stars')));
+		});
+		
 	    //var model = "";
     	////Autocomplete for searchterms
     	//if (typeof(my.MODEL_NAME) != undefined && my.MODEL_NAME != null) // This check is needed for embedding; different checks for different browsers
@@ -1364,7 +1375,7 @@ optemo_module = (function (my){
     		if (parts[1] != null) {
     			$('#ajaxfilter').empty().append(parts[1]);
     		}
-    		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
+    		optemo_module.FilterAndSearchInit();
     		my.flashError(parts[0].substr(5,parts[0].length));
     		return -1;
     	} else {
@@ -1373,7 +1384,8 @@ optemo_module = (function (my){
     		$('#main').html(parts[0]);
     		$('#myfilter_search').attr('value',parts[2]);
     		optemo_module.stop_spinner();
-    		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
+    		optemo_module.FilterAndSearchInit();
+			optemo_module.DBinit();
     		return 0;
     	}
     }
@@ -1758,7 +1770,7 @@ if (window.embedding_flag) {
 
     optemo_module.clearSocketError = function() {
         // if ajaxhandler never gets called, here we are.
-		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
+		optemo_module.FilterAndSearchInit();
 		if (!(typeof(optemo_french) == "undefined") && optemo_french)
 			optemo_module.flashError('<div class="bb_poptitle">Erreur<a class="bb_quickview_close" href="close" style="float:right;">Fermer fenêtre</a></div><p class="error">Désolé! Une erreur est survenue sur le serveur.</p><p>Vous pouvez réinitialiser l\'outil et voir si le problème est résolu.</p>');
 		else
