@@ -1171,6 +1171,16 @@ optemo_module = (function (my){
 		return h;
 	}
 	
+	function row_class(row_h) {
+	    //Assign row_class
+		var row_class;
+		if (row_h == 4) row_class = 'quadruple_height_compare_row';
+		else if (row_h == 3) row_class = 'triple_height_compare_row';
+		else if (row_h == 2) row_class = 'double_height_compare_row';
+		else row_class = 'compare_row'; // row_class was 1
+		return row_class;
+	}
+	
 	my.buildComparisonMatrix = function() {
 		var savedProducts = $('#opt_savedproducts').children(), anchor = $('#hideable_matrix');
 		// Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
@@ -1185,13 +1195,19 @@ optemo_module = (function (my){
 		}
 		var result = "";
 		var whitebg = true;
+		var divContentHolderTag = '<div class="contentholder">';
+		var divContentHolderTagEnd = '</div>';
+        
 		for (var heading in grouped_specs) {
 			//Add Heading
-			result += '<div class="compare_row"><div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' leftcolumntext" style="font-style: italic;">' + heading.replace('&','&amp;') + "</div>";
+			result += '<div class="'+row_class(row_height(heading.length,true))+'"><div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' leftcolumntext" style="font-style: italic;"><a class="togglable closed title_link" style="font-style: italic;" href="#">' + heading.replace('&','&amp;') + '</a></div>';
+
 			for (var i = 0; i < savedProducts.length; i++) {
 				result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' spec_column_'+i+'">&nbsp;</div>';
 			}
+			
 			result += "</div>";
+			result += divContentHolderTag;
 			whitebg = !whitebg;
 			for (var spec in grouped_specs[heading]) {
 				//Row Height calculation
@@ -1200,15 +1216,8 @@ optemo_module = (function (my){
 					if (grouped_specs[heading][spec][i])
 						array.push(grouped_specs[heading][spec][i].length);	
 				}
-				var row_h = Math.max(row_height(Math.max.apply(null,array)),row_height(spec.length,true));
-				
-				//Assign row_class and append on the last iteration
-				var row_class;
-				if (row_h == 4) row_class = 'quadruple_height_compare_row';
-				else if (row_h == 3) row_class = 'triple_height_compare_row';
-				else if (row_h == 2) row_class = 'double_height_compare_row';
-				else row_class = 'compare_row'; // row_class was 1
-				result += '<div class="'+row_class+'">';
+				//Assign row_class
+				result += '<div class="'+row_class(Math.max(row_height(Math.max.apply(null,array)),row_height(spec.length,true)))+'">';
 				
 				//Row heading
 				result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' leftcolumntext">' + spec.replace('&','&amp;') + ":</div>";
@@ -1221,8 +1230,10 @@ optemo_module = (function (my){
 						result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + " " + "spec_column_"+ i + '">&nbsp;</div>';
 				}
 				result += "</div>";
+				
 				whitebg = !whitebg;
 			}
+			result += divContentHolderTagEnd;
 		}
 		anchor.append(result);
 
@@ -1233,7 +1244,17 @@ optemo_module = (function (my){
 			remove_row.next().clone(),
 			remove_row.next().next().clone().find('.leftmostcolumntitle').empty().end()
 		);
+		$('.togglable').each(function(){addtoggle($(this));});
 	};
+	
+	function addtoggle(item){
+	    //alert('I am called');
+		var closed = item.click(function() {
+			$(this).toggleClass("closed").toggleClass("open").parent('.cell').parent().next('div.contentholder').toggle();
+			return false;
+		}).hasClass("closed");
+		if (closed) {item.siblings('div').hide();}
+	}
 
     function ErrorInit() {
         //Link from popup (used for error messages)

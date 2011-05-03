@@ -12,7 +12,7 @@ en:
         specs:
             category:
                 name:               "Product Category"
-            price:
+            saleprice:
                 name:               "Price"
                 info:               "The lowest price for the item."
                 preunit:            "$"
