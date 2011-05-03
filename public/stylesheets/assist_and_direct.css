@@ -784,7 +784,8 @@ margin-top:0;
 	width: 110px;
 }
 
-#optemo_embedder a.title_link {
+#optemo_embedder a.title_link,
+#optemo_embedder a.title_link:visited {
     color: #000;
 }
 
