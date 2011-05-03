@@ -6,7 +6,7 @@
 	<% end%>
 	<% if spec.nil? %>
 		-
-	<%elsif feat=="price" %>	
+	<%elsif feat=="saleprice" %>	
 		<%= number_to_currency(spec) %>
 	<%else%>
 		<%= t("#{Session.product_type}.specs.#{feat}.preunit", :default => "") %><%= number_with_delimiter(spec).to_s + " " + t("#{Session.product_type}.specs.#{feat}.unit", :default => "") %>
