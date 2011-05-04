@@ -111,8 +111,8 @@ module CompareHelper
 	  end
  end
  
-  def chosencats(feat,countlist = {})
-    Session.search.userdatacats.select{|d|d.name == feat && countlist[d.value] != 0}.map(&:value)
+  def chosencats(feat)
+    Session.search.userdatacats.select{|d|d.name == feat}.map(&:value)
   end
   
   def featuretext(product_id)
