@@ -194,7 +194,7 @@ end
   # initial seeds for clustering  ### just based on contiuous features
   inits = self.init(number_clusters, products, cluster_weights)
   standard_specs = self.factorize_cont_data(products)
-  utilities = Kmeans.utility_rep(products, "rep")
+  utilities_rep = Kmeans.utility(products, "rep")
   utilities_gorder  = Kmeans.utility(products, "gorder")
   utilities_gorder.each_with_index{|u, i| utilities_gorder[i]=u+(0.0000001*i)} if utilities_gorder.uniq.size<number_clusters
   $k = Kmeans.new unless $k
