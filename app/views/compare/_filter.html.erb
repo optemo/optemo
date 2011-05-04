@@ -17,9 +17,8 @@
   				<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat %>" data-position="<%= i %>">See Groups</div>
   			<% end %>
   		</div>
-		
+		<% chosen_cats = chosencats(feat) %>
 		<% if feat == "color" %>
-			<% chosen_cats = chosencats(feat) %>
 			<div style="margin-right: -4px">
 				<% color_counts = SearchProduct.cat_counts("color",true) %>
 				<% %w(Red Orange Yellow Green Blue Purple Pink White Silver Brown Black).each do |color| %>
@@ -31,10 +30,7 @@
 		<% else %>
 			
 			<%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
-			<% optionlist = SearchProduct.cat_counts(feat,true,true) %>
-			<% chosen_cats = chosencats(feat, optionlist) %>
-			
-			<% optionlist = optionlist.to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? -a[1]-1000000 : -a[1]) <=> (chosen_cats.include?(b[0]) ? -b[1]-1000000 : -b[1])} %>
+			<% optionlist = SearchProduct.cat_counts(feat,true,true).to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? -a[1]-1000000 : -a[1]) <=> (chosen_cats.include?(b[0]) ? -b[1]-1000000 : -b[1])} %>
 			<div class="categorical">
 			<% optionlist.each do |k,available_count| %>
 			<% checked = chosen_cats.include?(k) %>
