@@ -51,15 +51,15 @@ class SearchProduct < ActiveRecord::Base
       ComparableSet.from_storage(cached)
     end
     
-    def cat_counts(feat,expanded,includezeros = false)
-      allcats = Session.search.userdatacats.group_by(&:name)
+    def cat_counts(feat,expanded,includezeros = false,s = Session.search)
+      allcats = s.userdatacats.group_by(&:name)
       mycats = allcats.reject{|id|feat == id}.values
-      mybins = Session.search.userdatabins
+      mybins = s.userdatabins
       table_id = mycats.size
       if expanded
-        q = where(:search_id => Product.initial).create_join(mycats+[[feat]],mybins).conts_keywords.bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
+        q = where(:search_id => Product.initial).create_join(mycats+[[feat]],mybins,s.userdataconts,s).conts_keywords(s).bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
       else
-        q = search_id_q.create_join(mycats+[[feat]],mybins).conts_keywords.bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
+        q = search_id_q.create_join(mycats+[[feat]],mybins,s.userdataconts,s).conts_keywords(s).bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
       end
       CachingMemcached.cache_lookup("CatsCount(#{includezeros.to_s})-#{q.to_sql.hash}") do
         if includezeros
@@ -85,23 +85,23 @@ class SearchProduct < ActiveRecord::Base
       where(:search_id => Product.initial)
     end
       
-    def create_join(mycats,mybins,myconts = Session.search.userdataconts)
+    def create_join(mycats,mybins,myconts = Session.search.userdataconts,s=Session.search)
       tables = []
       tables << ["cont_specs"] * myconts.size
       tables << ["cat_specs"] * mycats.size
       tables << ["bin_specs"] * mybins.size
-      tables << ["keyword_searches"] if Session.search.keyword_search
+      tables << ["keyword_searches"] if s.keyword_search
       myjoins = []
       tables.map{|type|type.each_with_index{|table,i| myjoins << "INNER JOIN #{table} #{table+i.to_s} ON search_products.product_id = #{table+i.to_s}.product_id"}}
       joins(myjoins.join(" "))
     end
     
-    def conts_keywords
+    def conts_keywords(s=Session.search)
       res = []
-      Session.search.userdataconts.each_with_index do |d,i|
+      s.userdataconts.each_with_index do |d,i|
         res << "cont_specs#{i}.value <= #{d.max+0.00001} and cont_specs#{i}.value >= #{d.min-0.00001} and cont_specs#{i}.name = '#{d.name}'"
       end
-      res << "keyword_searches0.keyword = '#{Session.search.keyword_search}'" if Session.search.keyword_search
+      res << "keyword_searches0.keyword = '#{Session.search.keyword_search}'" if s.keyword_search
       where(res.join(" and "))
     end
     
