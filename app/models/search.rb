@@ -380,6 +380,15 @@ class Search < ActiveRecord::Base
         self.keyword_search = v
       end
     end
+    #Check for cat filters which have been eliminated by other filters
+    @userdatacats.group_by(&:name).each_pair do |k,v|
+      if v.size > 1
+        counts = SearchProduct.cat_counts(k,true,false,self)
+        v.each do |val|
+          @userdatacats.reject!{|c|c.name == k && c.value == val.value} if counts[val.value].nil? || counts[val.value] == 0
+        end
+      end
+    end
   end
   
   # The intent of this function is to see if filtering is being done on a previously filtered set of clusters.
