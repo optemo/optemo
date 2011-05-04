@@ -188,7 +188,7 @@ if (s<number_clusters)
   #if utilities are the same
   utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
   util_tmp = utilitylist.sort{|x,y| y <=> x }    
-  ordered_list = utilitylist.map{|u| util_tmp.index(u)}
+  ordered_list = util_tmp.map{|u| utilitylist.index(u)}
   return ordered_list + ordered_list
 end
   # initial seeds for clustering  ### just based on contiuous features
