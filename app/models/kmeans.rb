@@ -204,7 +204,7 @@ end
 def self.utility(products, use)
   if use == "rep"
     products.mapfeat("utility")
-  elsif use = "gorder"
+  elsif use == "gorder"
       if Session.search.sortby.nil? || Session.search.sortby == "relevance" 
         products.mapfeat("utility")
       else
