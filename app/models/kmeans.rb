@@ -5,11 +5,12 @@ require 'inline'
 inline :C do |builder|
   builder.c "
   #include <math.h> 
-  static VALUE kmeans_c(VALUE _points, _VALUE n, VALUE d, VALUE cluster_n,VALUE _weights, VALUE _utilities, VALUE _inits){
+  static VALUE kmeans_c(VALUE _points, _VALUE n, VALUE d, VALUE cluster_n,VALUE _weights, VALUE _utilities_rep, VALUE _utilities_gorder, VALUE _inits){
 
    VALUE* points_a = RARRAY_PTR(_points);
    VALUE* weights_a = RARRAY_PTR(_weights);
-   VALUE* utilities_a = RARRAY_PTR(_utilities);
+   VALUE* utilities_rep_a = RARRAY_PTR(_utilities_rep);
+   VALUE* utilities_gorder_a = RARRAY_PTR(_utilities_gorder);
    VALUE* inits_a = RARRAY_PTR(_inits);
    int nn = NUM2INT(n);
    int dd = NUM2INT(d);
@@ -29,14 +30,16 @@ inline :C do |builder|
   for (i=0; i<k; i++) inits[i] = NUM2INT(inits_a[i]);
   double** data = malloc(sizeof(double*)*nn);
   double* weights = (double*)calloc(dd, sizeof(double));
-  double* utilities = malloc(sizeof(double)*nn);
+  double* utilities_rep = malloc(sizeof(double)*nn);
+  double* utilities_gorder = malloc(sizeof(double)*nn);
   double* avgUtilities = (double*)calloc(k, sizeof(double)); 
 
   for (j=0; j<dd; j++) weights[j] = NUM2DBL(weights_a[j]);
   for (i=0; i<nn; i++){
     data[i] = malloc(sizeof(double)*dd);
     for (j=0; j<dd; j++) data[i][j] = NUM2DBL(points_a[dd*i+j]);
-    utilities[i] = NUM2DBL(utilities_a[i]);   
+    utilities_rep[i] = NUM2DBL(utilities_rep_a[i]);
+    utilities_gorder[i] = NUM2DBL(utilities_gorder_a[i]);     
   } 
 
 
@@ -126,8 +129,8 @@ for (j=0; j<dd; j++) {
   
   for (i=0; i<nn; i++){
     h = labels[i];
-    if (utilities[i] > utilities[reps[h]]) reps[h] = i;
-    avgUtilities[h] += utilities[i];  
+    if (utilities_rep[i] > utilities_rep[reps[h]]) reps[h] = i;
+    avgUtilities[h] += utilities_gorder[i];  
  }
   
  for (h=0; h<k; h++) {
@@ -181,28 +184,33 @@ cluster_weights = self.set_cluster_weights(Session.continuous["cluster"])
 
 s = products.size
 if (s<number_clusters)
-  utilitylist = Kmeans.utility(products)
+  utilitylist = Kmeans.utility(products, "gorder")
   #if utilities are the same
   utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
   util_tmp = utilitylist.sort{|x,y| y <=> x }    
-  ordered_list = utilitylist.map{|u| util_tmp.index(u)}
+  ordered_list = util_tmp.map{|u| utilitylist.index(u)}
   return ordered_list + ordered_list
 end
   # initial seeds for clustering  ### just based on contiuous features
   inits = self.init(number_clusters, products, cluster_weights)
   standard_specs = self.factorize_cont_data(products)
-  utilities  = Kmeans.utility(products)
-  utilities.each_with_index{|u, i| utilities[i]=u+(0.0000001*i)} if utilities.uniq.size<number_clusters
+  utilities_rep = Kmeans.utility(products, "rep")
+  utilities_gorder  = Kmeans.utility(products, "gorder")
+  utilities_gorder.each_with_index{|u, i| utilities_gorder[i]=u+(0.0000001*i)} if utilities_gorder.uniq.size<number_clusters
   $k = Kmeans.new unless $k
-  $k.kmeans_c(standard_specs.flatten.map{|s| s.nil? ? 0.0 : s}, standard_specs.size , standard_specs.first.size, number_clusters, cluster_weights, utilities, inits)
+  $k.kmeans_c(standard_specs.flatten.map{|s| s.nil? ? 0.0 : s}, standard_specs.size , standard_specs.first.size, number_clusters, cluster_weights, utilities_rep, utilities_gorder, inits)
 end
 
-def self.utility(products)
-  if Session.search.sortby.nil? || Session.search.sortby == "relevance" 
+def self.utility(products, use)
+  if use == "rep"
     products.mapfeat("utility")
-  else
-    products.map{|i| i.instance_variable_get("@#{Session.search.sortby}_factor") || 0}
-  end
+  elsif use == "gorder"
+      if Session.search.sortby.nil? || Session.search.sortby == "relevance" 
+        products.mapfeat("utility")
+      else
+        products.map{|i| i.instance_variable_get("@#{Session.search.sortby}_factor") || 0}
+      end
+  end    
 end
 
 
