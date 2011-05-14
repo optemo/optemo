@@ -14,7 +14,7 @@ main navigation page:
 10) repeat the previous step for other sliders
 11) Filter for red cameras by clicking on red color swatch and check if only red cameras are displayed
 12) repeat the previous step for other colors
-13) filter brands by clicking on one and multiple brand check boxers and check if right products are displayed
+13) filter brands by clicking on one and multiple brand check boxes and check if right products are displayed
 14) When filtering check if the numbers associated with checkboxes are adjusted and click on brands using the checkbox and the link text 
 15) Check on sale and then undo it and see if it works fine
 16) Click on reset 
@@ -28,9 +28,9 @@ product info popover:
 1) click on a product image on the main page- check if the info displays in the small window
 3) Check the Galleria by cycling through pictures (Galleria does not work for IE6 - For IE6 the the product image is displayed)
 4) Check the specs and review tabs to make sure the display content loads fine
-5) like the product
+5) like the product(not on IE6)
 6) Click on compare
-7) Go to PDP by clicking on the link and go back
+7) Go to PDP by clicking on the "Learn More" link and go back
 
 
 
