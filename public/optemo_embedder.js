@@ -41,7 +41,7 @@ var optemo_socket_activator = (function () {
     		/**
     		 * Register the DOMElement that the generated IFrame should be inserted into
     		 */
-    		container: "optemo_embedder_socket",
+    		//container: "optemo_embedder_socket",
     		onReady: function(){
     		   /**
     		    * Call the initial loading method on the other side; this gets the frame. Pass in the location hash in case we need to re-run a search
