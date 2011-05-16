@@ -28,9 +28,9 @@ product info popover:
 1) click on a product image on the main page- check if the info displays in the small window
 3) Check the Galleria by cycling through pictures (Galleria does not work for IE6 - For IE6 the the product image is displayed)
 4) Check the specs and review tabs to make sure the display content loads fine
-5) like the product
+5) like the product(not on IE6)
 6) Click on compare
-7) Go to PDP by clicking on the link and go back
+7) Go to PDP by clicking on the "Learn More" link and go back
 
 
 
