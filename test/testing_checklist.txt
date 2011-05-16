@@ -14,7 +14,7 @@ main navigation page:
 10) repeat the previous step for other sliders
 11) Filter for red cameras by clicking on red color swatch and check if only red cameras are displayed
 12) repeat the previous step for other colors
-13) filter brands by clicking on one and multiple brand check boxers and check if right products are displayed
+13) filter brands by clicking on one and multiple brand check boxes and check if right products are displayed
 14) When filtering check if the numbers associated with checkboxes are adjusted and click on brands using the checkbox and the link text 
 15) Check on sale and then undo it and see if it works fine
 16) Click on reset 
