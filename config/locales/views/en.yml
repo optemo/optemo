@@ -4,7 +4,7 @@ en:
             browsings:      "Browsing %{count} "
             browsing:       "Browsing 1 "
             search:         "Narrow your search"
-            saved:          "Compare and Save"
+            saved:          "Compare Cameras"
             alreadyadded:   "You already added that product!"
             toomanysaved:   "You can only save up to 4 products at a time."
             savesome:       "Select two or more items to compare specs"
