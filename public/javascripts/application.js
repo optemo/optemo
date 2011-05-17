@@ -435,7 +435,7 @@ optemo_module = (function (my){
 			href = "/product/_/"+id;
 		}
     	// Create an empty slot for product
-    	var saveditem = "<div class='saveditem' style='height:81px' id='c" + id + "' data-sku='"+sku+"'>";
+    	var saveditem = "<div class='saveditem' id='c" + id + "' data-sku='"+sku+"'>";
 
     	// The best is to just leave the medium URL in place, because that image is already loaded in case of comparison, the common case.
     	// For the uncommon case of page reload, it's fine to load a larger image.
