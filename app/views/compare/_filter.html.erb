@@ -6,7 +6,7 @@
 		<span><%= t('products.compare.reset') %></span>
 	<% end %>
 </h2>
-<%= form_tag("/compare", :id => 'filter_form', :style => "font-size:0.85em;") do %>
+<%= form_tag("/compare", :id => 'filter_form') do %>
 
   <% i = 0 # Yes, I know, this isn't Rails-y, but we need to assign a different UI position to each feature of all kinds, in order. %> 
   <% @s.categorical["filter"].each_with_index do |feat, index| %>
@@ -65,7 +65,7 @@
   		<div class="feature<%= " disabled" if available_count == 0 %>" data-position="<%= i %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
   			<%= check_box_tag "myfilter[#{feat}]", "1", !unchecked ,:disabled => (available_count == 0) ? true : false, :class => 'binary_filter', :'data-opt' => feat %>
   			<%= (available_count == 0) ? t("#{Session.product_type}.specs.#{feat}.name") : link_to( t("#{Session.product_type}.specs.#{feat}.name"), "#", :class => "binary_filter_text") %>
-			<span class="av_count" style="font-size:0.85em;"><%= "(#{available_count})" if unchecked %></span>
+			<span class="av_count"><%= "(#{available_count})" if unchecked %></span>
   		</div>
   	<% i = i + 1 %>	
 	<% end %>
