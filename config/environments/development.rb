@@ -38,4 +38,8 @@ Site::Application.configure do
      File.delete(File.join(Rails.root.to_s,'tmp', 'debug.txt'))
   end
   
+  #Add jsonp wrapping support
+  require 'j_s_padding'
+  config.middleware.use JSPadding
+  
 end
