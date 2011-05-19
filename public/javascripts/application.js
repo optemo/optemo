@@ -504,14 +504,13 @@ optemo_module = (function (my){
 
     // Submit a categorical filter, e.g. brand.
     function submitCategorical(){
-        var arguments_to_send = [];
-        var arguments = $("#filter_form").serialize().split("&");
-        for (i=0; i<arguments.length; i++)
-        {
-            if (!(arguments[i].match(/(^superfluous|=$)/)))
-                arguments_to_send.push(arguments[i]);
-        }
-    	my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
+        var selections = $("#filter_form").serializeObject();
+        $.each(selections, function(k,v){
+            if(k.match(/(^superfluous)/) || v == "") {
+                delete selections[k];
+            }
+        });
+    	my.ajaxcall("/compare/create", selections);
     	return false;
     }
 
@@ -766,20 +765,13 @@ optemo_module = (function (my){
     				var sliderinfo = {'slider_min' : parseFloat(ui.values[0]) * rangemin / 100.0, 'slider_max' : parseFloat(rightslidervalue) * rangemax / 100.0,
                 	            'slider_name' : $(this).attr('data-label'), 'filter_type' : 'slider', 'data_min' : datasetmin, 'data_max' : datasetmax, 'ui_position' : $(this).parent().find('.label').attr('data-position')};
     				my.trackPage('goals/filter/slider', sliderinfo);
-    				var arguments_to_send = [];
-                    arguments = $("#filter_form").serialize().split("&");
-                    for (i=0; i<arguments.length; i++)
-                    {
-                        if (!(arguments[i].match(/^superfluous/)))
-                            arguments_to_send.push(arguments[i]);
-                    }
                     if (leftsliderknob.data('toofar') || rightsliderknob.data('toofar')) {
                         sliderinfo['filter_type'] = 'forced_stop';
         				my.trackPage('goals/filter/forcedstop', sliderinfo);
     				    leftsliderknob.removeData('toofar');
     				    rightsliderknob.removeData('toofar');
                     }
-                	my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
+                    submitCategorical();
     			}
     		});
     		if ($(this).slider("option", "disabled") == true) {
@@ -823,12 +815,12 @@ optemo_module = (function (my){
     	//		return submitsearch();
     	//});
 
-		// extended navigation action
-		$('.extendednav').live('click', function(){
-	        arguments = $(this).attr('data-adjustedfilters');
-	    	my.ajaxcall("/extended?ajax=true", arguments);
-			return false;
-		})
+		//// extended navigation action
+		//$('.extendednav').live('click', function(){
+	    //    arguments = $(this).attr('data-adjustedfilters');
+	    //	my.ajaxcall("/extended", arguments);
+		//	return false;
+		//})
 		
     	// Change sort method
     	$('.sortby').live('click', function() {
@@ -836,7 +828,7 @@ optemo_module = (function (my){
     	    var whichSortingMethodSelected = $(this).attr('data-feat');
     	    var info = {'chosen_sorting_method' : whichSortingMethodSelected, 'filter_type' : 'sorting_method'};
 			my.trackPage('goals/filter/sorting_method', info);
-            my.ajaxcall("/compare?ajax=true&sortby=" + whichSortingMethodSelected);
+            my.ajaxcall("/compare", {"sortby" : whichSortingMethodSelected});
 			return false;
 	    });
 
@@ -1003,7 +995,7 @@ optemo_module = (function (my){
     	$('.simlinks').live("click", function() {
 			if (my.loading_indicator_state.disable) return false;
     		var ignored_ids = getAllShownProductIds();
-    		my.ajaxcall($(this).attr('href')+'?ajax=true');
+    		my.ajaxcall($(this).attr('href'));
     		my.trackPage('goals/browse_similar', {'filter_type' : 'browse_similar', 'product_picked' : $(this).attr('data-id') , 'product_ignored' : ignored_ids, 'picked_cluster_layer' : $(this).attr('data-layer'), 'picked_cluster_size' : $(this).attr('data-size')});
     		return false;
     	});
@@ -1139,14 +1131,14 @@ optemo_module = (function (my){
 		$('.reset').live('click', function(){
 			if (my.loading_indicator_state.disable) return false;
 			my.trackPage('goals/reset', {'filter_type' : 'reset'});
-			my.ajaxcall($(this).attr('href')+'?ajax=true');
+			my.ajaxcall($(this).attr('href'));
 			return false;
 		});
 		
 		//Zoomout filters
 		$('.zoomout').live('click', function(){
 			my.trackPage('goals/zoomout', {'filter_type' : 'zoomout'});
-			my.ajaxcall($(this).attr('href')+'?ajax=true');
+			my.ajaxcall($(this).attr('href'));
 			return false;
 		});
     }
@@ -1342,23 +1334,32 @@ optemo_module = (function (my){
     my.ajaxsend = function (hash,myurl,mydata,timeoutlength) {
         var lis = my.loading_indicator_state;
         if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 50);
-    	if (myurl != null) {
-        	$.ajax({
-        		type: (mydata==null)?"GET":"POST",
-        		data: (mydata==null)?"":mydata,
-        		url: (hash==null)?myurl:myurl+"&hist="+hash,
-        		success: my.ajaxhandler,
-        		error: my.ajaxerror
-        	});
-    	} else if (typeof(hash) != "undefined" && hash != null) {
-			/* Used by back button */
-    		$.ajax({
-    			type: "GET",
-    			url: "/compare/?ajax=true&hist="+hash,
-    			success: my.ajaxhandler,
-    			error: my.ajaxerror
-    		});
-    	}
+        if (OPT_REMOTE) {
+            //Embedded Layout
+            if (myurl != null)
+                JSONP.get(OPT_REMOTE+myurl,$.extend({'ajax': true},mydata),my.ajaxhandler);
+            else if (typeof(hash) != "undefined" && hash != null)
+                JSONP.get(OPT_REMOTE+"/compare",{'ajax': true,'hist':hash},my.ajaxhandler);
+        } else {
+    	    if (myurl != null) {
+                myurl = "http://192.168.5.100:3000" + myurl + "&callback=optemo_module.ajaxhandler";
+            	$.ajax({
+            		//type: (mydata==null)?"GET":"POST",
+            		data: (mydata==null)?"":mydata,
+            		url: (hash==null)?myurl:myurl+"&hist="+hash,
+            		success: my.ajaxhandler,
+            		error: my.ajaxerror
+            	});
+    	    } else if (typeof(hash) != "undefined" && hash != null) {
+		    	/* Used by back button */
+    	    	$.ajax({
+    	    		type: "GET",
+    	    		url: "/compare/?ajax=true&hist="+hash,
+    	    		success: my.ajaxhandler,
+    	    		error: my.ajaxerror
+    	    	});
+    	    }
+	    }
     };
 
     /* The ajax handler takes data from the ajax call and processes it according to some (unknown) rules. */
@@ -1391,9 +1392,6 @@ optemo_module = (function (my){
     }
 
     my.ajaxerror = function() {
-    	//if (language=="fr")
-    	//	my.flashError('<div class="poptitle">&nbsp;</div><p class="error">Désolé! Une erreur s’est produite sur le serveur.</p><p>Vous pouvez <a href="" class="popuplink">réinitialiser</a> l’outil et constater si le problème persiste.</p>');
-    	//else
         var lis = my.loading_indicator_state;
         lis.disable = false;
         clearTimeout(lis.spinner_timer); // clearTimeout can run on "null" without error
@@ -1410,9 +1408,15 @@ optemo_module = (function (my){
     	numactions = parseInt($("#actioncount").html()) + 1;
     	$.history.load(numactions.toString(),myurl,mydata);
     };
-
+    
     my.quickajaxcall = function(element_name, myurl, fn) { // The purpose of this is to do an ajax load without having to go through the relatively heavy ajaxcall().
-        $(element_name).load(myurl, fn);
+        if (OPT_REMOTE)
+            JSONP.get(OPT_REMOTE+myurl, {embedding:'true', param2:'456'}, function(data){
+                $(element_name).html(data);
+                if (fn) fn();
+            });
+        else
+            $(element_name).load(myurl, fn);
     }
 
     /* Puts an ajax-related error message in a specific part of the screen */
@@ -1601,6 +1605,24 @@ optemo_module = (function (my){
 $(function(){
     // This initializes the jquery history plugin. Note that the plugin was modified for use with our application javascript (details in jquery.history.js)
     $.history.init(optemo_module.ajaxsend);
+    
+    //Serialize an form into a hash, Warning: duplicate keys are dropped
+    $.fn.serializeObject = function()
+    {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function() {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
 
 	// Only load DBinit if it will not be loaded by the upcoming ajax call
 	// Do LiveInit anyway, since timing is not important
@@ -1741,47 +1763,6 @@ $(function(){
 	// Load the classic theme for galleria, the jquery image slideshow plugin we're using (jquery.galleria.js)
 //    Galleria.loadTheme('/javascripts/galleria.classic.js');
 });
-
-//--------------------------------------//
-//       Embedding-specific code        //
-//--------------------------------------//
-
-if (window.embedding_flag) {
-    // On embed, we need to redefine the ajaxcall / ajaxsend duo so that they point at the remote server as appropriate.
-    // The data will come back through the same ajaxhandler function as before, getting pushed there by the
-    // remote socket when it's ready.
-    optemo_module.ajaxcall = function (myurl, mydata) {
-	    if (myurl) myurl = myurl.replace(/http:\/\/[^\/]+/,'');
-        optemo_module.disableInterfaceElements();
-    	numactions = parseInt($("#actioncount").html()) + 1;
-    	$.history.load(numactions.toString(),myurl,mydata);
-	};
-
-	optemo_module.ajaxsend = function(hash,myurl,mydata,timeoutlength) {
-	    if (myurl) myurl = myurl.replace(/http:\/\/[^\/]+/,'');
-        optemo_module.disableInterfaceElements();
-        var lis = optemo_module.loading_indicator_state;
-        lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 1000);
-        lis.socket_error_timer = setTimeout("optemo_module.clearSocketError()", 15000);
-        // Hopefully we can just send the arguments as-is. It' would certainly be wise to sanity-check them though.
-        remote.iframecall(hash, myurl, (mydata == "" ? null : mydata)); // emptiness check put in for AJS vs. jquery differences
-    };
-    $.history.init(optemo_module.ajaxsend); // re-init with the new ajaxsend module here, after it's been redefined
-
-    optemo_module.clearSocketError = function() {
-        // if ajaxhandler never gets called, here we are.
-		optemo_module.FilterAndSearchInit();
-		if (!(typeof(optemo_french) == "undefined") && optemo_french)
-			optemo_module.flashError('<div class="bb_poptitle">Erreur<a class="bb_quickview_close" href="close" style="float:right;">Fermer fenêtre</a></div><p class="error">Désolé! Une erreur est survenue sur le serveur.</p><p>Vous pouvez réinitialiser l\'outil et voir si le problème est résolu.</p>');
-		else
-    		optemo_module.flashError('<div class="bb_poptitle">Error<a class="bb_quickview_close" href="close" style="float:right;">Close Window</a></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can reload the page and see if the problem is resolved.</p>');
-    }
-
-    optemo_module.quickajaxcall = function (element_name, myurl, fn) { // for the show page
-	    if (myurl) myurl = myurl.replace(/http:\/\/[^\/]+/,'');        
-        remote.quickiframecall(element_name, myurl, fn);
-    }
-}
 
 //--------------------------------------//
 //             Page Loader              //
