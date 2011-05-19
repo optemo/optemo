@@ -79,8 +79,13 @@ task :redopermissions do
   run "find #{current_path} #{current_path}/../../shared -user `whoami` ! -perm /g+w -execdir chmod g+w {} +"
 end
 
+task :warmupserver do
+  run "curl -A 'Java' localhost > /dev/null"
+end
+
 # redopermissions is last, so that if it fails due to the searchd pid, no other tasks get blocked
 after "deploy:symlink", "build_assets"
 after :build_assets, "serversetup"
 after :serversetup, "restartmemcached"
 after :restartmemcached, "redopermissions"
+after "deploy:restart", "warmupserver"
