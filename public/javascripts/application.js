@@ -28,7 +28,7 @@
                                        -  For more on this, see the Preferences plugin in the Piwik code base.
 
    ---- JQuery Initialization Routines ----
-    ** FilterAndSearchInit()  -  Search and filter areas.
+    ** SliderInit()  -  Draw slider historgrams
  	** LiveInit()  -   All the events that can be handled appropriately with jquery live
  	row_height(length,isLabel)  -  Helper function for calculating row height, used only in the next function
  	** buildComparisonMatrix()  -  Builds the HTML used in the product direct comparison screen
@@ -324,7 +324,6 @@ optemo_module = (function (my){
 
     my.removeSilkScreen = function() {
         $('#silkscreen, #outsidecontainer').hide();
-        $('#outsidecontainer').unbind('click');
     };
 
     my.applySilkScreen = function(url,data,width,height,f) {
@@ -350,10 +349,6 @@ optemo_module = (function (my){
             );
         })();
 
-        // reenabled because slikscreen clicking is disabled when doing the filter "loading" panel
-    	$("#silkscreen").unbind('click').click(function() {
-    	   my.removeSilkScreen();
-	    });
     	$('#silkscreen').css({'height' : current_height+'px', 'display' : 'inline'});
     	if (data) {
     		$('#info').html(data).css('height','');
@@ -585,9 +580,7 @@ optemo_module = (function (my){
     //       Initialization Routines        //
     //--------------------------------------//
 
-    my.FilterAndSearchInit = function() {
-        my.removeSilkScreen();
-
+    my.SliderInit = function() {
     	// Initialize Sliders
     	$('.slider').each(function() {
     	    // threshold identifies that 2 sliders are too close to each other
@@ -1137,6 +1130,11 @@ optemo_module = (function (my){
 			my.ajaxcall($(this).attr('href'));
 			return false;
 		});
+		
+		//Silkscreen
+        $('#outsidecontainer').live('click', function(){
+            my.removeSilkScreen();
+        });
     }
 
 	//These should be locally scoped functions, but for jquery 1.4.2 compatibility it is moved outside (specifically for the cookie-loading-to-savebar part)
@@ -1247,10 +1245,6 @@ optemo_module = (function (my){
     function ErrorInit() {
         //Link from popup (used for error messages)
         $('#silkscreen').css({'display' : 'none', 'top' : '', 'left' : '', 'width' : ''})
-        $('#outsidecontainer').unbind('click').click(function(){
-        	my.FilterAndSearchInit();
-        	return false;
-        });
     };
 
     my.DBinit = function() {
@@ -1372,7 +1366,6 @@ optemo_module = (function (my){
     		if (parts[1] != null) {
     			$('#ajaxfilter').empty().append(parts[1]);
     		}
-    		optemo_module.FilterAndSearchInit();
     		my.flashError(parts[0].substr(5,parts[0].length));
     		return -1;
     	} else {
@@ -1380,9 +1373,9 @@ optemo_module = (function (my){
     		$('#ajaxfilter').empty().append(parts[1]);
     		$('#main').html(parts[0]);
     		$('#myfilter_search').attr('value',parts[2]);
-    		optemo_module.stop_spinner();
-    		optemo_module.FilterAndSearchInit();
-			optemo_module.DBinit();
+    		my.stop_spinner();
+    		my.SliderInit();
+			my.DBinit();
     		return 0;
     	}
     }
@@ -1625,7 +1618,7 @@ $(function(){
 	optemo_module.LiveInit();
 	if ($('#opt_discovery').length == 0) {
 		// Other init routines get run when they are needed.
-		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
+		optemo_module.SliderInit(); optemo_module.DBinit();
 	}
 	
 	if (!(window.embedding_flag)) {
