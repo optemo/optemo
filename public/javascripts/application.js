@@ -89,7 +89,7 @@ optemo_module = (function (my){
     // They are in a separate function like this so that the embedder can call them at the appropriate time.
     // Note that those that are locally scoped to the optemo_module must be defined before this function call.
     var VERSION, SESSION_ID, AB_TESTING_TYPE;
-    if (typeof window.OPT_REMOTE == "undefined") window.OPT_REMOTE = false;
+    if (typeof OPT_REMOTE == "undefined") OPT_REMOTE = false;
     my.IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
     my.MODEL_NAME = $("#modelname").html();
     VERSION = $("#version").html();
