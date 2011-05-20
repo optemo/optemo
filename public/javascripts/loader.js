@@ -10,12 +10,18 @@ if (opt_history.length > 0)
 else
     var opt_options = {embedding:'true'};
 JSONP.get(OPT_REMOTE, opt_options, function(data){
+    function checkInit(){
+        if (typeof optemo_module != "undefined") {
+            optemo_module.domready();
+        }
+    }
     var opt_t = document.getElementById("optemo_embedder");
     var se = document.createElement("div");
     se.id = "opt_new";
     se.innerHTML = data;
     if (opt_t) {
         opt_t.appendChild(se);
+        checkInit();
     } else {
         se.setAttribute("style","display:none;");
         var iebody=(document.compatMode && document.compatMode != "BackCompat")? document.documentElement : document.body;
@@ -24,8 +30,10 @@ JSONP.get(OPT_REMOTE, opt_options, function(data){
             var n = document.getElementById("opt_new");
             document.getElementById("optemo_embedder").appendChild(n);
             n.setAttribute("style","display:block;");
+            checkInit();
         });
     }
+    
 });
 // Private function for the register_remote socket. Takes data, splits according to rules, does replace() according to rules.
 function opt_parse_data_by_pattern(mydata, split_pattern_string, replacement_function) {
