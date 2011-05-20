@@ -5,13 +5,13 @@ function opt_s(f){/in/.test(document.readyState)?setTimeout('opt_s('+f+')',9):f(
 JSONP.get(OPT_REMOTE, {embedding:'true', param2:'456'}, function(data){
     var opt_t = document.getElementById("optemo_embedder");
     if (opt_t) {
-        opt_t.innerHTML = data_to_append;
+        opt_t.innerHTML = data;
     } else {
         var se = document.createElement("div");
         se.id = "opt_new";
         se.setAttribute("style","display:none;");
         document.body.appendChild(se);
-        se.innerHTML = data_to_append;
+        se.innerHTML = data;
         opt_s(function(){
             var n = document.getElementById("opt_new");
             document.getElementById("optemo_embedder").appendChild(n);
