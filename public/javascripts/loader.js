@@ -18,7 +18,8 @@ JSONP.get(OPT_REMOTE, opt_options, function(data){
         opt_t.appendChild(se);
     } else {
         se.setAttribute("style","display:none;");
-        document.body.appendChild(se);
+        var iebody=(document.compatMode && document.compatMode != "BackCompat")? document.documentElement : document.body;
+        iebody.appendChild(se);
         opt_s(function(){
             var n = document.getElementById("opt_new");
             document.getElementById("optemo_embedder").appendChild(n);
