@@ -11,14 +11,14 @@ else
     var opt_options = {embedding:'true'};
 JSONP.get(OPT_REMOTE, opt_options, function(data){
     var opt_t = document.getElementById("optemo_embedder");
+    var se = document.createElement("div");
+    se.id = "opt_new";
+    se.innerHTML = data;
     if (opt_t) {
-        opt_t.innerHTML = data;
+        opt_t.appendChild(se);
     } else {
-        var se = document.createElement("div");
-        se.id = "opt_new";
         se.setAttribute("style","display:none;");
         document.body.appendChild(se);
-        se.innerHTML = data;
         opt_s(function(){
             var n = document.getElementById("opt_new");
             document.getElementById("optemo_embedder").appendChild(n);
