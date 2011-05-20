@@ -4,7 +4,6 @@
    Functions marked ** are public functions that can be called from outside the optemo_module declaration.
 
    ---- Show Page Pre-loader & Helpers ----
-    ** initiateModuleVariables  -  module variables are locally scoped to the optemo_module. They are initialized at different times for embedded and non-embedded.
 	** loadSavedProductsFromCookie - Loads the saved products into the saved products box
     parse_bb_json(obj)  -  recursive function to parse the returned JSON into an html list
     ** loadspecs(sku, f)  -  Does 2 AJAX requests for data relating to sku and puts the results in $('body').data() for later. Runs the callback function f if provided.
@@ -90,14 +89,13 @@ optemo_module = (function (my){
     // They are in a separate function like this so that the embedder can call them at the appropriate time.
     // Note that those that are locally scoped to the optemo_module must be defined before this function call.
     var VERSION, SESSION_ID, AB_TESTING_TYPE;
-    my.initiateModuleVariables = function () {
-        my.IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
-        my.MODEL_NAME = $("#modelname").html();
-        VERSION = $("#version").html();
-        my.DIRECT_LAYOUT = ($('#directLayout').html() == "true");
-        SESSION_ID = parseInt($('#seshid').html());
-        AB_TESTING_TYPE = parseInt($('#ab_testing_type').html());
-    }
+    if (typeof window.OPT_REMOTE == "undefined") window.OPT_REMOTE = false;
+    my.IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
+    my.MODEL_NAME = $("#modelname").html();
+    VERSION = $("#version").html();
+    my.DIRECT_LAYOUT = ($('#directLayout').html() == "true");
+    SESSION_ID = parseInt($('#seshid').html());
+    AB_TESTING_TYPE = parseInt($('#ab_testing_type').html());
 
 	my.loadSavedProductsFromCookie = function() {
 		var tokenizedArrayID = 0, savedproducts = null; /* Must initialize savedproducts here for IE */
@@ -444,7 +442,7 @@ optemo_module = (function (my){
     	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\">" +
     	"<img src=\"" +
         // This next line is used for embedding: check whether there is a remote server defined, and put the appropriate image url in.
-    	(typeof(REMOTE) != 'undefined' ? REMOTE : "") +
+    	(OPT_REMOTE ? OPT_REMOTE : "") +
     	"/images/closepopup.png\" alt=\"Close\"/></a>";
 		saveditem += "</div>";
     	var image = $('#opt_savedproducts').append(saveditem).find('.draganddropimage:last');
@@ -1234,7 +1232,6 @@ optemo_module = (function (my){
 	};
 	
 	function addtoggle(item){
-	    //alert('I am called');
 		var closed = item.click(function() {
 			$(this).toggleClass("closed").toggleClass("open").parent('.cell').parent().next('div.contentholder').toggle();
 			return false;
@@ -1332,11 +1329,10 @@ optemo_module = (function (my){
                 JSONP.get(OPT_REMOTE+"/compare",{'ajax': true,'hist':hash},my.ajaxhandler);
         } else {
     	    if (myurl != null) {
-                myurl = "http://192.168.5.100:3000" + myurl + "&callback=optemo_module.ajaxhandler";
             	$.ajax({
             		//type: (mydata==null)?"GET":"POST",
             		data: (mydata==null)?"":mydata,
-            		url: (hash==null)?myurl:myurl+"&hist="+hash,
+            		url: (hash==null)?myurl+"?ajax=true":myurl+"?ajax=true&hist="+hash,
             		success: my.ajaxhandler,
             		error: my.ajaxerror
             	});
@@ -1624,7 +1620,6 @@ $(function(){
 	if (!(window.embedding_flag)) {
 	    // If we're not embedded, initialize these here.
 	    // Otherwise, initialize them in optemo_embedder.js once the DOM is loaded.
-	    optemo_module.initiateModuleVariables();
 		optemo_module.loadSavedProductsFromCookie();
     }
 
@@ -1761,9 +1756,9 @@ $(function(){
 // This history discovery works for embedded also, because by now the ajaxsend function has been redefined, and the history init has been called.
 if ($('#opt_discovery').length) {
     if (location.hash) {
-    	optemo_module.ajaxsend(location.hash.replace(/^#/, ''),'/?ajax=true',null);
+    	optemo_module.ajaxsend(location.hash.replace(/^#/, ''),'/');
 	} else {
-		optemo_module.ajaxsend(null,'/?ajax=true',null);
+		optemo_module.ajaxsend(null,'/');
 	}
 }
 
