@@ -1099,7 +1099,7 @@ optemo_module = (function (my){
     		submitCategorical();
     	}
 
-    	$(".close, .bb_quickview_close").live('click', function(){
+    	$(".close, .bb_quickview_close, #silkscreen").live('click', function(){
     		my.removeSilkScreen();
     		return false;
     	});
@@ -1128,11 +1128,6 @@ optemo_module = (function (my){
 			my.ajaxcall($(this).attr('href'));
 			return false;
 		});
-		
-		//Silkscreen
-        $('#outsidecontainer').live('click', function(){
-            my.removeSilkScreen();
-        });
     }
 
 	//These should be locally scoped functions, but for jquery 1.4.2 compatibility it is moved outside (specifically for the cookie-loading-to-savebar part)
