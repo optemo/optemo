@@ -1319,7 +1319,7 @@ optemo_module = (function (my){
         if (OPT_REMOTE) {
             //Embedded Layout
             if (myurl != null)
-                JSONP.get(OPT_REMOTE+myurl,$.extend({'ajax': true},mydata),my.ajaxhandler);
+                JSONP.get(OPT_REMOTE+myurl.replace(/http:\/\/[^\/]+/,''),$.extend({'ajax': true},mydata),my.ajaxhandler);
             else if (typeof(hash) != "undefined" && hash != null)
                 JSONP.get(OPT_REMOTE+"/compare",{'ajax': true,'hist':hash},my.ajaxhandler);
         } else {
