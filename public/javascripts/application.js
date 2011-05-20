@@ -1391,7 +1391,8 @@ optemo_module = (function (my){
     
     my.quickajaxcall = function(element_name, myurl, fn) { // The purpose of this is to do an ajax load without having to go through the relatively heavy ajaxcall().
         if (OPT_REMOTE)
-            JSONP.get(OPT_REMOTE+myurl, {embedding:'true', param2:'456'}, function(data){
+            //Check for absolute urls
+            JSONP.get(OPT_REMOTE+myurl.replace(/http:\/\/[^\/]+/,''), {embedding:'true'}, function(data){
                 $(element_name).html(data);
                 if (fn) fn();
             });
