@@ -52,6 +52,10 @@ Site::Application.configure do
   # Send deprecation notices to registered listeners
   config.active_support.deprecation = :notify
   
+  #Add jsonp wrapping support
+  require 'j_s_padding'
+  config.middleware.use JSPadding
+  
 end
 
 #create a new connection to memcached for forked processes, as a forked process will by default share file descriptors with its parent
