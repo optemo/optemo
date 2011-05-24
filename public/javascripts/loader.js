@@ -2,7 +2,20 @@
 OPT_REMOTE = 'http://embed.optemo.com';
 var JSONP=(function(){var a=0,c,f,b,d=this;function e(j){var i=document.createElement("script"),h=false;i.src=j;i.async=true;i.onload=i.onreadystatechange=function(){if(!h&&(!this.readyState||this.readyState==="loaded"||this.readyState==="complete")){h=true;i.onload=i.onreadystatechange=null;if(i&&i.parentNode){i.parentNode.removeChild(i)}}};if(!c){c=document.getElementsByTagName("head")[0]}c.appendChild(i)}function g(h,j,k){f="?";j=j||{};for(b in j){if(j.hasOwnProperty(b)){f+=encodeURIComponent(b)+"="+encodeURIComponent(j[b])+"&"}}var i="json"+(++a);d[i]=function(l){k(opt_parse_data_by_pattern(l, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, OPT_REMOTE + "$1");})));d[i]=null;try{delete d[i]}catch(m){}};e(h+f+"callback="+i);return i}return{get:g}}());
 //Function for executing code at DOMReady
-function opt_s(f){/in/.test(document.readyState)?setTimeout('opt_s('+f+')',9):f()}
+//function opt_s(f){/in/.test(document.readyState)?setTimeout('opt_s('+f+')',9):f()}
+function opt_insert(d) {
+    var opt_t = document.getElementById("optemo_embedder");
+    if (opt_t) {
+        var se = document.createElement("div");
+        se.id = "opt_new";
+        se.innerHTML = d;
+        opt_t.appendChild(se);
+        if (typeof optemo_module != "undefined") {
+            optemo_module.domready();
+        }
+    } else
+        setTimeout(function(){opt_insert(d);d=null;},10);
+}
 //Load the correct history on reload
 var opt_history = location.hash.replace(/^#/, '');
 if (opt_history.length > 0)
@@ -10,30 +23,7 @@ if (opt_history.length > 0)
 else
     var opt_options = {embedding:'true'};
 JSONP.get(OPT_REMOTE, opt_options, function(data){
-    function checkInit(){
-        if (typeof optemo_module != "undefined") {
-            optemo_module.domready();
-        }
-    }
-    var opt_t = document.getElementById("optemo_embedder");
-    var se = document.createElement("div");
-    se.id = "opt_new";
-    se.innerHTML = data;
-    if (opt_t) {
-        opt_t.appendChild(se);
-        checkInit();
-    } else {
-        se.setAttribute("style","display:none;");
-        var iebody=(document.compatMode && document.compatMode != "BackCompat")? document.documentElement : document.body;
-        iebody.appendChild(se);
-        opt_s(function(){
-            var n = document.getElementById("opt_new");
-            document.getElementById("optemo_embedder").appendChild(n);
-            n.setAttribute("style","display:block;");
-            checkInit();
-        });
-    }
-    
+    opt_insert(data);
 });
 // Private function for the register_remote socket. Takes data, splits according to rules, does replace() according to rules.
 function opt_parse_data_by_pattern(mydata, split_pattern_string, replacement_function) {
