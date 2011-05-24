@@ -325,6 +325,15 @@ optemo_module = (function (my){
     my.removeSilkScreen = function() {
         $('#silkscreen, #outsidecontainer').hide();
     };
+    
+    my.current_height = (function() {
+	var D = document;
+	return Math.max(
+	    Math.max(D.body.scrollHeight, D.documentElement.scrollHeight),
+	    Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),
+	    Math.max(D.body.clientHeight, D.documentElement.clientHeight)
+	);
+    });
 
     my.applySilkScreen = function(url,data,width,height,f) {
     	//IE Compatibility
@@ -337,19 +346,10 @@ optemo_module = (function (my){
     								'top' : (dsoctop+5)+'px',
     								'width' : (width||560)+'px',
     								'display' : 'inline' });
-        /* This is used to get the document height for doing layout properly. */
-        /*http://james.padolsey.com/javascript/get-document-height-cross-browser/*/
-        // As of jQuery 1.5, there is probably a better way of doing this, maybe just calling $('body').height() even.
-        var current_height = (function() {
-            var D = document;
-            return Math.max(
-                Math.max(D.body.scrollHeight, D.documentElement.scrollHeight),
-                Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),
-                Math.max(D.body.clientHeight, D.documentElement.clientHeight)
-            );
-        })();
+	wWidth = $(window).width();
+    	$('#silkscreen').css({'height' : my.current_height()+'px', 'display' : 'inline', 'width' : wWidth + 'px'});
 
-    	$('#silkscreen').css({'height' : current_height+'px', 'display' : 'inline'});
+
     	if (data) {
     		$('#info').html(data).css('height','');
     	} else {
@@ -393,30 +393,27 @@ optemo_module = (function (my){
     	imgurlToSave = imgurlToSaveArray.join("/");
     */
         if (typeof(id) == "object") id = parseInt(id); // Fix some type errors
-    	if($(".saveditem").length == 4)
-    	{
-    		$("#too_many_saved").css("display", "block");
-    	}
-    	else
-    	{
-        	//Check if this id has already been added.
-        	if(null != document.getElementById('c'+id)){
-        		$("#already_added_msg").css("display", "block");
-        	} else {
-        	    ignored_ids = getAllShownProductIds();
-                my.trackPage('goals/save', {'filter_type' : 'save', 'product_picked' : id, 'product_ignored' : ignored_ids});
 
-        		my.renderComparisonProducts(id, sku, imgurl, name, href);
-        		addValueToCookie('optemo_SavedProductIDs', [id, sku, imgurl, name, my.MODEL_NAME]);
-        		// Hide the drag-and-drop message
-        		$('#savesome').hide();
-        	}
+        //Check if this id has already been added.
+	if(null != document.getElementById('c'+id)){
+	    $("#already_added_msg").css("display", "block");
+        } else {
+	    ignored_ids = getAllShownProductIds();
+	    my.trackPage('goals/save', {'filter_type' : 'save', 'product_picked' : id, 'product_ignored' : ignored_ids});
+	    
+	    my.renderComparisonProducts(id, sku, imgurl, name, href);
+	    addValueToCookie('optemo_SavedProductIDs', [id, sku, imgurl, name, my.MODEL_NAME]);
+	    // Hide the drag-and-drop message
+	    $('#savesome').hide();
+        }
+	// if ($(".saveditem").length > 4)
+	//     $(".saveditem").each(function() {this.style.width="65px";})
+	
+        // There should be at least 1 saved item, so...
+        // 1. show compare button
+        $("#compare_button").show();
+	$("#savesome").hide();
 
-        	// There should be at least 1 saved item, so...
-        	// 1. show compare button
-        	$("#compare_button").show();
-			$("#savesome").hide();
-    	}
     };
 
 	//(id, sku, imgurl, name, href) for drag and drop
@@ -459,7 +456,7 @@ optemo_module = (function (my){
 	    });
 
     	$("#already_added_msg").css("display", "none");
-    	$("#too_many_saved").css("display", "none");
+
     	if ($.browser.msie) // If it's IE, clear the height element.
     		$("#opt_savedproducts").css({"height" : ''});
     };
@@ -488,7 +485,7 @@ optemo_module = (function (my){
     	my.trackPage('goals/remove', {'filter_type' : 'remove_from_comparison', 'product_picked' : id});
 
     	$("#already_added_msg").css("display", "none");
-    	$("#too_many_saved").css("display", "none");
+
 
     	removeValueFromCookie('optemo_SavedProductIDs', id);
     	if ($('#opt_savedproducts').children().length == 0)
@@ -496,6 +493,9 @@ optemo_module = (function (my){
     	    $('#savesome').show(); // This is the "save products by dropping..." message
     		$("#compare_button").hide();
 	    }
+	// if ($(".saveditem").length <= 4)
+	//     $(".saveditem").each(function(index) {this.style.width="71px";})
+	
     	return false;
     }
 
@@ -896,6 +896,8 @@ optemo_module = (function (my){
     	    el.attr('id', 'tab_selected');
 			$('#'+el.attr('data-tab')).show();
 			my.trackPage('goals/specs_and_reviews', {'filter_type' : 'specs_and_reviews', 'feature_name' : el.attr('data-tab')});
+		        $('#silkscreen').css({'height' : my.current_height()+'px', 'display' : 'inline'});
+
 			return false;
 		});
 
@@ -906,6 +908,8 @@ optemo_module = (function (my){
 			t.find(".lesstext").toggle();
 			t.find(".moretext").toggle();
             $('#hideable_matrix').toggle();
+	    cHeight = my.current_height();
+	    $('#silkscreen').css({'height' : cHeight+'px', 'display' : 'inline'});
             return false;
         });
 
@@ -942,16 +946,11 @@ optemo_module = (function (my){
             // To figure out the width that we need, start with $('#opt_savedproducts').length probably
             // 560 minimum (width is the first of the two parameters)
             // 2, 3, 4 ==>  513, 704, 895  (191 each)
-            switch(number_of_saved_products) {
-                case 3:
-                    width = 757;
-                    break;
-                case 4:
-                    width = 948;
-                    break;
-                default:
-                    width = 566;
-            }
+	    if (number_of_saved_products >= 2)
+		width = 191 * (number_of_saved_products - 2) + 566;
+	    else
+		width = 566;
+
     		my.applySilkScreen('/comparison/' + productIDs, null, width, 580,function(){
 				// Jquery 1.5 would finish all the requests before building the comparison matrix once
 				// With 1.4.2 we can't do that. Keep code for later.
@@ -1102,6 +1101,7 @@ optemo_module = (function (my){
     	}
 
     	$(".close, .bb_quickview_close, #silkscreen").live('click', function(){
+
     		my.removeSilkScreen();
     		return false;
     	});
