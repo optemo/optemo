@@ -55,7 +55,7 @@ Site::Application.configure do
   #Add jsonp wrapping support
   require 'j_s_padding'
   config.middleware.use JSPadding
-  
+  require 'etags'
 end
 
 #create a new connection to memcached for forked processes, as a forked process will by default share file descriptors with its parent
