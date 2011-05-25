@@ -30,7 +30,7 @@ class ApplicationController < ActionController::Base
   
   # this is required by IE so that we can set session cookies
   def set_p3p
-    headers['P3P'] = 'CP="ALL DSP COR CURa ADMa DEVa OUR IND COM NAV"'
+    headers['P3P'] = 'CP="NON TAIa OUR SAMa IND ONL UNI COM NAV TST"'
   end
   
 
