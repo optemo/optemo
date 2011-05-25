@@ -16,7 +16,7 @@ class ApplicationController < ActionController::Base
   # from your application log (in this case, all fields with names like "password"). 
   # filter_parameter_logging :password
   
-  before_filter :update_user, :set_locale, :set_p3p
+  before_filter :update_user, :set_locale
   
   private
   
@@ -27,12 +27,6 @@ class ApplicationController < ActionController::Base
   def set_locale
     I18n.locale = request.subdomains.first == 'fr' ? 'fr' : 'en'
   end
-  
-  # this is required by IE so that we can set session cookies
-  def set_p3p
-    headers['P3P'] = 'CP="ALL DSP COR CURa ADMa DEVa OUR IND COM NAV"'
-  end
-  
 
   def update_user
     mysession_id = session[:user_id]

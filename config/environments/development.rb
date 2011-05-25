@@ -41,5 +41,5 @@ Site::Application.configure do
   #Add jsonp wrapping support
   require 'j_s_padding'
   config.middleware.use JSPadding
-  require 'etags'
+  
 end
