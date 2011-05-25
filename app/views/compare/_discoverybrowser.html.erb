@@ -27,4 +27,5 @@
 <%= raw '</div>' if !@s.directLayout %>
 <%= raw mb %>
 <%= raw '</div>' if @s.directLayout %>
-<div style="clear:both;"><span id="actioncount" style="display:none"><%= @s.searches.size %></span></div>
+<% search_count = @s.searches.size %>
+<div style="clear:both;"><span id="actioncount" style="display:none"><%= search_count %></span></div>
