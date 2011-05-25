@@ -880,7 +880,7 @@ margin-top:0;
 	top: 0;
 	left: 344px;
 	position: fixed;
-	z-index: 2;
+	z-index: 1005;
 	background-color: yellow;
 	border: 1px solid #444;
 	padding: 4px;
