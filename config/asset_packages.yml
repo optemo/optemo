@@ -21,6 +21,7 @@ javascripts:
   - jquery_galleria
   - galleria.classic
   - application
+  - bbfixes
 - loader:
     - loader
 stylesheets: 
