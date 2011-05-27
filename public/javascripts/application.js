@@ -4,7 +4,6 @@
    Functions marked ** are public functions that can be called from outside the optemo_module declaration.
 
    ---- Show Page Pre-loader & Helpers ----
-    ** initiateModuleVariables  -  module variables are locally scoped to the optemo_module. They are initialized at different times for embedded and non-embedded.
 	** loadSavedProductsFromCookie - Loads the saved products into the saved products box
     parse_bb_json(obj)  -  recursive function to parse the returned JSON into an html list
     ** loadspecs(sku, f)  -  Does 2 AJAX requests for data relating to sku and puts the results in $('body').data() for later. Runs the callback function f if provided.
@@ -28,7 +27,7 @@
                                        -  For more on this, see the Preferences plugin in the Piwik code base.
 
    ---- JQuery Initialization Routines ----
-    ** FilterAndSearchInit()  -  Search and filter areas.
+    ** SliderInit()  -  Draw slider historgrams
  	** LiveInit()  -   All the events that can be handled appropriately with jquery live
  	row_height(length,isLabel)  -  Helper function for calculating row height, used only in the next function
  	** buildComparisonMatrix()  -  Builds the HTML used in the product direct comparison screen
@@ -90,7 +89,8 @@ optemo_module = (function (my){
     // They are in a separate function like this so that the embedder can call them at the appropriate time.
     // Note that those that are locally scoped to the optemo_module must be defined before this function call.
     var VERSION, SESSION_ID, AB_TESTING_TYPE;
-    my.initiateModuleVariables = function () {
+    if (typeof OPT_REMOTE == "undefined") OPT_REMOTE = false;
+    my.initializeVariables = function() {
         my.IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
         my.MODEL_NAME = $("#modelname").html();
         VERSION = $("#version").html();
@@ -324,8 +324,16 @@ optemo_module = (function (my){
 
     my.removeSilkScreen = function() {
         $('#silkscreen, #outsidecontainer').hide();
-        $('#outsidecontainer').unbind('click');
     };
+    
+    my.current_height = (function() {
+	var D = document;
+	return Math.max(
+	    Math.max(D.body.scrollHeight, D.documentElement.scrollHeight),
+	    Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),
+	    Math.max(D.body.clientHeight, D.documentElement.clientHeight)
+	);
+    });
 
     my.applySilkScreen = function(url,data,width,height,f) {
     	//IE Compatibility
@@ -338,23 +346,10 @@ optemo_module = (function (my){
     								'top' : (dsoctop+5)+'px',
     								'width' : (width||560)+'px',
     								'display' : 'inline' });
-        /* This is used to get the document height for doing layout properly. */
-        /*http://james.padolsey.com/javascript/get-document-height-cross-browser/*/
-        // As of jQuery 1.5, there is probably a better way of doing this, maybe just calling $('body').height() even.
-        var current_height = (function() {
-            var D = document;
-            return Math.max(
-                Math.max(D.body.scrollHeight, D.documentElement.scrollHeight),
-                Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),
-                Math.max(D.body.clientHeight, D.documentElement.clientHeight)
-            );
-        })();
+	wWidth = $(window).width();
+    	$('#silkscreen').css({'height' : my.current_height()+'px', 'display' : 'inline', 'width' : wWidth + 'px'});
 
-        // reenabled because slikscreen clicking is disabled when doing the filter "loading" panel
-    	$("#silkscreen").unbind('click').click(function() {
-    	   my.removeSilkScreen();
-	    });
-    	$('#silkscreen').css({'height' : current_height+'px', 'display' : 'inline'});
+
     	if (data) {
     		$('#info').html(data).css('height','');
     	} else {
@@ -364,14 +359,16 @@ optemo_module = (function (my){
 					if (!($.browser.msie && $.browser.version == "6.0")) {
                     	// Initialize Galleria
                     	// If you are debugging around this point, be aware that galleria likes to be initialized without debugging pauses.
-                    	$('#galleria').galleria();
-                    	// The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
-                    	// It's important to set this up as an event handler at all because there is a race condition with galleria updating the DOM otherwise.
-                    	$('.galleria-thumbnails-list').livequery(function() {
-                    	    var g = $('#galleria').find('.galleria-thumbnails-list');
-                    	    g.children().css('float', 'left');
-                    	    g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
-                    	});
+                    	$('#galleria').galleria({
+						    extend: function(options) {
+						        // wait until gallaria is loaded
+						        this.bind(Galleria.LOADFINISH, function(e) {
+						            var g = $('#galleria').find('.galleria-thumbnails-list');
+							        g.children().css('float', 'left');
+							        g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
+						        });
+						    }
+						});
 					}
     	        } else {
     	            $('#outsidecontainer').css('width','');
@@ -396,30 +393,27 @@ optemo_module = (function (my){
     	imgurlToSave = imgurlToSaveArray.join("/");
     */
         if (typeof(id) == "object") id = parseInt(id); // Fix some type errors
-    	if($(".saveditem").length == 4)
-    	{
-    		$("#too_many_saved").css("display", "block");
-    	}
-    	else
-    	{
-        	//Check if this id has already been added.
-        	if(null != document.getElementById('c'+id)){
-        		$("#already_added_msg").css("display", "block");
-        	} else {
-        	    ignored_ids = getAllShownProductIds();
-                my.trackPage('goals/save', {'filter_type' : 'save', 'product_picked' : id, 'product_ignored' : ignored_ids});
 
-        		my.renderComparisonProducts(id, sku, imgurl, name, href);
-        		addValueToCookie('optemo_SavedProductIDs', [id, sku, imgurl, name, my.MODEL_NAME]);
-        		// Hide the drag-and-drop message
-        		$('#savesome').hide();
-        	}
+        //Check if this id has already been added.
+	if(null != document.getElementById('c'+id)){
+	    $("#already_added_msg").css("display", "block");
+        } else {
+	    ignored_ids = getAllShownProductIds();
+	    my.trackPage('goals/save', {'filter_type' : 'save', 'product_picked' : id, 'product_ignored' : ignored_ids});
+	    
+	    my.renderComparisonProducts(id, sku, imgurl, name, href);
+	    addValueToCookie('optemo_SavedProductIDs', [id, sku, imgurl, name, my.MODEL_NAME]);
+	    // Hide the drag-and-drop message
+	    $('#savesome').hide();
+        }
+	// if ($(".saveditem").length > 4)
+	//     $(".saveditem").each(function() {this.style.width="65px";})
+	
+        // There should be at least 1 saved item, so...
+        // 1. show compare button
+        $("#compare_button").show();
+	$("#savesome").hide();
 
-        	// There should be at least 1 saved item, so...
-        	// 1. show compare button
-        	$("#compare_button").show();
-			$("#savesome").hide();
-    	}
     };
 
 	//(id, sku, imgurl, name, href) for drag and drop
@@ -447,7 +441,7 @@ optemo_module = (function (my){
     	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\">" +
     	"<img src=\"" +
         // This next line is used for embedding: check whether there is a remote server defined, and put the appropriate image url in.
-    	(typeof(REMOTE) != 'undefined' ? REMOTE : "") +
+    	(OPT_REMOTE ? OPT_REMOTE : "") +
     	"/images/closepopup.png\" alt=\"Close\"/></a>";
 		saveditem += "</div>";
     	var image = $('#opt_savedproducts').append(saveditem).find('.draganddropimage:last');
@@ -462,7 +456,7 @@ optemo_module = (function (my){
 	    });
 
     	$("#already_added_msg").css("display", "none");
-    	$("#too_many_saved").css("display", "none");
+
     	if ($.browser.msie) // If it's IE, clear the height element.
     		$("#opt_savedproducts").css({"height" : ''});
     };
@@ -491,7 +485,7 @@ optemo_module = (function (my){
     	my.trackPage('goals/remove', {'filter_type' : 'remove_from_comparison', 'product_picked' : id});
 
     	$("#already_added_msg").css("display", "none");
-    	$("#too_many_saved").css("display", "none");
+
 
     	removeValueFromCookie('optemo_SavedProductIDs', id);
     	if ($('#opt_savedproducts').children().length == 0)
@@ -499,19 +493,21 @@ optemo_module = (function (my){
     	    $('#savesome').show(); // This is the "save products by dropping..." message
     		$("#compare_button").hide();
 	    }
+	// if ($(".saveditem").length <= 4)
+	//     $(".saveditem").each(function(index) {this.style.width="71px";})
+	
     	return false;
     }
 
     // Submit a categorical filter, e.g. brand.
     function submitCategorical(){
-        var arguments_to_send = [];
-        var arguments = $("#filter_form").serialize().split("&");
-        for (i=0; i<arguments.length; i++)
-        {
-            if (!(arguments[i].match(/(^superfluous|=$)/)))
-                arguments_to_send.push(arguments[i]);
-        }
-    	my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
+        var selections = $("#filter_form").serializeObject();
+        $.each(selections, function(k,v){
+            if(k.match(/(^superfluous)/) || v == "") {
+                delete selections[k];
+            }
+        });
+    	my.ajaxcall("/compare/create", selections);
     	return false;
     }
 
@@ -584,9 +580,7 @@ optemo_module = (function (my){
     //       Initialization Routines        //
     //--------------------------------------//
 
-    my.FilterAndSearchInit = function() {
-        my.removeSilkScreen();
-
+    my.SliderInit = function() {
     	// Initialize Sliders
     	$('.slider').each(function() {
     	    // threshold identifies that 2 sliders are too close to each other
@@ -766,20 +760,13 @@ optemo_module = (function (my){
     				var sliderinfo = {'slider_min' : parseFloat(ui.values[0]) * rangemin / 100.0, 'slider_max' : parseFloat(rightslidervalue) * rangemax / 100.0,
                 	            'slider_name' : $(this).attr('data-label'), 'filter_type' : 'slider', 'data_min' : datasetmin, 'data_max' : datasetmax, 'ui_position' : $(this).parent().find('.label').attr('data-position')};
     				my.trackPage('goals/filter/slider', sliderinfo);
-    				var arguments_to_send = [];
-                    arguments = $("#filter_form").serialize().split("&");
-                    for (i=0; i<arguments.length; i++)
-                    {
-                        if (!(arguments[i].match(/^superfluous/)))
-                            arguments_to_send.push(arguments[i]);
-                    }
                     if (leftsliderknob.data('toofar') || rightsliderknob.data('toofar')) {
                         sliderinfo['filter_type'] = 'forced_stop';
         				my.trackPage('goals/filter/forcedstop', sliderinfo);
     				    leftsliderknob.removeData('toofar');
     				    rightsliderknob.removeData('toofar');
                     }
-                	my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
+                    submitCategorical();
     			}
     		});
     		if ($(this).slider("option", "disabled") == true) {
@@ -805,12 +792,6 @@ optemo_module = (function (my){
     };
 
     my.LiveInit = function() { // This stuff only needs to be called once per full page load.
-		// The livequery function is used so that this function fires on DOM element creation. jQuery live() doesn't support this as far as I can tell.
-        $('.galleria-thumbnails-list').livequery(function() {
-            var g = $('#galleria').find('.galleria-thumbnails-list');
-            g.children().css('float', 'left');
-            g.append($('#bestbuy_sibling_images').css({'display':'', 'float':'right'}));
-        });
 
     	//Search submit
     	//$('#submit_button').live('click', function(){
@@ -823,12 +804,12 @@ optemo_module = (function (my){
     	//		return submitsearch();
     	//});
 
-		// extended navigation action
-		$('.extendednav').live('click', function(){
-	        arguments = $(this).attr('data-adjustedfilters');
-	    	my.ajaxcall("/extended?ajax=true", arguments);
-			return false;
-		})
+		//// extended navigation action
+		//$('.extendednav').live('click', function(){
+	    //    arguments = $(this).attr('data-adjustedfilters');
+	    //	my.ajaxcall("/extended", arguments);
+		//	return false;
+		//})
 		
     	// Change sort method
     	$('.sortby').live('click', function() {
@@ -836,7 +817,7 @@ optemo_module = (function (my){
     	    var whichSortingMethodSelected = $(this).attr('data-feat');
     	    var info = {'chosen_sorting_method' : whichSortingMethodSelected, 'filter_type' : 'sorting_method'};
 			my.trackPage('goals/filter/sorting_method', info);
-            my.ajaxcall("/compare?ajax=true&sortby=" + whichSortingMethodSelected);
+            my.ajaxcall("/compare", {"sortby" : whichSortingMethodSelected});
 			return false;
 	    });
 
@@ -915,6 +896,8 @@ optemo_module = (function (my){
     	    el.attr('id', 'tab_selected');
 			$('#'+el.attr('data-tab')).show();
 			my.trackPage('goals/specs_and_reviews', {'filter_type' : 'specs_and_reviews', 'feature_name' : el.attr('data-tab')});
+		        $('#silkscreen').css({'height' : my.current_height()+'px', 'display' : 'inline'});
+
 			return false;
 		});
 
@@ -925,6 +908,8 @@ optemo_module = (function (my){
 			t.find(".lesstext").toggle();
 			t.find(".moretext").toggle();
             $('#hideable_matrix').toggle();
+	    cHeight = my.current_height();
+	    $('#silkscreen').css({'height' : cHeight+'px', 'display' : 'inline'});
             return false;
         });
 
@@ -961,16 +946,11 @@ optemo_module = (function (my){
             // To figure out the width that we need, start with $('#opt_savedproducts').length probably
             // 560 minimum (width is the first of the two parameters)
             // 2, 3, 4 ==>  513, 704, 895  (191 each)
-            switch(number_of_saved_products) {
-                case 3:
-                    width = 757;
-                    break;
-                case 4:
-                    width = 948;
-                    break;
-                default:
-                    width = 566;
-            }
+	    if (number_of_saved_products >= 2)
+		width = 191 * (number_of_saved_products - 2) + 566;
+	    else
+		width = 566;
+
     		my.applySilkScreen('/comparison/' + productIDs, null, width, 580,function(){
 				// Jquery 1.5 would finish all the requests before building the comparison matrix once
 				// With 1.4.2 we can't do that. Keep code for later.
@@ -1003,7 +983,7 @@ optemo_module = (function (my){
     	$('.simlinks').live("click", function() {
 			if (my.loading_indicator_state.disable) return false;
     		var ignored_ids = getAllShownProductIds();
-    		my.ajaxcall($(this).attr('href')+'?ajax=true');
+    		my.ajaxcall($(this).attr('href'));
     		my.trackPage('goals/browse_similar', {'filter_type' : 'browse_similar', 'product_picked' : $(this).attr('data-id') , 'product_ignored' : ignored_ids, 'picked_cluster_layer' : $(this).attr('data-layer'), 'picked_cluster_size' : $(this).attr('data-size')});
     		return false;
     	});
@@ -1120,7 +1100,8 @@ optemo_module = (function (my){
     		submitCategorical();
     	}
 
-    	$(".close, .bb_quickview_close").live('click', function(){
+    	$(".close, .bb_quickview_close, #silkscreen").live('click', function(){
+
     		my.removeSilkScreen();
     		return false;
     	});
@@ -1139,14 +1120,14 @@ optemo_module = (function (my){
 		$('.reset').live('click', function(){
 			if (my.loading_indicator_state.disable) return false;
 			my.trackPage('goals/reset', {'filter_type' : 'reset'});
-			my.ajaxcall($(this).attr('href')+'?ajax=true');
+			my.ajaxcall($(this).attr('href'));
 			return false;
 		});
 		
 		//Zoomout filters
 		$('.zoomout').live('click', function(){
 			my.trackPage('goals/zoomout', {'filter_type' : 'zoomout'});
-			my.ajaxcall($(this).attr('href')+'?ajax=true');
+			my.ajaxcall($(this).attr('href'));
 			return false;
 		});
     }
@@ -1248,7 +1229,6 @@ optemo_module = (function (my){
 	};
 	
 	function addtoggle(item){
-	    //alert('I am called');
 		var closed = item.click(function() {
 			$(this).toggleClass("closed").toggleClass("open").parent('.cell').parent().next('div.contentholder').toggle();
 			return false;
@@ -1259,10 +1239,6 @@ optemo_module = (function (my){
     function ErrorInit() {
         //Link from popup (used for error messages)
         $('#silkscreen').css({'display' : 'none', 'top' : '', 'left' : '', 'width' : ''})
-        $('#outsidecontainer').unbind('click').click(function(){
-        	my.FilterAndSearchInit();
-        	return false;
-        });
     };
 
     my.DBinit = function() {
@@ -1342,23 +1318,31 @@ optemo_module = (function (my){
     my.ajaxsend = function (hash,myurl,mydata,timeoutlength) {
         var lis = my.loading_indicator_state;
         if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 50);
-    	if (myurl != null) {
-        	$.ajax({
-        		type: (mydata==null)?"GET":"POST",
-        		data: (mydata==null)?"":mydata,
-        		url: (hash==null)?myurl:myurl+"&hist="+hash,
-        		success: my.ajaxhandler,
-        		error: my.ajaxerror
-        	});
-    	} else if (typeof(hash) != "undefined" && hash != null) {
-			/* Used by back button */
-    		$.ajax({
-    			type: "GET",
-    			url: "/compare/?ajax=true&hist="+hash,
-    			success: my.ajaxhandler,
-    			error: my.ajaxerror
-    		});
-    	}
+        if (OPT_REMOTE) {
+            //Embedded Layout
+            if (myurl != null)
+                JSONP.get(OPT_REMOTE+myurl.replace(/http:\/\/[^\/]+/,''),$.extend({'ajax': true},mydata),my.ajaxhandler);
+            else if (typeof(hash) != "undefined" && hash != null)
+                JSONP.get(OPT_REMOTE+"/compare",{'ajax': true,'hist':hash},my.ajaxhandler);
+        } else {
+    	    if (myurl != null) {
+            	$.ajax({
+            		//type: (mydata==null)?"GET":"POST",
+            		data: (mydata==null)?"":mydata,
+            		url: (hash==null)?myurl+"?ajax=true":myurl+"?ajax=true&hist="+hash,
+            		success: my.ajaxhandler,
+            		error: my.ajaxerror
+            	});
+    	    } else if (typeof(hash) != "undefined" && hash != null) {
+		    	/* Used by back button */
+    	    	$.ajax({
+    	    		type: "GET",
+    	    		url: "/compare/?ajax=true&hist="+hash,
+    	    		success: my.ajaxhandler,
+    	    		error: my.ajaxerror
+    	    	});
+    	    }
+	    }
     };
 
     /* The ajax handler takes data from the ajax call and processes it according to some (unknown) rules. */
@@ -1375,7 +1359,6 @@ optemo_module = (function (my){
     		if (parts[1] != null) {
     			$('#ajaxfilter').empty().append(parts[1]);
     		}
-    		optemo_module.FilterAndSearchInit();
     		my.flashError(parts[0].substr(5,parts[0].length));
     		return -1;
     	} else {
@@ -1383,17 +1366,14 @@ optemo_module = (function (my){
     		$('#ajaxfilter').empty().append(parts[1]);
     		$('#main').html(parts[0]);
     		$('#myfilter_search').attr('value',parts[2]);
-    		optemo_module.stop_spinner();
-    		optemo_module.FilterAndSearchInit();
-			optemo_module.DBinit();
+    		my.stop_spinner();
+    		my.SliderInit();
+			my.DBinit();
     		return 0;
     	}
     }
 
     my.ajaxerror = function() {
-    	//if (language=="fr")
-    	//	my.flashError('<div class="poptitle">&nbsp;</div><p class="error">Désolé! Une erreur s’est produite sur le serveur.</p><p>Vous pouvez <a href="" class="popuplink">réinitialiser</a> l’outil et constater si le problème persiste.</p>');
-    	//else
         var lis = my.loading_indicator_state;
         lis.disable = false;
         clearTimeout(lis.spinner_timer); // clearTimeout can run on "null" without error
@@ -1410,9 +1390,16 @@ optemo_module = (function (my){
     	numactions = parseInt($("#actioncount").html()) + 1;
     	$.history.load(numactions.toString(),myurl,mydata);
     };
-
+    
     my.quickajaxcall = function(element_name, myurl, fn) { // The purpose of this is to do an ajax load without having to go through the relatively heavy ajaxcall().
-        $(element_name).load(myurl, fn);
+        if (OPT_REMOTE)
+            //Check for absolute urls
+            JSONP.get(OPT_REMOTE+myurl.replace(/http:\/\/[^\/]+/,''), {embedding:'true'}, function(data){
+                $(element_name).html(data);
+                if (fn) fn();
+            });
+        else
+            $(element_name).load(myurl, fn);
     }
 
     /* Puts an ajax-related error message in a specific part of the screen */
@@ -1589,6 +1576,171 @@ optemo_module = (function (my){
     function eraseCookie(name) {
         createCookie(name,"",-1);
     }
+    
+    my.domready = function(){
+        if (typeof DOM_ALREADY_RUN == "undefined") {
+            DOM_ALREADY_RUN = true;
+            optemo_module.initializeVariables();
+            // This initializes the jquery history plugin. Note that the plugin was modified for use with our application javascript (details in jquery.history.js)
+            $.history.init(optemo_module.ajaxsend);
+            
+            //Serialize an form into a hash, Warning: duplicate keys are dropped
+            $.fn.serializeObject = function()
+            {
+                var o = {};
+                var a = this.serializeArray();
+                $.each(a, function() {
+                    if (o[this.name] !== undefined) {
+                        if (!o[this.name].push) {
+                            o[this.name] = [o[this.name]];
+                        }
+                        o[this.name].push(this.value || '');
+                    } else {
+                        o[this.name] = this.value || '';
+                    }
+                });
+                return o;
+            };
+            
+    	    // Only load DBinit if it will not be loaded by the upcoming ajax call
+    	    // Do LiveInit anyway, since timing is not important
+    	    optemo_module.LiveInit();
+    	    if ($('#opt_discovery').length == 0) {
+    	    	// Other init routines get run when they are needed.
+    	    	optemo_module.SliderInit(); optemo_module.DBinit();
+    	    }
+            
+    	    if (!(window.embedding_flag)) {
+    	        // If we're not embedded, initialize these here.
+    	        // Otherwise, initialize them in optemo_embedder.js once the DOM is loaded.
+    	    	optemo_module.loadSavedProductsFromCookie();
+            }
+            
+    	    //Decrypt encrypted links
+    	    //$('a.decrypt').each(function () {
+    	    //	$(this).attr('href',$(this).attr('href').replace(/[a-zA-Z]/g, function(c){
+    	    //		return String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26);
+    	    //		}));
+    	    //});
+            
+    	    //if (optemo_module.DIRECT_LAYOUT) {
+    	    //    //Tour section
+    	    //    // There is some code duplication going on here that would be good to condense.
+    	    //    // The only real differences here are where the tour goes and what is drawn attention to, 
+    	    //    // so this should be possible to condense into about half the amount of code or less
+            //	$('#popupTour1, #popupTour2, #popupTour3, #popupTour4').each(function(){
+            //		$(this).find('.deleteX').click(function(){
+            //			$(this).parent().fadeOut("slow");
+            //			optemo_module.clearStyles(["box0", "filterbar", "savebar", "groupby0"], 'tourDrawAttention');
+            //			$("#box0").removeClass('tourDrawAttention');
+            //    		trackPage('goals/tourclose');
+            //			return false;
+            //		});
+            //	});
+            //
+            //	$('#popupTour1').find('a.popupnextbutton').click(function(){
+            //		var groupbyoffset = $("#groupby0").offset();
+            //		$("#popupTour2").css({"position":"absolute", "top" : parseInt(groupbyoffset.top) - 120, "left" : parseInt(groupbyoffset.left) + 220}).fadeIn("slow");
+            //		$("#popupTour1").fadeOut("slow");
+            //		$("#groupby0").addClass('tourDrawAttention');
+            //		$("#box0").removeClass('tourDrawAttention');
+            //		trackPage('goals/tournext', {'tour_page_number' : 2});
+            //	});
+            //
+            //	$('#popupTour2').find('a.popupnextbutton').click(function(){
+            //		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
+            //		$("#popupTour3").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
+            //		$("#popupTour2").fadeOut("slow");
+            //		$("#filterbar").addClass('tourDrawAttention');
+            //		$("#groupby0").removeClass('tourDrawAttention');
+            //		trackPage('goals/tournext', {'tour_page_number' : 3});
+            //	});
+            //
+            //	$('#popupTour3').find('a.popupnextbutton').click(function(){
+            //		var comparisonposition = $("#savebar").offset();
+            //		$("#popupTour4").css({"position":"absolute", "top" : parseInt(comparisonposition.top) - 260, "left" : parseInt(comparisonposition.left) + 70}).fadeIn("slow");
+            //		$("#popupTour3").fadeOut("slow");
+            //		$("#savebar").addClass('tourDrawAttention');
+            //		$("#filterbar").removeClass('tourDrawAttention');
+            //		trackPage('goals/tournext', {'tour_page_number' : 4});
+            //	});
+            //
+            //	$('#popupTour4').find('a.popupnextbutton').click(function(){
+            //		$("#popupTour4").fadeOut("slow");
+            //		$("#savebar").removeClass('tourDrawAttention');
+            //		trackPage('goals/tourclose');
+            //	});
+            //} else {
+            //	//Tour section
+            //	$('#popupTour1, #popupTour2, #popupTour3').each(function(){
+            //		$(this).find('.deleteX').click(function(){
+            //			$(this).parent().fadeOut("slow");
+            //			optemo_module.clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
+            //			$("#sim0").removeClass('tourDrawAttention');
+            //    		trackPage('goals/tourclose');
+            //			return false;
+            //		});
+            //	});
+            //
+            //	$('#popupTour1').find('a.popupnextbutton').click(function(){
+            //		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
+            //		$("#popupTour2").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
+            //		$("#popupTour1").fadeOut("slow");
+            //		$("#filterbar").addClass('tourDrawAttention');
+            //		$("#sim0").removeClass('tourDrawAttention');
+            //		$("#sim0").parent().removeClass('tourDrawAttention');
+            //		trackPage('goals/tournext', {'tour_page_number' : 2});
+            //	});
+            //
+            //	$('#popupTour2').find('a.popupnextbutton').click(function(){
+            //		var comparisonposition = $("#savebar").offset();
+            //		$("#popupTour3").css({"position":"absolute", "top" : parseInt(comparisonposition.top) - 260, "left" : parseInt(comparisonposition.left) + 70}).fadeIn("slow");
+            //		$("#popupTour2").fadeOut("slow");
+            //		$("#savebar").addClass('tourDrawAttention');
+            //		$("#filterbar").removeClass('tourDrawAttention');
+            //		trackPage('goals/tournext', {'tour_page_number' : 3});
+            //	});
+            //
+            //	$('#popupTour3').find('a.popupnextbutton').click(function(){
+            //		$("#popupTour3").fadeOut("slow");
+            //		$("#savebar").removeClass('tourDrawAttention');
+            //		trackPage('goals/tourclose');
+            //	});
+    	    //}
+            
+    /*	    // On escape press. This is used for exiting the tour but would interfere with other uses of escape (canceling the autocomplete box for example)
+    	    $(document).keydown(function(e){
+    	    	if(e.keyCode==27){
+    	    		$(".popupTour").fadeOut("slow");
+    	    		optemo_module.clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
+    	    		if ($.browser.msie && $.browser.version == "7.0") $("#sim0").parent().removeClass('tourDrawAttention');
+            		trackPage('goals/tourclose');
+    	    	}
+    	    });
+    */      
+    	    //launchtour = (function () {
+    	    //    if (optemo_module.DIRECT_LAYOUT) {
+    	    //        // Right now the position of the tour pop-up is hard-coded based on a particular element name.
+    	    //	    var browseposition = $("#box0").offset();
+            //		$("#box0").addClass('tourDrawAttention');
+            //		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
+            //		trackPage('goals/tournext', {'tour_page_number' : 1});
+    	    //	} else {
+            //		var browseposition = $("#sim0").offset();
+            //		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
+            //		$("#sim0").addClass('tourDrawAttention');
+            //		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
+            //		trackPage('goals/tournext', {'tour_page_number' : 1});
+            //	}
+    	    //	return false;
+    	    //});
+    	    //if ($('#tourautostart').length) { launchtour; } //Automatically launch tour if appropriate
+    	    //$("#tourButton a").click(launchtour); //Launch tour when this is clicked
+            
+    	    // Load the classic theme for galleria, the jquery image slideshow plugin we're using (jquery.galleria.js)
+            //    Galleria.loadTheme('/javascripts/galleria.classic.js');
+        }
+    }
 
     return my;
 })(optemo_module || {});
@@ -1599,189 +1751,9 @@ optemo_module = (function (my){
 //--------------------------------------//
 
 $(function(){
-    // This initializes the jquery history plugin. Note that the plugin was modified for use with our application javascript (details in jquery.history.js)
-    $.history.init(optemo_module.ajaxsend);
-
-	// Only load DBinit if it will not be loaded by the upcoming ajax call
-	// Do LiveInit anyway, since timing is not important
-	optemo_module.LiveInit();
-	if ($('#opt_discovery').length == 0) {
-		// Other init routines get run when they are needed.
-		optemo_module.FilterAndSearchInit(); optemo_module.DBinit();
-	}
-	
-	if (!(window.embedding_flag)) {
-	    // If we're not embedded, initialize these here.
-	    // Otherwise, initialize them in optemo_embedder.js once the DOM is loaded.
-	    optemo_module.initiateModuleVariables();
-		optemo_module.loadSavedProductsFromCookie();
-    }
-
-	//Decrypt encrypted links
-	//$('a.decrypt').each(function () {
-	//	$(this).attr('href',$(this).attr('href').replace(/[a-zA-Z]/g, function(c){
-	//		return String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26);
-	//		}));
-	//});
-
-	//if (optemo_module.DIRECT_LAYOUT) {
-	//    //Tour section
-	//    // There is some code duplication going on here that would be good to condense.
-	//    // The only real differences here are where the tour goes and what is drawn attention to, 
-	//    // so this should be possible to condense into about half the amount of code or less
-    //	$('#popupTour1, #popupTour2, #popupTour3, #popupTour4').each(function(){
-    //		$(this).find('.deleteX').click(function(){
-    //			$(this).parent().fadeOut("slow");
-    //			optemo_module.clearStyles(["box0", "filterbar", "savebar", "groupby0"], 'tourDrawAttention');
-    //			$("#box0").removeClass('tourDrawAttention');
-    //    		trackPage('goals/tourclose');
-    //			return false;
-    //		});
-    //	});
-    //
-    //	$('#popupTour1').find('a.popupnextbutton').click(function(){
-    //		var groupbyoffset = $("#groupby0").offset();
-    //		$("#popupTour2").css({"position":"absolute", "top" : parseInt(groupbyoffset.top) - 120, "left" : parseInt(groupbyoffset.left) + 220}).fadeIn("slow");
-    //		$("#popupTour1").fadeOut("slow");
-    //		$("#groupby0").addClass('tourDrawAttention');
-    //		$("#box0").removeClass('tourDrawAttention');
-    //		trackPage('goals/tournext', {'tour_page_number' : 2});
-    //	});
-    //
-    //	$('#popupTour2').find('a.popupnextbutton').click(function(){
-    //		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
-    //		$("#popupTour3").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
-    //		$("#popupTour2").fadeOut("slow");
-    //		$("#filterbar").addClass('tourDrawAttention');
-    //		$("#groupby0").removeClass('tourDrawAttention');
-    //		trackPage('goals/tournext', {'tour_page_number' : 3});
-    //	});
-    //
-    //	$('#popupTour3').find('a.popupnextbutton').click(function(){
-    //		var comparisonposition = $("#savebar").offset();
-    //		$("#popupTour4").css({"position":"absolute", "top" : parseInt(comparisonposition.top) - 260, "left" : parseInt(comparisonposition.left) + 70}).fadeIn("slow");
-    //		$("#popupTour3").fadeOut("slow");
-    //		$("#savebar").addClass('tourDrawAttention');
-    //		$("#filterbar").removeClass('tourDrawAttention');
-    //		trackPage('goals/tournext', {'tour_page_number' : 4});
-    //	});
-    //
-    //	$('#popupTour4').find('a.popupnextbutton').click(function(){
-    //		$("#popupTour4").fadeOut("slow");
-    //		$("#savebar").removeClass('tourDrawAttention');
-    //		trackPage('goals/tourclose');
-    //	});
-    //} else {
-    //	//Tour section
-    //	$('#popupTour1, #popupTour2, #popupTour3').each(function(){
-    //		$(this).find('.deleteX').click(function(){
-    //			$(this).parent().fadeOut("slow");
-    //			optemo_module.clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
-    //			$("#sim0").removeClass('tourDrawAttention');
-    //    		trackPage('goals/tourclose');
-    //			return false;
-    //		});
-    //	});
-    //
-    //	$('#popupTour1').find('a.popupnextbutton').click(function(){
-    //		var middlefeatureposition = $("#filterbar").find(".feature:eq(3)").offset();
-    //		$("#popupTour2").css({"position":"absolute", "top" : parseInt(middlefeatureposition.top) - 120, "left" : parseInt(middlefeatureposition.left) + 220}).fadeIn("slow");
-    //		$("#popupTour1").fadeOut("slow");
-    //		$("#filterbar").addClass('tourDrawAttention');
-    //		$("#sim0").removeClass('tourDrawAttention');
-    //		$("#sim0").parent().removeClass('tourDrawAttention');
-    //		trackPage('goals/tournext', {'tour_page_number' : 2});
-    //	});
-    //
-    //	$('#popupTour2').find('a.popupnextbutton').click(function(){
-    //		var comparisonposition = $("#savebar").offset();
-    //		$("#popupTour3").css({"position":"absolute", "top" : parseInt(comparisonposition.top) - 260, "left" : parseInt(comparisonposition.left) + 70}).fadeIn("slow");
-    //		$("#popupTour2").fadeOut("slow");
-    //		$("#savebar").addClass('tourDrawAttention');
-    //		$("#filterbar").removeClass('tourDrawAttention');
-    //		trackPage('goals/tournext', {'tour_page_number' : 3});
-    //	});
-    //
-    //	$('#popupTour3').find('a.popupnextbutton').click(function(){
-    //		$("#popupTour3").fadeOut("slow");
-    //		$("#savebar").removeClass('tourDrawAttention');
-    //		trackPage('goals/tourclose');
-    //	});
-	//}
-
-/*	// On escape press. This is used for exiting the tour but would interfere with other uses of escape (canceling the autocomplete box for example)
-	$(document).keydown(function(e){
-		if(e.keyCode==27){
-			$(".popupTour").fadeOut("slow");
-			optemo_module.clearStyles(["sim0", "filterbar", "savebar"], 'tourDrawAttention');
-			if ($.browser.msie && $.browser.version == "7.0") $("#sim0").parent().removeClass('tourDrawAttention');
-    		trackPage('goals/tourclose');
-		}
-	});
-*/
-	//launchtour = (function () {
-	//    if (optemo_module.DIRECT_LAYOUT) {
-	//        // Right now the position of the tour pop-up is hard-coded based on a particular element name.
-	//	    var browseposition = $("#box0").offset();
-    //		$("#box0").addClass('tourDrawAttention');
-    //		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
-    //		trackPage('goals/tournext', {'tour_page_number' : 1});
-	//	} else {
-    //		var browseposition = $("#sim0").offset();
-    //		// Position relative to sim0 every time in case of interface changes (it is the first browse similar link)
-    //		$("#sim0").addClass('tourDrawAttention');
-    //		$("#popupTour1").css({"position":"absolute", "top" : parseInt(browseposition.top) - 120, "left" : parseInt(browseposition.left) + 165}).fadeIn("slow");
-    //		trackPage('goals/tournext', {'tour_page_number' : 1});
-    //	}
-	//	return false;
-	//});
-	//if ($('#tourautostart').length) { launchtour; } //Automatically launch tour if appropriate
-	//$("#tourButton a").click(launchtour); //Launch tour when this is clicked
-
-	// Load the classic theme for galleria, the jquery image slideshow plugin we're using (jquery.galleria.js)
-//    Galleria.loadTheme('/javascripts/galleria.classic.js');
+    if ($.trim($("#optemo_embedder").text()) != "")
+        optemo_module.domready();
 });
-
-//--------------------------------------//
-//       Embedding-specific code        //
-//--------------------------------------//
-
-if (window.embedding_flag) {
-    // On embed, we need to redefine the ajaxcall / ajaxsend duo so that they point at the remote server as appropriate.
-    // The data will come back through the same ajaxhandler function as before, getting pushed there by the
-    // remote socket when it's ready.
-    optemo_module.ajaxcall = function (myurl, mydata) {
-	    if (myurl) myurl = myurl.replace(/http:\/\/[^\/]+/,'');
-        optemo_module.disableInterfaceElements();
-    	numactions = parseInt($("#actioncount").html()) + 1;
-    	$.history.load(numactions.toString(),myurl,mydata);
-	};
-
-	optemo_module.ajaxsend = function(hash,myurl,mydata,timeoutlength) {
-	    if (myurl) myurl = myurl.replace(/http:\/\/[^\/]+/,'');
-        optemo_module.disableInterfaceElements();
-        var lis = optemo_module.loading_indicator_state;
-        lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 1000);
-        lis.socket_error_timer = setTimeout("optemo_module.clearSocketError()", 15000);
-        // Hopefully we can just send the arguments as-is. It' would certainly be wise to sanity-check them though.
-        remote.iframecall(hash, myurl, (mydata == "" ? null : mydata)); // emptiness check put in for AJS vs. jquery differences
-    };
-    $.history.init(optemo_module.ajaxsend); // re-init with the new ajaxsend module here, after it's been redefined
-
-    optemo_module.clearSocketError = function() {
-        // if ajaxhandler never gets called, here we are.
-		optemo_module.FilterAndSearchInit();
-		if (!(typeof(optemo_french) == "undefined") && optemo_french)
-			optemo_module.flashError('<div class="bb_poptitle">Erreur<a class="bb_quickview_close" href="close" style="float:right;">Fermer fenêtre</a></div><p class="error">Désolé! Une erreur est survenue sur le serveur.</p><p>Vous pouvez réinitialiser l\'outil et voir si le problème est résolu.</p>');
-		else
-    		optemo_module.flashError('<div class="bb_poptitle">Error<a class="bb_quickview_close" href="close" style="float:right;">Close Window</a></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can reload the page and see if the problem is resolved.</p>');
-    }
-
-    optemo_module.quickajaxcall = function (element_name, myurl, fn) { // for the show page
-	    if (myurl) myurl = myurl.replace(/http:\/\/[^\/]+/,'');        
-        remote.quickiframecall(element_name, myurl, fn);
-    }
-}
 
 //--------------------------------------//
 //             Page Loader              //
@@ -1791,9 +1763,9 @@ if (window.embedding_flag) {
 // This history discovery works for embedded also, because by now the ajaxsend function has been redefined, and the history init has been called.
 if ($('#opt_discovery').length) {
     if (location.hash) {
-    	optemo_module.ajaxsend(location.hash.replace(/^#/, ''),'/?ajax=true',null);
+    	optemo_module.ajaxsend(location.hash.replace(/^#/, ''),'/');
 	} else {
-		optemo_module.ajaxsend(null,'/?ajax=true',null);
+		optemo_module.ajaxsend(null,'/');
 	}
 }
 
