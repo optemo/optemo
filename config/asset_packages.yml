@@ -8,7 +8,7 @@ javascripts:
   - jquery_galleria
   - galleria.classic
   - jquery.livequery
-  - application
+  - application_old
   
 - mobile:
     - helpers_shared
