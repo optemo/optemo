@@ -3,31 +3,41 @@ javascripts:
 - base: 
   - raphael
   - helpers_shared
-#  - autocomplete_terms
   - jquery-ui-1.8.6.custom.min
   - jquery.history
   - jquery_galleria
   - galleria.classic
   - jquery.livequery
-#  - css_browser_selector
-  - application
+  - application_old
   
 - mobile:
     - helpers_shared
-    - jquery-ui-1.8.6.custom.min
+    - jquery-ui-1.8.13.custom.min
     - application_mobile
-    
+- bb_loader: 
+  - raphael
+  - helpers_shared
+  - jquery-ui-1.8.13.custom.min
+  - jquery.history
+  - jquery_galleria
+  - galleria.classic
+  - application
+  - bbfixes
+- loader:
+    - loader
 stylesheets: 
 - assist: 
     - shared
     - assist_and_direct
     - assist
-    - jquery-ui-1.8.6.custom
 - direct: 
     - shared
     - assist_and_direct
     - direct
-    - jquery-ui-1.8.6.custom
 - mobileview: 
     - shared
     - mobile
+- bb_embed:
+    - shared
+    - assist_and_direct
+    - assist
