@@ -3,10 +3,11 @@ javascripts:
 - base: 
   - raphael
   - helpers_shared
-  - jquery-ui-1.8.13.custom.min
+  - jquery-ui-1.8.6.custom.min
   - jquery.history
   - jquery_galleria
   - galleria.classic
+  - jquery.livequery
   - application
   
 - mobile:

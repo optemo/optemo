@@ -56,7 +56,7 @@ Site::Application.routes.draw do
   # Note: This route will make all actions in every controller accessible via GET requests.
   # match ':controller(/:action(/:id(.:format)))'
 
-  resources :compare, :only => :index, :as => "searches"
+  resources :compare, :only => [:index, :create], :as => "searches"
   match "compare/create" => "compare#create"
   #resources :surveys, :only => :new
   #match "surveys/create" => "surveys#create", :as => "surveys" #This should be cleaned up to a POST instead of a GET in JS

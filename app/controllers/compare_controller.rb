@@ -134,6 +134,7 @@ class CompareController < ApplicationController
   
   def classVariables(search)
     @s = Session
+    @jsonp_version = true if request.subdomains.first == "embed"
     @s.search = search
     if @s.directLayout
       @products = search.products.paginate :page => search.page, :per_page => 10
