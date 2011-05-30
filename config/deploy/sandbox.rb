@@ -1,7 +1,7 @@
-set :application, "staging"
+set :application, "sandbox"
 set :repository,  "git@jaguar:site.git"
 set :domain, "jaguar"
-set :branch, "staging"
+set :branch, "master"
 set :user, "#{ `whoami`.chomp }"
 
 # If you aren't deploying to /u/apps/#{application} on the target
@@ -79,13 +79,8 @@ task :redopermissions do
   run "find #{current_path} #{current_path}/../../shared -user `whoami` ! -perm /g+w -execdir chmod g+w {} +"
 end
 
-task :warmupserver do
-  run "curl -A 'Java' localhost > /dev/null"
-end
-
 # redopermissions is last, so that if it fails due to the searchd pid, no other tasks get blocked
 after "deploy:symlink", "build_assets"
 after :build_assets, "serversetup"
 after :serversetup, "restartmemcached"
 after :restartmemcached, "redopermissions"
-after "deploy:restart", "warmupserver"

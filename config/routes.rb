@@ -57,8 +57,9 @@ Site::Application.routes.draw do
   # match ':controller(/:action(/:id(.:format)))'
 
   resources :compare, :only => [:index, :create], :as => "searches"
-  resources :surveys, :only => :new
-  match "surveys/create" => "surveys#create", :as => "surveys" #This should be cleaned up to a POST instead of a GET in JS
+  match "compare/create" => "compare#create"
+  #resources :surveys, :only => :new
+  #match "surveys/create" => "surveys#create", :as => "surveys" #This should be cleaned up to a POST instead of a GET in JS
   match "comparison/:id" => "direct_comparison#index" #This should be cleaned up to a POST instead of a GET in JS
   match "product/:name/:id" => "compare#show", :as => "product"
   match "similar/:id" => "compare#sim", :id => /(\d|-)+/, :as => "cluster"

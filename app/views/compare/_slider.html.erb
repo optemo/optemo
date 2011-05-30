@@ -10,9 +10,9 @@
 	</div>
 	<% current = isnil(Session.search.userdataconts.select{|m|m.name == feat}.first){Userdatacont.new("min" => overall_min, "max" => overall_max)} %>  
 	
-	<div class="hist" data-data="<%= distribution_data.second.join(',') %>" style="top:24px"></div>
-	<%= hidden_field_tag "myfilter[#{feat}_min]", current.name.nil? ? nil : number_with_delimiter(current.min),{:class => 'min'}%>
-	<%= hidden_field_tag "myfilter[#{feat}_max]", current.name.nil? ? nil : number_with_delimiter(current.max),{:class => 'max'}%>
+	<div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
+	<%= hidden_field_tag "myfilter[#{feat}_min]", current.name.nil? ? nil : current.min,{:class => 'min'}%>
+	<%= hidden_field_tag "myfilter[#{feat}_max]", current.name.nil? ? nil : current.max,{:class => 'max'}%>
 	<div class='slider'
 	data-label= '<%= feat %>'
 	data-min='<%= format_acceptable_increments(overall_min, "down") %>'
