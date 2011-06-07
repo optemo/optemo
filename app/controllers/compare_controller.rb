@@ -137,7 +137,7 @@ class CompareController < ApplicationController
     @jsonp_version = true if request.subdomains.first == "embed"
     @s.search = search
     if @s.directLayout
-      @products = search.products.paginate :page => search.page, :per_page => 10
+      @products = search.products.paginate :page => search.page, :per_page => 9
     end
   end
   

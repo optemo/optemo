@@ -206,26 +206,18 @@ module CompareHelper
 	    else # Grid View (Optemo Assist)
 	      range = true
 	      range = !(@s.search.cluster.min(@s.search.sortby)== @s.search.cluster.max(@s.search.sortby)) if @s.continuous["cluster"].include?(@s.search.sortby)    
-    		for i in 0...[@s.search.cluster.numclusters, @s.numGroups].min
+    		for i in 0...@s.search.paginated_products.size
     		  if i % (Float(@s.numGroups)/3).ceil == 0
     			  res << '<div class="rowdiv">'
     			  open = true
     		  end
     		  #Navbox partial to draw boxes
-    		  res << render(:partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative, :range =>range})
+    		  res << render(:partial => 'navbox', :locals => {:i => i, :product => @s.search.paginated_products[i]})
           if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
             res << '<div style="clear: both"></div></div>'
             open = false
           end
     		end
-    		if (Session.extendednav && @s.search.cluster.size < 12 && @s.search.cluster.numclusters<8)
-    		  extended_ids = Kmeans.extendedCluster(10,@s.search.products)
-          if extended_ids.size > 1
-              @s.search.extend_it(Cluster.new(extended_ids,nil))
-    		      res << render(:partial => 'extendedbox', :locals => {:i => 9, :extended => @s.search.extended, :group => @s.search.extended.size > 1, :product => @s.search.extended.representative, :filter_hash => adjustingfilters_hash, :adjustedfilters => adjustingfilters})
-  		        @s.search.extend_it(nil)
-  		    end
-  		  end 
   		end
   	end
   	res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
