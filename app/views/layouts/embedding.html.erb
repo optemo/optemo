@@ -17,6 +17,7 @@
 	<% if s %>
 	<span id="dragDropEnabled"><%= s.dragAndDropEnabled %></span>
 	<span id="seshid" session-id="<%= s.id unless s.nil? %>"><%= s.id %></span>
+	<span id="piwikid"><%= s.piwikSiteId %></span>
 	<span id="modelname"><%= s.product_type %></span>
 	<span id="directLayout"><%= s.directLayout %></span>
 	<span id="ab_testing_type"><%= s.ab_testing_type %></span>	
@@ -26,7 +27,7 @@
 <% unless @jsonp_version %>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <!-- The jquery-ui script is being included locally due to the custom jquery-ui being about 45k instead of 200kb from Google's CDN -->
-<%= raw javascript_include_merged :base %>
+<%= raw javascript_include_merged :bb_loader %>
 <% end %>
 
 <%= render :partial => "piwik_stub", :locals => {:s => s} %>

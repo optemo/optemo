@@ -97,6 +97,7 @@ optemo_module = (function (my){
         my.DIRECT_LAYOUT = ($('#directLayout').html() == "true");
         SESSION_ID = parseInt($('#seshid').html());
         AB_TESTING_TYPE = parseInt($('#ab_testing_type').html());
+        my.PIWIK_ID = $('#piwikid').html();
     }
 
 	my.loadSavedProductsFromCookie = function() {
@@ -1739,6 +1740,39 @@ optemo_module = (function (my){
             
     	    // Load the classic theme for galleria, the jquery image slideshow plugin we're using (jquery.galleria.js)
             //    Galleria.loadTheme('/javascripts/galleria.classic.js');
+            /* Piwik Code */
+            var pkBaseURL = (("https:" == document.location.protocol) ? "https://analytics.optemo.com/" : "http://analytics.optemo.com/");
+            var piwik_script_tag = document.createElement("script");
+            piwik_script_tag.setAttribute("src", pkBaseURL + 'piwik.js');
+            piwik_script_tag.setAttribute("type", "text/javascript");
+            document.getElementsByTagName("head")[0].appendChild(piwik_script_tag);
+
+            if (piwik_script_tag.readyState){  //IE
+                piwik_script_tag.onreadystatechange = function(){
+                    if (piwik_script_tag.readyState == "loaded" ||
+                            piwik_script_tag.readyState == "complete"){
+                        piwik_script_tag.onreadystatechange = null;
+                        piwik_ready(); // Using square bracket notation because the jquery object won't be initialized until later
+                    }
+                };
+            } else {  //Others
+                piwik_script_tag.onload = function(){
+                    piwik_ready();
+                };
+            }
+
+            function piwik_ready() {
+            //    try {
+                    window.piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", my.PIWIK_ID); // idsite is here
+            		piwikTracker.setDocumentTitle('Index');
+            		piwikTracker.setCustomData({'optemo_session': SESSION_ID, 'filter_type' : "index"});
+            		piwikTracker.trackPageView();
+            		// I'm not sure what emptying the title and data do, but it seems like a standard pattern.
+            		piwikTracker.setDocumentTitle('');
+            		piwikTracker.setCustomData({});
+                    piwikTracker.enableLinkTracking();
+            //    } catch( err ) {}
+            }
         }
     }
 
