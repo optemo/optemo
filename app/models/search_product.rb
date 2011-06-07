@@ -48,7 +48,8 @@ class SearchProduct < ActiveRecord::Base
         end
         result
       end
-      ComparableSet.from_storage(cached)
+      #ComparableSet.from_storage(cached)
+      cached.map{|c|ProductAndSpec.from_storage(c)}
     end
     
     def cat_counts(feat,expanded,includezeros = false,s = Session.search)

@@ -155,7 +155,7 @@ class Search < ActiveRecord::Base
   end
   
   def paginated_products
-    @paginated_products ||= products.to_a.paginate :page => page, :per_page => 9
+    @paginated_products ||= products.map{|p|Product.cached(p.id)}.paginate :page => page, :per_page => 9
   end
   
   def isextended?
