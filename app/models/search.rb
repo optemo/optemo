@@ -154,6 +154,10 @@ class Search < ActiveRecord::Base
     @cluster ||= Cluster.new(sim_products, nil)
   end
   
+  def paginated_products
+    @paginated_products ||= products.to_a.paginate :page => page, :per_page => 9
+  end
+  
   def isextended?
     !@extended.nil?
   end  
