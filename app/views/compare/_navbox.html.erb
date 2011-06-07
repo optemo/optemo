@@ -23,40 +23,4 @@
 			<% end %>
 		</div>
 	</div>
-
-	
-	<% if group %>
-	<div class='bottombar'>
-      <%if Session.continuous["cluster"].include?(@s.search.sortby)%>
-		<%if range%>	
-            <%if cluster.min(@s.search.sortby)==cluster.max(@s.search.sortby)%>
-                <%link_text =  t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.min(@s.search.sortby).to_s + t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "") + " (" + cluster.size.to_s + ")" %>
-            <%else%>
-                <%link_text=t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.min(@s.search.sortby).to_s + t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "")+"-"+ t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.max(@s.search.sortby).to_s+t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "") +" ("+cluster.size.to_s+")"%>   
-            <%end%>
- 	     <%else%>
-			<%link_text =  t("#{@s.product_type}.specs.#{@s.search.sortby}.preunit", :default => "") + cluster.min(@s.search.sortby).to_s + t("#{@s.product_type}.specs.#{@s.search.sortby}.unit", :default => "") + " "+ t("products.compare.likethis") +" (" + cluster.size.to_s + ")" %>
-       <%end%>
-     <%else%>   
-		<% link_text = t("products.compare.similar",:count => cluster.size)%>
-     <%end%>	
-      <div style="padding:3px 0 3px 16px;">
-      <%= link_to cluster_path(cluster.id), {:id => "sim#{i}", :class => 'simlinks awesome_reset global_btn', :"data-id" => "#{product.id}", :"data-size" => cluster.size, :"title" =>  t('products.compare.seegroup'), :rel => "nofollow", :style => "font-size: 0.9em;"} do %>
-		<span><%= link_text %></span>
-	  <% end %>
-      </div>
-	  <%# Distribution ranges %>
-	  <% unless true || Session.continuous["cluster"].include?(@s.search.sortby)%>	
-		<%["opticalzoom", "maxresolution"].each_with_index do |f,i|%>
-			<% min = overallmin(f)
-			   max = overallmax(f)%>
-			<div class="clustertext" style="float:<%= i%2==0 ? "left" : "right"%>;">
-			<div class="clusterspecs"><div class="leftbox" style="width:<%= ((cluster.min(f)-min)/(max-min))*75 %>px"></div> <div class="rightbox" style="width:<%= (0.98-((cluster.max(f)-min)/(max-min)))*75 %>px"></div><div class="referencebar"> </div></div>
-			<%=t "#{Session.product_type}.specs.#{f}.name" %>
-			</div>
-		<%end%>
-		<div style="clear:both;"> </div>
-	  <%end%>
-	</div>
-	<%end%>
 </div>
