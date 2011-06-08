@@ -1250,6 +1250,18 @@ optemo_module = (function (my){
 			t.append(numberofstars(t.attr('data-stars')));
 		});
 		
+		//Infinite Scroll
+		$('#main').infinitescroll({
+            navSelector  : "div.pagination",            
+                           // selector for the paged navigation (it will be hidden)
+            nextSelector : "div.pagination a.next_page",    
+                           // selector for the NEXT link (to page 2)
+            itemSelector : "#main div.navbox",          
+                           // selector for all items you'll retrieve
+            loadingText : "Loading more products...",
+            donetext : "<em>These are all the products with this selection <a href='#'>here</a></em>"
+        });
+		
 	    //var model = "";
     	////Autocomplete for searchterms
     	//if (typeof(my.MODEL_NAME) != undefined && my.MODEL_NAME != null) // This check is needed for embedding; different checks for different browsers
@@ -1330,6 +1342,10 @@ optemo_module = (function (my){
     		$('#ajaxfilter').empty().append(parts[1]);
     		$('#main').html(parts[0]);
     		$('#myfilter_search').attr('value',parts[2]);
+    		//Reset Infinite Scroll Counter
+    		var ifc = $('#main').data('infinitescroll');
+    		if (ifc)
+    		    ifc.restart();
     		my.stop_spinner();
     		my.SliderInit();
 			my.DBinit();
