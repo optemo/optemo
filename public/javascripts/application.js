@@ -963,21 +963,21 @@ optemo_module = (function (my){
 
     	//Pagination links
         // This convoluted line takes the second-last element in the list: "<< prev 1 2 3 4 next >>" and takes its numerical page value.
-    	//var total_pages = parseInt($('.pagination').children().last().prev().html());
-    	//$('.pagination a').live("click", function(){
-    	//	var url = $(this).attr('href')
-    	//	if (url.match(/\?/))
-    	//		url +='&ajax=true'
-    	//	else
-    	//		url +='?ajax=true'
-    	//	if ($(this).hasClass('next_page'))
-        //		my.trackPage('goals/next', {'filter_type' : 'next' , 'page_number' : parseInt($('.pagination .current').html()), 'total_number_of_pages' : total_pages});
-    	//	else
-    	//	    my.trackPage('goals/next', {'filter_type' : 'next_number' , 'page_number' : parseInt($(this).html()), 'total_number_of_pages' : total_pages});
-		//    my.loading_indicator_state.main = true;
-    	//	my.ajaxcall(url);
-    	//	return false;
-    	//});
+    	var total_pages = parseInt($('.pagination').children().last().prev().html());
+    	$('.pagination a').live("click", function(){
+    	    if (my.loading_indicator_state.disable) return false;
+    		var url = $(this).attr('href')
+    		//if (url.match(/\?/))
+    		//	url +='&ajax=true'
+    		//else
+    		//	url +='?ajax=true'
+    		if ($(this).hasClass('next_page'))
+        		my.trackPage('goals/next', {'filter_type' : 'next' , 'page_number' : parseInt($('.pagination .current').html()), 'total_number_of_pages' : total_pages});
+    		else
+    		    my.trackPage('goals/next', {'filter_type' : 'next_number' , 'page_number' : parseInt($(this).html()), 'total_number_of_pages' : total_pages});
+    		my.ajaxcall(url);
+    		return false;
+    	});
 
         // Choose a grouping via group button rather than drop-down (effect is the same as the select boxes)
     	//$('.title').live('click', function(){
