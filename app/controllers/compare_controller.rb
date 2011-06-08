@@ -143,7 +143,11 @@ class CompareController < ApplicationController
   
   def correct_render
     if params[:ajax]
-      render 'ajax', :layout => false
+      if @s.search.page
+        render 'page', :layout => false
+      else
+        render 'ajax', :layout => false
+      end
     else
       if Session.mobileView
         classVariables(Search.create({"page" => params[:page], "action_type" => "initial"}))

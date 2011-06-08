@@ -23,6 +23,7 @@ javascripts:
   - galleria.classic
   - application
   - bbfixes
+  - jquery.infinitescroll
 - loader:
     - loader
 stylesheets: 
