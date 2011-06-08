@@ -24,7 +24,7 @@ class SearchProduct < ActiveRecord::Base
           res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = 'price'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value ASC")
         end
       else
-        res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[]]).conts_keywords.cats(mycats).bins(mybins).group("search_products.product_id")
+        res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = 'utility'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value DESC")
       end
       q = res.to_sql
       cached = CachingMemcached.cache_lookup("Products-#{q.hash}") do
