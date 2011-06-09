@@ -226,6 +226,7 @@ module CompareHelper
   	  params.delete(:hist) #Clear hist so it doesn't show up in url
   	  params.delete(:ajax)
   	  pagination_line = will_paginate(@s.search.paginated_products)
+  	  res << '<span id="actioncount" style="display:none">' + "#{@s.searches.size}</span>"
 	  end
     res << "#{pagination_line}" #Handles nils as blank
   	res

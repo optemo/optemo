@@ -637,6 +637,8 @@ optemo_module = (function (my){
     				force_int = $(this).attr('force-int');
     				if(force_int == 'false')
     				{
+    				    curmin = parseFloat($(this).attr('data-startmin'));
+                        curmax = parseFloat($(this).attr('data-startmax'));
     					rangemin = parseFloat($(this).attr('data-min'));
     					rangemax = parseFloat($(this).attr('data-max'));
     					datasetmin = parseFloat($(this).attr('current-data-min'));
@@ -644,6 +646,8 @@ optemo_module = (function (my){
     				}
     				else
     				{
+    				    curmin = parseInt($(this).attr('data-startmin'));
+                        curmax = parseInt($(this).attr('data-startmax'));
     					rangemin = parseInt($(this).attr('data-min'));
     					rangemax = parseInt($(this).attr('data-max'));
     					datasetmin = parseInt($(this).attr('current-data-min'));
@@ -677,15 +681,47 @@ optemo_module = (function (my){
     				realvalue = (parseFloat((ui.values[sliderno]/100))*(rangemax-rangemin))+rangemin;
     				// Prevent the left slider knob from going too far to the right (past all the current data)
     				if ((realvalue > datasetmax && sliderno == 0) || ui.values[0] == 100) {
+    				    realvalue = datasetmax;
     				    leftsliderknob.css('left', ((datasetmax - rangemin) * 99.9 / (rangemax - rangemin)) + "%");
     				    // Store the fact that it went too far using data()
     				    leftsliderknob.data('toofar', true);
     			    }
     				// Prevent the right slider knob from going too far to the left (past all the current data)
     			    if ((realvalue < datasetmin && sliderno == 1) || ui.values[1] == 0) {
+    			        realvalue = datasetmin;
     				    rightsliderknob.css('left', ((datasetmin - rangemin) * 100.1 / (rangemax - rangemin)) + "%"); // was 100.1
     				    rightsliderknob.data('toofar', true);
                     }
+                    if (increment < 1) {
+                        // floating point division has problems; avoid it
+                        tempinc = parseInt(1.0 / increment);
+                        realvalue = parseInt(realvalue * tempinc) / tempinc;
+                    } else {
+                        realvalue = parseInt(realvalue / increment) * increment;
+                    }
+                    
+                    // This makes sure that when sliding to the extremes, you get back to the real starting points
+                    if (sliderno == 1 && ui.values[1] == 100)
+                        realvalue = rangemax;
+                    else if (sliderno == 0 && ui.values[0] == 0)
+                        realvalue = rangemin;
+                    
+                    if (sliderno == 0 && ui.values[0] != ui.values[1])                        // First slider is not identified correctly by sliderno for the case
+                        leftsliderknob.html(realvalue).addClass("valabove");            // when rightslider = left slider, hence the second condition
+                    else if (ui.values[0] != ui.values[1])
+                        rightsliderknob.html(realvalue).addClass("valabove");
+                    
+                    if(sliderno == 0)
+                    {
+                        $(this).siblings('.min').attr('value',realvalue);
+                        $(this).siblings('.max').attr('value',curmax);
+                    }
+                    else
+                    {
+                        $(this).siblings('.min').attr('value',curmin);
+                        $(this).siblings('.max').attr('value',realvalue);
+                    }
+                    
     			   	return false;
     	        },
     			stop: function(e,ui)
