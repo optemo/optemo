@@ -9,8 +9,7 @@
 	
 	+ Documentation: http://infinite-scroll.com/
 	
-	JU - Note: Changed line 157-8 from ?page= to &page=
-	           Changed infscr_retrieve function for html + callback
+	JU - Note: Changed infscr_retrieve function for html + callback
 	           Added restart function for ajax page loading
 	
 */
@@ -155,12 +154,11 @@
                 path = path.match(/^(.*?)2(.*?$)/).slice(1);
 
             } else {
-                alert(path);
                 return path;
                 // page= is used in drupal too but second page is page=1 not page=2:
                 // thx Jerod Fritz, vladikoff
-                if (path.match(/^(.*&page=\d+)(\/.*|$)/)) {
-                    path = path.match(/^(.*&page=\d+)(\/.*|$)/).slice(1);
+                if (path.match(/^(.*?page=\d+)(\/.*|$)/)) {
+                    path = path.match(/^(.*?page=\d+)(\/.*|$)/).slice(1);
                     return path;
                 } else {
                     this._debug('Sorry, we couldn\'t parse your Next (Previous Posts) URL. Verify your the css selector points to the correct A tag. If you still get this error: yell, scream, and kindly ask for help at infinite-scroll.com.');
@@ -446,7 +444,7 @@
                     case 'html+callback':
 
                         instance._debug('Using HTML via .load() method');
-                        box.load(desturl + ' ' + opts.itemSelector, null, function infscr_ajax_callback(jqXHR, textStatus) {
+                        box.load(desturl + "&ajax=true"+ ' ' + opts.itemSelector , null, function infscr_ajax_callback(jqXHR, textStatus) {
                             //instance._loadcallback(box, jqXHR.responseText);
                             instance._loadcallback($("<div/>").append(jqXHR), jqXHR.responseText);
                         });

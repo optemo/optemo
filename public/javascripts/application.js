@@ -1305,7 +1305,7 @@ optemo_module = (function (my){
             	$.ajax({
             		//type: (mydata==null)?"GET":"POST",
             		data: (mydata==null)?"":mydata,
-            		url: (hash==null)?myurl+"?ajax=true":myurl+"?ajax=true&hist="+hash,
+            		url: myurl+(myurl.match("[?]")?"&":"?")+"ajax=true"+((hash==null)?"":("&hist="+hash)),
             		success: my.ajaxhandler,
             		error: my.ajaxerror
             	});
@@ -1337,6 +1337,10 @@ optemo_module = (function (my){
     		}
     		my.flashError(parts[0].substr(5,parts[0].length));
     		return -1;
+    	} else if (data.indexOf('[PAGE]') != -1){
+    	    $('#main').html(data);
+    	    my.stop_spinner();
+    	    return 0;
     	} else {
     		var parts = data.split('[BRK]');
     		$('#ajaxfilter').empty().append(parts[1]);
