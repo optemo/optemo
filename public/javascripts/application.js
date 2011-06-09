@@ -1295,6 +1295,7 @@ optemo_module = (function (my){
             itemSelector : "#main div.navbox",          
                            // selector for all items you'll retrieve
             loadingText : "Loading more products...",
+            dataType : "jsonp",
             donetext : "<em>These are all the products with this selection <a href='#'>here</a></em>"
         });
 		

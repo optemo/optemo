@@ -225,6 +225,7 @@ module CompareHelper
   	unless secondload && !params.include?(:hist)
   	  params.delete(:hist) #Clear hist so it doesn't show up in url
   	  params.delete(:ajax)
+  	  params.delete(:embedding)
   	  pagination_line = will_paginate(@s.search.paginated_products)
   	  res << '<span id="actioncount" style="display:none">' + "#{@s.searches.size}</span>"
 	  end
