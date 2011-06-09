@@ -9,8 +9,10 @@
 	
 	+ Documentation: http://infinite-scroll.com/
 	
-	JU - Note: Changed infscr_retrieve function for html + callback
+	JU - Note: Added JSONP support to the infscr_retrieve function
+	           Rewrote the way they made html+callback default in the infscr_retrieve function
 	           Added restart function for ajax page loading
+	           
 	
 */
 
@@ -432,25 +434,20 @@
 
                 // INSERT DEBUG ERROR FOR invalid desturl
                 desturl = ($.isFunction(opts.pathParse)) ? opts.pathParse(path.join('2'), opts.currPage) : path.join(opts.currPage);
+                desturl += "&ajax=true";
                 // desturl = path.join(opts.currPage);
 
                 // create switch parameter for append / callback
-                // MAKE SURE CALLBACK EXISTS???
-                method = (opts.dataType == 'html' || opts.dataType == 'json') ? opts.dataType : 'html+callback';
+                method = opts.dataType;
                 if (opts.appendCallback && opts.dataType == 'html') method += '+callback'
 
                 switch (method) {
-
-                    case 'html+callback':
-
-                        instance._debug('Using HTML via .load() method');
-                        box.load(desturl + "&ajax=true"+ ' ' + opts.itemSelector , null, function infscr_ajax_callback(jqXHR, textStatus) {
-                            //instance._loadcallback(box, jqXHR.responseText);
-                            instance._loadcallback($("<div/>").append(jqXHR), jqXHR.responseText);
+                    case 'jsonp':
+                        instance._debug('Using JSONP via optemo_module method');
+                        optemo_module.quickajaxcall(box,desturl,function(){
+                            instance._loadcallback(box);
                         });
-
                         break;
-
                     case 'html':
                     case 'json':
 
@@ -465,6 +462,14 @@
                             }
                         });
 
+                        break;
+                    case 'html+callback':
+                    default:
+                        instance._debug('Using HTML via .load() method');
+                        box.load(desturl + ' ' + opts.itemSelector , null, function infscr_ajax_callback(jqXHR, textStatus) {
+                            instance._loadcallback(box, jqXHR.responseText);
+                        });
+                    
                         break;
 
                 }
