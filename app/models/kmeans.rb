@@ -23,7 +23,7 @@ inline :C do |builder|
    double tmp_min = DBL_MAX;
    int tmp_ind=0;
    int not_eq_flag = 0;
-   VALUE labels_and_reps = rb_ary_new2(nn+k);
+   VALUE labels_and_reps = rb_ary_new2(nn);
    int i, j, h,t;
 
   int* inits = malloc(sizeof(int)*k);
@@ -121,15 +121,15 @@ for (j=0; j<dd; j++) {
 //labels = labels.map{|l| labels.uniq.index(l)} if labels.uniq.size <labels.max+1
 ///???????????????
   
-  for (h=0; h<k; h++){
-      i=0;
-      while(labels[i] != h && i<nn){ i++;}
-      reps[h] = i;
-  }
+ // for (h=0; h<k; h++){
+ //     i=0;
+ //     while(labels[i] != h && i<nn){ i++;}
+ //     reps[h] = i;
+ // }
   
   for (i=0; i<nn; i++){
     h = labels[i];
-    if (utilities_rep[i] > utilities_rep[reps[h]]) reps[h] = i;
+ //   if (utilities_rep[i] > utilities_rep[reps[h]]) reps[h] = i;
     avgUtilities[h] += utilities_gorder[i];  
  }
   
@@ -161,17 +161,17 @@ for(j=1;j<k;j++){
  }
  
 int* sorted_labels = (int*)calloc(nn, sizeof(int));
-int* sorted_reps = (int*)calloc(k, sizeof(int));
+//int* sorted_reps = (int*)calloc(k, sizeof(int));
  
  for (j=0; j<k; j++){
    for (i=0; i<nn; i++)
      if (labels[i]==ids[j]) sorted_labels[i]=j;
-   sorted_reps[j] = reps[ids[j]];                   
+   //sorted_reps[j] = reps[ids[j]];                   
  }
 
 ///storing the labels in the ruby array
  for (j=0; j<nn; j++) rb_ary_store(labels_and_reps, j, INT2NUM(sorted_labels[j]));
- for (j=0; j<k; j++) rb_ary_store(labels_and_reps, nn+j, INT2NUM(sorted_reps[j]));
+ //for (j=0; j<k; j++) rb_ary_store(labels_and_reps, nn+j, INT2NUM(sorted_reps[j]));
  return labels_and_reps;
   }
   "
@@ -198,15 +198,26 @@ end
   utilities_gorder  = Kmeans.utility(products, "gorder")
   utilities_gorder.each_with_index{|u, i| utilities_gorder[i]=u+(0.0000001*i)} if utilities_gorder.uniq.size<number_clusters
   $k = Kmeans.new unless $k
-  $k.kmeans_c(standard_specs.flatten.map{|s| s.nil? ? 0.0 : s}, standard_specs.size , standard_specs.first.size, number_clusters, cluster_weights, utilities_rep, utilities_gorder, inits)
+  labels = $k.kmeans_c(standard_specs.flatten.map{|s| s.nil? ? 0.0 : s}, standard_specs.size , standard_specs.first.size, number_clusters, cluster_weights, utilities_rep, utilities_gorder, inits)
+  sorted_products=[]
+  until labels.empty?
+      p_ins = []
+      ([labels]*number_clusters).each_with_index{|l, i| p_ins << l.index(i) if l.index(i)}
+      p_ins.map do |i| 
+          sorted_products << products[i]
+          labels[i] = nil; products[i] = nil
+      end
+      labels.compact!; products.compact!    
+  end
+  sorted_products
 end
 
 def self.utility(products, use)
   if use == "rep"
-    products.mapfeat("utility")
+    products.map{|p| p.instance_variable_get("@utility")}
   elsif use == "gorder"
       if Session.search.sortby.nil? || Session.search.sortby == "relevance" 
-        products.mapfeat("utility")
+       products.map{|p| p.instance_variable_get("@utility")}
       else
         products.map{|i| i.instance_variable_get("@#{Session.search.sortby}_factor") || 0}
       end
@@ -327,7 +338,7 @@ def self.distance(point1, point2, weights)
 end
   
   def self.factorize_cont_data(products)
-      Session.continuous["cluster"].map{|f| products.mapfeat("#{f}_factor")}.transpose
+      Session.continuous["cluster"].map{|f| products.map{|p| p.instance_variable_get("@#{f}_factor")}}.transpose
   end
   
   def self.factorize_cont(product)
