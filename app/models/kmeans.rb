@@ -165,13 +165,11 @@ int* sorted_labels = (int*)calloc(nn, sizeof(int));
  
  for (j=0; j<k; j++){
    for (i=0; i<nn; i++)
-     if (labels[i]==ids[j]) sorted_labels[i]=j;
-   //sorted_reps[j] = reps[ids[j]];                   
+     if (labels[i]==ids[j]) sorted_labels[i]=j;                   
  }
 
 ///storing the labels in the ruby array
  for (j=0; j<nn; j++) rb_ary_store(labels_and_reps, j, INT2NUM(sorted_labels[j]));
- //for (j=0; j<k; j++) rb_ary_store(labels_and_reps, nn+j, INT2NUM(sorted_reps[j]));
  return labels_and_reps;
   }
   "
@@ -189,7 +187,7 @@ if (s<number_clusters)
   utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
   util_tmp = utilitylist.sort{|x,y| y <=> x }    
   ordered_list = util_tmp.map{|u| utilitylist.index(u)}
-  return ordered_list + ordered_list
+  return ordered_list.map{|i| products[i]}
 end
   # initial seeds for clustering  ### just based on contiuous features
   inits = self.init(number_clusters, products, cluster_weights)
