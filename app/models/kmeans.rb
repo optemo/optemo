@@ -205,11 +205,9 @@ end
       ([labels]*number_clusters).each_with_index{|l, i| p_ins << l.index(i) if l.index(i)}
       p_ins.map do |i| 
           sorted_products << products[i]
-          labels[i] = nil
-          products[i] = nil
+          labels[i] = nil; products[i] = nil
       end
-      labels.compact!
-      products.compact!    
+      labels.compact!; products.compact!    
   end
   sorted_products
 end
