@@ -178,7 +178,9 @@ class Search < ActiveRecord::Base
         @products ||= Kmeans.compute(9,SearchProduct.fq2)
     else
         @products ||= SearchProduct.fq2
-    end    
+    end
+    debugger if @products.first.class == Fixnum
+    @products
   end
   
   def sim_products
