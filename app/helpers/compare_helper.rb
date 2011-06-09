@@ -182,7 +182,7 @@ module CompareHelper
     select('superfluous', feat, [expanded ? t('products.add')+t(Session.product_type+'.specs.'+feat+'.name') : t('products.all')+t(Session.product_type+'.specs.'+feat+'.name').pluralize] + SearchProduct.cat_counts(feat,expanded,true).map{|k,v| ["#{k} (#{v})", k]}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
   end
   
-  def main_boxes(infinitescroll = false)
+  def main_boxes(secondload = false)
     res = ""
     if @s.directLayout # List View (Optemo Direct)
   		if @s.search.groupby.nil?
@@ -221,8 +221,13 @@ module CompareHelper
   		end
   	end
   	res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
-  	pagination_line = will_paginate(@s.search.paginated_products) unless infinitescroll
-    res << pagination_line unless pagination_line.nil?
+  	#Only show on initial load and when pagination is used instead of infinitescroll
+  	unless secondload && !params.include?(:hist)
+  	  params.delete(:hist) #Clear hist so it doesn't show up in url
+  	  params.delete(:ajax)
+  	  pagination_line = will_paginate(@s.search.paginated_products)
+	  end
+    res << "#{pagination_line}" #Handles nils as blank
   	res
 	end
    
