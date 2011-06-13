@@ -217,7 +217,7 @@ def self.utility(products, use)
       if Session.search.sortby.nil? || Session.search.sortby == "relevance" 
        products.map{|p| p.instance_variable_get("@utility")}
       else
-        products.map{|i| i.instance_variable_get("@#{Session.search.sortby}_factor") || 0}
+        products.map{|i| i.instance_variable_get("@#{Session.search.sortby}") || 0}
       end
   end    
 end
