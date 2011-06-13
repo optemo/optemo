@@ -1,3 +1,4 @@
+/*global defineClass: false, deserialize: false, gc: false, help: false, load: false, loadClass: false, print: false, quit: false, readFile: false, readUrl: false, runCommand: false, seal: false, serialize: false, spawn: false, sync: false, toint32: false, version: false */
 /* Application-specific Javascript.
    This is for the grid & list views (Optemo Assist & Optemo Direct) only.
    If you add a function and don't add it to the table of contents, prepare to be punished by your god of choice.
@@ -55,8 +56,7 @@
 
    -------- Cookies -------
     addValueToCookie(name, value)  -  Add a value to the cookie "name" or create a cookie if none exists.
-    removeValueFromCookie(name, value)  -  Remove a value from the cookie, and delete the cookie if it's empty.
-    ** readAllCookieValues(name)  -  Returns an array of cookie values.
+    removeValueFromCookie(name, value)  -  Remove a value from the cookie, and delete the cookie if it's readAllCookieValues(name)  -  Returns an array of cookie values.
     createCookie(name,value,days)  -  Try not to use this or the two below directly if possible, they are like private methods.
     readCookie(name)  -  Gets raw cookie 'value' data.
     eraseCookie(name)  -  Erases cookie.
@@ -99,7 +99,7 @@ optemo_module = (function (my){
         AB_TESTING_TYPE = parseInt($('#ab_testing_type').html());
     }
 
-	my.loadSavedProductsFromCookie = function() {
+	my.loadSavedProductsFromCookie = function() { // TODO: need to be deleted after the new function works
 		var tokenizedArrayID = 0, savedproducts = null; /* Must initialize savedproducts here for IE */
 	    savedproducts = optemo_module.readAllCookieValues('optemo_SavedProductIDs');
 		if (savedproducts)
@@ -122,7 +122,30 @@ optemo_module = (function (my){
 			$("#compare_button").show();
 			$("#savesome").hide();
 		}
-	}
+	};
+
+    	my.loadOptemoSavedProductsFromCookie = function() { 
+	    var savedproducts = optemo_module.readAllCookieValues('optemo_SavedProductIDs');
+
+	    if (savedproducts)
+	    {
+	    	if (savedproducts) {
+		    var savedIds = [];
+		    $.each(savedproducts, function(index, value) {
+			var product = value.split(',');
+			savedIds.push(product[0]);
+			my.loadspecs(product[1]);
+		    });
+
+		    $('.optemo_compare_checkbox').each( function (index) {
+			if ($.inArray($(this).attr('data-id'), savedIds) > -1) {
+			    $(this).attr('checked', 'checked');
+			}
+		    });
+		}
+	    }
+	};
+						    
 
     // Renders a recursive html list of the specs.
     // This is still used for displaying reviews for the time being.
@@ -145,12 +168,13 @@ optemo_module = (function (my){
 		var index = 0;
 		for (var p = 0; p < arguments.length; p++) {
 			for (var heading in arguments[p]) {
-				for (var spec in arguments[p][heading]) {
-					if (typeof(merged[heading]) == "undefined")
+			    for (var spec in arguments[p][heading]) {
+				if (typeof(merged[heading]) == "undefined")
 						merged[heading] = {};
 					if (typeof(merged[heading][spec]) == "undefined")
 						merged[heading][spec] = [];
 					merged[heading][spec][index] = arguments[p][heading][spec];
+				
 				}
 			}
 			index++;
@@ -479,7 +503,7 @@ optemo_module = (function (my){
 	}
 
     // When you click the X on a saved product:
-    function removeFromComparison(id)
+    function removeFromComparison(id) // TODO: Remove this function when new compare functions works fine
     {
     	$('#c'+id).remove();
     	my.trackPage('goals/remove', {'filter_type' : 'remove_from_comparison', 'product_picked' : id});
@@ -498,6 +522,16 @@ optemo_module = (function (my){
 	
     	return false;
     }
+
+    function removeFromComparisonOptemo(id) {
+	removeValueFromCookie('optemo_SavedProductIDs', id);
+	$(".optemo_compare_checkbox").each( function (index) {
+	    if ($(this).attr('data-id') == id) {
+		$(this).attr('checked', '');
+		return;
+		}
+	    });
+	}
 
     // Submit a categorical filter, e.g. brand.
     function submitCategorical(){
@@ -874,7 +908,7 @@ optemo_module = (function (my){
     	// From Compare
     	//Remove buttons on compare
     	$('.remove').live('click', function(){
-    		removeFromComparison($(this).attr('data-name'));
+    		removeFromComparisonOptemo($(this).attr('data-name'));
     		var class_name = $(this).attr('class').split(' ').slice(-1); // spec_column_0, for example
             $("." + class_name).each(function () {
                 $(this).remove();
@@ -1166,9 +1200,80 @@ optemo_module = (function (my){
 		var savedProducts = $('#opt_savedproducts').children(), anchor = $('#hideable_matrix');
 		// Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
 		var array = [];
+
 		for (var i = 0; i <= savedProducts.length; i++) {
 			array.push($('body').data('bestbuy_specs_'+$(savedProducts[i]).attr('data-sku')));
+		    console.log('bestbuy_specs_'+$(savedProducts[i]).attr('data-sku'));
 		}
+
+		var grouped_specs = optemo_module.merge_bb_json.apply(null,array);
+		//Set up Headers
+		for (var i = 0; i < savedProducts.length; i++) {
+			anchor.append('<div class="columntitle spec_column_'+i+'">&nbsp;</div>');
+		}
+		var result = "";
+		var whitebg = true;
+		var divContentHolderTag = '<div class="contentholder">';
+		var divContentHolderTagEnd = '</div>';
+        
+		for (var heading in grouped_specs) {
+			//Add Heading
+			result += '<div class="'+row_class(row_height(heading.length,true))+'"><div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' leftcolumntext" style="font-style: italic;"><a class="togglable closed title_link" style="font-style: italic;" href="#">' + heading.replace('&','&amp;') + '</a></div>';
+
+			for (var i = 0; i < savedProducts.length; i++) {
+				result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' spec_column_'+i+'">&nbsp;</div>';
+			}
+			
+			result += "</div>";
+			result += divContentHolderTag;
+			whitebg = !whitebg;
+			for (var spec in grouped_specs[heading]) {
+				//Row Height calculation
+				array = [];
+				for(var i = 0; i < grouped_specs[heading][spec].length; i++) {
+					if (grouped_specs[heading][spec][i])
+						array.push(grouped_specs[heading][spec][i].length);	
+				}
+				//Assign row_class
+				result += '<div class="'+row_class(Math.max(row_height(Math.max.apply(null,array)),row_height(spec.length,true)))+'">';
+				
+				//Row heading
+				result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' leftcolumntext">' + spec.replace('&','&amp;') + ":</div>";
+				//Data
+				for (var i = 0; i < savedProducts.length; i++) {
+					if (grouped_specs[heading][spec][i])
+						result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + " " + "spec_column_"+ i + '">' + grouped_specs[heading][spec][i].replace(/&/g,'&amp;') + "</div>";
+					else
+						//Blank Cell
+						result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + " " + "spec_column_"+ i + '">&nbsp;</div>';
+				}
+				result += "</div>";
+				
+				whitebg = !whitebg;
+			}
+			result += divContentHolderTagEnd;
+		}
+		anchor.append(result);
+
+		// Put the thumbnails and such at the bottom of the compare area too (in the hideable matrix)
+		var remove_row = $('#basic_matrix .compare_row:first');
+		anchor.append(
+			remove_row.clone(),
+			remove_row.next().clone(),
+			remove_row.next().next().clone().find('.leftmostcolumntitle').empty().end()
+		);
+		$('.togglable').each(function(){addtoggle($(this));});
+	};
+	my.buildOptemoComparisonMatrix = function() {
+		var savedProducts = my.readAllCookieValues('optemo_SavedProductIDs'), anchor = $('#hideable_matrix');
+		// Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
+		var array = [];
+	    $.each(savedProducts, function (index, value) {
+		var product = value.split(',');
+		console.log($('body').data('bestbuy_specs_'+product[1]));
+		array.push($('body').data('bestbuy_specs_'+product[1]));
+		});
+
 		var grouped_specs = optemo_module.merge_bb_json.apply(null,array);
 		//Set up Headers
 		for (var i = 0; i < savedProducts.length; i++) {
@@ -1361,6 +1466,7 @@ optemo_module = (function (my){
     /* The ajax handler takes data from the ajax call and processes it according to some (unknown) rules. */
     // This needs to be a public function now
     my.ajaxhandler = function(data) {
+
         var lis = my.loading_indicator_state;
         lis.disable = false;
         clearTimeout(lis.spinner_timer); // clearTimeout can run on "null" without error
@@ -1376,7 +1482,16 @@ optemo_module = (function (my){
     		return -1;
     	} else if (data.indexOf('[PAGE]') != -1){
     	    $('#main').html(data);
+	    
     	    my.stop_spinner();
+	    // TODO: Maybe DBInit need to be called here
+	    if (!(window.embedding_flag)) {
+    	        // If we're not embedded, initialize these here.
+    	        // Otherwise, initialize them in optemo_embedder.js once the DOM is loaded.
+    	    	// optemo_module.loadSavedProductsFromCookie();
+		my.loadOptemoSavedProductsFromCookie();
+            }
+	    
     	    return 0;
     	} else {
     		var parts = data.split('[BRK]');
@@ -1389,7 +1504,14 @@ optemo_module = (function (my){
     		    ifc.restart();
     		my.stop_spinner();
     		my.SliderInit();
-			my.DBinit();
+	        my.DBinit();
+	    if (!(window.embedding_flag)) {
+    	        // If we're not embedded, initialize these here.
+    	        // Otherwise, initialize them in optemo_embedder.js once the DOM is loaded.
+    	    	// optemo_module.loadSavedProductsFromCookie();
+		my.loadOptemoSavedProductsFromCookie();
+            }
+
     		return 0;
     	}
     }
@@ -1601,7 +1723,7 @@ optemo_module = (function (my){
     my.domready = function(){
         if (typeof DOM_ALREADY_RUN == "undefined") {
             DOM_ALREADY_RUN = true;
-            optemo_module.initializeVariables();
+            my.initializeVariables();
             // This initializes the jquery history plugin. Note that the plugin was modified for use with our application javascript (details in jquery.history.js)
             $.history.init(optemo_module.ajaxsend);
             
@@ -1625,17 +1747,18 @@ optemo_module = (function (my){
             
     	    // Only load DBinit if it will not be loaded by the upcoming ajax call
     	    // Do LiveInit anyway, since timing is not important
-    	    optemo_module.LiveInit();
+    	    my.LiveInit();
     	    if ($('#opt_discovery').length == 0) {
     	    	// Other init routines get run when they are needed.
-    	    	optemo_module.SliderInit(); optemo_module.DBinit();
+    	    	my.SliderInit(); optemo_module.DBinit();
     	    }
             
-    	    if (!(window.embedding_flag)) {
-    	        // If we're not embedded, initialize these here.
-    	        // Otherwise, initialize them in optemo_embedder.js once the DOM is loaded.
-    	    	optemo_module.loadSavedProductsFromCookie();
-            }
+    	    // if (!(window.embedding_flag)) {
+    	    //     // If we're not embedded, initialize these here.
+    	    //     // Otherwise, initialize them in optemo_embedder.js once the DOM is loaded.
+    	    // 	// optemo_module.loadSavedProductsFromCookie();
+	    // 	my.loadOptemoSavedProductsFromCookie();
+            // }
             
     	    //Decrypt encrypted links
     	    //$('a.decrypt').each(function () {
@@ -1761,10 +1884,69 @@ optemo_module = (function (my){
     	    // Load the classic theme for galleria, the jquery image slideshow plugin we're using (jquery.galleria.js)
             //    Galleria.loadTheme('/javascripts/galleria.classic.js');
         }
-    }
+    };
+    
+    my.saveProductForComparisonFromCheckbox = function (objCheckbox) {
+	var pId = objCheckbox.attr("data-id");
+	var pSku = objCheckbox.attr("data-sku");
+	var imgObj = objCheckbox.parent().parent().find('.productimg');
+	var imgUrl = imgObj.attr('src');
+	var name = imgObj.attr('alt');
+	var href = imgObj.parent().find(".easylink").attr('href');
+	removeValueFromCookie('optemo_SavedProductIDs', pId);
+	addValueToCookie('optemo_SavedProductIDs', [pId, pSku, imgUrl, name, href, my.MODEL_NAME]); // TODO: maybe need to track page
+	my.loadspecs(pSku);
+	};
+    
+    $('.optemo_compare_checkbox').live('click', function(){
+	
+	if ($(this).attr('checked')) { // save the comparison item
+	    my.saveProductForComparisonFromCheckbox($(this));
+	    }
+	else { // Remove the comparison item
+	    removeValueFromCookie('optemo_SavedProductIDs', $(this).attr('data-id')); // TODO: maybe need to track page
+	    }
+	});
+
+    $('.optemo_compare_button').live('click', function(){
+	var objCheckbox = $(this).parent().find('.optemo_compare_checkbox');
+	if (!objCheckbox.attr('checked')) {
+	    objCheckbox.attr('checked', 'checked');
+	    my.saveProductForComparisonFromCheckbox(objCheckbox);
+	    }
+	var savedproducts = my.readAllCookieValues('optemo_SavedProductIDs');
+
+	if (savedproducts) {
+	    var productIDs = '', width = 560, number_of_saved_products = 0;
+	    $.each(savedproducts, function(index, value) {
+		var product = value.split(',');
+		productIDs = productIDs + product[0] + ',';
+		number_of_saved_products++;
+		});
+	    
+	    }
+        // To figure out the width that we need, start with $('#opt_savedproducts').length probably
+        // 560 minimum (width is the first of the two parameters)
+        // 2, 3, 4 ==>  513, 704, 895  (191 each)
+	if (number_of_saved_products >= 2)
+	    width = 191 * (number_of_saved_products - 2) + 566;
+	else
+	    width = 566;
+
+    	my.applySilkScreen('/comparison/' + productIDs, null, width, 580,function(){
+	    // Jquery 1.5 would finish all the requests before building the comparison matrix once
+	    // With 1.4.2 we can't do that. Keep code for later.
+	    // $.when.apply(this,reqs).done();
+	    my.buildOptemoComparisonMatrix();
+        });
+	// TODO: maybe need to track page
+    	// my.trackPage('goals/compare', {'filter_type' : 'direct_comparison'});
+    	return false;
+    });
 
     return my;
 })(optemo_module || {});
+    
 
 
 //--------------------------------------//
@@ -1791,16 +1973,17 @@ if ($('#opt_discovery').length) {
 }
 
 });
+			    
 
 // Load jQuery if it's not already loaded.
 // The purpose of using a try/catch loop is to avoid Internet Explorer 8 from crashing when assigning an undefined variable.
 // NB: Cannot use "$" because of jQuery.noConflict() -- $ might be scoped to prototype or some other framework, depending
+var jQueryIsLoaded = jQuery;
 try {
-    var jqueryIsLoaded = jQuery;
     jQueryIsLoaded = true;
 }
 catch(err) {
-    var jQueryIsLoaded = false;
+    jQueryIsLoaded = false;
 }
 
 if(jQueryIsLoaded) {
@@ -1825,3 +2008,4 @@ if(jQueryIsLoaded) {
     script_element.setAttribute("src", 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js');
     document.getElementsByTagName("head")[0].appendChild(script_element);
 }
+
