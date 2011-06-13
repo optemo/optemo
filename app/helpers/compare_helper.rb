@@ -204,8 +204,6 @@ module CompareHelper
 	        res << "<div style=\"padding:10px;\">No search results. Please search again or " + link_to("start over", "/") + ".</div>"
         end
 	    else # Grid View (Optemo Assist)
-	      range = true
-	      range = !(@s.search.cluster.min(@s.search.sortby)== @s.search.cluster.max(@s.search.sortby)) if @s.continuous["cluster"].include?(@s.search.sortby)    
     		for i in 0...@s.search.paginated_products.size
     		  if i % (Float(@s.numGroups)/3).ceil == 0
     			  res << '<div class="rowdiv">'
@@ -298,7 +296,7 @@ module CompareHelper
   
   def sortbyList
     sortbyList = [Session.search.sortby == "relevance" || Session.search.sortby.blank? ? t("products.relevance") : link_to(t("products.relevance"), "#", :'data-feat' => "relevance", :class => 'sortby')]
-    Session.continuous["cluster"].each do |f| 
+    Session.continuous["sortby"].each do |f| 
       sortbyList << (Session.search.sortby == f ? t(Session.product_type+".specs."+f+".name") : link_to(t(Session.product_type+".specs."+f+".name"), "#", :'data-feat' => f, :class => 'sortby'))
     end
     t("products.sortby") + sortbyList.join("&nbsp;&nbsp;|&nbsp;&nbsp;")

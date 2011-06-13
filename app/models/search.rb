@@ -179,8 +179,6 @@ class Search < ActiveRecord::Base
     else
         @products ||= SearchProduct.fq2
     end
-    debugger if @products.first.class == Fixnum
-    @products
   end
   
   def sim_products
