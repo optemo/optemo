@@ -2,7 +2,7 @@ class Session
   # products.yml gets parsed below, initializing these variables.
   cattr_accessor :id, :search  # Basic individual data. These are not set in initialization.
   cattr_accessor :directLayout, :mobileView  # View choice (Assist vs. Direct, mobile view vs. computer view)
-  cattr_accessor :continuous, :binary, :categorical, :binarygroup, :prefered  # Caching of features' names
+  cattr_accessor :continuous, :binary, :categorical, :binarygroup, :prefered # Caching of features' names
   cattr_accessor :prefDirection, :maximum, :minimum, :utility_weight, :cluster_weight  # Stores which preferences are 'lower is better' vs. normal; used in sorting, plus some attribute globals
   cattr_accessor :dragAndDropEnabled, :relativeDescriptions, :numGroups, :extendednav  # These flags should probably be stripped back out of the code eventually
   cattr_accessor :product_type # Product type (camera_us, etc.), used everywhere
@@ -61,6 +61,7 @@ class Session
           self.prefDirection[feature] = atts["prefdir"] if atts["prefdir"]
           self.maximum[feature] = atts["max"] if atts["max"]
           self.minimum[feature] = atts["min"] if atts["min"]
+          self.continuous["sortby"].each_index{|i|  self.continuous["sortby"][i] ||= "#{self.continuous["sortby"][i]}_factor"} 
         when "Binary"
           atts["used_for"].each{|flag| self.binary[flag] << feature; self.binarygroup[heading] << feature if flag == "filter"}
           self.binary["all"] << feature #Keep track of all features

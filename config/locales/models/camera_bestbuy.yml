@@ -28,6 +28,8 @@ en:
                 name:               "LCD Size"
                 info:               "The size of the LCD (Liquid Crystal Display) screen on the camera, measured diagonally. You may find it easier to view your subject on the screen than through a standard viewfinder. This feature is also useful for reviewing and deleting photos."
                 unit:               "in."
+            fblike:
+                name:               "Facebook like"     
             slr:
                 name:               "DSLR"
                 info:               "Features manual and automatic controls, and is compatible with interchangeable lenses for professional-quality shots."
