@@ -1968,7 +1968,7 @@ if ($('#opt_discovery').length) {
     if (location.hash) {
     	optemo_module.ajaxsend(location.hash.replace(/^#/, ''),'/');
 	} else {
-		optemo_module.ajaxsend(null,'/');
+		optemo_module.ajaxsend(null,'/', {landing:'true'});
 	}
 }
 
