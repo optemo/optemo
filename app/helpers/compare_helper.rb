@@ -182,6 +182,24 @@ module CompareHelper
     select('superfluous', feat, [expanded ? t('products.add')+t(Session.product_type+'.specs.'+feat+'.name') : t('products.all')+t(Session.product_type+'.specs.'+feat+'.name').pluralize] + SearchProduct.cat_counts(feat,expanded,true).map{|k,v| ["#{k} (#{v})", k]}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
   end
   
+  
+  def landing_main_boxes(type)
+    res = ""
+    num_examples = 3
+    res << '<div class="rowdiv">'
+    open = true
+    for i in 0...num_examples
+      case type
+        when "featured"      
+            res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(@s.search.products[i].id)})
+        when "liked"
+              res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(@s.search.products('fblike_factor')[i].id)})
+        when 'customerRating'
+              res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(@s.search.products('customerRating')[i].id)})    
+        end                
+    end    
+    res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
+  end      
   def main_boxes(secondload = false)
     res = ""
     if @s.directLayout # List View (Optemo Direct)
