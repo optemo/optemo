@@ -2,24 +2,6 @@
 <% main_window = render :partial => 'discoverybrowser' unless @indexload %>
 <div class="left-right-wrapper">
 <div id="leftbar">
-    <!-- The Saved Items box -->
-	<div id="savebar" class='leftboxes gainlayout'>
-		<h2> <%=t 'products.compare.saved' %> </h2>
-		<div id="savesome" class="rounded"> 
-			<div class="box-top-r"></div>
-            <div class="text-place"><% if Session.dragAndDropEnabled == true %> <%= image_tag('hand_and_arrow.png', :id => "draghandexample") %> <%=t('products.compare.savesomedrag')%> <% else %> <%=t('products.compare.savesome')%> <% end %></div>
-            <div class="box-top-r box-bottom-r"></div>
-		</div>
-		<div id="already_added_msg" class="savedmsg"> <%=t 'products.compare.alreadyadded' %> </div>
-		<div id="opt_savedproducts">
-		</div>
-		<!-- Hide if 0 products, show if 1/more. -->
-		<div class="spacer">
-		  <%= link_to "#", :id => "compare_button", :class => "awesome_reset global_btn", :style => "display:none;" do %>
-		  <span><%= t('products.compare.compare') %></span>
-		  <% end %>
-		</div>
-	</div>
 	<!-- The Filters section -->
 	<div id="filterbar" class="leftboxes">
 		<div id="ajaxfilter">

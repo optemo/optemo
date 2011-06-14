@@ -1,8 +1,16 @@
-<div id="box<%= i %>" class="navbox" <%= ("style='margin-right:0px;background:none;'" if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1) %>>
+<div id="box<%= product.id %>" class="navbox" <%= ("style='margin-right:0px;background:none;'" if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1) %>>
 	<div class="topbar">
-		<% if @s.dragAndDropEnabled %>
-				<%= image_tag('hand_and_arrow.png', :class => "dragHand", :title => 'Click for product info. Drag to compare with other products.') %>
-		<% end %>
+	  <div class="spacer">
+	    <input type="checkbox"
+		   data-id="<%= product.id %>"
+		   data-sku="<%= product.sku %>"
+		   class="optemo_compare_checkbox" />
+	    <a class="awesome_reset
+		      global_btn optemo_compare_button" style="" href="#">
+	      <span>COMPARE</span>
+	    </a>
+	  </div>
+
 		<%= image_tag(CatSpec.cache_all(product.id)["img150url"], :class => "productimg", :alt => product.small_title, :title => product.small_title, :'data-id' => product.id, :'data-sku' => product.sku) %>
 		<div class="productinfo">
 			<%= link_to product.small_title, product_path(:name => product.descurl, :id => product.id), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>

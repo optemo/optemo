@@ -303,11 +303,15 @@ div#division {
 	font-size: 10px;
 	box-shadow: none;
 }
-#optemo_embedder #compare_button {
+#optemo_embedder #compare_button , #optemo_embedder .optemo_compare_button {
 	clear: both;
 	font-size: 0.7em;
 	margin: 5px;
 }
+
+#optemo_embedder .compare_button {
+   font-size: 0.8em;
+   }
 /*.selected_cat_features img {
 	vertical-align: baseline;
 }*/
