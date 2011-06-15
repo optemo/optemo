@@ -9,7 +9,6 @@
 	<% mb['liked'] =landing_main_boxes('liked') #Calculate mb before navtitle %>
 	<% mb['customerRating'] = landing_main_boxes('customerRating')%>
 	<div id="navtitle"><%=raw navtitle %></div>
-<% end %>
 </div>
 </div>
 Featured products:
@@ -19,5 +18,4 @@ Most liked products:
 Highest customer rating:
 <%= raw mb['customerRating']%>
 List all products ...
-<% search_count = @s.searches.size %>
-<div style="clear:both;"><span id="actioncount" style="display:none"><%= search_count %></span></div>
+<div style="clear:both;"><span id="actioncount" style="display:none"><%= @s.searches.size %></span></div>
