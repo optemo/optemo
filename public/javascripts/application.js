@@ -1943,7 +1943,22 @@ optemo_module = (function (my){
     	// my.trackPage('goals/compare', {'filter_type' : 'direct_comparison'});
     	return false;
     });
-
+    
+    // Back to top button
+    $(window).scroll(function () {
+	if ($(this).scrollTop() > 100) {
+	    $('#back-top').fadeIn();
+	} else {
+	    $('#back-top').fadeOut();
+	}
+	});
+		   
+    $('#back-top a').click( function () {
+	$('body,html').animate({
+	    scrollTop: 0
+	}, 800);
+	return false;
+	});
     return my;
 })(optemo_module || {});
     
@@ -1957,6 +1972,29 @@ $(function(){
     if ($.trim($("#optemo_embedder").text()) != "")
         optemo_module.domready();
 });
+
+
+    // hide #back-top first
+	$("#back-top").hide();
+	
+	// fade in #back-top
+	$(function () {
+		$(window).scroll(function () {
+			if ($(this).scrollTop() > 100) {
+				$('#back-top').fadeIn();
+			} else {
+				$('#back-top').fadeOut();
+			}
+		});
+
+		// scroll body to 0px on click
+		$('#back-top a').click(function () {
+			$('body,html').animate({
+				scrollTop: 0
+			}, 800);
+			return false;
+		});
+	});
 
 //--------------------------------------//
 //             Page Loader              //
