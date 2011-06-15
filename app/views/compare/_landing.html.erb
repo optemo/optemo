@@ -1,0 +1,21 @@
+<span style="color:red;" id="error"><%= flash[:error] unless flash[:error].nil? %></span>
+<% if flash[:notice] %>
+<span class="notice"><%= flash[:notice] %></span>
+<% end %>
+<div <%= 'class="listview_ungrouped"' if @s.search.groupby.nil? && @s.directLayout %> >
+<div id="navigator_bar">
+	<%mb={}%>
+	<% mb['featured'] = landing_main_boxes('featured') #Calculate mb before navtitle %>
+	<% mb['liked'] =landing_main_boxes('liked') #Calculate mb before navtitle %>
+	<% mb['customerRating'] = landing_main_boxes('customerRating')%>
+	<div id="navtitle"><%=raw navtitle %></div>
+</div>
+</div>
+Featured products:
+<%= raw mb['featured'] %>
+Most liked products:
+<%= raw mb['liked']%>
+Highest customer rating:
+<%= raw mb['customerRating']%>
+List all products ...
+<div style="clear:both;"><span id="actioncount" style="display:none"><%= @s.searches.size %></span></div>
