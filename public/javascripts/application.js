@@ -1210,7 +1210,7 @@ optemo_module = (function (my){
 
     		return 0;
     	}
-    }
+    };
 
     my.ajaxerror = function() {
         var lis = my.loading_indicator_state;

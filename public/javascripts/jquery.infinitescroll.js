@@ -74,11 +74,12 @@
 
             var debug = this._debug;
 
-            // If selectors from options aren't valid, return false
-            if (!this._validate(options)) { return false; }
 
             // Define options and shorthand
             var opts = this.options = $.extend({}, $.infinitescroll.defaults, options);
+            
+	    // If selectors from options aren't valid, return false
+            if (!this._validate(options)) { return false; }
 
             // contentSelector is 'page fragment' option for .load() / .ajax() calls
             opts.contentSelector = opts.contentSelector || this.element;
