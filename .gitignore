@@ -49,3 +49,4 @@ lib/helpers/fixClusters.sql
 merge_staging.sh
 
 
+/public/javascripts/jquery.infinitescroll_flymake.js
