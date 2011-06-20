@@ -1629,11 +1629,12 @@ optemo_module = (function (my){
     
     // Back to top button
     $(window).scroll(function () {
-	if ($(this).scrollTop() > 100) {
+	if ($(this).scrollTop() > $('#filterbar').height() + 15) {
 	    $('#back-top').fadeIn();
 	} else {
 	    $('#back-top').fadeOut();
 	}
+	return false;
 	});
 		   
     $('#back-top a').click( function () {
