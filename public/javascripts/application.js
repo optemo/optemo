@@ -1629,20 +1629,19 @@ optemo_module = (function (my){
     
     // Back to top button
     $(window).scroll(function () {
-	if ($(this).scrollTop() > $('#filterbar').height() + 15) {
-	    $('#back-top').fadeIn();
-	} else {
-	    $('#back-top').fadeOut();
-	}
-	return false;
-	});
+    	if ($(this).scrollTop() > $('#filterbar').height() + 15) {
+    	    $('#back-top').fadeIn();
+    	} else {
+    	    $('#back-top').fadeOut();
+    	}
+    	});
 		   
     $('#back-top a').click( function () {
-	$('body,html').animate({
-	    scrollTop: 0
-	}, 800);
-	return false;
-	});
+    	$('body,html').animate({
+    	    scrollTop: 0
+    	}, 800);
+    	return false;
+    	});
     return my;
 })(optemo_module || {});
     
