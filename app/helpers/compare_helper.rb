@@ -188,18 +188,20 @@ module CompareHelper
     num_examples = 3
     res << '<div class="rowdiv">'
     open = true
+    prods = @s.search.products_landing
     for i in 0...num_examples
       case type
         when "featured"      
-            res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(@s.search.products[i].id)})
+            res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[0][i].product_id)})
         when "liked"
-              res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(@s.search.products('fblike_factor')[i].id)})
+              res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[1][i].product_id)})
         when 'customerRating'
-              res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(@s.search.products('customerRating')[i].id)})    
+              res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[2][i].product_id)})    
         end                
     end    
     res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
-  end      
+  end
+    
   def main_boxes(secondload = false)
     res = ""
     if @s.directLayout # List View (Optemo Direct)
@@ -314,7 +316,7 @@ module CompareHelper
   
   def sortbyList
     sortbyList = [Session.search.sortby == "relevance" || Session.search.sortby.blank? ? t("products.relevance") : link_to(t("products.relevance"), "#", :'data-feat' => "relevance", :class => 'sortby')]
-    Session.continuous["sortby"].each do |f| 
+    Session.continuous["sortby"].each_with_index do |f, i| 
       sortbyList << (Session.search.sortby == f ? t(Session.product_type+".specs."+f+".name") : link_to(t(Session.product_type+".specs."+f+".name"), "#", :'data-feat' => f, :class => 'sortby'))
     end
     t("products.sortby") + sortbyList.join("&nbsp;&nbsp;|&nbsp;&nbsp;")

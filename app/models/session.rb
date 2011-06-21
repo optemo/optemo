@@ -82,6 +82,7 @@ class Session
           self.prefDirection[feature.name] = feature.larger_is_better ? 1 : -1
           self.maximum[feature] = feature.max if feature.max > 0
           self.minimum[feature] = feature.min if feature.min > 0
+          self.continuous["sortby"].each_index{|i|  self.continuous["sortby"][i] = "#{self.continuous["sortby"][i]}_factor" unless self.continuous["sortby"][i].include?("factor")} 
         when "Binary"
           used_fors.each{|flag| self.binary[flag] << feature.name; self.binarygroup[heading.name] << feature.name if flag == "filter"}
           self.binary["all"] << feature.name #Keep track of all features

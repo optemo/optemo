@@ -15,7 +15,7 @@ en:
             saleprice:
                 name:               "Price"
                 info:               "The lowest price for the item."
-                preunit:            "$"
+                preunit:            "$"  
             maxresolution:
                 name:               "Resolution"
                 info:               "Measured in megapixels (millions of pixels), the number of light-sensitive cells that are actually exposed to light and used to capture the image, while the remainder may be shielded or just unused."
@@ -75,3 +75,11 @@ en:
                 name:               "Front and Back LCD"
             toprated:
                 name:               "Top-Rated"
+            saleprice_factor:
+                name:               "Price"
+            maxresolution_factor:
+                name:               "Resolution"
+            opticalzoom_factor:
+                name:               "Optical Zoom" 
+            fblike_factor:
+                name:               "Facebook like"

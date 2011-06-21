@@ -173,12 +173,17 @@ class Search < ActiveRecord::Base
     @products_size ||= products.size
   end
   
-  def products(sortby=nil)
+  def products
+    sortby=Session.search.sortby
     if sortby == "relevance" || sortby.nil?
         @products = Kmeans.compute(9,SearchProduct.fq2)
     else
-        @products = SearchProduct.fq2(sortby)
+        @products = SearchProduct.fq2
     end
+  end
+  
+  def products_landing
+    SearchProduct.fq2_landing
   end
   
   def sim_products
