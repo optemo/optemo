@@ -976,7 +976,8 @@ optemo_module = (function (my){
         	var product_title = t.attr('title');
         	if (product_title == undefined) product_title = t.html(); // This is a text link
         	my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids, 'imgurl' : t.attr('src')});
-			my.applySilkScreen(href + '?plain=true',null, 560, 580);
+			//my.applySilkScreen(href + '?plain=true',null, 560, 580);
+			window.location = href;
         	return false;
         });
 
