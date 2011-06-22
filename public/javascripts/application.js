@@ -1189,8 +1189,7 @@ optemo_module = (function (my){
     		my.flashError(parts[0].substr(5,parts[0].length));
     		return -1;
     	} else if (data.indexOf('[PAGE]') != -1){
-    	    $('#main').html(data);
-	    
+    	    $('#main #product_content').html(data);
     	    my.stop_spinner();
 	    // TODO: Maybe DBInit need to be called here
 	    
