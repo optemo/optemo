@@ -427,7 +427,7 @@ optemo_module = (function (my){
 			href = arguments[4];
 		else {
 			// Using /product/_/ because savedproducts do not have an href (otherwise it would need to be stored in the cookie)
-			href = "/product/_/"+id;
+			href = "http://www.bestbuy.ca/"+((!(typeof(optemo_french) == "undefined") && optemo_french) ? "fr" : "en")+"-CA/product/_/"+sku+".aspx";
 		}
     	// Create an empty slot for product
     	var saveditem = "<div class='saveditem' id='c" + id + "' data-sku='"+sku+"'>";
@@ -473,7 +473,7 @@ optemo_module = (function (my){
             }
     	} else {
     		var el = img.parent().find('.easylink');
-    		res = el.attr('href').match(/\d+$/);
+    		res = el.attr('data-id');
     		sku = el.attr('data-sku');
     	}
     	return Array(res, sku);
