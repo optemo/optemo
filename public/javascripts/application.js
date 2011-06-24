@@ -1319,32 +1319,20 @@ optemo_module = (function (my){
     /* Does a relatively generic ajax call and returns data to the handler below */
     my.ajaxsend = function (hash,myurl,mydata,timeoutlength) {
         var lis = my.loading_indicator_state;
-        mydata = $.extend({'ajax': true},mydata);
+        mydata = $.extend({'ajax': true, 'hist':hash},mydata);
         if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 50);
         if (OPT_REMOTE) {
             //Embedded Layout
-            if (myurl != null)
-                JSONP.get(OPT_REMOTE+myurl.replace(/http:\/\/[^\/]+/,''),mydata,my.ajaxhandler);
-            else if (typeof(hash) != "undefined" && hash != null)
-                JSONP.get(OPT_REMOTE+"/compare",{'ajax': true,'hist':hash},my.ajaxhandler);
+            myurl = (myurl != null) ? myurl.replace(/http:\/\/[^\/]+/,'') : "/compare"
+            JSONP.get(OPT_REMOTE+myurl,mydata,my.ajaxhandler);
         } else {
-    	    if (myurl != null) {
-            	$.ajax({
-            		//type: (mydata==null)?"GET":"POST",
-            		data: (mydata==null)?"":mydata,
-            		url: (hash==null)?myurl:myurl+"?hist="+hash,
-            		success: my.ajaxhandler,
-            		error: my.ajaxerror
-            	});
-    	    } else if (typeof(hash) != "undefined" && hash != null) {
-		    	/* Used by back button */
-    	    	$.ajax({
-    	    		type: "GET",
-    	    		url: "/compare/?ajax=true&hist="+hash,
-    	    		success: my.ajaxhandler,
-    	    		error: my.ajaxerror
-    	    	});
-    	    }
+            $.ajax({
+            	//type: (mydata==null)?"GET":"POST",
+            	data: (mydata==null)?"":mydata,
+            	url: myurl || "/compare",
+            	success: my.ajaxhandler,
+            	error: my.ajaxerror
+            });
 	    }
     };
 
