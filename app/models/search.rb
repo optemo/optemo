@@ -277,11 +277,10 @@ class Search < ActiveRecord::Base
   
   def initialize(p={})
     super({})
-    #Set session id
-    self.session_id = Session.id
+    #Set parent id
+    self.parent_id = Base64.decode64(p["parent"]).to_i unless p["parent"].blank?
     unless p["action_type"] == "initial" #Exception for initial clusters
-      old_search = Search.find_by_id_and_session_id(p["search_hist"],Session.id) if p["search_hist"]
-      old_search = Session.lastsearch if old_search.nil?
+      old_search = Search.find_by_parent_id(self.parent_id)
     end
     # If there is a sort method to keep from last time, move it across
     self.sortby = old_search[:sortby] if old_search && old_search[:sortby]

@@ -1319,11 +1319,12 @@ optemo_module = (function (my){
     /* Does a relatively generic ajax call and returns data to the handler below */
     my.ajaxsend = function (hash,myurl,mydata,timeoutlength) {
         var lis = my.loading_indicator_state;
+        mydata = $.extend({'ajax': true, 'parent': $("#actioncount").html()},mydata);
         if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 50);
         if (OPT_REMOTE) {
             //Embedded Layout
             if (myurl != null)
-                JSONP.get(OPT_REMOTE+myurl.replace(/http:\/\/[^\/]+/,''),$.extend({'ajax': true},mydata),my.ajaxhandler);
+                JSONP.get(OPT_REMOTE+myurl.replace(/http:\/\/[^\/]+/,''),mydata,my.ajaxhandler);
             else if (typeof(hash) != "undefined" && hash != null)
                 JSONP.get(OPT_REMOTE+"/compare",{'ajax': true,'hist':hash},my.ajaxhandler);
         } else {
@@ -1331,7 +1332,7 @@ optemo_module = (function (my){
             	$.ajax({
             		//type: (mydata==null)?"GET":"POST",
             		data: (mydata==null)?"":mydata,
-            		url: (hash==null)?myurl+"?ajax=true":myurl+"?ajax=true&hist="+hash,
+            		url: (hash==null)?myurl:myurl+"?hist="+hash,
             		success: my.ajaxhandler,
             		error: my.ajaxerror
             	});
@@ -1389,8 +1390,7 @@ optemo_module = (function (my){
 
     my.ajaxcall = function(myurl,mydata) {
         my.disableInterfaceElements();
-    	numactions = parseInt($("#actioncount").html()) + 1;
-    	$.history.load(numactions.toString(),myurl,mydata);
+    	$.history.load($("#actioncount").html(),myurl,mydata);
     };
     
     my.quickajaxcall = function(element_name, myurl, fn) { // The purpose of this is to do an ajax load without having to go through the relatively heavy ajaxcall().
