@@ -29,9 +29,10 @@ class CompareController < ApplicationController
     end
   end
   
+  #This function should be combined with create
   def zoomout
     # Zoom out of see similar
-    classVariables(Search.create("action_type" => "nextpage"))
+    classVariables(Search.create("action_type" => "nextpage", "parent" => params[:hist]))
     correct_render
   end
 
@@ -48,9 +49,10 @@ class CompareController < ApplicationController
     render 'mobile-filters', :layout=>'filters'
   end
   
+  #This function should be combined with create
   def sim
     # Explore products through clusters
-    classVariables(Search.create({"cluster_hash" => params[:id], "action_type" => "similar"}))
+    classVariables(Search.create({"cluster_hash" => params[:id], "action_type" => "similar", "parent" => params[:hist]}))
     correct_render
   end
 
