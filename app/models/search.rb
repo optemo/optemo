@@ -280,7 +280,7 @@ class Search < ActiveRecord::Base
     #Set parent id
     self.parent_id = Base64.decode64(p["parent"]).to_i unless p["parent"].blank?
     unless p["action_type"] == "initial" #Exception for initial clusters
-      old_search = Search.find_by_parent_id(self.parent_id)
+      old_search = Search.find_by_id(self.parent_id)
     end
     # If there is a sort method to keep from last time, move it across
     self.sortby = old_search[:sortby] if old_search && old_search[:sortby]
