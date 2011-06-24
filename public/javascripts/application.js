@@ -1319,7 +1319,7 @@ optemo_module = (function (my){
     /* Does a relatively generic ajax call and returns data to the handler below */
     my.ajaxsend = function (hash,myurl,mydata,timeoutlength) {
         var lis = my.loading_indicator_state;
-        mydata = $.extend({'ajax': true, 'parent': $("#actioncount").html()},mydata);
+        mydata = $.extend({'ajax': true},mydata);
         if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 50);
         if (OPT_REMOTE) {
             //Embedded Layout

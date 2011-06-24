@@ -79,6 +79,7 @@ class CompareController < ApplicationController
       end
     else
       params[:myfilter]["action_type"] = "filter"
+      params[:myfilter]["parent"] = params[:hist] if params[:hist]
       classVariables(Search.create(params[:myfilter]))
       correct_render
     end

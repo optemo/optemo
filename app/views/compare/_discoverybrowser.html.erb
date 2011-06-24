@@ -27,4 +27,4 @@
 <%= raw '</div>' if !@s.directLayout %>
 <%= raw mb %>
 <%= raw '</div>' if @s.directLayout %>
-<div style="clear:both;"><span id="actioncount" style="display:none"><%= Base64.encode64(Session.search.id) %></span></div>
+<div style="clear:both;"><span id="actioncount" style="display:none"><%= Base64.encode64(Session.search.id.to_s).chomp %></span></div>
