@@ -47,6 +47,7 @@ class Session
         break
       end
     end unless url.nil?
+
     p_type = p_url.nil?? ProductType.find_all_by_name('camera_bestbuy').first : p_url.product_type
     
     self.product_type = p_type.name
