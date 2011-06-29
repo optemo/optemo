@@ -1,0 +1,60 @@
+en:
+    drive_bestbuy:
+        # All language-dependent definitions in models
+        sitetitle:                  "Best Buy Drive & Storage"
+        title:                      "Drive & Storage"
+        title-plural:               "Drive & Storage"
+        defaultdesc:                "With an external hard drive, flash drive or disc drive you can backup your files and take them virtually anywhere. Shop for reliable, high-quality hard drives at BestBuy.ca and find the perfect way to keep your files safe."
+        keywords:                   "external hard drive, flash drive, portable hard drive, hard drives"
+        classification:             "Drive & Storage"
+        navtitle:                   "Currently browsing %{count} Camera"
+        
+        specs:
+            category:
+                name:               "Product Category"
+            saleprice:
+                name:               "Price"
+                info:               "The lowest price for the item."
+                preunit:            "$"  
+            maxresolution:
+                name:               "Resolution"
+                info:               "Measured in megapixels (millions of pixels), the number of light-sensitive cells that are actually exposed to light and used to capture the image, while the remainder may be shielded or just unused."
+                unit:               "MP"
+            fblike:
+                name:               "Facebook like"     
+            waterproof:
+                name:               "Waterproof / Shockproof"
+                info:               "lets you snap photos under water down to a certain depth."
+            brand:
+                name:               "Brands"
+                info:               "The manufacturer of the product. You can choose more than just one brand."
+            color:
+                name:               "Colors"
+            customerRating:
+                name:               "Customer Rating"
+                info:               "On a scale of 1 to 5, five being the best, this is the average of our customer ratings. Items are rated 0 if they have not been reviewed."
+                unit:               "/ 5.0"
+            onsale:
+                name:               "On Sale"
+            isClearance:
+                name:               "Clearance"
+            isOnlineOnly:
+                name:               "Online Only"
+            isInternal:
+                name:               "Internal"
+            isExternal:
+                name:               "External"
+            toprated:
+                name:               "Top-Rated"
+            saleprice_factor:
+                name:               "Price"
+            maxresolution_factor:
+                name:               "Resolution"
+            opticalzoom_factor:
+                name:               "Optical Zoom" 
+            fblike_factor:
+                name:               "Facebook like"
+            capacity:
+                name:               "Storage Capacity"
+            isMac:
+                name:               "Mac"

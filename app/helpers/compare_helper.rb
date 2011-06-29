@@ -191,13 +191,19 @@ module CompareHelper
     prods = @s.search.products_landing
     for i in 0...num_examples
       case type
-        when "featured"      
-            res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[0][i].product_id)})
-        when "liked"
-              res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[1][i].product_id)})
-        when 'customerRating'
-              res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[2][i].product_id)})    
-        end                
+      when "featured"
+        if prods[0].size > 0
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[0][i].product_id)})
+        end
+      when "liked"
+        if prods[1].size > 0
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[1][i].product_id)})
+        end
+      when 'customerRating'
+        if prods[2].size > 0
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[2][i].product_id)})
+        end
+      end                
     end    
     res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
   end
