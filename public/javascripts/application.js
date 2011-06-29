@@ -427,7 +427,7 @@ optemo_module = (function (my){
 			href = arguments[4];
 		else {
 			// Using /product/_/ because savedproducts do not have an href (otherwise it would need to be stored in the cookie)
-			href = "/product/_/"+id;
+			href = "http://www.bestbuy.ca/"+((!(typeof(optemo_french) == "undefined") && optemo_french) ? "fr" : "en")+"-CA/product/_/"+sku+".aspx";
 		}
     	// Create an empty slot for product
     	var saveditem = "<div class='saveditem' id='c" + id + "' data-sku='"+sku+"'>";
@@ -473,7 +473,7 @@ optemo_module = (function (my){
             }
     	} else {
     		var el = img.parent().find('.easylink');
-    		res = el.attr('href').match(/\d+$/);
+    		res = el.attr('data-id');
     		sku = el.attr('data-sku');
     	}
     	return Array(res, sku);
@@ -976,7 +976,8 @@ optemo_module = (function (my){
         	var product_title = t.attr('title');
         	if (product_title == undefined) product_title = t.html(); // This is a text link
         	my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids, 'imgurl' : t.attr('src')});
-			my.applySilkScreen(href + '?plain=true',null, 560, 580);
+			//my.applySilkScreen(href + '?plain=true',null, 560, 580);
+			window.location = href;
         	return false;
         });
 
@@ -1318,31 +1319,20 @@ optemo_module = (function (my){
     /* Does a relatively generic ajax call and returns data to the handler below */
     my.ajaxsend = function (hash,myurl,mydata,timeoutlength) {
         var lis = my.loading_indicator_state;
+        mydata = $.extend({'ajax': true, 'hist':hash},mydata);
         if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 50);
         if (OPT_REMOTE) {
             //Embedded Layout
-            if (myurl != null)
-                JSONP.get(OPT_REMOTE+myurl.replace(/http:\/\/[^\/]+/,''),$.extend({'ajax': true},mydata),my.ajaxhandler);
-            else if (typeof(hash) != "undefined" && hash != null)
-                JSONP.get(OPT_REMOTE+"/compare",{'ajax': true,'hist':hash},my.ajaxhandler);
+            myurl = (myurl != null) ? myurl.replace(/http:\/\/[^\/]+/,'') : "/compare"
+            JSONP.get(OPT_REMOTE+myurl,mydata,my.ajaxhandler);
         } else {
-    	    if (myurl != null) {
-            	$.ajax({
-            		//type: (mydata==null)?"GET":"POST",
-            		data: (mydata==null)?"":mydata,
-            		url: (hash==null)?myurl+"?ajax=true":myurl+"?ajax=true&hist="+hash,
-            		success: my.ajaxhandler,
-            		error: my.ajaxerror
-            	});
-    	    } else if (typeof(hash) != "undefined" && hash != null) {
-		    	/* Used by back button */
-    	    	$.ajax({
-    	    		type: "GET",
-    	    		url: "/compare/?ajax=true&hist="+hash,
-    	    		success: my.ajaxhandler,
-    	    		error: my.ajaxerror
-    	    	});
-    	    }
+            $.ajax({
+            	//type: (mydata==null)?"GET":"POST",
+            	data: (mydata==null)?"":mydata,
+            	url: myurl || "/compare",
+            	success: my.ajaxhandler,
+            	error: my.ajaxerror
+            });
 	    }
     };
 
@@ -1388,8 +1378,7 @@ optemo_module = (function (my){
 
     my.ajaxcall = function(myurl,mydata) {
         my.disableInterfaceElements();
-    	numactions = parseInt($("#actioncount").html()) + 1;
-    	$.history.load(numactions.toString(),myurl,mydata);
+    	$.history.load($("#actioncount").html(),myurl,mydata);
     };
     
     my.quickajaxcall = function(element_name, myurl, fn) { // The purpose of this is to do an ajax load without having to go through the relatively heavy ajaxcall().
