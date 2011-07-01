@@ -1100,17 +1100,17 @@ optemo_module = (function (my){
 		});
 		
 		//Infinite Scroll
-		//$('#main').infinitescroll({
-        //    navSelector  : "div.pagination",            
-        //                   // selector for the paged navigation (it will be hidden)
-        //    nextSelector : "div.pagination a.next_page",    
-        //                   // selector for the NEXT link (to page 2)
-        //    itemSelector : "#main div.navbox",          
-        //                   // selector for all items you'll retrieve
-        //    loadingText : "Loading more products...",
-        //    dataType : "jsonp",
-        //    donetext : "<em>These are all the products with this selection <a href='#'>here</a></em>"
-        //});
+		$('#main').infinitescroll({
+            navSelector  : "div.pagination",            
+                           // selector for the paged navigation (it will be hidden)
+            nextSelector : "div.pagination a.next_page",    
+                           // selector for the NEXT link (to page 2)
+            itemSelector : "#main div.navbox",          
+                           // selector for all items you'll retrieve
+            loadingText : "Loading more products...",
+            dataType : "jsonp",
+            donetext : "<em>These are all the products with this selection <a href='#'>here</a></em>"
+        });
 		
 	    //var model = "";
     	////Autocomplete for searchterms
