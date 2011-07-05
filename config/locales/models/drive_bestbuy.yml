@@ -11,7 +11,7 @@ en:
         
         specs:
             category:
-                name:               "Product Category"
+                name:               "Shop Drives & Storage"
             saleprice:
                 name:               "Price"
                 info:               "The lowest price for the item."
@@ -58,3 +58,15 @@ en:
                 name:               "Storage Capacity"
             isMac:
                 name:               "Mac"
+            '20237':
+                name:               "External Hard Drives"                
+            '20243':
+                name:               "USB Flash Drives"
+            '20239':
+                name:               "Internal Hard Drives"
+            '30442':
+                name:               "Solid State Drives"
+            '20236':
+                name:               "DVD & CD Drives"
+            '29583':
+                name:               "Storage Accessories"

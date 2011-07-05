@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class Search < ActiveRecord::Base
   attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
   
@@ -377,13 +378,13 @@ class Search < ActiveRecord::Base
         fname = Regexp.last_match[1]
         max = fname+'_max'
         @userdataconts << Userdatacont.new({:name => fname, :min => v, :max => p[max]})
-      elsif Session.binary["filter"].index(k)
+      elsif Session.binary["all"].index(k)
         #Binary Features
         #Handle false booleans
         if v != '0'
           @userdatabins << Userdatabin.new({:name => k, :value => v})
         end
-      elsif Session.categorical["filter"].index(k)
+      elsif Session.categorical["all"].index(k)
         #Categorical Features
         v.split("*").each do |cat|
           @userdatacats << Userdatacat.new({:name => k, :value => cat})
@@ -393,8 +394,13 @@ class Search < ActiveRecord::Base
         self.keyword_search = v
       end
     end
+    cats = []
     #Check for cat filters which have been eliminated by other filters
     @userdatacats.group_by(&:name).each_pair do |k,v|
+      # get all categories
+      if k='category'
+        v.each { |x| cats << x.value }
+      end
       if v.size > 1
         counts = SearchProduct.cat_counts(k,true,false,self)
         v.each do |val|
@@ -402,6 +408,36 @@ class Search < ActiveRecord::Base
         end
       end
     end
+    
+    # remove the filter without categories selected
+    
+
+      @userdatacats.group_by(&:name).keys.uniq.each do |feature_name|
+        Session.dynamic_filter_cat.each_pair do |k, v|
+          if v.include?(feature_name)
+            @userdatacats.reject!{|c| c.name == feature_name} unless cats.include?(k)
+            break
+          end
+        end
+      end
+    @userdataconts.group_by(&:name).keys.uniq.each do |feature_name|
+      Session.dynamic_filter_cont.each_pair do |k, v|
+          if v.include?(feature_name)
+            @userdataconts.reject!{|c| c.name == feature_name} unless cats.include?(k)
+            break
+          end
+        end
+      end
+      @userdatabins.group_by(&:name).keys.uniq.each do |feature_name|
+        Session.dynamic_filter_bin.each_pair do |k, v|
+          if v.include?(feature_name)
+            @userdatabins.reject!{|c| c.name == feature_name} unless cats.include?(k)
+            break
+          end
+        end
+      end
+    
+
   end
   
   # The intent of this function is to see if filtering is being done on a previously filtered set of clusters.

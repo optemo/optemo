@@ -8,7 +8,7 @@ class Session
   cattr_accessor :product_type # Product type (camera_us, etc.), used everywhere
   cattr_accessor :piwikSiteId # Piwik Site ID, as configured in the currently-running Piwik install.
   cattr_accessor :ab_testing_type # Categorizes new users for AB testing
-  cattr_accessor :category_id
+  cattr_accessor :category_id, :dynamic_filter_cat, :dynamic_filter_cont, :dynamic_filter_bin
 
   def initialize (url = nil)
     # This parameter controls whether the interface features drag-and-drop comparison or not.
@@ -30,23 +30,20 @@ class Session
     self.utility = Hash.new{|h,k| h[k] = []}     
     self.utility_weight = Hash.new(1)
     self.cluster_weight = Hash.new(1)
-
-    # file = YAML::load(File.open("#{Rails.root}/config/products.yml"))
-    # file.each_pair do |product_type,d|
-    #   if d["url"].keys.include? url
-    #     self.product_type = product_type
-    #     break
-    #   end
-    # end
-    # self.product_type ||= 'camera_bestbuy' #Default product type
+    self.dynamic_filter_cat = Hash.new{|h,k| h[k] = []}     
+    self.dynamic_filter_cont = Hash.new{|h,k| h[k] = []}     
+    self.dynamic_filter_bin = Hash.new{|h,k| h[k] = []}
+    
     p_url = nil
 
-    Url.find_each do |u|
-      if url && u.url.include?(url)
-        p_url = u
-        break
+    unless url.nil?
+      Url.find_each do |u|
+        if u.url==url
+          p_url = u
+          break
+        end
       end
-    end unless url.nil?
+    end
 
     p_type = p_url.nil?? ProductType.find_all_by_name('camera_bestbuy').first : p_url.product_type
     
@@ -71,26 +68,66 @@ class Session
     # self.piwikSiteId = product_yml["url"][url] || 10 # This is a catch-all for testing sites.
     p_url ||= p_type.urls.first
     self.piwikSiteId = p_url.piwik_id || 10 # This is a catch-all for testing sites.
-
-        # This block gets out the continuous, binary, and categorical features
+   
+    continuous_filter_unsorted=[]
+    binary_filter_unsorted=[]
+    categorical_filter_unsorted=[]
+    
+    # This block gets out the continuous, binary, and categorical features
     p_headings = Heading.find_all_by_product_type_id(p_type.id, :include => :features) # eager loading headings and features to reduce the queries.
     p_headings.each do |heading|
       heading.features.each do |feature|
+        cats = []
+        cats = feature.used_for_categories.split(',') unless feature.used_for_categories.nil?
+        cats = [cats] unless cats.is_a?(Array)
+        cats.each do |c|
+          case feature.feature_type
+          when "Continuous"
+            self.dynamic_filter_cont[c] << feature.name
+          when "Binary"
+            self.dynamic_filter_bin[c] << feature.name
+          when "Categorical"
+            self.dynamic_filter_cat[c] << feature.name
+          end
+        end
         used_fors = feature.used_for.split(',').map { |uf| uf.strip }
         case feature.feature_type
         when "Continuous"
-            used_fors.each{|flag| self.continuous[flag] << feature.name}
+#          used_fors.each do |flag|
+#            if flag == 'filter' # only add features of selected product types to the filter
+#              continuous_filter_unsorted << [feature.name, feature.used_for_order] if feature.used_for_categories.nil?
+#            else
+#              self.continuous[flag] << feature.name
+#            end
+          #          end
+
           self.continuous["all"] << feature.name #Keep track of all features
           self.prefDirection[feature.name] = feature.larger_is_better ? 1 : -1
           self.maximum[feature] = feature.max if feature.max > 0
           self.minimum[feature] = feature.min if feature.min > 0
           self.continuous["sortby"].each_index{|i|  self.continuous["sortby"][i] = "#{self.continuous["sortby"][i]}_factor" unless self.continuous["sortby"][i].include?("factor")} 
         when "Binary"
-          used_fors.each{|flag| self.binary[flag] << feature.name; self.binarygroup[heading.name] << feature.name if flag == "filter"}
+#          used_fors.each do |flag|
+ #           if flag == 'filter' # only add features of selected product types to the filter
+  #            binary_filter_unsorted << [feature.name, feature.used_for_order] if feature.used_for_categories.nil?
+   #           self.binarygroup[heading.name] << feature.name
+    #        else
+     #         self.binary[flag] << feature.name
+      #      end
+       #   end
+
           self.binary["all"] << feature.name #Keep track of all features
           self.prefered[feature.name] = feature.prefered if !feature.prefered.nil? && !feature.prefered.empty?
         when "Categorical"
-          used_fors.each{|flag| self.categorical[flag] << feature.name}
+#          used_fors.each do |flag|
+#            if flag == 'filter' # only add features of selected product types to the filter
+#              categorical_filter_unsorted << [feature.name, feature.used_for_order] if feature.used_for_categories.nil?
+#            else
+#              self.categorical[flag] << feature.name
+#            end
+#          end
+
+        
           self.categorical["all"] << feature.name #Keep track of all features
           self.prefered[feature.name] = feature.prefered if !feature.prefered.nil? && !feature.prefered.empty?
         end
@@ -99,31 +136,10 @@ class Session
          self.cluster_weight[feature.name] = feature.cluster_weight if feature.cluster_weight > 1
       end
     end
-  
-    # # This block gets out the continuous, binary, and categorical features
-    # product_yml["specs"].each_pair do |heading, specs|
-    #   specs.each_pair do |feature,atts|
-    #     case atts["type"]
-    #     when "Continuous"
-    #       atts["used_for"].each{|flag| self.continuous[flag] << feature}
-    #       self.continuous["all"] << feature #Keep track of all features
-    #       self.prefDirection[feature] = atts["prefdir"] if atts["prefdir"]
-    #       self.maximum[feature] = atts["max"] if atts["max"]
-    #       self.minimum[feature] = atts["min"] if atts["min"]
-    #       self.continuous["sortby"].each_index{|i|  self.continuous["sortby"][i] ||= "#{self.continuous["sortby"][i]}_factor"} 
-    #     when "Binary"
-    #       atts["used_for"].each{|flag| self.binary[flag] << feature; self.binarygroup[heading] << feature if flag == "filter"}
-    #       self.binary["all"] << feature #Keep track of all features
-    #     when "Categorical"
-    #       atts["used_for"].each{|flag| self.categorical[flag] << feature}
-    #       self.categorical["all"] << feature #Keep track of all features
-    #       self.prefered[feature] = atts["prefered"] if atts["prefered"]
-    #     end
-    #      self.utility_weight[feature] = atts["utility"] if atts["utility"]
-    #      self.cluster_weight[feature] = atts["cluster"] if atts["cluster"]
-    #   end
-     
-    # end
+    self.continuous['filter'] = continuous_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{ |f| f[0] }
+    self.binary['filter'] = binary_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{|f| f[0] }
+    self.categorical['filter'] = categorical_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{|f| f[0] }
+    
   end
 
   def self.searches
@@ -139,5 +155,81 @@ class Session
     # esc_param is either nil (if it doesn't exist) or "" if it does. The reason is that the URL ends with ?_escaped_fragment_= (the value is empty).
     # For more information on esc_param and its purpose, see the file "lib/absolute_url_enabler.rb" 
     !esc_param.nil? || (!str.nil? && str.match(/Google|msnbot|Rambler|Yahoo|AbachoBOT|accoona|AcioRobot|ASPSeek|CocoCrawler|Dumbot|FAST-WebCrawler|GeonaBot|Gigabot|Lycos|MSRBOT|Scooter|AltaVista|IDBot|eStyle|ScrubbyBloglines subscriber|Dumbot|Sosoimagespider|QihooBot|FAST-WebCrawler|Superdownloads Spiderman|LinkWalker|msnbot|ASPSeek|WebAlta Crawler|Lycos|FeedFetcher-Google|Yahoo|YoudaoBot|AdsBot-Google|Googlebot|Scooter|Gigabot|Charlotte|eStyle|AcioRobot|GeonaBot|msnbot-media|Baidu|CocoCrawler|Google|Charlotte t|Yahoo! Slurp China|Sogou web spider|YodaoBot|MSRBOT|AbachoBOT|Sogou head spider|AltaVista|IDBot|Sosospider|Yahoo! Slurp|Java VM|DotBot|LiteFinder|Yeti|Rambler|Scrubby|Baiduspider|accoona|Java/i))
+  end
+  def self.is_feature_in_myfilter_categories? (feature, myfilter_categories)
+    ret = false
+    if feature.used_for_categories.nil?
+      ret = true
+    else
+      if myfilter_categories.size > 0
+        cats = feature.used_for_categories.split(',')
+        cats = [cats] unless cats.is_a?(Array)
+        cats.each do |cat|
+          cat = cat.strip
+          if myfilter_categories.include? cat
+
+            ret = true
+            break
+          end
+        end
+      end
+    end
+    ret
+  end
+  def self.getFilters(userdatacats)
+    category_ids = []
+    userdatacats.each do |d|
+      category_ids << d.value if d.name == 'category'
+    end unless userdatacats.nil?
+
+    continuous_filter_unsorted=[]
+    binary_filter_unsorted=[]
+    categorical_filter_unsorted=[]
+    
+    
+    # This block gets out the continuous, binary, and categorical features
+    
+    p_headings = Heading.find_all_by_product_type_id(ProductType.find_all_by_name(product_type).first.id, :include => :features) # eager loading headings and features to reduce the queries.
+    p_headings.each do |heading|
+      heading.features.each do |feature|
+        used_fors = feature.used_for.split(',').map { |uf| uf.strip }
+        case feature.feature_type
+        when "Continuous"
+          used_fors.each do |flag|
+            if flag == 'filter' # only add features of selected product types to the filter
+              continuous_filter_unsorted << [feature.name, feature.used_for_order] if is_feature_in_myfilter_categories?(feature, category_ids)
+             else
+              self.continuous[flag] << feature.name
+            end
+          end
+        when "Binary"
+          used_fors.each do |flag|
+            if flag == 'filter' # only add features of selected product types to the filter
+              if is_feature_in_myfilter_categories?(feature, category_ids)
+                binary_filter_unsorted << [feature.name, feature.used_for_order]
+                
+                self.binarygroup[heading.name] << feature.name unless self.binarygroup[heading.name].include? feature.name
+              end
+            else
+              self.binary[flag] << feature.name
+              self.binarygroup[heading.name] << feature.name unless self.binarygroup[heading.name].include? feature.name
+            end
+          end
+        when "Categorical"
+          used_fors.each do |flag|
+            if flag == 'filter' # only add features of selected product types to the filter
+              categorical_filter_unsorted << [feature.name, feature.used_for_order] if is_feature_in_myfilter_categories?(feature, category_ids)
+            else
+              self.categorical[flag] << feature.name
+            end
+          end
+        end
+      end
+    end
+    self.continuous['filter'] = continuous_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{ |f| f[0] }
+    self.binary['filter'] = binary_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{|f| f[0] }
+    self.categorical['filter'] = categorical_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{|f| f[0] }
+    
+
   end
 end
