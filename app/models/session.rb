@@ -196,18 +196,21 @@ class Session
           used_fors.each do |flag|
             if flag == 'filter' # only add features of selected product types to the filter
               continuous_filter_unsorted << [feature.name, feature.used_for_order] if is_feature_in_myfilter_categories?(feature, category_ids)
-              
-            else
+             else
               self.continuous[flag] << feature.name
             end
           end
         when "Binary"
           used_fors.each do |flag|
             if flag == 'filter' # only add features of selected product types to the filter
-              binary_filter_unsorted << [feature.name, feature.used_for_order] if is_feature_in_myfilter_categories?(feature, category_ids)
-              self.binarygroup[heading.name] << feature.name
+              if is_feature_in_myfilter_categories?(feature, category_ids)
+                binary_filter_unsorted << [feature.name, feature.used_for_order]
+                
+                self.binarygroup[heading.name] << feature.name unless self.binarygroup[heading.name].include? feature.name
+              end
             else
               self.binary[flag] << feature.name
+              self.binarygroup[heading.name] << feature.name unless self.binarygroup[heading.name].include? feature.name
             end
           end
         when "Categorical"
@@ -218,8 +221,6 @@ class Session
               self.categorical[flag] << feature.name
             end
           end
-
-          used_fors.each{|flag| self.categorical[flag] << feature.name}
         end
       end
     end
