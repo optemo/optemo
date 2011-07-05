@@ -88,7 +88,7 @@ optemo_module = (function (my){
     // The following variables are pulled from optemo.html.erb
     // They are in a separate function like this so that the embedder can call them at the appropriate time.
     // Note that those that are locally scoped to the optemo_module must be defined before this function call.
-    var VERSION, SESSION_ID, AB_TESTING_TYPE;
+    var VERSION, SESSION_ID, AB_TESTING_TYPE, DOM_ALREADY_RUN;
     if (typeof OPT_REMOTE == "undefined") OPT_REMOTE = false;
     my.initializeVariables = function() {
         my.IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
@@ -1774,7 +1774,7 @@ optemo_module = (function (my){
 //--------------------------------------//
 
 $(function(){
-    if ($.trim($("#optemo_embedder").text()) != "")
+    if ($("#optemo_embedder").children().length)
         optemo_module.domready();
 });
 
