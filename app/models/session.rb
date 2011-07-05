@@ -42,7 +42,7 @@ class Session
     p_url = nil
 
     Url.find_each do |u|
-      if u.url.include? url
+      if url && u.url.include?(url)
         p_url = u
         break
       end
