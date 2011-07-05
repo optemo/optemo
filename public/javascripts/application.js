@@ -692,6 +692,12 @@ optemo_module = (function (my){
 		//	return false;
 		//})
 		
+		//See all Products
+		$('.seeall').live('click', function() {
+		    my.ajaxcall('/', {});
+		    return false;
+		});
+		
     	// Change sort method
     	$('.sortby').live('click', function() {
 			if (my.loading_indicator_state.disable) return false;
