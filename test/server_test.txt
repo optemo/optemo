@@ -1,0 +1,20 @@
+Testing
+
+1) Functionality Testing
+We will go through the attached checklist to make sure everything is functional.
+
+2) Browser Compatibility
+Firefox, Safari, Chrome, Opera, Internet Explorer >= 6
+We will go through the checklist to make sure everything displays correctly in these browsers.
+
+3) Performance Testing
+First we will optimize the application including database requests so that it performs well. Requests should always take less than 1 sec and the responsiveness of the website will be at least as good as the current BestBuy website
+
+4) Load Testing
+We will use JMeter to test the responsiveness of the website as load increases to find out the amount of load the current website can handle and whether it needs to be scaled up.
+
+5) Disaster Recovery Testing
+The website will be deployed at two data centers simultaneously so that there is a redundant backup. We will go through a scenario where we simulate one data center going down.
+
+6) Monitoring Solutions
+Test the monitoring solutions to make sure we are notified if anything is wrong with the servers.

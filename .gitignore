@@ -18,6 +18,12 @@ public/system
 lib/.ruby_inline
 public/javascripts/base_packaged.js
 public/stylesheets/assist_packaged.css
+public/javascripts/bb_loader_packaged.js
+public/javascripts/loader_packaged.js
+public/javascripts/mobile_packaged.js
+public/stylesheets/bb_embed_packaged.css
+public/stylesheets/direct_packaged.css
+public/stylesheets/mobileview_packaged.css
 
 lib/c_code/clusteringCodes/CMakeFiles
 lib/c_code/clusteringCodes/Makefile

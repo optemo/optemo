@@ -89,3 +89,5 @@ en:
                 name:               "Best Selling"    
             saleprice_factor_high:       
                 name:               "Price High"    
+            AdvancedSearch:
+                name:               "Advanced Search"                            

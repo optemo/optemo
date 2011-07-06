@@ -1,6 +1,6 @@
 <% s = Session %>	
 <%= render :partial => "html_and_head", :locals => {:s => s} %>
-<body style="font-size:0.75em;font-family: arial, helvetica;margin:0;">
+<body style="font-size:0.75em;font-family: arial, helvetica, sans-serif;margin:0;">
 <div id="optemo_embedder">
 <!--[if IE]>
 <div id="IE">
@@ -38,6 +38,7 @@
 	<% if s %>
 	<span id="dragDropEnabled"><%= s.dragAndDropEnabled %></span>
 	<span id="seshid"><%= s.id %></span>
+	<span id="piwikid"><%= s.piwikSiteId %></span>
 	<span id="modelname"><%= s.product_type %></span>
 	<span id="directLayout"><%= s.directLayout %></span>
 	<span id="ab_testing_type"><%= s.ab_testing_type %></span>
