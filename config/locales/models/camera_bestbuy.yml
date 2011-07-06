@@ -83,6 +83,14 @@ en:
                 name:               "Optical Zoom" 
             fblike_factor:
                 name:               "Facebook like"
+            '22474':
+                name:               "Point and Shoot"                
+            '28382':
+                name:               "Waterproof"
+            '28381':
+                name:               "Ultra Zoom"
+            '20220':
+                name:               "Advanced Compact"
             displayDate:
                 name:               "Newest Model"
             orders_factor:  
@@ -91,3 +99,4 @@ en:
                 name:               "Price High"    
             AdvancedSearch:
                 name:               "Advanced Search"                            
+
