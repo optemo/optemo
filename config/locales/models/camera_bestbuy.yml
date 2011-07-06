@@ -83,5 +83,13 @@ en:
                 name:               "Optical Zoom" 
             fblike_factor:
                 name:               "Facebook like"
+            '22474':
+                name:               "Point and Shoot"                
+            '28382':
+                name:               "Waterproof"
+            '28381':
+                name:               "Ultra Zoom"
+            '20220':
+                name:               "Advanced Compact"
             'AdvancedSearch':
                 name:               "Advanced Search"                                
