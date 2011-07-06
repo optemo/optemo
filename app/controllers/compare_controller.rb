@@ -9,7 +9,7 @@ class CompareController < ApplicationController
     else
       # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
       if Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
-        hist = params[:hist].unpack('m')[0].gsub(/\D/,'').to_i if params[:hist] && !params[:hist].blank?
+        hist = CGI.unescape(params[:hist]).unpack('m')[0].gsub(/\D/,'').to_i if params[:hist] && !params[:hist].blank?
         search_history = Search.find_by_parent_id(hist) if hist && params[:page].nil?
         if params[:page]
           classVariables(Search.create({:page => params[:page], :sortby => params[:sortby], "action_type" => "nextpage"}))

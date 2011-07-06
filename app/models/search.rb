@@ -292,7 +292,7 @@ class Search < ActiveRecord::Base
   def initialize(p={})
     super({})
     #Set parent id
-    self.parent_id = p["parent"].unpack("m")[0].to_i unless p["parent"].blank?
+    self.parent_id = CGI.unescape(p["parent"]).unpack("m")[0].to_i unless p["parent"].blank?
     unless p["action_type"] == "initial" #Exception for initial clusters
       old_search = Search.find_by_id(self.parent_id)
     end
