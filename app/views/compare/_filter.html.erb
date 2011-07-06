@@ -13,26 +13,26 @@
   <% if feat[:filter_type] == 'cat' %>
   	<div class='feature'>
 	  <% if index < 4 %>
-  		<div class='label' data-position="<%= index %>">
+ 		<div class='label' data-position="<%= index %>">
           <% end %>
            <% if index == 4 %>
-  		<div class='label space' data-position="<%= index %>">
+  		<div class='label-advanced-title' data-position="<%= index %>">
 		  <%= t("#{Session.product_type}.specs.AdvancedSearch.name")
-		  %>
+		  %>&nbsp;&gt;
 		  </div>
 		<div class='label-advanced' data-position="<%= index %>">
            <% end %>
 	   <% if index > 4 %>
   		<div class='label-advanced' data-position="<%= index %>">
 	   <% end %>
-			<%= t("#{Session.product_type}.specs.#{feat[:name]}.name") %>
+			<%= t("#{Session.product_type}.specs.#{feat[:name]}.name") %>&nbsp;&gt;
   			<% if @s.directLayout %>
   				<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat[:name] %>" data-position="<%= index %>">See Groups</div>
   			<% end %>
   		</div>
 		<% chosen_cats = chosencats(feat[:name]) %>
 		<% if feat[:name] == "color" %>
-			<div style="margin-right: -4px">
+			<div style="margin-right: -4px;margin-top: 4px;">
 				<% color_counts = SearchProduct.cat_counts("color",true) %>
 				<% %w(Red Orange Yellow Green Blue Purple Pink White Silver Brown Black).each do |color| %>
     				<% next if color_counts[color].nil? && !chosen_cats.include?(color) %>
@@ -75,16 +75,16 @@
   		<div class='label' data-position="<%= index %>">
           <% end %>
            <% if index == 4 %>
-  		<div class='label space' data-position="<%= index %>">
+  		<div class='label-advanced-title' data-position="<%= index %>">
 		  <%= t("#{Session.product_type}.specs.AdvancedSearch.name")
-		  %>
+		  %>&nbsp;&gt;
 		  </div>
 		<div class='label-advanced' data-position="<%= index %>">
            <% end %>
 	   <% if index > 4 %>
   		<div class='label-advanced' data-position="<%= index %>">
 	   <% end %>
-	<%= t('products.compare.'+heading) %></div></div>
+	<%= t('products.compare.'+heading) %>&nbsp;&gt;</div></div>
 	<% features.each do |b_feat| %>
 		<% dobj = @s.search.userdatabins.select{|udb| udb.name == b_feat}.first %>
 		<% unchecked = dobj.nil? || dobj.value == false %>

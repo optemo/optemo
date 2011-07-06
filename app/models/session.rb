@@ -183,10 +183,6 @@ class Session
       category_ids << d.value if d.name == 'category'
     end unless userdatacats.nil?
 
-    continuous_filter_unsorted=[]
-    binary_filter_unsorted=[]
-    categorical_filter_unsorted=[]
-    
     
     # This block gets out the continuous, binary, and categorical features
     
@@ -198,7 +194,7 @@ class Session
         when "Continuous"
           used_fors.each do |flag|
             if flag == 'filter' # only add features of selected product types to the filter
-              continuous_filter_unsorted << [feature.name, feature.used_for_order] if is_feature_in_myfilter_categories?(feature, category_ids)
+              self.continuous['filter'] << feature.name if is_feature_in_myfilter_categories?(feature, category_ids)
               self.filters_order << {:name => feature.name, :filter_type=> 'cont', :show_order => feature.used_for_order}
              else
               self.continuous[flag] << feature.name
@@ -208,8 +204,7 @@ class Session
           used_fors.each do |flag|
             if flag == 'filter' # only add features of selected product types to the filter
               if is_feature_in_myfilter_categories?(feature, category_ids)
-                binary_filter_unsorted << [feature.name, feature.used_for_order]
-                
+                self.binary['filter'] << feature.name
                 self.binarygroup[heading.name] << feature.name unless self.binarygroup[heading.name].include? feature.name
                 self.filters_order << {:name => heading.name, :filter_type =>  'bin', :show_order => heading.show_order} unless self.filters_order.index {|x| x[:name] == heading.name}
               end
@@ -221,7 +216,7 @@ class Session
         when "Categorical"
           used_fors.each do |flag|
             if flag == 'filter' # only add features of selected product types to the filter
-              categorical_filter_unsorted << [feature.name, feature.used_for_order] if is_feature_in_myfilter_categories?(feature, category_ids)
+              self.categorical['filter'] << feature.name if is_feature_in_myfilter_categories?(feature, category_ids)
               self.filters_order << {:name => feature.name, :filter_type => 'cat', :show_order => feature.used_for_order}
             else
               self.categorical[flag] << feature.name
@@ -230,9 +225,6 @@ class Session
         end
       end
     end
-    self.continuous['filter'] = continuous_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{ |f| f[0] }
-    self.binary['filter'] = binary_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{|f| f[0] }
-    self.categorical['filter'] = categorical_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{|f| f[0] }
     self.filters_order.sort_by! {|item| item[:show_order].to_i }
   end
 end

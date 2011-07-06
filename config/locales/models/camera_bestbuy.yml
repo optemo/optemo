@@ -83,3 +83,5 @@ en:
                 name:               "Optical Zoom" 
             fblike_factor:
                 name:               "Facebook like"
+            'AdvancedSearch':
+                name:               "Advanced Search"                                
