@@ -37,4 +37,4 @@ Best Sellers:
 Top Rated:
 <%= raw mb['customerRating']%>
 <a href="/" class="seeall">See All</a>
-<div style="clear:both;"><span id="actioncount" style="display:none"><%= @s.searches.size %></span></div>
+<div style="clear:both;"><span id="actioncount" style="display:none"><%= [Session.search.id.to_s].pack("m").chomp %></span></div>

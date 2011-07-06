@@ -5,5 +5,5 @@
 </div>
 <div id="product_content">
 <%= raw mb %>
-</div>
-<div style="clear:both;"><span id="actioncount" style="display:none"><%= @s.searches.size %></span></div>
+<%= raw '</div>' if @s.directLayout %>
+<div style="clear:both;"><span id="actioncount" style="display:none"><%= [Session.search.id.to_s].pack("m").chomp %></span></div>
