@@ -8,17 +8,30 @@
 </h2>
 <%= form_tag("/compare", :id => 'filter_form') do %>
 
-  <% i = 0 # Yes, I know, this isn't Rails-y, but we need to assign a different UI position to each feature of all kinds, in order. %> 
-  <% @s.categorical["filter"].each_with_index do |feat, index| %>
+ <% (0...@s.filters_order.size).each do |index| %>
+  <% feat = @s.filters_order[index] %>
+  <% if feat[:filter_type] == 'cat' %>
   	<div class='feature'>
-  		<div class='label' data-position="<%= i %>">
-			<%= t("#{Session.product_type}.specs.#{feat}.name") %>
+	  <% if index < 4 %>
+  		<div class='label' data-position="<%= index %>">
+          <% end %>
+           <% if index == 4 %>
+  		<div class='label space' data-position="<%= index %>">
+		  <%= t("#{Session.product_type}.specs.AdvancedSearch.name")
+		  %>
+		  </div>
+		<div class='label-advanced' data-position="<%= index %>">
+           <% end %>
+	   <% if index > 4 %>
+  		<div class='label-advanced' data-position="<%= index %>">
+	   <% end %>
+			<%= t("#{Session.product_type}.specs.#{feat[:name]}.name") %>
   			<% if @s.directLayout %>
-  				<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat %>" data-position="<%= i %>">See Groups</div>
+  				<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat[:name] %>" data-position="<%= index %>">See Groups</div>
   			<% end %>
   		</div>
-		<% chosen_cats = chosencats(feat) %>
-		<% if feat == "color" %>
+		<% chosen_cats = chosencats(feat[:name]) %>
+		<% if feat[:name] == "color" %>
 			<div style="margin-right: -4px">
 				<% color_counts = SearchProduct.cat_counts("color",true) %>
 				<% %w(Red Orange Yellow Green Blue Purple Pink White Silver Brown Black).each do |color| %>
@@ -30,45 +43,65 @@
 		<% else %>
 			
 			<%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
-			<% optionlist = SearchProduct.cat_counts(feat,true,true).to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? -a[1]-1000000 : -a[1]) <=> (chosen_cats.include?(b[0]) ? -b[1]-1000000 : -b[1])} %>
+			<% optionlist = SearchProduct.cat_counts(feat[:name],true,true).to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? -a[1]-1000000 : -a[1]) <=> (chosen_cats.include?(b[0]) ? -b[1]-1000000 : -b[1])} %>
 			<div class="categorical">
 			<% optionlist.each do |k,available_count| %>
 			<% checked = chosen_cats.include?(k) %>
-  			<div data-position="<%= i %>" <%=raw 'style="font-weight:bold;"' if checked %><%=raw 'class=" disabled"' if available_count == 0 %>>
-	  			<%= check_box_tag "superfluous[#{k}]", "1", checked, :disabled => (available_count == 0) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :'data-feat' => feat, :'data-opt' => k %>
+  			<div data-position="<%= index %>" <%=raw 'style="font-weight:bold;"' if checked %><%=raw 'class=" disabled"' if available_count == 0 %>>
+	  			<%= check_box_tag "superfluous[#{k}]", "1", checked, :disabled => (available_count == 0) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :'data-feat' => feat[:name], :'data-opt' => k %>
 				<%= (available_count == 0) ?	t("#{Session.product_type}.specs.i#{k}.name",:default=>k) : link_to(t("#{Session.product_type}.specs.#{k}.name", :default=>k), "#", :class => "binary_filter_text") %>
 	  			<span class="av_count"><%= "(#{available_count})" unless checked %></span>
 	  		</div>
 			<% end %>
 			</div>
   		<% end %>
-  		<%= hidden_field_tag "myfilter[#{feat}]", chosen_cats.join("*") %>
+  		<%= hidden_field_tag "myfilter[#{feat[:name]}]", chosen_cats.join("*") %>
   	</div>
-  	<% i = i + 1 %>
-  <% end %>
-  <% @s.continuous["filter"].each do |feat| %>
+ <% end %>
+ <% if feat[:filter_type] == 'cont' %>
   	<%= render :partial => 'slider', 
-  		:locals => {:name => t('products.' + feat),
-  		:i => i,
-  		:feat => feat,
+  		:locals => {:name => t('products.' + feat[:name]),
+  		:i => index,
+  		:feat => feat[:name],
   		:money_formatting => feat == 'saleprice',
-  		:overall_min => ContSpec.allMinMax(feat)[0],
-  		:overall_max => ContSpec.allMinMax(feat)[1]} %>
-  	<% i = i + 1 %>
-  <% end %>
-  <% @s.binarygroup.each_pair do |heading,features| %>
-	<div class="feature"><div class="label"><%= t('products.compare.'+heading) %></div></div>
-	<% features.each do |feat| %>
-		<% dobj = @s.search.userdatabins.select{|udb| udb.name == feat}.first %>
+  		:overall_min => ContSpec.allMinMax(feat[:name])[0],
+  		:overall_max => ContSpec.allMinMax(feat[:name])[1]} %>
+ <% end %>
+ <% if feat[:filter_type] == 'bin' %>
+ <% heading = feat[:name] %>
+ <% features = @s.binarygroup[heading] %>
+ <div class="feature">
+           <% if index < 4 %>
+  		<div class='label' data-position="<%= index %>">
+          <% end %>
+           <% if index == 4 %>
+  		<div class='label space' data-position="<%= index %>">
+		  <%= t("#{Session.product_type}.specs.AdvancedSearch.name")
+		  %>
+		  </div>
+		<div class='label-advanced' data-position="<%= index %>">
+           <% end %>
+	   <% if index > 4 %>
+  		<div class='label-advanced' data-position="<%= index %>">
+	   <% end %>
+	<%= t('products.compare.'+heading) %></div></div>
+	<% features.each do |b_feat| %>
+		<% dobj = @s.search.userdatabins.select{|udb| udb.name == b_feat}.first %>
 		<% unchecked = dobj.nil? || dobj.value == false %>
-		<% available_count = SearchProduct.bin_count(feat) %>
-  		<div class="feature<%= " disabled" if available_count == 0 %>" data-position="<%= i %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
-  			<%= check_box_tag "myfilter[#{feat}]", "1", !unchecked ,:disabled => (available_count == 0) ? true : false, :class => 'binary_filter', :'data-opt' => feat %>
-  			<%= (available_count == 0) ? t("#{Session.product_type}.specs.#{feat}.name") : link_to( t("#{Session.product_type}.specs.#{feat}.name"), "#", :class => "binary_filter_text") %>
+		<% available_count = SearchProduct.bin_count(b_feat) %>
+  		<div class="feature<%= " disabled" if available_count == 0 %>" data-position="<%= index %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
+  			<%= check_box_tag "myfilter[#{b_feat}]", "1", !unchecked ,:disabled => (available_count == 0) ? true : false, :class => 'binary_filter', :'data-opt' => b_feat %>
+  			<%= (available_count == 0) ? t("#{Session.product_type}.specs.#{b_feat}.name") : link_to( t("#{Session.product_type}.specs.#{b_feat}.name"), "#", :class => "binary_filter_text") %>
 			<span class="av_count"><%= "(#{available_count})" if unchecked %></span>
   		</div>
-  	<% i = i + 1 %>	
 	<% end %>
   <% end %>
 <% end %>
+<% end %>
+<div class="y_bottom">
+	<%= link_to "/", :class => "reset awesome_reset global_btn", :rel => "nofollow", :style => "float: right; margin-top:12px", :title => t('products.compare.resetdesc') do %>
+		<span><%= t('products.compare.reset') %></span>
+	<% end %>
+</div>
+
 <div style="clear:both; height: 0"><!-- --></div>

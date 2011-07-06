@@ -1,7 +1,19 @@
 <% distribution_data = getDist(feat)%>
 <% if distribution_data %>
 <div class='feature'>
-	<div class='label space' data-position="<%= i %>">
+          <% if i < 4 %>
+  		<div class='label space' data-position="<%= i %>">
+          <% end %>
+           <% if i == 4 %>
+  		<div class='label space'>
+		  <%= t("#{Session.product_type}.specs.AdvancedSearch.name")
+		  %>
+		  </div>
+		<div class='label-advanced space' data-position="<%= i %>">
+           <% end %>
+	   <% if i > 4 %>
+  		<div class='label-advanced space' data-position="<%= i %>">
+	   <% end %>
 		<%= t("#{Session.product_type}.specs.#{feat}.name") %>
 		<span class="unitdisp">(<%=t("#{Session.product_type}.specs.#{feat}.unit", :default=>"") + t("#{Session.product_type}.specs.#{feat}.preunit", :default=>"") %>)</span>
 		<% if Session.directLayout %>
