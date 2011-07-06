@@ -103,7 +103,8 @@ class Session
           self.prefDirection[feature.name] = feature.larger_is_better ? 1 : -1
           self.maximum[feature] = feature.max if feature.max > 0
           self.minimum[feature] = feature.min if feature.min > 0
-          self.continuous["sortby"].each_index{|i|  self.continuous["sortby"][i] = "#{self.continuous["sortby"][i]}_factor" unless self.continuous["sortby"][i].include?("factor")} 
+        #  self.continuous["sortby"] = ["saleprice_factor", "saleprice_factor_high", "orders_factor", "displayDate"]
+          #self.continuous["sortby"].each_index{|i|  self.continuous["sortby"][i] = "#{self.continuous["sortby"][i]}_factor" unless self.continuous["sortby"][i].include?("factor")} 
         when "Binary"
 #          used_fors.each do |flag|
  #           if flag == 'filter' # only add features of selected product types to the filter
@@ -224,6 +225,7 @@ class Session
         end
       end
     end
+    self.continuous["sortby"] = ["saleprice_factor", "saleprice_factor_high", "orders_factor", "displayDate"]
     self.continuous['filter'] = continuous_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{ |f| f[0] }
     self.binary['filter'] = binary_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{|f| f[0] }
     self.categorical['filter'] = categorical_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{|f| f[0] }

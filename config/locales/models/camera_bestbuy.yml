@@ -83,3 +83,9 @@ en:
                 name:               "Optical Zoom" 
             fblike_factor:
                 name:               "Facebook like"
+            displayDate:
+                name:               "Newest Model"
+            orders_factor:  
+                name:               "Best Selling"    
+            saleprice_factor_high:       
+                name:               "Price High"    

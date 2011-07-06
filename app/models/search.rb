@@ -179,7 +179,11 @@ class Search < ActiveRecord::Base
     if sortby == "relevance" || sortby.nil?
         @products = Kmeans.compute(9,SearchProduct.fq2)
     else
-        @products = SearchProduct.fq2
+        #if sortby.include?("_high")
+            @products = SearchProduct.fq2
+        #else    
+        #    @products = SearchProduct.fq2
+        #end        
     end
   end
   
