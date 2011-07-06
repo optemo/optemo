@@ -86,7 +86,7 @@ optemo_module = (function (my){
     // The following variables are pulled from optemo.html.erb
     // They are in a separate function like this so that the embedder can call them at the appropriate time.
     // Note that those that are locally scoped to the optemo_module must be defined before this function call.
-    var VERSION, SESSION_ID, AB_TESTING_TYPE;
+    var VERSION, SESSION_ID, AB_TESTING_TYPE, DOM_ALREADY_RUN;
     if (typeof OPT_REMOTE == "undefined") OPT_REMOTE = false;
     my.initializeVariables = function() {
         my.MODEL_NAME = $("#modelname").html();
@@ -94,6 +94,7 @@ optemo_module = (function (my){
         my.DIRECT_LAYOUT = ($('#directLayout').html() == "true");
         SESSION_ID = parseInt($('#seshid').html());
         AB_TESTING_TYPE = parseInt($('#ab_testing_type').html());
+        my.PIWIK_ID = $('#piwikid').html();
     }
 
     // Renders a recursive html list of the specs.
@@ -365,7 +366,7 @@ optemo_module = (function (my){
             }
     	} else {
     		var el = img.parent().find('.easylink');
-    		res = el.attr('href').match(/\d+$/);
+    		res = el.attr('data-id');
     		sku = el.attr('data-sku');
     	}
     	return Array(res, sku);
@@ -692,6 +693,12 @@ optemo_module = (function (my){
 		//	return false;
 		//})
 		
+		//See all Products
+		$('.seeall').live('click', function() {
+		    my.ajaxcall('/', {});
+		    return false;
+		});
+		
     	// Change sort method
     	$('.sortby').live('click', function() {
 			if (my.loading_indicator_state.disable) return false;
@@ -823,7 +830,8 @@ optemo_module = (function (my){
         	var product_title = t.attr('title');
         	if (product_title == undefined) product_title = t.html(); // This is a text link
         	my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids, 'imgurl' : t.attr('src')});
-			my.applySilkScreen(href + '?plain=true',null, 560, 580);
+			//my.applySilkScreen(href + '?plain=true',null, 560, 580);
+			window.location = href;
         	return false;
         });
 
@@ -1100,17 +1108,17 @@ optemo_module = (function (my){
 		});
 		
 		//Infinite Scroll
-		$('#main').infinitescroll({
-            navSelector  : "div.pagination",            
-                           // selector for the paged navigation (it will be hidden)
-            nextSelector : "div.pagination a.next_page",    
-                           // selector for the NEXT link (to page 2)
-            itemSelector : "#main div.navbox",          
-                           // selector for all items you'll retrieve
-            loadingText : "Loading more products...",
-            dataType : "jsonp",
-            donetext : "<em>These are all the products with this selection <a href='#'>here</a></em>"
-        });
+		//$('#main').infinitescroll({
+        //    navSelector  : "div.pagination",            
+        //                   // selector for the paged navigation (it will be hidden)
+        //    nextSelector : "div.pagination a.next_page",    
+        //                   // selector for the NEXT link (to page 2)
+        //    itemSelector : "#main div.navbox",          
+        //                   // selector for all items you'll retrieve
+        //    loadingText : "Loading more products...",
+        //    dataType : "jsonp",
+        //    donetext : "<em>These are all the products with this selection <a href='#'>here</a></em>"
+        //});
 		
 	    //var model = "";
     	////Autocomplete for searchterms
@@ -1143,31 +1151,20 @@ optemo_module = (function (my){
     /* Does a relatively generic ajax call and returns data to the handler below */
     my.ajaxsend = function (hash,myurl,mydata,timeoutlength) {
         var lis = my.loading_indicator_state;
+        mydata = $.extend({'ajax': true, 'hist':hash},mydata);
         if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 50);
         if (OPT_REMOTE) {
             //Embedded Layout
-            if (myurl != null)
-                JSONP.get(OPT_REMOTE+myurl.replace(/http:\/\/[^\/]+/,''),$.extend({'ajax': true},mydata),my.ajaxhandler);
-            else if (typeof(hash) != "undefined" && hash != null)
-                JSONP.get(OPT_REMOTE+"/compare",{'ajax': true,'hist':hash},my.ajaxhandler);
+            myurl = (myurl != null) ? myurl.replace(/http:\/\/[^\/]+/,'') : "/compare"
+            JSONP.get(OPT_REMOTE+myurl,mydata,my.ajaxhandler);
         } else {
-    	    if (myurl != null) {
-            	$.ajax({
-            		//type: (mydata==null)?"GET":"POST",
-            		data: (mydata==null)?"":mydata,
-            		url: myurl+(myurl.match("[?]")?"&":"?")+"ajax=true"+((hash==null)?"":("&hist="+hash)),
-            		success: my.ajaxhandler,
-            		error: my.ajaxerror
-            	});
-    	    } else if (typeof(hash) != "undefined" && hash != null) {
-		    	/* Used by back button */
-    	    	$.ajax({
-    	    		type: "GET",
-    	    		url: "/compare/?ajax=true&hist="+hash,
-    	    		success: my.ajaxhandler,
-    	    		error: my.ajaxerror
-    	    	});
-    	    }
+            $.ajax({
+            	//type: (mydata==null)?"GET":"POST",
+            	data: (mydata==null)?"":mydata,
+            	url: myurl || "/compare",
+            	success: my.ajaxhandler,
+            	error: my.ajaxerror
+            });
 	    }
     };
 
@@ -1223,8 +1220,7 @@ optemo_module = (function (my){
 
     my.ajaxcall = function(myurl,mydata) {
         my.disableInterfaceElements();
-    	numactions = parseInt($("#actioncount").html()) + 1;
-    	$.history.load(numactions.toString(),myurl,mydata);
+    	$.history.load($("#actioncount").html(),myurl,mydata);
     };
     
     my.quickajaxcall = function(element_name, myurl, fn) { // The purpose of this is to do an ajax load without having to go through the relatively heavy ajaxcall().
@@ -1568,6 +1564,39 @@ optemo_module = (function (my){
             
     	    // Load the classic theme for galleria, the jquery image slideshow plugin we're using (jquery.galleria.js)
             //    Galleria.loadTheme('/javascripts/galleria.classic.js');
+            /* Piwik Code */
+            var pkBaseURL = (("https:" == document.location.protocol) ? "https://analytics.optemo.com/" : "http://analytics.optemo.com/");
+            var piwik_script_tag = document.createElement("script");
+            piwik_script_tag.setAttribute("src", pkBaseURL + 'piwik.js');
+            piwik_script_tag.setAttribute("type", "text/javascript");
+            document.getElementsByTagName("head")[0].appendChild(piwik_script_tag);
+
+            if (piwik_script_tag.readyState){  //IE
+                piwik_script_tag.onreadystatechange = function(){
+                    if (piwik_script_tag.readyState == "loaded" ||
+                            piwik_script_tag.readyState == "complete"){
+                        piwik_script_tag.onreadystatechange = null;
+                        piwik_ready(); // Using square bracket notation because the jquery object won't be initialized until later
+                    }
+                };
+            } else {  //Others
+                piwik_script_tag.onload = function(){
+                    piwik_ready();
+                };
+            }
+
+            function piwik_ready() {
+            //    try {
+                    window.piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", my.PIWIK_ID); // idsite is here
+            		piwikTracker.setDocumentTitle('Index');
+            		piwikTracker.setCustomData({'optemo_session': SESSION_ID, 'filter_type' : "index"});
+            		piwikTracker.trackPageView();
+            		// I'm not sure what emptying the title and data do, but it seems like a standard pattern.
+            		piwikTracker.setDocumentTitle('');
+            		piwikTracker.setCustomData({});
+                    piwikTracker.enableLinkTracking();
+            //    } catch( err ) {}
+            }
         }
     };
     
@@ -1649,7 +1678,7 @@ optemo_module = (function (my){
 //--------------------------------------//
 
 $(function(){
-    if ($.trim($("#optemo_embedder").text()) != "")
+    if ($("#optemo_embedder").children().length)
         optemo_module.domready();
 });
 

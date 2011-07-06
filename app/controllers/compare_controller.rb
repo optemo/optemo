@@ -7,35 +7,32 @@ class CompareController < ApplicationController
       render 'customFacebookChannel', :layout => false
       # A custom channel is required to avoid ?fb_xd_fragment calls (which load index.html and have side effects) in MSIE 7-9
     else
-      if request.subdomains.first == "ilovecameras" && !params[:ajax] && (!params[:checked] || params[:checked][:password] != "camerasloveme")
-        render 'password', :layout => false
-      else
-        # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
-        if Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
-          hist = params[:hist].gsub(/\D/,'').to_i if params[:hist]
-          search_history = Session.searches if hist && params[:page].nil?
-          if params[:page]
-            classVariables(Search.create({:page => params[:page], :sortby => params[:sortby], "action_type" => "nextpage"}))
-          elsif search_history && hist <= search_history.length && hist > 0
-            #Going back to a previous search
-            classVariables(search_history[hist-1])
-          elsif params[:sortby] # Change sorting method via navigator_bar select box
-            classVariables(Search.create({:sortby => params[:sortby], "action_type" => "sortby"}))
-          else
-            #Initial clusters
-            classVariables(Search.create({:sortby => params[:sortby], "action_type" => "initial"}))
-          end
+      # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
+      if Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
+        hist = params[:hist].unpack('m')[0].gsub(/\D/,'').to_i if params[:hist] && !params[:hist].blank?
+        search_history = Search.find_by_parent_id(hist) if hist && params[:page].nil?
+        if params[:page]
+          classVariables(Search.create({:page => params[:page], :sortby => params[:sortby], "action_type" => "nextpage"}))
+        elsif search_history
+          #Going back to a previous search
+          classVariables(search_history)
+        elsif params[:sortby] # Change sorting method via navigator_bar select box
+          classVariables(Search.create({:sortby => params[:sortby], "action_type" => "sortby"}))
         else
-          @indexload = true
+          #Initial clusters
+          classVariables(Search.create({:sortby => params[:sortby], "action_type" => "initial"}))
         end
-        correct_render
+      else
+        @indexload = true
       end
+      correct_render
     end
   end
   
+  #This function should be combined with create
   def zoomout
     # Zoom out of see similar
-    classVariables(Search.create("action_type" => "nextpage"))
+    classVariables(Search.create("action_type" => "nextpage", "parent" => params[:hist]))
     correct_render
   end
 
@@ -52,9 +49,10 @@ class CompareController < ApplicationController
     render 'mobile-filters', :layout=>'filters'
   end
   
+  #This function should be combined with create
   def sim
     # Explore products through clusters
-    classVariables(Search.create({"cluster_hash" => params[:id], "action_type" => "similar"}))
+    classVariables(Search.create({"cluster_hash" => params[:id], "action_type" => "similar", "parent" => params[:hist]}))
     correct_render
   end
 
@@ -83,6 +81,7 @@ class CompareController < ApplicationController
       end
     else
       params[:myfilter]["action_type"] = "filter"
+      params[:myfilter]["parent"] = params[:hist] if params[:hist]
       classVariables(Search.create(params[:myfilter]))
       correct_render
     end
@@ -118,10 +117,10 @@ class CompareController < ApplicationController
     end
   end
   
+  private
   def fr?
     I18n.locale == :fr ? "_fr" : ""
   end
-  private
   # Depending on the session, either use the traditional layout or the "optemo" layout.
   # The CSS files are loaded automatically though, so the usual "sv / gv / lv / mv" CSS classes are needed.
   def choose_layout

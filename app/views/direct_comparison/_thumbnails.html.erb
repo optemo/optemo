@@ -1,10 +1,10 @@
 <div class="thumbnailcell spec_column_<%= column_number.to_s %>">
 		<div class="first">
-			<%= link_to image_tag(catspecs["imgmurl"], :"data-id" => thumbnails.id, :class => "compareimg"), product_path(:name => thumbnails.descurl, :id => thumbnails.id), {:class => 'easylink', :'data-id' => thumbnails.id} %>
+			<%= link_to image_tag(catspecs["imgmurl"], :"data-id" => thumbnails.id, :class => "compareimg"), TextSpec.cacheone(thumbnails.id, "productUrl#{fr?}"), {:class => 'easylink', :'data-id' => thumbnails.id} %>
  		</div>
 	<div class="thumbnaillabel">
 	<div style="height: 65px">
-   	<%= link_to thumbnails.small_title, product_path(:name => thumbnails.descurl, :id => thumbnails.id), :class => 'easylink', :'data-id' => thumbnails.id %>
+   	<%= link_to thumbnails.small_title, TextSpec.cacheone(thumbnails.id, "productUrl#{fr?}"), :class => 'easylink', :'data-id' => thumbnails.id %>
 	<div class="thumbnaildetails">
     	<% if binspecs["onsale"] %>
     		<%= t('compare.index.onsale')+": "+number_with_delimiter(contspecs["saleprice"]) %>

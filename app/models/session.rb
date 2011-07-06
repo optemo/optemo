@@ -37,12 +37,14 @@ class Session
     
     p_url = nil
 
-    Url.find_each do |u|
-      if u.url==url.strip
-        p_url = u
-        break
+    unless url.nil?
+      Url.find_each do |u|
+        if u.url==url
+          p_url = u
+          break
+        end
       end
-    end unless url.nil?
+    end
 
     p_type = p_url.nil?? ProductType.find_all_by_name('camera_bestbuy').first : p_url.product_type
     

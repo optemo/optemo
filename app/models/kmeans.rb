@@ -181,7 +181,7 @@ def self.compute(number_clusters,products)
 cluster_weights = self.set_cluster_weights(Session.continuous["cluster"])
 
 s = products.size
-if (s<number_clusters)
+if (s<=number_clusters)
   utilitylist = Kmeans.utility(products, "gorder")
   #if utilities are the same
   utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
