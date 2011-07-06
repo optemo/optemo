@@ -13,7 +13,11 @@
   <% if feat[:filter_type] == 'cat' %>
   	<div class='feature'>
 	  <% if index < 4 %>
+	     <% if index == 0 #add a css class to fix IE6 and IE7 first  label space issue %>
+	        <div class='label without-space' data-position="<%= index %>">
+	     <% else %>
  		<div class='label' data-position="<%= index %>">
+             <% end %>
           <% end %>
            <% if index == 4 %>
   		<div class='label-advanced-title' data-position="<%= index %>">
@@ -72,8 +76,12 @@
  <% features = @s.binarygroup[heading] %>
  <div class="feature">
            <% if index < 4 %>
-  		<div class='label' data-position="<%= index %>">
-          <% end %>
+	      <% if index == 0 #add a css class to fix IE6 and IE7 first  label space issue %>
+	        <div class='label without-space' data-position="<%= index %>">
+	     <% else %>
+ 		<div class='label' data-position="<%= index %>">
+	      <% end %>
+         <% end %>
            <% if index == 4 %>
   		<div class='label-advanced-title' data-position="<%= index %>">
 		  <%= t("#{Session.product_type}.specs.AdvancedSearch.name")

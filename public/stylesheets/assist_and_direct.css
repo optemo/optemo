@@ -457,6 +457,9 @@ div#division {
 #optemo_embedder .space {
 	margin-bottom: 15px; /*Spacing for histogram*/
 }
+#optemo_embedder .without-space {
+   *margin-top: -20px;
+}
 #optemo_embedder .reset {
 	font-size: 0.7em;
    font-weight: bold;

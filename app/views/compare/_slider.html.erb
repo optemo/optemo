@@ -2,7 +2,12 @@
 <% if distribution_data %>
 <div class='feature'>
           <% if i < 4 %>
-  		<div class='label space' data-position="<%= i %>">
+	     <% if i == 0 #add a css class to fix IE6 and IE7 first  label space issue %>
+	        <div class='label without-space space' data-position="<%= i %>">
+	     <% else %>
+ 		<div class='label space' data-position="<%= i %>">
+	      <% end %>
+
           <% end %>
            <% if i == 4 %>
   		<div class='label-advanced-title space'>

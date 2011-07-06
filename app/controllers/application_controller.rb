@@ -46,6 +46,8 @@ class ApplicationController < ActionController::Base
     s = Session.new(request.domain(4) || request.env["REMOTE_HOST"]) 
     #s.id = mysession_id
     #s.ab_testing_type = ab_testing_type
+    # We are passing in the category id from javascript
+    s.rails_category_id = params[:category_id]
     $d = Distribution.new unless defined? $d
     $k = Kmeans.new unless defined? $k    
   end

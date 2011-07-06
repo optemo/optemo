@@ -208,7 +208,7 @@ module CompareHelper
     res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
   end
     
-  def main_boxes(secondload = false)
+  def main_boxes
     res = ""
     if @s.directLayout # List View (Optemo Direct)
   		if @s.search.groupby.nil?
@@ -245,15 +245,8 @@ module CompareHelper
   		end
   	end
   	res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
-  	#Only show on initial load and when pagination is used instead of infinitescroll
-  	unless secondload && !params.include?(:hist)
-  	  params.delete(:hist) #Clear hist so it doesn't show up in url
-  	  params.delete(:ajax)
-  	  params.delete(:embedding)
-  	  pagination_line = will_paginate(@s.search.paginated_products)
-  	  res << '<span id="actioncount" style="display:none">' + "#{@s.searches.size}</span>"
-	  end
-    res << "#{pagination_line}" #Handles nils as blank
+  	res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
+    res << will_paginate(@s.search.paginated_products)
   	res
 	end
    
