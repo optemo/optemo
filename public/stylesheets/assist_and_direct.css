@@ -232,12 +232,16 @@ div#division {
 #optemo_embedder #ajaxfilter {
 	display:inline;
 }
-
 #optemo_embedder .categorical {
 	border: 1px solid #ccc;
 	overflow: auto;
-	height: 150px;
+	max-height: 150px;
+padding-bottom: 5px;
 }
+* html #optemo_embedder .categorical {
+   height: expression( this.scrollHeight > 150 ? "150px" : "auto" ); /* sets max-height for IE */
+   }
+
 #optemo_embedder a.binary_filter_text{
 	color: #4d4d4f;
 }
@@ -440,7 +444,7 @@ div#division {
 	padding-top: 6px;
 	padding-bottom: 4px;
    padding-left: 6px;
-   background-color: yellow;
+   background-color: #FFF200;
    margin: 6px 0 0 -6px;
 }
 
