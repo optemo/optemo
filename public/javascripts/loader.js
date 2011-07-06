@@ -47,7 +47,7 @@ var category_id_hash = {'digital-cameras.aspx' : 20218,
                         'storage-accessories.aspx' :29583}
 var rails_category_id = 0;
 for (var i in category_id_hash) {
-    if window.location.pathname.match(new RegExp(i)) {
+    if (window.location.pathname.match(new RegExp(i))) {
         rails_category_id = category_id_hash[i];
         break;
     }
