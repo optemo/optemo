@@ -95,7 +95,8 @@ class Session
           self.prefDirection[feature.name] = feature.larger_is_better ? 1 : -1
           self.maximum[feature] = feature.max if feature.max > 0
           self.minimum[feature] = feature.min if feature.min > 0
-          self.continuous["sortby"].each_index{|i|  self.continuous["sortby"][i] = "#{self.continuous["sortby"][i]}_factor" unless self.continuous["sortby"][i].include?("factor")} 
+        #  self.continuous["sortby"] = ["saleprice_factor", "saleprice_factor_high", "orders_factor", "displayDate"]
+          #self.continuous["sortby"].each_index{|i|  self.continuous["sortby"][i] = "#{self.continuous["sortby"][i]}_factor" unless self.continuous["sortby"][i].include?("factor")} 
         when "Binary"
           self.binary["all"] << feature.name #Keep track of all features
           self.prefered[feature.name] = feature.prefered if !feature.prefered.nil? && !feature.prefered.empty?
@@ -195,6 +196,7 @@ class Session
         end
       end
     end
+    self.continuous["sortby"] = ["saleprice_factor", "saleprice_factor_high", "orders_factor", "displayDate"]
     self.filters_order.sort_by! {|item| item[:show_order].to_i }
   end
 end

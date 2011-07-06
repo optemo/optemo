@@ -68,6 +68,16 @@
 	font-size:0.8em;
 	padding-bottom:6px;
 }
+#optemo_embedder .heroinfo {
+    width: 248px;
+    float: right;
+    margin-top: 2em;  
+}
+#optemo_embedder .heroinfo a {
+    color: #4D4D4F;
+    font-weight: bold;
+    font-size: 18px;
+}
 /*.clusterspecs {
 	background: url(../images/gradient.png) no-repeat;
 	width: 75px;

@@ -15,15 +15,17 @@ class SearchProduct < ActiveRecord::Base
           mycats = Session.search.userdatacats.group_by(&:name).values
           mybins = Session.search.userdatabins
           myconts = Session.search.userdataconts
-          sortbylist = ['utility', 'fblike', 'customerRating']
+          slist = ['relevance', 'orders_factor', 'customerRating']#['relevance', 'saleprice_factor', 'saleprice_factor_high', 'orders_factor', 'displayDate']
           res = []
-          sortbylist.each do |s|
-             res << search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = '#{s}'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value DESC")[0..2] 
+          slist.each do |s|
+             s = 'utility' if s=='relevance' 
+             order =  "DESC"
+             res << search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = '#{s}'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value #{order}")[0..2] 
           end
           res
       end    
 
-      def fq2 
+      def fq2
         sortby= Session.search.sortby
         mycats = Session.search.userdatacats.group_by(&:name).values
         mybins = Session.search.userdatabins
@@ -39,8 +41,14 @@ class SearchProduct < ActiveRecord::Base
         else
             if sortby.nil? || sortby == "relevance" 
                 res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = 'utility'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value DESC")
-            else        
-                res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = '#{sortby}'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value DESC")  
+            else    
+                if sortby.include?("_high")  
+                     order = "ASC"
+                     sortby = "saleprice_factor"  # this should be rewritten
+                else
+                     order =  "DESC"    
+                end     
+                res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = '#{sortby}'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value #{order}")  
              end
          end
         q = res.to_sql

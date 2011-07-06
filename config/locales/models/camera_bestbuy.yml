@@ -91,5 +91,12 @@ en:
                 name:               "Ultra Zoom"
             '20220':
                 name:               "Advanced Compact"
-            'AdvancedSearch':
-                name:               "Advanced Search"                                
+            displayDate:
+                name:               "Newest Model"
+            orders_factor:  
+                name:               "Best Selling"    
+            saleprice_factor_high:       
+                name:               "Price High"    
+            AdvancedSearch:
+                name:               "Advanced Search"                            
+
