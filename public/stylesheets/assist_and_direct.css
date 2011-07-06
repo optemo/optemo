@@ -312,7 +312,7 @@ padding-bottom: 5px;
 #optemo_embedder #compare_button , #optemo_embedder .optemo_compare_button {
 	clear: both;
 	font-size: 0.8em;
-	margin: 5px;
+margin: 5px 0;
    font-weight: bold;
 }
 
@@ -1173,7 +1173,7 @@ margin-top:0;
 #optemo_embedder .awesome_reset:visited {
 /*	background: #003b65; *//*url(/images/alert-overlay.png) repeat-x; */
 	display: inline-block; 
-	padding: 4px 4px 4px; 
+	padding: 4px 0; 
 	color: blue; 
 	text-decoration: none;
 /*	-moz-border-radius: 4px; 
@@ -1193,7 +1193,7 @@ margin-top:0;
 .medium_awesome_tour, .medium_awesome_tour:visited 		{ font-size: 13px; font-weight: bold; line-height: 1; text-shadow: 0 -1px 1px rgba(0,0,0,0.25); }*/
 
 /* Global Button */
-#optemo_embedder #IE .awesome_reset, #IE .awesome_reset:visited {
+/* #optemo_embedder #IE .awesome_reset, #IE .awesome_reset:visited {
 	border: none;
 }
 #optemo_embedder #IE .global_btn {
@@ -1216,7 +1216,7 @@ margin-top:0;
 }
 #optemo_embedder #IE .global_btn:hover span {
 	color:#fff200;
-}
+} */
 
 #optemo_embedder .narrow_text {
 	display:inline-block;
