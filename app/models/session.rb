@@ -9,6 +9,7 @@ class Session
   cattr_accessor :piwikSiteId # Piwik Site ID, as configured in the currently-running Piwik install.
   cattr_accessor :ab_testing_type # Categorizes new users for AB testing
   cattr_accessor :category_id, :dynamic_filter_cat, :dynamic_filter_cont, :dynamic_filter_bin, :filters_order
+  cattr_accessor :rails_category_id # This is passed in from ajaxsend and the logic for determining the category ID is from the javascript side rather than from the Rails side. Useful for embedding. We will probably combine the two category ids later? 
 
   def initialize (url = nil)
     # This parameter controls whether the interface features drag-and-drop comparison or not.
@@ -140,7 +141,6 @@ class Session
     self.continuous['filter'] = continuous_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{ |f| f[0] }
     self.binary['filter'] = binary_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{|f| f[0] }
     self.categorical['filter'] = categorical_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{|f| f[0] }
-    
   end
 
   def self.searches
