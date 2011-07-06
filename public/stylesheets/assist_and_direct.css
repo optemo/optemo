@@ -425,7 +425,22 @@ div#division {
 	clear: left;
 	padding-top: 6px;
 	padding-bottom: 4px;
+   padding-left: 6px;
+   background-color: yellow;
+   margin-left: -6px;
 }
+
+#optemo_embedder .label-advanced {
+	font-weight: bold;
+	text-align: left;
+	position: relative;
+	clear: left;
+	padding-top: 6px;
+	padding-bottom: 4px;
+   padding-left: 6px;
+   margin-left: -6px;
+}
+
 #optemo_embedder .space {
 	margin-bottom: 15px; /*Spacing for histogram*/
 }
@@ -1432,4 +1447,11 @@ margin-top:0;
 
 #optemo_embedder .disabled {
 	color: #aaa;
+}
+
+#optemo_embedder .y_bottom {
+	overflow:hidden;
+	_height:35px;
+   background-color: #e9e9e9;
+   margin-bottom: -12px;
 }

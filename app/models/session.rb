@@ -8,7 +8,8 @@ class Session
   cattr_accessor :product_type # Product type (camera_us, etc.), used everywhere
   cattr_accessor :piwikSiteId # Piwik Site ID, as configured in the currently-running Piwik install.
   cattr_accessor :ab_testing_type # Categorizes new users for AB testing
-  cattr_accessor :category_id, :dynamic_filter_cat, :dynamic_filter_cont, :dynamic_filter_bin
+  cattr_accessor :category_id, :dynamic_filter_cat, :dynamic_filter_cont, :dynamic_filter_bin, :filters_order
+  cattr_accessor :rails_category_id # This is passed in from ajaxsend and the logic for determining the category ID is from the javascript side rather than from the Rails side. Useful for embedding. We will probably combine the two category ids later? 
 
   def initialize (url = nil)
     # This parameter controls whether the interface features drag-and-drop comparison or not.
@@ -33,6 +34,7 @@ class Session
     self.dynamic_filter_cat = Hash.new{|h,k| h[k] = []}     
     self.dynamic_filter_cont = Hash.new{|h,k| h[k] = []}     
     self.dynamic_filter_bin = Hash.new{|h,k| h[k] = []}
+    self.filters_order = Array.new
     
     p_url = nil
 
@@ -139,7 +141,6 @@ class Session
     self.continuous['filter'] = continuous_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{ |f| f[0] }
     self.binary['filter'] = binary_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{|f| f[0] }
     self.categorical['filter'] = categorical_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{|f| f[0] }
-    
   end
 
   def self.searches
@@ -198,6 +199,7 @@ class Session
           used_fors.each do |flag|
             if flag == 'filter' # only add features of selected product types to the filter
               continuous_filter_unsorted << [feature.name, feature.used_for_order] if is_feature_in_myfilter_categories?(feature, category_ids)
+              self.filters_order << {:name => feature.name, :filter_type=> 'cont', :show_order => feature.used_for_order}
              else
               self.continuous[flag] << feature.name
             end
@@ -209,6 +211,7 @@ class Session
                 binary_filter_unsorted << [feature.name, feature.used_for_order]
                 
                 self.binarygroup[heading.name] << feature.name unless self.binarygroup[heading.name].include? feature.name
+                self.filters_order << {:name => heading.name, :filter_type =>  'bin', :show_order => heading.show_order} unless self.filters_order.index {|x| x[:name] == heading.name}
               end
             else
               self.binary[flag] << feature.name
@@ -219,6 +222,7 @@ class Session
           used_fors.each do |flag|
             if flag == 'filter' # only add features of selected product types to the filter
               categorical_filter_unsorted << [feature.name, feature.used_for_order] if is_feature_in_myfilter_categories?(feature, category_ids)
+              self.filters_order << {:name => feature.name, :filter_type => 'cat', :show_order => feature.used_for_order}
             else
               self.categorical[flag] << feature.name
             end
@@ -229,7 +233,6 @@ class Session
     self.continuous['filter'] = continuous_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{ |f| f[0] }
     self.binary['filter'] = binary_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{|f| f[0] }
     self.categorical['filter'] = categorical_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{|f| f[0] }
-    
-
+    self.filters_order.sort_by! {|item| item[:show_order].to_i }
   end
 end

@@ -397,7 +397,7 @@ class Search < ActiveRecord::Base
     #Check for cat filters which have been eliminated by other filters
     @userdatacats.group_by(&:name).each_pair do |k,v|
       # get all categories
-      if k='category'
+      if k=='category'
         v.each { |x| cats << x.value }
       end
       if v.size > 1
