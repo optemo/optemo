@@ -245,7 +245,7 @@ module CompareHelper
   	end
   	res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
   	res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
-    res << will_paginate(@s.search.paginated_products)
+    res << "#{will_paginate(@s.search.paginated_products)}"
   	res
 	end
    
