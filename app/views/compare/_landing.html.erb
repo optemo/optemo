@@ -2,7 +2,7 @@
 <div id="navigator_bar">
 	<%mb={}%>
 	<% mb['featured'] = landing_main_boxes('featured') #Calculate mb before navtitle %>
-	<% mb['liked'] =landing_main_boxes('liked') #Calculate mb before navtitle %>
+	<% mb['orders'] =landing_main_boxes('orders') #Calculate mb before navtitle %>
 	<% mb['customerRating'] = landing_main_boxes('customerRating')%>
 	<div id="navtitle"><div style="font-size: 30px; float:left; margin-right: 7px;"><%= Session.search.products_size %></div><%= raw navtitle %><br><%= t("#{Session.product_type}.refineyoursearch") %></div>
 </div>
