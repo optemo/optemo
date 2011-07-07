@@ -53,7 +53,7 @@ class Session
 
 
     # product_yml = file[self.product_type]
-    self.category_id = p_type.category_id.split(',').map{ |id| id.to_i }
+    self.category_id = p_type.category_id_product_type_maps.map{ |x| x.category_id }
     
     # directLayout controls the presented view: Optemo Assist vs. Optemo Direct. 
     # Direct needs no clustering, showing all products in browseable pages and offering "group by" buttons.
