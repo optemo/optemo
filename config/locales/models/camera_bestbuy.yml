@@ -7,7 +7,9 @@ en:
         defaultdesc:                "Best Selection of digital cameras"
         keywords:                   "cameras"
         classification:             "Digital Cameras"
-        navtitle:                   "Currently browsing %{count} Camera"
+        navtitle:                   "Camera"
+        navtitle2:                  " Available"
+        refineyoursearch:           "Refine your search now!"
         
         specs:
             category:
@@ -88,6 +90,6 @@ en:
             orders_factor:  
                 name:               "Best Selling"    
             saleprice_factor_high:       
-                name:               "Price High"    
+                name:               "Price (High to Low)"    
             AdvancedSearch:
                 name:               "Advanced Search"                            

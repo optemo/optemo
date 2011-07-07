@@ -82,13 +82,19 @@ html {
 	background: #FFF200;
 /*	keep pretty gradients for now, they looked nice and could be useful
     background-image:-moz-linear-gradient(center bottom, #e9e9e9, white);
-	background-image:-webkit-gradient(linear, left bottom, left top, from(#e9e9e9), to(white)); */
+	background-image:-webkit-gradient(linear, left bottom, left top, from(#e9e9e9), to(white)); 
 }
 #optemo_embedder #IE #navigator_bar {
-	background: url(../images/navbar_gradient.png) repeat;
+	background: url(../images/navbar_gradient.png) repeat; */
 }
 #optemo_embedder #sorting_method_box {
-	font-size: 0.7em;
+	font-size: 0.75em;
+}
+
+.bluesubheading {
+    background: #D6DBF7;
+    padding: 6px;
+    border: 1px solid #D0D0D0;
 }
 
 /*.demo_selector {

@@ -196,7 +196,7 @@ class Session
         end
       end
     end
-    self.continuous["sortby"] = ["saleprice_factor", "saleprice_factor_high", "orders_factor", "displayDate"]
+    self.continuous["sortby"] = ["saleprice_factor", "orders_factor", "displayDate"]
     self.filters_order.sort_by! {|item| item[:show_order].to_i }
   end
 end
