@@ -195,7 +195,7 @@ module CompareHelper
         if prods[0].size > 0
           res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[0][i].product_id)})
         end
-      when "liked"
+      when "orders"
         if prods[1].size > 0
           res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[1][i].product_id)})
         end
