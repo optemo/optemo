@@ -315,16 +315,17 @@ module CompareHelper
   def sortbyList
     sortbyList = [] # Session.search.sortby == "relevance" || Session.search.sortby.blank? ? t("products.relevance") : link_to(t("products.relevance"), "#", :'data-feat' => "relevance", :class => 'sortby')
     Session.continuous["sortby"].each_with_index do |f, i|
-      # The 'unless' clause below is hard coded to not print links to the current price sorting method.
-      # This is as per the Best Buy spec of July 6, 2011
-      # In other cases, it will iterate through the specs that were hard-coded in the Session initialization
+      # For the sale price, we need logic to figure out whether we are sorting either direction by price.
       if f == "saleprice_factor"
         if Session.search.sortby == "saleprice_factor"
           # We need to link to the descending sort order, but show the ascending arrow
           sortbyList << link_to(t(Session.product_type+".specs.saleprice_factor.name"), "#", :'data-feat' => 'saleprice_factor_high', :class => 'sortby') + image_tag("price_sorting_arrow_up.gif")
+        elsif Session.search.sortby == "saleprice_factor_high"
+          # We need to link to the ascending sort order, but show the descending arrow
+          sortbyList << link_to(t(Session.product_type+".specs.saleprice_factor.name"), "#", :'data-feat' => 'saleprice_factor', :class => 'sortby') + image_tag("price_sorting_arrow_down.gif")
         else
-          # If we haven't sorted by price yet, we should show the up arrow and link 
-          sortbyList << link_to(t(Session.product_type+".specs.saleprice_factor.name"), "#", :'data-feat' => 'saleprice_factor', :class => 'sortby') + image_tag("price_sorting_arrow_up.gif")
+          # If we haven't sorted by price yet, we should not show any arrow and link to the ascending price sort
+          sortbyList << link_to(t(Session.product_type+".specs.saleprice_factor.name"), "#", :'data-feat' => 'saleprice_factor', :class => 'sortby')
         end
       else
         sortbyList << (Session.search.sortby == f ? t(Session.product_type+".specs."+f+".name") : link_to(t(Session.product_type+".specs."+f+".name"), "#", :'data-feat' => f, :class => 'sortby'))
