@@ -56,6 +56,10 @@ class CompareController < ApplicationController
     correct_render
   end
 
+  def featured 
+    classVariables(Search.create({"featured _hash" => params[:id], "action_type" => "similar", "parent" => params[:hist]}))
+    correct_render
+  end      
   def extended
     params["action_type"]= "extended"
     classVariables(Search.create(params))

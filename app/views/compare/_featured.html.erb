@@ -4,9 +4,9 @@
 	<% mb['featured'] = landing_main_boxes('featured') #Calculate mb before navtitle %>
 	<% mb['orders'] =landing_main_boxes('orders') #Calculate mb before navtitle %>
 	<% mb['customerRating'] = landing_main_boxes('customerRating')%>
-	<div id="navtitle"><div style="font-size: 30px; float:left; margin-right: 7px;"><%= Session.search.products_size %></div><%= raw navtitle %><br><%= t("#{Session.product_type}.refineyoursearch") %></div>
+	<div id="navtitle"><%=raw navtitle %></div>
+	<div id="sorting_method_box"><%=raw sortbyList %></div>
 </div>
-<div id="sorting_method_box" class="bluesubheading"><b style='margin-right:20px;'><%= t("products.sortby") %></b><%=raw sortbyList %></div>
 </div>
 <div id="hero">
     <% hero = Product.find_by_id(Maybe(SearchProduct.find_by_search_id(Product.initial+1)).product_id) || Product.find_by_product_type(Session.product_type) %>
@@ -30,12 +30,11 @@
 		<% end %>
 	</div>
 </div>
-<div class='bluesubheading'>Featured products <a href="/">see more</a></div>
-<a href="" class "">
+Featured products: <a href="/" class="seeall">See more</a>
 <%= raw mb['featured'] %>
-<div class='bluesubheading'>Best Sellers</div>
+Best Sellers:
 <%= raw mb['orders']%>
-<div class='bluesubheading'>Top Rated</div>
+Top Rated:
 <%= raw mb['customerRating']%>
 <a href="/" class="seeall">See All</a>
 <div style="clear:both;"><span id="actioncount" style="display:none"><%= [Session.search.id.to_s].pack("m").chomp %></span></div>

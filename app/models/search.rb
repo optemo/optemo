@@ -313,6 +313,8 @@ class Search < ActiveRecord::Base
       #Browse similar button
       self.seesim = p["cluster_hash"] # current products
       duplicateFeatures(old_search)
+    when "featured"
+      self.featured 
     when "extended"
       self.seesim = p["extended_hash"] # current products
       createFeatures(p)
