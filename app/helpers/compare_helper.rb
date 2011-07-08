@@ -244,8 +244,10 @@ module CompareHelper
   		end
   	end
   	res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
-  	res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
-    res << "#{will_paginate(@s.search.paginated_products)}"
+    res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
+    products = @s.search.paginated_products
+    res << "<span style='font-size: small;'>#{page_entries_info(products, :entry_name =>'').gsub(/([Dd]isplaying\s*)|(\s*in\s*total)|(\<b\>)|(<\/b>)|(&nbps;)/,'')}</span>"
+    res << "#{will_paginate(products, {:previous_label=>'&lt;', :next_label=>'&gt;', :page_links=>true, :inner_window=>1, :outer_window=>-2, :style=>'text-align: center; font-size: small;'})}"
   	res
 	end
    
