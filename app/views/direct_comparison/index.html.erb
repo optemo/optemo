@@ -26,7 +26,7 @@
     <% spec_hash = {} %>
     <div class="compare_row">
         <div class="thumbnailcell leftmostcolumn tabletitle" style="padding-right:3px;"> <%# the style information is here because IE can't handle .class.otherclass CSS declarations %>
-			<%= t('compare.index.tabletitle') %>
+			&nbsp;
 		</div>
 		<% @products.each_with_index do |product,i| %>
     		<% contspecs = ContSpec.cache_all(product.id) %>
@@ -38,12 +38,12 @@
     </div>
 
     <div class="compare_row">
-        <div class="columntitle leftmostcolumntitle">
+        <div class="columntitle leftmostcolumntitle spec-capt">
         	<%=t 'compare.index.proddetails'%>
         </div>
 
 		<% @products.each_with_index do |product, i| %>
-            <div class="columntitle spec_column_<%= i %>">&nbsp;</div>
+            <div class="columntitle spec_column_<%= i %> spec-capt">&nbsp;</div>
         <% end %>
     </div>
 	<% gray = false %>
@@ -67,7 +67,7 @@
         <% end %>
 </div>
 
-<div class="spacer togglespecs"><%= link_to '#', :class => 'toggle_specs' do %>
+<div class="spacer togglespecs" style="width=<%= box_width %>px"><%= link_to '#', :class => 'toggle_specs' do %>
 	<div class="moretext">
 	<%=t('compare.index.morespecs')%>&nbsp;
 	<%= image_tag "downarrow.png" %>
@@ -79,6 +79,7 @@
 <% end %>
 </div>
 <div class="comparisonmatrix" id="hideable_matrix" style="width: <%= box_width %>px">
-	<div class="compare_row"><div class="columntitle leftmostcolumntitle"><%=t('compare.index.allspecifications')%></div></div>
+	<div class="compare_row"><div class="columntitle
+	leftmostcolumntitle spec-capt"><%=t('compare.index.allspecifications')%></div></div>
 </div>
 <div class="spacer">

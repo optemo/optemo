@@ -131,7 +131,7 @@ optemo_module = (function (my){
     });
 
 	my.merge_bb_json = function () {
-		var merged = {}
+		var merged = {};
 		var index = 0;
 		for (var p = 0; p < arguments.length; p++) {
 			for (var heading in arguments[p]) {
@@ -779,16 +779,24 @@ optemo_module = (function (my){
     	// From Compare
     	//Remove buttons on compare
     	$('.remove').live('click', function(){
+
     	    removeFromComparison($(this).attr('data-name'));
     	    var class_name = $(this).attr('class').split(' ').slice(-1); // spec_column_0, for example
 
             $("." + class_name).each(function () {
                 $(this).remove();
             });
+
+	    
+
     	    // If this is the last one, take the comparison screen down too
     	    if ($('.comparisonmatrix:first .compare_row:first .columntitle').length <= 1) {
     		my.removeSilkScreen();
     	    }
+	    else
+	    {
+		optemo_module.changeCompareTitle($('.comparisonmatrix:first .compare_row:first .columntitle').length -1 );
+	    }
     	    return false;
     	});
 
@@ -1034,11 +1042,18 @@ optemo_module = (function (my){
 		else row_class = 'compare_row'; // row_class was 1
 		return row_class;
 	}
+    my.changeCompareTitle = function(len) {
+	    comp_title = $("label.comp-title");
+	    comp_title_text = comp_title.text().replace(/\([^)]*\)/, '');
+	    comp_title.text(comp_title_text + "(" + len + " Selected)");
+	
+	};
 	
 	my.buildComparisonMatrix = function() {
 	    var checkedProducts = my.getSelectedComparisons(), anchor = $('#hideable_matrix');
 		// Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
 		var array = [];
+	    my.changeCompareTitle(checkedProducts.length);
 	    $.each(checkedProducts, function (index, value) {
 		var product = value.split(',');
 		array.push($('body').data('bestbuy_specs_'+product[1]));
@@ -1048,7 +1063,7 @@ optemo_module = (function (my){
 		//Set up Headers
 	    
 		for (var i = 0; i < checkedProducts.length; i++) {
-			anchor.append('<div class="columntitle spec_column_'+i+'">&nbsp;</div>');
+			anchor.append('<div class="columntitle spec_column_'+i+' spec-capt">&nbsp;</div>');
 		}
 		var result = "";
 		var whitebg = true;
@@ -1074,7 +1089,7 @@ optemo_module = (function (my){
 						array.push(grouped_specs[heading][spec][i].length);	
 				}
 				//Assign row_class
-				result += '<div class="'+row_class(Math.max(row_height(Math.max.apply(null,array)),row_height(spec.length,true)))+'">';
+				result += '<div class="'+row_class(Math.max(row_height(Math.max.apply(null,array)),row_height(spec.length,true))) + '">';
 				
 				//Row heading
 				result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' leftcolumntext">' + spec.replace('&','&amp;') + ":</div>";

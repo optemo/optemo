@@ -693,7 +693,7 @@ margin-top:0;
 	display: none;
 }
 #optemo_embedder .cell {
-	border-right: 1px solid #cccccc;
+/*	border-right: 1px solid #cccccc;*/
 	width: 176px;
 	height: 100%;
 	font-size: 0.9em;
@@ -707,21 +707,22 @@ margin-top:0;
 }
 #optemo_embedder .thumbnailcell {
 	padding-top: 15px;
-	border-right: 1px solid #cccccc;
+/*	border-right: 1px solid #cccccc; */
 	width: 189px;
 	height: 205px;
 	float: left;
 }
 #optemo_embedder .columntitle {
-	background: url(../images/columntitlebg.gif);
+/*	background: url(../images/columntitlebg.gif); */
 	width: 189px;
 	height: 27px;
 	font-size: 0.9em;
 	padding-top: 3px;
-	border-right: solid 1px #ccc;
+/*	border-right: solid 1px #ccc; */
 	z-index: 4;
 	position: relative;
 	float: left;
+   text-align: center;
 }
 #optemo_embedder .bgrow {
 	height: 30px;
@@ -761,7 +762,7 @@ margin-top:0;
 
 #optemo_embedder .leftmostcolumntitle {
 	width: 123px;
-	border-left: solid 1px #ccc;
+/*	border-left: solid 1px #ccc; */
 	padding-left: 0px;
 	font-weight: bold;
 	padding-right: 7px;
@@ -854,6 +855,27 @@ margin-top:0;
     color: #000;
 }
 
+#optemo_embedder div.togglespecs {
+   text-align: center;
+   margin: 5px 0;
+   *padding: 0;
+   }
+#optemo_embedder div.moretext, #optemo_embedder div.lesstext{
+   width: 100px;
+   height: 22px;
+   margin: 3px auto;
+   background: #FFF220;
+   line-height: 22px;
+   }
+
+#optemo_embedder div.spec-capt {
+   background: #DADADA;
+    }
+#optemo_embedder span {
+   margin-left: 7px;
+   }
+   
+
 /*--------------------------------------//
 //        Show page and related         //
 //--------------------------------------*/
@@ -898,7 +920,7 @@ margin-top:0;
 	height: auto;
 	z-index: 1005;
 	display: none;
-	background: white;
+	background: url("/images/bg_outsidecontainer.gif") repeat-x white;
 	-moz-box-shadow: 0 -2px 16px 3px #888;
     -webkit-box-shadow: 0 -2px 16px 3px #888;
     box-shadow: 0 -2px 16px 3px #888;
