@@ -64,9 +64,10 @@ module CompareHelper
   def navtitle
     res = t("#{Session.product_type}.navtitle")
     if Session.search.products_size > 1
-      res = res.pluralize
-    end
-    res + t("#{Session.product_type}.navtitle2")
+      res + t("#{Session.product_type}.navtitle2").pluralize
+    else
+        res + t("#{Session.product_type}.navtitle2")
+    end    
   end
   
   def groupDesc(group, i)
@@ -179,6 +180,30 @@ module CompareHelper
   
   def category_select(feat,expanded)
     select('superfluous', feat, [expanded ? t('products.add')+t(Session.product_type+'.specs.'+feat+'.name') : t('products.all')+t(Session.product_type+'.specs.'+feat+'.name').pluralize] + SearchProduct.cat_counts(feat,expanded,true).map{|k,v| ["#{k} (#{v})", k]}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
+  end
+  
+  def special_main_boxes(type, num)
+    res = ""
+    res << '<div class="rowdiv">'
+    open = true
+    prods = @s.search.products_landing(type)
+    for i in 0...num
+      case type
+      when "featured"
+        if prods.size > 0    
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+        end
+      when "orders"
+        if prods.size > 0
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+        end
+      when 'customerRating'
+        if prods.size > 0
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+        end
+      end                
+    end    
+    res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
   end
   
   

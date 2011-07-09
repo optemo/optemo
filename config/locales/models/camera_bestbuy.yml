@@ -7,8 +7,8 @@ en:
         defaultdesc:                "Best Selection of digital cameras"
         keywords:                   "cameras"
         classification:             "Digital Cameras"
-        navtitle:                   "Camera"
-        navtitle2:                  " Available"
+        navtitle:                   "Available"
+        navtitle2:                  " Camera"
         refineyoursearch:           "Refine your search now!"
         
         specs:
@@ -19,7 +19,7 @@ en:
                 info:               "The lowest price for the item."
                 preunit:            "$"  
             maxresolution:
-                name:               "Resolution"
+                name:               "Megapixels"
                 info:               "Measured in megapixels (millions of pixels), the number of light-sensitive cells that are actually exposed to light and used to capture the image, while the remainder may be shielded or just unused."
                 unit:               "MP"
             opticalzoom:
@@ -54,9 +54,9 @@ en:
             isOnlineOnly:
                 name:               "Online Only"
             videoresolution720:
-                name:               "720P"
+                name:               "720"
             videoresolution1080:
-                name:               "1080P"
+                name:               "1080"
             touchscreen:
                 name:               "Touchscreen"
             oled:
@@ -80,7 +80,7 @@ en:
             saleprice_factor:
                 name:               "Price"
             maxresolution_factor:
-                name:               "Resolution"
+                name:               "Megapixels"
             opticalzoom_factor:
                 name:               "Optical Zoom" 
             fblike_factor:

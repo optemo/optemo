@@ -36,6 +36,11 @@ class CompareController < ApplicationController
     correct_render
   end
 
+  def featured
+      classVariables(Search.create("action_type" => "featured", "parent" => params[:hist]))
+      correct_render
+  end     
+    
   def groupby
     # Group products by specified feature
     classVariables(Search.create(:feat => params[:feat], "action_type" => "groupby"))

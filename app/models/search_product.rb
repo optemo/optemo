@@ -11,18 +11,22 @@ class SearchProduct < ActiveRecord::Base
       search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins)
     end
     
-    def fq2_landing
+    def fq2_landing(s) 
           mycats = Session.search.userdatacats.group_by(&:name).values
           mybins = Session.search.userdatabins
           myconts = Session.search.userdataconts
-          slist = ['relevance', 'orders_factor', 'customerRating']#['relevance', 'saleprice_factor', 'saleprice_factor_high', 'orders_factor', 'displayDate']
           res = []
-          slist.each do |s|
-             s = 'utility' if s=='relevance' 
-             order =  "DESC"
-             res << search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = '#{s}'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value #{order}")[0..2] 
-          end
-          res
+          order =  "DESC"
+           if s=='featured'
+               mybins = [Userdatabin.new({:name => 'hero', :value => 1})]
+               res << search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins).where("product_type=\'#{Session.product_type}\'")
+               mybins = [Userdatabin.new({:name => 'featured', :value => 1})]
+               res << search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins) 
+           else
+               res << search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = '#{s}'").group("search_products.product_id")..where("product_type=\'#{Session.product_type}\'").order("cont_specs#{myconts.size+1}.value #{order}")[0...18] 
+           end      
+
+          res.flatten
       end    
 
       def fq2

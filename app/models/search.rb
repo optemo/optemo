@@ -156,7 +156,7 @@ class Search < ActiveRecord::Base
   end
   
   def paginated_products
-    @paginated_products ||= products.map{|p|Product.cached(p.id)}.paginate :page => page, :per_page => 9
+    @paginated_products ||= products.map{|p|Product.cached(p.id)}.paginate :page => page, :per_page => 18
   end
   
   def isextended?
@@ -187,8 +187,8 @@ class Search < ActiveRecord::Base
     end
   end
   
-  def products_landing
-    SearchProduct.fq2_landing
+  def products_landing(type)
+    SearchProduct.fq2_landing(type)
   end
   
   def sim_products
@@ -314,7 +314,8 @@ class Search < ActiveRecord::Base
       self.seesim = p["cluster_hash"] # current products
       duplicateFeatures(old_search)
     when "featured"
-      self.featured 
+        debugger
+      @userdatacats << Userdatacat.new({:name => "featured", :value => '1'})
     when "extended"
       self.seesim = p["extended_hash"] # current products
       createFeatures(p)

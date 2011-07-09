@@ -4,7 +4,7 @@
 	<% mb['featured'] = landing_main_boxes('featured') #Calculate mb before navtitle %>
 	<% mb['orders'] =landing_main_boxes('orders') #Calculate mb before navtitle %>
 	<% mb['customerRating'] = landing_main_boxes('customerRating')%>
-	<div id="navtitle"><div style="font-size: 30px; float:left; margin-right: 7px;"><%= Session.search.products_size %></div><%= raw navtitle %><br><%= t("#{Session.product_type}.refineyoursearch") %></div>
+	<div id="navtitle"><div style="font-size: 30px; float:left; margin-right: 5px;"><%= Session.search.products_size %></div><div style="font-size: 1.3 em; float:left; margin-right: 7px;">of <%=  Session.search.products_size%></div>><%= raw navtitle %></div>
 </div>
 <div id="sorting_method_box" class="bluesubheading"><b style='margin-right:20px;'><%= t("products.sortby") %></b><%=raw sortbyList %></div>
 </div>
@@ -30,7 +30,7 @@
 		<% end %>
 	</div>
 </div>
-<div class='bluesubheading'>Featured products <a href="/">see more</a></div>
+<div class='bluesubheading'>Featured products <a href="/featured">see more</a></div>
 <a href="" class "">
 <%= raw mb['featured'] %>
 <div class='bluesubheading'>Best Sellers</div>
