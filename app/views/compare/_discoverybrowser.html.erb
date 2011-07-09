@@ -1,9 +1,13 @@
 <% mb = main_boxes #Calculate this before navtitle %>
 <div id="navigator_bar">
-	<div id="navtitle"><%=raw navtitle %></div>
-	<div id="sorting_method_box"><b style='margin-right:20px;'><%= t("products.sortby") %></b><%=raw sortbyList %></div>
+  <div id="navtitle"><div style="font-size: 30px; float:left; margin-right: 7px;"><%= Session.search.products_size %></div><%= raw navtitle %><br><%= t("#{Session.product_type}.refineyoursearch") %></div><%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn'})  %>
+</div>
+<ul id="sorting_method_box" class="bluesubheading"><li style="width: 50px;margin-right: 7px;"><span><b><%= t("products.sortby") %></b></span></li><%=raw sortbyList %></ul>
+
 </div>
 <div id="product_content">
 <%= raw mb %>
 <%= raw '</div>' if @s.directLayout %>
+</div>
+
 <div style="clear:both;"></div>

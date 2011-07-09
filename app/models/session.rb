@@ -95,14 +95,33 @@ class Session
           self.prefDirection[feature.name] = feature.larger_is_better ? 1 : -1
           self.maximum[feature] = feature.max if feature.max > 0
           self.minimum[feature] = feature.min if feature.min > 0
+          used_fors.each do |flag|
+            if flag != 'filter' # filter is depents by category id, which maybe depents with last search condition, we can not do filter here
+              self.continuous[flag] << feature.name
+            end
+          end
+
         #  self.continuous["sortby"] = ["saleprice_factor", "saleprice_factor_high", "orders_factor", "displayDate"]
           #self.continuous["sortby"].each_index{|i|  self.continuous["sortby"][i] = "#{self.continuous["sortby"][i]}_factor" unless self.continuous["sortby"][i].include?("factor")} 
         when "Binary"
           self.binary["all"] << feature.name #Keep track of all features
           self.prefered[feature.name] = feature.prefered if !feature.prefered.nil? && !feature.prefered.empty?
+          used_fors.each do |flag|
+            if flag != 'filter' # only add features of selected product types to the filter
+              self.binary[flag] << feature.name
+              self.binarygroup[heading.name] << feature.name unless self.binarygroup[heading.name].include? feature.name
+            end
+          end
+
         when "Categorical"
           self.categorical["all"] << feature.name #Keep track of all features
           self.prefered[feature.name] = feature.prefered if !feature.prefered.nil? && !feature.prefered.empty?
+          used_fors.each do |flag|
+            if flag != 'filter' # only add features of selected product types to the filter
+              self.categorical[flag] << feature.name
+            end
+          end
+
         end
          self.utility_weight[feature.name] = feature.utility_weight if feature.utility_weight > 1
          self.utility["all"] << feature.name if feature.utility_weight > 1
@@ -167,8 +186,6 @@ class Session
             if flag == 'filter' # only add features of selected product types to the filter
               self.continuous['filter'] << feature.name if is_feature_in_myfilter_categories?(feature, category_ids)
               self.filters_order << {:name => feature.name, :filter_type=> 'cont', :show_order => feature.used_for_order}
-             else
-              self.continuous[flag] << feature.name
             end
           end
         when "Binary"
@@ -179,9 +196,6 @@ class Session
                 self.binarygroup[heading.name] << feature.name unless self.binarygroup[heading.name].include? feature.name
                 self.filters_order << {:name => heading.name, :filter_type =>  'bin', :show_order => heading.show_order} unless self.filters_order.index {|x| x[:name] == heading.name}
               end
-            else
-              self.binary[flag] << feature.name
-              self.binarygroup[heading.name] << feature.name unless self.binarygroup[heading.name].include? feature.name
             end
           end
         when "Categorical"
@@ -189,8 +203,6 @@ class Session
             if flag == 'filter' # only add features of selected product types to the filter
               self.categorical['filter'] << feature.name if is_feature_in_myfilter_categories?(feature, category_ids)
               self.filters_order << {:name => feature.name, :filter_type => 'cat', :show_order => feature.used_for_order}
-            else
-              self.categorical[flag] << feature.name
             end
           end
         end

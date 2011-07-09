@@ -8,7 +8,10 @@ en:
         keywords:                   "external hard drive, flash drive, portable hard drive, hard drives"
         classification:             "Drive & Storage"
         navtitle:                   "Currently browsing %{count} Camera"
-        
+        refineyoursearch:           "Refine your search now!"
+        compare:                    "Compare"
+        seeall:                     "See All"
+        shopnow:                    "Shop Now"        
         specs:
             category:
                 name:               "Shop Drives & Storage"

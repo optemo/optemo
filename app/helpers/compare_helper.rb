@@ -212,20 +212,20 @@ module CompareHelper
     num_examples = 3
     res << '<div class="rowdiv">'
     open = true
-    prods = @s.search.products_landing
+    prods = @s.search.products_landing(type)
     for i in 0...num_examples
       case type
       when "featured"
-        if prods[0].size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[0][i].product_id)})
+        if prods.size > 0
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
         end
       when "orders"
-        if prods[1].size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[1][i].product_id)})
+        if prods.size > 0
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
         end
       when 'customerRating'
-        if prods[2].size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[2][i].product_id)})
+        if prods.size > 0
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
         end
       end                
     end    
@@ -269,8 +269,14 @@ module CompareHelper
   		end
   	end
   	res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
-  	res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
-    res << "#{will_paginate(@s.search.paginated_products)}"
+    res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
+    products = @s.search.paginated_products
+    res << "<div id='navigator_bar_bottom'>"
+    res << "<div id='navtitle'>#{Session.search.products_size.to_s + ' ' + navtitle}</div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div>"
+
+    res << "<div class='pagination-container'><span class='pagi-info'>#{page_entries_info(products, :entry_name =>'').gsub(/([Dd]isplaying\s*)|(\s*in\s*total)|(\<b\>)|(<\/b>)|(&nbps;)/,'')}</span>"
+    
+    res << "#{will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :inner_window=>1, :outer_window=>-4}).gsub(/\.{3}/,'').sub(/>/,'><span>Page:&nbsp;</span>')}<a href='#' id='back-to-top-bottom'>Back to Top</a></div>"
   	res
 	end
    
@@ -284,8 +290,8 @@ module CompareHelper
              new_filters << se.name + "_max=" + se.max.to_s
            end
            if @s.search.extended.max(se.name)>se.max 
-             new_filters<<se.name + "_max=" + @s.search.extended.max(se.name).to_s
-             new_filters<<se.name + "_min=" + se.min.to_s
+             new_filters<< se.name + "_max=" + @s.search.extended.max(se.name).to_s
+             new_filters<< se.name + "_min=" + se.min.to_s
            end   
          end
       end  
@@ -344,19 +350,19 @@ module CompareHelper
       if f == "saleprice_factor"
         if Session.search.sortby == "saleprice_factor"
           # We need to link to the descending sort order, but show the ascending arrow
-          sortbyList << link_to(t(Session.product_type+".specs.saleprice_factor.name"), "#", :'data-feat' => 'saleprice_factor_high', :class => 'sortby') + image_tag("price_sorting_arrow_up.gif")
+          sortbyList << "<li class='sortby_li sortby_selected'>" + link_to(t(Session.product_type+".specs.saleprice_factor.name"), "#", :'data-feat' => 'saleprice_factor_high', :class => 'sortby price_low') + "</li>"
         elsif Session.search.sortby == "saleprice_factor_high"
           # We need to link to the ascending sort order, but show the descending arrow
-          sortbyList << link_to(t(Session.product_type+".specs.saleprice_factor.name"), "#", :'data-feat' => 'saleprice_factor', :class => 'sortby') + image_tag("price_sorting_arrow_down.gif")
+          sortbyList << "<li class='sortby_li sortby_selected'>" + link_to(t(Session.product_type+".specs.saleprice_factor.name"), "#", :'data-feat' => 'saleprice_factor', :class => 'sortby price_high') + '</li>'
         else
           # If we haven't sorted by price yet, we should not show any arrow and link to the ascending price sort
-          sortbyList << link_to(t(Session.product_type+".specs.saleprice_factor.name"), "#", :'data-feat' => 'saleprice_factor', :class => 'sortby')
+          sortbyList << "<li class='sortby_li'>" + link_to(t(Session.product_type+".specs.saleprice_factor.name"), "#", :'data-feat' => 'saleprice_factor', :class => 'sortby') + '</li>'
         end
       else
-        sortbyList << (Session.search.sortby == f ? t(Session.product_type+".specs."+f+".name") : link_to(t(Session.product_type+".specs."+f+".name"), "#", :'data-feat' => f, :class => 'sortby'))
+        sortbyList << (Session.search.sortby == f ? "<li class='sortby_li sortby_selected'><span>" + t(Session.product_type+".specs."+f+".name")+"</span>" : "<li class='sortby_li'>" + link_to(t(Session.product_type+".specs."+f+".name"), "#", :'data-feat' => f, :class => 'sortby')) + '</li>'
       end
     end
-    sortbyList.join("&nbsp;&nbsp;|&nbsp;&nbsp;")
+    sortbyList.join("&nbsp;")
     # select('sorting_method', @s.search.sortby, sortbyList, {:selected => @s.search.sortby}, {:id => "sorting_method"})
   end
 end

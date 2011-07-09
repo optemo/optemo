@@ -23,7 +23,7 @@ class SearchProduct < ActiveRecord::Base
                mybins = [Userdatabin.new({:name => 'featured', :value => 1})]
                res << search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins) 
            else
-               res << search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = '#{s}'").group("search_products.product_id")..where("product_type=\'#{Session.product_type}\'").order("cont_specs#{myconts.size+1}.value #{order}")[0...18] 
+               res << search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = '#{s}'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value #{order}")[0...18] 
            end      
 
           res.flatten
