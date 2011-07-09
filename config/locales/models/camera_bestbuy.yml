@@ -10,7 +10,9 @@ en:
         navtitle:                   "Camera"
         navtitle2:                  " Available"
         refineyoursearch:           "Refine your search now!"
-        
+        compare:                    "Compare"
+        seeall:                     "See All"
+        shopnow:                    "Shop Now"
         specs:
             category:
                 name:               "Product Category"

@@ -723,6 +723,10 @@ optemo_module = (function (my){
     	    var info = {'chosen_sorting_method' : whichSortingMethodSelected, 'filter_type' : 'sorting_method'};
 			my.trackPage('goals/filter/sorting_method', info);
             my.ajaxcall("/compare", {"sortby" : whichSortingMethodSelected});
+	    $('.sortby').each( function (index) {
+		$(this).removeClass('sortby_selected');
+		});
+	    $(this).addClass('sortby_selected');
 			return false;
 	    });
 
@@ -895,6 +899,15 @@ optemo_module = (function (my){
     		my.ajaxcall(url);
     		return false;
     	});
+
+	$('#back-to-top-bottom').live("click", function() {
+	$('body,html').animate({
+    	    scrollTop: 0
+    	}, 800);
+    	return false;
+	});
+
+
 
         // Choose a grouping via group button rather than drop-down (effect is the same as the select boxes)
     	//$('.title').live('click', function(){
@@ -1636,6 +1649,8 @@ optemo_module = (function (my){
     	if ($(this).attr('checked')) { // save the comparison item
     	    my.loadspecs($(this).attr('data-sku'));
         }
+	
+	my.changeNavigatorCompareBtn(my.getSelectedComparisons().length);
 	});
 
     my.getSelectedComparisons = function () {
@@ -1647,7 +1662,7 @@ optemo_module = (function (my){
 	    });
     	return checkedproducts;
 	};
-	
+
     my.compareCheckedProducts = function () {
     	var checkedProducts = my.getSelectedComparisons();
     	if (checkedProducts.length >= 1) {
@@ -1658,6 +1673,8 @@ optemo_module = (function (my){
         		number_of_saved_products++;
     		});
         }
+	else
+	    return false;
         // To figure out the width that we need, start with $('#opt_savedproducts').length probably
         // 560 minimum (width is the first of the two parameters)
         // 2, 3, 4 ==>  513, 704, 895  (191 each)
@@ -1671,7 +1688,34 @@ optemo_module = (function (my){
     	    // With 1.4.2 we can't do that. Keep code for later.
     	    // $.when.apply(this,reqs).done();
     	    my.buildComparisonMatrix();
+	    
         });
+	return false;
+	};
+    $('#optemo_embedder .nav-compare-btn').live("click", function(e) {
+	e.preventDefault();
+	my.compareCheckedProducts();
+	  });
+
+    my.changeNavigatorCompareBtn = function (selected) {
+	if (selected > 0) {
+	    $('.nav-compare-btn').each ( function(index) {
+		$(this).removeClass('awesome_reset_grey');
+		$(this).removeClass('global_btn_grey');
+		$(this).addClass('awesome_reset');
+		$(this).addClass('global_btn');
+		$(this).text($(this).text().replace(/\d+/, selected));
+		});
+	} else {
+	    $('.nav-compare-btn').each ( function(index) {
+		$(this).removeClass('awesome_reset');
+		$(this).removeClass('global_btn');
+		$(this).addClass('awesome_reset_grey');
+		$(this).addClass('global_btn_grey');
+		$(this).text($(this).text().replace(/\d+/, 0));
+		});
+	    }
+
 	};
 	
     $('.optemo_compare_button').live('click', function(){
@@ -1681,12 +1725,15 @@ optemo_module = (function (my){
     	    my.loadspecs(objCheckbox.attr('data-sku'));
         }
     	my.compareCheckedProducts();
+	// Change navigator bar compare button text
+	my.changeNavigatorCompareBtn(my.getSelectedComparisons().length);
+	
     	return false;
     });
     
     // Back to top button
     $(window).scroll(function () {
-    	if ($(this).scrollTop() > $('#filterbar').height() + 15) {
+    	if ($(this).scrollTop() > $('#filterbar').height()) {
     	    $('#back-top').fadeIn();
     	} else {
     	    $('#back-top').fadeOut();
