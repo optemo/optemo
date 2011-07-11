@@ -6,7 +6,7 @@
 	<% mb['customerRating'] = landing_main_boxes('customerRating')%>
 	<div id="navtitle"><div style="font-size: 30px; float:left; margin-right: 7px;"><%= Session.search.products_size %></div><%= raw navtitle %><br><%= t("#{Session.product_type}.refineyoursearch") %><%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn'})  %></div>
 </div>
-<ul id="sorting_method_box" class="bluesubheading"><li><span style="width: 50px;"><b><%= t("products.sortby") %></b></span></li><%=raw sortbyList %></ul>
+<ul id="sorting_method_box" class="optemo_bluesubheading"><li><span style="width: 50px;"><b><%= t("products.sortby") %></b></span></li><%=raw sortbyList %></ul>
 </div>
 
 <div id="hero">
@@ -33,12 +33,11 @@
 	</div>
 </div>
 
-<div class='bluesubheading'>Featured products <a href="#" class="special_boxes" data-special-boxes="featured">see more</a></div>
-<a href="" class "">
+<div class='optemo_bluesubheading'>Featured products &nbsp;<a href="#" class="optemo_special_boxes" data-special-boxes="featured">see more</a></div>
 <%= raw mb['featured'] %>
-<div class='bluesubheading'>Best Sellers <a href="#" class="special_boxes" data-special-boxes="bestsellers">see more</a></div>
+<div class='optemo_bluesubheading'>Best Sellers &nbsp;<a href="#" class="optemo_special_boxes" data-special-boxes="bestsellers">see more</a></div>
 <%= raw mb['orders']%>
-<div class='bluesubheading'>Top Rated <a href="#" class="special_boxes" data-special-boxes="toprated">see more</a></div>
+<div class='optemo_bluesubheading'>Top Rated &nbsp;<a href="#" class="optemo_special_boxes" data-special-boxes="toprated">see more</a></div>
 <%= raw mb['customerRating']%>
 <div id='navigator_bar_bottom'>
     <div id='navtitle'><%= Session.search.products_size.to_s + ' ' + raw(navtitle) %></div><%= link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'}) %><%= link_to t(Session.product_type+'.seeall')+' >',root_path, :class=>"seeall" %></div>

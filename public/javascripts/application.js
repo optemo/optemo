@@ -1017,7 +1017,7 @@ optemo_module = (function (my){
 		});
 		
 		// Special Boxes - these are the featured, top rated, and best selling product layouts
-		$('.special_boxes').live('click', function () {
+		$('.optemo_special_boxes').live('click', function () {
 		    var whichSpecialBoxSelected = $(this).attr('data-special-boxes');
 		    my.trackPage('goals/special_boxes', {'filter_type' : 'special_boxes'});
 		    my.ajaxcall("/compare/create", {"special_boxes" : whichSpecialBoxSelected});
