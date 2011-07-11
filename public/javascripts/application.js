@@ -830,20 +830,20 @@ optemo_module = (function (my){
         // This bridge function adds the product currently shown in the Quickview screen and puts it in the comparison box.
         // If there are at least two products, bring up the comparison pop-up immediately, otherwise go back to browsing.
         $('#add_compare').live('click', function () {
-	    var t = $(this);
+	        var t = $(this);
             var sku = $('.poptitle').attr('data-sku');
             var image = $('#galleria').find('img:first').attr('src');
-	    my.removeSilkScreen();
+	        my.removeSilkScreen();
 
-	    $('.optemo_compare_checkbox').each (function (index) {
-		if ($(this).attr('data-sku') == sku) {
-		    $(this).attr('checked', 'checked');
-		    return false;
-		}
-		return true;
-		});
-	    my.compareCheckedProducts();
-	    return false;
+	        $('.optemo_compare_checkbox').each (function (index) {
+		        if ($(this).attr('data-sku') == sku) {
+		            $(this).attr('checked', 'checked');
+		            return false;
+		        }
+		        return true;
+		    });
+	        my.compareCheckedProducts();
+	        return false;
         });
 
         $(".productimg, .easylink").live("click", function (){
@@ -896,14 +896,10 @@ optemo_module = (function (my){
     		return false;
     	});
 
-	$('#back-to-top-bottom').live("click", function() {
-	$('body,html').animate({
-    	    scrollTop: 0
-    	}, 800);
-    	return false;
-	});
-
-
+        $('#back-to-top-bottom').live("click", function() {
+            $('body,html').animate({scrollTop: 0}, 800);
+    	    return false;
+        });
 
         // Choose a grouping via group button rather than drop-down (effect is the same as the select boxes)
     	//$('.title').live('click', function(){
@@ -991,7 +987,6 @@ optemo_module = (function (my){
     	}
 
     	$(".close, .bb_quickview_close, #silkscreen").live('click', function(){
-
     		my.removeSilkScreen();
     		return false;
     	});
@@ -1020,10 +1015,18 @@ optemo_module = (function (my){
 			my.ajaxcall($(this).attr('href'));
 			return false;
 		});
+		
+		// Special Boxes - these are the featured, top rated, and best selling product layouts
+		$('.special_boxes').live('click', function () {
+		    var whichSpecialBoxSelected = $(this).attr('data-special-boxes');
+		    my.trackPage('goals/special_boxes', {'filter_type' : 'special_boxes'});
+		    my.ajaxcall("/compare/create", {"special_boxes" : whichSpecialBoxSelected});
+            return false;
+	   });
     }
 
 	//These should be locally scoped functions, but for jquery 1.4.2 compatibility it is moved outside (specifically for the cookie-loading-to-savebar part)
-	
+
 	function row_height(length,isLabel)
 	{
 		var h;
@@ -1630,6 +1633,8 @@ optemo_module = (function (my){
             }
 
             function piwik_ready() {
+                // The try/catch block here was put in specifically to avoid piwik errors from percolating into
+                // the main page. I don't know why it was taken out. ZAT
             //    try {
                     window.piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", my.PIWIK_ID); // idsite is here
             		piwikTracker.setDocumentTitle('Index');
@@ -1648,8 +1653,8 @@ optemo_module = (function (my){
     	if ($(this).attr('checked')) { // save the comparison item
     	    my.loadspecs($(this).attr('data-sku'));
         }
-	
-	my.changeNavigatorCompareBtn(my.getSelectedComparisons().length);
+
+	    my.changeNavigatorCompareBtn(my.getSelectedComparisons().length);
 	});
 
     my.getSelectedComparisons = function () {
@@ -1672,8 +1677,9 @@ optemo_module = (function (my){
         		number_of_saved_products++;
     		});
         }
-	else
-	    return false;
+        // This code has a strange structure and should be cleaned up? Or at least commented?
+	    else
+	        return false;
         // To figure out the width that we need, start with $('#opt_savedproducts').length probably
         // 560 minimum (width is the first of the two parameters)
         // 2, 3, 4 ==>  513, 704, 895  (191 each)
@@ -1689,12 +1695,12 @@ optemo_module = (function (my){
     	    my.buildComparisonMatrix();
 	    
         });
-	return false;
+	    return false;
 	};
     $('#optemo_embedder .nav-compare-btn').live("click", function(e) {
-	e.preventDefault();
-	my.compareCheckedProducts();
-	  });
+        e.preventDefault();
+        my.compareCheckedProducts();
+    });
 
     my.changeNavigatorCompareBtn = function (selected) {
 	if (selected > 0) {

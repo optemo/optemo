@@ -19,8 +19,9 @@
 				<div class="stars" data-stars="<%= ContSpec.cache_all(product.id)["customerRating"] %>"></div>
 			<% end %>
 		</div>
-
-		<div class="spacer buttons"><%= link_to image_tag("bestbuy_addtocart#{fr?}.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{product.sku}", {:'data-sku' => product.sku, :class => 'addtocart', :'data-name' => product.small_title} %></div>
+	     
+		<div style="text-align:left; padding-left:20px">
+			<div class="spacer buttons"><%= link_to image_tag("bestbuy_addtocart#{fr?}.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{product.sku}", {:'data-sku' => product.sku, :class => 'addtocart', :'data-name' => product.small_title} %></div>
 		<div class="spacer">
 		  <input type="checkbox"
 			 data-id="<%= product.id %>"
@@ -30,6 +31,7 @@
 			    global_btn optemo_compare_button" style="" href="#">
 		    <span>COMPARE</span>
 		  </a>
+		</div>
 		</div>
 	</div>
 </div>

@@ -8,6 +8,7 @@
 </div>
 <ul id="sorting_method_box" class="bluesubheading"><li><span style="width: 50px;"><b><%= t("products.sortby") %></b></span></li><%=raw sortbyList %></ul>
 </div>
+
 <div id="hero">
     <% hero = Product.find_by_id(Maybe(SearchProduct.find_by_search_id(Product.initial+1)).product_id) || Product.find_by_product_type(Session.product_type) %>
     <%= image_tag(CatSpec.cache_all(hero.id)["imglurl"], :class => "productimg", :alt => hero.small_title, :title => hero.small_title, :'data-id' => hero.id, :'data-sku' => hero.sku) %>
@@ -30,14 +31,14 @@
 		<% end %>
 		    <div style='margin-top: 50px'><%= link_to t(Session.product_type+'.shopnow'), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{hero.sku}", {:'data-sku' =>hero.sku, :class => 'spacer shop-now addcart', :'data-name' =>hero.small_title} %></div>
 	</div>
-
 </div>
-<div class='bluesubheading'>Featured products <a href="/featured">see more</a></div>
+
+<div class='bluesubheading'>Featured products <a href="#" class="special_boxes" data-special-boxes="featured">see more</a></div>
 <a href="" class "">
 <%= raw mb['featured'] %>
-<div class='bluesubheading'>Best Sellers</div>
+<div class='bluesubheading'>Best Sellers <a href="#" class="special_boxes" data-special-boxes="bestsellers">see more</a></div>
 <%= raw mb['orders']%>
-<div class='bluesubheading'>Top Rated</div>
+<div class='bluesubheading'>Top Rated <a href="#" class="special_boxes" data-special-boxes="toprated">see more</a></div>
 <%= raw mb['customerRating']%>
 <div id='navigator_bar_bottom'>
     <div id='navtitle'><%= Session.search.products_size.to_s + ' ' + raw(navtitle) %></div><%= link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'}) %><%= link_to t(Session.product_type+'.seeall')+' >',root_path, :class=>"seeall" %></div>
