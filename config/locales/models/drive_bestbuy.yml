@@ -15,7 +15,7 @@ en:
         shopnow:                    "Shop Now"        
         specs:
             category:
-                name:               "Shop Drives & Storage"
+                name:               "Categories"
             saleprice:
                 name:               "Price"
                 info:               "The lowest price for the item."
@@ -44,12 +44,34 @@ en:
                 name:               "Clearance"
             isOnlineOnly:
                 name:               "Online Only"
-            isInternal:
+            internal:
                 name:               "Internal"
-            isExternal:
+            external:
                 name:               "External"
             toprated:
                 name:               "Top-Rated"
+            compatibility:
+                name:               "Compatiblility"
+            pcmac:
+                name:               "PC & Mac"
+            pc:
+                name:               "PC"
+            mac:
+                name:               "MAC"
+            rotations:
+                name:               "Rotation Speed"
+            5000rpm:
+                name:               "5000 rpm"
+            5900rpm:
+                name:               "5900 rpm"
+            5400rpm:
+                name:               "5400 rpm"
+            7200rpm:
+                name:               "7200 rpm"
+            10000rpm:
+                name:               "10000 rpm"
+            Internal or External:
+                name:               "Internal or External"
             saleprice_factor:
                 name:               "Price"
             maxresolution_factor:
