@@ -98,9 +98,7 @@ en:
             displayDate:
                 name:               "Newest Model"
             orders_factor:  
-                name:               "Best Selling"    
-            saleprice_factor_high:       
-                name:               "Price (High to Low)"    
+                name:               "Best Selling"        
             AdvancedSearch:
                 name:               "Advanced Search"                            
 

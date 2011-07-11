@@ -7,7 +7,8 @@ en:
         defaultdesc:                "With an external hard drive, flash drive or disc drive you can backup your files and take them virtually anywhere. Shop for reliable, high-quality hard drives at BestBuy.ca and find the perfect way to keep your files safe."
         keywords:                   "external hard drive, flash drive, portable hard drive, hard drives"
         classification:             "Drive & Storage"
-        navtitle:                   "Currently browsing %{count} Camera"
+        navtitle:                   "Currently browsing %{count} Drive"
+        outof:                      "Out of %{count} possible Drives"
         refineyoursearch:           "Refine your search now!"
         compare:                    "Compare"
         seeall:                     "See All"
@@ -74,4 +75,9 @@ en:
             '29583':
                 name:               "Storage Accessories"
             'AdvancedSearch':
-                name:               "Advanced Search"                
+                name:               "Advanced Search"
+            displayDate:
+                name:               "Newest Model"
+            orders_factor:  
+                name:               "Best Selling"        
+                  

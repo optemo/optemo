@@ -52,7 +52,7 @@ class SearchProduct < ActiveRecord::Base
                 else
                      order =  "DESC"    
                 end     
-                res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = '#{sortby}'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value #{order}")  
+                res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = '#{sortby}'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value #{order}")
              end
          end
         q = res.to_sql

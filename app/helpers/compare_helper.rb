@@ -342,27 +342,12 @@ module CompareHelper
 	  end  
 	  @dist[feat]
   end
-  
   def sortbyList
-    sortbyList = [] # Session.search.sortby == "relevance" || Session.search.sortby.blank? ? t("products.relevance") : link_to(t("products.relevance"), "#", :'data-feat' => "relevance", :class => 'sortby')
+    sortbyList = [(Session.search.sortby=="relevance" ? "<li class='sortby_li sortby_selected'><span>" + t("products.relevance")+"</span>" : "<li class='sortby_li'>" + link_to(t("products.relevance"), "#", :'data-feat' => "relevance", :class => 'sortby')) + '</li>']
     Session.continuous["sortby"].each_with_index do |f, i|
-      # For the sale price, we need logic to figure out whether we are sorting either direction by price.
-      if f == "saleprice_factor"
-        if Session.search.sortby == "saleprice_factor"
-          # We need to link to the descending sort order, but show the ascending arrow
-          sortbyList << "<li class='sortby_li sortby_selected'>" + link_to(t(Session.product_type+".specs.saleprice_factor.name"), "#", :'data-feat' => 'saleprice_factor_high', :class => 'sortby price_low') + "</li>"
-        elsif Session.search.sortby == "saleprice_factor_high"
-          # We need to link to the ascending sort order, but show the descending arrow
-          sortbyList << "<li class='sortby_li sortby_selected'>" + link_to(t(Session.product_type+".specs.saleprice_factor.name"), "#", :'data-feat' => 'saleprice_factor', :class => 'sortby price_high') + '</li>'
-        else
-          # If we haven't sorted by price yet, we should not show any arrow and link to the ascending price sort
-          sortbyList << "<li class='sortby_li'>" + link_to(t(Session.product_type+".specs.saleprice_factor.name"), "#", :'data-feat' => 'saleprice_factor', :class => 'sortby') + '</li>'
-        end
-      else
-        sortbyList << (Session.search.sortby == f ? "<li class='sortby_li sortby_selected'><span>" + t(Session.product_type+".specs."+f+".name")+"</span>" : "<li class='sortby_li'>" + link_to(t(Session.product_type+".specs."+f+".name"), "#", :'data-feat' => f, :class => 'sortby')) + '</li>'
-      end
+          # For the sale price, we need logic to figure out whether we are sorting either direction by price.
+          sortbyList << (Session.search.sortby == f ? "<li class='sortby_li sortby_selected'><span>" + t(Session.product_type+".specs."+f+".name")+"</span>" : "<li class='sortby_li'>" + link_to(t(Session.product_type+".specs."+f+".name"), "#", :'data-feat' => f, :class => 'sortby')) + '</li>'
     end
     sortbyList.join("&nbsp;")
-    # select('sorting_method', @s.search.sortby, sortbyList, {:selected => @s.search.sortby}, {:id => "sorting_method"})
   end
 end
