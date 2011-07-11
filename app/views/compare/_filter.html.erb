@@ -84,7 +84,7 @@
          <% end %>
            <% if index == 4 %>
   		<div class='label-advanced-title' data-position="<%= index %>">
-		  <%= t("#{Session.product_type}.specs.AdvancedSearch.name")
+		  <%= t('products.compare.AdvancedSearch')
 		  %>&nbsp;&gt;
 		  </div>
 		<div class='label-advanced' data-position="<%= index %>">
@@ -92,7 +92,7 @@
 	   <% if index > 4 %>
   		<div class='label-advanced' data-position="<%= index %>">
 	   <% end %>
-	<%= t('products.compare.'+heading) %>&nbsp;&gt;</div></div>
+	<%= t('products.compare.' + heading) %>&nbsp;&gt;</div></div>
 	<% features.each do |b_feat| %>
 		<% dobj = @s.search.userdatabins.select{|udb| udb.name == b_feat}.first %>
 		<% unchecked = dobj.nil? || dobj.value == false %>
