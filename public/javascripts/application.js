@@ -1192,7 +1192,10 @@ optemo_module = (function (my){
     my.ajaxsend = function (hash,myurl,mydata,timeoutlength) {
         var lis = my.loading_indicator_state;
         mydata = $.extend({'ajax': true, category_id: my.RAILS_CATEGORY_ID},mydata);
-        if (typeof hash != "undefined" && hash != null) mydata.hist = hash;
+        if (typeof hash != "undefined" && hash != null && hash != "") {
+            mydata.hist = hash;}
+        else
+            mydata.landing = true;
         if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 50);
         if (OPT_REMOTE) {
             //Embedded Layout
