@@ -9,13 +9,13 @@ class Session
   cattr_accessor :piwikSiteId # Piwik Site ID, as configured in the currently-running Piwik install.
   cattr_accessor :ab_testing_type # Categorizes new users for AB testing
   cattr_accessor :category_id, :dynamic_filter_cat, :dynamic_filter_cont, :dynamic_filter_bin, :filters_order
-  cattr_accessor :rails_category_id # This is passed in from ajaxsend and the logic for determining the category ID is from the javascript side rather than from the Rails side. Useful for embedding. We will probably combine the two category ids later? 
+  cattr_accessor :rails_category_id # This is passed in from ajaxsend and the logic for determining the category ID is from the javascript side rather than from the Rails side. Useful for embedding.
 
-  def initialize (url = nil)
+  def initialize (cat_id = nil)
     # This parameter controls whether the interface features drag-and-drop comparison or not.
     self.dragAndDropEnabled = true
     # Relative descriptions, in comparison to absolute descriptions, have been the standard since late 2009, and now we use Boostexter labels also.
-    # As of August 2010, I highly suspect that setting this to false breaks the application.
+    # As of August 2010, setting this to false might breaks the application. - ZAT
     self.relativeDescriptions = true
     # At one time, this parameter controlled how many clusters were shown.
     self.numGroups = 9
@@ -36,24 +36,11 @@ class Session
     self.dynamic_filter_bin = Hash.new{|h,k| h[k] = []}
     self.filters_order = Array.new
     
-    p_url = nil
-
-    unless url.nil?
-      Url.find_each do |u|
-        if u.url==url
-          p_url = u
-          break
-        end
-      end
-    end
-
-    p_type = p_url.nil?? ProductType.find_all_by_name('camera_bestbuy').first : p_url.product_type
-    
+    # 2 is hard-coded to cameras at the moment and is the default
+    # Check the product_types table for details
+    p_type = ProductType.find(cat_id.blank? ? 2 : CategoryIdProductTypeMap.find_by_category_id(cat_id.to_i).product_type_id)
     self.product_type = p_type.name
-
-
-    # product_yml = file[self.product_type]
-    self.category_id = p_type.category_id_product_type_maps.map{ |x| x.category_id }
+    self.category_id = p_type.category_id_product_type_maps.map(&:category_id)
     
     # directLayout controls the presented view: Optemo Assist vs. Optemo Direct. 
     # Direct needs no clustering, showing all products in browseable pages and offering "group by" buttons.

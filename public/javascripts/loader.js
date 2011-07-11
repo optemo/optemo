@@ -37,14 +37,10 @@ var opt_history = location.hash.replace(/^#/, '');
 // http://www.bestbuy.ca/en-CA/digital-cameras.aspx maps to the category id 20218.
 // This is ascertained by looking at the database, in the category_id_product_type_maps table.
 // The regular expressions for all but the first entry (digital cameras) are assumed (as of July 6, 2011)
-var category_id_hash = {'digital-cameras.aspx' : 20218,
-                        'digital-tvs.aspx' : 21344,
-                        'flash-drives.aspx' : 20243,
-                        'external-hard-drives.aspx' : 20237,
-                        'internal-hard-drives.aspx' : 20239,
-                        'solid-state-drives.aspx' : 30442,
-                        'dvd-cd-drives.aspx' : 20236,
-                        'storage-accessories.aspx' :29583}
+var category_id_hash = {'digital-cameras' : 20218,
+                        'digital-tvs' : 21344, // The URL is probably not quite correct yet; this is a placeholder
+                        'harddrives' : 20232};
+
 var rails_category_id = 0;
 for (var i in category_id_hash) {
     if (window.location.pathname.match(new RegExp(i))) {

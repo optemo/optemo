@@ -23,7 +23,7 @@ en:
             zoomout:        "Zoom out"
             clickforspecs:  "Click for product specifications"
             seegroup:       "Click here to see products in this group"
-            reset:          "RESET"
+            reset:          "Reset All"
             resetdesc:      "Clear all filters"
             compare:        "COMPARE"
             newTechnology:  "New Technology"

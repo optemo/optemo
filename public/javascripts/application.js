@@ -95,14 +95,10 @@ optemo_module = (function (my){
         SESSION_ID = parseInt($('#seshid').html());
         AB_TESTING_TYPE = parseInt($('#ab_testing_type').html());
         my.PIWIK_ID = $('#piwikid').html();
-        var category_id_hash = {'digital-cameras.aspx' : 20218,
-                        'digital-tvs.aspx' : 21344,
-                        'flash-drives.aspx' : 20243,
-                        'external-hard-drives.aspx' : 20237,
-                        'internal-hard-drives.aspx' : 20239,
-                        'solid-state-drives.aspx' : 30442,
-                        'dvd-cd-drives.aspx' : 20236,
-                        'storage-accessories.aspx' :29583}
+        var category_id_hash = {'digital-cameras' : 20218,
+                        'digital-tvs' : 21344, // The URL is probably not quite correct yet; this is a placeholder
+                        'harddrives' : 20232};
+
         my.RAILS_CATEGORY_ID = 0;
         for (var i in category_id_hash) {
             if (window.location.pathname.match(new RegExp(i))) {
