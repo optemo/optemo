@@ -10,7 +10,7 @@ en:
         navtitle:                  "Lecteur"
         navtitle2:                   " Disponibles"
         outof:                      "Parmi %{count} Lecteurs"
-        compare:                    "Compare"
+        compare:                    "Comparer"
         seeall:                     "Visionner Tout"
         toprated:                   "Meilleure Cote Produits"
         bestsellers:                "Meilleurs Vendeurs"

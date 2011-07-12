@@ -51,9 +51,9 @@
             <% feat_list.each do |feat| %>
 			<%#needs to be more efficient especially if we want to have unlimited number of products in the compare box%>	
 				<% if feat_type!="bin" || !@products.map{|product| spec_hash[product.id][feat]}.compact.empty? %> 
-					<div class="<%= t("#{Session.product_type}.specs.#{feat}.name").length < 20 ? "compare_row" : "double_height_compare_row" %>">
+					<div class="<%= t("#{Session.product_type}#{fr}.specs.#{feat}.name").length < 20 ? "compare_row" : "double_height_compare_row" %>">
 		     			<div class="cell <%= gray ? "graybg" : "whitebg" %> leftmostcolumn leftcolumntext">
-		        			<%= t("#{Session.product_type}.specs.#{feat}.name") %>:
+		        			<%= t("#{Session.product_type}#{fr}.specs.#{feat}.name") %>:
 		        		</div>
         				<% @products.each_with_index do |product, i| %>
             				<% allspecs = spec_hash[product.id] %>
