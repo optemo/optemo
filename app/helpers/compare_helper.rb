@@ -217,7 +217,7 @@ end
       case type
       when "featured"
         if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i+1].product_id)})
         end
       when "orders"
         if prods.size > 0
