@@ -132,6 +132,7 @@ html {
    margin-right: 15px;
    text-decoration: none;
 }
+
 #optemo_embedder #sorting_method_box {
    font-size: 0.75em;
    background: #eee;
@@ -1385,8 +1386,7 @@ margin-top:0;
    }
 #optemo_embedder .y_heading {
 	overflow:hidden;
-	_height:35px;
-
+	height:75px;
 }
 
 /*
