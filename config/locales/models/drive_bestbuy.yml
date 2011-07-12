@@ -9,7 +9,6 @@ en:
         classification:             "Drive & Storage"
         navtitle:                   "Currently browsing %{count} Drive"
         outof:                      "Out of %{count} possible Drives"
-        refineyoursearch:           "Refine your search now!"
         compare:                    "Compare"
         seeall:                     "See All"
         shopnow:                    "Shop Now"        

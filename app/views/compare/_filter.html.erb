@@ -1,8 +1,9 @@
 <h2 class="y_heading">
-	<label class="narrow_text">
-		<%=t 'products.compare.search' %> 
-	</label>
-	<%= link_to "/", :class => "reset regular_reset", :rel => "nofollow", :style => "float: right; margin-top:12px", :title => t('products.compare.resetdesc') do %>
+	<p class="narrow_text">
+		<%= image_tag "refine_your_search.gif" %>
+	</p>
+	<%= link_to "/", :class => "reset regular_reset", :rel =>
+	"nofollow", :style=>"float: right; margin-top: 0;", :title => t('products.compare.resetdesc') do %>
 		<span><%= t('products.compare.reset') %></span>
 	<% end %>
 </h2>
