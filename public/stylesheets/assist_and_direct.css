@@ -128,7 +128,7 @@ html {
    text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
    font-size: 0.8em;
    padding: 5px 15px;
-   margin-right: 15px;
+   margin-right: 100px;
    text-decoration: none;
 }
 #optemo_embedder #sorting_method_box {
@@ -560,8 +560,7 @@ padding-bottom: 5px;
    *margin-top: -20px;
 }
 #optemo_embedder .reset {
-	font-size: 0.7em;
-   font-weight: bold;
+	font-size: 0.9em;
 }
 
 #optemo_embedder .valbelow {
@@ -962,7 +961,7 @@ margin-top:0;
    background: #DADADA;
     }
 #optemo_embedder span {
-   margin-left: 7px;
+   margin-left: 2px;
    }
 #optemo_embedder .productinfo {
    height: 120px;
@@ -1377,6 +1376,7 @@ margin-top:0;
 #optemo_embedder .narrow_text img{
    width: 150px;
    height: 39px;
+   padding-left: 10px;
    }
 #optemo_embedder .y_heading {
 	overflow:hidden;

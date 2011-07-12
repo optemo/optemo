@@ -217,7 +217,7 @@ module CompareHelper
       case type
       when "featured"
         if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i+1].product_id)})
         end
       when "orders"
         if prods.size > 0
@@ -275,6 +275,7 @@ module CompareHelper
     res << "<div id='navtitle'>#{Session.search.products_size.to_s + ' ' + navtitle}</div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div>"
 
     res << "<div class='pagination-container'><span class='pagi-info'>#{page_entries_info(products, :entry_name =>'').gsub(/([Dd]isplaying\s*)|(\s*in\s*total)|(\<b\>)|(<\/b>)|(&nbps;)/,'')}</span>"
+
     if products.size >18 
         res << "#{will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :inner_window=>1, :outer_window=>-4}).gsub(/\.{3}/,'').sub(/>/,'><span>Page:&nbsp;</span>')}<a href='#' id='back-to-top-bottom'>Back to Top</a></div>"
   	end
