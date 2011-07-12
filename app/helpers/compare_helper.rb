@@ -204,7 +204,7 @@ module CompareHelper
       end                
     end    
     res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
-  end
+end
   
   
   def landing_main_boxes(type)
@@ -217,7 +217,7 @@ module CompareHelper
       case type
       when "featured"
         if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i+1].product_id)})
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
         end
       when "orders"
         if prods.size > 0
