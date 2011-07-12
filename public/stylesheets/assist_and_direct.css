@@ -1633,6 +1633,7 @@ margin-top:0;
 
 #optemo_embedder .y_bottom {
    margin: 12px 0 -12px;
+   padding-right: 6px;
    padding-bottom: 3px;
    _margin-bottom: 0;
    margin-bottom: 0\0/; /* ie8 */
