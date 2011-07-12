@@ -2,9 +2,9 @@
 	<% when 'featured' %>
 		<% mb = "<div class='optemo_bluesubheading'>Featured Products</div>" + special_main_boxes('featured', 10) %>
 	<% when 'toprated' %>
-		<% mb = "<div class='optemo_bluesubheading'>Top Rated Products</div>" + special_main_boxes('customerRating', 10) %>
+		<% mb = "<div class='optemo_bluesubheading'>Top Rated Products</div>" + special_main_boxes('customerRating', 18) %>
 	<% when 'bestsellers' %>
-		<% mb = "<div class='optemo_bluesubheading'>Best Sellers</div>" + special_main_boxes('orders', 10) %>		
+		<% mb = "<div class='optemo_bluesubheading'>Best Sellers</div>" + special_main_boxes('orders', 18) %>		
 	<% else %>
 		<% mb = main_boxes #Calculate this before navtitle %>
 <% end %>

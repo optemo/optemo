@@ -28,6 +28,16 @@ class SearchProduct < ActiveRecord::Base
           res.flatten
       end    
 
+      def find_hero
+        mycats = Session.search.userdatacats.group_by(&:name).values
+        mybins = Session.search.userdatabins
+        myconts = Session.search.userdataconts  
+        res = []  
+        mybins = [Userdatabin.new({:name => 'hero', :value => 1})]
+        res << search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins).where("product_type=\'#{Session.product_type}\'")
+        res.flatten.first   
+      end
+            
       def fq2
         sortby= Session.search.sortby
         mycats = Session.search.userdatacats.group_by(&:name).values
