@@ -62,12 +62,12 @@ module CompareHelper
   end
   
   def navtitle
-    res = t("#{Session.product_type}.navtitle")
     if Session.search.products_size > 1
-      res + t("#{Session.product_type}.navtitle2").pluralize
+      res = t("#{Session.product_type}.navtitle").pluralize
     else
-        res + t("#{Session.product_type}.navtitle2")
+        res = t("#{Session.product_type}.navtitle")
     end    
+    res + t("#{Session.product_type}.navtitle2")
   end
   
   def groupDesc(group, i)

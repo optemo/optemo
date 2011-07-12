@@ -7,8 +7,10 @@ en:
         defaultdesc:                "Best Selection of digital cameras"
         keywords:                   "cameras"
         classification:             "Digital Cameras"
-        navtitle:                   "Available"
-        navtitle2:                  " Camera"
+        navtitle:                  "Camera"
+        navtitle2:                   " Available"
+        outof:                      "Out of %{count} Available"
+
         compare:                    "Compare"
         seeall:                     "See All"
         shopnow:                    "Shop Now"
