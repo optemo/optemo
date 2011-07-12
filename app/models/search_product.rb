@@ -11,45 +11,84 @@ class SearchProduct < ActiveRecord::Base
       search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins)
     end
     
-    def fq2
-      mycats = Session.search.userdatacats.group_by(&:name).values
-      mybins = Session.search.userdatabins
-      myconts = Session.search.userdataconts
-      if Session.directLayout
-        unless Session.search.sortby == "Price"
-          # We order by utility here, the default ("Relevance" or blank sortby term)
-          res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = 'utility'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value DESC")
-        else
-          # We order by price here
-          res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = 'price'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value ASC")
-        end
-      else
-        res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[]]).conts_keywords.cats(mycats).bins(mybins).group("search_products.product_id")
+    def fq2_landing(s) 
+          mycats = Session.search.userdatacats.group_by(&:name).values
+          mybins = Session.search.userdatabins
+          myconts = Session.search.userdataconts
+          res = []
+          order =  "DESC"
+           if s=='featured'
+               mybins = [Userdatabin.new({:name => 'hero', :value => 1})]
+               res << search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins) 
+               mybins = [Userdatabin.new({:name => 'featured', :value => 1})]
+               res << search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins) 
+           else
+               res << search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = '#{s}'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value #{order}")[0...18] 
+           end      
+          res.flatten
+      end    
+
+      def find_hero
+        mycats = Session.search.userdatacats.group_by(&:name).values
+        mybins = Session.search.userdatabins
+        myconts = Session.search.userdataconts  
+        res = []  
+        mybins = [Userdatabin.new({:name => 'hero', :value => 1})]
+        res << search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins)#.where("product_type=\'#{Session.product_type}\'")
+        res.flatten.first   
       end
-      q = res.to_sql
-      cached = CachingMemcached.cache_lookup("Products-#{q.hash}") do
-        #We don't want to store the activerecord here
-        tried_once = true
-        begin
-          result = self.connection.execute(q).to_a
-          raise SearchError, "No products match that search criteria for #{Session.product_type}" if result.empty?
-        rescue SearchError
-          #Check if the initial products are missing
-          if search_id_q.count == 0 && tried_once
-            initial_products_id = Product.initial
-            SearchProduct.transaction do
-              Product.instock.current_type.map{|product| SearchProduct.new(:product_id => product.id, :search_id => initial_products_id)}.each(&:save)
-            end
-            tried_once = false
-            retry
+            
+      def fq2
+        sortby= Session.search.sortby
+        mycats = Session.search.userdatacats.group_by(&:name).values
+        mybins = Session.search.userdatabins
+        myconts = Session.search.userdataconts
+        if Session.directLayout
+          unless sortby == "Price"
+            # We order by utility here, the default ("Relevance" or blank sortby term)
+            res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = 'utility'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value DESC")
           else
-            raise
+            # We order by price here
+            res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = 'price'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value ASC")
           end
+        else
+            if sortby.nil? || sortby == "relevance" 
+                res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = 'utility'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value DESC")
+            else    
+                if sortby.include?("_high")  
+                     order = "ASC"
+                     sortby = "saleprice_factor"  # this should be rewritten
+                else
+                     order =  "DESC"    
+                end     
+                res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = '#{sortby}'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value #{order}")
+             end
+         end
+        q = res.to_sql
+        cached = CachingMemcached.cache_lookup("Products-#{q.hash}") do
+          #We don't want to store the activerecord here
+          tried_once = true
+          begin
+            result = self.connection.execute(q).to_a
+            raise SearchError, "No products match that search criteria for #{Session.product_type}" if result.empty?
+          rescue SearchError
+            #Check if the initial products are missing
+            if search_id_q.count == 0 && tried_once
+              initial_products_id = Product.initial
+              SearchProduct.transaction do
+                Product.instock.current_type.map{|product| SearchProduct.new(:product_id => product.id, :search_id => initial_products_id)}.each(&:save)
+              end
+              tried_once = false
+              retry
+            else
+              raise
+            end
+          end
+          result
         end
-        result
+        #ComparableSet.from_storage(cached)
+        cached.map{|c|ProductAndSpec.from_storage(c)}
       end
-      ComparableSet.from_storage(cached)
-    end
     
     def cat_counts(feat,expanded,includezeros = false,s = Session.search)
       allcats = s.userdatacats.group_by(&:name)

@@ -62,12 +62,12 @@ module CompareHelper
   end
   
   def navtitle
-    res = t("#{Session.product_type}.navtitle", :count => Session.search.products_size)
+    res = t("#{Session.product_type}.navtitle")
     if Session.search.products_size > 1
-      res.pluralize
+      res + t("#{Session.product_type}.navtitle2").pluralize
     else
-      res
-    end
+        res + t("#{Session.product_type}.navtitle2")
+    end    
   end
   
   def groupDesc(group, i)
@@ -182,6 +182,56 @@ module CompareHelper
     select('superfluous', feat, [expanded ? t('products.add')+t(Session.product_type+'.specs.'+feat+'.name') : t('products.all')+t(Session.product_type+'.specs.'+feat+'.name').pluralize] + SearchProduct.cat_counts(feat,expanded,true).map{|k,v| ["#{k} (#{v})", k]}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
   end
   
+  def special_main_boxes(type, num)
+    res = ""
+    res << '<div class="rowdiv">'
+    open = true
+    prods = @s.search.products_landing(type)
+    for i in 0...num
+      case type
+      when "featured"
+        if prods.size > 0    
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+        end
+      when "orders"
+        if prods.size > 0
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+        end
+      when 'customerRating'
+        if prods.size > 0
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+        end
+      end                
+    end    
+    res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
+end
+  
+  
+  def landing_main_boxes(type)
+    res = ""
+    num_examples = 3
+    res << '<div class="rowdiv">'
+    open = true
+    prods = @s.search.products_landing(type)
+    for i in 0...num_examples
+      case type
+      when "featured"
+        if prods.size > 0
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+        end
+      when "orders"
+        if prods.size > 0
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+        end
+      when 'customerRating'
+        if prods.size > 0
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+        end
+      end                
+    end    
+    res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
+  end
+    
   def main_boxes
     res = ""
     if @s.directLayout # List View (Optemo Direct)
@@ -204,34 +254,30 @@ module CompareHelper
 	        res << "<div style=\"padding:10px;\">No search results. Please search again or " + link_to("start over", "/") + ".</div>"
         end
 	    else # Grid View (Optemo Assist)
-	      range = true
-	      range = !(@s.search.cluster.min(@s.search.sortby)== @s.search.cluster.max(@s.search.sortby)) if @s.continuous["cluster"].include?(@s.search.sortby)    
-    		for i in 0...[@s.search.cluster.numclusters, @s.numGroups].min
+    		for i in 0...@s.search.paginated_products.size
     		  if i % (Float(@s.numGroups)/3).ceil == 0
     			  res << '<div class="rowdiv">'
     			  open = true
     		  end
     		  #Navbox partial to draw boxes
-    		  res << render(:partial => 'navbox', :locals => {:i => i, :cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size > 1, :product => @s.search.cluster.children[i].representative, :range =>range})
+    		  res << render(:partial => 'navbox', :locals => {:i => i, :product => @s.search.paginated_products[i]})
           if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
             res << '<div style="clear: both"></div></div>'
             open = false
           end
     		end
-    		if (Session.extendednav && @s.search.cluster.size < 12 && @s.search.cluster.numclusters<8)
-    		  extended_ids = Kmeans.extendedCluster(10,@s.search.products)
-          if extended_ids.size > 1
-              @s.search.extend_it(Cluster.new(extended_ids,nil))
-    		      res << render(:partial => 'extendedbox', :locals => {:i => 9, :extended => @s.search.extended, :group => @s.search.extended.size > 1, :product => @s.search.extended.representative, :filter_hash => adjustingfilters_hash, :adjustedfilters => adjustingfilters})
-  		        @s.search.extend_it(nil)
-  		    end
-  		  end 
   		end
   	end
   	res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
-  	if @s.directLayout && @s.search.groupby.nil?
-  	  pagination_line = will_paginate(@products)
-    	res << pagination_line unless pagination_line.nil?
+    res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
+    products = @s.search.paginated_products
+    res << "<div id='navigator_bar_bottom'>"
+    res << "<div id='navtitle'>#{Session.search.products_size.to_s + ' ' + navtitle}</div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div>"
+
+    res << "<div class='pagination-container'><span class='pagi-info'>#{page_entries_info(products, :entry_name =>'').gsub(/([Dd]isplaying\s*)|(\s*in\s*total)|(\<b\>)|(<\/b>)|(&nbps;)/,'')}</span>"
+
+    if products.size >18 
+        res << "#{will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :inner_window=>1, :outer_window=>-4}).gsub(/\.{3}/,'').sub(/>/,'><span>Page:&nbsp;</span>')}<a href='#' id='back-to-top-bottom'>Back to Top</a></div>"
   	end
   	res
 	end
@@ -246,8 +292,8 @@ module CompareHelper
              new_filters << se.name + "_max=" + se.max.to_s
            end
            if @s.search.extended.max(se.name)>se.max 
-             new_filters<<se.name + "_max=" + @s.search.extended.max(se.name).to_s
-             new_filters<<se.name + "_min=" + se.min.to_s
+             new_filters<< se.name + "_max=" + @s.search.extended.max(se.name).to_s
+             new_filters<< se.name + "_min=" + se.min.to_s
            end   
          end
       end  
@@ -298,13 +344,12 @@ module CompareHelper
 	  end  
 	  @dist[feat]
   end
-  
   def sortbyList
-    sortbyList = [Session.search.sortby == "relevance" || Session.search.sortby.blank? ? t("products.relevance") : link_to(t("products.relevance"), "#", :'data-feat' => "relevance", :class => 'sortby')]
-    Session.continuous["cluster"].each do |f| 
-      sortbyList << (Session.search.sortby == f ? t(Session.product_type+".specs."+f+".name") : link_to(t(Session.product_type+".specs."+f+".name"), "#", :'data-feat' => f, :class => 'sortby'))
+    sortbyList = [(Session.search.sortby=="relevance" ? "<li class='sortby_li sortby_selected'><span>" + t("products.relevance")+"</span>" : "<li class='sortby_li'>" + link_to(t("products.relevance"), "#", :'data-feat' => "relevance", :class => 'sortby')) + '</li>']
+    Session.continuous["sortby"].each_with_index do |f, i|
+          # For the sale price, we need logic to figure out whether we are sorting either direction by price.
+          sortbyList << (Session.search.sortby == f ? "<li class='sortby_li sortby_selected'><span>" + t(Session.product_type+".specs."+f+".name")+"</span>" : "<li class='sortby_li'>" + link_to(t(Session.product_type+".specs."+f+".name"), "#", :'data-feat' => f, :class => 'sortby')) + '</li>'
     end
-    t("products.sortby") + sortbyList.join("&nbsp;&nbsp;|&nbsp;&nbsp;")
-    # select('sorting_method', @s.search.sortby, sortbyList, {:selected => @s.search.sortby}, {:id => "sorting_method"})
+    sortbyList.join("&nbsp;")
   end
 end

@@ -1,5 +1,5 @@
 require 'absolute_url_enabler'
-require 'base64'
+require 'null_object'
 Site::Application.configure do
   # Settings specified here will take precedence over those in config/environment.rb
 

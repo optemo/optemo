@@ -2,6 +2,5 @@ en:
     products:
         # All language-dependent definitions in models  
         ErrorPart1:         "Sorry! An error has occurred on the server. You can reset the tool and see if the problem is resolved."
-        sortby:             "Group by:"
-        sortby:             "Group by: "
-        relevance:          "Our Top Picks"
+        sortby:             "Sort by"
+        relevance:          "Relevance"

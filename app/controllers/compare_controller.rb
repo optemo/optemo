@@ -9,7 +9,7 @@ class CompareController < ApplicationController
     else
       # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
       if Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
-        hist = Base64.decode64(params[:hist]).gsub(/\D/,'').to_i if params[:hist] && !params[:hist].blank?
+        hist = CGI.unescape(params[:hist]).unpack('m')[0].gsub(/\D/,'').to_i if params[:hist] && !params[:hist].blank?
         search_history = Search.find_by_parent_id(hist) if hist && params[:page].nil?
         if params[:page]
           classVariables(Search.create({:page => params[:page], :sortby => params[:sortby], "action_type" => "nextpage"}))
@@ -36,6 +36,11 @@ class CompareController < ApplicationController
     correct_render
   end
 
+  def featured
+      classVariables(Search.create("action_type" => "featured", "parent" => params[:hist]))
+      correct_render
+  end     
+    
   def groupby
     # Group products by specified feature
     classVariables(Search.create(:feat => params[:feat], "action_type" => "groupby"))
@@ -56,6 +61,10 @@ class CompareController < ApplicationController
     correct_render
   end
 
+  def featured 
+    classVariables(Search.create({"featured _hash" => params[:id], "action_type" => "similar", "parent" => params[:hist]}))
+    correct_render
+  end      
   def extended
     params["action_type"]= "extended"
     classVariables(Search.create(params))
@@ -82,6 +91,7 @@ class CompareController < ApplicationController
     else
       params[:myfilter]["action_type"] = "filter"
       params[:myfilter]["parent"] = params[:hist] if params[:hist]
+      @special_boxes = params[:special_boxes] if params[:special_boxes]
       classVariables(Search.create(params[:myfilter]))
       correct_render
     end
@@ -135,14 +145,23 @@ class CompareController < ApplicationController
     @s = Session
     @jsonp_version = true if request.subdomains.first == "embed"
     @s.search = search
+    @s.getFilters search.userdatacats
     if @s.directLayout
-      @products = search.products.paginate :page => search.page, :per_page => 10
+      @products = search.products.paginate :page => search.page, :per_page => 9
     end
   end
   
   def correct_render
     if params[:ajax]
-      render 'ajax', :layout => false
+      if @s.search.page
+          render 'page', :layout => false
+      else
+          if params[:landing]
+              render 'ajax_landing', :layout => false
+          else      
+              render 'ajax', :layout => false
+          end      
+      end
     else
       if Session.mobileView
         classVariables(Search.create({"page" => params[:page], "action_type" => "initial"}))

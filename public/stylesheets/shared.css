@@ -60,11 +60,10 @@ body {
 	font-size: 2.1em;
 }
 #optemo_embedder #leftbar h2 {
-	margin: 0px 0px 3px;
+	margin: 0;
 	font-size: 0.9em;
-	padding: 6px;
 	border-bottom: 1px solid #ccc;
-	background-color: yellow;
+	background-color: #E9E9E9;
 }
 #optemo_embedder a {
 	text-decoration: none;
@@ -82,11 +81,19 @@ body {
     background-color: white;
     border: 1px solid #ccc;
 }*/
+
 #optemo_embedder #navtitle {
-    display:inline;
+   display: inline;
+    *display:inline-block;
     margin-left: auto;
     margin-right: auto;
+   
 }
+
+#optemo_embedder #IE #navtitle{
+   display: inline-block;
+   border: none;
+   }
 
 /*--------------------------------------//
 //      Main Content (Right Side)       //

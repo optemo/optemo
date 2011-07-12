@@ -1,10 +1,11 @@
+/*global defineClass: false, deserialize: false, gc: false, help: false, load: false, loadClass: false, print: false, quit: false, readFile: false, readUrl: false, runCommand: false, seal: false, serialize: false, spawn: false, sync: false, toint32: false, version: false */
 /* Application-specific Javascript.
    This is for the grid & list views (Optemo Assist & Optemo Direct) only.
    If you add a function and don't add it to the table of contents, prepare to be punished by your god of choice.
    Functions marked ** are public functions that can be called from outside the optemo_module declaration.
 
    ---- Show Page Pre-loader & Helpers ----
-	** loadSavedProductsFromCookie - Loads the saved products into the saved products box
+
     parse_bb_json(obj)  -  recursive function to parse the returned JSON into an html list
     ** loadspecs(sku, f)  -  Does 2 AJAX requests for data relating to sku and puts the results in $('body').data() for later. Runs the callback function f if provided.
     numberofstars(stars)  -  Helper function to turn a number of stars into images
@@ -13,8 +14,6 @@
    ---- UI Manipulation ----
     ** removeSilkScreen()
     ** applySilkScreen(url, data, width, height, f)  -  Puts up fading boxes, calling the callback frunction f if provided.
-    ** saveProductForComparison(id, sku, imgurl, name)  -  Puts comparison items in #savebar_content and stores them in a cookie. SKU is optional.
-    ** renderComparisonProducts(id, sku, imgurl, name)  -  Does actual insertion of UI elements
     ** getIdAndSkuFromProductimg(img)  -  Returns the ID from the image. Only used for drag-and-drop at the moment.
     removeFromComparison(id)  -  Removes comparison items from #savebar_content
     submitCategorical()  -  Submits a categorical filter (no longer does tracking)
@@ -55,8 +54,7 @@
 
    -------- Cookies -------
     addValueToCookie(name, value)  -  Add a value to the cookie "name" or create a cookie if none exists.
-    removeValueFromCookie(name, value)  -  Remove a value from the cookie, and delete the cookie if it's empty.
-    ** readAllCookieValues(name)  -  Returns an array of cookie values.
+    removeValueFromCookie(name, value)  -  Remove a value from the cookie, and delete the cookie if it's readAllCookieValues(name)  -  Returns an array of cookie values.
     createCookie(name,value,days)  -  Try not to use this or the two below directly if possible, they are like private methods.
     readCookie(name)  -  Gets raw cookie 'value' data.
     eraseCookie(name)  -  Erases cookie.
@@ -88,42 +86,29 @@ optemo_module = (function (my){
     // The following variables are pulled from optemo.html.erb
     // They are in a separate function like this so that the embedder can call them at the appropriate time.
     // Note that those that are locally scoped to the optemo_module must be defined before this function call.
-    var VERSION, SESSION_ID, AB_TESTING_TYPE;
+    var VERSION, SESSION_ID, AB_TESTING_TYPE, DOM_ALREADY_RUN;
     if (typeof OPT_REMOTE == "undefined") OPT_REMOTE = false;
     my.initializeVariables = function() {
-        my.IS_DRAG_DROP_ENABLED = ($("#dragDropEnabled").html() === 'true');
         my.MODEL_NAME = $("#modelname").html();
         VERSION = $("#version").html();
         my.DIRECT_LAYOUT = ($('#directLayout').html() == "true");
         SESSION_ID = parseInt($('#seshid').html());
         AB_TESTING_TYPE = parseInt($('#ab_testing_type').html());
         my.PIWIK_ID = $('#piwikid').html();
-    }
+        var category_id_hash = {'digital-cameras' : 20218,
+                        'digital-tvs' : 21344, // The URL is probably not quite correct yet; this is a placeholder
+                        'harddrives' : 20232};
 
-	my.loadSavedProductsFromCookie = function() {
-		var tokenizedArrayID = 0, savedproducts = null; /* Must initialize savedproducts here for IE */
-	    savedproducts = optemo_module.readAllCookieValues('optemo_SavedProductIDs');
-		if (savedproducts)
-		{
-			// There are saved products to display
-			if ($.browser.msie) {
-				fixedheight = ((savedproducts.length > 2) ? 80 : 160) + 'px';
-				$("#opt_savedproducts").css({"height" : fixedheight});
-			}
-			for (tokenizedArrayID = 0; tokenizedArrayID < savedproducts.length; tokenizedArrayID++)
-			{
-				tokenizedArray = savedproducts[tokenizedArrayID].split(',');
-	            // These arguments are (id, sku, imgurl, name, product_type).
-	            // We just ignore product type for now since the websites only have one product type each.
-				optemo_module.renderComparisonProducts(tokenizedArray[0], tokenizedArray[1], tokenizedArray[2], tokenizedArray[3]);
-				optemo_module.loadspecs(tokenizedArray[1]);
-			}
-			// There should be at least 1 saved item, so...
-			// 1. show compare button
-			$("#compare_button").show();
-			$("#savesome").hide();
-		}
-	}
+        my.RAILS_CATEGORY_ID = 0;
+        for (var i in category_id_hash) {
+            if (window.location.pathname.match(new RegExp(i))) {
+                my.RAILS_CATEGORY_ID = category_id_hash[i];
+                break;
+            }
+        }
+        // Failsafe just in case nothing seems to match
+        if (my.RAILS_CATEGORY_ID == 0) my.RAILS_CATEGORY_ID = 20218;
+    }
 
     // Renders a recursive html list of the specs.
     // This is still used for displaying reviews for the time being.
@@ -142,16 +127,17 @@ optemo_module = (function (my){
     });
 
 	my.merge_bb_json = function () {
-		var merged = {}
+		var merged = {};
 		var index = 0;
 		for (var p = 0; p < arguments.length; p++) {
 			for (var heading in arguments[p]) {
-				for (var spec in arguments[p][heading]) {
-					if (typeof(merged[heading]) == "undefined")
+			    for (var spec in arguments[p][heading]) {
+				if (typeof(merged[heading]) == "undefined")
 						merged[heading] = {};
 					if (typeof(merged[heading][spec]) == "undefined")
 						merged[heading][spec] = [];
 					merged[heading][spec][index] = arguments[p][heading][spec];
+				
 				}
 			}
 			index++;
@@ -339,7 +325,7 @@ optemo_module = (function (my){
     my.applySilkScreen = function(url,data,width,height,f) {
     	//IE Compatibility
     	var iebody=(document.compatMode && document.compatMode != "BackCompat")? document.documentElement : document.body,
-    	dsoctop=document.all? iebody.scrollTop : pageYOffset;
+    	dsoctop=document.all? iebody.scrollTop : window.pageYOffset;
 		var outsidecontainer = $('#outsidecontainer');
 		if (outsidecontainer.css('display') != 'block') 
 			$('#info').html("").css({'height' : "560px", 'width' : (width-46)+'px'});
@@ -347,7 +333,7 @@ optemo_module = (function (my){
     								'top' : (dsoctop+5)+'px',
     								'width' : (width||560)+'px',
     								'display' : 'inline' });
-	wWidth = $(window).width();
+	var wWidth = $(window).width();
     	$('#silkscreen').css({'height' : my.current_height()+'px', 'display' : 'inline', 'width' : wWidth + 'px'});
 
 
@@ -382,86 +368,6 @@ optemo_module = (function (my){
         }
     };
 
-    // When products get dropped into the save box
-    my.saveProductForComparison = function(id, sku, imgurl, name, href) {
-    	/* We need to store the entire thing for Flooring. Eventually this will probably not be an issue
-    	since we won't be pulling images directly from another website. Keep original code below
-    	imgurlToSaveArray = imgurl.split('/');
-
-    	imgurlToSaveArray[imgurlToSaveArray.length - 1] = id + "_s.jpg";
-    	productType = imgurlToSaveArray[(imgurlToSaveArray.length - 2)];
-    	productType = productType.substring(0, productType.length-1);
-    	imgurlToSave = imgurlToSaveArray.join("/");
-    */
-        if (typeof(id) == "object") id = parseInt(id); // Fix some type errors
-
-        //Check if this id has already been added.
-	if(null != document.getElementById('c'+id)){
-	    $("#already_added_msg").css("display", "block");
-        } else {
-	    ignored_ids = getAllShownProductIds();
-	    my.trackPage('goals/save', {'filter_type' : 'save', 'product_picked' : id, 'product_ignored' : ignored_ids});
-	    
-	    my.renderComparisonProducts(id, sku, imgurl, name, href);
-	    addValueToCookie('optemo_SavedProductIDs', [id, sku, imgurl, name, my.MODEL_NAME]);
-	    // Hide the drag-and-drop message
-	    $('#savesome').hide();
-        }
-	// if ($(".saveditem").length > 4)
-	//     $(".saveditem").each(function() {this.style.width="65px";})
-	
-        // There should be at least 1 saved item, so...
-        // 1. show compare button
-        $("#compare_button").show();
-	$("#savesome").hide();
-
-    };
-
-	//(id, sku, imgurl, name, href) for drag and drop
-    my.renderComparisonProducts = function(id, sku, imgurl, name) {
-        // The reason for writing out all the HTML in javascript like this is that we want the drop action to happen instantly, without
-        // a page load. As for why it's done explicitly rather than, e.g. el = document.createElement("img"); el.src = [...] that is
-        // more due to inexperience than anything else. This should probably be refactored to the above style for readability.
-		//Pass in the show page href when drag and dropping
-		if (typeof(arguments[4]) != "undefined")
-			href = arguments[4];
-		else {
-			// Using /product/_/ because savedproducts do not have an href (otherwise it would need to be stored in the cookie)
-			href = "http://www.bestbuy.ca/"+((!(typeof(optemo_french) == "undefined") && optemo_french) ? "fr" : "en")+"-CA/product/_/"+sku+".aspx";
-		}
-    	// Create an empty slot for product
-    	var saveditem = "<div class='saveditem' id='c" + id + "' data-sku='"+sku+"'>";
-
-    	// The best is to just leave the medium URL in place, because that image is already loaded in case of comparison, the common case.
-    	// For the uncommon case of page reload, it's fine to load a larger image.
-    	saveditem += "<img class=\"draganddropimage productimg\" src=" + // used to have width=\"45\" height=\"50\" in there, but I think it just works for printers...
-    	imgurl + " data-id=\""+id+"\" data-sku=\""+sku+"\" alt=\""+id+"_s\"><div>" +
-    	"<a class=\"easylink\" data-id=\""+id+"\" data-sku=\""+sku+"\" href=\"" + href + "\">" +
-    	((name) ? optemo_module.getShortProductName(name) : 0) +
-    	"</a></div>" +
-    	"<a class=\"deleteX\" data-name=\""+id+"\" href=\"#\">" +
-    	"<img src=\"" +
-        // This next line is used for embedding: check whether there is a remote server defined, and put the appropriate image url in.
-    	(OPT_REMOTE ? OPT_REMOTE : "") +
-    	"/images/closepopup.png\" alt=\"Close\"/></a>";
-		saveditem += "</div>";
-    	var image = $('#opt_savedproducts').append(saveditem).find('.draganddropimage:last');
-    	image.hide();
-    	image.load(function() { // This function runs after the DOM has loaded the image, to avoid race conditions
-    	    if (image.height() * 1.12 > image.width()) { // This is because we want 45 height and 50 width, plus a 0.01 fudge factor
-    	        image.css('height', '45px');
-	        } else { // Limit by width
-	            image.css('width', '50px');
-            }
-            $(this).show();
-	    });
-
-    	$("#already_added_msg").css("display", "none");
-
-    	if ($.browser.msie) // If it's IE, clear the height element.
-    		$("#opt_savedproducts").css({"height" : ''});
-    };
-
 	my.getIdAndSkuFromProductimg = function(img) {
         var res, sku=0;
     	if (my.DIRECT_LAYOUT) {
@@ -479,26 +385,14 @@ optemo_module = (function (my){
     	return Array(res, sku);
 	}
 
-    // When you click the X on a saved product:
-    function removeFromComparison(id)
-    {
-    	$('#c'+id).remove();
-    	my.trackPage('goals/remove', {'filter_type' : 'remove_from_comparison', 'product_picked' : id});
-
-    	$("#already_added_msg").css("display", "none");
-
-
-    	removeValueFromCookie('optemo_SavedProductIDs', id);
-    	if ($('#opt_savedproducts').children().length == 0)
-    	{
-    	    $('#savesome').show(); // This is the "save products by dropping..." message
-    		$("#compare_button").hide();
-	    }
-	// if ($(".saveditem").length <= 4)
-	//     $(".saveditem").each(function(index) {this.style.width="71px";})
-	
-    	return false;
-    }
+    function removeFromComparison(id) {
+		$(".optemo_compare_checkbox").each( function (index) {
+		    if ($(this).attr('data-id') == id) {
+				$(this).attr('checked', '');
+				return;
+			}
+	    });
+	}
 
     // Submit a categorical filter, e.g. brand.
     function submitCategorical(){
@@ -512,19 +406,19 @@ optemo_module = (function (my){
     	return false;
     }
 
-    //function submitsearch() {
-    //	my.trackPage('goals/search', {'filter_type' : 'search', 'search_text' : $("#myfilter_search").attr('value'), 'previous_search_text' : $("#previous_search_word").attr('value')});
-    //	var arguments_to_send = [];
-    //    arguments = $("#filter_form").serialize().split("&");
-    //    for (i=0; i<arguments.length; i++)
-    //    {
-    //        if (!(arguments[i].match(/^superfluous/)))
-    //            arguments_to_send.push(arguments[i]);
-    //    }
-    //    my.loading_indicator_state.sidebar = true;
-    //	my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
-    //	return false;
-    //}
+    /* function submitsearch() {
+    	my.trackPage('goals/search', {'filter_type' : 'search', 'search_text' : $("#myfilter_search").attr('value'), 'previous_search_text' : $("#previous_search_word").attr('value')});
+    	var arguments_to_send = [];
+        arguments = $("#filter_form").serialize().split("&");
+        for (i=0; i<arguments.length; i++)
+        {
+            if (!(arguments[i].match(/^superfluous/)))
+                arguments_to_send.push(arguments[i]);
+        }
+        my.loading_indicator_state.sidebar = true;
+    	my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
+    	return false;
+    } */
 
     // Draw slider histogram, called for each slider above
     function histogram(element, norange) {
@@ -611,8 +505,8 @@ optemo_module = (function (my){
     				force_int = $(this).attr('force-int');
     				if(force_int == 'false')
     				{
-    					curmin = parseFloat($(this).attr('data-startmin'));
-    					curmax = parseFloat($(this).attr('data-startmax'));
+    					curmin = $(this).attr('data-startmin');
+    					curmax = $(this).attr('data-startmax');
     				}
     				else
     				{
@@ -638,8 +532,8 @@ optemo_module = (function (my){
     				force_int = $(this).attr('force-int');
     				if(force_int == 'false')
     				{
-    					curmin = parseFloat($(this).attr('data-startmin'));
-    					curmax = parseFloat($(this).attr('data-startmax'));
+    				    curmin = parseFloat($(this).attr('data-startmin'));
+                        curmax = parseFloat($(this).attr('data-startmax'));
     					rangemin = parseFloat($(this).attr('data-min'));
     					rangemax = parseFloat($(this).attr('data-max'));
     					datasetmin = parseFloat($(this).attr('current-data-min'));
@@ -647,8 +541,8 @@ optemo_module = (function (my){
     				}
     				else
     				{
-    					curmin = parseInt($(this).attr('data-startmin'));
-    					curmax = parseInt($(this).attr('data-startmax'));
+    				    curmin = parseInt($(this).attr('data-startmin'));
+                        curmax = parseInt($(this).attr('data-startmax'));
     					rangemin = parseInt($(this).attr('data-min'));
     					rangemax = parseInt($(this).attr('data-max'));
     					datasetmin = parseInt($(this).attr('current-data-min'));
@@ -693,36 +587,36 @@ optemo_module = (function (my){
     				    rightsliderknob.css('left', ((datasetmin - rangemin) * 100.1 / (rangemax - rangemin)) + "%"); // was 100.1
     				    rightsliderknob.data('toofar', true);
                     }
-    				if (increment < 1) {
-    					// floating point division has problems; avoid it
-    					tempinc = parseInt(1.0 / increment);
-    					realvalue = parseInt(realvalue * tempinc) / tempinc;
-    				} else {
-					    realvalue = parseInt(realvalue / increment) * increment;
-					}
-
-    				// This makes sure that when sliding to the extremes, you get back to the real starting points
-    				if (sliderno == 1 && ui.values[1] == 100)
-    					realvalue = rangemax;
-    				else if (sliderno == 0 && ui.values[0] == 0)
-    					realvalue = rangemin;
-
-    				if (sliderno == 0 && ui.values[0] != ui.values[1])						// First slider is not identified correctly by sliderno for the case
-    					leftsliderknob.html(realvalue).addClass("valabove");			// when rightslider = left slider, hence the second condition
-    				else if (ui.values[0] != ui.values[1])
-    					rightsliderknob.html(realvalue).addClass("valabove");
-
-    				if(sliderno == 0)
-    				{
-    					$(this).siblings('.min').attr('value',realvalue);
-    					$(this).siblings('.max').attr('value',curmax);
-    				}
-    				else
-    				{
-    					$(this).siblings('.min').attr('value',curmin);
-    					$(this).siblings('.max').attr('value',realvalue);
-    				}
-
+                    if (increment < 1) {
+                        // floating point division has problems; avoid it
+                        tempinc = parseInt(1.0 / increment);
+                        realvalue = parseInt(realvalue * tempinc) / tempinc;
+                    } else {
+                        realvalue = parseInt(realvalue / increment) * increment;
+                    }
+                    
+                    // This makes sure that when sliding to the extremes, you get back to the real starting points
+                    if (sliderno == 1 && ui.values[1] == 100)
+                        realvalue = rangemax;
+                    else if (sliderno == 0 && ui.values[0] == 0)
+                        realvalue = rangemin;
+                    
+                    if (sliderno == 0 && ui.values[0] != ui.values[1])                        // First slider is not identified correctly by sliderno for the case
+                        leftsliderknob.html(realvalue).addClass("valabove");            // when rightslider = left slider, hence the second condition
+                    else if (ui.values[0] != ui.values[1])
+                        rightsliderknob.html(realvalue).addClass("valabove");
+                    
+                    if(sliderno == 0)
+                    {
+                        $(this).siblings('.min').attr('value',realvalue);
+                        $(this).siblings('.max').attr('value',curmax);
+                    }
+                    else
+                    {
+                        $(this).siblings('.min').attr('value',curmin);
+                        $(this).siblings('.max').attr('value',realvalue);
+                    }
+                    
     			   	return false;
     	        },
     			stop: function(e,ui)
@@ -758,8 +652,7 @@ optemo_module = (function (my){
     					leftsliderknob.removeClass("valabove").addClass("valbelow");
     					rightsliderknob.removeClass("valabove").addClass("valbelow");
     				}
-    				var sliderinfo = {'slider_min' : parseFloat(ui.values[0]) * rangemin / 100.0, 'slider_max' : parseFloat(rightslidervalue) * rangemax / 100.0,
-                	            'slider_name' : $(this).attr('data-label'), 'filter_type' : 'slider', 'data_min' : datasetmin, 'data_max' : datasetmax, 'ui_position' : $(this).parent().find('.label').attr('data-position')};
+    				var sliderinfo = {'slider_min' : parseFloat(ui.values[0]) * rangemin / 100.0, 'slider_max' : parseFloat(rightslidervalue) * rangemax / 100.0, 'slider_name' : $(this).attr('data-label'), 'filter_type' : 'slider', 'data_min' : datasetmin, 'data_max' : datasetmax, 'ui_position' : $(this).parent().find('.label').attr('data-position')};
     				my.trackPage('goals/filter/slider', sliderinfo);
                     if (leftsliderknob.data('toofar') || rightsliderknob.data('toofar')) {
                         sliderinfo['filter_type'] = 'forced_stop';
@@ -812,6 +705,12 @@ optemo_module = (function (my){
 		//	return false;
 		//})
 		
+		//See all Products
+		$('.seeall').live('click', function() {
+		    my.ajaxcall('/', {});
+		    return false;
+		});
+		
     	// Change sort method
     	$('.sortby').live('click', function() {
 			if (my.loading_indicator_state.disable) return false;
@@ -819,6 +718,10 @@ optemo_module = (function (my){
     	    var info = {'chosen_sorting_method' : whichSortingMethodSelected, 'filter_type' : 'sorting_method'};
 			my.trackPage('goals/filter/sorting_method', info);
             my.ajaxcall("/compare", {"sortby" : whichSortingMethodSelected});
+	    $('.sortby').each( function (index) {
+		$(this).removeClass('sortby_selected');
+		});
+	    $(this).addClass('sortby_selected');
 			return false;
 	    });
 
@@ -875,16 +778,25 @@ optemo_module = (function (my){
     	// From Compare
     	//Remove buttons on compare
     	$('.remove').live('click', function(){
-    		removeFromComparison($(this).attr('data-name'));
-    		var class_name = $(this).attr('class').split(' ').slice(-1); // spec_column_0, for example
+
+    	    removeFromComparison($(this).attr('data-name'));
+    	    var class_name = $(this).attr('class').split(' ').slice(-1); // spec_column_0, for example
+
             $("." + class_name).each(function () {
                 $(this).remove();
             });
-    		// If this is the last one, take the comparison screen down too
-    		if ($('.comparisonmatrix:first .column').length == 1) {
-    			my.removeSilkScreen();
-    		}
-    		return false;
+
+	    
+
+    	    // If this is the last one, take the comparison screen down too
+    	    if ($('.comparisonmatrix:first .compare_row:first .columntitle').length <= 1) {
+    		my.removeSilkScreen();
+    	    }
+	    else
+	    {
+		optemo_module.changeCompareTitle($('.comparisonmatrix:first .compare_row:first .columntitle').length -1 );
+	    }
+    	    return false;
     	});
 
         // The next few functions were written to be Best Buy-specific, but they can be extended
@@ -917,54 +829,20 @@ optemo_module = (function (my){
         // This bridge function adds the product currently shown in the Quickview screen and puts it in the comparison box.
         // If there are at least two products, bring up the comparison pop-up immediately, otherwise go back to browsing.
         $('#add_compare').live('click', function () {
-			var t = $(this);
+	        var t = $(this);
             var sku = $('.poptitle').attr('data-sku');
             var image = $('#galleria').find('img:first').attr('src');
-            // Test for the length of the saved products array here to avoid a race condition
-            my.saveProductForComparison(t.attr('data-id'), sku, image, t.attr('data-name'));
-            // This message will be displayed next to the droppable box if
-            $("#already_added_msg").css("display", "none");
-            // Call click handler for the compare button if there are multiple saved products there. Otherwise, get out of show page
-            ($('#opt_savedproducts').children().length > 1) ? $('#compare_button').click() : my.removeSilkScreen();
-            return false;
-        });
+	        my.removeSilkScreen();
 
-    	//Call overlay for product comparison
-    	$("#compare_button").live('click', function(){
-    		var productIDs = '', width = 560, number_of_saved_products = 0;
-    		// For each saved product, get the ID out of the id=#opt_savedproducts children.
-    		$('#opt_savedproducts').children().each(function() {
-    			// it's a saved item if the CSS class is set as such. This allows for other children later if we feel like it.
-    			if ($(this).attr('class').indexOf('saveditem') != -1)
-    			{
-    				// Build a list of product IDs to send to the AJAX call
-    				var p_id = $(this).attr('id').substring(1);
-    				var sku = $(this).attr('data-sku');
-    				productIDs = productIDs + p_id + ',';
-    				number_of_saved_products++;
-    			}
-    		});
-            // To figure out the width that we need, start with $('#opt_savedproducts').length probably
-            // 560 minimum (width is the first of the two parameters)
-            // 2, 3, 4 ==>  513, 704, 895  (191 each)
-	    if (number_of_saved_products >= 2)
-		width = 191 * (number_of_saved_products - 2) + 566;
-	    else
-		width = 566;
-
-    		my.applySilkScreen('/comparison/' + productIDs, null, width, 580,function(){
-				// Jquery 1.5 would finish all the requests before building the comparison matrix once
-				// With 1.4.2 we can't do that. Keep code for later.
-				// $.when.apply(this,reqs).done();
-				my.buildComparisonMatrix();
-            });
-    		my.trackPage('goals/compare', {'filter_type' : 'direct_comparison'});
-    		return false;
-    	});
-
-        $('.saveditem .deleteX').live('click', function() {
-             removeFromComparison($(this).attr('data-name'));
-             return false;
+	        $('.optemo_compare_checkbox').each (function (index) {
+		        if ($(this).attr('data-sku') == sku) {
+		            $(this).attr('checked', 'checked');
+		            return false;
+		        }
+		        return true;
+		    });
+	        my.compareCheckedProducts();
+	        return false;
         });
 
         $(".productimg, .easylink").live("click", function (){
@@ -1001,21 +879,26 @@ optemo_module = (function (my){
 
     	//Pagination links
         // This convoluted line takes the second-last element in the list: "<< prev 1 2 3 4 next >>" and takes its numerical page value.
-    	//var total_pages = parseInt($('.pagination').children().last().prev().html());
-    	//$('.pagination a').live("click", function(){
-    	//	var url = $(this).attr('href')
-    	//	if (url.match(/\?/))
-    	//		url +='&ajax=true'
-    	//	else
-    	//		url +='?ajax=true'
-    	//	if ($(this).hasClass('next_page'))
-        //		my.trackPage('goals/next', {'filter_type' : 'next' , 'page_number' : parseInt($('.pagination .current').html()), 'total_number_of_pages' : total_pages});
-    	//	else
-    	//	    my.trackPage('goals/next', {'filter_type' : 'next_number' , 'page_number' : parseInt($(this).html()), 'total_number_of_pages' : total_pages});
-		//    my.loading_indicator_state.main = true;
-    	//	my.ajaxcall(url);
-    	//	return false;
-    	//});
+    	var total_pages = parseInt($('.pagination').children().last().prev().html());
+    	$('.pagination a').live("click", function(){
+    	    if (my.loading_indicator_state.disable) return false;
+    		var url = $(this).attr('href')
+    		//if (url.match(/\?/))
+    		//	url +='&ajax=true'
+    		//else
+    		//	url +='?ajax=true'
+    		if ($(this).hasClass('next_page'))
+        		my.trackPage('goals/next', {'filter_type' : 'next' , 'page_number' : parseInt($('.pagination .current').html()), 'total_number_of_pages' : total_pages});
+    		else
+    		    my.trackPage('goals/next', {'filter_type' : 'next_number' , 'page_number' : parseInt($(this).html()), 'total_number_of_pages' : total_pages});
+    		my.ajaxcall(url);
+    		return false;
+    	});
+
+        $('#back-to-top-bottom').live("click", function() {
+            $('body,html').animate({scrollTop: 0}, 800);
+    	    return false;
+        });
 
         // Choose a grouping via group button rather than drop-down (effect is the same as the select boxes)
     	//$('.title').live('click', function(){
@@ -1103,7 +986,6 @@ optemo_module = (function (my){
     	}
 
     	$(".close, .bb_quickview_close, #silkscreen").live('click', function(){
-
     		my.removeSilkScreen();
     		return false;
     	});
@@ -1132,10 +1014,18 @@ optemo_module = (function (my){
 			my.ajaxcall($(this).attr('href'));
 			return false;
 		});
+		
+		// Special Boxes - these are the featured, top rated, and best selling product layouts
+		$('.optemo_special_boxes').live('click', function () {
+		    var whichSpecialBoxSelected = $(this).attr('data-special-boxes');
+		    my.trackPage('goals/special_boxes', {'filter_type' : 'special_boxes'});
+		    my.ajaxcall("/compare/create", {"special_boxes" : whichSpecialBoxSelected});
+            return false;
+	   });
     }
 
 	//These should be locally scoped functions, but for jquery 1.4.2 compatibility it is moved outside (specifically for the cookie-loading-to-savebar part)
-	
+
 	function row_height(length,isLabel)
 	{
 		var h;
@@ -1163,18 +1053,28 @@ optemo_module = (function (my){
 		else row_class = 'compare_row'; // row_class was 1
 		return row_class;
 	}
+    my.changeCompareTitle = function(len) {
+	    comp_title = $("label.comp-title");
+	    comp_title_text = comp_title.text().replace(/\([^)]*\)/, '');
+	    comp_title.text(comp_title_text + "(" + len + " Selected)");
+	
+	};
 	
 	my.buildComparisonMatrix = function() {
-		var savedProducts = $('#opt_savedproducts').children(), anchor = $('#hideable_matrix');
+	    var checkedProducts = my.getSelectedComparisons(), anchor = $('#hideable_matrix');
 		// Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
 		var array = [];
-		for (var i = 0; i <= savedProducts.length; i++) {
-			array.push($('body').data('bestbuy_specs_'+$(savedProducts[i]).attr('data-sku')));
-		}
+	    my.changeCompareTitle(checkedProducts.length);
+	    $.each(checkedProducts, function (index, value) {
+		var product = value.split(',');
+		array.push($('body').data('bestbuy_specs_'+product[1]));
+		});
+
 		var grouped_specs = optemo_module.merge_bb_json.apply(null,array);
 		//Set up Headers
-		for (var i = 0; i < savedProducts.length; i++) {
-			anchor.append('<div class="columntitle spec_column_'+i+'">&nbsp;</div>');
+	    
+		for (var i = 0; i < checkedProducts.length; i++) {
+			anchor.append('<div class="columntitle spec_column_'+i+' spec-capt">&nbsp;</div>');
 		}
 		var result = "";
 		var whitebg = true;
@@ -1185,7 +1085,7 @@ optemo_module = (function (my){
 			//Add Heading
 			result += '<div class="'+row_class(row_height(heading.length,true))+'"><div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' leftcolumntext" style="font-style: italic;"><a class="togglable closed title_link" style="font-style: italic;" href="#">' + heading.replace('&','&amp;') + '</a></div>';
 
-			for (var i = 0; i < savedProducts.length; i++) {
+			for (var i = 0; i < checkedProducts.length; i++) {
 				result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' spec_column_'+i+'">&nbsp;</div>';
 			}
 			
@@ -1200,12 +1100,12 @@ optemo_module = (function (my){
 						array.push(grouped_specs[heading][spec][i].length);	
 				}
 				//Assign row_class
-				result += '<div class="'+row_class(Math.max(row_height(Math.max.apply(null,array)),row_height(spec.length,true)))+'">';
+				result += '<div class="'+row_class(Math.max(row_height(Math.max.apply(null,array)),row_height(spec.length,true))) + '">';
 				
 				//Row heading
 				result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' leftcolumntext">' + spec.replace('&','&amp;') + ":</div>";
 				//Data
-				for (var i = 0; i < savedProducts.length; i++) {
+				for (var i = 0; i < checkedProducts.length; i++) {
 					if (grouped_specs[heading][spec][i])
 						result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + " " + "spec_column_"+ i + '">' + grouped_specs[heading][spec][i].replace(/&/g,'&amp;') + "</div>";
 					else
@@ -1244,49 +1144,24 @@ optemo_module = (function (my){
     };
 
     my.DBinit = function() {
-    	if (my.IS_DRAG_DROP_ENABLED)
-    	{
-    		// Make item boxes draggable. This is a jquery UI builtin.
-    		$("img.productimg").each(function() {
-    			$(this).draggable({
-    				revert: 'invalid',
-    				cursor: "move",
-    				// The following defines the drag distance before a "drag" event is actually initiated. Helps for people who click while the mouse is slightly moving.
-    				distance:2,
-    				helper: 'clone',
-    				zIndex: 1000
-    			});
-    	    });
-    	    // Make savebar area droppable. jquery UI builtin.
-    	    if (!($("#savebar").hasClass('ui-droppable'))) {
-        		$("#savebar").droppable({
-    				hoverClass: 'drop-box-hover',
-    				activeClass: 'ui-state-dragging',
-    				accept: ".ui-draggable, .dragHand",
-    				drop: function (e, ui) {
-    				    var id_and_sku, imgObj = $(ui.helper);
-    					if (imgObj.hasClass('dragHand')) { // This is a drag hand object
-    				        var realImgObj = imgObj.parent().find('.productimg');
-    				        id_and_sku = my.getIdAndSkuFromProductimg(realImgObj);
-        					my.saveProductForComparison(id_and_sku[0], id_and_sku[1], realImgObj.attr('src'), realImgObj.attr('alt'));
-    				    }
-    				    else { // This is an image object; behave as normal
-    				        id_and_sku = my.getIdAndSkuFromProductimg(imgObj);
-							//Get href
-							var href = imgObj.parent().find(".easylink").attr('href');
-        					my.saveProductForComparison(id_and_sku[0], id_and_sku[1], imgObj.attr('src'), imgObj.attr('alt'), href);
-    					}
-        				my.loadspecs(id_and_sku[1]);
-    				}
-    			});
-            }    	    
-    	}
-		
 		//Load star ratings
 		$(".stars").each(function(){
 			var t = $(this);
 			t.append(numberofstars(t.attr('data-stars')));
 		});
+		
+		//Infinite Scroll
+		//$('#main').infinitescroll({
+        //    navSelector  : "div.pagination",            
+        //                   // selector for the paged navigation (it will be hidden)
+        //    nextSelector : "div.pagination a.next_page",    
+        //                   // selector for the NEXT link (to page 2)
+        //    itemSelector : "#main div.navbox",          
+        //                   // selector for all items you'll retrieve
+        //    loadingText : "Loading more products...",
+        //    dataType : "jsonp",
+        //    donetext : "<em>These are all the products with this selection <a href='#'>here</a></em>"
+        //});
 		
 	    //var model = "";
     	////Autocomplete for searchterms
@@ -1315,11 +1190,14 @@ optemo_module = (function (my){
 
     my.loading_indicator_state = {spinner_timer : null, socket_error_timer : null, disable : false};
 
-
     /* Does a relatively generic ajax call and returns data to the handler below */
     my.ajaxsend = function (hash,myurl,mydata,timeoutlength) {
         var lis = my.loading_indicator_state;
-        mydata = $.extend({'ajax': true, 'hist':hash},mydata);
+        mydata = $.extend({'ajax': true, category_id: my.RAILS_CATEGORY_ID},mydata);
+        if (typeof hash != "undefined" && hash != null && hash != "") {
+            mydata.hist = hash;}
+        else
+            mydata.landing = true;
         if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 50);
         if (OPT_REMOTE) {
             //Embedded Layout
@@ -1339,6 +1217,7 @@ optemo_module = (function (my){
     /* The ajax handler takes data from the ajax call and processes it according to some (unknown) rules. */
     // This needs to be a public function now
     my.ajaxhandler = function(data) {
+
         var lis = my.loading_indicator_state;
         lis.disable = false;
         clearTimeout(lis.spinner_timer); // clearTimeout can run on "null" without error
@@ -1352,17 +1231,26 @@ optemo_module = (function (my){
     		}
     		my.flashError(parts[0].substr(5,parts[0].length));
     		return -1;
+    	} else if (data.indexOf('[PAGE]') != -1){
+    	    $('#main #product_content').html(data);
+    	    my.stop_spinner();
+	    // TODO: Maybe DBInit need to be called here
+    	    return 0;
     	} else {
     		var parts = data.split('[BRK]');
     		$('#ajaxfilter').empty().append(parts[1]);
     		$('#main').html(parts[0]);
     		$('#myfilter_search').attr('value',parts[2]);
+    		//Reset Infinite Scroll Counter
+    		var ifc = $('#main').data('infinitescroll');
+    		if (ifc)
+    		    ifc.restart();
     		my.stop_spinner();
     		my.SliderInit();
-			my.DBinit();
+	        my.DBinit();
     		return 0;
     	}
-    }
+    };
 
     my.ajaxerror = function() {
         var lis = my.loading_indicator_state;
@@ -1384,7 +1272,7 @@ optemo_module = (function (my){
     my.quickajaxcall = function(element_name, myurl, fn) { // The purpose of this is to do an ajax load without having to go through the relatively heavy ajaxcall().
         if (OPT_REMOTE)
             //Check for absolute urls
-            JSONP.get(OPT_REMOTE+myurl.replace(/http:\/\/[^\/]+/,''), {embedding:'true'}, function(data){
+            JSONP.get(OPT_REMOTE+myurl.replace(/http:\/\/[^\/]+/,''), {embedding:'true', category_id: my.RAILS_CATEGORY_ID}, function(data){
                 $(element_name).html(data);
                 if (fn) fn();
             });
@@ -1414,33 +1302,33 @@ optemo_module = (function (my){
     //--------------------------------------//
 
     // Takes an array of div IDs and removes either inline styles or a named class style from all of them.
-    //my.clearStyles = function(nameArray, styleclassname) {
-    //	if (nameArray.constructor == Array) {
-    //		if (styleclassname != '') { // We have a style name, so remove it from each div id that was passed in
-    //			for (i in nameArray) { // iterate over all elements of array
-    //				if ($('#' + nameArray[i]).length) { // the element exists
-    //					$("#" + nameArray[i]).removeClass(styleclassname);
-    //				}
-    //			}
-    //		} else { // No style name. Take out inline styles.
-    //			for (i in nameArray) { // iterate over all elements of array
-    //				if ($('#' + nameArray[i]).length) { // the element exists
-    //					$("#" + nameArray[i]).removeAttr('style');
-    //				}
-    //			}
-    //		}
-    //	} else if (nameArray != '') { // there could be a single string passed also
-    //		if ($('#' + nameArray).length) { // the element exists
-    //			if (styleclassname != '') { // There is a style name for a single element.
-    //				$('#' + nameArray).removeClass(styleclassname);
-    //            } else {// Remove the inline styling by default
-    //				$('#' + nameArray).removeAttr('style');
-    //			}
-    //		}
-    //		// If the element doesn't exist, don't try to access it via jquery, just do nothing.
-    //	}
-    //	else { } // There is no array or string passed. Do nothing.
-    //};
+    /* my.clearStyles = function(nameArray, styleclassname) {
+    	if (nameArray.constructor == Array) {
+    		if (styleclassname != '') { // We have a style name, so remove it from each div id that was passed in
+    			for (i in nameArray) { // iterate over all elements of array
+    				if ($('#' + nameArray[i]).length) { // the element exists
+    					$("#" + nameArray[i]).removeClass(styleclassname);
+    				}
+    			}
+    		} else { // No style name. Take out inline styles.
+    			for (i in nameArray) { // iterate over all elements of array
+    				if ($('#' + nameArray[i]).length) { // the element exists
+    					$("#" + nameArray[i]).removeAttr('style');
+    				}
+    			}
+    		}
+    	} else if (nameArray != '') { // there could be a single string passed also
+    		if ($('#' + nameArray).length) { // the element exists
+        		if (styleclassname != '') { // There is a style name for a single element.
+    				$('#' + nameArray).removeClass(styleclassname);
+                } else {// Remove the inline styling by default
+    				$('#' + nameArray).removeAttr('style');
+    			}
+    		}
+    		// If the element doesn't exist, don't try to access it via jquery, just do nothing.
+    	}
+    	else { } // There is no array or string passed. Do nothing.
+    }; */
 
     //--------------------------------------//
     //                Data                  //
@@ -1509,7 +1397,6 @@ optemo_module = (function (my){
     //--------------------------------------//
     //              Cookies                 //
     //--------------------------------------//
-
     function addValueToCookie(name, value) {
     	var savedData = readCookie(name), numDays = 30;
     	if (savedData) {
@@ -1570,7 +1457,7 @@ optemo_module = (function (my){
     my.domready = function(){
         if (typeof DOM_ALREADY_RUN == "undefined") {
             DOM_ALREADY_RUN = true;
-            optemo_module.initializeVariables();
+            my.initializeVariables();
             // This initializes the jquery history plugin. Note that the plugin was modified for use with our application javascript (details in jquery.history.js)
             $.history.init(optemo_module.ajaxsend);
             
@@ -1594,17 +1481,11 @@ optemo_module = (function (my){
             
     	    // Only load DBinit if it will not be loaded by the upcoming ajax call
     	    // Do LiveInit anyway, since timing is not important
-    	    optemo_module.LiveInit();
+    	    my.LiveInit();
     	    if ($('#opt_discovery').length == 0) {
     	    	// Other init routines get run when they are needed.
-    	    	optemo_module.SliderInit(); optemo_module.DBinit();
+    	    	my.SliderInit(); optemo_module.DBinit();
     	    }
-            
-    	    if (!(window.embedding_flag)) {
-    	        // If we're not embedded, initialize these here.
-    	        // Otherwise, initialize them in optemo_embedder.js once the DOM is loaded.
-    	    	optemo_module.loadSavedProductsFromCookie();
-            }
             
     	    //Decrypt encrypted links
     	    //$('a.decrypt').each(function () {
@@ -1751,6 +1632,8 @@ optemo_module = (function (my){
             }
 
             function piwik_ready() {
+                // The try/catch block here was put in specifically to avoid piwik errors from percolating into
+                // the main page. I don't know why it was taken out. ZAT
             //    try {
                     window.piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", my.PIWIK_ID); // idsite is here
             		piwikTracker.setDocumentTitle('Index');
@@ -1763,20 +1646,122 @@ optemo_module = (function (my){
             //    } catch( err ) {}
             }
         }
-    }
+    };
+    
+    $('.optemo_compare_checkbox').live('click', function(){
+    	if ($(this).attr('checked')) { // save the comparison item
+    	    my.loadspecs($(this).attr('data-sku'));
+        }
 
+	    my.changeNavigatorCompareBtn(my.getSelectedComparisons().length);
+	});
+
+    my.getSelectedComparisons = function () {
+    	var checkedproducts = [];
+    	$('.optemo_compare_checkbox').each( function(index) {
+    	    if ($(this).attr('checked')) {
+        		checkedproducts.push($(this).attr('data-id') + ',' +  $(this).attr('data-sku'));
+    		}
+	    });
+    	return checkedproducts;
+	};
+
+    my.compareCheckedProducts = function () {
+    	var checkedProducts = my.getSelectedComparisons();
+    	if (checkedProducts.length >= 1) {
+    	    var productIDs = '', width = 560, number_of_saved_products = 0;
+    	    $.each(checkedProducts, function(index, value) {
+        		var product = value.split(',');
+        		productIDs = productIDs + product[0] + ',';
+        		number_of_saved_products++;
+    		});
+        }
+        // This code has a strange structure and should be cleaned up? Or at least commented?
+	    else
+	        return false;
+        // To figure out the width that we need, start with $('#opt_savedproducts').length probably
+        // 560 minimum (width is the first of the two parameters)
+        // 2, 3, 4 ==>  513, 704, 895  (191 each)
+    	if (number_of_saved_products >= 2)
+    	    width = 191 * (number_of_saved_products - 2) + 566;
+    	else
+    	    width = 566;
+
+    	my.applySilkScreen('/comparison/' + productIDs, null, width, 580,function(){
+    	    // Jquery 1.5 would finish all the requests before building the comparison matrix once
+    	    // With 1.4.2 we can't do that. Keep code for later.
+    	    // $.when.apply(this,reqs).done();
+    	    my.buildComparisonMatrix();
+	    
+        });
+	    return false;
+	};
+    $('#optemo_embedder .nav-compare-btn').live("click", function(e) {
+        e.preventDefault();
+        my.compareCheckedProducts();
+    });
+
+    my.changeNavigatorCompareBtn = function (selected) {
+	if (selected > 0) {
+	    $('.nav-compare-btn').each ( function(index) {
+		$(this).removeClass('awesome_reset_grey');
+		$(this).removeClass('global_btn_grey');
+		$(this).addClass('awesome_reset');
+		$(this).addClass('global_btn');
+		$(this).text($(this).text().replace(/\d+/, selected));
+		});
+	} else {
+	    $('.nav-compare-btn').each ( function(index) {
+		$(this).removeClass('awesome_reset');
+		$(this).removeClass('global_btn');
+		$(this).addClass('awesome_reset_grey');
+		$(this).addClass('global_btn_grey');
+		$(this).text($(this).text().replace(/\d+/, 0));
+		});
+	    }
+
+	};
+	
+    $('.optemo_compare_button').live('click', function(){
+    	var objCheckbox = $(this).parent().find('.optemo_compare_checkbox');
+    	if (!objCheckbox.attr('checked')) {
+    	    objCheckbox.attr('checked', 'checked');
+    	    my.loadspecs(objCheckbox.attr('data-sku'));
+        }
+    	my.compareCheckedProducts();
+	// Change navigator bar compare button text
+	my.changeNavigatorCompareBtn(my.getSelectedComparisons().length);
+	
+    	return false;
+    });
+    
+    // Back to top button
+    $(window).scroll(function () {
+    	if ($(this).scrollTop() > $('#filterbar').height()) {
+    	    $('#back-top').fadeIn();
+    	} else {
+    	    $('#back-top').fadeOut();
+    	}
+	});
+		   
+    $('#back-top a').click( function () {
+    	$('body,html').animate({
+    	    scrollTop: 0
+    	}, 800);
+    	return false;
+	});
     return my;
 })(optemo_module || {});
-
-
+    
 //--------------------------------------//
 //          document.ready()            //
 //--------------------------------------//
 
 $(function(){
-    if ($.trim($("#optemo_embedder").text()) != "")
+    if ($("#optemo_embedder").children().length)
         optemo_module.domready();
 });
+
 
 //--------------------------------------//
 //             Page Loader              //
@@ -1788,21 +1773,21 @@ if ($('#opt_discovery').length) {
     if (location.hash) {
     	optemo_module.ajaxsend(location.hash.replace(/^#/, ''),'/');
 	} else {
-		optemo_module.ajaxsend(null,'/');
+		optemo_module.ajaxsend(null,'/', {landing:'true'});
 	}
 }
 
-});
+}); // This corresponds with optemo_module_activator and is intentional. The code below here executes first.
 
 // Load jQuery if it's not already loaded.
 // The purpose of using a try/catch loop is to avoid Internet Explorer 8 from crashing when assigning an undefined variable.
 // NB: Cannot use "$" because of jQuery.noConflict() -- $ might be scoped to prototype or some other framework, depending
+var jQueryIsLoaded = jQuery;
 try {
-    var jqueryIsLoaded = jQuery;
     jQueryIsLoaded = true;
 }
 catch(err) {
-    var jQueryIsLoaded = false;
+    jQueryIsLoaded = false;
 }
 
 if(jQueryIsLoaded) {
@@ -1824,6 +1809,8 @@ if(jQueryIsLoaded) {
             optemo_module_activator();
         };
     }
+    // Using jquery 1.4.2 for Best Buy integration reasons
     script_element.setAttribute("src", 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js');
     document.getElementsByTagName("head")[0].appendChild(script_element);
 }
+

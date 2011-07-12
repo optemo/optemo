@@ -39,11 +39,10 @@
 	position: relative;
 	margin-right: 4px; 
 	margin-bottom: 3px;
-	height:300px;
+	height:330px;
 	width: 181px; /*+2 for the border*/
 	background: right center url(../images/seperatorbar.png) no-repeat;*/
 }
-
 #optemo_embedder .title {
 	text-align: left;
 	margin: 0 8px;
@@ -67,6 +66,20 @@
 #optemo_embedder .productspecs {
 	font-size:0.8em;
 	padding-bottom:6px;
+}
+
+#optemo_embedder .heroinfo {
+     width: 248px;
+    float: right;
+    margin-top: 2em;  
+}
+#optemo_embedder #hero img.productimg {
+   *float: left;
+   }
+#optemo_embedder .heroinfo a {
+    color: #4D4D4F;
+    font-weight: bold;
+    font-size: 18px;
 }
 /*.clusterspecs {
 	background: url(../images/gradient.png) no-repeat;
@@ -95,7 +108,6 @@
 }
 */
 #optemo_embedder .topbar {
-	width: 181px;
 	height: 263px;
 	text-align:center;
 }
@@ -136,22 +148,22 @@
 //--------------------------------------*/
 
 #optemo_embedder .dragHand {
-	display: none;
-	position: absolute;
-	left: 0;
-	top: 5px;
-	z-index:1;
+   display: none;
+   position: absolute;
+   left: 0;
+   top: 5px;
+   z-index:1;
 }
 
 #optemo_embedder .navbox:hover .dragHand {
-	display: block;
+   display: block;
 }
 
 #optemo_embedder #draghandexample {
-	position: absolute;
-	left: 20px;
-	top: 40px;
-	z-index: 1;
+   position: absolute;
+   left: 20px;
+   top: 40px;
+   z-index: 1;
 }
 #optemo_embedder #IE .text-place #draghandexample {
 	display: none;
@@ -160,6 +172,56 @@
 /*--------------------------------------//
 //                Sliders               //
 //--------------------------------------*/
+
+/*--------------------------------------//
+//              Back to Top             //
+//--------------------------------------*/
+#back-top {
+   position: fixed;
+   bottom: 30px;
+   margin-left: -150px;
+   display: none;
+}
+
+#back-top a {
+   width: 75px;
+   display: block;
+   text-align: center;
+   font: 11px/100% Arial, Helvetica, sans-serif;
+   text-transform: uppercase;
+   text-decoration: none;
+   color: #bbb;
+
+	/* transition */
+   -webkit-transition: 1s;
+   -moz-transition: 1s;
+   transition: 1s;
+}
+#back-top a:hover {
+   color: #000;
+}
+
+/* arrow icon (span tag) */
+#back-top span {
+   width: 75px;
+   height: 75px;
+   display: block;
+   margin-bottom: 7px;
+   background: #ddd url(../images/up-arrow.png) no-repeat center center;
+
+	/* rounded corners */
+   -webkit-border-radius: 15px;
+   -moz-border-radius: 15px;
+   border-radius: 15px;
+
+	/* transition */
+   -webkit-transition: 1s;
+   -moz-transition: 1s;
+   transition: 1s;
+}
+#back-top a:hover span {
+   background-color: #777;
+}
 
 /*--------------------------------------//
 //                Footer                //

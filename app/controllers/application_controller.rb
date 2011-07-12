@@ -43,9 +43,12 @@ class ApplicationController < ActionController::Base
     #end
     # request.domain gets anything up to www.printers.browsethenbuy.co.uk (n + 1 elements in the domain name)
     # request.env["REMOTE_HOST"] is necessary when doing embedding
-    s = Session.new(request.domain(4) || request.env["REMOTE_HOST"]) 
+    # request.domain(4) || request.env["REMOTE_HOST"]
+    # As of July 11, we are using the category id that gets passed in instead
+    s = Session.new(params[:category_id]) 
     #s.id = mysession_id
     #s.ab_testing_type = ab_testing_type
+    # We are passing in the category id from javascript
     $d = Distribution.new unless defined? $d
     $k = Kmeans.new unless defined? $k    
   end

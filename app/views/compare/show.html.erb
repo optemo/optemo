@@ -72,18 +72,23 @@
     	    <div class="bbfeatures"><%= image_tag "best_buy_instore_pickup.gif" %><%=t('products.show.instorepickup')%></div>
     	    <div class="bbfeatures"><%= image_tag "best_buy_rewards_card.gif" %><%=t('products.show.rewardprog')%></div>
 			<div id="fb-root"></div>
+
+
 			<script>
 			if (!(jQuery.browser.msie)) {
 			  window.fbAsyncInit = function() {
 			    FB.init({appId: '191247887553933', status: true, cookie: true,
-			             xfbml: true, channelUrl: 'http://example.com/channel.html'});
+			             xfbml: true'});
 			  };
 			  (function() {
 			    var e = document.createElement('script'); e.async = true;
 			    e.src = document.location.protocol + "<%=raw t('products.show.fbconnecturl')%>";
 			    document.getElementById('fb-root').appendChild(e);
 			  })();
+
 			}
+				
+		
 			</script>
 			<script src=<%=raw "http:"+t('products.show.fbconnecturl')+"#xfbml=1"%>></script><div class='facebook-like'><fb:like href=<%=@prod_url%> show_faces="false" width="300" font="arial"></fb:like></div>
         </div>

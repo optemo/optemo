@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class Search < ActiveRecord::Base
   attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
   
@@ -154,6 +155,10 @@ class Search < ActiveRecord::Base
     @cluster ||= Cluster.new(sim_products, nil)
   end
   
+  def paginated_products
+    @paginated_products ||= products.map{|p|Product.cached(p.id)}.paginate :page => page, :per_page => 18
+  end
+  
   def isextended?
     !@extended.nil?
   end  
@@ -170,7 +175,20 @@ class Search < ActiveRecord::Base
   end
   
   def products
-    @products ||= SearchProduct.fq2
+    sortby=Session.search.sortby
+    if sortby == "relevance" || sortby.nil?
+        @products = Kmeans.compute(9,SearchProduct.fq2)
+    else
+        #if sortby.include?("_high")
+            @products = SearchProduct.fq2
+        #else    
+        #    @products = SearchProduct.fq2
+        #end        
+    end
+  end
+  
+  def products_landing(type)
+    SearchProduct.fq2_landing(type)
   end
   
   def sim_products
@@ -278,7 +296,7 @@ class Search < ActiveRecord::Base
   def initialize(p={})
     super({})
     #Set parent id
-    self.parent_id = Base64.decode64(p["parent"]).to_i unless p["parent"].blank?
+    self.parent_id = CGI.unescape(p["parent"]).unpack("m")[0].to_i unless p["parent"].blank?
     unless p["action_type"] == "initial" #Exception for initial clusters
       old_search = Search.find_by_id(self.parent_id)
     end
@@ -295,6 +313,9 @@ class Search < ActiveRecord::Base
       #Browse similar button
       self.seesim = p["cluster_hash"] # current products
       duplicateFeatures(old_search)
+    when "featured"
+        debugger
+      @userdatacats << Userdatacat.new({:name => "featured", :value => '1'})
     when "extended"
       self.seesim = p["extended_hash"] # current products
       createFeatures(p)
@@ -363,13 +384,13 @@ class Search < ActiveRecord::Base
         fname = Regexp.last_match[1]
         max = fname+'_max'
         @userdataconts << Userdatacont.new({:name => fname, :min => v, :max => p[max]})
-      elsif Session.binary["filter"].index(k)
+      elsif Session.binary["all"].index(k)
         #Binary Features
         #Handle false booleans
         if v != '0'
           @userdatabins << Userdatabin.new({:name => k, :value => v})
         end
-      elsif Session.categorical["filter"].index(k)
+      elsif Session.categorical["all"].index(k)
         #Categorical Features
         v.split("*").each do |cat|
           @userdatacats << Userdatacat.new({:name => k, :value => cat})
@@ -379,8 +400,13 @@ class Search < ActiveRecord::Base
         self.keyword_search = v
       end
     end
+    cats = []
     #Check for cat filters which have been eliminated by other filters
     @userdatacats.group_by(&:name).each_pair do |k,v|
+      # get all categories
+      if k=='category'
+        v.each { |x| cats << x.value }
+      end
       if v.size > 1
         counts = SearchProduct.cat_counts(k,true,false,self)
         v.each do |val|
@@ -388,6 +414,36 @@ class Search < ActiveRecord::Base
         end
       end
     end
+    
+    # remove the filter without categories selected
+    
+
+      @userdatacats.group_by(&:name).keys.uniq.each do |feature_name|
+        Session.dynamic_filter_cat.each_pair do |k, v|
+          if v.include?(feature_name)
+            @userdatacats.reject!{|c| c.name == feature_name} unless cats.include?(k)
+            break
+          end
+        end
+      end
+    @userdataconts.group_by(&:name).keys.uniq.each do |feature_name|
+      Session.dynamic_filter_cont.each_pair do |k, v|
+          if v.include?(feature_name)
+            @userdataconts.reject!{|c| c.name == feature_name} unless cats.include?(k)
+            break
+          end
+        end
+      end
+      @userdatabins.group_by(&:name).keys.uniq.each do |feature_name|
+        Session.dynamic_filter_bin.each_pair do |k, v|
+          if v.include?(feature_name)
+            @userdatabins.reject!{|c| c.name == feature_name} unless cats.include?(k)
+            break
+          end
+        end
+      end
+    
+
   end
   
   # The intent of this function is to see if filtering is being done on a previously filtered set of clusters.

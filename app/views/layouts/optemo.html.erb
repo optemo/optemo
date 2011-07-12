@@ -1,6 +1,6 @@
 <% s = Session %>	
 <%= render :partial => "html_and_head", :locals => {:s => s} %>
-<body style="font-size:0.75em;font-family: arial, helvetica;margin:0;">
+<body style="font-size:0.75em;font-family: arial, helvetica, sans-serif;margin:0;">
 <div id="optemo_embedder">
 <!--[if IE]>
 <div id="IE">
@@ -23,12 +23,12 @@
    <div class="bd">
     <%= yield %>
    </div>
-   <div class="watermark"><%=t('products.compare.powered')%><%= link_to 'Optemo', 'http://optemo.com', :class => "popup" %></div>
 </div>
 <div id="silkscreen">&nbsp;</div>
 <div id="filter_silkscreen"></div>
 <div id="loading"><img src="/images/classic-loader.gif" /><%=t('products.show.loading')%></div>
 <div id="outsidecontainer"><div id="info">&nbsp;</div></div>
+
 <!--[if IE]>
 </div>
 <![endif]-->
