@@ -652,8 +652,7 @@ optemo_module = (function (my){
     					leftsliderknob.removeClass("valabove").addClass("valbelow");
     					rightsliderknob.removeClass("valabove").addClass("valbelow");
     				}
-    				var sliderinfo = {'slider_min' : parseFloat(ui.values[0]) * rangemin / 100.0, 'slider_max' : parseFloat(rightslidervalue) * rangemax / 100.0,
-                	            'slider_name' : $(this).attr('data-label'), 'filter_type' : 'slider', 'data_min' : datasetmin, 'data_max' : datasetmax, 'ui_position' : $(this).parent().find('.label').attr('data-position')};
+    				var sliderinfo = {'slider_min' : parseFloat(ui.values[0]) * rangemin / 100.0, 'slider_max' : parseFloat(rightslidervalue) * rangemax / 100.0, 'slider_name' : $(this).attr('data-label'), 'filter_type' : 'slider', 'data_min' : datasetmin, 'data_max' : datasetmax, 'ui_position' : $(this).parent().find('.label').attr('data-position')};
     				my.trackPage('goals/filter/slider', sliderinfo);
                     if (leftsliderknob.data('toofar') || rightsliderknob.data('toofar')) {
                         sliderinfo['filter_type'] = 'forced_stop';
