@@ -2,9 +2,9 @@
 	<div id="navigator_bar">
 		<div id="navtitle"><div style="font-size: 30px; float:left; margin-right: 7px;"><%= Session.search.products_size %></div><%= raw navtitle %><br><%= t("#{Session.product_type}.refineyoursearch") %><%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn'})  %></div>
 	</div>
-	<ul id="sorting_method_box" class="bluesubheading"><li><span style="width: 50px;"><b><%= t("products.sortby") %></b></span></li><%=raw sortbyList %></ul>
+	<ul id="sorting_method_box" class="optemo_bluesubheading"><li><span style="width: 50px;"><b><%= t("products.sortby") %></b></span></li><%=raw sortbyList %></ul>
 	</div>
-<div class='bluesubheading'>Best Sellers</div>
+<div class='optemo_bluesubheading'>Best Sellers</div>
 <a href="" class "">
 <%= raw special_main_boxes('orders', 18) %>
 

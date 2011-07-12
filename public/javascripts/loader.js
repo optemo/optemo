@@ -52,9 +52,9 @@ for (var i in category_id_hash) {
 if (rails_category_id == 0) rails_category_id = 20218;
 
 if (opt_history.length > 0)
-    var opt_options = {embedding:'true',hist:opt_history, category_id:rails_category_id};
+    var opt_options = {embedding:'true', hist: opt_history, category_id: rails_category_id};
 else
-    var opt_options = {embedding:'true', category_id:rails_category_id};
+    var opt_options = {embedding:'true', category_id: rails_category_id, landing: true};
 JSONP.get(OPT_REMOTE, opt_options, opt_insert);
 // Private function for the register_remote socket. Takes data, splits according to rules, does replace() according to rules.
 function opt_parse_data_by_pattern(mydata, split_pattern_string, replacement_function) {

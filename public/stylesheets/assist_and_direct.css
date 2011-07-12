@@ -190,11 +190,19 @@ html {
    }
 
 
-.bluesubheading {
+.optemo_bluesubheading {
     background: #D6DBF7;
     padding: 6px;
     border-left: 1px solid #D0D0D0;
     border-right: 1px solid #D0D0D0;
+}
+
+.optemo_special_boxes {
+    float: right;
+    padding-right: 10px;
+    margin-top: 3px;
+    font-size: 0.8em;
+    font-weight: bold;
 }
 
 /*.demo_selector {
@@ -418,8 +426,8 @@ padding-bottom: 5px;
 #optemo_embedder #compare_button , #optemo_embedder .optemo_compare_button {
 	clear: both;
 	font-size: 0.8em;
-margin: 5px 0;
-   font-weight: bold;
+    margin: 5px 0;
+    font-weight: bold;
 }
 
 #optemo_embedder .compare_button {

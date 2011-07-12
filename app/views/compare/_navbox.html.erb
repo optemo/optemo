@@ -2,7 +2,7 @@
 	<div class="topbar">
 		<%= image_tag(CatSpec.cache_all(product.id)["img150url"], :class => "productimg", :alt => product.small_title, :title => product.small_title, :'data-id' => product.id, :'data-sku' => product.sku) %>
 		<div class="productinfo">
-			<%= link_to product.small_title, product_path(:name => product.descurl, :id => product.id), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
+			<%= link_to product.small_title, TextSpec.cacheone(product.id, "productUrl#{fr?}"), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
 		    
 			<div class="productspecs"><%=featuretext(product.id) %></div>
 			<% if BinSpec.cache_all(product.id)["onsale"] %>
