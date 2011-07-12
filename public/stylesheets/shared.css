@@ -83,7 +83,7 @@ body {
 }*/
 
 #optemo_embedder #navtitle {
-   display: inline;
+   display: inline-block;
     *display:inline-block;
     margin-left: auto;
     margin-right: auto;
