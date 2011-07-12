@@ -9,11 +9,15 @@ en:
         classification:             "Digital Cameras"
         navtitle:                  "Camera"
         navtitle2:                   " Available"
-        outof:                      "Out of %{count} Available"
+        outof:                      "Out of %{count} Cameras"
 
         compare:                    "Compare"
         seeall:                     "See All"
         shopnow:                    "Shop Now"
+        toprated:                   "Top Rated Products"
+        bestsellers:                "Best Sellers"
+        featuredproducts:           "Featured Products"
+
         specs:
             category:
                 name:               "Product Category"
