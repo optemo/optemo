@@ -10,8 +10,10 @@ fr:
         navtitle:                  "Appareils photo"
         navtitle2:                   " Disponibles"
         outof:                      "Parmi %{count} Appareils Photo"
-        
+
+        compare:                    "Comparer"
         seeall:                     "Visionner Tout"
+        shopnow:                    "Magasinez"
         toprated:                   "Meilleure Cote Produits"
         bestsellers:                "Meilleurs Vendeurs"
         featuredproducts:           "Produits Vedettes"
@@ -73,6 +75,8 @@ fr:
                 name:               "Mégapixels"
             displayDate:
                 name:               "Tout Dernier Modèle"
+            saleprice_factor:
+                name:               "Prix"     
             orders_factor:  
                 name:               "Qui Se Vend Le Mieux"        
             AdvancedSearch:

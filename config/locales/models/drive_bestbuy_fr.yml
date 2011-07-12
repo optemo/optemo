@@ -10,13 +10,13 @@ en:
         navtitle:                  "Lecteur"
         navtitle2:                   " Disponibles"
         outof:                      "Parmi %{count} Lecteurs"
-        compare:                    "Compare"
+        compare:                    "Comparer"
         seeall:                     "Visionner Tout"
         toprated:                   "Meilleure Cote Produits"
         bestsellers:                "Meilleurs Vendeurs"
         featuredproducts:           "Produits Vedettes"
 
-        shopnow:                    "Shop Now"        
+        shopnow:                    "Magasinez"        
         specs:
             category:
                 name:               "Categories"

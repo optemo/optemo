@@ -34,7 +34,7 @@ fr:
             none:           "None"
             unknown:        "Unknown"
             save:           "Épargnez"
-
+            seemore:        "Voir Plus"
         show:
             title:          "Renseignements sur le produit"
             noimage:        "Image non disponible"

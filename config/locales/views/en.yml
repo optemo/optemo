@@ -35,6 +35,7 @@ en:
             unknown:        "Unknown"
             save:           "Save"
             AdvancedSearch: "Advanced Search"
+            seemore:        "See More"
         show:
             title:          "Product Details"
             noimage:        "No Image Available"
