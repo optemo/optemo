@@ -55,6 +55,7 @@ html {
 
 #optemo_embedder .heroinfo a.shop-now {
    Background: url('/images/shopnow.gif') no-repeat;
+   
    }
 
 /*#header {
@@ -118,7 +119,7 @@ html {
    top: 15px;
    right: 15px;
    font-size: 0.8em;
-   border: 1px #ccc solid;
+/*   border: 1px #ccc solid; */
 }
 
 #optemo_embedder .seeall, #optemo_embedder .seeall:visited, #optemo_embedder .seeall:hover {
@@ -1301,7 +1302,7 @@ margin-top:0;
 	-moz-box-shadow: inset 0 7px 8px #2680bf;
 	-webkit-box-shadow: inset 0 7px 8px #2680bf; 
 	text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
-	border: 1px solid #c4c5c5;
+/*	border: 1px solid #c4c5c5; */
 	position: relative;
 	cursor: pointer;
 }
@@ -1316,7 +1317,7 @@ margin-top:0;
 	-moz-border-radius: 4px; 
 	-webkit-border-radius: 4px;
 	text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
-	border: 1px solid #c4c5c5;
+/*	border: 1px solid #c4c5c5; */
 	position: relative;
 	cursor: pointer;
 }
@@ -1337,7 +1338,7 @@ margin-top:0;
    text-decoration: none;
    }
 /* Global Button */
- #optemo_embedder #IE .awesome_reset, #IE .awesome_reset:visited,  #optemo_embedder #IE .awesome_reset_grey, #IE .awesome_reset_grey:visited {
+ #optemo_embedder #IE .awesome_reset,#optemo_embedder #IE .awesome_reset:visited,  #optemo_embedder #IE .awesome_reset_grey, #optemo_embedder #IE .awesome_reset_grey:visited {
 	border: none;
 }
 #optemo_embedder #IE .global_btn,#optemo_embedder #IE .global_btn {
@@ -1346,10 +1347,14 @@ margin-top:0;
 	background:url(../images/global-button-left.gif) no-repeat left;
 }
 #optemo_embedder #IE .global_btn_grey {
+   display: block;
    	background:url(../images/global-button-grey.gif) no-repeat left;
    width: 121px;
    height: 34px;
    padding: 5px;
+   }
+#optemo_embedder #IE .global_btn_grey span{
+   margin: 5px auto;
    }
 #optemo_embedder #IE .global_btn span {
 	display:inline-block;

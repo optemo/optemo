@@ -82,6 +82,7 @@ body {
     background-color: white;
     border: 1px solid #ccc;
 }*/
+
 #optemo_embedder #navtitle {
    display: inline;
     *display:inline-block;
@@ -89,6 +90,11 @@ body {
     margin-right: auto;
    
 }
+
+#optemo_embedder #IE #navtitle{
+   display: inline-block;
+   border: none;
+   }
 
 /*--------------------------------------//
 //      Main Content (Right Side)       //
