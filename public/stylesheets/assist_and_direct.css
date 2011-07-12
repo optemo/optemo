@@ -129,6 +129,7 @@ html {
    }
 #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom {
    font-size: 0.8em;
+   *top: -25px;
    }
 #optemo_embedder .seeall, #optemo_embedder .seeall:visited, #optemo_embedder .seeall:hover {
    background: #FFF220;
@@ -136,7 +137,7 @@ html {
    -webkit-border-radius: 4px;
    text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
    font-size: 0.8em;
-   padding: 5px 15px;
+   padding: 8px 18px;
    margin-right: 10px;
    text-decoration: none;
    border: 1px #ccc solid;
