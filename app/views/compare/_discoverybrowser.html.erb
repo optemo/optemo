@@ -9,7 +9,7 @@
 		<% mb = main_boxes #Calculate this before navtitle %>
 <% end %>
 <div id="navigator_bar">
-  <div id="navtitle"><div style="font-size: 30px; float:left;  margin-right: 7px;"><%= Session.search.products_size %></div><%= raw  navtitle %><br><%= Session.search.products_size <  ContSpec.all.length ? raw("<div style=\"font-size:0.7em;\">Out of  #{ContSpec.all.length} available</div>") : ""
+  <div id="navtitle"><div style="font-size: 30px; float:left;  margin-right: 7px;font-weight: bold;"><%= Session.search.products_size %></div><%= raw  navtitle %><br><%= Session.search.products_size <  ContSpec.all.length ? raw("<div style=\"font-size:0.7em;\">Out of  #{ContSpec.all.length} available</div>") : ""
   %></div><%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn'})  %></div>
 </div>
 <ul id="sorting_method_box" class="optemo_bluesubheading"><li style="width: 50px;margin-right: 7px;"><span><b><%= t("products.sortby") %></b></span></li><%=raw sortbyList %></ul>

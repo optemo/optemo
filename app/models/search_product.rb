@@ -34,7 +34,7 @@ class SearchProduct < ActiveRecord::Base
         myconts = Session.search.userdataconts  
         res = []  
         mybins = [Userdatabin.new({:name => 'hero', :value => 1})]
-        res << search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins).where("product_type=\'#{Session.product_type}\'")
+        res << search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins)#.where("product_type=\'#{Session.product_type}\'")
         res.flatten.first   
       end
             
