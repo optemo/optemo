@@ -272,7 +272,7 @@ end
     res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
     products = @s.search.paginated_products
     res << "<div id='navigator_bar_bottom'>"
-    res << "<div id='navtitle'>#{Session.search.products_size.to_s + ' ' + navtitle}</div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div>"
+    res << "<div id='navtitle'>#{Session.search.products_size.to_s + ' ' + navtitle}</div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div><div style='clear:both;'></div>"
 
 
     
