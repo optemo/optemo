@@ -4,18 +4,18 @@ class ContSpec < ActiveRecord::Base
   # Get specs for a single item, returns a hash of this format: {"price" => 1.75, "width" => ... }
   def self.cache_all(p_id)
     CachingMemcached.cache_lookup("ContSpecs#{p_id}") do
-      select("name, value").where(["product_id = ?", p_id]).each_with_object({}){|r, h| h[r.name] = r.value}
+      select("name, value").where(["product_id = ?", p_id]).all.each_with_object({}){|r, h| h[r.name] = r.value}
     end
   end
   def self.cachemany(p_ids, feat) # Returns numerical (floating point) values only
     CachingMemcached.cache_lookup("ContSpecs#{feat}#{p_ids.join(',').hash}") do
-      select("value").where(["product_id IN (?) and name = ?", p_ids, feat]).map(&:value)
+      select("value").where(["product_id IN (?) and name = ?", p_ids, feat]).all.map(&:value)
     end
   end
   
   def self.all
     CachingMemcached.cache_lookup("ContSpecsAll#{Product.initial}") do
-      joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").select("search_products.product_id, group_concat(cont_specs.name) AS names, group_concat(cont_specs.value) AS vals").where(:search_products => {:search_id => Product.initial}).group(:product_id)
+      joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").select("search_products.product_id, group_concat(cont_specs.name) AS names, group_concat(cont_specs.value) AS vals").where(:search_products => {:search_id => Product.initial}).group(:product_id).all
     end
   end
   
@@ -67,6 +67,6 @@ class ContSpec < ActiveRecord::Base
   private
   
   def self.initial_specs(feat)
-    joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").where(:cont_specs => {:name => feat}, :search_products => {:search_id => Product.initial}).select("value").map(&:value)
+    joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").where(:cont_specs => {:name => feat}, :search_products => {:search_id => Product.initial}).select("value").all.map(&:value)
   end
 end
