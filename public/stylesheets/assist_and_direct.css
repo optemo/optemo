@@ -53,10 +53,6 @@ html {
    position: relative;
    }
 
-#optemo_embedder .heroinfo a.shop-now {
-   Background: url('/images/shopnow.gif') no-repeat;
-   
-   }
 
 /*#header {
    padding-top: 8px;
@@ -114,19 +110,26 @@ html {
 }
 
 
-#optemo_embedder #navigator_bar a#nav_compare_btn,#optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom, #optemo_embedder .seeall {
+#optemo_embedder #navigator_bar a#nav_compare_btn {
    position: absolute;
    top: 15px;
-   right: 15px;
+   right: 10px;
    font-size: 0.8em;
 /*   border: 1px #ccc solid; */
 }
+#optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom, #optemo_embedder .seeall {
+   float: right;
+   font-size: 0.8em;
 
-* html #optemo_embedder #navigator_bar a#nav_compare_btn ,* html #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom {
-   padding-top: 20px !important;
-   padding-left: 18px !important;
    }
-
+#optemo_embedder #IE #navigator_bar a#nav_compare_btn ,#optemo_embedder #IE #navigator_bar_bottom a#nav_compare_btn_bottom {
+   padding-top: 8px !important;
+   padding-left: 18px !important;
+   
+   }
+#optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom {
+   font-size: 0.8em;
+   }
 #optemo_embedder .seeall, #optemo_embedder .seeall:visited, #optemo_embedder .seeall:hover {
    background: #FFF220;
    -moz-border-radius: 4px; 
@@ -134,8 +137,10 @@ html {
    text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
    font-size: 0.8em;
    padding: 5px 15px;
-   margin-right: 100px;
+   margin-right: 10px;
    text-decoration: none;
+   border: 1px #ccc solid;
+   *top: -25px;
 }
 
 #optemo_embedder #sorting_method_box {
@@ -1348,11 +1353,11 @@ margin-top:0;
 #optemo_embedder #IE .global_btn,#optemo_embedder #IE .global_btn {
 	display:inline-block;
 	padding:0 0 0 6px;
-	background:url(../images/global-button-left.gif) no-repeat left;
+	background:url(../images/global-button-left.gif) no-repeat top left;
 }
 #optemo_embedder #IE .global_btn_grey {
    display: block;
-   	background:url(../images/global-button-grey.gif) no-repeat left;
+   	background:url(../images/global-button-grey.gif) no-repeat top left;
    width: 121px;
    height: 34px;
    padding: 5px;
