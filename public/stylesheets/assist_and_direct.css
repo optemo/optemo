@@ -52,20 +52,6 @@ html {
 #optemo_embedder #main #hero {
    position: relative;
    }
-#optemo_embedder .heroinfo a.shop-now:hover, #optemo_embedder .heroinfo a.shop-now:visited {
-   display: block
-   width: 100px;
-   height: 22px;
-   background: #FFF220;
-   line-height: 22px;
-   -moz-border-radius: 4px; 
-   -webkit-border-radius: 4px;
-   text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
-   padding: 5px 15px;
-   font-size: 0.8em;
-   font-weight: normal;
-   text-decoration: none;
-   }
 
 #optemo_embedder .heroinfo a.shop-now {
    Background: url('/images/shopnow.gif') no-repeat;
@@ -115,13 +101,6 @@ html {
 	border-left: 1px solid #d0d0d0;
 	border-right: 1px solid #d0d0d0;
 	background: #FFF200;
-	height: 30px;
-/*	keep pretty gradients for now, they looked nice and could be useful
-    background-image:-moz-linear-gradient(center bottom, #e9e9e9, white);
-	background-image:-webkit-gradient(linear, left bottom, left top, from(#e9e9e9), to(white)); 
-}
-#optemo_embedder #IE #navigator_bar {
-	background: url(../images/navbar_gradient.png) repeat; */
 }
 
 #optemo_embedder #navigator_bar_bottom {
@@ -129,11 +108,8 @@ html {
 	position: relative;
 	border: 1px solid #d0d0d0;
 /*	keep pretty gradients for now, they looked nice and could be useful*/
-    background-image:-moz-linear-gradient(center bottom, #e9e9e9, white);
+        background-image:-moz-linear-gradient(center bottom, #e9e9e9, white);
 	background-image:-webkit-gradient(linear, left bottom, left top, from(#e9e9e9), to(white)); 
-}
-#optemo_embedder #IE #navigator_bar {
-	background: url(../images/navbar_gradient.png) repeat; 
 }
 
 
@@ -1370,9 +1346,12 @@ margin-top:0;
 	background:url(../images/global-button-left.gif) no-repeat left;
 }
 #optemo_embedder #IE .global_btn_grey {
-   	background:url(../images/global-button-left.gif) no-repeat left;
+   	background:url(../images/global-button-grey.gif) no-repeat left;
+   width: 121px;
+   height: 34px;
+   padding: 5px;
    }
-#optemo_embedder #IE .global_btn span, #optemo_embedder #IE .global_btn_grey span {
+#optemo_embedder #IE .global_btn span {
 	display:inline-block;
 	background:url(../images/global-button-right.gif) no-repeat right;
 	padding:0 10px 0 4px;
@@ -1396,8 +1375,8 @@ margin-top:0;
 	display:inline-block;
 }
 #optemo_embedder .narrow_text img{
-   width: 140px;
-   height: 36px;
+   width: 150px;
+   height: 39px;
    }
 #optemo_embedder .y_heading {
 	overflow:hidden;
