@@ -20,7 +20,8 @@
 			<% end %>
 		</div>
 	     
-		<div style="text-align:left; padding-left:20px">
+	</div>
+	<div style="text-align:left; padding-left:20px">
 			<div class="spacer buttons"><%= link_to image_tag("bestbuy_addtocart#{fr?}.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{product.sku}", {:'data-sku' => product.sku, :class => 'addtocart', :'data-name' => product.small_title} %></div>
 		<div class="spacer">
 		  <input type="checkbox"
@@ -32,6 +33,7 @@
 		    <span>COMPARE</span>
 		  </a>
 		</div>
-		</div>
 	</div>
+
 </div>
+

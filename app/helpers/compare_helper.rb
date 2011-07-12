@@ -262,13 +262,13 @@ end
     		  #Navbox partial to draw boxes
     		  res << render(:partial => 'navbox', :locals => {:i => i, :product => @s.search.paginated_products[i]})
           if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
-            res << '<div style="clear: both"></div></div>'
+            res << '<div style="clear: both;height: 1px; width: 520px; margin: 2px auto; text-align: center;"><hr style="color:#ccc;" size="1px;" noshade="noshade" /></div></div>'
             open = false
           end
     		end
   		end
   	end
-  	res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
+  	res << '<div style="clear: both; height: 1px; width: 520px; margin: 2px auto; text-align: center;"><hr style="color: #ccc" size="1px;" noshade="noshade" /></div></div>' if open && !@s.directLayout
     res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
     products = @s.search.paginated_products
     res << "<div id='navigator_bar_bottom'>"

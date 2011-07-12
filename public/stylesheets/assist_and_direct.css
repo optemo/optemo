@@ -37,7 +37,7 @@ html {
     padding: 4px 0 5px 37px;
 }
 
-#optemo_embedder #product_content,#optemo_embedder #main .rowdiv, #optemo_embedder #main #hero {
+#optemo_embedder #product_content, #optemo_embedder #main #hero {
    border: 1px solid #d0d0d0;
    }
 
@@ -46,8 +46,10 @@ html {
    border-right: none;
    border-top: none;
 }
+
 #optemo_embedder #main .rowdiv, #optemo_embedder #main #hero {
    margin-bottom: 3px;
+   border: 1px solid #d0d0d0;
    }
 #optemo_embedder #main #hero {
    position: relative;
@@ -197,6 +199,7 @@ html {
     padding: 6px;
     border-left: 1px solid #D0D0D0;
     border-right: 1px solid #D0D0D0;
+   position: relative;
 }
 
 .optemo_special_boxes {
@@ -206,7 +209,12 @@ html {
     font-size: 0.8em;
     font-weight: bold;
 }
-
+#optemo_embedder #IE .optemo_special_boxes {
+   float: none;
+   position: absolute;
+   right: 10px;
+   top: 3px;
+   }
 /*.demo_selector {
 	float: left;
 	width: 260px;
@@ -221,9 +229,6 @@ html {
 //      Main Content (Right Side)       //
 //--------------------------------------*/
 
-#optemo_embedder div.rowdiv {
-	border-bottom: 1px solid #ccc;
-}
 
 #optemo_embedder .poptitle {
 	font-size: 1.13em;
@@ -561,7 +566,7 @@ padding-bottom: 5px;
 	padding-bottom: 4px;
    padding-left: 6px;
    background-color: #FFF200;
-   margin: 6px 0 0 -6px;
+   margin: 6px 0 0 0;
 }
 
 
