@@ -5,7 +5,7 @@
 	<% mb['orders'] =landing_main_boxes('orders') #Calculate mb before navtitle %>
 	<% mb['customerRating'] = landing_main_boxes('customerRating')%>
 	<div id="navtitle"><div style="font-size: 30px; float:left; margin-right: 7px; font-weight: bold;">
-	<%= Session.search.products_size %><br><%= Session.search.products_size < ContSpec.all.length ? raw("<div style=\"font-size:0.7em;\">" + t("#{Session.product_type}.outof", ContSpec.all.length) + "</div>") : "" %><%= raw navtitle %><%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn'})  %></div>
+	<%= Session.search.products_size %><br><%= Session.search.products_size < ContSpec.all.length ? raw("<div style=\"font-size:0.7em;\">" + t("#{Session.product_type}.outof", :count => ContSpec.all.length) + "</div>") : "" %><%= raw navtitle %><%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn'})  %></div>
 </div>
 <ul id="sorting_method_box" class="optemo_bluesubheading"><li><span style="width: 50px;"><b><%= t("products.sortby") %></b></span></li><%=raw sortbyList %></ul>
 </div>
