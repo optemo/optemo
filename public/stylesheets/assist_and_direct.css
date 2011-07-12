@@ -122,6 +122,11 @@ html {
 /*   border: 1px #ccc solid; */
 }
 
+* html #optemo_embedder #navigator_bar a#nav_compare_btn ,* html #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom {
+   padding-top: 20px !important;
+   padding-left: 18px !important;
+   }
+
 #optemo_embedder .seeall, #optemo_embedder .seeall:visited, #optemo_embedder .seeall:hover {
    background: #FFF220;
    -moz-border-radius: 4px; 
@@ -1386,7 +1391,7 @@ margin-top:0;
 #optemo_embedder .y_heading
  {
 	overflow:hidden;
-	*height:75px;
+	*height:85px;
 }
 
 /*
