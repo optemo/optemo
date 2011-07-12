@@ -38,11 +38,11 @@
 </div>
 
 <div style='clear:both; width:0'></div>
-<div class='optemo_bluesubheading'>Featured products &nbsp;<a href="#" class="optemo_special_boxes" data-special-boxes="featured">See more</a></div>
+<div class='optemo_bluesubheading'><%=t("#{Session.product_type}.featuredproducts")%> &nbsp;<a href="#" class="optemo_special_boxes" data-special-boxes="featured">See more</a></div>
 <%= raw mb['featured'] %>
-<div class='optemo_bluesubheading'>Best Sellers &nbsp;<a href="#" class="optemo_special_boxes" data-special-boxes="bestsellers">See more</a></div>
+<div class='optemo_bluesubheading'><%=t("#{Session.product_type}.bestsellers")%> &nbsp;<a href="#" class="optemo_special_boxes" data-special-boxes="bestsellers">See more</a></div>
 <%= raw mb['orders']%>
-<div class='optemo_bluesubheading'>Top Rated &nbsp;<a href="#" class="optemo_special_boxes" data-special-boxes="toprated">See more</a></div>
+<div class='optemo_bluesubheading'><%=t("#{Session.product_type}.toprated")%> &nbsp;<a href="#" class="optemo_special_boxes" data-special-boxes="toprated">See more</a></div>
 <%= raw mb['customerRating']%>
 <div id='navigator_bar_bottom'>
     <div id='navtitle'><%= Session.search.products_size.to_s + ' ' + raw(navtitle) %></div><%= link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'}) %><%= link_to t(Session.product_type+'.seeall')+' >',root_path, :class=>"seeall" %></div>

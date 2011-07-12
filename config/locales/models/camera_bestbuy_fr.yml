@@ -7,8 +7,15 @@ fr:
         defaultdesc:                "Meilleure sélection dappareils photo numériques"
         keywords:                   "appareils photo"
         classification:             "Appareils photo numériques"
-        navtitle:                   "Vous survolez actuellement %{count} appareils photo"
+        navtitle:                  "Appareils photo"
+        navtitle2:                   " Disponibles"
+        outof:                      "Parmi %{count} Appareils Photo"
         
+        seeall:                     "Visionner Tout"
+        toprated:                   "Meilleure Cote Produits"
+        bestsellers:                "Meilleurs Vendeurs"
+        featuredproducts:           "Produits Vedettes"
+
         specs:
             category:
                 name:               "Catégorie de produit"
@@ -16,7 +23,7 @@ fr:
                 name:               "Prix"
                 preunit:            "$"
             maxresolution:
-                name:               "Résolution"
+                name:               "Mégapixels"
                 unit:               "Mpx"
             opticalzoom:
                 name:               "Zoom optique"
@@ -62,3 +69,11 @@ fr:
                 name:               "ACL avant et arrière"
             toprated:
                 name:               "Les mieux cotés"
+            maxresolution_factor:
+                name:               "Mégapixels"
+            displayDate:
+                name:               "Tout Dernier Modèle"
+            orders_factor:  
+                name:               "Qui Se Vend Le Mieux"        
+            AdvancedSearch:
+                name:               "Recherche Avancée"                            
