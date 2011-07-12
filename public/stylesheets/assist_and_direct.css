@@ -143,12 +143,11 @@ html {
    margin: 0 0 3px;
 }
 #optemo_embedder #sorting_method_box li {
-   float: left;
-   height: 30px;
-   padding: 0 10px;
+   display: inline;
+   padding: 8px 10px;
    }
 #optemo_embedder #sorting_method_box a, #optemo_embedder #sorting_method_box span {
-   display:inline-block;
+   display: inline-block;
    padding-top: 8px;
    }
 #optemo_embedder #sorting_method_box a.price_high {
@@ -1384,9 +1383,10 @@ margin-top:0;
    height: 39px;
    padding-left: 10px;
    }
-#optemo_embedder .y_heading {
+#optemo_embedder .y_heading
+ {
 	overflow:hidden;
-	height:75px;
+	*height:75px;
 }
 
 /*
