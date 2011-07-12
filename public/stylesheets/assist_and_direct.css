@@ -120,7 +120,20 @@ html {
 #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom, #optemo_embedder .seeall {
    float: right;
    font-size: 0.8em;
-
+   }
+#optemo_embedder #IE #navigator_bar_bottom a#nav_compare_btn_bottom, #optemo_embedder #IE .seeall {
+   float: none;
+   font-size: 0.8em;
+   }
+#optemo_embedder #IE #navigator_bar_bottom a#nav_compare_btn_bottom {
+   position: absolute;
+   right: 10px;
+   top: 5px;
+   }
+#optemo_embedder #IE .seeall {
+   position: absolute;
+   right: 161px;
+   top: 8px;
    }
 #optemo_embedder #IE #navigator_bar a#nav_compare_btn ,#optemo_embedder #IE #navigator_bar_bottom a#nav_compare_btn_bottom {
    padding-top: 8px !important;
@@ -129,7 +142,6 @@ html {
    }
 #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom {
    font-size: 0.8em;
-   *top: -25px;
    }
 #optemo_embedder .seeall, #optemo_embedder .seeall:visited, #optemo_embedder .seeall:hover {
    background: #FFF220;
@@ -137,13 +149,12 @@ html {
    -webkit-border-radius: 4px;
    text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
    font-size: 0.8em;
-   padding: 8px 18px;
+   padding: 5px 18px;
    margin-right: 10px;
    text-decoration: none;
    border: 1px #ccc solid;
-   *top: -25px;
 }
-
+   
 #optemo_embedder #sorting_method_box {
    font-size: 0.75em;
    background: #eee;
@@ -1354,7 +1365,8 @@ margin-top:0;
 #optemo_embedder #IE .global_btn,#optemo_embedder #IE .global_btn {
 	display:inline-block;
 	padding:0 0 0 6px;
-	background:url(../images/global-button-left.gif) no-repeat top left;
+/*	background:url(../images/global-button-left.gif) no-repeat top left;*/
+   background:url(../images/compare_button_blue.gif) no-repeat top left;
 }
 #optemo_embedder #IE .global_btn_grey {
    display: block;
@@ -1363,6 +1375,13 @@ margin-top:0;
    height: 34px;
    padding: 5px;
    }
+#optemo_embedder #IE .global_btn {
+   display: block;
+   width: 121px;
+   height: 34px;
+   padding: 5px;
+   }
+
 #optemo_embedder #IE .global_btn_grey span{
    margin: 5px auto;
    }
