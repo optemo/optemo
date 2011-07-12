@@ -115,6 +115,7 @@ html {
 	border-left: 1px solid #d0d0d0;
 	border-right: 1px solid #d0d0d0;
 	background: #FFF200;
+	height: 30px;
 /*	keep pretty gradients for now, they looked nice and could be useful
     background-image:-moz-linear-gradient(center bottom, #e9e9e9, white);
 	background-image:-webkit-gradient(linear, left bottom, left top, from(#e9e9e9), to(white)); 
@@ -137,10 +138,12 @@ html {
 
 
 #optemo_embedder #navigator_bar a#nav_compare_btn,#optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom, #optemo_embedder .seeall {
-   float: right;
+   position: absolute;
+   top: 15px;
+   right: 15px;
    font-size: 0.8em;
    border: 1px #ccc solid;
-   }
+}
 
 #optemo_embedder .seeall, #optemo_embedder .seeall:visited, #optemo_embedder .seeall:hover {
    background: #FFF220;
@@ -1648,6 +1651,7 @@ margin-top:0;
 
 #optemo_embedder .y_bottom {
    margin: 12px 0 -12px;
+   padding-right: 6px;
    padding-bottom: 3px;
    _margin-bottom: 0;
    margin-bottom: 0\0/; /* ie8 */
