@@ -191,15 +191,15 @@ module CompareHelper
       case type
       when "featured"
         if prods.size > 0    
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)}) unless prods[i].nil?
         end
       when "orders"
         if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)}) unless prods[i].nil?
         end
       when 'customerRating'
         if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)}) unless prods[i].nil?
         end
       end
       res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto;"></div>' if (i%3) == 2 && i!=(num -1)
