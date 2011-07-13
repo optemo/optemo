@@ -1010,11 +1010,11 @@ margin-top:0;
 //        Show page and related         //
 //--------------------------------------*/
 #optemo_embedder div#silkscreen {
- 	background-color: #fff;
+ 	background-color: #9e9e9e;
   
-   filter:alpha(opacity=10);
-      opacity: 0.1;  
-  -moz-opacity:0.1;
+   filter:alpha(opacity=80);
+      opacity: 0.8;  
+  -moz-opacity:0.8;
 /*   -khtml-opacity: 0.1;*/
 
 	position: absolute;
@@ -1030,8 +1030,8 @@ margin-top:0;
 
 
 #optemo_embedder div#silkscreen {
-   filter:alpha(opacity=10);
-   opacity: 0.1;
+   filter:alpha(opacity=80);
+   opacity: 0.8;
    }
 
 #optemo_embedder div#filter_silkscreen {
