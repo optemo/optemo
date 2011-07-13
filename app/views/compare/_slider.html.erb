@@ -1,31 +1,31 @@
 <% distribution_data = getDist(feat)%>
 <% if distribution_data %>
-<div class='feature'>
-          <% if i < 4 %>
-	     <% if i == 0 #add a css class to fix IE6 and IE7 first  label space issue %>
-	        <div class='label without-space space' data-position="<%= i %>">
-	     <% else %>
- 		<div class='label space' data-position="<%= i %>">
-	      <% end %>
+    <div class='feature'>
+        <% if i < 4 %>
+            <% if i == 0 #add a css class to fix IE6 and IE7 first  label space issue %>
+                <div class='label without-space space' data-position="<%= i %>">
+            <% else %>
+         		<div class='label space' data-position="<%= i %>">
+    	    <% end %>
 
-          <% end %>
-           <% if i == 4 %>
-  		<div class='label-advanced-title space'>
-		  <%= t('products.compare.AdvancedSearch') 
-		  %>&nbsp;&gt;
-		  </div>
-		<div class='label-advanced space' data-position="<%= i %>">
-           <% end %>
-	   <% if i > 4 %>
-  		<div class='label-advanced space' data-position="<%= i %>">
-	   <% end %>
-		<%= t("#{Session.product_type}.specs.#{feat}.name") %>
-		<span class="unitdisp">(<%=t("#{Session.product_type}.specs.#{feat}.unit", :default=>"") + t("#{Session.product_type}.specs.#{feat}.preunit", :default=>"") %>)</span>&nbsp;&gt;
-		<% if Session.directLayout %>
-			<div class="groupby" data-feat="<%= feat %>" data-position="<%= i %>">See Groups</div>
-		<% end %>		
-	</div>
-	<% current = Maybe(Session.search.userdataconts.select{|m|m.name == feat}.first) %>
+        <% end %>
+        <% if i == 4 %>
+      		<div class='label-advanced-title space'>
+    		    <%= t('products.compare.AdvancedSearch') %>&nbsp;&gt;
+            </div>
+    		<div class='label-advanced space' data-position="<%= i %>">
+        <% end %>
+        <% if i > 4 %>
+            <div class='label-advanced space' data-position="<%= i %>">
+        <% end %>
+    	<%= t("#{Session.product_type}.specs.#{feat}.name") %>
+    	<span class="unitdisp">(<%=t("#{Session.product_type}.specs.#{feat}.unit", :default=>"") + t("#{Session.product_type}.specs.#{feat}.preunit", :default=>"") %>)</span>&nbsp;&gt;
+    	<% if Session.directLayout %>
+    		<div class="groupby" data-feat="<%= feat %>" data-position="<%= i %>">See Groups</div>
+    	<% end %>		
+        </div>
+
+    <% current = Maybe(Session.search.userdataconts.select{|m|m.name == feat}.first) %>   
 	
 	<div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
 	<%= hidden_field_tag "myfilter[#{feat}_min]", current.min, {:class => 'min'}%>
@@ -40,7 +40,7 @@
 	current-data-max='<%= distribution_data.first.second %>'
 	force-int='false'
 	<%= money_formatting ? 'data-formatting=\'$\'' : ""  %>>
-		<div class="centerofslider"><!-- --></div>
+    	<div class="centerofslider"><!-- --></div>
 	</div>
 </div>
 <% end %>

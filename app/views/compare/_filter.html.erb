@@ -30,7 +30,7 @@
 	   <% if index > 4 %>
   		<div class='label-advanced' data-position="<%= index %>">
 	   <% end %>
-			<%= t("#{Session.product_type}.specs.#{feat[:name]}.name") %>&nbsp;&gt;
+			<%= raw t("#{Session.product_type}.specs.#{feat[:name].gsub(" ","")}.name") %>&nbsp;&gt;
   			<% if @s.directLayout %>
   				<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat[:name] %>" data-position="<%= index %>">See Groups</div>
   			<% end %>
