@@ -41,7 +41,7 @@ html {
    border: 1px solid #d0d0d0;
    }
 
-#optemo_embedder #product_content .rowdiv,#optemo_embedder #product_content #navigator_bar_bottom {
+#optemo_embedder #product_content #navigator_bar_bottom {
    border-left: none;
    border-right: none;
    border-top: none;
@@ -50,6 +50,11 @@ html {
 #optemo_embedder #main .rowdiv, #optemo_embedder #main #hero {
    margin-bottom: 3px;
    border: 1px solid #d0d0d0;
+   zoom: 1;
+   }
+#optemo_embedder #product_content .rowdiv {
+   border: none;
+   
    }
 #optemo_embedder #main #hero {
    position: relative;
@@ -144,6 +149,9 @@ html {
    }
 #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom {
    font-size: 0.8em;
+   }
+#optemo_embedder #IE #navigator_bar_bottom {
+   background: url(../images/navbar_gradient.png) repeat;
    }
 #optemo_embedder .seeall, #optemo_embedder .seeall:visited, #optemo_embedder .seeall:hover {
    background: #FFF220;
@@ -351,7 +359,8 @@ div#division {
 
 
 #optemo_embedder #ajaxfilter {
-	display:inline;
+	display:inline-block;
+   position: relative;
 }
 #optemo_embedder .categorical {
 	border: 1px solid #ccc;
@@ -573,7 +582,6 @@ padding-bottom: 5px;
 #optemo_embedder .label-advanced {
 	font-weight: bold;
 	text-align: left;
-	position: relative;
 	clear: left;
 	padding-top: 6px;
 	padding-bottom: 4px;
@@ -604,8 +612,11 @@ padding-bottom: 5px;
 	font-weight: normal;
 }
 #optemo_embedder .feature {
-    position: relative;
-    clear: both;
+
+    padding: 0 1px 2px 6px;
+}
+#optemo_embedder .feature_slider {
+   position: relative;
     padding: 0 1px 2px 6px;
 }
 

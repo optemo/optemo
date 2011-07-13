@@ -7,7 +7,7 @@
 </div>
 <% end %>
 
-<div class='feature'>
+<div class='feature_slider'>
           <% if i < 4 %>
 	     <% if i == 0 #add a css class to fix IE6 and IE7 first  label space issue %>
 	        <div class='label without-space space' data-position="<%= i %>">
@@ -46,4 +46,5 @@
 		<div class="centerofslider"><!-- --></div>
 	</div>
 </div>
+		<div style="clear:both; height: 0"></div>
 <% end %>
