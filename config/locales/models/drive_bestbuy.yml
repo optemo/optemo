@@ -106,4 +106,35 @@ en:
                 name:               "Newest Model"
             orders_factor:  
                 name:               "Best Selling"        
-                  
+            cdReadSpeed:
+                name:               "CD Read Speed"
+            cdRewriteSpeed:
+                name:               "CD Rewrite Speed"
+            cdWriteSpeed:
+                name:               "CD Write Speed"
+            dvdReadSpeed:
+                name:               "DVD Read Speed"
+            dvdRewriteSpeed:
+                name:               "DVD Rewrite Speed"
+            dvdWriteSpeed:
+                name:               "DVD Write Speed"
+            dataAccessTime:
+                name:               "Data Access Time"
+            dataTransferTime:
+                name:               "Data Transfer Time"
+            dataTransferRate:
+                name:               "Data Transfer Rate"
+            readPerSecond:
+                name:               "Read per Second"
+            writePerSecond:
+                name:               "Write per Second"
+            seekTime:
+                name:               "Seek Time"
+            dataBuffer:
+                name:               "Data Buffer"
+            interface:
+                name:               "Interface"
+            dimensions:
+                name:               "Dimensions"
+            weight:
+                name:               "Weight"

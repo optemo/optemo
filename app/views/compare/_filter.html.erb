@@ -56,7 +56,7 @@
 			<% checked = chosen_cats.include?(k) %>
   			<div data-position="<%= index %>" <%=raw 'style="font-weight:bold;"' if checked %><%=raw 'class=" disabled"' if available_count == 0 %>>
 	  			<%= check_box_tag "superfluous[#{k}]", "1", checked, :disabled => (available_count == 0) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :'data-feat' => feat[:name], :'data-opt' => k %>
-				<%= (available_count == 0) ?	t("#{Session.product_type}.specs.i#{k}.name",:default=>k) : link_to(t("#{Session.product_type}.specs.#{k}.name", :default=>k), "#", :class => "binary_filter_text") %>
+				<%= (available_count == 0) ?	t("#{Session.product_type}.specs.i#{k}.name",:default=>(feat[:name]=='brand'?capitalize_brand_name(k):k)) : link_to(t("#{Session.product_type}.specs.#{k}.name", :default=>(feat[:name]=='brand'?capitalize_brand_name(k):k)), "#", :class => "binary_filter_text") %>
 	  			<span class="av_count"><%= "(#{available_count})" unless checked %></span>
 	  		</div>
 			<% end %>
