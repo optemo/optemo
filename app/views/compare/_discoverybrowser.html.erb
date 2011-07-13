@@ -1,6 +1,10 @@
 <% case @special_boxes %>
 	<% when 'featured' %>
-		<% mb = "<div class='optemo_bluesubheading'>"+t("#{Session.product_type}.featuredproducts")+"</div>" + special_main_boxes('featured', 10) %>
+		<%if Session.product_type=="camera_bestbuy"%>
+			<% mb = "<div class='optemo_bluesubheading'>"+t("#{Session.product_type}.featuredproducts")+"</div>" + special_main_boxes('featured', 10) %>
+		<%else%>
+			<% mb = "<div class='optemo_bluesubheading'>"+t("#{Session.product_type}.featuredproducts")+"</div>" + special_main_boxes('featured', 12) %>
+		<%end%>	
 	<% when 'toprated' %>
 		<% mb = "<div class='optemo_bluesubheading'>"+t("#{Session.product_type}.toprated")+"</div>" + special_main_boxes('customerRating', 18) %>
 	<% when 'bestsellers' %>
