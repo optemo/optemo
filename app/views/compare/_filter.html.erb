@@ -32,7 +32,7 @@
 	   <% if index > 4 %>
   		<div class='label-advanced' data-position="<%= index %>">
 	   <% end %>
-			<%= raw t("#{Session.product_type}.specs.#{feat[:name].gsub(" ","")}.name") %><%= ">" if index < 4 %>
+			<%= t("#{Session.product_type}.specs.#{feat[:name].gsub(" ","")}.name") %><%= ">" if index < 4 %>
   			<% if @s.directLayout %>
   				<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat[:name] %>" data-position="<%= index %>">See Groups</div>
   			<% end %>
@@ -97,7 +97,7 @@
 	   <% if index > 4 %>
   		<div class='label-advanced' data-position="<%= index %>">
 	   <% end %>
-	<%= t('products.compare.' + heading) %><%= ">" if index < 4 %></div></div>
+	<%= t('products.compare.' + heading.gsub(" ","")) %><%= ">" if index < 4 %></div></div>
 	<% features.each do |b_feat| %>
 		<% dobj = @s.search.userdatabins.select{|udb| udb.name == b_feat}.first %>
 		<% unchecked = dobj.nil? || dobj.value == false %>
