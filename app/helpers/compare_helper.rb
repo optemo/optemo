@@ -204,6 +204,11 @@ module CompareHelper
       end                
     end    
     res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
+    res << '<div style="clear: both; height: 1px; width: 520px; margin: 2px auto; text-align: center;"><hr style="color: #ccc" size="1px;" noshade="noshade" /></div></div>' if open && !@s.directLayout
+    res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
+    res << "<div id='navigator_bar_bottom'>"
+    res << "<div id='navtitle'>#{prods.size.to_s + ' ' + navtitle}</div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div><div style='clear:both;'></div>"
+	
 end
   
   
