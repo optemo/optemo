@@ -7,7 +7,7 @@
 	<div id="navtitle"><div style="font-size: 30px; float:left; margin-right: 7px; font-weight: bold;">
 	<%= Session.search.products_size %><br><%= Session.search.products_size < ContSpec.all.length ? raw("<div style=\"font-size:0.7em;\">Out of #{ContSpec.all.length} available</div>") : "" %></div><%= raw navtitle %></div><%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn'})  %>
 </div>
-<ul id="sorting_method_box" class="optemo_bluesubheading"><li><span style="width: 50px;"><b><%= t("products.sortby") %></b></span></li><%=raw sortbyList %></ul>
+<ul id="sorting_method_box" class="optemo_bluesubheading"><li><span style="width: 65px;"><b><%= t("products.sortby") %></b></span></li><%=raw sortbyList %></ul>
 </div>
 
 <div id="hero">
@@ -33,7 +33,7 @@
 		<% if ContSpec.cache_all(hero.id)["customerRating"] > 0 %>
 			<div class="stars" data-stars="<%= ContSpec.cache_all(hero.id)["customerRating"] %>"></div>
 		<% end %>
-		    <div style='margin-top: 50px'><%= link_to image_tag('shopnow.gif'), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{hero.sku}", {:'data-sku' =>hero.sku, :class => 'spacer shop-now addcart', :'data-name' =>hero.small_title} %></div>
+		    <div style='margin-top: 50px'><%= link_to image_tag("shopnow#{fr?}.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{hero.sku}", {:'data-sku' =>hero.sku, :class => 'spacer shop-now addcart', :'data-name' =>hero.small_title} %></div>
 	</div>
 </div>
 
