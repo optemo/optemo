@@ -1371,9 +1371,10 @@ margin-top:0;
    display: inline-block;
    padding: 4px 0;
    color: blue;
-   position: relative;
    text-decoration: none;
+   position: relative;
    }
+
 /* Global Button */
  #optemo_embedder #IE .awesome_reset,#optemo_embedder #IE .awesome_reset:visited,  #optemo_embedder #IE .awesome_reset_grey, #optemo_embedder #IE .awesome_reset_grey:visited {
 	border: none;
@@ -1691,6 +1692,7 @@ margin-top:0;
    font-size: 0.9em;
    font-weight: bold;
 }
+
 
 #optemo_embedder .pagination-container {
    position: relative;
