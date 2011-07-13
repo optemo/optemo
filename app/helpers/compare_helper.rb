@@ -201,10 +201,11 @@ module CompareHelper
         if prods.size > 0
           res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
         end
-      end                
+      end
+      res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto;"></div>' if (i%3) == 2 && i!=(num -1)
     end    
-    res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
-    res << '<div style="clear: both; height: 1px; width: 520px; margin: 2px auto; text-align: center;"><hr style="color: #ccc" size="1px;" noshade="noshade" /></div></div>' if open && !@s.directLayout
+    res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto;"></div>' if open && !@s.directLayout
+
     res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
     res << "<div id='navigator_bar_bottom'>"
     res << "<div id='navtitle'>#{prods.size.to_s + ' ' + navtitle}</div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div><div style='clear:both;'></div>"
@@ -232,9 +233,11 @@ end
         if prods.size > 0
           res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
         end
-      end                
-    end    
-    res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
+      end
+
+    end
+    res << '<div style="clear:both;height:0;"></div></div>' if open && !@s.directLayout
+
   end
     
   def main_boxes
@@ -267,13 +270,13 @@ end
     		  #Navbox partial to draw boxes
     		  res << render(:partial => 'navbox', :locals => {:i => i, :product => @s.search.paginated_products[i]})
           if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
-            res << '<div style="clear: both;height: 1px; width: 520px; margin: 2px auto; text-align: center;"><hr style="color:#ccc;" size="1px;" noshade="noshade" /></div></div>'
+            res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin:0 auto;"></div></div>'
             open = false
           end
     		end
   		end
   	end
-  	res << '<div style="clear: both; height: 1px; width: 520px; margin: 2px auto; text-align: center;"><hr style="color: #ccc" size="1px;" noshade="noshade" /></div></div>' if open && !@s.directLayout
+  	res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;"></div></div>' if open && !@s.directLayout
     res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
     products = @s.search.paginated_products
     res << "<div id='navigator_bar_bottom'>"

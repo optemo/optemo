@@ -44,7 +44,7 @@
  	width: 181px; /*+2 for the border*/
 	background: right center url(../images/seperatorbar.png) no-repeat;*/
     overflow: hidden;
-    zoom: 1;
+    zoom: 1; /* fix IE peekaboo issue */
 }
 
 #optemo_embedder .title {
