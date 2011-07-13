@@ -33,14 +33,15 @@
 //      Main Content (Right Side)       //
 //--------------------------------------*/
 
-#optemo_embedder .navbox {
+#optemo_embedder .navbox
+ {
 	font-size: 0.85em;
 	float: left;
 	position: relative;
-	margin-right: 4px; 
-	margin-bottom: 3px;
-	height:330px;
-	width: 181px; /*+2 for the border*/
+	margin-right: 3px; 
+	margin-bottom: 4px;
+/*	height:330px;*/
+ 	width: 181px; /*+2 for the border*/
 	background: right center url(../images/seperatorbar.png) no-repeat;*/
 }
 #optemo_embedder .title {
@@ -108,9 +109,10 @@
 }
 */
 #optemo_embedder .topbar {
-	height: 263px;
+	height: 273px;
 	text-align:center;
 }
+
 #optemo_embedder .bottombar {
 	clear: left;
 	margin-top: 3px;
