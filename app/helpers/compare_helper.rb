@@ -361,4 +361,9 @@ end
     end
     sortbyList.join("&nbsp;")
   end
+
+  def capitalize_brand_name(name)
+    brand_name = name.split(' ').map{|bn| bn=(bn==bn.upcase ? bn.capitalize : bn)}.join(' ')
+  end
+
 end

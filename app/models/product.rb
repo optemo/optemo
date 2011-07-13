@@ -87,7 +87,11 @@ class Product < ActiveRecord::Base
   end
   
   def small_title
-    [brand,model || cat_specs.cache_all(id)["model"] || cat_specs.cache_all(id)["mpn"]].join(" ")
+    str = [brand,model || cat_specs.cache_all(id)["model"] || cat_specs.cache_all(id)["mpn"]].join(" ")
+    if str.size >= 40
+      str = str[0,37] + '...'
+    end
+    str
   end
 
   def mobile_descurl

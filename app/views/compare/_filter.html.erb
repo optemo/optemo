@@ -32,7 +32,7 @@
 	   <% if index > 4 %>
   		<div class='label-advanced' data-position="<%= index %>">
 	   <% end %>
-			<%= t("#{Session.product_type}.specs.#{feat[:name].gsub(" ","")}.name") %><%= ">" if index < 4 %>
+			<%= t("#{Session.product_type}.specs.#{feat[:name].gsub(" ","")}.name") %><%= " >" if index < 4 %>
   			<% if @s.directLayout %>
   				<div id="groupby<%= index %>" class="groupby" data-feat="<%= feat[:name] %>" data-position="<%= index %>">See Groups</div>
   			<% end %>
@@ -56,7 +56,7 @@
 			<% checked = chosen_cats.include?(k) %>
   			<div data-position="<%= index %>" <%=raw 'style="font-weight:bold;"' if checked %><%=raw 'class=" disabled"' if available_count == 0 %>>
 	  			<%= check_box_tag "superfluous[#{k}]", "1", checked, :disabled => (available_count == 0) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :'data-feat' => feat[:name], :'data-opt' => k %>
-				<%= (available_count == 0) ?	t("#{Session.product_type}.specs.i#{k}.name",:default=>k) : link_to(t("#{Session.product_type}.specs.#{k}.name", :default=>k), "#", :class => "binary_filter_text") %>
+				<%= (available_count == 0) ?	t("#{Session.product_type}.specs.i#{k}.name",:default=>(feat[:name]=='brand'?capitalize_brand_name(k):k)) : link_to(t("#{Session.product_type}.specs.#{k}.name", :default=>(feat[:name]=='brand'?capitalize_brand_name(k):k)), "#", :class => "binary_filter_text") %>
 	  			<span class="av_count"><%= "(#{available_count})" unless checked %></span>
 	  		</div>
 			<% end %>
@@ -97,7 +97,7 @@
 	   <% if index > 4 %>
   		<div class='label-advanced' data-position="<%= index %>">
 	   <% end %>
-	<%= t('products.compare.' + heading.gsub(" ","")) %><%= ">" if index < 4 %></div></div>
+	<%= t('products.compare.' + heading.gsub(" ","")) %><%= " >" if index < 4 %></div></div>
 	<% features.each do |b_feat| %>
 		<% dobj = @s.search.userdatabins.select{|udb| udb.name == b_feat}.first %>
 		<% unchecked = dobj.nil? || dobj.value == false %>
