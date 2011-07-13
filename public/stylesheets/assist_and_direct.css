@@ -362,6 +362,9 @@ div#division {
 	display:inline-block;
    position: relative;
 }
+#optemo_embedder #IE #ajaxfilter {
+   _padding-bottom: 35px;
+   }
 #optemo_embedder .categorical {
 	border: 1px solid #ccc;
 	overflow: auto;
