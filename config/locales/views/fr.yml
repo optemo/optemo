@@ -35,6 +35,8 @@ fr:
             unknown:        "Unknown"
             save:           "Épargnez"
             seemore:        "Voir Plus"
+            AdvancedSearch: "Recherche Avancée"
+            compatibility:  "Compatibilité"
         show:
             title:          "Renseignements sur le produit"
             noimage:        "Image non disponible"
