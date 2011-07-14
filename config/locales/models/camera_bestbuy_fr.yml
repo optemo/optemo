@@ -80,4 +80,12 @@ fr:
             orders_factor:  
                 name:               "Qui Se Vend Le Mieux"        
             AdvancedSearch:
-                name:               "Recherche Avancée"                            
+                name:               "Recherche Avancée"       
+            '22474':
+                name:               "Point and Shoot"                
+            '28382':
+                name:               "Waterproof"
+            '28381':
+                name:               "Ultra Zoom"
+            '20220':
+                name:               "Advanced Compact"                         
