@@ -37,6 +37,7 @@ fr:
             seemore:        "Voir Plus"
             AdvancedSearch: "Recherche Avancée"
             compatibility:  "Compatibilité"
+            InternalorExternal: "Interne ou externe"  
         show:
             title:          "Renseignements sur le produit"
             noimage:        "Image non disponible"
