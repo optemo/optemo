@@ -17,6 +17,7 @@
       <%= Session.search.products_size %></div><%= raw  navtitle %><br><%= Session.search.products_size < ContSpec.all.length ? raw("<div style=\"font-size:0.7em;\">" + t("#{Session.product_type}.outof", :count => ContSpec.all.length) + "</div>") : "" %></div><%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn'})  %></div>
 </div>
 -->
+<div id="navigator_bar">
 	<div id="navtitle"><div style="font-size: 30px; float:left; margin-right: 7px; font-weight: bold;">
 	<%= Session.search.products_size %><br><%= Session.search.products_size < ContSpec.all.length ? raw("<div style=\"font-size:0.7em;\">Out of #{ContSpec.all.length} available</div>") : "" %></div><%= raw navtitle %></div><%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn'})  %>
 </div>
