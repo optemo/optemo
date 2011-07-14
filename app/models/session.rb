@@ -96,7 +96,6 @@ class Session
           used_fors.each do |flag|
             if flag != 'filter' # only add features of selected product types to the filter
               self.binary[flag] << feature.name
-              self.binarygroup[heading.name] << feature.name unless self.binarygroup[heading.name].include? feature.name
             end
           end
 
@@ -178,7 +177,7 @@ class Session
         when "Binary"
           used_fors.each do |flag|
             if flag == 'filter' # only add features of selected product types to the filter
-              if is_feature_in_myfilter_categories?(feature, category_ids)
+              if is_feature_in_myfilter_categories?(feature, category_ids) && feature.has_products
                 self.binary['filter'] << feature.name
                 self.binarygroup[heading.name] << feature.name unless self.binarygroup[heading.name].include? feature.name
                 self.filters_order << {:name => heading.name, :filter_type =>  'bin', :show_order => heading.show_order} unless self.filters_order.index {|x| x[:name] == heading.name}
