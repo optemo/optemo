@@ -36,6 +36,7 @@ en:
             save:           "Save"
             AdvancedSearch: "Advanced Search"
             seemore:        "See More"
+            InternalorExternal: "Internal or External"            
         show:
             title:          "Product Details"
             noimage:        "No Image Available"
