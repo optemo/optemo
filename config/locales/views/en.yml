@@ -71,7 +71,7 @@ en:
             title:          "Compare Results"
             tabletitle:     "You've selected these products to compare"
             error:          "You can save only up to 4 products at a time"  
-            proddetails:    "Product Details"
+            proddetails:    "Specifications"
             remove:         "Remove"
             morespecs:      "More Specs"
             lessspecs:      "Less Specs"
