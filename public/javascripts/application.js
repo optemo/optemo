@@ -790,11 +790,12 @@ optemo_module = (function (my){
 
     	    // If this is the last one, take the comparison screen down too
     	    if ($('.comparisonmatrix:first .compare_row:first .columntitle').length <= 1) {
+		my.changeNavigatorCompareBtn(0);
     		my.removeSilkScreen();
     	    }
 	    else
 	    {
-		optemo_module.changeCompareTitle($('.comparisonmatrix:first .compare_row:first .columntitle').length -1 );
+		my.changeNavigatorCompareBtn($('.comparisonmatrix:first .compare_row:first .columntitle').length -1 );
 	    }
     	    return false;
     	});
