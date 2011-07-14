@@ -37,6 +37,7 @@ en:
             AdvancedSearch: "Advanced Search"
             seemore:        "See More"
             InternalorExternal: "Internal or External"            
+            rotations:      "Rotation Speed"
         show:
             title:          "Product Details"
             noimage:        "No Image Available"
