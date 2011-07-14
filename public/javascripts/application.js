@@ -1056,8 +1056,10 @@ optemo_module = (function (my){
     my.changeCompareTitle = function(len) {
 	    comp_title = $("label.comp-title");
 	    comp_title_text = comp_title.text().replace(/\([^)]*\)/, '');
-	    comp_title.text(comp_title_text + "(" + len + " Selected)");
-	
+	    if (!(typeof(optemo_french) == "undefined") && optemo_french)
+	        comp_title.text(comp_title_text + "(" + len + " Sélection)");
+	    else
+	        comp_title.text(comp_title_text + "(" + len + " Selected)"); 
 	};
 	
 	my.buildComparisonMatrix = function() {

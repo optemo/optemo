@@ -35,6 +35,10 @@ fr:
             unknown:        "Unknown"
             save:           "Épargnez"
             seemore:        "Voir Plus"
+            AdvancedSearch: "Recherche Avancée"
+            compatibility:  "Compatibilité"
+            InternalorExternal: "Interne ou externe"
+            rotations:      "Tours par minute"  
         show:
             title:          "Renseignements sur le produit"
             noimage:        "Image non disponible"
