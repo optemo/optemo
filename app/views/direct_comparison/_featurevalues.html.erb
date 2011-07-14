@@ -21,7 +21,11 @@
 		<!-- If the interesting feature should be displayed then display -->
 		<b><%= spec.to_s if spec %></b>		
 	<% else %>
-		<%= spec.to_s if spec %>
+	        <% if spec %>
+		<%= spec.to_s %>
+		<% else %>
+		&nbsp;
+		<% end %>
 	<% end %>
 </div>
 <% else #Binary -- might need to add another elsif clause for text specs later %> 
