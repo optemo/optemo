@@ -293,13 +293,12 @@ end
 	end
   def navigator_bar_bottom_special(type)
     prods = @s.search.products_landing(type)
-    res = "<div id='navigator_bar_bottom'><div id='navtitle'>#{prods.size.to_s + ' ' + navtitle}</div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div><div style='clear:both;'></div>"
+    res = "<div id='navigator_bar_bottom'><div id='navtitle'><b>#{prods.size.to_s + ' ' + navtitle}</b></div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div><div style='clear:both;'></div>"
 	    
   end
   def navigator_bar_bottom 
         products = @s.search.paginated_products
-
-    res = "<div id='navigator_bar_bottom'><div id='navtitle'>#{Session.search.products_size.to_s + ' ' + navtitle}</div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div><div style='clear:both;'></div>"
+    res = "<div id='navigator_bar_bottom'><div id='navtitle'><b>#{Session.search.products_size.to_s + ' ' + navtitle}</b></div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div><div style='clear:both;'></div>"
 
       if @s.search.products_size > 18
         res << "<div class='pagination-container'><span class='pagi-info'>#{page_entries_info(products, :entry_name =>'').gsub(/([Dd]isplaying\s*)|(\s*in\s*total)|(\<b\>)|(<\/b>)|(&nbps;)/,'')}</span>"

@@ -102,11 +102,9 @@ html {
 	border-top: 1px solid #d0d0d0;
 	border-left: 1px solid #d0d0d0;
 	border-right: 1px solid #d0d0d0;
-
-      background-image:-moz-linear-gradient(center bottom, #FEE642, #FEF9A0);
-   background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE642), to(#FEF9A0)); 
-
-   height: 75px;
+    background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
+    background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200));
+    height: 75px;
 }
 #optemo_embedder #IE #navigator_bar {
    Background: url("/images/ie_navigator_bar_bg.gif") repeat-x;
@@ -400,7 +398,11 @@ div#division {
 #optemo_embedder .categorical {
 	overflow: auto;
 	max-height: 150px;
-padding-bottom: 5px;
+    padding-bottom: 4px;
+    padding-top: 4px;
+}
+#optemo_embedder .categorical .feature {
+    padding-bottom: 1px;
 }
 * html #optemo_embedder .categorical {
    height: expression( this.scrollHeight > 150 ? "150px" : "auto" ); /* sets max-height for IE */
@@ -599,11 +601,11 @@ padding-bottom: 5px;
    padding-left: 6px;
    background-color: #FFF102;
    margin-left: -6px;
-   margin-top: 10px;
+   margin-top: 0;
    border-top: 1px #ccc solid;
    border-bottom: 1px #ccc solid;
-   background-image:-moz-linear-gradient(center bottom, #FEE541, #FEF03E);
-   background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE541), to(#FEF03E)); 
+   background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
+   background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200)); 
 
 }
 #optemo_embedder .label-advanced-title {
@@ -618,8 +620,8 @@ padding-bottom: 5px;
    margin: 6px 0 0 0;
    border-top: 1px #ccc solid;
    border-bottom: 1px #ccc solid;
-   background-image:-moz-linear-gradient(center bottom, #FEE541, #FEF03E);
-   background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE541), to(#FEF03E)); 
+   background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
+   background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200)); 
 
 }
 #optemo_embedder #IE .label, #optemo_embedder #IE .label-advanced-title {
@@ -658,10 +660,12 @@ padding-bottom: 5px;
 #optemo_embedder .unitdisp {      /* Display units of features in filters */
 	font-size: 0.8em;
 	font-weight: normal;
-   display: none;
 }
 #optemo_embedder .feature {
-    padding: 0 1px 2px 6px;
+    padding: 0 0 0 6px;
+}
+#optemo_embedder .feature_last {
+    padding: 1px 1px 4px 6px;
 }
 #optemo_embedder .feature_slider { /* relative position cause elements blow out in IE 6, so that only used in slider bar */
    position: relative;
@@ -870,7 +874,7 @@ margin-top:0;
 	width: 176px;
 	height: 100%;
 	font-size: 0.9em;
-	padding: 0 3px 0 10px;
+	padding: 0 3px 0 20px;
 	float: left;
 	position: relative;
 }
@@ -880,6 +884,7 @@ margin-top:0;
 }
 #optemo_embedder .thumbnailcell {
 	padding-top: 15px;
+	padding-right: 10px;
 /*	border-right: 1px solid #cccccc; */
 	width: 189px;
 	height: 205px;
@@ -891,11 +896,12 @@ margin-top:0;
 	height: 27px;
 	font-size: 0.9em;
 	padding-top: 3px;
+	padding-right: 10px;
 /*	border-right: solid 1px #ccc; */
 	z-index: 4;
 	position: relative;
 	float: left;
-   text-align: center;
+    text-align: center;
 }
 #optemo_embedder .bgrow {
 	height: 30px;
@@ -1393,7 +1399,7 @@ margin-top:0;
 }
 #optemo_embedder .awesome_reset_grey, 
 #optemo_embedder .awesome_reset_grey:visited {
-       background-image:-moz-linear-gradient(center bottom, #9e9e9e, #ccc);
+    background-image:-moz-linear-gradient(center bottom, #9e9e9e, #ccc);
 	background-image:-webkit-gradient(linear, left bottom, left top, from(#9e9e9e), to(#ccc));
    	display: inline-block; 
 	padding: 5px 10px; 
@@ -1407,7 +1413,7 @@ margin-top:0;
 	cursor: pointer;
 }
 
-#optemo_embedder .awesome_reset:hover, #optemo_embedder .awesome_reset_grey:hover {color:#ffff00; text-decoration: none; }
+#optemo_embedder .awesome_reset:hover, #optemo_embedder .awesome_reset_grey:hover {text-decoration: none; }
 
 .awesome_tour:hover							{ background-color: #111; color: #fff; }
 .awesome_tour:active							{ top: 1px; }

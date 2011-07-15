@@ -1705,24 +1705,25 @@ optemo_module = (function (my){
     });
 
     my.changeNavigatorCompareBtn = function (selected) {
-	if (selected > 0) {
-	    $('.nav-compare-btn').each ( function(index) {
-		$(this).removeClass('awesome_reset_grey');
-		$(this).removeClass('global_btn_grey');
-		$(this).addClass('awesome_reset');
-		$(this).addClass('global_btn');
-		$(this).text($(this).text().replace(/\d+/, selected));
-		});
-	} else {
-	    $('.nav-compare-btn').each ( function(index) {
-		$(this).removeClass('awesome_reset');
-		$(this).removeClass('global_btn');
-		$(this).addClass('awesome_reset_grey');
-		$(this).addClass('global_btn_grey');
-		$(this).text($(this).text().replace(/\d+/, 0));
-		});
-	    }
-
+    	if (selected > 0) {
+    	    $('.nav-compare-btn').each ( function(index) {
+        		$(this).removeClass('awesome_reset_grey');
+        		$(this).removeClass('global_btn_grey');
+        		$(this).addClass('awesome_reset');
+        		$(this).addClass('global_btn');
+        		$(this).text($(this).text().replace(/\d+/, selected));
+        		$(this).hover(function(){$(this).css('color', '#ffff00');}, function(){$(this).css('color', '');});
+    		});
+    	} else {
+    	    $('.nav-compare-btn').each ( function(index) {
+        		$(this).removeClass('awesome_reset');
+        		$(this).removeClass('global_btn');
+        		$(this).addClass('awesome_reset_grey');
+        		$(this).addClass('global_btn_grey');
+        		$(this).text($(this).text().replace(/\d+/, 0));
+        		$(this).unbind('mouseenter mouseleave'); // Remove the hover color change
+    		});
+        }
 	};
 	
     $('.optemo_compare_button').live('click', function(){

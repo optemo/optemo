@@ -59,6 +59,7 @@
 
 #optemo_embedder img.productimg {
 	cursor: move;
+	padding-top: 4px;
 }
 #optemo_embedder img.draganddropimage {
 	cursor: default;
