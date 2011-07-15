@@ -62,7 +62,7 @@ body {
 #optemo_embedder #leftbar h2 {
 	margin: 0;
 	font-size: 0.9em;
-	border-bottom: 1px solid #ccc;
+/*	border-bottom: 1px solid #ccc;*/
 	background-color: #E9E9E9;
 }
 #optemo_embedder a {
@@ -85,11 +85,17 @@ body {
 #optemo_embedder #navtitle {
    display: inline-block;
     *display:inline-block;
-    margin-left: auto;
-    margin-right: auto;
+    margin-left: 17px;
+    margin-top: 13px;
    
 }
-
+#optemo_embedder #navtitle .nav-number{
+   font-size: 39pt; float:left; margin-right: 7px; font-weight: bold;color: #333;
+   }
+#optemo_embedder #navtitle .nav-available-text{
+   color: #333;
+   font-size: 15pt;
+   }
 #optemo_embedder #IE #navtitle{
    display: inline-block;
    border: none;

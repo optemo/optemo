@@ -428,7 +428,7 @@ optemo_module = (function (my){
     	else
     		var data = [0.5,0.7,0.1,0,0.3,0.8,0.6,0.4,0.3,0.3];
     	//Data is assumed to be 10 normalized elements in an array
-    	var peak = 0, trans = 3, length = 170, height = 19, init = 4;
+    	var peak = 0, trans = 3, length = 170, height = 20, init = 4;
     	var step = peak + 2*trans, shapelayer = Raphael(element,length,height), h = height - 1,
 	    t = shapelayer.path({fill: "#bad0f2", stroke: "#039", opacity: 0.75});
     	t.moveTo(0,height);
