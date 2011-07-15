@@ -279,7 +279,6 @@ end
   	end
   	res << '<div style="clear:both;height:3px;width: 552px;margin-left: -1px;">&nbsp;</div></div>' if open && !@s.directLayout
     res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
-
   	res
 	end
   def navigator_bar_bottom_special(type)
@@ -289,6 +288,7 @@ end
   end
   def navigator_bar_bottom 
         products = @s.search.paginated_products
+
     res = "<div id='navigator_bar_bottom'><div id='navtitle'>#{Session.search.products_size.to_s + ' ' + navtitle}</div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div><div style='clear:both;'></div>"
 
       if @s.search.products_size > 18
