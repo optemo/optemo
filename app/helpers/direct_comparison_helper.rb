@@ -9,7 +9,7 @@ module DirectComparisonHelper
   end
   
   def box_width
-    (@products.size - 2) * 191 + 520
-    520 if @products.size <= 2
+    (@products.size - 2) * 191 + 531
+    531 if @products.size <= 2
   end
 end
