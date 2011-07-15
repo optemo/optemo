@@ -398,6 +398,11 @@ div#division {
     padding-bottom: 8px;
     padding-top: 8px;
 }
+#optemo_embedder .categorical_advanced {
+	overflow: auto;
+    padding-bottom: 8px;
+    padding-top: 8px;
+}
 #optemo_embedder .categorical .feature, #optemo_embedder .list_item {
     padding-bottom: 1px;
 }
