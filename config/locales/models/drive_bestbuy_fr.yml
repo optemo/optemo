@@ -44,6 +44,8 @@ fr:
                 name:               "En solde"
             isClearance:
                 name:               "Liquidation"
+            featured:
+                name:               "Produits Vedettes"
             isOnlineOnly:
                 name:               "En ligne seulement"
             internal:
