@@ -279,15 +279,6 @@ end
   	end
   	res << '<div style="clear:both;height:3px;width: 552px;margin-left: -1px;">&nbsp;</div></div>' if open && !@s.directLayout
     res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
-
-        products = @s.search.paginated_products
-res << "<div id='navigator_bar_bottom'><div id='navtitle'>#{Session.search.products_size.to_s + ' ' + navtitle}</div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div><div style='clear:both;'></div>"
-
-      if @s.search.products_size > 18
-        res << "<div class='pagination-container'><span class='pagi-info'>#{page_entries_info(products, :entry_name =>'').gsub(/([Dd]isplaying\s*)|(\s*in\s*total)|(\<b\>)|(<\/b>)|(&nbps;)/,'')}</span>"
-        res << "#{will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :inner_window=>1, :outer_window=>-4}).gsub(/\.{3}/,'').sub(/>/,'><span>Page:&nbsp;</span>')}<a href='#' id='back-to-top-bottom'>"+t("products.backtotop")+"</a></div>"
-      end
-    
   	res
 	end
   def navigator_bar_bottom_special(type)
@@ -296,14 +287,14 @@ res << "<div id='navigator_bar_bottom'><div id='navtitle'>#{Session.search.produ
 	    
   end
   def navigator_bar_bottom 
+        products = @s.search.paginated_products
 
-    ''
-    # res = "<div id='navigator_bar_bottom'><div id='navtitle'>#{Session.search.products_size.to_s + ' ' + navtitle}</div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div><div style='clear:both;'></div>"
+    res = "<div id='navigator_bar_bottom'><div id='navtitle'>#{Session.search.products_size.to_s + ' ' + navtitle}</div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div><div style='clear:both;'></div>"
 
-    #   if @s.search.products_size > 18
-    #     res << "<div class='pagination-container'><span class='pagi-info'>#{page_entries_info(products, :entry_name =>'').gsub(/([Dd]isplaying\s*)|(\s*in\s*total)|(\<b\>)|(<\/b>)|(&nbps;)/,'')}</span>"
-    #     res << "#{will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :inner_window=>1, :outer_window=>-4}).gsub(/\.{3}/,'').sub(/>/,'><span>Page:&nbsp;</span>')}<a href='#' id='back-to-top-bottom'>"+t("products.backtotop")+"</a></div>"
-    #   end
+      if @s.search.products_size > 18
+        res << "<div class='pagination-container'><span class='pagi-info'>#{page_entries_info(products, :entry_name =>'').gsub(/([Dd]isplaying\s*)|(\s*in\s*total)|(\<b\>)|(<\/b>)|(&nbps;)/,'')}</span>"
+        res << "#{will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :inner_window=>1, :outer_window=>-4}).gsub(/\.{3}/,'').sub(/>/,'><span>Page:&nbsp;</span>')}<a href='#' id='back-to-top-bottom'>"+t("products.backtotop")+"</a></div>"
+      end
       
   end
    

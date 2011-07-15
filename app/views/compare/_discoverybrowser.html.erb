@@ -23,7 +23,7 @@
 <ul id="sorting_method_box" class="optemo_bluesubheading"><li style="width: 50px;margin-right: 7px;"><span><b><%= t("products.sortby") %></b></span></li><%=raw sortbyList %></ul>
 
 <div id="product_content">
-	
+<div class='border-content'>	
 <%= raw mb %>
 <%= raw '</div>' if @s.directLayout %>
 </div>
@@ -32,4 +32,6 @@
 <% else %>
 <%= raw navigator_bar_bottom_special(@special_boxes) %>
 <% end %>
+
+</div>
 <div style="clear:both;"></div>
