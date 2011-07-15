@@ -47,14 +47,14 @@
       
       <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
       <% optionlist = SearchProduct.cat_counts(feat[:name],true,true).to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? -a[1]-1000000 : -a[1]) <=> (chosen_cats.include?(b[0]) ? -b[1]-1000000 : -b[1])} %>
-      <div class="categorical">
+      <div class="categorical<%= index >= 4 ? '_advanced' : ''%>">
       <% optionlist.each do |k,available_count| %>
       <% checked = chosen_cats.include?(k) %>
-        <div class="list_item" data-position="<%= index %>" <%=raw 'style="font-weight:bold;"' if checked %><%=raw 'class=" disabled"' if available_count == 0 %>>
+        <p class="list_item hanging_indent" data-position="<%= index %>" <%=raw 'style="font-weight:bold;"' if checked %><%=raw 'class=" disabled"' if available_count == 0 %>>
           <%= check_box_tag "superfluous[#{k}]", "1", checked, :disabled => (available_count == 0) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :'data-feat' => feat[:name], :'data-opt' => k %>
         <%= (available_count == 0) ?  t("#{Session.product_type}.specs.i#{k}.name",:default=>(feat[:name]=='brand'?capitalize_brand_name(k):k)) : link_to(t("#{Session.product_type}.specs.#{k}.name", :default=>(feat[:name]=='brand'?capitalize_brand_name(k):k)), "#", :class => "binary_filter_text") %>
           <span class="av_count"><%= "(#{available_count})" unless checked %></span>
-        </div>
+        </p>
       <% end %>
       </div>
       <% end %>
@@ -94,16 +94,16 @@
     <% end %>
     <div class='<%= feature_class %>' data-position="<%= index %>">
   <%= t('products.compare.' + heading.gsub(" ","")) %><%= " >" if index < 4 %></div></div>
-  <div class="categorical">
+  <div class="categorical<%= index >= 4 ? '_advanced' : ''%>">
   <% features.each do |b_feat| %>
     <% dobj = @s.search.userdatabins.select{|udb| udb.name == b_feat}.first %>
     <% unchecked = dobj.nil? || dobj.value == false %>
     <% available_count = SearchProduct.bin_count(b_feat) %>
-    <div class="feature<%= " disabled" if available_count == 0 %>" data-position="<%= index %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
+    <p class="hanging_indent feature<%= " disabled" if available_count == 0 %>" data-position="<%= index %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
       <%= check_box_tag "myfilter[#{b_feat}]", "1", !unchecked ,:disabled => (available_count == 0) ? true : false, :class => 'binary_filter', :'data-opt' => b_feat %>
       <%= (available_count == 0) ? t("#{Session.product_type}.specs.#{b_feat}.name") : link_to( t("#{Session.product_type}.specs.#{b_feat}.name"), "#", :class => "binary_filter_text") %>
       <span class="av_count"><%= "(#{available_count})" if unchecked %></span>
-    </div>
+    </p>
   <% end %>
   </div>
   <% end %>
