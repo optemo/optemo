@@ -125,7 +125,7 @@ html {
    }
 #optemo_embedder #navigator_bar a#nav_compare_btn {
    position: absolute;
-   top: 15px;
+   top: 19px;
    right: 10px;
    font-size: 12pt;
    width: 149px;
@@ -395,10 +395,10 @@ div#division {
 #optemo_embedder .categorical {
 	overflow: auto;
 	max-height: 150px;
-    padding-bottom: 4px;
-    padding-top: 4px;
+    padding-bottom: 8px;
+    padding-top: 8px;
 }
-#optemo_embedder .categorical .feature {
+#optemo_embedder .categorical .feature, #optemo_embedder .list_item {
     padding-bottom: 1px;
 }
 * html #optemo_embedder .categorical {
@@ -1037,7 +1037,7 @@ margin-top:0;
    *padding: 0;
    }
 #optemo_embedder div.moretext, #optemo_embedder div.lesstext{
-   width: 100px;
+   width: 120px;
    height: 22px;
    margin: 3px auto;
    background: #FFF220;
@@ -1132,13 +1132,13 @@ margin-top:0;
 	left: 344px;
 	position: fixed;
 	z-index: 1005;
-	background-color: #FFF102;
+/*	background-color: #FFF102;
 	border: 1px solid #444;
-	padding: 4px;
+	padding: 4px; */
 	font-size: 9pt;
 	display: none;
-	-moz-box-shadow: 1px 1px 0 #444;
-	-webkit-box-shadow: 1px 1px 0 #444;
+/*	-moz-box-shadow: 1px 1px 0 #444;
+	-webkit-box-shadow: 1px 1px 0 #444; */
 }
 * html #optemo_embedder div#loading {
 	position: absolute;
@@ -1146,7 +1146,7 @@ margin-top:0;
 	
 #optemo_embedder #loading img {
 	vertical-align: text-bottom;
-	margin-right: 4px;
+/*	margin-right: 4px;        */
 }
 #optemo_embedder div#filter_bar_loading{
     display: none;

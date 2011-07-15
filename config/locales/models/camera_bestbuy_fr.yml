@@ -43,6 +43,8 @@ fr:
                 name:               "Classement en général"
             onsale:
                 name:               "En solde"
+            featured:
+                name:               "Produits Vedettes"    
             isClearance:
                 name:               "Liquidation"
             isOnlineOnly:

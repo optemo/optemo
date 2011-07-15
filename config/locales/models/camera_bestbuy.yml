@@ -84,6 +84,8 @@ en:
                 name:               "Front and Back LCD"
             toprated:
                 name:               "Top-Rated"
+            featured:
+                name:               "Featured Products"    
             saleprice_factor:
                 name:               "Price"
             maxresolution_factor:
