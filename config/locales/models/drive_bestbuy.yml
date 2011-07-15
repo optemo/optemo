@@ -54,6 +54,8 @@ en:
                 name:               "External"
             toprated:
                 name:               "Top-Rated"
+            featured:
+                name:               "Featured Products"    
             compatibility:
                 name:               "Compatibility"
             pcmac:
