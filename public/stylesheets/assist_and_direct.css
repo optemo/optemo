@@ -108,7 +108,9 @@ html {
 
    height: 75px;
 }
-
+#optemo_embedder #IE #navigator_bar {
+   Background: url("/images/ie_navigator_bar_bg.gif") repeat-x;
+   }
 #optemo_embedder #navigator_bar_bottom {
 	padding: 0;
 	position: relative;
@@ -620,7 +622,9 @@ padding-bottom: 5px;
    background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE541), to(#FEF03E)); 
 
 }
-
+#optemo_embedder #IE .label, #optemo_embedder #IE .label-advanced-title {
+   background: url('/images/filter_label_bg.gif') repeat-x;
+   }
 
 #optemo_embedder .label-advanced {
 	font-weight: bold;
