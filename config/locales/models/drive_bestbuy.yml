@@ -88,6 +88,7 @@ en:
                 name:               "Facebook like"
             capacity:
                 name:               "Storage Capacity"
+                unit:               "GB"
             isMac:
                 name:               "Mac"
             '20237':
