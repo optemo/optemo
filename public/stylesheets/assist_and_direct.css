@@ -117,7 +117,7 @@ html {
         background-image:-moz-linear-gradient(center bottom, #d1d1d1, #e9e9e9);
 	background-image:-webkit-gradient(linear, left bottom, left top, from(#d1d1d1), to(#e9e9e9));
    margin-top: 5px;
-   height: 50px;
+   height: 49px;
 }
 
 #optemo_embedder #navigator_bar_bottom #navtitle {
@@ -140,44 +140,36 @@ html {
    font-size: 0.8em;
    font-weight: bold;
    margin-top: 12px;
+   margin-right: 5px;
    }
 #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom {
    margin-right: 12px;
    width: 120px;
-   height: 18px;
+   height: px;
    padding: 6px 0;
    text-align: center;
 
    }
+
 #optemo_embedder #IE #navigator_bar_bottom a#nav_compare_btn_bottom, #optemo_embedder #IE .seeall {
    float: none;
    }
 #optemo_embedder #IE #navigator_bar_bottom a#nav_compare_btn_bottom {
    position: absolute;
    right: 10px;
-   top: 5px;
+   padding: 8px 0;
+   top: 0;
    }
 #optemo_embedder #IE .seeall {
    position: absolute;
-   right: 161px;
-   top: 8px;
+   right: 150px;
+   top: 2px;
    }
 
 
 #optemo_embedder #IE #navigator_bar_bottom {
-   background: url(../images/navbar_gradient.png) repeat;
+   background: url(../images/ie_nav_bottom_bg.gif) repeat;
    }
-#optemo_embedder .seeall, #optemo_embedder .seeall:visited, #optemo_embedder .seeall:hover {
-   background: #FFF220;
-   -moz-border-radius: 4px; 
-   -webkit-border-radius: 4px;
-   text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
-   font-size: 0.8em;
-   padding: 5px 18px;
-   margin-right: 10px;
-   text-decoration: none;
-   border: 1px #ccc solid;
-}
    
 #optemo_embedder #sorting_method_box {
    font-size: 0.75em;
@@ -1753,7 +1745,7 @@ margin-top:0;
    margin: 12px 0 -12px;
    padding-right: 6px;
    padding-bottom: 3px;
-   margin-bottom: 0\0/; /* ie8 */
+
 	overflow:hidden;
    
    background-image:-moz-linear-gradient(center bottom, #d1d1d1, #e8e8e8);
@@ -1765,11 +1757,11 @@ margin-top:0;
    
 }
 #optemo_embedder #IE .y_bottom {
-   _position: absolute;
-   _bottom: 7px;
-   _height: 25px;
-   margin: 0 1px;
-   Background: url('/images/ie_y_bottom_bg.gif') repeat-x ;
+   *position: absolute;
+   
+   *bottom: 7px;
+   *height: 25px;
+   background: url('/images/ie_y_bottom_bg.gif') repeat-x ;
    }
 
 #optemo_embedder .pagination-container {
