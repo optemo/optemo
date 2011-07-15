@@ -184,10 +184,15 @@ module CompareHelper
   
   def special_main_boxes(type, num)
     res = ""
-    res << '<div class="rowdiv">'
-    open = true
+
+
     prods = @s.search.products_landing(type)
+    num = prods.size if type=='featured'
     for i in 0...num
+      if i % 3 == 0
+        open = true
+        res << '<div class="rowdiv">'
+      end
       case type
       when "featured"
         if prods.size > 0    
@@ -202,9 +207,14 @@ module CompareHelper
           res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)}) unless prods[i].nil?
         end
       end
-      res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto;"></div>' if (i%3) == 2 && i!=(num -1)
+      if (i%3) == 2
+        if i != (num -1)
+          res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto;"></div></div>'
+          open = false
+        end
+      end
     end    
-    res << '<div style="clear:both;height:0;"></div>' if open && !@s.directLayout
+    res << '<div style="clear:both;height:0;"></div></div>' if open && !@s.directLayout
 
     res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
     
@@ -294,7 +304,7 @@ end
         res << "<div class='pagination-container'><span class='pagi-info'>#{page_entries_info(products, :entry_name =>'').gsub(/([Dd]isplaying\s*)|(\s*in\s*total)|(\<b\>)|(<\/b>)|(&nbps;)/,'')}</span>"
         res << "#{will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :inner_window=>1, :outer_window=>-4}).gsub(/\.{3}/,'').sub(/>/,'><span>Page:&nbsp;</span>')}<a href='#' id='back-to-top-bottom'>"+t("products.backtotop")+"</a></div>"
       end
-      
+    res
   end
    
 	def adjustingfilters
