@@ -279,7 +279,6 @@ end
   	end
   	res << '<div style="clear:both;height:3px;width: 552px;margin-left: -1px;">&nbsp;</div></div>' if open && !@s.directLayout
     res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
-
   	res
 	end
   def navigator_bar_bottom_special(type)

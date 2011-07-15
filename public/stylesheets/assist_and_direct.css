@@ -37,7 +37,11 @@ html {
     padding: 4px 0 5px 37px;
 }
 
-#optemo_embedder #product_content, #optemo_embedder #main #hero {
+#optemo_embedder #main #hero {
+   border: 1px solid #d0d0d0;
+   }
+
+#optemo_embedder #product_content .border-content {
    border: 1px solid #d0d0d0;
    }
 
