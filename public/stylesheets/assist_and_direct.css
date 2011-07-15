@@ -420,6 +420,13 @@ div#division {
 #optemo_embedder .av_count{
 	font-size: 0.85em;
 }
+
+#optemo_embedder .hanging_indent {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    text-indent: -18px;
+    margin-left: 18px;
+}
 /*--------------------------------------//
 //         Drag And Drop Compare        //
 //--------------------------------------*/
