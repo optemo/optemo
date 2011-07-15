@@ -1390,7 +1390,16 @@ optemo_module = (function (my){
 
 		//Show the spinner up top
 		t = $('#loading');
-		t.css("left",(document.body.clientWidth-t.width())/2+'px').show();
+        var viewportwidth, viewportheight;
+        if (typeof window.innerWidth != 'undefined') {  // (mozilla/netscape/opera/IE7/etc.)
+            viewportwidth = window.innerWidth,
+            viewportheight = window.innerHeight;
+        } else { // IE6 and others
+            viewportwidth = document.getElementsByTagName('body')[0].clientWidth,
+            viewportheight = document.getElementsByTagName('body')[0].clientHeight;
+        }
+        if (height < 100) height = document.body.clientHeight / 2;
+		t.css({left: viewportwidth/2 + 'px', top : viewportheight/2 + 'px'}).show();
 	}
 	
 	my.stop_spinner = function() {
