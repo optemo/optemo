@@ -606,15 +606,18 @@ div#division {
 	clear: left;
 	padding-top: 6px;
 	padding-bottom: 4px;
-   padding-left: 6px;
-   background-color: #FFF102;
-   margin-left: -6px;
-   margin-top: 0;
-   border-top: 1px #ccc solid;
-   border-bottom: 1px #ccc solid;
-   background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
-   background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200)); 
-
+    padding-left: 6px;
+    background-color: #FFF102;
+    margin-left: -6px;
+    margin-top: 0;
+    border-top: 1px #ccc solid;
+    border-bottom: 1px #ccc solid;
+    background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
+    background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200)); 
+}
+#optemo_embedder .label img, #optemo_embedder .label-advanced-title img {
+    position: absolute;
+    bottom: 5px;
 }
 #optemo_embedder .label-advanced-title {
 	font-weight: bold;
@@ -623,14 +626,13 @@ div#division {
 	clear: left;
 	padding-top: 6px;
 	padding-bottom: 4px;
-   padding-left: 6px;
-   background-color: #FFF102;
-   margin: 6px 0 0 0;
-   border-top: 1px #ccc solid;
-   border-bottom: 1px #ccc solid;
-   background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
-   background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200)); 
-
+    padding-left: 6px;
+    background-color: #FFF102;
+    margin: 6px 0 0 0;
+    border-top: 1px #ccc solid;
+    border-bottom: 1px #ccc solid;
+    background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
+    background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200));
 }
 #optemo_embedder #IE .label, #optemo_embedder #IE .label-advanced-title {
    background: url('/images/filter_label_bg.gif') repeat-x;
@@ -642,8 +644,8 @@ div#division {
 	clear: left;
 	padding-top: 6px;
 	padding-bottom: 4px;
-   padding-left: 6px;
-   margin-left: -6px;
+    padding-left: 6px;
+    margin-left: -6px;
 }
 
 #optemo_embedder .space {
@@ -676,10 +678,9 @@ div#division {
     padding: 1px 1px 4px 6px;
 }
 #optemo_embedder .feature_slider { /* relative position cause elements blow out in IE 6, so that only used in slider bar */
-   position: relative;
-    padding: 0 1px 2px 6px;
+    position: relative;
+    padding: 0 0 2px 6px;
 }
-
 
 #optemo_embedder .desc {
 	display: none;
@@ -1015,12 +1016,6 @@ margin-top:0;
 	text-align:center; 
 	padding:10px;
 }
-#optemo_embedder .lessspecs img {
-	/*rotation: 180deg;*/
-	-moz-transform: rotate(180deg);
-	-webkit-transform: rotate(180deg);
-	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
-}
 #optemo_embedder .closed {
 	background: url("/images/demo-spindown-closed.gif") no-repeat left center;
 	padding-left: 0;
@@ -1046,16 +1041,6 @@ margin-top:0;
     text-align: center;
     margin: 5px 0;
     *padding: 0;
-}
-#optemo_embedder div.moretext, #optemo_embedder div.lesstext{
-    width: 120px;
-    height: 22px;
-    margin: 3px auto;
-    background: #FFF220;
-    line-height: 22px;
-    -moz-border-radius: 4px; 
-    -webkit-border-radius: 4px;
-    text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
 }
 
 #optemo_embedder div.spec-capt {

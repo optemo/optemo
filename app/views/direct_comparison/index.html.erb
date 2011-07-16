@@ -69,12 +69,10 @@
 
 <div class="spacer togglespecs" style="width=<%= box_width %>px"><%= link_to '#', :class => 'toggle_specs' do %>
 	<div class="moretext">
-	<%=t('compare.index.morespecs')%>&nbsp;
-	<%= image_tag "downarrow.png" %>
+    <%= image_tag("bb_more_specs#{fr?}.gif") %>
 	</div>
 	<div class="lesstext" style="display:none;">
-	<%=t('compare.index.lessspecs')%>&nbsp;
-	<%= image_tag "downarrow.png" %>
+    <%= image_tag("bb_less_specs#{fr?}.gif") %>
 	</div>
 <% end %>
 </div>

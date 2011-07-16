@@ -14,8 +14,7 @@
   <% if feat[:filter_type] == 'cat' %>
     <% if index == 4 %>
       <div class='label-advanced-title' data-position="<%= index %>">
-        <%= t("#{Session.product_type}.specs.AdvancedSearch.name")
-      %>&nbsp;&gt;
+        <%= t("#{Session.product_type}.specs.AdvancedSearch.name") %><%= image_tag "bb_right_facing_carat#{fr?}.gif" %>
       </div>
     <% end %>
     <div class='feature'>
@@ -28,7 +27,7 @@
           <% feature_class = 'label-advanced' %>
       <% end %>
       <div class='<%= feature_class %>' data-position="<%= index %>">
-        <%= t("#{Session.product_type}.specs.#{feat[:name].gsub(" ","")}.name") %><%= " >" if index < 4 %>
+        <%= t("#{Session.product_type}.specs.#{feat[:name].gsub(" ","")}.name") %><%= image_tag "bb_right_facing_carat#{fr?}.gif" if index < 4 %>
           <% if @s.directLayout %>
             <div id="groupby<%= index %>" class="groupby" data-feat="<%= feat[:name] %>" data-position="<%= index %>">See Groups</div>
             <% end %>
@@ -93,7 +92,7 @@
         <% feature_class = 'label-advanced' %>
     <% end %>
     <div class='<%= feature_class %>' data-position="<%= index %>">
-  <%= t('products.compare.' + heading.gsub(" ","")) %><%= " >" if index < 4 %></div></div>
+  <%= t('products.compare.' + heading.gsub(" ","")) %><%= image_tag "bb_right_facing_carat#{fr?}.gif" if index < 4 %></div></div>
   <div class="categorical<%= index >= 4 ? '_advanced' : ''%>">
   <% features.each do |b_feat| %>
     <% dobj = @s.search.userdatabins.select{|udb| udb.name == b_feat}.first %>
