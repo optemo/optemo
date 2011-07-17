@@ -28,6 +28,7 @@ en:
             compare:        "COMPARE"
             NewTechnology:  "New Technology"
             VideoResolution: "Video Resolution"
+            Status:         "Status"
             status:         "Status"
             closewindow:    "Close Window"
             yes:            "Yes"

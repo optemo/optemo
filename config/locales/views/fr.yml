@@ -28,6 +28,7 @@ fr:
             compare:        "COMPARER"
             NewTechnology:  "Nouvelle technologie"
             VideoResolution:    "Résolution vidéo"
+            Status:         "État"
             status:         "État"
             closewindow:    "Fermer fenêtre"
             yes:            "Qui"

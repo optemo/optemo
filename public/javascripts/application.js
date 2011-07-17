@@ -1695,7 +1695,7 @@ optemo_module = (function (my){
         // 560 minimum (width is the first of the two parameters)
         // 2, 3, 4 ==>  513, 704, 895  (191 each)
     	if (number_of_saved_products >= 2)
-    	    width = 201 * (number_of_saved_products - 2) + 566;
+    	    width = 211 * (number_of_saved_products - 2) + 566;
     	else
     	    width = 566;
 
