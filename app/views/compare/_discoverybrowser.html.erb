@@ -1,18 +1,29 @@
 <% special = true %>
 <% case @special_boxes %>
 	<% when 'featured' %>
+		<%if Session.product_type=="camera_bestbuy"%>
 			<% mb = "<div class='optemo_bluesubheading'>"+t("#{Session.product_type}.featuredproducts")+"</div>" + special_main_boxes('featured', 20) %>
+		<%else%>
+			<% mb = "<div class='optemo_bluesubheading'>"+t("#{Session.product_type}.featuredproducts")+"</div>" + special_main_boxes('featured', 20) %>
+		<%end%>	
 	<% when 'toprated' %>
 		<% mb = "<div class='optemo_bluesubheading'>"+t("#{Session.product_type}.toprated")+"</div>" + special_main_boxes('customerRating', 18) %>
 	<% when 'bestsellers' %>
-		<% mb = "<div class='optemo_bluesubheading'>"+t("#{Session.product_type}.bestsellers")+"</div>" + special_main_boxes('orders', 18) %>
+		<% mb = "<div class='optemo_bluesubheading'>"+t("#{Session.product_type}.bestsellers")+"</div>" + special_main_boxes('orders', 18) %>		
 	<% else %>
 		<% mb = main_boxes #Calculate this before navtitle %>
 		<% special = false %>
 <% end %>
-<div id="navigator_bar">
-  <div id="navtitle"><div class='nav-number'>
-      <%= Session.search.products_size %></div><span class='nav-available-text'><%= raw  navtitle %></span><br><%= Session.search.products_size < ContSpec.all.length ? raw("<div style=\"font-size:0.7em;\">" + t("#{Session.product_type}.outof", :count => ContSpec.all.length) + "</div>") : "" %></div><%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn'})  %></div>
+
+	<%if special%>	
+	<%=raw navigator_bar_top_special(@special_boxes) %>
+	<span class='nav-available-text'><%= raw  navtitle %></span><br><%=raw("<div style=\"font-size:0.7em;\">" + t("#{Session.product_type}.outof", :count => ContSpec.all.length) + "</div>") %></div><%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn'})  %></div>
+	
+	<%else%>
+	<div id="navigator_bar">
+	  <div id="navtitle"><div class='nav-number'>
+	 <%= Session.search.products_size %></div><span class='nav-available-text'><%= raw  navtitle %></span><br><%= Session.search.products_size < ContSpec.all.length ? raw("<div style=\"font-size:0.7em;\">" + t("#{Session.product_type}.outof", :count => ContSpec.all.length) + "</div>") : "" %></div><%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn'})  %></div>
+	<%end%>
 
 <ul id="sorting_method_box" class="optemo_bluesubheading"><li style="width: 50px;margin-right: 7px;"><span><b><%= t("products.sortby") %></b></span></li><%=raw sortbyList %></ul>
 
