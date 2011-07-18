@@ -974,12 +974,10 @@ optemo_module = (function (my){
 			var t = (typeof(arguments[0]) != "undefined" && typeof(arguments[0].originalEvent) != "undefined") ? $(this) : arguments[0];
     		var whichcat = t.attr('data-feat'), feature_selected = t.attr('data-opt');
     		var feat_obj = $('#myfilter_'+whichcat);
-    		if (t.attr('checked'))
-			{	//Uncheck action
+    		if (t.attr('checked')) // It was just checked a moment ago
+			{	// Check action
 				feat_obj.val(opt_appendStringWithToken(feat_obj.val(), feature_selected, '*'));
-			}
-			else
-			{	//Check selection
+			} else { // Uncheck selection
 				feat_obj.val(opt_removeStringWithToken(feat_obj.val(), feature_selected, '*'));
         		my.trackPage('goals/filter/checkbox', {'feature_name' : feature_selected, 'filter_type' : 'brand'});
 			}
@@ -996,10 +994,10 @@ optemo_module = (function (my){
 			return false;
 		});
 
-		//$(".demo_selector select").live('change', function(){
-		//	var url = "http://"+$(".demo_selector select:last").val()+"."+$(".demo_selector select:first").val()+".demo.optemo.com";
-		//	window.location = url;
-		//});
+		/* $(".demo_selector select").live('change', function(){
+			var url = "http://"+$(".demo_selector select:last").val()+"."+$(".demo_selector select:first").val()+".demo.optemo.com";
+			window.location = url;
+		}); */
 
 		//Reset filters
 		$('.reset').live('click', function(){
@@ -1022,7 +1020,20 @@ optemo_module = (function (my){
 		    my.trackPage('goals/special_boxes', {'filter_type' : 'special_boxes'});
 		    my.ajaxcall("/compare/create", {"special_boxes" : whichSpecialBoxSelected});
             return false;
-	   });
+        });
+
+		// Showcase Products - the product banner on the landing page is paid advertising
+		$('.showcase_banner').live('click', function () {
+		    // Right now this function assumes that brand is the only filter category that the showcase banner is filtering on.
+		    var whichBrand = $(this).attr('data-brand');
+    		var feat_obj = $('#myfilter_brand');
+    		// Since it's just on the landing page, we know that there are no filters yet, 
+    		// so we can add without checking if it's already there
+			feat_obj.val(opt_appendStringWithToken(feat_obj.val(), whichBrand, '*'));
+    		my.trackPage('goals/showcase_banner', {'feature_name' : whichBrand, 'filter_type' : 'brand'});
+            submitCategorical();
+            return false;
+        });
     }
 
 	//These should be locally scoped functions, but for jquery 1.4.2 compatibility it is moved outside (specifically for the cookie-loading-to-savebar part)
@@ -1721,7 +1732,7 @@ optemo_module = (function (my){
         		$(this).addClass('awesome_reset');
         		$(this).addClass('global_btn');
         		$(this).text($(this).text().replace(/\d+/, selected));
-        		$(this).hover(function(){$(this).css('color', '#ffff00');}, function(){$(this).css('color', '');});
+//        		$(this).hover(function(){$(this).css('color', '#ffff00');}, function(){$(this).css('color', '');});
     		});
     	} else {
     	    $('.nav-compare-btn').each ( function(index) {
@@ -1730,7 +1741,7 @@ optemo_module = (function (my){
         		$(this).addClass('awesome_reset_grey');
         		$(this).addClass('global_btn_grey');
         		$(this).text($(this).text().replace(/\d+/, 0));
-        		$(this).unbind('mouseenter mouseleave'); // Remove the hover color change
+//        		$(this).unbind('mouseenter mouseleave'); // Remove the hover color change
     		});
         }
 	};
