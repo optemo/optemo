@@ -382,14 +382,12 @@ div#division {
    max-width: 777px; /* this sets the max-width value for all standards-compliant browsers */
 }
 
-
 #optemo_embedder #ajaxfilter {
-	display:inline-block;
-   position: relative;
+    display:inline-block;
 }
 #optemo_embedder #IE #ajaxfilter {
    _padding-bottom: 35px;
-   }
+}
 #optemo_embedder .categorical {
 	overflow: auto;
 	max-height: 150px;
