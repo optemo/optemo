@@ -39,25 +39,26 @@ html {
 
 #optemo_embedder #main #hero {
    border: 1px solid #d0d0d0;
-   }
+}
 
 #optemo_embedder #product_content .border-content {
    border: 1px solid #d0d0d0;
-   }
-
+}
 
 #optemo_embedder #main .rowdiv, #optemo_embedder #main #hero {
    margin-bottom: 3px;
    border: 1px solid #d0d0d0;
    zoom: 1;
-   }
+}
+#optemo_embedder .showcase_banner_div {
+   margin: 9px 0 9px 0;
+}
 #optemo_embedder #product_content .rowdiv {
    border: none;
-   
-   }
+}
 #optemo_embedder #main #hero {
    position: relative;
-   }
+}
 
 
 /*#header {
