@@ -133,7 +133,10 @@ html {
     text-align: center;
     font-weight: bold; 
 }
-
+#optemo_embedder #navigator_bar a#nav_compare_btn:hover, #optemo_embedder #navigator_bar a#nav_compare_btn:visited,
+       #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom:hover, #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom:visited {
+	  color: #fff;
+	  }
 #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom, #optemo_embedder .seeall {
 
    float: right;
@@ -142,6 +145,8 @@ html {
    margin-top: 12px;
    margin-right: 5px;
    }
+
+
 #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom {
    margin-right: 12px;
    width: 120px;
