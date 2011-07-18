@@ -602,7 +602,7 @@ div#division {
 	text-align: left;
 	position: relative;
 	clear: left;
-	padding-top: 6px;
+	padding-top: 5px;
 	padding-bottom: 4px;
     padding-left: 6px;
     background-color: #FFF102;
@@ -635,12 +635,21 @@ div#division {
 #optemo_embedder #IE .label, #optemo_embedder #IE .label-advanced-title {
    background: url('/images/filter_label_bg.gif') repeat-x;
    }
+#optemo_embedder #IE .label{
+   padding-top: 7px;
+   }
+#optemo_embedder #IE .label-advanced{
+   padding-top: 10px;
+   padding-top: 9px\0/;
+   *padding-top: 9px;
+   }
+   
 
 #optemo_embedder .label-advanced {
 	font-weight: bold;
 	text-align: left;
 	clear: left;
-	padding-top: 6px;
+	padding-top: 8px;
 	padding-bottom: 4px;
     padding-left: 6px;
     margin-left: -6px;
@@ -679,6 +688,13 @@ div#division {
     position: relative;
     padding: 0 0 2px 6px;
 }
+
+   
+   
+#optemo_embedder .feature .label img, #optemo_embedder .feature_slider .label img, #optemo_embedder .label-advanced-title img {
+   _position: static;
+   vertical-align: text-top;
+   }
 
 #optemo_embedder .desc {
 	display: none;
