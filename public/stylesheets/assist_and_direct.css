@@ -51,7 +51,8 @@ html {
    zoom: 1;
 }
 #optemo_embedder .showcase_banner_div {
-   margin: 9px 0 9px 0;
+   margin: 12px 0;
+   clear:both;
 }
 #optemo_embedder #product_content .rowdiv {
    border: none;
@@ -59,7 +60,6 @@ html {
 #optemo_embedder #main #hero {
    position: relative;
 }
-
 
 /*#header {
    padding-top: 8px;
