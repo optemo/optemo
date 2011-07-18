@@ -1732,7 +1732,7 @@ optemo_module = (function (my){
         		$(this).addClass('awesome_reset');
         		$(this).addClass('global_btn');
         		$(this).text($(this).text().replace(/\d+/, selected));
-        		$(this).hover(function(){$(this).css('color', '#ffff00');}, function(){$(this).css('color', '');});
+//        		$(this).hover(function(){$(this).css('color', '#ffff00');}, function(){$(this).css('color', '');});
     		});
     	} else {
     	    $('.nav-compare-btn').each ( function(index) {
@@ -1741,7 +1741,7 @@ optemo_module = (function (my){
         		$(this).addClass('awesome_reset_grey');
         		$(this).addClass('global_btn_grey');
         		$(this).text($(this).text().replace(/\d+/, 0));
-        		$(this).unbind('mouseenter mouseleave'); // Remove the hover color change
+//        		$(this).unbind('mouseenter mouseleave'); // Remove the hover color change
     		});
         }
 	};
