@@ -8,6 +8,10 @@ class DirectComparisonController < ApplicationController
     # These IDs come straight from id=#opt_savedproducts on the client side (comma-separated)
     @products = params[:id].split(",").map{|id| Product.cached(id)}
     # Calculate best value for each feature, to display as bold
+    # We need to create a search in order for getFilters to work. This seems like a bit of a hack but I'm not totally
+    # sure how the filter splitting code works. There is code left over that uses @s.continuous["filter"]
+    # even though it seems deprecated. Ask Ray -ZAT
+    @s.getFilters(Search.create({"action_type" => "initial"}).userdatacats)
     @bestvalue = calculateBestValues
 
     respond_to do |format|
@@ -19,7 +23,6 @@ class DirectComparisonController < ApplicationController
 private
 
   def calculateBestValues()
-    
     bestvalue = {}
     if @products.length > 1
       contspecs = {}
