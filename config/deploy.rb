@@ -1,4 +1,4 @@
-set :stages, %w(staging production crawler linode slicehost sandbox)
+set :stages, %w(staging production crawler linode slicehost sandbox slicehost2)
 require 'capistrano/ext/multistage'
 require 'bundler/capistrano'
 # The next two lines are needed for integration with Ruby Version Manager:
