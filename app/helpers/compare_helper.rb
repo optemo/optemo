@@ -401,4 +401,13 @@ end
     brand_name = name.split(' ').map{|bn| bn=(bn==bn.upcase ? bn.capitalize : bn)}.join(' ')
   end
 
+  def missing_spec_name_translation?(name)
+    missing = false
+    begin
+      I18n::translate(Session.product_type + ".specs." + name + ".name", :raise => true)
+    rescue I18n::MissingTranslationData
+      missing = true
+    end
+    missing
+  end
 end

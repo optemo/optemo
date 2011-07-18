@@ -1433,7 +1433,7 @@ margin-top:0;
     padding: 4px 0;
     color: #039;
     text-decoration: none;
-    position: relative;
+/*    position: relative;*/
 }
 #optemo_embedder .regular_reset span {
     margin-right: 4px;
