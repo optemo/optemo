@@ -384,6 +384,7 @@ div#division {
 
 #optemo_embedder #ajaxfilter {
     display:block;
+   position: relative;
 }
 #optemo_embedder #IE #ajaxfilter {
    _padding-bottom: 35px;
@@ -1772,9 +1773,7 @@ margin-top:0;
     font-weight: bold;
 }
 #optemo_embedder #IE .y_bottom {
-
    *position: absolute;
-   
    *bottom: 7px;
    *height: 25px;
    background: url('/images/ie_y_bottom_bg.gif') repeat-x ;
