@@ -387,7 +387,8 @@ div#division {
    position: relative;
 }
 #optemo_embedder #IE #ajaxfilter {
-   _padding-bottom: 35px;
+   padding-bottom: 15px;
+   _padding-bottom: 25px;
 }
 #optemo_embedder .categorical {
 	overflow: auto;
