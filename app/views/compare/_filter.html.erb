@@ -1,4 +1,4 @@
-<h2 class="y_heading">
+<div class="y_heading">
   <p class="narrow_text">
     <%= image_tag "refine_your_search#{fr?}.gif" %>
   </p>
@@ -6,8 +6,12 @@
   "nofollow", :style=>"float: right; margin-top: 0;", :title => t('products.compare.resetdesc') do %>
     <span><%= t('products.compare.reset') %></span>
   <% end %>
-</h2>
-<%= form_tag("/compare", :id => 'filter_form', :style=>'zoom:1;') do %>
+</div>
+<!--[if gte IE 6]>
+<div style="clear: both;margin-top: 15px;"></div>
+<![endif]-->
+
+<%= form_tag("/compare", :id => 'filter_form') do %>
 
 <% (0...@s.filters_order.size).each do |index| %>
 <% feat = @s.filters_order[index] %>
