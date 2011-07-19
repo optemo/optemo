@@ -1,4 +1,4 @@
-<h2 class="y_heading">
+<div class="y_heading">
   <p class="narrow_text">
     <%= image_tag "refine_your_search#{fr?}.gif" %>
   </p>
@@ -6,7 +6,10 @@
   "nofollow", :style=>"float: right; margin-top: 0;", :title => t('products.compare.resetdesc') do %>
     <span><%= t('products.compare.reset') %></span>
   <% end %>
-</h2>
+</div>
+<!-- [if gte IE 6]>
+     <div style="clear: both;margin-top: 16px;" class="space-refine-search"></div>
+<![endif]-->
 <%= form_tag("/compare", :id => 'filter_form') do %>
 
 <% (0...@s.filters_order.size).each do |index| %>
@@ -116,8 +119,8 @@
 <% end %>
 <% end # form_tag %>
 <div class="y_bottom">
-  <%= link_to "/", :class => "reset regular_reset", :rel => "nofollow", :style => "float:right;overflow:hidden;height: 10px; ", :title => t('products.compare.resetdesc') do %>
-    <span style="display: block;height: 10px;"><%= t('products.compare.reset') %></span>
+  <%= link_to "/", :class => "reset regular_reset", :rel => "nofollow", :style => "float:right;", :title => t('products.compare.resetdesc') do %>
+    <span><%= t('products.compare.reset') %></span>
   <% end %>
   <div style="clear:both;height: 0;"></div>
 </div>
