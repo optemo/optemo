@@ -383,7 +383,7 @@ div#division {
 }
 
 #optemo_embedder #ajaxfilter {
-    display:inline-block;
+    display:block;
 }
 #optemo_embedder #IE #ajaxfilter {
    _padding-bottom: 35px;
