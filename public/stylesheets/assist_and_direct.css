@@ -54,6 +54,9 @@ html {
    margin: 12px 0;
    clear:both;
 }
+#optemo_embedder  a.showcase_banner {
+   display: inline-block;
+   }
 #optemo_embedder #product_content .rowdiv {
    border: none;
 }
