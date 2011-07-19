@@ -7,7 +7,9 @@
     <span><%= t('products.compare.reset') %></span>
   <% end %>
 </div>
-
+<!-- [if gte IE 6]>
+     <div style="clear: both;margin-top: 16px;" class="space-refine-search"></div>
+<![endif]-->
 <%= form_tag("/compare", :id => 'filter_form') do %>
 
 <% (0...@s.filters_order.size).each do |index| %>
