@@ -35,9 +35,10 @@
 		<% end %>
 		    <div style='margin-top: 50px'><%= link_to image_tag('shopnow.gif'), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{hero.sku}", {:'data-sku' =>hero.sku, :class => 'spacer shop-now addcart', :'data-name' =>hero.small_title} %></div>
 	</div>
+    <div style='clear:both; width:0;height: 0;'></div>   
 </div>
 
-<div style='clear:both; width:0'></div>   
+
 <% if @s.product_type == 'camera_bestbuy' %><div class='showcase_banner_div'><%= link_to image_tag("group_bar-banner#{fr?}.jpg"), '#', :class => 'showcase_banner', :"data-brand" => "Canon" %></div><% end %>
 <div class='optemo_bluesubheading'><%=t("#{Session.product_type}.featuredproducts")%> &nbsp;<a href="#" class="optemo_special_boxes" data-special-boxes="featured">See more</a></div>
 <%= raw mb['featured'] %>
