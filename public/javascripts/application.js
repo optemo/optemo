@@ -396,6 +396,22 @@ optemo_module = (function (my){
 
     // Submit a categorical filter, e.g. brand.
     function submitCategorical(){
+        //Serialize an form into a hash, Warning: duplicate keys are dropped
+        $.fn.serializeObject = function(){
+            var o = {};
+            var a = this.serializeArray();
+            $.each(a, function() {
+                if (o[this.name] !== undefined) {
+                    if (!o[this.name].push) {
+                        o[this.name] = [o[this.name]];
+                    }
+                    o[this.name].push(this.value || '');
+                } else {
+                    o[this.name] = this.value || '';
+                }
+            });
+            return o;
+        };
         var selections = $("#filter_form").serializeObject();
         $.each(selections, function(k,v){
             if(k.match(/(^superfluous)/) || v == "") {
@@ -1483,25 +1499,7 @@ optemo_module = (function (my){
             my.initializeVariables();
             // This initializes the jquery history plugin. Note that the plugin was modified for use with our application javascript (details in jquery.history.js)
             $.history.init(optemo_module.ajaxsend);
-            
-            //Serialize an form into a hash, Warning: duplicate keys are dropped
-            $.fn.serializeObject = function()
-            {
-                var o = {};
-                var a = this.serializeArray();
-                $.each(a, function() {
-                    if (o[this.name] !== undefined) {
-                        if (!o[this.name].push) {
-                            o[this.name] = [o[this.name]];
-                        }
-                        o[this.name].push(this.value || '');
-                    } else {
-                        o[this.name] = this.value || '';
-                    }
-                });
-                return o;
-            };
-            
+
     	    // Only load DBinit if it will not be loaded by the upcoming ajax call
     	    // Do LiveInit anyway, since timing is not important
     	    my.LiveInit();
