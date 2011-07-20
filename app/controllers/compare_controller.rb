@@ -12,7 +12,7 @@ class CompareController < ApplicationController
         hist = CGI.unescape(params[:hist]).unpack('m')[0].gsub(/\D/,'').to_i if params[:hist] && !params[:hist].blank?
         search_history = Search.find_by_parent_id(hist) if hist && params[:page].nil?
         if params[:page]
-          classVariables(Search.create({:page => params[:page], :sortby => params[:sortby], "action_type" => "nextpage"}))
+          classVariables(Search.create({:page => params[:page], :sortby => params[:sortby], "action_type" => "nextpage", "parent"=>params[:hist]}))
         elsif search_history
           #Going back to a previous search
           classVariables(search_history)
