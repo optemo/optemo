@@ -1777,8 +1777,9 @@ optemo_module = (function (my){
 
     // Reset button clicked to landing page
     $('a.reset').live('click', function() {
-	location = "/";
+	
 	optemo_module.ajaxsend(null,'/', {landing:'true'});
+	window.location.hash = "";
 	return false;
 	});
     return my;
