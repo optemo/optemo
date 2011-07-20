@@ -87,11 +87,7 @@ class Product < ActiveRecord::Base
   end
   
   def small_title
-    str = [brand,model || cat_specs.cache_all(id)["model"]].join(" ")
-    if str.size >= 50
-      str = str[0,37] 
-    end
-    str
+    [brand.split(' ').map{|bn| bn=(bn==bn.upcase ? bn.capitalize : bn)}.join(' '), cat_specs.cache_all(id)["model"]].join(" ")
   end
 
   def mobile_descurl
