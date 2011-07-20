@@ -1775,13 +1775,11 @@ optemo_module = (function (my){
     	return false;
 	});
 
-    // Reset button clicked to landing page
-    $('a.reset').live('click', function() {
-	
-	optemo_module.ajaxsend(null,'/', {landing:'true'});
-	window.location.hash = "";
-	return false;
-	});
+    // // Reset button clicked to landing page
+    // $('a.reset').live('click', function(event) {
+    // 	optemo_module.ajaxsend(null,'/', {landing:'true'});
+    // 	return false;
+    // 	});
     return my;
 })(optemo_module || {});
     
