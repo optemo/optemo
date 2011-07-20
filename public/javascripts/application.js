@@ -1240,6 +1240,25 @@ optemo_module = (function (my){
         if (OPT_REMOTE) {
             //Embedded Layout
             myurl = (myurl != null) ? myurl.replace(/http:\/\/[^\/]+/,'') : "/compare"
+            // There is a bug in the JSONP implementation. If there is a "?" in the URL, with parameters already on it,
+            // this JSONP implementation will add another "?" for the second set of parameters (specified in mydata).
+            // For now, just check for a "?" and take those parameters into mydata, 
+            // then strip them and the '?' from the URL. -ZAT July 20, 2011
+            if (myurl.match(/\?/)) {
+                var url_hash_to_merge = {};
+                var url_params_to_merge = myurl.slice(myurl.indexOf('?') + 1).split('&');
+                for(var i = 0; i < url_params_to_merge.length; i++)
+                {
+                    var hash = url_params_to_merge[i].split('=');
+                    url_hash_to_merge[hash[0]] = hash[1];
+                }
+                for (i in url_hash_to_merge) {
+                    if(!mydata.hasOwnProperty(i)) { // Do not merge properties that already exist.
+                        mydata[i] = url_hash_to_merge[i];
+                    }
+                }                                          
+                myurl = myurl.slice(0, myurl.indexOf('?'));
+            }                    
             JSONP.get(OPT_REMOTE+myurl,mydata,my.ajaxhandler);
         } else {
             $.ajax({
