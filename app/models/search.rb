@@ -313,9 +313,6 @@ class Search < ActiveRecord::Base
       #Browse similar button
       self.seesim = p["cluster_hash"] # current products
       duplicateFeatures(old_search)
-    when "featured"
-        debugger
-      @userdatacats << Userdatacat.new({:name => "featured", :value => '1'})
     when "extended"
       self.seesim = p["extended_hash"] # current products
       createFeatures(p)
