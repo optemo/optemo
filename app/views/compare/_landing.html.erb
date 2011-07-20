@@ -1,15 +1,10 @@
 <div <%= 'class="listview_ungrouped"' if @s.search.groupby.nil? && @s.directLayout %> >
-<div id="navigator_bar">
 	<%mb={}%>
 	<% mb['featured'] = landing_main_boxes('featured') #Calculate mb before navtitle %>
 	<% mb['orders'] =landing_main_boxes('orders') #Calculate mb before navtitle %>
 	<% mb['customerRating'] = landing_main_boxes('customerRating')%>
-	<div id="navtitle"><div style="font-size: 30px; float:left; margin-right: 7px; font-weight: bold;">
-	<%= Session.search.products_size %><br><%= Session.search.products_size < ContSpec.all.length ? raw("<div style=\"font-size:0.7em;\">Out of #{ContSpec.all.length} available</div>") : "" %></div><%= raw navtitle %></div><%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn'})  %>
-</div>
-<ul id="sorting_method_box" class="optemo_bluesubheading"><li><span style="width: 50px;"><b><%= t("products.sortby") %></b></span></li><%=raw sortbyList %></ul>
-</div>
-
+	<div id='navigator_bar_bottom2'>
+	    <div id='navtitle'><%= Session.search.products_size.to_s + ' ' + raw(navtitle) %></div><%= link_to image_tag('see_all.gif'),root_path, :class=>"seeall" %></div>
 <div id="hero">
     <% hero = Product.find_by_id(Maybe(SearchProduct.find_hero).product_id) || Product.find_by_product_type(Session.product_type) %>
     <%= image_tag(CatSpec.cache_all(hero.id)["imglurl"], :class => "productimg", :alt => hero.small_title, :title => hero.small_title, :'data-id' => hero.id, :'data-sku' => hero.sku) %>
@@ -40,14 +35,14 @@
 
 
 <% if @s.product_type == 'camera_bestbuy' %><div class='showcase_banner_div'><%= link_to image_tag("group_bar-banner#{fr?}.jpg"), '#', :class => 'showcase_banner', :"data-brand" => "Canon" %></div><% end %>
-<div class='optemo_bluesubheading'><%=t("#{Session.product_type}.featuredproducts")%> &nbsp;<a href="#" class="optemo_special_boxes" data-special-boxes="featured"><%=t("products.compare.seemore")%></a></div>
+<div class='optemo_bluesubheading'><%=t("#{Session.product_type}.featuredproducts")%></div>
 <%= raw mb['featured'] %>
-<div class='optemo_bluesubheading'><%=t("#{Session.product_type}.bestsellers")%> &nbsp;<a href="#" class="optemo_special_boxes" data-special-boxes="bestsellers"><%=t("products.compare.seemore")%></a></div>
+<div class='optemo_bluesubheading'><%=t("#{Session.product_type}.bestsellers")%></div>
 <%= raw mb['orders']%>
-<div class='optemo_bluesubheading'><%=t("#{Session.product_type}.toprated")%> &nbsp;<a href="#" class="optemo_special_boxes" data-special-boxes="toprated"><%=t("products.compare.seemore")%></a></div>
+<div class='optemo_bluesubheading'><%=t("#{Session.product_type}.toprated")%></div>
 <%= raw mb['customerRating']%>
 <div id='navigator_bar_bottom'>
-    <div id='navtitle'><%= Session.search.products_size.to_s + ' ' + raw(navtitle) %></div><%= link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'}) %><%= link_to image_tag('see_all.gif'),root_path, :class=>"seeall" %></div>
+    <div id='navtitle'><%= Session.search.products_size.to_s + ' ' + raw(navtitle) %></div><%= link_to image_tag('see_all.gif'),root_path, :class=>"seeall" %></div>
 
 
 <div style="clear:both;"><span id="actioncount" style="display:none"><%= [Session.search.id.to_s].pack("m").chomp %></span></div>
