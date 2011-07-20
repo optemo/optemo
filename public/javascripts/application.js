@@ -741,6 +741,14 @@ optemo_module = (function (my){
 			return false;
 	    });
 
+	// Reset button clicked to landing page
+    $('a.reset').live('click', function(event) {
+    	optemo_module.ajaxsend(null,'/', {landing:'true'});
+	window.location.hash = '';
+     	return false;
+    });
+
+
     	//Show and Hide Descriptions
     	//$('.label a, .desc .deleteX').live('click', function(){
     	//	if($(this).parent().attr('class') == "desc")
@@ -1773,11 +1781,6 @@ optemo_module = (function (my){
     	return false;
 	});
 
-    // // Reset button clicked to landing page
-    // $('a.reset').live('click', function(event) {
-    // 	optemo_module.ajaxsend(null,'/', {landing:'true'});
-    // 	return false;
-    // 	});
     return my;
 })(optemo_module || {});
     

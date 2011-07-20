@@ -59,7 +59,7 @@ if (opt_history.length > 0)
 else
     var opt_options = {embedding:'true', category_id: rails_category_id, landing: true};
 JSONP.get(OPT_REMOTE, opt_options, function (data) {
-    if (scriptSource.match(/localhost/)) { // We need to do some additional work
+    if (scriptSource.match(/localhost/)||scriptSource.match(/192.168/)) { // We need to do some additional work
         var regexp_pattern, data_to_add, data_to_append, scripts, headID = document.getElementsByTagName("head")[0], script_nodes_to_append, i, images;
         // Take out all the scripts, load them on the client (consumer) page in the HEAD tag, and put the data back together
         regexp_pattern = (/<script[^>]+>/g);
