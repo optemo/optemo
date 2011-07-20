@@ -20,7 +20,6 @@
   	<% if i > 3 %>
   	  <span class="unitdisp">(<%=t("#{Session.product_type}.specs.#{feat}.unit", :default=>"") + t("#{Session.product_type}.specs.#{feat}.preunit", :default=>"") %>)</span>
   	<% end %>
-  	<%= image_tag "bb_right_facing_carat#{fr?}.gif" if i < 4 %>
   	<% if Session.directLayout %>
   		<div class="groupby" data-feat="<%= feat %>" data-position="<%= i %>">See Groups</div>
   	<% end %>		
