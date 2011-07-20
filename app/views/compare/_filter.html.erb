@@ -30,7 +30,7 @@
           <% feature_class = 'label-advanced' %>
       <% end %>
       <div class='<%= feature_class %>' data-position="<%= index %>">
-        <%= t("#{Session.product_type}.specs.#{feat[:name].gsub(" ","")}.name") %><%= image_tag "bb_right_facing_carat#{fr?}.gif" if index < 4 %>
+        <%= t("#{Session.product_type}.specs.#{feat[:name].gsub(" ","")}.name") %>
           <% if @s.directLayout %>
             <div id="groupby<%= index %>" class="groupby" data-feat="<%= feat[:name] %>" data-position="<%= index %>">See Groups</div>
             <% end %>
