@@ -1772,6 +1772,12 @@ optemo_module = (function (my){
     	}, 800);
     	return false;
 	});
+
+    // // Reset button clicked to landing page
+    // $('a.reset').live('click', function(event) {
+    // 	optemo_module.ajaxsend(null,'/', {landing:'true'});
+    // 	return false;
+    // 	});
     return my;
 })(optemo_module || {});
     

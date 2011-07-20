@@ -123,6 +123,23 @@ html {
 #optemo_embedder #navigator_bar_bottom #navtitle {
     margin: 17px 17px;
 }
+
+#optemo_embedder #navigator_bar_bottom2 {
+	padding: 0;
+	position: relative;
+	border: 1px solid #d2d2d2;
+    background-image:-moz-linear-gradient(center bottom, #d1d1d1, #e9e9e9);
+	background-image:-webkit-gradient(linear, left bottom, left top, from(#d1d1d1), to(#e9e9e9));
+   margin-bottom: 5px;
+   height: 49px;
+}
+
+#optemo_embedder #navigator_bar_bottom2 #navtitle {
+    margin: 17px 17px;
+}
+
+
+
 #optemo_embedder #navigator_bar a#nav_compare_btn {
     position: absolute;
     top: 19px;
@@ -382,13 +399,14 @@ div#division {
    max-width: 777px; /* this sets the max-width value for all standards-compliant browsers */
 }
 
+
 #optemo_embedder #ajaxfilter {
-    display:block;
+	display:inline-block;
    position: relative;
 }
 #optemo_embedder #IE #ajaxfilter {
    _padding-bottom: 35px;
-}
+   }
 #optemo_embedder .categorical {
 	overflow: auto;
 	max-height: 150px;
@@ -1432,7 +1450,7 @@ margin-top:0;
     padding: 4px 0;
     color: #039;
     text-decoration: none;
-/*    position: relative;*/
+    position: relative;
 }
 #optemo_embedder .regular_reset span {
     margin-right: 4px;
@@ -1508,12 +1526,10 @@ margin-top:0;
 	background-image:-webkit-gradient(linear, left bottom, left top, from(#cecece), to(#e9e9e9));
     border: 1px #ccc solid;
     padding: 0;
-   clear: both;
 }
 
 #optemo_embedder #IE .y_heading {
    Background: url("/images/ie_refine_search_bg.gif") repeat-x #cecece;
-   height: 75px;
 }
 
 /*
@@ -1773,7 +1789,9 @@ margin-top:0;
     font-weight: bold;
 }
 #optemo_embedder #IE .y_bottom {
+
    *position: absolute;
+   
    *bottom: 7px;
    *height: 25px;
    background: url('/images/ie_y_bottom_bg.gif') repeat-x ;

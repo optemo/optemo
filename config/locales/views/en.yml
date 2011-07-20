@@ -22,6 +22,7 @@ en:
             onsale:         "On Sale"      
             zoomout:        "Zoom out"
             clickforspecs:  "Click for product specifications"
+            clickforcompare:    "Click to compare products"
             seegroup:       "Click here to see products in this group"
             reset:          "Reset All"
             resetdesc:      "Clear all filters"
