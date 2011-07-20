@@ -1776,11 +1776,11 @@ optemo_module = (function (my){
 	});
 
     // Reset button clicked to landing page
-    $('a.reset').live('click', function() {
-	location = "/";
-	optemo_module.ajaxsend(null,'/', {landing:'true'});
-	return false;
-	});
+   // $('a.reset').live('click', function() {
+   // location = "/";
+   // optemo_module.ajaxsend(null,'/', {landing:'true'});
+   // return false;
+   // });
     return my;
 })(optemo_module || {});
     
