@@ -9,6 +9,7 @@ class CompareController < ApplicationController
     else
       # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
       if Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
+#        debugger
         hist = CGI.unescape(params[:hist]).unpack('m')[0].gsub(/\D/,'').to_i if params[:hist] && !params[:hist].blank?
         search_history = Search.find_by_parent_id(hist) if hist && params[:page].nil?
         sortby = params[:sortby] || 'relevance'
@@ -155,14 +156,19 @@ class CompareController < ApplicationController
   
   def correct_render
     if params[:ajax]
-      if @s.search.page
-          render 'page', :layout => false
-      else
-          if params[:landing]
-              render 'ajax_landing', :layout => false
-          else      
-              render 'ajax', :layout => false
-          end      
+      # Having a more efficient method of turning the pages in the pagination branch is a good idea.
+      # However, we were having troubles with reloading, say, the second page of a search (since it would not render ajax.html.erb
+      # but instead just render page.html.erb) and for the sake of bug-fixing speed I just took this out.
+      # The page.html.erb code is still around, and the javascript side in ajaxhandler() is still in application.js
+      # ZAT July 20, 2011
+      # if @s.search.page
+      #   render 'page', :layout => false
+      # else
+      if params[:landing]
+        render 'ajax_landing', :layout => false
+      else      
+        render 'ajax', :layout => false
+       # end      
       end
     else
       if Session.mobileView
