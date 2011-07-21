@@ -563,13 +563,14 @@ div#division {
 	text-decoration: none;
 }
 #optemo_embedder .ui-slider .ui-slider-handle { 
-	background:url(../../../images/sliderhandlebox.gif) no-repeat;
+	background:url(../../../images/sliderhandlebox.gif) 0 0 no-repeat;
 	/*background-color:#c0c0c0;
 	border: 1px solid #4D4D4F;*/
 	font-size: 0.7em;
 	color: black;
 	height:13px; width:16px;text-decoration:none;outline:none;position:absolute;z-index:2;
 }
+
 #optemo_embedder .ui-slider .ui-slider-range { 
 	position: absolute; 
 	z-index: 1; 
@@ -1445,13 +1446,17 @@ margin-top:0;
 .awesome_tour, .awesome_tour:visited,
 .medium_awesome_tour, .medium_awesome_tour:visited 		{ font-size: 13px; font-weight: bold; line-height: 1; text-shadow: 0 -1px 1px rgba(0,0,0,0.25); }
 
-#optemo_embedder .regular_reset, #optemo_embedder .regular_reset:visited, #optemo_embedder .regular_reset:hover {
+#optemo_embedder .regular_reset, #optemo_embedder .regular_reset:visited {
     display: inline-block;
     padding: 4px 0;
     color: #039;
     text-decoration: none;
     position: relative;
 }
+
+#optemo_embedder .regular_reset:hover {
+   text-decoration: underline;
+   }
 #optemo_embedder .regular_reset span {
     margin-right: 4px;
     font-weight: normal;
