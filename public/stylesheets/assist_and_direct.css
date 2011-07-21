@@ -185,12 +185,12 @@ html {
    }
 #optemo_embedder #IE .seeall {
    position: absolute;
-   right: 150px;
+   right: 15px;
    top: 2px;
    }
 
 
-#optemo_embedder #IE #navigator_bar_bottom {
+#optemo_embedder #IE #navigator_bar_bottom, #optemo_embedder #IE #navigator_bar_bottom2 {
    background: url(../images/ie_nav_bottom_bg.gif) repeat;
    }
    
