@@ -146,7 +146,7 @@ class CompareController < ApplicationController
   def classVariables(search)
     @s = Session
     
-    @jsonp_version = true if params[:embedding] && params[:ajax] # request.subdomains.first == "embed" || request.subdomains.first == "sandbox"
+    @jsonp_version = true if params[:embedding] # request.subdomains.first == "embed" || request.subdomains.first == "sandbox"
     @s.search = search
     @s.getFilters search.userdatacats
     if @s.directLayout
