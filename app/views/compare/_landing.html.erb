@@ -4,7 +4,7 @@
 	<% mb['orders'] =landing_main_boxes('orders') #Calculate mb before navtitle %>
 	<% mb['customerRating'] = landing_main_boxes('customerRating')%>
 	<div id='navigator_bar_top'>
-	    <div id='navtitle'><%= Session.search.products_size.to_s + ' ' + raw(navtitle) %></div><%= link_to image_tag("see_all#{fr?}.gif"),root_path, :class=>"seeall" %></div>
+	    <div id='navtitle'><%= Session.search.products_size.to_s + ' ' + raw(navtitle) %></div><%= link_to image_tag("see_all_white#{fr?}.gif"),root_path, :class=>"seeall" %></div>
 <div id="hero">
     <% hero = Product.find_by_id(Maybe(SearchProduct.find_hero).product_id) || Product.find_by_product_type(Session.product_type) %>
     <%= image_tag(CatSpec.cache_all(hero.id)["imglurl"], :class => "productimg", :alt => hero.small_title, :title => hero.small_title, :'data-id' => hero.id, :'data-sku' => hero.sku) %>

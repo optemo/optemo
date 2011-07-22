@@ -12,7 +12,7 @@
 			    <div class="saleends"><%= t('products.show.saleends')+": "%><%= l((Date.parse(CatSpec.cache_all(product.id)["saleEndDate"]) - 1.day), :format => :long) if CatSpec.cache_all(product.id)["saleEndDate"] %></div>
 			<% else %>
 				<div class="price">
-					$<%= number_with_delimiter(ContSpec.cache_all(product.id)["price"]) %>
+					<%= t('products.show.ourprice') + ":"%> $<%= number_with_delimiter(ContSpec.cache_all(product.id)["price"]) %>
 				</div>	
 			<% end %>
 			<% if ContSpec.cache_all(product.id)["customerRating"] > 0 %>

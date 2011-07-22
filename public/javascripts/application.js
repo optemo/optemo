@@ -1705,11 +1705,19 @@ optemo_module = (function (my){
     };
     
     $('.optemo_compare_checkbox').live('click', function(){
-    	if ($(this).attr('checked')) { // save the comparison item
-    	    my.loadspecs($(this).attr('data-sku'));
+        var selectedComps = my.getSelectedComparisons().length;
+    	if (selectedComps <= 5) {
+            if ($(this).attr('checked')) { // save the comparison item
+        	    my.loadspecs($(this).attr('data-sku'));
+            }
+    	    my.changeNavigatorCompareBtn(selectedComps);
+	    } else {
+	        if (typeof(optemo_french) == "undefined")
+    	        alert("The maximum number of products you can compare is 5. Please try again.");
+	        else
+    	        alert("Le nombre maximum de produits que vous pouvez comparer est de 5. Veuillez réessayer.");
+    	    $(this).attr('checked', '');
         }
-
-	    my.changeNavigatorCompareBtn(my.getSelectedComparisons().length);
 	});
 
     my.getSelectedComparisons = function () {
