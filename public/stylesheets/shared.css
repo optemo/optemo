@@ -97,8 +97,9 @@ body {
    margin-top: 7px;
    }
 #optemo_embedder #navtitle .sub-title .outof{
-   font-size: 15pt;
+   font-size: 11pt;
    color: #333;
+   margin-left: 3px;
    }
 #optemo_embedder #navtitle .nav-available-text{
    color: #333;

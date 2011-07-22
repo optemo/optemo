@@ -105,4 +105,7 @@ fr:
                 name:               "Tout Dernier Modèle"
             orders_factor:  
                 name:               "Qui Se Vend Le Mieux"        
-                  
+            drive_size_25:
+                name:               "2.5\""
+            drive_size_35:
+                name:               "3.5\""
