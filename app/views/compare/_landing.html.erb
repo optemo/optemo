@@ -3,7 +3,7 @@
 	<% mb['featured'] = landing_main_boxes('featured') #Calculate mb before navtitle %>
 	<% mb['orders'] =landing_main_boxes('orders') #Calculate mb before navtitle %>
 	<% mb['customerRating'] = landing_main_boxes('customerRating')%>
-	<div id='navigator_bar_bottom2'>
+	<div id='navigator_bar_top'>
 	    <div id='navtitle'><%= Session.search.products_size.to_s + ' ' + raw(navtitle) %></div><%= link_to image_tag("see_all#{fr?}.gif"),root_path, :class=>"seeall" %></div>
 <div id="hero">
     <% hero = Product.find_by_id(Maybe(SearchProduct.find_hero).product_id) || Product.find_by_product_type(Session.product_type) %>
