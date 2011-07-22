@@ -510,6 +510,7 @@ optemo_module = (function (my){
     			rangemin = parseInt($(this).attr('data-min'));
     			rangemax = parseInt($(this).attr('data-max'));
     		}
+	    
     		$(this).slider({
     			orientation: 'horizontal',
     	        range: false,
@@ -698,6 +699,13 @@ optemo_module = (function (my){
     			$(this).removeClass('ui-state-default').removeClass('ui-corner-all');
     			$(this).unbind('mouseenter mouseleave');
     		});
+	    // Try to text align center of max handle
+	    max_handle_text = $(this).children().last().html();
+	    max_handle_text_len = max_handle_text.length;
+	    margin_hash = {3:-5, 4:-6, 5:-7, 6:-8, 7:-9, 8:-10, 9: -11};
+	    
+	    if (max_handle_text_len >= 3)
+		$(this).children().last().html("<span style='margin-left:" + margin_hash[max_handle_text_len] + "px;'>" + max_handle_text + "</span>");
     	});
     };
 

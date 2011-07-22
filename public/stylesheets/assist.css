@@ -117,6 +117,7 @@
 	text-align:center;
    position: relative;
    overflow: hidden;
+   margin-bottom: 12px;
 }
 
 #optemo_embedder .bottombar {
