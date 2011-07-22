@@ -90,6 +90,14 @@ class Product < ActiveRecord::Base
     [brand.split(' ').map{|bn| bn=(bn==bn.upcase ? bn.capitalize : bn)}.join(' '), model || cat_specs.cache_all(id)["model"]].join(" ")
   end
 
+  def navbox_display_title
+    if small_title.length > 43
+      small_title[0..43].gsub(/\s[^\s]*$/,'')
+    else
+      small_title
+    end
+  end
+
   def mobile_descurl
     "/show/"+[id,brand,model || cat_specs.cache_all(id)["model"] || cat_specs.cache_all(id)["mpn"]].join('-').tr(' /','_-')
   end
