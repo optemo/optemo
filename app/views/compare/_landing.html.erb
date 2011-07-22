@@ -35,11 +35,11 @@
 
 
 <% if @s.product_type == 'camera_bestbuy' %><div class='showcase_banner_div'><%= link_to image_tag("group_bar-banner#{fr?}.jpg"), '#', :class => 'showcase_banner', :"data-brand" => "Canon" %></div><% end %>
-<div class='optemo_bluesubheading'><%=t("#{Session.product_type}.featuredproducts")%></div>
+<div class='optemo_bluesubheading'><%=link_to t("#{Session.product_type}.featuredproducts"), "#", :id => 'optemo_landing_featured_header' %></div>
 <%= raw mb['featured'] %>
-<div class='optemo_bluesubheading'><%=t("#{Session.product_type}.bestsellers")%></div>
+<div class='optemo_bluesubheading'><%=link_to t("#{Session.product_type}.bestsellers"), "#", :id => 'optemo_landing_bestsellers_header' %></div>
 <%= raw mb['orders']%>
-<div class='optemo_bluesubheading'><%=t("#{Session.product_type}.toprated")%></div>
+<div class='optemo_bluesubheading'><%=link_to t("#{Session.product_type}.toprated"), "#", :id => 'optemo_landing_toprated_header' %></div>
 <%= raw mb['customerRating']%>
 <div id='navigator_bar_bottom'>
     <div id='navtitle'><%= Session.search.products_size.to_s + ' ' + raw(navtitle) %></div><%= link_to image_tag("see_all#{fr?}.gif"),root_path, :class=>"seeall" %></div>
