@@ -705,7 +705,7 @@ optemo_module = (function (my){
 	    margin_hash = {3:-5, 4:-6, 5:-7, 6:-8, 7:-9, 8:-10, 9: -11};
 	    
 	    if (max_handle_text_len >= 3)
-		$(this).children().last().html("<span style='margin-left:" + margin_hash[max_handle_text_len] + "px;'>" + max_handle_text + "</span>");
+		$(this).children().last().html("<span style='margin-left:" + margin_hash[max_handle_text_len] + "px;position:relative;'>" + max_handle_text + "</span>");
     	});
     };
 

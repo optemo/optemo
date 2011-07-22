@@ -106,6 +106,7 @@ html {
     background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200));
     height: 75px;
    overflow: hidden;
+   position: relative;
 }
 
 #optemo_embedder #IE #navigator_bar {
@@ -572,6 +573,15 @@ div#division {
 	color: black;
 	height:13px; width:16px;text-decoration:none;outline:none;position:absolute;z-index:2;
 }
+
+#optemo_embedder #IE .ui-slider .ui-slider-handle {
+   overflow: available;
+   display: inline-block;
+   }
+#optemo_embedder .ui-slider .ui-slider-handle span{
+   _position: relative;
+   _display: block;
+   }
 
 #optemo_embedder .ui-slider .ui-slider-range { 
 	position: absolute; 
@@ -1134,6 +1144,7 @@ margin-top:0;
 	-moz-box-shadow: 0 -2px 16px 3px #888;
     -webkit-box-shadow: 0 -2px 16px 3px #888;
     box-shadow: 0 -2px 16px 3px #888;
+   border: 3px #ccc solid;
 }
 #optemo_embedder #info h1 {
 	font-size: 1.2em;
@@ -1142,7 +1153,6 @@ margin-top:0;
 #optemo_embedder div#info {
 	font-size: 0.8em;
 	padding: 12px 23px 22px 22px;
-	border: 1px solid #666;
 	min-width: 513px;
 }
 #optemo_embedder .mainprodimg {
@@ -1300,14 +1310,25 @@ margin-top:0;
     color: black;
 	border-bottom: 1px solid #ccc;
 	border-top: 1px solid white;
-      margin-top: -17px;
-   margin-right: -53px;
-
+   height: 0 \0/;
+   width: 0 \0/;
+   margin-top: -20px;
+   margin-right: -57px;
 }
 
+#optemo_embedder #IE .bb_poptitle a.bb_quickview_close {
+   margin-top: -21px;
+   margin-right: -26px;
+   *margin-top: 0;
+   *margin-right: 0;
+   }
 
-#optemo_embedder .bb_quickview_close img {
-
+#optemo_embedder #IE .bb_quickview_close img {
+   *margin-top: -15px;
+   *margin-right: -57px;
+   _margin-right: -68px;
+   position: relative;
+   *display: block;
 }
 #optemo_embedder a.compare {
 	float: right;
@@ -1467,7 +1488,6 @@ margin-top:0;
 }
 #optemo_embedder #IE .optemo_compare_checkbox {
     *vertical-align: middle;
-    *margin-top: -6px;
 }
 /* Global Button */
 #optemo_embedder #IE .awesome_reset,#optemo_embedder #IE .awesome_reset:visited,  #optemo_embedder #IE .awesome_reset_grey, #optemo_embedder #IE .awesome_reset_grey:visited {
