@@ -1100,7 +1100,7 @@ margin-top:0;
 //        Show page and related         //
 //--------------------------------------*/
 #optemo_embedder div#silkscreen {
- 	background-color: #9e9e9e;
+ 	background-color: #666;
   
     filter:alpha(opacity=80);
       opacity: 0.8;  
@@ -1116,18 +1116,18 @@ margin-top:0;
 	display: none;
  
 }
-    #optemo_embedder div#silkscreen {
-    filter:alpha(opacity=80);
-    opacity: 0.8;
+#optemo_embedder div#silkscreen {
+   filter:alpha(opacity=80);
+   opacity: 0.8;
 }
 
 #optemo_embedder div#filter_silkscreen {
-	background-color: black;
-	position: absolute;
-	top: 0;
-	left: 0;
-	z-index: 3;
-	display: none;
+   background-color: black;
+   position: absolute;
+   top: 0;
+   left: 0;
+   z-index: 3;
+   display: none;
 }
 
 #optemo_embedder #outsidecontainer {
@@ -1843,6 +1843,12 @@ margin-top:0;
     background: #e5e5e5;
     text-align: center;
 }
+#optemo_embedder .pagi-info {
+   margin-left: 14px;
+   }
+#optemo_embedder #back-to-top-bottom {
+   margin-right: 14px;
+   }
 #optemo_embedder .pagination {
     text-align: center;
     font-size: 0.9em;
