@@ -97,7 +97,7 @@ optemo_module = (function (my){
         my.PIWIK_ID = $('#piwikid').html();
         var category_id_hash = {'digital-cameras' : 20218,
                         'digital-tvs' : 21344, // The URL is probably not quite correct yet; this is a placeholder
-                        'harddrives' : 20232};
+                        'harddrives' : 20243};
 
         my.RAILS_CATEGORY_ID = 0;
         for (var i in category_id_hash) {
