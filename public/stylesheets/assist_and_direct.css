@@ -428,8 +428,8 @@ div#division {
 #optemo_embedder .categorical {
 	overflow: auto;
 	max-height: 150px;
-    padding-bottom: 18px;
-    padding-top: 8px;
+    padding-bottom: 20px;
+    padding-top: 10px;
 }
 #optemo_embedder .categorical_advanced {
 	overflow: auto;
