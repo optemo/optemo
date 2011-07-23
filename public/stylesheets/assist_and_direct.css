@@ -1842,6 +1842,8 @@ margin-top:0;
     padding-bottom: 3px;
 	overflow:hidden;
    margin-bottom:-4px \0/;
+   *margin-bottom: -4px;
+   _margin-bottom: -12px;
     background-image:-moz-linear-gradient(center bottom, #d1d1d1, #e8e8e8);
     background-image:-webkit-gradient(linear, left bottom, left top, from(#d1d1d1), to(#e8e8e8));
     height: 25px
