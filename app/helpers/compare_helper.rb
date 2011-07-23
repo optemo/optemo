@@ -309,7 +309,7 @@ end
 
     if @s.search.products_size > 18
         res << "<div class='pagination-container'><span class='pagi-info'>#{page_entries_info(products, :entry_name =>'').gsub(/([Dd]isplaying\s*)|(\s*in\s*total)|(&nbps;)/,'')}</span>"
-        res << "#{will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :inner_window=>1, :outer_window=>-4}).gsub(/\.{3}/,'').sub(/>/,'><span><strong>Page:&nbsp;</strong></span>')}<a href='#' id='back-to-top-bottom'>"+t("products.backtotop")+"</a></div>"
+        res << "#{will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :inner_window=>4, :outer_window=>-2}).gsub(/\.{3}/,'').sub(/>/,'><span><strong>Page:&nbsp;</strong></span>')}<a href='#' id='back-to-top-bottom'>"+t("products.backtotop")+"</a></div>"
       end
     res
   end
