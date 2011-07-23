@@ -19,7 +19,7 @@ class CompareController < ApplicationController
           #Going back to a previous search
           classVariables(search_history)
         elsif sortby # Change sorting method via navigator_bar select box
-          classVariables(Search.create({:sortby => sortby, "action_type" => "sortby"}))
+          classVariables(Search.create({:sortby => sortby, "action_type" => "sortby",  "parent"=>params[:hist]}))
         else
           #Initial clusters
           classVariables(Search.create({:sortby => sortby, "action_type" => "initial"}))
