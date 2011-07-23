@@ -58,7 +58,7 @@
 }
 
 #optemo_embedder img.productimg {
-	cursor: move;
+	cursor: pointer;
 	padding-top: 8px;
 }
 #optemo_embedder img.draganddropimage {
@@ -117,7 +117,7 @@
 	text-align:center;
    position: relative;
    overflow: hidden;
-   margin-bottom: 12px;
+   margin-bottom: 17px;
 }
 
 #optemo_embedder .bottombar {
