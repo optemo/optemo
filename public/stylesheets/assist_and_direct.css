@@ -418,11 +418,9 @@ div#division {
 }
 
 
-#optemo_embedder #ajaxfilter {
-	*display:inline-block;
 
-}
 #optemo_embedder #IE #ajaxfilter {
+   *display:inline-block;
     _padding-bottom: 7px;
 }
 #optemo_embedder .categorical {
@@ -1026,13 +1024,22 @@ margin-top:0;
 	height: 100px;
 	text-align: center;
 }
+
+
 #optemo_embedder .thumbnaillabel {
 	text-align:center;
 	padding-top: 7px;
 	color:#0A2088;
 	height: 90px;
 	line-height: 20px;
+    
 }
+
+#optemo_embedder .thumbnaillabel a.addtocart img
+{
+   margin-top: 8px;
+   }
+   
 #optemo_embedder .thumbnaildetails {
 	color: #F5000B;
 	padding-bottom:5px;
@@ -1562,6 +1569,7 @@ margin-top:0;
 {
     overflow:hidden;
     height: 75px;
+   margin-bottom:0\0/; /* IE8 */
     background-image:-moz-linear-gradient(center bottom, #cecece, #e9e9e9);
     background-image:-webkit-gradient(linear, left bottom, left top, from(#cecece), to(#e9e9e9));
     padding: 0;
@@ -1832,13 +1840,15 @@ margin-top:0;
     margin: 12px 0 -12px;
     padding-right: 6px;
     padding-bottom: 3px;
-    margin-bottom: 0\0/; /* ie8 */
 	overflow:hidden;
+   margin-bottom:-4px \0/;
     background-image:-moz-linear-gradient(center bottom, #d1d1d1, #e8e8e8);
     background-image:-webkit-gradient(linear, left bottom, left top, from(#d1d1d1), to(#e8e8e8));
     height: 25px
     font-weight: bold;
+   
 }
+
 #optemo_embedder .y_bottom a.regular_reset{
     margin: 7px 0 0;
     height: 15px;
