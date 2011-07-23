@@ -263,7 +263,7 @@ html {
     font-size: 14px;
     font-weight: bold;
     background: #D6DBF7;
-    padding: 6px;
+    padding: 6px 6px 6px 20px;  
     border-left: 1px solid #D0D0D0;
     border-right: 1px solid #D0D0D0;
     position: relative;
@@ -428,7 +428,7 @@ div#division {
 #optemo_embedder .categorical {
 	overflow: auto;
 	max-height: 150px;
-    padding-bottom: 8px;
+    padding-bottom: 18px;
     padding-top: 8px;
 }
 #optemo_embedder .categorical_advanced {
