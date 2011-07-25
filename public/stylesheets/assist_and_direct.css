@@ -1868,17 +1868,16 @@ margin-top:0;
     position: relative;
     background: #e5e5e5;
     text-align: center;
+   font-size: 12px;
 }
 #optemo_embedder .pagi-info {
    margin-left: 14px;
    }
 #optemo_embedder #back-to-top-bottom {
    margin-right: 14px;
-   font-size: 11px;
    }
 #optemo_embedder .pagination {
     text-align: center;
-    font-size: 11px;
     padding: 5px;
    *background: #e5e5e5;
 }
@@ -1905,7 +1904,6 @@ margin-top:0;
     position: absolute;
     left: 0;
     top: 0;
-    font-size: 0.8em;
     padding: 5px;
 }
 #optemo_embedder #back-to-top-bottom, #optemo_embedder #back-to-top-bottom:visited {
