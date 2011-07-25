@@ -1877,10 +1877,14 @@ margin-top:0;
    }
 #optemo_embedder .pagination {
     text-align: center;
-    font-size: 0.9em;
+    font-size: 0.7em;
     padding: 5px;
    *background: #e5e5e5;
 }
+
+#optemo_embedder .pagination a,#optemo_embedder .pagination a:hover,#optemo_embedder .pagination a:visited {
+   color: #66b4ee;
+   }
 #optemo_embedder .pagination span.gap {
     display: none;
 }
