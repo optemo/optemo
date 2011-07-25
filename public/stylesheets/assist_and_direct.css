@@ -317,10 +317,13 @@ html {
 	line-height:22px;
 	margin-bottom:5px;
     overflow: visible;
+   background: url("/images/bg_outsidecontainer.gif") repeat-x ;
+   height: 40px;
 }
 #optemo_embedder .comp-title {
 	display:block;
 	float:left;
+   margin: 10px 12px;
 }
 
 /*.fv {
@@ -952,7 +955,7 @@ margin-top:0;
 	padding-right: 10px;
 /*	border-right: 1px solid #cccccc; */
 	width: 189px;
-	height: 205px;
+	height: 220px;
 	float: left;
 }
 #optemo_embedder .columntitle {
@@ -1035,10 +1038,6 @@ margin-top:0;
     
 }
 
-#optemo_embedder .thumbnaillabel a.addtocart img
-{
-   margin-top: 8px;
-   }
    
 #optemo_embedder .thumbnaildetails {
 	color: #F5000B;
@@ -1159,7 +1158,7 @@ margin-top:0;
 	height: auto;
 	z-index: 1005;
 	display: none;
-	background: url("/images/bg_outsidecontainer.gif") repeat-x white;
+	background: white;
 	-moz-box-shadow: 0 -2px 16px 3px #888;
     -webkit-box-shadow: 0 -2px 16px 3px #888;
     box-shadow: 0 -2px 16px 3px #888;
