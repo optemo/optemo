@@ -1883,16 +1883,21 @@ margin-top:0;
 }
 #optemo_embedder .pagination a img{
    vertical-align: top;
-
+   padding: 1px 0 0;
    }
 #optemo_embedder #IE .pagination a img{
+   vertical-align: sub; /* For ie9 */
+   vertical-align: top \0/;
    *vertical-align: middle;
    margin-top: 1px \0/;/*IE8*/
    *margin-top: 0;
-   
    }
-#optemo_embedder .pagination a,#optemo_embedder .pagination a:hover,#optemo_embedder .pagination a:visited {
-   color: #66b4ee;
+#optemo_embedder .pagination-container a,#optemo_embedder .pagination-container a:hover,#optemo_embedder .pagination-container a:visited {
+   color: #003399;
+   }
+#optemo_embedder .pagination a, #optemo_embedder .pagination strong {
+   padding: 3px 1px;
+   line-height: 12px;
    }
 #optemo_embedder .pagination span.gap {
     display: none;
@@ -1912,5 +1917,4 @@ margin-top:0;
     top: 0;
     background: url('/images/back-to-top-small.gif') no-repeat right center;
     padding: 5px 20px 5px 5px;
-    color: blue;
 }
