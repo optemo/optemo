@@ -1874,13 +1874,27 @@ margin-top:0;
    }
 #optemo_embedder #back-to-top-bottom {
    margin-right: 14px;
+   font-size: 11px;
    }
 #optemo_embedder .pagination {
     text-align: center;
-    font-size: 0.9em;
+    font-size: 11px;
     padding: 5px;
    *background: #e5e5e5;
 }
+#optemo_embedder .pagination a img{
+   vertical-align: top;
+
+   }
+#optemo_embedder #IE .pagination a img{
+   *vertical-align: middle;
+   margin-top: 1px \0/;/*IE8*/
+   *margin-top: 0;
+   
+   }
+#optemo_embedder .pagination a,#optemo_embedder .pagination a:hover,#optemo_embedder .pagination a:visited {
+   color: #66b4ee;
+   }
 #optemo_embedder .pagination span.gap {
     display: none;
 }
@@ -1900,6 +1914,5 @@ margin-top:0;
     top: 0;
     background: url('/images/back-to-top-small.gif') no-repeat right center;
     padding: 5px 20px 5px 5px;
-    font-size: 0.8em;
     color: blue;
 }
