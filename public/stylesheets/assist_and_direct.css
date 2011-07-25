@@ -1882,7 +1882,16 @@ margin-top:0;
     padding: 5px;
    *background: #e5e5e5;
 }
+#optemo_embedder .pagination a img{
+   vertical-align: top;
 
+   }
+#optemo_embedder #IE .pagination a img{
+   *vertical-align: middle;
+   margin-top: 1px \0/;/*IE8*/
+   *margin-top: 0;
+   
+   }
 #optemo_embedder .pagination a,#optemo_embedder .pagination a:hover,#optemo_embedder .pagination a:visited {
    color: #66b4ee;
    }
