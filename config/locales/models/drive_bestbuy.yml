@@ -101,6 +101,8 @@ en:
                 name:               "Solid State Drives"
             '20236':
                 name:               "DVD & CD Drives"
+            '29583':
+                name:               "Storage Accessories"
             'AdvancedSearch':
                 name:               "Advanced Search"
             displayDate:

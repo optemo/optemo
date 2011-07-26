@@ -99,6 +99,8 @@ fr:
                 name:               "Disques durs Solid State"
             '20236':
                 name:               "Lecteurs de DVD et CD"
+            '29583':
+                name:               "Accessoires pour stockage"
             AdvancedSearch:
                 name:               "Recherche Avancée"
             displayDate:
