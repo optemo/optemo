@@ -21,7 +21,7 @@ fr:
             rembrandfilter: "Retirer le filtre de marque"  
             onsale:         "En solde"       
             zoomout:        "Zoom arrière"
-            clickforcompare:    "Click to compare products"
+            clickforcompare:    "Cliquer pour comparer les produits"
             clickforspecs:  "Cliquez pour voir les spÈcifications du produit"
             seegroup:       "Cliquez ici pour voir les produits de ce groupe"   
             reset:          "Réinitialiser Tout"
@@ -41,6 +41,7 @@ fr:
             compatibility:  "Compatibilité"
             InternalorExternal: "Interne ou externe"
             rotations:      "Tours par minute"  
+            drive_size:     "Dimension du disque dur"
         show:
             title:          "Renseignements sur le produit"
             noimage:        "Image non disponible"
