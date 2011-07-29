@@ -1182,7 +1182,7 @@ optemo_module = (function (my){
                 for (var i = 0; i < checkedProducts.length; i++) {
                     var spec_value = grouped_specs[heading][spec][i];
                     if (spec_value) {
-                        if (spec_value == "No") spec_value = "-";
+                        if (spec_value == "No" || spec_value == "Non") spec_value = "-";
                         result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + " " + "spec_column_"+ i + '">' + spec_value.replace(/&/g,'&amp;') + "</div>";
                     } else {
                         //Blank Cell
