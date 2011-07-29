@@ -97,7 +97,9 @@ optemo_module = (function (my){
         my.PIWIK_ID = $('#piwikid').html();
         var category_id_hash = {'digital-cameras' : 20218,
                         'digital-tvs' : 21344, // The URL is probably not quite correct yet; this is a placeholder
-                        'harddrives' : 20243};
+                        'harddrives' : 20243,
+                        'Drives-Storage' : 20243,
+                        'lecteurs-et-stockage' : 20243};
 
         my.RAILS_CATEGORY_ID = 0;
         for (var i in category_id_hash) {
@@ -1178,11 +1180,14 @@ optemo_module = (function (my){
                 result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' leftcolumntext">' + spec.replace('&','&amp;') + ":</div>";
                 //Data
                 for (var i = 0; i < checkedProducts.length; i++) {
-                    if (grouped_specs[heading][spec][i])
-                        result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + " " + "spec_column_"+ i + '">' + grouped_specs[heading][spec][i].replace(/&/g,'&amp;') + "</div>";
-                    else
+                    var spec_value = grouped_specs[heading][spec][i];
+                    if (spec_value) {
+                        if (spec_value == "No") spec_value = "-";
+                        result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + " " + "spec_column_"+ i + '">' + spec_value.replace(/&/g,'&amp;') + "</div>";
+                    } else {
                         //Blank Cell
                         result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + " " + "spec_column_"+ i + '">&nbsp;</div>';
+                    }
                 }
                 result += "</div>";
                 

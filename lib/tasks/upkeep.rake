@@ -7,7 +7,7 @@ end
 namespace :cache do
   desc 'Clear memcache'
   task :clear => :environment do
-    Rails.cache.clear
+    Rails.cache.clear if Rails.cache && Rails.cache.respond_to?(:clear)
   end
 end
 
