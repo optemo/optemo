@@ -701,7 +701,7 @@ optemo_module = (function (my){
         // Try to text align center of max handle
         max_handle_text = $(this).children().last().html();
         max_handle_text_len = max_handle_text.length;
-        margin_hash = {3:-5, 4:-6, 5:-8, 6:-10, 7:-12, 8:-14, 9: -16};
+        margin_hash = {3:-5, 4:-9, 5:-13, 6:-17, 7:-21, 8:-25, 9: -29};
         
         if (max_handle_text_len >= 3)
         $(this).children().last().html("<span style='margin-left:" + margin_hash[max_handle_text_len] + "px;position:absolute;'>" + max_handle_text + "</span>");
