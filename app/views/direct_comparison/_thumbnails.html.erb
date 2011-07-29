@@ -7,9 +7,9 @@
    	<%= link_to thumbnails.small_title, TextSpec.cacheone(thumbnails.id, "productUrl#{fr?}"), :class => 'easylink', :'data-id' => thumbnails.id %>
 	<div class="thumbnaildetails">
     	<% if binspecs["onsale"] %>
-    		<%= t('compare.index.onsale')+(" " if fr?)+": "+number_with_delimiter(contspecs["saleprice"]) %>
+    		<%= t('compare.index.onsale')+(" " unless fr?.blank?)+": "+number_with_delimiter(contspecs["saleprice"]) %>
     	<% else %>
-    		<%= "$" unless fr? %><%= number_with_delimiter(contspecs["price"]) %><%= " $" if fr? %>
+    		<%= "$" if fr?.blank? %><%= number_with_delimiter(contspecs["price"]) %><%= " $" unless fr?.blank? %>
     	<% end %>
 	</div>
 	</div>
