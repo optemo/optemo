@@ -42,7 +42,7 @@ fr:
             InternalorExternal: "Interne ou externe"
             rotations:      "Tours par minute"  
             drive_size:     "Dimension du disque dur"
-            selectand:      "Select and "
+            selectand:      "Sélectionner et "
         show:
             title:          "Renseignements sur le produit"
             noimage:        "Image non disponible"
