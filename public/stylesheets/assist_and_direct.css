@@ -108,6 +108,7 @@ html {
     overflow: hidden;
     overflow: hidden;
     position: relative;
+  margin-bottom: 1px;
 }
 
 #optemo_embedder #IE #navigator_bar {
@@ -209,55 +210,28 @@ html {
     background: url(../images/ie_nav_bottom_bg.gif) repeat;
 }
    
-#optemo_embedder #sorting_method_box {
-    font-size: 0.75em;
-    background: #eee;
-    border-bottom: 5px #ccc solid;
-    list-style: none;
-    height: 30px;
-    padding: 0;
-    margin: 0 0 3px;    
+#optemo_embedder ul#sorting_method_box {
+  list-style-type: none;
+  font-size: 11px;
+  height: 27px;
+  padding: 13px 0 0 15px;
+  margin: 0;
+  *height: 30px;
 }
-#optemo_embedder #sorting_method_box li {
-    display: inline;
-    padding: 9px 10px 10px;
+#optemo_embedder ul#sorting_method_box li {
+  display: inline;
+  padding: 0;
 }
-#optemo_embedder #sorting_method_box a, #optemo_embedder #sorting_method_box span {
-    display: inline-block;
-    padding-top: 8px;
+#optemo_embedder ul#sorting_method_box li span.seperater{
+  padding: 0 2px;
+  }
+#optemo_embedder ul#sorting_method_box li a, #optemo_embedder ul#sorting_method_box li a:visited{
+  text-decoration: none;
+  color: #0A3498;
 }
-
-#optemo_embedder #sorting_method_box a.price_high {
-    width: 60px;
-    background: url("/images/price_sorting_arrow_down.gif") no-repeat right center;
-}
-#optemo_embedder #sorting_method_box a.price_low {
-    width: 60px;
-    background: url("/images/price_sorting_arrow_up.gif") no-repeat right center;
-}
-
-#optemo_embedder a.sortby:hover, #optemo_embedder a.sortby:visited, #optemo_embedder a.sortby {
-    text-align: center;
-    text-decoration: none; 
-} 
-#optemo_embedder li.sortby_selected {
-    font-weight: bold;
-    color: blue;
-    background: #ccc url("/images/sortby_selected.gif") no-repeat top center;
-}
-#optemo_embedder #IE #sorting_method_box a, #optemo_embedder #IE #sorting_method_box span {
-    *padding-bottom: 10px;
-}
-
-
-#optemo_embedder #IE li.sortby_selected {
-    *background: #ccc;
-}
-
-#optemo_embedder #IE li.sortby_selected span{
-    *background: #ccc url("/images/sortby_selected.gif") no-repeat top center;
-}
-
+#optemo_embedder ul#sorting_method_box li a:hover{
+  text-decoration: underline;
+  }
 .optemo_bluesubheading {
     font: Arial, Helvetica, sans-serif;
     font-size: 14px;
@@ -1502,10 +1476,10 @@ margin-top:0;
 #optemo_embedder .regular_reset span {
     margin-right: 4px;
     font-weight: normal;
-    font-size: 11px;
+    font-size: 12px;
 }
 #optemo_embedder #IE .optemo_compare_checkbox {
-    *vertical-align: middle;
+    vertical-align: middle;
 }
 /* Global Button */
 #optemo_embedder #IE .awesome_reset,#optemo_embedder #IE .awesome_reset:visited,  #optemo_embedder #IE .awesome_reset_grey, #optemo_embedder #IE .awesome_reset_grey:visited {
@@ -1864,22 +1838,23 @@ margin-top:0;
     height: 25px;
 }
 
-#optemo_embedder .pagination-container {
+#optemo_embedder .pagination-container{
     position: relative;
-    background: #e5e5e5;
+    background: #e7e7e7;
     text-align: center;
-   font-size: 12px;
+  font-size: 12px;
+  height: 33px;
+  *height: 35px;
+  border: 1px #cecece solid;
 }
-#optemo_embedder .pagi-info {
-   margin-left: 14px;
-   }
+
 #optemo_embedder #back-to-top-bottom {
    margin-right: 14px;
    }
 #optemo_embedder .pagination {
     text-align: center;
-    padding: 5px;
-   *background: #e5e5e5;
+    padding: 10px 5px;
+   *background: #e7e7e7;
 }
 #optemo_embedder .pagination a img{
    vertical-align: top;
@@ -1905,16 +1880,19 @@ margin-top:0;
 #optemo_embedder .pagination .disabled {
     display: none;
 }
+
+
 #optemo_embedder .pagi-info {
     position: absolute;
     left: 0;
     top: 0;
-    padding: 5px;
+    padding: 10px 0;
+  margin-left: 14px;
 }
 #optemo_embedder #back-to-top-bottom, #optemo_embedder #back-to-top-bottom:visited {
     position: absolute;
     right: 0;
     top: 0;
     background: url('/images/back-to-top-small.gif') no-repeat right center;
-    padding: 5px 20px 5px 5px;
+    padding: 10px 20px 5px 5px;
 }
