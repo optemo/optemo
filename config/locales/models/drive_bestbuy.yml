@@ -79,7 +79,9 @@ en:
             InternalorExternal:
                 name:               "Internal or External"
             saleprice_factor:
-                name:               "Price"
+                name:               "Price: Low to High"
+            saleprice_factor_high_to_low:
+                name:               "Price: High to Low"
             maxresolution_factor:
                 name:               "Resolution"
             opticalzoom_factor:

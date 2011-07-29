@@ -231,15 +231,15 @@ end
       case type
       when "featured"
         if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i+1].product_id)})
+          res << render(:partial => 'landing_navbox', :locals => {:i => i, :product => Product.cached(prods[i+1].product_id)})
         end
       when "orders"
         if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+          res << render(:partial => 'landing_navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
         end
       when 'customerRating'
         if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+          res << render(:partial => 'landing_navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
         end
       end
 
@@ -377,26 +377,6 @@ end
 	  end  
 	  @dist[feat]
   end
-  def sortbyList
-    sortbyList = [(Session.search.sortby=="relevance" ? "<li class='sortby_li sortby_selected'><span>" + t("products.relevance")+"</span>" : "<li class='sortby_li'>" + link_to(t("products.relevance"), "#", :'data-feat' => "relevance", :class => 'sortby')) + '</li>']
-    Session.continuous["sortby"].each_with_index do |f, i|  
-        if f == "saleprice_factor"
-             if Session.search.sortby == "saleprice_factor"
-               # We need to link to the descending sort order, but show the ascending arrow
-               sortbyList << "<li class='sortby_li sortby_selected'>" + link_to(t(Session.product_type+".specs.saleprice_factor.name"), "#", :'data-feat' => 'saleprice_factor_high', :class => 'sortby price_low') + "</li>"
-             elsif Session.search.sortby == "saleprice_factor_high"
-               # We need to link to the ascending sort order, but show the descending arrow
-               sortbyList << "<li class='sortby_li sortby_selected'>" + link_to(t(Session.product_type+".specs.saleprice_factor.name"), "#", :'data-feat' => 'saleprice_factor', :class => 'sortby price_high') + '</li>'
-             else
-               # If we haven't sorted by price yet, we should not show any arrow and link to the ascending price sort
-               sortbyList << "<li class='sortby_li'>" + link_to(t(Session.product_type+".specs.saleprice_factor.name"), "#", :'data-feat' => 'saleprice_factor', :class => 'sortby') + '</li>'
-             end
-           else
-             sortbyList << (Session.search.sortby == f ? "<li class='sortby_li sortby_selected'><span>" + t(Session.product_type+".specs."+f+".name")+"</span>" : "<li class='sortby_li'>" + link_to(t(Session.product_type+".specs."+f+".name"), "#", :'data-feat' => f, :class => 'sortby')) + '</li>'
-           end
-   end   
-     sortbyList.join("&nbsp;")   
-end      
 
   def capitalize_brand_name(name)
     brand_name = name.split(' ').map{|bn| bn=(bn==bn.upcase ? bn.capitalize : bn)}.join(' ')

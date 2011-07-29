@@ -78,7 +78,9 @@ fr:
             displayDate:
                 name:               "Tout Dernier Modèle"
             saleprice_factor:
-                name:               "Prix"     
+                name:               "Prix croissants"
+            saleprice_factor_high_to_low:
+                name:               "Prix décroissants"
             orders_factor:  
                 name:               "Qui Se Vend Le Mieux"        
             AdvancedSearch:

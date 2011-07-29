@@ -77,7 +77,9 @@ fr:
             Internal or External:
                 name:               "Interne ou externe"
             saleprice_factor:
-                name:               "Prix"   
+                name:               "Prix croissants"
+            saleprice_factor_high_to_low:
+                name:               "Prix décroissants"
             maxresolution_factor:
                 name:               "Resolution"
             opticalzoom_factor:

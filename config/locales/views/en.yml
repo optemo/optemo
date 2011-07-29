@@ -26,7 +26,7 @@ en:
             seegroup:       "Click here to see products in this group"
             reset:          "Reset All"
             resetdesc:      "Clear all filters"
-            compare:        "COMPARE"
+            compare:        "compare"
             NewTechnology:  "New Technology"
             VideoResolution: "Video Resolution"
             Status:         "Status"
@@ -41,6 +41,7 @@ en:
             InternalorExternal: "Internal or External"            
             rotations:      "Rotation Speed"
             drive_size:     "Drive Size"
+            selectand:      "Select and "
         show:
             title:          "Product Details"
             noimage:        "No Image Available"

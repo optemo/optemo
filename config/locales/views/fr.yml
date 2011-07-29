@@ -26,7 +26,7 @@ fr:
             seegroup:       "Cliquez ici pour voir les produits de ce groupe"   
             reset:          "Réinitialiser Tout"
             resetdesc:      "Supprimer tous les filtres" 
-            compare:        "COMPARER"
+            compare:        "comparar"
             NewTechnology:  "Nouvelle technologie"
             VideoResolution:    "Résolution vidéo"
             Status:         "État"
@@ -42,6 +42,7 @@ fr:
             InternalorExternal: "Interne ou externe"
             rotations:      "Tours par minute"  
             drive_size:     "Dimension du disque dur"
+            selectand:      "Sélectionnez et "
         show:
             title:          "Renseignements sur le produit"
             noimage:        "Image non disponible"
