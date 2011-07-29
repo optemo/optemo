@@ -39,7 +39,7 @@
 	float: left;
 	position: relative;
 	margin-right: 3px; 
-	margin-bottom: 4px;
+	margin-bottom: 35px;
 /*	height:330px;*/
  	width: 181px; /*+2 for the border*/
 	background: right center url(../images/seperatorbar.png) no-repeat;*/
@@ -113,7 +113,7 @@
 }
 */
 #optemo_embedder .topbar {
-	height: 273px;
+	height: 310px;
 	text-align:center;
    position: relative;
    overflow: hidden;
