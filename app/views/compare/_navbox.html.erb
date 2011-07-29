@@ -19,12 +19,12 @@
 			<div class="productspecs"><%=featuretext(product.id) %></div>
 			<% if BinSpec.cache_all(product.id)["onsale"] %>
 				<div class="saleprice">
-				<%= t('products.compare.onsale')+(fr?.blank? ? "" : " ")+": "+number_to_currency(ContSpec.cache_all(product.id)["saleprice"]) %></div>	
-				<div class="save"><%= t('products.compare.save')+(fr?.blank? ? "" : " ")+": "+ number_to_currency(ContSpec.cache_all(product.id)["price"]-ContSpec.cache_all(product.id)["saleprice"]) %></div>
-			    <div class="saleends"><%= t('products.show.saleends')+(fr?.blank? ? "" : " ")+": "%><%= l((Date.parse(CatSpec.cache_all(product.id)["saleEndDate"]) - 1.day), :format => :long) if CatSpec.cache_all(product.id)["saleEndDate"] %></div>
+				<%= t('products.compare.onsale')+(fr?.empty? ? "" : " ")+": "+number_to_currency(ContSpec.cache_all(product.id)["saleprice"]) %></div>	
+				<div class="save"><%= t('products.compare.save')+(fr?.empty? ? "" : " ")+": "+ number_to_currency(ContSpec.cache_all(product.id)["price"]-ContSpec.cache_all(product.id)["saleprice"]) %></div>
+			    <div class="saleends"><%= t('products.show.saleends')+(fr?.empty? ? "" : " ")+": "%><%= l((Date.parse(CatSpec.cache_all(product.id)["saleEndDate"]) - 1.day), :format => :long) if CatSpec.cache_all(product.id)["saleEndDate"] %></div>
 			<% else %>
 				<div class="price">
-					<%= t('products.show.ourprice') + ":"%> <%= "$" if fr?.blank %><%= number_with_delimiter(ContSpec.cache_all(product.id)["price"]) %> <%= " $" unless fr?.blank? %>
+					<%= t('products.show.ourprice') + ":"%> <%= "$" if fr?.blank %><%= number_with_delimiter(ContSpec.cache_all(product.id)["price"]) %> <%= " $" unless fr?.empty? %>
 				</div>	
 			<% end %>
 			<% if ContSpec.cache_all(product.id)["customerRating"] > 0 %>
