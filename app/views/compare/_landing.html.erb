@@ -17,8 +17,8 @@
 	<%end%> 	
 		<% if BinSpec.cache_all(hero.id)["onsale"] %>
 			<div class="saleprice">
-			<%= t('products.compare.onsale')+": "+number_to_currency(ContSpec.cache_all(hero.id)["saleprice"]) %></div>	
-			<div class="save"><%= t('products.compare.save')+": "+ number_to_currency(ContSpec.cache_all(hero.id)["price"]-ContSpec.cache_all(hero.id)["saleprice"]) %></div>
+			<%= t('products.compare.onsale')+(" " if fr?)+": "+number_to_currency(ContSpec.cache_all(hero.id)["saleprice"]) %></div>	
+			<div class="save"><%= t('products.compare.save')+(" " if fr?)+": "+ number_to_currency(ContSpec.cache_all(hero.id)["price"]-ContSpec.cache_all(hero.id)["saleprice"]) %></div>
 		    <div class="saleends"><%= t('products.show.saleends')+": "%><%= l((Date.parse(CatSpec.cache_all(hero.id)["saleEndDate"]) - 1.day), :format => :long) if CatSpec.cache_all(hero.id)["saleEndDate"] %></div>
 		<% else %>
 			<div class="price">
