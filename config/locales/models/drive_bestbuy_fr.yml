@@ -8,13 +8,13 @@ fr:
         keywords:                   "external hard drive, flash drive, portable hard drive, hard drives"
         classification:             "Lecteurs et stockage"
         navtitle:                  "Lecteur"
-        navtitle2:                   " Disponibles"
-        outof:                      "Parmi %{count} Lecteurs"
+        navtitle2:                   " disponibles"
+        outof:                      "Parmi %{count} lecteurs"
         compare:                    "Comparer"
-        seeall:                     "Visionner Tout"
-        toprated:                   "Meilleure Cote Produits"
-        bestsellers:                "Meilleurs Vendeurs"
-        featuredproducts:           "Produits Vedettes"
+        seeall:                     "Visionner tout"
+        toprated:                   "Meilleure cote produits"
+        bestsellers:                "Meilleurs vendeurs"
+        featuredproducts:           "Produits vedettes"
 
         shopnow:                    "Magasinez"        
         specs:
@@ -37,7 +37,7 @@ fr:
             color:
                 name:               "Colors"
             customerRating:
-                name:               "Customer Rating"
+                name:               "Customer rating"
                 info:               "On a scale of 1 to 5, five being the best, this is the average of our customer ratings. Items are rated 0 if they have not been reviewed."
                 unit:               "/ 5.0"
             onsale:
@@ -45,7 +45,7 @@ fr:
             isClearance:
                 name:               "Liquidation"
             featured:
-                name:               "Produits Vedettes"
+                name:               "Produits vedettes"
             isOnlineOnly:
                 name:               "En ligne seulement"
             internal:
@@ -63,7 +63,7 @@ fr:
             mac:
                 name:               "Mac"
             rotations:
-                name:               "Rotation Speed"
+                name:               "Rotation speed"
             5000rpm:
                 name:               "5000 rpm"
             5900rpm:
@@ -83,11 +83,11 @@ fr:
             maxresolution_factor:
                 name:               "Resolution"
             opticalzoom_factor:
-                name:               "Optical Zoom" 
+                name:               "Optical zoom" 
             fblike_factor:
                 name:               "Facebook like"
             capacity:
-                name:               "Capacité de Stockage"
+                name:               "Capacité de stockage"
                 unit:               "GB"
             isMac:
                 name:               "Mac"
@@ -98,17 +98,17 @@ fr:
             '20239':
                 name:               "Disques durs internes"
             '30442':
-                name:               "Disques durs Solid State"
+                name:               "Disques durs solid state"
             '20236':
                 name:               "Lecteurs de DVD et CD"
             '29583':
                 name:               "Accessoires pour stockage"
             AdvancedSearch:
-                name:               "Recherche Avancée"
+                name:               "Recherche avancée"
             displayDate:
-                name:               "Tout Dernier Modèle"
+                name:               "Tout dernier modèle"
             orders_factor:  
-                name:               "Qui Se Vend Le Mieux"        
+                name:               "Qui se vend le mieux"        
             drive_size_25:
                 name:               "2.5\""
             drive_size_35:

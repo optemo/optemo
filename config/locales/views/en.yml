@@ -82,7 +82,7 @@ en:
             morespecs:      "More Specs"
             lessspecs:      "Less Specs"
             yesoption:            "Yes"
-            nooption:             "No"
+            nooption:             "–"
             allspecifications:  "All Specifications"    
             onsale:         "On Sale"  
             
@@ -91,7 +91,7 @@ en:
         title:          "Survey Questions"
         decisiontext:   "Thank you for visiting the Best Buy Discovery Browser. You’ve been selected to take part in our brief survey to let us know how we’re doing and where we can improve to serve you better in the future. Please take a moment to share your opinions. Your responses are anonymous."
         yesoption:      "Yes"
-        nooption:       "No"
+        nooption:       "–"
         submit:         "Submit"
         error_ansone:   "Please answer at least one question"
         thanks:         "Thank you for your feedback."

@@ -7,10 +7,11 @@
    	<%= link_to thumbnails.small_title, TextSpec.cacheone(thumbnails.id, "productUrl#{fr?}"), :class => 'easylink', :'data-id' => thumbnails.id %>
 	<div class="thumbnaildetails">
     	<% if binspecs["onsale"] %>
-    		<%= t('compare.index.onsale')+": "+number_with_delimiter(contspecs["saleprice"]) %>
+    		<%= t('compare.index.onsale') + (fr?.empty? ? "" : " ")+": " + (fr?.empty? ? "$" : "") + number_with_delimiter(contspecs["saleprice"]) %>
     	<% else %>
-    		$<%= number_with_delimiter(contspecs["price"]) %>
+    		<%= "$" if fr?.empty? %><%= number_with_delimiter(contspecs["price"]) %>
     	<% end %>
+    	<%= " $" unless fr?.empty? %>
 	</div>
 	</div>
 	<%= link_to image_tag("bestbuy_addtocart#{fr?}.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{thumbnails.sku}", {:'data-sku' => thumbnails.sku, :class => 'addtocart', :'data-name' => thumbnails.small_title} %>

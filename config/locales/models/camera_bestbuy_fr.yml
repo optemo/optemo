@@ -8,15 +8,15 @@ fr:
         keywords:                   "appareils photo"
         classification:             "Appareils photo numériques"
         navtitle:                  "Appareils photo"
-        navtitle2:                   " Disponibles"
-        outof:                      "Parmi %{count} Appareils Photo"
+        navtitle2:                   " disponibles"
+        outof:                      "Parmi %{count} appareils photo"
 
         compare:                    "Comparer"
-        seeall:                     "Visionner Tout"
+        seeall:                     "Visionner tout"
         shopnow:                    "Magasinez"
-        toprated:                   "Meilleure Cote Produits"
-        bestsellers:                "Meilleurs Vendeurs"
-        featuredproducts:           "Produits Vedettes"
+        toprated:                   "Meilleure cote produits"
+        bestsellers:                "Meilleurs vendeurs"
+        featuredproducts:           "Produits vedettes"
 
         specs:
             category:
@@ -44,7 +44,7 @@ fr:
             onsale:
                 name:               "En solde"
             featured:
-                name:               "Produits Vedettes"    
+                name:               "Produits vedettes"    
             isClearance:
                 name:               "Liquidation"
             isOnlineOnly:
@@ -76,15 +76,15 @@ fr:
             maxresolution_factor:
                 name:               "Mégapixels"
             displayDate:
-                name:               "Tout Dernier Modèle"
+                name:               "Tout dernier modèle"
             saleprice_factor:
                 name:               "Prix croissants"
             saleprice_factor_high_to_low:
                 name:               "Prix décroissants"
             orders_factor:  
-                name:               "Qui Se Vend Le Mieux"        
+                name:               "Qui se vend le mieux"        
             AdvancedSearch:
-                name:               "Recherche Avancée"       
+                name:               "Recherche avancée"       
             '22474':
                 name:               "Visez et photographiez"                
             '28382':
