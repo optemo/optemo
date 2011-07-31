@@ -75,7 +75,11 @@ class Product < ActiveRecord::Base
   #Session.binary["filter"].map{|f|"id in (select product_id from bin_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{Session.product_type}')"}+\
     
   def brand
-    @brand ||= cat_specs.cache_all(id)["brand"]
+    if I18n.locale == :fr
+      cat_specs.cache_all(id)["brand_fr"]
+    else
+      @brand ||= cat_specs.cache_all(id)["brand"]
+    end
   end
   
   def tinyTitle
@@ -87,7 +91,11 @@ class Product < ActiveRecord::Base
   end
   
   def small_title
-    [brand.split(' ').map{|bn| bn=(bn==bn.upcase ? bn.capitalize : bn)}.join(' '), model || cat_specs.cache_all(id)["model"]].join(" ")
+    if I18n.locale == :fr
+      [cat_specs.cache_all(id)["brand_fr"], cat_specs.cache_all(id)["model_fr"]].join(" ")
+    else
+      [brand.split(' ').map{|bn| bn=(bn==bn.upcase ? bn.capitalize : bn)}.join(' '), model || cat_specs.cache_all(id)["model"]].join(" ")
+    end
   end
 
   def navbox_display_title
