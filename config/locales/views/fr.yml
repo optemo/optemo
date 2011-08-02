@@ -67,6 +67,7 @@ fr:
             saleprice:      "Prix de vente"
             lowestprice:    "Garantie du plus bas prix"
             fbconnecturl:   "//connect.facebook.net/fr_CA/all.js#xfbml=1"
+            bundle:         "ensemble"
         
     features:
         maxresolution:      "%{num}Mpx"

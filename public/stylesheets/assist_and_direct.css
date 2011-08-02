@@ -50,6 +50,24 @@ html {
     border: 1px solid #d0d0d0;
     zoom: 1;
 }
+#optemo_embedder #main .rowdiv {
+  position: relative;
+  overflow: visible;
+  clear: both;
+  }
+#optemo_embedder #main .rowdiv .title_landing_type {
+   background: #FFFFFF;
+    color: #666666;
+    display: inline;
+    font-size: 14px;
+    font-weight: bold;
+    margin-left: 6px;
+    padding: 0 9px;
+    position: absolute;
+    top: -9px;
+  left: 0;
+  border: none;
+  }
 #optemo_embedder .showcase_banner_div {
     margin: 12px 0;
     clear:both;

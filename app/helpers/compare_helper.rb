@@ -227,9 +227,13 @@ end
     res << '<div class="rowdiv">'
     open = true
     prods = @s.search.products_landing(type)
+    # now the new mockup is only with featured products
+    res << "<div class='title_landing_type'>" + I18n.t(Session.product_type + ".featuredproducts") + "</div>"
+    res << "<div style='clear:both;width: 0;height: 0;'><!--ie6/7 title disappear issue --></div>"
     for i in 0...num_examples
       case type
       when "featured"
+
         if prods.size > 0
           res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i+1].product_id)})
         end

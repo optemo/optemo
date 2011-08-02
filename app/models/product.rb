@@ -2,6 +2,7 @@ class Product < ActiveRecord::Base
   has_many :cat_specs
   has_many :bin_specs
   has_many :cont_specs
+  has_many :text_specs
   has_many :search_products
   
   #define_index do
@@ -91,11 +92,23 @@ class Product < ActiveRecord::Base
   end
   
   def small_title
-    if I18n.locale == :fr
-      [cat_specs.cache_all(id)["brand_fr"], cat_specs.cache_all(id)["model_fr"]].join(" ")
-    else
-      [brand.split(' ').map{|bn| bn=(bn==bn.upcase ? bn.capitalize : bn)}.join(' '), model || cat_specs.cache_all(id)["model"]].join(" ")
+    # If it is a bundle get the first product in the bundle
+    bundle = ""
+    id_or_bundle_first_id = id
+    bundle_cat_specs = cat_specs
+    if text_specs.cache_all(id)["bundle"].match 'sku'
+      bundle = " (" + I18n.t('products.show.bundle') + ")"
+      bundle_first_sku = JSON.parse(text_specs.cache_all(id)["bundle"].gsub("=>",":"))[0]["sku"]
+      bundle_first_product = Product.find_by_sku(bundle_first_sku)
+      id_or_bundle_first_id = bundle_first_product.id
+      bundle_cat_specs = bundle_first_product.cat_specs
     end
+    if I18n.locale == :fr
+      [bundle_cat_specs.cache_all(id_or_bundle_first_id)["brand_fr"], bundle_cat_specs.cache_all(id_or_bundle_first_id)["model_fr"]].join(" ") + bundle
+    else
+      [bundle_cat_specs.cache_all(id_or_bundle_first_id)["brand"], bundle_cat_specs.cache_all(id_or_bundle_first_id)["model"]].join(" ") + bundle  
+    end
+    
   end
 
   def navbox_display_title

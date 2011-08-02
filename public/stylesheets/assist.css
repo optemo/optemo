@@ -45,6 +45,7 @@
 	background: right center url(../images/seperatorbar.png) no-repeat;*/
     overflow: hidden;
     zoom: 1; /* fix IE peekaboo issue */
+   	margin-top: 8px;
 }
 
 #optemo_embedder .title {
@@ -59,7 +60,6 @@
 
 #optemo_embedder img.productimg {
 	cursor: pointer;
-	padding-top: 8px;
 }
 #optemo_embedder img.draganddropimage {
 	cursor: default;

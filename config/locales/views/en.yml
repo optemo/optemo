@@ -66,6 +66,7 @@ en:
             saleends:       "Sale Ends"
             lowestprice:    "Lowest Price Guarantee"
             fbconnecturl:   "//connect.facebook.net/en_US/all.js#xfbml=1"
+            bundle:         "Bundle"
 
     features:
         maxresolution:      "%{num}MP"
