@@ -155,31 +155,46 @@ optemo_module = (function (my){
     //   - get the loading code to chain back to the insertion code
     //   - "specs" or "more specs" links just show/hide the table element rather than building it up; the ajax return below does that
     // The disadvantage would be that the specs wouldn't be stored for later retrieval. This probably isn't a big deal.
-   
-    my.loadspecs = function (sku, f) {
+
+    // For the bundle products, get the first product from bundle spec and show its specs
+    my.loadspecs = function (sku, f, bundle_sku) {
         // The jQuery AJAX request will add ?callback=? as appropriate. Best Buy API v.2 supports this.
            var baseurl = "http://www.bestbuy.ca/api/v2/json/product/" + sku;
         if (!(typeof(optemo_french) == "undefined") && optemo_french) baseurl = baseurl+"?lang=fr";
+        // Do not need check bundle sku
         if (!(jQuery('body').data('bestbuy_specs_' + sku))) {
             $.ajax({
                 url: baseurl,
                 type: "GET",
                 dataType: "jsonp",
                 success: function (data) {
-                    var raw_specs = data["specs"];
-                    // rebuild prop_list so that we can get the specs back out.
-                    // We might need to do this regardless, due to the fact that
-                    // the property list doesn't have to be sent in order.
-                    var processed_specs = function (my) {
-                        for (var i = 0; i < raw_specs.length; i++) {
-                            var spec = raw_specs[i];
-                            if (typeof(my[spec.group]) == "undefined") my[spec.group] = {};
-                            my[spec.group][spec.name] = spec.value;
-                        }
-                        return my;
-                    }({});
-                    jQuery('body').data('bestbuy_specs_' + sku, processed_specs);
-                    if (f) f();
+                    // If it is a bundle, get the first sku
+                    var bundle = data["bundle"];
+
+                    if (bundle.length > 0) {
+                     
+                        my.loadspecs(bundle[0]["sku"], f, sku);
+                    }
+                    else {
+                        
+                        var raw_specs = data["specs"];
+                        // rebuild prop_list so that we can get the specs back out.
+                        // We might need to do this regardless, due to the fact that
+                        // the property list doesn't have to be sent in order.
+                        var processed_specs = function (my) {
+                            for (var i = 0; i < raw_specs.length; i++) {
+                                var spec = raw_specs[i];
+                                if (typeof(my[spec.group]) == "undefined") my[spec.group] = {};
+                                my[spec.group][spec.name] = spec.value;
+                            }
+                            return my;
+                        }({});
+                        var sku_to_register = sku;
+                        if (bundle_sku)
+                            sku_to_register = bundle_sku;
+                        jQuery('body').data('bestbuy_specs_' + sku_to_register, processed_specs);
+                        if (f) f();
+                    }
                 }
             });
         }
