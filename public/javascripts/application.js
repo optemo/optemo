@@ -1079,14 +1079,19 @@ optemo_module = (function (my){
 
         // Showcase Products - the product banner on the landing page is paid advertising
         $('.showcase_banner').live('click', function () {
-            // Right now this function assumes that brand is the only filter category that the showcase banner is filtering on.
             var whichBrand = $(this).attr('data-brand');
-            var feat_obj = $('#myfilter_brand');
-            // Since it's just on the landing page, we know that there are no filters yet, 
-            // so we can add without checking if it's already there
-            feat_obj.val(opt_appendStringWithToken(feat_obj.val(), whichBrand, '*'));
-            my.trackPage('goals/showcase_banner', {'feature_name' : whichBrand, 'filter_type' : 'brand'});
-            submitCategorical();
+            if (whichBrand != undefined && whichBrand != "") {
+                var feat_obj = $('#myfilter_brand');
+                // Since it's just on the landing page, we know that there are no filters yet, 
+                // so we can add without checking if it's already there
+                feat_obj.val(opt_appendStringWithToken(feat_obj.val(), whichBrand, '*'));
+                my.trackPage('goals/showcase_banner', {'feature_name' : whichBrand, 'filter_type' : 'showcase_banner'});
+                submitCategorical();
+            } else { // This is not scalable. Eventually this sort of logic should be in Firehose.
+                var whichSku = $(this).attr('data-sku');
+                my.trackPage('goals/showcase_banner', {'feature_name' : whichSku, 'filter_type' : 'showcase_banner'});
+                window.location = "http://www.bestbuy.ca/" + ((!(typeof(optemo_french) == "undefined") && optemo_french) ? "fr" : "en") + "-CA/research/seagate-goflex-satellite/rc8372.aspx";
+            }
             return false;
         });
 
