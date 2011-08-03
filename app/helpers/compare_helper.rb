@@ -127,10 +127,10 @@ module CompareHelper
       num = ContSpec.cache_all(product_id)[feat]
       num = "<1" if feat == "maxresolution" && num == "1"
       num = num.to_i if num.to_i==num
-		  out << t('features.'+feat, :num =>  number_with_delimiter(num), :default =>  number_with_delimiter(num))
+		  out << t('features.'+feat, :num =>  number_with_delimiter(num), :default =>  number_with_delimiter(num)) if num
 	  end
 	  s.binary["desc"].each do |feat|
-      out << BinSpec.cache_all(product_id)[feat]
+      out << t("#{Session.product_type}.specs.#{feat.gsub(" ","")}.name") if BinSpec.cache_all(product_id)[feat]
     end
 		out.join(", ")
   end
