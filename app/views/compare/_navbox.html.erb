@@ -4,6 +4,7 @@
 
 
 		<div class="productinfo">
+      <% if !landing %>
       <div class="productspecs">
       		  <input type="checkbox"
 			       data-id="<%= product.id %>"
@@ -13,7 +14,7 @@
 		    <span><%=t('products.compare.compare')%></span>
 		  </a>
       </div>
-
+      <% end %>
 			<%= link_to product.navbox_display_title, TextSpec.cacheone(product.id, "productUrl#{fr?}"), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
 		    
 			<div class="productspecs"><%=featuretext(product.id) %></div>

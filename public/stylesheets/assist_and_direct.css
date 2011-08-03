@@ -67,6 +67,7 @@ html {
     top: -9px;
   left: 0;
   border: none;
+  display:inline;
   }
 #optemo_embedder .showcase_banner_div {
     margin: 12px 0;

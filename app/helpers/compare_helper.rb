@@ -195,15 +195,15 @@ module CompareHelper
       case type
       when "featured"
         if prods.size > 0    
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)}) unless prods[i].nil?
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id), :landing=>false}) unless prods[i].nil?
         end
       when "orders"
         if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)}) unless prods[i].nil?
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id), :landing=>false}) unless prods[i].nil?
         end
       when 'customerRating'
         if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)}) unless prods[i].nil?
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id), :landing=>false}) unless prods[i].nil?
         end
       end
       if (i%3) == 2
@@ -234,7 +234,7 @@ end
       #case type
       #when "featured"
         if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id), :landing => true})
         end
 
 
@@ -286,7 +286,7 @@ end
     			  open = true
     		  end
     		  #Navbox partial to draw boxes
-    		  res << render(:partial => 'navbox', :locals => {:i => i, :product => @s.search.paginated_products[i]})
+    		  res << render(:partial => 'navbox', :locals => {:i => i, :product => @s.search.paginated_products[i], :landing=>false})
                   if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
                     if i < (@s.search.paginated_products.size - 1)
                       res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin:0 auto;"></div></div>'

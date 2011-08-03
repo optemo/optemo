@@ -32,7 +32,9 @@
 </div>
 
 
-<% if @s.product_type == 'camera_bestbuy' %><div class='showcase_banner_div'><%= link_to image_tag("group_bar-banner#{fr?}.jpg"), '#', :class => 'showcase_banner', :"data-brand" => "Canon" %></div><% end %>
+<% if @s.product_type == 'camera_bestbuy' %><div class='showcase_banner_div'><%= link_to image_tag("#{@s.product_type}-banner#{fr?}.jpg"), '#', :class => 'showcase_banner', :"data-brand" => "Canon" %></div><% else %>
+<div class='showcase_banner_div'><%= link_to image_tag("#{@s.product_type}-banner#{fr?}.jpg"), '#', :class => 'showcase_banner', :"data-sku" => "10172122" %></div>
+<% end %>
 <%= raw mb['featured'] %>
 
 <div style="clear:both;"><span id="actioncount" style="display:none"><%= [Session.search.id.to_s].pack("m").chomp %></span></div>

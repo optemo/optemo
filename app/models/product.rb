@@ -96,7 +96,7 @@ class Product < ActiveRecord::Base
     bundle = ""
     id_or_bundle_first_id = id
     bundle_cat_specs = cat_specs
-    if text_specs.cache_all(id)["bundle"].match 'sku'
+    if text_specs.cache_all(id)["bundle"] && text_specs.cache_all(id)["bundle"].match('sku')
       bundle = " (" + I18n.t('products.show.bundle') + ")"
       bundle_first_sku = JSON.parse(text_specs.cache_all(id)["bundle"].gsub("=>",":"))[0]["sku"]
       bundle_first_product = Product.find_by_sku(bundle_first_sku)
