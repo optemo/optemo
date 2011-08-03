@@ -11,7 +11,7 @@ class Session
   cattr_accessor :category_id, :dynamic_filter_cat, :dynamic_filter_cont, :dynamic_filter_bin, :filters_order
   cattr_accessor :rails_category_id # This is passed in from ajaxsend and the logic for determining the category ID is from the javascript side rather than from the Rails side. Useful for embedding.
 
-  def initialize (cat_id = nil)
+  def initialize (cat_id = nil, request_url = nil)
     # This parameter controls whether the interface features drag-and-drop comparison or not.
     self.dragAndDropEnabled = true
     # Relative descriptions, in comparison to absolute descriptions, have been the standard since late 2009, and now we use Boostexter labels also.
@@ -52,7 +52,7 @@ class Session
     # Check for what Piwik site ID to put down in the optemo.html.erb layout
     # These site ids MUST match what's in the piwik database.
     p_type.urls.each do |u|
-      if request.url.match[u] 
+      if request_url.match[u] 
         p_url = u
         break
       end

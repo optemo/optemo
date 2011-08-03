@@ -45,7 +45,7 @@ class ApplicationController < ActionController::Base
     # request.env["REMOTE_HOST"] is necessary when doing embedding
     # request.domain(4) || request.env["REMOTE_HOST"]
     # As of July 11, we are using the category id that gets passed in instead
-    s = Session.new(params[:category_id]) 
+    s = Session.new(params[:category_id], request.url) 
     #s.id = mysession_id
     #s.ab_testing_type = ab_testing_type
     # We are passing in the category id from javascript
