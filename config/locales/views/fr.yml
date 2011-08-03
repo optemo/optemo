@@ -73,6 +73,7 @@ fr:
         maxresolution:      "%{num}Mpx"
         screensize:         "ACL %{num}po"
         opticalzoom:        "Zoom %{num}X"
+        capacity:           "%{num} Go"
     
     compare:
         index:

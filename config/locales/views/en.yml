@@ -72,6 +72,7 @@ en:
         maxresolution:      "%{num}MP"
         screensize:         "%{num}in. LCD"
         opticalzoom:        "%{num}X zoom"
+        capacity:           "%{num} GB"
     
     compare:
         index:
