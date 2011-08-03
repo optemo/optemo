@@ -1,7 +1,7 @@
 class CatSpec < ActiveRecord::Base
   belongs_to :product
-
   # Get specs for a single item
+
   def self.cache_all(p_id)
     CachingMemcached.cache_lookup("CatSpecs#{p_id}") do
       select("name, value").where("product_id = ?", p_id).each_with_object({}){|r, h| h[r.name] = r.value}
@@ -25,13 +25,29 @@ class CatSpec < ActiveRecord::Base
   end
 
   def self.colors_en_fr
-    colors = {}
-    colors_spec = CatSpec.where("product_type=? and name=?", Session.product_type, 'color')
-    colors_spec.each do |spec|
-      color_fr = CatSpec.where("product_id=? and name=?", spec.product_id, 'color_fr').first
-      if color_fr
-        colors[spec.value] = color_fr.value
+    if defined? @@colors_map
+      colors = @@colors_map
+    else
+      colors = {}
+      colors_en = CatSpec.where("product_type=? and name=?", Session.product_type, 'color').select('product_id, value').order('product_id')
+      colors_fr = CatSpec.where("product_type=? and name=?", Session.product_type, 'color_fr').select('product_id, value').order('product_id')
+      i=0
+      j = 0
+      while i < colors_en.size && j < colors_fr.size
+        if colors_en[i].product_id == colors_fr[j].product_id
+          colors[colors_en[i].value] = colors_fr[j].value
+          i += 1
+          j += 1
+        else
+          if colors_en[i].product_id > colors_fr[j].product_id
+            j += 1
+          else
+            i += 1
+          end
+
+        end
       end
+      @@colors_map = colors
     end
     colors
   end
