@@ -241,7 +241,8 @@ html {
   padding: 0;
 }
 #optemo_embedder ul#sorting_method_box li span.seperater{
-  padding: 0 2px;
+  margin: 0;
+  padding: 0;
   }
 #optemo_embedder ul#sorting_method_box li a, #optemo_embedder ul#sorting_method_box li a:visited{
   text-decoration: none;
