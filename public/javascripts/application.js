@@ -95,7 +95,7 @@ optemo_module = (function (my){
         SESSION_ID = parseInt($('#seshid').html());
         AB_TESTING_TYPE = parseInt($('#ab_testing_type').html());
         my.PIWIK_ID = $('#piwikid').html();
-        var category_id_hash = {'digital-cameras' : 20218,
+        var category_id_hash = {'digital-cameras' : 22474,
                         'digital-tvs' : 21344, // The URL is probably not quite correct yet; this is a placeholder
                         'harddrives' : 20243,
                         'Drives-Storage' : 20243,
@@ -109,7 +109,7 @@ optemo_module = (function (my){
             }
         }
         // Failsafe just in case nothing seems to match
-        if (my.RAILS_CATEGORY_ID == 0) my.RAILS_CATEGORY_ID = 20218;
+        if (my.RAILS_CATEGORY_ID == 0) my.RAILS_CATEGORY_ID = 22474;
     }
 
     // Renders a recursive html list of the specs.

@@ -38,11 +38,11 @@ function opt_insert(d) {
 //Load the correct history on reload
 var opt_history = location.hash.replace(/^#/, '');
 // To get the category id that gets passed in, check the URL:
-// http://www.bestbuy.ca/en-CA/digital-cameras.aspx maps to the category id 20218.
+// http://www.bestbuy.ca/en-CA/digital-cameras.aspx maps to the category id 22474.
 // This is ascertained by looking at the database, in the category_id_product_type_maps table.
 // The regular expressions for all but the first entry (digital cameras) are assumed (as of July 6, 2011)
 
-var category_id_hash = {'digital-cameras' : 20218,
+var category_id_hash = {'digital-cameras' : 22474,
                         'digital-tvs' : 21344, // The URL is probably not quite correct yet; this is a placeholder
                         'harddrives' : 20243,
                         'Drives-Storage' : 20243,
@@ -56,7 +56,7 @@ for (var i in category_id_hash) {
     }
 }
 // Failsafe just in case nothing seems to match
-if (rails_category_id == 0) rails_category_id = 20218;
+if (rails_category_id == 0) rails_category_id = 22474;
 
 if (opt_history.length > 0)
     var opt_options = {embedding:'true', hist: opt_history, category_id: rails_category_id};
