@@ -223,16 +223,21 @@ end
     res = ""
     res << '<div class="rowdiv">'
     open = true
+
     prods = @s.search.products_landing(type)
+    num = prods.size
     # now the new mockup is only with featured products
     res << "<div class='title_landing_type'>" + I18n.t(Session.product_type + ".featuredproducts") + "</div>"
     res << "<div style='clear:both;width: 0;height: 0;'><!--ie6/7 title disappear issue --></div>"
     for i in 0...prods.size
+      
       #case type
       #when "featured"
         if prods.size > 0
           res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
         end
+
+
       #when "orders"
       #  if prods.size > 0
       #    res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
@@ -242,6 +247,12 @@ end
       #    res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
       #  end
       #end
+      if (i%3) == 2
+        if i != (num -1)
+          res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto;"></div>'
+        end
+      end
+
     end
     res << '<div style="clear:both;height:0;"></div></div>' if open && !@s.directLayout
 
