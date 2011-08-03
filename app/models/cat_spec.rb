@@ -24,4 +24,15 @@ class CatSpec < ActiveRecord::Base
     end
   end
 
+  def self.colors_en_fr
+    colors = {}
+    colors_spec = CatSpec.where("product_type=? and name=?", Session.product_type, 'color')
+    colors_spec.each do |spec|
+      color_fr = CatSpec.where("product_id=? and name=?", spec.product_id, 'color_fr').first
+      if color_fr
+        colors[spec.value] = color_fr.value
+      end
+    end
+    colors
+  end
 end

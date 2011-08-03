@@ -4,7 +4,7 @@ class Product < ActiveRecord::Base
   has_many :cont_specs
   has_many :text_specs
   has_many :search_products
-  
+
   #define_index do
   #  #fields
   #  indexes "LOWER(title)", :as => :title
@@ -104,11 +104,14 @@ class Product < ActiveRecord::Base
       bundle_cat_specs = bundle_first_product.cat_specs
     end
     if I18n.locale == :fr
-      [bundle_cat_specs.cache_all(id_or_bundle_first_id)["brand_fr"], bundle_cat_specs.cache_all(id_or_bundle_first_id)["model_fr"]].join(" ") + bundle
+      st = [bundle_cat_specs.cache_all(id_or_bundle_first_id)["brand_fr"], bundle_cat_specs.cache_all(id_or_bundle_first_id)["model_fr"]].join(" ") + bundle
+      CatSpec.colors_en_fr.each_pair do |k, v|
+        st = st.sub(k.upcase,v)
+      end
     else
-      [bundle_cat_specs.cache_all(id_or_bundle_first_id)["brand"], bundle_cat_specs.cache_all(id_or_bundle_first_id)["model"]].join(" ") + bundle  
+      st = [bundle_cat_specs.cache_all(id_or_bundle_first_id)["brand"], bundle_cat_specs.cache_all(id_or_bundle_first_id)["model"]].join(" ") + bundle  
     end
-    
+    st
   end
 
   def navbox_display_title
