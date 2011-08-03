@@ -4,6 +4,7 @@ class Product < ActiveRecord::Base
   has_many :cont_specs
   has_many :text_specs
   has_many :search_products
+  has_one :product_bundle, :foreign_key=>:bundle_id
 
   #define_index do
   #  #fields
@@ -33,8 +34,8 @@ class Product < ActiveRecord::Base
     #Algorithm for calculating id of initial products in product_searches table
     #We probably need a better algorithm to check for collisions
     chars = []
-    Session.product_type.each_char{|c|chars<<c.getbyte(0)*chars.size}
-    chars.sum*-1
+    Session.product_type.each_char{|c|chars << c.getbyte(0)*chars.size}
+    chars.sum * -1
   end
   
   def self.filterspecs
@@ -95,8 +96,9 @@ class Product < ActiveRecord::Base
     # If it is a bundle get the first product in the bundle
     bundle = ""
     id_or_bundle_first_id = id
+
     bundle_cat_specs = cat_specs
-    if text_specs.cache_all(id)["bundle"] && text_specs.cache_all(id)["bundle"].match('sku')
+    if product_bundle
       bundle = " (" + I18n.t('products.show.bundle') + ")"
       bundle_first_sku = JSON.parse(text_specs.cache_all(id)["bundle"].gsub("=>",":"))[0]["sku"]
       bundle_first_product = Product.find_by_sku(bundle_first_sku)
