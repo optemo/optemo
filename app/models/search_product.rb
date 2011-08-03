@@ -18,8 +18,8 @@ class SearchProduct < ActiveRecord::Base
           res = []
           order =  "DESC"
            if s=='featured'
-               mybins = [Userdatabin.new({:name => 'hero', :value => 1})]
-               res << search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins)#.where("product_type=\'#{Session.product_type}\'")
+               #mybins = [Userdatabin.new({:name => 'hero', :value => 1})]
+               #res << search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins)#.where("product_type=\'#{Session.product_type}\'")
                mybins = [Userdatabin.new({:name => 'featured', :value => 1})]
                res << search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins)#.where("product_type=\'#{Session.product_type}\'") 
            else

@@ -185,8 +185,6 @@ module CompareHelper
   
   def special_main_boxes(type, num)
     res = ""
-
-
     prods = @s.search.products_landing(type)
     num = prods.size if type=='featured'
     for i in 0...num
@@ -223,30 +221,27 @@ end
   
   def landing_main_boxes(type)
     res = ""
-    num_examples = 3
     res << '<div class="rowdiv">'
     open = true
     prods = @s.search.products_landing(type)
     # now the new mockup is only with featured products
     res << "<div class='title_landing_type'>" + I18n.t(Session.product_type + ".featuredproducts") + "</div>"
     res << "<div style='clear:both;width: 0;height: 0;'><!--ie6/7 title disappear issue --></div>"
-    for i in 0...num_examples
-      case type
-      when "featured"
-
-        if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i+1].product_id)})
-        end
-      when "orders"
+    for i in 0...prods.size
+      #case type
+      #when "featured"
         if prods.size > 0
           res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
         end
-      when 'customerRating'
-        if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
-        end
-      end
-
+      #when "orders"
+      #  if prods.size > 0
+      #    res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+      #  end
+      #when 'customerRating'
+      #  if prods.size > 0
+      #    res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+      #  end
+      #end
     end
     res << '<div style="clear:both;height:0;"></div></div>' if open && !@s.directLayout
 
