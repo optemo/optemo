@@ -52,7 +52,7 @@ class Session
     # Check for what Piwik site ID to put down in the optemo.html.erb layout
     # These site ids MUST match what's in the piwik database.
     p_type.urls.each do |u|
-      if request_url[u.to_s] 
+      if request_url[u.url.to_s] 
         p_url = u
         break
       end
