@@ -100,7 +100,7 @@ fr:
             '30442':
                 name:               "Disques durs solid state"
             '20236':
-                name:               "Lecteurs de DVD et CD"
+                name:               "Optical Drives"
             '29583':
                 name:               "Accessoires pour stockage"
             'Network Attached Storage':
