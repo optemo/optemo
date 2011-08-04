@@ -103,6 +103,8 @@ fr:
                 name:               "Lecteurs de DVD et CD"
             '29583':
                 name:               "Accessoires pour stockage"
+            'Network Attached Storage':
+                name:               "Network Attached Storage"
             AdvancedSearch:
                 name:               "Recherche avancée"
             displayDate:

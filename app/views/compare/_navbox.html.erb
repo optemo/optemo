@@ -1,6 +1,6 @@
 <div id="box<%= product.id %>" class="navbox" <%= ("style='margin-right:0px;background:none;'" if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1) %>>
 	<div class="topbar">
-		<%= image_tag(CatSpec.cache_all(product.id)["img150url"], :class => "productimg", :alt => product.small_title, :title => product.small_title, :'data-id' => product.id, :'data-sku' => product.sku) %>
+		<%= image_tag(CatSpec.cache_all(product.id)["img150url"], :class => "productimg", :alt => small_title(product), :title => small_title(product), :'data-id' => product.id, :'data-sku' => product.sku) %>
 
 
 		<div class="productinfo">
@@ -15,7 +15,7 @@
 		  </a>
       </div>
       <% end %>
-			<%= link_to product.navbox_display_title, TextSpec.cacheone(product.id, "productUrl#{fr?}"), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
+			<%= link_to navbox_display_title(product), TextSpec.cacheone(product.id, "productUrl#{fr?}"), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
 		    
 			<div class="productspecs"><%=featuretext(product.id) %></div>
 			<% if BinSpec.cache_all(product.id)["onsale"] %>
@@ -35,7 +35,7 @@
 	     
 	</div>
 	<div style="text-align:left; padding-left:20px">
-			<div class="spacer buttons"><%= link_to image_tag("bestbuy_addtocart#{fr?}.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{product.sku}", {:'data-sku' => product.sku, :class => 'addtocart', :'data-name' => product.small_title} %></div>
+			<div class="spacer buttons"><%= link_to image_tag("bestbuy_addtocart#{fr?}.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{product.sku}", {:'data-sku' => product.sku, :class => 'addtocart', :'data-name' => small_title(product)} %></div>
 	</div>
 
 </div>

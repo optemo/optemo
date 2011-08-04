@@ -88,42 +88,6 @@ class Product < ActiveRecord::Base
     @tinyTitle ||= [brand.gsub("Hewlett-Packard", "HP"),(model || cat_specs.cache_all(id)["model"] || cat_specs.cache_all(id)["mpn"]).split(' ')[0]].join(' ')
   end
   
-  def descurl
-    small_title.tr(' /','_-').tr('.', '-')
-  end
-  
-  def small_title
-    # If it is a bundle get the first product in the bundle
-    bundle = ""
-    id_or_bundle_first_id = id
-
-    bundle_cat_specs = cat_specs
-    if product_bundle
-      bundle = " (" + I18n.t('products.show.bundle') + ")"
-      bundle_first_sku = JSON.parse(text_specs.cache_all(id)["bundle"].gsub("=>",":"))[0]["sku"]
-      bundle_first_product = Product.find_by_sku(bundle_first_sku)
-      id_or_bundle_first_id = bundle_first_product.id
-      bundle_cat_specs = bundle_first_product.cat_specs
-    end
-    if I18n.locale == :fr
-      st = [bundle_cat_specs.cache_all(id_or_bundle_first_id)["brand_fr"], bundle_cat_specs.cache_all(id_or_bundle_first_id)["model_fr"]].join(" ") + bundle
-      CatSpec.colors_en_fr.each_pair do |k, v|
-        st = st.sub(k.upcase,v)
-      end
-    else
-      st = [bundle_cat_specs.cache_all(id_or_bundle_first_id)["brand"], bundle_cat_specs.cache_all(id_or_bundle_first_id)["model"]].join(" ") + bundle  
-    end
-    st
-  end
-
-  def navbox_display_title
-    if small_title.length > 43
-      small_title[0..43].gsub(/\s[^\s]*$/,'')
-    else
-      small_title
-    end
-  end
-
   def mobile_descurl
     "/show/"+[id,brand,model || cat_specs.cache_all(id)["model"] || cat_specs.cache_all(id)["mpn"]].join('-').tr(' /','_-')
   end

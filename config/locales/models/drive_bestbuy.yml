@@ -105,6 +105,8 @@ en:
                 name:               "DVD & CD Drives"
             '29583':
                 name:               "Storage Accessories"
+            'Network Attached Storage':
+                name:               "Network Attached Storage"
             'AdvancedSearch':
                 name:               "Advanced Search"
             displayDate:
