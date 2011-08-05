@@ -108,9 +108,9 @@ fr:
             AdvancedSearch:
                 name:               "Recherche avancée"
             displayDate:
-                name:               "Tout dernier modèle"
+                name:               "Dernier modèle"
             orders_factor:  
-                name:               "Qui se vend le mieux"        
+                name:               "Meilleur vendeur"        
             drive_size_25:
                 name:               "2.5\""
             drive_size_35:

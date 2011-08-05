@@ -2,7 +2,7 @@ fr:
     products:
         ErrorPart1:     "Désolé! Une erreur est survenue sur le serveur. Vous pouvez réinitialiser loutil et voir si le problème est résolu."
         sortby:         "Classé par"
-        relevance:      "Meilleure correspondance"    
+        relevance:      "Meilleure association"    
         #"Pertinence"
         backtotop:      "Retour en haut"
         
