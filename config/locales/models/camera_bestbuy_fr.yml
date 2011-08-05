@@ -76,13 +76,13 @@ fr:
             maxresolution_factor:
                 name:               "Mégapixels"
             displayDate:
-                name:               "Tout dernier modèle"
+                name:               "Dernier modèle"
             saleprice_factor:
                 name:               "Prix croissants"
             saleprice_factor_high_to_low:
                 name:               "Prix décroissants"
             orders_factor:  
-                name:               "Qui se vend le mieux"        
+                name:               "Meilleur vendeur"        
             AdvancedSearch:
                 name:               "Recherche avancée"       
             '22474':
