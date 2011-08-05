@@ -112,7 +112,7 @@ fr:
             AdvancedSearch:
                 name:               "Recherche avancée"
             displayDate:
-                name:               "Tout dernier modèle"
+                name:               "Dernier modèle"
             orders_factor:  
                 name:               "Qui se vend le mieux"        
             driveSize:

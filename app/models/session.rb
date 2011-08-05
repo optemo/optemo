@@ -68,8 +68,8 @@ class Session
       heading.features.each do |feature|
         cats = []
         cats = feature.used_for_categories.split(',') unless feature.used_for_categories.nil?
-        cats = [cats] unless cats.is_a?(Array)
-        cats.each do |c|
+
+        cats.map{|c| c=c.strip}.each do |c|
           case feature.feature_type
           when "Continuous"
             self.dynamic_filter_cont[c] << feature.name
@@ -137,18 +137,19 @@ class Session
     # For more information on esc_param and its purpose, see the file "lib/absolute_url_enabler.rb" 
     !esc_param.nil? || (!str.nil? && str.match(/Google|msnbot|Rambler|Yahoo|AbachoBOT|accoona|AcioRobot|ASPSeek|CocoCrawler|Dumbot|FAST-WebCrawler|GeonaBot|Gigabot|Lycos|MSRBOT|Scooter|AltaVista|IDBot|eStyle|ScrubbyBloglines subscriber|Dumbot|Sosoimagespider|QihooBot|FAST-WebCrawler|Superdownloads Spiderman|LinkWalker|msnbot|ASPSeek|WebAlta Crawler|Lycos|FeedFetcher-Google|Yahoo|YoudaoBot|AdsBot-Google|Googlebot|Scooter|Gigabot|Charlotte|eStyle|AcioRobot|GeonaBot|msnbot-media|Baidu|CocoCrawler|Google|Charlotte t|Yahoo! Slurp China|Sogou web spider|YodaoBot|MSRBOT|AbachoBOT|Sogou head spider|AltaVista|IDBot|Sosospider|Yahoo! Slurp|Java VM|DotBot|LiteFinder|Yeti|Rambler|Scrubby|Baiduspider|accoona|Java/i))
   end
+  # The logic is:
+  # 1. if no categories have been selected, only show filters without used_for_categories.
+  # 2. Any categories selected, filters without used_for_categories or categories selected included in used_for_categories
   def self.is_feature_in_myfilter_categories? (feature, myfilter_categories)
     ret = false
-    if feature.used_for_categories.nil?
+    if feature.used_for_categories.blank?
       ret = true
     else
       if myfilter_categories.size > 0
         cats = feature.used_for_categories.split(',')
-        cats = [cats] unless cats.is_a?(Array)
         cats.each do |cat|
           cat = cat.strip
           if myfilter_categories.include? cat
-
             ret = true
             break
           end
@@ -157,41 +158,41 @@ class Session
     end
     ret
   end
+  
   def self.getFilters(userdatacats)
     category_ids = []
-    userdatacats.each do |d|
-      category_ids << d.value if d.name == 'category'
-    end unless userdatacats.nil?
-
+    unless userdatacats.nil?
+      userdatacats.each do |d|
+        category_ids << d.value if d.name == 'category'
+      end
+    end
     
     # This block gets out the continuous, binary, and categorical features
     
     p_headings = Heading.find_all_by_product_type_id(ProductType.find_all_by_name(product_type).first.id, :include => :features) # eager loading headings and features to reduce the queries.
     p_headings.each do |heading|
       heading.features.each do |feature|
-        used_fors = feature.used_for.split(',').map { |uf| uf.strip }
+#        used_fors = feature.used_for.split(',').map { |uf| uf.strip }
         case feature.feature_type
         when "Continuous"
-          used_fors.each do |flag|
-            if flag == 'filter' # only add features of selected product types to the filter
-              self.continuous['filter'] << feature.name if is_feature_in_myfilter_categories?(feature, category_ids)
+          if !feature.used_for.blank? && feature.used_for.include?('filter')
+            if is_feature_in_myfilter_categories?(feature, category_ids)
+              self.continuous['filter'] << feature.name 
               self.filters_order << {:name => feature.name, :filter_type=> 'cont', :show_order => feature.used_for_order}
             end
           end
         when "Binary"
-          used_fors.each do |flag|
-            if flag == 'filter' # only add features of selected product types to the filter
-              if is_feature_in_myfilter_categories?(feature, category_ids) && feature.has_products
-                self.binary['filter'] << feature.name
-                self.binarygroup[heading.name] << feature.name unless self.binarygroup[heading.name].include? feature.name
-                self.filters_order << {:name => heading.name, :filter_type =>  'bin', :show_order => heading.show_order} unless self.filters_order.index {|x| x[:name] == heading.name}
-              end
+          if !feature.used_for.blank? && feature.used_for.include?('filter') # only add features of selected product types to the filter
+            if is_feature_in_myfilter_categories?(feature, category_ids) && feature.has_products
+              self.binary['filter'] << feature.name
+              self.binarygroup[heading.name] << feature.name unless self.binarygroup[heading.name].include? feature.name
+              self.filters_order << {:name => heading.name, :filter_type =>  'bin', :show_order => heading.show_order} unless self.filters_order.index {|x| x[:name] == heading.name}
             end
           end
         when "Categorical"
-          used_fors.each do |flag|
-            if flag == 'filter' # only add features of selected product types to the filter
-              self.categorical['filter'] << feature.name if is_feature_in_myfilter_categories?(feature, category_ids)
+          if !feature.used_for.blank? && feature.used_for.include?('filter') # only add features of selected product types to the filter
+            if is_feature_in_myfilter_categories?(feature, category_ids)
+              self.categorical['filter'] << feature.name 
               self.filters_order << {:name => feature.name, :filter_type => 'cat', :show_order => feature.used_for_order}
             end
           end
