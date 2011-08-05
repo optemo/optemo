@@ -63,19 +63,20 @@ fr:
             mac:
                 name:               "Mac"
             rotations:
-                name:               "Rotation speed"
-            5000rpm:
-                name:               "5000 rpm"
-            5900rpm:
-                name:               "5900 rpm"
-            5400rpm:
-                name:               "5400 rpm"
-            7200rpm:
-                name:               "7200 rpm"
-            10000rpm:
-                name:               "10000 rpm"
-            Internal or External:
-                name:               "Interne ou externe"
+                name:               "Tours par minute"
+                unit:               "RPM"
+            # 5000rpm:
+            #     name:               "5000 rpm"
+            # 5900rpm:
+            #     name:               "5900 rpm"
+            # 5400rpm:
+            #     name:               "5400 rpm"
+            # 7200rpm:
+            #     name:               "7200 rpm"
+            # 10000rpm:
+            #     name:               "10000 rpm"
+            internalExternal:
+                name:               "Interne ou externe"                
             saleprice_factor:
                 name:               "Prix croissants"
             saleprice_factor_high_to_low:
@@ -100,17 +101,22 @@ fr:
             '30442':
                 name:               "Disques durs solid state"
             '20236':
-                name:               "Optical Drives"
+                name:               "Lecteur optique"
             '29583':
                 name:               "Accessoires pour stockage"
+            dataBuffer:
+                name:               "Mémoire tampon"
+                unit:               "Mo"
             'Network Attached Storage':
-                name:               "Network Attached Storage"
+                name:               "Serveur de stockage en réseau (NAS)"
             AdvancedSearch:
                 name:               "Recherche avancée"
             displayDate:
                 name:               "Tout dernier modèle"
             orders_factor:  
                 name:               "Qui se vend le mieux"        
+            driveSize:
+                name:               "Dimension du disque dur"
             drive_size_25:
                 name:               "2.5\""
             drive_size_35:

@@ -66,17 +66,18 @@ en:
                 name:               "Mac"
             rotations:
                 name:               "Rotation Speed"
-            5000rpm:
-                name:               "5000 rpm"
-            5900rpm:
-                name:               "5900 rpm"
-            5400rpm:
-                name:               "5400 rpm"
-            7200rpm:
-                name:               "7200 rpm"
-            10000rpm:
-                name:               "10000 rpm"
-            InternalorExternal:
+                unit:               "RPM"
+            # 5000rpm:
+            #     name:               "5000 rpm"
+            # 5900rpm:
+            #     name:               "5900 rpm"
+            # 5400rpm:
+            #     name:               "5400 rpm"
+            # 7200rpm:
+            #     name:               "7200 rpm"
+            # 10000rpm:
+            #     name:               "10000 rpm"
+            internalExternal:
                 name:               "Internal or External"
             saleprice_factor:
                 name:               "Price: Low to High"
@@ -106,7 +107,7 @@ en:
             '29583':
                 name:               "Storage Accessories"
             'Network Attached Storage':
-                name:               "Network Attached Storage"
+                name:               "Network-Attached Storage (NAS)"
             'AdvancedSearch':
                 name:               "Advanced Search"
             displayDate:
@@ -139,12 +140,15 @@ en:
                 name:               "Seek Time"
             dataBuffer:
                 name:               "Data Buffer"
+                unit:               "MB"
             interface:
                 name:               "Interface"
             dimensions:
                 name:               "Dimensions"
             weight:
                 name:               "Weight"
+            driveSize:
+                name:               "Drive Size"
             drive_size_25:
                 name:               "2.5\""
             drive_size_35:
