@@ -380,7 +380,13 @@ class Search < ActiveRecord::Base
         #Continuous Features
         fname = Regexp.last_match[1]
         max = fname+'_max'
-        @userdataconts << Userdatacont.new({:name => fname, :min => v, :max => p[max]})
+        # Only add the filter when the feature if it is in its range
+        feat_range = ContSpec.allMinMax fname
+
+
+        if (feat_range[0] < v.to_f && feat_range[1] > v.to_f) || (feat_range[0] < p[max].to_f && feat_range[1] > p[max].to_f)
+          @userdataconts << Userdatacont.new({:name => fname, :min => v, :max => p[max]})
+        end
       elsif Session.binary["all"].index(k)
         #Binary Features
         #Handle false booleans

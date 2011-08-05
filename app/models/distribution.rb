@@ -35,7 +35,6 @@ require 'inline'
     rescue ValidationError
       puts "Falling back to ruby distribution"
       num_buckets = 24
-      debugger
       ruby
     end
   end
