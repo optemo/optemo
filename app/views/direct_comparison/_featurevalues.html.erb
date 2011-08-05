@@ -19,12 +19,12 @@
 <div class="cell <%= gray ? "graybg" : "whitebg" %><%=' spec_column_' + column_number.to_s %>">
 	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
 		<!-- If the interesting feature should be displayed then display -->
-		<b><%= spec.to_s if spec %></b>		
+		<b><%= spec.nil? ? '-' : (feat=='category'?t("#{Session.product_type}.specs.#{spec}.name"):spec.to_s) %></b>
 	<% else %>
-	        <% if spec %>
-		<%= spec.to_s %>
+	  <% if spec %>
+		<%= feat=='category'?t("#{Session.product_type}.specs.#{spec}.name"):spec.to_s %>
 		<% else %>
-		&nbsp;
+		'-'
 		<% end %>
 	<% end %>
 </div>
