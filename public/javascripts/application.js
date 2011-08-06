@@ -1763,7 +1763,7 @@ optemo_module = (function (my){
             }
             my.changeNavigatorCompareBtn(selectedComps);
         } else {
-            if (typeof(optemo_french) == "undefined")
+            if !(typeof(optemo_french) == "undefined") && optemo_french)
                 alert("The maximum number of products you can compare is 5. Please try again.");
             else
                 alert("Le nombre maximum de produits que vous pouvez comparer est de 5. Veuillez réessayer.");
