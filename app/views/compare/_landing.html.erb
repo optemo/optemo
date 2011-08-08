@@ -7,7 +7,7 @@
     <% hero = Product.find_by_id(Maybe(SearchProduct.find_hero).product_id) || Product.find_by_product_type(Session.product_type) %>
     <%= image_tag(CatSpec.cache_all(hero.id)["imglurl"], :class => "productimg", :alt => small_title(hero), :title => small_title(hero), :'data-id' => hero.id, :'data-sku' => hero.sku) %>
     <div class="heroinfo">
-		<%= link_to small_title(hero),  TextSpec.cacheone(hero.id, "productUrl#{fr?}"), :'data-id' => hero.id, :'data-sku' => hero.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
+		<%= link_to I18n.locale == :fr ? CatSpec.cache_all(hero.id)["title#{fr?}"] : hero.title,  TextSpec.cacheone(hero.id, "productUrl#{fr?}"), :'data-id' => hero.id, :'data-sku' => hero.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
 		<div class="productspecs"><%=featuretext(hero.id) %></div>	
 		<% if BinSpec.cache_all(hero.id)["onsale"] %>
 			<div class="saleprice">

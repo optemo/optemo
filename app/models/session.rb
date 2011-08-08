@@ -51,7 +51,7 @@ class Session
 
     # Check for what Piwik site ID to put down in the optemo.html.erb layout
     # These site ids MUST match what's in the piwik database.
-    p_url = ""  # Initialize variable out here for locality
+    p_url = nil  # Initialize variable out here for locality
     p_type.urls.each do |u|
       p_url = u if request_url[u.url] 
     end
