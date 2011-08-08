@@ -401,9 +401,10 @@ end
     end
     missing
   end
-  # Get product small title
+
+  # Generate product small title. If the product is a bundle, its title should be the first product included in the bundle with same product type as this bundle.
   def small_title(product)
-    # If it is a bundle get the first product in the bundle
+    # If this is a bundle get the first product in the bundle with same product type
     bundle = ""
     id_or_bundle_first_id = product.id
 
