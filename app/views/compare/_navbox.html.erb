@@ -1,18 +1,31 @@
 <div id="box<%= product.id %>" class="navbox" <%= ("style='margin-right:0px;background:none;'" if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1) %>>
 	<div class="topbar">
-		<%= image_tag(CatSpec.cache_all(product.id)["img150url"], :class => "productimg", :alt => product.small_title, :title => product.small_title, :'data-id' => product.id, :'data-sku' => product.sku) %>
+		<%= image_tag(CatSpec.cache_all(product.id)["img150url"], :class => "productimg", :alt => small_title(product), :title => small_title(product), :'data-id' => product.id, :'data-sku' => product.sku) %>
+
+
 		<div class="productinfo">
-			<%= link_to product.small_title, TextSpec.cacheone(product.id, "productUrl#{fr?}"), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
+      <% if !landing %>
+      <div class="productspecs">
+      		  <input type="checkbox"
+			       data-id="<%= product.id %>"
+			       data-sku="<%= product.sku %>"
+			       class="optemo_compare_checkbox" />
+		  <span style='font-size: 12px;'><%= t('products.compare.selectand') %></span><a class="regular_reset optemo_compare_button" style="" href="#" title="<%=t('products.compare.clickforcompare')%>">
+		    <span><%=t('products.compare.compare')%></span>
+		  </a>
+      </div>
+      <% end %>
+			<%= link_to navbox_display_title(product), TextSpec.cacheone(product.id, "productUrl#{fr?}"), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
 		    
 			<div class="productspecs"><%=featuretext(product.id) %></div>
 			<% if BinSpec.cache_all(product.id)["onsale"] %>
 				<div class="saleprice">
-				<%= t('products.compare.onsale')+": "+number_to_currency(ContSpec.cache_all(product.id)["saleprice"]) %></div>	
-				<div class="save"><%= t('products.compare.save')+": "+ number_to_currency(ContSpec.cache_all(product.id)["price"]-ContSpec.cache_all(product.id)["saleprice"]) %></div>
-			    <div class="saleends"><%= t('products.show.saleends')+": "%><%= l((Date.parse(CatSpec.cache_all(product.id)["saleEndDate"]) - 1.day), :format => :long) if CatSpec.cache_all(product.id)["saleEndDate"] %></div>
+				<%= t('products.compare.onsale')+(fr?.empty? ? "" : " ")+": "+number_to_currency(ContSpec.cache_all(product.id)["saleprice"]) %></div>	
+				<div class="save"><%= t('products.compare.save')+(fr?.empty? ? "" : " ")+": "+ number_to_currency(ContSpec.cache_all(product.id)["price"]-ContSpec.cache_all(product.id)["saleprice"]) %></div>
+			    <div class="saleends"><%= t('products.show.saleends')+(fr?.empty? ? "" : " ")+": "%><%= l((Date.parse(CatSpec.cache_all(product.id)["saleEndDate"]) - 1.day), :format => :long) if CatSpec.cache_all(product.id)["saleEndDate"] %></div>
 			<% else %>
 				<div class="price">
-					$<%= number_with_delimiter(ContSpec.cache_all(product.id)["price"]) %>
+					<%= t('products.show.ourprice') + ":"%> <%= "$" if fr?.empty? %><%= number_with_delimiter(ContSpec.cache_all(product.id)["price"]) %> <%= " $" unless fr?.empty? %>
 				</div>	
 			<% end %>
 			<% if ContSpec.cache_all(product.id)["customerRating"] > 0 %>
@@ -20,18 +33,9 @@
 			<% end %>
 		</div>
 	     
-		<div style="text-align:left; padding-left:20px">
-			<div class="spacer buttons"><%= link_to image_tag("bestbuy_addtocart#{fr?}.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{product.sku}", {:'data-sku' => product.sku, :class => 'addtocart', :'data-name' => product.small_title} %></div>
-		<div class="spacer">
-		  <input type="checkbox"
-			 data-id="<%= product.id %>"
-			 data-sku="<%= product.sku %>"
-			 class="optemo_compare_checkbox" />
-		  <a class="regular_reset
-			    optemo_compare_button" style="" href="#">
-		    <span>COMPARE</span>
-		  </a>
-		</div>
-		</div>
 	</div>
+	<div style="text-align:left; padding-left:20px">
+			<div class="spacer buttons"><%= link_to image_tag("bestbuy_addtocart#{fr?}.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{product.sku}", {:'data-sku' => product.sku, :class => 'addtocart', :'data-name' => small_title(product)} %></div>
+	</div>
+
 </div>

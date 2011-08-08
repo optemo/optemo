@@ -1,3 +1,4 @@
+require 'bestbuy_pagination_renderer'
 module CompareHelper
   def landing?
     ! (request.referer && request.referer.match(/http:\/\/(laserprinterhub|localhost)/))
@@ -62,12 +63,12 @@ module CompareHelper
   end
   
   def navtitle
-    res = t("#{Session.product_type}.navtitle")
     if Session.search.products_size > 1
-      res + t("#{Session.product_type}.navtitle2").pluralize
+      res = t("#{Session.product_type}.navtitle").pluralize
     else
-        res + t("#{Session.product_type}.navtitle2")
+        res = t("#{Session.product_type}.navtitle")
     end    
+    res + t("#{Session.product_type}.navtitle2")
   end
   
   def groupDesc(group, i)
@@ -126,10 +127,10 @@ module CompareHelper
       num = ContSpec.cache_all(product_id)[feat]
       num = "<1" if feat == "maxresolution" && num == "1"
       num = num.to_i if num.to_i==num
-		  out << t('features.'+feat, :num =>  number_with_delimiter(num), :default =>  number_with_delimiter(num))
+		  out << t('features.'+feat, :num =>  number_with_delimiter(num), :default =>  number_with_delimiter(num)) if num
 	  end
 	  s.binary["desc"].each do |feat|
-      out << BinSpec.cache_all(product_id)[feat]
+      out << t("#{Session.product_type}.specs.#{feat.gsub(" ","")}.name") if BinSpec.cache_all(product_id)[feat]
     end
 		out.join(", ")
   end
@@ -184,52 +185,77 @@ module CompareHelper
   
   def special_main_boxes(type, num)
     res = ""
-    res << '<div class="rowdiv">'
-    open = true
     prods = @s.search.products_landing(type)
+    num = prods.size if type=='featured'
     for i in 0...num
+      if i % 3 == 0
+        open = true
+        res << '<div class="rowdiv">'
+      end
       case type
       when "featured"
         if prods.size > 0    
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id), :landing=>false}) unless prods[i].nil?
         end
       when "orders"
         if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id), :landing=>false}) unless prods[i].nil?
         end
       when 'customerRating'
         if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id), :landing=>false}) unless prods[i].nil?
         end
-      end                
+      end
+      if (i%3) == 2
+        if i != (num -1)
+          res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto;"></div></div>'
+          open = false
+        end
+      end
     end    
-    res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
+    res << '<div style="clear:both;height:0;"></div></div>' if open && !@s.directLayout
+
+    res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
+    
 end
-  
   
   def landing_main_boxes(type)
     res = ""
-    num_examples = 3
     res << '<div class="rowdiv">'
     open = true
+
     prods = @s.search.products_landing(type)
-    for i in 0...num_examples
-      case type
-      when "featured"
+    num = prods.size
+    # now the new mockup is only with featured products
+    res << "<div class='title_landing_type'>" + I18n.t(Session.product_type + ".featuredproducts") + "</div>"
+    res << "<div style='clear:both;width: 0;height: 0;'><!--ie6/7 title disappear issue --></div>"
+    for i in 0...prods.size
+      
+      #case type
+      #when "featured"
         if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id), :landing => true})
         end
-      when "orders"
-        if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+
+
+      #when "orders"
+      #  if prods.size > 0
+      #    res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+      #  end
+      #when 'customerRating'
+      #  if prods.size > 0
+      #    res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
+      #  end
+      #end
+      if (i%3) == 2
+        if i != (num -1)
+          res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto;"></div>'
         end
-      when 'customerRating'
-        if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
-        end
-      end                
-    end    
-    res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
+      end
+
+    end
+    res << '<div style="clear:both;height:0;"></div></div>' if open && !@s.directLayout
+
   end
     
   def main_boxes
@@ -260,27 +286,44 @@ end
     			  open = true
     		  end
     		  #Navbox partial to draw boxes
-    		  res << render(:partial => 'navbox', :locals => {:i => i, :product => @s.search.paginated_products[i]})
-          if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
-            res << '<div style="clear: both"></div></div>'
-            open = false
-          end
+    		  res << render(:partial => 'navbox', :locals => {:i => i, :product => @s.search.paginated_products[i], :landing=>false})
+                  if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
+                    if i < (@s.search.paginated_products.size - 1)
+                      res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin:0 auto;"></div></div>'
+                    else
+                      res << '<div style="clear:both;height:0;"></div></div>'
+                    end
+                    open = false
+                  end
     		end
-  		end
+          end
   	end
-  	res << '<div style="clear: both"></div></div>' if open && !@s.directLayout
+  	res << '<div style="clear:both;height:3px;width: 552px;margin-left: -1px;">&nbsp;</div></div>' if open && !@s.directLayout
     res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
-    products = @s.search.paginated_products
-    res << "<div id='navigator_bar_bottom'>"
-    res << "<div id='navtitle'>#{Session.search.products_size.to_s + ' ' + navtitle}</div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div>"
-
-    res << "<div class='pagination-container'><span class='pagi-info'>#{page_entries_info(products, :entry_name =>'').gsub(/([Dd]isplaying\s*)|(\s*in\s*total)|(\<b\>)|(<\/b>)|(&nbps;)/,'')}</span>"
-
-    if products.size >18 
-        res << "#{will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :inner_window=>1, :outer_window=>-4}).gsub(/\.{3}/,'').sub(/>/,'><span>Page:&nbsp;</span>')}<a href='#' id='back-to-top-bottom'>Back to Top</a></div>"
-  	end
   	res
 	end
+  def navigator_bar_bottom_special(type)
+    prods = @s.search.products_landing(type)
+    type=="featured" ? s = prods.size : s=18
+    res = "<div id='navigator_bar_bottom'><div id='navtitle'><b>#{s.to_s + ' ' + navtitle}</b></div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div><div style='clear:both;'></div>"	    
+  end
+  
+  def navigator_bar_top_special(type)
+      prods = @s.search.products_landing(type)
+      type=="featured" ? s = prods.size : s=18
+      res = "<div id='navigator_bar'>
+ 	  <div id='navtitle'><div class='nav-number'>#{s}</div>"
+  end      
+  def navigator_bar_bottom 
+        products = @s.search.paginated_products
+    res = "<div id='navigator_bar_bottom'><div id='navtitle'>#{Session.search.products_size.to_s + ' ' + navtitle}</div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div><div style='clear:both;'></div>"
+
+    if @s.search.products_size > 18
+        res << "<div class='pagination-container'><span class='pagi-info'>#{page_entries_info(products, :entry_name =>'').gsub(/([Dd]isplaying\s*)|(\s*in\s*total)|(&nbps;)/,'').gsub(/\-/,t("products.compare.dash")).gsub(/of/, t("products.compare.of"))}</span>"
+        res << "#{will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :outer_window=>-2, :renderer=>'BestbuyPaginationLinkRenderer'}).gsub(/\.{3}/,'').sub(/>/,'><span><strong>Page:&nbsp;</strong></span>')}<a href='#' id='back-to-top-bottom'>"+t("products.backtotop")+"</a></div>"
+      end
+    res
+  end
    
 	def adjustingfilters
 	  #@s.search.userdataconts
@@ -344,12 +387,55 @@ end
 	  end  
 	  @dist[feat]
   end
-  def sortbyList
-    sortbyList = [(Session.search.sortby=="relevance" ? "<li class='sortby_li sortby_selected'><span>" + t("products.relevance")+"</span>" : "<li class='sortby_li'>" + link_to(t("products.relevance"), "#", :'data-feat' => "relevance", :class => 'sortby')) + '</li>']
-    Session.continuous["sortby"].each_with_index do |f, i|
-          # For the sale price, we need logic to figure out whether we are sorting either direction by price.
-          sortbyList << (Session.search.sortby == f ? "<li class='sortby_li sortby_selected'><span>" + t(Session.product_type+".specs."+f+".name")+"</span>" : "<li class='sortby_li'>" + link_to(t(Session.product_type+".specs."+f+".name"), "#", :'data-feat' => f, :class => 'sortby')) + '</li>'
-    end
-    sortbyList.join("&nbsp;")
+
+  def capitalize_brand_name(name)
+    brand_name = name.split(' ').map{|bn| bn=(bn==bn.upcase ? bn.capitalize : bn)}.join(' ')
   end
+
+  def missing_spec_name_translation?(name)
+    missing = false
+    begin
+      I18n::translate(Session.product_type + ".specs." + name + ".name", :raise => true)
+    rescue I18n::MissingTranslationData
+      missing = true
+    end
+    missing
+  end
+  # Get product small title
+  def small_title(product)
+    # If it is a bundle get the first product in the bundle
+    bundle = ""
+    id_or_bundle_first_id = product.id
+
+    bundle_cat_specs = product.cat_specs
+
+    if product.product_bundle
+      bundle = " (" + t("products.show.bundle") + ")"
+      id_or_bundle_first_id = product.product_bundle.product_id
+      bundle_cat_specs = Product.find(id_or_bundle_first_id).cat_specs
+    end
+    
+    st = [bundle_cat_specs.cache_all(id_or_bundle_first_id)["brand#{fr?}"], bundle_cat_specs.cache_all(id_or_bundle_first_id)["model#{fr?}"]].join(" ") + bundle
+    if !(fr?.empty?)
+      CatSpec.colors_en_fr.each_pair do |k, v|
+        st = st.sub(k.upcase,v)
+      end
+    end
+    st
+  end
+
+  def descurl(product)
+    small_title(product).tr(' /','_-').tr('.', '-')
+  end
+  
+
+  def navbox_display_title(product)
+    title = small_title(product)
+    if title.length > 43
+      title = title[0..43].gsub(/\s[^\s]*$/,'')
+    end
+    title
+  end
+
+
 end

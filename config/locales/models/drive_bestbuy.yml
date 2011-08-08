@@ -7,11 +7,16 @@ en:
         defaultdesc:                "With an external hard drive, flash drive or disc drive you can backup your files and take them virtually anywhere. Shop for reliable, high-quality hard drives at BestBuy.ca and find the perfect way to keep your files safe."
         keywords:                   "external hard drive, flash drive, portable hard drive, hard drives"
         classification:             "Drive & Storage"
-        navtitle:                   "Currently browsing %{count} Drive"
-        outof:                      "Out of %{count} possible Drives"
+        navtitle:                  "Drive"
+        navtitle2:                   " Available"
+        outof:                      "Out of %{count} Drives"
         compare:                    "Compare"
         seeall:                     "See All"
-        shopnow:                    "Shop Now"        
+        shopnow:                    "Shop Now"
+        toprated:                   "Top Rated Products"
+        bestsellers:                "Best Sellers"
+        featuredproducts:           "Featured Products"
+        
         specs:
             category:
                 name:               "Categories"
@@ -49,30 +54,35 @@ en:
                 name:               "External"
             toprated:
                 name:               "Top-Rated"
+            featured:
+                name:               "Featured Products"    
             compatibility:
-                name:               "Compatiblility"
+                name:               "Compatibility"
             pcmac:
                 name:               "PC & Mac"
             pc:
                 name:               "PC"
             mac:
-                name:               "MAC"
+                name:               "Mac"
             rotations:
                 name:               "Rotation Speed"
-            5000rpm:
-                name:               "5000 rpm"
-            5900rpm:
-                name:               "5900 rpm"
-            5400rpm:
-                name:               "5400 rpm"
-            7200rpm:
-                name:               "7200 rpm"
-            10000rpm:
-                name:               "10000 rpm"
-            Internal or External:
+                unit:               "RPM"
+            # 5000rpm:
+            #     name:               "5000 rpm"
+            # 5900rpm:
+            #     name:               "5900 rpm"
+            # 5400rpm:
+            #     name:               "5400 rpm"
+            # 7200rpm:
+            #     name:               "7200 rpm"
+            # 10000rpm:
+            #     name:               "10000 rpm"
+            internalExternal:
                 name:               "Internal or External"
             saleprice_factor:
-                name:               "Price"
+                name:               "Price: Low to High"
+            saleprice_factor_high_to_low:
+                name:               "Price: High to Low"
             maxresolution_factor:
                 name:               "Resolution"
             opticalzoom_factor:
@@ -81,6 +91,7 @@ en:
                 name:               "Facebook like"
             capacity:
                 name:               "Storage Capacity"
+                unit:               "GB"
             isMac:
                 name:               "Mac"
             '20237':
@@ -92,13 +103,54 @@ en:
             '30442':
                 name:               "Solid State Drives"
             '20236':
-                name:               "DVD & CD Drives"
+                name:               "Optical Drives"
             '29583':
                 name:               "Storage Accessories"
+            'Network Attached Storage':
+                name:               "Network-Attached Storage (NAS)"
             'AdvancedSearch':
                 name:               "Advanced Search"
             displayDate:
                 name:               "Newest Model"
             orders_factor:  
                 name:               "Best Selling"        
-                  
+            cdReadSpeed:
+                name:               "CD Read Speed"
+            cdRewriteSpeed:
+                name:               "CD Rewrite Speed"
+            cdWriteSpeed:
+                name:               "CD Write Speed"
+            dvdReadSpeed:
+                name:               "DVD Read Speed"
+            dvdRewriteSpeed:
+                name:               "DVD Rewrite Speed"
+            dvdWriteSpeed:
+                name:               "DVD Write Speed"
+            dataAccessTime:
+                name:               "Data Access Time"
+            dataTransferTime:
+                name:               "Data Transfer Time"
+            dataTransferRate:
+                name:               "Data Transfer Rate"
+            readPerSecond:
+                name:               "Read per Second"
+            writePerSecond:
+                name:               "Write per Second"
+            seekTime:
+                name:               "Seek Time"
+            dataBuffer:
+                name:               "Data Buffer"
+                unit:               "MB"
+            interface:
+                name:               "Interface"
+            dimensions:
+                name:               "Dimensions"
+            weight:
+                name:               "Weight"
+            driveSize:
+                name:               "Drive Size"
+            drive_size_25:
+                name:               "2.5\""
+            drive_size_35:
+                name:               "3.5\""
+                

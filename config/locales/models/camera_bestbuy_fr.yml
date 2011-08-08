@@ -7,8 +7,17 @@ fr:
         defaultdesc:                "Meilleure sélection dappareils photo numériques"
         keywords:                   "appareils photo"
         classification:             "Appareils photo numériques"
-        navtitle:                   "Vous survolez actuellement %{count} appareils photo"
-        
+        navtitle:                  "Appareils photo"
+        navtitle2:                   " disponibles"
+        outof:                      "Parmi %{count} appareils photo"
+
+        compare:                    "Comparer"
+        seeall:                     "Visionner tout"
+        shopnow:                    "Magasinez"
+        toprated:                   "Meilleure cote produits"
+        bestsellers:                "Meilleurs vendeurs"
+        featuredproducts:           "Produits vedettes"
+
         specs:
             category:
                 name:               "Catégorie de produit"
@@ -16,7 +25,7 @@ fr:
                 name:               "Prix"
                 preunit:            "$"
             maxresolution:
-                name:               "Résolution"
+                name:               "Mégapixels"
                 unit:               "Mpx"
             opticalzoom:
                 name:               "Zoom optique"
@@ -34,6 +43,8 @@ fr:
                 name:               "Classement en général"
             onsale:
                 name:               "En solde"
+            featured:
+                name:               "Produits vedettes"    
             isClearance:
                 name:               "Liquidation"
             isOnlineOnly:
@@ -62,3 +73,23 @@ fr:
                 name:               "ACL avant et arrière"
             toprated:
                 name:               "Les mieux cotés"
+            maxresolution_factor:
+                name:               "Mégapixels"
+            displayDate:
+                name:               "Dernier modèle"
+            saleprice_factor:
+                name:               "Prix croissants"
+            saleprice_factor_high_to_low:
+                name:               "Prix décroissants"
+            orders_factor:  
+                name:               "Meilleur vendeur"        
+            AdvancedSearch:
+                name:               "Recherche avancée"       
+            '22474':
+                name:               "Visez et photographiez"                
+            '28382':
+                name:               "Étanche"
+            '28381':
+                name:               "Zoom puissant"
+            '20220':
+                name:               "Compact amélioré"                         

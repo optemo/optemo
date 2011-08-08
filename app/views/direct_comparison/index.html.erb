@@ -1,85 +1,95 @@
 <div class="bb_poptitle">
-	<labeL class="comp-title"><%=t "compare.index.title"%></label>
-    <% link_to "close", :class => "compare bb_quickview_close" do %>
-		<%=t('products.compare.closewindow')%> <%= image_tag("closepopup.png") %>
-	<% end %>
-	<div class="clear">&nbsp;</div>
+	<label class="comp-title"><%=t "compare.index.title"%></label>
+  <% link_to "close", :class => "compare bb_quickview_close" do %>
+	<%= image_tag("closepopup.png") %>
+<% end %>
+<div class="clear">&nbsp;</div>
 </div>
 
 <div id="basic_matrix" class="comparisonmatrix" style="width: <%= box_width %>px">
 
-    <%# Rows are like this: %>
-    <%# remove buttons %>
-    <%# pictures (thumbnail partial) %>
-    <%# "product details" %>
-    <%# then featurename, data, data %>
+  <%# Rows are like this: %>
+  <%# remove buttons %>
+  <%# pictures (thumbnail partial) %>
+  <%# "product details" %>
+  <%# then featurename, data, data %>
 
-    <div class="compare_row">
-        <div class="columntitle leftmostcolumn leftmostcolumntitle"></div>
+  <div class="compare_row">
+    <div class="columntitle leftmostcolumn leftmostcolumntitle"></div>
 
-    	<% @products.each_with_index do |product, i| %>
-            <div class="columntitle spec_column_<%= i %>">
-    				<%= link_to image_tag('remove.png', :style => "vertical-align: text-top;")+" "+t('compare.index.remove'), "", :"data-name" => product.id, :class => 'remove spec_column_' + i.to_s %>
-    		</div>
+    <% @products.each_with_index do |product, i| %>
+      <div class="columntitle spec_column_<%= i %>">
+    		<%= link_to image_tag('remove.png', :style => "vertical-align: text-top;")+" "+t('compare.index.remove'), "", :"data-name" => product.id, :class => 'remove spec_column_' + i.to_s %>
+    	</div>
 		<% end %>
-    </div>
-    <% spec_hash = {} %>
-    <div class="compare_row">
-        <div class="thumbnailcell leftmostcolumn tabletitle" style="padding-right:3px;"> <%# the style information is here because IE can't handle .class.otherclass CSS declarations %>
+  </div>
+  <% spec_hash = {} %>
+  <div class="compare_row">
+    <div class="thumbnailcell leftmostcolumn tabletitle" style="padding-right:3px;"> <%# the style information is here because IE can't handle .class.otherclass CSS declarations %>
 			&nbsp;
 		</div>
 		<% @products.each_with_index do |product,i| %>
-    		<% contspecs = ContSpec.cache_all(product.id) %>
-    		<% catspecs = CatSpec.cache_all(product.id) %>
-    		<% binspecs = BinSpec.cache_all(product.id) %>
-    		<% spec_hash[product.id] = contspecs.merge(catspecs).merge(binspecs) %>
-    		<%= render :partial => 'thumbnails', :object => product, :locals => {:contspecs => contspecs, :catspecs => catspecs, :binspecs => binspecs, :column_number => i} %>
-        <% end %>
-    </div>
+    	<% contspecs = ContSpec.cache_all(product.id) %>
+    	<% catspecs = CatSpec.cache_all(product.id) %>
+    	<% binspecs = BinSpec.cache_all(product.id) %>
+    	<% spec_hash[product.id] = contspecs.merge(catspecs).merge(binspecs) %>
+    	<%= render :partial => 'thumbnails', :object => product, :locals => {:contspecs => contspecs, :catspecs => catspecs, :binspecs => binspecs, :column_number => i} %>
+    <% end %>
+  </div>
 
-    <div class="compare_row">
-        <div class="columntitle leftmostcolumntitle spec-capt">
-        	<%=t 'compare.index.proddetails'%>
-        </div>
+  <div class="compare_row">
+    <div class="columntitle leftmostcolumntitle spec-capt">
+      <%=t 'compare.index.proddetails'%>
+    </div>
 
 		<% @products.each_with_index do |product, i| %>
-            <div class="columntitle spec_column_<%= i %> spec-capt">&nbsp;</div>
-        <% end %>
-    </div>
+      <div class="columntitle spec_column_<%= i %> spec-capt">&nbsp;</div>
+    <% end %>
+  </div>
 	<% gray = false %>
-        <% {@s.continuous["show"] => "cont", @s.categorical["show"] => "cat", @s.binary["show"] => "bin"}.each_pair do |feat_list, feat_type| %>
-            <% feat_list.each do |feat| %>
-			<%#needs to be more efficient especially if we want to have unlimited number of products in the compare box%>	
-				<% if feat_type!="bin" || !@products.map{|product| spec_hash[product.id][feat]}.compact.empty? %> 
-					<div class="<%= t("#{Session.product_type}.specs.#{feat}.name").length < 20 ? "compare_row" : "double_height_compare_row" %>">
+  <% show_feats=@s.continuous['show'].map{|x| {x=>'cont'}} + @s.categorical['show'].map{|x| {x=>'cat'}} + @s.binary['show'].map{|x| {x=>'bin'}} %>
+  <% show_feats.sort! do |a,b| %>
+  <% a_index = @s.filters_order.index{|f| f[:name]==a.keys[0]} %>
+  <% b_index = @s.filters_order.index{|f| f[:name]==b.keys[0]} %>
+  <% (a_index.nil? ? 9999 : @s.filters_order[a_index][:show_order]) <=>(b_index.nil? ? 9999 : @s.filters_order[b_index][:show_order]) %>
+  <% end %>
+  <% show_feats.each do |feat_pair| %>
+    <% feat_pair.each_pair do |feat, feat_type| %>
+
+
+      <%# {@s.continuous["show"] => "cont", @s.categorical["show"] => "cat", @s.binary["show"] => "bin"}.each_pair do |feat_list, feat_type| %>
+        
+        <%# feat_list.each do |feat| %>
+          
+			    <%#needs to be more efficient especially if we want to have unlimited number of products in the compare box%>	
+				  <% if feat_type!="bin" || !@products.map{|product| spec_hash[product.id][feat]}.compact.empty? %> 
+					  <div class="<%= t("#{Session.product_type}.specs.#{feat}.name", :default=>feat).length < 20 ? "compare_row" : "double_height_compare_row" %>">
 		     			<div class="cell <%= gray ? "graybg" : "whitebg" %> leftmostcolumn leftcolumntext">
-		        			<%= t("#{Session.product_type}.specs.#{feat}.name") %>:
-		        		</div>
-        				<% @products.each_with_index do |product, i| %>
-            				<% allspecs = spec_hash[product.id] %>
-							<%# Some features have a french version and others don't %>
-            				<%= render :partial => 'featurevalues', :locals => {:product => product, :numberofproducts => @products.count, :spec => allspecs[feat+fr?] || allspecs[feat], :gray => gray, :feat => feat, :type => feat_type, :column_number => i} %>
-                		<% end %>
-        				<% gray = !gray %>
-					</div>
-				<%end%>		
-            <% end %>
+		        		<%= t("#{Session.product_type}.specs.#{feat}.name", :default=>feat) %>:
+		        	</div>
+        			<% @products.each_with_index do |product, i| %>
+            		<% allspecs = spec_hash[product.id] %>
+							  <%# Some features have a french version and others don't %>
+            		<%= render :partial => 'featurevalues', :locals => {:product => product, :numberofproducts => @products.count, :spec => allspecs[feat+fr?] || allspecs[feat], :gray => gray, :feat => feat, :type => feat_type, :column_number => i} %>
+              <% end %>
+        			<% gray = !gray %>
+					  </div>
+          <% end %>
         <% end %>
+      <% end %>
 </div>
 
 <div class="spacer togglespecs" style="width=<%= box_width %>px"><%= link_to '#', :class => 'toggle_specs' do %>
 	<div class="moretext">
-	<%=t('compare.index.morespecs')%>&nbsp;
-	<%= image_tag "downarrow.png" %>
+    <%= image_tag("bb_more_specs#{fr?}.gif") %>
 	</div>
 	<div class="lesstext" style="display:none;">
-	<%=t('compare.index.lessspecs')%>&nbsp;
-	<%= image_tag "downarrow.png" %>
+    <%= image_tag("bb_less_specs#{fr?}.gif") %>
 	</div>
 <% end %>
 </div>
 <div class="comparisonmatrix" id="hideable_matrix" style="width: <%= box_width %>px">
 	<div class="compare_row"><div class="columntitle
-	leftmostcolumntitle spec-capt"><%=t('compare.index.allspecifications')%></div></div>
+	                                     leftmostcolumntitle spec-capt"><%=t('compare.index.allspecifications')%></div></div>
 </div>
 <div class="spacer">

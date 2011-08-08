@@ -7,11 +7,17 @@ en:
         defaultdesc:                "Best Selection of digital cameras"
         keywords:                   "cameras"
         classification:             "Digital Cameras"
-        navtitle:                   "Available"
-        navtitle2:                  " Camera"
+        navtitle:                  "Camera"
+        navtitle2:                   " Available"
+        outof:                      "Out of %{count} Cameras"
+
         compare:                    "Compare"
         seeall:                     "See All"
         shopnow:                    "Shop Now"
+        toprated:                   "Top Rated Products"
+        bestsellers:                "Best Sellers"
+        featuredproducts:           "Featured Products"
+
         specs:
             category:
                 name:               "Product Category"
@@ -78,8 +84,12 @@ en:
                 name:               "Front and Back LCD"
             toprated:
                 name:               "Top-Rated"
+            featured:
+                name:               "Featured Products"    
             saleprice_factor:
-                name:               "Price"
+                name:               "Price: Low to High"
+            saleprice_factor_high_to_low:
+                name:               "Price: High to Low"
             maxresolution_factor:
                 name:               "Megapixels"
             opticalzoom_factor:

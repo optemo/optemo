@@ -177,7 +177,7 @@ class Search < ActiveRecord::Base
   def products
     sortby=Session.search.sortby
     if sortby == "relevance" || sortby.nil?
-        @products = Kmeans.compute(9,SearchProduct.fq2)
+        @products = Kmeans.compute(18,SearchProduct.fq2)
     else
         #if sortby.include?("_high")
             @products = SearchProduct.fq2
@@ -313,9 +313,6 @@ class Search < ActiveRecord::Base
       #Browse similar button
       self.seesim = p["cluster_hash"] # current products
       duplicateFeatures(old_search)
-    when "featured"
-        debugger
-      @userdatacats << Userdatacat.new({:name => "featured", :value => '1'})
     when "extended"
       self.seesim = p["extended_hash"] # current products
       createFeatures(p)
@@ -383,7 +380,13 @@ class Search < ActiveRecord::Base
         #Continuous Features
         fname = Regexp.last_match[1]
         max = fname+'_max'
-        @userdataconts << Userdatacont.new({:name => fname, :min => v, :max => p[max]})
+        # Only add the filter when the feature if it is in its range
+        feat_range = ContSpec.allMinMax fname
+
+
+        if (feat_range[0] < v.to_f && feat_range[1] > v.to_f) || (feat_range[0] < p[max].to_f && feat_range[1] > p[max].to_f)
+          @userdataconts << Userdatacont.new({:name => fname, :min => v, :max => p[max]})
+        end
       elsif Session.binary["all"].index(k)
         #Binary Features
         #Handle false booleans
@@ -417,31 +420,65 @@ class Search < ActiveRecord::Base
     
     # remove the filter without categories selected
     
+    dynamic_filter_cat_selected = []
+    dynamic_filter_cat_all = []
+    dynamic_filter_cont_selected = []
+    dynamic_filter_cont_all = []
+    dynamic_filter_bin_selected = []
+    dynamic_filter_bin_all = []
+    Session.dynamic_filter_cat.each_pair do |k, v|
+      dynamic_filter_cat_all += Session.dynamic_filter_cat[k]
+    end
+    Session.dynamic_filter_cont.each_pair do |k, v|
+      dynamic_filter_cont_all += Session.dynamic_filter_cont[k]
+    end
+    Session.dynamic_filter_bin.each_pair do |k, v|
+      dynamic_filter_bin_all += Session.dynamic_filter_bin[k]
+    end
 
-      @userdatacats.group_by(&:name).keys.uniq.each do |feature_name|
-        Session.dynamic_filter_cat.each_pair do |k, v|
-          if v.include?(feature_name)
-            @userdatacats.reject!{|c| c.name == feature_name} unless cats.include?(k)
-            break
-          end
-        end
-      end
-    @userdataconts.group_by(&:name).keys.uniq.each do |feature_name|
-      Session.dynamic_filter_cont.each_pair do |k, v|
-          if v.include?(feature_name)
-            @userdataconts.reject!{|c| c.name == feature_name} unless cats.include?(k)
-            break
-          end
-        end
-      end
-      @userdatabins.group_by(&:name).keys.uniq.each do |feature_name|
-        Session.dynamic_filter_bin.each_pair do |k, v|
-          if v.include?(feature_name)
-            @userdatabins.reject!{|c| c.name == feature_name} unless cats.include?(k)
-            break
-          end
-        end
-      end
+    cats.each do |c|
+      dynamic_filter_cat_selected += Session.dynamic_filter_cat[c]
+      dynamic_filter_cont_selected += Session.dynamic_filter_cont[c]
+      dynamic_filter_bin_selected += Session.dynamic_filter_bin[c]
+    end
+
+    
+
+    dynamic_filter_cat_selected.uniq!
+    dynamic_filter_cat_all.uniq!
+    dynamic_filter_cont_selected.uniq!
+    dynamic_filter_cont_all.uniq!
+    dynamic_filter_bin_selected.uniq!
+    dynamic_filter_bin_all.uniq!
+    
+    @userdatacats.reject!{|c| dynamic_filter_cat_all.include?(c.name) && !dynamic_filter_cat_selected.include?(c.name)}
+    @userdataconts.reject!{|c| dynamic_filter_cont_all.include?(c.name) && !dynamic_filter_cont_selected.include?(c.name)}
+    @userdatabins.reject!{|c| dynamic_filter_bin_all.include?(c.name) && !dynamic_filter_bin_selected.include?(c.name)}
+
+    # @userdatacats.group_by(&:name).keys.uniq.each do |feature_name|
+    #   Session.dynamic_filter_cat.each_pair do |k, v|
+    #       if v.include?(feature_name)
+    #         @userdatacats.reject!{|c| c.name == feature_name} unless cats.include?(k)
+    #         break
+    #       end
+    #     end
+    #   end
+    # @userdataconts.group_by(&:name).keys.uniq.each do |feature_name|
+    #   Session.dynamic_filter_cont.each_pair do |k, v|
+    #       if v.include?(feature_name)
+    #         @userdataconts.reject!{|c| c.name == feature_name} unless cats.include?(k)
+    #         break
+    #       end
+    #     end
+    #   end
+    #   @userdatabins.group_by(&:name).keys.uniq.each do |feature_name|
+    #     Session.dynamic_filter_bin.each_pair do |k, v|
+    #       if v.include?(feature_name)
+    #         @userdatabins.reject!{|c| c.name == feature_name} unless cats.include?(k)
+    #         break
+    #       end
+    #     end
+    #   end
     
 
   end

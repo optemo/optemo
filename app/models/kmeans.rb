@@ -178,27 +178,26 @@ end
 
 def self.compute(number_clusters,products)
 
-cluster_weights = self.set_cluster_weights(Session.continuous["cluster"])
-
-s = products.size
-if (s<=number_clusters)
-  utilitylist = Kmeans.utility(products, "gorder")
-  #if utilities are the same
-  utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
-  util_tmp = utilitylist.sort{|x,y| y <=> x }    
-  ordered_list = util_tmp.map{|u| utilitylist.index(u)}
-  return ordered_list.map{|i| products[i]}
-end
-  # initial seeds for clustering  ### just based on contiuous features
-  inits = self.init(number_clusters, products, cluster_weights)
-  standard_specs = self.factorize_cont_data(products)
-  utilities_rep = Kmeans.utility(products, "rep")
-  utilities_gorder  = Kmeans.utility(products, "gorder")
-  utilities_gorder.each_with_index{|u, i| utilities_gorder[i]=u+(0.0000001*i)} if utilities_gorder.uniq.size<number_clusters
-  $k = Kmeans.new unless $k
-  labels = $k.kmeans_c(standard_specs.flatten.map{|s| s.nil? ? 0.0 : s}, standard_specs.size , standard_specs.first.size, number_clusters, cluster_weights, utilities_rep, utilities_gorder, inits)
-  sorted_products=[]
-  until labels.empty?
+    cluster_weights = self.set_cluster_weights(Session.continuous["cluster"])
+    s = products.size
+    if (s<=number_clusters)
+        utilitylist = Kmeans.utility(products, "gorder")
+        #if utilities are the same
+        utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<s
+        util_tmp = utilitylist.sort{|x,y| y <=> x }    
+        ordered_list = util_tmp.map{|u| utilitylist.index(u)}
+        return ordered_list.map{|i| products[i]}
+    end
+    # initial seeds for clustering  ### just based on contiuous features
+    inits = self.init(number_clusters, products, cluster_weights)
+    standard_specs = self.factorize_cont_data(products)
+    utilities_rep = Kmeans.utility(products, "rep")
+    utilities_gorder  = Kmeans.utility(products, "gorder")
+    utilities_gorder.each_with_index{|u, i| utilities_gorder[i]=u+(0.0000001*i)} if utilities_gorder.uniq.size<number_clusters
+    $k = Kmeans.new unless $k
+    labels = $k.kmeans_c(standard_specs.flatten.map{|s| s.nil? ? 0.0 : s}, standard_specs.size , standard_specs.first.size, number_clusters, cluster_weights, utilities_rep, utilities_gorder, inits)
+    sorted_products=[]
+    until labels.empty?
       p_ins = []
       ([labels]*number_clusters).each_with_index{|l, i| p_ins << l.index(i) if l.index(i)}
       p_ins.map do |i| 

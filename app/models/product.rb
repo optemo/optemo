@@ -2,8 +2,10 @@ class Product < ActiveRecord::Base
   has_many :cat_specs
   has_many :bin_specs
   has_many :cont_specs
+  has_many :text_specs
   has_many :search_products
-  
+  has_one :product_bundle, :foreign_key=>:bundle_id
+
   #define_index do
   #  #fields
   #  indexes "LOWER(title)", :as => :title
@@ -32,8 +34,8 @@ class Product < ActiveRecord::Base
     #Algorithm for calculating id of initial products in product_searches table
     #We probably need a better algorithm to check for collisions
     chars = []
-    Session.product_type.each_char{|c|chars<<c.getbyte(0)*chars.size}
-    chars.sum*-1
+    Session.product_type.each_char{|c|chars << c.getbyte(0)*chars.size}
+    chars.sum * -1
   end
   
   def self.filterspecs
@@ -75,21 +77,17 @@ class Product < ActiveRecord::Base
   #Session.binary["filter"].map{|f|"id in (select product_id from bin_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{Session.product_type}')"}+\
     
   def brand
-    @brand ||= cat_specs.cache_all(id)["brand"]
+    if I18n.locale == :fr
+      cat_specs.cache_all(id)["brand_fr"]
+    else
+      @brand ||= cat_specs.cache_all(id)["brand"]
+    end
   end
   
   def tinyTitle
     @tinyTitle ||= [brand.gsub("Hewlett-Packard", "HP"),(model || cat_specs.cache_all(id)["model"] || cat_specs.cache_all(id)["mpn"]).split(' ')[0]].join(' ')
   end
   
-  def descurl
-    small_title.tr(' /','_-').tr('.', '-')
-  end
-  
-  def small_title
-    [brand,model || cat_specs.cache_all(id)["model"] || cat_specs.cache_all(id)["mpn"]].join(" ")
-  end
-
   def mobile_descurl
     "/show/"+[id,brand,model || cat_specs.cache_all(id)["model"] || cat_specs.cache_all(id)["mpn"]].join('-').tr(' /','_-')
   end

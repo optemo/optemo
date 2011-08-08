@@ -9,18 +9,20 @@ class CompareController < ApplicationController
     else
       # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
       if Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
+#        debugger
         hist = CGI.unescape(params[:hist]).unpack('m')[0].gsub(/\D/,'').to_i if params[:hist] && !params[:hist].blank?
         search_history = Search.find_by_parent_id(hist) if hist && params[:page].nil?
+        sortby = params[:sortby] || 'relevance'
         if params[:page]
-          classVariables(Search.create({:page => params[:page], :sortby => params[:sortby], "action_type" => "nextpage"}))
+          classVariables(Search.create({:page => params[:page], :sortby => sortby, "action_type" => "nextpage", "parent"=>params[:hist]}))
         elsif search_history
           #Going back to a previous search
           classVariables(search_history)
-        elsif params[:sortby] # Change sorting method via navigator_bar select box
-          classVariables(Search.create({:sortby => params[:sortby], "action_type" => "sortby"}))
+        elsif sortby # Change sorting method via navigator_bar select box
+          classVariables(Search.create({:sortby => sortby, "action_type" => "sortby",  "parent"=>params[:hist]}))
         else
           #Initial clusters
-          classVariables(Search.create({:sortby => params[:sortby], "action_type" => "initial"}))
+          classVariables(Search.create({:sortby => sortby, "action_type" => "initial"}))
         end
       else
         @indexload = true
@@ -131,6 +133,7 @@ class CompareController < ApplicationController
   def fr?
     I18n.locale == :fr ? "_fr" : ""
   end
+  
   # Depending on the session, either use the traditional layout or the "optemo" layout.
   # The CSS files are loaded automatically though, so the usual "sv / gv / lv / mv" CSS classes are needed.
   def choose_layout
@@ -143,7 +146,8 @@ class CompareController < ApplicationController
   
   def classVariables(search)
     @s = Session
-    @jsonp_version = true if request.subdomains.first == "embed"
+    
+    @jsonp_version = true if params[:embedding] # request.subdomains.first == "embed" || request.subdomains.first == "sandbox"
     @s.search = search
     @s.getFilters search.userdatacats
     if @s.directLayout
@@ -153,14 +157,19 @@ class CompareController < ApplicationController
   
   def correct_render
     if params[:ajax]
-      if @s.search.page
-          render 'page', :layout => false
-      else
-          if params[:landing]
-              render 'ajax_landing', :layout => false
-          else      
-              render 'ajax', :layout => false
-          end      
+      # Having a more efficient method of turning the pages in the pagination branch is a good idea.
+      # However, we were having troubles with reloading, say, the second page of a search (since it would not render ajax.html.erb
+      # but instead just render page.html.erb) and for the sake of bug-fixing speed I just took this out.
+      # The page.html.erb code is still around, and the javascript side in ajaxhandler() is still in application.js
+      # ZAT July 20, 2011
+      # if @s.search.page
+      #   render 'page', :layout => false
+      # else
+      if params[:landing]
+        render 'ajax_landing', :layout => false
+      else      
+        render 'ajax', :layout => false
+       # end      
       end
     else
       if Session.mobileView
