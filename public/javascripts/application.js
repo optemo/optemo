@@ -1584,6 +1584,7 @@ optemo_module = (function (my){
             DOM_ALREADY_RUN = true;
             my.initializeVariables();
             // This initializes the jquery history plugin. Note that the plugin was modified for use with our application javascript (details in jquery.history.js)
+
             $.history.init(optemo_module.ajaxsend);
 
             // Only load DBinit if it will not be loaded by the upcoming ajax call
@@ -1839,10 +1840,22 @@ optemo_module = (function (my){
     };
     
     $('.optemo_compare_button').live('click', function(){
+        var selectedComps = my.getSelectedComparisons().length;
         var objCheckbox = $(this).parent().find('.optemo_compare_checkbox');
+        var max = (objCheckbox.attr('checked') ? 5 : 4);
+        
         if (!objCheckbox.attr('checked')) {
-            objCheckbox.attr('checked', 'checked');
-            my.loadspecs(objCheckbox.attr('data-sku'));
+            if (selectedComps <= max) {
+                objCheckbox.attr('checked', 'checked');
+                my.loadspecs(objCheckbox.attr('data-sku'));
+            }
+            else {
+                if (!(typeof(optemo_french) == "undefined") && optemo_french)
+                    alert("Le nombre maximum de produits que vous pouvez comparer est de 5. Veuillez réessayer.");
+                else
+                    alert("The maximum number of products you can compare is 5. Please try again.");
+                return false;
+            }
         }
         my.compareCheckedProducts();
         // Change navigator bar compare button text
