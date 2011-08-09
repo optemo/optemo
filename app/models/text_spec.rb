@@ -6,7 +6,7 @@ class TextSpec < ActiveRecord::Base
   end
   def self.cacheone(p_id, feat) 
      CachingMemcached.cache_lookup("TextSpecs#{feat}#{p_id}") do
-       select("value").where(["product_id = ? and name = ?", p_id, feat]).map(&:value).first
+       select("value").where(["product_id = ? and name = ?", p_id, feat]).map{|x|x.value}.first
      end
   end
 end
