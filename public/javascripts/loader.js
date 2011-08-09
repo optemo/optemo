@@ -50,7 +50,7 @@ var category_id_hash = {'digital-cameras' : 22474,
 
 var rails_category_id = 0;
 for (var i in category_id_hash) {
-    if (window.location.pathname.match(new RegExp(i))) {
+    if (window.location.pathname.match(new RegExp(i,"i"))) {
         rails_category_id = category_id_hash[i];
         break;
     }
