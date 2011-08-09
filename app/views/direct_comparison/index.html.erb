@@ -47,11 +47,12 @@
     <% end %>
   </div>
 	<% gray = false %>
+  <%# Sort features of specs in compare page if they are also filter features %>
   <% show_feats=@s.continuous['show'].map{|x| {x=>'cont'}} + @s.categorical['show'].map{|x| {x=>'cat'}} + @s.binary['show'].map{|x| {x=>'bin'}} %>
   <% show_feats.sort! do |a,b| %>
   <% a_index = @s.filters_order.index{|f| f[:name]==a.keys[0]} %>
   <% b_index = @s.filters_order.index{|f| f[:name]==b.keys[0]} %>
-  <% (a_index.nil? ? 9999 : @s.filters_order[a_index][:show_order]) <=>(b_index.nil? ? 9999 : @s.filters_order[b_index][:show_order]) %>
+  <% (a_index.nil? ? 9999 : @s.filters_order[a_index][:show_order].to_i) <=>(b_index.nil? ? 9999 : @s.filters_order[b_index][:show_order].to_i) %>
   <% end %>
   <% show_feats.each do |feat_pair| %>
     <% feat_pair.each_pair do |feat, feat_type| %>

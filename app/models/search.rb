@@ -419,7 +419,7 @@ class Search < ActiveRecord::Base
     end
     
     # remove the filter without categories selected
-    
+    # Compare the set of all dynamic filters and dynamic filters of selected categories. If the feature is in "all" but not in "selected", remove it from filters list(@userdatacats, @userdataconts and @userdatabins)
     dynamic_filter_cat_selected = []
     dynamic_filter_cat_all = []
     dynamic_filter_cont_selected = []
