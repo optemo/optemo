@@ -179,6 +179,7 @@
         },
         load: function(hash,myurl,mydata) {
             locationWrapper.put(hash);
+            self.callback(hash,myurl,mydata);
         }
     };
 

@@ -9,20 +9,18 @@ class CompareController < ApplicationController
     else
       # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
       if Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
-#        debugger
-        hist = CGI.unescape(params[:hist]).unpack('m')[0].gsub(/\D/,'').to_i if params[:hist] && !params[:hist].blank?
-        search_history = Search.find_by_parent_id(hist) if hist && params[:page].nil?
-        sortby = params[:sortby] || 'relevance'
+        hist = CGI.unescape(params[:hist]).unpack('m')[0].gsub(/\D/,'').to_i if params[:page].nil? && params[:landing].nil? && params[:hist] && !params[:hist].blank?
+        search_history = Search.find_by_parent_id(hist) if hist
         if params[:page]
-          classVariables(Search.create({:page => params[:page], :sortby => sortby, "action_type" => "nextpage", "parent"=>params[:hist]}))
+          classVariables(Search.create({:page => params[:page], :sortby => params[:sortby] || 'relevance', "action_type" => "nextpage", "parent"=>params[:hist]}))
         elsif search_history
           #Going back to a previous search
           classVariables(search_history)
-        elsif sortby # Change sorting method via navigator_bar select box
-          classVariables(Search.create({:sortby => sortby, "action_type" => "sortby",  "parent"=>params[:hist]}))
+        elsif params[:sortby] # Change sorting method via navigator_bar select box
+          classVariables(Search.create({:sortby => params[:sortby], "action_type" => "sortby",  "parent"=>params[:hist]}))
         else
           #Initial clusters
-          classVariables(Search.create({:sortby => sortby, "action_type" => "initial"}))
+          classVariables(Search.create({"action_type" => "initial"}))
         end
       else
         @indexload = true

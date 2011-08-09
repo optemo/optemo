@@ -110,7 +110,7 @@ module CompareHelper
 	    end      
 	    dispString
 	  end
- end
+  end
  
   def chosencats(feat)
     Session.search.userdatacats.select{|d|d.name == feat}.map{|x|x.value}
