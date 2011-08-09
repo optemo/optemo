@@ -6,13 +6,13 @@ class SearchProduct < ActiveRecord::Base
     end
     
     def filterquery
-      mycats = Session.search.userdatacats.group_by(&:name).values
+      mycats = Session.search.userdatacats.group_by{|x|x.name}.values
       mybins = Session.search.userdatabins
       search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins)
     end
     
     def fq2_landing(s) 
-          mycats = Session.search.userdatacats.group_by(&:name).values
+          mycats = Session.search.userdatacats.group_by{|x|x.name}.values
           mybins = Session.search.userdatabins
           myconts = Session.search.userdataconts
           res = []
@@ -29,7 +29,7 @@ class SearchProduct < ActiveRecord::Base
       end    
 
       def find_hero
-        mycats = Session.search.userdatacats.group_by(&:name).values
+        mycats = Session.search.userdatacats.group_by{|x|x.name}.values
         mybins = Session.search.userdatabins
         myconts = Session.search.userdataconts  
         res = []  
@@ -40,7 +40,7 @@ class SearchProduct < ActiveRecord::Base
             
       def fq2
         sortby= Session.search.sortby
-        mycats = Session.search.userdatacats.group_by(&:name).values
+        mycats = Session.search.userdatacats.group_by{|x|x.name}.values
         mybins = Session.search.userdatabins
         myconts = Session.search.userdataconts
         if Session.directLayout
@@ -91,7 +91,7 @@ class SearchProduct < ActiveRecord::Base
       end
     
     def cat_counts(feat,expanded,includezeros = false,s = Session.search)
-      allcats = s.userdatacats.group_by(&:name)
+      allcats = s.userdatacats.group_by{|x|x.name}
       mycats = allcats.reject{|id|feat == id}.values
       mybins = s.userdatabins
       table_id = mycats.size
@@ -110,7 +110,7 @@ class SearchProduct < ActiveRecord::Base
     end
     
     def bin_count(feat)
-      mycats = Session.search.userdatacats.group_by(&:name).values
+      mycats = Session.search.userdatacats.group_by{|x|x.name}.values
       mybins = Session.search.userdatabins.reject{|e|e.name == feat} << BinSpec.new(:name => feat, :value => true)
       q = where(:search_id => Product.initial).create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins)
       CachingMemcached.cache_lookup("BinsCount-#{q.to_sql.hash}") do

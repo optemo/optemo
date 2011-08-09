@@ -40,7 +40,7 @@ class Session
     # Check the product_types table for details
     p_type = ProductType.find(cat_id.blank? ? 2 : CategoryIdProductTypeMap.find_by_category_id(cat_id.to_i).product_type_id)
     self.product_type = p_type.name
-    self.category_id = p_type.category_id_product_type_maps.map(&:category_id)
+    self.category_id = p_type.category_id_product_type_maps.map{|x|x.category_id}
     
     # directLayout controls the presented view: Optemo Assist vs. Optemo Direct. 
     # Direct needs no clustering, showing all products in browseable pages and offering "group by" buttons.
