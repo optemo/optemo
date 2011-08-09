@@ -1,6 +1,8 @@
+<%# Cache specs here at the top of navbox partial to save on SQL calls and instantiations. Don't bother with Bin or Text specs since they are only used once each (though this might change in future, be careful) %>
+<% cont_specs = ContSpec.cache_all(product.id); cat_specs = CatSpec.cache_all(product.id) %>
 <div id="box<%= product.id %>" class="navbox" <%= ("style='margin-right:0px;background:none;'" if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1) %>>
 	<div class="topbar">
-		<%= image_tag(CatSpec.cache_all(product.id)["img150url"], :class => "productimg", :alt => small_title(product), :title => small_title(product), :'data-id' => product.id, :'data-sku' => product.sku) %>
+		<%= image_tag(cat_specs["img150url"], :class => "productimg", :alt => small_title(product), :title => small_title(product), :'data-id' => product.id, :'data-sku' => product.sku) %>
 
 
 		<div class="productinfo">
@@ -15,21 +17,21 @@
 		  </a>
       </div>
       <% end %>
-			<%= link_to navbox_display_title(product), TextSpec.cacheone(product.id, "productUrl#{fr?}"), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
+			<%= link_to I18n.locale == :fr ? CatSpec.cache_all(product.id)["title#{fr?}"] : product.title, TextSpec.cacheone(product.id, "productUrl#{fr?}"), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
 		    
-			<div class="productspecs"><%=featuretext(product.id) %></div>
+			<div class="productspecs"><!--&--></div>
 			<% if BinSpec.cache_all(product.id)["onsale"] %>
 				<div class="saleprice">
-				<%= t('products.compare.onsale')+(fr?.empty? ? "" : " ")+": "+number_to_currency(ContSpec.cache_all(product.id)["saleprice"]) %></div>	
-				<div class="save"><%= t('products.compare.save')+(fr?.empty? ? "" : " ")+": "+ number_to_currency(ContSpec.cache_all(product.id)["price"]-ContSpec.cache_all(product.id)["saleprice"]) %></div>
-			    <div class="saleends"><%= t('products.show.saleends')+(fr?.empty? ? "" : " ")+": "%><%= l((Date.parse(CatSpec.cache_all(product.id)["saleEndDate"]) - 1.day), :format => :long) if CatSpec.cache_all(product.id)["saleEndDate"] %></div>
+				<%= t('products.compare.onsale')+(fr?.empty? ? "" : " ")+": "+number_to_currency(cont_specs["saleprice"]) %></div>	
+				<div class="save"><%= t('products.compare.save')+(fr?.empty? ? "" : " ")+": "+ number_to_currency(cont_specs["price"]-cont_specs["saleprice"]) %></div>
+			    <div class="saleends"><%= t('products.show.saleends')+(fr?.empty? ? "" : " ")+": "%><%= l((Date.parse(cat_specs["saleEndDate"]) - 1.day), :format => :long) if cat_specs["saleEndDate"] %></div>
 			<% else %>
 				<div class="price">
-					<%= t('products.show.ourprice') + ":"%> <%= "$" if fr?.empty? %><%= number_with_delimiter(ContSpec.cache_all(product.id)["price"]) %> <%= " $" unless fr?.empty? %>
+					<%= t('products.show.ourprice') + ":"%> <%= "$" if fr?.empty? %><%= number_with_delimiter(cont_specs["price"]) %> <%= " $" unless fr?.empty? %>
 				</div>	
 			<% end %>
-			<% if ContSpec.cache_all(product.id)["customerRating"] > 0 %>
-				<div class="stars" data-stars="<%= ContSpec.cache_all(product.id)["customerRating"] %>"></div>
+			<% if cont_specs["customerRating"] > 0 %>
+				<div class="stars" data-stars="<%= cont_specs["customerRating"] %>"></div>
 			<% end %>
 		</div>
 	     
