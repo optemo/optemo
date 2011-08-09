@@ -1,5 +1,5 @@
 <div class="showtable_mobile rounded">
-	<h3><%= URI.decode(@product.title) %></h3>
+	<h3><%= URI.decode(CatSpec.cache_all(@product.id)["title".fr?] || @product.title) %></h3>
 	<div id="image">
 		<% if FileTest.exist?("#{Rails.root}/public" + @allspecs["imglurl"]) %>
 			<%= image_tag(@allspecs["imglurl"]) %>

@@ -414,15 +414,14 @@ module CompareHelper
     bundle = ""
     id_or_bundle_first_id = product.id
 
-    bundle_cat_specs = product.cat_specs
-
+    bundle_cat_specs = CatSpec.cache_all(product.id)
     if product.product_bundle
       bundle = " (" + t("products.show.bundle") + ")"
       id_or_bundle_first_id = product.product_bundle.product_id
-      bundle_cat_specs = Product.find(id_or_bundle_first_id).cat_specs
+      bundle_cat_specs = CatSpec.cache_all(id_or_bundle_first_id)
     end
     
-    st = [bundle_cat_specs.cache_all(id_or_bundle_first_id)["brand#{fr?}"], bundle_cat_specs.cache_all(id_or_bundle_first_id)["model#{fr?}"]].join(" ") + bundle
+    st = [bundle_cat_specs["brand#{fr?}"] || product.brand, bundle_cat_specs["model#{fr?}"] || product.model].join(" ") + bundle
     if !(fr?.empty?)
       CatSpec.colors_en_fr.each_pair do |k, v|
         st = st.sub(k.upcase,v)
