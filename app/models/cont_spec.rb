@@ -9,7 +9,7 @@ class ContSpec < ActiveRecord::Base
   end
   def self.cachemany(p_ids, feat) # Returns numerical (floating point) values only
     CachingMemcached.cache_lookup("ContSpecs#{feat}#{p_ids.join(',').hash}") do
-      select("value").where(["product_id IN (?) and name = ?", p_ids, feat]).all.map(&:value)
+      select("value").where(["product_id IN (?) and name = ?", p_ids, feat]).all.map{|x|x.value}
     end
   end
   
@@ -67,6 +67,6 @@ class ContSpec < ActiveRecord::Base
   private
   
   def self.initial_specs(feat)
-    joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").where(:cont_specs => {:name => feat}, :search_products => {:search_id => Product.initial}).select("value").all.map(&:value)
+    joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").where(:cont_specs => {:name => feat}, :search_products => {:search_id => Product.initial}).select("value").all.map{|x|x.value}
   end
 end

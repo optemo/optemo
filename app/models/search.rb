@@ -175,20 +175,20 @@ class Search < ActiveRecord::Base
   end
   
   def products
-    sortby=Session.search.sortby
+    sortby = Session.search.sortby
     if sortby == "relevance" || sortby.nil?
-        @products = Kmeans.compute(18,SearchProduct.fq2)
+      @kmeans_products ||= Kmeans.compute(18,SearchProduct.fq2)
     else
-        #if sortby.include?("_high")
-            @products = SearchProduct.fq2
-        #else    
-        #    @products = SearchProduct.fq2
-        #end        
+      #if sortby.include?("_high")
+      @products ||= SearchProduct.fq2
+      #else    
+      #    @products = SearchProduct.fq2
+      #end        
     end
   end
   
   def products_landing(type)
-    SearchProduct.fq2_landing(type)
+    @products_landing ||= SearchProduct.fq2_landing(type)
   end
   
   def sim_products
