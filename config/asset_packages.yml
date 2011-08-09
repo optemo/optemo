@@ -8,7 +8,7 @@ javascripts:
   - raphael
   - helpers_shared
   - jquery-ui-1.8.13.custom.min
-  - jquery.history.2
+  - jquery.history
   - application
   - bbfixes
 - loader:

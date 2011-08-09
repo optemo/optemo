@@ -175,20 +175,20 @@ class Search < ActiveRecord::Base
   end
   
   def products
-    sortby = Session.search.sortby
+    sortby=Session.search.sortby
     if sortby == "relevance" || sortby.nil?
-      @kmeans_products ||= Kmeans.compute(18,SearchProduct.fq2)
+        @products = Kmeans.compute(18,SearchProduct.fq2)
     else
-      #if sortby.include?("_high")
-      @products ||= SearchProduct.fq2
-      #else    
-      #    @products = SearchProduct.fq2
-      #end        
+        #if sortby.include?("_high")
+            @products = SearchProduct.fq2
+        #else    
+        #    @products = SearchProduct.fq2
+        #end        
     end
   end
   
   def products_landing(type)
-    @products_landing ||= SearchProduct.fq2_landing(type)
+    SearchProduct.fq2_landing(type)
   end
   
   def sim_products
@@ -279,7 +279,7 @@ class Search < ActiveRecord::Base
     else
       product_ids = Product.search_for_ids(:per_page => 10000, :star => true, :conditions => {:product_type => Session.product_type, :title => keyword})
       #Check that the results are valid and instock
-      new_entries = SearchProduct.where(:search_id => Product.initial).where("product_id IN (#{product_ids.join(',')})").map{|sp| KeywordSearch.new({:keyword => keyword, :product_id => sp.product_id})} unless product_ids.empty?
+      new_entries = SearchProduct.where(:search_id => Session.product_type_int).where("product_id IN (#{product_ids.join(',')})").map{|sp| KeywordSearch.new({:keyword => keyword, :product_id => sp.product_id})} unless product_ids.empty?
       if product_ids.empty? || new_entries.empty?
         #Save a nil entry for failed searches
         KeywordSearch.create({:keyword => keyword})
@@ -419,7 +419,7 @@ class Search < ActiveRecord::Base
     end
     
     # remove the filter without categories selected
-    # Compare the set of all dynamic filters and dynamic filters of selected categories. If the feature is in "all" but not in "selected", remove it from filters list(@userdatacats, @userdataconts and @userdatabins)
+    
     dynamic_filter_cat_selected = []
     dynamic_filter_cat_all = []
     dynamic_filter_cont_selected = []

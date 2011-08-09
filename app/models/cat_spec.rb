@@ -10,17 +10,17 @@ class CatSpec < ActiveRecord::Base
 
   def self.cachemany(p_ids, feat) # Returns different values 
     CachingMemcached.cache_lookup("CatSpecs#{feat}#{p_ids.join(',').hash}") do
-      select("value").where(["product_id IN (?) and name = ?", p_ids, feat]).map{|x|x.value}
+      select("value").where(["product_id IN (?) and name = ?", p_ids, feat]).map(&:value)
     end
   end
   def self.all(feat)
     CachingMemcached.cache_lookup("#{Session.product_type}Cats-#{feat}") do
-      select("value").where("product_id IN (select product_id from search_products where search_id = ?) and name = ?", Product.initial, feat).map{|x|x.value}
+      select("value").where("product_id IN (select product_id from search_products where search_id = ?) and name = ?", Session.product_type_int, feat).map(&:value)
     end
   end
   def self.alloptions(feat)
     CachingMemcached.cache_lookup("#{Session.product_type}Cats-#{feat}-options") do
-      select("value").where("product_id IN (select product_id from search_products where search_id = ?) and name = ?", Product.initial, feat).map{|x|x.value}.uniq
+      select("value").where("product_id IN (select product_id from search_products where search_id = ?) and name = ?", Session.product_type_int, feat).map(&:value).uniq
     end
   end
 

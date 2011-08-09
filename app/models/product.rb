@@ -30,16 +30,6 @@ class Product < ActiveRecord::Base
     end
   end
   
-  def self.initial
-    #Algorithm for calculating id of initial products in product_searches table
-    #We probably need a better algorithm to check for collisions
-    unless @chars
-      chars = []
-      Session.product_type.each_char{|c|chars << c.getbyte(0)*chars.size}
-      @chars = chars.sum * -1
-    end
-  end
-  
   def self.filterspecs
     st = []
     Session.continuous["filter"].each do |f| 
