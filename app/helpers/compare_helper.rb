@@ -113,7 +113,7 @@ module CompareHelper
  end
  
   def chosencats(feat)
-    Session.search.userdatacats.select{|d|d.name == feat}.map(&:value)
+    Session.search.userdatacats.select{|d|d.name == feat}.map{|x|x.value}
   end
   
   def featuretext(product_id)
@@ -223,7 +223,7 @@ module CompareHelper
 
     res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
     
-end
+  end
   
   def landing_main_boxes(type)
     res = ""

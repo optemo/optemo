@@ -1582,6 +1582,7 @@ optemo_module = (function (my){
         if (typeof DOM_ALREADY_RUN == "undefined") {
             DOM_ALREADY_RUN = true;
             my.initializeVariables();
+
             // This initializes the jquery history plugin. Note that the plugin was modified for use with our application javascript (details in jquery.history.js)
 
             $.history.init(optemo_module.ajaxsend);
@@ -1842,20 +1843,20 @@ optemo_module = (function (my){
         var selectedComps = my.getSelectedComparisons().length;
         var objCheckbox = $(this).parent().find('.optemo_compare_checkbox');
         var max = (objCheckbox.attr('checked') ? 5 : 4);
-        
-        if (!objCheckbox.attr('checked')) {
-            if (selectedComps <= max) {
+        if (selectedComps <= max) {
+            if (!objCheckbox.attr('checked')) {
                 objCheckbox.attr('checked', 'checked');
-                my.loadspecs(objCheckbox.attr('data-sku'), my.compareCheckedProducts);
             }
-            else {
-                if (!(typeof(optemo_french) == "undefined") && optemo_french)
-                    alert("Le nombre maximum de produits que vous pouvez comparer est de 5. Veuillez réessayer.");
-                else
-                    alert("The maximum number of products you can compare is 5. Please try again.");
-                return false;
-            }
+            my.loadspecs(objCheckbox.attr('data-sku'), my.compareCheckedProducts);
         }
+        else {
+            if (!(typeof(optemo_french) == "undefined") && optemo_french)
+                alert("Le nombre maximum de produits que vous pouvez comparer est de 5. Veuillez réessayer.");
+            else
+                alert("The maximum number of products you can compare is 5. Please try again.");
+            return false;
+        }
+
 
         // Change navigator bar compare button text
         my.changeNavigatorCompareBtn(my.getSelectedComparisons().length);
