@@ -10,7 +10,6 @@
 <div style="clear: both;margin-top: 19px;"></div>
 <![endif]-->
 <%= form_tag("/compare", :id => 'filter_form') do %>
-
 <% (0...@s.filters_order.size).each do |index| %>
 <% feat = @s.filters_order[index] %>
   <% if feat[:filter_type] == 'cat' %>

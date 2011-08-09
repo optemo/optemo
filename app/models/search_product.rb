@@ -27,16 +27,6 @@ class SearchProduct < ActiveRecord::Base
            end      
           res.flatten
       end    
-
-      def find_hero
-        mycats = Session.search.userdatacats.group_by{|x|x.name}.values
-        mybins = Session.search.userdatabins
-        myconts = Session.search.userdataconts  
-        res = []  
-        mybins = [Userdatabin.new({:name => 'hero', :value => 1})]
-        res << search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins)#.where("product_type=\'#{Session.product_type}\'")
-        res.flatten.first   
-      end
             
       def fq2
         sortby= Session.search.sortby
@@ -74,7 +64,7 @@ class SearchProduct < ActiveRecord::Base
           rescue SearchError
             #Check if the initial products are missing
             if search_id_q.count == 0 && tried_once
-              initial_products_id = Product.initial
+              initial_products_id = Session.product_type_int
               SearchProduct.transaction do
                 Product.instock.current_type.map{|product| SearchProduct.new(:product_id => product.id, :search_id => initial_products_id)}.each(&:save)
               end
@@ -96,7 +86,7 @@ class SearchProduct < ActiveRecord::Base
       mybins = s.userdatabins
       table_id = mycats.size
       if expanded
-        q = where(:search_id => Product.initial).create_join(mycats+[[feat]],mybins,s.userdataconts,s).conts_keywords(s).bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
+        q = where(:search_id => Session.product_type_int).create_join(mycats+[[feat]],mybins,s.userdataconts,s).conts_keywords(s).bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
       else
         q = search_id_q.create_join(mycats+[[feat]],mybins,s.userdataconts,s).conts_keywords(s).bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
       end
@@ -112,7 +102,7 @@ class SearchProduct < ActiveRecord::Base
     def bin_count(feat)
       mycats = Session.search.userdatacats.group_by{|x|x.name}.values
       mybins = Session.search.userdatabins.reject{|e|e.name == feat} << BinSpec.new(:name => feat, :value => true)
-      q = where(:search_id => Product.initial).create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins)
+      q = where(:search_id => Session.product_type_int).create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins)
       CachingMemcached.cache_lookup("BinsCount-#{q.to_sql.hash}") do
         q.count
       end
@@ -121,7 +111,7 @@ class SearchProduct < ActiveRecord::Base
   private
   class << self
     def search_id_q
-      where(:search_id => Product.initial)
+      where(:search_id => Session.product_type_int)
     end
       
     def create_join(mycats,mybins,myconts = Session.search.userdataconts,s=Session.search)
