@@ -2,12 +2,9 @@ testing check list:
 
 Landing page:
 - There is a hero product at the top
-- There are 3 product categories displaying 3 products each
+- There are featured products listed in the bottom 
 - Click on the first product image and see if it successfully loads the PDP
 - Click on the back button and check if you get the first page 
-- Click on the See More link under the "Featured Products" heading, and see if you see 9 products; go back
-- Click on the See More link under the "Best Sellers" heading, and see if you see 18 products; go back
-- Click on the See More link under the "Top Rated" heading, and see if you see 18 products with high star ratings; go back
 
 Filter Page:
 - Click on "See All"
@@ -19,22 +16,35 @@ Filter Page:
 - filter brands by clicking on one and multiple brand check boxes and check if right products are displayed
 - When filtering check if the numbers associated with checkboxes are adjusted and click on brands using the checkbox and the link text 
 - Check on sale and then undo it and see if it works fine
-- Click on reset 
+- Click on reset the test  
 - Click on a brand name link (say Canon link) and see if it filters and the box gets checked then click again to undo it 
 - Check two brand boxes and undo them and see if it filter properly 
 - Check a couple of binary filters and uncheck it (by both clicking on the link and checking the box) 
 - Check two brands and then click on a binary filter that have a small number then undo one of the brands and see if it handles it properly
 - Click Reset All
 - Click on the Sort by: Price(Low to High) link; See if the products are sorted correctly
+- Click on the Sort by bestseller to see if products are getting sorted differently;
+- Click on the Sort by newest model to see if products are getting sorted differently;  
 - Click on the next page link; Go back
 - Click on the number 2; make sure this is the same page as before
 - Click on sort by Price again and see if it goes High to Low
 - Click on the Add to Cart link and see if it works
 
+
 Product Comparison:
 - Check the compare box for one product
 - Click the compare link on another product; You should see the comparison popover with two products displayed
+- Check if product tile and 
 - Click the remove link; The product should be removed; Click close
-- Check the boxes of 4 more products; Click the Compare button at the bottom of the page
+- Check the boxes of 3 more products; Click the Compare button at the bottom of the page
+- Add products to compare up to the 6th one and see if an error message comes up
 - Add to cart in the compare page
 - Click on the product link on the compare page to see if the PDP loads fine
+
+
+
+Dynamic filters:
+
+
+
+French: 
