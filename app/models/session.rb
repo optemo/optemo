@@ -38,7 +38,6 @@ class Session
     
     # 2 is hard-coded to cameras at the moment and is the default
     # Check the product_types table for details
-    cat_id = 20243
     p_type = ProductType.find(cat_id.blank? ? 2 : CategoryIdProductTypeMap.find_by_category_id(cat_id.to_i).product_type_id)
     self.product_type = p_type.name
     #Define an integer for the product type
