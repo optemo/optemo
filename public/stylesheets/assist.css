@@ -113,8 +113,8 @@
 }
 */
 #optemo_embedder .topbar {
-	height: 325px;
-	text-align:center;
+   height: 325px;
+   text-align:center;
    position: relative;
    overflow: hidden;
    margin-bottom: 5px;

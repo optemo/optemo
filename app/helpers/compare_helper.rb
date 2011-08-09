@@ -119,18 +119,24 @@ module CompareHelper
   def featuretext(product_id)
     s = Session
     out = []
+    # Moved variable declarations out of the loop for each type of feature.
+    # This speeds up the rails app somewhat due to fewer SQL requests / activerecord instantiations
+    cat_specs = CatSpec.cache_all(product_id)
     s.categorical["desc"].each do |feat|
-      out << CatSpec.cache_all(product_id)[feat]
+      out << cat_specs[feat]
     end
+    
+    cont_specs = ContSpec.cache_all(product_id)
     s.continuous["desc"].each do |feat|
       #num = "%.1f" % ContSpec.cache_all(product_id)[feat]
-      num = ContSpec.cache_all(product_id)[feat]
+      num = cont_specs[feat]
       num = "<1" if feat == "maxresolution" && num == "1"
       num = num.to_i if num.to_i==num
 		  out << t('features.'+feat, :num =>  number_with_delimiter(num), :default =>  number_with_delimiter(num)) if num
 	  end
+	  bin_specs = BinSpec.cache_all(product_id)
 	  s.binary["desc"].each do |feat|
-      out << t("#{Session.product_type}.specs.#{feat.gsub(" ","")}.name") if BinSpec.cache_all(product_id)[feat]
+      out << t("#{Session.product_type}.specs.#{feat.gsub(" ","")}.name") if bin_specs[feat]
     end
 		out.join(", ")
   end
@@ -401,9 +407,10 @@ end
     end
     missing
   end
-  # Get product small title
+
+  # Generate product small title. If the product is a bundle, its title should be the first product included in the bundle with same product type as this bundle.
   def small_title(product)
-    # If it is a bundle get the first product in the bundle
+    # If this is a bundle get the first product in the bundle with same product type
     bundle = ""
     id_or_bundle_first_id = product.id
 

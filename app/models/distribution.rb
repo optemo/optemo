@@ -10,8 +10,9 @@ require 'inline'
     feats = []
 
     begin
+      prods = Session.search.products
       Session.continuous["filter"].each do |f| 
-        data = Session.search.products.map{|p|p.instance_variable_get("@#{f}")}.compact
+        data = prods.map{|p|p.instance_variable_get("@#{f}")}.compact
         next if data.empty? #There's no data available for this feature
         specs << data
         feats << f
