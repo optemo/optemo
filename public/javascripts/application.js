@@ -176,7 +176,6 @@ optemo_module = (function (my){
                         my.loadspecs(bundle[0]["sku"], f, sku);
                     }
                     else {
-                        
                         var raw_specs = data["specs"];
                         // rebuild prop_list so that we can get the specs back out.
                         // We might need to do this regardless, due to the fact that
@@ -1847,7 +1846,7 @@ optemo_module = (function (my){
         if (!objCheckbox.attr('checked')) {
             if (selectedComps <= max) {
                 objCheckbox.attr('checked', 'checked');
-                my.loadspecs(objCheckbox.attr('data-sku'));
+                my.loadspecs(objCheckbox.attr('data-sku'), my.compareCheckedProducts);
             }
             else {
                 if (!(typeof(optemo_french) == "undefined") && optemo_french)
@@ -1857,7 +1856,7 @@ optemo_module = (function (my){
                 return false;
             }
         }
-        my.compareCheckedProducts();
+
         // Change navigator bar compare button text
         my.changeNavigatorCompareBtn(my.getSelectedComparisons().length);
     
