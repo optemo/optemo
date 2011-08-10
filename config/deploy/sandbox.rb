@@ -1,7 +1,7 @@
 set :application, "sandbox"
 set :repository,  "git@jaguar:site.git"
 set :domain, "jaguar"
-set :branch, "pagination"
+set :branch, "staging"
 set :user, "#{ `whoami`.chomp }"
 
 # If you aren't deploying to /u/apps/#{application} on the target
