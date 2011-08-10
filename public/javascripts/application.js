@@ -103,7 +103,7 @@ optemo_module = (function (my){
 
         my.RAILS_CATEGORY_ID = 0;
         for (var i in category_id_hash) {
-            if (window.location.pathname.match(new RegExp(i))) {
+            if (window.location.pathname.match(new RegExp(i,"i"))) {
                 my.RAILS_CATEGORY_ID = category_id_hash[i];
                 break;
             }
@@ -764,13 +764,6 @@ optemo_module = (function (my){
             return false;
         });
 
-        // Reset button clicked to landing page
-        $('a.reset').live('click', function(event) {
-            optemo_module.ajaxsend(null,'/', {landing:'true'});
-            window.location.hash = '';
-             return false;
-        });
-
         //Show and Hide Descriptions
         //$('.label a, .desc .deleteX').live('click', function(){
         //    if($(this).parent().attr('class') == "desc")
@@ -1057,7 +1050,7 @@ optemo_module = (function (my){
         $('.reset').live('click', function(){
             if (my.loading_indicator_state.disable) return false;
             my.trackPage('goals/reset', {'filter_type' : 'reset'});
-            my.ajaxcall($(this).attr('href'));
+            my.ajaxcall('/',{landing:'true'});
             return false;
         });
         
@@ -1297,7 +1290,7 @@ optemo_module = (function (my){
         if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 50);
         if (OPT_REMOTE) {
             //Embedded Layout
-            myurl = (myurl != null) ? myurl.replace(/http:\/\/[^\/]+/,'') : "/compare"
+            myurl = (typeof myurl != "undefined" && myurl != null) ? myurl.replace(/http:\/\/[^\/]+/,'') : "/compare"
             // There is a bug in the JSONP implementation. If there is a "?" in the URL, with parameters already on it,
             // this JSONP implementation will add another "?" for the second set of parameters (specified in mydata).
             // For now, just check for a "?" and take those parameters into mydata, 
@@ -1321,7 +1314,7 @@ optemo_module = (function (my){
         } else {
             $.ajax({
                 //type: (mydata==null)?"GET":"POST",
-                data: (mydata==null)?"":mydata,
+                data: (typeof mydata == "undefined" || mydata == null)?"":mydata,
                 url: myurl || "/compare",
                 success: my.ajaxhandler,
                 error: my.ajaxerror

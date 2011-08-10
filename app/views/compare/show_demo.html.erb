@@ -2,11 +2,11 @@
 <div class="poptitle"><%=t 'products.show.title'%><%= link_to t('products.compare.closewindow'), "close", :class => "close"%>
 </div>
 <% else %>
-<% self.title = "#{@product.title}" %>
+<% self.title = "#{CatSpec.cache_all(@product.id)["title".fr?] || @product.title}" %>
 <div class="content">
 <a href="/" id="browseother">Browse Other Printers</a>
 <% end %>
-	<h1><%= URI.decode(@product.title) %></h1>
+	<h1><%= URI.decode(CatSpec.cache_all(@product.id)["title".fr?] || @product.title) %></h1>
 	<div id="image">
 		<% if @s.product_type == "flooring_builddirect" || @s.product_type == "Laptop" || FileTest.exist?("#{Rails.root}/public" + @imglurl) %>
 			<%= link_to image_tag(@imglurl), @imglurl, :class => "popup" %>
