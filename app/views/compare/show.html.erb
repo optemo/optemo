@@ -17,7 +17,7 @@
 <% end %>
 <div id="info_container">
 	<h1><%= @allspecs["title#{fr?}"] || @product.title%></h1>
-	<h5 style="margin: 0"><%=t('products.show.webcode')+": #{@product.sku}, "+t('products.show.model')+": #{@product.mpn}"%></h5> 
+	<h5 style="margin: 0"><%=t('products.show.webcode')+": #{@product.sku}, "+t('products.show.model')+": #{CatSpec.cache_all(@product.id)["mpn"] || @product.mpn}"%></h5> 
 <div id="info_content" class="tabbed_content">
     	<div id="galleria" style="width: 500px; height: 300px;margin-left: -10px;">
     		<!-- What follows is a Best Buy-specific hack, put in to get "additional media" out prior to a consultation meeting with them
