@@ -1217,6 +1217,13 @@ optemo_module = (function (my){
             remove_row.next().next().clone().find('.leftmostcolumntitle').empty().end()
         );
         $('.togglable').each(function(){addtoggle($(this));});
+        if ($.browser.msie && $.browser.version.substr(0,1)<7) {// IE6 comparison page close button margin space issue
+
+            if (checkedProducts.length <= 2){ 
+                $('#optemo_embedder #IE .bb_quickview_close img').css("margin-right",'-68px');
+            }
+        }
+
     };
     
     function addtoggle(item){
@@ -1791,11 +1798,14 @@ optemo_module = (function (my){
         // To figure out the width that we need, start with $('#opt_savedproducts').length probably
         // 560 minimum (width is the first of the two parameters)
         // 2, 3, 4 ==>  513, 704, 895  (191 each)
-        if (number_of_saved_products >= 2)
+        if (number_of_saved_products > 2)
             width = 211 * (number_of_saved_products - 2) + 566;
-        else
+        else {
             width = 566;
 
+        }
+
+        
         my.applySilkScreen('/comparison/' + productIDs, null, width, 580,function(){
             // Jquery 1.5 would finish all the requests before building the comparison matrix once
             // With 1.4.2 we can't do that. Keep code for later.
