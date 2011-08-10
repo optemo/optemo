@@ -522,6 +522,16 @@ div#division {
 #optemo_embedder .compare_button {
     font-size: 0.8em;
 }
+
+#optemo_embedder span.select-compare {
+  font-size: 12px;
+  }
+#optemo_embedder #IE span.select-compare {
+  margin-left: -4px;
+  margin-left: -5px \0/;
+  *margin-left: -6px;
+  
+  }
 /*.selected_cat_features img {
 	vertical-align: baseline;
 }*/
