@@ -522,6 +522,16 @@ div#division {
 #optemo_embedder .compare_button {
     font-size: 0.8em;
 }
+
+#optemo_embedder span.select-compare {
+  font-size: 12px;
+  }
+#optemo_embedder #IE span.select-compare {
+  margin-left: -4px;
+  margin-left: -5px \0/;
+  *margin-left: -6px;
+  
+  }
 /*.selected_cat_features img {
 	vertical-align: baseline;
 }*/
@@ -949,7 +959,7 @@ margin-top:0;
 	padding-right: 10px;
 /*	border-right: 1px solid #cccccc; */
 	width: 189px;
-	height: 220px;
+	height: 250px;
 	float: left;
 }
 #optemo_embedder .columntitle {
@@ -1027,9 +1037,8 @@ margin-top:0;
 	text-align:center;
 	padding-top: 7px;
 	color:#0A2088;
-	height: 90px;
+	height: 120px;
 	line-height: 20px;
-    
 }
 
    
@@ -1320,8 +1329,6 @@ margin-top:0;
 	padding-right: 0;
 	margin: 0;
     color: black;
-	border-bottom: 1px solid #ccc;
-	border-top: 1px solid white;
     height: 0 \0/;
     width: 0 \0/;
     margin-top: -20px;
@@ -1338,7 +1345,7 @@ margin-top:0;
 #optemo_embedder #IE .bb_quickview_close img {
    *margin-top: -15px;
    *margin-right: -57px;
-   _margin-right: -68px;
+   _margin-right: -57px;
    position: relative;
    *display: block;
 }
