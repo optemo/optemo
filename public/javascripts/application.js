@@ -1051,7 +1051,6 @@ optemo_module = (function (my){
             if (my.loading_indicator_state.disable) return false;
             my.trackPage('goals/reset', {'filter_type' : 'reset'});
             my.ajaxcall('/',{landing:'true'});
-            //my.ajaxsend(null,'/',{landing:'true'});
             return false;
         });
         
@@ -1291,7 +1290,7 @@ optemo_module = (function (my){
         if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 50);
         if (OPT_REMOTE) {
             //Embedded Layout
-            myurl = (myurl != null) ? myurl.replace(/http:\/\/[^\/]+/,'') : "/compare"
+            myurl = (typeof myurl != "undefined" && myurl != null) ? myurl.replace(/http:\/\/[^\/]+/,'') : "/compare"
             // There is a bug in the JSONP implementation. If there is a "?" in the URL, with parameters already on it,
             // this JSONP implementation will add another "?" for the second set of parameters (specified in mydata).
             // For now, just check for a "?" and take those parameters into mydata, 
@@ -1315,7 +1314,7 @@ optemo_module = (function (my){
         } else {
             $.ajax({
                 //type: (mydata==null)?"GET":"POST",
-                data: (mydata==null)?"":mydata,
+                data: (typeof mydata == "undefined" || mydata == null)?"":mydata,
                 url: myurl || "/compare",
                 success: my.ajaxhandler,
                 error: my.ajaxerror

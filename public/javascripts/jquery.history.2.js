@@ -170,16 +170,21 @@
     };
 
     implementations.hashchangeEvent = {
+        _appURL: undefined,
+        _appDATA: undefined,
         _init: function() {
             //self.callback(locationWrapper.get());
             $(window).bind('hashchange', self.check);
         },
         check: function() {
-            self.callback(locationWrapper.get(), null, null, 100);
+            self.callback(locationWrapper.get(), self._appURL, self._appDATA, 100);
+            self._appURL = undefined;
+            self._appDATA = undefined;
         },
         load: function(hash,myurl,mydata) {
+            self._appURL = myurl;
+            self._appDATA = mydata;
             locationWrapper.put(hash);
-            self.callback(hash,myurl,mydata);
         }
     };
 
