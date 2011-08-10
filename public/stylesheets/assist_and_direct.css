@@ -959,7 +959,7 @@ margin-top:0;
 	padding-right: 10px;
 /*	border-right: 1px solid #cccccc; */
 	width: 189px;
-	height: 220px;
+	height: 250px;
 	float: left;
 }
 #optemo_embedder .columntitle {
@@ -1037,9 +1037,8 @@ margin-top:0;
 	text-align:center;
 	padding-top: 7px;
 	color:#0A2088;
-	height: 90px;
+	height: 120px;
 	line-height: 20px;
-    
 }
 
    
@@ -1330,8 +1329,6 @@ margin-top:0;
 	padding-right: 0;
 	margin: 0;
     color: black;
-	border-bottom: 1px solid #ccc;
-	border-top: 1px solid white;
     height: 0 \0/;
     width: 0 \0/;
     margin-top: -20px;
