@@ -15,7 +15,7 @@ class CompareController < ApplicationController
           classVariables(Search.create({:sortby => params[:sortby], "action_type" => "sortby",  "parent"=>params[:hist]}))
         else
           hist = CGI.unescape(params[:hist]).unpack('m')[0].gsub(/\D/,'').to_i if params[:landing].nil? && params[:hist] && !params[:hist].blank?
-          search_history = Search.find_by_parent_id(hist) if hist
+          search_history = Search.find_last_by_parent_id(hist) if hist
           if search_history
             #Going back to a previous search
             classVariables(search_history)
