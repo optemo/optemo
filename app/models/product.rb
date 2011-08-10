@@ -77,11 +77,11 @@ class Product < ActiveRecord::Base
   end
   
   def tinyTitle
-    @tinyTitle ||= [brand.gsub("Hewlett-Packard", "HP"),(model || cat_specs.cache_all(id)["model"] || cat_specs.cache_all(id)["mpn"]).split(' ')[0]].join(' ')
+    @tinyTitle ||= [brand.gsub("Hewlett-Packard", "HP"),(cat_specs.cache_all(id)["model"] || model || cat_specs.cache_all(id)["mpn"]).split(' ')[0]].join(' ')
   end
   
   def mobile_descurl
-    "/show/"+[id,brand,model || cat_specs.cache_all(id)["model"] || cat_specs.cache_all(id)["mpn"]].join('-').tr(' /','_-')
+    "/show/"+[id,brand,cat_specs.cache_all(id)["model"] || model || cat_specs.cache_all(id)["mpn"]].join('-').tr(' /','_-')
   end
   
   def display(attr, data) # This function is probably superceded by resolutionmaxunit, etc., defined in the appropriate YAML file (e.g. printer_us.yml)
