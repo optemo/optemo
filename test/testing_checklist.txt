@@ -8,6 +8,7 @@ Landing page:
 
 Filter Page:
 - Click on "See All"
+- Check if Best Match is a link (it shouldn't be a link as this is supposed to be the sorting option) 
 - Check if there are distribution graphs on top of sliders on the left panel
 - Filter by price and check if the number of products in the status bar and the distribution on top of other sliders have been changed
 - repeat the previous step for other sliders
@@ -45,6 +46,11 @@ Product Comparison:
 
 Dynamic filters:
 
-
+-Check dynamic filter on hard drives page - only common filters should be displayed on the first page and relevant filters for each product category 
 
 French: 
+
+- Check French links for all departments. 
+- Check that titles are french. 
+- Check that links go to french PDPs
+- Check that the copy and units are all french 
