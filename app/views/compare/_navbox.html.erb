@@ -11,13 +11,14 @@
       		  <input type="checkbox"
 			       data-id="<%= product.id %>"
 			       data-sku="<%= product.sku %>"
+             data-cat="<%= cat_specs['category'] %>"
 			       class="optemo_compare_checkbox" />
 		  <span class='select-compare'><%= t('products.compare.selectand') %></span><a class="regular_reset optemo_compare_button" style="" href="#" title="<%=t('products.compare.clickforcompare')%>">
 		    <span><%=t('products.compare.compare')%></span>
 		  </a>
       </div>
       <% end %>
-			<%= link_to CatSpec.cache_all(product.id)["title#{fr?}"], TextSpec.cacheone(product.id, "productUrl#{fr?}"), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
+			<%= link_to cat_specs["title#{fr?}"], TextSpec.cacheone(product.id, "productUrl#{fr?}"), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
 		    
 			<div class="productspecs"><!--&--></div>
 			<% if BinSpec.cache_all(product.id)["onsale"] %>
