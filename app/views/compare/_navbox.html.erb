@@ -17,7 +17,7 @@
 		  </a>
       </div>
       <% end %>
-			<%= link_to CatSpec.cache_all(product.id)["title#{fr?}"] || product.title, TextSpec.cacheone(product.id, "productUrl#{fr?}"), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
+			<%= link_to CatSpec.cache_all(product.id)["title#{fr?}"], TextSpec.cacheone(product.id, "productUrl#{fr?}"), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
 		    
 			<div class="productspecs"><!--&--></div>
 			<% if BinSpec.cache_all(product.id)["onsale"] %>
