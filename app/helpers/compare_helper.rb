@@ -421,7 +421,7 @@ module CompareHelper
       bundle_cat_specs = CatSpec.cache_all(id_or_bundle_first_id)
     end
     
-    st = [bundle_cat_specs["brand#{fr?}"] || product.brand, bundle_cat_specs["model#{fr?}"] || product.model].join(" ") + bundle
+    st = [bundle_cat_specs["brand#{fr?}"], bundle_cat_specs["model#{fr?}"]].join(" ") + bundle
     if !(fr?.empty?)
       CatSpec.colors_en_fr.each_pair do |k, v|
         st = st.sub(k.upcase,v)

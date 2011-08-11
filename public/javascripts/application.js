@@ -7,7 +7,7 @@
    ---- Show Page Pre-loader & Helpers ----
 
     parse_bb_json(obj)  -  recursive function to parse the returned JSON into an html list
-    ** loadspecs(sku, f)  -  Does 2 AJAX requests for data relating to sku and puts the results in $('body').data() for later. Runs the callback function f if provided.
+    ** loadspecs(sku,cat_id, f, bundle_sku)  -  Does 2 AJAX requests for data relating to sku and puts the results in $('body').data() for later. Runs the callback function f if provided.
     numberofstars(stars)  -  Helper function to turn a number of stars into images
     ** preloadSpecsAndReviews  -  Called on show action, this gets the specs and reviews if necessary for instant tab switching on pop-over window
 
@@ -157,10 +157,28 @@ optemo_module = (function (my){
     // The disadvantage would be that the specs wouldn't be stored for later retrieval. This probably isn't a big deal.
 
     // For the bundle products, get the first product from bundle spec and show its specs
-    my.loadspecs = function (sku, f, bundle_sku) {
+    my.loadspecs = function (sku, cat_id, prod_id, f, bundle_sku) {
         // The jQuery AJAX request will add ?callback=? as appropriate. Best Buy API v.2 supports this.
            var baseurl = "http://www.bestbuy.ca/api/v2/json/product/" + sku;
         if (!(typeof(optemo_french) == "undefined") && optemo_french) baseurl = baseurl+"?lang=fr";
+        // Insert spec in right order to show in comparison page
+        var insert_before = -1;
+        var skus = $('body').data('bestbuy_specs_skus') || [];
+        $.each(skus, function(index,val) {
+                   if (val[2] == prod_id) {
+                       insert_before = index;
+                       return false;
+                       }
+                    
+                   if (val[1] > cat_id) {
+                       insert_before = index;
+                       skus.splice(insert_before,0,[sku, cat_id, prod_id]);
+                       return false;
+                   }
+               });
+        if (insert_before < 0)
+            skus.push([sku, cat_id, prod_id]);
+
         // Do not need check bundle sku
         if (!(jQuery('body').data('bestbuy_specs_' + sku))) {
             $.ajax({
@@ -173,7 +191,7 @@ optemo_module = (function (my){
 
                     if (bundle.length > 0) {
                      
-                        my.loadspecs(bundle[0]["sku"], f, sku);
+                        my.loadspecs(bundle[0]["sku"], cat_id, prod_id, f, sku);
                     }
                     else {
                         var raw_specs = data["specs"];
@@ -192,6 +210,7 @@ optemo_module = (function (my){
                         if (bundle_sku)
                             sku_to_register = bundle_sku;
                         jQuery('body').data('bestbuy_specs_' + sku_to_register, processed_specs);
+                        $('body').data('bestbuy_specs_skus', skus);
                         if (f) f();
                     }
                 }
@@ -218,8 +237,8 @@ optemo_module = (function (my){
         return ret;
     }
     // This function gets called when a show action gets called.
-    my.preloadSpecsAndReviews = function(sku) {
-        my.loadspecs(sku, (function() {
+    my.preloadSpecsAndReviews = function(sku, cat_id, prod_id) {
+        my.loadspecs(sku, cat_id, prod_id, (function() {
             $('#specs_content').html('<ul>' + parse_bb_json($('body').data('bestbuy_specs_' + sku)) + "</ul>");
         }));
         if (!(jQuery('body').data('bestbuy_reviews_' + sku))) {
@@ -357,7 +376,7 @@ optemo_module = (function (my){
         } else {
             my.quickajaxcall('#info', url, function(){
                 if (url.match(/\/product/)) {
-                    my.preloadSpecsAndReviews($('.poptitle').attr('data-sku'));
+                    my.preloadSpecsAndReviews($('.poptitle').attr('data-sku'), $('.poptitle').attr('data-cat'), $('.poptitle').attr('data-id'));
                     if (!($.browser.msie && $.browser.version == "6.0")) {
                         // Initialize Galleria
                         // If you are debugging around this point, be aware that galleria likes to be initialized without debugging pauses.
@@ -407,8 +426,20 @@ optemo_module = (function (my){
                 return;
             }
         });
+        remove_comparison_from_skus(id);
     }
+                     function remove_comparison_from_skus(prod_id) {
+                         $.each($('body').data('bestbuy_specs_skus'), function(index, val) {
+                                    if (val[2] == prod_id) {
+                                        $('body').data('bestbuy_specs_skus').splice(index, 1);
+                                        return false;
+                                    }
+                                });
+                     }
 
+
+                     
+                     
     // Submit a categorical filter, e.g. brand.
     function submitCategorical(){
         //Serialize an form into a hash, Warning: duplicate keys are dropped
@@ -1147,19 +1178,18 @@ optemo_module = (function (my){
     };
     
     my.buildComparisonMatrix = function() {
-        var checkedProducts = my.getSelectedComparisons(), anchor = $('#hideable_matrix');
+        var skus = $('body').data('bestbuy_specs_skus') || [], anchor = $('#hideable_matrix');
         // Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
         var array = [];
-        my.changeCompareTitle(checkedProducts.length);
-        $.each(checkedProducts, function (index, value) {
-        var product = value.split(',');
-        array.push($('body').data('bestbuy_specs_'+product[1]));
+        my.changeCompareTitle(skus.length);
+        $.each(skus, function (index, value) {
+        array.push($('body').data('bestbuy_specs_'+value[0]));
         });
 
         var grouped_specs = optemo_module.merge_bb_json.apply(null,array);
         //Set up Headers
         
-        for (var i = 0; i < checkedProducts.length; i++) {
+        for (var i = 0; i < skus.length; i++) {
             anchor.append('<div class="columntitle spec_column_'+i+' spec-capt">&nbsp;</div>');
         }
         var result = "";
@@ -1171,7 +1201,7 @@ optemo_module = (function (my){
             //Add Heading
             result += '<div class="'+row_class(row_height(heading.length,true))+'"><div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' leftcolumntext" style="font-style: italic;"><a class="togglable closed title_link" style="font-style: italic;" href="#">' + heading.replace('&','&amp;') + '</a></div>';
 
-            for (var i = 0; i < checkedProducts.length; i++) {
+            for (var i = 0; i < skus.length; i++) {
                 result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' spec_column_'+i+'">&nbsp;</div>';
             }
             
@@ -1191,7 +1221,7 @@ optemo_module = (function (my){
                 //Row heading
                 result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' leftcolumntext">' + spec.replace('&','&amp;') + ":</div>";
                 //Data
-                for (var i = 0; i < checkedProducts.length; i++) {
+                for (var i = 0; i < skus.length; i++) {
                     var spec_value = grouped_specs[heading][spec][i];
                     if (spec_value) {
                         if (spec_value == "No" || spec_value == "Non") spec_value = "-";
@@ -1219,7 +1249,7 @@ optemo_module = (function (my){
         $('.togglable').each(function(){addtoggle($(this));});
         if ($.browser.msie && $.browser.version.substr(0,1)<7) {// IE6 comparison page close button margin space issue
 
-            if (checkedProducts.length <= 2){ 
+            if (skus.length <= 2){ 
                 $('#optemo_embedder #IE .bb_quickview_close img').css("margin-right",'-68px');
             }
         }
@@ -1757,38 +1787,34 @@ optemo_module = (function (my){
     };
     
     $('.optemo_compare_checkbox').live('click', function(){
-        var selectedComps = my.getSelectedComparisons().length;
-        if (selectedComps <= 5) {
-            if ($(this).attr('checked')) { // save the comparison item
-                my.loadspecs($(this).attr('data-sku'));
-            }
-            my.changeNavigatorCompareBtn(selectedComps);
-        } else {
-            if (!(typeof(optemo_french) == "undefined") && optemo_french)
-                alert("Le nombre maximum de produits que vous pouvez comparer est de 5. Veuillez réessayer.");
-            else
-                alert("The maximum number of products you can compare is 5. Please try again.");
-            $(this).attr('checked', '');
-        }
-    });
+                                           var skus = $('body').data('bestbuy_specs_skus') || [];
+                                           var thisObj = $(this) ;
+                                                    if (thisObj.attr('checked')) { // save the comparison item
+                                                        if (skus.length <5) {
+   
+                                                            my.loadspecs(thisObj.attr('data-sku'), thisObj.attr('data-cat'), thisObj.attr('data-id'));
+                                                        }
+                                                        else {
+                                                            if (!(typeof(optemo_french) == "undefined") && optemo_french)
+                                                                alert("Le nombre maximum de produits que vous pouvez comparer est de 5. Veuillez réessayer.");
+                                                            else
+                                                                alert("The maximum number of products you can compare is 5. Please try again.");
+                                                            $(this).attr('checked', '');
+                                                        }
+                                                    } else 
+                                                        remove_comparison_from_skus(thisObj.attr('data-id'));
+                                           my.changeNavigatorCompareBtn(skus.length);
+         
+                                       });
 
-    my.getSelectedComparisons = function () {
-        var checkedproducts = [];
-        $('.optemo_compare_checkbox').each( function(index) {
-            if ($(this).attr('checked')) {
-                checkedproducts.push($(this).attr('data-id') + ',' +  $(this).attr('data-sku'));
-            }
-        });
-        return checkedproducts;
-    };
 
     my.compareCheckedProducts = function () {
-        var checkedProducts = my.getSelectedComparisons();
-        if (checkedProducts.length >= 1) {
+        var skus = $('body').data('bestbuy_specs_skus') || [];
+
+        if (skus.length >= 1) {
             var productIDs = '', width = 560, number_of_saved_products = 0;
-            $.each(checkedProducts, function(index, value) {
-                var product = value.split(',');
-                productIDs = productIDs + product[0] + ',';
+            $.each(skus, function(index, value) {
+                productIDs = productIDs + value[2] + ',';
                 number_of_saved_products++;
             });
         }
@@ -1843,14 +1869,15 @@ optemo_module = (function (my){
     };
     
     $('.optemo_compare_button').live('click', function(){
-        var selectedComps = my.getSelectedComparisons().length;
+        var skus = $('body').data('bestbuy_specs_skus') || [];
+                                         
         var objCheckbox = $(this).parent().find('.optemo_compare_checkbox');
         var max = (objCheckbox.attr('checked') ? 5 : 4);
-        if (selectedComps <= max) {
+        if (skus.length <= max) {
             if (!objCheckbox.attr('checked')) {
                 objCheckbox.attr('checked', 'checked');
             }
-            my.loadspecs(objCheckbox.attr('data-sku'), my.compareCheckedProducts);
+            my.loadspecs(objCheckbox.attr('data-sku'), objCheckbox.attr('data-cat'), objCheckbox.attr('data-id'), my.compareCheckedProducts);
         }
         else {
             if (!(typeof(optemo_french) == "undefined") && optemo_french)
@@ -1862,7 +1889,7 @@ optemo_module = (function (my){
 
 
         // Change navigator bar compare button text
-        my.changeNavigatorCompareBtn(my.getSelectedComparisons().length);
+        my.changeNavigatorCompareBtn(skus.length);
     
         return false;
     });
