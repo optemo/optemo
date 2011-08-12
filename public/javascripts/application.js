@@ -163,7 +163,7 @@ optemo_module = (function (my){
         if (!(typeof(optemo_french) == "undefined") && optemo_french) baseurl = baseurl+"?lang=fr";
         // Insert spec in right order to show in comparison page
         var insert_before = -1;
-        var skus = $('body').data('bestbuy_specs_skus') || [];
+        var skus = $('#optemo_embedder .border-content').data('bestbuy_specs_skus') || [];
         $.each(skus, function(index,val) {
                    if (val[2] == prod_id) {
                        insert_before = index;
@@ -210,9 +210,13 @@ optemo_module = (function (my){
                         if (bundle_sku)
                             sku_to_register = bundle_sku;
                         jQuery('body').data('bestbuy_specs_' + sku_to_register, processed_specs);
-                        $('body').data('bestbuy_specs_skus', skus);
+                        $('#optemo_embedder .border-content').data('bestbuy_specs_skus', skus);
                         if (f) f();
                     }
+        // Change navigator bar compare button text
+                    my.changeNavigatorCompareBtn(skus.length);
+                    
+
                 }
             });
         }
@@ -220,7 +224,10 @@ optemo_module = (function (my){
             // specs are already loaded. In jQuery 1.5 this would warrant a promise() call
             // but we are in jQuery 1.4.2 at the moment. Keep this code for later.
             // var req = $.Deferred().resolve().promise();
+
+            $('#optemo_embedder .border-content').data('bestbuy_specs_skus', skus);
             if (f) f();
+            my.changeNavigatorCompareBtn(skus.length);
         }
     };
     function numberofstars(stars) {
@@ -429,12 +436,14 @@ optemo_module = (function (my){
         remove_comparison_from_skus(id);
     }
                      function remove_comparison_from_skus(prod_id) {
-                         $.each($('body').data('bestbuy_specs_skus'), function(index, val) {
+                         $.each($('#optemo_embedder .border-content').data('bestbuy_specs_skus'), function(index, val) {
                                     if (val[2] == prod_id) {
-                                        $('body').data('bestbuy_specs_skus').splice(index, 1);
+                                        $('#optemo_embedder .border-content').data('bestbuy_specs_skus').splice(index, 1);
                                         return false;
                                     }
                                 });
+                         
+                         my.changeNavigatorCompareBtn($('#optemo_embedder .border-content').data('bestbuy_specs_skus').length);   
                      }
 
 
@@ -859,14 +868,10 @@ optemo_module = (function (my){
         
 
             // If this is the last one, take the comparison screen down too
-            if ($('.comparisonmatrix:first .compare_row:first .columntitle').length <= 1) {
-        my.changeNavigatorCompareBtn(0);
-            my.removeSilkScreen();
+            if ($('#optemo_embedder .border-content').data('bestbuy_specs_skus').length == 0) {
+                my.removeSilkScreen();
             }
-        else
-        {
-        my.changeNavigatorCompareBtn($('.comparisonmatrix:first .compare_row:first .columntitle').length -1 );
-        }
+
             return false;
         });
 
@@ -1178,7 +1183,7 @@ optemo_module = (function (my){
     };
     
     my.buildComparisonMatrix = function() {
-        var skus = $('body').data('bestbuy_specs_skus') || [], anchor = $('#hideable_matrix');
+        var skus = $('#optemo_embedder .border-content').data('bestbuy_specs_skus') || [], anchor = $('#hideable_matrix');
         // Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
         var array = [];
         my.changeCompareTitle(skus.length);
@@ -1398,6 +1403,7 @@ optemo_module = (function (my){
     };
 
     my.ajaxerror = function() {
+  
         var lis = my.loading_indicator_state;
         lis.disable = false;
         clearTimeout(lis.spinner_timer); // clearTimeout can run on "null" without error
@@ -1787,7 +1793,7 @@ optemo_module = (function (my){
     };
     
     $('.optemo_compare_checkbox').live('click', function(){
-                                           var skus = $('body').data('bestbuy_specs_skus') || [];
+                                           var skus = $('#optemo_embedder .border-content').data('bestbuy_specs_skus') || [];
                                            var thisObj = $(this) ;
                                                     if (thisObj.attr('checked')) { // save the comparison item
                                                         if (skus.length <5) {
@@ -1803,14 +1809,11 @@ optemo_module = (function (my){
                                                         }
                                                     } else 
                                                         remove_comparison_from_skus(thisObj.attr('data-id'));
-                                           my.changeNavigatorCompareBtn(skus.length);
-         
                                        });
 
 
     my.compareCheckedProducts = function () {
-        var skus = $('body').data('bestbuy_specs_skus') || [];
-
+        var skus = $('#optemo_embedder .border-content').data('bestbuy_specs_skus') || [];
         if (skus.length >= 1) {
             var productIDs = '', width = 560, number_of_saved_products = 0;
             $.each(skus, function(index, value) {
@@ -1869,7 +1872,7 @@ optemo_module = (function (my){
     };
     
     $('.optemo_compare_button').live('click', function(){
-        var skus = $('body').data('bestbuy_specs_skus') || [];
+        var skus = $('#optemo_embedder .border-content').data('bestbuy_specs_skus') || [];
                                          
         var objCheckbox = $(this).parent().find('.optemo_compare_checkbox');
         var max = (objCheckbox.attr('checked') ? 5 : 4);
@@ -1888,8 +1891,7 @@ optemo_module = (function (my){
         }
 
 
-        // Change navigator bar compare button text
-        my.changeNavigatorCompareBtn(skus.length);
+
     
         return false;
     });
