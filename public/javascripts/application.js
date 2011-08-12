@@ -186,7 +186,7 @@ optemo_module = (function (my){
         if (insert_before < 0)
             skus.push([sku, cat_id, prod_id, product_type_id].join(','));
 
-        addValueToCookie('bestbuy_specs_skus', skus.join('*'));
+        addValueToCookie('bestbuy_specs_skus', skus.join('*'), 1);
         // Do not need check bundle sku
         if (!(jQuery('body').data('bestbuy_specs_' + sku))) {
             $.ajax({
@@ -449,7 +449,7 @@ optemo_module = (function (my){
                                     if (val[2] == prod_id) {
                                         skus.splice(index, 1);
                                           eraseCookie('bestbuy_specs_skus');
-                                          addValueToCookie('bestbuy_specs_skus', skus.join('*'));
+                                          addValueToCookie('bestbuy_specs_skus', skus.join('*'), 1);
                                         return false;
                                     }
                                 });
@@ -1596,8 +1596,8 @@ optemo_module = (function (my){
     //--------------------------------------//
     //              Cookies                 //
     //--------------------------------------//
-    function addValueToCookie(name, value) {
-        var savedData = readCookie(name), numDays = 30;
+    function addValueToCookie(name, value, days) {
+        var savedData = readCookie(name), numDays = days || 30;
         if (savedData) {
             // Cookie exists, add additional values with * as the token.
             savedData = opt_appendStringWithToken(savedData, value, '*');
@@ -1608,8 +1608,8 @@ optemo_module = (function (my){
         }
     }
 
-    function removeValueFromCookie(name, value) {
-        var savedData = readCookie(name), numDays = 30;
+    function removeValueFromCookie(name, value, days) {
+        var savedData = readCookie(name), numDays = days || 30;
         if (savedData) {
             savedData = opt_removeStringWithToken(savedData, value, '*');
             if (savedData == "") { // No values left to store
