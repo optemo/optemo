@@ -12,14 +12,4 @@ module DirectComparisonHelper
     (@products.size - 2) * 201 + 531
     531 if @products.size <= 2
   end
-  # Sort features of specs in compare page: if they are also filter features following same order of filters, otherwise give it large number (eg: 9999)
-  def sort_show_feats
-    feats=Session.continuous['show'].map{|x| {x=>'cont'}} + Session.categorical['show'].map{|x| {x=>'cat'}} + Session.binary['show'].map{|x| {x=>'bin'}}
-    feats.sort! do |a,b|
-      a_index = Session.filters_order.index{|f| f[:name]==a.keys[0]}
-      b_index = Session.filters_order.index{|f| f[:name]==b.keys[0]}
-      (a_index.nil? ? 9999 : Session.filters_order[a_index][:show_order].to_i) <=>(b_index.nil? ? 9999 : Session.filters_order[b_index][:show_order].to_i)
-    end
-    feats
-  end
 end

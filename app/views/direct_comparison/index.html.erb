@@ -48,11 +48,11 @@
   </div>
 	<% gray = false %>
   <%# sort_show_feats is function defined in direct_comparison_helper.rb %>
-  <% sort_show_feats.each do |feat_pair| %>
+  <% @s.comparison_features.each do |feat_pair| %>
     <% feat_pair.each_pair do |feat, feat_type| %>
 
 			    <%#needs to be more efficient especially if we want to have unlimited number of products in the compare box%>	
-				  <% if feat_type!="bin" || !@products.map{|product| spec_hash[product.id][feat]}.compact.empty? %> 
+				  <% if feat_type!="Binary" || !@products.map{|product| spec_hash[product.id][feat]}.compact.empty? %> 
 					  <div class="<%= t("#{Session.product_type}.specs.#{feat}.name", :default=>feat).length < 20 ? "compare_row" : "double_height_compare_row" %>">
 		     			<div class="cell <%= gray ? "graybg" : "whitebg" %> leftmostcolumn leftcolumntext">
 		        		<%= t("#{Session.product_type}.specs.#{feat}.name", :default=>feat) %>:
