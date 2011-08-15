@@ -1,6 +1,4 @@
 //Lightweight JSONP fetcher - www.nonobtrusive.com
-// The remote server is getting sensed below now, including port number, by the including webpage's script location.
-//OPT_REMOTE = 'http://192.168.5.132:3000';
 
 var scriptSource = (function(scripts) { 
     var scripts = document.getElementsByTagName('script'), 
@@ -48,20 +46,23 @@ var category_id_hash = {'digital-cameras' : 22474,
                         'Drives-Storage' : 20243,
                         'lecteurs-et-stockage' : 20243};
 
-var rails_category_id = 0;
+var opt_category_id = 0;
 for (var i in category_id_hash) {
     if (window.location.pathname.match(new RegExp(i,"i"))) {
-        rails_category_id = category_id_hash[i];
+        opt_category_id = category_id_hash[i];
         break;
     }
 }
 // Failsafe just in case nothing seems to match
-if (rails_category_id == 0) rails_category_id = 22474;
+if (opt_category_id == 0) {
+    opt_category_id = 22474;
+    if (console) console.warn("Product category not recognized - Cameras used as default");
+}
 
 if (opt_history.length > 0)
-    var opt_options = {embedding:'true', hist: opt_history, category_id: rails_category_id};
+    var opt_options = {embedding:'true', hist: opt_history, category_id: opt_category_id};
 else
-    var opt_options = {embedding:'true', category_id: rails_category_id, landing: true};
+    var opt_options = {embedding:'true', category_id: opt_category_id, landing: true};
 JSONP.get(OPT_REMOTE, opt_options, function (data) {
     if (scriptSource.match(/localhost/) || scriptSource.match(/192.168/)) { // We need to do some additional work
         var regexp_pattern, data_to_add, data_to_append, scripts, headID = document.getElementsByTagName("head")[0], script_nodes_to_append, i, images;
