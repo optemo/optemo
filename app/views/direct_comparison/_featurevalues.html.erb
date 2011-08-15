@@ -18,17 +18,13 @@
 <% elsif type == "cat" %>
 <div class="cell <%= gray ? "graybg" : "whitebg" %><%=' spec_column_' + column_number.to_s %>">
 
-	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
-		<!-- If the interesting feature should be displayed then display -->
-    <% b='<b>'; b_end='</b>' %>
-	<% else %>
-    <% b=''; b_end='' %>
-	<% end %>
-  
-  <% if spec %>
-  <%= b + feat=='category'?t("#{Session.product_type}.specs.#{spec}.name"):spec.to_s + b_end %>    <% else %>
-   <%= b + '-' + b_end %>
-  <% end %>
+  <span <%= "style='font-weight: bold;'" if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>>
+    <% if spec %>
+    <%= feat=='category'?t("#{Session.product_type}.specs.#{spec}.name"):spec.to_s %>
+    <% else %>
+    <%= '-' %>
+    <% end %>
+  </span>
 </div>
 <% else #Binary -- might need to add another elsif clause for text specs later %> 
 <div class="cell <%= gray ? "graybg" : "whitebg" %><%=' spec_column_' + column_number.to_s %>" <%= 'style="font-weight:bold;"' if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>>
