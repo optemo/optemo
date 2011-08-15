@@ -95,21 +95,6 @@ optemo_module = (function (my){
         SESSION_ID = parseInt($('#seshid').html());
         AB_TESTING_TYPE = parseInt($('#ab_testing_type').html());
         my.PIWIK_ID = $('#piwikid').html();
-        var category_id_hash = {'digital-cameras' : 22474,
-                        'digital-tvs' : 21344, // The URL is probably not quite correct yet; this is a placeholder
-                        'harddrives' : 20243,
-                        'Drives-Storage' : 20243,
-                        'lecteurs-et-stockage' : 20243};
-
-        my.RAILS_CATEGORY_ID = 0;
-        for (var i in category_id_hash) {
-            if (window.location.pathname.match(new RegExp(i,"i"))) {
-                my.RAILS_CATEGORY_ID = category_id_hash[i];
-                break;
-            }
-        }
-        // Failsafe just in case nothing seems to match
-        if (my.RAILS_CATEGORY_ID == 0) my.RAILS_CATEGORY_ID = 22474;
     }
 
     // Renders a recursive html list of the specs.
@@ -1342,7 +1327,8 @@ optemo_module = (function (my){
     /* Does a relatively generic ajax call and returns data to the handler below */
     my.ajaxsend = function (hash,myurl,mydata,timeoutlength) {
         var lis = my.loading_indicator_state;
-        mydata = $.extend({'ajax': true, category_id: my.RAILS_CATEGORY_ID},mydata);
+        //The Optemo category ID should be set in the loader unless this file is loaded non-embedded, then it is set in the opt_discovery section
+        mydata = $.extend({'ajax': true, category_id: window.opt_category_id},mydata);
         if (typeof hash != "undefined" && hash != null && hash != "") {
             mydata.hist = hash;}
         else
@@ -1460,7 +1446,7 @@ optemo_module = (function (my){
     my.quickajaxcall = function(element_name, myurl, fn) { // The purpose of this is to do an ajax load without having to go through the relatively heavy ajaxcall().
         if (OPT_REMOTE)
             //Check for absolute urls
-            JSONP.get(OPT_REMOTE+myurl.replace(/http:\/\/[^\/]+/,''), {embedding:'true', category_id: my.RAILS_CATEGORY_ID}, function(data){
+            JSONP.get(OPT_REMOTE+myurl.replace(/http:\/\/[^\/]+/,''), {embedding:'true', category_id: window.opt_category_id}, function(data){
                 $(element_name).html(data);
                 if (fn) fn();
             });
@@ -2003,10 +1989,12 @@ $(function(){
 // This should be able to go ahead before document.ready for a slight time savings.
 // This history discovery works for embedded also, because by now the ajaxsend function has been redefined, and the history init has been called.
 if ($('#opt_discovery').length) {
+    //Pass in the option as a url param (Digital Cameras are default)
+    window.opt_category_id = decodeURI((RegExp('([?]|&)[Cc]ategory_id=(.+?)(&|$)').exec(location.search)||[,,22474])[2]);
     if (location.hash) {
-        optemo_module.ajaxsend(location.hash.replace(/^#/, ''),'/');
+        optemo_module.ajaxsend(location.hash.replace(/^#/, ''),'/', {category_id: opt_category_id});
     } else {
-        optemo_module.ajaxsend(null,'/', {landing:'true'});
+        optemo_module.ajaxsend(null,'/', {landing:'true', category_id: opt_category_id});
     }
 }
 
