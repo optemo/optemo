@@ -12,7 +12,7 @@
 	</div>
 	<div class="watermark"><%=t('products.compare.powered')%><%= link_to 'Optemo', 'http://optemo.com', :class => "popup" %></div>
 </div>
-<div id="main">
+<div id="main" data-product_type='<%= Session.product_type %>'>
 	<% if @indexload %>
 		<div id="opt_discovery"></div>
 	<% else %>
