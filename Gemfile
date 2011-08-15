@@ -15,6 +15,10 @@ gem 'mysql2'
 gem 'capistrano'
 gem 'capistrano-ext'
 
+gem 'i18n-active_record',
+      :git => 'git://github.com/svenfuchs/i18n-active_record.git',
+      :require => 'i18n/active_record'
+
 # To use debugger
 gem 'ruby-debug19'
 

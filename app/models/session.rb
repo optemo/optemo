@@ -8,7 +8,7 @@ class Session
   cattr_accessor :product_type, :product_type_int # Product type (camera_us, etc.), used everywhere
   cattr_accessor :piwikSiteId # Piwik Site ID, as configured in the currently-running Piwik install.
   cattr_accessor :ab_testing_type # Categorizes new users for AB testing
-  cattr_accessor :category_id, :dynamic_filter_cat, :dynamic_filter_cont, :dynamic_filter_bin, :filters_order
+  cattr_accessor :category_id, :dynamic_filter_cat, :dynamic_filter_cont, :dynamic_filter_bin, :filters_order, :comparison_features
   cattr_accessor :rails_category_id # This is passed in from ajaxsend and the logic for determining the category ID is from the javascript side rather than from the Rails side. Useful for embedding.
 
   def initialize (cat_id = nil, request_url = nil)
@@ -35,7 +35,8 @@ class Session
     self.dynamic_filter_cont = Hash.new{|h,k| h[k] = []}     
     self.dynamic_filter_bin = Hash.new{|h,k| h[k] = []}
     self.filters_order = Array.new
-    
+    self.comparison_features = Array.new
+
     # 2 is hard-coded to cameras at the moment and is the default
     # Check the product_types table for details
     p_type = ProductType.find(cat_id.blank? ? 2 : CategoryIdProductTypeMap.find_by_category_id(cat_id.to_i).product_type_id)
@@ -63,9 +64,6 @@ class Session
     p_url ||= p_type.urls.first
     self.piwikSiteId = p_url.piwik_id || 10 # This is a catch-all for testing sites.
    
-    continuous_filter_unsorted=[]
-    binary_filter_unsorted=[]
-    categorical_filter_unsorted=[]
     
     # This block gets out the continuous, binary, and categorical features
     p_headings = Heading.find_all_by_product_type_id(p_type.id, :include => :features) # eager loading headings and features to reduce the queries.
@@ -85,6 +83,7 @@ class Session
           end
         end
         used_fors = feature.used_for.split(',').map { |uf| uf.strip }
+        comparison = []
         case feature.feature_type
         when "Continuous"
           self.continuous["all"] << feature.name #Keep track of all features
@@ -92,8 +91,11 @@ class Session
           self.maximum[feature] = feature.max if feature.max > 0
           self.minimum[feature] = feature.min if feature.min > 0
           used_fors.each do |flag|
-            if flag != 'filter' # filter is depents by category id, which maybe depents with last search condition, we can not do filter here
+            if flag != 'filter' # filter specs are changed dynamicly according categories selected
               self.continuous[flag] << feature.name
+              if flag == 'show' 
+                self.comparison_features << { :name=>feature.name, :feature_type=>feature.feature_type, :order=> feature.used_for_order }
+              end
             end
           end
 
@@ -103,31 +105,39 @@ class Session
           self.binary["all"] << feature.name #Keep track of all features
           self.prefered[feature.name] = feature.prefered if !feature.prefered.nil? && !feature.prefered.empty?
           used_fors.each do |flag|
-            if flag != 'filter' # only add features of selected product types to the filter
+            if flag != 'filter' # filter specs change dynamicly with categories selected
               self.binary[flag] << feature.name
+              if flag == 'show'
+                self.comparison_features << { :name=>feature.name, :feature_type=>feature.feature_type, :order => feature.heading.show_order }
+              end
+              
             end
           end
+
 
         when "Categorical"
           self.categorical["all"] << feature.name #Keep track of all features
           self.prefered[feature.name] = feature.prefered if !feature.prefered.nil? && !feature.prefered.empty?
           used_fors.each do |flag|
-            if flag != 'filter' # only add features of selected product types to the filter
+            if flag != 'filter' # filter specs change dynamicly with categories selected
               self.categorical[flag] << feature.name
+              if flag == 'show'
+                self.comparison_features << { :name=>feature.name, :feature_type=>feature.feature_type, :order => feature.used_for_order }
+              end
             end
           end
 
         end
          self.utility_weight[feature.name] = feature.utility_weight if feature.utility_weight > 1
          self.utility["all"] << feature.name if feature.utility_weight > 1
-         self.cluster_weight[feature.name] = feature.cluster_weight if feature.cluster_weight > 1
+        self.cluster_weight[feature.name] = feature.cluster_weight if feature.cluster_weight > 1
+
       end
     end
-    self.continuous['filter'] = continuous_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{ |f| f[0] }
-    self.binary['filter'] = binary_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{|f| f[0] }
-    self.categorical['filter'] = categorical_filter_unsorted.sort {|a,b| a[1] <=> b[1]}.map{|f| f[0] }
+    # Sort comparison features to show them by order
+    self.comparison_features.sort_by!{|c| c[:order] }.map!{|c| {c[:name] => c[:feature_type]}}
   end
-
+  
   def self.searches
     # Return searches with this session id
     Search.where(["session_id = ?",self.id])
@@ -166,14 +176,13 @@ class Session
   
   def self.getFilters(userdatacats)
     category_ids = []
-    unless userdatacats.nil?
-      userdatacats.each do |d|
-        category_ids << d.value if d.name == 'category'
-      end
+
+    Maybe(userdatacats).each do |d|
+      category_ids << d.value if d.name == 'category'
     end
+
     
     # This block gets out the continuous, binary, and categorical features
-    
     p_headings = Heading.find_all_by_product_type_id(ProductType.find_all_by_name(product_type).first.id, :include => :features) # eager loading headings and features to reduce the queries.
     p_headings.each do |heading|
       heading.features.each do |feature|
@@ -205,6 +214,6 @@ class Session
       end
     end
     self.continuous["sortby"] = ["saleprice_factor", "orders_factor", "displayDate"]
-    self.filters_order.sort_by! {|item| item[:show_order].to_i }
+    self.filters_order.sort_by! {|item| item[:show_order].to_i }.map!{|f| {f[:name] => f[:filter_type]} }
   end
 end

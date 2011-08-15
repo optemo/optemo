@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/svenfuchs/i18n-active_record.git
+  revision: 5121021650e8412350784274c47899b293d8669e
+  specs:
+    i18n-active_record (0.0.2)
+      i18n (>= 0.5.0)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -106,6 +113,7 @@ DEPENDENCIES
   capistrano-ext
   dalli (= 1.0.2)
   factory_girl
+  i18n-active_record!
   mysql2
   rails (= 3.0.7)
   ruby-debug19
