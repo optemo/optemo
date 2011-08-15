@@ -1416,9 +1416,6 @@ optemo_module = (function (my){
             my.SliderInit();
             my.DBinit();
             var skus = my.readAllCookieValues('bestbuy_specs_skus');
-            console.log(skus[0].split(',')[3]);
-            console.log(my.RAILS_CATEGORY_ID);
-
             if (skus != 0) {
                 if (skus[0].split(',')[3] != $('#main').attr('data-product_type')) {
                     skus = [];
