@@ -1348,7 +1348,7 @@ optemo_module = (function (my){
         else
             mydata.landing = true;
         if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 50);
-        lis.socket_error_timer = setTimeout("optemo_module.ajaxerror()", 8000);
+        lis.socket_error_timer = setTimeout("optemo_module.ajaxerror()", 10000);
         if (OPT_REMOTE) {
             //Embedded Layout
             myurl = (typeof myurl != "undefined" && myurl != null) ? myurl.replace(/http:\/\/[^\/]+/,'') : "/compare"
