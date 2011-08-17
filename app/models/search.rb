@@ -421,69 +421,6 @@ class Search < ActiveRecord::Base
       end
     end
     
-    # remove the filter without categories selected
-    
-    dynamic_filter_cat_selected = []
-    dynamic_filter_cat_all = []
-    dynamic_filter_cont_selected = []
-    dynamic_filter_cont_all = []
-    dynamic_filter_bin_selected = []
-    dynamic_filter_bin_all = []
-    Session.dynamic_filter_cat.each_pair do |k, v|
-      dynamic_filter_cat_all += Session.dynamic_filter_cat[k]
-    end
-    Session.dynamic_filter_cont.each_pair do |k, v|
-      dynamic_filter_cont_all += Session.dynamic_filter_cont[k]
-    end
-    Session.dynamic_filter_bin.each_pair do |k, v|
-      dynamic_filter_bin_all += Session.dynamic_filter_bin[k]
-    end
-
-    cats.each do |c|
-      dynamic_filter_cat_selected += Session.dynamic_filter_cat[c]
-      dynamic_filter_cont_selected += Session.dynamic_filter_cont[c]
-      dynamic_filter_bin_selected += Session.dynamic_filter_bin[c]
-    end
-
-    
-
-    dynamic_filter_cat_selected.uniq!
-    dynamic_filter_cat_all.uniq!
-    dynamic_filter_cont_selected.uniq!
-    dynamic_filter_cont_all.uniq!
-    dynamic_filter_bin_selected.uniq!
-    dynamic_filter_bin_all.uniq!
-    
-    @userdatacats.reject!{|c| dynamic_filter_cat_all.include?(c.name) && !dynamic_filter_cat_selected.include?(c.name)}
-    @userdataconts.reject!{|c| dynamic_filter_cont_all.include?(c.name) && !dynamic_filter_cont_selected.include?(c.name)}
-    @userdatabins.reject!{|c| dynamic_filter_bin_all.include?(c.name) && !dynamic_filter_bin_selected.include?(c.name)}
-
-    # @userdatacats.group_by(&:name).keys.uniq.each do |feature_name|
-    #   Session.dynamic_filter_cat.each_pair do |k, v|
-    #       if v.include?(feature_name)
-    #         @userdatacats.reject!{|c| c.name == feature_name} unless cats.include?(k)
-    #         break
-    #       end
-    #     end
-    #   end
-    # @userdataconts.group_by(&:name).keys.uniq.each do |feature_name|
-    #   Session.dynamic_filter_cont.each_pair do |k, v|
-    #       if v.include?(feature_name)
-    #         @userdataconts.reject!{|c| c.name == feature_name} unless cats.include?(k)
-    #         break
-    #       end
-    #     end
-    #   end
-    #   @userdatabins.group_by(&:name).keys.uniq.each do |feature_name|
-    #     Session.dynamic_filter_bin.each_pair do |k, v|
-    #       if v.include?(feature_name)
-    #         @userdatabins.reject!{|c| c.name == feature_name} unless cats.include?(k)
-    #         break
-    #       end
-    #     end
-    #   end
-    
-
   end
   
   # The intent of this function is to see if filtering is being done on a previously filtered set of clusters.
@@ -530,5 +467,11 @@ class Search < ActiveRecord::Base
       return true unless old_search.keyword_search.blank?
     end
     false
+  end
+
+  # When remove dynamic fitlers, remove same filters in search from history
+  def resign_userdatas(deleted_fitlers)
+    [@userdatacats, @userdatabins, @userdataconts].each{|u| u.reject! {|x| deleted_filters.include? x.name} }
+    # save
   end
 end
