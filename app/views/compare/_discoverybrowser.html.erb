@@ -26,8 +26,8 @@
 	<%end%>
   <% if Session.search.products_size > 18 %><!-- top pagination bar -->
     <% products = Session.search.paginated_products %>
-    <div class='pagination-container'><span class='pagi-info'><%= page_entries_info(products, :entry_name =>'').gsub(/([Dd]isplaying\s*)|(\s*in\s*total)|(&nbps;)/,'').gsub(/\-/,t("products.compare.dash")).gsub(/of/, t("products.compare.of")) %></span>
-      <%= will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :outer_window=>-2, :renderer=>'BestbuyPaginationLinkRenderer'}).gsub(/\.{3}/,'').sub(/>/,'><span><strong>Page:&nbsp;</strong></span>') %>
+    <div class='pagination-container'><span class='pagi-info'><%= page_entries_info(products) %></span>
+      <b>Page:</b><%= will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :outer_window => -1, :inner_window => 5})%><%#What is outer window => -2?? .gsub(/\.{3}/,'').sub(/>/,'><span><strong>Page:&nbsp;</strong></span>') %>
     </div>
   <% end %>
   <%= render 'sortby' %>

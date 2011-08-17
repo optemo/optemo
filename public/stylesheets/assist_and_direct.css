@@ -1875,10 +1875,11 @@ margin-top:0;
     position: relative;
     background: #e7e7e7;
     text-align: center;
-  font-size: 12px;
-  height: 33px;
-  *height: 35px;
-  border: 1px #cecece solid;
+    padding-top: 10px;
+    font-size: 12px;
+    height: 23px;
+    *height: 25px;
+    border: 1px #cecece solid;
 }
 
 #optemo_embedder #back-to-top-bottom {
@@ -1886,8 +1887,13 @@ margin-top:0;
    }
 #optemo_embedder .pagination {
     text-align: center;
-    padding: 10px 5px;
+    padding: 0px 5px;
+    display: inline;
    *background: #e7e7e7;
+}
+#optemo_embedder .pagination .current{
+    font-style: normal;
+    font-weight: bold;
 }
 #optemo_embedder .pagination a img{
    vertical-align: top;

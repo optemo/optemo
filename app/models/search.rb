@@ -156,7 +156,8 @@ class Search < ActiveRecord::Base
   end
   
   def paginated_products
-    @paginated_products ||= products.map{|p|Product.cached(p.id)}.paginate :page => page, :per_page => 18
+    #@paginated_products ||= products.map{|p|Product.cached(p.id)}.paginate :page => page, :per_page => 18
+    @paginated_products ||= Product.where(:id => products.map{|p|p.id}).page(page)
   end
   
   def isextended?
@@ -179,11 +180,7 @@ class Search < ActiveRecord::Base
     if sortby == "relevance" || sortby.nil?
         @products = Kmeans.compute(18,SearchProduct.fq2)
     else
-        #if sortby.include?("_high")
-            @products = SearchProduct.fq2
-        #else    
-        #    @products = SearchProduct.fq2
-        #end        
+        @products = SearchProduct.fq2
     end
   end
   

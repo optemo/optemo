@@ -38,8 +38,6 @@ en:
             save:           "Save"
             AdvancedSearch: "Advanced Search"
             seemore:        "See More"
-            of:             "of"
-            dash:           "-"
             InternalorExternal: "Internal or External"            
             rotations:      "Rotation Speed"
             drive_size:     "Drive Size"
