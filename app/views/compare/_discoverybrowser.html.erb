@@ -1,46 +1,30 @@
-<% special = true %>
-<% case @special_boxes %>
-	<% when 'featured' %>
-		<%if Session.product_type=="camera_bestbuy"%>
-			<% mb = "<div class='optemo_bluesubheading'>"+t("#{Session.product_type}.featuredproducts")+"</div>" + special_main_boxes('featured', 20) %>
-		<%else%>
-			<% mb = "<div class='optemo_bluesubheading'>"+t("#{Session.product_type}.featuredproducts")+"</div>" + special_main_boxes('featured', 20) %>
-		<%end%>	
-	<% when 'toprated' %>
-		<% mb = "<div class='optemo_bluesubheading'>"+t("#{Session.product_type}.toprated")+"</div>" + special_main_boxes('customerRating', 18) %>
-	<% when 'bestsellers' %>
-		<% mb = "<div class='optemo_bluesubheading'>"+t("#{Session.product_type}.bestsellers")+"</div>" + special_main_boxes('orders', 18) %>		
-	<% else %>
-		<% mb = main_boxes #Calculate this before navtitle %>
-		<% special = false %>
-<% end %>
-
-	<%if special%>	
-	<%=raw navigator_bar_top_special(@special_boxes) %>
-	<span class='nav-available-text'><%= raw  navtitle %></span><br><%=raw("<div style=\"font-size:0.7em;\">" + t("#{Session.product_type}.outof", :count => ContSpec.all.length) + "</div>") %></div><%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn'})  %></div>
-	
-	<%else%>
+<% mb = main_boxes #Calculate this before navtitle %>
 	<div id="navigator_bar">
-	  <div id="navtitle"><div class='nav-number'>
-	 <%= Session.search.products_size %></div><div class='sub-title'><span class='nav-available-text'><%= raw  navtitle %></span><br><%= Session.search.products_size < ContSpec.all.length ? raw("<div class='outof'>" + t("#{Session.product_type}.outof", :count => ContSpec.all.length) + "</div>") : "" %></div><div style='clear:both;height:0;width:0;'></div></div><%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn'})  %></div>
-	<%end%>
-  <% if Session.search.products_size > 18 %><!-- top pagination bar -->
-    <% products = Session.search.paginated_products %>
-    <div class='pagination-container'><span class='pagi-info'><%= page_entries_info(products) %></span>
-      <b>Page:</b><%= will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :outer_window => -1, :inner_window => 5})%><%#What is outer window => -2?? .gsub(/\.{3}/,'').sub(/>/,'><span><strong>Page:&nbsp;</strong></span>') %>
-    </div>
-  <% end %>
-  <%= render 'sortby' %>
-  <div id="product_content">
-<div class='border-content'>	
-<%= raw mb %>
-<%= raw '</div>' if @s.directLayout %>
+	    <div id="navtitle"><div class='nav-number'>
+	        <%= Session.search.products_size %>
+	    </div>
+	    <div class='sub-title'>
+	        <span class='nav-available-text'><%= raw navtitle %></span>
+	        <div class='outof'>
+	            <%= t("#{Session.product_type}.outof", :count => ContSpec.all.length) if Session.search.products_size < ContSpec.all.length %>
+	        </div>
+	    </div>
+	    <div style='clear:both;height:0;width:0;'></div>
+	</div>
+	<%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn'})  %>
 </div>
-<% if !special %>
-<%= raw navigator_bar_bottom() %>
-<% else %>
-<%= raw navigator_bar_bottom_special(@special_boxes) %>
+<% if Session.search.products_size > Product.per_page %><!-- top pagination bar -->
+  <% products = Session.search.paginated_products %>
+  <div class='pagination-container'><span class='pagi-info'><%= page_entries_info(products) %></span>
+    <b>Page:</b><%= will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :outer_window => -1})%>
+  </div>
 <% end %>
-
+<%= render 'sortby' %>
+<div id="product_content">
+    <div class='border-content'>	
+    <%= raw mb %>
+    <%= raw '</div>' if @s.directLayout %>
+    </div>
+    <%= raw navigator_bar_bottom() %>
 </div>
 <div style="clear:both;"></div>
