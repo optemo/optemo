@@ -189,79 +189,23 @@ module CompareHelper
     select('superfluous', feat, [expanded ? t('products.add')+t(Session.product_type+'.specs.'+feat+'.name') : t('products.all')+t(Session.product_type+'.specs.'+feat+'.name').pluralize] + SearchProduct.cat_counts(feat,expanded,true).map{|k,v| ["#{k} (#{v})", k]}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
   end
   
-  def special_main_boxes(type, num)
-    res = ""
-    prods = @s.search.products_landing(type)
-    num = prods.size if type=='featured'
-    for i in 0...num
-      if i % 3 == 0
-        open = true
-        res << '<div class="rowdiv">'
-      end
-      case type
-      when "featured"
-        if prods.size > 0    
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id), :landing=>false}) unless prods[i].nil?
-        end
-      when "orders"
-        if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id), :landing=>false}) unless prods[i].nil?
-        end
-      when 'customerRating'
-        if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id), :landing=>false}) unless prods[i].nil?
-        end
-      end
-      if (i%3) == 2
-        if i != (num -1)
-          res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto;"></div></div>'
-          open = false
-        end
-      end
-    end    
-    res << '<div style="clear:both;height:0;"></div></div>' if open && !@s.directLayout
-
-    res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
-    
-  end
-  
   def landing_main_boxes(type)
     res = ""
     res << '<div class="rowdiv">'
-    open = true
-
     prods = @s.search.products_landing(type)
     num = prods.size
     # now the new mockup is only with featured products
     res << "<div class='title_landing_type'>" + I18n.t(Session.product_type + ".featuredproducts") + "</div>"
     res << "<div style='clear:both;width: 0;height: 0;'><!--ie6/7 title disappear issue --></div>"
-    for i in 0...prods.size
-      
-      #case type
-      #when "featured"
-        if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id), :landing => true})
+    for i in 0...num
+        res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id), :landing => true})
+        if (i%3) == 2
+            if i != (num -1)
+                res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto;"></div>'
+            end
         end
-
-
-      #when "orders"
-      #  if prods.size > 0
-      #    res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
-      #  end
-      #when 'customerRating'
-      #  if prods.size > 0
-      #    res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
-      #  end
-      #end
-      if (i%3) == 2
-        if i != (num -1)
-          res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto;"></div>'
-        end
-      end
-
     end
-    res << '<div style="clear:both;height:0;"></div></div>' if open && !@s.directLayout
-
+    res << '<div style="clear:both;height:0;"></div></div>' if !@s.directLayout
   end
     
   def main_boxes
