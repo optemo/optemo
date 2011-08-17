@@ -538,7 +538,10 @@ div#division {
 
 /* IE hack for save bar maybe? */
 #optemo_embedder .gainlayout div {
-       zoom: 1;
+    zoom: 1;
+}
+#optemo_embedder .ie6 .gainlayout { 
+    height: 0; 
 }
 
 #optemo_embedder #IE .box-top-r {
@@ -1179,6 +1182,9 @@ margin-top:0;
 #optemo_embedder .mainprodimg {
 	text-align: center;
 }
+#optemo_embedder .ie6 .mainprodimg {
+    display: block !important;
+}
 #optemo_embedder #info_container {
 	border-right: 1px solid #CCC;
 	border-bottom: 1px solid #CCC;
@@ -1192,14 +1198,10 @@ margin-top:0;
 	left: 344px;
 	position: fixed;
 	z-index: 1005;
-/*	background-color: #FFF102;
-	border: 1px solid #444;
-	padding: 4px; */
 	font-size: 9pt;
 	display: none;
-/*	-moz-box-shadow: 1px 1px 0 #444;
-	-webkit-box-shadow: 1px 1px 0 #444; */
 }
+
 * html #optemo_embedder div#loading {
 	position: absolute;
 }
@@ -1836,6 +1838,14 @@ margin-top:0;
 	margin: -1px 1px 1px -1px;
 	-moz-border-radius: 0px; 
 	-webkit-border-radius: 0px;
+}
+
+#optemo_embedder .ie7 .white_swatch,
+#optemo_embedder .ie8 .white_swatch,
+#optemo_embedder .ie9 .white_swatch {
+	width: 11px;
+	height: 11px;
+	border: 1px solid #ccc;
 }
 
 #optemo_embedder .disabled {
