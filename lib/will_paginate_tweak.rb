@@ -1,20 +1,8 @@
-class BestbuyPaginationLinkRenderer < WillPaginate::ViewHelpers::LinkRenderer
-  # Process it! This method returns the complete HTML string which contains
-      # pagination links. Feel free to subclass LinkRenderer and change this
-      # method as you see fit.
-      def to_html
-        html = pagination.map do |item|
-          item.is_a?(Fixnum) ?
-            page_number(item) :
-            send(item)
-        end.join(@options[:separator])
-        
-        @options[:container] ? html_container(html) : html
-      end
-    protected
-    
-      # Calculates visible page numbers using the <tt>:inner_window</tt> and
-      # <tt>:outer_window</tt> options.
+#This change is for adding an odd number of pages and other cosmetic changes to the will_paginate gem version 3.0.0
+require 'will_paginate/view_helpers/link_renderer_base'
+module WillPaginate
+  module ViewHelpers
+    class LinkRenderer < LinkRendererBase
       def windowed_page_numbers
         inner_window, outer_window = @options[:inner_window].to_i, @options[:outer_window].to_i
         window_from = current_page - 4
@@ -52,13 +40,6 @@ class BestbuyPaginationLinkRenderer < WillPaginate::ViewHelpers::LinkRenderer
         
         left.to_a + middle.to_a + right.to_a
       end
-      
-      def page_number(page)
-        unless page == current_page
-          link(page, page, :rel => rel_value(page))
-        else
-          tag(:strong, page)
-        end
-      end
-
+    end
+  end
 end

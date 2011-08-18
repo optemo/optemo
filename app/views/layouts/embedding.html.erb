@@ -1,8 +1,18 @@
 <% s = Session %>
 <%# raw stylesheet_link_merged(s.directLayout ? :direct : :assist) %>
-<!--[if IE]>
+<!--[if lte IE 6]>
+<div id="IE" class="ie6">
+<![endif]-->
+<!--[if IE 7]>
+<div id="IE" class="ie7">
+<![endif]-->
+<!--[if IE 8]>
+<div id="IE" class="ie8">
+<![endif]-->
+<!--[if gte IE 9]>
 <div id="IE">
 <![endif]-->
+
 <%# The border and other aspects of the top bar are in the retailer's frame. This just puts the "compare" layout in. %>
 <%= yield %>
 <div id="silkscreen">&nbsp;</div>
@@ -29,5 +39,6 @@
 <%= raw javascript_include_merged :bb_loader %>
 <% end %>
 
-<%= render :partial => "piwik_stub", :locals => {:s => s} %>
-<%# render :partial => "tour_stub", :locals => {:s => s} %>
+<!-- Piwik -->
+<noscript><p><img src="http://analytics.optemo.com/piwik.php?idsite=<%= s.piwikSiteId %>" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tag -->

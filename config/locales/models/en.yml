@@ -5,3 +5,6 @@ en:
         sortby:             "Sort by"
         relevance:          "Best Match"
         backtotop:          "Back To Top"
+    will_paginate:
+      page_entries_info:
+        multi_page_html: "<b>%{from}&nbsp;-&nbsp;%{to}</b> of <b>%{count}</b>"

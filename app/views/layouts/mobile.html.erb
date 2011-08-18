@@ -25,7 +25,9 @@
 <!-- The jquery-ui script is being included locally due to the custom jquery-ui being about 45k instead of 200kb from Google's CDN -->
 <%= raw javascript_include_merged(:mobile) %>
 
-<%= render :partial => "piwik_stub", :locals => {:s => s} %>
+<!-- Piwik -->
+<noscript><p><img src="http://analytics.optemo.com/piwik.php?idsite=<%= s.piwikSiteId %>" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tag -->
 
 <noscript><div id="noJavascript" style="position:absolute; top: 40px; left:30px; width:250px; background: #FFFFFF; opacity:0.8"><b>Javascript is disabled.</b>For full functionality of Optemo Mobile, please enable javascript.</div></noscript>
 </body>

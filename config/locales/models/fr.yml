@@ -5,4 +5,6 @@ fr:
         relevance:      "Meilleure association"    
         #"Pertinence"
         backtotop:      "Retour en haut"
-        
+    will_paginate:
+      page_entries_info:
+        multi_page_html: "<b>%{from}&nbsp;à&nbsp;%{to}</b> sur <b>%{count}</b>"

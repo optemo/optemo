@@ -1116,9 +1116,15 @@ optemo_module = (function (my){
                 my.trackPage('goals/showcase_banner', {'feature_name' : whichBrand, 'filter_type' : 'showcase_banner'});
                 submitCategorical();
             } else { // This is not scalable. Eventually this sort of logic should be in Firehose.
-                var whichSku = $(this).attr('data-sku');
-                my.trackPage('goals/showcase_banner', {'feature_name' : whichSku, 'filter_type' : 'showcase_banner'});
-                window.location = "http://www.bestbuy.ca/" + ((!(typeof(optemo_french) == "undefined") && optemo_french) ? "fr" : "en") + "-CA/research/seagate-goflex-satellite/rc8372.aspx";
+                //var whichSku = $(this).attr('data-sku');
+                var whichProduct = $(this).attr('product_type');
+                if (whichProduct == 'camera_bestbuy'){
+                    my.trackPage('goals/showcase_banner', {'feature_name' : whichProduct, 'filter_type' : 'showcase_banner'});
+                    window.location = "http://www.bestbuy.ca/" + ((!(typeof(optemo_french) == "undefined") && optemo_french) ? "fr" : "en") + "-CA/research/get-to-know-the-new-canon-powershot-family-of-digital-cameras/rc8360.aspx";
+                } else if (whichProduct == 'drive_bestbuy'){   
+                    my.trackPage('goals/showcase_banner', {'feature_name' : whichProduct, 'filter_type' : 'showcase_banner'});
+                    window.location = "http://www.bestbuy.ca/" + ((!(typeof(optemo_french) == "undefined") && optemo_french) ? "fr" : "en") + "-CA/research/seagate-goflex-satellite/rc8372.aspx";
+                }    
             }
             return false;
         });
@@ -1334,7 +1340,7 @@ optemo_module = (function (my){
         else
             mydata.landing = true;
         if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 50);
-        lis.socket_error_timer = setTimeout("optemo_module.ajaxerror()", 8000);
+        lis.socket_error_timer = setTimeout("optemo_module.ajaxerror()", 10000);
         if (OPT_REMOTE) {
             //Embedded Layout
             myurl = (typeof myurl != "undefined" && myurl != null) ? myurl.replace(/http:\/\/[^\/]+/,'') : "/compare"

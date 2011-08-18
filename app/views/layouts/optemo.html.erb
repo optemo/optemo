@@ -2,9 +2,18 @@
 <%= render :partial => "html_and_head", :locals => {:s => s} %>
 <body style="font-size:0.75em;font-family: arial, helvetica, sans-serif;margin:0;">
 <div id="optemo_embedder">
-<!--[if IE]>
-<div id="IE">
-<![endif]-->
+    <!--[if lte IE 6]>
+    <div id="IE" class="ie6">
+    <![endif]-->
+    <!--[if IE 7]>
+    <div id="IE" class="ie7">
+    <![endif]-->
+    <!--[if IE 8]>
+    <div id="IE" class="ie8">
+    <![endif]-->
+    <!--[if gte IE 9]>
+    <div id="IE">
+    <![endif]-->
 <div id="mycenter">
 	<%= case Session.product_type 
 	  when "printer_lph" then render :partial => "lph_header" 
@@ -48,8 +57,9 @@
 <!-- The jquery-ui script is being included locally due to the custom jquery-ui being about 45k instead of 200kb from Google's CDN -->
 <%= raw javascript_include_merged :bb_loader %>
 
-<%= render :partial => "piwik_stub", :locals => {:s => s} %>
-<%# render :partial => "tour_stub", :locals => {:s => s} %>
+<!-- Piwik -->
+<noscript><p><img src="http://analytics.optemo.com/piwik.php?idsite=<%= s.piwikSiteId %>" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tag -->
 
 <% if @indexload %>
 <noscript><div id="noJavascript" style="position:absolute; top: 40px; left:30px; width:250px; background: #FFFFFF; opacity:0.8"><b>Javascript is disabled.</b>For full functionality, please enable javascript.</div></noscript>

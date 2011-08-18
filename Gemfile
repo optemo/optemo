@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.0.7'
+gem 'rails', '3.0.9'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -29,7 +29,7 @@ gem 'ruby-debug19'
 # gem 'aws-s3', :require => 'aws/s3'
 
 #gem 'thinking-sphinx', '2.0.1', :require => 'thinking_sphinx'
-gem 'will_paginate', '>=3.0.pre'
+gem 'will_paginate', '3.0.0'
 #gem 'rmagick'
 
 group :production, :profile do

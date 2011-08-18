@@ -1,4 +1,3 @@
-require 'bestbuy_pagination_renderer'
 module CompareHelper
   def landing?
     ! (request.referer && request.referer.match(/http:\/\/(laserprinterhub|localhost)/))
@@ -189,79 +188,23 @@ module CompareHelper
     select('superfluous', feat, [expanded ? t('products.add')+t(Session.product_type+'.specs.'+feat+'.name') : t('products.all')+t(Session.product_type+'.specs.'+feat+'.name').pluralize] + SearchProduct.cat_counts(feat,expanded,true).map{|k,v| ["#{k} (#{v})", k]}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
   end
   
-  def special_main_boxes(type, num)
-    res = ""
-    prods = @s.search.products_landing(type)
-    num = prods.size if type=='featured'
-    for i in 0...num
-      if i % 3 == 0
-        open = true
-        res << '<div class="rowdiv">'
-      end
-      case type
-      when "featured"
-        if prods.size > 0    
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id), :landing=>false}) unless prods[i].nil?
-        end
-      when "orders"
-        if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id), :landing=>false}) unless prods[i].nil?
-        end
-      when 'customerRating'
-        if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id), :landing=>false}) unless prods[i].nil?
-        end
-      end
-      if (i%3) == 2
-        if i != (num -1)
-          res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto;"></div></div>'
-          open = false
-        end
-      end
-    end    
-    res << '<div style="clear:both;height:0;"></div></div>' if open && !@s.directLayout
-
-    res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
-    
-  end
-  
   def landing_main_boxes(type)
     res = ""
     res << '<div class="rowdiv">'
-    open = true
-
     prods = @s.search.products_landing(type)
     num = prods.size
     # now the new mockup is only with featured products
     res << "<div class='title_landing_type'>" + I18n.t(Session.product_type + ".featuredproducts") + "</div>"
     res << "<div style='clear:both;width: 0;height: 0;'><!--ie6/7 title disappear issue --></div>"
-    for i in 0...prods.size
-      
-      #case type
-      #when "featured"
-        if prods.size > 0
-          res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id), :landing => true})
+    for i in 0...num
+        res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id), :landing => true})
+        if (i%3) == 2
+            if i != (num -1)
+                res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto;"></div>'
+            end
         end
-
-
-      #when "orders"
-      #  if prods.size > 0
-      #    res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
-      #  end
-      #when 'customerRating'
-      #  if prods.size > 0
-      #    res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id)})
-      #  end
-      #end
-      if (i%3) == 2
-        if i != (num -1)
-          res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto;"></div>'
-        end
-      end
-
     end
-    res << '<div style="clear:both;height:0;"></div></div>' if open && !@s.directLayout
-
+    res << '<div style="clear:both;height:0;"></div></div>' if !@s.directLayout
   end
     
   def main_boxes
@@ -308,31 +251,19 @@ module CompareHelper
     res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
   	res
 	end
-  def navigator_bar_bottom_special(type)
-    prods = @s.search.products_landing(type)
-    type=="featured" ? s = prods.size : s=18
-    res = "<div id='navigator_bar_bottom'><div id='navtitle'><b>#{s.to_s + ' ' + navtitle}</b></div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div><div style='clear:both;'></div>"	    
-  end
-  
-  def navigator_bar_top_special(type)
-      prods = @s.search.products_landing(type)
-      type=="featured" ? s = prods.size : s=18
-      res = "<div id='navigator_bar'>
- 	  <div id='navtitle'><div class='nav-number'>#{s}</div>"
-  end      
+    
   def navigator_bar_bottom 
-        products = @s.search.paginated_products
     res = "<div id='navigator_bar_bottom'><div id='navtitle'>#{Session.search.products_size.to_s + ' ' + navtitle}</div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div><div style='clear:both;'></div>"
-
+  
     if @s.search.products_size > 18
-        res << "<div class='pagination-container'><span class='pagi-info'>#{page_entries_info(products, :entry_name =>'').gsub(/([Dd]isplaying\s*)|(\s*in\s*total)|(&nbps;)/,'').gsub(/\-/,t("products.compare.dash")).gsub(/of/, t("products.compare.of"))}</span>"
-        res << "#{will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :outer_window=>-2, :renderer=>'BestbuyPaginationLinkRenderer'}).gsub(/\.{3}/,'').sub(/>/,'><span><strong>Page:&nbsp;</strong></span>')}<a href='#' id='back-to-top-bottom'>"+t("products.backtotop")+"</a></div>"
+        products = @s.search.paginated_products
+        res << "<div class='pagination-container'><span class='pagi-info'>#{page_entries_info(products)}</span>"
+        res << "<b>Page:</b>#{will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :outer_window => -1})}<a href='#' id='back-to-top-bottom'>"+t("products.backtotop")+"</a></div>"
       end
     res
   end
    
 	def adjustingfilters
-	  #@s.search.userdataconts
 	  new_filters = []
 	    unless Session.search.userdataconts.empty?
          Session.search.userdataconts.each do |se| 

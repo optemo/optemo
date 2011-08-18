@@ -1,5 +1,6 @@
 require 'absolute_url_enabler'
 require 'null_object'
+require 'will_paginate_tweak'
 Site::Application.configure do
   # Settings specified here will take precedence over those in config/environment.rb
 
