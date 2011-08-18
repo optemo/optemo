@@ -19,7 +19,7 @@ namespace :builddirect do
   end
   
   desc 'Parse builddirect XML file'
-  task :parse, :fileparameter, :needs => [:flooring_init] do |t, args|
+  task :parse, [:fileparameter] => [:flooring_init] do |t, args|
     # Open up the XML file
     args.with_defaults(:fileparameter => "BuildDirect_Products.xml")
     doc = Nokogiri::XML(File.open(args.fileparameter)) do |config|
