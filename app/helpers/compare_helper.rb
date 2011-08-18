@@ -1,4 +1,3 @@
-require 'bestbuy_pagination_renderer'
 module CompareHelper
   def landing?
     ! (request.referer && request.referer.match(/http:\/\/(laserprinterhub|localhost)/))
