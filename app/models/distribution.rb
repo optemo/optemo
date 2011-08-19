@@ -11,7 +11,7 @@ require 'inline'
 
     begin
       prods = Session.search.products
-      Session.continuous["filter"].each do |f| 
+      Maybe(Session.select_feature_names("filter", Session::FEATURE_TYPES[:cont])).each do |f| 
         data = prods.map{|p|p.instance_variable_get("@#{f}")}.compact
         next if data.empty? #There's no data available for this feature
         specs << data
@@ -160,7 +160,7 @@ require 'inline'
   end  
   def ruby
     dist = {}
-    Session.continuous["filter"].each{|f| dist[f] = dist_each(f)}
+    Maybe(Session.select_feature_names("filter", Session::FEATURE_TYPES[:cont])).each{|f| dist[f] = dist_each(f)}
     dist
   end
 end

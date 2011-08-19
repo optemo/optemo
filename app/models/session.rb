@@ -3,12 +3,14 @@ class Session
   cattr_accessor :id, :search  # Basic individual data. These are not set in initialization.
   cattr_accessor :directLayout, :mobileView  # View choice (Assist vs. Direct, mobile view vs. computer view)
   cattr_accessor :dragAndDropEnabled, :relativeDescriptions, :numGroups, :extendednav  # These flags should probably be stripped back out of the code eventually
-  cattr_accessor :product_type, :product_type_int # Product type (camera_us, etc.), used everywhere
+  cattr_accessor :product_type, :product_type_int, :product_type_id # Product type (camera_us, etc.), used everywhere
   cattr_accessor :piwikSiteId # Piwik Site ID, as configured in the currently-running Piwik install.
   cattr_accessor :ab_testing_type # Categorizes new users for AB testing
   cattr_accessor :category_id
   cattr_accessor :rails_category_id # This is passed in from ajaxsend and the logic for determining the category ID is from the javascript side rather than from the Rails side. Useful for embedding.
-  cattr_accessor :Features # Gets out the features which include utility, comparison, filter, cluster, sortby, show   
+  cattr_accessor :features # Gets out the features which include utility, comparison, filter, cluster, sortby, show
+
+  FEATURE_TYPES = {:cont=>'Continuous', :bin=>'Binary', :cat=>'Categorical', :text=>'Text'}
 
   def initialize (cat_id = nil, request_url = nil)
     # This parameter controls whether the interface features drag-and-drop comparison or not.
@@ -20,11 +22,12 @@ class Session
     self.numGroups = 9
     self.extendednav = false
     self.features = Hash.new{|h,k| h[k] = []} # Features include utility, comparison, filter, cluster, sortby, show
-    
+
     # 2 is hard-coded to cameras at the moment and is the default
     # Check the product_types table for details
     p_type = ProductType.find(cat_id.blank? ? 2 : CategoryIdProductTypeMap.find_by_category_id(cat_id.to_i).product_type_id)
     self.product_type = p_type.name
+    self.product_type_id = p_type.id
     #Define an integer for the product type
     chars = []
     self.product_type.each_char{|c|chars << c.getbyte(0)*chars.size}
@@ -47,6 +50,20 @@ class Session
     end
     p_url ||= p_type.urls.first
     self.piwikSiteId = p_url.piwik_id || 10 # This is a catch-all for testing sites.
+
+    # initialize features
+    facets = Facet.find_all_by_product_type_id_and_active(product_type_id, true, :include=>:dynamic_facets)
+
+    # Gets out the features which include utility, comparison, filter, cluster, sortby, show
+
+    facets.each do |f|
+      temp = {:name=>f.name, :feature_type=>f.feature_type, :value=>f.value, :style=>f.style}
+      unless f.dynamic_facets.nil? || f.dynamic_facets.empty?
+        temp.merge!({:categories=>f.dynamic_facets.map{|x| x.category}})
+      end
+      self.features[f.used_for] << temp
+    end
+
   end
 
   def self.searches
@@ -64,30 +81,61 @@ class Session
     !esc_param.nil? || (!str.nil? && str.match(/Google|msnbot|Rambler|Yahoo|AbachoBOT|accoona|AcioRobot|ASPSeek|CocoCrawler|Dumbot|FAST-WebCrawler|GeonaBot|Gigabot|Lycos|MSRBOT|Scooter|AltaVista|IDBot|eStyle|ScrubbyBloglines subscriber|Dumbot|Sosoimagespider|QihooBot|FAST-WebCrawler|Superdownloads Spiderman|LinkWalker|msnbot|ASPSeek|WebAlta Crawler|Lycos|FeedFetcher-Google|Yahoo|YoudaoBot|AdsBot-Google|Googlebot|Scooter|Gigabot|Charlotte|eStyle|AcioRobot|GeonaBot|msnbot-media|Baidu|CocoCrawler|Google|Charlotte t|Yahoo! Slurp China|Sogou web spider|YodaoBot|MSRBOT|AbachoBOT|Sogou head spider|AltaVista|IDBot|Sosospider|Yahoo! Slurp|Java VM|DotBot|LiteFinder|Yeti|Rambler|Scrubby|Baiduspider|accoona|Java/i))
   end
   # Generic features after catogories used for search have been defined. This is called in function classVariables of compare controller
-  def self.getFeatures(userdatacats)
-    facets = Facet.find_all_by_product_type_id(p_type.id, :include=>:dynamic_facets)
 
-    # Gets out the features which include utility, comparison, filter, cluster, sortby, show   
-    facets.each do |f|
-      temp = {:name=>f.name, :feature_type=>f.feature_type, :value=>f.value}
-      unless f.dynamic_facets.nil?
-        temp.merge! {:categories => f.dynamic_facets}
-      end
-      self.features[f.used_for] << temp
-    end
-
-    category_ids = Maybe(userdatacats).take_while{|d| d == 'category'}.map{|d| d.value}
+  def self.set_dynamic_features(category_ids)
     deleted_filters = []
     self.features.each_pair do |k, v|
-      # Sort every feature by its value
-      v.sortby!{|f| f[:value]}
+      # Sort feature by its value
+      v.sort_by!{|f| f[:value].abs}
       # Set dynamic features. Remove the dynamic filters which will not used 
-      v.reject!{|x| x.has_key?(:categories) && !x[:categories].nil? && !x[:categories].any? {|e| category_ids.include? e && deleted_filters << x[:name]}} 
+      v.reject!{|x| !x[:categories].nil? && !(x[:categories].any?{|e| category_ids.include? e}) && deleted_filters << x[:name]} 
     end
+    # Some filters of last search need to be removed when dynamic filters removed
 
-    # Resign userdatacats, userdataconts and userdatabins variables of search
-    if !deleted_filters.empty?
+    unless deleted_filters.empty?
       Maybe(search).resign_userdatas(deleted_filters)
     end
+
   end
+
+
+  # return specific features collection
+  def self.select_features(used_for, feature_type = nil)
+    facets = features[used_for]
+    unless facets.nil? || feature_type.nil? 
+      facets.reject!{|f| f[:feature_type] != feature_type}
+    end
+    facets
+  end
+
+  
+  # return specific features name collection
+  def self.select_feature_names(used_for, feature_type = nil)
+    facets = features[used_for]
+    unless facets.nil? || feature_type.nil? 
+      facets.reject!{|f| f[:feature_type] != feature_type}
+    end
+    Maybe(facets).map{|f| f[:name]}
+  end
+  
+  # return specific feature=>value hash
+  def self.select_feature_values(used_for, feature_type = nil)
+    facets = features[used_for]
+    unless facets.nil? || feature_type.nil? 
+      facets.reject!{|f| f[:feature_type] != feature_type}
+    end
+    fh = {}
+    Maybe(facets).each{|x| fh[x[:name]] = x[:value]}
+    fh
+  end
+
+  # return specific type of features names colloection 
+  def self.select_feature_names_by_type(feature_type)
+    names = []
+    features.each_pair do |k,v|
+      v.each{|x| names << x[:name] if x[:feature_type] == feature_type }
+    end
+    names
+  end
+
 end

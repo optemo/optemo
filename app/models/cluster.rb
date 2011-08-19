@@ -62,19 +62,19 @@ class Cluster
   end
   
   def min(feature)
-    if Session.continuous["cluster"].include?(feature)
+    if Maybe(Session.select_feature_names("cluster", Session::FEATURE_TYPES[:cont])).include?(feature)
       products.mapfeat(feature).compact.min
     end  
   end  
   
   def max(feature)
-    if Session.continuous["cluster"].include?(feature)
+    if Maybe(Session.select_feature_names("cluster", Session::FEATURE_TYPES[:cont])).include?(feature)
       products.mapfeat(feature).compact.max
     end  
   end
   
   def cat_vals(feature)
-    if Session.categorical["cluster"].include?(feature) 
+    if Maybe(Session.select_feature_names("cluster", Session::FEATURE_TYPES[:cat])).include?(feature)
       products.map{|p_id| CatSpec.cachemany([p_id], feature)}.flatten.uniq
     end
   end  

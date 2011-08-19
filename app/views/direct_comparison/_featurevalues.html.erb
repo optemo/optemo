@@ -1,4 +1,5 @@
-<% if type == "Continuous" %>
+
+<% if type == Session::FEATURE_TYPES[:cont] %>
 <div class="cell <%= gray ? "graybg" : "whitebg" %><%=' spec_column_' + column_number.to_s %>">
 	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
 		<!-- If the interesting feature should be displayed then display -->
@@ -15,7 +16,7 @@
 		</b>		
 	<% end%>
 </div>
-<% elsif type == "Categorical" %>
+<% elsif type == Session::FEATURE_TYPES[:cat] %>
 <div class="cell <%= gray ? "graybg" : "whitebg" %><%=' spec_column_' + column_number.to_s %>">
 
   <span <%= "style='font-weight: bold;'" if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>>

@@ -11,7 +11,7 @@ class DirectComparisonController < ApplicationController
     # We need to create a search in order for getFilters to work. This seems like a bit of a hack but I'm not totally
     # sure how the filter splitting code works. There is code left over that uses @s.continuous["filter"]
     # even though it seems deprecated. Ask Ray -ZAT
-    @s.getFilters(Search.create({:action_type => "allproducts"}).userdatacats)
+
     @bestvalue = calculateBestValues
 
     respond_to do |format|
@@ -27,7 +27,8 @@ private
     if @products.length > 1
       contspecs = {}
       @products.each {|p| contspecs[p.id] = ContSpec.cache_all(p.id)}
-      @s.continuous["show"].each do |feature|
+      show_conts = @s.select_feature_values("show", @s::FEATURE_TYPES[:cont])
+      Maybe(show_conts).keys.each do |feature|
         # For every feature in ContinuousFeatures
         # For every product in @products
         # Find the min value and assign @bestvalue[feature]=product-id
@@ -35,7 +36,7 @@ private
         bestproducts = []
         @products.each do |p|
           next if contspecs[p.id][feature].nil?
-          featval = contspecs[p.id][feature]*@s.prefDirection[feature]
+          featval = contspecs[p.id][feature]*(show_conts[feature] < 0 ? -1 : 1)
           if featval > bestval
             bestproducts = [p.id]
             bestval = featval

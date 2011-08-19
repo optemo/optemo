@@ -41,14 +41,15 @@ class Search < ActiveRecord::Base
     @reldescs ||= []
     if @reldescs.empty?
       feats = {}
-      Session.continuous["filter"].each do |f|
+      cont_filters = Session.select_feature_names("filter", Session::FEATURE_TYPES[:cont])
+      Maybe(cont_filters).each do |f|
         norm = ContSpec.allMinMax(f)[1] - ContSpec.allMinMax(f)[0]
         norm = 1 if norm == 0
         feats[f] = clusters.map{ |c| c.representative}.compact.map {|c| c[f].to_f/norm } 
       end
       cluster_count.times do |i|
         dist = {}
-        Session.continuous["filter"].each do |f|
+        Maybe(cont_filters).each do |f|
           if feats[f].min == feats[f][i]
             #This is the lowest feature
             distance = feats[f].sort[1] - feats[f][i]
@@ -93,14 +94,14 @@ class Search < ActiveRecord::Base
     clusterDs = Array.new 
     des = []
     slr=0
-      Session.binary["filter"].each do |f|
+    Maybe(Session.select_feature_names("filter", Session::FEATURE_TYPES[:bin])).each do |f|
         if clusters[clusterNumber].indicator(f)
           (f=='slr' && indicator("slr"))? slr = 1 : slr =0
           des<< f if $config["DescFeatures"].include?(f) 
         end
       end
-      
-      Session.continuous["desc"].each do |f|
+    
+    Maybe(Session.select_feature_names("desc", Session::FEATURE_TYPES[:cont])).each do |f|      
         if !(f == "opticalzoom" && slr == 1)
               cRanges = clusters[clusterNumber].ranges(f)
               if (cRanges[1] < ContSpec.allLow(f))
@@ -121,7 +122,7 @@ class Search < ActiveRecord::Base
   
   def searchDescription
     des = []
-    Session.continuous["desc"].each do |f|
+    Maybe(Session.select_feature_names("desc", Session::FEATURE_TYPES[:cont])).each do |f|      
       searchR = ranges(f)
       return ['Empty'] if searchR[0].nil? || searchR[1].nil?
       if (searchR[1] <= ContSpec.allLow(f))
@@ -213,11 +214,11 @@ class Search < ActiveRecord::Base
 
   def groupings
     return [] if groupby.nil? 
-    if Session.categorical["all"].index(groupby) 
+    if Session.select_feature_names_by_type(Session::FEATURE_TYPES[:cat]).index(groupby) 
       # It's in the categorical array
       specs = products.zip CatSpec.cachemany(products, groupby)
       grouping = specs.group_by{|spec|spec[1]}.values.sort{|a,b| b.length <=> a.length}
-    elsif Session.continuous["all"].index(groupby)
+    elsif Session.select_feature_names_by_type(Session::FEATURE_TYPES[:cont]).index(groupby) 
       #The chosen feature is continuous
       specs = products.zip ContSpec.by_feat(groupby).sort
       # [[id, low], [id, higher], ... [id, highest]]
@@ -379,6 +380,7 @@ class Search < ActiveRecord::Base
     
     p.each_pair do |k,v|
       next if v.blank? #Skip blank values, this should be fixed in JS
+      
       if k.index(/(.+)_min/)
         #Continuous Features
         fname = Regexp.last_match[1]
@@ -390,13 +392,13 @@ class Search < ActiveRecord::Base
         if (feat_range[0] < v.to_f && feat_range[1] > v.to_f) || (feat_range[0] < p[max].to_f && feat_range[1] > p[max].to_f)
           @userdataconts << Userdatacont.new({:name => fname, :min => v, :max => p[max]})
         end
-      elsif Session.binary["all"].index(k)
+      elsif Maybe(Session.select_feature_names_by_type(Session::FEATURE_TYPES[:bin])).index(k)
         #Binary Features
         #Handle false booleans
         if v != '0'
           @userdatabins << Userdatabin.new({:name => k, :value => v})
         end
-      elsif Session.categorical["all"].index(k)
+      elsif Maybe(Session.select_feature_names_by_type(Session::FEATURE_TYPES[:cat])).index(k)
         #Categorical Features
         v.split("*").each do |cat|
           @userdatacats << Userdatacat.new({:name => k, :value => cat})
@@ -420,7 +422,6 @@ class Search < ActiveRecord::Base
         end
       end
     end
-    
   end
   
   # The intent of this function is to see if filtering is being done on a previously filtered set of clusters.
@@ -470,8 +471,9 @@ class Search < ActiveRecord::Base
   end
 
   # When remove dynamic fitlers, remove same filters in search from history
-  def resign_userdatas(deleted_fitlers)
-    [@userdatacats, @userdatabins, @userdataconts].each{|u| u.reject! {|x| deleted_filters.include? x.name} }
-    # save
+  def resign_userdatas(deleted_filters)
+    [@userdatacats, @userdatabins, @userdataconts].each{|u| Maybe(u).reject! {|x| deleted_filters.include? x.name} }
+    # TODO: The search need to be saved of not? Need to be tested to confirm
+    save
   end
 end

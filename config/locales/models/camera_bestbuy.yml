@@ -112,4 +112,11 @@ en:
                 name:               "Best Selling"        
             AdvancedSearch:
                 name:               "Advanced Search"                            
-
+            status:
+                name:               "Status"
+            AdvancedSearch:
+                name:               "Advanced Search"
+            New Technology:
+                name:               "New Technology"
+            Video Resolution:
+                name:               "Video Resolution"

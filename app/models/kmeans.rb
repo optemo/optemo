@@ -207,6 +207,29 @@ class  Kmeans
         labels.compact!; products.compact!    
     end
     sorted_products
+  end    
+end
+
+
+def self.init(number_clusters, products, weights)
+  specs = self.factorize_cont_data(products)
+  centers = [specs[(specs.size-1)/2]]
+  for j in (0...number_clusters-1)
+    actual_dists = centers.map{|c| specs.map{|s| self.distance(c,s, weights)}}.transpose.map{|j| j.min}
+      centers << specs[actual_dists.index(actual_dists.max)]
+  end  
+  centers.map{|c| specs.index(c)} 
+end
+
+def self.set_cluster_weights(features)
+  if Session.search.sortby.nil? || Session.search.sortby == "relevance"
+    weights = features.map{|f| Session.select_feature_values('cluster')[f]}
+    weights_sum = weights.sum.to_f
+    weights.map{|w| w/weights_sum}
+  else
+    weights = [0.001/(features.size-1)]*features.size
+    weights[Session.select_feature_values("cluster", Session::FEATURE_TYPES[:cont]).index(Session.search.sortby)] = 0.999
+    weights
   end
   
   def self.utility(products, use)
@@ -300,7 +323,7 @@ class  Kmeans
     (0...number_clusters).each{|i| m[i] = specs[i]}
     m
   end
-  
+
   #  # Finding the mean of several points
   #  # points is a nxd dimension array where n is the number of products and d is number of features
   def self.mean(points)
@@ -329,12 +352,12 @@ class  Kmeans
     dim == 0.0 ? 0 : dist/dim
   end
     
-  def self.factorize_cont_data(products)
-      Session.continuous["cluster"].map{|f| products.map{|p| p.instance_variable_get("@#{f}_factor")}}.transpose
-  end
+def self.factorize_cont_data(products)
+  Maybe(Session.select_feature_names("cluster", Session::FEATURE_TYPES[:cont])).map{|f| products.map{|p| p.instance_variable_get("@#{f}_factor")}}.transpose
+end
   
   def self.factorize_cont(product)
-    Session.continuous["cluster"].map{|f| product.instance_variable_get("@#{f}_factor")}
+    Maybe(Session.select_feature_names("cluster", Session::FEATURE_TYPES[:cont])).map{|f| product.instance_variable_get("@#{f}_factor")}
   end
   
   def self.betterproducts(curr_set)
@@ -354,7 +377,7 @@ class  Kmeans
   def self.extendedCluster(expected_num,products)
     better_set = Kmeans.betterproducts(products)
     
-    dim = Session.continuous["cluster"].size
+    dim = Maybe(Session.select_feature_names("cluster", Session::FEATURE_TYPES[:cont])).size
     weights = [1.0/dim]*dim
     
     dists = better_set.map do |better| 

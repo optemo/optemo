@@ -95,3 +95,11 @@ fr:
                 name:               "Zoom puissant"
             '20220':
                 name:               "Compact amélioré"                         
+            status:
+                name:               "État"
+            AdvancedSearch:
+                name:               "Recherche avancée"
+            New Technology:
+                name:               "Nouvelle technologie"                
+            Video Resolution:
+                name:               "Résolution vidéo"

@@ -140,7 +140,7 @@ class CompareController < ApplicationController
     @s = Session
     @jsonp_version = true if params[:embedding] # request.subdomains.first == "embed" || request.subdomains.first == "sandbox"
     @s.search = search
-    @s.getFilters search.userdatacats
+    @s.set_dynamic_features(search.userdatacats.reject{|d| d.name != 'category'}.map{|d| d.value})
   end
   
   def correct_render

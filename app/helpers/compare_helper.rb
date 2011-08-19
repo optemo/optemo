@@ -121,12 +121,13 @@ module CompareHelper
     # Moved variable declarations out of the loop for each type of feature.
     # This speeds up the rails app somewhat due to fewer SQL requests / activerecord instantiations
     cat_specs = CatSpec.cache_all(product_id)
-    s.categorical["desc"].each do |feat|
+
+    Maybe(s.select_feature_names("desc", s::FEATURE_TYPES[:cat])).each do |feat|
       out << cat_specs[feat]
     end
     
     cont_specs = ContSpec.cache_all(product_id)
-    s.continuous["desc"].each do |feat|
+    Maybe(s.select_feature_names("desc", s::FEATURE_TYPES[:cont])).each do |feat|
       #num = "%.1f" % ContSpec.cache_all(product_id)[feat]
       num = cont_specs[feat]
       num = "<1" if feat == "maxresolution" && num == "1"
@@ -134,7 +135,7 @@ module CompareHelper
 		  out << t('features.'+feat, :num =>  number_with_delimiter(num), :default =>  number_with_delimiter(num)) if num
 	  end
 	  bin_specs = BinSpec.cache_all(product_id)
-	  s.binary["desc"].each do |feat|
+	  Maybe(s.select_feature_names("desc", s::FEATURE_TYPES[:bin])).each do |feat|
       out << t("#{Session.product_type}.specs.#{feat.gsub(" ","")}.name") if bin_specs[feat]
     end
 		out.join(", ")
