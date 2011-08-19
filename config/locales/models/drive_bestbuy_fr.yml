@@ -76,7 +76,9 @@ fr:
             # 10000rpm:
             #     name:               "10000 rpm"
             internalExternal:
-                name:               "Interne ou externe"                
+                name:               "Interne ou externe"     
+            utility:
+                name:               "Meilleure association"
             saleprice_factor:
                 name:               "Prix croissants"
             saleprice_factor_high:

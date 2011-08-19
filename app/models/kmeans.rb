@@ -213,11 +213,7 @@ def self.utility(products, use)
   if use == "rep"
     products.map{|p| p.instance_variable_get("@utility")}
   elsif use == "gorder"
-      if Session.search.sortby.nil? || Session.search.sortby == "relevance" 
-       products.map{|p| p.instance_variable_get("@utility")}
-      else
-        products.map{|i| i.instance_variable_get("@#{Session.search.sortby}") || 0}
-      end
+    products.map{|i| i.instance_variable_get("@#{Session.search.sortby || "utility"}") || 0}
   end    
 end
 
@@ -233,7 +229,7 @@ def self.init(number_clusters, products, weights)
 end
 
 def self.set_cluster_weights(features)
-  if Session.search.sortby.nil? || Session.search.sortby == "relevance"
+  if Session.search.sortby.nil? || Session.search.sortby == "utility"
     weights = features.map{|f| Session.cluster_weight[f]}
     weights_sum = weights.sum.to_f
     weights.map{|w| w/weights_sum}

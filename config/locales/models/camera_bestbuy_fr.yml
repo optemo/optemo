@@ -77,9 +77,11 @@ fr:
                 name:               "Mégapixels"
             displayDate:
                 name:               "Dernier modèle"
+            utility:
+                name:               "Meilleure association"
             saleprice_factor:
                 name:               "Prix croissants"
-            saleprice_factor_high_to_low:
+            saleprice_factor_high:
                 name:               "Prix décroissants"
             orders_factor:  
                 name:               "Meilleur vendeur"        

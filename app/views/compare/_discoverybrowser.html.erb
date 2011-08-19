@@ -13,13 +13,15 @@
 	</div>
 	<%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn'})  %>
 </div>
-<% if Session.search.products_size > Product.per_page %><!-- top pagination bar -->
+<% if Session.search.products_size > SearchProduct.per_page %><!-- top pagination bar -->
   <% products = Session.search.paginated_products %>
   <div class='pagination-container'><span class='pagi-info'><%= page_entries_info(products) %></span>
     <b>Page:</b><%= will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :outer_window => -1})%>
   </div>
 <% end %>
-<%= render 'sortby' %>
+<ul id="sorting_method_box"><li><strong><%= t("products.sortby") %>: </strong></li>
+  <%=raw sortby %>
+</ul>
 <div id="product_content">
     <div class='border-content'>	
     <%= raw mb %>

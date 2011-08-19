@@ -1,9 +1,0 @@
-<ul id="sorting_method_box"><li><strong><%= t("products.sortby") %>: </strong></li>
-  <% if Session.search.sortby=="relevance"  || Session.search.sortby.nil?%>
-    <li><%= t("products.relevance") %><span class='seperater'> | </span></li>
-  <% else %>
-    <li><%= link_to(t("products.relevance"), "#", {:'data-feat'=> "relevance", :class=>"sortby"}) %> <span class='seperater'> | </span></li>
-  <% end %>
-  <%= sort_by %>
-</ul>
-
