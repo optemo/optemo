@@ -374,5 +374,8 @@ module CompareHelper
     title
   end
 
+  def sort_by
+    Session.continuous["sortby"].map { |f| tag(:li, (Session.search.sortby == f) ? t(Session.product_type+".specs."+f+".name") : link_to(t(Session.product_type+".specs."+f+".name"), "#", {:'data-feat'=>f, :class=>"sortby"}))}.join(tag(:span, " | ", :class => "seperater"))
+  end
 
 end

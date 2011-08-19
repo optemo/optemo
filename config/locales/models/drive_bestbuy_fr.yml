@@ -79,7 +79,7 @@ fr:
                 name:               "Interne ou externe"                
             saleprice_factor:
                 name:               "Prix croissants"
-            saleprice_factor_high_to_low:
+            saleprice_factor_high:
                 name:               "Prix décroissants"
             maxresolution_factor:
                 name:               "Resolution"
