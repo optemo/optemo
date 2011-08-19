@@ -156,8 +156,7 @@ class Search < ActiveRecord::Base
   end
   
   def paginated_products
-    #@paginated_products ||= products.map{|p|Product.cached(p.id)}.paginate :page => page, :per_page => 18
-    @paginated_products ||= Product.where(:id => products.map{|p|p.id}).page(page)
+    @paginated_products ||= SearchProduct.fq_paginated_products
   end
   
   def isextended?
@@ -176,8 +175,7 @@ class Search < ActiveRecord::Base
   end
   
   def products
-    sortby=Session.search.sortby
-    if sortby == "relevance" || sortby.nil?
+    if sortby == "utility" || sortby.nil?
         @products = Kmeans.compute(18,SearchProduct.fq2)
     else
         @products = SearchProduct.fq2

@@ -10,7 +10,7 @@ class CompareController < ApplicationController
       # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
       if Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
         if params[:page]
-          classVariables(Search.create({:page => params[:page], :sortby => params[:sortby] || 'relevance', "action_type" => "nextpage", "parent"=>params[:hist]}))
+          classVariables(Search.create({:page => params[:page], :sortby => params[:sortby] || 'utility', "action_type" => "nextpage", "parent"=>params[:hist]}))
         elsif params[:sortby] # Change sorting method via navigator_bar select box
           classVariables(Search.create({:sortby => params[:sortby], "action_type" => "sortby",  "parent"=>params[:hist]}))
         else
