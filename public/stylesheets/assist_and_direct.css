@@ -33,51 +33,51 @@ html {
 //--------------------------------------*/
 
 #optemo_embedder .watermark {
-    font-size: 0.8em;
-    padding: 4px 0 5px 37px;
+  font-size: 0.8em;
+  padding: 4px 0 5px 37px;
 }
 
 #optemo_embedder #main #hero {
-    border: 1px solid #d0d0d0;
+  border: 1px solid #d0d0d0;
 }
 
 #optemo_embedder #product_content .border-content {
-    border: 1px solid #d0d0d0;
+  border: 1px solid #d0d0d0;
 }
 
 #optemo_embedder #main .rowdiv, #optemo_embedder #main #hero {
-    margin-bottom: 3px;
-    border: 1px solid #d0d0d0;
-    zoom: 1;
+  margin-bottom: 3px;
+  border: 1px solid #d0d0d0;
+  zoom: 1;
 }
 #optemo_embedder #main .rowdiv {
   position: relative;
   overflow: visible;
   clear: both;
-  }
+}
 #optemo_embedder #main .rowdiv .title_landing_type {
-   background: #FFFFFF;
-    color: #666666;
-    display: inline;
-    font-size: 14px;
-    font-weight: bold;
-    margin-left: 6px;
-    padding: 0 9px;
-    position: absolute;
-    top: -9px;
+  background: #FFFFFF;
+  color: #666666;
+  display: inline;
+  font-size: 14px;
+  font-weight: bold;
+  margin-left: 6px;
+  padding: 0 9px;
+  position: absolute;
+  top: -9px;
   left: 0;
   border: none;
   display:inline;
-  }
+}
 #optemo_embedder .showcase_banner_div {
-    margin: 12px 0;
-    clear:both;
+  margin: 12px 0;
+  clear:both;
 }
 #optemo_embedder #product_content .rowdiv {
-    border: none;
+  border: none;
 }
 #optemo_embedder #main #hero {
-    position: relative;
+  position: relative;
 }
 
 /*#header {
@@ -121,121 +121,126 @@ html {
 	border-top: 1px solid #d0d0d0;
 	border-left: 1px solid #d0d0d0;
 	border-right: 1px solid #d0d0d0;
-    background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
-    background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200));
-    height: 75px;
-    overflow: hidden;
-    overflow: hidden;
-    position: relative;
+  background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
+  background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200));
+  height: 75px;
+  overflow: hidden;
+  overflow: hidden;
+  position: relative;
   margin-bottom: 1px;
 }
 
 #optemo_embedder #IE #navigator_bar {
-    Background: url("/images/ie_navigator_bar_bg.gif") repeat-x;
+  Background: url("/images/ie_navigator_bar_bg.gif") repeat-x;
 }
 #optemo_embedder #navigator_bar_bottom {
 	padding: 0;
 	position: relative;
 	border: 1px solid #d2d2d2;
-    background-image:-moz-linear-gradient(center bottom, #d1d1d1, #e9e9e9);
+  background-image:-moz-linear-gradient(center bottom, #d1d1d1, #e9e9e9);
 	background-image:-webkit-gradient(linear, left bottom, left top, from(#d1d1d1), to(#e9e9e9));
-    margin-top: 5px;
-    height: 49px;
-   *height: 51px;
+  margin-top: 5px;
+  height: 49px;
 }
-
+#optemo_embedder #IE.ie7 #navigator_bar_bottom,#optemo_embedder #IE.ie6 #navigator_bar_bottom {
+  height: 51px;
+}
 #optemo_embedder #navigator_bar_bottom #navtitle {
-    margin: 15px 17px;
+  margin: 15px 17px;
 }
 
 #optemo_embedder #navigator_bar_top {
 	padding: 0;
 	position: relative;
 	border: 1px solid #d2d2d2;
-    background-image: -moz-linear-gradient(center bottom, #FEE719, #FFF200);
-    background-image: -webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200));
-    margin-bottom: 5px;
-    height: 49px;
-   *height: 51px;
+  background-image: -moz-linear-gradient(center bottom, #FEE719, #FFF200);
+  background-image: -webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200));
+  margin-bottom: 5px;
+  height: 49px;
 }
-
+#optemo_embedder #IE.ie7 #navigator_bar_top,#optemo_embedder #IE.ie6 #navigator_bar_top {
+  height: 51px;
+}
 #optemo_embedder #navigator_bar_top #navtitle {
-    margin: 15px 17px;
+  margin: 15px 17px;
 }
-    #optemo_embedder #navigator_bar a#nav_compare_btn {
-    position: absolute;
-    top: 19px;
-    right: 10px;
-    font-size: 12pt;
-    width: 149px;
-    height: 20px;
-    padding: 8px 0 8px;
-    text-align: center;
-    font-weight: bold; 
+#optemo_embedder #navigator_bar a#nav_compare_btn {
+  position: absolute;
+  top: 19px;
+  right: 10px;
+  font-size: 12pt;
+  width: 149px;
+  height: 20px;
+  padding: 8px 0 8px;
+  text-align: center;
+  font-weight: bold; 
 }
 #optemo_embedder #navigator_bar a#nav_compare_btn:hover, #optemo_embedder #navigator_bar a#nav_compare_btn:visited,
-       #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom:hover, #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom:visited {
-    color: #fff;
-}
+    #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom:hover, #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom:visited {
+      color: #fff;
+    }
 #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom {
-    float: right;
-    font-size: 0.8em;
-    font-weight: bold;
-    margin-top: 11px;
-    margin-right: 5px;
+  float: right;
+  font-size: 0.8em;
+  font-weight: bold;
+  margin-top: 11px;
+  margin-right: 5px;
 }
 #optemo_embedder #IE #navigator_bar_bottom a#nav_compare_btn_bottom {
-   margin-top: 8px;
-   }
+  margin-top: 8px;
+}
 #optemo_embedder .seeall {
-   float: right;
-    font-size: 0.8em;
-    font-weight: bold;
-    margin-right: 5px;
-   }
+  float: right;
+  font-size: 0.8em;
+  font-weight: bold;
+  margin-right: 5px;
+}
 #optemo_embedder #navigator_bar_top .seeall {
-   margin-top: 6px;
-   }
+  margin-top: 6px;
+}
 #optemo_embedder #navigator_bar_bottom .seeall {
-   margin-top: 6px;
-   }
+  margin-top: 6px;
+}
 #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom {
-    margin-right: 12px;
-    width: 120px;
-    height: px;
-    padding: 6px 0;
-    text-align: center;
+  margin-right: 12px;
+  width: 120px;
+  height: px;
+  padding: 6px 0;
+  text-align: center;
 }
 
 #optemo_embedder #IE #navigator_bar_bottom a#nav_compare_btn_bottom, #optemo_embedder #IE .seeall {
-    float: none;
+  float: none;
 }
 #optemo_embedder #IE #navigator_bar_bottom a#nav_compare_btn_bottom {
-    position: absolute;
-    right: 10px;
-    padding: 8px 0;
-    top: 0;
+  position: absolute;
+  right: 10px;
+  padding: 8px 0;
+  top: 0;
 }
 #optemo_embedder #IE .seeall {
-    position: absolute;
-    right: 15px;
-    top: 2px;
+  position: absolute;
+  right: 15px;
+  top: 2px;
 }
 
 #optemo_embedder #IE #navigator_bar_top {
-    background: url(../images/ie_nav_top_bg.gif) repeat;    
+  background: url(../images/ie_nav_top_bg.gif) repeat;    
 }
 #optemo_embedder #IE #navigator_bar_bottom {
-    background: url(../images/ie_nav_bottom_bg.gif) repeat;
+  background: url(../images/ie_nav_bottom_bg.gif) repeat;
 }
-   
+
 #optemo_embedder ul#sorting_method_box {
   list-style-type: none;
   font-size: 11px;
   height: 27px;
   padding: 13px 0 0 15px;
   margin: 0;
-  *height: 30px;
+}
+
+#optemo_embedder #IE.ie7 ul#sorting_method_box, #optemo_embedder #IE.ie6 ul#sorting_method_box{
+  height: 30px;
 }
 #optemo_embedder ul#sorting_method_box li {
   display: inline;
@@ -244,37 +249,37 @@ html {
 #optemo_embedder ul#sorting_method_box li span.seperater{
   margin: 0;
   padding: 0;
-  }
+}
 #optemo_embedder ul#sorting_method_box li a, #optemo_embedder ul#sorting_method_box li a:visited{
   text-decoration: none;
   color: #0A3498;
 }
 #optemo_embedder ul#sorting_method_box li a:hover{
   text-decoration: underline;
-  }
+}
 .optemo_bluesubheading {
-    font: Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    font-weight: bold;
-    background: #D6DBF7;
-    padding: 6px 6px 6px 20px;  
-    border-left: 1px solid #D0D0D0;
-    border-right: 1px solid #D0D0D0;
-    position: relative;
+  font: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  background: #D6DBF7;
+  padding: 6px 6px 6px 20px;  
+  border-left: 1px solid #D0D0D0;
+  border-right: 1px solid #D0D0D0;
+  position: relative;
 }
 
 .optemo_special_boxes {
-    float: right;
-    padding-right: 10px;
-    margin-top: 3px;
-    font-size: 0.8em;
-    font-weight: bold;
+  float: right;
+  padding-right: 10px;
+  margin-top: 3px;
+  font-size: 0.8em;
+  font-weight: bold;
 }
 #optemo_embedder #IE .optemo_special_boxes {
-    float: none;
-    position: absolute;
-    right: 10px;
-    top: 3px;
+  float: none;
+  position: absolute;
+  right: 10px;
+  top: 3px;
 }
 /*.demo_selector {
 	float: left;
@@ -305,19 +310,19 @@ html {
 	font-weight: bold;
 	font-size: 1.13em;
 	color: #000;
-    height: 22px;
-    margin-left: -2px;
-    margin-top: 5px;
+  height: 22px;
+  margin-left: -2px;
+  margin-top: 5px;
 	line-height:22px;
 	margin-bottom:5px;
-    overflow: visible;
-   background: url("/images/bg_outsidecontainer.gif") repeat-x ;
-   height: 40px;
+  overflow: visible;
+  background: url("/images/bg_outsidecontainer.gif") repeat-x ;
+  height: 40px;
 }
 #optemo_embedder .comp-title {
 	display:block;
 	float:left;
-   margin: 10px 12px;
+  margin: 10px 12px;
 }
 
 /*.fv {
@@ -398,44 +403,46 @@ html {
 	background-repeat: no-repeat;
 }
 
-* html #opt_savedproducts {
-    height: 192px;
-    height: expression( this.scrollHeight > 192 ? "193px" : "auto" ); /* sets max-height for IE */
+#optemo_embedder #IE.ie7 #opt_savedproducts,#optemo_embedder #IE.ie6 #opt_savedproducts {
+  height: 192px;
+  height: expression( this.scrollHeight > 192 ? "193px" : "auto" ); /* sets max-height for IE */
 }
 
 
 #optemo_embedder #opt_savedproducts {
-    max-height: 192px;
-    overflow: auto;
-    position: relative;
+  max-height: 192px;
+  overflow: auto;
+  position: relative;
 }
 
 div#division { 
-    max-width: 777px; /* this sets the max-width value for all standards-compliant browsers */
+  max-width: 777px; /* this sets the max-width value for all standards-compliant browsers */
 }
 
 
 
-#optemo_embedder #IE #ajaxfilter {
-   *display:inline-block;
-    _padding-bottom: 7px;
+#optemo_embedder #IE.ie7 #ajaxfilter, #optemo_embedder #IE.ie6 #ajaxfilter {
+  display:inline-block;
+}
+#optemo_embedder #IE.ie6 #ajaxfilter {
+  padding-bottom: 7px;
 }
 #optemo_embedder .categorical {
 	overflow: auto;
 	max-height: 150px;
-    padding-bottom: 20px;
-    padding-top: 10px;
+  padding-bottom: 20px;
+  padding-top: 10px;
 }
 #optemo_embedder .categorical_advanced {
 	overflow: auto;
-    padding-bottom: 8px;
-    padding-top: 8px;
+  padding-bottom: 8px;
+  padding-top: 8px;
 }
 #optemo_embedder .categorical .feature, #optemo_embedder .list_item {
-    padding-bottom: 1px;
+  padding-bottom: 1px;
 }
-* html #optemo_embedder .categorical {
-    height: expression( this.scrollHeight > 150 ? "150px" : "auto" ); /* sets max-height for IE */
+#optemo_embedder #IE .categorical {
+  height: expression( this.scrollHeight > 150 ? "150px" : "auto" ); /* sets max-height for IE */
 }
 
 #optemo_embedder a.binary_filter_text{
@@ -452,10 +459,10 @@ div#division {
 }
 
 #optemo_embedder .hanging_indent {
-    margin-top: 0px;
-    margin-bottom: 5px;
-    text-indent: -18px;
-    margin-left: 18px;
+  margin-top: 0px;
+  margin-bottom: 5px;
+  text-indent: -18px;
+  margin-left: 18px;
 }
 /*--------------------------------------//
 //         Drag And Drop Compare        //
@@ -515,33 +522,36 @@ div#division {
 #optemo_embedder #compare_button , #optemo_embedder .optemo_compare_button {
 	clear: both;
 	font-size: 0.8em;
-    margin: 5px 0;
-    font-weight: bold;
+  margin: 5px 0;
+  font-weight: bold;
 }
 
 #optemo_embedder .compare_button {
-    font-size: 0.8em;
+  font-size: 0.8em;
 }
 
 #optemo_embedder span.select-compare {
   font-size: 12px;
-  }
+}
 #optemo_embedder #IE span.select-compare {
   margin-left: -4px;
-  margin-left: -5px \0/;
-  *margin-left: -6px;
-  
-  }
+}
+#optemo_embedder #IE.ie8 span.select-compare {
+  margin-left: -5px;
+}
+#optemo_embedder #IE.ie7 span.select-compare,#optemo_embedder #IE.ie6 span.select-compare {
+  margin-left: -6px;
+}
 /*.selected_cat_features img {
 	vertical-align: baseline;
 }*/
 
 /* IE hack for save bar maybe? */
 #optemo_embedder .gainlayout div {
-    zoom: 1;
+  zoom: 1;
 }
 #optemo_embedder .ie6 .gainlayout { 
-    height: 0; 
+  height: 0; 
 }
 
 #optemo_embedder #IE .box-top-r {
@@ -590,21 +600,19 @@ div#division {
 }
 #optemo_embedder .ui-slider .ui-slider-handle { 
 	background:url(../../../images/sliderhandlebox.gif) 0 0 no-repeat;
-	/*background-color:#c0c0c0;
-	border: 1px solid #4D4D4F;*/
 	font-size: 0.7em;
 	color: black;
 	height:13px; width:16px;text-decoration:none;outline:none;position:absolute;z-index:2;
 }
 
 #optemo_embedder #IE .ui-slider .ui-slider-handle {
-   overflow: available;
-   display: inline-block;
-   }
-#optemo_embedder .ui-slider .ui-slider-handle span{
-   _position: relative;
-   _display: block;
-   }
+  overflow: available;
+  display: inline-block;
+}
+#optemo_embedder #IE.ie6 .ui-slider .ui-slider-handle span{
+  position: relative;
+  display: block;
+}
 
 #optemo_embedder .ui-slider .ui-slider-range { 
 	position: absolute; 
@@ -658,18 +666,18 @@ div#division {
 	clear: left;
 	padding-top: 5px;
 	padding-bottom: 4px;
-    padding-left: 6px;
-    background-color: #FFF102;
-    margin-left: -6px;
-    margin-top: 0;
-    border-top: 1px #ccc solid;
-    border-bottom: 1px #ccc solid;
-    background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
-    background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200)); 
+  padding-left: 6px;
+  background-color: #FFF102;
+  margin-left: -6px;
+  margin-top: 0;
+  border-top: 1px #ccc solid;
+  border-bottom: 1px #ccc solid;
+  background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
+  background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200)); 
 }
 #optemo_embedder .label img, #optemo_embedder .label-advanced-title img {
-    position: absolute;
-    bottom: 5px;
+  position: absolute;
+  bottom: 5px;
 }
 #optemo_embedder .label-advanced-title {
 	font-weight: bold;
@@ -678,26 +686,26 @@ div#division {
 	clear: left;
 	padding-top: 6px;
 	padding-bottom: 4px;
-    padding-left: 6px;
-    background-color: #FFF102;
-    margin: 6px 0 0 0;
-    border-top: 1px #ccc solid;
-    border-bottom: 1px #ccc solid;
-    background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
-    background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200));
+  padding-left: 6px;
+  background-color: #FFF102;
+  margin: 6px 0 0 0;
+  border-top: 1px #ccc solid;
+  border-bottom: 1px #ccc solid;
+  background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
+  background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200));
 }
 #optemo_embedder #IE .label, #optemo_embedder #IE .label-advanced-title {
-    background: url('/images/filter_label_bg.gif') repeat-x;
+  background: url('/images/filter_label_bg.gif') repeat-x;
 }
 #optemo_embedder #IE .label{
-    padding-top: 7px;
+  padding-top: 7px;
 }
 #optemo_embedder #IE .label-advanced{
-    padding-top: 10px;
-    padding-top: 9px\0/;
-    *padding-top: 9px;
+  padding-top: 10px;
 }
-   
+#optemo_embedder #IE.ie8 .label-advanced,#optemo_embedder #IE.ie7 .label-advanced,#optemo_embedder #IE.ie6 .label-advanced{
+  padding-top: 9px;
+}
 
 #optemo_embedder .label-advanced {
 	font-weight: bold;
@@ -705,18 +713,20 @@ div#division {
 	clear: left;
 	padding-top: 8px;
 	padding-bottom: 4px;
-    padding-left: 6px;
-    margin-left: -6px;
+  padding-left: 6px;
+  margin-left: -6px;
 }
 
 #optemo_embedder .space {
 	margin-bottom: 15px; /*Spacing for histogram*/
 }
 #optemo_embedder div.without-space {
-    margin-top: 0;
-    *margin-top: -20px;
+  margin-top: 0;
 }
 
+#optemo_embedder #IE.ie7 div.without-space,#optemo_embedder #IE.ie6 div.without-space {
+  margin-top: -20px;
+}
 
 #optemo_embedder .valbelow {
 	padding-top: 18px;
@@ -731,21 +741,23 @@ div#division {
 	font-weight: normal;
 }
 #optemo_embedder .feature {
-    padding: 0 0 0 6px;
+  padding: 0 0 0 6px;
 }
 #optemo_embedder .feature_last {
-    padding: 1px 1px 4px 6px;
+  padding: 1px 1px 4px 6px;
 }
 #optemo_embedder .feature_slider { /* relative position cause elements blow out in IE 6, so that only used in slider bar */
-    position: relative;
-    padding: 0 0 2px 6px;
+  position: relative;
+  padding: 0 0 2px 6px;
 }
 
-   
-   
+
+
 #optemo_embedder .feature .label img, #optemo_embedder .feature_slider .label img, #optemo_embedder .label-advanced-title img {
-    _position: static;
-    vertical-align: text-top;
+  vertical-align: text-top;
+}
+#optemo_embedder #IE.ie6 .feature .label img, #optemo_embedder #IE.ie6 .feature_slider .label img, #optemo_embedder #IE.ie6 .label-advanced-title img {
+  position: static;
 }
 
 #optemo_embedder .desc {
@@ -954,8 +966,8 @@ margin-top:0;
 	position: relative;
 }
 #optemo_embedder .cell img {
-    top: 3px;
-    position: absolute;
+  top: 3px;
+  position: absolute;
 }
 #optemo_embedder .thumbnailcell {
 	padding-top: 15px;
@@ -976,7 +988,7 @@ margin-top:0;
 	z-index: 4;
 	position: relative;
 	float: left;
-    text-align: center;
+  text-align: center;
 }
 #optemo_embedder .bgrow {
 	height: 30px;
@@ -1044,39 +1056,39 @@ margin-top:0;
 	line-height: 20px;
 }
 
-   
+
 #optemo_embedder .thumbnaildetails {
 	color: #F5000B;
 	padding-bottom:5px;
 }
 #optemo_embedder .compare_row {
-    clear: both;
-    line-height: 23px;
-    height:auto;
+  clear: both;
+  line-height: 23px;
+  height:auto;
 }
 #optemo_embedder .double_height_compare_row {
-    clear: both;
-    line-height: 16px;
-    height: 32px;
+  clear: both;
+  line-height: 16px;
+  height: 32px;
 }
 #optemo_embedder .double_height_compare_row .cell {
-    height: 32px;
+  height: 32px;
 }
 #optemo_embedder .triple_height_compare_row {
-    clear: both;
-    line-height: 16px;
-    height: 48px;
+  clear: both;
+  line-height: 16px;
+  height: 48px;
 }
 #optemo_embedder .triple_height_compare_row .cell {
-    height: 48px;
+  height: 48px;
 }
 #optemo_embedder .quadruple_height_compare_row {
-    clear: both;
-    line-height: 16px;
-    height: 64px;
+  clear: both;
+  line-height: 16px;
+  height: 64px;
 }
 #optemo_embedder .quadruple_height_compare_row .cell {
-    height: 64px;
+  height: 64px;
 }
 #optemo_embedder .toggle_specs img {
 	vertical-align: top;
@@ -1103,24 +1115,27 @@ margin-top:0;
 }
 
 #optemo_embedder a.title_link,
-#optemo_embedder a.title_link:visited {
-    color: #000;
-}
+    #optemo_embedder a.title_link:visited {
+      color: #000;
+    }
 
 #optemo_embedder div.togglespecs {
-    text-align: center;
-    margin: 5px 0;
-    *padding: 0;
+  text-align: center;
+  margin: 5px 0;
+}
+
+#optemo_embedder #IE.ie7 div.togglespecs, #optemo_embedder #IE.ie6 div.togglespecs {
+  padding: 0;
 }
 
 #optemo_embedder div.spec-capt {
-    background: #DADADA;
+  background: #DADADA;
 }
 #optemo_embedder span {
-    margin-left: 2px;
+  margin-left: 2px;
 }
 #optemo_embedder .productinfo {
-    height: 120px;
+  height: 120px;
 }
 
 /*--------------------------------------//
@@ -1129,8 +1144,8 @@ margin-top:0;
 #optemo_embedder div#silkscreen {
  	background-color: #666;
   
-    filter:alpha(opacity=80);
-      opacity: 0.8;  
+  filter:alpha(opacity=80);
+  opacity: 0.8;  
   -moz-opacity:0.8;
 /*   -khtml-opacity: 0.1;*/
 
@@ -1141,20 +1156,20 @@ margin-top:0;
 	height: 5000px;
 	z-index: 3;
 	display: none;
- 
+  
 }
 #optemo_embedder div#silkscreen {
-   filter:alpha(opacity=80);
-   opacity: 0.8;
+  filter:alpha(opacity=80);
+  opacity: 0.8;
 }
 
 #optemo_embedder div#filter_silkscreen {
-   background-color: black;
-   position: absolute;
-   top: 0;
-   left: 0;
-   z-index: 3;
-   display: none;
+  background-color: black;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  display: none;
 }
 
 #optemo_embedder #outsidecontainer {
@@ -1166,9 +1181,9 @@ margin-top:0;
 	display: none;
 	background: white;
 	-moz-box-shadow: 0 -2px 16px 3px #888;
-    -webkit-box-shadow: 0 -2px 16px 3px #888;
-    box-shadow: 0 -2px 16px 3px #888;
-   border: 3px #ccc solid;
+  -webkit-box-shadow: 0 -2px 16px 3px #888;
+  box-shadow: 0 -2px 16px 3px #888;
+  border: 3px #ccc solid;
 }
 #optemo_embedder #info h1 {
 	font-size: 1.2em;
@@ -1183,7 +1198,7 @@ margin-top:0;
 	text-align: center;
 }
 #optemo_embedder .ie6 .mainprodimg {
-    display: block !important;
+  display: block !important;
 }
 #optemo_embedder #info_container {
 	border-right: 1px solid #CCC;
@@ -1205,25 +1220,25 @@ margin-top:0;
 * html #optemo_embedder div#loading {
 	position: absolute;
 }
-	
+
 #optemo_embedder #loading img {
 	vertical-align: text-bottom;
 /*	margin-right: 4px;        */
 }
 #optemo_embedder div#filter_bar_loading{
-    display: none;
-    position:absolute;
-    z-index: 3;
-    background-color: #eee;
-    border: solid black 3px;
-    padding: 10px;
-    width: 100px;
-    top: 300px;
-    left: 250px;
-    -moz-border-radius:5px;
-    -webkit-border-radius: 5px;
-    -border-radius: 5px;
-    text-align:center;
+  display: none;
+  position:absolute;
+  z-index: 3;
+  background-color: #eee;
+  border: solid black 3px;
+  padding: 10px;
+  width: 100px;
+  top: 300px;
+  left: 250px;
+  -moz-border-radius:5px;
+  -webkit-border-radius: 5px;
+  -border-radius: 5px;
+  text-align:center;
 }
 
 /*#image {
@@ -1236,17 +1251,17 @@ margin-top:0;
 	width: 475px;
 }
 #optemo_embedder #features div.buttons {
-    height: 32px;
+  height: 32px;
 	width: 135px;
 	margin: auto;
 }
 #optemo_embedder #features div.bbfeatures {
-    height: 50px;
-    line-height: 20px;
+  height: 50px;
+  line-height: 20px;
 }
 #optemo_embedder #features img {
-    float: left;
-    padding-right: 5px;
+  float: left;
+  padding-right: 5px;
 }
 #optemo_embedder .shortdesc {
 	border-top: 1px dashed #999;
@@ -1330,26 +1345,30 @@ margin-top:0;
 	padding-top: 0;
 	padding-right: 0;
 	margin: 0;
-    color: black;
-    height: 0 \0/;
-    width: 0 \0/;
-    margin-top: -20px;
-    margin-right: -57px;
+  color: black;
+  margin-top: -20px;
+  margin-right: -57px;
 }
 
+#optemo_embedder #IE.ie8 .bb_poptitle a.bb_quickview_close {
+  height: 0;
+  width: 0;
+}
 #optemo_embedder #IE .bb_poptitle a.bb_quickview_close {
-   margin-top: -21px;
-   margin-right: -26px;
-   *margin-top: 0;
-   *margin-right: 0;
-   }
-
+  margin-top: -21px;
+  margin-right: -26px;
+}
+#optemo_embedder #IE.ie7 .bb_poptitle a.bb_quickview_close,#optemo_embedder #IE.ie6 .bb_poptitle a.bb_quickview_close {
+  margin-top: 0;
+  margin-right: 0;
+}
 #optemo_embedder #IE .bb_quickview_close img {
-   *margin-top: -15px;
-   *margin-right: -57px;
-   _margin-right: -57px;
-   position: relative;
-   *display: block;
+  position: relative;
+}
+#optemo_embedder #IE.ie7 .bb_quickview_close img,#optemo_embedder #IE.ie6 .bb_quickview_close img {
+  margin-top: -15px;
+  margin-right: -57px;
+  display: block;
 }
 #optemo_embedder a.compare {
 	float: right;
@@ -1454,35 +1473,35 @@ margin-top:0;
 
 /* Zurb http://www.zurb.com/article/266/super-awesome-buttons-with-css3-and-rgba */
 #optemo_embedder .awesome_reset, 
-#optemo_embedder .awesome_reset:visited {
-	background: #003b65; url(/images/alert-overlay.png) repeat-x; 
-	display: inline-block; 
-	padding: 5px 10px; 
-	color: #FFF; 
-	text-decoration: none;
-	-moz-border-radius: 4px; 
-	-webkit-border-radius: 4px;
-	-moz-box-shadow: inset 0 7px 8px #2680bf;
-	-webkit-box-shadow: inset 0 7px 8px #2680bf; 
-	text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+    #optemo_embedder .awesome_reset:visited {
+	    background: #003b65; url(/images/alert-overlay.png) repeat-x; 
+	    display: inline-block; 
+	    padding: 5px 10px; 
+	    color: #FFF; 
+	    text-decoration: none;
+	    -moz-border-radius: 4px; 
+	    -webkit-border-radius: 4px;
+	    -moz-box-shadow: inset 0 7px 8px #2680bf;
+	    -webkit-box-shadow: inset 0 7px 8px #2680bf; 
+	    text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
 /*	border: 1px solid #c4c5c5; */
-	position: relative;
-	cursor: pointer;
-}
+	    position: relative;
+	    cursor: pointer;
+    }
 #optemo_embedder .awesome_reset_grey, 
-#optemo_embedder .awesome_reset_grey:visited {
-    background-image:-moz-linear-gradient(center bottom, #9e9e9e, #ccc);
-	background-image:-webkit-gradient(linear, left bottom, left top, from(#9e9e9e), to(#ccc));
-   	display: inline-block; 
-	color: #FFF; 
-	text-decoration: none;
-	-moz-border-radius: 4px; 
-	-webkit-border-radius: 4px;
-	text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+        #optemo_embedder .awesome_reset_grey:visited {
+          background-image:-moz-linear-gradient(center bottom, #9e9e9e, #ccc);
+	        background-image:-webkit-gradient(linear, left bottom, left top, from(#9e9e9e), to(#ccc));
+   	      display: inline-block; 
+	        color: #FFF; 
+	        text-decoration: none;
+	        -moz-border-radius: 4px; 
+	        -webkit-border-radius: 4px;
+	        text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
 /*	border: 1px solid #c4c5c5; */
-	position: relative;
-	cursor: pointer;
-}
+	        position: relative;
+	        cursor: pointer;
+        }
 
 #optemo_embedder .awesome_reset:hover, #optemo_embedder .awesome_reset_grey:hover {text-decoration: none; }
 
@@ -1490,31 +1509,31 @@ margin-top:0;
 .awesome_tour:active							{ top: 1px; }
 .small_awesome_tour, .small_awesome_tour:visited 			{ font-size: 11px; padding: ; }
 .awesome_tour, .awesome_tour:visited,
-.medium_awesome_tour, .medium_awesome_tour:visited 		{ font-size: 13px; font-weight: bold; line-height: 1; text-shadow: 0 -1px 1px rgba(0,0,0,0.25); }
+            .medium_awesome_tour, .medium_awesome_tour:visited 		{ font-size: 13px; font-weight: bold; line-height: 1; text-shadow: 0 -1px 1px rgba(0,0,0,0.25); }
 
 #optemo_embedder .regular_reset, #optemo_embedder .regular_reset:visited {
-    display: inline-block;
-    padding: 0;
-    color: #039;
-    text-decoration: none;
+  display: inline-block;
+  padding: 0;
+  color: #039;
+  text-decoration: none;
 }
 
 #optemo_embedder .regular_reset:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 #optemo_embedder .regular_reset span {
-    margin-right: 4px;
-    font-weight: normal;
-    font-size: 12px;
+  margin-right: 4px;
+  font-weight: normal;
+  font-size: 12px;
 }
 
 #optemo_embedder .optemo_compare_checkbox {
   pading: 0;
   margin: 0;
-  }
+}
 
 #optemo_embedder #IE .optemo_compare_checkbox {
-    vertical-align: middle;
+  vertical-align: middle;
 }
 /* Global Button */
 #optemo_embedder #IE .awesome_reset,#optemo_embedder #IE .awesome_reset:visited,  #optemo_embedder #IE .awesome_reset_grey, #optemo_embedder #IE .awesome_reset_grey:visited {
@@ -1522,26 +1541,26 @@ margin-top:0;
 }
 
 #optemo_embedder #IE #navigator_bar_bottom .global_btn {
-    background:url(../images/compare_button_blue.gif) no-repeat top left;
+  background:url(../images/compare_button_blue.gif) no-repeat top left;
 }
 #optemo_embedder #IE #navigator_bar_bottom .global_btn_grey {
-    background:url(../images/global-button-grey.gif) no-repeat top left;
+  background:url(../images/global-button-grey.gif) no-repeat top left;
 }
 #optemo_embedder #IE #navigator_bar .global_btn_grey {
-    Background: url(/images/ie_compare_grey_nav_top.gif) no-repeat top left;
+  Background: url(/images/ie_compare_grey_nav_top.gif) no-repeat top left;
 }
 #optemo_embedder #IE #navigator_bar .global_btn {
-    Background: url(/images/ie_compare_blue_nav_top.gif) no-repeat top left;
+  Background: url(/images/ie_compare_blue_nav_top.gif) no-repeat top left;
 }
 #optemo_embedder #IE .global_btn {
-    display: block;
-    width: 121px;
-    height: 34px;
-    padding: 5px;
+  display: block;
+  width: 121px;
+  height: 34px;
+  padding: 5px;
 }
 
 #optemo_embedder #IE .global_btn_grey span{
-    margin: 5px auto;
+  margin: 5px auto;
 }
 #optemo_embedder #IE .global_btn span {
 	display:inline-block;
@@ -1554,50 +1573,53 @@ margin-top:0;
 	cursor:pointer;
 }
 #optemo_embedder #IE .global_btn_grey span {
-    background:url(../images/global-button-right.gif) no-repeat right;
+  background:url(../images/global-button-right.gif) no-repeat right;
 }
 #optemo_embedder #IE .global_btn:hover, #optemo_embedder #IE .global_btn_grey:hover {
 	text-decoration:none;
 }
 #optemo_embedder #IE .global_btn:hover span, #optemo_embedder #IE .global_btn_grey:hover span {
-    color:#FFF102;
+  color:#FFF102;
 } 
 
 #optemo_embedder .narrow_text {
 	display:inline-block;
-    margin: 17px 11px 0 4px;
-    padding: 0;
+  margin: 17px 11px 0 4px;
+  padding: 0;
 
 }
 #optemo_embedder .narrow_text img{
-    width: 150px;
-    height: 39px;
+  width: 150px;
+  height: 39px;
 }
 #optemo_embedder .y_heading
 {
-    overflow:hidden;
-    height: 75px;
-   margin-bottom:0\0/; /* IE8 */
-    background-image:-moz-linear-gradient(center bottom, #cecece, #e9e9e9);
-    background-image:-webkit-gradient(linear, left bottom, left top, from(#cecece), to(#e9e9e9));
-    padding: 0;
-    text-align: right;
+  overflow:hidden;
+  height: 75px;
+  background-image:-moz-linear-gradient(center bottom, #cecece, #e9e9e9);
+  background-image:-webkit-gradient(linear, left bottom, left top, from(#cecece), to(#e9e9e9));
+  padding: 0;
+  text-align: right;
+}
+#optemo_embedder #IE.ie8 .y_heading {
+  margin-bottom:0;
 }
 #optemo_embedder .y_heading a.regular_reset, #optemo_embedder .y_bottom a.regular_reset { 
-    font-size: 11px;
-    font-weight: bold;
-    padding: 0;
-    margin: 2px 0 0;
-    *margin: -2px 0 0;
-   
+  font-size: 11px;
+  font-weight: bold;
+  padding: 0;
+  margin: 2px 0 0;
+}
+#optemo_embedder #IE.ie7 .y_heading a.regular_reset, #optemo_embedder #IE.ie7 .y_bottom a.regular_reset, #optemo_embedder #IE.ie6 .y_heading a.regular_reset, #optemo_embedder #IE.ie6 .y_bottom a.regular_reset {
+  margin: -2px 0 0;
 }
 
 #optemo_embedder #IE .y_heading {
-    Background: url("/images/ie_refine_search_bg.gif") repeat-x #cecece;
+  Background: url("/images/ie_refine_search_bg.gif") repeat-x #cecece;
 }
 
 #optemo_embedder #IE .y_heading a.regular_reset{
-    display: block;
+  display: block;
 }
 
 /*
@@ -1606,210 +1628,210 @@ margin-top:0;
  * Licensed under the MIT license.
  * Modified by Zev Thompson of Optemo.
  */
- 
+
 #optemo_embedder .galleria-container {
-    position: relative;
-    overflow: hidden;
-    background: #FFF;
+  position: relative;
+  overflow: hidden;
+  background: #FFF;
 }
 #optemo_embedder .galleria-container img {
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    -o-user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -o-user-select: none;
 }
 #optemo_embedder .galleria-stage {
-    position: absolute;
-    top: 10px;
-    bottom: 60px;
-    left: 10px;
-    right: 10px;
-    overflow:hidden;
+  position: absolute;
+  top: 10px;
+  bottom: 60px;
+  left: 10px;
+  right: 10px;
+  overflow:hidden;
 }
 #optemo_embedder .galleria-thumbnails-container {
-    height: 50px;
-    bottom: 0;
-    position: absolute;
-    left: 10px;
-    right: 10px;
-    z-index: 2;
+  height: 50px;
+  bottom: 0;
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  z-index: 2;
 }
 #optemo_embedder .galleria-carousel .galleria-thumbnails-list {
-    margin-left: 30px;
-    margin-right: 30px;
+  margin-left: 30px;
+  margin-right: 30px;
 }
 #optemo_embedder .galleria-thumbnails .galleria-image {
-    height: 40px;
-    width: 60px;
-    background: #000;
-    margin: 0 5px 0 0;
-    border: 1px solid #000;;
-    float: left;
-    cursor: pointer;
+  height: 40px;
+  width: 60px;
+  background: #000;
+  margin: 0 5px 0 0;
+  border: 1px solid #000;;
+  float: left;
+  cursor: pointer;
 }
 
 #optemo_embedder #bestbuy_sibling_images {
-    height: 40px;
-    float: right;
-    position: relative;
+  height: 40px;
+  float: right;
+  position: relative;
 }
 
 #optemo_embedder .galleria-counter {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    text-align: right;
-    color: #fff;
-    font: normal 11px/1 arial,sans-serif;
-    z-index: 2;
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  text-align: right;
+  color: #fff;
+  font: normal 11px/1 arial,sans-serif;
+  z-index: 2;
 }
 #optemo_embedder .galleria-loader {
-    background: #000;
-    width: 20px;
-    height: 20px;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 2;
-    display: none;
-    background: url(../images/classic-loader.gif) no-repeat 2px 2px;
+  background: #000;
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  display: none;
+  background: url(../images/classic-loader.gif) no-repeat 2px 2px;
 }
 #optemo_embedder .galleria-info {
-    width: 50%;
-    top: 15px;
-    left: 15px;
-    z-index: 2;
-    position: absolute;
+  width: 50%;
+  top: 15px;
+  left: 15px;
+  z-index: 2;
+  position: absolute;
 }
 #optemo_embedder .galleria-info-text {
-    background-color: #000;
-    padding: 12px;
-    display: none;
+  background-color: #000;
+  padding: 12px;
+  display: none;
     /* IE7 */ zoom:1;
 }
 #optemo_embedder .galleria-info-title {
-    font: bold 12px/1.1 arial,sans-serif;
-    margin: 0;
-    color: #fff;
+  font: bold 12px/1.1 arial,sans-serif;
+  margin: 0;
+  color: #fff;
 }
 #optemo_embedder .galleria-info-description {
-    font: italic 12px/1.4 georgia,serif;
-    margin: 0;
-    color: #bbb;
+  font: italic 12px/1.4 georgia,serif;
+  margin: 0;
+  color: #bbb;
 }
 #optemo_embedder .galleria-info-title+.galleria-info-description {
-    margin-top: 7px;
+  margin-top: 7px;
 }
 #optemo_embedder .galleria-info-close {
-    width: 9px;
-    height: 9px;
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background-position: -753px -11px;
-    opacity: .5;
-    filter: alpha(opacity=50);
-    cursor: pointer;
-    display: none;
+  width: 9px;
+  height: 9px;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-position: -753px -11px;
+  opacity: .5;
+  filter: alpha(opacity=50);
+  cursor: pointer;
+  display: none;
 }
 #optemo_embedder .galleria-info-close:hover{
-    opacity:1;
-    filter: alpha(opacity=100);
+  opacity:1;
+  filter: alpha(opacity=100);
 }
 #optemo_embedder .galleria-info-link {
-    background-position: -669px -5px;
-    opacity: .7;
-    filter: alpha(opacity=70);
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    background-color: #000;
+  background-position: -669px -5px;
+  opacity: .7;
+  filter: alpha(opacity=70);
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  background-color: #000;
 }
 #optemo_embedder .galleria-info-link:hover {
-    opacity: 1;
-    filter: alpha(opacity=100);
+  opacity: 1;
+  filter: alpha(opacity=100);
 }
 #optemo_embedder .galleria-image-nav {
-    position: absolute;
-    top: 50%;
-    margin-top: -62px;
-    width: 100%;
-    height: 62px;
-    left: 0;
+  position: absolute;
+  top: 50%;
+  margin-top: -62px;
+  width: 100%;
+  height: 62px;
+  left: 0;
 }
 #optemo_embedder .galleria-image-nav-left,
+    #optemo_embedder .galleria-image-nav-right {
+      opacity: .3;
+      filter: alpha(opacity=30);
+      cursor: pointer;
+      width: 62px;
+      height: 124px;
+      position: absolute;
+      left: 10px;
+      z-index: 2;
+      background-position: 0 46px;
+    }
 #optemo_embedder .galleria-image-nav-right {
-    opacity: .3;
-    filter: alpha(opacity=30);
-    cursor: pointer;
-    width: 62px;
-    height: 124px;
-    position: absolute;
-    left: 10px;
-    z-index: 2;
-    background-position: 0 46px;
-}
-#optemo_embedder .galleria-image-nav-right {
-    left: auto;
-    right: 10px;
-    background-position: -254px 46px;
-    z-index: 2;
+  left: auto;
+  right: 10px;
+  background-position: -254px 46px;
+  z-index: 2;
 }
 #optemo_embedder .galleria-image-nav-left:hover,
-#optemo_embedder .galleria-image-nav-right:hover {
-    opacity: 1;
-    filter: alpha(opacity=100);
-}
+    #optemo_embedder .galleria-image-nav-right:hover {
+      opacity: 1;
+      filter: alpha(opacity=100);
+    }
 #optemo_embedder .galleria-thumb-nav-left,
+        #optemo_embedder .galleria-thumb-nav-right {
+          cursor: pointer;
+          display: none;
+          background-position: -495px 5px;
+          position: absolute;
+          left: 0;
+          top: 0;
+          height: 40px;
+          width: 23px;
+          z-index: 3;
+          opacity: .8;
+          filter: alpha(opacity=80);
+        }
 #optemo_embedder .galleria-thumb-nav-right {
-    cursor: pointer;
-    display: none;
-    background-position: -495px 5px;
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 40px;
-    width: 23px;
-    z-index: 3;
-    opacity: .8;
-    filter: alpha(opacity=80);
-}
-#optemo_embedder .galleria-thumb-nav-right {
-    background-position: -578px 5px;
-    border-right: none;
-    right: 0;
-    left: auto;
+  background-position: -578px 5px;
+  border-right: none;
+  right: 0;
+  left: auto;
 }
 #optemo_embedder .galleria-thumbnails-container .disabled {
-    opacity: .2;
-    filter: alpha(opacity=20);
-    cursor: default;
+  opacity: .2;
+  filter: alpha(opacity=20);
+  cursor: default;
 }
 #optemo_embedder .galleria-thumb-nav-left:hover,
-#optemo_embedder .galleria-thumb-nav-right:hover {
-    opacity: 1;
-    filter: alpha(opacity=100);
-    background-color: #111;
-}
+    #optemo_embedder .galleria-thumb-nav-right:hover {
+      opacity: 1;
+      filter: alpha(opacity=100);
+      background-color: #111;
+    }
 #optemo_embedder .galleria-thumbnails-container .disabled:hover {
-    opacity: 0.2;
-    filter: alpha(opacity=20);
-    background-color: transparent;
+  opacity: 0.2;
+  filter: alpha(opacity=20);
+  background-color: transparent;
 }
 
 #optemo_embedder .galleria-carousel .galleria-thumb-nav-left,
-#optemo_embedder .galleria-carousel .galleria-thumb-nav-right {
-    display: block;
-}
+    #optemo_embedder .galleria-carousel .galleria-thumb-nav-right {
+      display: block;
+    }
 #optemo_embedder .galleria-thumb-nav-left,
-#optemo_embedder .galleria-thumb-nav-right,
-#optemo_embedder .galleria-info-link,
-#optemo_embedder .galleria-info-close,
-#optemo_embedder .galleria-image-nav-left,
-#optemo_embedder .galleria-image-nav-right {
-    background-image: url(../images/classic-map.png);
-    background-repeat: no-repeat;
-}
+        #optemo_embedder .galleria-thumb-nav-right,
+        #optemo_embedder .galleria-info-link,
+        #optemo_embedder .galleria-info-close,
+        #optemo_embedder .galleria-image-nav-left,
+        #optemo_embedder .galleria-image-nav-right {
+          background-image: url(../images/classic-map.png);
+          background-repeat: no-repeat;
+        }
 
 /*--------------------------------------//
 //            Color Picker              //
@@ -1841,35 +1863,38 @@ margin-top:0;
 }
 
 #optemo_embedder .ie7 .white_swatch,
-#optemo_embedder .ie8 .white_swatch,
-#optemo_embedder .ie9 .white_swatch {
-	width: 11px;
-	height: 11px;
-	border: 1px solid #ccc;
-}
+    #optemo_embedder .ie8 .white_swatch,
+    #optemo_embedder .ie9 .white_swatch {
+	    width: 11px;
+	    height: 11px;
+	    border: 1px solid #ccc;
+    }
 
 #optemo_embedder .disabled {
 	color: #aaa;
 }
 
 #optemo_embedder .y_bottom {
-    margin: 12px 0 -12px;
-    padding-right: 6px;
-    padding-bottom: 3px;
+  margin: 12px 0 -12px;
+  padding-right: 6px;
+  padding-bottom: 3px;
 	overflow:hidden;
-   margin-bottom:-4px \0/;
-   *margin-bottom: -4px;
-   _margin-bottom: -12px;
-    background-image:-moz-linear-gradient(center bottom, #d1d1d1, #e8e8e8);
-    background-image:-webkit-gradient(linear, left bottom, left top, from(#d1d1d1), to(#e8e8e8));
-    height: 25px
-    font-weight: bold;
-   
+  background-image:-moz-linear-gradient(center bottom, #d1d1d1, #e8e8e8);
+  background-image:-webkit-gradient(linear, left bottom, left top, from(#d1d1d1), to(#e8e8e8));
+  height: 25px
+  font-weight: bold;
 }
 
+
+#optemo_embedder #IE.ie8 .y_bottom, #optemo_embedder #IE.ie7 .y_bottom{
+  margin-bottom: -4px;
+}
+#optemo_embedder #IE.ie6 .y_bottom {
+  margin-bottom: -12px;
+}
 #optemo_embedder .y_bottom a.regular_reset{
-    margin: 7px 0 0;
-    height: 15px;
+  margin: 7px 0 0;
+  height: 15px;
 }
 #optemo_embedder #IE .y_bottom {
 
@@ -1877,71 +1902,78 @@ margin-top:0;
    
     *bottom: 7px;
     *height: 25px;*/
-    background: url('/images/ie_y_bottom_bg.gif') repeat-x ;
-    height: 25px;
+  background: url('/images/ie_y_bottom_bg.gif') repeat-x ;
+  height: 25px;
 }
 
 #optemo_embedder .pagination-container{
-    position: relative;
-    background: #e7e7e7;
-    text-align: center;
-    padding-top: 10px;
-    font-size: 12px;
-    height: 23px;
-    *height: 25px;
-    border: 1px #cecece solid;
+  position: relative;
+  background: #e7e7e7;
+  text-align: center;
+  padding-top: 10px;
+  font-size: 12px;
+  height: 23px;
+  border: 1px #cecece solid;
 }
-
+#optemo_embedder #IE.ie7 .pagination-container, #optemo_embedder #IE.ie6 .pagination-container{
+  height: 25px;
+}
 #optemo_embedder #back-to-top-bottom {
-   margin-right: 14px;
-   }
+  margin-right: 14px;
+}
 #optemo_embedder .pagination {
-    text-align: center;
-    padding: 0px 5px;
-    display: inline;
-   *background: #e7e7e7;
+  text-align: center;
+  padding: 0px 5px;
+  display: inline;
+}
+#optemo_embedder #IE.ie7 .pagination,#optemo_embedder #IE.ie6 .pagination {
+  background: #e7e7e7;
 }
 #optemo_embedder .pagination .current{
-    font-style: normal;
-    font-weight: bold;
+  font-style: normal;
+  font-weight: bold;
 }
 #optemo_embedder .pagination a img{
-   vertical-align: top;
-   padding: 1px 0 0;
-   }
+  vertical-align: top;
+  padding: 1px 0 0;
+}
 #optemo_embedder #IE .pagination a img{
-   vertical-align: sub; /* For ie9 */
-   vertical-align: top \0/;
-   *vertical-align: middle;
-   margin-top: 1px \0/;/*IE8*/
-   *margin-top: 0;
-   }
+  vertical-align: sub; /* For ie9 */
+}
+#optemo_embedder #IE.ie8 .pagination a img{
+  vertical-align: top;
+  margin-top: 1px;
+}
+#optemo_embedder #IE.ie7 .pagination a img, #optemo_embedder #IE.ie6 .pagination a img{
+  vertical-align: middle;
+  margin-top: 0;
+}
 #optemo_embedder .pagination-container a,#optemo_embedder .pagination-container a:hover,#optemo_embedder .pagination-container a:visited {
-   color: #003399;
-   }
+  color: #003399;
+}
 #optemo_embedder .pagination a, #optemo_embedder .pagination strong {
-   padding: 3px 1px;
-   line-height: 12px;
-   }
+  padding: 3px 1px;
+  line-height: 12px;
+}
 #optemo_embedder .pagination span.gap {
-    display: none;
+  display: none;
 }
 #optemo_embedder .pagination .disabled {
-    display: none;
+  display: none;
 }
 
 
 #optemo_embedder .pagi-info {
-    position: absolute;
-    left: 0;
-    top: 0;
-    padding: 10px 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 10px 0;
   margin-left: 14px;
 }
 #optemo_embedder #back-to-top-bottom, #optemo_embedder #back-to-top-bottom:visited {
-    position: absolute;
-    right: 0;
-    top: 0;
-    background: url('/images/back-to-top-small.gif') no-repeat right center;
-    padding: 10px 20px 5px 5px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: url('/images/back-to-top-small.gif') no-repeat right center;
+  padding: 10px 20px 5px 5px;
 }

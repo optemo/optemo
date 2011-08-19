@@ -74,8 +74,8 @@ body {
 
 .rounded {
 	-webkit-border-radius: 8px;    /* for Safari */
-  	-moz-border-radius: 8px;       /* for Firefox */
-  	border-radius: 8px;            /* Opera, KHTML, others */
+  -moz-border-radius: 8px;       /* for Firefox */
+  border-radius: 8px;            /* Opera, KHTML, others */
 }
 /*.rounded_bd {
     background-color: white;
@@ -83,36 +83,35 @@ body {
 }*/
 
 #optemo_embedder #navtitle {
-   display: inline-block;
-    *display:inline-block;
-    margin-left: 17px;
-    margin-top: 9px;
-   font-weight: bold;
-   
+  display: inline-block;
+  margin-left: 17px;
+  margin-top: 9px;
+  font-weight: bold;
+  
 }
 #optemo_embedder #navtitle .nav-number{
-   font-size: 39pt; float:left; margin-right: 7px; font-weight: bold;color: #333;
-   }
+  font-size: 39pt; float:left; margin-right: 7px; font-weight: bold;color: #333;
+}
 #optemo_embedder #navtitle .sub-title{
-   float: left;
-   margin-top: 7px;
-   }
+  float: left;
+  margin-top: 7px;
+}
 #optemo_embedder #navtitle .sub-title .outof{
-   font-size: 11pt;
-   color: #333;
-   margin-left: 3px;
-   }
+  font-size: 11pt;
+  color: #333;
+  margin-left: 3px;
+}
 #optemo_embedder #navtitle .nav-available-text{
-   color: #333;
-   font-size: 15pt;
-   font-weight: bold;
-   }
+  color: #333;
+  font-size: 15pt;
+  font-weight: bold;
+}
 
 
 #optemo_embedder #IE #navtitle{
-   display: inline-block;
-   border: none;
-   }
+  display: inline-block;
+  border: none;
+}
 
 /*--------------------------------------//
 //      Main Content (Right Side)       //
