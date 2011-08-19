@@ -79,9 +79,11 @@ en:
             #     name:               "10000 rpm"
             internalExternal:
                 name:               "Internal or External"
+            utility:
+                name:               "Best Match"
             saleprice_factor:
                 name:               "Price: Low to High"
-            saleprice_factor_high_to_low:
+            saleprice_factor_high:
                 name:               "Price: High to Low"
             maxresolution_factor:
                 name:               "Resolution"

@@ -1,4 +1,5 @@
 class SearchProduct < ActiveRecord::Base
+  self.per_page = 18 #for will_paginate
   class << self
     def queryPresent?
       s = Session.search
@@ -24,55 +25,28 @@ class SearchProduct < ActiveRecord::Base
                res << search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = '#{s}'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value #{order}")[0...18] 
            end      
           res.flatten
-      end    
-            
-      def fq2
-        sortby= Session.search.sortby
+      end
+      
+      def fq_paginated_products
         mycats = Session.search.userdatacats.group_by{|x|x.name}.values
         mybins = Session.search.userdatabins
         myconts = Session.search.userdataconts
-        if Session.directLayout
-          unless sortby == "Price"
-            # We order by utility here, the default ("Relevance" or blank sortby term)
-            res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = 'utility'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value DESC")
-          else
-            # We order by price here
-            res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = 'price'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value ASC")
-          end
-        else
-            if sortby.nil? || sortby == "relevance" 
-                res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = 'utility'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value DESC")
-            else    
-                if sortby.include?("_high")  
-                     order = "ASC"
-                     sortby = "saleprice_factor"  # this should be rewritten
-                else
-                     order =  "DESC"    
-                end     
-                res = search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = '#{sortby}'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value #{order}")
-             end
-         end
+        res = search_id_q.select_part.create_join(mycats,mybins,myconts+[[]]).conts_keywords.cats(mycats).bins(mybins).sorting(Session.search.sortby,myconts.size).page(Session.search.page)
+        #q = res.to_sql
+        #cached = CachingMemcached.cache_lookup("JustProducts-#{q.hash}") do
+        #  run_query_no_activerecord(q)
+        #end
+        #cached
+      end
+            
+      def fq2
+        mycats = Session.search.userdatacats.group_by{|x|x.name}.values
+        mybins = Session.search.userdatabins
+        myconts = Session.search.userdataconts
+        res = search_id_q.products_and_specs(myconts.size).create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).sorting(Session.search.sortby,myconts.size+1)
         q = res.to_sql
         cached = CachingMemcached.cache_lookup("Products-#{q.hash}") do
-          #We don't want to store the activerecord here
-          tried_once = true
-          begin
-            result = self.connection.execute(q).to_a
-            raise SearchError, "No products match that search criteria for #{Session.product_type}" if result.empty?
-          rescue SearchError
-            #Check if the initial products are missing
-            if search_id_q.count == 0 && tried_once
-              initial_products_id = Session.product_type_int
-              SearchProduct.transaction do
-                Product.instock.current_type.map{|product| SearchProduct.new(:product_id => product.id, :search_id => initial_products_id)}.each(&:save)
-              end
-              tried_once = false
-              retry
-            else
-              raise
-            end
-          end
-          result
+          run_query_no_activerecord(q)
         end
         #ComparableSet.from_storage(cached)
         cached.map{|c|ProductAndSpec.from_storage(c)}
@@ -146,6 +120,52 @@ class SearchProduct < ActiveRecord::Base
         res << "bin_specs#{i}.value = #{d.value} and bin_specs#{i}.name = '#{d.name}'"
       end
       where(res.join(" and "))
+    end
+    
+    def sorting(sortby,table_id)
+      sortby ||= "utility" #Default sorting
+      if sortby.include?("_high")  
+           order = "ASC"
+           sortby = "saleprice_factor"
+      else
+           order =  "DESC"    
+      end
+      where("cont_specs#{table_id}.name = '#{sortby}'").order("cont_specs#{table_id}.value #{order}")
+    end
+    
+    def select_part(grouping_table_id = false)
+      if grouping_table_id
+        select("search_products.product_id, group_concat(cont_specs#{grouping_table_id}.name) AS names, group_concat(cont_specs#{grouping_table_id}.value) AS vals")
+      else
+        select("search_products.product_id")
+      end
+    end
+    
+    def products_and_specs(grouping_table_id)
+      #This returns product ids along with products spec names and values, to be used in ProductAndSpec
+      select_part(grouping_table_id).group("search_products.product_id")
+    end
+    
+    def run_query_no_activerecord(q)
+      #We don't want to store the activerecord here
+      tried_once = true
+      begin
+        result = self.connection.execute(q).to_a
+        raise SearchError, "No products match that search criteria for #{Session.product_type}" if result.empty?
+      rescue SearchError
+        #Check if the initial products are missing
+        if search_id_q.count == 0 && tried_once
+          initial_products_id = Session.product_type_int
+          SearchProduct.transaction do
+            Product.instock.current_type.map{|product| SearchProduct.new(:product_id => product.id, :search_id => initial_products_id)}.each(&:save)
+          end
+          tried_once = false
+          retry
+        else
+          raise
+        end
+      end
+      result
     end
   end
 end

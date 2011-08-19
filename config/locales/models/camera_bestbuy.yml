@@ -85,10 +85,12 @@ en:
             toprated:
                 name:               "Top-Rated"
             featured:
-                name:               "Featured Products"    
+                name:               "Featured Products"
+            utility:
+                name:               "Best Match"
             saleprice_factor:
                 name:               "Price: Low to High"
-            saleprice_factor_high_to_low:
+            saleprice_factor_high:
                 name:               "Price: High to Low"
             maxresolution_factor:
                 name:               "Megapixels"
