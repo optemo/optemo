@@ -1033,6 +1033,8 @@ optemo_module = (function (my){
                 clickCat(checkbox);
             else
                 clickBinary(checkbox);
+            var whichbox = checkbox.attr('data-opt');
+            my.trackPage('goals/filter/categorical', {'feature_name' : whichbox, 'filter_type': 'categorical'});
             return false;
         });
         // Checkboxes -- submit
