@@ -156,7 +156,7 @@ class Search < ActiveRecord::Base
   end
   
   def paginated_products
-    @paginated_products ||= SearchProduct.fq_paginated_products
+    @paginated_products ||= SearchProduct.fq_paginated_products.all
   end
   
   def isextended?
