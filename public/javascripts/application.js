@@ -149,9 +149,6 @@ optemo_module = (function (my){
         // Insert spec in right order to show in comparison page
         var insert_before = -1;
         var skus = my.readAllCookieValues('bestbuy_specs_skus');
-
-        if (skus == 0)
-            skus = [];
         eraseCookie('bestbuy_specs_skus'); // Because resort the skus, we can not append value at the end
         
         $.each(skus, function(index,value) {
@@ -427,7 +424,7 @@ optemo_module = (function (my){
         remove_comparison_from_skus(id);
     }
                      function remove_comparison_from_skus(prod_id) {
-                         var skus = my.readAllCookieValues('bestbuy_specs_skus') || [];
+                         var skus = my.readAllCookieValues('bestbuy_specs_skus');
 
                          $.each(skus, function(index, value) {
                                     var val = value.split(',');
@@ -866,8 +863,7 @@ optemo_module = (function (my){
 
             // If this is the last one, take the comparison screen down too
 
-                              var skus = my.readAllCookieValues('bestbuy_specs_skus');
-                              if(skus == 0) skus=[];
+            var skus = my.readAllCookieValues('bestbuy_specs_skus');
             if (skus.length == 0) {
                 my.removeSilkScreen();
             }
@@ -1193,7 +1189,6 @@ optemo_module = (function (my){
     
     my.buildComparisonMatrix = function() {
         var skus = my.readAllCookieValues('bestbuy_specs_skus'), anchor = $('#hideable_matrix');
-        if (skus == 0) skus=[];
         // Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
         var array = [];
         my.changeCompareTitle(skus.length);
@@ -1411,7 +1406,7 @@ optemo_module = (function (my){
             my.SliderInit();
             my.DBinit();
             var skus = my.readAllCookieValues('bestbuy_specs_skus');
-            if (skus != 0) {
+            if (skus.length != 0) {
                 if (skus[0].split(',')[3] != $('#main').attr('data-product_type')) {
                     skus = [];
                 }
@@ -1616,7 +1611,7 @@ optemo_module = (function (my){
     // This should return all cookie values in an array.
     my.readAllCookieValues = function(name) {
         // Must error check for empty cookie
-        return (readCookie(name) ? readCookie(name).split('*') : 0);
+        return (readCookie(name) ? readCookie(name).split('*') : []);
     };
 
     // The functions below should not be used; treat them as private, to be called by the two cookie interface functions above
@@ -1659,7 +1654,6 @@ optemo_module = (function (my){
             my.LiveInit();
 
             var skus = my.readAllCookieValues('bestbuy_specs_skus');
-            if(skus==0) skus=[];
             if(OPT_REMOTE) {
 
             if (skus != 0) {
@@ -1849,8 +1843,6 @@ optemo_module = (function (my){
     
     $('.optemo_compare_checkbox').live('click', function(){
                                            var skus = my.readAllCookieValues('bestbuy_specs_skus');
-
-                                           if (skus == 0) skus=[];
                                            var thisObj = $(this) ;
                                            if (thisObj.attr('checked')) { // save the comparison item
                                                if (skus.length <5) {
@@ -1874,7 +1866,6 @@ optemo_module = (function (my){
 
     my.compareCheckedProducts = function () {
         var skus = my.readAllCookieValues('bestbuy_specs_skus');
-        if(skus == 0) skus=[];
         if (skus.length >= 1) {
             var productIDs = '', width = 560, number_of_saved_products = 0;
             $.each(skus, function(index, val) {
@@ -1934,9 +1925,7 @@ optemo_module = (function (my){
     };
     
     $('.optemo_compare_button').live('click', function(){
-        var skus = my.readAllCookieValues('bestbuy_specs_skus');
-        if (skus == 0) skus = [];                                         
-                                         
+        var skus = my.readAllCookieValues('bestbuy_specs_skus');                                                                       
         var objCheckbox = $(this).parent().find('.optemo_compare_checkbox');
         var max = (objCheckbox.attr('checked') ? 5 : 4);
         if (skus.length <= max) {
