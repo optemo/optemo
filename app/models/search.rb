@@ -292,13 +292,19 @@ class Search < ActiveRecord::Base
     super({})
     #Set parent id
     self.parent_id = CGI.unescape(p["parent"]).unpack("m")[0].to_i unless p["parent"].blank?
-    unless p["action_type"] == "initial" #Exception for initial clusters
+    unless p["action_type"] == "allproducts" || p["action_type"] == "landing" #Exception for initial clusters
       old_search = Search.find_by_id(self.parent_id)
     end
     # If there is a sort method to keep from last time, move it across
     self.sortby = old_search[:sortby] if old_search && old_search[:sortby]
     case p["action_type"]
-    when "initial"
+    when "allproducts"
+      #Initial load of the homepage
+      self.initial = false
+      @userdataconts = []
+      @userdatabins = []
+      @userdatacats = []
+    when "landing"
       #Initial load of the homepage
       self.initial = true
       @userdataconts = []
@@ -318,20 +324,14 @@ class Search < ActiveRecord::Base
     when "sortby"
       self.sortby = p[:sortby]
       duplicateFeatures(old_search)
-      self.initial = true;
+      self.initial = false
     when "groupby"
       self.groupby = p[:feat]
       duplicateFeatures(old_search)
     when "filter"
       #product filtering has been done through keyword search of attribute filters
       createFeatures(p)
-      #Find clusters that match filtering query
-      #if old_search && !expandedFiltering?(old_search)
-      #  #Search is narrowed, so use old products to begin with
-      #else
-      #  #Search is expanded, so use all products to begin with
-        self.initial = true
-      #end
+      self.initial = false
     else
       #Error
     end
