@@ -776,7 +776,9 @@ div#division {
 	left: 9px;
 	top: 36px;
 }
-
+#optemo_embedder #IE.ie6 .hist {
+  left: 3px;
+  }
 
 /*--------------------------------------//
 //                Survey                //
@@ -1610,9 +1612,11 @@ margin-top:0;
   padding: 0;
   margin: 2px 0 0;
 }
-#optemo_embedder #IE.ie7 .y_heading a.regular_reset, #optemo_embedder #IE.ie7 .y_bottom a.regular_reset, #optemo_embedder #IE.ie6 .y_heading a.regular_reset, #optemo_embedder #IE.ie6 .y_bottom a.regular_reset {
-  margin: -2px 0 0;
+#optemo_embedder .y_bottom a.regular_reset{
+  margin: 7px 0 0;
+  height: 15px;
 }
+
 
 #optemo_embedder #IE .y_heading {
   Background: url("/images/ie_refine_search_bg.gif") repeat-x #cecece;
@@ -1622,6 +1626,10 @@ margin-top:0;
   display: block;
 }
 
+#optemo_embedder #IE .y_bottom a.regular_reset{
+  margin: 5px 0 0;
+  height: 15px;
+  }
 /*
  * Galleria Classic Theme
  * Copyright (c) 2010, Aino
@@ -1891,10 +1899,6 @@ margin-top:0;
 }
 #optemo_embedder #IE.ie6 .y_bottom {
   margin-bottom: -12px;
-}
-#optemo_embedder .y_bottom a.regular_reset{
-  margin: 7px 0 0;
-  height: 15px;
 }
 #optemo_embedder #IE .y_bottom {
 
