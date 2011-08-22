@@ -21,7 +21,7 @@ class CompareController < ApplicationController
             classVariables(search_history)
           else
             #Initial clusters
-            classVariables(Search.create({"action_type" => "initial"}))
+            classVariables(Search.create({"action_type" => params[:landing].nil? ? "allproducts" : "landing", "parent" => params[:hist]}))
           end
         end
       else
@@ -165,7 +165,7 @@ class CompareController < ApplicationController
       # if @s.search.page
       #   render 'page', :layout => false
       # else
-      if params[:landing]
+      if Session.search.initial
         render 'ajax_landing', :layout => false
       else      
         render 'ajax', :layout => false
@@ -173,7 +173,7 @@ class CompareController < ApplicationController
       end
     else
       if Session.mobileView
-        classVariables(Search.create({"page" => params[:page], "action_type" => "initial"}))
+        classVariables(Search.create({"page" => params[:page], "action_type" => "allproducts"}))
         render 'products'
       else
         render 'compare'
