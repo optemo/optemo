@@ -1216,16 +1216,18 @@ optemo_module = (function (my){
         var divContentHolderTagEnd = '</div>';
         
         for (var heading in grouped_specs) {
-            //Add Heading
-            result += '<div class="'+row_class(row_height(heading.length,true))+'"><div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' leftcolumntext" style="font-style: italic;"><a class="togglable closed title_link" style="font-style: italic;" href="#">' + heading.replace('&','&amp;') + '</a></div>';
-
-            for (var i = 0; i < skus.length; i++) {
-                result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' spec_column_'+i+'">&nbsp;</div>';
+            if (heading != "") {
+                //Add Heading
+                result += '<div class="'+row_class(row_height(heading.length,true))+'"><div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' leftcolumntext" style="font-style: italic;"><a class="togglable closed title_link" style="font-style: italic;" href="#">' + heading.replace('&','&amp;') + '</a></div>';
+                
+                for (var i = 0; i < skus.length; i++) {
+                    result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' spec_column_'+i+'">&nbsp;</div>';
+                }
+                
+                result += "</div>";
+                result += divContentHolderTag;
+                whitebg = !whitebg;
             }
-            
-            result += "</div>";
-            result += divContentHolderTag;
-            whitebg = !whitebg;
             for (var spec in grouped_specs[heading]) {
                 //Row Height calculation
                 array = [];
@@ -1253,7 +1255,9 @@ optemo_module = (function (my){
                 
                 whitebg = !whitebg;
             }
-            result += divContentHolderTagEnd;
+            if (heading != "") {
+                result += divContentHolderTagEnd;
+            }
         }
         anchor.append(result);
 
