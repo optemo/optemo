@@ -1343,7 +1343,7 @@ optemo_module = (function (my){
             mydata.hist = hash;}
         else
             mydata.landing = true;
-        if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 50);
+        if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 800);
         var val_timeout = 10000;
         if (/localhost/.test(myurl) || /192\.168/.test(myurl))
             val_timeout = 100000;
