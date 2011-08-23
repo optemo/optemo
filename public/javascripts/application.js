@@ -1335,7 +1335,7 @@ optemo_module = (function (my){
     my.loading_indicator_state = {spinner_timer : null, socket_error_timer : null, disable : false};
 
     /* Does a relatively generic ajax call and returns data to the handler below */
-    my.ajaxsend = function (hash,myurl,mydata,timeoutlength) {
+    my.ajaxsend = function (hash,myurl,mydata) {
         var lis = my.loading_indicator_state;
         //The Optemo category ID should be set in the loader unless this file is loaded non-embedded, then it is set in the opt_discovery section
         mydata = $.extend({'ajax': true, category_id: window.opt_category_id},mydata);
@@ -1343,7 +1343,7 @@ optemo_module = (function (my){
             mydata.hist = hash;}
         else
             mydata.landing = true;
-        if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 800);
+        if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", 800);
         var val_timeout = 10000;
         if (/localhost/.test(myurl) || /192\.168/.test(myurl))
             val_timeout = 100000;
