@@ -340,6 +340,9 @@ optemo_module = (function (my){
 
     my.removeSilkScreen = function() {
         $('#silkscreen, #outsidecontainer').hide();
+        // For ie 6, dropdown list has z-index issue. Show dropdown when popup hide.
+        if($.browser.msie && $.browser.version.substr<7)        
+            $('.jumpmenu').show();
     };
     
     my.current_height = (function() {
@@ -352,6 +355,10 @@ optemo_module = (function (my){
     });
 
     my.applySilkScreen = function(url,data,width,height,f) {
+        // For ie 6, dropdown list has z-index issue. Hide dropdown when popup show.
+        if($.browser.msie && $.browser.version.substr<7)
+            $('jumpmenu').hide();
+                
         //IE Compatibility
         var iebody=(document.compatMode && document.compatMode != "BackCompat")? document.documentElement : document.body,
         dsoctop=document.all? iebody.scrollTop : window.pageYOffset;
@@ -1337,7 +1344,10 @@ optemo_module = (function (my){
         else
             mydata.landing = true;
         if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 50);
-        lis.socket_error_timer = setTimeout("optemo_module.ajaxerror()", 10000);
+        var val_timeout = 10000;
+        if (/localhost/.test(myurl) || /192\.168/.test(myurl))
+            val_timeout = 100000;
+        lis.socket_error_timer = setTimeout("optemo_module.ajaxerror()", val_timeout);
         if (OPT_REMOTE) {
             //Embedded Layout
             myurl = (typeof myurl != "undefined" && myurl != null) ? myurl.replace(/http:\/\/[^\/]+/,'') : "/compare"
