@@ -122,7 +122,7 @@
             var current_hash = locationWrapper.get();
             if(current_hash != self._appState) {
                 self._appState = current_hash;
-                self.callback(current_hash, null, null, 100);
+                self.callback(current_hash, null, null);
             }
         },
         load: function(hash,myurl,mydata) {
@@ -151,11 +151,11 @@
                 if (location_hash == self._appState) {    // user used Back or Forward button
                     self._appState = iframe_hash;
                     locationWrapper.put(iframe_hash);
-                    self.callback(iframe_hash, null, null, 100); 
+                    self.callback(iframe_hash, null, null); 
                 } else {                              // user loaded new bookmark
                     self._appState = location_hash;  
                     iframeWrapper.put(location_hash);
-                    self.callback(location_hash, null, null, 100);
+                    self.callback(location_hash, null, null);
                 }
             }
         },
@@ -177,7 +177,7 @@
             $(window).bind('hashchange', self.check);
         },
         check: function() {
-            self.callback(locationWrapper.get(), self._appURL, self._appDATA, 100);
+            self.callback(locationWrapper.get(), self._appURL, self._appDATA);
             self._appURL = undefined;
             self._appDATA = undefined;
         },
