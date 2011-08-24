@@ -1818,7 +1818,7 @@ optemo_module = (function (my){
             // Load the classic theme for galleria, the jquery image slideshow plugin we're using (jquery.galleria.js)
             //    Galleria.loadTheme('/javascripts/galleria.classic.js');
             /* Piwik Code */
-            var pkBaseURL = (("https:" == document.location.protocol) ? "https://analytics.optemo.com/" : "http://analytics.optemo.com/");
+            var pkBaseURL = (("https:" == document.location.protocol) ? "https://analyze.optemo.com/" : "http://analyze.optemo.com/");
             var piwik_script_tag = document.createElement("script");
             piwik_script_tag.setAttribute("src", pkBaseURL + 'piwik.js');
             piwik_script_tag.setAttribute("type", "text/javascript");
