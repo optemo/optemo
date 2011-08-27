@@ -1043,11 +1043,8 @@ optemo_module = (function (my){
         // Checkboxes -- submit
         $('.binary_filter').live('click', clickBinary);
         function clickBinary() {                                                                                                        
-            // I do not understand this line below at all, so I added an additional check one line below it to catch
-            // an error relating to click handlers being called from outside the filterbar, e.g. for "Featured Products" header.
-            // Please comment code for readability -ZAT July 2011
-            var t = (typeof(arguments[0]) != "undefined" && typeof(arguments[0].originalEvent) != "undefined") ? $(this) : arguments[0];
-            if (t.jquery == undefined) t = $(this);
+            //Differentiate between the checkbox and text link, which passes in the checkbox
+            var t = (arguments[0].jquery == undefined) ? $(this) : arguments[0];
             var whichbox = t.attr('data-opt'), box_value = t.attr('checked') ? 100 : 0;
             my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox, 'filter_type': 'checkbox'});
             submitCategorical();
@@ -1055,11 +1052,8 @@ optemo_module = (function (my){
         // Checkboxes -- submit
         $('.cat_filter').live('click', clickCat);
         function clickCat() {
-            // I do not understand this line below at all, so I added an additional check one line below it to catch
-            // an error relating to click handlers being called from outside the filterbar, e.g. for "Featured Products" header.
-            // Please comment code for readability -ZAT July 2011
-            var t = (typeof(arguments[0]) != "undefined" && typeof(arguments[0].originalEvent) != "undefined") ? $(this) : arguments[0];
-            if (t.jquery == undefined) t = $(this);
+            //Differentiate between the checkbox and text link, which passes in the checkbox
+            var t = (arguments[0].jquery == undefined) ? $(this) : arguments[0];
             var whichcat = t.attr('data-feat'), feature_selected = t.attr('data-opt');
             var feat_obj = $('#myfilter_'+whichcat);
             if (t.attr('checked')) // It was just checked a moment ago
