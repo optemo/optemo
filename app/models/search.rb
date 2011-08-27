@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+require 'will_paginate/array'
 class Search < ActiveRecord::Base
   attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
   
@@ -156,7 +157,16 @@ class Search < ActiveRecord::Base
   end
   
   def paginated_products
-    @paginated_products ||= SearchProduct.fq_paginated_products.all
+    unless @paginated_products
+      if sortby == "utility" || sortby.nil?
+        myproducts = Kmeans.compute(18,products.dup)
+      else
+        myproducts = products
+      end
+      @paginated_products = myproducts.paginate(:page => page, :per_page => SearchProduct.per_page)
+      #SearchProduct.fq_paginated_products.all
+    end
+    @paginated_products
   end
   
   def isextended?
@@ -175,11 +185,7 @@ class Search < ActiveRecord::Base
   end
   
   def products
-    if sortby == "utility" || sortby.nil?
-        @products = Kmeans.compute(18,SearchProduct.fq2)
-    else
-        @products = SearchProduct.fq2
-    end
+    @products ||= SearchProduct.fq2
   end
   
   def products_landing(type)

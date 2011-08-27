@@ -235,7 +235,7 @@ module CompareHelper
     			  open = true
     		  end
     		  #Navbox partial to draw boxes
-    		  res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(@s.search.paginated_products[i].product_id), :landing=>false})
+    		  res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(@s.search.paginated_products[i].id), :landing=>false})
           if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
             if i < (@s.search.paginated_products.size - 1)
               res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin:0 auto;"></div></div>'
