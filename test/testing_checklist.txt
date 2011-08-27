@@ -38,6 +38,7 @@ Product Comparison:
 - Check if product tile and 
 - Click the remove link; The product should be removed; Click close
 - Check the boxes of 3 more products; Click the Compare button at the bottom of the page
+- Click the More specs link and see that the tables works, including collapsable headings if available
 - Add products to compare up to the 6th one and see if an error message comes up
 - Add to cart in the compare page
 - Click on the product link on the compare page to see if the PDP loads fine
