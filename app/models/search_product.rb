@@ -13,44 +13,35 @@ class SearchProduct < ActiveRecord::Base
     end
     
     def fq2_landing(s) 
-          mycats = Session.search.userdatacats.group_by{|x|x.name}.values
-          mybins = Session.search.userdatabins
-          myconts = Session.search.userdataconts
-          res = []
-          order =  "DESC"
-           if s=='featured'
-               mybins = [Userdatabin.new({:name => 'featured', :value => 1})]
-               res << search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins)
-           else
-               res << search_id_q.select("search_products.product_id, group_concat(cont_specs#{myconts.size}.name) AS names, group_concat(cont_specs#{myconts.size}.value) AS vals").create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).where("cont_specs#{myconts.size+1}.name = '#{s}'").group("search_products.product_id").order("cont_specs#{myconts.size+1}.value #{order}")[0...18] 
-           end      
+          mybins = [Userdatabin.new({:name => 'featured', :value => 1})]
+          res = search_id_q.create_join([],mybins).bins(mybins)     
           res.flatten
       end
       
-      def fq_paginated_products
-        mycats = Session.search.userdatacats.group_by{|x|x.name}.values
-        mybins = Session.search.userdatabins
-        myconts = Session.search.userdataconts
-        res = search_id_q.select_part.create_join(mycats,mybins,myconts+[[]]).conts_keywords.cats(mycats).bins(mybins).sorting(Session.search.sortby,myconts.size).page(Session.search.page)
-        #q = res.to_sql
-        #cached = CachingMemcached.cache_lookup("JustProducts-#{q.hash}") do
-        #  run_query_no_activerecord(q)
-        #end
-        #cached
-      end
+    def fq_paginated_products
+      mycats = Session.search.userdatacats.group_by{|x|x.name}.values
+      mybins = Session.search.userdatabins
+      myconts = Session.search.userdataconts
+      res = search_id_q.select_part.create_join(mycats,mybins,myconts+[[]]).conts_keywords.cats(mycats).bins(mybins).sorting(Session.search.sortby,myconts.size).page(Session.search.page)
+      #q = res.to_sql
+      #cached = CachingMemcached.cache_lookup("JustProducts-#{q.hash}") do
+      #  run_query_no_activerecord(q)
+      #end
+      #cached
+    end
             
-      def fq2
-        mycats = Session.search.userdatacats.group_by{|x|x.name}.values
-        mybins = Session.search.userdatabins
-        myconts = Session.search.userdataconts
-        res = search_id_q.products_and_specs(myconts.size).create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).sorting(Session.search.sortby,myconts.size+1)
-        q = res.to_sql
-        cached = CachingMemcached.cache_lookup("Products-#{q.hash}") do
-          run_query_no_activerecord(q)
-        end
-        #ComparableSet.from_storage(cached)
-        cached.map{|c|ProductAndSpec.from_storage(c)}
+    def fq2
+      mycats = Session.search.userdatacats.group_by{|x|x.name}.values
+      mybins = Session.search.userdatabins
+      myconts = Session.search.userdataconts
+      res = search_id_q.products_and_specs(myconts.size).create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).sorting(Session.search.sortby,myconts.size+1)
+      q = res.to_sql
+      cached = CachingMemcached.cache_lookup("Products-#{q.hash}") do
+        run_query_no_activerecord(q)
       end
+      #ComparableSet.from_storage(cached)
+      cached.map{|c|ProductAndSpec.from_storage(c)}
+    end
     
     def cat_counts(feat,expanded,includezeros = false,s = Session.search)
       allcats = s.userdatacats.group_by{|x|x.name}
