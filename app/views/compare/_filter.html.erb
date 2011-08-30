@@ -6,9 +6,6 @@
   "nofollow", :title => t('products.compare.resetdesc')%>
   </p>
 </div>
-<!--[if gte IE 6]>
-<div style="clear: both;margin-top: 19px;"></div>
-<![endif]-->
 <%= form_tag("/compare", :id => 'filter_form') do %>
 <% @s.filters_order.each_index do |index| %>
 <% @s.filters_order[index].each_pair do |feat, feat_type| %>

@@ -957,8 +957,6 @@ optemo_module = (function (my){
         });
 
         //Pagination links
-        // This convoluted line takes the second-last element in the list: "<< prev 1 2 3 4 next >>" and takes its numerical page value.
-        var total_pages = parseInt($('.pagination').children().last().prev().html());
         $('.pagination a').live("click", function(){
             if (my.loading_indicator_state.disable) return false;
             var url = $(this).attr('href')
@@ -967,9 +965,9 @@ optemo_module = (function (my){
             //else
             //    url +='?ajax=true'
             if ($(this).hasClass('next_page'))
-                my.trackPage('goals/next', {'filter_type' : 'next' , 'page_number' : parseInt($('.pagination .current').html()), 'total_number_of_pages' : total_pages});
+                my.trackPage('goals/next', {'filter_type' : 'next' , 'page_number' : parseInt($('.pagination .current').html())});
             else
-                my.trackPage('goals/next', {'filter_type' : 'next_number' , 'page_number' : parseInt($(this).html()), 'total_number_of_pages' : total_pages});
+                my.trackPage('goals/next', {'filter_type' : 'next_number' , 'page_number' : parseInt($(this).html())});
             my.ajaxcall(url);
             return false;
         });
@@ -1093,14 +1091,6 @@ optemo_module = (function (my){
         $('.zoomout').live('click', function(){
             my.trackPage('goals/zoomout', {'filter_type' : 'zoomout'});
             my.ajaxcall($(this).attr('href'));
-            return false;
-        });
-        
-        // Special Boxes - these are the featured, top rated, and best selling product layouts
-        $('.optemo_special_boxes').live('click', function () {
-            var whichSpecialBoxSelected = $(this).attr('data-special-boxes');
-            my.trackPage('goals/special_boxes', {'filter_type' : 'special_boxes'});
-            my.ajaxcall("/compare/create", {"special_boxes" : whichSpecialBoxSelected});
             return false;
         });
 

@@ -1,7 +1,6 @@
 class CompareController < ApplicationController
   layout :choose_layout, :except => "sitemap"
   require 'open-uri'
-  
   def index
     if params.include?(:fb_xd_fragment)
       render 'customFacebookChannel', :layout => false
@@ -10,9 +9,9 @@ class CompareController < ApplicationController
       # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
       if Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
         if params[:page]
-          classVariables(Search.create({:page => params[:page], :sortby => params[:sortby] || 'utility', "action_type" => "nextpage", "parent"=>params[:hist]}))
+          classVariables(Search.create({:page => params[:page], :sortby => params[:sortby] || 'utility', :action_type => "nextpage", :parent=>params[:hist]}))
         elsif params[:sortby] # Change sorting method via navigator_bar select box
-          classVariables(Search.create({:sortby => params[:sortby], "action_type" => "sortby",  "parent"=>params[:hist]}))
+          classVariables(Search.create({:sortby => params[:sortby], :action_type => "sortby",  :parent=>params[:hist]}))
         else
           hist = CGI.unescape(params[:hist]).unpack('m')[0].gsub(/\D/,'').to_i if params[:landing].nil? && params[:hist] && !params[:hist].blank?
           search_history = Search.find_last_by_parent_id(hist) if hist
@@ -21,7 +20,7 @@ class CompareController < ApplicationController
             classVariables(search_history)
           else
             #Initial clusters
-            classVariables(Search.create({"action_type" => params[:landing].nil? ? "allproducts" : "landing", "parent" => params[:hist]}))
+            classVariables(Search.create({:action_type => params[:landing].nil? ? "allproducts" : "landing", :parent => params[:hist]}))
           end
         end
       else
@@ -34,18 +33,18 @@ class CompareController < ApplicationController
   #This function should be combined with create
   def zoomout
     # Zoom out of see similar
-    classVariables(Search.create("action_type" => "nextpage", "parent" => params[:hist]))
+    classVariables(Search.create(:action_type => "nextpage", :parent => params[:hist]))
     correct_render
   end
 
   def featured
-      classVariables(Search.create("action_type" => "featured", "parent" => params[:hist]))
+      classVariables(Search.create(:action_type => "featured", :parent => params[:hist]))
       correct_render
   end     
     
   def groupby
     # Group products by specified feature
-    classVariables(Search.create(:feat => params[:feat], "action_type" => "groupby"))
+    classVariables(Search.create(:feat => params[:feat], :action_type => "groupby"))
     correct_render
   end
   
@@ -59,16 +58,12 @@ class CompareController < ApplicationController
   #This function should be combined with create
   def sim
     # Explore products through clusters
-    classVariables(Search.create({"cluster_hash" => params[:id], "action_type" => "similar", "parent" => params[:hist]}))
+    classVariables(Search.create({"cluster_hash" => params[:id], :action_type => "similar", :parent => params[:hist]}))
     correct_render
   end
-
-  def featured 
-    classVariables(Search.create({"featured _hash" => params[:id], "action_type" => "similar", "parent" => params[:hist]}))
-    correct_render
-  end      
+   
   def extended
-    params["action_type"]= "extended"
+    params[:action_type]= "extended"
     classVariables(Search.create(params))
     correct_render 
   end  
@@ -91,10 +86,7 @@ class CompareController < ApplicationController
         render 'error', :layout => false
       end
     else
-      params[:myfilter]["action_type"] = "filter"
-      params[:myfilter]["parent"] = params[:hist] if params[:hist]
-      @special_boxes = params[:special_boxes] if params[:special_boxes]
-      classVariables(Search.create(params[:myfilter]))
+      classVariables(Search.create(action_type: "filter", parent: params[:hist], filters: params[:myfilter]))
       correct_render
     end
   end
@@ -169,7 +161,7 @@ class CompareController < ApplicationController
       end
     else
       if Session.mobileView
-        classVariables(Search.create({"page" => params[:page], "action_type" => "allproducts"}))
+        classVariables(Search.create({"page" => params[:page], :action_type => "allproducts"}))
         render 'products'
       else
         render 'compare'

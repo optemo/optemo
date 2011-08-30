@@ -251,17 +251,6 @@ module CompareHelper
     res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
   	res
 	end
-    
-  def navigator_bar_bottom 
-    res = "<div id='navigator_bar_bottom'><div id='navtitle'>#{Session.search.products_size.to_s + ' ' + navtitle}</div>#{link_to(t(Session.product_type+'.compare')+' (0) ', '#', {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn_bottom'})}</div><div style='clear:both;'></div>"
-  
-    if @s.search.products_size > SearchProduct.per_page
-        products = @s.search.paginated_products
-        res << "<div class='pagination-container'><span class='pagi-info'>#{page_entries_info(products)}</span>"
-        res << "<b>Page:</b>#{will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :outer_window => -1})}<a href='#' id='back-to-top-bottom'>"+t("products.backtotop")+"</a></div>"
-      end
-    res
-  end
    
 	def adjustingfilters
 	  new_filters = []

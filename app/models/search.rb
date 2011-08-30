@@ -297,13 +297,13 @@ class Search < ActiveRecord::Base
   def initialize(p={})
     super({})
     #Set parent id
-    self.parent_id = CGI.unescape(p["parent"]).unpack("m")[0].to_i unless p["parent"].blank?
-    unless p["action_type"] == "allproducts" || p["action_type"] == "landing" #Exception for initial clusters
+    self.parent_id = CGI.unescape(p[:parent]).unpack("m")[0].to_i unless p[:parent].blank?
+    unless p[:action_type] == "allproducts" || p[:action_type] == "landing" #Exception for initial clusters
       old_search = Search.find_by_id(self.parent_id)
     end
     # If there is a sort method to keep from last time, move it across
     self.sortby = old_search[:sortby] if old_search && old_search[:sortby]
-    case p["action_type"]
+    case p[:action_type]
     when "allproducts"
       #Initial load of the homepage
       self.initial = false
@@ -336,7 +336,7 @@ class Search < ActiveRecord::Base
       duplicateFeatures(old_search)
     when "filter"
       #product filtering has been done through keyword search of attribute filters
-      createFeatures(p)
+      createFeatures(p[:filters])
       self.initial = false
     else
       #Error
