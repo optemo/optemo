@@ -441,9 +441,6 @@ div#division {
 #optemo_embedder .categorical .feature, #optemo_embedder .list_item {
   padding-bottom: 1px;
 }
-#optemo_embedder #IE.ie6 .categorical {
-    height: 150px;
-}
 #optemo_embedder #IE .categorical {
   height: expression( this.scrollHeight > 150 ? "150px" : "auto" ); /* sets max-height for IE */
 }
