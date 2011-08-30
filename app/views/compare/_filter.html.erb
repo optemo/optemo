@@ -1,12 +1,11 @@
 <div class="y_heading">
   <p class="narrow_text">
     <%= image_tag "refine_your_search#{fr?}.gif" %>
-<br />
-  <%= link_to t('products.compare.reset'), "/", :class => "reset regular_reset", :rel =>
+    <%= link_to t('products.compare.reset'), "/", :class => "reset regular_reset", :rel =>
   "nofollow", :title => t('products.compare.resetdesc')%>
   </p>
 </div>
-<%= form_tag("/compare", :id => 'filter_form') do %>
+<form id="filter_form" method="get" action="/compare">
 <% @s.filters_order.each_index do |index| %>
 <% @s.filters_order[index].each_pair do |feat, feat_type| %>
   <% if feat_type == 'cat' %>
@@ -113,7 +112,7 @@
   <% end %>
   <% end %>
 <% end %>
-<% end # form_tag %>
+</form>
 <div class="y_bottom">
   <%= link_to t('products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :style => "float:right;", :title => t('products.compare.resetdesc') %>
 </div>
