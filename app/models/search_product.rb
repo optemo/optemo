@@ -14,8 +14,7 @@ class SearchProduct < ActiveRecord::Base
     
     def fq2_landing(s) 
           mybins = [Userdatabin.new({:name => 'featured', :value => 1})]
-          res = search_id_q.create_join([],mybins).bins(mybins)     
-          res.flatten
+          search_id_q.create_join([],mybins).bins(mybins).sort{|a,b| BinSpec.find_by_product_id_and_name(a.product_id, "featured").id <=> BinSpec.find_by_product_id_and_name(b.product_id, "featured").id}     
       end
       
     def fq_paginated_products

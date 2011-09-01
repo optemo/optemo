@@ -192,12 +192,12 @@ module CompareHelper
     res = ""
     res << '<div class="rowdiv">'
     prods = @s.search.products_landing(type)
-    num = prods.size
+    num = prods.size-1
     # now the new mockup is only with featured products
     res << "<div class='title_landing_type'>" + I18n.t(Session.product_type + ".featuredproducts") + "</div>"
     res << "<div style='clear:both;width: 0;height: 0;'><!--ie6/7 title disappear issue --></div>"
     for i in 0...num
-        res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i].product_id), :landing => true})
+        res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i+1].product_id), :landing => true})
         if (i%3) == 2
             if i != (num -1)
                 res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto;"></div>'
