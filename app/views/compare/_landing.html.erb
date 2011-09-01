@@ -4,7 +4,8 @@
 	<div id='navigator_bar_top'>
 	    <div id='navtitle'><%= Session.search.products_size.to_s + ' ' + raw(navtitle) %></div><%= link_to image_tag("see_all_white#{fr?}.gif"),root_path, :class=>"seeall" %></div>
 <div id="hero">
-    <% hero = Product.find_by_id(Maybe(BinSpec.find_by_name_and_product_type('featured',Session.product_type)).product_id) || Product.find_by_product_type(Session.product_type) %>
+    <%# The hero product is the first featured product in the db %>
+    <% hero = Product.find_by_id(Maybe(Session.search.products_landing.first).product_id) || Product.find_by_product_type(Session.product_type) %>
     <%# Cache specs local to the view so as to reduce SQL calls / cache hits / object instantiations %>
     <% cont_specs = ContSpec.cache_all(hero.id); cat_specs = CatSpec.cache_all(hero.id); text_spec = TextSpec.cacheone(hero.id, "productUrl#{fr?}") %>
     <%= image_tag(cat_specs["imglurl"], :class => "productimg", :alt => small_title(hero), :title => small_title(hero), :'data-id' => hero.id, :'data-sku' => hero.sku) %>

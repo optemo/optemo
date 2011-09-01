@@ -191,7 +191,7 @@ module CompareHelper
   def landing_main_boxes(type)
     res = ""
     res << '<div class="rowdiv">'
-    prods = @s.search.products_landing(type)
+    prods = @s.search.products_landing
     num = prods.size-1
     # now the new mockup is only with featured products
     res << "<div class='title_landing_type'>" + I18n.t(Session.product_type + ".featuredproducts") + "</div>"

@@ -11,11 +11,6 @@ class SearchProduct < ActiveRecord::Base
       mybins = Session.search.userdatabins
       search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins)
     end
-    
-    def fq2_landing(s) 
-          mybins = [Userdatabin.new({:name => 'featured', :value => 1})]
-          search_id_q.create_join([],mybins).bins(mybins).sort{|a,b| BinSpec.find_by_product_id_and_name(a.product_id, "featured").id <=> BinSpec.find_by_product_id_and_name(b.product_id, "featured").id}     
-      end
       
     def fq_paginated_products
       mycats = Session.search.userdatacats.group_by{|x|x.name}.values

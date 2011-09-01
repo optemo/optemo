@@ -188,8 +188,10 @@ class Search < ActiveRecord::Base
     @products ||= SearchProduct.fq2
   end
   
-  def products_landing(type)
-    SearchProduct.fq2_landing(type)
+  def products_landing
+    @landing_products ||= CachingMemcached.cache_lookup("FeaturedProducts(#{Session.product_type}") do
+      BinSpec.find_all_by_name_and_product_type("featured",Session.product_type)
+    end
   end
   
   def sim_products
