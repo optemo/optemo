@@ -470,6 +470,12 @@ optemo_module = (function (my){
             if(k.match(/(^superfluous)/) || v == "") {
                 delete selections[k];
             }
+            /* Look for weird $ error */
+            if(v.match(/ctl00\$hidNotEnoughProductsMessage|ctl00\$hidSelectedProductC
+            ount|ctl00\$hidTooManyProductsMessage/)) {
+              delete selections[k];
+              selections["XXXDBG"] = "MSIE-"+$.browser.msie+"VERSION-"+$.browser.version;
+            }
         });
         my.ajaxcall("/compare/create", selections);
         return false;
