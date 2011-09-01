@@ -11,7 +11,7 @@ require 'inline'
     feats = []
     prods = Session.search.products
     Session.features["filter"].each do |f| 
-      next if f.feature_type != "continuous" #Only draw distributions for continuous features
+      next if f.feature_type != "Continuous" #Only draw distributions for continuous features
       data = prods.map{|p|p.instance_variable_get("@#{f.name}")}.compact
       next if data.empty? #There's no data available for this feature
       min,max = ContSpec.allMinMax(f)

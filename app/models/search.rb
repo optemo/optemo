@@ -116,11 +116,11 @@ class Search < ActiveRecord::Base
 
   def groupings
     return [] if groupby.nil? 
-    if Session.currrent.features["filter"].select{|f|f.feature_type == "categorical"}.index(groupby) 
+    if Session.currrent.features["filter"].select{|f|f.feature_type == "Categorical"}.index(groupby) 
       # It's in the categorical array
       specs = products.zip CatSpec.cachemany(products, groupby)
       grouping = specs.group_by{|spec|spec[1]}.values.sort{|a,b| b.length <=> a.length}
-    elsif Session.currrent.features["filter"].select{|f|f.feature_type == "continuous"}.index(groupby) 
+    elsif Session.currrent.features["filter"].select{|f|f.feature_type == "Continuous"}.index(groupby) 
       #The chosen feature is continuous
       specs = products.zip ContSpec.by_feat(groupby).sort
       # [[id, low], [id, higher], ... [id, highest]]

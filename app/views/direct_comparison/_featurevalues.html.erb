@@ -1,4 +1,4 @@
-<% if type == "continuous" %>
+<% if type == "Continuous" %>
 <div class="cell <%= gray ? "graybg" : "whitebg" %><%=' spec_column_' + column_number.to_s %>">
 	<% if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>
 		<!-- If the interesting feature should be displayed then display -->
@@ -15,7 +15,7 @@
 		</b>		
 	<% end%>
 </div>
-<% elsif type == "categorical" %>
+<% elsif type == "Categorical" %>
 <div class="cell <%= gray ? "graybg" : "whitebg" %><%=' spec_column_' + column_number.to_s %>">
 
   <span <%= "style='font-weight: bold;'" if numberofproducts > 1 && (@bestvalue[feat] != nil && (@bestvalue[feat] == product.id || IsPresentAndUniqueInCSV(product.id, @bestvalue[feat]))) %>>

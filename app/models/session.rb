@@ -50,7 +50,7 @@ class Session
     self.piwikSiteId = p_url.piwik_id || 10 # This is a catch-all for testing sites.
   end
   
-  def set_features(categories)
+  def self.set_features(categories)
     #if an array of categories is given, dynamic features which apply only to those categories are shown
     dynamically_excluded = []
     # initialize features
@@ -60,13 +60,13 @@ class Session
       subcategories.empty? || #We don't store subcategories for features which are always used
       subcategories.any?{|e| categories.include? e} ||
       (dynamically_excluded << f.name && false) #If a feature is not selected, we need to note this
-    end.group_by(:used_for)
+    end.group_by(&:used_for)
     # Some filters of last search need to be removed when dynamic filters removed
     dynamically_excluded.each do |f|
       selection = case f.feature_type
-        when "continuous" then search.userdataconts
-        when "categorical" then search.userdatacats
-        when "binary" then search.userdatabins
+        when "Continuous" then self.search.userdataconts
+        when "Categorical" then self.search.userdatacats
+        when "Binary" then self.search.userdatabins
       end
       Maybe(selection.select{|ud|ud.name == f.name}.first).destroy
     end
