@@ -13,16 +13,15 @@
       <div class='label-advanced-title' data-position="<%= index %>">
         <%= t("#{Session.product_type}.specs.AdvancedSearch.name") %>
       </div>
-    <% if f[:feature_type] != Session::FEATURE_TYPES[:cont] && f[:name] != 'color' %>
+    <% if f.feature_type != "continuous" && f.name != 'color' %>
     </div>
     <% end %>
   <% end %><!-- End of group label -->
 <!-- Filter items -->
-  <% if f[:used_for] != 'heading' %>
-    <% case f[:feature_type] %>
-    <% when Session::FEATURE_TYPES[:cat] %>
-      <% chosen_cats = chosencats(f[:name]) %>
-      <% if f[:name] == "color" # TODO: should not be hard code here%>
+    <% case f.feature_type %>
+    <% when "categorical" %>
+      <% chosen_cats = chosencats(f.name) %>
+      <% if f.name == "color" # TODO: should not be hard code here%>
         <div style="margin-right: -4px;margin-top: 4px;">
           <% color_counts = SearchProduct.cat_counts("color",true) %>
           <% %w(Red Orange Yellow Green Blue Purple Pink White Silver Brown Black).each do |color| %>
@@ -33,42 +32,42 @@
         </div>
       <% else %>
         <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
-        <% optionlist = SearchProduct.cat_counts(f[:name],true,true).to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? -a[1]-1000000 : -a[1]) <=> (chosen_cats.include?(b[0]) ? -b[1]-1000000 : -b[1])} %>
+        <% optionlist = SearchProduct.cat_counts(f.name,true,true).to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? -a[1]-1000000 : -a[1]) <=> (chosen_cats.include?(b[0]) ? -b[1]-1000000 : -b[1])} %>
         <div class="categorical">
           <% optionlist.each do |k,available_count| %>
-            <% if f[:name]=='category' && missing_spec_name_translation?(k) # Do not display the category filter, when it has no translation %>
+            <% if f.name =='category' && missing_spec_name_translation?(k) # Do not display the category filter, when it has no translation %>
               <% next %>
             <% end %>
             <% checked = chosen_cats.include?(k) %>
             <p class="list_item hanging_indent <%=raw ' disabled' if available_count == 0 %>" <%=raw "style='font-weight:bold;'" if checked %> >
-              <%= check_box_tag "superfluous[#{k}]", "1", checked, :disabled => (available_count == 0) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :'data-feat' => f[:name], :'data-opt' => k %>
+              <%= check_box_tag "superfluous[#{k}]", "1", checked, :disabled => (available_count == 0) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :'data-feat' => f.name, :'data-opt' => k %>
               <%= (available_count == 0) ?  t("#{Session.product_type}.specs.#{k}.name",:default=>k) : link_to(t("#{Session.product_type}.specs.#{k}.name", :default=>k), "#", :class => "binary_filter_text") %>
               <span class="av_count"><%= "(#{available_count})" unless checked %></span>
             </p>
           <% end %>
         </div>
       <% end %>
-      <%= hidden_field_tag "myfilter[#{f[:name]}]", chosen_cats.join("*") %>
-    <% when Session::FEATURE_TYPES[:cont] %>
+      <%= hidden_field_tag "myfilter[#{f.name}]", chosen_cats.join("*") %>
+    <% when "continuous" %>
       <%= render :partial => 'slider',
-          :locals => {:name => t('products.' + f[:name]),
+          :locals => {:name => t('products.' + f.name),
             :distribution_data => distribution_data,
-            :feat => f[:name],
-            :money_formatting => f[:name] == 'saleprice',
-            :overall_min => ContSpec.allMinMax(f[:name])[0],
-            :overall_max => ContSpec.allMinMax(f[:name])[1]} %>
-    <% when Session::FEATURE_TYPES[:bin] %>
-      <% dobj = @s.search.userdatabins.select{|udb| udb.name == f[:name]}.first %>
+            :feat => f.name,
+            :money_formatting => f.name == 'saleprice',
+            :overall_min => ContSpec.allMinMax(f.name)[0],
+            :overall_max => ContSpec.allMinMax(f.name)[1]} %>
+    <% when "binary" %>
+      <% dobj = @s.search.userdatabins.select{|udb| udb.name == f.name}.first %>
       <% unchecked = dobj.nil? || dobj.value == false %>
-      <% available_count = SearchProduct.bin_count(f[:name]) %>
+      <% available_count = SearchProduct.bin_count(f.name) %>
       <p class="hanging_indent feature<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
-        <%= check_box_tag "myfilter[#{f[:name]}]", "1", !unchecked ,:disabled => (available_count == 0) ? true : false, :class => 'binary_filter', :'data-opt' => f[:name] %>
-        <%= (available_count == 0) ? t("#{Session.product_type}.specs.#{f[:name]}.name") : link_to( t("#{Session.product_type}.specs.#{f[:name]}.name"), "#", :class => "binary_filter_text") %>
+        <%= check_box_tag "myfilter[#{f.name}]", "1", !unchecked ,:disabled => (available_count == 0) ? true : false, :class => 'binary_filter', :'data-opt' => f.name %>
+        <%= (available_count == 0) ? t("#{Session.product_type}.specs.#{f.name}.name") : link_to( t("#{Session.product_type}.specs.#{f.name}.name"), "#", :class => "binary_filter_text") %>
         <span class="av_count"><%= "(#{available_count})" if unchecked %></span>
       </p>
     <% end %>
-  <% end %><!-- end of Filter Items label -->
-  <% if f[:feature_type] == Session::FEATURE_TYPES[:cont] || f[:name]=='color' %><!-- The color and sliders are enclosed in feature block -->
+<!-- end of Filter Items label -->
+  <% if f.product_type == "continuous" || f.name =='color' %><!-- The color and sliders are enclosed in feature block -->
     </div>
     <div style="clear:both; height: 0"></div>
   <% end %>

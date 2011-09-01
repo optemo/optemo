@@ -354,11 +354,11 @@ def self.set_cluster_weights(features)
   end
     
 def self.factorize_cont_data(products)
-  Session.current.features["cluster"].map{|f| products.map{|p| p.instance_variable_get("@#{f.name}_factor")}}.transpose
+  Session.features["cluster"].map{|f| products.map{|p| p.instance_variable_get("@#{f.name}_factor")}}.transpose
 end
   
   def self.factorize_cont(product)
-    Session.current.features["cluster"].map{|f| product.instance_variable_get("@#{f.name}_factor")}
+    Session.features["cluster"].map{|f| product.instance_variable_get("@#{f.name}_factor")}
   end
   
   def self.betterproducts(curr_set)
@@ -378,7 +378,7 @@ end
   def self.extendedCluster(expected_num,products)
     better_set = Kmeans.betterproducts(products)
     
-    dim = Session.current.features["cluster"].size
+    dim = Session.features["cluster"].size
     weights = [1.0/dim]*dim
     
     dists = better_set.map do |better| 

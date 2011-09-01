@@ -48,7 +48,7 @@
   </div>
 	<% gray = false %>
   
-  <% Session.current.features['show'].each do |feature| %>
+  <% Session.features['show'].each do |feature| %>
 		<%#needs to be more efficient especially if we want to have unlimited number of products in the compare box%>	
 		<% if feature.feature_type != "binary" || !@products.map{|product| spec_hash[product.id][feature.name]}.compact.empty? %> 
 			<div class="<%= t("#{Session.product_type}.specs.#{feature.name}.name", :default=>feature.name).length < 20 ? "compare_row" : "double_height_compare_row" %>">

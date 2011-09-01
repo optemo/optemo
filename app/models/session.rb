@@ -10,8 +10,6 @@ class Session
   cattr_accessor :rails_category_id # This is passed in from ajaxsend and the logic for determining the category ID is from the javascript side rather than from the Rails side. Useful for embedding.
   cattr_accessor :features # Gets out the features which include utility, comparison, filter, cluster, sortby, show
 
-  FEATURE_TYPES = {:cont=>'Continuous', :bin=>'Binary', :cat=>'Categorical', :text=>'Text'}
-
   def initialize (cat_id = nil, request_url = nil)
     # This parameter controls whether the interface features drag-and-drop comparison or not.
     self.dragAndDropEnabled = true
