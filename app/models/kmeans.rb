@@ -223,12 +223,13 @@ end
 
 def self.set_cluster_weights(features)
   if Session.search.sortby.nil? || Session.search.sortby == "relevance"
-    weights = features.map{|f| Session.select_feature_values('cluster')[f]}
+    weights = features.map{|f| f.value}
     weights_sum = weights.sum.to_f
     weights.map{|w| w/weights_sum}
   else
     weights = [0.001/(features.size-1)]*features.size
-    weights[Session.select_feature_values("cluster", Session::FEATURE_TYPES[:cont]).index(Session.search.sortby)] = 0.999
+    sorted_feature = features.select{|f|f.name == Session.search.sortby}.first
+    weights[features.index(sorted_feature)] = 0.999
     weights
   end
   
@@ -353,11 +354,11 @@ def self.set_cluster_weights(features)
   end
     
 def self.factorize_cont_data(products)
-  Maybe(Session.select_feature_names("cluster", Session::FEATURE_TYPES[:cont])).map{|f| products.map{|p| p.instance_variable_get("@#{f}_factor")}}.transpose
+  Session.current.features["cluster"].map{|f| products.map{|p| p.instance_variable_get("@#{f.name}_factor")}}.transpose
 end
   
   def self.factorize_cont(product)
-    Maybe(Session.select_feature_names("cluster", Session::FEATURE_TYPES[:cont])).map{|f| product.instance_variable_get("@#{f}_factor")}
+    Session.current.features["cluster"].map{|f| product.instance_variable_get("@#{f.name}_factor")}
   end
   
   def self.betterproducts(curr_set)
@@ -377,7 +378,7 @@ end
   def self.extendedCluster(expected_num,products)
     better_set = Kmeans.betterproducts(products)
     
-    dim = Maybe(Session.select_feature_names("cluster", Session::FEATURE_TYPES[:cont])).size
+    dim = Session.current.features["cluster"].size
     weights = [1.0/dim]*dim
     
     dists = better_set.map do |better| 

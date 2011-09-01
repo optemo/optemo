@@ -50,20 +50,28 @@ class Session
     end
     p_url ||= p_type.urls.first
     self.piwikSiteId = p_url.piwik_id || 10 # This is a catch-all for testing sites.
-
+  end
+  
+  def set_features(categories)
+    #if an array of categories is given, dynamic features which apply only to those categories are shown
+    dynamically_excluded = []
     # initialize features
-    facets = Facet.find_all_by_product_type_id_and_active(product_type_id, true, :include=>:dynamic_facets)
-
-    # Gets out the features which include utility, comparison, filter, cluster, sortby, show
-
-    facets.each do |f|
-      temp = {:name=>f.name, :feature_type=>f.feature_type, :value=>f.value, :style=>f.style}
-      unless f.dynamic_facets.nil? || f.dynamic_facets.empty?
-        temp.merge!({:categories=>f.dynamic_facets.map{|x| x.category}})
+    self.features = Facet.find_all_by_product_type_id_and_active(product_type_id, true, :include=>:dynamic_facets).select do |f|
+      #These are the subcategories for which this feature is only used for
+      subcategories = f.dynamic_facets.map{|x|x.category}
+      subcategories.empty? || #We don't store subcategories for features which are always used
+      subcategories.any?{|e| categories.include? e} ||
+      (dynamically_excluded << f.name && false) #If a feature is not selected, we need to note this
+    end.group_by(:used_for)
+    # Some filters of last search need to be removed when dynamic filters removed
+    dynamically_excluded.each do |f|
+      selection = case f.feature_type
+        when "continuous" then search.userdataconts
+        when "categorical" then search.userdatacats
+        when "binary" then search.userdatabins
       end
-      self.features[f.used_for] << temp
+      Maybe(selection.select{|ud|ud.name == f.name}.first).destroy
     end
-
   end
 
   def self.searches
@@ -79,63 +87,6 @@ class Session
     # esc_param is either nil (if it doesn't exist) or "" if it does. The reason is that the URL ends with ?_escaped_fragment_= (the value is empty).
     # For more information on esc_param and its purpose, see the file "lib/absolute_url_enabler.rb" 
     !esc_param.nil? || (!str.nil? && str.match(/Google|msnbot|Rambler|Yahoo|AbachoBOT|accoona|AcioRobot|ASPSeek|CocoCrawler|Dumbot|FAST-WebCrawler|GeonaBot|Gigabot|Lycos|MSRBOT|Scooter|AltaVista|IDBot|eStyle|ScrubbyBloglines subscriber|Dumbot|Sosoimagespider|QihooBot|FAST-WebCrawler|Superdownloads Spiderman|LinkWalker|msnbot|ASPSeek|WebAlta Crawler|Lycos|FeedFetcher-Google|Yahoo|YoudaoBot|AdsBot-Google|Googlebot|Scooter|Gigabot|Charlotte|eStyle|AcioRobot|GeonaBot|msnbot-media|Baidu|CocoCrawler|Google|Charlotte t|Yahoo! Slurp China|Sogou web spider|YodaoBot|MSRBOT|AbachoBOT|Sogou head spider|AltaVista|IDBot|Sosospider|Yahoo! Slurp|Java VM|DotBot|LiteFinder|Yeti|Rambler|Scrubby|Baiduspider|accoona|Java/i))
-  end
-  # Generic features after catogories used for search have been defined. This is called in function classVariables of compare controller
-
-  def self.set_dynamic_features(category_ids)
-    deleted_filters = []
-    self.features.each_pair do |k, v|
-      # Sort feature by its value
-      v.sort_by!{|f| f[:value].abs}
-      # Set dynamic features. Remove the dynamic filters which will not used 
-      v.reject!{|x| !x[:categories].nil? && !(x[:categories].any?{|e| category_ids.include? e}) && deleted_filters << x[:name]} 
-    end
-    # Some filters of last search need to be removed when dynamic filters removed
-
-    unless deleted_filters.empty?
-      Maybe(search).resign_userdatas(deleted_filters)
-    end
-
-  end
-
-
-  # return specific features collection
-  def self.select_features(used_for, feature_type = nil)
-    facets = features[used_for]
-    unless facets.nil? || feature_type.nil? 
-      facets.reject!{|f| f[:feature_type] != feature_type}
-    end
-    facets
-  end
-
-  
-  # return specific features name collection
-  def self.select_feature_names(used_for, feature_type = nil)
-    facets = features[used_for]
-    unless facets.nil? || feature_type.nil? 
-      facets.reject!{|f| f[:feature_type] != feature_type}
-    end
-    Maybe(facets).map{|f| f[:name]}
-  end
-  
-  # return specific feature=>value hash
-  def self.select_feature_values(used_for, feature_type = nil)
-    facets = features[used_for]
-    unless facets.nil? || feature_type.nil? 
-      facets.reject!{|f| f[:feature_type] != feature_type}
-    end
-    fh = {}
-    Maybe(facets).each{|x| fh[x[:name]] = x[:value]}
-    fh
-  end
-
-  # return specific type of features names colloection 
-  def self.select_feature_names_by_type(feature_type)
-    names = []
-    features.each_pair do |k,v|
-      v.each{|x| names << x[:name] if x[:feature_type] == feature_type }
-    end
-    names
   end
 
 end

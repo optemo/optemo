@@ -27,16 +27,15 @@ private
     if @products.length > 1
       contspecs = {}
       @products.each {|p| contspecs[p.id] = ContSpec.cache_all(p.id)}
-      show_conts = @s.select_feature_values("show", @s::FEATURE_TYPES[:cont])
-      Maybe(show_conts).keys.each do |feature|
+      @s.current.features["show"].each do |feature|
         # For every feature in ContinuousFeatures
         # For every product in @products
         # Find the min value and assign @bestvalue[feature]=product-id
         bestval = -1000000000
         bestproducts = []
         @products.each do |p|
-          next if contspecs[p.id][feature].nil?
-          featval = contspecs[p.id][feature]*(show_conts[feature] < 0 ? -1 : 1)
+          next if contspecs[p.id][feature.name].nil?
+          featval = contspecs[p.id][feature.name]*(feature.value < 0 ? -1 : 1)
           if featval > bestval
             bestproducts = [p.id]
             bestval = featval
@@ -44,7 +43,7 @@ private
             bestproducts << p.id
           end
         end
-        bestvalue[feature] = bestproducts.join(",")
+        bestvalue[feature.name] = bestproducts.join(",")
       end
     end
     bestvalue

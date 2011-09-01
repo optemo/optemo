@@ -31,43 +31,14 @@ class Product < ActiveRecord::Base
     end
   end
   
-  def self.filterspecs
-    st = []
-    Maybe(Session.select_feature_names("filter", Session::FEATURE_TYPES[:cont])).each do |f| 
-      data = Session.search.products.mapfeat(f).compact
-      raise ValidationError, "Can't find data for feature: #{f}" if data.empty?
-      st << data
-    end
-    st
-  end
-  
-  #This function is deprecated and would need to be updated if used
-  def self.specs(p_ids = nil)
-    st = []
-    Maybe(Session.select_feature_names("cluster", Session::FEATURE_TYPES[:cont])).each{|f| st << ContSpec.by_feat(f)}
-   # Session.binary["cluster"].each{|f| st<< self.to_bin_array(CatSpec.all(f))}
-   #  Session.categorical["cluster"].each{|f| st<< self.to_cat_array(CatSpec.all(f))}  
-    #Check for 1 spec per product
-    raise ValidationError unless Session.search.products_size == st.first.length
-    #Check for no nil values
-    raise ValidationError unless st.first.size == st.first.compact.size
-    raise ValidationError unless st.first.size > 0
-    #Check that every spec has the same number of features
-    first_size = st.first.compact.size
-    st
-  end
-  
-  
-  
   scope :instock, :conditions => {:instock => true}
   scope :valid, lambda {
-    {:conditions => (Maybe(Session.select_feature_names("filter", Session::FEATURE_TYPES[:cont])).map{|f|"id in (select product_id from cont_specs where #{Session.minimum[f] ? "value > " + Session.minimum[f].to_s : "value > 0"}#{" and value < " + Session.maximum[f].to_s if Session.maximum[f]} and name = '#{f}' and product_type = '#{Session.product_type}')"}+\
-    Maybe(Session.select_feature_names("filter", Session::FEATURE_TYPES[:cat])).map{|f|"id in (select product_id from cat_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{Session.product_type}')"}).join(" and ")}
+    {:conditions => (Session.current.features["filter"].select{|f|f.feature_type == "continuous"}).map{|f|"id in (select product_id from cont_specs where #{Session.minimum[f] ? "value > " + Session.minimum[f].to_s : "value > 0"}#{" and value < " + Session.maximum[f].to_s if Session.maximum[f]} and name = '#{f}' and product_type = '#{Session.product_type}')"}+\
+    Session.current.features["filter"].select{|f|f.feature_type == "categorical"}.map{|f|"id in (select product_id from cat_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{Session.product_type}')"}).join(" and ")}
   }
   scope :current_type, lambda {
     {:conditions => {:product_type => Session.product_type}}
   }
-  #Maybe(Session.select_feature_names("filter", Session::FEATURE_TYPES[:bin])).map{|f|"id in (select product_id from bin_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{Session.product_type}')"}+\
     
   def brand
     if I18n.locale == :fr

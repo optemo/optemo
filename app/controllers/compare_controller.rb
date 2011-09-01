@@ -140,7 +140,7 @@ class CompareController < ApplicationController
     @s = Session
     @jsonp_version = true if params[:embedding] # request.subdomains.first == "embed" || request.subdomains.first == "sandbox"
     @s.search = search
-    @s.set_dynamic_features(search.userdatacats.reject{|d| d.name != 'category'}.map{|d| d.value})
+    @s.set_features(search.userdatacats.select{|d| d.name == 'category'}.map{|d| d.value})
   end
   
   def correct_render
@@ -160,12 +160,7 @@ class CompareController < ApplicationController
        # end      
       end
     else
-      if Session.mobileView
-        classVariables(Search.create({"page" => params[:page], :action_type => "allproducts"}))
-        render 'products'
-      else
-        render 'compare'
-      end
+      render 'compare'
     end
   end
 end

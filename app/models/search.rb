@@ -35,104 +35,6 @@ class Search < ActiveRecord::Base
     end  
     indic
   end
-  
-  def relativeDescriptions
-    return if clusters.empty?
-    @reldescs ||= []
-    if @reldescs.empty?
-      feats = {}
-      cont_filters = Session.select_feature_names("filter", Session::FEATURE_TYPES[:cont])
-      Maybe(cont_filters).each do |f|
-        norm = ContSpec.allMinMax(f)[1] - ContSpec.allMinMax(f)[0]
-        norm = 1 if norm == 0
-        feats[f] = clusters.map{ |c| c.representative}.compact.map {|c| c[f].to_f/norm } 
-      end
-      cluster_count.times do |i|
-        dist = {}
-        Maybe(cont_filters).each do |f|
-          if feats[f].min == feats[f][i]
-            #This is the lowest feature
-            distance = feats[f].sort[1] - feats[f][i]
-            dist[f] = distance unless distance == 0 && feats[f].sort[2] == feats[f][i] #Remove ties
-          elsif feats[f].max == feats[f][i]
-            #This is the highest feature
-            distance = feats[f][i] - feats[f].sort[-2]
-            dist[f] = distance unless distance == 0 && feats[f].sort[-3] == feats[f][i] #Remove ties
-          #elsif feats[f].sort[4] == feats[f][i]
-          #  #This is an average feature
-          #  dist[f] = ([feats[f].sort[4]-feats[f].sort[3],feats[f].sort[5]-feats[f].sort[4]].min) - 1
-          #  dist[f] = distance unless distance == -1 #Remove ties
-          end
-        end if cluster_count > 1
-        n = dist.count
-        d = []
-        dist.sort{|a,b| b[1] <=> a[1]}[0..1].each do |f,v|
-          dir = feats[f].min == feats[f][i] ? "lower" : "higher"
-          #dir = feats[f].min == feats[f][i] ? "lower" : feats[f].max == feats[f][i] ? "higher" : "avg"
-          d << dir+f
-        end
-        #Add binary labels
-        #d.unshift "Waterproof" if clusters[i].waterproof && layer == 1
-        #d.unshift "SLR" if clusters[i].slr && layer == 1
-        if d.empty?
-          @reldescs << ["avg"]
-        else
-          @reldescs << d
-        end
-        #@descs[-1] = @descs.last + " (#{n})"
-      end
-    end
-    @reldescs
-  end
-  
-  def boostexterClusterDescriptions
-    @returned_taglines ||= BoostexterRule.clusterLabels(clusters)
-  end
-  
-  def clusterDescription(clusterNumber)
-    return if clusters.empty?
-    clusterDs = Array.new 
-    des = []
-    slr=0
-    Maybe(Session.select_feature_names("filter", Session::FEATURE_TYPES[:bin])).each do |f|
-        if clusters[clusterNumber].indicator(f)
-          (f=='slr' && indicator("slr"))? slr = 1 : slr =0
-          des<< f if $config["DescFeatures"].include?(f) 
-        end
-      end
-    
-    Maybe(Session.select_feature_names("desc", Session::FEATURE_TYPES[:cont])).each do |f|      
-        if !(f == "opticalzoom" && slr == 1)
-              cRanges = clusters[clusterNumber].ranges(f)
-              if (cRanges[1] < ContSpec.allLow(f))
-                 clusterDs << {'desc' => "low_"+f, 'stat' => 0}  
-              elsif (cRanges[0] > ContSpec.allHigh(f))
-                 clusterDs <<  {'desc' => "high_"+f, 'stat' => 2}  
-              elsif ((cRanges[0] >= ContSpec.allLow(f)) && (cRanges[1] <= ContSpec.allHigh(f))) 
-                  clusterDs <<  {'desc' => "avg_"+f, 'stat' => 1}
-              end 
-        end   
-      end     
-      
-    clusterDs.sort!{|a,b| b['stat'] <=> a['stat']}
-    clusterDs = clusterDs[0..1] if clusterDs.size > 2
-    clusterDs[0] = {'desc' => "average", 'stat' => 1} if clusterDs.blank?
-    des << clusterDs.map{|d| d['desc']};
-  end
-  
-  def searchDescription
-    des = []
-    Maybe(Session.select_feature_names("desc", Session::FEATURE_TYPES[:cont])).each do |f|      
-      searchR = ranges(f)
-      return ['Empty'] if searchR[0].nil? || searchR[1].nil?
-      if (searchR[1] <= ContSpec.allLow(f))
-           des <<  "low_#{f}"
-      elsif (searchR[0] >= ContSpec.allHigh(f))
-           des <<  "high_#{f}"
-      end
-    end  
-    des[0..3]
-  end
     
   def minimum(feature)
     feature = feature + "_min"
@@ -214,11 +116,11 @@ class Search < ActiveRecord::Base
 
   def groupings
     return [] if groupby.nil? 
-    if Session.select_feature_names_by_type(Session::FEATURE_TYPES[:cat]).index(groupby) 
+    if Session.currrent.features["filter"].select{|f|f.feature_type == "categorical"}.index(groupby) 
       # It's in the categorical array
       specs = products.zip CatSpec.cachemany(products, groupby)
       grouping = specs.group_by{|spec|spec[1]}.values.sort{|a,b| b.length <=> a.length}
-    elsif Session.select_feature_names_by_type(Session::FEATURE_TYPES[:cont]).index(groupby) 
+    elsif Session.currrent.features["filter"].select{|f|f.feature_type == "continuous"}.index(groupby) 
       #The chosen feature is continuous
       specs = products.zip ContSpec.by_feat(groupby).sort
       # [[id, low], [id, higher], ... [id, highest]]
@@ -392,16 +294,17 @@ class Search < ActiveRecord::Base
         if (feat_range[0] < v.to_f && feat_range[1] > v.to_f) || (feat_range[0] < p[max].to_f && feat_range[1] > p[max].to_f)
           @userdataconts << Userdatacont.new({:name => fname, :min => v, :max => p[max]})
         end
-      elsif Maybe(Session.select_feature_names_by_type(Session::FEATURE_TYPES[:bin])).index(k)
+      elsif k.index(/brand|category/)
+        #Categorical Features
+        v.split("*").each do |cat|
+          @userdatacats << Userdatacat.new({:name => k, :value => cat})
+        end
+      #TODO XXX Filter types should be passed by the form
+      elsif true
         #Binary Features
         #Handle false booleans
         if v != '0'
           @userdatabins << Userdatabin.new({:name => k, :value => v})
-        end
-      elsif Maybe(Session.select_feature_names_by_type(Session::FEATURE_TYPES[:cat])).index(k)
-        #Categorical Features
-        v.split("*").each do |cat|
-          @userdatacats << Userdatacat.new({:name => k, :value => cat})
         end
       elsif k == "search"
         #Keyword Search
