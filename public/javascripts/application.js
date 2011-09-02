@@ -471,7 +471,7 @@ optemo_module = (function (my){
                 delete selections[k];
             }
             /* Look for weird $ error */
-            if(v.match(/(ctl00[$]hidNotEnoughProductsMessage|ctl00[$]hidSelectedProductCount|ctl00[$]hidTooManyProductsMessage)/)) {
+            if(v.match(/(ctl00[$]hidNotEnoughProductsMessage|ctl00[$]hidSelectedProductCount|ctl00[$]hidTooManyProductsMessage|ctl00[$]hidSelectedProductIds)/)) {
               delete selections[k];
               selections["XXXDBG"] = "MSIE-"+$.browser.msie+"VERSION-"+$.browser.version;
             }
