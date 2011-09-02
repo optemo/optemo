@@ -178,7 +178,7 @@ class  Kmeans
   
   def self.compute(number_clusters,products)
   
-      cluster_weights = self.set_cluster_weights(Session.continuous["cluster"])
+      cluster_weights = self.set_cluster_weights(Session.features["cluster"])
       s = products.size
       if (s<=number_clusters)
           utilitylist = Kmeans.utility(products, "gorder")
@@ -207,30 +207,29 @@ class  Kmeans
         labels.compact!; products.compact!    
     end
     sorted_products
-  end    
-end
+  end 
 
-
-def self.init(number_clusters, products, weights)
-  specs = self.factorize_cont_data(products)
-  centers = [specs[(specs.size-1)/2]]
-  for j in (0...number_clusters-1)
-    actual_dists = centers.map{|c| specs.map{|s| self.distance(c,s, weights)}}.transpose.map{|j| j.min}
-      centers << specs[actual_dists.index(actual_dists.max)]
-  end  
-  centers.map{|c| specs.index(c)} 
-end
-
-def self.set_cluster_weights(features)
-  if Session.search.sortby.nil? || Session.search.sortby == "relevance"
-    weights = features.map{|f| f.value}
-    weights_sum = weights.sum.to_f
-    weights.map{|w| w/weights_sum}
-  else
-    weights = [0.001/(features.size-1)]*features.size
-    sorted_feature = features.select{|f|f.name == Session.search.sortby}.first
-    weights[features.index(sorted_feature)] = 0.999
-    weights
+  def self.init(number_clusters, products, weights)
+    specs = self.factorize_cont_data(products)
+    centers = [specs[(specs.size-1)/2]]
+    for j in (0...number_clusters-1)
+      actual_dists = centers.map{|c| specs.map{|s| self.distance(c,s, weights)}}.transpose.map{|j| j.min}
+        centers << specs[actual_dists.index(actual_dists.max)]
+    end  
+    centers.map{|c| specs.index(c)} 
+  end
+  
+  def self.set_cluster_weights(features)
+    if Session.search.sortby.nil? || Session.search.sortby == "relevance"
+      weights = features.map{|f| f.value}
+      weights_sum = weights.sum.to_f
+      weights.map{|w| w/weights_sum}
+    else
+      weights = [0.001/(features.size-1)]*features.size
+      sorted_feature = features.select{|f|f.name == Session.search.sortby}.first
+      weights[features.index(sorted_feature)] = 0.999
+      weights
+    end
   end
   
   def self.utility(products, use)
@@ -240,29 +239,6 @@ def self.set_cluster_weights(features)
       products.map{|i| i.instance_variable_get("@#{Session.search.sortby || "utility"}") || 0}
     end    
   end
-  
-  def self.init(number_clusters, products, weights)
-    specs = self.factorize_cont_data(products)
-    centers = [specs[(specs.size-1)/2]]
-    for j in (0...number_clusters-1)
-        actual_dists = centers.map{|c| specs.map{|s| self.distance(c,s, weights)}}.transpose.map{|j| j.min}
-        centers << specs[actual_dists.index(actual_dists.max)]
-    end  
-    centers.map{|c| specs.index(c)} 
-  end
-  
-  def self.set_cluster_weights(features)
-    if Session.search.sortby.nil? || Session.search.sortby == "utility"
-      weights = features.map{|f| Session.cluster_weight[f]}
-      weights_sum = weights.sum.to_f
-      weights.map{|w| w/weights_sum}
-    else
-      weights = [0.001/(features.size-1)]*features.size
-      weights[Session.continuous["cluster"].index(Session.search.sortby)] = 0.999
-      weights
-    end
-  end
-  
   
   # regular kmeans function     
   ## ruby function only cluster based on continuous data 

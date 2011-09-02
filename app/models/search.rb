@@ -372,11 +372,4 @@ class Search < ActiveRecord::Base
     end
     false
   end
-
-  # When remove dynamic fitlers, remove same filters in search from history
-  def resign_userdatas(deleted_filters)
-    [@userdatacats, @userdatabins, @userdataconts].each{|u| Maybe(u).reject! {|x| deleted_filters.include? x.name} }
-    # TODO: The search need to be saved of not? Need to be tested to confirm
-    save
-  end
 end

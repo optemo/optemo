@@ -225,9 +225,9 @@ module CompareHelper
   
   def sortby
     current_sorting_option = Session.search.sortby || "utility"
-    Session.continuous["sortby"].map { |f| content_tag :li, do
-       text = t(Session.product_type+".specs."+f+".name")
-       (current_sorting_option == f) ? text : link_to(text, "#", {:'data-feat'=>f, :class=>"sortby"})
+    Session.features["sortby"].map { |f| content_tag :li, do
+       text = t(Session.product_type+".specs."+f.name+".name")
+       (current_sorting_option == f.name) ? text : link_to(text, "#", {:'data-feat'=>f.name, :class=>"sortby"})
     end}.join(content_tag(:span, "  |  ", :class => "seperater"))
   end
 

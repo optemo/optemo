@@ -14,7 +14,7 @@ require 'inline'
       next if f.feature_type != "Continuous" #Only draw distributions for continuous features
       data = prods.map{|p|p.instance_variable_get("@#{f.name}")}.compact
       next if data.empty? #There's no data available for this feature
-      min,max = ContSpec.allMinMax(f)
+      min,max = ContSpec.allMinMax(f.name)
       #Max must be larger or equal to min
       next unless max >= min #ValidationError, "min is larger than max"
       specs << data
