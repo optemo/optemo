@@ -433,8 +433,7 @@ div#division {
 #optemo_embedder .categorical {
 	overflow: auto;
 	max-height: 150px;
-  padding-bottom: 20px;
-  padding-top: 10px;
+  padding-top: 5px;
 }
 #optemo_embedder .categorical_advanced {
 	overflow: auto;
@@ -651,7 +650,7 @@ div#division {
 #optemo_embedder .slider {
 	margin: 27px 0 0 3px;
 	width: 155px;
-	padding-bottom: 18px;
+	padding-bottom: 25px;
 	position: relative;
 }
 #optemo_embedder .centerofslider {
@@ -663,10 +662,9 @@ div#division {
 #optemo_embedder #filter_form {
 	font-size: 0.85em;
 }
-#optemo_embedder .label {
+#optemo_embedder .boldlabel {
 	font-weight: bold;
 	text-align: left;
-	position: relative;
 	clear: left;
 	padding-top: 5px;
 	padding-bottom: 4px;
@@ -680,51 +678,16 @@ div#division {
   background-image:-o-linear-gradient(bottom, rgb(254,231,25), rgb(255,242,0));
   background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200)); 
 }
-#optemo_embedder .label img, #optemo_embedder .label-advanced-title img {
-  position: absolute;
-  bottom: 5px;
-}
-#optemo_embedder .label-advanced-title {
-	font-weight: bold;
-	text-align: left;
-	position: relative;
-	clear: left;
-	padding-top: 6px;
-	padding-bottom: 4px;
-  padding-left: 6px;
-  background-color: #FFF102;
-  margin: 6px 0 0 0;
-  border-top: 1px #ccc solid;
-  border-bottom: 1px #ccc solid;
-  background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
-  background-image:-o-linear-gradient(bottom, rgb(254,231,25), rgb(255,242,0));;
-  background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200));
-}
-#optemo_embedder #IE .label, #optemo_embedder #IE .label-advanced-title {
-  background: url('/images/filter_label_bg.gif') repeat-x;
-}
+
 #optemo_embedder #IE .label{
-  /*padding-top: 7px;*/
-}
-#optemo_embedder #IE .label-advanced{
   padding-top: 10px;
 }
-#optemo_embedder #IE.ie8 .label-advanced,#optemo_embedder #IE.ie7 .label-advanced,#optemo_embedder #IE.ie6 .label-advanced{
-  padding-top: 9px;
-}
 
-#optemo_embedder .label-advanced {
+#optemo_embedder .label {
 	font-weight: bold;
 	text-align: left;
 	clear: left;
-	padding-top: 8px;
-	padding-bottom: 4px;
-  padding-left: 6px;
-  margin-left: -6px;
-}
-
-#optemo_embedder .space {
-	margin-bottom: 15px; /*Spacing for histogram*/
+	padding-top: 4px;
 }
 
 #optemo_embedder .valbelow {
@@ -757,8 +720,12 @@ div#division {
 	z-index: 10;
 }
 #optemo_embedder .hist {
-	float: left;
-	margin: 7px 0 0 3px;
+	/*float: left;
+	margin: 7px 0 0 3px;*/
+	position: absolute;
+	left: 9px;
+	top: -20px;
+	text-align: left;
 }
 #optemo_embedder #IE.ie6 .hist {
   left: 3px;

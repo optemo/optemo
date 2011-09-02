@@ -8,9 +8,20 @@
 <form id="filter_form" method="get" action="/compare">
 <% Session.features["filter"].sort_by(&:value).each do |f| %>
   <div class="feature">
-  <% case f.feature_type %>
-  <% when "Categorical" %>
-    <div class="label"><%=t "#{Session.product_type}.specs.#{f.name}.name" %></div>
+  <% unless f.feature_type == "Binary" -%>
+    <div class="<%= f.style.blank? ? "label" : f.style %>">
+      <%=t "#{Session.product_type}.specs.#{f.name}.name" %>
+      <% if !(unit = t("#{Session.product_type}.specs.#{f.name}.unit", :default => "")).blank? -%>
+      <span class="unitdisp">
+        (<%= unit %>)
+      </span>
+      <% end %>
+    </div>
+  <% end -%>
+  <% case f.feature_type -%>
+  <% when "Heading" -%>
+    <div style="height: 4px"><!-- --></div>
+  <% when "Categorical" -%>
     <% chosen_cats = chosencats(f.name) %>
     <% if f.name == "color" # TODO: should not be hard code here%>
       <div style="margin-right: -4px;margin-top: 4px;">
@@ -39,28 +50,29 @@
   <% when "Continuous" %>
     <% distribution_data = getDist(f.name) -%>
     <% next if distribution_data.blank? -%>
-    <div class="label"><%=t "#{Session.product_type}.specs.#{f.name}.name" %></div>
-  	<div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
-    <% current = Maybe(Session.search.userdataconts.select{|m|m.name == f.name}.first) -%>
-  	<%= hidden_field_tag "myfilter[#{f.name}_min]", current.min, {:class => 'min'}%>
-  	<%= hidden_field_tag "myfilter[#{f.name}_max]", current.max, {:class => 'max'}%>
-  	<div class='slider'
-  	  data-label= '<%= f.name %>'
-  	  data-min='<%= format_acceptable_increments(ContSpec.allMinMax(f.name)[0], "down") %>'
-  	  data-max='<%= format_acceptable_increments(ContSpec.allMinMax(f.name)[1], "up") %>'
-  	  data-startmin='<%= format_acceptable_increments(current.min.nil? ? ContSpec.allMinMax(f.name)[0] : current.min, "down") %>'
-  	  data-startmax='<%= format_acceptable_increments(current.max.nil? ? ContSpec.allMinMax(f.name)[1] : current.max, "up") %>'
-  	  current-data-min='<%= distribution_data.first.first %>'
-  	  current-data-max='<%= distribution_data.first.second %>'
-  	  force-int='false'
-  	<%= f.name == 'saleprice' ? 'data-formatting=\'$\'' : ""  %>>
-      	<div class="centerofslider"><!-- --></div>
+    <div style="position:relative">
+  	  <div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
+      <% current = Maybe(Session.search.userdataconts.select{|m|m.name == f.name}.first) -%>
+  	  <%= hidden_field_tag "myfilter[#{f.name}_min]", current.min, {:class => 'min'}%>
+  	  <%= hidden_field_tag "myfilter[#{f.name}_max]", current.max, {:class => 'max'}%>
+  	  <div class='slider'
+  	    data-label= '<%= f.name %>'
+  	    data-min='<%= format_acceptable_increments(ContSpec.allMinMax(f.name)[0], "down") %>'
+  	    data-max='<%= format_acceptable_increments(ContSpec.allMinMax(f.name)[1], "up") %>'
+  	    data-startmin='<%= format_acceptable_increments(current.min.nil? ? ContSpec.allMinMax(f.name)[0] : current.min, "down") %>'
+  	    data-startmax='<%= format_acceptable_increments(current.max.nil? ? ContSpec.allMinMax(f.name)[1] : current.max, "up") %>'
+  	    current-data-min='<%= distribution_data.first.first %>'
+  	    current-data-max='<%= distribution_data.first.second %>'
+  	    force-int='false'
+  	  <%= f.name == 'saleprice' ? 'data-formatting=\'$\'' : ""  %>>
+        	<div class="centerofslider"><!-- --></div>
+  	  </div>
   	</div>
   <% when "Binary" %>
     <% dobj = @s.search.userdatabins.select{|udb| udb.name == f.name}.first %>
     <% unchecked = dobj.nil? || dobj.value == false %>
     <% available_count = SearchProduct.bin_count(f.name) %>
-    <div class="hanging_indent feature<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
+    <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
       <%= check_box_tag "myfilter[#{f.name}]", "1", !unchecked ,:disabled => (available_count == 0) ? true : false, :class => 'binary_filter', :'data-opt' => f.name %>
       <%= (available_count == 0) ? t("#{Session.product_type}.specs.#{f.name}.name") : link_to( t("#{Session.product_type}.specs.#{f.name}.name"), "#", :class => "binary_filter_text") %>
       <span class="av_count"><%= "(#{available_count})" if unchecked %></span>

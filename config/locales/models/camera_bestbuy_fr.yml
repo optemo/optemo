@@ -85,7 +85,7 @@ fr:
                 name:               "Prix décroissants"
             orders_factor:  
                 name:               "Meilleur vendeur"        
-            AdvancedSearch:
+            advanced_search:
                 name:               "Recherche avancée"       
             '22474':
                 name:               "Visez et photographiez"                
@@ -97,9 +97,7 @@ fr:
                 name:               "Compact amélioré"                         
             status:
                 name:               "État"
-            AdvancedSearch:
-                name:               "Recherche avancée"
             New Technology:
                 name:               "Nouvelle technologie"                
-            Video Resolution:
+            video_resolution:
                 name:               "Résolution vidéo"
