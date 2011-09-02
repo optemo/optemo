@@ -745,19 +745,6 @@ div#division {
 #optemo_embedder .feature_last {
   padding: 1px 1px 4px 6px;
 }
-#optemo_embedder .feature_slider { /* relative position cause elements blow out in IE 6, so that only used in slider bar */
-  position: relative;
-  padding: 0 0 2px 6px;
-}
-
-
-
-#optemo_embedder .feature .label img, #optemo_embedder .feature_slider .label img, #optemo_embedder .label-advanced-title img {
-  vertical-align: text-top;
-}
-#optemo_embedder #IE.ie6 .feature .label img, #optemo_embedder #IE.ie6 .feature_slider .label img, #optemo_embedder #IE.ie6 .label-advanced-title img {
-  position: static;
-}
 
 #optemo_embedder .desc {
 	display: none;
@@ -770,10 +757,8 @@ div#division {
 	z-index: 10;
 }
 #optemo_embedder .hist {
-	position: absolute;
-	text-align: left;
-	left: 9px;
-	top: 36px;
+	float: left;
+	margin: 7px 0 0 3px;
 }
 #optemo_embedder #IE.ie6 .hist {
   left: 3px;

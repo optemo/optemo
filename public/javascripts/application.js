@@ -454,6 +454,7 @@ optemo_module = (function (my){
             var o = {};
             var a = this.serializeArray();
             $.each(a, function() {
+              //So that multiple checkboxes don't get overwritten, if the value exists, turn it into an array
                 if (o[this.name] !== undefined) {
                     if (!o[this.name].push) {
                         o[this.name] = [o[this.name]];

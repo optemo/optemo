@@ -1,17 +1,1 @@
-	<% current = Maybe(Session.search.userdataconts.select{|m|m.name == feat}.first) %>
-	
-	<div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
-	<%= hidden_field_tag "myfilter[#{feat}_min]", current.min, {:class => 'min'}%>
-	<%= hidden_field_tag "myfilter[#{feat}_max]", current.max, {:class => 'max'}%>
-	<div class='slider'
-	data-label= '<%= feat %>'
-	data-min='<%= format_acceptable_increments(overall_min, "down") %>'
-	data-max='<%= format_acceptable_increments(overall_max, "up") %>'
-	data-startmin='<%= format_acceptable_increments(current.min.nil? ? overall_min : current.min, "down") %>'
-	data-startmax='<%= format_acceptable_increments(current.max.nil? ? overall_max : current.max, "up") %>'
-	current-data-min='<%= distribution_data.first.first %>'
-	current-data-max='<%= distribution_data.first.second %>'
-	force-int='false'
-	<%= money_formatting ? 'data-formatting=\'$\'' : ""  %>>
-    	<div class="centerofslider"><!-- --></div>
-	</div>
+
