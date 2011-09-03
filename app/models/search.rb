@@ -306,9 +306,6 @@ class Search < ActiveRecord::Base
         if v != '0'
           @userdatabins << Userdatabin.new({:name => k, :value => v})
         end
-      elsif k == "search"
-        #Keyword Search
-        self.keyword_search = v
       end
     end
     cats = []

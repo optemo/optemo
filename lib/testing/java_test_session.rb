@@ -32,7 +32,7 @@ class JavaTestSession < Webrat::SeleniumSession
   def move_slider which_slider, min, max
     parse_and_set_attribute(@slider_max_names[which_slider], :with => max)
     parse_and_set_attribute(@slider_min_names[which_slider], :with => min)
-    browser.run_script('submitCategorical()')
+    browser.run_script('submitAJAX()')
     #browser.run_script('ajaxcall("/products/filter", $("#filter_form").serialize())')
     wait_for_ajax
   end

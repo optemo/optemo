@@ -447,13 +447,13 @@ div#division {
   height: expression( this.scrollHeight > 150 ? "150px" : "auto" ); /* sets max-height for IE */
 }
 
-#optemo_embedder a.binary_filter_text{
+#optemo_embedder a.checkbox_text{
 	color: #4d4d4f;
 }
-#optemo_embedder a.binary_filter_text:visited{
+#optemo_embedder a.checkbox_text:visited{
 	color: #4d4d4f;
 }
-#optemo_embedder .disabled a.binary_filter_text{
+#optemo_embedder .disabled a.checkbox_text{
 	color: #ccc;
 }
 #optemo_embedder .av_count{

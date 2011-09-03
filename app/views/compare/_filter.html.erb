@@ -30,7 +30,9 @@
           <% next if color_counts[color].nil? && !chosen_cats.include?(color) %>
           <div class="swatch<%= " white_swatch" if color == "White" %><%= " selected_swatch" if chosen_cats.include?(color) %>" style="background-color: <%= color %>"></div>
         <% end %>
-        <div style="clear: left;"></div>
+        <div style="clear: left;">
+          <%= hidden_field_tag "categorical[color]", chosen_cats.join("*") %>
+        </div>
       </div>
     <% else %>
       <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
@@ -39,23 +41,20 @@
         <% optionlist.each do |k,available_count| %>
           <% checked = chosen_cats.include?(k) %>
           <div class="list_item hanging_indent <%=raw ' disabled' if available_count == 0 %>" <%=raw "style='font-weight:bold;'" if checked %> >
-            <%= check_box_tag "superfluous[#{k}]", "1", checked, :disabled => (available_count == 0) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :'data-feat' => f.name, :'data-opt' => k %>
-            <%= (available_count == 0) ?  t("#{Session.product_type}.specs.#{k}.name",:default=>k) : link_to(t("#{Session.product_type}.specs.#{k}.name", :default=>k), "#", :class => "binary_filter_text") %>
+            <%= check_box_tag "categorical[#{f.name}]", k, checked, :disabled => (available_count == 0) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false' %>
+            <%= (available_count == 0) ?  t("#{Session.product_type}.specs.#{k}.name",:default=>k) : link_to(t("#{Session.product_type}.specs.#{k}.name", :default=>k), "#", :class => "checkbox_text") %>
             <span class="av_count"><%= "(#{available_count})" unless checked %></span>
           </div>
         <% end %>
       </div>
     <% end %>
-    <%= hidden_field_tag "myfilter[#{f.name}]", chosen_cats.join("*") %>
   <% when "Continuous" %>
     <% distribution_data = getDist(f.name) -%>
     <% next if distribution_data.blank? -%>
     <div style="position:relative">
   	  <div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
       <% current = Maybe(Session.search.userdataconts.select{|m|m.name == f.name}.first) -%>
-  	  <%= hidden_field_tag "myfilter[#{f.name}_min]", current.min, {:class => 'min'}%>
-  	  <%= hidden_field_tag "myfilter[#{f.name}_max]", current.max, {:class => 'max'}%>
-  	  <div class='slider'
+  	  <%= hidden_field_tag "continuous[#{f.name}]", current.min+","+current.max, {:class => 'min'}%>
   	    data-label= '<%= f.name %>'
   	    data-min='<%= format_acceptable_increments(ContSpec.allMinMax(f.name)[0], "down") %>'
   	    data-max='<%= format_acceptable_increments(ContSpec.allMinMax(f.name)[1], "up") %>'
@@ -73,8 +72,8 @@
     <% unchecked = dobj.nil? || dobj.value == false %>
     <% available_count = SearchProduct.bin_count(f.name) %>
     <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
-      <%= check_box_tag "myfilter[#{f.name}]", "1", !unchecked ,:disabled => (available_count == 0) ? true : false, :class => 'binary_filter', :'data-opt' => f.name %>
-      <%= (available_count == 0) ? t("#{Session.product_type}.specs.#{f.name}.name") : link_to( t("#{Session.product_type}.specs.#{f.name}.name"), "#", :class => "binary_filter_text") %>
+      <%= check_box_tag "binary[#{f.name}]", "1", !unchecked ,:disabled => (available_count == 0) ? true : false, :class => 'binary_filter' %>
+      <%= (available_count == 0) ? t("#{Session.product_type}.specs.#{f.name}.name") : link_to( t("#{Session.product_type}.specs.#{f.name}.name"), "#", :class => "checkbox_text") %>
       <span class="av_count"><%= "(#{available_count})" if unchecked %></span>
     </div>
   <% end %>
