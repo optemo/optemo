@@ -6,7 +6,7 @@
   </p>
 </div>
 <form id="filter_form" method="get" action="/compare">
-<% Session.features["filter"].sort_by(&:value).each do |f| %>
+<% Session.features["filter"].each do |f| %>
   <div class="feature">
   <% unless f.feature_type == "Binary" || f.feature_type == "Spacer" -%>
     <div class="<%= f.style.blank? ? "label" : f.style %>">

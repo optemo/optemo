@@ -54,7 +54,7 @@ class Session
     #if an array of categories is given, dynamic features which apply only to those categories are shown
     dynamically_excluded = []
     # initialize features
-    self.features = Facet.find_all_by_product_type_id_and_active(product_type_id, true, :include=>:dynamic_facets).select do |f|
+    self.features = Facet.where(product_type_id: product_type_id, active: true).includes(:dynamic_facets).order(:value).select do |f|
       #These are the subcategories for which this feature is only used for
       subcategories = f.dynamic_facets.map{|x|x.category}
       subcategories.empty? || #We don't store subcategories for features which are always used
