@@ -69,7 +69,7 @@ class CompareController < ApplicationController
   end  
   
   def create
-    classVariables(Search.create(action_type: "filter", parent: params[:hist], filters: {cont: params[:continuous], cat: params[:categorical], bin: params[:binary]}))
+    classVariables(Search.create(action_type: "filter", parent: params[:hist], filters: {continuous: params[:continuous], categorical: params[:categorical], binary: params[:binary]}))
     correct_render
   end
 

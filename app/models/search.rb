@@ -275,37 +275,33 @@ class Search < ActiveRecord::Base
   end
    
   def createFeatures(p)
-    #seperate myfilter into various parts
     @userdataconts = []
-    @userdatabins = []
-    @userdatacats = []
-    
-    p.each_pair do |k,v|
-      next if v.blank? #Skip blank values, this should be fixed in JS
-      
-      if k.index(/(.+)_min/)
-        #Continuous Features
-        fname = Regexp.last_match[1]
-        max = fname+'_max'
+    r = /(?<min>[\d.]+)-(?<max>[\d.]+)/
+    Maybe(p[:continuous]).each_pair do |k,v|
+      #Split range into min and max
+      if res = r.match(v)
         # Only add the filter when the feature if it is in its range
-        feat_range = ContSpec.allMinMax fname
-
-
-        if (feat_range[0] < v.to_f && feat_range[1] > v.to_f) || (feat_range[0] < p[max].to_f && feat_range[1] > p[max].to_f)
-          @userdataconts << Userdatacont.new({:name => fname, :min => v, :max => p[max]})
+        feat_range = ContSpec.allMinMax(k)
+        if (feat_range[0] < res[:min].to_f && feat_range[1] > res[:min].to_f) || (feat_range[0] < res[:max].to_f && feat_range[1] > res[:max].to_f)
+          @userdataconts << Userdatacont.new({:name => k, :min => res[:min], :max => res[:max]})
         end
-      elsif k.index(/brand|category/)
-        #Categorical Features
-        v.split("*").each do |cat|
-          @userdatacats << Userdatacat.new({:name => k, :value => cat})
-        end
-      #TODO XXX Filter types should be passed by the form
-      elsif true
-        #Binary Features
-        #Handle false booleans
-        if v != '0'
-          @userdatabins << Userdatabin.new({:name => k, :value => v})
-        end
+      end
+    end
+    
+    #Binary Features
+    @userdatabins = []
+    Maybe(p[:binary]).each_pair do |k,v|
+      #Handle false booleans
+      if v != '0'
+        @userdatabins << Userdatabin.new({:name => k, :value => v})
+      end
+    end
+    
+    #Categorical Features
+    @userdatacats = []
+    Maybe(p[:categorical]).each_pair do |k,v|
+      v.split("*").each do |cat|
+        @userdatacats << Userdatacat.new({:name => k, :value => cat})
       end
     end
     cats = []

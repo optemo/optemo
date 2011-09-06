@@ -684,16 +684,13 @@ optemo_module = (function (my){
                     
                     if(sliderno == 0)
                     {
-                        $(this).siblings('.min').attr('value',realvalue);
-                        $(this).siblings('.max').attr('value',curmax);
+                      $(this).siblings('.range').attr('value',realvalue + "-" + curmax);
                     }
                     else
                     {
-                        $(this).siblings('.min').attr('value',curmin);
-                        $(this).siblings('.max').attr('value',realvalue);
+                      $(this).siblings('.range').attr('value',curmin + "-" + realvalue);
                     }
-                    
-                       return false;
+                    return false;
                 },
                 stop: function(e,ui)
                 {
@@ -718,7 +715,8 @@ optemo_module = (function (my){
 
                     if ((ui.values[1] * (rangemax - rangemin) / 100.0) + rangemin < datasetmin) {
                         rightslidervalue = datasetmin;
-                        $(this).siblings('.max').attr('value', rightslidervalue);
+                        var leftslidervalue = $(this).siblings('.range').attr('value').match(/[^-]+/).join();
+                        $(this).siblings('.range').attr('value', leftslidervalue + "-" + rightslidervalue);
                     }
                     else
                         rightslidervalue = ui.values[1];

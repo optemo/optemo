@@ -54,7 +54,8 @@
     <div style="position:relative">
   	  <div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
       <% current = Maybe(Session.search.userdataconts.select{|m|m.name == f.name}.first) -%>
-  	  <%= hidden_field_tag "continuous[#{f.name}]", current.min+","+current.max, {:class => 'min'}%>
+  	  <%= hidden_field_tag "continuous[#{f.name}]", current.min.to_s+"-"+current.max.to_s, {:class => 'range'}%>
+  	  <div class='slider'
   	    data-label= '<%= f.name %>'
   	    data-min='<%= format_acceptable_increments(ContSpec.allMinMax(f.name)[0], "down") %>'
   	    data-max='<%= format_acceptable_increments(ContSpec.allMinMax(f.name)[1], "up") %>'
