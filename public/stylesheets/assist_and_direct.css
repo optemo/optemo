@@ -434,6 +434,7 @@ div#division {
 	overflow: auto;
 	max-height: 150px;
   padding-top: 5px;
+  padding-bottom: 5px;
 }
 #optemo_embedder .categorical_advanced {
 	overflow: auto;
@@ -461,8 +462,6 @@ div#division {
 }
 
 #optemo_embedder .hanging_indent {
-  margin-top: 0px;
-  margin-bottom: 5px;
   text-indent: -18px;
   margin-left: 18px;
 }

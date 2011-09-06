@@ -8,7 +8,7 @@
 <form id="filter_form" method="get" action="/compare">
 <% Session.features["filter"].sort_by(&:value).each do |f| %>
   <div class="feature">
-  <% unless f.feature_type == "Binary" -%>
+  <% unless f.feature_type == "Binary" || f.feature_type == "Spacer" -%>
     <div class="<%= f.style.blank? ? "label" : f.style %>">
       <%=t "#{Session.product_type}.specs.#{f.name}.name" %>
       <% if !(unit = t("#{Session.product_type}.specs.#{f.name}.unit", :default => "")).blank? -%>
@@ -19,8 +19,8 @@
     </div>
   <% end -%>
   <% case f.feature_type -%>
-  <% when "Heading" -%>
-    <div style="height: 4px"><!-- --></div>
+  <% when "Heading", "Spacer" -%>
+    <div style="height: 5px"><!-- --></div>
   <% when "Categorical" -%>
     <% chosen_cats = chosencats(f.name) %>
     <% if f.name == "color" # TODO: should not be hard code here%>
