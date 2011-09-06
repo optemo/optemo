@@ -59,7 +59,7 @@ class Session
       subcategories = f.dynamic_facets.map{|x|x.category}
       subcategories.empty? || #We don't store subcategories for features which are always used
       subcategories.any?{|e| categories.include? e} ||
-      (dynamically_excluded << f.name && false) #If a feature is not selected, we need to note this
+      (dynamically_excluded << f && false) #If a feature is not selected, we need to note this
     end.group_by(&:used_for)
     # Some filters of last search need to be removed when dynamic filters removed
     dynamically_excluded.each do |f|
