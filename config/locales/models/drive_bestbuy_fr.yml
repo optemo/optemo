@@ -111,7 +111,7 @@ fr:
                 unit:               "Mo"
             'Network Attached Storage':
                 name:               "Serveur de stockage en réseau (NAS)"
-            AdvancedSearch:
+            advanced_search:
                 name:               "Recherche avancée"
             displayDate:
                 name:               "Dernier modèle"
@@ -123,7 +123,5 @@ fr:
                 name:               "2.5\""
             drive_size_35:
                 name:               "3.5\""
-            Advanced Search:
-                name:               "Recherche avancée"
             status:
                 name:               "État"
