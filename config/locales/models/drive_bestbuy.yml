@@ -110,7 +110,7 @@ en:
                 name:               "Storage Accessories"
             'Network Attached Storage':
                 name:               "Network-Attached Storage (NAS)"
-            'AdvancedSearch':
+            advanced_search:
                 name:               "Advanced Search"
             displayDate:
                 name:               "Newest Model"
@@ -155,4 +155,5 @@ en:
                 name:               "2.5\""
             drive_size_35:
                 name:               "3.5\""
-                
+            status:
+                name:               "Status"

@@ -31,43 +31,14 @@ class Product < ActiveRecord::Base
     end
   end
   
-  def self.filterspecs
-    st = []
-    Session.continuous["filter"].each do |f| 
-      data = Session.search.products.mapfeat(f).compact
-      raise ValidationError, "Can't find data for feature: #{f}" if data.empty?
-      st << data
-    end
-    st
-  end
-  
-  #This function is deprecated and would need to be updated if used
-  def self.specs(p_ids = nil)
-    st = []
-    Session.continuous["cluster"].each{|f| st << ContSpec.by_feat(f)}
-   # Session.binary["cluster"].each{|f| st<< self.to_bin_array(CatSpec.all(f))}
-   #  Session.categorical["cluster"].each{|f| st<< self.to_cat_array(CatSpec.all(f))}  
-    #Check for 1 spec per product
-    raise ValidationError unless Session.search.products_size == st.first.length
-    #Check for no nil values
-    raise ValidationError unless st.first.size == st.first.compact.size
-    raise ValidationError unless st.first.size > 0
-    #Check that every spec has the same number of features
-    first_size = st.first.compact.size
-    st
-  end
-  
-  
-  
   scope :instock, :conditions => {:instock => true}
   scope :valid, lambda {
-    {:conditions => (Session.continuous["filter"].map{|f|"id in (select product_id from cont_specs where #{Session.minimum[f] ? "value > " + Session.minimum[f].to_s : "value > 0"}#{" and value < " + Session.maximum[f].to_s if Session.maximum[f]} and name = '#{f}' and product_type = '#{Session.product_type}')"}+\
-    Session.categorical["filter"].map{|f|"id in (select product_id from cat_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{Session.product_type}')"}).join(" and ")}
+    {:conditions => (Session.features["filter"].select{|f|f.feature_type == "Continuous"}.map{|f|"id in (select product_id from cont_specs where #{Session.minimum[f] ? "value > " + Session.minimum[f].to_s : "value > 0"}#{" and value < " + Session.maximum[f].to_s if Session.maximum[f]} and name = '#{f}' and product_type = '#{Session.product_type}')"}+\
+    Session.features["filter"].select{|f|f.feature_type == "Categorical"}.map{|f|"id in (select product_id from cat_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{Session.product_type}')"}).join(" and ")}
   }
   scope :current_type, lambda {
     {:conditions => {:product_type => Session.product_type}}
   }
-  #Session.binary["filter"].map{|f|"id in (select product_id from bin_specs where value IS NOT NULL and name = '#{f}' and product_type = '#{Session.product_type}')"}+\
     
   def brand
     if I18n.locale == :fr

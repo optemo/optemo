@@ -61,24 +61,6 @@ class Cluster
     @rep
   end
   
-  def min(feature)
-    if Session.continuous["cluster"].include?(feature)
-      products.mapfeat(feature).compact.min
-    end  
-  end  
-  
-  def max(feature)
-    if Session.continuous["cluster"].include?(feature)
-      products.mapfeat(feature).compact.max
-    end  
-  end
-  
-  def cat_vals(feature)
-    if Session.categorical["cluster"].include?(feature) 
-      products.map{|p_id| CatSpec.cachemany([p_id], feature)}.flatten.uniq
-    end
-  end  
-  
   def size
     products.size
   end

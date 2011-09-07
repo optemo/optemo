@@ -4,24 +4,26 @@ require 'inline'
   def computeDist
     dist = {}
     num_buckets = 24 #Must be greater than 0
+    #Get the data for the computation
     mins = []
     maxes = []
     specs = []
     feats = []
+    prods = Session.search.products
+    Session.features["filter"].each do |f| 
+      next if f.feature_type != "Continuous" #Only draw distributions for continuous features
+      data = prods.map{|p|p.instance_variable_get("@#{f.name}")}.compact
+      next if data.empty? #There's no data available for this feature
+      min,max = ContSpec.allMinMax(f.name)
+      #Max must be larger or equal to min
+      next unless max >= min #ValidationError, "min is larger than max"
+      specs << data
+      feats << f.name     
+      mins << min
+      maxes << max
+    end
 
     begin
-      prods = Session.search.products
-      Session.continuous["filter"].each do |f| 
-        data = prods.map{|p|p.instance_variable_get("@#{f}")}.compact
-        next if data.empty? #There's no data available for this feature
-        specs << data
-        feats << f
-        min,max = ContSpec.allMinMax(f)
-        #Max must be larger or equal to min
-        raise ValidationError, "min is larger than max" unless max >= min        
-        mins << min
-        maxes << max
-      end
       #Features can have varying lengths
       lengths = specs.map{|s| s.size}
       raise ValidationError, "num_buckets is less than 2" unless num_buckets>1
@@ -36,7 +38,7 @@ require 'inline'
     rescue ValidationError
       puts "Falling back to ruby distribution"
       num_buckets = 24
-      ruby
+      ruby(feats)
     end
   end
   
@@ -158,9 +160,9 @@ require 'inline'
        end  
        [[current_dataset_minimum, current_dataset_maximum], round2Decim(normalize(dist))] 
   end  
-  def ruby
+  def ruby(feats)
     dist = {}
-    Session.continuous["filter"].each{|f| dist[f] = dist_each(f)}
+    feats.each{|f| dist[f] = dist_each(f)}
     dist
   end
 end

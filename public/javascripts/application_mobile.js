@@ -84,7 +84,7 @@ optemo_module = (function (my){
     		var cat = whichSelector.substring(whichSelector.indexOf("[")+1, whichSelector.indexOf("]"));
     		var capitalizedCat = cat.replace( /(^|\s)([a-z])/g , function(m,p1,p2){ return p1+p2.toUpperCase(); } );
     		$('#myfilter_'+cat).val(opt_appendStringWithToken($('#myfilter_'+cat).val(), whichThingSelected, '*'));
-    		// submitCategorical();
+    		// submitAJAX();
     		var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : cat, 'filter_type' : 'categorical'};
         	trackPage('goals/filter/categorical', info);
 

@@ -69,75 +69,9 @@ module CompareHelper
     end    
     res + t("#{Session.product_type}.navtitle2")
   end
-  
-  def groupDesc(group, i)
-    return "Description"
-    s = Session
-    if s.relativeDescriptions
-      descs = s.search.boostexterClusterDescriptions[i].map{|d|t("products."+d, :default => d)}
-      if s.directLayout
-        descs.map{|d|"<div style='position: relative;'>" + link_to(d, "#", :class => "description") + render(:partial => 'desc', :locals => {:feat => d}) + "</div>"}.join(" ")
-      else
-        descs.join(", ")
-      end
-    else
-      disptranslation = []
-      dispString = ""
-	    s.search.boostexterClusterDescription(i).compact.flatten.uniq.each do |property|
-	      disptranslation << t('products.' + property)
-	    end
-	    if group
-	      if disptranslation.size>2
-	        dispString = disptranslation[0..disptranslation.size-2].join(', ') + " "+t('products.' + "and") +" "+disptranslation[-1]
-	      elsif disptranslation.size==2
-	        dispString = disptranslation[0] + " "+ t('products.' + "and") + " "+ disptranslation[-1]
-	      elsif disptranslation.size==1
-	        dispString = disptranslation[0]
-	      else
-	        t('products.'+"Average")  
-	      end
-      else
-	     if disptranslation.size>2
-	       dispString = disptranslation[0]+ " "+ t('products.' + "and") +" "+disptranslation[1]
-	     elsif disptranslation.size==2
-	       dispString= disptranslation[0] + " "+t('products.' + "and") + " "+disptranslation[-1] 
-	     elsif disptranslation.size==1
-	       dispString=disptranslation[0]
-	     else
-	      t('products.'+"Average")  
-	     end 
-	    end      
-	    dispString
-	  end
-  end
  
   def chosencats(feat)
     Session.search.userdatacats.select{|d|d.name == feat}.map{|x|x.value}
-  end
-  
-  def featuretext(product_id)
-    s = Session
-    out = []
-    # Moved variable declarations out of the loop for each type of feature.
-    # This speeds up the rails app somewhat due to fewer SQL requests / activerecord instantiations
-    cat_specs = CatSpec.cache_all(product_id)
-    s.categorical["desc"].each do |feat|
-      out << cat_specs[feat]
-    end
-    
-    cont_specs = ContSpec.cache_all(product_id)
-    s.continuous["desc"].each do |feat|
-      #num = "%.1f" % ContSpec.cache_all(product_id)[feat]
-      num = cont_specs[feat]
-      num = "<1" if feat == "maxresolution" && num == "1"
-      num = num.to_i if num.to_i==num
-		  out << t('features.'+feat, :num =>  number_with_delimiter(num), :default =>  number_with_delimiter(num)) if num
-	  end
-	  bin_specs = BinSpec.cache_all(product_id)
-	  s.binary["desc"].each do |feat|
-      out << t("#{Session.product_type}.specs.#{feat.gsub(" ","")}.name") if bin_specs[feat]
-    end
-		out.join(", ")
   end
 
   def columntext(showgroups)
@@ -209,99 +143,25 @@ module CompareHelper
     
   def main_boxes
     res = ""
-    if @s.directLayout # List View (Optemo Direct)
-  		if @s.search.groupby.nil?
-  			@products.each_index do |i|
-  				res << render(:partial => 'singlelist', :locals => {:product => Product.cached(@products[i]), :i => i})
-  			end
-  		else
-  			@s.search.groupings.each do |grouping|
-  				res << render(:partial => 'grouping', :locals => {:grouping => grouping, :group => true})
-  			end
-  		end
-  	else
-  	  if @s.mobileView
-  	    if @s.search.products_size != 0
-          for i in 0...[@s.search.cluster.numclusters,@s.numGroups].min
-            res << render(:partial => 'mobilebox', :locals => {:cluster => @s.search.cluster.children[i], :group => @s.search.cluster.children[i].size>1, :representative => @s.search.cluster.children[i].representative})
-          end
-        else
-	        res << "<div style=\"padding:10px;\">No search results. Please search again or " + link_to("start over", "/") + ".</div>"
-        end
-	    else # Grid View (Optemo Assist)
-    		for i in 0...@s.search.paginated_products.size
-    		  if i % (Float(@s.numGroups)/3).ceil == 0
-    			  res << '<div class="rowdiv">'
-    			  open = true
-    		  end
-    		  #Navbox partial to draw boxes
-    		  res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(@s.search.paginated_products[i].id), :landing=>false})
-          if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
-            if i < (@s.search.paginated_products.size - 1)
-              res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin:0 auto;"></div></div>'
-            else
-              res << '<div style="clear:both;height:0;"></div></div>'
-            end
-            open = false
-          end
-        end
+    for i in 0...@s.search.paginated_products.size
+      if i % (Float(@s.numGroups)/3).ceil == 0
+    	  res << '<div class="rowdiv">'
+    	  open = true
       end
+      #Navbox partial to draw boxes
+      res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(@s.search.paginated_products[i].id), :landing=>false})
+              if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
+                if i < (@s.search.paginated_products.size - 1)
+                  res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin:0 auto;"></div></div>'
+                else
+                  res << '<div style="clear:both;height:0;"></div></div>'
+                end
+                open = false
+              end
     end
   	res << '<div style="clear:both;height:3px;width: 552px;margin-left: -1px;">&nbsp;</div></div>' if open && !@s.directLayout
     res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
   	res
-	end
-   
-	def adjustingfilters
-	  new_filters = []
-	    unless Session.search.userdataconts.empty?
-         Session.search.userdataconts.each do |se| 
-           if @s.search.extended.min(se.name)<se.min  
-             new_filters << se.name + "_min=" + @s.search.extended.min(se.name).to_s
-             new_filters << se.name + "_max=" + se.max.to_s
-           end
-           if @s.search.extended.max(se.name)>se.max 
-             new_filters<< se.name + "_max=" + @s.search.extended.max(se.name).to_s
-             new_filters<< se.name + "_min=" + se.min.to_s
-           end   
-         end
-      end  
-      unless Session.search.userdatacats.empty?
-        curr_feats=Session.search.userdatacats.map{|se| se.name}.uniq
-        curr_feats.each{|f| new_filters << (f + "") unless (@s.search.extended.cat_vals(f) - Session.search.userdatacats.map{|se| se.value if se.name==f}.compact).nil?}  
-      end
-      #unless Session.search.userdatabins.empty?
-      #  curr_feats=Session.search.userdatabins.map{|se| se.name}.uniq
-      #  curr_feats.each{|f| new_filters << (f + "") unless (@s.search.extended.bin_val(f)-Session.search.userdatabins.map{|se| se.value if se.name==f}.compact).nil?}
-      #end   
-    new_filters << "extended_hash=" + @s.search.extended.id.to_s
-    new_filters = new_filters.compact
-    new_filters.join("&")
-	end  
-	
-	def adjustingfilters_hash
-	  #@s.search.userdataconts
-	  new_filters = {}
-	    unless Session.search.userdataconts.empty?
-         Session.search.userdataconts.each do |se| 
-           if @s.search.extended.min(se.name)<se.min  
-             new_filters["Minimum " + se.name] = @s.search.extended.min(se.name)
-           end
-           if @s.search.extended.max(se.name)>se.max 
-             new_filters["Maximum " + se.name] =@s.search.extended.max(se.name)
-           end   
-         end
-      end  
-      unless Session.search.userdatacats.empty?
-        curr_feats=Session.search.userdatacats.map{|se| se.name}.uniq
-        curr_feats.each do |f|
-            unless @s.search.extended.cat_vals(f).nil?
-              new_vals = @s.search.extended.cat_vals(f) - Session.search.userdatacats.map{|se| se.value if se.name==f}.uniq  
-              new_filters[f]= "All "+f+"s" unless new_vals.empty?
-            end  
-        end    
-      end
-    new_filters 
 	end
 	
 	def getDist(feat)
@@ -365,9 +225,9 @@ module CompareHelper
   
   def sortby
     current_sorting_option = Session.search.sortby || "utility"
-    Session.continuous["sortby"].map { |f| content_tag :li, do
-       text = t(Session.product_type+".specs."+f+".name")
-       (current_sorting_option == f) ? text : link_to(text, "#", {:'data-feat'=>f, :class=>"sortby"})
+    Session.features["sortby"].map { |f| content_tag :li, do
+       text = t(Session.product_type+".specs."+f.name+".name")
+       (current_sorting_option == f.name) ? text : link_to(text, "#", {:'data-feat'=>f.name, :class=>"sortby"})
     end}.join(content_tag(:span, "  |  ", :class => "seperater"))
   end
 

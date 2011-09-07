@@ -16,7 +16,7 @@
     ** applySilkScreen(url, data, width, height, f)  -  Puts up fading boxes, calling the callback frunction f if provided.
     ** getIdAndSkuFromProductimg(img)  -  Returns the ID from the image. Only used for drag-and-drop at the moment.
     removeFromComparison(id)  -  Removes comparison items from #savebar_content
-    submitCategorical()  -  Submits a categorical filter (no longer does tracking)
+    submitAJAX()  -  Submits a categorical filter (no longer does tracking)
     submitsearch()  -  Submits a search via the main search field in the filter bar
     histogram(element, norange)  -  draws histogram
     ** disableInterfaceElements()  -  Disables filters, so that the UI is only fielding one request at a time.
@@ -448,17 +448,20 @@ optemo_module = (function (my){
 
                      
     // Submit a categorical filter, e.g. brand.
-    function submitCategorical(){
+    function submitAJAX(){
         //Serialize an form into a hash, Warning: duplicate keys are dropped
         $.fn.serializeObject = function(){
             var o = {};
             var a = this.serializeArray();
             $.each(a, function() {
+              //So that multiple checkboxes don't get overwritten, if the value exists, turn it into an array
                 if (o[this.name] !== undefined) {
-                    if (!o[this.name].push) {
-                        o[this.name] = [o[this.name]];
-                    }
-                    o[this.name].push(this.value || '');
+                    //if (!o[this.name].push) {
+                    //    o[this.name] = [o[this.name]];
+                    //}
+                    //o[this.name].push(this.value || '');
+                    //Don't use an array - just concatenate with *
+                    o[this.name] = o[this.name] + "*" + this.value || '';
                 } else {
                     o[this.name] = this.value || '';
                 }
@@ -467,7 +470,7 @@ optemo_module = (function (my){
         };
         var selections = $("#filter_form").serializeObject();
         $.each(selections, function(k,v){
-            if(k.match(/(^superfluous)/) || v == "") {
+            if(v == "") {
                 delete selections[k];
             }
             /* Look for weird $ error */
@@ -683,16 +686,13 @@ optemo_module = (function (my){
                     
                     if(sliderno == 0)
                     {
-                        $(this).siblings('.min').attr('value',realvalue);
-                        $(this).siblings('.max').attr('value',curmax);
+                      $(this).siblings('.range').attr('value',realvalue + "-" + curmax);
                     }
                     else
                     {
-                        $(this).siblings('.min').attr('value',curmin);
-                        $(this).siblings('.max').attr('value',realvalue);
+                      $(this).siblings('.range').attr('value',curmin + "-" + realvalue);
                     }
-                    
-                       return false;
+                    return false;
                 },
                 stop: function(e,ui)
                 {
@@ -717,7 +717,8 @@ optemo_module = (function (my){
 
                     if ((ui.values[1] * (rangemax - rangemin) / 100.0) + rangemin < datasetmin) {
                         rightslidervalue = datasetmin;
-                        $(this).siblings('.max').attr('value', rightslidervalue);
+                        var leftslidervalue = $(this).siblings('.range').attr('value').match(/[^-]+/).join();
+                        $(this).siblings('.range').attr('value', leftslidervalue + "-" + rightslidervalue);
                     }
                     else
                         rightslidervalue = ui.values[1];
@@ -735,7 +736,7 @@ optemo_module = (function (my){
                         leftsliderknob.removeData('toofar');
                         rightsliderknob.removeData('toofar');
                     }
-                    submitCategorical();
+                    submitAJAX();
                 }
             });
             if ($(this).slider("option", "disabled") == true) {
@@ -834,31 +835,19 @@ optemo_module = (function (my){
             whichThingSelected = whichThingSelected.charAt(0).toUpperCase() + whichThingSelected.slice(1);
             if (t.hasClass("selected_swatch"))
             { //Removed selected color
-                $('#myfilter_color').val(opt_removeStringWithToken($('#myfilter_color').val(), whichThingSelected, '*'));
+                $('#categorical_color').val("");
                 var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : 'color', 'filter_type' : 'categorical_removed'};
                 my.trackPage('goals/filter/categorical_removed', info);
             }
             else
             { //Added selected color
-                $('#myfilter_color').val(whichThingSelected);
+                $('#categorical_color').val(whichThingSelected);
                 var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : 'color', 'filter_type' : 'categorical'};
                 my.trackPage('goals/filter/categorical', info);
             }
             t.toggleClass('selected_swatch');
-            submitCategorical();
+            submitAJAX();
         });
-
-        // Remove a brand -- submit
-        //$('.removefilter').live('click', function(){
-        //    var whichRemoved = $(this).attr('data-id');
-        //    var whichCat = $(this).attr('data-cat');
-        //    $('#myfilter_'+whichCat).val(opt_removeStringWithToken($('#myfilter_'+whichCat).val(), whichRemoved, '*'));
-        //    var info = {'chosen_categorical' : whichRemoved, 'slider_name' : whichCat, 'filter_type' : 'categorical_removed'};
-        //    my.loading_indicator_state.sidebar = true;
-        //    my.trackPage('goals/filter/categorical_removed', info);
-        //    submitCategorical();
-        //    return false;
-        //});
 
         // From Compare
         //Remove buttons on compare
@@ -982,91 +971,25 @@ optemo_module = (function (my){
             return false;
         });
 
-        // Choose a grouping via group button rather than drop-down (effect is the same as the select boxes)
-        //$('.title').live('click', function(){
-        //    if ($(this).find('.choose_group').length) { // This is a categorical feature
-        //        group_element = $(this).find('.choose_group');
-        //        var whichThingSelected = group_element.attr('data-min');
-        //        var categorical_filter_name = group_element.attr('data-grouping');
-        //        if($('#myfilter_'+categorical_filter_name).val().match(whichThingSelected) === null)
-        //            $('#myfilter_'+categorical_filter_name).val(opt_appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
-        //        var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : categorical_filter_name, 'filter_type' : 'categorical_from_groups'};
-        //        my.trackPage('goals/filter/categorical_from_groups', info);
-        //        submitCategorical();
-        //        return false;
-        //    }
-        //    else { // This is a continuous feature
-        //        group_element = $(this).find('.choose_cont_range');
-        //        feat = group_element.attr('data-grouping');
-        //        lowerbound = group_element.attr('data-min');
-        //        upperbound = group_element.attr('data-max');
-        //        var arguments_to_send = [];
-        //        arguments = $("#filter_form").serialize().split("&");
-        //        for (i=0; i<arguments.length; i++)
-        //        {
-        //            if (arguments[i].match(feat)) {
-        //                split_arguments = arguments[i].split("=")
-        //                if (arguments[i].match(/min/))
-        //                    split_arguments[1] = lowerbound;
-        //                else
-        //                    split_arguments[1] = upperbound;
-        //                arguments[i] = split_arguments.join("=");
-        //            }
-        //            if (!(arguments[i].match(/^superfluous/)))
-        //                arguments_to_send.push(arguments[i]);
-        //        }
-        //        my.trackPage('goals/filter/continuous_from_groups', {'filter_type' : 'continuous_from_groups', 'feature_name': group_element.attr('data-grouping'), 'selected_continuous_min' : lowerbound, 'selected_continuous_max' : upperbound});
-        //        my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
-        //    }
-        //});
-
-        //$('.removesearch').live('click', function(){
-        //    $('#previous_search_word').val('');
-        //    $("#myfilter_search").val("");
-        //    $(this).parent().remove();
-        //    submitCategorical();
-        //    return false;
-         //});
-
-        $('.binary_filter_text').live('click', function(){
+        $('.checkbox_text').live('click', function(){
             if (my.loading_indicator_state.disable) return false;
             var checkbox = $(this).siblings('input');
             if (checkbox.attr('checked'))
                 checkbox.removeAttr("checked");
             else
                 checkbox.attr("checked", "checked");
-            if (checkbox.hasClass("cat_filter"))
-                clickCat(checkbox);
-            else
-                clickBinary(checkbox);
-            var whichbox = checkbox.attr('data-opt');
-            my.trackPage('goals/filter/categorical', {'feature_name' : whichbox, 'filter_type': 'categorical'});
+            clickCheckbox(checkbox);
             return false;
         });
         // Checkboxes -- submit
-        $('.binary_filter').live('click', clickBinary);
-        function clickBinary() {                                                                                                        
+        $('.binary_filter').live('click', clickCheckbox);
+        $('.cat_filter').live('click', clickCheckbox);
+        function clickCheckbox() {                                                                                                        
             //Differentiate between the checkbox and text link, which passes in the checkbox
             var t = (arguments[0].jquery == undefined) ? $(this) : arguments[0];
-            var whichbox = t.attr('data-opt'), box_value = t.attr('checked') ? 100 : 0;
-            my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox, 'filter_type': 'checkbox'});
-            submitCategorical();
-        }
-        // Checkboxes -- submit
-        $('.cat_filter').live('click', clickCat);
-        function clickCat() {
-            //Differentiate between the checkbox and text link, which passes in the checkbox
-            var t = (arguments[0].jquery == undefined) ? $(this) : arguments[0];
-            var whichcat = t.attr('data-feat'), feature_selected = t.attr('data-opt');
-            var feat_obj = $('#myfilter_'+whichcat);
-            if (t.attr('checked')) // It was just checked a moment ago
-            {    // Check action
-                feat_obj.val(opt_appendStringWithToken(feat_obj.val(), feature_selected, '*'));
-            } else { // Uncheck selection
-                feat_obj.val(opt_removeStringWithToken(feat_obj.val(), feature_selected, '*'));
-                my.trackPage('goals/filter/checkbox', {'feature_name' : feature_selected, 'filter_type' : 'brand'});
-            }
-            submitCategorical();
+            //TODO XXX - This should be tracking the name and value as seperate fields
+            my.trackPage('goals/filter/checkbox', {'feature_name' : t.name+'='+t.value, 'filter_type': 'checkbox'});
+            submitAJAX();
         }
 
         $(".close, .bb_quickview_close, #silkscreen").live('click', function(){
@@ -1103,12 +1026,12 @@ optemo_module = (function (my){
         $('.showcase_banner').live('click', function () {
             var whichBrand = $(this).attr('data-brand');
             if (whichBrand != undefined && whichBrand != "") {
-                var feat_obj = $('#myfilter_brand');
+                var feat_obj = $('#categorical_brand');
                 // Since it's just on the landing page, we know that there are no filters yet, 
                 // so we can add without checking if it's already there
-                feat_obj.val(opt_appendStringWithToken(feat_obj.val(), whichBrand, '*'));
+                feat_obj.val(whichBrand);
                 my.trackPage('goals/showcase_banner', {'feature_name' : whichBrand, 'filter_type' : 'showcase_banner'});
-                submitCategorical();
+                submitAJAX();
             } else { // This is not scalable. Eventually this sort of logic should be in Firehose.
                 //var whichSku = $(this).attr('data-sku');
                 var whichProduct = $(this).attr('product_type');

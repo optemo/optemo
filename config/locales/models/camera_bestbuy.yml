@@ -110,6 +110,11 @@ en:
                 name:               "Newest Model"
             orders_factor:  
                 name:               "Best Selling"        
-            AdvancedSearch:
+            advanced_search:
                 name:               "Advanced Search"                            
-
+            status:
+                name:               "Status"
+            New Technology:
+                name:               "New Technology"
+            video_resolution:
+                name:               "Video Resolution"

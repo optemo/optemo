@@ -69,26 +69,8 @@ class CompareController < ApplicationController
   end  
   
   def create
-    #Narrow the product search through filters
-    params[:myfilter] = {} if params[:myfilter].nil?
-      # We need to propagate the previous search term if the new search term is blank (this should be done is JS)
-    if (!params[:previous_search_word].blank? && params[:myfilter][:search].blank?)
-      params[:myfilter][:search] = params[:previous_search_word]
-    end
-    #The search should only be able to fail from bad keywords, as empty searches can't be selected
-    if !params[:myfilter][:search].blank? && !Search.keyword(params[:myfilter][:search])
-      #Rollback
-      classVariables(Session.lastsearch)
-      @errortype = "filter"
-      if Session.mobileView
-        render 'error'
-      else 
-        render 'error', :layout => false
-      end
-    else
-      classVariables(Search.create(action_type: "filter", parent: params[:hist], filters: params[:myfilter]))
-      correct_render
-    end
+    classVariables(Search.create(action_type: "filter", parent: params[:hist], filters: {continuous: params[:continuous], categorical: params[:categorical], binary: params[:binary]}))
+    correct_render
   end
 
   # GET /products/1
@@ -140,7 +122,7 @@ class CompareController < ApplicationController
     @s = Session
     @jsonp_version = true if params[:embedding] # request.subdomains.first == "embed" || request.subdomains.first == "sandbox"
     @s.search = search
-    @s.getFilters search.userdatacats
+    @s.set_features(search.userdatacats.select{|d| d.name == 'category'}.map{|d| d.value})
   end
   
   def correct_render
@@ -160,12 +142,7 @@ class CompareController < ApplicationController
        # end      
       end
     else
-      if Session.mobileView
-        classVariables(Search.create({"page" => params[:page], :action_type => "allproducts"}))
-        render 'products'
-      else
-        render 'compare'
-      end
+      render 'compare'
     end
   end
 end

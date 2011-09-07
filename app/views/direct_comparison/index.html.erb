@@ -47,26 +47,24 @@
     <% end %>
   </div>
 	<% gray = false %>
-  <%# sort_show_feats is function defined in direct_comparison_helper.rb %>
-  <% @s.comparison_features.each do |feat_pair| %>
-    <% feat_pair.each_pair do |feat, feat_type| %>
+  
+  <% Session.features['show'].each do |feature| %>
+		<%#needs to be more efficient especially if we want to have unlimited number of products in the compare box%>	
+		<% if feature.feature_type != "Binary" || !@products.map{|product| spec_hash[product.id][feature.name]}.compact.empty? %> 
+			<div class="<%= t("#{Session.product_type}.specs.#{feature.name}.name", :default=>feature.name).length < 20 ? "compare_row" : "double_height_compare_row" %>">
+		    <div class="cell <%= gray ? "graybg" : "whitebg" %> leftmostcolumn leftcolumntext">
+		      <%= t("#{Session.product_type}.specs.#{feature.name}.name", :default=>feature.name) %>:
+		    </div>
+        <% @products.each_with_index do |product, i| %>
+          <% allspecs = spec_hash[product.id] %>
+					<%# Some features have a french version and others don't %>
+          <%= render :partial => 'featurevalues', :locals => {:product => product, :numberofproducts => @products.count, :spec => allspecs[feature.name+fr?] || allspecs[feature.name], :gray => gray, :feat => feature.name, :type => feature.feature_type, :column_number => i} %>
 
-			    <%#needs to be more efficient especially if we want to have unlimited number of products in the compare box%>	
-				  <% if feat_type!="Binary" || !@products.map{|product| spec_hash[product.id][feat]}.compact.empty? %> 
-					  <div class="<%= t("#{Session.product_type}.specs.#{feat}.name", :default=>feat).length < 20 ? "compare_row" : "double_height_compare_row" %>">
-		     			<div class="cell <%= gray ? "graybg" : "whitebg" %> leftmostcolumn leftcolumntext">
-		        		<%= t("#{Session.product_type}.specs.#{feat}.name", :default=>feat) %>:
-		        	</div>
-        			<% @products.each_with_index do |product, i| %>
-            		<% allspecs = spec_hash[product.id] %>
-							  <%# Some features have a french version and others don't %>
-            		<%= render :partial => 'featurevalues', :locals => {:product => product, :numberofproducts => @products.count, :spec => allspecs[feat+fr?] || allspecs[feat], :gray => gray, :feat => feat, :type => feat_type, :column_number => i} %>
-              <% end %>
-        			<% gray = !gray %>
-					  </div>
-          <% end %>
         <% end %>
-      <% end %>
+        <% gray = !gray %>
+			</div>
+    <% end %>
+  <% end %>
 </div>
 
 <div class="spacer togglespecs" style="width=<%= box_width %>px"><%= link_to '#', :class => 'toggle_specs' do %>
