@@ -27,7 +27,7 @@ private
     if @products.length > 1
       contspecs = {}
       @products.each {|p| contspecs[p.id] = ContSpec.cache_all(p.id)}
-      @s.current.features["show"].each do |feature|
+      @s.features["show"].each do |feature|
         # For every feature in ContinuousFeatures
         # For every product in @products
         # Find the min value and assign @bestvalue[feature]=product-id
