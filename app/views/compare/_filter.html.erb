@@ -19,8 +19,10 @@
     </div>
   <% end -%>
   <% case f.feature_type -%>
-  <% when "Heading", "Spacer" -%>
-    <div style="height: 5px"><!-- --></div>
+  <% when "Heading" -%>
+    <div style="height: 7px"><!-- --></div>
+  <% when "Spacer" -%>
+    <div style="height: 17px"><!-- --></div>
   <% when "Categorical" -%>
     <% chosen_cats = chosencats(f.name) %>
     <% if f.name == "color" # TODO: should not be hard code here%>
