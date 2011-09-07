@@ -27,7 +27,7 @@
 		<% if cont_specs["customerRating"] > 0 %>
 			<div class="stars" data-stars="<%= cont_specs["customerRating"] %>"></div>
 		<% end %>
-		    <div style='margin-top: 50px'><%= link_to image_tag("shopnow#{fr?}.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{hero.sku}", {:'data-sku' =>hero.sku, :class => 'spacer shop-now addcart', :'data-name' =>small_title(hero)} %></div>
+		    <div style='margin-top: 50px'><%= link_to image_tag("shopnow#{fr?}.gif"), text_spec, {:'data-sku' =>hero.sku, :class => 'spacer shop-now addcart', :'data-name' =>small_title(hero)} %></div>
 	</div>
     <div style='clear:both; width:0;height: 0;'></div>   
 </div>
