@@ -13,15 +13,14 @@
 
 		<%= link_to cat_specs["title#{fr?}"], text_spec, :'data-id' => hero.id, :'data-sku' => hero.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
 		<div class="productspecs"><!--7--></div>	
-
 		<% if BinSpec.cache_all(hero.id)["onsale"] %>
 			<div class="saleprice">
 			<%= t('products.compare.onsale')+(fr?.empty? ? "" : " ")+": "+number_to_currency(cont_specs["saleprice"]) %></div>	
 			<div class="save"><%= t('products.compare.save')+(fr?.empty? ? "" : " ")+": "+ number_to_currency(cont_specs["price"]-cont_specs["saleprice"]) %></div>
-		    <div class="saleends"><%= t('products.show.saleends')+": "%><%= l((Date.parse(cat_specs["saleEndDate"]) - 1.day), :format => :long) if cat_specs["saleEndDate"] %></div>
+		    <div class="saleends"><%= t('products.show.saleends')+(fr?.empty? ? "" : " ")+": "%><%= l((Date.parse(cat_specs["saleEndDate"]) - 1.day), :format => :long) if cat_specs["saleEndDate"] %></div>
 		<% else %>
 			<div class="price">
-				$<%= number_with_delimiter(cont_specs["price"]) %>
+				<%= t('products.show.ourprice') + ":"%> <%= "$" if fr?.empty? %><%= number_with_delimiter(cont_specs["price"]) %> <%= " $" unless fr?.empty? %>
 			</div>	
 		<% end %>
 		<% if cont_specs["customerRating"] > 0 %>
