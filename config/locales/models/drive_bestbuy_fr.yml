@@ -21,8 +21,7 @@ fr:
             category:
                 name:               "Catégories"
             saleprice:
-                name:               "Prix"   
-                preunit:            "$"  
+                name:               "Prix"
             maxresolution:
                 name:               "Resolution"
                 info:               "Measured in megapixels (millions of pixels), the number of light-sensitive cells that are actually exposed to light and used to capture the image, while the remainder may be shielded or just unused."

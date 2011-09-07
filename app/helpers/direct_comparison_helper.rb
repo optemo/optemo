@@ -1,13 +1,22 @@
 module DirectComparisonHelper
-  def IsPresentAndUniqueInCSV(item, csvString)
-    # Parse csv string into array
-    # match item with each element of array, and return true if match occurs
-    values = csvString.to_s.split(',')
-    return false if values.length > 1 # If 2 or more items have the best value
-    return true if !values.index(item.to_s).nil?
-    return false
+  def feature_value(product_id, spec, gray, feature, column_number)
+    feat = feature.name
+    content_tag :div, :class => ["cell", gray ? "graybg" : "whitebg", "spec_column_"+column_number.to_s], :style => Maybe(@bestvalue[feature.name]).include?(product_id) ? "font-weight:bold;" : "" do
+      if feature.feature_type == "Continuous"
+    	  if spec.nil?
+    		  "-"
+    	  elsif feature.name=="saleprice"
+    	  	number_to_currency(spec)
+    	  else
+    	  	number_with_delimiter(spec).to_s + " " + t("#{Session.product_type}.specs.#{feature.name}.unit", :default => "")
+    	  end
+      elsif feature.feature_type == "Categorical"
+        t("#{Session.product_type}.specs.#{spec}.name", :default => spec.nil? ? "-" : spec.to_s)
+      else #Binary -- might need to add another elsif clause for text specs later
+      	spec ? t('compare.index.yesoption') : t('compare.index.nooption')
+      end
+    end
   end
-  
   def box_width
     (@products.size - 2) * 201 + 531
     531 if @products.size <= 2

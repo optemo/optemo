@@ -62,13 +62,15 @@ class Session
       (dynamically_excluded << f && false) #If a feature is not selected, we need to note this
     end.group_by(&:used_for)
     # Some filters of last search need to be removed when dynamic filters removed
-    dynamically_excluded.each do |f|
-      selection = case f.feature_type
-        when "Continuous" then self.search.userdataconts
-        when "Categorical" then self.search.userdatacats
-        when "Binary" then self.search.userdatabins
+    unless categories.empty?
+      dynamically_excluded.each do |f|
+        selection = case f.feature_type
+          when "Continuous" then self.search.userdataconts
+          when "Categorical" then self.search.userdatacats
+          when "Binary" then self.search.userdatabins
+        end
+        Maybe(selection.select{|ud|ud.name == f.name}.first).destroy
       end
-      Maybe(selection.select{|ud|ud.name == f.name}.first).destroy
     end
   end
 

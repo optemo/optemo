@@ -23,7 +23,6 @@ fr:
                 name:               "Catégorie de produit"
             saleprice:
                 name:               "Prix"
-                preunit:            "$"
             maxresolution:
                 name:               "Mégapixels"
                 unit:               "Mpx"
