@@ -3,7 +3,7 @@ class Session
   cattr_accessor :id, :search  # Basic individual data. These are not set in initialization.
   cattr_accessor :directLayout, :mobileView  # View choice (Assist vs. Direct, mobile view vs. computer view)
   cattr_accessor :dragAndDropEnabled, :relativeDescriptions, :numGroups, :extendednav  # These flags should probably be stripped back out of the code eventually
-  cattr_accessor :product_type, :product_type_int, :product_type_id # Product type (camera_us, etc.), used everywhere
+  cattr_accessor :product_type, :product_type_id # Product type (camera_us, etc.), used everywhere
   cattr_accessor :piwikSiteId # Piwik Site ID, as configured in the currently-running Piwik install.
   cattr_accessor :ab_testing_type # Categorizes new users for AB testing
   cattr_accessor :category_id
@@ -26,10 +26,6 @@ class Session
     p_type = ProductType.find((cat_id.blank? || cat_id == "undefined") ? 2 : CategoryIdProductTypeMap.find_by_category_id(cat_id.to_i).product_type_id)
     self.product_type = p_type.name
     self.product_type_id = p_type.id
-    #Define an integer for the product type
-    chars = []
-    self.product_type.each_char{|c|chars << c.getbyte(0)*chars.size}
-    self.product_type_int = chars.sum * -1
     
     self.category_id = p_type.category_id_product_type_maps.map{|x|x.category_id}
     

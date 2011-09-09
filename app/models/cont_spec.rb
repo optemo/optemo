@@ -14,8 +14,8 @@ class ContSpec < ActiveRecord::Base
   end
   
   def self.all
-    CachingMemcached.cache_lookup("ContSpecsAll#{Session.product_type_int}") do
-      joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").select("search_products.product_id, group_concat(cont_specs.name) AS names, group_concat(cont_specs.value) AS vals").where(:search_products => {:search_id => Session.product_type_int}).group(:product_id).all
+    CachingMemcached.cache_lookup("ContSpecsAll#{Session.product_type_id}") do
+      joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").select("search_products.product_id, group_concat(cont_specs.name) AS names, group_concat(cont_specs.value) AS vals").where(:search_products => {:search_id => Session.product_type_id}).group(:product_id).all
     end
   end
   
@@ -67,6 +67,6 @@ class ContSpec < ActiveRecord::Base
   private
   
   def self.initial_specs(feat)
-    joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").where(:cont_specs => {:name => feat}, :search_products => {:search_id => Session.product_type_int}).select("value").all.map(&:value)
+    joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").where(:cont_specs => {:name => feat}, :search_products => {:search_id => Session.product_type_id}).select("value").all.map(&:value)
   end
 end

@@ -185,7 +185,7 @@ class Search < ActiveRecord::Base
     else
       product_ids = Product.search_for_ids(:per_page => 10000, :star => true, :conditions => {:product_type => Session.product_type, :title => keyword})
       #Check that the results are valid and instock
-      new_entries = SearchProduct.where(:search_id => Session.product_type_int).where("product_id IN (#{product_ids.join(',')})").map{|sp| KeywordSearch.new({:keyword => keyword, :product_id => sp.product_id})} unless product_ids.empty?
+      new_entries = SearchProduct.where(:search_id => Session.product_type_id).where("product_id IN (#{product_ids.join(',')})").map{|sp| KeywordSearch.new({:keyword => keyword, :product_id => sp.product_id})} unless product_ids.empty?
       if product_ids.empty? || new_entries.empty?
         #Save a nil entry for failed searches
         KeywordSearch.create({:keyword => keyword})
