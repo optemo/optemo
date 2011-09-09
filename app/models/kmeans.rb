@@ -220,7 +220,7 @@ class  Kmeans
   end
   
   def self.set_cluster_weights(features)
-    if Session.search.sortby.nil? || Session.search.sortby == "relevance"
+    if Session.search.sortby.nil? || Session.search.sortby == "utility"
       weights = features.map{|f| f.value}
       weights_sum = weights.sum.to_f
       weights.map{|w| w/weights_sum}
