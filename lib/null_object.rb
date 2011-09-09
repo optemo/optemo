@@ -7,6 +7,7 @@ class NullObject
   end
 
   def nil?; true; end
+  def to_s; ""; end
 end
 
 def Maybe(value, &block)

@@ -470,7 +470,7 @@ optemo_module = (function (my){
         };
         var selections = $("#filter_form").serializeObject();
         $.each(selections, function(k,v){
-            if(v == "") {
+            if(v == "" || v == "-") {
                 delete selections[k];
             }
             /* Look for weird $ error */
