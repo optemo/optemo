@@ -363,6 +363,21 @@ html {
 #optemo_embedder .stars {
 	padding-top: 3px;
 }
+
+#optemo_embedder .siblingsbox {
+  margin-top: 3px;
+  text-align: center;
+  border-bottom: 1px solid #e1e1e1;;
+  border-top: 1px solid #e1e1e1;
+}
+
+#optemo_embedder .sibling img {
+  height: 35px;
+  width: 35px;
+  position: relative;
+  overflow: left;
+}
+
 /*.itemtitle {
     font-size: 1.4em;
     line-height: 1.7em;

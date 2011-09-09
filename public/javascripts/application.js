@@ -887,6 +887,10 @@ optemo_module = (function (my){
             return false;
         });
 
+        $(".sibling").live("click", function (){
+            my.trackPage('goals/show', {'filter_type' : 'siblings', 'product_picked' : $(this).attr("data-sku")});
+        });
+
         //Ajax call for simlinks ('browse similar')
         $('.simlinks').live("click", function() {
             if (my.loading_indicator_state.disable) return false;
