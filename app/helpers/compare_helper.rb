@@ -188,28 +188,6 @@ module CompareHelper
     missing
   end
 
-  # Generate product small title. If the product is a bundle, its title should be the first product included in the bundle with same product type as this bundle.
-  def small_title(product)
-    # If this is a bundle get the first product in the bundle with same product type
-    bundle = ""
-    id_or_bundle_first_id = product.id
-
-    bundle_cat_specs = CatSpec.cache_all(product.id)
-    if product.product_bundle
-      bundle = " (" + t("products.show.bundle") + ")"
-      id_or_bundle_first_id = product.product_bundle.product_id
-      bundle_cat_specs = CatSpec.cache_all(id_or_bundle_first_id)
-    end
-    
-    st = [bundle_cat_specs["brand#{fr?}"], bundle_cat_specs["model#{fr?}"]].join(" ") + bundle
-    if !(fr?.empty?)
-      CatSpec.colors_en_fr.each_pair do |k, v|
-        st = st.sub(k.upcase,v)
-      end
-    end
-    st
-  end
-
   def descurl(product)
     small_title(product).tr(' /','_-').tr('.', '-')
   end
