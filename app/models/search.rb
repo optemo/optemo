@@ -280,11 +280,7 @@ class Search < ActiveRecord::Base
     Maybe(p[:continuous]).each_pair do |k,v|
       #Split range into min and max
       if res = r.match(v)
-        # Only add the filter when the feature if it is in its range
-        feat_range = ContSpec.allMinMax(k)
-        if (feat_range[0] < res[:min].to_f && feat_range[1] > res[:min].to_f) || (feat_range[0] < res[:max].to_f && feat_range[1] > res[:max].to_f)
-          @userdataconts << Userdatacont.new({:name => k, :min => res[:min], :max => res[:max]})
-        end
+        @userdataconts << Userdatacont.new({:name => k, :min => res[:min], :max => res[:max]})
       end
     end
     
