@@ -3,14 +3,6 @@ module CompareHelper
     ! (request.referer && request.referer.match(/http:\/\/(laserprinterhub|localhost)/))
   end
   
-  def overallmin(feat)
-    ((ContSpec.allMinMax(feat)[0] || 0)*10).to_i.to_f/10
-  end
-  
-  def overallmax(feat)
-    ((ContSpec.allMinMax(feat)[1] || 0)*10).ceil.to_f/10
-  end
-  
   # This function formats a number's display precision in a way that humans find more reasonable.
   # Specifically, it takes numbers like 8177.99 and turns them into 8200, or numbers like 4.974 into 4.97.
   # This code is ported from application.js (in setting up slider increments).
@@ -186,28 +178,6 @@ module CompareHelper
       missing = true
     end
     missing
-  end
-
-  # Generate product small title. If the product is a bundle, its title should be the first product included in the bundle with same product type as this bundle.
-  def small_title(product)
-    # If this is a bundle get the first product in the bundle with same product type
-    bundle = ""
-    id_or_bundle_first_id = product.id
-
-    bundle_cat_specs = CatSpec.cache_all(product.id)
-    if product.product_bundle
-      bundle = " (" + t("products.show.bundle") + ")"
-      id_or_bundle_first_id = product.product_bundle.product_id
-      bundle_cat_specs = CatSpec.cache_all(id_or_bundle_first_id)
-    end
-    
-    st = [bundle_cat_specs["brand#{fr?}"], bundle_cat_specs["model#{fr?}"]].join(" ") + bundle
-    if !(fr?.empty?)
-      CatSpec.colors_en_fr.each_pair do |k, v|
-        st = st.sub(k.upcase,v)
-      end
-    end
-    st
   end
 
   def descurl(product)

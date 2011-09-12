@@ -24,7 +24,6 @@ class Cluster
       p_ids = ComparableSet.from_storage Rails.cache.read("Cluster#{id}")
     end
     #Cache miss
-    #p_ids = SearchProduct.find_all_by_search_id(Session.product_type_int).map(&:product_id) unless p_ids
     debugger unless p_ids
     p_ids
   end

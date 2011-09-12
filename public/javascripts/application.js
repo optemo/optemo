@@ -923,10 +923,7 @@ optemo_module = (function (my){
             var t = $(this), href = t.attr('href') || t.parent().find('.easylink').attr('href'),
             ignored_ids = getAllShownProductSkus(),
             currentelementid = t.attr('data-sku') || href.match(/\d+$/);
-            if (!(t.hasClass('productimg'))) t = t.parent().parent().find('img.productimg');
-            var product_title = t.attr('title');
-            if (product_title == undefined) product_title = t.html(); // This is a text link
-            my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids, 'imgurl' : t.attr('src')});
+            my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : t.html(), 'product_ignored' : ignored_ids, 'imgurl' : t.attr('src')});
             //my.applySilkScreen(href + '?plain=true',null, 560, 580);
             window.location = href;
             return false;
@@ -943,11 +940,7 @@ optemo_module = (function (my){
 
         // Add to cart buy link
         $('.addtocart').live("click", function(){
-            my.trackPage('goals/addtocart', {'product_picked' : $(this).attr('data-sku'), 'filter_type' : 'addtocart', 'product_picked_name' : $(this).attr('data-name')});
-        });
-
-        $('.bestbuy_pdp').live("click", function(){
-            my.trackPage('goals/bestbuy_pdp', {'product_picked' : $(this).attr('data-sku'), 'filter_type' : 'bestbuy_pdp', 'product_picked_name' : $(this).attr('data-name')});
+            my.trackPage('goals/addtocart', {'product_picked' : $(this).attr('data-sku'), 'filter_type' : 'addtocart'});
         });
 
         //Pagination links
