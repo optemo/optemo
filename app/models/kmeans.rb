@@ -220,16 +220,9 @@ class  Kmeans
   end
   
   def self.set_cluster_weights(features)
-    if Session.search.sortby.nil? || Session.search.sortby == "utility"
       weights = features.map{|f| f.value}
       weights_sum = weights.sum.to_f
       weights.map{|w| w/weights_sum}
-    else
-      weights = [0.001/(features.size-1)]*features.size
-      sorted_feature = features.select{|f|f.name == Session.search.sortby}.first
-      weights[features.index(sorted_feature)] = 0.999
-      weights
-    end
   end
   
   def self.utility(products, use)
