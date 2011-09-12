@@ -28,7 +28,7 @@ class SearchProduct < ActiveRecord::Base
       if !categories.empty?
         categories = [categories]
       end
-      res = search_id_q.create_join(categories,[]).cats(categories)
+      res = search_id_q.create_join(categories,[],[]).cats(categories)
     end
             
     def fq2
