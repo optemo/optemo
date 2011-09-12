@@ -3,14 +3,6 @@ module CompareHelper
     ! (request.referer && request.referer.match(/http:\/\/(laserprinterhub|localhost)/))
   end
   
-  def overallmin(feat)
-    ((ContSpec.allMinMax(feat)[0] || 0)*10).to_i.to_f/10
-  end
-  
-  def overallmax(feat)
-    ((ContSpec.allMinMax(feat)[1] || 0)*10).ceil.to_f/10
-  end
-  
   # This function formats a number's display precision in a way that humans find more reasonable.
   # Specifically, it takes numbers like 8177.99 and turns them into 8200, or numbers like 4.974 into 4.97.
   # This code is ported from application.js (in setting up slider increments).

@@ -40,7 +40,7 @@ class Session
     # These site ids MUST match what's in the piwik database.
     p_url = nil  # Initialize variable out here for locality
     p_type.urls.each do |u|
-      p_url = u if request_url[u.url] 
+      p_url = u if request_url && request_url[u.url] 
     end
     p_url ||= p_type.urls.first
     self.piwikSiteId = p_url.piwik_id || 10 # This is a catch-all for testing sites.

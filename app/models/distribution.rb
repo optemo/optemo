@@ -27,12 +27,13 @@ require 'inline'
       #Features can have varying lengths
       lengths = specs.map{|s| s.size}
       raise ValidationError, "num_buckets is less than 2" unless num_buckets>1
+      raise ValidationError, "size of feats is not right" unless feats.size == specs.size
       raise ValidationError, "size of mins is not right" unless mins.size == specs.size
       raise ValidationError, "size of maxes is not right" unless maxes.size == specs.size
       res = distribution_c(specs.flatten, specs.size, num_buckets, mins, maxes, lengths) #unless $res
       feats.each_with_index do |f, i|   
         t = i*(2+num_buckets) 
-        dist[f] = [[res[t], res[t+1]], res[(t+2)...(i+1)*(2+num_buckets)]]
+        dist[f] = [[res[t], res[t+1],mins[i],maxes[i]], res[(t+2)...(i+1)*(2+num_buckets)]]
       end
       dist
     rescue ValidationError
@@ -145,8 +146,7 @@ require 'inline'
     
   def dist_each(feat) 
        dist = Array.new(21,0)
-       min = ContSpec.allMinMax(feat)[0]
-       max = ContSpec.allMinMax(feat)[1]
+       min, max = ContSpec.allMinMax(feat)
        return [[],[]] if max.nil? || min.nil?
        current_dataset_minimum = max
        current_dataset_maximum = min
@@ -158,7 +158,7 @@ require 'inline'
          i = ((s - min) / stepsize).to_i
          dist[i] += 1 if i < dist.length
        end  
-       [[current_dataset_minimum, current_dataset_maximum], round2Decim(normalize(dist))] 
+       [[current_dataset_minimum, current_dataset_maximum,min,max], round2Decim(normalize(dist))] 
   end  
   def ruby(feats)
     dist = {}

@@ -23,6 +23,13 @@ class SearchProduct < ActiveRecord::Base
       #end
       #cached
     end
+    
+    def fq_categories(categories)
+      if !categories.empty?
+        categories = [categories]
+      end
+      res = search_id_q.create_join(categories,[],[]).cats(categories)
+    end
             
     def fq2
       mycats = Session.search.userdatacats.group_by{|x|x.name}.values
@@ -43,9 +50,9 @@ class SearchProduct < ActiveRecord::Base
       mybins = s.userdatabins
       table_id = mycats.size
       if expanded
-        q = where(:search_id => Session.product_type_id).create_join(mycats+[[feat]],mybins,s.userdataconts,s).conts_keywords(s).bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
+        q = where(:search_id => Session.product_type_id).create_join(mycats+[[feat]],mybins,s.userdataconts).conts_keywords(s).bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
       else
-        q = search_id_q.create_join(mycats+[[feat]],mybins,s.userdataconts,s).conts_keywords(s).bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
+        q = search_id_q.create_join(mycats+[[feat]],mybins,s.userdataconts).conts_keywords(s).bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
       end
       CachingMemcached.cache_lookup("CatsCount(#{includezeros.to_s})-#{q.to_sql.hash}") do
         if includezeros
@@ -71,12 +78,11 @@ class SearchProduct < ActiveRecord::Base
       where(:search_id => Session.product_type_id)
     end
       
-    def create_join(mycats,mybins,myconts = Session.search.userdataconts,s=Session.search)
+    def create_join(mycats,mybins,myconts = Maybe(Session.search).userdataconts)
       tables = []
       tables << ["cont_specs"] * myconts.size
       tables << ["cat_specs"] * mycats.size
       tables << ["bin_specs"] * mybins.size
-      tables << ["keyword_searches"] if s.keyword_search
       myjoins = []
       tables.map{|type|type.each_with_index{|table,i| myjoins << "INNER JOIN #{table} #{table+i.to_s} ON search_products.product_id = #{table+i.to_s}.product_id"}}
       joins(myjoins.join(" "))
