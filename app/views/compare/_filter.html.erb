@@ -59,10 +59,10 @@
   	  <%= hidden_field_tag "continuous[#{f.name}]", current.min.to_s+"-"+current.max.to_s, {:class => 'range'}%>
   	  <div class='slider'
   	    data-label= '<%= f.name %>'
-  	    data-min='<%= format_acceptable_increments(ContSpec.allMinMax(f.name)[0], "down") %>'
-  	    data-max='<%= format_acceptable_increments(ContSpec.allMinMax(f.name)[1], "up") %>'
-  	    data-startmin='<%= format_acceptable_increments(current.min.nil? ? ContSpec.allMinMax(f.name)[0] : current.min, "down") %>'
-  	    data-startmax='<%= format_acceptable_increments(current.max.nil? ? ContSpec.allMinMax(f.name)[1] : current.max, "up") %>'
+  	    data-min='<%= format_acceptable_increments(distribution_data.first[2], "down") %>' <%# Global min %>
+  	    data-max='<%= format_acceptable_increments(distribution_data.first[3], "up") %>' <%# Global max %>
+  	    data-startmin='<%= format_acceptable_increments(current.min.nil? ? distribution_data.first[2] : current.min, "down") %>'
+  	    data-startmax='<%= format_acceptable_increments(current.max.nil? ? distribution_data.first[3] : current.max, "up") %>'
   	    current-data-min='<%= distribution_data.first.first %>'
   	    current-data-max='<%= distribution_data.first.second %>'
   	    force-int='false'
