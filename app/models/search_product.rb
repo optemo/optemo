@@ -23,6 +23,13 @@ class SearchProduct < ActiveRecord::Base
       #end
       #cached
     end
+    
+    def fq_categories(categories)
+      if !categories.empty?
+        categories = [categories]
+      end
+      res = search_id_q.create_join(categories,[]).cats(categories)
+    end
             
     def fq2
       mycats = Session.search.userdatacats.group_by{|x|x.name}.values
