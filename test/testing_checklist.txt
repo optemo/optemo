@@ -2,6 +2,8 @@ testing check list:
 
 Landing page:
 - There is a hero product at the top
+- Both SHOP NOW button and the product title link direct to the Best Buy product detail page
+- Click on both the SHOP NOW button and the title link and click back - check if you go back to the landing page
 - There are featured products listed in the bottom 
 - Click on the first product image and see if it successfully loads the PDP
 - Click on the back button and check if you get the first page 
@@ -38,18 +40,42 @@ Product Comparison:
 - Check if product tile and 
 - Click the remove link; The product should be removed; Click close
 - Check the boxes of 3 more products; Click the Compare button at the bottom of the page
+- Click the More specs link and see that the tables works, including collapsable headings if available
 - Add products to compare up to the 6th one and see if an error message comes up
 - Add to cart in the compare page
 - Click on the product link on the compare page to see if the PDP loads fine
 
-
-
 Dynamic filters:
-
 -Check dynamic filter on hard drives page - only common filters should be displayed on the first page and relevant filters for each product category 
+- Common filters are the following: 
+    Categories:   
+        External Hard Drives
+        Internal Hard Drives
+        Solid State Drives
+        USB Flash Drives
+        Optical Drives (this used to be DVD & CD drives)
+        Network-Attached Storage (NAS)
+        Storage Accessories
+    Status:
+        On Sale
+        Clearance
+        Online Only
+        Top-Rated
+        Featured Products
+    Brands
+    Price
+    Storage Capacity
+- Additional facets will be also displayed for the following categories:
+	Internal and External drives:
+    	Rotation Speed (multi-selection checkbox)
+    	Data Buffer (slider)
+    	Drive Size (multi-selection checkbox)
+	Solid State Drive:
+		Internal or External (multi-selection checkbox)
+	Optical Drives:
+		Internal or External (multi-selection checkbox)
 
 French: 
-
 - Check French links for all departments. 
 - Check that titles are french. 
 - Check that links go to french PDPs

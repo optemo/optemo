@@ -13,8 +13,8 @@ class BinSpec < ActiveRecord::Base
     end
   end
   def self.all(feat)
-    CachingMemcached.cache_lookup("#{Session.current.product_type}Bins-#{feat}") do
-      select("value").where("product_id IN (select product_id from search_products where search_id = ?) and name = ?", Session.product_type_int, feat).map(&:value)
+    CachingMemcached.cache_lookup("#{Session.product_type}Bins-#{feat}") do
+      select("value").where("product_id IN (select product_id from search_products where search_id = ?) and name = ?", Session.product_type_id, feat).map(&:value)
     end
   end
   

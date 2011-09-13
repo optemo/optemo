@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+require 'will_paginate/array'
 class Search < ActiveRecord::Base
   attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
   
@@ -34,103 +35,6 @@ class Search < ActiveRecord::Base
     end  
     indic
   end
-  
-  def relativeDescriptions
-    return if clusters.empty?
-    @reldescs ||= []
-    if @reldescs.empty?
-      feats = {}
-      Session.continuous["filter"].each do |f|
-        norm = ContSpec.allMinMax(f)[1] - ContSpec.allMinMax(f)[0]
-        norm = 1 if norm == 0
-        feats[f] = clusters.map{ |c| c.representative}.compact.map {|c| c[f].to_f/norm } 
-      end
-      cluster_count.times do |i|
-        dist = {}
-        Session.continuous["filter"].each do |f|
-          if feats[f].min == feats[f][i]
-            #This is the lowest feature
-            distance = feats[f].sort[1] - feats[f][i]
-            dist[f] = distance unless distance == 0 && feats[f].sort[2] == feats[f][i] #Remove ties
-          elsif feats[f].max == feats[f][i]
-            #This is the highest feature
-            distance = feats[f][i] - feats[f].sort[-2]
-            dist[f] = distance unless distance == 0 && feats[f].sort[-3] == feats[f][i] #Remove ties
-          #elsif feats[f].sort[4] == feats[f][i]
-          #  #This is an average feature
-          #  dist[f] = ([feats[f].sort[4]-feats[f].sort[3],feats[f].sort[5]-feats[f].sort[4]].min) - 1
-          #  dist[f] = distance unless distance == -1 #Remove ties
-          end
-        end if cluster_count > 1
-        n = dist.count
-        d = []
-        dist.sort{|a,b| b[1] <=> a[1]}[0..1].each do |f,v|
-          dir = feats[f].min == feats[f][i] ? "lower" : "higher"
-          #dir = feats[f].min == feats[f][i] ? "lower" : feats[f].max == feats[f][i] ? "higher" : "avg"
-          d << dir+f
-        end
-        #Add binary labels
-        #d.unshift "Waterproof" if clusters[i].waterproof && layer == 1
-        #d.unshift "SLR" if clusters[i].slr && layer == 1
-        if d.empty?
-          @reldescs << ["avg"]
-        else
-          @reldescs << d
-        end
-        #@descs[-1] = @descs.last + " (#{n})"
-      end
-    end
-    @reldescs
-  end
-  
-  def boostexterClusterDescriptions
-    @returned_taglines ||= BoostexterRule.clusterLabels(clusters)
-  end
-  
-  def clusterDescription(clusterNumber)
-    return if clusters.empty?
-    clusterDs = Array.new 
-    des = []
-    slr=0
-      Session.binary["filter"].each do |f|
-        if clusters[clusterNumber].indicator(f)
-          (f=='slr' && indicator("slr"))? slr = 1 : slr =0
-          des<< f if $config["DescFeatures"].include?(f) 
-        end
-      end
-      
-      Session.continuous["desc"].each do |f|
-        if !(f == "opticalzoom" && slr == 1)
-              cRanges = clusters[clusterNumber].ranges(f)
-              if (cRanges[1] < ContSpec.allLow(f))
-                 clusterDs << {'desc' => "low_"+f, 'stat' => 0}  
-              elsif (cRanges[0] > ContSpec.allHigh(f))
-                 clusterDs <<  {'desc' => "high_"+f, 'stat' => 2}  
-              elsif ((cRanges[0] >= ContSpec.allLow(f)) && (cRanges[1] <= ContSpec.allHigh(f))) 
-                  clusterDs <<  {'desc' => "avg_"+f, 'stat' => 1}
-              end 
-        end   
-      end     
-      
-    clusterDs.sort!{|a,b| b['stat'] <=> a['stat']}
-    clusterDs = clusterDs[0..1] if clusterDs.size > 2
-    clusterDs[0] = {'desc' => "average", 'stat' => 1} if clusterDs.blank?
-    des << clusterDs.map{|d| d['desc']};
-  end
-  
-  def searchDescription
-    des = []
-    Session.continuous["desc"].each do |f|
-      searchR = ranges(f)
-      return ['Empty'] if searchR[0].nil? || searchR[1].nil?
-      if (searchR[1] <= ContSpec.allLow(f))
-           des <<  "low_#{f}"
-      elsif (searchR[0] >= ContSpec.allHigh(f))
-           des <<  "high_#{f}"
-      end
-    end  
-    des[0..3]
-  end
     
   def minimum(feature)
     feature = feature + "_min"
@@ -156,7 +60,16 @@ class Search < ActiveRecord::Base
   end
   
   def paginated_products
-    @paginated_products ||= SearchProduct.fq_paginated_products.all
+    unless @paginated_products
+      if sortby == "utility" || sortby.nil?
+        myproducts = Kmeans.compute(18,products.dup)
+      else
+        myproducts = products
+      end
+      @paginated_products = myproducts.paginate(:page => page, :per_page => SearchProduct.per_page)
+      #SearchProduct.fq_paginated_products.all
+    end
+    @paginated_products
   end
   
   def isextended?
@@ -175,15 +88,13 @@ class Search < ActiveRecord::Base
   end
   
   def products
-    if sortby == "utility" || sortby.nil?
-        @products = Kmeans.compute(18,SearchProduct.fq2)
-    else
-        @products = SearchProduct.fq2
-    end
+    @products ||= SearchProduct.fq2
   end
   
-  def products_landing(type)
-    SearchProduct.fq2_landing(type)
+  def products_landing
+    @landing_products ||= CachingMemcached.cache_lookup("FeaturedProducts(#{Session.product_type}") do
+      BinSpec.find_all_by_name_and_product_type("featured",Session.product_type)
+    end
   end
   
   def sim_products
@@ -205,11 +116,11 @@ class Search < ActiveRecord::Base
 
   def groupings
     return [] if groupby.nil? 
-    if Session.categorical["all"].index(groupby) 
+    if Session.currrent.features["filter"].select{|f|f.feature_type == "Categorical"}.index(groupby) 
       # It's in the categorical array
       specs = products.zip CatSpec.cachemany(products, groupby)
       grouping = specs.group_by{|spec|spec[1]}.values.sort{|a,b| b.length <=> a.length}
-    elsif Session.continuous["all"].index(groupby)
+    elsif Session.currrent.features["filter"].select{|f|f.feature_type == "Continuous"}.index(groupby) 
       #The chosen feature is continuous
       specs = products.zip ContSpec.by_feat(groupby).sort
       # [[id, low], [id, higher], ... [id, highest]]
@@ -274,7 +185,7 @@ class Search < ActiveRecord::Base
     else
       product_ids = Product.search_for_ids(:per_page => 10000, :star => true, :conditions => {:product_type => Session.product_type, :title => keyword})
       #Check that the results are valid and instock
-      new_entries = SearchProduct.where(:search_id => Session.product_type_int).where("product_id IN (#{product_ids.join(',')})").map{|sp| KeywordSearch.new({:keyword => keyword, :product_id => sp.product_id})} unless product_ids.empty?
+      new_entries = SearchProduct.where(:search_id => Session.product_type_id).where("product_id IN (#{product_ids.join(',')})").map{|sp| KeywordSearch.new({:keyword => keyword, :product_id => sp.product_id})} unless product_ids.empty?
       if product_ids.empty? || new_entries.empty?
         #Save a nil entry for failed searches
         KeywordSearch.create({:keyword => keyword})
@@ -291,14 +202,20 @@ class Search < ActiveRecord::Base
   def initialize(p={})
     super({})
     #Set parent id
-    self.parent_id = CGI.unescape(p["parent"]).unpack("m")[0].to_i unless p["parent"].blank?
-    unless p["action_type"] == "initial" #Exception for initial clusters
+    self.parent_id = CGI.unescape(p[:parent]).unpack("m")[0].to_i unless p[:parent].blank?
+    unless p[:action_type] == "allproducts" || p[:action_type] == "landing" #Exception for initial clusters
       old_search = Search.find_by_id(self.parent_id)
     end
     # If there is a sort method to keep from last time, move it across
     self.sortby = old_search[:sortby] if old_search && old_search[:sortby]
-    case p["action_type"]
-    when "initial"
+    case p[:action_type]
+    when "allproducts"
+      #Initial load of the homepage
+      self.initial = false
+      @userdataconts = []
+      @userdatabins = []
+      @userdatacats = []
+    when "landing"
       #Initial load of the homepage
       self.initial = true
       @userdataconts = []
@@ -318,20 +235,14 @@ class Search < ActiveRecord::Base
     when "sortby"
       self.sortby = p[:sortby]
       duplicateFeatures(old_search)
-      self.initial = true;
+      self.initial = false
     when "groupby"
       self.groupby = p[:feat]
       duplicateFeatures(old_search)
     when "filter"
       #product filtering has been done through keyword search of attribute filters
-      createFeatures(p)
-      #Find clusters that match filtering query
-      #if old_search && !expandedFiltering?(old_search)
-      #  #Search is narrowed, so use old products to begin with
-      #else
-      #  #Search is expanded, so use all products to begin with
-        self.initial = true
-      #end
+      createFeatures(p[:filters])
+      self.initial = false
     else
       #Error
     end
@@ -364,38 +275,29 @@ class Search < ActiveRecord::Base
   end
    
   def createFeatures(p)
-    #seperate myfilter into various parts
     @userdataconts = []
-    @userdatabins = []
-    @userdatacats = []
+    r = /(?<min>[\d.]+)-(?<max>[\d.]+)/
+    Maybe(p[:continuous]).each_pair do |k,v|
+      #Split range into min and max
+      if res = r.match(v)
+        @userdataconts << Userdatacont.new({:name => k, :min => res[:min], :max => res[:max]})
+      end
+    end
     
-    p.each_pair do |k,v|
-      next if v.blank? #Skip blank values, this should be fixed in JS
-      if k.index(/(.+)_min/)
-        #Continuous Features
-        fname = Regexp.last_match[1]
-        max = fname+'_max'
-        # Only add the filter when the feature if it is in its range
-        feat_range = ContSpec.allMinMax fname
-
-
-        if (feat_range[0] < v.to_f && feat_range[1] > v.to_f) || (feat_range[0] < p[max].to_f && feat_range[1] > p[max].to_f)
-          @userdataconts << Userdatacont.new({:name => fname, :min => v, :max => p[max]})
-        end
-      elsif Session.binary["all"].index(k)
-        #Binary Features
-        #Handle false booleans
-        if v != '0'
-          @userdatabins << Userdatabin.new({:name => k, :value => v})
-        end
-      elsif Session.categorical["all"].index(k)
-        #Categorical Features
-        v.split("*").each do |cat|
-          @userdatacats << Userdatacat.new({:name => k, :value => cat})
-        end
-      elsif k == "search"
-        #Keyword Search
-        self.keyword_search = v
+    #Binary Features
+    @userdatabins = []
+    Maybe(p[:binary]).each_pair do |k,v|
+      #Handle false booleans
+      if v != '0'
+        @userdatabins << Userdatabin.new({:name => k, :value => v})
+      end
+    end
+    
+    #Categorical Features
+    @userdatacats = []
+    Maybe(p[:categorical]).each_pair do |k,v|
+      v.split("*").each do |cat|
+        @userdatacats << Userdatacat.new({:name => k, :value => cat})
       end
     end
     cats = []
@@ -412,70 +314,6 @@ class Search < ActiveRecord::Base
         end
       end
     end
-    
-    # remove the filter without categories selected
-    
-    dynamic_filter_cat_selected = []
-    dynamic_filter_cat_all = []
-    dynamic_filter_cont_selected = []
-    dynamic_filter_cont_all = []
-    dynamic_filter_bin_selected = []
-    dynamic_filter_bin_all = []
-    Session.dynamic_filter_cat.each_pair do |k, v|
-      dynamic_filter_cat_all += Session.dynamic_filter_cat[k]
-    end
-    Session.dynamic_filter_cont.each_pair do |k, v|
-      dynamic_filter_cont_all += Session.dynamic_filter_cont[k]
-    end
-    Session.dynamic_filter_bin.each_pair do |k, v|
-      dynamic_filter_bin_all += Session.dynamic_filter_bin[k]
-    end
-
-    cats.each do |c|
-      dynamic_filter_cat_selected += Session.dynamic_filter_cat[c]
-      dynamic_filter_cont_selected += Session.dynamic_filter_cont[c]
-      dynamic_filter_bin_selected += Session.dynamic_filter_bin[c]
-    end
-
-    
-
-    dynamic_filter_cat_selected.uniq!
-    dynamic_filter_cat_all.uniq!
-    dynamic_filter_cont_selected.uniq!
-    dynamic_filter_cont_all.uniq!
-    dynamic_filter_bin_selected.uniq!
-    dynamic_filter_bin_all.uniq!
-    
-    @userdatacats.reject!{|c| dynamic_filter_cat_all.include?(c.name) && !dynamic_filter_cat_selected.include?(c.name)}
-    @userdataconts.reject!{|c| dynamic_filter_cont_all.include?(c.name) && !dynamic_filter_cont_selected.include?(c.name)}
-    @userdatabins.reject!{|c| dynamic_filter_bin_all.include?(c.name) && !dynamic_filter_bin_selected.include?(c.name)}
-
-    # @userdatacats.group_by(&:name).keys.uniq.each do |feature_name|
-    #   Session.dynamic_filter_cat.each_pair do |k, v|
-    #       if v.include?(feature_name)
-    #         @userdatacats.reject!{|c| c.name == feature_name} unless cats.include?(k)
-    #         break
-    #       end
-    #     end
-    #   end
-    # @userdataconts.group_by(&:name).keys.uniq.each do |feature_name|
-    #   Session.dynamic_filter_cont.each_pair do |k, v|
-    #       if v.include?(feature_name)
-    #         @userdataconts.reject!{|c| c.name == feature_name} unless cats.include?(k)
-    #         break
-    #       end
-    #     end
-    #   end
-    #   @userdatabins.group_by(&:name).keys.uniq.each do |feature_name|
-    #     Session.dynamic_filter_bin.each_pair do |k, v|
-    #       if v.include?(feature_name)
-    #         @userdatabins.reject!{|c| c.name == feature_name} unless cats.include?(k)
-    #         break
-    #       end
-    #     end
-    #   end
-    
-
   end
   
   # The intent of this function is to see if filtering is being done on a previously filtered set of clusters.

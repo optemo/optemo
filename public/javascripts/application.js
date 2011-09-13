@@ -16,7 +16,7 @@
     ** applySilkScreen(url, data, width, height, f)  -  Puts up fading boxes, calling the callback frunction f if provided.
     ** getIdAndSkuFromProductimg(img)  -  Returns the ID from the image. Only used for drag-and-drop at the moment.
     removeFromComparison(id)  -  Removes comparison items from #savebar_content
-    submitCategorical()  -  Submits a categorical filter (no longer does tracking)
+    submitAJAX()  -  Submits a categorical filter (no longer does tracking)
     submitsearch()  -  Submits a search via the main search field in the filter bar
     histogram(element, norange)  -  draws histogram
     ** disableInterfaceElements()  -  Disables filters, so that the UI is only fielding one request at a time.
@@ -340,6 +340,9 @@ optemo_module = (function (my){
 
     my.removeSilkScreen = function() {
         $('#silkscreen, #outsidecontainer').hide();
+        // For ie 6, dropdown list has z-index issue. Show dropdown when popup hide.
+        if($.browser.msie && $.browser.version.substr<7)        
+            $('.jumpmenu').show();
     };
     
     my.current_height = (function() {
@@ -352,6 +355,10 @@ optemo_module = (function (my){
     });
 
     my.applySilkScreen = function(url,data,width,height,f) {
+        // For ie 6, dropdown list has z-index issue. Hide dropdown when popup show.
+        if($.browser.msie && $.browser.version.substr<7)
+            $('jumpmenu').hide();
+                
         //IE Compatibility
         var iebody=(document.compatMode && document.compatMode != "BackCompat")? document.documentElement : document.body,
         dsoctop=document.all? iebody.scrollTop : window.pageYOffset;
@@ -441,17 +448,20 @@ optemo_module = (function (my){
 
                      
     // Submit a categorical filter, e.g. brand.
-    function submitCategorical(){
+    function submitAJAX(){
         //Serialize an form into a hash, Warning: duplicate keys are dropped
         $.fn.serializeObject = function(){
             var o = {};
             var a = this.serializeArray();
             $.each(a, function() {
+              //So that multiple checkboxes don't get overwritten, if the value exists, turn it into an array
                 if (o[this.name] !== undefined) {
-                    if (!o[this.name].push) {
-                        o[this.name] = [o[this.name]];
-                    }
-                    o[this.name].push(this.value || '');
+                    //if (!o[this.name].push) {
+                    //    o[this.name] = [o[this.name]];
+                    //}
+                    //o[this.name].push(this.value || '');
+                    //Don't use an array - just concatenate with *
+                    o[this.name] = o[this.name] + "*" + this.value || '';
                 } else {
                     o[this.name] = this.value || '';
                 }
@@ -460,8 +470,13 @@ optemo_module = (function (my){
         };
         var selections = $("#filter_form").serializeObject();
         $.each(selections, function(k,v){
-            if(k.match(/(^superfluous)/) || v == "") {
+            if(v == "" || v == "-") {
                 delete selections[k];
+            }
+            /* Look for weird $ error */
+            if(v.match(/(ctl00[$]hidNotEnoughProductsMessage|ctl00[$]hidSelectedProductCount|ctl00[$]hidTooManyProductsMessage|ctl00[$]hidSelectedProductIds)/)) {
+              delete selections[k];
+              selections["XXXDBG"] = "MSIE-"+$.browser.msie+"VERSION-"+$.browser.version;
             }
         });
         my.ajaxcall("/compare/create", selections);
@@ -671,16 +686,13 @@ optemo_module = (function (my){
                     
                     if(sliderno == 0)
                     {
-                        $(this).siblings('.min').attr('value',realvalue);
-                        $(this).siblings('.max').attr('value',curmax);
+                      $(this).siblings('.range').attr('value',realvalue + "-" + curmax);
                     }
                     else
                     {
-                        $(this).siblings('.min').attr('value',curmin);
-                        $(this).siblings('.max').attr('value',realvalue);
+                      $(this).siblings('.range').attr('value',curmin + "-" + realvalue);
                     }
-                    
-                       return false;
+                    return false;
                 },
                 stop: function(e,ui)
                 {
@@ -705,7 +717,8 @@ optemo_module = (function (my){
 
                     if ((ui.values[1] * (rangemax - rangemin) / 100.0) + rangemin < datasetmin) {
                         rightslidervalue = datasetmin;
-                        $(this).siblings('.max').attr('value', rightslidervalue);
+                        var leftslidervalue = $(this).siblings('.range').attr('value').match(/[^-]+/).join();
+                        $(this).siblings('.range').attr('value', leftslidervalue + "-" + rightslidervalue);
                     }
                     else
                         rightslidervalue = ui.values[1];
@@ -723,7 +736,7 @@ optemo_module = (function (my){
                         leftsliderknob.removeData('toofar');
                         rightsliderknob.removeData('toofar');
                     }
-                    submitCategorical();
+                    submitAJAX();
                 }
             });
             if ($(this).slider("option", "disabled") == true) {
@@ -822,31 +835,19 @@ optemo_module = (function (my){
             whichThingSelected = whichThingSelected.charAt(0).toUpperCase() + whichThingSelected.slice(1);
             if (t.hasClass("selected_swatch"))
             { //Removed selected color
-                $('#myfilter_color').val(opt_removeStringWithToken($('#myfilter_color').val(), whichThingSelected, '*'));
+                $('#categorical_color').val("");
                 var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : 'color', 'filter_type' : 'categorical_removed'};
                 my.trackPage('goals/filter/categorical_removed', info);
             }
             else
             { //Added selected color
-                $('#myfilter_color').val(whichThingSelected);
+                $('#categorical_color').val(whichThingSelected);
                 var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : 'color', 'filter_type' : 'categorical'};
                 my.trackPage('goals/filter/categorical', info);
             }
             t.toggleClass('selected_swatch');
-            submitCategorical();
+            submitAJAX();
         });
-
-        // Remove a brand -- submit
-        //$('.removefilter').live('click', function(){
-        //    var whichRemoved = $(this).attr('data-id');
-        //    var whichCat = $(this).attr('data-cat');
-        //    $('#myfilter_'+whichCat).val(opt_removeStringWithToken($('#myfilter_'+whichCat).val(), whichRemoved, '*'));
-        //    var info = {'chosen_categorical' : whichRemoved, 'slider_name' : whichCat, 'filter_type' : 'categorical_removed'};
-        //    my.loading_indicator_state.sidebar = true;
-        //    my.trackPage('goals/filter/categorical_removed', info);
-        //    submitCategorical();
-        //    return false;
-        //});
 
         // From Compare
         //Remove buttons on compare
@@ -922,10 +923,7 @@ optemo_module = (function (my){
             var t = $(this), href = t.attr('href') || t.parent().find('.easylink').attr('href'),
             ignored_ids = getAllShownProductSkus(),
             currentelementid = t.attr('data-sku') || href.match(/\d+$/);
-            if (!(t.hasClass('productimg'))) t = t.parent().parent().find('img.productimg');
-            var product_title = t.attr('title');
-            if (product_title == undefined) product_title = t.html(); // This is a text link
-            my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : product_title, 'product_ignored' : ignored_ids, 'imgurl' : t.attr('src')});
+            my.trackPage('goals/show', {'filter_type' : 'show', 'product_picked' : currentelementid, 'product_picked_name' : t.html(), 'product_ignored' : ignored_ids, 'imgurl' : t.attr('src')});
             //my.applySilkScreen(href + '?plain=true',null, 560, 580);
             window.location = href;
             return false;
@@ -942,16 +940,10 @@ optemo_module = (function (my){
 
         // Add to cart buy link
         $('.addtocart').live("click", function(){
-            my.trackPage('goals/addtocart', {'product_picked' : $(this).attr('data-sku'), 'filter_type' : 'addtocart', 'product_picked_name' : $(this).attr('data-name')});
-        });
-
-        $('.bestbuy_pdp').live("click", function(){
-            my.trackPage('goals/bestbuy_pdp', {'product_picked' : $(this).attr('data-sku'), 'filter_type' : 'bestbuy_pdp', 'product_picked_name' : $(this).attr('data-name')});
+            my.trackPage('goals/addtocart', {'product_picked' : $(this).attr('data-sku'), 'filter_type' : 'addtocart'});
         });
 
         //Pagination links
-        // This convoluted line takes the second-last element in the list: "<< prev 1 2 3 4 next >>" and takes its numerical page value.
-        var total_pages = parseInt($('.pagination').children().last().prev().html());
         $('.pagination a').live("click", function(){
             if (my.loading_indicator_state.disable) return false;
             var url = $(this).attr('href')
@@ -960,9 +952,9 @@ optemo_module = (function (my){
             //else
             //    url +='?ajax=true'
             if ($(this).hasClass('next_page'))
-                my.trackPage('goals/next', {'filter_type' : 'next' , 'page_number' : parseInt($('.pagination .current').html()), 'total_number_of_pages' : total_pages});
+                my.trackPage('goals/next', {'filter_type' : 'next' , 'page_number' : parseInt($('.pagination .current').html())});
             else
-                my.trackPage('goals/next', {'filter_type' : 'next_number' , 'page_number' : parseInt($(this).html()), 'total_number_of_pages' : total_pages});
+                my.trackPage('goals/next', {'filter_type' : 'next_number' , 'page_number' : parseInt($(this).html())});
             my.ajaxcall(url);
             return false;
         });
@@ -972,97 +964,25 @@ optemo_module = (function (my){
             return false;
         });
 
-        // Choose a grouping via group button rather than drop-down (effect is the same as the select boxes)
-        //$('.title').live('click', function(){
-        //    if ($(this).find('.choose_group').length) { // This is a categorical feature
-        //        group_element = $(this).find('.choose_group');
-        //        var whichThingSelected = group_element.attr('data-min');
-        //        var categorical_filter_name = group_element.attr('data-grouping');
-        //        if($('#myfilter_'+categorical_filter_name).val().match(whichThingSelected) === null)
-        //            $('#myfilter_'+categorical_filter_name).val(opt_appendStringWithToken($('#myfilter_'+categorical_filter_name).val(), whichThingSelected, '*'));
-        //        var info = {'chosen_categorical' : whichThingSelected, 'slider_name' : categorical_filter_name, 'filter_type' : 'categorical_from_groups'};
-        //        my.trackPage('goals/filter/categorical_from_groups', info);
-        //        submitCategorical();
-        //        return false;
-        //    }
-        //    else { // This is a continuous feature
-        //        group_element = $(this).find('.choose_cont_range');
-        //        feat = group_element.attr('data-grouping');
-        //        lowerbound = group_element.attr('data-min');
-        //        upperbound = group_element.attr('data-max');
-        //        var arguments_to_send = [];
-        //        arguments = $("#filter_form").serialize().split("&");
-        //        for (i=0; i<arguments.length; i++)
-        //        {
-        //            if (arguments[i].match(feat)) {
-        //                split_arguments = arguments[i].split("=")
-        //                if (arguments[i].match(/min/))
-        //                    split_arguments[1] = lowerbound;
-        //                else
-        //                    split_arguments[1] = upperbound;
-        //                arguments[i] = split_arguments.join("=");
-        //            }
-        //            if (!(arguments[i].match(/^superfluous/)))
-        //                arguments_to_send.push(arguments[i]);
-        //        }
-        //        my.trackPage('goals/filter/continuous_from_groups', {'filter_type' : 'continuous_from_groups', 'feature_name': group_element.attr('data-grouping'), 'selected_continuous_min' : lowerbound, 'selected_continuous_max' : upperbound});
-        //        my.ajaxcall("/compare?ajax=true", arguments_to_send.join("&"));
-        //    }
-        //});
-
-        //$('.removesearch').live('click', function(){
-        //    $('#previous_search_word').val('');
-        //    $("#myfilter_search").val("");
-        //    $(this).parent().remove();
-        //    submitCategorical();
-        //    return false;
-         //});
-
-        $('.binary_filter_text').live('click', function(){
+        $('.checkbox_text').live('click', function(){
             if (my.loading_indicator_state.disable) return false;
             var checkbox = $(this).siblings('input');
             if (checkbox.attr('checked'))
                 checkbox.removeAttr("checked");
             else
                 checkbox.attr("checked", "checked");
-            if (checkbox.hasClass("cat_filter"))
-                clickCat(checkbox);
-            else
-                clickBinary(checkbox);
-            var whichbox = checkbox.attr('data-opt');
-            my.trackPage('goals/filter/categorical', {'feature_name' : whichbox, 'filter_type': 'categorical'});
+            clickCheckbox(checkbox);
             return false;
         });
         // Checkboxes -- submit
-        $('.binary_filter').live('click', clickBinary);
-        function clickBinary() {                                                                                                        
-            // I do not understand this line below at all, so I added an additional check one line below it to catch
-            // an error relating to click handlers being called from outside the filterbar, e.g. for "Featured Products" header.
-            // Please comment code for readability -ZAT July 2011
-            var t = (typeof(arguments[0]) != "undefined" && typeof(arguments[0].originalEvent) != "undefined") ? $(this) : arguments[0];
-            if (t.jquery == undefined) t = $(this);
-            var whichbox = t.attr('data-opt'), box_value = t.attr('checked') ? 100 : 0;
-            my.trackPage('goals/filter/checkbox', {'feature_name' : whichbox, 'filter_type': 'checkbox'});
-            submitCategorical();
-        }
-        // Checkboxes -- submit
-        $('.cat_filter').live('click', clickCat);
-        function clickCat() {
-            // I do not understand this line below at all, so I added an additional check one line below it to catch
-            // an error relating to click handlers being called from outside the filterbar, e.g. for "Featured Products" header.
-            // Please comment code for readability -ZAT July 2011
-            var t = (typeof(arguments[0]) != "undefined" && typeof(arguments[0].originalEvent) != "undefined") ? $(this) : arguments[0];
-            if (t.jquery == undefined) t = $(this);
-            var whichcat = t.attr('data-feat'), feature_selected = t.attr('data-opt');
-            var feat_obj = $('#myfilter_'+whichcat);
-            if (t.attr('checked')) // It was just checked a moment ago
-            {    // Check action
-                feat_obj.val(opt_appendStringWithToken(feat_obj.val(), feature_selected, '*'));
-            } else { // Uncheck selection
-                feat_obj.val(opt_removeStringWithToken(feat_obj.val(), feature_selected, '*'));
-                my.trackPage('goals/filter/checkbox', {'feature_name' : feature_selected, 'filter_type' : 'brand'});
-            }
-            submitCategorical();
+        $('.binary_filter').live('click', clickCheckbox);
+        $('.cat_filter').live('click', clickCheckbox);
+        function clickCheckbox() {                                                                                                        
+            //Differentiate between the checkbox and text link, which passes in the checkbox
+            var t = (arguments[0].jquery == undefined) ? $(this) : arguments[0];
+            //TODO XXX - This should be tracking the name and value as seperate fields
+            my.trackPage('goals/filter/checkbox', {'feature_name' : t.name+'='+t.value, 'filter_type': 'checkbox'});
+            submitAJAX();
         }
 
         $(".close, .bb_quickview_close, #silkscreen").live('click', function(){
@@ -1094,25 +1014,17 @@ optemo_module = (function (my){
             my.ajaxcall($(this).attr('href'));
             return false;
         });
-        
-        // Special Boxes - these are the featured, top rated, and best selling product layouts
-        $('.optemo_special_boxes').live('click', function () {
-            var whichSpecialBoxSelected = $(this).attr('data-special-boxes');
-            my.trackPage('goals/special_boxes', {'filter_type' : 'special_boxes'});
-            my.ajaxcall("/compare/create", {"special_boxes" : whichSpecialBoxSelected});
-            return false;
-        });
 
         // Showcase Products - the product banner on the landing page is paid advertising
         $('.showcase_banner').live('click', function () {
             var whichBrand = $(this).attr('data-brand');
             if (whichBrand != undefined && whichBrand != "") {
-                var feat_obj = $('#myfilter_brand');
+                var feat_obj = $('#categorical_brand');
                 // Since it's just on the landing page, we know that there are no filters yet, 
                 // so we can add without checking if it's already there
-                feat_obj.val(opt_appendStringWithToken(feat_obj.val(), whichBrand, '*'));
+                feat_obj.val(whichBrand);
                 my.trackPage('goals/showcase_banner', {'feature_name' : whichBrand, 'filter_type' : 'showcase_banner'});
-                submitCategorical();
+                submitAJAX();
             } else { // This is not scalable. Eventually this sort of logic should be in Firehose.
                 //var whichSku = $(this).attr('data-sku');
                 var whichProduct = $(this).attr('product_type');
@@ -1209,16 +1121,18 @@ optemo_module = (function (my){
         var divContentHolderTagEnd = '</div>';
         
         for (var heading in grouped_specs) {
-            //Add Heading
-            result += '<div class="'+row_class(row_height(heading.length,true))+'"><div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' leftcolumntext" style="font-style: italic;"><a class="togglable closed title_link" style="font-style: italic;" href="#">' + heading.replace('&','&amp;') + '</a></div>';
-
-            for (var i = 0; i < skus.length; i++) {
-                result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' spec_column_'+i+'">&nbsp;</div>';
+            if (heading != "") {
+                //Add Heading
+                result += '<div class="'+row_class(row_height(heading.length,true))+'"><div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' leftcolumntext" style="font-style: italic;"><a class="togglable closed title_link" style="font-style: italic;" href="#">' + heading.replace('&','&amp;') + '</a></div>';
+                
+                for (var i = 0; i < skus.length; i++) {
+                    result += '<div class="cell ' + ((whitebg) ? 'whitebg' : 'graybg') + ' spec_column_'+i+'">&nbsp;</div>';
+                }
+                
+                result += "</div>";
+                result += divContentHolderTag;
+                whitebg = !whitebg;
             }
-            
-            result += "</div>";
-            result += divContentHolderTag;
-            whitebg = !whitebg;
             for (var spec in grouped_specs[heading]) {
                 //Row Height calculation
                 array = [];
@@ -1246,7 +1160,9 @@ optemo_module = (function (my){
                 
                 whitebg = !whitebg;
             }
-            result += divContentHolderTagEnd;
+            if (heading != "") {
+                result += divContentHolderTagEnd;
+            }
         }
         anchor.append(result);
 
@@ -1328,7 +1244,7 @@ optemo_module = (function (my){
     my.loading_indicator_state = {spinner_timer : null, socket_error_timer : null, disable : false};
 
     /* Does a relatively generic ajax call and returns data to the handler below */
-    my.ajaxsend = function (hash,myurl,mydata,timeoutlength) {
+    my.ajaxsend = function (hash,myurl,mydata) {
         var lis = my.loading_indicator_state;
         //The Optemo category ID should be set in the loader unless this file is loaded non-embedded, then it is set in the opt_discovery section
         mydata = $.extend({'ajax': true, category_id: window.opt_category_id},mydata);
@@ -1336,8 +1252,11 @@ optemo_module = (function (my){
             mydata.hist = hash;}
         else
             mydata.landing = true;
-        if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", timeoutlength || 50);
-        lis.socket_error_timer = setTimeout("optemo_module.ajaxerror()", 10000);
+        if (!(lis.spinner_timer)) lis.spinner_timer = setTimeout("optemo_module.start_spinner()", 800);
+        var val_timeout = 10000;
+        if (/localhost/.test(myurl) || /192\.168/.test(myurl))
+            val_timeout = 100000;
+        lis.socket_error_timer = setTimeout("optemo_module.ajaxerror()", val_timeout);
         if (OPT_REMOTE) {
             //Embedded Layout
             myurl = (typeof myurl != "undefined" && myurl != null) ? myurl.replace(/http:\/\/[^\/]+/,'') : "/compare"
@@ -1804,7 +1723,7 @@ optemo_module = (function (my){
             // Load the classic theme for galleria, the jquery image slideshow plugin we're using (jquery.galleria.js)
             //    Galleria.loadTheme('/javascripts/galleria.classic.js');
             /* Piwik Code */
-            var pkBaseURL = (("https:" == document.location.protocol) ? "https://analytics.optemo.com/" : "http://analytics.optemo.com/");
+            var pkBaseURL = (("https:" == document.location.protocol) ? "https://analyze.optemo.com/" : "http://analyze.optemo.com/");
             var piwik_script_tag = document.createElement("script");
             piwik_script_tag.setAttribute("src", pkBaseURL + 'piwik.js');
             piwik_script_tag.setAttribute("type", "text/javascript");

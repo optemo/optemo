@@ -23,7 +23,6 @@ fr:
                 name:               "Catégorie de produit"
             saleprice:
                 name:               "Prix"
-                preunit:            "$"
             maxresolution:
                 name:               "Mégapixels"
                 unit:               "Mpx"
@@ -85,7 +84,7 @@ fr:
                 name:               "Prix décroissants"
             orders_factor:  
                 name:               "Meilleur vendeur"        
-            AdvancedSearch:
+            advanced_search:
                 name:               "Recherche avancée"       
             '22474':
                 name:               "Visez et photographiez"                
@@ -95,3 +94,9 @@ fr:
                 name:               "Zoom puissant"
             '20220':
                 name:               "Compact amélioré"                         
+            status:
+                name:               "État"
+            New Technology:
+                name:               "Nouvelle technologie"                
+            video_resolution:
+                name:               "Résolution vidéo"

@@ -45,8 +45,15 @@ var category_id_hash = {'digital-cameras' : 22474,
                         'harddrives' : 20243,
                         'Drives-Storage' : 20243,
                         'lecteurs-et-stockage' : 20243};
+// Allow for passing the category via url
+var urlRegex = new RegExp("[\\?&]category_id=([^&#]*)");
+var url_passed_category = urlRegex.exec(window.location.href);
+if (url_passed_category == null)
+  var opt_category_id = 0;
+else
+  var opt_category_id = url_passed_category[1] || 0;
 
-var opt_category_id = 0;
+//Check the URL for the categories in the category_hash  
 for (var i in category_id_hash) {
     if (window.location.pathname.match(new RegExp(i,"i"))) {
         opt_category_id = category_id_hash[i];
@@ -56,7 +63,7 @@ for (var i in category_id_hash) {
 // Failsafe just in case nothing seems to match
 if (opt_category_id == 0) {
     opt_category_id = 22474;
-    if (console) console.warn("Product category not recognized - Cameras used as default");
+    if (typeof(console) != "undefined") console.warn("Product category not recognized - Cameras used as default");
 }
 
 if (opt_history.length > 0)

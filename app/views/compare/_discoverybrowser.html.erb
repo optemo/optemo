@@ -1,24 +1,5 @@
 <% mb = main_boxes #Calculate this before navtitle %>
-	<div id="navigator_bar">
-	    <div id="navtitle"><div class='nav-number'>
-	        <%= Session.search.products_size %>
-	    </div>
-	    <div class='sub-title'>
-	        <span class='nav-available-text'><%= raw navtitle %></span>
-	        <div class='outof'>
-	            <%= t("#{Session.product_type}.outof", :count => ContSpec.all.length) if Session.search.products_size < ContSpec.all.length %>
-	        </div>
-	    </div>
-	    <div style='clear:both;height:0;width:0;'></div>
-	</div>
-	<%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>'nav_compare_btn'})  %>
-</div>
-<% if Session.search.products_size > SearchProduct.per_page %><!-- top pagination bar -->
-  <% products = Session.search.paginated_products %>
-  <div class='pagination-container'><span class='pagi-info'><%= page_entries_info(products) %></span>
-    <b>Page:</b><%= will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :outer_window => -2})%>
-  </div>
-<% end %>
+<%= render partial: "pagination" %>
 <ul id="sorting_method_box"><li><strong><%= t("products.sortby") %>: </strong></li>
   <%=raw sortby %>
 </ul>
@@ -27,6 +8,6 @@
     <%= raw mb %>
     <%= raw '</div>' if @s.directLayout %>
     </div>
-    <%= raw navigator_bar_bottom() %>
+    <%= render partial: "pagination", locals: {bottom: true} %>
 </div>
 <div style="clear:both;"></div>

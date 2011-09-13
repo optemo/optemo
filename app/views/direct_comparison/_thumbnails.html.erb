@@ -17,6 +17,6 @@
     	<%= " $" unless fr?.empty? %>
 	  </div>
 	</div>
-	<%= link_to image_tag("bestbuy_addtocart#{fr?}.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{thumbnails.sku}", {:'data-sku' => thumbnails.sku, :class => 'addtocart', :'data-name' => small_title(thumbnails)} %>
+	<%= link_to image_tag("bestbuy_addtocart#{fr?}.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{thumbnails.sku}", {:'data-sku' => thumbnails.sku, :class => 'addtocart'} %>
 	</div>
 </div>

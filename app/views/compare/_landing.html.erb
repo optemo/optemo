@@ -4,29 +4,29 @@
 	<div id='navigator_bar_top'>
 	    <div id='navtitle'><%= Session.search.products_size.to_s + ' ' + raw(navtitle) %></div><%= link_to image_tag("see_all_white#{fr?}.gif"),root_path, :class=>"seeall" %></div>
 <div id="hero">
-    <% hero = Product.find_by_id(Maybe(BinSpec.find_by_name_and_product_type('hero',Session.product_type)).product_id) || Product.find_by_product_type(Session.product_type) %>
+    <%# The hero product is the first featured product in the db %>
+    <% hero = Product.find_by_id(Maybe(Session.search.products_landing.first).product_id) || Product.find_by_product_type(Session.product_type) %>
     <%# Cache specs local to the view so as to reduce SQL calls / cache hits / object instantiations %>
     <% cont_specs = ContSpec.cache_all(hero.id); cat_specs = CatSpec.cache_all(hero.id); text_spec = TextSpec.cacheone(hero.id, "productUrl#{fr?}") %>
-    <%= image_tag(cat_specs["imglurl"], :class => "productimg", :alt => small_title(hero), :title => small_title(hero), :'data-id' => hero.id, :'data-sku' => hero.sku) %>
+    <%= image_tag(cat_specs["imglurl"], :class => "productimg", :alt => cat_specs["title#{fr?}"], :title => t('products.compare.clickforspecs'), :'data-id' => hero.id, :'data-sku' => hero.sku) %>
     <div class="heroinfo">
 
 		<%= link_to cat_specs["title#{fr?}"], text_spec, :'data-id' => hero.id, :'data-sku' => hero.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
 		<div class="productspecs"><!--7--></div>	
-
 		<% if BinSpec.cache_all(hero.id)["onsale"] %>
 			<div class="saleprice">
 			<%= t('products.compare.onsale')+(fr?.empty? ? "" : " ")+": "+number_to_currency(cont_specs["saleprice"]) %></div>	
 			<div class="save"><%= t('products.compare.save')+(fr?.empty? ? "" : " ")+": "+ number_to_currency(cont_specs["price"]-cont_specs["saleprice"]) %></div>
-		    <div class="saleends"><%= t('products.show.saleends')+": "%><%= l((Date.parse(cat_specs["saleEndDate"]) - 1.day), :format => :long) if cat_specs["saleEndDate"] %></div>
+		    <div class="saleends"><%= t('products.show.saleends')+(fr?.empty? ? "" : " ")+": "%><%= l((Date.parse(cat_specs["saleEndDate"]) - 1.day), :format => :long) if cat_specs["saleEndDate"] %></div>
 		<% else %>
 			<div class="price">
-				$<%= number_with_delimiter(cont_specs["price"]) %>
+				<%= t('products.show.ourprice') + ":"%> <%= "$" if fr?.empty? %><%= number_with_delimiter(cont_specs["price"]) %> <%= " $" unless fr?.empty? %>
 			</div>	
 		<% end %>
 		<% if cont_specs["customerRating"] > 0 %>
 			<div class="stars" data-stars="<%= cont_specs["customerRating"] %>"></div>
 		<% end %>
-		    <div style='margin-top: 50px'><%= link_to image_tag("shopnow#{fr?}.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{hero.sku}", {:'data-sku' =>hero.sku, :class => 'spacer shop-now addcart', :'data-name' =>small_title(hero)} %></div>
+		    <div style='margin-top: 50px'><%= link_to image_tag("shopnow#{fr?}.gif"), text_spec, {:'data-sku' =>hero.sku, :class => 'spacer easylink'} %></div>
 	</div>
     <div style='clear:both; width:0;height: 0;'></div>   
 </div>

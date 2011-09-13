@@ -24,7 +24,6 @@ class Cluster
       p_ids = ComparableSet.from_storage Rails.cache.read("Cluster#{id}")
     end
     #Cache miss
-    #p_ids = SearchProduct.find_all_by_search_id(Session.product_type_int).map(&:product_id) unless p_ids
     debugger unless p_ids
     p_ids
   end
@@ -60,24 +59,6 @@ class Cluster
     end
     @rep
   end
-  
-  def min(feature)
-    if Session.continuous["cluster"].include?(feature)
-      products.mapfeat(feature).compact.min
-    end  
-  end  
-  
-  def max(feature)
-    if Session.continuous["cluster"].include?(feature)
-      products.mapfeat(feature).compact.max
-    end  
-  end
-  
-  def cat_vals(feature)
-    if Session.categorical["cluster"].include?(feature) 
-      products.map{|p_id| CatSpec.cachemany([p_id], feature)}.flatten.uniq
-    end
-  end  
   
   def size
     products.size

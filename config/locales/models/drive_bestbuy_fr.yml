@@ -21,8 +21,7 @@ fr:
             category:
                 name:               "Catégories"
             saleprice:
-                name:               "Prix"   
-                preunit:            "$"  
+                name:               "Prix"
             maxresolution:
                 name:               "Resolution"
                 info:               "Measured in megapixels (millions of pixels), the number of light-sensitive cells that are actually exposed to light and used to capture the image, while the remainder may be shielded or just unused."
@@ -111,7 +110,7 @@ fr:
                 unit:               "Mo"
             'Network Attached Storage':
                 name:               "Serveur de stockage en réseau (NAS)"
-            AdvancedSearch:
+            advanced_search:
                 name:               "Recherche avancée"
             displayDate:
                 name:               "Dernier modèle"
@@ -123,3 +122,5 @@ fr:
                 name:               "2.5\""
             drive_size_35:
                 name:               "3.5\""
+            status:
+                name:               "État"

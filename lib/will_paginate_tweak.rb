@@ -1,4 +1,6 @@
 #This change is for adding an odd number of pages and other cosmetic changes to the will_paginate gem version 3.0.0
+#This change also removes GET paramters from links
+require 'will_paginate/view_helpers/action_view' #This is required because otherwise the action_view is loaded after this, and this tweak will not take effect
 require 'will_paginate/view_helpers/link_renderer_base'
 module WillPaginate
   module ViewHelpers
@@ -39,6 +41,16 @@ module WillPaginate
         end
         
         left.to_a + middle.to_a + right.to_a
+      end
+    end
+  end
+  module ActionView
+    protected
+    class LinkRenderer < ViewHelpers::LinkRenderer
+      protected
+      def base_url_params
+        # page links should not include GET parameters
+        default_url_params
       end
     end
   end

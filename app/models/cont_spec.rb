@@ -14,8 +14,8 @@ class ContSpec < ActiveRecord::Base
   end
   
   def self.all
-    CachingMemcached.cache_lookup("ContSpecsAll#{Session.product_type_int}") do
-      joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").select("search_products.product_id, group_concat(cont_specs.name) AS names, group_concat(cont_specs.value) AS vals").where(:search_products => {:search_id => Session.product_type_int}).group(:product_id).all
+    CachingMemcached.cache_lookup("ContSpecsAll#{Session.product_type_id}") do
+      joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").select("search_products.product_id, group_concat(cont_specs.name) AS names, group_concat(cont_specs.value) AS vals").where(:search_products => {:search_id => Session.product_type_id}).group(:product_id).all
     end
   end
   
@@ -30,22 +30,11 @@ class ContSpec < ActiveRecord::Base
   end
   
   def self.allMinMax(feat)
-    CachingMemcached.cache_lookup("#{Session.product_type}MinMax-#{feat}") do
-      #all = ContSpec.allspecs(feat)
-      all = ContSpec.initial_specs(feat)
+    mycats = Array(Maybe(Session.search).userdatacats.group_by{|x|x.name}["category"])
+    CachingMemcached.cache_lookup("#{Session.product_type}MinMax-#{feat}-#{mycats.map(&:value).join("-")}") do
+      all = SearchProduct.fq_categories(mycats).joins("INNER JOIN cont_specs ON cont_specs.product_id = search_products.product_id").where(:cont_specs => {name: feat}).select("cont_specs.value").map(&:value)
+      #all = ContSpec.initial_specs(feat)
       [all.compact.min,all.compact.max]
-    end
-  end
-
-  def self.allLow(feat)
-    CachingMemcached.cache_lookup("#{Session.product_type}Low-#{feat}") do
-      ContSpec.initial_specs(feat).sort[Session.search.product_size*0.4]
-    end
-  end
-
-  def self.allHigh(feat)
-    CachingMemcached.cache_lookup("#{Session.product_type}High-#{feat}") do
-      ContSpec.initial_specs(feat).sort[Session.search.product_size*0.6]
     end
   end
   
@@ -67,6 +56,6 @@ class ContSpec < ActiveRecord::Base
   private
   
   def self.initial_specs(feat)
-    joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").where(:cont_specs => {:name => feat}, :search_products => {:search_id => Session.product_type_int}).select("value").all.map(&:value)
+    joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").where(:cont_specs => {:name => feat}, :search_products => {:search_id => Session.product_type_id}).select("value").all.map(&:value)
   end
 end

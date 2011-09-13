@@ -27,6 +27,11 @@
 html {
     height: 100%;
 }*/
+#optemo_embedder .ie6 *,
+#optemo_embedder .ie7 * {
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+}
 
 /*--------------------------------------//
 //            Navigator Bar             //
@@ -122,6 +127,7 @@ html {
 	border-left: 1px solid #d0d0d0;
 	border-right: 1px solid #d0d0d0;
   background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
+  background-image:-o-linear-gradient(bottom, rgb(254,231,25), rgb(255,242,0));
   background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200));
   height: 75px;
   overflow: hidden;
@@ -131,14 +137,15 @@ html {
 }
 
 #optemo_embedder #IE #navigator_bar {
-  Background: url("/images/ie_navigator_bar_bg.gif") repeat-x;
+  background: url("/images/ie_navigator_bar_bg.gif") repeat-x;
 }
 #optemo_embedder #navigator_bar_bottom {
 	padding: 0;
 	position: relative;
-	border: 1px solid #d2d2d2;
+  border: 1px solid #d2d2d2;
   background-image:-moz-linear-gradient(center bottom, #d1d1d1, #e9e9e9);
-	background-image:-webkit-gradient(linear, left bottom, left top, from(#d1d1d1), to(#e9e9e9));
+  background-image:-o-linear-gradient(bottom, rgb(209,209,209), rgb(233,233,233));
+  background-image:-webkit-gradient(linear, left bottom, left top, from(#d1d1d1), to(#e9e9e9));
   margin-top: 5px;
   height: 49px;
 }
@@ -154,6 +161,7 @@ html {
 	position: relative;
 	border: 1px solid #d2d2d2;
   background-image: -moz-linear-gradient(center bottom, #FEE719, #FFF200);
+  background-image: -o-linear-gradient(bottom, rgb(254,231,25), rgb(255,242,0));
   background-image: -webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200));
   margin-bottom: 5px;
   height: 49px;
@@ -268,19 +276,14 @@ html {
   position: relative;
 }
 
-.optemo_special_boxes {
+.optemo_embedder {
   float: right;
   padding-right: 10px;
   margin-top: 3px;
   font-size: 0.8em;
   font-weight: bold;
 }
-#optemo_embedder #IE .optemo_special_boxes {
-  float: none;
-  position: absolute;
-  right: 10px;
-  top: 3px;
-}
+
 /*.demo_selector {
 	float: left;
 	width: 260px;
@@ -430,8 +433,8 @@ div#division {
 #optemo_embedder .categorical {
 	overflow: auto;
 	max-height: 150px;
-  padding-bottom: 20px;
-  padding-top: 10px;
+  padding-top: 7px;
+  padding-bottom: 17px;
 }
 #optemo_embedder .categorical_advanced {
 	overflow: auto;
@@ -445,13 +448,13 @@ div#division {
   height: expression( this.scrollHeight > 150 ? "150px" : "auto" ); /* sets max-height for IE */
 }
 
-#optemo_embedder a.binary_filter_text{
+#optemo_embedder a.checkbox_text{
 	color: #4d4d4f;
 }
-#optemo_embedder a.binary_filter_text:visited{
+#optemo_embedder a.checkbox_text:visited{
 	color: #4d4d4f;
 }
-#optemo_embedder .disabled a.binary_filter_text{
+#optemo_embedder .disabled a.checkbox_text{
 	color: #ccc;
 }
 #optemo_embedder .av_count{
@@ -459,10 +462,8 @@ div#division {
 }
 
 #optemo_embedder .hanging_indent {
-  margin-top: 0px;
-  margin-bottom: 5px;
   text-indent: -18px;
-  margin-left: 18px;
+  margin: 3px 0 3px 18px;
 }
 /*--------------------------------------//
 //         Drag And Drop Compare        //
@@ -489,6 +490,7 @@ div#division {
 	margin: 5px 0 0 5px;
 	border: 1px solid #C6C6C6;
 	-moz-box-shadow: 0 2px 1px #888;
+	box-shadow: 0 2px 1px #888;
 	-webkit-box-shadow: 0 2px 1px #888;
 	font-size: 0.6em;
 }
@@ -647,7 +649,7 @@ div#division {
 #optemo_embedder .slider {
 	margin: 27px 0 0 3px;
 	width: 155px;
-	padding-bottom: 18px;
+	padding-bottom: 25px;
 	position: relative;
 }
 #optemo_embedder .centerofslider {
@@ -659,10 +661,9 @@ div#division {
 #optemo_embedder #filter_form {
 	font-size: 0.85em;
 }
-#optemo_embedder .label {
+#optemo_embedder .boldlabel {
 	font-weight: bold;
 	text-align: left;
-	position: relative;
 	clear: left;
 	padding-top: 5px;
 	padding-bottom: 4px;
@@ -673,59 +674,19 @@ div#division {
   border-top: 1px #ccc solid;
   border-bottom: 1px #ccc solid;
   background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
+  background-image:-o-linear-gradient(bottom, rgb(254,231,25), rgb(255,242,0));
   background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200)); 
 }
-#optemo_embedder .label img, #optemo_embedder .label-advanced-title img {
-  position: absolute;
-  bottom: 5px;
-}
-#optemo_embedder .label-advanced-title {
-	font-weight: bold;
-	text-align: left;
-	position: relative;
-	clear: left;
-	padding-top: 6px;
-	padding-bottom: 4px;
-  padding-left: 6px;
-  background-color: #FFF102;
-  margin: 6px 0 0 0;
-  border-top: 1px #ccc solid;
-  border-bottom: 1px #ccc solid;
-  background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
-  background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200));
-}
-#optemo_embedder #IE .label, #optemo_embedder #IE .label-advanced-title {
-  background: url('/images/filter_label_bg.gif') repeat-x;
-}
+
 #optemo_embedder #IE .label{
-  padding-top: 7px;
-}
-#optemo_embedder #IE .label-advanced{
   padding-top: 10px;
 }
-#optemo_embedder #IE.ie8 .label-advanced,#optemo_embedder #IE.ie7 .label-advanced,#optemo_embedder #IE.ie6 .label-advanced{
-  padding-top: 9px;
-}
 
-#optemo_embedder .label-advanced {
+#optemo_embedder .label {
 	font-weight: bold;
 	text-align: left;
 	clear: left;
-	padding-top: 8px;
-	padding-bottom: 4px;
-  padding-left: 6px;
-  margin-left: -6px;
-}
-
-#optemo_embedder .space {
-	margin-bottom: 15px; /*Spacing for histogram*/
-}
-#optemo_embedder div.without-space {
-  margin-top: 0;
-}
-
-#optemo_embedder #IE.ie7 div.without-space,#optemo_embedder #IE.ie6 div.without-space {
-  margin-top: -20px;
+	padding-top: 4px;
 }
 
 #optemo_embedder .valbelow {
@@ -746,19 +707,6 @@ div#division {
 #optemo_embedder .feature_last {
   padding: 1px 1px 4px 6px;
 }
-#optemo_embedder .feature_slider { /* relative position cause elements blow out in IE 6, so that only used in slider bar */
-  position: relative;
-  padding: 0 0 2px 6px;
-}
-
-
-
-#optemo_embedder .feature .label img, #optemo_embedder .feature_slider .label img, #optemo_embedder .label-advanced-title img {
-  vertical-align: text-top;
-}
-#optemo_embedder #IE.ie6 .feature .label img, #optemo_embedder #IE.ie6 .feature_slider .label img, #optemo_embedder #IE.ie6 .label-advanced-title img {
-  position: static;
-}
 
 #optemo_embedder .desc {
 	display: none;
@@ -771,12 +719,16 @@ div#division {
 	z-index: 10;
 }
 #optemo_embedder .hist {
+	/*float: left;
+	margin: 7px 0 0 3px;*/
 	position: absolute;
-	text-align: left;
 	left: 9px;
-	top: 36px;
+	top: -20px;
+	text-align: left;
 }
-
+#optemo_embedder #IE.ie6 .hist {
+  left: 3px;
+  }
 
 /*--------------------------------------//
 //                Survey                //
@@ -1145,10 +1097,7 @@ margin-top:0;
  	background-color: #666;
   
   filter:alpha(opacity=80);
-  opacity: 0.8;  
-  -moz-opacity:0.8;
-/*   -khtml-opacity: 0.1;*/
-
+  opacity: 0.8;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -1237,7 +1186,7 @@ margin-top:0;
   left: 250px;
   -moz-border-radius:5px;
   -webkit-border-radius: 5px;
-  -border-radius: 5px;
+  border-radius: 5px;
   text-align:center;
 }
 
@@ -1395,6 +1344,7 @@ margin-top:0;
 	height:17px;
 	border: 1px solid #ccc;
 	background-image:-moz-linear-gradient(center bottom, white, #cdcdcd);
+	background-image:-o-linear-gradient(bottom, white, rgb(205,205,205));
 	background-image:-webkit-gradient(linear, left bottom, left top, from(white), to(#cdcdcd));
 }
 #optemo_embedder #IE a.tab {
@@ -1405,6 +1355,7 @@ margin-top:0;
 }
 #optemo_embedder #tab_selected {
 	background-image:-moz-linear-gradient(center bottom, white, #FFEF00);
+	background-image:-o-linear-gradient(bottom, white, rgb(255,239,0));
 	background-image:-webkit-gradient(linear, left bottom, left top, from(white), to(#ffef00));
 	border-bottom: 1px solid white;
 	color: black;
@@ -1481,8 +1432,10 @@ margin-top:0;
 	    text-decoration: none;
 	    -moz-border-radius: 4px; 
 	    -webkit-border-radius: 4px;
+	    border-radius: 4px;
 	    -moz-box-shadow: inset 0 7px 8px #2680bf;
-	    -webkit-box-shadow: inset 0 7px 8px #2680bf; 
+	    -webkit-box-shadow: inset 0 7px 8px #2680bf;
+	    box-shadow: inset 0 7px 8px #2680bf;
 	    text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
 /*	border: 1px solid #c4c5c5; */
 	    position: relative;
@@ -1491,12 +1444,14 @@ margin-top:0;
 #optemo_embedder .awesome_reset_grey, 
         #optemo_embedder .awesome_reset_grey:visited {
           background-image:-moz-linear-gradient(center bottom, #9e9e9e, #ccc);
+          background-image:-o-linear-gradient(bottom, rgb(158,158,158), rgb(204,204,204));
 	        background-image:-webkit-gradient(linear, left bottom, left top, from(#9e9e9e), to(#ccc));
    	      display: inline-block; 
 	        color: #FFF; 
 	        text-decoration: none;
 	        -moz-border-radius: 4px; 
 	        -webkit-border-radius: 4px;
+	        border-radius: 4px;
 	        text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
 /*	border: 1px solid #c4c5c5; */
 	        position: relative;
@@ -1597,12 +1552,11 @@ margin-top:0;
   overflow:hidden;
   height: 75px;
   background-image:-moz-linear-gradient(center bottom, #cecece, #e9e9e9);
+  background-image:-o-linear-gradient(bottom, rgb(206,206,206), rgb(233,233,233));
   background-image:-webkit-gradient(linear, left bottom, left top, from(#cecece), to(#e9e9e9));
   padding: 0;
   text-align: right;
-}
-#optemo_embedder #IE.ie8 .y_heading {
-  margin-bottom:0;
+  margin:0;
 }
 #optemo_embedder .y_heading a.regular_reset, #optemo_embedder .y_bottom a.regular_reset { 
   font-size: 11px;
@@ -1610,18 +1564,24 @@ margin-top:0;
   padding: 0;
   margin: 2px 0 0;
 }
-#optemo_embedder #IE.ie7 .y_heading a.regular_reset, #optemo_embedder #IE.ie7 .y_bottom a.regular_reset, #optemo_embedder #IE.ie6 .y_heading a.regular_reset, #optemo_embedder #IE.ie6 .y_bottom a.regular_reset {
-  margin: -2px 0 0;
+#optemo_embedder .y_bottom a.regular_reset{
+  margin: 7px 0 0;
+  height: 15px;
 }
 
+
 #optemo_embedder #IE .y_heading {
-  Background: url("/images/ie_refine_search_bg.gif") repeat-x #cecece;
+  background: url("/images/ie_refine_search_bg.gif") repeat-x #cecece;
 }
 
 #optemo_embedder #IE .y_heading a.regular_reset{
   display: block;
 }
 
+#optemo_embedder #IE .y_bottom a.regular_reset{
+  margin: 5px 0 0;
+  height: 15px;
+  }
 /*
  * Galleria Classic Theme
  * Copyright (c) 2010, Aino
@@ -1842,8 +1802,10 @@ margin-top:0;
 	background-color: red;
 	-moz-border-radius: 4px; 
 	-webkit-border-radius: 4px;
+	border-radius: 4px;
 	-moz-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
 	-webkit-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
+	box-shadow: 0 1px 3px rgba(50,50,50,0.5);
 	/*border: 1px solid #ccc;*/
 	float: left;
 	margin: 0 2px 2px 0;
@@ -1860,6 +1822,7 @@ margin-top:0;
 	margin: -1px 1px 1px -1px;
 	-moz-border-radius: 0px; 
 	-webkit-border-radius: 0px;
+	border-radius: 0px;
 }
 
 #optemo_embedder .ie7 .white_swatch,
@@ -1880,6 +1843,7 @@ margin-top:0;
   padding-bottom: 3px;
 	overflow:hidden;
   background-image:-moz-linear-gradient(center bottom, #d1d1d1, #e8e8e8);
+  background-image:-o-linear-gradient(bottom, rgb(209,209,209), rgb(232,232,232));;
   background-image:-webkit-gradient(linear, left bottom, left top, from(#d1d1d1), to(#e8e8e8));
   height: 25px
   font-weight: bold;
@@ -1891,10 +1855,6 @@ margin-top:0;
 }
 #optemo_embedder #IE.ie6 .y_bottom {
   margin-bottom: -12px;
-}
-#optemo_embedder .y_bottom a.regular_reset{
-  margin: 7px 0 0;
-  height: 15px;
 }
 #optemo_embedder #IE .y_bottom {
 
