@@ -276,7 +276,7 @@ class Search < ActiveRecord::Base
    
   def createFeatures(p)
     @userdataconts = []
-    r = /(?<min>[\d.]+)-(?<max>[\d.]+)/
+    r = /(?<min>[\d.]*)-(?<max>[\d.]*)/
     Maybe(p[:continuous]).each_pair do |k,v|
       #Split range into min and max
       if res = r.match(v)

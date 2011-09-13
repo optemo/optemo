@@ -683,15 +683,22 @@ optemo_module = (function (my){
                         leftsliderknob.html(realvalue).addClass("valabove");            // when rightslider = left slider, hence the second condition
                     else if (ui.values[0] != ui.values[1])
                         rightsliderknob.html(realvalue).addClass("valabove");
-                    
+                    var range_result = "";
                     if(sliderno == 0)
                     {
-                      $(this).siblings('.range').attr('value',realvalue + "-" + curmax);
+                      range_result = realvalue + "-";
+                      var previous_value = new RegExp(/[\d.]*-([\d.]*)/).exec($(this).siblings('.range').attr('value'));
+                      if (previous_value != null)
+                        range_result += previous_value[1];
                     }
                     else
                     {
-                      $(this).siblings('.range').attr('value',curmin + "-" + realvalue);
+                      var previous_value = new RegExp(/([\d.]*)-[\d.]*/).exec($(this).siblings('.range').attr('value'));
+                      if (previous_value != null)
+                        range_result = previous_value[1];
+                      range_result += "-" + realvalue;
                     }
+                    $(this).siblings('.range').attr('value',range_result);
                     return false;
                 },
                 stop: function(e,ui)
@@ -1843,7 +1850,13 @@ optemo_module = (function (my){
         }
     };
     
+	// THIS IS WHERE THE CHANGE SHOULD GO SO(3) //
+
     $('.optemo_compare_button').live('click', function(){
+	
+		//a tracker to record this event
+		my.trackPage('goals/filter/direct_comparison', {'filter_type' : 'direct_comparison'});
+	
         var skus = my.readAllCookieValues('bestbuy_specs_skus');                                                                       
         var objCheckbox = $(this).parent().find('.optemo_compare_checkbox');
         var max = (objCheckbox.attr('checked') ? 5 : 4);
