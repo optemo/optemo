@@ -1924,7 +1924,13 @@ optemo_module = (function (my){
         }
     };
     
+	// THIS IS WHERE THE CHANGE SHOULD GO SO(3) //
+
     $('.optemo_compare_button').live('click', function(){
+	
+		//a tracker to record this event
+		my.trackPage('goals/filter/direct_comparison', {'filter_type' : 'direct_comparison'});
+	
         var skus = my.readAllCookieValues('bestbuy_specs_skus');                                                                       
         var objCheckbox = $(this).parent().find('.optemo_compare_checkbox');
         var max = (objCheckbox.attr('checked') ? 5 : 4);
