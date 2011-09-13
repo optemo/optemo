@@ -3,6 +3,8 @@ fr:
         ErrorPart1:     "Désolé! Une erreur est survenue sur le serveur. Vous pouvez réinitialiser loutil et voir si le problème est résolu."
         sortby:         "Classé par"
         backtotop:      "Retour en haut"
+        all:                "tous"
+        notapplicable:      "Non disponible"
     will_paginate:
       page_entries_info:
         multi_page_html: "<b>%{from}&nbsp;à&nbsp;%{to}</b> sur <b>%{count}</b>"
