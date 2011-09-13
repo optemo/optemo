@@ -918,6 +918,9 @@ optemo_module = (function (my){
             return false;
         });
 
+
+		// SO(2) *** This is where the "show" events are getting recorded
+
         $(".productimg, .easylink").live("click", function (){
             // This is the show page
             var t = $(this), href = t.attr('href') || t.parent().find('.easylink').attr('href'),
