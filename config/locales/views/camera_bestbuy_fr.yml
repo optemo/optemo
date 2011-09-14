@@ -4,25 +4,15 @@ fr:
         sitetitle:                  "Appareils photo Best Buy"
         title:                      "Appareil photo"
         title-plural:               "Appareils photo"
-        defaultdesc:                "Meilleure sélection dappareils photo numériques"
+        defaultdesc:                "Meilleure sélection d'appareils photo numériques"
         keywords:                   "appareils photo"
         classification:             "Appareils photo numériques"
         navtitle:                  "Appareils photo"
         navtitle2:                   " disponibles"
         outof:                      "Parmi %{count} appareils photo"
-
-        compare:                    "Comparer"
-        seeall:                     "Visionner tout"
-        shopnow:                    "Magasinez"
-        toprated:                   "Meilleure cote produits"
-        bestsellers:                "Meilleurs vendeurs"
-        featuredproducts:           "Produits vedettes"
-
+        compare:                   "Comparer"
+        
         specs:
-            category:
-                name:               "Catégorie de produit"
-            saleprice:
-                name:               "Prix"
             maxresolution:
                 name:               "Mégapixels"
                 unit:               "Mpx"
@@ -34,20 +24,6 @@ fr:
                 unit:               "po"
             waterproof:
                 name:               "À l'épreuve de l'eau et des chocs"
-            brand:
-                name:               "Marques"
-            color:
-                name:               "Couleurs"
-            customerRating:
-                name:               "Classement en général"
-            onsale:
-                name:               "En solde"
-            featured:
-                name:               "Produits vedettes"    
-            isClearance:
-                name:               "Liquidation"
-            isOnlineOnly:
-                name:               "En ligne seulement"
             videoresolution720:
                 name:               "720p"
             videoresolution1080:
@@ -70,22 +46,6 @@ fr:
                 name:               "Balayage panoramique"
             frontlcd:
                 name:               "ACL avant et arrière"
-            toprated:
-                name:               "Les mieux cotés"
-            maxresolution_factor:
-                name:               "Mégapixels"
-            displayDate:
-                name:               "Dernier modèle"
-            utility:
-                name:               "Meilleure association"
-            saleprice_factor:
-                name:               "Prix croissants"
-            saleprice_factor_high:
-                name:               "Prix décroissants"
-            orders_factor:  
-                name:               "Meilleur vendeur"        
-            advanced_search:
-                name:               "Recherche avancée"       
             '22474':
                 name:               "Visez et photographiez"                
             '28382':
@@ -94,8 +54,6 @@ fr:
                 name:               "Zoom puissant"
             '20220':
                 name:               "Compact amélioré"                         
-            status:
-                name:               "État"
             New Technology:
                 name:               "Nouvelle technologie"                
             video_resolution:
