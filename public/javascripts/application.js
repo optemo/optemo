@@ -1712,6 +1712,21 @@ optemo_module = (function (my){
         my.compareCheckedProducts();
     });
 
+    $('#optemo_embedder .nav-clear-btn').live("click", function() {
+				var skus = my.readAllCookieValues('bestbuy_specs_skus');
+				var erased = 0;
+		    if (skus.length > 0) {
+					$('.optemo_compare_checkbox:checked').each (function (index) {
+							erased = erased + 1;
+							$(this).attr('checked', '');
+					});
+				}
+				eraseCookie('bestbuy_specs_skus');
+				my.changeNavigatorCompareBtn(0)
+				//alert("Cleared" + erased + " checkboxes ");
+				return false;
+    });
+
     my.changeNavigatorCompareBtn = function (selected) {
         if (selected > 0) {
             $('.nav-compare-btn').each ( function(index) {
@@ -1722,6 +1737,8 @@ optemo_module = (function (my){
                 $(this).text($(this).text().replace(/\d+/, selected));
 //                $(this).hover(function(){$(this).css('color', '#ffff00');}, function(){$(this).css('color', '');});
             });
+						// Show the clear option if it's not visible
+						$('.nav-clear-btn:hidden').show();
         } else {
             $('.nav-compare-btn').each ( function(index) {
                 $(this).removeClass('awesome_reset');
@@ -1731,6 +1748,8 @@ optemo_module = (function (my){
                 $(this).text($(this).text().replace(/\d+/, 0));
 //                $(this).unbind('mouseenter mouseleave'); // Remove the hover color change
             });
+						// Hide the clear option if it is visible
+						$('.nav-clear-btn:visible').hide();
         }
     };
     function click_checkbox(){

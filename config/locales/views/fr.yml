@@ -30,7 +30,9 @@ fr:
         compare:    
             powered:        "Offert par "
             rembrandfilter: "Retirer le filtre de marque"  
-            onsale:         "En solde"       
+            onsale:         "En solde"
+            clear:          "Supprimer la sélection"
+            cleardesc:      "Effacer la sélection de produits"
             clickforcompare: "Cliquer pour comparer les produits"
             clickforspecs:  "Cliquez pour voir les spécifications du produit"
             reset:          "Réinitialiser tout"

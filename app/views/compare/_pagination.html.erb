@@ -15,6 +15,7 @@
     <% end %>
   </div>
   <%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>"nav_compare_btn#{'_bottom' if defined? bottom}"})  %>
+  <%= link_to t('products.compare.clear'), "#", :class => "nav-clear-btn", :rel => "nofollow", :title => t('products.compare.cleardesc') %>
 </div>
 
 <% if Session.search.products_size > SearchProduct.per_page %><!-- top pagination bar -->
@@ -23,4 +24,6 @@
     <b>Page:</b><%= will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :outer_window => -2})%>
     <%= link_to t("products.backtotop"), "#", id: "back-to-top-bottom" if defined? bottom %>
   </div>
+  
+  
 <% end %>
