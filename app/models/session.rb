@@ -46,7 +46,7 @@ class Session
     self.piwikSiteId = p_url.piwik_id || 10 # This is a catch-all for testing sites.
   end
   
-  def self.set_features(categories)
+  def self.set_features(categories = [])
     #if an array of categories is given, dynamic features which apply only to those categories are shown
     dynamically_excluded = []
     # initialize features
