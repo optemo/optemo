@@ -120,7 +120,7 @@ module CompareHelper
     prods = @s.search.products_landing
     num = prods.size-1
     # now the new mockup is only with featured products
-    res << "<div class='title_landing_type'>" + I18n.t(Session.product_type + ".featuredproducts") + "</div>"
+    res << "<div class='title_landing_type'>" + I18n.t("products.featuredproducts") + "</div>"
     res << "<div style='clear:both;width: 0;height: 0;'><!--ie6/7 title disappear issue --></div>"
     for i in 0...num
         res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i+1].product_id), :landing => true})
@@ -196,7 +196,7 @@ module CompareHelper
   def sortby
     current_sorting_option = Session.search.sortby || "utility"
     Session.features["sortby"].map { |f| content_tag :li, do
-       text = t(Session.product_type+".specs."+f.name+".name")
+      text = t("specs."+f.name)
        (current_sorting_option == f.name) ? text : link_to(text, "#", {:'data-feat'=>f.name, :class=>"sortby"})
     end}.join(content_tag(:span, "  |  ", :class => "seperater"))
   end
