@@ -1024,10 +1024,16 @@ margin-top:0;
 }
 
 
-#optemo_embedder .thumbnaildetails {
+#optemo_embedder .thumbnaildetailssale {
 	color: #F5000B;
 	padding-bottom:5px;
 }
+
+#optemo_embedder .thumbnaildetails {
+	color: #000000;
+	padding-bottom:5px;
+}
+
 #optemo_embedder .compare_row {
   clear: both;
   line-height: 23px;

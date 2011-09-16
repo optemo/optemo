@@ -5,6 +5,7 @@ class Product < ActiveRecord::Base
   has_many :text_specs
   has_many :search_products
   has_one :product_bundle, :foreign_key=>:bundle_id
+  has_many :product_siblings
   self.per_page = 18
 
   #define_index do

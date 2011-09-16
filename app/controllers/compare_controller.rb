@@ -81,7 +81,7 @@ class CompareController < ApplicationController
       @product = Product.cached(id)
       @prod_url = TextSpec.cacheone(@product.id, "productUrl#{fr?}")
       @allspecs = ContSpec.cache_all(id).merge(CatSpec.cache_all(id)).merge(BinSpec.cache_all(id)).merge(TextSpec.cache_all(id))
-      @siblings = ProductSiblings.find_all_by_product_id_and_name(id,"imgsurl")
+      @siblings = ProductSibling.find_all_by_product_id_and_name(id,"imgsurl")
       @s = Session
       
       respond_to do |format|

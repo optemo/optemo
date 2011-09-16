@@ -35,15 +35,14 @@
 				<div class="stars" data-stars="<%= cont_specs["customerRating"] %>"></div>
 			<% end %>
 			
-			<!-- Show small images and links for each sibling of this product -->
-			<% siblings = ProductSiblings.where(:product_id => product.id) %>
+			<!-- Show small images and links for each sibling of this product  -->
+			<% siblings = product.product_siblings %>
 			<% unless siblings.empty? %>
 			<div class="siblingsbox">
-				<div class="siblingslabel"> <%= fr?.empty? ? "Other Colours" : "Autres Couleurs" %></div> 
+				<div class="siblingslabel"> <%= t('products.show.othercolors') %> </div>
 				<% siblings.each do |sibling| %> 
-					<% sibling_product = Product.cached(sibling.sibling_id) %>
-					<% sibling_cat_specs = CatSpec.cache_all(sibling_product.id) %>				 
-					<%= link_to image_tag(sibling_cat_specs["imgsurl"], :alt => sibling_cat_specs["color"]), TextSpec.cacheone(sibling_product.id, "productUrl#{fr?}"), :'data-id' => sibling_product.id, :'data-sku' => sibling_product.sku, :class => "sibling", :title => sibling_cat_specs["color"] %>
+					<% sibling_cat_specs = CatSpec.cache_all(sibling.sibling_id) %>
+					<%= link_to image_tag(sibling_cat_specs["imgsurl"], :alt => sibling_cat_specs["color#{fr?}"]), TextSpec.cacheone(sibling.sibling_id, "productUrl#{fr?}"), :'data-id' => sibling.sibling_id, :class => "sibling", :title => sibling_cat_specs["color#{fr?}"] %>
 				<% end %>
 			</div>
 			<% end %>

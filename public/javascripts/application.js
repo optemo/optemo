@@ -888,7 +888,8 @@ optemo_module = (function (my){
         });
 
         $(".sibling").live("click", function (){
-            my.trackPage('goals/show', {'filter_type' : 'siblings', 'product_picked' : $(this).attr("data-sku")});
+						var t = $(this)
+            my.trackPage('goals/show', {'filter_type' : 'siblings', 'product_picked' : t.attr('data-id'), 'product_picked_name' : t.html(), 'imgurl' : t.attr('src')});
         });
 
         //Ajax call for simlinks ('browse similar')
