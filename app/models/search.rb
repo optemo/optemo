@@ -199,7 +199,7 @@ class Search < ActiveRecord::Base
     end
   end
   
-  def initialize(p={})
+  def initialize(p={}, opt=nil)
     super({})
     #Set parent id
     self.parent_id = CGI.unescape(p[:parent]).unpack("m")[0].to_i unless p[:parent].blank?
@@ -255,7 +255,7 @@ class Search < ActiveRecord::Base
       d.save
     end
   end
-  
+ 
   # Duplicate the features of search (s) and the last search (os)
   def duplicateFeatures(os)
     @userdataconts = []

@@ -1,12 +1,25 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.0.9'
+
+gem 'rails', '3.1.0'
+
+# Gems used only for assets and not required
+# in production environments by default.
+group :assets do
+  gem 'sass-rails', "  ~> 3.1.0"
+  gem 'coffee-rails', "~> 3.1.0"
+  gem 'uglifier'
+end
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 #gem 'sqlite3-ruby', :require => 'sqlite3'
-gem 'mysql2'
+#gem 'mysql2', '~> 0.2.13'
+#gem 'mysql2', '< 0.3'
+gem 'mysql2', '> 0.3'
+
+gem 'jquery-rails'
 
 # Use unicorn as the web server
 # gem 'unicorn'
