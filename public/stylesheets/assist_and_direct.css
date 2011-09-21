@@ -365,16 +365,30 @@ html {
 }
 
 #optemo_embedder .siblingsbox {
-  margin-top: 3px;
   text-align: center;
   border-bottom: 1px solid #e1e1e1;;
   border-top: 1px solid #e1e1e1;
+  font-size: 0.8em;
+  margin: 6px 10px 0;
+}
+#optemo_embedder .siblingdiv {
+  width: 35px;
+  float: left;
+  padding-right: 5px;
+  min-height: 35px;
+}
+#optemo_embedder .pricediff {
+  margin-top: -5px;
+  color: black;
+}
+
+#optemo_embedder .siblingslabel {
+  margin-top: 2px;
 }
 
 #optemo_embedder .sibling img {
   height: 35px;
   width: 35px;
-  position: relative;
   overflow: left;
 }
 
@@ -546,22 +560,6 @@ div#division {
 #optemo_embedder .compare_button {
   font-size: 0.8em;
 }
-
-#optemo_embedder span.select-compare {
-  font-size: 12px;
-}
-#optemo_embedder #IE span.select-compare {
-  margin-left: -4px;
-}
-#optemo_embedder #IE.ie8 span.select-compare {
-  margin-left: -5px;
-}
-#optemo_embedder #IE.ie7 span.select-compare,#optemo_embedder #IE.ie6 span.select-compare {
-  margin-left: -6px;
-}
-/*.selected_cat_features img {
-	vertical-align: baseline;
-}*/
 
 /* IE hack for save bar maybe? */
 #optemo_embedder .gainlayout div {
@@ -1107,10 +1105,6 @@ margin-top:0;
 #optemo_embedder span {
   margin-left: 2px;
 }
-#optemo_embedder .productinfo {
-  height: 120px;
-}
-
 /*--------------------------------------//
 //        Show page and related         //
 //--------------------------------------*/

@@ -200,5 +200,10 @@ module CompareHelper
        (current_sorting_option == f.name) ? text : link_to(text, "#", {:'data-feat'=>f.name, :class=>"sortby"})
     end}.join(content_tag(:span, "  |  ", :class => "seperater"))
   end
-
+  def siblingslabel(siblings,bundles)
+    txt = []
+    txt << t('products.show.colors') unless siblings.empty?
+    txt << t('products.show.bundles') unless bundles.empty?
+    t('products.show.available')+" "+txt.join(t('products.show.and'))
+  end
 end

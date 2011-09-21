@@ -37,10 +37,9 @@ fr:
             clickforspecs:  "Cliquez pour voir les spécifications du produit"
             reset:          "Réinitialiser tout"
             resetdesc:      "Supprimer tous les filtres" 
-            compare:        "comparer"
+            compare:        "Comparer"
             closewindow:    "Fermer fenêtre"
             save:           "Épargnez"
-            selectand:      "Sélectionner et "
         show:
             title:          "Renseignements sur le produit"
             noimage:        "Image non disponible"

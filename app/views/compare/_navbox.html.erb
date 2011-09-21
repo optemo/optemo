@@ -11,7 +11,7 @@
       		  <input type="checkbox"
 			       data-sku="<%= product.sku %>"
 			       class="optemo_compare_checkbox" />
-		  <span class='select-compare'><%= t('products.compare.selectand') %></span><a class="regular_reset optemo_compare_button" style="" href="#" title="<%=t('products.compare.clickforcompare')%>">
+		        <a class="regular_reset optemo_compare_button" style="" href="#" title="<%=t('products.compare.clickforcompare')%>">
 		    <span><%=t('products.compare.compare')%></span>
 		  </a>
       </div>
@@ -34,19 +34,27 @@
 			<% if cont_specs["customerRating"] > 0 %>
 				<div class="stars" data-stars="<%= cont_specs["customerRating"] %>"></div>
 			<% end %>
-			
-			<!-- Show small images and links for each sibling of this product  -->
-			<% siblings = product.product_siblings %>
-			<% unless siblings.empty? %>
-			<div class="siblingsbox">
-				<div class="siblingslabel"> <%= t('products.show.othercolors') %> </div>
-				<% siblings.each do |sibling| %> 
-					<% sibling_cat_specs = CatSpec.cache_all(sibling.sibling_id) %>
-					<%= link_to image_tag(sibling_cat_specs["imgsurl"], :alt => sibling_cat_specs["color#{fr?}"]), TextSpec.cacheone(sibling.sibling_id, "productUrl#{fr?}"), :'data-id' => sibling.sibling_id, :class => "sibling", :title => sibling_cat_specs["color#{fr?}"] %>
-				<% end %>
-			</div>
-			<% end %>
 		</div>
+		<!-- Show small images and links for each sibling of this product  -->
+		<% siblings = product.product_siblings -%>
+		<% bundles = product.product_bundles -%>
+		<% unless siblings.empty? && bundles.empty? %>
+		<div class="siblingsbox">
+			<div class="siblingslabel"><%=raw siblingslabel(siblings,bundles) %></div>
+			<% (siblings+bundles).each do |sibling| -%> 
+			  <% sibling_id = sibling.is_a?(ProductSibling) ? sibling.sibling_id : sibling.bundle_id -%>
+				<% sibling_cat_specs = CatSpec.cache_all(sibling_id) -%>
+				<% sibling_cont_specs = ContSpec.cache_all(sibling_id) -%>
+        <div class="siblingdiv">
+				<% link_to TextSpec.cacheone(sibling_id, "productUrl#{fr?}"), :'data-id' => sibling_id, :class => "sibling", :title => sibling.is_a?(ProductSibling) ? sibling_cat_specs["color#{fr?}"] : sibling_cat_specs["title#{fr?}"] do %>
+				  <%= image_tag(sibling_cat_specs["imgsurl"], :alt => sibling_cat_specs["color#{fr?}"]) %>
+				  <div class="pricediff"><%= "+"+number_to_currency(sibling_cont_specs["saleprice"]-cont_specs["saleprice"], precision: 0) if sibling_cont_specs["saleprice"] != cont_specs["saleprice"] %></div>
+				<% end %>
+        </div>
+			<% end %>
+			<div style="clear:left"><!-- --></div>
+		</div>
+		<% end %>
 	     
 	</div>
 	<div style="text-align:left; padding-left:20px">
