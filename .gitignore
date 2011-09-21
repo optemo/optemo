@@ -44,6 +44,7 @@ mkmf.log
 public/images/cameras
 
 cache/*
+.sass-cache/
 
 lib/c_code/clusteringCodes/cppconn/libmysqlcppconn.dylib
 

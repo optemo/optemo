@@ -42,7 +42,7 @@
 	margin-bottom: 15px;
 	height:405px;
  	width: 181px; /*+2 for the border*/
-	background: right center url(../images/seperatorbar.png) no-repeat;*/
+	background: right center image-url("seperatorbar.png") no-repeat;*/
   overflow: hidden;
   zoom: 1; /* fix IE peekaboo issue */
   margin-top: 8px;

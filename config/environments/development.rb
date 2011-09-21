@@ -50,5 +50,11 @@ Site::Application.configure do
   #Add jsonp wrapping support
   require 'j_s_padding'
   config.middleware.use JSPadding
-  
+
+  # Do not compress assets
+  config.assets.compress = false
+
+  # Expands the lines which load the assets
+  config.assets.debug = true
+
 end
