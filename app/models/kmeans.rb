@@ -180,9 +180,21 @@ class  Kmeans
       utilities_rep = Kmeans.utility(products, "rep")
       utilities_gorder  = Kmeans.utility(products, "gorder")
       utilities_gorder.each_with_index{|u, i| utilities_gorder[i]=u+(0.0000001*i)} if utilities_gorder.uniq.size<number_clusters
-      $k = Kmeans.new unless $k
-      #labels = self.ruby(number_clusters, cluster_weights, inits, products) #
-      labels = $k.kmeans_c(standard_specs.flatten.map{|s| s.nil? ? 0.0 : s}, standard_specs.size , standard_specs.first.size, number_clusters, cluster_weights, utilities_rep, utilities_gorder, inits)
+      begin
+        raise ValidationError, "specs is nil or empty" if standard_specs.nil? || standard_specs.empty?
+        raise ValidationError, "cluster_weights is nil or empty" if cluster_weights.nil? || cluster_weights.empty?
+        raise ValidationErrot, "utilities_gorder is nil or empty" if utilities_gorder.nil? || utilities_gorder.empty?
+        raise ValidationError, "utilities_rep is nil or empty" if utilities_rep.nil? || utilities_rep.empty?
+        raise ValidationError, "inits is nil or empty" if inits.nil? || inits.empty?
+          
+        labels = $k.kmeans_c(standard_specs.flatten.map{|s| s.nil? ? 0.0 : s}, standard_specs.size , standard_specs.first.size, number_clusters, cluster_weights, utilities_rep, utilities_gorder, inits)
+        $k = Kmeans.new unless $k
+      
+      rescue ValidationError  
+        labels = self.ruby(number_clusters, cluster_weights, inits, products) #
+        debugger
+      end  
+      
       sorted_products=[]
       until labels.empty?
         p_ins = []
@@ -257,13 +269,13 @@ class  Kmeans
        (0...number_clusters-1).to_a.each{|i| labels[i] = i}
        (number_clusters-1...labels.size).to_a.each{|i| labels[i] = number_clusters -1}
      end
-    #ordering clusters based on group utility and picking the rep 
+    #ordering clusters based on group utility 
     self.utility_order(products, labels, labels.uniq.size)
   end
   
   
   def self.utility_order(products, labels, number_clusters)
-    utilitylist = Kmeans.utility(products)
+    utilitylist = Kmeans.utility(products, "gorder")
     utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<number_clusters
     grouped_utilities = group_by_labels(utilitylist, labels)
     avg_group_utilities = grouped_utilities.map do |g| 
@@ -272,8 +284,7 @@ class  Kmeans
     sorted_group_utilities = avg_group_utilities.sort{|x,y| y<=>x}
     sorted_grouped_utilities = sorted_group_utilities.map{|g| grouped_utilities[avg_group_utilities.index(g)]}
     sorted_labels  = labels.map{|l| sorted_group_utilities.index(avg_group_utilities[l])} 
-    reps = (0...number_clusters).map{|i| utilitylist.index(sorted_grouped_utilities[i][sorted_grouped_utilities[i].index(sorted_grouped_utilities[i].max)])}
-    sorted_labels + reps
+    sorted_labels 
   end
   
   #selecting the initial cluster centers
