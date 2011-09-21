@@ -183,10 +183,11 @@ html {
   text-align: center;
   font-weight: bold; 
 }
-#optemo_embedder #navigator_bar a#nav_compare_btn:hover, #optemo_embedder #navigator_bar a#nav_compare_btn:visited,
-    #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom:hover, #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom:visited {
+#optemo_embedder #navigator_bar a.nav-compare-btn:hover, 
+#optemo_embedder #navigator_bar a.nav-compare-btn:visited {
       color: #fff;
     }
+
 #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom {
   float: right;
   font-size: 0.8em;
@@ -1466,14 +1467,7 @@ margin-top:0;
 	        position: relative;
 	        cursor: pointer;
         }
-
-#optemo_embedder .awesome_reset:hover, #optemo_embedder .awesome_reset_grey:hover {text-decoration: none; }
-
-.awesome_tour:hover							{ background-color: #111; color: #fff; }
-.awesome_tour:active							{ top: 1px; }
-.small_awesome_tour, .small_awesome_tour:visited 			{ font-size: 11px; padding: ; }
-.awesome_tour, .awesome_tour:visited,
-            .medium_awesome_tour, .medium_awesome_tour:visited 		{ font-size: 13px; font-weight: bold; line-height: 1; text-shadow: 0 -1px 1px rgba(0,0,0,0.25); }
+#optemo_embedder .awesome_reset:hover, #optemo_embedder .awesome_reset_grey:hover {text-decoration: none;background-color: #004373; }
 
 #optemo_embedder .regular_reset, #optemo_embedder .regular_reset:visited {
   display: inline-block;
@@ -1492,7 +1486,7 @@ margin-top:0;
 }
 
 #optemo_embedder .optemo_compare_checkbox {
-  pading: 0;
+  padding: 0;
   margin: 0;
 }
 
@@ -1574,14 +1568,14 @@ margin-top:0;
   margin: 2px 0 0;
 }
 
-#optemo_embedder .nav-clear-btn{
+#optemo_embedder .nav_clear_btn,
+#optemo_embedder .nav_clear_btn:visited{
   font-size: 11px;
-  font-weight: bold;
   left: 403px;
   margin: 2px 0 0;
   padding: 0;
   position: absolute;
-  text-decoration: underline;
+  color: black;
   top: 55px;
 }
 
