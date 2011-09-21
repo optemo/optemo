@@ -42,8 +42,8 @@
 .greybg {background: #EFEFEF}
 .productimg {float: left; padding-right:3px; width: 50px;  }
 .easylink {font-size: 0.8em}
-.number_in_group {background: url(../images/redbubble.png) no-repeat; font-size: 0.65em; color: white; width: 24px; height: 26px; padding: 2px 0 0; margin: -3px; text-align: center}
-.largegroup {background: url(../images/redbubbleL.png) no-repeat; width: 36px}
+.number_in_group {background: image-url("redbubble.png") no-repeat; font-size: 0.65em; color: white; width: 24px; height: 26px; padding: 2px 0 0; margin: -3px; text-align: center}
+.largegroup {background: image-url("redbubbleL.png") no-repeat; width: 36px}
 .minus {margin: 9px !important}
  .leftboxes {padding: 6px; margin-bottom:2px}
 .rounded_leftboxes {border: 1px solid #ccc; background: white}

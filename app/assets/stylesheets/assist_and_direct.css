@@ -1419,7 +1419,7 @@ margin-top:0;
 /* Zurb http://www.zurb.com/article/266/super-awesome-buttons-with-css3-and-rgba */
 #optemo_embedder .awesome_reset, 
     #optemo_embedder .awesome_reset:visited {
-	    background: #003b65; url(/images/alert-overlay.png) repeat-x; 
+	    background: #003b65; image-url("alert-overlay.png") repeat-x; 
 	    display: inline-block; 
 	    padding: 5px 10px; 
 	    color: #FFF; 
@@ -1496,10 +1496,10 @@ margin-top:0;
   background:image-url("global-button-grey.gif") no-repeat top left;
 }
 #optemo_embedder #IE #navigator_bar .global_btn_grey {
-  Background: url(/images/IE/compare_grey_nav_top.gif) no-repeat top left;
+  Background: image-url("IE/compare_grey_nav_top.gif") no-repeat top left;
 }
 #optemo_embedder #IE #navigator_bar .global_btn {
-  Background: url(/images/IE/compare_blue_nav_top.gif) no-repeat top left;
+  Background: image-url("IE/compare_blue_nav_top.gif") no-repeat top left;
 }
 #optemo_embedder #IE .global_btn {
   display: block;
@@ -1856,7 +1856,7 @@ margin-top:0;
    
     *bottom: 7px;
     *height: 25px;*/
-  background: url('/images/IE/y_bottom_bg.gif') repeat-x ;
+  background: image-url('IE/y_bottom_bg.gif') repeat-x ;
   height: 25px;
 }
 
