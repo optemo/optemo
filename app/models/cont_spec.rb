@@ -43,19 +43,116 @@ class ContSpec < ActiveRecord::Base
      return value == other.value && product_id == other.product_id #&& name == other.name Not included due to partial db instatiations ie .select("product_ids, values")
   end
   
-  def self.by_feat(feat)
-    SearchProduct.fq2 unless defined? @@by_feat
-    @@by_feat[feat]
-  end
-  
-  
-  def self.by_feat=(specs)
-    @@by_feat = specs
-  end
-  
   private
   
   def self.initial_specs(feat)
     joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").where(:cont_specs => {:name => feat}, :search_products => {:search_id => Session.product_type_id}).select("value").all.map(&:value)
   end
+
+  public
+  class << self
+    def fq2
+      mycats = Session.search.userdatacats.group_by{|x|x.name}.values
+      mybins = Session.search.userdatabins
+      myconts = Session.search.userdataconts
+      res = ContSpec.joins("INNER JOIN (#{Equivalence.no_duplicate_variations(mycats,mybins,myconts,Session.search.sortby).to_sql}) as pids ON pids.product_id = `cont_specs`.`product_id`").products_and_specs
+      q = res.to_sql
+      cached = CachingMemcached.cache_lookup("Products-#{q.hash}") do
+        run_query_no_activerecord(q)
+      end
+      #ComparableSet.from_storage(cached)
+      cached.map{|c|ProductAndSpec.from_storage(c)}
+    end
+  end
+    private
+  class << self
+    def search_id_q
+      where(search_products: {:search_id => Session.product_type_id})
+    end
+      
+    def create_join(mycats,mybins,myconts = Maybe(Session.search).userdataconts)
+      tables = []
+      tables << ["cont_specs"] * myconts.size
+      tables << ["cat_specs"] * mycats.size
+      tables << ["bin_specs"] * mybins.size
+      myjoins = []
+      tables.map{|type|type.each_with_index{|table,i| myjoins << "INNER JOIN #{table} #{table+i.to_s} ON pids.product_id = #{table+i.to_s}.product_id"}}
+      joins(myjoins.join(" "))
+    end
+    def no_duplicate_variations
+      Equivalence.joins("INNER JOIN `search_products` ON `search_products`.`product_id` = equivalences.product_id").group(:eq_id).select('DISTINCT(eq_id), equivalences.product_id').search_id_q
+    end
+    
+    def conts(s=Session.search)
+      res = []
+      s.userdataconts.each_with_index do |d,i|
+        res << "cont_specs#{i}.value <= #{d.max+0.00001}" unless d.max.blank?
+        res << "cont_specs#{i}.value >= #{d.min-0.00001}" unless d.min.blank?
+        res << "cont_specs#{i}.name = '#{d.name}'"
+      end
+      where(res.join(" and "))
+    end
+    
+    def cats(mycats)
+      res = []
+      mycats.each_with_index do |group, i|
+        res << ("(" + group.map{|cs| "(cat_specs#{i}.value = '#{cs.value}' and cat_specs#{i}.name = '#{cs.name}')"}.join(" OR ") + ")")
+      end
+      where(res.join(" and "))
+    end
+    
+    def bins(mybins)
+      res = []
+      mybins.each_with_index do |d,i|
+        res << "bin_specs#{i}.value = #{d.value} and bin_specs#{i}.name = '#{d.name}'"
+      end
+      where(res.join(" and "))
+    end
+    
+    def sorting(sortby)
+      sortby ||= "utility" #Default sorting
+      if sortby.include?("_high")  
+           order = "ASC"
+           sortby = "saleprice_factor"
+      else
+           order =  "DESC"    
+      end
+      where("`cont_specs`.name = '#{sortby}'").order("`cont_specs`.value #{order}")
+    end
+    
+    def select_part(grouping_table_id = false)
+      if grouping_table_id
+        select("`cont_specs`.`product_id`, group_concat(`cont_specs`.name) AS names, group_concat(`cont_specs`.value) AS vals")
+      else
+        select("pids.product_id")
+      end
+    end
+    
+    def products_and_specs
+      #This returns product ids along with products spec names and values, to be used in ProductAndSpec
+      select_part(true).group("`cont_specs`.`product_id`")
+    end
+    
+    def run_query_no_activerecord(q)
+      #We don't want to store the activerecord here
+      tried_once = true
+      begin
+        result = self.connection.execute(q).to_a
+        raise SearchError, "No products match that search criteria for #{Session.product_type}" if result.empty?
+      rescue SearchError
+        #Check if the initial products are missing
+        if SearchProduct.search_id_q.count == 0 && tried_once
+          SearchProduct.transaction do
+            Product.instock.current_type.map{|product| SearchProduct.new(:product_id => product.id, :search_id => Session.product_type_id)}.each(&:save)
+          end
+          tried_once = false
+          retry
+        else
+          raise
+        end
+      end
+      result
+    end
+  end
 end
+class SearchError < StandardError; end

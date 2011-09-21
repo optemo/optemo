@@ -19,7 +19,7 @@
     <% chosen_cats = chosencats(f.name) %>
     <% if f.name == "color" # TODO: should not be hard code here%>
       <div style="margin-right: -4px;margin-top: 4px;">
-        <% color_counts = SearchProduct.cat_counts("color",true) %>
+        <% color_counts = CatSpec.count_feat("color") %>
         <% %w(Red Orange Yellow Green Blue Purple Pink White Silver Brown Black).each do |color| %>
           <% next if color_counts[color].nil? && !chosen_cats.include?(color) %>
           <div class="swatch<%= " white_swatch" if color == "White" %><%= " selected_swatch" if chosen_cats.include?(color) %>" style="background-color: <%= color %>"></div>
@@ -30,7 +30,7 @@
       </div>
     <% else %>
       <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
-      <% optionlist = SearchProduct.cat_counts(f.name,true,true).to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? -a[1]-1000000 : -a[1]) <=> (chosen_cats.include?(b[0]) ? -b[1]-1000000 : -b[1])} %>
+      <% optionlist = CatSpec.count_feat(f.name,true).to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? -a[1]-1000000 : -a[1]) <=> (chosen_cats.include?(b[0]) ? -b[1]-1000000 : -b[1])} %>
       <div class="categorical">
         <% optionlist.each do |k,available_count| %>
           <% checked = chosen_cats.include?(k) %>
@@ -72,7 +72,7 @@
   <% when "Binary" %>
     <% dobj = @s.search.userdatabins.select{|udb| udb.name == f.name}.first %>
     <% unchecked = dobj.nil? || dobj.value == false %>
-    <% available_count = SearchProduct.bin_count(f.name) %>
+    <% available_count = BinSpec.count_feat(f.name) %>
     <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
       <%= check_box_tag "binary[#{f.name}]", "1", !unchecked ,:disabled => (available_count == 0) ? true : false, :class => 'binary_filter' %>
       <%= (available_count == 0) ? t("#{Session.product_type}.specs.#{f.name}.name", :default => "specs.#{f.name}".to_sym) : link_to( t("#{Session.product_type}.specs.#{f.name}.name", :default => "specs.#{f.name}".to_sym), "#", :class => "checkbox_text") %>

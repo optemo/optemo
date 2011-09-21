@@ -110,8 +110,8 @@ module CompareHelper
     end
   end
   
-  def category_select(feat,expanded)
-    select('superfluous', feat, [expanded ? t('products.add')+t(Session.product_type+'.specs.'+feat+'.name') : t('products.all')+t(Session.product_type+'.specs.'+feat+'.name').pluralize] + SearchProduct.cat_counts(feat,expanded,true).map{|k,v| ["#{k} (#{v})", k]}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
+  def category_select(feat)
+    select('superfluous', feat, [t('products.add')+t(Session.product_type+'.specs.'+feat+'.name')] + CatSpec.count_feat(feat,true).map{|k,v| ["#{k} (#{v})", k]}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
   end
   
   def landing_main_boxes(type)

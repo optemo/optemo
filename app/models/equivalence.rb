@@ -1,4 +1,4 @@
-class SearchProduct < ActiveRecord::Base
+class Equivalence < ActiveRecord::Base
   self.per_page = 18 #for will_paginate
   class << self
     def queryPresent?
@@ -44,12 +44,16 @@ class SearchProduct < ActiveRecord::Base
       cached.map{|c|ProductAndSpec.from_storage(c)}
     end
     
-    def cat_counts(feat,includezeros = false,s = Session.search)
+    def cat_counts(feat,expanded,includezeros = false,s = Session.search)
       allcats = s.userdatacats.group_by{|x|x.name}
       mycats = allcats.reject{|id|feat == id}.values
       mybins = s.userdatabins
       table_id = mycats.size
-      q = where(:search_id => Session.product_type_id).create_join(mycats+[[feat]],mybins,s.userdataconts).conts(s).bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
+      if expanded
+        q = where(:search_id => Session.product_type_id).create_join(mycats+[[feat]],mybins,s.userdataconts).conts(s).bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
+      else
+        q = search_id_q.create_join(mycats+[[feat]],mybins,s.userdataconts).conts(s).bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
+      end
       CachingMemcached.cache_lookup("CatsCount(#{includezeros.to_s})-#{q.to_sql.hash}") do
         if includezeros
           q.count.merge(Hash[CatSpec.alloptions(feat).map {|x| [x, 0]}]){|k,oldv,newv|oldv}
@@ -67,13 +71,21 @@ class SearchProduct < ActiveRecord::Base
         q.count
       end
     end
+    
+    def no_duplicate_variations(mycats,mybins,myconts,sortby)
+      res = search_id_q.joins("INNER JOIN search_products ON search_products.product_id = `equivalences`.product_id").create_join(mycats,mybins,myconts).conts(myconts).cats(mycats).bins(mybins)
+      if sortby == false
+        res.select("DISTINCT eq_id")
+      else
+        res.select_part.sorting(sortby,"").group("eq_id")
+      end
+    end
   end
   private
   class << self
     def search_id_q
-      where(:search_id => Session.product_type_id)
+      where(search_products: {:search_id => Session.product_type_id})
     end
-      
     def create_join(mycats,mybins,myconts = Maybe(Session.search).userdataconts)
       tables = []
       tables << ["cont_specs"] * myconts.size
@@ -84,9 +96,9 @@ class SearchProduct < ActiveRecord::Base
       joins(myjoins.join(" "))
     end
     
-    def conts(s=Session.search)
+    def conts(myconts)
       res = []
-      s.userdataconts.each_with_index do |d,i|
+      myconts.each_with_index do |d,i|
         res << "cont_specs#{i}.value <= #{d.max+0.00001}" unless d.max.blank?
         res << "cont_specs#{i}.value >= #{d.min-0.00001}" unless d.min.blank?
         res << "cont_specs#{i}.name = '#{d.name}'"
@@ -118,7 +130,7 @@ class SearchProduct < ActiveRecord::Base
       else
            order =  "DESC"    
       end
-      where("cont_specs#{table_id}.name = '#{sortby}'").order("cont_specs#{table_id}.value #{order}")
+      joins("INNER JOIN cont_specs ON cont_specs.product_id = `equivalences`.product_id").where("cont_specs#{table_id}.name = '#{sortby}'").order("cont_specs#{table_id}.value #{order}")
     end
     
     def select_part(grouping_table_id = false)
@@ -131,7 +143,7 @@ class SearchProduct < ActiveRecord::Base
     
     def products_and_specs(grouping_table_id)
       #This returns product ids along with products spec names and values, to be used in ProductAndSpec
-      select_part(grouping_table_id).group("search_products.product_id")
+      joins("INNER JOIN search_products ON search_products.product_id = equivalences.product_id").select_part(grouping_table_id).group(:eq_id)
     end
     
     def run_query_no_activerecord(q)

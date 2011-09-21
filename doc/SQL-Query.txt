@@ -1,0 +1,77 @@
+Current Query:
+SELECT 
+  DISTINCT(equivalences.eq_id), 
+  search_products.product_id, 
+  group_concat(cont_specs0.name) AS names, 
+  group_concat(cont_specs0.value) AS vals 
+FROM `equivalences` INNER JOIN `search_products` ON `search_products`.`product_id` = equivalences.product_id INNER JOIN cont_specs cont_specs0 ON search_products.product_id = cont_specs0.product_id INNER JOIN cont_specs cont_specs1 ON search_products.product_id = cont_specs1.product_id 
+WHERE 
+  `search_products`.`search_id` = 2 AND 
+  (cont_specs1.name = 'utility') 
+  GROUP BY equivalences.eq_id, search_products.product_id 
+  ORDER BY cont_specs1.value DESC
+  
+New Query:
+SELECT
+  pids.product_id
+  group_concat(cont_specs0.name) AS names, 
+  group_concat(cont_specs0.value) AS vals
+FROM
+  (Select
+    DISTINCT(equivalences.eq_id)
+    search_products.product_id
+  FROM equivalences` INNER JOIN `search_products` ON `search_products`.`product_id` = equivalences.product_id
+  WHERE
+    `search_products`.`search_id` = 2
+    GROUP BY equivalences.eq_id) pids
+  INNER JOIN cont_specs cont_specs0 ON search_products.product_id = cont_specs0.product_id 
+  INNER JOIN cont_specs cont_specs1 ON search_products.product_id = cont_specs1.product_id 
+WHERE
+  (cont_specs1.name = 'utility') 
+  GROUP BY search_products.product_id 
+  ORDER BY cont_specs1.value DESC
+  
+Current:
+SELECT pids.product_id,
+      cont_specs0.product_id, 
+      group_concat(cont_specs0.name) AS names, 
+      group_concat(cont_specs0.value) AS vals 
+FROM `cont_specs` 
+  INNER JOIN (
+        SELECT eq_id, 
+               equivalences.product_id 
+        FROM `equivalences` 
+          INNER JOIN `search_products` ON `search_products`.`product_id` = equivalences.product_id 
+        WHERE `search_products`.`search_id` = 2 
+        GROUP BY eq_id
+  ) as pids 
+  INNER JOIN cont_specs cont_specs0 ON pids.product_id = cont_specs0.product_id 
+WHERE (`cont_specs`.name = 'utility')
+ORDER BY `cont_specs`.value DESC
+
+
+New Idea:
+SELECT search_products.product_id, 
+      group_concat(cont_specs0.name) AS names, 
+      group_concat(cont_specs0.value) AS vals 
+FROM `equivalences` 
+  INNER JOIN search_products ON search_products.product_id = equivalences.product_id 
+  INNER JOIN cont_specs cont_specs0 ON search_products.product_id = cont_specs0.product_id 
+  INNER JOIN cont_specs cont_specs1 ON search_products.product_id = cont_specs1.product_id 
+WHERE `search_products`.`search_id` = 2 AND (cont_specs1.name = 'utility') 
+GROUP BY eq_id 
+ORDER BY cont_specs1.value DESC
+
+Only 1 row per grouping
+SELECT cont_specs.product_id, 
+      group_concat(cont_specs.name) AS names, 
+      group_concat(cont_specs.value) AS vals
+FROM cont_specs INNER JOIN
+(SELECT search_products.product_id
+FROM `equivalences` 
+  INNER JOIN search_products ON search_products.product_id = equivalences.product_id
+  INNER JOIN cont_specs cont_specs1 ON search_products.product_id = cont_specs1.product_id 
+WHERE `search_products`.`search_id` = 2 AND (cont_specs1.name = 'utility') 
+GROUP BY eq_id 
+ORDER BY cont_specs1.value DESC) AS pids ON cont_specs.product_id = pids.product_id
+GROUP BY cont_specs.product_id
