@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <% if Session.product_type != "camera_bestbuy" %>
 	<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-	<%= render :partial => "product", :collection => Product.valid %>
+	<%= render :partial => "product", :collection => Product.all %>
 	</urlset>
 <% end %>

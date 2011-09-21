@@ -8,22 +8,14 @@
 <form id="filter_form" method="get" action="/compare">
 <% Session.features["filter"].each do |f| %>
   <div class="feature">
-  <% unless f.feature_type == "Binary" || f.feature_type == "Spacer" -%>
-    <div class="<%= f.style.blank? ? "label" : f.style %>">
-      <%=t "#{Session.product_type}.specs.#{f.name}.name" %>
-      <% if !(unit = t("#{Session.product_type}.specs.#{f.name}.unit", :default => "")).blank? -%>
-      <span class="unitdisp">
-        (<%= unit %>)
-      </span>
-      <% end %>
-    </div>
-  <% end -%>
   <% case f.feature_type -%>
   <% when "Heading" -%>
+    <%= render partial: 'filter_label', locals: {f: f} %>
     <div style="height: 7px"><!-- --></div>
   <% when "Spacer" -%>
     <div style="height: 17px"><!-- --></div>
   <% when "Categorical" -%>
+    <%= render partial: 'filter_label', locals: {f: f} %>
     <% chosen_cats = chosencats(f.name) %>
     <% if f.name == "color" # TODO: should not be hard code here%>
       <div style="margin-right: -4px;margin-top: 4px;">
@@ -51,32 +43,39 @@
       </div>
     <% end %>
   <% when "Continuous" %>
+    <%= render partial: 'filter_label', locals: {f: f} %>
+    <%# Check continuous features for data, instead of graying them, we just don't show them %>
     <% distribution_data = getDist(f.name) -%>
-    <% next if distribution_data.blank? -%>
-    <div style="position:relative">
-  	  <div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
-      <% current = Maybe(Session.search.userdataconts.select{|m|m.name == f.name}.first) -%>
-  	  <%= hidden_field_tag "continuous[#{f.name}]", current.min.to_s+"-"+current.max.to_s, {:class => 'range'}%>
-  	  <div class='slider'
-  	    data-label= '<%= f.name %>'
-  	    data-min='<%= format_acceptable_increments(distribution_data.first[2], "down") %>' <%# Global min %>
-  	    data-max='<%= format_acceptable_increments(distribution_data.first[3], "up") %>' <%# Global max %>
-  	    data-startmin='<%= format_acceptable_increments(current.min.nil? ? distribution_data.first[2] : current.min, "down") %>'
-  	    data-startmax='<%= format_acceptable_increments(current.max.nil? ? distribution_data.first[3] : current.max, "up") %>'
-  	    current-data-min='<%= distribution_data.first.first %>'
-  	    current-data-max='<%= distribution_data.first.second %>'
-  	    force-int='false'
-  	  <%= f.name == 'saleprice' ? 'data-formatting=\'$\'' : ""  %>>
-        	<div class="centerofslider"><!-- --></div>
-  	  </div>
-  	</div>
+    <% if distribution_data.blank? -%>
+      <div class="disabled" style="margin: 4px 0 0 5px">(<%= t('specs.notapplicable') %>)</div>
+    <% elsif distribution_data.first[2] == distribution_data.first[3] %>
+      <div class="disabled" style="margin: 4px 0 0 5px"><%= distribution_data.first[2] %> <span class="av_count">(<%=t 'specs.all' %>)</span></div>
+    <% else %>
+      <div style="position:relative">
+        <div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
+        <% current = Maybe(Session.search.userdataconts.select{|m|m.name == f.name}.first) -%>
+        <%= hidden_field_tag "continuous[#{f.name}]", current.min.to_s+"-"+current.max.to_s, {:class => 'range'}%>
+        <div class='slider'
+          data-label= '<%= f.name %>'
+          data-min='<%= format_acceptable_increments(distribution_data.first[2], "down") %>' <%# Global min %>
+          data-max='<%= format_acceptable_increments(distribution_data.first[3], "up") %>' <%# Global max %>
+          data-startmin='<%= format_acceptable_increments(current.min.nil? ? distribution_data.first[2] : current.min, "down") %>'
+          data-startmax='<%= format_acceptable_increments(current.max.nil? ? distribution_data.first[3] : current.max, "up") %>'
+          current-data-min='<%= distribution_data.first.first %>'
+          current-data-max='<%= distribution_data.first.second %>'
+          force-int='false'
+        <%= f.name == 'saleprice' ? 'data-formatting=\'$\'' : ""  %>>
+            <div class="centerofslider"><!-- --></div>
+        </div>
+      </div>
+    <% end %>
   <% when "Binary" %>
     <% dobj = @s.search.userdatabins.select{|udb| udb.name == f.name}.first %>
     <% unchecked = dobj.nil? || dobj.value == false %>
     <% available_count = SearchProduct.bin_count(f.name) %>
     <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
       <%= check_box_tag "binary[#{f.name}]", "1", !unchecked ,:disabled => (available_count == 0) ? true : false, :class => 'binary_filter' %>
-      <%= (available_count == 0) ? t("#{Session.product_type}.specs.#{f.name}.name") : link_to( t("#{Session.product_type}.specs.#{f.name}.name"), "#", :class => "checkbox_text") %>
+      <%= (available_count == 0) ? t("#{Session.product_type}.specs.#{f.name}.name", :default => "specs.#{f.name}".to_sym) : link_to( t("#{Session.product_type}.specs.#{f.name}.name", :default => "specs.#{f.name}".to_sym), "#", :class => "checkbox_text") %>
       <span class="av_count"><%= "(#{available_count})" if unchecked %></span>
     </div>
   <% end %>

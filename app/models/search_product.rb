@@ -9,14 +9,14 @@ class SearchProduct < ActiveRecord::Base
     def filterquery
       mycats = Session.search.userdatacats.group_by{|x|x.name}.values
       mybins = Session.search.userdatabins
-      search_id_q.create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins)
+      search_id_q.create_join(mycats,mybins).conts.cats(mycats).bins(mybins)
     end
       
     def fq_paginated_products
       mycats = Session.search.userdatacats.group_by{|x|x.name}.values
       mybins = Session.search.userdatabins
       myconts = Session.search.userdataconts
-      res = search_id_q.select_part.create_join(mycats,mybins,myconts+[[]]).conts_keywords.cats(mycats).bins(mybins).sorting(Session.search.sortby,myconts.size).page(Session.search.page)
+      res = search_id_q.select_part.create_join(mycats,mybins,myconts+[[]]).conts.cats(mycats).bins(mybins).sorting(Session.search.sortby,myconts.size).page(Session.search.page)
       #q = res.to_sql
       #cached = CachingMemcached.cache_lookup("JustProducts-#{q.hash}") do
       #  run_query_no_activerecord(q)
@@ -35,7 +35,7 @@ class SearchProduct < ActiveRecord::Base
       mycats = Session.search.userdatacats.group_by{|x|x.name}.values
       mybins = Session.search.userdatabins
       myconts = Session.search.userdataconts
-      res = search_id_q.products_and_specs(myconts.size).create_join(mycats,mybins,myconts+[[],[]]).conts_keywords.cats(mycats).bins(mybins).sorting(Session.search.sortby,myconts.size+1)
+      res = search_id_q.products_and_specs(myconts.size).create_join(mycats,mybins,myconts+[[],[]]).conts.cats(mycats).bins(mybins).sorting(Session.search.sortby,myconts.size+1)
       q = res.to_sql
       cached = CachingMemcached.cache_lookup("Products-#{q.hash}") do
         run_query_no_activerecord(q)
@@ -50,9 +50,9 @@ class SearchProduct < ActiveRecord::Base
       mybins = s.userdatabins
       table_id = mycats.size
       if expanded
-        q = where(:search_id => Session.product_type_id).create_join(mycats+[[feat]],mybins,s.userdataconts).conts_keywords(s).bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
+        q = where(:search_id => Session.product_type_id).create_join(mycats+[[feat]],mybins,s.userdataconts).conts(s).bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
       else
-        q = search_id_q.create_join(mycats+[[feat]],mybins,s.userdataconts).conts_keywords(s).bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
+        q = search_id_q.create_join(mycats+[[feat]],mybins,s.userdataconts).conts(s).bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
       end
       CachingMemcached.cache_lookup("CatsCount(#{includezeros.to_s})-#{q.to_sql.hash}") do
         if includezeros
@@ -66,7 +66,7 @@ class SearchProduct < ActiveRecord::Base
     def bin_count(feat)
       mycats = Session.search.userdatacats.group_by{|x|x.name}.values
       mybins = Session.search.userdatabins.reject{|e|e.name == feat} << BinSpec.new(:name => feat, :value => true)
-      q = where(:search_id => Session.product_type_id).create_join(mycats,mybins).conts_keywords.cats(mycats).bins(mybins)
+      q = where(:search_id => Session.product_type_id).create_join(mycats,mybins).conts.cats(mycats).bins(mybins)
       CachingMemcached.cache_lookup("BinsCount-#{q.to_sql.hash}") do
         q.count
       end
@@ -88,12 +88,13 @@ class SearchProduct < ActiveRecord::Base
       joins(myjoins.join(" "))
     end
     
-    def conts_keywords(s=Session.search)
+    def conts(s=Session.search)
       res = []
       s.userdataconts.each_with_index do |d,i|
-        res << "cont_specs#{i}.value <= #{d.max+0.00001} and cont_specs#{i}.value >= #{d.min-0.00001} and cont_specs#{i}.name = '#{d.name}'"
+        res << "cont_specs#{i}.value <= #{d.max+0.00001}" unless d.max.blank?
+        res << "cont_specs#{i}.value >= #{d.min-0.00001}" unless d.min.blank?
+        res << "cont_specs#{i}.name = '#{d.name}'"
       end
-      res << "keyword_searches0.keyword = '#{Session.search.keyword_search}'" if s.keyword_search
       where(res.join(" and "))
     end
     

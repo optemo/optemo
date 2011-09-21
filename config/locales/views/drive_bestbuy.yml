@@ -11,41 +11,12 @@ en:
         navtitle2:                   " Available"
         outof:                      "Out of %{count} Drives"
         compare:                    "Compare"
-        seeall:                     "See All"
-        shopnow:                    "Shop Now"
-        toprated:                   "Top Rated Products"
-        bestsellers:                "Best Sellers"
-        featuredproducts:           "Featured Products"
         
         specs:
-            category:
-                name:               "Categories"
-            saleprice:
-                name:               "Price"
-                info:               "The lowest price for the item."  
-            brand:
-                name:               "Brands"
-                info:               "The manufacturer of the product. You can choose more than just one brand."
-            color:
-                name:               "Colors"
-            customerRating:
-                name:               "Customer Rating"
-                info:               "On a scale of 1 to 5, five being the best, this is the average of our customer ratings. Items are rated 0 if they have not been reviewed."
-                unit:               "/ 5.0"
-            onsale:
-                name:               "On Sale"
-            isClearance:
-                name:               "Clearance"
-            isOnlineOnly:
-                name:               "Online Only"
             internal:
                 name:               "Internal"
             external:
-                name:               "External"
-            toprated:
-                name:               "Top-Rated"
-            featured:
-                name:               "Featured Products"    
+                name:               "External"  
             compatibility:
                 name:               "Compatibility"
             pcmac:
@@ -59,12 +30,6 @@ en:
                 unit:               "RPM"
             internalExternal:
                 name:               "Internal or External"
-            utility:
-                name:               "Best Match"
-            saleprice_factor:
-                name:               "Price: Low to High"
-            saleprice_factor_high:
-                name:               "Price: High to Low"
             capacity:
                 name:               "Storage Capacity"
                 unit:               "GB"
@@ -82,14 +47,8 @@ en:
                 name:               "Optical Drives"
             '29583':
                 name:               "Storage Accessories"
-            '29582':
-                name:               "Network-Attached Storage (NAS)"
-            advanced_search:
-                name:               "Advanced Search"
-            displayDate:
-                name:               "Newest Model"
-            orders_factor:  
-                name:               "Best Selling"        
+            'Network Attached Storage':
+                name:               "Network-Attached Storage (NAS)"    
             cdReadSpeed:
                 name:               "CD Read Speed"
             cdRewriteSpeed:
@@ -129,6 +88,4 @@ en:
                 name:               "2.5\""
             drive_size_35:
                 name:               "3.5\""
-            status:
-                name:               "Status"
     31868: *drives
