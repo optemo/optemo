@@ -73,7 +73,7 @@ class Equivalence < ActiveRecord::Base
       if sortby == false
         res.select("DISTINCT eq_id")
       else
-        res.select_part.sorting(sortby,"").group("eq_id")
+        res.select_part.group("eq_id")
       end
     end
   end

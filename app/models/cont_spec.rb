@@ -55,7 +55,7 @@ class ContSpec < ActiveRecord::Base
       mycats = Session.search.userdatacats.group_by{|x|x.name}.values
       mybins = Session.search.userdatabins
       myconts = Session.search.userdataconts
-      res = ContSpec.joins("INNER JOIN (#{Equivalence.no_duplicate_variations(mycats,mybins,myconts,Session.search.sortby).to_sql}) as pids ON pids.product_id = `cont_specs`.`product_id`").products_and_specs
+      res = ContSpec.joins("INNER JOIN (#{Equivalence.no_duplicate_variations(mycats,mybins,myconts,Session.search.sortby).to_sql}) as pids ON pids.product_id = `cont_specs`.`product_id`").products_and_specs.sorting(Session.search.sortby)
       q = res.to_sql
       cached = CachingMemcached.cache_lookup("Products-#{q.hash}") do
         run_query_no_activerecord(q)
@@ -117,7 +117,7 @@ class ContSpec < ActiveRecord::Base
       else
            order =  "DESC"    
       end
-      where("`cont_specs`.name = '#{sortby}'").order("`cont_specs`.value #{order}")
+      joins("INNER JOIN cont_specs cont_specs_sort ON cont_specs_sort.product_id = `cont_specs`.product_id").where("cont_specs_sort.name = '#{sortby}'").order("cont_specs_sort.value #{order}")
     end
     
     def select_part(grouping_table_id = false)
