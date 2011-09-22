@@ -31,7 +31,7 @@
 		<% bundles = hero.product_bundles -%>
 		<% unless siblings.empty? && bundles.empty? %>
 		<div class="herosiblings">
-			<div class="herosiblingslabel"><%=raw siblingslabel(siblings,bundles) %></div>
+			<div class="herosiblingslabel"><%=raw siblingslabel(siblings,bundles) %>:</div>
 			<div class="siblingdiv">
 			<% (siblings+bundles).each do |sibling| -%> 
 			  <% sibling_id = sibling.is_a?(ProductSibling) ? sibling.sibling_id : sibling.bundle_id -%>

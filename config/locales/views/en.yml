@@ -2,7 +2,7 @@ en:
     specs:
         status:                 "Status"
         brand:                  "Brands"
-        color:                  "Colors"
+        color:                  "Colours"
         utility:                "Best Match"
         saleprice:              "Price"
         advanced_search:        "Advanced Search"
@@ -52,7 +52,7 @@ en:
             instorepickup:  "Order online and pick up in-store."
             rewardprog:     "It's free to get into the rewards program." 
             available:      "Available"
-            colors:         "Colors"
+            colors:         "Colours"
             and:            " and "
             bundles:        "Bundles"
             loading:        "Loading"
