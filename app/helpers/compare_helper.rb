@@ -111,8 +111,10 @@ module CompareHelper
     res << '<div class="rowdiv">'
     prods = landing ? @s.search.products_landing[1..-1] : @s.search.paginated_products #The first products_landing is the hero product
     # now the new mockup is only with featured products
-    res << "<div class='title_landing_type'>" + I18n.t("products.featuredproducts") + "</div>"
-    res << "<div style='clear:both;width: 0;height: 0;'><!-- --></div>"
+    if landing
+      res << "<div class='title_landing_type'>" + I18n.t("products.featuredproducts") + "</div>"
+      res << "<div style='clear:both;width: 0;height: 0;'><!-- --></div>"
+    end
     products = prods.map{|p|Product.cached(landing ? p.product_id : p.id)}
     loop do
       row = products.shift(3)
