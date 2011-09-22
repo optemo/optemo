@@ -106,47 +106,29 @@ module CompareHelper
     select('superfluous', feat, [t('products.add')+t(Session.product_type+'.specs.'+feat+'.name')] + CatSpec.count_feat(feat,true).map{|k,v| ["#{k} (#{v})", k]}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
   end
   
-  def landing_main_boxes(type)
+  def main_boxes(landing = false)
     res = ""
     res << '<div class="rowdiv">'
-    prods = @s.search.products_landing
-    num = prods.size-1
+    prods = landing ? @s.search.products_landing[1..-1] : @s.search.paginated_products #The first products_landing is the hero product
     # now the new mockup is only with featured products
     res << "<div class='title_landing_type'>" + I18n.t("products.featuredproducts") + "</div>"
-    res << "<div style='clear:both;width: 0;height: 0;'><!--ie6/7 title disappear issue --></div>"
-    for i in 0...num
-        res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(prods[i+1].product_id), :landing => true})
-        if (i%3) == 2
-            if i != (num -1)
-                res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto;"></div>'
-            end
-        end
-    end
-    res << '<div style="clear:both;height:0;"></div></div>' if !@s.directLayout
-  end
-    
-  def main_boxes
-    res = ""
-    for i in 0...@s.search.paginated_products.size
-      if i % (Float(@s.numGroups)/3).ceil == 0
-    	  res << '<div class="rowdiv">'
-    	  open = true
+    res << "<div style='clear:both;width: 0;height: 0;'><!-- --></div>"
+    products = prods.map{|p|Product.cached(landing ? p.product_id : p.id)}
+    loop do
+      row = products.shift(3)
+      #Check if any of the products have variations or bundles
+      no_variations = row.inject(true){|ans,p| ans && p.product_bundles.empty? && p.product_siblings.empty?}
+      row.each_index do |i|
+        res << render(:partial => 'navbox', :locals => {product: row[i], landing: landing, last_in_row: i == row.length-1, no_variations: no_variations, bundles: row[i].product_bundles, siblings: row[i].product_siblings})
       end
-      #Navbox partial to draw boxes
-      res << render(:partial => 'navbox', :locals => {:i => i, :product => Product.cached(@s.search.paginated_products[i].id), :landing=>false})
-              if i % (Float(@s.numGroups)/3).ceil == (Float(@s.numGroups)/3).ceil - 1
-                if i < (@s.search.paginated_products.size - 1)
-                  res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin:0 auto;"></div></div>'
-                else
-                  res << '<div style="clear:both;height:0;"></div></div>'
-                end
-                open = false
-              end
+      if products.empty?
+        break
+      else
+        res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto;"><!-- --></div>'
+      end
     end
-  	res << '<div style="clear:both;height:3px;width: 552px;margin-left: -1px;">&nbsp;</div></div>' if open && !@s.directLayout
-    res << '<span id="actioncount" style="display:none">' + "#{[Session.search.id.to_s].pack("m").chomp}</span>"
-  	res
-	end
+    res << '<div style="clear:both;height:0;"><!-- --></div></div>'
+  end
 	
 	def getDist(feat)
     unless defined? @dist

@@ -367,7 +367,6 @@ html {
 
 #optemo_embedder .siblingsbox {
   text-align: center;
-  border-bottom: 1px solid #e1e1e1;;
   border-top: 1px solid #e1e1e1;
   font-size: 0.8em;
   margin: 6px 10px 0;
@@ -1489,16 +1488,6 @@ margin-top:0;
         }
 #optemo_embedder .awesome_reset:hover, #optemo_embedder .awesome_reset_grey:hover {text-decoration: none;background-color: #004373; }
 
-#optemo_embedder .regular_reset, #optemo_embedder .regular_reset:visited {
-  display: inline-block;
-  padding: 0;
-  color: #039;
-  text-decoration: none;
-}
-
-#optemo_embedder .regular_reset:hover {
-  text-decoration: underline;
-}
 #optemo_embedder .regular_reset span {
   margin-right: 4px;
   font-weight: normal;
