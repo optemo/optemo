@@ -44,22 +44,14 @@ module CompareHelper
     increments.push(max)
     increments.map{|i|(i.round == i) ? i.to_i : (i * 100.0).to_i.to_f / 100.0 }
   end
-  
-  def nav_link
-    if request.env['HTTP_REFERER'] && request.env['HTTP_REFERER'].match('laserprinterhub|localhost')
-      link_to 'Go back<br> to navigation', 'javascript:history.back()'
-    else
-      link_to 'Browse more products', :controller => 'products'
-    end
-  end
-  
+
   def navtitle
-    if Session.search.products_size > 1
-      res = t("#{Session.product_type}.navtitle").pluralize
+    if I18n.locale == :fr
+      res = t("#{Session.product_type}.navtitle")
     else
-        res = t("#{Session.product_type}.navtitle")
-    end    
-    res + t("#{Session.product_type}.navtitle2")
+      res = Session.search.products_size > 1 ? t("#{Session.product_type}.navtitle").pluralize : t("#{Session.product_type}.navtitle")
+    end
+    res + " " + t("#{Session.product_type}.navtitle2")
   end
  
   def chosencats(feat)

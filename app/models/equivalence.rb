@@ -68,6 +68,12 @@ class Equivalence < ActiveRecord::Base
       end
     end
     
+    def all_count
+      CachingMemcached.cache_lookup("AllCount-#{Session.product_type_id}") do
+        search_id_q.joins("INNER JOIN search_products ON search_products.product_id = `equivalences`.product_id").select("DISTINCT eq_id").count
+      end
+    end
+    
     def no_duplicate_variations(mycats,mybins,myconts,sortby)
       res = search_id_q.joins("INNER JOIN search_products ON search_products.product_id = `equivalences`.product_id").create_join(mycats,mybins,myconts).conts(myconts).cats(mycats).bins(mybins)
       if sortby == false

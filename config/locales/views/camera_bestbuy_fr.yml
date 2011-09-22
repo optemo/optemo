@@ -7,10 +7,10 @@ fr:
         defaultdesc:                "Meilleure sélection d'appareils photo numériques"
         keywords:                   "appareils photo"
         classification:             "Appareils photo numériques"
-        navtitle:                  "Appareils photo"
-        navtitle2:                   " disponibles"
+        navtitle:                   "Appareils photo"
+        navtitle2:                  "disponibles"
         outof:                      "Parmi %{count} appareils photo"
-        compare:                   "Comparer"
+        compare:                    "Comparer"
         
         specs:
             maxresolution:
