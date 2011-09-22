@@ -372,6 +372,7 @@ html {
   font-size: 0.8em;
   margin: 6px 10px 0;
 }
+
 #optemo_embedder .siblingdiv {
   width: 35px;
   float: left;
@@ -391,6 +392,25 @@ html {
   height: 35px;
   width: 35px;
   overflow: left;
+}
+
+#optemo_embedder .herosiblings {
+  text-align: center;
+  font-size: 0.8em;
+  margin: 6px 0px 0px;
+}
+
+#optemo_embedder .herosiblingslabel {
+  margin-top: 2px;
+  float: left;
+  padding-right: 5px;
+}
+
+#optemo_embedder .herosiblings a img {
+  height: 35px;
+  width: 35px;
+  overflow: left;
+  vertical-align: top;
 }
 
 /*.itemtitle {
