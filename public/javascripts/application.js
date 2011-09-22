@@ -1713,7 +1713,7 @@ optemo_module = (function (my){
         my.compareCheckedProducts();
     });
 
-    $('#optemo_embedder .nav-clear-btn').live("click", function() {
+    $('#optemo_embedder .nav_clear_btn').live("click", function() {
 				var skus = my.readAllCookieValues('bestbuy_specs_skus');
 				var erased = 0;
 		    if (skus.length > 0) {
@@ -1739,7 +1739,7 @@ optemo_module = (function (my){
 //                $(this).hover(function(){$(this).css('color', '#ffff00');}, function(){$(this).css('color', '');});
             });
 						// Show the clear option if it's not visible
-						$('.nav-clear-btn:hidden').show();
+						$('.nav_clear_btn:hidden').show();
         } else {
             $('.nav-compare-btn').each ( function(index) {
                 $(this).removeClass('awesome_reset');
@@ -1750,7 +1750,7 @@ optemo_module = (function (my){
 //                $(this).unbind('mouseenter mouseleave'); // Remove the hover color change
             });
 						// Hide the clear option if it is visible
-						$('.nav-clear-btn:visible').hide();
+						$('.nav_clear_btn:visible').hide();
         }
     };
     function click_checkbox(){
