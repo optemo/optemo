@@ -432,7 +432,7 @@ optemo_module = (function (my){
     }
                      function remove_comparison_from_skus(prod_id) {
                          var skus = my.readAllCookieValues('bestbuy_specs_skus');
-
+                         
                          $.each(skus, function(index, value) {
                                     var val = value.split(',');
                                     if (val[2] == prod_id) {
@@ -1539,8 +1539,14 @@ optemo_module = (function (my){
 
     // This should return all cookie values in an array.
     my.readAllCookieValues = function(name) {
-        // Must error check for empty cookie
-        return (readCookie(name) ? readCookie(name).split('*') : []);
+        var skus = (readCookie(name) ? readCookie(name).split('*') : []);
+        // Fix for cookie not saving but some product checkboxes are checked. Issue found in IE6.
+        if (skus.length == 0) {
+            $(".optemo_compare_checkbox:checked").each (function (index) {
+                skus.push([$(this).attr('data-sku'), $(this).attr('data-cat'), $(this).attr('data-id'), $('#main').attr('data-product_type')].join(','));
+              });
+        }
+        return skus;
     };
 
     // The functions below should not be used; treat them as private, to be called by the two cookie interface functions above
@@ -1775,7 +1781,6 @@ optemo_module = (function (my){
                                            var thisObj = $(this) ;
                                            if (thisObj.attr('checked')) { // save the comparison item
                                                if (skus.length <5) {
-   
                                                    my.loadspecs(thisObj.attr('data-sku'), thisObj.attr('data-cat'), thisObj.attr('data-id'), $('#main').attr('data-product_type'));
                                                }
                                                else {
@@ -1816,7 +1821,6 @@ optemo_module = (function (my){
 
         }
 
-        
         my.applySilkScreen('/comparison/' + productIDs, null, width, 580,function(){
             // Jquery 1.5 would finish all the requests before building the comparison matrix once
             // With 1.4.2 we can't do that. Keep code for later.
