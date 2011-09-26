@@ -29,7 +29,7 @@ end
 def fetch_terms(product_type)
   # Must do a join followed by a split since the initial mapping of titles is like this: ["keywords are here", "and also here", ...]
   # The gsub lines are to take out the parentheses on both sides, take out commas, and take out trailing slashes.
-  searchterms = Product.valid.instock.map{|c|c.title}.join(" ").split(" ").map{|t| t.gsub("()", '').gsub(/,/,' ').gsub(/\/$/,'').chomp}.uniq
+  searchterms = Product.instock.map{|c|c.title}.join(" ").split(" ").map{|t| t.gsub("()", '').gsub(/,/,' ').gsub(/\/$/,'').chomp}.uniq
   # Sanitize RSS-fed UTF-8 character input.
   ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
   searchterms = searchterms.map {|t| ic.iconv(t << ' ')[0..-2]}

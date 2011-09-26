@@ -117,19 +117,8 @@ class  Kmeans
         z+=z_temp*z_temp; 
     }   
     }while (z>tresh && tt<150);
-  //Taking care of cases where a cluster collapse
-  //labels = labels.map{|l| labels.uniq.index(l)} if labels.uniq.size <labels.max+1
-  ///???????????????
-    
-   // for (h=0; h<k; h++){
-   //     i=0;
-   //     while(labels[i] != h && i<nn){ i++;}
-   //     reps[h] = i;
-   // }
-    
     for (i=0; i<nn; i++){
       h = labels[i];
-   //   if (utilities_rep[i] > utilities_rep[reps[h]]) reps[h] = i;
       avgUtilities[h] += utilities_gorder[i];  
    }
     
@@ -137,7 +126,7 @@ class  Kmeans
      if (counts[h]>0) avgUtilities[h] = avgUtilities[h]/counts[h];  
    }   
   
-  //  //////////////////////////////////////////////////////////////////////sort based on utilities   
+  ////////////////////////////////////////////////////////////////////////sort based on utilities   
     int idKey;
     double key;	 
     int* ids = malloc(sizeof(int)*k);
@@ -149,7 +138,6 @@ class  Kmeans
     key=x[j];
      idKey = ids[j];	
        i=j-1;
-  
        while(x[i]<key && i>=0)
        {
            x[i+1]=x[i];
@@ -159,7 +147,6 @@ class  Kmeans
        x[i+1] = key;
     	ids[i+1] = idKey;
    }
-   
   int* sorted_labels = (int*)calloc(nn, sizeof(int));
   //int* sorted_reps = (int*)calloc(k, sizeof(int));
    
@@ -167,7 +154,7 @@ class  Kmeans
      for (i=0; i<nn; i++)
        if (labels[i]==ids[j]) sorted_labels[i]=j;                   
    }
-  
+   
   ///storing the labels in the ruby array
    for (j=0; j<nn; j++) rb_ary_store(labels_and_reps, j, INT2NUM(sorted_labels[j]));
    return labels_and_reps;
@@ -177,7 +164,6 @@ class  Kmeans
   
   
   def self.compute(number_clusters,products)
-  
       cluster_weights = self.set_cluster_weights(Session.features["cluster"])
       s = products.size
       if (s<=number_clusters)
@@ -194,8 +180,21 @@ class  Kmeans
       utilities_rep = Kmeans.utility(products, "rep")
       utilities_gorder  = Kmeans.utility(products, "gorder")
       utilities_gorder.each_with_index{|u, i| utilities_gorder[i]=u+(0.0000001*i)} if utilities_gorder.uniq.size<number_clusters
-      $k = Kmeans.new unless $k
-      labels = $k.kmeans_c(standard_specs.flatten.map{|s| s.nil? ? 0.0 : s}, standard_specs.size , standard_specs.first.size, number_clusters, cluster_weights, utilities_rep, utilities_gorder, inits)
+      begin
+        raise ValidationError, "specs is nil or empty" if standard_specs.nil? || standard_specs.empty?
+        raise ValidationError, "cluster_weights is nil or empty" if cluster_weights.nil? || cluster_weights.empty?
+        raise ValidationErrot, "utilities_gorder is nil or empty" if utilities_gorder.nil? || utilities_gorder.empty?
+        raise ValidationError, "utilities_rep is nil or empty" if utilities_rep.nil? || utilities_rep.empty?
+        raise ValidationError, "inits is nil or empty" if inits.nil? || inits.empty?
+          
+        labels = $k.kmeans_c(standard_specs.flatten.map{|s| s.nil? ? 0.0 : s}, standard_specs.size , standard_specs.first.size, number_clusters, cluster_weights, utilities_rep, utilities_gorder, inits)
+        $k = Kmeans.new unless $k
+      
+      rescue ValidationError  
+        labels = self.ruby(number_clusters, cluster_weights, inits, products) #
+        debugger
+      end  
+      
       sorted_products=[]
       until labels.empty?
         p_ins = []
@@ -220,16 +219,9 @@ class  Kmeans
   end
   
   def self.set_cluster_weights(features)
-    if Session.search.sortby.nil? || Session.search.sortby == "utility"
       weights = features.map{|f| f.value}
       weights_sum = weights.sum.to_f
       weights.map{|w| w/weights_sum}
-    else
-      weights = [0.001/(features.size-1)]*features.size
-      sorted_feature = features.select{|f|f.name == Session.search.sortby}.first
-      weights[features.index(sorted_feature)] = 0.999
-      weights
-    end
   end
   
   def self.utility(products, use)
@@ -243,6 +235,9 @@ class  Kmeans
   # regular kmeans function     
   ## ruby function only cluster based on continuous data 
   ## ruby function does not sort by utility and don't pick the highest utility as the rep
+  
+  #$k.kmeans_c(standard_specs.flatten.map{|s| s.nil? ? 0.0 : s}, standard_specs.size , standard_specs.first.size, number_clusters, cluster_weights, utilities_rep, utilities_gorder, inits)
+  
   def self.ruby(number_clusters, cluster_weights, inits, products)
     thresh = 0.000001
     standard_specs = self.factorize_cont_data(products)
@@ -274,13 +269,13 @@ class  Kmeans
        (0...number_clusters-1).to_a.each{|i| labels[i] = i}
        (number_clusters-1...labels.size).to_a.each{|i| labels[i] = number_clusters -1}
      end
-    #ordering clusters based on group utility and picking the rep 
+    #ordering clusters based on group utility 
     self.utility_order(products, labels, labels.uniq.size)
   end
   
   
   def self.utility_order(products, labels, number_clusters)
-    utilitylist = Kmeans.utility(products)
+    utilitylist = Kmeans.utility(products, "gorder")
     utilitylist.each_with_index{|u, i| utilitylist[i]=u+(0.0000001*i)} if utilitylist.uniq.size<number_clusters
     grouped_utilities = group_by_labels(utilitylist, labels)
     avg_group_utilities = grouped_utilities.map do |g| 
@@ -289,8 +284,7 @@ class  Kmeans
     sorted_group_utilities = avg_group_utilities.sort{|x,y| y<=>x}
     sorted_grouped_utilities = sorted_group_utilities.map{|g| grouped_utilities[avg_group_utilities.index(g)]}
     sorted_labels  = labels.map{|l| sorted_group_utilities.index(avg_group_utilities[l])} 
-    reps = (0...number_clusters).map{|i| utilitylist.index(sorted_grouped_utilities[i][sorted_grouped_utilities[i].index(sorted_grouped_utilities[i].max)])}
-    sorted_labels + reps
+    sorted_labels 
   end
   
   #selecting the initial cluster centers

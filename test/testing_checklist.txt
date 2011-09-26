@@ -4,18 +4,21 @@ Landing page:
 - There is a hero product at the top
 - Both SHOP NOW button and the product title link direct to the Best Buy product detail page
 - Click on both the SHOP NOW button and the title link and click back - check if you go back to the landing page
-- There are featured products listed in the bottom 
-- Click on the first product image and see if it successfully loads the PDP
-- Click on the back button and check if you get the first page 
+- If there are other variations of the hero product shown (siblings or bundles) hover over to check
+the displayed alternative text, and click on one to test linking to the proper variation
+- There are featured products listed below the hero
+- Click on the first product image in featured products and check if it successfully loads the product details page (PDP)
+- Click on the back button and check if you get the same page as previously on 
 
 Filter Page:
-- Click on "See All"
-- Check if Best Match is a link (it shouldn't be a link as this is supposed to be the sorting option) 
+- Click on the "See All" button above the hero
+- Check that Best Match is not a link but text: as the default sort by option, it should be already loaded
 - Check if there are distribution graphs on top of sliders on the left panel
-- Filter by price and check if the number of products in the status bar and the distribution on top of other sliders have been changed
+- Filter by price using the Price slider and check if the number of products in the status bar and the distribution on top of other sliders have been changed
 - repeat the previous step for other sliders
-- Filter for red cameras by clicking on red color swatch and check if only red cameras are displayed
-- repeat the previous step for other colors
+- Filter for red cameras by clicking on red colour swatch and check if only red cameras are displayed
+- repeat the previous step for a couple of other colours
+- find a displayed result which has other available colours or bundles displayed underneath. Hover over a sibling / bundle picture to check the alt text and click on one to see if it leads to the right product page
 - filter brands by clicking on one and multiple brand check boxes and check if right products are displayed
 - When filtering check if the numbers associated with checkboxes are adjusted and click on brands using the checkbox and the link text 
 - Check on sale and then undo it and see if it works fine
@@ -23,7 +26,7 @@ Filter Page:
 - Click on a brand name link (say Canon link) and see if it filters and the box gets checked then click again to undo it 
 - Check two brand boxes and undo them and see if it filter properly 
 - Check a couple of binary filters and uncheck it (by both clicking on the link and checking the box) 
-- Check two brands and then click on a binary filter that have a small number then undo one of the brands and see if it handles it properly
+- Check two brands and then click on a binary filter that has a small number then undo one of the brands. If the binary filter matched products from both brands, undoing it will preserve the two brands, but if it only matched one, only the matched brand stays selected
 - Click Reset All
 - Click on the Sort by: Price(Low to High) link; See if the products are sorted correctly
 - Click on the Sort by bestseller to see if products are getting sorted differently;
@@ -35,15 +38,16 @@ Filter Page:
 
 
 Product Comparison:
-- Check the compare box for one product
+- Check the Compare box for one product
 - Click the compare link on another product; You should see the comparison popover with two products displayed
-- Check if product tile and 
+- Check if product tile and price are displayed.
 - Click the remove link; The product should be removed; Click close
 - Check the boxes of 3 more products; Click the Compare button at the bottom of the page
 - Click the More specs link and see that the tables works, including collapsable headings if available
 - Add products to compare up to the 6th one and see if an error message comes up
+- Click on Clear Selected Products and check that the checked boxes and compare button are updated for zero selection
 - Add to cart in the compare page
-- Click on the product link on the compare page to see if the PDP loads fine
+- Click on the product link on the compare page to see if the PDP loads properly
 
 Dynamic filters:
 -Check dynamic filter on hard drives page - only common filters should be displayed on the first page and relevant filters for each product category 

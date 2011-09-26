@@ -10,20 +10,9 @@ en:
         navtitle:                  "Camera"
         navtitle2:                   " Available"
         outof:                      "Out of %{count} Cameras"
-
-        compare:                    "Compare"
-        seeall:                     "See All"
-        shopnow:                    "Shop Now"
-        toprated:                   "Top Rated Products"
-        bestsellers:                "Best Sellers"
-        featuredproducts:           "Featured Products"
-
+        compare:                  "Compare"
+        
         specs:
-            category:
-                name:               "Product Category"
-            saleprice:
-                name:               "Price"
-                info:               "The lowest price for the item."
             maxresolution:
                 name:               "Megapixels"
                 info:               "Measured in megapixels (millions of pixels), the number of light-sensitive cells that are actually exposed to light and used to capture the image, while the remainder may be shielded or just unused."
@@ -36,29 +25,9 @@ en:
                 name:               "LCD Size"
                 info:               "The size of the LCD (Liquid Crystal Display) screen on the camera, measured diagonally. You may find it easier to view your subject on the screen than through a standard viewfinder. This feature is also useful for reviewing and deleting photos."
                 unit:               "in."
-            fblike:
-                name:               "Facebook like"     
-            slr:
-                name:               "DSLR"
-                info:               "Features manual and automatic controls, and is compatible with interchangeable lenses for professional-quality shots."
             waterproof:
                 name:               "Waterproof / Shockproof"
                 info:               "lets you snap photos under water down to a certain depth."
-            brand:
-                name:               "Brands"
-                info:               "The manufacturer of the product. You can choose more than just one brand."
-            color:
-                name:               "Colors"
-            customerRating:
-                name:               "Customer Rating"
-                info:               "On a scale of 1 to 5, five being the best, this is the average of our customer ratings. Items are rated 0 if they have not been reviewed."
-                unit:               "/ 5.0"
-            onsale:
-                name:               "On Sale"
-            isClearance:
-                name:               "Clearance"
-            isOnlineOnly:
-                name:               "Online Only"
             videoresolution720:
                 name:               "720"
             videoresolution1080:
@@ -81,22 +50,6 @@ en:
                 name:               "Sweep Panorama"
             frontlcd:
                 name:               "Front and Back LCD"
-            toprated:
-                name:               "Top-Rated"
-            featured:
-                name:               "Featured Products"
-            utility:
-                name:               "Best Match"
-            saleprice_factor:
-                name:               "Price: Low to High"
-            saleprice_factor_high:
-                name:               "Price: High to Low"
-            maxresolution_factor:
-                name:               "Megapixels"
-            opticalzoom_factor:
-                name:               "Optical Zoom" 
-            fblike_factor:
-                name:               "Facebook like"
             '22474':
                 name:               "Point and Shoot"                
             '28382':
@@ -105,14 +58,6 @@ en:
                 name:               "Ultra Zoom"
             '20220':
                 name:               "Advanced Compact"
-            displayDate:
-                name:               "Newest Model"
-            orders_factor:  
-                name:               "Best Selling"        
-            advanced_search:
-                name:               "Advanced Search"                            
-            status:
-                name:               "Status"
             New Technology:
                 name:               "New Technology"
             video_resolution:

@@ -1,0 +1,60 @@
+fr:
+    drive_bestbuy:
+        # All language-dependent definitions in models
+        sitetitle:                  "Lecteurs et stockage Best Buy"
+        title:                      "Lecteurs et stockage"
+        title-plural:               "Lecteurs et stockage"
+        defaultdesc:                "With an external hard drive, flash drive or disc drive you can backup your files and take them virtually anywhere. Shop for reliable, high-quality hard drives at BestBuy.ca and find the perfect way to keep your files safe."
+        keywords:                   "external hard drive, flash drive, portable hard drive, hard drives"
+        classification:             "Lecteurs et stockage"
+        navtitle:                  "Lecteur"
+        navtitle2:                   " disponibles"
+        outof:                      "Parmi %{count} lecteurs"
+        compare:                   "Comparer"
+
+        specs:       
+            internal:
+                name:               "Interne"
+            external:
+                name:               "Externe"
+            compatibility:
+                name:               "Compatibilité"
+            pcmac:
+                name:               "PC et Mac"
+            pc:
+                name:               "PC"
+            mac:
+                name:               "Mac"
+            rotations:
+                name:               "Tours par minute"
+                unit:               "RPM"
+            capacity:
+                name:               "Capacité de stockage"
+                unit:               "Go"
+            internalExternal:
+                name:               "Interne ou externe"     
+            isMac:
+                name:               "Mac"
+            '20237':
+                name:               "Disques durs externes"                
+            '20243':
+                name:               "Lecteurs Flash USB"
+            '20239':
+                name:               "Disques durs internes"
+            '30442':
+                name:               "Disques durs solid state"
+            '20236':
+                name:               "Lecteur optique"
+            '29583':
+                name:               "Accessoires pour stockage"
+            dataBuffer:
+                name:               "Mémoire tampon"
+                unit:               "Mo"
+            '29582':
+                name:               "Serveur de stockage en réseau (NAS)"  
+            driveSize:
+                name:               "Dimension du disque dur"
+            drive_size_25:
+                name:               "2.5\""
+            drive_size_35:
+                name:               "3.5\""
