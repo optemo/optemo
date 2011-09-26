@@ -50,7 +50,7 @@ fr:
             dataBuffer:
                 name:               "Mémoire tampon"
                 unit:               "Mo"
-            'Network Attached Storage':
+            '29582':
                 name:               "Serveur de stockage en réseau (NAS)"  
             driveSize:
                 name:               "Dimension du disque dur"

@@ -1777,11 +1777,12 @@ optemo_module = (function (my){
     };
     
     $('.optemo_compare_checkbox').live('click', function(){
-                                           var skus = my.readAllCookieValues('bestbuy_specs_skus');
+                                           var sku_size = my.readAllCookieValues('bestbuy_specs_skus').length;
                                            var thisObj = $(this) ;
                                            if (thisObj.attr('checked')) { // save the comparison item
-                                               if (skus.length <5) {
+                                               if (sku_size < 5) {
                                                    my.loadspecs(thisObj.attr('data-sku'), thisObj.attr('data-cat'), thisObj.attr('data-id'), $('#main').attr('data-product_type'));
+                                                   sku_size += 1;
                                                }
                                                else {
                                                    if (!(typeof(optemo_french) == "undefined") && optemo_french)
@@ -1792,9 +1793,9 @@ optemo_module = (function (my){
                                                }
                                            } else {
                                                remove_comparison_from_skus(thisObj.attr('data-id'));
-                                               }
-                                           skus = my.readAllCookieValues('bestbuy_specs_skus');
-                                           my.changeNavigatorCompareBtn(skus.length);
+                                               sku_size -= 1;
+                                           }
+                                           my.changeNavigatorCompareBtn(sku_size);
                                        });
 
 
