@@ -45,6 +45,7 @@ public/images/cameras
 
 cache/*
 .sass-cache/
+public/assets/
 
 lib/c_code/clusteringCodes/cppconn/libmysqlcppconn.dylib
 

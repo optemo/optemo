@@ -162,7 +162,7 @@ var optemo_socket_activator = (function () {
         		            data_to_append = data_to_add.join("\n");
         				}
         	            // Process images next. To do this, just find all the images, split the data as before, and change the src tag.
-        	            data_to_append = parse_data_by_pattern(data_to_append, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
+        	            data_to_append = parse_data_by_pattern(data_to_append, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/assets\/[^?]+)/, REMOTE + "$1");}));
 
         				// Now strip out any erroneous tags.
         				regexp_patterns = ["<\/?html[^>]*>", "<!doctype[^>]+>", "<meta[^>]*>", "<\/?body[^>]*>", "<\/?head>", "<title>[^<]*<\/title>"];
@@ -196,11 +196,11 @@ var optemo_socket_activator = (function () {
                     }
     		    },
     			parseData: function (data) {
-    	            var data_to_append = parse_data_by_pattern(data, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
+    	            var data_to_append = parse_data_by_pattern(data, "<img[^>]+>", (function(mystring){return mystring.replace(/(\assets\/[^?]+)/, REMOTE + "$1");}));
     				optemo_module.ajaxhandler(data_to_append);
     			},
     			parseDataThin: function (element_name, data, fn) {
-    				var data = parse_data_by_pattern(data, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, REMOTE + "$1");}));
+    				var data = parse_data_by_pattern(data, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/assets\/[^?]+)/, REMOTE + "$1");}));
     				jQuery(element_name).html(data);
     				fn(); // This is probably DBInit(), but could be anything
     			}

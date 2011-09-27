@@ -1,8 +1,9 @@
 <div class="bb_poptitle">
 	<label class="comp-title"><%=t "compare.index.title"%></label>
+	<!-- Bug: the link_to, image_tag isn't working - resulting in *no close button* in the page -->
   <% link_to "close", :class => "compare bb_quickview_close" do %>
-	<%= image_tag("closepopup.gif", :class=>'comparison-close') %>
-<% end %>
+  <%= image_tag("closepopup.png", :class=>'comparison-close') %>
+  <% end %>
 <div class="clear">&nbsp;</div>
 </div>
 
