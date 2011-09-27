@@ -20,8 +20,8 @@ class JSPadding
     status, headers, response = @app.call(env)
     if callback
       response = pad(callback, response)
-      headers['Content-Length'] = response.first.length.to_s
-      headers['Content-Type'] = 'application/javascript'
+      headers['Content-Length'] = response.first.bytesize.to_s
+      headers['Content-Type'] = 'application/javascript;charset=utf-8'
     end
     [status, headers, response]
   end
