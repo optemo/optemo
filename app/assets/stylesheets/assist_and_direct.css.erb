@@ -137,7 +137,7 @@ html {
 }
 
 #optemo_embedder #IE #navigator_bar {
-  background: image-url("IE/navigator_bar_bg.gif") repeat-x;
+  background: url(<%= asset_path "IE/navigator_bar_bg.gif" %>) repeat-x;
 }
 #optemo_embedder #navigator_bar_bottom {
 	padding: 0;
@@ -233,10 +233,10 @@ html {
 }
 
 #optemo_embedder #IE #navigator_bar_top {
-  background: image-url("IE/nav_top_bg.gif") repeat;    
+  background: url(<%= asset_path "IE/nav_top_bg.gif" %>) repeat;    
 }
 #optemo_embedder #IE #navigator_bar_bottom {
-  background: image-url("IE/nav_bottom_bg.gif") repeat;
+  background: url(<%= asset_path "IE/nav_bottom_bg.gif" %>) repeat;
 }
 
 #optemo_embedder ul#sorting_method_box {
@@ -319,7 +319,7 @@ html {
 	line-height:22px;
 	margin-bottom:5px;
   overflow: visible;
-  background: image-url("bg_outsidecontainer.gif") repeat-x ;
+  background: url(<%= asset_path "bg_outsidecontainer.gif" %>) repeat-x ;
   height: 40px;
 }
 #optemo_embedder .comp-title {
@@ -561,11 +561,11 @@ div#division {
 	line-height:0;
 	font-size:0;
 	overflow:hidden;
-	background: image-url("IE/box-top-round.gif") no-repeat;
+	background: url(<%= asset_path "IE/box-top-round.gif" %>) no-repeat;
 }
 #optemo_embedder #IE .box-bottom-r {
 	height:17px;
-	background: image-url("IE/box-bottom-round.gif") no-repeat;
+	background: url(<%= asset_path "IE/box-bottom-round.gif" %>) no-repeat;
 }
 #optemo_embedder #IE .text-place {
 	padding:3px 7px 3px 14px;
@@ -575,7 +575,7 @@ div#division {
 	font-size:10px;
 	line-height:11px;
 	width:123px;
-	background:image-url("IE/box-top-rptr.gif") repeat-x top #eeeeee;
+	background: url(<%= asset_path "IE/box-top-rptr.gif" %>) repeat-x top #eeeeee;
 }
 #optemo_embedder .deleteX {
 	position: absolute;
@@ -639,7 +639,7 @@ div#division {
 #optemo_embedder .ui-slider-horizontal .ui-slider-range-min { left: 0; }
 #optemo_embedder .ui-slider-horizontal .ui-slider-range-max { right: 0; }
 #optemo_embedder .ui-slider-vertical .ui-slider-handle { 
-	background:image-url("diamond_vertical.gif") no-repeat; 
+	background: url(<%= asset_path "diamond_vertical.gif" %>) no-repeat; 
 	height:13px; 
 	width:9px; 
 	overflow:hidden;
@@ -944,7 +944,7 @@ margin-top:0;
 }
 #optemo_embedder .bgrow {
 	height: 30px;
-	background: image-url("/columntitlebg.gif") repeat;
+	background: url(<%= asset_path "columntitlebg.gif" %>) repeat;
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -1051,7 +1051,7 @@ margin-top:0;
 	padding:10px;
 }
 #optemo_embedder .closed {
-	background: image-url("demo-spindown-closed.gif") no-repeat left center;
+	background: url(<%= asset_path "demo-spindown-closed.gif" %>) no-repeat left center;
 	padding-left: 0;
 	padding-right: 7px;
 	display: block;
@@ -1059,7 +1059,7 @@ margin-top:0;
 }
 
 #optemo_embedder .open {
-	background: image-url("demo-spindown-open.gif") no-repeat left center;
+	background: url(<%= asset_path "demo-spindown-open.gif" %>) no-repeat left center;
 	padding-left: 0;
 	padding-right: 7px;
 	display: block;
@@ -1348,7 +1348,7 @@ margin-top:0;
 	background-image:-webkit-gradient(linear, left bottom, left top, from(white), to(#cdcdcd));
 }
 #optemo_embedder #IE a.tab {
-	background: image-url("gray_gradient.png") repeat;
+	background: url(<%= asset_path "gray_gradient.png" %>) repeat;
 }
 #optemo_embedder .tab:hover {
 	text-decoration: none;
@@ -1362,7 +1362,7 @@ margin-top:0;
 	font-weight: bold;
 }
 #optemo_embedder #IE #tab_selected {
-	background: image-url("yellow_gradient.png") repeat;
+	background: url(<%= asset_path "yellow_gradient.png" %>) repeat;
 }
 #optemo_embedder .tabspacer {
 	height: 30px;
@@ -1425,7 +1425,7 @@ margin-top:0;
 /* Zurb http://www.zurb.com/article/266/super-awesome-buttons-with-css3-and-rgba */
 #optemo_embedder .awesome_reset, 
     #optemo_embedder .awesome_reset:visited {
-	    background: #003b65; image-url("alert-overlay.png") repeat-x; 
+	    background: #003b65; url(<%= asset_path "alert-overlay.png" %>) repeat-x; 
 	    display: inline-block; 
 	    padding: 5px 10px; 
 	    color: #FFF; 
@@ -1496,16 +1496,16 @@ margin-top:0;
 }
 
 #optemo_embedder #IE #navigator_bar_bottom .global_btn {
-  background:image-url("compare_button_blue.gif") no-repeat top left;
+  background: url(<%= asset_path "compare_button_blue.gif" %>) no-repeat top left;
 }
 #optemo_embedder #IE #navigator_bar_bottom .global_btn_grey {
-  background:image-url("global-button-grey.gif") no-repeat top left;
+  background: url(<%= asset_path "global-button-grey.gif" %>) no-repeat top left;
 }
 #optemo_embedder #IE #navigator_bar .global_btn_grey {
-  Background: image-url("IE/compare_grey_nav_top.gif") no-repeat top left;
+  Background: url(<%= asset_path "IE/compare_grey_nav_top.gif" %>) no-repeat top left;
 }
 #optemo_embedder #IE #navigator_bar .global_btn {
-  Background: image-url("IE/compare_blue_nav_top.gif") no-repeat top left;
+  Background: url(<%= asset_path "IE/compare_blue_nav_top.gif" %>) no-repeat top left;
 }
 #optemo_embedder #IE .global_btn {
   display: block;
@@ -1519,7 +1519,7 @@ margin-top:0;
 }
 #optemo_embedder #IE .global_btn span {
 	display:inline-block;
-	background:image-url("global-button-right.gif") no-repeat right;
+	background: url(<%= asset_path "global-button-right.gif" %>) no-repeat right;
 	padding:0 10px 0 4px;
 	height:21px;
 	line-height:21px;
@@ -1528,7 +1528,7 @@ margin-top:0;
 	cursor:pointer;
 }
 #optemo_embedder #IE .global_btn_grey span {
-  background:image-url("global-button-right.gif") no-repeat right;
+  background: url(<%= asset_path "global-button-right.gif" %>) no-repeat right;
 }
 #optemo_embedder #IE .global_btn:hover, #optemo_embedder #IE .global_btn_grey:hover {
 	text-decoration:none;
@@ -1571,7 +1571,7 @@ margin-top:0;
 
 
 #optemo_embedder #IE .y_heading {
-  background: image-url("IE/refine_search_bg.gif") repeat-x #cecece;
+  background: url(<%= asset_path "IE/refine_search_bg.gif" %>) repeat-x #cecece;
 }
 
 #optemo_embedder #IE .y_heading a.regular_reset{
@@ -1653,7 +1653,7 @@ margin-top:0;
   right: 10px;
   z-index: 2;
   display: none;
-  background: image-url("classic-loader.gif") no-repeat 2px 2px;
+  background: url(<%= asset_path "classic-loader.gif" %>) no-repeat 2px 2px;
 }
 #optemo_embedder .galleria-info {
   width: 50%;
@@ -1789,7 +1789,7 @@ margin-top:0;
         #optemo_embedder .galleria-info-close,
         #optemo_embedder .galleria-image-nav-left,
         #optemo_embedder .galleria-image-nav-right {
-          background-image: image-url("classic-map.png");
+          background-image: url(<%= asset_path "classic-map.png" %>);
           background-repeat: no-repeat;
         }
 
@@ -1862,7 +1862,7 @@ margin-top:0;
    
     *bottom: 7px;
     *height: 25px;*/
-  background: image-url('IE/y_bottom_bg.gif') repeat-x ;
+  background: url(<%= asset_path 'IE/y_bottom_bg.gif' %>) repeat-x ;
   height: 25px;
 }
 

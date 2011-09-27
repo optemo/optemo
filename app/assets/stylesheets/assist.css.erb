@@ -42,7 +42,7 @@
 	margin-bottom: 15px;
 	height:405px;
  	width: 181px; /*+2 for the border*/
-	background: right center image-url("seperatorbar.png") no-repeat;*/
+	background: right center url(<%= asset_path "seperatorbar.png" %>) no-repeat;
   overflow: hidden;
   zoom: 1; /* fix IE peekaboo issue */
   margin-top: 8px;
@@ -216,7 +216,7 @@
   height: 75px;
   display: block;
   margin-bottom: 7px;
-  background: #ddd image-url("up-arrow.png") no-repeat center center;
+  background: #ddd url(<%= asset_path "up-arrow.png" %>) no-repeat center center;
 
 	/* rounded corners */
   -webkit-border-radius: 15px;

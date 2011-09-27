@@ -166,7 +166,7 @@ body {
 	font-size: 0.8em;
 }
 .number_in_group  {
-	background: image-url("redbubble.png") no-repeat;
+	background: url(<%= asset_path "redbubble.png" %>) no-repeat;
 	font-size: 0.65em;
 	color: white;
 	width: 24px;
@@ -176,7 +176,7 @@ body {
 	text-align: center;
 }
 .largegroup {
-	background: image-url("redbubbleL.png") no-repeat;
+	background: url(<%= asset_path "redbubbleL.png" %>) no-repeat;
 	width: 36px;
 }
 .minus {
