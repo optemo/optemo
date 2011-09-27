@@ -1582,7 +1582,7 @@ optemo_module = (function (my){
 
             // This initializes the jquery history plugin. Note that the plugin was modified for use with our application javascript (details in jquery.history.js)
 
-            $.history.init(optemo_module.ajaxsend);
+            $.history.init(optemo_module.ajaxsend,{unescape: true});
 
             // Only load DBinit if it will not be loaded by the upcoming ajax call
             // Do LiveInit anyway, since timing is not important
