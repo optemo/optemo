@@ -1,8 +1,0 @@
-[ERR]
-<!--<%= @errortype %>-->
-Error<%= link_to t('products.compare.closewindow'), "close", :class => "bb_quickview_close"%>
-&nbsp;</div>
-<p><%=t("products.ErrorPart1") + " " + t("products.here") + " " + t("products.ErrorPart2")%></p>
-<% if @errortype == "filter" %>
-[BRK]<%= render :partial => 'filter' %>
-<% end %>

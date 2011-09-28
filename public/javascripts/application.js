@@ -430,22 +430,22 @@ optemo_module = (function (my){
         });
         remove_comparison_from_skus(id);
     }
-                     function remove_comparison_from_skus(prod_id) {
-                         var skus = my.readAllCookieValues('bestbuy_specs_skus');
-                         
-                         $.each(skus, function(index, value) {
-                                    var val = value.split(',');
-                                    if (val[2] == prod_id) {
-                                        skus.splice(index, 1);
-                                          eraseCookie('bestbuy_specs_skus');
-                                          addValueToCookie('bestbuy_specs_skus', skus.join('*'), 1);
-                                        return false;
-                                    }
-                                });
-                         
-                         my.changeNavigatorCompareBtn(skus.length);   
-                     }
-
+    function remove_comparison_from_skus(prod_id) {
+        var skus = my.readAllCookieValues('bestbuy_specs_skus');
+        
+        $.each(skus, function(index, value) {
+                   var val = value.split(',');
+                   if (val[2] == prod_id) {
+                       skus.splice(index, 1);
+                       eraseCookie('bestbuy_specs_skus');
+                       addValueToCookie('bestbuy_specs_skus', skus.join('*'), 1);
+                       return false;
+                   }
+               });
+        
+        my.changeNavigatorCompareBtn(skus.length);   
+    }
+    
                      
     // Submit a categorical filter, e.g. brand.
     function submitAJAX(){
@@ -906,26 +906,6 @@ optemo_module = (function (my){
             return false;
         });
 
-        // This bridge function adds the product currently shown in the Quickview screen and puts it in the comparison box.
-        // If there are at least two products, bring up the comparison pop-up immediately, otherwise go back to browsing.
-        $('#add_compare').live('click', function () {
-            var t = $(this);
-            var sku = $('.poptitle').attr('data-sku');
-            var image = $('#galleria').find('img:first').attr('src');
-            my.removeSilkScreen();
-
-            $('.optemo_compare_checkbox').each (function (index) {
-                if ($(this).attr('data-sku') == sku) {
-                    $(this).attr('checked', 'checked');
-                    return false;
-                }
-                return true;
-            });
-            my.compareCheckedProducts();
-            return false;
-        });
-
-
 		// SO(2) *** This is where the "show" events are getting recorded
 
         $(".productimg, .easylink").live("click", function (){
@@ -1307,53 +1287,18 @@ optemo_module = (function (my){
         var lis = my.loading_indicator_state;
         lis.disable = false;
         clearTimeout(lis.spinner_timer); // clearTimeout can run on "null" without error
+        my.stop_spinner();
         clearTimeout(lis.socket_error_timer); // We need to clear the timeout error here
         lis.spinner_timer = lis.socket_error_timer = null;
-
-        if (data.indexOf('[ERR]') != -1) {
-            var parts = data.split('[BRK]');
-            if (parts[1] != null) {
-                $('#ajaxfilter').empty().append(parts[1]);
-            }
-            my.flashError(parts[0].substr(5,parts[0].length));
-            return -1;
-        } else if (data.indexOf('[PAGE]') != -1){
-            $('#main #product_content').html(data);
-            my.stop_spinner();
-        // TODO: Maybe DBInit need to be called here
-            return 0;
-        } else {
-            var parts = data.split('[BRK]');
-            $('#ajaxfilter').empty().append(parts[1]);
-            $('#main').html(parts[0]);
-            $('#myfilter_search').attr('value',parts[2]);
-            //Reset Infinite Scroll Counter
-            var ifc = $('#main').data('infinitescroll');
-            if (ifc)
-                ifc.restart();
-            my.stop_spinner();
-            my.SliderInit();
-            my.DBinit();
-            var skus = my.readAllCookieValues('bestbuy_specs_skus');
-            if (skus.length != 0) {
-                if (skus[0].split(',')[3] != $('#main').attr('data-product_type')) {
-                    skus = [];
-                }
-            }
-            eraseCookie('bestbuy_specs_skus');
-            $.each(skus, function(index,value) {
-                       var val = value.split(',');
-                       $('.optemo_compare_checkbox').each(function() {
-                                                              var thisObj = $(this);
-                                                              if (thisObj.attr('data-id') == val[2]){
-                                                                  thisObj.attr('checked', 'checked');
-                                                              }
-                                                          });
-                       my.loadspecs(val[0], val[1], val[2], val[3]);
-                   });
-            my.changeNavigatorCompareBtn(skus.length);
-            
-            return 0;
+        
+        var parts = data.split('[BRK]');
+        if (parts.length == 2) {
+          $('#ajaxfilter').empty().append(parts[1]);
+          $('#main').html(parts[0]);
+          my.SliderInit();
+          my.DBinit();
+          my.apply_compared_checks();
+          return 0;
         }
     };
 
@@ -1539,12 +1484,19 @@ optemo_module = (function (my){
 
     // This should return all cookie values in an array.
     my.readAllCookieValues = function(name) {
-        var skus = (readCookie(name) ? readCookie(name).split('*') : []);
-        // Fix for cookie not saving but some product checkboxes are checked. Issue found in IE6.
-        if (skus.length == 0) {
-            $(".optemo_compare_checkbox:checked").each (function (index) {
-                skus.push([$(this).attr('data-sku'), $(this).attr('data-cat'), $(this).attr('data-id'), $('#main').attr('data-product_type')].join(','));
-              });
+        var skus, cookie = readCookie(name);
+        if (cookie) {
+          //Remove items that don't match the current product class
+          var c_product_type = $('#main').attr('data-product_type');
+          skus = $.grep(cookie.split('*'), function(value) {
+            return value.split(',')[3] == c_product_type;
+          });
+        } else {
+          // Fix for cookie not saving but some product checkboxes are checked. Issue found in IE6.
+          skus = [];
+          $(".optemo_compare_checkbox:checked").each (function (index) {
+              skus.push([$(this).attr('data-sku'), $(this).attr('data-cat'), $(this).attr('data-id'), $('#main').attr('data-product_type')].join(','));
+          });
         }
         return skus;
     };
@@ -1575,6 +1527,17 @@ optemo_module = (function (my){
         createCookie(name,"",-1);
     }
     
+    my.apply_compared_checks = function() {
+      var skus = my.readAllCookieValues('bestbuy_specs_skus');
+      $.each(skus, function(index,value) {
+         var val = value.split(',');
+         $('.optemo_compare_checkbox[data-id="'+val[2]+'"]').each(function() {
+            $(this).attr('checked', 'checked');
+         });
+      });
+      my.changeNavigatorCompareBtn(skus.length);
+    }
+    
     my.domready = function(){
         if (typeof DOM_ALREADY_RUN == "undefined") {
             DOM_ALREADY_RUN = true;
@@ -1589,26 +1552,8 @@ optemo_module = (function (my){
             my.LiveInit();
 
             var skus = my.readAllCookieValues('bestbuy_specs_skus');
-            if(OPT_REMOTE) {
-
-            if (skus != 0) {
-                if (skus[0].split(',')[3] != $('#main').attr('data-product_type')) {
-                    skus = [];
-                }
-            }
-            eraseCookie('bestbuy_specs_skus');
-            $.each(skus, function(index,value) {
-                       var val = value.split(',');
-                       $('.optemo_compare_checkbox').each(function() {
-                                                              var thisObj = $(this);
-                                                              if (thisObj.attr('data-id') == val[2]){
-                                                                  thisObj.attr('checked', 'checked');
-                                                              }
-                                                          });
-                       my.loadspecs(val[0], val[1], val[2], val[3]);
-                   });
-                            my.changeNavigatorCompareBtn(skus.length);            
-                }
+            if(OPT_REMOTE)
+              apply_compared_checks();
 
             if ($('#opt_discovery').length == 0) {
                 // Other init routines get run when they are needed.
@@ -1775,29 +1720,6 @@ optemo_module = (function (my){
             }
         }
     };
-    
-    $('.optemo_compare_checkbox').live('click', function(){
-                                           var sku_size = my.readAllCookieValues('bestbuy_specs_skus').length;
-                                           var thisObj = $(this) ;
-                                           if (thisObj.attr('checked')) { // save the comparison item
-                                               if (sku_size < 5) {
-                                                   my.loadspecs(thisObj.attr('data-sku'), thisObj.attr('data-cat'), thisObj.attr('data-id'), $('#main').attr('data-product_type'));
-                                                   sku_size += 1;
-                                               }
-                                               else {
-                                                   if (!(typeof(optemo_french) == "undefined") && optemo_french)
-                                                       alert("Le nombre maximum de produits que vous pouvez comparer est de 5. Veuillez réessayer.");
-                                                   else
-                                                       alert("The maximum number of products you can compare is 5. Please try again.");
-                                                   $(this).attr('checked', '');
-                                               }
-                                           } else {
-                                               remove_comparison_from_skus(thisObj.attr('data-id'));
-                                               sku_size -= 1;
-                                           }
-                                           my.changeNavigatorCompareBtn(my.readAllCookieValues('bestbuy_specs_skus').length);
-                                       });
-
 
     my.compareCheckedProducts = function () {
         var skus = my.readAllCookieValues('bestbuy_specs_skus');
@@ -1857,38 +1779,38 @@ optemo_module = (function (my){
             });
         }
     };
-    
-	// THIS IS WHERE THE CHANGE SHOULD GO SO(3) //
-
-    $('.optemo_compare_button').live('click', function(){
-	
-		//a tracker to record this event
-		my.trackPage('goals/filter/direct_comparison', {'filter_type' : 'direct_comparison'});
-	
-        var skus = my.readAllCookieValues('bestbuy_specs_skus');                                                                       
-        var objCheckbox = $(this).parent().find('.optemo_compare_checkbox');
-        var max = (objCheckbox.attr('checked') ? 5 : 4);
-        if (skus.length <= max) {
-            if (!objCheckbox.attr('checked')) {
-                objCheckbox.attr('checked', 'checked');
+    function click_checkbox(){
+        var sku_size = my.readAllCookieValues('bestbuy_specs_skus').length;
+        //Differentiate between the checkbox and text link, which passes in the checkbox
+        var t = (arguments[0].jquery == undefined) ? $(this) : arguments[0];
+        if (t.attr('checked')) { // save the comparison item
+            if (sku_size < 5) {
+                my.loadspecs(t.attr('data-sku'), t.attr('data-cat'), t.attr('data-id'), $('#main').attr('data-product_type'));
             }
-            my.loadspecs(objCheckbox.attr('data-sku'), objCheckbox.attr('data-cat'), objCheckbox.attr('data-id'), $('#main').attr('data-product_type'), my.compareCheckedProducts);
+            else {
+                if (!(typeof(optemo_french) == "undefined") && optemo_french)
+                    alert("Le nombre maximum de produits que vous pouvez comparer est de 5. Veuillez réessayer.");
+                else
+                    alert("The maximum number of products you can compare is 5. Please try again.");
+                $(this).attr('checked', '');
+            }
+        } else {
+            remove_comparison_from_skus(t.attr('data-id'));
         }
-        else {
-            if (!(typeof(optemo_french) == "undefined") && optemo_french)
-                alert("Le nombre maximum de produits que vous pouvez comparer est de 5. Veuillez réessayer.");
-            else
-                alert("The maximum number of products you can compare is 5. Please try again.");
-            return false;
-        }
-                                         // Change navigator bar compare button text
-                                         skus = my.readAllCookieValues('bestbuy_specs_skus');
-                                         my.changeNavigatorCompareBtn(skus.length);
-
-
-        return false;
+        sku_size = my.readAllCookieValues('bestbuy_specs_skus').length;
+        my.changeNavigatorCompareBtn(sku_size);
+    }
+	  $('.optemo_compare_checkbox').live('click', click_checkbox);
+    $('.optemo_compare_button').live('click', function(){
+		  my.trackPage('goals/filter/direct_comparison', {'filter_type' : 'direct_comparison'});
+		  var my_checkbox = $(this).parent().find('.optemo_compare_checkbox');
+		  if (!my_checkbox.attr('checked')) {
+		    my_checkbox.attr('checked','checked');
+	      click_checkbox(my_checkbox);
+      }
+	    my.compareCheckedProducts();
+      return false;
     });
-
     
     // Back to top button
     $(window).scroll(function () {
