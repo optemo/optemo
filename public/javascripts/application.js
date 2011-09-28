@@ -1795,7 +1795,7 @@ optemo_module = (function (my){
                                                remove_comparison_from_skus(thisObj.attr('data-id'));
                                                sku_size -= 1;
                                            }
-                                           my.changeNavigatorCompareBtn(sku_size);
+                                           my.changeNavigatorCompareBtn(my.readAllCookieValues('bestbuy_specs_skus').length);
                                        });
 
 
