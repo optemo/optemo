@@ -1270,9 +1270,6 @@ margin-top:0;
 	margin-top: 10px;
 	padding: 6px;
 }
-#optemo_embedder .fb_edge_widget_with_comment {
-	padding-top: 5px;
-}
 #optemo_embedder div#textfeatures, div#reviews {
 	clear:both;
 }
@@ -1394,9 +1391,6 @@ margin-top:0;
 	padding-left: 1em;
 }
 
-#optemo_embedder .facebook-like{
-	min-height: 40px;
-}
 /*--------------------------------------//
 //            Awesome Buttons           //
 //--------------------------------------*/

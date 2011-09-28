@@ -2,10 +2,6 @@ class CompareController < ApplicationController
   layout :choose_layout, :except => "sitemap"
   require 'open-uri'
   def index
-    if params.include?(:fb_xd_fragment)
-      render 'customFacebookChannel', :layout => false
-      # A custom channel is required to avoid ?fb_xd_fragment calls (which load index.html and have side effects) in MSIE 7-9
-    else
       # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
       if Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
         if params[:page]
@@ -28,7 +24,6 @@ class CompareController < ApplicationController
       end
       correct_render
     end
-  end
   
   #This function should be combined with create
   def zoomout
