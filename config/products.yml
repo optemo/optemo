@@ -140,11 +140,7 @@ camera_bestbuy:
                 type: Continuous
                 used_for: [desc, filter, cluster, show, sortby]
                 utility: 5
-                cluster: 5    
-            fblike:
-                type: Continuous
-                used_for: [sortby]
-                utility: 5          
+                cluster: 5           
             brand:
                 type: Categorical
                 used_for: [show, filter, cluster]

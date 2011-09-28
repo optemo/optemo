@@ -55,7 +55,6 @@ en:
             saleprice:      "Sale Price"
             saleends:       "Sale Ends"
             lowestprice:    "Lowest Price Guarantee"
-            fbconnecturl:   "//connect.facebook.net/en_US/all.js#xfbml=1"
     features:
         maxresolution:      "%{num}MP"
         screensize:         "%{num}in. LCD"
