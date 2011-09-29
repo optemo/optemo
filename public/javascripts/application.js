@@ -744,10 +744,6 @@ optemo_module = (function (my){
     };
 
     my.LiveInit = function() { // This stuff only needs to be called once per full page load.
-            $('.clear_compare').live('click', function() {
-                                         eraseCookie(my.cmpcookie);
-                                         });
-
         //Search submit
         //$('#submit_button').live('click', function(){
         //    return submitsearch();
@@ -1718,17 +1714,13 @@ optemo_module = (function (my){
     });
 
     $('#optemo_embedder .nav_clear_btn').live("click", function() {
-				var skus = my.readAllCookieValues('bestbuy_specs_skus');
-				var erased = 0;
-		    if (skus.length > 0) {
-					$('.optemo_compare_checkbox:checked').each (function (index) {
-							erased = erased + 1;
-							$(this).attr('checked', '');
-					});
-				}
-				eraseCookie('bestbuy_specs_skus');
+        //Uncheck currently checked navboxes
+				$('.optemo_compare_checkbox:checked').each (function (index) {
+						$(this).attr('checked', '');
+				});
+				//Remove saved cookie values
+				eraseCookie(my.cmpcookie);
 				my.changeNavigatorCompareBtn(0)
-				//alert("Cleared" + erased + " checkboxes ");
 				return false;
     });
 
