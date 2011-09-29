@@ -41,6 +41,10 @@ fr:
             closewindow:    "Fermer fenêtre"
             save:           "Épargnez"
         show:
+            available:      "Autres"
+            colors:         "coleurs"
+            and:            " et "
+            bundles:        "ensembles"
             title:          "Renseignements sur le produit"
             noimage:        "Image non disponible"
             regularprice:   "Prix régulier"
