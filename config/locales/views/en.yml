@@ -12,6 +12,7 @@ en:
         isOnlineOnly:           "Online Only"
         toprated:               "Top-Rated"
         featured:               "Featured Products"
+        isBundle:               "Bundles"
         saleprice_factor:       "Price: High to Low"
         saleprice_factor_high:  "Price: Low to High"
         displayDate:            "Newest Model"
