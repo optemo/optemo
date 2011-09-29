@@ -119,7 +119,7 @@ module CompareHelper
     loop do
       row = products.shift(3)
       #Check if any of the products have variations or bundles
-      no_variations = row.inject(true){|ans,p| ans && p.product_bundles.empty? && p.product_siblings.empty?}
+      no_variations = row.inject(true){|ans,p| ans && p.product_bundles.empty?}
       row.each_index do |i|
         res << render(:partial => 'navbox', :locals => {product: row[i], landing: landing, last_in_row: i == row.length-1, no_variations: no_variations, bundles: row[i].product_bundles, siblings: row[i].product_siblings})
       end
