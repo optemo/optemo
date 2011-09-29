@@ -1,5 +1,5 @@
 <% if @plain %>
-<div class="poptitle" data-sku='<%= @product.sku %>' data-cat="<%= CatSpec.cache_all(@product.id)['category']%>" data-id='<%= @product.id %>'>
+<div class="poptitle" data-sku='<%= @product.sku %>'>
 <%# These are used in the application javascript "show" and "compare" pages' logic. %>
 	<a href="#" id="tab_selected" class="fetch tab" data-tab="info_content"><%=t('products.show.productinfo')%></a>
 	<div class="tabspacer"></div>

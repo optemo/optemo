@@ -18,7 +18,6 @@ module DirectComparisonHelper
     end
   end
   def box_width
-    (@products.size - 2) * 201 + 531
-    531 if @products.size <= 2
+    [(@products.size - 2) * 201,0].max + 531
   end
 end

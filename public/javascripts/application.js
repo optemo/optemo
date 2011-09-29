@@ -95,6 +95,7 @@ optemo_module = (function (my){
         SESSION_ID = parseInt($('#seshid').html());
         AB_TESTING_TYPE = parseInt($('#ab_testing_type').html());
         my.PIWIK_ID = $('#piwikid').html();
+        my.cmpcookie = 'bestbuy_compare_skus';
     }
 
     // Renders a recursive html list of the specs.
@@ -142,35 +143,12 @@ optemo_module = (function (my){
     // The disadvantage would be that the specs wouldn't be stored for later retrieval. This probably isn't a big deal.
 
     // For the bundle products, get the first product from bundle spec and show its specs
-    my.loadspecs = function (sku, cat_id, prod_id, product_type_id, f, bundle_sku) {
+    my.loadspecs = function (sku, f, bundle_sku) {
         // The jQuery AJAX request will add ?callback=? as appropriate. Best Buy API v.2 supports this.
            var baseurl = "http://www.bestbuy.ca/api/v2/json/product/" + sku;
         if (!(typeof(optemo_french) == "undefined") && optemo_french) baseurl = baseurl+"?lang=fr";
-        // Insert spec in right order to show in comparison page
-        var insert_before = -1;
-        var skus = my.readAllCookieValues('bestbuy_specs_skus');
-        eraseCookie('bestbuy_specs_skus'); // Because resort the skus, we can not append value at the end
-        
-        $.each(skus, function(index,value) {
-                   var val = value.split(',');
-                   if (val[2] == prod_id) {
-                       insert_before = index;
-                       return false;
-                       }
-                    
-                   if (val[1] > cat_id) {
-                       insert_before = index;
-                       skus.splice(insert_before,0,[sku, cat_id, prod_id, product_type_id].join(','));
-                       return false;
-                   }
-               });
-        
-        if (insert_before < 0)
-            skus.push([sku, cat_id, prod_id, product_type_id].join(','));
-
-        addValueToCookie('bestbuy_specs_skus', skus.join('*'), 1);
         // Do not need check bundle sku
-        if (!(jQuery('body').data('bestbuy_specs_' + sku))) {
+        if (!($('body').data('bestbuy_specs_' + sku))) {
             $.ajax({
                 url: baseurl,
                 type: "GET",
@@ -180,8 +158,7 @@ optemo_module = (function (my){
                     var bundle = data["bundle"];
 
                     if (bundle.length > 0) {
-                     
-                        my.loadspecs(bundle[0]["sku"], cat_id, prod_id, product_type_id, f, sku);
+                        my.loadspecs(bundle[0]["sku"], f, sku);
                     }
                     else {
                         var raw_specs = data["specs"];
@@ -232,8 +209,8 @@ optemo_module = (function (my){
         return ret;
     }
     // This function gets called when a show action gets called.
-    my.preloadSpecsAndReviews = function(sku, cat_id, prod_id, product_type_id) {
-        my.loadspecs(sku, cat_id, prod_id, product_type_id, (function() {
+    my.preloadSpecsAndReviews = function(sku) {
+        my.loadspecs(sku, (function() {
             $('#specs_content').html('<ul>' + parse_bb_json($('body').data('bestbuy_specs_' + sku)) + "</ul>");
         }));
         if (!(jQuery('body').data('bestbuy_reviews_' + sku))) {
@@ -378,7 +355,7 @@ optemo_module = (function (my){
         } else {
             my.quickajaxcall('#info', url, function(){
                 if (url.match(/\/product/)) {
-                    my.preloadSpecsAndReviews($('.poptitle').attr('data-sku'), $('.poptitle').attr('data-cat'), $('.poptitle').attr('data-id'), $('#main').attr('data-product_type'));
+                    my.preloadSpecsAndReviews($('.poptitle').attr('data-sku'));
                     if (!($.browser.msie && $.browser.version == "6.0")) {
                         // Initialize Galleria
                         // If you are debugging around this point, be aware that galleria likes to be initialized without debugging pauses.
@@ -421,29 +398,20 @@ optemo_module = (function (my){
         return Array(res, sku);
     }
 
-    function removeFromComparison(id) {
+    function removeFromComparison(sku) {
         $(".optemo_compare_checkbox").each( function (index) {
-            if ($(this).attr('data-id') == id) {
+            if ($(this).attr('data-sku') == sku) {
                 $(this).attr('checked', '');
                 return;
             }
         });
-        remove_comparison_from_skus(id);
+        remove_comparison_from_skus(sku);
     }
-    function remove_comparison_from_skus(prod_id) {
-        var skus = my.readAllCookieValues('bestbuy_specs_skus');
-        
-        $.each(skus, function(index, value) {
-                   var val = value.split(',');
-                   if (val[2] == prod_id) {
-                       skus.splice(index, 1);
-                       eraseCookie('bestbuy_specs_skus');
-                       addValueToCookie('bestbuy_specs_skus', skus.join('*'), 1);
-                       return false;
-                   }
-               });
-        
-        my.changeNavigatorCompareBtn(skus.length);   
+    function remove_comparison_from_skus(prod_sku) {
+      removeValueFromCookie(my.cmpcookie, prod_sku+","+$('#main').attr('data-product_type'), 1);
+      //Update comparison number
+      var skus = my.readAllCookieValues(my.cmpcookie);
+      my.changeNavigatorCompareBtn(skus.length);   
     }
     
                      
@@ -777,7 +745,7 @@ optemo_module = (function (my){
 
     my.LiveInit = function() { // This stuff only needs to be called once per full page load.
             $('.clear_compare').live('click', function() {
-                                         eraseCookie('bestbuy_specs_skus');
+                                         eraseCookie(my.cmpcookie);
                                          });
 
         //Search submit
@@ -860,7 +828,7 @@ optemo_module = (function (my){
         //Remove buttons on compare
         $('.remove').live('click', function(){
 
-            removeFromComparison($(this).attr('data-name'));
+            removeFromComparison($(this).attr('data-sku'));
             var class_name = $(this).attr('class').split(' ').slice(-1); // spec_column_0, for example
 
             $("." + class_name).each(function () {
@@ -871,7 +839,7 @@ optemo_module = (function (my){
 
             // If this is the last one, take the comparison screen down too
 
-            var skus = my.readAllCookieValues('bestbuy_specs_skus');
+            var skus = my.readAllCookieValues(my.cmpcookie);
             if (skus.length == 0) {
                 my.removeSilkScreen();
             }
@@ -1080,25 +1048,14 @@ optemo_module = (function (my){
         else row_class = 'compare_row'; // row_class was 1
         return row_class;
     }
-    my.changeCompareTitle = function(len) {
-        comp_title = $("label.comp-title");
-        comp_title_text = comp_title.text().replace(/\([^)]*\)/, '');
-        if (!(typeof(optemo_french) == "undefined") && optemo_french)
-            comp_title.text(comp_title_text + " (" + len + " Sélection)");
-        else
-            comp_title.text(comp_title_text + " (" + len + " Selected)"); 
-    };
     
     my.buildComparisonMatrix = function() {
-        var skus = my.readAllCookieValues('bestbuy_specs_skus'), anchor = $('#hideable_matrix');
+        var skus = $('#basic_matrix').attr('data-skus').split(','), anchor = $('#hideable_matrix');
         // Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
         var array = [];
-        my.changeCompareTitle(skus.length);
-        $.each(skus, function (index, val) {
-                   var value = val.split(',');
-        array.push($('body').data('bestbuy_specs_'+value[0]));
+        $.each(skus, function(index,value) {
+          array.push($('body').data('bestbuy_specs_'+value));
         });
-
         var grouped_specs = optemo_module.merge_bb_json.apply(null,array);
         //Set up Headers
         
@@ -1489,13 +1446,17 @@ optemo_module = (function (my){
           //Remove items that don't match the current product class
           var c_product_type = $('#main').attr('data-product_type');
           skus = $.grep(cookie.split('*'), function(value) {
-            return value.split(',')[3] == c_product_type;
+            return value.split(',')[1] == c_product_type;
+          });
+          //Remove product_type from cookie values
+          skus = $.map(skus, function(value) {
+            return value.split(',')[0];
           });
         } else {
           // Fix for cookie not saving but some product checkboxes are checked. Issue found in IE6.
           skus = [];
           $(".optemo_compare_checkbox:checked").each (function (index) {
-              skus.push([$(this).attr('data-sku'), $(this).attr('data-cat'), $(this).attr('data-id'), $('#main').attr('data-product_type')].join(','));
+              skus.push($(this).attr('data-sku'));
           });
         }
         return skus;
@@ -1528,11 +1489,11 @@ optemo_module = (function (my){
     }
     
     my.apply_compared_checks = function() {
-      var skus = my.readAllCookieValues('bestbuy_specs_skus');
-      $.each(skus, function(index,value) {
-         var val = value.split(',');
-         $('.optemo_compare_checkbox[data-id="'+val[2]+'"]').each(function() {
+      var skus = my.readAllCookieValues(my.cmpcookie);
+      $.each(skus, function(index,sku) {
+         $('.optemo_compare_checkbox[data-sku="'+sku+'"]').each(function() {
             $(this).attr('checked', 'checked');
+            my.loadspecs(sku);
          });
       });
       my.changeNavigatorCompareBtn(skus.length);
@@ -1551,7 +1512,6 @@ optemo_module = (function (my){
             // Do LiveInit anyway, since timing is not important
             my.LiveInit();
 
-            var skus = my.readAllCookieValues('bestbuy_specs_skus');
             if(OPT_REMOTE)
               apply_compared_checks();
 
@@ -1722,34 +1682,24 @@ optemo_module = (function (my){
     };
 
     my.compareCheckedProducts = function () {
-        var skus = my.readAllCookieValues('bestbuy_specs_skus');
-        if (skus.length >= 1) {
-            var productIDs = '', width = 560, number_of_saved_products = 0;
-            $.each(skus, function(index, val) {
-                       var value = val.split(',');
-                productIDs = productIDs + value[2] + ',';
-                number_of_saved_products++;
-            });
-        }
-        // This code has a strange structure and should be cleaned up? Or at least commented?
-        else
-            return false;
+        var skus = my.readAllCookieValues(my.cmpcookie), width;
+        if (skus.length < 1)
+          return false;
+
         // To figure out the width that we need, start with $('#opt_savedproducts').length probably
         // 560 minimum (width is the first of the two parameters)
         // 2, 3, 4 ==>  513, 704, 895  (191 each)
-        if (number_of_saved_products > 2)
-            width = 211 * (number_of_saved_products - 2) + 566;
+        if (skus.length > 2)
+            width = 211 * (skus.length - 2) + 566;
         else {
             width = 566;
-
         }
 
-        my.applySilkScreen('/comparison/' + productIDs, null, width, 580,function(){
+        my.applySilkScreen('/comparison/' + skus.join(","), null, width, 580,function(){
             // Jquery 1.5 would finish all the requests before building the comparison matrix once
             // With 1.4.2 we can't do that. Keep code for later.
             // $.when.apply(this,reqs).done();
             my.buildComparisonMatrix();
-        
         });
         return false;
     };
@@ -1780,12 +1730,13 @@ optemo_module = (function (my){
         }
     };
     function click_checkbox(){
-        var sku_size = my.readAllCookieValues('bestbuy_specs_skus').length;
+        var sku_size = my.readAllCookieValues(my.cmpcookie).length;
         //Differentiate between the checkbox and text link, which passes in the checkbox
         var t = (arguments[0].jquery == undefined) ? $(this) : arguments[0];
         if (t.attr('checked')) { // save the comparison item
             if (sku_size < 5) {
-                my.loadspecs(t.attr('data-sku'), t.attr('data-cat'), t.attr('data-id'), $('#main').attr('data-product_type'));
+              my.loadspecs(t.attr('data-sku'));
+              addValueToCookie(my.cmpcookie, t.attr('data-sku')+','+$('#main').attr('data-product_type'), 1);
             }
             else {
                 if (!(typeof(optemo_french) == "undefined") && optemo_french)
@@ -1795,9 +1746,9 @@ optemo_module = (function (my){
                 $(this).attr('checked', '');
             }
         } else {
-            remove_comparison_from_skus(t.attr('data-id'));
+          remove_comparison_from_skus(t.attr('data-sku'));
         }
-        sku_size = my.readAllCookieValues('bestbuy_specs_skus').length;
+        sku_size = my.readAllCookieValues(my.cmpcookie).length;
         my.changeNavigatorCompareBtn(sku_size);
     }
 	  $('.optemo_compare_checkbox').live('click', click_checkbox);
