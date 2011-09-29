@@ -36,7 +36,7 @@
 			  <% end %>
 			
       <div class="productspecs">
-  		<%= link_to cat_specs["title#{fr?}"], TextSpec.cacheone(product.id, "productUrl#{fr?}"), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
+  		<%= link_to (cat_specs["title#{fr?}"] || cat_specs["title"]), (TextSpec.cacheone(product.id, "productUrl#{fr?}") || TextSpec.cacheone(product.id, "productUrl")), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
 			</div>
 			<div class="productspecs"><!--&--></div>
 			
