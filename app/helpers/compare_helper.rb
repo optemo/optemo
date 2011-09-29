@@ -160,6 +160,12 @@ module CompareHelper
     small_title(product).tr(' /','_-').tr('.', '-')
   end
   
+  def siblingslabel(siblings,bundles)
+    txt = []
+    txt << t('products.show.colors') unless siblings.empty?
+    txt << t('products.show.bundles') unless bundles.empty?
+    t('products.show.available')+" "+txt.join(t('products.show.and'))
+  end
 
   def navbox_display_title(product)
     title = small_title(product)
