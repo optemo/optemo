@@ -55,6 +55,7 @@ en:
             colors:         "Colours"
             and:            " and "
             bundles:        "Bundles"
+            bundledwith:    "Bundled with"
             loading:        "Loading"
             ourprice:       "Our Price"
             saleprice:      "Sale Price"

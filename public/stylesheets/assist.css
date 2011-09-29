@@ -72,6 +72,15 @@
 	font-size:0.8em;
 	padding-bottom:6px;
 }
+#optemo_embedder .navboxcolours {
+  font-size:0.8em;
+  padding-bottom:3px;
+}
+#optemo_embedder .navboxcompare {
+	font-size: 0.8em;
+	text-align: left;
+	padding-left: 15px;
+}
 
 #optemo_embedder .heroinfo {
   width: 248px;

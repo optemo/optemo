@@ -365,11 +365,19 @@ html {
 	padding-top: 3px;
 }
 
-#optemo_embedder .siblingsbox {
-  text-align: center;
+#optemo_embedder .bundlesbox {
+  text-align: left;
   border-top: 1px solid #e1e1e1;
   font-size: 0.8em;
   margin: 6px 10px 0;
+}
+
+#optemo_embedder .nolinelink {
+  text-decoration: none;
+}
+
+#optemo_embedder .nolinelink:hover {
+  text-decoration: none;
 }
 
 #optemo_embedder .siblingdiv {
@@ -378,19 +386,31 @@ html {
   padding-right: 5px;
   min-height: 35px;
 }
+#optemo_embedder .bundlediv {
+  padding-bottom: 5px;
+  min-height: 35px;
+  border:1px solid white;
+}
+
+#optemo_embedder .bundlediv:hover {
+  border:1px solid blue;
+}
+
 #optemo_embedder .pricediff {
-  margin-top: -5px;
+  float: right;
   color: black;
 }
 
-#optemo_embedder .siblingslabel {
-  margin-top: 2px;
+#optemo_embedder .bundleslabel {
+  padding-left: 5px;
+  padding-bottom: 5px;
 }
 
 #optemo_embedder .sibling img {
   height: 35px;
   width: 35px;
   overflow: left;
+  vertical-align: middle;
 }
 
 #optemo_embedder .herosiblings {

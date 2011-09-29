@@ -2,25 +2,42 @@
 <% cont_specs = ContSpec.cache_all(product.id); cat_specs = CatSpec.cache_all(product.id); %>
 <div id="box<%= product.id %>" class="navbox" style="<%= "margin-right:0px;background:none;" if last_in_row %><%= "height:335px;" if no_variations %>">
 	<div class="topbar"<%= "style='height:303px;'" if no_variations %>>
+
+	  <div class="navboxcompare">
+    <% if landing %>
+      &nbsp;
+    <% else %>
+    		  <input type="checkbox"
+		       data-sku="<%= product.sku %>"
+		       class="optemo_compare_checkbox" />
+	        <a class="regular_reset optemo_compare_button" style="" href="#" title="<%=t('products.compare.clickforcompare')%>">
+	    <span><%=t('products.compare.compare')%></span>
+	  </a>
+	  <% end %>
+    </div>
+		
 		<%= image_tag(cat_specs["img150url"], :class => "productimg", :alt => cat_specs["title#{fr?}"], :title => t('products.compare.clickforspecs'), :'data-id' => product.id, :'data-sku' => product.sku) %>
 
-
+		<% siblings = product.product_siblings -%>
 		<div class="productinfo">
-		  <div class="productspecs">
-      <% if landing %>
-        &nbsp;
-      <% else %>
-      		  <input type="checkbox"
-			       data-sku="<%= product.sku %>"
-			       class="optemo_compare_checkbox" />
-		        <a class="regular_reset optemo_compare_button" style="" href="#" title="<%=t('products.compare.clickforcompare')%>">
-		    <span><%=t('products.compare.compare')%></span>
-		  </a>
-		  <% end %>
-      </div>
-			<%= link_to cat_specs["title#{fr?}"], TextSpec.cacheone(product.id, "productUrl#{fr?}"), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
-		    
-						
+		  <!-- Colour swatches -->
+			<% unless siblings.empty? %>
+			<div class="navboxcolours">
+			  <% siblings.each do |sibling| -%>
+			    <% sibling_id = sibling.sibling_id -%>
+  				<% sibling_cat_specs = CatSpec.cache_all(sibling_id) -%>
+  				<% color = sibling_cat_specs["color"] %>
+  				<% link_to TextSpec.cacheone(sibling_id, "productUrl#{fr?}"), :'data-id' => sibling_id, :class => "sibling", :title => sibling.is_a?(ProductSibling) ? sibling_cat_specs["color#{fr?}"] : sibling_cat_specs["title#{fr?}"] do %>
+  				  <div class="swatch<%= " white_swatch" if color == "White" %>" style="background-color:<%= color %>; float:left"></div>
+  				<% end %>
+			  <% end %>
+			  &nbsp;
+			  </div>
+			  <% end %>
+			
+      <div class="productspecs">
+  		<%= link_to cat_specs["title#{fr?}"], TextSpec.cacheone(product.id, "productUrl#{fr?}"), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
+			</div>
 			<div class="productspecs"><!--&--></div>
 			
 			<% if BinSpec.cache_all(product.id)["onsale"] %>
@@ -37,20 +54,30 @@
 				<div class="stars" data-stars="<%= cont_specs["customerRating"] %>"></div>
 			<% end %>
 		</div>
-		<!-- Show small images and links for each sibling of this product  -->
-		<% unless no_variations || (siblings.empty? && bundles.empty?) %>
-		<div class="siblingsbox">
-			<div class="siblingslabel"><%=raw siblingslabel(siblings,bundles) %></div>
-			<% (siblings+bundles).each do |sibling| -%> 
-			  <% sibling_id = sibling.is_a?(ProductSibling) ? sibling.sibling_id : sibling.bundle_id -%>
-				<% sibling_cat_specs = CatSpec.cache_all(sibling_id) -%>
-				<% sibling_cont_specs = ContSpec.cache_all(sibling_id) -%>
-        <div class="siblingdiv">
-				<% link_to TextSpec.cacheone(sibling_id, "productUrl#{fr?}"), :'data-id' => sibling_id, :class => "sibling", :title => sibling.is_a?(ProductSibling) ? sibling_cat_specs["color#{fr?}"] : sibling_cat_specs["title#{fr?}"] do %>
-				  <%= image_tag(sibling_cat_specs["imgsurl"], :alt => sibling_cat_specs["color#{fr?}"]) %>
-				  <div class="pricediff"><%= "+"+number_to_currency(sibling_cont_specs["saleprice"]-cont_specs["saleprice"], precision: 0) if sibling_cont_specs["saleprice"] != cont_specs["saleprice"] %></div>
-				<% end %>
-        </div>
+		<!-- For each bundle of this product, show price and images for products it's bundled with -->
+		<% bundles = product.product_bundles -%>
+		<% unless no_variations || (bundles.empty?) %>
+		<div class="bundlesbox">
+		  <div class="bundleslabel"> <%= t('products.show.bundledwith') %>: </div>
+			<% bundles.each do |bundle| -%> 
+			  <% bundle_id = bundle.bundle_id -%>
+				<% bundle_cat_specs = CatSpec.cache_all(bundle_id) -%>
+				<% bundle_cont_specs = ContSpec.cache_all(bundle_id) -%>
+				  <div class="bundlediv" data-url="<%= TextSpec.cacheone(bundle_id, "productUrl#{fr?}") %>">
+				   <%= link_to TextSpec.cacheone(bundle_id, "productUrl#{fr?}"), :'data-id' => bundle_id, :'data-sku' => bundle_id, :class => "nolinelink", :title => bundle_cat_specs["title#{fr?}"] do %>
+  				
+      		<% bundledesc = JSON.parse(TextSpec.cacheone(bundle_id, 'bundle').gsub("=>",":")) %>
+				  
+				  <div class="sibling">
+  				  <% bundledesc[1..-2].each do |item| -%>
+  				    <%= image_tag( "http://www.bestbuy.ca" + item["thumbnailImage"], :alt => item["name"] ) %>
+  				  <% end %>
+  				  <% item = bundledesc[-1] -%>
+  				  <%= image_tag( "http://www.bestbuy.ca" + item["thumbnailImage"], :alt => item["name"]) %>
+  			  	<% end %>
+  			  	<%= number_to_currency(bundle_cont_specs["saleprice"], precision: 2) %>
+				  </div>
+				  </div>
 			<% end %>
 			<div style="clear:left"><!-- --></div>
 		</div>

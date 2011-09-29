@@ -766,6 +766,10 @@ optemo_module = (function (my){
         //    return false;
         //})
         
+        $('.bundlediv').live('click', function() {
+            window.location = $(this).attr("data-url");
+        });
+        
         //See all Products
         $('.seeall').live('click', function() {
             my.ajaxcall('/', {});
