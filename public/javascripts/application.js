@@ -1513,7 +1513,7 @@ optemo_module = (function (my){
             my.LiveInit();
 
             if(OPT_REMOTE)
-              apply_compared_checks();
+              my.apply_compared_checks();
 
             if ($('#opt_discovery').length == 0) {
                 // Other init routines get run when they are needed.
