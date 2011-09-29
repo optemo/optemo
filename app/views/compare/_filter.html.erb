@@ -22,7 +22,7 @@
         <% color_counts = CatSpec.count_feat("color") %>
         <% %w(Red Orange Yellow Green Blue Purple Pink White Silver Brown Black).each do |color| %>
           <% next if color_counts[color].nil? && !chosen_cats.include?(color) %>
-          <div class="swatch<%= " white_swatch" if color == "White" %><%= " selected_swatch" if chosen_cats.include?(color) %>" style="background-color: <%= color %>"></div>
+          <div class="swatch_button swatch<%= " white_swatch" if color == "White" %><%= " selected_swatch" if chosen_cats.include?(color) %>" style="background-color: <%= color %>"></div>
         <% end %>
         <div style="clear: left;">
           <%= hidden_field_tag "categorical[color]", chosen_cats.join("*") %>
