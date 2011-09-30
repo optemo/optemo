@@ -19,7 +19,7 @@ Filter Page:
 - Filter for red cameras by clicking on red colour swatch and check if only red cameras are displayed
 - repeat the previous step for a couple of other colours
 - find a displayed result which has other available colours or bundles displayed underneath. Hover over a sibling / bundle picture to check the alt text and click on one to see if it leads to the right product page
-- filter brands by clicking on one and multiple brand check boxes and check if right products are displayed
+- filter brands by clicking on one and multiple brand check boxes and check if the right products are displayed
 - When filtering check if the numbers associated with checkboxes are adjusted and click on brands using the checkbox and the link text 
 - Check on sale and then undo it and see if it works fine
 - Click on reset the test  
@@ -27,7 +27,7 @@ Filter Page:
 - Check two brand boxes and undo them and see if it filter properly 
 - Check a couple of binary filters and uncheck it (by both clicking on the link and checking the box) 
 - Check two brands and then click on a binary filter that has a small number then undo one of the brands. If the binary filter matched products from both brands, undoing it will preserve the two brands, but if it only matched one, only the matched brand stays selected
-- Click Reset All
+- Click Reset All, then See all
 - Click on the Sort by: Price(Low to High) link; See if the products are sorted correctly
 - Click on the Sort by bestseller to see if products are getting sorted differently;
 - Click on the Sort by newest model to see if products are getting sorted differently;  
