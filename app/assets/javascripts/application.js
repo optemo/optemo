@@ -1,6 +1,7 @@
-//= require_self  
+//= require prototype
+//= require effects
 //= require_tree .
-
+//= require_self  
 
 /*global defineClass: false, deserialize: false, gc: false, help: false, load: false, loadClass: false, print: false, quit: false, readFile: false, readUrl: false, runCommand: false, seal: false, serialize: false, spawn: false, sync: false, toint32: false, version: false */
 /* Application-specific Javascript.
