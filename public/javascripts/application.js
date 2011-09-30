@@ -1733,7 +1733,7 @@ optemo_module = (function (my){
         var sku_size = my.readAllCookieValues(my.cmpcookie).length;
         //Differentiate between the checkbox and text link, which passes in the checkbox
         var t = (arguments[0].jquery == undefined) ? $(this) : arguments[0];
-        if (t.attr('checked')) { // save the comparison item
+        if (t.is(':checked')) { // save the comparison item
             if (sku_size < 5) {
               my.loadspecs(t.attr('data-sku'));
               addValueToCookie(my.cmpcookie, t.attr('data-sku')+','+$('#main').attr('data-product_type'), 1);
@@ -1743,7 +1743,7 @@ optemo_module = (function (my){
                     alert("Le nombre maximum de produits que vous pouvez comparer est de 5. Veuillez réessayer.");
                 else
                     alert("The maximum number of products you can compare is 5. Please try again.");
-                $(this).attr('checked', '');
+                t.attr('checked', '');
             }
         } else {
           remove_comparison_from_skus(t.attr('data-sku'));
@@ -1759,7 +1759,8 @@ optemo_module = (function (my){
 		    my_checkbox.attr('checked','checked');
 	      click_checkbox(my_checkbox);
       }
-	    my.compareCheckedProducts();
+      if (my_checkbox.is(':checked'))
+	      my.compareCheckedProducts();
       return false;
     });
     
