@@ -39,10 +39,11 @@ Filter Page:
 
 Product Comparison:
 - Check the Compare box for one product
+- See if the Comparison number on the Compare button increased to 1 (unless you previously had products selected)
 - Click the compare link on another product; You should see the comparison popover with two products displayed
 - Check if product tile and price are displayed.
 - Click the remove link; The product should be removed; Click close
-- Check the boxes of 3 more products; Click the Compare button at the bottom of the page
+- Check the boxes of 3 more products; Click the Compare button at the bottom of the page (it should have (4) next to it)
 - Click the More specs link and see that the tables works, including collapsable headings if available
 - Add products to compare up to the 6th one and see if an error message comes up
 - Click on Clear Selected Products and check that the checked boxes and compare button are updated for zero selection
