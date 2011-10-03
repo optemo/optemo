@@ -1,3 +1,4 @@
+//= require_self
 var scriptSource = (function(scripts) { 
     var scripts = document.getElementsByTagName('script'), 
     script = scripts[scripts.length - 1]; 

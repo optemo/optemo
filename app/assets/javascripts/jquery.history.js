@@ -1,30 +1,48 @@
 /*
  * jQuery history plugin
  * 
- * sample page: http://www.serpere.info/jquery-history-plugin/samples/
- *
+ * The MIT License
+ * 
  * Copyright (c) 2006-2009 Taku Sano (Mikage Sawatari)
  * Copyright (c) 2010 Takayuki Miwa
- * Licensed under the MIT License:
- *   http://www.opensource.org/licenses/mit-license.php
- *
- * Modified by Lincoln Cooper to add Safari support and only call the callback once during initialization
- * for msie when no initial hash supplied.
- *
- * Modified by Zev Thompson of Optemo to ignore the app state when doing load() (ie., take out "if  ... != appstate"), and to
- * take parameters myurl and mydata that get passed through to the call-back.
  * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ 
+ * Modified by Jan Ulrich of Optemo to ignore the app state when doing load() (ie., take out "if  ... != appstate"), and to
+ * take parameters myurl and mydata that get passed through to the call-back.
  */
 
 (function($) {
     var locationWrapper = {
         put: function(hash, win) {
-            (win || window).location.hash = encodeURIComponent(hash);
+            (win || window).location.hash = this.encoder(hash);
         },
         get: function(win) {
             var hash = ((win || window).location.hash).replace(/^#/, '');
-            return $.browser.mozilla ? hash : decodeURIComponent(hash);
-        }
+            try {
+                return $.browser.mozilla ? hash : decodeURIComponent(hash);
+            }
+            catch (error) {
+                return hash;
+            }
+        },
+        encoder: encodeURIComponent
     };
 
     var iframeWrapper = {
@@ -48,72 +66,138 @@
         }
     };
 
-    // public base interface
-    var _ = {
-        appState: undefined,
+    function initObjects(options) {
+        options = $.extend({
+                unescape: false
+            }, options || {});
+
+        locationWrapper.encoder = encoder(options.unescape);
+
+        function encoder(unescape_) {
+            if(unescape_ === true) {
+                return function(hash){ return hash; };
+            }
+            if(typeof unescape_ == "string" &&
+               (unescape_ = partialDecoder(unescape_.split("")))
+               || typeof unescape_ == "function") {
+                return function(hash) { return unescape_(encodeURIComponent(hash)); };
+            }
+            return encodeURIComponent;
+        }
+
+        function partialDecoder(chars) {
+            var re = new RegExp($.map(chars, encodeURIComponent).join("|"), "ig");
+            return function(enc) { return enc.replace(re, decodeURIComponent); };
+        }
+    }
+
+    var implementations = {};
+
+    implementations.base = {
         callback: undefined,
-        init:  function(callback) {},
+        type: undefined,
+
         check: function() {},
-        load:  function(hash,myurl,mydata) {}
-    };
-    $.history = _;
+        load:  function(hash) {},
+        init:  function(callback, options) {
+            initObjects(options);
+            self.callback = callback;
+            self._options = options;
+            self._init();
+        },
 
-    var SimpleImpl = {
-        init: function(callback) {
-            _.callback = callback;
+        _init: function() {},
+        _options: {}
+    };
+
+    implementations.timer = {
+        _appState: undefined,
+        _init: function() {
             var current_hash = locationWrapper.get();
-            _.appState = current_hash;
-            // This is a modification of the original jquery history plugin. 
-            // Don't call the function when initializing the callback. We do this manually already with #opt_discovery
-            //_.callback(current_hash);
-            setInterval(_.check, 100);
+            self._appState = current_hash;
+            //self.callback(current_hash);
+            setInterval(self.check, 100);
         },
         check: function() {
             var current_hash = locationWrapper.get();
-            if(current_hash != _.appState) {
-                _.appState = current_hash;
-                optemo_module.loading_indicator_state.main = true;
-                _.callback(current_hash, null, null, 100);
+            if(current_hash != self._appState) {
+                self._appState = current_hash;
+                self.callback(current_hash, null, null);
             }
         },
         load: function(hash,myurl,mydata) {
-            locationWrapper.put(hash);
-            _.appState = hash;
-            _.callback(hash, myurl, mydata);
+            if(hash != self._appState) {
+                locationWrapper.put(hash);
+                self._appState = hash;
+                self.callback(hash,myurl,mydata);
+            }
         }
     };
 
-    var IframeImpl = {
-        init: function(callback) {
-            _.callback = callback;
+    implementations.iframeTimer = {
+        _appState: undefined,
+        _init: function() {
             var current_hash = locationWrapper.get();
-            _.appState = current_hash;
+            self._appState = current_hash;
             iframeWrapper.init().put(current_hash);
-            // This is a modification of the original jquery history plugin. 
-            // Don't call the function when initializing the callback. We do this manually already with #opt_discovery
-            //_.callback(current_hash);
-            setInterval(_.check, 100);
+            //self.callback(current_hash);
+            setInterval(self.check, 100);
         },
         check: function() {
-            var current_hash = iframeWrapper.get();
-            if(current_hash != _.appState) {
-                locationWrapper.put(current_hash);
-                _.appState = current_hash;
-                optemo_module.loading_indicator_state.main = true;
-                _.callback(current_hash, null, null, 100);
+            var iframe_hash = iframeWrapper.get(),
+                location_hash = locationWrapper.get();
+
+            if (location_hash != iframe_hash) {
+                if (location_hash == self._appState) {    // user used Back or Forward button
+                    self._appState = iframe_hash;
+                    locationWrapper.put(iframe_hash);
+                    self.callback(iframe_hash, null, null); 
+                } else {                              // user loaded new bookmark
+                    self._appState = location_hash;  
+                    iframeWrapper.put(location_hash);
+                    self.callback(location_hash, null, null);
+                }
             }
         },
         load: function(hash,myurl,mydata) {
-            locationWrapper.put(hash);
-            iframeWrapper.put(hash);
-            _.appState = hash;
-            _.callback(hash, myurl, mydata);
+            if(hash != self._appState) {
+                locationWrapper.put(hash);
+                iframeWrapper.put(hash);
+                self._appState = hash;
+                self.callback(hash,myurl,mydata);
+            }
         }
     };
+
+    implementations.hashchangeEvent = {
+        _appURL: undefined,
+        _appDATA: undefined,
+        _init: function() {
+            //self.callback(locationWrapper.get());
+            $(window).bind('hashchange', self.check);
+        },
+        check: function() {
+            self.callback(locationWrapper.get(), self._appURL, self._appDATA);
+            self._appURL = undefined;
+            self._appDATA = undefined;
+        },
+        load: function(hash,myurl,mydata) {
+            self._appURL = myurl;
+            self._appDATA = mydata;
+            locationWrapper.put(hash);
+        }
+    };
+
+    var self = $.extend({}, implementations.base);
 
     if($.browser.msie && ($.browser.version < 8 || document.documentMode < 8)) {
-        $.extend(_, IframeImpl);
+        self.type = 'iframeTimer';
+    } else if("onhashchange" in window) {
+        self.type = 'hashchangeEvent';
     } else {
-        $.extend(_, SimpleImpl);
+        self.type = 'timer';
     }
+
+    $.extend(self, implementations[self.type]);
+    $.history = self;
 })(jQuery);
