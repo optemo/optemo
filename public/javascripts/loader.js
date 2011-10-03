@@ -85,13 +85,14 @@ JSONP.get(OPT_REMOTE, opt_options, function (data) {
             script_nodes_to_append = Array();
             for (i = 0; i < scripts.length; i++)
             {
-                srcs = scripts[i].match(/javascripts[^"]+/); // We might want to make a check for src instead.
+                srcs = scripts[i].match(/src=["']([^'"]+)["']/); // Check is there is a src file linked
                 if (srcs == null) {
                     scripts[i] = '<script type="text/javascript">';
-                } else if (typeof(srcs) == "object" && srcs[0] && srcs[0].match(/easyXDM/)){
-        			 scripts[i] = ''; // so it will get taken out completely later
-        		} else {
-                    script_nodes_to_append.push(OPT_REMOTE + "/" + srcs);
+        		    } else {
+        		        if (srcs[1].match("http://")) //If complete URL use that
+        		          script_nodes_to_append.push(srcs[1]);
+        		        else //Otherwise, us the remote URL with the relative URL
+                      script_nodes_to_append.push(OPT_REMOTE + "/" + srcs[1]);
                     scripts[i] = '';
                 }
             // When zipping stuff back up, we want to take out the /script tag *unless* there was a null response.
