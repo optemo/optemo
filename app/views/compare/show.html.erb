@@ -1,5 +1,5 @@
 <% if @plain %>
-<div class="poptitle" data-sku='<%= @product.sku %>' data-cat="<%= CatSpec.cache_all(@product.id)['category']%>" data-id='<%= @product.id %>'>
+<div class="poptitle" data-sku='<%= @product.sku %>'>
 <%# These are used in the application javascript "show" and "compare" pages' logic. %>
 	<a href="#" id="tab_selected" class="fetch tab" data-tab="info_content"><%=t('products.show.productinfo')%></a>
 	<div class="tabspacer"></div>
@@ -82,7 +82,6 @@
     		<div class="left" style="height: 18px;"><a href="http://www.bestbuy.ca/en-CA/help/what-is-your-lowest-price-guarantee/hc1001.aspx?path=27eeec1b59d42df5dfc298ab6993d9dfen15&HelpTitleId=HC1001" class="popup-link"><%=t('products.show.lowestprice')%></a></div>
     		<div class="pricespacer"></div>
     	    <div class="buttons"><%= link_to image_tag("bestbuy_addtocart#{fr?}.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{@product.sku}", {:'data-sku' => @product.sku, :class => 'addtocart'} %></div>
-    	    <div class="buttons"><%= link_to image_tag("bestbuy_compare#{fr?}.gif"), "#", {:id => 'add_compare', :'data-id' => @product.id} %></div>
         </div>
 		<div class="spacer"> </div>
 	</div>

@@ -21,6 +21,10 @@ class Product < ActiveRecord::Base
     CachingMemcached.cache_lookup("Product#{id}"){find(id)}
   end
   
+  def self.by_sku(sku)
+    CachingMemcached.cache_lookup("Product-sku#{sku}"){find_by_sku(sku)}
+  end
+  
   #Returns an array of results
   def self.manycached(ids)
     res = CachingMemcached.cache_lookup("ManyProducts#{ids.join(',').hash}"){find(ids)}

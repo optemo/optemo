@@ -1,21 +1,22 @@
 <div class="thumbnailcell spec_column_<%= column_number.to_s %>">
-		<div class="first">
-
-			  <%= link_to image_tag(catspecs["imgmurl"], :"data-id" => thumbnails.id, :class => "compareimg"), TextSpec.cacheone(thumbnails.id, "productUrl#{fr?}"), {:class => 'easylink', :'data-id' => thumbnails.id} %>
-      </div>
+	<div class="first">
+		<%= link_to image_tag(@sp["Categorical"][thumbnails.id]["imgmurl"], :"data-id" => thumbnails.id, :class => "compareimg"), TextSpec.cacheone(thumbnails.id, "productUrl#{fr?}"), {:class => 'easylink', :'data-id' => thumbnails.id} %>
+  </div>
 
 	<div class="thumbnaillabel">
 	<div style="height: 110px;">
-   	  <%= link_to CatSpec.cache_all(thumbnails.id)["title#{fr?}"], TextSpec.cacheone(thumbnails.id, "productUrl#{fr?}"), :class => 'easylink', :'data-id' => thumbnails.id %>
+   	  <%= link_to @sp["Categorical"][thumbnails.id]["title#{fr?}"], TextSpec.cacheone(thumbnails.id, "productUrl#{fr?}"), :class => 'easylink', :'data-id' => thumbnails.id %>
 
 	  <div class="thumbnaildetails">
-    	<% if binspecs["onsale"] %>
-    		<%= t('compare.index.onsale') + (fr?.empty? ? "" : " ")+": " + (fr?.empty? ? "$" : "") + number_with_delimiter(contspecs["saleprice"]) %>
+    	<% if @sp["Binary"][thumbnails.id]["onsale"] %>
+    	  <div class="thumbnaildetailssale">
+    		  <%= t('compare.index.onsale') + (fr?.empty? ? "" : " ")+": " + (fr?.empty? ? "$" : "") + number_to_currency(@sp["Continuous"][thumbnails.id]["saleprice"]) %>
+    		</div>
     	<% else %>
-    		<%= "$" if fr?.empty? %><%= number_with_delimiter(contspecs["price"]) %>
+    	  <div class="thumbnaildetails">
+    		  <%= number_to_currency(@sp["Continuous"][thumbnails.id]["price"]) %>
+    		</div>
     	<% end %>
-    	<%= " $" unless fr?.empty? %>
-	  </div>
 	</div>
 	<%= link_to image_tag("bestbuy_addtocart#{fr?}.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{thumbnails.sku}", {:'data-sku' => thumbnails.sku, :class => 'addtocart'} %>
 	</div>
