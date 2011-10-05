@@ -38,7 +38,11 @@
 				<% sibling_cont_specs = ContSpec.cache_all(sibling_id) -%>
 				<% link_to TextSpec.cacheone(sibling_id, "productUrl#{fr?}"), :'data-id' => sibling_id, :class => "herosiblings", :title => sibling.is_a?(ProductSibling) ? sibling_cat_specs["color#{fr?}"] : sibling_cat_specs["title#{fr?}"] do %>
 				  <%= image_tag(sibling_cat_specs["imgsurl"], :alt => sibling_cat_specs["color#{fr?}"]) %>
-				  <div class="pricediff"><%= "+"+number_to_currency(sibling_cont_specs["saleprice"]-cont_specs["saleprice"], precision: 0) if sibling_cont_specs["saleprice"] != cont_specs["saleprice"] %></div>
+				  <% if sibling_cont_specs["saleprice"] != cont_specs["saleprice"] %>
+				    <div class="pricediff">
+				      <%= "+"+number_to_currency(sibling_cont_specs["saleprice"]-cont_specs["saleprice"], precision: 0) %>
+				    </div>
+				  <% end %>
 				<% end %>
 			<% end %>
 			</div>
