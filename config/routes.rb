@@ -68,5 +68,6 @@ Site::Application.routes.draw do
   match "groupby/:feat" => "compare#groupby"
   match "zoomout" => "compare#zoomout"
   match "sitemap" => "compare#sitemap"
+  match "bbiframe"  => "bbiframe#bbiframe.html"
   root :to => "compare#index"
 end
