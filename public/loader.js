@@ -1,1 +1,0 @@
-javascripts/loader_packaged.js
