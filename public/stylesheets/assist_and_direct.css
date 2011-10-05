@@ -319,9 +319,28 @@ html {
 	line-height:22px;
 	margin-bottom:5px;
   overflow: visible;
-  background: url("/images/bg_outsidecontainer.gif") repeat-x ;
+  background-color: #fff200;
   height: 40px;
 }
+
+#optemo_embedder .bb_poptitle .bb_quickview_close {
+	float: right;
+	margin: -18px -57px 0 0;
+	cursor: pointer;
+  background: url('data:image/gif;base64,R0lGODlhHgAnAMQAAHh4eNnZ2fr6+oyMjPn5+e7u7sPDw+3t7crKyqOjo5B8aX5yWX5+fpCQkLGxscfHx/39/fz8/Li1rsjIyJ+fn7e3t35lSrOzs8zMzJmZmf///wAAAAAAAAAAAAAAAAAAACH5BAAAAAAALAAAAAAeACcAAAWfICaOZGmSxtUwi+a+cCzDQhEk1qzvL4EovODsIBEaX5HHcYlZHptOITTKm1J11qssq4VxNZnwLpyZfcllGdo8Q6dfbnZ77YrL52Qw/Y53v/l9eVVCdoM8fn+AMYhiO191a4VbOoWSXoGLe5dqgpmNMWefnIkuj12mWqhXqlSsUa5OsExdMxATtDIHFbgwPgO8GjUBFAAnxscYBg4DAAAhADs=') no-repeat bottom right;
+  height: 39px;
+  width: 80px;
+}
+#optemo_embedder .ie6 .bb_poptitle .bb_quickview_close,
+#optemo_embedder .ie7 .bb_poptitle .bb_quickview_close {
+  position: relative;
+  background: url('/images/closepopup.gif') no-repeat bottom right;
+  margin: -13px -58px 0 0;
+}
+#optemo_embedder .ie7 .bb_poptitle .bb_quickview_close {
+  margin-right: -56px;
+}
+
 #optemo_embedder .comp-title {
 	display:block;
 	float:left;
@@ -1284,43 +1303,6 @@ margin-top:0;
 	width: 400px;
 	margin-right:10px;
 	border: 1px dotted black;
-}
-
-#optemo_embedder .bb_poptitle a.bb_quickview_close {
-	text-align: right;
-	padding-top: 0;
-	padding-right: 0;
-	margin: 0;
-  color: black;
-  margin-top: -20px;
-  margin-right: -57px;
-}
-
-#optemo_embedder #IE.ie8 .bb_poptitle a.bb_quickview_close {
-  height: 0;
-  width: 0;
-}
-#optemo_embedder #IE .bb_poptitle a.bb_quickview_close {
-  margin-top: -21px;
-  margin-right: -26px;
-}
-#optemo_embedder #IE.ie7 .bb_poptitle a.bb_quickview_close,#optemo_embedder #IE.ie6 .bb_poptitle a.bb_quickview_close {
-  margin-top: 0;
-  margin-right: 0;
-}
-#optemo_embedder #IE .bb_quickview_close img {
-  position: relative;
-}
-#optemo_embedder #IE.ie7 .bb_quickview_close img,#optemo_embedder #IE.ie6 .bb_quickview_close img {
-  margin-top: -15px;
-  margin-right: -57px;
-  display: block;
-}
-#optemo_embedder a.compare {
-	float: right;
-	border: none;
-	margin:0;
-	display:block;
 }
 
 #optemo_embedder .clear {
