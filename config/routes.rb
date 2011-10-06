@@ -69,5 +69,6 @@ Site::Application.routes.draw do
   match "zoomout" => "compare#zoomout"
   match "sitemap" => "compare#sitemap"
   match "bbiframe"  => "bbiframe#index"
+  match "fr-ca-bbiframe" => "bbiframe#index"
   root :to => "compare#index"
 end
