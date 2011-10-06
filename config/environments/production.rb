@@ -46,10 +46,12 @@ Site::Application.configure do
 
   # Don't fallback to assets pipeline if a precompiled asset is missed
   # Set to true as a workaround to Rails 3.1.0 bug -- rails 3-1-stable has a fix
-  config.assets.compile = true
+  config.assets.compile = false
 
   # Generate digests for assets URLs
   config.assets.digest = true
+  #Add our custom BB files
+  config.assets.precompile += ['bb_loader_packaged.js', 'loader.js', 'bb_embed_packaged.css']
 
   # Defaults to Rails.root.join("public/assets")
   # config.assets.manifest = YOUR_PATH
