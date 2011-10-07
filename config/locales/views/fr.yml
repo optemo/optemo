@@ -27,6 +27,9 @@ fr:
         seeall:             "Visionner tout"
         shopnow:            "Magasinez"
         featuredproducts:   "Produits vedettes"
+        sortby:             "Classé par"
+        page:               "Page"
+        backtotop:          "Retour en haut"
         compare:    
             powered:        "Offert par "
             rembrandfilter: "Retirer le filtre de marque"  
