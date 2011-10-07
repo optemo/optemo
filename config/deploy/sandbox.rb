@@ -25,13 +25,9 @@ role :app, domain
 role :web, domain
 role :db,  domain, :primary => true
 
-############################################################
-#	Passenger
-#############################################################
 load 'deploy/assets'
-load 'recipes'
+load 'config/deploy/recipes'
 
-# redopermissions is last, so that if it fails due to the searchd pid, no other tasks get blocked
 before "deploy:assets:precompile", :serversetup
 after "deploy:symlink", :restartmemcached
 after :restartmemcached, :redopermissions

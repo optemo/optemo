@@ -1,3 +1,6 @@
+############################################################
+#	Passenger
+#############################################################
 namespace :deploy do
   desc "Restart Application"
   task :restart do
@@ -18,4 +21,8 @@ end
 
 task :redopermissions do
   run "find #{current_path} #{current_path}/../../shared -user `whoami` ! -perm /g+w -execdir chmod g+w {} +"
+end
+
+task :warmupserver do
+  run "curl -A 'Java' localhost > /dev/null"
 end
