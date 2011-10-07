@@ -451,7 +451,7 @@ optemo_module = (function (my){
         my.ajaxcall("/compare/create", selections);
         return false;
     }
-
+    
     /* function submitsearch() {
         my.trackPage('goals/search', {'filter_type' : 'search', 'search_text' : $("#myfilter_search").attr('value'), 'previous_search_text' : $("#previous_search_word").attr('value')});
         var arguments_to_send = [];
@@ -944,9 +944,14 @@ optemo_module = (function (my){
             submitAJAX();
         }
 
-        $(".close, .bb_quickview_close, #silkscreen").live('click', function(){
+        $(".bb_quickview_close, #silkscreen").live('click', function(){
             my.removeSilkScreen();
-            return false;
+            if (typeof(my.lastpage) != "undefined" && my.lastpage) {
+              //There was an error in the last request
+              $("#actioncount").html(my.lasthash); //Undo the last action
+              my.ajaxcall("/");
+              my.lastpage = false;
+            }
         });
 
         $(".popup").live('click', function(){
@@ -1125,7 +1130,7 @@ optemo_module = (function (my){
         if ($.browser.msie && $.browser.version.substr(0,1)<7) {// IE6 comparison page close button margin space issue
 
             if (skus.length <= 2){ 
-                $('#optemo_embedder #IE .bb_quickview_close img').css("margin-right",'-68px');
+                $('#optemo_embedder #IE .bb_quickview_close').css("margin-right",'-68px');
             }
         }
 
@@ -1265,16 +1270,21 @@ optemo_module = (function (my){
         var lis = my.loading_indicator_state;
         lis.disable = false;
         clearTimeout(lis.spinner_timer); // clearTimeout can run on "null" without error
+        my.stop_spinner();
         clearTimeout(lis.socket_error_timer); // We need to clear the timeout error here
+        lis.spinner_timer = lis.socket_error_timer = null;
         if (!(typeof(optemo_french) == "undefined") && optemo_french)
-            my.flashError('<div class="bb_poptitle">Erreur<a class="bb_quickview_close" href="close" style="float:right;">Fermer fenêtre</a></div><p class="error">Désolé! Une erreur est survenue sur le serveur.</p><p>Vous pouvez réinitialiser l\'outil et voir si le problème est résolu.</p>');
+            my.flashError('<div class="bb_poptitle"><label class="comp-title">Erreur</label><div class="bb_quickview_close"></div></div><p class="error">Désolé! Une erreur est survenue sur le serveur.</p><p>Vous pouvez réinitialiser l\'outil et voir si le problème est résolu.</p>');
         else
-            my.flashError('<div class="bb_poptitle">Error<a class="bb_quickview_close" href="close" style="float:right;"></a></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can reload the page and see if the problem is resolved.</p>');
+            my.flashError('<div class="bb_poptitle"><label class="comp-title">Error</label><div class="bb_quickview_close"></div></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can reload the page and see if the problem is resolved.</p>');
+        if(typeof(my.lastpage) == "undefined")
+          my.lastpage = true; //Loads the first page after the dialog is closed to try and mitigate the problem. and only do it once
         my.trackPage('goals/error');
     }
 
     my.ajaxcall = function(myurl,mydata) {
         my.disableInterfaceElements();
+        my.lasthash = window.location.hash.replace(/^#/, ''); //Save the last request hash in case there is an error
         $.history.load($("#actioncount").html(),myurl,mydata);
     };
     
