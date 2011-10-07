@@ -26,6 +26,9 @@ en:
         seeall:                 "See All"
         shopnow:                "Shop Now"
         featuredproducts:       "Featured Products"
+        sortby:                 "Sort By"
+        page:                   "Page"
+        backtotop:              "Back to Top"
         compare:
             powered:        "Powered by "
             rembrandfilter: "Remove brand filter"

@@ -29,50 +29,9 @@ role :db,  domain, :primary => true
 #	Passenger
 #############################################################
 load 'deploy/assets'
-namespace :deploy do
-desc "Sync the public/assets directory."
-  task :assets do
-    system "rsync -vr --exclude='.DS_Store' public/system #{user}@#{domain}:#{shared_path}"
-  end
-  desc "Restart Application"
-  task :restart do
-    run "touch #{current_path}/tmp/restart.txt"
-  end
-end
-
-namespace :cache do
-  desc 'Clear memcache'
-  task :clear do
-    
-  end
-end
-
-desc "Reindex search index"
-task :reindex do
-  run "rake -f #{current_path}/Rakefile ts:conf RAILS_ENV=production"
-  sudo "rake -f #{current_path}/Rakefile ts:rebuild RAILS_ENV=production"
-end
-
-desc "Configure the server files"
-task :serversetup do
-  # Instantiate the database.yml file
-  run "cd #{current_path}/config              && cp -f database.yml.deploy database.yml"
-  #run "cd #{current_path}/config/ultrasphinx   && cp -f development.conf.deploy development.conf && cp -f production.conf.deploy production.conf"
-end
-
-task :restartmemcached do # Found this idea. Maybe consider it for when memcached crashes? :only => {:memcached => true}
-  run "rake -f #{current_path}/Rakefile cache:clear RAILS_ENV=production"
-end
-
-task :fetchAutocomplete do
-  run "RAILS_ENV=production rake -f #{current_path}/Rakefile autocomplete:fetch"
-end
-
-task :redopermissions do
-  run "find #{current_path} #{current_path}/../../shared -user `whoami` ! -perm /g+w -execdir chmod g+w {} +"
-end
+load 'recipes'
 
 # redopermissions is last, so that if it fails due to the searchd pid, no other tasks get blocked
-after "deploy:symlink", "serversetup"
-after :serversetup, "restartmemcached"
-after :restartmemcached, "redopermissions"
+before "deploy:assets:precompile", :serversetup
+after "deploy:symlink", :restartmemcached
+after :restartmemcached, :redopermissions
