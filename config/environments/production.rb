@@ -37,6 +37,25 @@ Site::Application.configure do
   # In production, Apache or nginx will already do this
   config.serve_static_assets = true # false by default; true for asset_packager
 
+  # Compress JavaScripts and CSS
+  config.assets.compress = true
+
+  # Choose the compressors to use
+  config.assets.js_compressor = :uglifier
+  config.assets.css_compressor = :yui
+
+  # Don't fallback to assets pipeline if a precompiled asset is missed
+  # Set to true as a workaround to Rails 3.1.0 bug -- rails 3-1-stable has a fix
+  config.assets.compile = false
+
+  # Generate digests for assets URLs
+  config.assets.digest = true
+  #Add our custom BB files
+  config.assets.precompile += ['bb_loader_packaged.js', 'loader.js', 'bb_embed_packaged.css']
+
+  # Defaults to Rails.root.join("public/assets")
+  # config.assets.manifest = YOUR_PATH
+
   # Enable serving of images, stylesheets, and javascripts from an asset server
   #config.action_controller.asset_host = "http://ast0.optemo.com"
   #config.action_controller.asset_host = "http://localhost:3000"

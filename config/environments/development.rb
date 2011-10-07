@@ -14,7 +14,7 @@ Site::Application.configure do
 
   # Show full error reports and disable caching
   config.consider_all_requests_local       = true
-  config.action_view.debug_rjs             = true
+  #config.action_view.debug_rjs             = true
   config.action_controller.perform_caching = false
   
   # In production, Apache or nginx will already do this
@@ -50,5 +50,11 @@ Site::Application.configure do
   #Add jsonp wrapping support
   require 'j_s_padding'
   config.middleware.use JSPadding
-  
+
+  # Do not compress assets
+  config.assets.compress = false
+
+  # Expands the lines which load the assets
+  config.assets.debug = true
+
 end

@@ -13,7 +13,7 @@
 			<% unless @s.search.keyword_search.blank? %>
 			<div id="previous_search_container" class='selected_options'>
 				<a title="Remove search filter" id="removeSearch" href="">
-					<img width="13" src="/images/close.png" alt="Close">
+					<%= image_tag("close.png", :width => "13", :alt => "Close"})%>
 				</a>
 				Search term: '<%= @s.search.keyword_search %>'
 			</div>

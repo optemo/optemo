@@ -28,7 +28,7 @@ role :db,  domain, :primary => true
 ############################################################
 #	Passenger
 #############################################################
-
+load 'deploy/assets'
 namespace :deploy do
 desc "Sync the public/assets directory."
   task :assets do
@@ -38,13 +38,6 @@ desc "Sync the public/assets directory."
   task :restart do
     run "touch #{current_path}/tmp/restart.txt"
   end
-end
-
-desc "Create asset packages for production" 
-task :build_assets, :roles => [:web] do
-  run <<-EOF
-    cd #{release_path} && rake asset:packager:build_all
-  EOF
 end
 
 desc "Reindex search index"
@@ -85,8 +78,7 @@ task :warmupserver do
 end
 
 # redopermissions is last, so that if it fails due to the searchd pid, no other tasks get blocked
-after "deploy:symlink", "build_assets"
-after :build_assets, "serversetup"
+after "deploy:symlink", "serversetup"
 after :serversetup, "restartmemcached"
 after :restartmemcached, "redopermissions"
 after "deploy:restart", "warmupserver"

@@ -17,11 +17,8 @@
 <% if s.mobileView %>
 <link rel="apple-touch-icon" href="/images/O.png" />
 <% end %>
+
 <% if @indexload %>
-<% if s.mobileView %>
-    <%= raw stylesheet_link_merged(:mobileview) %>
-<% else %>
-    <%= raw stylesheet_link_merged(s.directLayout ? :direct : :assist) %>
-<% end %>
+  <%= stylesheet_link_tag :bb_embed_packaged %>
 <% end %>
 </head>

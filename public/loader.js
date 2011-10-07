@@ -1,1 +1,1 @@
-javascripts/loader_packaged.js
+assets/loader.js
