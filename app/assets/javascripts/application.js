@@ -1,3 +1,9 @@
+//= require raphael
+//= require helpers_shared
+//= require jquery-ui-1.8.13.custom.min
+//= require jquery.history
+//= require_self
+//= require bbfixes
 
 /*global defineClass: false, deserialize: false, gc: false, help: false, load: false, loadClass: false, print: false, quit: false, readFile: false, readUrl: false, runCommand: false, seal: false, serialize: false, spawn: false, sync: false, toint32: false, version: false */
 /* Application-specific Javascript.
