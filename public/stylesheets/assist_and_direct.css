@@ -342,7 +342,7 @@ html {
 	font-weight: bold;
 	font-size: 1em;
 	margin-top: 1px;
-	margin-bottom: 2px;
+	margin-bottom: 6px;
 }
 
 #optemo_embedder .saleprice {
@@ -360,6 +360,7 @@ html {
 #optemo_embedder .saleends {
 	/*color: #F5000B;*/
 	font-size: 0.8em;
+	margin-bottom: 4px;
 }
 #optemo_embedder .stars {
 	padding-top: 3px;
@@ -403,6 +404,10 @@ html {
 #optemo_embedder .bundleslabel {
   padding-left: 5px;
   padding-bottom: 5px;
+}
+
+#optemo_embedder .colorslabel {
+  margin-bottom: 2px;
 }
 
 #optemo_embedder .sibling img {

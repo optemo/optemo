@@ -40,7 +40,7 @@
 	position: relative;
 	margin-right: 3px; 
 	margin-bottom: 12px;
-	height:434px; /* Please adjust the _navbox no_variations height as well */
+	height: 455px; /* Please adjust the _navbox no_variations height as well */
  	width: 181px; /*+2 for the border*/
 	background: right center url(../images/seperatorbar.png) no-repeat;*/
   overflow: hidden;
@@ -74,7 +74,7 @@
 }
 #optemo_embedder .navboxcolours {
   font-size:0.8em;
-  padding-bottom:3px;
+  padding-bottom:5px;
 }
 #optemo_embedder .navboxcompare {
 	font-size: 0.8em;
@@ -122,7 +122,7 @@
 }
 */
 #optemo_embedder .topbar {
-  height: 402px; /* Please adjust the _navbox no_variations height as well */
+  height: 423px; /* Please adjust the _navbox no_variations height as well */
   text-align:center;
   position: relative;
   overflow: hidden;

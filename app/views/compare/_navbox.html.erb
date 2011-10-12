@@ -1,7 +1,7 @@
 <%# Cache specs here at the top of navbox partial to save on SQL calls and instantiations. Don't bother with Bin or Text specs since they are only used once each (though this might change in future, be careful) %>
 <% cont_specs = ContSpec.cache_all(product.id); cat_specs = CatSpec.cache_all(product.id); %>
-<div id="box<%= product.id %>" class="navbox" style="<%= "margin-right:0px;background:none;" if last_in_row %><%= "height:365px;" if no_variations %>">
-	<div class="topbar"<%= "style='height:333px;'" if no_variations %>>
+<div id="box<%= product.id %>" class="navbox" style="<%= "margin-right:0px;background:none;" if last_in_row %><%= "height:386px;" if no_variations %>">
+	<div class="topbar"<%= "style='height:354px;'" if no_variations %>>
 
 	  <div class="navboxcompare">
     <% if landing %>
@@ -15,27 +15,12 @@
 	  </a>
 	  <% end %>
     </div>
-		
+
 		<%= image_tag(cat_specs["img150url"], :class => "productimg", :alt => cat_specs["title#{fr?}"], :title => t('products.compare.clickforspecs'), :'data-id' => product.id, :'data-sku' => product.sku) %>
 
 		<% siblings = product.product_siblings -%>
 		<div class="productinfo">
-		  <!-- Colour swatches -->
-			<% unless siblings.empty? %>
-			<div class="navboxcolours">
-			  <% siblings.each do |sibling| -%>
-			    <% sibling_id = sibling.sibling_id -%>
-  				<% sibling_cat_specs = CatSpec.cache_all(sibling_id) -%>
-  				<% color = sibling_cat_specs["color"] %>
-  				<% link_to TextSpec.cacheone(sibling_id, "productUrl#{fr?}"), :'data-id' => sibling_id, :class => "sibling", :title => sibling.is_a?(ProductSibling) ? sibling_cat_specs["color#{fr?}"] : sibling_cat_specs["title#{fr?}"] do %>
-  				  <div class="swatch<%= " white_swatch" if color == "White" %>" style="background-color:<%= color %>; float:left"></div>
-  				<% end %>
-			  <% end %>
-			  &nbsp;
-			  </div>
-			  <% end %>
-			
-  		<%= link_to (cat_specs["title#{fr?}"] || cat_specs["title"]), (TextSpec.cacheone(product.id, "productUrl#{fr?}") || TextSpec.cacheone(product.id, "productUrl")), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
+      <%= link_to (cat_specs["title#{fr?}"] || cat_specs["title"]), (TextSpec.cacheone(product.id, "productUrl#{fr?}") || TextSpec.cacheone(product.id, "productUrl")), :'data-id' => product.id, :'data-sku' => product.sku, :class => "easylink", :title => t('products.compare.clickforspecs') %>
 			<div class="productspecs"><!--&--></div>
 			
 			<% if BinSpec.cache_all(product.id)["onsale"] %>
@@ -48,6 +33,23 @@
 					<%= t('products.show.ourprice') + ":"%> <%= "$" if fr?.empty? %><%= number_with_delimiter(cont_specs["price"]) %> <%= " $" unless fr?.empty? %>
 				</div>	
 			<% end %>
+			
+			<!-- Colour swatches -->
+      <% unless siblings.empty? %>
+        <div class="navboxcolours">
+          <div class="colorslabel"> <%= t('products.show.othercolors') %>: </div>
+          <% siblings.each do |sibling| -%>
+            <% sibling_id = sibling.sibling_id -%>
+            <% sibling_cat_specs = CatSpec.cache_all(sibling_id) -%>
+            <% color = sibling_cat_specs["color"] %>
+            <% link_to TextSpec.cacheone(sibling_id, "productUrl#{fr?}"), :'data-id' => sibling_id, :class => "sibling", :title => sibling.is_a?(ProductSibling) ? sibling_cat_specs["color#{fr?}"] : sibling_cat_specs["title#{fr?}"] do %>
+              <div class="swatch<%= " white_swatch" if color == "White" %>" style="background-color:<%= color %>; float:left"></div>
+            <% end %>
+          <% end %>
+          &nbsp;
+        </div>
+      <% end %>
+			
 			<% if cont_specs["customerRating"] > 0 %>
 				<div class="stars" data-stars="<%= cont_specs["customerRating"] %>"></div>
 			<% end %>
