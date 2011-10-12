@@ -37,7 +37,7 @@
 			<!-- Colour swatches -->
       <% unless siblings.empty? %>
         <div class="navboxcolours">
-          <div class="colorslabel"> <%= t('products.show.othercolors') %>: </div>
+          <div class="colorslabel"> <%= t('products.show.othercolors') %></div>
           <% siblings.each do |sibling| -%>
             <% sibling_id = sibling.sibling_id -%>
             <% sibling_cat_specs = CatSpec.cache_all(sibling_id) -%>
