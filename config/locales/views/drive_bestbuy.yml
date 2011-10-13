@@ -47,6 +47,8 @@ en:
                 name:               "Optical Drives"
             '29583':
                 name:               "Storage Accessories"
+            '20028':
+                name:               "Blank Media"
             '29582':
                 name:               "Network-Attached Storage (NAS)"    
             cdReadSpeed:

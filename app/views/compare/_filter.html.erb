@@ -20,9 +20,10 @@
     <% if f.name == "color" # TODO: should not be hard code here%>
       <div style="margin-right: -4px;margin-top: 4px;">
         <% color_counts = CatSpec.count_feat("color") %>
-        <% %w(Red Orange Yellow Green Blue Purple Pink White Silver Brown Black).each do |color| %>
+        <% %w(Red Orange Yellow Green Blue Purple Pink White Silver Brown Black).zip(
+           %w(l   l       l       d   d     d     l     l     l     d     d    )).each do |color,brightness| %>
           <% next if color_counts[color].nil? && !chosen_cats.include?(color) %>
-          <div class="swatch_button swatch<%= " white_swatch" if color == "White" %><%= " selected_swatch" if chosen_cats.include?(color) %>" style="background-color: <%= color %>"></div>
+          <div class="swatch_button swatch<%= " white_swatch" if color == "White" %><%= " selected_swatch" if chosen_cats.include?(color) %><%= brightness == "l" ? " light" : " dark" %>" style="background-color: <%= color %>"></div>
         <% end %>
         <div style="clear: left;">
           <%= hidden_field_tag "categorical[color]", chosen_cats.join("*") %>
@@ -31,7 +32,7 @@
     <% else %>
       <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
       <% optionlist = CatSpec.count_feat(f.name,true).to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? -a[1]-1000000 : -a[1]) <=> (chosen_cats.include?(b[0]) ? -b[1]-1000000 : -b[1])} %>
-      <div class="categorical">
+      <div class="categorical<%= " brand" if f.name == "brand" %>">
         <% optionlist.each do |k,available_count| %>
           <% checked = chosen_cats.include?(k) %>
           <div class="list_item hanging_indent <%=raw ' disabled' if available_count == 0 %>" <%=raw "style='font-weight:bold;'" if checked %> >

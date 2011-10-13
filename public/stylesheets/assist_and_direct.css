@@ -504,20 +504,17 @@ div#division {
   padding-bottom: 7px;
 }
 #optemo_embedder .categorical {
-	overflow: auto;
-	max-height: 150px;
   padding-top: 7px;
   padding-bottom: 17px;
 }
-#optemo_embedder .categorical_advanced {
-	overflow: auto;
-  padding-bottom: 8px;
-  padding-top: 8px;
+#optemo_embedder .brand {
+  overflow: auto;
+	max-height: 150px;
 }
 #optemo_embedder .categorical .feature, #optemo_embedder .list_item {
   padding-bottom: 1px;
 }
-#optemo_embedder #IE .categorical {
+#optemo_embedder #IE .brand {
   height: expression( this.scrollHeight > 150 ? "150px" : "auto" ); /* sets max-height for IE */
 }
 
@@ -1848,38 +1845,30 @@ margin-top:0;
 	width: 13px;
 	height: 13px;
 	background-color: red;
-	-moz-border-radius: 4px; 
+	/*-moz-border-radius: 4px; 
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
 	-moz-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
 	-webkit-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
 	box-shadow: 0 1px 3px rgba(50,50,50,0.5);
-	/*border: 1px solid #ccc;*/
+	border: 1px solid #ccc;*/
 	float: left;
 	margin: 0 2px 2px 0;
 	cursor: pointer;
 }
-/*.swatch:hover {
-	-moz-box-shadow: 0 1px 3px rgba(50,50,50,0.5), inset 0px 0px 10px white;
-	-webkit-box-shadow: 0 1px 3px rgba(50,50,50,0.5), inset 0px 0px 10px white;
-}*/
-#optemo_embedder .selected_swatch {
-	border: 1px solid black;
-	width: 13px;
-	height: 13px;
-	margin: -1px 1px 1px -1px;
-	-moz-border-radius: 0px; 
-	-webkit-border-radius: 0px;
-	border-radius: 0px;
+
+#optemo_embedder .white_swatch {
+  width: 11px;
+  height: 11px;
+  border: 1px solid #ccc;
 }
 
-#optemo_embedder .ie7 .white_swatch,
-    #optemo_embedder .ie8 .white_swatch,
-    #optemo_embedder .ie9 .white_swatch {
-	    width: 11px;
-	    height: 11px;
-	    border: 1px solid #ccc;
-    }
+#optemo_embedder .dark.selected_swatch {
+	background-image: url(data:image/gif;base64,R0lGODlhDQANAIABAP///////yH5BAEAAAEALAAAAAANAA0AAAIVjI+py43gAphtwnds0lpZynRVRDoFADs=);
+}
+#optemo_embedder .light.selected_swatch {
+	background-image: url(data:image/gif;base64,R0lGODlhDQANAIABAAAAAP///yH5BAEAAAEALAAAAAANAA0AAAIVjI+py43gAphtwnds0lpZynRVRDoFADs=);
+}
 
 #optemo_embedder .disabled {
 	color: #aaa;
@@ -1905,11 +1894,6 @@ margin-top:0;
   margin-bottom: -12px;
 }
 #optemo_embedder #IE .y_bottom {
-
-/*   *position: absolute;
-   
-    *bottom: 7px;
-    *height: 25px;*/
   background: url('/images/ie_y_bottom_bg.gif') repeat-x ;
   height: 25px;
 }

@@ -47,11 +47,11 @@ fr:
                 name:               "Lecteur optique"
             '29583':
                 name:               "Accessoires pour stockage"
+            '20028':
+                name:               "Supports d'enregistrement"
             dataBuffer:
                 name:               "Mémoire tampon"
                 unit:               "Mo"
-            '29582':
-                name:               "Serveur de stockage en réseau (NAS)"  
             driveSize:
                 name:               "Dimension du disque dur"
             drive_size_25:
