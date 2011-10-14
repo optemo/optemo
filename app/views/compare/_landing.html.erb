@@ -25,7 +25,24 @@
 		<% if cont_specs["customerRating"] > 0 %>
 			<div class="stars" data-stars="<%= cont_specs["customerRating"] %>"></div>
 		<% end %>
+		
+		<!-- Colour swatches -->
+    <% unless (siblings = hero.product_siblings).empty? %>
+      <div class="herosiblings">
+        <div class="colorslabel"> <%= t('products.show.othercolors') %></div>
+        <% siblings.each do |sibling| -%>
+          <% sibling_id = sibling.sibling_id -%>
+          <% sibling_cat_specs = CatSpec.cache_all(sibling_id) -%>
+          <% color = sibling_cat_specs["color"] %>
+          <% link_to TextSpec.cacheone(sibling_id, "productUrl#{fr?}"), :'data-id' => sibling_id, :class => "sibling", :title => sibling.is_a?(ProductSibling) ? sibling_cat_specs["color#{fr?}"] : sibling_cat_specs["title#{fr?}"] do %>
+            <div class="swatch<%= " white_swatch" if color == "White" %>" style="background-color:<%= color %>; float:left"></div>
+          <% end %>
+        <% end %>
+        &nbsp;
+      </div>
+    <% end %>
 		<!-- Display sibling products of hero -->
+		<!-- Bundles are not shown for now
 		<% siblings = hero.product_siblings -%>
 		<% bundles = hero.product_bundles -%>
 		<% unless siblings.empty? && bundles.empty? %>
@@ -46,9 +63,9 @@
 				<% end %>
 			<% end %>
 			</div>
-			<div style="clear:left"><!-- --></div>
+			<div style="clear:left"><!-- --><!--</div>
 		</div>
-		<% end %>
+		<% end %>-->
 		    <div style='margin-top: 25px; margin-bottom: 25px'><%= link_to image_tag("shopnow#{fr?}.gif"), text_spec, {:'data-sku' =>hero.sku, :class => 'spacer easylink'} %></div>
 	</div>
     <div style='clear:both; width:0;height: 0;'></div>   

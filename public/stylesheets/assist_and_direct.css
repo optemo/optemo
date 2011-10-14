@@ -408,6 +408,7 @@ html {
 
 #optemo_embedder .colorslabel {
   margin-bottom: 2px;
+  text-align: left;
 }
 
 #optemo_embedder .sibling img {
