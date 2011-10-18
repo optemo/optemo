@@ -27,9 +27,7 @@ function opt_insert(d) {
         se.id = "opt_new";
         se.innerHTML = d;
         opt_t.appendChild(se);
-        if (typeof optemo_module != "undefined") {
-            optemo_module.domready();
-        }
+        optemo_module.SliderInit();
     } else
         setTimeout(function(){opt_insert(d);d=null;},10);
 }

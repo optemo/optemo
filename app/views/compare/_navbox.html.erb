@@ -30,7 +30,7 @@
 				</div>	
 			<% end %>
 			<% if cont_specs["customerRating"] > 0 %>
-				<div class="stars" data-stars="<%= cont_specs["customerRating"] %>"></div>
+				<div class="stars"><%=raw stars(cont_specs["customerRating"]) %></div>
 			<% end %>
 		</div>
 	     

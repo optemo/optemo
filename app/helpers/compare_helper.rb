@@ -200,5 +200,22 @@ module CompareHelper
        (current_sorting_option == f.name) ? text : link_to(text, "#", {:'data-feat'=>f.name, :class=>"sortby"})
     end}.join(content_tag(:span, "  |  ", :class => "seperater"))
   end
-
+  
+  def stars(numstars)
+    fullstars = numstars.to_i
+    halfstar = (fullstars == numstars) ? 0 : 1
+    emptystars = 5 - fullstars - halfstar
+    ret = ""
+    fullstars.times do
+      ret += '<img src="http://bestbuy.ca/images/common/pictures/yellowStar.gif" /> '
+    end
+    halfstar.times do
+      ret += '<img src="http://bestbuy.ca/images/common/pictures/yellowhalfstar.gif" /> '
+    end
+    emptystars.times do
+      ret += '<img src="http://bestbuy.ca/images/common/pictures/emptystar.gif" /> '
+    end
+    return ret
+  end
+  
 end

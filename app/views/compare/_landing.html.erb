@@ -24,7 +24,7 @@
 			</div>	
 		<% end %>
 		<% if cont_specs["customerRating"] > 0 %>
-			<div class="stars" data-stars="<%= cont_specs["customerRating"] %>"></div>
+			<div class="stars"><%=raw stars(cont_specs["customerRating"]) %></div>
 		<% end %>
 		    <div style='margin-top: 50px'><%= link_to image_tag("shopnow#{fr?}.gif"), text_spec, {:'data-sku' =>hero.sku, :class => 'spacer easylink'} %></div>
 	</div>

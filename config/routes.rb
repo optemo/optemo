@@ -66,7 +66,6 @@ Site::Application.routes.draw do
   match "extended" => "compare#extended"
   match "filtering" => "compare#filtering"
   match "groupby/:feat" => "compare#groupby"
-  match "zoomout" => "compare#zoomout"
   match "sitemap" => "compare#sitemap"
   match "bbiframe"  => "bbiframe#index"
   match "fr-ca-bbiframe" => "bbiframe#index"
