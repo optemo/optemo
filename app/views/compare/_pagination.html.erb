@@ -9,12 +9,14 @@
       <div class='sub-title'>
         <span class='nav-available-text'><%= raw navtitle %></span>
         <div class='outof'>
-          <%= t("#{Session.product_type}.outof", :count => ContSpec.all.length) if Session.search.products_size < ContSpec.all.length %>
+          <% total = Equivalence.all_count -%>
+          <%= t("#{Session.product_type}.outof", :count => total) if Session.search.products_size < total %>
         </div>
       </div>
     <% end %>
   </div>
   <%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>"nav_compare_btn#{'_bottom' if defined? bottom}"})  %>
+  <%= link_to t('products.compare.clear'), "#", :class => "nav_clear_btn", :rel => "nofollow", :title => t('products.compare.cleardesc') %>
 </div>
 
 <% if Session.search.products_size > SearchProduct.per_page %><!-- top pagination bar -->
@@ -23,4 +25,6 @@
     <b><%=t 'products.page' %>:</b><%= will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :outer_window => -2})%>
     <%= link_to t("products.backtotop"), "#", id: "back-to-top-bottom" if defined? bottom %>
   </div>
+  
+  
 <% end %>

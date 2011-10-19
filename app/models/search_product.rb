@@ -1,17 +1,6 @@
 class SearchProduct < ActiveRecord::Base
   self.per_page = 18 #for will_paginate
   class << self
-    def queryPresent?
-      s = Session.search
-      return !(s.userdatacats.empty? && s.userdataconts.empty? && s.userdatabins.empty? && s.keyword_search.blank?)
-    end
-    
-    def filterquery
-      mycats = Session.search.userdatacats.group_by{|x|x.name}.values
-      mybins = Session.search.userdatabins
-      search_id_q.create_join(mycats,mybins).conts.cats(mycats).bins(mybins)
-    end
-      
     def fq_paginated_products
       mycats = Session.search.userdatacats.group_by{|x|x.name}.values
       mybins = Session.search.userdatabins
@@ -44,16 +33,12 @@ class SearchProduct < ActiveRecord::Base
       cached.map{|c|ProductAndSpec.from_storage(c)}
     end
     
-    def cat_counts(feat,expanded,includezeros = false,s = Session.search)
+    def cat_counts(feat,includezeros = false,s = Session.search)
       allcats = s.userdatacats.group_by{|x|x.name}
       mycats = allcats.reject{|id|feat == id}.values
       mybins = s.userdatabins
       table_id = mycats.size
-      if expanded
-        q = where(:search_id => Session.product_type_id).create_join(mycats+[[feat]],mybins,s.userdataconts).conts(s).bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
-      else
-        q = search_id_q.create_join(mycats+[[feat]],mybins,s.userdataconts).conts(s).bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
-      end
+      q = where(:search_id => Session.product_type_id).create_join(mycats+[[feat]],mybins,s.userdataconts).conts(s).bins(mybins).cats(mycats).where(["cat_specs#{table_id}.name = ?", feat]).group("cat_specs#{table_id}.value").order("count(*) DESC")
       CachingMemcached.cache_lookup("CatsCount(#{includezeros.to_s})-#{q.to_sql.hash}") do
         if includezeros
           q.count.merge(Hash[CatSpec.alloptions(feat).map {|x| [x, 0]}]){|k,oldv,newv|oldv}

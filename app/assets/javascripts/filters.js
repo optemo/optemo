@@ -22,7 +22,7 @@ optemo_module = (function (my){
   });
   
   // Add a color selection -- submit
-  $('.swatch').live('click', function(){
+  $('.swatch_button').live('click', function(){
       if (my.loading_indicator_state.disable) return false;
       var t = $(this);
       if (t.hasClass("selected_swatch"))

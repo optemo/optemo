@@ -7,8 +7,8 @@ fr:
         defaultdesc:                "With an external hard drive, flash drive or disc drive you can backup your files and take them virtually anywhere. Shop for reliable, high-quality hard drives at BestBuy.ca and find the perfect way to keep your files safe."
         keywords:                   "external hard drive, flash drive, portable hard drive, hard drives"
         classification:             "Lecteurs et stockage"
-        navtitle:                  "Lecteur"
-        navtitle2:                   " disponibles"
+        navtitle:                   "Lecteurs"
+        navtitle2:                  "disponibles"
         outof:                      "Parmi %{count} lecteurs"
         compare:                   "Comparer"
 
@@ -47,11 +47,11 @@ fr:
                 name:               "Lecteur optique"
             '29583':
                 name:               "Accessoires pour stockage"
+            '20028':
+                name:               "Supports d'enregistrement"
             dataBuffer:
                 name:               "Mémoire tampon"
                 unit:               "Mo"
-            '29582':
-                name:               "Serveur de stockage en réseau (NAS)"  
             driveSize:
                 name:               "Dimension du disque dur"
             drive_size_25:

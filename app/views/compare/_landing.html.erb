@@ -1,6 +1,5 @@
 <div <%= 'class="listview_ungrouped"' if @s.search.groupby.nil? && @s.directLayout %> >
-	<%mb={}%>
-	<% mb['featured'] = landing_main_boxes('featured') #Calculate mb before navtitle %>
+	<% mb = {"featured" => main_boxes(true)} #Calculate mb before navtitle -%>
 	<div id='navigator_bar_top'>
 	    <div id='navtitle'><%= Session.search.products_size.to_s + ' ' + raw(navtitle) %></div><%= link_to image_tag("see_all_white#{fr?}.gif"),root_path, :class=>"seeall" %></div>
 <div id="hero">
@@ -26,7 +25,48 @@
 		<% if cont_specs["customerRating"] > 0 %>
 			<div class="stars"><%=raw stars(cont_specs["customerRating"]) %></div>
 		<% end %>
-		    <div style='margin-top: 50px'><%= link_to image_tag("shopnow#{fr?}.gif"), text_spec, {:'data-sku' =>hero.sku, :class => 'spacer easylink'} %></div>
+		
+		<!-- Colour swatches -->
+    <% unless (siblings = hero.product_siblings).empty? %>
+      <div class="herosiblings">
+        <div class="colorslabel"> <%= t('products.show.othercolors') %></div>
+        <% siblings.each do |sibling| -%>
+          <% sibling_id = sibling.sibling_id -%>
+          <% sibling_cat_specs = CatSpec.cache_all(sibling_id) -%>
+          <% color = sibling_cat_specs["color"] %>
+          <% link_to TextSpec.cacheone(sibling_id, "productUrl#{fr?}"), :'data-id' => sibling_id, :class => "sibling", :title => sibling.is_a?(ProductSibling) ? sibling_cat_specs["color#{fr?}"] : sibling_cat_specs["title#{fr?}"] do %>
+            <div class="swatch<%= " white_swatch" if color == "White" %>" style="background-color:<%= color %>; float:left"></div>
+          <% end %>
+        <% end %>
+        &nbsp;
+      </div>
+    <% end %>
+		<!-- Display sibling products of hero -->
+		<!-- Bundles are not shown for now
+		<% siblings = hero.product_siblings -%>
+		<% bundles = hero.product_bundles -%>
+		<% unless siblings.empty? && bundles.empty? %>
+		<div class="herosiblings">
+			<div class="herosiblingslabel"><%=raw siblingslabel(siblings,bundles) %>:</div>
+			<div class="siblingdiv">
+			<% (siblings+bundles).each do |sibling| -%> 
+			  <% sibling_id = sibling.is_a?(ProductSibling) ? sibling.sibling_id : sibling.bundle_id -%>
+				<% sibling_cat_specs = CatSpec.cache_all(sibling_id) -%>
+				<% sibling_cont_specs = ContSpec.cache_all(sibling_id) -%>
+				<% link_to TextSpec.cacheone(sibling_id, "productUrl#{fr?}"), :'data-id' => sibling_id, :class => "herosiblings", :title => sibling.is_a?(ProductSibling) ? sibling_cat_specs["color#{fr?}"] : sibling_cat_specs["title#{fr?}"] do %>
+				  <%= image_tag(sibling_cat_specs["imgsurl"], :alt => sibling_cat_specs["color#{fr?}"]) %>
+				  <% if sibling_cont_specs["saleprice"] != cont_specs["saleprice"] %>
+				    <div class="pricediff">
+				      <%= "+"+number_to_currency(sibling_cont_specs["saleprice"]-cont_specs["saleprice"], precision: 0) %>
+				    </div>
+				  <% end %>
+				<% end %>
+			<% end %>
+			</div>
+			<div style="clear:left"><!-- --><!--</div>
+		</div>
+		<% end %>-->
+		    <div style='margin-top: 25px; margin-bottom: 25px'><%= link_to image_tag("shopnow#{fr?}.gif"), text_spec, {:'data-sku' =>hero.sku, :class => 'spacer easylink'} %></div>
 	</div>
     <div style='clear:both; width:0;height: 0;'></div>   
 </div>

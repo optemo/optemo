@@ -33,7 +33,14 @@ optemo_module = (function (my){
         $('body,html').animate({scrollTop: 0}, 800);
         return false;
     });
-
+    
+    /* Bundles are disabled for now
+    //Bundle link
+    $('.bundlediv').live('click', function() {
+        window.location = $(this).attr("data-url");
+    });
+    */
+    
     // Showcase Products - the product banner on the landing page is paid advertising
     $('.showcase_banner').live('click', function () {
         var whichBrand = $(this).attr('data-brand');

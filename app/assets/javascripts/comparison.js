@@ -72,6 +72,9 @@ optemo_module = (function (my){
               $(this).addClass('global_btn');
               $(this).text($(this).text().replace(/\d+/, selected));
           });
+          // Show the clear option if it's not visible
+          $('.nav_clear_btn:hidden').show();
+          
       } else {
           $('.nav-compare-btn').each ( function(index) {
               $(this).removeClass('awesome_reset');
@@ -80,6 +83,8 @@ optemo_module = (function (my){
               $(this).addClass('global_btn_grey');
               $(this).text($(this).text().replace(/\d+/, 0));
           });
+          // Hide the clear option if it is visible
+          $('.nav_clear_btn:visible').hide();
       }
   };
   
@@ -313,6 +318,19 @@ optemo_module = (function (my){
 
       return false;
   });
+  
+  //Clear all comparison options
+  $('#optemo_embedder .nav_clear_btn').live("click", function() {
+      //Uncheck currently checked navboxes
+      $('.optemo_compare_checkbox:checked').each(function () {
+        $(this).attr('checked', '');
+      });
+      //Remove saved cookie values
+      my.eraseCookie(my.cmpcookie);
+      my.changeNavigatorCompareBtn(0);
+      return false;
+  });
+  
   
   //Show/Hide API specs
   $('.toggle_specs').live('click', function () {

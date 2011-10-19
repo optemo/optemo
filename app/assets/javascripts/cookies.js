@@ -44,12 +44,15 @@ optemo_module = (function (my){
       if (savedData) {
           savedData = opt_removeStringWithToken(savedData, value, '*');
           if (savedData == "") { // No values left to store
-              eraseCookie(name);
+              my.eraseCookie(name);
           } else {
               createCookie(name, savedData, numDays);
           }
       }
       // else do nothing
+  }
+  my.eraseCookie = function(name) {
+      createCookie(name,"",-1);
   }
   
   //****Private Functions****
@@ -94,8 +97,5 @@ optemo_module = (function (my){
       return null;
   }
 
-  function eraseCookie(name) {
-      createCookie(name,"",-1);
-  }
   return my;
 })(optemo_module || {});
