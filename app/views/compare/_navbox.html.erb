@@ -55,7 +55,8 @@
 			<% end %>
 		</div>
 		<!-- For each bundle of this product, show price and images for products it's bundled with -->
-		<% bundles = product.product_bundles -%>
+		<!-- Bundles are not shown right now>
+		<% bundles = []#product.product_bundles -%>
 		<% unless no_variations || (bundles.empty?) %>
 		<div class="bundlesbox">
 		  <div class="bundleslabel"> <%= t('products.show.bundledwith') %>: </div>
@@ -75,9 +76,10 @@
 				    <% end %>
 				  </div>
 			<% end %>
-			<div style="clear:left"><!-- --></div>
+			<div style="clear:left"><!-- -/-></div>
 		</div>
 		<% end %>
+		End of bundles-->
 	     
 	</div>
 	<div style="text-align:left; padding-left:20px">
