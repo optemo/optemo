@@ -1,17 +1,6 @@
 class SearchProduct < ActiveRecord::Base
   self.per_page = 18 #for will_paginate
   class << self
-    def queryPresent?
-      s = Session.search
-      return !(s.userdatacats.empty? && s.userdataconts.empty? && s.userdatabins.empty? && s.keyword_search.blank?)
-    end
-    
-    def filterquery
-      mycats = Session.search.userdatacats.group_by{|x|x.name}.values
-      mybins = Session.search.userdatabins
-      search_id_q.create_join(mycats,mybins).conts.cats(mycats).bins(mybins)
-    end
-      
     def fq_paginated_products
       mycats = Session.search.userdatacats.group_by{|x|x.name}.values
       mybins = Session.search.userdatabins

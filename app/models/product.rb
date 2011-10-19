@@ -7,8 +7,6 @@ class Product < ActiveRecord::Base
   has_one :product_bundle, :foreign_key=>:bundle_id
   has_many :product_siblings
   has_many :product_bundles
-  
-  self.per_page = 18
 
   #define_index do
   #  #fields
@@ -85,17 +83,5 @@ class Product < ActiveRecord::Base
     end
     data.to_s+ending
   end
-  
-  def self.per_page
-    9
-  end
-  def self.to_bin_array(a)
-    a.map{|i| i==1 ? [1,0] : [0,1]}
-  end  
-  def self.to_cat_array(a) # converting categorical values to numbers
-    uniqVals = a.uniq
-    r = uniqVals.size
-    a.map{|i| s=[0]*r; s[uniqVals.index(i)]=1;s}
-  end  
 end
 class ValidationError < ArgumentError; end
