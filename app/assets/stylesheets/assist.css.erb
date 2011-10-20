@@ -38,14 +38,13 @@
 	font-size: 0.85em;
 	float: left;
 	position: relative;
-	margin-right: 3px; 
-	margin-bottom: 15px;
-	height:405px;
- 	width: 181px; /*+2 for the border*/
+	margin: 8px 3px 12px 0;
+	padding-right: 2px;
+	height: 455px; /* Please adjust the _navbox no_variations height as well */
+ 	width: 179px; /*+2 for the border*/
 	background: right center url(<%= asset_path "seperatorbar.png" %>) no-repeat;
   overflow: hidden;
   zoom: 1; /* fix IE peekaboo issue */
-  margin-top: 8px;
 }
 
 #optemo_embedder .title {
@@ -71,6 +70,15 @@
 #optemo_embedder .productspecs {
 	font-size:0.8em;
 	padding-bottom:6px;
+}
+#optemo_embedder .navboxcolours {
+  font-size:0.8em;
+  padding-bottom:5px;
+}
+#optemo_embedder .navboxcompare {
+	font-size: 0.8em;
+	text-align: left;
+	padding-left: 15px;
 }
 
 #optemo_embedder .heroinfo {
@@ -113,7 +121,7 @@
 }
 */
 #optemo_embedder .topbar {
-  height: 345px;
+  height: 423px; /* Please adjust the _navbox no_variations height as well */
   text-align:center;
   position: relative;
   overflow: hidden;
@@ -139,9 +147,6 @@
 	padding-left: 20px;
 }
 */
-#optemo_embedder .simlinks {
-	font-size: 0.9em;
-}
 
 /*#extended_box {
 	width: auto;
@@ -176,60 +181,6 @@
 }
 #optemo_embedder #IE .text-place #draghandexample {
 	display: none;
-}
-
-/*--------------------------------------//
-//                Sliders               //
-//--------------------------------------*/
-
-/*--------------------------------------//
-//              Back to Top             //
-//--------------------------------------*/
-#back-top {
-  position: fixed;
-  bottom: 30px;
-  margin-left: -150px;
-  display: none;
-}
-
-#back-top a {
-  width: 75px;
-  display: block;
-  text-align: center;
-  font: 11px/100% Arial, Helvetica, sans-serif;
-  text-transform: uppercase;
-  text-decoration: none;
-  color: #bbb;
-
-	/* transition */
-  -webkit-transition: 1s;
-  -moz-transition: 1s;
-  transition: 1s;
-}
-#back-top a:hover {
-  color: #000;
-}
-
-/* arrow icon (span tag) */
-#back-top span {
-  width: 75px;
-  height: 75px;
-  display: block;
-  margin-bottom: 7px;
-  background: #ddd url(<%= asset_path "up-arrow.png" %>) no-repeat center center;
-
-	/* rounded corners */
-  -webkit-border-radius: 15px;
-  -moz-border-radius: 15px;
-  border-radius: 15px;
-
-	/* transition */
-  -webkit-transition: 1s;
-  -moz-transition: 1s;
-  transition: 1s;
-}
-#back-top a:hover span {
-  background-color: #777;
 }
 
 /*--------------------------------------//

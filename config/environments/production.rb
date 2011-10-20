@@ -1,4 +1,3 @@
-require 'absolute_url_enabler'
 require 'null_object'
 require 'will_paginate_tweak'
 Site::Application.configure do
@@ -51,7 +50,7 @@ Site::Application.configure do
   # Generate digests for assets URLs
   config.assets.digest = true
   #Add our custom BB files
-  config.assets.precompile += ['bb_loader_packaged.js', 'loader.js', 'bb_embed_packaged.css']
+  config.assets.precompile += ['loader.js']
 
   # Defaults to Rails.root.join("public/assets")
   # config.assets.manifest = YOUR_PATH

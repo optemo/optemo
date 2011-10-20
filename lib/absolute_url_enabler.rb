@@ -20,34 +20,34 @@
 # For the purpose of the Best Buy trial, the code below is commented out.
 # For SEO purposes this should probably be re-enabled eventually. 04-2011
 
-#module ActionView::Helpers::UrlHelper
-#  @@retailer_server = "192.168.5.107" # This has to be the retailer's host for googlebot. 
-#  @@embedded_optemo_server = "assets.optemo.com"
-#
-#  # = Action View URL Helpers
-#  def url_for(options = {})
-#    options ||= {}
-#    url = case options
-#    when String
-#      options
-#    when Hash
-#      options = options.symbolize_keys
-#      if request.host[Regexp.new(@@retailer_server)] 
-##        route = options[:use_route]
-#        options = options.merge!({:only_path => false})
-##        debugger
-##        options = options.merge!({:use_route => "proxy", :extra_data => route}) if route
-#      elsif (request.domain && request.domain(4)[Regexp.new(@@embedded_optemo_server)]) 
-#        options = options.merge!({:only_path => false}) # reverse merge host and port here as necessary
-#      else
-#        options = options.reverse_merge!(:only_path => options[:host].nil?)
-#      end
-#      super
-#    when :back
-#      controller.request.env["HTTP_REFERER"] || 'javascript:history.back()'
-#    else
-#      polymorphic_path(options)
-#    end
-#    url
-#  end
-#end
+module ActionView::Helpers::UrlHelper
+  @@retailer_server = "192.168.5.107" # This has to be the retailer's host for googlebot. 
+  @@embedded_optemo_server = "assets.optemo.com"
+
+  # = Action View URL Helpers
+  def url_for(options = {})
+    options ||= {}
+    url = case options
+    when String
+      options
+    when Hash
+      options = options.symbolize_keys
+      if request.host[Regexp.new(@@retailer_server)] 
+#        route = options[:use_route]
+        options = options.merge!({:only_path => false})
+#        debugger
+#        options = options.merge!({:use_route => "proxy", :extra_data => route}) if route
+      elsif (request.domain && request.domain(4)[Regexp.new(@@embedded_optemo_server)]) 
+        options = options.merge!({:only_path => false}) # reverse merge host and port here as necessary
+      else
+        options = options.reverse_merge!(:only_path => options[:host].nil?)
+      end
+      super
+    when :back
+      controller.request.env["HTTP_REFERER"] || 'javascript:history.back()'
+    else
+      polymorphic_path(options)
+    end
+    url
+  end
+end

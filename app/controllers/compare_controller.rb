@@ -26,12 +26,6 @@ class CompareController < ApplicationController
     end
   
   #This function should be combined with create
-  def zoomout
-    # Zoom out of see similar
-    classVariables(Search.create(:action_type => "nextpage", :parent => params[:hist]))
-    correct_render
-  end
-
   def featured
       classVariables(Search.create(:action_type => "featured", :parent => params[:hist]))
       correct_render
@@ -81,7 +75,7 @@ class CompareController < ApplicationController
       @product = Product.cached(id)
       @prod_url = TextSpec.cacheone(@product.id, "productUrl#{fr?}")
       @allspecs = ContSpec.cache_all(id).merge(CatSpec.cache_all(id)).merge(BinSpec.cache_all(id)).merge(TextSpec.cache_all(id))
-      @siblings = ProductSiblings.find_all_by_product_id_and_name(id,"imgsurl")
+      @siblings = ProductSibling.find_all_by_product_id_and_name(id,"imgsurl")
       @s = Session
       
       respond_to do |format|
@@ -115,21 +109,12 @@ class CompareController < ApplicationController
   
   def classVariables(search)
     @s = Session
-    @jsonp_version = true if params[:embedding] # request.subdomains.first == "embed" || request.subdomains.first == "sandbox"
     @s.search = search
     @s.set_features(search.userdatacats.select{|d| d.name == 'category'}.map{|d| d.value})
   end
   
   def correct_render
     if params[:ajax]
-      # Having a more efficient method of turning the pages in the pagination branch is a good idea.
-      # However, we were having troubles with reloading, say, the second page of a search (since it would not render ajax.html.erb
-      # but instead just render page.html.erb) and for the sake of bug-fixing speed I just took this out.
-      # The page.html.erb code is still around, and the javascript side in ajaxhandler() is still in application.js
-      # ZAT July 20, 2011
-      # if @s.search.page
-      #   render 'page', :layout => false
-      # else
       if Session.search.initial
         render 'ajax_landing', :layout => false
       else      

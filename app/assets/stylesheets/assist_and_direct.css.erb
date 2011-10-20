@@ -183,10 +183,11 @@ html {
   text-align: center;
   font-weight: bold; 
 }
-#optemo_embedder #navigator_bar a#nav_compare_btn:hover, #optemo_embedder #navigator_bar a#nav_compare_btn:visited,
-    #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom:hover, #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom:visited {
+#optemo_embedder #navigator_bar a.nav-compare-btn:hover, 
+#optemo_embedder #navigator_bar a.nav-compare-btn:visited {
       color: #fff;
     }
+
 #optemo_embedder #navigator_bar_bottom a#nav_compare_btn_bottom {
   float: right;
   font-size: 0.8em;
@@ -360,7 +361,7 @@ html {
 	font-weight: bold;
 	font-size: 1em;
 	margin-top: 1px;
-	margin-bottom: 2px;
+	margin-bottom: 6px;
 }
 
 #optemo_embedder .saleprice {
@@ -378,10 +379,86 @@ html {
 #optemo_embedder .saleends {
 	/*color: #F5000B;*/
 	font-size: 0.8em;
+	margin-bottom: 4px;
 }
 #optemo_embedder .stars {
 	padding-top: 3px;
 }
+#optemo_embedder .stars img {
+  float: left;
+}
+
+#optemo_embedder .bundlesbox {
+  text-align: left;
+  border-top: 1px solid #e1e1e1;
+  font-size: 0.8em;
+  margin: 6px 10px 0;
+}
+
+#optemo_embedder .nolinelink {
+  text-decoration: none;
+}
+
+#optemo_embedder .nolinelink:hover {
+  text-decoration: none;
+}
+
+#optemo_embedder .siblingdiv {\
+  float: left;
+  padding-right: 5px;
+  min-height: 35px;
+}
+#optemo_embedder .bundlediv {
+  padding-bottom: 5px;
+  min-height: 35px;
+  border:1px solid white;
+}
+
+#optemo_embedder .bundlediv:hover {
+  border:1px solid blue;
+}
+
+#optemo_embedder .pricediff {
+  float: right;
+  color: black;
+}
+
+#optemo_embedder .bundleslabel {
+  padding-left: 5px;
+  padding-bottom: 5px;
+}
+
+#optemo_embedder .colorslabel {
+  margin-bottom: 2px;
+  text-align: left;
+}
+
+#optemo_embedder .sibling img {
+  height: 35px;
+  width: 35px;
+  overflow: left;
+  vertical-align: middle;
+}
+
+#optemo_embedder .herosiblings {
+  text-align: center;
+  font-size: 0.8em;
+  margin: 6px 0px 0px;
+}
+
+#optemo_embedder .herosiblingslabel {
+  margin-top: 2px;
+  float: left;
+  padding-right: 5px;
+}
+
+#optemo_embedder .herosiblings a img {
+  height: 35px;
+  width: 35px;
+  overflow: left;
+  vertical-align: top;
+}
+
 /*.itemtitle {
     font-size: 1.4em;
     line-height: 1.7em;
@@ -450,20 +527,17 @@ div#division {
   padding-bottom: 7px;
 }
 #optemo_embedder .categorical {
-	overflow: auto;
-	max-height: 150px;
   padding-top: 7px;
   padding-bottom: 17px;
 }
-#optemo_embedder .categorical_advanced {
-	overflow: auto;
-  padding-bottom: 8px;
-  padding-top: 8px;
+#optemo_embedder .brand {
+  overflow: auto;
+	max-height: 150px;
 }
 #optemo_embedder .categorical .feature, #optemo_embedder .list_item {
   padding-bottom: 1px;
 }
-#optemo_embedder #IE .categorical {
+#optemo_embedder #IE .brand {
   height: expression( this.scrollHeight > 150 ? "150px" : "auto" ); /* sets max-height for IE */
 }
 
@@ -550,22 +624,6 @@ div#division {
 #optemo_embedder .compare_button {
   font-size: 0.8em;
 }
-
-#optemo_embedder span.select-compare {
-  font-size: 12px;
-}
-#optemo_embedder #IE span.select-compare {
-  margin-left: -4px;
-}
-#optemo_embedder #IE.ie8 span.select-compare {
-  margin-left: -5px;
-}
-#optemo_embedder #IE.ie7 span.select-compare,#optemo_embedder #IE.ie6 span.select-compare {
-  margin-left: -6px;
-}
-/*.selected_cat_features img {
-	vertical-align: baseline;
-}*/
 
 /* IE hack for save bar maybe? */
 #optemo_embedder .gainlayout div {
@@ -1029,9 +1087,19 @@ margin-top:0;
 
 
 #optemo_embedder .thumbnaildetails {
+	color: black;
+	padding-bottom:5px;
+}
+#optemo_embedder .thumbnaildetailssale {
 	color: #F5000B;
 	padding-bottom:5px;
 }
+
+#optemo_embedder .thumbnaildetails {
+	color: #000000;
+	padding-bottom:5px;
+}
+
 #optemo_embedder .compare_row {
   clear: both;
   line-height: 23px;
@@ -1105,10 +1173,6 @@ margin-top:0;
 #optemo_embedder span {
   margin-left: 2px;
 }
-#optemo_embedder .productinfo {
-  height: 120px;
-}
-
 /*--------------------------------------//
 //        Show page and related         //
 //--------------------------------------*/
@@ -1439,14 +1503,7 @@ margin-top:0;
 	        position: relative;
 	        cursor: pointer;
         }
-
-#optemo_embedder .awesome_reset:hover, #optemo_embedder .awesome_reset_grey:hover {text-decoration: none; }
-
-.awesome_tour:hover							{ background-color: #111; color: #fff; }
-.awesome_tour:active							{ top: 1px; }
-.small_awesome_tour, .small_awesome_tour:visited 			{ font-size: 11px; }
-.awesome_tour, .awesome_tour:visited,
-            .medium_awesome_tour, .medium_awesome_tour:visited 		{ font-size: 13px; line-height: 1; text-shadow: 0 -1px 1px rgba(0,0,0,0.25); }
+#optemo_embedder .awesome_reset:hover, #optemo_embedder .awesome_reset_grey:hover {text-decoration: none;background-color: #004373; }
 
 #optemo_embedder .regular_reset, #optemo_embedder .regular_reset:visited {
   display: inline-block;
@@ -1458,6 +1515,7 @@ margin-top:0;
 #optemo_embedder .regular_reset:hover {
   text-decoration: underline;
 }
+
 #optemo_embedder .regular_reset span {
   margin-right: 4px;
   font-weight: normal;
@@ -1465,7 +1523,7 @@ margin-top:0;
 }
 
 #optemo_embedder .optemo_compare_checkbox {
-  pading: 0;
+  padding: 0;
   margin: 0;
 }
 
@@ -1540,12 +1598,24 @@ margin-top:0;
   text-align: right;
   margin:0;
 }
-#optemo_embedder .y_heading a.regular_reset, #optemo_embedder .y_bottom a.regular_reset { 
+#optemo_embedder .y_heading a.regular_reset, #optemo_embedder .y_bottom a.regular_reset{ 
   font-size: 11px;
   font-weight: bold;
   padding: 0;
   margin: 2px 0 0;
 }
+
+#optemo_embedder .nav_clear_btn,
+#optemo_embedder .nav_clear_btn:visited{
+  font-size: 11px;
+  left: 403px;
+  margin: 2px 0 0;
+  padding: 0;
+  position: absolute;
+  color: black;
+  top: 55px;
+}
+
 #optemo_embedder .y_bottom a.regular_reset{
   margin: 7px 0 0;
   height: 15px;
@@ -1782,38 +1852,38 @@ margin-top:0;
 	width: 13px;
 	height: 13px;
 	background-color: red;
-	-moz-border-radius: 4px; 
+	/*-moz-border-radius: 4px; 
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
 	-moz-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
 	-webkit-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
 	box-shadow: 0 1px 3px rgba(50,50,50,0.5);
-	/*border: 1px solid #ccc;*/
+	border: 1px solid #ccc;*/
 	float: left;
 	margin: 0 2px 2px 0;
 	cursor: pointer;
 }
-/*.swatch:hover {
-	-moz-box-shadow: 0 1px 3px rgba(50,50,50,0.5), inset 0px 0px 10px white;
-	-webkit-box-shadow: 0 1px 3px rgba(50,50,50,0.5), inset 0px 0px 10px white;
-}*/
-#optemo_embedder .selected_swatch {
-	border: 1px solid black;
-	width: 13px;
-	height: 13px;
-	margin: -1px 1px 1px -1px;
-	-moz-border-radius: 0px; 
-	-webkit-border-radius: 0px;
-	border-radius: 0px;
+
+#optemo_embedder .white_swatch {
+  width: 11px;
+  height: 11px;
+  border: 1px solid #ccc;
 }
 
-#optemo_embedder .ie7 .white_swatch,
-    #optemo_embedder .ie8 .white_swatch,
-    #optemo_embedder .ie9 .white_swatch {
-	    width: 11px;
-	    height: 11px;
-	    border: 1px solid #ccc;
-    }
+#optemo_embedder .dark.selected_swatch {
+	background-image: url(data:image/gif;base64,R0lGODlhDQANAIABAP///////yH5BAEAAAEALAAAAAANAA0AAAIVjI+py43gAphtwnds0lpZynRVRDoFADs=);
+}
+
+#optemo_embedder .light.selected_swatch {
+	background-image: url(data:image/gif;base64,R0lGODlhDQANAIABAAAAAP///yH5BAEAAAEALAAAAAANAA0AAAIVjI+py43gAphtwnds0lpZynRVRDoFADs=);
+}
+
+#optemo_embedder #IE .dark.selected_swatch {
+	background-image: url(<%= asset_path 'IE/checkmark-white.gif' %>) repeat-x;
+}
+#optemo_embedder #IE .light.selected_swatch {
+	background-image: url(<%= asset_path 'IE/checkmark.gif' %>) repeat-x;
+}
 
 #optemo_embedder .disabled {
 	color: #aaa;
@@ -1839,12 +1909,7 @@ margin-top:0;
   margin-bottom: -12px;
 }
 #optemo_embedder #IE .y_bottom {
-
-/*   *position: absolute;
-   
-    *bottom: 7px;
-    *height: 25px;*/
-  background: url(<%= asset_path 'IE/y_bottom_bg.gif' %>) repeat-x ;
+  background: url(<%= asset_path 'IE/y_bottom_bg.gif' %>) repeat-x;
   height: 25px;
 }
 

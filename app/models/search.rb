@@ -61,13 +61,12 @@ class Search < ActiveRecord::Base
   
   def paginated_products
     unless @paginated_products
-      if sortby == "utility" || sortby.nil?
-        myproducts = Kmeans.compute(18,products.dup)
-      else
-        myproducts = products
-      end
-      @paginated_products = myproducts.paginate(:page => page, :per_page => SearchProduct.per_page)
-      #SearchProduct.fq_paginated_products.all
+      #if sortby == "utility" || sortby.nil?
+      #  myproducts = Kmeans.compute(18,products.dup)
+      #else
+      #  myproducts = products
+      #end
+      @paginated_products = products.paginate(:page => page, :per_page => SearchProduct.per_page)
     end
     @paginated_products
   end
@@ -88,7 +87,7 @@ class Search < ActiveRecord::Base
   end
   
   def products
-    @products ||= SearchProduct.fq2
+    @products ||= ContSpec.fq2
   end
   
   def products_landing
@@ -173,29 +172,6 @@ class Search < ActiveRecord::Base
         :cheapest =>  Product.cached(product_ids[prices_list.index(prices_list.max)]),
         :best => Product.cached(product_ids[utility_list.index(utility_list.max)])
       }
-    end
-  end
-
-  def self.keyword(keyword)
-    #Check if this search has been done before
-    #This could be cached in memcache, for performance
-    previous_search = KeywordSearch.where(["keyword = ?", keyword]).limit(1).first
-    if previous_search
-      return !previous_search.product_id.nil?
-    else
-      product_ids = Product.search_for_ids(:per_page => 10000, :star => true, :conditions => {:product_type => Session.product_type, :title => keyword})
-      #Check that the results are valid and instock
-      new_entries = SearchProduct.where(:search_id => Session.product_type_id).where("product_id IN (#{product_ids.join(',')})").map{|sp| KeywordSearch.new({:keyword => keyword, :product_id => sp.product_id})} unless product_ids.empty?
-      if product_ids.empty? || new_entries.empty?
-        #Save a nil entry for failed searches
-        KeywordSearch.create({:keyword => keyword})
-        return false
-      else
-        KeywordSearch.transaction do
-          new_entries.each(&:save)
-        end
-        return true
-      end
     end
   end
   
@@ -308,7 +284,7 @@ class Search < ActiveRecord::Base
         v.each { |x| cats << x.value }
       end
       if v.size > 1
-        counts = SearchProduct.cat_counts(k,true,false,self)
+        counts = CatSpec.count_feat(k,false,self)
         v.each do |val|
           @userdatacats.reject!{|c|c.name == k && c.value == val.value} if counts[val.value].nil? || counts[val.value] == 0
         end

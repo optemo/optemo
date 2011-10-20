@@ -17,5 +17,13 @@ class BinSpec < ActiveRecord::Base
       select("value").where("product_id IN (select product_id from search_products where search_id = ?) and name = ?", Session.product_type_id, feat).map(&:value)
     end
   end
-  
+  def self.count_feat(feat)
+    mycats = Session.search.userdatacats.group_by{|x|x.name}.values
+    myconts = Session.search.userdataconts
+    mybins = Session.search.userdatabins.reject{|e|e.name == feat} << BinSpec.new(:name => feat, :value => true)
+    q = Equivalence.no_duplicate_variations(mycats,mybins,myconts,false)
+    CachingMemcached.cache_lookup("BinsCount-#{q.to_sql.hash}") do
+      q.count
+    end
+  end
 end

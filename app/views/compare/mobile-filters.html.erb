@@ -39,10 +39,10 @@
 						<div class='selected_cat_features'><%= link_to image_tag('close.png', :width => '13'), "", {:title => t('products.compare.rembrandfilter'), :"data-cat" => feat, :class => "removefilter", :"data-id" => b} %> <%= b %>
 						</div>
 					<% end %>
-					<%= category_select(feat, true) %>
+					<%= category_select(feat) %>
 				<% else %>
 					<%# Nothing selected %>
-					<%= category_select(feat, false) %>		
+					<%= category_select(feat) %>		
 				<% end %>
 
 				<%= hidden_field_tag "myfilter[#{feat}]", chosen_cats.join("*") %>
