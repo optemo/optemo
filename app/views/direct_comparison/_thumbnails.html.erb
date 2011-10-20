@@ -5,10 +5,10 @@
 
 	<div class="thumbnaillabel">
 	<div style="height: 110px;">
-    <%= link_to @sp["Categorical"][thumbnails.id]["title#{fr?}"], TextSpec.cacheone(thumbnails.id, "productUrl#{fr?}"), :class => 'easylink', :'data-id' => thumbnails.id %>
+    <%= link_to @sp["Categorical"][thumbnails.id]["title#{fr?}"] || @sp["Categorical"][thumbnails.id]["title"], TextSpec.cacheone(thumbnails.id, "productUrl#{fr?}"), :class => 'easylink', :'data-id' => thumbnails.id %>
     <% if @sp["Binary"][thumbnails.id]["onsale"] %>
       <div class="thumbnaildetailssale">
-        <%= t('compare.index.onsale') + (fr?.empty? ? "" : " ")+": " + (fr?.empty? ? "$" : "") + number_to_currency(@sp["Continuous"][thumbnails.id]["saleprice"]) %>
+        <%= t('compare.index.onsale') + (fr?.empty? ? "" : " ")+": " +  number_to_currency(@sp["Continuous"][thumbnails.id]["saleprice"]) %>
       </div>
     <% else %>
       <div class="thumbnaildetails">

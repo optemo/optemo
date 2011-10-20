@@ -8,6 +8,10 @@ optemo_module = (function (my){
   $(document).ready(function(){$.history.init(my.ajaxsend,{unescape: true})});
   //****Public Functions****
   // Submit a categorical filter, e.g. brand.
+  my.whenDOMready = function(){
+    my.load_comparisons();
+    my.SliderInit();
+  } 
   my.submitAJAX = function(){
       var selections = $("#filter_form").serializeObject();
       $.each(selections, function(k,v){
@@ -204,8 +208,7 @@ optemo_module = (function (my){
       if (parts.length == 2) {
         $('#ajaxfilter').empty().append(parts[1]);
         $('#main').html(parts[0]);
-        my.SliderInit();
-        my.load_comparisons();
+        my.whenDOMready();
         return 0;
       }
   };
