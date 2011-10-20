@@ -327,7 +327,7 @@ optemo_module = (function (my){
       });
       //Remove saved cookie values
       my.eraseCookie(my.cmpcookie);
-      my.changeNavigatorCompareBtn(0);
+      changeNavigatorCompareBtn(0);
       return false;
   });
   
