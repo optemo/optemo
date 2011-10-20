@@ -1,7 +1,7 @@
 <%# Cache specs here at the top of navbox partial to save on SQL calls and instantiations. Don't bother with Bin or Text specs since they are only used once each (though this might change in future, be careful) %>
 <% cont_specs = ContSpec.cache_all(product.id); cat_specs = CatSpec.cache_all(product.id); %>
-<div id="box<%= product.id %>" class="navbox" style="<%= "margin-right:0px;background:none;" if last_in_row %><%= "height:386px;" if no_variations %>">
-	<div class="topbar"<%= "style='height:354px;'" if no_variations %>>
+<div id="box<%= product.id %>" class="navbox" style="<%= "margin-right:0px;background:none;" if last_in_row %><%= "height:352px;" if no_variations %>">
+	<div class="topbar"<%= "style='height:320px;'" if no_variations %>>
 
 	  <div class="navboxcompare">
     <% if landing %>
