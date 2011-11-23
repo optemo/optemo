@@ -53,9 +53,9 @@ optemo_module = (function (my){
         } else { // This is not scalable. Eventually this sort of logic should be in Firehose.
             var whichProduct = $(this).attr('product_type');
             if (whichProduct == 'camera_bestbuy'){
-                window.location = "http://www.bestbuy.ca/" + ((!(typeof(optemo_french) == "undefined") && optemo_french) ? "fr" : "en") + "-CA/category/new-technology/pc_new.aspx";
+                window.location = "http://www.bestbuy.ca/" + ((!(typeof(optemo_french) == "undefined") && optemo_french) ? "fr" : "en") + "-CA/category/pc/pc_gifts1.aspx";
             } else if (whichProduct == 'drive_bestbuy'){
-                window.location = "http://www.bestbuy.ca/" + ((!(typeof(optemo_french) == "undefined") && optemo_french) ? "fr" : "en") + "-CA/category/new-technology/pc_new.aspx";
+                window.location = "http://www.bestbuy.ca/" + ((!(typeof(optemo_french) == "undefined") && optemo_french) ? "fr" : "en") + "-CA/research/seagate-goflex-satellite/rc8372.aspx";
             }    
         }
         return false;
