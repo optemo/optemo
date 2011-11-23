@@ -91,12 +91,7 @@ class CompareController < ApplicationController
       end
     end
   end
-  
-  private
-  def fr?
-    I18n.locale == :fr ? "_fr" : ""
-  end
-  
+ 
   # Depending on the session, either use the traditional layout or the "optemo" layout.
   # The CSS files are loaded automatically though, so the usual "sv / gv / lv / mv" CSS classes are needed.
   def choose_layout
