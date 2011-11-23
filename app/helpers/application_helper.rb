@@ -22,6 +22,10 @@ module ApplicationHelper
   def fr?
     I18n.locale == :fr ? "_fr" : ""
   end
+
+  def isfr?
+    I18n.locale == :fr
+  end 
   
   def utfstr(s)
     if RUBY_VERSION == "1.9.1"
