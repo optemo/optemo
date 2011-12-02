@@ -19,9 +19,8 @@
   </div>
   <div style='clear:both; width:0;height: 0;'></div>
 </div>
-
-<% if @s.product_type == 'camera_bestbuy' %><div class='showcase_banner_div'><%= link_to image_tag("#{@s.product_type}-banner#{fr?}.jpg"), '#', :class => 'showcase_banner', :"product_type" => "camera_bestbuy" %></div><% else %>
-<div class='showcase_banner_div'><%= link_to image_tag("#{@s.product_type}-banner#{fr?}.jpg"), '#', :class => 'showcase_banner', :"product_type" => "drive_bestbuy" %></div>
+<% if @s.product_type == 'camera_bestbuy' %><div class='showcase_banner_div'><%= link_to image_tag("#{@s.product_type}-banner#{fr?}.jpg"), "http://www.bestbuy.ca/#{isfr? ? "fr" : "en"}-CA/category/pc/pc_gifts1.aspx", :class => 'showcase_banner', :"product_type" => "camera_bestbuy" %></div><% else %>
+<div class='showcase_banner_div'><%= link_to image_tag("#{@s.product_type}-banner#{fr?}.jpg"), "http://www.bestbuy.ca/#{isfr? ? "fr":"en"}-CA/research/seagate-goflex-satellite/rc8372.aspx", :class => 'showcase_banner', :"product_type" => "drive_bestbuy" %></div>
 <% end %>
 <%= raw mb['featured'] %>
 
