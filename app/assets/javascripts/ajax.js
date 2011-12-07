@@ -9,6 +9,7 @@ optemo_module = (function (my){
   //****Public Functions****
   // Submit a categorical filter, e.g. brand.
   my.whenDOMready = function(){
+    my.getRealtimePrices();
     my.load_comparisons();
     my.SliderInit();
   } 

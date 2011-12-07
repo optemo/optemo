@@ -200,4 +200,12 @@ module CompareHelper
     end
     return ret
   end
+  
+  def only_if_onsale(product)
+    'style="display:none;"' unless BinSpec.cache_all(product.id)["onsale"]
+  end
+  
+  def only_if_not_onsale(product)
+    'style="display:none;"' if BinSpec.cache_all(product.id)["onsale"]
+  end
 end
