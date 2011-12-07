@@ -11,45 +11,49 @@ optemo_module = (function (my){
         dataType: "jsonp",
         success: function(data){
           $(data["products"]).each(function(i){
-            var c = $('.easylink[data-sku="'+this.sku+'"]');
+            var c = $('.productinfo[data-sku="'+this.sku+'"]');
             //Check whether onsale
             if (this.salePrice != this.regularPrice) {
               //We have a sale!
-              c.siblings('.saleprice').show();
-              c.siblings('.price').hide();
-              c.siblings('.save').show();
-              c.siblings('.saleends').show();
+              c.find('.saleprice').show();
+              c.find('.price').hide();
+              c.find('.save').show();
+              c.find('.saleends').show();
             } else {
               //No sale
-              c.siblings('.saleprice').hide();
-              c.siblings('.price').show();
-              c.siblings('.save').hide();
-              c.siblings('.saleends').hide();
+              c.find('.saleprice').hide();
+              c.find('.price').show();
+              c.find('.save').hide();
+              c.find('.saleends').hide();
             }
             
             //Update the saleprice
-            c.siblings('.saleprice').children('span').html((optemo_french ? "" : "$") + this.salePrice + (optemo_french ? " $" : ""));
+            c.find('.saleprice > span').html((optemo_french ? "" : "$") + this.salePrice + (optemo_french ? " $" : ""));
             //Update the regularprice
-            c.siblings('.price').children('span').html((optemo_french ? "" : "$") + this.regularPrice + (optemo_french ? " $" : ""));
+            c.find('.price > span').html((optemo_french ? "" : "$") + this.regularPrice + (optemo_french ? " $" : ""));
             //Update the savings
             var savings = (parseFloat(this.regularPrice)-parseFloat(this.salePrice)).toFixed(2);
-            var current_savings = c.siblings('.save').children('span').html()
+            var current_savings = c.find('.save > span').html()
             if (!(savings == parseFloat(current_savings) || savings == parseFloat(current_savings.substring(1,current_savings.length)))) {
-              c.siblings('.save').children('span').html((optemo_french ? "" : "$") + savings + (optemo_french ? " $" : ""));
+              c.find('.save > span').html((optemo_french ? "" : "$") + savings + (optemo_french ? " $" : ""));
               //Remove saleEnd data because we don't have accurate ones
-              c.siblings('.saleends').hide();
+              c.find('.saleends').hide();
             }
             
             //Set checked flag to true
             c.attr("data-checked", true);
           });
-          $('.easylink[data-checked!="true"]').each(function(){
+          $('.productinfo[data-checked!="true"]').each(function(){
             //These products weren't found so remove links
-            var t = $(this);
+            var t = $(this).children(".easylink");
             t.after($('<span>').html(t.html()));
             t.hide();
             //And also remove the add to cart button
-            t.parent().parent().siblings().hide();
+            var addlink = $(this).siblings().find('.easylink'); //See if we're dealing with the hero product 
+            if (!(addlink == true)) {
+              addlink = t.parent().parent().siblings();
+            }
+            addlink.after($('<div style="text-align: center;">').html(optemo_french ? "(En rupture de stock)" : "(Out of stock)")).hide();
           });
         }
     });
