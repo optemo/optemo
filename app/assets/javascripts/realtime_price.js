@@ -50,7 +50,7 @@ optemo_module = (function (my){
             t.hide();
             //And also remove the add to cart button
             var addlink = $(this).siblings().find('.easylink'); //See if we're dealing with the hero product 
-            if (!(addlink == true)) {
+            if (!(addlink.length)) {
               addlink = t.parent().parent().siblings();
             }
             addlink.after($('<div style="text-align: center;">').html(optemo_french ? "(En rupture de stock)" : "(Out of stock)")).hide();
