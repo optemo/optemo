@@ -2,17 +2,7 @@
 
 var optemo_module;
 optemo_module = (function (my){
-  //Don't wait for document ready
-  var API_URL = "http://www.bestbuy.ca/api/v2/json/search";
-  var API_URL = "http://www.bestbuy.ca/api/v2/json/search?categoryid=20218&pagesize=100&query=";
-  var opt_options = {
-    'categoryid':'20218',
-    'pagesize':'100',
-    'query':"10164957%20b9002406"
-  };
-  //JSONP.get(API_URL, opt_options, function (data) {
-  //  alert(data);
-  //});
+  var API_URL = "http://www.bestbuy.ca/api/v2/json/search?pagesize=100&query=";
   my.getRealtimePrices = function() {
     var skus = $('.productimg').map(function(){return $(this).attr('data-sku')}).toArray().join(" ");
     $.ajax({
