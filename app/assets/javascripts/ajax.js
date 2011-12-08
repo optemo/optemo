@@ -51,7 +51,7 @@ optemo_module = (function (my){
         var outsidecontainer = $('#outsidecontainer');
         if (outsidecontainer.css('display') != 'block') 
             $('#info').html("").css({'height' : "560px", 'width' : (width-46)+'px'});
-        outsidecontainer.css({'left' : Math.max(((document.body.clientWidth-(width||560))/2),0)+'px',
+        outsidecontainer.css({'left' : '100px',
                                     'top' : (dsoctop+5)+'px',
                                     'width' : (width||560)+'px',
                                     'display' : 'inline' });
