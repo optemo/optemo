@@ -178,10 +178,9 @@ module CompareHelper
   
   def sortby
     current_sorting_option = Session.search.sortby || "utility"
-    Session.features["sortby"].map { |f| content_tag :li, do
-      text = t("specs."+f.name)
-       (current_sorting_option == f.name) ? text : link_to(text, "#", {:'data-feat'=>f.name, :class=>"sortby"})
-    end}.join(content_tag(:span, "  |  ", :class => "seperater"))
+    Session.features["sortby"].map do |f| 
+      content_tag :li, (current_sorting_option == f.name) ? t("specs."+f.name) : link_to(t("specs."+f.name), "#", {:'data-feat'=>f.name, :class=>"sortby"})
+    end.join(content_tag(:span, "  |  ", :class => "seperater"))
   end
   
   def stars(numstars)
