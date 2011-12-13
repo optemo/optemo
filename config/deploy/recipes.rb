@@ -16,7 +16,7 @@ task :serversetup do
 end
 
 task :restartmemcached do # Found this idea. Maybe consider it for when memcached crashes? :only => {:memcached => true}
-  run "rake -f #{current_path}/Rakefile cache:clear RAILS_ENV=production"
+  run "bundle exec rake -f #{current_path}/Rakefile cache:clear RAILS_ENV=production"
 end
 
 task :redopermissions do
