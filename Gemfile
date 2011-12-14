@@ -39,6 +39,8 @@ gem 'ruby-debug19'
 # gem 'nokogiri'
 # gem 'sqlite3-ruby', :require => 'sqlite3'
 # gem 'aws-s3', :require => 'aws/s3'
+gem 'sunspot_rails'
+gem 'sunspot_solr' # optional pre-packaged Solr distribution for use in development
 
 #gem 'thinking-sphinx', '2.0.1', :require => 'thinking_sphinx'
 gem 'will_paginate', '3.0.0'

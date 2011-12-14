@@ -36,7 +36,7 @@
     </div>
   <% end %>
 	
-	<% if cont_specs["customerRating"] > 0 %>
+	<% if cont_specs["customerRating"] && cont_specs["customerRating"] > 0 %>
 		<div class="stars"><%=raw stars(cont_specs["customerRating"]) %></div>
 	<% end %>
 </div>
