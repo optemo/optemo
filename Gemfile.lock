@@ -63,7 +63,7 @@ GEM
     hike (1.2.1)
     i18n (0.6.0)
     json (1.6.3)
-    linecache19 (0.5.12)
+    linecache19 (0.5.13)
       ruby_core_source (>= 0.1.4)
     mail (2.3.0)
       i18n (>= 0.4.0)
@@ -112,7 +112,7 @@ GEM
       json (~> 1.4)
     rsolr (1.0.6)
       builder (>= 2.1.2)
-    ruby-debug-base19 (0.11.25)
+    ruby-debug-base19 (0.11.26)
       columnize (>= 0.3.1)
       linecache19 (>= 0.5.11)
       ruby_core_source (>= 0.1.4)
@@ -163,8 +163,10 @@ DEPENDENCIES
   coffee-rails (~> 3.1.0)
   dalli (= 1.0.2)
   factory_girl
+  linecache19 (= 0.5.13)
   mysql2 (> 0.3)
   rails (= 3.1.1)
+  ruby-debug-base19 (= 0.11.26)
   ruby-debug19
   sass-rails (~> 3.1.0)
   sunspot_rails
