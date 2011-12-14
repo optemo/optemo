@@ -26,9 +26,18 @@ class CompareController < ApplicationController
     end
   
   def keyword_search
-    @skus = BestBuyApi.keyword_search(params[:keyword])
-    'keyword_search'
+    #@skus = BestBuyApi.keyword_search(params[:keyword])
+    @skus = Product.search do
+      fulltext params[:keyword]
+
+      #with :blog_id, 1
+      #with(:published_at).less_than Time.now
+      #order_by :published_at, :desc
+      #paginate :page => 2, :per_page => 15
+      #facet :category_ids, :author_id
+    end
   end
+  
   #This function should be combined with create
   def featured
       classVariables(Search.create(:action_type => "featured", :parent => params[:hist]))
