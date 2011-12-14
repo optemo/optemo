@@ -26,9 +26,11 @@ class CompareController < ApplicationController
     end
   
   def keyword_search
-    @skus = BestBuyApi.keyword_search(params[:keyword])
-    'keyword_search'
+    #@skus = BestBuyApi.keyword_search(params[:keyword])
+    classVariables(Search.create(action_type: "filter", parent: params[:hist], keyword: params[:keyword], filters: {continuous: {}, categorical: {}, binary: {}}))
+    correct_render
   end
+  
   #This function should be combined with create
   def featured
       classVariables(Search.create(:action_type => "featured", :parent => params[:hist]))

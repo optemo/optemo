@@ -31,14 +31,13 @@ gem 'capistrano-ext'
 #      :git => 'git://github.com/svenfuchs/i18n-active_record.git',
 #      :require => 'i18n/active_record'
 
-# To use debugger
-gem 'ruby-debug19'
-
 # Bundle the extra gems:
 # gem 'bj'
 # gem 'nokogiri'
 # gem 'sqlite3-ruby', :require => 'sqlite3'
 # gem 'aws-s3', :require => 'aws/s3'
+gem 'sunspot_rails'
+gem 'sunspot_solr' # optional pre-packaged Solr distribution for use in development
 
 #gem 'thinking-sphinx', '2.0.1', :require => 'thinking_sphinx'
 gem 'will_paginate', '3.0.0'
@@ -46,6 +45,12 @@ gem 'will_paginate', '3.0.0'
 
 group :production, :profile do
   gem "dalli", "1.0.2"
+end
+
+group :development do
+   gem "linecache19", "0.5.13"
+   gem "ruby-debug-base19", "0.11.26"
+   gem "ruby-debug19", require: 'ruby-debug'
 end
 
 # Bundle gems for the local environment. Make sure to

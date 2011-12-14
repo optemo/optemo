@@ -18,6 +18,15 @@ class Product < ActiveRecord::Base
   #  ThinkingSphinx.deltas_enabled = false
   #end
   
+  searchable do
+    text :title do
+      cat_specs.find_by_name("title").try(:value)
+    end
+    text :description do
+      text_specs.find_by_name("longDescription").try(:value)
+    end
+  end
+  
   def self.cached(id)
     CachingMemcached.cache_lookup("Product#{id}"){find(id)}
   end

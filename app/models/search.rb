@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'will_paginate/array'
 class Search < ActiveRecord::Base
-  attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
+  attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size, :keyword
   
   def userdataconts
       @userdataconts ||= Userdatacont.find_all_by_search_id(id)
@@ -87,7 +87,19 @@ class Search < ActiveRecord::Base
   end
   
   def products
-    @products ||= ContSpec.fq2
+    if @keyword
+      @products ||= Product.search do
+        fulltext @keyword
+
+        #with :blog_id, 1
+        #with(:published_at).less_than Time.now
+        #order_by :published_at, :desc
+        #paginate :page => 2, :per_page => 15
+        #facet :category_ids, :author_id
+      end.results
+    else
+      @products ||= ContSpec.fq2
+    end
   end
   
   def products_landing
@@ -217,6 +229,7 @@ class Search < ActiveRecord::Base
       duplicateFeatures(old_search)
     when "filter"
       #product filtering has been done through keyword search of attribute filters
+      @keyword = p[:keyword]
       createFeatures(p[:filters])
       self.initial = false
     else
