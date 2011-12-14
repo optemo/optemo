@@ -60,7 +60,7 @@ require 'inline'
          VALUE result_ary = rb_ary_new2((2*d)+(k*d));
          int i,j, ind, len, p;
          double curr_min, curr_max, stepsize, offset;
-         double** data = malloc(sizeof(double*)*n);
+         double** data;
          double** dist = malloc(sizeof(double*)*d);
          double* dataMins = malloc(sizeof(double)*d);
          int* dataLengths = malloc(sizeof(int)*d);
@@ -77,7 +77,7 @@ require 'inline'
            dist[j] = malloc(sizeof(double)*k);
            for (i=0; i<k; i++) dist[j][i] = 0.0;  
          }
-
+        data= malloc(sizeof(double*)*n); 
         for (i=0; i<n; i++) data[i] = malloc(sizeof(double)*d);     
 
            for (j=0; j<d; j++) {   
