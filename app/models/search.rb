@@ -88,10 +88,11 @@ class Search < ActiveRecord::Base
   
   def products
     if @keyword
-      @products ||= Product.search do
-        fulltext @keyword
+      phrase = @keyword
+     @products ||= Product.search do
+        fulltext phrase
 
-        #with :blog_id, 1
+        with :instock, 1
         #with(:published_at).less_than Time.now
         #order_by :published_at, :desc
         #paginate :page => 2, :per_page => 15
