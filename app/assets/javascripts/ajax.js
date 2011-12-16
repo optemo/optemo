@@ -159,15 +159,7 @@ optemo_module = (function (my){
   //--------------------------------------//
 
   my.start_spinner = function() {
-      // This will turn on the fade for the left area
-      elementToShadow = $('#filterbar');
-      var pos = elementToShadow.offset();
-      var width = elementToShadow.innerWidth() + 2; // Extra pixels are for the border.
-      var height = elementToShadow.innerHeight() + 2; // and padding bottom
-      $('#filter_silkscreen').css({'display' : 'inline', 'left' : pos.left + "px", 'top' : pos.top + "px", 'height' : height + "px", 'width' : width + "px"}).fadeTo(0,0.2);
-
       //Show the spinner up top
-      t = $('#loading');
       var viewportwidth, viewportheight;
       if (typeof window.innerWidth != 'undefined') {  // (mozilla/netscape/opera/IE7/etc.)
           viewportwidth = window.innerWidth,
@@ -176,12 +168,11 @@ optemo_module = (function (my){
           viewportwidth = document.getElementsByTagName('body')[0].clientWidth,
           viewportheight = document.getElementsByTagName('body')[0].clientHeight;
       }
-      if (height < 100) height = document.body.clientHeight / 2;
-      t.css({left: viewportwidth/2 + 'px', top : viewportheight/2 + 'px'}).show();
+      $('#loading').css({left: viewportwidth/2 + 'px', top : viewportheight/2 + 'px'}).show();
   }
   
   my.stop_spinner = function() {
-      $('#loading, #filter_silkscreen').hide();
+      $('#loading').hide();
   }
   
   //****Private Functions****
