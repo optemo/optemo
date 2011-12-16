@@ -159,13 +159,6 @@ optemo_module = (function (my){
   //--------------------------------------//
 
   my.start_spinner = function() {
-      // This will turn on the fade for the left area
-      elementToShadow = $('#filterbar');
-      var pos = elementToShadow.offset();
-      var width = elementToShadow.innerWidth() + 2; // Extra pixels are for the border.
-      var height = elementToShadow.innerHeight() + 2; // and padding bottom
-      $('#filter_silkscreen').css({'display' : 'inline', 'left' : pos.left + "px", 'top' : pos.top + "px", 'height' : height + "px", 'width' : width + "px"}).fadeTo(0,0.2);
-
       //Show the spinner up top
       t = $('#loading');
       var viewportwidth, viewportheight;
@@ -181,7 +174,7 @@ optemo_module = (function (my){
   }
   
   my.stop_spinner = function() {
-      $('#loading, #filter_silkscreen').hide();
+      $('#loading').hide();
   }
   
   //****Private Functions****
