@@ -160,7 +160,6 @@ optemo_module = (function (my){
 
   my.start_spinner = function() {
       //Show the spinner up top
-      t = $('#loading');
       var viewportwidth, viewportheight;
       if (typeof window.innerWidth != 'undefined') {  // (mozilla/netscape/opera/IE7/etc.)
           viewportwidth = window.innerWidth,
@@ -169,8 +168,7 @@ optemo_module = (function (my){
           viewportwidth = document.getElementsByTagName('body')[0].clientWidth,
           viewportheight = document.getElementsByTagName('body')[0].clientHeight;
       }
-      if (height < 100) height = document.body.clientHeight / 2;
-      t.css({left: viewportwidth/2 + 'px', top : viewportheight/2 + 'px'}).show();
+      $('#loading').css({left: viewportwidth/2 + 'px', top : viewportheight/2 + 'px'}).show();
   }
   
   my.stop_spinner = function() {
