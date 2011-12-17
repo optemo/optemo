@@ -3,6 +3,15 @@
 <ul id="sorting_method_box"><li><strong><%= t("products.sortby") %>: </strong></li>
   <%=raw sortby %>
 </ul>
+<%if (Session.search.collation!=nil)%>
+ <ul id="spellcheck_suggestion_box"><li><i> <b> You searched for</b> <font color= "blue"><%=Session.search.keyword%></font> <b> but did you mean</b><font color="darkblue">
+ <%if (Session.search.sc_emp_result)%>
+    <%=Session.search.collation%>
+ <%else%>
+  <a class="suggestion" href="#"> <%=Session.search.collation%></a>
+ <%end%>
+ </font></i></li></ul>		
+<%end%>
 <div id="product_content">
     <div class='border-content'>	
     <%= raw mb %>

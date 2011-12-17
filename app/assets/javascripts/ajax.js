@@ -262,6 +262,12 @@ optemo_module = (function (my){
       return false;
   });
   
+  
+  $('.suggestion').live('click', function() {
+      if (my.loading_indicator_state.disable) return false;
+      my.ajaxcall("/search", {"keyword" : $(this).html()});
+      return false;
+  });	
   /* End of LiveInit Functions */
   return my;
 })(optemo_module || {});

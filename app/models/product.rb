@@ -1,3 +1,6 @@
+require "sunspot"
+require "autocomplete_view_helpers"
+require 'sunspot_autocomplete'
 class Product < ActiveRecord::Base
   has_many :cat_specs
   has_many :bin_specs
@@ -26,7 +29,9 @@ class Product < ActiveRecord::Base
       text_specs.find_by_name("longDescription").try(:value)
     end
     text :sku 
-    boolean :instock 
+    boolean :instock
+    autocomplete :post_title, :using => :title
+    #autocomplete :post_description, :using => :description 
   end
   
   def self.cached(id)

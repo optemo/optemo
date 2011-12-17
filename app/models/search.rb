@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+require 'sunspot_spellcheck'
 require 'will_paginate/array'
+
 class Search < ActiveRecord::Base
   attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size, :keyword
+  attr :suggestions, :collation, :sc_emp_result, :keyword
   
   def userdataconts
       @userdataconts ||= Userdatacont.find_all_by_search_id(id)
@@ -89,16 +92,38 @@ class Search < ActiveRecord::Base
   def products
     if @keyword
       phrase = @keyword
-     @products ||= Product.search do
+      @sc_emp_result = false
+     @keysearch ||= Product.search do
         fulltext phrase
-
+        spellcheck :count => 5
         with :instock, 1
+        
         #with(:published_at).less_than Time.now
         #order_by :published_at, :desc
         #paginate :page => 2, :per_page => 15
         #facet :category_ids, :author_id
-      end.results
-    else
+     end
+     if (!@keysearch.suggestions.empty?)
+          puts "suggestions: #{@keysearch.suggestions}"
+          @suggestions = @keysearch.suggestions
+          @collation = @keysearch.collation
+         
+         if (@keysearch.results.empty?)
+                @sc_emp_result = true 
+                phrase = @keysearch.collation        
+                @products ||= Product.search do
+                         fulltext phrase
+                         with :instock, 1
+                  end.results   
+                
+         else
+             @products =@keysearch.results
+         end
+               
+     else    
+        @products =@keysearch.results                          
+     end
+   else
       @products ||= ContSpec.fq2
     end
   end
@@ -231,6 +256,9 @@ class Search < ActiveRecord::Base
     when "filter"
       #product filtering has been done through keyword search of attribute filters
       @keyword = p[:keyword]
+      @collation = nil
+      @suggestions={}
+      @sc_emp_result=false
       createFeatures(p[:filters])
       self.initial = false
     else
