@@ -4,7 +4,7 @@
   <%=raw sortby %>
 </ul>
 <%if (Session.search.collation!=nil)%>
- <ul id="spellcheck_suggestion_box"><li><i> <b> You searched for</b> <font color= "blue"><%=Session.search.keyword%></font> <b> but did you mean</b><font color="darkblue">
+ <ul id="spellcheck_suggestion_box"><li><i> <b> You searched for</b> <font color= "blue"><%=Session.search.keyword%></font> <b> but did you mean:</b><font color="darkblue">
  <%if (Session.search.sc_emp_result)%>
     <%=Session.search.collation%>
  <%else%>

@@ -30,7 +30,7 @@ class Product < ActiveRecord::Base
     end
     text :sku 
     boolean :instock
-    autocomplete :post_title, :using => :title
+    #autocomplete :post_title, :using => :title
     #autocomplete :post_description, :using => :description 
   end
   
