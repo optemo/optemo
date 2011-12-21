@@ -17,11 +17,11 @@
         dimension: " "+t.attr('data-unit')
         skin: "plastic"
         callback: (value) ->
+          t.parent().siblings('.range').val(value)
           optemo_module.submitAJAX() #Auto-submit
-        onmove: (value) ->
+        movable: (value) ->
           [min,max] = (parseFloat(i) for i in value.split(";"))
-          console.log(min+mystep,t.attr('data-distmin'),max,t.attr('data-distmax'),min+mystep < parseFloat(t.attr('data-distmax')) and max-mystep > parseFloat(t.attr('data-distmin')))
-          min+mystep < parseFloat(t.attr('data-distmax')) and max-mystep > parseFloat(t.attr('data-distmin'))
+          min < parseFloat(t.attr('data-distmax')) and max > parseFloat(t.attr('data-distmin'))
       histogram(t.parent().siblings('.hist')[0])
       console.log(t.attr('name')+calcInterval(min,max))
       

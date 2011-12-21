@@ -930,12 +930,16 @@
   	},
   	onmousemove: function( evt, x ){
   	  var coords = this._getPageCoords( evt );
-  	  if (this.parent.settings.onmove && $.isFunction(this.parent.settings.onmove)) {
-  	    if (this.parent.settings.onmove.call( this.parent, this.parent.getValue() ))
-  	      this._set( this.calc( coords.x ) );
+  	  var prc = this.calc( coords.x );
+
+  	  if (this.parent.settings.movable && $.isFunction(this.parent.settings.movable)) {
+  	    var ptrs = this.parent.getValue().split(";");
+  	    ptrs[this.uid] = this.parent.prcToValue(prc);
+  	    if (this.parent.settings.movable.call( this.parent, ptrs.join(";")))
+  	      this._set(prc);
   	  }
   	  else
-  	    this._set( this.calc( coords.x ) );
+  	    this._set(prc);
   	},
   	onmouseup: function( evt ){
       // var coords = this._getPageCoords( evt );

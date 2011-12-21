@@ -16,10 +16,13 @@ optemo_module = (function (my){
   my.submitAJAX = function(){
       var selections = $("#filter_form").serializeObject();
       $.each(selections, function(k,v){
-          if(v == "" || v == "-") {
-              delete selections[k];
+          if(v == "" || v == "-" || v == ";") {
+            delete selections[k];
           }
-          /* Look for weird $ error */
+          /* Slider values shouldn't get sent unless specifically set */
+          if(k.match(/superfluous/)) {
+            delete selections[k];
+          }
       });
       my.ajaxcall("/compare/create", selections);
   }
