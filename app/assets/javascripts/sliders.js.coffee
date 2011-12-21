@@ -1,9 +1,32 @@
-/* Optemo Sliders */
+# Optemo Sliders
+@module "optemo_module", ->
+  #****Public Functions****
+  @SliderInit = ->
+    $('.slider').each ->
+      t = $(this)
+      min = parseFloat(t.attr('data-min'))
+      max = parseFloat(t.attr('data-max'))
+      mystep = calcInterval(min,max)
+      
+      t.slider
+        from: min
+        to: max
+        step: mystep
+        smooth: true
+        round: if mystep >= 1 then 0 else if mystep * 10 >= 1 then 1 else 2
+        dimension: " "+t.attr('data-unit')
+        skin: "plastic"
+        callback: (value) ->
+          optemo_module.submitAJAX() #Auto-submit
+        onmove: (value) ->
+          [min,max] = (parseFloat(i) for i in value.split(";"))
+          console.log(min+mystep,t.attr('data-distmin'),max,t.attr('data-distmax'),min+mystep < parseFloat(t.attr('data-distmax')) and max-mystep > parseFloat(t.attr('data-distmin')))
+          min+mystep < parseFloat(t.attr('data-distmax')) and max-mystep > parseFloat(t.attr('data-distmin'))
+      histogram(t.parent().siblings('.hist')[0])
+      console.log(t.attr('name')+calcInterval(min,max))
+      
 
-var optemo_module;
-optemo_module = (function (my){
-  //****Public Functions****
-  my.SliderInit = function() {
+  `oldSliderInit = function() {
       // Initialize Sliders
       $('.slider').each(function() {
           // threshold identifies that 2 sliders are too close to each other
@@ -234,7 +257,10 @@ optemo_module = (function (my){
       }
       t.cplineTo(init+(data.length)*step+4,height,5);
       t.andClose();
-  }
-
-  return my;
-})(optemo_module || {});
+  }`
+  #Private functions
+  calcInterval = (min,max) ->
+    range = max - min
+    steps = [1000, 500, 100, 50, 10, 5, 1, 0.5, 0.1, 0.05, 0.01]
+    s = steps.shift() until range/s > 30 #30 was selected arbitrarly, so that it looks good in the sliders
+    s

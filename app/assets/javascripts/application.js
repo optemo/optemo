@@ -1,7 +1,10 @@
 //= require realtime_price
 //= require raphael
-//= require jquery-ui-1.8.13.custom.min
+// require jquery-ui-1.8.13.custom.min
+//= require jquery.dependClass
+//= require jquery.slider
 //= require jquery.history
+//= require def
 //= require cookies
 //= require ajax
 //= require_self
