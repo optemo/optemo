@@ -6,11 +6,11 @@
 //= require jquery.history
 //= require def
 //= require cookies
+//= require sliders
+//= require comparison
 //= require ajax
 //= require_self
 //= require filters
-//= require sliders
-//= require comparison
 //= require bbfixes
 
 // These global variables must be declared explicitly for proper scope (the spinner is because setTimeout has its own scope and needs to set the spinner)

@@ -22,8 +22,8 @@
         movable: (value) ->
           [min,max] = (parseFloat(i) for i in value.split(";"))
           min < parseFloat(t.attr('data-distmax')) and max > parseFloat(t.attr('data-distmin'))
+          
       histogram(t.parent().siblings('.hist')[0])
-      console.log(t.attr('name')+calcInterval(min,max))
       
 
   `oldSliderInit = function() {
