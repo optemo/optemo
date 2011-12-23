@@ -148,7 +148,7 @@ optemo_module = (function (my){
   my.ajaxcall = function(myurl,mydata) {
       // Disable interface elements.
       $('.slider').each(function() {
-          $(this).slider("option", "disabled", true);
+          $(this).slider("disabled", true);
       });
       $('.binary_filter, .cat_filter').attr('disabled', true);
       my.loading_indicator_state.disable = true; //Disables any live click handlers
