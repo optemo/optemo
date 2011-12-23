@@ -28,14 +28,14 @@ optemo_module = (function (my){
             }
             
             //Update the saleprice
-            c.find('.saleprice > span').html((optemo_french ? "" : "$") + this.salePrice + (optemo_french ? " $" : ""));
+            c.find('.saleprice > span').html(((typeof(optemo_french) != "undefined" && optemo_french) ? "" : "$") + this.salePrice + ((typeof(optemo_french) != "undefined" && optemo_french) ? " $" : ""));
             //Update the regularprice
-            c.find('.price > span').html((optemo_french ? "" : "$") + this.regularPrice + (optemo_french ? " $" : ""));
+            c.find('.price > span').html(((typeof(optemo_french) != "undefined" && optemo_french) ? "" : "$") + this.regularPrice + ((typeof(optemo_french) != "undefined" && optemo_french) ? " $" : ""));
             //Update the savings
             var savings = (parseFloat(this.regularPrice)-parseFloat(this.salePrice)).toFixed(2);
             var current_savings = c.find('.save > span').html()
             if (!(savings == parseFloat(current_savings) || savings == parseFloat(current_savings.substring(1,current_savings.length)))) {
-              c.find('.save > span').html((optemo_french ? "" : "$") + savings + (optemo_french ? " $" : ""));
+              c.find('.save > span').html(((typeof(optemo_french) != "undefined" && optemo_french) ? "" : "$") + savings + ((typeof(optemo_french) != "undefined" && optemo_french) ? " $" : ""));
               //Remove saleEnd data because we don't have accurate ones
               c.find('.saleends').hide();
             }
