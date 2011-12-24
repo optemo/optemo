@@ -12,7 +12,15 @@ fr:
         outof:                      "Parmi %{count} lecteurs"
         compare:                   "Comparer"
 
-        specs:       
+        specs:
+            saleprice:
+                name:               "Prix"
+            brand:
+                name:               "Marque"
+            category:
+                name:               "Catégorie"
+            customerRating:
+                name:               "Évaluation"
             internal:
                 name:               "Interne"
             external:
