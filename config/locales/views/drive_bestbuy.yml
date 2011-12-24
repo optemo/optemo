@@ -13,6 +13,14 @@ en:
         compare:                    "Compare"
         
         specs:
+            saleprice:
+                name:               "Price"
+            category:
+                name:               "Product Category"
+            brand:
+                name:               "Brand"
+            customerRating:
+                name:               "Rating"
             internal:
                 name:               "Internal"
             external:

@@ -13,6 +13,14 @@ fr:
         compare:                    "Comparer"
         
         specs:
+            saleprice:
+                name:               "Prix"
+            brand:
+                name:               "Marque"
+            color:
+                name:               "Couleur"
+            customerRating:
+                name:               "Évaluation"
             maxresolution:
                 name:               "Mégapixels"
                 unit:               "Mpx"
