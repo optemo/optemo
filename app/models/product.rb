@@ -1,6 +1,7 @@
 require "sunspot"
-require "autocomplete_view_helpers"
 require 'sunspot_autocomplete'
+require "autocomplete_view_helpers"
+
 class Product < ActiveRecord::Base
   has_many :cat_specs
   has_many :bin_specs
@@ -20,17 +21,22 @@ class Product < ActiveRecord::Base
   #  ThinkingSphinx.updates_enabled = false
   #  ThinkingSphinx.deltas_enabled = false
   #end
-  
+  attr_writer :product_name
   searchable do
+    #text :title do
     text :title do
       cat_specs.find_by_name("title").try(:value)
     end
+     
     text :description do
       text_specs.find_by_name("longDescription").try(:value)
     end
+    
     text :sku 
     boolean :instock
-    #autocomplete :post_title, :using => :title
+    autosuggest :product_name, :using => :title, :using => :sku
+    
+    puts "test2: #{:product_name}"
     #autocomplete :post_description, :using => :description 
   end
   

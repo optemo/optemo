@@ -9,6 +9,12 @@
 //= require sliders
 //= require comparison
 //= require bbfixes
+//= require solr-autocomplete/ajax-solr/core/Core
+//= require solr-autocomplete/ajax-solr/core/AbstractManager
+//= require solr-autocomplete/ajax-solr/managers/Manager.jquery
+//= require solr-autocomplete/ajax-solr/core/Parameter
+//= require solr-autocomplete/ajax-solr/core/ParameterStore
+//= require solr-autocomplete/jquery-autocomplete/jquery.autocomplete
 
 // These global variables must be declared explicitly for proper scope (the spinner is because setTimeout has its own scope and needs to set the spinner)
 var optemo_module;
