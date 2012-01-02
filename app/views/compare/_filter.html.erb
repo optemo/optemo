@@ -65,7 +65,8 @@
             data-max= '<%= distribution_data.first[3].ceil %>'
             data-distmin=<%= distribution_data.first[0] %>
             data-distmax=<%= distribution_data.first[1] %>
-            data-unit = "<%= t("#{Session.product_type}.specs.#{f.name}.unit", :default => '') %>" />
+            data-unit = "<%= t("#{Session.product_type}.specs.#{f.name}.unit", :default => '') %>" 
+            disabled="disabled"/>
         </span>
       </div>
     <% end %>

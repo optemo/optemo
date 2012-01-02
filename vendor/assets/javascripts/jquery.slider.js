@@ -419,6 +419,8 @@
   		      
   		    case "disabled":
             self.settings.disabled=args[1];
+            self.addClass("disabled");
+            
             break;
 		    };
 		  
