@@ -104,6 +104,7 @@ class Search < ActiveRecord::Base
         #paginate :page => 2, :per_page => 15
         #facet :category_ids, :author_id
      end
+
      if (!@keysearch.suggestions.empty?)
           #puts "suggestions: #{@keysearch.suggestions}"
           @suggestions = @keysearch.suggestions

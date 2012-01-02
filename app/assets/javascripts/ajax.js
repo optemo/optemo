@@ -12,8 +12,6 @@ optemo_module = (function (my){
     my.getRealtimePrices();
     my.load_comparisons();
     my.SliderInit();
-    $('#product_name').autosuggest('http://127.0.0.1:8983/solr/', 'product_name', {});
-   
   } 
   my.submitAJAX = function(){
       var selections = $("#filter_form").serializeObject();
@@ -263,7 +261,11 @@ optemo_module = (function (my){
       my.ajaxcall("/compare", {"sortby" : $(this).attr('data-feat')});
       return false;
   });
-  
+  $('#keyword_submit').live("click", function(){
+    if (my.loading_indicator_state.disable) return false;
+    my.ajaxcall("/search", {"keyword" : $("#product_name").val()});
+    return false;
+  })
   
   $('.suggestion').live('click', function() {
       if (my.loading_indicator_state.disable) return false;
