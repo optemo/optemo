@@ -12,12 +12,8 @@ optemo_module = (function (my){
     my.getRealtimePrices();
     my.load_comparisons();
     my.SliderInit();
-<<<<<<< HEAD
-  
-   
-=======
->>>>>>> origin/search
-  } 
+
+} 
   my.submitAJAX = function(){
       var selections = $("#filter_form").serializeObject();
       $.each(selections, function(k,v){
@@ -274,7 +270,7 @@ optemo_module = (function (my){
   
   $('.suggestion').live('click', function() {
       if (my.loading_indicator_state.disable) return false;
-      my.ajaxcall("/search", {"product_name" : $(this).html()});
+      my.ajaxcall("/search", {"keyword" : $(this).html()});
       return false;
   });
  
