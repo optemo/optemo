@@ -27,12 +27,12 @@ class CompareController < ApplicationController
   
   def keyword_search
     #@skus = BestBuyApi.keyword_search(params[:keyword])
-     puts "product_title_jan2 autocomp #{params[:product][:name]}"
-    if (params[:product][:name] =~/[0-9BM]\d{7}/)
+
+    if (params[:keyword] =~/[0-9BM]\d{7}/)
       #puts "sku_number #{params[:product][:name]}"
-      redirect_to (TextSpec.cacheone((Product.find_by_sku(params[:product][:name])).id, "productUrl"))
+      redirect_to (TextSpec.cacheone((Product.find_by_sku(params[:keyword])).id, "productUrl"))
      else                   
-      classVariables(Search.create(action_type: "filter", parent: params[:hist], keyword: params[:product][:name], filters: {continuous: {}, categorical: {}, binary: {}}))
+      classVariables(Search.create(action_type: "filter", parent: params[:hist], keyword: params[:keyword], filters: {continuous: {}, categorical: {}, binary: {}}))
           correct_render       
     end
   end

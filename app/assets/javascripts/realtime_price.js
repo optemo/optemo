@@ -53,7 +53,7 @@ optemo_module = (function (my){
             if (!(addlink.length)) {
               addlink = t.parent().parent().siblings();
             }
-            addlink.after($('<div style="text-align: center;">').html(optemo_french ? "(En rupture de stock)" : "(Out of stock)")).hide();
+            addlink.after($('<div style="text-align: center;">').html((typeof(optemo_french) != "undefined" && optemo_french) ? "(En rupture de stock)" : "(Out of stock)")).hide();
           });
         }
     });
