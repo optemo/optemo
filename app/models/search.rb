@@ -105,7 +105,7 @@ class Search < ActiveRecord::Base
         #facet :category_ids, :author_id
      end
      if (!@keysearch.suggestions.empty?)
-          #puts "suggestions: #{@keysearch.suggestions}"
+          puts "suggestions: #{@keysearch.suggestions}"
           @suggestions = @keysearch.suggestions
           @collation = @keysearch.collation
          

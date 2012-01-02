@@ -1,9 +1,9 @@
 <div class="y_heading">
   <p class="narrow_text">
     <%= image_tag "refine_your_search#{fr?}.gif" %>
- 	<%= form_tag("/search", :method => "get") do %>
+ 	<%= form_tag("/search", :method => "post") do %>
 	<br>
-	<%=raw autosuggest_text_field "product", "name", "http://127.0.0.1:8983/solr/", "product_name", :size => 15 %>:<%= submit_tag("Go", :size => "2", :action=>'commit', :name=> 'word_submit' ) %>
+	<%=raw autosuggest_text_field "product", "name", "http://127.0.0.1:8982/solr/", "product_name", :size => 15 %>:<%= submit_tag("Go", :size => "2", :class=> "commit" ) %>
 	</br>
 	<%end%>
     <%= link_to t('products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc')%>  
