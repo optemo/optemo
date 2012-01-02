@@ -92,7 +92,6 @@ class Search < ActiveRecord::Base
   def products
     if @keyword
       phrase = @keyword
-      puts "phrase-jan2 #{phrase}"
       @sc_emp_result = false
      @keysearch ||= Product.search do
         fulltext phrase
@@ -106,7 +105,7 @@ class Search < ActiveRecord::Base
      end
 
      if (!@keysearch.suggestions.empty?)
-          puts "suggestions: #{@keysearch.suggestions}"
+          #puts "suggestions: #{@keysearch.suggestions}"
           @suggestions = @keysearch.suggestions
           @collation = @keysearch.collation
          
