@@ -19,10 +19,10 @@
   <%= link_to t('products.compare.clear'), "#", :class => "nav_clear_btn", :rel => "nofollow", :title => t('products.compare.cleardesc') %>
   <% unless defined? bottom %>
     <%= form_tag("/search", :method => "post", id: "keyword_search") do %>
-  	  <% solr_config = YAML.load_file("#{Rails.root}/config/sunspot.yml")[Rails.env] %>
-  	  <%=raw autosuggest_text_field "product", "name", "http://127.0.0.1:#{solr_config['solr']['port']}/solr/", "product_name", :size => 68 %>
-  	  <%= submit_tag("Search", :size => "2", :action=>'commit', :name=> 'word_submit', :id => 'keyword_submit' ) %>
-  	<% end %>
+      <% solr_config = YAML.load_file("#{Rails.root}/config/sunspot.yml")[Rails.env] %>
+      <%=raw autosuggest_text_field "product", "name", "http://127.0.0.1:#{solr_config['solr']['port']}/solr/", "product_name", size: 68, onfocus: "javascript:this.value='';", value: Session.search.keyword || "Keyword or Web Code" %>
+      <%= submit_tag "Search", id: 'keyword_submit' %>
+    <% end %>
   <% end %>
 </div>
 
