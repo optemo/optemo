@@ -156,8 +156,6 @@ GEM
     uglifier (1.2.0)
       execjs (>= 0.3.0)
       multi_json (>= 1.0.2)
-    vinova_sunspot_autocomplete (1.0.1)
-      sunspot_rails
     will_paginate (3.0.0)
     yui-compressor (0.9.6)
       POpen4 (>= 0.1.4)
@@ -181,6 +179,5 @@ DEPENDENCIES
   sunspot_rails
   sunspot_solr
   uglifier
-  vinova_sunspot_autocomplete
   will_paginate (= 3.0.0)
   yui-compressor

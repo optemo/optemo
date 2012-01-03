@@ -122,6 +122,10 @@ html {
 	min-height: 744px; /* Empirically determined; used for embedded LPH layout */
 }
 
+#optemo_embedder #keyword_search {
+  padding-left: 7px;
+}
+
 #optemo_embedder #navigator_bar {
 	border-top: 1px solid #d0d0d0;
 	border-left: 1px solid #d0d0d0;
@@ -129,7 +133,7 @@ html {
   background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
   background-image:-o-linear-gradient(bottom, rgb(254,231,25), rgb(255,242,0));
   background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200));
-  height: 75px;
+  height: 99px;
   overflow: hidden;
   overflow: hidden;
   position: relative;
@@ -247,12 +251,15 @@ html {
   padding: 13px 0 0 15px;
   margin: 0;
 }
-#optemo_embedder ul#spellcheck_suggestion_box{
-  list-style-type: none;
+#optemo_embedder #spellcheck_suggestion_box{
+  color: red;
   font-size: 12px;
   height: 27px;
-  padding: 5px 0 0 5px;
+  padding: 0 0 0 15px;
   margin: 0;
+}
+#optemo_embedder #spellcheck_suggestion_box b{
+  color: black;
 }
 
 #optemo_embdder #IE.ie7 ul#sorting_method_box, #optemo_embedder #IE.ie6 ul#sorting_method_box{
@@ -1594,7 +1601,7 @@ margin-top:0;
 #optemo_embedder .y_heading
 {
   overflow:hidden;
-  height: 115px;
+  height: 75px;
   background-image:-moz-linear-gradient(center bottom, #cecece, #e9e9e9);
   background-image:-o-linear-gradient(bottom, rgb(206,206,206), rgb(233,233,233));
   background-image:-webkit-gradient(linear, left bottom, left top, from(#cecece), to(#e9e9e9));

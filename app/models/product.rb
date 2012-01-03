@@ -35,8 +35,6 @@ class Product < ActiveRecord::Base
     text :sku 
     boolean :instock
     autosuggest :product_name, :using => :title
-    
-    #autocomplete :post_description, :using => :description 
   end
   
   def self.cached(id)

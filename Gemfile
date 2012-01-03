@@ -39,7 +39,6 @@ gem 'capistrano-ext'
 gem 'sunspot_rails'
 gem 'sunspot_solr' # optional pre-packaged Solr distribution for use in development
 gem 'progress_bar'
-gem 'vinova_sunspot_autocomplete'
 
 #gem 'thinking-sphinx', '2.0.1', :require => 'thinking_sphinx'
 gem 'will_paginate', '3.0.0'

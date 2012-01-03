@@ -107,7 +107,7 @@ class Search < ActiveRecord::Base
      end
 
      if (!@keysearch.suggestions.empty?)
-        #  puts "suggestions: #{@keysearch.suggestions}"
+
           @suggestions = @keysearch.suggestions
           @collation = @keysearch.collation
          

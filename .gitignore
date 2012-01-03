@@ -20,5 +20,10 @@ cache/*
 .sass-cache/
 public/assets/
 
+
+solr/data
+solr/pids
+
+
 TAGS
 
