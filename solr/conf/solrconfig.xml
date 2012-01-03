@@ -605,8 +605,7 @@
       <str name="name">default</str>
       <str name="field">title_text</str>
 	  <str name="field">description_text</str>
-	  <str name="field">autocomplete</str> 	
-      <str name="spellcheckIndexDir">./spellchecker</str>
+	  <str name="spellcheckIndexDir">./spellchecker</str>
 	  <str name="buildOnOptimize">true</str>
     </lst>
     <!-- a spellchecker that uses a different distance measure

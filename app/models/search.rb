@@ -91,9 +91,10 @@ class Search < ActiveRecord::Base
   
   def products
     if @keyword
-      phrase = @keyword
+      phrase = @keyword.downcase
       puts "phrase-jan2 #{phrase}"
       @sc_emp_result = false
+      
      @keysearch ||= Product.search do
         fulltext phrase
         spellcheck :count => 5
@@ -106,7 +107,7 @@ class Search < ActiveRecord::Base
      end
 
      if (!@keysearch.suggestions.empty?)
-          puts "suggestions: #{@keysearch.suggestions}"
+        #  puts "suggestions: #{@keysearch.suggestions}"
           @suggestions = @keysearch.suggestions
           @collation = @keysearch.collation
          
@@ -116,12 +117,12 @@ class Search < ActiveRecord::Base
                 @products ||= Product.search do
                          fulltext phrase
                          with :instock, 1
-                  end.results   
+                end.results
                 
          else
              @products =@keysearch.results
          end
-               
+                
      else    
         @products =@keysearch.results                          
      end

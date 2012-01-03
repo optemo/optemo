@@ -36,7 +36,6 @@ class Product < ActiveRecord::Base
     boolean :instock
     autosuggest :product_name, :using => :title
     
-    puts "test2: #{:product_name}"
     #autocomplete :post_description, :using => :description 
   end
   
