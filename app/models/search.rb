@@ -90,14 +90,13 @@ class Search < ActiveRecord::Base
   end
   
   def products
-    if @keyword
-      phrase = @keyword.downcase
-      puts "phrase-jan2 #{phrase}"
+  if @keyword
+      phrase = @keyword.downcase.gsub(/\s-/,'')
+      puts "phrase-jan3-search #{phrase}"
       @sc_emp_result = false
       
      @keysearch ||= Product.search do
         fulltext phrase
-        spellcheck :count => 5
         with :instock, 1
         
         #with(:published_at).less_than Time.now
@@ -105,7 +104,7 @@ class Search < ActiveRecord::Base
         #paginate :page => 2, :per_page => 15
         #facet :category_ids, :author_id
      end
-
+     puts "keysearch_total #{@keysearch.total}"
      if (!@keysearch.suggestions.empty?)
 
           @suggestions = @keysearch.suggestions
@@ -124,7 +123,8 @@ class Search < ActiveRecord::Base
          end
                 
      else    
-        @products =@keysearch.results                          
+        @products =@keysearch.results 
+                 
      end
    else
       @products ||= ContSpec.fq2

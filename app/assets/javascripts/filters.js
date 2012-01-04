@@ -21,11 +21,6 @@ optemo_module = (function (my){
       return false;
   });
   
-  $('#keyword_submit').live('click', function(e){
-    if (my.loading_indicator_state.disable) return false;
-    my.ajaxcall("/search", {'keyword':$('#keyword').val()});
-    return false;
-  });
   
   // Add a color selection -- submit
   $('.swatch_button').live('click', function(){

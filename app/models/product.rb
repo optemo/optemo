@@ -34,7 +34,15 @@ class Product < ActiveRecord::Base
     
     text :sku 
     boolean :instock
-    autosuggest :product_name, :using => :title
+    autosuggest :product_name, :using => :instock?                                 
+  end
+  
+  def instock?
+    if (instock)
+      cat_specs.find_by_name("title").try(:value)
+    else
+      false
+   end
   end
   
   def self.cached(id)

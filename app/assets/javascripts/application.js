@@ -9,6 +9,7 @@
 //= require sliders
 //= require comparison
 //= require bbfixes
+//= require search
 //= require solr-autocomplete/ajax-solr/core/Core
 //= require solr-autocomplete/ajax-solr/core/AbstractManager
 //= require solr-autocomplete/ajax-solr/managers/Manager.jquery

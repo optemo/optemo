@@ -5,13 +5,13 @@
 </ul>
 <%if (Session.search.collation!=nil)%>
   <div id="spellcheck_suggestion_box">
-    Showing results for
+    You searched for <b><%=Session.search.keyword%></b>,
+	,did you mean
     <b><%if (Session.search.sc_emp_result)%>
       <%=Session.search.collation%>
     <%else%>
       <a class="suggestion" href="#"> <%=Session.search.collation%></a>
     <%end%></b>
-    as there were no results for <b><%=Session.search.keyword%></b>
   </div>		
 <%end%>
 <div id="product_content">

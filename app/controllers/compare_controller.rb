@@ -27,6 +27,7 @@ class CompareController < ApplicationController
   
   def keyword_search
     #@skus = BestBuyApi.keyword_search(params[:keyword])
+    #puts "phrase_jan3 #{params[:keyword]}"
 
     if (params[:keyword] =~/[0-9BM]\d{7}/)
       #puts "sku_number #{params[:product][:name]}"
