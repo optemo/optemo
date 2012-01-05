@@ -12,7 +12,15 @@ fr:
         outof:                      "Parmi %{count} lecteurs"
         compare:                   "Comparer"
 
-        specs:       
+        specs:
+            saleprice:
+                name:               "Prix"
+            brand:
+                name:               "Marque"
+            category:
+                name:               "Catégorie"
+            customerRating:
+                name:               "Évaluation"
             internal:
                 name:               "Interne"
             external:
@@ -27,7 +35,7 @@ fr:
                 name:               "Mac"
             rotations:
                 name:               "Tours par minute"
-                unit:               "RPM"
+                unit:               "tours/min"
             capacity:
                 name:               "Capacité de stockage"
                 unit:               "Go"
@@ -49,11 +57,43 @@ fr:
                 name:               "Accessoires pour stockage"
             '20028':
                 name:               "Supports d'enregistrement"
+            '29582':
+                name:               "Serveur de stockage en réseau (NAS)"
             dataBuffer:
                 name:               "Mémoire tampon"
-                unit:               "Mo"
+                unit:               "Mo"                
+            cdReadSpeed:
+                name:               "Vitesse de lecture des CD"
+            cdRewriteSpeed:
+                name:               "Vitesse de réécriture des CD"
+            cdWriteSpeed:
+                name:               "Vitesse d'écriture des CD"
+            dvdReadSpeed:
+                name:               "Vitesse de lecture des DVD"
+            dvdRewriteSpeed:
+                name:               "Vitesse de réécriture des DVD"
+            dvdWriteSpeed:
+                name:               "Vitesse d'écriture des DVD"
+            dataAccessTime:
+                name:               "Temps d'accès aux données"
+            dataTransferTime:
+                name:               "Temps de transfert des données"
+            dataTransferRate:
+                name:               "Vitesse de transfert des données"
+            readPerSecond:
+                name:               "Opérations de lecture"
+            writePerSecond:
+                name:               "Opérations d'écriture"
+            seekTime:
+                name:               "Temps de positionnement"
+            interface:
+                name:               "Interface"
+            dimensions:
+                name:               "Dimensions"
+            weight:
+                name:               "Poids"
             driveSize:
-                name:               "Dimension du disque dur"
+                name:               "Dimensions du disque dur"
             drive_size_25:
                 name:               "2.5\""
             drive_size_35:

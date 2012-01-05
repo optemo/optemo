@@ -17,6 +17,14 @@ en:
                 name:               "Megapixels"
                 info:               "Measured in megapixels (millions of pixels), the number of light-sensitive cells that are actually exposed to light and used to capture the image, while the remainder may be shielded or just unused."
                 unit:               "MP"
+            saleprice:
+                name:               "Price"
+            brand:
+                name:               "Brand"
+            color:
+                name:               "Colour"
+            customerRating:
+                name:               "Rating"
             opticalzoom:
                 name:               "Optical Zoom"
                 info:               'Magnifies the photo by physical lens movement to bring you closer to the subject, thereby keeping the original photo quality. The magnification level is expressed in factors, such as "3x", "6x", or "10x".'
