@@ -16,10 +16,13 @@ optemo_module = (function (my){
   my.submitAJAX = function(){
       var selections = $("#filter_form").serializeObject();
       $.each(selections, function(k,v){
-          if(v == "" || v == "-") {
-              delete selections[k];
+          if(v == "" || v == "-" || v == ";") {
+            delete selections[k];
           }
-          /* Look for weird $ error */
+          /* Slider values shouldn't get sent unless specifically set */
+          if(k.match(/superfluous/)) {
+            delete selections[k];
+          }
       });
       my.ajaxcall("/compare/create", selections);
   }
@@ -145,7 +148,7 @@ optemo_module = (function (my){
   my.ajaxcall = function(myurl,mydata) {
       // Disable interface elements.
       $('.slider').each(function() {
-          $(this).slider("option", "disabled", true);
+          $(this).slider("disabled", true);
       });
       $('.binary_filter, .cat_filter').attr('disabled', true);
       my.loading_indicator_state.disable = true; //Disables any live click handlers
