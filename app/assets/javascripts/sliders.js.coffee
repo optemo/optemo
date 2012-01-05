@@ -22,7 +22,24 @@
         movable: (value) ->
           [min,max] = (parseFloat(i) for i in value.split(";"))
           min < parseFloat(t.attr('data-distmax')) and max > parseFloat(t.attr('data-distmin'))
-          
+        calculate: (value, label) ->
+          #GB / TB conversion
+          if label?
+            if label.html().match(/[GT]B/) && value >= 1000
+              value = value / 1000
+              this.settings.round = 1
+              label.html "TB"
+            else if label.html().match(/[GT]B/) && value < 1000
+              this.settings.round = 0
+              label.html "GB"
+          value = value.toString()
+            .replace(/,/gi, ".")
+            .replace(/\ /gi, "")
+          if( Number.prototype.jSliderNice )
+            (new Number(value)).jSliderNice(this.settings.round).replace(/-/gi, "&minus;")
+          else
+            new Number(value)
+
       histogram(t.parent().siblings('.hist')[0])
 
   #Private functions
