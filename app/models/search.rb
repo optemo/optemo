@@ -3,8 +3,9 @@ require 'sunspot_spellcheck'
 require 'will_paginate/array'
 
 class Search < ActiveRecord::Base
-  attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size, :keyword
-  attr :suggestions, :collation, :sc_emp_result, :keyword
+  attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
+  attr :collation, :sc_emp_result, :col_emp_result, :num_result
+  attr_accessor :keyword
   
   def userdataconts
       @userdataconts ||= Userdatacont.find_all_by_search_id(id)
@@ -90,45 +91,58 @@ class Search < ActiveRecord::Base
   end
   
   def products
-  if @keyword
-      phrase = @keyword.downcase.gsub(/\s-/,'')
-      puts "phrase-jan3-search #{phrase}"
-      @sc_emp_result = false
+  if keyword_search
+    @keyword = keyword_search
+    phrase = keyword_search.downcase.gsub(/\s-/,'')
+    
       
-     @keysearch ||= Product.search do
+    @sc_emp_result = false
+    @col_emp_result = false
+    @num_result = 0
+    #page_num = page
+         
+    @keysearch ||= Product.search do
+      fulltext phrase
+      with :instock, 1
+      paginate :per_page => 500 
+     
+      #with(:published_at).less_than Time.now
+      #order_by :published_at, :desc
+      #facet :category_ids, :author_id
+    end
+    #puts "phrase-jan5-search #{phrase}"
+    #puts "keysearch_total #{@keysearch.total}"
+    #puts "total_pages_results: #{@keysearch.results.total_pages}"
+    
+    @num_result = @keysearch.total
+    if (!@keysearch.suggestions.empty?)
+     #@suggestions = @keysearch.suggestions
+      @collation = @keysearch.collation
+         
+      phrase = @collation.downcase.gsub(/\s-/,'')        
+      @sug_products ||= Product.search do
         fulltext phrase
         with :instock, 1
-        
-        #with(:published_at).less_than Time.now
-        #order_by :published_at, :desc
-        #paginate :page => 2, :per_page => 15
-        #facet :category_ids, :author_id
-     end
-     puts "keysearch_total #{@keysearch.total}"
-     if (!@keysearch.suggestions.empty?)
-
-          @suggestions = @keysearch.suggestions
-          @collation = @keysearch.collation
+        paginate :per_page => 500
+      end
          
-         if (@keysearch.results.empty?)
-                @sc_emp_result = true 
-                phrase = @keysearch.collation        
-                @products ||= Product.search do
-                         fulltext phrase
-                         with :instock, 1
-                end.results
+      if (@sug_products.results.empty?)
+        @col_emp_result = true;
+      end
+         
+      if (@keysearch.results.empty? && !@col_emp_result)
+        @sc_emp_result = true 
+        @products = @sug_products.results
+      else
+        @products =@keysearch.results
+      end
                 
-         else
-             @products =@keysearch.results
-         end
-                
-     else    
-        @products =@keysearch.results 
-                 
-     end
-   else
-      @products ||= ContSpec.fq2
+    else    
+      @products =@keysearch.results 
     end
+  else
+    @products ||= ContSpec.fq2
+  end
   end
   
   def products_landing
@@ -258,10 +272,8 @@ class Search < ActiveRecord::Base
       duplicateFeatures(old_search)
     when "filter"
       #product filtering has been done through keyword search of attribute filters
-      @keyword = p[:keyword]
-      @collation = nil
-      @suggestions={}
-      @sc_emp_result=false
+      self.keyword_search = p[:keyword]
+      #self.page = p[:page]
       createFeatures(p[:filters])
       self.initial = false
     else
@@ -321,6 +333,7 @@ class Search < ActiveRecord::Base
         @userdatacats << Userdatacat.new({:name => k, :value => cat})
       end
     end
+    
     cats = []
     #Check for cat filters which have been eliminated by other filters
     @userdatacats.group_by(&:name).each_pair do |k,v|

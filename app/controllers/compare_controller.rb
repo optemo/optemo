@@ -25,19 +25,6 @@ class CompareController < ApplicationController
       correct_render
     end
   
-  def keyword_search
-    #@skus = BestBuyApi.keyword_search(params[:keyword])
-    #puts "phrase_jan3 #{params[:keyword]}"
-
-    if (params[:keyword] =~/[0-9BM]\d{7}/)
-      #puts "sku_number #{params[:product][:name]}"
-      redirect_to (TextSpec.cacheone((Product.find_by_sku(params[:keyword])).id, "productUrl"))
-     else                   
-      classVariables(Search.create(action_type: "filter", parent: params[:hist], keyword: params[:keyword], filters: {continuous: {}, categorical: {}, binary: {}}))
-          correct_render       
-    end
-  end
-  
   #This function should be combined with create
   def featured
       classVariables(Search.create(:action_type => "featured", :parent => params[:hist]))
@@ -71,8 +58,22 @@ class CompareController < ApplicationController
   end  
   
   def create
+  if (params[:keyword])  
+    if (params[:keyword] =~/[0-9BM]\d{7}/)
+       #puts "sku_number #{params[:product][:name]}"
+       redirect_to (TextSpec.cacheone((Product.find_by_sku(params[:keyword])).id, "productUrl"))
+    else
+    #  if (params[:page])                     
+    #    classVariables(Search.create(action_type: "nextpage", parent: params[:hist], keyword: params[:keyword], page: params[:page], filters: {continuous: {}, categorical: {}, binary: {}}))
+    #  else
+        classVariables(Search.create(action_type: "filter", parent: params[:hist], keyword: params[:keyword], filters: {continuous: {}, categorical: {}, binary: {}}))
+    #  end  
+        correct_render       
+    end
+  else 
     classVariables(Search.create(action_type: "filter", parent: params[:hist], filters: {continuous: params[:continuous], categorical: params[:categorical], binary: params[:binary]}))
     correct_render
+  end
   end
 
   # GET /products/1

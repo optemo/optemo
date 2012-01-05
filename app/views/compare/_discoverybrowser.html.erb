@@ -3,7 +3,7 @@
 <ul id="sorting_method_box"><li><strong><%= t("products.sortby") %>: </strong></li>
   <%=raw sortby %>
 </ul>
-<%if (Session.search.collation!=nil)%>
+<%if (Session.search.collation!=nil && !Session.search.col_emp_result) %>
   <div id="spellcheck_suggestion_box">
     You searched for <b><%=Session.search.keyword%></b>,
 	,did you mean
@@ -12,7 +12,11 @@
     <%else%>
       <a class="suggestion" href="#"> <%=Session.search.collation%></a>
     <%end%></b>
-  </div>		
+  </div>	
+<%elsif (Session.search.num_result == 0 && Session.search.col_emp_result )%>
+<div id="spellcheck_suggestion_box">
+ Your search: <b><%=Session.search.keyword%></b>, did not match any products. 	
+</div>
 <%end%>
 <div id="product_content">
     <div class='border-content'>	

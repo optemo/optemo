@@ -240,8 +240,10 @@ optemo_module = (function (my){
   $('.pagination a').live("click", function(){
       if (my.loading_indicator_state.disable) return false;
       my.ajaxcall($(this).attr('href'));
+
       return false;
   });
+
   //See all Products
   $('.seeall').live('click', function() {
       my.ajaxcall('/', {});
