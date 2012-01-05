@@ -52,7 +52,7 @@ optemo_module = (function (my){
         if (outsidecontainer.css('display') != 'block') 
             $('#info').html("").css({'height' : "560px", 'width' : (width-46)+'px'});
         outsidecontainer.css({'left' : '100px',
-                                    'top' : (dsoctop+5-187)+'px',
+                                    'top' : (dsoctop+5)+'px',
                                     'width' : (width||560)+'px',
                                     'display' : 'inline' });
     var wWidth = $(window).width();
