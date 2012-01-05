@@ -57,6 +57,8 @@ fr:
                 name:               "Accessoires pour stockage"
             '20028':
                 name:               "Supports d'enregistrement"
+            '29582':
+                name:               "Serveur de stockage en réseau (NAS)"
             dataBuffer:
                 name:               "Mémoire tampon"
                 unit:               "Mo"                
@@ -91,7 +93,7 @@ fr:
             weight:
                 name:               "Poids"
             driveSize:
-                name:               "Dimension du disque dur"
+                name:               "Dimensions du disque dur"
             drive_size_25:
                 name:               "2.5\""
             drive_size_35:
