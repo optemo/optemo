@@ -25,13 +25,15 @@
         calculate: (value, label) ->
           #GB / TB conversion
           if label?
-            if label.html().match(/[GT]B/) && value >= 1000
-              value = value / 1000
-              this.settings.round = 1
-              label.html "TB"
-            else if label.html().match(/[GT]B/) && value < 1000
-              this.settings.round = 0
-              label.html "GB"
+            unitmatch = /[GT]([Bo])/.exec(label.html())
+            if unitmatch
+              if value >= 1000
+                value = value / 1000
+                this.settings.round = 1
+                label.html "T"+unitmatch[1]
+              else
+                this.settings.round = 0
+                label.html "G"+unitmatch[1]
           value = value.toString()
             .replace(/,/gi, ".")
             .replace(/\ /gi, "")
