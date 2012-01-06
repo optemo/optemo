@@ -31,9 +31,6 @@ gem 'capistrano-ext'
 #      :git => 'git://github.com/svenfuchs/i18n-active_record.git',
 #      :require => 'i18n/active_record'
 
-# To use debugger
-gem 'ruby-debug19'
-
 # Bundle the extra gems:
 # gem 'bj'
 # gem 'nokogiri'
@@ -51,9 +48,12 @@ end
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
 # and rake tasks are available in development mode:
-# group :development, :test do
+group :development, :test do
 #   gem 'webrat'
-# end
+  gem "linecache19", "0.5.13"
+  gem "ruby-debug-base19", "0.11.26"
+  gem "ruby-debug19", :require => 'ruby-debug'
+end
 
 group :test do
 	gem 'factory_girl'
