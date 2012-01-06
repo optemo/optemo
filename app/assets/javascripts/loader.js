@@ -1,3 +1,4 @@
+//= require jsonp
 //= require_self
 var scriptSource = (function(scripts) { 
     var scripts = document.getElementsByTagName('script'), 
@@ -15,9 +16,7 @@ optemo_french = (window.location.href.match(/fr-ca/i));
 OPT_REMOTE = 'http://';
 if (typeof(optemo_french) != undefined && optemo_french != null) OPT_REMOTE += "fr.";
 OPT_REMOTE += temp_element.host;
-//Lightweight JSONP fetcher - www.nonobtrusive.com
-//Took out encodeURIComponent
-var JSONP=(function(){var a=0,c,f,b,d=this;function e(j){var i=document.createElement("script"),h=false;i.src=j;i.async=true;i.onload=i.onreadystatechange=function(){if(!h&&(!this.readyState||this.readyState==="loaded"||this.readyState==="complete")){h=true;i.onload=i.onreadystatechange=null;if(i&&i.parentNode){i.parentNode.removeChild(i)}}};if(!c){c=document.getElementsByTagName("head")[0]}c.appendChild(i)}function g(h,j,k){f="?";j=j||{};for(b in j){if(j.hasOwnProperty(b)){f+=encodeURIComponent(b)+"="+encodeURIComponent(j[b])+"&"}}var i="json"+(++a);d[i]=function(l){k(opt_parse_data_by_pattern(l, "<img[^>]+>", (function(mystring){return mystring.replace(/(\/images\/[^?]+)/, OPT_REMOTE + "$1");})));d[i]=null;try{delete d[i]}catch(m){}};e(h+f+"callback="+i);return i}return{get:g}}());
+
 //Function for executing code at DOMReady
 //function opt_s(f){/in/.test(document.readyState)?setTimeout('opt_s('+f+')',9):f()}
 function opt_insert(d) {
@@ -68,6 +67,7 @@ if (opt_history.length > 0)
     var opt_options = {embedding:'true', hist: opt_history, category_id: opt_category_id};
 else
     var opt_options = {embedding:'true', category_id: opt_category_id, landing: true};
+
 JSONP.get(OPT_REMOTE, opt_options, function (data) {
     if ( !/MSIE/i.test(navigator.userAgent) || scriptSource.match(/localhost/) || scriptSource.match(/192.168/)) { // We need to do some additional work
         var regexp_pattern, data_to_add, data_to_append, scripts, headID = document.getElementsByTagName("head")[0], script_nodes_to_append, i, images;
