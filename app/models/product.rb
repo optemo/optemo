@@ -22,6 +22,7 @@ class Product < ActiveRecord::Base
   #  ThinkingSphinx.deltas_enabled = false
   #end
   attr_writer :product_name
+  
   searchable do
     #text :title do
     text :title do
@@ -31,12 +32,29 @@ class Product < ActiveRecord::Base
     text :description do
       text_specs.find_by_name("longDescription").try(:value)
     end
-    
     text :sku 
+    var = 1
     boolean :instock
-    autosuggest :product_name, :using => :instock?                                 
+  Facet.find_all_by_used_for("filter").each do |s|
+     puts "filter_name #{s.name}"
+    # filter_name = s.name
+    if (s.feature_type == "Continuous")  
+      #name = s.name
+       double s.name.to_sym do
+        cont_specs.find_by_name(s.name).try(:value)
+       end
+     elsif (s.feature_type == "Categorical")
+       string s.name.to_sym do
+        cat_specs.find_by_name(s.name).try(:value)
+       end
+     elsif (s.feature_type == "Binary")
+       boolean s.name.to_sym do 
+         bin_specs.find_by_name(s.name).try(:value)
+       end
+    end
   end
-  
+    autosuggest :product_name, :using => :instock?                  
+  end
   def instock?
     if (instock)
       cat_specs.find_by_name("title").try(:value)
