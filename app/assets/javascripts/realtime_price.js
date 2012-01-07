@@ -45,15 +45,19 @@ optemo_module = (function (my){
           });
           $('.productinfo[data-checked!="true"]').each(function(){
             //These products weren't found so remove links
-            var t = $(this).children(".easylink");
-            t.after($('<span>').html(t.html()));
-            t.hide();
+            var t = $(this);
+            var title = $(this).children(".easylink");
+            title.after($('<span>').html(title.html()));
+            title.hide();
             //And also remove the add to cart button
-            var addlink = $(this).siblings().find('.easylink'); //See if we're dealing with the hero product 
+            var addlink = t.siblings().find('.easylink'); //See if we're dealing with the hero product 
             if (!(addlink.length)) {
-              addlink = t.parent().parent().siblings();
+              addlink = t.parent().siblings(); //Otherwise we're dealing with the navbox
             }
             addlink.after($('<div style="text-align: center;">').html((typeof(optemo_french) != "undefined" && optemo_french) ? "(En rupture de stock)" : "(Out of stock)")).hide();
+            //And also remove the link from the image
+            t.siblings("img.productimg").removeClass("productimg").removeAttr('title');//navbox
+            t.parent().siblings("img.productimg").removeClass("productimg").removeAttr('title');//Hero
           });
         }
     });
