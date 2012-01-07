@@ -104,8 +104,9 @@ class Search < ActiveRecord::Base
     @keysearch ||= Product.search do
       fulltext phrase
       with :instock, 1
+      #with "saleprice".to_sym, 199.99
       paginate :per_page => 500 
-     
+      
       #with(:published_at).less_than Time.now
       #order_by :published_at, :desc
       #facet :category_ids, :author_id
@@ -261,6 +262,9 @@ class Search < ActiveRecord::Base
       createFeatures(p)
     when "nextpage"
       #the next page button has been clicked
+      if p[:keyword]
+        self.keyword_search = p[:keyword]
+      end 
       self.page = p[:page]
       duplicateFeatures(old_search)
     when "sortby"

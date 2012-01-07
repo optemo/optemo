@@ -7,7 +7,8 @@ optemo_module = (function (my){
   /* LiveInit functions */
   $('#keyword_submit').live("click", function(){
     if (my.loading_indicator_state.disable) return false;
-    my.ajaxcall("/search", {"keyword" : $("#product_name").val()});
+   if ($("#product_name").val()!="")
+   	 {my.ajaxcall("/search", {"keyword" : $("#product_name").val()});}
     return false;
   })
   

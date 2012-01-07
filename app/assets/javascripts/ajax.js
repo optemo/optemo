@@ -239,8 +239,10 @@ optemo_module = (function (my){
   //Pagination links
   $('.pagination a').live("click", function(){
       if (my.loading_indicator_state.disable) return false;
-      my.ajaxcall($(this).attr('href'));
-
+      if ($("#product_name").val()!= "Keyword or Web Code")
+      	my.ajaxcall($(this).attr('href'), {"keyword": $("#product_name").val()});
+			else
+			 my.ajaxcall($(this).attr('href'))
       return false;
   });
 

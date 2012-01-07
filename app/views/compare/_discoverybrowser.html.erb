@@ -13,7 +13,7 @@
     <%end%></b>	
     as there were no results for <b><%=Session.search.keyword%></b>
   </div>		
-<%elsif (Session.search.num_result == 0 && Session.search.col_emp_result )%>
+<%elsif (Session.search.num_result == 0 && (Session.search.col_emp_result || Session.search.collation==nil))%>
 <div id="spellcheck_suggestion_box">
  Your search, <b><%=Session.search.keyword%></b>, did not match any products. 	
 </div>

@@ -1,9 +1,9 @@
+require "sunspot"
+
 class Facet < ActiveRecord::Base
   has_many :dynamic_facets, :dependent=>:delete_all
+ 
   after_save{ Maybe(dynamic_facets).each{|x| x.save}}
-    
-
-
   def self.transfer_data_from_feature
     Facet.destroy_all
     Feature.all.each do |f|

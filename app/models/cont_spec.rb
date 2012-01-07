@@ -1,5 +1,5 @@
 class ContSpec < ActiveRecord::Base
-  belongs_to :product
+  belongs_to :product 
 
   # Get specs for a single item, returns a hash of this format: {"price" => 1.75, "width" => ... }
   def self.cache_all(p_id)

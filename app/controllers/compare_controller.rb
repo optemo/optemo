@@ -4,8 +4,10 @@ class CompareController < ApplicationController
   def index
       # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
       if Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
-        if params[:page]
-          classVariables(Search.create({:page => params[:page], :sortby => params[:sortby] || 'utility', :action_type => "nextpage", :parent=>params[:hist]}))
+        if (params[:page] && params[:keyword] && params[:keyword] != "Keyword or Web Code" )
+          classVariables(Search.create({:page => params[:page], :keyword => params[:keyword], :sortby => params[:sortby] || 'utility', :action_type => "nextpage", :parent=>params[:hist]}))
+        elsif params[:page]
+             classVariables(Search.create({:page => params[:page], :sortby => params[:sortby] || 'utility', :action_type => "nextpage", :parent=>params[:hist]}))  
         elsif params[:sortby] # Change sorting method via navigator_bar select box
           classVariables(Search.create({:sortby => params[:sortby], :action_type => "sortby",  :parent=>params[:hist]}))
         else
@@ -60,14 +62,11 @@ class CompareController < ApplicationController
   def create
   if (params[:keyword])  
     if (params[:keyword] =~/[0-9BM]\d{7}/)
-       #puts "sku_number #{params[:product][:name]}"
-       redirect_to (TextSpec.cacheone((Product.find_by_sku(params[:keyword])).id, "productUrl"))
+      # puts "sku_number #{params[:keyword]}"
+      # puts "sku_params_id: #{(Product.find_by_sku(params[:keyword])).id}"
+       redirect_to(TextSpec.cacheone((Product.find_by_sku(params[:keyword])).id, "productUrl"))
     else
-    #  if (params[:page])                     
-    #    classVariables(Search.create(action_type: "nextpage", parent: params[:hist], keyword: params[:keyword], page: params[:page], filters: {continuous: {}, categorical: {}, binary: {}}))
-    #  else
         classVariables(Search.create(action_type: "filter", parent: params[:hist], keyword: params[:keyword], filters: {continuous: {}, categorical: {}, binary: {}}))
-    #  end  
         correct_render       
     end
   else 
