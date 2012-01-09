@@ -278,7 +278,7 @@ class Search < ActiveRecord::Base
       duplicateFeatures(old_search)
     when "filter"
       #product filtering has been done through keyword search of attribute filters
-      self.keyword_search = p[:keyword]
+      self.keyword_search = p[:keyword] unless p[:keyword].blank?
       #self.page = p[:page]
       puts "filter_params: #{p[:filters]}"
       createFeatures(p[:filters])

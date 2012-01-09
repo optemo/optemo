@@ -196,13 +196,17 @@ optemo_module = (function (my){
       my.stop_spinner();
       clearTimeout(lis.socket_error_timer); // We need to clear the timeout error here
       lis.spinner_timer = lis.socket_error_timer = null;
-      
-      var parts = data.split('[BRK]');
-      if (parts.length == 2) {
-        $('#ajaxfilter').empty().append(parts[1]);
-        $('#main').html(parts[0]);
-        my.whenDOMready();
-        return 0;
+      var rdr;
+      if (rdr = /\[REDIRECT\](.*)/.exec(data)) {
+        window.location.replace(rdr[1]);
+      } else {
+        var parts = data.split('[BRK]');
+        if (parts.length == 2) {
+          $('#ajaxfilter').empty().append(parts[1]);
+          $('#main').html(parts[0]);
+          my.whenDOMready();
+          return 0;
+        }
       }
   };
   

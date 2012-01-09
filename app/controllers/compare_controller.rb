@@ -60,19 +60,13 @@ class CompareController < ApplicationController
   end  
   
   def create
-  if (params[:keyword])  
-    if (params[:keyword] =~/[0-9BM]\d{7}/)
-      # puts "sku_number #{params[:keyword]}"
-      # puts "sku_params_id: #{(Product.find_by_sku(params[:keyword])).id}"
-       redirect_to(TextSpec.cacheone((Product.find_by_sku(params[:keyword])).id, "productUrl"))
+    if (params[:keyword] && params[:keyword] =~ /[0-9BM]\d{7}/)
+      # Redirect directly to the PDP
+      render text: "[REDIRECT]#{ TextSpec.cacheone((Product.find_by_sku(params[:keyword])).id, "productUrl")}"
     else
-        classVariables(Search.create(action_type: "filter", parent: params[:hist], keyword: params[:keyword], filters: {continuous: {}, categorical: {}, binary: {}}))
-        correct_render       
+      classVariables(Search.create(action_type: "filter", parent: params[:hist], filters: params))
+      correct_render
     end
-  else 
-    classVariables(Search.create(action_type: "filter", parent: params[:hist], filters: {continuous: params[:continuous], categorical: params[:categorical], binary: params[:binary]}))
-    correct_render
-  end
   end
 
   # GET /products/1
