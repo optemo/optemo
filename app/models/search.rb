@@ -17,6 +17,9 @@ class Search < ActiveRecord::Base
   
   def userdatabins
       @userdatabins ||= Userdatabin.find_all_by_search_id(id)
+    #  @userdatabins.each do |s|
+    #    puts "userdatabins_ #{s.name}"
+    #  end
   end
   
   
@@ -99,7 +102,6 @@ class Search < ActiveRecord::Base
     @sc_emp_result = false
     @col_emp_result = false
     @num_result = 0
-    #page_num = page
          
     @keysearch ||= Product.search do
       fulltext phrase
@@ -278,6 +280,7 @@ class Search < ActiveRecord::Base
       #product filtering has been done through keyword search of attribute filters
       self.keyword_search = p[:keyword]
       #self.page = p[:page]
+      puts "filter_params: #{p[:filters]}"
       createFeatures(p[:filters])
       self.initial = false
     else

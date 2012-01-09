@@ -36,11 +36,10 @@ class Product < ActiveRecord::Base
     var = 1
     boolean :instock
   Facet.find_all_by_used_for("filter").each do |s|
-     puts "filter_name #{s.name}"
-    # filter_name = s.name
+    # puts "filter_name #{s.name}"
     if (s.feature_type == "Continuous")  
       #name = s.name
-       double s.name.to_sym do
+       float s.name.to_sym, :trie =>true do
         cont_specs.find_by_name(s.name).try(:value)
        end
      elsif (s.feature_type == "Categorical")
