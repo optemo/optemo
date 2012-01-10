@@ -36,8 +36,8 @@ gem 'capistrano-ext'
 # gem 'nokogiri'
 # gem 'sqlite3-ruby', :require => 'sqlite3'
 # gem 'aws-s3', :require => 'aws/s3'
-gem 'sunspot_rails'
-gem 'sunspot_solr' # optional pre-packaged Solr distribution for use in development
+gem 'sunspot_rails', :git=> "https://github.com/sunspot/sunspot.git", :branch=>"master"
+gem 'sunspot_solr', :git=> "https://github.com/sunspot/sunspot.git", :branch=>"master" # optional pre-packaged Solr distribution for use in development
 gem 'progress_bar'
 
 #gem 'thinking-sphinx', '2.0.1', :require => 'thinking_sphinx'

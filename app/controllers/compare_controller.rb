@@ -62,7 +62,7 @@ class CompareController < ApplicationController
   def create
     if (params[:keyword] && params[:keyword] =~ /[0-9BM]\d{7}/)
       # Redirect directly to the PDP
-      render text: "[REDIRECT]#{ TextSpec.cacheone((Product.find_by_sku(params[:keyword])).id, "productUrl")}"
+       render text: "[REDIRECT]#{ TextSpec.cacheone((Product.find_by_sku(params[:keyword])).id, "productUrl")}"
     else
       classVariables(Search.create(action_type: "filter", parent: params[:hist], filters: params))
       correct_render

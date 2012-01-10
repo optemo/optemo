@@ -35,8 +35,9 @@ class Product < ActiveRecord::Base
     text :sku 
     var = 1
     boolean :instock
-  Facet.find_all_by_used_for("filter").each do |s|
-    # puts "filter_name #{s.name}"
+    string :eq_id_str 
+ 
+   Facet.find_all_by_used_for("filter").each do |s|
     if (s.feature_type == "Continuous")  
       #name = s.name
        float s.name.to_sym, :trie =>true do
@@ -51,9 +52,13 @@ class Product < ActiveRecord::Base
          bin_specs.find_by_name(s.name).try(:value)
        end
     end
-  end
+   end
     autosuggest :product_name, :using => :instock?                  
   end
+  
+ def eq_id_str
+    Equivalence.find_by_product_id(id).try(:eq_id).to_s
+ end
   def instock?
     if (instock)
       cat_specs.find_by_name("title").try(:value)

@@ -7,6 +7,70 @@ class Search < ActiveRecord::Base
   attr :collation, :sc_emp_result, :col_emp_result, :num_result
   attr_accessor :keyword
   
+  def filtering_cat_cont_bin_specs
+    mycats = self.userdatacats
+    mybins = self.userdatabins
+    myconts = self.userdataconts    
+    
+   if (mybins.empty? && mycats.empty? && myconts.empty?)  
+    @products ||= ContSpec.fq2
+   else
+    @products1||= Product.search do
+      
+      any_of do  #disjunction inside the category part
+        mycats.each do |cats|
+          puts "cats_name #{cats.name} cats_value #{cats.value}"        
+          if (cats.name == "category")
+            with cats.name.to_sym, cats.value 
+          end             
+        end   
+      end     
+      any_of do   # disjunction inside the brand part
+        mycats.each do |cats|
+          if (cats.name == "brand")
+            with cats.name.to_sym, cats.value 
+          end             
+        end   
+      end      
+      all_of do  #conjunction for the other cats, bins, and conts specs
+          mycats.each do |cats|
+            if (cats.name != "category" && cats.name != "brand")
+              with cats.name.to_sym, cats.value 
+            end     
+          end   
+         mybins.each do |bins|
+           puts "bins_name #{bins.name} bins_value #{bins.value}"
+           with bins.name.to_sym, bins.value
+         end      
+         myconts.each do |conts|
+           puts "conts_name #{conts.name} conts_value #{conts.value}"
+           with (conts.name.to_sym), [conts.min..conts.max]
+           
+         end  
+      end
+      
+      with :instock, 1
+      paginate :per_page => 500 
+    #  group :eq_id_str
+    end
+   # puts "num_results #{@products1.total}"
+    @products = @products1.results
+    
+   #puts "group_matches #{@products1.group(:eq_id_str).matches}"
+    
+   #  @products1.group(:eq_id_str).groups.each do |group|
+   #   puts "group_value #{group.value}" # blog_id of the each document in the group
+
+      # By default, there is only one document per group (the highest
+      # scoring one); if `limit` is specified (see below), multiple
+      # documents can be returned per group
+       #group.results.each do |result|
+      #  @products << result
+       # =>  end
+   #  end
+    
+   end   
+  end
   def userdataconts
       @userdataconts ||= Userdatacont.find_all_by_search_id(id)
   end
@@ -144,7 +208,8 @@ class Search < ActiveRecord::Base
       @products =@keysearch.results 
     end
   else
-    @products ||= ContSpec.fq2
+    #@products ||= ContSpec.fq2
+    @products ||= self.filtering_cat_cont_bin_specs
   end
   end
   
