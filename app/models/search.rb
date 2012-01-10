@@ -338,7 +338,6 @@ class Search < ActiveRecord::Base
       duplicateFeatures(old_search)
     when "filter"
       #product filtering has been done through keyword search of attribute filters
-      self.keyword_search = p[:filters][:keyword] unless p[:filters][:keyword].blank?
       #self.page = p[:page]
       puts "filter_params: #{p[:filters]}"
       createFeatures(p[:filters])
@@ -371,6 +370,8 @@ class Search < ActiveRecord::Base
       os.userdatabins.each do |d|
         @userdatabins << d.class.new(d.attributes)
       end
+      #Save keyword search
+      self.keyword_search = os.keyword_search unless os.keyword_search.blank?
     end
   end
    
@@ -415,6 +416,9 @@ class Search < ActiveRecord::Base
         end
       end
     end
+    
+    #Save keyword search
+    self.keyword_search = p[:keyword] unless p[:keyword].blank?
   end
   
   # The intent of this function is to see if filtering is being done on a previously filtered set of clusters.
