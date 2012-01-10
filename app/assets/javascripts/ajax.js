@@ -22,8 +22,11 @@ optemo_module = (function (my){
           }
           /* Look for weird $ error */
       });
-      my.ajaxcall("/compare/create", selections);
-  }
+			if ($("#product_name").val() == "" || $("#product_name").val()== "Keyword or Web Code")
+				my.ajaxcall("/compare/create", selections)
+			else
+        my.ajaxcall("/compare/create", $.extend({"keyword" :$("#product_name").val()},selections) );
+	};
    my.removeSilkScreen = function() {
         $('#silkscreen, #outsidecontainer').hide();
         // For ie 6, dropdown list has z-index issue. Show dropdown when popup hide.

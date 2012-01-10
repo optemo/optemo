@@ -7,8 +7,17 @@ optemo_module = (function (my){
   /* LiveInit functions */
   $('#keyword_submit').live("click", function(){
     if (my.loading_indicator_state.disable) return false;
-   if ($("#product_name").val()!="")
+	 var selections = $("#filter_form").serializeObject();
+		$.each(selections, function(k,v){
+       if(v == "" || v == "-") {
+           delete selections[k];
+       }
+       /* Look for weird $ error */
+   });
+   if ($("#product_name").val()!="" && !selections)
    	 {my.ajaxcall("/search", {"keyword" : $("#product_name").val()});}
+		else if ($("#product_name").val()!="")
+		 {my.ajaxcall("/search", $.extend(selections,{"keyword" : $("#product_name").val()}));}
     return false;
   })
   

@@ -7,16 +7,15 @@ class Search < ActiveRecord::Base
   attr :collation, :sc_emp_result, :col_emp_result, :num_result
   attr_accessor :keyword
   
-  def filtering_cat_cont_bin_specs
-    mycats = self.userdatacats
-    mybins = self.userdatabins
-    myconts = self.userdataconts    
+  def filtering_cat_cont_bin_specs(mybins,mycats,myconts)
     
-   if (mybins.empty? && mycats.empty? && myconts.empty?)  
-    @products ||= ContSpec.fq2
-   else
-    @products1||= Product.search do
-      
+    @filtering||= Product.search do
+      if keyword_search
+        puts "jan-10 we are here"
+        @keyword = keyword_search
+        phrase = keyword_search.downcase.gsub(/\s-/,'').to_s
+        fulltext phrase
+      end  
       any_of do  #disjunction inside the category part
         mycats.each do |cats|
           puts "cats_name #{cats.name} cats_value #{cats.value}"        
@@ -33,7 +32,7 @@ class Search < ActiveRecord::Base
         end   
       end      
       all_of do  #conjunction for the other cats, bins, and conts specs
-          mycats.each do |cats|
+         mycats.each do |cats|
             if (cats.name != "category" && cats.name != "brand")
               with cats.name.to_sym, cats.value 
             end     
@@ -42,7 +41,7 @@ class Search < ActiveRecord::Base
            puts "bins_name #{bins.name} bins_value #{bins.value}"
            with bins.name.to_sym, bins.value
          end      
-         myconts.each do |conts|
+        myconts.each do |conts|
            puts "conts_name #{conts.name} conts_value #{conts.value}"
            with (conts.name.to_sym), [conts.min..conts.max]
            
@@ -56,13 +55,12 @@ class Search < ActiveRecord::Base
    # puts "num_results #{@products1.total}"
     #puts "group_matches #{@products1.group(:eq_id_str).matches}"
     res = []
-    @products1.group(:eq_id_str).groups.each do |g|
+    @filtering.group(:eq_id_str).groups.each do |g|
         #puts "group_value #{g.value}" # blog_id of the each document in the group
         #puts "g_result #{g.results.first.sku}" 
         res << g.results.first
     end
-    @products = res
-   end   
+    @products = res   
   end
   def userdataconts
       @userdataconts ||= Userdatacont.find_all_by_search_id(id)
@@ -151,7 +149,12 @@ class Search < ActiveRecord::Base
   end
   
   def products
-  if keyword_search
+   mycats = self.userdatacats
+   mybins = self.userdatabins
+   myconts = self.userdataconts
+   specs = mybins.empty? && mycats.empty? && myconts.empty?
+      
+   if (keyword_search && specs) 
     @keyword = keyword_search
     phrase = keyword_search.downcase.gsub(/\s-/,'').to_s
     
@@ -198,9 +201,11 @@ class Search < ActiveRecord::Base
     else    
       @products =@keysearch.results 
     end
-  else
-    @products ||= self.filtering_cat_cont_bin_specs
-  end
+   elsif (!keyword_search && specs )
+    @products ||= ContSpec.fq2   
+   else
+    @products ||= self.filtering_cat_cont_bin_specs(mybins,mycats,myconts)
+   end
   end
   
   def products_landing
