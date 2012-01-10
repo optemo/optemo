@@ -51,23 +51,39 @@ class Search < ActiveRecord::Base
       
       with :instock, 1
       paginate :per_page => 500 
-    #  group :eq_id_str
+      group :eq_id_str
     end
    # puts "num_results #{@products1.total}"
-    @products = @products1.results
+    @products1.group(:eq_id_str).matches
+    puts "group_matches #{@products1.group(:eq_id_str).matches}"
+    @products1.group(:eq_id_str).groups.each do |g|
+        puts "group_value #{g.value}" # blog_id of the each document in the group
+
+        # By default, there is only one document per group (the highest
+        # scoring one); if `limit` is specified (see below), multiple
+        # documents can be returned per group
+        #puts "current_class #{self}"
+        @products << g.first.hit.map{|ele| ele.results}
+        # g.results.each do |result|
+        #  @products << result
+        # end
+    end
+    #@products= @products1.groups[0].groups.first.hits.map{ |ele|  ele.result }
     
-   #puts "group_matches #{@products1.group(:eq_id_str).matches}"
+    #@products = @products1.results
+    #@products1.group(:eq_id_str).matches
+   
     
-   #  @products1.group(:eq_id_str).groups.each do |group|
-   #   puts "group_value #{group.value}" # blog_id of the each document in the group
+    # @products1.group(:eq_id_str).groups.each do |group|
+      #puts "group_value #{group.value}" # blog_id of the each document in the group
 
       # By default, there is only one document per group (the highest
       # scoring one); if `limit` is specified (see below), multiple
       # documents can be returned per group
-       #group.results.each do |result|
-      #  @products << result
-       # =>  end
-   #  end
+      # group.results.each do |result|
+       # @products << result
+      #  end
+    # end
     
    end   
   end
