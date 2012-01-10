@@ -54,37 +54,14 @@ class Search < ActiveRecord::Base
       group :eq_id_str
     end
    # puts "num_results #{@products1.total}"
-    @products1.group(:eq_id_str).matches
-    puts "group_matches #{@products1.group(:eq_id_str).matches}"
+    #puts "group_matches #{@products1.group(:eq_id_str).matches}"
+    res = []
     @products1.group(:eq_id_str).groups.each do |g|
-        puts "group_value #{g.value}" # blog_id of the each document in the group
-
-        # By default, there is only one document per group (the highest
-        # scoring one); if `limit` is specified (see below), multiple
-        # documents can be returned per group
-        #puts "current_class #{self}"
-        @products << g.first.hit.map{|ele| ele.results}
-        # g.results.each do |result|
-        #  @products << result
-        # end
+        #puts "group_value #{g.value}" # blog_id of the each document in the group
+        #puts "g_result #{g.results.first.sku}" 
+        res << g.results.first
     end
-    #@products= @products1.groups[0].groups.first.hits.map{ |ele|  ele.result }
-    
-    #@products = @products1.results
-    #@products1.group(:eq_id_str).matches
-   
-    
-    # @products1.group(:eq_id_str).groups.each do |group|
-      #puts "group_value #{group.value}" # blog_id of the each document in the group
-
-      # By default, there is only one document per group (the highest
-      # scoring one); if `limit` is specified (see below), multiple
-      # documents can be returned per group
-      # group.results.each do |result|
-       # @products << result
-      #  end
-    # end
-    
+    @products = res
    end   
   end
   def userdataconts
@@ -176,7 +153,7 @@ class Search < ActiveRecord::Base
   def products
   if keyword_search
     @keyword = keyword_search
-    phrase = keyword_search.downcase.gsub(/\s-/,'')
+    phrase = keyword_search.downcase.gsub(/\s-/,'').to_s
     
       
     @sc_emp_result = false
@@ -186,20 +163,16 @@ class Search < ActiveRecord::Base
     @keysearch ||= Product.search do
       fulltext phrase
       with :instock, 1
-      #with "saleprice".to_sym, 199.99
       paginate :per_page => 500 
-      
-      #with(:published_at).less_than Time.now
-      #order_by :published_at, :desc
-      #facet :category_ids, :author_id
     end
-    #puts "phrase-jan5-search #{phrase}"
+    #puts "phrase-jan10-search #{phrase}"
+    #puts "suggestions, #{@keysearch.suggestions}"
     #puts "keysearch_total #{@keysearch.total}"
     #puts "total_pages_results: #{@keysearch.results.total_pages}"
     
     @num_result = @keysearch.total
-    if (!@keysearch.suggestions.empty?)
-     #@suggestions = @keysearch.suggestions
+    if (@keysearch.suggestions!=nil)  
+     if (!@keysearch.suggestions.empty?)
       @collation = @keysearch.collation
          
       phrase = @collation.downcase.gsub(/\s-/,'')        
@@ -219,12 +192,13 @@ class Search < ActiveRecord::Base
       else
         @products =@keysearch.results
       end
-                
+     else
+       @products =@keysearch.results 
+     end          
     else    
       @products =@keysearch.results 
     end
   else
-    #@products ||= ContSpec.fq2
     @products ||= self.filtering_cat_cont_bin_specs
   end
   end
